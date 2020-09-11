@@ -12,24 +12,20 @@ import sphinx_rtd_theme
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-# needs_sphinx = '1.0'
+# needs_sphinx = "3.1"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.imgmath",
-]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
+if sys.platform == "win32":
+    extensions.extend(["sphinx.ext.autodoc", "rst2pdf.pdfbuilder"])
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+# source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -46,7 +42,7 @@ copyright = "2015-2020, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.16.18"
+release = "1.17.6"
 
 # The short X.Y version
 version = release
@@ -95,9 +91,9 @@ keep_warnings = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 # html_theme = "agogo"
-html_theme = "sphinxdoc"
+# html_theme = "sphinxdoc"
 # html_theme = "python_docs_theme"
-# html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_rtd_theme"
 # html_theme = "classic"
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -128,7 +124,7 @@ html_theme_options = {
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "Pymupdf.ico"
+html_favicon = "PyMuPDF.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -165,8 +161,8 @@ html_use_index = True
 html_split_index = True
 
 # If true, links to the reST sources are added to the pages.
-html_show_sourcelink = False
-
+html_show_sourcelink = True
+html_sourcelink_suffix = ".rst"
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = True
 
@@ -176,10 +172,10 @@ html_show_copyright = True
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-# html_use_opensearch = ""
+# html_use_opensearch = "https://pymupdf.readthedocs.io/en/latest"
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
-html_file_suffix = ".html"
+# html_file_suffix = ".html"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "PyMuPDF"
@@ -207,7 +203,7 @@ latex_logo = "images/img-pymupdf.jpg"
 latex_show_pagerefs = False
 
 # If true, show URL addresses after external links.
-latex_show_urls = "footnote"
+# latex_show_urls = True
 # latex_use_xindy = True
 # Documents to append as an appendix to all manuals.
 # latex_appendices = []
@@ -222,7 +218,7 @@ latex_domain_indices = True
 pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Jorj McKie")]
 
 # A comma-separated list of custom stylesheets. Example:
-pdf_stylesheets = ["sphinx", "bahnschrift"]
+pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]
 
 # Create a compressed PDF
 pdf_compressed = True

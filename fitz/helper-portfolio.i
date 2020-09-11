@@ -19,8 +19,7 @@ void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
                                     PDF_NAME(EmbeddedFiles),
                                     PDF_NAME(Names),
                                     NULL);
-    if (efiles)  // make sure embedded files get displayed by viewers
-    {
+    if (efiles) {
         pdf_dict_put_name(ctx, root, PDF_NAME(PageMode), "UseAttachments");
     }
     return;
@@ -40,8 +39,7 @@ pdf_obj *JM_embed_file(fz_context *ctx,
     size_t len = 0;
     pdf_obj *ef, *f, *params, *val = NULL;
     fz_var(val);
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         val = pdf_new_dict(ctx, pdf, 6);
         pdf_dict_put_dict(ctx, val, PDF_NAME(CI), 4);
         ef = pdf_dict_put_dict(ctx, val, PDF_NAME(EF), 4);
@@ -60,11 +58,9 @@ pdf_obj *JM_embed_file(fz_context *ctx,
         params = pdf_dict_put_dict(ctx, f, PDF_NAME(Params), 4);
         pdf_dict_put_int(ctx, params, PDF_NAME(Size), len);
     }
-    fz_always(ctx)
-    {
-        ;
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
     }
-    fz_catch(ctx) fz_rethrow(ctx);
     return val;
 }
 %}

@@ -29,11 +29,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.getImageData`   return a memory area in a variety of formats
 :meth:`Pixmap.getPNGData`     return a PNG as a memory area
 :meth:`Pixmap.invertIRect`    invert the pixels of a given area
+:meth:`Pixmap.pillowWrite`    save as image using pillow (experimental)
+:meth:`Pixmap.pillowData`     write image stream using pillow (experimental)
 :meth:`Pixmap.pixel`          return the value of a pixel
+:meth:`Pixmap.setAlpha`       set alpha values
 :meth:`Pixmap.setPixel`       set the color of a pixel
 :meth:`Pixmap.setRect`        set the color of a rectangle
 :meth:`Pixmap.setResolution`  set the image resolution
-:meth:`Pixmap.setAlpha`       set alpha values
 :meth:`Pixmap.shrink`         reduce size keeping proportions
 :meth:`Pixmap.tintWith`       tint a pixmap with a color
 :meth:`Pixmap.writeImage`     save a pixmap in a variety of formats
@@ -81,7 +83,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: __init__(self, source, width, height, [clip])
 
-      **Copy and scale:** Copy *source* pixmap choosing new width and height values. Supports partial copying and the source colorspace may be also *None*.
+      **Copy and scale:** Copy *source* pixmap, scaling new width and height values -- the image will appear stretched or shrunk accordingly. Supports partial copying. The source colorspace may be *None*.
 
       :arg source: the source pixmap.
       :type source: *Pixmap*
@@ -90,11 +92,11 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg float height: desired target height.
 
-      :arg irect_like clip: a region of the source pixmap to take the copy from.
+      :arg irect_like clip: restrict the resulting pixmap to this region of the **scaled** pixmap.
 
-      .. note:: If width or height are not *de facto* integers (meaning e.g. *round(width) != width*), then pixmap will be created with *alpha = 1*.
+      .. note:: If width or height are not *de facto* integers (i.e. *float(int(value) != value*), then the resulting pixmap will have an alpha channel.
 
-   .. method:: __init__(self, source, alpha = 1)
+   .. method:: __init__(self, source, alpha=1)
 
       **Copy and add or drop alpha:** Copy *source* and add or drop its alpha channel. Identical copy if *alpha* equals *source.alpha*. If an alpha channel is added, its values will be set to 255.
 
@@ -265,7 +267,6 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: writeImage(filename, output=None)
 
-
       Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the *savealpha* option is no longer supported and will be silently ignored.
 
       :arg str filename: The filename to save to. The filename's extension determines the image format, if not overriden by the output parameter.
@@ -291,6 +292,25 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       Equal to *pix.getImageData("png")*.
 
       :rtype: bytes
+
+   ..  method:: pillowWrite(*args, **kwargs)
+
+      *(New in v1.17.3)*
+
+      Write the pixmap as an image file using Pillow. Use this method for image formats or extended image features not supported by MuPDF. Examples are
+
+      * Formats JPEG, JPX, J2K, WebP, etc.
+      * Storing EXIF or dpi information.
+      * If you do not provide dpi information, the values stored with the pixmap are automatically used.
+
+      A simple example: ``pix.pillowWrite("some.jpg", optimize=True, dpi=(150,150))``. For details on possible parameters see the Pillow documentation.
+
+   ..  method:: pillowData(*args, **kwargs)
+
+      *(New in v1.17.3)*
+
+      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pillowData(format="JPEG", optimize=True)``. Also see above. For details on possible parameters see the Pillow documentation.
+
 
    .. attribute:: alpha
 
@@ -430,6 +450,6 @@ psd        gray, rgb, cmyk yes       .psd           Adobe Photoshop Document
 
 .. rubric:: Footnotes
 
-.. [#f1] If you need a **vector image** from the SVG, you must first convert it to a PDF. Try :meth:`Document.convertToPDF`. If this is not not good enough, look for other SVG-to-PDF conversion tools like the Python packages `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ or the Java solution `Apache Batik <https://github.com/apache/batik>`_. Have a look at our Wiki for more examples.
+.. [#f1] If you need a **vector image** from the SVG, you must first convert it to a PDF. Try :meth:`Document.convertToPDF`. If this is not good enough, look for other SVG-to-PDF conversion tools like the Python packages `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ or the Java solution `Apache Batik <https://github.com/apache/batik>`_. Have a look at our Wiki for more examples.
 
 .. [#f2] To also set the alpha property, add an additional step to this method by dropping or adding an alpha channel to the result.

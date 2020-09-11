@@ -6,6 +6,6 @@ Contains a number of functions and classes for the experienced user. To be used 
 .. toctree::
    :maxdepth: 1
 
-   functions.rst
-   device.rst
-   coop_low.rst
+   functions
+   device
+   coop_low

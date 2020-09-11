@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 from distutils.command.build_py import build_py as build_py_orig
-import sys, os
+import re, sys, os
 
 # custom build_py command which runs build_ext first
 # this is necessary because build_py needs the fitz.py which is only generated
@@ -11,8 +11,43 @@ class build_ext_first(build_py_orig):
         return super().run()
 
 
+DEFAULT = ["mupdf", "mupdf-third"]
+ARCH_LINUX = DEFAULT + ["jbig2dec", "openjp2", "jpeg", "freetype"]
+OPENSUSE = ARCH_LINUX + ["harfbuzz", "png16"]
+FEDORA = ARCH_LINUX + ["harfbuzz"]
+LIBRARIES = {
+    "default": DEFAULT,
+    "arch": ARCH_LINUX,
+    "manjaro": ARCH_LINUX,
+    "opensuse": OPENSUSE,
+    "fedora": FEDORA,
+}
+
+
+def load_libraries():
+    filepath = "/etc/os-release"
+    if not os.path.exists(filepath):
+        return LIBRARIES["default"]
+    regex = re.compile("^([\\w]+)=(?:'|\")?(.*?)(?:'|\")?$")
+    with open(filepath) as os_release:
+        info = {
+            regex.match(line.strip()).group(1): re.sub(
+                r'\\([$"\'\\`])', r"\1", regex.match(line.strip()).group(2)
+            )
+            for line in os_release
+            if regex.match(line.strip())
+        }
+
+    os_id = info["ID"]
+    if os_id.startswith("opensuse"):
+        os_id = "opensuse"
+    if os_id not in LIBRARIES:
+        return LIBRARIES["default"]
+    return LIBRARIES[os_id]
+
+
 # check the platform
-if sys.platform.startswith("linux"):
+if sys.platform.startswith("linux") or 'gnu' in sys.platform:
     module = Extension(
         "fitz._fitz",  # name of the module
         ["fitz/fitz.i"],
@@ -20,13 +55,7 @@ if sys.platform.startswith("linux"):
             "/usr/include/mupdf",
             "/usr/local/include/mupdf",
         ],
-        # library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
-        libraries=[
-            "mupdf",
-            #'crypto', #openssl is required by mupdf on archlinux
-            #'jbig2dec', 'openjp2', 'jpeg', 'freetype',
-            "mupdf-third",
-        ],  # the libraries to link with
+        libraries=load_libraries(),
     )
 elif sys.platform.startswith(("darwin", "freebsd")):
     module = Extension(
@@ -81,7 +110,7 @@ long_desc = "\n".join(long_dtab)
 
 setup(
     name="PyMuPDF",
-    version="1.16.18",
+    version="1.17.6",
     description="Python bindings for the PDF rendering library MuPDF",
     long_description=long_desc,
     classifiers=classifier,

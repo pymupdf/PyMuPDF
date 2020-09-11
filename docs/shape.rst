@@ -298,11 +298,11 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: morph; finish
       pair: width; finish
 
-   .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(pivot, matrix))
+   .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix))
 
-      Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them. This method also supports morphing the resulting compound drawing using a pivotal :ref:`Point`.
+      Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them. This method also supports morphing the resulting compound drawing using a fixpoint :ref:`Point`.
 
-      :arg sequence morph: morph the text or the compound drawing around some arbitrary pivotal :ref:`Point` *pivot* by applying :ref:`Matrix` *matrix* to it. This implies that *pivot* is a **fixed point** of this operation. Default is no morphing (*None*). The matrix can contain any values in its first 4 components, *matrix.e == matrix.f == 0* must be true, however. This means that any combination of scaling, shearing, rotating, flipping, etc. is possible, but translations are not.
+      :arg sequence morph: morph the text or the compound drawing around some arbitrary :ref:`Point` *fixpoint* by applying :ref:`Matrix` *matrix* to it. This implies that *fixpoint* is a **fixed point** of this operation: it will not change its position. Default is no morphing (*None*). The matrix can contain any values in its first 4 components, *matrix.e == matrix.f == 0* must be true, however. This means that any combination of scaling, shearing, rotating, flipping, etc. is possible, but translations are not.
 
       :arg bool even_odd: request the **"even-odd rule"** for filling operations. Default is *False*, so that the **"nonzero winding number rule"** is used. These rules are alternative methods to apply the fill color where areas overlap. Only with fairly complex shapes a different behavior is to be expected with these rules. For an in-depth explanation, see :ref:`AdobeManual`, pp. 232 ff. Here is an example to demonstrate the difference.
 
@@ -541,7 +541,7 @@ Common Parameters
 
 **morph** (*sequence*)
 
-  Causes "morphing" of either a shape, created by the *draw*()* methods, or the text inserted by page methods *insertTextbox()* / *insertText()*. If not *None*, it must be a pair *(pivot, matrix)*, where *pivot* is a :ref:`Point` and *matrix* is a :ref:`Matrix`. The matrix can be anything except translations, i.e. *matrix.e == matrix.f == 0* must be true. The point is used as a pivotal point for the matrix operation. For example, if *matrix* is a rotation or scaling operation, then *pivot* is its center. Similarly, if *matrix* is a left-right or up-down flip, then the mirroring axis will be the vertical, respectively horizontal line going through *pivot*, etc.
+  Causes "morphing" of either a shape, created by the *draw*()* methods, or the text inserted by page methods *insertTextbox()* / *insertText()*. If not *None*, it must be a pair *(fixpoint, matrix)*, where *fixpoint* is a :ref:`Point` and *matrix* is a :ref:`Matrix`. The matrix can be anything except translations, i.e. *matrix.e == matrix.f == 0* must be true. The point is used as a fixed point for the matrix operation. For example, if *matrix* is a rotation or scaling, then *fixpoint* is its center. Similarly, if *matrix* is a left-right or up-down flip, then the mirroring axis will be the vertical, respectively horizontal line going through *fixpoint*, etc.
 
   .. note:: Several methods contain checks whether the to be inserted items will actually fit into the page (like :meth:`Shape.insertText`, or :meth:`Shape.drawRect`). For the result of a morphing operation there is however no such guaranty: this is entirely the rpogrammer's responsibility.
 

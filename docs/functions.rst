@@ -1,9 +1,9 @@
 ============
 Functions
 ============
-The following are miscellaneous functions on a fairly low-level technical detail.
+The following are miscellaneous functions and attributes on a fairly low-level technical detail.
 
-Some functions provide detail access to PDF structures. Others are stripped-down, high performance versions of functions providing more information.
+Some functions provide detail access to PDF structures. Others are stripped-down, high performance versions of other functions which provide more information.
 
 Yet others are handy, general-purpose utilities.
 
@@ -11,8 +11,11 @@ Yet others are handy, general-purpose utilities.
 ==================================== ==============================================================
 **Function**                         **Short Description**
 ==================================== ==============================================================
-:attr:`Document.FontInfos`           PDF only: information on inserted fonts
 :meth:`Annot._cleanContents`         PDF only: clean the annot's :data:`contents` objects
+:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
+:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
+:attr:`Annot.APNMattrix`             PDF only: the matrix of the appearance object
+:attr:`Annot.APNBBox`                PDF only: bbox of the appearance object
 :meth:`ConversionHeader`             return header string for *getText* methods
 :meth:`ConversionTrailer`            return trailer string for *getText* methods
 :meth:`Document._delXmlMetadata`     PDF only: remove XML metadata
@@ -34,22 +37,27 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document.extractImage`        PDF only: extract embedded image
 :meth:`Document.getCharWidths`       PDF only: return a list of glyph widths of a font
 :meth:`Document.isStream`            PDF only: check whether an :data:`xref` is a stream object
+:attr:`Document.FontInfos`           PDF only: information on inserted fonts
 :meth:`ImageProperties`              return a dictionary of basic image properties
 :meth:`getPDFnow`                    return the current timestamp in PDF format
 :meth:`getPDFstr`                    return PDF-compatible string
 :meth:`getTextlength`                return string length for a given font & fontsize
-:meth:`Page._cleanContents`          PDF only: clean the page's :data:`contents` objects
+:meth:`Page.cleanContents`           PDF only: clean the page's :data:`contents` objects
 :meth:`Page._getContents`            PDF only: return a list of content numbers
-:meth:`Page._setContents`            PDF only: set page's :data:`contents` object to specified :data:`xref`
+:meth:`Page._setContents`            PDF only: set page's :data:`contents` to some :data:`xref`
 :meth:`Page.getDisplayList`          create the page's display list
 :meth:`Page.getTextBlocks`           extract text blocks as a Python list
 :meth:`Page.getTextWords`            extract text words as a Python list
 :meth:`Page.run`                     run a page through a device
-:meth:`Page._wrapContents`           wrap contents with stacking commands
+:meth:`Page.readContents`            PDF only: get complete, concatenated /Contents source
+:meth:`Page.wrapContents`            wrap contents with stacking commands
 :attr:`Page._isWrapped`              check whether contents wrapping is present
 :meth:`planishLine`                  matrix to map a line to the x-axis
 :meth:`PaperSize`                    return width, height for a known paper format
 :meth:`PaperRect`                    return rectangle for a known paper format
+:meth:`sRGB_to_pdf`                  return PDF RGB color tuple from a sRGB integer
+:meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from a sRGB integer
+:meth:`make_table`                   return list of table cells for a given rectangle
 :attr:`paperSizes`                   dictionary of pre-defined paper formats
 ==================================== ==============================================================
 
@@ -81,6 +89,49 @@ Yet others are handy, general-purpose utilities.
       >>> fitz.PaperRect("letter-l")
       fitz.Rect(0.0, 0.0, 792.0, 612.0)
       >>>
+
+-----
+
+   .. method:: sRGB_to_pdf(srgb)
+
+      *New in v1.17.4*
+
+      Convenience function returning a PDF color triple (red, green, blue) for a given sRGB color integer as it occurs in :meth:`Page.getText` dictionaries "dict" and "rawdict".
+
+      :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
+
+      :returns: a tuple (red, green, blue) with float items in intervall *0 <= item <= 1* representing the same color.
+
+-----
+
+   .. method:: sRGB_to_rgb(srgb)
+
+      *New in v1.17.4*
+
+      Convenience function returning a color (red, green, blue) for a given sRGB color integer .
+
+      :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
+
+      :returns: a tuple (red, green, blue) with integer items in intervall *0 <= item <= 255* representing the same color.
+
+-----
+
+   .. method:: make_table(rect=(0, 0, 1, 1), cols=1, rows=1)
+
+      *New in v1.17.4*
+
+      Convenience function returning a list of <rows x cols> :ref:`Rect` objects representing equal sized table cells for the given rectangle.
+
+      :arg rect_like rect: the rectangle to contain the table.
+      :arg int cols: the desired number of columns.
+      :arg int rows: the desired number of rows.
+      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*::
+
+         [
+            [cell00, cell01, ...]  # row 0
+            ...
+            [...]  # last row
+         ]
 
 -----
 
@@ -124,6 +175,29 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
+   .. attribute:: fitz_fontdescriptors
+
+      *(New in v1.17.5)*
+
+      A dictionary of usable fonts from repository `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. Items are keyed by their reserved fontname and provide information like this::
+
+         In [2]: fitz.fitz_fontdescriptors.keys()
+         Out[2]: dict_keys(['figbo', 'figo', 'figbi', 'figit', 'fimbo', 'fimo',
+         'spacembo', 'spacembi', 'spacemit', 'spacemo', 'math', 'music', 'symbol1',
+         'symbol2'])
+         In [3]: fitz.fitz_fontdescriptors["fimo"]
+         Out[3]:
+         {'name': 'Fira Mono Regular',
+         'size': 125712,
+         'mono': True,
+         'bold': False,
+         'italic': False,
+         'serif': True,
+         'glyphs': 1485}
+         
+
+-----
+
    .. method:: getPDFnow()
 
       Convenience function to return the current local timestamp in PDF compatible format, e.g. *D:20170501121525-04'00'* for local datetime May 1, 2017, 12:15:25 in a timezone 4 hours westward of the UTC meridian.
@@ -163,13 +237,13 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: ImageProperties(image)
+   .. method:: ImageProperties(stream)
 
       *(New in version 1.14.14)*
-      
+
       Return a number of basic properties for an image.
 
-      :arg bytes|bytearray|BytesIO|file image: an image either in memory or an **opened** file. A memory resident image maybe any of the formats *bytes*, *bytearray* or *io.BytesIO*.
+      :arg bytes|bytearray|BytesIO|file stream: an image either in memory or an **opened** file. A memory resident image maybe any of the formats *bytes*, *bytearray* or *io.BytesIO*.
 
       :returns: a dictionary with the following keys (an empty dictionary for any error):
 
@@ -181,7 +255,7 @@ Yet others are handy, general-purpose utilities.
          colorspace (int) colorspace.n (e.g. 3 = RGB)
          bpc        (int) bits per component (usually 8)
          format     (int) image format in *range(15)*
-         ext        (str) suggested image file extension for the format
+         ext        (str) image file extension indicating the format
          size       (int) length of the image in bytes
          ========== ====================================================
 
@@ -315,17 +389,17 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page._wrapContents
+   .. method:: Page.wrapContents
 
       Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
 
-      Use this method as an alternative, minimalistic version of :meth:`Page._cleanContents`. Its advantage is a small footprint in terms of processing time and impact on incremental saves.
+      Use this method as an alternative, minimalistic version of :meth:`Page.cleanContents`. Its advantage is a small footprint in terms of processing time and impact on incremental saves.
 
 -----
 
    .. attribute:: Page._isWrapped
 
-      Indicate whether :meth:`Page._wrapContents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
+      Indicate whether :meth:`Page.wrapContents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
 
 -----
 
@@ -377,19 +451,31 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page._cleanContents()
+   .. method:: Page.cleanContents(sanitize=True)
 
-      Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected. See :meth:`Page._getContents` for more details.
+      *(Changed in v1.17.6)*
+      
+      PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.getContents` for more details.
 
       Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
 
-      .. warning:: This is a complex function which may generate large amounts of new data and render other data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
+      :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the ``/Resources/Font`` object.
+
+      .. warning:: This is a complex function which may generate large amounts of new data and render old data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
+
+-----
+
+   .. method:: Page.readContents()
+
+      *New in version 1.17.0.*
+      Return the concatenation of all :data:`contents` objects associated with the page -- without cleaning or otherwise modifying them. Use this method whenever you need to parse this source in its entirety whithout having to bother how many separate contents objects exist.
+
 
 -----
 
    .. method:: Annot._cleanContents()
 
-      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page._cleanContents` performs -- just restricted to this annotation.
+      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page.cleanContents` performs -- just restricted to this annotation.
 
 
 -----

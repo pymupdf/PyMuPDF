@@ -9,7 +9,7 @@ from fitz import *
 
 
 """
-The following is a collection of functions to extend PyMupdf.
+This is a collection of functions to extend PyMuPDF.
 """
 
 
@@ -23,8 +23,8 @@ def writeText(
     keep_proportion=True,
     rotate=0,
 ):
-    """Write the text of one or TextWriter objects.
-    
+    """Write the text of one or more TextWriter objects.
+
     Args:
         rect: target rectangle. If None, the union of the text writers is used.
         writers: one or more TextWriter objects.
@@ -102,14 +102,12 @@ def showPDFpage(
             Transformation matrix.
         """
         # calc center point of source rect
-        smp = Point((sr.x1 + sr.x0) / 2.0, (sr.y1 + sr.y0) / 2.0)
+        smp = (sr.tl + sr.br) / 2.0
         # calc center point of target rect
-        tmp = Point((tr.x1 + tr.x0) / 2.0, (tr.y1 + tr.y0) / 2.0)
-
-        rot = Matrix(rotate)  # rotation matrix
+        tmp = (tr.tl + tr.br) / 2.0
 
         # m moves to (0, 0), then rotates
-        m = Matrix(1, 0, 0, 1, -smp.x, -smp.y) * rot
+        m = Matrix(1, 0, 0, 1, -smp.x, -smp.y) * Matrix(rotate)
 
         sr1 = sr * m  # resulting source rect to calculate scale factors
 
@@ -137,16 +135,16 @@ def showPDFpage(
 
     while pno < 0:  # support negative page numbers
         pno += len(src)
-    src_page = src[pno]  # load ource page
+    src_page = src[pno]  # load source page
     if len(src_page._getContents()) == 0:
         raise ValueError("nothing to show - source page empty")
 
-    tar_rect = rect * ~page._getTransformation()  # target rect in PDF coordinates
+    tar_rect = rect * ~page.transformationMatrix  # target rect in PDF coordinates
 
     src_rect = src_page.rect if not clip else src_page.rect & clip  # source rect
     if src_rect.isEmpty or src_rect.isInfinite:
         raise ValueError("clip must be finite and not empty")
-    src_rect = src_rect * ~src_page._getTransformation()  # ... in PDF coord
+    src_rect = src_rect * ~src_page.transformationMatrix  # ... in PDF coord
 
     matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
 
@@ -218,29 +216,19 @@ def insertImage(
         """ Calculate transformation matrix for image insertion.
 
         Notes:
-            The image will preserve its aspect ratio if and only if arguments
-            fw, fh are both equal to 1.
+            The result is basically a multiplication of four matrices in this
+            sequence: number one moves the image rectangle (always a unit rect!) to (0,0), number two rotates as desired, number three
+            scales using the width-height-ratio, and number four moves to the
+            target rect.
         Args:
-            fw, fh: width / height ratio factors of image - floats in (0,1].
-                At least one of them (corresponding to the longer side) is equal to 1.
-            tr: target rect in PDF coordinates
-            rotate: rotation angle in degrees
+            fw, fh: width / height ratio factors 0 < f <= 1.
+                    The longer one must be 1.
+            tr: target rect in PDF (!) coordinates
+            rotate: (degrees) rotation angle.
         Returns:
             Transformation matrix.
         """
-        # center point of target rect
-        tmp = Point((tr.x1 + tr.x0) / 2.0, (tr.y1 + tr.y0) / 2.0)
-
-        rot = Matrix(rotate)  # rotation matrix
-
-        # matrix m moves image center to (0, 0), then rotates
-        m = Matrix(1, 0, 0, 1, -0.5, -0.5) * rot
-
-        # sr1 = sr * m  # resulting image rect
-
-        # --------------------------------------------------------------------
-        # calculate the scale matrix
-        # --------------------------------------------------------------------
+        # compute scale matrix parameters
         small = min(fw, fh)  # factor of the smaller side
 
         if rotate not in (0, 180):
@@ -262,17 +250,20 @@ def insertImage(
                 w = tr.width
                 h = tr.width * small
 
-        else:  # (treated as) equal sided
+        else:
             w = tr.width
             h = tr.height
 
+        # center point of target rectangle
+        tmp = (tr.tl + tr.br) / 2.0
+
+        # move image center to (0, 0), then rotate
+        m = Matrix(1, 0, 0, 1, -0.5, -0.5) * Matrix(rotate)
         m *= Matrix(w, h)  # concat scale matrix
-
         m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
-
         return m
 
-    # -------------------------------------------------------------------------
+    # ------------------------------------------------------------------------
 
     CheckParent(page)
     doc = page.parent
@@ -295,7 +286,7 @@ def insertImage(
     if rotate not in (0, 90, 180, 270):
         raise ValueError("bad rotate value")
 
-    r = page.CropBox & rect
+    r = rect
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
 
@@ -338,7 +329,7 @@ def insertImage(
     else:
         fw = fh = 1.0
 
-    clip = r * ~page._getTransformation()  # target rect in PDF coordinates
+    clip = r * ~page.transformationMatrix  # target rect in PDF coordinates
 
     matrix = calc_matrix(fw, fh, clip, rotate=rotate)  # calculate matrix
 
@@ -362,89 +353,6 @@ def insertImage(
     )
 
 
-def getImageBbox(page, item):
-    """Calculate the rectangle (bbox) of a PDF image.
-
-    Args:
-        :page: the PyMuPDF page object
-        :item: item from doc.getPageImageList(page.number, full=True)
-
-    Returns:
-        The bbox (fitz.Rect) of the image.
-
-    Notes:
-        This function can be used to find a connection between images returned
-        by page.getText("dict") and the images referenced in the list
-        page.getImageList().
-    """
-
-    def calc_matrix(cont, imgname):
-        imgnm = ("/" + imgname).encode()
-        cont = cont.replace(b"/", b" /")  # prepend slashes with a space
-        # split this, ignoring white spaces
-        cont = cont.split()
-        if imgnm not in cont:
-            return Matrix()
-        idx = cont.index(imgnm)  # the image name
-        mat_list = []
-        while idx >= 0:  # start position is "/Image Do" location
-            if cont[idx] == b"q":  # finished at leading stacking command
-                break
-            if cont[idx] == b"cm":  # encountered a matrix command
-                mat = cont[idx - 6 : idx]  # list of the 6 matrix values
-                l = list(map(float, mat))  # make them floats
-                mat_list.append(Matrix(l))  # append fitz matrix
-                idx -= 6  # step backwards 6 entries
-            else:
-                idx -= 1  # step backwards
-
-        l = len(mat_list)
-        if l == 0:  # safeguard against unusual situations
-            return Matrix()  # the zero matrix
-
-        mat = Matrix(1, 1)  # concatenate encountered matrices to this one
-        for m in reversed(mat_list):
-            mat *= m
-
-        return mat
-
-    def lookup_matrix(page, item):
-        """Return the transformation matrix for an image name.
-
-        Args:
-            :page: the PyMuPDF page object
-            :item: an item of the list doc.getPageImageList(page.number, full=True).
-
-        Returns:
-            concatenated matrices preceeding the image invocation.
-
-        Notes:
-            We are looking up "/imgname Do" in the concatenated /contents of the
-            page first. If not found, also look it up in the streams of any
-            Form XObjects of the page. If still not found, return the zero matrix.
-        """
-        doc = page.parent  # get the PDF document
-        imgname = item[7]  # the image reference name
-        stream_xref = item[-1]  # the contents object to inspect
-
-        if stream_xref == 0:  # only look in the page's /Contents
-            cont = TOOLS._get_all_contents(page)  # concatenated contents
-            return calc_matrix(cont, imgname)
-
-        cont = doc._getXrefStream(stream_xref)  # the contents object
-        return calc_matrix(cont, imgname)
-
-    mat = lookup_matrix(page, item)
-    if not bool(mat):
-        return Rect(1, 1, -1, -1)  # return infinite rect if not found
-
-    ctm = page._getTransformation()  # page transformation matrix
-    mat.preScale(1, -1)  # fiddle the matrix
-    mat.preTranslate(0, -1)  # fiddle the matrix
-    r = Rect(0, 0, 1, 1) * mat  # the bbox in PDF coordinates
-    return r * ctm  # the bbox in MuPDF coordinates
-
-
 def searchFor(page, text, hit_max=16, quads=False, flags=None):
     """ Search for a string on a page.
 
@@ -459,7 +367,6 @@ def searchFor(page, text, hit_max=16, quads=False, flags=None):
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
     tp = page.getTextPage(flags)  # create TextPage
-    # return list of hitting reactangles
     rlist = tp.search(text, hit_max=hit_max, quads=quads)
     tp = None
     return rlist
@@ -488,8 +395,8 @@ def getTextBlocks(page, flags=None):
     Args:
         flags: (int) control the amount of data parsed into the textpage.
     Returns:
-        A list of the blocks. Each item contains the containing rectangle coordinates,
-        text lines, block type and running block number.
+        A list of the blocks. Each item contains the containing rectangle
+        coordinates, text lines, block type and running block number.
     """
     CheckParent(page)
     if flags is None:
@@ -517,28 +424,33 @@ def getTextWords(page, flags=None):
     return l
 
 
-def getText(page, output="text", flags=None):
+def getText(page, option="text", flags=None):
     """ Extract a document page's text.
 
+    This is a unifying wrapper for various methods of Page / TextPage classes.
+
     Args:
-        output: (str) text, html, dict, json, rawdict, xhtml or xml.
+        option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
 
     Returns:
-        the output of TextPage methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT, extractXHTML or etractXML respectively. Default and misspelling choice is "text".
+        the output of Page methods getTextWords / getTextBlocks or TextPage
+        methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT,
+        extractXHTML or extractXML respectively.
+        Default and misspelling choice is "text".
     """
-    output = output.lower()
-    if output == "words":
+    option = option.lower()
+    if option == "words":
         return getTextWords(page, flags=flags)
-    if output == "blocks":
+    if option == "blocks":
         return getTextBlocks(page, flags=flags)
     CheckParent(page)
     # available output types
     formats = ("text", "html", "json", "xml", "xhtml", "dict", "rawdict")
-    if output not in formats:
-        output = "text"
+    if option not in formats:
+        option = "text"
     # choose which of them also include images in the TextPage
     images = (0, 1, 1, 0, 1, 1, 1)  # controls image inclusion in text page
-    f = formats.index(output)
+    f = formats.index(option)
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
         if images[f] == 1:
@@ -559,18 +471,18 @@ def getText(page, output="text", flags=None):
     return t
 
 
-def getPageText(doc, pno, output="text"):
+def getPageText(doc, pno, option="text", flags=None):
     """ Extract a document page's text by page number.
 
     Notes:
         Convenience function calling page.getText().
     Args:
         pno: page number
-        output: (str) text, html, dict, json, rawdict, xhtml or xml.
+        option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
     Returns:
         output from page.TextPage().
     """
-    return doc[pno].getText(output)
+    return doc[pno].getText(option, flags=flags)
 
 
 def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annots=True):
@@ -584,7 +496,6 @@ def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annot
         annots: (bool) whether to also render annotations
     """
     CheckParent(page)
-    doc = page.parent
     if type(colorspace) is str:
         if colorspace.upper() == "GRAY":
             colorspace = csGRAY
@@ -595,7 +506,12 @@ def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annot
     if colorspace.n not in (1, 3, 4):
         raise ValueError("unsupported colorspace")
 
-    return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
+    dl = page.getDisplayList(annots=annots)
+    pix = dl.getPixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
+    dl = None
+    return pix
+    # doc = page.parent
+    # return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
 
 
 def getPagePixmap(
@@ -669,7 +585,7 @@ def getLinks(page):
     """Create a list of all links contained in a PDF page.
 
     Notes:
-        see PyMuPDF ducmentation for details.
+        see PyMuPDF documentation for details.
     """
 
     CheckParent(page)
@@ -681,7 +597,7 @@ def getLinks(page):
         #    if type(nl["to"]) is Point and nl["page"] >= 0:
         #        doc = page.parent
         #        target_page = doc[nl["page"]]
-        #        ctm = target_page._getTransformation()
+        #        ctm = target_page.transformationMatrix
         #        point = nl["to"] * ctm
         #        nl["to"] = point
         links.append(nl)
@@ -711,7 +627,11 @@ def getToC(doc, simple=True):
 
             if not olItem.isExternal:
                 if olItem.uri:
-                    page = olItem.page + 1
+                    if olItem.page == -1:
+                        resolve = doc.resolveLink(olItem.uri)
+                        page = resolve[0] + 1
+                    else:
+                        page = olItem.page + 1
                 else:
                     page = -1
             else:
@@ -921,7 +841,7 @@ def setToC(doc, toc, collapse=1):
         title = getPDFstr(o[1])  # title
         pno = min(doc.pageCount - 1, max(0, o[2] - 1))  # page number
         page = doc[pno]  # load the page
-        ictm = ~page._getTransformation()  # get inverse transformation matrix
+        ictm = ~page.transformationMatrix  # get inverse transformation matrix
         top = Point(72, 36) * ictm  # default top location
         dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
         if o[2] < 0:
@@ -1112,7 +1032,7 @@ def do_links(doc1, doc2, from_page=-1, to_page=-1, start_at=-1):
         if len(links) == 0:  # no links there
             page_src = None
             continue
-        ctm = ~page_src._getTransformation()  # calc page transformation matrix
+        ctm = ~page_src.transformationMatrix  # calc page transformation matrix
         page_dst = doc1[pno_dst[i]]  # load destination page
         link_tab = []  # store all link definitions here
         for l in links:
@@ -1134,7 +1054,7 @@ def getLinkText(page, lnk):
     # --------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     # --------------------------------------------------------------------------
-    ctm = page._getTransformation()
+    ctm = page.transformationMatrix
     ictm = ~ctm
     r = lnk["from"]
     height = page.rect.height
@@ -1234,7 +1154,7 @@ def insertTextbox(
         expandtabs: handles tabulators with string function
         align: left, center, right, justified
         rotate: 0, 90, 180, or 270 degrees
-        morph: morph box with  a matrix and a pivotal point
+        morph: morph box with a matrix and a fixpoint
         overlay: put text in foreground or background
     Returns:
         unused or deficit rectangle area (float)
@@ -2293,6 +2213,13 @@ def getColorInfoList():
     ]
 
 
+def getColorInfoDict():
+    d = {}
+    for item in getColorInfoList():
+        d[item[0].lower()] = item[1:]
+    return d
+
+
 def getColor(name):
     """Retrieve RGB color in PDF format by name.
 
@@ -2461,7 +2388,7 @@ class Shape(object):
         self.x = page.CropBoxPosition.x
         self.y = page.CropBoxPosition.y
 
-        self.pctm = page._getTransformation()  # page transf. matrix
+        self.pctm = page.transformationMatrix  # page transf. matrix
         self.ipctm = ~self.pctm  # inverted transf. matrix
 
         self.draw_cont = ""
@@ -2707,7 +2634,7 @@ class Shape(object):
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt  # revised breadth
-        matrix = TOOLS._hor_matrix(p1, p2)  # normalize line to x-axis
+        matrix = Matrix(TOOLS._hor_matrix(p1, p2))  # normalize line to x-axis
         i_mat = ~matrix  # get original position
         k = 2.4142135623765633  # y of drawCurve helper point
 
@@ -2851,9 +2778,6 @@ class Shape(object):
             space = abs(point.y + self.y)
             headroom = height - point.y - self.y
 
-        if headroom < fontsize:  # at least 1 full line space required!
-            raise ValueError("text starts outside page")
-
         nres = templ1 % (cm, left, top, fname, fontsize)
         if render_mode > 0:
             nres += "%i Tr " % render_mode
@@ -2924,7 +2848,7 @@ class Shape(object):
             expandtabs -- handles tabulators with string function
             align -- left, center, right, justified
             rotate -- 0, 90, 180, or 270 degrees
-            morph -- morph box with  a matrix and a pivotal point
+            morph -- morph box with a matrix and a fixpoint
         Returns:
             unused or deficit rectangle area (float)
         """
@@ -3193,7 +3117,8 @@ class Shape(object):
             return
         if roundCap is not None:
             warnings.warn(
-                "roundCap is replaced by lineCap / lineJoin", DeprecationWarning
+                "roundCap replaced by lineCap / lineJoin and removed in next version",
+                DeprecationWarning,
             )
             lineCap = lineJoin = roundCap
 
@@ -3256,10 +3181,11 @@ class Shape(object):
         if not fitz_py2:  # need bytes if Python > 2
             self.totalcont = bytes(self.totalcont, "utf-8")
 
-        # make /Contents object with dummy stream
-        xref = TOOLS._insert_contents(self.page, b" ", overlay)
-        # update it with potential compression
-        self.doc._updateStream(xref, self.totalcont)
+        if self.totalcont != b"":
+            # make /Contents object with dummy stream
+            xref = TOOLS._insert_contents(self.page, b" ", overlay)
+            # update it with potential compression
+            self.doc.updateStream(xref, self.totalcont)
 
         self.lastPoint = None  # clean up ...
         self.rect = None  #
@@ -3270,20 +3196,21 @@ class Shape(object):
 
 
 def apply_redactions(page):
-    """Apply redaction annotations of the page.
+    """Apply the redaction annotations of the page.
     """
 
     def center_rect(annot_rect, text, font, fsize):
         """Calculate minimal sub-rectangle for the overlay text.
 
         Notes:
-            We will use 'insertTextbox', which supports no vertical text
-            centering. We calculate an approximate number of lines here and
-            return a sub-rectangle, which should still contain the text.
+            Because 'insertTextbox' supports no vertical text centering,
+            we calculate an approximate number of lines here and return a
+            sub-rect with smaller height, which should still be sufficient.
         Args:
             annot_rect: the annotation rectangle
             text: the text to insert.
-            font: the fontname. Must be one of CJK or Base-14 set.
+            font: the fontname. Must be one of the CJK or Base-14 set, else
+                the rectangle is returned unchanged.
             fsize: the fontsize
         Returns:
             A rectangle to use instead of the annot rectangle.
@@ -3318,55 +3245,15 @@ def apply_redactions(page):
     if redact_annots == []:  # any redactions on this page?
         return False  # no redactions
 
-    candidate_names = []  # list of image / xobject names covered by redactions
-    ctm = page._getTransformation()  # the page transformation matrix
-
-    image_list = doc.getPageImageList(page.number, full=True)  # list of images
-
-    for item in image_list:  # loop through images
-        if item[-1] != 0:  # only consider if in page contents
-            continue
-        try:
-            bbox = page.getImageBbox(item)
-        except ValueError:  # image may not indeed be referenced by the page
-            continue
-        for redact in redact_annots:  # check if covered by a redaction
-            if bbox in redact["rect"]:
-                candidate_names.append(item[-3])  # save the name
-                break
-
-    for item in doc._getPageInfo(page.number, 3):  # loop through /XObjects
-        if item[-2] != 0:  # only consider if in page's own contents
-            continue
-        bbox = Rect(item[-1]) * ctm  # need transformation matrix here
-        for redact in redact_annots:  # check if covered by a redaction
-            if bbox in redact["rect"]:
-                candidate_names.append(item[1])
-                break
-
     rc = page._apply_redactions()  # call MuPDF redaction process step
     if not rc:  # should not happen really
         raise ValueError("Error applying redactions.")
-
-    xref = page._getContents()[0]  # read page's /Contents
-    # note: this is just one object because cleaning has been executed under
-    # the hood already by page.getImageBbox().
-    cont = doc.xrefStream(xref)
-
-    # cont is formatted such that each command is contained in its own line
-    # loop through image & xobject names and remove their invocations
-    for name in candidate_names:
-        bytes_name = b"/" + name.encode("utf8") + b" Do"
-        cont = cont.replace(bytes_name, b"")
-
-    doc.updateStream(xref, cont)  # rewrite the modified contents stream
 
     # now write replacement text in old redact rectangles
     shape = page.newShape()
     for redact in redact_annots:
         annot_rect = redact["rect"]
         fill = redact["fill"]
-        annot_rect = DerotateRect(page.CropBox, annot_rect, page.rotation)
         if fill:
             shape.drawRect(annot_rect)  # colorize the rect background
             shape.finish(fill=fill, color=fill)
@@ -3536,7 +3423,7 @@ def scrub(
         if not (clean_pages or hidden_text):
             continue  # done with the page
 
-        page.cleanContents()
+        page.cleanContents(sanitize=True)
 
         if hidden_text:
             xref = page.getContents()[0]  # only one b/o cleaning!
@@ -3548,25 +3435,41 @@ def scrub(
 
 
 def fillTextbox(
-    writer, rect=None, text=None, font=None, fontsize=11, align=0, warn=True
+    writer, rect, text, pos=None, font=None, fontsize=11, align=0, warn=True
 ):
     """Fill a rectangle with text.
 
     Args:
-        text: a string or a list of strings.
-        rect: a rect-like to fill with the text.
-        font: the font.
+        writer: TextWriter object (= "self")
+        text: string or list/tuple of strings.
+        rect: rect-like to receive the text.
+        pos: point-like start position of first word.
+        font: Font object (default Font('helv')).
         fontsize: the fontsize.
-        align: an integer: 0 = left, 1 = center, 2 = right, 3 = justify
-        warn: (bool) warn if too much text for the area, else raise exception.
+        align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
+        warn: (bool) just warn on text overflow, else raise exception.
     """
     textlen = lambda x: font.text_length(x, fontsize)  # just for abbreviation
 
     rect = fitz.Rect(rect)
     if rect.isEmpty or rect.isInfinite:
         raise ValueError("fill rect must be finite and not empty.")
-    if not text:
-        raise ValueError("no text to output")
+
+    if type(font) is not Font:
+        font = Font("helv")
+
+    tolerance = fontsize * 0.25
+    width = rect.width - tolerance  # available horizontal space
+
+    len_space = textlen(" ")  # width of space character
+
+    # starting point of the text
+    if pos is not None:
+        pos = Point(pos)
+        if not pos in rect:
+            raise ValueError("'pos' must be inside 'rect'")
+    else:  # default is just below rect top-left
+        pos = rect.tl + (tolerance, fontsize * 1.3)
 
     # calculate displacement factor for alignment
     if align == fitz.TEXT_ALIGN_CENTER:
@@ -3582,16 +3485,14 @@ def fillTextbox(
 
     text = " \n".join(text).split(" ")  # split in words, preserve line breaks
 
-    tolerance = fontsize * 0.25
-    width = rect.width - tolerance
-    len_space = textlen(" ")
-
-    # we first compute lists of words and corresponding lengths
+    # compute lists of words and word lengths
     words = []  # recomputed list of words
     len_words = []  # corresponding lengths
 
     for word in text:
         # fill the lists of words and their lengths
+        # this splits words longer than width into chunks, which each are
+        # treated as words themselves.
         if word.startswith("\n"):
             len_word = textlen(word[1:])
         else:
@@ -3616,36 +3517,49 @@ def fillTextbox(
         words.append(w)  # output tail of long word
         len_words.append(l)  # output length of long word tail
 
-    pos = 0  # index of current word processed
-    line_ctr = 1  # counter for output lines
-    end_pos = len(words)  # number of words
+    idx = 0  # index of current word processed
+    line_ctr = 0  # counter for output lines
+    end_idx = len(words)  # number of words
 
-    while True:  # now output the text
-        # compute the new insertion point
-        # we add a small distance to the left to copy with funny glyph bboxes
-        start = rect.tl + (tolerance, fontsize * 1.3 * line_ctr)
-        if start.y > rect.y1:  # landed below rectangle area
-            if warn:
-                print("Warning: only fitting %i of %i total words." % (pos, end_pos))
-                break
-            else:
-                raise ValueError("only fitting %i of %i total words." % (pos, end_pos))
-        if pos >= end_pos:  # all words processed
+    # -------------------------------------------------------------------------
+    # each loop outputs one line
+    # -------------------------------------------------------------------------
+    while True:
+        if idx >= end_idx:  # all words processed
             break
 
-        word = words[pos]  # get first word for the line
+        # compute the new insertion point
+        if line_ctr == 0 and len_words[0] >= rect.x1 - pos.x and idx == 0:
+            line_ctr = 1  # first word wont fit in first line: take next one
+
+        if line_ctr == 0:  # first line in rect
+            start = pos
+            width = rect.x1 - pos.x
+        else:
+            start = Point(rect.x0 + tolerance, pos.y + fontsize * 1.3 * line_ctr)
+            width = rect.width - tolerance
+
+        if start.y > rect.y1:  # landed below rectangle area
+            if warn:
+                print("Warning: only fitting %i of %i total words." % (idx, end_idx))
+                break
+            else:
+                raise ValueError("only fitting %i of %i total words." % (idx, end_idx))
+
+        word = words[idx]  # get first word for the line
         if word.startswith("\n"):  # remove any leading line breaks
             word = word[1:]
 
-        line = [word]  # create a list of words fitting in one line
-        len_line = [len_words[pos]]
+        line = [word]  # list of words fitting in this line
+        len_line = [len_words[idx]]  # list of word lengths
+
         exhausted = False  # switch indicating we are done
         justify = True  # enable text justify as default
-        next_words = range(pos + 1, end_pos)  # remaining words in text
+        next_words = range(idx + 1, end_idx)  # remaining words in text
 
         for i in next_words:  # try adding more words to the line
             nw = words[i]  # next word
-            if nw.startswith("\n"):  # a forced line break
+            if nw.startswith("\n"):  # forced line break
                 justify = False  # do not justify this current line
                 break
             tl = len_space + len_words[i]
@@ -3653,7 +3567,7 @@ def fillTextbox(
                 break
             line.append(nw)  # append new word
             len_line.append(len_words[i])  # add its length
-            if i >= end_pos - 1:  # if we exhausted the words
+            if i >= end_idx - 1:  # if we exhausted the words
                 justify = False  # do not justify current line
                 exhausted = True  # and turn on switch
 
@@ -3663,7 +3577,7 @@ def fillTextbox(
             d = (width - fin_len) * factor  # takes care of alignment
             start.x += d
             writer.append(start, " ".join(line), font, fontsize)
-        else:  # take care of justify alignment
+        else:  # take care of justified alignment
             writer.append(start, line[0], font, fontsize)  # always 1st word
             if len(line) > 1:  # more than one word in the line
                 if justify is False:  # if no justify use space as gap
@@ -3678,5 +3592,8 @@ def fillTextbox(
         if len(next_words) == 0 or exhausted is True:  # no words left
             break
 
-        pos = i  # number of next word to read
+        idx = i  # number of next word to read
         line_ctr += 1  # line counter
+
+    return (idx, end_idx)  # return count of processed words, total words
+

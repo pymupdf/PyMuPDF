@@ -1,11 +1,90 @@
 Change Logs
 ===============
 
+Changes in Version 1.17.6
+---------------------------
+* **Fixed** issue `#605 <https://github.com/pymupdf/PyMuPDF/issues/605>`_
+* **Fixed** issue `#600 <https://github.com/pymupdf/PyMuPDF/issues/600>`_ -- text should now be correctly positioned also for pages with a CropBox smaller than MediaBox.
+* **Added** text span dictionary key ``origin`` which contains the lower left coordinate of the first character in that span.
+* **Added** attribute :attr:`Font.buffer`, a *bytes* copy of the font file.
+* **Added** parameter *sanitize* to :meth:`Page.cleanContents`. Allows switching of sanitization, so only syntax cleaning will be done.
+
+Changes in Version 1.17.5
+---------------------------
+* **Fixed** issue `#561 <https://github.com/pymupdf/PyMuPDF/issues/561>`_ -- second go: certain :ref:`TextWriter` usages with many alternating fonts did not work correctly.
+* **Fixed** issue `#566 <https://github.com/pymupdf/PyMuPDF/issues/566>`_.
+* **Fixed** issue `#568 <https://github.com/pymupdf/PyMuPDF/issues/568>`_.
+* **Fixed** -- opacity is now correctly taken from the :ref:`TextWriter` object, if not given in :meth:`TextWriter.writeText`.
+* **Added** a new global attribute :attr:`fitz_fontdescriptors`. Contains information about usable fonts from repository `pymupdf-fonts <https://github.com/pymupdf/pymupdf-fonts>`_.
+* **Added** :meth:`Font.valid_codepoints` which returns an array of unicode codepoints for which the font has a glyph.
+* **Added** option ``text_as_path`` to :meth:`Page.getSVGimage`. this implements `#580 <https://github.com/pymupdf/PyMuPDF/issues/580>`_. Generates much smaller SVG files with parseable text if set to *False*.
+
+
+Changes in Version 1.17.4
+---------------------------
+* **Fixed** issue `#561 <https://github.com/pymupdf/PyMuPDF/issues/561>`_. Handling of more than 10 :ref:`Font` objects on one page should now work correctly.
+* **Fixed** issue `#562 <https://github.com/pymupdf/PyMuPDF/issues/562>`_. Annotation pixmaps are no longer derived from the page pixmap, thus avoiding unintended inclusion of page content.
+* **Fixed** issue `#559 <https://github.com/pymupdf/PyMuPDF/issues/559>`_. This **MuPDF** bug is being temporarily fixed with a pre-version of MuPDF's next release.
+* **Added** utility function :meth:`repair_mono_font` for correcting displayed character spacing for some mono-spaced fonts.
+* **Added** utility method :meth:`Document.need_appearances` for fine-controlling Form PDF behavior. Addresses issue `#563 <https://github.com/pymupdf/PyMuPDF/issues/563>`_.
+* **Added** utility function :meth:`sRGB_to_pdf` to recover the PDF color triple for a given color integer in sRGB format.
+* **Added** utility function :meth:`sRGB_to_rgb` to recover the (R, G, B) color triple for a given color integer in sRGB format.
+* **Added** utility function :meth:`make_table` which delivers table cells for a given rectangle and desired numbers of columns and rows.
+* **Added** support for optional fonts in repository `pymupdf-fonts <https://github.com/pymupdf/pymupdf-fonts>`_.
+
+Changes in Version 1.17.3
+---------------------------
+* **Fixed** an undocumented issue, which prevented fully cleaning a PDF page when using :meth:`Page.cleanContents`.
+* **Fixed** issue `#540 <https://github.com/pymupdf/PyMuPDF/issues/540>`_. Text extraction for EPUB should again work correctly.
+* **Fixed** issue `#548 <https://github.com/pymupdf/PyMuPDF/issues/548>`_. Documentation now includes ``LINK_NAMED``.
+* **Added** new parameter to control start of text in :meth:`TextWriter.fillTextbox`. Implements `#549 <https://github.com/pymupdf/PyMuPDF/issues/549>`_.
+* **Changed** documentation of :meth:`Page.addRedactAnnot` to explain the usage of non-builtin fonts.
+
+Changes in Version 1.17.2
+---------------------------
+* **Fixed** issue `#533 <https://github.com/pymupdf/PyMuPDF/issues/533>`_.
+* **Added** options to modify 'Redact' annotation appearance. Implements `#535 <https://github.com/pymupdf/PyMuPDF/issues/535>`_.
+
+
+Changes in Version 1.17.1
+---------------------------
+* **Fixed** issue `#520 <https://github.com/pymupdf/PyMuPDF/issues/520>`_.
+* **Fixed** issue `#525 <https://github.com/pymupdf/PyMuPDF/issues/525>`_. Vertices for 'Ink' annots should now be correct.
+* **Fixed** issue `#524 <https://github.com/pymupdf/PyMuPDF/issues/524>`_. It is now possible to query and set rotation for applicable annotation types.
+
+Also significantly improved inline documentation for better support of interactive help.
+
+Changes in Version 1.17.0
+---------------------------
+This version is based on MuPDF v1.17. Following are highlights of new and changed features:
+
+* **Added** extended language support for annotations and widgets: a mixture of Latin, Greece, Russian, Chinese, Japanese and Korean characters can now be used in 'FreeText' annotations and text widgets. No special arrangement is required to use it.
+
+* Faster page access is implemented for documents supporting a "chapter" structure. This applies to EPUB documents currently. This comes with several new :ref:`Document` methods and changes for :meth:`Document.loadPage` and the "indexed" page access *doc[n]*: In addition to specifying a page number as before, a tuple *(chaper, pno)* can be specified to identify the desired page.
+
+* **Changed:** Improved support of redaction annotations: images overlapped by redactions are **permanantly modified** by erasing the overlap areas. Also links are removed if overlapped by redactions. This is now fully in sync with PDF specifications.
+
+Other changes:
+
+* **Changed** :meth:`TextWriter.writeText` to support the *"morph"* parameter.
+* **Added** methods :meth:`Rect.morph`, :meth:`IRect.morph`, and :meth:`Quad.morph`, which return a new :ref:`Quad`.
+* **Changed** :meth:`Page.addFreetextAnnot` to support text alignment via a new *"align"* parameter.
+* **Fixed** issue `#508 <https://github.com/pymupdf/PyMuPDF/issues/508>`_. Improved image rectangle calculation to hopefully deliver correct values in most if not all cases.
+* **Fixed** issue `#502 <https://github.com/pymupdf/PyMuPDF/issues/502>`_.
+* **Fixed** issue `#500 <https://github.com/pymupdf/PyMuPDF/issues/500>`_. :meth:`Document.convertToPDF` should no longer cause memory leaks.
+* **Fixed** issue `#496 <https://github.com/pymupdf/PyMuPDF/issues/496>`_. Annotations and widgets / fields are now added or modified using the coordinates of the **unrotated page**. This behavior is now in sync with other methods modifying PDF pages.
+* **Added** :attr:`Page.rotationMatrix` and :attr:`Page.derotationMatrix` to support coordinate transformations between the rotated and the original versions of a PDF page.
+
+Potential code breaking changes:
+
+* The private method ``Page._getTransformation()`` has been removed. Use the public :attr:`Page.transformationMattrix` instead.
+
+
 Changes in Version 1.16.18
 ---------------------------
 This version introduces several new features around PDF text output. The motivation is to simplify this task, while at the same time offering extending features.
 
-One major achievement is using MuPDF's capabilities to dynamically choosing fallback fonts whenever a character cannot be found in the predefined one. This seemlessly works for Base-14 fonts in combination with CJK fonts (China, Japan, Korea).
+One major achievement is using MuPDF's capabilities to dynamically choosing fallback fonts whenever a character cannot be found in the current one. This seemlessly works for Base-14 fonts in combination with CJK fonts (China, Japan, Korea). So a text may contain **any combination of characters** from the Latin, Greek, Russian, Chinese, Japanese and Korean languages.
 
 * **Fixed** issue `#493 <https://github.com/pymupdf/PyMuPDF/issues/493>`_. ``Pixmap(doc, xref)`` should now again correctly resemble the loaded image object.
 * **Fixed** issue `#488 <https://github.com/pymupdf/PyMuPDF/issues/488>`_. Widget names are now modifyable.

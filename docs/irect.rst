@@ -15,6 +15,7 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 :meth:`IRect.getRectArea`      calculate rectangle area
 :meth:`IRect.intersect`        common part with another rectangle
 :meth:`IRect.intersects`       checks for non-empty intersection
+:meth:`IRect.morph`            transform with a point and a matrix
 :meth:`IRect.norm`             the Euclidean norm
 :meth:`IRect.normalize`        makes a rectangle finite
 :attr:`IRect.bottom_left`      bottom left point, synonym *bl*
@@ -91,6 +92,16 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
       :arg rect_like r: the rectangle to check.
 
       :rtype: bool
+
+   .. method:: morph(fixpoint, matrix)
+
+      *(New in version 1.17.0)*
+      
+      Return a new quad after applying a matrix to it using a fixed point.
+
+      :arg point_like fixpoint: the fixed point.
+      :arg matrix_like matrix: the matrix.
+      :returns: a new :ref:`Quad`. This a wrapper of the same-named quad method.
 
    .. method:: norm()
 

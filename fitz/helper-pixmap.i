@@ -22,14 +22,11 @@ JM_clear_pixmap_rect_with_value(fz_context *ctx, fz_pixmap *dest, int value, fz_
     destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
 
     /* CMYK needs special handling (and potentially any other subtractive colorspaces) */
-    if (fz_colorspace_n(ctx, dest->colorspace) == 4)
-    {
+    if (fz_colorspace_n(ctx, dest->colorspace) == 4) {
         value = 255 - value;
-        do
-        {
+        do {
             unsigned char *s = destp;
-            for (x = 0; x < w; x++)
-            {
+            for (x = 0; x < w; x++) {
                 *s++ = 0;
                 *s++ = 0;
                 *s++ = 0;
@@ -37,24 +34,20 @@ JM_clear_pixmap_rect_with_value(fz_context *ctx, fz_pixmap *dest, int value, fz_
                 if (dest->alpha) *s++ = 255;
             }
             destp += destspan;
-        }
-        while (--y);
+        } while (--y);
         return 1;
     }
 
-    do
-    {
+    do {
         unsigned char *s = destp;
-        for (x = 0; x < w; x++)
-        {
+        for (x = 0; x < w; x++) {
             for (k = 0; k < dest->n - 1; k++)
                 *s++ = value;
             if (dest->alpha) *s++ = 255;
             else *s++ = value;
         }
         destp += destspan;
-    }
-    while (--y);
+    } while (--y);
     return 1;
 }
 
@@ -76,17 +69,14 @@ JM_fill_pixmap_rect_with_color(fz_context *ctx, fz_pixmap *dest, unsigned char c
     destspan = dest->stride;
     destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
 
-    do
-    {
+    do {
         unsigned char *s = destp;
-        for (x = 0; x < w; x++)
-        {
+        for (x = 0; x < w; x++) {
             for (i = 0; i < dest->n; i++)
                 *s++ = col[i];
         }
         destp += destspan;
-    }
-    while (--y);
+    } while (--y);
     return 1;
 }
 
@@ -108,18 +98,15 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     destspan = dest->stride;
     destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
     int n0 = dest->n - dest->alpha;
-    do
-    {
+    do {
         unsigned char *s = destp;
-        for (x = 0; x < w; x++)
-        {
+        for (x = 0; x < w; x++) {
             for (i = 0; i < n0; i++)
                 *s++ = 255 - *s;
             if (dest->alpha) *s++;
         }
         destp += destspan;
-    }
-    while (--y);
+    } while (--y);
     return 1;
 }
 
@@ -129,8 +116,7 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
 //-----------------------------------------------------------------------------
 PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
 {
-    if (!EXISTS(imagedata))
-    {
+    if (!EXISTS(imagedata)) {
         Py_RETURN_NONE;  // nothing given
     }
     fz_image *image = NULL;
@@ -138,41 +124,33 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     PyObject *result = NULL;
     unsigned char *c = NULL;
     Py_ssize_t len = 0;
-    if (PyBytes_Check(imagedata))
-    {
+    if (PyBytes_Check(imagedata)) {
         c = PyBytes_AS_STRING(imagedata);
         len = PyBytes_GET_SIZE(imagedata);
     }
-    else if (PyByteArray_Check(imagedata))
-    {
+    else if (PyByteArray_Check(imagedata)) {
         c = PyByteArray_AS_STRING(imagedata);
         len = PyByteArray_GET_SIZE(imagedata);
     }
-    else
-    {
+    else {
         PySys_WriteStderr("bad image data\n");
         Py_RETURN_NONE;
     }
 
-    if (len < 8)
-    {
+    if (len < 8) {
         PySys_WriteStderr("bad image data\n");
         Py_RETURN_NONE;
     }
     int type = fz_recognize_image_format(ctx, c);
-    if (type == FZ_IMAGE_UNKNOWN)
-    {
+    if (type == FZ_IMAGE_UNKNOWN) {
         Py_RETURN_NONE;
     }
 
-    fz_try(ctx)
-    {
-        if (keep_image)  // ensure image buffer is not dropped
-        {
+    fz_try(ctx) {
+        if (keep_image) {
             res = fz_new_buffer_from_copied_data(ctx, c, (size_t) len);
         }
-        else
-        {
+        else {
             res = fz_new_buffer_from_shared_data(ctx, c, (size_t) len);
         }
         image = fz_new_image_from_buffer(ctx, res);
@@ -197,25 +175,20 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
         DICT_SETITEM_DROP(result, dictkey_cs_name,
                 Py_BuildValue("s", cs_name));
 
-        if (keep_image)  // hand over fz_image address and do not drop
-        {
+        if (keep_image) {
             DICT_SETITEM_DROP(result, dictkey_image,
                     PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
         }
     }
-    fz_always(ctx)
-    {
-        if (!keep_image)  // drop the image
-        {
+    fz_always(ctx) {
+        if (!keep_image) {
             fz_drop_image(ctx, image);
         }
-        else
-        {
+        else {
             fz_drop_buffer(ctx, res);  // drop the buffer copy
         }
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         Py_CLEAR(result);
         Py_RETURN_NONE;
     }
@@ -255,27 +228,22 @@ JM_pixmap_from_display_list(fz_context *ctx,
     else
         fz_clear_pixmap_with_value(ctx, pix, 0xFF);
 
-    fz_try(ctx)
-    {
-        if (!fz_is_infinite_rect(rclip))
-        {
+    fz_try(ctx) {
+        if (!fz_is_infinite_rect(rclip)) {
             dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
             fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
         }
-        else
-        {
+        else {
             dev = fz_new_draw_device(ctx, matrix, pix);
             fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
         }
 
         fz_close_device(ctx, dev);
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         fz_drop_device(ctx, dev);
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         fz_drop_pixmap(ctx, pix);
         fz_rethrow(ctx);
     }
@@ -320,25 +288,20 @@ JM_pixmap_from_page(fz_context *ctx,
     rect = fz_transform_rect(rect, matrix);
     bbox = fz_round_rect(rect);
 
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         // Pixmap of the document's /OutputIntents ("output intents")
         oi = fz_document_output_intent(ctx, doc);
         // if present and compatible, use it instead of the parameter
-        if (oi)
-        {
-            if (fz_colorspace_n(ctx, oi) == fz_colorspace_n(ctx, cs))
-            {
+        if (oi) {
+            if (fz_colorspace_n(ctx, oi) == fz_colorspace_n(ctx, cs)) {
                 colorspace = fz_keep_colorspace(ctx, oi);
             }
         }
 
         // check if spots rendering is available and if so use separations
-        if (spots != SPOTS_NONE)
-        {
+        if (spots != SPOTS_NONE) {
             seps = fz_page_separations(ctx, page);
-            if (seps)
-            {
+            if (seps) {
                 int i, n = fz_count_separations(ctx, seps);
                 if (spots == SPOTS_FULL)
                     for (i = 0; i < n; i++)
@@ -346,15 +309,11 @@ JM_pixmap_from_page(fz_context *ctx,
                 else
                     for (i = 0; i < n; i++)
                         fz_set_separation_behavior(ctx, seps, i, FZ_SEPARATION_COMPOSITE);
-            }
-            else if (fz_page_uses_overprint(ctx, page))
-            {
+            } else if (fz_page_uses_overprint(ctx, page)) {
                 /* This page uses overprint, so we need an empty
                  * sep object to force the overprint simulation on. */
                 seps = fz_new_separations(ctx, 0);
-            }
-            else if (oi && fz_colorspace_n(ctx, oi) != fz_colorspace_n(ctx, colorspace))
-            {
+            } else if (oi && fz_colorspace_n(ctx, oi) != fz_colorspace_n(ctx, colorspace)) {
                 /* We have an output intent, and it's incompatible
                  * with the colorspace our device needs. Force the
                  * overprint simulation on, because this ensures that
@@ -365,34 +324,26 @@ JM_pixmap_from_page(fz_context *ctx,
 
         pix = fz_new_pixmap_with_bbox(ctx, colorspace, bbox, seps, alpha);
 
-        if (alpha)
-        {
+        if (alpha) {
             fz_clear_pixmap(ctx, pix);
-        }
-        else
-        {
+        } else {
             fz_clear_pixmap_with_value(ctx, pix, 0xFF);
         }
 
         dev = fz_new_draw_device(ctx, matrix, pix);
-        if (annots)
-        {
+        if (annots) {
             fz_run_page(ctx, page, dev, fz_identity, NULL);
-        }
-        else
-        {
+        } else {
             fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
         }
         fz_close_device(ctx, dev);
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         fz_drop_device(ctx, dev);
         fz_drop_separations(ctx, seps);
         fz_drop_colorspace(ctx, oi);
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         fz_rethrow(ctx);
     }
     return pix;

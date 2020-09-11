@@ -10,92 +10,105 @@ There is a parent-child relationship between a document and its pages. If the do
 
 Several page methods have a :ref:`Document` counterpart for convenience. At the end of this chapter you will find a synopsis.
 
-Adding Page Content
--------------------
-This is available for PDF documents only. There are basically two groups of methods:
+Modifying Pages
+---------------
+Changing page properties and adding or changing page content is available for PDF documents only.
 
-1. **Methods making permanent changes.** This group contains *insertText()*, *insertTextbox()* and all *draw*()* methods. They provide "stand-alone", shortcut versions for the same-named methods of the :ref:`Shape` class. For detailed descriptions have a look in that chapter. Some remarks on the relationship between the :ref:`Page` and :ref:`Shape` methods:
+In a nutshell, this is what you can do with PyMuPDF:
 
-  * In contrast to :ref:`Shape`, the results of page methods are not interconnected: they do not share properties like colors, line width / dashing, morphing, etc.
-  * Each page *draw*()* method invokes a :meth:`Shape.finish` and then a :meth:`Shape.commit` and consequently accepts the combined arguments of both these methods.
-  * Text insertion methods (*insertText()* and *insertTextbox()*) do not need :meth:`Shape.finish` and therefore only invoke :meth:`Shape.commit`.
+* Modify page rotation and the visible part ("CropBox") of the page.
+* Insert images, other PDF pages, text and simple geometrical objects.
+* Add annotations and form fields.
 
-2. **Methods adding annotations.** Annotations can be added, modified and deleted without necessarily having full document permissions. Their effect is **not permanent** in the sense, that manipulating them does not require to rebuild the document. **Adding** and **deleting** annotations are page methods. **Changing** existing annotations is possible via methods of the :ref:`Annot` class.
+.. note::
 
-================================ ================================================
+   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: expcept :attr:`Page.rect`, resp. :meth:`Page.bound` (both *reflect* when the page is rotated), all coordinates returned by methods and attributes pertain to the unrotated page.
+
+   So the returned value of e.g. :meth:`Page.getImageBbox` will not change if you do a :meth:`Page.setRotation`. The same is true for coordinates returned by :meth:`Page.getText`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiply the coordinates with :attr:`Page.rotationMatrix`. There also is its inverse, :attr:`Page.derotationMatrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
+
+.. note::
+
+   If you add or update annotations, links or form fields on the page and immediately afterwards need to work with them (i.e. **without leaving the page**), you should reload the page using :meth:`Document.reload_page` before referring to these new or updated items.
+
+   This ensures all your changes have been fully applied to PDF structures, so can safely create Pixmaps or successfully iterate over annotations, links and form fields.
+
+================================= =======================================================
 **Method / Attribute**            **Short Description**
-================================ ================================================
-:meth:`Page.addCaretAnnot`       PDF only: add a caret annotation
-:meth:`Page.addCircleAnnot`      PDF only: add a circle annotation
-:meth:`Page.addFileAnnot`        PDF only: add a file attachment annotation
-:meth:`Page.addFreetextAnnot`    PDF only: add a text annotation
-:meth:`Page.addHighlightAnnot`   PDF only: add a "highlight" annotation
-:meth:`Page.addInkAnnot`         PDF only: add an ink annotation
-:meth:`Page.addLineAnnot`        PDF only: add a line annotation
-:meth:`Page.addPolygonAnnot`     PDF only: add a polygon annotation
-:meth:`Page.addPolylineAnnot`    PDF only: add a multi-line annotation
-:meth:`Page.addRectAnnot`        PDF only: add a rectangle annotation
-:meth:`Page.addRedactAnnot`      PDF only: add a redation annotation
-:meth:`Page.addSquigglyAnnot`    PDF only: add a "squiggly" annotation
-:meth:`Page.addStampAnnot`       PDF only: add a "rubber stamp" annotation
-:meth:`Page.addStrikeoutAnnot`   PDF only: add a "strike-out" annotation
-:meth:`Page.addTextAnnot`        PDF only: add a comment
-:meth:`Page.addUnderlineAnnot`   PDF only: add an "underline" annotation
-:meth:`Page.addWidget`           PDF only: add a PDF Form field
-:meth:`Page.annot_names`         PDF only: a list of annotation and widget names
-:meth:`Page.annots`              return a generator over the annots on the page
-:meth:`Page.apply_redactions`    PDF olny: process redaction annots on the page
-:meth:`Page.bound`               rectangle of the page
-:meth:`Page.deleteAnnot`         PDF only: delete an annotation
-:meth:`Page.deleteLink`          PDF only: delete a link
-:meth:`Page.drawBezier`          PDF only: draw a cubic Bezier curve
-:meth:`Page.drawCircle`          PDF only: draw a circle
-:meth:`Page.drawCurve`           PDF only: draw a special Bezier curve
-:meth:`Page.drawLine`            PDF only: draw a line
-:meth:`Page.drawOval`            PDF only: draw an oval / ellipse
-:meth:`Page.drawPolyline`        PDF only: connect a point sequence
-:meth:`Page.drawRect`            PDF only: draw a rectangle
-:meth:`Page.drawSector`          PDF only: draw a circular sector
-:meth:`Page.drawSquiggle`        PDF only: draw a squiggly line
-:meth:`Page.drawZigzag`          PDF only: draw a zig-zagged line
-:meth:`Page.getFontList`         PDF only: get list of used fonts
-:meth:`Page.getImageBbox`        PDF only: get bbox of inserted image
-:meth:`Page.getImageList`        PDF only: get list of used images
-:meth:`Page.getLinks`            get all links
-:meth:`Page.getPixmap`           create a :ref:`Pixmap`
-:meth:`Page.getSVGimage`         create a page image in SVG format
-:meth:`Page.getText`             extract the page's text
-:meth:`Page.getTextPage`         create a TextPage for the page
-:meth:`Page.insertFont`          PDF only: insert a font for use by the page
-:meth:`Page.insertImage`         PDF only: insert an image
-:meth:`Page.insertLink`          PDF only: insert a link
-:meth:`Page.insertText`          PDF only: insert text
-:meth:`Page.insertTextbox`       PDF only: insert a text box
-:meth:`Page.links`               return a generator of the links on the page
-:meth:`Page.load_annot`          PDF only: load an annotation identified by its name
-:meth:`Page.loadLinks`           return the first link on a page
-:meth:`Page.newShape`            PDF only: create a new :ref:`Shape`
-:meth:`Page.searchFor`           search for a string
-:meth:`Page.setCropBox`          PDF only: modify the visible page
-:meth:`Page.setMediaBox`         PDF only: modify the mediabox
-:meth:`Page.setRotation`         PDF only: set page rotation
-:meth:`Page.showPDFpage`         PDF only: display PDF page image
-:meth:`Page.updateLink`          PDF only: modify a link
-:meth:`Page.widgets`             return a generator over the fields on the page
-:meth:`Page.writeText`           write one or more :ref:`Textwriter` objects
-:attr:`Page.CropBox`             the page's :data:`CropBox`
-:attr:`Page.CropBoxPosition`     displacement of the :data:`CropBox`
-:attr:`Page.firstAnnot`          first :ref:`Annot` on the page
-:attr:`Page.firstLink`           first :ref:`Link` on the page
-:attr:`Page.firstWidget`         first widget (form field) on the page
-:attr:`Page.MediaBox`            the page's :data:`MediaBox`
-:attr:`Page.MediaBoxSize`        bottom-right point of :data:`MediaBox`
-:attr:`Page.number`              page number
-:attr:`Page.parent`              owning document object
-:attr:`Page.rect`                rectangle (mediabox) of the page
-:attr:`Page.rotation`            PDF only: page rotation
-:attr:`Page.xref`                PDF :data:`xref`
-================================ ================================================
+================================= =======================================================
+:meth:`Page.addCaretAnnot`        PDF only: add a caret annotation
+:meth:`Page.addCircleAnnot`       PDF only: add a circle annotation
+:meth:`Page.addFileAnnot`         PDF only: add a file attachment annotation
+:meth:`Page.addFreetextAnnot`     PDF only: add a text annotation
+:meth:`Page.addHighlightAnnot`    PDF only: add a "highlight" annotation
+:meth:`Page.addInkAnnot`          PDF only: add an ink annotation
+:meth:`Page.addLineAnnot`         PDF only: add a line annotation
+:meth:`Page.addPolygonAnnot`      PDF only: add a polygon annotation
+:meth:`Page.addPolylineAnnot`     PDF only: add a multi-line annotation
+:meth:`Page.addRectAnnot`         PDF only: add a rectangle annotation
+:meth:`Page.addRedactAnnot`       PDF only: add a redaction annotation
+:meth:`Page.addSquigglyAnnot`     PDF only: add a "squiggly" annotation
+:meth:`Page.addStampAnnot`        PDF only: add a "rubber stamp" annotation
+:meth:`Page.addStrikeoutAnnot`    PDF only: add a "strike-out" annotation
+:meth:`Page.addTextAnnot`         PDF only: add a comment
+:meth:`Page.addUnderlineAnnot`    PDF only: add an "underline" annotation
+:meth:`Page.addWidget`            PDF only: add a PDF Form field
+:meth:`Page.annot_names`          PDF only: a list of annotation and widget names
+:meth:`Page.annots`               return a generator over the annots on the page
+:meth:`Page.apply_redactions`     PDF olny: process the redactions of the page
+:meth:`Page.bound`                rectangle of the page
+:meth:`Page.deleteAnnot`          PDF only: delete an annotation
+:meth:`Page.deleteLink`           PDF only: delete a link
+:meth:`Page.drawBezier`           PDF only: draw a cubic Bezier curve
+:meth:`Page.drawCircle`           PDF only: draw a circle
+:meth:`Page.drawCurve`            PDF only: draw a special Bezier curve
+:meth:`Page.drawLine`             PDF only: draw a line
+:meth:`Page.drawOval`             PDF only: draw an oval / ellipse
+:meth:`Page.drawPolyline`         PDF only: connect a point sequence
+:meth:`Page.drawRect`             PDF only: draw a rectangle
+:meth:`Page.drawSector`           PDF only: draw a circular sector
+:meth:`Page.drawSquiggle`         PDF only: draw a squiggly line
+:meth:`Page.drawZigzag`           PDF only: draw a zig-zagged line
+:meth:`Page.getFontList`          PDF only: get list of used fonts
+:meth:`Page.getImageBbox`         PDF only: get bbox of embedded image
+:meth:`Page.getImageList`         PDF only: get list of used images
+:meth:`Page.getLinks`             get all links
+:meth:`Page.getPixmap`            create a page image in raster format
+:meth:`Page.getSVGimage`          create a page image in SVG format
+:meth:`Page.getText`              extract the page's text
+:meth:`Page.getTextPage`          create a TextPage for the page
+:meth:`Page.insertFont`           PDF only: insert a font for use by the page
+:meth:`Page.insertImage`          PDF only: insert an image
+:meth:`Page.insertLink`           PDF only: insert a link
+:meth:`Page.insertText`           PDF only: insert text
+:meth:`Page.insertTextbox`        PDF only: insert a text box
+:meth:`Page.links`                return a generator of the links on the page
+:meth:`Page.loadAnnot`            PDF only: load a specific annotation
+:meth:`Page.loadLinks`            return the first link on a page
+:meth:`Page.newShape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.searchFor`            search for a string
+:meth:`Page.setCropBox`           PDF only: modify the visible page
+:meth:`Page.setMediaBox`          PDF only: modify the mediabox
+:meth:`Page.setRotation`          PDF only: set page rotation
+:meth:`Page.showPDFpage`          PDF only: display PDF page image
+:meth:`Page.updateLink`           PDF only: modify a link
+:meth:`Page.widgets`              return a generator over the fields on the page
+:meth:`Page.writeText`            write one or more :ref:`Textwriter` objects
+:attr:`Page.CropBox`              the page's :data:`CropBox`
+:attr:`Page.CropBoxPosition`      displacement of the :data:`CropBox`
+:attr:`Page.firstAnnot`           first :ref:`Annot` on the page
+:attr:`Page.firstLink`            first :ref:`Link` on the page
+:attr:`Page.firstWidget`          first widget (form field) on the page
+:attr:`Page.MediaBox`             the page's :data:`MediaBox`
+:attr:`Page.MediaBoxSize`         bottom-right point of :data:`MediaBox`
+:attr:`Page.derotationMatrix`     PDF only: get coordinates in unrotated page space
+:attr:`Page.rotationMatrix`       PDF only: get coordinates in rotated page space
+:attr:`Page.transformationMatrix` PDF only: translate between PDF and MuPDF space
+:attr:`Page.number`               page number
+:attr:`Page.parent`               owning document object
+:attr:`Page.rect`                 rectangle of the page
+:attr:`Page.rotation`             PDF only: page rotation
+:attr:`Page.xref`                 PDF only: page :data:`xref`
+================================= =======================================================
 
 **Class API**
 
@@ -103,7 +116,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. method:: bound()
 
-      Determine the rectangle of the page. Same as property :attr:`Page.rect` below. For PDF documents this **usually** also coincides with objects :data:`MediaBox` and :data:`CropBox`, but not always. For example, if the page is rotated, then this is reflected by this method -- the :attr:`Page.CropBox` however will not change.
+      Determine the rectangle of the page. Same as property :attr:`Page.rect` below. For PDF documents this **usually** also coincides with :data:`MediaBox` and :data:`CropBox`, but not always. For example, if the page is rotated, then this is reflected by this method -- the :attr:`Page.CropBox` however will not change.
 
       :rtype: :ref:`Rect`
 
@@ -111,7 +124,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
       *(New in version 1.16.0)*
       
-      PDF only: Add a caret icon. A caret annotation is a visual symbol that indicates the presence of text edits.
+      PDF only: Add a caret icon. A caret annotation is a visual symbol normally used to indicate the presence of text edits on the page.
 
       :arg point_like point: the top left point of a 20 x 20 rectangle containing the MuPDF-provided icon.
 
@@ -123,7 +136,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. method:: addTextAnnot(point, text, icon="Note")
 
-      PDF only: Add a comment icon ("sticky note") with accompanying text.
+      PDF only: Add a comment icon ("sticky note") with accompanying text. Only the icon is visible, the accompanying text is hidden and can be visualized by many PDF viewers by hovering the mouse over the symbol.
 
       :arg point_like point: the top left point of a 20 x 20 rectangle containing the MuPDF-provided "note" icon.
 
@@ -139,19 +152,21 @@ This is available for PDF documents only. There are basically two groups of meth
       pair: fontsize; addFreetextAnnot
       pair: rect; addFreetextAnnot
       pair: rotate; addFreetextAnnot
+      pair: align; addFreetextAnnot
 
-   .. method:: addFreetextAnnot(rect, text, fontsize=12, fontname="helv", text_color=0, fill_color=1, rotate=0)
+   .. method:: addFreetextAnnot(rect, text, fontsize=12, fontname="helv", text_color=0, fill_color=1, rotate=0, align=TEXT_ALIGN_LEFT)
 
       PDF only: Add text in a given rectangle.
 
       :arg rect_like rect: the rectangle into which the text should be inserted. Text is automatically wrapped to a new line at box width. Lines not fitting into the box will be invisible.
 
-      :arg str text: the text. May contain any Latin characters.
+      :arg str text: the text. *(New in v1.17.0)* May contain any mixture of Latin, Greek, Cyrillic, Chinese, Japanese and Korean characters. The respective required font is automatically determined.
       :arg float fontsize: the font size. Default is 12.
-      :arg str fontname: the font name. Default is "Helv". Accepted alternatives are "Cour", "TiRo", "ZaDb" and "Symb". The name may be abbreviated to the first two characters, like "Co" for "Cour". Lower case is also accepted. Since MuPDF v1.16, **bold or italic** variants of the fonts are **no longer accepted**. A user-contributed script provides a circumvention for this restriction -- see section *Using Buttons and JavaScript* in chapter :ref:`FAQ`.
+      :arg str fontname: the font name. Default is "Helv". Accepted alternatives are "Cour", "TiRo", "ZaDb" and "Symb". The name may be abbreviated to the first two characters, like "Co" for "Cour". Lower case is also accepted. *(Changed in v1.16.0)* Bold or italic variants of the fonts are **no longer accepted**. A user-contributed script provides a circumvention for this restriction -- see section *Using Buttons and JavaScript* in chapter :ref:`FAQ`. *(New in v1.17.0)* The actual font to use is now determined on a by-character level, and all required fonts (or sub-fonts) are automatically included. Therefore, you should rarely ever need to care about this parameter and let it default (except you insist on a serifed font for your non-CJK text parts).
       :arg sequence,float text_color: *(new in version 1.16.0)* the text color. Default is black.
 
       :arg sequence,float fill_color: *(new in version 1.16.0)* the fill color. Default is white.
+      :arg int align: *(new in version 1.17.0)* text alignment, one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT - justify is not supported.
 
 
       :arg int rotate: the text orientation. Accepted values are 0, 90, 270, invalid entries are set to zero.
@@ -195,7 +210,7 @@ This is available for PDF documents only. There are basically two groups of meth
       :arg point_like p2: the end point of the line.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. It is drawn with line color black and line width 1. To change, or attach other information (like author, creation date, line properties, colors, line ends, etc.) use methods of :ref:`Annot`. The **rectangle** is automatically created to contain both points, each one surrounded by a circle of radius 3 (= 3 * line width) to make room for any line end symbols. Use methods of :ref:`Annot` to make any changes.
+      :returns: the created annotation. It is drawn with line color black and line width 1. The **rectangle** is automatically created to contain both points, each one surrounded by a circle of radius 3 * line width to make room for any line end symbols.
 
    .. method:: addRectAnnot(rect)
 
@@ -206,28 +221,43 @@ This is available for PDF documents only. There are basically two groups of meth
       :arg rect_like rect: the rectangle in which the circle or rectangle is drawn, must be finite and not empty. If the rectangle is not equal-sided, an ellipse is drawn.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. It is drawn with line color black, no fill color and line width 1. Use methods of :ref:`Annot` to make any changes.
+      :returns: the created annotation. It is drawn with line color red, no fill color and line width 1.
 
-   .. method:: addRedactAnnot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0))
+   .. method:: addRedactAnnot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
 
-      PDF only: *(new in version 1.16.11)* Add a redaction annotation. A redaction annotation identifies content that is intended to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
+      PDF only: *(new in version 1.16.11)* Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the envelopping rectangle is taken.
 
       :arg str text: *(New in v1.16.12)* text to be placed in the rectangle after applying the redaction (and thus removing old content).
 
-      :arg str fontname: *(New in v1.16.12)* the font to use when *text* is given, otherwise ignored. This must be one of the :ref:`Base14_Fonts` or a CJK fonts.
+      :arg str fontname: *(New in v1.16.12)* the font to use when *text* is given, otherwise ignored. The same rules apply as for :meth:`Page.insertTextbox` -- which is the method :meth:`Page.apply_redactions` internally invokes. The replacement text will be **vertically centered**, if this is one of the CJK or :ref:`Base-14-Fonts`.
 
-      :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing this value down to 4. If then the text will still not fit, no text insertion will take place at all.
+         .. note::
 
-      :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is always centered (approximately).
+            * For an **existing** font of the page, use its reference name as *fontname* (this is *item[4]* of its entry in :meth:`Page.getFontList`).
+            * For a **new, non-builtin** font, proceed as follows::
 
-      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle after applying the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress any fill color, specify *False*. In this cases the rectangle remains transparent.
+               page.insertText(point,  # anywhere, but outside all redaction rectangles
+                   "somthing",  # some non-empty string
+                   fontname="newname",  # new, unused reference name
+                   fontfile="...",  # desired font file
+                   render_mode=3,  # makes the text invisible
+               )
+               page.addRedactAnnot(..., fontname="newname")
+
+      :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing the fontsize to no less than 4. If then the text will still not fit, no text insertion will take place at all.
+
+      :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is (approximately) centered if a PDF built-in font is used (CJK or :ref:`Base-14-Fonts`).
+
+      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress a fill color alltogether, specify *False*. In this cases the rectangle remains transparent.
 
       :arg sequence text_color: *(New in v1.16.12)* the color of the replacing text. Default is *black = (0, 0, 0)*.
 
+      :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle.
+
       :rtype: :ref:`Annot`
-      :returns: the created annotation. The appearance of a redaction annotation cannot be changed (except for its rectangle). A redaction is displayed as a crossed-out transparent rectangle with red lines.
+      :returns: the created annotation. *(Changed in v1.17.2)* Its standard appearance looks like a red rectangle (no fill color), optionally showing two diagonal lines. Colors, line width, dashing, opacity and blend mode can now be set and applied via :meth:`Annot.update` like with other annotations.
 
       .. image:: images/img-redact.jpg
 
@@ -253,7 +283,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. method:: addHighlightAnnot(quads=None, start=None, stop=None, clip=None)
 
-      PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`searchFor`). But this is not required: you are free to "mark" just anything.
+      PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`Page.searchFor`). But this is not required: you are free to "mark" just anything.
 
       Standard colors are chosen per annotation type: **yellow** for highlighting, **red** for strike out, **green** for underlining, and **magenta** for wavy underlining.
 
@@ -264,7 +294,7 @@ This is available for PDF documents only. There are basically two groups of meth
            >>> quads = page.searchFor("pymupdf", hit_max=100, quads=True)
            >>> page.addHighlightAnnot(quads)
 
-      :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the rectangles or quads containing the to-be-marked text (locations). A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). You should prefer using quads, because this will automatically support non-horizontal text and avoid rectangle-to-quad conversion effort. *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
+      :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
       :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*.
       :arg point_like stop: *(New in v1.16.14)* stop text marking at this point. Defaults to the bottom-right point of *clip*.
       :arg rect_like clip: *(New in v1.16.14)* only consider text lines intersecting this area. Defaults to the page rectangle.
@@ -272,7 +302,7 @@ This is available for PDF documents only. There are basically two groups of meth
       :rtype: :ref:`Annot` or *(changed in v1.16.14)* *None*
       :returns: the created annotation. *(Changed in v1.16.14)* If *quads* is an empty list, **no annotation** is created. To change colors, set the "stroke" color accordingly (:meth:`Annot.setColors`) and then perform an :meth:`Annot.update`.
 
-      .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight was created specifying the two red points and setting clip accordingly.
+      .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight on a page with three text columnbs was created by specifying the two red points and setting clip accordingly.
 
       .. image:: images/img-markers.jpg
          :scale: 100
@@ -328,13 +358,17 @@ This is available for PDF documents only. There are basically two groups of meth
       :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
 
       .. note::
-         Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions. Other annotations are unaffected.
+         Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions or anywhere else. Other annotations are unaffected.
 
-         Images and XObjects (embedded PDF pages, e.g. via :meth:`showPDFpage`) will also **physically** be removed from the page if they are **completely** contained in a redation rectangle. **Partial** overlaps however will only be **overlaid** with the redaction background color, and no removal will take place.
+         Images and links will also **physically** be removed from the page. For an image, overlapping parts will be blanked-out. Links will always be completely removed.
 
-         Decision to remove text is made on a by-character level: A character will be removed if and only if the bottom-left corner of its **boundary box** is contained in some redaction rectangle. Hence it may happen, that a character is removed even if the better part of it is outside the redaction or -- vice versa -- **not removed**, even if most of its bbox is inside the rect.
+         Text removal is done by character: A character is removed if its bbox has a **non-empty intersection** with a redaction *(changed in v1.17)*.
 
-         Redactions are an easy way to replace single words in a PDF, or to physically render them unreadable: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence. Just be wary if the replacement is much longer than the original -- this may lead to an awkward appearance or no new text at all. Also, for a number of reasons, the new text is often not exactly positioned on the same line like the old one.
+         Redactions are an easy way to replace single words in a PDF, or to just physically remove them from the PDF: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
+
+            * Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
+
+            * For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
 
    .. method:: deleteLink(linkdict)
 
@@ -688,9 +722,11 @@ This is available for PDF documents only. There are basically two groups of meth
 
          Changed in version 1.14.11 By default, the image keeps its aspect ratio.
 
-      :arg rect_like rect: where to put the image on the page. Only the rectangle part which is inside the page is used. This intersection must be finite and not empty.
+      :arg rect_like rect: where to put the image. Must be finite and not empty.
+      
+         *(Changed in v1.17.6)* Needs no longer have a non-empty intersection with the page's :attr:`Page.CropBox` [#f5]_.
 
-         Changed in version 1.14.13 The image is now always placed **centered** in the rectangle, i.e. the center of the image and the rectangle coincide.
+         *(Changed in version 1.14.13)* The image is now always placed **centered** in the rectangle, i.e. the centers of image and rectangle are equal.
 
       :arg str filename: name of an image file (all formats supported by MuPDF -- see :ref:`ImageFiles`). If the same image is to be inserted multiple times, choose one of the other two options to avoid some overhead.
 
@@ -788,31 +824,34 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. method:: getImageBbox(item)
 
-      *(New in version 1.16.0)*
-      
       PDF only: Return the boundary box of an image.
 
-      :arg list item: an item of the list :meth:`Page.getImageList` with *full=True* specified.
+      *Changed in version 1.17.0:*
+
+      * The method should deliver correct results now.
+      * The page's ``/Contents`` are no longer modified by this method.
+      
+      :arg list,str item: an item of the list :meth:`Page.getImageList` with *full=True* specified, or the **name** entry of such an item, which is item[-3] (or item[7] respectively).
 
       :rtype: :ref:`Rect`
       :returns: the boundary box of the image.
-         Changed in version 1.16.7 If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised.
-
-      .. warning:: The method internally cleans the page's */Contents* object(s) using :meth:`Page._cleanContents()`. Please consult its description for implications.
+         *(Changed in v1.16.7)* -- If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised.
+         *(Changed in v.17.0)* -- Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
 
       .. note::
 
-         * Be aware that :meth:`Page.getImageList` may contain "dead" entries, i.e. there may be image references which -- although present in the PDF -- are **not displayed** by this page. In this case an exception is raised.
-         * This function is still somewhat **experimental**: it does not yet cover all possibilities of how an image location might have been coded, but instead makes some simplifying assumptions. As a result you occasionally may find the bbox incorrectly calculated. In contrast, image blocks returned by :meth:`Page.getText` ("dict" or "rawdict" options) do contain a correct bbox on the one hand, but on the other hand do **not allow an (easy) identification** of the image as a PDF object. There are however ways to match these information pieces -- please consult the recipes chapter.
+         * Be aware that :meth:`Page.getImageList` may contain "dead" entries, i.e. there may be image references which are **not displayed** by this page. In this case an infinite rectangle is returned.
+         * As mentioned above, images inside embedded PDF pages are ignored by this method.
 
    .. index::
       pair: matrix; getSVGimage
 
-   .. method:: getSVGimage(matrix=fitz.Identity)
+   .. method:: getSVGimage(matrix=fitz.Identity, text_as_path=True)
 
       Create an SVG image from the page. Only full page images are currently supported.
 
      :arg matrix_like matrix: a matrix, default is :ref:`Identity`.
+     :arg bool text_as_path: *(new in v1.17.5)* -- controls how text is represented. *True* outputs each character as a series of elementary draw commands, which leads to a more precise text display in browsers, but a **very much larger** output for text-oriented pages. Display quality for *False* relies on the presence of the referenced fonts on the current system. For missing fonts, the internet browser will fall back to some default -- leading to unpleasant appearances. Choose *False* if you want to parse the text of the SVG.
 
      :returns: a UTF-8 encoded string that contains the image. Because SVG has XML syntax it can be saved in a text file with extension *.svg*.
 
@@ -825,7 +864,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. method:: getPixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
 
-     Create a pixmap from the page. This is probably the most often used method to create a pixmap.
+     Create a pixmap from the page. This is probably the most often used method to create a :ref:`Pixmap`.
 
      :arg matrix_like matrix: default is :ref:`Identity`.
      :arg colorspace: Defines the required colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
@@ -845,30 +884,46 @@ This is available for PDF documents only. There are basically two groups of meth
 
          .. image:: images/img-alpha-0.png
 
-     :arg bool annots: *(new in vrsion 1.16.0)* whether to also render any annotations on the page. You can create pixmaps for annotations separately.
+     :arg bool annots: *(new in vrsion 1.16.0)* whether to also render annotations or to suppress them. You can create pixmaps for annotations separately.
 
      :rtype: :ref:`Pixmap`
-     :returns: Pixmap of the page.
+     :returns: Pixmap of the page. For fine-controlling the generated image, the by far most important parameter is **matrix**. E.g. you can increase or decrease the image resolution by using **Matrix(xzoom, yzoom)**. If zoom > 1, you will get a higher resolution: zoom=2 will double the number of pixels in that direction and thus generate a 2 times larger image. Non-positive values will flip horizontally, resp. vertically. Similarly, matrices also let you rotate or shear, and you can combine effects via e.g. matrix multiplication. See the :ref:`Matrix` section to learn more.
 
    .. method:: annot_names()
 
       *(New in version 1.16.10)*
 
-      PDF only: return a list of the names of annotations or widgets.
+      PDF only: return a list of the names of annotations, widgets and links. Technically, these are the */NM* values of every PDF object found in the page's */Annots*  array.
 
       :rtype: list
 
 
-   .. method:: load_annot(annot_id)
+   .. method:: annot_xrefs()
 
-      *(New in version 1.16.10)*
+      *(New in version 1.17.1)*
 
-      PDF only: return the annotation identified by *annot_id* -- its unique name (*/NM*).
+      PDF only: return a list of the :data`xref` numbers of annotations, widgets and links -- technically of all entries found in the page's */Annots*  array.
 
-      :arg str annot_id: the annotation name.
+      :rtype: list
+      :returns: a list of items *(xref, type)* where type is the annotation type. Use the type to tell apart links, fields and annotations, see :ref:`AnnotationTypes`.
+
+
+   .. method:: load_annot(ident)
+
+      *(Deprecated since v1.17.1)*.
+
+   .. method:: loadAnnot(ident)
+
+      *(New in version 1.17.1)*
+
+      PDF only: return the annotation identified by *ident*. This may be its unique name (PDF */NM* key), or its :data:`xref`.
+
+      :arg str,int ident: the annotation name or xref.
 
       :rtype: :ref:`Annot`
       :returns: the annotation or *None*.
+
+      .. note:: Methods :meth:`Page.annot_names`, :meth:`Page.annots_xrefs` provide lists of names or xrefs, respectively, from where an item may be picked and loaded via this method.
 
    .. method:: loadLinks()
 
@@ -884,7 +939,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
       PDF only: Sets the rotation of the page.
 
-      :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90.
+      :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
 
    .. index::
       pair: clip; showPDFpage
@@ -962,7 +1017,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
       :arg str text: Text to search for. Upper / lower case is ignored. The string may contain spaces.
 
-      :arg int hit_max: Maximum number of occurrences accepted.
+      :arg int hit_max: Maximum number of returned occurrences.
       :arg bool quads: Return :ref:`Quad` instead of :ref:`Rect` objects.
       :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. Default is 0 (ligatures are dissolved, white space is replaced with space and excessive spaces are not suppressed).
 
@@ -971,6 +1026,10 @@ This is available for PDF documents only. There are basically two groups of meth
       :returns: A list of :ref:`Rect` \s (resp. :ref:`Quad` \s) each of which  -- **normally!** -- surrounds one occurrence of *text*. **However:** if the search string spreads across more than one line, then a separate item is recorded in the list for each part of the string per line. So, if you are looking for "search string" and the two words happen to be located on separate lines, two entries will be recorded in the list: one for "search" and one for "string".
 
         .. note:: In this way, the effect supports multi-line text marker annotations.
+
+        .. note:: The number of returned objects will never exceed *hit_max*. Hence, if the returned list has this many items, you cannot know whether there really exist more on the page. So please make sure you provide a hit_max value which is large enough.
+
+        .. note:: Please also be aware of a trickier aspect: the search logic regards **contiguous multiple** occurrences of the search string as one: assuming your search string is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one containing "abc", and a second one containing "abcabc".
 
 
    .. method:: setMediaBox(r)
@@ -1016,7 +1075,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. attribute:: rotation
 
-      PDF only: contains the rotation of the page in degrees and *-1* for other document types.
+      Contains the rotation of the page in degrees (always 0 for non-PDF types).
 
       :type: int
 
@@ -1044,7 +1103,29 @@ This is available for PDF documents only. There are basically two groups of meth
 
       :type: :ref:`Rect`
 
-      .. note:: For most PDF documents and for all other types, *page.rect == page.CropBox == page.MediaBox* is true. However, for some PDFs the visible page is a true subset of :data:`MediaBox`. Also, if the page is rotated, its ``Page.rect`` may not equal ``Page.CropBox``. In these cases the above attributes help to correctly locate page elements.
+      .. note:: For most PDF documents and for **all other document types**, *page.rect == page.CropBox == page.MediaBox* is true. However, for some PDFs the visible page is a true subset of :data:`MediaBox`. Also, if the page is rotated, its ``Page.rect`` may not equal ``Page.CropBox``. In these cases the above attributes help to correctly locate page elements.
+
+   .. attribute:: transformationMatrix
+
+      This matrix translates coordinates from the PDF space to the MuPDF space. For example, in PDF ``/Rect [x0 y0 x1 y1]`` the pair (x0, y0) specifies the **bottom-left** point of the rectangle -- in contrast to MuPDF's system, where (x0, y0) specify top-left. Multiplying the PDF coordinates with this matrix will deliver the (Py-) MuPDF rectangle version. Obviously, the inverse matrix will again yield the PDF rectangle.
+
+      :type: :ref:`Matrix`
+
+   .. attribute:: rotationMatrix
+
+   .. attribute:: derotationMatrix
+
+      These matrices may be used for dealing with rotated PDF pages. When adding / inserting anything to a PDF page with PyMuPDF, the coordinates of the **unrotated** page are always used. These matrices help translating between the two states. Example: if a page is rotated by 90 degrees -- what would then be the coordinates of the top-left Point(0, 0) of an A4 page?
+
+         >>> page.setRotation(90)  # rotate an ISO A4 page
+         >>> page.rect
+         Rect(0.0, 0.0, 842.0, 595.0)
+         >>> p = fitz.Point(0, 0)  # where did top-left point land?
+         >>> p * page.rotationMatrix
+         Point(842.0, 0.0)
+         >>> 
+
+      :type: :ref:`Matrix`
 
    .. attribute:: firstLink
 
@@ -1145,7 +1226,7 @@ This is an overview of homologous methods on the :ref:`Document` and on the :ref
 *Document.searchPageFor(pno, ...)*     :meth:`Page.searchFor`
 ====================================== =====================================
 
-The page number "pno"` is a 0-based integer *-inf < pno < pageCount*.
+The page number "pno" is a 0-based integer *-inf < pno < pageCount*.
 
 .. note::
 
@@ -1162,3 +1243,5 @@ The page number "pno"` is a 0-based integer *-inf < pno < pageCount*.
 .. [#f3] Not all PDF readers display these fonts at all. Some others do, but use a wrong character spacing, etc.
 
 .. [#f4] You are generally free to choose any of the :ref:`mupdficons` you consider adequate.
+
+.. [#f5] The previous algorithm caused images to be **shrunk** to this intersection. Now the image can be anywhere on :attr:`Page.MediaBox`, potentially being invisible or only partially visible if the cropbox (representing the visible page part) is smaller.

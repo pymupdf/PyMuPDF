@@ -26,9 +26,10 @@ There is a parent-child relationship between an annotation and its page. If the 
 :meth:`Annot.setFlags`          change the flags
 :meth:`Annot.setInfo`           change various properties
 :meth:`Annot.setLineEnds`       set line ending styles
-:meth:`Annot.setOpacity`        change transparency
 :meth:`Annot.setName`           change the "Name" field (e.g. icon name)
+:meth:`Annot.setOpacity`        change transparency
 :meth:`Annot.setRect`           change the rectangle
+:meth:`Annot.setRotation`       change rotation
 :meth:`Annot.update`            apply accumulated annot changes
 :attr:`Annot.border`            border details
 :attr:`Annot.colors`            border / background and fill colors
@@ -66,7 +67,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: :ref:`Pixmap`
 
-      .. note:: If the annotation has just been created or modified
+      .. note:: If the annotation has just been created or modified, you should reload the page first via *page = doc.reload_page(page)*.
 
    .. method:: setInfo(info=None, content=None, title=None, creationDate=None, modDate=None, subject=None)
 
@@ -140,6 +141,21 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg rect_like rect: the new rectangle of the annotation (finite and not empty). E.g. using a value of *annot.rect + (5, 5, 5, 5)* will shift the annot position 5 pixels to the right and downwards.
 
+      .. note:: You **need not** invoke :meth:`Annot.update` for activation of the effect.
+
+
+   .. method:: setRotation(angle)
+
+      Set the rotation of an annotation. This rotates the annotation rectangle around its center point. Then a **new annotation rectangle** is calculated from the resulting quad.
+
+      :arg int angle: rotation angle in degrees. Arbitrary values are possible, but will be clamped to the interval 0 <= angle < 360.
+
+      .. note::
+        * You **must invoke** :meth:`Annot.update` to activate the effect.
+        * For PDF_ANNOT_FREE_TEXT, only one of the values 0, 90, 180 and 270 is possible and will **rotate the text** inside the current rectangle (which remains unchanged). Other values are silently ignored and replaced by 0.
+        * Otherwise, only the following :ref:`AnnotationTypes` can be rotated: 'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', 'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op.
+
+
    .. method:: setBorder(border=None, width=0, style=None, dashes=None)
 
       PDF only: Change border width and dashing properties.
@@ -180,9 +196,10 @@ There is a parent-child relationship between an annotation and its page. If the 
       pair: text_color; update
       pair: border_color; update
       pair: fill_color; update
+      pair: cross_out; update
       pair: rotate; update
 
-   .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, rotate=-1)
+   .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, cross_out=True, rotate=-1)
 
       Synchronize the appearance of an annotation with its properties after any changes. 
 
@@ -191,9 +208,9 @@ There is a parent-child relationship between an annotation and its page. If the 
          * :meth:`setRect`
          * :meth:`setFlags`
          * :meth:`fileUpd`
-         * :meth:`setInfo` (except changes to *"content"*)
+         * :meth:`setInfo` (except any changes to *"content"*)
 
-      All arguments are optional. *(Changed in v1.16.14)* Blend mode and opacity are applicable to all annotation types. The other arguments are mostly special use, as described below.
+      All arguments are optional. *(Changed in v1.16.14)* Blend mode and opacity are applicable to **all annotation types**. The other arguments are mostly special use, as described below.
 
       Color specifications may be made in the usual format used in PuMuPDF as sequences of floats ranging from 0.0 to 1.0 (including both). The sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK colorspaces respectively). For mono-color, just a float is also acceptable and yields some shade of gray.
 
@@ -205,9 +222,10 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg sequence,float fill_color: the fill color.
       
           * 'FreeText' annotations: If you set (or leave) this to *None*, then **no rectangle at all** will be drawn around the text, and the border color will be ignored. This will leave anything "under" the text visible.
-          * 'Line', 'Polyline', 'Polygon' annotations: use it for line end symbols to give them a fill color other than the one of the annotation *(changed in v1.16.16)*
+          * 'Line', 'Polyline', 'Polygon' annotations: use it to give applicable line end symbols a fill color other than that of the annotation *(changed in v1.16.16)*.
 
-      :arg int rotate: new rotation value. Default (-1) means no change. 'FreeText' annotations only.
+      :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle. 'Redact' annotations only. If not desired, *False* must be specified even if the annotation was created with *False*.
+      :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see :meth:`Annot.setRotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
 
       :rtype: bool
 
@@ -257,6 +275,13 @@ There is a parent-child relationship between an annotation and its page. If the 
       The owning page object of the annotation.
 
       :rtype: :ref:`Page`
+
+   .. attribute:: rotation
+
+      The annot rotation.
+
+      :rtype: int
+      :returns: a value [-1, 359]. If rotation is not at all, -1 is returned (and implies a rotation angle of 0). Other possible values are normalized to some value value 0 <= angle < 360.
 
    .. attribute:: rect
 
@@ -387,3 +412,7 @@ This is how the circle annotation looks like before and after the change (pop-up
 
 .. |circle| image:: images/img-circle.png
 
+
+.. rubric:: Footnotes
+
+.. [#f1] Rotating an annotation generally also changes its rectangle. Depending on how the annotation was defined, the original rectangle in general is **not reconstructible** by setting the rotation value to zero. This information may be lost. 

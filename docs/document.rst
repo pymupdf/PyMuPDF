@@ -8,15 +8,24 @@ Document
 
 This class represents a document. It can be constructed from a file or from memory.
 
-Since version 1.9.0 there exists the alias *open* for this class.
+Since version 1.9.0 there exists the alias *open* for this class, i.e. ``fitz.Document(...)`` and ``fitz.open(...)`` do exactly the same thing.
 
-For addional details on **embedded files** refer to Appendix 3.
+For details on **embedded files** refer to Appendix 3.
+
+.. note::
+
+  Starting with v1.17.0, a new page addressing mechanism for **EPUB files only** is supported. This document type is internally organized in chapters such that pages can most efficiently be found by their so-called "location". The location is a tuple *(chapter, pno)* consisting of the chapter number and the page number **in that chapter**. Both numbers are zero-based.
+
+  While it is still possible to locate a page via its (absoute) number, doing so may mean that the complete document has to be layouted before the page can be addressed. This may have a significant performance implication if the document is very large. Due to internal EPUB file structures, using the page's **location** *(chapter, pno)* prevents this from happening.
+
+  To maintain a consistent API, PyMuPDF supports page *location* syntax for **all file types** -- documents without this feature simply have just one chapter. :meth:`Document.loadPage` and the equivalent index access now also support using the page *location*. There are a number of methods to convert between page numbers and locations, determine the chapter count, the page count per chapter, to compute the next and previous locations, and the last page location of a document.
 
 ======================================= ==========================================================
 **Method / Attribute**                  **Short Description**
 ======================================= ==========================================================
 :meth:`Document.authenticate`           gain access to an encrypted document
 :meth:`Document.can_save_incrementally` check if incremental save is possible
+:meth:`Document.chapterPageCount`       number of pages in chapter
 :meth:`Document.close`                  close the document
 :meth:`Document.convertToPDF`           write a PDF version to memory
 :meth:`Document.copyPage`               PDF only: copy a page reference
@@ -29,24 +38,29 @@ For addional details on **embedded files** refer to Appendix 3.
 :meth:`Document.embeddedFileInfo`       PDF only: metadata of an embedded file
 :meth:`Document.embeddedFileNames`      PDF only: list of embedded files
 :meth:`Document.embeddedFileUpd`        PDF only: change an embedded file
+:meth:`Document.findBookmark`           retrieve page location after layouting
 :meth:`Document.fullcopyPage`           PDF only: duplicate a page
 :meth:`Document.getPageFontList`        PDF only: make a list of fonts on a page
 :meth:`Document.getPageImageList`       PDF only: make a list of images on a page
-:meth:`Document.getPageXObjectList`     PDF only: make a list of XObjects on a page
 :meth:`Document.getPagePixmap`          create a pixmap of a page by page number
 :meth:`Document.getPageText`            extract the text of a page by page number
+:meth:`Document.getPageXObjectList`     PDF only: make a list of XObjects on a page
 :meth:`Document.getSigFlags`            PDF only: determine signature state
 :meth:`Document.getToC`                 create a table of contents
 :meth:`Document.insertPage`             PDF only: insert a new page
 :meth:`Document.insertPDF`              PDF only: insert pages from another PDF
 :meth:`Document.layout`                 re-paginate the document (if supported)
 :meth:`Document.loadPage`               read a page
+:meth:`Document.makeBookmark`           create a page pointer in reflowable documents
 :meth:`Document.metadataXML`            PDF only: :data:`xref` of XML metadata
-:meth:`Document.movePage`               PDF only: move a page to another location
+:meth:`Document.movePage`               PDF only: move a page to different location in doc
+:meth:`Document.need_appearances`       PDF only: get/set */NeedAppearances* property
 :meth:`Document.newPage`                PDF only: insert a new empty page
+:meth:`Document.nextLocation`           return (chapter, pno) of following page
 :meth:`Document.pages`                  iterator over a page range
 :meth:`Document.PDFCatalog`             PDF only: :data:`xref` of catalog (root)
 :meth:`Document.PDFTrailer`             PDF only: trailer source
+:meth:`Document.previousLocation`       return (chapter, pno) of preceeding page
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.save`                   PDF only: save the document
 :meth:`Document.saveIncr`               PDF only: save the document incrementally
@@ -57,16 +71,19 @@ For addional details on **embedded files** refer to Appendix 3.
 :meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
 :meth:`Document.updateObject`           PDF only: replace object source
 :meth:`Document.updateStream`           PDF only: replace stream source
-:meth:`Document.write`                  PDF only: writes the document to memory
+:meth:`Document.write`                  PDF only: writes document to memory
 :meth:`Document.xrefObject`             PDF only: object source at the :data:`xref`
-:meth:`Document.xrefStream`             PDF only: stream source at the :data:`xref`
-:meth:`Document.xrefStreamRaw`          PDF only: raw stream source at the :data:`xref`
+:meth:`Document.xrefStream`             PDF only: decompressed stream source at :data:`xref`
+:meth:`Document.xrefStreamRaw`          PDF only: raw stream source at :data:`xref`
+:attr:`Document.chapterCount`           number of chapters
 :attr:`Document.FormFonts`              PDF only: list of global widget fonts
 :attr:`Document.isClosed`               has document been closed?
+:attr:`Document.isDirty`                PDF only: has document been changed yet?
 :attr:`Document.isEncrypted`            document (still) encrypted?
 :attr:`Document.isFormPDF`              is this a Form PDF?
 :attr:`Document.isPDF`                  is this a PDF?
 :attr:`Document.isReflowable`           is this a reflowable document?
+:attr:`Document.lastLocation`           (chapter, pno) of last page
 :attr:`Document.metadata`               metadata
 :attr:`Document.name`                   filename of document
 :attr:`Document.needsPass`              require password to access data?
@@ -148,15 +165,79 @@ For addional details on **embedded files** refer to Appendix 3.
         * bit 2 set => **owner** password authenticated
 
 
-    .. method:: loadPage(pno=0)
+    .. method:: makeBookmark(loc)
+
+      *(New in v.1.17.3)* Return a page pointer in a reflowable document. After re-layouting the document, the result of this method can be used to find the new location of the page.
+
+      .. note:: Do not confuse with items of a table of contents, TOC.
+
+      :arg list,tuple loc: page location. Must be a valid *(chapter, pno)*.
+
+      :rtype: pointer
+      :returns: a long integer in pointer format. To be used for finding the new location of the page after re-layouting the document. Do not touch or re-assign.
+
+
+    .. method:: findBookmark(bookmark)
+
+      *(New in v.1.17.3)* Return the new page location after re-layouting the document.
+
+      :arg pointer bookmark: created by :meth:`Document.makeBookmark`.
+
+      :rtype: tuple
+      :returns: the new (chapter, pno) of the page.
+
+
+    .. method:: chapterPageCount(chapter)
+
+      *(New in v.1.17.0)* Return the number of pages of a chapter.
+
+      :arg int chapter: the 0-based chapter number.
+
+      :rtype: int
+      :returns: number of pages in chapter. Relevant only for document types whith chapter support (EPUB currently).
+
+
+    .. method:: nextLocation(page_id)
+
+      *(New in v.1.17.0)* Return the location of the following page.
+
+      :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
+
+      :returns: The tuple of the following page, i.e. either *(chapter, pno + 1)* or *(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the last page. Relevant only for document types whith chapter support (EPUB currently).
+
+
+    .. method:: previousLocation(page_id)
+
+      *(New in v.1.17.0)* Return the locator of the preceeding page.
+
+      :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
+
+      :returns: The tuple of the preceeding page, i.e. either *(chapter, pno - 1)* or the last page of the receeding chapter, **or** the empty tuple *()* if the argument was the first page. Relevant only for document types whith chapter support (EPUB currently).
+
+
+    .. method:: loadPage(page_id=0)
 
       Create a :ref:`Page` object for further processing (like rendering, text searching, etc.).
 
-      :arg int pno: page number, zero-based (0 is default and the first page of the document). Any integer -inf < pno < pageCount is acceptable. If pno is negative, then :attr:`pageCount` will be added until this is no longer the case. For example: to load the last page, you can specify doc.loadPage(-1). After this you have page.number = doc.pageCount - 1.
+      *(Changed in v1.17.0)* For document types supporting a so-called "chapter structure" (like EPUB), pages can also be loaded via the combination of chapter number and relative page number, instead of the absolute page number. This should **significantly speed up access** for large documents.
+
+      :arg int,tuple page_id: *(Changed in v1.17.0)*
+      
+          Either a 0-based page number, or a tuple *(chapter, pno)*. For an **integer**, any *-inf < page_id < pageCount* is acceptable. While page_id is negative, :attr:`pageCount` will be added to it. For example: to load the last page, you can use *doc.loadPage(-1)*. After this you have page.number = doc.pageCount - 1.
+      
+          For a tuple, *chapter* must be in range :attr:`Document.chapterCount`, and *pno* must be in range :meth:`Document.chapterPageCount` of that chapter. Both values are 0-based. Using this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types whith chapter support (EPUB currently).
 
       :rtype: :ref:`Page`
 
-    .. note:: Documents also follow the Python sequence protocol with page numbers as indices: *doc.loadPage(n) == doc[n]*. Consequently, expressions like *"for page in doc: ..."* and *"for page in reversed(doc): ..."* will successively yield the document's pages. Refer to :meth:`Document.pages` which allows processing pages as with slicing.
+    .. note::
+    
+       Documents also follow the Python sequence protocol with page numbers as indices: *doc.loadPage(n) == doc[n]*.
+       
+       For **absolute page numbers** only, expressions like *"for page in doc: ..."* and *"for page in reversed(doc): ..."* will successively yield the document's pages. Refer to :meth:`Document.pages` which allows processing pages as with slicing.
+
+       You can also use index notation with the new chapter-based page identification: use *page = doc[(5, 2)]* to load the third page of the sixth chapter.
+
+       To maintain a consistent API, for document types not supporting a chapter structure (like PDFs), :attr:`Document.chapterCount` is 1, and pages can also be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for comments on performance improvements.
 
     .. method:: reload_page(page)
 
@@ -639,7 +720,11 @@ For addional details on **embedded files** refer to Appendix 3.
 
       :arg int to: the page number in front of which to copy. The default inserts **after** the last page.
 
-      .. note:: In contrast to :meth:`copyPage`, this method creates a completely identical new page object -- with the exception of :attr:`Page.xref` of course, which will be different. So changes to a copy will only show there.
+      .. note::
+      
+          * In contrast to :meth:`copyPage`, this method creates a new page object (with a new :data:`xref`), which can be changed independently from the original.
+
+          * Any Popup and "IRT" ("in response to") annotations are **not copied** to avoid potentially incorrect situations.
 
     .. method:: movePage(pno, to=-1)
 
@@ -649,13 +734,30 @@ For addional details on **embedded files** refer to Appendix 3.
 
       :arg int to: the page number in front of which to insert the moved page. The default moves **after** the last page.
 
+
+    .. method:: need_appearances(value=None)
+
+      *(New in v1.17.4)*
+
+      PDF only: Get or set the */NeedAppearances* property of Form PDFs. Quote: *"(Optional) A flag specifying whether to construct appearance streams and appearance dictionaries for all widget annotations in the document ... Default value: false."* This may help controlling the behavior of some readers / viewers.
+
+      :arg bool value: set the property to this value. If omitted or *None*, inquire the current value.
+
+      :rtype: bool
+      :returns:
+         * None: not a Form PDF or property not defined.
+         * True / False: the value of the property (either just set or existing for inquiries).
+
+         Once set, the property cannot be removed again (which is no problem).
+
+
     .. method:: getSigFlags()
 
-      PDF only: Return whether the document contains signature fields.
+      PDF only: Return whether the document contains signature fields. This is an optional PDF property: if not present (return value -1), no conclusions can be drawn -- the PDF creator may just not have bothered to use it.
 
       :rtype: int
       :returns:
-         * -1: not a Form PDF or no signature fields exist.
+         * -1: not a Form PDF / no signature fields recorded / no *SigFlags* found.
          * 1: at least one signature field exists.
          * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
 
@@ -899,6 +1001,20 @@ For addional details on **embedded files** refer to Appendix 3.
 
       :type: int
 
+    .. Attribute:: chapterCount
+      
+      *(New in version 1.17.0)*
+      Contains the number of chapters in the document. Always at least 1. Relevant only for document types with chapter support (EPUB currently). Other documents will return 1.
+
+      :type: int
+
+    .. Attribute:: lastLocation
+
+      *(New in version 1.17.0)*
+      Contains (chapter, pno) of the document's last page. Relevant only for document types with chapter support (EPUB currently). Other documents will return *(0, len(doc) - 1)* and *(0, -1)* if it has no pages.
+
+      :type: int
+
     .. Attribute:: FormFonts
 
       A list of form field font names defined in the */AcroForm* object. *None* if not a PDF.
@@ -1000,3 +1116,5 @@ Other Examples
 .. [#f1] Content streams describe what (e.g. text or images) appears where and how on a page. PDF uses a specialized mini language similar to PostScript to do this (pp. 985 in :ref:`AdobeManual`), which gets interpreted when a page is loaded.
 
 .. [#f2] However, you **can** use :meth:`Document.getToC` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
+
+.. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.
