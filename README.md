@@ -62,6 +62,7 @@ Our **documentation**, written using Sphinx, is available in various formats fro
 For the major **Windows** and (thanks to our user **@jbarlow83**!) **Mac OSX** or **Linux** versions we provide wheels in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files). This includes Python 2.7 and versions Python 3.5 through 3.9.
 
 > Starting January 2021, wheels for Python version 2 will no longer be built. You will need to build PyMuPDF for Python 2 from sources as explained below.
+> Similarly for Python 3.5: it has reached its end of life on 2020-09-13 and will therefore also no longer be serviced with wheels in 2021.
 
 For other Python versions or operating systems you need to generate PyMuPDF yourself as follows. This should work for all platforms which support Python and MuPDF. In any case you need the development version of Python.
 
