@@ -521,20 +521,32 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
 // location (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
 //-----------------------------------------------------------------------------
-void JM_merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots)
+void JM_merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots, int show_progress)
 {
     int page, afterpage;
     pdf_graft_map *graft_map;
     afterpage = apage;
     graft_map = pdf_new_graft_map(ctx, doc_des);
+    int counter = 0;  // copied page counter
+    int total = fz_absi(epage - spage) + 1;  // total pages to copy
 
     fz_try(ctx) {
         if (spage < epage) {
-            for (page = spage; page <= epage; page++, afterpage++)
+            for (page = spage; page <= epage; page++, afterpage++) {
                 page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
+                counter ++;
+                if (show_progress > 0 && counter % show_progress == 0) {
+                    PySys_WriteStdout("Inserted %i of %i pages.\n", counter, total);
+                }
+            }
         } else {
-            for (page = spage; page >= epage; page--, afterpage++)
+            for (page = spage; page >= epage; page--, afterpage++) {
                 page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
+                counter ++;
+                if (show_progress > 0 && counter % show_progress == 0) {
+                    PySys_WriteStdout("Inserted %i of %i pages.\n", counter, total);
+                }
+            }
         }
     }
 
@@ -565,6 +577,49 @@ PyObject *JM_outline_xrefs(fz_context *ctx, pdf_obj *obj, PyObject *xrefs)
         if (!thisobj) thisobj = parent;  // goto parent if no next exists
     }
     return xrefs;
+}
+
+//----------------------------------------------------------------------------
+// Return xref of n-th outline entry
+// 'obj' first OL item
+// n entry number, 0 on invocation
+//----------------------------------------------------------------------------
+int JM_outline_xref(fz_context *ctx, pdf_obj *obj, int search)
+{
+    pdf_obj *first, *parent, *thisobj, *next;
+    if (!obj) return 0;
+    parent = thisobj = obj;
+    int n = 0;
+    while (thisobj) {
+        if (n > search) return 0;
+        if (n == search) {
+            return pdf_to_num(ctx, thisobj);
+        }
+        first = pdf_dict_get(ctx, thisobj, PDF_NAME(First));
+        if (first) {
+            parent = thisobj;
+            thisobj = first;
+            n++;
+            continue;
+        }
+        next = pdf_dict_get(ctx, thisobj, PDF_NAME(Next));
+        if (next) {
+            thisobj = next;
+            n++;
+            continue;
+        }
+        parent = pdf_dict_get(ctx, thisobj, PDF_NAME(Parent));
+        repeat:;
+        thisobj = pdf_dict_get(ctx, parent, PDF_NAME(Next));
+        if (thisobj) {
+            n++;
+            continue;
+        }
+        parent = pdf_dict_get(ctx, parent, PDF_NAME(Parent));
+        if (!parent) break;
+        goto repeat;
+    }
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -734,11 +789,11 @@ int JM_page_rotation(fz_context *ctx, pdf_page *page)
 //----------------------------------------------------------------------------
 // return a PDF page's MediaBox
 //----------------------------------------------------------------------------
-fz_rect JM_mediabox(fz_context *ctx, pdf_page *page)
+fz_rect JM_mediabox(fz_context *ctx, pdf_obj *page_obj)
 {
     fz_rect mediabox, page_mediabox;
 
-    mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, page->obj,
+    mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, page_obj,
         PDF_NAME(MediaBox)));
     if (fz_is_empty_rect(mediabox) || fz_is_infinite_rect(mediabox))
     {
@@ -764,11 +819,11 @@ fz_rect JM_mediabox(fz_context *ctx, pdf_page *page)
 //----------------------------------------------------------------------------
 // return a PDF page's CropBox
 //----------------------------------------------------------------------------
-fz_rect JM_cropbox(fz_context *ctx, pdf_page *page)
+fz_rect JM_cropbox(fz_context *ctx, pdf_obj *page_obj)
 {
-    fz_rect mediabox = JM_mediabox(ctx, page);
+    fz_rect mediabox = JM_mediabox(ctx, page_obj);
     fz_rect cropbox = pdf_to_rect(ctx,
-                pdf_dict_get_inheritable(ctx, page->obj, PDF_NAME(CropBox)));
+                pdf_dict_get_inheritable(ctx, page_obj, PDF_NAME(CropBox)));
     if (fz_is_infinite_rect(cropbox) || fz_is_empty_rect(cropbox))
         return mediabox;
     float y0 = mediabox.y1 - cropbox.y1;
@@ -782,12 +837,12 @@ fz_rect JM_cropbox(fz_context *ctx, pdf_page *page)
 //----------------------------------------------------------------------------
 // calculate width and height of the UNROTATED page
 //----------------------------------------------------------------------------
-fz_point JM_cropbox_size(fz_context *ctx, pdf_page *page)
+fz_point JM_cropbox_size(fz_context *ctx, pdf_obj *page_obj)
 {
     fz_point size;
     fz_try(ctx)
     {
-        fz_rect rect = JM_cropbox(ctx, page);
+        fz_rect rect = JM_cropbox(ctx, page_obj);
         float w = (rect.x0 < rect.x1 ? rect.x1 - rect.x0 : rect.x0 - rect.x1);
         float h = (rect.y0 < rect.y1 ? rect.y1 - rect.y0 : rect.y0 - rect.y1);
         size = fz_make_point(w, h);
@@ -806,7 +861,7 @@ fz_matrix JM_rotate_page_matrix(fz_context *ctx, pdf_page *page)
     int rotation = JM_page_rotation(ctx, page);
     if (rotation == 0) return fz_identity;  // no rotation
     fz_matrix m;
-    fz_point cb_size = JM_cropbox_size(ctx, page);
+    fz_point cb_size = JM_cropbox_size(ctx, page->obj);
     float w = cb_size.x;
     float h = cb_size.y;
     if (rotation == 90)

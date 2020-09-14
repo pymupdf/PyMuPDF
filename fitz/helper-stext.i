@@ -2,18 +2,16 @@
 //-----------------------------------------------------------------------------
 // Make a text page directly from an fz_page
 //-----------------------------------------------------------------------------
-fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int flags)
+fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, fz_rect rect, int flags)
 {
     if (!page) return NULL;
     fz_stext_page *tp = NULL;
-    fz_rect rect;
     fz_device *dev = NULL;
     fz_var(dev);
     fz_var(tp);
     fz_stext_options options = { 0 };
     options.flags = flags;
     fz_try(ctx) {
-        rect = fz_bound_page(ctx, page);
         tp = fz_new_stext_page(ctx, rect);
         dev = fz_new_stext_device(ctx, tp, &options);
         fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
@@ -39,9 +37,9 @@ PyObject *JM_repl_char()
     return PyUnicode_FromStringAndSize(data, 2);
 }
 
-//-----------------------------------------------------------------------------
-// APPEND non-ascii runes in unicode escape format to a fz_buffer
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// APPEND non-ascii runes in unicode escape format to fz_buffer
+//---------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
     if (ch >= 32 && ch <= 127) {
@@ -54,9 +52,9 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 }
 
 
-//-----------------------------------------------------------------------------
-// WRITE non-ascii runes in unicode escape format to a fz_output
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// WRITE non-ascii runes in unicode escape format to fz_output
+//---------------------------------------------------------------------------
 void JM_write_rune(fz_context *ctx, fz_output *out, int ch)
 {
     if (ch >= 32 && ch <= 127) {
@@ -81,16 +79,26 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_stext_line *line = NULL;
     fz_stext_char *ch = NULL;
     int last_char = 0;
+    fz_rect tp_rect = page->mediabox;
 
     for (block = page->first_block; block; block = block->next) {
         if (block->type == FZ_STEXT_BLOCK_TEXT) {
+            if (fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
+                continue;
+            }
             int line_n = 0;
             for (line = block->u.t.first_line; line; line = line->next) {
+                if (fz_is_empty_rect(fz_intersect_rect(tp_rect, line->bbox))) {
+                    continue;
+                }
                 if (line_n > 0 && last_char != 10) {
                     fz_write_string(ctx, out, "\n");
                 }
                 line_n++;
                 for (ch = line->first_char; ch; ch = ch->next) {
+                    if (fz_is_empty_rect(fz_intersect_rect(tp_rect, fz_rect_from_quad(ch->quad)))) {
+                        continue;
+                    }
                     JM_write_rune(ctx, out, ch->c);
                     last_char = ch->c;
                 }
@@ -125,7 +133,8 @@ int JM_append_word(fz_context *ctx, PyObject *lines, fz_buffer *buff, fz_rect *w
 //-----------------------------------------------------------------------------
 
 // create the char rect from its quad
-fz_rect JM_char_bbox(fz_stext_line *line, fz_stext_char *ch)
+static fz_rect
+JM_char_bbox(fz_stext_char *ch)
 {
     fz_rect r = fz_rect_from_quad(ch->quad);
     if (!fz_is_empty_rect(r)) return r;
@@ -161,22 +170,29 @@ JM_font_name(fz_context *ctx, fz_font *font)
 }
 
 
-static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw, fz_buffer *buff)
+static fz_rect
+JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
+                 fz_stext_line *line, int raw, fz_buffer *buff,
+                 fz_rect tp_rect)
 {
     PyObject *span = NULL, *char_list = NULL, *char_dict;
     PyObject *span_list = PyList_New(0);
     fz_clear_buffer(ctx, buff);
     fz_stext_char *ch;
     fz_rect span_rect;
+    fz_rect line_rect = fz_empty_rect;
     fz_point span_origin;
     typedef struct style_s
     {float size; int flags; const char *font; int color; } char_style;
 
     char_style old_style = { -1, -1, "", -1 }, style;
 
-    for (ch = line->first_char; ch; ch = ch->next)
-    {
-        fz_rect r = JM_char_bbox(line, ch);
+    for (ch = line->first_char; ch; ch = ch->next) {
+//start-trace
+        fz_rect r = JM_char_bbox(ch);
+        if (fz_is_empty_rect(fz_intersect_rect(tp_rect, r))) {
+            continue;
+        }
         int flags = JM_char_font_flags(ctx, ch->font, line, ch);
         fz_point origin = ch->origin;
         style.size = ch->size;
@@ -207,7 +223,12 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
                     Py_BuildValue("ff", span_origin.x, span_origin.y));
                 DICT_SETITEM_DROP(span, dictkey_bbox,
                     JM_py_from_rect(span_rect));
-                LIST_APPEND_DROP(span_list, span);
+                line_rect = fz_union_rect(line_rect, span_rect);
+                if (!fz_is_empty_rect(span_rect)) {
+                    LIST_APPEND_DROP(span_list, span);
+                } else {
+                    Py_DECREF(span);
+                }
                 span = NULL;
             }
 
@@ -260,10 +281,23 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
         DICT_SETITEM_DROP(span, dictkey_origin,
             Py_BuildValue("ff", span_origin.x, span_origin.y));
         DICT_SETITEM_DROP(span, dictkey_bbox, JM_py_from_rect(span_rect));
-        LIST_APPEND_DROP(span_list, span);
+
+        if (!fz_is_empty_rect(span_rect)) {
+            LIST_APPEND_DROP(span_list, span);
+            line_rect = fz_union_rect(line_rect, span_rect);
+        } else {
+            Py_DECREF(span);
+        }
         span = NULL;
     }
-    return span_list;
+    if (!fz_is_empty_rect(line_rect)) {
+        DICT_SETITEM_DROP(line_dict, dictkey_spans, span_list);
+    } else {
+        PySys_WriteStdout("line-bbox %g, %g, %g, %g\n", line->bbox.x0,line->bbox.y0,line->bbox.x1,line->bbox.y1);
+        THROWMSG("line_rect is empty");
+    }
+//stop-trace
+    return line_rect;
 }
 
 static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject *block_dict)
@@ -323,25 +357,27 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
     return;
 }
 
-static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject *block_dict, int raw, fz_buffer *buff)
+static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject *block_dict, int raw, fz_buffer *buff, fz_rect tp_rect)
 {
     fz_stext_line *line;
     PyObject *line_list = PyList_New(0), *line_dict;
-
+    fz_rect block_rect = fz_empty_rect;
     for (line = block->u.t.first_line; line; line = line->next) {
+        if (fz_is_empty_rect(fz_intersect_rect(tp_rect, line->bbox))) {
+            continue;
+        }
         line_dict = PyDict_New();
-
+        fz_rect line_rect = JM_make_spanlist(ctx, line_dict, line, raw, buff, tp_rect);
+        block_rect = fz_union_rect(block_rect, line_rect);
         DICT_SETITEM_DROP(line_dict, dictkey_wmode,
-                      Py_BuildValue("i", line->wmode));
+                    Py_BuildValue("i", line->wmode));
         DICT_SETITEM_DROP(line_dict, dictkey_dir,
-                      Py_BuildValue("ff", line->dir.x, line->dir.y));
+                    Py_BuildValue("ff", line->dir.x, line->dir.y));
         DICT_SETITEM_DROP(line_dict, dictkey_bbox,
-                      JM_py_from_rect(line->bbox));
-        DICT_SETITEM_DROP(line_dict, dictkey_spans,
-                       JM_make_spanlist(ctx, line, raw, buff));
-
+                    JM_py_from_rect(line_rect));
         LIST_APPEND_DROP(line_list, line_dict);
     }
+    DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block_rect));
     DICT_SETITEM_DROP(block_dict, dictkey_lines, line_list);
     return;
 }
@@ -351,16 +387,23 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
     fz_stext_block *block;
     fz_buffer *text_buffer = fz_new_buffer(ctx, 128);
     PyObject *block_dict, *block_list = PyList_New(0);
+    fz_rect tp_rect = tp->mediabox;
     for (block = tp->first_block; block; block = block->next) {
+        if (fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
+            continue;
+        }
+        if (!fz_contains_rect(tp_rect, block->bbox) &&
+            block->type == FZ_STEXT_BLOCK_IMAGE) {
+            continue;
+        }
+
         block_dict = PyDict_New();
-
         DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
-        DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
-
         if (block->type == FZ_STEXT_BLOCK_IMAGE) {
+            DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
             JM_make_image_block(ctx, block, block_dict);
         } else {
-            JM_make_text_block(ctx, block, block_dict, raw, text_buffer);
+            JM_make_text_block(ctx, block, block_dict, raw, text_buffer, tp_rect);
         }
 
         LIST_APPEND_DROP(block_list, block_dict);

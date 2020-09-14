@@ -109,48 +109,6 @@ annot_skel = {
 }
 
 
-def _toc_remove_page(toc, first, last):
-    """ Remove all ToC entries pointing to certain pages.
-
-    Args:
-        toc: old table of contents generated with getToC(False).
-        first: (int) number of first page to remove.
-        last: (int) number of last page to remove.
-    Returns:
-        Modified table of contents, which should be used by PDF
-        document method setToC.
-    """
-    toc2 = []  # intermediate new toc
-    count = last - first + 1  # number of pages to remove
-    # step 1: remove numbers from toc
-    for t in toc:
-        if first <= t[2] <= last:  # skip entries between first and last
-            continue
-        if t[2] < first:  # keep smaller page numbers
-            toc2.append(t)
-            continue
-        # larger page numbers
-        t[2] -= count  # decrease page number
-        d = t[3]
-        if d["kind"] == LINK_GOTO:
-            d["page"] -= count
-            t[3] = d
-        toc2.append(t)
-
-    toc3 = []  # final new toc
-    old_lvl = 0
-
-    # step 2: deal with hierarchy lvl gaps > 1
-    for t in toc2:
-        while t[0] - old_lvl > 1:  # lvl gap too large
-            old_lvl += 1  # increase previous lvl
-            toc3.append([old_lvl] + t[1:])  # insert a filler item
-        old_lvl = t[0]
-        toc3.append(t)
-
-    return toc3
-
-
 def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
     """Calculate length of a string for a given built-in font.
 

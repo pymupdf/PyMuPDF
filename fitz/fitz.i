@@ -1505,7 +1505,16 @@ struct Document
             raise ValueError("source and target PDF are the same object")
         sa = start_at
         if sa < 0:
-            sa = self.pageCount%}
+            sa = self.pageCount
+        if len(docsrc) > show_progress > 0:
+            inname = os.path.basename(docsrc.name)
+            if not inname:
+                inname = "memory PDF"
+            outname = os.path.basename(self.name)
+            if not outname:
+                outname = "memory PDF"
+            print("Inserting '%s' at '%s'" % (inname, outname))
+        %}
 
         %pythonappend insertPDF %{
         self._reset_page_refs()
@@ -1520,7 +1529,8 @@ struct Document
             int start_at=-1,
             int rotate=-1,
             int links=1,
-            int annots=1)
+            int annots=1,
+            int show_progress=0)
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdfout = pdf_specifics(gctx, doc);
@@ -1543,7 +1553,7 @@ struct Document
 
             fz_try(gctx) {
                 if (!pdfout || !pdfsrc) THROWMSG("source or target not a PDF");
-                JM_merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate, links, annots);
+                JM_merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate, links, annots, show_progress);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -1745,6 +1755,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             return wlist;
         }
 
+
         FITZEXCEPTION(_getPageObjNumber, !result)
         CLOSECHECK0(_getPageObjNumber, """Get (xref, generation) of page number.""")
         PyObject *_getPageObjNumber(int pno)
@@ -1768,6 +1779,33 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             return Py_BuildValue("ii", pdf_to_num(gctx, pageref),
                                        pdf_to_gen(gctx, pageref));
         }
+
+
+        FITZEXCEPTION(pageCropBox, !result)
+        CLOSECHECK0(pageCropBox, """Get CropBox of page number (without loading page).""")
+        %pythonappend pageCropBox %{val = Rect(val)%}
+        PyObject *pageCropBox(int pno)
+        {
+            fz_document *this_doc = (fz_document *) $self;
+            int pageCount = fz_count_pages(gctx, this_doc);
+            int n = pno;
+            while (n < 0) n += pageCount;
+            pdf_obj *pageref = NULL;
+            fz_var(pageref);
+            pdf_document *pdf = pdf_specifics(gctx, this_doc);
+            fz_try(gctx) {
+                if (n >= pageCount) THROWMSG("bad page number(s)");
+                ASSERT_PDF(pdf);
+                pageref = pdf_lookup_page_obj(gctx, pdf, n);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+
+            fz_rect cropbox = JM_cropbox(gctx, pageref);
+            return JM_py_from_rect(cropbox);
+        }
+
 
         FITZEXCEPTION(_getPageInfo, !result)
         CLOSECHECK(_getPageInfo, """List fonts, images, XObjects used on a page.""")
@@ -1874,6 +1912,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             const char *cs_name = NULL;
             int img_type, xres, yres, colorspace;
             int smask = 0, width, height, bpc;
+            fz_compressed_buffer *cbuf = NULL;
             fz_var(img);
             fz_var(res);
             fz_var(obj);
@@ -1887,7 +1926,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME(Subtype));
 
                 if (!pdf_name_eq(gctx, subtype, PDF_NAME(Image)))
-                    THROWMSG("xref not an image");
+                    THROWMSG("xref is no image");
 
                 pdf_obj *o = pdf_dict_get(gctx, obj, PDF_NAME(SMask));
                 if (o) smask = pdf_to_num(gctx, o);
@@ -1896,20 +1935,31 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 unsigned char *c = NULL;
                 fz_buffer_storage(gctx, res, &c);
                 img_type = fz_recognize_image_format(gctx, c);
+                ext = JM_image_extension(img_type);
 
-                if (img_type != FZ_IMAGE_UNKNOWN)
-                {
-                    img = fz_new_image_from_buffer(gctx, res);
-                    ext = JM_image_extension(img_type);
-                }
-                else
-                {
+                if (img_type == FZ_IMAGE_UNKNOWN) {
                     fz_drop_buffer(gctx, res);
                     res = NULL;
                     img = pdf_load_image(gctx, pdf, obj);
                     res = fz_new_buffer_from_image_as_png(gctx, img,
                                 fz_default_color_params);
                     ext = "png";
+                } else if (smask == 0) {
+                    img = fz_new_image_from_buffer(gctx, res);
+                } else {
+                    fz_drop_buffer(gctx, res);
+                    res = NULL;
+                    img = pdf_load_image(gctx, pdf, obj);
+                    cbuf = fz_compressed_image_buffer(gctx, img);
+                    if (!cbuf) {
+                        res = fz_new_buffer_from_image_as_png(gctx, img,
+                                        fz_default_color_params);
+                        ext = "png";
+                    } else {
+                        res = cbuf->buffer;
+                        img_type = cbuf->params.type;
+                        ext = JM_image_extension(img_type);
+                    }
                 }
                 fz_image_resolution(img, &xres, &yres);
                 width = img->w;
@@ -1942,7 +1992,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             }
             fz_always(gctx) {
                 fz_drop_image(gctx, img);
-                fz_drop_buffer(gctx, res);
+                if (!cbuf) fz_drop_buffer(gctx, res);
                 pdf_drop_obj(gctx, obj);
             }
 
@@ -1995,6 +2045,27 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             LIST_APPEND_DROP(xrefs, Py_BuildValue("i", olroot_xref));
             pdf->dirty = 1;
             return xrefs;
+        }
+
+        //---------------------------------------------------------------------
+        // Return outline xref by index.
+        // Performs a linear search
+        //---------------------------------------------------------------------
+        CLOSECHECK0(outlineXref, """Get outline xref by index.""")
+        int outlineXref(int index)
+        {
+            if (index < 0) return 0;  // nonsense call
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            if (!pdf) return 0;  // only works for PDF
+            // get the main root
+            pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+            // get the outline root
+            pdf_obj *olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
+            if (!olroot) return 0;  // no outlines / some problem
+            // first outline
+            pdf_obj *first = pdf_dict_get(gctx, olroot, PDF_NAME(First));
+            if (!first) return 0;
+            return JM_outline_xref(gctx, first, index);
         }
 
         //---------------------------------------------------------------------
@@ -2674,6 +2745,54 @@ if not self.isFormPDF:
             return_none;
         }
 
+        FITZEXCEPTION(_remove_toc_item, !result)
+        PyObject *_remove_toc_item(int xref)
+        {
+            // "remove" bookmark by letting it point to nowhere
+            pdf_obj *item = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                item = pdf_new_indirect(gctx, pdf, xref, 0);
+                pdf_dict_del(gctx, item, PDF_NAME(Dest));
+                pdf_dict_del(gctx, item, PDF_NAME(A));
+                pdf_dict_put_text_string(gctx, item, PDF_NAME(Title), "<>");
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, item);
+            }
+            fz_catch(gctx){
+                return NULL;
+            }
+            return_none;
+        }
+
+        FITZEXCEPTION(_update_toc_item, !result)
+        PyObject *_update_toc_item(int xref, char *action=NULL, char *title=NULL)
+        {
+            // "update" bookmark by letting it point to nowhere
+            pdf_obj *item = NULL;
+            pdf_obj *obj = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                item = pdf_new_indirect(gctx, pdf, xref, 0);
+                if (title) {
+                    pdf_dict_put_text_string(gctx, item, PDF_NAME(Title), title);
+                }
+                if (action) {
+                    pdf_dict_del(gctx, item, PDF_NAME(Dest));
+                    obj = JM_pdf_obj_from_str(gctx, pdf, action);
+                    pdf_dict_put_drop(gctx, item, PDF_NAME(A), obj);
+                }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, item);
+            }
+            fz_catch(gctx){
+                return NULL;
+            }
+            return_none;
+        }
+
         //---------------------------------------------------------------------
         // Initialize document: set outline and metadata properties
         //---------------------------------------------------------------------
@@ -2687,6 +2806,12 @@ if not self.isFormPDF:
 
             outline = property(lambda self: self._outline)
             _getPageXref = _getPageObjNumber
+
+
+            def pageXref(self, pno):
+                """Return the xref of page number pno."""
+                return self._getPageObjNumber(pno)[0]
+
 
             def getPageFontList(self, pno, full=False):
                 """Retrieve a list of fonts used on a page.
@@ -2773,7 +2898,7 @@ if not self.isFormPDF:
 
                 return self._move_copy_page(pno, to, before, copy)
 
-            def deletePage(self, pno = -1):
+            def deletePage(self, pno=-1):
                 """ Delete one page from a PDF.
                 """
                 if not self.isPDF:
@@ -2788,13 +2913,15 @@ if not self.isFormPDF:
                 if not pno in range(pageCount):
                     raise ValueError("bad page number(s)")
 
-                old_toc = self.getToC(False)
-                new_toc = _toc_remove_page(old_toc, pno+1, pno+1)
+                # remove TOC bookmarks pointing to deleted page
+                old_toc = self.getToC()
+                for i, item in enumerate(old_toc):
+                    if item[2] == pno + 1:
+                        xref = self.outlineXref(i)
+                        self._remove_toc_item(xref)
+
                 self._remove_links_to(pno, pno)
-
                 self._deletePage(pno)
-
-                self.setToC(new_toc)
                 self._reset_page_refs()
 
 
@@ -2817,14 +2944,17 @@ if not self.isFormPDF:
                 if not f <= t < pageCount:
                     raise ValueError("bad page number(s)")
 
-                old_toc = self.getToC(False)
-                new_toc = _toc_remove_page(old_toc, f+1, t+1)
+                old_toc = self.getToC()
+                for i, item in enumerate(old_toc):
+                    if f + 1 <= item[2] <= t + 1:
+                        xref = self.outlineXref(i)
+                        self._remove_toc_item(xref)
+
                 self._remove_links_to(f, t)
 
                 for i in range(t, f - 1, -1):  # delete pages, last to first
                     self._deletePage(i)
 
-                self.setToC(new_toc)
                 self._reset_page_refs()
 
 
@@ -3114,11 +3244,12 @@ struct Page {
         FITZEXCEPTION(_get_text_page, !result)
         %pythonappend _get_text_page %{val.thisown = True%}
         struct TextPage *
-        _get_text_page(int flags=0)
+        _get_text_page(PyObject *clip, int flags=0)
         {
             fz_stext_page *textpage=NULL;
             fz_try(gctx) {
-                textpage = JM_new_stext_page_from_page(gctx, (fz_page *) $self, flags);
+                fz_rect rect = JM_rect_from_py(clip);
+                textpage = JM_new_stext_page_from_page(gctx, (fz_page *) $self, rect, flags);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -3126,13 +3257,15 @@ struct Page {
             return (struct TextPage *) textpage;
         }
         %pythoncode %{
-        def getTextPage(self, flags=0):
+        def getTextPage(self, clip=None, flags=0):
             CheckParent(self)
             old_rotation = self.rotation
             if old_rotation != 0:
                 self.setRotation(0)
             try:
-                textpage = self._get_text_page(flags=flags)
+                if clip is None:
+                    clip = self.rect
+                textpage = self._get_text_page(clip, flags=flags)
             finally:
                 if old_rotation != 0:
                     self.setRotation(old_rotation)
@@ -3519,7 +3652,6 @@ struct Page {
         // page: add a text marker annotation
         //---------------------------------------------------------------------
         FITZEXCEPTION(_add_text_marker, !result)
-
         %pythonprepend _add_text_marker %{
         CheckParent(self)
         if not self.parent.isPDF:
@@ -4087,8 +4219,8 @@ struct Page {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             int success = 0;
             pdf_redact_options opts;
-            opts.no_black_boxes = 1;  // no black boxes
-            opts.keep_images = 0;  // do not keep images
+            opts.black_boxes = 0;  // no black boxes
+            opts.image_method = PDF_REDACT_IMAGE_REMOVE;  // no kept images
             fz_try(gctx) {
                 ASSERT_PDF(page);
                 success = pdf_redact_page(gctx, page->doc, page, &opts);
@@ -4346,7 +4478,7 @@ except:
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             if (!page)
                 return JM_py_from_rect(fz_bound_page(gctx, (fz_page *) $self));
-            return JM_py_from_rect(JM_mediabox(gctx, page));
+            return JM_py_from_rect(JM_mediabox(gctx, page->obj));
         }
 
 
@@ -4361,7 +4493,7 @@ except:
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             if (!page)
                 return JM_py_from_rect(fz_bound_page(gctx, (fz_page *) $self));
-            return JM_py_from_rect(JM_cropbox(gctx, page));
+            return JM_py_from_rect(JM_cropbox(gctx, page->obj));
         }
 
 
@@ -5378,7 +5510,7 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
                 type = pdf_dict_get(gctx, ref, PDF_NAME(Subtype));
                 if (!pdf_name_eq(gctx, type, PDF_NAME(Image)))
-                    THROWMSG("xref not an image");
+                    THROWMSG("xref is no image");
                 img = pdf_load_image(gctx, pdf, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -5808,6 +5940,16 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         //----------------------------------------------------------------------
         // Set Pixmap resolution
         //----------------------------------------------------------------------
+        %pythonprepend setOrigin
+        %{"""Set top-left coordinates."""%}
+        PyObject *setOrigin(int x, int y)
+        {
+            fz_pixmap *pm = (fz_pixmap *) $self;
+            pm->x = x;
+            pm->y = y;
+            Py_RETURN_NONE;
+        }
+
         %pythonprepend setResolution
 %{"""Set resolution in both dimensions.
 
@@ -6566,11 +6708,11 @@ struct Annot
                 return_none;
 
             PyObject *values = PyDict_New();
+            pdf_obj *obj = NULL;
             const char *text = NULL;
             fz_try(gctx) {
-                pdf_obj *obj = pdf_dict_gets(gctx, annot->obj, "RO");
-                if (obj) {
-                    THROWMSG("unsupported redaction key '/RO'.");
+                if (pdf_dict_gets(gctx, annot->obj, "RO")) {
+                    JM_Warning("Ignoring redaction key '/RO'.");
                 }
                 obj = pdf_dict_gets(gctx, annot->obj, "OverlayText");
                 if (obj) {
@@ -8135,17 +8277,18 @@ struct TextPage {
             fz_buffer *res = NULL;
             fz_var(res);
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
+            fz_rect tp_rect = this_tpage->mediabox;
 
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
                 for (block = this_tpage->first_block; block; block = block->next) {
-                    fz_rect blockrect = block->bbox;
+                    fz_rect blockrect = fz_empty_rect;
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         fz_clear_buffer(gctx, res);  // set text buffer to empty
                         int line_n = 0;
                         float last_y0 = 0.0;
                         for (line = block->u.t.first_line; line; line = line->next) {
-                            fz_rect linerect = line->bbox;
+                            fz_rect linerect = fz_empty_rect;
                             // append line no. 2 with new-line
                             if (line_n > 0) {
                                 if (linerect.y0 != last_y0)
@@ -8156,28 +8299,34 @@ struct TextPage {
                             last_y0 = linerect.y0;
                             line_n++;
                             for (ch = line->first_char; ch; ch = ch->next) {
+                                fz_rect cbbox = JM_char_bbox(ch);
+                                if (fz_is_empty_rect(fz_intersect_rect(tp_rect, cbbox))) {
+                                    continue;
+                                }
                                 JM_append_rune(gctx, res, ch->c);
-                                linerect = fz_union_rect(linerect, JM_char_bbox(line, ch));
+                                linerect = fz_union_rect(linerect, JM_char_bbox(ch));
                             }
                             blockrect = fz_union_rect(blockrect, linerect);
                         }
                         text = JM_EscapeStrFromBuffer(gctx, res);
-                    } else {
+                    } else if (fz_contains_rect(tp_rect, block->bbox)) {
                         fz_image *img = block->u.i.image;
                         fz_colorspace *cs = img->colorspace;
                         text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
                         blockrect = fz_union_rect(blockrect, block->bbox);
                     }
-                    litem = PyTuple_New(7);
-                    PyTuple_SET_ITEM(litem, 0, Py_BuildValue("f", blockrect.x0));
-                    PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
-                    PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
-                    PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
-                    PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
-                    PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
-                    PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
-                    LIST_APPEND_DROP(lines, litem);
-                    Py_DECREF(text);
+                    if (!fz_is_empty_rect(blockrect)) {
+                        litem = PyTuple_New(7);
+                        PyTuple_SET_ITEM(litem, 0, Py_BuildValue("f", blockrect.x0));
+                        PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
+                        PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
+                        PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
+                        PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
+                        PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
+                        PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
+                        LIST_APPEND_DROP(lines, litem);
+                    }
+                    Py_CLEAR(text);
                     block_n++;
                 }
             }
@@ -8209,6 +8358,7 @@ struct TextPage {
             int block_n = 0, line_n, word_n;
             fz_rect wbbox = {0,0,0,0};  // word bbox
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
+            fz_rect tp_rect = this_tpage->mediabox;
 
             fz_try(gctx) {
                 buff = fz_new_buffer(gctx, 64);
@@ -8223,6 +8373,11 @@ struct TextPage {
                         fz_clear_buffer(gctx, buff);      // reset word buffer
                         buflen = 0;                       // reset char counter
                         for (ch = line->first_char; ch; ch = ch->next) {
+                            fz_rect cbbox = JM_char_bbox(ch);
+                            if (fz_is_empty_rect(fz_intersect_rect(tp_rect, cbbox))) {
+                                continue;
+                            }
+
                             if (ch->c == 32 && buflen == 0)
                                 continue;                 // skip spaces at line start
                             if (ch->c == 32) {
@@ -8236,7 +8391,7 @@ struct TextPage {
                             JM_append_rune(gctx, buff, ch->c);
                             buflen++;
                             // enlarge word bbox
-                            wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));
+                            wbbox = fz_union_rect(wbbox, JM_char_bbox(ch));
                         }
                         if (buflen) {
                             word_n = JM_append_word(gctx, lines, buff, &wbbox,
@@ -8315,6 +8470,47 @@ struct TextPage {
             }
             return text;
         }
+
+        //---------------------------------------------------------------------
+        // method extractRect()
+        //---------------------------------------------------------------------
+        PyObject *extractRect(PyObject *rect)
+        {
+            fz_stext_page *this_tpage = (fz_stext_page *) $self;
+            fz_rect bbox = JM_rect_from_py(rect);
+            if (fz_is_infinite_rect(bbox)) {
+                return PyUnicode_FromString("");
+            }
+            char *found = fz_copy_rectangle(gctx, this_tpage, bbox, 0);
+            PyObject *rc = NULL;
+            if (found) {
+                rc = PyUnicode_FromString(found);
+                JM_Free(found);
+            } else {
+                rc = PyUnicode_FromString("");
+            }
+            return rc;
+        }
+
+        //---------------------------------------------------------------------
+        // method extractSelection()
+        //---------------------------------------------------------------------
+        PyObject *extractSelection(PyObject *pointa, PyObject *pointb)
+        {
+            fz_stext_page *this_tpage = (fz_stext_page *) $self;
+            fz_point a = JM_point_from_py(pointa);
+            fz_point b = JM_point_from_py(pointb);
+            char *found = fz_copy_selection(gctx, this_tpage, a, b, 0);
+            PyObject *rc = NULL;
+            if (found) {
+                rc = PyUnicode_FromString(found);
+                JM_Free(found);
+            } else {
+                rc = PyUnicode_FromString("");
+            }
+            return rc;
+        }
+
         %pythoncode %{
             def extractText(self):
                 """Return simple, bare text on the page."""
@@ -8461,12 +8657,12 @@ struct TextWriter
             self.used_fonts.add(font)
         %}
         PyObject *
-        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int wmode=0, int bidi_level=0, int markup_dir=0)
+        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL)
         {
             fz_text_language lang = fz_text_language_from_string(language);
-            //fz_bidi_direction markup_dir = 0;
             fz_point p = JM_point_from_py(pos);
             fz_matrix trm = fz_make_matrix(fontsize, 0, 0, fontsize, p.x, p.y);
+            int bidi_level = 0, markup_dir = 0, wmode = 0;
             fz_try(gctx) {
                 trm = fz_show_string(gctx, (fz_text *) $self, (fz_font *) font, trm, text, wmode, bidi_level, markup_dir, lang);
             }
@@ -8475,6 +8671,18 @@ struct TextWriter
             }
             return JM_py_from_matrix(trm);
         }
+
+        %pythoncode %{
+        def appendv(self, pos, text, font=None, fontsize=11,
+            language=None):
+            lheight = fontsize * 1.2
+            for c in text:
+                self.append(pos, c, font=font, fontsize=fontsize,
+                    language=language)
+                pos.y += lheight
+            return self.textRect, self.lastPoint
+        %}
+
 
         %pythoncode %{@property%}
         %pythonappend _bbox%{val = Rect(val)%}
@@ -8631,14 +8839,13 @@ struct Font
         FITZEXCEPTION(Font, !result)
         %pythonprepend Font %{
         if fontname:
-            if "/" in fontname or "\\" in fontname:
-                print("Warning: did you mean fontfile?")
-            try:
-                ordering = ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s").index(fontname.lower()) % 4
-            except ValueError:
-                ordering = -1
+            if "/" in fontname or "\\" in fontname or "." in fontname:
+                print("Warning: did you mean a fontfile?")
 
-            if fontname.lower() in fitz_fontdescriptors.keys():
+            if fontname.lower() in ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s", "cjk"):
+                ordering = 0
+
+            elif fontname.lower() in fitz_fontdescriptors.keys():
                 import pymupdf_fonts  # optional fonts
                 fontbuffer = pymupdf_fonts.myfont(fontname)  # make a copy
                 fontname = None  # ensure using fontbuffer only
@@ -8699,7 +8906,7 @@ struct Font
         %pythonprepend glyph_bbox
         %{"""Return the glyph bbox of a unicode."""%}
         %pythonappend glyph_bbox %{val = Rect(val)%}
-        PyObject *glyph_bbox(int chr, char *language=NULL, int script=0, int wmode=0)
+        PyObject *glyph_bbox(int chr, char *language=NULL, int script=0)
         {
             fz_font *font;
             fz_text_language lang = fz_text_language_from_string(language);

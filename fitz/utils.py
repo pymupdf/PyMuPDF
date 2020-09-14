@@ -9,7 +9,7 @@ from fitz import *
 
 
 """
-This is a collection of functions to extend PyMuPDF.
+This is a collection of functions to extend PyMupdf.
 """
 
 
@@ -23,8 +23,8 @@ def writeText(
     keep_proportion=True,
     rotate=0,
 ):
-    """Write the text of one or more TextWriter objects.
-
+    """Write the text of one or TextWriter objects.
+    
     Args:
         rect: target rectangle. If None, the union of the text writers is used.
         writers: one or more TextWriter objects.
@@ -33,7 +33,7 @@ def writeText(
         rotate: arbitrary rotation angle.
     """
     if not writers:
-        raise ValueError("specify at least one TextWriter")
+        raise ValueError("need at least one TextWriter")
     if type(writers) is TextWriter:
         if rotate == 0 and rect is None:
             writers.writeText(page, opacity=opacity, color=color, overlay=overlay)
@@ -135,7 +135,7 @@ def showPDFpage(
 
     while pno < 0:  # support negative page numbers
         pno += len(src)
-    src_page = src[pno]  # load source page
+    src_page = src[pno]  # load ource page
     if len(src_page._getContents()) == 0:
         raise ValueError("nothing to show - source page empty")
 
@@ -286,7 +286,7 @@ def insertImage(
     if rotate not in (0, 90, 180, 270):
         raise ValueError("bad rotate value")
 
-    r = rect
+    r = Rect(rect)
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
 
@@ -353,7 +353,7 @@ def insertImage(
     )
 
 
-def searchFor(page, text, hit_max=16, quads=False, flags=None):
+def searchFor(page, text, hit_max=16, quads=False, clip=None, flags=None):
     """ Search for a string on a page.
 
     Args:
@@ -366,13 +366,13 @@ def searchFor(page, text, hit_max=16, quads=False, flags=None):
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(flags)  # create TextPage
+    tp = page.getTextPage(clip, flags)  # create TextPage
     rlist = tp.search(text, hit_max=hit_max, quads=quads)
     tp = None
     return rlist
 
 
-def searchPageFor(doc, pno, text, hit_max=16, quads=False, flags=None):
+def searchPageFor(doc, pno, text, hit_max=16, quads=False, clip=None, flags=None):
     """ Search for a string on a page.
 
     Args:
@@ -384,10 +384,12 @@ def searchPageFor(doc, pno, text, hit_max=16, quads=False, flags=None):
         a list of rectangles or quads, each containing an occurrence.
     """
 
-    return doc[pno].searchFor(text, hit_max=hit_max, quads=quads, flags=flags)
+    return doc[pno].searchFor(
+        text, hit_max=hit_max, quads=quads, clip=clip, flags=flags
+    )
 
 
-def getTextBlocks(page, flags=None):
+def getTextBlocks(page, clip=None, flags=None):
     """Return the text blocks on a page.
 
     Notes:
@@ -401,14 +403,14 @@ def getTextBlocks(page, flags=None):
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(flags)
+    tp = page.getTextPage(clip, flags)
     l = []
     tp.extractBLOCKS(l)
     del tp
     return l
 
 
-def getTextWords(page, flags=None):
+def getTextWords(page, clip=None, flags=None):
     """Return the text words as a list with the bbox for each word.
 
     Args:
@@ -417,32 +419,52 @@ def getTextWords(page, flags=None):
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(flags)
+    tp = page.getTextPage(clip, flags)
     l = []
     tp.extractWORDS(l)
     del tp
     return l
 
 
-def getText(page, option="text", flags=None):
+def getTextbox(page, rect, clip=None):
+    CheckParent(page)
+    flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+    tp = page.getTextPage(clip, flags)
+    rc = tp.extractRect(rect)
+    del tp
+    return rc
+
+
+def getTextSelection(page, p1, p2, clip=None):
+    CheckParent(page)
+    flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+    tp = page.getTextPage(clip, flags)
+    rc = tp.extractSelection(p1, p2)
+    del tp
+    return rc
+
+
+def getText(page, option="text", clip=None, flags=None):
     """ Extract a document page's text.
 
     This is a unifying wrapper for various methods of Page / TextPage classes.
 
     Args:
         option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
+        clip: (rect-like) restrict output to this area.
+        flags: bitfield to e.g. exclude images.
 
     Returns:
         the output of Page methods getTextWords / getTextBlocks or TextPage
         methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT,
-        extractXHTML or extractXML respectively.
+        extractXHTML or etractXML respectively.
         Default and misspelling choice is "text".
     """
     option = option.lower()
     if option == "words":
-        return getTextWords(page, flags=flags)
+        return getTextWords(page, clip=clip, flags=flags)
     if option == "blocks":
-        return getTextBlocks(page, flags=flags)
+        return getTextBlocks(page, clip=clip, flags=flags)
     CheckParent(page)
     # available output types
     formats = ("text", "html", "json", "xml", "xhtml", "dict", "rawdict")
@@ -456,7 +478,7 @@ def getText(page, option="text", flags=None):
         if images[f] == 1:
             flags |= TEXT_PRESERVE_IMAGES
 
-    tp = page.getTextPage(flags)  # TextPage with or without images
+    tp = page.getTextPage(clip, flags)  # TextPage with or without images
 
     if f == 2:
         t = tp.extractJSON()
@@ -471,7 +493,7 @@ def getText(page, option="text", flags=None):
     return t
 
 
-def getPageText(doc, pno, option="text", flags=None):
+def getPageText(doc, pno, option="text", clip=None, flags=None):
     """ Extract a document page's text by page number.
 
     Notes:
@@ -482,7 +504,7 @@ def getPageText(doc, pno, option="text", flags=None):
     Returns:
         output from page.TextPage().
     """
-    return doc[pno].getText(option, flags=flags)
+    return doc[pno].getText(option, clip=clip, flags=flags)
 
 
 def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annots=True):
@@ -585,7 +607,7 @@ def getLinks(page):
     """Create a list of all links contained in a PDF page.
 
     Notes:
-        see PyMuPDF documentation for details.
+        see PyMuPDF ducmentation for details.
     """
 
     CheckParent(page)
@@ -659,6 +681,98 @@ def getToC(doc, simple=True):
     lvl = 1
     liste = []
     return recurse(olItem, liste, lvl)
+
+
+def delTOC_item(doc, idx):
+    """Delete TOC / bookmark item by index."""
+    toc = doc.getTOC()
+    xref = doc.outlineXref(idx)
+    if xref == 0:
+        raise ValueError("bad TOC item number")
+    doc._remove_toc_item(xref)
+
+
+def setTOC_item(
+    doc,
+    idx,
+    dest_dict=None,
+    kind=None,
+    pno=None,
+    uri=None,
+    title=None,
+    to=None,
+    filename=None,
+    zoom=0,
+):
+    """Update TOC item by index.
+    
+    It allows changing the item's title and link destination.
+
+    Args:
+        idx: (int) desired index of the TOC list, as created by getTOC.
+        dest_dict: (dict) destination dictionary as created by getTOC(False).
+            Outrules all other parameters. If None, the remaining parameters
+            are used to make a dest dictionary.
+        kind: (int) kind of link (LINK_GOTO, etc.). If None, then only the
+            title will be updated. If LINK_NONE, the TOC item will be deleted.
+        pno: (int) page number (1-based like in getTOC). Required if LINK_GOTO.
+        uri: (str) the URL, required if LINK_URI.
+        title: (str) the new title. No change if None.
+        to: (point-like) destination on the target page. If omitted, (72, 36)
+            will be used as taget coordinates.
+        filename: (str) destination filename, required for LINK_GOTOR and
+            LINK_LAUNCH.
+        name: (str) a destination name for LINK_NAMED.
+        zoom: (float) a zoom factor for the target location (LINK_GOTO).
+    """
+    xref = doc.outlineXref(idx)
+    if xref == 0:
+        raise ValueError("bad TOC item number")
+    page_xref = 0
+    if type(dest_dict) is dict:
+        if dest_dict["kind"] == LINK_GOTO:
+            pno = dest_dict["page"]
+            page_xref = doc.pageXref(pno)
+            page_height = doc.pageCropBox(pno).height
+            to = dest_dict.get(to, Point(72, 36))
+            to.y = page_height - to.y
+            dest_dict["to"] = to
+        action = getDestStr(page_xref, dest_dict)
+        if not action.startswith("/A"):
+            raise ValueError("bad bookmark dest")
+        return doc._update_toc_item(xref, action=action[2:], title=title)
+
+    if kind == LINK_NONE:  # delete bookmark item
+        return doc.delTOC_item(idx)
+    if kind is None and title is None:  # treat as no-op
+        return None
+    if kind is None:  # only update title text
+        return doc._update_toc_item(xref, action=None, title=title)
+
+    if kind == LINK_GOTO:
+        if pno is None or pno not in range(1, doc.pageCount + 1):
+            raise ValueError("bad page number")
+        page_xref = doc.pageXref(pno - 1)
+        page_height = doc.pageCropBox(pno - 1).height
+        if to is None:
+            to = Point(72, page_height - 38)
+        else:
+            to = Point(to)
+            to.y = page_height - to.y
+
+    ddict = {
+        "kind": kind,
+        "to": to,
+        "uri": uri,
+        "page": pno,
+        "file": filename,
+        "zoom": zoom,
+    }
+    action = getDestStr(page_xref, ddict)
+    if action == "" or not action.startswith("/A"):
+        raise ValueError("bad bookmark dest")
+
+    return doc._update_toc_item(xref, action=action[2:], title=title)
 
 
 def getRectArea(*args):
@@ -840,21 +954,22 @@ def setToC(doc, toc, collapse=1):
         lvl = o[0]  # level
         title = getPDFstr(o[1])  # title
         pno = min(doc.pageCount - 1, max(0, o[2] - 1))  # page number
-        page = doc[pno]  # load the page
-        ictm = ~page.transformationMatrix  # get inverse transformation matrix
-        top = Point(72, 36) * ictm  # default top location
+        page_xref = doc.pageXref(pno)
+        page_height = doc.pageCropBox(pno).height
+        top = Point(72, page_height - 36)
         dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
         if o[2] < 0:
             dest_dict["kind"] = LINK_NONE
         if len(o) > 3:  # some target is specified
             if type(o[3]) in (int, float):  # convert a number to a point
-                dest_dict["to"] = Point(72, o[3]) * ictm
+                dest_dict["to"] = Point(72, page_height - o[3])
             else:  # if something else, make sure we have a dict
                 dest_dict = o[3] if type(o[3]) is dict else dest_dict
                 if "to" not in dest_dict:  # target point not in dict?
                     dest_dict["to"] = top  # put default in
                 else:  # transform target to PDF coordinates
-                    point = dest_dict["to"] * ictm
+                    point = +dest_dict["to"]
+                    point.y = page_height - point.y
                     dest_dict["to"] = point
         d = {}
         d["first"] = -1
@@ -862,7 +977,7 @@ def setToC(doc, toc, collapse=1):
         d["last"] = -1
         d["prev"] = -1
         d["next"] = -1
-        d["dest"] = getDestStr(page.xref, dest_dict)
+        d["dest"] = getDestStr(page_xref, dest_dict)
         d["top"] = dest_dict["to"]
         d["title"] = title
         d["parent"] = lvltab[lvl - 1]
@@ -3407,7 +3522,7 @@ def scrub(
 
         found_redacts = False
         for annot in page.annots():
-            if annot.type[0] == PDF_ANNOT_FILEATTACHMENT and attached_files:
+            if annot.type[0] == PDF_ANNOT_FILE_ATTACHMENT and attached_files:
                 annot.fileUpd(buffer=b"")  # set file content to empty
             if reset_responses:
                 annot.delete_responses()

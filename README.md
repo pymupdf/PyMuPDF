@@ -1,8 +1,8 @@
-# PyMuPDF 1.17.6
+# PyMuPDF 1.17.7
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: August 26, 2020
+Release date: September 15, 2020
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.17.6 of PyMuPDF**, a Python binding with support for [MuPDF 1.17.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.17.7 of PyMuPDF**, a Python binding with support for [MuPDF 1.17.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -34,8 +34,6 @@ For all supported document types (i.e. **_including images_**) you can
 
 **PDF documents** can be created, joined or split up. Pages can be inserted, deleted, re-arranged or modified in many ways (including annotations and form fields).
 
-* For PDFs, text may not only be extracted, but can also be **_inserted_** in many ways.
-    > Starting with v1.17.6, a handy script becomes available, allowing **_selective font replacement_** for existing documents, see [this](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/font-replacement) repository.
 * Images and fonts can be extracted or inserted.
     > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/image-maintenance.py) cool new GUI example script, which lets you insert, delete, replace or re-position images under your visual control.
 * Embedded files are fully supported.
@@ -61,11 +59,13 @@ Our **documentation**, written using Sphinx, is available in various formats fro
 
 # Installation
 
-For the major **Windows** and (thanks to our user **@jbarlow83**!) **Mac OSX** or **Linux** versions we offer wheels in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files). This includes Python 2.7 and version Python 3.5 through 3.8.
+For the major **Windows** and (thanks to our user **@jbarlow83**!) **Mac OSX** or **Linux** versions we provide wheels in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files). This includes Python 2.7 and versions Python 3.5 through 3.9.
+
+> Starting January 2021, wheels for Python version 2 will no longer be built. You will need to build PyMuPDF for Python 2 from sources as explained below.
 
 For other Python versions or operating systems you need to generate PyMuPDF yourself as follows. This should work for all platforms which support Python and MuPDF. In any case you need the development version of Python.
 
-To do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this. Please observe the following general steps:
+Before building PyMuPDF from sources, you must build MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this. Please observe the following general steps:
 
 * Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads/archive).
 
@@ -75,6 +75,9 @@ To do this, you must download and generate MuPDF. This process depends very much
   - fitz configuration file `_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
   - font support file `_pdf-font-add.c` copy-replace to: `mupdf/source/pdf/pdf-font-add.c`.
   - fax compression file `_encode-fax.c` copy-replace to: `mupdf/source/fitz/encode-fax.c`.
+  - CLI subtool `_murun.c` copy-replace to: `mupdf/source/tools/murun.c`.
+  - PDF page cleaning `_pdf_clean.c` copy-replace to: `mupdf/source/pdf/pdf_clean.c`.
+  - PDF page header `_pdf_page.h` copy-replace to: `mupdf/include/mupdf/pdf/page.h`.
 
   - Now MuPDF can be generated.
 
