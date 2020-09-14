@@ -8,6 +8,25 @@ Font
 
 A Font object also contains useful general information, like the font bbox, the number of defined glyphs, glyph names or the bbox of a single glyph.
 
+
+==================================== ============================================
+**Method / Attribute**               **Short Description**
+==================================== ============================================
+:meth:`~Font.glyph_advance`          Width of a character
+:meth:`~Font.glyph_bbox`             Glyph rectangle
+:meth:`~Font.glyph_name_to_unicode`  Get unicode from glyph name
+:meth:`~Font.has_glyph`              Check if a unicode is supported
+:meth:`~Font.text_length`            Compute text length under a fontsize
+:meth:`~Font.unicode_to_glyph_name`  Get glyph name of a unicode
+:meth:`~Font.valid_codepoints`       Array of supported unicodes
+:attr:`~Font.bbox`                   Font rectangle
+:attr:`~Font.buffer`                 Copy of the font's binary image
+:attr:`~Font.flags`                  Collection of font properties
+:attr:`~Font.glyph_count`            Number of supported glyphs
+:attr:`~Font.name`                   Name of font
+==================================== ============================================
+
+
 **Class API**
 
 .. class:: Font
@@ -33,24 +52,18 @@ A Font object also contains useful general information, like the font bbox, the 
       :arg bool is_italic: look for an italic font.
       :arg bool is_serif: look for a serifed font.
 
-      :returns: a MuPDF font if successful. This is the overall logic, how an appropriate font is located::
+      :returns: a MuPDF font if successful. This is the overall sequence of checks to determine an appropriate font:
 
-         if fontfile:
-            create font from it ignoring other arguments
-            if not successful -> exception
-         if fonbuffer:
-            create font from it ignoring other arguments
-            if not successful -> exception
-         if ordering >= 0:
-            load **"universal"** font ignoring other parameters
-            # this will always be successful
-         if fontname:
-            create a Base14 font, or resp. **"universal"** font, ignoring other parameters
-            # note: values "Arial", "Times", "Times Roman" are also possible
-            if not successful -> exception
-         Finally try to load a "NOTO" font using *script* and *language* parameters.
-         if not successful:
-            look for fallback font
+         =========== ============================================================
+         Argument    Action
+         =========== ============================================================
+         fontfile?   Create font from file, exception if failure.
+         fontbuffer? Create font from buffer, exception if failure.
+         ordering>=0 Create universal font, always succeeds.
+         fontname?   Create a Base-14 font, universal font, or font
+                     provided by `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. See table below.
+         =========== ============================================================
+
 
       .. note::
 
@@ -59,24 +72,24 @@ A Font object also contains useful general information, like the font bbox, the 
          * a font file will **always** be embedded in your PDF,
          * Greek and Cyrillic characters are supported without needing the *encoding* parameter.
 
-        Using *ordering >= 0*, or fontnames starting with "china", "japan" or "korea" will always create the same **"universal"** font **"Droid Sans Fallback Regular"**. This font supports **all CJK and all Latin characters**.
+        Using *ordering >= 0*, or fontnames "cjk", "china-t", "china-s", "japan" or "korea" will **always create the same "universal"** font **"Droid Sans Fallback Regular"**. This font supports **all CJK and all Latin characters**, including Greek and Cyrillic.
 
         Actually, you would rarely ever need another font than **"Droid Sans Fallback Regular"**. **Except** that this font file is relatively large and adds about 1.65 MB (compressed) to your PDF file size. If you do not need CJK support, stick with specifying "helv", "tiro" etc., and you will get away with about 35 KB compressed.
 
-        If you **know** you have a mixture of CJK and Latin text, consider just using ``Font(ordering=0)`` because this supports everything and also significantly (by a factor of two to three) speeds up execution: MuPDF will always find any character in this single font and need not check fallbacks.
+        If you **know** you have a mixture of CJK and Latin text, consider just using ``Font("cjk")`` because this supports everything and also significantly (by a factor of two to three) speeds up execution: MuPDF will always find any character in this single font and need not check fallbacks.
 
-        But if you do specify a Base-14 fontname, you will still be able to also write CJK characters! MuPDF automatically detects this situation and silently falls back to the universal font (which will then of course also be embedded in your PDF).
+        But if you do specify a Base-14 fontname, you will still be able to also write CJK characters: MuPDF detects this situation and silently falls back to the universal font (which will then of course also be embedded in your PDF).
 
-        *(New in v1.17.5)* Optionally, some new "reserved" fontnames become available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. **"Fira Mono"** is a nice mono-spaced sans font set and **FiraGO** is another non-serifed "universal" font, set which supports all European languages (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- however none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- **and** it provides the style variants bold, italic, bold-italic.
+        *(New in v1.17.5)* Optionally, some new "reserved" fontname codes become available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. **"Fira Mono"** is a nice mono-spaced sans font set and **FiraGO** is another non-serifed "universal" font, set which supports all Latin (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- but none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- **and** it provides the weight bold, italic, bold-italic -- which the universal font doesn't.
 
-        **"Space Mono"** is another nice and small fixed-width font from Google Fonts, which supports Latin Extended characters and comes with all 4 important font weights.
+        **"Space Mono"** is another nice and small mono-spaced font from Google Fonts, which supports Latin Extended characters and comes with all 4 important weights.
 
-        The following table maps a fontname to the corresponding font:
+        The following table maps a fontname code to the corresponding font:
 
             =========== =========================== ======= =============================
-            Fontname    Font                        New in  Comment
+            Code        Fontname                    New in  Comment
             =========== =========================== ======= =============================
-            figo        FiraGO Regular              v1.0.0
+            figo        FiraGO Regular              v1.0.0  narrower than Helvetica
             figbo       FiraGO Bold                 v1.0.0
             figit       FiraGO Italic               v1.0.0
             figbi       FiraGO Bold Italic          v1.0.0
@@ -88,20 +101,24 @@ A Font object also contains useful general information, like the font bbox, the 
             spacembi    Space Mono Bold-Italic      v1.0.1
             math        Noto Sans Math Regular      v1.0.2  math symbols
             music       Noto Music Regular          v1.0.2  musical symbols
-            symbol1     Noto Sans Symbols Regular   v1.0.2  replacemt for "symb"
+            symbol1     Noto Sans Symbols Regular   v1.0.2  replacement for "symb"
             symbol2     Noto Sans Symbols2 Regular  v1.0.2  extended symbol set
+            notos       Noto Sans Regular           v1.0.3  alternative to Helvetica
+            notosit     Noto Sans Italic            v1.0.3
+            notosbo     Noto Sans Bold              v1.0.3
+            notosbi     Noto Sans BoldItalic        v1.0.3
             =========== =========================== ======= =============================
 
 
    .. method:: has_glyph(chr, language=None, script=0, fallback=False)
 
-      Check whether the unicode *chr* exists in the font or some fallback. May be used to check whether any "TOFU" symbols will appear on output.
+      Check whether the unicode *chr* exists in the font or some fallback font. May be used to check whether any "TOFU" symbols will appear on output.
 
       :arg int chr: the unicode of the character (i.e. *ord()*).
       :arg str language: the language -- currently unused.
       :arg int script: the UCDN script number.
       :arg bool fallback: *(new in v1.17.5)* perform an extended search in fallback fonts or restrict to current font (default).
-      :returns: *True* or *False*.
+      :returns: *(changed in 1.17.7)* the glyph number (which signifies *True*) or zero (*False*).
 
    .. method:: valid_codepoints()
 
@@ -109,7 +126,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       Return an array of unicodes supported by this font.
 
-      :returns: an *array.array* [#f2]_ of length :attr:`Font.glyph_count` (or less). I.e. *chr()* of every item in this array will be found in the font without using fallbacks. This is an example display of the supported glyphs:
+      :returns: an *array.array* [#f2]_ of length :attr:`Font.glyph_count` (or less). I.e. *chr()* of every item in this array will be found in the font without using fallback fonts. This is an example display of the supported glyphs:
 
          >>> import fitz
          >>> font = fitz.Font("math")
@@ -137,14 +154,16 @@ A Font object also contains useful general information, like the font bbox, the 
          221E ∞ (infinity)
          ...
 
+      .. note:: This method only returns meaningful data for fonts having a CMAP (character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array will have length 1 and contain zero only.
 
    .. method:: glyph_advance(chr, language=None, script=0, wmode=0)
 
       Calculate the "width" of the character's glyph (visual representation).
 
-      :arg int chr: the unicode number of the character. Use ``ord(c)``, not the character itself. Again, this should normally work even if a character is not supported by that font, because fallback fonts will be checked where necessary.
+      :arg int chr: the unicode number of the character. Use *ord()*, not the character itself. Again, this should normally work even if a character is not supported by that font, because fallback fonts will be checked where necessary.
+      :arg int wmode: write mode, 0 = horizontal, 1 = vertical.
 
-      The other parameters are not in use currently. This especially means that only horizontal text writing is supported.
+      The other parameters are not in use currently.
 
       :returns: a float representing the glyph's width relative to **fontsize 1**.
 
@@ -160,11 +179,20 @@ A Font object also contains useful general information, like the font bbox, the 
          >>> font.has_glyph(font.glyph_name_to_unicode("infinity"))
          True
 
-   .. method:: unicode_to_glyph_name(chr, language=None, script=0, wmode=0)
+   .. method:: glyph_bbox(chr, language=None, script=0)
+
+      The glyph rectangle relative to fontsize 1.
+
+      :arg int chr: *ord()* of the character.
+
+      :returns: a :ref:`Rect`.
+
+
+   .. method:: unicode_to_glyph_name(chr)
 
       Show the name of the character's glyph.
 
-      :arg int chr: the unicode number of the character. Use ``ord(c)``, not the character itself.
+      :arg int chr: the unicode number of the character. Use *ord()*, not the character itself.
 
       :returns: a string representing the glyph's name. E.g. ``font.glyph_name(ord("#")) = "numbersign"``. Depending on how this font was built, the string may be empty, ".notfound" or some generated name.
 
@@ -192,12 +220,16 @@ A Font object also contains useful general information, like the font bbox, the 
 
       Name of the font. May be "" or "(null)".
 
+   .. attribute:: bbox
+
+      The font bbox. This is the maximum of its glyph bboxes.
+
    .. attribute:: glyph_count
 
       The number of glyphs defined in the font.
 
 .. rubric:: Footnotes
 
-.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if encounters issues.
+.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues.
 
-.. [#f2] Builtin module *array* has been chosen for its speed and its compact representation of values with an identical type.
+.. [#f2] The built-in module *array* has been chosen for its speed and its compact representation of values.

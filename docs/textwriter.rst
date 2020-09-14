@@ -4,25 +4,49 @@
 TextWriter
 ================
 
-*(New in v1.16.18)* This class represents a MuPDF *text* object. It can be thought of as a collection of text *"spans"*. Each span has its own starting position, font and font size. It is an elegant alternative for writing text to PDF pages, when compared with methods :meth:`Page.insertText` and friends:
+*(New in v1.16.18)*
 
-* **Improved text positioning:** Choose any point where insertion of a text span should start. Storing a text span returns the coordinates of the *last character* of the span.
-* **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch between font and font characteristics when composing a larger text.
-* **Automatic fallback fonts:** If a character is not represented by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs"). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
-* **Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated support of Cyrillic and Greek characters **without specifying encoding.** If your text is a mixture of Latin, Greek and Cyrillic, it will be shown correctly if you just use e.g. font "Helvetica".
+This class represents a MuPDF *text* object. The basic idea is to **decouple text preparation and text output** to PDF pages.
+
+A text writer stores any number of text pieces ("spans") together with their positions and individual font information. The output of the text content may happen repeatedly to any PDF page with a compatible page size.
+
+A text writer is an elegant alternative to methods :meth:`Page.insertText` and friends:
+
+* **Improved text positioning:** Choose any point where insertion of text should start. Storing text returns the "cursor coordinates" after the *last character* of the span.
+* **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch when composing a larger text.
+* **Automatic fallback fonts:** If a character is not supported by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs"). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
+* **Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated support of Cyrillic and Greek characters **without specifying encoding.** Your text may be a mixture of Latin, Greek and Cyrillic.
 * **Transparency support:** Parameter *opacity* is supported. This offers a handy way to create watermark-style text.
-* **Justified text:** Supported for any font -- not just simple fonts as in :meth:`Page.insertText`.
-* **Reusability:** A TextWriter object exists independent from any page. It can be written multiple times, either to the same or to other pages, in the same or in different PDFs, choosing different colors or transparency.
+* **Justified text:** Supported for any font -- not just simple fonts as in :meth:`Page.insertTextbox`.
+* **Reusability:** A TextWriter object exists independent from PDF pages. It can be written multiple times, either to the same or to other pages, in the same or in different PDFs, choosing different colors or transparency.
 
 Using this object entails three steps:
 
-1. When **created**, a TextWriter requires a fixed **page rectangle** in relation to which it calculates text span positions. Text can be written to a page if and only if its size equals that of the TextWriter.
-2. Store text in the TextWriter using methods :meth:`TextWriter.append` and :meth:`TextWriter.fillTextbox` as often as desired.
-3. Output the TextWriter object on some PDF page with a compatible size.
+1. When **created**, a TextWriter requires a fixed **page rectangle** in relation to which it calculates text positions. A text writer can write to a page with the same size only.
+2. Store text in the TextWriter using methods :meth:`TextWriter.append`, :meth:`TextWriter.appendv` and :meth:`TextWriter.fillTextbox` as often as desired.
+3. Output the TextWriter object on some PDF page.
 
-.. note:: Starting with version 1.17.0, TextWriters **do support** text rotation via the *morph* parameter of :meth:`TextWriter.writeText`.
+.. note::
 
-There also exists :meth:`Page.writeText` which lets you combine one or more TextWriters and jointly write them to a given rectangle and with a given rotation angle -- much like :meth:`Page.showPDFpage`.
+   * Starting with version 1.17.0, TextWriters **do support** text rotation via the *morph* parameter of :meth:`TextWriter.writeText`.
+
+   * There also exists :meth:`Page.writeText` which combines one or more TextWriters and jointly writes them to a given rectangle and with a given rotation angle -- much like :meth:`Page.showPDFpage`.
+
+
+================================ ============================================
+**Method / Attribute**           **Short Description**
+================================ ============================================
+:meth:`~TextWriter.append`       Add text in horizontal write mode
+:meth:`~TextWriter.appendv`      Add text in vertical write mode
+:meth:`~TextWriter.fillTextbox`  Fill rectangle (horizontal write mode)
+:meth:`~TextWriter.writeText`    Output TextWriter to a PDF page
+:attr:`~TextWriter.color`        Text color (can be changed)
+:attr:`~TextWriter.lastPoint`    Last written character ends here
+:attr:`~TextWriter.opacity`      Text opacity (can be changed)
+:attr:`~TextWriter.rect`         Page rectangle used by this TextWriter
+:attr:`~TextWriter.textRect`     Area occupied so far
+================================ ============================================
+
 
 **Class API**
 
@@ -37,7 +61,20 @@ There also exists :meth:`Page.writeText` which lets you combine one or more Text
 
    .. method:: append(pos, text, font=None, fontsize=11, language=None)
 
-      Add new text, usually (but not necessarily) representing a text span.
+      Add some new text in horizontal, left-to-right writing.
+
+      :arg point_like pos: start position of the text, the bottom left point of the first character.
+      :arg str text: a string (Python 2: unicode is mandatory!) of arbitrary length. It will be written starting at position "pos".
+      :arg font: a :ref:`Font`. If omitted, ``fitz.Font("helv")`` will be used.
+      :arg float fontsize: the fontsize, a positive number, default 11.
+      :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
+
+      :returns: :attr:`textRect` and :attr:`lastPoint`.
+
+
+   .. method:: appendv(pos, text, font=None, fontsize=11, language=None)
+
+      Add some new text in vertical, top-to-bottom writing.
 
       :arg point_like pos: start position of the text, the bottom left point of the first character.
       :arg str text: a string (Python 2: unicode is mandatory!) of arbitrary length. It will be written starting at position "pos".
@@ -49,7 +86,7 @@ There also exists :meth:`Page.writeText` which lets you combine one or more Text
 
    .. method:: fillTextbox(rect, text, pos=None, font=None, fontsize=11, align=0, warn=True)
 
-      Fill a given rectangle with text. This is a convenience method to use as an alternative to :meth:`append`.
+      Fill a given rectangle with text in horizontal, left-to-right manner. This is a convenience method to use as an alternative to :meth:`append`.
 
       :arg rect_like rect: the area to fill. No part of the text will appear outside of this.
       :arg str,sequ text: the text. Can be specified as a (UTF-8) string or a list / tuple of strings. A string will first be converted to a list using *splitlines()*. Every list item will begin on a new line (forced line breaks).

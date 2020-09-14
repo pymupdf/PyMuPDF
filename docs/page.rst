@@ -75,6 +75,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.getPixmap`            create a page image in raster format
 :meth:`Page.getSVGimage`          create a page image in SVG format
 :meth:`Page.getText`              extract the page's text
+:meth:`Page.getTextbox`           extract text contained in a rectangle
 :meth:`Page.getTextPage`          create a TextPage for the page
 :meth:`Page.insertFont`           PDF only: insert a font for use by the page
 :meth:`Page.insertImage`          PDF only: insert an image
@@ -767,6 +768,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. index::
       pair: blocks; getText
       pair: dict; getText
+      pair: clip; getText
       pair: flags; getText
       pair: html; getText
       pair: json; getText
@@ -776,7 +778,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: xhtml; getText
       pair: xml; getText
 
-   .. method:: getText(opt="text", flags=None)
+   .. method:: getText(opt="text", clip=None, flags=None)
 
       Retrieves the content of a page in a variety of formats. This is a wrapper for :ref:`TextPage` methods by choosing the output option as follows:
 
@@ -794,23 +796,41 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          Changed in version 1.16.3 Values "words" and "blocks" are now also accepted.
 
+      :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this rectangle. If None, the full page is taken. Has **no effect** for options "html", "xhtml" and "xml".
+
       :arg int flags: *(new in version 1.16.2)* indicator bits to control whether to include images or how text should be handled with respect to white spaces and ligatures. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings.
 
       :rtype: *str, list, dict*
       :returns: The page's content as a string, list or as a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
 
-      .. note:: You can use this method as a **document conversion tool** from any supported document type (not only PDF!) to one of TEXT, HTML, XHTML or XML documents.
+      .. note::
+
+        1. You can use this method as a **document conversion tool** from any supported document type (not only PDF!) to one of TEXT, HTML, XHTML or XML documents.
+        2. The inclusion of text via the *clip* parameter is decided on a by-character level: a character becomes part of the output, if its bbox has a non-empty intersection with *clip*. Note that this is compatible with the algorithm used in redaction annotations.
+
+   .. method:: getTextbox(rect)
+
+      *(New in v1.17.7)*
+
+      Retrieves the text of contained in a rectangle.
+
+      :arg rect-like rect: rect-like.
+
+      :returns: a string with interspersed linebreaks where necessary.
+
 
    .. index::
       pair: flags; getTextPage
 
-   .. method:: getTextPage(flags=3)
+   .. method:: getTextPage(clip=None, flags=3)
 
       *(New in version 1.16.5)*
       
       Create a :ref:`TextPage` for the page. This method avoids using an intermediate :ref:`DisplayList`.
 
       :arg in flags: indicator bits controlling the content available for subsequent extraction -- see the parameter of :meth:`Page.getText`.
+
+      :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this area -- to be used by text extraction methods.
 
       :returns: :ref:`TextPage`
 
@@ -1011,11 +1031,11 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: hit_max; searchFor
       pair: quads; searchFor
 
-   .. method:: searchFor(text, hit_max=16, quads=False, flags=None)
+   .. method:: searchFor(needle, hit_max=16, quads=False, flags=None)
 
-      Searches for *text* on a page. Wrapper for :meth:`TextPage.search`.
+      Searches for *needle* on a page. Wrapper for :meth:`TextPage.search`.
 
-      :arg str text: Text to search for. Upper / lower case is ignored. The string may contain spaces.
+      :arg str needle: Text to search for. Upper / lower case is ignored. The string may contain spaces.
 
       :arg int hit_max: Maximum number of returned occurrences.
       :arg bool quads: Return :ref:`Quad` instead of :ref:`Rect` objects.
@@ -1023,13 +1043,17 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :rtype: list
 
-      :returns: A list of :ref:`Rect` \s (resp. :ref:`Quad` \s) each of which  -- **normally!** -- surrounds one occurrence of *text*. **However:** if the search string spreads across more than one line, then a separate item is recorded in the list for each part of the string per line. So, if you are looking for "search string" and the two words happen to be located on separate lines, two entries will be recorded in the list: one for "search" and one for "string".
+      :returns: A list of :ref:`Rect` or  :ref:`Quad` objects each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if the search string spreads across more than one line, then a separate item is recorded in the list for each part of the string per line. So, if ``needle = "search string"`` and the two words happen to be located on separate lines, two entries will be recorded in the list and consumed from *hit_max*: one for "search" and one for "string".
 
-        .. note:: In this way, the effect supports multi-line text marker annotations.
+      .. note:: The method supports multi-line text marker annotations: use the full returned list as parameter for creating the annotation.
 
-        .. note:: The number of returned objects will never exceed *hit_max*. Hence, if the returned list has this many items, you cannot know whether there really exist more on the page. So please make sure you provide a hit_max value which is large enough.
+      .. caution::
 
-        .. note:: Please also be aware of a trickier aspect: the search logic regards **contiguous multiple** occurrences of the search string as one: assuming your search string is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one containing "abc", and a second one containing "abcabc".
+         * The number of returned objects will **never exceed** *hit_max*. Hence, if you get this many items, you cannot know whether you missed some.
+
+         * If *needle* is a longer sentence with multiple words and *hit_max* is smaller than the word count, you may not see enough rectangles to reflect **even one** full search string.
+
+         * There also is a trickier aspect: the search logic regards **contiguous multiple occurrences** of *needle* as one: assuming *needle* is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one containing "abc", and a second one containing "abcabc".
 
 
    .. method:: setMediaBox(r)

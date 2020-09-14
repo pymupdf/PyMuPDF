@@ -31,6 +31,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.copyPage`               PDF only: copy a page reference
 :meth:`Document.deletePage`             PDF only: delete a page
 :meth:`Document.deletePageRange`        PDF only: delete a page range
+:meth:`Document.delTOC_item`            PDF only: remove a single TOC item
 :meth:`Document.embeddedFileAdd`        PDF only: add a new embedded file from buffer
 :meth:`Document.embeddedFileCount`      PDF only: number of embedded files
 :meth:`Document.embeddedFileDel`        PDF only: delete an embedded file entry
@@ -47,6 +48,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.getPageXObjectList`     PDF only: make a list of XObjects on a page
 :meth:`Document.getSigFlags`            PDF only: determine signature state
 :meth:`Document.getToC`                 create a table of contents
+:meth:`Document.getTOC`                 alias of previous
 :meth:`Document.insertPage`             PDF only: insert a new page
 :meth:`Document.insertPDF`              PDF only: insert pages from another PDF
 :meth:`Document.layout`                 re-paginate the document (if supported)
@@ -57,7 +59,10 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.need_appearances`       PDF only: get/set */NeedAppearances* property
 :meth:`Document.newPage`                PDF only: insert a new empty page
 :meth:`Document.nextLocation`           return (chapter, pno) of following page
+:meth:`Document.outlineXref`            PDF only: :data:`xref` a TOC item
+:meth:`Document.pageCropBox`            PDF only: the unrotated page rectangle
 :meth:`Document.pages`                  iterator over a page range
+:meth:`Document.pageXref`               PDF only: :data:`xref` of the page
 :meth:`Document.PDFCatalog`             PDF only: :data:`xref` of catalog (root)
 :meth:`Document.PDFTrailer`             PDF only: trailer source
 :meth:`Document.previousLocation`       return (chapter, pno) of preceeding page
@@ -68,12 +73,14 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.searchPageFor`          search for a string on a page
 :meth:`Document.select`                 PDF only: select a subset of pages
 :meth:`Document.setMetadata`            PDF only: set the metadata
+:meth:`Document.setTOC_item`            PDF only: change a single TOC item
 :meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
+:meth:`Document.setTOC`                 PDF only: alias of previous
 :meth:`Document.updateObject`           PDF only: replace object source
 :meth:`Document.updateStream`           PDF only: replace stream source
 :meth:`Document.write`                  PDF only: writes document to memory
 :meth:`Document.xrefObject`             PDF only: object source at the :data:`xref`
-:meth:`Document.xrefStream`             PDF only: decompressed stream source at :data:`xref`
+:meth:`Document.xrefStream`             PDF only: expanded stream source at :data:`xref`
 :meth:`Document.xrefStreamRaw`          PDF only: raw stream source at :data:`xref`
 :attr:`Document.chapterCount`           number of chapters
 :attr:`Document.FormFonts`              PDF only: list of global widget fonts
@@ -254,6 +261,26 @@ For details on **embedded files** refer to Appendix 3.
         .. note:: In a typical use case, a page :ref:`Pixmap` should be taken after annotations / widgets have been added or changed. To force all those changes being reflected in the page structure, this method re-instates a fresh copy while keeping the object hierarchy "document -> page -> annotation(s)" intact.
 
 
+    .. method:: pageCropBox(pno)
+
+      *(New in version 1.17.7)*
+
+      PDF only: Return the unrotated page rectangle -- **without reading the page (via :meth:`Document.loadPage`). This is meant for internal purpose requiring best possible performance.
+
+      :arg int pno: 0-based page number.
+
+      :returns: :ref:`Rect` of the page like :meth:`Page.rect`, but ignoring any rotation.
+      
+    .. method:: pageXref(pno)
+
+      *(New in version 1.17.7)*
+
+      PDF only: Return the :data:`xref` of the page -- **without reading the page (via :meth:`Document.loadPage`). This is meant for internal purpose requiring best possible performance.
+
+      :arg int pno: 0-based page number.
+
+      :returns: :data:`xref` of the page like :attr:`Page.xref`.
+      
     .. method:: pages(start=None, [stop=None, [step=None]])
 
       *(New in version 1.16.4)*
@@ -324,6 +351,8 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: getToC(simple=True)
 
+    .. method:: getTOC(simple=True)
+
       Creates a table of contents out of the document's outline chain.
 
       :arg bool simple: Indicates whether a simple or a detailed ToC is required. If *simple == False*, each entry of the list also contains a dictionary with :ref:`linkDest` details for each outline entry.
@@ -352,17 +381,17 @@ For details on **embedded files** refer to Appendix 3.
       :arg int pno: page number, 0-based, *-inf < pno < pageCount*.
 
       :rtype: list
-      :returns: a list of (non-image) XObjects. These objects typically represent pages *embedded* (not copied) from other PDFs. For example, meth:`Page.showPDFpage` will create this type of object. An item of this list has the following layout: **(xref, name, invoker, bbox)**, where
+      :returns: a list of (non-image) XObjects. These objects typically represent pages *embedded* (not copied) from other PDFs. For example, :meth:`Page.showPDFpage` will create this type of object. An item of this list has the following layout: **(xref, name, invoker, bbox)**, where
 
         * **xref** (*int*) is the XObject's :data:`xref`
         * **name** (*str*) is the symbolic name to reference the XObject
         * **invoker** (*int*) the :data:`xref` of the invoking XObject or zero if the page directly invokes it
-        * **bbox** (*tuple*) the boundary box of the XObject's location on the page **in untransformed coordinates**. To get actual, non-rotated page coordinates, multiply with the page's transformation matrix :meth:`Page.getTransformation`.
+        * **bbox** (*tuple*) the boundary box of the XObject's location on the page **in untransformed coordinates**. To get actual, non-rotated page coordinates, multiply with the page's transformation matrix :attr:`Page.transformationMatrix`.
 
 
     .. method:: getPageImageList(pno, full=False)
 
-      PDF only: Return a list of all image descriptions referenced by a page.
+      PDF only: Return a list of all images referenced by the page.
 
       :arg int pno: page number, 0-based, *-inf < pno < pageCount*.
       :arg bool full: whether to also include the invoker's :data:`xref` (which is zero if this is the page).
@@ -477,6 +506,8 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: setToC(toc, collapse=1)
 
+    .. method:: setTOC(toc, collapse=1)
+
       PDF only: Replaces the **complete current outline** tree (table of contents) with the new one provided as the argument. After successful execution, the new outline tree can be accessed as usual via method *getToC()* or via property *outline*. Like with other output-oriented methods, changes become permanent only via *save()* (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.
 
       - Step 1 deletes all existing bookmarks.
@@ -501,6 +532,45 @@ For details on **embedded files** refer to Appendix 3.
 
       :rtype: int
       :returns: the number of inserted, resp. deleted items.
+
+    .. method:: outlineXref(idx)
+
+      *(New in v1.17.7)*
+
+      PDF only: Return the :data:`xref` of the outline item. This is mainly used for internal purposes.
+
+      arg int idx: index of the item in list ``Document.getTOC`.
+
+      :returns: :data:`xref`.
+
+    .. method:: delTOC_item(idx)
+
+      *(New in v1.17.7)*
+
+      PDF only: Remove this TOC item. This is intended to be a high-speed method primarily meant for *disabling* items, which are pointing to deleted pages. Physically, the item still exists in the TOC tree, but will show an empty title and no longer point to a destination. So the overall TOC structure remains intact.
+
+      This also implies that you can reassign the item when required.
+
+      :arg int idx: the index of the item in list `Document.getTOC`.
+
+
+    .. method:: setTOC_item(idx, dest_dict=None, kind=None, pno=None, uri=None, title=None, to=None, filename=None, zoom=0)
+
+      *(New in v1.17.7)*
+
+      PDF only: Changes the TOC item identified by its index. It is possible to change the title text and the location this item is pointing to -- or to remove the item as such.
+
+      Use this method if you need specific changes for selected entries only and want to avoid replacing the complete TOC. This is beneficial especially if you are dealing with large table of contents.
+
+      :arg int idx: the index of the entry in the list created by :meth:`Document.getTOC`.
+      :arg dict dest_dict: the new destination. A dictionary like the last entry of an item in ``doc.getTOC(False)``. Using this as a template would also be the natural use of this parameter. When given, **all other parameters are ignored** -- except title.
+      :arg int kind: the link kind, values like ``fitz.LINK_GOTO``, etc. If equal to fitz.LINK_NONE, then all remaining parameter will be ignored, and the TOC item will be removed -- same as :meth:`Document.delTOC_item`. If None, then only the title is modified and the remaining parameters are ignored. All other values will lead to making a new destination dictionary using the subsequent arguments.
+      :arg int pno: the 1-based page number, i.e. a value 1 <= pno <= doc.pageCount. Required for LINK_GOTO.
+      :arg str uri: the URL text. Required for LINK_URI.
+      :arg str title: the desired new title. None if no change.
+      :arg point_like to: (optional) points to a coordinate on the arget page. Relevant for LINK_GOTO. If omitted, a point near the page's top is chosen.
+      :arg str filename: required for LINK_GOTOR and LINK_LAUNCH.
+      :arg float zoom: use this zoom factor when showing the target page.
 
 
     .. method:: can_save_incrementally()
@@ -592,8 +662,9 @@ For details on **embedded files** refer to Appendix 3.
        pair: rotate; insertPDF (Document method)
        pair: links; insertPDF (Document method)
        pair: annots; insertPDF (Document method)
+       pair: show_progress; insertPDF (Document method)
 
-    .. method:: insertPDF(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True)
+    .. method:: insertPDF(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0)
 
       PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.
 
@@ -610,6 +681,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is *True*. An **internal link is always excluded**, if its destination is not one of the copied pages.
       :arg bool annots: *(new in version 1.16.1)* choose whether annotations should be included in the copy.
+      :arg int show_progress: *(new in version 1.17.7)* specify an interval size greater zero to see progress messages on ``sys.stdout``. After each interval, a message like ``Inserted 30 of 47 pages.`` will be printed.
       
     .. note::
 
@@ -675,11 +747,9 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note::
 
-        In an effort to maintain a valid PDF structure, this method and :meth:`deletePage` will also remove the deleted pages from the table of contents.
+        *(Changed in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`deletePage` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". So the overall TOC structure is left intact.
 
-        Similarly, it will **scan all pages** of the PDF and remove any links that point to deleted pages. This action may have an extended response time for documents with a lot of pages.
-
-        The **number of deleted pages** has a very small response time effect. Therefore, whenever possible, delete page **ranges** instead of single pages.
+        Similarly, it will remove any **links on remaining pages** that point to a deleted page. This action may have an extended response time for documents with a lot of pages.
 
         Example: Delete the page range 500 to 520 from a large PDF, using different methods.
 
@@ -896,25 +966,58 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the **decompressed** contents of the :data:`xref` stream object. For details please refer to :meth:`Document._getXrefStream`.
+      PDF only: Return the **decompressed** contents of the :data:`xref` stream object.
+
+      :arg int xref: :data:`xref` number.
+
+      :rtype: bytes
+      :returns: the (decompressed) stream of the object.
 
     .. method:: xrefStreamRaw(xref)
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the **unmodified** contents of the :data:`xref` stream object. Otherwise equal to :meth:`Document.xrefStream`.
+      PDF only: Return the **unmodified** (esp. **not decompressed**) contents of the :data:`xref` stream object. Otherwise equal to :meth:`Document.xrefStream`.
  
+      :rtype: bytes
+      :returns: the (original) stream of the object.
+
     .. method:: updateObject(xref, obj_str, page=None)
 
       *(New in version 1.16.8)*
       
-      PDF only: Update object at :data:`xref`. For details please refer to :meth:`Document._updateObject`.
+      PDF only: Replace object definition of :data:`xref` with the provided string. The xref may also be new, in which case this instruction completes the object definition. If a page object is also given, its links and annotations will be reloaded afterwards.
+
+      :arg int xref: :data:`xref` number.
+
+      :arg str obj_str: a string containing a valid PDF object definition.
+
+      :arg page: a page object. If provided, indicates, that annotations of this page should be refreshed (reloaded) to reflect changes incurred with links and / or annotations.
+      :type page: :ref:`Page`
+
+      :rtype: int
+      :returns: zero if successful, otherwise an exception will be raised.
+
 
     .. method:: updateStream(xref, data, new=False)
 
       *(New in version 1.16.8)*
       
-      PDF only: Repleace the stream at :data`xref`. For details please refer to :meth:`Document._updateStream`.
+      Replace the stream of an object identified by *xref*. If the object has no stream, an exception is raised unless *new=True* is used. The function automatically performs a compress operation ("deflate") where beneficial.
+
+      :arg int xref: :data:`xref` number.
+
+      :arg bytes|bytearray|BytesIO stream: the new content of the stream.
+
+         *(Changed in version 1.14.13:)* *io.BytesIO* objects are now also supported.
+
+      :arg bool new: whether to force accepting the stream, and thus **turning it into a stream object**.
+
+      This method is intended to manipulate streams containing PDF operator syntax (see pp. 985 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
+
+      If you update a contents stream, you should use save parameter *clean=True*. This ensures consistency between PDF operator source and the object structure.
+
+      Example: Let us assume that you no longer want a certain image appear on a page. This can be achieved by deleting the respective reference in its contents source(s) -- and indeed: the image will be gone after reloading the page. But the page's :data:`resources` object would still show the image as being referenced by the page. This save option will clean up any such mismatches.
 
 
     .. attribute:: outline

@@ -28,11 +28,8 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document._getTrailerString`   PDF only: return the PDF file trailer string
 :meth:`Document._getXmlMetadataXref` PDF only: return XML metadata :data:`xref` number
 :meth:`Document._getXrefLength`      PDF only: return length of :data:`xref` table
-:meth:`Document._getXrefStream`      PDF only: return content of a stream object
 :meth:`Document._getXrefString`      PDF only: return object definition "source"
 :meth:`Document._make_page_map`      PDF only: create a fast-access array of page numbers
-:meth:`Document._updateObject`       PDF only: insert or update a PDF object
-:meth:`Document._updateStream`       PDF only: replace the stream of an object
 :meth:`Document.extractFont`         PDF only: extract embedded font
 :meth:`Document.extractImage`        PDF only: extract embedded image
 :meth:`Document.getCharWidths`       PDF only: return a list of glyph widths of a font
@@ -346,7 +343,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document._getXmlMetadataXref()
 
-      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document._getXrefStream` and then work with it using some XML software.
+      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
 
       :rtype: int
       :returns: :data:`xref` of PDF file level XML metadata.
@@ -431,7 +428,7 @@ Yet others are handy, general-purpose utilities.
       :rtype: list
       :returns: a list of :data:`xref` integers.
 
-      Each page may have zero to many associated contents objects (:data:`stream` \s) which contain some operator syntax describing what appears where and how on the page (like text or images, etc. See the :ref:`AdobeManual`, chapter "Operator Summary", page 985). This function only enumerates the number(s) of such objects. To get the actual stream source, use function :meth:`Document._getXrefStream` with one of the numbers in this list. Use :meth:`Document._updateStream` to replace the content.
+      Each page may have zero to many associated contents objects (:data:`stream` \s) which contain some operator syntax describing what appears where and how on the page (like text or images, etc. See the :ref:`AdobeManual`, chapter "Operator Summary", page 985). This function only enumerates the number(s) of such objects. To get the actual stream source, use function :meth:`Document.xrefStream` with one of the numbers in this list. Use :meth:`Document.updateStream` to replace the content.
 
 -----
 
@@ -442,8 +439,8 @@ Yet others are handy, general-purpose utilities.
          >>> c = b""
          >>> xreflist = page._getContents()
          >>> for xref in xreflist:
-                 c += doc._getXrefStream(xref)
-         >>> doc._updateStream(xreflist[0], c)
+                 c += doc.xrefStream(xref)
+         >>> doc.updateStream(xreflist[0], c)
          >>> page._setContents(xreflist[0])
          >>> # doc.save(..., garbage=1) will remove the unused objects
 
@@ -504,7 +501,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document._getXrefString(xref, compressed=False)
 
-      Return the string ("source code") representing an arbitrary object. For :data:`stream` objects, only the non-stream part is returned. To get the stream data, use :meth:`_getXrefStream`.
+      Return the string ("source code") representing an arbitrary object. For :data:`stream` objects, only the non-stream part is returned. To get the stream data, use :meth:`Document.xrefStream`.
 
       :arg int xref: :data:`xref` number.
       :arg bool compressed: *(new in version 1.14.14)* whether to generate a compressed output or one with nice indentations to ease reading or parsing (default).
@@ -570,59 +567,12 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._updateObject(xref, obj_str, page=None)
-
-      Associate the object identified by string *obj_str* with *xref*, which must already exist. If *xref* pointed to an existing object, this will be replaced with the new object. If a page object is specified, links and other annotations of this page will be reloaded after the object has been updated.
-
-      :arg int xref: :data:`xref` number.
-
-      :arg str obj_str: a string containing a valid PDF object definition.
-
-      :arg page: a page object. If provided, indicates, that annotations of this page should be refreshed (reloaded) to reflect changes incurred with links and / or annotations.
-      :type page: :ref:`Page`
-
-      :rtype: int
-      :returns: zero if successful, otherwise an exception will be raised.
-
------
-
    .. method:: Document._getXrefLength()
 
       Return length of :data:`xref` table.
 
       :rtype: int
       :returns: the number of entries in the :data:`xref` table.
-
------
-
-   .. method:: Document._getXrefStream(xref)
-
-      Return the decompressed stream of the object referenced by *xref*. For non-stream objects *None* is returned.
-
-      :arg int xref: :data:`xref` number.
-
-      :rtype: bytes
-      :returns: the (decompressed) stream of the object.
-
------
-
-   .. method:: Document._updateStream(xref, stream, new=False)
-
-      Replace the stream of an object identified by *xref*. If the object has no stream, an exception is raised unless *new=True* is used. The function automatically performs a compress operation ("deflate") where beneficial.
-
-      :arg int xref: :data:`xref` number.
-
-      :arg bytes|bytearray|BytesIO stream: the new content of the stream.
-
-         *(Changed in version 1.14.13:)* *io.BytesIO* objects are now also supported.
-
-      :arg bool new: whether to force accepting the stream, and thus **turning it into a stream object**.
-
-      This method is intended to manipulate streams containing PDF operator syntax (see pp. 985 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
-
-      If you update a contents stream, you should use save parameter *clean=True*. This ensures consistency between PDF operator source and the object structure.
-
-      Example: Let us assume that you no longer want a certain image appear on a page. This can be achieved by deleting the respective reference in its contents source(s) -- and indeed: the image will be gone after reloading the page. But the page's :data:`resources` object would still show the image as being referenced by the page. This save option will clean up any such mismatches.
 
 -----
 
@@ -662,7 +612,7 @@ Yet others are handy, general-purpose utilities.
       102
       >>> imgout.close()
 
-      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extractImage, **(1)** does not only deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
+      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extractImage, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
 
          * xref 1268 is a PNG -- Comparable execution time and identical output::
 
