@@ -34,7 +34,7 @@ For all supported document types (i.e. **_including images_**) you can
 
 For **PDF documents,** there exists a plethorea of additional features: they can be created, joined or split up. Pages can be inserted, deleted, re-arranged or modified in many ways (including annotations and form fields).
 
-* **_NEW:_** Drawings on a PDF page can be extracted. You can now find out, where lines, rectangles or curves have been drawn on the page. This may help detecting the location of tables and text positions. The feature is still in development and can be imported as a separate module from [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-graphics) folder. You will also find detailed documentation there.
+* **_NEW:_** Drawings on a PDF page can be extracted. You can now find out, where lines, rectangles or curves have been drawn on the page. This may help detecting the location of tables and text positions. The feature is still in development and can be imported as a separate module from [this](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/extract-graphics) folder. You will also find detailed documentation there.
 * Images and fonts can be extracted or inserted.
     > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/image-maintenance.py) cool new GUI example script, which lets you insert, delete, replace or re-position images under your visual control.
 * Embedded files are fully supported.
