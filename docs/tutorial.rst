@@ -201,7 +201,7 @@ Again, you also can get along **without using PIL** if you use the pixmap *strid
     from PyQt<x>.QtGui import QImage
 
     # set the correct QImage format depending on alpha
-    fmt = QImage.Format_RGBA8888 if pix.alpha else QImage.Format_RGB888
+    fmt = QImage.Format_RGBA8888_Premultiplied if pix.alpha else QImage.Format_RGB888
     qtimg = QImage(pix.samples, pix.width, pix.height, pix.stride, fmt)
 
 
