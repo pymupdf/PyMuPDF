@@ -64,7 +64,7 @@ For Windows, Linux and Mac OSX platforms, there are wheels in the [download](htt
 > Wheels for **Python versions 2.7 and 3.5** will only be produced until the end of this year 2020. After that, you will need to build PyMuPDF from sources as explained below.
 > Starting immediately, we **_defer uploading_** Python 2.7 / 3.5 wheels. Please submit an issue to request one of them.
 
-If your plaform is not supported with one of our wheels, you need to generate PyMuPDF yourself as follows. This requires the development version of Python.
+If your platform is not supported with one of our wheels, you need to generate PyMuPDF yourself as follows. This requires the development version of Python.
 
 Before you can do that, you must first build MuPDF. For most platforms, the MuPDF sources contain prepared procedures for achieving this. Please observe the following general steps:
 
