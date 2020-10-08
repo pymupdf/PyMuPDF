@@ -136,6 +136,8 @@ Block Dictionaries
 ~~~~~~~~~~~~~~~~~~
 Blocks come in two different formats: **image blocks** and **text blocks**.
 
+*(Changed in v1.18.0)* -- new dict key *number*, the block number.
+
 **Image block:**
 
 =============== ===============================================================
@@ -143,6 +145,7 @@ Blocks come in two different formats: **image blocks** and **text blocks**.
 =============== ===============================================================
 type            1 = image *(int)*
 bbox            block / image rectangle, formatted as *tuple(fitz.Rect)*
+number          block number *(int)* (0-based)
 ext             image type *(str)*, as file extension, see below
 width           original image width *(int)*
 height          original image height *(int)*
@@ -176,6 +179,7 @@ Possible values of key "ext" are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "jxr" 
 =============== ====================================================
 type            0 = text *(int)*
 bbox            block rectangle, formatted as *tuple(fitz.Rect)*
+number          block number *(int)* (0-based)
 lines           *list* of text line dictionaries
 =============== ====================================================
 

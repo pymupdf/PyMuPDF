@@ -122,7 +122,7 @@ class DocForm(QtWidgets.QWidget):
                 self.curPageNum = num
                 self.label.setText("{}/{}".format(self.curPageNum + 1, self.pageCount))
                 fmt = (
-                    QtGui.QImage.Format_RGBA8888_Premultiplied
+                    QtGui.QImage.Format_RGBA8888
                     if alpha
                     else QtGui.QImage.Format_RGB888
                 )

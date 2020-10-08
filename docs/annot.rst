@@ -21,6 +21,8 @@ There is a parent-child relationship between an annotation and its page. If the 
 :meth:`Annot.fileInfo`          return attached file information
 :meth:`Annot.fileUpd`           set attached file new content
 :meth:`Annot.getPixmap`         image of the annotation as a pixmap
+:meth:`Annot.getText`           extract annotation text
+:meth:`Annot.getTextbox`        extract annotation text
 :meth:`Annot.setBorder`         change the border
 :meth:`Annot.setColors`         change the colors
 :meth:`Annot.setFlags`          change the flags
@@ -68,6 +70,50 @@ There is a parent-child relationship between an annotation and its page. If the 
       :rtype: :ref:`Pixmap`
 
       .. note:: If the annotation has just been created or modified, you should reload the page first via *page = doc.reload_page(page)*.
+
+
+   .. index::
+      pair: blocks; Annot.getText
+      pair: dict; Annot.getText
+      pair: clip; Annot.getText
+      pair: flags; Annot.getText
+      pair: html; Annot.getText
+      pair: json; Annot.getText
+      pair: rawdict; Annot.getText
+      pair: text; Annot.getText
+      pair: words; Annot.getText
+      pair: xhtml; Annot.getText
+      pair: xml; Annot.getText
+
+   .. method:: getText(opt="text", clip=None, flags=None)
+
+      *(New in 1.18.0)*
+
+      Retrieves the content of the annotation in a variety of formats -- much like the same method for :ref:`Page`.. This currently only delivers relevant data for annotation types 'FreeText' and 'Stamp'. Other type will return an empty string (or equivalent objects).
+
+      :arg str opt: the desired format - one of the following values. Please note that this method works exactly like the same-named method of :ref:`Page`.
+
+         * "text" -- :meth:`TextPage.extractTEXT`, default
+         * "blocks" -- :meth:`TextPage.extractBLOCKS`
+         * "words" -- :meth:`TextPage.extractWORDS`
+         * "html" -- :meth:`TextPage.extractHTML`
+         * "xhtml" -- :meth:`TextPage.extractXHTML`
+         * "xml" -- :meth:`TextPage.extractXML`
+         * "dict" -- :meth:`TextPage.extractDICT`
+         * "json" -- :meth:`TextPage.extractJSON`
+         * "rawdict" -- :meth:`TextPage.extractRAWDICT`
+
+      :arg rect-like clip: restrict the extraction to this area. Should hardly ever be required, defaults to :attr:`Annot.rect`.
+      :arg int flags: control the amount of data returned. Defaults to simple text extraction.
+
+   .. method:: getTextbox(rect)
+
+      *(New in 1.18.0)*
+
+      Return the annotation text. Mostly (except line breaks) equal to :meth:`Annot.getText` with the "text" option.
+
+      :arg rect-like rect: the area to consider, defaults to :attr:`Annot.rect`.
+
 
    .. method:: setInfo(info=None, content=None, title=None, creationDate=None, modDate=None, subject=None)
 

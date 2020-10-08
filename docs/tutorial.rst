@@ -64,7 +64,7 @@ creator        creating application
 subject        subject
 ============== =================================
 
-.. note:: Apart from these standard metadata, **PDF documents** starting from PDF version 1.4 may also contain so-called *"metadata streams"*. Information in such streams is coded in XML. PyMuPDF deliberately contains no XML components, so we do not directly support access to information contained therein. But you can extract the stream as a whole, inspect or modify it using a package like `lxml <https://pypi.org/project/lxml/>`_ and then store the result back into the PDF. If you want, you can also delete these data altogether.
+.. note:: Apart from these standard metadata, **PDF documents** starting from PDF version 1.4 may also contain so-called *"metadata streams"* (see also :data:`stream`). Information in such streams is coded in XML. PyMuPDF deliberately contains no XML components, so we do not directly support access to information contained therein. But you can extract the stream as a whole, inspect or modify it using a package like `lxml <https://pypi.org/project/lxml/>`_ and then store the result back into the PDF. If you want, you can also delete these data altogether.
 
 .. note:: There are two utility scripts in the repository that `import (PDF only) <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2meta.py>`_ resp. `export <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/meta2csv.py>`_ metadata from resp. to CSV files.
 
@@ -201,7 +201,7 @@ Again, you also can get along **without using PIL** if you use the pixmap *strid
     from PyQt<x>.QtGui import QImage
 
     # set the correct QImage format depending on alpha
-    fmt = QImage.Format_RGBA8888_Premultiplied if pix.alpha else QImage.Format_RGB888
+    fmt = QImage.Format_RGBA8888 if pix.alpha else QImage.Format_RGB888
     qtimg = QImage(pix.samples, pix.width, pix.height, pix.stride, fmt)
 
 
@@ -327,6 +327,8 @@ expand=1            i           decompress images
 expand=2            f           decompress fonts
 expand=255          d           decompress all
 =================== =========== ==================================================
+
+.. note:: For an explanation of terms like *object, stream, xref* consult the :ref:`Glossary` chapter.
 
 For example, *mutool clean -ggggz file.pdf* yields excellent compression results. It corresponds to *doc.save(filename, garbage=4, deflate=1)*.
 

@@ -6,9 +6,9 @@ TextWriter
 
 *(New in v1.16.18)*
 
-This class represents a MuPDF *text* object. The basic idea is to **decouple text preparation and text output** to PDF pages.
+This class represents a MuPDF *text* object. The basic idea is to **decouple (1) text preparation, and (2) text output** to PDF pages.
 
-A text writer stores any number of text pieces ("spans") together with their positions and individual font information. The output of the text content may happen repeatedly to any PDF page with a compatible page size.
+A text writer stores any number of text pieces ("spans") together with their positions and individual font information. The output of the writer's content may happen repeatedly to any PDF page with a compatible page size.
 
 A text writer is an elegant alternative to methods :meth:`Page.insertText` and friends:
 
@@ -69,7 +69,7 @@ Using this object entails three steps:
       :arg float fontsize: the fontsize, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
 
-      :returns: :attr:`textRect` and :attr:`lastPoint`.
+      :returns: :attr:`textRect` and :attr:`lastPoint`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
 
 
    .. method:: appendv(pos, text, font=None, fontsize=11, language=None)
@@ -82,7 +82,7 @@ Using this object entails three steps:
       :arg float fontsize: the fontsize, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
 
-      :returns: :attr:`textRect` and :attr:`lastPoint`.
+      :returns: :attr:`textRect` and :attr:`lastPoint`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
 
    .. method:: fillTextbox(rect, text, pos=None, font=None, fontsize=11, align=0, warn=True)
 
@@ -96,7 +96,7 @@ Using this object entails three steps:
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
       :arg bool warn: warn on text overflow (default), or raise an exception. In any case, text not fitting will not be written.
 
-   .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order.
+   .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
 
 
    .. method:: writeText(page, opacity=None, color=None, morph=None, overlay=True)
@@ -112,10 +112,12 @@ Using this object entails three steps:
 
    .. attribute:: textRect
 
-      The :ref:`Rect` currently occupied. This value changes when more text is added.
+      :rtype: :ref:`Rect`
+      The area currently occupied.
 
    .. attribute:: lastPoint
 
+      :rtype: :ref:`Point`
       The "cursor position" -- a :ref:`Point` -- after the last written character (its bottom-right).
 
    .. attribute:: opacity
@@ -141,3 +143,4 @@ To see some demo scripts dealing with TextWriter, have a look at `this <https://
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
   4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`lastPoint` of the previously added item.
   5. You can use the *pos* argument of :meth:`TextWriter.fillTextbox` to indent the first line, so its text may continue any preceeding one in a continuous manner.
+  6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.isWritable`.

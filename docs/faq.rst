@@ -384,9 +384,8 @@ This shows how pixmaps can be used for purely graphical, non-document purposes. 
 
  # now fill target with the tiles
  for i in range(col):
-     src.x = src.width * i                # modify input's x coord
      for j in range(lin):
-         src.y = src.height * j           # modify input's y coord
+         src.setOrigin(src.width * i, src.height * j)
          tar_pix.copyPixmap(src, src.irect) # copy input to new loc
 
  tar_pix.writePNG("tar.png")
@@ -1281,6 +1280,81 @@ This is the script's outcome:
 
 .. image:: images/img-symbols.jpg
    :scale: 50
+
+------------------------------
+
+Extracting Drawings
+---------------------
+
+*(New in v1.18.0)*
+
+The drawing commands issued by a page can be extracted. Interestingly, this is possible for **all supported document types** -- not just PDF: so you can use it for XPS, EPUB and others as well.
+
+A new page method, :meth:`Page.getDrawings()` accesses draw commands and converts them into a list of Python dictionaries. Each dictionary -- called a "path" -- represents a separate drawing -- it may be simple like a single line, or a complex combination of lines and curves representing one of the shapes of the previous section.
+
+The *path* dictionary has been designed such that it can easily be used by the :ref:`Shape` class and its methods.
+
+The following is a code snippet which extracts the drawings of a page and re-draws them on a new page::
+
+    import fitz
+    doc = fitz.open("some.file")
+    page = doc[0]
+    paths = page.getDrawings()  # extract existing drawings
+    # this is a list of "paths", which can directly be drawn again using Shape
+    # -------------------------------------------------------------------------
+    #
+    # define some output page with the same dimensions
+    outpdf = fitz.open()
+    outpage = outpdf.newPage(width=page.rect.width, height=page.rect.height)
+    shape = outpage.newShape()  # make a drawing canvas for the output page
+    # --------------------------------------
+    # loop through the paths and draw them
+    # --------------------------------------
+    for path in paths:
+        # ------------------------------------
+        # draw each entry of the 'items' list
+        # ------------------------------------
+        for item in path["items"]:  # these are the draw commands
+            if item[0] == "l":  # line
+                shape.drawLine(item[1], item[2])
+            elif item[0] == "re":  # rectangle
+                shape.drawRect(item[1])
+            elif item[0] == "c":  # curve
+                shape.drawBezier(item[1], item[2], item[3], item[4])
+            else:
+                raise ValueError("unhandled drawing", item)
+        # ------------------------------------------------------
+        # all items are drawn, now apply the common properties
+        # to finish the path
+        # ------------------------------------------------------
+        shape.finish(
+            fill=path["fill"],  # fill color
+            color=path["color"],  # line color
+            dashes=path["dashes"],  # line dashing
+            even_odd=path["even_odd"],  # control color of overlaps
+            closePath=path["closePath"],  # whether to connect last and first point
+            lineJoin=path["lineJoin"],  # how line joins should look like
+            lineCap=max(path["lineCap"]),  # how line ends should look like
+            width=path["width"],  # line width
+        )
+    # all paths processed - commit the shape to its page
+    shape.commit()
+    outpdf.save("drawings-page-0.pdf")
+
+As can bee seen, there is a high congruence level with the :ref:`Shape` class. With one exception: For technical reasons ``lineCap`` is a tuple of 3 numbers here, whereas it is an integer in :ref:`Shape` (and in PDF). So we simply take the maximum value of that tuple.
+
+Here is a comparison between input and output of an example page, created by the previous script:
+
+.. image:: images/img-getdrawings.png
+   :scale: 50
+
+.. note:: The reconstruction of graphics like shown here is not perfect. The following aspects will not be reproduced as of this version:
+
+   * Transparency / opacity: while this value is contained in the 'path' dictionary, it is yet unsupported by the :ref:`Shape` class.
+   * Page definitions can be complex and include instructions for not showing / hiding certain areas to keep them invisible. Things like this are ignored by :meth:`Page.getDrawings` - it will always return all paths.
+
+.. note:: You can use the path list to make your own lists of e.g. all lines or all rectangles on the page, subselect them by criteria like color or position on the page etc.
+
 
 ------------------------------
 

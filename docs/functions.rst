@@ -54,8 +54,13 @@ Yet others are handy, general-purpose utilities.
 :meth:`PaperRect`                    return rectangle for a known paper format
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from a sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from a sRGB integer
-:meth:`make_table`                   return list of table cells for a given rectangle
+:meth:`glyph_name_to_unicode`        return unicode from a glyph name
+:meth:`unicode_to_glyph_name`        return glyph name from a unicode
+:meth:`make_table`                   split rectangle in sub-rectangles
+:meth:`adobe_glyph_names`            list of glyph names defined in **Adobe Glyph List**
+:meth:`adobe_glyph_unicodes`         list of unicodes defined in **Adobe Glyph List**
 :attr:`paperSizes`                   dictionary of pre-defined paper formats
+:attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 ==================================== ==============================================================
 
    .. method:: PaperSize(s)
@@ -101,11 +106,67 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
+   .. method:: glyph_name_to_unicode(name)
+
+      *New in v1.18.0*
+
+      Return the unicode number of a glyph name based on the **Adobe Glyph List**.
+
+      :arg str name: the name of some glyph. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+
+      :rtype: int
+      :returns: the unicode. Invalid *name* entries return ``0xfffd (65533)``.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+
+-----
+
+   .. method:: unicode_to_glyph_name(ch)
+
+      *New in v1.18.0*
+
+      Return the glyph name of a unicode number, based on the **Adobe Glyph List**.
+
+      :arg int che: the unicode given by e.g. ``ord("ß")``. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+
+      :rtype: str
+      :returns: the glyph name. E.g. ``fitz.unicode_to_glyph_name(ord("Ä"))`` returns ``'Adieresis'``.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_: in its *agl* sub-package.
+
+-----
+
+   .. method:: adobe_glyph_names()
+
+      *New in v1.18.0*
+
+      Return a list of glyph names defined in the **Adobe Glyph List**.
+
+      :rtype: list
+      :returns: list of strings.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+
+-----
+
+   .. method:: adobe_glyph_unicodes()
+
+      *New in v1.18.0*
+
+      Return a list of unicodes for there exists a glyph name in the **Adobe Glyph List**.
+
+      :rtype: list
+      :returns: list of integers.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+
+-----
+
    .. method:: sRGB_to_rgb(srgb)
 
       *New in v1.17.4*
 
-      Convenience function returning a color (red, green, blue) for a given sRGB color integer .
+      Convenience function returning a color (red, green, blue) for a given *sRGB* color integer .
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
@@ -113,22 +174,20 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: make_table(rect=(0, 0, 1, 1), cols=1, rows=1)
+   .. method:: make_table(rect, cols=1, rows=1)
 
       *New in v1.17.4*
 
-      Convenience function returning a list of <rows x cols> :ref:`Rect` objects representing equal sized table cells for the given rectangle.
+      Convenience function to split a rectangle into sub-rectangles. Returns a list of *rows* lists, each containing *cols* :ref:`Rect` items. Each sub-rectangle can then be addressed by its row and column index.
 
-      :arg rect_like rect: the rectangle to contain the table.
+      :arg rect_like rect: the rectangle to split.
       :arg int cols: the desired number of columns.
       :arg int rows: the desired number of rows.
-      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*::
+      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*. Here is the layout of a 3x4 table created by ``cell = fitz.make_table(rect, cols=4, rows=3)``:
 
-         [
-            [cell00, cell01, ...]  # row 0
-            ...
-            [...]  # last row
-         ]
+      .. image:: images/img-make-table.jpg
+         :scale: 60
+
 
 -----
 

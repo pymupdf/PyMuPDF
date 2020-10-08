@@ -1,6 +1,29 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.0
+---------------------------
+This is first PyMuPDF version supporting MuPDF v1.18. The goal here is on extending PyMuPDF's own functionality -- apart from bug fixing. Subsequent PyMuPDF patches may address features new in MuPDF.
+
+* **Fixed** issue `#519 <https://github.com/pymupdf/PyMuPDF/issues/519>`_. This upstream bug occurred occasionally for some pages only and seems to be fixed now: page layout should no longer be ruined in these cases.
+
+* **Fixed** issue `#675 <https://github.com/pymupdf/PyMuPDF/issues/675>`_.
+
+  - Unsuccessful storage allocations should now always lead to exceptions (circumvention of an upstream bug intermittently crashing the interpreter).
+  - :ref:`Pixmap` size is now based on ``size_t`` instead of ``int`` in C and should be correct even for extremely large pixmaps.
+
+* **Fixed** issue `#668 <https://github.com/pymupdf/PyMuPDF/issues/668>`_. Specification of dashes for PDF drawing insertion should now correctly reflect the PDF spec.
+* **Fixed** issue `#669 <https://github.com/pymupdf/PyMuPDF/issues/669>`_. A major source of memory leakage in :meth:`Page.insertPDF` has been removed.
+* **Added** keyword *"images"* to :meth:`Page.apply_redactions` for fine-controlling the handling of images.
+* **Added** :meth:`Annot.getText` and :meth:`Annot.getTextbox`, which offer the same functionality as the :ref:`Page` versions.
+* **Added** key *"number"* to the block dictionaries of :meth:`Page.getText` / :meth:`Annot.getText` for options "dict" and "rawdict".
+* **Added** :meth:`glyph_name_to_unicode` and :meth:`unicode_to_glyph_name`. Both functions do not really connect to a specific font and are now independently available, too. The data are now based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+* **Added** convenience functions :meth:`adobe_glyph_names` and :meth:`adobe_glyph_unicodes` which return the respective available data.
+* **Added** :meth:`Page.getDrawings` which returns details of drawing operations on a document page. Works for all document types.
+* Improved performance of :meth:`Document.insertPDF`. Multiple object copies are now also suppressed across multiple separate insertions from the same source. This saves time, memory and target file size. Previously this mechanism was only active within each single method execution. The feature can also be suppressed with the new method bool parameter *final=1*, which is the default.
+* For PNG images created from pixmaps, the resolution (dpi) is now automatically set from the respective :attr:`Pixmap.xres` and :attr:`Pixmap.yres` values.
+
+
 Changes in Version 1.17.7
 ---------------------------
 * **Fixed** issue `#651 <https://github.com/pymupdf/PyMuPDF/issues/651>`_. An upstream bug causing interpreter crashes in corner case redaction processings was fixed by backporting MuPDF changes from their development repo.

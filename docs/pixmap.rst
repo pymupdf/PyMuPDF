@@ -240,10 +240,10 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       *(New in v1.16.17)* Set the resolution (dpi) in x and y direction.
 
+      *(Changed in v1.18.0)* When saving as a PNG image, these values will be stored now.
+
       :arg int xres: resolution in x direction.
       :arg int yres: resolution in y direction.
-
-      .. note:: This is information only. In MuPDF, this will not have other implications and will not be written to images created from the pixmap.
 
 
    .. method:: setAlpha([alphavalues])
@@ -309,10 +309,12 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       Write the pixmap as an image file using Pillow. Use this method for image formats or extended image features not supported by MuPDF. Examples are
 
       * Formats JPEG, JPX, J2K, WebP, etc.
-      * Storing EXIF or dpi information.
+      * Storing EXIF information.
       * If you do not provide dpi information, the values *xres*, *yres* stored with the pixmap are automatically used.
 
       A simple example: ``pix.pillowWrite("some.jpg", optimize=True, dpi=(150, 150))``. For details on other parameters see the Pillow documentation.
+
+      .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.writeImage` and :meth:`Pixmap.writePNG` now also set resolution / dpi from *xres* / *yres* automatically, when saving a PNG image.
 
    ..  method:: pillowData(*args, **kwargs)
 

@@ -15,15 +15,18 @@ A Font object also contains useful general information, like the font bbox, the 
 :meth:`~Font.glyph_advance`          Width of a character
 :meth:`~Font.glyph_bbox`             Glyph rectangle
 :meth:`~Font.glyph_name_to_unicode`  Get unicode from glyph name
-:meth:`~Font.has_glyph`              Check if a unicode is supported
+:meth:`~Font.has_glyph`              Return glyph id of unicode
 :meth:`~Font.text_length`            Compute text length under a fontsize
 :meth:`~Font.unicode_to_glyph_name`  Get glyph name of a unicode
 :meth:`~Font.valid_codepoints`       Array of supported unicodes
+:attr:`~Font.ascender`               Font ascender
+:attr:`~Font.descender`              Font descender
 :attr:`~Font.bbox`                   Font rectangle
 :attr:`~Font.buffer`                 Copy of the font's binary image
 :attr:`~Font.flags`                  Collection of font properties
 :attr:`~Font.glyph_count`            Number of supported glyphs
 :attr:`~Font.name`                   Name of font
+:attr:`~Font.isWritable`             Font usable with :ref:`TextWriter`
 ==================================== ============================================
 
 
@@ -118,7 +121,7 @@ A Font object also contains useful general information, like the font bbox, the 
       :arg str language: the language -- currently unused.
       :arg int script: the UCDN script number.
       :arg bool fallback: *(new in v1.17.5)* perform an extended search in fallback fonts or restrict to current font (default).
-      :returns: *(changed in 1.17.7)* the glyph number (which signifies *True*) or zero (*False*).
+      :returns: *(changed in 1.17.7)* the glyph number. Zero indicates no glyph found.
 
    .. method:: valid_codepoints()
 
@@ -126,7 +129,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       Return an array of unicodes supported by this font.
 
-      :returns: an *array.array* [#f2]_ of length :attr:`Font.glyph_count` (or less). I.e. *chr()* of every item in this array will be found in the font without using fallback fonts. This is an example display of the supported glyphs:
+      :returns: an *array.array* [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. *chr()* of every item in this array has a glyph in the font without using fallbacks. This is an example display of the supported glyphs:
 
          >>> import fitz
          >>> font = fitz.Font("math")
@@ -169,11 +172,11 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: glyph_name_to_unicode(name)
 
-      Return the unicode for a given glyph name. Use it in conjunction with ``chr()`` if you want to output e.g. a certain symbol.
+      Return the unicode value for a given glyph name. Use it in conjunction with ``chr()`` if you want to output e.g. a certain symbol.
 
       :arg str name: The name of the glyph.
 
-      :returns: The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: ``font.glyph_name_to_unicode("Sigma") = 931``, ``font.glyph_name_to_unicode("sigma") = 963``. Refer to e.g. `this <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names and their unicode numbers. Example:
+      :returns: The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: ``font.glyph_name_to_unicode("Sigma") = 931``, ``font.glyph_name_to_unicode("sigma") = 963``. Refer to the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names and their unicode numbers. Example:
 
          >>> font = fitz.Font("helv")
          >>> font.has_glyph(font.glyph_name_to_unicode("infinity"))
@@ -188,13 +191,15 @@ A Font object also contains useful general information, like the font bbox, the 
       :returns: a :ref:`Rect`.
 
 
-   .. method:: unicode_to_glyph_name(chr)
+   .. method:: unicode_to_glyph_name(ch)
 
       Show the name of the character's glyph.
 
-      :arg int chr: the unicode number of the character. Use *ord()*, not the character itself.
+      :arg int ch: the unicode number of the character. Use *ord()*, not the character itself.
 
-      :returns: a string representing the glyph's name. E.g. ``font.glyph_name(ord("#")) = "numbersign"``. Depending on how this font was built, the string may be empty, ".notfound" or some generated name.
+      :returns: a string representing the glyph's name. E.g. ``font.glyph_name(ord("#")) = "numbersign"``. For an invalid code ".notfound" is returned.
+      
+        .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as ``fitz.unicode_to_glyph_name()`` and resp. ``fitz.glyph_name_to_unicode()``.
 
    .. method:: text_length(text, fontsize=11)
 
@@ -204,29 +209,68 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :arg float fontsize: the fontsize.
 
-      :returns: a float representing the length of the string when stored in the PDF. Internally :meth:`glyph_advance` is used on a by-character level. If the font does not have a character, it will automatically be looked up in a fallback font.
+      :rtype: float
+      :returns: the length of the string when stored in the PDF. Internally :meth:`glyph_advance` is used on a by-character level. If the font does not have a character, it will automatically be looked up in a fallback font.
 
    .. attribute:: buffer
 
       *(New in v1.17.6)*
       
-      A *bytes* copy of the binary font file.
+      :rtype: bytes
+      Copy of the binary font file content.
 
    .. attribute:: flags
 
-      A dictionary with various font properties, each represented as bools.
+      :rtype: dict
+      A dictionary with various font properties, each represented as bools. Example for Helvetica::
+
+         >>> pprint(font.flags)
+         {'bold': 0,
+         'fake-bold': 0,
+         'fake-italic': 0,
+         'invalid-bbox': 0,
+         'italic': 0,
+         'mono': 0,
+         'opentype': 0,
+         'serif': 1,
+         'stretch': 0,
+         'substitute': 0}
 
    .. attribute:: name
 
+      :rtype: str
       Name of the font. May be "" or "(null)".
 
    .. attribute:: bbox
 
+      :rtype: :ref:`Rect`
       The font bbox. This is the maximum of its glyph bboxes.
 
    .. attribute:: glyph_count
 
+      :rtype: int
       The number of glyphs defined in the font.
+
+   .. attribute:: ascender
+
+      *(New in v1.18.0)*
+
+      :rtype: float
+      The ascender value of the font, see `here <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details.
+
+   .. attribute:: descender
+
+      *(New in v1.18.0)*
+
+      :rtype: float
+      The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details.
+
+   .. attribute:: isWritable
+
+      *(New in v1.18.0)*
+
+      :rtype: bool
+      Indicates whether this font can be used with :ref:`TextWriter`.
 
 .. rubric:: Footnotes
 

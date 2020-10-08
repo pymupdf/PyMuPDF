@@ -158,6 +158,19 @@ For details on **embedded files** refer to Appendix 3.
           >>> doc = fitz.open()
           >>> 
 
+      The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
+
+          >>> import fitz
+          >>> with fitz.open(...) as doc:
+                  for page in doc: print("page %i" % page.number)
+          page 0
+          page 1
+          page 2
+          page 3
+          >>> doc.isClosed
+          True
+          >>> 
+
     .. method:: authenticate(password)
 
       Decrypts the document with the string *password*. If successful, document data can be accessed. For PDF documents, the "owner" and the "user" have different priviledges, and hence different passwords may exist for these authorization levels. The method will automatically establish the appropriate access rights for the provided password.
@@ -608,7 +621,7 @@ For details on **embedded files** refer to Appendix 3.
        * 1 = remove unused objects
        * 2 = in addition to 1, compact the :data:`xref` table
        * 3 = in addition to 2, merge duplicate objects
-       * 4 = in addition to 3, check object streams for duplication (may be slow)
+       * 4 = in addition to 3, check :data:`stream` objects for duplication. This may be slow because such data are typically large and in addition may require (de-) compression before such comparisons can be made.
 
       :arg bool clean: Clean and sanitize content streams [#f1]_. Corresponds to "mutool clean -sc".
 
@@ -642,7 +655,7 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: saves the document incrementally. This is a convenience abbreviation for *doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)*.
 
 
-    .. method:: write(garbage=0, clean=False, deflate=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+    .. method:: write(garbage=0, clean=False, deflate=False, ascii=False, expand=0, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
 
       PDF only: Writes the **current content of the document** to a bytes object instead of to a file. Obviously, you should be wary about memory requirements. The meanings of the parameters exactly equal those in :meth:`save`. Chater :ref:`FAQ` contains an example for using this method as a pre-processor to `pdfrw <https://pypi.python.org/pypi/pdfrw/0.3>`_.
 
@@ -664,30 +677,31 @@ For details on **embedded files** refer to Appendix 3.
        pair: annots; insertPDF (Document method)
        pair: show_progress; insertPDF (Document method)
 
-    .. method:: insertPDF(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0)
+    .. method:: insertPDF(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0, final=1)
 
-      PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.
+      PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Value -1 indicates default values. All pages thus copied will be rotated as specified. Links and annotations can be excluded in the target, see below. All page numbers are 0-based.
 
-      :arg docsrc: An opened PDF *Document* which must not be the current document object. However, it may refer to the same underlying file.
+      :arg docsrc: An opened PDF *Document* which must not be the current document. However, it may refer to the same underlying file.
       :type docsrc: *Document*
 
       :arg int from_page: First page number in *docsrc*. Default is zero.
 
-      :arg int to_page: Last page number in *docsrc* to copy. Default is the last page.
+      :arg int to_page: Last page number in *docsrc* to copy. Defaults to last page.
 
-      :arg int start_at: First copied page will become page number *start_at* in the destination. If omitted, the page range will be appended to current document. If zero, the page range will be inserted before current first page.
+      :arg int start_at: First copied page, will become page number *start_at* in the target. Default -1 appends the page range to the end. If zero, the page range will be inserted before current first page.
 
       :arg int rotate: All copied pages will be rotated by the provided value (degrees, integer multiple of 90).
 
-      :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is *True*. An **internal link is always excluded**, if its destination is not one of the copied pages.
+      :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is *True*. Internal links to outside the copied page range are **always excluded**.
       :arg bool annots: *(new in version 1.16.1)* choose whether annotations should be included in the copy.
       :arg int show_progress: *(new in version 1.17.7)* specify an interval size greater zero to see progress messages on ``sys.stdout``. After each interval, a message like ``Inserted 30 of 47 pages.`` will be printed.
+      :arg int final: *(new in v1.18.0)* controls whether the list of already copied objects should be **dropped** after this method, default *True*. Set it to 0 except for the last one of multiple insertions from the same source PDF. This saves target file size and speeds up execution considerably.
       
     .. note::
 
        1. If *from_page > to_page*, pages will be **copied in reverse order**. If *0 <= from_page == to_page*, then one page will be copied.
 
-       2. *docsrc* bookmarks **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+       2. *docsrc* TOC entries **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
     .. index::
        pair: width; newPage (Document method)
@@ -697,7 +711,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Insert an empty page.
 
-      :arg int pno: page number in front of which the new page should be inserted. Must be in *1 < pno <= pageCount*. Special values -1 and *len(doc)* insert **after** the last page.
+      :arg int pno: page number in front of which the new page should be inserted. Must be in *1 < pno <= pageCount*. Special values -1 and *doc.pageCount* insert **after** the last page.
 
       :arg float width: page width.
       :arg float height: page height.
@@ -737,9 +751,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: deletePageRange(from_page=-1, to_page=-1)
 
-      PDF only: Delete a range of pages given as 0-based numbers. Any *-1* parameter will first be replaced by *len(doc) - 1* (ie. last page number). After that, condition *0 <= from_page <= to_page < len(doc)* must be true. If the parameters are equal, this is equivalent to :meth:`deletePage`.
-
-      *(Changed in version 1.14.17)* Table of contents and internal links are now resynchronized.
+      PDF only: Delete a range of pages given as 0-based numbers. Any *-1* parameter will first be replaced by *doc.pageCount - 1* (ie. last page number). After that, condition *0 <= from_page <= to_page < doc.pageCount* must be true. If the parameters are equal, this is equivalent to :meth:`deletePage`.
 
       :arg int from_page: the first page to be deleted.
 
@@ -747,9 +759,9 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note::
 
-        *(Changed in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`deletePage` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". So the overall TOC structure is left intact.
+        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`deletePage` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". So the overall TOC structure is left intact.
 
-        Similarly, it will remove any **links on remaining pages** that point to a deleted page. This action may have an extended response time for documents with a lot of pages.
+        Similarly, it will remove any **links on remaining pages** that point to a deleted page. This action may have an extended response time for documents with many pages.
 
         Example: Delete the page range 500 to 520 from a large PDF, using different methods.
 
@@ -784,7 +796,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.14.17)*
       
-      PDF only: Make a new copy (duplicate) of a page.
+      PDF only: Make a full copy (duplicate) of a page.
 
       :arg int pno: the page to be duplicated. Must be in range *0 <= pno < len(doc)*.
 

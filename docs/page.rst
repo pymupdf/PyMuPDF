@@ -68,6 +68,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.drawSector`           PDF only: draw a circular sector
 :meth:`Page.drawSquiggle`         PDF only: draw a squiggly line
 :meth:`Page.drawZigzag`           PDF only: draw a zig-zagged line
+:meth:`Page.getDrawings`          get list of the draw commands contained in the page
 :meth:`Page.getFontList`          PDF only: get list of used fonts
 :meth:`Page.getImageBbox`         PDF only: get bbox of embedded image
 :meth:`Page.getImageList`         PDF only: get list of used images
@@ -348,22 +349,30 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the annotation following the deleted one. Please remember that physical removal will take place only with saving to a new file with a positive garbage collection option.
 
-   .. method:: apply_redactions()
+   .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS)
 
       PDF only: *(New in version 1.16.11)* Remove all **text content** contained in any redaction rectangle.
 
       *(Changed in v1.16.12)* The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the individual *fill* color of each redaction annotation. If a *text* was given in the annotation, then :meth:`insertTextbox` is invoked to insert it, using parameters provided with the redaction.
 
-      **This method applies and then deletes all redaction annotations from the page.**
+      **This method applies and then deletes all redactions from the page.**
+
+      :arg int images: *(new in v1.18.0)* how to redact overlapping images. The default (2) blanks out overlapping pixels. *PDF_REDACT_IMAGE_NONE* (0) ignores, and *PDF_REDACT_IMAGE_REMOVE* (1) completely removes all overlapping images.
 
       :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
 
       .. note::
          Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions or anywhere else. Other annotations are unaffected.
 
-         Images and links will also **physically** be removed from the page. For an image, overlapping parts will be blanked-out. Links will always be completely removed.
+         All overlapping links will be removed.
 
-         Text removal is done by character: A character is removed if its bbox has a **non-empty intersection** with a redaction *(changed in v1.17)*.
+         *(Changed in v1.18.0)* The overlapping parts of **images** will be blanked-out for option 2. Option 0 does not touch any images and 1 will remove any image with an overlap.
+
+         Please be aware that there is an MuPDF bug for option *PDF_REDACT_IMAGE_PIXELS = 2*: transparent images will be incorrectly handled!
+
+         To remove only selected images (as opposed to all intersecting), use PyMuPDF low-level functions instead of redaction annotations.
+
+         Text removal is done by character: A character is removed if its bbox has a **non-empty intersection** with a redaction *(changed in MuPDF v1.17)*.
 
          Redactions are an easy way to replace single words in a PDF, or to just physically remove them from the PDF: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
 
@@ -833,6 +842,40 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this area -- to be used by text extraction methods.
 
       :returns: :ref:`TextPage`
+
+   .. method:: getDrawings()
+
+      *(New in v1.18.0)*
+
+      Return a list of **"paths"** defining draw commands made on the page. These are commands which draw lines, rectangles or curves, including relevant properties like colors, line width and dashing, etc.
+
+      :returns: a list of dictionaries. A list item is called a "path" and has been designed to be compatible with the methods and terminology of class :ref:`Shape`. A path has the following keys:
+
+            ============== =========================================================================
+            Key            Value
+            ============== =========================================================================
+            closePath      Same as the parameter in :ref:`Shape`.
+            color          Same as the parameter in :ref:`Shape`.
+            dashes         Same as the parameter in :ref:`Shape`.
+            even_odd       Same as the parameter in :ref:`Shape`.
+            fill           Same as the parameter in :ref:`Shape`.
+            items          List of draw commands: lines, rectangle or curves.
+            lineCap        Number 3-tuple, use its max value on output with :ref:`Shape`.
+            lineJoin       Same as the parameter in :ref:`Shape`.
+            opacity        Transparency: 0 <= opacity <= 1. Cannot be used in :ref:`Shape` yet.
+            rect           Page area covered by this path. Information only.
+            width          Same as the parameter in :ref:`Shape`.
+            ============== =========================================================================
+
+            Each entry in ``path["items"]`` is one of the following:
+
+            * ``("l", p1, p2)`` - a line from p1 to p2 (:ref:`Point` objects).
+            * ``("c", p1, p2, p3, p4)`` - cubic Bézier curve from p1 to p4, p2 and p3 are the control points. All objects are of type :ref:`Point`.
+            * ``("re", rect)`` - a :ref:`Rect`.
+
+            Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
+
+            Please note that this is a brandnew function, so there exists a higher probability for bugs.
 
    .. method:: getFontList(full=False)
 

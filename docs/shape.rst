@@ -500,7 +500,7 @@ Common Parameters
 
 **dashes** (*str*)
 
-  Causes lines to be dashed. A continuous line with no dashes is drawn with *"[]0"* or *None*. For (the rather complex) details on how to achieve dashing effects, see :ref:`AdobeManual`, page 217. Simple versions look like *"[3 4]"*, which means dashes of 3 and gaps of 4 pixels length follow each other. *"[3 3]"* and *"[3]"* do the same thing.
+  Causes lines to be dashed. A continuous line with no dashes is drawn with *"[] 0"* or *None* or *""*.. For (the rather complex) details on how to achieve dashing effects, see :ref:`AdobeManual`, page 217. Simple versions look like *"[3 4] 0"*, which means dashes of 3 and gaps of 4 pixels length follow each other. *"[3 3] 0"* and *"[3] 0"* do the same thing.
 
 ----
 

@@ -1,3 +1,5 @@
+.. _Glossary:
+
 ==============
 Glossary
 ==============
@@ -24,24 +26,24 @@ Glossary
 
 .. data:: inheritable
 
-        A number of values in a PDF can be specified once and then be inherited by objects further down in a parent-child relationship. The mediabox (physical size) of pages can for example be specified in nodes of the :data:`pagetree` and will then be taken as value for all *kids*, which do not specify their own value.
+        A number of values in a PDF can be specified once and then be inherited by objects further down in a parent-child relationship. The mediabox (physical size) of pages can for example be specified in some node(s) of the :data:`pagetree` and will then be taken as value for all *kids*, which do not specify their own value.
 
 .. data:: MediaBox
 
-        A PDF array of 4 floats specifying a physical page size (:data:`inheritable`).
+        A PDF array of 4 floats specifying a physical page size -- (:data:`inheritable`).
 
 .. data:: CropBox
 
-        A PDF array of 4 floats specifying a page's visible area (:data:`inheritable`). This value is **not affected** if the page is rotated.
+        A PDF array of 4 floats specifying a page's visible area -- (:data:`inheritable`). This value is **not affected** if the page is rotated. In contrast to the page rectangle, :attr:`Page.rect`, the top-left corner of the cropbox may or may not be *(0, 0)*.
 
 
 .. data:: catalog
 
-        A central PDF :data:`dictionary` -- also called "root" -- containing pointers to many other information.
+        A central PDF :data:`dictionary` -- also called the "root" -- containing pointers to many other information.
 
 .. data:: contents
 
-        "A **content stream** is a PDF :data:`stream` :data:`object` whose data consists of a sequence of instructions describing the graphical elements to be painted on a page." (:ref:`AdobeManual` p. 151). For an overview of the mini-language used in these streams see chapter "Operator Summary" on page 985 of the :ref:`AdobeManual`. A PDF :data:`page` can have none to many contents objects. If it has none, the page is empty (but still may show annotations). If it has several, they will be interpreted in sequence as if their instructions had been present in one such object (i.e. like in a concatenated string). It should be noted that there are more stream object types which use the same syntax: e.g. appearance dictionaries associated with annotations and Form XObjects.
+        "A **content stream** is a PDF :data:`object` with an attached :data:`stream`, whose data consists of a sequence of instructions describing the graphical elements to be painted on a page." (:ref:`AdobeManual` p. 151). For an overview of the mini-language used in these streams see chapter "Operator Summary" on page 985 of the :ref:`AdobeManual`. A PDF :data:`page` can have none to many contents objects. If it has none, the page is empty (but still may show annotations). If it has several, they will be interpreted in sequence as if their instructions had been present in one such object (i.e. like in a concatenated string). It should be noted that there are more stream object types which use the same syntax: e.g. appearance dictionaries associated with annotations and Form XObjects.
 
 .. data:: resources
 
@@ -92,7 +94,7 @@ Glossary
 
 .. data:: stream
 
-        A PDF :data:`object` type which is a sequence of bytes, similar to a string. "However, a PDF application can read a stream incrementally, while a string must be read in its entirety. Furthermore, a stream can be of unlimited length, whereas a string is subject to an implementation limit. For this reason, objects with potentially large amounts of data, such as images and page descriptions, are represented as streams." "A stream consists of a :data:`dictionary` followed by zero or more bytes bracketed between the keywords *stream* and *endstream*"::
+        A PDF :data:`object` type which is followed by a sequence of bytes, similar to a Python *string* or rather *bytes*. "However, a PDF application can read a stream incrementally, while a string must be read in its entirety. Furthermore, a stream can be of unlimited length, whereas a string is subject to an implementation limit. For this reason, objects with potentially large amounts of data, such as images and page descriptions, are represented as streams." "A stream consists of a :data:`dictionary` followed by zero or more bytes bracketed between the keywords *stream* and *endstream*"::
 
             nnn 0 obj
             <<
