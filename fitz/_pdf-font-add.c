@@ -21,14 +21,10 @@ static int ft_font_file_kind(FT_Face face)
 #else
 	const char *kind = FT_Get_X11_Font_Format(face);
 #endif
-	if (!strcmp(kind, "TrueType"))
-		return 2;
-	if (!strcmp(kind, "Type 1"))
-		return 1;
-	if (!strcmp(kind, "CFF"))
-		return 3;
-	if (!strcmp(kind, "CID Type 1"))
-		return 1;
+	if (!strcmp(kind, "TrueType")) return 2;
+	if (!strcmp(kind, "Type 1")) return 1;
+	if (!strcmp(kind, "CFF")) return 3;
+	if (!strcmp(kind, "CID Type 1")) return 1;
 	return 0;
 }
 
@@ -58,7 +54,7 @@ static int is_builtin_font(fz_context *ctx, fz_font *font)
 	return fz_lookup_base14_font(ctx, pdf_clean_font_name(font->name), &size) == data;
 }
 
-static pdf_obj *
+static pdf_obj*
 pdf_add_font_file(fz_context *ctx, pdf_document *doc, fz_font *font)
 {
 	fz_buffer *buf = font->buffer;
@@ -140,15 +136,9 @@ pdf_add_font_descriptor(fz_context *ctx, pdf_document *doc, pdf_obj *fobj, fz_fo
 			switch (ft_font_file_kind(face))
 			{
 			default:
-			case 1:
-				pdf_dict_put_drop(ctx, fdobj, PDF_NAME(FontFile), fileref);
-				break;
-			case 2:
-				pdf_dict_put_drop(ctx, fdobj, PDF_NAME(FontFile2), fileref);
-				break;
-			case 3:
-				pdf_dict_put_drop(ctx, fdobj, PDF_NAME(FontFile3), fileref);
-				break;
+			case 1: pdf_dict_put_drop(ctx, fdobj, PDF_NAME(FontFile), fileref); break;
+			case 2: pdf_dict_put_drop(ctx, fdobj, PDF_NAME(FontFile2), fileref); break;
+			case 3: pdf_dict_put_drop(ctx, fdobj, PDF_NAME(FontFile3), fileref); break;
 			}
 		}
 
@@ -161,7 +151,7 @@ pdf_add_font_descriptor(fz_context *ctx, pdf_document *doc, pdf_obj *fobj, fz_fo
 }
 
 static void
-pdf_add_simple_font_widths(fz_context *ctx, pdf_document *doc, pdf_obj *fobj, fz_font *font, const char *const encoding[])
+pdf_add_simple_font_widths(fz_context *ctx, pdf_document *doc, pdf_obj *fobj, fz_font *font, const char * const encoding[])
 {
 	int width_table[256];
 	pdf_obj *widths;
@@ -206,12 +196,7 @@ pdf_add_cid_system_info(fz_context *ctx, pdf_document *doc, pdf_obj *fobj, const
 }
 
 /* Different states of starting, same width as last, or consecutive glyph */
-enum
-{
-	FW_START,
-	FW_SAME,
-	FW_RUN
-};
+enum { FW_START, FW_SAME, FW_RUN };
 
 /* ToDo: Ignore the default sized characters */
 static void
@@ -332,19 +317,28 @@ pdf_add_cid_font_widths(fz_context *ctx, pdf_document *doc, pdf_obj *fobj, fz_fo
 			prev_code = curr_code;
 		}
 
+		if (pdf_array_len(ctx, run_obj) > 0)
+		{
+			pdf_array_push_int(ctx, fw, first_code);
+			pdf_array_push(ctx, fw, run_obj);
+		}
+
 		if (font->width_table != NULL)
 			pdf_dict_put_int(ctx, fobj, PDF_NAME(DW), font->width_default);
 		if (pdf_array_len(ctx, fw) > 0)
 			pdf_dict_put(ctx, fobj, PDF_NAME(W), fw);
 	}
 	fz_always(ctx)
+	{
 		pdf_drop_obj(ctx, fw);
+		pdf_drop_obj(ctx, run_obj);
+	}
 	fz_catch(ctx)
 		fz_rethrow(ctx);
 }
 
 /* Descendant font construction used for CID font creation from ttf or Adobe type1 */
-static pdf_obj *
+static pdf_obj*
 pdf_add_descendant_cid_font(fz_context *ctx, pdf_document *doc, fz_font *font)
 {
 	FT_Face face = font->ft_face;
@@ -387,9 +381,9 @@ static int next_range(int *table, int size, int k)
 	int n;
 	for (n = 1; k + n < size; ++n)
 	{
-		if ((k & 0xFF00) != ((k + n) & 0xFF00)) /* high byte changes */
+		if ((k & 0xFF00) != ((k+n) & 0xFF00)) /* high byte changes */
 			break;
-		if (table[k] + n != table[k + n])
+		if (table[k] + n != table[k+n])
 			break;
 	}
 	return n;
@@ -489,7 +483,7 @@ pdf_add_to_unicode(fz_context *ctx, pdf_document *doc, pdf_obj *fobj, fz_font *f
 							fz_append_printf(ctx, buf, "%d beginbfrange\n", num_seq);
 						count = 0;
 					}
-					fz_append_printf(ctx, buf, "<%04x> <%04x> <%04x>\n", k, k + n - 1, table[k]);
+					fz_append_printf(ctx, buf, "<%04x> <%04x> <%04x>\n", k, k+n-1, table[k]);
 					++count;
 				}
 			}
@@ -597,7 +591,7 @@ pdf_add_simple_font_encoding_imp(fz_context *ctx, pdf_document *doc, pdf_obj *fo
 		const char *glyph = glyph_names[i];
 		if (glyph)
 		{
-			if (last != i - 1)
+			if (last != i-1)
 				pdf_array_push_int(ctx, diff, i);
 			last = i;
 			pdf_array_push_name(ctx, diff, glyph);
@@ -639,15 +633,9 @@ pdf_add_simple_font(fz_context *ctx, pdf_document *doc, fz_font *font, int encod
 	switch (encoding)
 	{
 	default:
-	case PDF_SIMPLE_ENCODING_LATIN:
-		enc = fz_glyph_name_from_windows_1252;
-		break;
-	case PDF_SIMPLE_ENCODING_GREEK:
-		enc = fz_glyph_name_from_iso8859_7;
-		break;
-	case PDF_SIMPLE_ENCODING_CYRILLIC:
-		enc = fz_glyph_name_from_koi8u;
-		break;
+	case PDF_SIMPLE_ENCODING_LATIN: enc = fz_glyph_name_from_windows_1252; break;
+	case PDF_SIMPLE_ENCODING_GREEK: enc = fz_glyph_name_from_iso8859_7; break;
+	case PDF_SIMPLE_ENCODING_CYRILLIC: enc = fz_glyph_name_from_koi8u; break;
 	}
 
 	fobj = pdf_add_new_dict(ctx, doc, 10);
@@ -688,7 +676,8 @@ pdf_add_simple_font(fz_context *ctx, pdf_document *doc, fz_font *font, int encod
 	return fref;
 }
 
-int pdf_font_writing_supported(fz_font *font)
+int
+pdf_font_writing_supported(fz_font *font)
 {
 	if (font->ft_face == NULL || font->buffer == NULL || font->buffer->len < 4)
 		return 0;
@@ -706,7 +695,7 @@ pdf_add_cjk_font(fz_context *ctx, pdf_document *doc, fz_font *fzfont, int script
 {
 	pdf_obj *fref, *font, *subfont, *fontdesc;
 	pdf_obj *dfonts;
-	fz_rect bbox = {-200, -200, 1200, 1200};
+	fz_rect bbox = { -200, -200, 1200, 1200 };
 	unsigned char digest[16];
 	int flags;
 
@@ -789,7 +778,6 @@ pdf_add_cjk_font(fz_context *ctx, pdf_document *doc, fz_font *fzfont, int script
 
 	return fref;
 }
-
 void jm_valid_chars(fz_context *ctx, fz_font *font, void *arr)
 {
 	FT_Face face = font->ft_face;

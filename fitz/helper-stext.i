@@ -388,7 +388,9 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
     fz_buffer *text_buffer = fz_new_buffer(ctx, 128);
     PyObject *block_dict, *block_list = PyList_New(0);
     fz_rect tp_rect = tp->mediabox;
+    int block_n = -1;
     for (block = tp->first_block; block; block = block->next) {
+        block_n++;
         if (fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
             continue;
         }
@@ -398,6 +400,7 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
         }
 
         block_dict = PyDict_New();
+        DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
         DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
         if (block->type == FZ_STEXT_BLOCK_IMAGE) {
             DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));

@@ -78,6 +78,11 @@ fitz.Page.showPDFpage = fitz.utils.showPDFpage
 fitz.Page.updateLink = fitz.utils.updateLink
 fitz.Page.writeText = fitz.utils.writeText
 # ------------------------------------------------------------------------------
+# Annot
+# ------------------------------------------------------------------------------
+fitz.Annot.getText = fitz.utils.getText
+fitz.Annot.getTextbox = fitz.utils.getTextbox
+# ------------------------------------------------------------------------------
 # Rect
 # ------------------------------------------------------------------------------
 fitz.Rect.getRectArea = fitz.utils.getRectArea

@@ -38,6 +38,18 @@ PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
     return val;
 }
 
+PyObject *JM_UnicodeFromBuffer(fz_context *ctx, fz_buffer *buff)
+{
+    unsigned char *s = NULL;
+    size_t len = fz_buffer_storage(ctx, buff, &s);
+    PyObject *val = PyUnicode_FromStringAndSize((const char *) s, (Py_ssize_t) len);
+    if (!val) {
+        val = PyUnicode_FromString("");
+        PyErr_Clear();
+    }
+    return val;
+}
+
 PyObject *JM_UnicodeFromStr(const char *c)
 {
     if (!c) return PyUnicode_FromString("");
@@ -95,12 +107,16 @@ void JM_Warning(const char *id)
 //-----------------------------------------------------------------------------
 static void *JM_Py_Malloc(void *opaque, size_t size)
 {
-    return PyMem_Malloc(size);
+    void *mem = PyMem_Malloc((Py_ssize_t) size);
+    if (mem) return mem;
+    fz_throw(gctx, FZ_ERROR_MEMORY, "malloc of %zu bytes failed", size);
 }
 
 static void *JM_Py_Realloc(void *opaque, void *old, size_t size)
 {
-    return PyMem_Realloc(old, size);
+    void *mem = PyMem_Realloc(old, (Py_ssize_t) size);
+    if (mem) return mem;
+    fz_throw(gctx, FZ_ERROR_MEMORY, "realloc of %zu bytes failed", size);
 }
 
 static void JM_PY_Free(void *opaque, void *ptr)
@@ -117,7 +133,7 @@ const fz_alloc_context JM_Alloc_Context =
 };
 #endif
 
-// return Python bools for a given integer
+// return Python bool for a given integer
 PyObject *JM_BOOL(int v)
 {
     if (v == 0)
@@ -451,65 +467,62 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
         PDF_NAME(Rotate),
         PDF_NAME(UserUnit)
     };
-    int i, n = nelem(known_page_objs);  // number of list elements
-    fz_var(obj);
+    int i, n = (int) nelem(known_page_objs);  // number of list elements
     fz_var(ref);
     fz_var(page_dict);
     fz_try(ctx) {
         page_ref = pdf_lookup_page_obj(ctx, doc_src, page_from);
         pdf_flatten_inheritable_page_items(ctx, page_ref);
 
-        // make a new page
+        // make new page dict in dest doc
         page_dict = pdf_new_dict(ctx, doc_des, 4);
         pdf_dict_put(ctx, page_dict, PDF_NAME(Type), PDF_NAME(Page));
 
         // copy objects of source page into it
         for (i = 0; i < n; i++) {
             obj = pdf_dict_get(ctx, page_ref, known_page_objs[i]);
-            if (obj != NULL)
+            if (obj != NULL) {
                 pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_mapped_object(ctx, graft_map, obj));
+            }
         }
 
-        // Copy the annotations, but skip types Link and Popup.
-        // Also skip IRT annotations ("in response to").
-        // Remove dict keys P (parent) and Popup from copyied annot.
+        // Copy the annotations, but skip types Link, Popup, IRT.
+        // Remove dict keys P (parent) and Popup from copied annot.
         if (copy_annots) {
             pdf_obj *old_annots = pdf_dict_get(ctx, page_ref, PDF_NAME(Annots));
             if (old_annots) {
                 n = pdf_array_len(ctx, old_annots);
-                pdf_obj *new_annots = pdf_new_array(ctx, doc_des, n);
+                pdf_obj *new_annots = pdf_dict_put_array(ctx, page_dict, PDF_NAME(Annots), n);
                 for (i = 0; i < n; i++) {
                     pdf_obj *o = pdf_array_get(ctx, old_annots, i);
+                    if (pdf_dict_gets(ctx, o, "IRT")) continue;
                     pdf_obj *subtype = pdf_dict_get(ctx, o, PDF_NAME(Subtype));
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Link))) continue;
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Popup))) continue;
-                    if (pdf_dict_gets(ctx, o, "IRT")) continue;
+                    pdf_dict_del(ctx, o, PDF_NAME(Popup));
+                    pdf_dict_del(ctx, o, PDF_NAME(P));
                     pdf_obj *copy_o = pdf_graft_mapped_object(ctx, graft_map, o);
-                    pdf_dict_del(gctx, copy_o, PDF_NAME(Popup));
-                    pdf_dict_del(gctx, copy_o, PDF_NAME(P));
-                    pdf_array_push_drop(ctx, new_annots, copy_o);
+                    pdf_obj *annot = pdf_new_indirect(ctx, doc_des,
+                                     pdf_to_num(ctx, copy_o), 0);
+                    pdf_array_push_drop(ctx, new_annots, annot);
+                    pdf_drop_obj(ctx, copy_o);
                 }
-                pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Annots), new_annots);
             }
         }
-        // rotate the page as requested
+        // rotate the page
         if (rotate != -1) {
             pdf_dict_put_int(ctx, page_dict, PDF_NAME(Rotate), (int64_t) rotate);
         }
         // Now add the page dictionary to dest PDF
-        obj = pdf_add_object(ctx, doc_des, page_dict);
-
-        // Get indirect ref of the new page
-        int num = pdf_to_num(ctx, obj);
-        ref = pdf_new_indirect(ctx, doc_des, num, 0);
+        ref = pdf_add_object(ctx, doc_des, page_dict);
 
         // Insert new page at specified location
         pdf_insert_page(ctx, doc_des, page_to, ref);
 
     }
     fz_always(ctx) {
-        pdf_drop_obj(ctx, obj);
         pdf_drop_obj(ctx, ref);
+        pdf_drop_obj(ctx, page_dict);
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);
@@ -521,20 +534,18 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
 // location (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
 //-----------------------------------------------------------------------------
-void JM_merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots, int show_progress)
+void JM_merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots, int show_progress, pdf_graft_map *graft_map)
 {
     int page, afterpage;
-    pdf_graft_map *graft_map;
     afterpage = apage;
-    graft_map = pdf_new_graft_map(ctx, doc_des);
-    int counter = 0;  // copied page counter
+    int counter = 0;  // copied pages counter
     int total = fz_absi(epage - spage) + 1;  // total pages to copy
 
     fz_try(ctx) {
         if (spage < epage) {
             for (page = spage; page <= epage; page++, afterpage++) {
                 page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
-                counter ++;
+                counter++;
                 if (show_progress > 0 && counter % show_progress == 0) {
                     PySys_WriteStdout("Inserted %i of %i pages.\n", counter, total);
                 }
@@ -542,7 +553,7 @@ void JM_merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_sr
         } else {
             for (page = spage; page >= epage; page--, afterpage++) {
                 page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
-                counter ++;
+                counter++;
                 if (show_progress > 0 && counter % show_progress == 0) {
                     PySys_WriteStdout("Inserted %i of %i pages.\n", counter, total);
                 }
@@ -550,9 +561,6 @@ void JM_merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_sr
         }
     }
 
-    fz_always(ctx) {
-        pdf_drop_graft_map(ctx, graft_map);
-    }
     fz_catch(ctx) {
         fz_rethrow(ctx);
     }

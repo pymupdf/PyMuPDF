@@ -58,7 +58,7 @@ CheckParent(self)%}
 
 // memory allocation macros
 #define JM_MEMORY 1
-#if  PY_VERSION_HEX < 0x03000000
+#if  PY_MAJOR_VERSION < 3
     #undef JM_MEMORY
     #define JM_MEMORY 0
 #endif
@@ -81,7 +81,7 @@ CheckParent(self)%}
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
 
 // binary output depends on Python major
-# if PY_VERSION_HEX >= 0x03000000
+# if PY_MAJOR_VERSION >= 3
     #define JM_BinFromChar(x) PyBytes_FromString(x)
     #define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
 # else
@@ -119,7 +119,7 @@ PyObject *JM_mupdf_show_errors;
     if(!gctx)
     {
         PyErr_SetString(PyExc_RuntimeError, "Fatal error: could not create global context.");
-# if PY_VERSION_HEX >= 0x03000000
+# if PY_MAJOR_VERSION >= 3
        return NULL;
 # else
        return;
@@ -168,6 +168,7 @@ dictkey_length = PyString_InternFromString("length");
 dictkey_lines = PyString_InternFromString("lines");
 dictkey_modDate = PyString_InternFromString("modDate");
 dictkey_name = PyString_InternFromString("name");
+dictkey_number = PyString_InternFromString("number");
 dictkey_origin = PyString_InternFromString("origin");
 dictkey_size = PyString_InternFromString("size");
 dictkey_smask = PyString_InternFromString("smask");
@@ -232,6 +233,7 @@ except ImportError:
 %include helper-xobject.i
 %include helper-pdfinfo.i
 %include helper-convert.i
+%include helper-trace.i
 
 //-----------------------------------------------------------------------------
 // fz_document
@@ -378,8 +380,8 @@ struct Document
             self.stream      = None
             self.isClosed    = True
             self.FontInfos   = []
-            for gmap in self.Graftmaps:
-                self.Graftmaps[gmap] = None
+            for k in self.Graftmaps.keys():
+                self.Graftmaps[k] = None
             self.Graftmaps = {}
             self.ShownPages = {}
         %}
@@ -1424,7 +1426,7 @@ struct Document
             raise ValueError("cannot write with zero pages")%}
 
         PyObject *write(int garbage=0, int clean=0, int deflate=0,
-                        int ascii=0, int expand=0, int linear=0, int pretty=0,
+                        int ascii=0, int expand=0, int pretty=0,
                         int encryption=1,
                         int permissions=-1,
                         char *owner_pw=NULL,
@@ -1441,7 +1443,7 @@ struct Document
             opts.do_compress_fonts  = deflate;
             opts.do_decompress      = expand;
             opts.do_garbage         = garbage;
-            opts.do_linear          = linear;
+            opts.do_linear          = 0;
             opts.do_clean           = clean;
             opts.do_sanitize        = clean;
             opts.do_pretty          = pretty;
@@ -1491,18 +1493,22 @@ struct Document
 
         Args:
             docsrc: PDF to copy from. Must be different object, but may be same file.
-            from_page: (int) first page of source PDF to copy.
-            to_page: (int) last page of source PDF to copy.
+            from_page: (int) first source page to copy, 0-based, default 0.
+            to_page: (int) last source page to copy, 0-based, default last page.
             start_at: (int) from_page will become this page number in target.
-            links: (int/bool) whether to also copy links
-            annots: (int/bool) whether to also copy annotations
+            rotate: (int) rotate copied pages, default -1 is no change.
+            links: (int/bool) whether to also copy links.
+            annots: (int/bool) whether to also copy annotations.
+            show_progress: (int) progress message interval, 0 is no messages.
+            final: (bool) indicates last insertion from this source PDF.
+            _gmap: internal use only
 
         Copy sequence will reversed if from_page > to_page."""
 
         if self.isClosed or self.isEncrypted:
             raise ValueError("document closed or encrypted")
-        if id(self) == id(docsrc):
-            raise ValueError("source and target PDF are the same object")
+        if self._graft_id == docsrc._graft_id:
+            raise ValueError("source and target cannot be same object")
         sa = start_at
         if sa < 0:
             sa = self.pageCount
@@ -1514,13 +1520,22 @@ struct Document
             if not outname:
                 outname = "memory PDF"
             print("Inserting '%s' at '%s'" % (inname, outname))
+
+        # retrieve / make a Graftmap to avoid duplicate objects
+        isrt = docsrc._graft_id
+        _gmap = self.Graftmaps.get(isrt, None)
+        if _gmap is None:
+            _gmap = Graftmap(self)
+            self.Graftmaps[isrt] = _gmap
         %}
 
         %pythonappend insertPDF %{
         self._reset_page_refs()
         if links:
             self._do_links(docsrc, from_page = from_page, to_page = to_page,
-                        start_at = sa)%}
+                        start_at = sa)
+        if final == 1:
+            self.Graftmaps[isrt] = None%}
 
         PyObject *
         insertPDF(struct Document *docsrc,
@@ -1530,7 +1545,9 @@ struct Document
             int rotate=-1,
             int links=1,
             int annots=1,
-            int show_progress=0)
+            int show_progress=0,
+            int final = 1,
+            struct Graftmap *_gmap=NULL)
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdfout = pdf_specifics(gctx, doc);
@@ -1553,7 +1570,7 @@ struct Document
 
             fz_try(gctx) {
                 if (!pdfout || !pdfsrc) THROWMSG("source or target not a PDF");
-                JM_merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate, links, annots, show_progress);
+                JM_merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate, links, annots, show_progress, (pdf_graft_map *) _gmap);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -3128,8 +3145,8 @@ if not self.isFormPDF:
                 if hasattr(self, "_reset_page_refs"):
                     self._reset_page_refs()
                 if hasattr(self, "Graftmaps"):
-                    for gmap in self.Graftmaps:
-                        self.Graftmaps[gmap] = None
+                    for k in self.Graftmaps.keys():
+                        self.Graftmaps[k] = None
                 if hasattr(self, "this") and self.thisown:
                     self.__swig_destroy__(self)
                     self.thisown = False
@@ -3531,6 +3548,7 @@ struct Page {
                         if (!PySequence_Check(p) || PySequence_Size(p) != 2)
                             THROWMSG("3rd level entries must be pairs of floats");
                         point = fz_transform_point(JM_point_from_py(p), inv_ctm);
+                        Py_CLEAR(p);
                         pdf_array_push_real(gctx, stroke, point.x);
                         pdf_array_push_real(gctx, stroke, point.y);
                     }
@@ -4210,17 +4228,194 @@ struct Page {
         }
 
 
+        //----------------------------------------------------------------
+        // Page.getDrawings
+        //----------------------------------------------------------------
+        %pythoncode %{
+        def getDrawings(self):
+            """Get page draw paths."""
+
+            CheckParent(self)
+            val = self._getDrawings()  # read raw list from trace device
+            paths = []
+
+            def new_path():
+                """Return empty path dict to use as template."""
+                return {
+                    "color": None,
+                    "fill": None,
+                    "width": 1.0,
+                    "lineJoin": 0,
+                    "lineCap": (0, 0, 0),
+                    "dashes": "[] 0",
+                    "closePath": False,
+                    "even_odd": False,
+                    "rect": Rect(),
+                    "items": [],
+                    "opacity": 1.0,
+                }
+
+            def is_rectangle(path):
+                """Check if path represents a rectangle.
+                
+                For this, it must be exactly three connected lines, of which
+                the first and the last one must be horizontal and line two
+                must be vertical.
+                """
+                if not path["closePath"]:
+                    return False
+                if [item[0] for item in path["items"]] != ["l", "l", "l"]:
+                    return False
+                p1, p2 = path["items"][0][1:]  # first line
+                p3, p4 = path["items"][1][1:]  # second line
+                p5, p6 = path["items"][2][1:]  # third line
+                if p2 != p3 or p4 != p5:  # must be connected
+                    return False
+                if p1.y != p2.y or p3.x != p4.x or p5.y != p6.y:
+                    return False
+                return True
+
+            def check_and_merge(this, prev):
+                """Check if "this" is the "stroke" version of "prev".
+
+                If so, update "prev" with appropriate values and return True,
+                else do nothing and return False.
+                """
+                if prev is None:
+                    return False
+                if this["items"] != prev["items"]:  # must have same items
+                    return False
+                if this["closePath"] != prev["closePath"]:
+                    return False
+                if this["color"] is not None:
+                    prev["color"] = this["color"]
+                if this["width"] != 1:
+                    prev["width"] = this["width"]
+                if this["dashes"] != "[] 0":
+                    prev["dashes"] = this["dashes"]
+                if this["lineCap"] != (0, 0, 0):
+                    prev["lineCap"] = this["lineCap"]
+                if this["lineJoin"] != 0:
+                    prev["lineJoin"] = this["lineJoin"]
+                return True
+
+            for item in val:
+                if type(item) is list:
+                    if item[0] in ("fill", "stroke", "clip", "clip-stroke"):
+                        # this begins a new path
+                        path = new_path()
+                        ctm = Matrix(1, 1)
+                        factor = 1  # modify width and dash length
+                        current = None  # the current point
+                        for x in item[1:]:  # loop through path parms that follow
+                            if x == "non-zero":
+                                path["even_odd"] = False
+                            elif x == "even-odd":
+                                path["even_odd"] = True
+                            elif x[0] == "matrix":
+                                ctm = Matrix(x[1])
+                                if ctm.a == ctm.d:
+                                    factor = ctm.a
+                            elif x[0] == "w":
+                                path["width"] = x[1] * factor
+                            elif x[0] == "lineCap":
+                                path["lineCap"] = x[1:]
+                            elif x[0] == "lineJoin":
+                                path["lineJoin"] = x[1]
+                            elif x[0] == "color":
+                                if item[0] == "fill":
+                                    path["fill"] = x[1:]
+                                else:
+                                    path["color"] = x[1:]
+                            elif x[0] == "dashPhase":
+                                dashPhase = x[1] * factor
+                            elif x[0] == "dashes":
+                                dashes = x[1:]
+                                l = list(map(lambda y: float(y) * factor, dashes))
+                                l = list(map(str, l))
+                                path["dashes"] = "[%s] %g" % (" ".join(l), dashPhase)
+                            elif x[0] == "alpha":
+                                path["opacity"] = round(x[1], 2)
+
+                    if item[0] == "m":
+                        p = Point(item[1]) * ctm
+                        current = p
+                        path["rect"] = Rect(p, p)
+                    elif item[0] == "l":
+                        p2 = Point(item[1]) * ctm
+                        path["items"].append(("l", current, p2))
+                        current = p2
+                        path["rect"] |= p2
+                    elif item[0] == "c":
+                        p2 = Point(item[1]) * ctm
+                        p3 = Point(item[2]) * ctm
+                        p4 = Point(item[3]) * ctm
+                        path["items"].append(("c", current, p2, p3, p4))
+                        current = p4
+                        path["rect"] |= p2
+                        path["rect"] |= p3
+                        path["rect"] |= p4
+                elif item == "closePath":
+                    path["closePath"] = True
+                elif item in ("estroke", "efill", "eclip", "eclip-stroke"):
+                    if is_rectangle(path):
+                        path["items"] = [("re", path["rect"])]
+                        path["closePath"] = False
+
+                    try:  # check if path is "stroke" duplicate of previous
+                        prev = paths.pop()  # get previous path in list
+                    except IndexError:
+                        prev = None  # we are the first
+                    if prev is None:
+                        paths.append(path)
+                    elif check_and_merge(path, prev) is False:  # no duplicates
+                        paths.append(prev)  # re-append old one
+                        paths.append(path)  # append new one
+                    else:
+                        paths.append(prev)  # append modified old one
+
+                    path = None
+                else:
+                    print("unexpected item:", item)
+
+            return paths
+        %}
+
+        FITZEXCEPTION(_getDrawings, !result)
+        PyObject *
+        _getDrawings()
+        {
+            fz_page *page = (fz_page *) $self;
+            fz_device *dev = NULL;
+            PyObject *rc = NULL;
+            fz_try(gctx) {
+                rc = PyList_New(0);
+                dev = JM_new_tracedraw_device(gctx, rc);
+                fz_run_page(gctx, page, dev, fz_identity, NULL);
+                fz_close_device(gctx, dev);
+            }
+            fz_always(gctx) {
+                fz_drop_device(gctx, dev);
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
+
         //---------------------------------------------------------------------
         // Page apply redactions
         //---------------------------------------------------------------------
         FITZEXCEPTION(_apply_redactions, !result)
-        PyObject *_apply_redactions()
+        PyObject *_apply_redactions(int images=PDF_REDACT_IMAGE_PIXELS)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             int success = 0;
             pdf_redact_options opts;
             opts.black_boxes = 0;  // no black boxes
-            opts.image_method = PDF_REDACT_IMAGE_REMOVE;  // no kept images
+            opts.image_method = images;  // how to treat images
             fz_try(gctx) {
                 ASSERT_PDF(page);
                 success = pdf_redact_page(gctx, page->doc, page, &opts);
@@ -4411,6 +4606,7 @@ except:
                 pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
                 if (!annots) goto finished;  // have no annotations
                 int len = pdf_array_len(gctx, annots);
+                if (len == 0) goto finished;
                 int i, oxref = 0;
 
                 for (i = 0; i < len; i++) {
@@ -4422,7 +4618,7 @@ except:
                 pdf_array_delete(gctx, annots, i);   // delete entry in annotations
                 pdf_delete_object(gctx, page->doc, xref);      // delete link object
                 pdf_dict_put(gctx, page->obj, PDF_NAME(Annots), annots);
-                JM_refresh_link_table(gctx, page);            // reload link / annot tables
+                JM_refresh_link_table(gctx, page);  // reload link / annot tables
                 page->doc->dirty = 1;
                 finished:;
             }
@@ -4544,58 +4740,48 @@ except:
         // Add new links provided as an array of string object definitions.
         /*********************************************************************/
         FITZEXCEPTION(_addAnnot_FromString, !result)
-        PARENTCHECK(_addAnnot_FromString, """Add Link/Annot from object source.""")
+        PARENTCHECK(_addAnnot_FromString, """Add links from list of object sources.""")
         PyObject *_addAnnot_FromString(PyObject *linklist)
         {
-            pdf_obj *annots, *annot, *ind_obj, *new_array;
+            pdf_obj *annots, *annot, *ind_obj;
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            PyObject *txtpy;
-            char *text;
-            int lcount = (int) PySequence_Size(linklist); // new object count
+            PyObject *txtpy = NULL;
+            char *text = NULL;
+            int lcount = (int) PySequence_Size(linklist); // link count
             if (lcount < 1) return_none;
-            int i;
+            int i = -1;
+            fz_var(text);
+
+            // insert links from the provided sources
             fz_try(gctx) {
                 ASSERT_PDF(page);
-                // get existing annots array
-                annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
-                if (annots) {
-                    new_array = annots;
-                } else {
-                    new_array = pdf_new_array(gctx, page->doc, lcount);
-                    pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Annots), new_array);
-                    new_array = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
+                if (!pdf_dict_get(gctx, page->obj, PDF_NAME(Annots))) {
+                    pdf_dict_put_array(gctx, page->obj, PDF_NAME(Annots), lcount);
                 }
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-
-            // extract object sources from Python list and store as annotations
-            for (i = 0; i < lcount; i++) {
-                fz_try(gctx) {
+                annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
+                for (i = 0; i < lcount; i++) {
                     text = NULL;
                     txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
                     text = JM_Python_str_AsChar(txtpy);
-                    if (!text) THROWMSG("non-string linklist item");
-                    annot = JM_pdf_obj_from_str(gctx, page->doc, text);
+                    Py_CLEAR(txtpy);
+                    if (!text) THROWMSG("bad linklist item");
+                    annot = pdf_add_object_drop(gctx, page->doc,
+                            JM_pdf_obj_from_str(gctx, page->doc, text));
                     JM_Python_str_DelForPy3(text);
-                    ind_obj = pdf_add_object(gctx, page->doc, annot);
-                    pdf_array_push_drop(gctx, new_array, ind_obj);
+                    ind_obj = pdf_new_indirect(gctx, page->doc, pdf_to_num(gctx, annot), 0);
+                    pdf_array_push_drop(gctx, annots, ind_obj);
                     pdf_drop_obj(gctx, annot);
                 }
-                fz_catch(gctx) {
-                    if (text)
-                        PySys_WriteStderr("%s (%i): '%s'\n", fz_caught_message(gctx), i, text);
-                    else
-                        PySys_WriteStderr("%s (%i)\n", fz_caught_message(gctx), i);
-                    JM_Python_str_DelForPy3(text);
-                    PyErr_Clear();
-                }
-            }
-            fz_try(gctx) {
-                JM_refresh_link_table(gctx, page);
             }
             fz_catch(gctx) {
+                if (text) {
+                    PySys_WriteStderr("%s (%i): '%s'\n", fz_caught_message(gctx), i, text);
+                    JM_Python_str_DelForPy3(text);
+                }
+                else if (i >= 0) {
+                    PySys_WriteStderr("%s (%i)\n", fz_caught_message(gctx), i);
+                }
+                PyErr_Clear();
                 return NULL;
             }
             page->doc->dirty = 1;
@@ -5626,31 +5812,39 @@ if not self.colorspace or self.colorspace.n > 3:
         %pythonprepend setAlpha
 %{"""Set alphas to values contained in a byte array.
 If omitted, set alphas to 255."""%}
-        PyObject *setAlpha(PyObject *alphavalues=NULL)
+        PyObject *setAlpha(PyObject *alphavalues=NULL, int premultiply=1)
         {
             fz_buffer *res = NULL;
             fz_pixmap *pix = (fz_pixmap *) $self;
             fz_try(gctx) {
                 if (pix->alpha == 0) THROWMSG("pixmap has no alpha");
-                int n = fz_pixmap_colorants(gctx, pix);
-                int w = fz_pixmap_width(gctx, pix);
-                int h = fz_pixmap_height(gctx, pix);
-                int balen = w * h * (n+1);
+                size_t n = fz_pixmap_colorants(gctx, pix);
+                size_t w = fz_pixmap_width(gctx, pix);
+                size_t h = fz_pixmap_height(gctx, pix);
+                size_t balen = w * h * (n+1);
                 unsigned char *data = NULL;
-                int data_len = 0;
+                size_t data_len = 0;
                 if (alphavalues) {
                     res = JM_BufferFromBytes(gctx, alphavalues);
                     if (res) {
-                        data_len = (int) fz_buffer_storage(gctx, res, &data);
+                        data_len = fz_buffer_storage(gctx, res, &data);
                         if (data && data_len < w * h)
                             THROWMSG("not enough alpha values");
                     }
                     else THROWMSG("bad type: 'alphavalues'");
                 }
-                int i = 0, k = 0;
+                size_t i = 0, k = 0, j = 0;
                 while (i < balen) {
-                    if (data_len) pix->samples[i+n] = data[k];
-                    else          pix->samples[i+n] = 255;
+                    if (data_len) {
+                        pix->samples[i+n] = data[k];
+                        if (premultiply) {
+                            for (j = i; j < n; j++) {
+                                pix->samples[j] = pix->samples[j] * data[k] / 255 * data[k] / 255;
+                            }
+                        }
+                    } else {
+                        pix->samples[i+n] = 255;
+                    }
                     i += n+1;
                     k += 1;
                 }
@@ -5919,8 +6113,10 @@ Last item is the alpha if Pixmap.alpha is true."""%}
                 int i, j;
                 unsigned char c[5];
                 for (j = 0; j < n; j++) {
-                    i = (int) PyInt_AsLong(PySequence_ITEM(color, j));
-                    if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
+                    if (JM_INT_ITEM(color, j, &i) == 1)
+                        THROWMSG("bad color sequence");
+                    if (!INRANGE(i, 0, 255))
+                        THROWMSG("bad color sequence");
                     c[j] = (unsigned char) i;
                 }
                 int stride = fz_pixmap_stride(gctx, pm);
@@ -6000,9 +6196,9 @@ Use pillowWrite to reflect this in output image."""%}
         //----------------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend stride %{"""Length of one image line (width * n)."""%}
-        int stride()
+        PyObject *stride()
         {
-            return fz_pixmap_stride(gctx, (fz_pixmap *) $self);
+            return PyLong_FromSize_t((size_t) fz_pixmap_stride(gctx, (fz_pixmap *) $self));
         }
 
         //----------------------------------------------------------------------
@@ -6026,16 +6222,16 @@ Use pillowWrite to reflect this in output image."""%}
 
         %pythoncode %{@property%}
         %pythonprepend w %{"""The width."""%}
-        int w()
+        PyObject *w()
         {
-            return fz_pixmap_width(gctx, (fz_pixmap *) $self);
+            return PyLong_FromSize_t((size_t) fz_pixmap_width(gctx, (fz_pixmap *) $self));
         }
 
         %pythoncode %{@property%}
         %pythonprepend h %{"""The height."""%}
-        int h()
+        PyObject *h()
         {
-            return fz_pixmap_height(gctx, (fz_pixmap *) $self);
+            return PyLong_FromSize_t((size_t) fz_pixmap_height(gctx, (fz_pixmap *) $self));
         }
 
         %pythoncode %{@property%}
@@ -6095,9 +6291,14 @@ Use pillowWrite to reflect this in output image."""%}
         //----------------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend size %{"""Pixmap size."""%}
-        int size()
+        PyObject *size()
         {
-            return (int) fz_pixmap_size(gctx, (fz_pixmap *) $self);
+            fz_pixmap *pix = (fz_pixmap *) $self;
+            size_t s = (size_t) pix->w;
+            s *= pix->h;
+            s *= pix->n;
+            s += sizeof(*pix);
+            return PyLong_FromSize_t(s);
         }
 
         //----------------------------------------------------------------------
@@ -6108,7 +6309,10 @@ Use pillowWrite to reflect this in output image."""%}
         PyObject *samples()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
-            return PyBytes_FromStringAndSize((const char *) pm->samples, (Py_ssize_t) (pm->w)*(pm->h)*(pm->n));
+            Py_ssize_t s = (Py_ssize_t) pm->w;
+            s *= pm->h;
+            s *= pm->n;
+            return PyBytes_FromStringAndSize((const char *) pm->samples, s);
         }
 
         %pythoncode %{
@@ -6733,6 +6937,27 @@ struct Annot
                 return NULL;
             }
             return values;
+        }
+
+        //---------------------------------------------------------------------
+        // annotation get TextPage
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(getTextPage, !result)
+        PARENTCHECK(getTextPage, """Get annotation TextPage.""")
+        struct TextPage *
+        getTextPage(PyObject *clip=NULL, int flags = 0)
+        {
+            fz_stext_page *textpage=NULL;
+            fz_stext_options options = { 0 };
+            options.flags = flags;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                textpage = pdf_new_stext_page_from_annot(gctx, annot, &options);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct TextPage *) textpage;
         }
 
         //---------------------------------------------------------------------
@@ -8265,23 +8490,25 @@ struct TextPage {
         //---------------------------------------------------------------------
         FITZEXCEPTION(extractBLOCKS, !result)
         %pythonprepend extractBLOCKS
-        %{"""Fill a given list with text block information."""%}
+        %{"""Return a list with text block information."""%}
         PyObject *
-        extractBLOCKS(PyObject *lines)
+        extractBLOCKS()
         {
             fz_stext_block *block;
             fz_stext_line *line;
             fz_stext_char *ch;
-            int block_n = 0;
+            int block_n = -1;
             PyObject *text = NULL, *litem;
             fz_buffer *res = NULL;
             fz_var(res);
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_rect tp_rect = this_tpage->mediabox;
-
+            PyObject *lines = NULL;
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
+                lines = PyList_New(0);
                 for (block = this_tpage->first_block; block; block = block->next) {
+                    block_n++;
                     fz_rect blockrect = fz_empty_rect;
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         fz_clear_buffer(gctx, res);  // set text buffer to empty
@@ -8327,7 +8554,6 @@ struct TextPage {
                         LIST_APPEND_DROP(lines, litem);
                     }
                     Py_CLEAR(text);
-                    block_n++;
                 }
             }
             fz_always(gctx) {
@@ -8337,7 +8563,7 @@ struct TextPage {
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            return lines;
         }
 
         //---------------------------------------------------------------------
@@ -8345,9 +8571,9 @@ struct TextPage {
         //---------------------------------------------------------------------
         FITZEXCEPTION(extractWORDS, !result)
         %pythonprepend extractWORDS
-        %{"""Fill a list with text word information."""%}
+        %{"""Return a list with text word information."""%}
         PyObject *
-        extractWORDS(PyObject *lines)
+        extractWORDS()
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -8355,16 +8581,17 @@ struct TextPage {
             fz_buffer *buff = NULL;
             fz_var(buff);
             size_t buflen = 0;
-            int block_n = 0, line_n, word_n;
+            int block_n = -1, line_n, word_n;
             fz_rect wbbox = {0,0,0,0};  // word bbox
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_rect tp_rect = this_tpage->mediabox;
-
+            PyObject *lines = NULL;
             fz_try(gctx) {
                 buff = fz_new_buffer(gctx, 64);
+                lines = PyList_New(0);
                 for (block = this_tpage->first_block; block; block = block->next) {
+                    block_n++;
                     if (block->type != FZ_STEXT_BLOCK_TEXT) {
-                        block_n++;
                         continue;
                     }
                     line_n = 0;
@@ -8401,7 +8628,6 @@ struct TextPage {
                         }
                         line_n++;
                     }
-                    block_n++;
                 }
             }
             fz_always(gctx) {
@@ -8411,7 +8637,7 @@ struct TextPage {
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            return lines;
         }
 
         //---------------------------------------------------------------------
@@ -8427,6 +8653,7 @@ struct TextPage {
             fz_rect mediabox = this_tpage->mediabox;
             return JM_py_from_rect(mediabox);
         }
+
         //---------------------------------------------------------------------
         // method _extractText()
         //---------------------------------------------------------------------
@@ -8565,7 +8792,7 @@ struct TextPage {
 };
 
 //-----------------------------------------------------------------------------
-// Graftmap - only internally used for optimizing PDF object copy operations
+// Graftmap - only used internally for inter-PDF object copy operations
 //-----------------------------------------------------------------------------
 struct Graftmap
 {
@@ -8579,6 +8806,7 @@ struct Graftmap
         }
 
         FITZEXCEPTION(Graftmap, !result)
+        %pythonappend Graftmap %{self.thisown = True%}
         Graftmap(struct Document *doc)
         {
             pdf_graft_map *map = NULL;
@@ -8590,13 +8818,15 @@ struct Graftmap
             fz_catch(gctx) {
                 return NULL;
             }
-            return (struct Graftmap *) map;
+            return (struct Graftmap *) pdf_keep_graft_map(gctx, map);
         }
         %pythoncode %{
         def __del__(self):
             if not type(self) is Graftmap:
                 return
-            self.__swig_destroy__(self)
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
+            self.thisown = False
         %}
     }
 };
@@ -8648,7 +8878,9 @@ struct TextWriter
 
         pos = Point(pos) * self.ictm
         if font is None:
-            font = Font("helv")%}
+            font = Font("helv")
+        if not font.isWritable:
+            raise ValueError("Unsupported font '%s'." % font.name)%}
         %pythonappend append %{
         self.lastPoint = Point(val[-2:]) * self.ctm
         self.textRect = self._bbox * self.ctm
@@ -8872,29 +9104,9 @@ struct Font
             return (struct Font *) font;
         }
 
-        %pythonprepend unicode_to_glyph_name
-        %{"""Return the glyph name of a unicode."""%}
-        PyObject *unicode_to_glyph_name(int c, char *language=NULL, int script=0)
-        {
-            fz_font *font;
-            fz_text_language lang = fz_text_language_from_string(language);
-            char name[32];
-            int gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, c, script, lang, &font);
-            fz_get_glyph_name(gctx, font, gid, name, sizeof(name));
-            return Py_BuildValue("s", name);
-        }
-
-
-        %pythonprepend glyph_name_to_unicode
-        %{"""Return the unicode for a glyph name."""%}
-        PyObject *glyph_name_to_unicode(const char *name)
-        {
-            return Py_BuildValue("i", fz_unicode_from_glyph_name(name));
-        }
-
 
         %pythonprepend glyph_advance
-        %{"""Return the glyph width of a unicode."""%}
+        %{"""Return the glyph width of a unicode (font size 1)."""%}
         float glyph_advance(int chr, char *language=NULL, int script=0, int wmode=0)
         {
             fz_font *font;
@@ -8904,7 +9116,7 @@ struct Font
         }
 
         %pythonprepend glyph_bbox
-        %{"""Return the glyph bbox of a unicode."""%}
+        %{"""Return the glyph bbox of a unicode (font size 1)."""%}
         %pythonappend glyph_bbox %{val = Rect(val)%}
         PyObject *glyph_bbox(int chr, char *language=NULL, int script=0)
         {
@@ -8915,20 +9127,19 @@ struct Font
         }
 
         %pythonprepend has_glyph
-        %{"""Return whether font has a glyph for this unicode."""%}
+        %{"""Check whether font has a glyph for this unicode."""%}
         PyObject *has_glyph(int chr, char *language=NULL, int script=0, int fallback=0)
         {
             fz_font *font;
             fz_text_language lang;
-            int gid;
+            int gid = 0;
             if (fallback) {
                 lang = fz_text_language_from_string(language);
                 gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
             } else {
                 gid = fz_encode_character(gctx, (fz_font *) $self, chr);
             }
-            if (gid > 0) Py_RETURN_TRUE;
-            Py_RETURN_FALSE;
+            return Py_BuildValue("i", gid);
         }
 
 
@@ -8939,13 +9150,15 @@ struct Font
             cp = array("l", (0,) * gc)
             arr = cp.buffer_info()
             self._valid_unicodes(arr)
-            return array("l", sorted(set(cp)))
+            return array("l", sorted(set(cp)[1:]))
         %}
         void _valid_unicodes(PyObject *arr)
         {
             fz_font *font = (fz_font *) $self;
-            void *ptr = PyLong_AsVoidPtr(PySequence_ITEM(arr, 0));
+            PyObject *temp = PySequence_ITEM(arr, 0);
+            void *ptr = PyLong_AsVoidPtr(temp);
             jm_valid_chars(gctx, font, ptr);
+            Py_DECREF(temp);
         }
 
 
@@ -8962,6 +9175,18 @@ struct Font
             "invalid-bbox", f->invalid_bbox);
         }
 
+
+        %pythoncode %{@property%}
+        PyObject *isWritable()
+        {
+            fz_font *font = (fz_font *) $self;
+            if (fz_font_t3_procs(gctx, font) ||
+                fz_font_flags(font)->ft_substitute ||
+                !pdf_font_writing_supported(font)) {
+                Py_RETURN_FALSE;
+            }
+            Py_RETURN_TRUE;
+        }
 
         %pythoncode %{@property%}
         PyObject *name()
@@ -8993,7 +9218,33 @@ struct Font
             return JM_py_from_rect(fz_font_bbox(gctx, this_font));
         }
 
+        %pythoncode %{@property%}
+        %pythonprepend ascender
+        %{"""Return the glyph ascender value."""%}
+        float ascender()
+        {
+            return fz_font_ascender(gctx, (fz_font *) $self);
+        }
+
+
+        %pythoncode %{@property%}
+        %pythonprepend descender
+        %{"""Return the glyph descender value."""%}
+        float descender()
+        {
+            return fz_font_descender(gctx, (fz_font *) $self);
+        }
+
+
         %pythoncode %{
+            def glyph_name_to_unicode(self, name):
+                """Return the unicode for a glyph name."""
+                return glyph_name_to_unicode(name)
+
+            def unicode_to_glyph_name(self, ch):
+                """Return the glyph name for a unicode."""
+                return unicode_to_glyph_name(ch)
+
             def text_length(self, text, fontsize=11, wmode=0):
                 """Calculate the length of a string for this font."""
                 return fontsize * sum([self.glyph_advance(ord(c), wmode=wmode) for c in text])
@@ -9025,6 +9276,7 @@ struct Tools
             if (JM_UNIQUE_ID < 0) JM_UNIQUE_ID = 1;
             return Py_BuildValue("i", JM_UNIQUE_ID);
         }
+
 
         FITZEXCEPTION(set_icc, !result)
         %pythonprepend set_icc

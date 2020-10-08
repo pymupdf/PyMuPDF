@@ -1,5 +1,5 @@
-wget https://mupdf.com/downloads/mupdf-1.17.0-source.tar.gz
-tar -zxvf mupdf-1.17.0-source.tar.gz
+wget https://mupdf.com/downloads/mupdf-1.18.0-source.tar.gz
+tar -zxvf mupdf-1.18.0-source.tar.gz
 
 cd mupdf-1.17.0-source
 export CFLAGS="-fPIC -std=gnu99"

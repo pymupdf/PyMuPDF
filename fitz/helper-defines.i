@@ -35,6 +35,12 @@
 #define PDF_ANNOT_3D 25
 #define PDF_ANNOT_UNKNOWN -1
 
+//------------------------
+// redaction annot options
+//------------------------
+#define PDF_REDACT_IMAGE_NONE 0
+#define PDF_REDACT_IMAGE_REMOVE 1
+#define PDF_REDACT_IMAGE_PIXELS 2
 
 //----------------------------------------------------------------------------
 // annotation flag bits
@@ -380,6 +386,7 @@ PyObject *dictkey_length;
 PyObject *dictkey_lines;
 PyObject *dictkey_modDate;
 PyObject *dictkey_name;
+PyObject *dictkey_number;
 PyObject *dictkey_origin;
 PyObject *dictkey_size;
 PyObject *dictkey_smask;

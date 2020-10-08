@@ -127,12 +127,10 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     if (PyBytes_Check(imagedata)) {
         c = PyBytes_AS_STRING(imagedata);
         len = PyBytes_GET_SIZE(imagedata);
-    }
-    else if (PyByteArray_Check(imagedata)) {
+    } else if (PyByteArray_Check(imagedata)) {
         c = PyByteArray_AS_STRING(imagedata);
         len = PyByteArray_GET_SIZE(imagedata);
-    }
-    else {
+    } else {
         PySys_WriteStderr("bad image data\n");
         Py_RETURN_NONE;
     }
@@ -149,8 +147,7 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     fz_try(ctx) {
         if (keep_image) {
             res = fz_new_buffer_from_copied_data(ctx, c, (size_t) len);
-        }
-        else {
+        } else {
             res = fz_new_buffer_from_shared_data(ctx, c, (size_t) len);
         }
         image = fz_new_image_from_buffer(ctx, res);
@@ -183,8 +180,7 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     fz_always(ctx) {
         if (!keep_image) {
             fz_drop_image(ctx, image);
-        }
-        else {
+        } else {
             fz_drop_buffer(ctx, res);  // drop the buffer copy
         }
     }
@@ -232,8 +228,7 @@ JM_pixmap_from_display_list(fz_context *ctx,
         if (!fz_is_infinite_rect(rclip)) {
             dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
             fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
-        }
-        else {
+        } else {
             dev = fz_new_draw_device(ctx, matrix, pix);
             fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
         }

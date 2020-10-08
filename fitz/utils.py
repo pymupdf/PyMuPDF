@@ -24,7 +24,7 @@ def writeText(
     rotate=0,
 ):
     """Write the text of one or TextWriter objects.
-    
+
     Args:
         rect: target rectangle. If None, the union of the text writers is used.
         writers: one or more TextWriter objects.
@@ -87,7 +87,7 @@ def showPDFpage(
     """
 
     def calc_matrix(sr, tr, keep=True, rotate=0):
-        """ Calculate transformation matrix from source to target rect.
+        """Calculate transformation matrix from source to target rect.
 
         Notes:
             The product of four matrices in this sequence: (1) translate correct
@@ -163,10 +163,9 @@ def showPDFpage(
     if doc._graft_id == isrc:
         raise ValueError("source document must not equal target")
 
-    # check if we have already copied objects from this source doc
-    if isrc in doc.Graftmaps:  # yes: use the old graftmap
-        gmap = doc.Graftmaps[isrc]
-    else:  # no: make a new graftmap
+    # retrieve / make Graftmap for source PDF
+    gmap = doc.Graftmaps.get(isrc, None)
+    if gmap is None:
         gmap = Graftmap(doc)
         doc.Graftmaps[isrc] = gmap
 
@@ -213,7 +212,7 @@ def insertImage(
     """
 
     def calc_matrix(fw, fh, tr, rotate=0):
-        """ Calculate transformation matrix for image insertion.
+        """Calculate transformation matrix for image insertion.
 
         Notes:
             The result is basically a multiplication of four matrices in this
@@ -354,7 +353,7 @@ def insertImage(
 
 
 def searchFor(page, text, hit_max=16, quads=False, clip=None, flags=None):
-    """ Search for a string on a page.
+    """Search for a string on a page.
 
     Args:
         text: string to be searched for
@@ -373,7 +372,7 @@ def searchFor(page, text, hit_max=16, quads=False, clip=None, flags=None):
 
 
 def searchPageFor(doc, pno, text, hit_max=16, quads=False, clip=None, flags=None):
-    """ Search for a string on a page.
+    """Search for a string on a page.
 
     Args:
         pno: page number
@@ -404,10 +403,9 @@ def getTextBlocks(page, clip=None, flags=None):
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
     tp = page.getTextPage(clip, flags)
-    l = []
-    tp.extractBLOCKS(l)
+    blocks = tp.extractBLOCKS()
     del tp
-    return l
+    return blocks
 
 
 def getTextWords(page, clip=None, flags=None):
@@ -420,16 +418,17 @@ def getTextWords(page, clip=None, flags=None):
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
     tp = page.getTextPage(clip, flags)
-    l = []
-    tp.extractWORDS(l)
+    words = tp.extractWORDS()
     del tp
-    return l
+    return words
 
 
-def getTextbox(page, rect, clip=None):
+def getTextbox(page, rect=None, clip=None):
     CheckParent(page)
     flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
     tp = page.getTextPage(clip, flags)
+    if rect is None:
+        rect = page.rect
     rc = tp.extractRect(rect)
     del tp
     return rc
@@ -445,7 +444,7 @@ def getTextSelection(page, p1, p2, clip=None):
 
 
 def getText(page, option="text", clip=None, flags=None):
-    """ Extract a document page's text.
+    """Extract a document page's text.
 
     This is a unifying wrapper for various methods of Page / TextPage classes.
 
@@ -494,7 +493,7 @@ def getText(page, option="text", clip=None, flags=None):
 
 
 def getPageText(doc, pno, option="text", clip=None, flags=None):
-    """ Extract a document page's text by page number.
+    """Extract a document page's text by page number.
 
     Notes:
         Convenience function calling page.getText().
@@ -705,7 +704,7 @@ def setTOC_item(
     zoom=0,
 ):
     """Update TOC item by index.
-    
+
     It allows changing the item's title and link destination.
 
     Args:
@@ -830,7 +829,7 @@ def setMetadata(doc, m):
 
 
 def getDestStr(xref, ddict):
-    """ Calculate the PDF action string.
+    """Calculate the PDF action string.
 
     Notes:
         Supports Link annotations and outline items (bookmarks).
@@ -1059,8 +1058,7 @@ def do_links(doc1, doc2, from_page=-1, to_page=-1, start_at=-1):
     # internal function to create the actual "/Annots" object string
     # --------------------------------------------------------------------------
     def cre_annot(lnk, xref_dst, pno_src, ctm):
-        """Create annotation object string for a passed-in link.
-        """
+        """Create annotation object string for a passed-in link."""
 
         r = lnk["from"] * ctm  # rect in PDF coordinates
         rect = "%g %g %g %g" % tuple(r)
@@ -1135,8 +1133,8 @@ def do_links(doc1, doc2, from_page=-1, to_page=-1, start_at=-1):
     for i in range(len(pno_src)):
         p_src = pno_src[i]
         p_dst = pno_dst[i]
-        old_xref = doc2._getPageObjNumber(p_src)[0]
-        new_xref = doc1._getPageObjNumber(p_dst)[0]
+        old_xref = doc2.pageXref(p_src)
+        new_xref = doc1.pageXref(p_dst)
         xref_src.append(old_xref)
         xref_dst.append(new_xref)
 
@@ -1158,7 +1156,7 @@ def do_links(doc1, doc2, from_page=-1, to_page=-1, start_at=-1):
                 print("cannot create /Annot for kind: " + str(l["kind"]))
             else:
                 link_tab.append(annot_text)
-        if len(link_tab) > 0:
+        if link_tab != []:
             page_dst._addAnnot_FromString(link_tab)
         page_dst = None
         page_src = None
@@ -1255,7 +1253,7 @@ def insertTextbox(
     morph=None,
     overlay=True,
 ):
-    """ Insert text into a given rectangle.
+    """Insert text into a given rectangle.
 
     Notes:
         Creates a Shape object, uses its same-named method and commits it.
@@ -1337,8 +1335,7 @@ def insertText(
 
 
 def newPage(doc, pno=-1, width=595, height=842):
-    """Create and return a new page object.
-    """
+    """Create and return a new page object."""
     doc._newPage(pno, width=width, height=height)
     return doc[pno]
 
@@ -1354,7 +1351,7 @@ def insertPage(
     fontfile=None,
     color=None,
 ):
-    """ Create a new PDF page and insert some text.
+    """Create a new PDF page and insert some text.
 
     Notes:
         Function combining Document.newPage() and Page.insertText().
@@ -1385,10 +1382,8 @@ def drawLine(
     lineJoin=0,
     overlay=True,
     morph=None,
-    roundcap=None,
 ):
-    """Draw a line from point p1 to point p2.
-    """
+    """Draw a line from point p1 to point p2."""
     img = page.newShape()
     p = img.drawLine(Point(p1), Point(p2))
     img.finish(
@@ -1399,7 +1394,6 @@ def drawLine(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundcap,
     )
     img.commit(overlay)
 
@@ -1418,10 +1412,8 @@ def drawSquiggle(
     lineJoin=0,
     overlay=True,
     morph=None,
-    roundCap=None,
 ):
-    """Draw a squiggly line from point p1 to point p2.
-    """
+    """Draw a squiggly line from point p1 to point p2."""
     img = page.newShape()
     p = img.drawSquiggle(Point(p1), Point(p2), breadth=breadth)
     img.finish(
@@ -1432,7 +1424,6 @@ def drawSquiggle(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
     )
     img.commit(overlay)
 
@@ -1451,10 +1442,8 @@ def drawZigzag(
     lineJoin=0,
     overlay=True,
     morph=None,
-    roundCap=None,
 ):
-    """Draw a zigzag line from point p1 to point p2.
-    """
+    """Draw a zigzag line from point p1 to point p2."""
     img = page.newShape()
     p = img.drawZigzag(Point(p1), Point(p2), breadth=breadth)
     img.finish(
@@ -1465,7 +1454,6 @@ def drawZigzag(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
     )
     img.commit(overlay)
 
@@ -1482,11 +1470,9 @@ def drawRect(
     lineCap=0,
     lineJoin=0,
     morph=None,
-    roundCap=None,
     overlay=True,
 ):
-    """Draw a rectangle.
-    """
+    """Draw a rectangle."""
     img = page.newShape()
     Q = img.drawRect(Rect(rect))
     img.finish(
@@ -1497,7 +1483,6 @@ def drawRect(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
     )
     img.commit(overlay)
 
@@ -1514,11 +1499,9 @@ def drawQuad(
     lineCap=0,
     lineJoin=0,
     morph=None,
-    roundCap=None,
     overlay=True,
 ):
-    """Draw a quadrilateral.
-    """
+    """Draw a quadrilateral."""
     img = page.newShape()
     Q = img.drawQuad(Quad(quad))
     img.finish(
@@ -1529,7 +1512,6 @@ def drawQuad(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
     )
     img.commit(overlay)
 
@@ -1546,12 +1528,10 @@ def drawPolyline(
     morph=None,
     lineCap=0,
     lineJoin=0,
-    roundCap=None,
     overlay=True,
     closePath=False,
 ):
-    """Draw multiple connected line segments.
-    """
+    """Draw multiple connected line segments."""
     img = page.newShape()
     Q = img.drawPolyline(points)
     img.finish(
@@ -1562,7 +1542,6 @@ def drawPolyline(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
         closePath=closePath,
     )
     img.commit(overlay)
@@ -1581,11 +1560,9 @@ def drawCircle(
     width=1,
     lineCap=0,
     lineJoin=0,
-    roundCap=None,
     overlay=True,
 ):
-    """Draw a circle given its center and radius.
-    """
+    """Draw a circle given its center and radius."""
     img = page.newShape()
     Q = img.drawCircle(Point(center), radius)
     img.finish(
@@ -1596,7 +1573,6 @@ def drawCircle(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
     )
     img.commit(overlay)
     return Q
@@ -1609,14 +1585,12 @@ def drawOval(
     fill=None,
     dashes=None,
     morph=None,
-    roundCap=None,
     width=1,
     lineCap=0,
     lineJoin=0,
     overlay=True,
 ):
-    """Draw an oval given its containing rectangle or quad.
-    """
+    """Draw an oval given its containing rectangle or quad."""
     img = page.newShape()
     Q = img.drawOval(rect)
     img.finish(
@@ -1627,7 +1601,6 @@ def drawOval(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
     )
     img.commit(overlay)
 
@@ -1644,14 +1617,12 @@ def drawCurve(
     dashes=None,
     width=1,
     morph=None,
-    roundCap=None,
     closePath=False,
     lineCap=0,
     lineJoin=0,
     overlay=True,
 ):
-    """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3.
-    """
+    """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3."""
     img = page.newShape()
     Q = img.drawCurve(Point(p1), Point(p2), Point(p3))
     img.finish(
@@ -1662,7 +1633,6 @@ def drawCurve(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
         closePath=closePath,
     )
     img.commit(overlay)
@@ -1681,14 +1651,12 @@ def drawBezier(
     dashes=None,
     width=1,
     morph=None,
-    roundCap=None,
     closePath=False,
     lineCap=0,
     lineJoin=0,
     overlay=True,
 ):
-    """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3.
-    """
+    """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3."""
     img = page.newShape()
     Q = img.drawBezier(Point(p1), Point(p2), Point(p3), Point(p4))
     img.finish(
@@ -1699,7 +1667,6 @@ def drawBezier(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
         closePath=closePath,
     )
     img.commit(overlay)
@@ -1717,14 +1684,13 @@ def drawSector(
     dashes=None,
     fullSector=True,
     morph=None,
-    roundCap=None,
     width=1,
     closePath=False,
     lineCap=0,
     lineJoin=0,
     overlay=True,
 ):
-    """ Draw a circle sector given circle center, one arc end point and the angle of the arc.
+    """Draw a circle sector given circle center, one arc end point and the angle of the arc.
 
     Parameters:
         center -- center of circle
@@ -1742,7 +1708,6 @@ def drawSector(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
-        roundCap=roundCap,
         closePath=closePath,
     )
     img.commit(overlay)
@@ -2534,8 +2499,7 @@ class Shape(object):
                 self.rect.y1 = max(self.rect.y1, x.y1)
 
     def drawLine(self, p1, p2):
-        """Draw a line between two points.
-        """
+        """Draw a line between two points."""
         p1 = Point(p1)
         p2 = Point(p2)
         if not (self.lastPoint == p1):
@@ -2549,8 +2513,7 @@ class Shape(object):
         return self.lastPoint
 
     def drawPolyline(self, points):
-        """Draw several connected line segments.
-        """
+        """Draw several connected line segments."""
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == Point(p)):
@@ -2564,8 +2527,7 @@ class Shape(object):
         return self.lastPoint
 
     def drawBezier(self, p1, p2, p3, p4):
-        """Draw a standard cubic Bezier curve.
-        """
+        """Draw a standard cubic Bezier curve."""
         p1 = Point(p1)
         p2 = Point(p2)
         p3 = Point(p3)
@@ -2583,8 +2545,7 @@ class Shape(object):
         return self.lastPoint
 
     def drawOval(self, tetra):
-        """Draw an ellipse inside a tetrapod.
-        """
+        """Draw an ellipse inside a tetrapod."""
         if len(tetra) != 4:
             raise ValueError("invalid arg length")
         if hasattr(tetra[0], "__float__"):
@@ -2608,8 +2569,7 @@ class Shape(object):
         return self.lastPoint
 
     def drawCircle(self, center, radius):
-        """Draw a circle given its center and radius.
-        """
+        """Draw a circle given its center and radius."""
         if not radius > EPSILON:
             raise ValueError("radius must be postive")
         center = Point(center)
@@ -2617,8 +2577,7 @@ class Shape(object):
         return self.drawSector(center, p1, 360, fullSector=False)
 
     def drawCurve(self, p1, p2, p3):
-        """Draw a curve between points using one control point.
-        """
+        """Draw a curve between points using one control point."""
         kappa = 0.55228474983
         p1 = Point(p1)
         p2 = Point(p2)
@@ -2628,8 +2587,7 @@ class Shape(object):
         return self.drawBezier(p1, k1, k2, p3)
 
     def drawSector(self, center, point, beta, fullSector=True):
-        """Draw a circle sector.
-        """
+        """Draw a circle sector."""
         center = Point(center)
         point = Point(point)
         l3 = "%g %g m\n"
@@ -2697,8 +2655,7 @@ class Shape(object):
         return self.lastPoint
 
     def drawRect(self, rect):
-        """Draw a rectangle.
-        """
+        """Draw a rectangle."""
         r = Rect(rect)
         self.draw_cont += "%g %g %g %g re\n" % JM_TUPLE(
             list(r.bl * self.ipctm) + [r.width, r.height]
@@ -2708,14 +2665,12 @@ class Shape(object):
         return self.lastPoint
 
     def drawQuad(self, quad):
-        """Draw a Quad.
-        """
+        """Draw a Quad."""
         q = Quad(quad)
         return self.drawPolyline([q.ul, q.ll, q.lr, q.ur, q.ul])
 
     def drawZigzag(self, p1, p2, breadth=2):
-        """Draw a zig-zagged line from p1 to p2.
-        """
+        """Draw a zig-zagged line from p1 to p2."""
         p1 = Point(p1)
         p2 = Point(p2)
         S = p2 - p1  # vector start - end
@@ -2739,8 +2694,7 @@ class Shape(object):
         return p2
 
     def drawSquiggle(self, p1, p2, breadth=2):
-        """Draw a squiggly line from p1 to p2.
-        """
+        """Draw a squiggly line from p1 to p2."""
         p1 = Point(p1)
         p2 = Point(p2)
         S = p2 - p1  # vector start - end
@@ -2948,7 +2902,7 @@ class Shape(object):
         rotate=0,
         morph=None,
     ):
-        """ Insert text into a given rectangle.
+        """Insert text into a given rectangle.
 
         Args:
             rect -- the textbox to fill
@@ -3215,7 +3169,6 @@ class Shape(object):
         fill=None,
         lineCap=0,
         lineJoin=0,
-        roundCap=None,
         dashes=None,
         even_odd=False,
         morph=None,
@@ -3230,12 +3183,6 @@ class Shape(object):
         """
         if self.draw_cont == "":  # treat empty contents as no-op
             return
-        if roundCap is not None:
-            warnings.warn(
-                "roundCap replaced by lineCap / lineJoin and removed in next version",
-                DeprecationWarning,
-            )
-            lineCap = lineJoin = roundCap
 
         if width == 0:  # border color makes no sense then
             color = None
@@ -3244,14 +3191,16 @@ class Shape(object):
         color_str = ColorCode(color, "c")  # ensure proper color string
         fill_str = ColorCode(fill, "f")  # ensure proper fill string
 
-        if width not in (0, 1):
-            self.draw_cont += "%g w\n" % width
+        if width != 1:
+            self.draw_cont = "%g w\n" % width + self.draw_cont
 
-        if lineCap + lineJoin > 0:
-            self.draw_cont += "%i J %i j\n" % (lineCap, lineJoin)
+        if lineCap != 0:
+            self.draw_cont = "%i J\n" % lineCap + self.draw_cont
+        if lineJoin != 0:
+            self.draw_cont = "%i j\n" % lineJoin + self.draw_cont
 
-        if dashes is not None and len(dashes) > 0:
-            self.draw_cont += "%s d\n" % dashes
+        if dashes not in (None, "", "[] 0"):
+            self.draw_cont = "%s d\n" % dashes + self.draw_cont
 
         if closePath:
             self.draw_cont += "h\n"
@@ -3288,8 +3237,7 @@ class Shape(object):
         return
 
     def commit(self, overlay=True):
-        """Update the page's /Contents object with Shape data. The argument controls whether data appear in foreground (default) or background.
-        """
+        """Update the page's /Contents object with Shape data. The argument controls whether data appear in foreground (default) or background."""
         CheckParent(self.page)  # doc may have died meanwhile
         self.totalcont += self.text_cont
 
@@ -3310,9 +3258,8 @@ class Shape(object):
         return
 
 
-def apply_redactions(page):
-    """Apply the redaction annotations of the page.
-    """
+def apply_redactions(page, images=2):
+    """Apply the redaction annotations of the page."""
 
     def center_rect(annot_rect, text, font, fsize):
         """Calculate minimal sub-rectangle for the overlay text.
@@ -3360,7 +3307,7 @@ def apply_redactions(page):
     if redact_annots == []:  # any redactions on this page?
         return False  # no redactions
 
-    rc = page._apply_redactions()  # call MuPDF redaction process step
+    rc = page._apply_redactions(images)  # call MuPDF redaction process step
     if not rc:  # should not happen really
         raise ValueError("Error applying redactions.")
 
@@ -3711,4 +3658,3 @@ def fillTextbox(
         line_ctr += 1  # line counter
 
     return (idx, end_idx)  # return count of processed words, total words
-
