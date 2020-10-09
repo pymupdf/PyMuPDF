@@ -14,7 +14,7 @@ class build_ext_first(build_py_orig):
 DEFAULT = ["mupdf", "mupdf-third"]
 ARCH_LINUX = DEFAULT + ["jbig2dec", "openjp2", "jpeg", "freetype"]
 OPENSUSE = ARCH_LINUX + ["harfbuzz", "png16"]
-FEDORA = ARCH_LINUX + ["harfbuzz"]
+FEDORA = ARCH_LINUX + ["harfbuzz", "gumbo"]
 LIBRARIES = {
     "default": DEFAULT,
     "arch": ARCH_LINUX,
