@@ -893,14 +893,14 @@ struct Document
         %pythoncode%{@property%}
         PyObject *pageCount()
         {
-            int pc = 0;
+            PyObject *ret;
             fz_try(gctx) {
-                pc = fz_count_pages(gctx, (fz_document *) $self);
+                ret = Py_BuildValue("i", fz_count_pages(gctx, (fz_document *) $self));
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", pc);
+            return ret;
         }
 
         FITZEXCEPTION(chapterCount, !result)
@@ -908,14 +908,14 @@ struct Document
         %pythoncode%{@property%}
         PyObject *chapterCount()
         {
-            int pc=0;
+            PyObject *ret;
             fz_try(gctx) {
-                pc = fz_count_chapters(gctx, (fz_document *) $self);
+                ret = Py_BuildValue("i", fz_count_chapters(gctx, (fz_document *) $self));
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", pc);
+            return ret;
         }
 
         FITZEXCEPTION(lastLocation, !result)
@@ -939,9 +939,9 @@ struct Document
         CLOSECHECK0(chapterPageCount, """Page count of chapter.""")
         PyObject *chapterPageCount(int chapter)
         {
-            int chapters = fz_count_chapters(gctx, (fz_document *) $self);
             int pages = 0;
             fz_try(gctx) {
+                int chapters = fz_count_chapters(gctx, (fz_document *) $self);
                 if (chapter < 0 || chapter >= chapters)
                     THROWMSG("bad chapter number");
                 pages = fz_count_chapter_pages(gctx, (fz_document *) $self, chapter);
