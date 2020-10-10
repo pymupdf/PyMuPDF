@@ -4,7 +4,6 @@ tar -zxvf mupdf-1.18.0-source.tar.gz
 cd mupdf-1.18.0-source
 # replace files in mupdf source
 cp ../PyMuPDF/fitz/_config.h include/mupdf/fitz/config.h
-cp ../PyMuPDF/fitz/_pdf-font-add.c source/pdf/pdf-font-add.c
 
 export CFLAGS="-fPIC"
 # install some prerequirement
