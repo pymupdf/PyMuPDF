@@ -92,6 +92,22 @@ CheckParent(self)%}
 #include <fitz.h>
 #include <pdf.h>
 #include <time.h>
+// freetype includes >> --------------------------------------------------
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#ifdef FT_FONT_FORMATS_H
+#include FT_FONT_FORMATS_H
+#else
+#include FT_XFREE86_H
+#endif
+#include FT_TRUETYPE_TABLES_H
+
+#ifndef FT_SFNT_HEAD
+#define FT_SFNT_HEAD ft_sfnt_head
+#endif
+// << freetype includes --------------------------------------------------
+
+
 char *JM_Python_str_AsChar(PyObject *str);
 
 // additional headers from MuPDF ----------------------------------------------
@@ -100,7 +116,7 @@ fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, fl
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
-void jm_valid_chars(fz_context *ctx, fz_font *font, void *ptr);
+
 // end of additional MuPDF headers --------------------------------------------
 
 PyObject *JM_mupdf_warnings_store;
@@ -859,7 +875,7 @@ struct Document
             fz_try(gctx) {
                 int fp = from_page, tp = to_page, srcCount = fz_count_pages(gctx, fz_doc);
                 if (pdf_specifics(gctx, fz_doc))
-                    THROWMSG("use select+write or insertPDF for PDF docs instead");
+                    THROWMSG("bad document type");
                 if (fp < 0) fp = 0;
                 if (fp > srcCount - 1) fp = srcCount - 1;
                 if (tp < 0) tp = srcCount - 1;
@@ -872,18 +888,34 @@ struct Document
             return doc;
         }
 
+        FITZEXCEPTION(pageCount, !result)
         CLOSECHECK0(pageCount, """Number of pages.""")
         %pythoncode%{@property%}
         PyObject *pageCount()
         {
-            return Py_BuildValue("i", fz_count_pages(gctx, (fz_document *) $self));
+            int pc = 0;
+            fz_try(gctx) {
+                pc = fz_count_pages(gctx, (fz_document *) $self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", pc);
         }
 
+        FITZEXCEPTION(chapterCount, !result)
         CLOSECHECK0(chapterCount, """Number of chapters.""")
         %pythoncode%{@property%}
         PyObject *chapterCount()
         {
-            return Py_BuildValue("i", fz_count_chapters(gctx, (fz_document *) $self));
+            int pc=0;
+            fz_try(gctx) {
+                pc = fz_count_chapters(gctx, (fz_document *) $self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", pc);
         }
 
         FITZEXCEPTION(lastLocation, !result)
@@ -3375,6 +3407,58 @@ struct Page {
             return text;
         }
 
+
+        //---------------------------------------------------------------------
+        // page set opacity
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_set_opacity, !result)
+        %pythonprepend _set_opacity %{
+        if min(CA, ca) >= 1:
+            return
+        tCA = int(round(max(CA , 0) * 100))
+        if tCA >= 100:
+            tCA = 99
+        tca = int(round(max(ca, 0) * 100))
+        if tca >= 100:
+            tca = 99
+        gstate = "fitzca%02i%02i" % (tCA, tca)
+        %}
+        PyObject *
+        _set_opacity(char *gstate=NULL, float CA=1, float ca=1)
+        {
+            if (!gstate) Py_RETURN_NONE;
+            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(page);
+                pdf_obj *resources = pdf_dict_get(gctx, page->obj, PDF_NAME(Resources));
+                if (!resources) {
+                    resources = pdf_dict_put_dict(gctx, page->obj, PDF_NAME(Resources), 2);
+                }
+                pdf_obj *extg = pdf_dict_get(gctx, resources, PDF_NAME(ExtGState));
+                if (!extg) {
+                    extg = pdf_dict_put_dict(gctx, resources, PDF_NAME(ExtGState), 2);
+                }
+                int i, n = pdf_dict_len(gctx, extg);
+                for (i = 0; i < n; i++) {
+                    pdf_obj *o1 = pdf_dict_get_key(gctx, extg, i);
+                    char *name = (char *) pdf_to_name(gctx, o1);
+                    if (strcmp(name, gstate) == 0) goto finished;
+                }
+                pdf_obj *opa = pdf_new_dict(gctx, page->doc, 3);
+                pdf_dict_put_real(gctx, opa, PDF_NAME(CA), (double) CA);
+                pdf_dict_put_real(gctx, opa, PDF_NAME(ca), (double) ca);
+                pdf_dict_puts_drop(gctx, extg, gstate, opa);
+                finished:;
+            }
+            fz_always(gctx) {
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("s", gstate);
+
+        }
+
         //---------------------------------------------------------------------
         // page addCaretAnnot
         //---------------------------------------------------------------------
@@ -4314,8 +4398,8 @@ struct Page {
                                 path["even_odd"] = True
                             elif x[0] == "matrix":
                                 ctm = Matrix(x[1])
-                                if ctm.a == ctm.d:
-                                    factor = ctm.a
+                                if abs(ctm.a) == abs(ctm.d):
+                                    factor = abs(ctm.a)
                             elif x[0] == "w":
                                 path["width"] = x[1] * factor
                             elif x[0] == "lineCap":
@@ -5560,7 +5644,7 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             fz_separations *seps = NULL;
             fz_try(gctx) {
                 if (!INRANGE(alpha, 0, 1))
-                    THROWMSG("illegal alpha value");
+                    THROWMSG("bad alpha value");
                 fz_colorspace *cs = fz_pixmap_colorspace(gctx, src_pix);
                 if (!cs && !alpha)
                     THROWMSG("cannot drop alpha for 'NULL' colorspace");
@@ -6915,8 +6999,11 @@ struct Annot
             pdf_obj *obj = NULL;
             const char *text = NULL;
             fz_try(gctx) {
-                if (pdf_dict_gets(gctx, annot->obj, "RO")) {
+                obj = pdf_dict_gets(gctx, annot->obj, "RO");
+                if (obj) {
                     JM_Warning("Ignoring redaction key '/RO'.");
+                    int xref = pdf_to_num(gctx, obj);
+                    DICT_SETITEM_DROP(values, dictkey_xref, Py_BuildValue("i", xref));
                 }
                 obj = pdf_dict_gets(gctx, annot->obj, "OverlayText");
                 if (obj) {
@@ -9150,14 +9237,14 @@ struct Font
             cp = array("l", (0,) * gc)
             arr = cp.buffer_info()
             self._valid_unicodes(arr)
-            return array("l", sorted(set(cp)[1:]))
+            return array("l", sorted(set(cp))[1:])
         %}
         void _valid_unicodes(PyObject *arr)
         {
             fz_font *font = (fz_font *) $self;
             PyObject *temp = PySequence_ITEM(arr, 0);
             void *ptr = PyLong_AsVoidPtr(temp);
-            jm_valid_chars(gctx, font, ptr);
+            JM_valid_chars(gctx, font, ptr);
             Py_DECREF(temp);
         }
 

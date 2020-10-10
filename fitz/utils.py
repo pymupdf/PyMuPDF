@@ -1252,6 +1252,8 @@ def insertTextbox(
     border_width=1,
     morph=None,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Insert text into a given rectangle.
 
@@ -1289,6 +1291,8 @@ def insertTextbox(
         align=align,
         rotate=rotate,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     if rc >= 0:
         img.commit(overlay)
@@ -1311,6 +1315,8 @@ def insertText(
     rotate=0,
     morph=None,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
 
     img = page.newShape()
@@ -1328,6 +1334,8 @@ def insertText(
         render_mode=render_mode,
         rotate=rotate,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     if rc >= 0:
         img.commit(overlay)
@@ -1382,6 +1390,8 @@ def drawLine(
     lineJoin=0,
     overlay=True,
     morph=None,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a line from point p1 to point p2."""
     img = page.newShape()
@@ -1394,6 +1404,8 @@ def drawLine(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1412,6 +1424,8 @@ def drawSquiggle(
     lineJoin=0,
     overlay=True,
     morph=None,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a squiggly line from point p1 to point p2."""
     img = page.newShape()
@@ -1424,6 +1438,8 @@ def drawSquiggle(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1442,6 +1458,8 @@ def drawZigzag(
     lineJoin=0,
     overlay=True,
     morph=None,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a zigzag line from point p1 to point p2."""
     img = page.newShape()
@@ -1454,6 +1472,8 @@ def drawZigzag(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1471,6 +1491,8 @@ def drawRect(
     lineJoin=0,
     morph=None,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a rectangle."""
     img = page.newShape()
@@ -1483,6 +1505,8 @@ def drawRect(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1500,6 +1524,8 @@ def drawQuad(
     lineJoin=0,
     morph=None,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a quadrilateral."""
     img = page.newShape()
@@ -1512,6 +1538,8 @@ def drawQuad(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1530,6 +1558,8 @@ def drawPolyline(
     lineJoin=0,
     overlay=True,
     closePath=False,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw multiple connected line segments."""
     img = page.newShape()
@@ -1543,6 +1573,8 @@ def drawPolyline(
         lineJoin=lineJoin,
         morph=morph,
         closePath=closePath,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1561,6 +1593,8 @@ def drawCircle(
     lineCap=0,
     lineJoin=0,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a circle given its center and radius."""
     img = page.newShape()
@@ -1573,6 +1607,8 @@ def drawCircle(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
     return Q
@@ -1589,6 +1625,8 @@ def drawOval(
     lineCap=0,
     lineJoin=0,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw an oval given its containing rectangle or quad."""
     img = page.newShape()
@@ -1601,6 +1639,8 @@ def drawOval(
         lineCap=lineCap,
         lineJoin=lineJoin,
         morph=morph,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1621,6 +1661,8 @@ def drawCurve(
     lineCap=0,
     lineJoin=0,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3."""
     img = page.newShape()
@@ -1634,6 +1676,8 @@ def drawCurve(
         lineJoin=lineJoin,
         morph=morph,
         closePath=closePath,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1655,6 +1699,8 @@ def drawBezier(
     lineCap=0,
     lineJoin=0,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3."""
     img = page.newShape()
@@ -1668,6 +1714,8 @@ def drawBezier(
         lineJoin=lineJoin,
         morph=morph,
         closePath=closePath,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -1689,6 +1737,8 @@ def drawSector(
     lineCap=0,
     lineJoin=0,
     overlay=True,
+    stroke_opacity=1,
+    fill_opacity=1,
 ):
     """Draw a circle sector given circle center, one arc end point and the angle of the arc.
 
@@ -1709,6 +1759,8 @@ def drawSector(
         lineJoin=lineJoin,
         morph=morph,
         closePath=closePath,
+        stroke_opacity=stroke_opacity,
+        fill_opacity=fill_opacity,
     )
     img.commit(overlay)
 
@@ -2743,6 +2795,8 @@ class Shape(object):
         border_width=1,
         rotate=0,
         morph=None,
+        stroke_opacity=1,
+        fill_opacity=1,
     ):
 
         # ensure 'text' is a list of strings, worth dealing with
@@ -2806,7 +2860,7 @@ class Shape(object):
             rot += 360
         rot = rot % 360  # text rotate = 0, 90, 270, 180
 
-        templ1 = "\nq BT\n%s1 0 0 1 %g %g Tm /%s %g Tf "
+        templ1 = "\nq\n%sBT\n%s1 0 0 1 %g %g Tm /%s %g Tf "
         templ2 = "TJ\n0 -%g TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"  # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"  # rotates 90 deg clockwise
@@ -2847,7 +2901,12 @@ class Shape(object):
             space = abs(point.y + self.y)
             headroom = height - point.y - self.y
 
-        nres = templ1 % (cm, left, top, fname, fontsize)
+        alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
+        if alpha == None:
+            alpha = ""
+        else:
+            alpha = "/%s gs\n" % alpha
+        nres = templ1 % (alpha, cm, left, top, fname, fontsize)
         if render_mode > 0:
             nres += "%i Tr " % render_mode
         if border_width != 1:
@@ -2901,6 +2960,8 @@ class Shape(object):
         render_mode=0,
         rotate=0,
         morph=None,
+        stroke_opacity=1,
+        fill_opacity=1,
     ):
         """Insert text into a given rectangle.
 
@@ -2930,6 +2991,13 @@ class Shape(object):
         if fill is None and render_mode == 0:  # ensure fill color for 0 Tr
             fill = color
             fill_str = ColorCode(color, "f")
+
+        # determine opacity / transparency
+        alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
+        if alpha == None:
+            alpha = ""
+        else:
+            alpha = "/%s gs\n" % alpha
 
         if rotate % 90 != 0:
             raise ValueError("rotate must be multiple of 90")
@@ -3107,7 +3175,7 @@ class Shape(object):
         more = abs(more)
         if more < EPSILON:
             more = 0  # don't bother with epsilons
-        nres = "\nq BT\n" + cm  # initialize output buffer
+        nres = "\nq\n%sBT\n" % alpha + cm  # initialize output buffer
         templ = "1 0 0 1 %g %g Tm /%s %g Tf "
         # center, right, justify: output each line with its own specifics
         spacing = 0
@@ -3173,6 +3241,8 @@ class Shape(object):
         even_odd=False,
         morph=None,
         closePath=True,
+        fill_opacity=1,
+        stroke_opacity=1,
     ):
         """Finish the current drawing segment.
 
@@ -3190,6 +3260,10 @@ class Shape(object):
             width = 0
         color_str = ColorCode(color, "c")  # ensure proper color string
         fill_str = ColorCode(fill, "f")  # ensure proper fill string
+
+        alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
+        if alpha != None:
+            self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
 
         if width != 1:
             self.draw_cont = "%g w\n" % width + self.draw_cont

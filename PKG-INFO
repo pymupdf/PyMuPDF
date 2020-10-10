@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.18.0
+Version: 1.18.1
 Author: Jorj McKie
 Author-email: jorj.x.mckie@outlook.de
 Maintainer: Jorj McKie
@@ -20,7 +20,7 @@ Description:
         Introduction
         ============
         
-        This is **version 1.18.0 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+        This is **version 1.18.1 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
         
         MuPDF can access files in PDF, XPS, OpenXPS, epub, comic and fiction book formats, and it is known for both, its top performance and high rendering quality.
         

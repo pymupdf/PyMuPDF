@@ -32,18 +32,16 @@ fz_buffer *JM_read_contents(fz_context * ctx, pdf_obj * pageref)
 //-----------------------------------------------------------------------------
 pdf_obj *JM_xobject_from_page(fz_context * ctx, pdf_document * pdfout, fz_page * fsrcpage, int xref, pdf_graft_map *gmap)
 {
-    fz_buffer *res = NULL;
     pdf_obj *xobj1, *resources = NULL, *o, *spageref;
-    fz_rect mediabox;
-
     fz_try(ctx) {
-        pdf_page *srcpage = pdf_page_from_fz_page(ctx, fsrcpage);
-        spageref = srcpage->obj;
-        mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox)));
-
         if (xref > 0) {
             xobj1 = pdf_new_indirect(ctx, pdfout, xref, 0);
         } else {
+            fz_buffer *res = NULL;
+            fz_rect mediabox;
+            pdf_page *srcpage = pdf_page_from_fz_page(ctx, fsrcpage);
+            spageref = srcpage->obj;
+            mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox)));
             // Deep-copy resources object of source page
             o = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(Resources));
             if (gmap) // use graftmap when possible

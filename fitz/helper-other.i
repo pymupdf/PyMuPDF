@@ -72,6 +72,27 @@ PyObject *JM_EscapeStrFromStr(const char *c)
     return val;
 }
 
+
+// list of valid unicodes of a fz_font
+void JM_valid_chars(fz_context *ctx, fz_font *font, void *arr)
+{
+	FT_Face face = font->ft_face;
+	FT_ULong ucs;
+	FT_UInt gid;
+	long *table = (long *)arr;
+	fz_lock(ctx, FZ_LOCK_FREETYPE);
+	ucs = FT_Get_First_Char(face, &gid);
+	while (gid > 0)
+	{
+		if (gid < (FT_ULong)face->num_glyphs && face->num_glyphs > 0)
+			table[gid] = (long)ucs;
+		ucs = FT_Get_Next_Char(face, ucs, &gid);
+	}
+	fz_unlock(ctx, FZ_LOCK_FREETYPE);
+	return;
+}
+
+
 // redirect MuPDF warnings
 void JM_mupdf_warning(void *user, const char *message)
 {

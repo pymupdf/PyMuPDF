@@ -37,7 +37,7 @@ class Matrix(object):
             self.a, self.b, self.c, self.d, self.e, self.f = 1.0, \
                 float(args[1]), float(args[0]), 1.0, 0.0, 0.0
             return None
-        raise ValueError("illegal Matrix constructor")
+        raise ValueError("bad Matrix constructor")
 
     def invert(self, src=None):
         """Calculate the inverted matrix. Return 0 if successful and replace
