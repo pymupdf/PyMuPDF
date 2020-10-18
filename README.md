@@ -62,7 +62,7 @@ Our **documentation**, written using Sphinx, is available in various formats fro
 For Windows, Linux and Mac OSX platforms, there are wheels in the [download](https://pypi.org/project/PyMuPDF/#files) section of PyPI. This includes Python 64bit versions 3.6 through 3.9. For Windows only, 32bit versions are available too.
 
 > Wheels for **Python versions 2.7 and 3.5** will only be produced until the end of this year 2020. After that, you will need to build PyMuPDF from sources as explained below.
-> Starting immediately, we **_defer uploading_** Python 2.7 / 3.5 wheels. Please submit an issue to request one of them.
+> Starting immediately, we **_defer uploading Python 2.7 / 3.5 wheels_** until explicitely requested. Please submit an issue.
 
 If your platform is not supported with one of our wheels, you need to generate PyMuPDF yourself as follows. This requires the development version of Python.
 
@@ -70,9 +70,8 @@ Before you can do that, you must first build MuPDF. For most platforms, the MuPD
 
 * Be sure to download the **_official MuPDF source release_** from [here](https://mupdf.com/downloads/archive). Do not use MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their development source for future versions.
 
-* This repo's [fitz](https://github.com/pymupdf/PyMuPDF/tree/master/fitz) folder contains one or more files whose names start with a single underscore `"_"`. These files contain configuration data and other fixes or extensions. Each of them must be copy-renamed to their correct target location within the downloaded MuPDF. Currently, these files are:
-  - fitz configuration file `_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
-  - font support file `_pdf-font-add.c` copy-replace to: `mupdf/source/pdf/pdf-font-add.c`.
+* This repo's [fitz](https://github.com/pymupdf/PyMuPDF/tree/master/fitz) folder contains one or more files whose names start with a single underscore `"_"`. These files contain configuration data and potentially other fixes. Copy-rename each of them to their correct target location within the downloaded MuPDF source. Currently, these files are:
+  - **Optional:** fitz configuration file `_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support. If omitting this change, the binary extension module will be over 30 MB (compared to around 11 MB). Does not impact functionality.
 
   - Now MuPDF can be generated.
 

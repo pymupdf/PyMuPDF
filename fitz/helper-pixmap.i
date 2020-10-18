@@ -110,6 +110,23 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     return 1;
 }
 
+int
+JM_is_jbig2_image(fz_context *ctx, pdf_obj *dict)
+{
+	return 0;
+    pdf_obj *filter;
+	int i, n;
+
+	filter = pdf_dict_get(ctx, dict, PDF_NAME(Filter));
+	if (pdf_name_eq(ctx, filter, PDF_NAME(JBIG2Decode)))
+		return 1;
+	n = pdf_array_len(ctx, filter);
+	for (i = 0; i < n; i++)
+		if (pdf_name_eq(ctx, pdf_array_get(ctx, filter, i), PDF_NAME(JBIG2Decode)))
+			return 1;
+	return 0;
+}
+
 //-----------------------------------------------------------------------------
 // Return basic properties of an image provided as bytes or bytearray
 // The function creates an fz_image and optionally returns it.
@@ -343,5 +360,4 @@ JM_pixmap_from_page(fz_context *ctx,
     }
     return pix;
 }
-
 %}

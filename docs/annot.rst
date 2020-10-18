@@ -18,6 +18,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 :meth:`Annot.setBlendMode`      set the annotation's blend mode
 :meth:`Annot.delete_responses`  delete all responding annotions
 :meth:`Annot.fileGet`           return attached file content
+:meth:`Annot.soundGet`          return the sound of an audio annotation
 :meth:`Annot.fileInfo`          return attached file information
 :meth:`Annot.fileUpd`           set attached file new content
 :meth:`Annot.getPixmap`         image of the annotation as a pixmap
@@ -310,9 +311,28 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str desc: new description of the file content.
 
+   .. method:: soundGet()
+
+      Return the embedded sound of an audio annotation.
+
+      :rtype: dict
+      :returns: the sound audio file and accompanying properties. These are the possible dictionary keys, of which "rate" and "stream" are always present.
+
+        =========== =======================================================
+        Key         Description
+        =========== =======================================================
+        rate        (float, requ.) samples per second
+        channels    (int, opt.) number of sound channels
+        bps         (int, opt.) bits per sample value per channel
+        encoding    (str, opt.) encoding format: Raw, Signed, muLaw, ALaw
+        compression (str, opt.) name of compression filter
+        stream      (bytes, requ.) the sound file content
+        =========== =======================================================
+
+
    .. attribute:: opacity
 
-      The annotation's transparency. If set, it is a value in range *[0, 1]*. The PDF default is *1.0*. However, in an effort to tell the difference, we return *-1.0* if not set.
+      The annotation's transparency. If set, it is a value in range *[0, 1]*. The PDF default is 1. However, in an effort to tell the difference, we return *-1.0* if not set.
 
       :rtype: float
 

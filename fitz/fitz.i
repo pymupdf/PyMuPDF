@@ -71,6 +71,7 @@ CheckParent(self)%}
     #define JM_Free(x) free(x)
 #endif
 
+#define EMPTY_STRING PyUnicode_FromString("")
 #define EXISTS(x) (x != NULL && PyObject_IsTrue(x)==1)
 #define THROWMSG(msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 #define ASSERT_PDF(cond) if (cond == NULL) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
@@ -1265,7 +1266,7 @@ struct Document
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (!INRANGE(xref, 1, pdf_xref_len(gctx, pdf)-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
                 pdf_delete_object(gctx, pdf, xref);
             }
             fz_catch(gctx) {
@@ -1862,23 +1863,29 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_specifics(gctx, doc);
-            int pageCount = fz_count_pages(gctx, doc);
             pdf_obj *pageref, *rsrc;
-            PyObject *liste = NULL;  // returned object
-            int n = pno;  // pno < 0 is allowed
-            while (n < 0) n += pageCount;  // make it non-negative
+            PyObject *liste = NULL, *tracer = NULL;
             fz_var(liste);
+            fz_var(tracer);
             fz_try(gctx) {
+                int pageCount = fz_count_pages(gctx, doc);
+                int n = pno;  // pno < 0 is allowed
+                while (n < 0) n += pageCount;  // make it non-negative
                 if (n >= pageCount) THROWMSG("bad page number(s)");
                 ASSERT_PDF(pdf);
                 pageref = pdf_lookup_page_obj(gctx, pdf, n);
-                rsrc = pdf_dict_get_inheritable(gctx, pageref, PDF_NAME(Resources));
-                if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
+                rsrc = pdf_dict_get_inheritable(gctx,
+                           pageref, PDF_NAME(Resources));
                 liste = PyList_New(0);
-                JM_scan_resources(gctx, pdf, rsrc, liste, what, 0);
+                tracer = PyList_New(0);
+                if (rsrc) {
+                    JM_scan_resources(gctx, pdf, rsrc, liste, what, 0, tracer);
+                }
             }
-            fz_catch(gctx)
-            {
+            fz_always(gctx) {
+                Py_DECREF(tracer);
+            }
+            fz_catch(gctx) {
                 Py_XDECREF(liste);
                 return NULL;
             }
@@ -1959,7 +1966,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             PyObject *rc = NULL;
             const char *ext = NULL;
             const char *cs_name = NULL;
-            int img_type, xres, yres, colorspace;
+            int img_type = 0, xres, yres, colorspace;
             int smask = 0, width, height, bpc;
             fz_compressed_buffer *cbuf = NULL;
             fz_var(img);
@@ -1969,23 +1976,35 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (!INRANGE(xref, 1, pdf_xref_len(gctx, pdf)-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
 
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME(Subtype));
 
                 if (!pdf_name_eq(gctx, subtype, PDF_NAME(Image)))
-                    THROWMSG("xref is no image");
+                    THROWMSG("not an image");
 
                 pdf_obj *o = pdf_dict_get(gctx, obj, PDF_NAME(SMask));
                 if (o) smask = pdf_to_num(gctx, o);
 
+                o = pdf_dict_get(gctx, obj, PDF_NAME(Mask));
+                if (o) smask = pdf_to_num(gctx, o);
+                if (pdf_is_jpx_image(gctx, obj)) {
+                    img_type = FZ_IMAGE_JPX;
+                    ext = "jpx";
+                }
+                if (JM_is_jbig2_image(gctx, obj)) {
+                    img_type = FZ_IMAGE_JBIG2;
+                    ext = "jbig2";
+                }
                 res = pdf_load_raw_stream(gctx, obj);
-                unsigned char *c = NULL;
-                fz_buffer_storage(gctx, res, &c);
-                img_type = fz_recognize_image_format(gctx, c);
-                ext = JM_image_extension(img_type);
-
+                if (img_type == FZ_IMAGE_UNKNOWN) {
+                    unsigned char *c = NULL;
+                    fz_buffer_storage(gctx, res, &c);
+                    img_type = fz_recognize_image_format(gctx, c);
+                    ext = JM_image_extension(img_type);
+                }
+                PySys_WriteStdout("xref %i image type %s\n", xref, ext);
                 if (img_type == FZ_IMAGE_UNKNOWN) {
                     fz_drop_buffer(gctx, res);
                     res = NULL;
@@ -1993,23 +2012,26 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     res = fz_new_buffer_from_image_as_png(gctx, img,
                                 fz_default_color_params);
                     ext = "png";
-                } else if (smask == 0) {
+                } else /*if (smask == 0)*/ {
                     img = fz_new_image_from_buffer(gctx, res);
-                } else {
-                    fz_drop_buffer(gctx, res);
-                    res = NULL;
-                    img = pdf_load_image(gctx, pdf, obj);
-                    cbuf = fz_compressed_image_buffer(gctx, img);
-                    if (!cbuf) {
-                        res = fz_new_buffer_from_image_as_png(gctx, img,
-                                        fz_default_color_params);
-                        ext = "png";
-                    } else {
-                        res = cbuf->buffer;
-                        img_type = cbuf->params.type;
-                        ext = JM_image_extension(img_type);
-                    }
                 }
+                /*
+                            else {
+                                fz_drop_buffer(gctx, res);
+                                res = NULL;
+                                img = pdf_load_image(gctx, pdf, obj);
+                                cbuf = fz_compressed_image_buffer(gctx, img);
+                                if (!cbuf) {
+                                    res = fz_new_buffer_from_image_as_png(gctx, img,
+                                                    fz_default_color_params);
+                                    ext = "png";
+                                } else {
+                                    res = cbuf->buffer;
+                                    img_type = cbuf->params.type;
+                                    ext = JM_image_extension(img_type);
+                                }
+                            }
+                */
                 fz_image_resolution(img, &xres, &yres);
                 width = img->w;
                 height = img->h;
@@ -2395,7 +2417,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
                 obj = pdf_load_object(gctx, pdf, xref);
                 res = JM_object_to_buffer(gctx, pdf_resolve_indirect(gctx, obj), compressed, ascii);
                 text = JM_EscapeStrFromBuffer(gctx, res);
@@ -2404,7 +2426,7 @@ if not self.isFormPDF:
                 pdf_drop_obj(gctx, obj);
                 fz_drop_buffer(gctx, res);
             }
-            fz_catch(gctx) return PyUnicode_FromString("");
+            fz_catch(gctx) return EMPTY_STRING;
             return text;
         }
 
@@ -2450,7 +2472,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (pdf_is_stream(gctx, obj))
                 {
@@ -2488,7 +2510,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (pdf_is_stream(gctx, obj))
                 {
@@ -2521,7 +2543,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
                 // create new object with passed-in string
                 new_obj = JM_pdf_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
@@ -2552,7 +2574,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
                 // get the object
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (!new && !pdf_is_stream(gctx, obj))
@@ -3293,7 +3315,7 @@ struct Page {
         FITZEXCEPTION(_get_text_page, !result)
         %pythonappend _get_text_page %{val.thisown = True%}
         struct TextPage *
-        _get_text_page(PyObject *clip, int flags=0)
+        _get_text_page(PyObject *clip=NULL, int flags=0)
         {
             fz_stext_page *textpage=NULL;
             fz_try(gctx) {
@@ -5010,7 +5032,7 @@ except:
         // insert an image
         //---------------------------------------------------------------------
         FITZEXCEPTION(_insertImage, !result)
-        PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, int overlay=1, PyObject *matrix=NULL,
+        PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, PyObject *imask=NULL, int overlay=1, PyObject *matrix=NULL,
         const char *_imgname=NULL, PyObject *_imgpointer=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
@@ -5020,10 +5042,11 @@ except:
             fz_image *mask = NULL;
             fz_separations *seps = NULL;
             pdf_obj *resources, *xobject, *ref;
-            fz_buffer *nres = NULL,  *imgbuf = NULL;
+            fz_buffer *nres = NULL,  *imgbuf = NULL, *maskbuf = NULL;
             fz_matrix mat = JM_matrix_from_py(matrix); // pre-calculated
+            fz_compressed_buffer *cbuf1 = NULL;
 
-            const char *template = " q %g %g %g %g %g %g cm /%s Do Q ";
+            const char *template = "\nq\n%g %g %g %g %g %g cm\n/%s Do\nQ\n";
             fz_image *zimg = NULL, *image = NULL;
             fz_try(gctx) {
                 //-------------------------------------------------------------
@@ -5039,22 +5062,34 @@ except:
                     } else {  // fz_image pointer has been handed in
                         image = (fz_image *)PyLong_AsVoidPtr(_imgpointer);
                     }
-
-                    // test for alpha (which would require making an SMask)
-                    pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
-                    int xres, yres;
+                    int xres, yres, w = image->w, h = image->h, bpc = image->bpc;
+                    fz_colorspace *colorspace = image->colorspace;
                     fz_image_resolution(image, &xres, &yres);
-                    pix->xres = xres;
-                    pix->yres = yres;
-                    if (pix->alpha == 1) {  // have alpha: create an SMask
-                        pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, fz_default_color_params, 1);
-                        pm->alpha = 0;
-                        pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
-                        mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                        zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                    if (EXISTS(imask)) {
+                        cbuf1 = fz_compressed_image_buffer(gctx, image);
+                        if (!cbuf1) THROWMSG("cannot mask uncompressed image");
+                        maskbuf = JM_BufferFromBytes(gctx, imask);
+                        mask = fz_new_image_from_buffer(gctx, maskbuf);
+                        zimg = fz_new_image_from_compressed_buffer(gctx, w, h,
+                                    bpc, colorspace, xres, yres, 1, 0, NULL,
+                                    NULL, cbuf1, mask);
                         fz_drop_image(gctx, image);
                         image = zimg;
                         zimg = NULL;
+                    } else {
+                        pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
+                        pix->xres = xres;
+                        pix->yres = yres;
+                        if (pix->alpha == 1) {  // have alpha: create an SMask
+                            pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, fz_default_color_params, 1);
+                            pm->alpha = 0;
+                            pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
+                            mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                            zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                            fz_drop_image(gctx, image);
+                            image = zimg;
+                            zimg = NULL;
+                        }
                     }
                 } else {  // pixmap specified
                     fz_pixmap *arg_pix = (fz_pixmap *) pixmap;
@@ -5092,13 +5127,17 @@ except:
                                  _imgname);
                 JM_insert_contents(gctx, pdf, page->obj, nres, overlay);
                 fz_drop_buffer(gctx, nres);
+                nres = NULL;
             }
             fz_always(gctx) {
                 fz_drop_image(gctx, image);
                 fz_drop_image(gctx, mask);
+                fz_drop_image(gctx, zimg);
                 fz_drop_pixmap(gctx, pix);
                 fz_drop_pixmap(gctx, pm);
                 fz_drop_buffer(gctx, imgbuf);
+                fz_drop_buffer(gctx, maskbuf);
+                fz_drop_buffer(gctx, nres);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -5395,7 +5434,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 ASSERT_PDF(page);
 
                 if (!INRANGE(xref, 1, pdf_xref_len(gctx, page->doc) - 1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
 
                 contents = pdf_new_indirect(gctx, page->doc, xref, 0);
                 if (!pdf_is_stream(gctx, contents))
@@ -5776,11 +5815,11 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG("bad xref");
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
                 type = pdf_dict_get(gctx, ref, PDF_NAME(Subtype));
                 if (!pdf_name_eq(gctx, type, PDF_NAME(Image)))
-                    THROWMSG("xref is no image");
+                    THROWMSG("not an image");
                 img = pdf_load_image(gctx, pdf, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -7606,7 +7645,7 @@ struct Annot
                     pdf_set_annot_color(gctx, annot, n, col);
                 }
                 fz_catch(gctx) {
-                    JM_Warning("could not set stroke color for this annot type");
+                    JM_Warning("annot type has no stroke color");
                 }
             }
             n = 0;
@@ -7616,7 +7655,7 @@ struct Annot
                     fz_try(gctx)
                         pdf_set_annot_interior_color(gctx, annot, n, col);
                     fz_catch(gctx)
-                        JM_Warning("cannot set fill color for this annot type");
+                        JM_Warning("annot type has no fill color");
                 } else {
                     pdf_obj *arr = pdf_new_array(gctx, annot->page->doc, n);
                     for (i = 0; i < n; i++) {
@@ -7728,7 +7767,7 @@ struct Annot
             fz_try(gctx) {
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != PDF_ANNOT_FILE_ATTACHMENT)
-                    THROWMSG("not a file attachment annot");
+                    THROWMSG("bad annot type");
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME(FS),
                                    PDF_NAME(EF), PDF_NAME(F), NULL);
                 if (!stream) THROWMSG("bad PDF: file entry not found");
@@ -7779,7 +7818,7 @@ struct Annot
             fz_try(gctx) {
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != PDF_ANNOT_FILE_ATTACHMENT)
-                    THROWMSG("not a file attachment annot");
+                    THROWMSG("bad annot type");
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME(FS),
                                    PDF_NAME(EF), PDF_NAME(F), NULL);
                 if (!stream) THROWMSG("bad PDF: file entry not found");
@@ -7790,6 +7829,67 @@ struct Annot
                 fz_drop_buffer(gctx, buf);
             }
             fz_catch(gctx) {
+                return NULL;
+            }
+            return res;
+        }
+
+        //---------------------------------------------------------------------
+        // annotation get attached sound stream
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(soundGet, !result)
+        PARENTCHECK(soundGet, """Retrieve sound stream.""")
+        PyObject *soundGet()
+        {
+            PyObject *res = NULL;
+            PyObject *stream = NULL;
+            fz_buffer *buf = NULL;
+            pdf_obj *obj = NULL;
+            pdf_annot *annot = (pdf_annot *) $self;
+            fz_var(buf);
+            fz_try(gctx) {
+                int type = (int) pdf_annot_type(gctx, annot);
+                pdf_obj *sound = pdf_dict_get(gctx, annot->obj, PDF_NAME(Sound));
+                if (type != PDF_ANNOT_SOUND || !sound)
+                    THROWMSG("bad annot type");
+                if (pdf_dict_get(gctx, sound, PDF_NAME(F))) {
+                    THROWMSG("unsupported sound stream");
+                }
+                res = PyDict_New();
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(R));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "rate",
+                            Py_BuildValue("f", pdf_to_real(gctx, obj)));
+                }
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(C));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "channels",
+                            Py_BuildValue("i", pdf_to_int(gctx, obj)));
+                }
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(B));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "bps",
+                            Py_BuildValue("i", pdf_to_int(gctx, obj)));
+                }
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(E));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "encoding",
+                            Py_BuildValue("s", pdf_to_name(gctx, obj)));
+                }
+                obj = pdf_dict_gets(gctx, sound, "CO");
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "compression",
+                            Py_BuildValue("s", pdf_to_name(gctx, obj)));
+                }
+                buf = pdf_load_stream(gctx, sound);
+                stream = JM_BinFromBuffer(gctx, buf);
+                DICT_SETITEMSTR_DROP(res, "stream", stream);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buf);
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(res);
                 return NULL;
             }
             return res;
@@ -8599,26 +8699,35 @@ struct TextPage {
                     fz_rect blockrect = fz_empty_rect;
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         fz_clear_buffer(gctx, res);  // set text buffer to empty
-                        int line_n = 0;
+                        int line_n = -1;
                         float last_y0 = 0.0;
+                        int last_char = 0;
                         for (line = block->u.t.first_line; line; line = line->next) {
-                            fz_rect linerect = fz_empty_rect;
-                            // append line no. 2 with new-line
-                            if (line_n > 0) {
-                                if (linerect.y0 != last_y0)
-                                    fz_append_string(gctx, res, "\n");
-                                else
-                                    fz_append_string(gctx, res, " ");
-                            }
-                            last_y0 = linerect.y0;
                             line_n++;
+                            if (fz_is_empty_rect(fz_intersect_rect(tp_rect, line->bbox))) {
+                                continue;
+                            }
+                            fz_rect linerect = fz_empty_rect;
+                            /* append line no. 2 with new-line
+                                    if (line_n > 0) {
+                                        if (linerect.y0 != last_y0)
+                                            fz_append_byte(gctx, res, 10);
+                                        else
+                                            fz_append_byte(gctx, res, 32);
+                                    }
+                                    last_y0 = linerect.y0;
+                            */
                             for (ch = line->first_char; ch; ch = ch->next) {
                                 fz_rect cbbox = JM_char_bbox(ch);
                                 if (fz_is_empty_rect(fz_intersect_rect(tp_rect, cbbox))) {
                                     continue;
                                 }
                                 JM_append_rune(gctx, res, ch->c);
+                                last_char = ch->c;
                                 linerect = fz_union_rect(linerect, JM_char_bbox(ch));
+                            }
+                            if (last_char != 10) {
+                                fz_append_byte(gctx, res, 10);
                             }
                             blockrect = fz_union_rect(blockrect, linerect);
                         }
@@ -8756,23 +8865,25 @@ struct TextPage {
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
                 switch(format) {
                     case(1):
+                        out = fz_new_output_with_buffer(gctx, res);
                         fz_print_stext_page_as_html(gctx, out, this_tpage, 0);
                         break;
                     case(3):
+                        out = fz_new_output_with_buffer(gctx, res);
                         fz_print_stext_page_as_xml(gctx, out, this_tpage, 0);
                         break;
                     case(4):
+                        out = fz_new_output_with_buffer(gctx, res);
                         fz_print_stext_page_as_xhtml(gctx, out, this_tpage, 0);
                         break;
                     default:
+                        out = fz_new_output_with_buffer(gctx, res);
                         JM_print_stext_page_as_text(gctx, out, this_tpage);
-                        text = JM_EscapeStrFromBuffer(gctx, res);
                         break;
                 }
-                if (!text) text = JM_EscapeStrFromBuffer(gctx, res);
+                text = JM_UnicodeFromBuffer(gctx, res);
 
             }
             fz_always(gctx) {
@@ -8785,26 +8896,6 @@ struct TextPage {
             return text;
         }
 
-        //---------------------------------------------------------------------
-        // method extractRect()
-        //---------------------------------------------------------------------
-        PyObject *extractRect(PyObject *rect)
-        {
-            fz_stext_page *this_tpage = (fz_stext_page *) $self;
-            fz_rect bbox = JM_rect_from_py(rect);
-            if (fz_is_infinite_rect(bbox)) {
-                return PyUnicode_FromString("");
-            }
-            char *found = fz_copy_rectangle(gctx, this_tpage, bbox, 0);
-            PyObject *rc = NULL;
-            if (found) {
-                rc = PyUnicode_FromString(found);
-                JM_Free(found);
-            } else {
-                rc = PyUnicode_FromString("");
-            }
-            return rc;
-        }
 
         //---------------------------------------------------------------------
         // method extractSelection()
@@ -8820,7 +8911,7 @@ struct TextPage {
                 rc = PyUnicode_FromString(found);
                 JM_Free(found);
             } else {
-                rc = PyUnicode_FromString("");
+                rc = EMPTY_STRING;
             }
             return rc;
         }

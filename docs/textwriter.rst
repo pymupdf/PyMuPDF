@@ -8,13 +8,13 @@ TextWriter
 
 This class represents a MuPDF *text* object. The basic idea is to **decouple (1) text preparation, and (2) text output** to PDF pages.
 
-A text writer stores any number of text pieces ("spans") together with their positions and individual font information. The output of the writer's content may happen repeatedly to any PDF page with a compatible page size.
+During **preparation**, a text writer stores any number of text pieces ("spans") together with their positions and individual font information. The **output** of the writer's prepared content may happen multiple times to any PDF page with a compatible page size.
 
 A text writer is an elegant alternative to methods :meth:`Page.insertText` and friends:
 
-* **Improved text positioning:** Choose any point where insertion of text should start. Storing text returns the "cursor coordinates" after the *last character* of the span.
+* **Improved text positioning:** Choose any point where insertion of text should start. Storing text returns the "cursor position" after the *last character* of the span.
 * **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch when composing a larger text.
-* **Automatic fallback fonts:** If a character is not supported by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs"). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
+* **Automatic fallback fonts:** If a character is not supported by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs" -- looking like a small rectangle). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
 * **Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated support of Cyrillic and Greek characters **without specifying encoding.** Your text may be a mixture of Latin, Greek and Cyrillic.
 * **Transparency support:** Parameter *opacity* is supported. This offers a handy way to create watermark-style text.
 * **Justified text:** Supported for any font -- not just simple fonts as in :meth:`Page.insertTextbox`.

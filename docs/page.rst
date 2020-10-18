@@ -351,7 +351,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS)
 
-      PDF only: *(New in version 1.16.11)* Remove all **text content** contained in any redaction rectangle.
+      *(New in version 1.16.11)*
+
+      PDF only: Remove all **text content** contained in any redaction rectangle.
 
       *(Changed in v1.16.12)* The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the individual *fill* color of each redaction annotation. If a *text* was given in the annotation, then :meth:`insertTextbox` is invoked to insert it, using parameters provided with the redaction.
 
@@ -468,8 +470,10 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: overlay; insertText
       pair: render_mode; insertText
       pair: rotate; insertText
+      pair: stroke_opacity; insertText
+      pair: fill_opacity; insertText
 
-   .. method:: insertText(point, text, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, rotate=0, morph=None, overlay=True)
+   .. method:: insertText(point, text, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, rotate=0, morph=None, stroke_opacity=1, fill_opaity=1, overlay=True)
 
       PDF only: Insert text starting at :data:`point_like` *point*. See :meth:`Shape.insertText`.
 
@@ -487,8 +491,10 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: overlay; insertTextbox
       pair: render_mode; insertTextbox
       pair: rotate; insertTextbox
+      pair: stroke_opacity; insertTextbox
+      pair: fill_opacity; insertTextbox
 
-   .. method:: insertTextbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, overlay=True)
+   .. method:: insertTextbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, stroke_opacity=1, fill_opaity=1, overlay=True)
 
       PDF only: Insert text into the specified :data:`rect_like` *rect*. See :meth:`Shape.insertTextbox`.
 
@@ -503,8 +509,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawLine
       pair: overlay; drawLine
       pair: width; drawLine
+      pair: stroke_opacity; drawLine
+      pair: fill_opacity; drawLine
 
-   .. method:: drawLine(p1, p2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None)
+   .. method:: drawLine(p1, p2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw a line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.drawLine`.
 
@@ -519,8 +529,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawZigzag
       pair: overlay; drawZigzag
       pair: width; drawZigzag
+      pair: stroke_opacity; drawZigzag
+      pair: fill_opacity; drawZigzag
 
-   .. method:: drawZigzag(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None)
+   .. method:: drawZigzag(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw a zigzag line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.drawZigzag`.
 
@@ -535,8 +549,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawSquiggle
       pair: overlay; drawSquiggle
       pair: width; drawSquiggle
+      pair: stroke_opacity; drawSquiggle
+      pair: fill_opacity; drawSquiggle
 
-   .. method:: drawSquiggle(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None)
+   .. method:: drawSquiggle(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw a squiggly (wavy, undulated) line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.drawSquiggle`.
 
@@ -550,8 +568,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawCircle
       pair: overlay; drawCircle
       pair: width; drawCircle
+      pair: stroke_opacity; drawCircle
+      pair: fill_opacity; drawCircle
 
-   .. method:: drawCircle(center, radius, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None)
+   .. method:: drawCircle(center, radius, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw a circle around *center* (:data:`point_like`) with a radius of *radius*. See :meth:`Shape.drawCircle`.
 
@@ -565,8 +587,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawOval
       pair: overlay; drawOval
       pair: width; drawOval
+      pair: stroke_opacity; drawOval
+      pair: fill_opacity; drawOval
 
-   .. method:: drawOval(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None)
+   .. method:: drawOval(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw an oval (ellipse) within the given :data:`rect_like` or :data:`quad_like`. See :meth:`Shape.drawOval`.
 
@@ -581,8 +607,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawSector
       pair: overlay; drawSector
       pair: width; drawSector
+      pair: stroke_opacity; drawSector
+      pair: fill_opacity; drawSector
 
-   .. method:: drawSector(center, point, angle, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None)
+   .. method:: drawSector(center, point, angle, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw a circular sector, optionally connecting the arc to the circle's center (like a piece of pie). See :meth:`Shape.drawSector`.
 
@@ -596,8 +626,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawPolyline
       pair: overlay; drawPolyline
       pair: width; drawPolyline
+      pair: stroke_opacity; drawPolyline
+      pair: fill_opacity; drawPolyline
 
-   .. method:: drawPolyline(points, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None)
+   .. method:: drawPolyline(points, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw several connected lines defined by a sequence of :data:`point_like` \s. See :meth:`Shape.drawPolyline`.
 
@@ -612,8 +646,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawBezier
       pair: overlay; drawBezier
       pair: width; drawBezier
+      pair: stroke_opacity; drawBezier
+      pair: fill_opacity; drawBezier
 
-   .. method:: drawBezier(p1, p2, p3, p4, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None)
+   .. method:: drawBezier(p1, p2, p3, p4, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw a cubic BÃ©zier curve from *p1* to *p4* with the control points *p2* and *p3* (all are :data`point_like` \s). See :meth:`Shape.drawBezier`.
 
@@ -627,8 +665,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawCurve
       pair: overlay; drawCurve
       pair: width; drawCurve
+      pair: stroke_opacity; drawCurve
+      pair: fill_opacity; drawCurve
 
-   .. method:: drawCurve(p1, p2, p3, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None)
+   .. method:: drawCurve(p1, p2, p3, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: This is a special case of *drawBezier()*. See :meth:`Shape.drawCurve`.
 
@@ -642,8 +684,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: morph; drawRect
       pair: overlay; drawRect
       pair: width; drawRect
+      pair: stroke_opacity; drawRect
+      pair: fill_opacity; drawRect
 
-   .. method:: drawRect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None)
+   .. method:: drawRect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1)
+
+      *(Changed in v1.18.1)*
 
       PDF only: Draw a rectangle. See :meth:`Shape.drawRect`.
 
@@ -725,8 +771,9 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: pixmap; insertImage
       pair: rotate; insertImage
       pair: stream; insertImage
+      pair: mask; insertImage
 
-   .. method:: insertImage(rect, filename=None, pixmap=None, stream=None, rotate=0, keep_proportion=True, overlay=True)
+   .. method:: insertImage(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, keep_proportion=True, overlay=True)
 
       PDF only: Put an image inside the given rectangle. The image can be taken from a pixmap, a file or a memory area - of these parameters **exactly one** must be specified.
 
@@ -734,7 +781,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like rect: where to put the image. Must be finite and not empty.
       
-         *(Changed in v1.17.6)* Needs no longer have a non-empty intersection with the page's :attr:`Page.CropBox` [#f5]_.
+         *(Changed in v1.17.6)* No longer needs to have a non-empty intersection with the page's :attr:`Page.CropBox` [#f5]_.
 
          *(Changed in version 1.14.13)* The image is now always placed **centered** in the rectangle, i.e. the centers of image and rectangle are equal.
 
@@ -742,10 +789,12 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bytes,bytearray,io.BytesIO stream: image in memory (all formats supported by MuPDF -- see :ref:`ImageFiles`). This is the most efficient option.
       
-         Changed in version 1.14.13 *io.BytesIO* is now also supported.
+         Changed in version 1.14.13: *io.BytesIO* is now also supported.
 
       :arg pixmap: a pixmap containing the image.
       :type pixmap: :ref:`Pixmap`
+
+      :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask for the base image. When specified, the base image must also be provided as an in-memory image (*stream* parameter).
 
       :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convertToPDF`) first and then use :meth:`Page.showPDFpage` instead.
 
@@ -821,11 +870,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in v1.17.7)*
 
-      Retrieves the text of contained in a rectangle.
+      Retrieve the text contained in a rectangle.
 
       :arg rect-like rect: rect-like.
 
-      :returns: a string with interspersed linebreaks where necessary.
+      :returns: a string with interspersed linebreaks where necessary. This is the same as ``page.getText("text", clip=rect, flags=0)`` with a removed final line break.
 
 
    .. index::
@@ -847,9 +896,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in v1.18.0)*
 
-      Return a list of **"paths"** defining draw commands made on the page. These are commands which draw lines, rectangles or curves, including relevant properties like colors, line width and dashing, etc.
+      Return the draw commands of the page. These are instructions which draw lines, rectangles or curves, including properties like colors, transparency, line width and dashing, etc.
 
-      :returns: a list of dictionaries. A list item is called a "path" and has been designed to be compatible with the methods and terminology of class :ref:`Shape`. A path has the following keys:
+      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands which belong together: their lines are connected and they have the same properties (colors, dashing, etc.). This is called a **"path"** in the PDF specification, but this method works the same for all document types.
+
+      The dictionary been designed to be compatible with the methods and terminology of class :ref:`Shape`. There are the following keys:
 
             ============== =========================================================================
             Key            Value
@@ -862,7 +913,7 @@ In a nutshell, this is what you can do with PyMuPDF:
             items          List of draw commands: lines, rectangle or curves.
             lineCap        Number 3-tuple, use its max value on output with :ref:`Shape`.
             lineJoin       Same as the parameter in :ref:`Shape`.
-            opacity        Transparency: 0 <= opacity <= 1. Cannot be used in :ref:`Shape` yet.
+            opacity        represents *fill_opacity* and *stroke_opacity* in :ref:`Shape`.
             rect           Page area covered by this path. Information only.
             width          Same as the parameter in :ref:`Shape`.
             ============== =========================================================================

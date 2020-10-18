@@ -27,12 +27,12 @@ int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value)
 
 PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
 {
-    if (!buff) return PyUnicode_FromString("");
+    if (!buff) return EMPTY_STRING;
     unsigned char *s = NULL;
     size_t len = fz_buffer_storage(ctx, buff, &s);
     PyObject *val = PyUnicode_DecodeRawUnicodeEscape((const char *) s, (Py_ssize_t) len, "replace");
     if (!val) {
-        val = PyUnicode_FromString("");
+        val = EMPTY_STRING;
         PyErr_Clear();
     }
     return val;
@@ -44,7 +44,7 @@ PyObject *JM_UnicodeFromBuffer(fz_context *ctx, fz_buffer *buff)
     size_t len = fz_buffer_storage(ctx, buff, &s);
     PyObject *val = PyUnicode_FromStringAndSize((const char *) s, (Py_ssize_t) len);
     if (!val) {
-        val = PyUnicode_FromString("");
+        val = EMPTY_STRING;
         PyErr_Clear();
     }
     return val;
@@ -52,10 +52,10 @@ PyObject *JM_UnicodeFromBuffer(fz_context *ctx, fz_buffer *buff)
 
 PyObject *JM_UnicodeFromStr(const char *c)
 {
-    if (!c) return PyUnicode_FromString("");
+    if (!c) return EMPTY_STRING;
     PyObject *val = Py_BuildValue("s", c);
     if (!val) {
-        val = PyUnicode_FromString("");
+        val = EMPTY_STRING;
         PyErr_Clear();
     }
     return val;
@@ -63,10 +63,10 @@ PyObject *JM_UnicodeFromStr(const char *c)
 
 PyObject *JM_EscapeStrFromStr(const char *c)
 {
-    if (!c) return PyUnicode_FromString("");
+    if (!c) return EMPTY_STRING;
     PyObject *val = PyUnicode_DecodeRawUnicodeEscape(c, (Py_ssize_t) strlen(c), "replace");
     if (!val) {
-        val = PyUnicode_FromString("");
+        val = EMPTY_STRING;
         PyErr_Clear();
     }
     return val;
@@ -287,7 +287,7 @@ const char *JM_image_extension(int type)
         case(FZ_IMAGE_RLD): return "rld";
         case(FZ_IMAGE_BMP): return "bmp";
         case(FZ_IMAGE_GIF): return "gif";
-        case(FZ_IMAGE_JBIG2): return "jbig2";
+        case(FZ_IMAGE_JBIG2): return "jb2";
         case(FZ_IMAGE_JPEG): return "jpeg";
         case(FZ_IMAGE_JPX): return "jpx";
         case(FZ_IMAGE_JXR): return "jxr";

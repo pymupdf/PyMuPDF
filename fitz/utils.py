@@ -193,6 +193,7 @@ def insertImage(
     filename=None,
     pixmap=None,
     stream=None,
+    mask=None,
     rotate=0,
     keep_proportion=True,
     overlay=True,
@@ -206,7 +207,8 @@ def insertImage(
         filename: (str) name of an image file
         pixmap: (obj) a Pixmap object
         stream: (bytes) an image in memory
-        rotate: (int) degrees (multiple of 90)
+        mask: (bytes) enforce this image mask
+        rotate: (int) degrees (int multiple of 90)
         keep_proportion: (bool) whether to maintain aspect ratio
         overlay: (bool) put in foreground
     """
@@ -277,7 +279,10 @@ def insertImage(
         raise ValueError("stream must be bytes-like or BytesIO")
     elif pixmap and type(pixmap) is not Pixmap:
         raise ValueError("pixmap must be a Pixmap")
-
+    if mask and not stream:
+        raise ValueError("mask requires stream")
+    if mask is not None and type(mask) not in (bytes, bytearray, io.BytesIO):
+        raise ValueError("mask must be bytes-like or BytesIO")
     while rotate < 0:
         rotate += 360
     while rotate >= 360:
@@ -332,9 +337,9 @@ def insertImage(
 
     matrix = calc_matrix(fw, fh, clip, rotate=rotate)  # calculate matrix
 
-    # Create a unique image reference name. First make existing names list.
-    ilst = [i[7] for i in doc.getPageImageList(page.number)]  # existing names
-    n = "fzImg"  # 'fitz image'
+    # Create a unique image reference name.
+    ilst = [i[7] for i in doc.getPageImageList(page.number)]
+    n = "Im"  # 'fitz image'
     i = 0
     _imgname = n + "0"  # first name candidate
     while _imgname in ilst:
@@ -345,6 +350,7 @@ def insertImage(
         filename=filename,  # image in file
         pixmap=pixmap,  # image in pixmap
         stream=stream,  # image in memory
+        imask=mask,
         matrix=matrix,  # generated matrix
         overlay=overlay,
         _imgname=_imgname,  # generated PDF resource name
@@ -401,7 +407,7 @@ def getTextBlocks(page, clip=None, flags=None):
     """
     CheckParent(page)
     if flags is None:
-        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+        flags = TEXT_PRESERVE_WHITESPACE + TEXT_PRESERVE_IMAGES
     tp = page.getTextPage(clip, flags)
     blocks = tp.extractBLOCKS()
     del tp
@@ -416,21 +422,17 @@ def getTextWords(page, clip=None, flags=None):
     """
     CheckParent(page)
     if flags is None:
-        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(clip, flags)
+        flags = TEXT_PRESERVE_WHITESPACE
+    tp = page.getTextPage(clip=clip, flags=flags)
     words = tp.extractWORDS()
     del tp
     return words
 
 
-def getTextbox(page, rect=None, clip=None):
-    CheckParent(page)
-    flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(clip, flags)
-    if rect is None:
-        rect = page.rect
-    rc = tp.extractRect(rect)
-    del tp
+def getTextbox(page, rect):
+    rc = page.getText("text", clip=rect, flags=0)
+    if rc.endswith("\n"):
+        rc = rc[:-1]
     return rc
 
 
@@ -459,34 +461,47 @@ def getText(page, option="text", clip=None, flags=None):
         extractXHTML or etractXML respectively.
         Default and misspelling choice is "text".
     """
+    formats = {
+        "text": 0,
+        "html": 1,
+        "json": 1,
+        "xml": 0,
+        "xhtml": 1,
+        "dict": 1,
+        "rawdict": 1,
+        "words": 0,
+        "blocks": 1,
+    }
     option = option.lower()
+    if option not in formats:
+        option = "text"
+    if flags is None:
+        flags = TEXT_PRESERVE_WHITESPACE
+        if formats[option] == 1:
+            flags += TEXT_PRESERVE_IMAGES
+
     if option == "words":
         return getTextWords(page, clip=clip, flags=flags)
     if option == "blocks":
         return getTextBlocks(page, clip=clip, flags=flags)
     CheckParent(page)
-    # available output types
-    formats = ("text", "html", "json", "xml", "xhtml", "dict", "rawdict")
-    if option not in formats:
-        option = "text"
-    # choose which of them also include images in the TextPage
-    images = (0, 1, 1, 0, 1, 1, 1)  # controls image inclusion in text page
-    f = formats.index(option)
-    if flags is None:
-        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-        if images[f] == 1:
-            flags |= TEXT_PRESERVE_IMAGES
 
-    tp = page.getTextPage(clip, flags)  # TextPage with or without images
+    tp = page.getTextPage(clip, flags=flags)  # TextPage with or without images
 
-    if f == 2:
+    if option == "json":
         t = tp.extractJSON()
-    elif f == 5:
+    elif option == "dict":
         t = tp.extractDICT()
-    elif f == 6:
+    elif option == "rawdict":
         t = tp.extractRAWDICT()
+    elif option == "html":
+        t = tp.extractHTML()
+    elif option == "xml":
+        t = tp.extractXML()
+    elif option == "xhtml":
+        t = tp.extractXHTML()
     else:
-        t = tp._extractText(f)
+        t = tp.extractText()
 
     del tp
     return t

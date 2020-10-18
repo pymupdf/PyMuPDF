@@ -42,7 +42,7 @@ PyObject *JM_repl_char()
 //---------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
-    if (ch >= 32 && ch <= 127) {
+    if (ch >= 32 && ch <= 127 || ch == 10) {
         fz_append_byte(ctx, buff, ch);
     } else if (ch <= 0xffff) {  // 4 hex digits
         fz_append_printf(ctx, buff, "\\u%04x", ch);
@@ -52,18 +52,16 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 }
 
 
-//---------------------------------------------------------------------------
-// WRITE non-ascii runes in unicode escape format to fz_output
-//---------------------------------------------------------------------------
-void JM_write_rune(fz_context *ctx, fz_output *out, int ch)
+// create the char rect from its quad
+static fz_rect
+JM_char_bbox(fz_stext_char *ch)
 {
-    if (ch >= 32 && ch <= 127) {
-        fz_write_byte(ctx, out, ch);
-    } else if (ch <= 0xffff) {  // 4 hex digits
-        fz_write_printf(ctx, out, "\\u%04x", ch);
-    } else {  // 8 hex digits
-        fz_write_printf(ctx, out, "\\U%08x", ch);
-    }
+    fz_rect r = fz_rect_from_quad(ch->quad);
+    if (!fz_is_empty_rect(r)) return r;
+    // we need to correct erroneous font!
+    if ((r.y1 - r.y0) <= FLT_EPSILON) r.y0 = r.y1 - ch->size;
+    if ((r.x1 - r.x0) <= FLT_EPSILON) r.x0 = r.x1 - ch->size;
+    return r;
 }
 
 
@@ -75,35 +73,32 @@ void JM_write_rune(fz_context *ctx, fz_output *out, int ch)
 void
 JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page)
 {
-    fz_stext_block *block = NULL;
-    fz_stext_line *line = NULL;
-    fz_stext_char *ch = NULL;
-    int last_char = 0;
-    fz_rect tp_rect = page->mediabox;
+    fz_stext_block *block;
+    fz_stext_line *line;
+    fz_stext_char *ch;
+    fz_rect rect = page->mediabox;
+    char utf[10];
+    int i, n, last_char = 0;
 
-    for (block = page->first_block; block; block = block->next) {
-        if (block->type == FZ_STEXT_BLOCK_TEXT) {
-            if (fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
-                continue;
-            }
-            int line_n = 0;
-            for (line = block->u.t.first_line; line; line = line->next) {
-                if (fz_is_empty_rect(fz_intersect_rect(tp_rect, line->bbox))) {
-                    continue;
-                }
-                if (line_n > 0 && last_char != 10) {
-                    fz_write_string(ctx, out, "\n");
-                }
-                line_n++;
-                for (ch = line->first_char; ch; ch = ch->next) {
-                    if (fz_is_empty_rect(fz_intersect_rect(tp_rect, fz_rect_from_quad(ch->quad)))) {
-                        continue;
-                    }
-                    JM_write_rune(ctx, out, ch->c);
+    for (block = page->first_block; block; block = block->next)
+    {
+        if (!fz_is_empty_rect(fz_intersect_rect(block->bbox, rect)) &&
+            block->type == FZ_STEXT_BLOCK_TEXT)
+        {
+            for (line = block->u.t.first_line; line; line = line->next)
+            {
+                if (fz_is_empty_rect(fz_intersect_rect(line->bbox, rect))) continue;
+                last_char = 0;
+                for (ch = line->first_char; ch; ch = ch->next)
+                {
+                    if (fz_is_empty_rect(fz_intersect_rect(JM_char_bbox(ch), rect))) continue;
                     last_char = ch->c;
+                    n = fz_runetochar(utf, ch->c);
+                    for (i = 0; i < n; i++)
+                        fz_write_byte(ctx, out, utf[i]);
                 }
+                if (last_char != 10) fz_write_string(ctx, out, "\n");
             }
-            fz_write_string(ctx, out, "\n");
         }
     }
 }
@@ -131,18 +126,6 @@ int JM_append_word(fz_context *ctx, PyObject *lines, fz_buffer *buff, fz_rect *w
 //-----------------------------------------------------------------------------
 // Functions for dictionary output
 //-----------------------------------------------------------------------------
-
-// create the char rect from its quad
-static fz_rect
-JM_char_bbox(fz_stext_char *ch)
-{
-    fz_rect r = fz_rect_from_quad(ch->quad);
-    if (!fz_is_empty_rect(r)) return r;
-    // we need to correct erroneous font!
-    if ((r.y1 - r.y0) <= FLT_EPSILON) r.y0 = r.y1 - ch->size;
-    if ((r.x1 - r.x0) <= FLT_EPSILON) r.x0 = r.x1 - ch->size;
-    return r;
-}
 
 static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
 {
@@ -220,7 +203,7 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
                 }
 
                 DICT_SETITEM_DROP(span, dictkey_origin,
-                    Py_BuildValue("ff", span_origin.x, span_origin.y));
+                    JM_py_from_point(span_origin));
                 DICT_SETITEM_DROP(span, dictkey_bbox,
                     JM_py_from_rect(span_rect));
                 line_rect = fz_union_rect(line_rect, span_rect);
@@ -253,10 +236,10 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
             char_dict = PyDict_New();
 
             DICT_SETITEM_DROP(char_dict, dictkey_origin,
-                          Py_BuildValue("ff", ch->origin.x, ch->origin.y));
+                          JM_py_from_point(ch->origin));
 
             DICT_SETITEM_DROP(char_dict, dictkey_bbox,
-                          Py_BuildValue("ffff", r.x0, r.y0, r.x1, r.y1));
+                          JM_py_from_rect(r));
 
             DICT_SETITEM_DROP(char_dict, dictkey_c,
                           Py_BuildValue("C", ch->c));
@@ -278,8 +261,7 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
             DICT_SETITEM_DROP(span, dictkey_text, JM_EscapeStrFromBuffer(ctx, buff));
             fz_clear_buffer(ctx, buff);
         }
-        DICT_SETITEM_DROP(span, dictkey_origin,
-            Py_BuildValue("ff", span_origin.x, span_origin.y));
+        DICT_SETITEM_DROP(span, dictkey_origin, JM_py_from_point(span_origin));
         DICT_SETITEM_DROP(span, dictkey_bbox, JM_py_from_rect(span_rect));
 
         if (!fz_is_empty_rect(span_rect)) {
@@ -371,8 +353,7 @@ static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject 
         block_rect = fz_union_rect(block_rect, line_rect);
         DICT_SETITEM_DROP(line_dict, dictkey_wmode,
                     Py_BuildValue("i", line->wmode));
-        DICT_SETITEM_DROP(line_dict, dictkey_dir,
-                    Py_BuildValue("ff", line->dir.x, line->dir.y));
+        DICT_SETITEM_DROP(line_dict, dictkey_dir, JM_py_from_point(line->dir));
         DICT_SETITEM_DROP(line_dict, dictkey_bbox,
                     JM_py_from_rect(line_rect));
         LIST_APPEND_DROP(line_list, line_dict);

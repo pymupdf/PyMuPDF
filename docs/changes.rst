@@ -1,6 +1,14 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.1
+---------------------------
+* **Fixed** issue `#692 <https://github.com/pymupdf/PyMuPDF/issues/692>`_. PyMuPDF now detects and recovers from more cyclic resource dependencies in PDF pages and for the first time reports them in the MuPDF warnings store.
+* **Fixed** issue `#686 <https://github.com/pymupdf/PyMuPDF/issues/686>`_.
+* **Added** opacity options for the :ref:`Shape` class: Stroke and fill colors can now be set to some transparency value. This means that all :ref:`Page` draw methods, methods :meth:`Page.insertText`, :meth:`Page.insertTextbox`, :meth:`Shape.finish`, :meth:`Shape.insertText`, and :meth:`Shape.insertTextbox` support two new parameters: *stroke_opacity* and *fill_opacity*.
+* **Added** new parameter ``mask`` to :meth:`Page.insertImage` for optionally providing an external image mask. Resolves issue `#685 <https://github.com/pymupdf/PyMuPDF/issues/685>`_.
+* **Added** :meth:`Annot.soundGet` for extracting the sound of an audio annotation.
+
 Changes in Version 1.18.0
 ---------------------------
 This is first PyMuPDF version supporting MuPDF v1.18. The goal here is on extending PyMuPDF's own functionality -- apart from bug fixing. Subsequent PyMuPDF patches may address features new in MuPDF.
