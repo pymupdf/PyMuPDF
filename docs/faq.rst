@@ -1336,7 +1336,9 @@ The following is a code snippet which extracts the drawings of a page and re-dra
             lineJoin=path["lineJoin"],  # how line joins should look like
             lineCap=max(path["lineCap"]),  # how line ends should look like
             width=path["width"],  # line width
-        )
+            stroke_opacity=path["opacity"],  # same value for both
+            fill_opacity=path["opacity"],  # opacity parameters
+            )
     # all paths processed - commit the shape to its page
     shape.commit()
     outpdf.save("drawings-page-0.pdf")
@@ -1350,7 +1352,6 @@ Here is a comparison between input and output of an example page, created by the
 
 .. note:: The reconstruction of graphics like shown here is not perfect. The following aspects will not be reproduced as of this version:
 
-   * Transparency / opacity: while this value is contained in the 'path' dictionary, it is yet unsupported by the :ref:`Shape` class.
    * Page definitions can be complex and include instructions for not showing / hiding certain areas to keep them invisible. Things like this are ignored by :meth:`Page.getDrawings` - it will always return all paths.
 
 .. note:: You can use the path list to make your own lists of e.g. all lines or all rectangles on the page, subselect them by criteria like color or position on the page etc.
