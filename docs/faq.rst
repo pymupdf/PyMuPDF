@@ -560,7 +560,7 @@ This script will take a document filename and generate a text file from all of i
 
 The document can be any supported type like PDF, XPS, etc.
 
-The script works as a command line tool which expects the document filename supplied as a parameter. It generates one text file named "filename.txt" in the script directory. Text of pages is separated by a line "-----"::
+The script works as a command line tool which expects the document filename supplied as a parameter. It generates one text file named "filename.txt" in the script directory. Text of pages is separated by a form feed character::
 
     import sys, fitz
     fname = sys.argv[1]  # get document filename
@@ -588,50 +588,7 @@ See the following two section for examples and further explanations.
 
 How to Extract Text from within a Rectangle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Please refer to the script `textboxtract.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/textboxtract.py>`_.
-
-It demonstrates ways to extract text contained in the following red rectangle,
-
-.. image:: images/img-textboxtract.png
-   :scale: 75
-
-.. highlight:: text
-
-by using more or less restrictive conditions to find the relevant words::
-
-    Select the words strictly contained in rectangle
-    ------------------------------------------------
-    Die Altersübereinstimmung deutete darauf hin,
-    engen, nur 50 Millionen Jahre großen
-    Gesteinshagel auf den Mond traf und dabei
-    hinterließ – einige größer als Frankreich.
-    es sich um eine letzte, infernalische Welle
-    Geburt des Sonnensystems. Daher tauften die
-    das Ereignis »lunare Katastrophe«. Später
-    die Bezeichnung Großes Bombardement durch.
-
-Or, more forgiving, respectively::
-
-    Select the words intersecting the rectangle
-    -------------------------------------------
-    Die Altersübereinstimmung deutete darauf hin, dass
-    einem engen, nur 50 Millionen Jahre großen Zeitfenster
-    ein Gesteinshagel auf den Mond traf und dabei unzählige
-    Krater hinterließ – einige größer als Frankreich. Offenbar
-    handelte es sich um eine letzte, infernalische Welle nach
-    der Geburt des Sonnensystems. Daher tauften die Caltech-
-    Forscher das Ereignis »lunare Katastrophe«. Später setzte
-    sich die Bezeichnung Großes Bombardement durch.
-
-The latter output also includes words *intersecting* the rectangle.
-
-.. highlight:: python
-
-What if your **rectangle spans across more than one page**? Follow this recipe:
-
-* Create a common list of all words of all pages which your rectangle intersects.
-* When adding word items to this common list, increase their **y-coordinates** by the accumulated height of all previous pages.
-
+There is now (v1.18.0) more than one way to achieve this. We therefore have created a `folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textbox-extraction>`_ in the PyMuPDF-Utilities repository specifically dealing with this topic.
 
 ----------
 
