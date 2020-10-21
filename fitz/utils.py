@@ -3467,23 +3467,23 @@ def scrub(
         suppress = False  # indicate text suppression active
         make_return = False
         for line in cont_lines:
-            if line == "BT":  # start of text object
+            if line == b"BT":  # start of text object
                 in_text = True  # switch on
                 out_lines.append(line)  # output it
                 continue
-            if line == "ET":  # end of text object
+            if line == b"ET":  # end of text object
                 in_text = False  # switch off
                 out_lines.append(line)  # output it
                 continue
-            if line == "3 Tr":  # text suppression operator
+            if line == b"3 Tr":  # text suppression operator
                 suppress = True  # switch on
                 make_return = True
                 continue
-            if line[-2:] == "Tr" and line[0] != "3":
+            if line[-2:] == b"Tr" and line[0] != b"3":
                 suppress = False  # text rendering changed
                 out_lines.append(line)
                 continue
-            if line == "Q":  # unstack command also switches off
+            if line == b"Q":  # unstack command also switches off
                 suppress = False
                 out_lines.append(line)
                 continue
@@ -3578,10 +3578,10 @@ def scrub(
 
         if hidden_text:
             xref = page.getContents()[0]  # only one b/o cleaning!
-            cont = doc.xrefStream(xref).decode()  # /Contents converted to str
+            cont = doc.xrefStream(xref)  # /Contents as bytes
             cont_lines = remove_hidden(cont.splitlines())  # remove hidden text
             if cont_lines:  # something was actually removed
-                cont = "\n".join(cont_lines).encode()
+                cont = b"\n".join(cont_lines)
                 doc.updateStream(xref, cont)  # rewrite the page /Contents
 
 
