@@ -728,15 +728,12 @@ There is a standard search function to search for arbitrary text on a page: :met
 
 This method has advantages and drawbacks. Pros are
 
-* the search string can contain blanks and wrap across lines
-* upper or lower cases are treated equal
+* The search string can contain blanks and wrap across lines
+* Upper or lower case characters are treated equal
+* Word hyphenation at line ends is detected and resolved
 * return may also be a list of :ref:`Quad` objects to precisely locate text that is **not parallel** to either axis.
 
-Disadvantages:
-
-* you cannot determine the number of found items beforehand: if *hit_max* items are returned you do not know whether you have missed any.
-
-But you have other options::
+But you also have other options::
 
  import sys
  import fitz
@@ -1580,8 +1577,9 @@ This deals with splitting up pages of a PDF in arbitrary pieces. For example, yo
 
     # that's it, save output file
     doc.save("poster-" + src.name,
-             garbage = 3,                       # eliminate duplicate objects
-             deflate = True)                    # compress stuff where possible
+             garbage=3,  # eliminate duplicate objects
+             deflate=True,  # compress stuff where possible
+    )
 
 
 This shows what happens to an input page:
@@ -1652,7 +1650,7 @@ This deals with joining PDF pages to form a new PDF with pages each combining tw
                          spage.number)      # input page number
 
     # by all means, save new file using garbage collection and compression
-    doc.save("4up-" + infile, garbage = 3, deflate = True)
+    doc.save("4up-" + infile, garbage=3, deflate=True)
 
 Example effect:
 
@@ -1858,20 +1856,20 @@ Problem
 ^^^^^^^^^
 There are two scenarios:
 
-1. Updating an annotation, which has been created by some other software, via a PyMuPDF script.
-2. Creating an annotation with PyMuPDF and later changing it using some other PDF application.
+1. **Updating** an annotation with PyMuPDF which was created by some other software.
+2. **Creating** an annotation with PyMuPDF and later changing it with some other software.
 
-In both cases you may experience unintended changes like a different annotation icon or text font, the fill color or line dashing have disappeared, line end symbols have changed their size or even have disappeared too, etc.
+In both cases you may experience unintended changes, like a different annotation icon or text font, the fill color or line dashing have disappeared, line end symbols have changed their size or even have disappeared too, etc.
 
 Cause
 ^^^^^^
-Annotation maintenance is handled differently by each PDF maintenance application (if it is supported at all). For any given PDF application, some annotation types may not be supported at all or only partly, or some details may be handled in a different way than with another application.
+Annotation maintenance is handled differently by each PDF maintenance application. Some annotation types may not be supported, or not be supported fully or some details may be handled in a different way than in another application. **There is no standard.**
 
 Almost always a PDF application also comes with its own icons (file attachments, sticky notes and stamps) and its own set of supported text fonts. For example:
 
 * (Py-) MuPDF only supports these 5 basic fonts for 'FreeText' annotations: Helvetica, Times-Roman, Courier, ZapfDingbats and Symbol -- no italics / no bold variations. When changing a 'FreeText' annotation created by some other app, its font will probably not be recognized nor accepted and be replaced by Helvetica.
 
-* PyMuPDF fully supports the PDF text markers, but these types cannot be updated with Adobe Acrobat Reader.
+* PyMuPDF supports all PDF text markers (highlight, underline, strikeout, squiggly), but these types cannot be updated with Adobe Acrobat Reader.
 
 In most cases there also exists limited support for line dashing which causes existing dashes to be replaced by straight lines. For example:
 

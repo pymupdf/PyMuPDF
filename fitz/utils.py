@@ -363,16 +363,17 @@ def searchFor(page, text, hit_max=16, quads=False, clip=None, flags=None):
 
     Args:
         text: string to be searched for
-        hit_max: maximum hits
-        quads: return quads instead of rectangles
+        clip: restrict search to this rectangle
+        quads: (bool) return quads instead of rectangles
+        flags: bit switches, default: join hyphened words
     Returns:
         a list of rectangles or quads, each containing one occurrence.
     """
     CheckParent(page)
     if flags is None:
-        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(clip, flags)  # create TextPage
-    rlist = tp.search(text, hit_max=hit_max, quads=quads)
+        flags = TEXT_DEHYPHENATE
+    tp = page.getTextPage(clip=clip, flags=flags)  # create TextPage
+    rlist = tp.search(text, quads=quads)
     tp = None
     return rlist
 
@@ -383,15 +384,14 @@ def searchPageFor(doc, pno, text, hit_max=16, quads=False, clip=None, flags=None
     Args:
         pno: page number
         text: string to be searched for
-        hit_max: maximum hits
-        quads: return quads instead of rectangles
+        clip: restrict search to this rectangle
+        quads: (bool) return quads instead of rectangles
+        flags: bit switches, default: join hyphened words
     Returns:
         a list of rectangles or quads, each containing an occurrence.
     """
 
-    return doc[pno].searchFor(
-        text, hit_max=hit_max, quads=quads, clip=clip, flags=flags
-    )
+    return doc[pno].searchFor(text, quads=quads, clip=clip, flags=flags)
 
 
 def getTextBlocks(page, clip=None, flags=None):
@@ -408,7 +408,7 @@ def getTextBlocks(page, clip=None, flags=None):
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_WHITESPACE + TEXT_PRESERVE_IMAGES
-    tp = page.getTextPage(clip, flags)
+    tp = page.getTextPage(clip=clip, flags=flags)
     blocks = tp.extractBLOCKS()
     del tp
     return blocks
@@ -439,7 +439,7 @@ def getTextbox(page, rect):
 def getTextSelection(page, p1, p2, clip=None):
     CheckParent(page)
     flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(clip, flags)
+    tp = page.getTextPage(clip=clip, flags=flags)
     rc = tp.extractSelection(p1, p2)
     del tp
     return rc
@@ -465,6 +465,7 @@ def getText(page, option="text", clip=None, flags=None):
         "text": 0,
         "html": 1,
         "json": 1,
+        "rawjson": 1,
         "xml": 0,
         "xhtml": 1,
         "dict": 1,
@@ -486,10 +487,12 @@ def getText(page, option="text", clip=None, flags=None):
         return getTextBlocks(page, clip=clip, flags=flags)
     CheckParent(page)
 
-    tp = page.getTextPage(clip, flags=flags)  # TextPage with or without images
+    tp = page.getTextPage(clip=clip, flags=flags)  # TextPage with or without images
 
     if option == "json":
         t = tp.extractJSON()
+    elif option == "rawjson":
+        t = tp.extractRAWJSON()
     elif option == "dict":
         t = tp.extractDICT()
     elif option == "rawdict":
@@ -3441,6 +3444,7 @@ def scrub(
     javascript=True,
     metadata=True,
     redactions=True,
+    redact_images=0,
     remove_links=True,
     reset_fields=True,
     reset_responses=True,
@@ -3459,7 +3463,7 @@ def scrub(
         Notes:
             The input must have been created after the page's /Contents object(s)
             have been cleaned with page.cleanContents(). This ensures a standard
-            formatting: one command per line, no double spaces between operators.
+            formatting: one command per line, single spaces between operators.
             This allows for drastic simplification of this code.
         """
         out_lines = []  # will return this
@@ -3496,9 +3500,9 @@ def scrub(
             return None
 
     if not doc.isPDF:  # only works for PDF
-        ValueError("not a PDF")
+        raise ValueError("not a PDF")
     if doc.isEncrypted or doc.isClosed:
-        ValueError("closed or encrypted doc")
+        raise ValueError("closed or encrypted doc")
 
     if clean_pages is False:
         hidden_text = False
@@ -3566,7 +3570,7 @@ def scrub(
                 found_redacts = True
 
         if redactions and found_redacts:
-            page.apply_redactions()
+            page.apply_redactions(images=redact_images)
 
         if not page.getContents():  # safeguard against empty /Contents
             continue
@@ -3578,7 +3582,7 @@ def scrub(
 
         if hidden_text:
             xref = page.getContents()[0]  # only one b/o cleaning!
-            cont = doc.xrefStream(xref)  # /Contents as bytes
+            cont = doc.xrefStream(xref)
             cont_lines = remove_hidden(cont.splitlines())  # remove hidden text
             if cont_lines:  # something was actually removed
                 cont = b"\n".join(cont_lines)

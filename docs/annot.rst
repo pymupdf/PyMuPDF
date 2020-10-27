@@ -90,7 +90,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       *(New in 1.18.0)*
 
-      Retrieves the content of the annotation in a variety of formats -- much like the same method for :ref:`Page`.. This currently only delivers relevant data for annotation types 'FreeText' and 'Stamp'. Other type will return an empty string (or equivalent objects).
+      Retrieves the content of the annotation in a variety of formats -- much like the same method for :ref:`Page`.. This currently only delivers relevant data for annotation types 'FreeText' and 'Stamp'. Other types return an empty string (or equivalent objects).
 
       :arg str opt: the desired format - one of the following values. Please note that this method works exactly like the same-named method of :ref:`Page`.
 

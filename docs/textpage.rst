@@ -18,11 +18,12 @@ For a description of what this class is all about, see Appendix 2.
 :meth:`~.extractBLOCKS`  plain text grouped in blocks     "blocks"
 :meth:`~.extractWORDS`   all words with their bbox        "words"
 :meth:`~.extractHTML`    page content in HTML format      "html"
-:meth:`~.extractJSON`    page content in JSON format      "json"
 :meth:`~.extractXHTML`   page content in XHTML format     "xhtml"
 :meth:`~.extractXML`     page text in XML format          "xml"
 :meth:`~.extractDICT`    page content in *dict* format    "dict"
+:meth:`~.extractJSON`    page content in JSON format      "json"
 :meth:`~.extractRAWDICT` page content in *dict* format    "rawdict"
+:meth:`~.extractRAWJSON` page content in JSON format      "rawjson"
 :meth:`~.search`         Search for a string in the page  searchFor()
 ======================== ================================ =============================
 
@@ -37,6 +38,7 @@ For a description of what this class is all about, see Appendix 2.
       Return a string of the page's complete text. The text is UTF-8 unicode and in the same sequence as specified at the time of document creation.
 
       :rtype: str
+
 
    .. method:: extractBLOCKS
 
@@ -100,19 +102,30 @@ For a description of what this class is all about, see Appendix 2.
 
       :rtype: dict
 
-   .. method:: search(string, hit_max = 16, quads = False)
+   .. method:: search(needle, quads=False)
+
+      *(Changed in v1.18.2)*
 
       Search for *string* and return a list of found locations.
 
-      :arg str string: the string to search for. Upper / lower cases will all match.
-      :arg int hit_max: maximum number of returned hits (default 16).
+      :arg str needle: the string to search for. Upper and lower cases will all match.
       :arg bool quads: return quadrilaterals instead of rectangles.
       :rtype: list
-      :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *string* occurrence. The search string may contain spaces, it may therefore happen, that its parts are located on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. The method does **not support hyphenation**, so it will not find "meth-od" when searching for "method".
+      :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *needle* occurrence. The search string may contain spaces, it may therefore happen, that its parts are located on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method **now supports hyphenation**, so it will find "method" even if it was hyphenated in two parts "meth-" and "od" across two lines. The rectangles will exclude the hyphen in this case.
 
-      Example: If the search for string "pymupdf" contains a hit like shown, then the corresponding entry will either be the blue rectangle, or, if *quads* was specified, *Quad(ul, ur, ll, lr)*.
+      .. note:: **Overview of changes in v1.18.2:**
+
+        1. The ``hit_max`` parameter has been removed: all hits are always returned.
+        2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered.
+        3. Words hyphenated at the end of a line are now found.
+
+      Example Quad versus Rect: when searching for needle "pymupdf", then the corresponding entry will either be the blue rectangle, or, if *quads* was specified, *Quad(ul, ur, ll, lr)*.
 
       .. image:: images/img-quads.jpg
+
+   .. attribute:: rect
+
+      The rectangle associated with the text page. This either equals the rectangle of the creating page or the ``clip`` parameter of :meth:`Page.getTextPage`.
 
 .. _textpagedict:
 
@@ -200,7 +213,7 @@ The value of key *"dir"* is a **unit vetor** and should be interpreted as follow
 * *x*: positive = "left-right", negative = "right-left", 0 = neither
 * *y*: positive = "top-bottom", negative = "bottom-top", 0 = neither
 
-The values indicate the "relative writing speed" in each direction, such that x\ :sup:`2` + y\ :sup:`2` = 1. In other words *dir = [cos(beta), sin(beta)]*, where *beta* is the writing angle relative to the horizontal.
+The values indicate the "relative writing speed" in each direction, such that x\ :sup:`2` + y\ :sup:`2` = 1. In other words *dir = [cos(beta), sin(beta)]*, where *beta* is the writing angle relative to the x-axis.
 
 Span Dictionary
 ~~~~~~~~~~~~~~~~~

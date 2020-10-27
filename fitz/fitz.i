@@ -1373,6 +1373,15 @@ struct Document
             return JM_BOOL(pdf_can_be_saved_incrementally(gctx, pdf));
         }
 
+        CLOSECHECK0(isRepaired, """Check whether PDF was repaired.""")
+        %pythoncode%{@property%}
+        PyObject *isRepaired()
+        {
+            pdf_document *pdf = pdf_document_from_fz_document(gctx, (fz_document *) $self);
+            if (!pdf) Py_RETURN_FALSE; // gracefully handle non-PDF
+            return JM_BOOL(pdf_was_repaired(gctx, pdf));
+        }
+
         CLOSECHECK0(authenticate, """Decrypt document.""")
         %pythonappend authenticate %{
         if val:  # the doc is decrypted successfully and we init the outline
@@ -1424,13 +1433,10 @@ struct Document
             opts.do_sanitize        = clean;
             opts.do_encrypt         = encryption;
             opts.permissions        = permissions;
-            if (owner_pw)
-            {
+            if (owner_pw) {
                 memcpy(&opts.opwd_utf8, owner_pw, strlen(owner_pw)+1);
             }
-
-            if (user_pw)
-            {
+            if (user_pw) {
                 memcpy(&opts.upwd_utf8, user_pw, strlen(user_pw)+1);
             }
 
@@ -1438,6 +1444,7 @@ struct Document
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 JM_embedded_clean(gctx, pdf);
+                JM_ensure_identity(gctx, pdf);
                 pdf_save_document(gctx, pdf, filename, &opts);
                 pdf->dirty = 0;
             }
@@ -1485,7 +1492,6 @@ struct Document
             if (owner_pw) {
                 memcpy(&opts.opwd_utf8, owner_pw, strlen(owner_pw)+1);
             }
-
             if (user_pw) {
                 memcpy(&opts.upwd_utf8, user_pw, strlen(user_pw)+1);
             }
@@ -1499,6 +1505,7 @@ struct Document
                 if (pdf_count_pages(gctx, pdf) < 1)
                     THROWMSG("cannot save with zero pages");
                 JM_embedded_clean(gctx, pdf);
+                JM_ensure_identity(gctx, pdf);
                 res = fz_new_buffer(gctx, 8192);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
@@ -1995,7 +2002,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 }
                 if (JM_is_jbig2_image(gctx, obj)) {
                     img_type = FZ_IMAGE_JBIG2;
-                    ext = "jbig2";
+                    ext = "jb2";
                 }
                 res = pdf_load_raw_stream(gctx, obj);
                 if (img_type == FZ_IMAGE_UNKNOWN) {
@@ -2004,7 +2011,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     img_type = fz_recognize_image_format(gctx, c);
                     ext = JM_image_extension(img_type);
                 }
-                PySys_WriteStdout("xref %i image type %s\n", xref, ext);
                 if (img_type == FZ_IMAGE_UNKNOWN) {
                     fz_drop_buffer(gctx, res);
                     res = NULL;
@@ -2362,19 +2368,49 @@ if not self.isFormPDF:
         }
 
         //---------------------------------------------------------------------
+        // Get XML Metadata
+        //---------------------------------------------------------------------
+        CLOSECHECK0(getXmlMetadata, """Get document XML metadata.""")
+        PyObject *getXmlMetadata()
+        {
+            PyObject *rc = NULL;
+            fz_buffer *buff = NULL;
+            pdf_obj *xml = NULL;
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+                if (pdf) {
+                    xml = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root), PDF_NAME(Metadata), NULL);
+                }
+                if (xml) {
+                    buff = pdf_load_stream(gctx, xml);
+                    rc = JM_UnicodeFromBuffer(gctx, buff);
+                } else {
+                    rc = EMPTY_STRING;
+                }
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+                PyErr_Clear();
+            }
+            fz_catch(gctx) {
+                return EMPTY_STRING;
+            }
+            return rc;
+        }
+
+        //---------------------------------------------------------------------
         // Get XML Metadata xref
         //---------------------------------------------------------------------
         CLOSECHECK0(_getXmlMetadataXref, """Get xref of document XML metadata.""")
         PyObject *_getXmlMetadataXref()
         {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            pdf_obj *xml;
             int xref = 0;
             fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
                 ASSERT_PDF(pdf);
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
-                if (!root) THROWMSG("could not load root object");
-                xml = pdf_dict_gets(gctx, root, "Metadata");
+                if (!root) THROWMSG("PDF has no root");
+                pdf_obj *xml = pdf_dict_get(gctx, root, PDF_NAME(Metadata));
                 if (xml) xref = pdf_to_num(gctx, xml);
             }
             fz_catch(gctx) {;}
@@ -2382,7 +2418,7 @@ if not self.isFormPDF:
         }
 
         //---------------------------------------------------------------------
-        // Delete XML-based Metadata
+        // Delete XML Metadata
         //---------------------------------------------------------------------
         FITZEXCEPTION(_delXmlMetadata, !result)
         CLOSECHECK(_delXmlMetadata, """Delete XML metadata.""")
@@ -2392,7 +2428,41 @@ if not self.isFormPDF:
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
-                if (root) pdf_dict_dels(gctx, root, "Metadata");
+                if (root) pdf_dict_del(gctx, root, PDF_NAME(Metadata));
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            pdf->dirty = 1;
+            return_none;
+        }
+
+        //---------------------------------------------------------------------
+        // Set XML-based Metadata
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(setXmlMetadata, !result)
+        CLOSECHECK(setXmlMetadata, """Put XML metadata.""")
+        PyObject *setXmlMetadata(char *metadata)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_buffer *res = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+                if (!root) THROWMSG("PDF has no root");
+                res = fz_new_buffer_from_copied_data(gctx, (const unsigned char *) metadata, strlen(metadata));
+                pdf_obj *xml = pdf_dict_get(gctx, root, PDF_NAME(Metadata));
+                if (xml) {
+                    JM_update_stream(gctx, pdf, xml, res, 0);
+                } else {
+                    xml = pdf_add_stream(gctx, pdf, res, NULL, 0);
+                    pdf_dict_put(gctx, xml, PDF_NAME(Type), PDF_NAME(Metadata));
+                    pdf_dict_put(gctx, xml, PDF_NAME(Subtype), PDF_NAME(XML));
+                    pdf_dict_put_drop(gctx, root, PDF_NAME(Metadata), xml);
+                }
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -8607,41 +8677,41 @@ struct TextPage {
         //---------------------------------------------------------------------
         FITZEXCEPTION(search, !result)
         %pythonprepend search
-        %{"""Locate up to 'hit_max' 'needle' occurrences returning rects or quads."""%}
+        %{"""Locate 'needle' returning rects or quads."""%}
         %pythonappend search %{
         if not val:
             return val
-        newval = []
-        for v in val:
-            q = Quad(v)
+        items = len(val)
+        for i in range(items):  # change entries to quads or rects
+            q = Quad(val[i])
             if quads:
-                newval.append(q)
+                val[i] = q
             else:
-                newval.append(q.rect)
-        val = newval
+                val[i] = q.rect
+        if quads:
+            return val
+        i = 0  # join overlapping rects on the same line
+        while i < items - 1:
+            v1 = val[i]
+            v2 = val[i + 1]
+            if v1.y1 != v2.y1 or (v1 & v2).isEmpty:
+                i += 1
+                continue  # no overlap on same line
+            val[i] = v1 | v2  # join rectangles
+            del val[i + 1]  # remove v2
+            items -= 1  # reduce item count
         %}
-        PyObject *search(const char *needle, int hit_max=16, int quads=1)
+        PyObject *search(const char *needle, int hit_max=0, int quads=1)
         {
-            fz_quad *result = NULL;
             PyObject *liste = NULL;
-            int i, mymax = hit_max;
-            if (mymax < 1) mymax = 16;
             fz_try(gctx) {
-                liste = PyList_New(0);
-                result = JM_Alloc(fz_quad, (mymax + 1));
-                fz_quad *quad = (fz_quad *) result;
-                int count = fz_search_stext_page(gctx, (fz_stext_page *) $self, needle, result, hit_max);
-                for (i = 0; i < count; i++) {
-                    LIST_APPEND_DROP(liste, JM_py_from_quad(*quad));
-                    quad += 1;
-                }
+                liste = JM_search_stext_page(gctx, (fz_stext_page *) $self, needle);
             }
             fz_always(gctx) {
-                JM_Free(result);
+                ;
             }
             fz_catch(gctx) {
-                Py_CLEAR(liste);
-                return PyList_New(0);
+                return NULL;
             }
             return liste;
         }
@@ -8664,7 +8734,7 @@ struct TextPage {
         }
 
         %pythoncode %{
-        def _textpage_dict(self, raw = False):
+        def _textpage_dict(self, raw=False):
             page_dict = {"width": self.rect.width, "height": self.rect.height}
             self._getNewBlockList(page_dict, raw)
             return page_dict
@@ -8719,7 +8789,7 @@ struct TextPage {
                             */
                             for (ch = line->first_char; ch; ch = ch->next) {
                                 fz_rect cbbox = JM_char_bbox(ch);
-                                if (fz_is_empty_rect(fz_intersect_rect(tp_rect, cbbox))) {
+                                if (!fz_contains_rect(tp_rect, cbbox)) {
                                     continue;
                                 }
                                 JM_append_rune(gctx, res, ch->c);
@@ -8797,10 +8867,9 @@ struct TextPage {
                         buflen = 0;                       // reset char counter
                         for (ch = line->first_char; ch; ch = ch->next) {
                             fz_rect cbbox = JM_char_bbox(ch);
-                            if (fz_is_empty_rect(fz_intersect_rect(tp_rect, cbbox))) {
+                            if (!fz_contains_rect(tp_rect, cbbox)) {
                                 continue;
                             }
-
                             if (ch->c == 32 && buflen == 0)
                                 continue;                 // skip spaces at line start
                             if (ch->c == 32) {
@@ -8921,6 +8990,7 @@ struct TextPage {
                 """Return simple, bare text on the page."""
                 return self._extractText(0)
 
+
             def extractHTML(self):
                 """Return page content as a HTML string."""
                 return self._extractText(1)
@@ -8941,7 +9011,24 @@ struct TextPage {
                                 return base64.b64encode(s).decode()
 
                 val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
+                return val
 
+            def extractRAWJSON(self):
+                """Return 'extractRAWDICT' converted to JSON format."""
+                import base64, json
+                val = self._textpage_dict(raw=True)
+
+                class b64encode(json.JSONEncoder):
+                    def default(self,s):
+                        if not fitz_py2 and type(s) is bytes:
+                            return base64.b64encode(s).decode()
+                        if type(s) is bytearray:
+                            if fitz_py2:
+                                return base64.b64encode(s)
+                            else:
+                                return base64.b64encode(s).decode()
+
+                val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
                 return val
 
             def extractXML(self):

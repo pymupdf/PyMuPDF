@@ -235,9 +235,9 @@ Searching for Text
 -------------------
 You can find out, exactly where on a page a certain text string appears::
 
-    areas = page.searchFor("mupdf", hit_max = 16)
+    areas = page.searchFor("mupdf")
 
-This delivers a list of up to 16 rectangles (see :ref:`Rect`), each of which surrounds one occurrence of the string "mupdf" (case insensitive). You could use this information to e.g. highlight those areas (PDF only) or create a cross reference of the document.
+This delivers a list of rectangles (see :ref:`Rect`), each of which surrounds one occurrence of the string "mupdf" (case insensitive). You could use this information to e.g. highlight those areas (PDF only) or create a cross reference of the document.
 
 Please also do have a look at chapter :ref:`cooperation` and at demo programs `demo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py>`_ and `demo-lowlevel.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py>`_. Among other things they contain details on how the :ref:`TextPage`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations suggest it.
 

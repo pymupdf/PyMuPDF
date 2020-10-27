@@ -1228,60 +1228,50 @@ def get_highlight_selection(page, start=None, stop=None, clip=None):
     clip = Rect(clip)
     if start is None:
         start = clip.tl
-    start = Point(start)
     if stop is None:
         stop = clip.br
-    stop = Point(stop)
+    clip.y0 = start.y
+    clip.y1 = stop.y
+    if clip.isEmpty or clip.isInfinite:
+        return []
 
-    # extract text of page (no images)
+    # extract text of page, clip only, no images, expand ligatures
     blocks = page.getText(
-        "dict", flags=TEXT_PRESERVE_LIGATURES + TEXT_PRESERVE_WHITESPACE
+        "dict", flags=0, clip=clip,
     )["blocks"]
-    rectangles = []  # we will be returning this
-    lines = []  # intermediate bbox store
+
+    lines = []  # will return this list of rectangles
     for b in blocks:
         for line in b["lines"]:
-            bbox = Rect(line["bbox"]) & clip  # line bbox intersection
-            if bbox.isEmpty:  # do not output empty rectangles
-                continue
-            if bbox.y0 < start.y or bbox.y1 > stop.y:
-                continue  # line above or below the selection points
-            lines.append(bbox)
+            lines.append(Rect(line["bbox"]))
 
-    if lines == []:  # we did not select anything
-        return rectangles
+    if lines == []:  # did not select anything
+        return lines
 
-    lines.sort(key=lambda bbox: bbox.y0)  # sort result by vertical positions
+    lines.sort(key=lambda bbox: bbox.y1)  # sort by vertical positions
 
-    bboxf = lines[0]  # potentially cut off left part of first line
-    if bboxf.y0 - start.y <= 0.1 * bboxf.height:  # close enough to the top?
+    # cut off prefix from first line if start point is close to its top
+    bboxf = lines.pop(0)
+    if bboxf.y0 - start.y <= 0.1 * bboxf.height:  # close enough?
         r = Rect(start.x, bboxf.y0, bboxf.br)  # intersection rectangle
-        if r.isEmpty or r.isInfinite:
-            bboxf = Rect()  # first line will be skipped
-        else:
-            bboxf &= r
-
-    if len(lines) > 1:  # if we selected 2 or more lines
-        if not bboxf.isEmpty:
-            rectangles.append(bboxf)  # output bbox of first line
-        bboxl = lines[-1]  # and read last line
+        if not (r.isEmpty or r.isInfinite):
+            lines.insert(0, r)  # insert again if not empty
     else:
-        bboxl = bboxf  # further restrict the only line selected
+        lines.insert(0, bboxf)  # insert again
 
-    if stop.y - bboxl.y1 <= 0.1 * bboxl.height:  # close enough to bottom?
+    if lines == []:  # the list might have been emptied
+        return lines
+
+    # cut off suffix from last line if stop point is close to its bottom
+    bboxl = lines.pop()
+    if stop.y - bboxl.y1 <= 0.1 * bboxl.height:  # close enough?
         r = Rect(bboxl.tl, stop.x, bboxl.y1)  # intersection rectangle
-        if r.isEmpty or r.isInfinite:  # last line will be skipped
-            bboxl = Rect()
-        else:
-            bboxl &= r
+        if not (r.isEmpty or r.isInfinite):
+            lines.append(r)  # append if not empty
+    else:
+        lines.append(bboxl)  # append again
 
-    if not bboxl.isEmpty:
-        rectangles.append(bboxl)
-
-    for bbox in lines[1:-1]:  # now add remaining line bboxes
-        rectangles.append(bbox)
-
-    return rectangles
+    return lines
 
 
 def annot_preprocess(page):

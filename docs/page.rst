@@ -293,7 +293,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note:: :meth:`searchFor` delivers a list of either rectangles or quadrilaterals. Such a list can be directly used as parameter for these annotation types and will deliver **one common** annotation for all occurrences of the search string::
 
-           >>> quads = page.searchFor("pymupdf", hit_max=100, quads=True)
+           >>> quads = page.searchFor("pymupdf", quads=True)
            >>> page.addHighlightAnnot(quads)
 
       :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
@@ -859,12 +859,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int flags: *(new in version 1.16.2)* indicator bits to control whether to include images or how text should be handled with respect to white spaces and ligatures. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings.
 
       :rtype: *str, list, dict*
-      :returns: The page's content as a string, list or as a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
+      :returns: The page's content as a string, a list or a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
 
       .. note::
 
         1. You can use this method as a **document conversion tool** from any supported document type (not only PDF!) to one of TEXT, HTML, XHTML or XML documents.
-        2. The inclusion of text via the *clip* parameter is decided on a by-character level: a character becomes part of the output, if its bbox has a non-empty intersection with *clip*. Note that this is compatible with the algorithm used in redaction annotations.
+        2. The inclusion of text via the *clip* parameter is decided on a by-character level: **(changed in v1.18.2)** a character becomes part of the output, if its bbox is contained in *clip*. This **deviates** from the algorithm used in redaction annotations: a character will be removed if its bbox intersects with some redaction annotation.
 
    .. method:: getTextbox(rect)
 
@@ -874,7 +874,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect-like rect: rect-like.
 
-      :returns: a string with interspersed linebreaks where necessary. This is the same as ``page.getText("text", clip=rect, flags=0)`` with a removed final line break.
+      :returns: a string with interspersed linebreaks where necessary. This is the same as ``page.getText("text", clip=rect, flags=0)`` with one removed final line break.
 
 
    .. index::
@@ -1122,32 +1122,37 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. index::
       pair: flags; searchFor
-      pair: hit_max; searchFor
       pair: quads; searchFor
 
-   .. method:: searchFor(needle, hit_max=16, quads=False, flags=None)
+   .. method:: searchFor(needle, clip=clip, quads=False, flags=None)
 
-      Searches for *needle* on a page. Wrapper for :meth:`TextPage.search`.
+      *(Changed in v1.18.2)*
+
+      Search for *needle* on a page. Wrapper for :meth:`TextPage.search`.
 
       :arg str needle: Text to search for. Upper / lower case is ignored. The string may contain spaces.
-
-      :arg int hit_max: Maximum number of returned occurrences.
+      :arg rect_like clip: *(New in v1.18.2)* only search in this area.
       :arg bool quads: Return :ref:`Quad` instead of :ref:`Rect` objects.
-      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. Default is 0 (ligatures are dissolved, white space is replaced with space and excessive spaces are not suppressed).
+      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default ligatures are expanded, white space is replaced with spaces and hyphenation is detected.
 
       :rtype: list
 
-      :returns: A list of :ref:`Rect` or  :ref:`Quad` objects each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if the search string spreads across more than one line, then a separate item is recorded in the list for each part of the string per line. So, if ``needle = "search string"`` and the two words happen to be located on separate lines, two entries will be recorded in the list and consumed from *hit_max*: one for "search" and one for "string".
+      :returns:
 
-      .. note:: The method supports multi-line text marker annotations: use the full returned list as parameter for creating the annotation.
+        A list of :ref:`Rect` or  :ref:`Quad` objects each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if parts of *needle* occur on more than one line, then a separate item is geberated for each part of the string per line. So, if ``needle = "search string"``, two rectangles may be generated.
+
+        **Changes in v1.18.2:**
+
+          * There no longer is a limit on the list length (removal of the ``hit_max`` parameter).
+          * If a word is **hyphenated** at a line break, it will still be found. E.g. the word "method" will be found even if hyphenated as "meth-" / "od" by a line break, and two rectangles will be returned: one surrounding "meth" (without the hyphen) and another one surrounding "od".
+
+
+
+      .. note:: The method supports multi-line text marker annotations: you can use the full returned list as **one** parameter for creating the annotation.
 
       .. caution::
 
-         * The number of returned objects will **never exceed** *hit_max*. Hence, if you get this many items, you cannot know whether you missed some.
-
-         * If *needle* is a longer sentence with multiple words and *hit_max* is smaller than the word count, you may not see enough rectangles to reflect **even one** full search string.
-
-         * There also is a trickier aspect: the search logic regards **contiguous multiple occurrences** of *needle* as one: assuming *needle* is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one containing "abc", and a second one containing "abcabc".
+         * There is a tricky aspect: the search logic regards **contiguous multiple occurrences** of *needle* as one: assuming *needle* is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one for "abc", and a second one for "abcabc".
 
 
    .. method:: setMediaBox(r)

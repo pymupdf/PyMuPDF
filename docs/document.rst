@@ -49,6 +49,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.getSigFlags`            PDF only: determine signature state
 :meth:`Document.getToC`                 create a table of contents
 :meth:`Document.getTOC`                 alias of previous
+:meth:`Document.getXmlMetadata`         PDF only: read the XML metadata
 :meth:`Document.insertPage`             PDF only: insert a new page
 :meth:`Document.insertPDF`              PDF only: insert pages from another PDF
 :meth:`Document.layout`                 re-paginate the document (if supported)
@@ -76,6 +77,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.setTOC_item`            PDF only: change a single TOC item
 :meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
 :meth:`Document.setTOC`                 PDF only: alias of previous
+:meth:`Document.setXmlMetadata`         PDF only: create or update document XML metadata
 :meth:`Document.updateObject`           PDF only: replace object source
 :meth:`Document.updateStream`           PDF only: replace stream source
 :meth:`Document.write`                  PDF only: writes document to memory
@@ -90,6 +92,7 @@ For details on **embedded files** refer to Appendix 3.
 :attr:`Document.isFormPDF`              is this a Form PDF?
 :attr:`Document.isPDF`                  is this a PDF?
 :attr:`Document.isReflowable`           is this a reflowable document?
+:attr:`Document.isRepaired`             PDF only: has this PDF been repaired during open?
 :attr:`Document.lastLocation`           (chapter, pno) of last page
 :attr:`Document.metadata`               metadata
 :attr:`Document.name`                   filename of document
@@ -513,9 +516,22 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: setMetadata(m)
 
-      PDF only: Sets or updates the metadata of the document as specified in *m*, a Python dictionary. As with :meth:`select`, these changes become permanent only when you save the document. Incremental save is supported.
+      PDF only: Sets or updates the metadata of the document as specified in *m*, a Python dictionary.
 
       :arg dict m: A dictionary with the same keys as *metadata* (see below). All keys are optional. A PDF's format and encryption method cannot be set or changed and will be ignored. If any value should not contain data, do not specify its key or set the value to *None*. If you use *{}* all metadata information will be cleared to the string *"none"*. If you want to selectively change only some values, modify a copy of *doc.metadata* and use it as the argument. Arbitrary unicode values are possible if specified as UTF-8-encoded.
+
+    .. method:: getXmlMetadata()
+
+      PDF only: Get the document XML metadata.
+
+      :rtype: str
+      :returns: XML metadata of the document. Empty string if not present or not a PDF.
+
+    .. method:: setXmlMetadata(xml)
+
+      PDF only: Sets or updates XML metadata of the document.
+
+      :arg str xml: the new XML metadata. Should be XML syntax, however no checking is done by this method and any string is accepted.
 
     .. method:: setToC(toc, collapse=1)
 
@@ -529,7 +545,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg sequence toc:
 
-          A Python sequence (list or tuple) with **all bookmark entries** that should form the new table of contents. Output variants of :meth:`getToC` are acceptable. To completely remove the table of contents specify an empty sequence or None. Each item must be a list with the following format.
+          A list or tuple with **all bookmark entries** that should form the new table of contents. Output variants of :meth:`getToC` are acceptable. To completely remove the table of contents specify an empty sequence or None. Each item must be a list with the following format.
 
           * [lvl, title, page [, dest]] where
 
@@ -592,7 +608,7 @@ For details on **embedded files** refer to Appendix 3.
       
       Check whether the document can be saved incrementally. Use it to choose the right option without encountering exceptions.
 
-    .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, remove_links=True, reset_fields=True, reset_responses=True, xml_metadata=True)
+    .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, xml_metadata=True)
 
       PDF only: *(New in v1.16.14)* Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options, which are all *True* by default.
 
@@ -603,6 +619,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg bool javascript: Remove JavaScript sources.
       :arg bool metadata: Remove PDF standard metadata.
       :arg bool redactions: Apply redaction annotations.
+      :arg int redact_images: how to handle images if applying redactions. One of 0 (ignore), 1 (blank out overlaps) or 2 (remove).
       :arg bool remove_links: Remove all links.
       :arg bool reset_fields: Reset all form fields to their defaults.
       :arg bool reset_responses: Remove all responses from all annotations.
@@ -664,7 +681,7 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: bytes
       :returns: a bytes object containing the complete document.
 
-    .. method:: searchPageFor(pno, text, hit_max=16, quads=False)
+    .. method:: searchPageFor(pno, text, quads=False)
 
        Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.searchFor`. Any integer -inf < pno < pageCount is acceptable.
 
@@ -1054,13 +1071,21 @@ For details on **embedded files** refer to Appendix 3.
 
       *False* if this is not a PDF or has no form fields, otherwise the number of root form fields (fields with no ancestors).
 
-      Changed in version 1.16.4 Returns the total number of (root) form fields.
+      *(Changed in version 1.16.4)* Returns the total number of (root) form fields.
 
       :type: bool,int
 
     .. attribute:: isReflowable
 
       *True* if document has a variable page layout (like e-books or HTML). In this case you can set the desired page dimensions during document creation (open) or via method :meth:`layout`.
+
+      :type: bool
+
+    .. attribute:: isRepaired
+
+      *(New in v1.18.2)*
+
+      *True* if PDF has been repaired during open (because of major structure issues). Always *False* for non-PDF documents. If true, more details have been stored in ``TOOLS.mupdf_warnings()``, and :meth:`Document.can_save_incrementally` will return *False*.
 
       :type: bool
 

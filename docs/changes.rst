@@ -1,6 +1,21 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.2
+---------------------------
+This version contains some interesting improvements for text searching: any number of search hits is now returned thanks to the removal of the **hit_max** parameter. The new **clip** parameter in addition allows to restrict the search area. Searching now detects hyphenations at line breaks and accordingly finds hyphenated words.
+
+* **Fixed** issue `#575 <https://github.com/pymupdf/PyMuPDF/issues/575>`_: if using ``quads=False`` in text searching, then overlapping rectangles on the same line are joined. Previously, parts of the search string, which belonged to different "marked content" items, each generated their own rectangle -- just as if occurring on separate lines.
+* **Added** :attr:`Document.isRepaired`, which is true if the PDF was repaired on open.
+* **Added** :meth:`Document.setXmlMetadata` which either updates or creates PDF XML metadata. Implements issue `#691 <https://github.com/pymupdf/PyMuPDF/issues/691>`_.
+* **Added** :meth:`Document.getXmlMetadata` returns PDF XML metadata.
+* **Changed** creation of PDF documents: they will now always carry a PDF identification (``/ID`` field) in the document trailer. Implements issue `#691 <https://github.com/pymupdf/PyMuPDF/issues/691>`_.
+* **Changed** :meth:`Page.searchFor`: a new parameter ``clip`` is accepted to restrict the search to this rectangle. Correspondingly, the attribute :attr:`TextPage.rect` is now respected by :meth:`TextPage.search`.
+* **Changed** parameter ``hit_max`` in :meth:`Page.searchFor` and :meth:`TextPage.search` is now obsolete: methods will return all hits.
+* **Changed** character **selection criteria** in :meth:`Page.getText`: a character is now considered to be part of a ``clip`` if its bbox is fully contained. Before this, a non-empty intersection was sufficient.
+* **Changed** :meth:`Document.scrub` to support a new option `redact_images`. This addresses issue `#697 <https://github.com/pymupdf/PyMuPDF/issues/697>`_.
+
+
 Changes in Version 1.18.1
 ---------------------------
 * **Fixed** issue `#692 <https://github.com/pymupdf/PyMuPDF/issues/692>`_. PyMuPDF now detects and recovers from more cyclic resource dependencies in PDF pages and for the first time reports them in the MuPDF warnings store.
@@ -11,7 +26,7 @@ Changes in Version 1.18.1
 
 Changes in Version 1.18.0
 ---------------------------
-This is first PyMuPDF version supporting MuPDF v1.18. The goal here is on extending PyMuPDF's own functionality -- apart from bug fixing. Subsequent PyMuPDF patches may address features new in MuPDF.
+This is the first PyMuPDF version supporting MuPDF v1.18. The focus here is on extending PyMuPDF's own functionality -- apart from bug fixing. Subsequent PyMuPDF patches may address features new in MuPDF.
 
 * **Fixed** issue `#519 <https://github.com/pymupdf/PyMuPDF/issues/519>`_. This upstream bug occurred occasionally for some pages only and seems to be fixed now: page layout should no longer be ruined in these cases.
 

@@ -1,4 +1,22 @@
 %{
+
+//----------------------------------------------------------------------------
+// Store ID in PDF trailer
+//----------------------------------------------------------------------------
+void JM_ensure_identity(fz_context *ctx, pdf_document *pdf)
+{
+    unsigned char rnd[16];
+    pdf_obj *id;
+    id = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME(ID));
+    if (!id) {
+        fz_memrnd(ctx, rnd, nelem(rnd));
+        id = pdf_dict_put_array(ctx, pdf_trailer(ctx, pdf), PDF_NAME(ID), 2);
+        pdf_array_push_drop(ctx, id, pdf_new_string(ctx, (char *) rnd + 0, nelem(rnd)));
+        pdf_array_push_drop(ctx, id, pdf_new_string(ctx, (char *) rnd + 0, nelem(rnd)));
+    }
+}
+
+
 //-----------------------------------------------------------------------------
 // Store info of a font in Python list
 //-----------------------------------------------------------------------------
@@ -156,12 +174,10 @@ int JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         if (o) {
             if (m) {
                 bbox = fz_transform_rect(pdf_to_rect(ctx, o), pdf_to_matrix(ctx, m));
-            }
-            else {
+            } else {
                 bbox = pdf_to_rect(ctx, o);
             }
-        }
-        else {
+        } else {
             bbox = fz_infinite_rect;
         }
         int xref = pdf_to_num(ctx, imagedict);
@@ -170,8 +186,7 @@ int JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
         PyTuple_SET_ITEM(entry, 1, Py_BuildValue("s", pdf_to_name(ctx, refname)));
         PyTuple_SET_ITEM(entry, 2, Py_BuildValue("i", stream_xref));
-        PyTuple_SET_ITEM(entry, 3, Py_BuildValue("ffff",
-                                   bbox.x0, bbox.y0, bbox.x1, bbox.y1));
+        PyTuple_SET_ITEM(entry, 3, JM_py_from_rect(bbox));
         LIST_APPEND_DROP(imagelist, entry);
     }
     return rc;
@@ -187,8 +202,8 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
     pdf_obj *font, *xobj, *subrsrc;
     int i, n, sxref;
     if (pdf_mark_obj(ctx, rsrc)) {
-        fz_warn(ctx, "cyclic dependencies detected - consider page cleaning");
-        return;  // cyclic dependencies!
+        fz_warn(ctx, "Circular dependencies! Consider page cleaning.");
+        return;  // Circular dependencies!
     }
 
     fz_try(ctx) {
@@ -202,10 +217,11 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
             JM_gather_images(ctx, pdf, xobj, liste, stream_xref);
         } else if (what == 3) {  // look up form xobjects
             JM_gather_forms(ctx, pdf, xobj, liste, stream_xref);
-        } else {
+        } else {  // should never happen
             goto finished;
         }
 
+        // check if we need to recurse into Form XObjects
         n = pdf_dict_len(ctx, xobj);
         for (i = 0; i < n; i++) {
             pdf_obj *obj = pdf_dict_get_val(ctx, xobj, i);
@@ -223,7 +239,7 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
                 } else {
                     Py_DECREF(sxref_t);
                     PyErr_Clear();
-                    fz_warn(ctx, "cyclic dependencies detected - consider page cleaning");
+                    fz_warn(ctx, "Circular dependencies! Consider page cleaning.");
                     goto finished;
                 }
             }
