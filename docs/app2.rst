@@ -268,6 +268,7 @@ preserve ligatures  1    1    1     1   1    1       1     1
 preserve whitespace 1    1    1     1   1    1       1     1
 preserve images     n/a  1    1     n/a 1    1       n/a   0
 inhibit spaces      0    0    0     0   0    0       0     0
+dehyphenate         0    0    0     0   0    0       0     0
 =================== ==== ==== ===== === ==== ======= ===== ======
 
 * **"json"** is handled exactly like **"dict"** and is hence left out.

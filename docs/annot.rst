@@ -15,24 +15,26 @@ There is a parent-child relationship between an annotation and its page. If the 
 **Attribute**                   **Short Description**
 =============================== ==============================================================
 :meth:`Annot.blendMode`         return the annotation's blend mode
-:meth:`Annot.setBlendMode`      set the annotation's blend mode
 :meth:`Annot.delete_responses`  delete all responding annotions
 :meth:`Annot.fileGet`           return attached file content
-:meth:`Annot.soundGet`          return the sound of an audio annotation
 :meth:`Annot.fileInfo`          return attached file information
 :meth:`Annot.fileUpd`           set attached file new content
+:meth:`Annot.getOC`             return xref of an optional content group
 :meth:`Annot.getPixmap`         image of the annotation as a pixmap
 :meth:`Annot.getText`           extract annotation text
 :meth:`Annot.getTextbox`        extract annotation text
+:meth:`Annot.setBlendMode`      set the annotation's blend mode
 :meth:`Annot.setBorder`         change the border
 :meth:`Annot.setColors`         change the colors
 :meth:`Annot.setFlags`          change the flags
 :meth:`Annot.setInfo`           change various properties
 :meth:`Annot.setLineEnds`       set line ending styles
 :meth:`Annot.setName`           change the "Name" field (e.g. icon name)
+:meth:`Annot.setOC`             set visibility via an optional content group (OCG)
 :meth:`Annot.setOpacity`        change transparency
 :meth:`Annot.setRect`           change the rectangle
 :meth:`Annot.setRotation`       change rotation
+:meth:`Annot.soundGet`          return the sound of an audio annotation
 :meth:`Annot.update`            apply accumulated annot changes
 :attr:`Annot.border`            border details
 :attr:`Annot.colors`            border / background and fill colors
@@ -140,6 +142,18 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg int start: The symbol number for the first point.
       :arg int end: The symbol number for the last point.
+
+   .. method:: setOC(xref)
+
+      Set the annotation's visibility using optional content groups. This visibility can be controlled by user interfaces provided by supporting PDF viewers and is independent from other parameters like ::attr:`Annot.flags`.
+
+      :arg int xref: :data:`xref` of an optional contents group (OCG). If zero, any previous enty will be removed. An exception occurs if the xref does not point to a valid PDF object.
+
+   .. method:: getOC()
+
+      Return the :data:`xref` of an optional content group, or zero if there is none.
+
+      :returns: zero or the xref of an OCG (or OCMD).
 
    .. method:: setOpacity(value)
 

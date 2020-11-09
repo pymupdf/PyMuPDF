@@ -1,9 +1,22 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.3
+---------------------------
+As a major new feature, this version introduces support for PDF's **Optional Content** concept.
+
+* **Fixed** issue `#714 <https://github.com/pymupdf/PyMuPDF/issues/714>`_.
+* **Fixed** issue `#711 <https://github.com/pymupdf/PyMuPDF/issues/711>`_.
+
+* **Fixed** issue `#707 <https://github.com/pymupdf/PyMuPDF/issues/707>`_: if a PDF user password is supplied but no owner password is supplied nor present, then the user password is also used as the owner password.
+* **Fixed** ``expand`` and ``deflate`` parameters of methods :meth:`Document.save` and :meth:`Document.write`. Individual image and font compression should now finally work. Addresses issue `#713 <https://github.com/pymupdf/PyMuPDF/issues/713>`_.
+* **Added** a support of PDF optional content. This includes several new :ref:`Document` methods for inquiring and setting optional content status and adding optional content configurations and groups. In addition, images, form XObjects and annotations now can be bound to optional content specifications. **Resolved** issue `#709 <https://github.com/pymupdf/PyMuPDF/issues/709>`_.
+
+
+
 Changes in Version 1.18.2
 ---------------------------
-This version contains some interesting improvements for text searching: any number of search hits is now returned thanks to the removal of the **hit_max** parameter. The new **clip** parameter in addition allows to restrict the search area. Searching now detects hyphenations at line breaks and accordingly finds hyphenated words.
+This version contains some interesting improvements for text searching: any number of search hits is now returned and the **hit_max** parameter was removed. The new **clip** parameter in addition allows to restrict the search area. Searching now detects hyphenations at line breaks and accordingly finds hyphenated words.
 
 * **Fixed** issue `#575 <https://github.com/pymupdf/PyMuPDF/issues/575>`_: if using ``quads=False`` in text searching, then overlapping rectangles on the same line are joined. Previously, parts of the search string, which belonged to different "marked content" items, each generated their own rectangle -- just as if occurring on separate lines.
 * **Added** :attr:`Document.isRepaired`, which is true if the PDF was repaired on open.

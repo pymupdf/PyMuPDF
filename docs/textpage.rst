@@ -111,13 +111,14 @@ For a description of what this class is all about, see Appendix 2.
       :arg str needle: the string to search for. Upper and lower cases will all match.
       :arg bool quads: return quadrilaterals instead of rectangles.
       :rtype: list
-      :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *needle* occurrence. The search string may contain spaces, it may therefore happen, that its parts are located on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method **now supports hyphenation**, so it will find "method" even if it was hyphenated in two parts "meth-" and "od" across two lines. The rectangles will exclude the hyphen in this case.
+      :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *needle* occurrence. The search string may contain spaces, it may therefore happen, that its parts are located on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method **now supports dehyphenation**, so it will find "method" even if it was hyphenated in two parts "meth-" and "od" across two lines. The two returned rectangles will **exclude the hyphen** in this case.
 
       .. note:: **Overview of changes in v1.18.2:**
 
         1. The ``hit_max`` parameter has been removed: all hits are always returned.
         2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered.
         3. Words hyphenated at the end of a line are now found.
+        4. Overlapping **rectangles** in the same line are now automatically joined. We assume that such separations are an artifact created by multiple marked content groups containing parts of the same search needle.
 
       Example Quad versus Rect: when searching for needle "pymupdf", then the corresponding entry will either be the blue rectangle, or, if *quads* was specified, *Quad(ul, ur, ll, lr)*.
 

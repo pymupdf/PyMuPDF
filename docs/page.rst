@@ -772,8 +772,9 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: rotate; insertImage
       pair: stream; insertImage
       pair: mask; insertImage
+      pair: oc; insertImage
 
-   .. method:: insertImage(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, keep_proportion=True, overlay=True)
+   .. method:: insertImage(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, oc=0, keep_proportion=True, overlay=True)
 
       PDF only: Put an image inside the given rectangle. The image can be taken from a pixmap, a file or a memory area - of these parameters **exactly one** must be specified.
 
@@ -798,6 +799,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convertToPDF`) first and then use :meth:`Page.showPDFpage` instead.
 
+      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this OCG (optional content group). Please be aware, that this property is stored with the generated PDF image definition. If you insert the same image anywhere else, but **with a different 'oc' value**, a full additional image copy will be stored.
       :arg bool keep_proportion: *(new in version v1.14.11)* maintain the aspect ratio of the image.
 
       For a description of *overlay* see :ref:`CommonParms`.
@@ -898,9 +900,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles or curves, including properties like colors, transparency, line width and dashing, etc.
 
-      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands which belong together: their lines are connected and they have the same properties (colors, dashing, etc.). This is called a **"path"** in the PDF specification, but this method works the same for all document types.
+      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands which belong together: their lines are connected and they have the same properties (colors, dashing, etc.). This is called a **"path"** in the PDF specification, but the method works the same for **all document types**.
 
-      The dictionary been designed to be compatible with the methods and terminology of class :ref:`Shape`. There are the following keys:
+      The path dictionary has been designed to be compatible with the methods and terminology of class :ref:`Shape`. There are the following keys:
 
             ============== =========================================================================
             Key            Value
@@ -926,7 +928,12 @@ In a nutshell, this is what you can do with PyMuPDF:
 
             Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
 
-            Please note that this is a brandnew function, so there exists a higher probability for bugs.
+            The following limitations exist by design:
+
+            * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of any item (drawings and other objects) depending on whatever condition: a watermark may be supressed if the page is shown by a viewer, but is visible if printed on paper.
+            * Only drawings are extracted, other page content is ignored. The method therefore does not detect whether a drawing is covered, hidden or overlaid in the original document, e.g. by some text or an image.
+
+            Effects like these are ignored by the method -- it will return all paths unconditionally.
 
    .. method:: getFontList(full=False)
 
@@ -1061,7 +1068,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: overlay; showPDFpage
       pair: rotate; showPDFpage
 
-   .. method:: showPDFpage(rect, docsrc, pno=0, keep_proportion=True, overlay=True, rotate=0, clip=None)
+   .. method:: showPDFpage(rect, docsrc, pno=0, keep_proportion=True, overlay=True, oc=0, rotate=0, clip=None)
 
       PDF only: Display a page of another PDF as a **vector image** (otherwise similar to :meth:`Page.insertImage`). This is a multi-purpose method. For example, you can use it to
 
@@ -1086,6 +1093,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bool overlay: put image in foreground (default) or background.
 
+      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make visibility dependent on this OCG (optional content group).
       :arg float rotate: *(new in version 1.14.10)* show the source rectangle rotated by some angle. *Changed in version 1.14.11:* Any angle is now supported.
 
       :arg rect_like clip: choose which part of the source page to show. Default is the full page, else must be finite and its intersection with the source page must not be empty.
@@ -1131,22 +1139,20 @@ In a nutshell, this is what you can do with PyMuPDF:
       Search for *needle* on a page. Wrapper for :meth:`TextPage.search`.
 
       :arg str needle: Text to search for. Upper / lower case is ignored. The string may contain spaces.
-      :arg rect_like clip: *(New in v1.18.2)* only search in this area.
-      :arg bool quads: Return :ref:`Quad` instead of :ref:`Rect` objects.
+      :arg rect_like clip: *(New in v1.18.2)* only search within this area.
+      :arg bool quads: Return object type :ref:`Quad` instead of :ref:`Rect`.
       :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default ligatures are expanded, white space is replaced with spaces and hyphenation is detected.
 
       :rtype: list
 
       :returns:
 
-        A list of :ref:`Rect` or  :ref:`Quad` objects each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if parts of *needle* occur on more than one line, then a separate item is geberated for each part of the string per line. So, if ``needle = "search string"``, two rectangles may be generated.
+        A list of :ref:`Rect` or  :ref:`Quad` objects each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if parts of *needle* occur on more than one line, then a separate item is generated for each part of the string per line. So, if ``needle = "search string"``, two rectangles may be generated.
 
         **Changes in v1.18.2:**
 
           * There no longer is a limit on the list length (removal of the ``hit_max`` parameter).
-          * If a word is **hyphenated** at a line break, it will still be found. E.g. the word "method" will be found even if hyphenated as "meth-" / "od" by a line break, and two rectangles will be returned: one surrounding "meth" (without the hyphen) and another one surrounding "od".
-
-
+          * If a word is **hyphenated** at a line break, it will still be found. E.g. the word "method" will be found even if hyphenated as "meth-od" by a line break, and two rectangles will be returned: one surrounding "meth" (without the hyphen) and another one surrounding "od".
 
       .. note:: The method supports multi-line text marker annotations: you can use the full returned list as **one** parameter for creating the annotation.
 

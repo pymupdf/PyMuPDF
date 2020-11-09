@@ -23,6 +23,8 @@ For details on **embedded files** refer to Appendix 3.
 ======================================= ==========================================================
 **Method / Attribute**                  **Short Description**
 ======================================= ==========================================================
+:meth:`Document.addLayerConfig`         PDF only: make new optional content configuration
+:meth:`Document.addOCG`                 PDF only: add new optional content group
 :meth:`Document.authenticate`           gain access to an encrypted document
 :meth:`Document.can_save_incrementally` check if incremental save is possible
 :meth:`Document.chapterPageCount`       number of pages in chapter
@@ -41,17 +43,22 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.embeddedFileUpd`        PDF only: change an embedded file
 :meth:`Document.findBookmark`           retrieve page location after layouting
 :meth:`Document.fullcopyPage`           PDF only: duplicate a page
+:meth:`Document.getOCGs`                PDF only: info on all optional content groups
+:meth:`Document.getOCStates`            PDF only: lists of OCGs in ON, OFF, RBGroups
+:meth:`Document.setOCStates`            PDF only: mass changing OCG states
 :meth:`Document.getPageFontList`        PDF only: make a list of fonts on a page
 :meth:`Document.getPageImageList`       PDF only: make a list of images on a page
 :meth:`Document.getPagePixmap`          create a pixmap of a page by page number
 :meth:`Document.getPageText`            extract the text of a page by page number
 :meth:`Document.getPageXObjectList`     PDF only: make a list of XObjects on a page
 :meth:`Document.getSigFlags`            PDF only: determine signature state
-:meth:`Document.getToC`                 create a table of contents
 :meth:`Document.getTOC`                 alias of previous
+:meth:`Document.getToC`                 create a table of contents
 :meth:`Document.getXmlMetadata`         PDF only: read the XML metadata
 :meth:`Document.insertPage`             PDF only: insert a new page
 :meth:`Document.insertPDF`              PDF only: insert pages from another PDF
+:meth:`Document.layerConfigs`           PDF only: list of optional content configurations
+:meth:`Document.layerUIConfigs`         PDF only: list of optional content intents
 :meth:`Document.layout`                 re-paginate the document (if supported)
 :meth:`Document.loadPage`               read a page
 :meth:`Document.makeBookmark`           create a page pointer in reflowable documents
@@ -73,10 +80,11 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.scrub`                  PDF only: remove sensitive data
 :meth:`Document.searchPageFor`          search for a string on a page
 :meth:`Document.select`                 PDF only: select a subset of pages
+:meth:`Document.setLayerConfig`         PDF only: activate optional content layer
 :meth:`Document.setMetadata`            PDF only: set the metadata
 :meth:`Document.setTOC_item`            PDF only: change a single TOC item
-:meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
 :meth:`Document.setTOC`                 PDF only: alias of previous
+:meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
 :meth:`Document.setXmlMetadata`         PDF only: create or update document XML metadata
 :meth:`Document.updateObject`           PDF only: replace object source
 :meth:`Document.updateStream`           PDF only: replace stream source
@@ -145,7 +153,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg float fontsize: the default fontsize for reflowable document types. This parameter is ignored if none of the parameters *rect* or *width* and *height* are specified. Will be used to calculate the page layout.
 
-      Overview of possible forms (using the *open* synonym of *Document*)::
+      Overview of possible forms (*open* is a synonym of *Document*)::
 
           >>> # from a file
           >>> doc = fitz.open("some.pdf")
@@ -172,6 +180,166 @@ For details on **embedded files** refer to Appendix 3.
           page 3
           >>> doc.isClosed
           True
+          >>> 
+
+    .. method:: layerConfigs()
+
+      *(New in v1.18.3)*
+
+      Show optional layer configurations. There always is a standard one, which is not included in the response.
+
+        >>> for item in doc.layerConfigs: print(item)
+        {'number': 0, 'name': 'my-config', 'creator': ''}
+        >>> # use 'number' as config identifyer in addOCG
+
+    .. method:: addLayerConfig(name, creator=None, on=None)
+
+      *(New in v1.18.3)*
+
+      Add an optional content configuration. Layers serve as a collection of ON / OFF states for optional content groups. They allow fast visibility switches between different views on the same document.
+
+      :arg str name: arbitrary name.
+      :arg str creator: creating software.
+      :arg sequ on: a sequence of OCG :data:`xref` numbers which should be set to ON (visible). All other OCGs will be set to OFF.
+
+
+    .. method:: setLayerConfig(number, as_default=False)
+
+      *(New in v1.18.3)*
+
+      Switch to a document view as defined by the optional layer's configuration number. This is temporary, except if established as default.
+
+      :arg int number: config number as returned by :meth:`Document.layerConfigs`.
+      :arg bool as_default: make this the default configuration.
+
+      Activates the ON / OFF states of OCGs as defined in this layer. If *as_default=True*, then additionally all layers, including the standard one, are merged and the result is written back to the standard layer, and **all optional layers are deleted**.
+
+
+    .. method:: addOCG(name, config=-1, on=True, intent="View", usage="Artwork")
+
+      *(New in v1.18.3)*
+
+      Add an optional content group. An OCG is the most important unit of information to determine object visibility. For a PDF, in order to be regarded as having optional content, at least one OCG must exist.
+
+      :arg str name: arbitrary name. Will show up in supporting PDF viewers.
+      :arg int config: layer configuration number. Default -1 is the standard configuration.
+      :arg bool on: standard visibility status for objects pointing to this OCG.
+      :arg str,list intent: a string or list of strings declaring the visibility intents. There are two PDF standard values to choose from: "View" and "Design". Default is "View". Correct **spelling is important**.
+      :arg str usage: another influencer for OCG visibility. This will become part of the OCG's ``/Usage`` key. There are two PDF standard values to choose from: "Artwork" and "Technical". Default is "Artwork". Please only change when required.
+
+      :returns: :data:`xref` of the created OCG. Use as entry for ``oc`` parameter in supporting objects.
+
+      .. note:: Multiple OCGs with identical parameters may be created. This will not cause problems. Garbage option 3 of :meth:`Document.save` will get rid of any duplicates.
+
+    .. method:: getOCStates()
+
+      *(New in v1.18.3)*
+
+      List of optional content groups by status. This is a dictionary with lists of cross reference numbers for OCGs that are ON, OFF or in some radio button group (``/RBGroups``).
+
+      >>> pprint(doc.getOCStates())
+      {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
+      >>>
+
+    .. method:: setOCStates(config, on=None, off=None, basestate=None, rbgroups=None)
+
+      *(New in v1.18.3)*
+
+      Mass changes of optional content groups. **Permanently** sets the status of OCGs.
+
+      :arg int config: desired configuration layer, choose -1 for the default one.
+      :arg list on: list of :data:`xref` of OCGs to set ON. Replaces previous values. An empty list will cause no OCG being set to ON anymore. Should be specified if ``basestate="ON"`` is used.
+      :arg list off: list of :data:`xref` of OCGs to set OFF. Replaces previous values. An empty list will cause no OCG being set to OFF anymore. Should be specified if ``basestate="OFF"`` is used.
+      :arg str basestate: desired state of OCGs that are not mentioned in *on* resp. *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
+      :arg list rbgroups: a list of lists. Repleaces previous values. Each sublist should contain two or more OCG xrefs. OCGs in the same sublist are handled like grouped radio buttons: setting one to ON automatically sets all other group members to OFF.
+
+        >>> doc.setOCStates(-1, basestate="OFF")
+        >>> pprint(doc.getOCStates())
+        {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
+
+
+    .. method:: getOCGs()
+
+      *(New in v1.18.3)*
+
+      Details of all optional content groups. This is a dictionary of dictionaries like this (key is the OCG's :data:`xref`):
+
+        >>> pprint(doc.getOCGs())
+        {13: {'on': True,
+              'intent': ['View', 'Design'],
+              'name': 'Circle',
+              'usage': 'Artwork'},
+        14: {'on': True,
+              'intent': ['View', 'Design'],
+              'name': 'Square',
+              'usage': 'Artwork'},
+        15: {'on': False, 'intent': ['View'], 'name': 'Square', 'usage': 'Artwork'}}
+        >>> 
+
+    .. method:: layerUIConfigs()
+
+      *(New in v1.18.3)*
+
+      Show the visibility status of optional content that is modifyable by the user interface of supporting PDF viewers. Example:
+
+        >>> pprint(doc.layerUIConfigs())
+         ({'depth': 0,
+          'locked': False,
+          'number': 0,
+          'on': True,
+          'text': 'Circle',
+          'type': 'checkbox'},
+         {'depth': 0,
+          'locked': False,
+          'number': 1,
+          'on': False,
+          'text': 'Square',
+          'type': 'checkbox'})
+         >>> # refers to OCGs named "Circle" (ON), resp. "Square" (OFF)
+
+       .. note::
+
+          * Only reports items contained in the currently selected layer configuration.
+
+          * The meaning of the dictionary keys is as follows:
+             - *depth:* item's nesting level in the `/Order` array 
+             - *locked:* whether changing the item's state is prohibited
+             - *number:* running sequence number
+             - *on:* item state
+             - *text:* text string or name field of the originating OCG
+             - *type:* one of "label" (set by a text string), "checkbox" (set by a single OCG) or "radiobox" (set by a set of connected OCGs)
+
+    .. method:: setLayerUIConfig(number, action=0)
+
+      *(New in v1.18.3)*
+
+      Modify OC visibility status of content groups, This is analog to what supporting PDF viewers would offer.
+
+      .. note::
+        Visibility is **not** a property of an OCG -- and the current visibility not even information necessarily present in the PDF document. Using this method, the user can **temporarily** modify visibility just as if doing so via a supporting PDF consumer software.
+
+        To make permanent changes, follow the recommendation mentioned in :meth:`Document.addLayerConfig`.
+
+      :arg in number: number as returned by :meth:`Document.layerUIConfigs`.
+      :arg int action: 0 = set on (default), 1 = toggle on/off, 2 = set off.
+
+      Example:
+
+          >>> # let's make above "Square" visible:
+          >>> doc.setLayerUIConfig(1, action=0)
+          >>> pprint(doc.layerUIConfigs())
+          ({'depth': 0,
+            'locked': False,
+            'number': 0,
+            'on': True,
+            'text': 'Circle',
+            'type': 'checkbox'},
+          {'depth': 0,
+            'locked': False,
+            'number': 1,
+            'on': True,  # <===
+            'text': 'Square',
+            'type': 'checkbox'})
           >>> 
 
     .. method:: authenticate(password)
@@ -626,7 +794,9 @@ For details on **embedded files** refer to Appendix 3.
       :arg bool xml_metadata: Remove XML metadata.
 
 
-    .. method:: save(outfile, garbage=0, clean=False, deflate=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+    .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+
+      *(Changed in v1.18.3)*
 
       PDF only: Saves the document in its **current state**.
 
@@ -635,14 +805,16 @@ For details on **embedded files** refer to Appendix 3.
       :arg int garbage: Do garbage collection. Positive values exclude "incremental".
 
        * 0 = none
-       * 1 = remove unused objects
-       * 2 = in addition to 1, compact the :data:`xref` table
-       * 3 = in addition to 2, merge duplicate objects
-       * 4 = in addition to 3, check :data:`stream` objects for duplication. This may be slow because such data are typically large and in addition may require (de-) compression before such comparisons can be made.
+       * 1 = remove unused (unreferenced) objects.
+       * 2 = in addition to 1, compact the :data:`xref` table.
+       * 3 = in addition to 2, merge duplicate objects.
+       * 4 = in addition to 3, check :data:`stream` objects for duplication. This may be slow because such data are typically large.
 
       :arg bool clean: Clean and sanitize content streams [#f1]_. Corresponds to "mutool clean -sc".
 
       :arg bool deflate: Deflate (compress) uncompressed streams.
+      :arg bool deflate_images: *(new in v1.18.3)* Deflate (compress) uncompressed image streams [#f4]_.
+      :arg bool deflate_fonts: *(new in v1.18.3)* Deflate (compress) uncompressed fontfile streams [#f4]_.
 
       :arg bool incremental: Only save changed objects. Excludes "garbage" and "linear". Cannot be used for files that are decrypted or repaired and also in some other cases. To be sure, check :meth:`Document.can_save_incrementally`. If this is false, saving to a new file is required.
 
@@ -663,7 +835,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int encryption: *(new in version 1.16.0)* set the desired encryption method. See :ref:`EncryptionMethods` for possible values.
 
-      :arg str owner_pw: *(new in version 1.16.0)* set the document's owner password.
+      :arg str owner_pw: *(new in version 1.16.0)* set the document's owner password. *(Changed in v1.18.3)* If not provided, the user password is taken if provided.
 
       :arg str user_pw: *(new in version 1.16.0)* set the document's user password.
 
@@ -672,9 +844,11 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: saves the document incrementally. This is a convenience abbreviation for *doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)*.
 
 
-    .. method:: write(garbage=0, clean=False, deflate=False, ascii=False, expand=0, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+    .. method:: write(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
 
-      PDF only: Writes the **current content of the document** to a bytes object instead of to a file. Obviously, you should be wary about memory requirements. The meanings of the parameters exactly equal those in :meth:`save`. Chater :ref:`FAQ` contains an example for using this method as a pre-processor to `pdfrw <https://pypi.python.org/pypi/pdfrw/0.3>`_.
+      *(Changed in v1.18.3)*
+
+      PDF only: Writes the **current content of the document** to a bytes object instead of to a file. Obviously, you should be wary about memory requirements. The meanings of the parameters exactly equal those in :meth:`save`. Chapter :ref:`FAQ` contains an example for using this method as a pre-processor to `pdfrw <https://pypi.python.org/pypi/pdfrw/0.3>`_.
 
       *(Changed in version 1.16.0)* for extended encryption support.
 
@@ -1258,3 +1432,5 @@ Other Examples
 .. [#f2] However, you **can** use :meth:`Document.getToC` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
 
 .. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.
+
+.. [#f4] These parameters cause separate handling of stream categories: use it together with ``expand`` to restrict decompression to streams other than images / fontfiles.

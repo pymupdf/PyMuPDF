@@ -318,19 +318,19 @@ You can write changes back to the **original PDF** by specifying option *increme
 garbage=1           g           garbage collect unused objects
 garbage=2           gg          in addition to 1, compact :data:`xref` tables
 garbage=3           ggg         in addition to 2, merge duplicate objects
-garbage=4           gggg        in addition to 3, skip duplicate streams
-clean=1             cs          clean and sanitize content streams
-deflate=1           z           deflate uncompressed streams
-ascii=1             a           convert binary data to ASCII format
-linear=1            l           create a linearized version
-expand=1            i           decompress images
-expand=2            f           decompress fonts
-expand=255          d           decompress all
+garbage=4           gggg        in addition to 3, merge duplicate stream content
+clean=True          cs          clean and sanitize content streams
+deflate=True        z           deflate uncompressed streams
+deflate_images=True i           deflate image streams
+deflate_fonts=True  f           deflate fontfile streams
+ascii=True          a           convert binary data to ASCII format
+linear=True         l           create a linearized version
+expand=True         d           decompress all streams
 =================== =========== ==================================================
 
 .. note:: For an explanation of terms like *object, stream, xref* consult the :ref:`Glossary` chapter.
 
-For example, *mutool clean -ggggz file.pdf* yields excellent compression results. It corresponds to *doc.save(filename, garbage=4, deflate=1)*.
+For example, *mutool clean -ggggz file.pdf* yields excellent compression results. It corresponds to *doc.save(filename, garbage=4, deflate=True)*.
 
 Closing
 =========

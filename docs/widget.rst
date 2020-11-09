@@ -4,11 +4,11 @@
 Widget
 ================
 
-This class represents a PDF Form field, also called "widget". Fields are a special case of annotations, which allow users with limited permissions to enter information in a PDF. This is primarily used for filling out forms.
+This class represents a PDF Form field, also called a "widget". Throughout this documentation, we are using these terms synonymously. Fields technically are a special case of PDF annotations, which allow users with limited permissions to enter information in a PDF. This is primarily used for filling out forms.
 
 Like annotations, widgets live on PDF pages. Similar to annotations, the first widget on a page is accessible via :attr:`Page.firstWidget` and subsequent widgets can be accessed via the :attr:`Widget.next` property.
 
-*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset of general annotations. Consequently, :attr:`Page.firstAnnot` and :meth:`Annot.next` will deliver non-widget annotations exclusively, and be *None* if only form fields exist on a page. Vice versa, :attr:`Page.firstWidget` and :meth:`Widget.next` will only show widgets. This design decision is purely internal to MuPDF; technically, links, annotations and fields have a lot in common and also continue to share the better part of their code within (Py-) MuPDF.
+*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset of general annotations. Consequently, :attr:`Page.firstAnnot` and :meth:`Annot.next` will deliver **non-widget annotations exclusively**, and be *None* if only form fields exist on a page. Vice versa, :attr:`Page.firstWidget` and :meth:`Widget.next` will only show widgets. This design decision is purely internal to MuPDF; technically, links, annotations and fields have a lot in common and also continue to share the better part of their code within (Py-) MuPDF.
 
 
 **Class API**
@@ -25,11 +25,11 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: next
 
-       Point to the next form field on the page.
+       Point to the next form field on the page. The last widget returns *None*.
 
     .. attribute:: border_color
 
-       A list of up to 4 floats defining the field's border. Default value is *None* which causes border style and border width to be ignored.
+       A list of up to 4 floats defining the field's border color. Default value is *None* which causes border style and border width to be ignored.
 
     .. attribute:: border_style
 
@@ -45,7 +45,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: choice_values
 
-       Python sequence of strings defining the valid choices of list boxes and combo boxes. For these widgets, this property is mandatory and must contain at least two items. Ignored for other types.
+       Python sequence of strings defining the valid choices of list boxes and combo boxes. For these widget types, this property is mandatory and must contain at least two items. Ignored for other types.
 
     .. attribute:: field_name
 
@@ -61,7 +61,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: field_flags
 
-       An integer defining a large amount of proprties of a field. Handle this attribute with care.
+       An integer defining a large amount of properties of a field. Be careful when changing this attribute as this may change the field type.
 
     .. attribute:: field_type
 
@@ -81,7 +81,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: is_signed
 
-       A bool indicating the status of a signature field, else *None*.
+       A bool indicating the signing status of a signature field, else *None*.
 
     .. attribute:: rect
 
@@ -162,6 +162,18 @@ ZaDb          ZapfDingbats
 ============= =======================
 
 You are generally free to use any font for every widget. However, we recommend using *ZaDb* ("ZapfDingbats") and fontsize 0 for check boxes: typical viewers will put a correctly sized tickmark in the field's rectangle, when it is clicked.
+
+Supported Widget Types
+-----------------------
+PyMuPDF supports the creation and update of many, but not all widget types.
+
+* text (``PDF_WIDGET_TYPE_TEXT``)
+* push button (``PDF_WIDGET_TYPE_BUTTON``)
+* check box (``PDF_WIDGET_TYPE_CHECKBOX``)
+* combo box (``PDF_WIDGET_TYPE_COMBOBOX``)
+* list box (``PDF_WIDGET_TYPE_LISTBOX``)
+* radio button (``PDF_WIDGET_TYPE_RADIOBUTTON``): PyMuPDF does not currently support groups of (interconnected) buttons, where setting one automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. Setting or unsetting happens via values ``True`` and ``False`` and will always work without affecting other radio buttons.
+* signature (``PDF_WIDGET_TYPE_SIGNATURE``) **read only**.
 
 .. rubric:: Footnotes
 

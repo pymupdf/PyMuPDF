@@ -309,8 +309,7 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_stext_line *line;
     fz_stext_char *ch;
     fz_rect rect = page->mediabox;
-    char utf[10];
-    int i, n, last_char = 0;
+    int last_char = 0;
 
     for (block = page->first_block; block; block = block->next)
     {
@@ -325,11 +324,9 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                 {
                     if (!fz_contains_rect(rect, JM_char_bbox(ch))) continue;
                     last_char = ch->c;
-                    n = fz_runetochar(utf, ch->c);
-                    for (i = 0; i < n; i++)
-                        fz_write_byte(ctx, out, utf[i]);
+                    fz_write_rune(ctx, out, ch->c);
                 }
-                if (last_char != 10) fz_write_string(ctx, out, "\n");
+                if (last_char != 10 && last_char) fz_write_string(ctx, out, "\n");
             }
         }
     }
@@ -804,7 +801,7 @@ fz_font *JM_get_font(fz_context *ctx,
         goto fertig;
 
         fertig:;
-        if (!font) THROWMSG("could not find a matching font");
+        if (!font) THROWMSG(ctx, "could not create font");
     }
     fz_always(ctx) {
         fz_drop_buffer(ctx, res);

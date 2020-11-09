@@ -17,6 +17,248 @@ void JM_ensure_identity(fz_context *ctx, pdf_document *pdf)
 }
 
 
+//----------------------------------------------------------------------------
+// Ensure OCProperties, return /OCProperties key
+//----------------------------------------------------------------------------
+pdf_obj *
+JM_ensure_ocproperties(fz_context *ctx, pdf_document *pdf)
+{
+    pdf_obj *D, *ocp;
+    fz_try(ctx) {
+        ocp = pdf_dict_get(ctx, pdf_dict_get(gctx, pdf_trailer(ctx, pdf), PDF_NAME(Root)), PDF_NAME(OCProperties));
+        if (ocp) goto finished;
+        pdf_obj *root = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME(Root));
+        ocp = pdf_dict_put_dict(ctx, root, PDF_NAME(OCProperties), 2);
+        pdf_dict_put_array(ctx, ocp, PDF_NAME(OCGs), 0);
+        D = pdf_dict_put_dict(ctx, ocp, PDF_NAME(D), 5);
+        pdf_dict_put_array(ctx, D, PDF_NAME(ON), 0);
+        pdf_dict_put_array(ctx, D, PDF_NAME(OFF), 0);
+        pdf_dict_put_array(ctx, D, PDF_NAME(Order), 0);
+        pdf_dict_put_array(ctx, D, PDF_NAME(RBGroups), 0);
+    finished:;
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+    return ocp;
+}
+
+
+//----------------------------------------------------------------------------
+// Add OC configuration to the PDF catalog
+//----------------------------------------------------------------------------
+void
+JM_add_layer_config(fz_context *ctx, pdf_document *pdf, char *name, char *creator, PyObject *ON)
+{
+    pdf_obj *D, *ocp, *configs;
+    fz_try(ctx) {
+        ocp = JM_ensure_ocproperties(ctx, pdf);
+        configs = pdf_dict_get(ctx, ocp, PDF_NAME(Configs));
+        if (!pdf_is_array(ctx, configs)) {
+            configs = pdf_dict_put_array(ctx,ocp, PDF_NAME(Configs), 1);
+        }
+        D = pdf_new_dict(ctx, pdf, 5);
+        pdf_dict_put_text_string(ctx, D, PDF_NAME(Name), name);
+        if (creator) {
+            pdf_dict_put_text_string(ctx, D, PDF_NAME(Creator), creator);
+        }
+        pdf_dict_put(ctx, D, PDF_NAME(BaseState), PDF_NAME(OFF));
+        pdf_obj *onarray = pdf_dict_put_array(ctx, D, PDF_NAME(ON), 5);
+        if (!EXISTS(ON) || !PySequence_Check(ON) || !PySequence_Size(ON)) {
+            ;
+        } else {
+            pdf_obj *ocgs = pdf_dict_get(ctx, ocp, PDF_NAME(OCGs));
+            int i, n = PySequence_Size(ON);
+            for (i = 0; i < n; i++) {
+                int xref = 0;
+                if (JM_INT_ITEM(ON, (Py_ssize_t) i, &xref) == 1) continue;
+                pdf_obj *ind = pdf_new_indirect(ctx, pdf, xref, 0);
+                if (pdf_array_contains(ctx, ocgs, ind)) {
+                    pdf_array_push_drop(ctx, onarray, ind);
+                } else {
+                    pdf_drop_obj(ctx, ind);
+                }
+            }
+        }
+        pdf_array_push_drop(ctx, configs, D);
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+}
+
+
+//----------------------------------------------------------------------------
+// Get OCG arrays from OC configuration
+// Returns dict {"basestate":name, "on":list, "off":list, "rbg":list}
+//----------------------------------------------------------------------------
+static PyObject *
+JM_get_ocg_arrays_imp(fz_context *ctx, pdf_obj *arr)
+{
+    int i, n;
+    PyObject *list = PyList_New(0), *item = NULL;
+    pdf_obj *obj = NULL;
+    if (pdf_is_array(ctx, arr)) {
+        n = pdf_array_len(ctx, arr);
+        for (i = 0; i < n; i++) {
+            obj = pdf_array_get(ctx, arr, i);
+            item = Py_BuildValue("i", pdf_to_num(ctx, obj));
+            if (!PySequence_Contains(list, item)) {
+                LIST_APPEND_DROP(list, item);
+            } else {
+                Py_DECREF(item);
+            }
+        }
+    }
+    return list;
+}
+
+PyObject *
+JM_get_ocg_arrays(fz_context *ctx, pdf_obj *conf)
+{
+    PyObject *rc = PyDict_New(), *list = NULL, *list1 = NULL;
+    int i, n;
+    pdf_obj *arr = NULL, *obj = NULL;
+    fz_try(ctx) {
+        arr = pdf_dict_get(ctx, conf, PDF_NAME(ON));
+        list = JM_get_ocg_arrays_imp(ctx, arr);
+        if (PySequence_Size(list)) {
+            PyDict_SetItemString(rc, "on", list);
+        }
+        Py_DECREF(list);
+        arr = pdf_dict_get(ctx, conf, PDF_NAME(OFF));
+        list = JM_get_ocg_arrays_imp(ctx, arr);
+        if (PySequence_Size(list)) {
+            PyDict_SetItemString(rc, "off", list);
+        }
+        Py_DECREF(list);
+        list = PyList_New(0);
+        arr = pdf_dict_get(ctx, conf, PDF_NAME(RBGroups));
+        if (pdf_is_array(ctx, arr)) {
+            n = pdf_array_len(ctx, arr);
+            for (i = 0; i < n; i++) {
+                obj = pdf_array_get(ctx, arr, i);
+                list1 = JM_get_ocg_arrays_imp(ctx, obj);
+                LIST_APPEND_DROP(list, list1);
+            }
+        }
+        if (PySequence_Size(list)) {
+            PyDict_SetItemString(rc, "rbgroups", list);
+        }
+        Py_DECREF(list);
+        obj = pdf_dict_get(ctx, conf, PDF_NAME(BaseState));
+
+        if (obj) {
+            PyObject *state = NULL;
+            state = Py_BuildValue("s", pdf_to_name(ctx, obj));
+            PyDict_SetItemString(rc, "basestate", state);
+            Py_DECREF(state);
+        }
+    }
+    fz_always(ctx) {
+    }
+    fz_catch(ctx) {
+        Py_CLEAR(rc);
+        fz_rethrow(ctx);
+    }
+    return rc;
+}
+
+
+//----------------------------------------------------------------------------
+// Set OCG arrays from dict of Python lists
+// Works with dict like {"basestate":name, "on":list, "off":list, "rbg":list}
+//----------------------------------------------------------------------------
+static void
+JM_set_ocg_arrays_imp(fz_context *ctx, pdf_obj *arr, PyObject *list)
+{
+    int i, n = PySequence_Size(list);
+    pdf_obj *obj = NULL;
+    pdf_document *pdf = pdf_get_bound_document(ctx, arr);
+    for (i = 0; i < n; i++) {
+        int xref = 0;
+        if (JM_INT_ITEM(list, i, &xref) == 1) continue;
+        obj = pdf_new_indirect(ctx, pdf, xref, 0);
+        pdf_array_push_drop(ctx, arr, obj);
+    }
+    return;
+}
+
+static void
+JM_set_ocg_arrays(fz_context *ctx, pdf_obj *conf, const char *basestate,
+                  PyObject *on, PyObject *off, PyObject *rbgroups)
+{
+    int i, n;
+    pdf_obj *arr = NULL, *obj = NULL, *indobj = NULL;
+    fz_try(ctx) {
+        if (basestate) {
+            pdf_dict_put_name(ctx, conf, PDF_NAME(BaseState), basestate);
+        }
+
+        if (on != Py_None) {
+            pdf_dict_del(ctx, conf, PDF_NAME(ON));
+            if (PySequence_Size(on)) {
+                arr = pdf_dict_put_array(ctx, conf, PDF_NAME(ON), 1);
+                JM_set_ocg_arrays_imp(ctx, arr, on);
+            }
+        }
+
+        if (off != Py_None) {
+            pdf_dict_del(ctx, conf, PDF_NAME(OFF));
+            if (PySequence_Size(off)) {
+                arr = pdf_dict_put_array(ctx, conf, PDF_NAME(OFF), 1);
+                JM_set_ocg_arrays_imp(ctx, arr, off);
+            }
+        }
+
+        if (rbgroups != Py_None) {
+            pdf_dict_del(ctx, conf, PDF_NAME(RBGroups));
+            if (PySequence_Size(rbgroups)) {
+                arr = pdf_dict_put_array(ctx, conf, PDF_NAME(RBGroups), 1);
+                n = PySequence_Size(rbgroups);
+                for (i = 0; i < n; i++) {
+                    PyObject *item0 = PySequence_ITEM(rbgroups, i);
+                    obj = pdf_array_push_array(ctx, arr, 1);
+                    JM_set_ocg_arrays_imp(ctx, obj, item0);
+                    Py_DECREF(item0);
+                }
+            }
+        }
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+    return;
+}
+
+
+//----------------------------------------------------------------------------
+// Add OC object reference to a dictionary
+//----------------------------------------------------------------------------
+void
+JM_add_oc_object(fz_context *ctx, pdf_document *pdf, pdf_obj *ref, int xref)
+{
+    pdf_obj *indobj = NULL;
+    fz_try(ctx) {
+        indobj = pdf_new_indirect(ctx, pdf, xref, 0);
+        if (!pdf_is_dict(ctx, indobj)) THROWMSG(ctx, "bad 'oc' reference");
+        pdf_obj *type = pdf_dict_get(ctx, indobj, PDF_NAME(Type));
+        if (pdf_objcmp(ctx, type, PDF_NAME(OCG)) == 0 ||
+            pdf_objcmp(ctx, type, PDF_NAME(OCMD)) == 0) {
+            pdf_dict_put(ctx, ref, PDF_NAME(OC), indobj);
+        } else {
+            THROWMSG(ctx, "bad 'oc' type");
+        }
+    }
+    fz_always(ctx) {
+        pdf_drop_obj(ctx, indobj);
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+}
+
+
 //-----------------------------------------------------------------------------
 // Store info of a font in Python list
 //-----------------------------------------------------------------------------

@@ -1790,9 +1790,7 @@ How to Deal with PDF Encryption
 Starting with version 1.16.0, PDF decryption and encryption (using passwords) are fully supported. You can do the following:
 
 * Check whether a document is password protected / (still) encrypted (:attr:`Document.needsPass`, :attr:`Document.isEncrypted`).
-
 * Gain access authorization to a document (:meth:`Document.authenticate`).
-
 * Set encryption details for PDF files using :meth:`Document.save` or :meth:`Document.write` and
 
     - decrypt or encrypt the content
@@ -1939,13 +1937,13 @@ Since v1.16.0, there is the property :attr:`Page._isWrapped`, which lets you che
 
 If it is *False* or if you want to be on the safe side, pick one of the following:
 
-1. The easiest way: in your script, do a :meth:`Page._cleanContents` before you do your first item insertion.
+1. The easiest way: in your script, do a :meth:`Page.cleanContents` before you do your first item insertion.
 2. Pre-process your PDF with the MuPDF command line utility *mutool clean -c ...* and work with its output file instead.
 3. Directly wrap the page's :data:`contents` with the stacking commands before you do your first item insertion.
 
 **Solutions 1. and 2.** use the same technical basis and **do a lot more** than what is required in this context: they also clean up other inconsistencies or redundancies that may exist, multiple */Contents* objects will be concatenated into one, and much more.
 
-.. note:: For **incremental saves,** solution 1. has an unpleasant implication: it will bloat the update delta, because it changes so many things and, in addition, stores the **cleaned contents uncompressed**. So, if you use :meth:`Page._cleanContents` you should consider **saving to a new file** with (at least) *garbage=3* and *deflate=True*.
+.. note:: For **incremental saves,** solution 1. has an unpleasant implication: it will bloat the update delta, because it changes so many things and, in addition, stores the **cleaned contents uncompressed**. So, if you use :meth:`Page.cleanContents` you should consider **saving to a new file** with (at least) *garbage=3* and *deflate=True*.
 
 **Solution 3.** is completely under your control and only does the minimum corrective action. There exists a handy low-level utility function which you can use for this. Suggested procedure:
 
@@ -2070,7 +2068,7 @@ Here are two ways of combining multiple contents of a page::
 
     >>> # method 1: use the clean function
     >>> for i in range(len(doc)):
-            doc[i]._cleanContents() # cleans and combines multiple Contents
+            doc[i].cleanContents() # cleans and combines multiple Contents
             page = doc[i]           # re-read the page (has only 1 contents now)
             cont = page._getContents()[0]
             # do something with the cleaned, combined contents
@@ -2082,7 +2080,7 @@ Here are two ways of combining multiple contents of a page::
                 cont += doc.xrefStream(xref)
             # do something with the combined contents
 
-The clean function :meth:`Page._cleanContents` does a lot more than just gluing :data:`contents` objects: it also corrects and optimizes the PDF operator syntax of the page and removes any inconsistencies.
+The clean function :meth:`Page.cleanContents` does a lot more than just gluing :data:`contents` objects: it also corrects and optimizes the PDF operator syntax of the page and removes any inconsistencies.
 
 ----------------------------------
 

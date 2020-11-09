@@ -745,9 +745,6 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     Py_CLEAR(value);
 
     // field value ------------------------------------------------------------
-    // MuPDF function "pdf_set_field_value" always sets strings. For button
-    // fields this may lead to an unrecognized state for some PDF viewers.
-    //-------------------------------------------------------------------------
     value = GETATTR("field_value");
     char *text = NULL;
     switch(field_type)
@@ -755,8 +752,10 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     case PDF_WIDGET_TYPE_CHECKBOX:
     case PDF_WIDGET_TYPE_RADIOBUTTON:
         if (PyObject_RichCompareBool(value, Py_True, Py_EQ)) {
-            result = pdf_set_field_value(ctx, pdf, annot->obj, "Yes", 1);
-            pdf_dict_put_name(ctx, annot->obj, PDF_NAME(V), "Yes");
+            pdf_obj *onstate = pdf_button_field_on_state(ctx, annot->obj);
+            const char *on = pdf_to_name(ctx, onstate);
+            result = pdf_set_field_value(ctx, pdf, annot->obj, on, 1);
+            pdf_dict_put_name(ctx, annot->obj, PDF_NAME(V), on);
         } else {
             result = pdf_set_field_value(ctx, pdf, annot->obj, "Off", 1);
             pdf_dict_put(ctx, annot->obj, PDF_NAME(V), PDF_NAME(Off));
