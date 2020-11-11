@@ -6661,8 +6661,8 @@ def pillowData(self, *args, **kwargs):
     """
     from io import BytesIO
     bytes_out = BytesIO()
-    self.pillowSave(bytes_out, *args, **kwargs)
-    return bytes_out.get_value()
+    self.pillowWrite(bytes_out, *args, **kwargs)
+    return bytes_out.getvalue()
 
         %}
         //----------------------------------------------------------------------
