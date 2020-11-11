@@ -1101,7 +1101,7 @@ struct Document
         }
 
         CLOSECHECK0(_getMetadata, """Get metadata.""")
-        char *_getMetadata(const char *key)
+        PyObject* _getMetadata(const char *key)
         {
             PyObject *res;
             fz_document *doc = (fz_document *) $self;
