@@ -1101,8 +1101,9 @@ struct Document
         }
 
         CLOSECHECK0(_getMetadata, """Get metadata.""")
-        char *_getMetadata(const char *key)
+        PyObject* _getMetadata(const char *key)
         {
+            PyObject *res;
             fz_document *doc = (fz_document *) $self;
             int vsize;
             char *value;
@@ -1110,10 +1111,10 @@ struct Document
             if(vsize > 1) {
                 value = JM_Alloc(char, vsize);
                 fz_lookup_metadata(gctx, doc, key, value, vsize);
-                return value;
+                res = PyString_FromString(value);
+                PyMem_Del(value);
             }
-            else
-                return NULL;
+            return res;
         }
 
         CLOSECHECK0(needsPass, """Indicate password required.""")
