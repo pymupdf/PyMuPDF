@@ -1,8 +1,8 @@
 %{
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Store ID in PDF trailer
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 void JM_ensure_identity(fz_context *ctx, pdf_document *pdf)
 {
     unsigned char rnd[16];
@@ -17,9 +17,9 @@ void JM_ensure_identity(fz_context *ctx, pdf_document *pdf)
 }
 
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Ensure OCProperties, return /OCProperties key
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 pdf_obj *
 JM_ensure_ocproperties(fz_context *ctx, pdf_document *pdf)
 {
@@ -44,9 +44,9 @@ JM_ensure_ocproperties(fz_context *ctx, pdf_document *pdf)
 }
 
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Add OC configuration to the PDF catalog
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 void
 JM_add_layer_config(fz_context *ctx, pdf_document *pdf, char *name, char *creator, PyObject *ON)
 {
@@ -88,10 +88,10 @@ JM_add_layer_config(fz_context *ctx, pdf_document *pdf, char *name, char *creato
 }
 
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Get OCG arrays from OC configuration
 // Returns dict {"basestate":name, "on":list, "off":list, "rbg":list}
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 static PyObject *
 JM_get_ocg_arrays_imp(fz_context *ctx, pdf_obj *arr)
 {
@@ -159,16 +159,17 @@ JM_get_ocg_arrays(fz_context *ctx, pdf_obj *conf)
     }
     fz_catch(ctx) {
         Py_CLEAR(rc);
+        PyErr_Clear();
         fz_rethrow(ctx);
     }
     return rc;
 }
 
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Set OCG arrays from dict of Python lists
 // Works with dict like {"basestate":name, "on":list, "off":list, "rbg":list}
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 static void
 JM_set_ocg_arrays_imp(fz_context *ctx, pdf_obj *arr, PyObject *list)
 {
@@ -232,9 +233,83 @@ JM_set_ocg_arrays(fz_context *ctx, pdf_obj *conf, const char *basestate,
 }
 
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
+// Return the items of Resources/Properties (used for Marked Content)
+// Argument may be e.g. a page object or a Form XObject
+//------------------------------------------------------------------------
+PyObject *
+JM_get_resource_properties(fz_context *ctx, pdf_obj *ref)
+{
+    PyObject *rc = NULL;
+    fz_try(ctx) {
+        pdf_obj *properties = pdf_dict_getl(ctx, ref,
+                         PDF_NAME(Resources),
+                         PDF_NAME(Properties), NULL);
+        if (!properties) {
+            rc = PyTuple_New(0);
+        } else {
+            int i, n = pdf_dict_len(ctx, properties);
+            if (n < 1) {
+                rc = PyTuple_New(0);
+                goto finished;
+            }
+            rc = PyTuple_New(n);
+            for (i = 0; i < n; i++) {
+                pdf_obj *key = pdf_dict_get_key(ctx, properties, i);
+                pdf_obj *val = pdf_dict_get_val(ctx, properties, i);
+                const char *c = pdf_to_name(ctx, key);
+                int xref = pdf_to_num(ctx, val);
+                PyTuple_SET_ITEM(rc, i, Py_BuildValue("si", c, xref));
+            }
+        }
+        finished:;
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+    return rc;
+}
+
+
+//------------------------------------------------------------------------
+// Insert an item into Resources/Properties (used for Marked Content)
+// Arguments:
+// (1) e.g. page object, Form XObject
+// (2) marked content name
+// (3) xref of the referenced object (insert as indirect reference)
+//------------------------------------------------------------------------
+void
+JM_set_resource_property(fz_context *ctx, pdf_obj *ref, const char *name, int xref)
+{
+    pdf_obj *ind = NULL;
+    pdf_obj *properties = NULL;
+    pdf_document *pdf = pdf_get_bound_document(ctx, ref);
+    fz_try(ctx) {
+        ind = pdf_new_indirect(ctx, pdf, xref, 0);
+        if (!ind) THROWMSG(ctx, "bad xref");
+        pdf_obj *resources = pdf_dict_get(ctx, ref, PDF_NAME(Resources));
+        if (!resources) {
+            resources = pdf_dict_put_dict(ctx, ref, PDF_NAME(Resources), 1);
+        }
+        properties = pdf_dict_get(ctx, resources, PDF_NAME(Properties));
+        if (!properties) {
+            properties = pdf_dict_put_dict(ctx, resources, PDF_NAME(Properties), 1);
+        }
+        pdf_dict_put(ctx, properties, pdf_new_name(ctx, name), ind);
+    }
+    fz_always(ctx) {
+        pdf_drop_obj(ctx, ind);
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+    return;
+}
+
+
+//------------------------------------------------------------------------
 // Add OC object reference to a dictionary
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 void
 JM_add_oc_object(fz_context *ctx, pdf_document *pdf, pdf_obj *ref, int xref)
 {
@@ -259,9 +334,9 @@ JM_add_oc_object(fz_context *ctx, pdf_document *pdf, pdf_obj *ref, int xref)
 }
 
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Store info of a font in Python list
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 int JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
                     PyObject *fontlist, int stream_xref)
 {
@@ -308,9 +383,9 @@ int JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
     return rc;
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Store info of an image in Python list
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 int JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
                      PyObject *imagelist, int stream_xref)
 {
@@ -385,9 +460,9 @@ int JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
     return rc;
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Store info of a /Form xobject in Python list
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 int JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
                      PyObject *imagelist, int stream_xref)
 {
@@ -434,9 +509,9 @@ int JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
     return rc;
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Step through /Resources, looking up image, xobject or font information
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
                  PyObject *liste, int what, int stream_xref,
                  PyObject *tracer)

@@ -1,7 +1,7 @@
 %{
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // return pdf_obj "border style" from Python str
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
 {
     pdf_obj *val = PDF_NAME(S);
@@ -17,9 +17,9 @@ pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
     return val;
 }
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Make /DA string of annotation
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 const char *JM_expand_fname(const char **name)
 {
     if (!*name) return "Helv";
@@ -56,9 +56,9 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
     return;
 }
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // refreshes the link and annotation tables of a page
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 void JM_refresh_link_table(fz_context *ctx, pdf_page *page)
 {
     fz_try(ctx)
@@ -227,11 +227,10 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
     return res;
 }
 
-//----------------------------------------------------------------------------
-// delete an annotation using mupdf functions, but first delete the /AP and
-// /Popup dict keys in annot->obj. Also remove the 'Popup' annotation
-// from the page's /Annots array which may also exist.
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
+// delete an annotation using mupdf functions, but first delete the /AP
+// dict key in annot->obj.
+//------------------------------------------------------------------------
 void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
 {
     if (!annot) return;
@@ -239,13 +238,8 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
         // first get any existing popup for the annotation
         pdf_obj *popup = pdf_dict_get(ctx, annot->obj, PDF_NAME(Popup));
 
-
         // next delete the /Popup and /AP entries from annot dictionary
-        pdf_dict_del(ctx, annot->obj, PDF_NAME(Popup));
         pdf_dict_del(ctx, annot->obj, PDF_NAME(AP));
-
-        // if there exists a /Popup, find and destroy it. The right popup
-        // has a /Parent entry which points to our annotation.
 
         pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
         int i, n = pdf_array_len(ctx, annots);
@@ -257,8 +251,12 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
                 pdf_array_delete(ctx, annots, i);
             }
         }
-
-        pdf_delete_annot(ctx, page, annot);
+        int type = pdf_annot_type(ctx, annot);
+        if (type != PDF_ANNOT_WIDGET) {
+            pdf_delete_annot(ctx, page, annot);
+        } else {
+            JM_delete_widget(ctx, page, annot);
+        }
     }
     fz_catch(ctx) {
         fz_warn(ctx, "could not delete annotation");
@@ -266,10 +264,10 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
     return;
 }
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Return the first annotation whose /IRT key ("In Response To") points to
 // annot. Used to remove the response chain of a given annotation.
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 pdf_annot *JM_find_annot_irt(fz_context *ctx, pdf_annot *annot)
 {
     pdf_annot *irt_annot = NULL;  // returning this
@@ -294,9 +292,9 @@ pdf_annot *JM_find_annot_irt(fz_context *ctx, pdf_annot *annot)
     return NULL;
 }
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // return the identifications of a page's annotations (list of /NM entries)
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 {
     PyObject *names = PyList_New(0);
@@ -321,9 +319,9 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 }
 
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // return the xref numbers of a page's annots, links and fields
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_page *page)
 {
     PyObject *names = PyList_New(0);
@@ -352,10 +350,10 @@ PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_page *page)
 }
 
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Add a unique /NM key to an annotation or widget.
 // Append a number to 'stem' such that the result is a unique name.
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
 {
     fz_try(ctx) {
@@ -382,9 +380,9 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
     }
 }
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // retrieve annot by name (/NM key)
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
 {
     if (!name || strlen(name) == 0) {
@@ -414,9 +412,9 @@ pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
     return pdf_keep_annot(ctx, annot);
 }
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // retrieve annot by its xref
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 pdf_annot *JM_get_annot_by_xref(fz_context *ctx, pdf_page *page, int xref)
 {
     pdf_annot **annotptr = NULL;

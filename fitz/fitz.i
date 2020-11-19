@@ -2,9 +2,9 @@
 %pythonbegin %{
 from __future__ import division, print_function
 %}
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // SWIG macro: generate fitz exceptions
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %define FITZEXCEPTION(meth, cond)
 %exception meth
 {
@@ -14,9 +14,9 @@ from __future__ import division, print_function
 }
 %enddef
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // SWIG macro: check that a document is not closed / encrypted
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %define CLOSECHECK(meth, doc)
 %pythonprepend meth %{doc
 if self.isClosed or self.isEncrypted:
@@ -29,9 +29,9 @@ if self.isClosed:
     raise ValueError("document closed")%}
 %enddef
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // SWIG macro: check if object has a valid parent
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %define PARENTCHECK(meth, doc)
 %pythonprepend meth %{doc
 CheckParent(self)%}
@@ -108,9 +108,8 @@ CheckParent(self)%}
 #endif
 // << freetype includes --------------------------------------------------
 
-
 char *JM_Python_str_AsChar(PyObject *str);
-
+void JM_delete_widget(fz_context *ctx, pdf_page *page, pdf_annot *annot);
 // additional headers from MuPDF ----------------------------------------------
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
 fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, float w, float h, const fz_irect *clip);
@@ -124,9 +123,9 @@ PyObject *JM_mupdf_warnings_store;
 PyObject *JM_mupdf_show_errors;
 %}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // global context
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %init %{
 #if JM_MEMORY == 1
     gctx = fz_new_context(&JM_Alloc_Context, NULL, FZ_STORE_DEFAULT);
@@ -144,19 +143,19 @@ PyObject *JM_mupdf_show_errors;
     }
     fz_register_document_handlers(gctx);
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // START redirect stdout/stderr
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 JM_mupdf_warnings_store = PyList_New(0);
 JM_mupdf_show_errors = Py_True;
 char user[] = "PyMuPDF";
 fz_set_warning_callback(gctx, JM_mupdf_warning, &user);
 fz_set_error_callback(gctx, JM_mupdf_error, &user);
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // STOP redirect stdout/stderr
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // init global constants
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 dictkey_align = PyString_InternFromString("align");
 dictkey_bbox = PyString_InternFromString("bbox");
 dictkey_blocks = PyString_InternFromString("blocks");
@@ -214,9 +213,9 @@ struct DeviceWrapper {
 };
 %}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // include version information and several other helpers
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %pythoncode %{
 import io
 import math
@@ -253,9 +252,9 @@ except ImportError:
 %include helper-convert.i
 %include helper-trace.i
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_document
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Document
 {
     %extend
@@ -518,9 +517,9 @@ struct Document
             DEBUGMSG2;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // EmbeddedFiles utility functions
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_embeddedFileNames, !result)
         CLOSECHECK0(_embeddedFileNames, """Get list of embedded file names.""")
         PyObject *_embeddedFileNames(PyObject *namelist)
@@ -891,6 +890,83 @@ struct Document
             return doc;
         }
 
+        FITZEXCEPTION(get_oc, !result)
+        CLOSECHECK0(get_oc, """Get xref of optional content object.""")
+        PyObject *get_oc(int xref)
+        {
+            PyObject *ret = NULL;
+            pdf_obj *ind = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                ind = pdf_new_indirect(gctx, pdf, xref, 0);
+                pdf_obj *type = pdf_dict_get(gctx, ind, PDF_NAME(Type));
+                if (pdf_objcmp(gctx, type, PDF_NAME(XObject)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                type = pdf_dict_get(gctx, ind, PDF_NAME(Subtype));
+                if (pdf_objcmp(gctx, type, PDF_NAME(Image)) != 0 &&
+                    pdf_objcmp(gctx, type, PDF_NAME(Form)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                pdf_obj *oc = pdf_dict_get(gctx, ind, PDF_NAME(OC));
+                if (!oc) {
+                    ret = Py_BuildValue("i", 0);
+                } else {
+                    ret = Py_BuildValue("i", pdf_to_num(gctx, oc));
+                }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, ind);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return ret;
+        }
+
+        FITZEXCEPTION(set_oc, !result)
+        CLOSECHECK0(set_oc, """Attach optional content object to image or form xobject.""")
+        PyObject *set_oc(int xref, int oc)
+        {
+            pdf_obj *ind = NULL, *indoc = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                ind = pdf_new_indirect(gctx, pdf, xref, 0);
+                pdf_obj *type = pdf_dict_get(gctx, ind, PDF_NAME(Type));
+                if (pdf_objcmp(gctx, type, PDF_NAME(XObject)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                type = pdf_dict_get(gctx, ind, PDF_NAME(Subtype));
+                if (pdf_objcmp(gctx, type, PDF_NAME(Image)) != 0 &&
+                    pdf_objcmp(gctx, type, PDF_NAME(Form)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                if (!oc) {
+                    pdf_dict_del(gctx, ind, PDF_NAME(OC));
+                } else {
+                    indoc = pdf_new_indirect(gctx, pdf, oc, 0);
+                    type = pdf_dict_get(gctx, indoc, PDF_NAME(Type));
+                    if (pdf_objcmp(gctx, type, PDF_NAME(OCG)) == 0 ||
+                        pdf_objcmp(gctx, type, PDF_NAME(OCMD)) == 0) {
+                        pdf_dict_put(gctx, ind, PDF_NAME(OC), indoc);
+                    } else {
+                        THROWMSG(gctx, "bad 'oc' type");
+                    }
+                }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, ind);
+                pdf_drop_obj(gctx, indoc);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
         FITZEXCEPTION(pageCount, !result)
         CLOSECHECK0(pageCount, """Number of pages.""")
         %pythoncode%{@property%}
@@ -1100,19 +1176,28 @@ struct Document
             return Py_BuildValue("i", page_n);
         }
 
+        FITZEXCEPTION(_getMetadata, !result)
         CLOSECHECK0(_getMetadata, """Get metadata.""")
-        PyObject* _getMetadata(const char *key)
+        PyObject *
+        _getMetadata(const char *key)
         {
-            PyObject *res;
+            PyObject *res = NULL;
             fz_document *doc = (fz_document *) $self;
             int vsize;
             char *value;
-            vsize = fz_lookup_metadata(gctx, doc, key, NULL, 0)+1;
-            if(vsize > 1) {
-                value = JM_Alloc(char, vsize);
-                fz_lookup_metadata(gctx, doc, key, value, vsize);
-                res = PyString_FromString(value);
-                PyMem_Del(value);
+            fz_try(gctx) {
+                vsize = fz_lookup_metadata(gctx, doc, key, NULL, 0)+1;
+                if(vsize > 1) {
+                    value = JM_Alloc(char, vsize);
+                    fz_lookup_metadata(gctx, doc, key, value, vsize);
+                    res = PyString_FromString(value);
+                    JM_Free(value);
+                } else {
+                    res = EMPTY_STRING;
+                }
+            }
+            fz_catch(gctx) {
+                return EMPTY_STRING;
             }
             return res;
         }
@@ -1533,11 +1618,11 @@ struct Document
             return r;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Insert pages from a source PDF into this PDF.
         // For reconstructing the links (_do_links method), we must save the
         // insertion point (start_at) if it was specified as -1.
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(insertPDF, !result)
         %pythonprepend insertPDF %{
         """Insert a page range from another PDF.
@@ -2983,7 +3068,7 @@ if not self.isFormPDF:
             }
             return rc;
         }
-
+        %pythoncode %{layer_configs = layerConfigs%}
 
         FITZEXCEPTION(setLayerConfig, !result)
         CLOSECHECK0(setLayerConfig, """Activate a optional content configuration.""")
@@ -3011,10 +3096,11 @@ if not self.isFormPDF:
             }
             Py_RETURN_NONE;
         }
+        %pythoncode %{set_layer_config = setLayerConfig%}
 
 
         FITZEXCEPTION(getOCStates, !result)
-        CLOSECHECK0(getOCStates, """Content of ON, OFF, RBGroups of a configuration.""")
+        CLOSECHECK0(getOCStates, """Content of ON, OFF, RBGroups of an OC config.""")
         PyObject *getOCStates(int config=-1)
         {
             PyObject *rc;
@@ -3039,22 +3125,39 @@ if not self.isFormPDF:
             }
             fz_catch(gctx) {
                 Py_CLEAR(rc);
+                PyErr_Clear();
                 return NULL;
             }
             return rc;
         }
+        %pythoncode %{get_oc_states = getOCStates%}
 
 
         FITZEXCEPTION(setOCStates, !result)
         %pythonprepend setOCStates %{"""Set ON, OFF, RBGroups of a configuration."""
 if self.isClosed:
     raise ValueError("document closed")
-if on is not None and type(on) not in (list, tuple):
+ocgs = set(self.getOCGs().keys())
+
+if on is not None:
+    if type(on) not in (list, tuple):
         raise ValueError("bad type: 'on'")
-if off is not None and type(off) not in (list, tuple):
+    if not set(on) <= ocgs:
+        raise ValueError("bad OCGs in 'on'")
+
+if off is not None:
+    if type(off) not in (list, tuple):
         raise ValueError("bad type: 'off'")
-if rbgroups is not None and type(rbgroups) not in (list, tuple):
+    if not set(off) <= ocgs:
+        raise ValueError("bad OCGs in 'off'")
+
+if rbgroups is not None:
+    if type(rbgroups) not in (list, tuple):
         raise ValueError("bad type: 'rbgroups'")
+    for x in rbgroups:
+        if not (type(x) in (list, tuple) and set(x) <= ocgs):
+            raise ValueError("bad OCGs or item types in 'rbgroups'")
+
 if basestate is not None:
     basestate = basestate.upper()
     if basestate == "UNCHANGED":
@@ -3090,6 +3193,7 @@ if basestate is not None:
             }
             Py_RETURN_NONE;
         }
+        %pythoncode %{set_oc_states = setOCStates%}
 
 
         FITZEXCEPTION(addLayerConfig, !result)
@@ -3107,6 +3211,7 @@ if basestate is not None:
             }
             Py_RETURN_NONE;
         }
+        %pythoncode %{add_layer_config = addLayerConfig%}
 
 
         FITZEXCEPTION(layerUIConfigs, !result)
@@ -3154,6 +3259,7 @@ if basestate is not None:
             }
             return rc;
         }
+        %pythoncode %{layer_ui_configs = layerUIConfigs%}
 
 
         FITZEXCEPTION(setLayerUIConfig, !result)
@@ -3181,6 +3287,7 @@ if basestate is not None:
             }
             Py_RETURN_NONE;
         }
+        %pythoncode %{set_layer_ui_config = setLayerUIConfig%}
 
 
         FITZEXCEPTION(getOCGs, !result)
@@ -3244,6 +3351,7 @@ if basestate is not None:
             }
             return rc;
         }
+        %pythoncode %{get_ocgs = getOCGs%}
 
         FITZEXCEPTION(addOCG, !result)
         CLOSECHECK0(addOCG, """Add new optional content group.""")
@@ -3344,7 +3452,7 @@ if basestate is not None:
             }
             return xref;
         }
-
+        %pythoncode %{add_ocg = addOCG%}
 
         //------------------------------------------------------------------
         // Initialize document: set outline and metadata properties
@@ -3354,7 +3462,7 @@ if basestate is not None:
                 if self.isEncrypted:
                     raise ValueError("cannot initData - document still encrypted")
                 self._outline = self._loadOutline()
-                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format', 'title':'info:Title', 'author':'info:Author','subject':'info:Subject', 'keywords':'info:Keywords','creator':'info:Creator', 'producer':'info:Producer', 'creationDate':'info:CreationDate', 'modDate':'info:ModDate'}.items()])
+                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format', 'title':'info:Title', 'author':'info:Author','subject':'info:Subject', 'keywords':'info:Keywords','creator':'info:Creator', 'producer':'info:Producer', 'creationDate':'info:CreationDate', 'modDate':'info:ModDate', 'trapped':'info:Trapped'}.items()])
                 self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
             outline = property(lambda self: self._outline)
@@ -3717,9 +3825,9 @@ struct Page {
             fz_drop_page(gctx, this_page);
             DEBUGMSG2;
         }
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // bound()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(bound, """Get page rectangle.""")
         %pythonappend bound %{val = Rect(val)%}
         PyObject *bound() {
@@ -3728,9 +3836,9 @@ struct Page {
         }
         %pythoncode %{rect = property(bound, doc="page rectangle")%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.getImageBbox
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend getImageBbox %{
         """Get rectangle occupied by image 'name'.
 
@@ -3776,9 +3884,9 @@ struct Page {
             return rc;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // run()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(run, !result)
         PARENTCHECK(run, """Run page through a device.""")
         PyObject *run(struct DeviceWrapper *dw, PyObject *m)
@@ -3792,9 +3900,9 @@ struct Page {
             return_none;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.getTextPage
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_get_text_page, !result)
         %pythonappend _get_text_page %{val.thisown = True%}
         struct TextPage *
@@ -3826,9 +3934,9 @@ struct Page {
             return textpage
         %}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.language
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode%{@property%}
         %pythonprepend language %{"""Page language."""%}
         PyObject *language()
@@ -3841,9 +3949,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.setLanguage
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(setLanguage, !result)
         PARENTCHECK(setLanguage, """Set PDF page default language.""")
         PyObject *setLanguage(char *language=NULL)
@@ -3869,9 +3977,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.getSVGimage
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(getSVGimage, !result)
         PARENTCHECK(getSVGimage, """Make SVG image from page.""")
         PyObject *getSVGimage(PyObject *matrix = NULL, int text_as_path=1)
@@ -3913,9 +4021,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page set opacity
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_set_opacity, !result)
         %pythonprepend _set_opacity %{
         if min(CA, ca) >= 1:
@@ -3964,9 +4072,9 @@ struct Page {
 
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addCaretAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_caret_annot, !result)
         struct Annot *
         _add_caret_annot(PyObject *point)
@@ -3993,9 +4101,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addRedactAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_redact_annot, !result)
         struct Annot *
         _add_redact_annot(PyObject *quad,
@@ -4041,9 +4149,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addLineAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_line_annot, !result)
         struct Annot *
         _add_line_annot(PyObject *p1, PyObject *p2)
@@ -4066,9 +4174,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addTextAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_text_annot, !result)
         struct Annot *
         _add_text_annot(PyObject *point,
@@ -4104,9 +4212,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addInkAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_ink_annot, !result)
         struct Annot *
         _add_ink_annot(PyObject *list)
@@ -4163,9 +4271,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addStampAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_stamp_annot, !result)
         struct Annot *
         _add_stamp_annot(PyObject *rect, int stamp=0)
@@ -4203,9 +4311,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addFileAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_file_annot, !result)
         struct Annot *
         _add_file_annot(PyObject *point,
@@ -4255,9 +4363,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page: add a text marker annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_text_marker, !result)
         %pythonprepend _add_text_marker %{
         CheckParent(self)
@@ -4309,9 +4417,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page: add circle or rectangle annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_square_or_circle, !result)
         struct Annot *
         _add_square_or_circle(PyObject *rect, int annot_type)
@@ -4335,9 +4443,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page: add multiline annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_multiline, !result)
         struct Annot *
         _add_multiline(PyObject *points, int annot_type)
@@ -4370,9 +4478,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addFreetextAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_freetext_annot, !result)
         struct Annot *
         _add_freetext_annot(PyObject *rect, char *text,
@@ -4654,9 +4762,9 @@ struct Page {
                 if old_rotation != 0:
                     self.setRotation(old_rotation)
             annot_postprocess(self, annot)
-            #------------------------------------------------------------------
-            # change the generated appearance to show a crossed-out rectangle
-            #------------------------------------------------------------------
+            #-------------------------------------------------------------
+            # change appearance to show a crossed-out rectangle
+            #-------------------------------------------------------------
             if cross_out:
                 ap_tab = annot._getAP().splitlines()[:-1]  # get the 4 commands only
                 _, LL, LR, UR, UL = ap_tab
@@ -4672,9 +4780,9 @@ struct Page {
         %}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page load annot by name or xref
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_load_annot, !result)
         struct Annot *
         _load_annot(char *name, int xref)
@@ -4695,9 +4803,69 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // page list Resource/Properties
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_get_resource_properties, !result)
+        PyObject *
+        _get_resource_properties()
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
+            PyObject *rc;
+            fz_try(gctx) {
+                ASSERT_PDF(page);
+                rc = JM_get_resource_properties(gctx, page->obj);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        //----------------------------------------------------------------
+        // page list Resource/Properties
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_set_resource_property, !result)
+        PyObject *
+        _set_resource_property(char *name, int xref)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(page);
+                JM_set_resource_property(gctx, page->obj, name, xref);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode %{
+def _get_optional_content(self, oc):
+    if oc == None or oc == 0:
+        return None
+    doc = self.parent
+    check = doc.xrefObject(oc, compressed=True)
+    if not ("/Type/OCG" in check or "/Type/OCMD" in check):
+        raise ValueError("bad optional content: 'oc'")
+    props = {}
+    for p,x in self._get_resource_properties():
+        props[x] = p
+    if oc in props.keys():
+        return props[oc]
+    i = 0
+    mc = "MC%i" % i
+    while mc in props.values():
+        i += 1
+        mc = "MC%i" % i
+    self._set_resource_property(mc, oc)
+    return mc
+%}
+
+        //----------------------------------------------------------------
         // page get list of annot names
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(annot_names, """List of names of annotations, fields and links.""")
         PyObject *annot_names()
         {
@@ -4707,9 +4875,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page retrieve list of annotation xrefs
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(annot_xrefs,"""List of xref numbers of annotations, fields and links.""")
         PyObject *annot_xrefs()
         {
@@ -4788,9 +4956,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.getDisplayList
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(getDisplayList, !result)
         %pythonprepend getDisplayList %{
         """Make a DisplayList from the page for Pixmap generation.
@@ -4994,9 +5162,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page apply redactions
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_apply_redactions, !result)
         PyObject *_apply_redactions(int images=PDF_REDACT_IMAGE_PIXELS)
         {
@@ -5016,9 +5184,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page._makePixmap
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_makePixmap, !result)
         struct Pixmap *
         _makePixmap(struct Document *doc,
@@ -5039,9 +5207,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.setMediaBox
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(setMediaBox, !result)
         PARENTCHECK(setMediaBox, """Set the MediaBox.""")
         PyObject *setMediaBox(PyObject *rect)
@@ -5064,10 +5232,10 @@ struct Page {
             return_none;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.setCropBox
         // ATTENTION: This will also change the value returned by Page.bound()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(setCropBox, !result)
         PARENTCHECK(setCropBox, """Set the CropBox.""")
         PyObject *setCropBox(PyObject *rect)
@@ -5094,9 +5262,9 @@ struct Page {
             return_none;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // loadLinks()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(loadLinks, """Get first Link.""")
         %pythonappend loadLinks %{
             if val:
@@ -5121,9 +5289,9 @@ struct Page {
         }
         %pythoncode %{firstLink = property(loadLinks, doc="First link on page")%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // firstAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(firstAnnot, """First annotation.""")
         %pythonappend firstAnnot %{
         if val:
@@ -5144,9 +5312,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // firstWidget
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(firstWidget, """First widget/field.""")
         %pythonappend firstWidget %{
@@ -5171,9 +5339,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.deleteLink() - delete link
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(deleteLink, """Delete a Link.""")
         %pythonappend deleteLink
 %{if linkdict["xref"] == 0: return
@@ -5214,9 +5382,9 @@ except:
             fz_catch(gctx) {;}
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.deleteAnnot() - delete annotation and return the next one
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend deleteAnnot %{
         """Delete annot and return next one."""
         CheckParent(self)
@@ -5252,9 +5420,9 @@ except:
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // MediaBox: get the /MediaBox (PDF only)
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(MediaBox, """The MediaBox.""")
         %pythonappend MediaBox %{val = Rect(val)%}
@@ -5267,9 +5435,9 @@ except:
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // CropBox: get the /CropBox (PDF only)
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(CropBox, """The CropBox.""")
         %pythonappend CropBox %{val = Rect(val)%}
@@ -5282,9 +5450,9 @@ except:
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // CropBox position: x0, y0 of /CropBox
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{
         @property
         def CropBoxPosition(self):
@@ -5292,9 +5460,9 @@ except:
         %}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // rotation - return page rotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(rotation, """Page rotation.""")
         %pythoncode %{@property%}
         int rotation()
@@ -5377,10 +5545,10 @@ except:
             return_none;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page._getLinkXrefs - get list of link xref numbers.
         // return_none for non-PDF
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PyObject *_getLinkXrefs()
         {
             pdf_obj *annots, *annots_arr, *link, *obj;
@@ -5407,9 +5575,9 @@ except:
             return linkxrefs;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page clean contents stream
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(_cleanContents, """Clean page /Contents object(s).""")
         PyObject *_cleanContents(int sanitize=0)
         {
@@ -5439,9 +5607,9 @@ except:
             return_none;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Show a PDF page
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_showPDFpage, !result)
         PyObject *_showPDFpage(struct Page *fz_srcpage, int overlay=1, PyObject *matrix=NULL, int xref=0, int oc=0, PyObject *clip = NULL, struct Graftmap *graftmap = NULL, char *_imgname = NULL)
         {
@@ -5512,9 +5680,9 @@ except:
             return Py_BuildValue("i", rc_xref);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // insert an image
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_insertImage, !result)
         PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, PyObject *imask=NULL, int overlay=1, int oc=0, int xref = 0, PyObject *matrix=NULL,
         const char *_imgname=NULL, PyObject *_imgpointer=NULL)
@@ -5643,9 +5811,9 @@ except:
             return Py_BuildValue("i", img_xref);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.refresh()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(refresh, !result)
         PARENTCHECK(refresh, """Refresh page after link/annot/widget updates.""")
         PyObject *refresh()
@@ -5662,9 +5830,9 @@ except:
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // insert font
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode
 %{
 def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
@@ -5711,7 +5879,6 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pass
 
     if fontname.lower() in fitz_fontdescriptors.keys():
-        # one of the extra fonts
         import pymupdf_fonts
         fontbuffer = pymupdf_fonts.myfont(fontname)  # make a copy
         del pymupdf_fonts
@@ -5855,9 +6022,9 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             return value;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get page transformation matrix
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(transformationMatrix, """Page transformation matrix.""")
         %pythonappend transformationMatrix %{
@@ -5878,9 +6045,9 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             return JM_py_from_matrix(ctm);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page Get list of contents objects
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_getContents, !result)
         PARENTCHECK(_getContents, """Get xref list of /Contents objects.""")
         PyObject *_getContents()
@@ -5917,9 +6084,9 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             return PyList_New(0);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Set given object as the /Contents of a page
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_setContents, !result)
         PARENTCHECK(_setContents, """Set bytes as the (only) /Contents object.""")
         PyObject *_setContents(int xref = 0)
@@ -6090,9 +6257,9 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
 };
 %clearnodefaultctor;
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Pixmap
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Pixmap
 {
     %extend {
@@ -6113,9 +6280,9 @@ Pixmap(image) - from an image in memory (bytes).
 Pixmap(colorspace, width, height, samples, alpha) - from samples data.
 Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
 """%}
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Colorspace *cs, PyObject *bbox, int alpha = 0)
         {
             fz_pixmap *pm = NULL;
@@ -6128,11 +6295,11 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // copy pixmap, converting colorspace
         // New in v1.11: option to remove alpha
         // Changed in v1.13: alpha = 0 does not work since at least v1.12
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Colorspace *cs, struct Pixmap *spix)
         {
             fz_pixmap *pm = NULL;
@@ -6148,9 +6315,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create pixmap as scaled copy of another one
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Pixmap *spix, float w, float h, PyObject *clip=NULL)
         {
             fz_pixmap *pm = NULL;
@@ -6170,9 +6337,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // copy pixmap & add / drop the alpha channel
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Pixmap *spix, int alpha=1)
         {
             fz_pixmap *pm = NULL, *src_pix = (fz_pixmap *) spix;
@@ -6216,9 +6383,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create pixmap from samples data
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Colorspace *cs, int w, int h, PyObject *samples, int alpha=0)
         {
             int n = fz_colorspace_n(gctx, (fz_colorspace *) cs);
@@ -6245,9 +6412,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create pixmap from filename
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(char *filename)
         {
             fz_image *img = NULL;
@@ -6269,9 +6436,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create pixmap from in-memory image
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(PyObject *imagedata)
         {
             fz_buffer *res = NULL;
@@ -6298,9 +6465,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Create pixmap from PDF image identified by XREF number
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Document *doc, int xref)
         {
             fz_image *img = NULL;
@@ -6332,9 +6499,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // shrink
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend shrink
 %{"""Divide width and height by 2**factor.
 E.g. factor=1 shrinks to 25% of original size (in place)."""%}
@@ -6348,9 +6515,9 @@ E.g. factor=1 shrinks to 25% of original size (in place)."""%}
             fz_subsample_pixmap(gctx, (fz_pixmap *) $self, factor);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // apply gamma correction
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend gammaWith
 %{"""Apply correction with some float.
 gamma=1 is a no-op."""}
@@ -6364,9 +6531,9 @@ gamma=1 is a no-op."""}
             fz_gamma_pixmap(gctx, (fz_pixmap *) $self, gamma);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // tint pixmap with color
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend tintWith
 %{"""Tint colors with modifiers for black and white."""
 
@@ -6378,9 +6545,9 @@ if not self.colorspace or self.colorspace.n > 3:
             fz_tint_pixmap(gctx, (fz_pixmap *) $self, black, white);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // clear all of pixmap samples to 0x00 */
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythonprepend clearWith
         %{"""Fill all color components with same value."""%}
         void clearWith()
@@ -6388,25 +6555,25 @@ if not self.colorspace or self.colorspace.n > 3:
             fz_clear_pixmap(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // clear total pixmap with value */
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         void clearWith(int value)
         {
             fz_clear_pixmap_with_value(gctx, (fz_pixmap *) $self, value);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // clear pixmap rectangle with value
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         void clearWith(int value, PyObject *bbox)
         {
             JM_clear_pixmap_rect_with_value(gctx, (fz_pixmap *) $self, value, JM_irect_from_py(bbox));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // copy pixmaps
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(copyPixmap, !result)
         %pythonprepend copyPixmap %{"""Copy bbox from another Pixmap."""%}
         PyObject *copyPixmap(struct Pixmap *src, PyObject *bbox)
@@ -6425,9 +6592,9 @@ if not self.colorspace or self.colorspace.n > 3:
             return_none;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // set alpha values
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(setAlpha, !result)
         %pythonprepend setAlpha
 %{"""Set alphas to values contained in a byte array.
@@ -6478,9 +6645,9 @@ If omitted, set alphas to 255."""%}
             return_none;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Pixmap._getImageData
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(_getImageData, !result)
         PyObject *_getImageData(int format)
         {
@@ -6560,9 +6727,9 @@ def getPNGData(self):
     return barray
     %}
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // _writeIMG
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(_writeIMG, !result)
         PyObject *_writeIMG(char *filename, int format)
         {
@@ -6666,9 +6833,9 @@ def pillowData(self, *args, **kwargs):
     return bytes_out.getvalue()
 
         %}
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // invertIRect
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythonprepend invertIRect
         %{"""Invert the colors inside a bbox."""%}
         PyObject *invertIRect(PyObject *bbox = NULL)
@@ -6687,9 +6854,9 @@ def pillowData(self, *args, **kwargs):
             return JM_BOOL(JM_invert_pixmap_rect(gctx, pm, r));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // get one pixel as a list
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(pixel, !result)
         %pythonprepend pixel
 %{"""Get color tuple of pixel (x, y).
@@ -6715,9 +6882,9 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             return p;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Set one pixel to a given color tuple
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(setPixel, !result)
         %pythonprepend setPixel
         %{"""Set color of pixel (x, y)."""%}
@@ -6753,9 +6920,9 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         }
 
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Set Pixmap resolution
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythonprepend setOrigin
         %{"""Set top-left coordinates."""%}
         PyObject *setOrigin(int x, int y)
@@ -6778,9 +6945,9 @@ Use pillowWrite to reflect this in output image."""%}
             Py_RETURN_NONE;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Set a rect to a given color tuple
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(setRect, !result)
         %pythonprepend setRect
         %{"""Set color of all pixels in bbox."""%}
@@ -6811,9 +6978,9 @@ Use pillowWrite to reflect this in output image."""%}
             return rc;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // get length of one image row
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend stride %{"""Length of one image line (width * n)."""%}
         PyObject *stride()
@@ -6821,9 +6988,9 @@ Use pillowWrite to reflect this in output image."""%}
             return PyLong_FromSize_t((size_t) fz_pixmap_stride(gctx, (fz_pixmap *) $self));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // x, y, width, height, xres, yres, n
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend xres %{"""Resolution in x direction."""%}
         int xres()
@@ -6875,9 +7042,9 @@ Use pillowWrite to reflect this in output image."""%}
             return fz_pixmap_components(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // check alpha channel
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend alpha %{"""Indicates presence of alpha channel."""%}
         int alpha()
@@ -6885,9 +7052,9 @@ Use pillowWrite to reflect this in output image."""%}
             return fz_pixmap_alpha(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // get colorspace of pixmap
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend colorspace %{"""Pixmap Colorspace."""%}
         struct Colorspace *colorspace()
@@ -6895,9 +7062,9 @@ Use pillowWrite to reflect this in output image."""%}
             return (struct Colorspace *) fz_pixmap_colorspace(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // return irect of pixmap
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend irect %{"""Pixmap bbox - an IRect object."""%}
         %pythonappend irect %{val = IRect(val)%}
@@ -6906,9 +7073,9 @@ Use pillowWrite to reflect this in output image."""%}
             return JM_py_from_irect(fz_pixmap_bbox(gctx, (fz_pixmap *) $self));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // return size of pixmap
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend size %{"""Pixmap size."""%}
         PyObject *size()
@@ -6921,9 +7088,9 @@ Use pillowWrite to reflect this in output image."""%}
             return PyLong_FromSize_t(s);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // samples
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend samples %{"""The area of all pixels."""%}
         PyObject *samples()
@@ -6987,9 +7154,9 @@ struct Colorspace
             }
             return (struct Colorspace *) cs;
         }
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // number of bytes to define color of one pixel
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend n %{"""Size of one pixel."""%}
         PyObject *n()
@@ -6997,9 +7164,9 @@ struct Colorspace
             return Py_BuildValue("i", fz_colorspace_n(gctx, (fz_colorspace *) $self));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // name of colorspace
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         PyObject *_name()
         {
             return JM_UnicodeFromStr(fz_colorspace_name(gctx, (fz_colorspace *) $self));
@@ -7089,9 +7256,9 @@ struct DeviceWrapper
     }
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_outline
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %nodefaultctor;
 struct Outline {
     %immutable;
@@ -7102,17 +7269,17 @@ struct Outline {
 
     As a result, if the root Outline python object drops ref,
     then other Outline will point to already freed area. E.g.:
-    >>> import fitz
-    >>> doc=fitz.Document('3.pdf')
-    >>> ol=doc.loadOutline()
-    >>> oln=ol.next
-    >>> oln.dest.page
+    import fitz
+    doc=fitz.Document('3.pdf')
+    ol=doc.loadOutline()
+    oln=ol.next
+    oln.dest.page
     5
-    >>> #drops root outline
+    #drops root outline
     ...
-    >>> ol=4
+    ol=4
     free outline
-    >>> oln.dest.page
+    oln.dest.page
     0
 
     I do not like to change struct of fz_document, so I decide
@@ -7216,9 +7383,9 @@ struct Outline {
 %clearnodefaultctor;
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Annotation
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %nodefaultctor;
 struct Annot
 {
@@ -7230,11 +7397,11 @@ struct Annot
             pdf_drop_annot(gctx, (pdf_annot *) $self);
             DEBUGMSG2;
         }
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation rectangle
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(rect, """Annotation rectangle.""")
+        PARENTCHECK(rect, """annotation rectangle""")
         %pythonappend rect %{
         val = Rect(val)
         val *= self.parent.derotationMatrix
@@ -7245,10 +7412,10 @@ struct Annot
             return JM_py_from_rect(r);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get xref number
-        //---------------------------------------------------------------------
-        PARENTCHECK(xref, """Annotation xref.""")
+        //----------------------------------------------------------------
+        PARENTCHECK(xref, """annotation xref""")
         %pythoncode %{@property%}
         PyObject *xref()
         {
@@ -7256,14 +7423,14 @@ struct Annot
             return Py_BuildValue("i", pdf_to_num(gctx, annot->obj));
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get AP/N Matrix
-        //---------------------------------------------------------------------
-        PARENTCHECK(APNMatrix, """Annotation appearance matrix.""")
-        %pythonappend APNMatrix %{val = Matrix(val)%}
+        //----------------------------------------------------------------
+        PARENTCHECK(apn_matrix, """annotation appearance matrix""")
+        %pythonappend apn_matrix %{val = Matrix(val)%}
         %pythoncode %{@property%}
         PyObject *
-        APNMatrix()
+        apn_matrix()
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
@@ -7273,17 +7440,18 @@ struct Annot
             fz_matrix mat = pdf_dict_get_matrix(gctx, ap, PDF_NAME(Matrix));
             return JM_py_from_matrix(mat);
         }
+        %pythoncode %{APNMatrix = apn_matrix%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get AP/N BBox
-        //---------------------------------------------------------------------
-        PARENTCHECK(APNBBox, """Annotation appearance bbox.""")
-        %pythonappend APNBBox %{
+        //----------------------------------------------------------------
+        PARENTCHECK(apn_bbox, """annotation appearance bbox""")
+        %pythonappend apn_bbox %{
         val = Rect(val) * self.parent.transformationMatrix
         val *= self.parent.derotationMatrix%}
         %pythoncode %{@property%}
         PyObject *
-        APNBBox()
+        apn_bbox()
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
@@ -7293,15 +7461,16 @@ struct Annot
             fz_rect rect = pdf_dict_get_rect(gctx, ap, PDF_NAME(BBox));
             return JM_py_from_rect(rect);
         }
+        %pythoncode %{APNBBox = apn_bbox%}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set AP/N Matrix
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setAPNMatrix, !result)
-        PARENTCHECK(setAPNMatrix, """Set annotation appearance matrix.""")
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_apn_matrix, !result)
+        PARENTCHECK(set_apn_matrix, """Set annotation appearance matrix.""")
         PyObject *
-        setAPNMatrix(PyObject *matrix)
+        set_apn_matrix(PyObject *matrix)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             fz_try(gctx) {
@@ -7316,13 +7485,14 @@ struct Annot
             }
             return_none;
         }
+        %pythoncode %{setAPNMatrix = set_apn_matrix%}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set AP/N BBox
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setAPNBBox, !result)
-        %pythonprepend setAPNBBox %{
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_apn_bbox, !result)
+        %pythonprepend set_apn_bbox %{
         """Set annotation appearance bbox."""
 
         CheckParent(self)
@@ -7332,7 +7502,7 @@ struct Annot
         bbox *= rot * ~mat
         %}
         PyObject *
-        setAPNBBox(PyObject *bbox)
+        set_apn_bbox(PyObject *bbox)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             fz_try(gctx) {
@@ -7347,12 +7517,13 @@ struct Annot
             }
             return_none;
         }
+        %pythoncode %{setAPNBBox = set_apn_bbox%}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation show blend mode (/BM)
-        //---------------------------------------------------------------------
-        PARENTCHECK(blendMode, """Annotation BlendMode.""")
+        //----------------------------------------------------------------
+        PARENTCHECK(blendMode, """annotation BlendMode""")
         PyObject *blendMode()
         {
             PyObject *blend_mode = NULL;
@@ -7360,9 +7531,9 @@ struct Annot
                 pdf_annot *annot = (pdf_annot *) $self;
                 pdf_obj *obj, *obj1, *obj2;
                 obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(BM));
-                if (obj) {  // check the annot object for /BM
+                if (obj) {
                     blend_mode = JM_UnicodeFromStr(pdf_to_name(gctx, obj));
-                    goto fertig;
+                    goto finished;
                 }
                 // loop through the /AP/N/Resources/ExtGState objects
                 obj = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
@@ -7381,13 +7552,13 @@ struct Annot
                                 obj2 = pdf_dict_get_key(gctx, obj1, j);
                                 if (pdf_objcmp(gctx, obj2, PDF_NAME(BM)) == 0) {
                                     blend_mode = JM_UnicodeFromStr(pdf_to_name(gctx, pdf_dict_get_val(gctx, obj1, j)));
-                                    goto fertig;
+                                    goto finished;
                                 }
                             }
                         }
                     }
                 }
-                fertig:;
+                finished:;
             }
             fz_catch(gctx) {
                 return_none;
@@ -7395,14 +7566,16 @@ struct Annot
             if (blend_mode) return blend_mode;
             return_none;
         }
+        %pythoncode %{blendmode = property(blendMode, doc="annotation BlendMode")%}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set blend mode (/BM)
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setBlendMode, !result)
-        PARENTCHECK(setBlendMode, """Set annotation BlendMode.""")
-        PyObject *setBlendMode(char *blend_mode)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_blendmode, !result)
+        PARENTCHECK(set_blendmode, """Set annotation BlendMode.""")
+        PyObject *
+        set_blendmode(char *blend_mode)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -7413,39 +7586,172 @@ struct Annot
             }
             return_none;
         }
+        %pythoncode %{setBlendMode = set_blendmode%}
 
 
-        //---------------------------------------------------------------------
-        // annotation set optional content
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getOC, !result)
-        PARENTCHECK(getOC, """Get annotation optional content reference.""")
-        PyObject *getOC()
+        //----------------------------------------------------------------
+        // annotation get optional content
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_oc, !result)
+        PARENTCHECK(get_oc, """Get annotation optional content reference.""")
+        PyObject *get_oc()
         {
-            PyObject *oc = NULL;
+            int oc = 0;
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
                 pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(OC));
-                if (!obj) {
-                    oc = Py_BuildValue("i", 0);
-                } else {
-                    int n = pdf_to_num(gctx, obj);
-                    oc = Py_BuildValue("i", n);
+                if (obj) {
+                    oc = pdf_to_num(gctx, obj);
                 }
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return oc;;
+            return Py_BuildValue("i", oc);
+        }
+        %pythoncode %{optional_content = property(getOC, doc="optional content xref")%}
+
+
+        //----------------------------------------------------------------
+        // annotation set open
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_open, !result)
+        PARENTCHECK(set_open, """Set 'open' status of annotation or its Popup.""")
+        PyObject *set_open(int is_open)
+        {
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_set_annot_is_open(gctx, annot, is_open);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return_none;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // annotation inquiry: is open
+        //----------------------------------------------------------------
+        FITZEXCEPTION(is_open, !result)
+        PARENTCHECK(is_open, """Get 'open' status of annotation or its Popup.""")
+        %pythoncode %{@property%}
+        PyObject *
+        is_open()
+        {
+            int is_open;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                is_open = pdf_annot_is_open(gctx, annot);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_BOOL(is_open);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation inquiry: has Popup
+        //----------------------------------------------------------------
+        FITZEXCEPTION(has_popup, !result)
+        PARENTCHECK(has_popup, """Check if annotation has a Popup.""")
+        %pythoncode %{@property%}
+        PyObject *
+        has_popup()
+        {
+            int has_popup = 0;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(Popup));
+                if (obj) has_popup = 1;
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_BOOL(has_popup);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation set Popup
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_popup, !result)
+        PARENTCHECK(set_popup, """Set the 'Popup' of annotation.""")
+        PyObject *
+        set_popup(PyObject *rect)
+        {
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_page *pdfpage = annot->page;
+                fz_matrix rot = JM_rotate_page_matrix(gctx, pdfpage);
+                fz_rect r = fz_transform_rect(JM_rect_from_py(rect), rot);
+                pdf_set_annot_popup(gctx, annot, r);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------------------------------------
+        // annotation Popup rectangle
+        //----------------------------------------------------------------
+        FITZEXCEPTION(popup_rect, !result)
+        PARENTCHECK(popup_rect, """Rectangle of the annotation's 'Popup'.""")
+        %pythoncode %{@property%}
+        %pythonappend popup_rect %{
+        val = Rect(val) * self.parent.transformationMatrix
+        val *= self.parent.derotationMatrix%}
+        PyObject *
+        popup_rect()
+        {
+            fz_rect rect = fz_infinite_rect;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(Popup));
+                if (obj) {
+                    rect = pdf_dict_get_rect(gctx, obj, PDF_NAME(Rect));
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_py_from_rect(rect);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation Popup xref
+        //----------------------------------------------------------------
+        FITZEXCEPTION(popup_xref, !result)
+        PARENTCHECK(popup_xref, """xref of the annotation's 'Popup'.""")
+        %pythoncode %{@property%}
+        PyObject *
+        popup_xref()
+        {
+            int xref = 0;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(Popup));
+                if (obj) {
+                    xref = pdf_to_num(gctx, obj);
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", xref);
+        }
+
+
+        //----------------------------------------------------------------
         // annotation set optional content
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setOC, !result)
-        PARENTCHECK(setOC, """Set annotation optional content reference.""")
-        PyObject *setOC(int oc=0)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_oc, !result)
+        PARENTCHECK(set_oc, """Set annotation optional content xref.""")
+        PyObject *
+        set_optional_content(int oc=0)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -7460,10 +7766,11 @@ struct Annot
             }
             return_none;
         }
+        %pythoncode%{setOC = set_oc%}
 
 
         %pythoncode%{@property%}
-        %pythonprepend language %{"""Annotation language."""%}
+        %pythonprepend language %{"""annotation language"""%}
         PyObject *language()
         {
             pdf_annot *this_annot = (pdf_annot *) $self;
@@ -7473,12 +7780,12 @@ struct Annot
             return Py_BuildValue("s", fz_string_from_text_language(buf, lang));
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set language (/Lang)
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setLaguage, !result)
-        PARENTCHECK(setLaguage, """Set annotation language.""")
-        PyObject *setLaguage(char *language=NULL)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_language, !result)
+        PARENTCHECK(set_language, """Set annotation language.""")
+        PyObject *set_language(char *language=NULL)
         {
             pdf_annot *this_annot = (pdf_annot *) $self;
             fz_try(gctx) {
@@ -7492,40 +7799,46 @@ struct Annot
             fz_catch(gctx) {
                 return NULL;
             }
-            Py_RETURN_TRUE;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get decompressed appearance stream source
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_getAP, !result)
-        PyObject *_getAP()
+        PyObject *
+        _getAP()
         {
-            PyObject *r = Py_None;
+            PyObject *r = NULL;
             fz_buffer *res = NULL;
+            fz_var(res);
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
                 pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                               PDF_NAME(N), NULL);
 
                 if (pdf_is_stream(gctx, ap))  res = pdf_load_stream(gctx, ap);
-                if (res) r = JM_BinFromBuffer(gctx, res);
+                if (res) {
+                    r = JM_BinFromBuffer(gctx, res);
+                }
             }
             fz_always(gctx) {
                 fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) {
-                return_none;
+                Py_RETURN_NONE;
             }
+            if (!r) Py_RETURN_NONE;
             return r;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation update /AP stream
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_setAP, !result)
-        PyObject *_setAP(PyObject *ap, int rect = 0)
+        PyObject *
+        _setAP(PyObject *ap, int rect=0)
         {
             fz_buffer *res = NULL;
             fz_var(res);
@@ -7533,9 +7846,9 @@ struct Annot
                 pdf_annot *annot = (pdf_annot *) $self;
                 pdf_obj *apobj = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                               PDF_NAME(N), NULL);
-                if (!apobj) THROWMSG(gctx, "annot has no /AP/N object");
+                if (!apobj) THROWMSG(gctx, "annot has no AP/N object");
                 if (!pdf_is_stream(gctx, apobj))
-                    THROWMSG(gctx, "/AP/N object is no stream");
+                    THROWMSG(gctx, "AP/N object is no stream");
                 res = JM_BufferFromBytes(gctx, ap);
                 if (!res) THROWMSG(gctx, "invalid /AP stream argument");
                 JM_update_stream(gctx, annot->page->doc, apobj, res, 1);
@@ -7555,9 +7868,9 @@ struct Annot
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // redaction annotation get values
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_get_redact_values, !result)
         %pythonappend _get_redact_values %{
         if not val:
@@ -7609,13 +7922,13 @@ struct Annot
             return values;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get TextPage
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getTextPage, !result)
-        PARENTCHECK(getTextPage, """Get annotation TextPage.""")
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_textpage, !result)
+        PARENTCHECK(get_textpage, """Get annotation TextPage.""")
         struct TextPage *
-        getTextPage(PyObject *clip=NULL, int flags = 0)
+        get_textpage(PyObject *clip=NULL, int flags = 0)
         {
             fz_stext_page *textpage=NULL;
             fz_stext_options options = { 0 };
@@ -7629,12 +7942,15 @@ struct Annot
             }
             return (struct TextPage *) textpage;
         }
+        %pythoncode %{getTextPage = get_textpage%}
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation set name
-        //---------------------------------------------------------------------
-        PARENTCHECK(setName, """Set /Name (icon) of annotation.""")
-        PyObject *setName(char *name)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_name, """Set /Name (icon) of annotation.""")
+        PyObject *
+        set_name(char *name)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -7646,12 +7962,14 @@ struct Annot
             }
             return_none;
         }
+        %pythoncode %{setName = set_name%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set rectangle
-        //---------------------------------------------------------------------
-        PARENTCHECK(setRect, """Set annotation rectangle.""")
-        PyObject *setRect(PyObject *rect)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_rect, """Set annotation rectangle.""")
+        PyObject *
+        set_rect(PyObject *rect)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -7665,12 +7983,14 @@ struct Annot
             }
             return_none;
         }
+        %pythoncode %{setRect = set_rect%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set rotation
-        //---------------------------------------------------------------------
-        PARENTCHECK(setRotation, """Set annotation rotation.""")
-        PyObject *setRotation(int rotate=0)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_rotation, """Set annotation rotation.""")
+        PyObject *
+        set_rotation(int rotate=0)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             int type = pdf_annot_type(gctx, annot);
@@ -7698,12 +8018,13 @@ struct Annot
             pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Rotate), rot);
             return_none;
         }
+        %pythoncode %{setRotation = set_rotation%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get rotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(rotation, """Annotation rotation.""")
+        PARENTCHECK(rotation, """annotation rotation""")
         int rotation()
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -7712,10 +8033,11 @@ struct Annot
             return pdf_to_int(gctx, rotation);
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation vertices (for "Line", "Polgon", "Ink", etc.
-        //---------------------------------------------------------------------
-        PARENTCHECK(vertices, """Vertex points.""")
+        //----------------------------------------------------------------
+        PARENTCHECK(vertices, """annotation vertex points""")
         %pythoncode %{@property%}
         PyObject *vertices()
         {
@@ -7778,9 +8100,9 @@ struct Annot
             return res;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation colors
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(colors, """Color definitions.""")
         PyObject *colors()
@@ -7789,9 +8111,9 @@ struct Annot
             return JM_annot_colors(gctx, annot->obj);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation update appearance
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PyObject *_update_appearance(float opacity=-1, char *blend_mode=NULL,
             PyObject *fill_color=NULL,
             int rotate = -1)
@@ -7935,7 +8257,7 @@ struct Annot
                     fill = None
 
             rect = None  # self.rect  # prevent MuPDF fiddling with it
-            apnmat = self.APNMatrix  # prevent MuPDF fiddling with it
+            apnmat = self.apn_matrix  # prevent MuPDF fiddling with it
             if rotate != -1:  # sanitize rotation value
                 while rotate < 0:
                     rotate += 360
@@ -7948,7 +8270,7 @@ struct Annot
             # handle opacity and blend mode
             #------------------------------------------------------------------
             if blend_mode is None:
-                blend_mode = self.blendMode()
+                blend_mode = self.blendmode
             if not hasattr(opacity, "__float__"):
                 opacity = self.opacity
 
@@ -8117,7 +8439,7 @@ struct Annot
 
             if ap_updated:
                 if rect:                        # rect modified here?
-                    self.setRect(rect)
+                    self.set_rect(rect)
                     self._setAP(ap, rect=1)
                 else:
                     self._setAP(ap, rect=0)
@@ -8150,20 +8472,19 @@ struct Annot
                     return  # matrix already is a no-op
                 quad = self.rect.morph(M, ~apnmat)  # derotate rect
                 self.setRect(quad.rect)
-                self.setAPNMatrix(Matrix(1, 1))  # appearance matrix = no-op
+                self.set_apn_matrix(Matrix(1, 1))  # appearance matrix = no-op
                 return
 
             mat = Matrix(rot)
             quad = self.rect.morph(M, mat)
-            self.setRect(quad.rect)
-            self.setAPNMatrix(apnmat * mat)
-
+            self.set_rect(quad.rect)
+            self.set_apn_matrix(apnmat * mat)
         %}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set colors
-        //---------------------------------------------------------------------
-        %pythonprepend setColors %{
+        //----------------------------------------------------------------
+        %pythonprepend set_colors %{
         """Set 'stroke' and 'fill' colors.
 
         Use either a dict or the direct arguments.
@@ -8172,7 +8493,7 @@ struct Annot
         if type(colors) is not dict:
             colors = {"fill": fill, "stroke": stroke}
         %}
-        void setColors(PyObject *colors=NULL, PyObject *fill=NULL, PyObject *stroke=NULL)
+        void set_colors(PyObject *colors=NULL, PyObject *fill=NULL, PyObject *stroke=NULL)
         {
             if (!PyDict_Check(colors)) return;
             pdf_annot *annot = (pdf_annot *) $self;
@@ -8210,10 +8531,11 @@ struct Annot
             }
             return;
         }
+        %pythoncode %{setColors = set_colors%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation lineEnds
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(lineEnds, """Line end codes.""")
         PyObject *lineEnds()
@@ -8228,24 +8550,26 @@ struct Annot
             int lend = (int) pdf_annot_line_end_style(gctx, annot);
             return Py_BuildValue("ii", lstart, lend);
         }
+        %pythoncode %{line_ends = lineEnds%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set line ends
-        //---------------------------------------------------------------------
-        PARENTCHECK(setLineEnds, """Set line end codes.""")
-        void setLineEnds(int start, int end)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_line_ends, """Set line end codes.""")
+        void set_line_ends(int start, int end)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             if (pdf_annot_has_line_ending_styles(gctx, annot))
                 pdf_set_annot_line_ending_styles(gctx, annot, start, end);
             else
-                JM_Warning("annot type has no line ends");
+                JM_Warning("bad annot type for line ends");
         }
+        %pythoncode %{setLineEnds = set_line_ends%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation type
-        //---------------------------------------------------------------------
-        PARENTCHECK(type, """Annotation type.""")
+        //----------------------------------------------------------------
+        PARENTCHECK(type, """annotation type""")
         %pythoncode %{@property%}
         PyObject *type()
         {
@@ -8259,9 +8583,9 @@ struct Annot
             return Py_BuildValue("iss", type, c, it);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation opacity
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(opacity, """Opacity.""")
         %pythoncode %{@property%}
         PyObject *opacity()
@@ -8274,11 +8598,11 @@ struct Annot
             return Py_BuildValue("f", opy);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set opacity
-        //---------------------------------------------------------------------
-        PARENTCHECK(setOpacity, """Set opacity.""")
-        void setOpacity(float opacity)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_opacity, """Set opacity.""")
+        void set_opacity(float opacity)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             if (!INRANGE(opacity, 0.0f, 1.0f))
@@ -8292,11 +8616,11 @@ struct Annot
                 annot->page->transparency = 1;
             }
         }
+        %pythoncode %{setOpacity = set_opacity%}
 
-
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get attached file info
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(fileInfo, !result)
         PARENTCHECK(fileInfo, """Attached file information.""")
         PyObject *fileInfo()
@@ -8346,13 +8670,16 @@ struct Annot
             DICT_SETITEM_DROP(res, dictkey_size, Py_BuildValue("i", size));
             return res;
         }
+        %pythoncode %{file_info = property(fileInfo, doc="Attached file information")%}
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation get attached file content
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(fileGet, !result)
-        PARENTCHECK(fileGet, """Attached file content.""")
-        PyObject *fileGet()
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_file, !result)
+        PARENTCHECK(get_file, """Attached file content.""")
+        PyObject *
+        get_file()
         {
             PyObject *res = NULL;
             pdf_obj *stream = NULL;
@@ -8377,13 +8704,15 @@ struct Annot
             }
             return res;
         }
+        %pythoncode %{fileGet = get_file%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get attached sound stream
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(soundGet, !result)
-        PARENTCHECK(soundGet, """Retrieve sound stream.""")
-        PyObject *soundGet()
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_sound, !result)
+        PARENTCHECK(get_sound, """Retrieve sound stream.""")
+        PyObject *
+        get_sound()
         {
             PyObject *res = NULL;
             PyObject *stream = NULL;
@@ -8438,16 +8767,18 @@ struct Annot
             }
             return res;
         }
+        %pythoncode %{soundGet = get_sound%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation update attached file
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(fileUpd, !result)
-        %pythonprepend fileUpd %{
-        """Update attached file."""
-        CheckParent(self)%}
+        //----------------------------------------------------------------
+        FITZEXCEPTION(update_file, !result)
+        %pythonprepend update_file
+%{"""Update attached file."""
+CheckParent(self)%}
 
-        PyObject *fileUpd(PyObject *buffer=NULL, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
+        PyObject *
+        update_file(PyObject *buffer=NULL, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
         {
             pdf_document *pdf = NULL;       // to be filled in
             char *data = NULL;              // for new file content
@@ -8506,10 +8837,11 @@ struct Annot
             pdf->dirty = 1;
             return_none;
         }
+        %pythoncode %{fileUpd = update_file%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation info
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(info, """Various information details.""")
         PyObject *info()
@@ -8550,11 +8882,11 @@ struct Annot
             return res;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set information
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setInfo, !result)
-        %pythonprepend setInfo %{
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_info, !result)
+        %pythonprepend set_info %{
         """Set various properties."""
         CheckParent(self)
         if type(info) is dict:  # build the args from the dictionary
@@ -8565,7 +8897,8 @@ struct Annot
             subject = info.get("subject", None)
             info = None
         %}
-        PyObject *setInfo(PyObject *info=NULL, char *content=NULL, char *title=NULL,
+        PyObject *
+        set_info(PyObject *info=NULL, char *content=NULL, char *title=NULL,
                           char *creationDate=NULL, char *modDate=NULL, char *subject=NULL)
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -8602,10 +8935,11 @@ struct Annot
             }
             return_none;
         }
+        %pythoncode %{setInfo = set_info%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation border
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(border, """Border information.""")
         PyObject *border()
@@ -8614,10 +8948,10 @@ struct Annot
             return JM_annot_border(gctx, annot->obj);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // set annotation border
-        //---------------------------------------------------------------------
-        %pythonprepend setBorder %{
+        //----------------------------------------------------------------
+        %pythonprepend set_border %{
         """Set border properties.
 
         Either a dict, or direct arguments width, style and dashes."""
@@ -8625,15 +8959,17 @@ struct Annot
         if type(border) is not dict:
             border = {"width": width, "style": style, "dashes": dashes}
         %}
-        PyObject *setBorder(PyObject *border=NULL, float width=0, char *style=NULL, PyObject *dashes=NULL)
+        PyObject *
+        set_border(PyObject *border=NULL, float width=0, char *style=NULL, PyObject *dashes=NULL)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             return JM_annot_set_border(gctx, border, annot->page->doc, annot->obj);
         }
+        %pythoncode %{setBorder = set_border%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation flags
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(flags, """Flags field.""")
         int flags()
@@ -8642,9 +8978,9 @@ struct Annot
             return pdf_annot_flags(gctx, annot);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation clean contents
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_cleanContents, !result)
         PARENTCHECK(_cleanContents, """Clean appearance contents object.""")
         PyObject *_cleanContents(int sanitize=0)
@@ -8671,20 +9007,23 @@ struct Annot
             pdf_dirty_annot(gctx, annot);
             return_none;
         }
+        %pythoncode %{clean_contents = _cleanContents%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // set annotation flags
-        //---------------------------------------------------------------------
-        PARENTCHECK(setFlags, """Set annotation flags.""")
-        void setFlags(int flags)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_flags, """Set annotation flags.""")
+        void 
+        set_flags(int flags)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_set_annot_flags(gctx, annot, flags);
         }
+        %pythoncode %{setFlags = set_flags%}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation delete responses
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(delete_responses, !result)
         PARENTCHECK(delete_responses, """Delete responding annotations.""")
         PyObject *delete_responses()
@@ -8723,9 +9062,9 @@ struct Annot
             return_none;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // next annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(next, """Next annotation.""")
         %pythonappend next %{
         if not val:
@@ -8746,12 +9085,9 @@ struct Annot
             int type = pdf_annot_type(gctx, this_annot);
             pdf_annot *annot;
 
-            if (type != PDF_ANNOT_WIDGET)
-            {
+            if (type != PDF_ANNOT_WIDGET) {
                 annot = pdf_next_annot(gctx, this_annot);
-            }
-            else
-            {
+            } else {
                 annot = (pdf_widget *) pdf_next_widget(gctx, (pdf_widget *) this_annot);
             }
 
@@ -8761,13 +9097,12 @@ struct Annot
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation pixmap
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getPixmap, !result)
-        PARENTCHECK(getPixmap, """Annotation Pixmap.""")
-        %pythonprepend getPixmap
-%{"""Annotation Pixmap."""
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_pixmap, !result)
+        %pythonprepend get_pixmap
+%{"""annotation Pixmap"""
 
 CheckParent(self)
 cspaces = {"gray": csGRAY, "rgb": csRGB, "cmyk": csCMYK}
@@ -8775,7 +9110,7 @@ if type(colorspace) is str:
     colorspace = cspaces.get(colorspace.lower(), None)
 %}
         struct Pixmap *
-        getPixmap(PyObject *matrix = NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
+        get_pixmap(PyObject *matrix = NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
         {
             fz_matrix ctm = JM_matrix_from_py(matrix);
             fz_colorspace *cs = (fz_colorspace *) colorspace;
@@ -8792,6 +9127,7 @@ if type(colorspace) is str:
             }
             return (struct Pixmap *) pix;
         }
+        %pythoncode %{getPixmap = get_pixmap%}
 
 
         %pythoncode %{
@@ -8821,9 +9157,9 @@ if type(colorspace) is str:
 };
 %clearnodefaultctor;
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_link
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %nodefaultctor;
 struct Link
 {
@@ -8963,9 +9299,9 @@ struct Link
             return JM_py_from_rect(this_link->rect);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // next link
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // we need to increase the link refs number
         // so that it will not be freed when the head is dropped
         PARENTCHECK(next, """Next link.""")
@@ -9017,9 +9353,9 @@ struct Link
 };
 %clearnodefaultctor;
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_display_list
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct DisplayList {
     %extend
     {
@@ -9054,9 +9390,9 @@ struct DisplayList {
             return_none;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // DisplayList.rect
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode%{@property%}
         %pythonappend rect %{val = Rect(val)%}
         PyObject *rect()
@@ -9064,9 +9400,9 @@ struct DisplayList {
             return JM_py_from_rect(fz_bound_display_list(gctx, (fz_display_list *) $self));
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // DisplayList.getPixmap
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(getPixmap, !result)
         %pythonappend getPixmap %{val.thisown = True%}
         struct Pixmap *getPixmap(PyObject *matrix=NULL,
@@ -9091,9 +9427,9 @@ struct DisplayList {
             return (struct Pixmap *) pix;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // DisplayList.getTextPage
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(getTextPage, !result)
         %pythonappend getTextPage %{val.thisown = True%}
         struct TextPage *getTextPage(int flags = 3)
@@ -9120,9 +9456,9 @@ struct DisplayList {
     }
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_stext_page
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct TextPage {
     %extend {
         ~TextPage()
@@ -9146,9 +9482,9 @@ struct TextPage {
             return (struct TextPage *) tp;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // method search()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(search, !result)
         %pythonprepend search
         %{"""Locate 'needle' returning rects or quads."""%}
@@ -9191,9 +9527,9 @@ struct TextPage {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get list of all blocks with block type and bbox as a Python list
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_getNewBlockList, !result)
         PyObject *
         _getNewBlockList(PyObject *page_dict, int raw)
@@ -9215,10 +9551,10 @@ struct TextPage {
         %}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get text blocks with their bbox and concatenated lines
         // as a Python list
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(extractBLOCKS, !result)
         %pythonprepend extractBLOCKS
         %{"""Return a list with text block information."""%}
@@ -9306,9 +9642,9 @@ struct TextPage {
             return lines;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get text words with their bbox
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(extractWORDS, !result)
         %pythonprepend extractWORDS
         %{"""Return a list with text word information."""%}
@@ -9379,9 +9715,9 @@ struct TextPage {
             return lines;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // TextPage rectangle
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend rect
         %{"""Page rectangle."""%}
@@ -9393,9 +9729,9 @@ struct TextPage {
             return JM_py_from_rect(mediabox);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // method _extractText()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_extractText, !result)
         %newobject _extractText;
         PyObject *_extractText(int format)
@@ -9440,9 +9776,9 @@ struct TextPage {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // method extractSelection()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PyObject *extractSelection(PyObject *pointa, PyObject *pointb)
         {
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
@@ -9530,9 +9866,9 @@ struct TextPage {
     }
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Graftmap - only used internally for inter-PDF object copy operations
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Graftmap
 {
     %extend
@@ -9571,9 +9907,9 @@ struct Graftmap
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // TextWriter
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct TextWriter
 {
     %extend {
@@ -9695,7 +10031,16 @@ struct TextWriter
         max_alp, max_font = max_nums
         old_cont_lines = content.splitlines()
 
+        optcont = page._get_optional_content(oc)
+        if optcont != None:
+            bdc = "/OC /%s BDC" % optcont
+            emc = "EMC"
+        else:
+            bdc = emc = ""
+
         new_cont_lines = ["q"]
+        if bdc:
+            new_cont_lines.append(bdc)
 
         cb = page.CropBoxPosition
         if bool(cb):
@@ -9728,6 +10073,8 @@ struct TextWriter
             elif line.endswith(" k"):
                 new_cont_lines.append(line.replace(" k", " K"))
             new_cont_lines.append(line)
+        if emc:
+            new_cont_lines.append(emc)
         new_cont_lines.append("Q\n")
         content = "\n".join(new_cont_lines).encode("utf-8")
         TOOLS._insert_contents(page, content, overlay=overlay)
@@ -9735,7 +10082,7 @@ struct TextWriter
         for font in self.used_fonts:
             repair_mono_font(page, font)
         %}
-        PyObject *writeText(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0)
+        PyObject *writeText(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0, int oc=0)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
             fz_rect mediabox = fz_bound_page(gctx, (fz_page *) page);
@@ -9793,9 +10140,9 @@ struct TextWriter
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Font
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Font
 {
     %extend
@@ -10000,9 +10347,9 @@ struct Font
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Tools - a collection of tools and utilities
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Tools
 {
     %extend

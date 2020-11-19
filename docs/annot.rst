@@ -10,56 +10,65 @@ Quote from the :ref:`AdobeManual`: "An annotation associates an object such as a
 
 There is a parent-child relationship between an annotation and its page. If the page object becomes unusable (closed document, any document structure change, etc.), then so does every of its existing annotation objects -- an exception is raised saying that the object is "orphaned", whenever an annotation property or method is accessed.
 
+.. note::
 
-=============================== ==============================================================
-**Attribute**                   **Short Description**
-=============================== ==============================================================
-:meth:`Annot.blendMode`         return the annotation's blend mode
-:meth:`Annot.delete_responses`  delete all responding annotions
-:meth:`Annot.fileGet`           return attached file content
-:meth:`Annot.fileInfo`          return attached file information
-:meth:`Annot.fileUpd`           set attached file new content
-:meth:`Annot.getOC`             return xref of an optional content group
-:meth:`Annot.getPixmap`         image of the annotation as a pixmap
-:meth:`Annot.getText`           extract annotation text
-:meth:`Annot.getTextbox`        extract annotation text
-:meth:`Annot.setBlendMode`      set the annotation's blend mode
-:meth:`Annot.setBorder`         change the border
-:meth:`Annot.setColors`         change the colors
-:meth:`Annot.setFlags`          change the flags
-:meth:`Annot.setInfo`           change various properties
-:meth:`Annot.setLineEnds`       set line ending styles
-:meth:`Annot.setName`           change the "Name" field (e.g. icon name)
-:meth:`Annot.setOC`             set visibility via an optional content group (OCG)
-:meth:`Annot.setOpacity`        change transparency
-:meth:`Annot.setRect`           change the rectangle
-:meth:`Annot.setRotation`       change rotation
-:meth:`Annot.soundGet`          return the sound of an audio annotation
-:meth:`Annot.update`            apply accumulated annot changes
-:attr:`Annot.border`            border details
-:attr:`Annot.colors`            border / background and fill colors
-:attr:`Annot.flags`             annotation flags
-:attr:`Annot.info`              various information
-:attr:`Annot.lineEnds`          start / end appearance of line-type annotations
-:attr:`Annot.next`              link to the next annotation
-:attr:`Annot.opacity`           the annot's transparency
-:attr:`Annot.parent`            page object of the annotation
-:attr:`Annot.rect`              rectangle containing the annotation
-:attr:`Annot.type`              type of the annotation
-:attr:`Annot.vertices`          point coordinates of Polygons, PolyLines, etc.
-:attr:`Annot.xref`              the PDF :data:`xref` number
-=============================== ==============================================================
+  Unfortunately, there exists no single, unique naming convention in PyMuPDF: examples for all of *CamelCases*, *mixedCases* and *lower_case_with underscores* can be found all over the place. We are now in the process of cleaning this up, step by step.
+
+  This class, Annot, is the first candidate for this execise. In this chapter, you will for example find :meth:`Annot.get_pixmap` -- and no longer the old name ``getPixmap``. The method with the old name however **continues to exists** and you can continue using it: your existing code will not break. But we do hope you will start using the new names -- for new code at least.
+
+
+================================== ==============================================================
+**Attribute**                      **Short Description**
+================================== ==============================================================
+:meth:`Annot.delete_responses`     delete all responding annotions
+:meth:`Annot.file_info`            get attached file information
+:meth:`Annot.get_file`             get attached file content
+:meth:`Annot.get_oc`               get :data:`xref` of an :data:`OCG` / :data:`OCMD`
+:meth:`Annot.get_pixmap`           image of the annotation as a pixmap
+:meth:`Annot.get_sound`            get the sound of an audio annotation
+:meth:`Annot.get_text`             extract annotation text
+:meth:`Annot.get_textbox`          extract annotation text
+:meth:`Annot.set_border`           set annotation's border properties
+:meth:`Annot.set_blendmode`        set annotation's blend mode
+:meth:`Annot.set_colors`           set annotation's colors
+:meth:`Annot.set_name`             set annotation's name field
+:meth:`Annot.set_oc`               set :data:`xref` to an :data:`OCG` / :data:`OCMD`
+:meth:`Annot.set_opacity`          change transparency
+:meth:`Annot.set_open`             open / close annotation or its Popup
+:meth:`Annot.set_popup`            create a Popup for the annotation
+:meth:`Annot.set_rect`             change annotation rectangle
+:meth:`Annot.set_rotation`         change rotation
+:meth:`Annot.update_file`          update attached file content
+:meth:`Annot.update`               apply accumulated annot changes
+:attr:`Annot.blendmode`            annotation BlendMode
+:attr:`Annot.border`               border details
+:attr:`Annot.colors`               border / background and fill colors
+:attr:`Annot.flags`                annotation flags
+:attr:`Annot.has_popup`            whether annotation has a Popup
+:attr:`Annot.info`                 various information
+:attr:`Annot.is_open`              whether annotation or its Popup is open
+:attr:`Annot.line_ends`            start / end appearance of line-type annotations
+:attr:`Annot.next`                 link to the next annotation
+:attr:`Annot.opacity`              the annot's transparency
+:attr:`Annot.parent`               page object of the annotation
+:attr:`Annot.popup_rect`           rectangle of the annotation's Popup
+:attr:`Annot.popup_xref`           the PDF :data:`xref` number of the annotation's Popup
+:attr:`Annot.rect`                 rectangle containing the annotation
+:attr:`Annot.type`                 type of the annotation
+:attr:`Annot.vertices`             point coordinates of Polygons, PolyLines, etc.
+:attr:`Annot.xref`                 the PDF :data:`xref` number
+================================== ==============================================================
 
 **Class API**
 
 .. class:: Annot
 
    .. index::
-      pair: matrix; getPixmap
-      pair: colorspace; getPixmap
-      pair: alpha; getPixmap
+      pair: matrix; get_pixmap
+      pair: colorspace; get_pixmap
+      pair: alpha; get_pixmap
 
-   .. method:: getPixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, alpha=False)
+   .. method:: get_pixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, alpha=False)
 
       Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap's :ref:`IRect` equals *Annot.rect.irect* (see below).
 
@@ -76,19 +85,19 @@ There is a parent-child relationship between an annotation and its page. If the 
 
 
    .. index::
-      pair: blocks; Annot.getText
-      pair: dict; Annot.getText
-      pair: clip; Annot.getText
-      pair: flags; Annot.getText
-      pair: html; Annot.getText
-      pair: json; Annot.getText
-      pair: rawdict; Annot.getText
-      pair: text; Annot.getText
-      pair: words; Annot.getText
-      pair: xhtml; Annot.getText
-      pair: xml; Annot.getText
+      pair: blocks; Annot.get_text
+      pair: dict; Annot.get_text
+      pair: clip; Annot.get_text
+      pair: flags; Annot.get_text
+      pair: html; Annot.get_text
+      pair: json; Annot.get_text
+      pair: rawdict; Annot.get_text
+      pair: text; Annot.get_text
+      pair: words; Annot.get_text
+      pair: xhtml; Annot.get_text
+      pair: xml; Annot.get_text
 
-   .. method:: getText(opt="text", clip=None, flags=None)
+   .. method:: get_text(opt="text", clip=None, flags=None)
 
       *(New in 1.18.0)*
 
@@ -109,16 +118,16 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg rect-like clip: restrict the extraction to this area. Should hardly ever be required, defaults to :attr:`Annot.rect`.
       :arg int flags: control the amount of data returned. Defaults to simple text extraction.
 
-   .. method:: getTextbox(rect)
+   .. method:: get_textbox(rect)
 
       *(New in 1.18.0)*
 
-      Return the annotation text. Mostly (except line breaks) equal to :meth:`Annot.getText` with the "text" option.
+      Return the annotation text. Mostly (except line breaks) equal to :meth:`Annot.get_text` with the "text" option.
 
       :arg rect-like rect: the area to consider, defaults to :attr:`Annot.rect`.
 
 
-   .. method:: setInfo(info=None, content=None, title=None, creationDate=None, modDate=None, subject=None)
+   .. method:: set_info(info=None, content=None, title=None, creationDate=None, modDate=None, subject=None)
 
       *(Changed in version 1.16.10)*
 
@@ -131,31 +140,53 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg str modDate: *(new in v1.16.10)* date of last modification. If given, should be in PDF datetime format.
       :arg str subject: *(new in v1.16.10)* see description in :attr:`info`.
 
-   .. method:: setLineEnds(start, end)
+   .. method:: set_line_ends(start, end)
 
       Sets an annotation's line ending styles. Each of these annotation types is defined by a list of points which are connected by lines. The symbol identified by *start* is attached to the first point, and *end* to the last point of this list. For unsupported annotation types, a no-operation with a warning message results.
 
       .. note::
 
          * While only 'FreeText', 'Line', 'PolyLine', and 'Polygon' annotations can have these properties, (Py-) MuPDF does not support line ends for 'FreeText', because the call-out variant for these is not supported.
-         * *(Changed in v1.16.16)* Some symbols have an interior area (diamonds, circles, squares, etc.). By default, these areas are filled with the fill color of the annotation. If this is *None*, then white is chosen. The *fill_color* argument of :meth:`Annot.update` can now be used to override this.
+         * *(Changed in v1.16.16)* Some symbols have an interior area (diamonds, circles, squares, etc.). By default, these areas are filled with the fill color of the annotation. If this is *None*, then white is chosen. The *fill_color* argument of :meth:`Annot.update` can now be used to override this and give line end symbols their own fill color.
 
       :arg int start: The symbol number for the first point.
       :arg int end: The symbol number for the last point.
 
-   .. method:: setOC(xref)
+   .. method:: set_oc(xref)
 
-      Set the annotation's visibility using optional content groups. This visibility can be controlled by user interfaces provided by supporting PDF viewers and is independent from other parameters like ::attr:`Annot.flags`.
+      Set the annotation's visibility using PDF optional content mechanisms. This visibility is controlled by the user interface of supporting PDF viewers. It is independent from other attributes like :attr:`Annot.flags`.
 
-      :arg int xref: :data:`xref` of an optional contents group (OCG). If zero, any previous enty will be removed. An exception occurs if the xref does not point to a valid PDF object.
+      :arg int xref: the :data:`xref` of an optional contents group (OCG or OCMD). Any previous xref will be overwritten. If zero, a previous entry will be removed. An exception occurs if the xref is not zero and does not point to a valid PDF object.
 
-   .. method:: getOC()
+      .. note:: This does **not require executing** :meth:`Annot.update` to take effect.
 
-      Return the :data:`xref` of an optional content group, or zero if there is none.
+   .. method:: get_oc()
+
+      Return the :data:`xref` of an optional content object, or zero if there is none.
 
       :returns: zero or the xref of an OCG (or OCMD).
 
-   .. method:: setOpacity(value)
+
+   .. method:: set_open(value)
+
+      *(New in v1.18.4)*
+
+      Set the annotation's Popup annotation to open or closed -- **or** the annotation itself, if its type is 'Text' ("sticky note").
+
+      :arg bool value: the desired open state.
+
+
+   .. method:: set_popup(rect)
+
+      *(New in v1.18.4)*
+
+      Create a Popup annotation for the annotation and specify its rectangle. If the Popup already exists, only its rectangle is updated.
+
+      :arg rect_like rect: the desired rectangle.
+
+
+
+   .. method:: set_opacity(value)
 
       Set the annotation's transparency. Opacity can also be set in :meth:`Annot.update`.
 
@@ -165,30 +196,32 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       .. image:: images/img-opacity.jpg
 
-   .. method:: blendMode()
+   .. attribute:: blendmode
 
-      *(New in v1.16.14)* Return the annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations.
+      *(New in v1.18.4)*
+
+      The annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations.
 
       :rtype: str
       :returns: the blend mode or *None*.
 
          >>> annot=page.firstAnnot
-         >>> annot.blendMode()
+         >>> annot.blendmode
          'Multiply'
 
 
-   .. method:: setBlendMode(blend_mode)
+   .. method:: set_blendmode(blendmode)
 
       *(New in v1.16.14)* Set the annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations. The blend mode can also be set in :meth:`Annot.update`.
 
-      :arg str blend_mode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. The best way to **remove** a special blend mode is choosing ``PDF_BM_Normal``.
+      :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use ``PDF_BM_Normal`` to **remove** a blend mode.
 
-         >>> annot.setBlendMode(fitz.PDF_BM_Multiply)
+         >>> annot.set_blendmode(fitz.PDF_BM_Multiply)
          >>> annot.update()
          >>> # or in one statement:
          >>> annot.update(blend_mode=fitz.PDF_BM_Multiply, ...)
 
-   .. method:: setName(name)
+   .. method:: set_name(name)
 
       *(New in version 1.16.0)* Change the name field of any annotation type. For 'FileAttachment' and 'Text' annotations, this is the icon name, for 'Stamp' annotations the text in the stamp. The visual result (if any) depends on your PDF viewer. See also :ref:`mupdficons`.
 
@@ -196,7 +229,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after "STAMP_"), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using fontsize 20 must not exceed 190 pixels. So please make sure that the following inequality is true: ``fitz.getTextlength(text, fontname="tibo", fontsize=20) <= 190``.
 
-   .. method:: setRect(rect)
+   .. method:: set_rect(rect)
 
       Change the rectangle of an annotation. The annotation can be moved around and both sides of the rectangle can be independently scaled. However, the annotation appearance will never get rotated, flipped or sheared.
 
@@ -205,7 +238,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       .. note:: You **need not** invoke :meth:`Annot.update` for activation of the effect.
 
 
-   .. method:: setRotation(angle)
+   .. method:: set_rotation(angle)
 
       Set the rotation of an annotation. This rotates the annotation rectangle around its center point. Then a **new annotation rectangle** is calculated from the resulting quad.
 
@@ -217,7 +250,7 @@ There is a parent-child relationship between an annotation and its page. If the 
         * Otherwise, only the following :ref:`AnnotationTypes` can be rotated: 'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', 'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op.
 
 
-   .. method:: setBorder(border=None, width=0, style=None, dashes=None)
+   .. method:: set_border(border=None, width=0, style=None, dashes=None)
 
       PDF only: Change border width and dashing properties.
 
@@ -229,13 +262,13 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg str style: see above.
       :arg sequence dashes: see above.
 
-   .. method:: setFlags(flags)
+   .. method:: set_flags(flags)
 
       Changes the annotation flags. Use the *|* operator to combine several.
 
       :arg int flags: an integer specifying the required flags.
 
-   .. method:: setColors(colors=None, stroke=None, fill=None)
+   .. method:: set_colors(colors=None, stroke=None, fill=None)
 
       Changes the "stroke" and "fill" colors for supported annotation types.
 
@@ -266,10 +299,11 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       You can safely omit this method **only** for the following changes:
 
-         * :meth:`setRect`
-         * :meth:`setFlags`
-         * :meth:`fileUpd`
-         * :meth:`setInfo` (except any changes to *"content"*)
+         * :meth:`set_rect`
+         * :meth:`set_flags`
+         * :meth:`set_oc`
+         * :meth:`update_file`
+         * :meth:`set_info` (except any changes to *"content"*)
 
       All arguments are optional. *(Changed in v1.16.14)* Blend mode and opacity are applicable to **all annotation types**. The other arguments are mostly special use, as described below.
 
@@ -291,14 +325,14 @@ There is a parent-child relationship between an annotation and its page. If the 
       :rtype: bool
 
 
-   .. method:: fileInfo()
+   .. method:: file_info()
 
       Basic information of the annot's attached file.
 
       :rtype: dict
       :returns: a dictionary with keys *filename*, *ufilename*, *desc* (description), *size* (uncompressed file size), *length* (compressed length) for FileAttachment annot types, else *None*.
 
-   .. method:: fileGet()
+   .. method:: get_file()
 
       Returns attached file content.
 
@@ -306,12 +340,12 @@ There is a parent-child relationship between an annotation and its page. If the 
       :returns: the content of the attached file.
 
    .. index::
-      pair: buffer; fileUpd
-      pair: filename; fileUpd
-      pair: ufilename; fileUpd
-      pair: desc; fileUpd
+      pair: buffer; update_file
+      pair: filename; update_file
+      pair: ufilename; update_file
+      pair: desc; update_file
 
-   .. method:: fileUpd(buffer=None, filename=None, ufilename=None, desc=None)
+   .. method:: update_file(buffer=None, filename=None, ufilename=None, desc=None)
 
       Updates the content of an attached file. All arguments are optional. No arguments lead to a no-op.
 
@@ -325,12 +359,12 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str desc: new description of the file content.
 
-   .. method:: soundGet()
+   .. method:: get_sound()
 
       Return the embedded sound of an audio annotation.
 
       :rtype: dict
-      :returns: the sound audio file and accompanying properties. These are the possible dictionary keys, of which "rate" and "stream" are always present.
+      :returns: the sound audio file and accompanying properties. These are the possible dictionary keys, of which only "rate" and "stream" are always present.
 
         =========== =======================================================
         Key         Description
@@ -392,11 +426,8 @@ There is a parent-child relationship between an annotation and its page. If the 
       * *title* -- a string containing the title of the annotation pop-up window. By convention, this is used for the **annotation author**.
 
       * *creationDate* -- creation timestamp.
-
       * *modDate* -- last modified timestamp.
-
       * *subject* -- subject.
-
       * *id* -- *(new in version 1.16.10)* a unique identification of the annotation. This is taken from PDF key */NM*. Annotations added by PyMuPDF will have a unique name, which appears here.
 
       :rtype: dict
@@ -408,7 +439,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: int
 
-   .. attribute:: lineEnds
+   .. attribute:: line_ends
 
       A pair of integers specifying start and end symbol of annotations types 'FreeText', 'Line', 'PolyLine', and 'Polygon'. *None* if not applicable. For possible values and descriptions in this list, see the :ref:`AdobeManual`, table 8.27 on page 630.
 
@@ -439,6 +470,30 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: int
 
+   .. attribute:: popup_xref
+
+      The PDF :data:`xref` of the associated Popup annotation. Zero if non-existent.
+
+      :rtype: int
+
+   .. attribute:: has_popup
+
+      Whether the annotation has a Popup annotation.
+
+      :rtype: bool
+
+   .. attribute:: is_open
+
+      Whether the annotation's Popup is open -- **or** the annotation itself ('Text' annotations only).
+
+      :rtype: bool
+
+   .. attribute:: popup_rect
+
+      The rectangle of the associated Popup annotation. Infinite rectangle if non-existent.
+
+      :rtype: :ref:`Rect`
+
    .. attribute:: border
 
       A dictionary containing border characteristics. Empty if no border information exists. The following keys may be present:
@@ -468,21 +523,21 @@ Change the graphical image of an annotation. Also update the "author" and the te
  doc = fitz.open("circle-in.pdf")
  page = doc[0]                          # page 0
  annot = page.firstAnnot                # get the annotation
- annot.setBorder({"dashes": [3]})       # set dashes to "3 on, 3 off ..."
+ annot.set_border(dashes=[3])           # set dashes to "3 on, 3 off ..."
 
  # set stroke and fill color to some blue
- annot.setColors({"stroke":(0, 0, 1), "fill":(0.75, 0.8, 0.95)})
+ annot.set_colors({"stroke":(0, 0, 1), "fill":(0.75, 0.8, 0.95)})
  info = annot.info                      # get info dict
  info["title"] = "Jorj X. McKie"        # set author
 
  # text in popup window ...
  info["content"] = "I changed border and colors and enlarged the image by 20%."
  info["subject"] = "Demonstration of PyMuPDF"     # some PDF viewers also show this
- annot.setInfo(info)                    # update info dict
+ annot.set_info(info)                    # update info dict
  r = annot.rect                         # take annot rect
  r.x1 = r.x0 + r.width  * 1.2           # new location has same top-left
  r.y1 = r.y0 + r.height * 1.2           # but 20% longer sides
- annot.setRect(r)                       # update rectangle
+ annot.set_rect(r)                       # update rectangle
  annot.update()                         # update the annot's appearance
  doc.save("circle-out.pdf")             # save
 

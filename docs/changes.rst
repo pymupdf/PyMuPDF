@@ -1,13 +1,30 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.4
+---------------------------
+This version adds several features to support PDF Optional Content. Among other things, this includes OCMDs (Optional Content Membership Dictionaries) with the full scope of *"visibility expressions"* (PDF key ``/VE``), text insertions (including the :ref:`TextWriter` class) and drawings.
+
+* **Fixed** issue `#724 <https://github.com/pymupdf/PyMuPDF/issues/724>`_. Empty values are no longer stored in the PDF /Info metadata dictionary.
+* **Added** new methods :meth:`Document.set_oc` and :meth:`Document.get_oc` to set or get optional content references for **existing** image and form XObjects. These methods are similar to the same-named methods of :ref:`Annot`.
+* **Added** :meth:`Document.set_ocmd`, :meth:`Document.get_ocmd` for handling OCMDs.
+* **Added** **Optional Content** support for text insertion and drawing.
+* **Added** new method :meth:`Page.deleteWidget`, which deletes a form field from a page. This is analogous to deleting annotations.
+* **Added** support for Popup annotations. This includes defining the Popup rectangle and setting the Popup to open or closed. Methods / attributes :meth:`Annot.set_popup`, :meth:`Annot.set_open`, :attr:`Annot.has_popup`, :attr:`Annot.is_open`, :attr:`Annot.popup_rect`, :attr:`Annot.popup_xref`.
+
+Other changes:
+
+* The **naming of methods and attributes** in PyMuPDF is far from being satisfactory: we have *CamelCases*, *mixedCases* and *lower_case_with_underscores* all over the place. With the :ref:`Annot` as the first candidate, we have started an activity to clean this up step by step, converting to lower case with underscores for methods and attributes while keeping UPPERCASE for the constants.
+
+   - Old names will remain available to prevent code breaks, but they will no longer be mentioned in the documentation.
+   - New methods and attributes of all classes will be named according to the new standard.
+
 Changes in Version 1.18.3
 ---------------------------
 As a major new feature, this version introduces support for PDF's **Optional Content** concept.
 
 * **Fixed** issue `#714 <https://github.com/pymupdf/PyMuPDF/issues/714>`_.
 * **Fixed** issue `#711 <https://github.com/pymupdf/PyMuPDF/issues/711>`_.
-
 * **Fixed** issue `#707 <https://github.com/pymupdf/PyMuPDF/issues/707>`_: if a PDF user password is supplied but no owner password is supplied nor present, then the user password is also used as the owner password.
 * **Fixed** ``expand`` and ``deflate`` parameters of methods :meth:`Document.save` and :meth:`Document.write`. Individual image and font compression should now finally work. Addresses issue `#713 <https://github.com/pymupdf/PyMuPDF/issues/713>`_.
 * **Added** a support of PDF optional content. This includes several new :ref:`Document` methods for inquiring and setting optional content status and adding optional content configurations and groups. In addition, images, form XObjects and annotations now can be bound to optional content specifications. **Resolved** issue `#709 <https://github.com/pymupdf/PyMuPDF/issues/709>`_.

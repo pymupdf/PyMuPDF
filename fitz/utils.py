@@ -4,7 +4,7 @@ import io
 import math
 import os
 import warnings
-
+import json
 from fitz import *
 
 
@@ -22,6 +22,7 @@ def writeText(
     overlay=True,
     keep_proportion=True,
     rotate=0,
+    oc=0,
 ):
     """Write the text of one or TextWriter objects.
 
@@ -31,6 +32,7 @@ def writeText(
         overlay: put in foreground or background.
         keep_proportion: maintain aspect ratio of rectangle sides.
         rotate: arbitrary rotation angle.
+        oc: the xref of an optional content object
     """
     if not writers:
         raise ValueError("need at least one TextWriter")
@@ -56,6 +58,7 @@ def writeText(
         keep_proportion=keep_proportion,
         rotate=rotate,
         clip=clip,
+        oc=oc,
     )
     textdoc = None
     tpage = None
@@ -464,9 +467,9 @@ def getTextSelection(page, p1, p2, clip=None):
 
 
 def getText(page, option="text", clip=None, flags=None):
-    """Extract a document page's text.
+    """Extract text from a page or an annotation.
 
-    This is a unifying wrapper for various methods of Page / TextPage classes.
+    This is a unifying wrapper for various methods of the TextPage class.
 
     Args:
         option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
@@ -474,7 +477,7 @@ def getText(page, option="text", clip=None, flags=None):
         flags: bitfield to e.g. exclude images.
 
     Returns:
-        the output of Page methods getTextWords / getTextBlocks or TextPage
+        the output of methods getTextWords / getTextBlocks or TextPage
         methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT,
         extractXHTML or etractXML respectively.
         Default and misspelling choice is "text".
@@ -823,41 +826,39 @@ def getRectArea(*args):
 
 
 def setMetadata(doc, m):
-    """Set a PDF's metadata (/Info dictionary)\nm: dictionary like doc.metadata'."""
+    """Set PDF /Info object.
+
+    Args:
+        m: a dictionary like doc.metadata.
+    """
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("document closed or encrypted")
     if type(m) is not dict:
-        raise ValueError("arg2 must be a dictionary")
+        raise ValueError("bad metadata argument")
+    keymap = {
+        "author": "/Author",
+        "producer": "/Producer",
+        "creator": "/Creator",
+        "title": "/Title",
+        "format": None,
+        "encryption": None,
+        "creationDate": "/CreationDate",
+        "modDate": "/ModDate",
+        "subject": "/Subject",
+        "keywords": "/Keywords",
+        "trapped": "/Trapped",
+    }
+    valid_keys = set(keymap.keys())
+    diff_set = set(m.keys()).difference(valid_keys)
+    if diff_set != set():
+        msg = "bad dict key(s): %s" % diff_set
+        raise ValueError(msg)
+
+    d = "<<"
     for k in m.keys():
-        if not k in (
-            "author",
-            "producer",
-            "creator",
-            "title",
-            "format",
-            "encryption",
-            "creationDate",
-            "modDate",
-            "subject",
-            "keywords",
-        ):
-            raise ValueError("invalid dictionary key: " + k)
-    d = "<</Author"
-    d += getPDFstr(m.get("author", "none"))
-    d += "/CreationDate"
-    d += getPDFstr(m.get("creationDate", "none"))
-    d += "/Creator"
-    d += getPDFstr(m.get("creator", "none"))
-    d += "/Keywords"
-    d += getPDFstr(m.get("keywords", "none"))
-    d += "/ModDate"
-    d += getPDFstr(m.get("modDate", "none"))
-    d += "/Producer"
-    d += getPDFstr(m.get("producer", "none"))
-    d += "/Subject"
-    d += getPDFstr(m.get("subject", "none"))
-    d += "/Title"
-    d += getPDFstr(m.get("title", "none"))
+        if m[k] and keymap[k] and m[k] != "none":
+            x = m[k] if m[k].startswith("/") else getPDFstr(m[k])
+            d += keymap[k] + x
     d += ">>"
     doc._setMetadata(d)
     doc.initData()
@@ -1248,6 +1249,22 @@ def getLinkText(page, lnk):
     return annot
 
 
+def deleteWidget(page, widget):
+    """Delete widget from page and return the next one."""
+    CheckParent(page)
+    annot = getattr(widget, "_annot", None)
+    if annot is None:
+        raise ValueError("bad type: widget")
+    nextwidget = widget.next
+    page.deleteAnnot(annot)
+    widget._annot.__del__()
+    widget._annot.parent = None
+    keylist = list(widget.__dict__.keys())
+    for key in keylist:
+        del widget.__dict__[key]
+    return nextwidget
+
+
 def updateLink(page, lnk):
     """ Update a link on the current page. """
     CheckParent(page)
@@ -1290,6 +1307,7 @@ def insertTextbox(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Insert text into a given rectangle.
 
@@ -1329,6 +1347,7 @@ def insertTextbox(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     if rc >= 0:
         img.commit(overlay)
@@ -1353,6 +1372,7 @@ def insertText(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
 
     img = page.newShape()
@@ -1372,6 +1392,7 @@ def insertText(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     if rc >= 0:
         img.commit(overlay)
@@ -1428,6 +1449,7 @@ def drawLine(
     morph=None,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a line from point p1 to point p2."""
     img = page.newShape()
@@ -1442,6 +1464,7 @@ def drawLine(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1462,6 +1485,7 @@ def drawSquiggle(
     morph=None,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a squiggly line from point p1 to point p2."""
     img = page.newShape()
@@ -1476,6 +1500,7 @@ def drawSquiggle(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1496,6 +1521,7 @@ def drawZigzag(
     morph=None,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a zigzag line from point p1 to point p2."""
     img = page.newShape()
@@ -1510,6 +1536,7 @@ def drawZigzag(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1529,6 +1556,7 @@ def drawRect(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a rectangle."""
     img = page.newShape()
@@ -1543,6 +1571,7 @@ def drawRect(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1562,6 +1591,7 @@ def drawQuad(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a quadrilateral."""
     img = page.newShape()
@@ -1576,6 +1606,7 @@ def drawQuad(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1596,6 +1627,7 @@ def drawPolyline(
     closePath=False,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw multiple connected line segments."""
     img = page.newShape()
@@ -1611,6 +1643,7 @@ def drawPolyline(
         closePath=closePath,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1631,6 +1664,7 @@ def drawCircle(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a circle given its center and radius."""
     img = page.newShape()
@@ -1645,6 +1679,7 @@ def drawCircle(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
     return Q
@@ -1663,6 +1698,7 @@ def drawOval(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw an oval given its containing rectangle or quad."""
     img = page.newShape()
@@ -1677,6 +1713,7 @@ def drawOval(
         morph=morph,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1699,6 +1736,7 @@ def drawCurve(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3."""
     img = page.newShape()
@@ -1714,6 +1752,7 @@ def drawCurve(
         closePath=closePath,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1737,6 +1776,7 @@ def drawBezier(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3."""
     img = page.newShape()
@@ -1752,6 +1792,7 @@ def drawBezier(
         closePath=closePath,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -1775,6 +1816,7 @@ def drawSector(
     overlay=True,
     stroke_opacity=1,
     fill_opacity=1,
+    oc=0,
 ):
     """Draw a circle sector given circle center, one arc end point and the angle of the arc.
 
@@ -1797,6 +1839,7 @@ def drawSector(
         closePath=closePath,
         stroke_opacity=stroke_opacity,
         fill_opacity=fill_opacity,
+        oc=oc,
     )
     img.commit(overlay)
 
@@ -2833,6 +2876,7 @@ class Shape(object):
         morph=None,
         stroke_opacity=1,
         fill_opacity=1,
+        oc=0,
     ):
 
         # ensure 'text' is a list of strings, worth dealing with
@@ -2896,7 +2940,7 @@ class Shape(object):
             rot += 360
         rot = rot % 360  # text rotate = 0, 90, 270, 180
 
-        templ1 = "\nq\n%sBT\n%s1 0 0 1 %g %g Tm /%s %g Tf "
+        templ1 = "\nq\n%s%sBT\n%s1 0 0 1 %g %g Tm /%s %g Tf "
         templ2 = "TJ\n0 -%g TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"  # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"  # rotates 90 deg clockwise
@@ -2937,12 +2981,19 @@ class Shape(object):
             space = abs(point.y + self.y)
             headroom = height - point.y - self.y
 
+        optcont = self.page._get_optional_content(oc)
+        if optcont != None:
+            bdc = "/OC /%s BDC\n" % optcont
+            emc = "EMC\n"
+        else:
+            bdc = emc = ""
+
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
         if alpha == None:
             alpha = ""
         else:
             alpha = "/%s gs\n" % alpha
-        nres = templ1 % (alpha, cm, left, top, fname, fontsize)
+        nres = templ1 % (bdc, alpha, cm, left, top, fname, fontsize)
         if render_mode > 0:
             nres += "%i Tr " % render_mode
         if border_width != 1:
@@ -2967,7 +3018,7 @@ class Shape(object):
             space -= lheight
             nlines += 1
 
-        nres += " ET Q\n"
+        nres += " ET\n%sQ\n" % emc
 
         # =========================================================================
         #   end of text insertion
@@ -2998,6 +3049,7 @@ class Shape(object):
         morph=None,
         stroke_opacity=1,
         fill_opacity=1,
+        oc=0,
     ):
         """Insert text into a given rectangle.
 
@@ -3027,6 +3079,13 @@ class Shape(object):
         if fill is None and render_mode == 0:  # ensure fill color for 0 Tr
             fill = color
             fill_str = ColorCode(color, "f")
+
+        optcont = self.page._get_optional_content(oc)
+        if optcont != None:
+            bdc = "/OC /%s BDC\n" % optcont
+            emc = "EMC\n"
+        else:
+            bdc = emc = ""
 
         # determine opacity / transparency
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
@@ -3211,7 +3270,7 @@ class Shape(object):
         more = abs(more)
         if more < EPSILON:
             more = 0  # don't bother with epsilons
-        nres = "\nq\n%sBT\n" % alpha + cm  # initialize output buffer
+        nres = "\nq\n%s%sBT\n" % (bdc, alpha) + cm  # initialize output buffer
         templ = "1 0 0 1 %g %g Tm /%s %g Tf "
         # center, right, justify: output each line with its own specifics
         spacing = 0
@@ -3260,7 +3319,7 @@ class Shape(object):
                 nres += "%g w " % border_width
             nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
 
-        nres += "ET Q\n"
+        nres += "ET\n%sQ\n" % emc
 
         self.text_cont += nres
         self.updateRect(rect)
@@ -3279,13 +3338,14 @@ class Shape(object):
         closePath=True,
         fill_opacity=1,
         stroke_opacity=1,
+        oc=0,
     ):
         """Finish the current drawing segment.
 
         Notes:
-            Apply stroke and fill colors, dashes, line style and width, or
-            morphing. Also determines whether any open path should be closed
-            by a connecting line to its start point.
+            Apply colors, opacity, dashes, line style and width, or
+            morphing. Also whether to close the path
+            by connecting last to first point.
         """
         if self.draw_cont == "":  # treat empty contents as no-op
             return
@@ -3297,12 +3357,19 @@ class Shape(object):
         color_str = ColorCode(color, "c")  # ensure proper color string
         fill_str = ColorCode(fill, "f")  # ensure proper fill string
 
+        optcont = self.page._get_optional_content(oc)
+        if optcont is not None:
+            self.draw_cont = "/OC /%s BDC\n" % optcont + self.draw_cont
+            emc = "EMC\n"
+        else:
+            emc = ""
+
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
         if alpha != None:
             self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
 
         if width != 1:
-            self.draw_cont = "%g w\n" % width + self.draw_cont
+            self.draw_cont += "%g w\n" % width
 
         if lineCap != 0:
             self.draw_cont = "%i J\n" % lineCap + self.draw_cont
@@ -3334,6 +3401,7 @@ class Shape(object):
         else:
             self.draw_cont += "S\n"
 
+        self.draw_cont += emc
         if CheckMorph(morph):
             m1 = Matrix(
                 1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
@@ -3769,3 +3837,129 @@ def fillTextbox(
         line_ctr += 1  # line counter
 
     return (idx, end_idx)  # return count of processed words, total words
+
+
+# ------------------------------------------------------------------------
+# Optional Content functions
+# ------------------------------------------------------------------------
+def set_ocmd(doc, xref=0, ocgs=None, policy=None, ve=None):
+    """Create or update an OCMD object in a PDF document.
+
+    Args:
+        xref: (int) 0 for creating a new object, otherwise update existing one.
+        ocgs: (list) OCG xref numbers, which shall be subject to 'policy'.
+        policy: one of 'AllOn', 'AllOff', 'AnyOn', 'AnyOff' (any casing).
+        ve: (list) visibility expression. Use instead of 'ocgs' with 'policy'.
+
+    Returns:
+        Xref of the created or updated OCMD.
+    """
+
+    all_ocgs = doc.getOCGs().keys()
+
+    def ve_maker(ve):
+        if len(ve) < 2:
+            raise ValueError("bad format: less than two items, %s" % ve)
+        if ve[0].lower() not in ("and", "or", "not"):
+            raise ValueError("bad operand: %s" % ve[0])
+        if ve[0].lower() == "not" and len(ve) != 2:
+            raise ValueError("bad format: require one operand, %s" % ve)
+        item = "[/%s" % ve[0].title()
+        for x in ve[1:]:
+            if type(x) is int:
+                if x not in all_ocgs:
+                    raise ValueError("bad OCG %i" % x)
+                item += " %i 0 R" % x
+            else:
+                item += " %s" % ve_maker(x)
+        item += "]"
+        return item
+
+    text = "<</Type/OCMD"
+    if ocgs and type(ocgs) in (list, tuple):
+        ocgs_str = "/OCGs["
+        for item in ocgs:
+            if item not in all_ocgs:
+                raise ValueError("bad OCG %i" % item)
+            ocgs_str += "%i 0 R " % item
+        ocgs_str[-1] = "]"
+        text += ocgs_str
+    if not policy:
+        policy = "/P/AnyOn"
+    else:
+        policy = policy.lower()
+        pols = {
+            "anyon": "AnyOn",
+            "allon": "AllOn",
+            "anyoff": "AnyOff",
+            "alloff": "AllOff",
+        }
+        if policy not in ("anyon", "allon", "anyoff", "alloff"):
+            raise ValueError("bad policy: %s" % policy)
+        text += "/P/%s" % pols[policy]
+    if ve:
+        text += "/VE%s" % ve_maker(ve)
+    text += ">>"
+    if xref == 0:
+        xref = doc._getNewXref()
+    else:
+        check = doc.xrefObject(xref, compressed=True)
+        if "/Type/OCMD" not in check:
+            raise ValueError("bad xref or not an OCMD")
+    doc.updateObject(xref, text)
+    return xref
+
+
+def get_ocmd(doc, xref):
+    """Return the definition of an OCMD (optional content membership dictionary).
+
+    Recognizes PDF dict keys /OCGs (array of OCGs), /P (policy string) and /VE
+    (visibility expression, PDF array). Via string manipulytion, this
+    information is converted to a Python dictionary with the keys "ocgs",
+    "policy" and "ve".
+    """
+
+    if xref not in range(doc.xrefLength()):
+        raise ValueError("bad xref")
+    text = doc.xrefObject(xref, compressed=True)
+    if "/Type/OCMD" not in text:
+        raise ValueError("bad object type")
+    textlen = len(text)
+    p0 = text.find("/OCGs[")
+    p1 = text.find("]", p0)
+    if p0 < 0 or p1 < 0:  # no OCGs found
+        ocgs = None
+    else:
+        ocgs = text[p0 + 6 : p1].replace("0 R", " ").split()
+        ocgs = list(map(int, ocgs))
+    p0 = text.find("/P/")
+    p1 = text.find("ff", p0)
+    if p1 < 0:
+        p1 = text.find("on", p0)
+    if p0 < 0 or p1 < 0:  # no policy found
+        policy = None
+    else:
+        policy = text[p0 + 3 : p1 + 2]
+    p0 = text.find("/VE[")
+    if p0 < 0:  # no visibility expression found
+        ve = None
+    else:
+        lp = rp = 0  # find end of /VE by finding last ']'.
+        p1 = p0
+        while lp < 1 or lp != rp:
+            p1 += 1
+            if not p1 < textlen:
+                raise ValueError("bad object at xref")
+            if text[p1] == "[":
+                lp += 1
+            if text[p1] == "]":
+                rp += 1
+        ve = text[p0 + 3 : p1 + 1]  # the PDF /VE array
+        ve = (
+            ve.replace("/And", '"and",')
+            .replace("/Not", '"not",')
+            .replace("/Or", '"or",')
+        )
+        ve = ve.replace(" 0 R]", "]").replace(" 0 R", ",").replace("][", "],[")
+        ve = json.loads(ve)
+    return {"xref": xref, "ocgs": ocgs, "policy": policy, "ve": ve}

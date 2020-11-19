@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.18.3
+Version: 1.18.4
 Author: Jorj McKie
 Author-email: jorj.x.mckie@outlook.de
 Maintainer: Jorj McKie
@@ -9,7 +9,7 @@ Home-page: https://github.com/pymupdf/PyMuPDF
 Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the PDF rendering library MuPDF
 Description:
-        Release date: November 9, 2020
+        Release date: November 30, 2020
         
         Authors
         =======
@@ -20,7 +20,7 @@ Description:
         Introduction
         ============
         
-        This is **version 1.18.3 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+        This is **version 1.18.4 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
         
         MuPDF can access files in PDF, XPS, OpenXPS, epub, comic and fiction book formats, and it is known for both, its top performance and high rendering quality.
         
@@ -40,15 +40,15 @@ Description:
         
         For all document types you can render pages in raster (PNG) or vector (SVG) formats, extract text and access meta information, links, annotations and bookmarks, as well as decrypt the document. For PDF files, these objects can also be created, modified or deleted. Plus you can rotate, re-arrange, duplicate, create, or delete pages and join or split documents.
         
-        Since version 1.16.0, PDF password protection is **fully supported**: owner and user passwords, encryption methods and permission levels can be set, changed or removed.
+        PDF password protection is **fully supported**: owner and user passwords, encryption methods and permission levels can be set, changed or removed.
         
-        Specifically for PDF files, PyMuPDF provides update access to low-level structure information, supports handling of embedded files and modification of page contents (like inserting images, fonts, text, annotations and drawings).
+        Specifically for PDF files, PyMuPDF provides update access to low-level structure information, supports **optional content**, handling of **embedded files** and modification of page contents (like inserting images, fonts, text, annotations and drawings).
         
         Other features include embedding vector images (SVG, PDF) such as logos or watermarks, joining or splitting single PDF pages (including things like posterizing and 2-up / 4-up processing).
         
         You can also create **PDF Form fields** with support for text, checkbox, listbox and combobox widgets.
         
-        Our home page provides many examples and How-Tos for all of this. At a minimum, read the tutorial and the the recipes sections of our documentation.
+        Our home page provides many examples and How-Tos for all of this. At a minimum, read the `tutorial <https://pymupdf.readthedocs.io/en/latest/tutorial.html>`_ and the the `recipes <https://pymupdf.readthedocs.io/en/latest/faq.html>`_ sections of our documentation.
         
         Written using **Sphinx**, documentation is available here:
         

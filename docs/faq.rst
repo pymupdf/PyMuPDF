@@ -1879,12 +1879,15 @@ Solutions
 Unfortunately there is not much you can do in most of these cases.
 
 1. Stay with the same software for **creating and changing** an annotation.
-2. When using PyMuPDF to change an "alien" annotation, try to **avoid** :meth:`Annot.update`. The following methods **can be used without it** so that the original appearance should be maintained:
+2. When using PyMuPDF to change an "alien" annotation, try to **avoid** :meth:`Annot.update`. The following methods **can be used without it,** so that the original appearance should be maintained:
 
-  * :meth:`Annot.setRect` (location changes)
-  * :meth:`Annot.setFlags` (annotation behaviour)
-  * :meth:`Annot.setInfo` (meta information, except changes to *content*)
-  * :meth:`Annot.fileUpd` (file attachment changes)
+  * :meth:`Annot.set_rect` (location changes)
+  * :meth:`Annot.set_flags` (annotation behaviour)
+  * :meth:`Annot.set_info` (meta information, except changes to *content*)
+  * :meth:`Annot.set_popup` (create popup or change its rect)
+  * :meth:`Annot.set_optional_content` (add / remove reference to optional content information)
+  * :meth:`Annot.set_open`
+  * :meth:`Annot.update_file` (file attachment changes)
 
 Misplaced Item Insertions on PDF Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

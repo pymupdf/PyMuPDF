@@ -12,10 +12,10 @@ Yet others are handy, general-purpose utilities.
 **Function**                         **Short Description**
 ==================================== ==============================================================
 :meth:`Annot._cleanContents`         PDF only: clean the annot's :data:`contents` objects
-:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
-:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
-:attr:`Annot.APNMattrix`             PDF only: the matrix of the appearance object
-:attr:`Annot.APNBBox`                PDF only: bbox of the appearance object
+:meth:`Annot.set_apn_matrix`         PDF only: set the matrix of the appearance object
+:meth:`Annot.set_apn_bbox`           PDF only: set the bbox of the appearance object
+:attr:`Annot.apn_matrix`             PDF only: the matrix of the appearance object
+:attr:`Annot.apn_bbox`               PDF only: bbox of the appearance object
 :meth:`ConversionHeader`             return header string for *getText* methods
 :meth:`ConversionTrailer`            return trailer string for *getText* methods
 :meth:`Document._delXmlMetadata`     PDF only: remove XML metadata

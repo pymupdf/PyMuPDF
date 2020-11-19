@@ -230,8 +230,9 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: rotate; insertText
       pair: stroke_opacity; insertText
       pair: fill_opacity; insertText
+      pair: oc; insertText
 
-   .. method:: insertText(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1)
+   .. method:: insertText(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       Insert text lines start at *point*.
 
@@ -246,6 +247,8 @@ Several draw methods can be executed in a row and each one of them will contribu
       :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent). Use this value to control transparency of the text color. Stroke opacity **only** affects the border line of characters.
 
       :arg int rotate: determines whether to rotate the text. Acceptable values are multiples of 90 degrees. Default is 0 (no rotation), meaning horizontal text lines oriented from left to right. 180 means text is shown upside down from **right to left**. 90 means anti-clockwise rotation, text running **upwards**. 270 (or -90) means clockwise rotation, text running **downwards**. In any case, *point* specifies the bottom-left coordinates of the first character's rectangle. Multiple lines, if present, always follow the reading direction established by this parameter. So line 2 is located **above** line 1 in case of *rotate = 180*, etc.
+
+      :arg int oc: *(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or :data:`OCMD` to make this text conditionally displayable.
 
       :rtype: int
       :returns: number of lines inserted.
@@ -265,8 +268,9 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: morph; insertTextbox
       pair: render_mode; insertTextbox
       pair: rotate; insertTextbox
+      pair: oc; insertTextbox
 
-   .. method:: insertTextbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1)
+   .. method:: insertTextbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Insert text into the specified rectangle. The text will be split into lines and words and then filled into the available space, starting from one of the four rectangle corners, which depends on *rotate*. Line feeds will be respected as well as multiple spaces will be.
 
@@ -282,6 +286,8 @@ Several draw methods can be executed in a row and each one of them will contribu
       :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent). Use this value to control transparency of the text color. Stroke opacity **only** affects the border line of characters.
 
       :arg int rotate: requests text to be rotated in the rectangle. This value must be a multiple of 90 degrees. Default is 0 (no rotation). Effectively, four different values are processed: 0, 90, 180 and 270 (= -90), each causing the text to start in a different rectangle corner. Bottom-left is 90, bottom-right is 180, and -90 / 270 is top-right. See the example how text is filled in a rectangle. This argument takes precedence over morphing. See the second example, which shows text first rotated left by 90 degrees and then the whole rectangle rotated clockwise around is lower left corner.
+
+      :arg int oc: *(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or :data:`OCMD` to make this text conditionally displayable.
 
       :rtype: float
       :returns:
@@ -307,8 +313,9 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: width; finish
       pair: stroke_opacity; finish
       pair: fill_opacity; finish
+      pair: oc; finish
 
-   .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1)
+   .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
 
       Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them. This method also supports morphing the resulting compound drawing using a fixpoint :ref:`Point`.
 
@@ -318,6 +325,8 @@ Several draw methods can be executed in a row and each one of them will contribu
       :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent).
 
       :arg bool even_odd: request the **"even-odd rule"** for filling operations. Default is *False*, so that the **"nonzero winding number rule"** is used. These rules are alternative methods to apply the fill color where areas overlap. Only with fairly complex shapes a different behavior is to be expected with these rules. For an in-depth explanation, see :ref:`AdobeManual`, pp. 232 ff. Here is an example to demonstrate the difference.
+
+      :arg int oc: *(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or :data:`OCMD` to make this drawing conditionally displayable.
 
       .. image:: images/img-even-odd.png
 

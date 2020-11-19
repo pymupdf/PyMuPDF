@@ -281,6 +281,64 @@ pdf_annot *JM_create_widget(fz_context *ctx, pdf_document *doc, pdf_page *page, 
 }
 
 
+void
+JM_delete_widget(fz_context *ctx, pdf_page *page, pdf_annot *annot)
+{
+    pdf_document *doc = annot->page->doc;
+    pdf_annot **annotptr;
+    pdf_obj *annot_arr, *obj;
+    int i;
+
+    if (annot == NULL)
+        return;
+
+    // Remove widget from page's list
+    for (annotptr = &page->widgets; *annotptr; annotptr = &(*annotptr)->next) {
+        if (*annotptr == annot)
+            break;
+    }
+
+    // Check whether passed annotation was of this page
+    if (*annotptr == NULL)
+        return;
+
+    *annotptr = pdf_next_widget(gctx, (pdf_widget *) annot);
+
+    // If the removed field was the last in the list adjust the end pointer
+    if (*annotptr == NULL)
+        page->widget_tailp = annotptr;
+
+    annot_arr = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
+    i = pdf_array_find(ctx, annot_arr, annot->obj);
+    if (i >= 0)
+        pdf_array_delete(ctx, annot_arr, i);
+
+    // remove any Popup for the field
+    obj = pdf_dict_get(ctx, annot->obj, PDF_NAME(Popup));
+    if (obj) {
+        i = pdf_array_find(ctx, annot_arr, obj);
+        if (i >= 0)
+            pdf_array_delete(ctx, annot_arr, i);
+    }
+
+    // remove field from AcroForm
+    obj = pdf_dict_getp(ctx, pdf_trailer(ctx, doc), "Root/AcroForm/Fields");
+    if (pdf_is_array(ctx, obj)) {
+        i = pdf_array_find(ctx, obj, annot->obj);
+        if (i >= 0)
+            pdf_array_delete(ctx, obj, i);
+    }
+
+    pdf_drop_annot(ctx, annot);
+    doc->dirty = 1;
+}
+
+
+
+
+
+
+
 // PushButton get state
 //-----------------------------------------------------------------------------
 PyObject *JM_pushbtn_state(fz_context *ctx, pdf_annot *annot)

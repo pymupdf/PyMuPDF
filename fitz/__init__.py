@@ -32,10 +32,14 @@ import fitz.utils
 fitz.open = fitz.Document
 fitz.Document.getToC = fitz.utils.getToC
 fitz.Document.getTOC = fitz.utils.getToC
+fitz.Document.get_toc = fitz.utils.getToC
 fitz.Document.setToC = fitz.utils.setToC
 fitz.Document.setTOC = fitz.utils.setToC
+fitz.Document.set_toc = fitz.utils.setToC
 fitz.Document.setTOC_item = fitz.utils.setTOC_item
+fitz.Document.set_toc_item = fitz.utils.setTOC_item
 fitz.Document.delTOC_item = fitz.utils.delTOC_item
+fitz.Document.del_toc_item = fitz.utils.delTOC_item
 fitz.Document._do_links = fitz.utils.do_links
 fitz.Document.getPagePixmap = fitz.utils.getPagePixmap
 fitz.Document.getPageText = fitz.utils.getPageText
@@ -45,11 +49,14 @@ fitz.Document.newPage = fitz.utils.newPage
 fitz.Document.insertPage = fitz.utils.insertPage
 fitz.Document.getCharWidths = fitz.utils.getCharWidths
 fitz.Document.scrub = fitz.utils.scrub
+fitz.Document.set_ocmd = fitz.utils.set_ocmd
+fitz.Document.get_ocmd = fitz.utils.get_ocmd
 
 # ------------------------------------------------------------------------------
 # Page
 # ------------------------------------------------------------------------------
 fitz.Page.apply_redactions = fitz.utils.apply_redactions
+fitz.Page.deleteWidget = fitz.utils.deleteWidget
 fitz.Page.drawBezier = fitz.utils.drawBezier
 fitz.Page.drawCircle = fitz.utils.drawCircle
 fitz.Page.drawCurve = fitz.utils.drawCurve

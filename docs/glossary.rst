@@ -39,7 +39,7 @@ Glossary
 
 .. data:: catalog
 
-        A central PDF :data:`dictionary` -- also called the "root" -- containing pointers to many other information.
+        A central PDF :data:`dictionary` -- also called the "root" -- containing document-wide parameters and pointers to many other information.
 
 .. data:: contents
 
@@ -118,3 +118,11 @@ Glossary
 .. data:: resolution
 
         Images and :ref:`Pixmap` objects may contain resolution information provided as "dots per inch", dpi, in each direction (horizontal and vertical). When MuPDF reads an image form a file or from a PDF object, it will parse this information and put it in :attr:`Pixmap.xres`, :attr:`Pixmap.yres`, respectively. When it finds not meaningful information in the input (like non-positive values or values exceeding 4800), it will use "sane" defaults instead. The usual default value is 96, but it may also be 72 in some cases (e.g. 72 for JPX images).
+
+.. data:: OCG
+
+        Optional content group -- a :data:`dictionary` object used to control the visibility of other PDF objects like images or annotations. Objects with the same OCG can simultaneously be shown or hidden by setting their OCG to ON of OFF. This can be achieved via the user interface provided by many PDF viewers (Adobe Acrobat), or programmatically.
+
+.. data:: OCMD
+        
+        Optional content membership dictionary -- a :data:`dictionary` object which can be used like an :data:`OCG`: it has a visibility state. The visibility of an OCMD is **computed:** it is a logical expression, which uses the state of one or more OCGs to produce a boolean value. The expression's result is interpreted as ON (true) or OFF (false).

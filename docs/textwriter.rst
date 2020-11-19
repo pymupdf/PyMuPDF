@@ -99,7 +99,7 @@ Using this object entails three steps:
    .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
 
 
-   .. method:: writeText(page, opacity=None, color=None, morph=None, overlay=True)
+   .. method:: writeText(page, opacity=None, color=None, morph=None, overlay=True, oc=0)
 
       Write the TextWriter text to a page.
 
@@ -108,6 +108,7 @@ Using this object entails three steps:
       :arg sequ color: override the value of the TextWriter for this output.
       :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*. 
       :arg bool overlay: put in foreground (default) or background.
+      :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
 
 
    .. attribute:: textRect

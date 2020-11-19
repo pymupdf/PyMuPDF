@@ -23,17 +23,17 @@ For details on **embedded files** refer to Appendix 3.
 ======================================= ==========================================================
 **Method / Attribute**                  **Short Description**
 ======================================= ==========================================================
-:meth:`Document.addLayerConfig`         PDF only: make new optional content configuration
-:meth:`Document.addOCG`                 PDF only: add new optional content group
+:meth:`Document.add_layer_config`       PDF only: make new optional content configuration
+:meth:`Document.add_ocg`                PDF only: add new optional content group
 :meth:`Document.authenticate`           gain access to an encrypted document
 :meth:`Document.can_save_incrementally` check if incremental save is possible
 :meth:`Document.chapterPageCount`       number of pages in chapter
 :meth:`Document.close`                  close the document
 :meth:`Document.convertToPDF`           write a PDF version to memory
 :meth:`Document.copyPage`               PDF only: copy a page reference
+:meth:`Document.del_toc_item`           PDF only: remove a single TOC item
 :meth:`Document.deletePage`             PDF only: delete a page
 :meth:`Document.deletePageRange`        PDF only: delete a page range
-:meth:`Document.delTOC_item`            PDF only: remove a single TOC item
 :meth:`Document.embeddedFileAdd`        PDF only: add a new embedded file from buffer
 :meth:`Document.embeddedFileCount`      PDF only: number of embedded files
 :meth:`Document.embeddedFileDel`        PDF only: delete an embedded file entry
@@ -43,22 +43,23 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.embeddedFileUpd`        PDF only: change an embedded file
 :meth:`Document.findBookmark`           retrieve page location after layouting
 :meth:`Document.fullcopyPage`           PDF only: duplicate a page
-:meth:`Document.getOCGs`                PDF only: info on all optional content groups
-:meth:`Document.getOCStates`            PDF only: lists of OCGs in ON, OFF, RBGroups
-:meth:`Document.setOCStates`            PDF only: mass changing OCG states
+:meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
+:meth:`Document.get_oc_states`          PDF only: lists of OCGs in ON, OFF, RBGroups
+:meth:`Document.get_ocgs`               PDF only: info on all optional content groups
+:meth:`Document.get_ocmd`               PDF only: retrieve definition of an :data:`OCMD`
+:meth:`Document.get_toc`                alias of getToC
 :meth:`Document.getPageFontList`        PDF only: make a list of fonts on a page
 :meth:`Document.getPageImageList`       PDF only: make a list of images on a page
 :meth:`Document.getPagePixmap`          create a pixmap of a page by page number
 :meth:`Document.getPageText`            extract the text of a page by page number
 :meth:`Document.getPageXObjectList`     PDF only: make a list of XObjects on a page
 :meth:`Document.getSigFlags`            PDF only: determine signature state
-:meth:`Document.getTOC`                 alias of previous
 :meth:`Document.getToC`                 create a table of contents
 :meth:`Document.getXmlMetadata`         PDF only: read the XML metadata
 :meth:`Document.insertPage`             PDF only: insert a new page
 :meth:`Document.insertPDF`              PDF only: insert pages from another PDF
-:meth:`Document.layerConfigs`           PDF only: list of optional content configurations
-:meth:`Document.layerUIConfigs`         PDF only: list of optional content intents
+:meth:`Document.layer_configs`          PDF only: list of optional content configurations
+:meth:`Document.layer_ui_configs`       PDF only: list of optional content intents
 :meth:`Document.layout`                 re-paginate the document (if supported)
 :meth:`Document.loadPage`               read a page
 :meth:`Document.makeBookmark`           create a page pointer in reflowable documents
@@ -80,10 +81,13 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.scrub`                  PDF only: remove sensitive data
 :meth:`Document.searchPageFor`          search for a string on a page
 :meth:`Document.select`                 PDF only: select a subset of pages
-:meth:`Document.setLayerConfig`         PDF only: activate optional content layer
+:meth:`Document.set_oc`                 PDF only: attach OCG / OCMD to image / form xobject
+:meth:`Document.set_oc_states`          PDF only: mass changing OCG states
+:meth:`Document.set_ocmd`               PDF only: create or update an :data:`OCMD`
+:meth:`Document.set_toc_item`           PDF only: change a single TOC item
+:meth:`Document.set_toc`                PDF only: alias of setToC
+:meth:`Document.set_layer_ui_config`    PDF only: temporarily set the visibility of OCGs
 :meth:`Document.setMetadata`            PDF only: set the metadata
-:meth:`Document.setTOC_item`            PDF only: change a single TOC item
-:meth:`Document.setTOC`                 PDF only: alias of previous
 :meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
 :meth:`Document.setXmlMetadata`         PDF only: create or update document XML metadata
 :meth:`Document.updateObject`           PDF only: replace object source
@@ -182,17 +186,37 @@ For details on **embedded files** refer to Appendix 3.
           True
           >>> 
 
-    .. method:: layerConfigs()
+    .. method:: get_oc(xref)
+
+      *(New in v1.18.4)*
+
+      Return the cross reference number of an :data:`OCG` or :data:`OCMD` attached to an image or form xobject.
+
+      :arg int xref: the :data:`xref` of an image or form xobject. Valid such cross reference numbers are returned by :meth:`Document.getPageImageList`, resp. :meth:`Document.getPageXObjectList`. For invalid numbers, an exception is raised.
+      :rtype: int
+      :returns: the cross reference number of an optional contents object or zero if there is none.
+
+    .. method:: set_oc(xref, ocxref)
+
+      *(New in v1.18.4)*
+
+      If *xref* represents an image or form xobject, set or remove the cross reference number *ocxref* of an optional contents object.
+
+      :arg int xref: the :data:`xref` of an image or form xobject [#f5]_. Valid such cross reference numbers are returned by :meth:`Document.getPageImageList`, resp. :meth:`Document.getPageXObjectList`. For invalid numbers, an exception is raised.
+      :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
+
+
+    .. method:: layer_configs()
 
       *(New in v1.18.3)*
 
       Show optional layer configurations. There always is a standard one, which is not included in the response.
 
-        >>> for item in doc.layerConfigs: print(item)
+        >>> for item in doc.layer_configs: print(item)
         {'number': 0, 'name': 'my-config', 'creator': ''}
-        >>> # use 'number' as config identifyer in addOCG
+        >>> # use 'number' as config identifyer in add_ocg
 
-    .. method:: addLayerConfig(name, creator=None, on=None)
+    .. method:: add_layer_config(name, creator=None, on=None)
 
       *(New in v1.18.3)*
 
@@ -203,19 +227,19 @@ For details on **embedded files** refer to Appendix 3.
       :arg sequ on: a sequence of OCG :data:`xref` numbers which should be set to ON (visible). All other OCGs will be set to OFF.
 
 
-    .. method:: setLayerConfig(number, as_default=False)
+    .. method:: set-layer-config(number, as_default=False)
 
       *(New in v1.18.3)*
 
       Switch to a document view as defined by the optional layer's configuration number. This is temporary, except if established as default.
 
-      :arg int number: config number as returned by :meth:`Document.layerConfigs`.
+      :arg int number: config number as returned by :meth:`Document.layer_configs`.
       :arg bool as_default: make this the default configuration.
 
       Activates the ON / OFF states of OCGs as defined in this layer. If *as_default=True*, then additionally all layers, including the standard one, are merged and the result is written back to the standard layer, and **all optional layers are deleted**.
 
 
-    .. method:: addOCG(name, config=-1, on=True, intent="View", usage="Artwork")
+    .. method:: add_ocg(name, config=-1, on=True, intent="View", usage="Artwork")
 
       *(New in v1.18.3)*
 
@@ -231,40 +255,97 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note:: Multiple OCGs with identical parameters may be created. This will not cause problems. Garbage option 3 of :meth:`Document.save` will get rid of any duplicates.
 
-    .. method:: getOCStates()
+
+    .. method:: set_ocmd(xref=0, ocgs=None, policy="AnyOn", ve=None)
+
+      *(New in v1.18.4)*
+
+      Create or update an :data:`OCMD` (optional content membership dictionary).
+
+      :arg list ocgs: a sequence of :data:`xref` numbers of existing :data:`OCG` PDF objects.
+      :arg str policy: one of "AnyOn", "AnyOff", "AllOn", "AllOff" (mixed or lower case).
+      :arg int xref: :data:`xref` of an existing OCMD, which should be updated, or 0 for a new OCMD.
+      :arg list ve: a "visibility expression". This is a list of arbitrarily nested other lists -- see explanation below. Use as an alternative to the combination *ocgs* / *policy* if you need to formulate more complex conditions.
+      :rtype: int
+      :returns: :data:`xref` of the OCMD. Use as entry for ``oc`` parameter in supporting objects.
+
+      .. note::
+
+        This object type can be used like an :data:`OCG` to determine the visibility of a PDF object. Its purpose is to **compute a boolean value** from the states of some OCGs. This value is then interpreted as ON (true) or OFF (false).
+        
+        * Using the combination of *ocgs* and *policy*: The possible *policy* values are as follows:
+
+          - AnyOn -- (default) true if at least one OCG is ON.
+          - AnyOff -- true if at least one OCG is OFF.
+          - AllOn -- true if all OCGs are ON.
+          - AllOff -- true if all OCGs are OFF.
+
+          For example assume you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be off): use an OCG for object 1 and an OCMD for object 2. Create the OCMD via ``set_ocmd(ocgs=[xref], policy="AllOff")``, where *xref* is the cross reference number of the OCG.
+
+        * Using the visibility expression *ve*: This is a list of arbitrarily nested other lists. It uses a combination of the logical expressions **"and"**, **"or"**, **"not"**, and the :data:`xref` numbers of one or more existing OCGs. The arguments *ocgs* and *policy* need not be used. The syntax of this parameter is a bit awkward, but quite powerful:
+
+          - Each list, including the top one, must have two or more items. The fist item must be a logical expression.
+          - If the first item is a **"not"**, then the list must have exactly two items.
+          - If the first item is **"and"** or **"or"**, any number of other items may follow.
+          - Items following the logical expression may be either integers or other lists. An *integer* must be the xref of an OCG. A list must conform to the rules layed out so far.
+
+          **Examples:**
+
+          - ``ve=["or", 4, ["not", 5], ["and", 6, 7]]``. This delivers ON if 4 is ON, or 5 is OFF, or 6 and 7 are both ON.
+          - ``ve=["not", xref]`` has the same effect like previously using *ocgs* and *policy*.
+
+          For more details and examples see page 367 of :ref:`AdobeManual`.
+
+
+    .. method:: get_ocmd(xref)
+
+      *(New in v1.18.4)*
+
+      Retrieve the definition of an OCMD (optional content membership dictionary).
+
+      :arg int xref: the :data:`xref` of the OCMD.
+      :rtype: dict
+      :returns: a dictionary with the keys *ocgs*, *policy* and *ve*.
+
+
+    .. method:: get_oc_states(config=-1)
 
       *(New in v1.18.3)*
 
-      List of optional content groups by status. This is a dictionary with lists of cross reference numbers for OCGs that are ON, OFF or in some radio button group (``/RBGroups``).
+      List of optional content groups by status in the specified configuration. This is a dictionary with lists of cross reference numbers for OCGs that occur in the arrays ``/ON``, ``/OFF`` or in some radio button group (``/RBGroups``).
 
-      >>> pprint(doc.getOCStates())
+      :arg int config: the configuration layer (default is the standard config layer).
+
+      >>> pprint(doc.get_oc_states())
       {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
       >>>
 
-    .. method:: setOCStates(config, on=None, off=None, basestate=None, rbgroups=None)
+    .. method:: set_oc_states(config, on=None, off=None, basestate=None, rbgroups=None)
 
       *(New in v1.18.3)*
 
-      Mass changes of optional content groups. **Permanently** sets the status of OCGs.
+      Mass status changes of optional content groups. **Permanently** sets the status of OCGs.
 
       :arg int config: desired configuration layer, choose -1 for the default one.
       :arg list on: list of :data:`xref` of OCGs to set ON. Replaces previous values. An empty list will cause no OCG being set to ON anymore. Should be specified if ``basestate="ON"`` is used.
       :arg list off: list of :data:`xref` of OCGs to set OFF. Replaces previous values. An empty list will cause no OCG being set to OFF anymore. Should be specified if ``basestate="OFF"`` is used.
       :arg str basestate: desired state of OCGs that are not mentioned in *on* resp. *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
-      :arg list rbgroups: a list of lists. Repleaces previous values. Each sublist should contain two or more OCG xrefs. OCGs in the same sublist are handled like grouped radio buttons: setting one to ON automatically sets all other group members to OFF.
+      :arg list rbgroups: a list of lists. Replaces previous values. Each sublist should contain two or more OCG xrefs. OCGs in the same sublist are handled like buttons in a radio button group: setting one to ON automatically sets all other group members to OFF.
 
-        >>> doc.setOCStates(-1, basestate="OFF")
-        >>> pprint(doc.getOCStates())
+      Values *None* will not change the corresponding PDF array.
+
+        >>> doc.set_oc_states(-1, basestate="OFF")  # only changes the base state
+        >>> pprint(doc.get_oc_states())
         {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
 
 
-    .. method:: getOCGs()
+    .. method:: get_ocgs()
 
       *(New in v1.18.3)*
 
       Details of all optional content groups. This is a dictionary of dictionaries like this (key is the OCG's :data:`xref`):
 
-        >>> pprint(doc.getOCGs())
+        >>> pprint(doc.get_ocgs())
         {13: {'on': True,
               'intent': ['View', 'Design'],
               'name': 'Circle',
@@ -276,13 +357,13 @@ For details on **embedded files** refer to Appendix 3.
         15: {'on': False, 'intent': ['View'], 'name': 'Square', 'usage': 'Artwork'}}
         >>> 
 
-    .. method:: layerUIConfigs()
+    .. method:: layer_ui_configs()
 
       *(New in v1.18.3)*
 
       Show the visibility status of optional content that is modifyable by the user interface of supporting PDF viewers. Example:
 
-        >>> pprint(doc.layerUIConfigs())
+        >>> pprint(doc.layer_ui_configs())
          ({'depth': 0,
           'locked': False,
           'number': 0,
@@ -309,25 +390,25 @@ For details on **embedded files** refer to Appendix 3.
              - *text:* text string or name field of the originating OCG
              - *type:* one of "label" (set by a text string), "checkbox" (set by a single OCG) or "radiobox" (set by a set of connected OCGs)
 
-    .. method:: setLayerUIConfig(number, action=0)
+    .. method:: set_layer_ui_config(number, action=0)
 
       *(New in v1.18.3)*
 
-      Modify OC visibility status of content groups, This is analog to what supporting PDF viewers would offer.
+      Modify OC visibility status of content groups. This is analog to what supporting PDF viewers would offer.
 
       .. note::
-        Visibility is **not** a property of an OCG -- and the current visibility not even information necessarily present in the PDF document. Using this method, the user can **temporarily** modify visibility just as if doing so via a supporting PDF consumer software.
+        Visibility is **not** a property of an OCG. Current visibility is not even an information that is necessarily present in the PDF document. Using this method, the user can **temporarily** modify visibility just as if doing so via a supporting PDF consumer software.
 
-        To make permanent changes, follow the recommendation mentioned in :meth:`Document.addLayerConfig`.
+        To make permanent changes, use :meth:`Document.set_oc_states`.
 
-      :arg in number: number as returned by :meth:`Document.layerUIConfigs`.
+      :arg in number: number as returned by :meth:`Document.layer_ui_configs`.
       :arg int action: 0 = set on (default), 1 = toggle on/off, 2 = set off.
 
       Example:
 
           >>> # let's make above "Square" visible:
-          >>> doc.setLayerUIConfig(1, action=0)
-          >>> pprint(doc.layerUIConfigs())
+          >>> doc.set_layer_ui_config(1, action=0)
+          >>> pprint(doc.layer_ui_configs())
           ({'depth': 0,
             'locked': False,
             'number': 0,
@@ -632,13 +713,15 @@ For details on **embedded files** refer to Appendix 3.
 
       Example::
 
-          >>> doc = fitz.open("some.pdf")
-          >>> for f in doc.getPageFontList(0, full=False): print(f)
-          [24, 'ttf', 'TrueType', 'DOKBTG+Calibri', 'R10', '']
-          [17, 'ttf', 'TrueType', 'NZNDCL+CourierNewPSMT', 'R14', '']
-          [32, 'ttf', 'TrueType', 'FNUUTH+Calibri-Bold', 'R8', '']
-          [28, 'ttf', 'TrueType', 'NOHSJV+Calibri-Light', 'R12', '']
-          [8, 'ttf', 'Type0', 'ECPLRU+Calibri', 'R23', 'Identity-H']
+          >>> pprint(doc.getPageFontList(0, full=False))
+          [(12, 'ttf', 'TrueType', 'FNUUTH+Calibri-Bold', 'R8', ''),
+           (13, 'ttf', 'TrueType', 'DOKBTG+Calibri', 'R10', ''),
+           (14, 'ttf', 'TrueType', 'NOHSJV+Calibri-Light', 'R12', ''),
+           (15, 'ttf', 'TrueType', 'NZNDCL+CourierNewPSMT', 'R14', ''),
+           (16, 'ttf', 'Type0', 'MNCSJY+SymbolMT', 'R17', 'Identity-H'),
+           (17, 'cff', 'Type1', 'UAEUYH+Helvetica', 'R20', 'WinAnsiEncoding'),
+           (18, 'ttf', 'Type0', 'ECPLRU+Calibri', 'R23', 'Identity-H'),
+           (19, 'ttf', 'Type0', 'TONAYT+CourierNewPSMT', 'R27', 'Identity-H')]
 
       .. note:: This list has no duplicate entries: the combination of :data:`xref`, *name* and *referencer* is unique.
 
@@ -687,6 +770,8 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: Sets or updates the metadata of the document as specified in *m*, a Python dictionary.
 
       :arg dict m: A dictionary with the same keys as *metadata* (see below). All keys are optional. A PDF's format and encryption method cannot be set or changed and will be ignored. If any value should not contain data, do not specify its key or set the value to *None*. If you use *{}* all metadata information will be cleared to the string *"none"*. If you want to selectively change only some values, modify a copy of *doc.metadata* and use it as the argument. Arbitrary unicode values are possible if specified as UTF-8-encoded.
+
+      *(Changed in v1.18.4)* Empty values or "none" are no longer written, but completely omitted.
 
     .. method:: getXmlMetadata()
 
@@ -740,7 +825,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :returns: :data:`xref`.
 
-    .. method:: delTOC_item(idx)
+    .. method:: del_toc_item(idx)
 
       *(New in v1.17.7)*
 
@@ -751,7 +836,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int idx: the index of the item in list `Document.getTOC`.
 
 
-    .. method:: setTOC_item(idx, dest_dict=None, kind=None, pno=None, uri=None, title=None, to=None, filename=None, zoom=0)
+    .. method:: set_toc_item(idx, dest_dict=None, kind=None, pno=None, uri=None, title=None, to=None, filename=None, zoom=0)
 
       *(New in v1.17.7)*
 
@@ -761,7 +846,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int idx: the index of the entry in the list created by :meth:`Document.getTOC`.
       :arg dict dest_dict: the new destination. A dictionary like the last entry of an item in ``doc.getTOC(False)``. Using this as a template would also be the natural use of this parameter. When given, **all other parameters are ignored** -- except title.
-      :arg int kind: the link kind, values like ``fitz.LINK_GOTO``, etc. If equal to fitz.LINK_NONE, then all remaining parameter will be ignored, and the TOC item will be removed -- same as :meth:`Document.delTOC_item`. If None, then only the title is modified and the remaining parameters are ignored. All other values will lead to making a new destination dictionary using the subsequent arguments.
+      :arg int kind: the link kind, values like ``fitz.LINK_GOTO``, etc. If equal to fitz.LINK_NONE, then all remaining parameter will be ignored, and the TOC item will be removed -- same as :meth:`Document.del_toc_item`. If None, then only the title is modified and the remaining parameters are ignored. All other values will lead to making a new destination dictionary using the subsequent arguments.
       :arg int pno: the 1-based page number, i.e. a value 1 <= pno <= doc.pageCount. Required for LINK_GOTO.
       :arg str uri: the URL text. Required for LINK_URI.
       :arg str title: the desired new title. None if no change.
@@ -1285,9 +1370,9 @@ For details on **embedded files** refer to Appendix 3.
 
     .. attribute:: metadata
 
-      Contains the document's meta data as a Python dictionary or *None* (if *isEncrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*. All item values are strings or *None*.
+      Contains the document's meta data as a Python dictionary or *None* (if *isEncrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*, *trapped*. All item values are strings or *None*.
 
-      Except *format* and *encryption*, for PDF documents, the key names correspond in an obvious way to the PDF keys */Creator*, */Producer*, */CreationDate*, */ModDate*, */Title*, */Author*, */Subject*, and */Keywords* respectively.
+      Except *format* and *encryption*, for PDF documents, the key names correspond in an obvious way to the PDF keys */Creator*, */Producer*, */CreationDate*, */ModDate*, */Title*, */Author*, */Subject*, */Trapped* and */Keywords* respectively.
 
       - *format* contains the document format (e.g. 'PDF-1.6', 'XPS', 'EPUB').
 
@@ -1434,3 +1519,5 @@ Other Examples
 .. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.
 
 .. [#f4] These parameters cause separate handling of stream categories: use it together with ``expand`` to restrict decompression to streams other than images / fontfiles.
+
+.. [#f5] Examples for "Form XObjects" are created by :meth:`Page.showPDFpage`.
