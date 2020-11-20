@@ -5,6 +5,8 @@ Changes in Version 1.18.4
 ---------------------------
 This version adds several features to support PDF Optional Content. Among other things, this includes OCMDs (Optional Content Membership Dictionaries) with the full scope of *"visibility expressions"* (PDF key ``/VE``), text insertions (including the :ref:`TextWriter` class) and drawings.
 
+* **Fixed** issue `#727 <https://github.com/pymupdf/PyMuPDF/issues/727>`_. Freetext annotations now support an uncolored rectangle when ``fill_color=None``.
+* **Fixed** issue `#726 <https://github.com/pymupdf/PyMuPDF/issues/726>`_. UTF-8 encoding errors are now handled for HTML / XML :meth:`Page.getText` output.
 * **Fixed** issue `#724 <https://github.com/pymupdf/PyMuPDF/issues/724>`_. Empty values are no longer stored in the PDF /Info metadata dictionary.
 * **Added** new methods :meth:`Document.set_oc` and :meth:`Document.get_oc` to set or get optional content references for **existing** image and form XObjects. These methods are similar to the same-named methods of :ref:`Annot`.
 * **Added** :meth:`Document.set_ocmd`, :meth:`Document.get_ocmd` for handling OCMDs.
@@ -25,7 +27,7 @@ As a major new feature, this version introduces support for PDF's **Optional Con
 
 * **Fixed** issue `#714 <https://github.com/pymupdf/PyMuPDF/issues/714>`_.
 * **Fixed** issue `#711 <https://github.com/pymupdf/PyMuPDF/issues/711>`_.
-* **Fixed** issue `#707 <https://github.com/pymupdf/PyMuPDF/issues/707>`_: if a PDF user password is supplied but no owner password is supplied nor present, then the user password is also used as the owner password.
+* **Fixed** issue `#707 <https://github.com/pymupdf/PyMuPDF/issues/707>`_: if a PDF user password, but no owner password is supplied nor present, then the user password is also used as the owner password.
 * **Fixed** ``expand`` and ``deflate`` parameters of methods :meth:`Document.save` and :meth:`Document.write`. Individual image and font compression should now finally work. Addresses issue `#713 <https://github.com/pymupdf/PyMuPDF/issues/713>`_.
 * **Added** a support of PDF optional content. This includes several new :ref:`Document` methods for inquiring and setting optional content status and adding optional content configurations and groups. In addition, images, form XObjects and annotations now can be bound to optional content specifications. **Resolved** issue `#709 <https://github.com/pymupdf/PyMuPDF/issues/709>`_.
 

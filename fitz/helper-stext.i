@@ -14,7 +14,7 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, fz_re
     fz_try(ctx) {
         tp = fz_new_stext_page(ctx, rect);
         dev = fz_new_stext_device(ctx, tp, &options);
-        fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
+        fz_run_page(ctx, page, dev, fz_identity, NULL);
         fz_close_device(ctx, dev);
     }
     fz_always(ctx) {

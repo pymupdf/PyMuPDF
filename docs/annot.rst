@@ -315,8 +315,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg sequence,float text_color: change the text color. 'FreeText' annotations only.
       :arg sequence,float border_color: change the border color. 'FreeText' annotations only.
       :arg sequence,float fill_color: the fill color.
-      
-          * 'FreeText' annotations: If you set (or leave) this to *None*, then **no rectangle at all** will be drawn around the text, and the border color will be ignored. This will leave anything "under" the text visible.
+
           * 'Line', 'Polyline', 'Polygon' annotations: use it to give applicable line end symbols a fill color other than that of the annotation *(changed in v1.16.16)*.
 
       :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle. 'Redact' annotations only. If not desired, *False* must be specified even if the annotation was created with *False*.

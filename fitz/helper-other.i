@@ -41,8 +41,8 @@ PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
 PyObject *JM_UnicodeFromBuffer(fz_context *ctx, fz_buffer *buff)
 {
     unsigned char *s = NULL;
-    size_t len = fz_buffer_storage(ctx, buff, &s);
-    PyObject *val = PyUnicode_FromStringAndSize((const char *) s, (Py_ssize_t) len);
+    Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(ctx, buff, &s);
+    PyObject *val = PyUnicode_DecodeUTF8((const char *) s, len, "replace");
     if (!val) {
         val = EMPTY_STRING;
         PyErr_Clear();

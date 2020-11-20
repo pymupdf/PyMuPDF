@@ -7609,7 +7609,6 @@ struct Annot
             }
             return Py_BuildValue("i", oc);
         }
-        %pythoncode %{optional_content = property(getOC, doc="optional content xref")%}
 
 
         //----------------------------------------------------------------
@@ -7751,7 +7750,7 @@ struct Annot
         FITZEXCEPTION(set_oc, !result)
         PARENTCHECK(set_oc, """Set annotation optional content xref.""")
         PyObject *
-        set_optional_content(int oc=0)
+        set_oc(int oc=0)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -8125,8 +8124,13 @@ struct Annot
             JM_color_FromSequence(fill_color, &nfcol, fcol);
             fz_try(gctx) {
                 pdf_dirty_annot(gctx, annot); // enforce MuPDF /AP formatting
-                if (type == PDF_ANNOT_FREE_TEXT && EXISTS(fill_color))
-                    pdf_set_annot_color(gctx, annot, nfcol, fcol);
+                if (type == PDF_ANNOT_FREE_TEXT) {
+                    if (EXISTS(fill_color)) {
+                        pdf_set_annot_color(gctx, annot, nfcol, fcol);
+                    } else{
+                        pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
+                    }
+                }
 
                 int insert_rot = (rotate >= 0) ? 1 : 0;
                 switch (type) {
@@ -8369,15 +8373,17 @@ struct Annot
                 TOOLS._update_da(self, da_str)
                 
                 for i, item in enumerate(ap_tab):
-                    if (item.endswith(b" w")
-                        and bwidth > 0
-                        and border_color is not None
-                       ):  # update border color
+                    if (
+                        item.endswith(b" w") and bwidth > 0 and border_color is not None
+                    ):  # update border color
                         ap_tab[i + 1] = color_string(border_color, "s")
                         continue
                     if item == b"BT":  # update text color
                         ap_tab[i + 1] = color_string(tcol, "f")
                         continue
+                    if fill is None:
+                        if item.endswith((b" re")) and ap_tab[i + 1] == b"f":
+                            ap_tab[i + 1] = b"n"
 
                 if dashes is not None:  # handle dashes
                     ap_tab.insert(0, dashes)
@@ -9744,21 +9750,18 @@ struct TextPage {
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
                 switch(format) {
                     case(1):
-                        out = fz_new_output_with_buffer(gctx, res);
                         fz_print_stext_page_as_html(gctx, out, this_tpage, 0);
                         break;
                     case(3):
-                        out = fz_new_output_with_buffer(gctx, res);
                         fz_print_stext_page_as_xml(gctx, out, this_tpage, 0);
                         break;
                     case(4):
-                        out = fz_new_output_with_buffer(gctx, res);
                         fz_print_stext_page_as_xhtml(gctx, out, this_tpage, 0);
                         break;
                     default:
-                        out = fz_new_output_with_buffer(gctx, res);
                         JM_print_stext_page_as_text(gctx, out, this_tpage);
                         break;
                 }
