@@ -881,6 +881,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * "dict" -- :meth:`TextPage.extractDICT`
       * "json" -- :meth:`TextPage.extractJSON`
       * "rawdict" -- :meth:`TextPage.extractRAWDICT`
+      * "rawjson" -- :meth:`TextPage.extractRAWJSON`
 
       :arg str opt: A string indicating the requested format, one of the above. A mixture of upper and lower case is supported.
 
@@ -906,7 +907,12 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect-like rect: rect-like.
 
-      :returns: a string with interspersed linebreaks where necessary. This is the same as ``page.getText("text", clip=rect, flags=0)`` with one removed final line break.
+      :returns: a string with interspersed linebreaks where necessary. This is the same as ``page.getText("text", clip=rect, flags=0)`` with one removed final line break. A tyical use is checking the result of :meth:`Page.searchFor`:
+
+        >>> rl = page.searchFor("currency:")
+        >>> page.getTextbox(rl[0])
+        'Currency:'
+        >>> 
 
 
    .. index::
@@ -987,12 +993,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Rect`
       :returns: the boundary box of the image.
          *(Changed in v1.16.7)* -- If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised.
-         *(Changed in v.17.0)* -- Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
+         *(Changed in v1.17.0)* -- Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
+         *(Changed in v1.18.5)* -- Removed the restriction introduced in v1.17.0. The base MuPDF library now more reliably computes that value.
 
       .. note::
 
-         * Be aware that :meth:`Page.getImageList` may contain "dead" entries, i.e. there may be image references which are **not displayed** by this page. In this case an infinite rectangle is returned.
-         * As mentioned above, images inside embedded PDF pages are ignored by this method.
+         * Be aware that :meth:`Page.getImageList` may contain "dead" entries, i.e. images **not displayed** by this page (some PDFs contain a central list of all images, to save specification effort on the page level). In this case an infinite rectangle is returned.
 
    .. index::
       pair: matrix; getSVGimage
@@ -1162,13 +1168,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: flags; searchFor
       pair: quads; searchFor
 
-   .. method:: searchFor(needle, clip=clip, quads=False, flags=None)
+   .. method:: searchFor(needle, clip=clip, quads=False, flags=TEXT_DEHYPHENATE)
 
       *(Changed in v1.18.2)*
 
       Search for *needle* on a page. Wrapper for :meth:`TextPage.search`.
 
-      :arg str needle: Text to search for. Upper / lower case is ignored. The string may contain spaces.
+      :arg str needle: Text to search for. Upper / lower case is ignored. May contain spaces.
       :arg rect_like clip: *(New in v1.18.2)* only search within this area.
       :arg bool quads: Return object type :ref:`Quad` instead of :ref:`Rect`.
       :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default ligatures are expanded, white space is replaced with spaces and hyphenation is detected.
@@ -1177,18 +1183,19 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :returns:
 
-        A list of :ref:`Rect` or  :ref:`Quad` objects each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if parts of *needle* occur on more than one line, then a separate item is generated for each part of the string per line. So, if ``needle = "search string"``, two rectangles may be generated.
+        A list of :ref:`Rect` or  :ref:`Quad` objects, each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if parts of *needle* occur on more than one line, then a separate item is generated for each these parts. So, if ``needle = "search string"``, two rectangles may be generated.
 
         **Changes in v1.18.2:**
 
           * There no longer is a limit on the list length (removal of the ``hit_max`` parameter).
           * If a word is **hyphenated** at a line break, it will still be found. E.g. the word "method" will be found even if hyphenated as "meth-od" by a line break, and two rectangles will be returned: one surrounding "meth" (without the hyphen) and another one surrounding "od".
 
-      .. note:: The method supports multi-line text marker annotations: you can use the full returned list as **one** parameter for creating the annotation.
+      .. note:: The method supports multi-line text marker annotations: you can use the full returned list as **one single** parameter for creating the annotation.
 
       .. caution::
 
          * There is a tricky aspect: the search logic regards **contiguous multiple occurrences** of *needle* as one: assuming *needle* is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one for "abc", and a second one for "abcabc".
+         * You can always use :meth:`Page.getTextbox` to check what text actually is being surrounded by each rectangle.
 
 
    .. method:: setMediaBox(r)
@@ -1208,7 +1215,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like r: the new visible area of the page. Note that this **must** be specified in **unrotated coordinates**.
 
-      After execution if the page is not rotated, :attr:`Page.rect` will equal this rectangle, shifted to the top-left position (0, 0). Example session:
+      After execution if the page is not rotated, :attr:`Page.rect` will equal this rectangle, but shifted to the top-left position (0, 0) if necessary. Example session:
 
       >>> page = doc.newPage()
       >>> page.rect

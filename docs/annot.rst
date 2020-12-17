@@ -31,6 +31,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 :meth:`Annot.set_border`           set annotation's border properties
 :meth:`Annot.set_blendmode`        set annotation's blend mode
 :meth:`Annot.set_colors`           set annotation's colors
+:meth:`Annot.set_flags`            set annotation's flags field
 :meth:`Annot.set_name`             set annotation's name field
 :meth:`Annot.set_oc`               set :data:`xref` to an :data:`OCG` / :data:`OCMD`
 :meth:`Annot.set_opacity`          change transparency
@@ -264,19 +265,21 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_flags(flags)
 
-      Changes the annotation flags. Use the *|* operator to combine several.
+      Changes the annotation flags. Use the ``|`` operator to combine several.
 
       :arg int flags: an integer specifying the required flags.
 
    .. method:: set_colors(colors=None, stroke=None, fill=None)
 
-      Changes the "stroke" and "fill" colors for supported annotation types.
+      Changes the "stroke" and "fill" colors for supported annotation types -- not all annotations accept both.
 
       *Changed in version 1.16.9:* Allow colors to be directly set. These parameters are used if *colors* is not a dictionary.
 
       :arg dict colors: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the *colors* property and then modify this dictionary as required.
       :arg sequence stroke: see above.
       :arg sequence fill: see above.
+
+      *Changed in v1.18.5:* To completely remove a color specification, use an empty sequence like ``[]``. 
 
 
    .. method:: delete_responses()

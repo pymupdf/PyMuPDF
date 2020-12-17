@@ -8,7 +8,7 @@ Document
 
 This class represents a document. It can be constructed from a file or from memory.
 
-Since version 1.9.0 there exists the alias *open* for this class, i.e. ``fitz.Document(...)`` and ``fitz.open(...)`` do exactly the same thing.
+There exists the alias *open* for this class, i.e. ``fitz.Document(...)`` and ``fitz.open(...)`` do exactly the same thing.
 
 For details on **embedded files** refer to Appendix 3.
 
@@ -262,39 +262,44 @@ For details on **embedded files** refer to Appendix 3.
 
       Create or update an :data:`OCMD` (optional content membership dictionary).
 
+      :arg int xref: :data:`xref` of the OCMD to be updated, or 0 for a new OCMD.
       :arg list ocgs: a sequence of :data:`xref` numbers of existing :data:`OCG` PDF objects.
-      :arg str policy: one of "AnyOn", "AnyOff", "AllOn", "AllOff" (mixed or lower case).
-      :arg int xref: :data:`xref` of an existing OCMD, which should be updated, or 0 for a new OCMD.
+      :arg str policy: one of "AnyOn" (default), "AnyOff", "AllOn", "AllOff" (mixed or lower case).
       :arg list ve: a "visibility expression". This is a list of arbitrarily nested other lists -- see explanation below. Use as an alternative to the combination *ocgs* / *policy* if you need to formulate more complex conditions.
       :rtype: int
-      :returns: :data:`xref` of the OCMD. Use as entry for ``oc`` parameter in supporting objects.
+      :returns: :data:`xref` of the OCMD. Use as ``oc=xref`` parameter in supporting objects, and respectively in :meth:`Document.set_oc` or :meth:`Annot.set_oc`.
 
       .. note::
 
-        This object type can be used like an :data:`OCG` to determine the visibility of a PDF object. Its purpose is to **compute a boolean value** from the states of some OCGs. This value is then interpreted as ON (true) or OFF (false).
-        
-        * Using the combination of *ocgs* and *policy*: The possible *policy* values are as follows:
+        The purpose of OCMDs is to more flexibly determine visibility. An OCMD actually is a boolean expression: it evaluates the current visibility of one or more optional content groups and then computes its own ON (true) or OFF (false) state.
+
+        There are two ways to formulate the OCMD's visibility:
+
+        1. Use the combination of *ocgs* and *policy*: The *policy* value is interpreted as follows:
 
           - AnyOn -- (default) true if at least one OCG is ON.
           - AnyOff -- true if at least one OCG is OFF.
           - AllOn -- true if all OCGs are ON.
           - AllOff -- true if all OCGs are OFF.
 
-          For example assume you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be off): use an OCG for object 1 and an OCMD for object 2. Create the OCMD via ``set_ocmd(ocgs=[xref], policy="AllOff")``, where *xref* is the cross reference number of the OCG.
+          Suppose you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be OFF):
+          
+          Solution: use an **OCG** for object 1 and an **OCMD** for object 2. Create the OCMD via ``set_ocmd(ocgs=[xref], policy="AllOff")``, with the :data:`xref` of the OCG.
 
-        * Using the visibility expression *ve*: This is a list of arbitrarily nested other lists. It uses a combination of the logical expressions **"and"**, **"or"**, **"not"**, and the :data:`xref` numbers of one or more existing OCGs. The arguments *ocgs* and *policy* need not be used. The syntax of this parameter is a bit awkward, but quite powerful:
+        2. Use the **visibility expression** *ve*: This is a list of a logical expression keyword (string) followed by integers or other lists. The possible logical expressions are **"and"**, **"or"**, and **"not"**. The integers must be :data:`xref` numbers of OCGs. The syntax of this parameter is a bit awkward, but quite powerful:
 
-          - Each list, including the top one, must have two or more items. The fist item must be a logical expression.
-          - If the first item is a **"not"**, then the list must have exactly two items.
-          - If the first item is **"and"** or **"or"**, any number of other items may follow.
-          - Items following the logical expression may be either integers or other lists. An *integer* must be the xref of an OCG. A list must conform to the rules layed out so far.
+          - Each list, including the top one, must start with a logical expression.
+          - If the first item is a **"not"**, then the list must have exactly two items. If it is **"and"** or **"or"**, any number of other items may follow.
+          - Items following the logical expression may be either integers or other lists. An *integer* must be the xref of an OCG. A *list* must conform to the rules above.
 
           **Examples:**
 
-          - ``ve=["or", 4, ["not", 5], ["and", 6, 7]]``. This delivers ON if 4 is ON, or 5 is OFF, or 6 and 7 are both ON.
-          - ``ve=["not", xref]`` has the same effect like previously using *ocgs* and *policy*.
+          - ``set_ocmd(ve=["or", 4, ["not", 5], ["and", 6, 7]])``. This delivers ON if the following is true: **"4 is ON, or 5 is OFF, or 6 and 7 are both ON"**.
+          - ``set_ocmd(ve=["not", xref])``. This has the same effect as the OCMD example created under 1.
 
-          For more details and examples see page 367 of :ref:`AdobeManual`.
+          For more details and examples see page 367 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
+
+          Visibility expressions, ``/VE``, are part of the PDF version 1.6 specification. If you are using an older PDF consumer software, you hence may find it unsupported (i.e. ignored).
 
 
     .. method:: get_ocmd(xref)
@@ -305,7 +310,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int xref: the :data:`xref` of the OCMD.
       :rtype: dict
-      :returns: a dictionary with the keys *ocgs*, *policy* and *ve*.
+      :returns: a dictionary with the keys *xref*, *ocgs*, *policy* and *ve*.
 
 
     .. method:: get_oc_states(config=-1)
@@ -397,9 +402,9 @@ For details on **embedded files** refer to Appendix 3.
       Modify OC visibility status of content groups. This is analog to what supporting PDF viewers would offer.
 
       .. note::
-        Visibility is **not** a property of an OCG. Current visibility is not even an information that is necessarily present in the PDF document. Using this method, the user can **temporarily** modify visibility just as if doing so via a supporting PDF consumer software.
+        Visibility is **not** a property stored with the OCG. It is not even an information necessarily present in the PDF document at all. Instead, the current visibility is **temporarily** set using the user interface of some supporting PDF consumer software. The same type of functionality is offered by this method.
 
-        To make permanent changes, use :meth:`Document.set_oc_states`.
+        To make **permanent** changes, use :meth:`Document.set_oc_states`.
 
       :arg in number: number as returned by :meth:`Document.layer_ui_configs`.
       :arg int action: 0 = set on (default), 1 = toggle on/off, 2 = set off.

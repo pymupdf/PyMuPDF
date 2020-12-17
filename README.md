@@ -1,8 +1,8 @@
-# PyMuPDF 1.18.4
+# PyMuPDF 1.18.5
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: November 30, 2020
+Release date: December 20, 2020
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -15,7 +15,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.18.4 of PyMuPDF**, a Python binding with support for [MuPDF 1.18.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.18.5 of PyMuPDF**, a Python binding with support for [MuPDF 1.18.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -61,10 +61,7 @@ Our **documentation**, written using Sphinx, is available in various formats fro
 
 # Installation
 
-For Windows, Linux and Mac OSX platforms, there are wheels in the [download](https://pypi.org/project/PyMuPDF/#files) section of PyPI. This includes Python 64bit versions 3.6 through 3.9. For Windows only, 32bit versions are available too.
-
-> Wheels for **Python versions 2.7 and 3.5** will only be produced until the end of this year 2020. After that, you will need to build PyMuPDF from sources as explained below.
-> Starting immediately, we **_defer uploading Python 2.7 / 3.5 wheels_** until explicitely requested. Please submit an issue.
+For Windows, Linux and Mac OSX platforms, there are wheels in the [download](https://pypi.org/project/PyMuPDF/#files) section of PyPI. This includes Python 64bit versions **3.6 through 3.9**. For Windows only, 32bit versions are available too.
 
 If your platform is not supported with one of our wheels, you need to generate PyMuPDF yourself as follows. This requires the development version of Python.
 
@@ -77,10 +74,10 @@ Before you can do that, you must first build MuPDF. For most platforms, the MuPD
 
   - Now MuPDF can be generated.
 
-* Since PyMuPDF v1.14.17, the sources provided in this repository **no longer contain** the interface files ``fitz.py`` and ``fitz.wrap.c`` - they are instead generated **"on the fly"** by ``setup.py`` using the interface generator [SWIG](http://www.swig.org/). So you need SWIG on your system. Please refer to issue #312 for some background.
+* Please note that you will need the interface generator [SWIG](http://www.swig.org/) when building PyMuPDF from the sources of this repository (please refer to issue #312 for some background on this).
     - PyMuPDF wheels are being generated using **SWIG v4.0.1**.
 
-* If you do **not use SWIG**, please download the **sources from PyPI** - they continue to contain those generated files, so installation should work like any other Python extension generation on your system.
+* If you do **not use SWIG**, please download the **sources from PyPI** - they contain sources pre-processed by SWIG, so installation should work like any other Python extension generation on your system.
 
 Once this is done, adjust directories in ``setup.py`` and run ``python setup.py install``.
 

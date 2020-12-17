@@ -5,21 +5,22 @@ Tools
 
 This class is a collection of utility methods and attributes, mainly around memory management. To simplify and speed up its use, it is automatically instantiated under the name *TOOLS* when PyMuPDF is imported.
 
-================================== =================================================
-**Method / Attribute**             **Description**
-================================== =================================================
-:meth:`Tools.gen_id`               generate a unique identifyer
-:meth:`Tools.image_profile`        report basic image properties
-:meth:`Tools.store_shrink`         shrink the storables cache [#f1]_
-:meth:`Tools.mupdf_warnings`       return the accumulated MuPDF warnings
-:meth:`Tools.mupdf_display_errors` return the accumulated MuPDF warnings
-:meth:`Tools.reset_mupdf_warnings` empty MuPDF messages on STDOUT
-:meth:`Tools.set_aa_level`         set the anti-aliasing values
-:meth:`Tools.show_aa_level`        return the anti-aliasing values
-:attr:`Tools.fitz_config`          configuration settings of PyMuPDF
-:attr:`Tools.store_maxsize`        maximum storables cache size
-:attr:`Tools.store_size`           current storables cache size
-================================== =================================================
+====================================== =================================================
+**Method / Attribute**                 **Description**
+====================================== =================================================
+:meth:`Tools.gen_id`                   generate a unique identifyer
+:meth:`Tools.image_profile`            report basic image properties
+:meth:`Tools.store_shrink`             shrink the storables cache [#f1]_
+:meth:`Tools.mupdf_warnings`           return the accumulated MuPDF warnings
+:meth:`Tools.mupdf_display_errors`     return the accumulated MuPDF warnings
+:meth:`Tools.reset_mupdf_warnings`     empty MuPDF messages on STDOUT
+:meth:`Tools.set_aa_level`             set the anti-aliasing values
+:meth:`Tools.set_small_glyph_heights`  search and extract small bbox heights
+:meth:`Tools.show_aa_level`            return the anti-aliasing values
+:attr:`Tools.fitz_config`              configuration settings of PyMuPDF
+:attr:`Tools.store_maxsize`            maximum storables cache size
+:attr:`Tools.store_size`               current storables cache size
+====================================== =================================================
 
 **Class API**
 
@@ -36,6 +37,18 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       :rtype: int
       :returns: a unique positive integer.
+
+   .. method:: set_small_glyph_heights(on=None)
+
+      *(New in v1.18. -- experimental)*
+
+      Set or inquire reduced bbox heights in text extract and text search methods.
+
+      :arg bool on: if omitted or *None*, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.searchFor` and :meth:`Page.getText` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will normally equal *line height*.
+
+      :rtype: bool
+      :returns: *True* or *False*.
+
 
    .. method:: image_profile(stream)
 

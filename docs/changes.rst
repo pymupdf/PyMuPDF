@@ -1,6 +1,23 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.5
+-------------------------
+Apart from several fixes, this version also focusses on several minor, but important feature improvements. Among the latter is a more precise computation of proper line heights and insertion points for writing / inserting text. As opposed to using font-agnostic constants, these values are now taken from the font's properties.
+
+Also note that this is the first version which does no longer provide pregenerated wheels for Python versions older than 3.6. PIP also discontinues support for these by end of this year 2020.
+
+* **Fixed** issue `#771 <https://github.com/pymupdf/PyMuPDF/issues/771>`_. By using "small glyph heights" option, the full page text can be extracted.
+* **Fixed** issue `#768 <https://github.com/pymupdf/PyMuPDF/issues/768>`_.
+* **Fixed** issue `#750 <https://github.com/pymupdf/PyMuPDF/issues/750>`_.
+* **Fixed** issue `#739 <https://github.com/pymupdf/PyMuPDF/issues/739>`_. The "dict", "rawdict" and corresponding JSON output variants now have two new *span* keys: ``"ascender"`` and ``"descender"``. These floats represent special font properties which can be used to compute bboxes of spans or characters of **exactly fontsize height** (as opposed to the default line height). An example algorithm is shown in section "Span Dictionary" `here <https://pymupdf.readthedocs.io/en/latest/textpage.html#dictionary-structure-of-extractdict-and-extractrawdict>`_. Also improved the detection and correction of ill-specified ascender / descender values encountered in some fonts.
+* **Added** a new, experimental :meth:`Tools.set_small_glyph_heights` -- also in response to issue `#739 <https://github.com/pymupdf/PyMuPDF/issues/739>`_. This method sets or unsets a global parameter to **always compute bboxes with fontsize height**. If "on", text searching and all text extractions will returned rectangles, bboxes and quads with a smaller height.
+* **Fixed** issue `#728 <https://github.com/pymupdf/PyMuPDF/issues/728>`_.
+* **Changed** fill color logic of 'Polyline' annotations: this parameter now only pertains to line end symbols -- the annotation itself can no longer have a fill color. Also addresses issue `#727 <https://github.com/pymupdf/PyMuPDF/issues/727>`_.
+* **Changed** :meth:`Page.getImageBbox` to also compute the bbox if the image is contained in an XObject.
+* **Changed** :meth:`Shape.insertTextbox`, resp. :meth:`Page.insertTextbox`, resp. :meth:`TextWriter.fillTextbox` to respect font's properties "ascender" / "descender" when computing line height and insertion point. This should no longer lead to line overlaps for multi-line output. These methods used to ignore font specifics and used constant values instead.
+
+
 Changes in Version 1.18.4
 ---------------------------
 This version adds several features to support PDF Optional Content. Among other things, this includes OCMDs (Optional Content Membership Dictionaries) with the full scope of *"visibility expressions"* (PDF key ``/VE``), text insertions (including the :ref:`TextWriter` class) and drawings.

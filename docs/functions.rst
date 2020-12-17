@@ -11,24 +11,24 @@ Yet others are handy, general-purpose utilities.
 ==================================== ==============================================================
 **Function**                         **Short Description**
 ==================================== ==============================================================
-:meth:`Annot._cleanContents`         PDF only: clean the annot's :data:`contents` objects
+:meth:`Annot.clean_contents`         PDF only: clean the annot's :data:`contents` object
 :meth:`Annot.set_apn_matrix`         PDF only: set the matrix of the appearance object
 :meth:`Annot.set_apn_bbox`           PDF only: set the bbox of the appearance object
 :attr:`Annot.apn_matrix`             PDF only: the matrix of the appearance object
 :attr:`Annot.apn_bbox`               PDF only: bbox of the appearance object
 :meth:`ConversionHeader`             return header string for *getText* methods
 :meth:`ConversionTrailer`            return trailer string for *getText* methods
-:meth:`Document._delXmlMetadata`     PDF only: remove XML metadata
-:meth:`Document._deleteObject`       PDF only: delete an object
-:meth:`Document._getNewXref`         PDF only: create and return a new :data:`xref` entry
+:meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
+:meth:`Document.set_xml_metadata`    PDF only: remove XML metadata
+:meth:`Document.delete_object`       PDF only: delete an object
+:meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document._getOLRootNumber`    PDF only: return / create :data:`xref` of */Outline*
-:meth:`Document._getPDFroot`         PDF only: return the :data:`xref` of the catalog
-:meth:`Document._getPageObjNumber`   PDF only: return :data:`xref` and generation number of a page
-:meth:`Document._getPageXref`        PDF only: same as *_getPageObjNumber()*
-:meth:`Document._getTrailerString`   PDF only: return the PDF file trailer string
-:meth:`Document._getXmlMetadataXref` PDF only: return XML metadata :data:`xref` number
-:meth:`Document._getXrefLength`      PDF only: return length of :data:`xref` table
-:meth:`Document._getXrefString`      PDF only: return object definition "source"
+:meth:`Document.pdf_catalog`         PDF only: return the :data:`xref` of the catalog
+:meth:`Document.page_xref`           PDF only: get xref of page object by page number
+:meth:`Document.pdf_trailer`         PDF only: return the PDF file trailer string
+:meth:`Document.xml_metadata_xref`   PDF only: return XML metadata :data:`xref` number
+:meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
+:meth:`Document.xref_object`         PDF only: return object definition "source"
 :meth:`Document._make_page_map`      PDF only: create a fast-access array of page numbers
 :meth:`Document.extractFont`         PDF only: extract embedded font
 :meth:`Document.extractImage`        PDF only: extract embedded image
@@ -39,16 +39,16 @@ Yet others are handy, general-purpose utilities.
 :meth:`getPDFnow`                    return the current timestamp in PDF format
 :meth:`getPDFstr`                    return PDF-compatible string
 :meth:`getTextlength`                return string length for a given font & fontsize
-:meth:`Page.cleanContents`           PDF only: clean the page's :data:`contents` objects
-:meth:`Page._getContents`            PDF only: return a list of content numbers
-:meth:`Page._setContents`            PDF only: set page's :data:`contents` to some :data:`xref`
+:meth:`Page.clean_contents`          PDF only: clean the page's :data:`contents` objects
+:meth:`Page.get_contents`            PDF only: return a list of content :data:`xref` numbers
+:meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
 :meth:`Page.getDisplayList`          create the page's display list
 :meth:`Page.getTextBlocks`           extract text blocks as a Python list
 :meth:`Page.getTextWords`            extract text words as a Python list
 :meth:`Page.run`                     run a page through a device
-:meth:`Page.readContents`            PDF only: get complete, concatenated /Contents source
-:meth:`Page.wrapContents`            wrap contents with stacking commands
-:attr:`Page._isWrapped`              check whether contents wrapping is present
+:meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
+:meth:`Page.wrap_contents`           wrap contents with stacking commands
+:attr:`Page.is_wrapped`              check whether contents wrapping is present
 :meth:`planishLine`                  matrix to map a line to the x-axis
 :meth:`PaperSize`                    return width, height for a known paper format
 :meth:`PaperRect`                    return rectangle for a known paper format
@@ -346,7 +346,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._deleteObject(xref)
+   .. method:: Document.delete_object(xref)
 
       PDF only: Delete an object given by its cross reference number.
 
@@ -356,13 +356,21 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._delXmlMetadata()
+   .. method:: Document.del_xml_metadata()
 
       Delete an object containing XML-based metadata from the PDF. (Py-) MuPDF does not support XML-based metadata. Use this if you want to make sure that the conventional metadata dictionary will be used exclusively. Many thirdparty PDF programs insert their own metadata in XML format and thus may override what you store in the conventional dictionary. This method deletes any such reference, and the corresponding PDF object will be deleted during next garbage collection of the file.
 
 -----
 
-   .. method:: Document._getTrailerString(compressed=False)
+   .. method:: Document.set_xml_metadata(xml)
+
+      Store data as the document's XML Metadata. Correct format is up to the programmer -- there is no checking. Any previous such data are overwritten.
+
+      :arg str xml: The data to store
+
+-----
+
+   .. method:: Document.pdf_trailer(compressed=False)
 
       *(New in version 1.14.9)*
       
@@ -370,16 +378,16 @@ Yet others are handy, general-purpose utilities.
 
       :arg bool compressed: *(ew in version 1.14.14)* whether to generate a compressed output or one with nice indentations to ease reading (default).
 
-      :returns: a string with the PDF trailer information. This is the analogous method to :meth:`Document._getXrefString` except that the trailer has no identifying :data:`xref` number. As can be seen here, the trailer object points to other important objects:
+      :returns: a string with the PDF trailer information. This is the analogous method to :meth:`Document.xref_object` except that the trailer has no identifying :data:`xref` number. As can be seen here, the trailer object points to other important objects:
 
       >>> doc=fitz.open("adobe.pdf")
       >>> # compressed output
-      >>> print(doc._getTrailerString(True))
+      >>> print(doc.pdf_trailer(True))
       <</Size 334093/Prev 25807185/XRefStm 186352/Root 333277 0 R/Info 109959 0 R
       /ID[(\\227\\366/gx\\016ds\\244\\207\\326\\261\\\\\\305\\376u)
       (H\\323\\177\\346\\371pkF\\243\\262\\375\\346\\325\\002)]>>
       >>> # non-compressed otput:
-      >>> print(doc._getTrailerString(False))
+      >>> print(doc.pdf_trailer(False))
       <<
          /Size 334093
          /Prev 25807185
@@ -389,7 +397,7 @@ Yet others are handy, general-purpose utilities.
          /ID [ (\227\366/gx\016ds\244\207\326\261\\\305\376u) (H\323\177\346\371pkF\243\262\375\346\325\002) ]
       >>
 
-      .. note:: MuPDF is capable of recovering from a number of damages a PDF may have. This includes re-generating a trailer, where the end of a file has been lost (e.g. because of incomplete downloads). If however *None* is returned for a PDF, then the recovery mechanisms were unsuccessful and you should check for any error messages (:attr:`Document.openErrCode`, :attr:`Document.openErrMsg`, :attr:`Tools.fitz_stderr`).
+      .. note:: MuPDF is capable of recovering from a number of damages a PDF may have. This includes re-generating a trailer, where the end of a file has been lost (e.g. because of incomplete downloads). If however *None* is returned for a PDF, then the recovery mechanisms did not work and you should check for any error messages: ``print(fitz.TOOLS.mupdf_warnings()``.
 
 
 -----
@@ -400,12 +408,12 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getXmlMetadataXref()
+   .. method:: Document.xml_metadata_xref()
 
       Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
 
       :rtype: int
-      :returns: :data:`xref` of PDF file level XML metadata.
+      :returns: :data:`xref` of PDF file level XML metadata -- or 0 if none exists.
 
 -----
 
@@ -413,7 +421,7 @@ Yet others are handy, general-purpose utilities.
 
       or
 
-   .. method:: Document._getPageXref(pno)
+   .. method:: Document.page_xref(pno)
 
        Return the :data:`xref` and generation number for a given page.
 
@@ -424,7 +432,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getPDFroot()
+   .. method:: Document.pdf_catalog()
 
        Return the :data:`xref` of the PDF catalog.
 
@@ -445,17 +453,17 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.wrapContents
+   .. method:: Page.wrap_contents
 
       Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
 
-      Use this method as an alternative, minimalistic version of :meth:`Page.cleanContents`. Its advantage is a small footprint in terms of processing time and impact on incremental saves.
+      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves.
 
 -----
 
-   .. attribute:: Page._isWrapped
+   .. attribute:: Page.is_wrapped
 
-      Indicate whether :meth:`Page.wrapContents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
+      Indicate whether :meth:`Page.wrap_contents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
 
 -----
 
@@ -507,7 +515,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.cleanContents(sanitize=True)
+   .. method:: Page.clean_contents(sanitize=True)
 
       *(Changed in v1.17.6)*
       
@@ -529,9 +537,9 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Annot._cleanContents()
+   .. method:: Annot.clean_contents(sanitize=True)
 
-      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page.cleanContents` performs -- just restricted to this annotation.
+      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page.clean_contents` performs -- just restricted to this annotation.
 
 
 -----
@@ -558,7 +566,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getXrefString(xref, compressed=False)
+   .. method:: Document.xref_object(xref, compressed=False)
 
       Return the string ("source code") representing an arbitrary object. For :data:`stream` objects, only the non-stream part is returned. To get the stream data, use :meth:`Document.xrefStream`.
 
@@ -570,13 +578,13 @@ Yet others are handy, general-purpose utilities.
 
       >>> doc = fitz.open("Adobe PDF Reference 1-7.pdf")  # the PDF
       >>> page = doc[100]  # some page in it
-      >>> print(doc._getXrefString(page.xref, compressed=True))
+      >>> print(doc.xref_object(page.xref, compressed=True))
       <</CropBox[0 0 531 666]/Annots[4795 0 R 4794 0 R 4793 0 R 4792 0 R 4797 0 R 4796 0 R]
       /Parent 109820 0 R/StructParents 941/Contents 229 0 R/Rotate 0/MediaBox[0 0 531 666]
       /Resources<</Font<</T1_0 3914 0 R/T1_1 3912 0 R/T1_2 3957 0 R/T1_3 3913 0 R/T1_4 4576 0 R
       /T1_5 3931 0 R/T1_6 3944 0 R>>/ProcSet[/PDF/Text]/ExtGState<</GS0 333283 0 R>>>>
       /Type/Page>>
-      >>> print(doc._getXrefString(page.xref, compressed=False))
+      >>> print(doc.xref_object(page.xref, compressed=False))
       <<
          /CropBox [ 0 0 531 666 ]
          /Annots [ 4795 0 R 4794 0 R 4793 0 R 4792 0 R 4797 0 R 4796 0 R ]
@@ -617,7 +625,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getNewXref()
+   .. method:: Document.get_new_xref()
 
       Increase the :data:`xref` by one entry and return that number. This can then be used to insert a new object.
 
@@ -626,7 +634,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getXrefLength()
+   .. method:: Document.xref_length()
 
       Return length of :data:`xref` table.
 

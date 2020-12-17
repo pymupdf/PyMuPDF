@@ -203,7 +203,7 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     }
     fz_catch(ctx) {
         Py_CLEAR(result);
-        Py_RETURN_NONE;
+        fz_rethrow(ctx);
     }
     PyErr_Clear();
     return result;

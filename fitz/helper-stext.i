@@ -28,15 +28,6 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, fz_re
 }
 
 
-//-----------------------------------------------------------------------------
-// Replace MuPDF error rune with character 0xB7
-//-----------------------------------------------------------------------------
-PyObject *JM_repl_char()
-{
-    const char data[2] = {194, 183};
-    return PyUnicode_FromStringAndSize(data, 2);
-}
-
 //---------------------------------------------------------------------------
 // APPEND non-ascii runes in unicode escape format to fz_buffer
 //---------------------------------------------------------------------------
@@ -51,16 +42,67 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
     }
 }
 
+// Switch for computing glyph of fontsize height
+static int small_glyph_heights = 0;
 
-// create the char rect from its quad
-static fz_rect
-JM_char_bbox(fz_stext_char *ch)
+// re-compute char quad if ascender/descender font values are wrong
+static fz_quad
+JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
 {
-    fz_rect r = fz_rect_from_quad(ch->quad);
-    if (!fz_is_empty_rect(r)) return r;
-    // we need to correct erroneous font!
-    if ((r.y1 - r.y0) <= FLT_EPSILON) r.y0 = r.y1 - ch->size;
-    if ((r.x1 - r.x0) <= FLT_EPSILON) r.x0 = r.x1 - ch->size;
+    if (line->wmode) {  // never touch vertical write mode
+        return ch->quad;
+    }
+    float asc = fz_font_ascender(ctx, ch->font);
+    float dsc = fz_font_descender(ctx, ch->font);
+    if (asc - dsc >= 1 && small_glyph_heights == 0) {  // no problem
+        return ch->quad;
+    }
+    /* ------------------------------
+    Re-compute quad with adjusted ascender / descender values:
+    Move ch->origin to (0,0) and de-rotate quad, then adjust the corners,
+    re-rotate and move back to ch->origin location.
+    ------------------------------ */
+    float c, s, fsize = ch->size;
+    fz_matrix trm1, trm2, xlate1, xlate2;
+    fz_quad quad;
+    fz_rect bbox = fz_font_bbox(ctx, ch->font);
+
+    // Re-compute asc, dsc if there are problems.
+    // In that case, we also do not trust dsc and try correcting it.
+    if (asc - dsc < 1) {
+        if (bbox.y0 < dsc) {
+            dsc = bbox.y0;
+        }
+        asc = 1 + dsc;
+    }
+
+    c = line->dir.x;  // cosine
+    s = line->dir.y;  // sine
+    trm1 = fz_make_matrix(c, -s, s, c, 0, 0);  // derotate
+    trm2 = fz_make_matrix(c, s, -s, c, 0, 0);  // rotate
+    xlate1 = fz_make_matrix(1, 0, 0, 1, -ch->origin.x, -ch->origin.y);
+    xlate2 = fz_make_matrix(1, 0, 0, 1, ch->origin.x, ch->origin.y);
+
+    quad = fz_transform_quad(ch->quad, xlate1);  // move origin to (0,0)
+    quad = fz_transform_quad(quad, trm1);  // de-rotate corners
+
+    // adjust vertical coordinates
+    quad.ll.y = -fsize * dsc / (asc - dsc);
+    quad.ul.y = quad.ll.y - fsize;
+    quad.lr.y = quad.ll.y;
+    quad.ur.y = quad.ul.y;
+
+    quad = fz_transform_quad(quad, trm2);  // rotate back
+    quad = fz_transform_quad(quad, xlate2);  // translate to char origin pos.
+    return quad;
+}
+
+
+// return rect of char quad
+static fz_rect
+JM_char_bbox(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
+{
+    fz_rect r = fz_rect_from_quad(JM_char_quad(ctx, line, ch));
     return r;
 }
 
@@ -89,7 +131,7 @@ JM_new_buffer_from_stext_page(fz_context *ctx, fz_stext_page *page)
                 {
                     if (fz_is_empty_rect(fz_intersect_rect(line->bbox, rect))) continue;
                     for (ch = line->first_char; ch; ch = ch->next) {
-                        if (!fz_contains_rect(rect, JM_char_bbox(ch))) continue;
+                        if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) continue;
                         fz_append_rune(ctx, buf, ch->c);
                     }
                     fz_append_byte(ctx, buf, '\n');
@@ -135,24 +177,24 @@ static void on_highlight_char(fz_context *ctx, void *arg, fz_stext_line *line, f
     struct highlight *hits = arg;
     float vfuzz = ch->size * hits->vfuzz;
     float hfuzz = ch->size * hits->hfuzz;
-
+    fz_quad ch_quad = JM_char_quad(ctx, line, ch);
     if (hits->len > 0) {
         PyObject *quad = PySequence_ITEM(hits->quads, hits->len - 1);
         fz_quad end = JM_quad_from_py(quad);
         Py_DECREF(quad);
-        if (hdist(&line->dir, &end.lr, &ch->quad.ll) < hfuzz
-            && vdist(&line->dir, &end.lr, &ch->quad.ll) < vfuzz
-            && hdist(&line->dir, &end.ur, &ch->quad.ul) < hfuzz
-            && vdist(&line->dir, &end.ur, &ch->quad.ul) < vfuzz)
+        if (hdist(&line->dir, &end.lr, &ch_quad.ll) < hfuzz
+            && vdist(&line->dir, &end.lr, &ch_quad.ll) < vfuzz
+            && hdist(&line->dir, &end.ur, &ch_quad.ul) < hfuzz
+            && vdist(&line->dir, &end.ur, &ch_quad.ul) < vfuzz)
         {
-            end.ur = ch->quad.ur;
-            end.lr = ch->quad.lr;
+            end.ur = ch_quad.ur;
+            end.lr = ch_quad.lr;
             quad = JM_py_from_quad(end);
             PyList_SetItem(hits->quads, hits->len - 1, quad);
             return;
         }
     }
-    LIST_APPEND_DROP(hits->quads, JM_py_from_quad(ch->quad));
+    LIST_APPEND_DROP(hits->quads, JM_py_from_quad(ch_quad));
     hits->len++;
 }
 
@@ -257,7 +299,7 @@ JM_search_stext_page(fz_context *ctx, fz_stext_page *page, const char *needle)
                 if (fz_is_empty_rect(fz_intersect_rect(line->bbox, rect))) continue;
                 for (ch = line->first_char; ch; ch = ch->next)
                 {
-                    if (!fz_contains_rect(rect, JM_char_bbox(ch))) continue;
+                    if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) continue;
 try_new_match:
                     if (!inside)
                     {
@@ -322,7 +364,7 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                 last_char = 0;
                 for (ch = line->first_char; ch; ch = ch->next)
                 {
-                    if (!fz_contains_rect(rect, JM_char_bbox(ch))) continue;
+                    if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) continue;
                     last_char = ch->c;
                     fz_write_rune(ctx, out, ch->c);
                 }
@@ -395,13 +437,13 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
     fz_rect line_rect = fz_empty_rect;
     fz_point span_origin;
     typedef struct style_s
-    {float size; int flags; const char *font; int color; } char_style;
+    {float size; int flags; const char *font; int color; float asc; float desc;} char_style;
 
-    char_style old_style = { -1, -1, "", -1 }, style;
+    char_style old_style = { -1, -1, "", -1, 0, 0 }, style;
 
     for (ch = line->first_char; ch; ch = ch->next) {
 //start-trace
-        fz_rect r = JM_char_bbox(ch);
+        fz_rect r = JM_char_bbox(gctx, line, ch);
         // if (fz_is_empty_rect(fz_intersect_rect(tp_rect, r))) continue;
         if (!fz_contains_rect(tp_rect, r)) continue;
 
@@ -410,6 +452,8 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
         style.size = ch->size;
         style.flags = flags;
         style.font = JM_font_name(ctx, ch->font);
+        style.asc = fz_font_ascender(ctx, ch->font);
+        style.desc = fz_font_descender(ctx, ch->font);
         style.color = ch->color;
 
         if (style.size != old_style.size ||
@@ -450,6 +494,8 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
             DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.flags));
             DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
             DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("i", style.color));
+            DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", style.asc));
+            DICT_SETITEMSTR_DROP(span, "descender", Py_BuildValue("f", style.desc));
 
             old_style = style;
             span_rect = r;

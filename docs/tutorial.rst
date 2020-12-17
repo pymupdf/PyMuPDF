@@ -223,7 +223,7 @@ Use one of the following strings for *opt* to obtain different formats [#f2]_:
 
 * *"dict"* / *"json"*: same information level as HTML, but provided as a Python dictionary or resp. JSON string. See :meth:`TextPage.extractDICT` resp. :meth:`TextPage.extractJSON` for details of its structure.
 
-* *"rawdict"*: a super-set of :meth:`TextPage.extractDICT`. It additionally provides character detail information like XML. See :meth:`TextPage.extractRAWDICT` for details of its structure.
+* *"rawdict"* / *"rawjson"*: a super-set of :meth:`TextPage.extractDICT`. It additionally provides character detail information like XML. See :meth:`TextPage.extractRAWDICT` for details of its structure.
 
 * *"xhtml"*: text information level as the TEXT version but includes images. Can also be displayed by internet browsers.
 

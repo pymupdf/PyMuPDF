@@ -432,37 +432,6 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
     return res;
 }
 
-//----------------------------------------------------------------------------
-// Modified copy of SWIG_Python_str_AsChar
-// If Py3, the SWIG original v3.0.12 does *not* deliver NULL for a
-// non-string input, as does PyString_AsString in Py2.
-//----------------------------------------------------------------------------
-char *JM_Python_str_AsChar(PyObject *str)
-{
-    if (!str) return NULL;
-#if PY_VERSION_HEX >= 0x03000000
-  char *newstr = NULL;
-  PyObject *xstr = PyUnicode_AsUTF8String(str);
-  if (xstr) {
-    char *cstr;
-    Py_ssize_t len;
-    PyBytes_AsStringAndSize(xstr, &cstr, &len);
-    size_t l = len + 1;
-    newstr = JM_Alloc(char, l);
-    memcpy(newstr, cstr, l);
-    Py_XDECREF(xstr);
-  }
-  return newstr;
-#else
-  return PyString_AsString(str);
-#endif
-}
-
-#if PY_VERSION_HEX >= 0x03000000
-#  define JM_Python_str_DelForPy3(x) JM_Free(x)
-#else
-#  define JM_Python_str_DelForPy3(x)
-#endif
 
 //----------------------------------------------------------------------------
 // Deep-copies a specified source page to the target location.

@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.18.4
+Version: 1.18.5
 Author: Jorj McKie
 Author-email: jorj.x.mckie@outlook.de
 Maintainer: Jorj McKie
@@ -9,7 +9,7 @@ Home-page: https://github.com/pymupdf/PyMuPDF
 Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the PDF rendering library MuPDF
 Description:
-        Release date: November 30, 2020
+        Release date: December 20, 2020
         
         Authors
         =======
@@ -20,13 +20,13 @@ Description:
         Introduction
         ============
         
-        This is **version 1.18.4 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+        This is **version 1.18.5 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
         
         MuPDF can access files in PDF, XPS, OpenXPS, epub, comic and fiction book formats, and it is known for both, its top performance and high rendering quality.
         
         With PyMuPDF you therefore can access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps``, ``*.epub``, ``*.cbz`` or ``*.fb2`` from your Python scripts. A number of popular image formats is supported as well, including multi-page TIFF images.
         
-        PyMuPDF should run on all platforms that are supported by both, MuPDF and Python. These include, but are not limited to, Windows (XP/SP2 and up), Mac OSX and Linux, 32-bit or 64-bit. If you can generate MuPDF on a Python supported platform, then also PyMuPDF can be used there.
+        PyMuPDF should run on all platforms that are supported by both, MuPDF and Python 3.6+. These include, but are not limited to, Windows, Mac OSX and Linux, 32-bit or 64-bit. If you can generate MuPDF on a Python supported platform, then also PyMuPDF can be used there.
         
         PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ where you find up-to-date information of its features, our `issue tracker <https://github.com/pymupdf/PyMuPDF/issues>`_, `Wikis <https://github.com/pymupdf/PyMuPDF/wiki>`_ and much more.
         
@@ -66,6 +66,5 @@ Classifier: Operating System :: MacOS
 Classifier: Operating System :: Microsoft :: Windows
 Classifier: Operating System :: POSIX :: Linux
 Classifier: Programming Language :: C
-Classifier: Programming Language :: Python :: 2.7
 Classifier: Programming Language :: Python :: 3
 Classifier: Topic :: Utilities

@@ -9,8 +9,7 @@ mycenter = lambda x: (" %s " % x).center(75, "-")
 
 
 def recoverpix(doc, item):
-    """Return image for a given XREF.
-    """
+    """Return image for a given XREF."""
     x = item[0]  # xref of PDF image
     s = item[1]  # xref of its /SMask
     if s == 0:  # no smask: use direct image output
@@ -46,8 +45,7 @@ def recoverpix(doc, item):
 
 
 def open_file(filename, password, show=False, pdf=True):
-    """Open and authenticate a document.
-    """
+    """Open and authenticate a document."""
     doc = fitz.open(filename)
     if not doc.isPDF and pdf is True:
         sys.exit("this command supports PDF files only")
@@ -66,8 +64,7 @@ def open_file(filename, password, show=False, pdf=True):
 
 
 def print_dict(item):
-    """Print a Python dictionary.
-    """
+    """Print a Python dictionary."""
     l = max([len(k) for k in item.keys()]) + 1
     for k, v in item.items():
         msg = "%s: %s" % (k.rjust(l), v)
@@ -197,13 +194,13 @@ def show(args):
         pagel = get_list(args.pages, doc.pageCount + 1)
         for pno in pagel:
             n = pno - 1
-            xref = doc._getPageXref(n)[0]
+            xref = doc.page_xref(n)
             print("Page %i:" % pno)
             print_xref(doc, xref)
             print()
     if args.trailer:
         print(mycenter("PDF trailer"))
-        print(doc.PDFTrailer())
+        print(doc.pdf_trailer())
         print()
     doc.close()
 
@@ -256,8 +253,7 @@ def clean(args):
 
 
 def doc_join(args):
-    """Join pages from several PDF documents.
-    """
+    """Join pages from several PDF documents."""
     doc_list = args.input  # a list of input PDFs
     doc = fitz.open()  # output PDF
     for src_item in doc_list:  # process one input PDF
@@ -278,8 +274,7 @@ def doc_join(args):
 
 
 def embedded_copy(args):
-    """Copy embedded files between PDFs.
-    """
+    """Copy embedded files between PDFs."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         not args.output or args.output == args.input
@@ -321,8 +316,7 @@ def embedded_copy(args):
 
 
 def embedded_del(args):
-    """Delete an embedded file entry.
-    """
+    """Delete an embedded file entry."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         not args.output or args.output == args.input
@@ -341,8 +335,7 @@ def embedded_del(args):
 
 
 def embedded_get(args):
-    """Retrieve contents of an embedded file.
-    """
+    """Retrieve contents of an embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
     try:
         stream = doc.embeddedFileGet(args.name)
@@ -358,8 +351,7 @@ def embedded_get(args):
 
 
 def embedded_add(args):
-    """Insert a new embedded file.
-    """
+    """Insert a new embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         args.output is None or args.output == args.input
@@ -392,8 +384,7 @@ def embedded_add(args):
 
 
 def embedded_upd(args):
-    """Update contents or metadata of an embedded file.
-    """
+    """Update contents or metadata of an embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         args.output is None or args.output == args.input
@@ -442,8 +433,7 @@ def embedded_upd(args):
 
 
 def embedded_list(args):
-    """List embedded files.
-    """
+    """List embedded files."""
     doc = open_file(args.input, args.password, pdf=True)
     names = doc.embeddedFileNames()
     if args.name is not None:
@@ -479,8 +469,7 @@ def embedded_list(args):
 
 
 def extract_objects(args):
-    """Extract images and / or fonts from a PDF.
-    """
+    """Extract images and / or fonts from a PDF."""
     if not args.fonts and not args.images:
         sys.exit("neither fonts nor images requested")
     doc = open_file(args.input, args.password, pdf=True)
@@ -502,7 +491,7 @@ def extract_objects(args):
 
     for pno in pages:
         if args.fonts:
-            itemlist = doc.getPageFontList(pno - 1)
+            itemlist = doc.get_page_fonts(pno - 1)
             for item in itemlist:
                 xref = item[0]
                 if xref not in font_xrefs:
@@ -518,7 +507,7 @@ def extract_objects(args):
                     outfile.close()
                     buffer = None
         if args.images:
-            itemlist = doc.getPageImageList(pno - 1)
+            itemlist = doc.get_page_images(pno - 1)
             for item in itemlist:
                 xref = item[0]
                 if xref not in image_xrefs:
@@ -548,8 +537,7 @@ def extract_objects(args):
 
 
 def main():
-    """Define command configurations.
-    """
+    """Define command configurations."""
     import argparse
 
     parser = argparse.ArgumentParser(

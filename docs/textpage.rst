@@ -24,7 +24,7 @@ For a description of what this class is all about, see Appendix 2.
 :meth:`~.extractJSON`    page content in JSON format      "json"
 :meth:`~.extractRAWDICT` page content in *dict* format    "rawdict"
 :meth:`~.extractRAWJSON` page content in JSON format      "rawjson"
-:meth:`~.search`         Search for a string in the page  searchFor()
+:meth:`~.search`         Search for a string in the page  :meth:`Page.search`
 ======================== ================================ =============================
 
 **Class API**
@@ -44,13 +44,13 @@ For a description of what this class is all about, see Appendix 2.
 
       Textpage content as a list of text lines grouped by block. Each list items looks like this::
 
-         (x0, y0, x1, y1, "lines in blocks", block_type, block_no)
+         (x0, y0, x1, y1, "lines in blocks", block_no, block_type)
 
       The first four entries are the block's bbox coordinates, *block_type* is 1 for an image block, 0 for text. *block_no* is the block sequence number.
 
       For an image block, its bbox and a text line with image meta information is included -- not the image data itself.
 
-      This is a high-speed method with enough information to rebuild a desired text sequence.
+      This is a high-speed method with just enough information to output plain text in desired reading sequence.
 
       :rtype: list
 
@@ -80,7 +80,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: extractJSON
 
-      Textpage content in JSON format. Created by  *json.dumps(TextPage.extractDICT())*. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result in some file. The  method detects binary image data, like *bytearray* and *bytes* (Python 3 only) and converts them to base64 encoded strings on JSON output.
+      Textpage content in JSON format. Created by  *json.dumps(TextPage.extractDICT())*. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings on JSON output.
 
       :rtype: str
 
@@ -102,6 +102,12 @@ For a description of what this class is all about, see Appendix 2.
 
       :rtype: dict
 
+   .. method:: extractRAWJSON
+
+      Textpage content in JSON format. Created by  *json.dumps(TextPage.extractRAWDICT())*. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings on JSON output.
+
+      :rtype: str
+
    .. method:: search(needle, quads=False)
 
       *(Changed in v1.18.2)*
@@ -116,17 +122,19 @@ For a description of what this class is all about, see Appendix 2.
       .. note:: **Overview of changes in v1.18.2:**
 
         1. The ``hit_max`` parameter has been removed: all hits are always returned.
-        2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered.
-        3. Words hyphenated at the end of a line are now found.
-        4. Overlapping **rectangles** in the same line are now automatically joined. We assume that such separations are an artifact created by multiple marked content groups containing parts of the same search needle.
+        2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered. The wrapper method :meth:`Page.searchFor` correspondingly supports a *clip* parameter.
+        3. Words **hyphenated** at the end of a line are now found.
+        4. **Overlapping rectangles** in the same line are now automatically joined. We assume that such separations are an artifact created by multiple marked content groups, containing parts of the same search needle.
 
-      Example Quad versus Rect: when searching for needle "pymupdf", then the corresponding entry will either be the blue rectangle, or, if *quads* was specified, *Quad(ul, ur, ll, lr)*.
+      Example Quad versus Rect: when searching for needle "pymupdf", then the corresponding entry will either be the blue rectangle, or, if *quads* was specified, the quad *Quad(ul, ur, ll, lr)*.
 
       .. image:: images/img-quads.jpg
 
    .. attribute:: rect
 
-      The rectangle associated with the text page. This either equals the rectangle of the creating page or the ``clip`` parameter of :meth:`Page.getTextPage`.
+      The rectangle associated with the text page. This either equals the rectangle of the creating page or the ``clip`` parameter of :meth:`Page.getTextPage` and text extration / searching methods.
+
+      .. note:: The output of text searching and most text extractions **is restricted to this rectangle**. (X)HTML and XML output will however always extract the full page.
 
 .. _textpagedict:
 
@@ -230,6 +238,8 @@ Spans contain the actual text. A line contains **more than one span only**, if i
 bbox            span rectangle, formatted as *tuple(fitz.Rect)*
 origin          *tuple* coordinates of the first character's bottom left point
 font            font name *(str)*
+ascender        ascender of the font *(float)*
+descender       descender of the font *(float)*
 size            font size *(float)*
 flags           font characteristics *(int)*
 color           text color in sRGB format *(int)*
@@ -237,11 +247,30 @@ text            (only for :meth:`extractDICT`) text *(str)*
 chars           (only for :meth:`extractRAWDICT`) *list* of character dictionaries
 =============== =====================================================================
 
-*(New in version 1.16.0)*
+*(New in version 1.16.0):* *"color"* is the text color encoded in sRGB (int) format, e.g. 0xFF0000 for red. There are functions for converting this integer back to formats (r, g, b) (PDF with float values from 0 to 1) :meth:`sRGB_to_pdf`, or (R, G, B), :meth:`sRGB_to_rgb` (with integer values from 0 to 255).
 
-*"color"* is the text color encoded in sRGB (int) format, e.g. 0xFF0000 for red. There are functions for converting this integer back to formats (r, g, b) (PDF with float values from 0 to 1) :meth:`sRGB_to_pdf`, or (R, G, B), :meth:`sRGB_to_rgb` (with integer values from 0 to 255).
+*(New in v1.18.5):* *"ascender"* and *"descender"* are font properties, provided relative to fontsize 1. Note that descender is a negative value. The following picture shows the relationship to other values and properties.
 
-*"flags"* is an integer, encoding bools of font properties:
+.. image:: images/img-asc-desc.*
+   :scale: 60
+
+These numbers may be used to compute the minimum height of a character (or span) -- as opposed to the standard height provided in the "bbox" values (which actually represents the **line height**). The following code recalculates the span bbox to have a height of **fontsize** exactly fitting the text inside:
+
+>>> a = span["ascender]
+>>> d = span["descender"]
+>>> r = fitz.Rect(span["bbox"])
+>>> o = fitz.Point(span["origin"])  # its y-value is the baseline
+>>> r.y1 = o.y - span["size"] * d / (a - d)
+>>> r.y0 = r.y1 - span["size"]
+>>> # r now is a rectangle of height 'fontsize'
+
+The following shows the original span rectangle in red and the rectangle with re-computed height in blue.
+
+.. image:: images/img-span-rect.*
+   :scale: 200
+
+
+*"flags"* is an integer, interpreted as a bit field like this:
 
 * bit 0: superscripted (2\ :sup:`0`)
 * bit 1: italic (2\ :sup:`1`)
@@ -272,4 +301,4 @@ c               the character (unicode)
 
 .. rubric:: Footnotes
 
-.. [#f1] Image specifications for a PDF page are done in the page's sub-dictionary */Resources*. Being a text format specification, PDF does not prevent one from having arbitrary image entries in this dictionary -- whether actually in use by the page or not. On top of this, resource dictionaries can be **inherited** from the page's parent object -- like a node of the PDF's :data:`pagetree` or the :data:`catalog` object. So the PDF creator may e.g. define one file level */Resources* naming all images and fonts ever used by any page. In this case, :meth:`Page.getImageList` and :meth:`Page.getFontList` will always return the same lists for all pages.
+.. [#f1] Image specifications for a PDF page are done in a page's (sub-) :data:`dictionary`, called *"/Resources"*. Resource dictionaries can be **inherited** from the page's parent object (usually the :data:`catalog`). The PDF creator may e.g. define one */Resources* on file level, naming all images and all fonts ever used by any page. In this case, :meth:`Page.getImageList` and :meth:`Page.getFontList` will always return the same lists for all pages.

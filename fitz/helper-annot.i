@@ -6,14 +6,13 @@ pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
 {
     pdf_obj *val = PDF_NAME(S);
     if (!style) return val;
-    char *s = JM_Python_str_AsChar(style);
+    char *s = JM_StrAsChar(style);
     JM_PyErr_Clear;
     if (!s) return val;
     if      (!strncmp(s, "b", 1) || !strncmp(s, "B", 1)) val = PDF_NAME(B);
     else if (!strncmp(s, "d", 1) || !strncmp(s, "D", 1)) val = PDF_NAME(D);
     else if (!strncmp(s, "i", 1) || !strncmp(s, "I", 1)) val = PDF_NAME(I);
     else if (!strncmp(s, "u", 1) || !strncmp(s, "U", 1)) val = PDF_NAME(U);
-    JM_Python_str_DelForPy3(s);
     return val;
 }
 
@@ -368,10 +367,9 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
             i += 1;
             Py_DECREF(stem_id);
         }
-        char *response = JM_Python_str_AsChar(stem_id);
+        char *response = JM_StrAsChar(stem_id);
         pdf_obj *name = pdf_new_string(ctx, (const char *) response, strlen(response));
         pdf_dict_puts_drop(ctx, annot->obj, "NM", name);
-        JM_Python_str_DelForPy3(response);
         Py_CLEAR(stem_id);
         Py_CLEAR(names);
     }

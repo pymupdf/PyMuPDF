@@ -1035,7 +1035,7 @@ def CheckMorph(o):
 def CheckFont(page, fontname):
     """Return an entry in the page's font list if reference name matches.
     """
-    for f in page.getFontList():
+    for f in page.get_fonts():
         if f[4] == fontname:
             return f
         if f[3].lower() == fontname.lower():
@@ -1299,8 +1299,24 @@ def annot_postprocess(page, annot):
     annot.thisown = True
 
 
+def sRGB_to_rgb(srgb):
+    """Convert sRGB color code to an RGB color triple.
+
+    There is **no error checking** for performance reasons!
+
+    Args:
+        srgb: (int) RRGGBB (red, green, blue), each color in range(255).
+    Returns:
+        Tuple (red, green, blue) each item in intervall 0 <= item <= 255.
+    """
+    r = srgb >> 16
+    g = (srgb - (r << 16)) >> 8
+    b = srgb - (r << 16) - (g << 8)
+    return (r, g, b)
+
+
 def sRGB_to_pdf(srgb):
-    """Convert sRGB color code to PDF color triple.
+    """Convert sRGB color code to a PDF color triple.
 
     There is **no error checking** for performance reasons!
 
@@ -1309,10 +1325,8 @@ def sRGB_to_pdf(srgb):
     Returns:
         Tuple (red, green, blue) each item in intervall 0 <= item <= 1.
     """
-    r = srgb >> 16
-    g = (srgb - (r << 16)) >> 8
-    b = srgb - (r << 16) - (g << 8)
-    return (r / 255.0, g / 255.0, b / 255.0)
+    t = sRGB_to_rgb(srgb)
+    return t[0] / 255.0, t[1] / 255.0, t[2] / 255.0
 
 
 def make_table(rect=(0, 0, 1, 1), cols=1, rows=1):
@@ -1364,17 +1378,18 @@ def repair_mono_font(page, font):
     Notes:
         Some mono-spaced fonts are displayed with a too large character
         distance, e.g. "a b c" instead of "abc". This utility adds an entry
-        "/W[0 65535 w]" to the descendent font(s) of font.
+        "/W[0 65535 w]" to the descendent font(s) of font. The float w is
+        taken to be the width of 0x20 (space).
         This should enforce viewers to use 'w' as the character width.
 
     Args:
         page: fitz.Page object.
         font: fitz.Font object.
     """
-    if not font.flags["mono"]:
+    if not font.flags["mono"]:  # font not flagged as monospaced
         return None
-    doc = page.parent
-    fontlist = page.getFontList()  # list of fonts on page
+    doc = page.parent  # the document
+    fontlist = page.get_fonts()  # list of fonts on page
     xrefs = [  # list of objects referring to font
         f[0]
         for f in fontlist

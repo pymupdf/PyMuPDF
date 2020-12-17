@@ -117,11 +117,21 @@ Glossary
 
 .. data:: resolution
 
-        Images and :ref:`Pixmap` objects may contain resolution information provided as "dots per inch", dpi, in each direction (horizontal and vertical). When MuPDF reads an image form a file or from a PDF object, it will parse this information and put it in :attr:`Pixmap.xres`, :attr:`Pixmap.yres`, respectively. When it finds not meaningful information in the input (like non-positive values or values exceeding 4800), it will use "sane" defaults instead. The usual default value is 96, but it may also be 72 in some cases (e.g. 72 for JPX images).
+        Images and :ref:`Pixmap` objects may contain resolution information provided as "dots per inch", dpi, in each direction (horizontal and vertical). When MuPDF reads an image form a file or from a PDF object, it will parse this information and put it in :attr:`Pixmap.xres`, :attr:`Pixmap.yres`, respectively. When it finds not meaningful information in the input (like non-positive values or values exceeding 4800), it will use "sane" defaults instead. The usual default value is 96, but it may also be 72 in some cases (e.g. for JPX images).
+
+.. data:: OCPD
+
+        Optional content properties dictionary - a sub :data:`dictionary` of the PDF :data:`catalog`. The central place to store optional content information, which is identified by the key `/OCProperties`. This dictionary has two required and one optional entry: (1) `/OCGs`, required, an array listing all optional content groups, (2) `/D`, required, the default optional content configuration dictionary (OCCD), (3) `/Configs`, optional, an array of alternative OCCDs.
+
+
+.. data:: OCCD
+
+        Optional content configuration dictionary - a PDF :data:`dictionary` inside the PDF :data:`OCPD`. It stores a setting of ON / OFF states of OCGs and how they are presented to a PDF viewer program. Selecting a configuration is quick way to achieve temporary mass visibility state changes. After opening a PDF, the `/D` configuration of the :data:`OCPD` is always activated. Viewer should offer a way to switch between the `/D`, or one of the optional configurations contained in array `/Configs`.
+
 
 .. data:: OCG
 
-        Optional content group -- a :data:`dictionary` object used to control the visibility of other PDF objects like images or annotations. Objects with the same OCG can simultaneously be shown or hidden by setting their OCG to ON of OFF. This can be achieved via the user interface provided by many PDF viewers (Adobe Acrobat), or programmatically.
+        Optional content group -- a :data:`dictionary` object used to control the visibility of other PDF objects like images or annotations. Independently on which page they are defined, objects with the same OCG can simultaneously be shown or hidden by setting their OCG to ON or OFF. This can be achieved via the user interface provided by many PDF viewers (Adobe Acrobat), or programmatically.
 
 .. data:: OCMD
         
