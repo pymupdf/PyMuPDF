@@ -3,6 +3,7 @@ Change Logs
 
 Changes in Version 1.18.6
 -------------------------
+* **Fixed** issue `#812 <https://github.com/pymupdf/PyMuPDF/issues/812>`_.
 * **Fixed** issue `#793 <https://github.com/pymupdf/PyMuPDF/issues/793>`_. Invalid document metadata previously prevented opening some documents at all. This error has been removed.
 * **Fixed** issue `#792 <https://github.com/pymupdf/PyMuPDF/issues/792>`_. Text search and text extraction will make no rectangle containment checks at all if the default ``clip=None`` is used.
 * **Fixed** issue `#785 <https://github.com/pymupdf/PyMuPDF/issues/785>`_.
