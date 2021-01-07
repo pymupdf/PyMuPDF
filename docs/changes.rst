@@ -1,6 +1,25 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.6
+-------------------------
+* **Fixed** issue `#793 <https://github.com/pymupdf/PyMuPDF/issues/793>`_. Invalid document metadata previously prevented opening some documents at all. This error has been removed.
+* **Fixed** issue `#792 <https://github.com/pymupdf/PyMuPDF/issues/792>`_. Text search and text extraction will make no rectangle containment checks at all if the default ``clip=None`` is used.
+* **Fixed** issue `#785 <https://github.com/pymupdf/PyMuPDF/issues/785>`_.
+* **Fixed** issue `#780 <https://github.com/pymupdf/PyMuPDF/issues/780>`_. Corrected a parameter check error.
+* **Fixed** issue `#779 <https://github.com/pymupdf/PyMuPDF/issues/779>`_. Fixed typo
+* **Added** an option to set the desired line height for text boxes. Implements `#804 <https://github.com/pymupdf/PyMuPDF/issues/804>`_.
+* **Changed** text position retrieval to better cope with Tesseract's glyphless font. Implements `#803 <https://github.com/pymupdf/PyMuPDF/issues/803>`_.
+* **Added** an option to choose the prefix of new annotations, fields and links for providing unique annotation ids. Implements request `#807 <https://github.com/pymupdf/PyMuPDF/issues/807>`_.
+* **Added** getting and setting color and text properties for Table of Contents items for PDFs. Implements `#779 <https://github.com/pymupdf/PyMuPDF/issues/779>`_.
+* **Added** PDF page label handling: :meth:`Page.get_label()` returns the page label, :meth:`Document.get_page_numbers` return all page numbers having a specified label, and :meth:`Document.set_page_labels` adds or updates a PDF's page label definition.
+
+
+
+.. note::
+   This version introduces **Python type hinting**. The goal is to provide each parameter and the return value of all functions and methods with type information. This still is work in progress although the majority of functions has already been handled.
+
+
 Changes in Version 1.18.5
 -------------------------
 Apart from several fixes, this version also focusses on several minor, but important feature improvements. Among the latter is a more precise computation of proper line heights and insertion points for writing / inserting text. As opposed to using font-agnostic constants, these values are now taken from the font's properties.
@@ -696,7 +715,7 @@ Changes in Version 1.12.0
 --------------------------
 This version is based on and requires MuPDF v1.12.0. The new MuPDF version contains quite a number of changes -- most of them around text extraction. Some of the changes impact the programmer's API.
 
-* :meth:`Outline.saveText` and :meth:`Outline.saveXML` have been deleted without replacement. You probably haven't used them much anyway. But if you are looking for a replacement: the output of :meth:`Document.getToC` can easily be used to produce something equivalent.
+* :meth:`Outline.saveText` and :meth:`Outline.saveXML` have been deleted without replacement. You probably haven't used them much anyway. But if you are looking for a replacement: the output of :meth:`Document.get_toc` can easily be used to produce something equivalent.
 
 * Class *TextSheet* does no longer exist.
 

@@ -905,29 +905,29 @@ class Widget(object):
         )
         if not self.script:
             self.script = None
-        elif type(self.script) not in string_types:
-            raise ValueError("script content must be unicode")
+        elif type(self.script) is not str:
+            raise ValueError("script content must be string")
 
         # buttons cannot have the following script actions
         if btn_type or not self.script_calc:
             self.script_calc = None
-        elif type(self.script_calc) not in string_types:
-            raise ValueError("script_calc content must be unicode")
+        elif type(self.script_calc) is not str:
+            raise ValueError("script_calc content must be string")
 
         if btn_type or not self.script_change:
             self.script_change = None
-        elif type(self.script_change) not in string_types:
-            raise ValueError("script_change content must be unicode")
+        elif type(self.script_change) is not str:
+            raise ValueError("script_change content must be string")
 
         if btn_type or not self.script_format:
             self.script_format = None
-        elif type(self.script_format) not in string_types:
-            raise ValueError("script_format content must be unicode")
+        elif type(self.script_format) is not str:
+            raise ValueError("script_format content must be string")
 
         if btn_type or not self.script_stroke:
             self.script_stroke = None
-        elif type(self.script_stroke) not in string_types:
-            raise ValueError("script_stroke content must be unicode")
+        elif type(self.script_stroke) is not str:
+            raise ValueError("script_stroke content must be string")
 
         self._checker()  # any field_type specific checks
 

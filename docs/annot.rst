@@ -71,7 +71,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: get_pixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, alpha=False)
 
-      Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap's :ref:`IRect` equals *Annot.rect.irect* (see below).
+      Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap's :ref:`IRect` equals *Annot.rect.irect* (see below). **All parameters are keyword only.**
 
       :arg matrix_like matrix: a matrix to be used for image creation. Default is the *fitz.Identity* matrix.
 
@@ -98,13 +98,13 @@ There is a parent-child relationship between an annotation and its page. If the 
       pair: xhtml; Annot.get_text
       pair: xml; Annot.get_text
 
-   .. method:: get_text(opt="text", clip=None, flags=None)
+   .. method:: get_text(opt, clip=None, flags=None)
 
       *(New in 1.18.0)*
 
       Retrieves the content of the annotation in a variety of formats -- much like the same method for :ref:`Page`.. This currently only delivers relevant data for annotation types 'FreeText' and 'Stamp'. Other types return an empty string (or equivalent objects).
 
-      :arg str opt: the desired format - one of the following values. Please note that this method works exactly like the same-named method of :ref:`Page`.
+      :arg str opt: (positional only) the desired format - one of the following values. Please note that this method works exactly like the same-named method of :ref:`Page`.
 
          * "text" -- :meth:`TextPage.extractTEXT`, default
          * "blocks" -- :meth:`TextPage.extractBLOCKS`
@@ -116,8 +116,8 @@ There is a parent-child relationship between an annotation and its page. If the 
          * "json" -- :meth:`TextPage.extractJSON`
          * "rawdict" -- :meth:`TextPage.extractRAWDICT`
 
-      :arg rect-like clip: restrict the extraction to this area. Should hardly ever be required, defaults to :attr:`Annot.rect`.
-      :arg int flags: control the amount of data returned. Defaults to simple text extraction.
+      :arg rect-like clip: (keyword only) restrict the extraction to this area. Should hardly ever be required, defaults to :attr:`Annot.rect`.
+      :arg int flags: (keyword only) control the amount of data returned. Defaults to simple text extraction.
 
    .. method:: get_textbox(rect)
 
@@ -147,7 +147,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       .. note::
 
-         * While only 'FreeText', 'Line', 'PolyLine', and 'Polygon' annotations can have these properties, (Py-) MuPDF does not support line ends for 'FreeText', because the call-out variant for these is not supported.
+         * While 'FreeText', 'Line', 'PolyLine', and 'Polygon' annotations can have these properties, (Py-) MuPDF does not support line ends for 'FreeText', because the call-out variant of it is not supported.
          * *(Changed in v1.16.16)* Some symbols have an interior area (diamonds, circles, squares, etc.). By default, these areas are filled with the fill color of the annotation. If this is *None*, then white is chosen. The *fill_color* argument of :meth:`Annot.update` can now be used to override this and give line end symbols their own fill color.
 
       :arg int start: The symbol number for the first point.

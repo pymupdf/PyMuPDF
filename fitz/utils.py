@@ -1,19 +1,31 @@
-from __future__ import division
-
 import io
+import json
 import math
 import os
+import string
+import typing
 import warnings
-import json
+
 from fitz import *
 
+point_like = "point_like"
+rect_like = "rect_like"
+matrix_like = "matrix_like"
+quad_like = "quad_like"
+AnyType = typing.Any
+OptInt = typing.Union[int, None]
+OptFloat = typing.Optional[float]
+OptStr = typing.Optional[str]
+OptDict = typing.Optional[dict]
+OptBytes = typing.Optional[typing.ByteString]
+OptSeq = typing.Optional[typing.Sequence]
 
 """
 This is a collection of functions to extend PyMupdf.
 """
 
 
-def writeText(page, **kwargs):
+def writeText(page: Page, **kwargs) -> None:
     """Write the text of one or more TextWriter objects.
 
     Args:
@@ -65,7 +77,7 @@ def writeText(page, **kwargs):
     tpage = None
 
 
-def showPDFpage(*args, **kwargs):
+def showPDFpage(*args, **kwargs) -> int:
     """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
 
     Args:
@@ -79,10 +91,15 @@ def showPDFpage(*args, **kwargs):
     Returns:
         xref of inserted object (for reuse)
     """
-    if len(args) != 3:
+    if len(args) not in (3, 4):
         raise ValueError("bad number of positional parameters")
-    page, rect, src = args
-    pno = int(kwargs.get("pno", 0))
+    pno = None
+    if len(args) == 3:
+        page, rect, src = args
+    else:
+        page, rect, src, pno = args
+    if pno == None:
+        pno = int(kwargs.get("pno", 0))
     overlay = bool(kwargs.get("overlay", True))
     keep_proportion = bool(kwargs.get("keep_proportion", True))
     rotate = float(kwargs.get("rotate", 0))
@@ -192,7 +209,7 @@ def showPDFpage(*args, **kwargs):
     return xref
 
 
-def insertImage(*args, **kwargs):
+def insertImage(*args, **kwargs) -> None:
     """Insert an image in a rectangle on the current page.
 
     Notes:
@@ -378,7 +395,7 @@ def insertImage(*args, **kwargs):
         doc.InsertedImages[digest] = xref
 
 
-def searchFor(*args, **kwargs):
+def searchFor(*args, **kwargs) -> list:
     """Search for a string on a page.
 
     Args:
@@ -406,14 +423,14 @@ def searchFor(*args, **kwargs):
 
 
 def searchPageFor(
-    doc,
-    pno,
-    text,
-    hit_max=16,
-    quads=False,
-    clip=None,
-    flags=TEXT_DEHYPHENATE,
-):
+    doc: Document,
+    pno: int,
+    text: str,
+    hit_max: int = 0,
+    quads: bool = False,
+    clip: rect_like = None,
+    flags: int = TEXT_DEHYPHENATE,
+) -> list:
     """Search for a string on a page.
 
     Args:
@@ -434,7 +451,11 @@ def searchPageFor(
     )
 
 
-def getTextBlocks(page, clip=None, flags=None):
+def getTextBlocks(
+    page: Page,
+    clip: rect_like = None,
+    flags: OptInt = None,
+) -> list:
     """Return the text blocks on a page.
 
     Notes:
@@ -454,7 +475,11 @@ def getTextBlocks(page, clip=None, flags=None):
     return blocks
 
 
-def getTextWords(page, clip=None, flags=None):
+def getTextWords(
+    page: Page,
+    clip: rect_like = None,
+    flags: OptInt = None,
+) -> list:
     """Return the text words as a list with the bbox for each word.
 
     Args:
@@ -469,14 +494,22 @@ def getTextWords(page, clip=None, flags=None):
     return words
 
 
-def getTextbox(page, rect):
+def getTextbox(
+    page: Page,
+    rect: rect_like,
+) -> str:
     rc = page.getText("text", clip=rect, flags=0)
     if rc.endswith("\n"):
         rc = rc[:-1]
     return rc
 
 
-def getTextSelection(page, p1, p2, clip=None):
+def getTextSelection(
+    page: Page,
+    p1: point_like,
+    p2: point_like,
+    clip: rect_like = None,
+):
     CheckParent(page)
     tp = page.getTextPage(clip=clip, flags=TEXT_DEHYPHENATE)
     rc = tp.extractSelection(p1, p2)
@@ -484,7 +517,12 @@ def getTextSelection(page, p1, p2, clip=None):
     return rc
 
 
-def getText(page, option="text", clip=None, flags=None):
+def getText(
+    page: Page,
+    option: str = "text",
+    clip: rect_like = None,
+    flags: OptInt = None,
+):
     """Extract text from a page or an annotation.
 
     This is a unifying wrapper for various methods of the TextPage class.
@@ -526,7 +564,7 @@ def getText(page, option="text", clip=None, flags=None):
         return getTextBlocks(page, clip=clip, flags=flags)
     CheckParent(page)
     if clip != None:
-        clip = fitz.Rect(clip)
+        clip = Rect(clip)
     tp = page.getTextPage(clip=clip, flags=flags)  # TextPage with or without images
 
     if option == "json":
@@ -550,7 +588,13 @@ def getText(page, option="text", clip=None, flags=None):
     return t
 
 
-def getPageText(doc, pno, option="text", clip=None, flags=None):
+def getPageText(
+    doc: Document,
+    pno: int,
+    option: str = "text",
+    clip: rect_like = None,
+    flags: OptInt = None,
+) -> typing.Any:
     """Extract a document page's text by page number.
 
     Notes:
@@ -564,7 +608,7 @@ def getPageText(doc, pno, option="text", clip=None, flags=None):
     return doc[pno].getText(option, clip=clip, flags=flags)
 
 
-def getPixmap(page, **kw):
+def getPixmap(page: Page, **kw) -> Pixmap:
     """Create pixmap of page.
 
     Args:
@@ -600,8 +644,14 @@ def getPixmap(page, **kw):
 
 
 def getPagePixmap(
-    doc, pno, matrix=None, colorspace=csRGB, clip=None, alpha=False, annots=True
-):
+    doc: Document,
+    pno: int,
+    matrix: matrix_like = Identity,
+    colorspace: Colorspace = csRGB,
+    clip: rect_like = None,
+    alpha: bool = False,
+    annots: bool = True,
+) -> Pixmap:
     """Create pixmap of document page by page number.
 
     Notes:
@@ -619,7 +669,7 @@ def getPagePixmap(
     )
 
 
-def getLinkDict(ln):
+def getLinkDict(ln) -> dict:
     nl = {"kind": ln.dest.kind, "xref": 0}
     try:
         nl["from"] = ln.rect
@@ -666,7 +716,7 @@ def getLinkDict(ln):
     return nl
 
 
-def getLinks(page):
+def getLinks(page: Page) -> list:
     """Create a list of all links contained in a PDF page.
 
     Notes:
@@ -688,14 +738,18 @@ def getLinks(page):
         links.append(nl)
         ln = ln.next
     if len(links) > 0:
-        linkxrefs = page._getLinkXrefs()
+        linkxrefs = [x for x in page.annot_xrefs() if x[1] == PDF_ANNOT_LINK]
         if len(linkxrefs) == len(links):
             for i in range(len(linkxrefs)):
-                links[i]["xref"] = linkxrefs[i]
+                links[i]["xref"] = linkxrefs[i][0]
+                links[i]["id"] = linkxrefs[i][2]
     return links
 
 
-def getToC(doc, simple=True):
+def getToC(
+    doc: Document,
+    simple: bool = True,
+) -> list:
     """Create a table of contents.
 
     Args:
@@ -733,7 +787,7 @@ def getToC(doc, simple=True):
             olItem = olItem.next
         return liste
 
-    # check if document is open and not encrypted
+    # ensure document is open
     if doc.isClosed:
         raise ValueError("document closed")
     doc.initData()
@@ -743,30 +797,33 @@ def getToC(doc, simple=True):
         return []
     lvl = 1
     liste = []
-    return recurse(olItem, liste, lvl)
+    toc = recurse(olItem, liste, lvl)
+    if doc.isPDF and simple is False:
+        doc._extend_toc_items(toc)
+    return toc
 
 
-def delTOC_item(doc, idx):
+def del_toc_item(
+    doc: Document,
+    idx: int,
+) -> None:
     """Delete TOC / bookmark item by index."""
-    toc = doc.getTOC()
-    xref = doc.outlineXref(idx)
-    if xref == 0:
-        raise ValueError("bad TOC item number")
+    xref = doc.get_outline_xrefs()[idx]
     doc._remove_toc_item(xref)
 
 
-def setTOC_item(
-    doc,
-    idx,
-    dest_dict=None,
-    kind=None,
-    pno=None,
-    uri=None,
-    title=None,
-    to=None,
-    filename=None,
-    zoom=0,
-):
+def set_toc_item(
+    doc: Document,
+    idx: int,
+    dest_dict: OptDict = None,
+    kind: OptInt = None,
+    pno: OptInt = None,
+    uri: OptStr = None,
+    title: OptStr = None,
+    to: point_like = None,
+    filename: OptStr = None,
+    zoom: int = 0,
+) -> None:
     """Update TOC item by index.
 
     It allows changing the item's title and link destination.
@@ -788,9 +845,7 @@ def setTOC_item(
         name: (str) a destination name for LINK_NAMED.
         zoom: (float) a zoom factor for the target location (LINK_GOTO).
     """
-    xref = doc.outlineXref(idx)
-    if xref == 0:
-        raise ValueError("bad TOC item number")
+    xref = doc.get_outline_xrefs()[idx]
     page_xref = 0
     if type(dest_dict) is dict:
         if dest_dict["kind"] == LINK_GOTO:
@@ -803,10 +858,26 @@ def setTOC_item(
         action = getDestStr(page_xref, dest_dict)
         if not action.startswith("/A"):
             raise ValueError("bad bookmark dest")
-        return doc._update_toc_item(xref, action=action[2:], title=title)
+        color = dest_dict.get("color")
+        if color:
+            color = list(map(float, color))
+            if len(color) != 3 or min(color) < 0 or max(color) > 1:
+                raise ValueError("bad color value")
+        bold = dest_dict.get("bold", False)
+        italic = dest_dict.get("italic", False)
+        flags = italic + 2 * bold
+        collapse = dest_dict.get("collapse")
+        return doc._update_toc_item(
+            xref,
+            action=action[2:],
+            title=title,
+            color=color,
+            flags=flags,
+            collapse=collapse,
+        )
 
     if kind == LINK_NONE:  # delete bookmark item
-        return doc.delTOC_item(idx)
+        return doc.del_toc_item(idx)
     if kind is None and title is None:  # treat as no-op
         return None
     if kind is None:  # only update title text
@@ -838,7 +909,7 @@ def setTOC_item(
     return doc._update_toc_item(xref, action=action[2:], title=title)
 
 
-def getRectArea(*args):
+def getRectArea(*args) -> float:
     """Calculate area of rectangle.\nparameter is one of 'px' (default), 'in', 'cm', or 'mm'."""
     rect = args[0]
     if len(args) > 1:
@@ -850,7 +921,7 @@ def getRectArea(*args):
     return f * rect.width * rect.height
 
 
-def setMetadata(doc, m):
+def setMetadata(doc: Document, m: dict) -> None:
     """Set PDF /Info object.
 
     Args:
@@ -890,7 +961,7 @@ def setMetadata(doc, m):
     return
 
 
-def getDestStr(xref, ddict):
+def getDestStr(xref: int, ddict: dict) -> str:
     """Calculate the PDF action string.
 
     Notes:
@@ -948,7 +1019,11 @@ def getDestStr(xref, ddict):
     return ""
 
 
-def setToC(doc, toc, collapse=1):
+def setToC(
+    doc: Document,
+    toc: list,
+    collapse: int = 1,
+) -> int:
     """Create new outline tree (table of contents, TOC).
 
     Args:
@@ -1043,10 +1118,14 @@ def setToC(doc, toc, collapse=1):
         d["title"] = title
         d["parent"] = lvltab[lvl - 1]
         d["xref"] = xref[i + 1]
+        d["color"] = dest_dict.get("color")
+        d["flags"] = dest_dict.get("italic", 0) + 2 * dest_dict.get("bold", 0)
         lvltab[lvl] = i + 1
         parent = olitems[lvltab[lvl - 1]]  # the parent entry
 
-        if collapse and lvl > collapse:  # suppress expansion
+        if (
+            dest_dict.get("collapse") or collapse and lvl > collapse
+        ):  # suppress expansion
             parent["count"] -= 1  # make /Count negative
         else:
             parent["count"] += 1  # positive /Count
@@ -1101,16 +1180,28 @@ def setToC(doc, toc, collapse=1):
             txt += "/Title" + ol["title"]
         except:
             pass
+
+        if ol.get("color") and len(ol["color"]) == 3:
+            txt += "/C[ %g %g %g]" % tuple(ol["color"])
+        if ol.get("flags", 0) > 0:
+            txt += "/F %i" % ol["flags"]
+
         if i == 0:  # special: this is the outline root
             txt += "/Type/Outlines"  # so add the /Type entry
         txt += ">>"
-        doc._updateObject(xref[i], txt)  # insert the PDF object
+        doc.update_object(xref[i], txt)  # insert the PDF object
 
     doc.initData()
     return toclen
 
 
-def do_links(doc1, doc2, from_page=-1, to_page=-1, start_at=-1):
+def do_links(
+    doc1: Document,
+    doc2: Document,
+    from_page: int = -1,
+    to_page: int = -1,
+    start_at: int = -1,
+) -> None:
     """Insert links contained in copied page range into destination PDF.
 
     Parameter values **must** equal those of method insertPDF(), which must
@@ -1225,14 +1316,13 @@ def do_links(doc1, doc2, from_page=-1, to_page=-1, start_at=-1):
     return
 
 
-def getLinkText(page, lnk):
+def getLinkText(page: Page, lnk: dict) -> str:
     # --------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     # --------------------------------------------------------------------------
     ctm = page.transformationMatrix
     ictm = ~ctm
     r = lnk["from"]
-    height = page.rect.height
     rect = "%g %g %g %g" % tuple(r * ictm)
 
     annot = ""
@@ -1270,11 +1360,33 @@ def getLinkText(page, lnk):
     elif lnk["kind"] == LINK_NAMED:
         txt = annot_skel["named"]  # annot_named
         annot = txt % (lnk["name"], rect)
+    if not annot:
+        return annot
+
+    # add a /NM PDF key to the object definition
+    link_names = dict(  # existing ids and their xref
+        [(x[0], x[2]) for x in page.annot_xrefs() if x[1] == PDF_ANNOT_LINK]
+    )
+
+    old_name = lnk.get("id", "")  # id value in the argument
+
+    if old_name and (lnk["xref"], old_name) in link_names.items():
+        name = old_name  # no new name if this is an update only
+    else:
+        i = 0
+        stem = TOOLS.set_annot_stem() + "-L%i"
+        while True:
+            name = stem % i
+            if name not in link_names.values():
+                break
+            i += 1
+    # add /NM key to object definition
+    annot = annot.replace("/Link", "/Link/NM(%s)" % name)
 
     return annot
 
 
-def deleteWidget(page, widget):
+def deleteWidget(page: Page, widget: Widget) -> Widget:
     """Delete widget from page and return the next one."""
     CheckParent(page)
     annot = getattr(widget, "_annot", None)
@@ -1290,50 +1402,50 @@ def deleteWidget(page, widget):
     return nextwidget
 
 
-def updateLink(page, lnk):
+def updateLink(page: Page, lnk: dict) -> None:
     """ Update a link on the current page. """
     CheckParent(page)
     annot = getLinkText(page, lnk)
     if annot == "":
         raise ValueError("link kind not supported")
 
-    page.parent._updateObject(lnk["xref"], annot, page=page)
+    page.parent.update_object(lnk["xref"], annot, page=page)
     return
 
 
-def insertLink(page, lnk, mark=True):
+def insertLink(page: Page, lnk: dict, mark: bool = True) -> None:
     """ Insert a new link for the current page. """
     CheckParent(page)
     annot = getLinkText(page, lnk)
     if annot == "":
         raise ValueError("link kind not supported")
-
     page._addAnnot_FromString([annot])
     return
 
 
 def insertTextbox(
-    page,
-    rect,
-    buffer,
-    fontname="helv",
-    fontfile=None,
-    set_simple=0,
-    encoding=0,
-    fontsize=11,
-    color=None,
-    fill=None,
-    expandtabs=1,
-    align=0,
-    rotate=0,
-    render_mode=0,
-    border_width=1,
-    morph=None,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    rect: rect_like,
+    buffer: typing.Union[str, list],
+    fontname: str = "helv",
+    fontfile: OptStr = None,
+    set_simple: int = 0,
+    encoding: int = 0,
+    fontsize: float = 11,
+    lineheight: OptFloat = None,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    expandtabs: int = 1,
+    align: int = 0,
+    rotate: int = 0,
+    render_mode: int = 0,
+    border_width: float = 1,
+    morph: OptSeq = None,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> float:
     """Insert text into a given rectangle.
 
     Notes:
@@ -1344,6 +1456,7 @@ def insertTextbox(
         fontname: a Base-14 font, font name or '/name'
         fontfile: name of a font file
         fontsize: font size
+        lineheight: overwrite the font property
         color: RGB color triple
         expandtabs: handles tabulators with string function
         align: left, center, right, justified
@@ -1358,6 +1471,7 @@ def insertTextbox(
         rect,
         buffer,
         fontsize=fontsize,
+        lineheight=lineheight,
         fontname=fontname,
         fontfile=fontfile,
         set_simple=set_simple,
@@ -1380,24 +1494,25 @@ def insertTextbox(
 
 
 def insertText(
-    page,
-    point,
-    text,
-    fontsize=11,
-    fontname="helv",
-    fontfile=None,
-    set_simple=0,
-    encoding=0,
-    color=None,
-    fill=None,
-    border_width=1,
-    render_mode=0,
-    rotate=0,
-    morph=None,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
+    page: Page,
+    point: point_like,
+    text: typing.Union[str, list],
+    fontsize: float = 11,
+    lineheight: OptFloat = None,
+    fontname: str = "helv",
+    fontfile: OptStr = None,
+    set_simple: int = 0,
+    encoding: int = 0,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    border_width: float = 1,
+    render_mode: int = 0,
+    rotate: int = 0,
+    morph: OptSeq = None,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
 ):
 
     img = page.newShape()
@@ -1405,6 +1520,7 @@ def insertText(
         point,
         text,
         fontsize=fontsize,
+        lineheight=lineheight,
         fontname=fontname,
         fontfile=fontfile,
         set_simple=set_simple,
@@ -1424,23 +1540,28 @@ def insertText(
     return rc
 
 
-def newPage(doc, pno=-1, width=595, height=842):
+def newPage(
+    doc: Document,
+    pno: int = -1,
+    width: float = 595,
+    height: float = 842,
+) -> Page:
     """Create and return a new page object."""
     doc._newPage(pno, width=width, height=height)
     return doc[pno]
 
 
 def insertPage(
-    doc,
-    pno,
-    text=None,
-    fontsize=11,
-    width=595,
-    height=842,
-    fontname="helv",
-    fontfile=None,
-    color=None,
-):
+    doc: Document,
+    pno: int,
+    text: typing.Union[str, list, None] = None,
+    fontsize: float = 11,
+    width: float = 595,
+    height: float = 842,
+    fontname: str = "helv",
+    fontfile: OptStr = None,
+    color: OptSeq = None,
+) -> int:
     """Create a new PDF page and insert some text.
 
     Notes:
@@ -1462,20 +1583,20 @@ def insertPage(
 
 
 def drawLine(
-    page,
-    p1,
-    p2,
-    color=None,
-    dashes=None,
-    width=1,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    morph=None,
-    stroke_opacity=1,
-    fill_opacity=1,
+    page: Page,
+    p1: point_like,
+    p2: point_like,
+    color: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    morph: OptSeq = None,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
     oc=0,
-):
+) -> Point:
     """Draw a line from point p1 to point p2."""
     img = page.newShape()
     p = img.drawLine(Point(p1), Point(p2))
@@ -1497,21 +1618,21 @@ def drawLine(
 
 
 def drawSquiggle(
-    page,
-    p1,
-    p2,
-    breadth=2,
-    color=None,
-    dashes=None,
-    width=1,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    morph=None,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    p1: point_like,
+    p2: point_like,
+    breadth: float = 2,
+    color: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    morph: OptSeq = None,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a squiggly line from point p1 to point p2."""
     img = page.newShape()
     p = img.drawSquiggle(Point(p1), Point(p2), breadth=breadth)
@@ -1533,21 +1654,21 @@ def drawSquiggle(
 
 
 def drawZigzag(
-    page,
-    p1,
-    p2,
-    breadth=2,
-    color=None,
-    dashes=None,
-    width=1,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    morph=None,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    p1: point_like,
+    p2: point_like,
+    breadth: float = 2,
+    color: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    morph: OptSeq = None,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a zigzag line from point p1 to point p2."""
     img = page.newShape()
     p = img.drawZigzag(Point(p1), Point(p2), breadth=breadth)
@@ -1569,20 +1690,20 @@ def drawZigzag(
 
 
 def drawRect(
-    page,
-    rect,
-    color=None,
-    fill=None,
-    dashes=None,
-    width=1,
-    lineCap=0,
-    lineJoin=0,
-    morph=None,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    rect: rect_like,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    morph: OptSeq = None,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a rectangle."""
     img = page.newShape()
     Q = img.drawRect(Rect(rect))
@@ -1604,20 +1725,20 @@ def drawRect(
 
 
 def drawQuad(
-    page,
-    quad,
-    color=None,
-    fill=None,
-    dashes=None,
-    width=1,
-    lineCap=0,
-    lineJoin=0,
-    morph=None,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    quad: quad_like,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    morph: OptSeq = None,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a quadrilateral."""
     img = page.newShape()
     Q = img.drawQuad(Quad(quad))
@@ -1639,21 +1760,21 @@ def drawQuad(
 
 
 def drawPolyline(
-    page,
-    points,
-    color=None,
-    fill=None,
-    dashes=None,
-    width=1,
-    morph=None,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    closePath=False,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    points: list,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    morph: OptSeq = None,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    closePath: bool = False,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw multiple connected line segments."""
     img = page.newShape()
     Q = img.drawPolyline(points)
@@ -1676,21 +1797,21 @@ def drawPolyline(
 
 
 def drawCircle(
-    page,
-    center,
-    radius,
-    color=None,
-    fill=None,
-    morph=None,
-    dashes=None,
-    width=1,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    center: point_like,
+    radius: float,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    morph: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a circle given its center and radius."""
     img = page.newShape()
     Q = img.drawCircle(Point(center), radius)
@@ -1711,20 +1832,20 @@ def drawCircle(
 
 
 def drawOval(
-    page,
-    rect,
-    color=None,
-    fill=None,
-    dashes=None,
-    morph=None,
-    width=1,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    rect: typing.Union[rect_like, quad_like],
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    dashes: OptStr = None,
+    morph: OptSeq = None,
+    width: float = 1,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw an oval given its containing rectangle or quad."""
     img = page.newShape()
     Q = img.drawOval(rect)
@@ -1746,23 +1867,23 @@ def drawOval(
 
 
 def drawCurve(
-    page,
-    p1,
-    p2,
-    p3,
-    color=None,
-    fill=None,
-    dashes=None,
-    width=1,
-    morph=None,
-    closePath=False,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    p1: point_like,
+    p2: point_like,
+    p3: point_like,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    morph: OptSeq = None,
+    closePath: bool = False,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3."""
     img = page.newShape()
     Q = img.drawCurve(Point(p1), Point(p2), Point(p3))
@@ -1785,24 +1906,24 @@ def drawCurve(
 
 
 def drawBezier(
-    page,
-    p1,
-    p2,
-    p3,
-    p4,
-    color=None,
-    fill=None,
-    dashes=None,
-    width=1,
-    morph=None,
-    closePath=False,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    p1: point_like,
+    p2: point_like,
+    p3: point_like,
+    p4: point_like,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    dashes: OptStr = None,
+    width: float = 1,
+    morph: OptStr = None,
+    closePath: bool = False,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3."""
     img = page.newShape()
     Q = img.drawBezier(Point(p1), Point(p2), Point(p3), Point(p4))
@@ -1825,24 +1946,24 @@ def drawBezier(
 
 
 def drawSector(
-    page,
-    center,
-    point,
-    beta,
-    color=None,
-    fill=None,
-    dashes=None,
-    fullSector=True,
-    morph=None,
-    width=1,
-    closePath=False,
-    lineCap=0,
-    lineJoin=0,
-    overlay=True,
-    stroke_opacity=1,
-    fill_opacity=1,
-    oc=0,
-):
+    page: Page,
+    center: point_like,
+    point: point_like,
+    beta: float,
+    color: OptSeq = None,
+    fill: OptSeq = None,
+    dashes: OptStr = None,
+    fullSector: bool = True,
+    morph: OptSeq = None,
+    width: float = 1,
+    closePath: bool = False,
+    lineCap: int = 0,
+    lineJoin: int = 0,
+    overlay: bool = True,
+    stroke_opacity: float = 1,
+    fill_opacity: float = 1,
+    oc: int = 0,
+) -> Point:
     """Draw a circle sector given circle center, one arc end point and the angle of the arc.
 
     Parameters:
@@ -1885,7 +2006,7 @@ def drawSector(
 # ----------------------------------------------------------------------
 
 
-def getColorList():
+def getColorList() -> list:
     """
     Returns a list of just the colour names used by this module.
     :rtype: list of strings
@@ -1894,7 +2015,7 @@ def getColorList():
     return [x[0] for x in getColorInfoList()]
 
 
-def getColorInfoList():
+def getColorInfoList() -> list:
     """
     Returns the list of colour name/value tuples used by this module.
     :rtype: list of tuples
@@ -2449,14 +2570,14 @@ def getColorInfoList():
     ]
 
 
-def getColorInfoDict():
+def getColorInfoDict() -> dict:
     d = {}
     for item in getColorInfoList():
         d[item[0].lower()] = item[1:]
     return d
 
 
-def getColor(name):
+def getColor(name: str) -> tuple:
     """Retrieve RGB color in PDF format by name.
 
     Returns:
@@ -2469,7 +2590,7 @@ def getColor(name):
         return (1, 1, 1)
 
 
-def getColorHSV(name):
+def getColorHSV(name: str) -> tuple:
     """Retrieve the hue, saturation, value triple of a color name.
 
     Returns:
@@ -2507,7 +2628,7 @@ def getColorHSV(name):
     return (H, S, V)
 
 
-def _get_font_properties(doc, xref):
+def _get_font_properties(doc: Document, xref: int) -> tuple:
     fontname, ext, stype, buffer = doc.extractFont(xref)
     asc = 0.8
     dsc = -0.2
@@ -2515,7 +2636,7 @@ def _get_font_properties(doc, xref):
         return fontname, ext, stype, asc, dsc
 
     if buffer:
-        font = fitz.Font(fontbuffer=buffer)
+        font = Font(fontbuffer=buffer)
         asc = font.ascender
         dsc = font.descender
         bbox = font.bbox
@@ -2527,7 +2648,7 @@ def _get_font_properties(doc, xref):
         buffer = None
         return fontname, ext, stype, asc, dsc
     try:
-        font = fitz.Font(fontname)
+        font = Font(fontname)
         asc = font.ascender
         dsc = font.descender
         font = None
@@ -2536,7 +2657,12 @@ def _get_font_properties(doc, xref):
     return fontname, ext, stype, asc, dsc
 
 
-def getCharWidths(doc, xref, limit=256, idx=0):
+def getCharWidths(
+    doc: Document,
+    xref: int,
+    limit: int = 256,
+    idx: int = 0,
+) -> list:
     """Get list of glyph information of a font.
 
     Notes:
@@ -2648,7 +2774,7 @@ class Shape(object):
                 alfa = -alfa
         return alfa
 
-    def __init__(self, page):
+    def __init__(self, page: Page):
         CheckParent(page)
         self.page = page
         self.doc = page.parent
@@ -2689,7 +2815,7 @@ class Shape(object):
                 self.rect.x1 = max(self.rect.x1, x.x1)
                 self.rect.y1 = max(self.rect.y1, x.y1)
 
-    def drawLine(self, p1, p2):
+    def drawLine(self, p1: point_like, p2: point_like) -> Point:
         """Draw a line between two points."""
         p1 = Point(p1)
         p2 = Point(p2)
@@ -2703,7 +2829,7 @@ class Shape(object):
         self.lastPoint = p2
         return self.lastPoint
 
-    def drawPolyline(self, points):
+    def drawPolyline(self, points: list) -> Point:
         """Draw several connected line segments."""
         for i, p in enumerate(points):
             if i == 0:
@@ -2717,7 +2843,13 @@ class Shape(object):
         self.lastPoint = Point(points[-1])
         return self.lastPoint
 
-    def drawBezier(self, p1, p2, p3, p4):
+    def drawBezier(
+        self,
+        p1: point_like,
+        p2: point_like,
+        p3: point_like,
+        p4: point_like,
+    ) -> Point:
         """Draw a standard cubic Bezier curve."""
         p1 = Point(p1)
         p2 = Point(p2)
@@ -2735,7 +2867,7 @@ class Shape(object):
         self.lastPoint = p4
         return self.lastPoint
 
-    def drawOval(self, tetra):
+    def drawOval(self, tetra: typing.Union[quad_like, rect_like]) -> Point:
         """Draw an ellipse inside a tetrapod."""
         if len(tetra) != 4:
             raise ValueError("invalid arg length")
@@ -2759,7 +2891,7 @@ class Shape(object):
         self.lastPoint = ml
         return self.lastPoint
 
-    def drawCircle(self, center, radius):
+    def drawCircle(self, center: point_like, radius: float) -> Point:
         """Draw a circle given its center and radius."""
         if not radius > EPSILON:
             raise ValueError("radius must be postive")
@@ -2767,7 +2899,12 @@ class Shape(object):
         p1 = center - (radius, 0)
         return self.drawSector(center, p1, 360, fullSector=False)
 
-    def drawCurve(self, p1, p2, p3):
+    def drawCurve(
+        self,
+        p1: point_like,
+        p2: point_like,
+        p3: point_like,
+    ) -> Point:
         """Draw a curve between points using one control point."""
         kappa = 0.55228474983
         p1 = Point(p1)
@@ -2777,7 +2914,13 @@ class Shape(object):
         k2 = p3 + (p2 - p3) * kappa
         return self.drawBezier(p1, k1, k2, p3)
 
-    def drawSector(self, center, point, beta, fullSector=True):
+    def drawSector(
+        self,
+        center: point_like,
+        point: point_like,
+        beta: float,
+        fullSector: bool = True,
+    ) -> Point:
         """Draw a circle sector."""
         center = Point(center)
         point = Point(point)
@@ -2845,7 +2988,7 @@ class Shape(object):
         self.lastPoint = Q
         return self.lastPoint
 
-    def drawRect(self, rect):
+    def drawRect(self, rect: rect_like) -> Point:
         """Draw a rectangle."""
         r = Rect(rect)
         self.draw_cont += "%g %g %g %g re\n" % JM_TUPLE(
@@ -2855,12 +2998,17 @@ class Shape(object):
         self.lastPoint = r.tl
         return self.lastPoint
 
-    def drawQuad(self, quad):
+    def drawQuad(self, quad: quad_like) -> Point:
         """Draw a Quad."""
         q = Quad(quad)
         return self.drawPolyline([q.ul, q.ll, q.lr, q.ur, q.ul])
 
-    def drawZigzag(self, p1, p2, breadth=2):
+    def drawZigzag(
+        self,
+        p1: point_like,
+        p2: point_like,
+        breadth: float = 2,
+    ) -> Point:
         """Draw a zig-zagged line from p1 to p2."""
         p1 = Point(p1)
         p2 = Point(p2)
@@ -2884,7 +3032,12 @@ class Shape(object):
         self.drawPolyline([p1] + points + [p2])  # add start and end points
         return p2
 
-    def drawSquiggle(self, p1, p2, breadth=2):
+    def drawSquiggle(
+        self,
+        p1: point_like,
+        p2: point_like,
+        breadth=2,
+    ) -> Point:
         """Draw a squiggly line from p1 to p2."""
         p1 = Point(p1)
         p2 = Point(p2)
@@ -2921,23 +3074,24 @@ class Shape(object):
     # ==============================================================================
     def insertText(
         self,
-        point,
-        buffer,
-        fontsize=11,
-        fontname="helv",
-        fontfile=None,
-        set_simple=0,
-        encoding=0,
-        color=None,
-        fill=None,
-        render_mode=0,
-        border_width=1,
-        rotate=0,
-        morph=None,
-        stroke_opacity=1,
-        fill_opacity=1,
-        oc=0,
-    ):
+        point: point_like,
+        buffer: typing.Union[str, list],
+        fontsize: float = 11,
+        lineheight: OptFloat = None,
+        fontname: str = "helv",
+        fontfile: OptStr = None,
+        set_simple: bool = 0,
+        encoding: int = 0,
+        color: OptSeq = None,
+        fill: OptSeq = None,
+        render_mode: int = 0,
+        border_width: float = 1,
+        rotate: int = 0,
+        morph: OptSeq = None,
+        stroke_opacity: float = 1,
+        fill_opacity: float = 1,
+        oc: int = 0,
+    ) -> int:
 
         # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer):
@@ -2971,6 +3125,15 @@ class Shape(object):
         ordering = fontdict["ordering"]
         simple = fontdict["simple"]
         bfname = fontdict["name"]
+        ascender = fontdict["ascender"]
+        descender = fontdict["descender"]
+        if lineheight:
+            lheight = fontsize * lineheight
+        elif ascender - descender <= 1:
+            lheight = fontsize * 1.2
+        else:
+            lheight = fontsize * (ascender - descender)
+
         if maxcode > 255:
             glyphs = self.doc.getCharWidths(xref, maxcode + 1)
         else:
@@ -2994,7 +3157,7 @@ class Shape(object):
         morphing = CheckMorph(morph)
         rot = rotate
         if rot % 90 != 0:
-            raise ValueError("rotate not multiple of 90")
+            raise ValueError("rotate no int multiple of 90")
 
         while rot < 0:
             rot += 360
@@ -3007,7 +3170,7 @@ class Shape(object):
         cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
         height = self.height
         width = self.width
-        lheight = fontsize * 1.2  # line height
+
         # setting up for standard rotation directions
         # case rotate = 0
         if morphing:
@@ -3092,25 +3255,26 @@ class Shape(object):
     # ==============================================================================
     def insertTextbox(
         self,
-        rect,
-        buffer,
-        fontname="helv",
-        fontfile=None,
-        fontsize=11,
-        set_simple=0,
-        encoding=0,
-        color=None,
-        fill=None,
-        expandtabs=1,
-        border_width=1,
-        align=0,
-        render_mode=0,
-        rotate=0,
-        morph=None,
-        stroke_opacity=1,
-        fill_opacity=1,
-        oc=0,
-    ):
+        rect: rect_like,
+        buffer: typing.Union[str, list],
+        fontname: OptStr = "helv",
+        fontfile: OptStr = None,
+        fontsize: float = 11,
+        lineheight: OptFloat = None,
+        set_simple: bool = 0,
+        encoding: int = 0,
+        color: OptSeq = None,
+        fill: OptSeq = None,
+        expandtabs: int = 1,
+        border_width: float = 1,
+        align: int = 0,
+        render_mode: int = 0,
+        rotate: int = 0,
+        morph: OptSeq = None,
+        stroke_opacity: float = 1,
+        fill_opacity: float = 1,
+        oc: int = 0,
+    ) -> float:
         """Insert text into a given rectangle.
 
         Args:
@@ -3119,6 +3283,7 @@ class Shape(object):
             fontname -- a Base-14 font, font name or '/name'
             fontfile -- name of a font file
             fontsize -- font size
+            lineheight -- overwrite the font property
             color -- RGB stroke color triple
             fill -- RGB fill color triple
             render_mode -- text rendering control
@@ -3187,12 +3352,13 @@ class Shape(object):
         bfname = fontdict["name"]
         ascender = fontdict["ascender"]
         descender = fontdict["descender"]
-        if ascender - descender <= 1:
-            lheight_factor = 1.2
 
+        if lineheight:
+            lheight_factor = lineheight
+        elif ascender - descender <= 1:
+            lheight_factor = 1.2
         else:
             lheight_factor = ascender - descender
-
         lheight = fontsize * lheight_factor
 
         # create a list from buffer, split into its lines
@@ -3396,19 +3562,19 @@ class Shape(object):
 
     def finish(
         self,
-        width=1,
-        color=None,
-        fill=None,
-        lineCap=0,
-        lineJoin=0,
-        dashes=None,
-        even_odd=False,
-        morph=None,
-        closePath=True,
-        fill_opacity=1,
-        stroke_opacity=1,
-        oc=0,
-    ):
+        width: float = 1,
+        color: OptSeq = None,
+        fill: OptSeq = None,
+        lineCap: int = 0,
+        lineJoin: int = 0,
+        dashes: OptStr = None,
+        even_odd: bool = False,
+        morph: OptSeq = None,
+        closePath: bool = True,
+        fill_opacity: float = 1,
+        stroke_opacity: float = 1,
+        oc: int = 0,
+    ) -> None:
         """Finish the current drawing segment.
 
         Notes:
@@ -3483,13 +3649,12 @@ class Shape(object):
         self.lastPoint = None
         return
 
-    def commit(self, overlay=True):
+    def commit(self, overlay: bool = True) -> None:
         """Update the page's /Contents object with Shape data. The argument controls whether data appear in foreground (default) or background."""
         CheckParent(self.page)  # doc may have died meanwhile
         self.totalcont += self.text_cont
 
-        if not fitz_py2:  # need bytes if Python > 2
-            self.totalcont = bytes(self.totalcont, "utf-8")
+        self.totalcont = self.totalcont.encode()
 
         if self.totalcont != b"":
             # make /Contents object with dummy stream
@@ -3505,8 +3670,14 @@ class Shape(object):
         return
 
 
-def apply_redactions(page, images=2):
-    """Apply the redaction annotations of the page."""
+def apply_redactions(page: Page, images: int = 2) -> bool:
+    """Apply the redaction annotations of the page.
+
+    Args:
+        page: the PDF page.
+        images: 0 - ignore images, 1 - remove complete overlapping image,
+                2 - blank out overlapping image parts.
+    """
 
     def center_rect(annot_rect, text, font, fsize):
         """Calculate minimal sub-rectangle for the overlay text.
@@ -3591,20 +3762,20 @@ def apply_redactions(page, images=2):
 # Acrobat 'sanitize' function
 # ------------------------------------------------------------------------------
 def scrub(
-    doc,
-    attached_files=True,
-    clean_pages=True,
-    embedded_files=True,
-    hidden_text=True,
-    javascript=True,
-    metadata=True,
-    redactions=True,
-    redact_images=0,
-    remove_links=True,
-    reset_fields=True,
-    reset_responses=True,
-    xml_metadata=True,
-):
+    doc: Document,
+    attached_files: bool = True,
+    clean_pages: bool = True,
+    embedded_files: bool = True,
+    hidden_text: bool = True,
+    javascript: bool = True,
+    metadata: bool = True,
+    redactions: bool = True,
+    redact_images: int = 0,
+    remove_links: bool = True,
+    reset_fields: bool = True,
+    reset_responses: bool = True,
+    xml_metadata: bool = True,
+) -> None:
     def remove_hidden(cont_lines):
         """Remove hidden text from a PDF page.
 
@@ -3666,43 +3837,6 @@ def scrub(
     if metadata:
         doc.setMetadata({})  # remove standard metadata
 
-    if not (xml_metadata or javascript):
-        xref_limit = 0
-    else:
-        xref_limit = doc.xrefLength()
-    for xref in range(1, xref_limit):
-        obj = doc.xref_object(xref)  # get object definition source
-        # note: this string is formatted in a fixed, standard way by MuPDF.
-
-        if javascript and "/S /JavaScript" in obj:  # a /JavaScript action object?
-            obj = "<</S/JavaScript/JS()>>"  # replace with a null JavaScript
-            doc.updateObject(xref, obj)  # update this object
-            continue  # no further handling
-
-        if not xml_metadata or "/Metadata" not in obj:
-            continue
-
-        if "/Type /Metadata" in obj:  # delete any metadata object directly
-            doc._deleteObject(xref)
-            continue
-
-        obj_lines = obj.splitlines()
-        new_lines = []  # will receive remaining obj definition lines
-        found = False  # assume /Metadata  not found
-        for line in obj_lines:
-            line = line.strip()
-            if not line.startswith("/Metadata "):
-                new_lines.append(line)  # keep this line
-            else:  # drop this line
-                found = True
-        if found:  # if removed /Metadata key, update object definition
-            doc.updateObject(xref, "\n".join(new_lines))
-
-    # remove embedded files
-    if embedded_files:
-        for name in doc.embeddedFileNames():
-            doc.embeddedFileDel(name)
-
     for page in doc:
         if reset_fields:
             # reset form fields (widgets)
@@ -3718,7 +3852,7 @@ def scrub(
         found_redacts = False
         for annot in page.annots():
             if annot.type[0] == PDF_ANNOT_FILE_ATTACHMENT and attached_files:
-                annot.fileUpd(buffer=b"")  # set file content to empty
+                annot.fileUpd(buffer=b" ")  # set file content to empty
             if reset_responses:
                 annot.delete_responses()
             if annot.type[0] == PDF_ANNOT_REDACT:
@@ -3727,26 +3861,73 @@ def scrub(
         if redactions and found_redacts:
             page.apply_redactions(images=redact_images)
 
-        if not page.getContents():  # safeguard against empty /Contents
-            continue
-
         if not (clean_pages or hidden_text):
             continue  # done with the page
 
-        page.cleanContents(sanitize=True)
-
+        page.clean_contents()
+        if not page.get_contents():
+            continue
         if hidden_text:
-            xref = page.getContents()[0]  # only one b/o cleaning!
+            xref = page.get_contents()[0]  # only one b/o cleaning!
             cont = doc.xref_stream(xref)
             cont_lines = remove_hidden(cont.splitlines())  # remove hidden text
             if cont_lines:  # something was actually removed
                 cont = b"\n".join(cont_lines)
                 doc.update_stream(xref, cont)  # rewrite the page /Contents
 
+    # pages are scrubbed, now perform document-wide scrubbing
+    # remove embedded files
+    if embedded_files:
+        for name in doc.embeddedFileNames():
+            doc.embeddedFileDel(name)
+
+    if xml_metadata:
+        doc.del_xml_metadata()
+    if not (xml_metadata or javascript):
+        xref_limit = 0
+    else:
+        xref_limit = doc.xrefLength()
+    for xref in range(1, xref_limit):
+        obj = doc.xref_object(xref)  # get object definition source
+        # note: this string is formatted in a standard way by MuPDF.
+
+        if javascript and "/S /JavaScript" in obj:  # a /JavaScript action object?
+            obj = "<</S/JavaScript/JS()>>"  # replace with a null JavaScript
+            doc.update_object(xref, obj)  # update this object
+            continue  # no further handling
+
+        if not xml_metadata or "/Metadata" not in obj:
+            continue
+
+        if "/Type /Metadata" in obj:  # delete any metadata object directly
+            doc.update_stream(xref, b"deleted")
+            doc.update_object(xref, "<<>>")
+            continue
+
+        obj_lines = obj.splitlines()
+        new_lines = []  # will receive remaining obj definition lines
+        found = False  # assume /Metadata  not found
+        for line in obj_lines:
+            line = line.strip()
+            if not line.startswith("/Metadata "):
+                new_lines.append(line)  # keep this line
+            else:  # drop this line
+                found = True
+        if found:  # if removed /Metadata key, update object definition
+            doc.updateObject(xref, "\n".join(new_lines))
+
 
 def fillTextbox(
-    writer, rect, text, pos=None, font=None, fontsize=11, align=0, warn=True
-):
+    writer: TextWriter,
+    rect: rect_like,
+    text: typing.Union[str, list],
+    pos: point_like = None,
+    font: typing.Optional[Font] = None,
+    fontsize: float = 11,
+    lineheight: OptFloat = None,
+    align: int = 0,
+    warn: bool = True,
+) -> tuple:
     """Fill a rectangle with text.
 
     Args:
@@ -3756,12 +3937,13 @@ def fillTextbox(
         pos: point-like start position of first word.
         font: Font object (default Font('helv')).
         fontsize: the fontsize.
+        lineheight: overwrite the font property
         align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
         warn: (bool) just warn on text overflow, else raise exception.
     """
     textlen = lambda x: font.text_length(x, fontsize)  # just for abbreviation
 
-    rect = fitz.Rect(rect)
+    rect = Rect(rect)
     if rect.isEmpty or rect.isInfinite:
         raise ValueError("fill rect must be finite and not empty.")
 
@@ -3770,10 +3952,13 @@ def fillTextbox(
 
     asc = font.ascender
     dsc = font.descender
-    if asc - dsc <= 1:
-        lheight = 1.2
+    if not lineheight:
+        if asc - dsc <= 1:
+            lheight = 1.2
+        else:
+            lheight = asc - dsc
     else:
-        lheight = asc - dsc
+        lheight = lineheight
 
     tolerance = fontsize * 0.25
     width = rect.width - tolerance  # available horizontal space
@@ -3789,9 +3974,9 @@ def fillTextbox(
         pos = rect.tl + (tolerance, fontsize * asc)
 
     # calculate displacement factor for alignment
-    if align == fitz.TEXT_ALIGN_CENTER:
+    if align == TEXT_ALIGN_CENTER:
         factor = 0.5
-    elif align == fitz.TEXT_ALIGN_RIGHT:
+    elif align == TEXT_ALIGN_RIGHT:
         factor = 1.0
     else:
         factor = 0
@@ -3889,7 +4074,7 @@ def fillTextbox(
                 exhausted = True  # and turn on switch
 
         # finished preparing a line
-        if align != fitz.TEXT_ALIGN_JUSTIFY:  # trivial alignments
+        if align != TEXT_ALIGN_JUSTIFY:  # trivial alignments
             fin_len = sum(len_line) + (len(line) - 1) * len_space
             d = (width - fin_len) * factor  # takes care of alignment
             start.x += d
@@ -3918,7 +4103,13 @@ def fillTextbox(
 # ------------------------------------------------------------------------
 # Optional Content functions
 # ------------------------------------------------------------------------
-def set_ocmd(doc, xref=0, ocgs=None, policy=None, ve=None):
+def set_ocmd(
+    doc: Document,
+    xref: int = 0,
+    ocgs: typing.Union[list, None] = None,
+    policy: OptStr = None,
+    ve: typing.Union[list, None] = None,
+) -> int:
     """Create or update an OCMD object in a PDF document.
 
     Args:
@@ -3986,7 +4177,7 @@ def set_ocmd(doc, xref=0, ocgs=None, policy=None, ve=None):
     return xref
 
 
-def get_ocmd(doc, xref):
+def get_ocmd(doc: Document, xref: int) -> dict:
     """Return the definition of an OCMD (optional content membership dictionary).
 
     Recognizes PDF dict keys /OCGs (PDF array of OCGs), /P (policy string) and
@@ -4050,3 +4241,228 @@ def get_ocmd(doc, xref):
             print("bad /VE key: ", ve)
             raise
     return {"xref": xref, "ocgs": ocgs, "policy": policy, "ve": ve}
+
+
+"""
+Handle page labels for PDF documents.
+
+Reading
+-------
+* compute the label of a page
+* find page number(s) having the given label.
+
+Writing
+-------
+Supports setting (defining) page labels for PDF documents.
+
+A big Thank You goes to WILLIAM CHAPMAN who contributed the idea and
+significant parts of the following code during late December 2020
+through early January 2021.
+"""
+
+
+def rule_dict(item):
+    """Make a Python dict from a PDF page label rule.
+
+    Args:
+        item -- a tuple (pno, rule) with the start page number and the rule
+                string like <</S/D...>>.
+    Returns:
+        A dict like
+        {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}.
+    """
+    # Jorj McKie, 2021-01-06
+
+    pno, rule = item
+    rule = rule[2:-2].split("/")[1:]  # strip "<<" and ">>"
+    d = {"startpage": pno, "prefix": "", "firstpagenum": 1}
+    skip = False
+    for i, item in enumerate(rule):
+        if skip:  # this item has already been processed
+            skip = False  # deactivate skipping again
+            continue
+        if item == "S":  # style specification
+            d["style"] = rule[i + 1]  # next item has the style
+            skip = True  # do not process next item again
+            continue
+        if item.startswith("P"):  # prefix specification: extract the string
+            x = item[1:].replace("(", "").replace(")", "")
+            d["prefix"] = x
+            continue
+        if item.startswith("St"):  # start page number specification
+            x = int(item[2:])
+            d["firstpagenum"] = x
+    return d
+
+
+def get_label_pno(pgNo, labels):
+    """Return the label for this page number.
+
+    Args:
+        pgNo: page number, 0-based.
+        labels: result of doc._get_page_labels().
+    Returns:
+        The label (str) of the page number. Errors return an empty string.
+    """
+    # Jorj McKie, 2021-01-06
+
+    item = [x for x in labels if x[0] <= pgNo][-1]
+    rule = rule_dict(item)
+    prefix = rule["prefix"]
+    style = rule["style"]
+    pagenumber = pgNo - rule["startpage"] + rule["firstpagenum"]
+    return construct_label(style, prefix, pagenumber)
+
+
+def get_label(page):
+    """Return the label for this PDF page.
+
+    Args:
+        page: page object.
+    Returns:
+        The label (str) of the page. Errors return an empty string.
+    """
+    # Jorj McKie, 2021-01-06
+
+    labels = page.parent._get_page_labels()
+    if not labels:
+        return ""
+    labels.sort()
+    return get_label_pno(page.number, labels)
+
+
+def get_page_numbers(doc, label, only_one=False):
+    """Return a list of page numbers with the given label.
+
+    Args:
+        doc: PDF document object (resp. 'self').
+        label: (str) label.
+        only_one: (bool) stop searching after first hit.
+    Returns:
+        List of page numbers having this label.
+    """
+    # Jorj McKie, 2021-01-06
+
+    numbers = []
+    if not label:
+        return numbers
+    labels = doc._get_page_labels()
+    if labels == []:
+        return numbers
+    for i in range(doc.pageCount):
+        plabel = get_label_pno(i, labels)
+        if plabel == label:
+            numbers.append(i)
+            if only_one:
+                break
+    return numbers
+
+
+def construct_label(style, prefix, pno) -> str:
+    """Construct a label based on style, prefix and page number."""
+    # William Chapman, 2021-01-06
+
+    n_str = ""
+    if style == "D":
+        n_str = str(pno)
+    if style == "r":
+        n_str = integerToRoman(pno).lower()
+    if style == "R":
+        n_str = integerToRoman(pno).upper()
+    if style == "a":
+        n_str = integerToLetter(pno).lower()
+    if style == "A":
+        n_str = integerToLetter(pno).upper()
+    result = prefix + n_str
+    return result
+
+
+def integerToLetter(i) -> str:
+    """Returns letter sequence string for integer i."""
+    # William Chapman, Jorj McKie, 2021-01-06
+
+    ls = string.ascii_uppercase
+    m = int((i - 1) / 26)  # how many times over
+    n = (i % 26) - 1  # remainder
+    str_t = ""
+    for _ in range(0, m + 1):
+        str_t = str_t + ls[n]
+    return str_t
+
+
+def integerToRoman(num: int) -> str:
+    """Return roman numeral for an integer."""
+    # William Chapman, Jorj McKie, 2021-01-06
+
+    roman = (
+        (1000, "M"),
+        (900, "CM"),
+        (500, "D"),
+        (400, "CD"),
+        (100, "C"),
+        (90, "XC"),
+        (50, "L"),
+        (40, "XL"),
+        (10, "X"),
+        (9, "IX"),
+        (5, "V"),
+        (4, "IV"),
+        (1, "I"),
+    )
+
+    def roman_num(num):
+        for r, ltr in roman:
+            x, _ = divmod(num, r)
+            yield ltr * x
+            num -= r * x
+            if num <= 0:
+                break
+
+    return "".join([a for a in roman_num(num)])
+
+
+def set_page_labels(doc, labels):
+    """Add / replace page label definitions in PDF document.
+
+    Args:
+        doc: PDF document (resp. 'self').
+        labels: list of label dictionaries like:
+        {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}
+    """
+    # William Chapman, 2021-01-06
+
+    def create_label_str(label):
+        """Convert Python label dict to correspnding PDF rule string.
+
+        Args:
+            label: (dict) build rule for the label.
+        Returns:
+            PDF label rule string wrapped in "<<", ">>".
+        """
+        s = "%i<<" % label["startpage"]
+        if label["prefix"] != "":
+            s += "/P(%s)" % label["prefix"]
+        if label["style"] != "":
+            s += "/S/%s" % label["style"]
+        if label["firstpagenum"] > 1:
+            s += "/St %i" % label["firstpagenum"]
+        s += ">>"
+        return s
+
+    def create_nums(labels):
+        """Return concatenated string of all labels rule.
+
+        Args:
+            labels: (list) dictionaries as created by function 'rule_dict'.
+        Returns:
+            PDF compatible string for page label definitions, ready to be
+            enclosed in PDF array 'Nums[...]'.
+        """
+        labels.sort(key=lambda x: x["startpage"])
+        s = "".join([create_label_str(label) for label in labels])
+        return s
+
+    doc._set_page_labels(create_nums(labels))
+
+
+# End of Page Label Code -------------------------------------------------

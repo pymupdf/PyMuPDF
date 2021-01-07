@@ -16,9 +16,11 @@ For details on **embedded files** refer to Appendix 3.
 
   Starting with v1.17.0, a new page addressing mechanism for **EPUB files only** is supported. This document type is internally organized in chapters such that pages can most efficiently be found by their so-called "location". The location is a tuple *(chapter, pno)* consisting of the chapter number and the page number **in that chapter**. Both numbers are zero-based.
 
-  While it is still possible to locate a page via its (absoute) number, doing so may mean that the complete document has to be layouted before the page can be addressed. This may have a significant performance implication if the document is very large. Due to internal EPUB file structures, using the page's **location** *(chapter, pno)* prevents this from happening.
+  While it is still possible to locate a page via its (absoute) number, doing so may mean that the complete EPUB document must be layouted before the page can be addressed. This may have a significant performance impact if the document is very large. Using the page's *(chapter, pno)* prevents this from happening.
 
-  To maintain a consistent API, PyMuPDF supports page *location* syntax for **all file types** -- documents without this feature simply have just one chapter. :meth:`Document.loadPage` and the equivalent index access now also support using the page *location*. There are a number of methods to convert between page numbers and locations, determine the chapter count, the page count per chapter, to compute the next and previous locations, and the last page location of a document.
+  To maintain a consistent API, PyMuPDF supports the page *location* syntax for **all file types** -- documents without this feature simply have just one chapter. :meth:`Document.loadPage` and the equivalent index access now also support a *location* argument.
+
+  There are a number of methods for converting between page numbers and locations, for determining the chapter count, the page count per chapter, for computing the next and the previous locations, and the last page location of a document.
 
 ======================================= ==========================================================
 **Method / Attribute**                  **Short Description**
@@ -47,14 +49,15 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.get_oc_states`          PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_ocgs`               PDF only: info on all optional content groups
 :meth:`Document.get_ocmd`               PDF only: retrieve definition of an :data:`OCMD`
-:meth:`Document.get_toc`                alias of getToC
+:meth:`Document.get_page_numbers`       PDF only: get page numbers having a given label
+:meth:`Document.get_toc`                create a table of contents
 :meth:`Document.getPageFontList`        PDF only: make a list of fonts on a page
 :meth:`Document.getPageImageList`       PDF only: make a list of images on a page
 :meth:`Document.getPagePixmap`          create a pixmap of a page by page number
 :meth:`Document.getPageText`            extract the text of a page by page number
 :meth:`Document.getPageXObjectList`     PDF only: make a list of XObjects on a page
 :meth:`Document.getSigFlags`            PDF only: determine signature state
-:meth:`Document.getToC`                 create a table of contents
+:meth:`Document.getToC`                 alias of get_toc
 :meth:`Document.getXmlMetadata`         PDF only: read the XML metadata
 :meth:`Document.insertPage`             PDF only: insert a new page
 :meth:`Document.insertPDF`              PDF only: insert pages from another PDF
@@ -65,13 +68,13 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.makeBookmark`           create a page pointer in reflowable documents
 :meth:`Document.metadataXML`            PDF only: :data:`xref` of XML metadata
 :meth:`Document.movePage`               PDF only: move a page to different location in doc
-:meth:`Document.need_appearances`       PDF only: get/set */NeedAppearances* property
+:meth:`Document.need_appearances`       PDF only: get/set ``/NeedAppearances`` property
 :meth:`Document.newPage`                PDF only: insert a new empty page
 :meth:`Document.nextLocation`           return (chapter, pno) of following page
-:meth:`Document.outlineXref`            PDF only: :data:`xref` a TOC item
+:meth:`Document.outline_xref`           PDF only: :data:`xref` a TOC item
 :meth:`Document.pageCropBox`            PDF only: the unrotated page rectangle
 :meth:`Document.pages`                  iterator over a page range
-:meth:`Document.pageXref`               PDF only: :data:`xref` of the page
+:meth:`Document.pageXref`               PDF only: :data:`xref` of a page number
 :meth:`Document.PDFCatalog`             PDF only: :data:`xref` of catalog (root)
 :meth:`Document.PDFTrailer`             PDF only: trailer source
 :meth:`Document.previousLocation`       return (chapter, pno) of preceeding page
@@ -81,14 +84,16 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.scrub`                  PDF only: remove sensitive data
 :meth:`Document.searchPageFor`          search for a string on a page
 :meth:`Document.select`                 PDF only: select a subset of pages
-:meth:`Document.set_oc`                 PDF only: attach OCG / OCMD to image / form xobject
+:meth:`Document.set_oc`                 PDF only: attach OCG/OCMD to image / form xobject
 :meth:`Document.set_oc_states`          PDF only: mass changing OCG states
 :meth:`Document.set_ocmd`               PDF only: create or update an :data:`OCMD`
 :meth:`Document.set_toc_item`           PDF only: change a single TOC item
-:meth:`Document.set_toc`                PDF only: alias of setToC
-:meth:`Document.set_layer_ui_config`    PDF only: temporarily set the visibility of OCGs
+:meth:`Document.set_toc`                PDF only: set the table of contents (TOC)
+:meth:`Document.set_layer_ui_config`    PDF only: set OCG visibility temporarily
+:meth:`Document.set_page_labels`        PDF only: add/update page label definitions
+:meth:`Document.switch_layer`           PDF only: activate OC configuration
 :meth:`Document.setMetadata`            PDF only: set the metadata
-:meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
+:meth:`Document.setToC`                 PDF only: alias of *set_toc*
 :meth:`Document.setXmlMetadata`         PDF only: create or update document XML metadata
 :meth:`Document.updateObject`           PDF only: replace object source
 :meth:`Document.updateStream`           PDF only: replace stream source
@@ -227,7 +232,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg sequ on: a sequence of OCG :data:`xref` numbers which should be set to ON (visible). All other OCGs will be set to OFF.
 
 
-    .. method:: set-layer-config(number, as_default=False)
+    .. method:: switch_layer(number, as_default=False)
 
       *(New in v1.18.3)*
 
@@ -236,7 +241,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int number: config number as returned by :meth:`Document.layer_configs`.
       :arg bool as_default: make this the default configuration.
 
-      Activates the ON / OFF states of OCGs as defined in this layer. If *as_default=True*, then additionally all layers, including the standard one, are merged and the result is written back to the standard layer, and **all optional layers are deleted**.
+      Activates the ON / OFF states of OCGs as defined in the identified layer. If *as_default=True*, then additionally all layers, including the standard one, are merged and the result is written back to the standard layer, and **all optional layers are deleted**.
 
 
     .. method:: add_ocg(name, config=-1, on=True, intent="View", usage="Artwork")
@@ -442,6 +447,38 @@ For details on **embedded files** refer to Appendix 3.
         * bit 2 set => **owner** password authenticated
 
 
+    .. method:: get_page_numbers(label, only_one=False)
+
+       *(New in v 1.18.6)*
+
+       PDF only: Return a list of page numbers that have the specified label -- note that labels may not be unique in a PDF. This implies a sequential search through **all page numbers** to compare their labels.
+       
+       .. note:: Implementation detail -- pages are **not loaded** for this purpose. 
+
+       :arg str label: the label to look for, e.g. "vii" (Roman number 7).
+       :arg bool only_one: stop after first hit. Useful e.g. if labelling is known to be unique, there are many pages, etc. The default will check every page number.
+       :rtype: list
+       :returns: list of page numbers that have this label. Empty if none found, no labels defined, etc.
+
+
+    .. method:: set_page_labels(labels)
+
+       *(New in v1.18.6)*
+
+       PDF only: Add or update the page label definitions of the PDF.
+       
+       :arg list labels: a list of dictionaries. Each dictionary defines a label building rule and a 0-based "start" page number. The number is the first for which the label definition is valid. Each dictionary looks like ``{'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}`` and has the following items. Note that all items **must** be specified:
+
+          - ``startpage``: (int) first page number to apply the label rule. The rule is applied to all subsequent pages until end of document or superseded by the next rule.
+          - ``prefix``: (str) a string to start the label with, e.g. "A-". Empty string if not required.
+          - ``style``: (str) the numbering style. Available are "D" (decimal), "r"/"R" (Roman numbers, lower or upper case), and "a"/"A" (alphabetical, lower/upper case). If "", then no numbering will take place and the pages in that range will receive the same label consisting of the ``prefix`` value. If prefix is also omitted, then the label will be "".
+          - ``firstpagenum``: (int) start numbering with this value. Must be 1 or greater.
+
+       For example ``{'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10}`` will generate the labels "A-10", "A-11", ... for pages 6, 7 and so on.
+       
+       .. note:: This is an expert function and requires knowledge of how PDF page labelling works. See :ref:`AdobeManual` page 595.
+
+
     .. method:: makeBookmark(loc)
 
       *(New in v.1.17.3)* Return a page pointer in a reflowable document. After re-layouting the document, the result of this method can be used to find the new location of the page.
@@ -621,11 +658,11 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: getToC(simple=True)
 
-    .. method:: getTOC(simple=True)
+    .. method:: get_toc(simple=True)
 
-      Creates a table of contents out of the document's outline chain.
+      Creates a table of contents (TOC) out of the document's outline chain.
 
-      :arg bool simple: Indicates whether a simple or a detailed ToC is required. If *simple == False*, each entry of the list also contains a dictionary with :ref:`linkDest` details for each outline entry.
+      :arg bool simple: Indicates whether a simple or a detailed TOC is required. If *False*, each item of the list also contains a dictionary with :ref:`linkDest` details for each outline entry.
 
       :rtype: list
 
@@ -633,8 +670,19 @@ For details on **embedded files** refer to Appendix 3.
 
         * *lvl* -- hierarchy level (positive *int*). The first entry is always 1. Entries in a row are either **equal**, **increase** by 1, or **decrease** by any number.
         * *title* -- title (*str*)
-        * *page* -- 1-based page number (*int*). Page numbers *< 1* either indicate a target outside this document or no target at all (see next entry).
-        * *dest* -- (*dict*) included only if *simple=False*. Contains details of the link destination.
+        * *page* -- 1-based page number (*int*). If `-1` either no destination or outside document.
+        * *dest* -- (*dict*) included only if *simple=False*. Contains details of the TOC item as follows:
+
+          - kind: destination kind, see :ref:`linkDest Kinds`.
+          - file: filename if kind is :data:`LINK_GOTOR` or :data:`LINK_LAUNCH`.
+          - page: target page, 0-based, :data:`LINK_GOTOR` or :data:`LINK_GOTO` only.
+          - to: position on target page (:ref:`Point`).
+          - zoom: (float) zoom factor on target page.
+          - xref: :data:`xref` of the item (0 if no PDF).
+          - color: item color in PDF RGB format ``(red, green, blue)``, or omitted (always omitted if no PDF).
+          - bold: true if bold item text or omitted. PDF only.
+          - italic: true if italic item text, or omitted. PDF only.
+          - collapse: true if sub-items are folded, or omitted. PDF only.
 
     .. method:: getPagePixmap(pno, *args, **kwargs)
 
@@ -793,9 +841,9 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: setToC(toc, collapse=1)
 
-    .. method:: setTOC(toc, collapse=1)
+    .. method:: set_toc(toc, collapse=1)
 
-      PDF only: Replaces the **complete current outline** tree (table of contents) with the new one provided as the argument. After successful execution, the new outline tree can be accessed as usual via method *getToC()* or via property *outline*. Like with other output-oriented methods, changes become permanent only via *save()* (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.
+      PDF only: Replaces the **complete current outline** tree (table of contents) with the one provided as the argument. After successful execution, the new outline tree can be accessed as usual via :meth:`Document.get_toc` or via :attr:`Document.outline`. Like with other output-oriented methods, changes become permanent only via :meth:`save` (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.
 
       - Step 1 deletes all existing bookmarks.
 
@@ -803,7 +851,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg sequence toc:
 
-          A list or tuple with **all bookmark entries** that should form the new table of contents. Output variants of :meth:`getToC` are acceptable. To completely remove the table of contents specify an empty sequence or None. Each item must be a list with the following format.
+          A list / tuple with **all bookmark entries** that should form the new table of contents. Output variants of :meth:`get_toc` are acceptable. To completely remove the table of contents specify an empty sequence or None. Each item must be a list with the following format.
 
           * [lvl, title, page [, dest]] where
 
@@ -813,20 +861,20 @@ For details on **embedded files** refer to Appendix 3.
 
             - **page** (int) is the target page number **(attention: 1-based)**. Must be in valid range if positive. Set it to -1 if there is no target, or the target is external.
 
-            - **dest** (optional) is a dictionary or a number. If a number, it will be interpreted as the desired height (in points) this entry should point to on the page. Use a dictionary (like the one given as output by *getToC(False)*) if you want to store destinations that are either "named", or reside outside this document (other files, internet resources, etc.).
+            - **dest** (optional) is a dictionary or a number. If a number, it will be interpreted as the desired height (in points) this entry should point to on the page. Use a dictionary (like the one given as output by ``get_toc(False)``) for a detailed control of the bookmark's properties, see :meth:`Document.get_toc` for a description.
 
-      :arg int collapse: *(new in version 1.16.9)* controls the hierarchy level beyond which outline entries should initially show up collapsed. The default 1 will hence only display level 1, higher levels must be expanded in the PDF viewer. To completely expand specify either a large integer, 0 or None.
+      :arg int collapse: *(new in version 1.16.9)* controls the hierarchy level beyond which outline entries should initially show up collapsed. The default 1 will hence only display level 1, higher levels must be unfolded using the PDF viewer. To unfold everything, specify either a large integer, 0 or None.
 
       :rtype: int
       :returns: the number of inserted, resp. deleted items.
 
-    .. method:: outlineXref(idx)
+    .. method:: outline_xref(idx)
 
       *(New in v1.17.7)*
 
       PDF only: Return the :data:`xref` of the outline item. This is mainly used for internal purposes.
 
-      arg int idx: index of the item in list ``Document.getTOC`.
+      arg int idx: index of the item in list :meth:`Document.get_toc`.
 
       :returns: :data:`xref`.
 
@@ -834,24 +882,26 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in v1.17.7)*
 
-      PDF only: Remove this TOC item. This is intended to be a high-speed method primarily meant for *disabling* items, which are pointing to deleted pages. Physically, the item still exists in the TOC tree, but will show an empty title and no longer point to a destination. So the overall TOC structure remains intact.
+      PDF only: Remove this TOC item. This is a high-speed method primarily meant for *disabling* items, which are pointing to deleted pages. Physically, the item still exists in the TOC tree, but will show an empty title and no longer point to a destination. So the overall TOC structure remains intact.
 
-      This also implies that you can reassign the item when required.
+      This also implies that you can reassign the item to a destination when required.
 
-      :arg int idx: the index of the item in list `Document.getTOC`.
+      :arg int idx: the index of the item in list :meth:`Document.get_toc`.
 
 
     .. method:: set_toc_item(idx, dest_dict=None, kind=None, pno=None, uri=None, title=None, to=None, filename=None, zoom=0)
 
       *(New in v1.17.7)*
 
-      PDF only: Changes the TOC item identified by its index. It is possible to change the title text and the location this item is pointing to -- or to remove the item as such.
+      *(Changed in v1.18.6)*
 
-      Use this method if you need specific changes for selected entries only and want to avoid replacing the complete TOC. This is beneficial especially if you are dealing with large table of contents.
+      PDF only: Changes the TOC item identified by its index. Change the item **title**, **destination**, **appearance** (color, bold, italic) or collapsing sub-items -- or to remove the item altogether.
 
-      :arg int idx: the index of the entry in the list created by :meth:`Document.getTOC`.
-      :arg dict dest_dict: the new destination. A dictionary like the last entry of an item in ``doc.getTOC(False)``. Using this as a template would also be the natural use of this parameter. When given, **all other parameters are ignored** -- except title.
-      :arg int kind: the link kind, values like ``fitz.LINK_GOTO``, etc. If equal to fitz.LINK_NONE, then all remaining parameter will be ignored, and the TOC item will be removed -- same as :meth:`Document.del_toc_item`. If None, then only the title is modified and the remaining parameters are ignored. All other values will lead to making a new destination dictionary using the subsequent arguments.
+      Use this method if you need specific changes for selected entries only and want to avoid replacing the complete TOC. This is beneficial especially when dealing with large table of contents.
+
+      :arg int idx: the index of the entry in the list created by :meth:`Document.get_toc`.
+      :arg dict dest_dict: the new destination. A dictionary like the last entry of an item in ``doc.get_toc(False)``. Using this as a template is recommended. When given, **all other parameters are ignored** -- except title.
+      :arg int kind: the link kind, see :ref:`linkDest Kinds`. If :data:`LINK_NONE`, then all remaining parameter will be ignored, and the TOC item will be removed -- same as :meth:`Document.del_toc_item`. If None, then only the title is modified and the remaining parameters are ignored. All other values will lead to making a new destination dictionary using the subsequent arguments.
       :arg int pno: the 1-based page number, i.e. a value 1 <= pno <= doc.pageCount. Required for LINK_GOTO.
       :arg str uri: the URL text. Required for LINK_URI.
       :arg str title: the desired new title. None if no change.
@@ -859,6 +909,26 @@ For details on **embedded files** refer to Appendix 3.
       :arg str filename: required for LINK_GOTOR and LINK_LAUNCH.
       :arg float zoom: use this zoom factor when showing the target page.
 
+      **Example use:** Change the TOC of the SWIG manual to achieve this:
+      
+      Collapse everything below top level and show the chapter on Python support in red, bold and italic::
+
+        >>> import fitz
+        >>> doc=fitz.open("SWIGDocumentation.pdf")
+        >>> toc = doc.get_toc(False)  # we need the detailed TOC
+        >>> # make a list of level 1 indices and their titles
+        >>> lvl1 = [(i, item[1]) for i, item in enumerate(toc) if item[0] == 1]
+        >>> for i, title in lvl1:
+                d = toc[i][3]  # get the destination dict
+                d["collapse"] = True  # collapse items underneath
+                if "Python" in title:  # show the 'Python' chapter
+                    d["color"] = (1, 0, 0)  # in red,
+                    d["bold"] = True  # bold and
+                    d["italic"] = True  # italic
+                doc.set_toc_item(i, dest_dict=d)  # update this toc item
+        >>> doc.save("NEWSWIG.pdf",garbage=3,deflate=True)
+
+      In the previous example, we have changed only 42 of the 1240 TOC items of the file.
 
     .. method:: can_save_incrementally()
 
@@ -1452,18 +1522,18 @@ This shows how to modify or add a table of contents. Also have a look at `csv2to
 
 >>> import fitz
 >>> doc = fitz.open("test.pdf")
->>> toc = doc.getToC()
+>>> toc = doc.get_toc()
 >>> for t in toc: print(t)                           # show what we have
 [1, 'The PyMuPDF Documentation', 1]
 [2, 'Introduction', 1]
 [3, 'Note on the Name fitz', 1]
 [3, 'License', 1]
->>> toc[1][1] += " modified by setToC"               # modify something
->>> doc.setToC(toc)                                  # replace outline tree
+>>> toc[1][1] += " modified by set_toc"               # modify something
+>>> doc.set_toc(toc)                                  # replace outline tree
 3                                                    # number of bookmarks inserted
->>> for t in doc.getToC(): print(t)                  # demonstrate it worked
+>>> for t in doc.get_toc(): print(t)                  # demonstrate it worked
 [1, 'The PyMuPDF Documentation', 1]
-[2, 'Introduction modified by setToC', 1]            # <<< this has changed
+[2, 'Introduction modified by set_toc', 1]            # <<< this has changed
 [3, 'Note on the Name fitz', 1]
 [3, 'License', 1]
 
@@ -1474,8 +1544,8 @@ This shows how to modify or add a table of contents. Also have a look at `csv2to
 >>> doc1 = fitz.open("file1.pdf")          # must be a PDF
 >>> doc2 = fitz.open("file2.pdf")          # must be a PDF
 >>> pages1 = len(doc1)                     # save doc1's page count
->>> toc1 = doc1.getToC(False)     # save TOC 1
->>> toc2 = doc2.getToC(False)     # save TOC 2
+>>> toc1 = doc1.get_toc(False)     # save TOC 1
+>>> toc2 = doc2.get_toc(False)     # save TOC 2
 >>> doc1.insertPDF(doc2)                   # doc2 at end of doc1
 >>> for t in toc2:                         # increase toc2 page numbers
         t[2] += pages1                     # by old len(doc1)
@@ -1519,7 +1589,7 @@ Other Examples
 
 .. [#f1] Content streams describe what (e.g. text or images) appears where and how on a page. PDF uses a specialized mini language similar to PostScript to do this (pp. 985 in :ref:`AdobeManual`), which gets interpreted when a page is loaded.
 
-.. [#f2] However, you **can** use :meth:`Document.getToC` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
+.. [#f2] However, you **can** use :meth:`Document.get_toc` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
 
 .. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.
 

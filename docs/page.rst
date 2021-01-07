@@ -74,6 +74,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.getImageBbox`         PDF only: get bbox of embedded image
 :meth:`Page.getImageList`         PDF only: get list of used images
 :meth:`Page.getLinks`             get all links
+:meth:`Page.get_label`            PDF only: return the label of the page
 :meth:`Page.getPixmap`            create a page image in raster format
 :meth:`Page.getSVGimage`          create a page image in SVG format
 :meth:`Page.getText`              extract the page's text
@@ -412,6 +413,19 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: Modify the specified link. The parameter must be a (modified) **original item** of :meth:`getLinks()` (see below). The reason for this is the dictionary's *"xref"* key, which identifies the PDF object to be changed.
 
       :arg dict linkdict: the link to be modified.
+
+
+   .. method:: get_label()
+
+      *(New in v1.18.6)*
+
+      PDF only: Return the label for the page.
+
+      :rtype: str
+
+      :returns: the label string like "vii" for Roman numbering or "" if not defined.
+
+
 
    .. method:: getLinks()
 
@@ -1340,7 +1354,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
 Description of *getLinks()* Entries
 ----------------------------------------
-Each entry of the *getLinks()* list is a dictionay with the following keys:
+Each entry of the :meth:`Page.getLinks` list is a dictionay with the following keys:
 
 * *kind*:  (required) an integer indicating the kind of link. This is one of *LINK_NONE*, *LINK_GOTO*, *LINK_GOTOR*, *LINK_LAUNCH*, or *LINK_URI*. For values and meaning of these names refer to :ref:`linkDest Kinds`.
 

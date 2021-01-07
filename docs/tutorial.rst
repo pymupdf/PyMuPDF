@@ -27,9 +27,9 @@ To access a supported document, it must be opened with the following statement::
 
     doc = fitz.open(filename)     # or fitz.Document(filename)
 
-This creates the :ref:`Document` object *doc*. *filename* must be a Python string specifying the name of an existing file.
+This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a ``pathlib.Path``) specifying the name of an existing file.
 
-It is also possible to open a document from memory data, or to create a new, empty PDF. See :ref:`Document` for details.
+It is also possible to open a document from memory data, or to create a new, empty PDF. See :ref:`Document` for details. You can also use :ref:`Document` as a *context manager*.
 
 A document contains many attributes and functions. Among them are meta information (like "author" or "subject"), number of total pages, outline and encryption information.
 
@@ -41,7 +41,7 @@ Some :ref:`Document` Methods and Attributes
 =========================== ==========================================
 :attr:`Document.pageCount`  the number of pages (*int*)
 :attr:`Document.metadata`   the metadata (*dict*)
-:meth:`Document.getToC`     get the table of contents (*list*)
+:meth:`Document.get_toc`    get the table of contents (*list*)
 :meth:`Document.loadPage`   read a :ref:`Page`
 =========================== ==========================================
 
@@ -72,7 +72,7 @@ Working with Outlines
 =========================
 The easiest way to get all outlines (also called "bookmarks") of a document, is by loading its *table of contents*::
 
-    toc = doc.getToC()
+    toc = doc.get_toc()
 
 This will return a Python list of lists *[[lvl, title, page, ...], ...]* which looks much like a conventional table of contents found in books.
 

@@ -167,7 +167,7 @@ RuntimeError: orphaned object: parent is None
 <... omitted lines ...>
 RuntimeError: orphaned object: parent is None
 
-.. note:: Objects outside the above relationship are not included in this mechanism. If you e.g. created a table of contents by *toc = doc.getToC()*, and later close or change the document, then this cannot and does not change variable *toc* in any way. It is your responsibility to refresh such variables as required.
+.. note:: Objects outside the above relationship are not included in this mechanism. If you e.g. created a table of contents by *toc = doc.get_toc()*, and later close or change the document, then this cannot and does not change variable *toc* in any way. It is your responsibility to refresh such variables as required.
 
 ------------
 

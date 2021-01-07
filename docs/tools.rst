@@ -15,6 +15,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 :meth:`Tools.mupdf_display_errors`     return the accumulated MuPDF warnings
 :meth:`Tools.reset_mupdf_warnings`     empty MuPDF messages on STDOUT
 :meth:`Tools.set_aa_level`             set the anti-aliasing values
+:meth:`Tools.set_annot_stem`           set the prefix of new annotation / link ids
 :meth:`Tools.set_small_glyph_heights`  search and extract small bbox heights
 :meth:`Tools.show_aa_level`            return the anti-aliasing values
 :attr:`Tools.fitz_config`              configuration settings of PyMuPDF
@@ -38,13 +39,26 @@ This class is a collection of utility methods and attributes, mainly around memo
       :rtype: int
       :returns: a unique positive integer.
 
+
+   .. method:: set_annot_stem(stem=None)
+
+      *(New in v1.18.6)*
+
+      Set or inquire the prefix for the id of new annotations, fields or links.
+
+      :arg str stem: if omitted, the current value is returned, default is "fitz". Annotations, fields / widgets and links technically are subtypes of the same type of object (`/Annot`) in PDF documents. An `/Annot` object may be given a unique identifier within a page. For each of the applicable subtypes, PyMuPDF generates identifiers "stem-Annn", "stem-Wnnn" or "stem-Lnnn" respectively. The number "nnn" is used to enforce the required uniqueness.
+
+      :rtype: str
+      :returns: the current value.
+
+
    .. method:: set_small_glyph_heights(on=None)
 
-      *(New in v1.18. -- experimental)*
+      *(New in v1.18.5)*
 
       Set or inquire reduced bbox heights in text extract and text search methods.
 
-      :arg bool on: if omitted or *None*, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.searchFor` and :meth:`Page.getText` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will normally equal *line height*.
+      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.searchFor` and :meth:`Page.getText` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will normally equal *line height*.
 
       :rtype: bool
       :returns: *True* or *False*.

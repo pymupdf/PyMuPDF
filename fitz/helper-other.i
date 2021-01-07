@@ -1,5 +1,5 @@
 %{
-
+fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *val, int a, int b);
 int LIST_APPEND_DROP(PyObject *list, PyObject *item)
 {
     if (!list || !PyList_Check(list) || !item) return -2;
@@ -22,6 +22,25 @@ int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value)
     int rc = PyDict_SetItemString(dict, key, value);
     Py_DECREF(value);
     return rc;
+}
+
+
+static void
+JM_get_page_labels(fz_context *ctx, PyObject *liste, pdf_obj *nums)
+{
+    int pno, i, n = pdf_array_len(ctx, nums);
+    char *c = NULL;
+    pdf_obj *val;
+    fz_buffer *res = NULL;
+    for (i = 0; i < n; i += 2) {
+        pdf_obj *key = pdf_resolve_indirect(ctx, pdf_array_get(ctx, nums, i));
+        pno = pdf_to_int(ctx, key);
+        val = pdf_resolve_indirect(ctx, pdf_array_get(ctx, nums, i + 1));
+        res = JM_object_to_buffer(ctx, val, 1, 0);
+        fz_buffer_storage(ctx, res, &c);
+        LIST_APPEND_DROP(liste, Py_BuildValue("is", pno, c));
+        fz_drop_buffer(ctx, res);
+    }
 }
 
 
@@ -572,53 +591,11 @@ PyObject *JM_outline_xrefs(fz_context *ctx, pdf_obj *obj, PyObject *xrefs)
         if (first) xrefs = JM_outline_xrefs(ctx, first, xrefs);
         thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME(Next));  // try go next
         parent = pdf_dict_get(ctx, thisobj, PDF_NAME(Parent));  // get parent
-        if (!thisobj) thisobj = parent;  // goto parent if no next exists
+        if (!thisobj) thisobj = parent;  // goto parent if no next
     }
     return xrefs;
 }
 
-//----------------------------------------------------------------------------
-// Return xref of n-th outline entry
-// 'obj' first OL item
-// n entry number, 0 on invocation
-//----------------------------------------------------------------------------
-int JM_outline_xref(fz_context *ctx, pdf_obj *obj, int search)
-{
-    pdf_obj *first, *parent, *thisobj, *next;
-    if (!obj) return 0;
-    parent = thisobj = obj;
-    int n = 0;
-    while (thisobj) {
-        if (n > search) return 0;
-        if (n == search) {
-            return pdf_to_num(ctx, thisobj);
-        }
-        first = pdf_dict_get(ctx, thisobj, PDF_NAME(First));
-        if (first) {
-            parent = thisobj;
-            thisobj = first;
-            n++;
-            continue;
-        }
-        next = pdf_dict_get(ctx, thisobj, PDF_NAME(Next));
-        if (next) {
-            thisobj = next;
-            n++;
-            continue;
-        }
-        parent = pdf_dict_get(ctx, thisobj, PDF_NAME(Parent));
-        repeat:;
-        thisobj = pdf_dict_get(ctx, parent, PDF_NAME(Next));
-        if (thisobj) {
-            n++;
-            continue;
-        }
-        parent = pdf_dict_get(ctx, parent, PDF_NAME(Parent));
-        if (!parent) break;
-        goto repeat;
-    }
-    return 0;
-}
 
 //-----------------------------------------------------------------------------
 // Return the contents of a font file, identified by xref

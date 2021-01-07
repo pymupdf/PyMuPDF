@@ -45,7 +45,7 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 // Switch for computing glyph of fontsize height
 static int small_glyph_heights = 0;
 
-// re-compute char quad if ascender/descender font values are wrong
+// re-compute char quad if ascender/descender values make no sense
 static fz_quad
 JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
 {
@@ -66,6 +66,10 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     fz_matrix trm1, trm2, xlate1, xlate2;
     fz_quad quad;
     fz_rect bbox = fz_font_bbox(ctx, ch->font);
+    float fwidth = bbox.x1 - bbox.x0;
+    if (asc < 1e-3) {  // probably Tesseract glyphless font
+        dsc = -0.1f;
+    }
 
     // Re-compute asc, dsc if there are problems.
     // In that case, we also do not trust dsc and try correcting it.
@@ -91,9 +95,14 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     quad.ul.y = quad.ll.y - fsize;
     quad.lr.y = quad.ll.y;
     quad.ur.y = quad.ul.y;
+    // adjust horizontal coordinates
+    if ((quad.lr.x - quad.ll.x) < FLT_EPSILON) {
+        quad.lr.x = quad.ll.x + fwidth * fsize;
+        quad.ur.x = quad.lr.x;
+    }
 
     quad = fz_transform_quad(quad, trm2);  // rotate back
-    quad = fz_transform_quad(quad, xlate2);  // translate to char origin pos.
+    quad = fz_transform_quad(quad, xlate2);  // translate back
     return quad;
 }
 
@@ -122,16 +131,14 @@ JM_new_buffer_from_stext_page(fz_context *ctx, fz_stext_page *page)
     fz_try(ctx)
     {
         buf = fz_new_buffer(ctx, 256);
-        for (block = page->first_block; block; block = block->next)
-        {
-            if (!fz_is_empty_rect(fz_intersect_rect(block->bbox, rect)) &&
-            block->type == FZ_STEXT_BLOCK_TEXT)
-            {
-                for (line = block->u.t.first_line; line; line = line->next)
-                {
-                    if (fz_is_empty_rect(fz_intersect_rect(line->bbox, rect))) continue;
+        for (block = page->first_block; block; block = block->next) {
+            if (block->type == FZ_STEXT_BLOCK_TEXT) {
+                for (line = block->u.t.first_line; line; line = line->next) {
                     for (ch = line->first_char; ch; ch = ch->next) {
-                        if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) continue;
+                        if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch)) &&
+                            !fz_is_infinite_rect(rect)) {
+                            continue;
+                        }
                         fz_append_rune(ctx, buf, ch->c);
                     }
                     fz_append_byte(ctx, buf, '\n');
@@ -269,7 +276,6 @@ JM_search_stext_page(fz_context *ctx, fz_stext_page *page, const char *needle)
     fz_stext_line *line;
     fz_stext_char *ch;
     fz_buffer *buffer = NULL;
-    fz_rect rect = page->mediabox;
     const char *haystack, *begin, *end;
     int c, inside;
 
@@ -280,44 +286,31 @@ JM_search_stext_page(fz_context *ctx, fz_stext_page *page, const char *needle)
     hits.hfuzz = 0.2f; /* merge kerns but not large gaps */
     hits.vfuzz = 0.1f;
 
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         buffer = JM_new_buffer_from_stext_page(ctx, page);
         haystack = fz_string_from_buffer(ctx, buffer);
         begin = find_string(haystack, needle, &end);
-        if (!begin)
-            goto no_more_matches;
+        if (!begin) goto no_more_matches;
 
         inside = 0;
-        for (block = page->first_block; block; block = block->next)
-        {
-            if (block->type != FZ_STEXT_BLOCK_TEXT ||
-                fz_is_empty_rect(fz_intersect_rect(block->bbox, rect)))
+        for (block = page->first_block; block; block = block->next) {
+            if (block->type != FZ_STEXT_BLOCK_TEXT) {
                 continue;
-            for (line = block->u.t.first_line; line; line = line->next)
-            {
-                if (fz_is_empty_rect(fz_intersect_rect(line->bbox, rect))) continue;
-                for (ch = line->first_char; ch; ch = ch->next)
-                {
-                    if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) continue;
+            }
+            for (line = block->u.t.first_line; line; line = line->next) {
+                for (ch = line->first_char; ch; ch = ch->next) {
 try_new_match:
-                    if (!inside)
-                    {
-                        if (haystack >= begin)
-                            inside = 1;
+                    if (!inside) {
+                        if (haystack >= begin) inside = 1;
                     }
-                    if (inside)
-                    {
-                        if (haystack < end)
+                    if (inside) {
+                        if (haystack < end) {
                             on_highlight_char(ctx, &hits, line, ch);
-                        else
-                        {
+                        } else {
                             inside = 0;
                             begin = find_string(haystack, needle, &end);
-                            if (!begin)
-                                goto no_more_matches;
-                            else
-                                goto try_new_match;
+                            if (!begin) goto no_more_matches;
+                            else goto try_new_match;
                         }
                     }
                     haystack += fz_chartorune(&c, haystack);
@@ -353,20 +346,16 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_rect rect = page->mediabox;
     int last_char = 0;
 
-    for (block = page->first_block; block; block = block->next)
-    {
-        if (!fz_is_empty_rect(fz_intersect_rect(block->bbox, rect)) &&
-            block->type == FZ_STEXT_BLOCK_TEXT)
-        {
-            for (line = block->u.t.first_line; line; line = line->next)
-            {
-                if (fz_is_empty_rect(fz_intersect_rect(line->bbox, rect))) continue;
+    for (block = page->first_block; block; block = block->next) {
+        if (block->type == FZ_STEXT_BLOCK_TEXT) {
+            for (line = block->u.t.first_line; line; line = line->next) {
                 last_char = 0;
-                for (ch = line->first_char; ch; ch = ch->next)
-                {
-                    if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) continue;
-                    last_char = ch->c;
-                    fz_write_rune(ctx, out, ch->c);
+                for (ch = line->first_char; ch; ch = ch->next) {
+                    if (fz_is_infinite_rect(rect) ||
+                        fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) {
+                        last_char = ch->c;
+                        fz_write_rune(ctx, out, ch->c);
+                    }
                 }
                 if (last_char != 10 && last_char) fz_write_string(ctx, out, "\n");
             }
@@ -444,8 +433,10 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
     for (ch = line->first_char; ch; ch = ch->next) {
 //start-trace
         fz_rect r = JM_char_bbox(gctx, line, ch);
-        // if (fz_is_empty_rect(fz_intersect_rect(tp_rect, r))) continue;
-        if (!fz_contains_rect(tp_rect, r)) continue;
+        if (!fz_contains_rect(tp_rect, r) &&
+            !fz_is_infinite_rect(tp_rect)) {
+            continue;
+        }
 
         int flags = JM_char_font_flags(ctx, ch->font, line, ch);
         fz_point origin = ch->origin;
@@ -489,13 +480,18 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
             }
 
             span = PyDict_New();
+            float asc = style.asc, desc = style.desc;
+            if (style.asc < 1e-3) {
+                asc = 0.9f;
+                desc = -0.1f;
+            }
 
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
             DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.flags));
             DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
             DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("i", style.color));
-            DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", style.asc));
-            DICT_SETITEMSTR_DROP(span, "descender", Py_BuildValue("f", style.desc));
+            DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", asc));
+            DICT_SETITEMSTR_DROP(span, "descender", Py_BuildValue("f", desc));
 
             old_style = style;
             span_rect = r;
@@ -582,11 +578,7 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
             buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, fz_default_color_params);
             ext = "png";
         }
-        if (PY_MAJOR_VERSION > 2) {
-            bytes = JM_BinFromBuffer(ctx, buf);
-        } else {
-            bytes = JM_BArrayFromBuffer(ctx, buf);
-        }
+        bytes = JM_BinFromBuffer(ctx, buf);
     }
     fz_always(ctx) {
         if (!bytes)
@@ -619,7 +611,8 @@ static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject 
     PyObject *line_list = PyList_New(0), *line_dict;
     fz_rect block_rect = fz_empty_rect;
     for (line = block->u.t.first_line; line; line = line->next) {
-        if (fz_is_empty_rect(fz_intersect_rect(tp_rect, line->bbox))) {
+        if (fz_is_empty_rect(fz_intersect_rect(tp_rect, line->bbox)) &&
+            !fz_is_infinite_rect(tp_rect)) {
             continue;
         }
         line_dict = PyDict_New();
@@ -646,11 +639,13 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
     int block_n = -1;
     for (block = tp->first_block; block; block = block->next) {
         block_n++;
-        if (fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
+        if (!fz_contains_rect(tp_rect, block->bbox) &&
+            !fz_is_infinite_rect(tp_rect) &&
+            block->type == FZ_STEXT_BLOCK_IMAGE) {
             continue;
         }
-        if (!fz_contains_rect(tp_rect, block->bbox) &&
-            block->type == FZ_STEXT_BLOCK_IMAGE) {
+        if (!fz_is_infinite_rect(tp_rect) &&
+            fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
             continue;
         }
 

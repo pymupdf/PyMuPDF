@@ -1702,8 +1702,8 @@ It features maintaining any metadata, table of contents and links contained in t
     b = doc.convertToPDF()                      # convert to pdf
     pdf = fitz.open("pdf", b)                   # open as pdf
 
-    toc= doc.getToC()                           # table of contents of input
-    pdf.setToC(toc)                             # simply set it for output
+    toc= doc.het_toc()                           # table of contents of input
+    pdf.set_toc(toc)                             # simply set it for output
     meta = doc.metadata                         # read and set metadata
     if not meta["producer"]:
         meta["producer"] = "PyMuPDF v" + fitz.VersionBind

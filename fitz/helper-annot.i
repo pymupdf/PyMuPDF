@@ -319,14 +319,13 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 
 
 //------------------------------------------------------------------------
-// return the xref numbers of a page's annots, links and fields
+// return the xrefs and /NM ids of a page's annots, links and fields
 //------------------------------------------------------------------------
 PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_page *page)
 {
     PyObject *names = PyList_New(0);
-    pdf_obj *annot_obj = NULL;
+    pdf_obj *id, *annot_obj = NULL;
     pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
-    pdf_obj *name = NULL;
     if (!annots) return names;
     fz_try(ctx) {
         int i, n = pdf_array_len(ctx, annots);
@@ -339,7 +338,8 @@ PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_page *page)
                 const char *name = pdf_to_name(ctx, subtype);
                 type = pdf_annot_type_from_string(ctx, name);
             }
-            LIST_APPEND_DROP(names, Py_BuildValue("ii", xref, type));
+            id = pdf_dict_gets(gctx, annot_obj, "NM");
+            LIST_APPEND_DROP(names, Py_BuildValue("iis", xref, type,pdf_to_text_string(gctx, id)));
         }
     }
     fz_catch(ctx) {
@@ -353,16 +353,16 @@ PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_page *page)
 // Add a unique /NM key to an annotation or widget.
 // Append a number to 'stem' such that the result is a unique name.
 //------------------------------------------------------------------------
+static char JM_annot_id_stem[50] = "fitz";
 void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
 {
     fz_try(ctx) {
         PyObject *names = NULL;
         names = JM_get_annot_id_list(ctx, annot->page);
-
         int i = 0;
         PyObject *stem_id = NULL;
         while (1) {
-            stem_id = PyUnicode_FromFormat("%s-%d", stem, i);
+            stem_id = PyUnicode_FromFormat("%s-%s%d", JM_annot_id_stem, stem, i);
             if (!PySequence_Contains(names, stem_id)) break;
             i += 1;
             Py_DECREF(stem_id);

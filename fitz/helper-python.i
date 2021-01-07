@@ -111,7 +111,7 @@ annot_skel = {
 }
 
 
-def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
+def getTextlength(text: str, fontname: str ="helv", fontsize: float =11, encoding: int =0) -> float:
     """Calculate length of a string for a given built-in font.
 
     Args:
@@ -745,7 +745,7 @@ class linkDest(object):
 # -------------------------------------------------------------------------------
 # "Now" timestamp in PDF Format
 # -------------------------------------------------------------------------------
-def getPDFnow():
+def getPDFnow() -> str:
     import time
 
     tz = "%s'%s'" % (
@@ -762,7 +762,7 @@ def getPDFnow():
     return tstamp
 
 
-def getPDFstr(s):
+def getPDFstr(s: str) -> str:
     """ Return a PDF string depending on its coding.
 
     Notes:
@@ -776,9 +776,8 @@ def getPDFstr(s):
         return "()"
 
     def make_utf16be(s):
-        r = hexlify(bytearray([254, 255]) + bytearray(s, "UTF-16BE"))
-        t = r if fitz_py2 else r.decode()
-        return "<" + t + ">"  # brackets indicate hex
+        r = bytearray([254, 255]) + bytearray(s, "UTF-16BE")
+        return "<" + r.hex() + ">"  # brackets indicate hex
 
     # The following either returns the original string with mixed-in
     # octal numbers \nnn for chars outside the ASCII range, or returns
@@ -816,7 +815,7 @@ def getPDFstr(s):
     return "(" + r + ")"
 
 
-def getTJstr(text, glyphs, simple, ordering):
+def getTJstr(text: str, glyphs: typing.Union[list, tuple, None], simple: bool, ordering: int) -> str:
     """ Return a PDF string enclosed in [] brackets, suitable for the PDF TJ
     operator.
 
@@ -907,7 +906,7 @@ paperSizes = {  # known paper formats @ 72 dpi
 }
 
 
-def PaperSize(s):
+def PaperSize(s: str) -> tuple:
     """Return a tuple (width, height) for a given paper format string.
     
     Notes:
@@ -927,19 +926,19 @@ def PaperSize(s):
     return (rc[1], rc[0])
 
 
-def PaperRect(s):
+def PaperRect(s: str) -> Rect:
     """Return a Rect for the paper size indicated in string 's'. Must conform to the argument of method 'PaperSize', which will be invoked.
     """
     width, height = PaperSize(s)
     return Rect(0.0, 0.0, width, height)
 
 
-def CheckParent(o):
+def CheckParent(o: typing.Any):
     if not hasattr(o, "parent") or o.parent is None:
         raise ValueError("orphaned object: parent is None")
 
 
-def CheckColor(c):
+def CheckColor(c: OptSeq):
     if c:
         if (
             type(c) not in (list, tuple)
@@ -950,7 +949,7 @@ def CheckColor(c):
             raise ValueError("need 1, 3 or 4 color components in range 0 to 1")
 
 
-def ColorCode(c, f):
+def ColorCode(c: typing.Union[list, tuple, float, None], f: str) -> str:
     if not c:
         return ""
     if hasattr(c, "__float__"):
@@ -968,47 +967,35 @@ def ColorCode(c, f):
     return s + "K " if f == "c" else s + "k "
 
 
-def JM_TUPLE(o):
+def JM_TUPLE(o: typing.Sequence) -> tuple:
     return tuple(map(lambda x: round(x, 5) if abs(x) >= 1e-4 else 0, o))
 
 
-def CheckRect(r):
+def CheckRect(r: typing.Any) -> bool:
     """Check whether an object is non-degenerate rect-like.
 
     It must be a sequence of 4 numbers.
     """
     try:
-        if r.__len__() != 4:
-            return False
-        for i in range(len(r)):
-            a = float(r[i])
+        r = Rect(r)
     except:
         return False
-
-    r = Rect(r)
     return not (r.isEmpty or r.isInfinite)
 
 
-def CheckQuad(q):
+def CheckQuad(q: typing.Any) -> bool:
     """Check whether an object is convex, not empty  quad-like.
 
     It must be a sequence of 4 number pairs.
     """
     try:
-        if q.__len__() != 4:
-            return False
-        for i in range(len(q)):
-            if q[i].__len__() != 2:
-                return False
-            a = float(q[i][0])
-            a = float(q[i][1])
+        q0 = Quad(q)
     except:
         return False
+    return q0.isConvex
 
-    return Quad(q).isConvex
 
-
-def CheckMarkerArg(quads):
+def CheckMarkerArg(quads: typing.Any) -> tuple:
     if CheckRect(quads):
         r = Rect(quads)
         return (r.quad,)
@@ -1020,7 +1007,7 @@ def CheckMarkerArg(quads):
     return quads
 
 
-def CheckMorph(o):
+def CheckMorph(o: typing.Any) -> bool:
     if not bool(o):
         return False
     if not (type(o) in (list, tuple) and len(o) == 2):
@@ -1032,7 +1019,7 @@ def CheckMorph(o):
     return True
 
 
-def CheckFont(page, fontname):
+def CheckFont(page: "struct Page *", fontname: str) -> tuple:
     """Return an entry in the page's font list if reference name matches.
     """
     for f in page.get_fonts():
@@ -1042,7 +1029,7 @@ def CheckFont(page, fontname):
             return f
 
 
-def CheckFontInfo(doc, xref):
+def CheckFontInfo(doc: "struct Document *", xref: int) -> list:
     """Return a font info if present in the document.
     """
     for f in doc.FontInfos:
@@ -1050,7 +1037,7 @@ def CheckFontInfo(doc, xref):
             return f
 
 
-def UpdateFontInfo(doc, info):
+def UpdateFontInfo(doc: "struct Document *", info: typing.Sequence):
     xref = info[0]
     found = False
     for i, fi in enumerate(doc.FontInfos):
@@ -1067,7 +1054,7 @@ def DUMMY(*args, **kw):
     return
 
 
-def planishLine(p1, p2):
+def planishLine(p1: point_like, p2: point_like) -> Matrix:
     """Return matrix which flattens out the line from p1 to p2.
 
     Args:
@@ -1082,7 +1069,7 @@ def planishLine(p1, p2):
     return Matrix(TOOLS._hor_matrix(p1, p2))
 
 
-def ImageProperties(img):
+def ImageProperties(img: typing.ByteString) -> dict:
     """ Return basic properties of an image.
 
     Args:
@@ -1104,7 +1091,7 @@ def ImageProperties(img):
     return TOOLS.image_profile(stream)
 
 
-def ConversionHeader(i, filename="unknown"):
+def ConversionHeader(i: str, filename: OptStr ="unknown"):
     t = i.lower()
     html = """<!DOCTYPE html>
 <html>
@@ -1152,7 +1139,7 @@ p{white-space:pre-wrap}
     return r
 
 
-def ConversionTrailer(i):
+def ConversionTrailer(i: str):
     t = i.lower()
     text = ""
     json = "]\n}"
@@ -1173,7 +1160,7 @@ def ConversionTrailer(i):
     return r
 
 
-def DerotateRect(cropbox, rect, deg):
+def DerotateRect(cropbox: rect_like, rect: rect_like, deg: float) -> Rect:
     """Calculate the non-rotated rect version.
 
     Args:
@@ -1207,7 +1194,7 @@ def DerotateRect(cropbox, rect, deg):
     return r
 
 
-def get_highlight_selection(page, start=None, stop=None, clip=None):
+def get_highlight_selection(page, start: point_like =None, stop: point_like =None, clip: rect_like =None) -> list:
     """Return rectangles of text lines between two points.
 
     Notes:
@@ -1274,7 +1261,7 @@ def get_highlight_selection(page, start=None, stop=None, clip=None):
     return lines
 
 
-def annot_preprocess(page):
+def annot_preprocess(page: "Page") -> int:
     """Prepare for annotation insertion on the page.
 
     Returns:
@@ -1289,7 +1276,7 @@ def annot_preprocess(page):
     return old_rotation
 
 
-def annot_postprocess(page, annot):
+def annot_postprocess(page: "Page", annot: "Annot") -> None:
     """Clean up after annotation inertion.
 
     Set ownership flag and store annotation in page annotation dictionary.
@@ -1299,7 +1286,7 @@ def annot_postprocess(page, annot):
     annot.thisown = True
 
 
-def sRGB_to_rgb(srgb):
+def sRGB_to_rgb(srgb: int) -> tuple:
     """Convert sRGB color code to an RGB color triple.
 
     There is **no error checking** for performance reasons!
@@ -1315,7 +1302,7 @@ def sRGB_to_rgb(srgb):
     return (r, g, b)
 
 
-def sRGB_to_pdf(srgb):
+def sRGB_to_pdf(srgb: int) -> tuple:
     """Convert sRGB color code to a PDF color triple.
 
     There is **no error checking** for performance reasons!
@@ -1329,7 +1316,7 @@ def sRGB_to_pdf(srgb):
     return t[0] / 255.0, t[1] / 255.0, t[2] / 255.0
 
 
-def make_table(rect=(0, 0, 1, 1), cols=1, rows=1):
+def make_table(rect: rect_like =(0, 0, 1, 1), cols: int =1, rows: int =1) -> list:
     """Return a list of (rows x cols) equal sized rectangles.
 
     Notes:
@@ -1372,7 +1359,7 @@ def make_table(rect=(0, 0, 1, 1), cols=1, rows=1):
     return rects
 
 
-def repair_mono_font(page, font):
+def repair_mono_font(page: "Page", font: "Font") -> None:
     """Repair character spacing for mono fonts.
 
     Notes:
@@ -1409,7 +1396,7 @@ import base64, gzip
 
 _adobe_glyphs = {}
 _adobe_unicodes = {}
-def unicode_to_glyph_name(ch):
+def unicode_to_glyph_name(ch: int) -> str:
     if _adobe_glyphs == {}:
         for line in _get_glyph_text():
             if line.startswith("#"):
@@ -1422,7 +1409,7 @@ def unicode_to_glyph_name(ch):
     return _adobe_glyphs.get(ch, ".notdef")
 
 
-def glyph_name_to_unicode(name):
+def glyph_name_to_unicode(name: str) -> int:
     if _adobe_unicodes == {}:
         for line in _get_glyph_text():
             if line.startswith("#"):
@@ -1432,7 +1419,7 @@ def glyph_name_to_unicode(name):
             _adobe_unicodes[gname] = c
     return _adobe_unicodes.get(name, 65533)
 
-def adobe_glyph_names():
+def adobe_glyph_names() -> tuple:
     if _adobe_unicodes == {}:
         for line in _get_glyph_text():
             if line.startswith("#"):
@@ -1442,7 +1429,7 @@ def adobe_glyph_names():
             _adobe_unicodes[gname] = c
     return tuple(_adobe_unicodes.keys())
 
-def adobe_glyph_unicodes():
+def adobe_glyph_unicodes() -> tuple:
     if _adobe_unicodes == {}:
         for line in _get_glyph_text():
             if line.startswith("#"):
@@ -1452,7 +1439,7 @@ def adobe_glyph_unicodes():
             _adobe_unicodes[gname] = c
     return tuple(_adobe_unicodes.values())
 
-def _get_glyph_text():
+def _get_glyph_text() -> bytes:
     return gzip.decompress(base64.b64decode(
     b'H4sIABmRaF8C/7W9SZfjRpI1useviPP15utzqroJgBjYWhEkKGWVlKnOoapVO0YQEYSCJE'
     b'IcMhT569+9Ppibg8xevHdeSpmEXfPBfDZ3N3f/t7u//r//k/zb3WJ4eTv2T9vzXTaZZH/N'
