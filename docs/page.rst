@@ -502,7 +502,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; insertText
       pair: oc; insertText
 
-   .. method:: insertText(point, text, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, rotate=0, morph=None, stroke_opacity=1, fill_opaity=1, overlay=True, oc=0)
+   .. method:: insertText(point, text, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, overlay=True, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -526,7 +526,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; insertTextbox
       pair: oc; insertTextbox
 
-   .. method:: insertTextbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, stroke_opacity=1, fill_opaity=1, oc=0, overlay=True)
+   .. method:: insertTextbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0, overlay=True)
 
       *(Changed in v1.18.4)*
 
@@ -547,7 +547,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawLine
       pair: oc; drawLine
 
-   .. method:: drawLine(p1, p2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawLine(p1, p2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -568,7 +568,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawZigzag
       pair: oc; drawZigzag
 
-   .. method:: drawZigzag(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawZigzag(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -589,7 +589,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawSquiggle
       pair: oc; drawSquiggle
 
-   .. method:: drawSquiggle(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawSquiggle(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -609,7 +609,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawCircle
       pair: oc; drawCircle
 
-   .. method:: drawCircle(center, radius, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawCircle(center, radius, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -629,7 +629,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawOval
       pair: oc; drawOval
 
-   .. method:: drawOval(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawOval(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -650,7 +650,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawSector
       pair: oc; drawSector
 
-   .. method:: drawSector(center, point, angle, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawSector(center, point, angle, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -670,7 +670,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawPolyline
       pair: oc; drawPolyline
 
-   .. method:: drawPolyline(points, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawPolyline(points, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -691,7 +691,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawBezier
       pair: oc; drawBezier
 
-   .. method:: drawBezier(p1, p2, p3, p4, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawBezier(p1, p2, p3, p4, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -711,7 +711,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawCurve
       pair: oc; drawCurve
 
-   .. method:: drawCurve(p1, p2, p3, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawCurve(p1, p2, p3, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 
@@ -731,7 +731,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; drawRect
       pair: oc; drawRect
 
-   .. method:: drawRect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opaity=1, oc=0)
+   .. method:: drawRect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       *(Changed in v1.18.4)*
 

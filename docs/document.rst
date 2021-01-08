@@ -474,7 +474,11 @@ For details on **embedded files** refer to Appendix 3.
           - ``style``: (str) the numbering style. Available are "D" (decimal), "r"/"R" (Roman numbers, lower or upper case), and "a"/"A" (alphabetical, lower/upper case). If "", then no numbering will take place and the pages in that range will receive the same label consisting of the ``prefix`` value. If prefix is also omitted, then the label will be "".
           - ``firstpagenum``: (int) start numbering with this value. Must be 1 or greater.
 
-       For example ``{'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10}`` will generate the labels "A-10", "A-11", ... for pages 6, 7 and so on.
+       For example::
+       
+        {'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10}
+       
+       will generate the labels "A-10", "A-11", ... for pages 6, 7 and so on.
        
        .. note:: This is an expert function and requires knowledge of how PDF page labelling works. See :ref:`AdobeManual` page 595.
 
