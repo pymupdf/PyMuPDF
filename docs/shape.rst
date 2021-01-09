@@ -115,7 +115,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: drawBezier(p1, p2, p3, p4)
 
-      Draw a standard cubic Bezier curve from *p1* to *p4*, using *p2* and *p3* as control points.
+      Draw a standard cubic Bézier curve from *p1* to *p4*, using *p2* and *p3* as control points.
 
       All arguments are :data:`point_like` \s.
 

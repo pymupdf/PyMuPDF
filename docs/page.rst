@@ -695,7 +695,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(Changed in v1.18.4)*
 
-      PDF only: Draw a cubic BÃ©zier curve from *p1* to *p4* with the control points *p2* and *p3* (all are :data`point_like` \s). See :meth:`Shape.drawBezier`.
+      PDF only: Draw a cubic Bézier curve from *p1* to *p4* with the control points *p2* and *p3* (all are :data:`point_like` \s). See :meth:`Shape.drawBezier`.
 
    .. index::
       pair: closePath; drawCurve
