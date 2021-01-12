@@ -46,7 +46,7 @@ BLOCKS
 
 Function :meth:`TextPage.extractBLOCKS` (or *Page.getText("blocks")*) extracts a page's text blocks as a list of items like::
 
-    (x0, y0, x1, y1, "lines in block", block_type, block_no)
+    (x0, y0, x1, y1, "lines in block", block_no, block_type)
 
 Where the first 4 items are the float coordinates of the block's bbox. The lines within each block are concatenated by a new-line character.
 
