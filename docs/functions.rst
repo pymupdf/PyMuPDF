@@ -20,7 +20,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`ConversionTrailer`            return trailer string for *getText* methods
 :meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
 :meth:`Document.set_xml_metadata`    PDF only: remove XML metadata
-:meth:`Document.delete_object`       PDF only: delete an object
+:meth:`Document._deleteObject`       PDF only: delete an object
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document._getOLRootNumber`    PDF only: return / create :data:`xref` of */Outline*
 :meth:`Document.pdf_catalog`         PDF only: return the :data:`xref` of the catalog
@@ -346,7 +346,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document.delete_object(xref)
+   .. method:: Document._deleteObject(xref)
 
       PDF only: Delete an object given by its cross reference number.
 
@@ -521,7 +521,7 @@ Yet others are handy, general-purpose utilities.
       
       PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.getContents` for more details.
 
-      Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
+      Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot.cleanContents` separately.
 
       :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the ``/Resources/Font`` object.
 

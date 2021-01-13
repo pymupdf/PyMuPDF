@@ -1952,12 +1952,12 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 * **Prepend** the missing stacking command by executing *fitz.TOOLS._insert_contents(page, b"q\n", False)*.
 * **Append** an unstacking command by executing *fitz.TOOLS._insert_contents(page, b"\nQ", True)*.
-* Alternatively, just use :meth:`Page._wrapContents`, which executes the previous two functions.
+* Alternatively, just use :meth:`Page.wrap_contents`, which executes the previous two functions.
 
 .. note:: If small incremental update deltas are a concern, this approach is the most effective. Other contents objects are not touched. The utility method creates two new PDF :data:`stream` objects and inserts them before, resp. after the page's other :data:`contents`. We therefore recommend the following snippet to get this situation under control:
 
     >>> if not page._isWrapped:
-            page._wrapContents()
+            page.wrap_contents()
     >>> # start inserting text, images or annotations here
 
 --------------------------
