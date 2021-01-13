@@ -472,7 +472,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in version 1.16.18)*
       
-      PDF only: Write the text of one or more :ref:`TextWriter` ojects to the page.
+      PDF only: Write the text of one or more :ref:`TextWriter` objects to the page.
 
       :arg rect_like rect: where to place the text. If omitted, the rectangle union of the text writers is used.
       :arg sequence writers: a non-empty tuple / list of :ref:`TextWriter` objects or a single :ref:`TextWriter`.

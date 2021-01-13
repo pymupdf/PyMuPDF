@@ -219,7 +219,7 @@ For details on **embedded files** refer to Appendix 3.
 
         >>> for item in doc.layer_configs: print(item)
         {'number': 0, 'name': 'my-config', 'creator': ''}
-        >>> # use 'number' as config identifyer in add_ocg
+        >>> # use 'number' as config identifier in add_ocg
 
     .. method:: add_layer_config(name, creator=None, on=None)
 
