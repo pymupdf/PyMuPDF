@@ -10002,6 +10002,7 @@ struct TextPage {
                 """Return simple, bare text on the page."""
                 return self._extractText(0)
 
+            extractTEXT = extractText
 
             def extractHTML(self) -> str:
                 """Return page content as a HTML string."""
