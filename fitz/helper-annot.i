@@ -321,11 +321,11 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 //------------------------------------------------------------------------
 // return the xrefs and /NM ids of a page's annots, links and fields
 //------------------------------------------------------------------------
-PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_page *page)
+PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_obj *page_obj)
 {
     PyObject *names = PyList_New(0);
     pdf_obj *id, *annot_obj = NULL;
-    pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
+    pdf_obj *annots = pdf_dict_get(ctx, page_obj, PDF_NAME(Annots));
     if (!annots) return names;
     fz_try(ctx) {
         int i, n = pdf_array_len(ctx, annots);

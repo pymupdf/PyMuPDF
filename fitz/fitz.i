@@ -2052,6 +2052,28 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         }
 
 
+        FITZEXCEPTION(page_annot_xrefs, !result)
+        CLOSECHECK0(page_annot_xrefs, """Get list annotations of page number.""")
+        PyObject *page_annot_xrefs(int pno)
+        {
+            fz_document *this_doc = (fz_document *) $self;
+            int pageCount = fz_count_pages(gctx, this_doc);
+            int n = pno;
+            while (n < 0) n += pageCount;
+            pdf_document *pdf = pdf_specifics(gctx, this_doc);
+            PyObject *annots = NULL;
+            fz_try(gctx) {
+                if (n >= pageCount) THROWMSG(gctx, "bad page number(s)");
+                ASSERT_PDF(pdf);
+                annots = JM_get_annot_xref_list(gctx, pdf_lookup_page_obj(gctx, pdf, n));
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return annots;
+        }
+
+
         FITZEXCEPTION(pageCropBox, !result)
         CLOSECHECK0(pageCropBox, """Get CropBox of page number (without loading page).""")
         %pythonappend pageCropBox %{val = Rect(val)%}
@@ -3801,8 +3823,7 @@ if basestate:
                 old_toc = self.getToC()
                 for i, item in enumerate(old_toc):
                     if item[2] == pno + 1:
-                        xref = self.outline_xref(i)
-                        self._remove_toc_item(xref)
+                        self.del_toc_item(i)
 
                 self._remove_links_to(pno, pno)
                 self._deletePage(pno)
@@ -3831,8 +3852,7 @@ if basestate:
                 old_toc = self.getToC()
                 for i, item in enumerate(old_toc):
                     if f + 1 <= item[2] <= t + 1:
-                        xref = self.outline_xref(i)
-                        self._remove_toc_item(xref)
+                        self.del_toc_item(i)
 
                 self._remove_links_to(f, t)
 
@@ -5078,7 +5098,7 @@ def get_oc_items(self) -> list:
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             if (!page) Py_RETURN_NONE;
-            return JM_get_annot_xref_list(gctx, page);
+            return JM_get_annot_xref_list(gctx, page->obj);
         }
 
 

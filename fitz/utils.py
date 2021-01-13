@@ -170,7 +170,9 @@ def showPDFpage(*args, **kwargs) -> int:
     matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
 
     # list of existing /Form /XObjects
-    ilst = [i[1] for i in doc._getPageInfo(page.number, 3)]
+    ilst = [i[1] for i in doc.get_page_xobjects(page.number)]
+    ilst += [i[7] for i in doc.get_page_images(page.number)]
+    ilst += [i[4] for i in doc.get_page_fonts(page.number)]
 
     # create a name not in that list
     n = "fzFrm"
@@ -369,8 +371,10 @@ def insertImage(*args, **kwargs) -> None:
     matrix = calc_matrix(fw, fh, clip, rotate=rotate)  # calculate matrix
 
     # Create a unique image reference name.
-    ilst = [i[7] for i in doc.getPageImageList(page.number)]
-    n = "Im"  # 'fitz image'
+    ilst = [i[7] for i in doc.get_page_images(page.number)]
+    ilst += [i[1] for i in doc.get_page_xobjects(page.number)]
+    ilst += [i[4] for i in doc.get_page_fonts(page.number)]
+    n = "fzImg"  # 'fitz image'
     i = 0
     _imgname = n + "0"  # first name candidate
     while _imgname in ilst:
@@ -1068,10 +1072,10 @@ def setToC(
     # make a list of xref numbers, which we can use for our TOC entries
     # --------------------------------------------------------------------------
     old_xrefs = doc._delToC()  # del old outlines, get their xref numbers
-    old_xrefs = []  # TODO do not reuse them currently
+
     # prepare table of xrefs for new bookmarks
     xref = [0] + old_xrefs
-    xref[0] = doc._getOLRootNumber()  # entry zero is outline root xref#
+    xref[0] = doc._getOLRootNumber()  # entry zero is outline root xref number
     if toclen > len(old_xrefs):  # too few old xrefs?
         for i in range((toclen - len(old_xrefs))):
             xref.append(doc.get_new_xref())  # acquire new ones
@@ -4466,3 +4470,37 @@ def set_page_labels(doc, labels):
 
 
 # End of Page Label Code -------------------------------------------------
+
+
+def has_links(doc: Document) -> bool:
+    """Check whether there links on any page."""
+    if doc.isClosed:
+        raise ValueError("closed document")
+    if not doc.isPDF:
+        raise ValueError("not a PDF")
+    s = set()
+    for i in range(doc.pageCount):
+        s = s.union([True for j in doc.page_annot_xrefs(i) if j[1] == PDF_ANNOT_LINK])
+        if s == {True}:
+            return True
+    return False
+
+
+def has_annots(doc: Document) -> bool:
+    """Check whether there annotations on any page."""
+    if doc.isClosed:
+        raise ValueError("closed document")
+    if not doc.isPDF:
+        raise ValueError("not a PDF")
+    s = set()
+    for i in range(doc.pageCount):
+        s = s.union(
+            [
+                True
+                for j in doc.page_annot_xrefs(i)
+                if j[1] not in (PDF_ANNOT_LINK, PDF_ANNOT_WIDGET)
+            ]
+        )
+        if s == {True}:
+            return True
+    return False

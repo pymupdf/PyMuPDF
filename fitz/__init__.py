@@ -56,6 +56,8 @@ fitz.Document.setToC = fitz.utils.setToC
 fitz.Document.tobytes = fitz.Document.write
 fitz.Document.set_page_labels = fitz.utils.set_page_labels
 fitz.Document.get_page_numbers = fitz.utils.get_page_numbers
+fitz.Document.has_links = fitz.utils.has_links
+fitz.Document.has_annots = fitz.utils.has_annots
 
 # ------------------------------------------------------------------------------
 # Page
