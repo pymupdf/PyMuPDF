@@ -1952,12 +1952,12 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 * **Prepend** the missing stacking command by executing *fitz.TOOLS._insert_contents(page, b"q\n", False)*.
 * **Append** an unstacking command by executing *fitz.TOOLS._insert_contents(page, b"\nQ", True)*.
-* Alternatively, just use :meth:`Page._wrapContents`, which executes the previous two functions.
+* Alternatively, just use :meth:`Page.wrap_contents`, which executes the previous two functions.
 
 .. note:: If small incremental update deltas are a concern, this approach is the most effective. Other contents objects are not touched. The utility method creates two new PDF :data:`stream` objects and inserts them before, resp. after the page's other :data:`contents`. We therefore recommend the following snippet to get this situation under control:
 
     >>> if not page._isWrapped:
-            page._wrapContents()
+            page.wrap_contents()
     >>> # start inserting text, images or annotations here
 
 --------------------------
@@ -2034,7 +2034,7 @@ How to Handle Object Streams
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Some object types contain additional data apart from their object definition. Examples are images, fonts, embedded files or commands describing the appearance of a page.
 
-Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xrefStream` with the object's :data:`xref` as an argument. And it is also possible to write back a modified version of a stream using :meth:`Document.updatefStream`.
+Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xrefStream` with the object's :data:`xref` as an argument. And it is also possible to write back a modified version of a stream using :meth:`Document.updateStream`.
 
 Assume that the following snippet wants to read all streams of a PDF for whatever reason::
 
@@ -2044,9 +2044,9 @@ Assume that the following snippet wants to read all streams of a PDF for whateve
             # do something with it (it is a bytes object or None)
             # e.g. just write it back:
             if stream:
-                doc.updatefStream(xref, stream)
+                doc.updateStream(xref, stream)
 
-:meth:`Document.xrefStream` automatically returns a stream decompressed as a bytes object -- and :meth:`Document.updatefStream` automatically compresses it (where beneficial).
+:meth:`Document.xrefStream` automatically returns a stream decompressed as a bytes object -- and :meth:`Document.updateStream` automatically compresses it (where beneficial).
 
 ----------------------------------
 
@@ -2125,11 +2125,11 @@ ID      array       File identifier consisting of two byte strings.
 XRefStm int         Offset of a cross-reference stream. See :ref:`AdobeManual` p. 109.
 ======= =========== ===================================================================================
 
-Access this information via PyMuPDF with :meth:`Document._getTrailerString`.
+Access this information via PyMuPDF with :meth:`Document.PDFTrailer`.
 
     >>> import fitz
     >>> doc=fitz.open("PyMuPDF.pdf")
-    >>> trailer=doc._getTrailerString()
+    >>> trailer=doc.PDFTrailer()
     >>> print(trailer)
     <</Size 5535/Info 5275 0 R/Root 5274 0 R/ID[(\340\273fE\225^l\226\232O|\003\201\325g\245)(}#1,\317\205\000\371\251wO6\352Oa\021)]>>
     >>>
@@ -2159,7 +2159,7 @@ PyMuPDF has no way to **interpret or change** this information directly, because
 Using some XML package, the XML data can be interpreted and / or modified and then stored back::
 
     >>> # write back modified XML metadata:
-    >>> doc.updatefStream(metaxref, xmlmetadata)
+    >>> doc.updateStream(metaxref, xmlmetadata)
     >>>
     >>> # if these data are not wanted, delete them:
-    >>> doc._delXmlMetadata()
+    >>> doc.del_xml_metadata()

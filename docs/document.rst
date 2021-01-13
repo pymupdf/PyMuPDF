@@ -219,7 +219,7 @@ For details on **embedded files** refer to Appendix 3.
 
         >>> for item in doc.layer_configs: print(item)
         {'number': 0, 'name': 'my-config', 'creator': ''}
-        >>> # use 'number' as config identifyer in add_ocg
+        >>> # use 'number' as config identifier in add_ocg
 
     .. method:: add_layer_config(name, creator=None, on=None)
 
@@ -1307,27 +1307,27 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the definition of a PDF object. For details please refer to :meth:`Document.xrefObject`.
+      PDF only: Return the definition of a PDF object.
   
     .. method:: PDFCatalog()
       
       *(New in version 1.16.8)*
       
-      PDF only: Return the :data:`xref` of the PDF catalog (or root) object. For details please refer to :meth:`Document._getPDFroot`.
+      PDF only: Return the :data:`xref` of the PDF catalog (or root) object.
 
 
     .. method:: PDFTrailer(compressed=False)
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the trailer of the PDF (UTF-8), which is usually located at the PDF file's end. For details please refer to :meth:`Document._getTrailerString`.
+      PDF only: Return the trailer of the PDF (UTF-8), which is usually located at the PDF file's end.
 
 
     .. method:: metadataXML()
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the :data:`xref` of the document's XML metadata. For details please refer to :meth:`Document._getXmlMetadataXref`.
+      PDF only: Return the :data:`xref` of the document's XML metadata.
 
     .. method:: xrefStream(xref)
 
@@ -1517,7 +1517,7 @@ Clear metadata information. If you do this out of privacy / data protection conc
 {'producer': 'none', 'format': 'PDF 1.4', 'encryption': None, 'author': 'none',
 'modDate': 'none', 'keywords': 'none', 'title': 'none', 'creationDate': 'none',
 'creator': 'none', 'subject': 'none'}
->>> doc._delXmlMetadata()    # clear any XML metadata
+>>> doc.del_xml_metadata()    # clear any XML metadata
 >>> doc.save("anonymous.pdf", garbage = 4)       # save anonymized doc
 
 :meth:`setToC` Demonstration

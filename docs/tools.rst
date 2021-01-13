@@ -8,7 +8,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 ====================================== =================================================
 **Method / Attribute**                 **Description**
 ====================================== =================================================
-:meth:`Tools.gen_id`                   generate a unique identifyer
+:meth:`Tools.gen_id`                   generate a unique identifier
 :meth:`Tools.image_profile`            report basic image properties
 :meth:`Tools.store_shrink`             shrink the storables cache [#f1]_
 :meth:`Tools.mupdf_warnings`           return the accumulated MuPDF warnings

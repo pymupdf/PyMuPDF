@@ -96,7 +96,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.showPDFpage`          PDF only: display PDF page image
 :meth:`Page.updateLink`           PDF only: modify a link
 :meth:`Page.widgets`              return a generator over the fields on the page
-:meth:`Page.writeText`            write one or more :ref:`Textwriter` objects
+:meth:`Page.writeText`            write one or more :ref:`TextWriter` objects
 :attr:`Page.CropBox`              the page's :data:`CropBox`
 :attr:`Page.CropBoxPosition`      displacement of the :data:`CropBox`
 :attr:`Page.firstAnnot`           first :ref:`Annot` on the page
@@ -472,7 +472,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in version 1.16.18)*
       
-      PDF only: Write the text of one or more :ref:`Textwriter` ojects to the page.
+      PDF only: Write the text of one or more :ref:`TextWriter` objects to the page.
 
       :arg rect_like rect: where to place the text. If omitted, the rectangle union of the text writers is used.
       :arg sequence writers: a non-empty tuple / list of :ref:`TextWriter` objects or a single :ref:`TextWriter`.
