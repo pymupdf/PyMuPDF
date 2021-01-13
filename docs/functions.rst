@@ -410,7 +410,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document.xml_metadata_xref()
 
-      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
+      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document.del_xml_metadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
 
       :rtype: int
       :returns: :data:`xref` of PDF file level XML metadata -- or 0 if none exists.

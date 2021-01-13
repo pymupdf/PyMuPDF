@@ -2125,11 +2125,11 @@ ID      array       File identifier consisting of two byte strings.
 XRefStm int         Offset of a cross-reference stream. See :ref:`AdobeManual` p. 109.
 ======= =========== ===================================================================================
 
-Access this information via PyMuPDF with :meth:`Document._getTrailerString`.
+Access this information via PyMuPDF with :meth:`Document.PDFTrailer`.
 
     >>> import fitz
     >>> doc=fitz.open("PyMuPDF.pdf")
-    >>> trailer=doc._getTrailerString()
+    >>> trailer=doc.PDFTrailer()
     >>> print(trailer)
     <</Size 5535/Info 5275 0 R/Root 5274 0 R/ID[(\340\273fE\225^l\226\232O|\003\201\325g\245)(}#1,\317\205\000\371\251wO6\352Oa\021)]>>
     >>>
@@ -2162,4 +2162,4 @@ Using some XML package, the XML data can be interpreted and / or modified and th
     >>> doc.updateStream(metaxref, xmlmetadata)
     >>>
     >>> # if these data are not wanted, delete them:
-    >>> doc._delXmlMetadata()
+    >>> doc.del_xml_metadata()
