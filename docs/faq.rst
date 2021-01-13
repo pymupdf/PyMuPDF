@@ -2034,7 +2034,7 @@ How to Handle Object Streams
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Some object types contain additional data apart from their object definition. Examples are images, fonts, embedded files or commands describing the appearance of a page.
 
-Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xrefStream` with the object's :data:`xref` as an argument. And it is also possible to write back a modified version of a stream using :meth:`Document.updatefStream`.
+Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xrefStream` with the object's :data:`xref` as an argument. And it is also possible to write back a modified version of a stream using :meth:`Document.updateStream`.
 
 Assume that the following snippet wants to read all streams of a PDF for whatever reason::
 
@@ -2044,9 +2044,9 @@ Assume that the following snippet wants to read all streams of a PDF for whateve
             # do something with it (it is a bytes object or None)
             # e.g. just write it back:
             if stream:
-                doc.updatefStream(xref, stream)
+                doc.updateStream(xref, stream)
 
-:meth:`Document.xrefStream` automatically returns a stream decompressed as a bytes object -- and :meth:`Document.updatefStream` automatically compresses it (where beneficial).
+:meth:`Document.xrefStream` automatically returns a stream decompressed as a bytes object -- and :meth:`Document.updateStream` automatically compresses it (where beneficial).
 
 ----------------------------------
 
@@ -2159,7 +2159,7 @@ PyMuPDF has no way to **interpret or change** this information directly, because
 Using some XML package, the XML data can be interpreted and / or modified and then stored back::
 
     >>> # write back modified XML metadata:
-    >>> doc.updatefStream(metaxref, xmlmetadata)
+    >>> doc.updateStream(metaxref, xmlmetadata)
     >>>
     >>> # if these data are not wanted, delete them:
     >>> doc._delXmlMetadata()
