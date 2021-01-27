@@ -16,11 +16,11 @@ Yet others are handy, general-purpose utilities.
 :meth:`Annot.set_apn_bbox`           PDF only: set the bbox of the appearance object
 :attr:`Annot.apn_matrix`             PDF only: the matrix of the appearance object
 :attr:`Annot.apn_bbox`               PDF only: bbox of the appearance object
-:meth:`ConversionHeader`             return header string for *getText* methods
-:meth:`ConversionTrailer`            return trailer string for *getText* methods
+:meth:`ConversionHeader`             return header string for *get_text* methods
+:meth:`ConversionTrailer`            return trailer string for *get_text* methods
 :meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
 :meth:`Document.set_xml_metadata`    PDF only: remove XML metadata
-:meth:`Document._deleteObject`       PDF only: delete an object
+:meth:`Document.delete_object`       PDF only: delete an object
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document._getOLRootNumber`    PDF only: return / create :data:`xref` of */Outline*
 :meth:`Document.pdf_catalog`         PDF only: return the :data:`xref` of the catalog
@@ -33,7 +33,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document.extractFont`         PDF only: extract embedded font
 :meth:`Document.extractImage`        PDF only: extract embedded image
 :meth:`Document.getCharWidths`       PDF only: return a list of glyph widths of a font
-:meth:`Document.isStream`            PDF only: check whether an :data:`xref` is a stream object
+:meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
 :attr:`Document.FontInfos`           PDF only: information on inserted fonts
 :meth:`ImageProperties`              return a dictionary of basic image properties
 :meth:`getPDFnow`                    return the current timestamp in PDF format
@@ -98,7 +98,7 @@ Yet others are handy, general-purpose utilities.
 
       *New in v1.17.4*
 
-      Convenience function returning a PDF color triple (red, green, blue) for a given sRGB color integer as it occurs in :meth:`Page.getText` dictionaries "dict" and "rawdict".
+      Convenience function returning a PDF color triple (red, green, blue) for a given sRGB color integer as it occurs in :meth:`Page.get_text` dictionaries "dict" and "rawdict".
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
@@ -328,7 +328,7 @@ Yet others are handy, general-purpose utilities.
 
       Return the header string required to make a valid document out of page text outputs.
 
-      :arg str output: type of document. Use the same as the output parameter of *getText()*.
+      :arg str output: type of document. Use the same as the output parameter of *get_text()*.
 
       :arg str filename: optional arbitrary name to use in output types "json" and "xml".
 
@@ -338,15 +338,15 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: ConversionTrailer(output)
 
-      Return the trailer string required to make a valid document out of page text outputs. See :meth:`Page.getText` for an example.
+      Return the trailer string required to make a valid document out of page text outputs. See :meth:`Page.get_text` for an example.
 
-      :arg str output: type of document. Use the same as the output parameter of *getText()*.
+      :arg str output: type of document. Use the same as the output parameter of *get_text()*.
 
       :rtype: str
 
 -----
 
-   .. method:: Document._deleteObject(xref)
+   .. method:: Document.delete_object(xref)
 
       PDF only: Delete an object given by its cross reference number.
 
@@ -410,7 +410,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document.xml_metadata_xref()
 
-      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document.del_xml_metadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
+      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
 
       :rtype: int
       :returns: :data:`xref` of PDF file level XML metadata -- or 0 if none exists.
@@ -495,7 +495,7 @@ Yet others are handy, general-purpose utilities.
       :rtype: list
       :returns: a list of :data:`xref` integers.
 
-      Each page may have zero to many associated contents objects (:data:`stream` \s) which contain some operator syntax describing what appears where and how on the page (like text or images, etc. See the :ref:`AdobeManual`, chapter "Operator Summary", page 985). This function only enumerates the number(s) of such objects. To get the actual stream source, use function :meth:`Document.xrefStream` with one of the numbers in this list. Use :meth:`Document.updateStream` to replace the content.
+      Each page may have zero to many associated contents objects (:data:`stream` \s) which contain some operator syntax describing what appears where and how on the page (like text or images, etc. See the :ref:`AdobeManual`, chapter "Operator Summary", page 985). This function only enumerates the number(s) of such objects. To get the actual stream source, use function :meth:`Document.xrefStream` with one of the numbers in this list. Use :meth:`Document.update_stream` to replace the content.
 
 -----
 
@@ -507,8 +507,8 @@ Yet others are handy, general-purpose utilities.
          >>> xreflist = page._getContents()
          >>> for xref in xreflist:
                  c += doc.xrefStream(xref)
-         >>> doc.updateStream(xreflist[0], c)
-         >>> page._setContents(xreflist[0])
+         >>> doc.update_stream(xreflist[0], c)
+         >>> page.set_contents(xreflist[0])
          >>> # doc.save(..., garbage=1) will remove the unused objects
 
       :arg int xref: the cross reference number of a :data:`contents` object. An exception is raised if outside the valid :data:`xref` range or not a stream object.
@@ -521,9 +521,9 @@ Yet others are handy, general-purpose utilities.
       
       PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.getContents` for more details.
 
-      Changed in version 1.16.0 Annotations are no longer implicitly cleaned by this method. Use :meth:`Annot.cleanContents` separately.
+      Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
 
-      :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is synchronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the ``/Resources/Font`` object.
+      :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the ``/Resources/Font`` object.
 
       .. warning:: This is a complex function which may generate large amounts of new data and render old data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
 
@@ -613,7 +613,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document.isStream(xref)
+   .. method:: Document.is_stream(xref)
 
       *(New in version 1.14.14)*
       
@@ -654,7 +654,7 @@ Yet others are handy, general-purpose utilities.
 
       PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
 
-      :arg int xref: :data:`xref` of an image object. If this is not in *range(1, doc.xrefLength())*, or the object is no image or other errors occur, *None* is returned and no exception is raised.
+      :arg int xref: :data:`xref` of an image object. If this is not in *range(1, doc.xref_length())*, or the object is no image or other errors occur, *None* is returned and no exception is raised.
 
       :rtype: dict
       :returns: a dictionary with the following keys

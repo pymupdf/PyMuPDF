@@ -33,7 +33,7 @@ Hence some useful classification:
 :meth:`Rect.morph`            transform with a point and a matrix
 :meth:`Rect.norm`             the Euclidean norm
 :meth:`Rect.normalize`        makes a rectangle finite
-:meth:`Rect.round`            create smallest :ref:`IRect` containing rectangle
+:meth:`Rect.round`            create smallest :ref:`Irect` containing rectangle
 :meth:`Rect.transform`        transform rectangle with a matrix
 :attr:`Rect.bottom_left`      bottom left point, synonym *bl*
 :attr:`Rect.bottom_right`     bottom right point, synonym *br*

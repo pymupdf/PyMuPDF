@@ -30,7 +30,7 @@ Using this object entails three steps:
 
    * Starting with version 1.17.0, TextWriters **do support** text rotation via the *morph* parameter of :meth:`TextWriter.writeText`.
 
-   * There also exists :meth:`Page.writeText` which combines one or more TextWriters and jointly writes them to a given rectangle and with a given rotation angle -- much like :meth:`Page.showPDFpage`.
+   * There also exists :meth:`Page.writeText` which combines one or more TextWriters and jointly writes them to a given rectangle and with a given rotation angle -- much like :meth:`Page.show_pdf_page`.
 
 
 ================================ ============================================

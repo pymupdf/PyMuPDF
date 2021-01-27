@@ -2,7 +2,7 @@
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: January 7, 2021
+Release date: January 31, 2021
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 

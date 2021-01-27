@@ -51,7 +51,7 @@ def print_descr(annot):
 
 
 doc = fitz.open()
-page = doc.newPage()
+page = doc.new_page()
 
 page.setRotation(0)
 

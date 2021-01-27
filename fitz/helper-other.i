@@ -1,5 +1,8 @@
 %{
 fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *val, int a, int b);
+PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff);
+pdf_obj *JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, char *src);
+
 int LIST_APPEND_DROP(PyObject *list, PyObject *item)
 {
     if (!list || !PyList_Check(list) || !item) return -2;
@@ -22,6 +25,86 @@ int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value)
     int rc = PyDict_SetItemString(dict, key, value);
     Py_DECREF(value);
     return rc;
+}
+
+//----------------------------------
+// Set a PDF dict key to some value
+//----------------------------------
+static pdf_obj
+*JM_set_object_value(fz_context *ctx, pdf_obj *obj, const char *key, char *value)
+{
+    fz_buffer *res = NULL;
+    pdf_obj *new_obj = NULL, *testkey = NULL;
+    PyObject *skey = PyUnicode_FromString(key);  // Python version of dict key
+    PyObject *slash = PyUnicode_FromString("/");  // PDF path separator
+    PyObject *list = NULL, *newval=NULL, *newstr=NULL, *nullval=NULL;
+    const char eyecatcher[] = "fitz: replace me!";
+    fz_try(ctx)
+    {
+        pdf_document *pdf = pdf_get_bound_document(ctx, obj);
+        // split PDF key at path seps and take last key part
+        list = PyUnicode_Split(skey, slash, -1);
+        Py_ssize_t len = PySequence_Size(list);
+        Py_ssize_t i = len - 1;
+        Py_DECREF(skey);
+        skey = PySequence_GetItem(list, i);
+
+        PySequence_DelItem(list, i);  // del the last sub-key
+        len =  PySequence_Size(list);  // remaining length
+        testkey = pdf_dict_getp(ctx, obj, key);  // check if key already exists
+        if (!testkey) {
+            /*-----------------------------------------------------------------
+            No, it will be created here. But we cannot allow this happening if
+            indirect objects are referenced. So we check all higher level
+            sub-paths for indirect references.
+            -----------------------------------------------------------------*/
+            while (len > 0) {
+                PyObject *t = PyUnicode_Join(slash, list);  // next high level
+                if (pdf_is_indirect(ctx, pdf_dict_getp(ctx, obj, JM_StrAsChar(t)))) {
+                    Py_DECREF(t);
+                    fz_throw(ctx, FZ_ERROR_GENERIC, "path of '%s' has indirects", JM_StrAsChar(skey));
+                }
+                PySequence_DelItem(list, len - 1);  // del last sub-key
+                len = PySequence_Size(list);  // remaining length
+                Py_DECREF(t);
+            }
+        }
+        // Insert our eyecatcher. Will create all sub-paths in the chain, or
+        // respectively remove old value of key-path.
+        pdf_dict_putp_drop(ctx, obj, key, pdf_new_text_string(ctx, eyecatcher));
+        testkey = pdf_dict_getp(ctx, obj, key);
+        if (!pdf_is_string(ctx, testkey)) {
+            fz_throw(ctx, FZ_ERROR_GENERIC, "cannot insert value for '%s'", key);
+        }
+        const char *temp = pdf_to_text_string(ctx, testkey);
+        if (strcmp(temp, eyecatcher) != 0) {
+            fz_throw(ctx, FZ_ERROR_GENERIC, "cannot insert value for '%s'", key);
+        }
+        // read the result as a string
+        res = JM_object_to_buffer(ctx, obj, 1, 0);
+        PyObject *objstr = JM_EscapeStrFromBuffer(ctx, res);
+
+        // replace 'nullval' by desired 'value'
+        nullval = PyUnicode_FromFormat("/%s(%s)", JM_StrAsChar(skey), eyecatcher);
+        newval = PyUnicode_FromFormat("/%s %s", JM_StrAsChar(skey), value);
+        newstr = PyUnicode_Replace(objstr, nullval, newval, 1);
+
+        // make PDF object from resulting string
+        new_obj = JM_pdf_obj_from_str(gctx, pdf, JM_StrAsChar(newstr));
+    }
+    fz_always(ctx) {
+        fz_drop_buffer(ctx, res);
+        Py_CLEAR(skey);
+        Py_CLEAR(slash);
+        Py_CLEAR(list);
+        Py_CLEAR(newval);
+        Py_CLEAR(newstr);
+        Py_CLEAR(nullval);
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+    return new_obj;
 }
 
 
@@ -418,7 +501,6 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 //----------------------------------------------------------------------------
 fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 {
-    if (!EXISTS(stream)) return NULL;
     char *c = NULL;
     PyObject *mybytes = NULL;
     size_t len = 0;
@@ -438,7 +520,13 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
             len = (size_t) PyBytes_GET_SIZE(mybytes);
         }
         // all the above leave c as NULL pointer if unsuccessful
-        if (c) res = fz_new_buffer_from_copied_data(ctx, (const unsigned char *) c, len);
+        if (c) {
+            res = fz_new_buffer_from_copied_data(ctx, (const unsigned char *) c, len);
+        } else {
+            res = fz_new_buffer(ctx, 1);
+            fz_append_byte(ctx, res, 10);
+        }
+        fz_terminate_buffer(ctx, res);
     }
     fz_always(ctx) {
         Py_CLEAR(mybytes);

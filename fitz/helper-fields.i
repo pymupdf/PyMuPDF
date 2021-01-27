@@ -332,11 +332,6 @@ JM_delete_widget(fz_context *ctx, pdf_page *page, pdf_annot *annot)
 }
 
 
-
-
-
-
-
 // PushButton get state
 //-----------------------------------------------------------------------------
 PyObject *JM_pushbtn_state(fz_context *ctx, pdf_annot *annot)
@@ -448,6 +443,7 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
     return liste;
 }
 
+
 // set ListBox / ComboBox values
 //-----------------------------------------------------------------------------
 void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
@@ -470,6 +466,7 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
     pdf_dict_put(ctx, annot->obj, PDF_NAME(Opt), optarr);
     return;
 }
+
 
 //-----------------------------------------------------------------------------
 // Populate a Python Widget object with the values from a PDF form field.

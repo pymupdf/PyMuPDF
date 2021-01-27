@@ -25,7 +25,7 @@ This is a collection of functions to extend PyMupdf.
 """
 
 
-def writeText(page: Page, **kwargs) -> None:
+def write_text(page: Page, **kwargs) -> None:
     """Write the text of one or more TextWriter objects.
 
     Args:
@@ -51,7 +51,7 @@ def writeText(page: Page, **kwargs) -> None:
         raise ValueError("need at least one TextWriter")
     if type(writers) is TextWriter:
         if rotate == 0 and rect is None:
-            writers.writeText(page, opacity=opacity, color=color, overlay=overlay)
+            writers.write_text(page, opacity=opacity, color=color, overlay=overlay)
             return None
         else:
             writers = (writers,)
@@ -60,10 +60,10 @@ def writeText(page: Page, **kwargs) -> None:
     tpage = textdoc.newPage(width=page.rect.width, height=page.rect.height)
     for writer in writers:
         clip |= writer.textRect
-        writer.writeText(tpage, opacity=opacity, color=color)
+        writer.write_text(tpage, opacity=opacity, color=color)
     if rect is None:
         rect = clip
-    page.showPDFpage(
+    page.show_pdf_page(
         rect,
         textdoc,
         0,
@@ -77,7 +77,7 @@ def writeText(page: Page, **kwargs) -> None:
     tpage = None
 
 
-def showPDFpage(*args, **kwargs) -> int:
+def show_pdf_page(*args, **kwargs) -> int:
     """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
 
     Args:
@@ -144,7 +144,7 @@ def showPDFpage(*args, **kwargs) -> int:
     CheckParent(page)
     doc = page.parent
 
-    if not doc.isPDF or not src.isPDF:
+    if not doc.is_pdf or not src.is_pdf:
         raise ValueError("not a PDF")
 
     rect = page.rect & rect  # intersect with page rectangle
@@ -196,7 +196,7 @@ def showPDFpage(*args, **kwargs) -> int:
     pno_id = (isrc, pno)  # id of src[pno]
     xref = doc.ShownPages.get(pno_id, 0)
 
-    xref = page._showPDFpage(
+    xref = page._show_pdf_page(
         src_page,
         overlay=overlay,
         matrix=matrix,
@@ -249,9 +249,10 @@ def insertImage(*args, **kwargs) -> None:
 
         Notes:
             The result is basically a multiplication of four matrices in this
-            sequence: number one moves the image rectangle (always a unit rect!) to (0,0), number two rotates as desired, number three
-            scales using the width-height-ratio, and number four moves to the
-            target rect.
+            sequence: number one moves the image rectangle (always a unit rect!)
+                      to (0,0), number two rotates as desired, number three
+                      scales using the width-height-ratio, and number four moves
+                      to the target rect.
         Args:
             fw, fh: width / height ratio factors 0 < f <= 1.
                     The longer one must be 1.
@@ -298,7 +299,7 @@ def insertImage(*args, **kwargs) -> None:
     # ------------------------------------------------------------------------
     CheckParent(page)
     doc = page.parent
-    if not doc.isPDF:
+    if not doc.is_pdf:
         raise ValueError("not a PDF")
     if bool(filename) + bool(stream) + bool(pixmap) != 1:
         raise ValueError("need exactly one of filename, pixmap, stream")
@@ -569,16 +570,19 @@ def getText(
     CheckParent(page)
     if clip != None:
         clip = Rect(clip)
+        cb = None
+    else:
+        cb = page.CropBox
     tp = page.getTextPage(clip=clip, flags=flags)  # TextPage with or without images
 
     if option == "json":
-        t = tp.extractJSON()
+        t = tp.extractJSON(cb=cb)
     elif option == "rawjson":
-        t = tp.extractRAWJSON()
+        t = tp.extractRAWJSON(cb=cb)
     elif option == "dict":
-        t = tp.extractDICT()
+        t = tp.extractDICT(cb=cb)
     elif option == "rawdict":
-        t = tp.extractRAWDICT()
+        t = tp.extractRAWDICT(cb=cb)
     elif option == "html":
         t = tp.extractHTML()
     elif option == "xml":
@@ -802,7 +806,7 @@ def getToC(
     lvl = 1
     liste = []
     toc = recurse(olItem, liste, lvl)
-    if doc.isPDF and simple is False:
+    if doc.is_pdf and simple is False:
         doc._extend_toc_items(toc)
     return toc
 
@@ -854,7 +858,7 @@ def set_toc_item(
     if type(dest_dict) is dict:
         if dest_dict["kind"] == LINK_GOTO:
             pno = dest_dict["page"]
-            page_xref = doc.pageXref(pno)
+            page_xref = doc.page_xref(pno)
             page_height = doc.pageCropBox(pno).height
             to = dest_dict.get(to, Point(72, 36))
             to.y = page_height - to.y
@@ -890,7 +894,7 @@ def set_toc_item(
     if kind == LINK_GOTO:
         if pno is None or pno not in range(1, doc.pageCount + 1):
             raise ValueError("bad page number")
-        page_xref = doc.pageXref(pno - 1)
+        page_xref = doc.page_xref(pno - 1)
         page_height = doc.pageCropBox(pno - 1).height
         if to is None:
             to = Point(72, page_height - 38)
@@ -1040,7 +1044,7 @@ def setToC(
     """
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("document closed or encrypted")
-    if not doc.isPDF:
+    if not doc.is_pdf:
         raise ValueError("not a PDF")
     if not toc:  # remove all entries
         return len(doc._delToC())
@@ -1094,7 +1098,7 @@ def setToC(
         lvl = o[0]  # level
         title = getPDFstr(o[1])  # title
         pno = min(doc.pageCount - 1, max(0, o[2] - 1))  # page number
-        page_xref = doc.pageXref(pno)
+        page_xref = doc.page_xref(pno)
         page_height = doc.pageCropBox(pno).height
         top = Point(72, page_height - 36)
         dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
@@ -1208,7 +1212,7 @@ def do_links(
 ) -> None:
     """Insert links contained in copied page range into destination PDF.
 
-    Parameter values **must** equal those of method insertPDF(), which must
+    Parameter values **must** equal those of method insert_pdf(), which must
     have been previously executed.
     """
     # --------------------------------------------------------------------------
@@ -1290,8 +1294,8 @@ def do_links(
     for i in range(len(pno_src)):
         p_src = pno_src[i]
         p_dst = pno_dst[i]
-        old_xref = doc2.pageXref(p_src)
-        new_xref = doc1.pageXref(p_dst)
+        old_xref = doc2.page_xref(p_src)
+        new_xref = doc1.page_xref(p_dst)
         xref_src.append(old_xref)
         xref_dst.append(new_xref)
 
@@ -2640,32 +2644,35 @@ def _get_font_properties(doc: Document, xref: int) -> tuple:
         return fontname, ext, stype, asc, dsc
 
     if buffer:
-        font = Font(fontbuffer=buffer)
-        asc = font.ascender
-        dsc = font.descender
-        bbox = font.bbox
-        if asc - dsc < 1:
-            if bbox.y0 < dsc:
-                dsc = bbox.y0
-            asc = 1 - dsc
-        font = None
-        buffer = None
+        try:
+            font = Font(fontbuffer=buffer)
+            asc = font.ascender
+            dsc = font.descender
+            bbox = font.bbox
+            if asc - dsc < 1:
+                if bbox.y0 < dsc:
+                    dsc = bbox.y0
+                asc = 1 - dsc
+        except:
+            asc *= 1.2
+            dsc *= 1.2
         return fontname, ext, stype, asc, dsc
-    try:
-        font = Font(fontname)
-        asc = font.ascender
-        dsc = font.descender
-        font = None
-    except:
-        pass
+    if ext != "n/a":
+        try:
+            font = Font(fontname)
+            asc = font.ascender
+            dsc = font.descender
+        except:
+            asc *= 1.2
+            dsc *= 1.2
+    else:
+        asc *= 1.2
+        dsc *= 1.2
     return fontname, ext, stype, asc, dsc
 
 
 def getCharWidths(
-    doc: Document,
-    xref: int,
-    limit: int = 256,
-    idx: int = 0,
+    doc: Document, xref: int, limit: int = 256, idx: int = 0, fontdict: OptDict = None
 ) -> list:
     """Get list of glyph information of a font.
 
@@ -2682,14 +2689,21 @@ def getCharWidths(
     """
     fontinfo = CheckFontInfo(doc, xref)
     if fontinfo is None:  # not recorded yet: create it
-        name, ext, stype, asc, dsc = _get_font_properties(doc, xref)
-        fontdict = {
-            "name": name,
-            "type": stype,
-            "ext": ext,
-            "ascender": asc,
-            "descender": dsc,
-        }
+        if fontdict is None:
+            name, ext, stype, asc, dsc = _get_font_properties(doc, xref)
+            fontdict = {
+                "name": name,
+                "type": stype,
+                "ext": ext,
+                "ascender": asc,
+                "descender": dsc,
+            }
+        else:
+            name = fontdict["name"]
+            ext = fontdict["ext"]
+            stype = fontdict["type"]
+            ordering = fontdict["ordering"]
+            simple = fontdict["simple"]
 
         if ext == "":
             raise ValueError("xref is not a font")
@@ -2782,7 +2796,7 @@ class Shape(object):
         CheckParent(page)
         self.page = page
         self.doc = page.parent
-        if not self.doc.isPDF:
+        if not self.doc.is_pdf:
             raise ValueError("not a PDF")
         self.height = page.MediaBoxSize.y
         self.width = page.MediaBoxSize.x
@@ -3719,7 +3733,7 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
     doc = page.parent
     if doc.isEncrypted or doc.isClosed:
         raise ValueError("document closed or encrypted")
-    if not doc.isPDF:
+    if not doc.is_pdf:
         raise ValueError("not a PDF")
 
     redact_annots = []  # storage of annot values
@@ -3778,6 +3792,7 @@ def scrub(
     remove_links: bool = True,
     reset_fields: bool = True,
     reset_responses: bool = True,
+    thumbnails: bool = True,
     xml_metadata: bool = True,
 ) -> None:
     def remove_hidden(cont_lines):
@@ -3829,7 +3844,7 @@ def scrub(
         else:
             return None
 
-    if not doc.isPDF:  # only works for PDF
+    if not doc.is_pdf:  # only works for PDF
         raise ValueError("not a PDF")
     if doc.isEncrypted or doc.isClosed:
         raise ValueError("closed or encrypted doc")
@@ -3879,6 +3894,10 @@ def scrub(
                 cont = b"\n".join(cont_lines)
                 doc.update_stream(xref, cont)  # rewrite the page /Contents
 
+        if thumbnails:  # remove page thumbnails?
+            if doc.xref_get_key(page.xref, "Thumb")[0] != "null":
+                doc.xref_set_key(page.xref, "Thumb", "null")
+
     # pages are scrubbed, now perform document-wide scrubbing
     # remove embedded files
     if embedded_files:
@@ -3892,33 +3911,23 @@ def scrub(
     else:
         xref_limit = doc.xrefLength()
     for xref in range(1, xref_limit):
-        obj = doc.xref_object(xref)  # get object definition source
-        # note: this string is formatted in a standard way by MuPDF.
-
-        if javascript and "/S /JavaScript" in obj:  # a /JavaScript action object?
+        if javascript and doc.xref_get_key(xref, "S")[1] == "/JavaScript":
+            # a /JavaScript action object
             obj = "<</S/JavaScript/JS()>>"  # replace with a null JavaScript
             doc.update_object(xref, obj)  # update this object
             continue  # no further handling
 
-        if not xml_metadata or "/Metadata" not in obj:
+        if not xml_metadata:
             continue
 
-        if "/Type /Metadata" in obj:  # delete any metadata object directly
-            doc.update_stream(xref, b"deleted")
+        if doc.xref_get_key(xref, "Type")[1] == "/Metadata":
+            # delete any metadata object directly
             doc.update_object(xref, "<<>>")
+            doc.update_stream(xref, b"deleted", new=True)
             continue
 
-        obj_lines = obj.splitlines()
-        new_lines = []  # will receive remaining obj definition lines
-        found = False  # assume /Metadata  not found
-        for line in obj_lines:
-            line = line.strip()
-            if not line.startswith("/Metadata "):
-                new_lines.append(line)  # keep this line
-            else:  # drop this line
-                found = True
-        if found:  # if removed /Metadata key, update object definition
-            doc.updateObject(xref, "\n".join(new_lines))
+        if doc.xref_get_key(xref, "Metadata")[0] != "null":
+            doc.xref_set_key(xref, "Metadata", "null")
 
 
 def fillTextbox(
@@ -4312,8 +4321,8 @@ def get_label_pno(pgNo, labels):
 
     item = [x for x in labels if x[0] <= pgNo][-1]
     rule = rule_dict(item)
-    prefix = rule["prefix"]
-    style = rule["style"]
+    prefix = rule.get("prefix", "")
+    style = rule.get("style", "")
     pagenumber = pgNo - rule["startpage"] + rule["firstpagenum"]
     return construct_label(style, prefix, pagenumber)
 
@@ -4369,13 +4378,13 @@ def construct_label(style, prefix, pno) -> str:
     n_str = ""
     if style == "D":
         n_str = str(pno)
-    if style == "r":
+    elif style == "r":
         n_str = integerToRoman(pno).lower()
-    if style == "R":
+    elif style == "R":
         n_str = integerToRoman(pno).upper()
-    if style == "a":
+    elif style == "a":
         n_str = integerToLetter(pno).lower()
-    if style == "A":
+    elif style == "A":
         n_str = integerToLetter(pno).upper()
     result = prefix + n_str
     return result
@@ -4425,13 +4434,27 @@ def integerToRoman(num: int) -> str:
     return "".join([a for a in roman_num(num)])
 
 
+def get_page_labels(doc):
+    """Return page label definitions in PDF document.
+
+    Args:
+        doc: PDF document (resp. 'self').
+    Returns:
+        A list of dictionaries with the following format:
+        {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}.
+    """
+    # Jorj McKie, 2021-01-10
+    return [rule_dict(item) for item in doc._get_page_labels()]
+
+
 def set_page_labels(doc, labels):
     """Add / replace page label definitions in PDF document.
 
     Args:
         doc: PDF document (resp. 'self').
         labels: list of label dictionaries like:
-        {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}
+        {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int},
+        as returned by get_page_labels().
     """
     # William Chapman, 2021-01-06
 
@@ -4444,17 +4467,17 @@ def set_page_labels(doc, labels):
             PDF label rule string wrapped in "<<", ">>".
         """
         s = "%i<<" % label["startpage"]
-        if label["prefix"] != "":
+        if label.get("prefix", "") != "":
             s += "/P(%s)" % label["prefix"]
-        if label["style"] != "":
+        if label.get("style", "") != "":
             s += "/S/%s" % label["style"]
-        if label["firstpagenum"] > 1:
+        if label.get("firstpagenum", 1) > 1:
             s += "/St %i" % label["firstpagenum"]
         s += ">>"
         return s
 
     def create_nums(labels):
-        """Return concatenated string of all labels rule.
+        """Return concatenated string of all labels rules.
 
         Args:
             labels: (list) dictionaries as created by function 'rule_dict'.
@@ -4473,34 +4496,26 @@ def set_page_labels(doc, labels):
 
 
 def has_links(doc: Document) -> bool:
-    """Check whether there links on any page."""
+    """Check whether there are links on any page."""
     if doc.isClosed:
-        raise ValueError("closed document")
-    if not doc.isPDF:
+        raise ValueError("document closed")
+    if not doc.is_pdf:
         raise ValueError("not a PDF")
-    s = set()
     for i in range(doc.pageCount):
-        s = s.union([True for j in doc.page_annot_xrefs(i) if j[1] == PDF_ANNOT_LINK])
-        if s == {True}:
-            return True
+        for item in doc.page_annot_xrefs(i):
+            if item[1] == PDF_ANNOT_LINK:
+                return True
     return False
 
 
 def has_annots(doc: Document) -> bool:
-    """Check whether there annotations on any page."""
+    """Check whether there are annotations on any page."""
     if doc.isClosed:
-        raise ValueError("closed document")
-    if not doc.isPDF:
+        raise ValueError("document closed")
+    if not doc.is_pdf:
         raise ValueError("not a PDF")
-    s = set()
     for i in range(doc.pageCount):
-        s = s.union(
-            [
-                True
-                for j in doc.page_annot_xrefs(i)
-                if j[1] not in (PDF_ANNOT_LINK, PDF_ANNOT_WIDGET)
-            ]
-        )
-        if s == {True}:
-            return True
+        for item in doc.page_annot_xrefs(i):
+            if not (item[1] == PDF_ANNOT_LINK or item[1] == PDF_ANNOT_WIDGET):
+                return True
     return False

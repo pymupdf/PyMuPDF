@@ -90,12 +90,15 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     quad = fz_transform_quad(ch->quad, xlate1);  // move origin to (0,0)
     quad = fz_transform_quad(quad, trm1);  // de-rotate corners
 
-    // adjust vertical coordinates
-    quad.ll.y = -fsize * dsc / (asc - dsc);
-    quad.ul.y = quad.ll.y - fsize;
-    quad.lr.y = quad.ll.y;
-    quad.ur.y = quad.ul.y;
-    // adjust horizontal coordinates
+    // adjust vertical coordinates if meaningful
+    if ((quad.ll.y - quad.ul.y) > fsize) {
+        quad.ll.y = -fsize * dsc / (asc - dsc);
+        quad.ul.y = quad.ll.y - fsize;
+        quad.lr.y = quad.ll.y;
+        quad.ur.y = quad.ul.y;
+    }
+
+    // adjust crazy horizontal coordinates
     if ((quad.lr.x - quad.ll.x) < FLT_EPSILON) {
         quad.lr.x = quad.ll.x + fwidth * fsize;
         quad.ur.x = quad.lr.x;
@@ -135,7 +138,7 @@ JM_new_buffer_from_stext_page(fz_context *ctx, fz_stext_page *page)
             if (block->type == FZ_STEXT_BLOCK_TEXT) {
                 for (line = block->u.t.first_line; line; line = line->next) {
                     for (ch = line->first_char; ch; ch = ch->next) {
-                        if (!fz_contains_rect(rect, JM_char_bbox(gctx, line, ch)) &&
+                        if (!fz_contains_rect(rect, JM_char_bbox(ctx, line, ch)) &&
                             !fz_is_infinite_rect(rect)) {
                             continue;
                         }
@@ -352,7 +355,7 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                 last_char = 0;
                 for (ch = line->first_char; ch; ch = ch->next) {
                     if (fz_is_infinite_rect(rect) ||
-                        fz_contains_rect(rect, JM_char_bbox(gctx, line, ch))) {
+                        fz_contains_rect(rect, JM_char_bbox(ctx, line, ch))) {
                         last_char = ch->c;
                         fz_write_rune(ctx, out, ch->c);
                     }
@@ -432,7 +435,7 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
 
     for (ch = line->first_char; ch; ch = ch->next) {
 //start-trace
-        fz_rect r = JM_char_bbox(gctx, line, ch);
+        fz_rect r = JM_char_bbox(ctx, line, ch);
         if (!fz_contains_rect(tp_rect, r) &&
             !fz_is_infinite_rect(tp_rect)) {
             continue;
@@ -671,7 +674,7 @@ fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *what, int compress, int
     fz_buffer *res=NULL;
     fz_output *out=NULL;
     fz_try(ctx) {
-        res = fz_new_buffer(ctx, 1024);
+        res = fz_new_buffer(ctx, 512);
         out = fz_new_output_with_buffer(ctx, res);
         pdf_print_obj(ctx, out, what, compress, ascii);
     }
@@ -679,9 +682,9 @@ fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *what, int compress, int
         fz_drop_output(ctx, out);
     }
     fz_catch(ctx) {
-        return NULL;
+        fz_rethrow(ctx);
     }
-    fz_terminate_buffer(gctx, res);
+    fz_terminate_buffer(ctx, res);
     return res;
 }
 
@@ -812,7 +815,7 @@ fz_font *JM_get_font(fz_context *ctx,
         if (data) font = fz_new_font_from_memory(ctx, fontname, data, size, 0, 0);
         if(font) goto fertig;
 
-        data = fz_lookup_builtin_font(gctx, fontname, is_bold, is_italic, &size);
+        data = fz_lookup_builtin_font(ctx, fontname, is_bold, is_italic, &size);
         if (data) font = fz_new_font_from_memory(ctx, fontname, data, size, 0, 0);
         goto fertig;
 

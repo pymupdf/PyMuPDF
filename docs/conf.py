@@ -40,7 +40,7 @@ copyright = "2015-2020, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.18.6"
+release = "1.18.7"
 
 # The short X.Y version
 version = release

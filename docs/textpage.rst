@@ -146,17 +146,18 @@ Dictionary Structure of :meth:`extractDICT` and :meth:`extractRAWDICT`
 
 Page Dictionary
 ~~~~~~~~~~~~~~~~~
+
 =============== ============================================
 **Key**         **Value**
 =============== ============================================
-width           page width in pixels *(float)*
-height          page height in pixels *(float)*
+width           width of the ``clip`` rectangle *(float)*
+height          height of the ``clip`` rectangle *(float)*
 blocks          *list* of block dictionaries
 =============== ============================================
 
 Block Dictionaries
 ~~~~~~~~~~~~~~~~~~
-Blocks come in two different formats: **image blocks** and **text blocks**.
+Block dictionaries come in two different formats for **image blocks** and for **text blocks**.
 
 *(Changed in v1.18.0)* -- new dict key *number*, the block number.
 
@@ -178,7 +179,7 @@ bpc             bits per component *(int)*
 image           image content *(bytes or bytearray)*
 =============== ===============================================================
 
-Possible values of key "ext" are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "jxr" (JPEG XR), "png", "pnm", and "tiff".
+Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "jxr" (JPEG XR), "png", "pnm", and "tiff".
 
 .. note::
 
@@ -263,6 +264,10 @@ These numbers may be used to compute the minimum height of a character (or span)
 >>> r.y1 = o.y - span["size"] * d / (a - d)
 >>> r.y0 = r.y1 - span["size"]
 >>> # r now is a rectangle of height 'fontsize'
+
+.. caution:: The above calculation may deliver a **larger** height! This may e.g. happen for OCR-ed documents, where the risk of all sorts of text artifacts is high. MuPDF tries to come up with a reasonable bbox height, independently from the fontsize found in the PDF. So please ensure that the height of ``span["bbox"]`` is **larger** than ``span["size"]``.
+
+.. note:: You may request PyMuPDF to do all of the above automatically by executing ``fitz.TOOLS.set_small_glyph_heights(True)``. This sets a global parameter so that all subsequent text searches and text extractions are based on reduced glyph heights, where meaningful.
 
 The following shows the original span rectangle in red and the rectangle with re-computed height in blue.
 

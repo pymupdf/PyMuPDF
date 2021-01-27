@@ -47,7 +47,7 @@ def recoverpix(doc, item):
 def open_file(filename, password, show=False, pdf=True):
     """Open and authenticate a document."""
     doc = fitz.open(filename)
-    if not doc.isPDF and pdf is True:
+    if not doc.is_pdf and pdf is True:
         sys.exit("this command supports PDF files only")
     rc = -1
     if not doc.needsPass:
@@ -79,9 +79,9 @@ def print_xref(doc, xref):
     For a stream also print its size.
     """
     print("%i 0 obj" % xref)
-    xref_str = doc.xrefObject(xref)
+    xref_str = doc.xref_object(xref)
     print(xref_str)
-    if doc.isStream(xref):
+    if doc.is_stream(xref):
         temp = xref_str.split()
         try:
             idx = temp.index("/Length") + 1
@@ -163,9 +163,9 @@ def show(args):
             meta["encryption"],
         )
     )
-    n = doc.isFormPDF
+    n = doc.is_form_pdf
     if n > 0:
-        s = doc.getSigFlags()
+        s = doc.get_sigflags()
         print(
             "document contains %i root form fields and is %ssigned"
             % (n, "not " if s != 3 else "")
@@ -233,7 +233,7 @@ def clean(args):
     outdoc = fitz.open()
     for pno in pages:
         n = pno - 1
-        outdoc.insertPDF(doc, from_page=n, to_page=n)
+        outdoc.insert_pdf(doc, from_page=n, to_page=n)
     outdoc.save(
         args.output,
         garbage=args.garbage,
@@ -266,7 +266,7 @@ def doc_join(args):
         else:  # take all pages
             page_list = range(1, src.pageCount + 1)
         for i in page_list:
-            doc.insertPDF(src, from_page=i - 1, to_page=i - 1)  # copy each source page
+            doc.insert_pdf(src, from_page=i - 1, to_page=i - 1)  # copy each source page
         src.close()
 
     doc.save(args.output, garbage=4, deflate=True)

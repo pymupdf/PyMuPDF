@@ -110,6 +110,7 @@ CheckParent(self)%}
 
 void JM_delete_widget(fz_context *ctx, pdf_page *page, pdf_annot *annot);
 static void JM_get_page_labels(fz_context *ctx, PyObject *liste, pdf_obj *nums);
+
 // additional headers from MuPDF ----------------------------------------------
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
 fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, float w, float h, const fz_irect *clip);
@@ -261,6 +262,7 @@ except ImportError:
 %include helper-pdfinfo.i
 %include helper-convert.i
 %include helper-trace.i
+%include helper-fileobj.i
 
 //------------------------------------------------------------------------
 // fz_document
@@ -284,19 +286,19 @@ struct Document
         Notes:
             Basic usages:
             open() - new PDF document
-            open(filename) - string or pathlib.Path, must have supported
-                    file extension.
-            open(type, buffer) - type: valid extension, buffer: bytes object.
+            open(filename) - string, pathlib.Path, or file object.
+            open(filename, fileype=type) - overwrite filename extension.
+            open(type, buffer) - type: extension, buffer: bytes object.
             open(stream=buffer, filetype=type) - keyword version of previous.
-            open(filename, fileype=type) - filename with unrecognized extension.
-            rect, width, height, fontsize: layout reflowable document
-            on open (e.g. EPUB). Ignored if n/a.
+            Parameters rect, width, height, fontsize: layout reflowable
+                 document on open (e.g. EPUB). Ignored if n/a.
         """
-
         if not filename or type(filename) is str:
             pass
+        elif hasattr(filename, "name"):
+            filename = filename.name
         else:
-            filename = str(filename)  # takes care of pathlib.Path
+            raise ValueError("bad filename")
 
         if stream:
             if not (filename or filetype):
@@ -455,26 +457,22 @@ struct Document
         {
             fz_page *page = NULL;
             fz_document *doc = (fz_document *) $self;
-            int pno;
+            int pno = 0, chapter = 0;
             PyObject *val = NULL;
             fz_try(gctx) {
                 if (PySequence_Check(page_id)) {
-                    val = PySequence_GetItem(page_id, 0);
-                    if (!val) THROWMSG(gctx, "bad page page id");
-                    int chapter = (int) PyLong_AsLong(val);
-                    Py_DECREF(val);
-                    if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
-
-                    val = PySequence_GetItem(page_id, 1);
-                    if (!val) THROWMSG(gctx, "bad page page id");
-                    pno = (int) PyLong_AsLong(val);
-                    Py_DECREF(val);
-                    if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
-
+                    if (JM_INT_ITEM(page_id, 0, &chapter) == 1) {
+                        THROWMSG(gctx, "bad page id");
+                    }
+                    if (JM_INT_ITEM(page_id, 1, &pno) == 1) {
+                        THROWMSG(gctx, "bad page id");
+                    }
                     page = fz_load_chapter_page(gctx, doc, chapter, pno);
                 } else {
                     pno = (int) PyLong_AsLong(page_id);
-                    if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
+                    if (PyErr_Occurred()) {
+                        THROWMSG(gctx, "bad page id");
+                    }
                     page = fz_load_page(gctx, doc, pno);
                 }
             }
@@ -546,10 +544,146 @@ struct Document
                 finished:;
             }
             fz_catch(gctx) {
+                Py_DECREF(xrefs);
                 return NULL;
             }
             return xrefs;
         }
+
+
+        FITZEXCEPTION(xref_get_keys, !result)
+        CLOSECHECK0(xref_get_keys, """Get the keys of PDF dict object at 'xref'.""")
+        PyObject *
+        xref_get_keys(int xref)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            pdf_obj *obj=NULL;
+            PyObject *rc = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if (!INRANGE(xref, 1, xreflen-1))
+                    THROWMSG(gctx, "bad xref");
+                obj = pdf_load_object(gctx, pdf, xref);
+                int i, n = pdf_dict_len(gctx, obj);
+                rc = PyTuple_New(n);
+                if (!n) goto finished;
+                for (i = 0; i < n; i++) {
+                    const char *key = pdf_to_name(gctx, pdf_dict_get_key(gctx, obj, i));
+                    PyTuple_SET_ITEM(rc, i, Py_BuildValue("s", key));
+                }
+                finished:;
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, obj);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(xref_get_key, !result)
+        CLOSECHECK0(xref_get_key, """Get PDF dict key value of object at 'xref'.""")
+        PyObject *
+        xref_get_key(int xref, const char *key)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            pdf_obj *obj=NULL, *subobj=NULL;
+            PyObject *rc = NULL;
+            fz_buffer *res = NULL;
+            PyObject *text = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if (!INRANGE(xref, 1, xreflen-1))
+                    THROWMSG(gctx, "bad xref");
+                obj = pdf_load_object(gctx, pdf, xref);
+                subobj = pdf_dict_getp(gctx, obj, key);
+                if (!subobj) {
+                    rc = Py_BuildValue("ss", "null", "null");
+                    goto finished;
+                }
+                char *type;
+                if (pdf_is_indirect(gctx, subobj)) {
+                    type = "xref";
+                } else if (pdf_is_array(gctx, subobj)) {
+                    type = "array";
+                } else if (pdf_is_dict(gctx, subobj)) {
+                    type = "dict";
+                } else if (pdf_is_int(gctx, subobj)) {
+                    type = "int";
+                } else if (pdf_is_real(gctx, subobj)) {
+                    type = "float";
+                } else if (pdf_is_null(gctx, subobj)) {
+                    type = "null";
+                    text = PyUnicode_FromString("null");
+                } else if (pdf_is_bool(gctx, subobj)) {
+                    type = "bool";
+                } else if (pdf_is_name(gctx, subobj)) {
+                    type = "name";
+                } else if (pdf_is_string(gctx, subobj)) {
+                    type = "string";
+                } else {
+                    type = "unknown";
+                }
+                if (!text) {
+                    res = JM_object_to_buffer(gctx, subobj, 1, 0);
+                    text = JM_EscapeStrFromBuffer(gctx, res);
+                }
+                rc = Py_BuildValue("sO", type, text);
+                Py_DECREF(text);
+                finished:;
+            }
+            fz_catch(gctx) {
+                fz_drop_buffer(gctx, res);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(xref_set_key, !result)
+        CLOSECHECK0(xref_set_key, """Set the value of a PDF dictionary key.""")
+        PyObject *
+        xref_set_key(int xref, const char *key, char *value)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            pdf_obj *obj = NULL, *new_obj = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if (!INRANGE(xref, 1, xreflen-1))
+                    THROWMSG(gctx, "bad xref");
+                if (strlen(value) == 0) {
+                    THROWMSG(gctx, "bad 'value'");
+                }
+                if (strlen(key) == 0) {
+                    THROWMSG(gctx, "bad 'key'");
+                }
+                obj = pdf_load_object(gctx, pdf, xref);
+                new_obj = JM_set_object_value(gctx, obj, key, value);
+                if (!new_obj) {
+                    goto finished;  // did not work: skip update
+                }
+                pdf_drop_obj(gctx, obj);
+                obj = NULL;
+                pdf_update_object(gctx, pdf, xref, new_obj);
+                pdf->dirty = 1;
+                finished:;
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, obj);
+                pdf_drop_obj(gctx, new_obj);
+                PyErr_Clear();
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
 
         FITZEXCEPTION(_extend_toc_items, !result)
         CLOSECHECK0(_extend_toc_items, """Add color info to all items of an extended TOC list.""")
@@ -1091,6 +1225,7 @@ struct Document
                 ret = Py_BuildValue("i", fz_count_pages(gctx, (fz_document *) $self));
             }
             fz_catch(gctx) {
+                PyErr_Clear();
                 return NULL;
             }
             return ret;
@@ -1477,6 +1612,7 @@ struct Document
             fz_catch(gctx) {
                 return NULL;
             }
+            pdf->dirty = 1;
             Py_RETURN_NONE;
         }
 
@@ -1537,9 +1673,9 @@ struct Document
             return idlist;
         }
 
-        CLOSECHECK0(isPDF, """Check for PDF.""")
+        CLOSECHECK0(is_pdf, """Check for PDF.""")
         %pythoncode%{@property%}
-        PyObject *isPDF()
+        PyObject *is_pdf()
         {
             if (pdf_specifics(gctx, (fz_document *) $self)) Py_RETURN_TRUE;
             else Py_RETURN_FALSE;
@@ -1604,19 +1740,19 @@ struct Document
         }
 
         //------------------------------------------------------------------
-        // save PDF file
+        // save a PDF
         //------------------------------------------------------------------
         FITZEXCEPTION(save, !result)
         %pythonprepend save %{
-        """Save PDF to filename."""
+        """Save PDF to file, pathlib.Path or file pointer."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("document closed or encrypted")
         if type(filename) == str:
             pass
-        elif str is bytes and type(filename) == unicode:
-            filename = filename.encode('utf8')
-        else:
+        elif hasattr(filename, "open"):  # assume: pathlib.Path
             filename = str(filename)
+        elif not hasattr(filename, "seek"):  # assume: file pointer
+            raise ValueError("filename must be str, Path or file pointer")
         if filename == self.name and not incremental:
             raise ValueError("save to original must be incremental")
         if self.pageCount < 1:
@@ -1627,7 +1763,7 @@ struct Document
         %}
 
         PyObject *
-        save(char *filename, int garbage=0, int clean=0,
+        save(PyObject *filename, int garbage=0, int clean=0,
             int deflate=0, int deflate_images=0, int deflate_fonts=0,
             int incremental=0, int ascii=0, int expand=0, int linear=0,
             int pretty=0, int encryption=1, int permissions=-1,
@@ -1657,12 +1793,21 @@ struct Document
             }
 
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_output *out = NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 JM_embedded_clean(gctx, pdf);
                 JM_ensure_identity(gctx, pdf);
-                pdf_save_document(gctx, pdf, filename, &opts);
+                if (PyUnicode_Check(filename)) {
+                    pdf_save_document(gctx, pdf, JM_StrAsChar(filename), &opts);
+                } else {
+                    out = JM_new_output_fileptr(gctx, filename);
+                    pdf_write_document(gctx, pdf, out, &opts);
+                }
                 pdf->dirty = 0;
+            }
+            fz_always(gctx) {
+                fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -1670,82 +1815,29 @@ struct Document
             Py_RETURN_NONE;
         }
 
-        //------------------------------------------------------------------
-        // write document to memory
-        //------------------------------------------------------------------
-        FITZEXCEPTION(write, !result)
-        %pythonprepend write %{
-        """Write the PDF to a bytes object."""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("document closed or encrypted")
-        if self.pageCount < 1:
-            raise ValueError("cannot write with zero pages")%}
-
-        PyObject *
-        write(int garbage=0, int clean=0,
-            int deflate=0, int deflate_images=0, int deflate_fonts=0,
-            int ascii=0, int expand=0, int pretty=0, int encryption=1,
-            int permissions=-1, char *owner_pw=NULL, char *user_pw=NULL)
-        {
-            PyObject *r = NULL;
-            fz_output *out = NULL;
-            fz_buffer *res = NULL;
-            pdf_write_options opts = pdf_default_write_options;
-            opts.do_incremental     = 0;
-            opts.do_ascii           = ascii;
-            opts.do_compress        = deflate;
-            opts.do_compress_images = deflate_images;
-            opts.do_compress_fonts  = deflate_fonts;
-            opts.do_decompress      = expand;
-            opts.do_garbage         = garbage;
-            opts.do_linear          = 0;
-            opts.do_clean           = clean;
-            opts.do_sanitize        = clean;
-            opts.do_pretty          = pretty;
-            opts.do_encrypt         = encryption;
-            opts.permissions        = permissions;
-            if (owner_pw) {
-                memcpy(&opts.opwd_utf8, owner_pw, strlen(owner_pw)+1);
-            } else if (user_pw) {
-                memcpy(&opts.opwd_utf8, user_pw, strlen(user_pw)+1);
-            }
-            if (user_pw) {
-                memcpy(&opts.upwd_utf8, user_pw, strlen(user_pw)+1);
-            }
-
-            fz_document *doc = (fz_document *) $self;
-            pdf_document *pdf = pdf_specifics(gctx, doc);
-            fz_var(out);
-            fz_var(r);
-            fz_try(gctx) {
-                ASSERT_PDF(pdf);
-                if (pdf_count_pages(gctx, pdf) < 1)
-                    THROWMSG(gctx, "cannot save with zero pages");
-                JM_embedded_clean(gctx, pdf);
-                JM_ensure_identity(gctx, pdf);
-                res = fz_new_buffer(gctx, 8192);
-                out = fz_new_output_with_buffer(gctx, res);
-                pdf_write_document(gctx, pdf, out, &opts);
-                r = JM_BinFromBuffer(gctx, res);
-                pdf->dirty = 0;
-            }
-            fz_always(gctx) {
-                fz_drop_buffer(gctx, res);
-                fz_drop_output(gctx, out);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return r;
-        }
+        %pythoncode %{
+        def write(self, garbage=False, clean=False,
+            deflate=False, deflate_images=False, deflate_fonts=False,
+            incremental=False, ascii=False, expand=False, linear=False,
+            pretty=False, encryption=1, permissions=-1,
+            owner_pw=None, user_pw=None):
+            from io import BytesIO
+            bio = BytesIO()
+            self.save(bio, garbage=garbage, clean=clean,
+            deflate=deflate, deflate_images=deflate_images, deflate_fonts=deflate_fonts,
+            incremental=incremental, ascii=ascii, expand=expand, linear=linear,
+            pretty=pretty, encryption=encryption, permissions=permissions,
+            owner_pw=owner_pw, user_pw=user_pw)
+            return bio.getvalue()
+        %}
 
         //----------------------------------------------------------------
         // Insert pages from a source PDF into this PDF.
         // For reconstructing the links (_do_links method), we must save the
         // insertion point (start_at) if it was specified as -1.
         //----------------------------------------------------------------
-        FITZEXCEPTION(insertPDF, !result)
-        %pythonprepend insertPDF %{
+        FITZEXCEPTION(insert_pdf, !result)
+        %pythonprepend insert_pdf %{
         """Insert a page range from another PDF.
 
         Args:
@@ -1786,7 +1878,7 @@ struct Document
             self.Graftmaps[isrt] = _gmap
         %}
 
-        %pythonappend insertPDF %{
+        %pythonappend insert_pdf %{
         self._reset_page_refs()
         if links:
             self._do_links(docsrc, from_page = from_page, to_page = to_page,
@@ -1795,7 +1887,7 @@ struct Document
             self.Graftmaps[isrt] = None%}
 
         PyObject *
-        insertPDF(struct Document *docsrc,
+        insert_pdf(struct Document *docsrc,
             int from_page=-1,
             int to_page=-1,
             int start_at=-1,
@@ -1877,7 +1969,7 @@ struct Document
         %pythonprepend select %{"""Build sub-pdf with page numbers in the list."""
 if self.isClosed or self.isEncrypted:
     raise ValueError("document closed or encrypted")
-if not self.isPDF:
+if not self.is_pdf:
     raise ValueError("not a PDF")
 if not hasattr(pyliste, "__getitem__"):
     raise ValueError("sequence required")
@@ -2187,6 +2279,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 }
             }
             fz_always(gctx) {
+                pdf_drop_obj(gctx, obj);
                 JM_PyErr_Clear;
                 JM_Free(fontname);
             }
@@ -2364,8 +2457,8 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         //------------------------------------------------------------------
         // Check: is xref a stream object?
         //------------------------------------------------------------------
-        CLOSECHECK0(isStream, """Check if xref is a stream object.""")
-        PyObject *isStream(int xref=0)
+        CLOSECHECK0(is_stream, """Check if xref is a stream object.""")
+        PyObject *is_stream(int xref=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) Py_RETURN_FALSE;  // not a PDF
@@ -2379,7 +2472,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 %{"""Get/set the NeedAppearances value."""
 if self.isClosed:
     raise ValueError("document closed")
-if not self.isFormPDF:
+if not self.is_form_pdf:
     return None
 %}
         PyObject *need_appearances(PyObject *value=NULL)
@@ -2417,8 +2510,8 @@ if not self.isFormPDF:
         //------------------------------------------------------------------
         // Return the /SigFlags value
         //------------------------------------------------------------------
-        CLOSECHECK0(getSigFlags, """Get the /SigFlags value.""")
-        int getSigFlags()
+        CLOSECHECK0(get_sigflags, """Get the /SigFlags value.""")
+        int get_sigflags()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) return -1;  // not a PDF
@@ -2443,9 +2536,9 @@ if not self.isFormPDF:
         //------------------------------------------------------------------
         // Check: is this an AcroForm with at least one field?
         //------------------------------------------------------------------
-        CLOSECHECK0(isFormPDF, """Check if PDF Form document.""")
+        CLOSECHECK0(is_form_pdf, """Check if PDF Form document.""")
         %pythoncode%{@property%}
-        PyObject *isFormPDF()
+        PyObject *is_form_pdf()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) Py_RETURN_FALSE;  // not a PDF
@@ -2710,7 +2803,6 @@ if not self.isFormPDF:
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             pdf_obj *obj = NULL;
             PyObject *text = NULL;
-            
             fz_buffer *res=NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
@@ -2863,7 +2955,7 @@ if not self.isFormPDF:
         //------------------------------------------------------------------
         FITZEXCEPTION(update_stream, !result)
         CLOSECHECK(update_stream, """Replace xref stream part.""")
-        PyObject *update_stream(int xref = 0, PyObject *stream = NULL, int new = 0)
+        PyObject *update_stream(int xref = 0, PyObject *stream = NULL, int new=0)
         {
             pdf_obj *obj = NULL;
             fz_var(obj);
@@ -2882,7 +2974,6 @@ if not self.isFormPDF:
                 res = JM_BufferFromBytes(gctx, stream);
                 if (!res) THROWMSG(gctx, "bad type: 'stream'");
                 JM_update_stream(gctx, pdf, obj, res, 1);
-
             }
             fz_always(gctx) {
                 fz_drop_buffer(gctx, res);
@@ -2917,7 +3008,7 @@ if not self.isFormPDF:
             info = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Info));
             if (info)
             {
-                info_num = pdf_to_num(gctx, info);    // get xref no of old info
+                info_num = pdf_to_num(gctx, info);  // get xref no of old info
                 pdf_update_object(gctx, pdf, info_num, new_info);  // insert new
                 pdf_drop_obj(gctx, new_info);
                 Py_RETURN_NONE;
@@ -3255,14 +3346,13 @@ if not self.isFormPDF:
         PyObject *
         _set_page_labels(char *labels)
         {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             fz_try(gctx) {
-                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
                 ASSERT_PDF(pdf);
                 pdf_obj *pagelabels = pdf_new_name(gctx, "PageLabels");
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
                 pdf_dict_del(gctx, root, pagelabels);
-                pdf_obj *plobject = pdf_new_array(gctx, pdf, 0);
-                pdf_dict_putl_drop(gctx, root, plobject, pagelabels, PDF_NAME(Nums), NULL);
+                pdf_dict_putl_drop(gctx, root, pdf_new_array(gctx, pdf, 0), pagelabels, PDF_NAME(Nums), NULL);
             }
             fz_always(gctx) {
                 PyErr_Clear();
@@ -3270,6 +3360,7 @@ if not self.isFormPDF:
             fz_catch(gctx){
                 return NULL;
             }
+            pdf->dirty = 1;
             Py_RETURN_NONE;
         }
 
@@ -3712,7 +3803,6 @@ if basestate:
 
             outline = property(lambda self: self._outline)
             _getPageXref = page_xref
-            pageXref = page_xref
 
 
 
@@ -3721,7 +3811,7 @@ if basestate:
                 """
                 if self.isClosed or self.isEncrypted:
                     raise ValueError("document closed or encrypted")
-                if not self.isPDF:
+                if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 1)
                 if full is False:
@@ -3735,7 +3825,7 @@ if basestate:
                 """
                 if self.isClosed or self.isEncrypted:
                     raise ValueError("document closed or encrypted")
-                if not self.isPDF:
+                if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 2)
                 if full is False:
@@ -3749,7 +3839,7 @@ if basestate:
                 """
                 if self.isClosed or self.isEncrypted:
                     raise ValueError("document closed or encrypted")
-                if not self.isPDF:
+                if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 3)
                 return val
@@ -3807,7 +3897,7 @@ if basestate:
             def deletePage(self, pno: int =-1):
                 """ Delete one page from a PDF.
                 """
-                if not self.isPDF:
+                if not self.is_pdf:
                     raise ValueError("not a PDF")
                 if self.isClosed:
                     raise ValueError("document closed")
@@ -3834,7 +3924,7 @@ if basestate:
             def deletePageRange(self, from_page: int =-1, to_page: int =-1):
                 """Delete pages from a PDF.
                 """
-                if not self.isPDF:
+                if not self.is_pdf:
                     raise ValueError("not a PDF")
                 if self.isClosed:
                     raise ValueError("document closed")
@@ -3886,17 +3976,6 @@ if basestate:
                 return page
 
 
-            updateObject = update_object
-            updateStream = update_stream
-            xrefStream = xref_stream
-            xrefStreamRaw = xref_stream_raw
-            xrefObject = xref_object
-            xrefLength = xref_length
-            PDFTrailer = pdf_trailer
-            PDFCatalog = pdf_catalog
-            metadataXML = xref_xml_metadata
-
-
             def __repr__(self) -> str:
                 m = "closed " if self.isClosed else ""
                 if self.stream is None:
@@ -3929,12 +4008,12 @@ if basestate:
                 return True
 
 
-            def __getitem__(self, i: int =0):
+            def __getitem__(self, i: int =0)->"Page":
                 if i not in self:
                     raise IndexError("page not in document")
                 return self.loadPage(i)
 
-            def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> "struct Page *":
+            def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None)->"Page":
                 """Return a generator iterator over a page range.
 
                 Arguments have the same meaning as for the range() built-in.
@@ -4121,10 +4200,7 @@ struct Page {
             if old_rotation != 0:
                 self.setRotation(0)
             try:
-                #if clip is None:
-                #    clip = self.rect
                 textpage = self._get_text_page(clip, flags=flags)
-
             finally:
                 if old_rotation != 0:
                     self.setRotation(old_rotation)
@@ -4565,7 +4641,7 @@ struct Page {
         FITZEXCEPTION(_add_text_marker, !result)
         %pythonprepend _add_text_marker %{
         CheckParent(self)
-        if not self.parent.isPDF:
+        if not self.parent.is_pdf:
             raise ValueError("not a PDF")%}
 
         %pythonappend _add_text_marker %{
@@ -5137,7 +5213,7 @@ def get_oc_items(self) -> list:
             """Add a 'Widget' (form field)."""
             CheckParent(self)
             doc = self.parent
-            if not doc.isPDF:
+            if not doc.is_pdf:
                 raise ValueError("not a PDF")
             widget._validate()
             annot = self._addWidget(widget.field_type, widget.field_name)
@@ -5437,6 +5513,9 @@ def get_oc_items(self) -> list:
                     fz_is_infinite_rect(mediabox)) {
                     THROWMSG(gctx, "rect must be finite and not empty");
                 }
+                if (mediabox.x0 != 0 || mediabox.y0 != 0) {
+                    THROWMSG(gctx, "mediabox must start at (0,0)");
+                }
                 pdf_dict_put_rect(gctx, page->obj, PDF_NAME(MediaBox), mediabox);
                 pdf_dict_put_rect(gctx, page->obj, PDF_NAME(CropBox), mediabox);
             }
@@ -5486,7 +5565,7 @@ def get_oc_items(self) -> list:
                 val.thisown = True
                 val.parent = weakref.proxy(self) # owning page object
                 self._annot_refs[id(val)] = val
-                if self.parent.isPDF:
+                if self.parent.is_pdf:
                     link_id = [x for x in self.annot_xrefs() if x[1] == PDF_ANNOT_LINK][0]
                     val.xref = link_id[0]
                     val.id = link_id[2]
@@ -5801,8 +5880,8 @@ if not sanitize and not self.is_wrapped:
         //----------------------------------------------------------------
         // Show a PDF page
         //----------------------------------------------------------------
-        FITZEXCEPTION(_showPDFpage, !result)
-        PyObject *_showPDFpage(struct Page *fz_srcpage, int overlay=1, PyObject *matrix=NULL, int xref=0, int oc=0, PyObject *clip = NULL, struct Graftmap *graftmap = NULL, char *_imgname = NULL)
+        FITZEXCEPTION(_show_pdf_page, !result)
+        PyObject *_show_pdf_page(struct Page *fz_srcpage, int overlay=1, PyObject *matrix=NULL, int xref=0, int oc=0, PyObject *clip = NULL, struct Graftmap *graftmap = NULL, char *_imgname = NULL)
         {
             pdf_obj *xobj1, *xobj2, *resources;
             fz_buffer *res=NULL, *nres=NULL;
@@ -6082,12 +6161,13 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         return val
 
     xref = val[0]                 # xref of installed font
+    fontdict = val[1]
 
     if CheckFontInfo(doc, xref):  # check again: document already has this font
         return xref               # we are done
 
     # need to create document font info
-    doc.getCharWidths(xref)
+    doc.getCharWidths(xref, fontdict=fontdict)
     return xref
 
 %}
@@ -6188,13 +6268,18 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 if (!exto)
                     exto = JM_UnicodeFromStr(JM_get_fontextension(gctx, pdf, ixref));
 
-                value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i}]",
+                float asc = fz_font_ascender(gctx, font);
+                float dsc = fz_font_descender(gctx, font);
+                value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i, s:f, s:f}]",
                                       ixref,
                                       "name", name,        // base font name
                                       "type", subt,        // subtype
                                       "ext", exto,         // file extension
                                       "simple", JM_BOOL(simple), // simple font?
-                                      "ordering", ordering); // CJK font?
+                                      "ordering", ordering, // CJK font?
+                                      "ascender", asc,
+                                      "descender", dsc
+                                      );
                 Py_CLEAR(exto);
                 Py_CLEAR(name);
                 Py_CLEAR(subt);
@@ -6276,36 +6361,24 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         }
 
         //----------------------------------------------------------------
-        // Set given object as the /Contents of a page
+        // 
         //----------------------------------------------------------------
-        FITZEXCEPTION(set_contents, !result)
-        PARENTCHECK(set_contents, """Set an xref as the (only) /Contents object.""")
-        PyObject *set_contents(int xref)
-        {
-            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            pdf_obj *contents = NULL;
-
-            fz_try(gctx) {
-                ASSERT_PDF(page);
-
-                if (!INRANGE(xref, 1, pdf_xref_len(gctx, page->doc) - 1))
-                    THROWMSG(gctx, "bad xref");
-
-                contents = pdf_new_indirect(gctx, page->doc, xref, 0);
-                if (!pdf_is_stream(gctx, contents))
-                    THROWMSG(gctx, "xref is no stream");
-
-                pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Contents), contents);
-            }
-            fz_catch(gctx) {
-                pdf_drop_obj(gctx, contents);
-                return NULL;
-            }
-            page->doc->dirty = 1;
-            Py_RETURN_NONE;
-        }
-
         %pythoncode %{
+        def set_contents(self, xref: int)->None:
+            """Set object at 'xref' as the page's /Contents."""
+            CheckParent(self)
+            doc = self.parent
+            if doc.isClosed:
+                raise ValueError("document closed")
+            if not doc.is_pdf:
+                raise ValueError("not a PDF")
+            if not xref in range(1, doc.xref_length()):
+                raise ValueError("bad xref")
+            if not doc.is_stream(xref):
+                raise ValueError("xref is no stream")
+            doc.xref_set_key(self.xref, "Contents", "%i 0 R" % xref)
+
+
         @property
         def is_wrapped(self):
             """Check if /Contents is wrapped with string pair "q" / "Q"."""
@@ -6320,7 +6393,6 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             self.was_wrapped = True  # cheap check next time
             return True
 
-        _isWrapped = is_wrapped
 
         def wrap_contents(self):
             if self.is_wrapped:  # avoid unnecessary wrapping
@@ -6328,8 +6400,6 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             TOOLS._insert_contents(self, b"q\n", False)
             TOOLS._insert_contents(self, b"\nQ", True)
             self.was_wrapped = True  # indicate not needed again
-
-        wrapContents = wrap_contents
 
 
         def links(self, kinds=None):
@@ -10022,13 +10092,12 @@ struct TextPage {
                 """Return simple, bare text on the page."""
                 return self._extractText(0)
 
-            extractTEXT = extractText
 
             def extractHTML(self) -> str:
                 """Return page content as a HTML string."""
                 return self._extractText(1)
 
-            def extractJSON(self) -> str:
+            def extractJSON(self, cb=None) -> str:
                 """Return 'extractDICT' converted to JSON format."""
                 import base64, json
                 val = self._textpage_dict(raw=False)
@@ -10038,10 +10107,13 @@ struct TextPage {
                         if type(s) in (bytes, bytearray):
                             return base64.b64encode(s).decode()
 
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
                 val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
                 return val
 
-            def extractRAWJSON(self) -> str:
+            def extractRAWJSON(self, cb=None) -> str:
                 """Return 'extractRAWDICT' converted to JSON format."""
                 import base64, json
                 val = self._textpage_dict(raw=True)
@@ -10051,6 +10123,9 @@ struct TextPage {
                         if type(s) in (bytes, bytearray):
                             return base64.b64encode(s).decode()
 
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
                 val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
                 return val
 
@@ -10062,13 +10137,21 @@ struct TextPage {
                 """Return page content as a XHTML string."""
                 return self._extractText(4)
 
-            def extractDICT(self) -> dict:
+            def extractDICT(self, cb=None) -> dict:
                 """Return page content as a Python dict of images and text spans."""
-                return self._textpage_dict(raw=False)
+                val = self._textpage_dict(raw=False)
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
+                return val
 
-            def extractRAWDICT(self) -> dict:
+            def extractRAWDICT(self, cb=None) -> dict:
                 """Return page content as a Python dict of images and text characters."""
-                return self._textpage_dict(raw=True)
+                val =  self._textpage_dict(raw=True)
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
+                return val
 
             def __del__(self):
                 if not type(self) is TextPage: return
@@ -10211,8 +10294,8 @@ struct TextWriter
             return JM_py_from_rect(fz_bound_text(gctx, (fz_text *) $self, NULL, fz_identity));
         }
 
-        FITZEXCEPTION(writeText, !result)
-        %pythonprepend writeText%{
+        FITZEXCEPTION(write_text, !result)
+        %pythonprepend write_text%{
         """Write the text to a PDF page having the TextWriter's page size.
 
         Args:
@@ -10238,7 +10321,7 @@ struct TextWriter
         if color is None:
             color = self.color
         %}
-        %pythonappend writeText%{
+        %pythonappend write_text%{
         max_nums = val[0]
         content = val[1]
         max_alp, max_font = max_nums
@@ -10295,7 +10378,7 @@ struct TextWriter
         for font in self.used_fonts:
             repair_mono_font(page, font)
         %}
-        PyObject *writeText(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0, int oc=0)
+        PyObject *write_text(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0, int oc=0)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
             fz_rect mediabox = fz_bound_page(gctx, (fz_page *) page);
@@ -10347,7 +10430,10 @@ struct TextWriter
         def __del__(self):
             if not type(self) is TextWriter:
                 return
-            self.__swig_destroy__(self)
+            try:
+                self.__swig_destroy__(self)
+            except:
+                pass
         %}
     }
 };
@@ -10369,6 +10455,14 @@ struct Font
 
         FITZEXCEPTION(Font, !result)
         %pythonprepend Font %{
+        if fontbuffer:
+            if hasattr(fontbuffer, "getvalue"):
+                fontbuffer = fontbuffer.getvalue()
+            elif type(fontbuffer) is bytearray:
+                fontbuffer = bytes(fontbuffer)
+            if type(fontbuffer) is not bytes:
+                raise ValueError("bad type: 'fontbuffer'")
+
         if fontname:
             if "/" in fontname or "\\" in fontname or "." in fontname:
                 print("Warning: did you mean a fontfile?")
@@ -10554,7 +10648,10 @@ struct Font
             def __del__(self):
                 if type(self) is not Font:
                     return None
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
         %}
     }
 };
@@ -11085,6 +11182,9 @@ struct Tools
                         pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
                     }
                 }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, font);
             }
             fz_catch(gctx) {
                 return NULL;

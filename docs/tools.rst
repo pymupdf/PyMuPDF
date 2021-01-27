@@ -8,7 +8,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 ====================================== =================================================
 **Method / Attribute**                 **Description**
 ====================================== =================================================
-:meth:`Tools.gen_id`                   generate a unique identifier
+:meth:`Tools.gen_id`                   generate a unique identifyer
 :meth:`Tools.image_profile`            report basic image properties
 :meth:`Tools.store_shrink`             shrink the storables cache [#f1]_
 :meth:`Tools.mupdf_warnings`           return the accumulated MuPDF warnings
@@ -91,7 +91,7 @@ This class is a collection of utility methods and attributes, mainly around memo
                'ext': 'jpeg',
                'cs-name': 'DeviceRGB'}
                In [4]: doc=fitz.open(<input.pdf>)
-               In [5]: stream = doc.xrefStreamRaw(5)  # no decompression!
+               In [5]: stream = doc.xref_stream_raw(5)  # no decompression!
                In [6]: fitz.TOOLS.image_profile(stream)
                Out[6]:
                {'width': 816,

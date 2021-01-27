@@ -90,7 +90,7 @@ Glossary
 
 .. data:: object
 
-        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values, integer and real numbers, strings, names, arrays, dictionaries, streams, and the null object (:ref:`AdobeManual` p. 51). Objects can be made identifyable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xrefObject`.
+        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values, integer and real numbers, strings, names, arrays, dictionaries, streams, and the null object (:ref:`AdobeManual` p. 51). Objects can be made identifyable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xref_object`.
 
 .. data:: stream
 
@@ -105,7 +105,7 @@ Glossary
             endstream
             endobj
 
-        See :ref:`AdobeManual` p. 60. PyMuPDF supports retrieving stream content via :meth:`Document.xrefStream`. Use :meth:`Document.isStream` to determine whether an object is of stream type.
+        See :ref:`AdobeManual` p. 60. PyMuPDF supports retrieving stream content via :meth:`Document.xrefStream`. Use :meth:`Document.is_stream` to determine whether an object is of stream type.
 
 .. data:: unitvector
 
@@ -113,7 +113,7 @@ Glossary
 
 .. data:: xref
 
-        Abbreviation for cross-reference number: this is an integer unique identification for objects in a PDF. There exists a cross-reference table (which may physically consist of several separate segments) in each PDF, which stores the relative position of each object for quick lookup. The cross-reference table is one entry longer than the number of existing object: item zero is reserved and must not be used in any way. Many PyMuPDF classes have an *xref* attribute (which is zero for non-PDFs), and one can find out the total number of objects in a PDF via :meth:`Document.xrefLength` *- 1*.
+        Abbreviation for cross-reference number: this is an integer unique identification for objects in a PDF. There exists a cross-reference table (which may physically consist of several separate segments) in each PDF, which stores the relative position of each object for quick lookup. The cross-reference table is one entry longer than the number of existing object: item zero is reserved and must not be used in any way. Many PyMuPDF classes have an *xref* attribute (which is zero for non-PDFs), and one can find out the total number of objects in a PDF via :meth:`Document.xref_length` *- 1*.
 
 .. data:: resolution
 

@@ -274,23 +274,23 @@ So you can easily create new PDFs with
 
 The saved new document will contain links, annotations and bookmarks that are still valid (i.a.w. either pointing to a selected page or to some external resource).
 
-:meth:`Document.insertPage` and :meth:`Document.newPage` insert new pages.
+:meth:`Document.insert_page` and :meth:`Document.new_page` insert new pages.
 
 Pages themselves can moreover be modified by a range of methods (e.g. page rotation, annotation and link maintenance, text and image insertion).
 
 Joining and Splitting PDF Documents
 ------------------------------------
 
-Method :meth:`Document.insertPDF` copies pages **between different** PDF documents. Here is a simple **joiner** example (*doc1* and *doc2* being openend PDFs)::
+Method :meth:`Document.insert_pdf` copies pages **between different** PDF documents. Here is a simple **joiner** example (*doc1* and *doc2* being openend PDFs)::
 
     # append complete doc2 to the end of doc1
-    doc1.insertPDF(doc2)
+    doc1.insert_pdf(doc2)
 
 Here is a snippet that **splits** *doc1*. It creates a new document of its first and its last 10 pages::
 
     doc2 = fitz.open()                 # new empty PDF
-    doc2.insertPDF(doc1, to_page = 9)  # first 10 pages
-    doc2.insertPDF(doc1, from_page = len(doc1) - 10) # last 10 pages
+    doc2.insert_pdf(doc1, to_page = 9)  # first 10 pages
+    doc2.insert_pdf(doc1, from_page = len(doc1) - 10) # last 10 pages
     doc2.save("first-and-last-10.pdf")
 
 More can be found in the :ref:`Document` chapter. Also have a look at `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_.
@@ -298,7 +298,7 @@ More can be found in the :ref:`Document` chapter. Also have a look at `PDFjoiner
 Embedding Data
 ---------------
 
-PDFs can be used as containers for arbitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
+PDFs can be used as containers for abitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
 PyMuPDF fully supports this feature via :ref:`Document` *embeddedFile** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `embedding files <https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files>`_, or the example scripts `embedded-copy.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py>`_, `embedded-export.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py>`_, `embedded-import.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py>`_, and `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_.
 

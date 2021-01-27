@@ -10,7 +10,9 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
 
 .. note::
 
-   * If the corners of a rectangle are transformed with a **rotation**, **scale** or **translation** :ref:`Matrix`, then the resulting quad is **rectangular**, i.e. its corners again enclose angles of 90 degrees. Property :attr:`Quad.isRectangular` checks whether a quad can be thought of being the result of such an operation. This is not true for all matrices: e.g. shear matrices produce parallelograms, and non-invertible matrices deliver "degenerate" tetragons like triangles or lines.
+   * If the corners of a rectangle are transformed with a **rotation**, **scale** or **translation** :ref:`Matrix`, then the resulting quad is **rectangular**, i.e. its corners again enclose angles of 90 degrees. Property :attr:`Quad.isRectangular` checks whether a quad can be thought of being the result of such an operation.
+   
+   * This is not true for all matrices: e.g. shear matrices produce parallelograms, and non-invertible matrices deliver "degenerate" tetragons like triangles or lines.
 
    * Attribute :attr:`Quad.rect` obtains the envelopping rectangle. Vice versa, rectangles now have attributes :attr:`Rect.quad`, resp. :attr:`IRect.quad` to obtain their respective tetragon versions.
 

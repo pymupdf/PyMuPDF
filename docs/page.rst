@@ -93,10 +93,10 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.setCropBox`           PDF only: modify the visible page
 :meth:`Page.setMediaBox`          PDF only: modify the mediabox
 :meth:`Page.setRotation`          PDF only: set page rotation
-:meth:`Page.showPDFpage`          PDF only: display PDF page image
-:meth:`Page.updateLink`           PDF only: modify a link
+:meth:`Page.show_pdf_page`        PDF only: display PDF page image
+:meth:`Page.update_link`           PDF only: modify a link
 :meth:`Page.widgets`              return a generator over the fields on the page
-:meth:`Page.writeText`            write one or more :ref:`TextWriter` objects
+:meth:`Page.writeText`            write one or more :ref:`Textwriter` objects
 :attr:`Page.CropBox`              the page's :data:`CropBox`
 :attr:`Page.CropBoxPosition`      displacement of the :data:`CropBox`
 :attr:`Page.firstAnnot`           first :ref:`Annot` on the page
@@ -293,10 +293,18 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       The methods convert the arguments into a list of :ref:`Quad` objects. The **annotation** rectangle is then calculated to envelop all these quadrilaterals.
 
-      .. note:: :meth:`searchFor` delivers a list of either rectangles or quadrilaterals. Such a list can be directly used as parameter for these annotation types and will deliver **one common** annotation for all occurrences of the search string::
+      .. note::
+      
+        :meth:`searchFor` delivers a list of either rectangles or quadrilaterals. Such a list can be directly used as an argument for these annotation types and will deliver **one common annotation** for all occurrences of the search string::
 
+           >>> # always prefer quads=True in text searching!
            >>> quads = page.searchFor("pymupdf", quads=True)
            >>> page.addHighlightAnnot(quads)
+
+      .. note::
+        Obviously, text marker annotations need to know what is the top and the bottom, the left and the right side of the tetragon to be marked. If the arguments are quads, this information is given by the sequence of the quad points. In contrast, a rectangle delivers much less information -- this is illustrated by the fact, that 4! = 24 different quads can be constructed with the four corners of each reactangle.
+        
+        Therefore, we **strongly recommend** to use the ``quads`` option for text searches, to ensure correct text markers. For more details on text marking see section "How to Mark Non-horizontal Text" of :ref:`FAQ`.
 
       :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
       :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*.
@@ -304,7 +312,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect_like clip: *(New in v1.16.14)* only consider text lines intersecting this area. Defaults to the page rectangle.
 
       :rtype: :ref:`Annot` or *(changed in v1.16.14)* *None*
-      :returns: the created annotation. *(Changed in v1.16.14)* If *quads* is an empty list, **no annotation** is created. To change colors, set the "stroke" color accordingly (:meth:`Annot.setColors`) and then perform an :meth:`Annot.update`.
+      :returns: the created annotation. *(Changed in v1.16.14)* If *quads* is an empty list, **no annotation** is created.
 
       .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight on a page with three text columnbs was created by specifying the two red points and setting clip accordingly.
 
@@ -408,7 +416,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg dict linkdict: the link to be inserted.
 
-   .. method:: updateLink(linkdict)
+   .. method:: update_link(linkdict)
 
       PDF only: Modify the specified link. The parameter must be a (modified) **original item** of :meth:`getLinks()` (see below). The reason for this is the dictionary's *"xref"* key, which identifies the PDF object to be changed.
 
@@ -472,7 +480,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in version 1.16.18)*
       
-      PDF only: Write the text of one or more :ref:`TextWriter` objects to the page.
+      PDF only: Write the text of one or more :ref:`Textwriter` ojects to the page.
 
       :arg rect_like rect: where to place the text. If omitted, the rectangle union of the text writers is used.
       :arg sequence writers: a non-empty tuple / list of :ref:`TextWriter` objects or a single :ref:`TextWriter`.
@@ -483,7 +491,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg float rotate: rotate the text by an arbitrary angle.
       :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
 
-      .. note:: Parameters *overlay, keep_proportion, rotate* and *oc* have the same meaning as in :ref:`showPDFpage`.
+      .. note:: Parameters *overlay, keep_proportion, rotate* and *oc* have the same meaning as in :ref:`show_pdf_page`.
 
 
    .. index::
@@ -841,7 +849,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask for the base image. When specified, the base image must also be provided as an in-memory image (*stream* parameter).
 
-      :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convertToPDF`) first and then use :meth:`Page.showPDFpage` instead.
+      :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convertToPDF`) first and then use :meth:`Page.show_pdf_page` instead.
 
       :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this OCG (optional content group). Please be aware, that this property is stored with the generated PDF image definition. If you insert the same image anywhere else, but **with a different 'oc' value**, a full additional image copy will be stored.
       :arg bool keep_proportion: *(new in version v1.14.11)* maintain the aspect ratio of the image.
@@ -867,7 +875,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          4. The image is stored in the PDF in its original quality. This may be much better than you ever need for your display. In this case consider decreasing the image size before inserting it -- e.g. by using the pixmap option and then shrinking it or scaling it down (see :ref:`Pixmap` chapter). The PIL method *Image.thumbnail()* can also be used for that purpose. The file size savings can be very significant.
 
-         5. The most efficient way to display the same image on multiple pages is another method: :meth:`showPDFpage`. Consult :meth:`Document.convertToPDF` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
+         5. The most efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convertToPDF` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
    .. index::
       pair: blocks; getText
@@ -1113,12 +1121,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
 
    .. index::
-      pair: clip; showPDFpage
-      pair: keep_proportion; showPDFpage
-      pair: overlay; showPDFpage
-      pair: rotate; showPDFpage
+      pair: clip; show_pdf_page
+      pair: keep_proportion; show_pdf_page
+      pair: overlay; show_pdf_page
+      pair: rotate; show_pdf_page
 
-   .. method:: showPDFpage(rect, docsrc, pno=0, keep_proportion=True, overlay=True, oc=0, rotate=0, clip=None)
+   .. method:: show_pdf_page(rect, docsrc, pno=0, keep_proportion=True, overlay=True, oc=0, rotate=0, clip=None)
 
       PDF only: Display a page of another PDF as a **vector image** (otherwise similar to :meth:`Page.insertImage`). This is a multi-purpose method. For example, you can use it to
 
@@ -1148,12 +1156,12 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like clip: choose which part of the source page to show. Default is the full page, else must be finite and its intersection with the source page must not be empty.
 
-      .. note:: In contrast to method :meth:`Document.insertPDF`, this method does not copy annotations or links, so they are not shown. But all its **other resources (text, images, fonts, etc.)** will be imported into the current PDF. They will therefore appear in text extractions and in :meth:`getFontList` and :meth:`getImageList` lists -- even if they are not contained in the visible area given by *clip*.
+      .. note:: In contrast to method :meth:`Document.insert_pdf`, this method does not copy annotations or links, so they are not shown. But all its **other resources (text, images, fonts, etc.)** will be imported into the current PDF. They will therefore appear in text extractions and in :meth:`getFontList` and :meth:`getImageList` lists -- even if they are not contained in the visible area given by *clip*.
 
       Example: Show the same source page, rotated by 90 and by -90 degrees:
 
       >>> doc = fitz.open()  # new empty PDF
-      >>> page=doc.newPage()  # new page in A4 format
+      >>> page=doc.new_page()  # new page in A4 format
       >>>
       >>> # upper half page
       >>> r1 = fitz.Rect(0, 0, page.rect.width, page.rect.height/2)
@@ -1163,11 +1171,11 @@ In a nutshell, this is what you can do with PyMuPDF:
       >>>
       >>> src = fitz.open("PyMuPDF.pdf")  # show page 0 of this
       >>>
-      >>> page.showPDFpage(r1, src, 0, rotate=90)
-      >>> page.showPDFpage(r2, src, 0, rotate=-90)
+      >>> page.show_pdf_page(r1, src, 0, rotate=90)
+      >>> page.show_pdf_page(r2, src, 0, rotate=-90)
       >>> doc.save("show.pdf")
 
-      .. image:: images/img-showpdfpage.jpg
+      .. image:: images/img-show_pdf_page.jpg
          :scale: 70
 
    .. method:: newShape()
@@ -1231,7 +1239,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       After execution if the page is not rotated, :attr:`Page.rect` will equal this rectangle, but shifted to the top-left position (0, 0) if necessary. Example session:
 
-      >>> page = doc.newPage()
+      >>> page = doc.new_page()
       >>> page.rect
       fitz.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
@@ -1401,9 +1409,9 @@ This is an overview of homologous methods on the :ref:`Document` and on the :ref
 ====================================== =====================================
 *Document.getPageFontlist(pno)*        :meth:`Page.getFontList`
 *Document.getPageImageList(pno)*       :meth:`Page.getImageList`
-*Document.getPagePixmap(pno, ...)*     :meth:`Page.getPixmap`
-*Document.getPageText(pno, ...)*       :meth:`Page.getText`
-*Document.searchPageFor(pno, ...)*     :meth:`Page.searchFor`
+*Document.get_page_pixmap(pno, ...)*     :meth:`Page.getPixmap`
+*Document.get_page_text(pno, ...)*       :meth:`Page.getText`
+*Document.search_page_for(pno, ...)*     :meth:`Page.searchFor`
 ====================================== =====================================
 
 The page number "pno" is a 0-based integer *-inf < pno < pageCount*.

@@ -1268,7 +1268,7 @@ def annot_preprocess(page: "Page") -> int:
         Old page rotation value. Temporarily sets rotation to 0 when required.
     """
     CheckParent(page)
-    if not page.parent.isPDF:
+    if not page.parent.is_pdf:
         raise ValueError("not a PDF")
     old_rotation = page.rotation
     if old_rotation != 0:
