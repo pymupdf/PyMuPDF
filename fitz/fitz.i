@@ -1124,8 +1124,6 @@ struct Document
             fz_document *fz_doc = (fz_document *) $self;
             fz_try(gctx) {
                 int fp = from_page, tp = to_page, srcCount = fz_count_pages(gctx, fz_doc);
-                if (pdf_specifics(gctx, fz_doc))
-                    THROWMSG(gctx, "bad document type");
                 if (fp < 0) fp = 0;
                 if (fp > srcCount - 1) fp = srcCount - 1;
                 if (tp < 0) tp = srcCount - 1;

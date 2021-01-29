@@ -625,7 +625,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: convertToPDF(from_page=-1, to_page=-1, rotate=0)
 
-      Create a PDF version of the current document and write it to memory. **All document types** (except PDF) are supported. The parameters have the same meaning as in :meth:`insert_pdf`. In essence, you can restrict the conversion to a page subset, specify page rotation, and revert page sequence.
+      Create a PDF version of the current document and write it to memory. **All document types** are supported. The parameters have the same meaning as in :meth:`insert_pdf`. In essence, you can restrict the conversion to a page subset, specify page rotation, and revert page sequence.
 
       :arg int from_page: first page to copy (0-based). Default is first page.
 
