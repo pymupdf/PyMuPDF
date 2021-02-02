@@ -18,7 +18,6 @@ PyMuPDF v1.17.0
 from __future__ import print_function
 
 import gc
-import os
 import sys
 
 import fitz
@@ -45,7 +44,7 @@ t1 = u"têxt üsès Lätiñ charß,\nEUR: €, mu: µ, super scripts: ²³!"
 
 def print_descr(annot):
     """Print a short description to the right of each annot rect."""
-    annot.parent.insertText(
+    annot.parent.insert_text(
         annot.rect.br + (10, -5), "%s annotation" % annot.type[1], color=red
     )
 
@@ -53,7 +52,7 @@ def print_descr(annot):
 doc = fitz.open()
 page = doc.new_page()
 
-page.setRotation(0)
+page.set_rotation(0)
 
 annot = page.addCaretAnnot(r.tl)
 print_descr(annot)
@@ -68,12 +67,11 @@ annot = page.addFreetextAnnot(
     fill_color=gold,
     align=fitz.TEXT_ALIGN_CENTER,
 )
-annot.setBorder(width=0.3, dashes=[2])
+annot.set_border(width=0.3, dashes=[2])
 annot.update(text_color=blue, fill_color=gold)
-
 print_descr(annot)
-r = annot.rect + displ
 
+r = annot.rect + displ
 annot = page.addTextAnnot(r.tl, t1)
 print_descr(annot)
 
@@ -85,64 +83,64 @@ page.insertText(
     highlight,  # inserted text
     morph=(pos, fitz.Matrix(-5)),  # rotate around insertion point
 )
-rl = page.searchFor(highlight, quads=True)  # need a quad b/o tilted text
+rl = page.search_for(highlight, quads=True)  # need a quad b/o tilted text
 annot = page.addHighlightAnnot(rl[0])
 print_descr(annot)
-pos = annot.rect.bl  # next insertion point
 
+pos = annot.rect.bl  # next insertion point
 page.insertText(pos, underline, morph=(pos, fitz.Matrix(-10)))
-rl = page.searchFor(underline, quads=True)
+rl = page.search_for(underline, quads=True)
 annot = page.addUnderlineAnnot(rl[0])
 print_descr(annot)
-pos = annot.rect.bl
 
+pos = annot.rect.bl
 page.insertText(pos, strikeout, morph=(pos, fitz.Matrix(-15)))
-rl = page.searchFor(strikeout, quads=True)
+rl = page.search_for(strikeout, quads=True)
 annot = page.addStrikeoutAnnot(rl[0])
 print_descr(annot)
-pos = annot.rect.bl
 
+pos = annot.rect.bl
 page.insertText(pos, squiggled, morph=(pos, fitz.Matrix(-20)))
-rl = page.searchFor(squiggled, quads=True)
+rl = page.search_for(squiggled, quads=True)
 annot = page.addSquigglyAnnot(rl[0])
 print_descr(annot)
-pos = annot.rect.bl
 
+pos = annot.rect.bl
 r = fitz.Rect(pos, pos.x + 75, pos.y + 35) + (0, 20, 0, 20)
 annot = page.addPolylineAnnot([r.bl, r.tr, r.br, r.tl])  # 'Polyline'
-annot.setBorder(width=0.3, dashes=[2])
-annot.setColors(stroke=blue, fill=green)
-annot.setLineEnds(fitz.PDF_ANNOT_LE_CLOSED_ARROW, fitz.PDF_ANNOT_LE_R_CLOSED_ARROW)
+annot.set_border(width=0.3, dashes=[2])
+annot.set_colors(stroke=blue, fill=green)
+annot.set_line_ends(fitz.PDF_ANNOT_LE_CLOSED_ARROW, fitz.PDF_ANNOT_LE_R_CLOSED_ARROW)
 annot.update(fill_color=(1, 1, 0))
 print_descr(annot)
 
 r += displ
 annot = page.addPolygonAnnot([r.bl, r.tr, r.br, r.tl])  # 'Polygon'
-annot.setBorder(width=0.3, dashes=[2])
-annot.setColors(stroke=blue, fill=gold)
-annot.setLineEnds(fitz.PDF_ANNOT_LE_DIAMOND, fitz.PDF_ANNOT_LE_CIRCLE)
+annot.set_border(width=0.3, dashes=[2])
+annot.set_colors(stroke=blue, fill=gold)
+annot.set_line_ends(fitz.PDF_ANNOT_LE_DIAMOND, fitz.PDF_ANNOT_LE_CIRCLE)
 annot.update()
 print_descr(annot)
 
 r += displ
 annot = page.addLineAnnot(r.tr, r.bl)  # 'Line'
-annot.setBorder(width=0.3, dashes=[2])
-annot.setColors(stroke=blue, fill=gold)
-annot.setLineEnds(fitz.PDF_ANNOT_LE_DIAMOND, fitz.PDF_ANNOT_LE_CIRCLE)
+annot.set_border(width=0.3, dashes=[2])
+annot.set_colors(stroke=blue, fill=gold)
+annot.set_line_ends(fitz.PDF_ANNOT_LE_DIAMOND, fitz.PDF_ANNOT_LE_CIRCLE)
 annot.update()
 print_descr(annot)
 
 r += displ
 annot = page.addRectAnnot(r)  # 'Square'
-annot.setBorder(width=1, dashes=[1, 2])
-annot.setColors(stroke=blue, fill=gold)
+annot.set_border(width=1, dashes=[1, 2])
+annot.set_colors(stroke=blue, fill=gold)
 annot.update(opacity=0.5)
 print_descr(annot)
 
 r += displ
 annot = page.addCircleAnnot(r)  # 'Circle'
-annot.setBorder(width=0.3, dashes=[2])
-annot.setColors(stroke=blue, fill=gold)
+annot.set_border(width=0.3, dashes=[2])
+annot.set_colors(stroke=blue, fill=gold)
 annot.update()
 print_descr(annot)
 
@@ -154,12 +152,12 @@ print_descr(annot)  # annot.rect
 
 r += displ
 annot = page.addStampAnnot(r, stamp=10)  # 'Stamp'
-annot.setColors(stroke=green)
+annot.set_colors(stroke=green)
 annot.update()
 print_descr(annot)
 
 r += displ + (0, 0, 50, 10)
-rc = page.insertTextbox(
+rc = page.insert_textbox(
     r,
     "This content will be removed upon applying the redaction.",
     color=blue,
@@ -168,5 +166,4 @@ rc = page.insertTextbox(
 annot = page.addRedactAnnot(r)
 print_descr(annot)
 
-outfile = os.path.abspath(__file__).replace(".py", "-%i.pdf" % page.rotation)
-doc.save(outfile, deflate=True)
+doc.save(__file__.replace(".py", "-%i.pdf" % page.rotation), deflate=True)

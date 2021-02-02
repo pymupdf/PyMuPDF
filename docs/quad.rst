@@ -6,7 +6,7 @@ Quad
 
 Represents a four-sided mathematical shape (also called "quadrilateral" or "tetragon") in the plane, defined as a sequence of four :ref:`Point` objects ul, ur, ll, lr (conveniently called upper left, upper right, lower left, lower right).
 
-Quads can **be obtained** as results of text search methods (:meth:`Page.searchFor`), and they **are used** to define text marker annotations (see e.g. :meth:`Page.addSquigglyAnnot` and friends), and in several draw methods (like :meth:`Page.drawQuad` / :meth:`Shape.drawQuad`, :meth:`Page.drawOval`/ :meth`Shape.drawQuad`).
+Quads can **be obtained** as results of text search methods (:meth:`Page.search_for`), and they **are used** to define text marker annotations (see e.g. :meth:`Page.addSquigglyAnnot` and friends), and in several draw methods (like :meth:`Page.draw_quad` / :meth:`Shape.draw_quad`, :meth:`Page.draw_oval`/ :meth`Shape.drawQuad`).
 
 .. note::
 
@@ -78,7 +78,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
 
       The smallest rectangle containing the quad, represented by the blue area in the following picture.
 
-      .. image:: images/img-quads.jpg
+      .. image:: images/img-quads.*
 
       :type: :ref:`Rect`
 

@@ -3,17 +3,23 @@ Change Logs
 
 Changes in Version 1.18.7
 -------------------------
-* **Implemented** request `#843 <https://github.com/pymupdf/PyMuPDF/Discussions/843>`_: :meth:`Document.write` now supports linearized PDF output. :meth:`Document.save` now also supports writing to Python file objects.
+
+* **Added** an experimental :meth:`Document.subset_fonts` which reduces the size of eligible fonts based on their use by text in the PDF. Implements `#855 <https://github.com/pymupdf/PyMuPDF/discussions/855>`_.
+* **Implemented** request `#870 <https://github.com/pymupdf/PyMuPDF/pull/870>`_: :meth:`Document.convert_to_pdf` now also supports PDF documents.
+* **Renamed** ``Document.write`` to :meth:`Document.tobytes` for greater clarity. But the deprecated name remains available for some time.
+* **Implemented** request `#843 <https://github.com/pymupdf/PyMuPDF/Discussions/843>`_: :meth:`Document.tobytes` now supports linearized PDF output. :meth:`Document.save` now also supports writing to Python **file objects**. In addition, the open function now also supports Python file objects.
 * **Fixed** issue `#844 <https://github.com/pymupdf/PyMuPDF/issues/844>`_.
 * **Fixed** issue `#838 <https://github.com/pymupdf/PyMuPDF/issues/838>`_.
-* **Fixed** issue `#823 <https://github.com/pymupdf/PyMuPDF/issues/823>`_. Added more logic to better support OCR-recognized text output (Tesseract, ABBYY).
+* **Fixed** issue `#823 <https://github.com/pymupdf/PyMuPDF/issues/823>`_. More logic for better support of OCR-ed text output (Tesseract, ABBYY).
 * **Fixed** issue `#818 <https://github.com/pymupdf/PyMuPDF/issues/818>`_.
 * **Fixed** issue `#814 <https://github.com/pymupdf/PyMuPDF/issues/814>`_.
 * **Added** :meth:`Document.get_page_labels` which returns a list of page label definitions of a PDF.
 * **Added** :meth:`Document.has_annots` and :meth:`Document.has_links` to check whether these object types are present anywhere in a PDF.
-* **Added** expert utility functions to simplify inquiry and modification of raw PDF objects: :meth:`Document.xref_ket_keys` list the available dictionary keys of the object, :meth:`Document.xref_get_key` return the type and the content of a given dictionary key in :data:`xref`, and :meth:`Document.xref_set_key` modifies the value of a key.
+* **Added** expert low-level functions to simplify inquiry and modification of PDF object sources: :meth:`Document.xref_get_keys` lists the keys of object :data:`xref`, :meth:`Document.xref_get_key` returns type and content of a key, and :meth:`Document.xref_set_key` modifies the key's value.
 * **Added** parameter ``thumbnails`` to :meth:`Document.scrub` to also allow removing page thumbnail images.
 * **Improved** documentation for how to add valid text marker annotations for non-horizontal text.
+
+We continued the process of renaming methods and properties from *"mixedCase"* to *"snake_case"*. Documentation usually mentions the new names only, but old, deprecated names remain available for some time.
 
 
 
@@ -428,14 +434,14 @@ Changes in Version 1.14.17
 * **Added** :meth:`Document.fullcopyPage` to make full page copies within a PDF (not just copied references as :meth:`Document.copyPage` does).
 * **Changed** :meth:`Page.getPixmap`, :meth:`Document.get_page_pixmap` now use *alpha=False* as default.
 * **Changed** text extraction: the span dictionary now (again) contains its rectangle under the *bbox* key.
-* **Changed** :meth:`Document.movePage` and :meth:`Document.copyPage` to use direct functions instead of wrapping :meth:`Document.select` -- similar to :meth:`Document.deletePage` in v1.14.16.
+* **Changed** :meth:`Document.movePage` and :meth:`Document.copyPage` to use direct functions instead of wrapping :meth:`Document.select` -- similar to :meth:`Document.delete_page` in v1.14.16.
 
 Changes in Version 1.14.16
 ---------------------------
 * **Changed** :ref:`Document` methods around PDF */EmbeddedFiles* to no longer use MuPDF's "portfolio" functions. That support will be dropped in MuPDF v1.15 -- therefore another solution was required.
-* **Changed** :meth:`Document.embeddedFileCount` to be a function (was an attribute).
-* **Added** new method :meth:`Document.embeddedFileNames` which returns a list of names of embedded files.
-* **Changed** :meth:`Document.deletePage` and :meth:`Document.deletePageRange` to internally no longer use :meth:`Document.select`, but instead use functions to perform the deletion directly. As it has turned out, the :meth:`Document.select` method yields invalid outline trees (tables of content) for very complex PDFs and sophisticated use of annotations.
+* **Changed** :meth:`Document.embfile_Count` to be a function (was an attribute).
+* **Added** new method :meth:`Document.embfile_Names` which returns a list of names of embedded files.
+* **Changed** :meth:`Document.delete_page` and :meth:`Document.delete_pages` to internally no longer use :meth:`Document.select`, but instead use functions to perform the deletion directly. As it has turned out, the :meth:`Document.select` method yields invalid outline trees (tables of content) for very complex PDFs and sophisticated use of annotations.
 
 
 Changes in Version 1.14.15
@@ -600,9 +606,9 @@ Changes in Version 1.13.13
 ---------------------------
 This patch version contains several improvements for embedded files and file attachment annotations.
 
-* **Added** :meth:`Document.embeddedFileUpd` which allows changing **file content and metadata** of an embedded file. It supersedes the old method :meth:`Document.embeddedFileSetInfo` (which will be deleted in a future version). Content is automatically compressed and metadata may be unicode.
-* **Changed** :meth:`Document.embeddedFileAdd` to now automatically compress file content. Accompanying metadata can now be unicode (had to be ASCII in the past).
-* **Changed** :meth:`Document.embeddedFileDel` to now automatically delete **all entries** having the supplied identifying name. The return code is now an integer count of the removed entries (was *None* previously).
+* **Added** :meth:`Document.embfile_Upd` which allows changing **file content and metadata** of an embedded file. It supersedes the old method :meth:`Document.embfile_SetInfo` (which will be deleted in a future version). Content is automatically compressed and metadata may be unicode.
+* **Changed** :meth:`Document.embfile_Add` to now automatically compress file content. Accompanying metadata can now be unicode (had to be ASCII in the past).
+* **Changed** :meth:`Document.embfile_Del` to now automatically delete **all entries** having the supplied identifying name. The return code is now an integer count of the removed entries (was *None* previously).
 * **Changed** embedded file methods to now also accept or show the PDF unicode filename as additional parameter *ufilename*.
 * **Added** :meth:`Page.addFileAnnot` which adds a new file attachment annotation.
 * **Changed** :meth:`Annot.fileUpd` (file attachment annot) to now also accept the PDF unicode *ufilename* parameter. The description parameter *desc* correctly works with unicode. Furthermore, **all** parameters are optional, so metadata may be changed without also replacing the file content.
@@ -790,12 +796,12 @@ Though MuPDF has declared it as being mostly a bug fix version, one major new fe
 
 * The *Document* class now support embedded files with several new methods and one new property:
 
-    - *embeddedFileInfo()* returns metadata information about an entry in the list of embedded files. This is more than *mutool* currently provides: it shows all the information that was used to embed the file (not just the entry's name).
-    - *embeddedFileGet()* retrieves the (decompressed) content of an entry into a *bytes* buffer.
-    - *embeddedFileAdd(...)* inserts new content into the PDF portfolio. We (in contrast to *mutool*) **restrict** this to entries with a **new name** (no duplicate names allowed).
-    - *embeddedFileDel(...)* deletes an entry from the portfolio (function not offered in MuPDF).
-    - *embeddedFileSetInfo()* -- changes filename or description of an embedded file.
-    - *embeddedFileCount* -- contains the number of embedded files.
+    - *embfile_Info()* returns metadata information about an entry in the list of embedded files. This is more than *mutool* currently provides: it shows all the information that was used to embed the file (not just the entry's name).
+    - *embfile_Get()* retrieves the (decompressed) content of an entry into a *bytes* buffer.
+    - *embfile_Add(...)* inserts new content into the PDF portfolio. We (in contrast to *mutool*) **restrict** this to entries with a **new name** (no duplicate names allowed).
+    - *embfile_Del(...)* deletes an entry from the portfolio (function not offered in MuPDF).
+    - *embfile_SetInfo()* -- changes filename or description of an embedded file.
+    - *embfile_Count* -- contains the number of embedded files.
 
 * Several enhancements deal with streamlining geometry objects. These are not connected to the new MuPDF version and most of them are also reflected in PyMuPDF v1.10.0. Among them are new properties to identify the corners of rectangles by name (e.g. *Rect.bottom_right*) and new methods to deal with set-theoretic questions like *Rect.contains(x)* or *IRect.intersects(x)*. Special effort focussed on supporting more "Pythonic" language constructs: *if x in rect ...* is equivalent to *rect.contains(x)*.
 
@@ -853,8 +859,8 @@ This version is also based on MuPDF v1.9a. Changes compared to version 1.9.2:
 
     - *copyPage()* copies a page within a document.
     - *movePage()* is similar, but deletes the original.
-    - *deletePage()* deletes a page
-    - *deletePageRange()* deletes a page range
+    - *delete_page()* deletes a page
+    - *delete_pages()* deletes a page range
 
 * *rotation* or *setRotation()* access or change a PDF page's rotation, respectively.
 * Available but undocumented before, :ref:`IRect`, :ref:`Rect`, :ref:`Point` and :ref:`Matrix` support the *len()* method and their coordinate properties can be accessed via indices, e.g. *IRect.x1 == IRect[2]*.

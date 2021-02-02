@@ -19,19 +19,13 @@ Yet others are handy, general-purpose utilities.
 :meth:`ConversionHeader`             return header string for *get_text* methods
 :meth:`ConversionTrailer`            return trailer string for *get_text* methods
 :meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
-:meth:`Document.set_xml_metadata`    PDF only: remove XML metadata
 :meth:`Document.delete_object`       PDF only: delete an object
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document._getOLRootNumber`    PDF only: return / create :data:`xref` of */Outline*
-:meth:`Document.pdf_catalog`         PDF only: return the :data:`xref` of the catalog
-:meth:`Document.page_xref`           PDF only: get xref of page object by page number
-:meth:`Document.pdf_trailer`         PDF only: return the PDF file trailer string
 :meth:`Document.xml_metadata_xref`   PDF only: return XML metadata :data:`xref` number
 :meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
-:meth:`Document.xref_object`         PDF only: return object definition "source"
-:meth:`Document._make_page_map`      PDF only: create a fast-access array of page numbers
-:meth:`Document.extractFont`         PDF only: extract embedded font
-:meth:`Document.extractImage`        PDF only: extract embedded image
+:meth:`Document.extract_font`        PDF only: extract embedded font
+:meth:`Document.extract_image`       PDF only: extract embedded image
 :meth:`Document.getCharWidths`       PDF only: return a list of glyph widths of a font
 :meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
 :attr:`Document.FontInfos`           PDF only: information on inserted fonts
@@ -42,9 +36,9 @@ Yet others are handy, general-purpose utilities.
 :meth:`Page.clean_contents`          PDF only: clean the page's :data:`contents` objects
 :meth:`Page.get_contents`            PDF only: return a list of content :data:`xref` numbers
 :meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
-:meth:`Page.getDisplayList`          create the page's display list
-:meth:`Page.getTextBlocks`           extract text blocks as a Python list
-:meth:`Page.getTextWords`            extract text words as a Python list
+:meth:`Page.get_displaylist`         create the page's display list
+:meth:`Page.get_text_blocks`         extract text blocks as a Python list
+:meth:`Page.get_text_words`          extract text words as a Python list
 :meth:`Page.run`                     run a page through a device
 :meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
 :meth:`Page.wrap_contents`           wrap contents with stacking commands
@@ -185,7 +179,7 @@ Yet others are handy, general-purpose utilities.
       :arg int rows: the desired number of rows.
       :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*. Here is the layout of a 3x4 table created by ``cell = fitz.make_table(rect, cols=4, rows=3)``:
 
-      .. image:: images/img-make-table.jpg
+      .. image:: images/img-make-table.*
          :scale: 60
 
 
@@ -362,82 +356,12 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document.set_xml_metadata(xml)
-
-      Store data as the document's XML Metadata. Correct format is up to the programmer -- there is no checking. Any previous such data are overwritten.
-
-      :arg str xml: The data to store
-
------
-
-   .. method:: Document.pdf_trailer(compressed=False)
-
-      *(New in version 1.14.9)*
-      
-      Return the trailer of the PDF (UTF-8), which is usually located at the PDF file's end. If not a PDF or the PDF has no trailer (because of irrecoverable errors), *None* is returned.
-
-      :arg bool compressed: *(ew in version 1.14.14)* whether to generate a compressed output or one with nice indentations to ease reading (default).
-
-      :returns: a string with the PDF trailer information. This is the analogous method to :meth:`Document.xref_object` except that the trailer has no identifying :data:`xref` number. As can be seen here, the trailer object points to other important objects:
-
-      >>> doc=fitz.open("adobe.pdf")
-      >>> # compressed output
-      >>> print(doc.pdf_trailer(True))
-      <</Size 334093/Prev 25807185/XRefStm 186352/Root 333277 0 R/Info 109959 0 R
-      /ID[(\\227\\366/gx\\016ds\\244\\207\\326\\261\\\\\\305\\376u)
-      (H\\323\\177\\346\\371pkF\\243\\262\\375\\346\\325\\002)]>>
-      >>> # non-compressed otput:
-      >>> print(doc.pdf_trailer(False))
-      <<
-         /Size 334093
-         /Prev 25807185
-         /XRefStm 186352
-         /Root 333277 0 R
-         /Info 109959 0 R
-         /ID [ (\227\366/gx\016ds\244\207\326\261\\\305\376u) (H\323\177\346\371pkF\243\262\375\346\325\002) ]
-      >>
-
-      .. note:: MuPDF is capable of recovering from a number of damages a PDF may have. This includes re-generating a trailer, where the end of a file has been lost (e.g. because of incomplete downloads). If however *None* is returned for a PDF, then the recovery mechanisms did not work and you should check for any error messages: ``print(fitz.TOOLS.mupdf_warnings()``.
-
-
------
-
-   .. method:: Document._make_page_map()
-
-      Create an internal array of page numbers, which significantly speeds up page lookup (:meth:`Document.loadPage`). If this array exists, finding a page object will be up to two times faster. Functions which change the PDF's page layout (copy, delete, move, select pages) will destroy this array again.
-
------
-
    .. method:: Document.xml_metadata_xref()
 
       Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
 
       :rtype: int
       :returns: :data:`xref` of PDF file level XML metadata -- or 0 if none exists.
-
------
-
-   .. method:: Document._getPageObjNumber(pno)
-
-      or
-
-   .. method:: Document.page_xref(pno)
-
-       Return the :data:`xref` and generation number for a given page.
-
-      :arg int pno: Page number (zero-based).
-
-      :rtype: list
-      :returns: :data:`xref` and generation number of page *pno* as a list *[xref, gen]*.
-
------
-
-   .. method:: Document.pdf_catalog()
-
-       Return the :data:`xref` of the PDF catalog.
-
-      :rtype: int
-      :returns: :data:`xref` of the PDF catalog -- a central :data:`dictionary` pointing to many other PDF information.
 
 -----
 
@@ -467,51 +391,24 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.getTextBlocks(flags=None)
+   .. method:: Page.get_text_blocks(flags=None)
 
-      Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.
+      Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.  Use :meth:`Page.getText` with the "blocks" option instead.
 
 -----
 
    .. method:: Page.getTextWords(flags=None)
 
-      Deprecated wrapper for :meth:`TextPage.extractWORDS`.
+      Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use :meth:`Page.getText` with the "words" option instead.
 
 -----
 
-   .. method:: Page.getDisplayList()
+   .. method:: Page.get_displaylist()
 
       Run a page through a list device and return its display list.
 
       :rtype: :ref:`DisplayList`
       :returns: the display list of the page.
-
------
-
-   .. method:: Page._getContents()
-
-      Return a list of :data:`xref` numbers of :data:`contents` objects belonging to the page.
-
-      :rtype: list
-      :returns: a list of :data:`xref` integers.
-
-      Each page may have zero to many associated contents objects (:data:`stream` \s) which contain some operator syntax describing what appears where and how on the page (like text or images, etc. See the :ref:`AdobeManual`, chapter "Operator Summary", page 985). This function only enumerates the number(s) of such objects. To get the actual stream source, use function :meth:`Document.xrefStream` with one of the numbers in this list. Use :meth:`Document.update_stream` to replace the content.
-
------
-
-   .. method:: Page._setContents(xref)
-
-      PDF only: Set a given object (identified by its :data:`xref`) as the page's one and only :data:`contents` object. Useful for joining mutiple :data:`contents` objects as in the following snippet::
-
-         >>> c = b""
-         >>> xreflist = page._getContents()
-         >>> for xref in xreflist:
-                 c += doc.xrefStream(xref)
-         >>> doc.update_stream(xreflist[0], c)
-         >>> page.set_contents(xreflist[0])
-         >>> # doc.save(..., garbage=1) will remove the unused objects
-
-      :arg int xref: the cross reference number of a :data:`contents` object. An exception is raised if outside the valid :data:`xref` range or not a stream object.
 
 -----
 
@@ -548,7 +445,7 @@ Yet others are handy, general-purpose utilities.
 
       Return a list of character glyphs and their widths for a font that is present in the document. A font must be specified by its PDF cross reference number :data:`xref`. This function is called automatically from :meth:`Page.insertText` and :meth:`Page.insertTextbox`. So you should rarely need to do this yourself.
 
-      :arg int xref: cross reference number of a font embedded in the PDF. To find a font :data:`xref`, use e.g. *doc.getPageFontList(pno)* of page number *pno* and take the first entry of one of the returned list entries.
+      :arg int xref: cross reference number of a font embedded in the PDF. To find a font :data:`xref`, use e.g. *doc.get_page_fonts(pno)* of page number *pno* and take the first entry of one of the returned list entries.
 
       :arg int limit: limits the number of returned entries. The default of 256 is enforced for all fonts that only support 1-byte characters, so-called "simple fonts" (checked by this method). All :ref:`Base-14-Fonts` are simple fonts.
 
@@ -563,53 +460,6 @@ Yet others are handy, general-purpose utilities.
        except IndexError:
            m = max([ord(c) for c in text])
            raise ValueError:("max. code point found: %i, increase limit" % m)
-
------
-
-   .. method:: Document.xref_object(xref, compressed=False)
-
-      Return the string ("source code") representing an arbitrary object. For :data:`stream` objects, only the non-stream part is returned. To get the stream data, use :meth:`Document.xrefStream`.
-
-      :arg int xref: :data:`xref` number.
-      :arg bool compressed: *(new in version 1.14.14)* whether to generate a compressed output or one with nice indentations to ease reading or parsing (default).
-
-      :rtype: string
-      :returns: the string defining the object identified by :data:`xref`. Example:
-
-      >>> doc = fitz.open("Adobe PDF Reference 1-7.pdf")  # the PDF
-      >>> page = doc[100]  # some page in it
-      >>> print(doc.xref_object(page.xref, compressed=True))
-      <</CropBox[0 0 531 666]/Annots[4795 0 R 4794 0 R 4793 0 R 4792 0 R 4797 0 R 4796 0 R]
-      /Parent 109820 0 R/StructParents 941/Contents 229 0 R/Rotate 0/MediaBox[0 0 531 666]
-      /Resources<</Font<</T1_0 3914 0 R/T1_1 3912 0 R/T1_2 3957 0 R/T1_3 3913 0 R/T1_4 4576 0 R
-      /T1_5 3931 0 R/T1_6 3944 0 R>>/ProcSet[/PDF/Text]/ExtGState<</GS0 333283 0 R>>>>
-      /Type/Page>>
-      >>> print(doc.xref_object(page.xref, compressed=False))
-      <<
-         /CropBox [ 0 0 531 666 ]
-         /Annots [ 4795 0 R 4794 0 R 4793 0 R 4792 0 R 4797 0 R 4796 0 R ]
-         /Parent 109820 0 R
-         /StructParents 941
-         /Contents 229 0 R
-         /Rotate 0
-         /MediaBox [ 0 0 531 666 ]
-         /Resources <<
-            /Font <<
-               /T1_0 3914 0 R
-               /T1_1 3912 0 R
-               /T1_2 3957 0 R
-               /T1_3 3913 0 R
-               /T1_4 4576 0 R
-               /T1_5 3931 0 R
-               /T1_6 3944 0 R
-            >>
-            /ProcSet [ /PDF /Text ]
-            /ExtGState <<
-               /GS0 333283 0 R
-            >>
-         >>
-         /Type /Page
-      >>
 
 -----
 
@@ -643,14 +493,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getOLRootNumber()
-
-       Return :data:`xref` number of the /Outlines root object (this is **not** the first outline entry!). If this object does not exist, a new one will be created.
-
-      :rtype: int
-      :returns: :data:`xref` number of the **/Outlines** root object.
-
-   .. method:: Document.extractImage(xref)
+   .. method:: Document.extract_image(xref)
 
       PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
 
@@ -669,7 +512,7 @@ Yet others are handy, general-purpose utilities.
         * *yres* (*int*) resolution in y direction. Please also see :data:`resolution`.
         * *image* (*bytes*) image data, usable as image file content
 
-      >>> d = doc.extractImage(1373)
+      >>> d = doc.extract_image(1373)
       >>> d
       {'ext': 'png', 'smask': 2934, 'width': 5, 'height': 629, 'colorspace': 3, 'xres': 96,
       'yres': 96, 'cs-name': 'DeviceRGB',
@@ -679,7 +522,7 @@ Yet others are handy, general-purpose utilities.
       102
       >>> imgout.close()
 
-      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extractImage, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
+      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
 
          * xref 1268 is a PNG -- Comparable execution time and identical output::
 
@@ -688,24 +531,24 @@ Yet others are handy, general-purpose utilities.
             In [24]: len(pix.getPNGData())
             Out[24]: 21462
 
-            In [25]: %timeit img = doc.extractImage(1268)
+            In [25]: %timeit img = doc.extract_image(1268)
             10.8 ms ± 86 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
             In [26]: len(img["image"])
             Out[26]: 21462
 
-         * xref 1186 is a JPEG -- :meth:`Document.extractImage` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
+         * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
 
             In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.getPNGData()
             341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
             In [28]: len(pix.getPNGData())
             Out[28]: 2599433
 
-            In [29]: %timeit img = doc.extractImage(1186)
+            In [29]: %timeit img = doc.extract_image(1186)
             15.7 µs ± 116 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
             In [30]: len(img["image"])
             Out[30]: 371177
 
-   .. method:: Document.extractFont(xref, info_only=False)
+   .. method:: Document.extract_font(xref, info_only=False)
 
       PDF Only: Return an embedded font file's data and appropriate file extension. This can be used to store the font as an external file. The method does not throw exceptions (other than via checking for PDF and valid :data:`xref`).
 
@@ -721,7 +564,7 @@ Yet others are handy, general-purpose utilities.
       Example:
 
       >>> # store font as an external file
-      >>> name, ext, buffer = doc.extractFont(4711)
+      >>> name, ext, buffer = doc.extract_font(4711)
       >>> # assuming buffer is not None:
       >>> ofile = open(name + "." + ext, "wb")
       >>> ofile.write(buffer)

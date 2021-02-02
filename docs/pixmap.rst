@@ -8,7 +8,7 @@ Pixmaps ("pixel maps") are objects at the heart of MuPDF's rendering capabilitie
 
 In PyMuPDF, there exist several ways to create a pixmap. Except the first one, all of them are available as overloaded constructors. A pixmap can be created ...
 
-1. from a document page (method :meth:`Page.getPixmap`)
+1. from a document page (method :meth:`Page.get_pixmap`)
 2. empty, based on :ref:`Colorspace` and :ref:`IRect` information
 3. from a file
 4. from an in-memory image
@@ -159,7 +159,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg doc: an opened **PDF** document.
       :type doc: :ref:`Document`
 
-      :arg int xref: the :data:`xref` of an image object. For example, you can make a list of images used on a particular page with :meth:`Document.getPageImageList`, which also shows the :data:`xref` numbers of each image.
+      :arg int xref: the :data:`xref` of an image object. For example, you can make a list of images used on a particular page with :meth:`Document.get_page_images`, which also shows the :data:`xref` numbers of each image.
 
    .. method:: clearWith([value [, irect]])
 
@@ -461,6 +461,6 @@ psd        gray, rgb, cmyk yes       .psd           Adobe Photoshop Document
 
 .. rubric:: Footnotes
 
-.. [#f1] If you need a **vector image** from the SVG, you must first convert it to a PDF. Try :meth:`Document.convertToPDF`. If this is not good enough, look for other SVG-to-PDF conversion tools like the Python packages `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ or the Java solution `Apache Batik <https://github.com/apache/batik>`_. Have a look at our Wiki for more examples.
+.. [#f1] If you need a **vector image** from the SVG, you must first convert it to a PDF. Try :meth:`Document.convert_to_pdf`. If this is not good enough, look for other SVG-to-PDF conversion tools like the Python packages `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ or the Java solution `Apache Batik <https://github.com/apache/batik>`_. Have a look at our Wiki for more examples.
 
 .. [#f2] To also set the alpha property, add an additional step to this method by dropping or adding an alpha channel to the result.

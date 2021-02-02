@@ -11,7 +11,7 @@ DisplayList is a list containing drawing commands (text, images, etc.). The inte
 
 A display list is populated with objects from a page, usually by executing :meth:`Page.getDisplayList`. There also exists an independent constructor.
 
-"Replay" the list (once or many times) by invoking one of its methods :meth:`~DisplayList.run`, :meth:`~DisplayList.getPixmap` or :meth:`~DisplayList.getTextPage`.
+"Replay" the list (once or many times) by invoking one of its methods :meth:`~DisplayList.run`, :meth:`~DisplayList.getPixmap` or :meth:`~DisplayList.get_textpage`.
 
 
 ================================= ============================================
@@ -19,7 +19,7 @@ A display list is populated with objects from a page, usually by executing :meth
 ================================= ============================================
 :meth:`~DisplayList.run`          Run a display list through a device.
 :meth:`~DisplayList.getPixmap`    generate a pixmap
-:meth:`~DisplayList.getTextPage`  generate a text page
+:meth:`~DisplayList.get_textpage`  generate a text page
 :attr:`~DisplayList.rect`         mediabox of the display list
 ================================= ============================================
 
@@ -41,7 +41,7 @@ A display list is populated with objects from a page, usually by executing :meth
     
       Run the display list through a device. The device will populate the display list with its "commands" (i.e. text extraction or image creation). The display list can later be used to "read" a page many times without having to re-interpret it from the document file.
 
-      You will most probably instead use one of the specialized run methods below -- :meth:`getPixmap` or :meth:`getTextPage`.
+      You will most probably instead use one of the specialized run methods below -- :meth:`getPixmap` or :meth:`get_textpage`.
 
       :arg device: Device
       :type device: :ref:`Device`
@@ -76,7 +76,7 @@ A display list is populated with objects from a page, usually by executing :meth
       :rtype: :ref:`Pixmap`
       :returns: pixmap of the display list.
 
-   .. method:: getTextPage(flags)
+   .. method:: get_textpage(flags)
 
       Run the display list through a text device and return a text page.
 

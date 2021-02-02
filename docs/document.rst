@@ -18,7 +18,7 @@ For details on **embedded files** refer to Appendix 3.
 
   While it is still possible to locate a page via its (absoute) number, doing so may mean that the complete EPUB document must be layouted before the page can be addressed. This may have a significant performance impact if the document is very large. Using the page's *(chapter, pno)* prevents this from happening.
 
-  To maintain a consistent API, PyMuPDF supports the page *location* syntax for **all file types** -- documents without this feature simply have just one chapter. :meth:`Document.loadPage` and the equivalent index access now also support a *location* argument.
+  To maintain a consistent API, PyMuPDF supports the page *location* syntax for **all file types** -- documents without this feature simply have just one chapter. :meth:`Document.load_page` and the equivalent index access now also support a *location* argument.
 
   There are a number of methods for converting between page numbers and locations, for determining the chapter count, the page count per chapter, for computing the next and the previous locations, and the last page location of a document.
 
@@ -29,22 +29,22 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.add_ocg`                PDF only: add new optional content group
 :meth:`Document.authenticate`           gain access to an encrypted document
 :meth:`Document.can_save_incrementally` check if incremental save is possible
-:meth:`Document.chapterPageCount`       number of pages in chapter
+:meth:`Document.chapter_page_count`     number of pages in chapter
 :meth:`Document.close`                  close the document
-:meth:`Document.convertToPDF`           write a PDF version to memory
-:meth:`Document.copyPage`               PDF only: copy a page reference
+:meth:`Document.convert_to_pdf`         write a PDF version to memory
+:meth:`Document.copy_page`              PDF only: copy a page reference
 :meth:`Document.del_toc_item`           PDF only: remove a single TOC item
-:meth:`Document.deletePage`             PDF only: delete a page
-:meth:`Document.deletePageRange`        PDF only: delete a page range
-:meth:`Document.embeddedFileAdd`        PDF only: add a new embedded file from buffer
-:meth:`Document.embeddedFileCount`      PDF only: number of embedded files
-:meth:`Document.embeddedFileDel`        PDF only: delete an embedded file entry
-:meth:`Document.embeddedFileGet`        PDF only: extract an embedded file buffer
-:meth:`Document.embeddedFileInfo`       PDF only: metadata of an embedded file
-:meth:`Document.embeddedFileNames`      PDF only: list of embedded files
-:meth:`Document.embeddedFileUpd`        PDF only: change an embedded file
-:meth:`Document.findBookmark`           retrieve page location after layouting
-:meth:`Document.fullcopyPage`           PDF only: duplicate a page
+:meth:`Document.delete_page`            PDF only: delete a page
+:meth:`Document.delete_pages`           PDF only: delete a page range
+:meth:`Document.embfile_add`            PDF only: add a new embedded file from buffer
+:meth:`Document.embfile_count`          PDF only: number of embedded files
+:meth:`Document.embfile_del`            PDF only: delete an embedded file entry
+:meth:`Document.embfile_get`            PDF only: extract an embedded file buffer
+:meth:`Document.embfile_info`           PDF only: metadata of an embedded file
+:meth:`Document.embfile_names`          PDF only: list of embedded files
+:meth:`Document.embfile_upd`            PDF only: change an embedded file
+:meth:`Document.find_bookmark`          retrieve page location after layouting
+:meth:`Document.fullcopy_page`          PDF only: duplicate a page
 :meth:`Document.get_oc_states`          PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
 :meth:`Document.get_ocgs`               PDF only: info on all optional content groups
@@ -56,30 +56,30 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.get_page_xobjects`      PDF only: make a list of XObjects on a page
 :meth:`Document.get_toc`                extract the table of contents
 :meth:`Document.get_page_pixmap`        create a pixmap of a page by page number
-:meth:`Document.get_page_text`            extract the text of a page by page number
-:meth:`Document.get_sigflags`            PDF only: determine signature state
-:meth:`Document.getXmlMetadata`         PDF only: read the XML metadata
+:meth:`Document.get_page_text`          extract the text of a page by page number
+:meth:`Document.get_sigflags`           PDF only: determine signature state
+:meth:`Document.get_xml_metadata`       PDF only: read the XML metadata
 :meth:`Document.has_annots`             PDF only: check if PDF contains any annots
 :meth:`Document.has_links`              PDF only: check if PDF contains any links
-:meth:`Document.insert_page`             PDF only: insert a new page
+:meth:`Document.insert_page`            PDF only: insert a new page
 :meth:`Document.insert_pdf`             PDF only: insert pages from another PDF
 :meth:`Document.layer_configs`          PDF only: list of optional content configurations
 :meth:`Document.layer_ui_configs`       PDF only: list of optional content intents
 :meth:`Document.layout`                 re-paginate the document (if supported)
-:meth:`Document.loadPage`               read a page
-:meth:`Document.makeBookmark`           create a page pointer in reflowable documents
+:meth:`Document.load_page`              read a page
+:meth:`Document.make_bookmark`          create a page pointer in reflowable documents
 :meth:`Document.xref_xml_metadata`      PDF only: :data:`xref` of XML metadata
 :meth:`Document.movePage`               PDF only: move a page to different location in doc
 :meth:`Document.need_appearances`       PDF only: get/set ``/NeedAppearances`` property
 :meth:`Document.new_page`               PDF only: insert a new empty page
-:meth:`Document.nextLocation`           return (chapter, pno) of following page
+:meth:`Document.next_location`          return (chapter, pno) of following page
 :meth:`Document.outline_xref`           PDF only: :data:`xref` a TOC item
-:meth:`Document.pageCropBox`            PDF only: the unrotated page rectangle
+:meth:`Document.page_cropbox`           PDF only: the unrotated page rectangle
 :meth:`Document.pages`                  iterator over a page range
 :meth:`Document.page_xref`              PDF only: :data:`xref` of a page number
 :meth:`Document.pdf_catalog`            PDF only: :data:`xref` of catalog (root)
 :meth:`Document.pdf_trailer`            PDF only: trailer source
-:meth:`Document.previousLocation`       return (chapter, pno) of preceeding page
+:meth:`Document.prev_location`          return (chapter, pno) of preceeding page
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.save`                   PDF only: save the document
 :meth:`Document.saveIncr`               PDF only: save the document incrementally
@@ -95,27 +95,29 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.set_toc_item`           PDF only: change a single TOC item
 :meth:`Document.set_toc`                PDF only: set the table of contents (TOC)
 :meth:`Document.set_xml_metadata`       PDF only: create or update document XML metadata
+:meth:`Document.subset_fonts`           PDF only: create font subsets **(experimental)**
 :meth:`Document.switch_layer`           PDF only: activate OC configuration
 :meth:`Document.tobytes`                PDF only: writes document to memory
+:meth:`Document.xref_object`            PDF only: get the definition source of :data:`xref`
 :meth:`Document.xref_get_key`           PDF only: get the value of a dictionary key
 :meth:`Document.xref_get_keys`          PDF only: list the keys of object at :data:`xref`
 :meth:`Document.xref_set_key`           PDF only: set the value of a dictionary key
 :meth:`Document.xref_stream_raw`        PDF only: raw stream source at :data:`xref`
-:attr:`Document.chapterCount`           number of chapters
+:attr:`Document.chapter_count`          number of chapters
 :attr:`Document.FormFonts`              PDF only: list of global widget fonts
-:attr:`Document.isClosed`               has document been closed?
+:attr:`Document.is_closed`              has document been closed?
 :attr:`Document.isDirty`                PDF only: has document been changed yet?
-:attr:`Document.isEncrypted`            document (still) encrypted?
-:attr:`Document.is_form_pdf`              is this a Form PDF?
-:attr:`Document.is_pdf`                  is this a PDF?
+:attr:`Document.is_encrypted`           document (still) encrypted?
+:attr:`Document.is_form_pdf`            is this a Form PDF?
+:attr:`Document.is_pdf`                 is this a PDF?
 :attr:`Document.isReflowable`           is this a reflowable document?
 :attr:`Document.isRepaired`             PDF only: has this PDF been repaired during open?
-:attr:`Document.lastLocation`           (chapter, pno) of last page
+:attr:`Document.last_location`          (chapter, pno) of last page
 :attr:`Document.metadata`               metadata
 :attr:`Document.name`                   filename of document
 :attr:`Document.needsPass`              require password to access data?
 :attr:`Document.outline`                first `Outline` item
-:attr:`Document.pageCount`              number of pages
+:attr:`Document.page_count`             number of pages
 :attr:`Document.permissions`            permissions to access the document
 ======================================= ==========================================================
 
@@ -187,7 +189,7 @@ For details on **embedded files** refer to Appendix 3.
           page 1
           page 2
           page 3
-          >>> doc.isClosed
+          >>> doc.is_closed
           True
           >>> 
 
@@ -440,11 +442,11 @@ For details on **embedded files** refer to Appendix 3.
       :arg str password: owner or user password.
 
       :rtype: int
-      :returns: a positive value if successful, zero otherwise. If successful, the indicator *isEncrypted* is set to *False*. Positive return codes carry the following information detail:
+      :returns: a positive value if successful, zero otherwise. If positive, the indicator :attr:`Document.is_encrypted` is set to *False*. Positive return codes carry the following information detail:
 
-        * bit 0 set => no password required -- happens if method was used although :meth:`needsPass` was zero.
-        * bit 1 set => **user** password authenticated
-        * bit 2 set => **owner** password authenticated
+        * bit 0 set => authenticated, but no password required -- happens if method was used although :meth:`needsPass` was zero.
+        * bit 1 set => authenticated with the **user** password.
+        * bit 2 set => authenticated with the **owner** password.
 
 
     .. method:: get_page_numbers(label, only_one=False)
@@ -490,7 +492,7 @@ For details on **embedded files** refer to Appendix 3.
        will generate the labels "A-10", "A-11", "A-12", "A-13", "1", "2", "3", ... for pages 6, 7 and so on until end of document. Pages 0 through 5 will have the label "".
 
 
-    .. method:: makeBookmark(loc)
+    .. method:: make_bookmark(loc)
 
       *(New in v.1.17.3)* Return a page pointer in a reflowable document. After re-layouting the document, the result of this method can be used to find the new location of the page.
 
@@ -502,17 +504,17 @@ For details on **embedded files** refer to Appendix 3.
       :returns: a long integer in pointer format. To be used for finding the new location of the page after re-layouting the document. Do not touch or re-assign.
 
 
-    .. method:: findBookmark(bookmark)
+    .. method:: find_bookmark(bookmark)
 
       *(New in v.1.17.3)* Return the new page location after re-layouting the document.
 
-      :arg pointer bookmark: created by :meth:`Document.makeBookmark`.
+      :arg pointer bookmark: created by :meth:`Document.make_bookmark`.
 
       :rtype: tuple
       :returns: the new (chapter, pno) of the page.
 
 
-    .. method:: chapterPageCount(chapter)
+    .. method:: chapter_page_count(chapter)
 
       *(New in v.1.17.0)* Return the number of pages of a chapter.
 
@@ -522,7 +524,7 @@ For details on **embedded files** refer to Appendix 3.
       :returns: number of pages in chapter. Relevant only for document types whith chapter support (EPUB currently).
 
 
-    .. method:: nextLocation(page_id)
+    .. method:: next_location(page_id)
 
       *(New in v.1.17.0)* Return the location of the following page.
 
@@ -531,7 +533,7 @@ For details on **embedded files** refer to Appendix 3.
       :returns: The tuple of the following page, i.e. either *(chapter, pno + 1)* or *(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the last page. Relevant only for document types whith chapter support (EPUB currently).
 
 
-    .. method:: previousLocation(page_id)
+    .. method:: prev_location(page_id)
 
       *(New in v.1.17.0)* Return the locator of the preceeding page.
 
@@ -540,7 +542,7 @@ For details on **embedded files** refer to Appendix 3.
       :returns: The tuple of the preceeding page, i.e. either *(chapter, pno - 1)* or the last page of the receeding chapter, **or** the empty tuple *()* if the argument was the first page. Relevant only for document types whith chapter support (EPUB currently).
 
 
-    .. method:: loadPage(page_id=0)
+    .. method:: load_page(page_id=0)
 
       Create a :ref:`Page` object for further processing (like rendering, text searching, etc.).
 
@@ -548,21 +550,21 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int,tuple page_id: *(Changed in v1.17.0)*
       
-          Either a 0-based page number, or a tuple *(chapter, pno)*. For an **integer**, any *-inf < page_id < pageCount* is acceptable. While page_id is negative, :attr:`pageCount` will be added to it. For example: to load the last page, you can use *doc.loadPage(-1)*. After this you have page.number = doc.pageCount - 1.
+          Either a 0-based page number, or a tuple *(chapter, pno)*. For an **integer**, any *-inf < page_id < page_count* is acceptable. While page_id is negative, :attr:`page_count` will be added to it. For example: to load the last page, you can use *doc.load_page(-1)*. After this you have page.number = doc.page_count - 1.
       
-          For a tuple, *chapter* must be in range :attr:`Document.chapterCount`, and *pno* must be in range :meth:`Document.chapterPageCount` of that chapter. Both values are 0-based. Using this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types whith chapter support (EPUB currently).
+          For a tuple, *chapter* must be in range :attr:`Document.chapter_count`, and *pno* must be in range :meth:`Document.chapter_page_count` of that chapter. Both values are 0-based. Using this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types whith chapter support (EPUB currently).
 
       :rtype: :ref:`Page`
 
     .. note::
     
-       Documents also follow the Python sequence protocol with page numbers as indices: *doc.loadPage(n) == doc[n]*.
+       Documents also follow the Python sequence protocol with page numbers as indices: *doc.load_page(n) == doc[n]*.
        
        For **absolute page numbers** only, expressions like *"for page in doc: ..."* and *"for page in reversed(doc): ..."* will successively yield the document's pages. Refer to :meth:`Document.pages` which allows processing pages as with slicing.
 
        You can also use index notation with the new chapter-based page identification: use *page = doc[(5, 2)]* to load the third page of the sixth chapter.
 
-       To maintain a consistent API, for document types not supporting a chapter structure (like PDFs), :attr:`Document.chapterCount` is 1, and pages can also be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for comments on performance improvements.
+       To maintain a consistent API, for document types not supporting a chapter structure (like PDFs), :attr:`Document.chapter_count` is 1, and pages can also be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for comments on performance improvements.
 
     .. method:: reload_page(page)
 
@@ -579,11 +581,11 @@ For details on **embedded files** refer to Appendix 3.
         .. note:: In a typical use case, a page :ref:`Pixmap` should be taken after annotations / widgets have been added or changed. To force all those changes being reflected in the page structure, this method re-instates a fresh copy while keeping the object hierarchy "document -> page -> annotation(s)" intact.
 
 
-    .. method:: pageCropBox(pno)
+    .. method:: page_cropbox(pno)
 
       *(New in version 1.17.7)*
 
-      PDF only: Return the unrotated page rectangle -- **without reading the page (via :meth:`Document.loadPage`). This is meant for internal purpose requiring best possible performance.
+      PDF only: Return the unrotated page rectangle -- **without reading the page (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
 
       :arg int pno: 0-based page number.
 
@@ -593,7 +595,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.17.7)*
 
-      PDF only: Return the :data:`xref` of the page -- **without reading the page (via :meth:`Document.loadPage`). This is meant for internal purpose requiring best possible performance.
+      PDF only: Return the :data:`xref` of the page -- **without reading the page (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
 
       :arg int pno: 0-based page number.
 
@@ -605,8 +607,8 @@ For details on **embedded files** refer to Appendix 3.
       
       A generator for a given range of pages. Parameters have the same meaning as in the built-in function *range()*. Intended for expressions of the form *"for page in doc.pages(start, stop, step): ..."*.
 
-      :arg int start: start iteration with this page number. Default is zero, allowed values are -inf < start < pageCount. While this is negative, :attr:`pageCount` is added **before** starting the iteration.
-      :arg int stop: stop iteration at this page number. Default is :attr:`pageCount`, possible are -inf < stop <= pageCount. Larger values are **silently replaced** by the default. Negative values will cyclically emit the pages in reversed order. As with the built-in *range()*, this is the first page **not** returned.
+      :arg int start: start iteration with this page number. Default is zero, allowed values are -inf < start < page_count. While this is negative, :attr:`page_count` is added **before** starting the iteration.
+      :arg int stop: stop iteration at this page number. Default is :attr:`page_count`, possible are -inf < stop <= page_count. Larger values are **silently replaced** by the default. Negative values will cyclically emit the pages in reversed order. As with the built-in *range()*, this is the first page **not** returned.
       :arg int step: stepping value. Defaults are 1 if start < stop and -1 if start > stop. Zero is not allowed.
 
       :returns: a generator iterator over the document's pages. Some examples:
@@ -619,11 +621,11 @@ For details on **embedded files** refer to Appendix 3.
           * "doc.pages(-1, -10)" emits pages in reversed order, starting with the last page **repeatedly**. For a 4-page document the following page numbers are emitted: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3.
 
     .. index::
-       pair: from_page; convertToPDF (Document method)
-       pair: to_page; convertToPDF (Document method)
-       pair: rotate; convertToPDF (Document method)
+       pair: from_page; convert_to_pdf (Document method)
+       pair: to_page; convert_to_pdf (Document method)
+       pair: rotate; convert_to_pdf (Document method)
 
-    .. method:: convertToPDF(from_page=-1, to_page=-1, rotate=0)
+    .. method:: convert_to_pdf(from_page=-1, to_page=-1, rotate=0)
 
       Create a PDF version of the current document and write it to memory. **All document types** are supported. The parameters have the same meaning as in :meth:`insert_pdf`. In essence, you can restrict the conversion to a page subset, specify page rotation, and revert page sequence.
 
@@ -638,7 +640,7 @@ For details on **embedded files** refer to Appendix 3.
 
           >>> # convert an XPS file to PDF
           >>> xps = fitz.open("some.xps")
-          >>> pdfbytes = xps.convertToPDF()
+          >>> pdfbytes = xps.convert_to_pdf()
           >>>
           >>> # either do this --->
           >>> pdf = fitz.open("pdf", pdfbytes)
@@ -655,7 +657,7 @@ For details on **embedded files** refer to Appendix 3.
           >>> imglist = [ ... image file names ...] # e.g. a directory listing
           >>> for img in imglist:
                   imgdoc=fitz.open(img)           # open image as a document
-                  pdfbytes=imgdoc.convertToPDF()  # make a 1-page PDF of it
+                  pdfbytes=imgdoc.convert_to_pdf()  # make a 1-page PDF of it
                   imgpdf=fitz.open("pdf", pdfbytes)
                   doc.insert_pdf(imgpdf)             # insert the image PDF
           >>> doc.save("allmyimages.pdf")
@@ -720,9 +722,9 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: Return type and value of a PDF dictionary key of an xref.
 
       :arg int xref: the :data:`xref`.
-      :arg str key: the desired PDF key. Must **exactly** match one of the keys contained in :meth:`Document.xref_get_keys`.
+      :arg str key: the desired PDF key. Must **exactly** match (case-sensitive) one of the keys contained in :meth:`Document.xref_get_keys`.
 
-      :returns: a tuple (type, value), where type is one of "xref", "array", "dict", "int", "float" "null", "bool", "float", "name", "string" or "unknown" (should not occur). The value of the key is **always** formatted as a string -- see the following example -- and a faithful reflection of what is stored in the PDF. An argument like the return value can be used to modify the value of a key of :data:`xref`.
+      :returns: a tuple (type, value), where type is one of "xref", "array", "dict", "int", "float" "null", "bool", "float", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and a faithful reflection of what is stored in the PDF. An argument like the return value can be used to modify the value of a key of :data:`xref`.
 
           >>> for key in doc.xref_get_keys(xref):
                   print(key, "=" , doc.xref_get_key(xref, key))
@@ -742,13 +744,13 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int xref: the :data:`xref`.
       :arg str key: the desired PDF key (without leading "/"). Must not be empty. Any valid PDF key -- whether already present in the object (which will be overwritten) -- or new. It is possible to use PDF path notation like ``"Resources/ExtGState"`` -- which sets the value for key ``"/ExtGState"`` as a sub-object of ``"/Resources"``.
-      :arg str value: the value for the key. It must be a non-empty string and, depending on the desired PDF object type, the following rules must be observed -- there is some syntax, but no type checking. Upper or lower case are important!
+      :arg str value: the value for the key. It must be a non-empty string and, depending on the desired PDF object type, the following rules must be observed -- there is some syntax, but no type checking and no checking of the PDF semantics. Upper or lower case are important!
 
           * **xref** -- must be provided as ``"nnn 0 R"`` with a valid :data:`xref` number nnn of the PDF. The suffix "``0 R``" is required to be recognizable as a xref.
-          * **array** -- a string like ``"[a b c d e f ...]"``. The brackets are required. Array items must be separated by at least one space (not commas like in Python). An empty array ``"[]"`` is possible and equivalent to removing the key. Array items may be any PDF objects, like dictionaries, xrefs, other arrays, etc.
-          * **dict** -- a string like ``"<< ... >>"``. The brackets are required and must enclose a valid PDF dictionary definition. An empty dictionary ``"<<>>"`` is possible and equivalent to removing the key.
+          * **array** -- a string like ``"[a b c d e f ...]"``. The brackets are required. Array items must be separated by at least one space (not commas like in Python). An empty array ``"[]"`` is possible and equivalent to removing the key. Array items may be any PDF objects, like dictionaries, xrefs, other arrays, etc. Like in Python, array items need not be of the same type.
+          * **dict** -- a string like ``"<< ... >>"``. The brackets are required and must enclose a valid PDF dictionary definition. The empty dictionary ``"<<>>"`` is possible and equivalent to removing the key.
           * **int** -- an integer formatted **as a string**.
-          * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is not supported by PDF.
+          * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is not allowed by PDF.
           * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
           * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``.
@@ -757,9 +759,9 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: get_page_pixmap(pno, *args, **kwargs)
 
-      Creates a pixmap from page *pno* (zero-based). Invokes :meth:`Page.getPixmap`.
+      Creates a pixmap from page *pno* (zero-based). Invokes :meth:`Page.get_pixmap`.
 
-      :arg int pno: page number, 0-based in -inf < pno < pageCount.
+      :arg int pno: page number, 0-based in -inf < pno < page_count.
 
       :rtype: :ref:`Pixmap`
 
@@ -767,7 +769,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: *(New in v1.16.13)* Return a list of all XObjects referenced by a page.
 
-      :arg int pno: page number, 0-based, *-inf < pno < pageCount*.
+      :arg int pno: page number, 0-based, *-inf < pno < page_count*.
 
       :rtype: list
       :returns: a list of (non-image) XObjects. These objects typically represent pages *embedded* (not copied) from other PDFs. For example, :meth:`Page.show_pdf_page` will create this type of object. An item of this list has the following layout: **(xref, name, invoker, bbox)**, where
@@ -782,7 +784,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return a list of all images (directly or indirectly) referenced by the page.
 
-      :arg int pno: page number, 0-based, *-inf < pno < pageCount*.
+      :arg int pno: page number, 0-based, *-inf < pno < page_count*.
       :arg bool full: whether to also include the referencer's :data:`xref` (which is zero if this is the page).
 
       :rtype: list
@@ -817,7 +819,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return a list of all fonts (directly or indirectly) referenced by the page.
 
-      :arg int pno: page number, 0-based, -inf < pno < pageCount.
+      :arg int pno: page number, 0-based, -inf < pno < page_count.
       :arg bool full: whether to also include the referencer's :data:`xref`. If *True*, the returned items are one entry longer. Use this option if you need to know, whether the page directly references the font. In this case the last entry is 0. If the font is referenced by an ``/XObject`` of the page, you will find its :data:`xref` here.
 
       :rtype: list
@@ -852,9 +854,9 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: get_page_text(pno, output="text")
 
-      Extracts the text of a page given its page number *pno* (zero-based). Invokes :meth:`Page.getText`.
+      Extracts the text of a page given its page number *pno* (zero-based). Invokes :meth:`Page.get_text`.
 
-      :arg int pno: page number, 0-based, any value *-inf < pno < pageCount*.
+      :arg int pno: page number, 0-based, any value *-inf < pno < page_count*.
 
       :arg str output: A string specifying the requested output format: text, html, json or xml. Default is *text*.
 
@@ -887,7 +889,7 @@ For details on **embedded files** refer to Appendix 3.
 
           * On a technical level, the method will always create a new :data:`pagetree`.
 
-          * When dealing with only a few pages, methods :meth:`copyPage`, :meth:`movePage`, :meth:`deletePage` are easier to use. In fact, they are also **much faster** -- by at least one order of magnitude when the document has many pages.
+          * When dealing with only a few pages, methods :meth:`copyPage`, :meth:`movePage`, :meth:`delete_page` are easier to use. In fact, they are also **much faster** -- by at least one order of magnitude when the document has many pages.
 
 
     .. method:: set_metadata(m)
@@ -898,7 +900,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(Changed in v1.18.4)* Empty values or "none" are no longer written, but completely omitted.
 
-    .. method:: getXmlMetadata()
+    .. method:: get_xml_metadata()
 
       PDF only: Get the document XML metadata.
 
@@ -972,7 +974,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int idx: the index of the entry in the list created by :meth:`Document.get_toc`.
       :arg dict dest_dict: the new destination. A dictionary like the last entry of an item in ``doc.get_toc(False)``. Using this as a template is recommended. When given, **all other parameters are ignored** -- except title.
       :arg int kind: the link kind, see :ref:`linkDest Kinds`. If :data:`LINK_NONE`, then all remaining parameter will be ignored, and the TOC item will be removed -- same as :meth:`Document.del_toc_item`. If None, then only the title is modified and the remaining parameters are ignored. All other values will lead to making a new destination dictionary using the subsequent arguments.
-      :arg int pno: the 1-based page number, i.e. a value 1 <= pno <= doc.pageCount. Required for LINK_GOTO.
+      :arg int pno: the 1-based page number, i.e. a value 1 <= pno <= doc.page_count. Required for LINK_GOTO.
       :arg str uri: the URL text. Required for LINK_URI.
       :arg str title: the desired new title. None if no change.
       :arg point_like to: (optional) points to a coordinate on the arget page. Relevant for LINK_GOTO. If omitted, a point near the page's top is chosen.
@@ -1088,7 +1090,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: search_page_for(pno, text, quads=False)
 
-       Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.searchFor`. Any integer -inf < pno < pageCount is acceptable.
+       Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.search_for`. Any integer -inf < pno < page_count is acceptable.
 
     .. index::
        pair: from_page; insert_pdf (Document method)
@@ -1133,7 +1135,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Insert an empty page.
 
-      :arg int pno: page number in front of which the new page should be inserted. Must be in *1 < pno <= pageCount*. Special values -1 and *doc.pageCount* insert **after** the last page.
+      :arg int pno: page number in front of which the new page should be inserted. Must be in *1 < pno <= page_count*. Special values -1 and *doc.page_count* insert **after** the last page.
 
       :arg float width: page width.
       :arg float height: page height.
@@ -1163,17 +1165,17 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: int
       :returns: the result of :meth:`Page.insertText` (number of successfully inserted lines).
 
-    .. method:: deletePage(pno=-1)
+    .. method:: delete_page(pno=-1)
 
-      PDF only: Delete a page given by its 0-based number in -inf < pno < pageCount - 1.
+      PDF only: Delete a page given by its 0-based number in -inf < pno < page_count - 1.
 
       Changed in version 1.14.17
 
       :arg int pno: the page to be deleted. Negative number count backwards from the end of the document (like with indices). Default is the last page.
 
-    .. method:: deletePageRange(from_page=-1, to_page=-1)
+    .. method:: delete_pages(from_page=-1, to_page=-1)
 
-      PDF only: Delete a range of pages given as 0-based numbers. Any *-1* parameter will first be replaced by *doc.pageCount - 1* (ie. last page number). After that, condition *0 <= from_page <= to_page < doc.pageCount* must be true. If the parameters are equal, this is equivalent to :meth:`deletePage`.
+      PDF only: Delete a range of pages given as 0-based numbers. Any *-1* parameter will first be replaced by *doc.page_count - 1* (ie. last page number). After that, condition *0 <= from_page <= to_page < doc.page_count* must be true. If the parameters are equal, this is equivalent to :meth:`delete_page`.
 
       :arg int from_page: the first page to be deleted.
 
@@ -1181,17 +1183,17 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note::
 
-        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`deletePage` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". So the overall TOC structure is left intact.
+        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". So the overall TOC structure is left intact.
 
         Similarly, it will remove any **links on remaining pages** that point to a deleted page. This action may have an extended response time for documents with many pages.
 
         Example: Delete the page range 500 to 520 from a large PDF, using different methods.
 
-        Method 1 - *deletePageRange*::
+        Method 1 - *delete_pages*::
 
           import time, fitz
           doc = fitz.open("Adobe PDF Reference 1-7.pdf")
-          t0=time.perf_counter();doc.deletePageRange(500, 520);t1=time.perf_counter()
+          t0=time.perf_counter();doc.delete_pages(500, 520);t1=time.perf_counter()
           round(t1 - t0, 2)
           0.66
 
@@ -1204,7 +1206,7 @@ For details on **embedded files** refer to Appendix 3.
           7.62
 
 
-    .. method:: copyPage(pno, to=-1)
+    .. method:: copy_page(pno, to=-1)
 
       PDF only: Copy a page reference within the document.
 
@@ -1214,7 +1216,7 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note:: Only a new **reference** to the page object will be created -- not a new page object, all copied pages will have identical attribute values, including the :attr:`Page.xref`. This implies that any changes to one of these copies will appear on all of them.
 
-    .. method:: fullcopyPage(pno, to=-1)
+    .. method:: fullcopy_page(pno, to=-1)
 
       *(New in version 1.14.17)*
       
@@ -1266,11 +1268,11 @@ For details on **embedded files** refer to Appendix 3.
          * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
 
     .. index::
-       pair: filename; embeddedFileAdd (Document method)
-       pair: ufilename; embeddedFileAdd (Document method)
-       pair: desc; embeddedFileAdd (Document method)
+       pair: filename; embfile_add (Document method)
+       pair: ufilename; embfile_add (Document method)
+       pair: desc; embfile_add (Document method)
 
-    .. method:: embeddedFileAdd(name, buffer, filename=None, ufilename=None, desc=None)
+    .. method:: embfile_add(name, buffer, filename=None, ufilename=None, desc=None)
 
       PDF only: Embed a new file. All string parameters except the name may be unicode (in previous versions, only ASCII worked correctly). File contents will be compressed (where beneficial).
 
@@ -1287,22 +1289,22 @@ For details on **embedded files** refer to Appendix 3.
       :arg str desc: optional description. Documentation only, will be set to *name* if *None*.
 
 
-    .. method:: embeddedFileCount()
+    .. method:: embfile_count()
 
       PDF only: Return the number of embedded files.
 
          Changed in version 1.14.16
             This is now a method. In previous versions, this was a property.
 
-    .. method:: embeddedFileGet(item)
+    .. method:: embfile_get(item)
 
       PDF only: Retrieve the content of embedded file by its entry number or name. If the document is not a PDF, or entry cannot be found, an exception is raised.
 
-      :arg int,str item: index or name of entry. An integer must be in *range(embeddedFileCount())*.
+      :arg int,str item: index or name of entry. An integer must be in *range(embfile_count())*.
 
       :rtype: bytes
 
-    .. method:: embeddedFileDel(item)
+    .. method:: embfile_del(item)
 
       PDF only: Remove an entry from `/EmbeddedFiles`. As always, physical deletion of the embedded file content (and file space regain) will occur only when the document is saved to a new file with a suitable garbage option.
 
@@ -1313,11 +1315,11 @@ For details on **embedded files** refer to Appendix 3.
 
       .. warning:: When specifying an entry name, this function will only **delete the first item** with that name. Be aware that PDFs not created with PyMuPDF may contain duplicate names. So you may want to take appropriate precautions.
 
-    .. method:: embeddedFileInfo(item)
+    .. method:: embfile_info(item)
 
       PDF only: Retrieve information of an embedded file given by its number or by its name.
 
-      :arg int/str item: index or name of entry. An integer must be in *range(embeddedFileCount())*.
+      :arg int/str item: index or name of entry. An integer must be in *range(embfile_count())*.
 
       :rtype: dict
       :returns: a dictionary with the following keys:
@@ -1329,7 +1331,7 @@ For details on **embedded files** refer to Appendix 3.
           * *size* -- (*int*) original file size
           * *length* -- (*int*) compressed file length
 
-    .. method:: embeddedFileNames()
+    .. method:: embfile_names()
 
       *(New in version 1.14.16)*
       
@@ -1338,15 +1340,15 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: list
 
     .. index::
-       pair: filename; embeddedFileUpd (Document method)
-       pair: ufilename; embeddedFileUpd (Document method)
-       pair: desc; embeddedFileUpd (Document method)
+       pair: filename; embfile_upd (Document method)
+       pair: ufilename; embfile_upd (Document method)
+       pair: desc; embfile_upd (Document method)
 
-    .. method:: embeddedFileUpd(item, buffer=None, filename=None, ufilename=None, desc=None)
+    .. method:: embfile_upd(item, buffer=None, filename=None, ufilename=None, desc=None)
 
       PDF only: Change an embedded file given its entry number or name. All parameters are optional. Letting them default leads to a no-operation.
 
-      :arg int/str item: index or name of entry. An integer must be in *range(0, embeddedFileCount())*.
+      :arg int/str item: index or name of entry. An integer must be in *range(0, embfile_count())*.
       :arg bytes,bytearray,BytesIO buffer: the new file content.
 
          *(Changed in version 1.14.13)* *io.BytesIO* is now also supported.
@@ -1355,16 +1357,16 @@ For details on **embedded files** refer to Appendix 3.
       :arg str ufilename: the new unicode filename.
       :arg str desc: the new description.
 
-    .. method:: embeddedFileSetInfo(n, filename=None, ufilename=None, desc=None)
+    .. method:: embfile_setinfo(n, filename=None, ufilename=None, desc=None)
 
       PDF only: Change embedded file meta information. All parameters are optional. Letting them default will lead to a no-operation.
 
-      :arg int,str n: index or name of entry. An integer must be in *range(embeddedFileCount())*.
+      :arg int,str n: index or name of entry. An integer must be in *range(embfile_count())*.
       :arg str filename: sets the filename.
       :arg str ufilename: sets the unicode filename.
       :arg str desc: sets the description.
 
-      .. note:: Deprecated subset of :meth:`embeddedFileUpd`. Will be deleted in a future version.
+      .. note:: Deprecated subset of :meth:`embfile_upd`. Will be deleted in a future version.
 
     .. method:: close()
 
@@ -1374,27 +1376,27 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the definition of a PDF object. For details please refer to :meth:`Document.xrefObject`.
+      PDF only: Return the definition source of a PDF object.
   
     .. method:: pdf_catalog()
       
       *(New in version 1.16.8)*
       
-      PDF only: Return the :data:`xref` of the PDF catalog (or root) object. For details please refer to :meth:`Document._getPDFroot`.
+      PDF only: Return the :data:`xref` number of the PDF catalog (or root) object. Use that number with :meth:`Document.xref_object` to see its source.
 
 
     .. method:: pdf_trailer(compressed=False)
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the trailer of the PDF (UTF-8), which is usually located at the PDF file's end. For details please refer to :meth:`Document._getTrailerString`.
+      PDF only: Return the trailer source of the PDF (UTF-8), which is usually located at the PDF file's end. This is similar to :meth:`Document.xref_object` except that this object has no identifier to access it.
 
 
     .. method:: xref_xml_metadata()
 
       *(New in version 1.16.8)*
       
-      PDF only: Return the :data:`xref` of the document's XML metadata. For details please refer to :meth:`Document._getXmlMetadataXref`.
+      PDF only: Return the :data:`xref` of the document's XML metadata.
 
     .. method:: xref_stream(xref)
 
@@ -1414,7 +1416,7 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: Return the **unmodified** (esp. **not decompressed**) contents of the :data:`xref` stream object. Otherwise equal to :meth:`Document.xref_stream`.
  
       :rtype: bytes
-      :returns: the (original) stream of the object.
+      :returns: the (original, unmodified) stream of the object.
 
     .. method:: update_object(xref, obj_str, page=None)
 
@@ -1447,7 +1449,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg bool new: whether to force accepting the stream, and thus **turning it into a stream object**.
 
-        .. caution:: The object of :data:`xref` must be a PDF dictionary for this to work, and especially must not be empty -- as is the case if you just created the object. To avoid this, execute ``doc.update_object(xref, "<<>>")`` before inserting the stream.
+        .. caution:: The object of :data:`xref` must be a PDF dictionary for this to work, and especially must not be empty -- as is the case if you just created the xref via :meth:`Document.get_new_xref`. To avoid this, execute ``doc.update_object(xref, "<<>>")`` before inserting the stream.
 
       This method is intended to manipulate streams containing PDF operator syntax (see pp. 985 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
 
@@ -1466,15 +1468,34 @@ For details on **embedded files** refer to Appendix 3.
       :returns: *True* / *False*. As opposed to fields, which are stored in a central place of a PDF document, the existence of links / annotations can only be detected by parsing each page. These methods are tuned to do this efficiently and will immediately return, if the answer is *True* for a page. For PDFs with many thousand pages however, an answer may take some time [#f6]_ if no link, resp. no annotation is found.
 
 
+    .. method:: subset_fonts()
+
+      *(New in v1.18.7)*
+
+      PDF only: Investigate eligible fonts for their use by text in the document. If a font is supported and a size reduction is possible, a subset of that font is built with a reduced character set, and the respective text is rewritten.
+
+      Use this method immediately before saving the document. The following features and restrictions apply for the time being:
+
+      * Package `fontTools <https://pypi.org/project/fonttools/>`_  must be installed. It is required for creating the font subsets.
+      * Supported font types include only embedded OTF, TTF and WOFF that are not already subsets.
+      * The script directory must be available for writing temporary files during the subsetting process.
+      * All text using a subsetted font will be rewritten. Under typical circumstances this should lead to an identical appearance, but the following deviations are possible:
+      
+        - Individual, by-character spacing is ignored, and resp. text is written with spacing as determined by the font.
+        - Rewritten text will always be visible: any previous restrictions like hidden text, optional content text, etc. are ignored.
+
+      The greatest benefit can probably achieved when creating new PDFs using large fonts. In these cases the amount of text is typically relatively small. Using this feature can reduce the embedded font by more than 95% easily.
+
+
     .. attribute:: outline
 
       Contains the first :ref:`Outline` entry of the document (or *None*). Can be used as a starting point to walk through all outline items. Accessing this property for encrypted, not authenticated documents will raise an *AttributeError*.
 
       :type: :ref:`Outline`
 
-    .. attribute:: isClosed
+    .. attribute:: is_closed
 
-      *False* if document is still open. If closed, most other attributes and methods will have been deleted / disabled. In addition, :ref:`Page` objects referring to this document (i.e. created with :meth:`Document.loadPage`) and their dependent objects will no longer be usable. For reference purposes, :attr:`Document.name` still exists and will contain the filename of the original document (if applicable).
+      *False* if document is still open. If closed, most other attributes and methods will have been deleted / disabled. In addition, :ref:`Page` objects referring to this document (i.e. created with :meth:`Document.load_page`) and their dependent objects will no longer be usable. For reference purposes, :attr:`Document.name` still exists and will contain the filename of the original document (if applicable).
 
       :type: bool
 
@@ -1492,13 +1513,13 @@ For details on **embedded files** refer to Appendix 3.
 
       :type: bool,int
 
-    .. attribute:: isReflowable
+    .. attribute:: is_reflowable
 
       *True* if document has a variable page layout (like e-books or HTML). In this case you can set the desired page dimensions during document creation (open) or via method :meth:`layout`.
 
       :type: bool
 
-    .. attribute:: isRepaired
+    .. attribute:: is_repaired
 
       *(New in v1.18.2)*
 
@@ -1506,15 +1527,15 @@ For details on **embedded files** refer to Appendix 3.
 
       :type: bool
 
-    .. attribute:: needsPass
+    .. attribute:: needs_pass
 
       Indicates whether the document is password-protected against access. This indicator remains unchanged -- **even after the document has been authenticated**. Precludes incremental saves if true.
 
       :type: bool
 
-    .. attribute:: isEncrypted
+    .. attribute:: is_encrypted
 
-      This indicator initially equals *needsPass*. After successful authentication, it is set to *False* to reflect the situation.
+      This indicator initially equals :attr:`Document.needs_pass`. After successful authentication, it is set to *False* to reflect the situation.
 
       :type: bool
 
@@ -1528,7 +1549,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. attribute:: metadata
 
-      Contains the document's meta data as a Python dictionary or *None* (if *isEncrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*, *trapped*. All item values are strings or *None*.
+      Contains the document's meta data as a Python dictionary or *None* (if *is_encrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*, *trapped*. All item values are strings or *None*.
 
       Except *format* and *encryption*, for PDF documents, the key names correspond in an obvious way to the PDF keys */Creator*, */Producer*, */CreationDate*, */ModDate*, */Title*, */Author*, */Subject*, */Trapped* and */Keywords* respectively.
 
@@ -1552,20 +1573,20 @@ For details on **embedded files** refer to Appendix 3.
 
       :type: str
 
-    .. Attribute:: pageCount
+    .. Attribute:: page_count
 
       Contains the number of pages of the document. May return 0 for documents with no pages. Function *len(doc)* will also deliver this result.
 
       :type: int
 
-    .. Attribute:: chapterCount
+    .. Attribute:: chapter_count
       
       *(New in version 1.17.0)*
       Contains the number of chapters in the document. Always at least 1. Relevant only for document types with chapter support (EPUB currently). Other documents will return 1.
 
       :type: int
 
-    .. Attribute:: lastLocation
+    .. Attribute:: last_location
 
       *(New in version 1.17.0)*
       Contains (chapter, pno) of the document's last page. Relevant only for document types with chapter support (EPUB currently). Other documents will return *(0, len(doc) - 1)* and *(0, -1)* if it has no pages.
@@ -1578,7 +1599,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :type: list
 
-.. NOTE:: For methods that change the structure of a PDF (:meth:`insert_pdf`, :meth:`select`, :meth:`copyPage`, :meth:`deletePage` and others), be aware that objects or properties in your program may have been invalidated or orphaned. Examples are :ref:`Page` objects and their children (links, annotations, widgets), variables holding old page counts, tables of content and the like. Remember to keep such variables up to date or delete orphaned objects. Also refer to :ref:`ReferenialIntegrity`.
+.. NOTE:: For methods that change the structure of a PDF (:meth:`insert_pdf`, :meth:`select`, :meth:`copyPage`, :meth:`delete_page` and others), be aware that objects or properties in your program may have been invalidated or orphaned. Examples are :ref:`Page` objects and their children (links, annotations, widgets), variables holding old page counts, tables of content and the like. Remember to keep such variables up to date or delete orphaned objects. Also refer to :ref:`ReferenialIntegrity`.
 
 :meth:`set_metadata` Example
 -------------------------------
@@ -1666,7 +1687,7 @@ Other Examples
 
 **Rotate all pages of a PDF:**
 
->>> for page in doc: page.setRotation(90)
+>>> for page in doc: page.set_rotation(90)
 
 .. rubric:: Footnotes
 
@@ -1674,7 +1695,7 @@ Other Examples
 
 .. [#f2] However, you **can** use :meth:`Document.get_toc` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
 
-.. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.
+.. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.next_location`, :meth:`Document.prev_location` and :attr:`Document.last_location` for maintaining a high level of coding efficiency.
 
 .. [#f4] These parameters cause separate handling of stream categories: use it together with ``expand`` to restrict decompression to streams other than images / fontfiles.
 

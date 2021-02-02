@@ -62,7 +62,7 @@ static pdf_obj
                 PyObject *t = PyUnicode_Join(slash, list);  // next high level
                 if (pdf_is_indirect(ctx, pdf_dict_getp(ctx, obj, JM_StrAsChar(t)))) {
                     Py_DECREF(t);
-                    fz_throw(ctx, FZ_ERROR_GENERIC, "path of '%s' has indirects", JM_StrAsChar(skey));
+                    fz_throw(ctx, FZ_ERROR_GENERIC, "path to '%s' has indirects", JM_StrAsChar(skey));
                 }
                 PySequence_DelItem(list, len - 1);  // del last sub-key
                 len = PySequence_Size(list);  // remaining length
@@ -84,7 +84,7 @@ static pdf_obj
         res = JM_object_to_buffer(ctx, obj, 1, 0);
         PyObject *objstr = JM_EscapeStrFromBuffer(ctx, res);
 
-        // replace 'nullval' by desired 'value'
+        // replace 'eyecatcher' by desired 'value'
         nullval = PyUnicode_FromFormat("/%s(%s)", JM_StrAsChar(skey), eyecatcher);
         newval = PyUnicode_FromFormat("/%s %s", JM_StrAsChar(skey), value);
         newstr = PyUnicode_Replace(objstr, nullval, newval, 1);

@@ -1272,7 +1272,7 @@ def annot_preprocess(page: "Page") -> int:
         raise ValueError("not a PDF")
     old_rotation = page.rotation
     if old_rotation != 0:
-        page.setRotation(0)
+        page.set_rotation(0)
     return old_rotation
 
 

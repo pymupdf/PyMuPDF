@@ -3,7 +3,7 @@
 ================
 Color Database
 ================
-Since the introduction of methods involving colors (like :meth:`Page.drawCircle`), a requirement may be to have access to predefined colors.
+Since the introduction of methods involving colors (like :meth:`Page.draw_circle`), a requirement may be to have access to predefined colors.
 
 The fabulous GUI package `wxPython <https://wxpython.org/>`_ has a database of over 540 predefined RGB colors, which are given more or less memorizable names. Among them are not only standard names like "green" or "blue", but also "turquoise", "skyblue", and 100 (not only 50 ...) shades of "gray", etc.
 
@@ -40,4 +40,4 @@ Printing the Color Database
 If you want to actually see how the many available colors look like, use scripts `colordbRGB.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/colordbRGB.py>`_ or `colordbHSV.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/colordbHSV.py>`_ in the examples directory. They create PDFs (already existing in the same directory) with all these colors. Their only difference is sorting order: one takes the RGB values, the other one the Hue-Saturation-Values as sort criteria.
 This is a screen print of what these files look like.
 
-.. image:: images/img-colordb.png
+.. image:: images/img-colordb.*

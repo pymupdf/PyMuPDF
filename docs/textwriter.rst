@@ -38,13 +38,13 @@ Using this object entails three steps:
 ================================ ============================================
 :meth:`~TextWriter.append`       Add text in horizontal write mode
 :meth:`~TextWriter.appendv`      Add text in vertical write mode
-:meth:`~TextWriter.fillTextbox`  Fill rectangle (horizontal write mode)
-:meth:`~TextWriter.writeText`    Output TextWriter to a PDF page
+:meth:`~TextWriter.fill_textbox` Fill rectangle (horizontal write mode)
+:meth:`~TextWriter.write_text`   Output TextWriter to a PDF page
 :attr:`~TextWriter.color`        Text color (can be changed)
-:attr:`~TextWriter.lastPoint`    Last written character ends here
+:attr:`~TextWriter.last_point`   Last written character ends here
 :attr:`~TextWriter.opacity`      Text opacity (can be changed)
 :attr:`~TextWriter.rect`         Page rectangle used by this TextWriter
-:attr:`~TextWriter.textRect`     Area occupied so far
+:attr:`~TextWriter.text_rect`    Area occupied so far
 ================================ ============================================
 
 
@@ -69,7 +69,7 @@ Using this object entails three steps:
       :arg float fontsize: the fontsize, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
 
-      :returns: :attr:`textRect` and :attr:`lastPoint`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
+      :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
 
 
    .. method:: appendv(pos, text, font=None, fontsize=11, language=None)
@@ -77,14 +77,14 @@ Using this object entails three steps:
       Add some new text in vertical, top-to-bottom writing.
 
       :arg point_like pos: start position of the text, the bottom left point of the first character.
-      :arg str text: a string (Python 2: unicode is mandatory!) of arbitrary length. It will be written starting at position "pos".
+      :arg str text: a string. It will be written starting at position "pos".
       :arg font: a :ref:`Font`. If omitted, ``fitz.Font("helv")`` will be used.
-      :arg float fontsize: the fontsize, a positive number, default 11.
+      :arg float fontsize: the fontsize, a positive float, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
 
-      :returns: :attr:`textRect` and :attr:`lastPoint`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
+      :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
 
-   .. method:: fillTextbox(rect, text, pos=None, font=None, fontsize=11, align=0, warn=True)
+   .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, align=0, warn=True)
 
       Fill a given rectangle with text in horizontal, left-to-right manner. This is a convenience method to use as an alternative to :meth:`append`.
 
@@ -99,7 +99,7 @@ Using this object entails three steps:
    .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
 
 
-   .. method:: writeText(page, opacity=None, color=None, morph=None, overlay=True, oc=0)
+   .. method:: write_text(page, opacity=None, color=None, morph=None, overlay=True, oc=0, render_mode=0)
 
       Write the TextWriter text to a page.
 
@@ -109,14 +109,15 @@ Using this object entails three steps:
       :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*. 
       :arg bool overlay: put in foreground (default) or background.
       :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
+      :arg int render_mode: The PDF ``Tr`` operator value.
 
 
-   .. attribute:: textRect
+   .. attribute:: text_rect
 
       :rtype: :ref:`Rect`
       The area currently occupied.
 
-   .. attribute:: lastPoint
+   .. attribute:: last_point
 
       :rtype: :ref:`Point`
       The "cursor position" -- a :ref:`Point` -- after the last written character (its bottom-right).
@@ -140,8 +141,8 @@ To see some demo scripts dealing with TextWriter, have a look at `this <https://
 .. note::
 
   1. Opacity and color apply to **all the text** in this object. 
-  2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`lastPoint` as position for the new text span.
+  2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
-  4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`lastPoint` of the previously added item.
+  4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`last_point` of the previously added item.
   5. You can use the *pos* argument of :meth:`TextWriter.fillTextbox` to indent the first line, so its text may continue any preceeding one in a continuous manner.
   6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.isWritable`.

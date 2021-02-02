@@ -39,10 +39,10 @@ Some :ref:`Document` Methods and Attributes
 =========================== ==========================================
 **Method / Attribute**      **Description**
 =========================== ==========================================
-:attr:`Document.pageCount`  the number of pages (*int*)
+:attr:`Document.page_count`  the number of pages (*int*)
 :attr:`Document.metadata`   the metadata (*dict*)
 :meth:`Document.get_toc`    get the table of contents (*list*)
-:meth:`Document.loadPage`   read a :ref:`Page`
+:meth:`Document.load_page`   read a :ref:`Page`
 =========================== ==========================================
 
 Accessing Meta Data
@@ -90,10 +90,10 @@ Working with Pages
 
 First, a :ref:`Page` must be created. This is a method of :ref:`Document`::
 
-    page = doc.loadPage(pno)  # loads page number 'pno' of the document (0-based)
+    page = doc.load_page(pno)  # loads page number 'pno' of the document (0-based)
     page = doc[pno]  # the short form
 
-Any integer *-inf < pno < pageCount* is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
+Any integer *-inf < pno < page_count* is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
 
 Some more advanced way would be using the document as an **iterator** over its pages::
 
@@ -116,7 +116,7 @@ Inspecting the Links, Annotations or Form Fields of a Page
 Links are shown as "hot areas" when a document is displayed with some viewer software. If you click while your cursor shows a hand symbol, you will usually be taken to the taget that is encoded in that hot area. Here is how to get all links::
 
     # get all links on a page
-    links = page.getLinks()
+    links = page.get_links()
 
 *links* is a Python list of dictionaries. For details see :meth:`Page.getLinks`.
 
@@ -138,9 +138,9 @@ Rendering a Page
 -----------------------
 This example creates a **raster** image of a page's content::
 
-    pix = page.getPixmap()
+    pix = page.get_pixmap()
 
-*pix* is a :ref:`Pixmap` object which (in this case) contains an **RGB** image of the page, ready to be used for many purposes. Method :meth:`Page.getPixmap` offers lots of variations for controlling the image: resolution, colorspace (e.g. to produce a grayscale image or an image with a subtractive color scheme), transparency, rotation, mirroring, shifting, shearing, etc. For example: to create an **RGBA** image (i.e. containing an alpha channel), specify *pix = page.getPixmap(alpha=True)*.
+*pix* is a :ref:`Pixmap` object which (in this case) contains an **RGB** image of the page, ready to be used for many purposes. Method :meth:`Page.get_pixmap` offers lots of variations for controlling the image: resolution, colorspace (e.g. to produce a grayscale image or an image with a subtractive color scheme), transparency, rotation, mirroring, shifting, shearing, etc. For example: to create an **RGBA** image (i.e. containing an alpha channel), specify *pix = page.get_pixmap(alpha=True)*.
 
 A :ref:`Pixmap` contains a number of methods and attributes which are referenced below. Among them are the integers *width*, *height* (each in pixels) and *stride* (number of bytes of one horizontal image line). Attribute *samples* represents a rectangular area of bytes representing the image data (a Python *bytes* object).
 
@@ -209,7 +209,7 @@ Extracting Text and Images
 ---------------------------
 We can also extract all text, images and other information of a page in many different forms, and levels of detail::
 
-    text = page.getText(opt)
+    text = page.get_text(opt)
 
 Use one of the following strings for *opt* to obtain different formats [#f2]_:
 
@@ -235,7 +235,7 @@ Searching for Text
 -------------------
 You can find out, exactly where on a page a certain text string appears::
 
-    areas = page.searchFor("mupdf")
+    areas = page.search_for("mupdf")
 
 This delivers a list of rectangles (see :ref:`Rect`), each of which surrounds one occurrence of the string "mupdf" (case insensitive). You could use this information to e.g. highlight those areas (PDF only) or create a cross reference of the document.
 
@@ -245,7 +245,7 @@ PDF Maintenance
 ==================
 PDFs are the only document type that can be **modified** using PyMuPDF. Other file types are read-only.
 
-However, you can convert **any document** (including images) to a PDF and then apply all PyMuPDF features to the conversion result. Find out more here :meth:`Document.convertToPDF`, and also look at the demo script `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_ which can convert any supported document to PDF.
+However, you can convert **any document** (including images) to a PDF and then apply all PyMuPDF features to the conversion result. Find out more here :meth:`Document.convert_to_pdf`, and also look at the demo script `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_ which can convert any supported document to PDF.
 
 :meth:`Document.save()` always stores a PDF in its current (potentially modified) state on disk.
 
@@ -257,11 +257,11 @@ Modifying, Creating, Re-arranging and Deleting Pages
 -------------------------------------------------------
 There are several ways to manipulate the so-called **page tree** (a structure describing all the pages) of a PDF:
 
-:meth:`Document.deletePage` and :meth:`Document.deletePageRange` delete pages.
+:meth:`Document.delete_page` and :meth:`Document.delete_pages` delete pages.
 
 :meth:`Document.copyPage`, :meth:`Document.fullcopyPage` and :meth:`Document.movePage` copy or move a page to other locations within the same document.
 
-:meth:`Document.select` shrinks a PDF down to selected pages. Parameter is a sequence [#f3]_ of the page numbers that you want to keep. These integers must all be in range *0 <= i < pageCount*. When executed, all pages **missing** in this list will be deleted. Remaining pages will occur **in the sequence and as many times (!) as you specify them**.
+:meth:`Document.select` shrinks a PDF down to selected pages. Parameter is a sequence [#f3]_ of the page numbers that you want to keep. These integers must all be in range *0 <= i < page_count*. When executed, all pages **missing** in this list will be deleted. Remaining pages will occur **in the sequence and as many times (!) as you specify them**.
 
 So you can easily create new PDFs with
 
@@ -300,7 +300,7 @@ Embedding Data
 
 PDFs can be used as containers for abitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
-PyMuPDF fully supports this feature via :ref:`Document` *embeddedFile** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `embedding files <https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files>`_, or the example scripts `embedded-copy.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py>`_, `embedded-export.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py>`_, `embedded-import.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py>`_, and `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_.
+PyMuPDF fully supports this feature via :ref:`Document` *embfile_** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `embedding files <https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files>`_, or the example scripts `embedded-copy.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py>`_, `embedded-export.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py>`_, `embedded-import.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py>`_, and `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_.
 
 
 Saving
@@ -348,6 +348,6 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 
 .. [#f1] PyMuPDF lets you also open several image file types just like normal documents. See section :ref:`ImageFiles` in chapter :ref:`Pixmap` for more comments.
 
-.. [#f2] :meth:`Page.getText` is a convenience wrapper for several methods of another PyMuPDF class, :ref:`TextPage`. The names of these methods correspond to the argument string passed to :meth:`Page.getText` \:  *Page.getText("dict")* is equivalent to *TextPage.extractDICT()* \.
+.. [#f2] :meth:`Page.get_text` is a convenience wrapper for several methods of another PyMuPDF class, :ref:`TextPage`. The names of these methods correspond to the argument string passed to :meth:`Page.get_text` \:  *Page.get_text("dict")* is equivalent to *TextPage.extractDICT()* \.
 
 .. [#f3] "Sequences" are Python objects conforming to the sequence protocol. These objects implement a method named *__getitem__()*. Best known examples are Python tuples and lists. But *array.array*, *numpy.array* and PyMuPDF's "geometry" objects (:ref:`Algebra`) are sequences, too. Refer to :ref:`SequenceTypes` for details.

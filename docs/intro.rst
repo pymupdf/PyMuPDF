@@ -1,7 +1,7 @@
 Introduction
 ==============
 
-.. image:: images/img-pymupdf.jpg
+.. image:: images/img-pymupdf.*
    :align: center
 
 **PyMuPDF** is a Python binding for `MuPDF <http://www.mupdf.com/>`_ -- "a lightweight PDF and XPS viewer".

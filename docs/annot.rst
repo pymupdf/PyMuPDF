@@ -195,7 +195,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       Three overlapping 'Circle' annotations with each opacity set to 0.5:
 
-      .. image:: images/img-opacity.jpg
+      .. image:: images/img-opacity.*
 
    .. attribute:: blendmode
 
@@ -322,7 +322,7 @@ There is a parent-child relationship between an annotation and its page. If the 
           * 'Line', 'Polyline', 'Polygon' annotations: use it to give applicable line end symbols a fill color other than that of the annotation *(changed in v1.16.16)*.
 
       :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle. 'Redact' annotations only. If not desired, *False* must be specified even if the annotation was created with *False*.
-      :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see :meth:`Annot.setRotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
+      :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see :meth:`Annot.set_rotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
 
       :rtype: bool
 
@@ -515,7 +515,7 @@ Annotation Icons in MuPDF
 -------------------------
 This is a list of icons referencable by name for annotation types 'Text' and 'FileAttachment'. You can use them via the *icon* parameter when adding an annotation, or use the as argument in :meth:`Annot.setName`. It is left to your discretion which item to choose when -- no mechanism will keep you from using e.g. the "Speaker" icon for a 'FileAttachment'.
 
-.. image:: images/mupdf-icons.jpg
+.. image:: images/mupdf-icons.*
 
 
 Example
@@ -547,7 +547,7 @@ This is how the circle annotation looks like before and after the change (pop-up
 
 |circle|
 
-.. |circle| image:: images/img-circle.png
+.. |circle| image:: images/img-circle.*
 
 
 .. rubric:: Footnotes

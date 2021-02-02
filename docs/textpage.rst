@@ -6,7 +6,7 @@ TextPage
 
 This class represents text and images shown on a document page. All MuPDF document types are supported.
 
-The usual ways to create a textpage are :meth:`DisplayList.getTextPage` and :meth:`Page.getTextPage`. Because there is a limited set of methods in this class, there exist wrappers in the :ref:`Page` class, which incorporate creating an intermediate text page and then invoke one of the following methods. The last column of this table shows these corresponding :ref:`Page` methods.
+The usual ways to create a textpage are :meth:`DisplayList.get_textpage` and :meth:`Page.get_textpage`. Because there is a limited set of methods in this class, there exist wrappers in the :ref:`Page` class, which incorporate creating an intermediate text page and then invoke one of the following methods. The last column of this table shows these corresponding :ref:`Page` methods.
 
 For a description of what this class is all about, see Appendix 2.
 
@@ -122,17 +122,17 @@ For a description of what this class is all about, see Appendix 2.
       .. note:: **Overview of changes in v1.18.2:**
 
         1. The ``hit_max`` parameter has been removed: all hits are always returned.
-        2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered. The wrapper method :meth:`Page.searchFor` correspondingly supports a *clip* parameter.
+        2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered. The wrapper method :meth:`Page.search_for` correspondingly supports a *clip* parameter.
         3. Words **hyphenated** at the end of a line are now found.
         4. **Overlapping rectangles** in the same line are now automatically joined. We assume that such separations are an artifact created by multiple marked content groups, containing parts of the same search needle.
 
       Example Quad versus Rect: when searching for needle "pymupdf", then the corresponding entry will either be the blue rectangle, or, if *quads* was specified, the quad *Quad(ul, ur, ll, lr)*.
 
-      .. image:: images/img-quads.jpg
+      .. image:: images/img-quads.*
 
    .. attribute:: rect
 
-      The rectangle associated with the text page. This either equals the rectangle of the creating page or the ``clip`` parameter of :meth:`Page.getTextPage` and text extration / searching methods.
+      The rectangle associated with the text page. This either equals the rectangle of the creating page or the ``clip`` parameter of :meth:`Page.get_textpage` and text extration / searching methods.
 
       .. note:: The output of text searching and most text extractions **is restricted to this rectangle**. (X)HTML and XML output will however always extract the full page.
 
@@ -141,7 +141,7 @@ For a description of what this class is all about, see Appendix 2.
 Dictionary Structure of :meth:`extractDICT` and :meth:`extractRAWDICT`
 -------------------------------------------------------------------------
 
-.. image:: images/img-textpage.png
+.. image:: images/img-textpage.*
    :scale: 66
 
 Page Dictionary
@@ -188,11 +188,11 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
       {"type": 1, "bbox": (0.0, 0.0, 0.0, 0.0), ..., "image": b""}
 
 
-   2. :ref:`TextPage` and corresponding method :meth:`Page.getText` are **available for all document types**. Only for PDF documents, methods :meth:`Document.getPageImageList` / :meth:`Page.getImageList` offer some overlapping functionality as far as image lists are concerned. But both lists **may or may not** contain the same items. Any differences are most probably caused by one of the following:
+   2. :ref:`TextPage` and corresponding method :meth:`Page.get_text` are **available for all document types**. Only for PDF documents, methods :meth:`Document.get_page_images` / :meth:`Page.get_images` offer some overlapping functionality as far as image lists are concerned. But both lists **may or may not** contain the same items. Any differences are most probably caused by one of the following:
 
-       - "Inline" images (see page 352 of the :ref:`AdobeManual`) of a PDF page are contained in a textpage, but **not in** :meth:`Page.getImageList`.
-       - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.getImageList`, which will contain each image only once.
-       - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.getImageList` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
+       - "Inline" images (see page 352 of the :ref:`AdobeManual`) of a PDF page are contained in a textpage, but **not in** :meth:`Page.get_images`.
+       - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will contain each image only once.
+       - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
 
 
 **Text block:**
@@ -292,7 +292,7 @@ Character Dictionary for :meth:`extractRAWDICT`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 We are currently providing the bbox in :data:`rect_like` format. In a future version, we might change that to :data:`quad_like`. This image shows the relationship between items in the following table: |textpagechar|
 
-.. |textpagechar| image:: images/img-textpage-char.png
+.. |textpagechar| image:: images/img-textpage-char.*
    :align: top
    :scale: 66
 
@@ -306,4 +306,4 @@ c               the character (unicode)
 
 .. rubric:: Footnotes
 
-.. [#f1] Image specifications for a PDF page are done in a page's (sub-) :data:`dictionary`, called *"/Resources"*. Resource dictionaries can be **inherited** from the page's parent object (usually the :data:`catalog`). The PDF creator may e.g. define one */Resources* on file level, naming all images and all fonts ever used by any page. In this case, :meth:`Page.getImageList` and :meth:`Page.getFontList` will always return the same lists for all pages.
+.. [#f1] Image specifications for a PDF page are done in a page's (sub-) :data:`dictionary`, called *"/Resources"*. Resource dictionaries can be **inherited** from the page's parent object (usually the :data:`catalog`). The PDF creator may e.g. define one */Resources* on file level, naming all images and all fonts ever used by any page. In this case, :meth:`Page.get_images` and :meth:`Page.get_fonts` will always return the same lists for all pages.

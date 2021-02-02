@@ -28,7 +28,7 @@ class DocForm(QtWidgets.QWidget):
         self.process = None
         self.queNum = mp.Queue()
         self.queDoc = mp.Queue()
-        self.pageCount = 0
+        self.page_count = 0
         self.curPageNum = 0
         self.lastDir = ""
         self.timerSend = QtCore.QTimer(self)
@@ -87,7 +87,7 @@ class DocForm(QtWidgets.QWidget):
                 self.queNum.put(-1)  # use -1 to notify the process to exit
             self.timerSend.stop()
             self.curPageNum = 0
-            self.pageCount = 0
+            self.page_count = 0
             self.process = mp.Process(
                 target=openDocInProcess, args=(path, self.queNum, self.queDoc)
             )
@@ -105,7 +105,7 @@ class DocForm(QtWidgets.QWidget):
         self.timerSend.stop()
 
     def onTimerSendPageNum(self):
-        if self.curPageNum < self.pageCount - 1:
+        if self.curPageNum < self.page_count - 1:
             self.queNum.put(self.curPageNum + 1)
         else:
             self.timerSend.stop()
@@ -115,12 +115,12 @@ class DocForm(QtWidgets.QWidget):
             ret = self.queDoc.get(False)
             if isinstance(ret, int):
                 self.timerWaiting.stop()
-                self.pageCount = ret
-                self.label.setText("{}/{}".format(self.curPageNum + 1, self.pageCount))
+                self.page_count = ret
+                self.label.setText("{}/{}".format(self.curPageNum + 1, self.page_count))
             else:  # tuple, pixmap info
                 num, samples, width, height, stride, alpha = ret
                 self.curPageNum = num
-                self.label.setText("{}/{}".format(self.curPageNum + 1, self.pageCount))
+                self.label.setText("{}/{}".format(self.curPageNum + 1, self.page_count))
                 fmt = (
                     QtGui.QImage.Format_RGBA8888
                     if alpha
@@ -147,13 +147,13 @@ def openDocInProcess(path, queNum, quePageInfo):
     start = my_timer()
     doc = fitz.open(path)
     end = my_timer()
-    quePageInfo.put(doc.pageCount)
+    quePageInfo.put(doc.page_count)
     while True:
         num = queNum.get()
         if num < 0:
             break
-        page = doc.loadPage(num)
-        pix = page.getPixmap()
+        page = doc.load_page(num)
+        pix = page.get_pixmap()
         quePageInfo.put(
             (num, pix.samples, pix.width, pix.height, pix.stride, pix.alpha)
         )

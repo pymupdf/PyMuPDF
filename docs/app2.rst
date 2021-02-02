@@ -33,18 +33,18 @@ A **span** consists of adjacent characters with identical font properties: name,
 Plain Text
 ~~~~~~~~~~
 
-Function :meth:`TextPage.extractText` (or *Page.getText("text")*) extracts a page's plain **text in original order** as specified by the creator of the document (which may not equal a natural reading order).
+Function :meth:`TextPage.extractText` (or *Page.get_text("text")*) extracts a page's plain **text in original order** as specified by the creator of the document (which may not equal a natural reading order).
 
 An example output::
 
-    >>> print(page.getText("text"))
+    >>> print(page.get_text("text"))
     Some text on first page.
 
 
 BLOCKS
 ~~~~~~~~~~
 
-Function :meth:`TextPage.extractBLOCKS` (or *Page.getText("blocks")*) extracts a page's text blocks as a list of items like::
+Function :meth:`TextPage.extractBLOCKS` (or *Page.get_text("blocks")*) extracts a page's text blocks as a list of items like::
 
     (x0, y0, x1, y1, "lines in block", block_type, block_no)
 
@@ -54,7 +54,7 @@ This is a high-speed method with enough information to re-arrange the page's tex
 
 Example output::
 
-    >>> print(page.getText("blocks"))
+    >>> print(page.get_text("blocks"))
     [(50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375,
     'Some text on first page.', 0, 0)]
 
@@ -62,7 +62,7 @@ Example output::
 WORDS
 ~~~~~~~~~~
 
-Function :meth:`TextPage.extractWORDS` (or *Page.getText("words")*) extracts a page's text **words** as a list of items like::
+Function :meth:`TextPage.extractWORDS` (or *Page.get_text("words")*) extracts a page's text **words** as a list of items like::
 
     (x0, y0, x1, y1, "word", block_no, line_no, word_no)
 
@@ -72,7 +72,7 @@ This is a high-speed method with enough information to extract text contained in
 
 Example output::
 
-    >>> for word in page.getText("words"):
+    >>> for word in page.get_text("words"):
             print(word)
     (50.0, 88.17500305175781, 78.73200225830078, 103.28900146484375,
     'Some', 0, 0, 0)
@@ -88,9 +88,9 @@ Example output::
 HTML
 ~~~~
 
-:meth:`TextPage.extractHTML` (or *Page.getText("html")* output fully reflects the structure of the page's *TextPage* -- much like DICT / JSON below. This includes images, font information and text positions. If wrapped in HTML header and trailer code, it can readily be displayed by an internet browser. Our above example::
+:meth:`TextPage.extractHTML` (or *Page.get_text("html")* output fully reflects the structure of the page's *TextPage* -- much like DICT / JSON below. This includes images, font information and text positions. If wrapped in HTML header and trailer code, it can readily be displayed by an internet browser. Our above example::
 
-    >>> for line in page.getText("html").splitlines():
+    >>> for line in page.get_text("html").splitlines():
             print(line)
 
     <div id="page0" style="position:relative;width:300pt;height:350pt;
@@ -153,7 +153,7 @@ To address the font issue, you can use a simple utility script to scan through t
 DICT (or JSON)
 ~~~~~~~~~~~~~~~~
 
-:meth:`TextPage.extractDICT` (or *Page.getText("dict")*) output fully reflects the structure of a *TextPage* and provides image content and position details (*bbox* -- boundary boxes in pixel units) for every block and line. This information can be used to present text in another reading order if required (e.g. from top-left to bottom-right). Images are stored as *bytes* (*bytearray* in Python 2) for DICT output and base64 encoded strings for JSON output.
+:meth:`TextPage.extractDICT` (or *Page.get_text("dict")*) output fully reflects the structure of a *TextPage* and provides image content and position details (*bbox* -- boundary boxes in pixel units) for every block and line. This information can be used to present text in another reading order if required (e.g. from top-left to bottom-right). Images are stored as *bytes* (*bytearray* in Python 2) for DICT output and base64 encoded strings for JSON output.
 
 For a visuallization of the dictionary structure have a look at :ref:`textpagedict`.
 
@@ -183,7 +183,7 @@ Here is how this looks like::
 
 RAWDICT
 ~~~~~~~~~~~~~~~~
-:meth:`TextPage.extractRAWDICT` (or *Page.getText("rawdict")*) is an **information superset of DICT** and takes the detail level one step deeper. It looks exactly like the above, except that the *"text"* items (*string*) are replaced by *"chars"* items (*list*). Each *"chars"* entry is a character *dict*. For example, here is what you would see in place of item *"text": "Text in black color."* above::
+:meth:`TextPage.extractRAWDICT` (or *Page.get_text("rawdict")*) is an **information superset of DICT** and takes the detail level one step deeper. It looks exactly like the above, except that the *"text"* items (*string*) are replaced by *"chars"* items (*list*). Each *"chars"* entry is a character *dict*. For example, here is what you would see in place of item *"text": "Text in black color."* above::
 
     "chars": [{
         "origin": [50.0, 100.0],
@@ -216,9 +216,9 @@ RAWDICT
 XML
 ~~~
 
-The :meth:`TextPage.extractXML` (or *Page.getText("xml")*) version extracts text (no images) with the detail level of RAWDICT::
+The :meth:`TextPage.extractXML` (or *Page.get_text("xml")*) version extracts text (no images) with the detail level of RAWDICT::
   
-    >>> for line in page.getText("xml").splitlines():
+    >>> for line in page.get_text("xml").splitlines():
         print(line)
 
     <page id="page0" width="300" height="350">
@@ -249,7 +249,7 @@ The :meth:`TextPage.extractXML` (or *Page.getText("xml")*) version extracts text
 
 XHTML
 ~~~~~
-:meth:`TextPage.extractXHTML` (or *Page.getText("xhtml")*) is a variation of TEXT but in HTML format, containing the bare text and images ("semantic" output)::
+:meth:`TextPage.extractXHTML` (or *Page.get_text("xhtml")*) is a variation of TEXT but in HTML format, containing the bare text and images ("semantic" output)::
 
     <div id="page0">
     <p>Some text on first page.</p>
@@ -259,7 +259,7 @@ XHTML
 
 Text Extraction Flags Defaults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*(New in version 1.16.2)* Method :meth:`Page.getText` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than *None*, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
+*(New in version 1.16.2)* Method :meth:`Page.get_text` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than *None*, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
 
 =================== ==== ==== ===== === ==== ======= ===== ======
 Indicator           text html xhtml xml dict rawdict words blocks
@@ -277,14 +277,14 @@ dehyphenate         0    0    0     0   0    0       0     0
 
 To show the effect of *TEXT_INHIBIT_SPACES* have a look at this example::
 
-    >>> print(page.getText("text"))
+    >>> print(page.get_text("text"))
     H a l l o !
     Mo r e  t e x t
     i s  f o l l o w i n g
     i n  E n g l i s h
     . . .  l e t ' s  s e e
     w h a t  h a p p e n s .
-    >>> print(page.getText("text", flags=fitz.TEXT_INHIBIT_SPACES))
+    >>> print(page.get_text("text", flags=fitz.TEXT_INHIBIT_SPACES))
     Hallo!
     More text
     is following

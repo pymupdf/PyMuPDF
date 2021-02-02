@@ -55,11 +55,11 @@ def write_text(page: Page, **kwargs) -> None:
             return None
         else:
             writers = (writers,)
-    clip = writers[0].textRect
+    clip = writers[0].text_rect
     textdoc = Document()
     tpage = textdoc.newPage(width=page.rect.width, height=page.rect.height)
     for writer in writers:
-        clip |= writer.textRect
+        clip |= writer.text_rect
         writer.write_text(tpage, opacity=opacity, color=color)
     if rect is None:
         rect = clip
@@ -155,17 +155,17 @@ def show_pdf_page(*args, **kwargs) -> int:
         warnings.warn("ignoring 'reuse_xref'", DeprecationWarning)
 
     while pno < 0:  # support negative page numbers
-        pno += src.pageCount
+        pno += src.page_count
     src_page = src[pno]  # load source page
     if src_page.get_contents() == []:
         raise ValueError("nothing to show - source page empty")
 
-    tar_rect = rect * ~page.transformationMatrix  # target rect in PDF coordinates
+    tar_rect = rect * ~page.transformation_matrix  # target rect in PDF coordinates
 
     src_rect = src_page.rect if not clip else src_page.rect & clip  # source rect
     if src_rect.isEmpty or src_rect.isInfinite:
         raise ValueError("clip must be finite and not empty")
-    src_rect = src_rect * ~src_page.transformationMatrix  # ... in PDF coord
+    src_rect = src_rect * ~src_page.transformation_matrix  # ... in PDF coord
 
     matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
 
@@ -367,7 +367,7 @@ def insertImage(*args, **kwargs) -> None:
     else:
         fw = fh = 1.0
 
-    clip = r * ~page.transformationMatrix  # target rect in PDF coordinates
+    clip = r * ~page.transformation_matrix  # target rect in PDF coordinates
 
     matrix = calc_matrix(fw, fh, clip, rotate=rotate)  # calculate matrix
 
@@ -421,7 +421,7 @@ def searchFor(*args, **kwargs) -> list:
     CheckParent(page)
     if flags is None:
         flags = TEXT_DEHYPHENATE
-    tp = page.getTextPage(clip=clip, flags=flags)  # create TextPage
+    tp = page.get_textpage(clip=clip, flags=flags)  # create TextPage
     rlist = tp.search(text, quads=quads)
     tp = None
     return rlist
@@ -474,7 +474,7 @@ def getTextBlocks(
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_WHITESPACE + TEXT_PRESERVE_IMAGES
-    tp = page.getTextPage(clip=clip, flags=flags)
+    tp = page.get_textpage(clip=clip, flags=flags)
     blocks = tp.extractBLOCKS()
     del tp
     return blocks
@@ -493,7 +493,7 @@ def getTextWords(
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_WHITESPACE
-    tp = page.getTextPage(clip=clip, flags=flags)
+    tp = page.get_textpage(clip=clip, flags=flags)
     words = tp.extractWORDS()
     del tp
     return words
@@ -516,7 +516,7 @@ def getTextSelection(
     clip: rect_like = None,
 ):
     CheckParent(page)
-    tp = page.getTextPage(clip=clip, flags=TEXT_DEHYPHENATE)
+    tp = page.get_textpage(clip=clip, flags=TEXT_DEHYPHENATE)
     rc = tp.extractSelection(p1, p2)
     del tp
     return rc
@@ -568,12 +568,13 @@ def getText(
     if option == "blocks":
         return getTextBlocks(page, clip=clip, flags=flags)
     CheckParent(page)
+    cb = None
     if clip != None:
         clip = Rect(clip)
         cb = None
-    else:
-        cb = page.CropBox
-    tp = page.getTextPage(clip=clip, flags=flags)  # TextPage with or without images
+    elif type(page) is Page:
+        cb = page.cropbox
+    tp = page.get_textpage(clip=clip, flags=flags)  # TextPage with or without images
 
     if option == "json":
         t = tp.extractJSON(cb=cb)
@@ -651,7 +652,7 @@ def getPixmap(page: Page, **kw) -> Pixmap:
     # return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
 
 
-def getPagePixmap(
+def get_page_pixmap(
     doc: Document,
     pno: int,
     matrix: matrix_like = Identity,
@@ -724,7 +725,7 @@ def getLinkDict(ln) -> dict:
     return nl
 
 
-def getLinks(page: Page) -> list:
+def get_links(page: Page) -> list:
     """Create a list of all links contained in a PDF page.
 
     Notes:
@@ -740,7 +741,7 @@ def getLinks(page: Page) -> list:
         #    if type(nl["to"]) is Point and nl["page"] >= 0:
         #        doc = page.parent
         #        target_page = doc[nl["page"]]
-        #        ctm = target_page.transformationMatrix
+        #        ctm = target_page.transformation_matrix
         #        point = nl["to"] * ctm
         #        nl["to"] = point
         links.append(nl)
@@ -775,7 +776,7 @@ def getToC(
             if not olItem.isExternal:
                 if olItem.uri:
                     if olItem.page == -1:
-                        resolve = doc.resolveLink(olItem.uri)
+                        resolve = doc.resolve_link(olItem.uri)
                         page = resolve[0] + 1
                     else:
                         page = olItem.page + 1
@@ -796,9 +797,9 @@ def getToC(
         return liste
 
     # ensure document is open
-    if doc.isClosed:
+    if doc.is_closed:
         raise ValueError("document closed")
-    doc.initData()
+    doc.init_doc()
     olItem = doc.outline
 
     if not olItem:
@@ -859,7 +860,7 @@ def set_toc_item(
         if dest_dict["kind"] == LINK_GOTO:
             pno = dest_dict["page"]
             page_xref = doc.page_xref(pno)
-            page_height = doc.pageCropBox(pno).height
+            page_height = doc.page_cropbox(pno).height
             to = dest_dict.get(to, Point(72, 36))
             to.y = page_height - to.y
             dest_dict["to"] = to
@@ -892,10 +893,10 @@ def set_toc_item(
         return doc._update_toc_item(xref, action=None, title=title)
 
     if kind == LINK_GOTO:
-        if pno is None or pno not in range(1, doc.pageCount + 1):
+        if pno is None or pno not in range(1, doc.page_count + 1):
             raise ValueError("bad page number")
         page_xref = doc.page_xref(pno - 1)
-        page_height = doc.pageCropBox(pno - 1).height
+        page_height = doc.page_cropbox(pno - 1).height
         if to is None:
             to = Point(72, page_height - 38)
         else:
@@ -935,7 +936,7 @@ def setMetadata(doc: Document, m: dict) -> None:
     Args:
         m: a dictionary like doc.metadata.
     """
-    if doc.isClosed or doc.isEncrypted:
+    if doc.is_closed or doc.is_encrypted:
         raise ValueError("document closed or encrypted")
     if type(m) is not dict:
         raise ValueError("bad metadata argument")
@@ -965,7 +966,7 @@ def setMetadata(doc: Document, m: dict) -> None:
             d += keymap[k] + x
     d += ">>"
     doc._setMetadata(d)
-    doc.initData()
+    doc.init_doc()
     return
 
 
@@ -1042,7 +1043,7 @@ def setToC(
     Returns:
         the number of inserted items, or the number of removed items respectively.
     """
-    if doc.isClosed or doc.isEncrypted:
+    if doc.is_closed or doc.is_encrypted:
         raise ValueError("document closed or encrypted")
     if not doc.is_pdf:
         raise ValueError("not a PDF")
@@ -1053,7 +1054,7 @@ def setToC(
     if type(toc) not in (list, tuple):
         raise ValueError("'toc' must be list or tuple")
     toclen = len(toc)
-    pageCount = doc.pageCount
+    page_count = doc.page_count
     t0 = toc[0]
     if type(t0) not in (list, tuple):
         raise ValueError("items must be sequences of 3 or 4 items")
@@ -1062,7 +1063,7 @@ def setToC(
     for i in list(range(toclen - 1)):
         t1 = toc[i]
         t2 = toc[i + 1]
-        if not -1 <= t1[2] <= pageCount:
+        if not -1 <= t1[2] <= page_count:
             raise ValueError("row %i: page number out of range" % i)
         if (type(t2) not in (list, tuple)) or len(t2) not in (3, 4):
             raise ValueError("bad row %i" % (i + 1))
@@ -1097,9 +1098,9 @@ def setToC(
         o = toc[i]
         lvl = o[0]  # level
         title = getPDFstr(o[1])  # title
-        pno = min(doc.pageCount - 1, max(0, o[2] - 1))  # page number
+        pno = min(doc.page_count - 1, max(0, o[2] - 1))  # page number
         page_xref = doc.page_xref(pno)
-        page_height = doc.pageCropBox(pno).height
+        page_height = doc.page_cropbox(pno).height
         top = Point(72, page_height - 36)
         dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
         if o[2] < 0:
@@ -1199,7 +1200,7 @@ def setToC(
         txt += ">>"
         doc.update_object(xref[i], txt)  # insert the PDF object
 
-    doc.initData()
+    doc.init_doc()
     return toclen
 
 
@@ -1268,13 +1269,13 @@ def do_links(
     # validate & normalize parameters
     if from_page < 0:
         fp = 0
-    elif from_page >= doc2.pageCount:
-        fp = doc2.pageCount - 1
+    elif from_page >= doc2.page_count:
+        fp = doc2.page_count - 1
     else:
         fp = from_page
 
-    if to_page < 0 or to_page >= doc2.pageCount:
-        tp = doc2.pageCount - 1
+    if to_page < 0 or to_page >= doc2.page_count:
+        tp = doc2.page_count - 1
     else:
         tp = to_page
 
@@ -1302,11 +1303,11 @@ def do_links(
     # create the links for each copied page in destination PDF
     for i in range(len(xref_src)):
         page_src = doc2[pno_src[i]]  # load source page
-        links = page_src.getLinks()  # get all its links
+        links = page_src.get_links()  # get all its links
         if len(links) == 0:  # no links there
             page_src = None
             continue
-        ctm = ~page_src.transformationMatrix  # calc page transformation matrix
+        ctm = ~page_src.transformation_matrix  # calc page transformation matrix
         page_dst = doc1[pno_dst[i]]  # load destination page
         link_tab = []  # store all link definitions here
         for l in links:
@@ -1328,7 +1329,7 @@ def getLinkText(page: Page, lnk: dict) -> str:
     # --------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     # --------------------------------------------------------------------------
-    ctm = page.transformationMatrix
+    ctm = page.transformation_matrix
     ictm = ~ctm
     r = lnk["from"]
     rect = "%g %g %g %g" % tuple(r * ictm)
@@ -1431,7 +1432,7 @@ def insertLink(page: Page, lnk: dict, mark: bool = True) -> None:
     return
 
 
-def insertTextbox(
+def insert_textbox(
     page: Page,
     rect: rect_like,
     buffer: typing.Union[str, list],
@@ -1474,8 +1475,8 @@ def insertTextbox(
     Returns:
         unused or deficit rectangle area (float)
     """
-    img = page.newShape()
-    rc = img.insertTextbox(
+    img = page.new_shape()
+    rc = img.insert_textbox(
         rect,
         buffer,
         fontsize=fontsize,
@@ -1501,7 +1502,7 @@ def insertTextbox(
     return rc
 
 
-def insertText(
+def insert_text(
     page: Page,
     point: point_like,
     text: typing.Union[str, list],
@@ -1523,8 +1524,8 @@ def insertText(
     oc: int = 0,
 ):
 
-    img = page.newShape()
-    rc = img.insertText(
+    img = page.new_shape()
+    rc = img.insert_text(
         point,
         text,
         fontsize=fontsize,
@@ -1573,13 +1574,13 @@ def insertPage(
     """Create a new PDF page and insert some text.
 
     Notes:
-        Function combining Document.newPage() and Page.insertText().
+        Function combining Document.newPage() and Page.insert_text().
         For parameter details see these methods.
     """
     page = doc.newPage(pno=pno, width=width, height=height)
     if not bool(text):
         return 0
-    rc = page.insertText(
+    rc = page.insert_text(
         (50, 72),
         text,
         fontsize=fontsize,
@@ -1590,7 +1591,7 @@ def insertPage(
     return rc
 
 
-def drawLine(
+def draw_line(
     page: Page,
     p1: point_like,
     p2: point_like,
@@ -1606,8 +1607,8 @@ def drawLine(
     oc=0,
 ) -> Point:
     """Draw a line from point p1 to point p2."""
-    img = page.newShape()
-    p = img.drawLine(Point(p1), Point(p2))
+    img = page.new_shape()
+    p = img.draw_line(Point(p1), Point(p2))
     img.finish(
         color=color,
         dashes=dashes,
@@ -1625,7 +1626,7 @@ def drawLine(
     return p
 
 
-def drawSquiggle(
+def draw_squiggle(
     page: Page,
     p1: point_like,
     p2: point_like,
@@ -1642,8 +1643,8 @@ def drawSquiggle(
     oc: int = 0,
 ) -> Point:
     """Draw a squiggly line from point p1 to point p2."""
-    img = page.newShape()
-    p = img.drawSquiggle(Point(p1), Point(p2), breadth=breadth)
+    img = page.new_shape()
+    p = img.draw_squiggle(Point(p1), Point(p2), breadth=breadth)
     img.finish(
         color=color,
         dashes=dashes,
@@ -1661,7 +1662,7 @@ def drawSquiggle(
     return p
 
 
-def drawZigzag(
+def draw_zigzag(
     page: Page,
     p1: point_like,
     p2: point_like,
@@ -1678,8 +1679,8 @@ def drawZigzag(
     oc: int = 0,
 ) -> Point:
     """Draw a zigzag line from point p1 to point p2."""
-    img = page.newShape()
-    p = img.drawZigzag(Point(p1), Point(p2), breadth=breadth)
+    img = page.new_shape()
+    p = img.draw_zigzag(Point(p1), Point(p2), breadth=breadth)
     img.finish(
         color=color,
         dashes=dashes,
@@ -1697,7 +1698,7 @@ def drawZigzag(
     return p
 
 
-def drawRect(
+def draw_rect(
     page: Page,
     rect: rect_like,
     color: OptSeq = None,
@@ -1713,8 +1714,8 @@ def drawRect(
     oc: int = 0,
 ) -> Point:
     """Draw a rectangle."""
-    img = page.newShape()
-    Q = img.drawRect(Rect(rect))
+    img = page.new_shape()
+    Q = img.draw_rect(Rect(rect))
     img.finish(
         color=color,
         fill=fill,
@@ -1732,7 +1733,7 @@ def drawRect(
     return Q
 
 
-def drawQuad(
+def draw_quad(
     page: Page,
     quad: quad_like,
     color: OptSeq = None,
@@ -1748,8 +1749,8 @@ def drawQuad(
     oc: int = 0,
 ) -> Point:
     """Draw a quadrilateral."""
-    img = page.newShape()
-    Q = img.drawQuad(Quad(quad))
+    img = page.new_shape()
+    Q = img.draw_quad(Quad(quad))
     img.finish(
         color=color,
         fill=fill,
@@ -1767,7 +1768,7 @@ def drawQuad(
     return Q
 
 
-def drawPolyline(
+def draw_polyline(
     page: Page,
     points: list,
     color: OptSeq = None,
@@ -1784,8 +1785,8 @@ def drawPolyline(
     oc: int = 0,
 ) -> Point:
     """Draw multiple connected line segments."""
-    img = page.newShape()
-    Q = img.drawPolyline(points)
+    img = page.new_shape()
+    Q = img.draw_polyline(points)
     img.finish(
         color=color,
         fill=fill,
@@ -1804,7 +1805,7 @@ def drawPolyline(
     return Q
 
 
-def drawCircle(
+def draw_circle(
     page: Page,
     center: point_like,
     radius: float,
@@ -1821,8 +1822,8 @@ def drawCircle(
     oc: int = 0,
 ) -> Point:
     """Draw a circle given its center and radius."""
-    img = page.newShape()
-    Q = img.drawCircle(Point(center), radius)
+    img = page.new_shape()
+    Q = img.draw_circle(Point(center), radius)
     img.finish(
         color=color,
         fill=fill,
@@ -1839,7 +1840,7 @@ def drawCircle(
     return Q
 
 
-def drawOval(
+def draw_oval(
     page: Page,
     rect: typing.Union[rect_like, quad_like],
     color: OptSeq = None,
@@ -1855,8 +1856,8 @@ def drawOval(
     oc: int = 0,
 ) -> Point:
     """Draw an oval given its containing rectangle or quad."""
-    img = page.newShape()
-    Q = img.drawOval(rect)
+    img = page.new_shape()
+    Q = img.draw_oval(rect)
     img.finish(
         color=color,
         fill=fill,
@@ -1874,7 +1875,7 @@ def drawOval(
     return Q
 
 
-def drawCurve(
+def draw_curve(
     page: Page,
     p1: point_like,
     p2: point_like,
@@ -1893,8 +1894,8 @@ def drawCurve(
     oc: int = 0,
 ) -> Point:
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3."""
-    img = page.newShape()
-    Q = img.drawCurve(Point(p1), Point(p2), Point(p3))
+    img = page.new_shape()
+    Q = img.draw_curve(Point(p1), Point(p2), Point(p3))
     img.finish(
         color=color,
         fill=fill,
@@ -1913,7 +1914,7 @@ def drawCurve(
     return Q
 
 
-def drawBezier(
+def draw_bezier(
     page: Page,
     p1: point_like,
     p2: point_like,
@@ -1933,8 +1934,8 @@ def drawBezier(
     oc: int = 0,
 ) -> Point:
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3."""
-    img = page.newShape()
-    Q = img.drawBezier(Point(p1), Point(p2), Point(p3), Point(p4))
+    img = page.new_shape()
+    Q = img.draw_bezier(Point(p1), Point(p2), Point(p3), Point(p4))
     img.finish(
         color=color,
         fill=fill,
@@ -1953,7 +1954,7 @@ def drawBezier(
     return Q
 
 
-def drawSector(
+def draw_sector(
     page: Page,
     center: point_like,
     point: point_like,
@@ -1980,8 +1981,8 @@ def drawSector(
         beta -- angle of arc (degrees)
         fullSector -- connect arc ends with center
     """
-    img = page.newShape()
-    Q = img.drawSector(Point(center), Point(point), beta, fullSector=fullSector)
+    img = page.new_shape()
+    Q = img.draw_sector(Point(center), Point(point), beta, fullSector=fullSector)
     img.finish(
         color=color,
         fill=fill,
@@ -2637,7 +2638,7 @@ def getColorHSV(name: str) -> tuple:
 
 
 def _get_font_properties(doc: Document, xref: int) -> tuple:
-    fontname, ext, stype, buffer = doc.extractFont(xref)
+    fontname, ext, stype, buffer = doc.extract_font(xref)
     asc = 0.8
     dsc = -0.2
     if ext == "":
@@ -2671,7 +2672,7 @@ def _get_font_properties(doc: Document, xref: int) -> tuple:
     return fontname, ext, stype, asc, dsc
 
 
-def getCharWidths(
+def get_char_widths(
     doc: Document, xref: int, limit: int = 256, idx: int = 0, fontdict: OptDict = None
 ) -> list:
     """Get list of glyph information of a font.
@@ -2756,7 +2757,7 @@ def getCharWidths(
         return glyphs
 
     if ordering < 0:  # not a CJK font
-        glyphs = doc._getCharWidths(
+        glyphs = doc._get_char_widths(
             xref, fontdict["name"], fontdict["ext"], fontdict["ordering"], mylimit, idx
         )
     else:  # CJK fonts use char codes and width = 1
@@ -2798,12 +2799,12 @@ class Shape(object):
         self.doc = page.parent
         if not self.doc.is_pdf:
             raise ValueError("not a PDF")
-        self.height = page.MediaBoxSize.y
-        self.width = page.MediaBoxSize.x
-        self.x = page.CropBoxPosition.x
-        self.y = page.CropBoxPosition.y
+        self.height = page.mediabox_size.y
+        self.width = page.mediabox_size.x
+        self.x = page.cropbox_position.x
+        self.y = page.cropbox_position.y
 
-        self.pctm = page.transformationMatrix  # page transf. matrix
+        self.pctm = page.transformation_matrix  # page transf. matrix
         self.ipctm = ~self.pctm  # inverted transf. matrix
 
         self.draw_cont = ""
@@ -2833,7 +2834,7 @@ class Shape(object):
                 self.rect.x1 = max(self.rect.x1, x.x1)
                 self.rect.y1 = max(self.rect.y1, x.y1)
 
-    def drawLine(self, p1: point_like, p2: point_like) -> Point:
+    def draw_line(self, p1: point_like, p2: point_like) -> Point:
         """Draw a line between two points."""
         p1 = Point(p1)
         p2 = Point(p2)
@@ -2847,7 +2848,7 @@ class Shape(object):
         self.lastPoint = p2
         return self.lastPoint
 
-    def drawPolyline(self, points: list) -> Point:
+    def draw_polyline(self, points: list) -> Point:
         """Draw several connected line segments."""
         for i, p in enumerate(points):
             if i == 0:
@@ -2861,7 +2862,7 @@ class Shape(object):
         self.lastPoint = Point(points[-1])
         return self.lastPoint
 
-    def drawBezier(
+    def draw_bezier(
         self,
         p1: point_like,
         p2: point_like,
@@ -2885,7 +2886,7 @@ class Shape(object):
         self.lastPoint = p4
         return self.lastPoint
 
-    def drawOval(self, tetra: typing.Union[quad_like, rect_like]) -> Point:
+    def draw_oval(self, tetra: typing.Union[quad_like, rect_like]) -> Point:
         """Draw an ellipse inside a tetrapod."""
         if len(tetra) != 4:
             raise ValueError("invalid arg length")
@@ -2901,23 +2902,23 @@ class Shape(object):
         if not (self.lastPoint == ml):
             self.draw_cont += "%g %g m\n" % JM_TUPLE(ml * self.ipctm)
             self.lastPoint = ml
-        self.drawCurve(ml, q.ll, mb)
-        self.drawCurve(mb, q.lr, mr)
-        self.drawCurve(mr, q.ur, mt)
-        self.drawCurve(mt, q.ul, ml)
+        self.draw_curve(ml, q.ll, mb)
+        self.draw_curve(mb, q.lr, mr)
+        self.draw_curve(mr, q.ur, mt)
+        self.draw_curve(mt, q.ul, ml)
         self.updateRect(q.rect)
         self.lastPoint = ml
         return self.lastPoint
 
-    def drawCircle(self, center: point_like, radius: float) -> Point:
+    def draw_circle(self, center: point_like, radius: float) -> Point:
         """Draw a circle given its center and radius."""
         if not radius > EPSILON:
             raise ValueError("radius must be postive")
         center = Point(center)
         p1 = center - (radius, 0)
-        return self.drawSector(center, p1, 360, fullSector=False)
+        return self.draw_sector(center, p1, 360, fullSector=False)
 
-    def drawCurve(
+    def draw_curve(
         self,
         p1: point_like,
         p2: point_like,
@@ -2930,9 +2931,9 @@ class Shape(object):
         p3 = Point(p3)
         k1 = p1 + (p2 - p1) * kappa
         k2 = p3 + (p2 - p3) * kappa
-        return self.drawBezier(p1, k1, k2, p3)
+        return self.draw_bezier(p1, k1, k2, p3)
 
-    def drawSector(
+    def draw_sector(
         self,
         center: point_like,
         point: point_like,
@@ -3006,7 +3007,7 @@ class Shape(object):
         self.lastPoint = Q
         return self.lastPoint
 
-    def drawRect(self, rect: rect_like) -> Point:
+    def draw_rect(self, rect: rect_like) -> Point:
         """Draw a rectangle."""
         r = Rect(rect)
         self.draw_cont += "%g %g %g %g re\n" % JM_TUPLE(
@@ -3016,12 +3017,12 @@ class Shape(object):
         self.lastPoint = r.tl
         return self.lastPoint
 
-    def drawQuad(self, quad: quad_like) -> Point:
+    def draw_quad(self, quad: quad_like) -> Point:
         """Draw a Quad."""
         q = Quad(quad)
-        return self.drawPolyline([q.ul, q.ll, q.lr, q.ur, q.ul])
+        return self.draw_polyline([q.ul, q.ll, q.lr, q.ur, q.ul])
 
-    def drawZigzag(
+    def draw_zigzag(
         self,
         p1: point_like,
         p2: point_like,
@@ -3047,10 +3048,10 @@ class Shape(object):
             else:  # ignore others
                 continue
             points.append(p * i_mat)
-        self.drawPolyline([p1] + points + [p2])  # add start and end points
+        self.draw_polyline([p1] + points + [p2])  # add start and end points
         return p2
 
-    def drawSquiggle(
+    def draw_squiggle(
         self,
         p1: point_like,
         p2: point_like,
@@ -3067,7 +3068,7 @@ class Shape(object):
         mb = rad / cnt  # revised breadth
         matrix = Matrix(TOOLS._hor_matrix(p1, p2))  # normalize line to x-axis
         i_mat = ~matrix  # get original position
-        k = 2.4142135623765633  # y of drawCurve helper point
+        k = 2.4142135623765633  # y of draw_curve helper point
 
         points = []  # stores edges
         for i in range(1, cnt):
@@ -3083,14 +3084,14 @@ class Shape(object):
         cnt = len(points)
         i = 0
         while i + 2 < cnt:
-            self.drawCurve(points[i], points[i + 1], points[i + 2])
+            self.draw_curve(points[i], points[i + 1], points[i + 2])
             i += 2
         return p2
 
     # ==============================================================================
-    # Shape.insertText
+    # Shape.insert_text
     # ==============================================================================
-    def insertText(
+    def insert_text(
         self,
         point: point_like,
         buffer: typing.Union[str, list],
@@ -3134,7 +3135,7 @@ class Shape(object):
         if fname.startswith("/"):
             fname = fname[1:]
 
-        xref = self.page.insertFont(
+        xref = self.page.insert_font(
             fontname=fname, fontfile=fontfile, encoding=encoding, set_simple=set_simple
         )
         fontinfo = CheckFontInfo(self.doc, xref)
@@ -3153,7 +3154,7 @@ class Shape(object):
             lheight = fontsize * (ascender - descender)
 
         if maxcode > 255:
-            glyphs = self.doc.getCharWidths(xref, maxcode + 1)
+            glyphs = self.doc.get_char_widths(xref, maxcode + 1)
         else:
             glyphs = fontdict["glyphs"]
 
@@ -3269,9 +3270,9 @@ class Shape(object):
         return nlines
 
     # ==============================================================================
-    # Shape.insertTextbox
+    # Shape.insert_textbox
     # ==============================================================================
-    def insertTextbox(
+    def insert_textbox(
         self,
         rect: rect_like,
         buffer: typing.Union[str, list],
@@ -3358,7 +3359,7 @@ class Shape(object):
         if fname.startswith("/"):
             fname = fname[1:]
 
-        xref = self.page.insertFont(
+        xref = self.page.insert_font(
             fontname=fname, fontfile=fontfile, encoding=encoding, set_simple=set_simple
         )
         fontinfo = CheckFontInfo(self.doc, xref)
@@ -3392,7 +3393,7 @@ class Shape(object):
 
         t0 = t0.splitlines()
 
-        glyphs = self.doc.getCharWidths(xref, maxcode + 1)
+        glyphs = self.doc.get_char_widths(xref, maxcode + 1)
         if simple and bfname not in ("Symbol", "ZapfDingbats"):
             tj_glyphs = None
         else:
@@ -3682,10 +3683,25 @@ class Shape(object):
 
         self.lastPoint = None  # clean up ...
         self.rect = None  #
-        self.draw_cont = ""  # for possible ...
+        self.draw_cont = ""  # for potential ...
         self.text_cont = ""  # ...
         self.totalcont = ""  # re-use
         return
+
+    # define deprecated aliases ------------------------------------------
+    drawBezier = draw_bezier
+    drawCircle = draw_circle
+    drawCurve = draw_curve
+    drawLine = draw_line
+    drawOval = draw_oval
+    drawPolyline = draw_polyline
+    drawQuad = draw_quad
+    drawRect = draw_rect
+    drawSector = draw_sector
+    drawSquiggle = draw_squiggle
+    drawZigzag = draw_zigzag
+    insertText = insert_text
+    insertTextbox = insert_textbox
 
 
 def apply_redactions(page: Page, images: int = 2) -> bool:
@@ -3701,7 +3717,7 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
         """Calculate minimal sub-rectangle for the overlay text.
 
         Notes:
-            Because 'insertTextbox' supports no vertical text centering,
+            Because 'insert_textbox' supports no vertical text centering,
             we calculate an approximate number of lines here and return a
             sub-rect with smaller height, which should still be sufficient.
         Args:
@@ -3731,7 +3747,7 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
 
     CheckParent(page)
     doc = page.parent
-    if doc.isEncrypted or doc.isClosed:
+    if doc.is_encrypted or doc.is_closed:
         raise ValueError("document closed or encrypted")
     if not doc.is_pdf:
         raise ValueError("not a PDF")
@@ -3748,12 +3764,12 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
         raise ValueError("Error applying redactions.")
 
     # now write replacement text in old redact rectangles
-    shape = page.newShape()
+    shape = page.new_shape()
     for redact in redact_annots:
         annot_rect = redact["rect"]
         fill = redact["fill"]
         if fill:
-            shape.drawRect(annot_rect)  # colorize the rect background
+            shape.draw_rect(annot_rect)  # colorize the rect background
             shape.finish(fill=fill, color=fill)
         if "text" in redact.keys():  # if we also have text
             trect = center_rect(  # try finding vertical centered sub-rect
@@ -3762,7 +3778,7 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
             fsize = redact["fontsize"]  # start with stored fontsize
             rc = -1
             while rc < 0 and fsize >= 4:  # while not enough room
-                rc = shape.insertTextbox(  # (re-) try insertion
+                rc = shape.insert_textbox(  # (re-) try insertion
                     trect,
                     redact["text"],
                     fontname=redact["fontname"],
@@ -3776,7 +3792,7 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
 
 
 # ------------------------------------------------------------------------------
-# Remove potentially sensitive data from a PDF. Corresponds to the Adobe
+# Remove potentially sensitive data from a PDF. Similar to the Adobe
 # Acrobat 'sanitize' function
 # ------------------------------------------------------------------------------
 def scrub(
@@ -3846,7 +3862,7 @@ def scrub(
 
     if not doc.is_pdf:  # only works for PDF
         raise ValueError("not a PDF")
-    if doc.isEncrypted or doc.isClosed:
+    if doc.is_encrypted or doc.is_closed:
         raise ValueError("closed or encrypted doc")
 
     if clean_pages is False:
@@ -3864,7 +3880,7 @@ def scrub(
                 widget.update()
 
         if remove_links:
-            links = page.getLinks()  # list of all links on page
+            links = page.get_links()  # list of all links on page
             for link in links:  # remove all links
                 page.deleteLink(link)
 
@@ -3901,8 +3917,8 @@ def scrub(
     # pages are scrubbed, now perform document-wide scrubbing
     # remove embedded files
     if embedded_files:
-        for name in doc.embeddedFileNames():
-            doc.embeddedFileDel(name)
+        for name in doc.embfile_names():
+            doc.embfile_del(name)
 
     if xml_metadata:
         doc.del_xml_metadata()
@@ -4362,7 +4378,7 @@ def get_page_numbers(doc, label, only_one=False):
     labels = doc._get_page_labels()
     if labels == []:
         return numbers
-    for i in range(doc.pageCount):
+    for i in range(doc.page_count):
         plabel = get_label_pno(i, labels)
         if plabel == label:
             numbers.append(i)
@@ -4497,11 +4513,11 @@ def set_page_labels(doc, labels):
 
 def has_links(doc: Document) -> bool:
     """Check whether there are links on any page."""
-    if doc.isClosed:
+    if doc.is_closed:
         raise ValueError("document closed")
     if not doc.is_pdf:
         raise ValueError("not a PDF")
-    for i in range(doc.pageCount):
+    for i in range(doc.page_count):
         for item in doc.page_annot_xrefs(i):
             if item[1] == PDF_ANNOT_LINK:
                 return True
@@ -4510,12 +4526,465 @@ def has_links(doc: Document) -> bool:
 
 def has_annots(doc: Document) -> bool:
     """Check whether there are annotations on any page."""
-    if doc.isClosed:
+    if doc.is_closed:
         raise ValueError("document closed")
     if not doc.is_pdf:
         raise ValueError("not a PDF")
-    for i in range(doc.pageCount):
+    for i in range(doc.page_count):
         for item in doc.page_annot_xrefs(i):
             if not (item[1] == PDF_ANNOT_LINK or item[1] == PDF_ANNOT_WIDGET):
                 return True
     return False
+
+
+# Building font subsets using fontTools ----------------------------------
+"""
+@created: 2021-01-28
+
+@author: @cuteufo (Github User), Jorj McKie
+
+Font Subsetting
+----------------
+This script walks through a PDF and builds subsets for used fonts.
+It has been derived from the PyMuPDF font replacement scripts, see here:
+https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/font-replacement.
+
+Approach and features
+---------------------
+
+* Determine the fonts used by every page. Select those
+  
+    - that are embedded and not already subset fonts
+    - for which package fontTools (https://pypi.org/project/fonttools/) can
+      build subsets (OTF, TTF, WOFF).
+
+* Per each piece of text, collect the characters used by font.
+
+* After one time through the PDF pages, a subset of each font is created by
+  using the fontTools package.
+
+* Iterate through the PDF's pages again and rewrite each piece of text for
+  which a subset font has been created.
+
+* Original text color is kept.
+
+* Original text position is kept as much as possible. Detail character
+  position changes may however happen, where individual spacing has been used.
+
+* Using fontTools, subsetting is possible only for OTF, TTF and WOFF type
+  fonts - others are ignored.
+
+Missing Features, Limitations
+-----------------------------
+* Text in annotations is **not handled**.
+* Running this script will always make rewritten text visible, because it will
+  be inserted after other page content (images, drawings, etc.) has been drawn.
+  This is inevitable and may prohibit using it.
+
+
+Dependencies
+------------
+PyMuPDF v1.18.7
+fontTools
+
+Notes
+------
+Depending on whether subsettable fonts are found at all, the PDF should become
+smaller. To benefit from this effect, save to a new file using save options
+'garbage=3' or higher and 'deflate=True'.
+
+License
+-------
+GNU GPL 3.x (this script)
+GNU AFFERO GPL 3.0 (MuPDF components)
+MIT license (fontTools)
+
+Copyright
+---------
+(c) 2021 @cuteufo, Jorj McKie.
+
+Usage
+-----
+This should happen mmediately before saving the document. So a typical use case
+would look like this:
+
+    doc.subset_fonts()
+    doc.save(..., garbage=3, deflate=True)
+
+As the font subsetter of fontTools is invoked, you may see errors and warnings
+appear on sys.stderr. These can safely be ignored.
+For every font successfully subsetted an information message is issued.
+"""
+
+
+def subset_fonts(indoc: Document):
+
+    # Contains sets of unicodes in use by font -  "fontname": unicode-list
+    font_subsets = {}
+
+    # Contains the binary buffers of each replacement font -  "font_xref": buffer
+    font_buffers = {}
+
+    # Maps a fontname to a font xref -  "fontname": xref
+    new_fontnames = {}
+
+    def cont_clean(page, fontrefs):
+        """Remove text written with one of the fonts to replace.
+
+        Args:
+            page: the page
+            fontrefs: dict of contents stream xrefs. Each xref key has a list of
+                ref names looking like b"/refname ".
+        """
+
+        def remove_font(fontrefs, lines):
+            """This inline function removes references to fonts in a /Contents stream.
+
+            Args:
+                fontrefs: a list of bytes objects looking like b"/fontref ".
+                lines: a list of the lines of the /Contents.
+            Returns:
+                (bool, lines), where the bool is True if we have changed any of
+                the lines.
+            """
+            changed = False
+            count = len(lines)
+            for ref in fontrefs:
+                found = False  # switch: processing our font
+                for i in range(count):
+                    if lines[i] == b"ET":  # end text object
+                        found = False  # no longer in found mode
+                        continue
+                    if lines[i].endswith(b" Tf"):  # font invoker command
+                        if lines[i].startswith(ref):  # our font?
+                            found = True  # switch on
+                            lines[i] = b""  # remove line
+                            changed = True  # tell we have changed
+                            continue  # next line
+                        else:  # else not our font
+                            found = False  # switch off
+                            continue  # next line
+                    if found == True and (
+                        lines[i].endswith(
+                            (
+                                b"TJ",
+                                b"Tj",
+                                b"TL",
+                                b"Tc",
+                                b"Td",
+                                b"Tm",
+                                b"T*",
+                                b"Ts",
+                                b"Tw",
+                                b"Tz",
+                                b"'",
+                                b'"',
+                            )
+                        )
+                    ):  # write command for our font?
+                        lines[i] = b""  # remove it
+                        changed = True  # tell we have changed
+                        continue
+            return changed, lines
+
+        doc = page.parent
+        for xref in fontrefs.keys():
+            xref0 = 0 + xref
+            if xref0 == 0:  # the page contents
+                xref0 = page.get_contents()[0]  # there is only one /Contents obj now
+            cont = doc.xref_stream(xref0)
+            cont_lines = cont.splitlines()
+            changed, cont_lines = remove_font(fontrefs[xref], cont_lines)
+            if changed:
+                cont = b"\n".join(cont_lines) + b"\n"
+                doc.update_stream(xref0, cont)  # replace command source
+
+    def build_subset(buffer, unc_set):
+        """Build font subsets using fontTools.
+
+        Args:
+            buffer: (bytes) the font given as a binary buffer.
+            unc_set: (set) required unicodes.
+        Returns:
+            Either None if subsetting is unsuccessful or the subset font buffer.
+        """
+        try:
+            import fontTools.subset as fts
+        except ImportError:
+            print("This method requires fontTools to be installed.")
+            raise
+
+        unc_list = list(unc_set)
+        unc_list.sort()
+        unc_file = open("uncfile.txt", "w")  # store unicodes as text file
+        for unc in unc_list:
+            unc_file.write("%04x\n" % unc)
+        unc_file.close()
+        fontfile = open("oldfont.ttf", "wb")  # store fontbuffer as a file
+        fontfile.write(buffer)
+        fontfile.close()
+        try:
+            os.remove("newfont.ttf")  # remove old file
+        except:
+            pass
+        try:  # invoke fontTools subsetter
+            fts.main(
+                [
+                    "oldfont.ttf",
+                    "--unicodes-file=uncfile.txt",
+                    "--output-file=newfont.ttf",
+                    "--retain-gids",
+                    "--recalc-bounds",
+                    "--passthrough-tables",
+                ]
+            )
+            fd = open("newfont.ttf", "rb")
+            new_buffer = fd.read()  # subset font
+            fd.close()
+        except:
+            new_buffer = None
+        try:
+            os.remove("uncfile.txt")
+            os.remove("oldfont.ttf")
+            os.remove("newfont.ttf")
+        except:
+            pass
+        return new_buffer
+
+    def clean_fontnames(page):
+        """Remove multiple references to one font.
+
+        When rebuilding the page text, dozens of font reference names '/Fnnn' may
+        be generated pointing to the same font.
+        This function removes these duplicates and thus reduces the size of the
+        /Resources object.
+        """
+        cont = bytearray(page.read_contents())  # read and concat all /Contents
+        font_xrefs = {}  # key: xref, value: set of font refs using it
+        for f in page.get_fonts():
+            xref = f[0]
+            name = f[4]  # font ref name, 'Fnnn'
+            names = font_xrefs.get(xref, set())
+            names.add(name)
+            font_xrefs[xref] = names
+        for xref in font_xrefs.keys():
+            names = list(font_xrefs[xref])
+            names.sort()  # read & sort font names for this xref
+            name0 = b"/" + names[0].encode() + b" "  # we will keep this font name
+            for name in names[1:]:
+                namex = b"/" + name.encode() + b" "
+                cont = cont.replace(namex, name0)
+        xref = page.get_contents()[0]  # xref of first /Contents
+        page.parent.update_stream(xref, cont)  # replace it with our result
+        page.set_contents(xref)  # tell PDF: this is the only /Contents object
+        page.clean_contents(sanitize=True)  # sanitize ensures cleaning /Resources
+
+    def tilted_span(page, wdir, span, font):
+        """Output a non-horizontal text span."""
+        cos, sin = wdir  # writing direction from the line
+        matrix = Matrix(cos, -sin, sin, cos, 0, 0)  # corresp. matrix
+        text = span["text"]  # text to write
+        bbox = Rect(span["bbox"])
+        fontsize = span["size"]
+        opa = 0.1 if fontsize > 100 else 1  # fake opacity for large fontsizes
+        tw = TextWriter(page.rect, opacity=opa, color=sRGB_to_pdf(span["color"]))
+        origin = Point(span["origin"])
+        if sin > 0:  # clockwise rotation
+            origin.y = bbox.y0
+        tw.append(origin, text, font=font, fontsize=fontsize)
+        tw.writeText(page, morph=(origin, matrix))
+
+    def get_page_fontrefs(page):
+        fontlist = page.get_fonts(full=True)
+        # Ref names for each font to replace.
+        # Each contents stream has a separate entry here: keyed by xref,
+        # 0 = page /Contents, otherwise xref of XObject
+        fontrefs = {}
+        for f in fontlist:
+            fontname = f[3]  # font name
+            ext = f[1]  # font file extension
+            if len(fontname) > 6 and fontname[6] == "+":
+                continue
+            if ext not in ("ttf", "otf", "woff", "woff2"):
+                continue
+            cont_xref = f[-1]  # xref of XObject, 0 if page /Contents
+            font_xref = f[0]
+            if fontname in new_fontnames.keys() and font_xref in font_buffers.keys():
+                # we replace this font!
+                refname = f[4]
+                refname = b"/" + refname.encode() + b" "
+                refs = fontrefs.get(cont_xref, [])
+                refs.append(refname)
+                fontrefs[cont_xref] = refs
+        return fontrefs  # return list of font reference names
+
+    def repl_fontnames(doc: Document):
+        def norm_name(name):
+            while "#" in name:
+                p = name.find("#")
+                c = int(name[p + 1 : p + 3], 16)
+                name = name.replace(name[p : p + 3], chr(c))
+            p = name.find("+") + 1
+            return name[p:]
+
+        def get_fontnames(doc, item):
+            """Return a list of fontnames.
+
+            There may be multiple alternatives e.g. for Type0 fonts.
+            """
+            subset = False
+            fontname = item[3]
+            idx = fontname.find("+") + 1
+            fontname = fontname[idx:]
+            if idx > 0:
+                subset = True
+            names = [fontname]
+            text = doc.xref_object(item[0])
+            font = ""
+            descendents = ""
+
+            for line in text.splitlines():
+                line = line.split()
+                if line[0] == "/BaseFont":
+                    font = norm_name(line[1][1:])
+                elif line[0] == "/DescendantFonts":
+                    descendents = " ".join(line[1:]).replace(" 0 R", " ")
+                    if descendents.startswith("["):
+                        descendents = descendents[1:-1]
+                    descendents = map(int, descendents.split())
+
+            if font and font not in names:
+                names.append(font)
+            if not descendents:
+                return subset, tuple(names)
+
+            # 'descendents' is a list of descendent font xrefs.
+            # Should be just one by the books.
+            for xref in descendents:
+                for line in doc.xref_object(xref).splitlines():
+                    line = line.split()
+                    if line[0] == "/BaseFont":
+                        font = norm_name(line[1][1:])
+                        if font not in names:
+                            names.append(font)
+            return subset, tuple(names)
+
+        for i in range(doc.page_count):
+            for f in doc.get_page_fonts(i, full=True):
+                font_xref = f[0]  # font xref
+                font_ext = f[1]  # font file extension
+                basename = f[3]  # font basename
+                if font_ext not in (
+                    "otf",  # supported by subsetting
+                    "ttf",
+                    "woff",
+                    "woff2",
+                ):
+                    continue
+                if len(basename) > 6 and basename[6] == "+":  # skip font subsets
+                    continue
+                _, fontname = get_fontnames(doc, f)
+                if font_xref not in font_buffers.keys():
+                    # store a new valid font buffer
+                    extr = doc.extract_font(font_xref)
+                    fontbuffer = extr[-1]
+                    _ = Font(fontbuffer=fontbuffer)
+                    font_buffers[font_xref] = fontbuffer
+                for _fontname in fontname:
+                    # all fontname alternatives point to font xref
+                    new_fontnames[_fontname[:33]] = font_xref
+        return None
+
+    repl_fontnames(indoc)  # populate font information
+    if not font_buffers:  # nothing to do
+        print("No fonts to subset.")
+        return
+
+    extr_flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+
+    # Phase 1
+    for page in indoc:
+        if [f[0] for f in page.get_fonts() if f[0] in font_buffers.keys()] == []:
+            continue
+        for block in page.get_text("dict", flags=extr_flags)["blocks"]:
+            for line in block["lines"]:
+                for span in line["spans"]:
+                    fontname = span["font"][:33]
+                    if fontname not in new_fontnames.keys():  # don't subset
+                        continue
+                    # replace non-utf8 by section symbol
+                    text = span["text"].replace(chr(0xFFFD), chr(0xB6))
+                    # extend collection of used unicodes
+                    subset = font_subsets.get(fontname, set())
+                    for c in text:
+                        subset.add(ord(c))  # add any new unicode values
+                    font_subsets[fontname] = subset  # store back extended set
+
+    # build the font subsets
+    for fontname in font_subsets.keys():
+        font_xref = new_fontnames[fontname]
+        old_buffer = font_buffers[font_xref]
+        new_buffer = build_subset(old_buffer, font_subsets[fontname])
+        if type(new_buffer) is bytes and new_buffer != font_buffers[font_xref]:
+            font_buffers[font_xref] = new_buffer
+            print("Subset built for '%s'." % fontname)
+        else:
+            del font_buffers[font_xref]  # failure of subset, remove this fontname from
+            del new_fontnames[fontname]  # font_buffers and new_fontnames
+        del old_buffer
+
+    # Phase 2
+    for page in indoc:
+        # clean contents streams of the page and any XObjects.
+        page.clean_contents(sanitize=True)
+        # extract text again
+        fontrefs = get_page_fontrefs(page)
+        if fontrefs == {}:  # page has no fonts to replace
+            continue
+        blocks = page.get_text("dict", flags=extr_flags)["blocks"]
+        cont_clean(page, fontrefs)  # remove text using fonts to be replaced
+        textwriters = {}  # contains one text writer per detected text color
+
+        for block in blocks:
+            for line in block["lines"]:
+                wdir = list(line["dir"])  # writing direction
+                for span in line["spans"]:
+                    fontname = span["font"][:33]
+                    if fontname not in new_fontnames.keys():  # do not replace
+                        continue
+                    font_xref = new_fontnames[fontname]
+                    if font_buffers[font_xref] is None:
+                        # do not replace this font due to failure of fontTools
+                        continue
+                    font = Font(fontbuffer=font_buffers[font_xref])
+                    text = span["text"].replace(chr(0xFFFD), chr(0xB6))
+                    # guard against non-utf8 characters
+                    textb = text.encode("utf8", errors="backslashreplace")
+                    text = textb.decode("utf8", errors="backslashreplace")
+                    span["text"] = text
+                    if wdir != [1, 0]:  # special treatment for tilted text
+                        tilted_span(page, wdir, span, font)
+                        continue
+                    color = span["color"]  # make or reuse textwriter for the color
+                    if color in textwriters.keys():  # already have a textwriter?
+                        tw = textwriters[color]  # re-use it
+                    else:  # make new
+                        tw = TextWriter(page.rect)  # make text writer
+                        textwriters[color] = tw  # store it for later use
+                    try:
+                        tw.append(
+                            span["origin"],
+                            text,
+                            font=font,
+                            fontsize=span["size"],
+                        )
+                    except Exception as err:
+                        print(f"page {page.number} exception: {err}")
+
+        # now write all text stored in the list of text writers
+        for color in textwriters.keys():  # output the stored text per color
+            tw = textwriters[color]
+            outcolor = sRGB_to_pdf(color)  # recover (r,g,b)
+            tw.write_text(page, color=outcolor)
+
+        clean_fontnames(page)

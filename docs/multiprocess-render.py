@@ -22,7 +22,7 @@ mytime = time.clock if str is bytes else time.perf_counter
 
 
 def render_page(vector):
-    """ Render a page range of a document.
+    """Render a page range of a document.
 
     Notes:
         The PyMuPDF document cannot be part of the argument, because that
@@ -54,8 +54,8 @@ def render_page(vector):
 
     for i in range(seg_from, seg_to):  # work through our page segment
         page = doc[i]
-        # page.getText("rawdict")  # use any page-related type of work here, eg
-        pix = page.getPixmap(alpha=False, matrix=mat)
+        # page.get_text("rawdict")  # use any page-related type of work here, eg
+        pix = page.get_pixmap(alpha=False, matrix=mat)
         # store away the result somewhere ...
         # pix.writePNG("p-%i.png" % i)
     print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
@@ -76,4 +76,3 @@ if __name__ == "__main__":
 
     t1 = mytime()  # stop the timer
     print("Total time %g seconds" % round(t1 - t0, 2))
-

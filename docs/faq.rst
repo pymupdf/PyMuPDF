@@ -28,7 +28,7 @@ The script works as a command line tool which expects the filename being supplie
     fname = sys.argv[1]  # get filename from command line
     doc = fitz.open(fname)  # open document
     for page in doc:  # iterate through the pages
-        pix = page.getPixmap(alpha = False)  # render page to an image
+        pix = page.get_pixmap(alpha = False)  # render page to an image
         pix.writePNG("page-%i.png" % page.number)  # store image as a PNG
 
 The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 72 dpi in x and y dimension and have no transparency. You can change all that -- for how to do this, read the next sections.
@@ -38,18 +38,18 @@ The script directory will now contain PNG image files named *page-0.png*, *page-
 How to Increase :index:`Image Resolution <pair: image; resolution>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The image of a document page is represented by a :ref:`Pixmap`, and the simplest way to create a pixmap is via method :meth:`Page.getPixmap`.
+The image of a document page is represented by a :ref:`Pixmap`, and the simplest way to create a pixmap is via method :meth:`Page.get_pixmap`.
 
 This method has many options for influencing the result. The most important among them is the :ref:`Matrix`, which lets you :index:`zoom`, rotate, distort or mirror the outcome.
 
-:meth:`Page.getPixmap` by default will use the :ref:`Identity` matrix, which does nothing.
+:meth:`Page.get_pixmap` by default will use the :ref:`Identity` matrix, which does nothing.
 
 In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 to each dimension, which will generate an image with a four times better resolution for us (and also about 4 times the size)::
 
     zoom_x = 2.0  # horizontal zoom
     zomm_y = 2.0  # vertical zoom
     mat = fitz.Matrix(zoom_x, zomm_y)  # zoom factor 2 in each dimension
-    pix = page.getPixmap(matrix = mat)  # use 'mat' instead of the identity matrix
+    pix = page.get_pixmap(matrix=mat)  # use 'mat' instead of the identity matrix
 
 
 ----------
@@ -62,16 +62,16 @@ Let's assume your GUI window has room to display a full document page, but you n
 
 To achieve this, we define a rectangle equal to the area we want to appear in the GUI and call it "clip". One way of constructing rectangles in PyMuPDF is by providing two diagonally opposite corners, which is what we are doing here.
 
-.. image:: images/img-clip.jpg
+.. image:: images/img-clip.*
    :scale: 80
 
 ::
 
     mat = fitz.Matrix(2, 2)  # zoom factor 2 in each direction
     rect = page.rect  # the page rectangle
-    mp = (rect.tl + rect.br) * 0.5  # its middle point, becomes top-left of clip
+    mp = (rect.tl + rect.br) / 2  # its middle point, becomes top-left of clip
     clip = fitz.Rect(mp, rect.br)  # the area we want
-    pix = page.getPixmap(matrix=mat, clip=clip)
+    pix = page.get_pixmap(matrix=mat, clip=clip)
 
 In the above we construct *clip* by specifying two diagonally opposite points: the middle point *mp* of the page rectangle, and its bottom right, *rect.br*.
 
@@ -81,15 +81,15 @@ How to Create or Suppress Annotation Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Normally, the pixmap of a page also shows the page's annotations. Occasionally, this may not be desirable.
 
-To suppress the annotation images on a rendered page, just specify *annots=False* in :meth:`Page.getPixmap`.
+To suppress the annotation images on a rendered page, just specify *annots=False* in :meth:`Page.get_pixmap`.
 
-You can also render annotations separately: :ref:`Annot` objects have their own :meth:`Annot.getPixmap` method. The resulting pixmap has the same dimensions as the annotation rectangle.
+You can also render annotations separately: :ref:`Annot` objects have their own :meth:`Annot.get_pixmap` method. The resulting pixmap has the same dimensions as the annotation rectangle.
 
 ----------
 
 .. index::
    triple: extract;image;non-PDF
-   pair: convertToPDF;examples
+   pair: convert_to_pdf;examples
 
 How to Extract Images: Non-PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,13 +100,13 @@ If you want recreate the original image in file form or as a memory area, you ha
 
 1. Convert your document to a PDF, and then use one of the PDF-only extraction methods. This snippet will convert a document to PDF::
 
-    >>> pdfbytes = doc.convertToPDF()  # this a bytes object
+    >>> pdfbytes = doc.convert_to_pdf()  # this a bytes object
     >>> pdf = fitz.open("pdf", pdfbytes)  # open it as a PDF document
     >>> # now use 'pdf' like any PDF document
 
-2. Use :meth:`Page.getText` with the "dict" parameter. This will extract all text and images shown on the page, formatted as a Python dictionary. Every image will occur in an image block, containing meta information and the binary image data. For details of the dictionary's structure, see :ref:`TextPage`. The method works equally well for PDF files. This creates a list of all images shown on a page::
+2. Use :meth:`Page.get_text` with the "dict" parameter. This will extract all text and images shown on the page, formatted as a Python dictionary. Every image will occur in an image block, containing meta information and the binary image data. For details of the dictionary's structure, see :ref:`TextPage`. The method works equally well for PDF files. This creates a list of all images shown on a page::
 
-    >>> d = page.getText("dict")
+    >>> d = page.get_text("dict")
     >>> blocks = d["blocks"]
     >>> imgblocks = [b for b in blocks if b["type"] == 1]
 
@@ -118,7 +118,7 @@ Each item if "imgblocks" is a dictionary which looks like this::
 
 .. index::
    triple: extract;image;PDF
-   pair: extractImage;examples
+   pair: extract_image;examples
 
 How to Extract Images: PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -127,23 +127,23 @@ Like any other "object" in a PDF, images are identified by a cross reference num
 
 1. **Create** a :ref:`Pixmap` of the image with instruction *pix = fitz.Pixmap(doc, xref)*. This method is **very** fast (single digit micro-seconds). The pixmap's properties (width, height, ...) will reflect the ones of the image. In this case there is no way to tell which image format the embedded original has.
 
-2. **Extract** the image with *img = doc.extractImage(xref)*. This is a dictionary containing the binary image data as *img["image"]*. A number of meta data are also provided -- mostly the same as you would find in the pixmap of the image. The major difference is string *img["ext"]*, which specifies the image format: apart from "png", strings like "jpeg", "bmp", "tiff", etc. can also occur. Use this string as the file extension if you want to store to disk. The execution speed of this method should be compared to the combined speed of the statements *pix = fitz.Pixmap(doc, xref);pix.getPNGData()*. If the embedded image is in PNG format, the speed of :meth:`Document.extractImage` is about the same (and the binary image data are identical). Otherwise, this method is **thousands of times faster**, and the **image data is much smaller**.
+2. **Extract** the image with *img = doc.extract_image(xref)*. This is a dictionary containing the binary image data as *img["image"]*. A number of meta data are also provided -- mostly the same as you would find in the pixmap of the image. The major difference is string *img["ext"]*, which specifies the image format: apart from "png", strings like "jpeg", "bmp", "tiff", etc. can also occur. Use this string as the file extension if you want to store to disk. The execution speed of this method should be compared to the combined speed of the statements *pix = fitz.Pixmap(doc, xref);pix.getPNGData()*. If the embedded image is in PNG format, the speed of :meth:`Document.extract_image` is about the same (and the binary image data are identical). Otherwise, this method is **thousands of times faster**, and the **image data is much smaller**.
 
 The question remains: **"How do I know those 'xref' numbers of images?"**. There are two answers to this:
 
-a. **"Inspect the page objects:"** Loop through the items of :meth:`Page.getImageList`. It is a list of list, and its items look like *[xref, smask, ...]*, containing the :data:`xref` of an image. This :data:`xref` can then be used with one of the above methods. Use this method for **valid (undamaged)** documents. Be wary however, that the same image may be referenced multiple times (by different pages), so you might want to provide a mechanism avoiding multiple extracts.
-b. **"No need to know:"** Loop through the list of **all xrefs** of the document and perform a :meth:`Document.extractImage` for each one. If the returned dictionary is empty, then continue -- this :data:`xref` is no image. Use this method if the PDF is **damaged (unusable pages)**. Note that a PDF often contains "pseudo-images" ("stencil masks") with the special purpose of defining the transparency of some other image. You may want to provide logic to exclude those from extraction. Also have a look at the next section.
+a. **"Inspect the page objects:"** Loop through the items of :meth:`Page.get_images`. It is a list of list, and its items look like *[xref, smask, ...]*, containing the :data:`xref` of an image. This :data:`xref` can then be used with one of the above methods. Use this method for **valid (undamaged)** documents. Be wary however, that the same image may be referenced multiple times (by different pages), so you might want to provide a mechanism avoiding multiple extracts.
+b. **"No need to know:"** Loop through the list of **all xrefs** of the document and perform a :meth:`Document.extract_image` for each one. If the returned dictionary is empty, then continue -- this :data:`xref` is no image. Use this method if the PDF is **damaged (unusable pages)**. Note that a PDF often contains "pseudo-images" ("stencil masks") with the special purpose of defining the transparency of some other image. You may want to provide logic to exclude those from extraction. Also have a look at the next section.
 
 For both extraction approaches, there exist ready-to-use general purpose scripts:
 
 `extract-imga.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imga.py>`_ extracts images page by page:
 
-.. image:: images/img-extract-imga.jpg
+.. image:: images/img-extract-imga.*
    :scale: 80
 
 and `extract-imgb.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imgb.py>`_ extracts images by xref table:
 
-.. image:: images/img-extract-imgb.jpg
+.. image:: images/img-extract-imgb.*
    :scale: 80
 
 ----------
@@ -154,14 +154,14 @@ Some images in PDFs are accompanied by **stencil masks**. In their simplest form
 
 Whether an image does have such a stencil mask can be recognized in one of two ways in PyMuPDF:
 
-1. An item of :meth:`Document.getPageImageList` has the general format *[xref, smask, ...]*, where *xref* is the image's :data:`xref` and *smask*, if positive, is the :data:`xref` of a stencil mask.
-2. The (dictionary) results of :meth:`Document.extractImage` have a key *"smask"*, which also contains any stencil mask's :data:`xref` if positive.
+1. An item of :meth:`Document.get_page_images` has the general format *[xref, smask, ...]*, where *xref* is the image's :data:`xref` and *smask*, if positive, is the :data:`xref` of a stencil mask.
+2. The (dictionary) results of :meth:`Document.extract_image` have a key *"smask"*, which also contains any stencil mask's :data:`xref` if positive.
 
 If *smask == 0* then the image encountered via :data:`xref` can be processed as it is.
 
 To recover the original image using PyMuPDF, the procedure depicted as follows must be executed:
 
-.. image:: images/img-stencil.jpg
+.. image:: images/img-stencil.*
    :scale: 60
 
 >>> pix1 = fitz.Pixmap(doc, xref)    # (1) pixmap of image w/o alpha
@@ -178,8 +178,8 @@ The scripts `extract-imga.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blo
 .. index::
    triple: picture;embed;PDF
    pair: show_pdf_page;examples
-   pair: insertImage;examples
-   pair: embeddedFileAdd;examples
+   pair: insert_image;examples
+   pair: embfile_add;examples
    pair: addFileAnnot;examples
 
 How to Make one PDF of all your Pictures (or Files)
@@ -200,7 +200,7 @@ The first one converts each image to a PDF page with the same dimensions. The re
  for i, f in enumerate(imglist):
      img = fitz.open(os.path.join(imgdir, f))  # open pic as document
      rect = img[0].rect  # pic dimension
-     pdfbytes = img.convertToPDF()  # make a PDF stream
+     pdfbytes = img.convert_to_pdf()  # make a PDF stream
      img.close()  # no longer needed
      imgPDF = fitz.open("pdf", pdfbytes)  # open stream as PDF
      page = doc.new_page(width = rect.width,  # new page with ...
@@ -215,7 +215,7 @@ This will generate a PDF only marginally larger than the combined pictures' size
 
 The above script needed about 1 minute on my machine for 149 pictures with a total size of 514 MB (and about the same resulting PDF size).
 
-.. image:: images/img-import-progress.jpg
+.. image:: images/img-import-progress.*
    :scale: 80
 
 Look `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-inserted.py>`_ for a more complete source code: it offers a directory selection dialog and skips unsupported files and non-file entries.
@@ -237,7 +237,7 @@ The second script **embeds** arbitrary files -- not only images. The resulting P
 
  for i, f in enumerate(imglist):
      img = open(os.path.join(imgdir,f), "rb").read()  # make pic stream
-     doc.embeddedFileAdd(img, f, filename=f,  # and embed it
+     doc.embfile_add(img, f, filename=f,  # and embed it
                          ufilename=f, desc=f)
      psg.EasyProgressMeter("Embedding Files",  # show our progress
          i+1, imgcount)
@@ -246,7 +246,7 @@ The second script **embeds** arbitrary files -- not only images. The resulting P
 
  doc.save("all-my-pics-embedded.pdf")
 
-.. image:: images/img-embed-progress.jpg
+.. image:: images/img-embed-progress.*
    :scale: 80
 
 This is by far the fastest method, and it also produces the smallest possible output file size. The above pictures needed 20 seconds on my machine and yielded a PDF size of 510 MB. Look `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-embedded.py>`_ for a more complete source code: it offers a directory selection dialog and skips non-file entries.
@@ -257,7 +257,7 @@ A third way to achieve this task is **attaching files** via page annotations see
 
 This has a similar performance as the previous script and it also produces a similar file size. It will produce PDF pages which show a 'FileAttachment' icon for each attached file.
 
-.. image:: images/img-attach-result.jpg
+.. image:: images/img-attach-result.*
 
 .. note:: Both, the **embed** and the **attach** methods can be used for **arbitrary files** -- not just images.
 
@@ -269,15 +269,15 @@ This has a similar performance as the previous script and it also produces a sim
    triple: vector;image;SVG
    pair: show_pdf_page;examples
    pair: insertImage;examples
-   pair: embeddedFileAdd;examples
+   pair: embfile_add;examples
 
 How to Create Vector Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The usual way to create an image from a document page is :meth:`Page.getPixmap`. A pixmap represents a raster image, so you must decide on its quality (i.e. resolution) at creation time. It cannot be changed later.
+The usual way to create an image from a document page is :meth:`Page.get_pixmap`. A pixmap represents a raster image, so you must decide on its quality (i.e. resolution) at creation time. It cannot be changed later.
 
 PyMuPDF also offers a way to create a **vector image** of a page in SVG format (scalable vector graphics, defined in XML syntax). SVG images remain precise across zooming levels (of course with the exception of any raster graphic elements embedded therein).
 
-Instruction *svg = page.getSVGimage(matrix = fitz.Identity)* delivers a UTF-8 string *svg* which can be stored with extension ".svg".
+Instruction *svg = page.getSVGimage(matrix=fitz.Identity)* delivers a UTF-8 string *svg* which can be stored with extension ".svg".
 
 ----------
 
@@ -521,7 +521,7 @@ multi-page image support       no                                    yes
 ease of use                    simple, intuitive;                    simple, intuitive;
                                performance considerations apply      **usable for all document types**
                                for multiple insertions of same image (including images!) after conversion to
-                                                                     PDF via :meth:`Document.convertToPDF`
+                                                                     PDF via :meth:`Document.convert_to_pdf`
 ============================== ===================================== =========================================
 
 Basic code pattern for :meth:`Page.insertImage`. **Exactly one** of the parameters **filename / stream / pixmap** must be given::
@@ -567,7 +567,7 @@ The script works as a command line tool which expects the document filename supp
     doc = fitz.open(fname)  # open document
     out = open(fname + ".txt", "wb")  # open text output
     for page in doc:  # iterate the document pages
-        text = page.getText().encode("utf8")  # get plain text (is in UTF-8)
+        text = page.get_text().encode("utf8")  # get plain text (is in UTF-8)
         out.write(text)  # write text of page
         out.write(bytes((12,)))  # write page delimiter (form feed 0x0C)
     out.close()
@@ -577,8 +577,8 @@ The output will be plain text as it is coded in the document. No effort is made 
 You have many options to cure this -- see chapter :ref:`Appendix2`. Among them are:
 
 1. Extract text in HTML format and store it as a HTML document, so it can be viewed in any browser.
-2. Extract text as a list of text blocks via *Page.getText("blocks")*. Each item of this list contains position information for its text, which can be used to establish a convenient reading order.
-3. Extract a list of single words via *Page.getText("words")*. Its items are words with position information. Use it to determine text contained in a given rectangle -- see next section.
+2. Extract text as a list of text blocks via *Page.get_text("blocks")*. Each item of this list contains position information for its text, which can be used to establish a convenient reading order.
+3. Extract a list of single words via *Page.get_text("words")*. Its items are words with position information. Use it to determine text contained in a given rectangle -- see next section.
 
 See the following two section for examples and further explanations.
 
@@ -636,11 +636,11 @@ In those cases, the following function will help composing the original words of
         """ Word recovery.
 
         Notes:
-            Method 'getTextWords()' does not try to recover words, if their single
+            Method 'get_textWords()' does not try to recover words, if their single
             letters do not appear in correct lexical order. This function steps in
             here and creates a new list of recovered words.
         Args:
-            words: list of words as created by 'getTextWords()'
+            words: list of words as created by 'get_textWords()'
             rect: rectangle to consider (usually the full page)
         Returns:
             List of recovered words. Same format as 'getTextWords', but left out
@@ -724,7 +724,7 @@ The wxPython GUI script `wxTableExtract.py <https://github.com/pymupdf/PyMuPDF-U
 
 How to Mark Extracted Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-There is a standard search function to search for arbitrary text on a page: :meth:`Page.searchFor`. It returns a list of :ref:`Rect` objects which surround a found occurrence. These rectangles can for example be used to automatically insert annotations which visibly mark the found text.
+There is a standard search function to search for arbitrary text on a page: :meth:`Page.search_for`. It returns a list of :ref:`Rect` objects which surround a found occurrence. These rectangles can for example be used to automatically insert annotations which visibly mark the found text.
 
 This method has advantages and drawbacks. Pros are
 
@@ -767,7 +767,7 @@ But you also have other options::
  if new_doc:
      doc.save("marked-" + doc.name)
 
-This script uses :meth:`Page.getText("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Therefore the words in this lists do not contain these characters. Further remarks:
+This script uses :meth:`Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Therefore the words in this lists do not contain these characters. Further remarks:
 
 * If found, the **complete word containing the string** is marked (underlined) -- not only the search string.
 * The search string may **not contain spaces** or other white space.
@@ -776,7 +776,7 @@ This script uses :meth:`Page.getText("words")` to look for a string, handed in v
 * You can use **anything** to mark the word: 'Underline', 'Highlight', 'StrikeThrough' or 'Square' annotations, etc.
 * Here is an example snippet of a page of this manual, where "MuPDF" has been used as the search string. Note that all strings **containing "MuPDF"** have been completely underlined (not just the search string).
 
-.. image:: images/img-markedpdf.jpg
+.. image:: images/img-markedpdf.*
    :scale: 60
 
 ----------------------------------------------
@@ -799,7 +799,7 @@ This script searches for text and marks it::
 
     # get list of text locations
     # we use "quads", not rectangles because text may be tilted!
-    rl = page.searchFor(t, quads = True)
+    rl = page.search_for(t, quads = True)
 
     # mark all found quads with one annotation
     page.addSquigglyAnnot(rl)
@@ -809,7 +809,7 @@ This script searches for text and marks it::
 
 The result looks like this:
 
-.. image:: images/img-textmarker.jpg
+.. image:: images/img-textmarker.*
    :scale: 80
 
 ----------------------------------------------
@@ -818,7 +818,7 @@ How to Mark Non-horizontal Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The previous section already shows an example for marking non-horizontal text detected by text **searching**.
 
-But text **extraction** with the "dict" option of :meth:`Page.getText` may also return text with a non-zero angle to the x-axis. This is reflected by the value of the ``"dir"`` key of the line dictionary: it is the tuple ``(cosine, sine)`` of that angle.
+But text **extraction** with the "dict" option of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is reflected by the value of the ``"dir"`` key of the line dictionary: it is the tuple ``(cosine, sine)`` of that angle.
 
 Currently, all bboxes returned by the method's are rectangles only -- no quads. So we can mark the span text (correctly) only, if the **angle is 0, 90, 180 or 270 degrees.**
 
@@ -856,7 +856,7 @@ To analyze the characteristics of text in a PDF use this elementary script as a 
 
 Here is the PDF page and the script output:
 
-.. image:: images/img-pdftext.jpg
+.. image:: images/img-pdftext.*
    :scale: 80
 
 -----------------------------------------
@@ -877,7 +877,7 @@ PyMuPDF provides ways to insert text on new or existing PDF pages with the follo
 
 All of the above is provided by three basic :ref:`Page`, resp. :ref:`Shape` methods:
 
-* :meth:`Page.insertFont` -- install a font for the page for later reference. The result is reflected in the output of :meth:`Document.getPageFontList`. The font can be:
+* :meth:`Page.insertFont` -- install a font for the page for later reference. The result is reflected in the output of :meth:`Document.get_page_fonts`. The font can be:
 
     - provided as a file,
     - already present somewhere in **this or another** PDF, or
@@ -938,10 +938,10 @@ Here is another example. It inserts 4 text strings using the four different rota
     shape = page.newShape()
 
     # draw the insertion points as red, filled dots
-    shape.drawCircle(p1,1)
-    shape.drawCircle(p2,1)
-    shape.drawCircle(p3,1)
-    shape.drawCircle(p4,1)
+    shape.draw_circle(p1,1)
+    shape.draw_circle(p2,1)
+    shape.draw_circle(p3,1)
+    shape.draw_circle(p4,1)
     shape.finish(width=0.3, color=red, fill=red)
 
     # insert the text strings
@@ -956,7 +956,7 @@ Here is another example. It inserts 4 text strings using the four different rota
 
 This is the result:
 
-.. image:: images/img-inserttext.jpg
+.. image:: images/img-inserttext.*
    :scale: 33
 
 
@@ -986,10 +986,10 @@ This script fills 4 different rectangles with text, each time choosing a differe
     the rectangles surrounding it for demonstration.
     """
     shape = page.newShape()  # create Shape
-    shape.drawRect(r1)  # draw rectangles
-    shape.drawRect(r2)  # giving them
-    shape.drawRect(r3)  # a yellow background
-    shape.drawRect(r4)  # and a red border
+    shape.draw_rect(r1)  # draw rectangles
+    shape.draw_rect(r2)  # giving them
+    shape.draw_rect(r3)  # a yellow background
+    shape.draw_rect(r4)  # and a red border
     shape.finish(width = 0.3, color = red, fill = gold)
     # Now insert text in the rectangles. Font "Helvetica" will be used
     # by default. A return code rc < 0 indicates insufficient space (not checked here).
@@ -1002,7 +1002,7 @@ This script fills 4 different rectangles with text, each time choosing a differe
 
 Several default values were used above: font "Helvetica", font size 11 and text alignment "left". The result will look like this:
 
-.. image:: images/img-textbox.jpg
+.. image:: images/img-textbox.*
    :scale: 50
 
 ------------------------------------------
@@ -1032,12 +1032,12 @@ If you change the fontname just slightly, you can also achieve an **encoding "mi
 
 The result:
 
-.. image:: images/img-encoding.jpg
+.. image:: images/img-encoding.*
    :scale: 50
 
 The snippet above indeed leads to three different copies of the Helvetica font in the PDF. Each copy is uniquely identified (and referenceable) by using the correct upper-lower case spelling of the reserved word "helv"::
 
-    for f in doc.getPageFontList(0): print(f)
+    for f in doc.get_page_fonts(0): print(f)
 
     [6, 'n/a', 'Type1', 'Helvetica', 'helv', 'WinAnsiEncoding']
     [7, 'n/a', 'Type1', 'Helvetica', 'HElv', 'WinAnsiEncoding']
@@ -1076,7 +1076,7 @@ As an overview for these capabilities, look at the following script that fills a
 
 This script should lead to the following output:
 
-.. image:: images/img-annots.jpg
+.. image:: images/img-annots.*
    :scale: 80
 
 ------------------------------
@@ -1118,7 +1118,7 @@ This script shows a couple of ways to deal with 'FreeText' annotations::
 
 The result looks like this:
 
-.. image:: images/img-freetext.jpg
+.. image:: images/img-freetext.*
    :scale: 80
 
 ------------------------------
@@ -1179,13 +1179,13 @@ The following script creates an ink annotation with two mathematical curves (sin
     annot.setColors(stroke=(0,0,1))  # make the lines blue
     annot.update()  # update the appearance
 
-    page.drawRect(rect, width=0.3)  # only to demonstrate we did OK
+    page.draw_rect(rect, width=0.3)  # only to demonstrate we did OK
 
     doc.save("a-inktest.pdf")
 
 This is the result:
 
-.. image:: images/img-inkannot.jpg
+.. image:: images/img-inkannot.*
     :scale: 50
 
 ------------------------------
@@ -1199,7 +1199,7 @@ The syntax for such operations is defined in "A Operator Summary" on page 985 of
 
 PyMuPDF implements a large part of the available features via its :ref:`Shape` class, which is comparable to notions like "canvas" in other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_).
 
-A shape is always created as a **child of a page**, usually with an instruction like *shape = page.newShape()*. The class defines numerous methods that perform drawing operations on the page's area. For example, *last_point = shape.drawRect(rect)* draws a rectangle along the borders of a suitably defined *rect = fitz.Rect(...)*.
+A shape is always created as a **child of a page**, usually with an instruction like *shape = page.newShape()*. The class defines numerous methods that perform drawing operations on the page's area. For example, *last_point = shape.draw_rect(rect)* draws a rectangle along the borders of a suitably defined *rect = fitz.Rect(...)*.
 
 The returned *last_point* **always** is the :ref:`Point` where drawing operation ended ("last point"). Every such elementary drawing requires a subsequent :meth:`Shape.finish` to "close" it, but there may be multiple drawings which have one common *finish()* method.
 
@@ -1265,7 +1265,7 @@ If you import this script, you can also directly use its graphics as in the foll
 
 This is the script's outcome:
 
-.. image:: images/img-symbols.jpg
+.. image:: images/img-symbols.*
    :scale: 50
 
 ------------------------------
@@ -1303,9 +1303,9 @@ The following is a code snippet which extracts the drawings of a page and re-dra
         # ------------------------------------
         for item in path["items"]:  # these are the draw commands
             if item[0] == "l":  # line
-                shape.drawLine(item[1], item[2])
+                shape.draw_line(item[1], item[2])
             elif item[0] == "re":  # rectangle
-                shape.drawRect(item[1])
+                shape.draw_rect(item[1])
             elif item[0] == "c":  # curve
                 shape.drawBezier(item[1], item[2], item[3], item[4])
             else:
@@ -1389,7 +1389,7 @@ PDF supports incorporating arbitrary data. This can be done in one of two ways: 
 
 1. Attached Files: data are **attached to a page** by way of a *FileAttachment* annotation with this statement: *annot = page.addFileAnnot(pos, ...)*, for details see :meth:`Page.addFileAnnot`. The first parameter "pos" is the :ref:`Point`, where a "PushPin" icon should be placed on the page.
 
-2. Embedded Files: data are embedded on the **document level** via method :meth:`Document.embeddedFileAdd`.
+2. Embedded Files: data are embedded on the **document level** via method :meth:`Document.embfile_add`.
 
 The basic differences between these options are **(1)** you need edit permission to embed a file, but only annotation permission to attach, **(2)** like all annotations, attachments are visible on a page, embedded files are not.
 
@@ -1413,7 +1413,7 @@ Or you alternatively prepare a complete new page layout in form of a Python sequ
 
 Now let's prepare a PDF for double-sided printing (on a printer not directly supporting this):
 
-The number of pages is given by *len(doc)* (equal to *doc.pageCount*). The following lists represent the even and the odd page numbers, respectively:
+The number of pages is given by *len(doc)* (equal to *doc.page_count*). The following lists represent the even and the odd page numbers, respectively:
 
 >>> p_even = [p in range(len(doc)) if p % 2 == 0]
 >>> p_odd  = [p in range(len(doc)) if p % 2 == 1]
@@ -1438,8 +1438,8 @@ The following example will reverse the order of all pages (**extremely fast:** s
 
 This snippet duplicates the PDF with itself so that it will contain the pages *0, 1, ..., n, 0, 1, ..., n* **(extremely fast and without noticeably increasing the file size!)**:
 
->>> pageCount = len(doc)
->>> for i in range(pageCount):
+>>> page_count = len(doc)
+>>> for i in range(page_count):
         doc.copyPage(i)  # copy this page to after last page
 
 ----------
@@ -1450,7 +1450,7 @@ It is easy to join PDFs with method :meth:`Document.insert_pdf`. Given open PDF 
 
 The GUI script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
 
-.. image:: images/img-pdfjoiner.jpg
+.. image:: images/img-pdfjoiner.*
    :scale: 60
 
 ----------
@@ -1535,7 +1535,7 @@ If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invo
          rc = doc.authenticate(password)
          if not rc > 0:
              raise ValueError("wrong password")
-     c = doc.write(garbage=3, deflate=True)
+     c = doc.tobytes(garbage=3, deflate=True)
      del doc  # close & delete doc
      return PdfReader(BytesIO(c))  # let pdfrw retry
  #---------------------------------------
@@ -1590,7 +1590,7 @@ This deals with splitting up pages of a PDF in arbitrary pieces. For example, yo
         #--------------------------------------------------------------------------
         # example: cut input page into 2 x 2 parts
         #--------------------------------------------------------------------------
-        r1 = r * 0.5  # top left rect
+        r1 = r / 2  # top left rect
         r2 = r1 + (r1.width, 0, r1.width, 0)  # top right rect
         r3 = r1 + (0, r1.height, 0, r1.height)  # bottom left rect
         r4 = fitz.Rect(r1.br, r.br)  # bottom right rect
@@ -1657,30 +1657,30 @@ This deals with joining PDF pages to form a new PDF with pages each combining tw
     import fitz, sys
     infile = sys.argv[1]
     src = fitz.open(infile)
-    doc = fitz.open()                      # empty output PDF
+    doc = fitz.open()  # empty output PDF
 
-    width, height = fitz.PaperSize("a4")   # A4 portrait output page format
+    width, height = fitz.PaperSize("a4")  # A4 portrait output page format
     r = fitz.Rect(0, 0, width, height)
 
     # define the 4 rectangles per page
-    r1 = r * 0.5                           # top left rect
-    r2 = r1 + (r1.width, 0, r1.width, 0)   # top right
-    r3 = r1 + (0, r1.height, 0, r1.height) # bottom left
-    r4 = fitz.Rect(r1.br, r.br)            # bottom right
+    r1 = r / 2  # top left rect
+    r2 = r1 + (r1.width, 0, r1.width, 0)  # top right
+    r3 = r1 + (0, r1.height, 0, r1.height)  # bottom left
+    r4 = fitz.Rect(r1.br, r.br)  # bottom right
 
     # put them in a list
     r_tab = [r1, r2, r3, r4]
 
     # now copy input pages to output
     for spage in src:
-        if spage.number % 4 == 0:           # create new output page
+        if spage.number % 4 == 0:  # create new output page
             page = doc.new_page(-1,
                           width = width,
                           height = height)
         # insert input page into the correct rectangle
-        page.show_pdf_page(r_tab[spage.number % 4],    # select output rect
-                         src,               # input document
-                         spage.number)      # input page number
+        page.show_pdf_page(r_tab[spage.number % 4],  # select output rect
+                         src,  # input document
+                         spage.number)  # input page number
 
     # by all means, save new file using garbage collection and compression
     doc.save("4up-" + infile, garbage=3, deflate=True)
@@ -1732,12 +1732,12 @@ It features maintaining any metadata, table of contents and links contained in t
 
     doc = fitz.open(fn)
 
-    b = doc.convertToPDF()                      # convert to pdf
-    pdf = fitz.open("pdf", b)                   # open as pdf
+    b = doc.convert_to_pdf()  # convert to pdf
+    pdf = fitz.open("pdf", b)  # open as pdf
 
-    toc= doc.het_toc()                           # table of contents of input
-    pdf.set_toc(toc)                             # simply set it for output
-    meta = doc.metadata                         # read and set metadata
+    toc= doc.het_toc()  # table of contents of input
+    pdf.set_toc(toc)  # simply set it for output
+    meta = doc.metadata  # read and set metadata
     if not meta["producer"]:
         meta["producer"] = "PyMuPDF v" + fitz.VersionBind
 
@@ -1750,16 +1750,16 @@ It features maintaining any metadata, table of contents and links contained in t
     # now process the links
     link_cnti = 0
     link_skip = 0
-    for pinput in doc:                # iterate through input pages
-        links = pinput.getLinks()     # get list of links
-        link_cnti += len(links)       # count how many
-        pout = pdf[pinput.number]     # read corresp. output page
-        for l in links:               # iterate though the links
-            if l["kind"] == fitz.LINK_NAMED:    # we do not handle named links
+    for pinput in doc:  # iterate through input pages
+        links = pinput.getLinks()  # get list of links
+        link_cnti += len(links)  # count how many
+        pout = pdf[pinput.number]  # read corresp. output page
+        for l in links:  # iterate though the links
+            if l["kind"] == fitz.LINK_NAMED:  # we do not handle named links
                 print("named link page", pinput.number, l)
-                link_skip += 1        # count them
+                link_skip += 1  # count them
                 continue
-            pout.insertLink(l)        # simply output the others
+            pout.insertLink(l)  # simply output the others
 
     # save the conversion result
     pdf.save(fn + ".pdf", garbage=4, deflate=True)
@@ -1822,7 +1822,7 @@ How to Deal with PDF Encryption
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Starting with version 1.16.0, PDF decryption and encryption (using passwords) are fully supported. You can do the following:
 
-* Check whether a document is password protected / (still) encrypted (:attr:`Document.needsPass`, :attr:`Document.isEncrypted`).
+* Check whether a document is password protected / (still) encrypted (:attr:`Document.needsPass`, :attr:`Document.is_encrypted`).
 * Gain access authorization to a document (:meth:`Document.authenticate`).
 * Set encryption details for PDF files using :meth:`Document.save` or :meth:`Document.write` and
 
@@ -1865,7 +1865,7 @@ The following snippet creates a new PDF and encrypts it with separate user and o
 
 Opening this document with some viewer (Nitro Reader 5) reflects these settings:
 
-.. image:: images/img-encrypting.jpg
+.. image:: images/img-encrypting.*
    :scale: 50
 
 **Decrypting** will automatically happen on save as before when no encryption parameters are provided.
@@ -2183,12 +2183,8 @@ A PDF may contain XML metadata in addition to the standard metadata format. In f
 
 PyMuPDF has no way to **interpret or change** this information directly, because it contains no XML features. XML metadata is however stored as a :data:`stream` object, so it can be read, modified with appropriate software and written back.
 
-    >>> metaxref = doc.xref_xml_metadata()  # get xref of XML metadata
-    >>> # check if metaxref > 0!!!
-    >>> doc.xref_object(metaxref)  # object definition
-    '<</Subtype/XML/Length 3801/Type/Metadata>>'
-    >>> xmlmetadata = doc.xref_stream(metaxref)  # XML data (stream - bytes obj)
-    >>> print(xmlmetadata.decode())  # print str version of bytes
+    >>> xmlmetadata = doc.get_xml_metadata()
+    >>> print(xmlmetadata)
     <?xpacket begin="\ufeff" id="W5M0MpCehiHzreSzNTczkc9d"?>
     <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="3.1-702">
     <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
@@ -2197,12 +2193,12 @@ PyMuPDF has no way to **interpret or change** this information directly, because
     ...
     <?xpacket end="w"?>
 
-Using some XML package, the XML data can be interpreted and / or modified and then stored back like any other stream::
+Using some XML package, the XML data can be interpreted and / or modified and then stored back. The following also works, if the PDF previously had no XML metadata::
 
     >>> # write back modified XML metadata:
-    >>> doc.update_stream(metaxref, xmlmetadata)
+    >>> doc.set_xml_metadata(xmlmetadata)
     >>>
-    >>> # if these data are not wanted, delete them:
+    >>> # XML metadata can be deleted like this:
     >>> doc.del_xml_metadata()
 
 ----------------------------------
@@ -2215,7 +2211,7 @@ How to Read and Update PDF Objects
 
 There also exist granular, elegant ways to access and manipulate selected PDF :data:`dictionary` keys.
 
-* :meth:`Document.xref_get_keys` returns the PDF keys of object at :data:`xref`::
+* :meth:`Document.xref_get_keys` returns the PDF keys of the object at :data:`xref`::
 
     In [1]: import fitz
     In [2]: doc = fitz.open("pymupdf.pdf")
@@ -2235,7 +2231,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       /Parent 1301 0 R
     >>
 
-* Single keys can also be accessed directly via :meth:`Document.xref_get_key`. The value always is a string together with type information, that helps interpreting it::
+* Single keys can also be accessed directly via :meth:`Document.xref_get_key`. The value **always is a string** together with type information, that helps interpreting it::
 
     In [7]: doc.xref_get_key(page.xref, "MediaBox")
     Out[7]: ('array', '[0 0 612 792]')
@@ -2252,7 +2248,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
     Parent = ('xref', '1301 0 R')
 
 * An undefined key inquiry returns ``('null', 'null')`` -- PDF object type ``null`` corresponds to ``None`` in Python. Similar for the booleans ``true`` and ``false``.
-* Let us add a new key to the page definition that sets its rotation to 90 degrees (you are aware that there is :meth:`Page.setRotation` for this?)::
+* Let us add a new key to the page definition that sets its rotation to 90 degrees (you are aware that there actually exists :meth:`Page.set_rotation` for this?)::
 
     In [11]: doc.xref_get_key(page.xref, "Rotate")  # no rotation set:
     Out[11]: ('null', 'null')
@@ -2267,9 +2263,9 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       /Rotate 90
     >>
 
-* This method can also be used to remove a key from the :data:`xref` dictionary by setting its value to ``null``: This will remove the rotation specification ``doc.xref_set_key(page.xref, "Rotate", "null")`` from the page. Similarly, to remove all links, annotations and fields from a page, use ``doc.xref_set_key(page.xref, "Annots", "null")``. Because ``Annots`` by definition is an array, the statement ``doc.xref_set_key(page.xref, "Annots", "[]")`` would do the same job in this case.
+* This method can also be used to remove a key from the :data:`xref` dictionary by setting its value to ``null``: The following will remove the rotation specification from the page: ``doc.xref_set_key(page.xref, "Rotate", "null")``. Similarly, to remove all links, annotations and fields from a page, use ``doc.xref_set_key(page.xref, "Annots", "null")``. Because ``Annots`` by definition is an array, setting en empty array with the statement ``doc.xref_set_key(page.xref, "Annots", "[]")`` would do the same job in this case.
 
-* PDF dictionaries can be nested. In the following page object definition both, ``Font`` and ``XObject`` are subdictionaries of ``Resources``::
+* PDF dictionaries can be hierarchically nested. In the following page object definition both, ``Font`` and ``XObject`` are subdictionaries of ``Resources``::
 
     In [15]: print(doc.xref_object(page.xref))
     <<
@@ -2289,7 +2285,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       /Rotate 90
     >>
 
-* The above situation **is supported** by methods :meth:`Document.xref_set_key` and :meth:`Document.xref_get_key`: use a path-like notation to point at the required key. For example, to retrieve the value of key ``Im1`` above, specify the chain of dictionaries "above" it in the key argument: ``"Resources/XObject/Im1"``::
+* The above situation **is supported** by methods :meth:`Document.xref_set_key` and :meth:`Document.xref_get_key`: use a path-like notation to point at the required key. For example, to retrieve the value of key ``Im1`` above, specify the complete chain of dictionaries "above" it in the key argument: ``"Resources/XObject/Im1"``::
 
     In [16]: doc.xref_get_key(page.xref, "Resources/XObject/Im1")
     Out[16]: ('xref', '1291 0 R')
@@ -2315,16 +2311,18 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       /Rotate 90
     >>
 
-* If a key does not exist, it will be created when setting its value. Moreover, if any intermediate keys do not exist either, they will also be created as necessary. The following creates an array ``D`` several levels below the existing dictionary ``A``. Intermediate dictionaries ``B`` and ``C`` are automatically created::
+  Be aware, that **no semantic checks** whatsoever will take place here: if the PDF has no xref 9999, it won't be detected at this point.
 
-    In [5]: print(doc.xref_object(xref))
+* If a key does not exist, it will be created by setting its value. Moreover, if any intermediate keys do not exist either, they will also be created as necessary. The following creates an array ``D`` several levels below the existing dictionary ``A``. Intermediate dictionaries ``B`` and ``C`` are automatically created::
+
+    In [5]: print(doc.xref_object(xref))  # some existing PDF object:
     <<
       /A <<
       >>
     >>
-    In [6]: # this will create 'B', 'C' and 'D'
+    In [6]: # the following will create 'B', 'C' and 'D'
     In [7]: doc.xref_set_key(xref, "A/B/C/D", "[1 2 3 4]")
-    In [8]: print(doc.xref_object(xref))
+    In [8]: print(doc.xref_object(xref))  # check out what happened:
     <<
       /A <<
         /B <<
@@ -2335,7 +2333,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       >>
     >>
 
-* New keys can only be created below a dictionary. The following tries to create a new item below the previously created array ``D``::
+* When setting key values, basic **PDF syntax checking** will be done by MuPDF. For example, new keys can only be created **below a dictionary**. The following tries to create some new string item ``E`` below the previously created array ``D``::
 
     In [9]: # 'D' is an array, no dictionary!
     In [10]: doc.xref_set_key(xref, "A/B/C/D/E", "(hello)")
@@ -2343,7 +2341,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
     --- ... ---
     RuntimeError: not a dict (array)
 
-* It is also **not possible**, to create a key if some higher level key is an **"indirect"** object, i.e. an xref. In other words, xrefs can only be modified directly and not by other objects referencing them::
+* It is also **not possible**, to create a key if some higher level key is an **"indirect"** object, i.e. an xref. In other words, xrefs can only be modified directly and not implicitely via other objects referencing them::
 
     In [13]: # the following object points to an xref
     In [14]: print(doc.xref_object(4))
@@ -2352,8 +2350,8 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
     >>
     In [15]: # 'E' is an indirect object and cannot be modified here!
     In [16]: doc.xref_set_key(4, "E/F", "90")
-    mupdf: path of 'F' has indirects
+    mupdf: path to 'F' has indirects
     --- ... ---
-    RuntimeError: path of 'F' has indirects
+    RuntimeError: path to 'F' has indirects
 
-.. caution:: These are expert functions! There are no validations as to whether valid PDF objects, xrefs, etc. are specified. As with other low-level methods there exists the risk to render the PDF or parts of it unusable.
+.. caution:: These are expert functions! There are no validations as to whether valid PDF objects, xrefs, etc. are specified. As with other low-level methods there exists the risk to render the PDF, or parts of it unusable.

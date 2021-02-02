@@ -58,7 +58,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Set or inquire reduced bbox heights in text extract and text search methods.
 
-      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.searchFor` and :meth:`Page.getText` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will normally equal *line height*.
+      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will normally equal *line height*.
 
       :rtype: bool
       :returns: *True* or *False*.
@@ -70,11 +70,11 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       :arg bytes,bytearray stream: the image data.
       :rtype: dict
-      :returns: a dictionary with the keys "width", "height", "xres", "yres", "colorspace" (the *colorspace.n* value, number of colorants), "cs-name" (the *colorspace.name* value), "bpc", "ext" (image type as file extension). The values for these keys are the same as returned by :meth:`Document.extractImage`. Please also have a look at :data:`resolution`.
+      :returns: a dictionary with the keys "width", "height", "xres", "yres", "colorspace" (the *colorspace.n* value, number of colorants), "cs-name" (the *colorspace.name* value), "bpc", "ext" (image type as file extension). The values for these keys are the same as returned by :meth:`Document.extract_image`. Please also have a look at :data:`resolution`.
       
       .. note::
 
-        * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extractImage` or create pixmaps via ``Pixmap(doc, xref)``. These methods will automatically convert exotic images to the PNG format before returning results.
+        * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via ``Pixmap(doc, xref)``. These methods will automatically convert exotic images to the PNG format before returning results.
 
         * Some examples::
 
@@ -246,7 +246,7 @@ Example Session
    >>> doc = fitz.open("demo1.pdf")
    # pixmap creation puts lots of object in cache (text, images, fonts),
    # apart from the pixmap itself
-   >>> pix = doc[0].getPixmap(alpha=False)
+   >>> pix = doc[0].get_pixmap(alpha=False)
    >>> fitz.TOOLS.store_size
    454519
    # release (at least) 50% of the storage
