@@ -295,6 +295,8 @@ struct Document
         """
         if not filename or type(filename) is str:
             pass
+        elif hasattr(filename, "absolute"):
+            filename = str(filename)
         elif hasattr(filename, "name"):
             filename = filename.name
         else:
@@ -691,9 +693,10 @@ struct Document
         _extend_toc_items(PyObject *items)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
-            pdf_obj *bm, *col;
+            pdf_obj *bm, *col, *obj;
             int count, flags;
-            PyObject *item=NULL, *itemdict=NULL, *xrefs, *bold, *italic, *collapse;
+            PyObject *item=NULL, *itemdict=NULL, *xrefs, *bold, *italic, *collapse, *zoom;
+            zoom = PyUnicode_FromString("zoom");
             bold = PyUnicode_FromString("bold");
             italic = PyUnicode_FromString("italic");
             collapse = PyUnicode_FromString("collapse");
@@ -704,7 +707,7 @@ struct Document
                 if (!olroot) goto finished;
                 pdf_obj *first = pdf_dict_get(gctx, olroot, PDF_NAME(First));
                 if (!first) goto finished;
-                xrefs = PyList_New(0);
+                xrefs = PyList_New(0);  // pre-allocate an empty list
                 xrefs = JM_outline_xrefs(gctx, first, xrefs);
                 Py_ssize_t i, n = PySequence_Size(xrefs);
                 if (!n) goto finished;
@@ -743,6 +746,15 @@ struct Document
                         PyTuple_SET_ITEM(color, 2, Py_BuildValue("f", pdf_to_real(gctx, pdf_array_get(gctx, col, 2))));
                         DICT_SETITEM_DROP(itemdict, dictkey_color, color);
                     }
+                    float z=0;
+                    obj = pdf_dict_get(gctx, bm, PDF_NAME(Dest));
+                    if (!obj || !pdf_is_array(gctx, obj)) {
+                        obj = pdf_dict_getl(gctx, bm, PDF_NAME(A), PDF_NAME(D), NULL);
+                    }
+                    if (pdf_is_array(gctx, obj) && pdf_array_len(gctx, obj) == 5) {
+                        z = pdf_to_real(gctx, pdf_array_get(gctx, obj, 4));
+                    }
+                    DICT_SETITEM_DROP(itemdict, zoom, Py_BuildValue("f", z));
                     PyList_SetItem(item, 3, itemdict);
                     PyList_SetItem(items, i, item);
                     pdf_drop_obj(gctx, bm);
@@ -755,6 +767,7 @@ struct Document
                 Py_CLEAR(bold);
                 Py_CLEAR(italic);
                 Py_CLEAR(collapse);
+                Py_CLEAR(zoom);
                 pdf_drop_obj(gctx, bm);
                 PyErr_Clear();
             }
@@ -1749,8 +1762,10 @@ struct Document
             pass
         elif hasattr(filename, "open"):  # assume: pathlib.Path
             filename = str(filename)
-        elif not hasattr(filename, "seek"):  # assume: file pointer
-            raise ValueError("filename must be str, Path or file pointer")
+        elif hasattr(filename, "name"):  # assume: file object
+            filename = filename.name
+        elif not hasattr(filename, "seek"):  # assume file object
+            raise ValueError("filename must be str, Path or file object")
         if filename == self.name and not incremental:
             raise ValueError("save to original must be incremental")
         if self.page_count < 1:
@@ -3876,7 +3891,7 @@ if basestate:
                     raise ValueError("bad page number(s)")
 
                 # remove TOC bookmarks pointing to deleted page
-                old_toc = self.getToC()
+                old_toc = self.get_toc()
                 for i, item in enumerate(old_toc):
                     if item[2] == pno + 1:
                         self.del_toc_item(i)
@@ -3904,7 +3919,7 @@ if basestate:
                 if not f <= t < page_count:
                     raise ValueError("bad page number(s)")
 
-                old_toc = self.getToC()
+                old_toc = self.get_toc()
                 for i, item in enumerate(old_toc):
                     if f + 1 <= item[2] <= t + 1:
                         self.del_toc_item(i)
@@ -5509,9 +5524,9 @@ def get_oc_items(self) -> list:
                 fz_rect cropbox = fz_empty_rect;
                 fz_rect r = JM_rect_from_py(rect);
                 cropbox.x0 = r.x0;
-                cropbox.y0 = mediabox.y1 - r.y1;
                 cropbox.x1 = r.x1;
-                cropbox.y1 = mediabox.y1 - r.y0;
+                cropbox.y0 = mediabox.y1 - r.y1 + mediabox.y0;
+                cropbox.y1 = mediabox.y1 - r.y0 + mediabox.y0;
                 pdf_dict_put_drop(gctx, page->obj, PDF_NAME(CropBox),
                                   pdf_new_rect(gctx, page->doc, cropbox));
             }
@@ -5920,7 +5935,7 @@ if not sanitize and not self.is_wrapped:
         // insert an image
         //----------------------------------------------------------------
         FITZEXCEPTION(_insertImage, !result)
-        PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, PyObject *imask=NULL, int overlay=1, int oc=0, int xref = 0, PyObject *matrix=NULL,
+        PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, PyObject *imask=NULL, int overlay=1, int oc=0, int xref=0, int alpha=0, PyObject *matrix=NULL,
         const char *_imgname=NULL, PyObject *_imgpointer=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
@@ -5944,8 +5959,7 @@ if not sanitize and not self.is_wrapped:
                 //-------------------------------------------------------------
                 // create the image
                 //-------------------------------------------------------------
-                if (filename || EXISTS(stream) || EXISTS(_imgpointer))
-                {
+                if (filename || EXISTS(stream) || EXISTS(_imgpointer)) {
                     if (filename) {
                         image = fz_new_image_from_file(gctx, filename);
                     } else if (EXISTS(stream)) {
@@ -5968,11 +5982,11 @@ if not sanitize and not self.is_wrapped:
                         fz_drop_image(gctx, image);
                         image = zimg;
                         zimg = NULL;
-                    } else {
-                        pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
-                        pix->xres = xres;
-                        pix->yres = yres;
-                        if (pix->alpha == 1) {  // have alpha: create an SMask
+                    } else if (alpha == 1) {
+                            // have alpha: create an SMask
+                            pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
+                            pix->xres = xres;
+                            pix->yres = yres;
                             pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, fz_default_color_params, 1);
                             pm->alpha = 0;
                             pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
@@ -5981,10 +5995,6 @@ if not sanitize and not self.is_wrapped:
                             fz_drop_image(gctx, image);
                             image = zimg;
                             zimg = NULL;
-                        } else {
-                            fz_drop_pixmap(gctx, pix);
-                            pix = NULL;
-                        }
                     }
                 } else {  // pixmap specified
                     fz_pixmap *arg_pix = (fz_pixmap *) pixmap;
@@ -7210,6 +7220,28 @@ Use pillowWrite to reflect this in output image."""%}
                 return NULL;
             }
             return rc;
+        }
+
+        //-----------------------------------------------------------------
+        // check if monochrome
+        //-----------------------------------------------------------------
+        %pythoncode %{@property%}
+        %pythonprepend is_monochrome %{"""Check if pixmap is monochrome."""%}
+        PyObject *is_monochrome()
+        {
+            return JM_BOOL(fz_is_pixmap_monochrome(gctx, (fz_pixmap *) $self));
+        }
+
+        //-----------------------------------------------------------------
+        // MD5 digest of pixmap
+        //-----------------------------------------------------------------
+        %pythoncode %{@property%}
+        %pythonprepend digest %{"""MD5 digest of pixmap (bytes)."""%}
+        PyObject *digest()
+        {
+            unsigned char digest[16];
+            fz_md5_pixmap(gctx, (fz_pixmap *) $self, digest);
+            return Py_BuildValue("y", digest);
         }
 
         //-----------------------------------------------------------------

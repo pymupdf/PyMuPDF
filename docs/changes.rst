@@ -1,6 +1,15 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.8
+-------------------------
+
+This is a bug fix version only. We are publishing early because of the potentially widely used functions.
+
+* **Fixed** issue `#881 <https://github.com/pymupdf/PyMuPDF/issues/881>`_. Fixed a memory leak in :meth:`Page.insert_image` when inserting images from files or memory.
+* **Fixed** issue `#878 <https://github.com/pymupdf/PyMuPDF/issues/878>`_. ``pathlib.Path`` objects should now correctly handle file path hierarchies.
+
+
 Changes in Version 1.18.7
 -------------------------
 
