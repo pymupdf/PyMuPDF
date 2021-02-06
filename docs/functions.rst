@@ -397,7 +397,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.getTextWords(flags=None)
+   .. method:: Page.get_text_words(flags=None)
 
       Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use :meth:`Page.getText` with the "words" option instead.
 
@@ -412,11 +412,17 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
+   .. method:: Page.get_contents()
+
+      PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of a page. May be empty or contain multiple integers. If the page is cleaned (:meth:`Page.clean_contents`), it will be one entry at most. The "source" of each `/Contents` object can be individually read by :meth:`Document.xref_stream` using an item of this list. Method :meth:`Page.read_contents` in contrast walks through this list and concatenates the corresponding sources into one ``bytes`` object.
+
+-----
+
    .. method:: Page.clean_contents(sanitize=True)
 
       *(Changed in v1.17.6)*
       
-      PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.getContents` for more details.
+      PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.get_contents` for more details.
 
       Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
 
@@ -426,7 +432,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.readContents()
+   .. method:: Page.read_contents()
 
       *New in version 1.17.0.*
       Return the concatenation of all :data:`contents` objects associated with the page -- without cleaning or otherwise modifying them. Use this method whenever you need to parse this source in its entirety whithout having to bother how many separate contents objects exist.
@@ -441,7 +447,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document.getCharWidths(xref=0, limit=256)
+   .. method:: Document.get_char_widths(xref=0, limit=256)
 
       Return a list of character glyphs and their widths for a font that is present in the document. A font must be specified by its PDF cross reference number :data:`xref`. This function is called automatically from :meth:`Page.insertText` and :meth:`Page.insertTextbox`. So you should rarely need to do this yourself.
 

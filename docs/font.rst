@@ -4,7 +4,7 @@
 Font
 ================
 
-*(New in v1.16.18)* This class represents a font as defined in MuPDF (*fz_font_s* structure). It is required for the new class :ref:`TextWriter` and the new :meth:`Page.writeText`. Currently, it has no connection to how fonts are used in methods ``insertText`` or insertTextbox``, respectively.
+*(New in v1.16.18)* This class represents a font as defined in MuPDF (*fz_font_s* structure). It is required for the new class :ref:`TextWriter` and the new :meth:`Page.write_text`. Currently, it has no connection to how fonts are used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`, respectively.
 
 A Font object also contains useful general information, like the font bbox, the number of defined glyphs, glyph names or the bbox of a single glyph.
 
@@ -210,18 +210,19 @@ A Font object also contains useful general information, like the font bbox, the 
       :arg float fontsize: the fontsize.
 
       :rtype: float
+
       :returns: the length of the string when stored in the PDF. Internally :meth:`glyph_advance` is used on a by-character level. If the font does not have a character, it will automatically be looked up in a fallback font.
 
    .. attribute:: buffer
 
       *(New in v1.17.6)*
+
+      Copy of the binary font file content.
       
       :rtype: bytes
-      Copy of the binary font file content.
 
    .. attribute:: flags
 
-      :rtype: dict
       A dictionary with various font properties, each represented as bools. Example for Helvetica::
 
          >>> pprint(font.flags)
@@ -236,41 +237,49 @@ A Font object also contains useful general information, like the font bbox, the 
          'stretch': 0,
          'substitute': 0}
 
+      :rtype: dict
+
    .. attribute:: name
 
       :rtype: str
+
       Name of the font. May be "" or "(null)".
 
    .. attribute:: bbox
 
-      :rtype: :ref:`Rect`
       The font bbox. This is the maximum of its glyph bboxes.
+
+      :rtype: :ref:`Rect`
 
    .. attribute:: glyph_count
 
       :rtype: int
+
       The number of glyphs defined in the font.
 
    .. attribute:: ascender
 
       *(New in v1.18.0)*
 
-      :rtype: float
       The ascender value of the font, see `here <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details.
+
+      :rtype: float
 
    .. attribute:: descender
 
       *(New in v1.18.0)*
 
-      :rtype: float
       The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details.
+
+      :rtype: float
 
    .. attribute:: isWritable
 
       *(New in v1.18.0)*
 
-      :rtype: bool
       Indicates whether this font can be used with :ref:`TextWriter`.
+
+      :rtype: bool
 
 .. rubric:: Footnotes
 

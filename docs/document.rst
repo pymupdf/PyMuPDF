@@ -69,7 +69,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.load_page`              read a page
 :meth:`Document.make_bookmark`          create a page pointer in reflowable documents
 :meth:`Document.xref_xml_metadata`      PDF only: :data:`xref` of XML metadata
-:meth:`Document.movePage`               PDF only: move a page to different location in doc
+:meth:`Document.move_page`              PDF only: move a page to different location in doc
 :meth:`Document.need_appearances`       PDF only: get/set ``/NeedAppearances`` property
 :meth:`Document.new_page`               PDF only: insert a new empty page
 :meth:`Document.next_location`          return (chapter, pno) of following page
@@ -106,7 +106,7 @@ For details on **embedded files** refer to Appendix 3.
 :attr:`Document.chapter_count`          number of chapters
 :attr:`Document.FormFonts`              PDF only: list of global widget fonts
 :attr:`Document.is_closed`              has document been closed?
-:attr:`Document.isDirty`                PDF only: has document been changed yet?
+:attr:`Document.is_dirty`               PDF only: has document been changed yet?
 :attr:`Document.is_encrypted`           document (still) encrypted?
 :attr:`Document.is_form_pdf`            is this a Form PDF?
 :attr:`Document.is_pdf`                 is this a PDF?
@@ -889,7 +889,7 @@ For details on **embedded files** refer to Appendix 3.
 
           * On a technical level, the method will always create a new :data:`pagetree`.
 
-          * When dealing with only a few pages, methods :meth:`copyPage`, :meth:`movePage`, :meth:`delete_page` are easier to use. In fact, they are also **much faster** -- by at least one order of magnitude when the document has many pages.
+          * When dealing with only a few pages, methods :meth:`copyPage`, :meth:`move_page`, :meth:`delete_page` are easier to use. In fact, they are also **much faster** -- by at least one order of magnitude when the document has many pages.
 
 
     .. method:: set_metadata(m)
@@ -1232,7 +1232,7 @@ For details on **embedded files** refer to Appendix 3.
 
           * Any Popup and "IRT" ("in response to") annotations are **not copied** to avoid potentially incorrect situations.
 
-    .. method:: movePage(pno, to=-1)
+    .. method:: move_page(pno, to=-1)
 
       PDF only: Move (copy and then delete original) a page within the document.
 
@@ -1496,6 +1496,18 @@ For details on **embedded files** refer to Appendix 3.
     .. attribute:: is_closed
 
       *False* if document is still open. If closed, most other attributes and methods will have been deleted / disabled. In addition, :ref:`Page` objects referring to this document (i.e. created with :meth:`Document.load_page`) and their dependent objects will no longer be usable. For reference purposes, :attr:`Document.name` still exists and will contain the filename of the original document (if applicable).
+
+      :type: bool
+
+    .. attribute:: is_dirty
+
+      *True* if this is a PDF document and contains unsaved changes, else *False*.
+
+      :type: bool
+
+    .. attribute:: is_pdf
+
+      *True* if this is a PDF document, else *False*.
 
       :type: bool
 

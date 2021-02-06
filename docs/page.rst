@@ -477,7 +477,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :returns: a :ref:`Widget` for each iteration.
 
 
-   .. method:: writeText(rect=None, writers=None, overlay=True, color=None, opacity=None, keep_proportion=True, rotate=0, oc=0)
+   .. method:: write_text(rect=None, writers=None, overlay=True, color=None, opacity=None, keep_proportion=True, rotate=0, oc=0)
 
       *(New in version 1.16.18)*
       

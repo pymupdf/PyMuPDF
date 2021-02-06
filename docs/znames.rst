@@ -4,12 +4,19 @@
 Deprecated Names
 ================
 
-This is a list of names for methods and attributes with references to their current notions.
-This list is a result of the effort to replace "mixedCase" names by their "snake_case" alternative.
+This list maps deprecated names of methods and attributes to their new "snake_case" versions.
 
-This is a major effort, that we only can muster in a step-wise fashion. We believe we so far (v1.18.7) are done with :ref:`Annot`, :ref:`Document`, :ref:`Page` and :ref:`TextWriter`.
+This is a major effort, that we only can muster in a step-wise fashion. We believe, we so far (v1.18.7) are done with :ref:`Annot`, :ref:`Document`, :ref:`Page` , :ref:`Shape` and :ref:`TextWriter`.
 
-Names of classes and package-wide constants remain untouched.
-Old names remain available for some time, but will be removed in some future version. Apart from this section however, old names will no longer be mentioned in this documentation.
+Names of classes (camel case) and package-wide constants (the majority is upper case) remain untouched.
+Deprecated names will remain available through MuPDF version 1.19.0 and probably be **removed in v1.20.0**. 
+
+Deprecated names will no longer be separately documented.
+
+.. note:: The following list is automatically generated.
+
+  * References to new names (right column) always refer to method names - even if the name actually is a property. Please lookup to disambiguate.
+  * One or two items refer to yet undocumented methods - please simply ignore.
+
 
 .. include:: deprecated.rst

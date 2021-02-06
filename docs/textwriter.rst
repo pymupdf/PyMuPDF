@@ -28,9 +28,9 @@ Using this object entails three steps:
 
 .. note::
 
-   * Starting with version 1.17.0, TextWriters **do support** text rotation via the *morph* parameter of :meth:`TextWriter.writeText`.
+   * Starting with version 1.17.0, TextWriters **do support** text rotation via the *morph* parameter of :meth:`TextWriter.write_text`.
 
-   * There also exists :meth:`Page.writeText` which combines one or more TextWriters and jointly writes them to a given rectangle and with a given rotation angle -- much like :meth:`Page.show_pdf_page`.
+   * There also exists :meth:`Page.write_text` which combines one or more TextWriters and jointly writes them to a given rectangle and with a given rotation angle -- much like :meth:`Page.show_pdf_page`.
 
 
 ================================ ============================================
@@ -114,31 +114,36 @@ Using this object entails three steps:
 
    .. attribute:: text_rect
 
-      :rtype: :ref:`Rect`
       The area currently occupied.
+
+      :rtype: :ref:`Rect`
 
    .. attribute:: last_point
 
-      :rtype: :ref:`Point`
       The "cursor position" -- a :ref:`Point` -- after the last written character (its bottom-right).
+
+      :rtype: :ref:`Point`
 
    .. attribute:: opacity
 
       The text opacity (modifyable).
 
+      :rtype: float
+
    .. attribute:: color
 
       The text color (modifyable).
+
+      :rtype: float,tuple
 
    .. attribute:: rect
 
       The page rectangle for which this TextWriter was created. Must not be modified.
 
+      :rtype: :ref:`Rect`
 
-To see some demo scripts dealing with TextWriter, have a look at `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ repository.
 
-
-.. note::
+.. note:: To see some demo scripts dealing with TextWriter, have a look at `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ repository.
 
   1. Opacity and color apply to **all the text** in this object. 
   2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.

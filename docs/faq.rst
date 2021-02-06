@@ -643,7 +643,7 @@ In those cases, the following function will help composing the original words of
             words: list of words as created by 'get_textWords()'
             rect: rectangle to consider (usually the full page)
         Returns:
-            List of recovered words. Same format as 'getTextWords', but left out
+            List of recovered words. Same format as 'get_text_words', but left out
             block, line and word number - a list of items of the following format:
             [x0, y0, x1, y1, "word"]
         """
@@ -698,7 +698,7 @@ In those cases, the following function will help composing the original words of
             words, etc.
         Args:
             text: string to be searched for
-            words: list of items in format delivered by 'getTextWords()'.
+            words: list of items in format delivered by 'get_text_words()'.
         Returns:
             List of rectangles, one for each found locations.
         """
