@@ -17,6 +17,8 @@ def modify_search_index(app, exception):
             searchfile = open(filename, "w")
             searchfile.write(data2)
             searchfile.close()
+        else:
+            print("INFO: No file", filename)
 
 
 def setup(app):
