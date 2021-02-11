@@ -944,6 +944,123 @@ fz_matrix JM_derotate_page_matrix(fz_context *ctx, pdf_page *page)
 
 
 //-----------------------------------------------------------------------------
+// Insert a font in a PDF
+//-----------------------------------------------------------------------------
+PyObject *
+JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
+    PyObject *fontbuffer, int set_simple, int idx, int wmode, int serif,
+    int encoding, int ordering)
+{
+    pdf_obj *font_obj;
+    fz_font *font = NULL;
+    fz_buffer *res = NULL;
+    const unsigned char *data = NULL;
+    int size, ixref = 0, index = 0, simple = 0;
+    PyObject *value, *name, *subt, *exto = NULL;
+
+    fz_try(ctx) {
+        //-------------------------------------------------------------
+        // check for CJK font
+        //-------------------------------------------------------------
+        if (ordering > -1) {
+            data = fz_lookup_cjk_font(ctx, ordering, &size, &index);
+        }
+        if (data) {
+            font = fz_new_font_from_memory(ctx, NULL, data, size, index, 0);
+            font_obj = pdf_add_cjk_font(ctx, pdf, font, ordering, wmode, serif);
+            exto = JM_UnicodeFromStr("n/a");
+            simple = 0;
+            goto weiter;
+        }
+
+        //-------------------------------------------------------------
+        // check for PDF Base-14 font
+        //-------------------------------------------------------------
+        if (bfname) {
+            data = fz_lookup_base14_font(ctx, bfname, &size);
+        }
+        if (data) {
+            font = fz_new_font_from_memory(ctx, bfname, data, size, 0, 0);
+            font_obj = pdf_add_simple_font(ctx, pdf, font, encoding);
+            exto = JM_UnicodeFromStr("n/a");
+            simple = 1;
+            goto weiter;
+        }
+
+        if (fontfile) {
+            font = fz_new_font_from_file(ctx, NULL, fontfile, idx, 0);
+        } else {
+            res = JM_BufferFromBytes(ctx, fontbuffer);
+            if (!res) {
+                THROWMSG(ctx, "need one of fontfile, fontbuffer");
+            }
+            font = fz_new_font_from_buffer(ctx, NULL, res, idx, 0);
+        }
+
+        if (!set_simple) {
+            font_obj = pdf_add_cid_font(ctx, pdf, font);
+            simple = 0;
+        } else {
+            font_obj = pdf_add_simple_font(ctx, pdf, font, encoding);
+            simple = 2;
+        }
+
+        weiter: ;
+        font_obj = pdf_keep_obj(ctx, font_obj);
+        ixref = pdf_to_num(ctx, font_obj);
+        if (fz_font_is_monospaced(ctx, font)) {
+            float adv = fz_advance_glyph(ctx, font,
+                            fz_encode_character(ctx, font, 32), 0);
+            int width = (int) floor(adv * 1000.0f + 0.5f);
+            pdf_obj *dfonts = pdf_dict_get(ctx, font_obj, PDF_NAME(DescendantFonts));
+            if (pdf_is_array(ctx, dfonts)) {
+                int i, n = pdf_array_len(ctx, dfonts);
+                for (i = 0; i < n; i++) {
+                    pdf_obj *dfont = pdf_array_get(ctx, dfonts, i);
+                    pdf_obj *warray = pdf_new_array(ctx, pdf, 3);
+                    pdf_array_push(ctx, warray, pdf_new_int(ctx, 0));
+                    pdf_array_push(ctx, warray, pdf_new_int(ctx, 65535));
+                    pdf_array_push(ctx, warray, pdf_new_int(ctx, (int64_t) width));
+                    pdf_dict_put_drop(ctx, dfont, PDF_NAME(W), warray);
+                }
+            }
+        }
+        name = JM_EscapeStrFromStr(pdf_to_name(ctx,
+                    pdf_dict_get(ctx, font_obj, PDF_NAME(BaseFont))));
+
+        subt = JM_UnicodeFromStr(pdf_to_name(ctx,
+                    pdf_dict_get(ctx, font_obj, PDF_NAME(Subtype))));
+
+        if (!exto)
+            exto = JM_UnicodeFromStr(JM_get_fontextension(ctx, pdf, ixref));
+
+        float asc = fz_font_ascender(ctx, font);
+        float dsc = fz_font_descender(ctx, font);
+        value = Py_BuildValue("[i,{s:O,s:O,s:O,s:O,s:i,s:f,s:f}]",
+                                ixref,
+                                "name", name,        // base font name
+                                "type", subt,        // subtype
+                                "ext", exto,         // file extension
+                                "simple", JM_BOOL(simple), // simple font?
+                                "ordering", ordering, // CJK font?
+                                "ascender", asc,
+                                "descender", dsc
+                                );
+    }
+    fz_always(ctx) {
+        Py_CLEAR(exto);
+        Py_CLEAR(name);
+        Py_CLEAR(subt);
+        fz_drop_buffer(ctx, res);
+        fz_drop_font(ctx, font);
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+    return value;
+}
+
+//-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities
 //-----------------------------------------------------------------------------
 struct Tools {int index;};

@@ -50,13 +50,7 @@ fitz.Document.set_page_labels = fitz.utils.set_page_labels
 fitz.Document.set_toc = fitz.utils.setToC
 fitz.Document.set_toc_item = fitz.utils.set_toc_item
 fitz.Document.tobytes = fitz.Document.write
-try:
-    import fontTools.subset as fts
-
-    fitz.Document.subset_fonts = fitz.utils.subset_fonts
-    del fts
-except ImportError:
-    fitz.Document.subset_fonts = lambda x: print("Requires fontTools.")
+fitz.Document.subset_fonts = fitz.utils.subset_fonts
 
 
 # ------------------------------------------------------------------------------
@@ -243,8 +237,8 @@ def restore_aliases():
     fitz.Page.writeText = fitz.Page.write_text
 
     # deprecated Annot aliases
-    fitz.Annot.getText = fitz.utils.getText
-    fitz.Annot.getTextbox = fitz.utils.getTextbox
+    fitz.Annot.getText = fitz.Annot.get_text
+    fitz.Annot.getTextbox = fitz.Annot.get_textbox
     fitz.Annot.fileGet = fitz.Annot.get_file
     fitz.Annot.fileUpd = fitz.Annot.update_file
     fitz.Annot.getPixmap = fitz.Annot.get_pixmap

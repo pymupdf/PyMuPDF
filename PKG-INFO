@@ -3,6 +3,7 @@ Name: PyMuPDF
 Version: 1.18.9
 Author: Jorj McKie
 Author-email: jorj.x.mckie@outlook.de
+License: GNU AFFERO GPL 3.0
 Maintainer: Jorj McKie
 Maintainer-email: jorj.x.mckie@outlook.de
 Home-page: https://github.com/pymupdf/PyMuPDF

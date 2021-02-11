@@ -102,7 +102,7 @@ If you are looking to make your own binary, consult this [Wiki page](https://git
 Earlier versions are available in the [releases](https://github.com/pymupdf/PyMuPDF/releases) directory.
 
 # License
-PyMuPDF is distributed under GNU GPL V3. Because you will implicitely also be using MuPDF, its license GNU AFFERO GPL V3 applies as well. Copies of both are included in this repository.
+PyMuPDF is distributed under the license of MuPDF, GNU AFFERO GPL V3.0.
 
 # Contact
 Please submit questions, comments or issues [here](https://github.com/pymupdf/PyMuPDF/issues), or directly contact the authors via their e-mail addresses.

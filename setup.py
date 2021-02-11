@@ -141,4 +141,6 @@ setup(
     cmdclass={"build_py": build_ext_first},
     ext_modules=[module],
     py_modules=["fitz.fitz", "fitz.utils", "fitz.__main__"],
+    license="GNU AFFERO GPL 3.0",
+    data_files=["README.md"],
 )

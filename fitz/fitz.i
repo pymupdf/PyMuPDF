@@ -525,6 +525,29 @@ struct Document
             DEBUGMSG2;
         }
 
+        FITZEXCEPTION(_insert_font, !result)
+        CLOSECHECK0(_insert_font, """Utility: insert font from file or binary.""")
+        PyObject *
+        _insert_font(char *fontfile=NULL, PyObject *fontbuffer=NULL)
+        {
+            PyObject *value=NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                if (!fontfile && !EXISTS(fontbuffer)) {
+                    THROWMSG(gctx, "need one of fontfile, fontbuffer");
+                }
+                value = JM_insert_font(gctx, pdf, NULL, fontfile, fontbuffer,
+                            0, 0, 0, 0, 0, -1);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return value;
+        }
+
+
         FITZEXCEPTION(get_outline_xrefs, !result)
         CLOSECHECK0(get_outline_xrefs, """Get list of outline xref numbers.""")
         PyObject *
@@ -6159,113 +6182,33 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
-            fz_font *font = NULL;
-            fz_buffer *res = NULL;
-            const unsigned char *data = NULL;
-            int size, ixref = 0, index = 0, simple = 0;
             PyObject *value;
-            PyObject *exto = NULL;
             fz_try(gctx) {
                 ASSERT_PDF(page);
                 pdf = page->doc;
+
+                value = JM_insert_font(gctx, pdf, bfname, fontfile,fontbuffer,
+                            set_simple, idx, wmode, serif, encoding, ordering);
+
                 // get the objects /Resources, /Resources/Font
                 resources = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Resources));
                 fonts = pdf_dict_get(gctx, resources, PDF_NAME(Font));
                 if (!fonts) {  // page has no fonts yet
-                    fonts = pdf_new_dict(gctx, pdf, 10);
+                    fonts = pdf_new_dict(gctx, pdf, 5);
                     pdf_dict_putl_drop(gctx, page->obj, fonts, PDF_NAME(Resources), PDF_NAME(Font), NULL);
                 }
-
-                //-------------------------------------------------------------
-                // check for CJK font
-                //-------------------------------------------------------------
-                if (ordering > -1) data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
-                if (data) {
-                    font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
-                    font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
-                    exto = JM_UnicodeFromStr("n/a");
-                    simple = 0;
-                    goto weiter;
-                }
-
-                //-------------------------------------------------------------
-                // check for PDF Base-14 font
-                //-------------------------------------------------------------
-                if (bfname) data = fz_lookup_base14_font(gctx, bfname, &size);
-                if (data) {
-                    font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
-                    font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
-                    exto = JM_UnicodeFromStr("n/a");
-                    simple = 1;
-                    goto weiter;
-                }
-
-                if (fontfile) {
-                    font = fz_new_font_from_file(gctx, NULL, fontfile, idx, 0);
-                } else {
-                    res = JM_BufferFromBytes(gctx, fontbuffer);
-                    if (!res) THROWMSG(gctx, "need one of fontfile, fontbuffer");
-                    font = fz_new_font_from_buffer(gctx, NULL, res, idx, 0);
-                }
-
-                if (!set_simple) {
-                    font_obj = pdf_add_cid_font(gctx, pdf, font);
-                    simple = 0;
-                } else {
-                    font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
-                    simple = 2;
-                }
-
-                weiter: ;
-                ixref = pdf_to_num(gctx, font_obj);
-                if (fz_font_is_monospaced(gctx, font)) {
-                    float adv = fz_advance_glyph(gctx, font,
-                                    fz_encode_character(gctx, font, 32), 0);
-                    int width = (int) floor(adv * 1000.0f + 0.5f);
-                    pdf_obj *dfonts = pdf_dict_get(gctx, font_obj, PDF_NAME(DescendantFonts));
-                    if (pdf_is_array(gctx, dfonts)) {
-                        int i, n = pdf_array_len(gctx, dfonts);
-                        for (i = 0; i < n; i++) {
-                            pdf_obj *dfont = pdf_array_get(gctx, dfonts, i);
-                            pdf_obj *warray = pdf_new_array(gctx, pdf, 3);
-                            pdf_array_push(gctx, warray, pdf_new_int(gctx, 0));
-                            pdf_array_push(gctx, warray, pdf_new_int(gctx, 65535));
-                            pdf_array_push(gctx, warray, pdf_new_int(gctx, (int64_t) width));
-                            pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
-                        }
-                    }
-                }
-                PyObject *name = JM_EscapeStrFromStr(pdf_to_name(gctx,
-                            pdf_dict_get(gctx, font_obj, PDF_NAME(BaseFont))));
-
-                PyObject *subt = JM_UnicodeFromStr(pdf_to_name(gctx,
-                            pdf_dict_get(gctx, font_obj, PDF_NAME(Subtype))));
-
-                if (!exto)
-                    exto = JM_UnicodeFromStr(JM_get_fontextension(gctx, pdf, ixref));
-
-                float asc = fz_font_ascender(gctx, font);
-                float dsc = fz_font_descender(gctx, font);
-                value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i, s:f, s:f}]",
-                                      ixref,
-                                      "name", name,        // base font name
-                                      "type", subt,        // subtype
-                                      "ext", exto,         // file extension
-                                      "simple", JM_BOOL(simple), // simple font?
-                                      "ordering", ordering, // CJK font?
-                                      "ascender", asc,
-                                      "descender", dsc
-                                      );
-                Py_CLEAR(exto);
-                Py_CLEAR(name);
-                Py_CLEAR(subt);
-
                 // store font in resources and fonts objects will contain named reference to font
+                int xref = 0;
+                JM_INT_ITEM(value, 0, &xref);
+                if (!xref) {
+                    THROWMSG(gctx, "cannot insert font");
+                }
+                font_obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_dict_puts_drop(gctx, fonts, fontname, font_obj);
+                Finished:;
             }
             fz_always(gctx) {
-                fz_drop_buffer(gctx, res);
-                fz_drop_font(gctx, font);
+                ;
             }
             fz_catch(gctx) {
                 return NULL;
@@ -6659,6 +6602,7 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         //----------------------------------------------------------------
         // create pixmap from filename
         //----------------------------------------------------------------
+        /*
         Pixmap(char *filename)
         {
             fz_image *img = NULL;
@@ -6679,19 +6623,32 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             }
             return (struct Pixmap *) pm;
         }
+        */
 
         //----------------------------------------------------------------
-        // create pixmap from in-memory image
+        // create pixmap from filename, pathlib.Path or in-memory image
         //----------------------------------------------------------------
         Pixmap(PyObject *imagedata)
         {
             fz_buffer *res = NULL;
             fz_image *img = NULL;
             fz_pixmap *pm = NULL;
+            PyObject *fname = NULL;
             fz_try(gctx) {
-                res = JM_BufferFromBytes(gctx, imagedata);
-                if (!res) THROWMSG(gctx, "bad image data");
-                img = fz_new_image_from_buffer(gctx, res);
+                if (PyObject_HasAttrString(imagedata, "resolve")) {
+                    fname = PyObject_CallMethod(imagedata, "__str__", NULL);
+                    if (fname) {
+                        img = fz_new_image_from_file(gctx, JM_StrAsChar(fname));
+                    }
+                } else if (PyUnicode_Check(imagedata)) {
+                    img = fz_new_image_from_file(gctx, JM_StrAsChar(imagedata));
+                } else {
+                    res = JM_BufferFromBytes(gctx, imagedata);
+                    if (!res || !fz_buffer_storage(gctx, res, NULL)) {
+                        THROWMSG(gctx, "bad image data");
+                    }
+                    img = fz_new_image_from_buffer(gctx, res);
+                }
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
                 int xres, yres;
                 fz_image_resolution(img, &xres, &yres);
@@ -6699,6 +6656,7 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
                 pm->yres = yres;
             }
             fz_always(gctx) {
+                Py_CLEAR(fname);
                 fz_drop_image(gctx, img);
                 fz_drop_buffer(gctx, res);
             }

@@ -4538,169 +4538,24 @@ def has_annots(doc: Document) -> bool:
 
 
 # Building font subsets using fontTools ----------------------------------
-"""
-@created: 2021-01-28
+def subset_fonts(doc: Document) -> None:
+    """Build font subsets of a PDF. Requires package 'fontTools'.
 
-@author: @cuteufo (Github User), Jorj McKie
-
-Font Subsetting
-----------------
-This script walks through a PDF and builds subsets for used fonts.
-It has been derived from the PyMuPDF font replacement scripts, see here:
-https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/font-replacement.
-
-Approach and features
----------------------
-
-* Determine the fonts used by every page. Select those
-  
-    - that are embedded and not already subset fonts
-    - for which package fontTools (https://pypi.org/project/fonttools/) can
-      build subsets (OTF, TTF, WOFF).
-
-* Per each piece of text, collect the characters used by font.
-
-* After one time through the PDF pages, a subset of each font is created by
-  using the fontTools package.
-
-* Iterate through the PDF's pages again and rewrite each piece of text for
-  which a subset font has been created.
-
-* Original text color is kept.
-
-* Original text position is kept as much as possible. Detail character
-  position changes may however happen, where individual spacing has been used.
-
-* Using fontTools, subsetting is possible only for OTF, TTF and WOFF type
-  fonts - others are ignored.
-
-Missing Features, Limitations
------------------------------
-* Text in annotations is **not handled**.
-* Running this script will always make rewritten text visible, because it will
-  be inserted after other page content (images, drawings, etc.) has been drawn.
-  This is inevitable and may prohibit using it.
-
-
-Dependencies
-------------
-PyMuPDF v1.18.7
-fontTools
-
-Notes
-------
-Depending on whether subsettable fonts are found at all, the PDF should become
-smaller. To benefit from this effect, save to a new file using save options
-'garbage=3' or higher and 'deflate=True'.
-
-License
--------
-GNU GPL 3.x (this script)
-GNU AFFERO GPL 3.0 (MuPDF components)
-MIT license (fontTools)
-
-Copyright
----------
-(c) 2021 @cuteufo, Jorj McKie.
-
-Usage
------
-This should happen mmediately before saving the document. So a typical use case
-would look like this:
-
-    doc.subset_fonts()
-    doc.save(..., garbage=3, deflate=True)
-
-As the font subsetter of fontTools is invoked, you may see errors and warnings
-appear on sys.stderr. These can safely be ignored.
-For every font successfully subsetted an information message is issued.
-"""
-
-
-def subset_fonts(indoc: Document):
-
-    # Contains sets of unicodes in use by font -  "fontname": unicode-list
+    Eligible fonts are potentially replaced by smaller versions. Page text is
+    NOT rewritten and thus should retain properties like being hidden or
+    controlled by optional content.
+    """
+    # Used unicodes by font -  "fontname" -> unicode-list
     font_subsets = {}
 
-    # Contains the binary buffers of each replacement font -  "font_xref": buffer
+    # Font subset binaries -  "font_xref" -> buffer
     font_buffers = {}
 
-    # Maps a fontname to a font xref -  "fontname": xref
+    # Maps fontnames to font xref -  "fontname" -> xref
     new_fontnames = {}
 
-    def cont_clean(page, fontrefs):
-        """Remove text written with one of the fonts to replace.
-
-        Args:
-            page: the page
-            fontrefs: dict of contents stream xrefs. Each xref key has a list of
-                ref names looking like b"/refname ".
-        """
-
-        def remove_font(fontrefs, lines):
-            """This inline function removes references to fonts in a /Contents stream.
-
-            Args:
-                fontrefs: a list of bytes objects looking like b"/fontref ".
-                lines: a list of the lines of the /Contents.
-            Returns:
-                (bool, lines), where the bool is True if we have changed any of
-                the lines.
-            """
-            changed = False
-            count = len(lines)
-            for ref in fontrefs:
-                found = False  # switch: processing our font
-                for i in range(count):
-                    if lines[i] == b"ET":  # end text object
-                        found = False  # no longer in found mode
-                        continue
-                    if lines[i].endswith(b" Tf"):  # font invoker command
-                        if lines[i].startswith(ref):  # our font?
-                            found = True  # switch on
-                            lines[i] = b""  # remove line
-                            changed = True  # tell we have changed
-                            continue  # next line
-                        else:  # else not our font
-                            found = False  # switch off
-                            continue  # next line
-                    if found == True and (
-                        lines[i].endswith(
-                            (
-                                b"TJ",
-                                b"Tj",
-                                b"TL",
-                                b"Tc",
-                                b"Td",
-                                b"Tm",
-                                b"T*",
-                                b"Ts",
-                                b"Tw",
-                                b"Tz",
-                                b"'",
-                                b'"',
-                            )
-                        )
-                    ):  # write command for our font?
-                        lines[i] = b""  # remove it
-                        changed = True  # tell we have changed
-                        continue
-            return changed, lines
-
-        doc = page.parent
-        for xref in fontrefs.keys():
-            xref0 = 0 + xref
-            if xref0 == 0:  # the page contents
-                xref0 = page.get_contents()[0]  # there is only one /Contents obj now
-            cont = doc.xref_stream(xref0)
-            cont_lines = cont.splitlines()
-            changed, cont_lines = remove_font(fontrefs[xref], cont_lines)
-            if changed:
-                cont = b"\n".join(cont_lines) + b"\n"
-                doc.update_stream(xref0, cont)  # replace command source
-
     def build_subset(buffer, unc_set):
-        """Build font subsets using fontTools.
+        """Build font subset using fontTools.
 
         Args:
             buffer: (bytes) the font given as a binary buffer.
@@ -4734,13 +4589,10 @@ def subset_fonts(indoc: Document):
                     "--unicodes-file=uncfile.txt",
                     "--output-file=newfont.ttf",
                     "--retain-gids",
-                    "--recalc-bounds",
                     "--passthrough-tables",
                 ]
             )
-            fd = open("newfont.ttf", "rb")
-            new_buffer = fd.read()  # subset font
-            fd.close()
+            new_buffer = open("newfont.ttf", "rb").read()  # subset binary
         except:
             new_buffer = None
         try:
@@ -4751,75 +4603,18 @@ def subset_fonts(indoc: Document):
             pass
         return new_buffer
 
-    def clean_fontnames(page):
-        """Remove multiple references to one font.
+    def repl_fontnames(doc):
+        """Populate 'font_buffers' and 'new_fontnames'.
 
-        When rebuilding the page text, dozens of font reference names '/Fnnn' may
-        be generated pointing to the same font.
-        This function removes these duplicates and thus reduces the size of the
-        /Resources object.
+        For each font candidate, store its xref and the list of names
+        by which PDF text may refer to it (there may be multiple).
         """
-        cont = bytearray(page.read_contents())  # read and concat all /Contents
-        font_xrefs = {}  # key: xref, value: set of font refs using it
-        for f in page.get_fonts():
-            xref = f[0]
-            name = f[4]  # font ref name, 'Fnnn'
-            names = font_xrefs.get(xref, set())
-            names.add(name)
-            font_xrefs[xref] = names
-        for xref in font_xrefs.keys():
-            names = list(font_xrefs[xref])
-            names.sort()  # read & sort font names for this xref
-            name0 = b"/" + names[0].encode() + b" "  # we will keep this font name
-            for name in names[1:]:
-                namex = b"/" + name.encode() + b" "
-                cont = cont.replace(namex, name0)
-        xref = page.get_contents()[0]  # xref of first /Contents
-        page.parent.update_stream(xref, cont)  # replace it with our result
-        page.set_contents(xref)  # tell PDF: this is the only /Contents object
-        page.clean_contents(sanitize=True)  # sanitize ensures cleaning /Resources
 
-    def tilted_span(page, wdir, span, font):
-        """Output a non-horizontal text span."""
-        cos, sin = wdir  # writing direction from the line
-        matrix = Matrix(cos, -sin, sin, cos, 0, 0)  # corresp. matrix
-        text = span["text"]  # text to write
-        bbox = Rect(span["bbox"])
-        fontsize = span["size"]
-        opa = 0.1 if fontsize > 100 else 1  # fake opacity for large fontsizes
-        tw = TextWriter(page.rect, opacity=opa, color=sRGB_to_pdf(span["color"]))
-        origin = Point(span["origin"])
-        if sin > 0:  # clockwise rotation
-            origin.y = bbox.y0
-        tw.append(origin, text, font=font, fontsize=fontsize)
-        tw.writeText(page, morph=(origin, matrix))
-
-    def get_page_fontrefs(page):
-        fontlist = page.get_fonts(full=True)
-        # Ref names for each font to replace.
-        # Each contents stream has a separate entry here: keyed by xref,
-        # 0 = page /Contents, otherwise xref of XObject
-        fontrefs = {}
-        for f in fontlist:
-            fontname = f[3]  # font name
-            ext = f[1]  # font file extension
-            if len(fontname) > 6 and fontname[6] == "+":
-                continue
-            if ext not in ("ttf", "otf", "woff", "woff2"):
-                continue
-            cont_xref = f[-1]  # xref of XObject, 0 if page /Contents
-            font_xref = f[0]
-            if fontname in new_fontnames.keys() and font_xref in font_buffers.keys():
-                # we replace this font!
-                refname = f[4]
-                refname = b"/" + refname.encode() + b" "
-                refs = fontrefs.get(cont_xref, [])
-                refs.append(refname)
-                fontrefs[cont_xref] = refs
-        return fontrefs  # return list of font reference names
-
-    def repl_fontnames(doc: Document):
         def norm_name(name):
+            """Recreate font name that contains PDF hex codes.
+
+            E.g. #20 -> space
+            """
             while "#" in name:
                 p = name.find("#")
                 c = int(name[p + 1 : p + 3], 16)
@@ -4828,16 +4623,11 @@ def subset_fonts(indoc: Document):
             return name[p:]
 
         def get_fontnames(doc, item):
-            """Return a list of fontnames.
+            """Return a list of fontnames for an item of page.get_fonts().
 
-            There may be multiple alternatives e.g. for Type0 fonts.
+            There may be multiple names e.g. for Type0 fonts.
             """
-            subset = False
             fontname = item[3]
-            idx = fontname.find("+") + 1
-            fontname = fontname[idx:]
-            if idx > 0:
-                subset = True
             names = [fontname]
             text = doc.xref_object(item[0])
             font = ""
@@ -4855,8 +4645,8 @@ def subset_fonts(indoc: Document):
 
             if font and font not in names:
                 names.append(font)
-            if not descendents:
-                return subset, tuple(names)
+            if not descendents:  # now alternate names found
+                return tuple(names)
 
             # 'descendents' is a list of descendent font xrefs.
             # Should be just one by the books.
@@ -4867,15 +4657,16 @@ def subset_fonts(indoc: Document):
                         font = norm_name(line[1][1:])
                         if font not in names:
                             names.append(font)
-            return subset, tuple(names)
+            return tuple(names)
 
         for i in range(doc.page_count):
             for f in doc.get_page_fonts(i, full=True):
                 font_xref = f[0]  # font xref
                 font_ext = f[1]  # font file extension
                 basename = f[3]  # font basename
-                if font_ext not in (
-                    "otf",  # supported by subsetting
+
+                if font_ext not in (  # supported by subsetting
+                    "otf",
                     "ttf",
                     "woff",
                     "woff2",
@@ -4883,7 +4674,8 @@ def subset_fonts(indoc: Document):
                     continue
                 if len(basename) > 6 and basename[6] == "+":  # skip font subsets
                     continue
-                _, fontname = get_fontnames(doc, f)
+
+                fontname = get_fontnames(doc, f)
                 if font_xref not in font_buffers.keys():
                     # store a new valid font buffer
                     extr = doc.extract_font(font_xref)
@@ -4895,28 +4687,35 @@ def subset_fonts(indoc: Document):
                     new_fontnames[_fontname[:33]] = font_xref
         return None
 
-    repl_fontnames(indoc)  # populate font information
-    if not font_buffers:  # nothing to do
+    repl_fontnames(doc)  # populate font information
+    if not font_buffers:  # nothing found to do
         print("No fonts to subset.")
-        return
+        return 0
+
+    old_fontsize = 0
+    new_fontsize = 0
+    for fontbuffer in font_buffers.values():
+        old_fontsize += len(fontbuffer)
 
     extr_flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
 
-    # Phase 1
-    for page in indoc:
-        if [f[0] for f in page.get_fonts() if f[0] in font_buffers.keys()] == []:
+    # Scan page text for usage of subsettable fonts
+    for page in doc:
+        # page fontlist must at least reference a candidate xref
+        if [
+            f[0] for f in page.get_fonts() if f[0] in font_buffers.keys()
+        ] == []:  # no relevant xref found
             continue
+        # go through the text and extend set of used unicodes by font
         for block in page.get_text("dict", flags=extr_flags)["blocks"]:
             for line in block["lines"]:
                 for span in line["spans"]:
-                    fontname = span["font"][:33]
+                    fontname = span["font"][:33]  # only first 32 bytes
                     if fontname not in new_fontnames.keys():  # don't subset
                         continue
-                    # replace non-utf8 by section symbol
-                    text = span["text"].replace(chr(0xFFFD), chr(0xB6))
                     # extend collection of used unicodes
                     subset = font_subsets.get(fontname, set())
-                    for c in text:
+                    for c in span["text"]:
                         subset.add(ord(c))  # add any new unicode values
                     font_subsets[fontname] = subset  # store back extended set
 
@@ -4925,66 +4724,28 @@ def subset_fonts(indoc: Document):
         font_xref = new_fontnames[fontname]
         old_buffer = font_buffers[font_xref]
         new_buffer = build_subset(old_buffer, font_subsets[fontname])
-        if type(new_buffer) is bytes and new_buffer != font_buffers[font_xref]:
+        if (
+            type(new_buffer) is bytes and new_buffer != font_buffers[font_xref]
+        ):  # subset was created and with a different binary
             font_buffers[font_xref] = new_buffer
             print("Subset built for '%s'." % fontname)
-        else:
-            del font_buffers[font_xref]  # failure of subset, remove this fontname from
+        else:  # some error or no true subset - remove
+            del font_buffers[font_xref]  # subsetting failed, remove from
             del new_fontnames[fontname]  # font_buffers and new_fontnames
         del old_buffer
 
-    # Phase 2
-    for page in indoc:
-        # clean contents streams of the page and any XObjects.
-        page.clean_contents(sanitize=True)
-        # extract text again
-        fontrefs = get_page_fontrefs(page)
-        if fontrefs == {}:  # page has no fonts to replace
-            continue
-        blocks = page.get_text("dict", flags=extr_flags)["blocks"]
-        cont_clean(page, fontrefs)  # remove text using fonts to be replaced
-        textwriters = {}  # contains one text writer per detected text color
+    # walk through the original font xrefs and replace each by its subset def
+    for font_xref, new_buffer in font_buffers.items():
+        val = doc._insert_font(fontbuffer=new_buffer)  # insert subset font
+        new_xref = val[0]  # xref of subset font
+        font_str = doc.xref_object(  # get its object definition
+            new_xref,
+            compressed=True,
+        )
+        # ... and replace original font xref with it
+        doc.update_object(font_xref, font_str)
+        # 'new_xref' remains unused in the PDF and will be removed
+        # by garbage collection.
+        new_fontsize += len(new_buffer)
 
-        for block in blocks:
-            for line in block["lines"]:
-                wdir = list(line["dir"])  # writing direction
-                for span in line["spans"]:
-                    fontname = span["font"][:33]
-                    if fontname not in new_fontnames.keys():  # do not replace
-                        continue
-                    font_xref = new_fontnames[fontname]
-                    if font_buffers[font_xref] is None:
-                        # do not replace this font due to failure of fontTools
-                        continue
-                    font = Font(fontbuffer=font_buffers[font_xref])
-                    text = span["text"].replace(chr(0xFFFD), chr(0xB6))
-                    # guard against non-utf8 characters
-                    textb = text.encode("utf8", errors="backslashreplace")
-                    text = textb.decode("utf8", errors="backslashreplace")
-                    span["text"] = text
-                    if wdir != [1, 0]:  # special treatment for tilted text
-                        tilted_span(page, wdir, span, font)
-                        continue
-                    color = span["color"]  # make or reuse textwriter for the color
-                    if color in textwriters.keys():  # already have a textwriter?
-                        tw = textwriters[color]  # re-use it
-                    else:  # make new
-                        tw = TextWriter(page.rect)  # make text writer
-                        textwriters[color] = tw  # store it for later use
-                    try:
-                        tw.append(
-                            span["origin"],
-                            text,
-                            font=font,
-                            fontsize=span["size"],
-                        )
-                    except Exception as err:
-                        print(f"page {page.number} exception: {err}")
-
-        # now write all text stored in the list of text writers
-        for color in textwriters.keys():  # output the stored text per color
-            tw = textwriters[color]
-            outcolor = sRGB_to_pdf(color)  # recover (r,g,b)
-            tw.write_text(page, color=outcolor)
-
-        clean_fontnames(page)
+    return old_fontsize - new_fontsize
