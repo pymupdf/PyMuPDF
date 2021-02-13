@@ -535,7 +535,7 @@ def getText(
     Args:
         option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
         clip: (rect-like) restrict output to this area.
-        flags: bitfield to e.g. exclude images.
+        flags: bit switches to e.g. exclude images or decompose ligatures
 
     Returns:
         the output of methods getTextWords / getTextBlocks or TextPage
@@ -569,6 +569,8 @@ def getText(
         return getTextBlocks(page, clip=clip, flags=flags)
     CheckParent(page)
     cb = None
+    if option in ("html", "xml", "xhtml"):  # no clipping for MuPDF functions
+        clip = page.cropbox
     if clip != None:
         clip = Rect(clip)
         cb = None
@@ -617,7 +619,7 @@ def getPageText(
     return doc[pno].getText(option, clip=clip, flags=flags)
 
 
-def getPixmap(page: Page, **kw) -> Pixmap:
+def get_pixmap(page: Page, **kw) -> Pixmap:
     """Create pixmap of page.
 
     Args:
@@ -644,8 +646,8 @@ def getPixmap(page: Page, **kw) -> Pixmap:
     if colorspace.n not in (1, 3, 4):
         raise ValueError("unsupported colorspace")
 
-    dl = page.getDisplayList(annots=annots)
-    pix = dl.getPixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
+    dl = page.get_displaylist(annots=annots)
+    pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
     dl = None
     return pix
     # doc = page.parent
@@ -664,7 +666,7 @@ def get_page_pixmap(
     """Create pixmap of document page by page number.
 
     Notes:
-        Convenience function calling page.getPixmap.
+        Convenience function calling page.get_pixmap.
     Args:
         pno: (int) page number
         matrix: Matrix for transformation (default: Identity).
@@ -673,7 +675,7 @@ def get_page_pixmap(
         alpha: (bool) include alpha channel
         annots: (bool) also render annotations
     """
-    return doc[pno].getPixmap(
+    return doc[pno].get_pixmap(
         matrix=matrix, colorspace=colorspace, clip=clip, alpha=alpha, annots=annots
     )
 
@@ -4571,6 +4573,8 @@ def subset_fonts(doc: Document) -> None:
 
         unc_list = list(unc_set)
         unc_list.sort()
+        if unc_list[-1] < 255:
+            unc_list.append(255)
         unc_file = open("uncfile.txt", "w")  # store unicodes as text file
         for unc in unc_list:
             unc_file.write("%04x\n" % unc)
@@ -4629,35 +4633,26 @@ def subset_fonts(doc: Document) -> None:
             """
             fontname = item[3]
             names = [fontname]
-            text = doc.xref_object(item[0])
-            font = ""
-            descendents = ""
-
-            for line in text.splitlines():
-                line = line.split()
-                if line[0] == "/BaseFont":
-                    font = norm_name(line[1][1:])
-                elif line[0] == "/DescendantFonts":
-                    descendents = " ".join(line[1:]).replace(" 0 R", " ")
-                    if descendents.startswith("["):
-                        descendents = descendents[1:-1]
-                    descendents = map(int, descendents.split())
-
-            if font and font not in names:
-                names.append(font)
-            if not descendents:  # now alternate names found
-                return tuple(names)
-
-            # 'descendents' is a list of descendent font xrefs.
-            # Should be just one by the books.
-            for xref in descendents:
-                for line in doc.xref_object(xref).splitlines():
-                    line = line.split()
-                    if line[0] == "/BaseFont":
-                        font = norm_name(line[1][1:])
-                        if font not in names:
-                            names.append(font)
-            return tuple(names)
+            fontname = doc.xref_get_key(item[0], "BaseFont")[1][1:]
+            fontname = norm_name(fontname)
+            if fontname not in names:
+                names.append(fontname)
+            descendents = doc.xref_get_key(item[0], "DescendantFonts")
+            if descendents[0] != "array":
+                return names
+            descendents = descendents[1][1:-1]
+            if descendents.endswith(" 0 R"):
+                xref = int(descendents[:-4])
+                descendents = doc.xref_object(xref, compressed=True)
+            p1 = descendents.find("/BaseFont")
+            if p1 >= 0:
+                p2 = descendents.find("/", p1 + 1)
+                p1 = min(descendents.find("/", p2 + 1), descendents.find(">>", p2 + 1))
+                fontname = descendents[p2 + 1 : p1]
+                fontname = norm_name(fontname)
+                if fontname not in names:
+                    names.append(fontname)
+            return names
 
         for i in range(doc.page_count):
             for f in doc.get_page_fonts(i, full=True):
@@ -4675,14 +4670,17 @@ def subset_fonts(doc: Document) -> None:
                 if len(basename) > 6 and basename[6] == "+":  # skip font subsets
                     continue
 
-                fontname = get_fontnames(doc, f)
+                names = get_fontnames(doc, f)
                 if font_xref not in font_buffers.keys():
                     # store a new valid font buffer
                     extr = doc.extract_font(font_xref)
                     fontbuffer = extr[-1]
-                    _ = Font(fontbuffer=fontbuffer)
+                    font = Font(fontbuffer=fontbuffer)
+                    if font.name not in names:
+                        names.append(font.name)
+                    del font
                     font_buffers[font_xref] = fontbuffer
-                for _fontname in fontname:
+                for _fontname in names:
                     # all fontname alternatives point to font xref
                     new_fontnames[_fontname[:33]] = font_xref
         return None
@@ -4730,8 +4728,7 @@ def subset_fonts(doc: Document) -> None:
             font_buffers[font_xref] = new_buffer
             print("Subset built for '%s'." % fontname)
         else:  # some error or no true subset - remove
-            del font_buffers[font_xref]  # subsetting failed, remove from
-            del new_fontnames[fontname]  # font_buffers and new_fontnames
+            del font_buffers[font_xref]
         del old_buffer
 
     # walk through the original font xrefs and replace each by its subset def

@@ -1223,7 +1223,7 @@ def get_highlight_selection(page, start: point_like =None, stop: point_like =Non
         return []
 
     # extract text of page, clip only, no images, expand ligatures
-    blocks = page.getText(
+    blocks = page.get_text(
         "dict", flags=0, clip=clip,
     )["blocks"]
 

@@ -48,11 +48,7 @@ The original rendering library for MuPDF was called *Libart*.
 
 License
 --------
-PyMuPDF is distributed under GNU GPL V3 (or later, at your choice).
-
-MuPDF is distributed under a separate license, the **GNU AFFERO GPL V3**.
-
-Both licenses apply, when you use PyMuPDF.
+PyMuPDF is distributed under MuPDF's license, GNU AFFERO GPL V3.
 
 .. note:: Version 3 of the GNU AFFERO GPL is a lot less restrictive than its earlier versions used to be. It basically is an open source freeware license, that obliges your software to also being open source and freeware. Consult `this website <http://artifex.com/licensing/>`_, if you want to create a commercial product with PyMuPDF.
 

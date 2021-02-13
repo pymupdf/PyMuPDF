@@ -1,6 +1,13 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.9
+-------------------------
+
+* **Fixed** issue `#896 <https://github.com/pymupdf/PyMuPDF/issues/896>`_. Since v1.17.6 PyMuPDF suppresses the subset tag and only reports the base fontname in text extraction outputs "dict" / "json" / "rawdict" / "rawjson". Now a new global parameter can request the old behaviour, :meth:`Tools.set_subset_fontnames`.
+* **Fixed** issue `#885 <https://github.com/pymupdf/PyMuPDF/issues/885>`_. Pixmap creation now also works with filenames given as ``pathlib.Paths``.
+* **Changed** :meth:`Document.subset_fonts`: Text is **not rewritten** any more and should therefore **retain all its properties** -- like being hidden or controlled by Optional Content mechanisms.
+
 Changes in Version 1.18.8
 -------------------------
 

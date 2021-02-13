@@ -1,156 +1,568 @@
-================================ ===================================
-Deprecated Name                  New Name
-================================ ===================================
-fitz.Annot.fileGet               :meth:`Annot.get_file`
-fitz.Annot.fileUpd               :meth:`Annot.update_file`
-fitz.Annot.getPixmap             :meth:`Annot.get_pixmap`
-fitz.Annot.getText               :meth:`Annot.get_text`
-fitz.Annot.getTextPage           :meth:`Annot.get_textpage`
-fitz.Annot.getTextbox            :meth:`Annot.get_textbox`
-fitz.Annot.lineEnds              :meth:`Annot.line_ends`
-fitz.Annot.setBlendMode          :meth:`Annot.set_blendmode`
-fitz.Annot.setBorder             :meth:`Annot.set_border`
-fitz.Annot.setColors             :meth:`Annot.set_colors`
-fitz.Annot.setFlags              :meth:`Annot.set_flags`
-fitz.Annot.setInfo               :meth:`Annot.set_info`
-fitz.Annot.setLineEnds           :meth:`Annot.set_line_ends`
-fitz.Annot.setName               :meth:`Annot.set_name`
-fitz.Annot.setOC                 :meth:`Annot.set_oc`
-fitz.Annot.setOpacity            :meth:`Annot.set_opacity`
-fitz.Annot.setRect               :meth:`Annot.set_rect`
-fitz.Annot.soundGet              :meth:`Annot.get_sound`
-fitz.Document.PDFCatalog         :meth:`Document.pdf_catalog`
-fitz.Document.PDFTrailer         :meth:`Document.pdf_trailer`
-fitz.Document.adOCG              :meth:`Document.add_ocg`
-fitz.Document.chapterCount       :meth:`Document.chapter_count`
-fitz.Document.chapterPageCount   :meth:`Document.chapter_page_count`
-fitz.Document.convertToPDF       :meth:`Document.convert_to_pdf`
-fitz.Document.copyPage           :meth:`Document.copy_page`
-fitz.Document.deletePage         :meth:`Document.delete_page`
-fitz.Document.deletePageRange    :meth:`Document.delete_pages`
-fitz.Document.embeddedFileAdd    :meth:`Document.embfile_add`
-fitz.Document.embeddedFileCount  :meth:`Document.embfile_count`
-fitz.Document.embeddedFileDel    :meth:`Document.embfile_del`
-fitz.Document.embeddedFileGet    :meth:`Document.embfile_get`
-fitz.Document.embeddedFileInfo   :meth:`Document.embfile_info`
-fitz.Document.embeddedFileNames  :meth:`Document.embfile_names`
-fitz.Document.embeddedFileUpd    :meth:`Document.embfile_upd`
-fitz.Document.extractFont        :meth:`Document.extract_font`
-fitz.Document.extractImage       :meth:`Document.extract_image`
-fitz.Document.findBookmark       :meth:`Document.find_bookmark`
-fitz.Document.fullcopyPage       :meth:`Document.fullcopy_page`
-fitz.Document.getCharWidths      :meth:`Document.get_char_widths`
-fitz.Document.getOCGs            :meth:`Document.get_ocgs`
-fitz.Document.getPageFontList    :meth:`Document.get_page_fonts`
-fitz.Document.getPageImageList   :meth:`Document.get_page_images`
-fitz.Document.getPagePixmap      :meth:`Document.get_page_pixmap`
-fitz.Document.getPageText        :meth:`Document.get_page_text`
-fitz.Document.getPageXObjectList :meth:`Document.get_page_xobjects`
-fitz.Document.getSigFlags        :meth:`Document.get_sigflags`
-fitz.Document.getToC             :meth:`Document.get_toc`
-fitz.Document.getXmlMetadata     :meth:`Document.get_xml_metadata`
-fitz.Document.insertPDF          :meth:`Document.insert_pdf`
-fitz.Document.insertPage         :meth:`Document.insert_page`
-fitz.Document.isDirty            :meth:`Document.is_dirty`
-fitz.Document.isFormPDF          :meth:`Document.is_form_pdf`
-fitz.Document.isPDF              :meth:`Document.is_pdf`
-fitz.Document.isReflowable       :meth:`Document.is_reflowable`
-fitz.Document.isRepaired         :meth:`Document.is_repaired`
-fitz.Document.isStream           :meth:`Document.is_stream`
-fitz.Document.lastLocation       :meth:`Document.last_location`
-fitz.Document.loadPage           :meth:`Document.load_page`
-fitz.Document.makeBookmark       :meth:`Document.make_bookmark`
-fitz.Document.metadataXML        :meth:`Document.xref_xml_metadata`
-fitz.Document.movePage           :meth:`Document.move_page`
-fitz.Document.needsPass          :meth:`Document.needs_pass`
-fitz.Document.newPage            :meth:`Document.new_page`
-fitz.Document.nextLocation       :meth:`Document.next_location`
-fitz.Document.pageCount          :meth:`Document.page_count`
-fitz.Document.pageCropBox        :meth:`Document.page_cropbox`
-fitz.Document.pageXref           :meth:`Document.page_xref`
-fitz.Document.previousLocation   :meth:`Document.prev_location`
-fitz.Document.resolveLink        :meth:`Document.resolve_link`
-fitz.Document.searchPageFor      :meth:`Document.search_page_for`
-fitz.Document.setLanguage        :meth:`Document.set_language`
-fitz.Document.setMetadata        :meth:`Document.set_metadata`
-fitz.Document.setToC             :meth:`Document.set_toc`
-fitz.Document.setXmlMetadata     :meth:`Document.set_xml_metadata`
-fitz.Document.updateObject       :meth:`Document.update_object`
-fitz.Document.updateStream       :meth:`Document.update_stream`
-fitz.Document.xrefLength         :meth:`Document.xref_length`
-fitz.Document.xrefObject         :meth:`Document.xref_object`
-fitz.Document.xrefStream         :meth:`Document.xref_stream`
-fitz.Document.xrefStreamRaw      :meth:`Document.xref_stream_raw`
-fitz.Page.CropBox                :meth:`Page.cropbox`
-fitz.Page.CropBoxPosition        :meth:`Page.cropbox_position`
-fitz.Page.MediaBox               :meth:`Page.mediabox`
-fitz.Page.MediaBoxSize           :meth:`Page.mediabox_size`
-fitz.Page._isWrapped             :meth:`Page.is_wrapped`
-fitz.Page.cleanContents          :meth:`Page.clean_contents`
-fitz.Page.deleteAnnot            :meth:`Page.delete_annot`
-fitz.Page.deleteLink             :meth:`Page.delete_link`
-fitz.Page.deleteWidget           :meth:`Page.delete_widget`
-fitz.Page.derotationMatrix       :meth:`Page.derotation_matrix`
-fitz.Page.drawBezier             :meth:`Page.draw_bezier`
-fitz.Page.drawCircle             :meth:`Page.draw_circle`
-fitz.Page.drawCurve              :meth:`Page.draw_curve`
-fitz.Page.drawLine               :meth:`Page.draw_line`
-fitz.Page.drawOval               :meth:`Page.draw_oval`
-fitz.Page.drawPolyline           :meth:`Page.draw_polyline`
-fitz.Page.drawQuad               :meth:`Page.draw_quad`
-fitz.Page.drawRect               :meth:`Page.draw_rect`
-fitz.Page.drawSector             :meth:`Page.draw_sector`
-fitz.Page.drawSquiggle           :meth:`Page.draw_squiggle`
-fitz.Page.drawZigzag             :meth:`Page.draw_zigzag`
-fitz.Page.firstAnnot             :meth:`Page.first_annot`
-fitz.Page.firstLink              :meth:`Page.first_link`
-fitz.Page.firstWidget            :meth:`Page.first_widget`
-fitz.Page.getContents            :meth:`Page.get_contents`
-fitz.Page.getDisplayList         :meth:`Page.get_displaylist`
-fitz.Page.getDrawings            :meth:`Page.get_drawings`
-fitz.Page.getFontList            :meth:`Page.get_fonts`
-fitz.Page.getImageBbox           :meth:`Page.get_image_bbox`
-fitz.Page.getImageList           :meth:`Page.get_images`
-fitz.Page.getLinks               :meth:`Page.get_links`
-fitz.Page.getPixmap              :meth:`Page.get_pixmap`
-fitz.Page.getSVGimage            :meth:`Page.get_svg_image`
-fitz.Page.getText                :meth:`Page.get_text`
-fitz.Page.getTextBlocks          :meth:`Page.get_text_blocks`
-fitz.Page.getTextPage            :meth:`Page.get_textpage`
-fitz.Page.getTextWords           :meth:`Page.get_text_words`
-fitz.Page.getTextbox             :meth:`Page.get_textbox`
-fitz.Page.insertFont             :meth:`Page.insert_font`
-fitz.Page.insertImage            :meth:`Page.insert_image`
-fitz.Page.insertLink             :meth:`Page.insert_link`
-fitz.Page.insertText             :meth:`Page.insert_text`
-fitz.Page.insertTextbox          :meth:`Page.insert_textbox`
-fitz.Page.loadAnnot              :meth:`Page.load_annot`
-fitz.Page.loadLinks              :meth:`Page.load_links`
-fitz.Page.newShape               :meth:`Page.new_shape`
-fitz.Page.readContents           :meth:`Page.read_contents`
-fitz.Page.rotationMatrix         :meth:`Page.rotation_matrix`
-fitz.Page.searchFor              :meth:`Page.search_for`
-fitz.Page.setCropBox             :meth:`Page.set_cropbox`
-fitz.Page.setMediaBox            :meth:`Page.set_mediabox`
-fitz.Page.setRotation            :meth:`Page.set_rotation`
-fitz.Page.showPDFpage            :meth:`Page.show_pdf_page`
-fitz.Page.transformationMatrix   :meth:`Page.transformation_matrix`
-fitz.Page.updateLink             :meth:`Page.update_link`
-fitz.Page.wrapContents           :meth:`Page.wrap_contents`
-fitz.Page.writeText              :meth:`Page.write_text`
-fitz.Shape.drawBezier            :meth:`Shape.draw_bezier`
-fitz.Shape.drawCircle            :meth:`Shape.draw_circle`
-fitz.Shape.drawCurve             :meth:`Shape.draw_curve`
-fitz.Shape.drawLine              :meth:`Shape.draw_line`
-fitz.Shape.drawOval              :meth:`Shape.draw_oval`
-fitz.Shape.drawPolyline          :meth:`Shape.draw_polyline`
-fitz.Shape.drawQuad              :meth:`Shape.draw_quad`
-fitz.Shape.drawRect              :meth:`Shape.draw_rect`
-fitz.Shape.drawSector            :meth:`Shape.draw_sector`
-fitz.Shape.drawSquiggle          :meth:`Shape.draw_squiggle`
-fitz.Shape.drawZigzag            :meth:`Shape.draw_zigzag`
-fitz.Shape.insertText            :meth:`Shape.insert_text`
-fitz.Shape.insertTextbox         :meth:`Shape.insert_textbox`
-fitz.TextWriter.fillTextbox      :meth:`TextWriter.fill_textbox`
-fitz.TextWriter.writeText        :meth:`TextWriter.write_text`
-================================ ===================================
+.. data:: CropBox
+
+    :meth:`Page.cropbox`
+
+.. data:: CropBoxPosition
+
+    :meth:`Page.cropbox_position`
+
+.. data:: MediaBox
+
+    :meth:`Page.mediabox`
+
+.. data:: MediaBoxSize
+
+    :meth:`Page.mediabox_size`
+
+.. data:: PDFCatalog
+
+    :meth:`Document.pdf_catalog`
+
+.. data:: PDFTrailer
+
+    :meth:`Document.pdf_trailer`
+
+.. data:: _isWrapped
+
+    :meth:`Page.is_wrapped`
+
+.. data:: chapterCount
+
+    :meth:`Document.chapter_count`
+
+.. data:: chapterPageCount
+
+    :meth:`Document.chapter_page_count`
+
+.. data:: cleanContents
+
+    :meth:`Page.clean_contents`
+
+.. data:: convertToPDF
+
+    :meth:`Document.convert_to_pdf`
+
+.. data:: copyPage
+
+    :meth:`Document.copy_page`
+
+.. data:: deleteAnnot
+
+    :meth:`Page.delete_annot`
+
+.. data:: deleteLink
+
+    :meth:`Page.delete_link`
+
+.. data:: deletePage
+
+    :meth:`Document.delete_page`
+
+.. data:: deletePageRange
+
+    :meth:`Document.delete_pages`
+
+.. data:: deleteWidget
+
+    :meth:`Page.delete_widget`
+
+.. data:: derotationMatrix
+
+    :meth:`Page.derotation_matrix`
+
+.. data:: drawBezier
+
+    :meth:`Page.draw_bezier`
+
+    :meth:`Shape.draw_bezier`
+
+.. data:: drawCircle
+
+    :meth:`Page.draw_circle`
+
+    :meth:`Shape.draw_circle`
+
+.. data:: drawCurve
+
+    :meth:`Page.draw_curve`
+
+    :meth:`Shape.draw_curve`
+
+.. data:: drawLine
+
+    :meth:`Page.draw_line`
+
+    :meth:`Shape.draw_line`
+
+.. data:: drawOval
+
+    :meth:`Page.draw_oval`
+
+    :meth:`Shape.draw_oval`
+
+.. data:: drawPolyline
+
+    :meth:`Page.draw_polyline`
+
+    :meth:`Shape.draw_polyline`
+
+.. data:: drawQuad
+
+    :meth:`Page.draw_quad`
+
+    :meth:`Shape.draw_quad`
+
+.. data:: drawRect
+
+    :meth:`Page.draw_rect`
+
+    :meth:`Shape.draw_rect`
+
+.. data:: drawSector
+
+    :meth:`Page.draw_sector`
+
+    :meth:`Shape.draw_sector`
+
+.. data:: drawSquiggle
+
+    :meth:`Page.draw_squiggle`
+
+    :meth:`Shape.draw_squiggle`
+
+.. data:: drawZigzag
+
+    :meth:`Page.draw_zigzag`
+
+    :meth:`Shape.draw_zigzag`
+
+.. data:: embeddedFileAdd
+
+    :meth:`Document.embfile_add`
+
+.. data:: embeddedFileCount
+
+    :meth:`Document.embfile_count`
+
+.. data:: embeddedFileDel
+
+    :meth:`Document.embfile_del`
+
+.. data:: embeddedFileGet
+
+    :meth:`Document.embfile_get`
+
+.. data:: embeddedFileInfo
+
+    :meth:`Document.embfile_info`
+
+.. data:: embeddedFileNames
+
+    :meth:`Document.embfile_names`
+
+.. data:: embeddedFileUpd
+
+    :meth:`Document.embfile_upd`
+
+.. data:: extractFont
+
+    :meth:`Document.extract_font`
+
+.. data:: extractImage
+
+    :meth:`Document.extract_image`
+
+.. data:: fileGet
+
+    :meth:`Annot.get_file`
+
+.. data:: fileUpd
+
+    :meth:`Annot.update_file`
+
+.. data:: fillTextbox
+
+    :meth:`TextWriter.fill_textbox`
+
+.. data:: findBookmark
+
+    :meth:`Document.find_bookmark`
+
+.. data:: firstAnnot
+
+    :meth:`Page.first_annot`
+
+.. data:: firstLink
+
+    :meth:`Page.first_link`
+
+.. data:: firstWidget
+
+    :meth:`Page.first_widget`
+
+.. data:: fullcopyPage
+
+    :meth:`Document.fullcopy_page`
+
+.. data:: getCharWidths
+
+    :meth:`Document.get_char_widths`
+
+.. data:: getContents
+
+    :meth:`Page.get_contents`
+
+.. data:: getDisplayList
+
+    :meth:`Page.get_displaylist`
+
+.. data:: getDrawings
+
+    :meth:`Page.get_drawings`
+
+.. data:: getFontList
+
+    :meth:`Page.get_fonts`
+
+.. data:: getImageBbox
+
+    :meth:`Page.get_image_bbox`
+
+.. data:: getImageList
+
+    :meth:`Page.get_images`
+
+.. data:: getLinks
+
+    :meth:`Page.get_links`
+
+.. data:: getOCGs
+
+    :meth:`Document.get_ocgs`
+
+.. data:: getPageFontList
+
+    :meth:`Document.get_page_fonts`
+
+.. data:: getPageImageList
+
+    :meth:`Document.get_page_images`
+
+.. data:: getPagePixmap
+
+    :meth:`Document.get_page_pixmap`
+
+.. data:: getPageText
+
+    :meth:`Document.get_page_text`
+
+.. data:: getPageXObjectList
+
+    :meth:`Document.get_page_xobjects`
+
+.. data:: getPixmap
+
+    :meth:`Annot.get_pixmap`
+
+    :meth:`Page.get_pixmap`
+
+.. data:: getSVGimage
+
+    :meth:`Page.get_svg_image`
+
+.. data:: getSigFlags
+
+    :meth:`Document.get_sigflags`
+
+.. data:: getText
+
+    :meth:`Annot.get_text`
+
+    :meth:`Page.get_text`
+
+.. data:: getTextBlocks
+
+    :meth:`Page.get_text_blocks`
+
+.. data:: getTextPage
+
+    :meth:`Annot.get_textpage`
+
+    :meth:`Page.get_textpage`
+
+.. data:: getTextWords
+
+    :meth:`Page.get_text_words`
+
+.. data:: getTextbox
+
+    :meth:`Annot.get_textbox`
+
+    :meth:`Page.get_textbox`
+
+.. data:: getToC
+
+    :meth:`Document.get_toc`
+
+.. data:: getXmlMetadata
+
+    :meth:`Document.get_xml_metadata`
+
+.. data:: insertFont
+
+    :meth:`Page.insert_font`
+
+.. data:: insertImage
+
+    :meth:`Page.insert_image`
+
+.. data:: insertLink
+
+    :meth:`Page.insert_link`
+
+.. data:: insertPDF
+
+    :meth:`Document.insert_pdf`
+
+.. data:: insertPage
+
+    :meth:`Document.insert_page`
+
+.. data:: insertText
+
+    :meth:`Page.insert_text`
+
+    :meth:`Shape.insert_text`
+
+.. data:: insertTextbox
+
+    :meth:`Page.insert_textbox`
+
+    :meth:`Shape.insert_textbox`
+
+.. data:: isDirty
+
+    :meth:`Document.is_dirty`
+
+.. data:: isFormPDF
+
+    :meth:`Document.is_form_pdf`
+
+.. data:: isPDF
+
+    :meth:`Document.is_pdf`
+
+.. data:: isReflowable
+
+    :meth:`Document.is_reflowable`
+
+.. data:: isRepaired
+
+    :meth:`Document.is_repaired`
+
+.. data:: isStream
+
+    :meth:`Document.is_stream`
+
+.. data:: lastLocation
+
+    :meth:`Document.last_location`
+
+.. data:: lineEnds
+
+    :meth:`Annot.line_ends`
+
+.. data:: loadAnnot
+
+    :meth:`Page.load_annot`
+
+.. data:: loadLinks
+
+    :meth:`Page.load_links`
+
+.. data:: loadPage
+
+    :meth:`Document.load_page`
+
+.. data:: makeBookmark
+
+    :meth:`Document.make_bookmark`
+
+.. data:: metadataXML
+
+    :meth:`Document.xref_xml_metadata`
+
+.. data:: movePage
+
+    :meth:`Document.move_page`
+
+.. data:: needsPass
+
+    :meth:`Document.needs_pass`
+
+.. data:: newPage
+
+    :meth:`Document.new_page`
+
+.. data:: newShape
+
+    :meth:`Page.new_shape`
+
+.. data:: nextLocation
+
+    :meth:`Document.next_location`
+
+.. data:: pageCount
+
+    :meth:`Document.page_count`
+
+.. data:: pageCropBox
+
+    :meth:`Document.page_cropbox`
+
+.. data:: pageXref
+
+    :meth:`Document.page_xref`
+
+.. data:: previousLocation
+
+    :meth:`Document.prev_location`
+
+.. data:: readContents
+
+    :meth:`Page.read_contents`
+
+.. data:: resolveLink
+
+    :meth:`Document.resolve_link`
+
+.. data:: rotationMatrix
+
+    :meth:`Page.rotation_matrix`
+
+.. data:: searchFor
+
+    :meth:`Page.search_for`
+
+.. data:: searchPageFor
+
+    :meth:`Document.search_page_for`
+
+.. data:: setBlendMode
+
+    :meth:`Annot.set_blendmode`
+
+.. data:: setBorder
+
+    :meth:`Annot.set_border`
+
+.. data:: setColors
+
+    :meth:`Annot.set_colors`
+
+.. data:: setCropBox
+
+    :meth:`Page.set_cropbox`
+
+.. data:: setFlags
+
+    :meth:`Annot.set_flags`
+
+.. data:: setInfo
+
+    :meth:`Annot.set_info`
+
+.. data:: setLanguage
+
+    :meth:`Document.set_language`
+
+.. data:: setLineEnds
+
+    :meth:`Annot.set_line_ends`
+
+.. data:: setMediaBox
+
+    :meth:`Page.set_mediabox`
+
+.. data:: setMetadata
+
+    :meth:`Document.set_metadata`
+
+.. data:: setName
+
+    :meth:`Annot.set_name`
+
+.. data:: setOC
+
+    :meth:`Annot.set_oc`
+
+.. data:: setOpacity
+
+    :meth:`Annot.set_opacity`
+
+.. data:: setRect
+
+    :meth:`Annot.set_rect`
+
+.. data:: setRotation
+
+    :meth:`Page.set_rotation`
+
+.. data:: setToC
+
+    :meth:`Document.set_toc`
+
+.. data:: setXmlMetadata
+
+    :meth:`Document.set_xml_metadata`
+
+.. data:: showPDFpage
+
+    :meth:`Page.show_pdf_page`
+
+.. data:: soundGet
+
+    :meth:`Annot.get_sound`
+
+.. data:: transformationMatrix
+
+    :meth:`Page.transformation_matrix`
+
+.. data:: updateLink
+
+    :meth:`Page.update_link`
+
+.. data:: updateObject
+
+    :meth:`Document.update_object`
+
+.. data:: updateStream
+
+    :meth:`Document.update_stream`
+
+.. data:: wrapContents
+
+    :meth:`Page.wrap_contents`
+
+.. data:: writeText
+
+    :meth:`Page.write_text`
+
+    :meth:`TextWriter.write_text`
+
+.. data:: xrefLength
+
+    :meth:`Document.xref_length`
+
+.. data:: xrefObject
+
+    :meth:`Document.xref_object`
+
+.. data:: xrefStream
+
+    :meth:`Document.xref_stream`
+
+.. data:: xrefStreamRaw
+
+    :meth:`Document.xref_stream_raw`
+

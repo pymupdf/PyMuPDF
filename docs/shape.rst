@@ -9,7 +9,7 @@ In fact, each :ref:`Page` draw method is just a convenience wrapper for (1) one 
 
 Several draw methods can be executed in a row and each one of them will contribute to one drawing. Once the drawing is complete, the :meth:`finish` method must be invoked to apply color, dashing, width, morphing and other attributes.
 
-**Draw** methods of this class (and :meth:`insert_textbox`) are logging the area they are covering in a rectangle (:attr:`Shape.rect`). This property can for instance be used to set :attr:`Page.CropBox`.
+**Draw** methods of this class (and :meth:`insert_textbox`) are logging the area they are covering in a rectangle (:attr:`Shape.rect`). This property can for instance be used to set :attr:`Page.cropbox_position`.
 
 **Text insertions** :meth:`insert_text` and :meth:`insert_textbox` implicitely execute a "finish" and therefore only require :meth:`commit` to become effective. As a consequence, both include parameters for controlling prperties like colors, etc.
 
@@ -48,7 +48,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: __init__(self, page)
 
-      Create a new drawing. During importing PyMuPDF, the *fitz.Page* object is being given the convenience method *newShape()* to construct a *Shape* object. During instantiation, a check will be made whether we do have a PDF page. An exception is otherwise raised.
+      Create a new drawing. During importing PyMuPDF, the *fitz.Page* object is being given the convenience method *new_shape()* to construct a *Shape* object. During instantiation, a check will be made whether we do have a PDF page. An exception is otherwise raised.
 
       :arg page: an existing page of a PDF document.
       :type page: :ref:`Page`
@@ -84,6 +84,18 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Here is an example of three connected lines, forming a closed, filled triangle. Little arrows indicate the stroking direction.
 
+         >>> import fitz
+         >>> doc=fitz.open()
+         >>> page=doc.new_page()
+         >>> r = fitz.Rect(100, 100, 300, 200)
+         >>> shape=page.new_shape()
+         >>> shape.draw_squiggle(r.tl, r.tr)
+         >>> shape.draw_squiggle(r.tr, r.br)
+         >>> shape.draw_squiggle(r.br, r.tl)
+         >>> shape.finish(color=(0, 0, 1), fill=(1, 1, 0))
+         >>> shape.commit()
+         >>> doc.save("x.pdf")
+
       .. image:: images/img-squiggly.*
 
       .. note:: Waves drawn are **not** trigonometric (sine / cosine). If you need that, have a look at `draw-sines.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/draw-sines.py>`_.
@@ -93,7 +105,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: draw_zigzag(p1, p2, breadth=2)
 
-      Draw a zigzag line from :data:`point_like` objects *p1* to *p2*. An integer number of full zigzag periods will always be drawn, one period having a length of *4 * breadth*. The breadth parameter will be adjusted to meet this condition. The drawn line will always turn "left" when leaving *p1* and always join *p2* from the "right".
+      Draw a zigzag line from :data:`point_like` objects *p1* to *p2*. Otherwise works exactly like :meth:`Shape.draw_squiggle`.
 
       :arg point_like p1: starting point
 
@@ -163,7 +175,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: draw_curve(p1, p2, p3)
 
-      A special case of *drawBezier()*: Draw a cubic Bezier curve from *p1* to *p3*. On each of the two lines from *p1* to *p2* and from *p2* to *p3* one control point is generated. This guaranties that the curve's curvature does not change its sign. If these two connecting lines intersect with an angle of 90 degrees, then the resulting curve is a quarter ellipse (or quarter circle, if of same length) circumference.
+      A special case of *draw_bezier()*: Draw a cubic Bezier curve from *p1* to *p3*. On each of the two lines from *p1* to *p2* and from *p2* to *p3* one control point is generated. This guaranties that the curve's curvature does not change its sign. If these two connecting lines intersect with an angle of 90 degrees, then the resulting curve is a quarter ellipse (or quarter circle, if of same length) circumference.
 
       All arguments are :data:`point_like`.
 
@@ -332,18 +344,18 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       .. note:: For each pixel in a drawing the following will happen:
 
-         1. Rule **"even-odd"** counts, how many areas are overlapping at a pixel. If this count is **odd** the pixel is regarded **inside**, if it is **even**, the pixel is **outside**.
+         1. Rule **"even-odd"** counts, how many areas contain the pixel. If this count is **odd,** the pixel is regarded **inside**, if it is **even**, the pixel is **outside**.
 
-         2. Default rule **"nonzero winding"** also looks at the orientation of overlapping areas: it **adds 1** if an area is drawn anit-clockwise and it **subtracts 1** for clockwise areas. If the result is zero, the pixel is regarded **outside**, pixels with a non-zero count are **inside**.
+         2. Default rule **"nonzero winding"** also looks at the *"orientation"* of each area containing the pixel: it **adds 1** if an area is drawn anit-clockwise and it **subtracts 1** for clockwise areas. If the result is zero, the pixel is regarded **outside**, pixels with a non-zero count are **inside**.
 
-         In the top two shapes, three circles are drawn in standard manner (anti-clockwise, look at the arrows). The lower two shapes contain one (top-left) circle drawn clockwise. As can be seen, area orientation is irrelevant for the even-odd rule.
+         Of the four shapes in above image, the top two each show three circles drawn in standard manner (anti-clockwise, look at the arrows). The lower two shapes contain one (the top-left) circle drawn clockwise. As can be seen, area orientation is irrelevant for the even-odd rule.
 
    .. index::
       pair: overlay; commit
 
    .. method:: commit(overlay=True)
 
-      Update the page's :data:`contents` with the accumulated draw commands and text insertions. If a *Shape* is not committed, the page will not be changed.
+      Update the page's :data:`contents` with the accumulated draw commands and text insertions. If a *Shape* is **not committed, the page will not be changed!**
 
       The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, :attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, the shape object can be reused for the **same page**.
 
@@ -389,7 +401,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Rectangle surrounding drawings. This attribute is at your disposal and may be changed at any time. Its value is set to *None* when a shape is created or committed. Every *draw** method, and :meth:`Shape.insert_textbox` update this property (i.e. **enlarge** the rectangle as needed). **Morphing** operations, however (:meth:`Shape.finish`, :meth:`Shape.insert_textbox`) are ignored.
 
-      A typical use of this attribute would be setting :attr:`Page.CropBox` to this value, when you are creating shapes for later or external use. If you have not manipulated the attribute yourself, it should reflect a rectangle that contains all drawings so far.
+      A typical use of this attribute would be setting :attr:`Page.cropbox_position` to this value, when you are creating shapes for later or external use. If you have not manipulated the attribute yourself, it should reflect a rectangle that contains all drawings so far.
 
       If you have used morphing and need a rectangle containing the morphed objects, use the following code::
 
@@ -414,7 +426,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
 Usage
 ------
-A drawing object is constructed by *shape = page.newShape()*. After this, as many draw, finish and text insertions methods as required may follow. Each sequence of draws must be finished before the drawing is committed. The overall coding pattern looks like this::
+A drawing object is constructed by *shape = page.new_shape()*. After this, as many draw, finish and text insertions methods as required may follow. Each sequence of draws must be finished before the drawing is committed. The overall coding pattern looks like this::
 
    >>> shape = page.new_shape()
    >>> shape.draw1(...)
@@ -475,7 +487,7 @@ Here is an example for 5 colors:
           p0 = shape.draw_sector(center, p0, beta)
           points.append(p0)
       shape.draw_cont = ""  # do not draw the circle sectors
-      shape.drawPolyline(points)  # draw the polygon
+      shape.draw_polyline(points)  # draw the polygon
       shape.finish(color=(1,0,0), fill=(1,1,0), closePath=False)
       shape.commit()
 

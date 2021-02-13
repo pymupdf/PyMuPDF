@@ -278,7 +278,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the *savealpha* option is no longer supported and will be silently ignored.
 
-      :arg str filename: The filename to save to. The filename's extension determines the image format, if not overriden by the output parameter.
+      :arg str,Path,file filename: The file to save to. May be provided as a string, as a ``pathlib.Path`` or as a Python file object. In the latter two cases, the filename is taken from the resp. object. The filename's extension determines the image format, which can be overruled by the output parameter.
 
       :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
 
@@ -386,13 +386,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: x
 
-      X-coordinate of top-left corner
+      X-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.setOrigin`.
 
       :type: int
 
    .. attribute:: y
 
-      Y-coordinate of top-left corner
+      Y-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.setOrigin`.
 
       :type: int
 
@@ -410,7 +410,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: yres
 
-      Vertical resolution in dpi. Please also see :data:`resolution`.
+      Vertical resolution in dpi (dots per inch). Please also see :data:`resolution`.
 
       :type: int
 

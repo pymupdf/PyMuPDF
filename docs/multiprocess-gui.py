@@ -3,7 +3,7 @@ Created on 2019-05-01
 
 @author: yinkaisheng@live.com
 @copyright: 2019 yinkaisheng@live.com
-@license: GNU GPL 3.0+
+@license: GNU AFFERO GPL 3.0
 
 Demonstrate the use of multiprocessing with PyMuPDF
 -----------------------------------------------------

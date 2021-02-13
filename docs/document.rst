@@ -110,12 +110,12 @@ For details on **embedded files** refer to Appendix 3.
 :attr:`Document.is_encrypted`           document (still) encrypted?
 :attr:`Document.is_form_pdf`            is this a Form PDF?
 :attr:`Document.is_pdf`                 is this a PDF?
-:attr:`Document.isReflowable`           is this a reflowable document?
-:attr:`Document.isRepaired`             PDF only: has this PDF been repaired during open?
+:attr:`Document.is_reflowable`          is this a reflowable document?
+:attr:`Document.is_repaired`            PDF only: has this PDF been repaired during open?
 :attr:`Document.last_location`          (chapter, pno) of last page
 :attr:`Document.metadata`               metadata
 :attr:`Document.name`                   filename of document
-:attr:`Document.needsPass`              require password to access data?
+:attr:`Document.needs_pass`             require password to access data?
 :attr:`Document.outline`                first `Outline` item
 :attr:`Document.page_count`             number of pages
 :attr:`Document.permissions`            permissions to access the document
@@ -444,7 +444,7 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: int
       :returns: a positive value if successful, zero otherwise. If positive, the indicator :attr:`Document.is_encrypted` is set to *False*. Positive return codes carry the following information detail:
 
-        * bit 0 set => authenticated, but no password required -- happens if method was used although :meth:`needsPass` was zero.
+        * bit 0 set => authenticated, but no password required -- happens if method was used although :attr:`needs_pass` was zero.
         * bit 1 set => authenticated with the **user** password.
         * bit 2 set => authenticated with the **owner** password.
 
@@ -664,7 +664,7 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note:: The method uses the same logic as the *mutool convert* CLI. This works very well in most cases -- however, beware of the following limitations.
 
-        * Image files: perfect, no issues detected. Apparently however, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insertImage` instead. Otherwise, this method is recommended for its much better prformance.
+        * Image files: perfect, no issues detected. Apparently however, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insert_image` instead. Otherwise, this method is recommended for its much better prformance.
         * XPS: appearance very good. Links work fine, outlines (bookmarks) are lost, but can easily be recovered [#f2]_.
         * EPUB, CBZ, FB2: similar to XPS.
         * SVG: medium. Roughly comparable to `svglib <https://github.com/deeplook/svglib>`_.
@@ -777,7 +777,7 @@ For details on **embedded files** refer to Appendix 3.
         * **xref** (*int*) is the XObject's :data:`xref`
         * **name** (*str*) is the symbolic name to reference the XObject
         * **invoker** (*int*) the :data:`xref` of the invoking XObject or zero if the page directly invokes it
-        * **bbox** (*tuple*) the boundary box of the XObject's location on the page **in untransformed coordinates**. To get actual, non-rotated page coordinates, multiply with the page's transformation matrix :attr:`Page.transformationMatrix`.
+        * **bbox** (*tuple*) the boundary box of the XObject's location on the page **in untransformed coordinates**. To get actual, non-rotated page coordinates, multiply with the page's transformation matrix :attr:`Page.transformation_matrix`.
 
 
     .. method:: get_page_images(pno, full=False)
@@ -870,7 +870,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: layout(rect=None, width=0, height=0, fontsize=11)
 
-      Re-paginate ("reflow") the document based on the given page dimension and fontsize. This only affects some document types like e-books and HTML. Ignored if not supported. Supported documents have *True* in property :attr:`isReflowable`.
+      Re-paginate ("reflow") the document based on the given page dimension and fontsize. This only affects some document types like e-books and HTML. Ignored if not supported. Supported documents have *True* in property :attr:`is_reflowable`.
 
       :arg rect_like rect: desired page size. Must be finite, not empty and start at point (0, 0).
       :arg float width: use it together with *height* as alternative to *rect*.
@@ -889,7 +889,7 @@ For details on **embedded files** refer to Appendix 3.
 
           * On a technical level, the method will always create a new :data:`pagetree`.
 
-          * When dealing with only a few pages, methods :meth:`copyPage`, :meth:`move_page`, :meth:`delete_page` are easier to use. In fact, they are also **much faster** -- by at least one order of magnitude when the document has many pages.
+          * When dealing with only a few pages, methods :meth:`copy_page`, :meth:`move_page`, :meth:`delete_page` are easier to use. In fact, they are also **much faster** -- by at least one order of magnitude when the document has many pages.
 
 
     .. method:: set_metadata(m)
@@ -1153,7 +1153,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: insert_page(pno, text=None, fontsize=11, width=595, height=842, fontname="helv", fontfile=None, color=None)
 
-      PDF only: Insert a new page and insert some text. Convenience function which combines :meth:`Document.new_page` and (parts of) :meth:`Page.insertText`.
+      PDF only: Insert a new page and insert some text. Convenience function which combines :meth:`Document.new_page` and (parts of) :meth:`Page.insert_text`.
 
       :arg int pno: page number (0-based) **in front of which** to insert. Must be in *range(-1, len(doc) + 1)*. Special values -1 and *len(doc)* insert **after** the last page.
 
@@ -1163,7 +1163,7 @@ For details on **embedded files** refer to Appendix 3.
       For the other parameters, please consult the aforementioned methods.
 
       :rtype: int
-      :returns: the result of :meth:`Page.insertText` (number of successfully inserted lines).
+      :returns: the result of :meth:`Page.insert_text` (number of successfully inserted lines).
 
     .. method:: delete_page(pno=-1)
 
@@ -1228,7 +1228,7 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note::
       
-          * In contrast to :meth:`copyPage`, this method creates a new page object (with a new :data:`xref`), which can be changed independently from the original.
+          * In contrast to :meth:`copy_page`, this method creates a new page object (with a new :data:`xref`), which can be changed independently from the original.
 
           * Any Popup and "IRT" ("in response to") annotations are **not copied** to avoid potentially incorrect situations.
 
@@ -1470,21 +1470,18 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: subset_fonts()
 
-      *(New in v1.18.7)*
+      *(New in v1.18.7, changed in v1.18.9)*
 
-      PDF only: Investigate eligible fonts for their use by text in the document. If a font is supported and a size reduction is possible, a subset of that font is built with a reduced character set, and the respective text is rewritten.
+      PDF only: **Experimental:** Investigate eligible fonts for their use by text in the document. If a font is supported and a size reduction is possible, that font is replaced by a version with a character subset.
 
       Use this method immediately before saving the document. The following features and restrictions apply for the time being:
 
-      * Package `fontTools <https://pypi.org/project/fonttools/>`_  must be installed. It is required for creating the font subsets.
-      * Supported font types include only embedded OTF, TTF and WOFF that are not already subsets.
+      * Package `fontTools <https://pypi.org/project/fonttools/>`_ **must be installed**. It is required for creating the font subsets.
+      * Supported font types only include embedded OTF, TTF and WOFF that are **not already subsets**.
       * The script directory must be available for writing temporary files during the subsetting process.
-      * All text using a subsetted font will be rewritten. Under typical circumstances this should lead to an identical appearance, but the following deviations are possible:
-      
-        - Individual, by-character spacing is ignored, and resp. text is written with spacing as determined by the font.
-        - Rewritten text will always be visible: any previous restrictions like hidden text, optional content text, etc. are ignored.
+      * **Changed in v1.18.9:** A subset font directly replaces its original -- text remains untouched and **is not rewritten.** It thus should retain all its properties, like spacing, hiddenness, control by Optional Content, etc.
 
-      The greatest benefit can probably achieved when creating new PDFs using large fonts. In these cases the amount of text is typically relatively small. Using this feature can reduce the embedded font by more than 95% easily.
+      The greatest benefit can be achieved when creating new PDFs using large fonts like is typical for Asian scripts. In these cases, the set of actually used unicodes mostly is small compared to the number of glyphs in the font. Using this feature can easily reduce the embedded font binary by two orders of magnitude -- from several megabytes to a low two-digit kilobyte amount.
 
 
     .. attribute:: outline
@@ -1567,7 +1564,7 @@ For details on **embedded files** refer to Appendix 3.
 
       - *format* contains the document format (e.g. 'PDF-1.6', 'XPS', 'EPUB').
 
-      - *encryption* either contains *None* (no encryption), or a string naming an encryption method (e.g. *'Standard V4 R4 128-bit RC4'*). Note that an encryption method may be specified **even if** *needsPass=False*. In such cases not all permissions will probably have been granted. Check :attr:`Document.permissions` for details.
+      - *encryption* either contains *None* (no encryption), or a string naming an encryption method (e.g. *'Standard V4 R4 128-bit RC4'*). Note that an encryption method may be specified **even if** *needs_pass=False*. In such cases not all permissions will probably have been granted. Check :attr:`Document.permissions` for details.
 
       - If the date fields contain valid data (which need not be the case at all!), they are strings in the PDF-specific timestamp format "D:<TS><TZ>", where
 
@@ -1611,7 +1608,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :type: list
 
-.. NOTE:: For methods that change the structure of a PDF (:meth:`insert_pdf`, :meth:`select`, :meth:`copyPage`, :meth:`delete_page` and others), be aware that objects or properties in your program may have been invalidated or orphaned. Examples are :ref:`Page` objects and their children (links, annotations, widgets), variables holding old page counts, tables of content and the like. Remember to keep such variables up to date or delete orphaned objects. Also refer to :ref:`ReferenialIntegrity`.
+.. NOTE:: For methods that change the structure of a PDF (:meth:`insert_pdf`, :meth:`select`, :meth:`copy_page`, :meth:`delete_page` and others), be aware that objects or properties in your program may have been invalidated or orphaned. Examples are :ref:`Page` objects and their children (links, annotations, widgets), variables holding old page counts, tables of content and the like. Remember to keep such variables up to date or delete orphaned objects. Also refer to :ref:`ReferenialIntegrity`.
 
 :meth:`set_metadata` Example
 -------------------------------
@@ -1705,7 +1702,7 @@ Other Examples
 
 .. [#f1] Content streams describe what (e.g. text or images) appears where and how on a page. PDF uses a specialized mini language similar to PostScript to do this (pp. 985 in :ref:`AdobeManual`), which gets interpreted when a page is loaded.
 
-.. [#f2] However, you **can** use :meth:`Document.get_toc` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
+.. [#f2] However, you **can** use :meth:`Document.get_toc` and :meth:`Page.get_links` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
 
 .. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.next_location`, :meth:`Document.prev_location` and :attr:`Document.last_location` for maintaining a high level of coding efficiency.
 

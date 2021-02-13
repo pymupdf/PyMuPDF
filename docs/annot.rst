@@ -206,7 +206,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       :rtype: str
       :returns: the blend mode or *None*.
 
-         >>> annot=page.firstAnnot
+         >>> annot=page.first_annot
          >>> annot.blendmode
          'Multiply'
 
@@ -513,7 +513,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
 Annotation Icons in MuPDF
 -------------------------
-This is a list of icons referencable by name for annotation types 'Text' and 'FileAttachment'. You can use them via the *icon* parameter when adding an annotation, or use the as argument in :meth:`Annot.setName`. It is left to your discretion which item to choose when -- no mechanism will keep you from using e.g. the "Speaker" icon for a 'FileAttachment'.
+This is a list of icons referencable by name for annotation types 'Text' and 'FileAttachment'. You can use them via the *icon* parameter when adding an annotation, or use the as argument in :meth:`Annot.set_name`. It is left to your discretion which item to choose when -- no mechanism will keep you from using e.g. the "Speaker" icon for a 'FileAttachment'.
 
 .. image:: images/mupdf-icons.*
 
@@ -524,7 +524,7 @@ Change the graphical image of an annotation. Also update the "author" and the te
 
  doc = fitz.open("circle-in.pdf")
  page = doc[0]                          # page 0
- annot = page.firstAnnot                # get the annotation
+ annot = page.first_annot                # get the annotation
  annot.set_border(dashes=[3])           # set dashes to "3 on, 3 off ..."
 
  # set stroke and fill color to some blue

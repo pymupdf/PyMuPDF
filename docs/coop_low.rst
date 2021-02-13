@@ -12,7 +12,7 @@ Create a DisplayList
 ---------------------
 A :ref:`DisplayList` represents an interpreted document page. Methods for pixmap creation, text extraction and text search are  -- behind the curtain -- all using the page's display list to perform their tasks. If a page must be rendered several times (e.g. because of changed zoom levels), or if text search and text extraction should both be performed, overhead can be saved, if the display list is created only once and then used for all other tasks.
 
->>> dl = page.getDisplayList()              # create the display list
+>>> dl = page.get_displaylist()              # create the display list
 
 You can also create display lists for many pages "on stack" (in a list), may be during document open, during idling times, or you store it when a page is visited for the first time (e.g. in GUI scripts).
 
@@ -24,7 +24,7 @@ The following creates a Pixmap from a :ref:`DisplayList`. Parameters are the sam
 
 >>> pix = dl.get_pixmap()                    # create the page's pixmap
 
-The execution time of this statement may be up to 50% shorter than that of :meth:`Page.getPixMap`.
+The execution time of this statement may be up to 50% shorter than that of :meth:`Page.get_pixmap`.
 
 Perform Text Search
 ---------------------

@@ -220,7 +220,7 @@ The above script needed about 1 minute on my machine for 149 pictures with a tot
 
 Look `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-inserted.py>`_ for a more complete source code: it offers a directory selection dialog and skips unsupported files and non-file entries.
 
-.. note:: We might have used :meth:`Page.insertImage` instead of :meth:`Page.show_pdf_page`, and the result would have been a similar looking file. However, depending on the image type, it may store **images uncompressed**. Therefore, the save option *deflate = True* must be used to achieve a reasonable file size, which hugely increases the runtime for large numbers of images. So this alternative **cannot be recommended** here.
+.. note:: We might have used :meth:`Page.insert_image` instead of :meth:`Page.show_pdf_page`, and the result would have been a similar looking file. However, depending on the image type, it may store **images uncompressed**. Therefore, the save option *deflate = True* must be used to achieve a reasonable file size, which hugely increases the runtime for large numbers of images. So this alternative **cannot be recommended** here.
 
 **Method 2: Embedding Files**
 
@@ -268,7 +268,7 @@ This has a similar performance as the previous script and it also produces a sim
 .. index::
    triple: vector;image;SVG
    pair: show_pdf_page;examples
-   pair: insertImage;examples
+   pair: insert_image;examples
    pair: embfile_add;examples
 
 How to Create Vector Images
@@ -277,7 +277,7 @@ The usual way to create an image from a document page is :meth:`Page.get_pixmap`
 
 PyMuPDF also offers a way to create a **vector image** of a page in SVG format (scalable vector graphics, defined in XML syntax). SVG images remain precise across zooming levels (of course with the exception of any raster graphic elements embedded therein).
 
-Instruction *svg = page.getSVGimage(matrix=fitz.Identity)* delivers a UTF-8 string *svg* which can be stored with extension ".svg".
+Instruction *svg = page.get_svg_image(matrix=fitz.Identity)* delivers a UTF-8 string *svg* which can be stored with extension ".svg".
 
 ----------
 
@@ -503,10 +503,10 @@ This shows how to create a PNG file from a numpy array (several times faster tha
 How to Add Images to a PDF Page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are two methods to add images to a PDF page: :meth:`Page.insertImage` and :meth:`Page.show_pdf_page`. Both methods have things in common, but there also exist differences.
+There are two methods to add images to a PDF page: :meth:`Page.insert_image` and :meth:`Page.show_pdf_page`. Both methods have things in common, but there also exist differences.
 
 ============================== ===================================== =========================================
-**Criterion**                  :meth:`Page.insertImage`              :meth:`Page.show_pdf_page`
+**Criterion**                  :meth:`Page.insert_image`              :meth:`Page.show_pdf_page`
 ============================== ===================================== =========================================
 displayable content            image file, image in memory, pixmap   PDF page
 display resolution             image resolution                      vectorized (except raster page content)
@@ -516,7 +516,7 @@ keep aspect ratio              yes (default option)                  yes (defaul
 transparency (water marking)   depends on image                      yes
 location / placement           scaled to fit target rectangle        scaled to fit target rectangle
 performance                    automatic prevention of duplicates;   automatic prevention of duplicates;
-                               MD5 calculation on every execution    faster than :meth:`Page.insertImage`
+                               MD5 calculation on every execution    faster than :meth:`Page.insert_image`
 multi-page image support       no                                    yes
 ease of use                    simple, intuitive;                    simple, intuitive;
                                performance considerations apply      **usable for all document types**
@@ -524,9 +524,9 @@ ease of use                    simple, intuitive;                    simple, int
                                                                      PDF via :meth:`Document.convert_to_pdf`
 ============================== ===================================== =========================================
 
-Basic code pattern for :meth:`Page.insertImage`. **Exactly one** of the parameters **filename / stream / pixmap** must be given::
+Basic code pattern for :meth:`Page.insert_image`. **Exactly one** of the parameters **filename / stream / pixmap** must be given::
 
-    page.insertImage(
+    page.insert_image(
         rect,                  # where to place the image (rect-like)
         filename=None,         # image in a file
         stream=None,           # image in memory (bytes)
@@ -606,8 +606,8 @@ Responsible for this effect is the PDF creator (software or a human). For exampl
     header = "Header"  # text in header
     footer = "Page %i of %i"  # text in footer
     for page in doc:
-        page.insertText((50, 50), header)  # insert header
-        page.insertText(  # insert footer 50 points above page bottom
+        page.insert_text((50, 50), header)  # insert header
+        page.insert_text(  # insert footer 50 points above page bottom
             (50, page.rect.height - 50),
             footer % (page.number + 1, len(doc)),
         )
@@ -877,15 +877,15 @@ PyMuPDF provides ways to insert text on new or existing PDF pages with the follo
 
 All of the above is provided by three basic :ref:`Page`, resp. :ref:`Shape` methods:
 
-* :meth:`Page.insertFont` -- install a font for the page for later reference. The result is reflected in the output of :meth:`Document.get_page_fonts`. The font can be:
+* :meth:`Page.insert_font` -- install a font for the page for later reference. The result is reflected in the output of :meth:`Document.get_page_fonts`. The font can be:
 
     - provided as a file,
     - already present somewhere in **this or another** PDF, or
     - be a **built-in** font.
 
-* :meth:`Page.insertText` -- write some lines of text. Internally, this uses :meth:`Shape.insertText`.
+* :meth:`Page.insert_text` -- write some lines of text. Internally, this uses :meth:`Shape.insert_text`.
 
-* :meth:`Page.insertTextbox` -- fit text in a given rectangle. Here you can choose text alignment features (left, right, centered, justified) and you keep control as to whether text actually fits. Internally, this uses :meth:`Shape.insertTextbox`.
+* :meth:`Page.insert_textbox` -- fit text in a given rectangle. Here you can choose text alignment features (left, right, centered, justified) and you keep control as to whether text actually fits. Internally, this uses :meth:`Shape.insert_textbox`.
 
 .. note:: Both text insertion methods automatically install the font as necessary.
 
@@ -902,7 +902,7 @@ Output some text lines on a page::
     # the same result is achievable by
     # text = ["Some text", "spread across", "several lines."]
 
-    rc = page.insertText(p,  # bottom-left of 1st char
+    rc = page.insert_text(p,  # bottom-left of 1st char
                          text,  # the text (honors '\n')
                          fontname = "helv",  # the default font
                          fontsize = 11,  # the default font size
@@ -935,7 +935,7 @@ Here is another example. It inserts 4 text strings using the four different rota
     p3 = fitz.Point(25, page.rect.height - 25)
     p4 = fitz.Point(page.rect.width - 25, page.rect.height - 25)
     # create a Shape to draw on
-    shape = page.newShape()
+    shape = page.new_shape()
 
     # draw the insertion points as red, filled dots
     shape.draw_circle(p1,1)
@@ -945,10 +945,10 @@ Here is another example. It inserts 4 text strings using the four different rota
     shape.finish(width=0.3, color=red, fill=red)
 
     # insert the text strings
-    shape.insertText(p1, text1)
-    shape.insertText(p3, text2, rotate=90)
-    shape.insertText(p2, text3, rotate=-90)
-    shape.insertText(p4, text4, rotate=180)
+    shape.insert_text(p1, text1)
+    shape.insert_text(p3, text2, rotate=90)
+    shape.insert_text(p2, text3, rotate=-90)
+    shape.insert_text(p4, text4, rotate=180)
 
     # store our work to the page
     shape.commit()
@@ -985,7 +985,7 @@ This script fills 4 different rectangles with text, each time choosing a differe
     """We use a Shape object (something like a canvas) to output the text and
     the rectangles surrounding it for demonstration.
     """
-    shape = page.newShape()  # create Shape
+    shape = page.new_shape()  # create Shape
     shape.draw_rect(r1)  # draw rectangles
     shape.draw_rect(r2)  # giving them
     shape.draw_rect(r3)  # a yellow background
@@ -993,10 +993,10 @@ This script fills 4 different rectangles with text, each time choosing a differe
     shape.finish(width = 0.3, color = red, fill = gold)
     # Now insert text in the rectangles. Font "Helvetica" will be used
     # by default. A return code rc < 0 indicates insufficient space (not checked here).
-    rc = shape.insertTextbox(r1, t1, color = blue)
-    rc = shape.insertTextbox(r2, t2, color = blue, rotate = 90)
-    rc = shape.insertTextbox(r3, t3, color = blue, rotate = -90)
-    rc = shape.insertTextbox(r4, t4, color = blue, rotate = 180)
+    rc = shape.insert_textbox(r1, t1, color = blue)
+    rc = shape.insert_textbox(r2, t2, color = blue, rotate = 90)
+    rc = shape.insert_textbox(r3, t3, color = blue, rotate = -90)
+    rc = shape.insert_textbox(r4, t4, color = blue, rotate = 180)
     shape.commit()  # write all stuff to page /Contents
     doc.save("...")
 
@@ -1011,7 +1011,7 @@ How to Use Non-Standard Encoding
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Since v1.14, MuPDF allows Greek and Russian encoding variants for the :data:`Base14_Fonts`. In PyMuPDF this is supported via an additional *encoding* argument. Effectively, this is relevant for Helvetica, Times-Roman and Courier (and their bold / italic forms) and characters outside the ASCII code range only. Elsewhere, the argument is ignored. Here is how to request Russian encoding with the standard font Helvetica::
 
-    page.insertText(point, russian_text, encoding=fitz.TEXT_ENCODING_CYRILLIC)
+    page.insert_text(point, russian_text, encoding=fitz.TEXT_ENCODING_CYRILLIC)
 
 The valid encoding values are TEXT_ENCODING_LATIN (0), TEXT_ENCODING_GREEK (1), and TEXT_ENCODING_CYRILLIC (2, Russian) with Latin being the default. Encoding can be specified by all relevant font and text insertion methods.
 
@@ -1022,11 +1022,11 @@ If you change the fontname just slightly, you can also achieve an **encoding "mi
     import fitz
     doc=fitz.open()
     page = doc.new_page()
-    shape = page.newShape()
+    shape = page.new_shape()
     t="Sômé tèxt wìth nöñ-Lâtîn characterß."
-    shape.insertText((50,70), t, fontname="helv", encoding=fitz.TEXT_ENCODING_LATIN)
-    shape.insertText((50,90), t, fontname="HElv", encoding=fitz.TEXT_ENCODING_GREEK)
-    shape.insertText((50,110), t, fontname="HELV", encoding=fitz.TEXT_ENCODING_CYRILLIC)
+    shape.insert_text((50,70), t, fontname="helv", encoding=fitz.TEXT_ENCODING_LATIN)
+    shape.insert_text((50,90), t, fontname="HElv", encoding=fitz.TEXT_ENCODING_GREEK)
+    shape.insert_text((50,110), t, fontname="HELV", encoding=fitz.TEXT_ENCODING_CYRILLIC)
     shape.commit()
     doc.save("t.pdf")
 
@@ -1110,7 +1110,7 @@ This script shows a couple of ways to deal with 'FreeText' annotations::
     a1 = page.addFreetextAnnot(r1, t, color=red)
     a2 = page.addFreetextAnnot(r2, t, fontname="Ti", color=blue)
     a3 = page.addFreetextAnnot(r3, t, fontname="Co", color=blue, rotate=90)
-    a3.setBorder(width=0)
+    a3.set_border(width=0)
     a3.update(fontsize=8, fill_color=gold)
 
     # save the PDF
@@ -1175,8 +1175,8 @@ The following script creates an ink annotation with two mathematical curves (sin
     #------------------------------------------------------------------------------
     annot = page.addInkAnnot((sin_points, cos_points))
     # let it look a little nicer
-    annot.setBorder(width=0.3, dashes=[1,])  # line thickness, some dashing
-    annot.setColors(stroke=(0,0,1))  # make the lines blue
+    annot.set_border(width=0.3, dashes=[1,])  # line thickness, some dashing
+    annot.set_colors(stroke=(0,0,1))  # make the lines blue
     annot.update()  # update the appearance
 
     page.draw_rect(rect, width=0.3)  # only to demonstrate we did OK
@@ -1199,7 +1199,7 @@ The syntax for such operations is defined in "A Operator Summary" on page 985 of
 
 PyMuPDF implements a large part of the available features via its :ref:`Shape` class, which is comparable to notions like "canvas" in other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_).
 
-A shape is always created as a **child of a page**, usually with an instruction like *shape = page.newShape()*. The class defines numerous methods that perform drawing operations on the page's area. For example, *last_point = shape.draw_rect(rect)* draws a rectangle along the borders of a suitably defined *rect = fitz.Rect(...)*.
+A shape is always created as a **child of a page**, usually with an instruction like *shape = page.new_shape()*. The class defines numerous methods that perform drawing operations on the page's area. For example, *last_point = shape.draw_rect(rect)* draws a rectangle along the borders of a suitably defined *rect = fitz.Rect(...)*.
 
 The returned *last_point* **always** is the :ref:`Point` where drawing operation ended ("last point"). Every such elementary drawing requires a subsequent :meth:`Shape.finish` to "close" it, but there may be multiple drawings which have one common *finish()* method.
 
@@ -1212,7 +1212,7 @@ If you import this script, you can also directly use its graphics as in the foll
     Created on Sun Dec  9 08:34:06 2018
 
     @author: Jorj
-    @license: GNU GPL 3.0+
+    @license: GNU AFFERO GPL V3
 
     Create a list of available symbols defined in shapes_and_symbols.py
 
@@ -1248,11 +1248,11 @@ If you import this script, you can also directly use its graphics as in the foll
 
     doc = fitz.open()  # create empty PDF
     page = doc.new_page()  # create an empty page
-    shape = page.newShape()  # start a Shape (canvas)
+    shape = page.new_shape()  # start a Shape (canvas)
 
     for i, r in enumerate(rlist):
         tlist[i][0](shape, rlist[i])  # execute symbol creation
-        shape.insertText(rlist[i].br + p,  # insert description text
+        shape.insert_text(rlist[i].br + p,  # insert description text
                        tlist[i][1], fontsize=r.height/1.2)
 
     # store everything to the page's /Contents object
@@ -1277,7 +1277,7 @@ Extracting Drawings
 
 The drawing commands issued by a page can be extracted. Interestingly, this is possible for **all supported document types** -- not just PDF: so you can use it for XPS, EPUB and others as well.
 
-A new page method, :meth:`Page.getDrawings()` accesses draw commands and converts them into a list of Python dictionaries. Each dictionary -- called a "path" -- represents a separate drawing -- it may be simple like a single line, or a complex combination of lines and curves representing one of the shapes of the previous section.
+A new page method, :meth:`Page.get_drawings()` accesses draw commands and converts them into a list of Python dictionaries. Each dictionary -- called a "path" -- represents a separate drawing -- it may be simple like a single line, or a complex combination of lines and curves representing one of the shapes of the previous section.
 
 The *path* dictionary has been designed such that it can easily be used by the :ref:`Shape` class and its methods.
 
@@ -1286,14 +1286,14 @@ The following is a code snippet which extracts the drawings of a page and re-dra
     import fitz
     doc = fitz.open("some.file")
     page = doc[0]
-    paths = page.getDrawings()  # extract existing drawings
+    paths = page.get_drawings()  # extract existing drawings
     # this is a list of "paths", which can directly be drawn again using Shape
     # -------------------------------------------------------------------------
     #
     # define some output page with the same dimensions
     outpdf = fitz.open()
     outpage = outpdf.new_page(width=page.rect.width, height=page.rect.height)
-    shape = outpage.newShape()  # make a drawing canvas for the output page
+    shape = outpage.new_shape()  # make a drawing canvas for the output page
     # --------------------------------------
     # loop through the paths and draw them
     # --------------------------------------
@@ -1307,7 +1307,7 @@ The following is a code snippet which extracts the drawings of a page and re-dra
             elif item[0] == "re":  # rectangle
                 shape.draw_rect(item[1])
             elif item[0] == "c":  # curve
-                shape.drawBezier(item[1], item[2], item[3], item[4])
+                shape.draw_bezier(item[1], item[2], item[3], item[4])
             else:
                 raise ValueError("unhandled drawing", item)
         # ------------------------------------------------------
@@ -1339,7 +1339,7 @@ Here is a comparison between input and output of an example page, created by the
 
 .. note:: The reconstruction of graphics like shown here is not perfect. The following aspects will not be reproduced as of this version:
 
-   * Page definitions can be complex and include instructions for not showing / hiding certain areas to keep them invisible. Things like this are ignored by :meth:`Page.getDrawings` - it will always return all paths.
+   * Page definitions can be complex and include instructions for not showing / hiding certain areas to keep them invisible. Things like this are ignored by :meth:`Page.get_drawings` - it will always return all paths.
 
 .. note:: You can use the path list to make your own lists of e.g. all lines or all rectangles on the page, subselect them by criteria like color or position on the page etc.
 
@@ -1405,7 +1405,7 @@ Also look at the sections above and at chapter :ref:`Appendix 3`.
 
 How to Delete and Re-Arrange Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-With PyMuPDF you have all options to copy, move, delete or re-arrange the pages of a PDF. Intuitive methods exist that allow you to do this on a page-by-page level, like the :meth:`Document.copyPage` method.
+With PyMuPDF you have all options to copy, move, delete or re-arrange the pages of a PDF. Intuitive methods exist that allow you to do this on a page-by-page level, like the :meth:`Document.copy_page` method.
 
 Or you alternatively prepare a complete new page layout in form of a Python sequence, that contains the page numbers you want, in the sequence you want, and as many times as you want each page. The following may illustrate what can be done with :meth:`Document.select`:
 
@@ -1434,13 +1434,13 @@ The following example will reverse the order of all pages (**extremely fast:** s
 
 >>> lastPage = len(doc) - 1
 >>> for i in range(lastPage):
-        doc.movePage(lastPage, i)  # move current last page to the front
+        doc.move_page(lastPage, i)  # move current last page to the front
 
 This snippet duplicates the PDF with itself so that it will contain the pages *0, 1, ..., n, 0, 1, ..., n* **(extremely fast and without noticeably increasing the file size!)**:
 
 >>> page_count = len(doc)
 >>> for i in range(page_count):
-        doc.copyPage(i)  # copy this page to after last page
+        doc.copy_page(i)  # copy this page to after last page
 
 ----------
 
@@ -1555,7 +1555,7 @@ This deals with splitting up pages of a PDF in arbitrary pieces. For example, yo
     """
     Create a PDF copy with split-up pages (posterize)
     ---------------------------------------------------
-    License: GNU GPL V3
+    License: GNU AFFERO GPL V3
     (c) 2018 Jorj X. McKie
 
     Usage
@@ -1585,8 +1585,8 @@ This deals with splitting up pages of a PDF in arbitrary pieces. For example, yo
 
     for spage in src:  # for each page in input
         r = spage.rect  # input page rectangle
-        d = fitz.Rect(spage.CropBoxPosition,  # CropBox displacement if not
-                      spage.CropBoxPosition)  # starting at (0, 0)
+        d = fitz.Rect(spage.cropbox_position,  # CropBox displacement if not
+                      spage.cropbox_position)  # starting at (0, 0)
         #--------------------------------------------------------------------------
         # example: cut input page into 2 x 2 parts
         #--------------------------------------------------------------------------
@@ -1629,7 +1629,7 @@ This deals with joining PDF pages to form a new PDF with pages each combining tw
     '''
     Copy an input PDF to output combining every 4 pages
     ---------------------------------------------------
-    License: GNU GPL V3
+    License: GNU AFFERO GPL V3
     (c) 2018 Jorj X. McKie
 
     Usage
@@ -1751,7 +1751,7 @@ It features maintaining any metadata, table of contents and links contained in t
     link_cnti = 0
     link_skip = 0
     for pinput in doc:  # iterate through input pages
-        links = pinput.getLinks()  # get list of links
+        links = pinput.get_links()  # get list of links
         link_cnti += len(links)  # count how many
         pout = pdf[pinput.number]  # read corresp. output page
         for l in links:  # iterate though the links
@@ -1759,7 +1759,7 @@ It features maintaining any metadata, table of contents and links contained in t
                 print("named link page", pinput.number, l)
                 link_skip += 1  # count them
                 continue
-            pout.insertLink(l)  # simply output the others
+            pout.insert_link(l)  # simply output the others
 
     # save the conversion result
     pdf.save(fn + ".pdf", garbage=4, deflate=True)
@@ -1782,7 +1782,7 @@ MuPDF warnings continue to be stored in an internal buffer and can be viewed usi
 
 Please note that MuPDF errors may or may not lead to Python exceptions. In other words, you may see error messages from which MuPDF can recover and continue processing.
 
-Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a few information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.isDirty` attribute at this point also indicates that the open had to repair the document:
+Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a few information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that the open had to repair the document:
 
 >>> import fitz
 >>> doc = fitz.open("damaged-file.pdf")  # leads to a sys.stderr message:
@@ -1796,7 +1796,7 @@ object missing 'endobj' token
 False
 >>> # the following indicates whether there are updates so far
 >>> # this is the case because of the repair actions:
->>> doc.isDirty
+>>> doc.is_dirty
 True
 >>> # the document has nevertheless been created:
 >>> doc
@@ -1822,7 +1822,7 @@ How to Deal with PDF Encryption
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Starting with version 1.16.0, PDF decryption and encryption (using passwords) are fully supported. You can do the following:
 
-* Check whether a document is password protected / (still) encrypted (:attr:`Document.needsPass`, :attr:`Document.is_encrypted`).
+* Check whether a document is password protected / (still) encrypted (:attr:`Document.needs_pass`, :attr:`Document.is_encrypted`).
 * Gain access authorization to a document (:meth:`Document.authenticate`).
 * Set encryption details for PDF files using :meth:`Document.save` or :meth:`Document.write` and
 
@@ -1854,7 +1854,7 @@ The following snippet creates a new PDF and encrypts it with separate user and o
     encrypt_meth = fitz.PDF_ENCRYPT_AES_256  # strongest algorithm
     doc = fitz.open()  # empty pdf
     page = doc.new_page()  # empty page
-    page.insertText((50, 72), text)  # insert the data
+    page.insert_text((50, 72), text)  # insert the data
     doc.save(
         "secret.pdf",
         encryption=encrypt_meth,  # set the encryption method
@@ -1969,7 +1969,7 @@ where they should have done this::
 Solutions
 ^^^^^^^^^^
 
-Since v1.16.0, there is the property :attr:`Page._isWrapped`, which lets you check whether a page's contents are wrapped in that string pair.
+Since v1.16.0, there is the property :attr:`Page.is_wrapped`, which lets you check whether a page's contents are wrapped in that string pair.
 
 If it is *False* or if you want to be on the safe side, pick one of the following:
 
@@ -1985,12 +1985,12 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 * **Prepend** the missing stacking command by executing *fitz.TOOLS._insert_contents(page, b"q\n", False)*.
 * **Append** an unstacking command by executing *fitz.TOOLS._insert_contents(page, b"\nQ", True)*.
-* Alternatively, just use :meth:`Page._wrapContents`, which executes the previous two functions.
+* Alternatively, just use :meth:`Page._wrap_contents`, which executes the previous two functions.
 
 .. note:: If small incremental update deltas are a concern, this approach is the most effective. Other contents objects are not touched. The utility method creates two new PDF :data:`stream` objects and inserts them before, resp. after the page's other :data:`contents`. We therefore recommend the following snippet to get this situation under control:
 
-    >>> if not page._isWrapped:
-            page._wrapContents()
+    >>> if not page.is_wrapped:
+            page.wrap_contents()
     >>> # start inserting text, images or annotations here
 
 --------------------------
@@ -2067,7 +2067,7 @@ How to Handle Object Streams
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Some object types contain additional data apart from their object definition. Examples are images, fonts, embedded files or commands describing the appearance of a page.
 
-Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xrefStream` with the object's :data:`xref` as an argument. And it is also possible to write back a modified version of a stream using :meth:`Document.updatefStream`.
+Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xref_stream` with the object's :data:`xref` as an argument. And it is also possible to write back a modified version of a stream using :meth:`Document.updatefStream`.
 
 Assume that the following snippet wants to read all streams of a PDF for whatever reason::
 

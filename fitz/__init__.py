@@ -70,7 +70,7 @@ fitz.Page.draw_sector = fitz.utils.draw_sector
 fitz.Page.draw_squiggle = fitz.utils.draw_squiggle
 fitz.Page.draw_zigzag = fitz.utils.draw_zigzag
 fitz.Page.get_links = fitz.utils.get_links
-fitz.Page.get_pixmap = fitz.utils.getPixmap
+fitz.Page.get_pixmap = fitz.utils.get_pixmap
 fitz.Page.get_text = fitz.utils.getText
 fitz.Page.get_text_blocks = fitz.utils.getTextBlocks
 fitz.Page.get_text_selection = fitz.utils.getTextSelection
@@ -114,7 +114,6 @@ fitz.TextWriter.fill_textbox = fitz.utils.fillTextbox
 
 def restore_aliases():
     # deprecated Document aliases
-    fitz.Document.adOCG = fitz.Document.add_ocg
     fitz.Document.chapterCount = fitz.Document.chapter_count
     fitz.Document.chapterPageCount = fitz.Document.chapter_page_count
     fitz.Document.convertToPDF = fitz.Document.convert_to_pdf

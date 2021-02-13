@@ -26,7 +26,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
 :meth:`Document.extract_font`        PDF only: extract embedded font
 :meth:`Document.extract_image`       PDF only: extract embedded image
-:meth:`Document.getCharWidths`       PDF only: return a list of glyph widths of a font
+:meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
 :meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
 :attr:`Document.FontInfos`           PDF only: information on inserted fonts
 :meth:`ImageProperties`              return a dictionary of basic image properties
@@ -264,15 +264,15 @@ Yet others are handy, general-purpose utilities.
       Calculate the length of text on output with a given **builtin** font, fontsize and encoding.
 
       :arg str text: the text string.
-      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth.`Page.insertFont`).
+      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth.`Page.insert_font`).
       :arg float fontsize: size of the font.
       :arg int encoding: the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic (Russian) are available. Relevant for Base-14 fonts "Helvetica", "Courier" and "Times" and their variants only. Make sure to use the same value as in the corresponding text insertion.
       :rtype: float
-      :returns: the length in points the string will have (e.g. when used in :meth:`Page.insertText`).
+      :returns: the length in points the string will have (e.g. when used in :meth:`Page.insert_text`).
 
       .. note:: This function will only do the calculation -- it won't insert font or text.
 
-      .. warning:: If you use this function to determine the required rectangle width for the (:ref:`Page` or :ref:`Shape`) *insertTextbox* methods, be aware that they calculate on a **by-character level**. Because of rounding effects, this will mostly lead to a slightly larger number: *sum([fitz.getTextlength(c) for c in text]) > fitz.getTextlength(text)*. So either (1) do the same, or (2) use something like *fitz.getTextlength(text + "'")* for your calculation.
+      .. warning:: If you use this function to determine the required rectangle width for the (:ref:`Page` or :ref:`Shape`) *insert_textbox* methods, be aware that they calculate on a **by-character level**. Because of rounding effects, this will mostly lead to a slightly larger number: *sum([fitz.getTextlength(c) for c in text]) > fitz.getTextlength(text)*. So either (1) do the same, or (2) use something like *fitz.getTextlength(text + "'")* for your calculation.
 
 -----
 
@@ -358,7 +358,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document.xml_metadata_xref()
 
-      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xrefStream` and then work with it using some XML software.
+      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xref_stream` and then work with it using some XML software.
 
       :rtype: int
       :returns: :data:`xref` of PDF file level XML metadata -- or 0 if none exists.
@@ -449,7 +449,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document.get_char_widths(xref=0, limit=256)
 
-      Return a list of character glyphs and their widths for a font that is present in the document. A font must be specified by its PDF cross reference number :data:`xref`. This function is called automatically from :meth:`Page.insertText` and :meth:`Page.insertTextbox`. So you should rarely need to do this yourself.
+      Return a list of character glyphs and their widths for a font that is present in the document. A font must be specified by its PDF cross reference number :data:`xref`. This function is called automatically from :meth:`Page.insert_text` and :meth:`Page.insert_textbox`. So you should rarely need to do this yourself.
 
       :arg int xref: cross reference number of a font embedded in the PDF. To find a font :data:`xref`, use e.g. *doc.get_page_fonts(pno)* of page number *pno* and take the first entry of one of the returned list entries.
 
@@ -582,7 +582,7 @@ Yet others are handy, general-purpose utilities.
 
    .. attribute:: Document.FontInfos
 
-       Contains following information for any font inserted via :meth:`Page.insertFont` in **this** session of PyMuPDF:
+       Contains following information for any font inserted via :meth:`Page.insert_font` in **this** session of PyMuPDF:
 
        * xref *(int)* -- XREF number of the */Type/Font* object.
        * info *(dict)* -- detail font information with the following keys:

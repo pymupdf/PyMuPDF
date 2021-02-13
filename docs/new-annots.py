@@ -78,7 +78,7 @@ print_descr(annot)
 # Adding text marker annotations:
 # first insert a unique text, then search for it, then mark it
 pos = annot.rect.tl + displ.tl
-page.insertText(
+page.insert_text(
     pos,  # insertion point
     highlight,  # inserted text
     morph=(pos, fitz.Matrix(-5)),  # rotate around insertion point
@@ -88,19 +88,19 @@ annot = page.addHighlightAnnot(rl[0])
 print_descr(annot)
 
 pos = annot.rect.bl  # next insertion point
-page.insertText(pos, underline, morph=(pos, fitz.Matrix(-10)))
+page.insert_text(pos, underline, morph=(pos, fitz.Matrix(-10)))
 rl = page.search_for(underline, quads=True)
 annot = page.addUnderlineAnnot(rl[0])
 print_descr(annot)
 
 pos = annot.rect.bl
-page.insertText(pos, strikeout, morph=(pos, fitz.Matrix(-15)))
+page.insert_text(pos, strikeout, morph=(pos, fitz.Matrix(-15)))
 rl = page.search_for(strikeout, quads=True)
 annot = page.addStrikeoutAnnot(rl[0])
 print_descr(annot)
 
 pos = annot.rect.bl
-page.insertText(pos, squiggled, morph=(pos, fitz.Matrix(-20)))
+page.insert_text(pos, squiggled, morph=(pos, fitz.Matrix(-20)))
 rl = page.search_for(squiggled, quads=True)
 annot = page.addSquigglyAnnot(rl[0])
 print_descr(annot)

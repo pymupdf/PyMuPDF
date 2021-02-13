@@ -43,7 +43,7 @@ The following 14 builtin font names **must be supported by every PDF viewer** ap
 
 In contrast to their obligation, not all PDF viewers support these fonts correctly and completely -- this is especially true for Symbol and ZapfDingbats. Also, the glyph (visual) images will be specific to every reader.
 
-To see how these fonts can be used -- including the **CJK built-in** fonts -- look at the table in :meth:`Page.insertFont`.
+To see how these fonts can be used -- including the **CJK built-in** fonts -- look at the table in :meth:`Page.insert_font`.
 
 ------------
 
@@ -136,7 +136,7 @@ All pages, links and annotations have the property *parent*, which points to the
 A sample session:
 
 >>> page = doc[n]
->>> annot = page.firstAnnot
+>>> annot = page.first_annot
 >>> annot.type                    # everything works fine
 [5, 'Circle']
 >>> page = None                   # this turns 'annot' into an orphan
@@ -145,7 +145,7 @@ A sample session:
 RuntimeError: orphaned object: parent is None
 >>>
 >>> # same happens, if you do this:
->>> annot = doc[n].firstAnnot     # deletes the page again immediately!
+>>> annot = doc[n].first_annot     # deletes the page again immediately!
 >>> annot.type                    # so, 'annot' is 'born' orphaned
 <... omitted lines ...>
 RuntimeError: orphaned object: parent is None
@@ -154,7 +154,7 @@ This shows the cascading effect:
 
 >>> doc = fitz.open("some.pdf")
 >>> page = doc[n]
->>> annot = page.firstAnnot
+>>> annot = page.first_annot
 >>> page.rect
 fitz.Rect(0.0, 0.0, 595.0, 842.0)
 >>> annot.type
@@ -181,8 +181,8 @@ Purpose and Capabilities
 
 The method displays an image of a ("source") page of another PDF document within a specified rectangle of the current ("containing", "target") page.
 
-* **In contrast** to :meth:`Page.insertImage`, this display is vector-based and hence remains accurate across zooming levels.
-* **Just like** :meth:`Page.insertImage`, the size of the display is adjusted to the given rectangle.
+* **In contrast** to :meth:`Page.insert_image`, this display is vector-based and hence remains accurate across zooming levels.
+* **Just like** :meth:`Page.insert_image`, the size of the display is adjusted to the given rectangle.
 
 The following variations of the display are currently supported:
 

@@ -16,7 +16,8 @@ This class is a collection of utility methods and attributes, mainly around memo
 :meth:`Tools.reset_mupdf_warnings`     empty MuPDF messages on STDOUT
 :meth:`Tools.set_aa_level`             set the anti-aliasing values
 :meth:`Tools.set_annot_stem`           set the prefix of new annotation / link ids
-:meth:`Tools.set_small_glyph_heights`  search and extract small bbox heights
+:meth:`Tools.set_small_glyph_heights`  search and extract using small bbox heights
+:meth:`Tools.set_subset_fontnames`     control suppression of subset fontname tags
 :meth:`Tools.show_aa_level`            return the anti-aliasing values
 :attr:`Tools.fitz_config`              configuration settings of PyMuPDF
 :attr:`Tools.store_maxsize`            maximum storables cache size
@@ -62,6 +63,20 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       :rtype: bool
       :returns: *True* or *False*.
+
+
+   .. method:: set_subset_fontnames(on=None)
+
+      *(New in v1.18.9)*
+
+      Control suppression of subset fontname tags in text extractions.
+
+      :arg bool on: if omitted / ``None``, the current setting is returned. For other values the *bool()* built-in function is applied to set a global variable. If *True*, options "dict", "json", "rawdict" and "rawjson" will return e.g. "NOHSJV+Calibri-Light", otherwise (default) "Calibri-Light".
+
+      :rtype: bool
+      :returns: *True* or *False*.
+
+      .. note:: No other text extraction variants can be influenced by this. This is especially true for the MuPDF-based options XMHL, (X)HTML.
 
 
    .. method:: image_profile(stream)

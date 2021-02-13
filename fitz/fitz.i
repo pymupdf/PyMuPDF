@@ -6599,34 +6599,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //----------------------------------------------------------------
-        // create pixmap from filename
-        //----------------------------------------------------------------
-        /*
-        Pixmap(char *filename)
-        {
-            fz_image *img = NULL;
-            fz_pixmap *pm = NULL;
-            fz_try(gctx) {
-                img = fz_new_image_from_file(gctx, filename);
-                pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
-                int xres, yres;
-                fz_image_resolution(img, &xres, &yres);
-                pm->xres = xres;
-                pm->yres = yres;
-            }
-            fz_always(gctx) {
-                fz_drop_image(gctx, img);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return (struct Pixmap *) pm;
-        }
-        */
 
         //----------------------------------------------------------------
-        // create pixmap from filename, pathlib.Path or in-memory image
+        // create pixmap from filename, file object, pathlib.Path or memory
         //----------------------------------------------------------------
         Pixmap(PyObject *imagedata)
         {
@@ -6634,9 +6609,15 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             fz_image *img = NULL;
             fz_pixmap *pm = NULL;
             PyObject *fname = NULL;
+            PyObject *name = PyUnicode_FromString("name");
             fz_try(gctx) {
                 if (PyObject_HasAttrString(imagedata, "resolve")) {
                     fname = PyObject_CallMethod(imagedata, "__str__", NULL);
+                    if (fname) {
+                        img = fz_new_image_from_file(gctx, JM_StrAsChar(fname));
+                    }
+                } else if (PyObject_HasAttr(imagedata, name)) {
+                    fname = PyObject_GetAttr(imagedata, name);
                     if (fname) {
                         img = fz_new_image_from_file(gctx, JM_StrAsChar(fname));
                     }
@@ -6657,6 +6638,7 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             }
             fz_always(gctx) {
                 Py_CLEAR(fname);
+                Py_CLEAR(name);
                 fz_drop_image(gctx, img);
                 fz_drop_buffer(gctx, res);
             }
@@ -6968,14 +6950,18 @@ def writeImage(self, filename, output=None):
     """Output as image in format determined by filename extension.
 
     Args:
-        output: (str) only use to override filename extension. Default is PNG.
+        output: (str) only use to overrule filename extension. Default is PNG.
                 Others are PNM, PGM, PPM, PBM, PAM, PSD, PS.
-    Returns:
-        Bytes object.
     """
     valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
                      "pam": 3, "tga": 4, "tpic": 4,
                      "psd": 5, "ps": 6}
+    if type(filename) is str:
+        pass
+    elif hasattr(filename, "absolute"):
+        filename = str(filename)
+    elif hasattr(filename, "name"):
+        filename = filename.name
     if output is None:
         _, ext = os.path.splitext(filename)
         output = ext[1:]
@@ -9635,11 +9621,11 @@ struct DisplayList {
         }
 
         //----------------------------------------------------------------
-        // DisplayList.getPixmap
+        // DisplayList.get_pixmap
         //----------------------------------------------------------------
-        FITZEXCEPTION(getPixmap, !result)
-        %pythonappend getPixmap %{val.thisown = True%}
-        struct Pixmap *getPixmap(PyObject *matrix=NULL,
+        FITZEXCEPTION(get_pixmap, !result)
+        %pythonappend get_pixmap %{val.thisown = True%}
+        struct Pixmap *get_pixmap(PyObject *matrix=NULL,
                                       struct Colorspace *colorspace=NULL,
                                       int alpha=0,
                                       PyObject *clip=NULL)
@@ -10655,6 +10641,22 @@ struct Tools
                 small_glyph_heights = 0;
             }
             return JM_BOOL(small_glyph_heights);
+        }
+
+
+        %pythonprepend set_subset_fontnames
+        %{"""Set / unset returning fontnames with their subset prefix."""%}
+        PyObject *set_subset_fontnames(PyObject *on=NULL)
+        {
+            if (!on || on == Py_None) {
+                return JM_BOOL(subset_fontnames);
+            }
+            if (PyObject_IsTrue(on)) {
+                subset_fontnames = 1;
+            } else {
+                subset_fontnames = 0;
+            }
+            return JM_BOOL(subset_fontnames);
         }
 
 

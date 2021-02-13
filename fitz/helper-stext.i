@@ -45,6 +45,9 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 // Switch for computing glyph of fontsize height
 static int small_glyph_heights = 0;
 
+// Switch for returning fontnames including subset prefix
+static int subset_fontnames = 0;
+
 // re-compute char quad if ascender/descender values make no sense
 static fz_quad
 JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
@@ -412,7 +415,10 @@ JM_font_name(fz_context *ctx, fz_font *font)
 {
     const char *name = fz_font_name(ctx, font);
     const char *s = strchr(name, '+');
-    return s ? s + 1 : name;
+    if (subset_fontnames || s == NULL || s-name != 6) {
+        return name;
+    }
+    return s + 1;
 }
 
 

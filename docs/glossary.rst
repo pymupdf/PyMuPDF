@@ -105,7 +105,7 @@ Glossary
             endstream
             endobj
 
-        See :ref:`AdobeManual` p. 60. PyMuPDF supports retrieving stream content via :meth:`Document.xrefStream`. Use :meth:`Document.is_stream` to determine whether an object is of stream type.
+        See :ref:`AdobeManual` p. 60. PyMuPDF supports retrieving stream content via :meth:`Document.xref_stream`. Use :meth:`Document.is_stream` to determine whether an object is of stream type.
 
 .. data:: unitvector
 

@@ -118,7 +118,7 @@ Links are shown as "hot areas" when a document is displayed with some viewer sof
     # get all links on a page
     links = page.get_links()
 
-*links* is a Python list of dictionaries. For details see :meth:`Page.getLinks`.
+*links* is a Python list of dictionaries. For details see :meth:`Page.get_links`.
 
 You can also use an iterator which emits one link at a time::
 
@@ -144,7 +144,7 @@ This example creates a **raster** image of a page's content::
 
 A :ref:`Pixmap` contains a number of methods and attributes which are referenced below. Among them are the integers *width*, *height* (each in pixels) and *stride* (number of bytes of one horizontal image line). Attribute *samples* represents a rectangular area of bytes representing the image data (a Python *bytes* object).
 
-.. note:: You can also create a **vector** image of a page by using :meth:`Page.getSVGimage`. Refer to this `Wiki <https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support>`_ for details.
+.. note:: You can also create a **vector** image of a page by using :meth:`Page.get_svg_image`. Refer to this `Wiki <https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support>`_ for details.
 
 Saving the Page Image in a File
 -----------------------------------
@@ -259,7 +259,7 @@ There are several ways to manipulate the so-called **page tree** (a structure de
 
 :meth:`Document.delete_page` and :meth:`Document.delete_pages` delete pages.
 
-:meth:`Document.copyPage`, :meth:`Document.fullcopyPage` and :meth:`Document.movePage` copy or move a page to other locations within the same document.
+:meth:`Document.copy_page`, :meth:`Document.fullcopy_page` and :meth:`Document.move_page` copy or move a page to other locations within the same document.
 
 :meth:`Document.select` shrinks a PDF down to selected pages. Parameter is a sequence [#f3]_ of the page numbers that you want to keep. These integers must all be in range *0 <= i < page_count*. When executed, all pages **missing** in this list will be deleted. Remaining pages will occur **in the sequence and as many times (!) as you specify them**.
 

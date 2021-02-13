@@ -24,7 +24,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: expcept :attr:`Page.rect`, resp. :meth:`Page.bound` (both *reflect* when the page is rotated), all coordinates returned by methods and attributes pertain to the unrotated page.
 
-   So the returned value of e.g. :meth:`Page.getImageBbox` will not change if you do a :meth:`Page.set_rotation`. The same is true for coordinates returned by :meth:`Page.get_text`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiply the coordinates with :attr:`Page.rotationMatrix`. There also is its inverse, :attr:`Page.derotationMatrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
+   So the returned value of e.g. :meth:`Page.get_image_bbox` will not change if you do a :meth:`Page.set_rotation`. The same is true for coordinates returned by :meth:`Page.get_text`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiply the coordinates with :attr:`Page.rotation_matrix`. There also is its inverse, :attr:`Page.derotation_matrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
 
 .. note::
 
@@ -332,7 +332,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * The stamp's text and its border line will automatically be sized and be put horizontally and vertically centered in the given rectangle. :attr:`Annot.rect` is automatically calculated to fit the given **width** and will usually be smaller than this parameter.
          * The font chosen is "Times Bold" and the text will be upper case.
-         * The appearance can be changed using :meth:`Annot.setOpacity` and by setting the "stroke" color (no "fill" color supported).
+         * The appearance can be changed using :meth:`Annot.set_opacity` and by setting the "stroke" color (no "fill" color supported).
          * This can be used to create watermark images: on a temporary PDF page create a stamp annotation with a low opacity value, make a pixmap from it with *alpha=True* (and potentially also rotate it), discard the temporary PDF page and use the pixmap with :meth:`insert_image` for your target PDF.
 
 
@@ -1124,7 +1124,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: load_links()
 
-      Return the first link on a page. Synonym of property :attr:`firstLink`.
+      Return the first link on a page. Synonym of property :attr:`first_link`.
 
       :rtype: :ref:`Link`
       :returns: first link on the page (or *None*).
@@ -1287,13 +1287,13 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. attribute:: cropbox_position
 
-      Contains the top-left point of the page's */cropbox* for a PDF, otherwise *Point(0, 0)*.
+      Contains the top-left point of the page's */CropBox* for a PDF, otherwise *Point(0, 0)*.
 
       :type: :ref:`Point`
 
    .. attribute:: cropbox
 
-      The page's */cropbox* for a PDF. Always the **unrotated** page rectangle is returned. For a non-PDF this will always equal the page rectangle.
+      The page's */CropBox* for a PDF. Always the **unrotated** page rectangle is returned. For a non-PDF this will always equal the page rectangle.
 
       :type: :ref:`Rect`
 
@@ -1400,7 +1400,7 @@ Notes on Supporting Links
 ---------------------------
 MuPDF's support for links has changed in **v1.10a**. These changes affect link types :data:`LINK_GOTO` and :data:`LINK_GOTOR`.
 
-Reading (pertains to method *get_links()* and the *firstLink* property chain)
+Reading (pertains to method *get_links()* and the *first_link* property chain)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If MuPDF detects a link to another file, it will supply either a *LINK_GOTOR* or a *LINK_LAUNCH* link kind. In case of *LINK_GOTOR* destination details may either be given as page number (eventually including position information), or as an indirect destination.

@@ -10,20 +10,20 @@ This class represents a MuPDF *text* object. The basic idea is to **decouple (1)
 
 During **preparation**, a text writer stores any number of text pieces ("spans") together with their positions and individual font information. The **output** of the writer's prepared content may happen multiple times to any PDF page with a compatible page size.
 
-A text writer is an elegant alternative to methods :meth:`Page.insertText` and friends:
+A text writer is an elegant alternative to methods :meth:`Page.insert_text` and friends:
 
 * **Improved text positioning:** Choose any point where insertion of text should start. Storing text returns the "cursor position" after the *last character* of the span.
 * **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch when composing a larger text.
 * **Automatic fallback fonts:** If a character is not supported by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs" -- looking like a small rectangle). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
 * **Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated support of Cyrillic and Greek characters **without specifying encoding.** Your text may be a mixture of Latin, Greek and Cyrillic.
 * **Transparency support:** Parameter *opacity* is supported. This offers a handy way to create watermark-style text.
-* **Justified text:** Supported for any font -- not just simple fonts as in :meth:`Page.insertTextbox`.
+* **Justified text:** Supported for any font -- not just simple fonts as in :meth:`Page.insert_textbox`.
 * **Reusability:** A TextWriter object exists independent from PDF pages. It can be written multiple times, either to the same or to other pages, in the same or in different PDFs, choosing different colors or transparency.
 
 Using this object entails three steps:
 
 1. When **created**, a TextWriter requires a fixed **page rectangle** in relation to which it calculates text positions. A text writer can write to a page with the same size only.
-2. Store text in the TextWriter using methods :meth:`TextWriter.append`, :meth:`TextWriter.appendv` and :meth:`TextWriter.fillTextbox` as often as desired.
+2. Store text in the TextWriter using methods :meth:`TextWriter.append`, :meth:`TextWriter.appendv` and :meth:`TextWriter.fill_textbox` as often as desired.
 3. Output the TextWriter object on some PDF page.
 
 .. note::
@@ -69,7 +69,7 @@ Using this object entails three steps:
       :arg float fontsize: the fontsize, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
 
-      :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
+      :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
 
    .. method:: appendv(pos, text, font=None, fontsize=11, language=None)
@@ -82,7 +82,7 @@ Using this object entails three steps:
       :arg float fontsize: the fontsize, a positive float, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
 
-      :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
+      :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
    .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, align=0, warn=True)
 
@@ -96,7 +96,7 @@ Using this object entails three steps:
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
       :arg bool warn: warn on text overflow (default), or raise an exception. In any case, text not fitting will not be written.
 
-   .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.isWritable`.
+   .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
 
    .. method:: write_text(page, opacity=None, color=None, morph=None, overlay=True, oc=0, render_mode=0)
@@ -149,5 +149,5 @@ Using this object entails three steps:
   2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
   4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`last_point` of the previously added item.
-  5. You can use the *pos* argument of :meth:`TextWriter.fillTextbox` to indent the first line, so its text may continue any preceeding one in a continuous manner.
-  6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.isWritable`.
+  5. You can use the *pos* argument of :meth:`TextWriter.fill_textbox` to indent the first line, so its text may continue any preceeding one in a continuous manner.
+  6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.is_writable`.

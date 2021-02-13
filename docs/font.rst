@@ -26,7 +26,7 @@ A Font object also contains useful general information, like the font bbox, the 
 :attr:`~Font.flags`                  Collection of font properties
 :attr:`~Font.glyph_count`            Number of supported glyphs
 :attr:`~Font.name`                   Name of font
-:attr:`~Font.isWritable`             Font usable with :ref:`TextWriter`
+:attr:`~Font.is_writable`            Font usable with :ref:`TextWriter`
 ==================================== ============================================
 
 
@@ -70,7 +70,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       .. note::
 
-        With the usual reserved names "helv", "tiro", etc., you will create fonts with the expected names "Helvetica", "Times-Roman" and so on. **However**, and in contrast to :meth:`Page.insertFont` and friends,
+        With the usual reserved names "helv", "tiro", etc., you will create fonts with the expected names "Helvetica", "Times-Roman" and so on. **However**, and in contrast to :meth:`Page.insert_font` and friends,
 
          * a font file will **always** be embedded in your PDF,
          * Greek and Cyrillic characters are supported without needing the *encoding* parameter.
@@ -205,7 +205,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       Calculate the length of a unicode string.
 
-      :arg str text: a text string -- UTF-8 encoded. For Python 2, you must use unicode here.
+      :arg str text: a text string -- UTF-8 encoded.
 
       :arg float fontsize: the fontsize.
 
@@ -273,7 +273,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :rtype: float
 
-   .. attribute:: isWritable
+   .. attribute:: is_writable
 
       *(New in v1.18.0)*
 
@@ -283,6 +283,6 @@ A Font object also contains useful general information, like the font bbox, the 
 
 .. rubric:: Footnotes
 
-.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues.
+.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues. The :ref:`TextWriter` methods check :attr:`Font.is_writable`.
 
 .. [#f2] The built-in module *array* has been chosen for its speed and its compact representation of values.
