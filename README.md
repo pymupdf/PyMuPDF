@@ -15,11 +15,13 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads]
 
 # Introduction
 
-This is **version 1.18.8 of PyMuPDF**, a Python binding with support for [MuPDF 1.18.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+PyMuPDF (current version 1.18.8) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
-With PyMuPDF you can access files with extensions like ".pdf", ".xps", ".oxps", ".cbz", ".fb2" or ".epub". In addition, about 10 popular image formats can also be opened and handled like documents.
+With PyMuPDF you can access files with extensions like “.pdf”, “.xps”, “.oxps”, “.cbz”, “.fb2” or “.epub”. In addition, about 10 popular image formats can also be opened and handled like documents.
+
+> In partnership with [Artifex](https://artifex.com/), PyMuPDF is now also available for commercial licensing. This agreement has no impact on use cases, that are compliant with the open-source license AGPL. Please see the “License and Copyright” section below for additional information.
 
 
 # Usage and Documentation
@@ -102,8 +104,16 @@ If you are looking to make your own binary, consult this [Wiki page](https://git
 # Earlier Versions
 Earlier versions are available in the [releases](https://github.com/pymupdf/PyMuPDF/releases) directory.
 
-# License
-PyMuPDF is distributed under GNU AFFERO GPL V3.0 (the same license as MuPDF), a copy of which is included in file COPYING.
+# License and Copyright
+In order to comply with MuPDF’s dual licensing model, PyMuPDF has entered into an agreement with Artifex who has the right to sublicense PyMuPDF to third parties.
+
+PyMuPDF and MuPDF are now available under both, open-source AGPL and commercial license agreements.
+
+Please read the full text of the [AGPL license agreement](https://www.gnu.org/licenses/agpl-3.0.html) (which is also included here in file COPYING) to ensure that your use case complies with the guidelines of this license. If you determine you cannot meet the requirements of the AGPL, please contact [Artifex](https://artifex.com/contact/) for more information regarding a commercial license.
+
+Artifex is the exclusive commercial licensing agent for MuPDF.
+
+Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
 
 # Contact
-Please submit questions, comments or issues [here](https://github.com/pymupdf/PyMuPDF/issues), or directly contact the authors via their e-mail addresses.
+Please use the [Discussions](https://github.com/pymupdf/PyMuPDF/discussions) menu for questions, comments, or asking others for help, and submit issues [here](https://github.com/pymupdf/PyMuPDF/issues). If you wish, you can also contact me directly via jorj.x.mckie@outlook.de.
