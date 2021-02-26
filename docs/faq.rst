@@ -912,7 +912,7 @@ Output some text lines on a page::
 
     doc.save("text.pdf")
 
-With this method, only the **number of lines** will be controlled to not go beyond page height. Surplus lines will not be written and the number of actual lines will be returned. The calculation uses *1.2 * fontsize* as the line height and 36 points (0.5 inches) as bottom margin.
+With this method, only the **number of lines** will be controlled to not go beyond page height. Surplus lines will not be written and the number of actual lines will be returned. The calculation uses a line height calculated from the fontsize and 36 points (0.5 inches) as bottom margin.
 
 Line **width is ignored**. The surplus part of a line will simply be invisible.
 

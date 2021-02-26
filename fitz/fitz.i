@@ -325,6 +325,7 @@ struct Document
 
         self.is_closed = False
         self.is_encrypted = False
+        self.isEncrypted = False
         self.metadata    = None
         self.FontInfos   = []
         self.Graftmaps   = {}
@@ -337,6 +338,7 @@ struct Document
                 self._graft_id = TOOLS.gen_id()
                 if self.needs_pass is True:
                     self.is_encrypted = True
+                    self.isEncrypted = True
                 else: # we won't init until doc is decrypted
                     self.init_doc()
         %}
@@ -1765,6 +1767,7 @@ struct Document
         %pythonappend authenticate %{
         if val:  # the doc is decrypted successfully and we init the outline
             self.is_encrypted = False
+            self.isEncrypted = False
             self.init_doc()
             self.thisown = True
         %}
@@ -6205,7 +6208,6 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
                 }
                 font_obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_dict_puts_drop(gctx, fonts, fontname, font_obj);
-                Finished:;
             }
             fz_always(gctx) {
                 ;
@@ -10167,7 +10169,12 @@ struct TextWriter
         if font is None:
             font = Font("helv")
         if not font.is_writable:
-            raise ValueError("Unsupported font '%s'." % font.name)%}
+            raise ValueError("Unsupported font '%s'." % font.name)
+        if right_to_left:
+            text = self.clean_rtl(text)
+            text = "".join(reversed(text))
+            right_to_left = 0
+        %}
         %pythonappend append %{
         self.last_point = Point(val[-2:]) * self.ctm
         self.text_rect = self._bbox * self.ctm
@@ -10176,14 +10183,14 @@ struct TextWriter
             self.used_fonts.add(font)
         %}
         PyObject *
-        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL)
+        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int right_to_left=0)
         {
             fz_text_language lang = fz_text_language_from_string(language);
             fz_point p = JM_point_from_py(pos);
             fz_matrix trm = fz_make_matrix(fontsize, 0, 0, fontsize, p.x, p.y);
-            int bidi_level = 0, markup_dir = 0, wmode = 0;
+            int markup_dir = 0, wmode = 0;
             fz_try(gctx) {
-                trm = fz_show_string(gctx, (fz_text *) $self, (fz_font *) font, trm, text, wmode, bidi_level, markup_dir, lang);
+                trm = fz_show_string(gctx, (fz_text *) $self, (fz_font *) font, trm, text, wmode, right_to_left, markup_dir, lang);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -10201,6 +10208,53 @@ struct TextWriter
                     language=language)
                 pos.y += lheight
             return self.text_rect, self.last_point
+
+
+        def clean_rtl(self, text):
+            """Revert the sequence of Latin text parts.
+
+            Text with right-to-left writing direction (Arabic, Hebrew) often
+            contains Latin parts, which are written in left-to-right: numbers, names,
+            etc. For output as PDF text we need *everything* in right-to-left.
+            E.g. an input like "<arabic> ABCDE FG HIJ <arabic> KL <arabic>" will be
+            converted to "<arabic> JIH GF EDCBA <arabic> LK <arabic>". The Arabic
+            parts remain untouched.
+
+            Args:
+                text: str
+            Returns:
+                Massaged string.
+            """
+            if not text:
+                return text
+            # split into words at space boundaries
+            words = text.split(" ")
+            idx = []
+            for i in range(len(words)):
+                w = words[i]
+                # revert character sequence for Latin only words
+                if not (len(w) < 2 or max([ord(c) for c in w]) > 255):
+                    words[i] = "".join(reversed(w))
+                    idx.append(i)  # stored index of Latin word
+
+            # adjacent Latin words must revert their sequence, too
+            idx2 = []  # store indices of adjacent Latin words
+            for i in range(len(idx)):
+                if idx2 == []:  # empty yet?
+                    idx2.append(idx[i]) # store Latin word number
+
+                elif idx[i] > idx2[-1] + 1:  # large gap to last?
+                    if len(idx2) > 1:  # at least two consecutives?
+                        words[idx2[0] : idx2[-1] + 1] = reversed(
+                            words[idx2[0] : idx2[-1] + 1]
+                        )  # revert their sequence
+                    idx2 = [idx[i]]  # re-initialize
+
+                elif idx[i] == idx2[-1] + 1:  # new adjacent Latin word
+                    idx2.append(idx[i])
+
+            text = " ".join(words)
+            return text
         %}
 
 
@@ -10220,7 +10274,7 @@ struct TextWriter
             color: override text color.
             opacity: override transparency.
             overlay: put in foreground or background.
-            morph: tuple(Point, Matrix), apply Matrix with fixpoint Point.
+            morph: tuple(Point, Matrix), apply a matrix with a fixpoint.
             render_mode: (int) PDF render mode operator 'Tr'.
         """
 

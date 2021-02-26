@@ -244,7 +244,7 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: fill_opacity; insert_text
       pair: oc; insert_text
 
-   .. method:: insert_text(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_text(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       Insert text lines start at *point*.
 
@@ -255,6 +255,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       :arg str/sequence text: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks *\n*, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *text* is discarded -- the return code however contains the number of inserted lines.
 
+      :arg float lineheight: a factor to override the line height calculated from font properties. If not *None*, a line height of ``fontsize * lineheight`` will be used.
       :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors. Negative values and values > 1 will be ignored. Default is 1 (intransparent).
       :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent). Use this value to control transparency of the text color. Stroke opacity **only** affects the border line of characters.
 
@@ -528,15 +529,20 @@ Common Parameters
 
 **fontsize** (*float*)
 
-  Font size of text. This also determines the line height as *fontsize * 1.2*.
+  Font size of text.
 
 ----
 
 **dashes** (*str*)
 
-  Causes lines to be drawn dashed. The general format is ``"[n m] p"``. The square brackets denote a PDF array of one or two floats. Float p is called the "dash phase" and specifies how many pixels should be skipped before the dashing starts.
+  Causes lines to be drawn dashed. The general format is ``"[n m] p"`` of (up to) 3 floats denoting pixel lengths. ``n`` is the dash length, ``m`` (optional) is the subsequent gap length, and ``p`` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If ``m`` is omitted, it defaults to ``n``.
   
-  A continuous line (no dashes) is drawn with *"[] 0"* or *None* or *""*. Specifying ``"[3 4] 0"`` means dashes of 3 and gaps of 4 pixels following each other. ``"[3 3] 0"`` and ``"[3] 0"`` do the same thing. For (the rather complex) details on how to achieve sophisticated dashing effects, see :ref:`AdobeManual`, page 217.
+  A continuous line (no dashes) is drawn with ``"[] 0"`` or *None* or ``""``. Examples:
+  
+  * Specifying ``"[3 4] 0"`` means dashes of 3 and gaps of 4 pixels following each other.
+  * ``"[3 3] 0"`` and ``"[3] 0"`` do the same thing.
+  
+  For (the rather complex) details on how to achieve sophisticated dashing effects, see :ref:`AdobeManual`, page 217.
 
 ----
 

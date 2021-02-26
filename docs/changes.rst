@@ -4,9 +4,13 @@ Change Logs
 Changes in Version 1.18.9
 -------------------------
 
-* **Fixed** issue `#896 <https://github.com/pymupdf/PyMuPDF/issues/896>`_. Since v1.17.6 PyMuPDF suppresses the subset tag and only reports the base fontname in text extraction outputs "dict" / "json" / "rawdict" / "rawjson". Now a new global parameter can request the old behaviour, :meth:`Tools.set_subset_fontnames`.
+* **Fixed** issue `#888 <https://github.com/pymupdf/PyMuPDF/issues/888>`_. Removed ambiguous statements concerning PyMuPDF's license, which is now clearly stated to be GNU AGPL V3.
+* **Fixed** issue `#895 <https://github.com/pymupdf/PyMuPDF/issues/895>`_.
+* **Fixed** issue `#896 <https://github.com/pymupdf/PyMuPDF/issues/896>`_. Since v1.17.6 PyMuPDF suppresses the font subset tags and only reports the base fontname in text extraction outputs "dict" / "json" / "rawdict" / "rawjson". Now a new global parameter can request the old behaviour, :meth:`Tools.set_subset_fontnames`.
 * **Fixed** issue `#885 <https://github.com/pymupdf/PyMuPDF/issues/885>`_. Pixmap creation now also works with filenames given as ``pathlib.Paths``.
-* **Changed** :meth:`Document.subset_fonts`: Text is **not rewritten** any more and should therefore **retain all its properties** -- like being hidden or controlled by Optional Content mechanisms.
+* **Changed** :meth:`Document.subset_fonts`: Text is **not rewritten** any more and should therefore **retain all its origial properties** -- like being hidden or being controlled by Optional Content mechanisms.
+* **Changed** :ref:`TextWriter` output to also accept text in right to left mode (Arabian, Hebrew): :meth:`TextWriter.fill_textbox`, :meth:`TextWriter.append`. These methods now accept a new boolean parameter `right_to_left`, which is *False* by default. Implements `#897 <https://github.com/pymupdf/PyMuPDF/issues/897>`_.
+* **Changed** :meth:`TextWriter.fill_textbox` to return all lines of text, that did not fit in the given rectangle. Also changed the default of the ``warn`` parameter to no longer print a warning message in overflow situations.
 
 Changes in Version 1.18.8
 -------------------------

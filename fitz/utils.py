@@ -51,7 +51,8 @@ def write_text(page: Page, **kwargs) -> None:
         raise ValueError("need at least one TextWriter")
     if type(writers) is TextWriter:
         if rotate == 0 and rect is None:
-            writers.write_text(page, opacity=opacity, color=color, overlay=overlay)
+            writers.write_text(page, opacity=opacity,
+                               color=color, overlay=overlay)
             return None
         else:
             writers = (writers,)
@@ -167,7 +168,8 @@ def show_pdf_page(*args, **kwargs) -> int:
         raise ValueError("clip must be finite and not empty")
     src_rect = src_rect * ~src_page.transformation_matrix  # ... in PDF coord
 
-    matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
+    matrix = calc_matrix(src_rect, tar_rect,
+                         keep=keep_proportion, rotate=rotate)
 
     # list of existing /Form /XObjects
     ilst = [i[1] for i in doc.get_page_xobjects(page.number)]
@@ -381,7 +383,8 @@ def insertImage(*args, **kwargs) -> None:
         i += 1
         _imgname = n + str(i)  # try new name
 
-    xref = doc.InsertedImages.get(digest, 0)  # reuse any previously inserted image
+    # reuse any previously inserted image
+    xref = doc.InsertedImages.get(digest, 0)
 
     xref = page._insertImage(
         filename=filename,  # image in file
@@ -576,7 +579,8 @@ def getText(
         cb = None
     elif type(page) is Page:
         cb = page.cropbox
-    tp = page.get_textpage(clip=clip, flags=flags)  # TextPage with or without images
+    # TextPage with or without images
+    tp = page.get_textpage(clip=clip, flags=flags)
 
     if option == "json":
         t = tp.extractJSON(cb=cb)
@@ -647,7 +651,8 @@ def get_pixmap(page: Page, **kw) -> Pixmap:
         raise ValueError("unsupported colorspace")
 
     dl = page.get_displaylist(annots=annots)
-    pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
+    pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace,
+                        alpha=alpha, clip=clip)
     dl = None
     return pix
     # doc = page.parent
@@ -927,7 +932,8 @@ def getRectArea(*args) -> float:
         unit = args[1]
     else:
         unit = "px"
-    u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (2.54, 72.0), "mm": (25.4, 72.0)}
+    u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (
+        2.54, 72.0), "mm": (25.4, 72.0)}
     f = (u[unit][0] / u[unit][1]) ** 2
     return f * rect.width * rect.height
 
@@ -1355,7 +1361,8 @@ def getLinkText(page: Page, lnk: dict) -> str:
             pnt = lnk.get("to", Point(0, 0))  # destination point
             if type(pnt) is not Point:
                 pnt = Point(0, 0)
-            annot = txt % (lnk["page"], pnt.x, pnt.y, lnk["file"], lnk["file"], rect)
+            annot = txt % (lnk["page"], pnt.x, pnt.y,
+                           lnk["file"], lnk["file"], rect)
         else:
             txt = annot_skel["gotor2"]  # annot_gotor_n
             annot = txt % (getPDFstr(lnk["to"]), lnk["file"], rect)
@@ -1984,7 +1991,8 @@ def draw_sector(
         fullSector -- connect arc ends with center
     """
     img = page.new_shape()
-    Q = img.draw_sector(Point(center), Point(point), beta, fullSector=fullSector)
+    Q = img.draw_sector(Point(center), Point(point),
+                        beta, fullSector=fullSector)
     img.finish(
         color=color,
         fill=fill,
@@ -2855,7 +2863,8 @@ class Shape(object):
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == Point(p)):
-                    self.draw_cont += "%g %g m\n" % JM_TUPLE(Point(p) * self.ipctm)
+                    self.draw_cont += "%g %g m\n" % JM_TUPLE(
+                        Point(p) * self.ipctm)
                     self.lastPoint = Point(p)
             else:
                 self.draw_cont += "%g %g l\n" % JM_TUPLE(Point(p) * self.ipctm)
@@ -2879,7 +2888,8 @@ class Shape(object):
         if not (self.lastPoint == p1):
             self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
         self.draw_cont += "%g %g %g %g %g %g c\n" % JM_TUPLE(
-            list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm)
+            list(p2 * self.ipctm) + list(p3 * self.ipctm) +
+            list(p4 * self.ipctm)
         )
         self.updateRect(p1)
         self.updateRect(p2)
@@ -2979,7 +2989,8 @@ class Shape(object):
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
             self.draw_cont += l4 % JM_TUPLE(
-                list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
+                list(cp1 * self.ipctm) + list(cp2 *
+                                              self.ipctm) + list(Q * self.ipctm)
             )
 
             betar -= w90  # reduce parm angle by 90 deg
@@ -3000,7 +3011,8 @@ class Shape(object):
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
             self.draw_cont += l4 % JM_TUPLE(
-                list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
+                list(cp1 * self.ipctm) + list(cp2 *
+                                              self.ipctm) + list(Q * self.ipctm)
             )
         if fullSector:
             self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
@@ -3195,7 +3207,8 @@ class Shape(object):
         # setting up for standard rotation directions
         # case rotate = 0
         if morphing:
-            m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x, height - morph[0].y - self.y)
+            m1 = Matrix(1, 0, 0, 1, morph[0].x +
+                        self.x, height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
             cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
         else:
@@ -3422,7 +3435,8 @@ class Shape(object):
 
         if CheckMorph(morph):
             m1 = Matrix(
-                1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
+                1, 0, 0, 1, morph[0].x +
+                self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
             cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
@@ -3449,7 +3463,8 @@ class Shape(object):
             cm += cmp90
 
         elif rot == 180:  # text upside down
-            c_pnt = -Point(0, fontsize * ascender)  # progress upwards in y direction
+            # progress upwards in y direction
+            c_pnt = -Point(0, fontsize * ascender)
             point = rect.br + c_pnt  # line 1 'lheight' above bottom
             pos = point.y + self.y  # position of first line
             maxwidth = rect.width  # pixels available in one line
@@ -3458,7 +3473,8 @@ class Shape(object):
             cm += cm180
 
         else:  # rotate clockwise (270 or -90)
-            c_pnt = -Point(fontsize * ascender, 0)  # progress from right to left
+            # progress from right to left
+            c_pnt = -Point(fontsize * ascender, 0)
             point = rect.tr + c_pnt  # line 1 'lheight' left of right
             pos = point.x + self.x  # position of first line
             maxwidth = rect.height  # pixels available in one line
@@ -3660,10 +3676,12 @@ class Shape(object):
         self.draw_cont += emc
         if CheckMorph(morph):
             m1 = Matrix(
-                1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
+                1, 0, 0, 1, morph[0].x +
+                self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
-            self.draw_cont = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat) + self.draw_cont
+            self.draw_cont = "%g %g %g %g %g %g cm\n" % JM_TUPLE(
+                mat) + self.draw_cont
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
@@ -3927,7 +3945,7 @@ def scrub(
     if not (xml_metadata or javascript):
         xref_limit = 0
     else:
-        xref_limit = doc.xrefLength()
+        xref_limit = doc.xref_length()
     for xref in range(1, xref_limit):
         if javascript and doc.xref_get_key(xref, "S")[1] == "/JavaScript":
             # a /JavaScript action object
@@ -3948,7 +3966,7 @@ def scrub(
             doc.xref_set_key(xref, "Metadata", "null")
 
 
-def fillTextbox(
+def fill_textbox(
     writer: TextWriter,
     rect: rect_like,
     text: typing.Union[str, list],
@@ -3957,7 +3975,8 @@ def fillTextbox(
     fontsize: float = 11,
     lineheight: OptFloat = None,
     align: int = 0,
-    warn: bool = True,
+    warn: bool = None,
+    right_to_left=False,
 ) -> tuple:
     """Fill a rectangle with text.
 
@@ -3972,14 +3991,59 @@ def fillTextbox(
         align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
         warn: (bool) just warn on text overflow, else raise exception.
     """
-    textlen = lambda x: font.text_length(x, fontsize)  # just for abbreviation
-
     rect = Rect(rect)
     if rect.isEmpty or rect.isInfinite:
         raise ValueError("fill rect must be finite and not empty.")
-
     if type(font) is not Font:
         font = Font("helv")
+
+    def textlen(x): return font.text_length(x, fontsize)  # abbreviation
+
+    def append_this(pos, text): return writer.append(
+        pos, text, font=font, fontsize=fontsize
+    )
+    tolerance = fontsize * 0.2
+    space_len = textlen(" ")
+    std_width = rect.width - tolerance
+    std_start = rect.x0 + tolerance
+
+    def norm_words(width, words):
+        """Cut any word in pieces that is longer than 'width'."""
+        nwords = []
+        for w in words:
+            wl = textlen(w)
+            if wl <= width:  # nothing to do - copy over
+                nwords.append(w)
+                continue
+            while True:  # shorten word from the end, char by char
+                nw = ""  # tail of word lands here
+                while wl > width:
+                    nw = w[-1] + nw
+                    w = w[:-1]
+                    wl = textlen(w)
+                nwords.append(w)
+                w = nw
+                if w == "":
+                    break
+        return nwords
+
+    def output_justify(start, line):
+        """Justified output of a line."""
+        # ignore leading / trailing / multiple spaces
+        words = [w for w in line.split(" ") if w != ""]
+        nwords = len(words)
+        if nwords == 0:
+            return
+        if nwords == 1:  # single word cannot be justified
+            append_this(start, words[0])
+            return
+        tl = sum([textlen(w) for w in words])  # total word lengths
+        gaps = nwords - 1  # number of word gaps
+        gapl = (std_width - tl) / gaps  # width of each gap
+        for w in words:
+            _, lp = append_this(start, w)  # output one word
+            start.x = lp.x + gapl  # next start at word end plus gap
+        return
 
     asc = font.ascender
     dsc = font.descender
@@ -3991,18 +4055,17 @@ def fillTextbox(
     else:
         lheight = lineheight
 
-    tolerance = fontsize * 0.25
-    width = rect.width - tolerance  # available horizontal space
+    width = std_width  # available horizontal space
 
-    len_space = textlen(" ")  # width of space character
-
-    # starting point of the text
+    # starting point of text
     if pos is not None:
         pos = Point(pos)
         if not pos in rect:
             raise ValueError("'pos' must be inside 'rect'")
     else:  # default is just below rect top-left
         pos = rect.tl + (tolerance, fontsize * asc)
+    if not pos in rect:
+        raise ValueError("Text must start in rectangle.")
 
     # calculate displacement factor for alignment
     if align == TEXT_ALIGN_CENTER:
@@ -4014,121 +4077,90 @@ def fillTextbox(
 
     # split in lines if just a string was given
     if type(text) not in (tuple, list):
-        text = text.splitlines()
+        textlines = text.splitlines()
+    else:
+        textlines = []
+        for line in text:
+            textlines.extend(line.splitlines())
 
-    text = " \n".join(text).split(" ")  # split in words, preserve line breaks
+    max_lines = int((rect.y1 - pos.y) / (lheight * fontsize))
 
-    # compute lists of words and word lengths
-    words = []  # recomputed list of words
-    len_words = []  # corresponding lengths
-
-    for word in text:
-        # fill the lists of words and their lengths
-        # this splits words longer than width into chunks, which each are
-        # treated as words themselves.
-        if word.startswith("\n"):
-            len_word = textlen(word[1:])
-        else:
-            len_word = textlen(word)
-        if len_word <= width:  # simple case: word not longer than a line
-            words.append(word)
-            len_words.append(len_word)
+    new_lines = []  # the final list of textbox lines
+    no_justify = []  # do not justify these line numbers
+    for i, line in enumerate(textlines):
+        if line in ("", " "):
+            new_lines.append((line, space_len))
+            width = rect.width - tolerance
+            no_justify.append((len(new_lines) - 1))
             continue
-        # deal with an extra long word
-        w = word[0]  # start with 1st char
-        l = textlen(w)  # and its length
-        for i in range(1, len(word)):
-            nl = textlen(word[i])  # next char length
-            if l + nl > width:  # if too long
-                words.append(w)  # append what we have so far
-                len_words.append(l)
-                w = word[i]  # start over with new char
-                l = nl  # and its length
-            else:  # if still fitting
-                w += word[i]  # just append char
-                l += nl  # and add its length
-        words.append(w)  # output tail of long word
-        len_words.append(l)  # output length of long word tail
-
-    idx = 0  # index of current word processed
-    line_ctr = 0  # counter for output lines
-    end_idx = len(words)  # number of words
-
-    # -------------------------------------------------------------------------
-    # each loop outputs one line
-    # -------------------------------------------------------------------------
-    while True:
-        if idx >= end_idx:  # all words processed
-            break
-
-        # compute the new insertion point
-        if line_ctr == 0 and len_words[0] >= rect.x1 - pos.x and idx == 0:
-            line_ctr = 1  # first word wont fit in first line: take next one
-
-        if line_ctr == 0:  # first line in rect
-            start = pos
+        if i == 0:
             width = rect.x1 - pos.x
         else:
-            start = Point(rect.x0 + tolerance, pos.y + fontsize * lheight * line_ctr)
             width = rect.width - tolerance
 
-        if start.y > rect.y1:  # landed below rectangle area
-            if warn:
-                print("Warning: only fitting %i of %i total words." % (idx, end_idx))
-                break
+        if right_to_left:  # reverses Arabic / Hebrew text front to back
+            line = writer.clean_rtl(line)
+        tl = textlen(line)
+        if textlen(line) <= width:  # line short enough
+            new_lines.append((line, tl))
+            no_justify.append((len(new_lines) - 1))
+            continue
+
+        # we need to split the line in fitting parts
+        words = line.split(" ")  # the words in the line
+
+        # cut in parts any words that are longer than rect width
+        words = norm_words(std_width, words)
+
+        j = 1
+        while len(words) > 0:
+            line0 = " ".join(words[:-j]) if j > 0 else " ".join(words)
+            tl = textlen(line0)
+            if tl <= width:
+                new_lines.append((line0, tl))  # shortened line fits
+                if j == 0:  # this was the last part of line
+                    no_justify.append((len(new_lines) - 1))
+                    break
+                del words[:-j]
+                j = 0
+                width = rect.width - tolerance
             else:
-                raise ValueError("only fitting %i of %i total words." % (idx, end_idx))
+                j += 1
 
-        word = words[idx]  # get first word for the line
-        if word.startswith("\n"):  # remove any leading line breaks
-            word = word[1:]
+    nlines = len(new_lines)
+    if nlines > max_lines:
+        msg = "Only fitting %i of %i lines." % (max_lines, nlines)
+        if warn == True:
+            print("Warning: " + msg)
+        elif warn == False:
+            raise ValueError(msg)
 
-        line = [word]  # list of words fitting in this line
-        len_line = [len_words[idx]]  # list of word lengths
-
-        exhausted = False  # switch indicating we are done
-        justify = True  # enable text justify as default
-        next_words = range(idx + 1, end_idx)  # remaining words in text
-
-        for i in next_words:  # try adding more words to the line
-            nw = words[i]  # next word
-            if nw.startswith("\n"):  # forced line break
-                justify = False  # do not justify this current line
-                break
-            tl = len_space + len_words[i]
-            if tl + sum(len_line) + (len(line) - 1) * len_space > width:  # won't fit
-                break
-            line.append(nw)  # append new word
-            len_line.append(len_words[i])  # add its length
-            if i >= end_idx - 1:  # if we exhausted the words
-                justify = False  # do not justify current line
-                exhausted = True  # and turn on switch
-
-        # finished preparing a line
-        if align != TEXT_ALIGN_JUSTIFY:  # trivial alignments
-            fin_len = sum(len_line) + (len(line) - 1) * len_space
-            d = (width - fin_len) * factor  # takes care of alignment
-            start.x += d
-            writer.append(start, " ".join(line), font, fontsize)
-        else:  # take care of justified alignment
-            writer.append(start, line[0], font, fontsize)  # always 1st word
-            if len(line) > 1:  # more than one word in the line
-                if justify is False:  # if no justify use space as gap
-                    gap = len_space
-                else:
-                    gap = (width - sum(len_line)) / (len(line) - 1)
-                this_gap = len_line[0] + gap  # gap for 2nd word
-                for j in range(1, len(line)):
-                    writer.append(start + (this_gap, 0), line[j], font, fontsize)
-                    this_gap += len_line[j] + gap  # gap for next word
-
-        if len(next_words) == 0 or exhausted is True:  # no words left
+    lh = fontsize * lheight
+    start = Point()
+    for i, (line, tl) in enumerate(new_lines):
+        if i > max_lines:  # do not exceed space
             break
 
-        idx = i  # number of next word to read
-        line_ctr += 1  # line counter
+        if right_to_left:  # Arabic, Hebrew
+            line = "".join(reversed(line))
 
-    return (idx, end_idx)  # return count of processed words, total words
+        if i == 0:  # may have different start for first line
+            start = pos
+
+        if align == TEXT_ALIGN_JUSTIFY and i not in no_justify and tl < std_width:
+            output_justify(start, line)
+            start.x = std_start
+            start.y += lh
+            continue
+
+        if i > 0 or pos.x == std_start:  # left, center, right alignments
+            start.x += (width - tl) * factor
+
+        append_this(start, line)
+        start.x = std_start
+        start.y += lh
+
+    return new_lines[max_lines:]  # return non-written lines
 
 
 # ------------------------------------------------------------------------
@@ -4229,7 +4261,7 @@ def get_ocmd(doc: Document, xref: int) -> dict:
     if p0 < 0 or p1 < 0:  # no OCGs found
         ocgs = None
     else:
-        ocgs = text[p0 + 6 : p1].replace("0 R", " ").split()
+        ocgs = text[p0 + 6: p1].replace("0 R", " ").split()
         ocgs = list(map(int, ocgs))
 
     p0 = text.find("/P/")  # look for /P policy key
@@ -4242,7 +4274,7 @@ def get_ocmd(doc: Document, xref: int) -> dict:
         if p1 < 0:  # some irregular syntax
             raise ValueError("bad object at xref")
         else:
-            policy = text[p0 + 3 : p1 + 2]
+            policy = text[p0 + 3: p1 + 2]
 
     p0 = text.find("/VE[")  # look for /VE visibility expression key
     if p0 < 0:  # no visibility expression found
@@ -4259,7 +4291,7 @@ def get_ocmd(doc: Document, xref: int) -> dict:
             if text[p1] == "]":
                 rp += 1
         # p1 now positioned at the last "]"
-        ve = text[p0 + 3 : p1 + 1]  # the PDF /VE array
+        ve = text[p0 + 3: p1 + 1]  # the PDF /VE array
         ve = (
             ve.replace("/And", '"and",')
             .replace("/Not", '"not",')
@@ -4621,8 +4653,8 @@ def subset_fonts(doc: Document) -> None:
             """
             while "#" in name:
                 p = name.find("#")
-                c = int(name[p + 1 : p + 3], 16)
-                name = name.replace(name[p : p + 3], chr(c))
+                c = int(name[p + 1: p + 3], 16)
+                name = name.replace(name[p: p + 3], chr(c))
             p = name.find("+") + 1
             return name[p:]
 
@@ -4647,8 +4679,9 @@ def subset_fonts(doc: Document) -> None:
             p1 = descendents.find("/BaseFont")
             if p1 >= 0:
                 p2 = descendents.find("/", p1 + 1)
-                p1 = min(descendents.find("/", p2 + 1), descendents.find(">>", p2 + 1))
-                fontname = descendents[p2 + 1 : p1]
+                p1 = min(descendents.find("/", p2 + 1),
+                         descendents.find(">>", p2 + 1))
+                fontname = descendents[p2 + 1: p1]
                 fontname = norm_name(fontname)
                 if fontname not in names:
                     names.append(fontname)
@@ -4667,7 +4700,8 @@ def subset_fonts(doc: Document) -> None:
                     "woff2",
                 ):
                     continue
-                if len(basename) > 6 and basename[6] == "+":  # skip font subsets
+                # skip font subsets
+                if len(basename) > 6 and basename[6] == "+":
                     continue
 
                 names = get_fontnames(doc, f)

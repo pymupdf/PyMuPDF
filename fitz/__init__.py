@@ -109,7 +109,7 @@ fitz.IRect.getArea = fitz.utils.getRectArea
 # ------------------------------------------------------------------------
 # TextWriter
 # ------------------------------------------------------------------------
-fitz.TextWriter.fill_textbox = fitz.utils.fillTextbox
+fitz.TextWriter.fill_textbox = fitz.utils.fill_textbox
 
 
 def restore_aliases():

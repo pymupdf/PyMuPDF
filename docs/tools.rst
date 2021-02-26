@@ -59,7 +59,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Set or inquire reduced bbox heights in text extract and text search methods.
 
-      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will normally equal *line height*.
+      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will be based on font properties and normally equal *line height*.
 
       :rtype: bool
       :returns: *True* or *False*.
@@ -71,12 +71,12 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Control suppression of subset fontname tags in text extractions.
 
-      :arg bool on: if omitted / ``None``, the current setting is returned. For other values the *bool()* built-in function is applied to set a global variable. If *True*, options "dict", "json", "rawdict" and "rawjson" will return e.g. "NOHSJV+Calibri-Light", otherwise (default) "Calibri-Light".
+      :arg bool on: if omitted / ``None``, the current setting is returned. For other values the *bool()* built-in function is applied to set a global variable. If *True*, options "dict", "json", "rawdict" and "rawjson" will return e.g. ``"NOHSJV+Calibri-Light"``, otherwise (default) only ``"Calibri-Light"`` (the default).
 
       :rtype: bool
       :returns: *True* or *False*.
 
-      .. note:: No other text extraction variants can be influenced by this. This is especially true for the MuPDF-based options XMHL, (X)HTML.
+      .. note:: Except mentioned above, no other text extraction variants are influenced by this. This is especially true for the options "xml", "xhtml" and "html", which are based on MuPDF code. They extract the font name ``"Calibri-Light"``, or even just the **family** name -- ``Calibri`` in this example.
 
 
    .. method:: image_profile(stream)

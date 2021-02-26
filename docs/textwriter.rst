@@ -59,15 +59,18 @@ Using this object entails three steps:
       :arg float,sequ color: the color of the text. All colors are specified as floats *0 <= color <= 1*. A single float represents some gray level, a sequence implies the colorspace via its length.
 
 
-   .. method:: append(pos, text, font=None, fontsize=11, language=None)
+   .. method:: append(pos, text, font=None, fontsize=11, language=None, right_to_left=False)
 
-      Add some new text in horizontal, left-to-right writing.
+      *(Changed in v1.18.9)*
+
+      Add some new text in horizontal writing.
 
       :arg point_like pos: start position of the text, the bottom left point of the first character.
-      :arg str text: a string (Python 2: unicode is mandatory!) of arbitrary length. It will be written starting at position "pos".
+      :arg str text: a string of arbitrary length. It will be written starting at position "pos".
       :arg font: a :ref:`Font`. If omitted, ``fitz.Font("helv")`` will be used.
       :arg float fontsize: the fontsize, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
+      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts within the text will automatically converted. There are no other consequences, i.e. :attr:`TextWriter.last_point` will still be the rightmost character, and there neither is any alignment taking place. Hence you may want to use :meth:`TextWriter.fill_textbox` instead.
 
       :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
@@ -84,9 +87,11 @@ Using this object entails three steps:
 
       :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
-   .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, align=0, warn=True)
+   .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, align=0, right_to_left=False, warn=None)
 
-      Fill a given rectangle with text in horizontal, left-to-right manner. This is a convenience method to use as an alternative to :meth:`append`.
+      *(Changed in v1.18.9)*
+
+      Fill a given rectangle with text in horizontal writing mode. This is a convenience method to use as an alternative to :meth:`append`.
 
       :arg rect_like rect: the area to fill. No part of the text will appear outside of this.
       :arg str,sequ text: the text. Can be specified as a (UTF-8) string or a list / tuple of strings. A string will first be converted to a list using *splitlines()*. Every list item will begin on a new line (forced line breaks).
@@ -94,14 +99,23 @@ Using this object entails three steps:
       :arg font: the :ref:`Font`, default `fitz.Font("helv")`.
       :arg float fontsize: the fontsize.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
-      :arg bool warn: warn on text overflow (default), or raise an exception. In any case, text not fitting will not be written.
+      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
+      :arg bool warn: on text overflow do nothing, warn, or raise an exception. Overflow text will never be written. **Changed in v1.18.9:**
+      
+        * Default is *None*.
+        * The list of overflow lines will be returned.
 
-   .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
+      *(New in v1.18.9)*
+
+      :rtype: list
+      :returns: List of lines that did not fit in the rectangle. Each item is a tuple `(text, length)` containing a string and its length (on the page).
+
+   .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix :meth:`append` and text boxes and have multiple of both. Text positioning is exclusively controlled by the insertion point. Therefore there is no need to adhere to any order. *(Changed in v1.18.0:)* Raise an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
 
    .. method:: write_text(page, opacity=None, color=None, morph=None, overlay=True, oc=0, render_mode=0)
 
-      Write the TextWriter text to a page.
+      Write the TextWriter text to a page, which is the only mandatory parameter. The other parameters can be used to temporarily override the values used when the TextWriter was created.
 
       :arg page: write to this :ref:`Page`.
       :arg float opacity: override the value of the TextWriter for this output.
