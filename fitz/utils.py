@@ -1087,6 +1087,7 @@ def setToC(
     old_xrefs = doc._delToC()  # del old outlines, get their xref numbers
 
     # prepare table of xrefs for new bookmarks
+    old_xrefs = []
     xref = [0] + old_xrefs
     xref[0] = doc._getOLRootNumber()  # entry zero is outline root xref number
     if toclen > len(old_xrefs):  # too few old xrefs?

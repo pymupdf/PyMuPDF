@@ -11,6 +11,7 @@ Changes in Version 1.18.9
 * **Changed** :meth:`Document.subset_fonts`: Text is **not rewritten** any more and should therefore **retain all its origial properties** -- like being hidden or being controlled by Optional Content mechanisms.
 * **Changed** :ref:`TextWriter` output to also accept text in right to left mode (Arabian, Hebrew): :meth:`TextWriter.fill_textbox`, :meth:`TextWriter.append`. These methods now accept a new boolean parameter `right_to_left`, which is *False* by default. Implements `#897 <https://github.com/pymupdf/PyMuPDF/issues/897>`_.
 * **Changed** :meth:`TextWriter.fill_textbox` to return all lines of text, that did not fit in the given rectangle. Also changed the default of the ``warn`` parameter to no longer print a warning message in overflow situations.
+* **Added** a utility function :meth:`recover_quad`, which computes the quadrilateral of a span. This function can be used when quadrilaterals for text extracted with the "dict" or "rawdict" options of :meth:`Page.get_text`.
 
 Changes in Version 1.18.8
 -------------------------

@@ -48,6 +48,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`PaperRect`                    return rectangle for a known paper format
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from a sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from a sRGB integer
+:meth:`recover_quad`                 return the quad for a text span ("dict" / "rawdict")
 :meth:`glyph_name_to_unicode`        return unicode from a glyph name
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :meth:`make_table`                   split rectangle in sub-rectangles
@@ -160,11 +161,24 @@ Yet others are handy, general-purpose utilities.
 
       *New in v1.17.4*
 
-      Convenience function returning a color (red, green, blue) for a given *sRGB* color integer .
+      Convenience function returning a color (red, green, blue) for a given *sRGB* color integer.
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
       :returns: a tuple (red, green, blue) with integer items in intervall *0 <= item <= 255* representing the same color.
+
+-----
+
+   .. method:: recover_quad(line_dir, span)
+
+      *New in v1.18.9*
+
+      Convenience function returning the quadrilateral envelopping the text of a text span, as returned by :meth:`Page.get_text` using the "dict" or "rawdict" options.
+
+      :arg tuple line_dict: the value ``line["dir"]`` of the span's line.
+      :arg dict span: the span sub-dictionary.
+
+      :returns: the quadrilateral of the span's text.
 
 -----
 

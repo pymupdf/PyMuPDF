@@ -818,30 +818,11 @@ How to Mark Non-horizontal Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The previous section already shows an example for marking non-horizontal text detected by text **searching**.
 
-But text **extraction** with the "dict" option of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is reflected by the value of the ``"dir"`` key of the line dictionary: it is the tuple ``(cosine, sine)`` of that angle.
+But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is reflected by the value of the ``"dir"`` key of the line dictionary: it is the tuple ``(cosine, sine)`` of that angle. If this value **does not equal** ``(1, 0)``, then the extracted text / characters are rotated by some angle != 0.
 
-Currently, all bboxes returned by the method's are rectangles only -- no quads. So we can mark the span text (correctly) only, if the **angle is 0, 90, 180 or 270 degrees.**
+All bboxes returned by the method are rectangles only -- no quads. In order to mark the span text correctly (or fitting a quad around it), its quadrilateral must be recovered from the data in the line and the span. Do this with the following utility function::
 
-In this case we can convert the span bbox into the right quad by choosing the right sequence of its corners::
-
-    r = fitz.Rect(span["bbox"])
-
-    if line["dir"] == (1, 0):  # rotation 0
-        q = fitz.Quad(r)
-
-    elif line["dir"] == (0, -1):  # rotation 90
-        q = fitz.Quad(r.bl, r.tl, r.br, r.tr)
-
-    elif line["dir"] == (-1, 0):  # rotation 180
-        q = fitz.Quad(r.br, r.bl, r.tr, r.tl)
-
-    elif line["dir"] == (0, 1):  # rotation 270
-        q = fitz.Quad(r.tr, r.br, r.tl, r.bl)
-
-    else:
-        q = fitz.Quad(r)
-        print("warning: unsupported text flow")
-
+    q = fitz.recover_quad(line["dir"], span)
     annot = page.addHighlightAnnot(q)
 
 

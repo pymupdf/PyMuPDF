@@ -303,9 +303,9 @@ In a nutshell, this is what you can do with PyMuPDF:
            >>> page.addHighlightAnnot(quads)
 
       .. note::
-        Obviously, text marker annotations need to know what is the top and the bottom, the left and the right side of the tetragon to be marked. If the arguments are quads, this information is given by the sequence of the quad points. In contrast, a rectangle delivers much less information -- this is illustrated by the fact, that 4! = 24 different quads can be constructed with the four corners of each reactangle.
+        Obviously, text marker annotations need to know what is the top, the bottom, the left, and the right side of the tetragon to be marked. If the arguments are quads, this information is given by the sequence of the quad points. In contrast, a rectangle delivers much less information -- this is illustrated by the fact, that 4! = 24 different quads can be constructed with the four corners of each reactangle.
         
-        Therefore, we **strongly recommend** to use the ``quads`` option for text searches, to ensure correct text markers. For more details on text marking see section "How to Mark Non-horizontal Text" of :ref:`FAQ`.
+        Therefore, we **strongly recommend** to use the ``quads`` option for text searches, to ensure correct text markers. A similar consideration applies to **marking text spans** extracted with the "dict" / "rawdict" options of :meth:`Page.get_text`. For more details on text marking see section "How to Mark Non-horizontal Text" of :ref:`FAQ`.
 
       :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
       :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*.
