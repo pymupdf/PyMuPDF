@@ -237,7 +237,7 @@ Spans contain the actual text. A line contains **more than one span only**, if i
 **Key**             **Value**
 =============== =====================================================================
 bbox            span rectangle, formatted as *tuple(fitz.Rect)*
-origin          *tuple* coordinates of the first character's bottom left point
+origin          *tuple* coordinates of the first character's origin
 font            font name *(str)*
 ascender        ascender of the font *(float)*
 descender       descender of the font *(float)*
@@ -296,13 +296,13 @@ We are currently providing the bbox in :data:`rect_like` format. In a future ver
    :align: top
    :scale: 66
 
-=============== =========================================================
+=============== ===========================================================
 **Key**             **Value**
-=============== =========================================================
-origin          *tuple* coordinates of the character's bottom left point
+=============== ===========================================================
+origin          *tuple* coordinates of the character's left baseline point
 bbox            character rectangle, formatted as *tuple(fitz.Rect)*
 c               the character (unicode)
-=============== =========================================================
+=============== ===========================================================
 
 .. rubric:: Footnotes
 

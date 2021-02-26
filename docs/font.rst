@@ -261,7 +261,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       *(New in v1.18.0)*
 
-      The ascender value of the font, see `here <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details.
+      The ascender value of the font, see `here <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details. Please note that there is a difference to the strict definition: our value includes everything above the baseline -- not just the height difference between upper case "A" and and lower case "a".
 
       :rtype: float
 
@@ -269,7 +269,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       *(New in v1.18.0)*
 
-      The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details.
+      The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details. This value always is negative and is the portion that some glyphs descend below the base line, for example "g" or "y". As a consequence, the value ``ascender - descender`` is the total height, that every glyph of the font fits into. This is true at least for most fonts -- as always, there are exceptions, especially for calligraphic fonts, etc.
 
       :rtype: float
 
