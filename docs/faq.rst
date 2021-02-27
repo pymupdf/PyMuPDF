@@ -816,14 +816,16 @@ The result looks like this:
 
 How to Mark Non-horizontal Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The previous section already shows an example for marking non-horizontal text detected by text **searching**.
+The previous section already shows an example for marking non-horizontal text, that was detected by text **searching**.
 
-But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is reflected by the value of the ``"dir"`` key of the line dictionary: it is the tuple ``(cosine, sine)`` of that angle. If this value **does not equal** ``(1, 0)``, then the extracted text / characters are rotated by some angle != 0.
+But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is indicated by the value of the line dictionary's ``"dir"`` key: it is the tuple ``(cosine, sine)`` for that angle. If ``line["dir"] != (1, 0)``, then the text of all its spans is rotated by (the same) angle != 0.
 
-All bboxes returned by the method are rectangles only -- no quads. In order to mark the span text correctly (or fitting a quad around it), its quadrilateral must be recovered from the data in the line and the span. Do this with the following utility function::
+The "bboxes" returned by the method however are rectangles only -- not quads. So, to mark span text correctly, its quad must be recovered from the data contained in the line and span dictionary. Do this with the following utility function (new in v1.18.9)::
 
     q = fitz.recover_quad(line["dir"], span)
-    annot = page.addHighlightAnnot(q)
+    annot = page.addHighlightAnnot(q)  # this will mark the span text
+
+If you want to **mark the complete line**, the line quad must be computed by joining the span quads. This is not entirely trivial, and we will provide a function for this in the next version (> 1.18.9). For the time being, you can simply provide the list of all the span quads as text marker argument. There should be no visual difference in most cases. Use a similar approach, when you need the block quadrilateral.
 
 
 ------------------------------

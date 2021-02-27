@@ -290,22 +290,22 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`Page.search_for`). But this is not required: you are free to "mark" just anything.
 
-      Standard colors are chosen per annotation type: **yellow** for highlighting, **red** for strike out, **green** for underlining, and **magenta** for wavy underlining.
+      Standard colors are chosen per annotation type: **yellow** for highlighting, **red** for striking out, **green** for underlining, and **magenta** for wavy underlining.
 
-      The methods convert the arguments into a list of :ref:`Quad` objects. The **annotation** rectangle is then calculated to envelop all these quadrilaterals.
+      All these four methods convert the arguments into a list of :ref:`Quad` objects. The **annotation** rectangle is then calculated to envelop all these quadrilaterals.
 
       .. note::
       
-        :meth:`search_for` delivers a list of either rectangles or quadrilaterals. Such a list can be directly used as an argument for these annotation types and will deliver **one common annotation** for all occurrences of the search string::
+        :meth:`search_for` delivers a list of either :ref:`Rect` or :ref:`Quad` objects. Such a list can be directly used as an argument for these annotation types and will deliver **one common annotation** for all occurrences of the search string::
 
            >>> # always prefer quads=True in text searching!
            >>> quads = page.search_for("pymupdf", quads=True)
            >>> page.addHighlightAnnot(quads)
 
       .. note::
-        Obviously, text marker annotations need to know what is the top, the bottom, the left, and the right side of the tetragon to be marked. If the arguments are quads, this information is given by the sequence of the quad points. In contrast, a rectangle delivers much less information -- this is illustrated by the fact, that 4! = 24 different quads can be constructed with the four corners of each reactangle.
+        Obviously, text marker annotations need to know what is the top, the bottom, the left, and the right side of the area(s) to be marked. If the arguments are quads, this information is given by the sequence of the quad points. In contrast, a rectangle delivers much less information -- this is illustrated by the fact, that 4! = 24 different quads can be constructed with the four corners of a reactangle.
         
-        Therefore, we **strongly recommend** to use the ``quads`` option for text searches, to ensure correct text markers. A similar consideration applies to **marking text spans** extracted with the "dict" / "rawdict" options of :meth:`Page.get_text`. For more details on text marking see section "How to Mark Non-horizontal Text" of :ref:`FAQ`.
+        Therefore, we **strongly recommend** to use the ``quads`` option for text searches, to ensure correct annotations. A similar consideration applies to marking **text spans** extracted with the "dict" / "rawdict" options of :meth:`Page.get_text`. For more details on how to compute quadrilaterals in this case, see section "How to Mark Non-horizontal Text" of :ref:`FAQ`.
 
       :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
       :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*.
