@@ -11089,7 +11089,11 @@ struct Tools
                 a = -src.e * dst.a - src.f * dst.c;
                 dst.f = -src.e * dst.b - src.f * dst.d;
                 dst.e = a;
-                return Py_BuildValue("(i, O)", 0, JM_py_from_matrix(dst));
+                PyObject* mat = JM_py_from_matrix(dst);
+                PyObject* res = Py_BuildValue("(i, O)", 0, mat);
+                Py_DECREF(mat);
+                return res;
+                // return Py_BuildValue("(i, O)", 0, JM_py_from_matrix(dst));
             }
             return Py_BuildValue("(i, ())", 1);
         }
