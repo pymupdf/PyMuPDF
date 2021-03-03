@@ -908,7 +908,7 @@ paperSizes = {  # known paper formats @ 72 dpi
 
 def PaperSize(s: str) -> tuple:
     """Return a tuple (width, height) for a given paper format string.
-    
+
     Notes:
         'A4-L' will return (842, 595), the values for A4 landscape.
         Suffix '-P' and no suffix return the portrait tuple.
@@ -1382,24 +1382,26 @@ def recover_quad(line_dir, span):
         d = span["ascender"] - span["descender"]
 
     height = d * span["size"]
+    # The following are distances from bbox corners, at wich we find
+    # the quad points. The calculation varies circle quadrant.
     hs = height * sin
     hc = height * cos
-    if hc >= 0 and hs <= 0:  # Quadrant 1
+    if hc >= 0 and hs <= 0:  # quadrant 1
         ul = bbox.bl - (0, hc)
         ur = bbox.tr + (hs, 0)
         ll = bbox.bl - (hs, 0)
         lr = bbox.tr + (0, hc)
-    elif hc <= 0 and hs <= 0:  # Quadrant 2
+    elif hc <= 0 and hs <= 0:  # quadrant 2
         ul = bbox.br + (hs, 0)
         ur = bbox.tl - (0, hc)
         ll = bbox.br + (0, hc)
         lr = bbox.tl - (hs, 0)
-    elif hc <= 0 and hs >= 0:  # Quadrant 3
+    elif hc <= 0 and hs >= 0:  # quadrant 3
         ul = bbox.tr - (0, hc)
         ur = bbox.bl + (hs, 0)
         ll = bbox.tr - (hs, 0)
         lr = bbox.bl + (0, hc)
-    else:  # Quadrant 4
+    else:  # quadrant 4
         ul = bbox.tl + (hs, 0)
         ur = bbox.br - (0, hc)
         ll = bbox.tl + (0, hc)

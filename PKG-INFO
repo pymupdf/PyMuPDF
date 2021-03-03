@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.18.9
+Version: 1.18.10
 Author: Jorj McKie
 Author-email: jorj.x.mckie@outlook.de
 License: GNU AFFERO GPL 3.0
@@ -10,63 +10,63 @@ Home-page: https://github.com/pymupdf/PyMuPDF
 Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the document renderer and toolkit MuPDF
 Description:
-        Release date: February 28, 2021
-        
+        Release date: March 2, 2021
+
         Authors
         =======
-        
+
         * Jorj X. McKie
         * Ruikai Liu
-        
+
         Introduction
         ============
-        
-        PyMuPDF (current version 1.18.9) is a Python binding with support for `MuPDF <http://mupdf.com/>`_ (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer and toolkit, which is maintained and developed by Artifex Software, Inc.
-        
+
+        PyMuPDF (current version 1.18.10) is a Python binding with support for `MuPDF <http://mupdf.com/>`_ (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer and toolkit, which is maintained and developed by Artifex Software, Inc.
+
         MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
-        
+
         With PyMuPDF you can access files with extensions like “.pdf”, “.xps”, “.oxps”, “.cbz”, “.fb2” or “.epub”. In addition, about 10 popular image formats can also be opened and handled like documents.
-        
+
         PyMuPDF should run on all platforms that are supported by both, MuPDF and Python 3.6+. These include, but are not limited to, Windows, Mac OSX and Linux, 32-bit or 64-bit. If you can generate MuPDF on a Python supported platform, then also PyMuPDF can be used there.
-        
+
         PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ where you find up-to-date information of its features, our `issue tracker <https://github.com/pymupdf/PyMuPDF/issues>`_, `Wikis <https://github.com/pymupdf/PyMuPDF/wiki>`_ and much more.
-        
+
         Installation
         ============
-        
+
         For all MS Windows versions as well as popular Max OSX and Linux versions, we are providing Python wheels - see the download section of this site and the current `release directory <https://github.com/pymupdf/PyMuPDF/releases/latest>`_ of our home page. Other platforms need to download and generate MuPDF first and then build PyMuPDF from sources. Do visit our GitHub home, which has more details on this, including latest bugfixes, pre-releases, etc.
-        
+
         Usage and Documentation
         ========================
-        
+
         For all document types you can render pages in raster (PNG) or vector (SVG) formats, extract text and access meta information, links, annotations and bookmarks, as well as decrypt the document. For PDF files, these objects can also be created, modified or deleted. Plus you can rotate, re-arrange, duplicate, create, or delete pages and join or split documents.
-        
+
         PDF password protection is **fully supported**: owner and user passwords, encryption methods and permission levels can be set, changed or removed.
-        
+
         Specifically for PDF files, PyMuPDF provides update access to low-level structure information, supports **optional content**, handling of **embedded files** and modification of page contents (like inserting images, fonts, text, annotations and drawings).
-        
+
         Other features include embedding vector images (SVG, PDF) such as logos or watermarks, joining or splitting single PDF pages (including things like posterizing and 2-up / 4-up processing).
-        
+
         You can also create **PDF Form fields** with support for text, checkbox, listbox and combobox widgets.
-        
+
         Our home page provides many examples and How-Tos for all of this. At a minimum, read the `tutorial <https://pymupdf.readthedocs.io/en/latest/tutorial.html>`_ and the the `recipes <https://pymupdf.readthedocs.io/en/latest/faq.html>`_ sections of our documentation.
-        
+
         Written using **Sphinx**, documentation is available here:
-        
+
         * `Read The Docs <https://pymupdf.readthedocs.io/en/latest/>`_.
         * `Windows CHM <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_
-        
+
         License and Copyright Information
         ==================================
-        
+
         In order to comply with MuPDF’s dual licensing model, PyMuPDF has entered into an agreement with Artifex who has the right to sublicense PyMuPDF to third parties.
-        
+
         PyMuPDF and MuPDF are now available under both open-source AGPL and commercial license agreements. Please read the full text of the AGPL license agreement, available in the distribution material (file COPYING) and `here <https://www.gnu.org/licenses/agpl-3.0.html>`_, to ensure that your use case complies with the guidelines of the license. If you determine you cannot meet the requirements of the AGPL, please contact `Artifex <https://artifex.com/contact/>`_ for more information regarding a commercial license.
-        
+
         Artifex is the exclusive commercial licensing agent for MuPDF.
-        
+
         Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
-        
+
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Console
 Classifier: Intended Audience :: Developers

@@ -51,8 +51,7 @@ def write_text(page: Page, **kwargs) -> None:
         raise ValueError("need at least one TextWriter")
     if type(writers) is TextWriter:
         if rotate == 0 and rect is None:
-            writers.write_text(page, opacity=opacity,
-                               color=color, overlay=overlay)
+            writers.write_text(page, opacity=opacity, color=color, overlay=overlay)
             return None
         else:
             writers = (writers,)
@@ -168,8 +167,7 @@ def show_pdf_page(*args, **kwargs) -> int:
         raise ValueError("clip must be finite and not empty")
     src_rect = src_rect * ~src_page.transformation_matrix  # ... in PDF coord
 
-    matrix = calc_matrix(src_rect, tar_rect,
-                         keep=keep_proportion, rotate=rotate)
+    matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
 
     # list of existing /Form /XObjects
     ilst = [i[1] for i in doc.get_page_xobjects(page.number)]
@@ -651,8 +649,7 @@ def get_pixmap(page: Page, **kw) -> Pixmap:
         raise ValueError("unsupported colorspace")
 
     dl = page.get_displaylist(annots=annots)
-    pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace,
-                        alpha=alpha, clip=clip)
+    pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
     dl = None
     return pix
     # doc = page.parent
@@ -932,8 +929,7 @@ def getRectArea(*args) -> float:
         unit = args[1]
     else:
         unit = "px"
-    u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (
-        2.54, 72.0), "mm": (25.4, 72.0)}
+    u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (2.54, 72.0), "mm": (25.4, 72.0)}
     f = (u[unit][0] / u[unit][1]) ** 2
     return f * rect.width * rect.height
 
@@ -1362,8 +1358,7 @@ def getLinkText(page: Page, lnk: dict) -> str:
             pnt = lnk.get("to", Point(0, 0))  # destination point
             if type(pnt) is not Point:
                 pnt = Point(0, 0)
-            annot = txt % (lnk["page"], pnt.x, pnt.y,
-                           lnk["file"], lnk["file"], rect)
+            annot = txt % (lnk["page"], pnt.x, pnt.y, lnk["file"], lnk["file"], rect)
         else:
             txt = annot_skel["gotor2"]  # annot_gotor_n
             annot = txt % (getPDFstr(lnk["to"]), lnk["file"], rect)
@@ -1992,8 +1987,7 @@ def draw_sector(
         fullSector -- connect arc ends with center
     """
     img = page.new_shape()
-    Q = img.draw_sector(Point(center), Point(point),
-                        beta, fullSector=fullSector)
+    Q = img.draw_sector(Point(center), Point(point), beta, fullSector=fullSector)
     img.finish(
         color=color,
         fill=fill,
@@ -2864,8 +2858,7 @@ class Shape(object):
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == Point(p)):
-                    self.draw_cont += "%g %g m\n" % JM_TUPLE(
-                        Point(p) * self.ipctm)
+                    self.draw_cont += "%g %g m\n" % JM_TUPLE(Point(p) * self.ipctm)
                     self.lastPoint = Point(p)
             else:
                 self.draw_cont += "%g %g l\n" % JM_TUPLE(Point(p) * self.ipctm)
@@ -2889,8 +2882,7 @@ class Shape(object):
         if not (self.lastPoint == p1):
             self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
         self.draw_cont += "%g %g %g %g %g %g c\n" % JM_TUPLE(
-            list(p2 * self.ipctm) + list(p3 * self.ipctm) +
-            list(p4 * self.ipctm)
+            list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm)
         )
         self.updateRect(p1)
         self.updateRect(p2)
@@ -2990,8 +2982,7 @@ class Shape(object):
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
             self.draw_cont += l4 % JM_TUPLE(
-                list(cp1 * self.ipctm) + list(cp2 *
-                                              self.ipctm) + list(Q * self.ipctm)
+                list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
             )
 
             betar -= w90  # reduce parm angle by 90 deg
@@ -3012,8 +3003,7 @@ class Shape(object):
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
             self.draw_cont += l4 % JM_TUPLE(
-                list(cp1 * self.ipctm) + list(cp2 *
-                                              self.ipctm) + list(Q * self.ipctm)
+                list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
             )
         if fullSector:
             self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
@@ -3208,8 +3198,7 @@ class Shape(object):
         # setting up for standard rotation directions
         # case rotate = 0
         if morphing:
-            m1 = Matrix(1, 0, 0, 1, morph[0].x +
-                        self.x, height - morph[0].y - self.y)
+            m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x, height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
             cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
         else:
@@ -3436,8 +3425,7 @@ class Shape(object):
 
         if CheckMorph(morph):
             m1 = Matrix(
-                1, 0, 0, 1, morph[0].x +
-                self.x, self.height - morph[0].y - self.y
+                1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
             cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
@@ -3677,12 +3665,10 @@ class Shape(object):
         self.draw_cont += emc
         if CheckMorph(morph):
             m1 = Matrix(
-                1, 0, 0, 1, morph[0].x +
-                self.x, self.height - morph[0].y - self.y
+                1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
-            self.draw_cont = "%g %g %g %g %g %g cm\n" % JM_TUPLE(
-                mat) + self.draw_cont
+            self.draw_cont = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat) + self.draw_cont
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
@@ -3998,11 +3984,12 @@ def fill_textbox(
     if type(font) is not Font:
         font = Font("helv")
 
-    def textlen(x): return font.text_length(x, fontsize)  # abbreviation
+    def textlen(x):
+        return font.text_length(x, fontsize)  # abbreviation
 
-    def append_this(pos, text): return writer.append(
-        pos, text, font=font, fontsize=fontsize
-    )
+    def append_this(pos, text):
+        return writer.append(pos, text, font=font, fontsize=fontsize)
+
     tolerance = fontsize * 0.2
     space_len = textlen(" ")
     std_width = rect.width - tolerance
@@ -4016,16 +4003,21 @@ def fill_textbox(
             if wl <= width:  # nothing to do - copy over
                 nwords.append(w)
                 continue
-            while True:  # shorten word from the end, char by char
-                nw = ""  # tail of word lands here
-                while wl > width:
-                    nw = w[-1] + nw
-                    w = w[:-1]
-                    wl = textlen(w)
-                nwords.append(w)
-                w = nw
-                if w == "":
+            # word longer than rect width - look at single chars
+            wl_lst = [textlen(c) for c in w]  # lengths of chars
+            while True:
+                wls = 0  # length of word piece
+                for i in range(len(wl_lst)):
+                    wls += wl_lst[i]
+                    if wls > width:
+                        break
+
+                if i == len(wl_lst) - 1:  # reached end of the word?
+                    nwords.append(w)
                     break
+                nwords.append(w[:i])  # output word segment
+                w = w[i:]  # remainder of word
+                wl_lst = wl_lst[i:]  # remainder of char lengths
         return nwords
 
     def output_justify(start, line):
@@ -4262,7 +4254,7 @@ def get_ocmd(doc: Document, xref: int) -> dict:
     if p0 < 0 or p1 < 0:  # no OCGs found
         ocgs = None
     else:
-        ocgs = text[p0 + 6: p1].replace("0 R", " ").split()
+        ocgs = text[p0 + 6 : p1].replace("0 R", " ").split()
         ocgs = list(map(int, ocgs))
 
     p0 = text.find("/P/")  # look for /P policy key
@@ -4275,7 +4267,7 @@ def get_ocmd(doc: Document, xref: int) -> dict:
         if p1 < 0:  # some irregular syntax
             raise ValueError("bad object at xref")
         else:
-            policy = text[p0 + 3: p1 + 2]
+            policy = text[p0 + 3 : p1 + 2]
 
     p0 = text.find("/VE[")  # look for /VE visibility expression key
     if p0 < 0:  # no visibility expression found
@@ -4292,7 +4284,7 @@ def get_ocmd(doc: Document, xref: int) -> dict:
             if text[p1] == "]":
                 rp += 1
         # p1 now positioned at the last "]"
-        ve = text[p0 + 3: p1 + 1]  # the PDF /VE array
+        ve = text[p0 + 3 : p1 + 1]  # the PDF /VE array
         ve = (
             ve.replace("/And", '"and",')
             .replace("/Not", '"not",')
@@ -4654,8 +4646,8 @@ def subset_fonts(doc: Document) -> None:
             """
             while "#" in name:
                 p = name.find("#")
-                c = int(name[p + 1: p + 3], 16)
-                name = name.replace(name[p: p + 3], chr(c))
+                c = int(name[p + 1 : p + 3], 16)
+                name = name.replace(name[p : p + 3], chr(c))
             p = name.find("+") + 1
             return name[p:]
 
@@ -4680,9 +4672,8 @@ def subset_fonts(doc: Document) -> None:
             p1 = descendents.find("/BaseFont")
             if p1 >= 0:
                 p2 = descendents.find("/", p1 + 1)
-                p1 = min(descendents.find("/", p2 + 1),
-                         descendents.find(">>", p2 + 1))
-                fontname = descendents[p2 + 1: p1]
+                p1 = min(descendents.find("/", p2 + 1), descendents.find(">>", p2 + 1))
+                fontname = descendents[p2 + 1 : p1]
                 fontname = norm_name(fontname)
                 if fontname not in names:
                     names.append(fontname)

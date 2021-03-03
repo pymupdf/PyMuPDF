@@ -627,10 +627,12 @@ struct Document
                 if (!INRANGE(xref, 1, xreflen-1))
                     THROWMSG(gctx, "bad xref");
                 obj = pdf_load_object(gctx, pdf, xref);
+                if (!obj) {
+                    goto not_found;
+                }
                 subobj = pdf_dict_getp(gctx, obj, key);
                 if (!subobj) {
-                    rc = Py_BuildValue("ss", "null", "null");
-                    goto finished;
+                    goto not_found;
                 }
                 char *type;
                 if (pdf_is_indirect(gctx, subobj)) {
@@ -661,10 +663,17 @@ struct Document
                 }
                 rc = Py_BuildValue("sO", type, text);
                 Py_DECREF(text);
+                goto finished;
+
+                not_found:;
+                rc = Py_BuildValue("ss", "null", "null");
                 finished:;
             }
-            fz_catch(gctx) {
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, obj);
                 fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx) {
                 return NULL;
             }
             return rc;
@@ -4001,7 +4010,7 @@ if basestate:
 
                 chapter, pno = loc
                 if (type(chapter) != int or
-                    chapter < 0 or 
+                    chapter < 0 or
                     chapter >= self.chapter_count
                     ):
                     return False
@@ -5190,7 +5199,7 @@ def get_oc_items(self) -> list:
         %pythoncode %{
         def load_annot(self, ident: typing.Union[str, int]) -> "struct Annot *":
             """Load an annot by name (/NM key) or xref.
-            
+
             Args:
                 ident: identifier, either name (str) or xref (int).
             """
@@ -5312,7 +5321,7 @@ def get_oc_items(self) -> list:
 
             def is_rectangle(path):
                 """Check if path represents a rectangle.
-                
+
                 For this, it must be exactly three connected lines, of which
                 the first and the last one must be horizontal and line two
                 must be vertical.
@@ -6055,7 +6064,7 @@ if not sanitize and not self.is_wrapped:
                     img_xref = pdf_to_num(gctx, ref);
                 }
                 if (oc) JM_add_oc_object(gctx, pdf, ref, oc);
-                
+
                 pdf_dict_puts_drop(gctx, xobject, _imgname, ref);  // update XObject
                 // make contents stream that invokes the image
                 nres = fz_new_buffer(gctx, 50);
@@ -6282,7 +6291,7 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
         }
 
         //----------------------------------------------------------------
-        // 
+        //
         //----------------------------------------------------------------
         %pythoncode %{
         def set_contents(self, xref: int)->None:
@@ -6425,7 +6434,7 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
             """List of fonts defined in the page object."""
             CheckParent(self)
             return self.parent.get_page_fonts(self.number, full=full)
-        
+
 
         def get_images(self, full=False):
             """List of images defined in the page object."""
@@ -8582,7 +8591,7 @@ struct Annot
                     fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
                 da_str = fmt.format(*tcol, f=fname, s=fsize)
                 TOOLS._update_da(self, da_str)
-                
+
                 for i, item in enumerate(ap_tab):
                     if (
                         item.endswith(b" w") and bwidth > 0 and border_color is not None
@@ -8772,7 +8781,7 @@ struct Annot
             int lend = (int) pdf_annot_line_end_style(gctx, annot);
             return Py_BuildValue("ii", lstart, lend);
         }
-        
+
 
         //----------------------------------------------------------------
         // annotation set line ends
@@ -9235,7 +9244,7 @@ CheckParent(self)%}
         // set annotation flags
         //----------------------------------------------------------------
         PARENTCHECK(set_flags, """Set annotation flags.""")
-        void 
+        void
         set_flags(int flags)
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -9809,7 +9818,7 @@ struct TextPage {
                             fz_rect linerect = fz_empty_rect;
                             for (ch = line->first_char; ch; ch = ch->next) {
                                 fz_rect cbbox = JM_char_bbox(gctx, line, ch);
-                                if (!fz_contains_rect(tp_rect, cbbox) && 
+                                if (!fz_contains_rect(tp_rect, cbbox) &&
                                     !fz_is_infinite_rect(tp_rect)) {
                                     continue;
                                 }
@@ -11089,11 +11098,7 @@ struct Tools
                 a = -src.e * dst.a - src.f * dst.c;
                 dst.f = -src.e * dst.b - src.f * dst.d;
                 dst.e = a;
-                PyObject* mat = JM_py_from_matrix(dst);
-                PyObject* res = Py_BuildValue("(i, O)", 0, mat);
-                Py_DECREF(mat);
-                return res;
-                // return Py_BuildValue("(i, O)", 0, JM_py_from_matrix(dst));
+                return Py_BuildValue("iN", 0, JM_py_from_matrix(dst));
             }
             return Py_BuildValue("(i, ())", 1);
         }
