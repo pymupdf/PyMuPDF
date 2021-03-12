@@ -82,6 +82,7 @@ elif sys.platform.startswith(("darwin", "freebsd")):
             "/usr/local/include/mupdf",
             "/usr/local/include",
             "/usr/include/freetype2",
+            "/usr/local/include/freetype2",
         ],
         # libraries should already be linked here by brew
         library_dirs=["/usr/local/lib"],
