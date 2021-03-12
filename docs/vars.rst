@@ -170,6 +170,14 @@ Options controlling the amount of data a text device parses into a :ref:`TextPag
 
     8 -- If set, we will not try to add missing space characters where there are large gaps between characters.
 
+.. py:data:: TEXT_DEHYPHENATE
+
+    16 -- Ignore hyphens at line ends and join with next line. Used mainly with search function
+
+.. py:data:: TEXT_PRESERVE_SPANS
+
+    32 -- Generate a new line for every span. Not used in PyMuPDF.
+
 
 .. _linkDest Kinds:
 
@@ -295,12 +303,14 @@ These identifiers also cover **links** and **widgets**: the PDF specification te
     PDF_ANNOT_FILE_ATTACHMENT 17
     PDF_ANNOT_SOUND 18
     PDF_ANNOT_MOVIE 19
-    PDF_ANNOT_WIDGET 20  # <=== Widget object in PyMuPDF
-    PDF_ANNOT_SCREEN 21
-    PDF_ANNOT_PRINTER_MARK 22
-    PDF_ANNOT_TRAP_NET 23
-    PDF_ANNOT_WATERMARK 24
-    PDF_ANNOT_3D 25
+    PDF_ANNOT_RICH_MEDIA 20
+    PDF_ANNOT_WIDGET 21  # <=== Widget object in PyMuPDF
+    PDF_ANNOT_SCREEN 22
+    PDF_ANNOT_PRINTER_MARK 23
+    PDF_ANNOT_TRAP_NET 24
+    PDF_ANNOT_WATERMARK 25
+    PDF_ANNOT_3D 26
+    PDF_ANNOT_PROJECTION 27
     PDF_ANNOT_UNKNOWN -1
 
 .. _AnnotationFlags:

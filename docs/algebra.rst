@@ -104,7 +104,7 @@ The following will deliver the **middle point of a line** connecting two points 
 
   >>> p1 = fitz.Point(1, 2)
   >>> p2 = fitz.Point(4711, 3141)
-  >>> mp = p1 + (p2 - p1) / 2
+  >>> mp = (p1 + p2) / 2
   >>> mp
   Point(2356.0, 1571.5)
   >>> 

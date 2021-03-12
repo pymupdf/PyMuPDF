@@ -7,7 +7,7 @@ Matrix
 
 Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the :ref:`AdobeManual`). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six float values.
 
-.. |matrix| image:: images/img-matrix.png
+.. |matrix| image:: images/img-matrix.*
 
 Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by *[a, b, c, d, e, f]*. Here is how they are positioned in the matrix:
 
@@ -186,7 +186,7 @@ Examples
 -------------
 Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
 
-.. |original| image:: images/img-original.png
+.. |original| image:: images/img-original.*
 
 This is the original page image:
 
@@ -194,13 +194,13 @@ This is the original page image:
 
 Shifting
 ------------
-.. |e100| image:: images/img-e-is-100.png
+.. |e100| image:: images/img-e-is-100.*
 
 We transform it with a matrix where *e = 100* (right shift by 100 pixels).
 
 |e100|
 
-.. |f100| image:: images/img-f-is-100.png
+.. |f100| image:: images/img-f-is-100.*
 
 Next we do a down shift by 100 pixels: *f = 100*.
 
@@ -208,13 +208,13 @@ Next we do a down shift by 100 pixels: *f = 100*.
 
 Flipping
 --------------
-.. |aminus1| image:: images/img-a-is--1.png
+.. |aminus1| image:: images/img-a-is--1.*
 
 Flip the page left-right (*a = -1*).
 
 |aminus1|
 
-.. |dminus1| image:: images/img-d-is--1.png
+.. |dminus1| image:: images/img-d-is--1.*
 
 Flip up-down (*d = -1*).
 
@@ -222,13 +222,13 @@ Flip up-down (*d = -1*).
 
 Shearing
 ----------------
-.. |bnull5| image:: images/img-b-is-0.5.png
+.. |bnull5| image:: images/img-b-is-0.5.*
 
 First a shear in Y direction (*b = 0.5*).
 
 |bnull5|
 
-.. |cnull5| image:: images/img-c-is-0.5.png
+.. |cnull5| image:: images/img-c-is-0.5.*
 
 Second a shear in X direction (*c = 0.5*).
 
@@ -236,7 +236,7 @@ Second a shear in X direction (*c = 0.5*).
 
 Rotating
 ---------
-.. |rot60| image:: images/img-rot-60.png
+.. |rot60| image:: images/img-rot-60.*
 
 Finally a rotation by 30 clockwise degrees (*preRotate(-30)*).
 

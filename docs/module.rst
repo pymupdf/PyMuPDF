@@ -304,7 +304,7 @@ Extract an embedded file like this::
     -password PASSWORD    password
     -output OUTPUT        output filename, default is stored name
 
-For details consult :meth:`Document.embeddedFileGet`. Example (refer to previous section)::
+For details consult :meth:`Document.embfile_get`. Example (refer to previous section)::
 
     python -m fitz embed-extract some.pdf -name neue.datei
     Saved entry 'neue.datei' as 'text-tester.pdf'
@@ -327,7 +327,7 @@ Delete an embedded file like this::
     -output OUTPUT        output PDF filename, incremental save if none
     -name NAME            name of entry to delete
 
-For details consult :meth:`Document.embeddedFileDel`.
+For details consult :meth:`Document.embfile_del`.
 
 Insertion
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -351,7 +351,7 @@ Add a new embedded file using this command::
     -path PATH            path to data for new entry
     -desc DESC            description of new entry
 
-*"NAME"* **must not** already exist in the PDF. For details consult :meth:`Document.embeddedFileAdd`.
+*"NAME"* **must not** already exist in the PDF. For details consult :meth:`Document.embfile_add`.
 
 Updates
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -380,7 +380,7 @@ Update an existing embedded file using this command::
 
     except '-name' all parameters are optional
 
-Use this method to change meta-information of the file -- just omit the *"PATH"*. For details consult :meth:`Document.embeddedFileUpd`.
+Use this method to change meta-information of the file -- just omit the *"PATH"*. For details consult :meth:`Document.embfile_upd`.
 
 
 Copying

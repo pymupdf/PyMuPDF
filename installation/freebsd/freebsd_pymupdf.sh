@@ -3,17 +3,16 @@ setenv CFLAGS -fPIC
 # install the pre-required tool
 pkg install swig
 
-wget https://mupdf.com/downloads/archive/mupdf-1.17.0-source.tar.gz
-tar -zxvf mupdf-1.17.0-source.tar.gz
+wget https://mupdf.com/downloads/archive/mupdf-1.18.0-source.tar.gz
+tar -zxvf mupdf-1.18.0-source.tar.gz
 
 rm -rf PyMuPDF
 git clone https://github.com/pymupdf/PyMuPDF.git
 
-cd mupdf-1.17.0-source
+cd mupdf-1.18.0-source
 # replace files in mupdf source
 cp ../PyMuPDF/fitz/_config.h include/mupdf/fitz/config.h
 cp ../PyMuPDF/fitz/_pdf-font-add.c source/pdf/pdf-font-add.c
-cp ../PyMuPDF/fitz/_encode-fax.c source/fitz/encode-fax.c
 
 gmake HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local
 gmake HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local install

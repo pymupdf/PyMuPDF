@@ -25,7 +25,7 @@ On occasion, vital hot fixes or functional enhancements must be applied to MuPDF
 
 Any such files are contained in the *fitz* directory of the `PyMuPDF homepage <https://github.com/pymupdf/PyMuPDF/tree/master/fitz>`_ -- their names all start with an underscore *"_"*. Currently (v1.16.x), these files and their copy destinations are the following:
 
-* *_config.h* -- PyMuPDF's configuration to control the binary file size and the inclusion of MuPDF features, see next section. This file must renamed and replace MuPDF file */include/mupdf/fitz/config.h*. This file controls the size of the PyMuPDF binary by cutting away unneeded fonts from MuPDF.
+* *_config.h* -- **(Optional)** PyMuPDF's configuration to control the binary file size. Copy-rename it to */include/mupdf/fitz/config.h*. This reduces the size of the PyMuPDF binary extension module to around 11 MB. If omitting this change, that size will be over 30 MB -- without impacting functionality.
 
 **Generate MuPDF**
 
@@ -37,7 +37,7 @@ Step 3: Build / Setup PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Adjust the setup.py script as necessary. E.g. make sure that:
 
-  * the include directory is correctly set in sync with your directory structure
+  * the include directories are correctly set in sync with your directory structure
   * the object code libraries are correctly defined
 
 Now perform a *python setup.py install*.
@@ -50,8 +50,10 @@ Now perform a *python setup.py install*.
 Option 2: Install from Binaries
 --------------------------------
 You can install PyMuPDF from Python wheels. The wheels are *self-contained*, i.e. you will **not need any other software** nor download / install MuPDF to run PyMuPDF scripts.
-This installation option is available for all MS Windows and the most **popular 64-bit** Mac OSX and Linux platforms for Python versions 2.7 and 3.5 through 3.8.
+This installation option is available for all MS Windows and the most **popular 64-bit** Mac OSX and Linux platforms for Python versions 3.6 through 3.9.
 Windows binaries are provided for Python **32-bit and 64-bit** versions.
+
+.. note:: For the time being, wheels for Python versions 2.7 and 3.5 are generated as well, but not uploaded to PyPI until explicitely requested via an issue. Starting year 2021, support for these wheel versions will be dropped entirely.
 
 **Overview of wheel names (PyMuPDF version is x.xx.xx):**
 

@@ -43,7 +43,7 @@ The following 14 builtin font names **must be supported by every PDF viewer** ap
 
 In contrast to their obligation, not all PDF viewers support these fonts correctly and completely -- this is especially true for Symbol and ZapfDingbats. Also, the glyph (visual) images will be specific to every reader.
 
-To see how these fonts can be used -- including the **CJK built-in** fonts -- look at the table in :meth:`Page.insertFont`.
+To see how these fonts can be used -- including the **CJK built-in** fonts -- look at the table in :meth:`Page.insert_font`.
 
 ------------
 
@@ -113,7 +113,7 @@ Python on the other hand implements the OO-model in a very clean way. The interf
 
 When you use one of PyMuPDF's objects or methods, this will result in excution of some code in *fitz.py*, which in turn will call some C code compiled with *fitz_wrap.c*.
 
-Because SWIG goes a long way to keep the Python and the C level in sync, everything works fine, if a certain set of rules is being strictly followed. For example: **never access** a :ref:`Page` object, after you have closed (or deleted or set to *None*) the owning :ref:`Document`. Or, less obvious: **never access** a page or any of its children (links or annotations) after you have executed one of the document methods *select()*, *deletePage()*, *insertPage()* ... and more.
+Because SWIG goes a long way to keep the Python and the C level in sync, everything works fine, if a certain set of rules is being strictly followed. For example: **never access** a :ref:`Page` object, after you have closed (or deleted or set to *None*) the owning :ref:`Document`. Or, less obvious: **never access** a page or any of its children (links or annotations) after you have executed one of the document methods *select()*, *delete_page()*, *insert_page()* ... and more.
 
 But just no longer accessing invalidated objects is actually not enough: They should rather be actively deleted entirely, to also free C-level resources (meaning allocated memory).
 
@@ -125,7 +125,7 @@ The required logic has therefore been built into PyMuPDF itself in the following
 
 1. If a page "loses" its owning document or is being deleted itself, all of its currently existing annotations and links will be made unusable in Python, and their C-level counterparts will be deleted and deallocated.
 
-2. If a document is closed (or deleted or set to *None*) or if its structure has changed, then similarly all currently existing pages and their children will be made unusable, and corresponding C-level deletions will take place. "Structure changes" include methods like *select()*, *delePage()*, *insertPage()*, *insertPDF()* and so on: all of these will result in a cascade of object deletions.
+2. If a document is closed (or deleted or set to *None*) or if its structure has changed, then similarly all currently existing pages and their children will be made unusable, and corresponding C-level deletions will take place. "Structure changes" include methods like *select()*, *delePage()*, *insert_page()*, *insert_pdf()* and so on: all of these will result in a cascade of object deletions.
 
 The programmer will normally not realize any of this. If he, however, tries to access invalidated objects, exceptions will be raised.
 
@@ -136,7 +136,7 @@ All pages, links and annotations have the property *parent*, which points to the
 A sample session:
 
 >>> page = doc[n]
->>> annot = page.firstAnnot
+>>> annot = page.first_annot
 >>> annot.type                    # everything works fine
 [5, 'Circle']
 >>> page = None                   # this turns 'annot' into an orphan
@@ -145,7 +145,7 @@ A sample session:
 RuntimeError: orphaned object: parent is None
 >>>
 >>> # same happens, if you do this:
->>> annot = doc[n].firstAnnot     # deletes the page again immediately!
+>>> annot = doc[n].first_annot     # deletes the page again immediately!
 >>> annot.type                    # so, 'annot' is 'born' orphaned
 <... omitted lines ...>
 RuntimeError: orphaned object: parent is None
@@ -154,7 +154,7 @@ This shows the cascading effect:
 
 >>> doc = fitz.open("some.pdf")
 >>> page = doc[n]
->>> annot = page.firstAnnot
+>>> annot = page.first_annot
 >>> page.rect
 fitz.Rect(0.0, 0.0, 595.0, 842.0)
 >>> annot.type
@@ -167,13 +167,13 @@ RuntimeError: orphaned object: parent is None
 <... omitted lines ...>
 RuntimeError: orphaned object: parent is None
 
-.. note:: Objects outside the above relationship are not included in this mechanism. If you e.g. created a table of contents by *toc = doc.getToC()*, and later close or change the document, then this cannot and does not change variable *toc* in any way. It is your responsibility to refresh such variables as required.
+.. note:: Objects outside the above relationship are not included in this mechanism. If you e.g. created a table of contents by *toc = doc.get_toc()*, and later close or change the document, then this cannot and does not change variable *toc* in any way. It is your responsibility to refresh such variables as required.
 
 ------------
 
 .. _FormXObject:
 
-Design of Method :meth:`Page.showPDFpage`
+Design of Method :meth:`Page.show_pdf_page`
 --------------------------------------------
 
 Purpose and Capabilities
@@ -181,8 +181,8 @@ Purpose and Capabilities
 
 The method displays an image of a ("source") page of another PDF document within a specified rectangle of the current ("containing", "target") page.
 
-* **In contrast** to :meth:`Page.insertImage`, this display is vector-based and hence remains accurate across zooming levels.
-* **Just like** :meth:`Page.insertImage`, the size of the display is adjusted to the given rectangle.
+* **In contrast** to :meth:`Page.insert_image`, this display is vector-based and hence remains accurate across zooming levels.
+* **Just like** :meth:`Page.insert_image`, the size of the display is adjusted to the given rectangle.
 
 The following variations of the display are currently supported:
 
@@ -200,7 +200,7 @@ Use cases include (but are not limited to) the following:
 Technical Implementation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is done using PDF **"Form XObjects"**, see section 4.9 on page 355 of :ref:`AdobeManual`. On execution of a *Page.showPDFpage(rect, src, pno, ...)*, the following things happen:
+This is done using PDF **"Form XObjects"**, see section 4.9 on page 355 of :ref:`AdobeManual`. On execution of a *Page.show_pdf_page(rect, src, pno, ...)*, the following things happen:
 
     1. The :data:`resources` and :data:`contents` objects of page *pno* in document *src* are copied over to the current document, jointly creating a new **Form XObject** with the following properties. The PDF :data:`xref` number of this object is returned by the method.
 
@@ -235,7 +235,7 @@ PyMuPDF will put error messages to *sys.stderr* prefixed with the string "mupdf:
 
 .. rubric:: Footnotes
 
-.. [#f1] MuPDF supports "deep-copying" objects between PDF documents. To avoid duplicate data in the target, it uses so-called "graftmaps", like a form of scratchpad: for each object to be copied, its :data:`xref` number is looked up in the graftmap. If found, copying is skipped. Otherwise, the new :data:`xref` is recorded and the copy takes place. PyMuPDF makes use of this technique in two places so far: :meth:`Document.insertPDF` and :meth:`Page.showPDFpage`. This process is fast and very efficient, because it prevents multiple copies of typically large and frequently referenced data, like images and fonts. However, you may still want to consider using garbage collection (option 4) in any of the following cases:
+.. [#f1] MuPDF supports "deep-copying" objects between PDF documents. To avoid duplicate data in the target, it uses so-called "graftmaps", like a form of scratchpad: for each object to be copied, its :data:`xref` number is looked up in the graftmap. If found, copying is skipped. Otherwise, the new :data:`xref` is recorded and the copy takes place. PyMuPDF makes use of this technique in two places so far: :meth:`Document.insert_pdf` and :meth:`Page.show_pdf_page`. This process is fast and very efficient, because it prevents multiple copies of typically large and frequently referenced data, like images and fonts. However, you may still want to consider using garbage collection (option 4) in any of the following cases:
 
     1. The target PDF is not new / empty: grafting does not check for resource types that already existed (e.g. images, fonts) in the target document
-    2. Using :meth:`Page.showPDFpage` for more than one source document: each grafting occurs **within one source** PDF only, not across multiple.
+    2. Using :meth:`Page.show_pdf_page` for more than one source document: each grafting occurs **within one source** PDF only, not across multiple.

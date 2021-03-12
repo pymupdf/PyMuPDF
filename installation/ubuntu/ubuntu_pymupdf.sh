@@ -1,7 +1,9 @@
-wget https://mupdf.com/downloads/archive/mupdf-1.17.0-source.tar.gz
-tar -zxvf mupdf-1.17.0-source.tar.gz
+wget https://mupdf.com/downloads/archive/mupdf-1.18.0-source.tar.gz
+tar -zxvf mupdf-1.18.0-source.tar.gz
 
-cd mupdf-1.17.0-source
+cd mupdf-1.18.0-source
+# replace files in mupdf source
+cp ../PyMuPDF/fitz/_config.h include/mupdf/fitz/config.h
 
 export CFLAGS="-fPIC"
 # install some prerequirement

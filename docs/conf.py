@@ -2,12 +2,11 @@
 #
 import sys
 import os
-import sphinx_rtd_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-# sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath("."))
 
 # -- General configuration ------------------------------------------------
 
@@ -17,15 +16,15 @@ import sphinx_rtd_theme
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
-if sys.platform == "win32":
-    extensions.extend(["sphinx.ext.autodoc", "rst2pdf.pdfbuilder"])
-
+# extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
+extensions = [
+    "extensions.searchrepair",
+]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-# source_suffix = ".rst"
+# source_suffix = ""
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -35,14 +34,14 @@ master_doc = "index"
 
 # General information about the project.
 project = "PyMuPDF"
-copyright = "2015-2020, Jorj X. McKie"
+copyright = "2015-2021, Jorj X. McKie"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.17.6"
+release = "1.18.9"
 
 # The short X.Y version
 version = release
@@ -91,9 +90,11 @@ keep_warnings = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 # html_theme = "agogo"
+html_theme = "bizstyle"
+# html_theme = "pyramid"
 # html_theme = "sphinxdoc"
 # html_theme = "python_docs_theme"
-html_theme = "sphinx_rtd_theme"
+# html_theme = "sphinx_rtd_theme"
 # html_theme = "classic"
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -103,7 +104,7 @@ html_theme_options = {
     # "root_name": "",
     # "root_url": "",
     # "root_icon": "pymupdf.ico",
-    # "sidebarbgcolor": "gray",
+    "sidebarbgcolor": "gray",
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -161,8 +162,8 @@ html_use_index = True
 html_split_index = True
 
 # If true, links to the reST sources are added to the pages.
-html_show_sourcelink = True
-html_sourcelink_suffix = ".rst"
+html_show_sourcelink = False
+html_sourcelink_suffix = ""
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = True
 
@@ -172,10 +173,10 @@ html_show_copyright = True
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-# html_use_opensearch = "https://pymupdf.readthedocs.io/en/latest"
+html_use_opensearch = ""
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
-# html_file_suffix = ".html"
+html_file_suffix = None
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "PyMuPDF"

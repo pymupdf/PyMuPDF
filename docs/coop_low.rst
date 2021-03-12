@@ -12,7 +12,7 @@ Create a DisplayList
 ---------------------
 A :ref:`DisplayList` represents an interpreted document page. Methods for pixmap creation, text extraction and text search are  -- behind the curtain -- all using the page's display list to perform their tasks. If a page must be rendered several times (e.g. because of changed zoom levels), or if text search and text extraction should both be performed, overhead can be saved, if the display list is created only once and then used for all other tasks.
 
->>> dl = page.getDisplayList()              # create the display list
+>>> dl = page.get_displaylist()              # create the display list
 
 You can also create display lists for many pages "on stack" (in a list), may be during document open, during idling times, or you store it when a page is visited for the first time (e.g. in GUI scripts).
 
@@ -20,11 +20,11 @@ Note, that for everything what follows, only the display list is needed -- the c
 
 Generate Pixmap
 ------------------
-The following creates a Pixmap from a :ref:`DisplayList`. Parameters are the same as for :meth:`Page.getPixmap`.
+The following creates a Pixmap from a :ref:`DisplayList`. Parameters are the same as for :meth:`Page.get_pixmap`.
 
->>> pix = dl.getPixmap()                    # create the page's pixmap
+>>> pix = dl.get_pixmap()                    # create the page's pixmap
 
-The execution time of this statement may be up to 50% shorter than that of :meth:`Page.getPixMap`.
+The execution time of this statement may be up to 50% shorter than that of :meth:`Page.get_pixmap`.
 
 Perform Text Search
 ---------------------
@@ -32,7 +32,7 @@ With the display list from above, we can also search for text.
 
 For this we need to create a :ref:`TextPage`.
 
->>> tp = dl.getTextPage()                    # display list from above
+>>> tp = dl.get_textpage()                    # display list from above
 >>> rlist = tp.search("needle")              # look up "needle" locations
 >>> for r in rlist:                          # work with the found locations, e.g.
         pix.invertIRect(r.irect)             # invert colors in the rectangles
@@ -62,7 +62,7 @@ TextPage
 If you do not need images extracted alongside the text of a page, you can set the following option:
 
 >>> flags = fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_WHITESPACE
->>> tp = dl.getTextPage(flags)
+>>> tp = dl.get_textpage(flags)
 
 This will save ca. 25% overall execution time for the HTML, XHTML and JSON text extractions and **hugely** reduce the amount of storage (both, memory and disk space) if the document is graphics oriented.
 

@@ -11,54 +11,51 @@ Yet others are handy, general-purpose utilities.
 ==================================== ==============================================================
 **Function**                         **Short Description**
 ==================================== ==============================================================
-:meth:`Annot._cleanContents`         PDF only: clean the annot's :data:`contents` objects
-:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
-:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
-:attr:`Annot.APNMattrix`             PDF only: the matrix of the appearance object
-:attr:`Annot.APNBBox`                PDF only: bbox of the appearance object
-:meth:`ConversionHeader`             return header string for *getText* methods
-:meth:`ConversionTrailer`            return trailer string for *getText* methods
-:meth:`Document._delXmlMetadata`     PDF only: remove XML metadata
-:meth:`Document._deleteObject`       PDF only: delete an object
-:meth:`Document._getNewXref`         PDF only: create and return a new :data:`xref` entry
+:meth:`Annot.clean_contents`         PDF only: clean the annot's :data:`contents` object
+:meth:`Annot.set_apn_matrix`         PDF only: set the matrix of the appearance object
+:meth:`Annot.set_apn_bbox`           PDF only: set the bbox of the appearance object
+:attr:`Annot.apn_matrix`             PDF only: the matrix of the appearance object
+:attr:`Annot.apn_bbox`               PDF only: bbox of the appearance object
+:meth:`ConversionHeader`             return header string for *get_text* methods
+:meth:`ConversionTrailer`            return trailer string for *get_text* methods
+:meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
+:meth:`Document.delete_object`       PDF only: delete an object
+:meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document._getOLRootNumber`    PDF only: return / create :data:`xref` of */Outline*
-:meth:`Document._getPDFroot`         PDF only: return the :data:`xref` of the catalog
-:meth:`Document._getPageObjNumber`   PDF only: return :data:`xref` and generation number of a page
-:meth:`Document._getPageXref`        PDF only: same as *_getPageObjNumber()*
-:meth:`Document._getTrailerString`   PDF only: return the PDF file trailer string
-:meth:`Document._getXmlMetadataXref` PDF only: return XML metadata :data:`xref` number
-:meth:`Document._getXrefLength`      PDF only: return length of :data:`xref` table
-:meth:`Document._getXrefStream`      PDF only: return content of a stream object
-:meth:`Document._getXrefString`      PDF only: return object definition "source"
-:meth:`Document._make_page_map`      PDF only: create a fast-access array of page numbers
-:meth:`Document._updateObject`       PDF only: insert or update a PDF object
-:meth:`Document._updateStream`       PDF only: replace the stream of an object
-:meth:`Document.extractFont`         PDF only: extract embedded font
-:meth:`Document.extractImage`        PDF only: extract embedded image
-:meth:`Document.getCharWidths`       PDF only: return a list of glyph widths of a font
-:meth:`Document.isStream`            PDF only: check whether an :data:`xref` is a stream object
+:meth:`Document.xml_metadata_xref`   PDF only: return XML metadata :data:`xref` number
+:meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
+:meth:`Document.extract_font`        PDF only: extract embedded font
+:meth:`Document.extract_image`       PDF only: extract embedded image
+:meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
+:meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
 :attr:`Document.FontInfos`           PDF only: information on inserted fonts
 :meth:`ImageProperties`              return a dictionary of basic image properties
 :meth:`getPDFnow`                    return the current timestamp in PDF format
 :meth:`getPDFstr`                    return PDF-compatible string
 :meth:`getTextlength`                return string length for a given font & fontsize
-:meth:`Page.cleanContents`           PDF only: clean the page's :data:`contents` objects
-:meth:`Page._getContents`            PDF only: return a list of content numbers
-:meth:`Page._setContents`            PDF only: set page's :data:`contents` to some :data:`xref`
-:meth:`Page.getDisplayList`          create the page's display list
-:meth:`Page.getTextBlocks`           extract text blocks as a Python list
-:meth:`Page.getTextWords`            extract text words as a Python list
+:meth:`Page.clean_contents`          PDF only: clean the page's :data:`contents` objects
+:meth:`Page.get_contents`            PDF only: return a list of content :data:`xref` numbers
+:meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
+:meth:`Page.get_displaylist`         create the page's display list
+:meth:`Page.get_text_blocks`         extract text blocks as a Python list
+:meth:`Page.get_text_words`          extract text words as a Python list
 :meth:`Page.run`                     run a page through a device
-:meth:`Page.readContents`            PDF only: get complete, concatenated /Contents source
-:meth:`Page.wrapContents`            wrap contents with stacking commands
-:attr:`Page._isWrapped`              check whether contents wrapping is present
+:meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
+:meth:`Page.wrap_contents`           wrap contents with stacking commands
+:attr:`Page.is_wrapped`              check whether contents wrapping is present
 :meth:`planishLine`                  matrix to map a line to the x-axis
 :meth:`PaperSize`                    return width, height for a known paper format
 :meth:`PaperRect`                    return rectangle for a known paper format
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from a sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from a sRGB integer
-:meth:`make_table`                   return list of table cells for a given rectangle
+:meth:`recover_quad`                 return the quad for a text span ("dict" / "rawdict")
+:meth:`glyph_name_to_unicode`        return unicode from a glyph name
+:meth:`unicode_to_glyph_name`        return glyph name from a unicode
+:meth:`make_table`                   split rectangle in sub-rectangles
+:meth:`adobe_glyph_names`            list of glyph names defined in **Adobe Glyph List**
+:meth:`adobe_glyph_unicodes`         list of unicodes defined in **Adobe Glyph List**
 :attr:`paperSizes`                   dictionary of pre-defined paper formats
+:attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 ==================================== ==============================================================
 
    .. method:: PaperSize(s)
@@ -96,7 +93,7 @@ Yet others are handy, general-purpose utilities.
 
       *New in v1.17.4*
 
-      Convenience function returning a PDF color triple (red, green, blue) for a given sRGB color integer as it occurs in :meth:`Page.getText` dictionaries "dict" and "rawdict".
+      Convenience function returning a PDF color triple (red, green, blue) for a given sRGB color integer as it occurs in :meth:`Page.get_text` dictionaries "dict" and "rawdict".
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
@@ -104,11 +101,67 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
+   .. method:: glyph_name_to_unicode(name)
+
+      *New in v1.18.0*
+
+      Return the unicode number of a glyph name based on the **Adobe Glyph List**.
+
+      :arg str name: the name of some glyph. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+
+      :rtype: int
+      :returns: the unicode. Invalid *name* entries return ``0xfffd (65533)``.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+
+-----
+
+   .. method:: unicode_to_glyph_name(ch)
+
+      *New in v1.18.0*
+
+      Return the glyph name of a unicode number, based on the **Adobe Glyph List**.
+
+      :arg int che: the unicode given by e.g. ``ord("ß")``. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+
+      :rtype: str
+      :returns: the glyph name. E.g. ``fitz.unicode_to_glyph_name(ord("Ä"))`` returns ``'Adieresis'``.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_: in its *agl* sub-package.
+
+-----
+
+   .. method:: adobe_glyph_names()
+
+      *New in v1.18.0*
+
+      Return a list of glyph names defined in the **Adobe Glyph List**.
+
+      :rtype: list
+      :returns: list of strings.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+
+-----
+
+   .. method:: adobe_glyph_unicodes()
+
+      *New in v1.18.0*
+
+      Return a list of unicodes for there exists a glyph name in the **Adobe Glyph List**.
+
+      :rtype: list
+      :returns: list of integers.
+
+      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+
+-----
+
    .. method:: sRGB_to_rgb(srgb)
 
       *New in v1.17.4*
 
-      Convenience function returning a color (red, green, blue) for a given sRGB color integer .
+      Convenience function returning a color (red, green, blue) for a given *sRGB* color integer.
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
@@ -116,22 +169,33 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: make_table(rect=(0, 0, 1, 1), cols=1, rows=1)
+   .. method:: recover_quad(line_dir, span)
+
+      *New in v1.18.9*
+
+      Convenience function returning the quadrilateral envelopping the text of a text span, as returned by :meth:`Page.get_text` using the "dict" or "rawdict" options.
+
+      :arg tuple line_dict: the value ``line["dir"]`` of the span's line.
+      :arg dict span: the span sub-dictionary.
+
+      :returns: the quadrilateral of the span's text.
+
+-----
+
+   .. method:: make_table(rect, cols=1, rows=1)
 
       *New in v1.17.4*
 
-      Convenience function returning a list of <rows x cols> :ref:`Rect` objects representing equal sized table cells for the given rectangle.
+      Convenience function to split a rectangle into sub-rectangles. Returns a list of *rows* lists, each containing *cols* :ref:`Rect` items. Each sub-rectangle can then be addressed by its row and column index.
 
-      :arg rect_like rect: the rectangle to contain the table.
+      :arg rect_like rect: the rectangle to split.
       :arg int cols: the desired number of columns.
       :arg int rows: the desired number of rows.
-      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*::
+      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*. Here is the layout of a 3x4 table created by ``cell = fitz.make_table(rect, cols=4, rows=3)``:
 
-         [
-            [cell00, cell01, ...]  # row 0
-            ...
-            [...]  # last row
-         ]
+      .. image:: images/img-make-table.*
+         :scale: 60
+
 
 -----
 
@@ -214,15 +278,15 @@ Yet others are handy, general-purpose utilities.
       Calculate the length of text on output with a given **builtin** font, fontsize and encoding.
 
       :arg str text: the text string.
-      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth.`Page.insertFont`).
+      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth.`Page.insert_font`).
       :arg float fontsize: size of the font.
       :arg int encoding: the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic (Russian) are available. Relevant for Base-14 fonts "Helvetica", "Courier" and "Times" and their variants only. Make sure to use the same value as in the corresponding text insertion.
       :rtype: float
-      :returns: the length in points the string will have (e.g. when used in :meth:`Page.insertText`).
+      :returns: the length in points the string will have (e.g. when used in :meth:`Page.insert_text`).
 
       .. note:: This function will only do the calculation -- it won't insert font or text.
 
-      .. warning:: If you use this function to determine the required rectangle width for the (:ref:`Page` or :ref:`Shape`) *insertTextbox* methods, be aware that they calculate on a **by-character level**. Because of rounding effects, this will mostly lead to a slightly larger number: *sum([fitz.getTextlength(c) for c in text]) > fitz.getTextlength(text)*. So either (1) do the same, or (2) use something like *fitz.getTextlength(text + "'")* for your calculation.
+      .. warning:: If you use this function to determine the required rectangle width for the (:ref:`Page` or :ref:`Shape`) *insert_textbox* methods, be aware that they calculate on a **by-character level**. Because of rounding effects, this will mostly lead to a slightly larger number: *sum([fitz.getTextlength(c) for c in text]) > fitz.getTextlength(text)*. So either (1) do the same, or (2) use something like *fitz.getTextlength(text + "'")* for your calculation.
 
 -----
 
@@ -272,7 +336,7 @@ Yet others are handy, general-purpose utilities.
 
       Return the header string required to make a valid document out of page text outputs.
 
-      :arg str output: type of document. Use the same as the output parameter of *getText()*.
+      :arg str output: type of document. Use the same as the output parameter of *get_text()*.
 
       :arg str filename: optional arbitrary name to use in output types "json" and "xml".
 
@@ -282,15 +346,15 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: ConversionTrailer(output)
 
-      Return the trailer string required to make a valid document out of page text outputs. See :meth:`Page.getText` for an example.
+      Return the trailer string required to make a valid document out of page text outputs. See :meth:`Page.get_text` for an example.
 
-      :arg str output: type of document. Use the same as the output parameter of *getText()*.
+      :arg str output: type of document. Use the same as the output parameter of *get_text()*.
 
       :rtype: str
 
 -----
 
-   .. method:: Document._deleteObject(xref)
+   .. method:: Document.delete_object(xref)
 
       PDF only: Delete an object given by its cross reference number.
 
@@ -300,80 +364,18 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._delXmlMetadata()
+   .. method:: Document.del_xml_metadata()
 
       Delete an object containing XML-based metadata from the PDF. (Py-) MuPDF does not support XML-based metadata. Use this if you want to make sure that the conventional metadata dictionary will be used exclusively. Many thirdparty PDF programs insert their own metadata in XML format and thus may override what you store in the conventional dictionary. This method deletes any such reference, and the corresponding PDF object will be deleted during next garbage collection of the file.
 
 -----
 
-   .. method:: Document._getTrailerString(compressed=False)
+   .. method:: Document.xml_metadata_xref()
 
-      *(New in version 1.14.9)*
-      
-      Return the trailer of the PDF (UTF-8), which is usually located at the PDF file's end. If not a PDF or the PDF has no trailer (because of irrecoverable errors), *None* is returned.
-
-      :arg bool compressed: *(ew in version 1.14.14)* whether to generate a compressed output or one with nice indentations to ease reading (default).
-
-      :returns: a string with the PDF trailer information. This is the analogous method to :meth:`Document._getXrefString` except that the trailer has no identifying :data:`xref` number. As can be seen here, the trailer object points to other important objects:
-
-      >>> doc=fitz.open("adobe.pdf")
-      >>> # compressed output
-      >>> print(doc._getTrailerString(True))
-      <</Size 334093/Prev 25807185/XRefStm 186352/Root 333277 0 R/Info 109959 0 R
-      /ID[(\\227\\366/gx\\016ds\\244\\207\\326\\261\\\\\\305\\376u)
-      (H\\323\\177\\346\\371pkF\\243\\262\\375\\346\\325\\002)]>>
-      >>> # non-compressed otput:
-      >>> print(doc._getTrailerString(False))
-      <<
-         /Size 334093
-         /Prev 25807185
-         /XRefStm 186352
-         /Root 333277 0 R
-         /Info 109959 0 R
-         /ID [ (\227\366/gx\016ds\244\207\326\261\\\305\376u) (H\323\177\346\371pkF\243\262\375\346\325\002) ]
-      >>
-
-      .. note:: MuPDF is capable of recovering from a number of damages a PDF may have. This includes re-generating a trailer, where the end of a file has been lost (e.g. because of incomplete downloads). If however *None* is returned for a PDF, then the recovery mechanisms were unsuccessful and you should check for any error messages (:attr:`Document.openErrCode`, :attr:`Document.openErrMsg`, :attr:`Tools.fitz_stderr`).
-
-
------
-
-   .. method:: Document._make_page_map()
-
-      Create an internal array of page numbers, which significantly speeds up page lookup (:meth:`Document.loadPage`). If this array exists, finding a page object will be up to two times faster. Functions which change the PDF's page layout (copy, delete, move, select pages) will destroy this array again.
-
------
-
-   .. method:: Document._getXmlMetadataXref()
-
-      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document._getXrefStream` and then work with it using some XML software.
+      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xref_stream` and then work with it using some XML software.
 
       :rtype: int
-      :returns: :data:`xref` of PDF file level XML metadata.
-
------
-
-   .. method:: Document._getPageObjNumber(pno)
-
-      or
-
-   .. method:: Document._getPageXref(pno)
-
-       Return the :data:`xref` and generation number for a given page.
-
-      :arg int pno: Page number (zero-based).
-
-      :rtype: list
-      :returns: :data:`xref` and generation number of page *pno* as a list *[xref, gen]*.
-
------
-
-   .. method:: Document._getPDFroot()
-
-       Return the :data:`xref` of the PDF catalog.
-
-      :rtype: int
-      :returns: :data:`xref` of the PDF catalog -- a central :data:`dictionary` pointing to many other PDF information.
+      :returns: :data:`xref` of PDF file level XML metadata -- or 0 if none exists.
 
 -----
 
@@ -389,33 +391,33 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.wrapContents
+   .. method:: Page.wrap_contents
 
       Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
 
-      Use this method as an alternative, minimalistic version of :meth:`Page.cleanContents`. Its advantage is a small footprint in terms of processing time and impact on incremental saves.
+      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves.
 
 -----
 
-   .. attribute:: Page._isWrapped
+   .. attribute:: Page.is_wrapped
 
-      Indicate whether :meth:`Page.wrapContents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
-
------
-
-   .. method:: Page.getTextBlocks(flags=None)
-
-      Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.
+      Indicate whether :meth:`Page.wrap_contents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
 
 -----
 
-   .. method:: Page.getTextWords(flags=None)
+   .. method:: Page.get_text_blocks(flags=None)
 
-      Deprecated wrapper for :meth:`TextPage.extractWORDS`.
+      Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.  Use :meth:`Page.getText` with the "blocks" option instead.
 
 -----
 
-   .. method:: Page.getDisplayList()
+   .. method:: Page.get_text_words(flags=None)
+
+      Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use :meth:`Page.getText` with the "words" option instead.
+
+-----
+
+   .. method:: Page.get_displaylist()
 
       Run a page through a list device and return its display list.
 
@@ -424,38 +426,17 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page._getContents()
+   .. method:: Page.get_contents()
 
-      Return a list of :data:`xref` numbers of :data:`contents` objects belonging to the page.
-
-      :rtype: list
-      :returns: a list of :data:`xref` integers.
-
-      Each page may have zero to many associated contents objects (:data:`stream` \s) which contain some operator syntax describing what appears where and how on the page (like text or images, etc. See the :ref:`AdobeManual`, chapter "Operator Summary", page 985). This function only enumerates the number(s) of such objects. To get the actual stream source, use function :meth:`Document._getXrefStream` with one of the numbers in this list. Use :meth:`Document._updateStream` to replace the content.
+      PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of a page. May be empty or contain multiple integers. If the page is cleaned (:meth:`Page.clean_contents`), it will be one entry at most. The "source" of each `/Contents` object can be individually read by :meth:`Document.xref_stream` using an item of this list. Method :meth:`Page.read_contents` in contrast walks through this list and concatenates the corresponding sources into one ``bytes`` object.
 
 -----
 
-   .. method:: Page._setContents(xref)
-
-      PDF only: Set a given object (identified by its :data:`xref`) as the page's one and only :data:`contents` object. Useful for joining mutiple :data:`contents` objects as in the following snippet::
-
-         >>> c = b""
-         >>> xreflist = page._getContents()
-         >>> for xref in xreflist:
-                 c += doc._getXrefStream(xref)
-         >>> doc._updateStream(xreflist[0], c)
-         >>> page._setContents(xreflist[0])
-         >>> # doc.save(..., garbage=1) will remove the unused objects
-
-      :arg int xref: the cross reference number of a :data:`contents` object. An exception is raised if outside the valid :data:`xref` range or not a stream object.
-
------
-
-   .. method:: Page.cleanContents(sanitize=True)
+   .. method:: Page.clean_contents(sanitize=True)
 
       *(Changed in v1.17.6)*
       
-      PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.getContents` for more details.
+      PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.get_contents` for more details.
 
       Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
 
@@ -465,7 +446,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.readContents()
+   .. method:: Page.read_contents()
 
       *New in version 1.17.0.*
       Return the concatenation of all :data:`contents` objects associated with the page -- without cleaning or otherwise modifying them. Use this method whenever you need to parse this source in its entirety whithout having to bother how many separate contents objects exist.
@@ -473,18 +454,18 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Annot._cleanContents()
+   .. method:: Annot.clean_contents(sanitize=True)
 
-      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page.cleanContents` performs -- just restricted to this annotation.
+      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page.clean_contents` performs -- just restricted to this annotation.
 
 
 -----
 
-   .. method:: Document.getCharWidths(xref=0, limit=256)
+   .. method:: Document.get_char_widths(xref=0, limit=256)
 
-      Return a list of character glyphs and their widths for a font that is present in the document. A font must be specified by its PDF cross reference number :data:`xref`. This function is called automatically from :meth:`Page.insertText` and :meth:`Page.insertTextbox`. So you should rarely need to do this yourself.
+      Return a list of character glyphs and their widths for a font that is present in the document. A font must be specified by its PDF cross reference number :data:`xref`. This function is called automatically from :meth:`Page.insert_text` and :meth:`Page.insert_textbox`. So you should rarely need to do this yourself.
 
-      :arg int xref: cross reference number of a font embedded in the PDF. To find a font :data:`xref`, use e.g. *doc.getPageFontList(pno)* of page number *pno* and take the first entry of one of the returned list entries.
+      :arg int xref: cross reference number of a font embedded in the PDF. To find a font :data:`xref`, use e.g. *doc.get_page_fonts(pno)* of page number *pno* and take the first entry of one of the returned list entries.
 
       :arg int limit: limits the number of returned entries. The default of 256 is enforced for all fonts that only support 1-byte characters, so-called "simple fonts" (checked by this method). All :ref:`Base-14-Fonts` are simple fonts.
 
@@ -502,54 +483,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getXrefString(xref, compressed=False)
-
-      Return the string ("source code") representing an arbitrary object. For :data:`stream` objects, only the non-stream part is returned. To get the stream data, use :meth:`_getXrefStream`.
-
-      :arg int xref: :data:`xref` number.
-      :arg bool compressed: *(new in version 1.14.14)* whether to generate a compressed output or one with nice indentations to ease reading or parsing (default).
-
-      :rtype: string
-      :returns: the string defining the object identified by :data:`xref`. Example:
-
-      >>> doc = fitz.open("Adobe PDF Reference 1-7.pdf")  # the PDF
-      >>> page = doc[100]  # some page in it
-      >>> print(doc._getXrefString(page.xref, compressed=True))
-      <</CropBox[0 0 531 666]/Annots[4795 0 R 4794 0 R 4793 0 R 4792 0 R 4797 0 R 4796 0 R]
-      /Parent 109820 0 R/StructParents 941/Contents 229 0 R/Rotate 0/MediaBox[0 0 531 666]
-      /Resources<</Font<</T1_0 3914 0 R/T1_1 3912 0 R/T1_2 3957 0 R/T1_3 3913 0 R/T1_4 4576 0 R
-      /T1_5 3931 0 R/T1_6 3944 0 R>>/ProcSet[/PDF/Text]/ExtGState<</GS0 333283 0 R>>>>
-      /Type/Page>>
-      >>> print(doc._getXrefString(page.xref, compressed=False))
-      <<
-         /CropBox [ 0 0 531 666 ]
-         /Annots [ 4795 0 R 4794 0 R 4793 0 R 4792 0 R 4797 0 R 4796 0 R ]
-         /Parent 109820 0 R
-         /StructParents 941
-         /Contents 229 0 R
-         /Rotate 0
-         /MediaBox [ 0 0 531 666 ]
-         /Resources <<
-            /Font <<
-               /T1_0 3914 0 R
-               /T1_1 3912 0 R
-               /T1_2 3957 0 R
-               /T1_3 3913 0 R
-               /T1_4 4576 0 R
-               /T1_5 3931 0 R
-               /T1_6 3944 0 R
-            >>
-            /ProcSet [ /PDF /Text ]
-            /ExtGState <<
-               /GS0 333283 0 R
-            >>
-         >>
-         /Type /Page
-      >>
-
------
-
-   .. method:: Document.isStream(xref)
+   .. method:: Document.is_stream(xref)
 
       *(New in version 1.14.14)*
       
@@ -561,7 +495,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getNewXref()
+   .. method:: Document.get_new_xref()
 
       Increase the :data:`xref` by one entry and return that number. This can then be used to insert a new object.
 
@@ -570,23 +504,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._updateObject(xref, obj_str, page=None)
-
-      Associate the object identified by string *obj_str* with *xref*, which must already exist. If *xref* pointed to an existing object, this will be replaced with the new object. If a page object is specified, links and other annotations of this page will be reloaded after the object has been updated.
-
-      :arg int xref: :data:`xref` number.
-
-      :arg str obj_str: a string containing a valid PDF object definition.
-
-      :arg page: a page object. If provided, indicates, that annotations of this page should be refreshed (reloaded) to reflect changes incurred with links and / or annotations.
-      :type page: :ref:`Page`
-
-      :rtype: int
-      :returns: zero if successful, otherwise an exception will be raised.
-
------
-
-   .. method:: Document._getXrefLength()
+   .. method:: Document.xref_length()
 
       Return length of :data:`xref` table.
 
@@ -595,49 +513,11 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document._getXrefStream(xref)
-
-      Return the decompressed stream of the object referenced by *xref*. For non-stream objects *None* is returned.
-
-      :arg int xref: :data:`xref` number.
-
-      :rtype: bytes
-      :returns: the (decompressed) stream of the object.
-
------
-
-   .. method:: Document._updateStream(xref, stream, new=False)
-
-      Replace the stream of an object identified by *xref*. If the object has no stream, an exception is raised unless *new=True* is used. The function automatically performs a compress operation ("deflate") where beneficial.
-
-      :arg int xref: :data:`xref` number.
-
-      :arg bytes|bytearray|BytesIO stream: the new content of the stream.
-
-         *(Changed in version 1.14.13:)* *io.BytesIO* objects are now also supported.
-
-      :arg bool new: whether to force accepting the stream, and thus **turning it into a stream object**.
-
-      This method is intended to manipulate streams containing PDF operator syntax (see pp. 985 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
-
-      If you update a contents stream, you should use save parameter *clean=True*. This ensures consistency between PDF operator source and the object structure.
-
-      Example: Let us assume that you no longer want a certain image appear on a page. This can be achieved by deleting the respective reference in its contents source(s) -- and indeed: the image will be gone after reloading the page. But the page's :data:`resources` object would still show the image as being referenced by the page. This save option will clean up any such mismatches.
-
------
-
-   .. method:: Document._getOLRootNumber()
-
-       Return :data:`xref` number of the /Outlines root object (this is **not** the first outline entry!). If this object does not exist, a new one will be created.
-
-      :rtype: int
-      :returns: :data:`xref` number of the **/Outlines** root object.
-
-   .. method:: Document.extractImage(xref)
+   .. method:: Document.extract_image(xref)
 
       PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
 
-      :arg int xref: :data:`xref` of an image object. If this is not in *range(1, doc.xrefLength())*, or the object is no image or other errors occur, *None* is returned and no exception is raised.
+      :arg int xref: :data:`xref` of an image object. If this is not in *range(1, doc.xref_length())*, or the object is no image or other errors occur, *None* is returned and no exception is raised.
 
       :rtype: dict
       :returns: a dictionary with the following keys
@@ -652,7 +532,7 @@ Yet others are handy, general-purpose utilities.
         * *yres* (*int*) resolution in y direction. Please also see :data:`resolution`.
         * *image* (*bytes*) image data, usable as image file content
 
-      >>> d = doc.extractImage(1373)
+      >>> d = doc.extract_image(1373)
       >>> d
       {'ext': 'png', 'smask': 2934, 'width': 5, 'height': 629, 'colorspace': 3, 'xres': 96,
       'yres': 96, 'cs-name': 'DeviceRGB',
@@ -662,7 +542,7 @@ Yet others are handy, general-purpose utilities.
       102
       >>> imgout.close()
 
-      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extractImage, **(1)** does not only deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
+      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
 
          * xref 1268 is a PNG -- Comparable execution time and identical output::
 
@@ -671,24 +551,24 @@ Yet others are handy, general-purpose utilities.
             In [24]: len(pix.getPNGData())
             Out[24]: 21462
 
-            In [25]: %timeit img = doc.extractImage(1268)
+            In [25]: %timeit img = doc.extract_image(1268)
             10.8 ms ± 86 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
             In [26]: len(img["image"])
             Out[26]: 21462
 
-         * xref 1186 is a JPEG -- :meth:`Document.extractImage` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
+         * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
 
             In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.getPNGData()
             341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
             In [28]: len(pix.getPNGData())
             Out[28]: 2599433
 
-            In [29]: %timeit img = doc.extractImage(1186)
+            In [29]: %timeit img = doc.extract_image(1186)
             15.7 µs ± 116 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
             In [30]: len(img["image"])
             Out[30]: 371177
 
-   .. method:: Document.extractFont(xref, info_only=False)
+   .. method:: Document.extract_font(xref, info_only=False)
 
       PDF Only: Return an embedded font file's data and appropriate file extension. This can be used to store the font as an external file. The method does not throw exceptions (other than via checking for PDF and valid :data:`xref`).
 
@@ -704,7 +584,7 @@ Yet others are handy, general-purpose utilities.
       Example:
 
       >>> # store font as an external file
-      >>> name, ext, buffer = doc.extractFont(4711)
+      >>> name, ext, buffer = doc.extract_font(4711)
       >>> # assuming buffer is not None:
       >>> ofile = open(name + "." + ext, "wb")
       >>> ofile.write(buffer)
@@ -716,7 +596,7 @@ Yet others are handy, general-purpose utilities.
 
    .. attribute:: Document.FontInfos
 
-       Contains following information for any font inserted via :meth:`Page.insertFont` in **this** session of PyMuPDF:
+       Contains following information for any font inserted via :meth:`Page.insert_font` in **this** session of PyMuPDF:
 
        * xref *(int)* -- XREF number of the */Type/Font* object.
        * info *(dict)* -- detail font information with the following keys:

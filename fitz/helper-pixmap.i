@@ -110,6 +110,23 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     return 1;
 }
 
+int
+JM_is_jbig2_image(fz_context *ctx, pdf_obj *dict)
+{
+	return 0;
+    pdf_obj *filter;
+	int i, n;
+
+	filter = pdf_dict_get(ctx, dict, PDF_NAME(Filter));
+	if (pdf_name_eq(ctx, filter, PDF_NAME(JBIG2Decode)))
+		return 1;
+	n = pdf_array_len(ctx, filter);
+	for (i = 0; i < n; i++)
+		if (pdf_name_eq(ctx, pdf_array_get(ctx, filter, i), PDF_NAME(JBIG2Decode)))
+			return 1;
+	return 0;
+}
+
 //-----------------------------------------------------------------------------
 // Return basic properties of an image provided as bytes or bytearray
 // The function creates an fz_image and optionally returns it.
@@ -127,12 +144,10 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     if (PyBytes_Check(imagedata)) {
         c = PyBytes_AS_STRING(imagedata);
         len = PyBytes_GET_SIZE(imagedata);
-    }
-    else if (PyByteArray_Check(imagedata)) {
+    } else if (PyByteArray_Check(imagedata)) {
         c = PyByteArray_AS_STRING(imagedata);
         len = PyByteArray_GET_SIZE(imagedata);
-    }
-    else {
+    } else {
         PySys_WriteStderr("bad image data\n");
         Py_RETURN_NONE;
     }
@@ -149,8 +164,7 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     fz_try(ctx) {
         if (keep_image) {
             res = fz_new_buffer_from_copied_data(ctx, c, (size_t) len);
-        }
-        else {
+        } else {
             res = fz_new_buffer_from_shared_data(ctx, c, (size_t) len);
         }
         image = fz_new_image_from_buffer(ctx, res);
@@ -183,14 +197,13 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     fz_always(ctx) {
         if (!keep_image) {
             fz_drop_image(ctx, image);
-        }
-        else {
+        } else {
             fz_drop_buffer(ctx, res);  // drop the buffer copy
         }
     }
     fz_catch(ctx) {
         Py_CLEAR(result);
-        Py_RETURN_NONE;
+        fz_rethrow(ctx);
     }
     PyErr_Clear();
     return result;
@@ -232,8 +245,7 @@ JM_pixmap_from_display_list(fz_context *ctx,
         if (!fz_is_infinite_rect(rclip)) {
             dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
             fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
-        }
-        else {
+        } else {
             dev = fz_new_draw_device(ctx, matrix, pix);
             fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
         }
@@ -348,5 +360,4 @@ JM_pixmap_from_page(fz_context *ctx,
     }
     return pix;
 }
-
 %}

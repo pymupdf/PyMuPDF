@@ -8,7 +8,7 @@ Pixmaps ("pixel maps") are objects at the heart of MuPDF's rendering capabilitie
 
 In PyMuPDF, there exist several ways to create a pixmap. Except the first one, all of them are available as overloaded constructors. A pixmap can be created ...
 
-1. from a document page (method :meth:`Page.getPixmap`)
+1. from a document page (method :meth:`Page.get_pixmap`)
 2. empty, based on :ref:`Colorspace` and :ref:`IRect` information
 3. from a file
 4. from an in-memory image
@@ -36,6 +36,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.setPixel`       set the color of a pixel
 :meth:`Pixmap.setRect`        set the color of a rectangle
 :meth:`Pixmap.setResolution`  set the image resolution
+:meth:`Pixmap.setOrigin`      set pixmap x,y values
 :meth:`Pixmap.shrink`         reduce size keeping proportions
 :meth:`Pixmap.tintWith`       tint a pixmap with a color
 :meth:`Pixmap.writeImage`     save a pixmap in a variety of formats
@@ -158,7 +159,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg doc: an opened **PDF** document.
       :type doc: :ref:`Document`
 
-      :arg int xref: the :data:`xref` of an image object. For example, you can make a list of images used on a particular page with :meth:`Document.getPageImageList`, which also shows the :data:`xref` numbers of each image.
+      :arg int xref: the :data:`xref` of an image object. For example, you can make a list of images used on a particular page with :meth:`Document.get_page_images`, which also shows the :data:`xref` numbers of each image.
 
    .. method:: clearWith([value [, irect]])
 
@@ -227,14 +228,22 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          1. This method is equivalent to :meth:`Pixmap.setPixel` executed for each pixel in the rectangle, but is obviously **very much faster** if many pixels are involved.
          2. This method can be used similar to :meth:`Pixmap.clearWith` to initialize a pixmap with a certain color like this: *pix.setRect(pix.irect, (255, 255, 0))* (RGB example, colors the complete pixmap with yellow).
 
+   .. method:: setOrigin(x, y)
+
+      *(New in v1.17.7)* Set the x and y values.
+
+      :arg int x: x coordinate
+      :arg int y: y coordinate
+
+
    .. method:: setResolution(xres, yres)
 
       *(New in v1.16.17)* Set the resolution (dpi) in x and y direction.
 
+      *(Changed in v1.18.0)* When saving as a PNG image, these values will be stored now.
+
       :arg int xres: resolution in x direction.
       :arg int yres: resolution in y direction.
-
-      .. note:: This is just documentary information. In MuPDF, this will not have other implications and will not be written to images created from the pixmap.
 
 
    .. method:: setAlpha([alphavalues])
@@ -269,7 +278,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the *savealpha* option is no longer supported and will be silently ignored.
 
-      :arg str filename: The filename to save to. The filename's extension determines the image format, if not overriden by the output parameter.
+      :arg str,Path,file filename: The file to save to. May be provided as a string, as a ``pathlib.Path`` or as a Python file object. In the latter two cases, the filename is taken from the resp. object. The filename's extension determines the image format, which can be overruled by the output parameter.
 
       :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
 
@@ -300,16 +309,18 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       Write the pixmap as an image file using Pillow. Use this method for image formats or extended image features not supported by MuPDF. Examples are
 
       * Formats JPEG, JPX, J2K, WebP, etc.
-      * Storing EXIF or dpi information.
-      * If you do not provide dpi information, the values stored with the pixmap are automatically used.
+      * Storing EXIF information.
+      * If you do not provide dpi information, the values *xres*, *yres* stored with the pixmap are automatically used.
 
-      A simple example: ``pix.pillowWrite("some.jpg", optimize=True, dpi=(150,150))``. For details on possible parameters see the Pillow documentation.
+      A simple example: ``pix.pillowWrite("some.jpg", optimize=True, dpi=(150, 150))``. For details on other parameters see the Pillow documentation.
+
+      .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.writeImage` and :meth:`Pixmap.writePNG` now also set resolution / dpi from *xres* / *yres* automatically, when saving a PNG image.
 
    ..  method:: pillowData(*args, **kwargs)
 
       *(New in v1.17.3)*
 
-      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pillowData(format="JPEG", optimize=True)``. Also see above. For details on possible parameters see the Pillow documentation.
+      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pillowData(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation.
 
 
    .. attribute:: alpha
@@ -375,13 +386,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: x
 
-      X-coordinate of top-left corner
+      X-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.setOrigin`.
 
       :type: int
 
    .. attribute:: y
 
-      Y-coordinate of top-left corner
+      Y-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.setOrigin`.
 
       :type: int
 
@@ -399,7 +410,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: yres
 
-      Vertical resolution in dpi. Please also see :data:`resolution`.
+      Vertical resolution in dpi (dots per inch). Please also see :data:`resolution`.
 
       :type: int
 
@@ -450,6 +461,6 @@ psd        gray, rgb, cmyk yes       .psd           Adobe Photoshop Document
 
 .. rubric:: Footnotes
 
-.. [#f1] If you need a **vector image** from the SVG, you must first convert it to a PDF. Try :meth:`Document.convertToPDF`. If this is not good enough, look for other SVG-to-PDF conversion tools like the Python packages `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ or the Java solution `Apache Batik <https://github.com/apache/batik>`_. Have a look at our Wiki for more examples.
+.. [#f1] If you need a **vector image** from the SVG, you must first convert it to a PDF. Try :meth:`Document.convert_to_pdf`. If this is not good enough, look for other SVG-to-PDF conversion tools like the Python packages `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ or the Java solution `Apache Batik <https://github.com/apache/batik>`_. Have a look at our Wiki for more examples.
 
 .. [#f2] To also set the alpha property, add an additional step to this method by dropping or adding an alpha channel to the result.

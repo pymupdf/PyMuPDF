@@ -1,10 +1,9 @@
 %module fitz
 %pythonbegin %{
-from __future__ import division, print_function
 %}
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // SWIG macro: generate fitz exceptions
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %define FITZEXCEPTION(meth, cond)
 %exception meth
 {
@@ -14,24 +13,24 @@ from __future__ import division, print_function
 }
 %enddef
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // SWIG macro: check that a document is not closed / encrypted
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %define CLOSECHECK(meth, doc)
 %pythonprepend meth %{doc
-if self.isClosed or self.isEncrypted:
+if self.is_closed or self.is_encrypted:
     raise ValueError("document closed or encrypted")%}
 %enddef
 
 %define CLOSECHECK0(meth, doc)
 %pythonprepend meth%{doc
-if self.isClosed:
+if self.is_closed:
     raise ValueError("document closed")%}
 %enddef
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // SWIG macro: check if object has a valid parent
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %define PARENTCHECK(meth, doc)
 %pythonprepend meth %{doc
 CheckParent(self)%}
@@ -52,13 +51,12 @@ CheckParent(self)%}
   #define FLT_EPSILON 1e-5
 #endif
 
-#define return_none Py_RETURN_NONE
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
 
 // memory allocation macros
 #define JM_MEMORY 1
-#if  PY_VERSION_HEX < 0x03000000
+#if  PY_MAJOR_VERSION < 3
     #undef JM_MEMORY
     #define JM_MEMORY 0
 #endif
@@ -71,8 +69,9 @@ CheckParent(self)%}
     #define JM_Free(x) free(x)
 #endif
 
+#define EMPTY_STRING PyUnicode_FromString("")
 #define EXISTS(x) (x != NULL && PyObject_IsTrue(x)==1)
-#define THROWMSG(msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
+#define THROWMSG(ctx, msg) fz_throw(ctx, FZ_ERROR_GENERIC, msg)
 #define ASSERT_PDF(cond) if (cond == NULL) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
 #define MAX(a, b) ((a) < (b)) ? (b) : (a)
@@ -80,11 +79,13 @@ CheckParent(self)%}
 
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
 
-// binary output depends on Python major
-# if PY_VERSION_HEX >= 0x03000000
+// binary and char outputs depend on Python major
+# if PY_MAJOR_VERSION >= 3
+    #define JM_StrAsChar(x) (char *)PyUnicode_AsUTF8(x)
     #define JM_BinFromChar(x) PyBytes_FromString(x)
     #define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
 # else
+    #define JM_StrAsChar(x) (char *)PyString_AsString(x)
     #define JM_BinFromChar(x) PyByteArray_FromStringAndSize(x, (Py_ssize_t) strlen(x))
     #define JM_BinFromCharSize(x, y) PyByteArray_FromStringAndSize(x, (Py_ssize_t) y)
 # endif
@@ -92,7 +93,23 @@ CheckParent(self)%}
 #include <fitz.h>
 #include <pdf.h>
 #include <time.h>
-char *JM_Python_str_AsChar(PyObject *str);
+// freetype includes >> --------------------------------------------------
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#ifdef FT_FONT_FORMATS_H
+#include FT_FONT_FORMATS_H
+#else
+#include FT_XFREE86_H
+#endif
+#include FT_TRUETYPE_TABLES_H
+
+#ifndef FT_SFNT_HEAD
+#define FT_SFNT_HEAD ft_sfnt_head
+#endif
+// << freetype includes --------------------------------------------------
+
+void JM_delete_widget(fz_context *ctx, pdf_page *page, pdf_annot *annot);
+static void JM_get_page_labels(fz_context *ctx, PyObject *liste, pdf_obj *nums);
 
 // additional headers from MuPDF ----------------------------------------------
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
@@ -100,16 +117,17 @@ fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, fl
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
-void jm_valid_chars(fz_context *ctx, fz_font *font, void *ptr);
+
 // end of additional MuPDF headers --------------------------------------------
 
 PyObject *JM_mupdf_warnings_store;
 PyObject *JM_mupdf_show_errors;
+
 %}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // global context
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %init %{
 #if JM_MEMORY == 1
     gctx = fz_new_context(&JM_Alloc_Context, NULL, FZ_STORE_DEFAULT);
@@ -119,7 +137,7 @@ PyObject *JM_mupdf_show_errors;
     if(!gctx)
     {
         PyErr_SetString(PyExc_RuntimeError, "Fatal error: could not create global context.");
-# if PY_VERSION_HEX >= 0x03000000
+# if PY_MAJOR_VERSION >= 3
        return NULL;
 # else
        return;
@@ -127,63 +145,64 @@ PyObject *JM_mupdf_show_errors;
     }
     fz_register_document_handlers(gctx);
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // START redirect stdout/stderr
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 JM_mupdf_warnings_store = PyList_New(0);
 JM_mupdf_show_errors = Py_True;
 char user[] = "PyMuPDF";
 fz_set_warning_callback(gctx, JM_mupdf_warning, &user);
 fz_set_error_callback(gctx, JM_mupdf_error, &user);
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // STOP redirect stdout/stderr
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // init global constants
-//-----------------------------------------------------------------------------
-dictkey_align = PyString_InternFromString("align");
-dictkey_bbox = PyString_InternFromString("bbox");
-dictkey_blocks = PyString_InternFromString("blocks");
-dictkey_bpc = PyString_InternFromString("bpc");
-dictkey_c = PyString_InternFromString("c");
-dictkey_chars = PyString_InternFromString("chars");
-dictkey_color = PyString_InternFromString("color");
-dictkey_colorspace = PyString_InternFromString("colorspace");
-dictkey_content = PyString_InternFromString("content");
-dictkey_creationDate = PyString_InternFromString("creationDate");
-dictkey_cs_name = PyString_InternFromString("cs-name");
-dictkey_da = PyString_InternFromString("da");
-dictkey_dashes = PyString_InternFromString("dashes");
-dictkey_desc = PyString_InternFromString("desc");
-dictkey_dir = PyString_InternFromString("dir");
-dictkey_effect = PyString_InternFromString("effect");
-dictkey_ext = PyString_InternFromString("ext");
-dictkey_filename = PyString_InternFromString("filename");
-dictkey_fill = PyString_InternFromString("fill");
-dictkey_flags = PyString_InternFromString("flags");
-dictkey_font = PyString_InternFromString("font");
-dictkey_height = PyString_InternFromString("height");
-dictkey_id = PyString_InternFromString("id");
-dictkey_image = PyString_InternFromString("image");
-dictkey_length = PyString_InternFromString("length");
-dictkey_lines = PyString_InternFromString("lines");
-dictkey_modDate = PyString_InternFromString("modDate");
-dictkey_name = PyString_InternFromString("name");
-dictkey_origin = PyString_InternFromString("origin");
-dictkey_size = PyString_InternFromString("size");
-dictkey_smask = PyString_InternFromString("smask");
-dictkey_spans = PyString_InternFromString("spans");
-dictkey_stroke = PyString_InternFromString("stroke");
-dictkey_style = PyString_InternFromString("style");
-dictkey_subject = PyString_InternFromString("subject");
-dictkey_text = PyString_InternFromString("text");
-dictkey_title = PyString_InternFromString("title");
-dictkey_type = PyString_InternFromString("type");
-dictkey_ufilename = PyString_InternFromString("ufilename");
-dictkey_width = PyString_InternFromString("width");
-dictkey_wmode = PyString_InternFromString("wmode");
-dictkey_xref = PyString_InternFromString("xref");
-dictkey_xres = PyString_InternFromString("xres");
-dictkey_yres = PyString_InternFromString("yres");
+//------------------------------------------------------------------------
+dictkey_align = PyUnicode_InternFromString("align");
+dictkey_bbox = PyUnicode_InternFromString("bbox");
+dictkey_blocks = PyUnicode_InternFromString("blocks");
+dictkey_bpc = PyUnicode_InternFromString("bpc");
+dictkey_c = PyUnicode_InternFromString("c");
+dictkey_chars = PyUnicode_InternFromString("chars");
+dictkey_color = PyUnicode_InternFromString("color");
+dictkey_colorspace = PyUnicode_InternFromString("colorspace");
+dictkey_content = PyUnicode_InternFromString("content");
+dictkey_creationDate = PyUnicode_InternFromString("creationDate");
+dictkey_cs_name = PyUnicode_InternFromString("cs-name");
+dictkey_da = PyUnicode_InternFromString("da");
+dictkey_dashes = PyUnicode_InternFromString("dashes");
+dictkey_desc = PyUnicode_InternFromString("desc");
+dictkey_dir = PyUnicode_InternFromString("dir");
+dictkey_effect = PyUnicode_InternFromString("effect");
+dictkey_ext = PyUnicode_InternFromString("ext");
+dictkey_filename = PyUnicode_InternFromString("filename");
+dictkey_fill = PyUnicode_InternFromString("fill");
+dictkey_flags = PyUnicode_InternFromString("flags");
+dictkey_font = PyUnicode_InternFromString("font");
+dictkey_height = PyUnicode_InternFromString("height");
+dictkey_id = PyUnicode_InternFromString("id");
+dictkey_image = PyUnicode_InternFromString("image");
+dictkey_length = PyUnicode_InternFromString("length");
+dictkey_lines = PyUnicode_InternFromString("lines");
+dictkey_modDate = PyUnicode_InternFromString("modDate");
+dictkey_name = PyUnicode_InternFromString("name");
+dictkey_number = PyUnicode_InternFromString("number");
+dictkey_origin = PyUnicode_InternFromString("origin");
+dictkey_size = PyUnicode_InternFromString("size");
+dictkey_smask = PyUnicode_InternFromString("smask");
+dictkey_spans = PyUnicode_InternFromString("spans");
+dictkey_stroke = PyUnicode_InternFromString("stroke");
+dictkey_style = PyUnicode_InternFromString("style");
+dictkey_subject = PyUnicode_InternFromString("subject");
+dictkey_text = PyUnicode_InternFromString("text");
+dictkey_title = PyUnicode_InternFromString("title");
+dictkey_type = PyUnicode_InternFromString("type");
+dictkey_ufilename = PyUnicode_InternFromString("ufilename");
+dictkey_width = PyUnicode_InternFromString("width");
+dictkey_wmode = PyUnicode_InternFromString("wmode");
+dictkey_xref = PyUnicode_InternFromString("xref");
+dictkey_xres = PyUnicode_InternFromString("xres");
+dictkey_yres = PyUnicode_InternFromString("yres");
 %}
 
 %header %{
@@ -196,18 +215,28 @@ struct DeviceWrapper {
 };
 %}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // include version information and several other helpers
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %pythoncode %{
 import io
 import math
 import os
 import weakref
-from binascii import hexlify
+import hashlib
+import typing
 
-fitz_py2 = str is bytes  # if true, this is Python 2
-string_types = (str, unicode) if fitz_py2 else (str,)
+point_like = "point_like"
+rect_like = "rect_like"
+matrix_like = "matrix_like"
+quad_like = "quad_like"
+AnyType = typing.Any
+OptInt = typing.Union[int, None]
+OptFloat = typing.Optional[float]
+OptStr = typing.Optional[str]
+OptDict = typing.Optional[dict]
+OptBytes = typing.Optional[typing.ByteString]
+OptSeq = typing.Optional[typing.Sequence]
 
 try:
     from pymupdf_fonts import fontdescriptors
@@ -232,10 +261,12 @@ except ImportError:
 %include helper-xobject.i
 %include helper-pdfinfo.i
 %include helper-convert.i
+%include helper-trace.i
+%include helper-fileobj.i
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_document
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Document
 {
     %extend
@@ -254,25 +285,22 @@ struct Document
 
         Notes:
             Basic usages:
-            open() - creates new empty PDF document
-            open(filename) - string or pathlib.Path, must have supported
-                    file extension.
-            open(type, buffer) - type: valid extension, buffer: bytes object.
+            open() - new PDF document
+            open(filename) - string, pathlib.Path, or file object.
+            open(filename, fileype=type) - overwrite filename extension.
+            open(type, buffer) - type: extension, buffer: bytes object.
             open(stream=buffer, filetype=type) - keyword version of previous.
-            open(filename, fileype=type) - filename with unrecognized extension.
-
-            rect, width, height, fontsize may be used to re-layout reflowable documents
-            on open (e.g. EPUB). Ignored if not applicable.
+            Parameters rect, width, height, fontsize: layout reflowable
+                 document on open (e.g. EPUB). Ignored if n/a.
         """
-
         if not filename or type(filename) is str:
             pass
+        elif hasattr(filename, "absolute"):
+            filename = str(filename)
+        elif hasattr(filename, "name"):
+            filename = filename.name
         else:
-            if fitz_py2:  # Python 2
-                if type(filename) is unicode:
-                    filename = filename.encode("utf8")
-            else:
-                filename = str(filename)  # takes care of pathlib.Path
+            raise ValueError("bad filename")
 
         if stream:
             if not (filename or filetype):
@@ -295,21 +323,24 @@ struct Document
         else:
             self.name = ""
 
-        self.isClosed    = False
+        self.is_closed = False
+        self.is_encrypted = False
         self.isEncrypted = False
         self.metadata    = None
         self.FontInfos   = []
         self.Graftmaps   = {}
         self.ShownPages  = {}
+        self.InsertedImages  = {}
         self._page_refs  = weakref.WeakValueDictionary()%}
 
         %pythonappend Document %{
             if self.thisown:
                 self._graft_id = TOOLS.gen_id()
-                if self.needsPass is True:
+                if self.needs_pass is True:
+                    self.is_encrypted = True
                     self.isEncrypted = True
                 else: # we won't init until doc is decrypted
-                    self.initData()
+                    self.init_doc()
         %}
 
         Document(const char *filename=NULL, PyObject *stream=NULL,
@@ -348,7 +379,7 @@ struct Document
                             handler = fz_recognize_document(gctx, filetype);
                             if (handler && handler->open)
                                 doc = handler->open(gctx, filename);
-                            else THROWMSG("unrecognized file type");
+                            else THROWMSG(gctx, "unrecognized file type");
                         }
                     } else {
                         pdf_document *pdf = pdf_create_document(gctx);
@@ -362,13 +393,15 @@ struct Document
             }
             if (w > 0 && h > 0) {
                 fz_layout_document(gctx, doc, w, h, fontsize);
+            } else if (fz_is_document_reflowable(gctx, doc)) {
+                fz_layout_document(gctx, doc, 400, 600, 11);
             }
             return (struct Document *) doc;
         }
 
         %pythonprepend close %{
             """Close document."""
-            if self.isClosed:
+            if self.is_closed:
                 raise ValueError("document closed")
             if hasattr(self, "_outline") and self._outline:
                 self._dropOutline(self._outline)
@@ -376,12 +409,13 @@ struct Document
             self._reset_page_refs()
             self.metadata    = None
             self.stream      = None
-            self.isClosed    = True
+            self.is_closed = True
             self.FontInfos   = []
-            for gmap in self.Graftmaps:
-                self.Graftmaps[gmap] = None
+            for k in self.Graftmaps.keys():
+                self.Graftmaps[k] = None
             self.Graftmaps = {}
             self.ShownPages = {}
+            self.InsertedImages  = {}
         %}
 
         %pythonappend close %{self.thisown = False%}
@@ -396,26 +430,26 @@ struct Document
             DEBUGMSG2;
         }
 
-        FITZEXCEPTION(loadPage, !result)
-        %pythonprepend loadPage %{
+        FITZEXCEPTION(load_page, !result)
+        %pythonprepend load_page %{
         """Load a page.
 
         'page_id' is either a 0-based page number or a tuple (chapter, pno),
         with chapter number and page number within that chapter.
         """
 
-        if self.isClosed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if page_id is None:
             page_id = 0
         if page_id not in self:
             raise ValueError("page not in document")
         if type(page_id) is int and page_id < 0:
-            np = self.pageCount
+            np = self.page_count
             while page_id < 0:
                 page_id += np
         %}
-        %pythonappend loadPage %{
+        %pythonappend load_page %{
         val.thisown = True
         val.parent = weakref.proxy(self)
         self._page_refs[id(val)] = val
@@ -423,30 +457,26 @@ struct Document
         val.number = page_id
         %}
         struct Page *
-        loadPage(PyObject *page_id)
+        load_page(PyObject *page_id)
         {
             fz_page *page = NULL;
             fz_document *doc = (fz_document *) $self;
-            int pno;
+            int pno = 0, chapter = 0;
             PyObject *val = NULL;
             fz_try(gctx) {
                 if (PySequence_Check(page_id)) {
-                    val = PySequence_GetItem(page_id, 0);
-                    if (!val) THROWMSG("bad page page id");
-                    int chapter = (int) PyLong_AsLong(val);
-                    Py_DECREF(val);
-                    if (PyErr_Occurred()) THROWMSG("bad page id");
-
-                    val = PySequence_GetItem(page_id, 1);
-                    if (!val) THROWMSG("bad page page id");
-                    pno = (int) PyLong_AsLong(val);
-                    Py_DECREF(val);
-                    if (PyErr_Occurred()) THROWMSG("bad page id");
-
+                    if (JM_INT_ITEM(page_id, 0, &chapter) == 1) {
+                        THROWMSG(gctx, "bad page id");
+                    }
+                    if (JM_INT_ITEM(page_id, 1, &pno) == 1) {
+                        THROWMSG(gctx, "bad page id");
+                    }
                     page = fz_load_chapter_page(gctx, doc, chapter, pno);
                 } else {
                     pno = (int) PyLong_AsLong(page_id);
-                    if (PyErr_Occurred()) THROWMSG("bad page id");
+                    if (PyErr_Occurred()) {
+                        THROWMSG(gctx, "bad page id");
+                    }
                     page = fz_load_page(gctx, doc, pno);
                 }
             }
@@ -472,7 +502,7 @@ struct Document
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
@@ -497,12 +527,287 @@ struct Document
             DEBUGMSG2;
         }
 
-        //---------------------------------------------------------------------
+        FITZEXCEPTION(_insert_font, !result)
+        CLOSECHECK0(_insert_font, """Utility: insert font from file or binary.""")
+        PyObject *
+        _insert_font(char *fontfile=NULL, PyObject *fontbuffer=NULL)
+        {
+            PyObject *value=NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                if (!fontfile && !EXISTS(fontbuffer)) {
+                    THROWMSG(gctx, "need one of fontfile, fontbuffer");
+                }
+                value = JM_insert_font(gctx, pdf, NULL, fontfile, fontbuffer,
+                            0, 0, 0, 0, 0, -1);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return value;
+        }
+
+
+        FITZEXCEPTION(get_outline_xrefs, !result)
+        CLOSECHECK0(get_outline_xrefs, """Get list of outline xref numbers.""")
+        PyObject *
+        get_outline_xrefs()
+        {
+            PyObject *xrefs = PyList_New(0);
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            if (!pdf) {
+                return xrefs;
+            }
+            fz_try(gctx) {
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+                if (!root) goto finished;
+                pdf_obj *olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
+                if (!olroot) goto finished;
+                pdf_obj *first = pdf_dict_get(gctx, olroot, PDF_NAME(First));
+                if (!first) goto finished;
+                xrefs = JM_outline_xrefs(gctx, first, xrefs);
+                finished:;
+            }
+            fz_catch(gctx) {
+                Py_DECREF(xrefs);
+                return NULL;
+            }
+            return xrefs;
+        }
+
+
+        FITZEXCEPTION(xref_get_keys, !result)
+        CLOSECHECK0(xref_get_keys, """Get the keys of PDF dict object at 'xref'.""")
+        PyObject *
+        xref_get_keys(int xref)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            pdf_obj *obj=NULL;
+            PyObject *rc = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if (!INRANGE(xref, 1, xreflen-1))
+                    THROWMSG(gctx, "bad xref");
+                obj = pdf_load_object(gctx, pdf, xref);
+                int i, n = pdf_dict_len(gctx, obj);
+                rc = PyTuple_New(n);
+                if (!n) goto finished;
+                for (i = 0; i < n; i++) {
+                    const char *key = pdf_to_name(gctx, pdf_dict_get_key(gctx, obj, i));
+                    PyTuple_SET_ITEM(rc, i, Py_BuildValue("s", key));
+                }
+                finished:;
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, obj);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(xref_get_key, !result)
+        CLOSECHECK0(xref_get_key, """Get PDF dict key value of object at 'xref'.""")
+        PyObject *
+        xref_get_key(int xref, const char *key)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            pdf_obj *obj=NULL, *subobj=NULL;
+            PyObject *rc = NULL;
+            fz_buffer *res = NULL;
+            PyObject *text = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if (!INRANGE(xref, 1, xreflen-1))
+                    THROWMSG(gctx, "bad xref");
+                obj = pdf_load_object(gctx, pdf, xref);
+                subobj = pdf_dict_getp(gctx, obj, key);
+                if (!subobj) {
+                    rc = Py_BuildValue("ss", "null", "null");
+                    goto finished;
+                }
+                char *type;
+                if (pdf_is_indirect(gctx, subobj)) {
+                    type = "xref";
+                } else if (pdf_is_array(gctx, subobj)) {
+                    type = "array";
+                } else if (pdf_is_dict(gctx, subobj)) {
+                    type = "dict";
+                } else if (pdf_is_int(gctx, subobj)) {
+                    type = "int";
+                } else if (pdf_is_real(gctx, subobj)) {
+                    type = "float";
+                } else if (pdf_is_null(gctx, subobj)) {
+                    type = "null";
+                    text = PyUnicode_FromString("null");
+                } else if (pdf_is_bool(gctx, subobj)) {
+                    type = "bool";
+                } else if (pdf_is_name(gctx, subobj)) {
+                    type = "name";
+                } else if (pdf_is_string(gctx, subobj)) {
+                    type = "string";
+                } else {
+                    type = "unknown";
+                }
+                if (!text) {
+                    res = JM_object_to_buffer(gctx, subobj, 1, 0);
+                    text = JM_EscapeStrFromBuffer(gctx, res);
+                }
+                rc = Py_BuildValue("sO", type, text);
+                Py_DECREF(text);
+                finished:;
+            }
+            fz_catch(gctx) {
+                fz_drop_buffer(gctx, res);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(xref_set_key, !result)
+        CLOSECHECK0(xref_set_key, """Set the value of a PDF dictionary key.""")
+        PyObject *
+        xref_set_key(int xref, const char *key, char *value)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            pdf_obj *obj = NULL, *new_obj = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if (!INRANGE(xref, 1, xreflen-1))
+                    THROWMSG(gctx, "bad xref");
+                if (strlen(value) == 0) {
+                    THROWMSG(gctx, "bad 'value'");
+                }
+                if (strlen(key) == 0) {
+                    THROWMSG(gctx, "bad 'key'");
+                }
+                obj = pdf_load_object(gctx, pdf, xref);
+                new_obj = JM_set_object_value(gctx, obj, key, value);
+                if (!new_obj) {
+                    goto finished;  // did not work: skip update
+                }
+                pdf_drop_obj(gctx, obj);
+                obj = NULL;
+                pdf_update_object(gctx, pdf, xref, new_obj);
+                pdf->dirty = 1;
+                finished:;
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, obj);
+                pdf_drop_obj(gctx, new_obj);
+                PyErr_Clear();
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        FITZEXCEPTION(_extend_toc_items, !result)
+        CLOSECHECK0(_extend_toc_items, """Add color info to all items of an extended TOC list.""")
+        PyObject *
+        _extend_toc_items(PyObject *items)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
+            pdf_obj *bm, *col, *obj;
+            int count, flags;
+            PyObject *item=NULL, *itemdict=NULL, *xrefs, *bold, *italic, *collapse, *zoom;
+            zoom = PyUnicode_FromString("zoom");
+            bold = PyUnicode_FromString("bold");
+            italic = PyUnicode_FromString("italic");
+            collapse = PyUnicode_FromString("collapse");
+            fz_try(gctx) {
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+                if (!root) goto finished;
+                pdf_obj *olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
+                if (!olroot) goto finished;
+                pdf_obj *first = pdf_dict_get(gctx, olroot, PDF_NAME(First));
+                if (!first) goto finished;
+                xrefs = PyList_New(0);  // pre-allocate an empty list
+                xrefs = JM_outline_xrefs(gctx, first, xrefs);
+                Py_ssize_t i, n = PySequence_Size(xrefs);
+                if (!n) goto finished;
+                int xref;
+
+                // update all TOC item dictionaries
+                for (i = 0; i < n; i++) {
+                    JM_INT_ITEM(xrefs, i, &xref);
+                    item = PySequence_ITEM(items, i);
+                    itemdict = PySequence_ITEM(item, 3);
+                    if (!itemdict || !PyDict_Check(itemdict)) {
+                        THROWMSG(gctx, "need non-simple TOC format");
+                    }
+                    PyDict_SetItem(itemdict, dictkey_xref, PySequence_ITEM(xrefs, i));
+                    bm = pdf_load_object(gctx, pdf, xref);
+                    flags = pdf_to_int(gctx, (pdf_dict_get(gctx, bm, PDF_NAME(F))));
+                    if (flags == 1) {
+                        PyDict_SetItem(itemdict, italic, Py_True);
+                    } else if (flags == 2) {
+                        PyDict_SetItem(itemdict, bold, Py_True);
+                    } else if (flags == 3) {
+                        PyDict_SetItem(itemdict, italic, Py_True);
+                        PyDict_SetItem(itemdict, bold, Py_True);
+                    }
+                    count = pdf_to_int(gctx, (pdf_dict_get(gctx, bm, PDF_NAME(Count))));
+                    if (count < 0) {
+                        PyDict_SetItem(itemdict, collapse, Py_True);
+                    } else if (count > 0) {
+                        PyDict_SetItem(itemdict, collapse, Py_False);
+                    }
+                    col = pdf_dict_get(gctx, bm, PDF_NAME(C));
+                    if (pdf_is_array(gctx, col) && pdf_array_len(gctx, col) == 3) {
+                        PyObject *color = PyTuple_New(3);
+                        PyTuple_SET_ITEM(color, 0, Py_BuildValue("f", pdf_to_real(gctx, pdf_array_get(gctx, col, 0))));
+                        PyTuple_SET_ITEM(color, 1, Py_BuildValue("f", pdf_to_real(gctx, pdf_array_get(gctx, col, 1))));
+                        PyTuple_SET_ITEM(color, 2, Py_BuildValue("f", pdf_to_real(gctx, pdf_array_get(gctx, col, 2))));
+                        DICT_SETITEM_DROP(itemdict, dictkey_color, color);
+                    }
+                    float z=0;
+                    obj = pdf_dict_get(gctx, bm, PDF_NAME(Dest));
+                    if (!obj || !pdf_is_array(gctx, obj)) {
+                        obj = pdf_dict_getl(gctx, bm, PDF_NAME(A), PDF_NAME(D), NULL);
+                    }
+                    if (pdf_is_array(gctx, obj) && pdf_array_len(gctx, obj) == 5) {
+                        z = pdf_to_real(gctx, pdf_array_get(gctx, obj, 4));
+                    }
+                    DICT_SETITEM_DROP(itemdict, zoom, Py_BuildValue("f", z));
+                    PyList_SetItem(item, 3, itemdict);
+                    PyList_SetItem(items, i, item);
+                    pdf_drop_obj(gctx, bm);
+                    bm = NULL;
+                }
+                finished:;
+            }
+            fz_always(gctx) {
+                Py_CLEAR(xrefs);
+                Py_CLEAR(bold);
+                Py_CLEAR(italic);
+                Py_CLEAR(collapse);
+                Py_CLEAR(zoom);
+                pdf_drop_obj(gctx, bm);
+                PyErr_Clear();
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------------------------------------
         // EmbeddedFiles utility functions
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_embeddedFileNames, !result)
-        CLOSECHECK0(_embeddedFileNames, """Get list of embedded file names.""")
-        PyObject *_embeddedFileNames(PyObject *namelist)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_embfile_names, !result)
+        CLOSECHECK0(_embfile_names, """Get list of embedded file names.""")
+        PyObject *_embfile_names(PyObject *namelist)
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_specifics(gctx, doc);
@@ -527,11 +832,11 @@ struct Document
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        FITZEXCEPTION(_embeddedFileDel, !result)
-        PyObject *_embeddedFileDel(int idx)
+        FITZEXCEPTION(_embfile_del, !result)
+        PyObject *_embfile_del(int idx)
         {
             fz_try(gctx) {
                 fz_document *doc = (fz_document *) $self;
@@ -548,11 +853,11 @@ struct Document
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        FITZEXCEPTION(_embeddedFileInfo, !result)
-        PyObject *_embeddedFileInfo(int idx, PyObject *infodict)
+        FITZEXCEPTION(_embfile_info, !result)
+        PyObject *_embfile_info(int idx, PyObject *infodict)
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_document_from_fz_document(gctx, doc);
@@ -599,11 +904,11 @@ struct Document
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        FITZEXCEPTION(_embeddedFileUpd, !result)
-        PyObject *_embeddedFileUpd(int idx, PyObject *buffer = NULL, char *filename = NULL, char *ufilename = NULL, char *desc = NULL)
+        FITZEXCEPTION(_embfile_upd, !result)
+        PyObject *_embfile_upd(int idx, PyObject *buffer = NULL, char *filename = NULL, char *ufilename = NULL, char *desc = NULL)
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_document_from_fz_document(gctx, doc);
@@ -621,10 +926,10 @@ struct Document
 
                 pdf_obj *filespec = pdf_dict_getl(gctx, entry, PDF_NAME(EF),
                                                   PDF_NAME(F), NULL);
-                if (!filespec) THROWMSG("bad PDF: /EF object not found");
+                if (!filespec) THROWMSG(gctx, "bad PDF: /EF object not found");
 
                 res = JM_BufferFromBytes(gctx, buffer);
-                if (EXISTS(buffer) && !res) THROWMSG("bad type: 'buffer'");
+                if (EXISTS(buffer) && !res) THROWMSG(gctx, "bad type: 'buffer'");
                 if (res)
                 {
                     JM_update_stream(gctx, pdf, filespec, res, 1);
@@ -650,7 +955,7 @@ struct Document
             fz_catch(gctx)
                 return NULL;
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
         FITZEXCEPTION(_embeddedFileGet, !result)
@@ -684,8 +989,8 @@ struct Document
             return cont;
         }
 
-        FITZEXCEPTION(_embeddedFileAdd, !result)
-        PyObject *_embeddedFileAdd(const char *name, PyObject *buffer, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
+        FITZEXCEPTION(_embfile_add, !result)
+        PyObject *_embfile_add(const char *name, PyObject *buffer, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_document_from_fz_document(gctx, doc);
@@ -698,7 +1003,7 @@ struct Document
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 data = JM_BufferFromBytes(gctx, buffer);
-                if (!data) THROWMSG("bad type: 'buffer'");
+                if (!data) THROWMSG(gctx, "bad type: 'buffer'");
                 size = fz_buffer_storage(gctx, data, &buffdata);
 
                 names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
@@ -732,18 +1037,18 @@ struct Document
                 return NULL;
             }
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
         %pythoncode %{
-        def embeddedFileNames(self):
+        def embfile_names(self) -> list:
             """Get list of names of EmbeddedFiles."""
             filenames = []
-            self._embeddedFileNames(filenames)
+            self._embfile_names(filenames)
             return filenames
 
-        def _embeddedFileIndex(self, item):
-            filenames = self.embeddedFileNames()
+        def _embeddedFileIndex(self, item: typing.Union[int, str]) -> int:
+            filenames = self.embfile_names()
             msg = "'%s' not in EmbeddedFiles array." % str(item)
             if item in filenames:
                 idx = filenames.index(item)
@@ -753,11 +1058,11 @@ struct Document
                 raise ValueError(msg)
             return idx
 
-        def embeddedFileCount(self):
+        def embfile_count(self) -> int:
             """Get number of EmbeddedFiles."""
-            return len(self.embeddedFileNames())
+            return len(self.embfile_names())
 
-        def embeddedFileDel(self, item):
+        def embfile_del(self, item: typing.Union[int, str]):
             """Delete an entry from EmbeddedFiles.
 
             Notes:
@@ -765,14 +1070,14 @@ struct Document
                 Physical deletion of data will happen on save to a new
                 file with appropriate garbage option.
             Args:
-                item: (str/int) name or number of the entry.
+                item: name or number of item.
             Returns:
                 None
             """
             idx = self._embeddedFileIndex(item)
-            return self._embeddedFileDel(idx)
+            return self._embfile_del(idx)
 
-        def embeddedFileInfo(self, item):
+        def embfile_info(self, item: typing.Union[int, str]) -> dict:
             """Get information of an item in the EmbeddedFiles array.
 
             Args:
@@ -781,11 +1086,11 @@ struct Document
                 Information dictionary.
             """
             idx = self._embeddedFileIndex(item)
-            infodict = {"name": self.embeddedFileNames()[idx]}
-            self._embeddedFileInfo(idx, infodict)
+            infodict = {"name": self.embfile_names()[idx]}
+            self._embfile_info(idx, infodict)
             return infodict
 
-        def embeddedFileGet(self, item):
+        def embfile_get(self, item: typing.Union[int, str]) -> bytes:
             """Get the content of an item in the EmbeddedFiles array.
 
             Args:
@@ -796,42 +1101,43 @@ struct Document
             idx = self._embeddedFileIndex(item)
             return self._embeddedFileGet(idx)
 
-        def embeddedFileUpd(self, item, buffer=None,
-                                  filename=None,
-                                  ufilename=None,
-                                  desc=None):
+        def embfile_upd(self, item: typing.Union[int, str],
+                                 buffer: OptBytes =None,
+                                 filename: OptStr =None,
+                                 ufilename: OptStr =None,
+                                 desc: OptStr =None,) -> None:
             """Change an item of the EmbeddedFiles array.
 
             Notes:
-                All parameter are optional. If all arguments are omitted, the
-                method is a no-op.
+                Only provided parameters are changed. If all are omitted,
+                the method is a no-op.
             Args:
-                item: the number or the name of the item.
+                item: number or name of item.
                 buffer: (binary data) the new file content.
                 filename: (str) the new file name.
                 ufilename: (unicode) the new filen ame.
                 desc: (str) the new description.
             """
             idx = self._embeddedFileIndex(item)
-            return self._embeddedFileUpd(idx, buffer=buffer,
+            return self._embfile_upd(idx, buffer=buffer,
                                          filename=filename,
                                          ufilename=ufilename,
                                          desc=desc)
 
-        def embeddedFileAdd(self, name, buffer,
-                                  filename=None,
-                                  ufilename=None,
-                                  desc=None):
+        def embfile_add(self, name: str, buffer: typing.ByteString,
+                                  filename: OptStr =None,
+                                  ufilename: OptStr =None,
+                                  desc: OptStr =None,) -> None:
             """Add an item to the EmbeddedFiles array.
 
             Args:
-                name: the name of the new item.
+                name: name of the new item, must not already exist.
                 buffer: (binary data) the file content.
-                filename: (str) the file name.
-                ufilename: (unicode) the filen ame.
+                filename: (str) the file name, default: the name
+                ufilename: (unicode) the file name, default: filename
                 desc: (str) the description.
             """
-            filenames = self.embeddedFileNames()
+            filenames = self.embfile_names()
             msg = "Name '%s' already in EmbeddedFiles array." % str(name)
             if name in filenames:
                 raise ValueError(msg)
@@ -842,22 +1148,20 @@ struct Document
                 ufilename = unicode(filename, "utf8") if str is bytes else filename
             if desc is None:
                 desc = name
-            return self._embeddedFileAdd(name, buffer=buffer,
+            return self._embfile_add(name, buffer=buffer,
                                          filename=filename,
                                          ufilename=ufilename,
                                          desc=desc)
         %}
 
-        FITZEXCEPTION(convertToPDF, !result)
-        CLOSECHECK(convertToPDF, """Convert document to a PDF, selecting page range and optional rotation. Output bytes object.""")
-        PyObject *convertToPDF(int from_page=0, int to_page=-1, int rotate=0)
+        FITZEXCEPTION(convert_to_pdf, !result)
+        CLOSECHECK(convert_to_pdf, """Convert document to a PDF, selecting page range and optional rotation. Output bytes object.""")
+        PyObject *convert_to_pdf(int from_page=0, int to_page=-1, int rotate=0)
         {
             PyObject *doc = NULL;
             fz_document *fz_doc = (fz_document *) $self;
             fz_try(gctx) {
                 int fp = from_page, tp = to_page, srcCount = fz_count_pages(gctx, fz_doc);
-                if (pdf_specifics(gctx, fz_doc))
-                    THROWMSG("use select+write or insertPDF for PDF docs instead");
                 if (fp < 0) fp = 0;
                 if (fp > srcCount - 1) fp = srcCount - 1;
                 if (tp < 0) tp = srcCount - 1;
@@ -870,24 +1174,118 @@ struct Document
             return doc;
         }
 
-        CLOSECHECK0(pageCount, """Number of pages.""")
-        %pythoncode%{@property%}
-        PyObject *pageCount()
+        FITZEXCEPTION(get_oc, !result)
+        CLOSECHECK0(get_oc, """Get xref of optional content object.""")
+        PyObject *get_oc(int xref)
         {
-            return Py_BuildValue("i", fz_count_pages(gctx, (fz_document *) $self));
+            PyObject *ret = NULL;
+            pdf_obj *ind = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                ind = pdf_new_indirect(gctx, pdf, xref, 0);
+                pdf_obj *type = pdf_dict_get(gctx, ind, PDF_NAME(Type));
+                if (pdf_objcmp(gctx, type, PDF_NAME(XObject)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                type = pdf_dict_get(gctx, ind, PDF_NAME(Subtype));
+                if (pdf_objcmp(gctx, type, PDF_NAME(Image)) != 0 &&
+                    pdf_objcmp(gctx, type, PDF_NAME(Form)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                pdf_obj *oc = pdf_dict_get(gctx, ind, PDF_NAME(OC));
+                if (!oc) {
+                    ret = Py_BuildValue("i", 0);
+                } else {
+                    ret = Py_BuildValue("i", pdf_to_num(gctx, oc));
+                }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, ind);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return ret;
         }
 
-        CLOSECHECK0(chapterCount, """Number of chapters.""")
-        %pythoncode%{@property%}
-        PyObject *chapterCount()
+        FITZEXCEPTION(set_oc, !result)
+        CLOSECHECK0(set_oc, """Attach optional content object to image or form xobject.""")
+        PyObject *set_oc(int xref, int oc)
         {
-            return Py_BuildValue("i", fz_count_chapters(gctx, (fz_document *) $self));
+            pdf_obj *ind = NULL, *indoc = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                ind = pdf_new_indirect(gctx, pdf, xref, 0);
+                pdf_obj *type = pdf_dict_get(gctx, ind, PDF_NAME(Type));
+                if (pdf_objcmp(gctx, type, PDF_NAME(XObject)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                type = pdf_dict_get(gctx, ind, PDF_NAME(Subtype));
+                if (pdf_objcmp(gctx, type, PDF_NAME(Image)) != 0 &&
+                    pdf_objcmp(gctx, type, PDF_NAME(Form)) != 0) {
+                    THROWMSG(gctx, "bad xref type");
+                }
+                if (!oc) {
+                    pdf_dict_del(gctx, ind, PDF_NAME(OC));
+                } else {
+                    indoc = pdf_new_indirect(gctx, pdf, oc, 0);
+                    type = pdf_dict_get(gctx, indoc, PDF_NAME(Type));
+                    if (pdf_objcmp(gctx, type, PDF_NAME(OCG)) == 0 ||
+                        pdf_objcmp(gctx, type, PDF_NAME(OCMD)) == 0) {
+                        pdf_dict_put(gctx, ind, PDF_NAME(OC), indoc);
+                    } else {
+                        THROWMSG(gctx, "bad 'oc' type");
+                    }
+                }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, ind);
+                pdf_drop_obj(gctx, indoc);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
         }
 
-        FITZEXCEPTION(lastLocation, !result)
-        CLOSECHECK0(lastLocation, """Id (chapter, page) of last page.""")
+
+        FITZEXCEPTION(page_count, !result)
+        CLOSECHECK0(page_count, """Number of pages.""")
         %pythoncode%{@property%}
-        PyObject *lastLocation()
+        PyObject *page_count()
+        {
+            PyObject *ret;
+            fz_try(gctx) {
+                ret = Py_BuildValue("i", fz_count_pages(gctx, (fz_document *) $self));
+            }
+            fz_catch(gctx) {
+                PyErr_Clear();
+                return NULL;
+            }
+            return ret;
+        }
+
+        FITZEXCEPTION(chapter_count, !result)
+        CLOSECHECK0(chapter_count, """Number of chapters.""")
+        %pythoncode%{@property%}
+        PyObject *chapter_count()
+        {
+            PyObject *ret;
+            fz_try(gctx) {
+                ret = Py_BuildValue("i", fz_count_chapters(gctx, (fz_document *) $self));
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return ret;
+        }
+
+        FITZEXCEPTION(last_location, !result)
+        CLOSECHECK0(last_location, """Id (chapter, page) of last page.""")
+        %pythoncode%{@property%}
+        PyObject *last_location()
         {
             fz_document *this_doc = (fz_document *) $self;
             fz_location last_loc;
@@ -901,15 +1299,15 @@ struct Document
         }
 
 
-        FITZEXCEPTION(chapterPageCount, !result)
-        CLOSECHECK0(chapterPageCount, """Page count of chapter.""")
-        PyObject *chapterPageCount(int chapter)
+        FITZEXCEPTION(chapter_page_count, !result)
+        CLOSECHECK0(chapter_page_count, """Page count of chapter.""")
+        PyObject *chapter_page_count(int chapter)
         {
-            int chapters = fz_count_chapters(gctx, (fz_document *) $self);
             int pages = 0;
             fz_try(gctx) {
+                int chapters = fz_count_chapters(gctx, (fz_document *) $self);
                 if (chapter < 0 || chapter >= chapters)
-                    THROWMSG("bad chapter number");
+                    THROWMSG(gctx, "bad chapter number");
                 pages = fz_count_chapter_pages(gctx, (fz_document *) $self, chapter);
             }
             fz_catch(gctx) {
@@ -918,10 +1316,10 @@ struct Document
             return Py_BuildValue("i", pages);
         }
 
-        FITZEXCEPTION(previousLocation, !result)
-        %pythonprepend previousLocation %{
+        FITZEXCEPTION(prev_location, !result)
+        %pythonprepend prev_location %{
         """Get (chapter, page) of previous page."""
-        if self.isClosed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if type(page_id) is int:
             page_id = (0, page_id)
@@ -930,7 +1328,7 @@ struct Document
         if page_id  == (0, 0):
             return ()
         %}
-        PyObject *previousLocation(PyObject *page_id)
+        PyObject *prev_location(PyObject *page_id)
         {
             fz_document *this_doc = (fz_document *) $self;
             fz_location prev_loc, loc;
@@ -938,16 +1336,16 @@ struct Document
             int pno;
             fz_try(gctx) {
                 val = PySequence_GetItem(page_id, 0);
-                if (!val) THROWMSG("bad page id");
+                if (!val) THROWMSG(gctx, "bad page id");
                 int chapter = (int) PyLong_AsLong(val);
                 Py_DECREF(val);
-                if (PyErr_Occurred()) THROWMSG("bad page id");
+                if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
 
                 val = PySequence_GetItem(page_id, 1);
-                if (!val) THROWMSG("bad page id");
+                if (!val) THROWMSG(gctx, "bad page id");
                 pno = (int) PyLong_AsLong(val);
                 Py_DECREF(val);
-                if (PyErr_Occurred()) THROWMSG("bad page id");
+                if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
 
                 loc = fz_make_location(chapter, pno);
                 prev_loc = fz_previous_page(gctx, this_doc, loc);
@@ -960,19 +1358,19 @@ struct Document
         }
 
 
-        FITZEXCEPTION(nextLocation, !result)
-        %pythonprepend nextLocation %{
+        FITZEXCEPTION(next_location, !result)
+        %pythonprepend next_location %{
         """Get (chapter, page) of next page."""
-        if self.isClosed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if type(page_id) is int:
             page_id = (0, page_id)
         if page_id not in self:
             raise ValueError("page id not in document")
-        if tuple(page_id)  == self.lastLocation:
+        if tuple(page_id)  == self.last_location:
             return ()
         %}
-        PyObject *nextLocation(PyObject *page_id)
+        PyObject *next_location(PyObject *page_id)
         {
             fz_document *this_doc = (fz_document *) $self;
             fz_location next_loc, loc;
@@ -981,16 +1379,16 @@ struct Document
             int pno;
             fz_try(gctx) {
                 val = PySequence_GetItem(page_id, 0);
-                if (!val) THROWMSG("bad page id");
+                if (!val) THROWMSG(gctx, "bad page id");
                 int chapter = (int) PyLong_AsLong(val);
                 Py_DECREF(val);
-                if (PyErr_Occurred()) THROWMSG("bad page id");
+                if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
 
                 val = PySequence_GetItem(page_id, 1);
-                if (!val) THROWMSG("bad page id");
+                if (!val) THROWMSG(gctx, "bad page id");
                 pno = (int) PyLong_AsLong(val);
                 Py_DECREF(val);
-                if (PyErr_Occurred()) THROWMSG("bad page id");
+                if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
 
                 loc = fz_make_location(chapter, pno);
                 next_loc = fz_next_page(gctx, this_doc, loc);
@@ -1009,11 +1407,11 @@ struct Document
         {
             fz_document *this_doc = (fz_document *) $self;
             fz_location loc = fz_make_location(-1, -1);
-            int pageCount = fz_count_pages(gctx, this_doc);
-            while (pno < 0) pno += pageCount;
+            int page_count = fz_count_pages(gctx, this_doc);
+            while (pno < 0) pno += page_count;
             fz_try(gctx) {
-                if (pno >= pageCount)
-                    THROWMSG("bad page number(s)");
+                if (pno >= page_count)
+                    THROWMSG(gctx, "bad page number(s)");
                 loc = fz_location_from_page_number(gctx, this_doc, pno);
             }
             fz_catch(gctx) {
@@ -1026,7 +1424,7 @@ struct Document
         %pythonprepend page_number_from_location%{
         """Convert (chapter, pno) to page number."""
         if type(page_id) is int:
-            np = self.pageCount
+            np = self.page_count
             while page_id < 0:
                 page_id += np
             page_id = (0, page_id)
@@ -1042,16 +1440,16 @@ struct Document
             int pno;
             fz_try(gctx) {
                 val = PySequence_GetItem(page_id, 0);
-                if (!val) THROWMSG("bad page id");
+                if (!val) THROWMSG(gctx, "bad page id");
                 int chapter = (int) PyLong_AsLong(val);
                 Py_DECREF(val);
-                if (PyErr_Occurred()) THROWMSG("bad page id");
+                if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
 
                 val = PySequence_GetItem(page_id, 1);
-                if (!val) THROWMSG("bad page id");
+                if (!val) THROWMSG(gctx, "bad page id");
                 pno = (int) PyLong_AsLong(val);
                 Py_DECREF(val);
-                if (PyErr_Occurred()) THROWMSG("bad page id");
+                if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
 
                 loc = fz_make_location(chapter, pno);
                 page_n = fz_page_number_from_location(gctx, this_doc, loc);
@@ -1063,25 +1461,38 @@ struct Document
             return Py_BuildValue("i", page_n);
         }
 
+        FITZEXCEPTION(_getMetadata, !result)
         CLOSECHECK0(_getMetadata, """Get metadata.""")
-        char *_getMetadata(const char *key)
+        PyObject *
+        _getMetadata(const char *key)
         {
+            PyObject *res = NULL;
             fz_document *doc = (fz_document *) $self;
             int vsize;
             char *value;
-            vsize = fz_lookup_metadata(gctx, doc, key, NULL, 0)+1;
-            if(vsize > 1) {
-                value = JM_Alloc(char, vsize);
-                fz_lookup_metadata(gctx, doc, key, value, vsize);
-                return value;
+            fz_try(gctx) {
+                vsize = fz_lookup_metadata(gctx, doc, key, NULL, 0)+1;
+                if(vsize > 1) {
+                    value = JM_Alloc(char, vsize);
+                    fz_lookup_metadata(gctx, doc, key, value, vsize);
+                    res = JM_EscapeStrFromStr(value);
+                    JM_Free(value);
+                } else {
+                    res = EMPTY_STRING;
+                }
             }
-            else
-                return NULL;
+            fz_always(gctx) {
+                PyErr_Clear();
+            }
+            fz_catch(gctx) {
+                return EMPTY_STRING;
+            }
+            return res;
         }
 
-        CLOSECHECK0(needsPass, """Indicate password required.""")
+        CLOSECHECK0(needs_pass, """Indicate password required.""")
         %pythoncode%{@property%}
-        PyObject *needsPass() {
+        PyObject *needs_pass() {
             return JM_BOOL(fz_needs_password(gctx, (fz_document *) $self));
         }
 
@@ -1090,15 +1501,15 @@ struct Document
         PyObject *language()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) return_none;
+            if (!pdf) Py_RETURN_NONE;
             fz_text_language lang = pdf_document_language(gctx, pdf);
             char buf[8];
-            if (lang == FZ_LANG_UNSET) return_none;
+            if (lang == FZ_LANG_UNSET) Py_RETURN_NONE;
             return Py_BuildValue("s", fz_string_from_text_language(buf, lang));
         }
 
-        FITZEXCEPTION(setLanguage, !result)
-        PyObject *setLanguage(char *language=NULL)
+        FITZEXCEPTION(set_language, !result)
+        PyObject *set_language(char *language=NULL)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             fz_try(gctx) {
@@ -1117,7 +1528,7 @@ struct Document
         }
 
 
-        %pythonprepend resolveLink %{
+        %pythonprepend resolve_link %{
         """Calculate internal link destination.
 
         Args:
@@ -1128,7 +1539,7 @@ struct Document
             page_id is either page number (if chapters=0), or (chapter, pno).
         """
         %}
-        PyObject *resolveLink(char *uri=NULL, int chapters=0)
+        PyObject *resolve_link(char *uri=NULL, int chapters=0)
         {
             if (!uri) {
                 if (chapters) return Py_BuildValue("(ii)ff", -1, -1, 0, 0);
@@ -1154,11 +1565,11 @@ struct Document
         CLOSECHECK(layout, """Re-layout a reflowable document.""")
         %pythonappend layout %{
             self._reset_page_refs()
-            self.initData()%}
+            self.init_doc()%}
         PyObject *layout(PyObject *rect = NULL, float width = 0, float height = 0, float fontsize = 11)
         {
             fz_document *doc = (fz_document *) $self;
-            if (!fz_is_document_reflowable(gctx, doc)) return_none;
+            if (!fz_is_document_reflowable(gctx, doc)) Py_RETURN_NONE;
             fz_try(gctx) {
                 float w = width, h = height;
                 fz_rect r = JM_rect_from_py(rect);
@@ -1167,29 +1578,29 @@ struct Document
                     h = r.y1 - r.y0;
                 }
                 if (w <= 0.0f || h <= 0.0f)
-                        THROWMSG("invalid page size");
+                        THROWMSG(gctx, "invalid page size");
                 fz_layout_document(gctx, doc, w, h, fontsize);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        FITZEXCEPTION(makeBookmark, !result)
-        CLOSECHECK(makeBookmark, """Make a page pointer before layouting document.""")
-        PyObject *makeBookmark(PyObject *loc)
+        FITZEXCEPTION(make_bookmark, !result)
+        CLOSECHECK(make_bookmark, """Make a page pointer before layouting document.""")
+        PyObject *make_bookmark(PyObject *loc)
         {
             fz_document *doc = (fz_document *) $self;
             fz_location location;
             fz_bookmark mark;
             fz_try(gctx) {
                 if (JM_INT_ITEM(loc, 0, &location.chapter) == 1)
-                    THROWMSG("Bad location");
+                    THROWMSG(gctx, "Bad location");
                 if (JM_INT_ITEM(loc, 1, &location.page) == 1)
-                    THROWMSG("Bad location");
+                    THROWMSG(gctx, "Bad location");
                 mark = fz_make_bookmark(gctx, doc, location);
-                if (!mark) THROWMSG("Bad location");
+                if (!mark) THROWMSG(gctx, "Bad location");
             }
             fz_catch(gctx) {
                 return NULL;
@@ -1198,9 +1609,9 @@ struct Document
         }
 
 
-        FITZEXCEPTION(findBookmark, !result)
-        CLOSECHECK(findBookmark, """Find new location after layouting a document.""")
-        PyObject *findBookmark(PyObject *bm)
+        FITZEXCEPTION(find_bookmark, !result)
+        CLOSECHECK(find_bookmark, """Find new location after layouting a document.""")
+        PyObject *find_bookmark(PyObject *bm)
         {
             fz_document *doc = (fz_document *) $self;
             fz_location location;
@@ -1215,9 +1626,9 @@ struct Document
         }
 
 
-        CLOSECHECK0(isReflowable, """Check if document is layoutable.""")
+        CLOSECHECK0(is_reflowable, """Check if document is layoutable.""")
         %pythoncode%{@property%}
-        PyObject *isReflowable()
+        PyObject *is_reflowable()
         {
             return JM_BOOL(fz_is_document_reflowable(gctx, (fz_document *) $self));
         }
@@ -1231,17 +1642,19 @@ struct Document
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (!INRANGE(xref, 1, pdf_xref_len(gctx, pdf)-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
                 pdf_delete_object(gctx, pdf, xref);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            pdf->dirty = 1;
+            Py_RETURN_NONE;
         }
 
-        CLOSECHECK0(_getPDFroot, """Get xref of PDF catalog.""")
-        PyObject *_getPDFroot()
+        FITZEXCEPTION(pdf_catalog, !result)
+        CLOSECHECK0(pdf_catalog, """Get xref of PDF catalog.""")
+        PyObject *pdf_catalog()
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_specifics(gctx, doc);
@@ -1252,16 +1665,19 @@ struct Document
                                              PDF_NAME(Root));
                 xref = pdf_to_num(gctx, root);
             }
-            fz_catch(gctx) {;}
+            fz_catch(gctx) {
+                return NULL;
+            }
             return Py_BuildValue("i", xref);
         }
 
+        FITZEXCEPTION(_getPDFfileid, !result)
         CLOSECHECK0(_getPDFfileid, """Get PDF file id.""")
         PyObject *_getPDFfileid()
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_specifics(gctx, doc);
-            if (!pdf) return_none;
+            if (!pdf) Py_RETURN_NONE;
             PyObject *idlist = PyList_New(0);
             fz_buffer *buffer = NULL;
             unsigned char *hex;
@@ -1272,11 +1688,9 @@ struct Document
             fz_try(gctx) {
                 pdf_obj *identity = pdf_dict_get(gctx, pdf_trailer(gctx, pdf),
                                              PDF_NAME(ID));
-                if (identity)
-                {
+                if (identity) {
                     n = pdf_array_len(gctx, identity);
-                    for (i = 0; i < n; i++)
-                    {
+                    for (i = 0; i < n; i++) {
                         o = pdf_array_get(gctx, identity, i);
                         len = (int) pdf_to_str_len(gctx, o);
                         buffer = fz_new_buffer(gctx, 2 * len);
@@ -1289,13 +1703,15 @@ struct Document
                     }
                 }
             }
-            fz_catch(gctx) fz_drop_buffer(gctx, buffer);
+            fz_catch(gctx) {
+                fz_drop_buffer(gctx, buffer);
+            }
             return idlist;
         }
 
-        CLOSECHECK0(isPDF, """Check if a PDF document.""")
+        CLOSECHECK0(is_pdf, """Check for PDF.""")
         %pythoncode%{@property%}
-        PyObject *isPDF()
+        PyObject *is_pdf()
         {
             if (pdf_specifics(gctx, (fz_document *) $self)) Py_RETURN_TRUE;
             else Py_RETURN_FALSE;
@@ -1321,9 +1737,9 @@ struct Document
             Py_RETURN_FALSE;
         }
 
-        CLOSECHECK0(isDirty, """True if PDF has unsaved changes.""")
+        CLOSECHECK0(is_dirty, """True if PDF has unsaved changes.""")
         %pythoncode%{@property%}
-        PyObject *isDirty()
+        PyObject *is_dirty()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) Py_RETURN_FALSE;
@@ -1338,11 +1754,21 @@ struct Document
             return JM_BOOL(pdf_can_be_saved_incrementally(gctx, pdf));
         }
 
+        CLOSECHECK0(is_repaired, """Check whether PDF was repaired.""")
+        %pythoncode%{@property%}
+        PyObject *is_repaired()
+        {
+            pdf_document *pdf = pdf_document_from_fz_document(gctx, (fz_document *) $self);
+            if (!pdf) Py_RETURN_FALSE; // gracefully handle non-PDF
+            return JM_BOOL(pdf_was_repaired(gctx, pdf));
+        }
+
         CLOSECHECK0(authenticate, """Decrypt document.""")
         %pythonappend authenticate %{
         if val:  # the doc is decrypted successfully and we init the outline
+            self.is_encrypted = False
             self.isEncrypted = False
-            self.initData()
+            self.init_doc()
             self.thisown = True
         %}
         PyObject *authenticate(char *password)
@@ -1350,177 +1776,166 @@ struct Document
             return Py_BuildValue("i", fz_authenticate_password(gctx, (fz_document *) $self, (const char *) password));
         }
 
-        //---------------------------------------------------------------------
-        // save PDF file
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
+        // save a PDF
+        //------------------------------------------------------------------
         FITZEXCEPTION(save, !result)
         %pythonprepend save %{
-        """Save PDF to filename."""
-        if self.isClosed or self.isEncrypted:
+        """Save PDF to file, pathlib.Path or file pointer."""
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if type(filename) == str:
             pass
-        elif str is bytes and type(filename) == unicode:
-            filename = filename.encode('utf8')
-        else:
+        elif hasattr(filename, "open"):  # assume: pathlib.Path
             filename = str(filename)
+        elif hasattr(filename, "name"):  # assume: file object
+            filename = filename.name
+        elif not hasattr(filename, "seek"):  # assume file object
+            raise ValueError("filename must be str, Path or file object")
         if filename == self.name and not incremental:
             raise ValueError("save to original must be incremental")
-        if self.pageCount < 1:
+        if self.page_count < 1:
             raise ValueError("cannot save with zero pages")
         if incremental:
             if self.name != filename or self.stream:
                 raise ValueError("incremental needs original file")
         %}
 
-        PyObject *save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0, int pretty=0, int encryption=1, int permissions=-1, char *owner_pw=NULL, char *user_pw=NULL)
+        PyObject *
+        save(PyObject *filename, int garbage=0, int clean=0,
+            int deflate=0, int deflate_images=0, int deflate_fonts=0,
+            int incremental=0, int ascii=0, int expand=0, int linear=0,
+            int pretty=0, int encryption=1, int permissions=-1,
+            char *owner_pw=NULL, char *user_pw=NULL)
         {
             pdf_write_options opts = pdf_default_write_options;
             opts.do_incremental     = incremental;
             opts.do_ascii           = ascii;
             opts.do_compress        = deflate;
-            opts.do_compress_images = deflate;
-            opts.do_compress_fonts  = deflate;
+            opts.do_compress_images = deflate_images;
+            opts.do_compress_fonts  = deflate_fonts;
             opts.do_decompress      = expand;
             opts.do_garbage         = garbage;
             opts.do_pretty          = pretty;
             opts.do_linear          = linear;
             opts.do_clean           = clean;
             opts.do_sanitize        = clean;
-            opts.do_encrypt         = encryption;
-            opts.permissions        = permissions;
-            if (owner_pw)
-            {
-                memcpy(&opts.opwd_utf8, owner_pw, strlen(owner_pw)+1);
-            }
-
-            if (user_pw)
-            {
-                memcpy(&opts.upwd_utf8, user_pw, strlen(user_pw)+1);
-            }
-
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            fz_try(gctx) {
-                ASSERT_PDF(pdf);
-                JM_embedded_clean(gctx, pdf);
-                pdf_save_document(gctx, pdf, filename, &opts);
-                pdf->dirty = 0;
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return_none;
-        }
-
-        //---------------------------------------------------------------------
-        // write document to memory
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(write, !result)
-        %pythonprepend write %{
-        """Write the PDF to a bytes object."""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("document closed or encrypted")
-        if self.pageCount < 1:
-            raise ValueError("cannot write with zero pages")%}
-
-        PyObject *write(int garbage=0, int clean=0, int deflate=0,
-                        int ascii=0, int expand=0, int linear=0, int pretty=0,
-                        int encryption=1,
-                        int permissions=-1,
-                        char *owner_pw=NULL,
-                        char *user_pw=NULL)
-        {
-            PyObject *r = NULL;
-            fz_output *out = NULL;
-            fz_buffer *res = NULL;
-            pdf_write_options opts = pdf_default_write_options;
-            opts.do_incremental     = 0;
-            opts.do_ascii           = ascii;
-            opts.do_compress        = deflate;
-            opts.do_compress_images = deflate;
-            opts.do_compress_fonts  = deflate;
-            opts.do_decompress      = expand;
-            opts.do_garbage         = garbage;
-            opts.do_linear          = linear;
-            opts.do_clean           = clean;
-            opts.do_sanitize        = clean;
-            opts.do_pretty          = pretty;
             opts.do_encrypt         = encryption;
             opts.permissions        = permissions;
             if (owner_pw) {
                 memcpy(&opts.opwd_utf8, owner_pw, strlen(owner_pw)+1);
+            } else if (user_pw) {
+                memcpy(&opts.opwd_utf8, user_pw, strlen(user_pw)+1);
             }
-
             if (user_pw) {
                 memcpy(&opts.upwd_utf8, user_pw, strlen(user_pw)+1);
             }
 
-            fz_document *doc = (fz_document *) $self;
-            pdf_document *pdf = pdf_specifics(gctx, doc);
-            fz_var(out);
-            fz_var(r);
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_output *out = NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
-                if (pdf_count_pages(gctx, pdf) < 1)
-                    THROWMSG("cannot save with zero pages");
                 JM_embedded_clean(gctx, pdf);
-                res = fz_new_buffer(gctx, 8192);
-                out = fz_new_output_with_buffer(gctx, res);
-                pdf_write_document(gctx, pdf, out, &opts);
-                r = JM_BinFromBuffer(gctx, res);
+                JM_ensure_identity(gctx, pdf);
+                if (PyUnicode_Check(filename)) {
+                    pdf_save_document(gctx, pdf, JM_StrAsChar(filename), &opts);
+                } else {
+                    out = JM_new_output_fileptr(gctx, filename);
+                    pdf_write_document(gctx, pdf, out, &opts);
+                }
                 pdf->dirty = 0;
             }
             fz_always(gctx) {
-                fz_drop_buffer(gctx, res);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return r;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        %pythoncode %{
+        def write(self, garbage=False, clean=False,
+            deflate=False, deflate_images=False, deflate_fonts=False,
+            incremental=False, ascii=False, expand=False, linear=False,
+            pretty=False, encryption=1, permissions=-1,
+            owner_pw=None, user_pw=None):
+            from io import BytesIO
+            bio = BytesIO()
+            self.save(bio, garbage=garbage, clean=clean,
+            deflate=deflate, deflate_images=deflate_images, deflate_fonts=deflate_fonts,
+            incremental=incremental, ascii=ascii, expand=expand, linear=linear,
+            pretty=pretty, encryption=encryption, permissions=permissions,
+            owner_pw=owner_pw, user_pw=user_pw)
+            return bio.getvalue()
+        %}
+
+        //----------------------------------------------------------------
         // Insert pages from a source PDF into this PDF.
         // For reconstructing the links (_do_links method), we must save the
         // insertion point (start_at) if it was specified as -1.
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(insertPDF, !result)
-        %pythonprepend insertPDF %{
+        //----------------------------------------------------------------
+        FITZEXCEPTION(insert_pdf, !result)
+        %pythonprepend insert_pdf %{
         """Insert a page range from another PDF.
 
         Args:
             docsrc: PDF to copy from. Must be different object, but may be same file.
-            from_page: (int) first page of source PDF to copy.
-            to_page: (int) last page of source PDF to copy.
+            from_page: (int) first source page to copy, 0-based, default 0.
+            to_page: (int) last source page to copy, 0-based, default last page.
             start_at: (int) from_page will become this page number in target.
-            links: (int/bool) whether to also copy links
-            annots: (int/bool) whether to also copy annotations
+            rotate: (int) rotate copied pages, default -1 is no change.
+            links: (int/bool) whether to also copy links.
+            annots: (int/bool) whether to also copy annotations.
+            show_progress: (int) progress message interval, 0 is no messages.
+            final: (bool) indicates last insertion from this source PDF.
+            _gmap: internal use only
 
-        Copy sequence will reversed if from_page > to_page."""
+        Copy sequence reversed if from_page > to_page."""
 
-        if self.isClosed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
-        if id(self) == id(docsrc):
-            raise ValueError("source and target PDF are the same object")
+        if self._graft_id == docsrc._graft_id:
+            raise ValueError("source and target cannot be same object")
         sa = start_at
         if sa < 0:
-            sa = self.pageCount%}
+            sa = self.page_count
+        if len(docsrc) > show_progress > 0:
+            inname = os.path.basename(docsrc.name)
+            if not inname:
+                inname = "memory PDF"
+            outname = os.path.basename(self.name)
+            if not outname:
+                outname = "memory PDF"
+            print("Inserting '%s' at '%s'" % (inname, outname))
 
-        %pythonappend insertPDF %{
+        # retrieve / make a Graftmap to avoid duplicate objects
+        isrt = docsrc._graft_id
+        _gmap = self.Graftmaps.get(isrt, None)
+        if _gmap is None:
+            _gmap = Graftmap(self)
+            self.Graftmaps[isrt] = _gmap
+        %}
+
+        %pythonappend insert_pdf %{
         self._reset_page_refs()
         if links:
             self._do_links(docsrc, from_page = from_page, to_page = to_page,
-                        start_at = sa)%}
+                        start_at = sa)
+        if final == 1:
+            self.Graftmaps[isrt] = None%}
 
         PyObject *
-        insertPDF(struct Document *docsrc,
+        insert_pdf(struct Document *docsrc,
             int from_page=-1,
             int to_page=-1,
             int start_at=-1,
             int rotate=-1,
             int links=1,
-            int annots=1)
+            int annots=1,
+            int show_progress=0,
+            int final = 1,
+            struct Graftmap *_gmap=NULL)
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdfout = pdf_specifics(gctx, doc);
@@ -1542,19 +1957,19 @@ struct Document
             sa = MIN(sa, outCount);         // but that is also the limit
 
             fz_try(gctx) {
-                if (!pdfout || !pdfsrc) THROWMSG("source or target not a PDF");
-                JM_merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate, links, annots);
+                if (!pdfout || !pdfsrc) THROWMSG(gctx, "source or target not a PDF");
+                JM_merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate, links, annots, show_progress, (pdf_graft_map *) _gmap);
             }
             fz_catch(gctx) {
                 return NULL;
             }
             pdfout->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Create and insert a new page (PDF)
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         FITZEXCEPTION(_newPage, !result)
         CLOSECHECK(_newPage, """Make a new PDF page.""")
         %pythonappend _newPage %{self._reset_page_refs()%}
@@ -1568,7 +1983,7 @@ struct Document
             fz_buffer *contents = NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
-                if (pno < -1) THROWMSG("bad page number(s)");
+                if (pno < -1) THROWMSG(gctx, "bad page number(s)");
                 // create /Resources and /Contents objects
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
                 page_obj = pdf_add_page(gctx, pdf, mediabox, 0, resources, contents);
@@ -1582,18 +1997,18 @@ struct Document
                 return NULL;
             }
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Create sub-document to keep only selected pages.
         // Parameter is a Python sequence of the wanted page numbers.
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         FITZEXCEPTION(select, !result)
         %pythonprepend select %{"""Build sub-pdf with page numbers in the list."""
-if self.isClosed or self.isEncrypted:
+if self.is_closed or self.is_encrypted:
     raise ValueError("document closed or encrypted")
-if not self.isPDF:
+if not self.is_pdf:
     raise ValueError("not a PDF")
 if not hasattr(pyliste, "__getitem__"):
     raise ValueError("sequence required")
@@ -1622,14 +2037,14 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 return NULL;
             }
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // remove one page
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_deletePage, !result)
-        PyObject *_deletePage(int pno)
+        //------------------------------------------------------------------
+        FITZEXCEPTION(_delete_page, !result)
+        PyObject *_delete_page(int pno)
         {
             fz_try(gctx) {
                 fz_document *doc = (fz_document *) $self;
@@ -1643,17 +2058,17 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //********************************************************************
+        //------------------------------------------------------------------
         // get document permissions
-        //********************************************************************
+        //------------------------------------------------------------------
         %pythoncode%{@property%}
         %pythonprepend permissions %{
         """Document permissions."""
 
-        if self.isEncrypted:
+        if self.is_encrypted:
             return 0
         %}
         PyObject *permissions()
@@ -1679,9 +2094,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             return Py_BuildValue("i", perm);
         }
 
-        FITZEXCEPTION(_getCharWidths, !result)
-        CLOSECHECK(_getCharWidths, """Return list of glyphs and glyph widths of a font.""")
-        PyObject *_getCharWidths(int xref, char *bfname, char *ext,
+        FITZEXCEPTION(_get_char_widths, !result)
+        CLOSECHECK(_get_char_widths, """Return list of glyphs and glyph widths of a font.""")
+        PyObject *_get_char_widths(int xref, char *bfname, char *ext,
                                  int ordering, int limit, int idx = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
@@ -1717,20 +2132,15 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 weiter:;
                 wlist = PyList_New(0);
                 float adv;
-                for (i = 0; i < mylimit; i++)
-                {
+                for (i = 0; i < mylimit; i++) {
                     glyph = fz_encode_character(gctx, font, i);
                     adv = fz_advance_glyph(gctx, font, glyph, 0);
-                    if (ordering >= 0)
+                    if (ordering >= 0) {
                         glyph = i;
-
-
-                    if (glyph > 0)
-                    {
-                        LIST_APPEND_DROP(wlist, Py_BuildValue("if", glyph, adv));
                     }
-                    else
-                    {
+                    if (glyph > 0) {
+                        LIST_APPEND_DROP(wlist, Py_BuildValue("if", glyph, adv));
+                    } else {
                         LIST_APPEND_DROP(wlist, Py_BuildValue("if", glyph, 0.0));
                     }
                 }
@@ -1745,19 +2155,65 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             return wlist;
         }
 
-        FITZEXCEPTION(_getPageObjNumber, !result)
-        CLOSECHECK0(_getPageObjNumber, """Get (xref, generation) of page number.""")
-        PyObject *_getPageObjNumber(int pno)
+
+        FITZEXCEPTION(page_xref, !result)
+        CLOSECHECK0(page_xref, """Get xref of page number.""")
+        PyObject *page_xref(int pno)
         {
             fz_document *this_doc = (fz_document *) $self;
-            int pageCount = fz_count_pages(gctx, this_doc);
+            int page_count = fz_count_pages(gctx, this_doc);
             int n = pno;
-            while (n < 0) n += pageCount;
+            while (n < 0) n += page_count;
+            pdf_document *pdf = pdf_specifics(gctx, this_doc);
+            int xref = 0;
+            fz_try(gctx) {
+                if (n >= page_count) THROWMSG(gctx, "bad page number(s)");
+                ASSERT_PDF(pdf);
+                xref = pdf_to_num(gctx, pdf_lookup_page_obj(gctx, pdf, n));
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", xref);
+        }
+
+
+        FITZEXCEPTION(page_annot_xrefs, !result)
+        CLOSECHECK0(page_annot_xrefs, """Get list annotations of page number.""")
+        PyObject *page_annot_xrefs(int pno)
+        {
+            fz_document *this_doc = (fz_document *) $self;
+            int page_count = fz_count_pages(gctx, this_doc);
+            int n = pno;
+            while (n < 0) n += page_count;
+            pdf_document *pdf = pdf_specifics(gctx, this_doc);
+            PyObject *annots = NULL;
+            fz_try(gctx) {
+                if (n >= page_count) THROWMSG(gctx, "bad page number(s)");
+                ASSERT_PDF(pdf);
+                annots = JM_get_annot_xref_list(gctx, pdf_lookup_page_obj(gctx, pdf, n));
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return annots;
+        }
+
+
+        FITZEXCEPTION(page_cropbox, !result)
+        CLOSECHECK0(page_cropbox, """Get CropBox of page number (without loading page).""")
+        %pythonappend page_cropbox %{val = Rect(val)%}
+        PyObject *page_cropbox(int pno)
+        {
+            fz_document *this_doc = (fz_document *) $self;
+            int page_count = fz_count_pages(gctx, this_doc);
+            int n = pno;
+            while (n < 0) n += page_count;
             pdf_obj *pageref = NULL;
             fz_var(pageref);
             pdf_document *pdf = pdf_specifics(gctx, this_doc);
             fz_try(gctx) {
-                if (n >= pageCount) THROWMSG("bad page number(s)");
+                if (n >= page_count) THROWMSG(gctx, "bad page number(s)");
                 ASSERT_PDF(pdf);
                 pageref = pdf_lookup_page_obj(gctx, pdf, n);
             }
@@ -1765,9 +2221,10 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 return NULL;
             }
 
-            return Py_BuildValue("ii", pdf_to_num(gctx, pageref),
-                                       pdf_to_gen(gctx, pageref));
+            fz_rect cropbox = JM_cropbox(gctx, pageref);
+            return JM_py_from_rect(cropbox);
         }
+
 
         FITZEXCEPTION(_getPageInfo, !result)
         CLOSECHECK(_getPageInfo, """List fonts, images, XObjects used on a page.""")
@@ -1775,32 +2232,38 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         {
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_specifics(gctx, doc);
-            int pageCount = fz_count_pages(gctx, doc);
             pdf_obj *pageref, *rsrc;
-            PyObject *liste = NULL;  // returned object
-            int n = pno;  // pno < 0 is allowed
-            while (n < 0) n += pageCount;  // make it non-negative
+            PyObject *liste = NULL, *tracer = NULL;
             fz_var(liste);
+            fz_var(tracer);
             fz_try(gctx) {
-                if (n >= pageCount) THROWMSG("bad page number(s)");
+                int page_count = fz_count_pages(gctx, doc);
+                int n = pno;  // pno < 0 is allowed
+                while (n < 0) n += page_count;  // make it non-negative
+                if (n >= page_count) THROWMSG(gctx, "bad page number(s)");
                 ASSERT_PDF(pdf);
                 pageref = pdf_lookup_page_obj(gctx, pdf, n);
-                rsrc = pdf_dict_get_inheritable(gctx, pageref, PDF_NAME(Resources));
-                if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
+                rsrc = pdf_dict_get_inheritable(gctx,
+                           pageref, PDF_NAME(Resources));
                 liste = PyList_New(0);
-                JM_scan_resources(gctx, pdf, rsrc, liste, what, 0);
+                tracer = PyList_New(0);
+                if (rsrc) {
+                    JM_scan_resources(gctx, pdf, rsrc, liste, what, 0, tracer);
+                }
             }
-            fz_catch(gctx)
-            {
+            fz_always(gctx) {
+                Py_DECREF(tracer);
+            }
+            fz_catch(gctx) {
                 Py_XDECREF(liste);
                 return NULL;
             }
             return liste;
         }
 
-        FITZEXCEPTION(extractFont, !result)
-        CLOSECHECK(extractFont, """Get a font by xref.""")
-        PyObject *extractFont(int xref = 0, int info_only = 0)
+        FITZEXCEPTION(extract_font, !result)
+        CLOSECHECK(extract_font, """Get a font by xref.""")
+        PyObject *extract_font(int xref=0, int info_only=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
 
@@ -1813,10 +2276,8 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
             fz_buffer *buffer = NULL;
             pdf_obj *obj, *basefont, *bname;
-            PyObject *bytes = PyBytes_FromString("");
+            PyObject *bytes = NULL;
             char *ext = NULL;
-            char *fontname = NULL;
-            PyObject *nulltuple = Py_BuildValue("sssO", "", "", "", bytes);
             PyObject *tuple;
             Py_ssize_t len = 0;
             fz_try(gctx) {
@@ -1824,46 +2285,44 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 pdf_obj *type = pdf_dict_get(gctx, obj, PDF_NAME(Type));
                 pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME(Subtype));
                 if(pdf_name_eq(gctx, type, PDF_NAME(Font)) &&
-                   strncmp(pdf_to_name(gctx, subtype), "CIDFontType", 11) != 0)
-                {
+                   strncmp(pdf_to_name(gctx, subtype), "CIDFontType", 11) != 0) {
                     basefont = pdf_dict_get(gctx, obj, PDF_NAME(BaseFont));
-                    if (!basefont || pdf_is_null(gctx, basefont))
+                    if (!basefont || pdf_is_null(gctx, basefont)) {
                         bname = pdf_dict_get(gctx, obj, PDF_NAME(Name));
-                    else
+                    } else {
                         bname = basefont;
+                    }
                     ext = JM_get_fontextension(gctx, pdf, xref);
-                    if (strcmp(ext, "n/a") != 0 && !info_only)
-                    {
+                    if (strcmp(ext, "n/a") != 0 && !info_only) {
                         buffer = JM_get_fontbuffer(gctx, pdf, xref);
                         bytes = JM_BinFromBuffer(gctx, buffer);
                         fz_drop_buffer(gctx, buffer);
+                    } else {
+                        bytes = Py_BuildValue("y", "");
                     }
                     tuple = PyTuple_New(4);
                     PyTuple_SET_ITEM(tuple, 0, JM_EscapeStrFromStr(pdf_to_name(gctx, bname)));
                     PyTuple_SET_ITEM(tuple, 1, JM_UnicodeFromStr(ext));
                     PyTuple_SET_ITEM(tuple, 2, JM_UnicodeFromStr(pdf_to_name(gctx, subtype)));
                     PyTuple_SET_ITEM(tuple, 3, bytes);
-                }
-                else
-                {
-                    tuple = nulltuple;
+                } else {
+                    tuple = Py_BuildValue("sssy", "", "", "", "");
                 }
             }
             fz_always(gctx) {
+                pdf_drop_obj(gctx, obj);
                 JM_PyErr_Clear;
-                JM_Free(fontname);
             }
-            fz_catch(gctx)
-            {
-                tuple = Py_BuildValue("sssO", "invalid-name", "", "", bytes);
+            fz_catch(gctx) {
+                tuple = Py_BuildValue("sssy", "invalid-name", "", "", "");
             }
             return tuple;
         }
 
 
-        FITZEXCEPTION(extractImage, !result)
-        CLOSECHECK(extractImage, """Get image by xref.""")
-        PyObject *extractImage(int xref)
+        FITZEXCEPTION(extract_image, !result)
+        CLOSECHECK(extract_image, """Get image by xref. Returns a dictionary.""")
+        PyObject *extract_image(int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             pdf_obj *obj = NULL;
@@ -1872,8 +2331,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             PyObject *rc = NULL;
             const char *ext = NULL;
             const char *cs_name = NULL;
-            int img_type, xres, yres, colorspace;
+            int img_type = 0, xres, yres, colorspace;
             int smask = 0, width, height, bpc;
+            fz_compressed_buffer *cbuf = NULL;
             fz_var(img);
             fz_var(res);
             fz_var(obj);
@@ -1881,35 +2341,43 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (!INRANGE(xref, 1, pdf_xref_len(gctx, pdf)-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
 
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME(Subtype));
 
                 if (!pdf_name_eq(gctx, subtype, PDF_NAME(Image)))
-                    THROWMSG("xref not an image");
+                    THROWMSG(gctx, "not an image");
 
                 pdf_obj *o = pdf_dict_get(gctx, obj, PDF_NAME(SMask));
                 if (o) smask = pdf_to_num(gctx, o);
 
+                o = pdf_dict_get(gctx, obj, PDF_NAME(Mask));
+                if (o) smask = pdf_to_num(gctx, o);
+                if (pdf_is_jpx_image(gctx, obj)) {
+                    img_type = FZ_IMAGE_JPX;
+                    ext = "jpx";
+                }
+                if (JM_is_jbig2_image(gctx, obj)) {
+                    img_type = FZ_IMAGE_JBIG2;
+                    ext = "jb2";
+                }
                 res = pdf_load_raw_stream(gctx, obj);
-                unsigned char *c = NULL;
-                fz_buffer_storage(gctx, res, &c);
-                img_type = fz_recognize_image_format(gctx, c);
-
-                if (img_type != FZ_IMAGE_UNKNOWN)
-                {
-                    img = fz_new_image_from_buffer(gctx, res);
+                if (img_type == FZ_IMAGE_UNKNOWN) {
+                    unsigned char *c = NULL;
+                    fz_buffer_storage(gctx, res, &c);
+                    img_type = fz_recognize_image_format(gctx, c);
                     ext = JM_image_extension(img_type);
                 }
-                else
-                {
+                if (img_type == FZ_IMAGE_UNKNOWN) {
                     fz_drop_buffer(gctx, res);
                     res = NULL;
                     img = pdf_load_image(gctx, pdf, obj);
                     res = fz_new_buffer_from_image_as_png(gctx, img,
                                 fz_default_color_params);
                     ext = "png";
+                } else /*if (smask == 0)*/ {
+                    img = fz_new_image_from_buffer(gctx, res);
                 }
                 fz_image_resolution(img, &xres, &yres);
                 width = img->w;
@@ -1942,27 +2410,26 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             }
             fz_always(gctx) {
                 fz_drop_image(gctx, img);
-                fz_drop_buffer(gctx, res);
+                if (!cbuf) fz_drop_buffer(gctx, res);
                 pdf_drop_obj(gctx, obj);
             }
 
-            fz_catch(gctx)
-            {
+            fz_catch(gctx) {
                 Py_CLEAR(rc);
-                return_none;
+                Py_RETURN_NONE;
             }
             if (!rc)
-                return_none;
+                Py_RETURN_NONE;
             return rc;
         }
 
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Delete all bookmarks (table of contents)
-        // returns the list of deleted (now available) xref numbers
-        //---------------------------------------------------------------------
+        // returns list of deleted (now available) xref numbers
+        //------------------------------------------------------------------
         CLOSECHECK(_delToC, """Delete the TOC.""")
-        %pythonappend _delToC %{self.initData()%}
+        %pythonappend _delToC %{self.init_doc()%}
         PyObject *_delToC()
         {
             PyObject *xrefs = PyList_New(0);          // create Python list
@@ -1989,7 +2456,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
             for (i = 0; i < xref_count; i++)
             {
-                xref = (int) PyInt_AsLong(PyList_GetItem(xrefs, i));
+                JM_INT_ITEM(xrefs, i, &xref);
                 pdf_delete_object(gctx, pdf, xref);      // delete outline item
             }
             LIST_APPEND_DROP(xrefs, Py_BuildValue("i", olroot_xref));
@@ -1997,25 +2464,26 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             return xrefs;
         }
 
-        //---------------------------------------------------------------------
+
+        //------------------------------------------------------------------
         // Check: is xref a stream object?
-        //---------------------------------------------------------------------
-        CLOSECHECK0(isStream, """Check if xref is a stream object.""")
-        PyObject *isStream(int xref=0)
+        //------------------------------------------------------------------
+        CLOSECHECK0(is_stream, """Check if xref is a stream object.""")
+        PyObject *is_stream(int xref=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) Py_RETURN_FALSE;  // not a PDF
             return JM_BOOL(pdf_obj_num_is_stream(gctx, pdf, xref));
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Return or set NeedAppearances
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         %pythonprepend need_appearances
 %{"""Get/set the NeedAppearances value."""
-if self.isClosed:
+if self.is_closed:
     raise ValueError("document closed")
-if not self.isFormPDF:
+if not self.is_form_pdf:
     return None
 %}
         PyObject *need_appearances(PyObject *value=NULL)
@@ -2039,7 +2507,7 @@ if not self.isFormPDF:
                 }
             }
             fz_catch(gctx) {
-                return_none;
+                Py_RETURN_NONE;
             }
             if (value != Py_None) {
                 return value;
@@ -2047,14 +2515,14 @@ if not self.isFormPDF:
             if (oldval >= 0) {
                 return JM_BOOL(oldval);
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Return the /SigFlags value
-        //---------------------------------------------------------------------
-        CLOSECHECK0(getSigFlags, """Get the /SigFlags value.""")
-        int getSigFlags()
+        //------------------------------------------------------------------
+        CLOSECHECK0(get_sigflags, """Get the /SigFlags value.""")
+        int get_sigflags()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) return -1;  // not a PDF
@@ -2076,12 +2544,12 @@ if not self.isFormPDF:
             return sigflag;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Check: is this an AcroForm with at least one field?
-        //---------------------------------------------------------------------
-        CLOSECHECK0(isFormPDF, """Check if PDF Form document.""")
+        //------------------------------------------------------------------
+        CLOSECHECK0(is_form_pdf, """Either False or PDF field count.""")
         %pythoncode%{@property%}
-        PyObject *isFormPDF()
+        PyObject *is_form_pdf()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) Py_RETURN_FALSE;  // not a PDF
@@ -2107,17 +2575,18 @@ if not self.isFormPDF:
             }
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Return the list of field font resource names
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         CLOSECHECK0(FormFonts, """Get list of field font resource names.""")
         %pythoncode%{@property%}
         PyObject *FormFonts()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) return_none;           // not a PDF
+            if (!pdf) Py_RETURN_NONE;           // not a PDF
             pdf_obj *fonts = NULL;
             PyObject *liste = PyList_New(0);
+            fz_var(liste);
             fz_try(gctx) {
                 fonts = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root), PDF_NAME(AcroForm), PDF_NAME(DR), PDF_NAME(Font), NULL);
                 if (fonts && pdf_is_dict(gctx, fonts))       // fonts exist
@@ -2130,36 +2599,39 @@ if not self.isFormPDF:
                     }
                 }
             }
-            fz_catch(gctx) return_none;  // any problem yields None
+            fz_catch(gctx) {
+                Py_DECREF(liste);
+                Py_RETURN_NONE;  // any problem yields None
+            }
             return liste;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Add a field font
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         FITZEXCEPTION(_addFormFont, !result)
         CLOSECHECK(_addFormFont, """Add new form font.""")
         PyObject *_addFormFont(char *name, char *font)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) return_none;  // not a PDF
+            if (!pdf) Py_RETURN_NONE;  // not a PDF
             pdf_obj *fonts = NULL;
             fz_try(gctx) {
                 fonts = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root),
                              PDF_NAME(AcroForm), PDF_NAME(DR), PDF_NAME(Font), NULL);
                 if (!fonts || !pdf_is_dict(gctx, fonts))
-                    THROWMSG("PDF has no form fonts yet");
+                    THROWMSG(gctx, "PDF has no form fonts yet");
                 pdf_obj *k = pdf_new_name(gctx, (const char *) name);
                 pdf_obj *v = JM_pdf_obj_from_str(gctx, pdf, font);
                 pdf_dict_put(gctx, fonts, k, v);
             }
             fz_catch(gctx) NULL;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Get Xref Number of Outline Root, create it if missing
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         FITZEXCEPTION(_getOLRootNumber, !result)
         CLOSECHECK(_getOLRootNumber, """Get xref of Outline Root, create it if missing.""")
         PyObject *_getOLRootNumber()
@@ -2189,93 +2661,165 @@ if not self.isFormPDF:
             return Py_BuildValue("i", pdf_to_num(gctx, olroot));
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Get a new Xref number
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_getNewXref, !result)
-        CLOSECHECK(_getNewXref, """Make new xref.""")
-        PyObject *_getNewXref()
+        //------------------------------------------------------------------
+        FITZEXCEPTION(get_new_xref, !result)
+        CLOSECHECK(get_new_xref, """Make new xref.""")
+        PyObject *get_new_xref()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            int xref = 0;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
+                xref = pdf_create_object(gctx, pdf);
             }
             fz_catch(gctx) {
                 return NULL;
             }
             pdf->dirty = 1;
-            return Py_BuildValue("i", pdf_create_object(gctx, pdf));
+            return Py_BuildValue("i", xref);
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Get Length of Xref
-        //---------------------------------------------------------------------
-        CLOSECHECK0(_getXrefLength, """Get length of xref table.""")
-        PyObject *_getXrefLength()
+        //------------------------------------------------------------------
+        FITZEXCEPTION(xref_length, !result)
+        CLOSECHECK0(xref_length, """Get length of xref table.""")
+        PyObject *xref_length()
         {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             int xreflen = 0;
-            if (pdf) xreflen = pdf_xref_len(gctx, pdf);
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+                if (pdf) xreflen = pdf_xref_len(gctx, pdf);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
             return Py_BuildValue("i", xreflen);
         }
 
-        //---------------------------------------------------------------------
-        // Get XML Metadata xref
-        //---------------------------------------------------------------------
-        CLOSECHECK0(_getXmlMetadataXref, """Get xref of document XML metadata.""")
-        PyObject *_getXmlMetadataXref()
+        //------------------------------------------------------------------
+        // Get XML Metadata
+        //------------------------------------------------------------------
+        CLOSECHECK0(get_xml_metadata, """Get document XML metadata.""")
+        PyObject *get_xml_metadata()
         {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            pdf_obj *xml;
+            PyObject *rc = NULL;
+            fz_buffer *buff = NULL;
+            pdf_obj *xml = NULL;
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+                if (pdf) {
+                    xml = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root), PDF_NAME(Metadata), NULL);
+                }
+                if (xml) {
+                    buff = pdf_load_stream(gctx, xml);
+                    rc = JM_UnicodeFromBuffer(gctx, buff);
+                } else {
+                    rc = EMPTY_STRING;
+                }
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+                PyErr_Clear();
+            }
+            fz_catch(gctx) {
+                return EMPTY_STRING;
+            }
+            return rc;
+        }
+
+        //------------------------------------------------------------------
+        // Get XML Metadata xref
+        //------------------------------------------------------------------
+        FITZEXCEPTION(xref_xml_metadata, !result)
+        CLOSECHECK0(xref_xml_metadata, """Get xref of document XML metadata.""")
+        PyObject *xref_xml_metadata()
+        {
             int xref = 0;
             fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
                 ASSERT_PDF(pdf);
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
-                if (!root) THROWMSG("could not load root object");
-                xml = pdf_dict_gets(gctx, root, "Metadata");
+                if (!root) THROWMSG(gctx, "PDF has no root");
+                pdf_obj *xml = pdf_dict_get(gctx, root, PDF_NAME(Metadata));
                 if (xml) xref = pdf_to_num(gctx, xml);
             }
             fz_catch(gctx) {;}
             return Py_BuildValue("i", xref);
         }
 
-        //---------------------------------------------------------------------
-        // Delete XML-based Metadata
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_delXmlMetadata, !result)
-        CLOSECHECK(_delXmlMetadata, """Delete XML metadata.""")
-        PyObject *_delXmlMetadata()
+        //------------------------------------------------------------------
+        // Delete XML Metadata
+        //------------------------------------------------------------------
+        FITZEXCEPTION(del_xml_metadata, !result)
+        CLOSECHECK(del_xml_metadata, """Delete XML metadata.""")
+        PyObject *del_xml_metadata()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
-                if (root) pdf_dict_dels(gctx, root, "Metadata");
+                if (root) pdf_dict_del(gctx, root, PDF_NAME(Metadata));
             }
             fz_catch(gctx) {
                 return NULL;
             }
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
+        // Set XML-based Metadata
+        //------------------------------------------------------------------
+        FITZEXCEPTION(set_xml_metadata, !result)
+        CLOSECHECK(set_xml_metadata, """Store XML document level metadata.""")
+        PyObject *set_xml_metadata(char *metadata)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_buffer *res = NULL;
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+                if (!root) THROWMSG(gctx, "PDF has no root");
+                res = fz_new_buffer_from_copied_data(gctx, (const unsigned char *) metadata, strlen(metadata));
+                pdf_obj *xml = pdf_dict_get(gctx, root, PDF_NAME(Metadata));
+                if (xml) {
+                    JM_update_stream(gctx, pdf, xml, res, 0);
+                } else {
+                    xml = pdf_add_stream(gctx, pdf, res, NULL, 0);
+                    pdf_dict_put(gctx, xml, PDF_NAME(Type), PDF_NAME(Metadata));
+                    pdf_dict_put(gctx, xml, PDF_NAME(Subtype), PDF_NAME(XML));
+                    pdf_dict_put_drop(gctx, root, PDF_NAME(Metadata), xml);
+                }
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            pdf->dirty = 1;
+            Py_RETURN_NONE;
+        }
+
+        //------------------------------------------------------------------
         // Get Object String of xref
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_getXrefString, !result)
-        CLOSECHECK0(_getXrefString, """Get xref object source as a string.""")
-        PyObject *_getXrefString(int xref, int compressed=0, int ascii=0)
+        //------------------------------------------------------------------
+        FITZEXCEPTION(xref_object, !result)
+        CLOSECHECK0(xref_object, """Get xref object source as a string.""")
+        PyObject *xref_object(int xref, int compressed=0, int ascii=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             pdf_obj *obj = NULL;
             PyObject *text = NULL;
-            
             fz_buffer *res=NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
                 obj = pdf_load_object(gctx, pdf, xref);
                 res = JM_object_to_buffer(gctx, pdf_resolve_indirect(gctx, obj), compressed, ascii);
                 text = JM_EscapeStrFromBuffer(gctx, res);
@@ -2284,19 +2828,20 @@ if not self.isFormPDF:
                 pdf_drop_obj(gctx, obj);
                 fz_drop_buffer(gctx, res);
             }
-            fz_catch(gctx) return PyUnicode_FromString("");
+            fz_catch(gctx) return EMPTY_STRING;
             return text;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Get String of PDF trailer
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_getTrailerString, !result)
-        CLOSECHECK0(_getTrailerString, """Get PDF trailer as a string.""")
-        PyObject *_getTrailerString(int compressed=0, int ascii=0)
+        //------------------------------------------------------------------
+        FITZEXCEPTION(pdf_trailer, !result)
+        CLOSECHECK0(pdf_trailer, """Get PDF trailer as a string.""")
+        PyObject *
+        pdf_trailer(int compressed=0, int ascii=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) return_none;
+            if (!pdf) Py_RETURN_NONE;
             PyObject *text = NULL;
             fz_buffer *res=NULL;
             fz_try(gctx) {
@@ -2312,13 +2857,13 @@ if not self.isFormPDF:
             return text;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Get compressed stream of an object by xref
-        // return_none if not stream
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_getXrefStreamRaw, !result)
-        CLOSECHECK(_getXrefStreamRaw, """Get xref stream without decompression.""")
-        PyObject *_getXrefStreamRaw(int xref)
+        // Py_RETURN_NONE if not stream
+        //------------------------------------------------------------------
+        FITZEXCEPTION(xref_stream_raw, !result)
+        CLOSECHECK(xref_stream_raw, """Get xref stream without decompression.""")
+        PyObject *xref_stream_raw(int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             PyObject *r = Py_None;
@@ -2330,7 +2875,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (pdf_is_stream(gctx, obj))
                 {
@@ -2350,13 +2895,13 @@ if not self.isFormPDF:
             return r;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Get decompressed stream of an object by xref
-        // return_none if not stream
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_getXrefStream, !result)
-        CLOSECHECK(_getXrefStream, """Get decompressed xref stream.""")
-        PyObject *_getXrefStream(int xref)
+        // Py_RETURN_NONE if not stream
+        //------------------------------------------------------------------
+        FITZEXCEPTION(xref_stream, !result)
+        CLOSECHECK(xref_stream, """Get decompressed xref stream.""")
+        PyObject *xref_stream(int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             PyObject *r = Py_None;
@@ -2368,7 +2913,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (pdf_is_stream(gctx, obj))
                 {
@@ -2388,12 +2933,12 @@ if not self.isFormPDF:
             return r;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Update an Xref number with a new object given as a string
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_updateObject, !result)
-        CLOSECHECK(_updateObject, """Replace object definition source.""")
-        PyObject *_updateObject(int xref, char *text, struct Page *page = NULL)
+        //------------------------------------------------------------------
+        FITZEXCEPTION(update_object, !result)
+        CLOSECHECK(update_object, """Replace object definition source.""")
+        PyObject *update_object(int xref, char *text, struct Page *page = NULL)
         {
             pdf_obj *new_obj;
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
@@ -2401,7 +2946,7 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
                 // create new object with passed-in string
                 new_obj = JM_pdf_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
@@ -2413,15 +2958,15 @@ if not self.isFormPDF:
                 return NULL;
             }
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Update a stream identified by its xref
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_updateStream, !result)
-        CLOSECHECK(_updateStream, """Replace xref stream part.""")
-        PyObject *_updateStream(int xref = 0, PyObject *stream = NULL, int new = 0)
+        //------------------------------------------------------------------
+        FITZEXCEPTION(update_stream, !result)
+        CLOSECHECK(update_stream, """Replace xref stream part.""")
+        PyObject *update_stream(int xref = 0, PyObject *stream = NULL, int new=0)
         {
             pdf_obj *obj = NULL;
             fz_var(obj);
@@ -2432,15 +2977,14 @@ if not self.isFormPDF:
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
                 // get the object
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (!new && !pdf_is_stream(gctx, obj))
-                    THROWMSG("xref not a stream object");
+                    THROWMSG(gctx, "no stream object at xref");
                 res = JM_BufferFromBytes(gctx, stream);
-                if (!res) THROWMSG("bad type: 'stream'");
+                if (!res) THROWMSG(gctx, "bad type: 'stream'");
                 JM_update_stream(gctx, pdf, obj, res, 1);
-
             }
             fz_always(gctx) {
                 fz_drop_buffer(gctx, res);
@@ -2449,12 +2993,12 @@ if not self.isFormPDF:
             fz_catch(gctx)
                 return NULL;
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // Add or update metadata based on provided raw string
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         FITZEXCEPTION(_setMetadata, !result)
         CLOSECHECK(_setMetadata, """Set old style metadata.""")
         PyObject *_setMetadata(char *text)
@@ -2475,27 +3019,27 @@ if not self.isFormPDF:
             info = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Info));
             if (info)
             {
-                info_num = pdf_to_num(gctx, info);    // get xref no of old info
+                info_num = pdf_to_num(gctx, info);  // get xref no of old info
                 pdf_update_object(gctx, pdf, info_num, new_info);  // insert new
                 pdf_drop_obj(gctx, new_info);
-                return_none;
+                Py_RETURN_NONE;
             }
             // create new indirect object from /Info object
             new_info_ind = pdf_add_object(gctx, pdf, new_info);
             // put this in the trailer dictionary
             pdf_dict_put_drop(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Info), new_info_ind);
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // create / refresh the page map
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         FITZEXCEPTION(_make_page_map, !result)
         CLOSECHECK0(_make_page_map, """Make an array page number -> page object.""")
         PyObject *_make_page_map()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) return_none;
+            if (!pdf) Py_RETURN_NONE;
             fz_try(gctx) {
                 pdf_drop_page_tree(gctx, pdf);
                 pdf_load_page_tree(gctx, pdf);
@@ -2507,23 +3051,23 @@ if not self.isFormPDF:
         }
 
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // full (deep) copy of one page
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(fullcopyPage, !result)
-        CLOSECHECK0(fullcopyPage, """Make full page duplication.""")
-        %pythonappend fullcopyPage %{self._reset_page_refs()%}
-        PyObject *fullcopyPage(int pno, int to = -1)
+        //------------------------------------------------------------------
+        FITZEXCEPTION(fullcopy_page, !result)
+        CLOSECHECK0(fullcopy_page, """Make a full page duplicate.""")
+        %pythonappend fullcopy_page %{self._reset_page_refs()%}
+        PyObject *fullcopy_page(int pno, int to = -1)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            int pageCount = pdf_count_pages(gctx, pdf);
+            int page_count = pdf_count_pages(gctx, pdf);
             fz_buffer *res = NULL, *nres=NULL;
             pdf_obj *page2 = NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
-                if (!INRANGE(pno, 0, pageCount - 1) ||
-                    !INRANGE(to, -1, pageCount - 1))
-                    THROWMSG("bad page number(s)");
+                if (!INRANGE(pno, 0, page_count - 1) ||
+                    !INRANGE(to, -1, page_count - 1))
+                    THROWMSG(gctx, "bad page number(s)");
 
                 pdf_obj *page1 = pdf_resolve_indirect(gctx,
                                  pdf_lookup_page_obj(gctx, pdf, pno));
@@ -2581,13 +3125,13 @@ if not self.isFormPDF:
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         // move or copy one page
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         FITZEXCEPTION(_move_copy_page, !result)
         CLOSECHECK0(_move_copy_page, """Move or copy a PDF page reference.""")
         %pythonappend _move_copy_page %{self._reset_page_refs()%}
@@ -2643,10 +3187,8 @@ if not self.isFormPDF:
                         }
                     }
                 }
-                else // same /Kids array --------------------------------------
-                {
-                    if (copy) // source page is copied
-                    {
+                else {  // same /Kids array
+                    if (copy) {  // source page is copied
                         parent = parent2;
                         while (parent) // increase /Count object in parents
                         {
@@ -2654,46 +3196,631 @@ if not self.isFormPDF:
                             pdf_dict_put_int(gctx, parent, PDF_NAME(Count), count + 1);
                             parent = pdf_dict_get(gctx, parent, PDF_NAME(Parent));
                         }
-                    }
-                    else
-                    {
+                    } else {
                         if (i1 < pos)
                             pdf_array_delete(gctx, kids1, i1);
                         else
                             pdf_array_delete(gctx, kids1, i1 + 1);
                     }
                 }
-                if (pdf->rev_page_map)  // page map no longer valid: drop it
-                {
+                if (pdf->rev_page_map) {  // page map no longer valid: drop it
                     pdf_drop_page_tree(gctx, pdf);
                 }
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        FITZEXCEPTION(_remove_toc_item, !result)
+        PyObject *_remove_toc_item(int xref)
+        {
+            // "remove" bookmark by letting it point to nowhere
+            pdf_obj *item = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                item = pdf_new_indirect(gctx, pdf, xref, 0);
+                pdf_dict_del(gctx, item, PDF_NAME(Dest));
+                pdf_dict_del(gctx, item, PDF_NAME(A));
+                pdf_dict_put_text_string(gctx, item, PDF_NAME(Title), "<>");
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, item);
+            }
+            fz_catch(gctx){
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION(_update_toc_item, !result)
+        PyObject *_update_toc_item(int xref, char *action=NULL, char *title=NULL, int flags=0, PyObject *collapse=NULL, PyObject *color=NULL)
+        {
+            // "update" bookmark by letting it point to nowhere
+            pdf_obj *item = NULL;
+            pdf_obj *obj = NULL;
+            Py_ssize_t i;
+            float f;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                item = pdf_new_indirect(gctx, pdf, xref, 0);
+                if (title) {
+                    pdf_dict_put_text_string(gctx, item, PDF_NAME(Title), title);
+                }
+                if (action) {
+                    pdf_dict_del(gctx, item, PDF_NAME(Dest));
+                    obj = JM_pdf_obj_from_str(gctx, pdf, action);
+                    pdf_dict_put_drop(gctx, item, PDF_NAME(A), obj);
+                }
+                pdf_dict_put_int(gctx, item, PDF_NAME(F), flags);
+                if (EXISTS(color)) {
+                    pdf_obj *c = pdf_new_array(gctx, pdf, 3);
+                    for (i = 0; i < 3; i++) {
+                        JM_FLOAT_ITEM(color, i, &f);
+                        pdf_array_push_real(gctx, c, f);
+                    }
+                    pdf_dict_put_drop(gctx, item, PDF_NAME(C), c);
+                } else if (color != Py_None) {
+                    pdf_dict_del(gctx, item, PDF_NAME(C));
+                }
+                if (collapse != Py_None) {
+                    if (pdf_dict_get(gctx, item, PDF_NAME(Count))) {
+                        i = pdf_dict_get_int(gctx, item, PDF_NAME(Count));
+                        if ((i < 0 && collapse == Py_False) || (i > 0 && collapse == Py_True)) {
+                            i = i * (-1);
+                            pdf_dict_put_int(gctx, item, PDF_NAME(Count), i);
+                        }
+                    }
+                }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, item);
+            }
+            fz_catch(gctx){
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //------------------------------------------------------------------
+        // PDF page label getting / setting
+        //------------------------------------------------------------------
+        FITZEXCEPTION(_get_page_labels, !result)
+        PyObject *
+        _get_page_labels()
+        {
+            pdf_obj *obj, *nums, *kids;
+            PyObject *rc = NULL;
+            fz_buffer *res = NULL;
+            int i, n;
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                rc = PyList_New(0);
+                pdf_obj *pagelabels = pdf_new_name(gctx, "PageLabels");
+                obj = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                   PDF_NAME(Root), pagelabels, NULL);
+                if (!obj) {
+                    goto finished;
+                }
+                // simple case: direct /Nums object
+                nums = pdf_resolve_indirect(gctx,
+                       pdf_dict_get(gctx, obj, PDF_NAME(Nums)));
+                if (nums) {
+                    JM_get_page_labels(gctx, rc, nums);
+                    goto finished;
+                }
+                // case: /Kids/Nums
+                nums = pdf_resolve_indirect(gctx,
+                           pdf_dict_getl(gctx, obj, PDF_NAME(Kids), PDF_NAME(Nums), NULL)
+                );
+                if (nums) {
+                    JM_get_page_labels(gctx, rc, nums);
+                    goto finished;
+                }
+                // case: /Kids is an array of multiple /Nums
+                kids = pdf_resolve_indirect(gctx,
+                       pdf_dict_get(gctx, obj, PDF_NAME(Kids)));
+                if (!kids || !pdf_is_array(gctx, kids)) {
+                    goto finished;
+                }
+
+                n = pdf_array_len(gctx, kids);
+                for (i = 0; i < n; i++) {
+                    nums = pdf_resolve_indirect(gctx,
+                           pdf_dict_get(gctx,
+                           pdf_array_get(gctx, kids, i),
+                           PDF_NAME(Nums)));
+                    JM_get_page_labels(gctx, rc, nums);
+                }
+                finished:;
+            }
+            fz_always(gctx) {
+                PyErr_Clear();
+            }
+            fz_catch(gctx){
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(_set_page_labels, !result)
+        %pythonappend _set_page_labels %{
+        xref = self.pdf_catalog()
+        text = self.xref_object(xref, compressed=True)
+        text = text.replace("/Nums[]", "/Nums[%s]" % labels)
+        self.update_object(xref, text)%}
+        PyObject *
+        _set_page_labels(char *labels)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(pdf);
+                pdf_obj *pagelabels = pdf_new_name(gctx, "PageLabels");
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+                pdf_dict_del(gctx, root, pagelabels);
+                pdf_dict_putl_drop(gctx, root, pdf_new_array(gctx, pdf, 0), pagelabels, PDF_NAME(Nums), NULL);
+            }
+            fz_always(gctx) {
+                PyErr_Clear();
+            }
+            fz_catch(gctx){
+                return NULL;
+            }
+            pdf->dirty = 1;
+            Py_RETURN_NONE;
+        }
+
+
+        //------------------------------------------------------------------
+        // PDF Optional Content functions
+        //------------------------------------------------------------------
+        FITZEXCEPTION(get_layers, !result)
+        CLOSECHECK0(get_layers, """Show optional OC layers.""")
+        PyObject *
+        get_layers()
+        {
+            PyObject *rc = NULL;
+            pdf_layer_config info = {NULL, NULL};
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                int i, n = pdf_count_layer_configs(gctx, pdf);
+                if (n == 1) {
+                    pdf_obj *obj = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                   PDF_NAME(Root), PDF_NAME(OCProperties), PDF_NAME(Configs), NULL);
+                    if (!pdf_is_array(gctx, obj)) n = 0;
+                }
+                rc = PyTuple_New(n);
+                for (i = 0; i < n; i++) {
+                    pdf_layer_config_info(gctx, pdf, i, &info);
+                    PyObject *item = Py_BuildValue("{s:i,s:s,s:s}",
+                        "number", i, "name", info.name, "creator", info.creator);
+                    PyTuple_SET_ITEM(rc, i, item);
+                    info.name = NULL;
+                    info.creator = NULL;
+                }
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(switch_layer, !result)
+        CLOSECHECK0(switch_layer, """Activate an OC layer.""")
+        PyObject *
+        switch_layer(int config, int as_default=0)
+        {
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                pdf_obj *cfgs = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                   PDF_NAME(Root), PDF_NAME(OCProperties), PDF_NAME(Configs), NULL);
+                if (!pdf_is_array(gctx, cfgs) || !pdf_array_len(gctx, cfgs)) {
+                    if (config < 1) goto finished;
+                    THROWMSG(gctx, "bad layer number");
+                }
+                if (config < 0) goto finished;
+                pdf_select_layer_config(gctx, pdf, config);
+                if (as_default) {
+                    pdf_set_layer_config_as_default(gctx, pdf);
+                    pdf_read_ocg(gctx, pdf);
+                }
+                finished:;
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        FITZEXCEPTION(get_layer, !result)
+        CLOSECHECK0(get_layer, """Content of ON, OFF, RBGroups of an OC layer.""")
+        PyObject *
+        get_layer(int config=-1)
+        {
+            PyObject *rc;
+            pdf_obj *obj = NULL;
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                pdf_obj *ocp = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                   PDF_NAME(Root), PDF_NAME(OCProperties), NULL);
+                if (!ocp) {
+                    rc = Py_BuildValue("s", NULL);
+                    goto finished;
+                }
+                if (config == -1) {
+                    obj = pdf_dict_get(gctx, ocp, PDF_NAME(D));
+                } else {
+                    obj = pdf_array_get(gctx, pdf_dict_get(gctx, ocp, PDF_NAME(Configs)), config);
+                }
+                if (!obj) THROWMSG(gctx, "bad config number");
+                rc = JM_get_ocg_arrays(gctx, obj);
+                finished:;
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                PyErr_Clear();
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(set_layer, !result)
+        %pythonprepend set_layer
+%{"""Set the PDF keys /ON, /OFF, /RBGroups of an OC layer."""
+if self.is_closed:
+    raise ValueError("document closed")
+ocgs = set(self.get_ocgs().keys())
+if ocgs == set():
+    raise ValueError("document has no optional content")
+
+if on:
+    if type(on) not in (list, tuple):
+        raise ValueError("bad type: 'on'")
+    s = set(on).difference(ocgs)
+    if s != set():
+        raise ValueError("bad OCGs in 'on': %s" % s)
+
+if off:
+    if type(off) not in (list, tuple):
+        raise ValueError("bad type: 'off'")
+    s = set(off).difference(ocgs)
+    if s != set():
+        raise ValueError("bad OCGs in 'off': %s" % s)
+
+if rbgroups:
+    if type(rbgroups) not in (list, tuple):
+        raise ValueError("bad type: 'rbgroups'")
+    for x in rbgroups:
+        if not type(x) in (list, tuple):
+            raise ValueError("bad RBGroup '%s'" % x)
+        s = set(x).difference(ocgs)
+        if f != set():
+            raise ValueError("bad OCGs in RBGroup: %s" % s)
+
+if basestate:
+    basestate = str(basestate).upper()
+    if basestate == "UNCHANGED":
+        basestate = "Unchanged"
+    if basestate not in ("ON", "OFF", "Unchanged"):
+        raise ValueError("bad 'basestate'")
+%}
+        PyObject *
+        set_layer(int config, const char *basestate=NULL, PyObject *on=NULL,
+                    PyObject *off=NULL, PyObject *rbgroups=NULL)
+        {
+            pdf_obj *obj = NULL;
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                pdf_obj *ocp = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                   PDF_NAME(Root), PDF_NAME(OCProperties), NULL);
+                if (!ocp) {
+                    goto finished;
+                }
+                if (config == -1) {
+                    obj = pdf_dict_get(gctx, ocp, PDF_NAME(D));
+                } else {
+                    obj = pdf_array_get(gctx, pdf_dict_get(gctx, ocp, PDF_NAME(Configs)), config);
+                }
+                if (!obj) THROWMSG(gctx, "bad config number");
+                JM_set_ocg_arrays(gctx, obj, basestate, on, off, rbgroups);
+                pdf_read_ocg(gctx, pdf);
+                finished:;
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        FITZEXCEPTION(add_layer, !result)
+        CLOSECHECK0(add_layer, """Add a new OC layer.""")
+        PyObject *add_layer(char *name, char *creator=NULL, PyObject *on=NULL)
+        {
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                JM_add_layer_config(gctx, pdf, name, creator, on);
+                pdf_read_ocg(gctx, pdf);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        FITZEXCEPTION(layer_ui_configs, !result)
+        CLOSECHECK0(layer_ui_configs, """Show OC visibility status modifyable by user.""")
+        PyObject *layer_ui_configs()
+        {
+            typedef struct
+            {
+                const char *text;
+                int depth;
+                pdf_layer_config_ui_type type;
+                int selected;
+                int locked;
+            } pdf_layer_config_ui;
+            PyObject *rc = NULL;
+
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                pdf_layer_config_ui info;
+                int i, n = pdf_count_layer_config_ui(gctx, pdf);
+                rc = PyTuple_New(n);
+                char *type = NULL;
+                for (i = 0; i < n; i++) {
+                    pdf_layer_config_ui_info(gctx, pdf, i, (void *) &info);
+                    switch (info.type)
+                    {
+                        case (1): type = "checkbox"; break;
+                        case (2): type = "radiobox"; break;
+                        default: type = "label"; break;
+                    }
+                    PyObject *item = Py_BuildValue("{s:i,s:s,s:i,s:s,s:O,s:O}",
+                        "number", i,
+                        "text", info.text,
+                        "depth", info.depth,
+                        "type", type,
+                        "on", JM_BOOL(info.selected),
+                        "locked", JM_BOOL(info.locked));
+                    PyTuple_SET_ITEM(rc, i, item);
+                }
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(set_layer_ui_config, !result)
+        CLOSECHECK0(set_layer_ui_config, """Set / unset OC intent configuration.""")
+        PyObject *set_layer_ui_config(int number, int action=0)
+        {
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                switch (action)
+                {
+                    case (1):
+                        pdf_toggle_layer_config_ui(gctx, pdf, number);
+                        break;
+                    case (2):
+                        pdf_deselect_layer_config_ui(gctx, pdf, number);
+                        break;
+                    default:
+                        pdf_select_layer_config_ui(gctx, pdf, number);
+                        break;
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        FITZEXCEPTION(get_ocgs, !result)
+        CLOSECHECK0(get_ocgs, """Show existing optional content groups.""")
+        PyObject *
+        get_ocgs()
+        {
+            PyObject *rc = NULL;
+            pdf_obj *ci = pdf_new_name(gctx, "CreatorInfo");
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+                pdf_obj *ocgs = pdf_dict_getl(gctx,
+                                pdf_dict_get(gctx,
+                                pdf_trailer(gctx, pdf), PDF_NAME(Root)),
+                                PDF_NAME(OCProperties), PDF_NAME(OCGs), NULL);
+                rc = PyDict_New();
+                if (!pdf_is_array(gctx, ocgs)) goto fertig;
+                int i, n = pdf_array_len(gctx, ocgs);
+                for (i = 0; i < n; i++) {
+                    pdf_obj *ocg = pdf_array_get(gctx, ocgs, i);
+                    int xref = pdf_to_num(gctx, ocg);
+                    const char *name = pdf_to_text_string(gctx, pdf_dict_get(gctx, ocg, PDF_NAME(Name)));
+                    pdf_obj *obj = pdf_dict_getl(gctx, ocg, PDF_NAME(Usage), ci, PDF_NAME(Subtype), NULL);
+                    const char *usage = NULL;
+                    if (obj) usage = pdf_to_name(gctx, obj);
+                    PyObject *intents = PyList_New(0);
+                    pdf_obj *intent = pdf_dict_get(gctx, ocg, PDF_NAME(Intent));
+                    if (intent) {
+                        if (pdf_is_name(gctx, intent)) {
+                            LIST_APPEND_DROP(intents, Py_BuildValue("s", pdf_to_name(gctx, intent)));
+                        } else if (pdf_is_array(gctx, intent)) {
+                            int j, m = pdf_array_len(gctx, intent);
+                            for (j = 0; j < m; j++) {
+                                pdf_obj *o = pdf_array_get(gctx, intent, j);
+                                if (pdf_is_name(gctx, o))
+                                    LIST_APPEND_DROP(intents, Py_BuildValue("s", pdf_to_name(gctx, o)));
+                            }
+                        }
+                    }
+                    pdf_ocg_descriptor *desc = pdf->ocg;
+                    int hidden = pdf_is_hidden_ocg(gctx, desc, NULL, usage, ocg);
+                    PyObject *item = Py_BuildValue("{s:s,s:O,s:O,s:s}",
+                            "name", name,
+                            "intent", intents,
+                            "on", JM_BOOL(!hidden),
+                            "usage", usage);
+                    Py_DECREF(intents);
+                    PyObject *temp = Py_BuildValue("i", xref);
+                    DICT_SETITEM_DROP(rc, temp, item);
+                    Py_DECREF(temp);
+                }
+                fertig:;
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, ci);
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(add_ocg, !result)
+        CLOSECHECK0(add_ocg, """Add new optional content group.""")
+        PyObject *
+        add_ocg(char *name, int config=-1, int on=1, PyObject *intent=NULL, const char *usage=NULL)
+        {
+            int xref = 0;
+            pdf_obj *obj = NULL, *cfg = NULL;
+            pdf_obj *indocg = NULL;
+            fz_try(gctx) {
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
+                ASSERT_PDF(pdf);
+
+                // ------------------------------
+                // make the OCG
+                // ------------------------------
+                pdf_obj *ocg = pdf_add_new_dict(gctx, pdf, 3);
+                pdf_dict_put(gctx, ocg, PDF_NAME(Type), PDF_NAME(OCG));
+                pdf_dict_put_text_string(gctx, ocg, PDF_NAME(Name), name);
+                pdf_obj *intents = pdf_dict_put_array(gctx, ocg, PDF_NAME(Intent), 2);
+                if (!EXISTS(intent)) {
+                    pdf_array_push(gctx, intents, PDF_NAME(View));
+                } else if (!PyUnicode_Check(intent)) {
+                    int i, n = PySequence_Size(intent);
+                    for (i = 0; i < n; i++) {
+                        PyObject *item = PySequence_ITEM(intent, i);
+                        char *c = JM_StrAsChar(item);
+                        if (c) {
+                            pdf_array_push(gctx, intents, pdf_new_name(gctx, c));
+                        }
+                        Py_DECREF(item);
+                    }
+                } else {
+                    char *c = JM_StrAsChar(intent);
+                    if (c) {
+                        pdf_array_push(gctx, intents, pdf_new_name(gctx, c));
+                    }
+                }
+                pdf_obj *use_for = pdf_dict_put_dict(gctx, ocg, PDF_NAME(Usage), 3);
+                pdf_obj *ci_name = pdf_new_name(gctx, "CreatorInfo");
+                pdf_obj *cre_info = pdf_dict_put_dict(gctx, use_for, ci_name, 2);
+                pdf_dict_put_text_string(gctx, cre_info, PDF_NAME(Creator), "PyMuPDF");
+                if (usage) {
+                    pdf_dict_put_name(gctx, cre_info, PDF_NAME(Subtype), usage);
+                } else {
+                    pdf_dict_put_name(gctx, cre_info, PDF_NAME(Subtype), "Artwork");
+                }
+                indocg = pdf_add_object(gctx, pdf, ocg);
+
+                // ------------------------------
+                // Insert OCG in the right config
+                // ------------------------------
+                pdf_obj *ocp = JM_ensure_ocproperties(gctx, pdf);
+                obj = pdf_dict_get(gctx, ocp, PDF_NAME(OCGs));
+                pdf_array_push(gctx, obj, indocg);
+
+                if (config > -1) {
+                    obj = pdf_dict_get(gctx, ocp, PDF_NAME(Configs));
+                    if (!pdf_is_array(gctx, obj)) {
+                        THROWMSG(gctx, "bad config number");
+                    }
+                    cfg = pdf_array_get(gctx, obj, config);
+                    if (!cfg) {
+                        THROWMSG(gctx, "bad config number");
+                    }
+                } else {
+                    cfg = pdf_dict_get(gctx, ocp, PDF_NAME(D));
+                }
+
+                obj = pdf_dict_get(gctx, cfg, PDF_NAME(Order));
+                if (!obj) {
+                    obj = pdf_dict_put_array(gctx, cfg, PDF_NAME(Order), 1);
+                }
+                pdf_array_push(gctx, obj, indocg);
+                if (on) {
+                    obj = pdf_dict_get(gctx, cfg, PDF_NAME(ON));
+                    if (!obj) {
+                        obj = pdf_dict_put_array(gctx, cfg, PDF_NAME(ON), 1);
+                    }
+                } else {
+                    obj = pdf_dict_get(gctx, cfg, PDF_NAME(OFF));
+                    if (!obj) {
+                        obj = pdf_dict_put_array(gctx, cfg, PDF_NAME(OFF), 1);
+                    }
+                }
+                pdf_array_push(gctx, obj, indocg);
+
+                // let MuPDF take note: re-read OCProperties
+                pdf_read_ocg(gctx, pdf);
+
+                xref = pdf_to_num(gctx, indocg);
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, indocg);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", xref);
+        }
+
+
+        //------------------------------------------------------------------
         // Initialize document: set outline and metadata properties
-        //---------------------------------------------------------------------
+        //------------------------------------------------------------------
         %pythoncode %{
-            def initData(self):
-                if self.isEncrypted:
-                    raise ValueError("cannot initData - document still encrypted")
+            def init_doc(self):
+                if self.is_encrypted:
+                    raise ValueError("cannot initialize - document still encrypted")
                 self._outline = self._loadOutline()
-                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format', 'title':'info:Title', 'author':'info:Author','subject':'info:Subject', 'keywords':'info:Keywords','creator':'info:Creator', 'producer':'info:Producer', 'creationDate':'info:CreationDate', 'modDate':'info:ModDate'}.items()])
+                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format', 'title':'info:Title', 'author':'info:Author','subject':'info:Subject', 'keywords':'info:Keywords','creator':'info:Creator', 'producer':'info:Producer', 'creationDate':'info:CreationDate', 'modDate':'info:ModDate', 'trapped':'info:Trapped'}.items()])
                 self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
             outline = property(lambda self: self._outline)
-            _getPageXref = _getPageObjNumber
 
-            def getPageFontList(self, pno, full=False):
+
+            def get_page_fonts(self, pno: int, full: bool =False) -> list:
                 """Retrieve a list of fonts used on a page.
                 """
-                if self.isClosed or self.isEncrypted:
+                if self.is_closed or self.is_encrypted:
                     raise ValueError("document closed or encrypted")
-                if not self.isPDF:
+                if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 1)
                 if full is False:
@@ -2701,12 +3828,12 @@ if not self.isFormPDF:
                 return val
 
 
-            def getPageImageList(self, pno, full=False):
+            def get_page_images(self, pno: int, full: bool =False) -> list:
                 """Retrieve a list of images used on a page.
                 """
-                if self.isClosed or self.isEncrypted:
+                if self.is_closed or self.is_encrypted:
                     raise ValueError("document closed or encrypted")
-                if not self.isPDF:
+                if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 2)
                 if full is False:
@@ -2714,117 +3841,120 @@ if not self.isFormPDF:
                 return val
 
 
-            def getPageXObjectList(self, pno):
+            def get_page_xobjects(self, pno: int) -> list:
                 """Retrieve a list of XObjects used on a page.
                 """
-                if self.isClosed or self.isEncrypted:
+                if self.is_closed or self.is_encrypted:
                     raise ValueError("document closed or encrypted")
-                if not self.isPDF:
+                if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 3)
                 return val
 
 
-            def copyPage(self, pno, to=-1):
+            def copy_page(self, pno: int, to: int =-1):
                 """Copy a page within a PDF document.
 
+                This will only create another reference of the same page object.
                 Args:
                     pno: source page number
                     to: put before this page, '-1' means after last page.
                 """
-                if self.isClosed:
+                if self.is_closed:
                     raise ValueError("document closed")
 
-                pageCount = len(self)
+                page_count = len(self)
                 if (
-                    pno not in range(pageCount) or
-                    to not in range(-1, pageCount)
+                    pno not in range(page_count) or
+                    to not in range(-1, page_count)
                    ):
                     raise ValueError("bad page number(s)")
                 before = 1
                 copy = 1
                 if to == -1:
-                    to = pageCount - 1
+                    to = page_count - 1
                     before = 0
 
                 return self._move_copy_page(pno, to, before, copy)
 
-            def movePage(self, pno, to = -1):
+            def move_page(self, pno: int, to: int =-1):
                 """Move a page within a PDF document.
 
                 Args:
                     pno: source page number.
                     to: put before this page, '-1' means after last page.
                 """
-                if self.isClosed:
+                if self.is_closed:
                     raise ValueError("document closed")
 
-                pageCount = len(self)
+                page_count = len(self)
                 if (
-                    pno not in range(pageCount) or
-                    to not in range(-1, pageCount)
+                    pno not in range(page_count) or
+                    to not in range(-1, page_count)
                    ):
                     raise ValueError("bad page number(s)")
                 before = 1
                 copy = 0
                 if to == -1:
-                    to = pageCount - 1
+                    to = page_count - 1
                     before = 0
 
                 return self._move_copy_page(pno, to, before, copy)
 
-            def deletePage(self, pno = -1):
+            def delete_page(self, pno: int =-1):
                 """ Delete one page from a PDF.
                 """
-                if not self.isPDF:
+                if not self.is_pdf:
                     raise ValueError("not a PDF")
-                if self.isClosed:
+                if self.is_closed:
                     raise ValueError("document closed")
 
-                pageCount = self.pageCount
+                page_count = self.page_count
                 while pno < 0:
-                    pno += pageCount
+                    pno += page_count
 
-                if not pno in range(pageCount):
+                if not pno in range(page_count):
                     raise ValueError("bad page number(s)")
 
-                old_toc = self.getToC(False)
-                new_toc = _toc_remove_page(old_toc, pno+1, pno+1)
+                # remove TOC bookmarks pointing to deleted page
+                old_toc = self.get_toc()
+                for i, item in enumerate(old_toc):
+                    if item[2] == pno + 1:
+                        self.del_toc_item(i)
+
                 self._remove_links_to(pno, pno)
-
-                self._deletePage(pno)
-
-                self.setToC(new_toc)
+                self._delete_page(pno)
                 self._reset_page_refs()
 
 
-
-            def deletePageRange(self, from_page = -1, to_page = -1):
+            def delete_pages(self, from_page: int =-1, to_page: int =-1):
                 """Delete pages from a PDF.
                 """
-                if not self.isPDF:
+                if not self.is_pdf:
                     raise ValueError("not a PDF")
-                if self.isClosed:
+                if self.is_closed:
                     raise ValueError("document closed")
 
-                pageCount = self.pageCount  # page count of document
+                page_count = self.page_count  # page count of document
                 f = from_page  # first page to delete
                 t = to_page  # last page to delete
                 while f < 0:
-                    f += pageCount
+                    f += page_count
                 while t < 0:
-                    t += pageCount
-                if not f <= t < pageCount:
+                    t += page_count
+                if not f <= t < page_count:
                     raise ValueError("bad page number(s)")
 
-                old_toc = self.getToC(False)
-                new_toc = _toc_remove_page(old_toc, f+1, t+1)
+                old_toc = self.get_toc()
+                for i, item in enumerate(old_toc):
+                    if f + 1 <= item[2] <= t + 1:
+                        self.del_toc_item(i)
+
                 self._remove_links_to(f, t)
 
                 for i in range(t, f - 1, -1):  # delete pages, last to first
-                    self._deletePage(i)
+                    self._delete_page(i)
 
-                self.setToC(new_toc)
                 self._reset_page_refs()
 
 
@@ -2833,62 +3963,7 @@ if not self.isFormPDF:
                 return self.save(self.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)
 
 
-            def xrefLength(self):
-                """Return the length of the xref table.
-                """
-                return self._getXrefLength()
-
-
-            def get_pdf_object(self, xref, compressed=False, ascii=False):
-                """Return the object definition of an xref.
-                """
-                return self._getXrefString(xref, compressed, ascii)
-
-
-            def updateObject(self, xref, text, page=None):
-                """Repleace the object at xref with text.
-
-                Optionally reload a page.
-                """
-                return self._updateObject(xref, text, page=page)
-
-
-            def xrefStream(self, xref):
-                """Return the decompressed stream content of an xref.
-                """
-                return self._getXrefStream(xref)
-
-
-            def xrefStreamRaw(self, xref):
-                """ Return the raw stream content of an xref.
-                """
-                return self._getXrefStreamRaw(xref)
-
-
-            def updateStream(self, xref, stream, new=False):
-                """Repleace the stream at xref with stream (bytes).
-                """
-                return self._updateStream(xref, stream, new=new)
-
-
-            def PDFTrailer(self, compressed=False, ascii=False):
-                """Return the PDF trailer string.
-                """
-                return self._getTrailerString(compressed, ascii)
-
-
-            def PDFCatalog(self):
-                """Return the xref of the PDF catalog object.
-                """
-                return self._getPDFroot()
-
-
-            def metadataXML(self):
-                """Get xref of document XML metadata."""
-                return self._getXmlMetadataXref()
-
-
-            def reload_page(self, page):
+            def reload_page(self, page: "struct Page *") -> "struct Page *":
                 """Make a fresh copy of a page."""
                 old_annots = {}  # copy annot references to here
                 pno = page.number  # save the page number
@@ -2896,7 +3971,7 @@ if not self.isFormPDF:
                     old_annots[k] = v
                 page._erase()  # remove the page
                 page = None
-                page = self.loadPage(pno)  # reload the page
+                page = self.load_page(pno)  # reload the page
 
                 # copy annot refs over to the new dictionary
                 page_proxy = weakref.proxy(page)
@@ -2907,11 +3982,8 @@ if not self.isFormPDF:
                 return page
 
 
-            xrefObject = get_pdf_object
-
-
-            def __repr__(self):
-                m = "closed " if self.isClosed else ""
+            def __repr__(self) -> str:
+                m = "closed " if self.is_closed else ""
                 if self.stream is None:
                     if self.name == "":
                         return m + "Document(<new PDF, doc# %i>)" % self._graft_id
@@ -2919,9 +3991,9 @@ if not self.isFormPDF:
                 return m + "Document('%s', <memory, doc# %i>)" % (self.name, self._graft_id)
 
 
-            def __contains__(self, loc):
+            def __contains__(self, loc) -> bool:
                 if type(loc) is int:
-                    if loc < self.pageCount:
+                    if loc < self.page_count:
                         return True
                     return False
                 if type(loc) not in (tuple, list) or len(loc) != 2:
@@ -2930,24 +4002,24 @@ if not self.isFormPDF:
                 chapter, pno = loc
                 if (type(chapter) != int or
                     chapter < 0 or 
-                    chapter >= self.chapterCount
+                    chapter >= self.chapter_count
                     ):
                     return False
                 if (type(pno) != int or
                     pno < 0 or
-                    pno >= self.chapterPageCount(chapter)
+                    pno >= self.chapter_page_count(chapter)
                     ):
                     return False
 
                 return True
 
 
-            def __getitem__(self, i=0):
+            def __getitem__(self, i: int =0)->"Page":
                 if i not in self:
                     raise IndexError("page not in document")
-                return self.loadPage(i)
+                return self.load_page(i)
 
-            def pages(self, start=None, stop=None, step=None):
+            def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None)->"Page":
                 """Return a generator iterator over a page range.
 
                 Arguments have the same meaning as for the range() built-in.
@@ -2955,12 +4027,12 @@ if not self.isFormPDF:
                 # set the start value
                 start = start or 0
                 while start < 0:
-                    start += self.pageCount
-                if start not in range(self.pageCount):
+                    start += self.page_count
+                if start not in range(self.page_count):
                     raise ValueError("bad start page number")
 
                 # set the stop value
-                stop = stop if stop is not None and stop <= self.pageCount else self.pageCount
+                stop = stop if stop is not None and stop <= self.page_count else self.page_count
 
                 # set the step value
                 if step == 0:
@@ -2972,13 +4044,13 @@ if not self.isFormPDF:
                         step = 1
 
                 for pno in range(start, stop, step):
-                    yield (self.loadPage(pno))
+                    yield (self.load_page(pno))
 
 
-            def __len__(self):
-                return self.pageCount
+            def __len__(self) -> int:
+                return self.page_count
 
-            def _forget_page(self, page):
+            def _forget_page(self, page: "struct Page *"):
                 """Remove a page from document page dict."""
                 pid = id(page)
                 if pid in self._page_refs:
@@ -2986,7 +4058,7 @@ if not self.isFormPDF:
 
             def _reset_page_refs(self):
                 """Invalidate all pages in document dictionary."""
-                if self.isClosed:
+                if self.is_closed:
                     return
                 for page in self._page_refs.values():
                     if page:
@@ -2998,18 +4070,22 @@ if not self.isFormPDF:
                 if hasattr(self, "_reset_page_refs"):
                     self._reset_page_refs()
                 if hasattr(self, "Graftmaps"):
-                    for gmap in self.Graftmaps:
-                        self.Graftmaps[gmap] = None
+                    for k in self.Graftmaps.keys():
+                        self.Graftmaps[k] = None
                 if hasattr(self, "this") and self.thisown:
-                    self.__swig_destroy__(self)
+                    try:
+                        self.__swig_destroy__(self)
+                    except:
+                        pass
                     self.thisown = False
 
                 self.Graftmaps = {}
                 self.ShownPages = {}
+                self.InsertedImages  = {}
                 self.stream = None
                 self._reset_page_refs = DUMMY
                 self.__swig_destroy__ = DUMMY
-                self.isClosed = True
+                self.is_closed = True
 
             def __enter__(self):
                 return self
@@ -3033,9 +4109,9 @@ struct Page {
             fz_drop_page(gctx, this_page);
             DEBUGMSG2;
         }
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // bound()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(bound, """Get page rectangle.""")
         %pythonappend bound %{val = Rect(val)%}
         PyObject *bound() {
@@ -3044,32 +4120,32 @@ struct Page {
         }
         %pythoncode %{rect = property(bound, doc="page rectangle")%}
 
-        //---------------------------------------------------------------------
-        // Page.getImageBbox
-        //---------------------------------------------------------------------
-        %pythonprepend getImageBbox %{
+        //----------------------------------------------------------------
+        // Page.get_image_bbox
+        //----------------------------------------------------------------
+        %pythonprepend get_image_bbox %{
         """Get rectangle occupied by image 'name'.
 
         'name' is either an item of the image full list, or the referencing
         name string - elem[7] of the resp. item."""
         CheckParent(self)
         doc = self.parent
-        if doc.isClosed or doc.isEncrypted:
-            raise ValueError("doc is closed or encrypted")
+        if doc.is_closed or doc.is_encrypted:
+            raise ValueError("document closed or encrypted")
         inf_rect = Rect(1, 1, -1, -1)
         if type(name) in (list, tuple):
             if not type(name[-1]) is int:
                 raise ValueError("need a full page image list item")
             item = name
-            if item[-1] != 0:
-                raise ValueError("unsupported image item")
         else:
-            imglist = [i for i in doc.getPageImageList(self.number, True) if i[-1] == 0 and name == i[-3]]
+            imglist = [i for i in doc.get_page_images(self.number, True) if name == i[-3]]
             if len(imglist) == 1:
                 item = imglist[0]
+            elif imglist == []:
+                raise ValueError("no valid image found")
             else:
-                raise ValueError("no valid image found")%}
-        %pythonappend getImageBbox %{
+                raise ValueError("found more than one image of that name.")%}
+        %pythonappend get_image_bbox %{
         if not bool(val):
             return inf_rect
         rc = inf_rect
@@ -3077,9 +4153,9 @@ struct Page {
             if v[0] == item[-3]:
                 rc = Quad(v[1]).rect
                 break
-        val = rc * self.transformationMatrix%}
+        val = rc * self.transformation_matrix%}
         PyObject *
-        getImageBbox(PyObject *name)
+        get_image_bbox(PyObject *name)
         {
             pdf_page *pdf_page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             PyObject *rc =NULL;
@@ -3087,14 +4163,14 @@ struct Page {
                 rc = JM_image_reporter(gctx, pdf_page);
             }
             fz_catch(gctx) {
-                return_none;
+                Py_RETURN_NONE;
             }
             return rc;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // run()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(run, !result)
         PARENTCHECK(run, """Run page through a device.""")
         PyObject *run(struct DeviceWrapper *dw, PyObject *m)
@@ -3105,20 +4181,21 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
-        // Page.getTextPage
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // Page.get_textpage
+        //----------------------------------------------------------------
         FITZEXCEPTION(_get_text_page, !result)
         %pythonappend _get_text_page %{val.thisown = True%}
         struct TextPage *
-        _get_text_page(int flags=0)
+        _get_text_page(PyObject *clip=NULL, int flags=0)
         {
             fz_stext_page *textpage=NULL;
             fz_try(gctx) {
-                textpage = JM_new_stext_page_from_page(gctx, (fz_page *) $self, flags);
+                fz_rect rect = JM_rect_from_py(clip);
+                textpage = JM_new_stext_page_from_page(gctx, (fz_page *) $self, rect, flags);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -3126,40 +4203,40 @@ struct Page {
             return (struct TextPage *) textpage;
         }
         %pythoncode %{
-        def getTextPage(self, flags=0):
+        def get_textpage(self, clip: rect_like =None, flags: int =0) -> "TextPage":
             CheckParent(self)
             old_rotation = self.rotation
             if old_rotation != 0:
-                self.setRotation(0)
+                self.set_rotation(0)
             try:
-                textpage = self._get_text_page(flags=flags)
+                textpage = self._get_text_page(clip, flags=flags)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             return textpage
         %}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.language
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode%{@property%}
         %pythonprepend language %{"""Page language."""%}
         PyObject *language()
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (!pdfpage) return_none;
+            if (!pdfpage) Py_RETURN_NONE;
             pdf_obj *lang = pdf_dict_get_inheritable(gctx, pdfpage->obj, PDF_NAME(Lang));
-            if (!lang) return_none;
+            if (!lang) Py_RETURN_NONE;
             return Py_BuildValue("s", pdf_to_str_buf(gctx, lang));
         }
 
 
-        //---------------------------------------------------------------------
-        // Page.setLanguage
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setLanguage, !result)
-        PARENTCHECK(setLanguage, """Set PDF page default language.""")
-        PyObject *setLanguage(char *language=NULL)
+        //----------------------------------------------------------------
+        // Page.set_language
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_language, !result)
+        PARENTCHECK(set_language, """Set PDF page default language.""")
+        PyObject *set_language(char *language=NULL)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             fz_try(gctx) {
@@ -3182,12 +4259,12 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
-        // Page.getSVGimage
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getSVGimage, !result)
-        PARENTCHECK(getSVGimage, """Make SVG image from page.""")
-        PyObject *getSVGimage(PyObject *matrix = NULL, int text_as_path=1)
+        //----------------------------------------------------------------
+        // Page.get_svg_image
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_svg_image, !result)
+        PARENTCHECK(get_svg_image, """Make SVG image from page.""")
+        PyObject *get_svg_image(PyObject *matrix = NULL, int text_as_path=1)
         {
             fz_rect mediabox = fz_bound_page(gctx, (fz_page *) $self);
             fz_device *dev = NULL;
@@ -3207,9 +4284,9 @@ struct Page {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 dev = fz_new_svg_device(gctx, out,
-                                        tbounds.x1-tbounds.x0,  // width
-                                        tbounds.y1-tbounds.y0,  // height
-                                        text_option, 1);
+                            tbounds.x1-tbounds.x0,  // width
+                            tbounds.y1-tbounds.y0,  // height
+                            text_option, 1);
                 fz_run_page(gctx, (fz_page *) $self, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
                 text = JM_EscapeStrFromBuffer(gctx, res);
@@ -3225,9 +4302,60 @@ struct Page {
             return text;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
+        // page set opacity
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_set_opacity, !result)
+        %pythonprepend _set_opacity %{
+        if min(CA, ca) >= 1:
+            return
+        tCA = int(round(max(CA , 0) * 100))
+        if tCA >= 100:
+            tCA = 99
+        tca = int(round(max(ca, 0) * 100))
+        if tca >= 100:
+            tca = 99
+        gstate = "fitzca%02i%02i" % (tCA, tca)
+        %}
+        PyObject *
+        _set_opacity(char *gstate=NULL, float CA=1, float ca=1)
+        {
+            if (!gstate) Py_RETURN_NONE;
+            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(page);
+                pdf_obj *resources = pdf_dict_get(gctx, page->obj, PDF_NAME(Resources));
+                if (!resources) {
+                    resources = pdf_dict_put_dict(gctx, page->obj, PDF_NAME(Resources), 2);
+                }
+                pdf_obj *extg = pdf_dict_get(gctx, resources, PDF_NAME(ExtGState));
+                if (!extg) {
+                    extg = pdf_dict_put_dict(gctx, resources, PDF_NAME(ExtGState), 2);
+                }
+                int i, n = pdf_dict_len(gctx, extg);
+                for (i = 0; i < n; i++) {
+                    pdf_obj *o1 = pdf_dict_get_key(gctx, extg, i);
+                    char *name = (char *) pdf_to_name(gctx, o1);
+                    if (strcmp(name, gstate) == 0) goto finished;
+                }
+                pdf_obj *opa = pdf_new_dict(gctx, page->doc, 3);
+                pdf_dict_put_real(gctx, opa, PDF_NAME(CA), (double) CA);
+                pdf_dict_put_real(gctx, opa, PDF_NAME(ca), (double) ca);
+                pdf_dict_puts_drop(gctx, extg, gstate, opa);
+                finished:;
+            }
+            fz_always(gctx) {
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("s", gstate);
+        }
+
+        //----------------------------------------------------------------
         // page addCaretAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_caret_annot, !result)
         struct Annot *
         _add_caret_annot(PyObject *point)
@@ -3243,7 +4371,7 @@ struct Page {
                     r = fz_make_rect(p.x, p.y, p.x + r.x1 - r.x0, p.y + r.y1 - r.y0);
                     pdf_set_annot_rect(gctx, annot, r);
                 }
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) {
@@ -3254,9 +4382,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addRedactAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_redact_annot, !result)
         struct Annot *
         _add_redact_annot(PyObject *quad,
@@ -3292,7 +4420,7 @@ struct Page {
                     pdf_dict_put_text_string(gctx,annot->obj, PDF_NAME(DA), da_str);
                     pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Q), (int64_t) align);
                 }
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) {
@@ -3302,9 +4430,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addLineAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_line_annot, !result)
         struct Annot *
         _add_line_annot(PyObject *p1, PyObject *p2)
@@ -3317,7 +4445,7 @@ struct Page {
                 fz_point a = JM_point_from_py(p1);
                 fz_point b = JM_point_from_py(p2);
                 pdf_set_annot_line(gctx, annot, a, b);
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) {
@@ -3327,9 +4455,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addTextAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_text_annot, !result)
         struct Annot *
         _add_text_annot(PyObject *point,
@@ -3353,7 +4481,7 @@ struct Page {
                 if (icon) {
                     pdf_set_annot_icon_name(gctx, annot, icon);
                 }
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
                 pdf_set_annot_rect(gctx, annot, r);
                 pdf_set_annot_flags(gctx, annot, flags);
@@ -3365,9 +4493,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addInkAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_ink_annot, !result)
         struct Annot *
         _add_ink_annot(PyObject *list)
@@ -3381,7 +4509,7 @@ struct Page {
             fz_var(annot);
             fz_try(gctx) {
                 ASSERT_PDF(page);
-                if (!PySequence_Check(list)) THROWMSG("arg must be a sequence");
+                if (!PySequence_Check(list)) THROWMSG(gctx, "arg must be a sequence");
                 pdf_page_transform(gctx, page, NULL, &ctm);
                 inv_ctm = fz_invert_matrix(ctm);
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_INK);
@@ -3396,8 +4524,9 @@ struct Page {
                     for (i = 0; i < n1; i++) {
                         p = PySequence_ITEM(sublist, i);
                         if (!PySequence_Check(p) || PySequence_Size(p) != 2)
-                            THROWMSG("3rd level entries must be pairs of floats");
+                            THROWMSG(gctx, "3rd level entries must be pairs of floats");
                         point = fz_transform_point(JM_point_from_py(p), inv_ctm);
+                        Py_CLEAR(p);
                         pdf_array_push_real(gctx, stroke, point.x);
                         pdf_array_push_real(gctx, stroke, point.y);
                     }
@@ -3410,7 +4539,7 @@ struct Page {
                 pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(InkList), inklist);
                 inklist = NULL;
                 pdf_dirty_annot(gctx, annot);
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
 
@@ -3423,9 +4552,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addStampAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_stamp_annot, !result)
         struct Annot *
         _add_stamp_annot(PyObject *rect, int stamp=0)
@@ -3445,7 +4574,7 @@ struct Page {
                 ASSERT_PDF(page);
                 fz_rect r = JM_rect_from_py(rect);
                 if (fz_is_infinite_rect(r) || fz_is_empty_rect(r))
-                    THROWMSG("rect must be finite and not empty");
+                    THROWMSG(gctx, "rect must be finite and not empty");
                 if (INRANGE(stamp, 0, n-1))
                     name = stamp_id[stamp];
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_STAMP);
@@ -3453,7 +4582,7 @@ struct Page {
                 pdf_dict_put(gctx, annot->obj, PDF_NAME(Name), name);
                 pdf_set_annot_contents(gctx, annot,
                         pdf_dict_get_name(gctx, annot->obj, PDF_NAME(Name)));
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) {
@@ -3463,9 +4592,9 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addFileAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_file_annot, !result)
         struct Annot *
         _add_file_annot(PyObject *point,
@@ -3487,7 +4616,7 @@ struct Page {
             fz_try(gctx) {
                 ASSERT_PDF(page);
                 filebuf = JM_BufferFromBytes(gctx, buffer);
-                if (!filebuf) THROWMSG("bad type: 'buffer'");
+                if (!filebuf) THROWMSG(gctx, "bad type: 'buffer'");
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_FILE_ATTACHMENT);
                 r = pdf_annot_rect(gctx, annot);
                 r = fz_make_rect(p.x, p.y, p.x + r.x1 - r.x0, p.y + r.y1 - r.y0);
@@ -3502,7 +4631,7 @@ struct Page {
                                     filename, uf, d, 1);
                 pdf_dict_put(gctx, annot->obj, PDF_NAME(FS), val);
                 pdf_dict_put_text_string(gctx, annot->obj, PDF_NAME(Contents), filename);
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
                 pdf_set_annot_rect(gctx, annot, r);
                 pdf_set_annot_flags(gctx, annot, flags);
@@ -3515,14 +4644,13 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page: add a text marker annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_text_marker, !result)
-
         %pythonprepend _add_text_marker %{
         CheckParent(self)
-        if not self.parent.isPDF:
+        if not self.parent.is_pdf:
             raise ValueError("not a PDF")%}
 
         %pythonappend _add_text_marker %{
@@ -3553,7 +4681,7 @@ struct Page {
                     Py_DECREF(item);
                     pdf_add_annot_quad_point(gctx, annot, q);
                 }
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_always(gctx) {
@@ -3570,9 +4698,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page: add circle or rectangle annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_square_or_circle, !result)
         struct Annot *
         _add_square_or_circle(PyObject *rect, int annot_type)
@@ -3582,10 +4710,10 @@ struct Page {
             fz_try(gctx) {
                 fz_rect r = JM_rect_from_py(rect);
                 if (fz_is_infinite_rect(r) || fz_is_empty_rect(r))
-                    THROWMSG("rect must be finite and not empty");
+                    THROWMSG(gctx, "rect must be finite and not empty");
                 annot = pdf_create_annot(gctx, page, annot_type);
                 pdf_set_annot_rect(gctx, annot, r);
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) {
@@ -3596,9 +4724,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page: add multiline annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_multiline, !result)
         struct Annot *
         _add_multiline(PyObject *points, int annot_type)
@@ -3607,20 +4735,20 @@ struct Page {
             pdf_annot *annot = NULL;
             fz_try(gctx) {
                 Py_ssize_t i, n = PySequence_Size(points);
-                if (n < 2) THROWMSG("bad list of points");
+                if (n < 2) THROWMSG(gctx, "bad list of points");
                 annot = pdf_create_annot(gctx, page, annot_type);
                 for (i = 0; i < n; i++) {
                     PyObject *p = PySequence_ITEM(points, i);
                     if (PySequence_Size(p) != 2) {
                         Py_DECREF(p);
-                        THROWMSG("bad list of points");
+                        THROWMSG(gctx, "bad list of points");
                     }
                     fz_point point = JM_point_from_py(p);
                     Py_DECREF(p);
                     pdf_add_annot_vertex(gctx, annot, point);
                 }
 
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) {
@@ -3631,9 +4759,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page addFreetextAnnot
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_add_freetext_annot, !result)
         struct Annot *
         _add_freetext_annot(PyObject *rect, char *text,
@@ -3655,7 +4783,7 @@ struct Page {
             pdf_annot *annot = NULL;
             fz_try(gctx) {
                 if (fz_is_infinite_rect(r) || fz_is_empty_rect(r))
-                    THROWMSG("rect must be finite and not empty");
+                    THROWMSG(gctx, "rect must be finite and not empty");
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_FREE_TEXT);
                 pdf_set_annot_contents(gctx, annot, text);
                 pdf_set_annot_rect(gctx, annot, r);
@@ -3668,7 +4796,7 @@ struct Page {
 
                 // insert the default appearance string
                 JM_make_annot_DA(gctx, annot, ntcol, tcol, fontname, fontsize);
-                JM_add_annot_id(gctx, annot, "fitzannot");
+                JM_add_annot_id(gctx, annot, "A");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) {
@@ -3681,28 +4809,28 @@ struct Page {
 
     %pythoncode %{
         @property
-        def rotationMatrix(self):
+        def rotation_matrix(self) -> Matrix:
             """Reflects page rotation."""
             return Matrix(TOOLS._rotate_matrix(self))
 
         @property
-        def derotationMatrix(self):
+        def derotation_matrix(self) -> Matrix:
             """Reflects page de-rotation."""
             return Matrix(TOOLS._derotate_matrix(self))
 
-        def addCaretAnnot(self, point):
+        def addCaretAnnot(self, point: point_like) -> "struct Annot *":
             """Add a 'Caret' annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_caret_annot(point)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addStrikeoutAnnot(self, quads=None, start=None, stop=None, clip=None):
+        def addStrikeoutAnnot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
             """Add a 'StrikeOut' annotation."""
             if quads is None:
                 q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -3711,7 +4839,7 @@ struct Page {
             return self._add_text_marker(q, PDF_ANNOT_STRIKE_OUT)
 
 
-        def addUnderlineAnnot(self, quads=None, start=None, stop=None, clip=None):
+        def addUnderlineAnnot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
             """Add a 'Underline' annotation."""
             if quads is None:
                 q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -3721,7 +4849,7 @@ struct Page {
 
 
         def addSquigglyAnnot(self, quads=None, start=None,
-                             stop=None, clip=None):
+                             stop=None, clip=None) -> "struct Annot *":
             """Add a 'Squiggly' annotation."""
             if quads is None:
                 q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -3731,7 +4859,7 @@ struct Page {
 
 
         def addHighlightAnnot(self, quads=None, start=None,
-                              stop=None, clip=None):
+                              stop=None, clip=None) -> "struct Annot *":
             """Add a 'Highlight' annotation."""
             if quads is None:
                 q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -3740,91 +4868,91 @@ struct Page {
             return self._add_text_marker(q, PDF_ANNOT_HIGHLIGHT)
 
 
-        def addRectAnnot(self, rect):
+        def addRectAnnot(self, rect: rect_like) -> "struct Annot *":
             """Add a 'Square' (rectangle) annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_square_or_circle(rect, PDF_ANNOT_SQUARE)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addCircleAnnot(self, rect):
+        def addCircleAnnot(self, rect: rect_like) -> "struct Annot *":
             """Add a 'Circle' (ellipse, oval) annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_square_or_circle(rect, PDF_ANNOT_CIRCLE)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addTextAnnot(self, point, text, icon="Note"):
+        def addTextAnnot(self, point: point_like, text: str, icon: str ="Note") -> "struct Annot *":
             """Add a 'Text' (sticky note) annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_text_annot(point, text, icon=icon)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addLineAnnot(self, p1, p2):
+        def addLineAnnot(self, p1: point_like, p2: point_like) -> "struct Annot *":
             """Add a 'Line' annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_line_annot(p1, p2)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addPolylineAnnot(self, points):
+        def addPolylineAnnot(self, points: list) -> "struct Annot *":
             """Add a 'PolyLine' annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_multiline(points, PDF_ANNOT_POLY_LINE)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addPolygonAnnot(self, points):
+        def addPolygonAnnot(self, points: list) -> "struct Annot *":
             """Add a 'Polygon' annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_multiline(points, PDF_ANNOT_POLYGON)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addStampAnnot(self, rect, stamp=0):
+        def addStampAnnot(self, rect: rect_like, stamp: int =0) -> "struct Annot *":
             """Add a ('rubber') 'Stamp' annotation."""
             old_rotation = annot_preprocess(self)
             try:
                 annot = self._add_stamp_annot(rect, stamp)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addInkAnnot(self, handwriting):
+        def addInkAnnot(self, handwriting: list) -> "struct Annot *":
             """Add a 'Ink' ('handwriting') annotation.
 
             The argument must be a list of lists of point_likes.
@@ -3834,17 +4962,17 @@ struct Page {
                 annot = self._add_ink_annot(handwriting)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addFileAnnot(self, point,
-            buffer,
-            filename,
-            ufilename=None,
-            desc=None,
-            icon=None):
+        def addFileAnnot(self, point: point_like,
+            buffer: typing.ByteString,
+            filename: str,
+            ufilename: OptStr =None,
+            desc: OptStr =None,
+            icon: OptStr =None) -> "struct Annot *":
             """Add a 'FileAttachment' annotation."""
 
             old_rotation = annot_preprocess(self)
@@ -3857,14 +4985,14 @@ struct Page {
                             icon=icon)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addFreetextAnnot(self, rect, text, fontsize=12,
-                             fontname=None, text_color=None,
-                             fill_color=None, align=0, rotate=0):
+        def addFreetextAnnot(self, rect: rect_like, text: str, fontsize: float =11,
+                             fontname: OptStr =None, text_color: OptSeq =None,
+                             fill_color: OptSeq =None, align: int =0, rotate: int =0) -> "struct Annot *":
             """Add a 'FreeText' annotation."""
 
             old_rotation = annot_preprocess(self)
@@ -3874,14 +5002,14 @@ struct Page {
                         fill_color=fill_color, align=align, rotate=rotate)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
             return annot
 
 
-        def addRedactAnnot(self, quad, text=None, fontname=None,
-                           fontsize=11, align=0, fill=None, text_color=None,
-                           cross_out=True):
+        def addRedactAnnot(self, quad, text: OptStr =None, fontname: OptStr =None,
+                           fontsize: float =11, align: int =0, fill: OptSeq =None, text_color: OptSeq =None,
+                           cross_out: bool =True) -> "struct Annot *":
             """Add a 'Redact' annotation."""
             da_str = None
             if text:
@@ -3913,11 +5041,11 @@ struct Page {
                            align=align, fill=fill)
             finally:
                 if old_rotation != 0:
-                    self.setRotation(old_rotation)
+                    self.set_rotation(old_rotation)
             annot_postprocess(self, annot)
-            #------------------------------------------------------------------
-            # change the generated appearance to show a crossed-out rectangle
-            #------------------------------------------------------------------
+            #-------------------------------------------------------------
+            # change appearance to show a crossed-out rectangle
+            #-------------------------------------------------------------
             if cross_out:
                 ap_tab = annot._getAP().splitlines()[:-1]  # get the 4 commands only
                 _, LL, LR, UR, UL = ap_tab
@@ -3933,9 +5061,9 @@ struct Page {
         %}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page load annot by name or xref
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_load_annot, !result)
         struct Annot *
         _load_annot(char *name, int xref)
@@ -3956,32 +5084,111 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // page list Resource/Properties
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_get_resource_properties, !result)
+        PyObject *
+        _get_resource_properties()
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
+            PyObject *rc;
+            fz_try(gctx) {
+                ASSERT_PDF(page);
+                rc = JM_get_resource_properties(gctx, page->obj);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        //----------------------------------------------------------------
+        // page list Resource/Properties
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_set_resource_property, !result)
+        PyObject *
+        _set_resource_property(char *name, int xref)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
+            fz_try(gctx) {
+                ASSERT_PDF(page);
+                JM_set_resource_property(gctx, page->obj, name, xref);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode %{
+def _get_optional_content(self, oc: OptInt) -> OptStr:
+    if oc == None or oc == 0:
+        return None
+    doc = self.parent
+    check = doc.xref_object(oc, compressed=True)
+    if not ("/Type/OCG" in check or "/Type/OCMD" in check):
+        raise ValueError("bad optional content: 'oc'")
+    props = {}
+    for p, x in self._get_resource_properties():
+        props[x] = p
+    if oc in props.keys():
+        return props[oc]
+    i = 0
+    mc = "MC%i" % i
+    while mc in props.values():
+        i += 1
+        mc = "MC%i" % i
+    self._set_resource_property(mc, oc)
+    return mc
+
+def get_oc_items(self) -> list:
+    """Get OCGs and OCMDs used in the page's contents.
+
+    Returns:
+        List of items (name, xref, type), where type is one of "ocg" / "ocmd",
+        and name is the property name.
+    """
+    rc = []
+    for pname, xref in self._get_resource_properties():
+        text = self.parent.xrefObject(xref, compressed=True)
+        if "/Type/OCG" in text:
+            octype = "ocg"
+        elif "/Type/OCMD" in text:
+            octype = "ocmd"
+        else:
+            continue
+        rc.append((pname, xref, octype))
+    return rc
+%}
+
+        //----------------------------------------------------------------
         // page get list of annot names
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(annot_names, """List of names of annotations, fields and links.""")
         PyObject *annot_names()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (!page) return_none;
+            if (!page) Py_RETURN_NONE;
             return JM_get_annot_id_list(gctx, page);
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // page retrieve list of annotation xrefs
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(annot_xrefs,"""List of xref numbers of annotations, fields and links.""")
         PyObject *annot_xrefs()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (!page) return_none;
-            return JM_get_annot_xref_list(gctx, page);
+            if (!page) Py_RETURN_NONE;
+            return JM_get_annot_xref_list(gctx, page->obj);
         }
 
 
         %pythoncode %{
-        def loadAnnot(self, ident):
+        def load_annot(self, ident: typing.Union[str, int]) -> "struct Annot *":
             """Load an annot by name (/NM key) or xref.
             
             Args:
@@ -4005,17 +5212,15 @@ struct Page {
             self._annot_refs[id(val)] = val
             return val
 
-        load_annot = loadAnnot
-
 
         #---------------------------------------------------------------------
         # page addWidget
         #---------------------------------------------------------------------
-        def addWidget(self, widget):
+        def addWidget(self, widget: Widget) -> "struct Annot *":
             """Add a 'Widget' (form field)."""
             CheckParent(self)
             doc = self.parent
-            if not doc.isPDF:
+            if not doc.is_pdf:
                 raise ValueError("not a PDF")
             widget._validate()
             annot = self._addWidget(widget.field_type, widget.field_name)
@@ -4039,8 +5244,8 @@ struct Page {
             fz_var(annot);
             fz_try(gctx) {
                 annot = JM_create_widget(gctx, pdf, page, field_type, field_name);
-                if (!annot) THROWMSG("could not create widget");
-                JM_add_annot_id(gctx, annot, "fitzwidget");
+                if (!annot) THROWMSG(gctx, "could not create widget");
+                JM_add_annot_id(gctx, annot, "W");
             }
             fz_catch(gctx) {
                 return NULL;
@@ -4049,19 +5254,19 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
-        // Page.getDisplayList
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getDisplayList, !result)
-        %pythonprepend getDisplayList %{
+        //----------------------------------------------------------------
+        // Page.get_displaylist
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_displaylist, !result)
+        %pythonprepend get_displaylist %{
         """Make a DisplayList from the page for Pixmap generation.
 
         Include (default) or exclude annotations."""
 
         CheckParent(self)
         %}
-        %pythonappend getDisplayList %{val.thisown = True%}
-        struct DisplayList *getDisplayList(int annots=1)
+        %pythonappend get_displaylist %{val.thisown = True%}
+        struct DisplayList *get_displaylist(int annots=1)
         {
             fz_display_list *dl = NULL;
             fz_try(gctx) {
@@ -4078,17 +5283,194 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // Page.get_drawings
+        //----------------------------------------------------------------
+        %pythoncode %{
+        def get_drawings(self):
+            """Get page draw paths."""
+
+            CheckParent(self)
+            val = self._getDrawings()  # read raw list from trace device
+            paths = []
+
+            def new_path():
+                """Return empty path dict to use as template."""
+                return {
+                    "color": None,
+                    "fill": None,
+                    "width": 1.0,
+                    "lineJoin": 0,
+                    "lineCap": (0, 0, 0),
+                    "dashes": "[] 0",
+                    "closePath": False,
+                    "even_odd": False,
+                    "rect": Rect(),
+                    "items": [],
+                    "opacity": 1.0,
+                }
+
+            def is_rectangle(path):
+                """Check if path represents a rectangle.
+                
+                For this, it must be exactly three connected lines, of which
+                the first and the last one must be horizontal and line two
+                must be vertical.
+                """
+                if not path["closePath"]:
+                    return False
+                if [item[0] for item in path["items"]] != ["l", "l", "l"]:
+                    return False
+                p1, p2 = path["items"][0][1:]  # first line
+                p3, p4 = path["items"][1][1:]  # second line
+                p5, p6 = path["items"][2][1:]  # third line
+                if p2 != p3 or p4 != p5:  # must be connected
+                    return False
+                if p1.y != p2.y or p3.x != p4.x or p5.y != p6.y:
+                    return False
+                return True
+
+            def check_and_merge(this, prev):
+                """Check if "this" is the "stroke" version of "prev".
+
+                If so, update "prev" with appropriate values and return True,
+                else do nothing and return False.
+                """
+                if prev is None:
+                    return False
+                if this["items"] != prev["items"]:  # must have same items
+                    return False
+                if this["closePath"] != prev["closePath"]:
+                    return False
+                if this["color"] is not None:
+                    prev["color"] = this["color"]
+                if this["width"] != 1:
+                    prev["width"] = this["width"]
+                if this["dashes"] != "[] 0":
+                    prev["dashes"] = this["dashes"]
+                if this["lineCap"] != (0, 0, 0):
+                    prev["lineCap"] = this["lineCap"]
+                if this["lineJoin"] != 0:
+                    prev["lineJoin"] = this["lineJoin"]
+                return True
+
+            for item in val:
+                if type(item) is list:
+                    if item[0] in ("fill", "stroke", "clip", "clip-stroke"):
+                        # this begins a new path
+                        path = new_path()
+                        ctm = Matrix(1, 1)
+                        factor = 1  # modify width and dash length
+                        current = None  # the current point
+                        for x in item[1:]:  # loop through path parms that follow
+                            if x == "non-zero":
+                                path["even_odd"] = False
+                            elif x == "even-odd":
+                                path["even_odd"] = True
+                            elif x[0] == "matrix":
+                                ctm = Matrix(x[1])
+                                if abs(ctm.a) == abs(ctm.d):
+                                    factor = abs(ctm.a)
+                            elif x[0] == "w":
+                                path["width"] = x[1] * factor
+                            elif x[0] == "lineCap":
+                                path["lineCap"] = x[1:]
+                            elif x[0] == "lineJoin":
+                                path["lineJoin"] = x[1]
+                            elif x[0] == "color":
+                                if item[0] == "fill":
+                                    path["fill"] = x[1:]
+                                else:
+                                    path["color"] = x[1:]
+                            elif x[0] == "dashPhase":
+                                dashPhase = x[1] * factor
+                            elif x[0] == "dashes":
+                                dashes = x[1:]
+                                l = list(map(lambda y: float(y) * factor, dashes))
+                                l = list(map(str, l))
+                                path["dashes"] = "[%s] %g" % (" ".join(l), dashPhase)
+                            elif x[0] == "alpha":
+                                path["opacity"] = round(x[1], 2)
+
+                    if item[0] == "m":
+                        p = Point(item[1]) * ctm
+                        current = p
+                        path["rect"] = Rect(p, p)
+                    elif item[0] == "l":
+                        p2 = Point(item[1]) * ctm
+                        path["items"].append(("l", current, p2))
+                        current = p2
+                        path["rect"] |= p2
+                    elif item[0] == "c":
+                        p2 = Point(item[1]) * ctm
+                        p3 = Point(item[2]) * ctm
+                        p4 = Point(item[3]) * ctm
+                        path["items"].append(("c", current, p2, p3, p4))
+                        current = p4
+                        path["rect"] |= p2
+                        path["rect"] |= p3
+                        path["rect"] |= p4
+                elif item == "closePath":
+                    path["closePath"] = True
+                elif item in ("estroke", "efill", "eclip", "eclip-stroke"):
+                    if is_rectangle(path):
+                        path["items"] = [("re", path["rect"])]
+                        path["closePath"] = False
+
+                    try:  # check if path is "stroke" duplicate of previous
+                        prev = paths.pop()  # get previous path in list
+                    except IndexError:
+                        prev = None  # we are the first
+                    if prev is None:
+                        paths.append(path)
+                    elif check_and_merge(path, prev) is False:  # no duplicates
+                        paths.append(prev)  # re-append old one
+                        paths.append(path)  # append new one
+                    else:
+                        paths.append(prev)  # append modified old one
+
+                    path = None
+                else:
+                    print("unexpected item:", item)
+
+            return paths
+        %}
+
+        FITZEXCEPTION(_getDrawings, !result)
+        PyObject *
+        _getDrawings()
+        {
+            fz_page *page = (fz_page *) $self;
+            fz_device *dev = NULL;
+            PyObject *rc = NULL;
+            fz_try(gctx) {
+                rc = PyList_New(0);
+                dev = JM_new_tracedraw_device(gctx, rc);
+                fz_run_page(gctx, page, dev, fz_identity, NULL);
+                fz_close_device(gctx, dev);
+            }
+            fz_always(gctx) {
+                fz_drop_device(gctx, dev);
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        //----------------------------------------------------------------
         // Page apply redactions
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_apply_redactions, !result)
-        PyObject *_apply_redactions()
+        PyObject *_apply_redactions(int images=PDF_REDACT_IMAGE_PIXELS)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             int success = 0;
             pdf_redact_options opts;
-            opts.no_black_boxes = 1;  // no black boxes
-            opts.keep_images = 0;  // do not keep images
+            opts.black_boxes = 0;  // no black boxes
+            opts.image_method = images;  // how to treat images
             fz_try(gctx) {
                 ASSERT_PDF(page);
                 success = pdf_redact_page(gctx, page->doc, page, &opts);
@@ -4100,9 +5482,9 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page._makePixmap
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_makePixmap, !result)
         struct Pixmap *
         _makePixmap(struct Document *doc,
@@ -4123,12 +5505,12 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
-        // Page.setMediaBox
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setMediaBox, !result)
-        PARENTCHECK(setMediaBox, """Set the MediaBox.""")
-        PyObject *setMediaBox(PyObject *rect)
+        //----------------------------------------------------------------
+        // Page.set_mediabox
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_mediabox, !result)
+        PARENTCHECK(set_mediabox, """Set the MediaBox.""")
+        PyObject *set_mediabox(PyObject *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             fz_try(gctx) {
@@ -4136,7 +5518,10 @@ struct Page {
                 fz_rect mediabox = JM_rect_from_py(rect);
                 if (fz_is_empty_rect(mediabox) ||
                     fz_is_infinite_rect(mediabox)) {
-                    THROWMSG("rect must be finite and not empty");
+                    THROWMSG(gctx, "rect must be finite and not empty");
+                }
+                if (mediabox.x0 != 0 || mediabox.y0 != 0) {
+                    THROWMSG(gctx, "mediabox must start at (0,0)");
                 }
                 pdf_dict_put_rect(gctx, page->obj, PDF_NAME(MediaBox), mediabox);
                 pdf_dict_put_rect(gctx, page->obj, PDF_NAME(CropBox), mediabox);
@@ -4145,16 +5530,16 @@ struct Page {
                 return NULL;
             }
             page->doc->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
-        // Page.setCropBox
+        //----------------------------------------------------------------
+        // Page.set_cropbox
         // ATTENTION: This will also change the value returned by Page.bound()
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setCropBox, !result)
-        PARENTCHECK(setCropBox, """Set the CropBox.""")
-        PyObject *setCropBox(PyObject *rect)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_cropbox, !result)
+        PARENTCHECK(set_cropbox, """Set the CropBox.""")
+        PyObject *set_cropbox(PyObject *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             fz_try(gctx) {
@@ -4165,9 +5550,9 @@ struct Page {
                 fz_rect cropbox = fz_empty_rect;
                 fz_rect r = JM_rect_from_py(rect);
                 cropbox.x0 = r.x0;
-                cropbox.y0 = mediabox.y1 - r.y1;
                 cropbox.x1 = r.x1;
-                cropbox.y1 = mediabox.y1 - r.y0;
+                cropbox.y0 = mediabox.y1 - r.y1 + mediabox.y0;
+                cropbox.y1 = mediabox.y1 - r.y0 + mediabox.y0;
                 pdf_dict_put_drop(gctx, page->obj, PDF_NAME(CropBox),
                                   pdf_new_rect(gctx, page->doc, cropbox));
             }
@@ -4175,24 +5560,27 @@ struct Page {
                 return NULL;
             }
             page->doc->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
-        // loadLinks()
-        //---------------------------------------------------------------------
-        PARENTCHECK(loadLinks, """Get first Link.""")
-        %pythonappend loadLinks %{
+        //----------------------------------------------------------------
+        // Page.load_links()
+        //----------------------------------------------------------------
+        PARENTCHECK(load_links, """Get first Link.""")
+        %pythonappend load_links %{
             if val:
                 val.thisown = True
                 val.parent = weakref.proxy(self) # owning page object
                 self._annot_refs[id(val)] = val
-                if self.parent.isPDF:
-                    val.xref = self._getLinkXrefs()[0]
+                if self.parent.is_pdf:
+                    link_id = [x for x in self.annot_xrefs() if x[1] == PDF_ANNOT_LINK][0]
+                    val.xref = link_id[0]
+                    val.id = link_id[2]
                 else:
                     val.xref = 0
+                    val.id = ""
         %}
-        struct Link *loadLinks()
+        struct Link *load_links()
         {
             fz_link *l = NULL;
             fz_try(gctx) {
@@ -4203,20 +5591,20 @@ struct Page {
             }
             return (struct Link *) l;
         }
-        %pythoncode %{firstLink = property(loadLinks, doc="First link on page")%}
+        %pythoncode %{first_link = property(load_links, doc="First link on page")%}
 
-        //---------------------------------------------------------------------
-        // firstAnnot
-        //---------------------------------------------------------------------
-        PARENTCHECK(firstAnnot, """First annotation.""")
-        %pythonappend firstAnnot %{
+        //----------------------------------------------------------------
+        // Page.first_annot
+        //----------------------------------------------------------------
+        PARENTCHECK(first_annot, """First annotation.""")
+        %pythonappend first_annot %{
         if val:
             val.thisown = True
             val.parent = weakref.proxy(self) # owning page object
             self._annot_refs[id(val)] = val
         %}
         %pythoncode %{@property%}
-        struct Annot *firstAnnot()
+        struct Annot *first_annot()
         {
             pdf_annot *annot = NULL;
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
@@ -4228,12 +5616,12 @@ struct Page {
             return (struct Annot *) annot;
         }
 
-        //---------------------------------------------------------------------
-        // firstWidget
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // first_widget
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(firstWidget, """First widget/field.""")
-        %pythonappend firstWidget %{
+        PARENTCHECK(first_widget, """First widget/field.""")
+        %pythonappend first_widget %{
         if val:
             val.thisown = True
             val.parent = weakref.proxy(self) # owning page object
@@ -4242,12 +5630,11 @@ struct Page {
             TOOLS._fill_widget(val, widget)
             val = widget
         %}
-        struct Annot *firstWidget()
+        struct Annot *first_widget()
         {
             pdf_annot *annot = NULL;
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (page)
-            {
+            if (page) {
                 annot = pdf_first_widget(gctx, page);
                 if (annot) pdf_keep_annot(gctx, annot);
             }
@@ -4255,11 +5642,11 @@ struct Page {
         }
 
 
-        //---------------------------------------------------------------------
-        // Page.deleteLink() - delete link
-        //---------------------------------------------------------------------
-        PARENTCHECK(deleteLink, """Delete a Link.""")
-        %pythonappend deleteLink
+        //----------------------------------------------------------------
+        // Page.delete_link() - delete link
+        //----------------------------------------------------------------
+        PARENTCHECK(delete_link, """Delete a Link.""")
+        %pythonappend delete_link
 %{if linkdict["xref"] == 0: return
 try:
     linkid = linkdict["id"]
@@ -4268,7 +5655,7 @@ try:
 except:
     pass
 %}
-        void deleteLink(PyObject *linkdict)
+        void delete_link(PyObject *linkdict)
         {
             if (!PyDict_Check(linkdict)) return; // have no dictionary
             fz_try(gctx) {
@@ -4279,6 +5666,7 @@ except:
                 pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
                 if (!annots) goto finished;  // have no annotations
                 int len = pdf_array_len(gctx, annots);
+                if (len == 0) goto finished;
                 int i, oxref = 0;
 
                 for (i = 0; i < len; i++) {
@@ -4290,22 +5678,22 @@ except:
                 pdf_array_delete(gctx, annots, i);   // delete entry in annotations
                 pdf_delete_object(gctx, page->doc, xref);      // delete link object
                 pdf_dict_put(gctx, page->obj, PDF_NAME(Annots), annots);
-                JM_refresh_link_table(gctx, page);            // reload link / annot tables
+                JM_refresh_link_table(gctx, page);  // reload link / annot tables
                 page->doc->dirty = 1;
                 finished:;
             }
             fz_catch(gctx) {;}
         }
 
-        //---------------------------------------------------------------------
-        // Page.deleteAnnot() - delete annotation and return the next one
-        //---------------------------------------------------------------------
-        %pythonprepend deleteAnnot %{
+        //----------------------------------------------------------------
+        // Page.delete_annot() - delete annotation and return the next one
+        //----------------------------------------------------------------
+        %pythonprepend delete_annot %{
         """Delete annot and return next one."""
         CheckParent(self)
         CheckParent(annot)%}
 
-        %pythonappend deleteAnnot %{
+        %pythonappend delete_annot %{
         if val:
             val.thisown = True
             val.parent = weakref.proxy(self) # owning page object
@@ -4313,12 +5701,12 @@ except:
         annot._erase()
         %}
 
-        struct Annot *deleteAnnot(struct Annot *annot)
+        struct Annot *delete_annot(struct Annot *annot)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             pdf_annot *irt_annot = NULL;
-            while (1)  // first loop through all /IRT annots and remove them
-            {
+            while (1) {
+                // first loop through all /IRT annots and remove them
                 irt_annot = JM_find_annot_irt(gctx, (pdf_annot *) annot);
                 if (!irt_annot)  // no more there
                     break;
@@ -4326,8 +5714,7 @@ except:
             }
             pdf_annot *nextannot = pdf_next_annot(gctx, (pdf_annot *) annot);  // store next
             JM_delete_annot(gctx, page, (pdf_annot *) annot);
-            if (nextannot)
-            {
+            if (nextannot) {
                 nextannot = pdf_keep_annot(gctx, nextannot);
             }
             page->doc->dirty = 1;
@@ -4335,49 +5722,51 @@ except:
         }
 
 
-        //---------------------------------------------------------------------
-        // MediaBox: get the /MediaBox (PDF only)
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // mediabox: get the /MediaBox (PDF only)
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(MediaBox, """The MediaBox.""")
-        %pythonappend MediaBox %{val = Rect(val)%}
-        PyObject *MediaBox()
+        PARENTCHECK(mediabox, """The MediaBox.""")
+        %pythonappend mediabox %{val = Rect(val)%}
+        PyObject *mediabox()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (!page)
+            if (!page) {
                 return JM_py_from_rect(fz_bound_page(gctx, (fz_page *) $self));
-            return JM_py_from_rect(JM_mediabox(gctx, page));
+            }
+            return JM_py_from_rect(JM_mediabox(gctx, page->obj));
         }
 
 
-        //---------------------------------------------------------------------
-        // CropBox: get the /CropBox (PDF only)
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // cropbox: get the /CropBox (PDF only)
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(CropBox, """The CropBox.""")
-        %pythonappend CropBox %{val = Rect(val)%}
-        PyObject *CropBox()
+        PARENTCHECK(cropbox, """The CropBox.""")
+        %pythonappend cropbox %{val = Rect(val)%}
+        PyObject *cropbox()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (!page)
+            if (!page) {
                 return JM_py_from_rect(fz_bound_page(gctx, (fz_page *) $self));
-            return JM_py_from_rect(JM_cropbox(gctx, page));
+            }
+            return JM_py_from_rect(JM_cropbox(gctx, page->obj));
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // CropBox position: x0, y0 of /CropBox
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{
         @property
-        def CropBoxPosition(self):
-            return self.CropBox.tl
+        def cropbox_position(self):
+            return self.cropbox.tl
         %}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // rotation - return page rotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(rotation, """Page rotation.""")
         %pythoncode %{@property%}
         int rotation()
@@ -4388,11 +5777,11 @@ except:
         }
 
         /*********************************************************************/
-        // setRotation() - set page rotation
+        // set_rotation() - set page rotation
         /*********************************************************************/
-        FITZEXCEPTION(setRotation, !result)
-        PARENTCHECK(setRotation, """Set page rotation.""")
-        PyObject *setRotation(int rotation)
+        FITZEXCEPTION(set_rotation, !result)
+        PARENTCHECK(set_rotation, """Set page rotation.""")
+        PyObject *set_rotation(int rotation)
         {
             fz_try(gctx) {
                 pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
@@ -4404,7 +5793,7 @@ except:
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
         /*********************************************************************/
@@ -4412,103 +5801,66 @@ except:
         // Add new links provided as an array of string object definitions.
         /*********************************************************************/
         FITZEXCEPTION(_addAnnot_FromString, !result)
-        PARENTCHECK(_addAnnot_FromString, """Add Link/Annot from object source.""")
+        PARENTCHECK(_addAnnot_FromString, """Add links from list of object sources.""")
         PyObject *_addAnnot_FromString(PyObject *linklist)
         {
-            pdf_obj *annots, *annot, *ind_obj, *new_array;
+            pdf_obj *annots, *annot, *ind_obj;
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            PyObject *txtpy;
-            char *text;
-            int lcount = (int) PySequence_Size(linklist); // new object count
-            if (lcount < 1) return_none;
-            int i;
+            PyObject *txtpy = NULL;
+            char *text = NULL;
+            int lcount = (int) PySequence_Size(linklist); // link count
+            if (lcount < 1) Py_RETURN_NONE;
+            int i = -1;
+            fz_var(text);
+
+            // insert links from the provided sources
             fz_try(gctx) {
                 ASSERT_PDF(page);
-                // get existing annots array
-                annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
-                if (annots) {
-                    new_array = annots;
-                } else {
-                    new_array = pdf_new_array(gctx, page->doc, lcount);
-                    pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Annots), new_array);
-                    new_array = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
+                if (!pdf_dict_get(gctx, page->obj, PDF_NAME(Annots))) {
+                    pdf_dict_put_array(gctx, page->obj, PDF_NAME(Annots), lcount);
                 }
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-
-            // extract object sources from Python list and store as annotations
-            for (i = 0; i < lcount; i++) {
-                fz_try(gctx) {
+                annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
+                for (i = 0; i < lcount; i++) {
                     text = NULL;
                     txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
-                    text = JM_Python_str_AsChar(txtpy);
-                    if (!text) THROWMSG("non-string linklist item");
-                    annot = JM_pdf_obj_from_str(gctx, page->doc, text);
-                    JM_Python_str_DelForPy3(text);
-                    ind_obj = pdf_add_object(gctx, page->doc, annot);
-                    pdf_array_push_drop(gctx, new_array, ind_obj);
+                    text = JM_StrAsChar(txtpy);
+                    Py_CLEAR(txtpy);
+                    if (!text) THROWMSG(gctx, "bad linklist item");
+                    annot = pdf_add_object_drop(gctx, page->doc,
+                            JM_pdf_obj_from_str(gctx, page->doc, text));
+                    ind_obj = pdf_new_indirect(gctx, page->doc, pdf_to_num(gctx, annot), 0);
+                    pdf_array_push_drop(gctx, annots, ind_obj);
                     pdf_drop_obj(gctx, annot);
                 }
-                fz_catch(gctx) {
-                    if (text)
-                        PySys_WriteStderr("%s (%i): '%s'\n", fz_caught_message(gctx), i, text);
-                    else
-                        PySys_WriteStderr("%s (%i)\n", fz_caught_message(gctx), i);
-                    JM_Python_str_DelForPy3(text);
-                    PyErr_Clear();
-                }
-            }
-            fz_try(gctx) {
-                JM_refresh_link_table(gctx, page);
             }
             fz_catch(gctx) {
+                if (text) {
+                    PySys_WriteStderr("%s (%i): '%s'\n", fz_caught_message(gctx), i, text);
+                }
+                else if (i >= 0) {
+                    PySys_WriteStderr("%s (%i)\n", fz_caught_message(gctx), i);
+                }
+                PyErr_Clear();
                 return NULL;
             }
             page->doc->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
-        // Page._getLinkXrefs - get list of link xref numbers.
-        // return_none for non-PDF
-        //---------------------------------------------------------------------
-        PyObject *_getLinkXrefs()
-        {
-            pdf_obj *annots, *annots_arr, *link, *obj;
-            int i, lcount;
-            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            PyObject *linkxrefs = PyList_New(0);
-            if (!page) return linkxrefs;  // empty list for non-PDF
-            annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
-            if (!annots) return linkxrefs;  // no links on this page
-            if (pdf_is_indirect(gctx, annots))
-                annots_arr = pdf_resolve_indirect(gctx, annots);
-            else
-                annots_arr = annots;
-            lcount = pdf_array_len(gctx, annots_arr);
-            for (i = 0; i < lcount; i++)
-            {
-                link = pdf_array_get(gctx, annots_arr, i);
-                obj = pdf_dict_get(gctx, link, PDF_NAME(Subtype));
-                if (pdf_name_eq(gctx, obj, PDF_NAME(Link)))
-                {
-                    LIST_APPEND_DROP(linkxrefs, Py_BuildValue("i", pdf_to_num(gctx, link)));
-                }
-            }
-            return linkxrefs;
-        }
-
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page clean contents stream
-        //---------------------------------------------------------------------
-        PARENTCHECK(_cleanContents, """Clean page /Contents object(s).""")
-        PyObject *_cleanContents(int sanitize=0)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(clean_contents, !result)
+        %pythonprepend clean_contents
+%{"""Clean page /Contents into one object."""
+CheckParent(self)
+if not sanitize and not self.is_wrapped:
+    self.wrap_contents()%}
+        PyObject *clean_contents(int sanitize=1)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             if (!page) {
-                return_none;
+                Py_RETURN_NONE;
             }
             pdf_filter_options filter = {
                 NULL,  // opaque
@@ -4526,17 +5878,17 @@ except:
                 pdf_filter_page_contents(gctx, page->doc, page, &filter);
             }
             fz_catch(gctx) {
-                return_none;
+                Py_RETURN_NONE;
             }
             page->doc->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Show a PDF page
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_showPDFpage, !result)
-        PyObject *_showPDFpage(struct Page *fz_srcpage, int overlay=1, PyObject *matrix=NULL, int xref=0, PyObject *clip = NULL, struct Graftmap *graftmap = NULL, char *_imgname = NULL)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_show_pdf_page, !result)
+        PyObject *_show_pdf_page(struct Page *fz_srcpage, int overlay=1, PyObject *matrix=NULL, int xref=0, int oc=0, PyObject *clip = NULL, struct Graftmap *graftmap = NULL, char *_imgname = NULL)
         {
             pdf_obj *xobj1, *xobj2, *resources;
             fz_buffer *res=NULL, *nres=NULL;
@@ -4569,7 +5921,9 @@ except:
                 fz_append_string(gctx, res, "/fullpage Do");
 
                 xobj2 = pdf_new_xobject(gctx, pdfout, cropbox, mat, subres, res);
-
+                if (oc > 0) {
+                    JM_add_oc_object(gctx, pdfout, pdf_resolve_indirect(gctx, xobj2), oc);
+                }
                 pdf_drop_obj(gctx, subres);
                 fz_drop_buffer(gctx, res);
 
@@ -4581,8 +5935,7 @@ except:
                 resources = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(Resources));
                 subres = pdf_dict_get(gctx, resources, PDF_NAME(XObject));
                 if (!subres) {
-                    subres = pdf_new_dict(gctx, pdfout, 10);
-                    pdf_dict_putl(gctx, tpageref, subres, PDF_NAME(Resources), PDF_NAME(XObject), NULL);
+                    subres = pdf_dict_put_dict(gctx, resources, PDF_NAME(XObject), 5);
                 }
 
                 pdf_dict_puts(gctx, subres, _imgname, xobj2);
@@ -4604,11 +5957,11 @@ except:
             return Py_BuildValue("i", rc_xref);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // insert an image
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_insertImage, !result)
-        PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, int overlay=1, PyObject *matrix=NULL,
+        PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, PyObject *imask=NULL, int overlay=1, int oc=0, int xref=0, int alpha=0, PyObject *matrix=NULL,
         const char *_imgname=NULL, PyObject *_imgpointer=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
@@ -4618,17 +5971,21 @@ except:
             fz_image *mask = NULL;
             fz_separations *seps = NULL;
             pdf_obj *resources, *xobject, *ref;
-            fz_buffer *nres = NULL,  *imgbuf = NULL;
+            fz_buffer *nres = NULL,  *imgbuf = NULL, *maskbuf = NULL;
             fz_matrix mat = JM_matrix_from_py(matrix); // pre-calculated
+            fz_compressed_buffer *cbuf1 = NULL;
+            int img_xref = 0;
 
-            const char *template = " q %g %g %g %g %g %g cm /%s Do Q ";
+            const char *template = "\nq\n%g %g %g %g %g %g cm\n/%s Do\nQ\n";
             fz_image *zimg = NULL, *image = NULL;
             fz_try(gctx) {
+                if (xref > 0) {
+                    goto image_exists;
+                }
                 //-------------------------------------------------------------
                 // create the image
                 //-------------------------------------------------------------
-                if (filename || EXISTS(stream) || EXISTS(_imgpointer))
-                {
+                if (filename || EXISTS(stream) || EXISTS(_imgpointer)) {
                     if (filename) {
                         image = fz_new_image_from_file(gctx, filename);
                     } else if (EXISTS(stream)) {
@@ -4637,22 +5994,33 @@ except:
                     } else {  // fz_image pointer has been handed in
                         image = (fz_image *)PyLong_AsVoidPtr(_imgpointer);
                     }
-
-                    // test for alpha (which would require making an SMask)
-                    pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
-                    int xres, yres;
+                    int xres, yres, w = image->w, h = image->h, bpc = image->bpc;
+                    fz_colorspace *colorspace = image->colorspace;
                     fz_image_resolution(image, &xres, &yres);
-                    pix->xres = xres;
-                    pix->yres = yres;
-                    if (pix->alpha == 1) {  // have alpha: create an SMask
-                        pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, fz_default_color_params, 1);
-                        pm->alpha = 0;
-                        pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
-                        mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                        zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                    if (EXISTS(imask)) {
+                        cbuf1 = fz_compressed_image_buffer(gctx, image);
+                        if (!cbuf1) THROWMSG(gctx, "cannot mask uncompressed image");
+                        maskbuf = JM_BufferFromBytes(gctx, imask);
+                        mask = fz_new_image_from_buffer(gctx, maskbuf);
+                        zimg = fz_new_image_from_compressed_buffer(gctx, w, h,
+                                    bpc, colorspace, xres, yres, 1, 0, NULL,
+                                    NULL, cbuf1, mask);
                         fz_drop_image(gctx, image);
                         image = zimg;
                         zimg = NULL;
+                    } else if (alpha == 1) {
+                            // have alpha: create an SMask
+                            pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
+                            pix->xres = xres;
+                            pix->yres = yres;
+                            pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, fz_default_color_params, 1);
+                            pm->alpha = 0;
+                            pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
+                            mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                            zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                            fz_drop_image(gctx, image);
+                            image = zimg;
+                            zimg = NULL;
                     }
                 } else {  // pixmap specified
                     fz_pixmap *arg_pix = (fz_pixmap *) pixmap;
@@ -4670,19 +6038,25 @@ except:
                 //-------------------------------------------------------------
                 // image created - now put it in the PDF
                 //-------------------------------------------------------------
+                image_exists:;
                 pdf = page->doc;  // owning PDF
 
                 // get /Resources, /XObject
                 resources = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Resources));
                 xobject = pdf_dict_get(gctx, resources, PDF_NAME(XObject));
                 if (!xobject) {  // has no XObject yet, create one
-                    xobject = pdf_new_dict(gctx, pdf, 10);
-                    pdf_dict_putl_drop(gctx, page->obj, xobject, PDF_NAME(Resources), PDF_NAME(XObject), NULL);
+                    xobject = pdf_dict_put_dict(gctx, resources, PDF_NAME(XObject), 5);
                 }
-
-                ref = pdf_add_image(gctx, pdf, image);
-                pdf_dict_puts(gctx, xobject, _imgname, ref);  // update XObject
-
+                if (xref > 0) {
+                    ref = pdf_new_indirect(gctx, page->doc, xref, 0);
+                    img_xref = xref;
+                } else {
+                    ref = pdf_add_image(gctx, pdf, image);
+                    img_xref = pdf_to_num(gctx, ref);
+                }
+                if (oc) JM_add_oc_object(gctx, pdf, ref, oc);
+                
+                pdf_dict_puts_drop(gctx, xobject, _imgname, ref);  // update XObject
                 // make contents stream that invokes the image
                 nres = fz_new_buffer(gctx, 50);
                 fz_append_printf(gctx, nres, template,
@@ -4690,46 +6064,50 @@ except:
                                  _imgname);
                 JM_insert_contents(gctx, pdf, page->obj, nres, overlay);
                 fz_drop_buffer(gctx, nres);
+                nres = NULL;
             }
             fz_always(gctx) {
                 fz_drop_image(gctx, image);
                 fz_drop_image(gctx, mask);
+                fz_drop_image(gctx, zimg);
                 fz_drop_pixmap(gctx, pix);
                 fz_drop_pixmap(gctx, pm);
                 fz_drop_buffer(gctx, imgbuf);
+                fz_drop_buffer(gctx, maskbuf);
+                fz_drop_buffer(gctx, nres);
             }
             fz_catch(gctx) {
                 return NULL;
             }
             pdf->dirty = 1;
-            return_none;
+            return Py_BuildValue("i", img_xref);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page.refresh()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(refresh, !result)
         PARENTCHECK(refresh, """Refresh page after link/annot/widget updates.""")
         PyObject *refresh()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (!page) return_none;
+            if (!page) Py_RETURN_NONE;
             fz_try(gctx) {
                 JM_refresh_link_table(gctx, page);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // insert font
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode
 %{
-def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
+def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
                set_simple=False, wmode=0, encoding=0):
     doc = self.parent
     if doc is None:
@@ -4744,8 +6122,8 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         xref = font[0]                      # this is the xref
         if CheckFontInfo(doc, xref):        # also in our document font list?
             return xref                     # yes: we are done
-        # need to build the doc FontInfo entry - done via getCharWidths
-        doc.getCharWidths(xref)
+        # need to build the doc FontInfo entry - done via get_char_widths
+        doc.get_char_widths(xref)
         return xref
 
     #--------------------------------------------------------------------------
@@ -4773,7 +6151,6 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pass
 
     if fontname.lower() in fitz_fontdescriptors.keys():
-        # one of the extra fonts
         import pymupdf_fonts
         fontbuffer = pymupdf_fonts.myfont(fontname)  # make a copy
         del pymupdf_fonts
@@ -4786,12 +6163,13 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         return val
 
     xref = val[0]                 # xref of installed font
+    fontdict = val[1]
 
     if CheckFontInfo(doc, xref):  # check again: document already has this font
         return xref               # we are done
 
     # need to create document font info
-    doc.getCharWidths(xref)
+    doc.get_char_widths(xref, fontdict=fontdict)
     return xref
 
 %}
@@ -4807,108 +6185,32 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
-            fz_font *font = NULL;
-            fz_buffer *res = NULL;
-            const unsigned char *data = NULL;
-            int size, ixref = 0, index = 0, simple = 0;
             PyObject *value;
-            PyObject *exto = NULL;
             fz_try(gctx) {
                 ASSERT_PDF(page);
                 pdf = page->doc;
+
+                value = JM_insert_font(gctx, pdf, bfname, fontfile,fontbuffer,
+                            set_simple, idx, wmode, serif, encoding, ordering);
+
                 // get the objects /Resources, /Resources/Font
                 resources = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Resources));
                 fonts = pdf_dict_get(gctx, resources, PDF_NAME(Font));
                 if (!fonts) {  // page has no fonts yet
-                    fonts = pdf_new_dict(gctx, pdf, 10);
+                    fonts = pdf_new_dict(gctx, pdf, 5);
                     pdf_dict_putl_drop(gctx, page->obj, fonts, PDF_NAME(Resources), PDF_NAME(Font), NULL);
                 }
-
-                //-------------------------------------------------------------
-                // check for CJK font
-                //-------------------------------------------------------------
-                if (ordering > -1) data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
-                if (data) {
-                    font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
-                    font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
-                    exto = JM_UnicodeFromStr("n/a");
-                    simple = 0;
-                    goto weiter;
-                }
-
-                //-------------------------------------------------------------
-                // check for PDF Base-14 font
-                //-------------------------------------------------------------
-                if (bfname) data = fz_lookup_base14_font(gctx, bfname, &size);
-                if (data) {
-                    font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
-                    font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
-                    exto = JM_UnicodeFromStr("n/a");
-                    simple = 1;
-                    goto weiter;
-                }
-
-                if (fontfile) {
-                    font = fz_new_font_from_file(gctx, NULL, fontfile, idx, 0);
-                } else {
-                    res = JM_BufferFromBytes(gctx, fontbuffer);
-                    if (!res) THROWMSG("need one of fontfile, fontbuffer");
-                    font = fz_new_font_from_buffer(gctx, NULL, res, idx, 0);
-                }
-
-                if (!set_simple) {
-                    font_obj = pdf_add_cid_font(gctx, pdf, font);
-                    simple = 0;
-                } else {
-                    font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
-                    simple = 2;
-                }
-
-                weiter: ;
-                ixref = pdf_to_num(gctx, font_obj);
-                if (fz_font_is_monospaced(gctx, font)) {
-                    float adv = fz_advance_glyph(gctx, font,
-                                    fz_encode_character(gctx, font, 32), 0);
-                    int width = (int) floor(adv * 1000.0f + 0.5f);
-                    pdf_obj *dfonts = pdf_dict_get(gctx, font_obj, PDF_NAME(DescendantFonts));
-                    if (pdf_is_array(gctx, dfonts)) {
-                        int i, n = pdf_array_len(gctx, dfonts);
-                        for (i = 0; i < n; i++) {
-                            pdf_obj *dfont = pdf_array_get(gctx, dfonts, i);
-                            pdf_obj *warray = pdf_new_array(gctx, pdf, 3);
-                            pdf_array_push(gctx, warray, pdf_new_int(gctx, 0));
-                            pdf_array_push(gctx, warray, pdf_new_int(gctx, 65535));
-                            pdf_array_push(gctx, warray, pdf_new_int(gctx, (int64_t) width));
-                            pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
-                        }
-                    }
-                }
-                PyObject *name = JM_EscapeStrFromStr(pdf_to_name(gctx,
-                            pdf_dict_get(gctx, font_obj, PDF_NAME(BaseFont))));
-
-                PyObject *subt = JM_UnicodeFromStr(pdf_to_name(gctx,
-                            pdf_dict_get(gctx, font_obj, PDF_NAME(Subtype))));
-
-                if (!exto)
-                    exto = JM_UnicodeFromStr(JM_get_fontextension(gctx, pdf, ixref));
-
-                value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i}]",
-                                      ixref,
-                                      "name", name,        // base font name
-                                      "type", subt,        // subtype
-                                      "ext", exto,         // file extension
-                                      "simple", JM_BOOL(simple), // simple font?
-                                      "ordering", ordering); // CJK font?
-                Py_CLEAR(exto);
-                Py_CLEAR(name);
-                Py_CLEAR(subt);
-
                 // store font in resources and fonts objects will contain named reference to font
+                int xref = 0;
+                JM_INT_ITEM(value, 0, &xref);
+                if (!xref) {
+                    THROWMSG(gctx, "cannot insert font");
+                }
+                font_obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_dict_puts_drop(gctx, fonts, fontname, font_obj);
             }
             fz_always(gctx) {
-                fz_drop_buffer(gctx, res);
-                fz_drop_font(gctx, font);
+                ;
             }
             fz_catch(gctx) {
                 return NULL;
@@ -4917,18 +6219,18 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             return value;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get page transformation matrix
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(transformationMatrix, """Page transformation matrix.""")
-        %pythonappend transformationMatrix %{
+        PARENTCHECK(transformation_matrix, """Page transformation matrix.""")
+        %pythonappend transformation_matrix %{
         if self.rotation % 360 == 0:
             val = Matrix(val)
         else:
-            val = Matrix(1, 0, 0, -1, 0, self.CropBox.height)
+            val = Matrix(1, 0, 0, -1, 0, self.cropbox.height)
         %}
-        PyObject *transformationMatrix()
+        PyObject *transformation_matrix()
         {
             fz_matrix ctm = fz_identity;
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
@@ -4940,12 +6242,12 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             return JM_py_from_matrix(ctm);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Page Get list of contents objects
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_getContents, !result)
-        PARENTCHECK(_getContents, """Get xref list of /Contents objects.""")
-        PyObject *_getContents()
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_contents, !result)
+        PARENTCHECK(get_contents, """Get xrefs of /Contents objects.""")
+        PyObject *get_contents()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             PyObject *list = NULL;
@@ -4979,61 +6281,57 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             return PyList_New(0);
         }
 
-        //---------------------------------------------------------------------
-        // Set given object as the /Contents of a page
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_setContents, !result)
-        PARENTCHECK(_setContents, """Set bytes as the (only) /Contents object.""")
-        PyObject *_setContents(int xref = 0)
-        {
-            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            pdf_obj *contents = NULL;
-
-            fz_try(gctx) {
-                ASSERT_PDF(page);
-
-                if (!INRANGE(xref, 1, pdf_xref_len(gctx, page->doc) - 1))
-                    THROWMSG("xref out of range");
-
-                contents = pdf_new_indirect(gctx, page->doc, xref, 0);
-                if (!pdf_is_stream(gctx, contents))
-                    THROWMSG("xref is not a stream");
-
-                pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Contents), contents);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            page->doc->dirty = 1;
-            return_none;
-        }
-
+        //----------------------------------------------------------------
+        // 
+        //----------------------------------------------------------------
         %pythoncode %{
+        def set_contents(self, xref: int)->None:
+            """Set object at 'xref' as the page's /Contents."""
+            CheckParent(self)
+            doc = self.parent
+            if doc.is_closed:
+                raise ValueError("document closed")
+            if not doc.is_pdf:
+                raise ValueError("not a PDF")
+            if not xref in range(1, doc.xref_length()):
+                raise ValueError("bad xref")
+            if not doc.is_stream(xref):
+                raise ValueError("xref is no stream")
+            doc.xref_set_key(self.xref, "Contents", "%i 0 R" % xref)
+
+
         @property
-        def _isWrapped(self):
-            """Check if /Contents is wrapped in string pair "q" / "Q".
-            """
-            cont = self.readContents().split()
-            if len(cont) < 1 or cont[0] != b"q" or cont[-1] != b"Q":
-                return False
+        def is_wrapped(self):
+            """Check if /Contents is wrapped with string pair "q" / "Q"."""
+            if getattr(self, "was_wrapped", False):  # costly checks only once
+                return True
+            cont = self.read_contents().split()
+            if cont == []:  # no contents treated as okay
+                self.was_wrapped = True
+                return True
+            if cont[0] != b"q" or cont[-1] != b"Q":
+                return False  # potential "geometry" issue
+            self.was_wrapped = True  # cheap check next time
             return True
 
-        def _wrapContents(self):
+
+        def wrap_contents(self):
+            if self.is_wrapped:  # avoid unnecessary wrapping
+                return
             TOOLS._insert_contents(self, b"q\n", False)
             TOOLS._insert_contents(self, b"\nQ", True)
-
-        wrapContents = _wrapContents
+            self.was_wrapped = True  # indicate not needed again
 
 
         def links(self, kinds=None):
             """ Generator over the links of a page.
 
             Args:
-                kinds: (tuple) link kinds to subselect from. If none,
-                        all links are returned. E.g. kinds=(LINK_URI,)
-                        will only yield URI links.
+                kinds: (list) link kinds to subselect from. If none,
+                       all links are returned. E.g. kinds=[LINK_URI]
+                       will only yield URI links.
             """
-            all_links = self.getLinks()
+            all_links = self.get_links()
             for link in all_links:
                 if kinds is None or link["kind"] in kinds:
                     yield (link)
@@ -5043,11 +6341,11 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             """ Generator over the annotations of a page.
 
             Args:
-                types: (tuple) annotation types to subselect from. If none,
-                        all annotations are returned. E.g. types=(PDF_ANNOT_LINE,)
-                        will only yield line annotations.
+                types: (list) annotation types to subselect from. If none,
+                       all annotations are returned. E.g. types=[PDF_ANNOT_LINE]
+                       will only yield line annotations.
             """
-            annot = self.firstAnnot
+            annot = self.first_annot
             while annot:
                 if types is None or annot.type[0] in types:
                     yield (annot)
@@ -5058,11 +6356,11 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             """ Generator over the widgets of a page.
 
             Args:
-                types: (tuple) field types to subselect from. If none,
-                        all fields are returned. E.g. types=(PDF_WIDGET_TYPE_TEXT,)
+                types: (list) field types to subselect from. If none,
+                        all fields are returned. E.g. types=[PDF_WIDGET_TYPE_TEXT]
                         will only yield text fields.
             """
-            widget = self.firstWidget
+            widget = self.first_widget
             while widget:
                 if types is None or widget.field_type in types:
                     yield (widget)
@@ -5104,7 +6402,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         def xref(self):
             """PDF xref number of page."""
             CheckParent(self)
-            return self.parent._getPageXref(self.number)[0]
+            return self.parent.page_xref(self.number)
 
         def _erase(self):
             self._reset_annot_refs()
@@ -5118,43 +6416,39 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             self.thisown = False
             self.number = None
 
+
         def __del__(self):
             self._erase()
 
-        def getFontList(self, full=False):
+
+        def get_fonts(self, full=False):
             """List of fonts defined in the page object."""
             CheckParent(self)
-            return self.parent.getPageFontList(self.number, full=full)
+            return self.parent.get_page_fonts(self.number, full=full)
+        
 
-        def getImageList(self, full=False):
+        def get_images(self, full=False):
             """List of images defined in the page object."""
             CheckParent(self)
-            return self.parent.getPageImageList(self.number, full=full)
+            return self.parent.get_page_images(self.number, full=full)
 
 
-        def readContents(self):
-            """All /Contents streams concatenated in one bytes object."""
+        def read_contents(self):
+            """All /Contents streams concatenated to one bytes object."""
             return TOOLS._get_all_contents(self)
 
 
         @property
-        def MediaBoxSize(self):
-            return Point(self.MediaBox.width, self.MediaBox.height)
-
-        def cleanContents(self, sanitize=True):
-            if not sanitize and not self._isWrapped:
-                self.wrapContents()
-            self._cleanContents(sanitize)
-
-        getContents = _getContents
+        def mediabox_size(self):
+            return Point(self.mediabox.width, self.mediabox.height)
         %}
     }
 };
 %clearnodefaultctor;
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Pixmap
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Pixmap
 {
     %extend {
@@ -5175,9 +6469,9 @@ Pixmap(image) - from an image in memory (bytes).
 Pixmap(colorspace, width, height, samples, alpha) - from samples data.
 Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
 """%}
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Colorspace *cs, PyObject *bbox, int alpha = 0)
         {
             fz_pixmap *pm = NULL;
@@ -5190,17 +6484,17 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // copy pixmap, converting colorspace
         // New in v1.11: option to remove alpha
         // Changed in v1.13: alpha = 0 does not work since at least v1.12
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Colorspace *cs, struct Pixmap *spix)
         {
             fz_pixmap *pm = NULL;
             fz_try(gctx) {
                 if (!fz_pixmap_colorspace(gctx, (fz_pixmap *) spix))
-                    THROWMSG("cannot copy pixmap with NULL colorspace");
+                    THROWMSG(gctx, "cannot copy pixmap with NULL colorspace");
                 pm = fz_convert_pixmap(gctx, (fz_pixmap *) spix, (fz_colorspace *) cs, NULL, NULL, fz_default_color_params, 1);
             }
             fz_catch(gctx) {
@@ -5210,9 +6504,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create pixmap as scaled copy of another one
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Pixmap *spix, float w, float h, PyObject *clip=NULL)
         {
             fz_pixmap *pm = NULL;
@@ -5232,9 +6526,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // copy pixmap & add / drop the alpha channel
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Pixmap *spix, int alpha=1)
         {
             fz_pixmap *pm = NULL, *src_pix = (fz_pixmap *) spix;
@@ -5242,10 +6536,10 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             fz_separations *seps = NULL;
             fz_try(gctx) {
                 if (!INRANGE(alpha, 0, 1))
-                    THROWMSG("illegal alpha value");
+                    THROWMSG(gctx, "bad alpha value");
                 fz_colorspace *cs = fz_pixmap_colorspace(gctx, src_pix);
                 if (!cs && !alpha)
-                    THROWMSG("cannot drop alpha for 'NULL' colorspace");
+                    THROWMSG(gctx, "cannot drop alpha for 'NULL' colorspace");
                 n = fz_pixmap_colorants(gctx, src_pix);
                 w = fz_pixmap_width(gctx, src_pix);
                 h = fz_pixmap_height(gctx, src_pix);
@@ -5278,9 +6572,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // create pixmap from samples data
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Colorspace *cs, int w, int h, PyObject *samples, int alpha=0)
         {
             int n = fz_colorspace_n(gctx, (fz_colorspace *) cs);
@@ -5292,9 +6586,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
                 size_t size = 0;
                 unsigned char *c = NULL;
                 res = JM_BufferFromBytes(gctx, samples);
-                if (!res) THROWMSG("bad samples data");
+                if (!res) THROWMSG(gctx, "bad samples data");
                 size = fz_buffer_storage(gctx, res, &c);
-                if (stride * h != size) THROWMSG("bad samples length");
+                if (stride * h != size) THROWMSG(gctx, "bad samples length");
                 pm = fz_new_pixmap(gctx, (fz_colorspace *) cs, w, h, seps, alpha);
                 memcpy(pm->samples, c, size);
             }
@@ -5307,42 +6601,37 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             return (struct Pixmap *) pm;
         }
 
-        //---------------------------------------------------------------------
-        // create pixmap from filename
-        //---------------------------------------------------------------------
-        Pixmap(char *filename)
-        {
-            fz_image *img = NULL;
-            fz_pixmap *pm = NULL;
-            fz_try(gctx) {
-                img = fz_new_image_from_file(gctx, filename);
-                pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
-                int xres, yres;
-                fz_image_resolution(img, &xres, &yres);
-                pm->xres = xres;
-                pm->yres = yres;
-            }
-            fz_always(gctx) {
-                fz_drop_image(gctx, img);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return (struct Pixmap *) pm;
-        }
 
-        //---------------------------------------------------------------------
-        // create pixmap from in-memory image
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // create pixmap from filename, file object, pathlib.Path or memory
+        //----------------------------------------------------------------
         Pixmap(PyObject *imagedata)
         {
             fz_buffer *res = NULL;
             fz_image *img = NULL;
             fz_pixmap *pm = NULL;
+            PyObject *fname = NULL;
+            PyObject *name = PyUnicode_FromString("name");
             fz_try(gctx) {
-                res = JM_BufferFromBytes(gctx, imagedata);
-                if (!res) THROWMSG("bad image data");
-                img = fz_new_image_from_buffer(gctx, res);
+                if (PyObject_HasAttrString(imagedata, "resolve")) {
+                    fname = PyObject_CallMethod(imagedata, "__str__", NULL);
+                    if (fname) {
+                        img = fz_new_image_from_file(gctx, JM_StrAsChar(fname));
+                    }
+                } else if (PyObject_HasAttr(imagedata, name)) {
+                    fname = PyObject_GetAttr(imagedata, name);
+                    if (fname) {
+                        img = fz_new_image_from_file(gctx, JM_StrAsChar(fname));
+                    }
+                } else if (PyUnicode_Check(imagedata)) {
+                    img = fz_new_image_from_file(gctx, JM_StrAsChar(imagedata));
+                } else {
+                    res = JM_BufferFromBytes(gctx, imagedata);
+                    if (!res || !fz_buffer_storage(gctx, res, NULL)) {
+                        THROWMSG(gctx, "bad image data");
+                    }
+                    img = fz_new_image_from_buffer(gctx, res);
+                }
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
                 int xres, yres;
                 fz_image_resolution(img, &xres, &yres);
@@ -5350,6 +6639,8 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
                 pm->yres = yres;
             }
             fz_always(gctx) {
+                Py_CLEAR(fname);
+                Py_CLEAR(name);
                 fz_drop_image(gctx, img);
                 fz_drop_buffer(gctx, res);
             }
@@ -5360,9 +6651,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Create pixmap from PDF image identified by XREF number
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         Pixmap(struct Document *doc, int xref)
         {
             fz_image *img = NULL;
@@ -5374,11 +6665,11 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
-                    THROWMSG("xref out of range");
+                    THROWMSG(gctx, "bad xref");
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
                 type = pdf_dict_get(gctx, ref, PDF_NAME(Subtype));
                 if (!pdf_name_eq(gctx, type, PDF_NAME(Image)))
-                    THROWMSG("xref not an image");
+                    THROWMSG(gctx, "not an image");
                 img = pdf_load_image(gctx, pdf, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -5394,9 +6685,9 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // shrink
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend shrink
 %{"""Divide width and height by 2**factor.
 E.g. factor=1 shrinks to 25% of original size (in place)."""%}
@@ -5410,9 +6701,9 @@ E.g. factor=1 shrinks to 25% of original size (in place)."""%}
             fz_subsample_pixmap(gctx, (fz_pixmap *) $self, factor);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // apply gamma correction
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend gammaWith
 %{"""Apply correction with some float.
 gamma=1 is a no-op."""}
@@ -5426,9 +6717,9 @@ gamma=1 is a no-op."""}
             fz_gamma_pixmap(gctx, (fz_pixmap *) $self, gamma);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // tint pixmap with color
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythonprepend tintWith
 %{"""Tint colors with modifiers for black and white."""
 
@@ -5440,9 +6731,9 @@ if not self.colorspace or self.colorspace.n > 3:
             fz_tint_pixmap(gctx, (fz_pixmap *) $self, black, white);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // clear all of pixmap samples to 0x00 */
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythonprepend clearWith
         %{"""Fill all color components with same value."""%}
         void clearWith()
@@ -5450,25 +6741,25 @@ if not self.colorspace or self.colorspace.n > 3:
             fz_clear_pixmap(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // clear total pixmap with value */
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         void clearWith(int value)
         {
             fz_clear_pixmap_with_value(gctx, (fz_pixmap *) $self, value);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // clear pixmap rectangle with value
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         void clearWith(int value, PyObject *bbox)
         {
             JM_clear_pixmap_rect_with_value(gctx, (fz_pixmap *) $self, value, JM_irect_from_py(bbox));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // copy pixmaps
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(copyPixmap, !result)
         %pythonprepend copyPixmap %{"""Copy bbox from another Pixmap."""%}
         PyObject *copyPixmap(struct Pixmap *src, PyObject *bbox)
@@ -5476,49 +6767,57 @@ if not self.colorspace or self.colorspace.n > 3:
             fz_try(gctx) {
                 fz_pixmap *pm = (fz_pixmap *) $self, *src_pix = (fz_pixmap *) src;
                 if (!fz_pixmap_colorspace(gctx, src_pix))
-                    THROWMSG("cannot copy pixmap with NULL colorspace");
+                    THROWMSG(gctx, "cannot copy pixmap with NULL colorspace");
                 if (pm->alpha != src_pix->alpha)
-                    THROWMSG("source and target alpha must be equal");
+                    THROWMSG(gctx, "source and target alpha must be equal");
                 fz_copy_pixmap_rect(gctx, pm, src_pix, JM_irect_from_py(bbox), NULL);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // set alpha values
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(setAlpha, !result)
         %pythonprepend setAlpha
 %{"""Set alphas to values contained in a byte array.
 If omitted, set alphas to 255."""%}
-        PyObject *setAlpha(PyObject *alphavalues=NULL)
+        PyObject *setAlpha(PyObject *alphavalues=NULL, int premultiply=1)
         {
             fz_buffer *res = NULL;
             fz_pixmap *pix = (fz_pixmap *) $self;
             fz_try(gctx) {
-                if (pix->alpha == 0) THROWMSG("pixmap has no alpha");
-                int n = fz_pixmap_colorants(gctx, pix);
-                int w = fz_pixmap_width(gctx, pix);
-                int h = fz_pixmap_height(gctx, pix);
-                int balen = w * h * (n+1);
+                if (pix->alpha == 0) THROWMSG(gctx, "pixmap has no alpha");
+                size_t n = fz_pixmap_colorants(gctx, pix);
+                size_t w = fz_pixmap_width(gctx, pix);
+                size_t h = fz_pixmap_height(gctx, pix);
+                size_t balen = w * h * (n+1);
                 unsigned char *data = NULL;
-                int data_len = 0;
+                size_t data_len = 0;
                 if (alphavalues) {
                     res = JM_BufferFromBytes(gctx, alphavalues);
                     if (res) {
-                        data_len = (int) fz_buffer_storage(gctx, res, &data);
+                        data_len = fz_buffer_storage(gctx, res, &data);
                         if (data && data_len < w * h)
-                            THROWMSG("not enough alpha values");
+                            THROWMSG(gctx, "not enough alpha values");
                     }
-                    else THROWMSG("bad type: 'alphavalues'");
+                    else THROWMSG(gctx, "bad type: 'alphavalues'");
                 }
-                int i = 0, k = 0;
+                size_t i = 0, k = 0, j = 0;
                 while (i < balen) {
-                    if (data_len) pix->samples[i+n] = data[k];
-                    else          pix->samples[i+n] = 255;
+                    if (data_len) {
+                        pix->samples[i+n] = data[k];
+                        if (premultiply) {
+                            for (j = i; j < n; j++) {
+                                pix->samples[j] = pix->samples[j] * data[k] / 255 * data[k] / 255;
+                            }
+                        }
+                    } else {
+                        pix->samples[i+n] = 255;
+                    }
                     i += n+1;
                     k += 1;
                 }
@@ -5529,12 +6828,12 @@ If omitted, set alphas to 255."""%}
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Pixmap._getImageData
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(_getImageData, !result)
         PyObject *_getImageData(int format)
         {
@@ -5614,9 +6913,9 @@ def getPNGData(self):
     return barray
     %}
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // _writeIMG
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(_writeIMG, !result)
         PyObject *_writeIMG(char *filename, int format)
         {
@@ -5646,21 +6945,25 @@ def getPNGData(self):
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
         %pythoncode %{
 def writeImage(self, filename, output=None):
     """Output as image in format determined by filename extension.
 
     Args:
-        output: (str) only use to override filename extension. Default is PNG.
+        output: (str) only use to overrule filename extension. Default is PNG.
                 Others are PNM, PGM, PPM, PBM, PAM, PSD, PS.
-    Returns:
-        Bytes object.
     """
     valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
                      "pam": 3, "tga": 4, "tpic": 4,
                      "psd": 5, "ps": 6}
+    if type(filename) is str:
+        pass
+    elif hasattr(filename, "absolute"):
+        filename = str(filename)
+    elif hasattr(filename, "name"):
+        filename = filename.name
     if output is None:
         _, ext = os.path.splitext(filename)
         output = ext[1:]
@@ -5716,13 +7019,13 @@ def pillowData(self, *args, **kwargs):
     """
     from io import BytesIO
     bytes_out = BytesIO()
-    self.pillowSave(bytes_out, *args, **kwargs)
-    return bytes_out.get_value()
+    self.pillowWrite(bytes_out, *args, **kwargs)
+    return bytes_out.getvalue()
 
         %}
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // invertIRect
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythonprepend invertIRect
         %{"""Invert the colors inside a bbox."""%}
         PyObject *invertIRect(PyObject *bbox = NULL)
@@ -5741,9 +7044,9 @@ def pillowData(self, *args, **kwargs):
             return JM_BOOL(JM_invert_pixmap_rect(gctx, pm, r));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // get one pixel as a list
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(pixel, !result)
         %pythonprepend pixel
 %{"""Get color tuple of pixel (x, y).
@@ -5754,7 +7057,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             fz_try(gctx) {
                 fz_pixmap *pm = (fz_pixmap *) $self;
                 if (!INRANGE(x, 0, pm->w - 1) || !INRANGE(y, 0, pm->h - 1))
-                    THROWMSG("coordinates outside image");
+                    THROWMSG(gctx, "outside image");
                 int n = pm->n;
                 int stride = fz_pixmap_stride(gctx, pm);
                 int j, i = stride * y + n * x;
@@ -5769,9 +7072,9 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             return p;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Set one pixel to a given color tuple
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(setPixel, !result)
         %pythonprepend setPixel
         %{"""Set color of pixel (x, y)."""%}
@@ -5780,15 +7083,17 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             fz_try(gctx) {
                 fz_pixmap *pm = (fz_pixmap *) $self;
                 if (!INRANGE(x, 0, pm->w - 1) || !INRANGE(y, 0, pm->h - 1))
-                    THROWMSG("outside image");
+                    THROWMSG(gctx, "outside image");
                 int n = pm->n;
                 if (!PySequence_Check(color) || PySequence_Size(color) != n)
-                    THROWMSG("bad color arg");
+                    THROWMSG(gctx, "bad color arg");
                 int i, j;
                 unsigned char c[5];
                 for (j = 0; j < n; j++) {
-                    i = (int) PyInt_AsLong(PySequence_ITEM(color, j));
-                    if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
+                    if (JM_INT_ITEM(color, j, &i) == 1)
+                        THROWMSG(gctx, "bad color sequence");
+                    if (!INRANGE(i, 0, 255))
+                        THROWMSG(gctx, "bad color sequence");
                     c[j] = (unsigned char) i;
                 }
                 int stride = fz_pixmap_stride(gctx, pm);
@@ -5801,13 +7106,23 @@ Last item is the alpha if Pixmap.alpha is true."""%}
                 PyErr_Clear();
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Set Pixmap resolution
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
+        %pythonprepend setOrigin
+        %{"""Set top-left coordinates."""%}
+        PyObject *setOrigin(int x, int y)
+        {
+            fz_pixmap *pm = (fz_pixmap *) $self;
+            pm->x = x;
+            pm->y = y;
+            Py_RETURN_NONE;
+        }
+
         %pythonprepend setResolution
 %{"""Set resolution in both dimensions.
 
@@ -5820,9 +7135,9 @@ Use pillowWrite to reflect this in output image."""%}
             Py_RETURN_NONE;
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // Set a rect to a given color tuple
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         FITZEXCEPTION(setRect, !result)
         %pythonprepend setRect
         %{"""Set color of all pixels in bbox."""%}
@@ -5833,14 +7148,14 @@ Use pillowWrite to reflect this in output image."""%}
                 fz_pixmap *pm = (fz_pixmap *) $self;
                 Py_ssize_t j, n = (Py_ssize_t) pm->n;
                 if (!PySequence_Check(color) || PySequence_Size(color) != n)
-                    THROWMSG("bad color arg");
+                    THROWMSG(gctx, "bad color arg");
                 unsigned char c[5];
                 int i;
                 for (j = 0; j < n; j++) {
                     if (JM_INT_ITEM(color, j, &i) == 1)
-                        THROWMSG("bad color component");
+                        THROWMSG(gctx, "bad color component");
                     if (!INRANGE(i, 0, 255))
-                        THROWMSG("bad color component");
+                        THROWMSG(gctx, "bad color component");
                     c[j] = (unsigned char) i;
                 }
                 i = JM_fill_pixmap_rect_with_color(gctx, pm, c, JM_irect_from_py(bbox));
@@ -5853,19 +7168,41 @@ Use pillowWrite to reflect this in output image."""%}
             return rc;
         }
 
-        //----------------------------------------------------------------------
-        // get length of one image row
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
+        // check if monochrome
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend stride %{"""Length of one image line (width * n)."""%}
-        int stride()
+        %pythonprepend is_monochrome %{"""Check if pixmap is monochrome."""%}
+        PyObject *is_monochrome()
         {
-            return fz_pixmap_stride(gctx, (fz_pixmap *) $self);
+            return JM_BOOL(fz_is_pixmap_monochrome(gctx, (fz_pixmap *) $self));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
+        // MD5 digest of pixmap
+        //-----------------------------------------------------------------
+        %pythoncode %{@property%}
+        %pythonprepend digest %{"""MD5 digest of pixmap (bytes)."""%}
+        PyObject *digest()
+        {
+            unsigned char digest[16];
+            fz_md5_pixmap(gctx, (fz_pixmap *) $self, digest);
+            return Py_BuildValue("y", digest);
+        }
+
+        //-----------------------------------------------------------------
+        // get length of one image row
+        //-----------------------------------------------------------------
+        %pythoncode %{@property%}
+        %pythonprepend stride %{"""Length of one image line (width * n)."""%}
+        PyObject *stride()
+        {
+            return PyLong_FromSize_t((size_t) fz_pixmap_stride(gctx, (fz_pixmap *) $self));
+        }
+
+        //-----------------------------------------------------------------
         // x, y, width, height, xres, yres, n
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend xres %{"""Resolution in x direction."""%}
         int xres()
@@ -5884,16 +7221,16 @@ Use pillowWrite to reflect this in output image."""%}
 
         %pythoncode %{@property%}
         %pythonprepend w %{"""The width."""%}
-        int w()
+        PyObject *w()
         {
-            return fz_pixmap_width(gctx, (fz_pixmap *) $self);
+            return PyLong_FromSize_t((size_t) fz_pixmap_width(gctx, (fz_pixmap *) $self));
         }
 
         %pythoncode %{@property%}
         %pythonprepend h %{"""The height."""%}
-        int h()
+        PyObject *h()
         {
-            return fz_pixmap_height(gctx, (fz_pixmap *) $self);
+            return PyLong_FromSize_t((size_t) fz_pixmap_height(gctx, (fz_pixmap *) $self));
         }
 
         %pythoncode %{@property%}
@@ -5917,9 +7254,9 @@ Use pillowWrite to reflect this in output image."""%}
             return fz_pixmap_components(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // check alpha channel
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend alpha %{"""Indicates presence of alpha channel."""%}
         int alpha()
@@ -5927,9 +7264,9 @@ Use pillowWrite to reflect this in output image."""%}
             return fz_pixmap_alpha(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // get colorspace of pixmap
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend colorspace %{"""Pixmap Colorspace."""%}
         struct Colorspace *colorspace()
@@ -5937,9 +7274,9 @@ Use pillowWrite to reflect this in output image."""%}
             return (struct Colorspace *) fz_pixmap_colorspace(gctx, (fz_pixmap *) $self);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // return irect of pixmap
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend irect %{"""Pixmap bbox - an IRect object."""%}
         %pythonappend irect %{val = IRect(val)%}
@@ -5948,25 +7285,33 @@ Use pillowWrite to reflect this in output image."""%}
             return JM_py_from_irect(fz_pixmap_bbox(gctx, (fz_pixmap *) $self));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // return size of pixmap
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend size %{"""Pixmap size."""%}
-        int size()
+        PyObject *size()
         {
-            return (int) fz_pixmap_size(gctx, (fz_pixmap *) $self);
+            fz_pixmap *pix = (fz_pixmap *) $self;
+            size_t s = (size_t) pix->w;
+            s *= pix->h;
+            s *= pix->n;
+            s += sizeof(*pix);
+            return PyLong_FromSize_t(s);
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // samples
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend samples %{"""The area of all pixels."""%}
         PyObject *samples()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
-            return PyBytes_FromStringAndSize((const char *) pm->samples, (Py_ssize_t) (pm->w)*(pm->h)*(pm->n));
+            Py_ssize_t s = (Py_ssize_t) pm->w;
+            s *= pm->h;
+            s *= pm->n;
+            return PyBytes_FromStringAndSize((const char *) pm->samples, s);
         }
 
         %pythoncode %{
@@ -6021,9 +7366,9 @@ struct Colorspace
             }
             return (struct Colorspace *) cs;
         }
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // number of bytes to define color of one pixel
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend n %{"""Size of one pixel."""%}
         PyObject *n()
@@ -6031,9 +7376,9 @@ struct Colorspace
             return Py_BuildValue("i", fz_colorspace_n(gctx, (fz_colorspace *) $self));
         }
 
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         // name of colorspace
-        //----------------------------------------------------------------------
+        //-----------------------------------------------------------------
         PyObject *_name()
         {
             return JM_UnicodeFromStr(fz_colorspace_name(gctx, (fz_colorspace *) $self));
@@ -6123,9 +7468,9 @@ struct DeviceWrapper
     }
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_outline
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %nodefaultctor;
 struct Outline {
     %immutable;
@@ -6136,17 +7481,17 @@ struct Outline {
 
     As a result, if the root Outline python object drops ref,
     then other Outline will point to already freed area. E.g.:
-    >>> import fitz
-    >>> doc=fitz.Document('3.pdf')
-    >>> ol=doc.loadOutline()
-    >>> oln=ol.next
-    >>> oln.dest.page
+    import fitz
+    doc=fitz.Document('3.pdf')
+    ol=doc.loadOutline()
+    oln=ol.next
+    oln.dest.page
     5
-    >>> #drops root outline
+    #drops root outline
     ...
-    >>> ol=4
+    ol=4
     free outline
-    >>> oln.dest.page
+    oln.dest.page
     0
 
     I do not like to change struct of fz_document, so I decide
@@ -6250,9 +7595,9 @@ struct Outline {
 %clearnodefaultctor;
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Annotation
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %nodefaultctor;
 struct Annot
 {
@@ -6264,25 +7609,26 @@ struct Annot
             pdf_drop_annot(gctx, (pdf_annot *) $self);
             DEBUGMSG2;
         }
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation rectangle
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(rect, """Annotation rectangle.""")
+        PARENTCHECK(rect, """annotation rectangle""")
         %pythonappend rect %{
         val = Rect(val)
-        val *= self.parent.derotationMatrix
+        val *= self.parent.derotation_matrix
         %}
-        PyObject *rect()
+        PyObject *
+        rect()
         {
             fz_rect r = pdf_bound_annot(gctx, (pdf_annot *) $self);
             return JM_py_from_rect(r);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get xref number
-        //---------------------------------------------------------------------
-        PARENTCHECK(xref, """Annotation xref.""")
+        //----------------------------------------------------------------
+        PARENTCHECK(xref, """annotation xref""")
         %pythoncode %{@property%}
         PyObject *xref()
         {
@@ -6290,14 +7636,14 @@ struct Annot
             return Py_BuildValue("i", pdf_to_num(gctx, annot->obj));
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get AP/N Matrix
-        //---------------------------------------------------------------------
-        PARENTCHECK(APNMatrix, """Annotation appearance matrix.""")
-        %pythonappend APNMatrix %{val = Matrix(val)%}
+        //----------------------------------------------------------------
+        PARENTCHECK(apn_matrix, """annotation appearance matrix""")
+        %pythonappend apn_matrix %{val = Matrix(val)%}
         %pythoncode %{@property%}
         PyObject *
-        APNMatrix()
+        apn_matrix()
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
@@ -6308,16 +7654,17 @@ struct Annot
             return JM_py_from_matrix(mat);
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation get AP/N BBox
-        //---------------------------------------------------------------------
-        PARENTCHECK(APNBBox, """Annotation appearance bbox.""")
-        %pythonappend APNBBox %{
-        val = Rect(val) * self.parent.transformationMatrix
-        val *= self.parent.derotationMatrix%}
+        //----------------------------------------------------------------
+        PARENTCHECK(apn_bbox, """annotation appearance bbox""")
+        %pythonappend apn_bbox %{
+        val = Rect(val) * self.parent.transformation_matrix
+        val *= self.parent.derotation_matrix%}
         %pythoncode %{@property%}
         PyObject *
-        APNBBox()
+        apn_bbox()
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
@@ -6329,74 +7676,75 @@ struct Annot
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set AP/N Matrix
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setAPNMatrix, !result)
-        PARENTCHECK(setAPNMatrix, """Set annotation appearance matrix.""")
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_apn_matrix, !result)
+        PARENTCHECK(set_apn_matrix, """Set annotation appearance matrix.""")
         PyObject *
-        setAPNMatrix(PyObject *matrix)
+        set_apn_matrix(PyObject *matrix)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             fz_try(gctx) {
                 pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                                 PDF_NAME(N), NULL);
-                if (!ap) THROWMSG("annot has no appearance stream");
+                if (!ap) THROWMSG(gctx, "annot has no appearance stream");
                 fz_matrix mat = JM_matrix_from_py(matrix);
                 pdf_dict_put_matrix(gctx, ap, PDF_NAME(Matrix), mat);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set AP/N BBox
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setAPNBBox, !result)
-        %pythonprepend setAPNBBox %{
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_apn_bbox, !result)
+        %pythonprepend set_apn_bbox %{
         """Set annotation appearance bbox."""
 
         CheckParent(self)
         page = self.parent
-        rot = page.rotationMatrix
-        mat = page.transformationMatrix
+        rot = page.rotation_matrix
+        mat = page.transformation_matrix
         bbox *= rot * ~mat
         %}
         PyObject *
-        setAPNBBox(PyObject *bbox)
+        set_apn_bbox(PyObject *bbox)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             fz_try(gctx) {
                 pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                                 PDF_NAME(N), NULL);
-                if (!ap) THROWMSG("annot has no appearance stream");
+                if (!ap) THROWMSG(gctx, "annot has no appearance stream");
                 fz_rect rect = JM_rect_from_py(bbox);
                 pdf_dict_put_rect(gctx, ap, PDF_NAME(BBox), rect);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation show blend mode (/BM)
-        //---------------------------------------------------------------------
-        PARENTCHECK(blendMode, """Annotation BlendMode.""")
-        PyObject *blendMode()
+        //----------------------------------------------------------------
+        %pythoncode %{@property%}
+        PARENTCHECK(blendmode, """annotation BlendMode""")
+        PyObject *blendmode()
         {
             PyObject *blend_mode = NULL;
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
                 pdf_obj *obj, *obj1, *obj2;
                 obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(BM));
-                if (obj) {  // check the annot object for /BM
+                if (obj) {
                     blend_mode = JM_UnicodeFromStr(pdf_to_name(gctx, obj));
-                    goto fertig;
+                    goto finished;
                 }
                 // loop through the /AP/N/Resources/ExtGState objects
                 obj = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
@@ -6415,28 +7763,29 @@ struct Annot
                                 obj2 = pdf_dict_get_key(gctx, obj1, j);
                                 if (pdf_objcmp(gctx, obj2, PDF_NAME(BM)) == 0) {
                                     blend_mode = JM_UnicodeFromStr(pdf_to_name(gctx, pdf_dict_get_val(gctx, obj1, j)));
-                                    goto fertig;
+                                    goto finished;
                                 }
                             }
                         }
                     }
                 }
-                fertig:;
+                finished:;
             }
             fz_catch(gctx) {
-                return_none;
+                Py_RETURN_NONE;
             }
             if (blend_mode) return blend_mode;
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set blend mode (/BM)
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setBlendMode, !result)
-        PARENTCHECK(setBlendMode, """Set annotation BlendMode.""")
-        PyObject *setBlendMode(char *blend_mode)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_blendmode, !result)
+        PARENTCHECK(set_blendmode, """Set annotation BlendMode.""")
+        PyObject *
+        set_blendmode(char *blend_mode)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -6445,27 +7794,205 @@ struct Annot
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation get optional content
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_oc, !result)
+        PARENTCHECK(get_oc, """Get annotation optional content reference.""")
+        PyObject *get_oc()
+        {
+            int oc = 0;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(OC));
+                if (obj) {
+                    oc = pdf_to_num(gctx, obj);
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", oc);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation set open
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_open, !result)
+        PARENTCHECK(set_open, """Set 'open' status of annotation or its Popup.""")
+        PyObject *set_open(int is_open)
+        {
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_set_annot_is_open(gctx, annot, is_open);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation inquiry: is open
+        //----------------------------------------------------------------
+        FITZEXCEPTION(is_open, !result)
+        PARENTCHECK(is_open, """Get 'open' status of annotation or its Popup.""")
+        %pythoncode %{@property%}
+        PyObject *
+        is_open()
+        {
+            int is_open;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                is_open = pdf_annot_is_open(gctx, annot);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_BOOL(is_open);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation inquiry: has Popup
+        //----------------------------------------------------------------
+        FITZEXCEPTION(has_popup, !result)
+        PARENTCHECK(has_popup, """Check if annotation has a Popup.""")
+        %pythoncode %{@property%}
+        PyObject *
+        has_popup()
+        {
+            int has_popup = 0;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(Popup));
+                if (obj) has_popup = 1;
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_BOOL(has_popup);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation set Popup
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_popup, !result)
+        PARENTCHECK(set_popup, """Create annotation 'Popup' or update rectangle.""")
+        PyObject *
+        set_popup(PyObject *rect)
+        {
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_page *pdfpage = annot->page;
+                fz_matrix rot = JM_rotate_page_matrix(gctx, pdfpage);
+                fz_rect r = fz_transform_rect(JM_rect_from_py(rect), rot);
+                pdf_set_annot_popup(gctx, annot, r);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------------------------------------
+        // annotation Popup rectangle
+        //----------------------------------------------------------------
+        FITZEXCEPTION(popup_rect, !result)
+        PARENTCHECK(popup_rect, """annotation 'Popup' rectangle""")
+        %pythoncode %{@property%}
+        %pythonappend popup_rect %{
+        val = Rect(val) * self.parent.transformation_matrix
+        val *= self.parent.derotation_matrix%}
+        PyObject *
+        popup_rect()
+        {
+            fz_rect rect = fz_infinite_rect;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(Popup));
+                if (obj) {
+                    rect = pdf_dict_get_rect(gctx, obj, PDF_NAME(Rect));
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_py_from_rect(rect);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation Popup xref
+        //----------------------------------------------------------------
+        FITZEXCEPTION(popup_xref, !result)
+        PARENTCHECK(popup_xref, """annotation 'Popup' xref""")
+        %pythoncode %{@property%}
+        PyObject *
+        popup_xref()
+        {
+            int xref = 0;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *obj = pdf_dict_get(gctx, annot->obj, PDF_NAME(Popup));
+                if (obj) {
+                    xref = pdf_to_num(gctx, obj);
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", xref);
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation set optional content
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_oc, !result)
+        PARENTCHECK(set_oc, """Set / remove annotation OC xref.""")
+        PyObject *
+        set_oc(int oc=0)
+        {
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                if (!oc) {
+                    pdf_dict_del(gctx, annot->obj, PDF_NAME(OC));
+                } else {
+                    JM_add_oc_object(gctx, pdf_get_bound_document(gctx, annot->obj), annot->obj, oc);
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
         }
 
 
         %pythoncode%{@property%}
-        %pythonprepend language %{"""Annotation language."""%}
+        %pythonprepend language %{"""annotation language"""%}
         PyObject *language()
         {
             pdf_annot *this_annot = (pdf_annot *) $self;
             fz_text_language lang = pdf_annot_language(gctx, this_annot);
             char buf[8];
-            if (lang == FZ_LANG_UNSET) return_none;
+            if (lang == FZ_LANG_UNSET) Py_RETURN_NONE;
             return Py_BuildValue("s", fz_string_from_text_language(buf, lang));
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set language (/Lang)
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setLaguage, !result)
-        PARENTCHECK(setLaguage, """Set annotation language.""")
-        PyObject *setLaguage(char *language=NULL)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_language, !result)
+        PARENTCHECK(set_language, """Set annotation language.""")
+        PyObject *set_language(char *language=NULL)
         {
             pdf_annot *this_annot = (pdf_annot *) $self;
             fz_try(gctx) {
@@ -6479,40 +8006,46 @@ struct Annot
             fz_catch(gctx) {
                 return NULL;
             }
-            Py_RETURN_TRUE;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get decompressed appearance stream source
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_getAP, !result)
-        PyObject *_getAP()
+        PyObject *
+        _getAP()
         {
-            PyObject *r = Py_None;
+            PyObject *r = NULL;
             fz_buffer *res = NULL;
+            fz_var(res);
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
                 pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                               PDF_NAME(N), NULL);
 
                 if (pdf_is_stream(gctx, ap))  res = pdf_load_stream(gctx, ap);
-                if (res) r = JM_BinFromBuffer(gctx, res);
+                if (res) {
+                    r = JM_BinFromBuffer(gctx, res);
+                }
             }
             fz_always(gctx) {
                 fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) {
-                return_none;
+                Py_RETURN_NONE;
             }
+            if (!r) Py_RETURN_NONE;
             return r;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation update /AP stream
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_setAP, !result)
-        PyObject *_setAP(PyObject *ap, int rect = 0)
+        PyObject *
+        _setAP(PyObject *ap, int rect=0)
         {
             fz_buffer *res = NULL;
             fz_var(res);
@@ -6520,11 +8053,11 @@ struct Annot
                 pdf_annot *annot = (pdf_annot *) $self;
                 pdf_obj *apobj = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                               PDF_NAME(N), NULL);
-                if (!apobj) THROWMSG("annot has no /AP/N object");
+                if (!apobj) THROWMSG(gctx, "annot has no AP/N object");
                 if (!pdf_is_stream(gctx, apobj))
-                    THROWMSG("/AP/N object is no stream");
+                    THROWMSG(gctx, "AP/N object is no stream");
                 res = JM_BufferFromBytes(gctx, ap);
-                if (!res) THROWMSG("invalid /AP stream argument");
+                if (!res) THROWMSG(gctx, "invalid /AP stream argument");
                 JM_update_stream(gctx, annot->page->doc, apobj, res, 1);
                 if (rect) {
                     fz_rect bbox = pdf_dict_get_rect(gctx, annot->obj, PDF_NAME(Rect));
@@ -6538,13 +8071,13 @@ struct Annot
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // redaction annotation get values
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_get_redact_values, !result)
         %pythonappend _get_redact_values %{
         if not val:
@@ -6563,14 +8096,17 @@ struct Annot
         {
             pdf_annot *annot = (pdf_annot *) $self;
             if (pdf_annot_type(gctx, annot) != PDF_ANNOT_REDACT)
-                return_none;
+                Py_RETURN_NONE;
 
             PyObject *values = PyDict_New();
+            pdf_obj *obj = NULL;
             const char *text = NULL;
             fz_try(gctx) {
-                pdf_obj *obj = pdf_dict_gets(gctx, annot->obj, "RO");
+                obj = pdf_dict_gets(gctx, annot->obj, "RO");
                 if (obj) {
-                    THROWMSG("unsupported redaction key '/RO'.");
+                    JM_Warning("Ignoring redaction key '/RO'.");
+                    int xref = pdf_to_num(gctx, obj);
+                    DICT_SETITEM_DROP(values, dictkey_xref, Py_BuildValue("i", xref));
                 }
                 obj = pdf_dict_gets(gctx, annot->obj, "OverlayText");
                 if (obj) {
@@ -6593,11 +8129,34 @@ struct Annot
             return values;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
+        // annotation get TextPage
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_textpage, !result)
+        PARENTCHECK(get_textpage, """Make annotation TextPage.""")
+        struct TextPage *
+        get_textpage(PyObject *clip=NULL, int flags = 0)
+        {
+            fz_stext_page *textpage=NULL;
+            fz_stext_options options = { 0 };
+            options.flags = flags;
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                textpage = pdf_new_stext_page_from_annot(gctx, annot, &options);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct TextPage *) textpage;
+        }
+
+
+        //----------------------------------------------------------------
         // annotation set name
-        //---------------------------------------------------------------------
-        PARENTCHECK(setName, """Set /Name (icon) of annotation.""")
-        PyObject *setName(char *name)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_name, """Set /Name (icon) of annotation.""")
+        PyObject *
+        set_name(char *name)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -6607,14 +8166,16 @@ struct Annot
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation set rectangle
-        //---------------------------------------------------------------------
-        PARENTCHECK(setRect, """Set annotation rectangle.""")
-        PyObject *setRect(PyObject *rect)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_rect, """Set annotation rectangle.""")
+        PyObject *
+        set_rect(PyObject *rect)
         {
             fz_try(gctx) {
                 pdf_annot *annot = (pdf_annot *) $self;
@@ -6626,14 +8187,16 @@ struct Annot
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation set rotation
-        //---------------------------------------------------------------------
-        PARENTCHECK(setRotation, """Set annotation rotation.""")
-        PyObject *setRotation(int rotate=0)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_rotation, """Set annotation rotation.""")
+        PyObject *
+        set_rotation(int rotate=0)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             int type = pdf_annot_type(gctx, annot);
@@ -6650,7 +8213,7 @@ struct Annot
                 case PDF_ANNOT_SQUARE: break;
                 case PDF_ANNOT_STAMP: break;
                 case PDF_ANNOT_TEXT: break;
-                default: return_none;
+                default: Py_RETURN_NONE;
             }
             int rot = rotate;
             while (rot < 0) rot += 360;
@@ -6659,14 +8222,15 @@ struct Annot
                 rot = 0;
 
             pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Rotate), rot);
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation get rotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(rotation, """Annotation rotation.""")
+        PARENTCHECK(rotation, """annotation rotation""")
         int rotation()
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -6675,10 +8239,11 @@ struct Annot
             return pdf_to_int(gctx, rotation);
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation vertices (for "Line", "Polgon", "Ink", etc.
-        //---------------------------------------------------------------------
-        PARENTCHECK(vertices, """Vertex points.""")
+        //----------------------------------------------------------------
+        PARENTCHECK(vertices, """annotation vertex points""")
         %pythoncode %{@property%}
         PyObject *vertices()
         {
@@ -6708,7 +8273,7 @@ struct Annot
             if (o) goto weiter;
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
             if (o) goto inklist;
-            return_none;
+            Py_RETURN_NONE;
 
             // handle lists with 1-level depth --------------------------------
             weiter:;
@@ -6741,9 +8306,9 @@ struct Annot
             return res;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation colors
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(colors, """Color definitions.""")
         PyObject *colors()
@@ -6752,9 +8317,9 @@ struct Annot
             return JM_annot_colors(gctx, annot->obj);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation update appearance
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PyObject *_update_appearance(float opacity=-1, char *blend_mode=NULL,
             PyObject *fill_color=NULL,
             int rotate = -1)
@@ -6766,8 +8331,19 @@ struct Annot
             JM_color_FromSequence(fill_color, &nfcol, fcol);
             fz_try(gctx) {
                 pdf_dirty_annot(gctx, annot); // enforce MuPDF /AP formatting
-                if (type == PDF_ANNOT_FREE_TEXT && EXISTS(fill_color))
-                    pdf_set_annot_color(gctx, annot, nfcol, fcol);
+                if (type == PDF_ANNOT_FREE_TEXT) {
+                    if (EXISTS(fill_color)) {
+                        pdf_set_annot_color(gctx, annot, nfcol, fcol);
+                    } else {
+                        pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
+                    }
+                } else {
+                    if (EXISTS(fill_color)) {
+                        pdf_set_annot_interior_color(gctx, annot, nfcol, fcol);
+                    } else if (fill_color != Py_None) {
+                        pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
+                    }
+                }
 
                 int insert_rot = (rotate >= 0) ? 1 : 0;
                 switch (type) {
@@ -6803,7 +8379,7 @@ struct Annot
                 pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                         PDF_NAME(N), NULL);
                 if (!ap)  // should never happen
-                    THROWMSG("annot has no /AP object");
+                    THROWMSG(gctx, "annot has no /AP object");
 
                 pdf_obj *resources = pdf_dict_get(gctx, ap, PDF_NAME(Resources));
                 if (!resources) {  // no Resources yet: make one
@@ -6836,15 +8412,15 @@ struct Annot
 
         %pythoncode %{
         def update(self,
-                   blend_mode=None,
-                   opacity=None,
-                   fontsize=0,
-                   fontname=None,
-                   text_color=None,
-                   border_color=None,
-                   fill_color=None,
-                   cross_out=True,
-                   rotate=-1,
+                   blend_mode: OptStr =None,
+                   opacity: OptFloat =None,
+                   fontsize: float =0,
+                   fontname: OptStr =None,
+                   text_color: OptSeq =None,
+                   border_color: OptSeq =None,
+                   fill_color: OptSeq =None,
+                   cross_out: bool =True,
+                   rotate: int =-1,
                    ):
 
             """Update annot appearance.
@@ -6884,21 +8460,19 @@ struct Annot
                 else:
                     col = "%g" % cs + app
 
-                return bytes(col, "utf8") if not fitz_py2 else col
+                return col.encode()
 
             type = self.type[0]  # get the annot type
             dt = self.border["dashes"]  # get the dashes spec
             bwidth = self.border["width"]  # get border line width
             stroke = self.colors["stroke"]  # get the stroke color
-            if fill_color is not None and type in (PDF_ANNOT_FREE_TEXT, PDF_ANNOT_REDACT):
+            if fill_color != None:
                 fill = fill_color
             else:
                 fill = self.colors["fill"]
-                if not fill:
-                    fill = None
 
             rect = None  # self.rect  # prevent MuPDF fiddling with it
-            apnmat = self.APNMatrix  # prevent MuPDF fiddling with it
+            apnmat = self.apn_matrix  # prevent MuPDF fiddling with it
             if rotate != -1:  # sanitize rotation value
                 while rotate < 0:
                     rotate += 360
@@ -6911,7 +8485,7 @@ struct Annot
             # handle opacity and blend mode
             #------------------------------------------------------------------
             if blend_mode is None:
-                blend_mode = self.blendMode()
+                blend_mode = self.blendmode
             if not hasattr(opacity, "__float__"):
                 opacity = self.opacity
 
@@ -6935,7 +8509,7 @@ struct Annot
             bfill = color_string(fill, "f")
             bstroke = color_string(stroke, "s")
 
-            p_ctm = self.parent.transformationMatrix
+            p_ctm = self.parent.transformation_matrix
             imat = ~p_ctm  # inverse page transf. matrix
 
             if dt:
@@ -6944,8 +8518,8 @@ struct Annot
             else:
                 dashes = None
 
-            if self.lineEnds:
-                line_end_le, line_end_ri = self.lineEnds
+            if self.line_ends:
+                line_end_le, line_end_ri = self.line_ends
             else:
                 line_end_le, line_end_ri = 0, 0  # init line end codes
 
@@ -7010,15 +8584,17 @@ struct Annot
                 TOOLS._update_da(self, da_str)
                 
                 for i, item in enumerate(ap_tab):
-                    if (item.endswith(b" w")
-                        and bwidth > 0
-                        and border_color is not None
-                       ):  # update border color
+                    if (
+                        item.endswith(b" w") and bwidth > 0 and border_color is not None
+                    ):  # update border color
                         ap_tab[i + 1] = color_string(border_color, "s")
                         continue
                     if item == b"BT":  # update text color
                         ap_tab[i + 1] = color_string(tcol, "f")
                         continue
+                    if not fill:
+                        if item.endswith((b" re")) and ap_tab[i + 1] == b"f":
+                            ap_tab[i + 1] = b"n"
 
                 if dashes is not None:  # handle dashes
                     ap_tab.insert(0, dashes)
@@ -7034,7 +8610,7 @@ struct Annot
                     if type == PDF_ANNOT_POLYGON:
                         ap = ap + bfill + b"b"  # close, fill, and stroke
                     elif type == PDF_ANNOT_POLY_LINE:
-                        ap = ap + bfill + b"B"  # fill and stroke
+                        ap = ap + b"S"  # stroke
                 else:
                     if type == PDF_ANNOT_POLYGON:
                         ap = ap + b"s"  # close and stroke
@@ -7071,16 +8647,16 @@ struct Annot
                     p1 = Point(points[0]) * imat
                     p2 = Point(points[1]) * imat
                     left = le_funcs[line_end_le](self, p1, p2, False, fill_color)
-                    ap += bytes(left, "utf8") if not fitz_py2 else left
+                    ap += left.encode()
                 if line_end_ri in le_funcs_range:
                     p1 = Point(points[-2]) * imat
                     p2 = Point(points[-1]) * imat
                     left = le_funcs[line_end_ri](self, p1, p2, True, fill_color)
-                    ap += bytes(left, "utf8") if not fitz_py2 else left
+                    ap += left.encode()
 
             if ap_updated:
                 if rect:                        # rect modified here?
-                    self.setRect(rect)
+                    self.set_rect(rect)
                     self._setAP(ap, rect=1)
                 else:
                     self._setAP(ap, rect=0)
@@ -7113,20 +8689,19 @@ struct Annot
                     return  # matrix already is a no-op
                 quad = self.rect.morph(M, ~apnmat)  # derotate rect
                 self.setRect(quad.rect)
-                self.setAPNMatrix(Matrix(1, 1))  # appearance matrix = no-op
+                self.set_apn_matrix(Matrix(1, 1))  # appearance matrix = no-op
                 return
 
             mat = Matrix(rot)
             quad = self.rect.morph(M, mat)
-            self.setRect(quad.rect)
-            self.setAPNMatrix(apnmat * mat)
-
+            self.set_rect(quad.rect)
+            self.set_apn_matrix(apnmat * mat)
         %}
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set colors
-        //---------------------------------------------------------------------
-        %pythonprepend setColors %{
+        //----------------------------------------------------------------
+        %pythonprepend set_colors %{
         """Set 'stroke' and 'fill' colors.
 
         Use either a dict or the direct arguments.
@@ -7135,7 +8710,7 @@ struct Annot
         if type(colors) is not dict:
             colors = {"fill": fill, "stroke": stroke}
         %}
-        void setColors(PyObject *colors=NULL, PyObject *fill=NULL, PyObject *stroke=NULL)
+        void set_colors(PyObject *colors=NULL, PyObject *fill=NULL, PyObject *stroke=NULL)
         {
             if (!PyDict_Check(colors)) return;
             pdf_annot *annot = (pdf_annot *) $self;
@@ -7152,8 +8727,10 @@ struct Annot
                     pdf_set_annot_color(gctx, annot, n, col);
                 }
                 fz_catch(gctx) {
-                    JM_Warning("could not set stroke color for this annot type");
+                    JM_Warning("annot type has no stroke color");
                 }
+            } else if (ccol != Py_None) {
+                pdf_dict_del(gctx, annot->obj, PDF_NAME(C));
             }
             n = 0;
             if (EXISTS(icol)) {
@@ -7162,7 +8739,7 @@ struct Annot
                     fz_try(gctx)
                         pdf_set_annot_interior_color(gctx, annot, n, col);
                     fz_catch(gctx)
-                        JM_Warning("cannot set fill color for this annot type");
+                        JM_Warning("annot type has no fill color");
                 } else {
                     pdf_obj *arr = pdf_new_array(gctx, annot->page->doc, n);
                     for (i = 0; i < n; i++) {
@@ -7170,45 +8747,51 @@ struct Annot
                     }
                     pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(IC), arr);
                 }
+            } else if (icol != Py_None) {
+                pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
             }
             return;
         }
 
-        //---------------------------------------------------------------------
-        // annotation lineEnds
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
+        // annotation line_ends
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(lineEnds, """Line end codes.""")
-        PyObject *lineEnds()
+        PARENTCHECK(line_ends, """Line end codes.""")
+        PyObject *
+        line_ends()
         {
             pdf_annot *annot = (pdf_annot *) $self;
 
             // return nothing for invalid annot types
             if (!pdf_annot_has_line_ending_styles(gctx, annot))
-                return_none;
+                Py_RETURN_NONE;
 
             int lstart = (int) pdf_annot_line_start_style(gctx, annot);
             int lend = (int) pdf_annot_line_end_style(gctx, annot);
             return Py_BuildValue("ii", lstart, lend);
         }
+        
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set line ends
-        //---------------------------------------------------------------------
-        PARENTCHECK(setLineEnds, """Set line end codes.""")
-        void setLineEnds(int start, int end)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_line_ends, """Set line end codes.""")
+        void set_line_ends(int start, int end)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             if (pdf_annot_has_line_ending_styles(gctx, annot))
                 pdf_set_annot_line_ending_styles(gctx, annot, start, end);
             else
-                JM_Warning("annot type has no line ends");
+                JM_Warning("bad annot type for line ends");
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation type
-        //---------------------------------------------------------------------
-        PARENTCHECK(type, """Annotation type.""")
+        //----------------------------------------------------------------
+        PARENTCHECK(type, """annotation type""")
         %pythoncode %{@property%}
         PyObject *type()
         {
@@ -7222,9 +8805,9 @@ struct Annot
             return Py_BuildValue("iss", type, c, it);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation opacity
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(opacity, """Opacity.""")
         %pythoncode %{@property%}
         PyObject *opacity()
@@ -7237,11 +8820,11 @@ struct Annot
             return Py_BuildValue("f", opy);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set opacity
-        //---------------------------------------------------------------------
-        PARENTCHECK(setOpacity, """Set opacity.""")
-        void setOpacity(float opacity)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_opacity, """Set opacity.""")
+        void set_opacity(float opacity)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             if (!INRANGE(opacity, 0.0f, 1.0f))
@@ -7257,12 +8840,13 @@ struct Annot
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation get attached file info
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(fileInfo, !result)
-        PARENTCHECK(fileInfo, """Attached file information.""")
-        PyObject *fileInfo()
+        //----------------------------------------------------------------
+        %pythoncode %{@property%}
+        FITZEXCEPTION(file_info, !result)
+        PARENTCHECK(file_info, """Attached file information.""")
+        PyObject *file_info()
         {
             PyObject *res = PyDict_New();  // create Python dict
             char *filename = NULL;
@@ -7274,10 +8858,10 @@ struct Annot
             fz_try(gctx) {
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != PDF_ANNOT_FILE_ATTACHMENT)
-                    THROWMSG("not a file attachment annot");
+                    THROWMSG(gctx, "bad annot type");
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME(FS),
                                    PDF_NAME(EF), PDF_NAME(F), NULL);
-                if (!stream) THROWMSG("bad PDF: file entry not found");
+                if (!stream) THROWMSG(gctx, "bad PDF: file entry not found");
             }
             fz_catch(gctx) {
                 return NULL;
@@ -7310,12 +8894,14 @@ struct Annot
             return res;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation get attached file content
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(fileGet, !result)
-        PARENTCHECK(fileGet, """Attached file content.""")
-        PyObject *fileGet()
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_file, !result)
+        PARENTCHECK(get_file, """Retrieve attached file content.""")
+        PyObject *
+        get_file()
         {
             PyObject *res = NULL;
             pdf_obj *stream = NULL;
@@ -7325,10 +8911,10 @@ struct Annot
             fz_try(gctx) {
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != PDF_ANNOT_FILE_ATTACHMENT)
-                    THROWMSG("not a file attachment annot");
+                    THROWMSG(gctx, "bad annot type");
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME(FS),
                                    PDF_NAME(EF), PDF_NAME(F), NULL);
-                if (!stream) THROWMSG("bad PDF: file entry not found");
+                if (!stream) THROWMSG(gctx, "bad PDF: file entry not found");
                 buf = pdf_load_stream(gctx, stream);
                 res = JM_BinFromBuffer(gctx, buf);
             }
@@ -7341,15 +8927,80 @@ struct Annot
             return res;
         }
 
-        //---------------------------------------------------------------------
-        // annotation update attached file
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(fileUpd, !result)
-        %pythonprepend fileUpd %{
-        """Update attached file."""
-        CheckParent(self)%}
 
-        PyObject *fileUpd(PyObject *buffer=NULL, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
+        //----------------------------------------------------------------
+        // annotation get attached sound stream
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_sound, !result)
+        PARENTCHECK(get_sound, """Retrieve sound stream.""")
+        PyObject *
+        get_sound()
+        {
+            PyObject *res = NULL;
+            PyObject *stream = NULL;
+            fz_buffer *buf = NULL;
+            pdf_obj *obj = NULL;
+            pdf_annot *annot = (pdf_annot *) $self;
+            fz_var(buf);
+            fz_try(gctx) {
+                int type = (int) pdf_annot_type(gctx, annot);
+                pdf_obj *sound = pdf_dict_get(gctx, annot->obj, PDF_NAME(Sound));
+                if (type != PDF_ANNOT_SOUND || !sound)
+                    THROWMSG(gctx, "bad annot type");
+                if (pdf_dict_get(gctx, sound, PDF_NAME(F))) {
+                    THROWMSG(gctx, "unsupported sound stream");
+                }
+                res = PyDict_New();
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(R));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "rate",
+                            Py_BuildValue("f", pdf_to_real(gctx, obj)));
+                }
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(C));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "channels",
+                            Py_BuildValue("i", pdf_to_int(gctx, obj)));
+                }
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(B));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "bps",
+                            Py_BuildValue("i", pdf_to_int(gctx, obj)));
+                }
+                obj = pdf_dict_get(gctx, sound, PDF_NAME(E));
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "encoding",
+                            Py_BuildValue("s", pdf_to_name(gctx, obj)));
+                }
+                obj = pdf_dict_gets(gctx, sound, "CO");
+                if (obj) {
+                    DICT_SETITEMSTR_DROP(res, "compression",
+                            Py_BuildValue("s", pdf_to_name(gctx, obj)));
+                }
+                buf = pdf_load_stream(gctx, sound);
+                stream = JM_BinFromBuffer(gctx, buf);
+                DICT_SETITEMSTR_DROP(res, "stream", stream);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buf);
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(res);
+                return NULL;
+            }
+            return res;
+        }
+
+
+        //----------------------------------------------------------------
+        // annotation update attached file
+        //----------------------------------------------------------------
+        FITZEXCEPTION(update_file, !result)
+        %pythonprepend update_file
+%{"""Update attached file."""
+CheckParent(self)%}
+
+        PyObject *
+        update_file(PyObject *buffer=NULL, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
         {
             pdf_document *pdf = NULL;       // to be filled in
             char *data = NULL;              // for new file content
@@ -7361,17 +9012,17 @@ struct Annot
                 pdf = annot->page->doc;     // the owning PDF
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != PDF_ANNOT_FILE_ATTACHMENT)
-                    THROWMSG("bad annot type");
+                    THROWMSG(gctx, "bad annot type");
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME(FS),
                                    PDF_NAME(EF), PDF_NAME(F), NULL);
                 // the object for file content
-                if (!stream) THROWMSG("bad PDF: no /EF object");
+                if (!stream) THROWMSG(gctx, "bad PDF: no /EF object");
 
                 fs = pdf_dict_get(gctx, annot->obj, PDF_NAME(FS));
 
                 // file content given
                 res = JM_BufferFromBytes(gctx, buffer);
-                if (buffer && !res) THROWMSG("bad type: 'buffer'");
+                if (buffer && !res) THROWMSG(gctx, "bad type: 'buffer'");
                 if (res) {
                     JM_update_stream(gctx, pdf, stream, res, 1);
                     // adjust /DL and /Size parameters
@@ -7406,12 +9057,13 @@ struct Annot
                 return NULL;
             }
             pdf->dirty = 1;
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation info
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(info, """Various information details.""")
         PyObject *info()
@@ -7452,11 +9104,11 @@ struct Annot
             return res;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation set information
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(setInfo, !result)
-        %pythonprepend setInfo %{
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_info, !result)
+        %pythonprepend set_info %{
         """Set various properties."""
         CheckParent(self)
         if type(info) is dict:  # build the args from the dictionary
@@ -7467,7 +9119,8 @@ struct Annot
             subject = info.get("subject", None)
             info = None
         %}
-        PyObject *setInfo(PyObject *info=NULL, char *content=NULL, char *title=NULL,
+        PyObject *
+        set_info(PyObject *info=NULL, char *content=NULL, char *title=NULL,
                           char *creationDate=NULL, char *modDate=NULL, char *subject=NULL)
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -7502,12 +9155,13 @@ struct Annot
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation border
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(border, """Border information.""")
         PyObject *border()
@@ -7516,10 +9170,10 @@ struct Annot
             return JM_annot_border(gctx, annot->obj);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // set annotation border
-        //---------------------------------------------------------------------
-        %pythonprepend setBorder %{
+        //----------------------------------------------------------------
+        %pythonprepend set_border %{
         """Set border properties.
 
         Either a dict, or direct arguments width, style and dashes."""
@@ -7527,15 +9181,17 @@ struct Annot
         if type(border) is not dict:
             border = {"width": width, "style": style, "dashes": dashes}
         %}
-        PyObject *setBorder(PyObject *border=NULL, float width=0, char *style=NULL, PyObject *dashes=NULL)
+        PyObject *
+        set_border(PyObject *border=NULL, float width=0, char *style=NULL, PyObject *dashes=NULL)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             return JM_annot_set_border(gctx, border, annot->page->doc, annot->obj);
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation flags
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         PARENTCHECK(flags, """Flags field.""")
         int flags()
@@ -7544,12 +9200,12 @@ struct Annot
             return pdf_annot_flags(gctx, annot);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation clean contents
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_cleanContents, !result)
-        PARENTCHECK(_cleanContents, """Clean appearance contents object.""")
-        PyObject *_cleanContents(int sanitize=0)
+        //----------------------------------------------------------------
+        FITZEXCEPTION(clean_contents, !result)
+        PARENTCHECK(clean_contents, """Clean appearance contents stream.""")
+        PyObject *clean_contents(int sanitize=1)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_filter_options filter = {
@@ -7571,25 +9227,29 @@ struct Annot
                 return NULL;
             }
             pdf_dirty_annot(gctx, annot);
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // set annotation flags
-        //---------------------------------------------------------------------
-        PARENTCHECK(setFlags, """Set annotation flags.""")
-        void setFlags(int flags)
+        //----------------------------------------------------------------
+        PARENTCHECK(set_flags, """Set annotation flags.""")
+        void 
+        set_flags(int flags)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_set_annot_flags(gctx, annot, flags);
         }
 
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // annotation delete responses
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(delete_responses, !result)
-        PARENTCHECK(delete_responses, """Delete responding annotations.""")
-        PyObject *delete_responses()
+        PARENTCHECK(delete_responses, """Delete 'Popup' and responding annotations.""")
+        PyObject *
+        delete_responses()
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_page *page = annot->page;
@@ -7622,12 +9282,12 @@ struct Annot
                 return NULL;
             }
             pdf_dirty_annot(gctx, annot);
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // next annotation
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         PARENTCHECK(next, """Next annotation.""")
         %pythonappend next %{
         if not val:
@@ -7648,12 +9308,9 @@ struct Annot
             int type = pdf_annot_type(gctx, this_annot);
             pdf_annot *annot;
 
-            if (type != PDF_ANNOT_WIDGET)
-            {
+            if (type != PDF_ANNOT_WIDGET) {
                 annot = pdf_next_annot(gctx, this_annot);
-            }
-            else
-            {
+            } else {
                 annot = (pdf_widget *) pdf_next_widget(gctx, (pdf_widget *) this_annot);
             }
 
@@ -7663,13 +9320,12 @@ struct Annot
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // annotation pixmap
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getPixmap, !result)
-        PARENTCHECK(getPixmap, """Annotation Pixmap.""")
-        %pythonprepend getPixmap
-%{"""Annotation Pixmap."""
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_pixmap, !result)
+        %pythonprepend get_pixmap
+%{"""annotation Pixmap"""
 
 CheckParent(self)
 cspaces = {"gray": csGRAY, "rgb": csRGB, "cmyk": csCMYK}
@@ -7677,7 +9333,7 @@ if type(colorspace) is str:
     colorspace = cspaces.get(colorspace.lower(), None)
 %}
         struct Pixmap *
-        getPixmap(PyObject *matrix = NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
+        get_pixmap(PyObject *matrix = NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
         {
             fz_matrix ctm = JM_matrix_from_py(matrix);
             fz_colorspace *cs = (fz_colorspace *) colorspace;
@@ -7694,8 +9350,6 @@ if type(colorspace) is str:
             }
             return (struct Pixmap *) pix;
         }
-
-
         %pythoncode %{
         def _erase(self):
             try:
@@ -7723,9 +9377,9 @@ if type(colorspace) is str:
 };
 %clearnodefaultctor;
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_link
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 %nodefaultctor;
 struct Link
 {
@@ -7740,9 +9394,9 @@ struct Link
         PyObject *_border(struct Document *doc, int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
-            if (!pdf) return_none;
+            if (!pdf) Py_RETURN_NONE;
             pdf_obj *link_obj = pdf_new_indirect(gctx, pdf, xref, 0);
-            if (!link_obj) return_none;
+            if (!link_obj) Py_RETURN_NONE;
             PyObject *b = JM_annot_border(gctx, link_obj);
             pdf_drop_obj(gctx, link_obj);
             return b;
@@ -7751,9 +9405,9 @@ struct Link
         PyObject *_setBorder(PyObject *border, struct Document *doc, int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
-            if (!pdf) return_none;
+            if (!pdf) Py_RETURN_NONE;
             pdf_obj *link_obj = pdf_new_indirect(gctx, pdf, xref, 0);
-            if (!link_obj) return_none;
+            if (!link_obj) Py_RETURN_NONE;
             PyObject *b = JM_annot_set_border(gctx, border, pdf, link_obj);
             pdf_drop_obj(gctx, link_obj);
             return b;
@@ -7762,9 +9416,9 @@ struct Link
         PyObject *_colors(struct Document *doc, int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
-            if (!pdf) return_none;
+            if (!pdf) Py_RETURN_NONE;
             pdf_obj *link_obj = pdf_new_indirect(gctx, pdf, xref, 0);
-            if (!link_obj) return_none;
+            if (!link_obj) Py_RETURN_NONE;
             PyObject *b = JM_annot_colors(gctx, link_obj);
             pdf_drop_obj(gctx, link_obj);
             return b;
@@ -7775,8 +9429,8 @@ struct Link
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
             pdf_obj *arr = NULL;
             int i;
-            if (!pdf) return_none;
-            if (!PyDict_Check(colors)) return_none;
+            if (!pdf) Py_RETURN_NONE;
+            if (!PyDict_Check(colors)) Py_RETURN_NONE;
             float scol[4] = {0.0f, 0.0f, 0.0f, 0.0f};
             int nscol = 0;
             float fcol[4] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -7785,9 +9439,9 @@ struct Link
             PyObject *fill = PyDict_GetItem(colors, dictkey_fill);
             JM_color_FromSequence(stroke, &nscol, scol);
             JM_color_FromSequence(fill, &nfcol, fcol);
-            if (!nscol && !nfcol) return_none;
+            if (!nscol && !nfcol) Py_RETURN_NONE;
             pdf_obj *link_obj = pdf_new_indirect(gctx, pdf, xref, 0);
-            if (!link_obj) return_none;
+            if (!link_obj) Py_RETURN_NONE;
             if (nscol > 0)
             {
                 arr = pdf_new_array(gctx, pdf, nscol);
@@ -7797,7 +9451,7 @@ struct Link
             }
             if (nfcol > 0) JM_Warning("this annot type has no fill color)");
             pdf_drop_obj(gctx, link_obj);
-            return_none;
+            Py_RETURN_NONE;
         }
 
         %pythoncode %{
@@ -7844,14 +9498,14 @@ struct Link
             """Create link destination details."""
             if hasattr(self, "parent") and self.parent is None:
                 raise ValueError("orphaned object: parent is None")
-            if self.parent.parent.isClosed or self.parent.parent.isEncrypted:
+            if self.parent.parent.is_closed or self.parent.parent.is_encrypted:
                 raise ValueError("document closed or encrypted")
             doc = self.parent.parent
 
             if self.isExternal or self.uri.startswith("#"):
                 uri = None
             else:
-                uri = doc.resolveLink(self.uri)
+                uri = doc.resolve_link(self.uri)
 
             return linkDest(self, uri)
         %}
@@ -7865,9 +9519,9 @@ struct Link
             return JM_py_from_rect(this_link->rect);
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // next link
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // we need to increase the link refs number
         // so that it will not be freed when the head is dropped
         PARENTCHECK(next, """Next link.""")
@@ -7877,11 +9531,14 @@ struct Link
                 val.parent = self.parent  # copy owning page from prev link
                 val.parent._annot_refs[id(val)] = val
                 if self.xref > 0:  # prev link has an xref
-                    link_xrefs = self.parent._getLinkXrefs()
+                    link_xrefs = [x[0] for x in self.parent.annot_xrefs() if x[1] == PDF_ANNOT_LINK]
+                    link_ids = [x[2] for x in self.parent.annot_xrefs() if x[1] == PDF_ANNOT_LINK]
                     idx = link_xrefs.index(self.xref)
                     val.xref = link_xrefs[idx + 1]
+                    val.id = link_ids[idx + 1]
                 else:
                     val.xref = 0
+                    val.id = ""
         %}
         %pythoncode %{@property%}
         struct Link *next()
@@ -7914,14 +9571,13 @@ struct Link
 
         def __del__(self):
             self._erase()%}
-
     }
 };
 %clearnodefaultctor;
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_display_list
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct DisplayList {
     %extend
     {
@@ -7953,12 +9609,12 @@ struct DisplayList {
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // DisplayList.rect
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode%{@property%}
         %pythonappend rect %{val = Rect(val)%}
         PyObject *rect()
@@ -7966,12 +9622,12 @@ struct DisplayList {
             return JM_py_from_rect(fz_bound_display_list(gctx, (fz_display_list *) $self));
         }
 
-        //---------------------------------------------------------------------
-        // DisplayList.getPixmap
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getPixmap, !result)
-        %pythonappend getPixmap %{val.thisown = True%}
-        struct Pixmap *getPixmap(PyObject *matrix=NULL,
+        //----------------------------------------------------------------
+        // DisplayList.get_pixmap
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_pixmap, !result)
+        %pythonappend get_pixmap %{val.thisown = True%}
+        struct Pixmap *get_pixmap(PyObject *matrix=NULL,
                                       struct Colorspace *colorspace=NULL,
                                       int alpha=0,
                                       PyObject *clip=NULL)
@@ -7993,12 +9649,12 @@ struct DisplayList {
             return (struct Pixmap *) pix;
         }
 
-        //---------------------------------------------------------------------
-        // DisplayList.getTextPage
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getTextPage, !result)
-        %pythonappend getTextPage %{val.thisown = True%}
-        struct TextPage *getTextPage(int flags = 3)
+        //----------------------------------------------------------------
+        // DisplayList.get_textpage
+        //----------------------------------------------------------------
+        FITZEXCEPTION(get_textpage, !result)
+        %pythonappend get_textpage %{val.thisown = True%}
+        struct TextPage *get_textpage(int flags = 3)
         {
             fz_display_list *this_dl = (fz_display_list *) $self;
             fz_stext_page *tp = NULL;
@@ -8022,9 +9678,9 @@ struct DisplayList {
     }
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // fz_stext_page
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct TextPage {
     %extend {
         ~TextPage()
@@ -8048,54 +9704,54 @@ struct TextPage {
             return (struct TextPage *) tp;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // method search()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(search, !result)
         %pythonprepend search
-        %{"""Locate up to 'hit_max' 'needle' occurrences returning rects or quads."""%}
+        %{"""Locate 'needle' returning rects or quads."""%}
         %pythonappend search %{
         if not val:
             return val
-        newval = []
-        for v in val:
-            q = Quad(v)
+        items = len(val)
+        for i in range(items):  # change entries to quads or rects
+            q = Quad(val[i])
             if quads:
-                newval.append(q)
+                val[i] = q
             else:
-                newval.append(q.rect)
-        val = newval
+                val[i] = q.rect
+        if quads:
+            return val
+        i = 0  # join overlapping rects on the same line
+        while i < items - 1:
+            v1 = val[i]
+            v2 = val[i + 1]
+            if v1.y1 != v2.y1 or (v1 & v2).isEmpty:
+                i += 1
+                continue  # no overlap on same line
+            val[i] = v1 | v2  # join rectangles
+            del val[i + 1]  # remove v2
+            items -= 1  # reduce item count
         %}
-        PyObject *search(const char *needle, int hit_max=16, int quads=1)
+        PyObject *search(const char *needle, int hit_max=0, int quads=1)
         {
-            fz_quad *result = NULL;
             PyObject *liste = NULL;
-            int i, mymax = hit_max;
-            if (mymax < 1) mymax = 16;
             fz_try(gctx) {
-                liste = PyList_New(0);
-                result = JM_Alloc(fz_quad, (mymax + 1));
-                fz_quad *quad = (fz_quad *) result;
-                int count = fz_search_stext_page(gctx, (fz_stext_page *) $self, needle, result, hit_max);
-                for (i = 0; i < count; i++) {
-                    LIST_APPEND_DROP(liste, JM_py_from_quad(*quad));
-                    quad += 1;
-                }
+                liste = JM_search_stext_page(gctx, (fz_stext_page *) $self, needle);
             }
             fz_always(gctx) {
-                JM_Free(result);
+                ;
             }
             fz_catch(gctx) {
-                Py_CLEAR(liste);
-                return PyList_New(0);
+                return NULL;
             }
             return liste;
         }
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get list of all blocks with block type and bbox as a Python list
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_getNewBlockList, !result)
         PyObject *
         _getNewBlockList(PyObject *page_dict, int raw)
@@ -8106,79 +9762,85 @@ struct TextPage {
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
         %pythoncode %{
-        def _textpage_dict(self, raw = False):
+        def _textpage_dict(self, raw=False):
             page_dict = {"width": self.rect.width, "height": self.rect.height}
             self._getNewBlockList(page_dict, raw)
             return page_dict
         %}
 
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get text blocks with their bbox and concatenated lines
         // as a Python list
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(extractBLOCKS, !result)
         %pythonprepend extractBLOCKS
-        %{"""Fill a given list with text block information."""%}
+        %{"""Return a list with text block information."""%}
         PyObject *
-        extractBLOCKS(PyObject *lines)
+        extractBLOCKS()
         {
             fz_stext_block *block;
             fz_stext_line *line;
             fz_stext_char *ch;
-            int block_n = 0;
+            int block_n = -1;
             PyObject *text = NULL, *litem;
             fz_buffer *res = NULL;
             fz_var(res);
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
-
+            fz_rect tp_rect = this_tpage->mediabox;
+            PyObject *lines = NULL;
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
+                lines = PyList_New(0);
                 for (block = this_tpage->first_block; block; block = block->next) {
-                    fz_rect blockrect = block->bbox;
+                    block_n++;
+                    fz_rect blockrect = fz_empty_rect;
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         fz_clear_buffer(gctx, res);  // set text buffer to empty
-                        int line_n = 0;
+                        int line_n = -1;
                         float last_y0 = 0.0;
+                        int last_char = 0;
                         for (line = block->u.t.first_line; line; line = line->next) {
-                            fz_rect linerect = line->bbox;
-                            // append line no. 2 with new-line
-                            if (line_n > 0) {
-                                if (linerect.y0 != last_y0)
-                                    fz_append_string(gctx, res, "\n");
-                                else
-                                    fz_append_string(gctx, res, " ");
-                            }
-                            last_y0 = linerect.y0;
                             line_n++;
+                            fz_rect linerect = fz_empty_rect;
                             for (ch = line->first_char; ch; ch = ch->next) {
+                                fz_rect cbbox = JM_char_bbox(gctx, line, ch);
+                                if (!fz_contains_rect(tp_rect, cbbox) && 
+                                    !fz_is_infinite_rect(tp_rect)) {
+                                    continue;
+                                }
                                 JM_append_rune(gctx, res, ch->c);
-                                linerect = fz_union_rect(linerect, JM_char_bbox(line, ch));
+                                last_char = ch->c;
+                                linerect = fz_union_rect(linerect, cbbox);
+                            }
+                            if (last_char != 10) {
+                                fz_append_byte(gctx, res, 10);
                             }
                             blockrect = fz_union_rect(blockrect, linerect);
                         }
                         text = JM_EscapeStrFromBuffer(gctx, res);
-                    } else {
+                    } else if (fz_contains_rect(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect)) {
                         fz_image *img = block->u.i.image;
                         fz_colorspace *cs = img->colorspace;
                         text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
                         blockrect = fz_union_rect(blockrect, block->bbox);
                     }
-                    litem = PyTuple_New(7);
-                    PyTuple_SET_ITEM(litem, 0, Py_BuildValue("f", blockrect.x0));
-                    PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
-                    PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
-                    PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
-                    PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
-                    PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
-                    PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
-                    LIST_APPEND_DROP(lines, litem);
-                    Py_DECREF(text);
-                    block_n++;
+                    if (!fz_is_empty_rect(blockrect)) {
+                        litem = PyTuple_New(7);
+                        PyTuple_SET_ITEM(litem, 0, Py_BuildValue("f", blockrect.x0));
+                        PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
+                        PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
+                        PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
+                        PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
+                        PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
+                        PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
+                        LIST_APPEND_DROP(lines, litem);
+                    }
+                    Py_CLEAR(text);
                 }
             }
             fz_always(gctx) {
@@ -8188,17 +9850,17 @@ struct TextPage {
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            return lines;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // Get text words with their bbox
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(extractWORDS, !result)
         %pythonprepend extractWORDS
-        %{"""Fill a list with text word information."""%}
+        %{"""Return a list with text word information."""%}
         PyObject *
-        extractWORDS(PyObject *lines)
+        extractWORDS()
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -8206,15 +9868,18 @@ struct TextPage {
             fz_buffer *buff = NULL;
             fz_var(buff);
             size_t buflen = 0;
-            int block_n = 0, line_n, word_n;
+            int block_n = -1, line_n, word_n;
             fz_rect wbbox = {0,0,0,0};  // word bbox
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
+            fz_rect tp_rect = this_tpage->mediabox;
 
+            PyObject *lines = NULL;
             fz_try(gctx) {
                 buff = fz_new_buffer(gctx, 64);
+                lines = PyList_New(0);
                 for (block = this_tpage->first_block; block; block = block->next) {
+                    block_n++;
                     if (block->type != FZ_STEXT_BLOCK_TEXT) {
-                        block_n++;
                         continue;
                     }
                     line_n = 0;
@@ -8223,20 +9888,25 @@ struct TextPage {
                         fz_clear_buffer(gctx, buff);      // reset word buffer
                         buflen = 0;                       // reset char counter
                         for (ch = line->first_char; ch; ch = ch->next) {
+                            fz_rect cbbox = JM_char_bbox(gctx, line, ch);
+                            if (!fz_contains_rect(tp_rect, cbbox) &&
+                                !fz_is_infinite_rect(tp_rect)) {
+                                continue;
+                            }
                             if (ch->c == 32 && buflen == 0)
-                                continue;                 // skip spaces at line start
+                                continue;  // skip spaces at line start
                             if (ch->c == 32) {
                                 word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                         block_n, line_n, word_n);
                                 fz_clear_buffer(gctx, buff);
-                                buflen = 0;               // reset char counter
+                                buflen = 0;  // reset char counter
                                 continue;
                             }
                             // append one unicode character to the word
                             JM_append_rune(gctx, buff, ch->c);
                             buflen++;
                             // enlarge word bbox
-                            wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));
+                            wbbox = fz_union_rect(wbbox, JM_char_bbox(gctx, line, ch));
                         }
                         if (buflen) {
                             word_n = JM_append_word(gctx, lines, buff, &wbbox,
@@ -8246,7 +9916,6 @@ struct TextPage {
                         }
                         line_n++;
                     }
-                    block_n++;
                 }
             }
             fz_always(gctx) {
@@ -8256,12 +9925,12 @@ struct TextPage {
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            return lines;
         }
 
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         // TextPage rectangle
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         %pythoncode %{@property%}
         %pythonprepend rect
         %{"""Page rectangle."""%}
@@ -8272,9 +9941,10 @@ struct TextPage {
             fz_rect mediabox = this_tpage->mediabox;
             return JM_py_from_rect(mediabox);
         }
-        //---------------------------------------------------------------------
+
+        //----------------------------------------------------------------
         // method _extractText()
-        //---------------------------------------------------------------------
+        //----------------------------------------------------------------
         FITZEXCEPTION(_extractText, !result)
         %newobject _extractText;
         PyObject *_extractText(int format)
@@ -8300,10 +9970,9 @@ struct TextPage {
                         break;
                     default:
                         JM_print_stext_page_as_text(gctx, out, this_tpage);
-                        text = JM_EscapeStrFromBuffer(gctx, res);
                         break;
                 }
-                if (!text) text = JM_EscapeStrFromBuffer(gctx, res);
+                text = JM_UnicodeFromBuffer(gctx, res);
 
             }
             fz_always(gctx) {
@@ -8315,49 +9984,92 @@ struct TextPage {
             }
             return text;
         }
+
+
+        //----------------------------------------------------------------
+        // method extractSelection()
+        //----------------------------------------------------------------
+        PyObject *extractSelection(PyObject *pointa, PyObject *pointb)
+        {
+            fz_stext_page *this_tpage = (fz_stext_page *) $self;
+            fz_point a = JM_point_from_py(pointa);
+            fz_point b = JM_point_from_py(pointb);
+            char *found = fz_copy_selection(gctx, this_tpage, a, b, 0);
+            PyObject *rc = NULL;
+            if (found) {
+                rc = PyUnicode_FromString(found);
+                JM_Free(found);
+            } else {
+                rc = EMPTY_STRING;
+            }
+            return rc;
+        }
+
         %pythoncode %{
-            def extractText(self):
+            def extractText(self) -> str:
                 """Return simple, bare text on the page."""
                 return self._extractText(0)
 
-            def extractHTML(self):
+
+            def extractHTML(self) -> str:
                 """Return page content as a HTML string."""
                 return self._extractText(1)
 
-            def extractJSON(self):
+            def extractJSON(self, cb=None) -> str:
                 """Return 'extractDICT' converted to JSON format."""
                 import base64, json
                 val = self._textpage_dict(raw=False)
 
                 class b64encode(json.JSONEncoder):
-                    def default(self,s):
-                        if not fitz_py2 and type(s) is bytes:
+                    def default(self, s):
+                        if type(s) in (bytes, bytearray):
                             return base64.b64encode(s).decode()
-                        if type(s) is bytearray:
-                            if fitz_py2:
-                                return base64.b64encode(s)
-                            else:
-                                return base64.b64encode(s).decode()
 
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
                 val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
-
                 return val
 
-            def extractXML(self):
+            def extractRAWJSON(self, cb=None) -> str:
+                """Return 'extractRAWDICT' converted to JSON format."""
+                import base64, json
+                val = self._textpage_dict(raw=True)
+
+                class b64encode(json.JSONEncoder):
+                    def default(self,s):
+                        if type(s) in (bytes, bytearray):
+                            return base64.b64encode(s).decode()
+
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
+                val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
+                return val
+
+            def extractXML(self) -> str:
                 """Return page content as a XML string."""
                 return self._extractText(3)
 
-            def extractXHTML(self):
+            def extractXHTML(self) -> str:
                 """Return page content as a XHTML string."""
                 return self._extractText(4)
 
-            def extractDICT(self):
+            def extractDICT(self, cb=None) -> dict:
                 """Return page content as a Python dict of images and text spans."""
-                return self._textpage_dict(raw=False)
+                val = self._textpage_dict(raw=False)
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
+                return val
 
-            def extractRAWDICT(self):
+            def extractRAWDICT(self, cb=None) -> dict:
                 """Return page content as a Python dict of images and text characters."""
-                return self._textpage_dict(raw=True)
+                val =  self._textpage_dict(raw=True)
+                if cb is not None:
+                    val["width"] = cb.width
+                    val["height"] = cb.height
+                return val
 
             def __del__(self):
                 if not type(self) is TextPage: return
@@ -8368,9 +10080,9 @@ struct TextPage {
     }
 };
 
-//-----------------------------------------------------------------------------
-// Graftmap - only internally used for optimizing PDF object copy operations
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
+// Graftmap - only used internally for inter-PDF object copy operations
+//------------------------------------------------------------------------
 struct Graftmap
 {
     %extend
@@ -8383,6 +10095,7 @@ struct Graftmap
         }
 
         FITZEXCEPTION(Graftmap, !result)
+        %pythonappend Graftmap %{self.thisown = True%}
         Graftmap(struct Document *doc)
         {
             pdf_graft_map *map = NULL;
@@ -8394,21 +10107,23 @@ struct Graftmap
             fz_catch(gctx) {
                 return NULL;
             }
-            return (struct Graftmap *) map;
+            return (struct Graftmap *) pdf_keep_graft_map(gctx, map);
         }
         %pythoncode %{
         def __del__(self):
             if not type(self) is Graftmap:
                 return
-            self.__swig_destroy__(self)
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
+            self.thisown = False
         %}
     }
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // TextWriter
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct TextWriter
 {
     %extend {
@@ -8428,10 +10143,10 @@ struct TextWriter
         self.rect = Rect(page_rect)
         self.ctm = Matrix(1, 0, 0, -1, 0, self.rect.height)
         self.ictm = ~self.ctm
-        self.lastPoint = Point()
-        self.lastPoint.__doc__ = "Position following last text insertion."
-        self.textRect = Rect(0, 0, -1, -1)
-        self.textRect.__doc__ = "Accumulated area of text spans."
+        self.last_point = Point()
+        self.last_point.__doc__ = "Position following last text insertion."
+        self.text_rect = Rect(0, 0, -1, -1)
+        self.text_rect.__doc__ = "Accumulated area of text spans."
         self.used_fonts = set()
         %}
         TextWriter(PyObject *page_rect, float opacity=1, PyObject *color=NULL )
@@ -8452,29 +10167,96 @@ struct TextWriter
 
         pos = Point(pos) * self.ictm
         if font is None:
-            font = Font("helv")%}
+            font = Font("helv")
+        if not font.is_writable:
+            raise ValueError("Unsupported font '%s'." % font.name)
+        if right_to_left:
+            text = self.clean_rtl(text)
+            text = "".join(reversed(text))
+            right_to_left = 0
+        %}
         %pythonappend append %{
-        self.lastPoint = Point(val[-2:]) * self.ctm
-        self.textRect = self._bbox * self.ctm
-        val = self.textRect, self.lastPoint
+        self.last_point = Point(val[-2:]) * self.ctm
+        self.text_rect = self._bbox * self.ctm
+        val = self.text_rect, self.last_point
         if font.flags["mono"] == 1:
             self.used_fonts.add(font)
         %}
         PyObject *
-        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int wmode=0, int bidi_level=0, int markup_dir=0)
+        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int right_to_left=0)
         {
             fz_text_language lang = fz_text_language_from_string(language);
-            //fz_bidi_direction markup_dir = 0;
             fz_point p = JM_point_from_py(pos);
             fz_matrix trm = fz_make_matrix(fontsize, 0, 0, fontsize, p.x, p.y);
+            int markup_dir = 0, wmode = 0;
             fz_try(gctx) {
-                trm = fz_show_string(gctx, (fz_text *) $self, (fz_font *) font, trm, text, wmode, bidi_level, markup_dir, lang);
+                trm = fz_show_string(gctx, (fz_text *) $self, (fz_font *) font, trm, text, wmode, right_to_left, markup_dir, lang);
             }
             fz_catch(gctx) {
                 return NULL;
             }
             return JM_py_from_matrix(trm);
         }
+
+        %pythoncode %{
+        def appendv(self, pos, text, font=None, fontsize=11,
+            language=None):
+            """Append text in vertical write mode."""
+            lheight = fontsize * 1.2
+            for c in text:
+                self.append(pos, c, font=font, fontsize=fontsize,
+                    language=language)
+                pos.y += lheight
+            return self.text_rect, self.last_point
+
+
+        def clean_rtl(self, text):
+            """Revert the sequence of Latin text parts.
+
+            Text with right-to-left writing direction (Arabic, Hebrew) often
+            contains Latin parts, which are written in left-to-right: numbers, names,
+            etc. For output as PDF text we need *everything* in right-to-left.
+            E.g. an input like "<arabic> ABCDE FG HIJ <arabic> KL <arabic>" will be
+            converted to "<arabic> JIH GF EDCBA <arabic> LK <arabic>". The Arabic
+            parts remain untouched.
+
+            Args:
+                text: str
+            Returns:
+                Massaged string.
+            """
+            if not text:
+                return text
+            # split into words at space boundaries
+            words = text.split(" ")
+            idx = []
+            for i in range(len(words)):
+                w = words[i]
+                # revert character sequence for Latin only words
+                if not (len(w) < 2 or max([ord(c) for c in w]) > 255):
+                    words[i] = "".join(reversed(w))
+                    idx.append(i)  # stored index of Latin word
+
+            # adjacent Latin words must revert their sequence, too
+            idx2 = []  # store indices of adjacent Latin words
+            for i in range(len(idx)):
+                if idx2 == []:  # empty yet?
+                    idx2.append(idx[i]) # store Latin word number
+
+                elif idx[i] > idx2[-1] + 1:  # large gap to last?
+                    if len(idx2) > 1:  # at least two consecutives?
+                        words[idx2[0] : idx2[-1] + 1] = reversed(
+                            words[idx2[0] : idx2[-1] + 1]
+                        )  # revert their sequence
+                    idx2 = [idx[i]]  # re-initialize
+
+                elif idx[i] == idx2[-1] + 1:  # new adjacent Latin word
+                    idx2.append(idx[i])
+
+            text = " ".join(words)
+            return text
+        %}
+
 
         %pythoncode %{@property%}
         %pythonappend _bbox%{val = Rect(val)%}
@@ -8483,8 +10265,8 @@ struct TextWriter
             return JM_py_from_rect(fz_bound_text(gctx, (fz_text *) $self, NULL, fz_identity));
         }
 
-        FITZEXCEPTION(writeText, !result)
-        %pythonprepend writeText%{
+        FITZEXCEPTION(write_text, !result)
+        %pythonprepend write_text%{
         """Write the text to a PDF page having the TextWriter's page size.
 
         Args:
@@ -8492,7 +10274,7 @@ struct TextWriter
             color: override text color.
             opacity: override transparency.
             overlay: put in foreground or background.
-            morph: tuple(Point, Matrix), apply Matrix with fixpoint Point.
+            morph: tuple(Point, Matrix), apply a matrix with a fixpoint.
             render_mode: (int) PDF render mode operator 'Tr'.
         """
 
@@ -8510,15 +10292,25 @@ struct TextWriter
         if color is None:
             color = self.color
         %}
-        %pythonappend writeText%{
+
+        %pythonappend write_text%{
         max_nums = val[0]
         content = val[1]
         max_alp, max_font = max_nums
         old_cont_lines = content.splitlines()
 
-        new_cont_lines = ["q"]
+        optcont = page._get_optional_content(oc)
+        if optcont != None:
+            bdc = "/OC /%s BDC" % optcont
+            emc = "EMC"
+        else:
+            bdc = emc = ""
 
-        cb = page.CropBoxPosition
+        new_cont_lines = ["q"]
+        if bdc:
+            new_cont_lines.append(bdc)
+
+        cb = page.cropbox_position
         if bool(cb):
             new_cont_lines.append("1 0 0 1 %g %g cm" % (cb.x, cb.y))
 
@@ -8549,6 +10341,8 @@ struct TextWriter
             elif line.endswith(" k"):
                 new_cont_lines.append(line.replace(" k", " K"))
             new_cont_lines.append(line)
+        if emc:
+            new_cont_lines.append(emc)
         new_cont_lines.append("Q\n")
         content = "\n".join(new_cont_lines).encode("utf-8")
         TOOLS._insert_contents(page, content, overlay=overlay)
@@ -8556,7 +10350,7 @@ struct TextWriter
         for font in self.used_fonts:
             repair_mono_font(page, font)
         %}
-        PyObject *writeText(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0)
+        PyObject *write_text(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0, int oc=0)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
             fz_rect mediabox = fz_bound_page(gctx, (fz_page *) page);
@@ -8608,15 +10402,18 @@ struct TextWriter
         def __del__(self):
             if not type(self) is TextWriter:
                 return
-            self.__swig_destroy__(self)
+            try:
+                self.__swig_destroy__(self)
+            except:
+                pass
         %}
     }
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Font
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Font
 {
     %extend
@@ -8630,15 +10427,22 @@ struct Font
 
         FITZEXCEPTION(Font, !result)
         %pythonprepend Font %{
-        if fontname:
-            if "/" in fontname or "\\" in fontname:
-                print("Warning: did you mean fontfile?")
-            try:
-                ordering = ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s").index(fontname.lower()) % 4
-            except ValueError:
-                ordering = -1
+        if fontbuffer:
+            if hasattr(fontbuffer, "getvalue"):
+                fontbuffer = fontbuffer.getvalue()
+            elif type(fontbuffer) is bytearray:
+                fontbuffer = bytes(fontbuffer)
+            if type(fontbuffer) is not bytes:
+                raise ValueError("bad type: 'fontbuffer'")
 
-            if fontname.lower() in fitz_fontdescriptors.keys():
+        if fontname:
+            if "/" in fontname or "\\" in fontname or "." in fontname:
+                print("Warning: did you mean a fontfile?")
+
+            if fontname.lower() in ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s", "cjk"):
+                ordering = 0
+
+            elif fontname.lower() in fitz_fontdescriptors.keys():
                 import pymupdf_fonts  # optional fonts
                 fontbuffer = pymupdf_fonts.myfont(fontname)  # make a copy
                 fontname = None  # ensure using fontbuffer only
@@ -8665,29 +10469,9 @@ struct Font
             return (struct Font *) font;
         }
 
-        %pythonprepend unicode_to_glyph_name
-        %{"""Return the glyph name of a unicode."""%}
-        PyObject *unicode_to_glyph_name(int c, char *language=NULL, int script=0)
-        {
-            fz_font *font;
-            fz_text_language lang = fz_text_language_from_string(language);
-            char name[32];
-            int gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, c, script, lang, &font);
-            fz_get_glyph_name(gctx, font, gid, name, sizeof(name));
-            return Py_BuildValue("s", name);
-        }
-
-
-        %pythonprepend glyph_name_to_unicode
-        %{"""Return the unicode for a glyph name."""%}
-        PyObject *glyph_name_to_unicode(const char *name)
-        {
-            return Py_BuildValue("i", fz_unicode_from_glyph_name(name));
-        }
-
 
         %pythonprepend glyph_advance
-        %{"""Return the glyph width of a unicode."""%}
+        %{"""Return the glyph width of a unicode (font size 1)."""%}
         float glyph_advance(int chr, char *language=NULL, int script=0, int wmode=0)
         {
             fz_font *font;
@@ -8697,9 +10481,9 @@ struct Font
         }
 
         %pythonprepend glyph_bbox
-        %{"""Return the glyph bbox of a unicode."""%}
+        %{"""Return the glyph bbox of a unicode (font size 1)."""%}
         %pythonappend glyph_bbox %{val = Rect(val)%}
-        PyObject *glyph_bbox(int chr, char *language=NULL, int script=0, int wmode=0)
+        PyObject *glyph_bbox(int chr, char *language=NULL, int script=0)
         {
             fz_font *font;
             fz_text_language lang = fz_text_language_from_string(language);
@@ -8708,20 +10492,19 @@ struct Font
         }
 
         %pythonprepend has_glyph
-        %{"""Return whether font has a glyph for this unicode."""%}
+        %{"""Check whether font has a glyph for this unicode."""%}
         PyObject *has_glyph(int chr, char *language=NULL, int script=0, int fallback=0)
         {
             fz_font *font;
             fz_text_language lang;
-            int gid;
+            int gid = 0;
             if (fallback) {
                 lang = fz_text_language_from_string(language);
                 gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
             } else {
                 gid = fz_encode_character(gctx, (fz_font *) $self, chr);
             }
-            if (gid > 0) Py_RETURN_TRUE;
-            Py_RETURN_FALSE;
+            return Py_BuildValue("i", gid);
         }
 
 
@@ -8732,13 +10515,15 @@ struct Font
             cp = array("l", (0,) * gc)
             arr = cp.buffer_info()
             self._valid_unicodes(arr)
-            return array("l", sorted(set(cp)))
+            return array("l", sorted(set(cp))[1:])
         %}
         void _valid_unicodes(PyObject *arr)
         {
             fz_font *font = (fz_font *) $self;
-            void *ptr = PyLong_AsVoidPtr(PySequence_ITEM(arr, 0));
-            jm_valid_chars(gctx, font, ptr);
+            PyObject *temp = PySequence_ITEM(arr, 0);
+            void *ptr = PyLong_AsVoidPtr(temp);
+            JM_valid_chars(gctx, font, ptr);
+            Py_DECREF(temp);
         }
 
 
@@ -8755,6 +10540,18 @@ struct Font
             "invalid-bbox", f->invalid_bbox);
         }
 
+
+        %pythoncode %{@property%}
+        PyObject *is_writable()
+        {
+            fz_font *font = (fz_font *) $self;
+            if (fz_font_t3_procs(gctx, font) ||
+                fz_font_flags(font)->ft_substitute ||
+                !pdf_font_writing_supported(font)) {
+                Py_RETURN_FALSE;
+            }
+            Py_RETURN_TRUE;
+        }
 
         %pythoncode %{@property%}
         PyObject *name()
@@ -8786,7 +10583,33 @@ struct Font
             return JM_py_from_rect(fz_font_bbox(gctx, this_font));
         }
 
+        %pythoncode %{@property%}
+        %pythonprepend ascender
+        %{"""Return the glyph ascender value."""%}
+        float ascender()
+        {
+            return fz_font_ascender(gctx, (fz_font *) $self);
+        }
+
+
+        %pythoncode %{@property%}
+        %pythonprepend descender
+        %{"""Return the glyph descender value."""%}
+        float descender()
+        {
+            return fz_font_descender(gctx, (fz_font *) $self);
+        }
+
+
         %pythoncode %{
+            def glyph_name_to_unicode(self, name):
+                """Return the unicode for a glyph name."""
+                return glyph_name_to_unicode(name)
+
+            def unicode_to_glyph_name(self, ch):
+                """Return the glyph name for a unicode."""
+                return unicode_to_glyph_name(ch)
+
             def text_length(self, text, fontsize=11, wmode=0):
                 """Calculate the length of a string for this font."""
                 return fontsize * sum([self.glyph_advance(ord(c), wmode=wmode) for c in text])
@@ -8797,15 +10620,18 @@ struct Font
             def __del__(self):
                 if type(self) is not Font:
                     return None
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
         %}
     }
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Tools - a collection of tools and utilities
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------
 struct Tools
 {
     %extend
@@ -8819,6 +10645,7 @@ struct Tools
             return Py_BuildValue("i", JM_UNIQUE_ID);
         }
 
+
         FITZEXCEPTION(set_icc, !result)
         %pythonprepend set_icc
         %{"""Set ICC color handling on or off."""%}
@@ -8829,7 +10656,7 @@ struct Tools
                     if (FZ_ENABLE_ICC)
                         fz_enable_icc(gctx);
                     else
-                        THROWMSG("MuPDF generated without ICC suppot.");
+                        THROWMSG(gctx, "MuPDF generated without ICC suppot.");
                 } else if (FZ_ENABLE_ICC) {
                     fz_disable_icc(gctx);
                 }
@@ -8837,7 +10664,53 @@ struct Tools
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
+        }
+
+
+        %pythonprepend set_annot_stem
+        %{"""Get / set id prefix for annotations."""%}
+        char *set_annot_stem(char *stem=NULL)
+        {
+            if (!stem) {
+                return JM_annot_id_stem;
+            }
+            size_t len = strlen(stem) + 1;
+            if (len > 50) len = 50;
+            memcpy(&JM_annot_id_stem, stem, len);
+            return JM_annot_id_stem;
+        }
+
+
+        %pythonprepend set_small_glyph_heights
+        %{"""Set / unset small glyph heights."""%}
+        PyObject *set_small_glyph_heights(PyObject *on=NULL)
+        {
+            if (!on || on == Py_None) {
+                return JM_BOOL(small_glyph_heights);
+            }
+            if (PyObject_IsTrue(on)) {
+                small_glyph_heights = 1;
+            } else {
+                small_glyph_heights = 0;
+            }
+            return JM_BOOL(small_glyph_heights);
+        }
+
+
+        %pythonprepend set_subset_fontnames
+        %{"""Set / unset returning fontnames with their subset prefix."""%}
+        PyObject *set_subset_fontnames(PyObject *on=NULL)
+        {
+            if (!on || on == Py_None) {
+                return JM_BOOL(subset_fontnames);
+            }
+            if (PyObject_IsTrue(on)) {
+                subset_fontnames = 1;
+            } else {
+                subset_fontnames = 0;
+            }
+            return JM_BOOL(subset_fontnames);
         }
 
 
@@ -8902,11 +10775,19 @@ struct Tools
         }
 
 
+        FITZEXCEPTION(image_profile, !result)
         %pythonprepend image_profile
         %{"""Metadata of an image binary stream."""%}
         PyObject *image_profile(PyObject *stream, int keep_image=0)
         {
-            return JM_image_profile(gctx, stream, keep_image);
+            PyObject *rc = NULL;
+            fz_try(gctx) {
+                rc = JM_image_profile(gctx, stream, keep_image);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return rc;
         }
 
 
@@ -8968,7 +10849,7 @@ struct Tools
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
@@ -8981,7 +10862,7 @@ struct Tools
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
@@ -8996,7 +10877,7 @@ struct Tools
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
@@ -9064,7 +10945,7 @@ struct Tools
             fz_catch(gctx) {
                 return NULL;
             }
-            return_none;
+            Py_RETURN_NONE;
         }
 
 
@@ -9208,7 +11089,11 @@ struct Tools
                 a = -src.e * dst.a - src.f * dst.c;
                 dst.f = -src.e * dst.b - src.f * dst.d;
                 dst.e = a;
-                return Py_BuildValue("(i, O)", 0, JM_py_from_matrix(dst));
+                PyObject* mat = JM_py_from_matrix(dst);
+                PyObject* res = Py_BuildValue("(i, O)", 0, mat);
+                Py_DECREF(mat);
+                return res;
+                // return Py_BuildValue("(i, O)", 0, JM_py_from_matrix(dst));
             }
             return Py_BuildValue("(i, ())", 1);
         }
@@ -9289,6 +11174,9 @@ struct Tools
                         pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
                     }
                 }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, font);
             }
             fz_catch(gctx) {
                 return NULL;

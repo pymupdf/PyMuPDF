@@ -36,7 +36,7 @@ JM_new_javascript(fz_context *ctx, pdf_document *pdf, PyObject *value)
     if (!PyObject_IsTrue(value))  // no argument given
         return NULL;
 
-    char *data = JM_Python_str_AsChar(value);
+    char *data = JM_StrAsChar(value);
     if (!data)  // not convertible to char*
         return NULL;
 
@@ -45,7 +45,6 @@ JM_new_javascript(fz_context *ctx, pdf_document *pdf, PyObject *value)
     pdf_obj *newaction = pdf_add_new_dict(ctx, pdf, 4);
     pdf_dict_put(ctx, newaction, PDF_NAME(S), pdf_new_name(ctx, "JavaScript"));
     pdf_dict_put(ctx, newaction, PDF_NAME(JS), source);
-    JM_Python_str_DelForPy3(data);
     fz_drop_buffer(ctx, res);
     return pdf_keep_obj(ctx, newaction);
 }
@@ -144,12 +143,11 @@ JM_exec_script(fz_context *ctx, pdf_obj *annot_obj, pdf_obj *key1, pdf_obj *key2
         } else {
             script = JM_get_script(ctx, pdf_dict_get(ctx, key1_obj, key2));
         }
-        code = JM_Python_str_AsChar(script);
+        code = JM_StrAsChar(script);
         fz_snprintf(buf, sizeof buf, "%d/A", pdf_to_num(ctx, annot_obj));
         pdf_js_execute(pdf->js, buf, code);
     }
     fz_always(ctx) {
-        JM_Python_str_DelForPy3(code);
         Py_XDECREF(string);
     }
     fz_catch(ctx) {
@@ -281,6 +279,59 @@ pdf_annot *JM_create_widget(fz_context *ctx, pdf_document *doc, pdf_page *page, 
 }
 
 
+void
+JM_delete_widget(fz_context *ctx, pdf_page *page, pdf_annot *annot)
+{
+    pdf_document *doc = annot->page->doc;
+    pdf_annot **annotptr;
+    pdf_obj *annot_arr, *obj;
+    int i;
+
+    if (annot == NULL)
+        return;
+
+    // Remove widget from page's list
+    for (annotptr = &page->widgets; *annotptr; annotptr = &(*annotptr)->next) {
+        if (*annotptr == annot)
+            break;
+    }
+
+    // Check whether passed annotation was of this page
+    if (*annotptr == NULL)
+        return;
+
+    *annotptr = pdf_next_widget(gctx, (pdf_widget *) annot);
+
+    // If the removed field was the last in the list adjust the end pointer
+    if (*annotptr == NULL)
+        page->widget_tailp = annotptr;
+
+    annot_arr = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
+    i = pdf_array_find(ctx, annot_arr, annot->obj);
+    if (i >= 0)
+        pdf_array_delete(ctx, annot_arr, i);
+
+    // remove any Popup for the field
+    obj = pdf_dict_get(ctx, annot->obj, PDF_NAME(Popup));
+    if (obj) {
+        i = pdf_array_find(ctx, annot_arr, obj);
+        if (i >= 0)
+            pdf_array_delete(ctx, annot_arr, i);
+    }
+
+    // remove field from AcroForm
+    obj = pdf_dict_getp(ctx, pdf_trailer(ctx, doc), "Root/AcroForm/Fields");
+    if (pdf_is_array(ctx, obj)) {
+        i = pdf_array_find(ctx, obj, annot->obj);
+        if (i >= 0)
+            pdf_array_delete(ctx, obj, i);
+    }
+
+    pdf_drop_annot(ctx, annot);
+    doc->dirty = 1;
+}
+
+
 // PushButton get state
 //-----------------------------------------------------------------------------
 PyObject *JM_pushbtn_state(fz_context *ctx, pdf_annot *annot)
@@ -392,6 +443,7 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
     return liste;
 }
 
+
 // set ListBox / ComboBox values
 //-----------------------------------------------------------------------------
 void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
@@ -406,15 +458,15 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
     PyObject *val = NULL;
     for (i = 0; i < n; i++) {
         val = PySequence_ITEM(liste, i);
-        opt = JM_Python_str_AsChar(val);
+        opt = JM_StrAsChar(val);
         pdf_array_push_text_string(ctx, optarr, (const char *) opt);
-        JM_Python_str_DelForPy3(opt);
         Py_CLEAR(val);
     }
 
     pdf_dict_put(ctx, annot->obj, PDF_NAME(Opt), optarr);
     return;
 }
+
 
 //-----------------------------------------------------------------------------
 // Populate a Python Widget object with the values from a PDF form field.
@@ -628,21 +680,19 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     // field label -----------------------------------------------------------
     value = GETATTR("field_label");
     if (value != Py_None) {
-        char *label = JM_Python_str_AsChar(value);
+        char *label = JM_StrAsChar(value);
         pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(TU), label);
-        JM_Python_str_DelForPy3(label);
     }
     Py_XDECREF(value);
 
     // field name -------------------------------------------------------------
     value = GETATTR("field_name");
     if (value != Py_None) {
-        char *name = JM_Python_str_AsChar(value);
+        char *name = JM_StrAsChar(value);
         char *old_name = pdf_field_name(ctx, annot->obj);
         if (strcmp(name, old_name) != 0) {
             pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(T), name);
         }
-        JM_Python_str_DelForPy3(name);
         JM_Free(old_name);
     }
     Py_XDECREF(value);
@@ -690,10 +740,9 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // /DA string -------------------------------------------------------------
     value = GETATTR("_text_da");
-    char *da = JM_Python_str_AsChar(value);
+    char *da = JM_StrAsChar(value);
     Py_XDECREF(value);
     pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(DA), da);
-    JM_Python_str_DelForPy3(da);
     pdf_dict_del(ctx, annot->obj, PDF_NAME(DS)); /* not supported by MuPDF */
     pdf_dict_del(ctx, annot->obj, PDF_NAME(RC)); /* not supported by MuPDF */
 
@@ -712,12 +761,11 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // button caption ---------------------------------------------------------
     value = GETATTR("button_caption");
-    char *ca = JM_Python_str_AsChar(value);
-    Py_XDECREF(value);
+    char *ca = JM_StrAsChar(value);
     if (ca) {
         pdf_field_set_button_caption(ctx, annot->obj, ca);
-        JM_Python_str_DelForPy3(ca);
     }
+    Py_XDECREF(value);
 
     // script (/A) -------------------------------------------------------
     value = GETATTR("script");
@@ -745,9 +793,6 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     Py_CLEAR(value);
 
     // field value ------------------------------------------------------------
-    // MuPDF function "pdf_set_field_value" always sets strings. For button
-    // fields this may lead to an unrecognized state for some PDF viewers.
-    //-------------------------------------------------------------------------
     value = GETATTR("field_value");
     char *text = NULL;
     switch(field_type)
@@ -755,18 +800,19 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     case PDF_WIDGET_TYPE_CHECKBOX:
     case PDF_WIDGET_TYPE_RADIOBUTTON:
         if (PyObject_RichCompareBool(value, Py_True, Py_EQ)) {
-            result = pdf_set_field_value(ctx, pdf, annot->obj, "Yes", 1);
-            pdf_dict_put_name(ctx, annot->obj, PDF_NAME(V), "Yes");
+            pdf_obj *onstate = pdf_button_field_on_state(ctx, annot->obj);
+            const char *on = pdf_to_name(ctx, onstate);
+            result = pdf_set_field_value(ctx, pdf, annot->obj, on, 1);
+            pdf_dict_put_name(ctx, annot->obj, PDF_NAME(V), on);
         } else {
             result = pdf_set_field_value(ctx, pdf, annot->obj, "Off", 1);
             pdf_dict_put(ctx, annot->obj, PDF_NAME(V), PDF_NAME(Off));
         }
         break;
     default:
-        text = JM_Python_str_AsChar(value);
+        text = JM_StrAsChar(value);
         if (text) {
             result = pdf_set_field_value(ctx, pdf, annot->obj, (const char *)text, 1);
-            JM_Python_str_DelForPy3(text);
         }
     }
     Py_CLEAR(value);
@@ -856,29 +902,29 @@ class Widget(object):
         )
         if not self.script:
             self.script = None
-        elif type(self.script) not in string_types:
-            raise ValueError("script content must be unicode")
+        elif type(self.script) is not str:
+            raise ValueError("script content must be string")
 
         # buttons cannot have the following script actions
         if btn_type or not self.script_calc:
             self.script_calc = None
-        elif type(self.script_calc) not in string_types:
-            raise ValueError("script_calc content must be unicode")
+        elif type(self.script_calc) is not str:
+            raise ValueError("script_calc content must be string")
 
         if btn_type or not self.script_change:
             self.script_change = None
-        elif type(self.script_change) not in string_types:
-            raise ValueError("script_change content must be unicode")
+        elif type(self.script_change) is not str:
+            raise ValueError("script_change content must be string")
 
         if btn_type or not self.script_format:
             self.script_format = None
-        elif type(self.script_format) not in string_types:
-            raise ValueError("script_format content must be unicode")
+        elif type(self.script_format) is not str:
+            raise ValueError("script_format content must be string")
 
         if btn_type or not self.script_stroke:
             self.script_stroke = None
-        elif type(self.script_stroke) not in string_types:
-            raise ValueError("script_stroke content must be unicode")
+        elif type(self.script_stroke) is not str:
+            raise ValueError("script_stroke content must be string")
 
         self._checker()  # any field_type specific checks
 

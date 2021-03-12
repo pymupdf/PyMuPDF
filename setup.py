@@ -11,14 +11,29 @@ class build_ext_first(build_py_orig):
         return super().run()
 
 
-DEFAULT = ["mupdf", "mupdf-third"]
-ARCH_LINUX = DEFAULT + ["jbig2dec", "openjp2", "jpeg", "freetype"]
-OPENSUSE = ARCH_LINUX + ["harfbuzz", "png16"]
-FEDORA = ARCH_LINUX + ["harfbuzz"]
+DEFAULT = [
+    "mupdf",
+    "mupdf-third",
+]
+ARCH_LINUX = DEFAULT + [
+    "jbig2dec",
+    "openjp2",
+    "jpeg",
+    "freetype",
+    "gumbo",
+]
+OPENSUSE = ARCH_LINUX + [
+    "harfbuzz",
+    "png16",
+]
+FEDORA = ARCH_LINUX + [
+    "harfbuzz",
+]
 LIBRARIES = {
     "default": DEFAULT,
     "arch": ARCH_LINUX,
     "manjaro": ARCH_LINUX,
+    "artix": ARCH_LINUX,
     "opensuse": OPENSUSE,
     "fedora": FEDORA,
 }
@@ -47,13 +62,14 @@ def load_libraries():
 
 
 # check the platform
-if sys.platform.startswith("linux") or 'gnu' in sys.platform:
+if sys.platform.startswith("linux") or "gnu" in sys.platform:
     module = Extension(
         "fitz._fitz",  # name of the module
         ["fitz/fitz.i"],
         include_dirs=[  # we need the path of the MuPDF headers
             "/usr/include/mupdf",
             "/usr/local/include/mupdf",
+            "/usr/include/freetype2",
         ],
         libraries=load_libraries(),
     )
@@ -62,7 +78,11 @@ elif sys.platform.startswith(("darwin", "freebsd")):
         "fitz._fitz",  # name of the module
         ["fitz/fitz.i"],
         # directories containing mupdf's header files
-        include_dirs=["/usr/local/include/mupdf", "/usr/local/include"],
+        include_dirs=[
+            "/usr/local/include/mupdf",
+            "/usr/local/include",
+            "/usr/include/freetype2",
+        ],
         # libraries should already be linked here by brew
         library_dirs=["/usr/local/lib"],
         # library_dirs=['/usr/local/Cellar/mupdf-tools/1.8/lib/',
@@ -84,6 +104,7 @@ else:
         include_dirs=[  # we need the path of the MuPDF's headers
             "./mupdf/include",
             "./mupdf/include/mupdf",
+            "./mupdf/thirdparty/freetype/include",
         ],
         libraries=[  # these are needed in Windows
             "libmupdf",
@@ -110,14 +131,16 @@ long_desc = "\n".join(long_dtab)
 
 setup(
     name="PyMuPDF",
-    version="1.17.6",
+    version="1.18.9",
     description="Python bindings for the PDF rendering library MuPDF",
     long_description=long_desc,
     classifiers=classifier,
     url="https://github.com/pymupdf/PyMuPDF",
-    author="Jorj McKie, Ruikai Liu",
+    author="Jorj McKie",
     author_email="jorj.x.mckie@outlook.de",
     cmdclass={"build_py": build_ext_first},
     ext_modules=[module],
     py_modules=["fitz.fitz", "fitz.utils", "fitz.__main__"],
+    license="GNU AFFERO GPL 3.0",
+    data_files=["README.md"],
 )

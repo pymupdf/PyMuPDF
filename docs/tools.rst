@@ -5,21 +5,24 @@ Tools
 
 This class is a collection of utility methods and attributes, mainly around memory management. To simplify and speed up its use, it is automatically instantiated under the name *TOOLS* when PyMuPDF is imported.
 
-================================== =================================================
-**Method / Attribute**             **Description**
-================================== =================================================
-:meth:`Tools.gen_id`               generate a unique identifyer
-:meth:`Tools.image_profile`        report basic image properties
-:meth:`Tools.store_shrink`         shrink the storables cache [#f1]_
-:meth:`Tools.mupdf_warnings`       return the accumulated MuPDF warnings
-:meth:`Tools.mupdf_display_errors` return the accumulated MuPDF warnings
-:meth:`Tools.reset_mupdf_warnings` empty MuPDF messages on STDOUT
-:meth:`Tools.set_aa_level`         set the anti-aliasing values
-:meth:`Tools.show_aa_level`        return the anti-aliasing values
-:attr:`Tools.fitz_config`          configuration settings of PyMuPDF
-:attr:`Tools.store_maxsize`        maximum storables cache size
-:attr:`Tools.store_size`           current storables cache size
-================================== =================================================
+====================================== =================================================
+**Method / Attribute**                 **Description**
+====================================== =================================================
+:meth:`Tools.gen_id`                   generate a unique identifyer
+:meth:`Tools.image_profile`            report basic image properties
+:meth:`Tools.store_shrink`             shrink the storables cache [#f1]_
+:meth:`Tools.mupdf_warnings`           return the accumulated MuPDF warnings
+:meth:`Tools.mupdf_display_errors`     return the accumulated MuPDF warnings
+:meth:`Tools.reset_mupdf_warnings`     empty MuPDF messages on STDOUT
+:meth:`Tools.set_aa_level`             set the anti-aliasing values
+:meth:`Tools.set_annot_stem`           set the prefix of new annotation / link ids
+:meth:`Tools.set_small_glyph_heights`  search and extract using small bbox heights
+:meth:`Tools.set_subset_fontnames`     control suppression of subset fontname tags
+:meth:`Tools.show_aa_level`            return the anti-aliasing values
+:attr:`Tools.fitz_config`              configuration settings of PyMuPDF
+:attr:`Tools.store_maxsize`            maximum storables cache size
+:attr:`Tools.store_size`               current storables cache size
+====================================== =================================================
 
 **Class API**
 
@@ -37,17 +40,56 @@ This class is a collection of utility methods and attributes, mainly around memo
       :rtype: int
       :returns: a unique positive integer.
 
+
+   .. method:: set_annot_stem(stem=None)
+
+      *(New in v1.18.6)*
+
+      Set or inquire the prefix for the id of new annotations, fields or links.
+
+      :arg str stem: if omitted, the current value is returned, default is "fitz". Annotations, fields / widgets and links technically are subtypes of the same type of object (`/Annot`) in PDF documents. An `/Annot` object may be given a unique identifier within a page. For each of the applicable subtypes, PyMuPDF generates identifiers "stem-Annn", "stem-Wnnn" or "stem-Lnnn" respectively. The number "nnn" is used to enforce the required uniqueness.
+
+      :rtype: str
+      :returns: the current value.
+
+
+   .. method:: set_small_glyph_heights(on=None)
+
+      *(New in v1.18.5)*
+
+      Set or inquire reduced bbox heights in text extract and text search methods.
+
+      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will be based on font properties and normally equal *line height*.
+
+      :rtype: bool
+      :returns: *True* or *False*.
+
+
+   .. method:: set_subset_fontnames(on=None)
+
+      *(New in v1.18.9)*
+
+      Control suppression of subset fontname tags in text extractions.
+
+      :arg bool on: if omitted / ``None``, the current setting is returned. For other values the *bool()* built-in function is applied to set a global variable. If *True*, options "dict", "json", "rawdict" and "rawjson" will return e.g. ``"NOHSJV+Calibri-Light"``, otherwise (default) only ``"Calibri-Light"`` (the default).
+
+      :rtype: bool
+      :returns: *True* or *False*.
+
+      .. note:: Except mentioned above, no other text extraction variants are influenced by this. This is especially true for the options "xml", "xhtml" and "html", which are based on MuPDF code. They extract the font name ``"Calibri-Light"``, or even just the **family** name -- ``Calibri`` in this example.
+
+
    .. method:: image_profile(stream)
 
       *(New in v1.16.17)* Show important properties of an image provided as a memory area. Its main purpose is to avoid using other Python packages just to determine basic properties.
 
       :arg bytes,bytearray stream: the image data.
       :rtype: dict
-      :returns: a dictionary with the keys "width", "height", "xres", "yres", "colorspace" (the *colorspace.n* value, number of colorants), "cs-name" (the *colorspace.name* value), "bpc", "ext" (image type as file extension). The values for these keys are the same as returned by :meth:`Document.extractImage`. Please also have a look at :data:`resolution`.
+      :returns: a dictionary with the keys "width", "height", "xres", "yres", "colorspace" (the *colorspace.n* value, number of colorants), "cs-name" (the *colorspace.name* value), "bpc", "ext" (image type as file extension). The values for these keys are the same as returned by :meth:`Document.extract_image`. Please also have a look at :data:`resolution`.
       
       .. note::
 
-        * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extractImage` or create pixmaps via ``Pixmap(doc, xref)``. These methods will automatically convert exotic images to the PNG format before returning results.
+        * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via ``Pixmap(doc, xref)``. These methods will automatically convert exotic images to the PNG format before returning results.
 
         * Some examples::
 
@@ -64,7 +106,7 @@ This class is a collection of utility methods and attributes, mainly around memo
                'ext': 'jpeg',
                'cs-name': 'DeviceRGB'}
                In [4]: doc=fitz.open(<input.pdf>)
-               In [5]: stream = doc.xrefStreamRaw(5)  # no decompression!
+               In [5]: stream = doc.xref_stream_raw(5)  # no decompression!
                In [6]: fitz.TOOLS.image_profile(stream)
                Out[6]:
                {'width': 816,
@@ -219,7 +261,7 @@ Example Session
    >>> doc = fitz.open("demo1.pdf")
    # pixmap creation puts lots of object in cache (text, images, fonts),
    # apart from the pixmap itself
-   >>> pix = doc[0].getPixmap(alpha=False)
+   >>> pix = doc[0].get_pixmap(alpha=False)
    >>> fitz.TOOLS.store_size
    454519
    # release (at least) 50% of the storage

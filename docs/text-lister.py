@@ -25,7 +25,7 @@ doc = fitz.open("text-tester.pdf")
 page = doc[0]
 
 # read page text as a dictionary, suppressing extra spaces in CJK fonts
-blocks = page.getText("dict", flags=11)["blocks"]
+blocks = page.get_text("dict", flags=11)["blocks"]
 for b in blocks:  # iterate through the text blocks
     for l in b["lines"]:  # iterate through the text lines
         for s in l["spans"]:  # iterate through the text spans

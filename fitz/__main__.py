@@ -9,12 +9,11 @@ mycenter = lambda x: (" %s " % x).center(75, "-")
 
 
 def recoverpix(doc, item):
-    """Return image for a given XREF.
-    """
+    """Return image for a given XREF."""
     x = item[0]  # xref of PDF image
     s = item[1]  # xref of its /SMask
     if s == 0:  # no smask: use direct image output
-        return doc.extractImage(x)
+        return doc.extract_image(x)
 
     def getimage(pix):
         if pix.colorspace.n != 4:
@@ -46,10 +45,9 @@ def recoverpix(doc, item):
 
 
 def open_file(filename, password, show=False, pdf=True):
-    """Open and authenticate a document.
-    """
+    """Open and authenticate a document."""
     doc = fitz.open(filename)
-    if not doc.isPDF and pdf is True:
+    if not doc.is_pdf and pdf is True:
         sys.exit("this command supports PDF files only")
     rc = -1
     if not doc.needsPass:
@@ -66,8 +64,7 @@ def open_file(filename, password, show=False, pdf=True):
 
 
 def print_dict(item):
-    """Print a Python dictionary.
-    """
+    """Print a Python dictionary."""
     l = max([len(k) for k in item.keys()]) + 1
     for k, v in item.items():
         msg = "%s: %s" % (k.rjust(l), v)
@@ -82,9 +79,9 @@ def print_xref(doc, xref):
     For a stream also print its size.
     """
     print("%i 0 obj" % xref)
-    xref_str = doc.xrefObject(xref)
+    xref_str = doc.xref_object(xref)
     print(xref_str)
-    if doc.isStream(xref):
+    if doc.is_stream(xref):
         temp = xref_str.split()
         try:
             idx = temp.index("/Length") + 1
@@ -158,7 +155,7 @@ def show(args):
         "'%s', pages: %i, objects: %i, %g %s, %s, encryption: %s"
         % (
             args.input,
-            doc.pageCount,
+            doc.page_count,
             doc._getXrefLength() - 1,
             size,
             flag,
@@ -166,14 +163,14 @@ def show(args):
             meta["encryption"],
         )
     )
-    n = doc.isFormPDF
+    n = doc.is_form_pdf
     if n > 0:
-        s = doc.getSigFlags()
+        s = doc.get_sigflags()
         print(
             "document contains %i root form fields and is %ssigned"
             % (n, "not " if s != 3 else "")
         )
-    n = doc.embeddedFileCount()
+    n = doc.embfile_count()
     if n > 0:
         print("document contains %i embedded files" % n)
     print()
@@ -194,16 +191,16 @@ def show(args):
             print()
     if args.pages:
         print(mycenter("page information"))
-        pagel = get_list(args.pages, doc.pageCount + 1)
+        pagel = get_list(args.pages, doc.page_count + 1)
         for pno in pagel:
             n = pno - 1
-            xref = doc._getPageXref(n)[0]
+            xref = doc.page_xref(n)
             print("Page %i:" % pno)
             print_xref(doc, xref)
             print()
     if args.trailer:
         print(mycenter("PDF trailer"))
-        print(doc.PDFTrailer())
+        print(doc.pdf_trailer())
         print()
     doc.close()
 
@@ -232,11 +229,11 @@ def clean(args):
         return
 
     # create sub document from page numbers
-    pages = get_list(args.pages, doc.pageCount + 1)
+    pages = get_list(args.pages, doc.page_count + 1)
     outdoc = fitz.open()
     for pno in pages:
         n = pno - 1
-        outdoc.insertPDF(doc, from_page=n, to_page=n)
+        outdoc.insert_pdf(doc, from_page=n, to_page=n)
     outdoc.save(
         args.output,
         garbage=args.garbage,
@@ -256,8 +253,7 @@ def clean(args):
 
 
 def doc_join(args):
-    """Join pages from several PDF documents.
-    """
+    """Join pages from several PDF documents."""
     doc_list = args.input  # a list of input PDFs
     doc = fitz.open()  # output PDF
     for src_item in doc_list:  # process one input PDF
@@ -266,11 +262,11 @@ def doc_join(args):
         src = open_file(src_list[0], password, pdf=True)
         pages = ",".join(src_list[2:])  # get 'pages' specifications
         if pages:  # if anything there, retrieve a list of desired pages
-            page_list = get_list(",".join(src_list[2:]), src.pageCount + 1)
+            page_list = get_list(",".join(src_list[2:]), src.page_count + 1)
         else:  # take all pages
-            page_list = range(1, src.pageCount + 1)
+            page_list = range(1, src.page_count + 1)
         for i in page_list:
-            doc.insertPDF(src, from_page=i - 1, to_page=i - 1)  # copy each source page
+            doc.insert_pdf(src, from_page=i - 1, to_page=i - 1)  # copy each source page
         src.close()
 
     doc.save(args.output, garbage=4, deflate=True)
@@ -278,8 +274,7 @@ def doc_join(args):
 
 
 def embedded_copy(args):
-    """Copy embedded files between PDFs.
-    """
+    """Copy embedded files between PDFs."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         not args.output or args.output == args.input
@@ -287,7 +282,7 @@ def embedded_copy(args):
         sys.exit("cannot save PDF incrementally")
     src = open_file(args.source, args.pwdsource)
     names = set(args.name) if args.name else set()
-    src_names = set(src.embeddedFileNames())
+    src_names = set(src.embfile_names())
     if names:
         if not names <= src_names:
             sys.exit("not all names are contained in source")
@@ -295,16 +290,14 @@ def embedded_copy(args):
         names = src_names
     if not names:
         sys.exit("nothing to copy")
-    intersect = names & set(
-        doc.embeddedFileNames()
-    )  # any equal name already in target?
+    intersect = names & set(doc.embfile_names())  # any equal name already in target?
     if intersect:
         sys.exit("following names already exist in receiving PDF: %s" % str(intersect))
 
     for item in names:
-        info = src.embeddedFileInfo(item)
+        info = src.embfile_info(item)
         buff = src.embeddedFileGet(item)
-        doc.embeddedFileAdd(
+        doc.embfile_add(
             item,
             buff,
             filename=info["filename"],
@@ -321,8 +314,7 @@ def embedded_copy(args):
 
 
 def embedded_del(args):
-    """Delete an embedded file entry.
-    """
+    """Delete an embedded file entry."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         not args.output or args.output == args.input
@@ -330,7 +322,7 @@ def embedded_del(args):
         sys.exit("cannot save PDF incrementally")
 
     try:
-        doc.embeddedFileDel(args.name)
+        doc.embfile_del(args.name)
     except ValueError:
         sys.exit("no such embedded file '%s'" % args.name)
     if not args.output or args.output == args.input:
@@ -341,12 +333,11 @@ def embedded_del(args):
 
 
 def embedded_get(args):
-    """Retrieve contents of an embedded file.
-    """
+    """Retrieve contents of an embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
     try:
         stream = doc.embeddedFileGet(args.name)
-        d = doc.embeddedFileInfo(args.name)
+        d = doc.embfile_info(args.name)
     except ValueError:
         sys.exit("no such embedded file '%s'" % args.name)
     filename = args.output if args.output else d["filename"]
@@ -358,8 +349,7 @@ def embedded_get(args):
 
 
 def embedded_add(args):
-    """Insert a new embedded file.
-    """
+    """Insert a new embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         args.output is None or args.output == args.input
@@ -367,7 +357,7 @@ def embedded_add(args):
         sys.exit("cannot save PDF incrementally")
 
     try:
-        doc.embeddedFileDel(args.name)
+        doc.embfile_del(args.name)
         sys.exit("entry '%s' already exists" % args.name)
     except:
         pass
@@ -381,7 +371,7 @@ def embedded_add(args):
         desc = filename
     else:
         desc = args.desc
-    doc.embeddedFileAdd(
+    doc.embfile_add(
         args.name, stream, filename=filename, ufilename=ufilename, desc=desc
     )
     if not args.output or args.output == args.input:
@@ -392,8 +382,7 @@ def embedded_add(args):
 
 
 def embedded_upd(args):
-    """Update contents or metadata of an embedded file.
-    """
+    """Update contents or metadata of an embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (
         args.output is None or args.output == args.input
@@ -401,7 +390,7 @@ def embedded_upd(args):
         sys.exit("cannot save PDF incrementally")
 
     try:
-        doc.embeddedFileInfo(args.name)
+        doc.embfile_info(args.name)
     except:
         sys.exit("no such embedded file '%s'" % args.name)
 
@@ -431,7 +420,7 @@ def embedded_upd(args):
     else:
         desc = None
 
-    doc.embeddedFileUpd(
+    doc.embfile_upd(
         args.name, stream, filename=filename, ufilename=ufilename, desc=desc
     )
     if args.output is None or args.output == args.input:
@@ -442,10 +431,9 @@ def embedded_upd(args):
 
 
 def embedded_list(args):
-    """List embedded files.
-    """
+    """List embedded files."""
     doc = open_file(args.input, args.password, pdf=True)
-    names = doc.embeddedFileNames()
+    names = doc.embfile_names()
     if args.name is not None:
         if args.name not in names:
             sys.exit("no such embedded file '%s'" % args.name)
@@ -456,7 +444,7 @@ def embedded_list(args):
                 % (len(names), "s" if len(names) > 1 else "")
             )
             print()
-            print_dict(doc.embeddedFileInfo(args.name))
+            print_dict(doc.embfile_info(args.name))
             print()
             return
     if not names:
@@ -472,23 +460,22 @@ def embedded_list(args):
         if not args.detail:
             print(name)
             continue
-        _ = doc.embeddedFileInfo(name)
-        print_dict(doc.embeddedFileInfo(name))
+        _ = doc.embfile_info(name)
+        print_dict(doc.embfile_info(name))
         print()
     doc.close()
 
 
 def extract_objects(args):
-    """Extract images and / or fonts from a PDF.
-    """
+    """Extract images and / or fonts from a PDF."""
     if not args.fonts and not args.images:
         sys.exit("neither fonts nor images requested")
     doc = open_file(args.input, args.password, pdf=True)
 
     if args.pages:
-        pages = get_list(args.pages, doc.pageCount + 1)
+        pages = get_list(args.pages, doc.page_count + 1)
     else:
-        pages = range(1, doc.pageCount + 1)
+        pages = range(1, doc.page_count + 1)
 
     if not args.output:
         out_dir = os.path.abspath(os.curdir)
@@ -502,12 +489,12 @@ def extract_objects(args):
 
     for pno in pages:
         if args.fonts:
-            itemlist = doc.getPageFontList(pno - 1)
+            itemlist = doc.get_page_fonts(pno - 1)
             for item in itemlist:
                 xref = item[0]
                 if xref not in font_xrefs:
                     font_xrefs.add(xref)
-                    fontname, ext, _, buffer = doc.extractFont(xref)
+                    fontname, ext, _, buffer = doc.extract_font(xref)
                     if ext == "n/a" or not buffer:
                         continue
                     outname = os.path.join(
@@ -518,7 +505,7 @@ def extract_objects(args):
                     outfile.close()
                     buffer = None
         if args.images:
-            itemlist = doc.getPageImageList(pno - 1)
+            itemlist = doc.get_page_images(pno - 1)
             for item in itemlist:
                 xref = item[0]
                 if xref not in image_xrefs:
@@ -548,8 +535,7 @@ def extract_objects(args):
 
 
 def main():
-    """Define command configurations.
-    """
+    """Define command configurations."""
     import argparse
 
     parser = argparse.ArgumentParser(

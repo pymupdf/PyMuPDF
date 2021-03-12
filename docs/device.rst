@@ -28,6 +28,3 @@ The different format handlers (pdf, xps, etc.) interpret pages to a "device". De
       :type textpage: :ref:`TextPage`
 
       :arg int flags: control the way how text is parsed into the text page. Currently 3 options can be coded into this parameter, see :ref:`TextPreserve`. To set these options use something like *flags=0 | TEXT_PRESERVE_LIGATURES | ...*.
-
-.. note:: In higher level code (:meth:`Page.getText`, :meth:`Document.getPageText`), the following decisions for creating text devices have been implemented: (1) *TEXT_PRESERVE_LIGATURES* and *TEXT_PRESERVE_WHITESPACES* are always set, (2) *TEXT_PRESERVE_IMAGES* is set for JSON and HTML, otherwise off.
-
