@@ -3976,7 +3976,8 @@ def fill_textbox(
         fontsize: the fontsize.
         lineheight: overwrite the font property
         align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
-        warn: (bool) just warn on text overflow, else raise exception.
+        warn: (bool) text overflow action: none, warn, or exception
+        right_to_left: (bool) indicate right-to-left language.
     """
     rect = Rect(rect)
     if rect.isEmpty or rect.isInfinite:
@@ -3990,7 +3991,7 @@ def fill_textbox(
     def append_this(pos, text):
         return writer.append(pos, text, font=font, fontsize=fontsize)
 
-    tolerance = fontsize * 0.2
+    tolerance = fontsize * 0.2  # extra distance to left border
     space_len = textlen(" ")
     std_width = rect.width - tolerance
     std_start = rect.x0 + tolerance
@@ -4564,7 +4565,187 @@ def has_annots(doc: Document) -> bool:
     return False
 
 
-# Building font subsets using fontTools ----------------------------------
+# -------------------------------------------------------------------
+# Functions to recover the quad contained in a text extraction bbox
+# -------------------------------------------------------------------
+def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> Quad:
+    """Compute the quad located inside the bbox.
+
+    The bbox may be any of the resp. tuples occurring inside the given span.
+
+    Args:
+        line_dir: (tuple) 'line["dir"]' of the owning line.
+        span: (dict) the span.
+        bbox: (tuple) the bbox of the span or any of its characters.
+    Returns:
+        The quad which is wrapped by the bbox.
+    """
+    cos, sin = line_dir
+    bbox = Rect(bbox)  # make it a rect
+    if TOOLS.set_small_glyph_heights():  # ==> just fontsize as height
+        d = 1
+    else:
+        d = span["ascender"] - span["descender"]
+
+    height = d * span["size"]  # the quad's rectangle height
+    # The following are distances from the bbox corners, at wich we find the
+    # respective quad points. The calculation depends, on in which circle
+    # quadrant the text writing angle is positioned.
+    hs = height * sin
+    hc = height * cos
+    if hc >= 0 and hs <= 0:  # quadrant 1
+        ul = bbox.bl - (0, hc)
+        ur = bbox.tr + (hs, 0)
+        ll = bbox.bl - (hs, 0)
+        lr = bbox.tr + (0, hc)
+    elif hc <= 0 and hs <= 0:  # quadrant 2
+        ul = bbox.br + (hs, 0)
+        ur = bbox.tl - (0, hc)
+        ll = bbox.br + (0, hc)
+        lr = bbox.tl - (hs, 0)
+    elif hc <= 0 and hs >= 0:  # quadrant 3
+        ul = bbox.tr - (0, hc)
+        ur = bbox.bl + (hs, 0)
+        ll = bbox.tr - (hs, 0)
+        lr = bbox.bl + (0, hc)
+    else:  # quadrant 4
+        ul = bbox.tl + (hs, 0)
+        ur = bbox.br - (0, hc)
+        ll = bbox.tl + (0, hc)
+        lr = bbox.br - (hs, 0)
+    return Quad(ul, ur, ll, lr)
+
+
+def recover_quad(line_dir: tuple, span: dict) -> Quad:
+    """Recover the quadrilateral of a text span.
+
+    Args:
+        line_dir: (tuple) 'line["dir"]' of the owning line.
+        span: the span.
+    Returns:
+        The quadrilateral envelopping the span's text.
+    """
+    if type(line_dir) is not tuple or len(line_dir) != 2:
+        raise ValueError("bad line dir argument")
+    if type(span) is not dict:
+        raise ValueError("bad span argument")
+    return recover_bbox_quad(line_dir, span, span["bbox"])
+
+
+def recover_line_quad(line: dict, spans: list = None) -> Quad:
+    """Calculate the line quad for 'dict' / 'rawdict' text extractions.
+
+    The lower quad points are those of the first, resp. last span quad.
+    The upper points are determined by the maximum span quad height.
+    From this, compute a rect with bottom-left in (0, 0), convert this to a
+    quad and rotate and shift back to cover the text of the spans.
+
+    Args:
+        spans: (list, optional) sub-list of spans to consider.
+    Returns:
+        Quad covering selected spans.
+    """
+    if spans == None:  # no sub-selection
+        spans = line["spans"]  # all spans
+    if len(spans) == 0:
+        raise ValueError("bad span list")
+    line_dir = line["dir"]  # text direction
+    cos, sin = line_dir
+    q0 = fitz.recover_quad(line_dir, spans[0])  # quad of first span
+
+    if len(spans) > 1:  # get quad of last span
+        q1 = fitz.recover_quad(line_dir, spans[-1])
+    else:
+        q1 = q0  # last = first
+
+    line_ll = q0.ll  # lower-left of line quad
+    line_lr = q1.lr  # lower-right of line quad
+
+    mat0 = fitz.planishLine(line_ll, line_lr)
+
+    # map base line to x-axis such that line_ll goes to (0, 0)
+    x_lr = line_lr * mat0
+
+    small = fitz.TOOLS.set_small_glyph_heights()  # small glyph heights?
+
+    h = max(
+        [s["size"] * (1 if small else s["ascender"] - s["descender"]) for s in spans]
+    )
+
+    line_rect = fitz.Rect(0, -h, x_lr.x, 0)  # line rectangle
+    line_quad = line_rect.quad  # make it a quad and:
+    line_quad *= ~mat0
+    return line_quad
+
+
+def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> Quad:
+    """Calculate the span quad for 'dict' / 'rawdict' text extractions.
+
+    Notes:
+        There are two execution paths:
+        1. For the full span quad, the result of 'recover_quad' is returned.
+        2. For the quad of a sub-list of characters, the char quads are
+           computed and joined. This is only supported for the "rawdict"
+           extraction option.
+
+    Args:
+        line_dir: (tuple) 'line["dir"]' of the owning line.
+        span: (dict) the span.
+        chars: (list, optional) sub-list of characters to consider.
+    Returns:
+        Quad covering selected characters.
+    """
+    if chars == None:  # no sub-selection
+        return recover_quad(line_dir, span)
+    if not hasattr(span, "chars"):
+        raise ValueError("need 'rawdict' option to sub-select chars")
+
+    q0 = recover_char_quad(line_dir, span, chars[0])  # quad of first char
+    if len(chars) > 1:  # get quad of last char
+        q1 = recover_char_quad(line_dir, span, chars[-1])
+    else:
+        q1 = q0  # last = first
+
+    span_ll = q0.ll  # lower-left of span quad
+    span_lr = q1.lr  # lower-right of span quad
+    mat0 = planishLine(span_ll, span_lr)
+    # map base line to x-axis such that span_ll goes to (0, 0)
+    x_lr = span_lr * mat0
+
+    small = TOOLS.set_small_glyph_heights()  # small glyph heights?
+    h = span["size"] * (1 if small else span["ascender"] - span["descender"])
+
+    span_rect = Rect(0, -h, x_lr.x, 0)  # line rectangle
+    span_quad = span_rect.quad  # make it a quad and:
+    span_quad *= ~mat0  # rotate back and shift back
+    return span_quad
+
+
+def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> Quad:
+    """Recover the quadrilateral of a text character.
+
+    This requires the "rawdict" option of text extraction.
+
+    Args:
+        line_dir: (tuple) 'line["dir"]' of the span's line.
+        span: (dict) the span dict.
+        char: (dict) the character dict.
+    Returns:
+        The quadrilateral envelopping the character.
+    """
+    if type(line_dir) is not tuple or len(line_dir) != 2:
+        raise ValueError("bad line dir argument")
+    if type(span) is not dict:
+        raise ValueError("bad span argument")
+    if type(char) is not dict:
+        raise ValueError("bad span argument")
+    bbox = Rect(char["bbox"])
+    return recover_bbox_quad(line_dir, span, bbox)
+
+
+# -------------------------------------------------------------------
+# Building font subsets using fontTools
+# -------------------------------------------------------------------
 def subset_fonts(doc: Document) -> None:
     """Build font subsets of a PDF. Requires package 'fontTools'.
 

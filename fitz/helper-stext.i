@@ -1,4 +1,34 @@
 %{
+
+// Switch for computing glyph of fontsize height
+static int small_glyph_heights = 0;
+
+// Switch for returning fontnames including subset prefix
+static int subset_fontnames = 0;
+
+// Unset ascender / descender corrections
+static int skip_quad_corrections = 0;
+
+// need own versions of ascender / descender
+static const float
+JM_font_ascender(fz_context *ctx, fz_font *font)
+{
+    if (skip_quad_corrections) {
+        return 0.8f;
+    }
+    return fz_font_ascender(ctx, font);
+}
+
+static const float
+JM_font_descender(fz_context *ctx, fz_font *font)
+{
+    if (skip_quad_corrections) {
+        return -0.2f;
+    }
+    return fz_font_descender(ctx, font);
+}
+
+
 //-----------------------------------------------------------------------------
 // Make a text page directly from an fz_page
 //-----------------------------------------------------------------------------
@@ -42,23 +72,22 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
     }
 }
 
-// Switch for computing glyph of fontsize height
-static int small_glyph_heights = 0;
-
-// Switch for returning fontnames including subset prefix
-static int subset_fontnames = 0;
 
 // re-compute char quad if ascender/descender values make no sense
 static fz_quad
 JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
 {
+    if (skip_quad_corrections) {  // no special handling
+        return ch->quad;
+    }
     if (line->wmode) {  // never touch vertical write mode
         return ch->quad;
     }
-    float asc = fz_font_ascender(ctx, ch->font);
-    float dsc = fz_font_descender(ctx, ch->font);
+    fz_font *font = ch->font;
+    float asc = JM_font_ascender(ctx, font);
+    float dsc = JM_font_descender(ctx, font);
     if (asc - dsc >= 1 && small_glyph_heights == 0) {  // no problem
-        return ch->quad;
+       return ch->quad;
     }
     /* ------------------------------
     Re-compute quad with adjusted ascender / descender values:
@@ -68,7 +97,7 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     float c, s, fsize = ch->size;
     fz_matrix trm1, trm2, xlate1, xlate2;
     fz_quad quad;
-    fz_rect bbox = fz_font_bbox(ctx, ch->font);
+    fz_rect bbox = fz_font_bbox(ctx, font);
     float fwidth = bbox.x1 - bbox.x0;
     if (asc < 1e-3) {  // probably Tesseract glyphless font
         dsc = -0.1f;
@@ -118,6 +147,12 @@ static fz_rect
 JM_char_bbox(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
 {
     fz_rect r = fz_rect_from_quad(JM_char_quad(ctx, line, ch));
+    if (!line->wmode) {
+        return r;
+    }
+    if (r.y1 < r.y0 + ch->size) {
+        r.y0 = r.y1 - ch->size;
+    }
     return r;
 }
 
@@ -452,8 +487,8 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
         style.size = ch->size;
         style.flags = flags;
         style.font = JM_font_name(ctx, ch->font);
-        style.asc = fz_font_ascender(ctx, ch->font);
-        style.desc = fz_font_descender(ctx, ch->font);
+        style.asc = JM_font_ascender(ctx, ch->font);
+        style.desc = JM_font_descender(ctx, ch->font);
         style.color = ch->color;
 
         if (style.size != old_style.size ||

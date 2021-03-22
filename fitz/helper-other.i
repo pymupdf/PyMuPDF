@@ -461,7 +461,7 @@ fz_buffer *JM_compress_buffer(fz_context *ctx, fz_buffer *inbuffer)
 //----------------------------------------------------------------------------
 void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer, int compress)
 {
-    
+
     fz_buffer *nres = NULL;
     size_t len = fz_buffer_storage(ctx, buffer, NULL);
     size_t nlen = len;

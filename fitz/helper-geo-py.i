@@ -861,28 +861,16 @@ class Quad(object):
 
         return False
 
+    width  = property(lambda self: max(abs(self.ul - self.ur), abs(self.ll - self.lr)))
+    height = property(lambda self: max(abs(self.ul - self.ll), abs(self.ur - self.lr)))
 
     @property
     def isEmpty(self):
         """Check whether all quad corners are on the same line.
 
-        The is the case exactly if more than one corner angle is zero.
+        The is the case if its width or height is zero.
         """
-        count = 0
-        if abs(TOOLS._sine_between(self.ul, self.ur, self.lr)) < EPSILON:
-            count += 1
-        if abs(TOOLS._sine_between(self.ur, self.lr, self.ll)) < EPSILON:
-            count += 1
-        if abs(TOOLS._sine_between(self.lr, self.ll, self.ul)) < EPSILON:
-            count += 1
-        if abs(TOOLS._sine_between(self.ll, self.ul, self.ur)) < EPSILON:
-            count += 1
-        if count <= 2:
-            return False
-        return True
-
-    width  = property(lambda self: max(abs(self.ul - self.ur), abs(self.ll - self.lr)))
-    height = property(lambda self: max(abs(self.ul - self.ll), abs(self.ur - self.lr)))
+        return self.width < EPSILON or self.height < EPSILON
 
     @property
     def rect(self):

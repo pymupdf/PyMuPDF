@@ -1359,56 +1359,6 @@ def make_table(rect: rect_like =(0, 0, 1, 1), cols: int =1, rows: int =1) -> lis
     return rects
 
 
-def recover_quad(line_dir, span):
-    """Recover the quadrilateral of a text span.
-
-    Args:
-        line_dir: the value 'line["dir"]' of the span's line, which is
-                  a tuple (cos, sin) of the text angle with the x-axis.
-        span: the span dictionary
-    Returns:
-        The quadrilateral envelopping the span's text.
-    """
-    if type(line_dir) is not tuple or len(line_dir) != 2:
-        raise ValueError("bad line dir argument")
-    if type(span) is not dict:
-        raise ValueError("bad span argument")
-    cos, sin = line_dir
-    bbox = Rect(span["bbox"])
-
-    if TOOLS.set_small_glyph_heights():  # ==> just fontsize
-        d = 1
-    else:
-        d = span["ascender"] - span["descender"]
-
-    height = d * span["size"]
-    # The following are distances from bbox corners, at wich we find
-    # the quad points. The calculation varies circle quadrant.
-    hs = height * sin
-    hc = height * cos
-    if hc >= 0 and hs <= 0:  # quadrant 1
-        ul = bbox.bl - (0, hc)
-        ur = bbox.tr + (hs, 0)
-        ll = bbox.bl - (hs, 0)
-        lr = bbox.tr + (0, hc)
-    elif hc <= 0 and hs <= 0:  # quadrant 2
-        ul = bbox.br + (hs, 0)
-        ur = bbox.tl - (0, hc)
-        ll = bbox.br + (0, hc)
-        lr = bbox.tl - (hs, 0)
-    elif hc <= 0 and hs >= 0:  # quadrant 3
-        ul = bbox.tr - (0, hc)
-        ur = bbox.bl + (hs, 0)
-        ll = bbox.tr - (hs, 0)
-        lr = bbox.bl + (0, hc)
-    else:  # quadrant 4
-        ul = bbox.tl + (hs, 0)
-        ur = bbox.br - (0, hc)
-        ll = bbox.tl + (0, hc)
-        lr = bbox.br - (hs, 0)
-    return Quad(ul, ur, ll, lr)
-
-
 def repair_mono_font(page: "Page", font: "Font") -> None:
     """Repair character spacing for mono fonts.
 

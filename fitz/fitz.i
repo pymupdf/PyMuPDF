@@ -111,12 +111,14 @@ CheckParent(self)%}
 void JM_delete_widget(fz_context *ctx, pdf_page *page, pdf_annot *annot);
 static void JM_get_page_labels(fz_context *ctx, PyObject *liste, pdf_obj *nums);
 
-// additional headers from MuPDF ----------------------------------------------
+// additional headers ----------------------------------------------
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
 fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, float w, float h, const fz_irect *clip);
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
+static const float JM_font_ascender(fz_context *ctx, fz_font *font);
+static const float JM_font_descender(fz_context *ctx, fz_font *font);
 
 // end of additional MuPDF headers --------------------------------------------
 
@@ -579,20 +581,25 @@ struct Document
 
 
         FITZEXCEPTION(xref_get_keys, !result)
-        CLOSECHECK0(xref_get_keys, """Get the keys of PDF dict object at 'xref'.""")
+        CLOSECHECK0(xref_get_keys, """Get the keys of PDF dict object at 'xref'. Use -1 for the PDF trailer.""")
         PyObject *
         xref_get_keys(int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *)$self);
             pdf_obj *obj=NULL;
             PyObject *rc = NULL;
+            int i, n;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
-                if (!INRANGE(xref, 1, xreflen-1))
+                if (!INRANGE(xref, 1, xreflen-1) && xref != -1)
                     THROWMSG(gctx, "bad xref");
-                obj = pdf_load_object(gctx, pdf, xref);
-                int i, n = pdf_dict_len(gctx, obj);
+                if (xref > 0) {
+                    obj = pdf_load_object(gctx, pdf, xref);
+                } else {
+                    obj = pdf_trailer(gctx, pdf);
+                }
+                n = pdf_dict_len(gctx, obj);
                 rc = PyTuple_New(n);
                 if (!n) goto finished;
                 for (i = 0; i < n; i++) {
@@ -602,7 +609,9 @@ struct Document
                 finished:;
             }
             fz_always(gctx) {
-                pdf_drop_obj(gctx, obj);
+                if (xref > 0) {
+                    pdf_drop_obj(gctx, obj);
+                }
             }
             fz_catch(gctx) {
                 return NULL;
@@ -624,9 +633,13 @@ struct Document
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
-                if (!INRANGE(xref, 1, xreflen-1))
+                if (!INRANGE(xref, 1, xreflen-1) && xref != -1)
                     THROWMSG(gctx, "bad xref");
-                obj = pdf_load_object(gctx, pdf, xref);
+                if (xref > 0) {
+                    obj = pdf_load_object(gctx, pdf, xref);
+                } else {
+                    obj = pdf_trailer(gctx, pdf);
+                }
                 if (!obj) {
                     goto not_found;
                 }
@@ -670,7 +683,9 @@ struct Document
                 finished:;
             }
             fz_always(gctx) {
-                pdf_drop_obj(gctx, obj);
+                if (xref > 0) {
+                    pdf_drop_obj(gctx, obj);
+                }
                 fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) {
@@ -9857,6 +9872,7 @@ struct TextPage {
                 PyErr_Clear();
             }
             fz_catch(gctx) {
+                Py_CLEAR(lines);
                 return NULL;
             }
             return lines;
@@ -10720,6 +10736,22 @@ struct Tools
                 subset_fontnames = 0;
             }
             return JM_BOOL(subset_fontnames);
+        }
+
+
+        %pythonprepend unset_quad_corrections
+        %{"""Set ascender / descender corrections on or off."""%}
+        PyObject *unset_quad_corrections(PyObject *on=NULL)
+        {
+            if (!on || on == Py_None) {
+                return JM_BOOL(skip_quad_corrections);
+            }
+            if (PyObject_IsTrue(on)) {
+                skip_quad_corrections = 1;
+            } else {
+                skip_quad_corrections = 0;
+            }
+            return JM_BOOL(skip_quad_corrections);
         }
 
 
