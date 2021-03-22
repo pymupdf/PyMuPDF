@@ -4651,28 +4651,28 @@ def recover_line_quad(line: dict, spans: list = None) -> Quad:
         raise ValueError("bad span list")
     line_dir = line["dir"]  # text direction
     cos, sin = line_dir
-    q0 = fitz.recover_quad(line_dir, spans[0])  # quad of first span
+    q0 = recover_quad(line_dir, spans[0])  # quad of first span
 
     if len(spans) > 1:  # get quad of last span
-        q1 = fitz.recover_quad(line_dir, spans[-1])
+        q1 = recover_quad(line_dir, spans[-1])
     else:
         q1 = q0  # last = first
 
     line_ll = q0.ll  # lower-left of line quad
     line_lr = q1.lr  # lower-right of line quad
 
-    mat0 = fitz.planishLine(line_ll, line_lr)
+    mat0 = planishLine(line_ll, line_lr)
 
     # map base line to x-axis such that line_ll goes to (0, 0)
     x_lr = line_lr * mat0
 
-    small = fitz.TOOLS.set_small_glyph_heights()  # small glyph heights?
+    small = TOOLS.set_small_glyph_heights()  # small glyph heights?
 
     h = max(
         [s["size"] * (1 if small else s["ascender"] - s["descender"]) for s in spans]
     )
 
-    line_rect = fitz.Rect(0, -h, x_lr.x, 0)  # line rectangle
+    line_rect = Rect(0, -h, x_lr.x, 0)  # line rectangle
     line_quad = line_rect.quad  # make it a quad and:
     line_quad *= ~mat0
     return line_quad
