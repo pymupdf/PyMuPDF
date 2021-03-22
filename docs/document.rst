@@ -170,15 +170,15 @@ For details on **embedded files** refer to Appendix 3.
           >>> doc = fitz.open("some.pdf")
           >>> doc = fitz.open("some.file", None, "pdf")  # copes with wrong extension
           >>> doc = fitz.open("some.file", filetype="pdf")  # copes with wrong extension
-          >>> 
+          >>>
           >>> # from memory
           >>> doc = fitz.open("pdf", mem_area)
           >>> doc = fitz.open(None, mem_area, "pdf")
           >>> doc = fitz.open(stream=mem_area, filetype="pdf")
-          >>> 
+          >>>
           >>> # new empty PDF
           >>> doc = fitz.open()
-          >>> 
+          >>>
 
       The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
 
@@ -191,7 +191,7 @@ For details on **embedded files** refer to Appendix 3.
           page 3
           >>> doc.is_closed
           True
-          >>> 
+          >>>
 
     .. method:: get_oc(xref)
 
@@ -290,7 +290,7 @@ For details on **embedded files** refer to Appendix 3.
           - AllOff -- true if all OCGs are OFF.
 
           Suppose you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be OFF):
-          
+
           Solution: use an **OCG** for object 1 and an **OCMD** for object 2. Create the OCMD via ``set_ocmd(ocgs=[xref], policy="AllOff")``, with the :data:`xref` of the OCG.
 
         2. Use the **visibility expression** *ve*: This is a list of a logical expression keyword (string) followed by integers or other lists. The possible logical expressions are **"and"**, **"or"**, and **"not"**. The integers must be :data:`xref` numbers of OCGs. The syntax of this parameter is a bit awkward, but quite powerful:
@@ -367,7 +367,7 @@ For details on **embedded files** refer to Appendix 3.
               'name': 'Square',
               'usage': 'Artwork'},
         15: {'on': False, 'intent': ['View'], 'name': 'Square', 'usage': 'Artwork'}}
-        >>> 
+        >>>
 
     .. method:: layer_ui_configs()
 
@@ -395,7 +395,7 @@ For details on **embedded files** refer to Appendix 3.
           * Only reports items contained in the currently selected layer configuration.
 
           * The meaning of the dictionary keys is as follows:
-             - *depth:* item's nesting level in the `/Order` array 
+             - *depth:* item's nesting level in the `/Order` array
              - *locked:* whether changing the item's state is prohibited
              - *number:* running sequence number
              - *on:* item state
@@ -433,32 +433,36 @@ For details on **embedded files** refer to Appendix 3.
             'on': True,  # <===
             'text': 'Square',
             'type': 'checkbox'})
-          >>> 
+          >>>
 
     .. method:: authenticate(password)
 
-      Decrypts the document with the string *password*. If successful, document data can be accessed. For PDF documents, the "owner" and the "user" have different priviledges, and hence different passwords may exist for these authorization levels. The method will automatically establish the appropriate access rights for the provided password.
+      Decrypts the document with the string *password*. If successful, document data can be accessed. For PDF documents, the "owner" and the "user" have different priviledges, and hence different passwords may exist for these authorization levels. The method will automatically establish the appropriate (owner or user) access rights for the provided password.
 
       :arg str password: owner or user password.
 
       :rtype: int
-      :returns: a positive value if successful, zero otherwise. If positive, the indicator :attr:`Document.is_encrypted` is set to *False*. Positive return codes carry the following information detail:
+      :returns: a positive value if successful, zero otherwise (the string does not match either password). If positive, the indicator :attr:`Document.is_encrypted` is set to *False*. **Positive** return codes carry the following information detail:
 
-        * bit 0 set => authenticated, but no password required -- happens if method was used although :attr:`needs_pass` was zero.
-        * bit 1 set => authenticated with the **user** password.
-        * bit 2 set => authenticated with the **owner** password.
+        * 1 => authenticated, but the PDF has neither owner nor user passwords.
+        * 2 => authenticated with the **user** password.
+        * 4 => authenticated with the **owner** password.
+        * 6 => authenticated and both passwords are equal -- probably a rare situation.
 
+        .. note::
+
+          The document may be protected by an owner, but **not** by a user password. Detect this situation via `doc.authenticate("") == 2`. This allows opening and reading the document without authentication, but, depending on the :attr:`Document.permissions` value, other actions may be prohibited. PyMuPDF (like MuPDF) in this case **ignores those restrictions**. So, -- in contrast to any PDF viewers -- you can for example extract text and add or modify content, even if the respective permission flags ``PDF_PERM_COPY``, ``PDF_PERM_MODIFY``, ``PDF_PERM_ANNOTATE``, etc. are set off! It is your responsibility building a legally compliant application where applicable.
 
     .. method:: get_page_numbers(label, only_one=False)
 
        *(New in v 1.18.6)*
 
        PDF only: Return a list of page numbers that have the specified label -- note that labels may not be unique in a PDF. This implies a sequential search through **all page numbers** to compare their labels.
-       
-       .. note:: Implementation detail -- pages are **not loaded** for this purpose. 
+
+       .. note:: Implementation detail -- pages are **not loaded** for this purpose.
 
        :arg str label: the label to look for, e.g. "vii" (Roman number 7).
-       :arg bool only_one: stop after first hit. Useful e.g. if labelling is known to be unique, there are many pages, etc. The default will check every page number.
+       :arg bool only_one: stop after first hit. Useful e.g. if labelling is known to be unique, or there are many pages, etc. The default will check every page number.
        :rtype: list
        :returns: list of page numbers that have this label. Empty if none found, no labels defined, etc.
 
@@ -476,19 +480,19 @@ For details on **embedded files** refer to Appendix 3.
        *(New in v1.18.6)*
 
        PDF only: Add or update the page label definitions of the PDF.
-       
-       :arg list labels: a list of dictionaries. Each dictionary defines a label building rule and a 0-based "start" page number. That start page number is the first for which the label definition is valid. Each dictionary has up to 4 items and looks like ``{'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}`` and has the following items.
+
+       :arg list labels: a list of dictionaries. Each dictionary defines a label building rule and a 0-based "start" page number. That start page is the first for which the label definition is valid. Each dictionary has up to 4 items and looks like ``{'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}`` and has the following items.
 
           - ``startpage``: (int) the first page number (0-based) to apply the label rule. This key **must be present**. The rule is applied to all subsequent pages until either end of document or superseded by the rule with the next larger page number.
           - ``prefix``: (str) an arbitrary string to start the label with, e.g. "A-". Default is "".
-          - ``style``: (str) the numbering style. Available are "D" (decimal), "r"/"R" (Roman numbers, lower or upper case), and "a"/"A" (lower or upper case alphabetical numbering: "a" through "z", then "aa" through "az", etc.). Default is "". If "", no numbering will take place and the pages in that range will receive the same label consisting of the ``prefix`` value. If prefix is also omitted, then the label will be "".
+          - ``style``: (str) the numbering style. Available are "D" (decimal), "r"/"R" (Roman numbers, lower / upper case), and "a"/"A" (lower / upper case alphabetical numbering: "a" through "z", then "aa" through "az", etc.). Default is "". If "", no numbering will take place and the pages in that range will receive the same label consisting of the ``prefix`` value. If prefix is also omitted, then the label will be "".
           - ``firstpagenum``: (int) start numbering with this value. Default is 1, smaller values are ignored.
 
        For example::
-       
+
         [{'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10},
          {'startpage': 10, 'prefix': '', 'style': 'D', 'firstpagenum': 1}]
-       
+
        will generate the labels "A-10", "A-11", "A-12", "A-13", "1", "2", "3", ... for pages 6, 7 and so on until end of document. Pages 0 through 5 will have the label "".
 
 
@@ -549,17 +553,17 @@ For details on **embedded files** refer to Appendix 3.
       *(Changed in v1.17.0)* For document types supporting a so-called "chapter structure" (like EPUB), pages can also be loaded via the combination of chapter number and relative page number, instead of the absolute page number. This should **significantly speed up access** for large documents.
 
       :arg int,tuple page_id: *(Changed in v1.17.0)*
-      
+
           Either a 0-based page number, or a tuple *(chapter, pno)*. For an **integer**, any *-inf < page_id < page_count* is acceptable. While page_id is negative, :attr:`page_count` will be added to it. For example: to load the last page, you can use *doc.load_page(-1)*. After this you have page.number = doc.page_count - 1.
-      
+
           For a tuple, *chapter* must be in range :attr:`Document.chapter_count`, and *pno* must be in range :meth:`Document.chapter_page_count` of that chapter. Both values are 0-based. Using this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types whith chapter support (EPUB currently).
 
       :rtype: :ref:`Page`
 
     .. note::
-    
+
        Documents also follow the Python sequence protocol with page numbers as indices: *doc.load_page(n) == doc[n]*.
-       
+
        For **absolute page numbers** only, expressions like *"for page in doc: ..."* and *"for page in reversed(doc): ..."* will successively yield the document's pages. Refer to :meth:`Document.pages` which allows processing pages as with slicing.
 
        You can also use index notation with the new chapter-based page identification: use *page = doc[(5, 2)]* to load the third page of the sixth chapter.
@@ -569,7 +573,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: reload_page(page)
 
       *(New in version 1.16.10)*
-  
+
       PDF only: Provide a new copy of a page after finishing and updating all pending changes.
 
       :arg page: page object.
@@ -590,7 +594,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int pno: 0-based page number.
 
       :returns: :ref:`Rect` of the page like :meth:`Page.rect`, but ignoring any rotation.
-      
+
     .. method:: page_xref(pno)
 
       *(New in version 1.17.7)*
@@ -600,11 +604,11 @@ For details on **embedded files** refer to Appendix 3.
       :arg int pno: 0-based page number.
 
       :returns: :data:`xref` of the page like :attr:`Page.xref`.
-      
+
     .. method:: pages(start=None, [stop=None, [step=None]])
 
       *(New in version 1.16.4)*
-      
+
       A generator for a given range of pages. Parameters have the same meaning as in the built-in function *range()*. Intended for expressions of the form *"for page in doc.pages(start, stop, step): ..."*.
 
       :arg int start: start iteration with this page number. Default is zero, allowed values are -inf < start < page_count. While this is negative, :attr:`page_count` is added **before** starting the iteration.
@@ -698,41 +702,55 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: xref_get_keys(xref)
 
-      *(New in v 1.18.7)*
+      *(New in v1.18.7)*
 
       PDF only: Return the PDF dictionary keys of the object provided by its xref number.
 
-      :arg int xref: the :data:`xref`.
+      :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use ``-1`` if you want to access the special dictionary "PDF trailer" (it has no identifying xref).
 
-      :returns: a tuple of dictionary keys present in object :data:`xref`. Example:
+      :returns: a tuple of dictionary keys present in object :data:`xref`. Examples:
 
         >>> from pprint import pprint
         >>> import fitz
         >>> doc=fitz.open("pymupdf.pdf")
         >>> xref = doc.page_xref(0)  # xref of page 0
-        >>> pprint(doc.xref_get_keys(xref))
+        >>> pprint(doc.xref_get_keys(xref))  # primary level keys of a page
         ('Type', 'Contents', 'Resources', 'MediaBox', 'Parent')
-        >>> 
+        >>> pprint(doc.xref_get_keys(-1))  # primary level keys of the trailer
+        ('Type', 'Index', 'Size', 'W', 'Root', 'Info', 'ID', 'Length', 'Filter')
+        >>>
 
 
     .. method:: xref_get_key(xref, key)
 
-      *(New in v 1.18.7)*
+      *(New in v1.18.7)*
 
       PDF only: Return type and value of a PDF dictionary key of an xref.
 
-      :arg int xref: the :data:`xref`.
+      :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use ``-1`` if you want to access the special dictionary "PDF trailer" (it has no identifying xref).
       :arg str key: the desired PDF key. Must **exactly** match (case-sensitive) one of the keys contained in :meth:`Document.xref_get_keys`.
 
       :returns: a tuple (type, value), where type is one of "xref", "array", "dict", "int", "float" "null", "bool", "float", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and a faithful reflection of what is stored in the PDF. An argument like the return value can be used to modify the value of a key of :data:`xref`.
 
           >>> for key in doc.xref_get_keys(xref):
                   print(key, "=" , doc.xref_get_key(xref, key))
-          Type = ['name', '/Page']
-          Contents = ['xref', '1297 0 R']
-          Resources = ['xref', '1296 0 R']
-          MediaBox = ['array', '[0 0 612 792]']
-          Parent = ['xref', '1301 0 R']
+          Type = ('name', '/Page')
+          Contents = ('xref', '1297 0 R')
+          Resources = ('xref', '1296 0 R')
+          MediaBox = ('array', '[0 0 612 792]')
+          Parent = ('xref', '1301 0 R')
+          >>> # no the same thing for the PDF trailer:
+          >>> for key in doc.xref_get_keys(-1):
+                  print(key, "=", doc.xref_get_key(-1, key))
+          Type = ('name', '/XRef')
+          Index = ('array', '[0 8802]')
+          Size = ('int', '8802')
+          W = ('array', '[1 3 1]')
+          Root = ('xref', '8799 0 R')
+          Info = ('xref', '8800 0 R')
+          ID = ('array', '[<DC9D56A6277EFFD82084E64F9441E18C><DC9D56A6277EFFD82084E64F9441E18C>]')
+          Length = ('int', '21111')
+          Filter = ('name', '/FlateDecode')
           >>>
 
 
@@ -742,7 +760,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Set the value of a PDF key in the object given by an xref. This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 51) and the structure of special dictionary types like page objects.
 
-      :arg int xref: the :data:`xref`.
+      :arg int xref: the :data:`xref`. Note that changing the content of the **PDF trailer** in this way is currently not enabled for safety reasons.
       :arg str key: the desired PDF key (without leading "/"). Must not be empty. Any valid PDF key -- whether already present in the object (which will be overwritten) -- or new. It is possible to use PDF path notation like ``"Resources/ExtGState"`` -- which sets the value for key ``"/ExtGState"`` as a sub-object of ``"/Resources"``.
       :arg str value: the value for the key. It must be a non-empty string and, depending on the desired PDF object type, the following rules must be observed -- there is some syntax, but no type checking and no checking of the PDF semantics. Upper or lower case are important!
 
@@ -754,7 +772,12 @@ For details on **embedded files** refer to Appendix 3.
           * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
           * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``.
-          * **string** -- a valid PDF string. Denote the empty string as ``"()"``. Depending on its content, it must be enclosed in bracket types "(...)" or "<...>", and reserved PDF characters must be escaped. If in doubt, we **strongly recommend** to use :meth:`getPDFstr`! This function automatically determines the required format. E.g. it will do conversions like ``fitz.getPDFstr("Pay in $ or €.") = "<feff00500061007900200069006e002000240020006f0072002020ac002e>"``, or ``fitz.getPDFstr("Prices in USD (EUR accepted).") = "(Prices in USD \(EUR accepted\).)"``.
+          * **string** -- a valid PDF string. Denote the empty string as ``"()"``. Depending on its content, it must be enclosed in bracket types "(...)" or "<...>", and reserved PDF characters must be escaped. If in doubt, we **strongly recommend** to use :meth:`getPDFstr`! This function automatically generates the right brackets and determines the required format. E.g. it will do conversions like these:
+
+            >>> fitz.getPDFstr("Pay in $ or €.")
+            '<feff00500061007900200069006e002000240020006f0072002020ac002e>'
+            >>> fitz.getPDFstr("Prices in EUR (USD also accepted). Areas are in m².")
+            '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
 
 
     .. method:: get_page_pixmap(pno, *args, **kwargs)
@@ -790,9 +813,9 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: list
 
       :returns: a list of images shown on this page. Each item looks like
-      
+
       **(xref, smask, width, height, bpc, colorspace, alt. colorspace, name, filter, referencer)**
-      
+
       Where
 
         * **xref** (*int*) is the image object number
@@ -827,7 +850,7 @@ For details on **embedded files** refer to Appendix 3.
       :returns: a list of fonts referenced by this page. Each entry looks like
 
       **(xref, ext, type, basefont, name, encoding, referencer)**,
-        
+
       where
 
           * **xref** (*int*) is the font object number (may be zero if the PDF uses one of the builtin fonts directly)
@@ -982,7 +1005,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg float zoom: use this zoom factor when showing the target page.
 
       **Example use:** Change the TOC of the SWIG manual to achieve this:
-      
+
       Collapse everything below top level and show the chapter on Python support in red, bold and italic::
 
         >>> import fitz
@@ -1005,7 +1028,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: can_save_incrementally()
 
       *(New in version 1.16.0)*
-      
+
       Check whether the document can be saved incrementally. Use it to choose the right option without encountering exceptions.
 
     .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
@@ -1120,7 +1143,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg bool annots: *(new in version 1.16.1)* choose whether annotations should be included in the copy.
       :arg int show_progress: *(new in version 1.17.7)* specify an interval size greater zero to see progress messages on ``sys.stdout``. After each interval, a message like ``Inserted 30 of 47 pages.`` will be printed.
       :arg int final: *(new in v1.18.0)* controls whether the list of already copied objects should be **dropped** after this method, default *True*. Set it to 0 except for the last one of multiple insertions from the same source PDF. This saves target file size and speeds up execution considerably.
-      
+
     .. note::
 
        1. If *from_page > to_page*, pages will be **copied in reverse order**. If *0 <= from_page == to_page*, then one page will be copied.
@@ -1219,7 +1242,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: fullcopy_page(pno, to=-1)
 
       *(New in version 1.14.17)*
-      
+
       PDF only: Make a full copy (duplicate) of a page.
 
       :arg int pno: the page to be duplicated. Must be in range *0 <= pno < len(doc)*.
@@ -1227,7 +1250,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int to: the page number in front of which to copy. The default inserts **after** the last page.
 
       .. note::
-      
+
           * In contrast to :meth:`copy_page`, this method creates a new page object (with a new :data:`xref`), which can be changed independently from the original.
 
           * Any Popup and "IRT" ("in response to") annotations are **not copied** to avoid potentially incorrect situations.
@@ -1334,7 +1357,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: embfile_names()
 
       *(New in version 1.14.16)*
-      
+
       PDF only: Return a list of embedded file names. The sequence of names equals the physical sequence in the document.
 
       :rtype: list
@@ -1375,33 +1398,33 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: xref_object(xref, compressed=False, ascii=False)
 
       *(New in version 1.16.8)*
-      
+
       PDF only: Return the definition source of a PDF object.
-  
+
     .. method:: pdf_catalog()
-      
+
       *(New in version 1.16.8)*
-      
+
       PDF only: Return the :data:`xref` number of the PDF catalog (or root) object. Use that number with :meth:`Document.xref_object` to see its source.
 
 
     .. method:: pdf_trailer(compressed=False)
 
       *(New in version 1.16.8)*
-      
+
       PDF only: Return the trailer source of the PDF (UTF-8), which is usually located at the PDF file's end. This is similar to :meth:`Document.xref_object` except that this object has no identifier to access it.
 
 
     .. method:: xref_xml_metadata()
 
       *(New in version 1.16.8)*
-      
+
       PDF only: Return the :data:`xref` of the document's XML metadata.
 
     .. method:: xref_stream(xref)
 
       *(New in version 1.16.8)*
-      
+
       PDF only: Return the **decompressed** contents of the :data:`xref` stream object.
 
       :arg int xref: :data:`xref` number.
@@ -1412,16 +1435,16 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: xref_stream_raw(xref)
 
       *(New in version 1.16.8)*
-      
+
       PDF only: Return the **unmodified** (esp. **not decompressed**) contents of the :data:`xref` stream object. Otherwise equal to :meth:`Document.xref_stream`.
- 
+
       :rtype: bytes
       :returns: the (original, unmodified) stream of the object.
 
     .. method:: update_object(xref, obj_str, page=None)
 
       *(New in version 1.16.8)*
-      
+
       PDF only: Replace object definition of :data:`xref` with the provided string. The xref may also be new, in which case this instruction completes the object definition. If a page object is also given, its links and annotations will be reloaded afterwards.
 
       :arg int xref: :data:`xref` number.
@@ -1438,7 +1461,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: update_stream(xref, data, new=False)
 
       *(New in version 1.16.8)*
-      
+
       Replace the stream of an object identified by *xref*. If the object has no stream, an exception is raised unless *new=True* is used. The function automatically performs a compress operation ("deflate") where beneficial.
 
       :arg int xref: :data:`xref` number.
@@ -1589,7 +1612,7 @@ For details on **embedded files** refer to Appendix 3.
       :type: int
 
     .. Attribute:: chapter_count
-      
+
       *(New in version 1.17.0)*
       Contains the number of chapters in the document. Always at least 1. Relevant only for document types with chapter support (EPUB currently). Other documents will return 1.
 

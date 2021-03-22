@@ -1,18 +1,18 @@
 .. data:: CropBox
 
-    :meth:`Page.cropbox`
+    :attr:`Page.cropbox`
 
 .. data:: CropBoxPosition
 
-    :meth:`Page.cropbox_position`
+    :attr:`Page.cropbox_position`
 
 .. data:: MediaBox
 
-    :meth:`Page.mediabox`
+    :attr:`Page.mediabox`
 
 .. data:: MediaBoxSize
 
-    :meth:`Page.mediabox_size`
+    :attr:`Page.mediabox_size`
 
 .. data:: PDFCatalog
 
@@ -24,11 +24,11 @@
 
 .. data:: _isWrapped
 
-    :meth:`Page.is_wrapped`
+    :attr:`Page.is_wrapped`
 
 .. data:: chapterCount
 
-    :meth:`Document.chapter_count`
+    :attr:`Document.chapter_count`
 
 .. data:: chapterPageCount
 
@@ -68,7 +68,7 @@
 
 .. data:: derotationMatrix
 
-    :meth:`Page.derotation_matrix`
+    :attr:`Page.derotation_matrix`
 
 .. data:: drawBezier
 
@@ -190,15 +190,15 @@
 
 .. data:: firstAnnot
 
-    :meth:`Page.first_annot`
+    :attr:`Page.first_annot`
 
 .. data:: firstLink
 
-    :meth:`Page.first_link`
+    :attr:`Page.first_link`
 
 .. data:: firstWidget
 
-    :meth:`Page.first_widget`
+    :attr:`Page.first_widget`
 
 .. data:: fullcopyPage
 
@@ -264,6 +264,8 @@
 
     :meth:`Annot.get_pixmap`
 
+    :meth:`DisplayList.get_pixmap`
+
     :meth:`Page.get_pixmap`
 
 .. data:: getSVGimage
@@ -287,6 +289,8 @@
 .. data:: getTextPage
 
     :meth:`Annot.get_textpage`
+
+    :meth:`DisplayList.get_textpage`
 
     :meth:`Page.get_textpage`
 
@@ -342,23 +346,23 @@
 
 .. data:: isDirty
 
-    :meth:`Document.is_dirty`
+    :attr:`Document.is_dirty`
 
 .. data:: isFormPDF
 
-    :meth:`Document.is_form_pdf`
+    :attr:`Document.is_form_pdf`
 
 .. data:: isPDF
 
-    :meth:`Document.is_pdf`
+    :attr:`Document.is_pdf`
 
 .. data:: isReflowable
 
-    :meth:`Document.is_reflowable`
+    :attr:`Document.is_reflowable`
 
 .. data:: isRepaired
 
-    :meth:`Document.is_repaired`
+    :attr:`Document.is_repaired`
 
 .. data:: isStream
 
@@ -366,11 +370,11 @@
 
 .. data:: lastLocation
 
-    :meth:`Document.last_location`
+    :attr:`Document.last_location`
 
 .. data:: lineEnds
 
-    :meth:`Annot.line_ends`
+    :attr:`Annot.line_ends`
 
 .. data:: loadAnnot
 
@@ -398,7 +402,7 @@
 
 .. data:: needsPass
 
-    :meth:`Document.needs_pass`
+    :attr:`Document.needs_pass`
 
 .. data:: newPage
 
@@ -414,7 +418,7 @@
 
 .. data:: pageCount
 
-    :meth:`Document.page_count`
+    :attr:`Document.page_count`
 
 .. data:: pageCropBox
 
@@ -438,7 +442,7 @@
 
 .. data:: rotationMatrix
 
-    :meth:`Page.rotation_matrix`
+    :attr:`Page.rotation_matrix`
 
 .. data:: searchFor
 
@@ -526,7 +530,7 @@
 
 .. data:: transformationMatrix
 
-    :meth:`Page.transformation_matrix`
+    :attr:`Page.transformation_matrix`
 
 .. data:: updateLink
 

@@ -436,7 +436,7 @@ This script creates a approximate image of it as a PNG, by going down to one-pix
 
     def punch(x, y, step):
         """Recursively "punch a hole" in the central square of a pixmap.
-        
+
         Arguments are top-left coords and the step width.
 
         Some alternative punching methods are commented out.
@@ -822,11 +822,17 @@ But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_t
 
 The "bboxes" returned by the method however are rectangles only -- not quads. So, to mark span text correctly, its quad must be recovered from the data contained in the line and span dictionary. Do this with the following utility function (new in v1.18.9)::
 
-    q = fitz.recover_quad(line["dir"], span)
-    annot = page.addHighlightAnnot(q)  # this will mark the span text
+    span_quad = fitz.recover_quad(line["dir"], span)
+    annot = page.addHighlightAnnot(span_quad)  # this will mark the complete span text
 
-If you want to **mark the complete line**, the line quad must be computed by joining the span quads. This is not entirely trivial, and we will provide a function for this in the next version (> 1.18.9). For the time being, you can simply provide the list of all the span quads as text marker argument. There should be no visual difference in most cases. Use a similar approach, when you need the block quadrilateral.
+If you want to **mark the complete line** or a subset of its spans in one go, use the following snippet (works for v1.18.10 or later)::
 
+    line_quad = fitz.recover_line_quad(line, spans=line["spans"][1:-1])
+    page.addHighlightAnnot(line_quad)
+
+.. image:: images/img-linequad.*
+
+The ``spans`` argument above may specify any sub-list of ``line["spans"]``. In the example above, the second to second-to-last span are marked. If omitted, the complete line is taken.
 
 ------------------------------
 
@@ -2156,7 +2162,7 @@ Access this information via PyMuPDF with :meth:`Document.pdf_trailer`.
     /Length 19883
     /Filter /FlateDecode
     >>
-    >>> 
+    >>>
 
 ----------------------------------
 

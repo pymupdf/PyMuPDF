@@ -128,7 +128,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: addCaretAnnot(point)
 
       *(New in version 1.16.0)*
-      
+
       PDF only: Add a caret icon. A caret annotation is a visual symbol normally used to indicate the presence of text edits on the page.
 
       :arg point_like point: the top left point of a 20 x 20 rectangle containing the MuPDF-provided icon.
@@ -295,7 +295,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       All these four methods convert the arguments into a list of :ref:`Quad` objects. The **annotation** rectangle is then calculated to envelop all these quadrilaterals.
 
       .. note::
-      
+
         :meth:`search_for` delivers a list of either :ref:`Rect` or :ref:`Quad` objects. Such a list can be directly used as an argument for these annotation types and will deliver **one common annotation** for all occurrences of the search string::
 
            >>> # always prefer quads=True in text searching!
@@ -304,7 +304,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note::
         Obviously, text marker annotations need to know what is the top, the bottom, the left, and the right side of the area(s) to be marked. If the arguments are quads, this information is given by the sequence of the quad points. In contrast, a rectangle delivers much less information -- this is illustrated by the fact, that 4! = 24 different quads can be constructed with the four corners of a reactangle.
-        
+
         Therefore, we **strongly recommend** to use the ``quads`` option for text searches, to ensure correct annotations. A similar consideration applies to marking **text spans** extracted with the "dict" / "rawdict" options of :meth:`Page.get_text`. For more details on how to compute quadrilaterals in this case, see section "How to Mark Non-horizontal Text" of :ref:`FAQ`.
 
       :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
@@ -387,23 +387,19 @@ In a nutshell, this is what you can do with PyMuPDF:
       :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
 
       .. note::
-         Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions or anywhere else. Other annotations are unaffected.
+         * Text contained in a redaction rectangle will be **physically** removed from the page (assuming :meth:`Document.save` with a suitable garbage option) and will no longer appear in e.g. text extractions or anywhere else. All redaction annotations will also be removed. Other annotations are unaffected.
 
-         All overlapping links will be removed.
+         * All overlapping links will be removed.
 
-         *(Changed in v1.18.0)* The overlapping parts of **images** will be blanked-out for option 2. Option 0 does not touch any images and 1 will remove any image with an overlap.
+         * *(Changed in v1.18.0)* The overlapping parts of **images** will be blanked-out for default option ``PDF_REDACT_IMAGE_PIXELS``. Option 0 does not touch any images and 1 will remove any image with an overlap. Please be aware that there is a bug for option *PDF_REDACT_IMAGE_PIXELS = 2*: transparent images will be incorrectly handled!
 
-         Please be aware that there is an MuPDF bug for option *PDF_REDACT_IMAGE_PIXELS = 2*: transparent images will be incorrectly handled!
+         * Text removal is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle *(changed in MuPDF v1.17)*. Depending on the font properties and / or the chosen line height, deletion may include undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a *True* argument before text search may help to prevent this.
 
-         To remove only selected images (as opposed to all intersecting), use PyMuPDF low-level functions instead of redaction annotations.
+         * Redactions are a simple way to replace single words in a PDF, or to just physically remove them. Locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
 
-         Text removal is done by character: A character is removed if its bbox has a **non-empty intersection** with a redaction *(changed in MuPDF v1.17)*.
+            - Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
 
-         Redactions are an easy way to replace single words in a PDF, or to just physically remove them from the PDF: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
-
-            * Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
-
-            * For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
+            - For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
 
    .. method:: delete_link(linkdict)
 
@@ -446,7 +442,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: links(kinds=None)
 
       *(New in version 1.16.4)*
-      
+
       Return a generator over the page's links. The results equal the entries of :meth:`Page.get_links`.
 
       :arg sequence kinds: a sequence of integers to down-select to one or more link kinds. Default is all links. Example: *kinds=(fitz.LINK_GOTO,)* will only return internal links.
@@ -457,7 +453,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: annots(types=None)
 
       *(New in version 1.16.4)*
-      
+
       Return a generator over the page's annotations.
 
       :arg sequence types: a sequence of integers to down-select to one or annotation types. Default is all annotations. Example: *types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)* will only return 'FreeText' and 'Text' annotations.
@@ -468,7 +464,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: widgets(types=None)
 
       *(New in version 1.16.4)*
-      
+
       Return a generator over the page's form fields.
 
       :arg sequence types: a sequence of integers to down-select to one or more widget types. Default is all form fields. Example: *types=(fitz.PDF_WIDGET_TYPE_TEXT,)* will only return 'Text' fields.
@@ -480,7 +476,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: write_text(rect=None, writers=None, overlay=True, color=None, opacity=None, keep_proportion=True, rotate=0, oc=0)
 
       *(New in version 1.16.18)*
-      
+
       PDF only: Write the text of one or more :ref:`Textwriter` ojects to the page.
 
       :arg rect_like rect: where to place the text. If omitted, the rectangle union of the text writers is used.
@@ -855,7 +851,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          Changed in version 1.14.11 By default, the image keeps its aspect ratio.
 
       :arg rect_like rect: where to put the image. Must be finite and not empty.
-      
+
          *(Changed in v1.17.6)* No longer needs to have a non-empty intersection with the page's :attr:`Page.cropbox` [#f5]_.
 
          *(Changed in version 1.14.13)* The image is now always placed **centered** in the rectangle, i.e. the centers of image and rectangle are equal.
@@ -863,7 +859,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str filename: name of an image file (all formats supported by MuPDF -- see :ref:`ImageFiles`). If the same image is to be inserted multiple times, choose one of the other two options to avoid some overhead.
 
       :arg bytes,bytearray,io.BytesIO stream: image in memory (all formats supported by MuPDF -- see :ref:`ImageFiles`). This is the most efficient option.
-      
+
          Changed in version 1.14.13: *io.BytesIO* is now also supported.
 
       :arg pixmap: a pixmap containing the image.
@@ -956,7 +952,7 @@ In a nutshell, this is what you can do with PyMuPDF:
         >>> rl = page.search_for("currency:")
         >>> page.get_textbox(rl[0])
         'Currency:'
-        >>> 
+        >>>
 
 
    .. index::
@@ -965,7 +961,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: get_textpage(clip=None, flags=3)
 
       *(New in version 1.16.5)*
-      
+
       Create a :ref:`TextPage` for the page. This method avoids using an intermediate :ref:`DisplayList`.
 
       :arg in flags: indicator bits controlling the content available for subsequent extraction -- see the parameter of :meth:`Page.get_text`.
@@ -1031,7 +1027,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * The method should deliver correct results now.
       * The page's ``/Contents`` are no longer modified by this method.
-      
+
       :arg list,str item: an item of the list :meth:`Page.get_images` with *full=True* specified, or the **name** entry of such an item, which is item[-3] (or item[7] respectively).
 
       :rtype: :ref:`Rect`
@@ -1329,7 +1325,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          >>> p = fitz.Point(0, 0)  # where did top-left point land?
          >>> p * page.rotation_matrix
          Point(842.0, 0.0)
-         >>> 
+         >>>
 
       :type: :ref:`Matrix`
 

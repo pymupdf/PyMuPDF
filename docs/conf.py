@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.abspath("."))
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
 extensions = [
     "extensions.searchrepair",
+    "extensions.fulltoc",
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -41,7 +42,7 @@ copyright = "2015-2021, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.18.9"
+release = "1.18.10"
 
 # The short X.Y version
 version = release
@@ -90,12 +91,12 @@ keep_warnings = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 # html_theme = "agogo"
-html_theme = "bizstyle"
+# html_theme = "bizstyle"
 # html_theme = "pyramid"
 # html_theme = "sphinxdoc"
 # html_theme = "python_docs_theme"
 # html_theme = "sphinx_rtd_theme"
-# html_theme = "classic"
+html_theme = "classic"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

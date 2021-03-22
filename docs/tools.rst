@@ -19,6 +19,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 :meth:`Tools.set_small_glyph_heights`  search and extract using small bbox heights
 :meth:`Tools.set_subset_fontnames`     control suppression of subset fontname tags
 :meth:`Tools.show_aa_level`            return the anti-aliasing values
+:meth:`Tools.unset_quad_corrections`   disable PyMuPDF-specific code
 :attr:`Tools.fitz_config`              configuration settings of PyMuPDF
 :attr:`Tools.store_maxsize`            maximum storables cache size
 :attr:`Tools.store_size`               current storables cache size
@@ -79,6 +80,20 @@ This class is a collection of utility methods and attributes, mainly around memo
       .. note:: Except mentioned above, no other text extraction variants are influenced by this. This is especially true for the options "xml", "xhtml" and "html", which are based on MuPDF code. They extract the font name ``"Calibri-Light"``, or even just the **family** name -- ``Calibri`` in this example.
 
 
+   .. method:: unset_quad_corrections(on=None)
+
+      *(New in v1.18.10)*
+
+      Enable / disable PyMuPDF-specific code, that tries to rebuild valid character quads when encountering nonsense in :meth:`Page.get_text` text extractions. This code depends on certain font properties (ascender and descender), which do not exist in rare situations and cause segmentation faults when trying to access them. This method sets a global parameter in PyMuPDF, which suppresses execution of this code.
+
+      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, PyMuPDF will not try to access the resp. font properties and use values ``ascender=0.8`` and ``descender=-0.2`` instead.
+
+      :rtype: bool
+      :returns: *True* or *False*.
+
+
+
+
    .. method:: image_profile(stream)
 
       *(New in v1.16.17)* Show important properties of an image provided as a memory area. Its main purpose is to avoid using other Python packages just to determine basic properties.
@@ -86,7 +101,7 @@ This class is a collection of utility methods and attributes, mainly around memo
       :arg bytes,bytearray stream: the image data.
       :rtype: dict
       :returns: a dictionary with the keys "width", "height", "xres", "yres", "colorspace" (the *colorspace.n* value, number of colorants), "cs-name" (the *colorspace.name* value), "bpc", "ext" (image type as file extension). The values for these keys are the same as returned by :meth:`Document.extract_image`. Please also have a look at :data:`resolution`.
-      
+
       .. note::
 
         * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via ``Pixmap(doc, xref)``. These methods will automatically convert exotic images to the PNG format before returning results.
@@ -145,14 +160,14 @@ This class is a collection of utility methods and attributes, mainly around memo
    .. method:: reset_mupdf_warnings()
 
       *(New in version 1.16.0)*
-      
+
       Empty MuPDF warnings message buffer.
 
 
    .. method:: mupdf_display_errors(value=None)
 
       *(New in version 1.16.8)*
-      
+
       Show or set whether MuPDF errors should be displayed.
 
       :arg bool value: if not a bool, the current setting is returned. If true, MuPDF errors will be shown on *sys.stderr*, otherwise suppressed. In any case, messages continue to be stored in the warnings store. Upon import of PyMuPDF this value is *True*.
@@ -163,7 +178,7 @@ This class is a collection of utility methods and attributes, mainly around memo
    .. method:: mupdf_warnings(reset=True)
 
       *(New in version 1.16.0)*
-      
+
       Return all stored MuPDF messages as a string with interspersed line-breaks.
 
       :arg bool reset: *(new in version 1.16.7)* whether to automatically empty the store.

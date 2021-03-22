@@ -6,12 +6,12 @@ Quad
 
 Represents a four-sided mathematical shape (also called "quadrilateral" or "tetragon") in the plane, defined as a sequence of four :ref:`Point` objects ul, ur, ll, lr (conveniently called upper left, upper right, lower left, lower right).
 
-Quads can **be obtained** as results of text search methods (:meth:`Page.search_for`), and they **are used** to define text marker annotations (see e.g. :meth:`Page.addSquigglyAnnot` and friends), and in several draw methods (like :meth:`Page.draw_quad` / :meth:`Shape.draw_quad`, :meth:`Page.draw_oval`/ :meth`Shape.draw_quad`).
+Quads can **be obtained** as results of text search methods (:meth:`Page.search_for`), and they **are used** to define text marker annotations (see e.g. :meth:`Page.addSquigglyAnnot` and friends), and in several draw methods (like :meth:`Page.draw_quad` / :meth:`Shape.draw_quad`, :meth:`Page.draw_oval`/ :meth:`Shape.draw_quad`).
 
 .. note::
 
    * If the corners of a rectangle are transformed with a **rotation**, **scale** or **translation** :ref:`Matrix`, then the resulting quad is **rectangular**, i.e. its corners again enclose angles of 90 degrees. Property :attr:`Quad.isRectangular` checks whether a quad can be thought of being the result of such an operation.
-   
+
    * This is not true for all matrices: e.g. shear matrices produce parallelograms, and non-invertible matrices deliver "degenerate" tetragons like triangles or lines.
 
    * Attribute :attr:`Quad.rect` obtains the envelopping rectangle. Vice versa, rectangles now have attributes :attr:`Rect.quad`, resp. :attr:`IRect.quad` to obtain their respective tetragon versions.
@@ -109,7 +109,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
    .. attribute:: isConvex
 
       *(New in version 1.16.1)*
-      
+
       True if every line connecting two points of the quad is inside the quad. We in addition also make sure here, that the quad is not "degenerate", i.e. not all corners are on the same line (which would still qualify as convexity in the mathematical sense).
 
       :type: bool

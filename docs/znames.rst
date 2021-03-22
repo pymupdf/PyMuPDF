@@ -13,9 +13,6 @@ Deprecated names will remain available through MuPDF version 1.19.0 and probably
 
 Deprecated names will no longer be separately documented.
 
-.. note:: The following list is automatically generated.
-
-  * References to the new names always refer to method names - even if the name actually is a property. Please look it up to disambiguate.
-  * One or two items refer to yet undocumented methods - please simply ignore them.
+.. note:: The following list is automatically generated. One or two items refer to yet undocumented methods - please simply ignore them.
 
 .. include:: deprecated.rst

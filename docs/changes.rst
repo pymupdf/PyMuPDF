@@ -1,6 +1,15 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.10
+---------------------------
+* **Fixed** issue `#941 <https://github.com/pymupdf/PyMuPDF/issues/941>`_. Added old aliases for :meth:`DisplayList.get_pixmap` and :meth:`DisplayList.get_textpage`.
+* **Fixed** issue `#929 <https://github.com/pymupdf/PyMuPDF/issues/929>`_. Stabilized removal of JavaScript objects with :meth:`Document.scrub`.
+* **Fixed** issue `#927 <https://github.com/pymupdf/PyMuPDF/issues/927>`_. Removed a loop in the reworked :meth:`TextWriter.fill_textbox`.
+* **Changed** :meth:`Document.xref_get_keys` and :meth:`Document.xref_get_key` to also allow accessing the PDF trailer dictionary. This can be done by using `-1` as the xref number argument.
+* **Added** a number of functions for reconstructing the quads for text lines, spans and characters extracted by :meth:`Page.get_text` options "dict" and "rawdict". See :meth:`recover_quad` and friends.
+* **Added** :meth:`Tools.unset_quad_corrections` to suppress character quad corrections (occasionally required for erroneous fonts).
+
 Changes in Version 1.18.9
 -------------------------
 
@@ -11,7 +20,7 @@ Changes in Version 1.18.9
 * **Changed** :meth:`Document.subset_fonts`: Text is **not rewritten** any more and should therefore **retain all its origial properties** -- like being hidden or being controlled by Optional Content mechanisms.
 * **Changed** :ref:`TextWriter` output to also accept text in right to left mode (Arabian, Hebrew): :meth:`TextWriter.fill_textbox`, :meth:`TextWriter.append`. These methods now accept a new boolean parameter `right_to_left`, which is *False* by default. Implements `#897 <https://github.com/pymupdf/PyMuPDF/issues/897>`_.
 * **Changed** :meth:`TextWriter.fill_textbox` to return all lines of text, that did not fit in the given rectangle. Also changed the default of the ``warn`` parameter to no longer print a warning message in overflow situations.
-* **Added** a utility function :meth:`recover_quad`, which computes the quadrilateral of a span. This function can be used when quadrilaterals for text extracted with the "dict" or "rawdict" options of :meth:`Page.get_text`.
+* **Added** a utility function :meth:`recover_quad`, which computes the quadrilateral of a span. This function can be used for correctly marking text extracted with the "dict" or "rawdict" options of :meth:`Page.get_text`.
 
 Changes in Version 1.18.8
 -------------------------

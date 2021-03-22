@@ -50,7 +50,7 @@ Accessing Meta Data
 PyMuPDF fully supports standard metadata. :attr:`Document.metadata` is a Python dictionary with the following keys. It is available for **all document types**, though not all entries may always contain data. For details of their meanings and formats consult the respective manuals, e.g. :ref:`AdobeManual` for PDF. Further information can also be found in chapter :ref:`Document`. The meta data fields are strings or *None* if not otherwise indicated. Also be aware that not all of them always contain meaningful data -- even if they are not *None*.
 
 ============== =================================
-**Key**        **Value**
+Key            Value
 ============== =================================
 producer       producer (producing software)
 format         format: 'PDF-1.4', 'EPUB', etc.
@@ -196,7 +196,7 @@ Please also see section 3.16 of the `Pillow documentation <https://Pillow.readth
     img = Image.frombytes(mode, [pix.width, pix.height], pix.samples)
     qtimg = ImageQt.ImageQt(img)
 
-Again, you also can get along **without using PIL** if you use the pixmap *stride* property::
+Again, you also can get along **without using Pillow** if you use the :attr:`Pixmap.stride` property::
 
     from PyQt<x>.QtGui import QImage
 

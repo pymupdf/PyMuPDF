@@ -56,6 +56,10 @@ Yet others are handy, general-purpose utilities.
 :meth:`adobe_glyph_unicodes`         list of unicodes defined in **Adobe Glyph List**
 :attr:`paperSizes`                   dictionary of pre-defined paper formats
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
+:attr:`recover_quad`                 compute the quad of a span ("dict", "rawdict")
+:attr:`recover_char_quad`            compute the quad of a char ("rawdict")
+:attr:`recover_span_quad`            compute the quad of a subset of span characters
+:attr:`recover_line_quad`            compute the quad of a subset of line spans
 ==================================== ==============================================================
 
    .. method:: PaperSize(s)
@@ -202,7 +206,7 @@ Yet others are handy, general-purpose utilities.
    .. method:: planishLine(p1, p2)
 
       *(New in version 1.16.2)*
-      
+
       Return a matrix which maps the line from p1 to p2 to the x-axis such that p1 will become (0,0) and p2 a point with the same distance to (0,0).
 
       :arg point_like p1: starting point of the line.
@@ -210,7 +214,7 @@ Yet others are handy, general-purpose utilities.
 
       :rtype: :ref:`Matrix`
       :returns:
-         
+
          a matrix which combines a rotation and a translation::
 
             p1 = fitz.Point(1, 1)
@@ -225,7 +229,7 @@ Yet others are handy, general-purpose utilities.
             # distance of the resulting points
             abs(p2 * m - p1 * m)
             5.0
- 
+
 
          .. image:: images/img-planish.png
             :scale: 40
@@ -258,7 +262,7 @@ Yet others are handy, general-purpose utilities.
          'italic': False,
          'serif': True,
          'glyphs': 1485}
-         
+
 
 -----
 
@@ -274,7 +278,7 @@ Yet others are handy, general-purpose utilities.
    .. method:: getTextlength(text, fontname="helv", fontsize=11, encoding=TEXT_ENCODING_LATIN)
 
       *(New in version 1.14.7)*
-      
+
       Calculate the length of text on output with a given **builtin** font, fontsize and encoding.
 
       :arg str text: the text string.
@@ -435,7 +439,7 @@ Yet others are handy, general-purpose utilities.
    .. method:: Page.clean_contents(sanitize=True)
 
       *(Changed in v1.17.6)*
-      
+
       PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.get_contents` for more details.
 
       Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
@@ -486,7 +490,7 @@ Yet others are handy, general-purpose utilities.
    .. method:: Document.is_stream(xref)
 
       *(New in version 1.14.14)*
-      
+
       PDF only: Check whether the object represented by :data:`xref` is a :data:`stream` type. Return is *False* if not a PDF or if the number is outside the valid xref range.
 
       :arg int xref: :data:`xref` number.
@@ -608,4 +612,47 @@ Yet others are handy, general-purpose utilities.
             * glyphs (*list*) -- list of glyph numbers and widths (filled by textinsertion methods).
 
       :rtype: list
+
+
+-----
+
+   .. method:: recover_quad(line_dir, span)
+
+      Compute the quadrilateral of a text span extracted via options "dict" or "rawdict" of :meth:`Page.get_text`.
+
+      :arg tuple line_dir: ``line["dir"]`` of the owning line.
+      :arg dict span: the span.
+      :returns: the :ref:`Quad` of the span, usable for text marker annotations ('Highlight', etc.).
+
+-----
+
+   .. method:: recover_char_quad(line_dir, span, char)
+
+      Compute the quadrilateral of a text character extracted via option "rawdict" of :meth:`Page.get_text`.
+
+      :arg tuple line_dir: ``line["dir"]`` of the owning line.
+      :arg dict span: the span.
+      :arg dict char: the character.
+      :returns: the :ref:`Quad` of the character, usable for text marker annotations ('Highlight', etc.).
+
+-----
+
+   .. method:: recover_span_quad(line_dir, span, chars=None)
+
+      Compute the quadrilateral of a subset of characters of a span extracted via option "rawdict" of :meth:`Page.get_text`.
+
+      :arg tuple line_dir: ``line["dir"]`` of the owning line.
+      :arg dict span: the span.
+      :arg list chars: the characters to consider. If omitted, identical to :meth:`recoer_span`. If given, the selected extraction option must be "rawdict".
+      :returns: the :ref:`Quad` of the selected characters, usable for text marker annotations ('Highlight', etc.).
+
+-----
+
+   .. method:: recover_line_quad(line, spans=None)
+
+      Compute the quadrilateral of a subset of spans of a text line extracted via options "dict" or "rawdict" of :meth:`Page.get_text`.
+
+      :arg dict line: the line.
+      :arg list spans: a sub-list of ``line["spans"]``. If omitted, the full line quad will be returned.
+      :returns: the :ref:`Quad` of the selected line spans, usable for text marker annotations ('Highlight', etc.).
 
