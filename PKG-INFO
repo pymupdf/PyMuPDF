@@ -40,7 +40,7 @@ Description:
         ========================
         
         For all document types you can render pages in raster (PNG) or vector (SVG) formats, extract text and access meta information, links, annotations and bookmarks, as well as decrypt the document. For PDF files, these objects can also be created, modified or deleted. Plus you can rotate, re-arrange, duplicate, create, or delete pages and join or split documents.
-
+        
         PDF password protection is **fully supported**: owner and user passwords, encryption methods and permission levels can be set, changed or removed.
         
         Specifically for PDF files, PyMuPDF provides update access to low-level structure information, supports **optional content**, handling of **embedded files** and modification of page contents (like inserting images, fonts, text, annotations and drawings).
@@ -54,7 +54,7 @@ Description:
         Written using **Sphinx**, documentation is available here:
         
         * `Read The Docs <https://pymupdf.readthedocs.io/en/latest/>`_.
-        * `Windows CHM <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_
+        * `Windows CHM <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_.
         
         License and Copyright Information
         ==================================
@@ -65,7 +65,7 @@ Description:
         
         Artifex is the exclusive commercial licensing agent for MuPDF.
         
-        Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
+        Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. (c) 2021 Artifex Software, Inc. All rights reserved.
 
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Console
