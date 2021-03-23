@@ -31,6 +31,7 @@ FEDORA = ARCH_LINUX + [
 ]
 LIBRARIES = {
     "default": DEFAULT,
+    "ubuntu": DEFAULT,
     "arch": ARCH_LINUX,
     "manjaro": ARCH_LINUX,
     "artix": ARCH_LINUX,
@@ -40,6 +41,15 @@ LIBRARIES = {
 
 
 def load_libraries():
+    try:
+        import distro
+
+        os_id = distro.id()
+    except:
+        os_id = ""
+    if os_id in list(LIBRARIES.keys()) + ["manjaro", "artix"]:
+        return LIBRARIES[os_id]
+
     filepath = "/etc/os-release"
     if not os.path.exists(filepath):
         return LIBRARIES["default"]
@@ -56,7 +66,7 @@ def load_libraries():
     os_id = info["ID"]
     if os_id.startswith("opensuse"):
         os_id = "opensuse"
-    if os_id not in LIBRARIES:
+    if os_id not in LIBRARIES.keys():
         return LIBRARIES["default"]
     return LIBRARIES[os_id]
 
