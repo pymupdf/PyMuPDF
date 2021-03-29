@@ -3,6 +3,7 @@ setenv CFLAGS -fPIC
 # install the pre-required tool
 pkg install swig
 pkg install freetype2
+pkg install gmake
 
 wget https://mupdf.com/downloads/archive/mupdf-1.18.0-source.tar.gz
 tar -zxvf mupdf-1.18.0-source.tar.gz
