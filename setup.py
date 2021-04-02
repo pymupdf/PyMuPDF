@@ -93,9 +93,12 @@ elif sys.platform.startswith(("darwin", "freebsd")):
             "/usr/local/include",
             "/usr/include/freetype2",
             "/usr/local/include/freetype2",
+            "/opt/homebrew/include",
+            "/opt/homebrew/include/mupdf",
+            "/opt/homebrew/include/freetype2",
         ],
         # libraries should already be linked here by brew
-        library_dirs=["/usr/local/lib"],
+        library_dirs=["/usr/local/lib", "/opt/homebrew/lib"],
         # library_dirs=['/usr/local/Cellar/mupdf-tools/1.8/lib/',
         #'/usr/local/Cellar/openssl/1.0.2g/lib/',
         #'/usr/local/Cellar/jpeg/8d/lib/',
