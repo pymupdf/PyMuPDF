@@ -366,7 +366,7 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
         return;
     }
 
-    float mcol[4] = {0,0,0,0}; // local color storage
+    double mcol[4] = {0,0,0,0}; // local color storage
     Py_ssize_t i;
     for (i = 0; i < len; i++) {
         rc = JM_FLOAT_ITEM(color, i, &mcol[i]);
@@ -375,7 +375,7 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
 
     *n = len;
     for (i = 0; i < len; i++)
-        col[i] = mcol[i];
+        col[i] = (float) mcol[i];
     return;
 }
 

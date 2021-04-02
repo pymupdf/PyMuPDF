@@ -629,7 +629,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     if (value && PySequence_Check(value)) {
         n = PySequence_Size(value);
         fill_col = pdf_new_array(ctx, pdf, n);
-        float col = 0;
+        double col = 0;
         for (i = 0; i < n; i++) {
             JM_FLOAT_ITEM(value, i, &col);
             pdf_array_push_real(ctx, fill_col, col);
@@ -660,7 +660,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     if (value && PySequence_Check(value)) {
         n = PySequence_Size(value);
         border_col = pdf_new_array(ctx, pdf, n);
-        float col = 0;
+        double col = 0;
         for (i = 0; i < n; i++) {
             JM_FLOAT_ITEM(value, i, &col);
             pdf_array_push_real(ctx, border_col, col);

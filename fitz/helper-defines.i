@@ -386,6 +386,7 @@ PyObject *dictkey_id;
 PyObject *dictkey_image;
 PyObject *dictkey_length;
 PyObject *dictkey_lines;
+PyObject *dictkey_matrix;
 PyObject *dictkey_modDate;
 PyObject *dictkey_name;
 PyObject *dictkey_number;

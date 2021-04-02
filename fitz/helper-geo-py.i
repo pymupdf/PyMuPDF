@@ -19,8 +19,8 @@ class Matrix(object):
         if len(args) == 1:  # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = math.radians(args[0])
-                c = round(math.cos(theta), 8)
-                s = round(math.sin(theta), 8)
+                c = round(math.cos(theta), 12)
+                s = round(math.sin(theta), 12)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -668,18 +668,18 @@ class Rect(object):
 
     def __or__(self, x):
         if not hasattr(x, "__len__"):
-            raise ValueError("bad operand 2")
+            raise ValueError("bad type op 2")
 
         r = Rect(self)
         if len(x) == 2:
             return r.includePoint(x)
         if len(x) == 4:
             return r.includeRect(x)
-        raise ValueError("bad operand 2")
+        raise ValueError("bad type op 2")
 
     def __and__(self, x):
         if not hasattr(x, "__len__"):
-            raise ValueError("bad operand 2")
+            raise ValueError("bad type op 2")
 
         r1 = Rect(x)
         r = Rect(self)
@@ -793,7 +793,7 @@ class Quad(object):
         raise ValueError("bad Quad constructor")
 
     @property
-    def isRectangular(self):
+    def isRectangular(self)->bool:
         """Check if quad is rectangular.
 
         Notes:
@@ -819,14 +819,14 @@ class Quad(object):
 
 
     @property
-    def isConvex(self):
+    def isConvex(self)->bool:
         """Check if quad is convex and not degenerate.
 
         Notes:
             For convexity, every line connecting two points of the quad must be
             inside the quad. This is equivalent to that every corner encloses
             an angle with 0 < angle < 180 degrees.
-            Excluding the "degenerate" case (all points on the same line),
+            Excluding the "degenerate" case (all corners on same line),
             it suffices to check that the sines of three angles are > 0.
         Returns:
             True or False.
@@ -868,7 +868,7 @@ class Quad(object):
     def isEmpty(self):
         """Check whether all quad corners are on the same line.
 
-        The is the case if its width or height is zero.
+        This is the case if width or height is zero.
         """
         return self.width < EPSILON or self.height < EPSILON
 
@@ -880,6 +880,31 @@ class Quad(object):
         r.x1 = max(self.ul.x, self.ur.x, self.lr.x, self.ll.x)
         r.y1 = max(self.ul.y, self.ur.y, self.lr.y, self.ll.y)
         return r
+
+
+    def __contains__(self, x):
+        try:
+            l = x.__len__()
+        except:
+            return False
+        if l == 2:
+            return TOOLS._point_in_quad(x, self)
+        if l != 4:
+            return False
+        if CheckRect(x):
+            r = Rect(x)
+            if r.isInfinite:
+                return False
+            if r.isEmpty:
+                return True
+            return TOOLS._point_in_quad(x[:2], self) and TOOLS._point_in_quad(x[2:], self)
+        if CheckQuad(x):
+            for i in range(4):
+                if not TOOLS._point_in_quad(x[i], self):
+                    return False
+            return True
+        return False
+
 
     def __getitem__(self, i):
         return (self.ul, self.ur, self.ll, self.lr)[i]

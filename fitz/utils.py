@@ -4669,7 +4669,7 @@ def recover_line_quad(line: dict, spans: list = None) -> Quad:
     small = TOOLS.set_small_glyph_heights()  # small glyph heights?
 
     h = max(
-        [s["size"] * (1 if small else s["ascender"] - s["descender"]) for s in spans]
+        [s["size"] * (1 if small else (s["ascender"] - s["descender"])) for s in spans]
     )
 
     line_rect = Rect(0, -h, x_lr.x, 0)  # line rectangle
@@ -4713,7 +4713,7 @@ def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> Quad:
     x_lr = span_lr * mat0
 
     small = TOOLS.set_small_glyph_heights()  # small glyph heights?
-    h = span["size"] * (1 if small else span["ascender"] - span["descender"])
+    h = span["size"] * (1 if small else (span["ascender"] - span["descender"]))
 
     span_rect = Rect(0, -h, x_lr.x, 0)  # line rectangle
     span_quad = span_rect.quad  # make it a quad and:

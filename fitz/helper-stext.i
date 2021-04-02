@@ -628,19 +628,21 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
         if (!bytes)
             bytes = JM_BinFromChar("");
         DICT_SETITEM_DROP(block_dict, dictkey_width,
-                          Py_BuildValue("i", w));
+                        Py_BuildValue("i", w));
         DICT_SETITEM_DROP(block_dict, dictkey_height,
-                          Py_BuildValue("i", h));
+                        Py_BuildValue("i", h));
         DICT_SETITEM_DROP(block_dict, dictkey_ext,
-                          Py_BuildValue("s", ext));
+                        Py_BuildValue("s", ext));
         DICT_SETITEM_DROP(block_dict, dictkey_colorspace,
-                          Py_BuildValue("i", n));
+                        Py_BuildValue("i", n));
         DICT_SETITEM_DROP(block_dict, dictkey_xres,
-                          Py_BuildValue("i", image->xres));
+                        Py_BuildValue("i", image->xres));
         DICT_SETITEM_DROP(block_dict, dictkey_yres,
-                          Py_BuildValue("i", image->xres));
+                        Py_BuildValue("i", image->xres));
         DICT_SETITEM_DROP(block_dict, dictkey_bpc,
-                          Py_BuildValue("i", (int) image->bpc));
+                        Py_BuildValue("i", (int) image->bpc));
+        DICT_SETITEM_DROP(block_dict, dictkey_matrix,
+                        JM_py_from_matrix(block->u.i.transform));
         DICT_SETITEM_DROP(block_dict, dictkey_image, bytes);
 
         fz_drop_buffer(ctx, freebuf);

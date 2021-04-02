@@ -190,7 +190,8 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
     pdf_obj *new_res;
     fz_buffer *buffer;
     int struct_parents;
-
+    fz_matrix ctm = fz_identity;
+    pdf_page_transform(gctx, page, NULL, &ctm);
     struct_parents_obj = pdf_dict_get(ctx, page->obj, PDF_NAME(StructParents));
     struct_parents = -1;
     if (pdf_is_number(ctx, struct_parents_obj))
@@ -199,7 +200,7 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
     contents = pdf_page_contents(ctx, page);
     old_res = pdf_page_resources(ctx, page);
     img_info = PyList_New(0);
-    JM_filter_content_stream(ctx, doc, contents, old_res, fz_identity, &filter, struct_parents, &buffer, &new_res);
+    JM_filter_content_stream(ctx, doc, contents, old_res, ctm, &filter, struct_parents, &buffer, &new_res);
     fz_drop_buffer(ctx, buffer);
     pdf_drop_obj(ctx, new_res);
     PyObject *rc = PySequence_Tuple(img_info);

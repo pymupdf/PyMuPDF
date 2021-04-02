@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.18.10
+Version: 1.18.11
 Author: Jorj McKie
 Author-email: jorj.x.mckie@outlook.de
 License: GNU AFFERO GPL 3.0
@@ -10,7 +10,7 @@ Home-page: https://github.com/pymupdf/PyMuPDF
 Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the document renderer and toolkit MuPDF
 Description:
-        Release date: March 22, 2021
+        Release date: March 26, 2021
         
         Authors
         =======
@@ -21,7 +21,7 @@ Description:
         Introduction
         ============
         
-        PyMuPDF (current version 1.18.10) is a Python binding with support for `MuPDF <http://mupdf.com/>`_ (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer and toolkit, which is maintained and developed by Artifex Software, Inc.
+        PyMuPDF (current version 1.18.11) is a Python binding with support for `MuPDF <http://mupdf.com/>`_ (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer and toolkit, which is maintained and developed by Artifex Software, Inc.
         
         MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
         

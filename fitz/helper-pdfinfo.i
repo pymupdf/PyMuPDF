@@ -468,6 +468,7 @@ int JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 {
     int i, rc = 1, n = pdf_dict_len(ctx, dict);
     fz_rect bbox;
+    fz_matrix mat;
     pdf_obj *o = NULL, *m = NULL;
     for (i = 0; i < n; i++) {
         pdf_obj *imagedict;
@@ -488,22 +489,24 @@ int JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         o = pdf_dict_get(ctx, imagedict, PDF_NAME(BBox));
         m = pdf_dict_get(ctx, imagedict, PDF_NAME(Matrix));
+        if (m) {
+            mat = pdf_to_matrix(ctx, m);
+        } else {
+            mat = fz_identity;
+        }
         if (o) {
-            if (m) {
-                bbox = fz_transform_rect(pdf_to_rect(ctx, o), pdf_to_matrix(ctx, m));
-            } else {
-                bbox = pdf_to_rect(ctx, o);
-            }
+            bbox = fz_transform_rect(pdf_to_rect(ctx, o), mat);
         } else {
             bbox = fz_infinite_rect;
         }
         int xref = pdf_to_num(ctx, imagedict);
 
-        PyObject *entry = PyTuple_New(4);
+        PyObject *entry = PyTuple_New(5);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
         PyTuple_SET_ITEM(entry, 1, Py_BuildValue("s", pdf_to_name(ctx, refname)));
         PyTuple_SET_ITEM(entry, 2, Py_BuildValue("i", stream_xref));
         PyTuple_SET_ITEM(entry, 3, JM_py_from_rect(bbox));
+        PyTuple_SET_ITEM(entry, 4, JM_py_from_matrix(mat));
         LIST_APPEND_DROP(imagelist, entry);
     }
     return rc;

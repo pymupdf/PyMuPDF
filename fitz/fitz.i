@@ -186,6 +186,7 @@ dictkey_id = PyUnicode_InternFromString("id");
 dictkey_image = PyUnicode_InternFromString("image");
 dictkey_length = PyUnicode_InternFromString("length");
 dictkey_lines = PyUnicode_InternFromString("lines");
+dictkey_matrix = PyUnicode_InternFromString("transform");
 dictkey_modDate = PyUnicode_InternFromString("modDate");
 dictkey_name = PyUnicode_InternFromString("name");
 dictkey_number = PyUnicode_InternFromString("number");
@@ -2842,44 +2843,30 @@ if not self.is_form_pdf:
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
-                if (!INRANGE(xref, 1, xreflen-1))
+                if (!INRANGE(xref, 1, xreflen-1) && xref != -1)
                     THROWMSG(gctx, "bad xref");
-                obj = pdf_load_object(gctx, pdf, xref);
+                if (xref > 0) {
+                    obj = pdf_load_object(gctx, pdf, xref);
+                } else {
+                    obj = pdf_trailer(gctx, pdf);
+                }
                 res = JM_object_to_buffer(gctx, pdf_resolve_indirect(gctx, obj), compressed, ascii);
                 text = JM_EscapeStrFromBuffer(gctx, res);
             }
             fz_always(gctx) {
-                pdf_drop_obj(gctx, obj);
+                if (xref > 0) {
+                    pdf_drop_obj(gctx, obj);
+                }
                 fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) return EMPTY_STRING;
             return text;
         }
+        %pythoncode %{
+        def pdf_trailer(self, compressed: bool=False, ascii:bool=False)->str:
+            """Get PDF trailer as a string."""
+            return self.xref_object(-1, compressed=compressed, ascii=ascii)%}
 
-        //------------------------------------------------------------------
-        // Get String of PDF trailer
-        //------------------------------------------------------------------
-        FITZEXCEPTION(pdf_trailer, !result)
-        CLOSECHECK0(pdf_trailer, """Get PDF trailer as a string.""")
-        PyObject *
-        pdf_trailer(int compressed=0, int ascii=0)
-        {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) Py_RETURN_NONE;
-            PyObject *text = NULL;
-            fz_buffer *res=NULL;
-            fz_try(gctx) {
-                res = JM_object_to_buffer(gctx, pdf_trailer(gctx, pdf), compressed, ascii);
-                text = JM_EscapeStrFromBuffer(gctx, res);
-            }
-            fz_always(gctx) {
-                fz_drop_buffer(gctx, res);
-            }
-            fz_catch(gctx) {
-                return PyUnicode_FromString("PDF trailer damaged");
-            }
-            return text;
-        }
 
         //------------------------------------------------------------------
         // Get compressed stream of an object by xref
@@ -3265,7 +3252,7 @@ if not self.is_form_pdf:
             pdf_obj *item = NULL;
             pdf_obj *obj = NULL;
             Py_ssize_t i;
-            float f;
+            double f;
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             fz_try(gctx) {
                 item = pdf_new_indirect(gctx, pdf, xref, 0);
@@ -3873,7 +3860,8 @@ if basestate:
                 if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 3)
-                return val
+                rc = [(v[0], v[1], v[2], Rect(v[3]), Matrix(v[4])) for v in val]
+                return rc
 
 
             def copy_page(self, pno: int, to: int =-1):
@@ -4156,30 +4144,55 @@ struct Page {
         doc = self.parent
         if doc.is_closed or doc.is_encrypted:
             raise ValueError("document closed or encrypted")
+
         inf_rect = Rect(1, 1, -1, -1)
+        null_mat = Matrix()
+        if transform == 1:
+            rc = (inf_rect, null_mat)
+        else:
+            rc = inf_rect
+
         if type(name) in (list, tuple):
             if not type(name[-1]) is int:
-                raise ValueError("need a full page image list item")
+                raise ValueError("need item of full page image list")
             item = name
         else:
             imglist = [i for i in doc.get_page_images(self.number, True) if name == i[-3]]
             if len(imglist) == 1:
                 item = imglist[0]
             elif imglist == []:
-                raise ValueError("no valid image found")
+                raise ValueError("bad image name")
             else:
-                raise ValueError("found more than one image of that name.")%}
+                raise ValueError("found multiple images named '%s'." % name)
+        xref = item[-1]
+        if xref != 0:
+            xobjs = [x for x in self.get_xobjects() if x[0] == xref and x[2] == 0]
+            if xobjs == []:
+                raise ValueError("image in unsupported Form XObject")
+        %}
         %pythonappend get_image_bbox %{
         if not bool(val):
-            return inf_rect
-        rc = inf_rect
+            return rc
+
         for v in val:
-            if v[0] == item[-3]:
-                rc = Quad(v[1]).rect
+            if v[0] != item[-3]:
+                continue
+            q = Quad(v[1])
+            bbox = q.rect
+            if transform == 0:
+                rc = bbox
                 break
-        val = rc * self.transformation_matrix%}
+
+            hm = Matrix(TOOLS._hor_matrix(q.ll, q.lr))
+            h = abs(q.ll - q.ul)
+            w = abs(q.ur - q.ul)
+            m0 = Matrix(1 / w, 0, 0, 1 / h, 0, 0)
+            m = ~(hm * m0)
+            rc = (bbox, m)
+            break
+        val = rc%}
         PyObject *
-        get_image_bbox(PyObject *name)
+        get_image_bbox(PyObject *name, int transform=0)
         {
             pdf_page *pdf_page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             PyObject *rc =NULL;
@@ -6455,6 +6468,12 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
             """List of images defined in the page object."""
             CheckParent(self)
             return self.parent.get_page_images(self.number, full=full)
+
+
+        def get_xobjects(self):
+            """List of xobjects defined in the page object."""
+            CheckParent(self)
+            return self.parent.get_page_xobjects(self.number)
 
 
         def read_contents(self):
@@ -9850,7 +9869,7 @@ struct TextPage {
                     } else if (fz_contains_rect(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect)) {
                         fz_image *img = block->u.i.image;
                         fz_colorspace *cs = img->colorspace;
-                        text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
+                        text = PyUnicode_FromFormat("<image: %s, width: %d, height: %d, bpc: %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
                         blockrect = fz_union_rect(blockrect, block->bbox);
                     }
                     if (!fz_is_empty_rect(blockrect)) {
@@ -11167,26 +11186,38 @@ struct Tools
             fz_point c = JM_point_from_py(C);
             fz_point p = JM_point_from_py(P);
             fz_point q = JM_point_from_py(Q);
-            fz_point s = fz_normalize_vector(fz_make_point(q.x - p.x, q.y - p.y));
+            fz_point s = JM_normalize_vector(q.x - p.x, q.y - p.y);
             fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -p.x, -p.y);
             fz_matrix m2 = fz_make_matrix(s.x, -s.y, s.y, s.x, 0, 0);
             m1 = fz_concat(m1, m2);
             c = fz_transform_point(c, m1);
-            c = fz_normalize_vector(c);
+            c = JM_normalize_vector(c.x, c.y);
             return Py_BuildValue("f", c.y);
         }
 
+        // Return matrix that maps point C to (0,0) and point P to the
+        // x-axis such that abs(x) equals abs(P - C).
         PyObject *
         _hor_matrix(PyObject *C, PyObject *P)
         {
-            // calculate matrix m that maps line CP to the x-axis,
-            // such that C * m = (0, 0), and target line has same length.
             fz_point c = JM_point_from_py(C);
             fz_point p = JM_point_from_py(P);
-            fz_point s = fz_normalize_vector(fz_make_point(p.x - c.x, p.y - c.y));
+
+            // compute (cosine, sine) of vector P-C with double precision:
+            fz_point s = JM_normalize_vector(p.x - c.x, p.y - c.y);
+
             fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -c.x, -c.y);
             fz_matrix m2 = fz_make_matrix(s.x, -s.y, s.y, s.x, 0, 0);
             return JM_py_from_matrix(fz_concat(m1, m2));
+        }
+
+
+        PyObject *
+        _point_in_quad(PyObject *P, PyObject *Q)
+        {
+            fz_point p = JM_point_from_py(P);
+            fz_quad q = JM_quad_from_py(Q);
+            return JM_BOOL(fz_is_point_inside_quad(p, q));
         }
 
 

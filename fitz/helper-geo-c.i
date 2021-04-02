@@ -18,11 +18,11 @@ JM_INT_ITEM(PyObject *obj, Py_ssize_t idx, int *result)
 }
 
 static int
-JM_FLOAT_ITEM(PyObject *obj, Py_ssize_t idx, float *result)
+JM_FLOAT_ITEM(PyObject *obj, Py_ssize_t idx, double *result)
 {
     PyObject *temp = PySequence_ITEM(obj, idx);
     if (!temp) return 1;
-    *result = (float) PyFloat_AsDouble(temp);
+    *result = PyFloat_AsDouble(temp);
     Py_DECREF(temp);
     if (PyErr_Occurred()) {
         PyErr_Clear();
@@ -30,6 +30,21 @@ JM_FLOAT_ITEM(PyObject *obj, Py_ssize_t idx, float *result)
     }
     return 0;
 }
+
+
+static fz_point
+JM_normalize_vector(float x, float y)
+{
+    double px = x, py = y, len = (double) (x * x + y * y);
+
+    if (len != 0) {
+        len = sqrt(len);
+        px /= len;
+        py /= len;
+    }
+    return fz_make_point((float) px, (float) py);
+}
+
 
 //-----------------------------------------------------------------------------
 // PySequence to fz_rect. Default: infinite rect
@@ -40,12 +55,12 @@ JM_rect_from_py(PyObject *r)
     if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
         return fz_infinite_rect;
     Py_ssize_t i;
-    float f[4];
+    double f[4];
 
     for (i = 0; i < 4; i++)
         if (JM_FLOAT_ITEM(r, i, &f[i]) == 1) return fz_infinite_rect;
 
-    return fz_make_rect(f[0], f[1], f[2], f[3]);
+    return fz_make_rect((float) f[0], (float) f[1], (float) f[2], (float) f[3]);
 }
 
 //-----------------------------------------------------------------------------
@@ -91,7 +106,7 @@ static fz_point
 JM_point_from_py(PyObject *p)
 {
     fz_point p0 = fz_make_point(0, 0);
-    float x, y;
+    double x, y;
 
     if (!p || !PySequence_Check(p) || PySequence_Size(p) != 2)
         return p0;
@@ -99,7 +114,7 @@ JM_point_from_py(PyObject *p)
     if (JM_FLOAT_ITEM(p, 0, &x) == 1) return p0;
     if (JM_FLOAT_ITEM(p, 1, &y) == 1) return p0;
 
-    return fz_make_point(x, y);
+    return fz_make_point((float) x, (float) y);
 }
 
 //-----------------------------------------------------------------------------
@@ -119,7 +134,7 @@ static fz_matrix
 JM_matrix_from_py(PyObject *m)
 {
     Py_ssize_t i;
-    float a[6];
+    double a[6];
 
     if (!m || !PySequence_Check(m) || PySequence_Size(m) != 6)
         return fz_identity;
@@ -127,7 +142,7 @@ JM_matrix_from_py(PyObject *m)
     for (i = 0; i < 6; i++)
         if (JM_FLOAT_ITEM(m, i, &a[i]) == 1) return fz_identity;
 
-    return fz_make_matrix(a[0], a[1], a[2], a[3], a[4], a[5]);
+    return fz_make_matrix((float) a[0], (float) a[1], (float) a[2], (float) a[3], (float) a[4], (float) a[5]);
 }
 
 //-----------------------------------------------------------------------------
@@ -148,7 +163,7 @@ JM_quad_from_py(PyObject *r)
 {
     fz_quad q = fz_make_quad(0, 0, 0, 0, 0, 0, 0, 0);
     fz_point p[4];
-    float test;
+    double test, x, y;
     Py_ssize_t i;
     PyObject *obj = NULL;
 
@@ -163,8 +178,9 @@ JM_quad_from_py(PyObject *r)
         if (!obj || !PySequence_Check(obj) || PySequence_Size(obj) != 2)
             goto exit_result;  // invalid: cancel the rest
 
-        if (JM_FLOAT_ITEM(obj, 0, &p[i].x) == 1) goto exit_result;
-        if (JM_FLOAT_ITEM(obj, 1, &p[i].y) == 1) goto exit_result;
+        if (JM_FLOAT_ITEM(obj, 0, &x) == 1) goto exit_result;
+        if (JM_FLOAT_ITEM(obj, 1, &y) == 1) goto exit_result;
+        p[i] = fz_make_point((float) x, (float) y);
 
         Py_CLEAR(obj);
     }
