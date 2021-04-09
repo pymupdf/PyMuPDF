@@ -83,6 +83,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.save`                   PDF only: save the document
 :meth:`Document.saveIncr`               PDF only: save the document incrementally
+:meth:`Document.saveSane`               PDF only: save the document with sane defaults
 :meth:`Document.scrub`                  PDF only: remove sensitive data
 :meth:`Document.search_page_for`        search for a string on a page
 :meth:`Document.select`                 PDF only: select a subset of pages
@@ -1098,6 +1099,11 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: saveIncr()
 
       PDF only: saves the document incrementally. This is a convenience abbreviation for *doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)*.
+
+
+    .. method:: saveSane()
+
+      PDF only: saves the document with sane defaults. This is a convenience abbreviation for *doc.save(doc.name, garbage=3, deflate=True, encryption=PDF_ENCRYPT_KEEP)*.
 
 
     .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)

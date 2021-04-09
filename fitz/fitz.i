@@ -3987,6 +3987,11 @@ if basestate:
                 return self.save(self.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)
 
 
+            def saveSane(self):
+                """ Save PDF with sane defaults"""
+                return self.save(self.name, garbage=3, deflate=True, encryption=PDF_ENCRYPT_KEEP)
+
+
             def reload_page(self, page: "struct Page *") -> "struct Page *":
                 """Make a fresh copy of a page."""
                 old_annots = {}  # copy annot references to here
