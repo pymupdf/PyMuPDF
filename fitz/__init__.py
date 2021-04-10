@@ -82,6 +82,7 @@ fitz.Page.draw_zigzag = fitz.utils.draw_zigzag
 fitz.Page.get_links = fitz.utils.get_links
 fitz.Page.get_pixmap = fitz.utils.get_pixmap
 fitz.Page.get_text = fitz.utils.getText
+fitz.Page.get_image_info = fitz.utils.get_image_info
 fitz.Page.get_text_blocks = fitz.utils.getTextBlocks
 fitz.Page.get_text_selection = fitz.utils.getTextSelection
 fitz.Page.get_text_words = fitz.utils.getTextWords

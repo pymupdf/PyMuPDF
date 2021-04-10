@@ -135,12 +135,12 @@ To address the font issue, you can use a simple utility script to scan through t
          testn = font_sans                     # use Helvetica
      elif test.endswith(",monospace"):         # monospaced font?
          testn = font_mono                     # becomes Courier
- 
+
      if testn != "":                           # any of the above found?
          otext = otext.replace(test, testn)    # change the source
          found_one = True
          pos1 = 0                              # start over
- 
+
  if found_one:
      ofile = open(filename + ".html", "w")
      ofile.write(otext)
@@ -217,7 +217,7 @@ XML
 ~~~
 
 The :meth:`TextPage.extractXML` (or *Page.get_text("xml")*) version extracts text (no images) with the detail level of RAWDICT::
-  
+
     >>> for line in page.get_text("xml").splitlines():
         print(line)
 
@@ -261,17 +261,19 @@ Text Extraction Flags Defaults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 *(New in version 1.16.2)* Method :meth:`Page.get_text` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than *None*, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
 
-=================== ==== ==== ===== === ==== ======= ===== ======
-Indicator           text html xhtml xml dict rawdict words blocks
-=================== ==== ==== ===== === ==== ======= ===== ======
-preserve ligatures  1    1    1     1   1    1       1     1
-preserve whitespace 1    1    1     1   1    1       1     1
-preserve images     n/a  1    1     n/a 1    1       n/a   0
-inhibit spaces      0    0    0     0   0    0       0     0
-dehyphenate         0    0    0     0   0    0       0     0
-=================== ==== ==== ===== === ==== ======= ===== ======
+=================== ==== ==== ===== === ==== ======= ===== ====== ======
+Indicator           text html xhtml xml dict rawdict words blocks search
+=================== ==== ==== ===== === ==== ======= ===== ====== ======
+preserve ligatures  1    1    1     1   1    1       1     1       0
+preserve whitespace 1    1    1     1   1    1       1     1       1
+preserve images     n/a  1    1     n/a 1    1       n/a   0       0
+inhibit spaces      0    0    0     0   0    0       0     0       0
+dehyphenate         0    0    0     0   0    0       0     0       1
+=================== ==== ==== ===== === ==== ======= ===== ====== ======
 
+* **search** refers to the text search function.
 * **"json"** is handled exactly like **"dict"** and is hence left out.
+* **"rawjson"** is handled exactly like **"rawdict"** and is hence left out.
 * An "n/a" specification means a value of 0 and setting this bit never has any effect on the output (but an adverse effect on performance).
 * If you are not interested in images when using an output variant which includes them by default, then by all means set the respective bit off: You will experience a better performance and much lower space requirements.
 
@@ -291,7 +293,7 @@ To show the effect of *TEXT_INHIBIT_SPACES* have a look at this example::
     in English
     ... let's see
     what happens.
-    >>> 
+    >>>
 
 
 Performance

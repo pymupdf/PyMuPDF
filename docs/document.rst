@@ -43,6 +43,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.embfile_info`           PDF only: metadata of an embedded file
 :meth:`Document.embfile_names`          PDF only: list of embedded files
 :meth:`Document.embfile_upd`            PDF only: change an embedded file
+:meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
 :meth:`Document.find_bookmark`          retrieve page location after layouting
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
 :meth:`Document.get_oc_states`          PDF only: lists of OCGs in ON, OFF, RBGroups
@@ -706,7 +707,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return the PDF dictionary keys of the object provided by its xref number.
 
-      :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use ``-1`` if you want to access the special dictionary "PDF trailer" (it has no identifying xref).
+      :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use ``-1`` to access the special dictionary "PDF trailer" (it has no identifying xref).
 
       :returns: a tuple of dictionary keys present in object :data:`xref`. Examples:
 
@@ -727,7 +728,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return type and value of a PDF dictionary key of an xref.
 
-      :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use ``-1`` if you want to access the special dictionary "PDF trailer" (it has no identifying xref).
+      :arg int xref: the :data:`xref`. *Changed in v1.18.10:* Use ``-1`` to access the special dictionary "PDF trailer" (it has no identifying xref).
       :arg str key: the desired PDF key. Must **exactly** match (case-sensitive) one of the keys contained in :meth:`Document.xref_get_keys`.
 
       :returns: a tuple (type, value), where type is one of "xref", "array", "dict", "int", "float" "null", "bool", "float", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and a faithful reflection of what is stored in the PDF. An argument like the return value can be used to modify the value of a key of :data:`xref`.
@@ -739,7 +740,7 @@ For details on **embedded files** refer to Appendix 3.
           Resources = ('xref', '1296 0 R')
           MediaBox = ('array', '[0 0 612 792]')
           Parent = ('xref', '1301 0 R')
-          >>> # no the same thing for the PDF trailer:
+          >>> # same thing for the PDF trailer:
           >>> for key in doc.xref_get_keys(-1):
                   print(key, "=", doc.xref_get_key(-1, key))
           Type = ('name', '/XRef')
@@ -790,17 +791,19 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: get_page_xobjects(pno)
 
+      *(Changed in v1.18.11)*
+
       PDF only: *(New in v1.16.13)* Return a list of all XObjects referenced by a page.
 
       :arg int pno: page number, 0-based, *-inf < pno < page_count*.
 
       :rtype: list
-      :returns: a list of (non-image) XObjects. These objects typically represent pages *embedded* (not copied) from other PDFs. For example, :meth:`Page.show_pdf_page` will create this type of object. An item of this list has the following layout: **(xref, name, invoker, bbox)**, where
+      :returns: a list of (non-image) XObjects. These objects typically represent pages *embedded* (not copied) from other PDFs. For example, :meth:`Page.show_pdf_page` will create this type of object. An item of this list has the following layout: ``(xref, name, invoker, bbox)``, where
 
-        * **xref** (*int*) is the XObject's :data:`xref`
-        * **name** (*str*) is the symbolic name to reference the XObject
-        * **invoker** (*int*) the :data:`xref` of the invoking XObject or zero if the page directly invokes it
-        * **bbox** (*tuple*) the boundary box of the XObject's location on the page **in untransformed coordinates**. To get actual, non-rotated page coordinates, multiply with the page's transformation matrix :attr:`Page.transformation_matrix`.
+        * **xref** (*int*) is the XObject's :data:`xref`.
+        * **name** (*str*) is the symbolic name to reference the XObject.
+        * **invoker** (*int*) the :data:`xref` of the invoking XObject or zero if the page directly invokes it.
+        * **bbox** (:ref:`Rect`) the boundary box of the XObject's location on the page **in untransformed coordinates**. To get actual, non-rotated page coordinates, multiply with the page's transformation matrix :attr:`Page.transformation_matrix`. *Changed in v.18.11:* the bbox is now formatted as :ref:`Rect`.
 
 
     .. method:: get_page_images(pno, full=False)
@@ -1095,10 +1098,18 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg str user_pw: *(new in version 1.16.0)* set the document's user password.
 
+    .. method:: ez_save(*args, **kwargs)
+
+      *(New in v1.18.11)*
+
+      PDF only: The same as :meth:`Document.save` but with the changed defaults `deflate=True, garbage=3`.
+
     .. method:: saveIncr()
 
       PDF only: saves the document incrementally. This is a convenience abbreviation for *doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)*.
 
+
+    .. method:: ez_save()
 
     .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
 
@@ -1397,9 +1408,16 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: xref_object(xref, compressed=False, ascii=False)
 
-      *(New in version 1.16.8)*
+      *(New in version 1.16.8, changed in v1.18.10)*
 
       PDF only: Return the definition source of a PDF object.
+
+      :arg int xref: the object's :data`xref`. *Changed in v1.18.10:* A value of -1 returns the PDF trailer source.
+      :arg bool compressed: whether to generate a compact output with no line breaks or spaces.
+      :arg bool: ascii: whether to ASCII-encode binary data.
+
+      :rtype: str
+      :returns: The object definition source.
 
     .. method:: pdf_catalog()
 
@@ -1412,7 +1430,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.16.8)*
 
-      PDF only: Return the trailer source of the PDF (UTF-8), which is usually located at the PDF file's end. This is similar to :meth:`Document.xref_object` except that this object has no identifier to access it.
+      PDF only: Return the trailer source of the PDF,  which is usually located at the PDF file's end. This is :meth:`Document.xref_object` with an *xref* argument of -1.
 
 
     .. method:: xref_xml_metadata()

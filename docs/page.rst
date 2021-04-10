@@ -72,8 +72,10 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.draw_zigzag`           PDF only: draw a zig-zagged line
 :meth:`Page.get_drawings`          get list of the draw commands contained in the page
 :meth:`Page.get_fonts`             PDF only: get list of used fonts
-:meth:`Page.get_image_bbox`        PDF only: get bbox of embedded image
+:meth:`Page.get_image_bbox`        PDF only: get bbox matrix of embedded image
 :meth:`Page.get_images`            PDF only: get list of used images
+:meth:`Page.get_image_info`        get list of meta information for all used images
+:meth:`Page.get_xobjects`          PDF only: get list of used xobjects
 :meth:`Page.get_links`             get all links
 :meth:`Page.get_label`             PDF only: return the label of the page
 :meth:`Page.get_pixmap`            create a page image in raster format
@@ -1015,30 +1017,71 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       PDF only: Return a list of fonts referenced by the page. Wrapper for :meth:`Document.get_page_fonts`.
 
+
    .. method:: get_images(full=False)
 
       PDF only: Return a list of images referenced by the page. Wrapper for :meth:`Document.get_page_images`.
 
-   .. method:: get_image_bbox(item)
 
-      PDF only: Return the boundary box of an image.
+   .. method:: get_image_info()
+
+      *(New in v1.18.11)*
+
+      Return a list of meta information dictionaries for all images shown on the page. This works for all document types. Technically, this is a subset of the dictionary output of :meth:`Page.get_text` -- just image binary content and any text on the page are skipped.
+
+      :rtype: list[dict]
+      :returns: A list of dictionaries. This includes information for **exactly those** images, that are shown on the page -- including *"inline images"*. In contrast to images included in :meth:`Page.get_text`, image **content** is not loaded, which drastically reduces memory usage. Depending on the page's image/text mixture, execution time should be shorter by 25% to 50% or more. Other than that, the dictionary layout is very similar to that of image blocks in ``page.get_text("dict")``.
+
+         =============== ===============================================================
+         **Key**             **Value**
+         =============== ===============================================================
+         number          block number *(int)*
+         bbox            image bbox on page, :data:`rect_like`
+         width           original image width *(int)*
+         height          original image height *(int)*
+         cs-name         colorspace name *(str)*
+         colorspace      colorspace.n *(int)*
+         xres            resolution in x-direction *(int)*
+         yres            resolution in y-direction *(int)*
+         bpc             bits per component *(int)*
+         size            storage occupied by image *(int)*
+         transform       matrix transforming image rect to bbox, :data:`matrix_like`
+         =============== ===============================================================
+
+         Multiple occurrences of the same image are regardlessly reported. Use the dictionary's items to detect this situation, e.g. by comparing width, height, and size.
+
+
+   .. method:: get_xobjects()
+
+      PDF only: Return a list of Form XObjects referenced by the page. Wrapper for :meth:`Document.get_page_xobjects`.
+
+
+   .. method:: get_image_bbox(item, transform=False)
+
+      *(Changed in v1.18.11)*
+
+      PDF only: Return boundary box and transformation matrix of an embedded image.
 
       *Changed in version 1.17.0:*
 
-      * The method should deliver correct results now.
-      * The page's ``/Contents`` are no longer modified by this method.
+      * The page's :data:`contents` are no longer modified by this method.
 
-      :arg list,str item: an item of the list :meth:`Page.get_images` with *full=True* specified, or the **name** entry of such an item, which is item[-3] (or item[7] respectively).
+      :arg list,str item: an item of the list :meth:`Page.get_images` with *full=True* specified, or the reference **name** entry of such an item, which is item[-3] (or item[7] respectively).
+      :arg bool transform: *(new in v1.18.11)* also return the matrix that transformed the image rectangle to the bbox on the page. Default is just the bbox. If true, then a tuple ``(bbox, matrix)`` is returned.
 
-      :rtype: :ref:`Rect`
-      :returns: the boundary box of the image.
-         *(Changed in v1.16.7)* -- If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised.
-         *(Changed in v1.17.0)* -- Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
-         *(Changed in v1.18.5)* -- Removed the restriction introduced in v1.17.0. The base MuPDF library now more reliably computes that value.
+      :rtype: :ref:`Rect` or (:ref:`Rect`, :ref:`Matrix`)
+      :returns: the boundary box of the image -- optionally also its transformation matrix.
+
+         * *(Changed in v1.16.7)* -- If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised. Formally invalid parameters still raise exceptions.
+         * *(Changed in v1.17.0)* -- Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
+         * *(Changed in v1.18.5)* -- Removed the restriction introduced in v1.17.0: any item of the page's image list may be specified.
+         * *(Changed in v1.18.11)* -- Partially re-instated a restriction: only those images are considered, that are either directly referenced by the page or by a Form XObject directly referenced by the page.
+         * *(Changed in v1.18.11)* -- Optionally also return the transformation matrix together with the bbox as the tuple ``(bbox, transform)``.
 
       .. note::
 
-         * Be aware that :meth:`Page.get_images` may contain "dead" entries, i.e. images **not displayed** by this page (some PDFs contain a central list of all images, to save specification effort on the page level). In this case an infinite rectangle is returned.
+         1. Be aware that :meth:`Page.get_images` may contain "dead" entries i.e. images, which the page **does not display**. This is no error, but thus intended by the PDF creator. No exception will be raised in this case, but an infinite rectangle is returned.
+         2. The image's "transformation matrix" is defined as the matrix, for which the expression ``bbox / transform == fitz.Rect(0, 0, 1, 1)`` is true, lookup details here: :ref:`ImageTransformation`.
 
    .. index::
       pair: matrix; get_svg_image

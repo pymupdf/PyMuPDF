@@ -643,6 +643,8 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
                         Py_BuildValue("i", (int) image->bpc));
         DICT_SETITEM_DROP(block_dict, dictkey_matrix,
                         JM_py_from_matrix(block->u.i.transform));
+        DICT_SETITEM_DROP(block_dict, dictkey_size,
+                        Py_BuildValue("n", (Py_ssize_t) fz_image_size(ctx, image)));
         DICT_SETITEM_DROP(block_dict, dictkey_image, bytes);
 
         fz_drop_buffer(ctx, freebuf);

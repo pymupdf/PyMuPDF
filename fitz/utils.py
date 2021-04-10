@@ -38,6 +38,24 @@ def write_text(page: Page, **kwargs) -> None:
     """
     if type(page) is not Page:
         raise ValueError("bad page parameter")
+    s = {
+        k
+        for k in kwargs.keys()
+        if k
+        not in {
+            "rect",
+            "writers",
+            "opacity",
+            "color",
+            "overlay",
+            "keep_proportion",
+            "rotate",
+            "oc",
+        }
+    }
+    if s != set():
+        raise ValueError("bad keywords: " + str(s))
+
     rect = kwargs.get("rect")
     writers = kwargs.get("writers")
     opacity = kwargs.get("opacity")
@@ -521,6 +539,14 @@ def getTextSelection(
     rc = tp.extractSelection(p1, p2)
     del tp
     return rc
+
+
+def get_image_info(page: Page) -> list:
+    """Extract image information only from a TextPage."""
+    tp = page.get_textpage(flags=TEXT_PRESERVE_IMAGES)
+    imginfo = tp.extractIMGINFO()
+    del tp
+    return imginfo
 
 
 def getText(
@@ -3181,13 +3207,13 @@ class Shape(object):
         morphing = CheckMorph(morph)
         rot = rotate
         if rot % 90 != 0:
-            raise ValueError("rotate no int multiple of 90")
+            raise ValueError("bad rotate value")
 
         while rot < 0:
             rot += 360
         rot = rot % 360  # text rotate = 0, 90, 270, 180
 
-        templ1 = "\nq\n%s%sBT\n%s1 0 0 1 %g %g Tm /%s %g Tf "
+        templ1 = "\nq\n%s%sBT\n%s1 0 0 1 %g %g Tm\n/%s %g Tf "
         templ2 = "TJ\n0 -%g TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"  # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"  # rotates 90 deg clockwise

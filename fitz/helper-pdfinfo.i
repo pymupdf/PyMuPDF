@@ -501,12 +501,11 @@ int JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         }
         int xref = pdf_to_num(ctx, imagedict);
 
-        PyObject *entry = PyTuple_New(5);
+        PyObject *entry = PyTuple_New(4);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
         PyTuple_SET_ITEM(entry, 1, Py_BuildValue("s", pdf_to_name(ctx, refname)));
         PyTuple_SET_ITEM(entry, 2, Py_BuildValue("i", stream_xref));
         PyTuple_SET_ITEM(entry, 3, JM_py_from_rect(bbox));
-        PyTuple_SET_ITEM(entry, 4, JM_py_from_matrix(mat));
         LIST_APPEND_DROP(imagelist, entry);
     }
     return rc;

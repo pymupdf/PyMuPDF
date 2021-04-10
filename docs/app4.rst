@@ -3,6 +3,60 @@
 ================================================
 Appendix 4: Assorted Technical Information
 ================================================
+This section deals with various technical topics, that are not necessarily related to each other.
+
+------------
+
+.. _ImageTransformation:
+
+Image Transformation Matrix
+----------------------------
+Starting with version 1.18.11, the image transformation matrix is returned by some methods for text and image extraction: :meth:`Page.get_text` and :meth:`Page.get_image_bbox`.
+
+The transformation matrix contains information about how an image was transformed to fit into the rectangle (its "boundary box" = "bbox") on some document page. By inspecting the image's bbox on the page and this matrix, one can determine for example, whether and how the image is displayed scaled or rotated on a page.
+
+The relationship between image width and height and the bbox on a page is the following:
+
+1. Using the original image's width and height, we can define the image rectangle ``imgrect = fitz.Rect(0, 0, width, height)`` and a "shrink matrix" ``shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)``.
+2. Transforming the image rectangle with its shrink matrix, will result in the unit rectangle: ``imgrect * shrink = fitz.Rect(0, 0, 1, 1)``.
+3. Using the image **transformation matrix** "transform", the following steps will compute the bbox::
+
+    imgrect = fitz.Rect(0, 0, width, height)
+    shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)
+    bbox = imgrect * shrink * transform
+
+4. Inspecting the matrix product ``shrink * transform`` will reveal all information about what happened to the image rectangle to make it fit into the bbox on the page: rotation, scaling of its sides and translation of its origin. Let us look at an example:
+
+    >>> imginfo = page.get_images()[0]  # get an image item on a page
+    >>> imginfo
+    (5, 0, 439, 501, 8, 'DeviceRGB', '', 'fzImg0', 'DCTDecode')
+    >>> #------------------------------------------------
+    >>> # define image shrink matrix and rectangle
+    >>> #------------------------------------------------
+    >>> shrink = fitz.Matrix(1 / 439, 0, 0, 1 / 501, 0, 0)
+    >>> imgrect = fitz.Rect(0, 0, 439, 501)
+    >>> #------------------------------------------------
+    >>> # determine image bbox and transformation matrix:
+    >>> #------------------------------------------------
+    >>> bbox, transform = page.get_image_bbox("fzImg0", transform=True)
+    >>> #------------------------------------------------
+    >>> # confirm equality - permitting rounding errors
+    >>> #------------------------------------------------
+    >>> bbox
+    Rect(100.0, 112.37525939941406, 300.0, 287.624755859375)
+    >>> imgrect * shrink * transform
+    Rect(100.0, 112.375244140625, 300.0, 287.6247253417969)
+    >>> #------------------------------------------------
+    >>> shrink * transform
+    Matrix(0.0, -0.39920157194137573, 0.3992016017436981, 0.0, 100.0, 287.6247253417969)
+    >>> #------------------------------------------------
+    >>> # the above shows:
+    >>> # image sides scaled by same factor 0.4
+    >>> # image rotated by 90 degrees anti-clockwise
+    >>> #------------------------------------------------
+
+
+------------
 
 .. _Base-14-Fonts:
 

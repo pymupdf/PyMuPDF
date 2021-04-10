@@ -120,10 +120,11 @@ void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_ir
 static const float JM_font_ascender(fz_context *ctx, fz_font *font);
 static const float JM_font_descender(fz_context *ctx, fz_font *font);
 
-// end of additional MuPDF headers --------------------------------------------
+// end of additional headers --------------------------------------------
 
 PyObject *JM_mupdf_warnings_store;
-PyObject *JM_mupdf_show_errors;
+static int JM_mupdf_show_errors;
+static int JM_mupdf_show_warnings;
 
 %}
 
@@ -151,7 +152,8 @@ PyObject *JM_mupdf_show_errors;
 // START redirect stdout/stderr
 //------------------------------------------------------------------------
 JM_mupdf_warnings_store = PyList_New(0);
-JM_mupdf_show_errors = Py_True;
+JM_mupdf_show_errors = 1;
+JM_mupdf_show_warnings = 0;
 char user[] = "PyMuPDF";
 fz_set_warning_callback(gctx, JM_mupdf_warning, &user);
 fz_set_error_callback(gctx, JM_mupdf_error, &user);
@@ -3860,7 +3862,7 @@ if basestate:
                 if not self.is_pdf:
                     return ()
                 val = self._getPageInfo(pno, 3)
-                rc = [(v[0], v[1], v[2], Rect(v[3]), Matrix(v[4])) for v in val]
+                rc = [(v[0], v[1], v[2], Rect(v[3])) for v in val]
                 return rc
 
 
@@ -3973,6 +3975,28 @@ if basestate:
             def saveIncr(self):
                 """ Save PDF incrementally"""
                 return self.save(self.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)
+
+
+            def ez_save(self, filename, garbage=3, clean=False,
+            deflate=True, deflate_images=True, deflate_fonts=True,
+            incremental=False, ascii=False, expand=False, linear=False,
+            pretty=False, encryption=1, permissions=-1,
+            owner_pw=None, user_pw=None):
+                """ Save PDF using some different defaults"""
+                return self.save(filename, garbage=garbage,
+                clean=clean,
+                deflate=deflate,
+                deflate_images=deflate_images,
+                deflate_fonts=deflate_fonts,
+                incremental=incremental,
+                ascii=ascii,
+                expand=expand,
+                linear=linear,
+                pretty=pretty,
+                encryption=encryption,
+                permissions=permissions,
+                owner_pw=owner_pw,
+                user_pw=user_pw)
 
 
             def reload_page(self, page: "struct Page *") -> "struct Page *":
@@ -6012,7 +6036,7 @@ if not sanitize and not self.is_wrapped:
             fz_matrix mat = JM_matrix_from_py(matrix); // pre-calculated
             fz_compressed_buffer *cbuf1 = NULL;
             int img_xref = 0;
-
+            int xres, yres, w, h, bpc;
             const char *template = "\nq\n%g %g %g %g %g %g cm\n/%s Do\nQ\n";
             fz_image *zimg = NULL, *image = NULL;
             fz_try(gctx) {
@@ -6031,7 +6055,9 @@ if not sanitize and not self.is_wrapped:
                     } else {  // fz_image pointer has been handed in
                         image = (fz_image *)PyLong_AsVoidPtr(_imgpointer);
                     }
-                    int xres, yres, w = image->w, h = image->h, bpc = image->bpc;
+                    w = image->w;
+                    h = image->h;
+                    bpc = image->bpc;
                     fz_colorspace *colorspace = image->colorspace;
                     fz_image_resolution(image, &xres, &yres);
                     if (EXISTS(imask)) {
@@ -6042,6 +6068,8 @@ if not sanitize and not self.is_wrapped:
                         zimg = fz_new_image_from_compressed_buffer(gctx, w, h,
                                     bpc, colorspace, xres, yres, 1, 0, NULL,
                                     NULL, cbuf1, mask);
+                        zimg->xres = xres;
+                        zimg->yres = yres;
                         fz_drop_image(gctx, image);
                         image = zimg;
                         zimg = NULL;
@@ -6052,23 +6080,37 @@ if not sanitize and not self.is_wrapped:
                             pix->yres = yres;
                             pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, fz_default_color_params, 1);
                             pm->alpha = 0;
-                            pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
+                            pm->colorspace = NULL; //fz_keep_colorspace(gctx, fz_device_gray(gctx));
+                            pm->xres = xres;
+                            pm->yres = yres;
                             mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                            mask->xres = xres;
+                            mask->yres = yres;
                             zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                            zimg->xres = xres;
+                            zimg->yres = yres;
                             fz_drop_image(gctx, image);
                             image = zimg;
                             zimg = NULL;
                     }
                 } else {  // pixmap specified
                     fz_pixmap *arg_pix = (fz_pixmap *) pixmap;
+                    xres = arg_pix->xres;
+                    yres = arg_pix->yres;
                     if (arg_pix->alpha == 0) {
                         image = fz_new_image_from_pixmap(gctx, arg_pix, NULL);
                     } else {  // pixmap has alpha: create an SMask
                         pm = fz_convert_pixmap(gctx, arg_pix, NULL, NULL, NULL, fz_default_color_params, 1);
+                        pm->xres = xres;
+                        pm->yres = yres;
                         pm->alpha = 0;
-                        pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
+                        pm->colorspace = NULL; //fz_keep_colorspace(gctx, fz_device_gray(gctx));
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                        mask->xres = xres;
+                        mask->yres = yres;
                         image = fz_new_image_from_pixmap(gctx, arg_pix, mask);
+                        image->xres = xres;
+                        image->yres = yres;
                     }
                 }
 
@@ -9817,6 +9859,66 @@ struct TextPage {
 
 
         //----------------------------------------------------------------
+        // Get image meta information as a Python dictionary
+        //----------------------------------------------------------------
+        FITZEXCEPTION(extractIMGINFO, !result)
+        %pythonprepend extractIMGINFO
+        %{"""Return a list with image meta information."""%}
+        PyObject *
+        extractIMGINFO()
+        {
+            fz_stext_block *block;
+            int block_n = -1;
+            fz_stext_page *this_tpage = (fz_stext_page *) $self;
+            PyObject *rc = NULL, *block_dict = NULL;
+            fz_try(gctx) {
+                rc = PyList_New(0);
+                for (block = this_tpage->first_block; block; block = block->next) {
+                    block_n++;
+                    if (block->type == FZ_STEXT_BLOCK_TEXT) {
+                        continue;
+                    }
+                    fz_image *img = block->u.i.image;
+                    fz_colorspace *cs = img->colorspace;
+                    block_dict = PyDict_New();
+                    DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
+                    DICT_SETITEM_DROP(block_dict, dictkey_bbox,
+                                    JM_py_from_rect(block->bbox));
+                    DICT_SETITEM_DROP(block_dict, dictkey_matrix,
+                                    JM_py_from_matrix(block->u.i.transform));
+                    DICT_SETITEM_DROP(block_dict, dictkey_width,
+                                    Py_BuildValue("i", img->w));
+                    DICT_SETITEM_DROP(block_dict, dictkey_height,
+                                    Py_BuildValue("i", img->h));
+                    DICT_SETITEM_DROP(block_dict, dictkey_colorspace,
+                                    Py_BuildValue("i",
+                                    fz_colorspace_n(gctx, cs)));
+                    DICT_SETITEM_DROP(block_dict, dictkey_cs_name,
+                                    Py_BuildValue("s",
+                                    fz_colorspace_name(gctx, cs)));
+                    DICT_SETITEM_DROP(block_dict, dictkey_xres,
+                                    Py_BuildValue("i", img->xres));
+                    DICT_SETITEM_DROP(block_dict, dictkey_yres,
+                                    Py_BuildValue("i", img->xres));
+                    DICT_SETITEM_DROP(block_dict, dictkey_bpc,
+                                    Py_BuildValue("i", (int) img->bpc));
+                    DICT_SETITEM_DROP(block_dict, dictkey_size,
+                                    Py_BuildValue("n", (Py_ssize_t) fz_image_size(gctx, img)));
+                    LIST_APPEND_DROP(rc, block_dict);
+                }
+            }
+            fz_always(gctx) {
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                Py_CLEAR(block_dict);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        //----------------------------------------------------------------
         // Get text blocks with their bbox and concatenated lines
         // as a Python list
         //----------------------------------------------------------------
@@ -10319,6 +10421,7 @@ struct TextWriter
             opacity: override transparency.
             overlay: put in foreground or background.
             morph: tuple(Point, Matrix), apply a matrix with a fixpoint.
+            matrix: Matrix to be used instead of 'morph' argument.
             render_mode: (int) PDF render mode operator 'Tr'.
         """
 
@@ -10331,6 +10434,8 @@ struct TextWriter
                 or type(morph[1]) is not Matrix
                 ):
                 raise ValueError("morph must be (Point, Matrix) or None")
+        if matrix != None and morph != None:
+            raise ValueError("only one of matrix, morph is allowed")
         if getattr(opacity, "__float__", None) is None or opacity == -1:
             opacity = self.opacity
         if color is None:
@@ -10362,6 +10467,7 @@ struct TextWriter
             p = morph[0] * self.ictm
             delta = Matrix(1, 1).preTranslate(p.x, p.y)
             matrix = ~delta * morph[1] * delta
+        if morph or matrix:
             new_cont_lines.append("%g %g %g %g %g %g cm" % JM_TUPLE(matrix))
 
         for line in old_cont_lines:
@@ -10394,7 +10500,8 @@ struct TextWriter
         for font in self.used_fonts:
             repair_mono_font(page, font)
         %}
-        PyObject *write_text(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0, int oc=0)
+        PyObject *write_text(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1,
+                    PyObject *morph=NULL, PyObject *matrix=NULL, int render_mode=0, int oc=0)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
             fz_rect mediabox = fz_bound_page(gctx, (fz_page *) page);
@@ -11089,14 +11196,32 @@ struct Tools
 
         %pythonprepend mupdf_display_errors
         %{"""Set MuPDF error display to True or False."""%}
-        PyObject *mupdf_display_errors(PyObject *value = NULL)
+        PyObject *mupdf_display_errors(PyObject *on=NULL)
         {
-            if (value == Py_True)
-                JM_mupdf_show_errors = Py_True;
-            else if (value == Py_False)
-                JM_mupdf_show_errors = Py_False;
-            Py_INCREF(JM_mupdf_show_errors);
-            return JM_mupdf_show_errors;
+            if (!on || on == Py_None) {
+                return JM_BOOL(JM_mupdf_show_errors);
+            }
+            if (PyObject_IsTrue(on)) {
+                JM_mupdf_show_errors = 1;
+            } else {
+                JM_mupdf_show_errors = 0;
+            }
+            return JM_BOOL(JM_mupdf_show_errors);
+        }
+
+        %pythonprepend mupdf_display_warnings
+        %{"""Set MuPDF warnings display to True or False."""%}
+        PyObject *mupdf_display_warnings(PyObject *on=NULL)
+        {
+            if (!on || on == Py_None) {
+                return JM_BOOL(JM_mupdf_show_warnings);
+            }
+            if (PyObject_IsTrue(on)) {
+                JM_mupdf_show_warnings = 1;
+            } else {
+                JM_mupdf_show_warnings = 0;
+            }
+            return JM_BOOL(JM_mupdf_show_warnings);
         }
 
         PyObject *_transform_rect(PyObject *rect, PyObject *matrix)

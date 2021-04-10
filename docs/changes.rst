@@ -1,6 +1,17 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.11
+---------------------------
+* **Fixed** issue `#972 <https://github.com/pymupdf/PyMuPDF/issues/972>`_. Improved layout of source distribution material.
+* **Fixed** issue `#962 <https://github.com/pymupdf/PyMuPDF/issues/962>`_. Stabilized Linux distribution detection for generating PyMuPDF from sources.
+* **Added:** :meth:`Page.get_xobjects` delivers the result of :meth:`Document.get_page_xobjects`.
+* **Added:** :meth:`Page.get_image_info` delivers meta information for all images shown on the page.
+* **Added:** :meth:`Tools.mupdf_display_warnings` allows setting on / off the display of MuPDF-generated warnings. The default is off.
+* **Added:** :meth:`Document.ez_save` convenience alias of :meth:`Document.save` with some different defaults.
+* **Changed:** Image extractions of document pages now also contain the image's **transformation matrix**. This concerns :meth:`Page.get_image_bbox` and the DICT, JSON, RAWDICT, and RAWJSON variants of :meth:`Page.get_text`.
+
+
 Changes in Version 1.18.10
 ---------------------------
 * **Fixed** issue `#941 <https://github.com/pymupdf/PyMuPDF/issues/941>`_. Added old aliases for :meth:`DisplayList.get_pixmap` and :meth:`DisplayList.get_textpage`.

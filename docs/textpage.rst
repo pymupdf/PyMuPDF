@@ -44,11 +44,11 @@ For a description of what this class is all about, see Appendix 2.
 
       Textpage content as a list of text lines grouped by block. Each list items looks like this::
 
-         (x0, y0, x1, y1, "lines in blocks", block_no, block_type)
+         (x0, y0, x1, y1, "lines in the block", block_no, block_type)
 
-      The first four entries are the block's bbox coordinates, *block_type* is 1 for an image block, 0 for text. *block_no* is the block sequence number.
+      The first four entries are the block's bbox coordinates, *block_type* is 1 for an image block, 0 for text. *block_no* is the block sequence number. Multiple text lines are joined via line breaks.
 
-      For an image block, its bbox and a text line with image meta information is included -- not the image data itself.
+      For an image block, its bbox and a text line with some image meta information is included -- **not the image content**.
 
       This is a high-speed method with just enough information to output plain text in desired reading sequence.
 
@@ -60,15 +60,13 @@ For a description of what this class is all about, see Appendix 2.
 
          (x0, y0, x1, y1, "word", block_no, line_no, word_no)
 
-      Everything wrapped in spaces is treated as a *"word"* with this method.
-
-      This is a high-speed method which e.g. allows extracting text from within a given rectangle.
+      Everything delimited by spaces is treated as a *"word"*. This is a high-speed method which e.g. allows extracting text from within given areas or recovering the text reading sequence.
 
       :rtype: list
 
    .. method:: extractHTML
 
-      Textpage content in HTML format. This version contains complete formatting and positioning information. Images are included (encoded as base64 strings). You need an HTML package to interpret the output in Python. Your internet browser should be able to adequately display this information, but see :ref:`HTMLQuality`.
+      Textpage content as a string in HTML format. This version contains complete formatting and positioning information. Images are included (encoded as base64 strings). You need an HTML package to interpret the output in Python. Your internet browser should be able to adequately display this information, but see :ref:`HTMLQuality`.
 
       :rtype: str
 
@@ -80,19 +78,19 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: extractJSON
 
-      Textpage content in JSON format. Created by  *json.dumps(TextPage.extractDICT())*. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings on JSON output.
+      Textpage content as a JSON string. Created by ``json.dumps(TextPage.extractDICT())``. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
 
       :rtype: str
 
    .. method:: extractXHTML
 
-      Textpage content in XHTML format. Text information detail is comparable with :meth:`extractTEXT`, but also contains images (base64 encoded). This method makes no attempt to re-create the original visual appearance.
+      Textpage content as a string in XHTML format. Text information detail is comparable with :meth:`extractTEXT`, but also contains images (base64 encoded). This method makes no attempt to re-create the original visual appearance.
 
       :rtype: str
 
    .. method:: extractXML
 
-      Textpage content in XML format. This contains complete formatting information about every single character on the page: font, size, line, paragraph, location, color, etc. Contains no images. You probably need an XML package to interpret the output in Python.
+      Textpage content as a string in XML format. This contains complete formatting information about every single character on the page: font, size, line, paragraph, location, color, etc. Contains no images. You need an XML package to interpret the output in Python.
 
       :rtype: str
 
@@ -104,7 +102,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: extractRAWJSON
 
-      Textpage content in JSON format. Created by  *json.dumps(TextPage.extractRAWDICT())*. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings on JSON output.
+      Textpage content as a JSON string. Created by ``json.dumps(TextPage.extractRAWDICT())``. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
 
       :rtype: str
 
@@ -114,16 +112,16 @@ For a description of what this class is all about, see Appendix 2.
 
       Search for *string* and return a list of found locations.
 
-      :arg str needle: the string to search for. Upper and lower cases will all match.
+      :arg str needle: the string to search for. Upper and lower cases will all match. But beware: this does not yet work for "Ä" versus "ä", etc.
       :arg bool quads: return quadrilaterals instead of rectangles.
       :rtype: list
-      :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *needle* occurrence. The search string may contain spaces, it may therefore happen, that its parts are located on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method **now supports dehyphenation**, so it will find "method" even if it was hyphenated in two parts "meth-" and "od" across two lines. The two returned rectangles will **exclude the hyphen** in this case.
+      :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *needle* occurrence. As the search string may contain spaces, its parts may be found on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method **now supports dehyphenation**, so it will find e.g. "method", even if it was hyphenated in two parts "meth-" and "od" across two lines. The two returned rectangles will contain "meth" (no hyphen) and "od".
 
       .. note:: **Overview of changes in v1.18.2:**
 
         1. The ``hit_max`` parameter has been removed: all hits are always returned.
         2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered. The wrapper method :meth:`Page.search_for` correspondingly supports a *clip* parameter.
-        3. Words **hyphenated** at the end of a line are now found.
+        3. **Hyphenated words** are now found.
         4. **Overlapping rectangles** in the same line are now automatically joined. We assume that such separations are an artifact created by multiple marked content groups, containing parts of the same search needle.
 
       Example Quad versus Rect: when searching for needle "pymupdf", then the corresponding entry will either be the blue rectangle, or, if *quads* was specified, the quad *Quad(ul, ur, ll, lr)*.
@@ -138,11 +136,38 @@ For a description of what this class is all about, see Appendix 2.
 
 .. _textpagedict:
 
-Dictionary Structure of :meth:`extractDICT` and :meth:`extractRAWDICT`
--------------------------------------------------------------------------
+Structure of Dictionary Outputs
+--------------------------------
+Methods :meth:`TextPage.extractDICT`, :meth:`TextPage.extractJSON`, :meth:`TextPage.extractRAWDICT`, and :meth:`TextPage.extractRAWJSON` return dictionaries, containing the page's text and image content. The dictionary structures of all four methods are almost equal. They strive to map the text page's information hierarchy of blocks, lines, spans and characters as precisely as possible, by representing each of these by its own sub-dictionary:
+
+* A **page** consists of a list of **block dictionaries**.
+* A (text) **block** consists of a list of **line dictionaries**.
+* A **line** consists of a list of **span dictionaries**.
+* A **span** either consists of the text itself or, for the RAW variants, a list of **character dictionaries**.
+* RAW variants: a **character** is a dictionary of its origin, bbox and unicode.
+
+All PyMuPDF geometry objects herein (points, rectangles, matrices) are represented by there **"like"** formats: a :data:`rect_like` *tuple* is used instead of a :ref:`Rect`, etc. The reasons for this are performance and memory considerations:
+
+* This code is written in C, where Python tuples can easily be generated. The geometry objects on the other hand are defined in Python source only. A conversion of each Python tuple into its corresponding geometry object would add significant -- and largely unnecessary -- execution time.
+* A 4-tuple needs about 168 bytes, the corresponding :ref:`Rect` 472 bytes - almost three times the size. A "dict" dictionary for a text-heavy page contains 300+ bbox objects -- which thus require about 50 KB storage as 4-tuples versus 140 KB as :ref:`Rect` objects. A "rawdict" output for such a page will however contain **4 to 5 thousand** bboxes, so in this case we talk about 750 KB versus 11 MB.
+
+Please also note, that only **bboxes** (= :data:`rect_like` 4-tuples) are returned, whereas a :ref:`TextPage` actually has the **full position information** -- in :ref:`Quad` format. The reason for this decision is again a memory consideration: a :data:`quad_like` needs 488 bytes (3 times the size of a :data:`rect_like`). Given the mentioned amounts of generated bboxes, returning :data:`quad_like` information would have a significant impact.
+
+In the vast majority of cases, we are dealing with **horizontal text only**, where bboxes provide entirely sufficient information.
+
+In addition, **the full quad information is not lost**: it can be recovered as needed for lines, spans, and characters by using the appropriate function from the following list:
+
+* :meth:`recover_quad` -- the quad of a complete span
+* :meth:`recover_span_quad` -- the quad of a character subset of a span
+* :meth:`recover_line_quad` -- the quad of a line
+* :meth:`recover_char_quad` -- the quad of a character
+
+As mentioned, using these functions is ever only needed, if the text is **not written horizontally** and you need the quad for text marker annotations (:meth:`Page.addHighlightAnnot` and friends).
+
 
 .. image:: images/img-textpage.*
    :scale: 66
+
 
 Page Dictionary
 ~~~~~~~~~~~~~~~~~
@@ -159,7 +184,9 @@ Block Dictionaries
 ~~~~~~~~~~~~~~~~~~
 Block dictionaries come in two different formats for **image blocks** and for **text blocks**.
 
-*(Changed in v1.18.0)* -- new dict key *number*, the block number.
+* *(Changed in v1.18.0)* -- new dict key *number*, the block number.
+* *(Changed in v1.18.11)* -- new dict key *transform*, the image transformation matrix for image blocks.
+* *(Changed in v1.18.11)* -- new dict key *size*, the size of the image in bytes for image blocks.
 
 **Image block:**
 
@@ -167,16 +194,18 @@ Block dictionaries come in two different formats for **image blocks** and for **
 **Key**             **Value**
 =============== ===============================================================
 type            1 = image *(int)*
-bbox            block / image rectangle, formatted as *tuple(fitz.Rect)*
-number          block number *(int)* (0-based)
+bbox            image bbox on page (:data:`rect_like`)
+number          block count *(int)*
 ext             image type *(str)*, as file extension, see below
 width           original image width *(int)*
 height          original image height *(int)*
-colorspace      colorspace.n *(int)*
+colorspace      colorspace component count *(int)*
 xres            resolution in x-direction *(int)*
 yres            resolution in y-direction *(int)*
 bpc             bits per component *(int)*
-image           image content *(bytes or bytearray)*
+transform       matrix transforming image rect to bbox (:data:`matrix_like`)
+size            size of the image in bytes *(int)*
+image           image content *(bytes)*
 =============== ===============================================================
 
 Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "jxr" (JPEG XR), "png", "pnm", and "tiff".
@@ -191,8 +220,10 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
    2. :ref:`TextPage` and corresponding method :meth:`Page.get_text` are **available for all document types**. Only for PDF documents, methods :meth:`Document.get_page_images` / :meth:`Page.get_images` offer some overlapping functionality as far as image lists are concerned. But both lists **may or may not** contain the same items. Any differences are most probably caused by one of the following:
 
        - "Inline" images (see page 352 of the :ref:`AdobeManual`) of a PDF page are contained in a textpage, but **not in** :meth:`Page.get_images`.
-       - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will contain each image only once.
+       - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will contain each image only once (per reference name).
        - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
+
+   3. The image's "transformation matrix" is defined as the matrix, for which the expression ``bbox / transform == fitz.Rect(0, 0, 1, 1)`` is true, lookup details here: :ref:`ImageTransformation`.
 
 
 **Text block:**
@@ -201,8 +232,8 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
 **Key**             **Value**
 =============== ====================================================
 type            0 = text *(int)*
-bbox            block rectangle, formatted as *tuple(fitz.Rect)*
-number          block number *(int)* (0-based)
+bbox            block rectangle, :data:`rect_like`
+number          block count *(int)*
 lines           *list* of text line dictionaries
 =============== ====================================================
 
@@ -212,18 +243,16 @@ Line Dictionary
 =============== =====================================================
 **Key**             **Value**
 =============== =====================================================
-bbox            line rectangle, formatted as *tuple(fitz.Rect)*
+bbox            line rectangle, :data:`rect_like`
 wmode           writing mode *(int)*: 0 = horizontal, 1 = vertical
-dir             writing direction *(list of floats)*: *[x, y]*
+dir             writing direction, :data:`point_like`
 spans           *list* of span dictionaries
 =============== =====================================================
 
-The value of key *"dir"* is a **unit vetor** and should be interpreted as follows:
+The value of key *"dir"* is the **unit vector** ``dir = (cosine, sine)`` of the angle, which the text has relative to the x-axis. See the following picture: The word in each quadrant (counter-clockwise from top-right to bottom-right) is rotated by 30, 120, 210 and 300 degrees respectively.
 
-* *x*: positive = "left-right", negative = "right-left", 0 = neither
-* *y*: positive = "top-bottom", negative = "bottom-top", 0 = neither
-
-The values indicate the "relative writing speed" in each direction, such that x\ :sup:`2` + y\ :sup:`2` = 1. In other words *dir = [cos(beta), sin(beta)]*, where *beta* is the writing angle relative to the x-axis.
+.. image:: images/img-line-dir.*
+   :scale: 100
 
 Span Dictionary
 ~~~~~~~~~~~~~~~~~
@@ -236,8 +265,8 @@ Spans contain the actual text. A line contains **more than one span only**, if i
 =============== =====================================================================
 **Key**             **Value**
 =============== =====================================================================
-bbox            span rectangle, formatted as *tuple(fitz.Rect)*
-origin          *tuple* coordinates of the first character's origin
+bbox            span rectangle, :data:`rect_like`
+origin          the first character's origin, :data:`point_like`
 font            font name *(str)*
 ascender        ascender of the font *(float)*
 descender       descender of the font *(float)*
@@ -299,8 +328,8 @@ We are currently providing the bbox in :data:`rect_like` format. In a future ver
 =============== ===========================================================
 **Key**             **Value**
 =============== ===========================================================
-origin          *tuple* coordinates of the character's left baseline point
-bbox            character rectangle, formatted as *tuple(fitz.Rect)*
+origin          character's left baseline point, :data:`point_like`
+bbox            character rectangle, :data:`rect_like`
 c               the character (unicode)
 =============== ===========================================================
 

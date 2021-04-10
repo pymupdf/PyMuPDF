@@ -2,7 +2,7 @@
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: March 22, 2021
+Release date: April 10, 2021
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -19,9 +19,9 @@ PyMuPDF (current version 1.18.11) is a Python binding with support for [MuPDF](h
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
-With PyMuPDF you can access files with extensions like “.pdf”, “.xps”, “.oxps”, “.cbz”, “.fb2” or “.epub”. In addition, about 10 popular image formats can also be opened and handled like documents: ".png", ".jpg", ".bmp", ".tiff", etc..
+With PyMuPDF you can access files with extensions like ".pdf", ".xps", ".oxps", ".cbz", ".fb2" or ".epub". In addition, about 10 popular image formats can also be handled like documents: ".png", ".jpg", ".bmp", ".tiff", etc..
 
-> In partnership with [Artifex](https://artifex.com/), PyMuPDF is now also available for commercial licensing. This agreement has no impact on use cases, that are compliant with the open-source license AGPL. Please see the “License and Copyright” section below for additional information.
+> In partnership with [Artifex](https://artifex.com/), PyMuPDF is now also available for commercial licensing. This agreement has no impact on use cases, that are compliant with the open-source license AGPL. Please see the "License and Copyright" section below for additional information.
 
 # Usage and Documentation
 For all supported document types (i.e. **_including images_**) you can
@@ -79,7 +79,7 @@ Before you can do that, you must first build MuPDF. For most platforms, the MuPD
   - Now MuPDF can be generated.
 
 * Please note that you will need the interface generator [SWIG](http://www.swig.org/) when building PyMuPDF from the sources of this repository (please refer to issue #312 for some background on this).
-    - PyMuPDF wheels are being generated using **SWIG v4.0.1**.
+    - PyMuPDF wheels are being generated using **SWIG v4.0.2**.
 
 * If you do **not use SWIG**, please download the **sources from PyPI** - they contain sources pre-processed by SWIG, so installation should work like any other Python extension generation on your system.
 

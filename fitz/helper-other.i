@@ -199,14 +199,18 @@ void JM_valid_chars(fz_context *ctx, fz_font *font, void *arr)
 void JM_mupdf_warning(void *user, const char *message)
 {
     LIST_APPEND_DROP(JM_mupdf_warnings_store, JM_EscapeStrFromStr(message));
+    if (JM_mupdf_show_warnings) {
+        PySys_WriteStderr("mupdf: %s\n", message);
+    }
 }
 
 // redirect MuPDF errors
 void JM_mupdf_error(void *user, const char *message)
 {
     LIST_APPEND_DROP(JM_mupdf_warnings_store, JM_EscapeStrFromStr(message));
-    if (JM_mupdf_show_errors == Py_True)
+    if (JM_mupdf_show_errors) {
         PySys_WriteStderr("mupdf: %s\n", message);
+    }
 }
 
 // a simple tracer
