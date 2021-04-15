@@ -1,6 +1,6 @@
 """
 Search for some text on a PDF page, and compare content of returned hit
-rectangle with its actual content.
+rectangle with the searched text.
 """
 import os
 
@@ -13,6 +13,7 @@ filename = os.path.join(scriptdir, "resources", "2.pdf")
 def test_search():
     doc = fitz.open(filename)
     page = doc[0]
-    needle = "version"
+    needle = "mupdf"
     rlist = page.search_for(needle)
-    assert needle == page.get_textbox(rlist[0])
+    for rect in rlist:
+        assert needle in page.get_textbox(rect).lower()
