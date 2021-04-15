@@ -1,0 +1,1 @@
+{"format": "PDF 1.6", "title": "RUBRIK_Editorial_01-06.indd", "author": "Natalie Schaefer", "subject": "", "keywords": "", "creator": "", "producer": "Acrobat Distiller 7.0.5 (Windows)", "creationDate": "D:20070113191400+01'00'", "modDate": "D:20070120104154+01'00'", "trapped": "", "encryption": null}

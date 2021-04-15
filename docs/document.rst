@@ -89,7 +89,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.select`                 PDF only: select a subset of pages
 :meth:`Document.set_layer_ui_config`    PDF only: set OCG visibility temporarily
 :meth:`Document.set_metadata`           PDF only: set the metadata
-:meth:`Document.set_oc_states`          PDF only: mass changing OCG states
+:meth:`Document.set_layer`              PDF only: mass changing OCG states
 :meth:`Document.set_oc`                 PDF only: attach OCG/OCMD to image / form xobject
 :meth:`Document.set_ocmd`               PDF only: create or update an :data:`OCMD`
 :meth:`Document.set_page_labels`        PDF only: add/update page label definitions
@@ -333,7 +333,7 @@ For details on **embedded files** refer to Appendix 3.
       {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
       >>>
 
-    .. method:: set_oc_states(config, on=None, off=None, basestate=None, rbgroups=None)
+    .. method:: set_layer(config, on=None, off=None, basestate=None, rbgroups=None)
 
       *(New in v1.18.3)*
 
@@ -347,7 +347,7 @@ For details on **embedded files** refer to Appendix 3.
 
       Values *None* will not change the corresponding PDF array.
 
-        >>> doc.set_oc_states(-1, basestate="OFF")  # only changes the base state
+        >>> doc.set_layer(-1, basestate="OFF")  # only changes the base state
         >>> pprint(doc.get_oc_states())
         {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
 
@@ -412,7 +412,7 @@ For details on **embedded files** refer to Appendix 3.
       .. note::
         Visibility is **not** a property stored with the OCG. It is not even an information necessarily present in the PDF document at all. Instead, the current visibility is **temporarily** set using the user interface of some supporting PDF consumer software. The same type of functionality is offered by this method.
 
-        To make **permanent** changes, use :meth:`Document.set_oc_states`.
+        To make **permanent** changes, use :meth:`Document.set_layer`.
 
       :arg in number: number as returned by :meth:`Document.layer_ui_configs`.
       :arg int action: 0 = set on (default), 1 = toggle on/off, 2 = set off.
