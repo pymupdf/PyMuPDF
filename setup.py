@@ -15,6 +15,13 @@ DEFAULT = [
     "mupdf",
     "mupdf-third",
 ]
+
+ALPINE = DEFAULT + [
+    "jbig2dec",
+    "jpeg",
+    "openjp2",
+    "harfbuzz",
+]
 ARCH_LINUX = DEFAULT + [
     "jbig2dec",
     "openjp2",
@@ -37,6 +44,7 @@ LIBRARIES = {
     "artix": ARCH_LINUX,
     "opensuse": OPENSUSE,
     "fedora": FEDORA,
+    "alpine": ALPINE,
 }
 
 
@@ -79,6 +87,7 @@ if sys.platform.startswith("linux") or "gnu" in sys.platform:
         include_dirs=[  # we need the path of the MuPDF headers
             "/usr/include/mupdf",
             "/usr/local/include/mupdf",
+            "mupdf/thirdparty/freetype/include",
             "/usr/include/freetype2",
         ],
         libraries=load_libraries(),
