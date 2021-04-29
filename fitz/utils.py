@@ -241,6 +241,7 @@ def insertImage(*args, **kwargs) -> None:
         stream: (bytes) an image in memory
         mask: (bytes) enforce this image mask
         rotate: (int) degrees (int multiple of 90)
+        xref: (int) xref of some existing image
         oc: (int) xref of an optional content object
         keep_proportion: (bool) whether to maintain aspect ratio
         overlay: (bool) put in foreground
@@ -254,6 +255,7 @@ def insertImage(*args, **kwargs) -> None:
     mask = kwargs.get("mask")
     rotate = int(kwargs.get("rotate", 0))
     oc = int(kwargs.get("oc", 0))
+    xref = int(kwargs.get("xref", 0))
     keep_proportion = bool(kwargs.get("keep_proportion", True))
     overlay = bool(kwargs.get("overlay", True))
 
@@ -314,13 +316,34 @@ def insertImage(*args, **kwargs) -> None:
         m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
         return m
 
+    def xref_img_profile(xref):
+        """Extract required information from an existing xref."""
+        t, temp = doc.xref_get_key(xref, "Subtype")
+        if temp != "/Image":
+            raise ValueError("xref %i is no image" % xref)
+        t, temp = doc.xref_get_key(xref, "Width")
+        if t != "int":
+            raise ValueError("xref %i has no 'Width'" % xref)
+        w = int(temp)
+        t, temp = doc.xref_get_key(xref, "Height")
+        if t != "int":
+            raise ValueError("xref %i has no 'Height'" % xref)
+        h = int(temp)
+        l_xref = [(d, x) for d, x in doc.InsertedImages.items() if x == xref]
+        if l_xref != []:
+            digest = l_xref[0][0]
+            return w, h, digest
+        img = doc.extract_image(xref)
+        digest = calc_hash(img["image"])
+        return w, h, digest
+
     # ------------------------------------------------------------------------
     CheckParent(page)
     doc = page.parent
     if not doc.is_pdf:
         raise ValueError("not a PDF")
-    if bool(filename) + bool(stream) + bool(pixmap) != 1:
-        raise ValueError("need exactly one of filename, pixmap, stream")
+    if xref == 0 and (bool(filename) + bool(stream) + bool(pixmap) != 1):
+        raise ValueError("xref 0 needs exactly one of filename, pixmap, stream")
 
     if filename and not os.path.exists(filename):
         raise FileNotFoundError("No such file: '%s'" % filename)
@@ -330,7 +353,7 @@ def insertImage(*args, **kwargs) -> None:
         raise ValueError("pixmap must be a Pixmap")
     if mask and not stream:
         raise ValueError("mask requires stream")
-    if mask is not None and type(mask) not in (bytes, bytearray, io.BytesIO):
+    if mask and type(mask) not in (bytes, bytearray, io.BytesIO):
         raise ValueError("mask must be bytes-like or BytesIO")
     while rotate < 0:
         rotate += 360
@@ -369,6 +392,9 @@ def insertImage(*args, **kwargs) -> None:
         del pix
         if type(stream) is io.BytesIO:
             stream = stream.getvalue()
+    elif xref > 0:
+        w, h, digest = xref_img_profile(xref)
+        alpha = 0
     else:
         pix = Pixmap(filename)
         w = pix.width
@@ -400,7 +426,8 @@ def insertImage(*args, **kwargs) -> None:
         _imgname = n + str(i)  # try new name
 
     # reuse any previously inserted image
-    xref = doc.InsertedImages.get(digest, 0)
+    if xref == 0:
+        xref = doc.InsertedImages.get(digest, 0)
 
     xref = page._insertImage(
         filename=filename,  # image in file
@@ -417,6 +444,8 @@ def insertImage(*args, **kwargs) -> None:
     )
     if xref > 0:
         doc.InsertedImages[digest] = xref
+
+    return xref
 
 
 def searchFor(*args, **kwargs) -> list:
@@ -541,12 +570,67 @@ def getTextSelection(
     return rc
 
 
-def get_image_info(page: Page) -> list:
-    """Extract image information only from a TextPage."""
+def get_image_info(page: Page, hashes: bool = False, xrefs: bool = False) -> list:
+    """Extract image information only from a TextPage.
+
+    Args:
+        hashes: (bool) include MD5 hash for each image.
+        xrefs: (bool) try to find the xref for each image. Sets hashes to true.
+    """
+    doc = page.parent
     tp = page.get_textpage(flags=TEXT_PRESERVE_IMAGES)
-    imginfo = tp.extractIMGINFO()
+    if xrefs and doc.is_pdf:
+        hashes = True
+    imginfo = tp.extractIMGINFO(hashes=hashes)
     del tp
+    if not xrefs or not doc.is_pdf:
+        return imginfo
+    imglist = page.get_images()
+    digests = {}
+    for item in imglist:
+        xref = item[0]
+        pix = Pixmap(doc, xref)
+        digests[pix.digest] = xref
+        del pix
+    for i in range(len(imginfo)):
+        item = imginfo[i]
+        xref = digests.get(item["digest"], 0)
+        item["xref"] = xref
+        imginfo[i] = item
     return imginfo
+
+
+def get_image_rects(page: Page, name, transform=False) -> list:
+    """Return list of image positions on a page.
+
+    Args:
+        name: (str, list, int) image identification. May be reference name, an
+              item of the page's image list or an xref.
+        transform: (bool) whether to also return the transformation matrix.
+    Returns:
+        A list of Rect or tuples of (Rect, Matrix) for all image locations on the page.
+    """
+    if type(name) in (list, tuple):
+        xref = name[0]
+    elif type(name) is int:
+        xref = name
+    else:
+        imglist = [i for i in page.get_images() if i[7] == name]
+        if imglist == []:
+            raise ValueError("bad image name")
+        elif len(imglist) != 1:
+            raise ValueError("multiple image names found")
+        xref = imglist[0][0]
+    infos = page.get_image_info(xrefs=True)
+    if not transform:
+        bboxes = [Rect(im["bbox"]) for im in infos if im["xref"] == xref]
+    else:
+        bboxes = [
+            (Rect(im["bbox"]), Matrix(im["transform"]))
+            for im in infos
+            if im["xref"] == xref
+        ]
+    return bboxes
 
 
 def getText(
@@ -960,28 +1044,30 @@ def getRectArea(*args) -> float:
     return f * rect.width * rect.height
 
 
-def setMetadata(doc: Document, m: dict) -> None:
-    """Set PDF /Info object.
+def set_metadata(doc: Document, m: dict) -> None:
+    """Update the PDF /Info object.
 
     Args:
         m: a dictionary like doc.metadata.
     """
+    if not doc.is_pdf:
+        raise ValueError("not a PDF")
     if doc.is_closed or doc.is_encrypted:
         raise ValueError("document closed or encrypted")
     if type(m) is not dict:
-        raise ValueError("bad metadata argument")
+        raise ValueError("bad metadata")
     keymap = {
-        "author": "/Author",
-        "producer": "/Producer",
-        "creator": "/Creator",
-        "title": "/Title",
+        "author": "Author",
+        "producer": "Producer",
+        "creator": "Creator",
+        "title": "Title",
         "format": None,
         "encryption": None,
-        "creationDate": "/CreationDate",
-        "modDate": "/ModDate",
-        "subject": "/Subject",
-        "keywords": "/Keywords",
-        "trapped": "/Trapped",
+        "creationDate": "CreationDate",
+        "modDate": "ModDate",
+        "subject": "Subject",
+        "keywords": "Keywords",
+        "trapped": "Trapped",
     }
     valid_keys = set(keymap.keys())
     diff_set = set(m.keys()).difference(valid_keys)
@@ -989,13 +1075,35 @@ def setMetadata(doc: Document, m: dict) -> None:
         msg = "bad dict key(s): %s" % diff_set
         raise ValueError(msg)
 
-    d = "<<"
+    t, temp = doc.xref_get_key(-1, "Info")
+    if t != "xref":
+        info_xref = 0
+    else:
+        info_xref = int(temp.replace("0 R", ""))
+    if m == {} and info_xref == 0:
+        return
+
+    if info_xref == 0:
+        info_xref = doc.get_new_xref()  # get a new xref
+        doc.update_object(info_xref, "<<>>")  # fill it with empty object
+        doc.xref_set_key(-1, "Info", "%i 0 R" % info_xref)
+    elif m == {}:
+        doc.xref_set_key(-1, "Info", "null")
+
+    for v in keymap.values():
+        if v == None:
+            continue
+        doc.xref_set_key(info_xref, v, "null")
     for k in m.keys():
-        if m[k] and keymap[k] and m[k] != "none":
-            x = m[k] if m[k].startswith("/") else getPDFstr(m[k])
-            d += keymap[k] + x
-    d += ">>"
-    doc._setMetadata(d)
+        if keymap[k] == None:
+            continue
+        pdf_key = keymap[k]
+        val = m[k]
+        if not bool(val) or not type(val) is str or val == "none":
+            val = "null"
+        else:
+            val = fitz.getPDFstr(val)
+        doc.xref_set_key(info_xref, pdf_key, val)
     doc.init_doc()
     return
 
@@ -3281,7 +3389,10 @@ class Shape(object):
         # =========================================================================
         nres += text[0]
         nlines = 1  # set output line counter
-        nres += templ2 % lheight  # line 1
+        if len(text) > 1:
+            nres += templ2 % lheight  # line 1
+        else:
+            nres += templ2[:2]
         for i in range(1, len(text)):
             if space < lheight:
                 break  # no space left on page
@@ -3291,7 +3402,7 @@ class Shape(object):
             space -= lheight
             nlines += 1
 
-        nres += " ET\n%sQ\n" % emc
+        nres += "\nET\n%sQ\n" % emc
 
         # =========================================================================
         #   end of text insertion
@@ -4186,6 +4297,47 @@ def fill_textbox(
 # ------------------------------------------------------------------------
 # Optional Content functions
 # ------------------------------------------------------------------------
+def get_oc(doc: Document, xref: int) -> int:
+    """Return optional content object xref for an image or form xobject.
+
+    Args:
+        xref: (int) xref number of an image or form xobject.
+    """
+    if doc.is_closed or doc.is_encrypted:
+        raise ValueError("document close or encrypted")
+    t, name = doc.xref_get_key(xref, "Subtype")
+    if t != "name" or name not in ("/Image", "/Form"):
+        raise ValueError("bad object type at xref %i" % xref)
+    t, oc = doc.xref_get_key(xref, "OC")
+    if t != "xref":
+        return 0
+    rc = int(oc.replace("0 R", ""))
+    return rc
+
+
+def set_oc(doc: Document, xref: int, oc: int) -> None:
+    """Attach optional content object to image or form xobject.
+
+    Args:
+        xref: (int) xref number of an image or form xobject
+        oc: (int) xref number of an OCG or OCMD
+    """
+    if doc.is_closed or doc.is_encrypted:
+        raise ValueError("document close or encrypted")
+    t, name = doc.xref_get_key(xref, "Subtype")
+    if t != "name" or name not in ("/Image", "/Form"):
+        raise ValueError("bad object type at xref %i" % xref)
+    if oc > 0:
+        t, name = doc.xref_get_key(oc, "Type")
+        if t != "name" or name not in ("/OCG", "/OCMD"):
+            raise ValueError("bad object type at xref %i" % oc)
+    if oc == 0 and "OC" in doc.xref_get_keys(xref):
+        doc.xref_set_key(xref, "OC", "null")
+        return None
+    doc.xref_set_key(xref, "OC", "%i 0 R" % oc)
+    return None
+
+
 def set_ocmd(
     doc: Document,
     xref: int = 0,

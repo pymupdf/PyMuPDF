@@ -212,15 +212,13 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
 
 .. note::
 
-   1. In some error situations, all of the above values may be zero or empty. So, please be prepared to digest items like::
-
-      {"type": 1, "bbox": (0.0, 0.0, 0.0, 0.0), ..., "image": b""}
-
+   1. An image block is generated for **all and every image occurrence** on the page. Hence there may be duplicates, if an image is shown at different locations.
 
    2. :ref:`TextPage` and corresponding method :meth:`Page.get_text` are **available for all document types**. Only for PDF documents, methods :meth:`Document.get_page_images` / :meth:`Page.get_images` offer some overlapping functionality as far as image lists are concerned. But both lists **may or may not** contain the same items. Any differences are most probably caused by one of the following:
 
-       - "Inline" images (see page 352 of the :ref:`AdobeManual`) of a PDF page are contained in a textpage, but **not in** :meth:`Page.get_images`.
-       - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will contain each image only once (per reference name).
+       - "Inline" images (see page 352 of the :ref:`AdobeManual`) of a PDF page are contained in a textpage, but **do not appear** in :meth:`Page.get_images`.
+       - Annotations may also contain images -- these will **not appear** in :meth:`Page.get_images`.
+       - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will list each image only once (per reference name).
        - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
 
    3. The image's "transformation matrix" is defined as the matrix, for which the expression ``bbox / transform == fitz.Rect(0, 0, 1, 1)`` is true, lookup details here: :ref:`ImageTransformation`.
@@ -319,11 +317,6 @@ Test these characteristics like so:
 
 Character Dictionary for :meth:`extractRAWDICT`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We are currently providing the bbox in :data:`rect_like` format. In a future version, we might change that to :data:`quad_like`. This image shows the relationship between items in the following table: |textpagechar|
-
-.. |textpagechar| image:: images/img-textpage-char.*
-   :align: top
-   :scale: 66
 
 =============== ===========================================================
 **Key**             **Value**
@@ -333,6 +326,13 @@ bbox            character rectangle, :data:`rect_like`
 c               the character (unicode)
 =============== ===========================================================
 
+This image shows the relationship between a character's bbox and its quad: |textpagechar|
+
+.. |textpagechar| image:: images/img-textpage-char.*
+   :align: top
+   :scale: 66
+
+
 .. rubric:: Footnotes
 
-.. [#f1] Image specifications for a PDF page are done in a page's (sub-) :data:`dictionary`, called *"/Resources"*. Resource dictionaries can be **inherited** from the page's parent object (usually the :data:`catalog`). The PDF creator may e.g. define one */Resources* on file level, naming all images and all fonts ever used by any page. In this case, :meth:`Page.get_images` and :meth:`Page.get_fonts` will always return the same lists for all pages.
+.. [#f1] Image specifications for a PDF page are done in a page's (sub-) :data:`dictionary`, called *"/Resources"*. Resource dictionaries can be **inherited** from the page's parent object (usually the :data:`catalog`). The PDF creator may e.g. define one */Resources* on file level, naming all images and all fonts ever used by any page. In these cases, :meth:`Page.get_images` and :meth:`Page.get_fonts` will return the same lists for all pages.

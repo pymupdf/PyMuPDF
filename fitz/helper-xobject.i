@@ -113,12 +113,11 @@ int JM_insert_contents(fz_context * ctx, pdf_document * pdf,
 static PyObject *img_info = NULL;
 
 static fz_image *
-JM_image_filter(fz_context * ctx, void *opaque, fz_matrix ctm, const char *name, fz_image *image)
+JM_image_filter(fz_context *ctx, void *opaque, fz_matrix ctm, const char *name, fz_image *image)
 {
     fz_quad q = fz_transform_quad(fz_quad_from_rect(fz_unit_rect), ctm);
-    PyObject *q_py = JM_py_from_quad(q);
-    PyList_Append(img_info, Py_BuildValue("sO", name, q_py));
-    Py_DECREF(q_py);
+    PyObject *temp = Py_BuildValue("sN", name, JM_py_from_quad(q));
+    LIST_APPEND_DROP(img_info, temp);
     return NULL;
 }
 
@@ -204,8 +203,7 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
     fz_drop_buffer(ctx, buffer);
     pdf_drop_obj(ctx, new_res);
     PyObject *rc = PySequence_Tuple(img_info);
-    Py_DECREF(img_info);
-    img_info = NULL;
+    Py_CLEAR(img_info);
     return rc;
 }
 

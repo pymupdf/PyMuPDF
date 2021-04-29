@@ -731,7 +731,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int xref: the :data:`xref`. *Changed in v1.18.10:* Use ``-1`` to access the special dictionary "PDF trailer" (it has no identifying xref).
       :arg str key: the desired PDF key. Must **exactly** match (case-sensitive) one of the keys contained in :meth:`Document.xref_get_keys`.
 
-      :returns: a tuple (type, value), where type is one of "xref", "array", "dict", "int", "float" "null", "bool", "float", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and a faithful reflection of what is stored in the PDF. An argument like the return value can be used to modify the value of a key of :data:`xref`.
+      :returns: a tuple (type, value), where type is one of "xref", "array", "dict", "int", "float", "null", "bool", "float", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and a faithful reflection of what is stored in the PDF. An argument like the returned value can be used to modify the value of a key of :data:`xref`.
 
           >>> for key in doc.xref_get_keys(xref):
                   print(key, "=" , doc.xref_get_key(xref, key))
@@ -757,26 +757,30 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: xref_set_key(xref, key, value)
 
-      *(New in v 1.18.7)*
+      *(New in v 1.18.7, changed in v 1.18.13)*
 
-      PDF only: Set the value of a PDF key in the object given by an xref. This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 51) and the structure of special dictionary types like page objects.
+      PDF only: Set (add, update, delete) the value of a PDF key for the object given by an xref.
+      
+      .. caution:: This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 51) and the structure of special dictionary types like page objects.
 
-      :arg int xref: the :data:`xref`. Note that changing the content of the **PDF trailer** in this way is currently not enabled for safety reasons.
+      :arg int xref: the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, specify -1.
       :arg str key: the desired PDF key (without leading "/"). Must not be empty. Any valid PDF key -- whether already present in the object (which will be overwritten) -- or new. It is possible to use PDF path notation like ``"Resources/ExtGState"`` -- which sets the value for key ``"/ExtGState"`` as a sub-object of ``"/Resources"``.
-      :arg str value: the value for the key. It must be a non-empty string and, depending on the desired PDF object type, the following rules must be observed -- there is some syntax, but no type checking and no checking of the PDF semantics. Upper or lower case are important!
+      :arg str value: the value for the key. It must be a non-empty string and, depending on the desired PDF object type, the following rules must be observed. There is some syntax checking, but **no type checking** and no checking if it makes sense PDF-wise, i.e. **no semantics checking**. Upper or lower case are important!
 
-          * **xref** -- must be provided as ``"nnn 0 R"`` with a valid :data:`xref` number nnn of the PDF. The suffix "``0 R``" is required to be recognizable as a xref.
-          * **array** -- a string like ``"[a b c d e f ...]"``. The brackets are required. Array items must be separated by at least one space (not commas like in Python). An empty array ``"[]"`` is possible and equivalent to removing the key. Array items may be any PDF objects, like dictionaries, xrefs, other arrays, etc. Like in Python, array items need not be of the same type.
+          * **xref** -- must be provided as ``"nnn 0 R"`` with a valid :data:`xref` number nnn of the PDF. The suffix "``0 R``" is required to be recognizable as an xref by PDF applications.
+          * **array** -- a string like ``"[a b c d e f]"``. The brackets are required. Array items must be separated by at least one space (not commas like in Python). An empty array ``"[]"`` is possible and equivalent to removing the key. Array items may be any PDF objects, like dictionaries, xrefs, other arrays, etc. Like in Python, array items may be of different types.
           * **dict** -- a string like ``"<< ... >>"``. The brackets are required and must enclose a valid PDF dictionary definition. The empty dictionary ``"<<>>"`` is possible and equivalent to removing the key.
           * **int** -- an integer formatted **as a string**.
-          * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is not allowed by PDF.
-          * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed.
+          * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is **not allowed by PDF**.
+          * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
-          * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``.
-          * **string** -- a valid PDF string. Denote the empty string as ``"()"``. Depending on its content, it must be enclosed in bracket types "(...)" or "<...>", and reserved PDF characters must be escaped. If in doubt, we **strongly recommend** to use :meth:`getPDFstr`! This function automatically generates the right brackets and determines the required format. E.g. it will do conversions like these:
+          * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 56 of the :ref:`AdobeManual`.
+          * **string** -- a valid PDF string. **All PDF strings** must be enclosed by some type of brackets. Denote the empty string as ``"()"``. Depending on its content, the possible bracket types are "(...)" or "<...>". Reserved PDF characters must be escaped. If in doubt, we **strongly recommend** to use :meth:`getPDFstr`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
 
+            >>> # because of €, the following yields UTF-16BE BOM
             >>> fitz.getPDFstr("Pay in $ or €.")
             '<feff00500061007900200069006e002000240020006f0072002020ac002e>'
+            >>> # escapes for brackets and non-ASCII
             >>> fitz.getPDFstr("Prices in EUR (USD also accepted). Areas are in m².")
             '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
 
@@ -1313,7 +1317,7 @@ For details on **embedded files** refer to Appendix 3.
       Changed in version 1.14.16
          The sequence of positional parameters "name" and "buffer" has been changed to comply with the layout of other functions.
 
-      :arg str name: entry identifier, must not already exist.
+      :arg str name: entry identifier, **must not already exist**.
       :arg bytes,bytearray,BytesIO buffer: file contents.
 
          *(Changed in version 1.14.13)* *io.BytesIO* is now also supported.
@@ -1321,6 +1325,9 @@ For details on **embedded files** refer to Appendix 3.
       :arg str filename: optional filename. Documentation only, will be set to *name* if *None*.
       :arg str ufilename: optional unicode filename. Documentation only, will be set to *filename* if *None*.
       :arg str desc: optional description. Documentation only, will be set to *name* if *None*.
+
+      :rtype: int
+      :returns: *(Changed in v1.18.13)* The method now returns the :data:`xref` of the inserted file. In addition, the file object now will be automatically given the PDF keys ``/CreationDate`` and ``/ModDate`` based on the current date-time.
 
 
     .. method:: embfile_count()
@@ -1334,7 +1341,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Retrieve the content of embedded file by its entry number or name. If the document is not a PDF, or entry cannot be found, an exception is raised.
 
-      :arg int,str item: index or name of entry. An integer must be in *range(embfile_count())*.
+      :arg int,str item: index or name of entry. An integer must be in ``range(embfile_count())``.
 
       :rtype: bytes
 
@@ -1351,9 +1358,11 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: embfile_info(item)
 
+      *(Changed in v1.18.13)*
+
       PDF only: Retrieve information of an embedded file given by its number or by its name.
 
-      :arg int/str item: index or name of entry. An integer must be in *range(embfile_count())*.
+      :arg int/str item: index or name of entry. An integer must be in ``range(embfile_count())``.
 
       :rtype: dict
       :returns: a dictionary with the following keys:
@@ -1364,12 +1373,16 @@ For details on **embedded files** refer to Appendix 3.
           * *desc* -- (*str*) description
           * *size* -- (*int*) original file size
           * *length* -- (*int*) compressed file length
+          * *creationDate* -- *(New in v1.18.13)* (*str*) date-time of item creation in PDF format
+          * *modDate* -- *(New in v1.18.13)* (*str*) date-time of last change in PDF format
+          * *collection* -- *(New in v1.18.13)* (*int*) :data:`xref` of the associated PDF portfolio item if any, else zero.
+          * *checksum* -- *(New in v1.18.13)* (*str*) a hashcode of the stored file content as a hexadecimal string. Should be MD5 according to PDF specifications, but be prepared to see other hashing algorithms.
 
     .. method:: embfile_names()
 
       *(New in version 1.14.16)*
 
-      PDF only: Return a list of embedded file names. The sequence of names equals the physical sequence in the document.
+      PDF only: Return a list of embedded file names. The sequence of the names equals the physical sequence in the document.
 
       :rtype: list
 
@@ -1382,7 +1395,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Change an embedded file given its entry number or name. All parameters are optional. Letting them default leads to a no-operation.
 
-      :arg int/str item: index or name of entry. An integer must be in *range(0, embfile_count())*.
+      :arg int/str item: index or name of entry. An integer must be in ``range(embfile_count())``.
       :arg bytes,bytearray,BytesIO buffer: the new file content.
 
          *(Changed in version 1.14.13)* *io.BytesIO* is now also supported.
@@ -1391,16 +1404,11 @@ For details on **embedded files** refer to Appendix 3.
       :arg str ufilename: the new unicode filename.
       :arg str desc: the new description.
 
-    .. method:: embfile_setinfo(n, filename=None, ufilename=None, desc=None)
+      *(Changed in v1.18.13)*  The method now returns the :data:`xref` of the file object.
 
-      PDF only: Change embedded file meta information. All parameters are optional. Letting them default will lead to a no-operation.
+      :rtype: int
+      :returns: xref of the file object. Automatically, its ``/ModDate`` PDF key will be updated with the current date-time.
 
-      :arg int,str n: index or name of entry. An integer must be in *range(embfile_count())*.
-      :arg str filename: sets the filename.
-      :arg str ufilename: sets the unicode filename.
-      :arg str desc: sets the description.
-
-      .. note:: Deprecated subset of :meth:`embfile_upd`. Will be deleted in a future version.
 
     .. method:: close()
 

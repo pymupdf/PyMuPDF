@@ -470,7 +470,7 @@ void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffe
     size_t len = fz_buffer_storage(ctx, buffer, NULL);
     size_t nlen = len;
 
-    if (len > 30) {  // ignore small stuff
+    if (compress == 1 && len > 30) {  // ignore small stuff
         nres = JM_compress_buffer(ctx, buffer);
         nlen = fz_buffer_storage(ctx, nres, NULL);
     }
@@ -523,7 +523,7 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
             c = PyBytes_AS_STRING(mybytes);
             len = (size_t) PyBytes_GET_SIZE(mybytes);
         }
-        // all the above leave c as NULL pointer if unsuccessful
+        // if none of the above, c is NULL and we return an empty buffer
         if (c) {
             res = fz_new_buffer_from_copied_data(ctx, (const unsigned char *) c, len);
         } else {

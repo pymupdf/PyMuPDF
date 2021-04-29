@@ -72,7 +72,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.draw_zigzag`           PDF only: draw a zig-zagged line
 :meth:`Page.get_drawings`          get list of the draw commands contained in the page
 :meth:`Page.get_fonts`             PDF only: get list of used fonts
-:meth:`Page.get_image_bbox`        PDF only: get bbox matrix of embedded image
+:meth:`Page.get_image_bbox`        PDF only: get bbox and matrix of embedded image
+:meth:`Page.get_image_rects`       PDF only: improved version of :meth:`Page.get_image_bbox`
 :meth:`Page.get_images`            PDF only: get list of used images
 :meth:`Page.get_image_info`        get list of meta information for all used images
 :meth:`Page.get_xobjects`          PDF only: get list of used xobjects
@@ -386,6 +387,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int images: *(new in v1.18.0)* how to redact overlapping images. The default (2) blanks out overlapping pixels. *PDF_REDACT_IMAGE_NONE* (0) ignores, and *PDF_REDACT_IMAGE_REMOVE* (1) completely removes all overlapping images.
 
+
       :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
 
       .. note::
@@ -395,7 +397,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * *(Changed in v1.18.0)* The overlapping parts of **images** will be blanked-out for default option ``PDF_REDACT_IMAGE_PIXELS``. Option 0 does not touch any images and 1 will remove any image with an overlap. Please be aware that there is a bug for option *PDF_REDACT_IMAGE_PIXELS = 2*: transparent images will be incorrectly handled!
 
-         * Text removal is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle *(changed in MuPDF v1.17)*. Depending on the font properties and / or the chosen line height, deletion may include undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a *True* argument before text search may help to prevent this.
+         * For option ``images=PDF_REDACT_IMAGE_PIXELS`` a new image of format PNG is created, which the page will use in place of the original one. The original image is not deleted as part of this process, so other pages might still show it. In addition, the new, modified PNG image currently is **stored uncompressed**. Do keep these aspects in mind when choosing the right garbage collection method and compression options during save.
+
+         * **Text removal** is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle *(changed in MuPDF v1.17)*. Depending on the font properties and / or the chosen line height, deletion may occur for undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a *True* argument before text search may help to prevent this.
 
          * Redactions are a simple way to replace single words in a PDF, or to just physically remove them. Locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
 
@@ -845,12 +849,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: stream; insert_image
       pair: mask; insert_image
       pair: oc; insert_image
+      pair: xref; insert_image
 
-   .. method:: insert_image(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, oc=0, keep_proportion=True, overlay=True)
+   .. method:: insert_image(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, oc=0, xref=0, keep_proportion=True, overlay=True)
 
-      PDF only: Put an image inside the given rectangle. The image can be taken from a pixmap, a file or a memory area - of these parameters **exactly one** must be specified.
+      PDF only: Put an image inside the given rectangle. The image can be taken either from an existing image in the PDF, provided as xref number, or otherwise from a pixmap, a file, or a memory area - of these parameters **exactly one** must be specified.
 
-         Changed in version 1.14.11 By default, the image keeps its aspect ratio.
+         * Changed in version 1.14.1: By default, the image keeps its aspect ratio.
+         * Changed in version 1.18.13: Allow providing the image as xref of an existing one.
 
       :arg rect_like rect: where to put the image. Must be finite and not empty.
 
@@ -869,33 +875,45 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask for the base image. When specified, the base image must also be provided as an in-memory image (*stream* parameter).
 
+      :arg int xref: *(New in v1.18.13)* the :data:`xref` of an image already present in the PDF. If given (xref > 0), parameters ``filename``, ``pixmap``, ``stream`` and ``mask`` are ignored. The page will simply receive a reference to the exsting image.
+
       :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convert_to_pdf`) first and then use :meth:`Page.show_pdf_page` instead.
 
-      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this OCG (optional content group). Please be aware, that this property is stored with the generated PDF image definition. If you insert the same image anywhere else, but **with a different 'oc' value**, a full additional image copy will be stored.
+      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this OCG (optional content group). This only happens, when inserting the image for the first time -- and consequently is ignored if xref is specified. This property is stored with the generated PDF image object and therefore controls the image's visibility throughout the PDF.
       :arg bool keep_proportion: *(new in version v1.14.11)* maintain the aspect ratio of the image.
 
       For a description of *overlay* see :ref:`CommonParms`.
+
+      *Changed in v1.18.13:* Return xref of stored image.
+
+      :rtype: int
+      :returns: The xref of the embedded image. This can be used as the ``xref`` argument for very significant performance boosts, if the image must be inserted again.
 
       This example puts the same image on every page of a document::
 
          >>> doc = fitz.open(...)
          >>> rect = fitz.Rect(0, 0, 50, 50)       # put thumbnail in upper left corner
          >>> img = open("some.jpg", "rb").read()  # an image file
+         >>> img_xref = 0                         # first execution embeds image
          >>> for page in doc:
-               page.insert_image(rect, stream = img)
+               img_xref = page.insert_image(rect, stream=img,
+                          xref=img_xref,  2nd time reuses existing image
+                   )
          >>> doc.save(...)
 
       .. note::
 
-         1. If that same image had already been present in the PDF, then only a reference to it will be inserted. This of course considerably saves disk space and processing time. But to detect this fact, existing PDF images need to be compared with the new one. This is achieved by storing an MD5 code for each image in a table and only compare the new image's MD5 code against the table entries. Generating this MD5 table, however, is done when the first image is inserted - which therefore may have an extended response time.
+         1. The method detects multiple insertions of the same image (like in above example) and will store its data only on the first execution. This is even true, if using the default ``xref=0``.
+         
+         2. The method cannot detect if the same image had already been part of the file before opening it. This type of situation can only be resolved by saving with ``garbage=4``.
 
-         2. You can use this method to provide a background or foreground image for the page, like a copyright, a watermark. Please remember, that watermarks require a transparent image ...
+         3. You can use this method to provide a background or foreground image for the page, like a copyright or a watermark. Please remember, that watermarks require a transparent image ...
 
-         3. The image may be inserted uncompressed, e.g. if a *Pixmap* is used or if the image has an alpha channel. Therefore, consider using *deflate=True* when saving the file.
+         4. The image may be inserted uncompressed, e.g. if a *Pixmap* is used or if the image has an alpha channel. Therefore, consider using *deflate=True* when saving the file. In addition, there exist effective ways to control the image size -- even if transparency comes into play. Have a look at `this <https://pymupdf.readthedocs.io/en/latest/faq.html#how-to-add-images-to-a-pdf-page>`_ section of the documentation.
 
-         4. The image is stored in the PDF in its original quality. This may be much better than you ever need for your display. In this case consider decreasing the image size before inserting it -- e.g. by using the pixmap option and then shrinking it or scaling it down (see :ref:`Pixmap` chapter). The PIL method *Image.thumbnail()* can also be used for that purpose. The file size savings can be very significant.
+         5. The image is stored in the PDF in its original quality. This may be much better than what you ever need for your display. Consider **decreasing the image size** before insertion -- e.g. by using the pixmap option and then shrinking it or scaling it down (see :ref:`Pixmap` chapter). The PIL method *Image.thumbnail()* can also be used for that purpose. The file size savings can be very significant.
 
-         5. The most efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
+         6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
    .. index::
       pair: blocks; get_text
@@ -1023,14 +1041,23 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: Return a list of images referenced by the page. Wrapper for :meth:`Document.get_page_images`.
 
 
-   .. method:: get_image_info()
+   .. index::
+      pair: hashes; get_image_info
+      pair: xrefs; get_image_info
 
-      *(New in v1.18.11)*
+   .. method:: get_image_info(hashes=False, xrefs=False)
 
-      Return a list of meta information dictionaries for all images shown on the page. This works for all document types. Technically, this is a subset of the dictionary output of :meth:`Page.get_text` -- just image binary content and any text on the page are skipped.
+      * *New in v1.18.11*
+      * *Changed in v1.18.13:* added image MD5 hashcode computation and :data:`xref` search.
+
+      Return a list of meta information dictionaries for all images shown on the page. This works for all document types. Technically, this is a subset of the dictionary output of :meth:`Page.get_text`: the image binary content and any text on the page are ignored.
+
+      :arg bool hashes: *New in v1.18.13:* Compute the MD5 hashcode for each encountered image, which allows identifying image duplicates. This adds the key ``"digest"`` to the output, whose value is a 16 byte ``bytes`` object.
+
+      :arg bool xrefs: *New in v1.18.13:* **PDF only.** Try to find the :data:`xref` for each image. Implies ``hashes=True``. Adds the ``"xref"`` key to the dictionary. If not found, the value is 0, which means, the image is either "inline" or otherwise undetectable. Please note that this option has an extended response time, because the MD5 hashcode will be computed at least two times for each image with an xref.
 
       :rtype: list[dict]
-      :returns: A list of dictionaries. This includes information for **exactly those** images, that are shown on the page -- including *"inline images"*. In contrast to images included in :meth:`Page.get_text`, image **content** is not loaded, which drastically reduces memory usage. Depending on the page's image/text mixture, execution time should be shorter by 25% to 50% or more. Other than that, the dictionary layout is very similar to that of image blocks in ``page.get_text("dict")``.
+      :returns: A list of dictionaries. This includes information for **exactly those** images, that are shown on the page -- including *"inline images"*. In contrast to images included in :meth:`Page.get_text`, image **binary content** is not loaded, which drastically reduces memory usage. The dictionary layout is similar to that of image blocks in ``page.get_text("dict")``.
 
          =============== ===============================================================
          **Key**             **Value**
@@ -1045,10 +1072,12 @@ In a nutshell, this is what you can do with PyMuPDF:
          yres            resolution in y-direction *(int)*
          bpc             bits per component *(int)*
          size            storage occupied by image *(int)*
+         digest          MD5 hashcode *(bytes)*, if *hashes* is true
+         xref            image :data:`xref` or 0, if *xrefs* is true
          transform       matrix transforming image rect to bbox, :data:`matrix_like`
          =============== ===============================================================
 
-         Multiple occurrences of the same image are regardlessly reported. Use the dictionary's items to detect this situation, e.g. by comparing width, height, and size.
+         Multiple occurrences of the same image are always reported. You can detect duplicates by comparing their ``digest`` values.
 
 
    .. method:: get_xobjects()
@@ -1056,18 +1085,41 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: Return a list of Form XObjects referenced by the page. Wrapper for :meth:`Document.get_page_xobjects`.
 
 
+   .. index::
+      pair: transform; get_image_rects
+
+   .. method:: get_image_rects(item, transform=False)
+
+      *New in v1.18.13*
+
+      PDF only: Return boundary boxes and transformation matrices of an embedded image. This is an improved version of :meth:`Page.get_image_bbox` with the following differences:
+
+      * There is no restriction on **how** the image is invoked (by the page or one of its Form XObjects). The result is always complete and correct.
+      * The result is a list of :ref:`Rect` or (:ref:`Rect`, :ref:`Matrix`) objects -- depending on *transform*. Each list item represents one location of the image on the page. Multiple occurrences might not be detectable by :meth:`Page.get_image_bbox`.
+      * The method invokes :meth:`Page.get_image_info` with ``xrefs=True`` and therefore has a noticeably longer response time than :meth:`Page.get_image_bbox`.
+
+      :arg list,str,int item: an item of the list :meth:`Page.get_images`, or the reference **name** entry of such an item (item[7]), or the image :data:`xref`.
+      :arg bool transform: also return the matrix used to transform the image rectangle to the bbox on the page. If true, then tuples ``(bbox, matrix)`` are returned.
+
+      :rtype: list
+      :returns: Boundary boxes and respective transformation matrices for each image occurrence on the page. If the item is not on the page, an empty list ``[]`` is returned.
+
+
+   .. index::
+      pair: transform; get_image_bbox
+
    .. method:: get_image_bbox(item, transform=False)
 
-      *(Changed in v1.18.11)*
+      *Changed in v1.18.11*
 
       PDF only: Return boundary box and transformation matrix of an embedded image.
 
-      *Changed in version 1.17.0:*
+      *Changed in v1.17.0:*
 
       * The page's :data:`contents` are no longer modified by this method.
 
       :arg list,str item: an item of the list :meth:`Page.get_images` with *full=True* specified, or the reference **name** entry of such an item, which is item[-3] (or item[7] respectively).
-      :arg bool transform: *(new in v1.18.11)* also return the matrix that transformed the image rectangle to the bbox on the page. Default is just the bbox. If true, then a tuple ``(bbox, matrix)`` is returned.
+      :arg bool transform: *(new in v1.18.11)* also return the matrix used to transform the image rectangle to the bbox on the page. Default is just the bbox. If true, then a tuple ``(bbox, matrix)`` is returned.
 
       :rtype: :ref:`Rect` or (:ref:`Rect`, :ref:`Matrix`)
       :returns: the boundary box of the image -- optionally also its transformation matrix.
@@ -1080,7 +1132,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note::
 
-         1. Be aware that :meth:`Page.get_images` may contain "dead" entries i.e. images, which the page **does not display**. This is no error, but thus intended by the PDF creator. No exception will be raised in this case, but an infinite rectangle is returned.
+         1. Be aware that :meth:`Page.get_images` may contain "dead" entries i.e. images, which the page **does not display**. This is no error, but intended by the PDF creator. No exception will be raised in this case, but an infinite rectangle is returned. You can avoid this from happening by executing :meth:`Page.clean_contents` before this method.
          2. The image's "transformation matrix" is defined as the matrix, for which the expression ``bbox / transform == fitz.Rect(0, 0, 1, 1)`` is true, lookup details here: :ref:`ImageTransformation`.
 
    .. index::
@@ -1107,7 +1159,7 @@ In a nutshell, this is what you can do with PyMuPDF:
      Create a pixmap from the page. This is probably the most often used method to create a :ref:`Pixmap`.
 
      :arg matrix_like matrix: default is :ref:`Identity`.
-     :arg colorspace: Defines the required colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
+     :arg colorspace: The desired colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
      :type colorspace: str or :ref:`Colorspace`
      :arg irect_like clip: restrict rendering to this area.
      :arg bool alpha: whether to add an alpha channel. Always accept the default *False* if you do not really need transparency. This will save a lot of memory (25% in case of RGB ... and pixmaps are typically **large**!), and also processing time. Also note an **important difference** in how the image will be rendered: with *True* the pixmap's samples area will be pre-cleared with *0x00*. This results in **transparent** areas where the page is empty. With *False* the pixmap's samples will be pre-cleared with *0xff*. This results in **white** where the page has nothing to show.

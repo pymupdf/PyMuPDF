@@ -416,19 +416,17 @@ int JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         int xref = pdf_to_num(ctx, imagedict);
         int gen = 0;
-        smask = pdf_dict_get(ctx, imagedict, PDF_NAME(SMask));
+        smask = pdf_dict_geta(ctx, imagedict, PDF_NAME(SMask), PDF_NAME(Mask));
         if (smask)
             gen = pdf_to_num(ctx, smask);
-        smask = pdf_dict_get(ctx, imagedict, PDF_NAME(Mask));
-        if (smask)
-            gen = pdf_to_num(ctx, smask);
-        filter = pdf_dict_get(ctx, imagedict, PDF_NAME(Filter));
+
+        filter = pdf_dict_geta(ctx, imagedict, PDF_NAME(Filter), PDF_NAME(F));
         if (pdf_is_array(ctx, filter)) {
             filter = pdf_array_get(ctx, filter, 0);
         }
 
         altcs = NULL;
-        cs = pdf_dict_get(ctx, imagedict, PDF_NAME(ColorSpace));
+        cs = pdf_dict_geta(ctx, imagedict, PDF_NAME(ColorSpace), PDF_NAME(CS));
         if (pdf_is_array(ctx, cs)) {
             pdf_obj *cses = cs;
             cs = pdf_array_get(ctx, cses, 0);
@@ -440,9 +438,9 @@ int JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
             }
         }
 
-        width = pdf_dict_get(ctx, imagedict, PDF_NAME(Width));
-        height = pdf_dict_get(ctx, imagedict, PDF_NAME(Height));
-        bpc = pdf_dict_get(ctx, imagedict, PDF_NAME(BitsPerComponent));
+        width = pdf_dict_geta(ctx, imagedict, PDF_NAME(Width), PDF_NAME(W));
+        height = pdf_dict_geta(ctx, imagedict, PDF_NAME(Height), PDF_NAME(H));
+        bpc = pdf_dict_geta(ctx, imagedict, PDF_NAME(BitsPerComponent), PDF_NAME(BPC));
 
         PyObject *entry = PyTuple_New(10);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));

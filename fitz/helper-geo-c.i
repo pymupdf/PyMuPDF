@@ -199,14 +199,11 @@ JM_quad_from_py(PyObject *r)
 // PySequence from fz_quad.
 //-----------------------------------------------------------------------------
 static PyObject *
-JM_py_from_quad(fz_quad quad)
+JM_py_from_quad(fz_quad q)
 {
-    PyObject *pquad = PyTuple_New(4);
-    PyTuple_SET_ITEM(pquad, 0, JM_py_from_point(quad.ul));
-    PyTuple_SET_ITEM(pquad, 1, JM_py_from_point(quad.ur));
-    PyTuple_SET_ITEM(pquad, 2, JM_py_from_point(quad.ll));
-    PyTuple_SET_ITEM(pquad, 3, JM_py_from_point(quad.lr));
-    return pquad;
+    return Py_BuildValue("((f,f),(f,f),(f,f),(f,f))",
+                          q.ul.x, q.ul.y, q.ur.x, q.ur.y,
+                          q.ll.x, q.ll.y, q.lr.x, q.lr.y);
 }
 
 %}

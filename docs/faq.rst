@@ -301,7 +301,7 @@ Notwithstanding that interfacing with Pillow is almost trivial.
 BMP               .                  Windows Bitmap
 JPEG              .                  Joint Photographic Experts Group
 JXR               .                  JPEG Extended Range
-JPX               .                  JPEG 2000
+JPX/JP2           .                  JPEG 2000
 GIF               .                  Graphics Interchange Format
 TIFF              .                  Tagged Image File Format
 PNG               PNG                Portable Network Graphics
@@ -513,7 +513,7 @@ display resolution             image resolution                      vectorized 
 rotation                       multiple of 90 degrees                any angle
 clipping                       no (full image only)                  yes
 keep aspect ratio              yes (default option)                  yes (default option)
-transparency (water marking)   depends on image                      yes
+transparency (water marking)   depends on image                      depends on the page
 location / placement           scaled to fit target rectangle        scaled to fit target rectangle
 performance                    automatic prevention of duplicates;   automatic prevention of duplicates;
                                MD5 calculation on every execution    faster than :meth:`Page.insert_image`
@@ -524,14 +524,17 @@ ease of use                    simple, intuitive;                    simple, int
                                                                      PDF via :meth:`Document.convert_to_pdf`
 ============================== ===================================== =========================================
 
-Basic code pattern for :meth:`Page.insert_image`. **Exactly one** of the parameters **filename / stream / pixmap** must be given::
+Basic code pattern for :meth:`Page.insert_image`. **Exactly one** of the parameters **filename / stream / pixmap** must be given, if not re-inserting an existing image::
 
     page.insert_image(
         rect,                  # where to place the image (rect-like)
         filename=None,         # image in a file
         stream=None,           # image in memory (bytes)
         pixmap=None,           # image from pixmap
+        mask=None,             # specify alpha channel separately
         rotate=0,              # rotate (int, multiple of 90)
+        xref=0,                # re-use existing image
+        oc=0,                  # control visibility via OCG / OCMD
         keep_proportion=True,  # keep aspect ratio
         overlay=True,          # put in foreground
     )
@@ -544,9 +547,46 @@ Basic code pattern for :meth:`Page.show_pdf_page`. Source and target PDF must be
         pno=0,                 # page number in source PDF
         clip=None,             # only display this area (rect-like)
         rotate=0,              # rotate (float, any value)
+        oc=0,                  # control visibility via OCG / OCMD
         keep_proportion=True,  # keep aspect ratio
         overlay=True,          # put in foreground
     )
+
+----------
+
+How to Control the Size of Inserted Images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For the following discussion, please also consult the previous section.
+
+If the ``pixmap`` parameter is used in :meth:`Page.insert_image`, the image format stored in the PDF is **always PNG**. This is independent from in which way the pixmap has originally been created.
+
+For ``filename`` and ``stream`` parameters, the **original image format**, quality and size are preserved (JPEG, BMP, JPEG2000, etc.). **However:** if :meth:`Page.insert_image` detects an alpha channel, then the image is internally converted to a pixmap, which is then inserted instead -- obviously as a PNG, so the original format is lost. This may lead to an increased image size (even after compression), or be otherwise undesireable.
+
+Here is a way to prevent this from happening and take a more direct control over the result.
+
+* Use ``filename`` or ``stream`` whenever possible. If there is no alpha channel, the original image will be inserted as is.
+* If possible, provide a transparent image as two separate binary (``bytes``) objects, by using both parameters ``stream=baseimage, mask=alphaimage``. This will store both parts in their original formats and prevent internal pixmap generation.
+* Check whether your file or stream has an alpha channel via ``fitz.Pixmap(filename).alpha == 1`` or looking at ``img.mode`` for a PIL image. If ``img.mode.endswith("A")`` (e.g. "RGBA"), then an alpha channel is present. Split the image up into base image and transparency mask like this::
+    
+    pix = fitz.Pixmap(stream)  # intermediate pixmap
+    pix0 = fitz.Pixmap(pix, 0)  # extract base image without alpha
+    baseimage = pix0.pillowData("FORMAT")  # best use original image format
+    pix1 = fitz.Pixmap(None, pix)  # extract alpha channel to make mask image
+    pixmask = fitz.Pixmap(fitz.csGRAY, pix1.width, pix1.height, pix1.samples, 0)
+    page.insert_image(rect, stream=baseimage, mask=pixmask.getPNGData())
+
+* In a similar way, you can **provide an alpha channel** for intransparent images to store them with a desired opacity::
+
+    stream = open("example.jpg", "rb").read()
+    basepix = fitz.Pixmap(stream)
+    opacity = 0.3  # 30% opacity, choose a value 0 < opacity < 1
+    value = int(255 * opacity)  # we need an integer between 0 and 255
+    alphas = [value] * (basepix.width * basepix.height)
+    alphas = bytearray(alphas)  # convert to a bytearray
+    pixmask = fitz.Pixmap(fitz.csGRAY, basepix.width, basepix.height, alphas, 0)
+    page.insert_image(rect, stream=stream, mask=pixmask.getPNGData())
+
 
 Text
 -----
@@ -1566,7 +1606,6 @@ This deals with splitting up pages of a PDF in arbitrary pieces. For example, yo
     ------------
     PyMuPDF 1.12.2 or later
     """
-    from __future__ import print_function
     import fitz, sys
     infile = sys.argv[1]  # input file name
     src = fitz.open(infile)
@@ -1642,7 +1681,6 @@ This deals with joining PDF pages to form a new PDF with pages each combining tw
     -------------
     PyMuPDF 1.12.1 or later
     '''
-    from __future__ import print_function
     import fitz, sys
     infile = sys.argv[1]
     src = fitz.open(infile)
@@ -1688,7 +1726,6 @@ Here is a script that converts any PyMuPDF supported document to a PDF. These in
 
 It features maintaining any metadata, table of contents and links contained in the source document::
 
-    from __future__ import print_function
     """
     Demo script: Convert input file to a PDF
     -----------------------------------------
@@ -2056,7 +2093,7 @@ How to Handle Object Streams
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Some object types contain additional data apart from their object definition. Examples are images, fonts, embedded files or commands describing the appearance of a page.
 
-Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xref_stream` with the object's :data:`xref` as an argument. And it is also possible to write back a modified version of a stream using :meth:`Document.updatefStream`.
+Objects of these types are called "stream objects". PyMuPDF allows reading an object's stream via method :meth:`Document.xref_stream` with the object's :data:`xref` as an argument. It is also possible to write back a modified version of a stream using :meth:`Document.update_stream`.
 
 Assume that the following snippet wants to read all streams of a PDF for whatever reason::
 
@@ -2073,11 +2110,11 @@ Assume that the following snippet wants to read all streams of a PDF for whateve
 
 How to Handle Page Contents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A PDF page can have zero or multiple :data:`contents` objects. These are stream objects describing **what** appears **where** on a page (like text and images). They are written in a special mini-language described e.g. in chapter "APPENDIX A - Operator Summary" on page 985 of the :ref:`AdobeManual`.
+A PDF page can have zero or multiple :data:`contents` objects. These are stream objects describing **what** appears **where** and **how** on a page (like text and images). They are written in a special mini-language described e.g. in chapter "APPENDIX A - Operator Summary" on page 985 of the :ref:`AdobeManual`.
 
 Every PDF reader application must be able to interpret the contents syntax to reproduce the intended appearance of the page.
 
-If multiple :data:`contents` objects are provided, they must be read and interpreted in the specified sequence in exactly the same way as if these streams were provided as a concatenation of the several.
+If multiple :data:`contents` objects are provided, they must be interpreted in the specified sequence in exactly the same way as if they were provided as a concatenation of the several.
 
 There are good technical arguments for having multiple :data:`contents` objects:
 
@@ -2150,7 +2187,7 @@ Access this information via PyMuPDF with :meth:`Document.pdf_trailer`.
 
     >>> import fitz
     >>> doc=fitz.open("PyMuPDF.pdf")
-    >>> print(doc.pdf_trailer())
+    >>> print(doc.xref_object(-1))
     <<
     /Type /XRef
     /Index [ 0 8263 ]
@@ -2189,6 +2226,85 @@ Using some XML package, the XML data can be interpreted and / or modified and th
     >>>
     >>> # XML metadata can be deleted like this:
     >>> doc.del_xml_metadata()
+
+----------------------------------
+
+How to Extend PDF Metadata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Attribute :attr:`Document.metadata` is designed so it works for all supported document types in the same way: it is a Python dictionary with a **fixed set of key-value pairs**. Correspondingly, :meth:`Document.set_metadata` only accepts standard keys.
+
+However, PDFs may contain items not accessible like this. Also, there may be reasons to store additional information, like copyrights. Here is a way to handle **arbitrary metadata items** by using PyMuPDF low-level functions.
+
+As an example, look at this standard metadata output of some PDF::
+
+    # ---------------------
+    # standard metadata
+    # ---------------------
+    pprint(doc.metadata)
+    {'author': 'PRINCE',
+     'creationDate': "D:2010102417034406'-30'",
+     'creator': 'PrimoPDF http://www.primopdf.com/',
+     'encryption': None,
+     'format': 'PDF 1.4',
+     'keywords': '',
+     'modDate': "D:20200725062431-04'00'",
+     'producer': 'macOS Version 10.15.6 (Build 19G71a) Quartz PDFContext, '
+                 'AppendMode 1.1',
+     'subject': '',
+     'title': 'Full page fax print',
+     'trapped': ''}
+
+Use the following code to see **all items** stored the metadata object::
+
+    # ----------------------------------
+    # metadata including private items
+    # ----------------------------------
+    metadata = {}  # make my own metadata dict
+    what, value = doc.xref_get_key(-1, "Info")  # /Info key in the trailer
+    if what != "xref":
+        pass  # PDF has no metadata
+    else:
+        xref = int(value.replace("0 R", ""))  # extract the metadata xref
+        for key in doc.xref_get_keys(xref):
+            metadata[key] = doc.xref_get_key(xref, key)[1]
+    pprint(metadata)
+    {'Author': 'PRINCE',
+     'CreationDate': "D:2010102417034406'-30'",
+     'Creator': 'PrimoPDF http://www.primopdf.com/',
+     'ModDate': "D:20200725062431-04'00'",
+     'PXCViewerInfo': 'PDF-XChange Viewer;2.5.312.1;Feb  9 '
+                     "2015;12:00:06;D:20200725062431-04'00'",
+     'Producer': 'macOS Version 10.15.6 (Build 19G71a) Quartz PDFContext, '
+                 'AppendMode 1.1',
+     'Title': 'Full page fax print'}
+    # ---------------------------------------------------------------
+    # note the additional 'PXCViewerInfo' key - ignored in standard!
+    # ---------------------------------------------------------------
+
+
+Vice cersa, you can also **store private metadata items** in a PDF. It is your responsibility making sure, that these items do conform to PDF specifications - especially they must be (unicode) strings. Consult section 10.2.1 (p. 843) of the :ref:`AdobeManual` for details and caveats::
+
+    what, value = doc.xref_get_key(-1, "Info")  # /Info key in the trailer
+    if what != "xref":
+        raise ValueError("PDF has no metadata")
+    xref = int(value.replace("0 R", ""))  # extract the metadata xref
+    # add some private information
+    doc.xref_set_key(xref, "mykey", fitz.getPDFstr("北京 is Beijing"))
+    #
+    # after executing the previous code snippet, we will see this:
+    pprint(metadata)
+    {'Author': 'PRINCE',
+     'CreationDate': "D:2010102417034406'-30'",
+     'Creator': 'PrimoPDF http://www.primopdf.com/',
+     'ModDate': "D:20200725062431-04'00'",
+     'PXCViewerInfo': 'PDF-XChange Viewer;2.5.312.1;Feb  9 '
+                      "2015;12:00:06;D:20200725062431-04'00'",
+     'Producer': 'macOS Version 10.15.6 (Build 19G71a) Quartz PDFContext, '
+                 'AppendMode 1.1',
+     'Title': 'Full page fax print',
+     'mykey': '北京 is Beijing'}
+
+To delete selected keys, use ``doc.xref_set_key(xref, "mykey", "null")``. As explained in the next section, string "null" is the PDF equivalent to Python's ``None``. A key with that value will be treated like being not specified -- and physically removed in garbage collections.
 
 ----------------------------------
 

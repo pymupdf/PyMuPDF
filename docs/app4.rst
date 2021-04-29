@@ -15,10 +15,14 @@ Starting with version 1.18.11, the image transformation matrix is returned by so
 
 The transformation matrix contains information about how an image was transformed to fit into the rectangle (its "boundary box" = "bbox") on some document page. By inspecting the image's bbox on the page and this matrix, one can determine for example, whether and how the image is displayed scaled or rotated on a page.
 
-The relationship between image width and height and the bbox on a page is the following:
+The relationship between image dimension and its bbox on a page is the following:
 
-1. Using the original image's width and height, we can define the image rectangle ``imgrect = fitz.Rect(0, 0, width, height)`` and a "shrink matrix" ``shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)``.
+1. Using the original image's width and height,
+    - define the image rectangle ``imgrect = fitz.Rect(0, 0, width, height)``
+    - define the "shrink matrix" ``shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)``.
+
 2. Transforming the image rectangle with its shrink matrix, will result in the unit rectangle: ``imgrect * shrink = fitz.Rect(0, 0, 1, 1)``.
+
 3. Using the image **transformation matrix** "transform", the following steps will compute the bbox::
 
     imgrect = fitz.Rect(0, 0, width, height)

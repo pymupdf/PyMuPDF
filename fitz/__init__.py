@@ -54,13 +54,15 @@ fitz.Document.insert_page = fitz.utils.insertPage
 fitz.Document.new_page = fitz.utils.newPage
 fitz.Document.scrub = fitz.utils.scrub
 fitz.Document.search_page_for = fitz.utils.searchPageFor
-fitz.Document.set_metadata = fitz.utils.setMetadata
+fitz.Document.set_metadata = fitz.utils.set_metadata
 fitz.Document.set_ocmd = fitz.utils.set_ocmd
 fitz.Document.set_page_labels = fitz.utils.set_page_labels
 fitz.Document.set_toc = fitz.utils.setToC
 fitz.Document.set_toc_item = fitz.utils.set_toc_item
 fitz.Document.tobytes = fitz.Document.write
 fitz.Document.subset_fonts = fitz.utils.subset_fonts
+fitz.Document.get_oc = fitz.utils.get_oc
+fitz.Document.set_oc = fitz.utils.set_oc
 
 
 # ------------------------------------------------------------------------------
@@ -97,6 +99,7 @@ fitz.Page.show_pdf_page = fitz.utils.show_pdf_page
 fitz.Page.update_link = fitz.utils.updateLink
 fitz.Page.write_text = fitz.utils.write_text
 fitz.Page.get_label = fitz.utils.get_label
+fitz.Page.get_image_rects = fitz.utils.get_image_rects
 
 # ------------------------------------------------------------------------
 # Annot

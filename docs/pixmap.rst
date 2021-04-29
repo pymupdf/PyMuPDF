@@ -43,6 +43,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.writePNG`       save a pixmap as a PNG file
 :attr:`Pixmap.alpha`          transparency indicator
 :attr:`Pixmap.colorspace`     pixmap's :ref:`Colorspace`
+:attr:`Pixmap.digest`         MD5 hashcode of the pixmap
 :attr:`Pixmap.height`         pixmap height
 :attr:`Pixmap.interpolate`    interpolation method indicator
 :attr:`Pixmap.irect`          :ref:`IRect` of the pixmap
@@ -246,13 +247,15 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg int yres: resolution in y direction.
 
 
-   .. method:: setAlpha([alphavalues])
+   .. method:: setAlpha(alphavalues, premultiply=1, opaque=None)
+
+      *(Changed in v 1.18.13)*
 
       Change the alpha values. The pixmap must have an alpha channel.
 
-      :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted, all alpha values are set to 255 (no transparency).
-
-         *Changed in version 1.14.13:* *io.BytesIO* is now also supported.
+      :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted (``None``), all alpha values are set to 255 (no transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also accepted.
+      :arg bool premultiply: *New in v1.18.13:* whether to premultiply color components with the alpha value.
+      :arg list,tuple opaque: make this color fully invisible (transparent). A sequence of integers 0 <= i <= 255 with a length of :attr:`Pixmap.n`. Default is *None*. E.g. in the RGB case a typical choice would be ``opaque=(255, 255, 255)`` for white.
 
 
    .. method:: invertIRect([irect])
@@ -267,7 +270,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, *(r + g + b) / 3* will be taken as the gray-shade value of the target.
 
-      Between *irect* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values *source.x* and *source.y* (which you are free to modify for this purpose). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
+      Between *irect* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values ``source.x`` and ``source.y`` (which you are free to modify for this purpose via :meth:`Pixmap.setOrigin`). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
 
       :arg source: source pixmap.
       :type source: :ref:`Pixmap`
@@ -306,7 +309,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       *(New in v1.17.3)*
 
-      Write the pixmap as an image file using Pillow. Use this method for image formats or extended image features not supported by MuPDF. Examples are
+      Write the pixmap as an image file using Pillow. Use this method for output unsupported by MuPDF. Examples are
 
       * Formats JPEG, JPX, J2K, WebP, etc.
       * Storing EXIF information.
@@ -328,6 +331,12 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       Indicates whether the pixmap contains transparency information.
 
       :type: bool
+
+   .. attribute:: digest
+
+      The MD5 hashcode of the pixmap. This is a technical value used for unique identifications.
+
+      :type: bytes
 
    .. attribute:: colorspace
 
