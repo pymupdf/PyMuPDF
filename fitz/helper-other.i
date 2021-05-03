@@ -1064,6 +1064,63 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
     return value;
 }
 
+
+//-----------------------------------------------------------------------------
+// compute image isnertion matrix
+//-----------------------------------------------------------------------------
+fz_matrix
+calc_image_matrix(int width, int height, PyObject *tr, int rotate, int keep)
+{
+    float large, small, fw, fh, trw, trh, f, w, h;
+    fz_rect trect = JM_rect_from_py(tr);
+    fz_matrix rot = fz_rotate((float) rotate);
+    trw = trect.x1 - trect.x0;
+    trh = trect.y1 - trect.y0;
+    w = trw;
+    h = trh;
+    if (keep) {
+        large = (float) MAX(width, height);
+        fw = (float) width / large;
+        fh = (float) height / large;
+    } else {
+        fw = fh = 1;
+    }
+    small = MIN(fw, fh);
+    if (rotate != 0 && rotate != 180) {
+        f = fw;
+        fw = fh;
+        fh = f;
+    }
+    if (fw < 1) {
+        if ((trw / fw) > (trh / fh)) {
+            w = trh * small;
+            h = trh;
+        } else {
+            w = trw;
+            h = trw / small;
+        }
+    } else if (fw != fh) {
+        if ((trw / fw) > (trh / fh)) {
+            w = trh / small;
+            h = trh;
+        } else {
+            w = trw;
+            h = trw * small;
+        }
+    } else {
+        w = trw;
+        h = trh;
+    }
+    fz_point tmp = fz_make_point((trect.x0 + trect.x1) / 2,
+                                 (trect.y0 + trect.y1) / 2);
+    fz_matrix mat = fz_make_matrix(1, 0, 0, 1, -0.5, -0.5);
+    mat = fz_concat(mat, rot);
+    mat = fz_concat(mat, fz_scale(w, h));
+    mat = fz_concat(mat, fz_translate(tmp.x, tmp.y));
+    return mat;
+}
+
+
 //-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities
 //-----------------------------------------------------------------------------

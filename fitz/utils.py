@@ -229,132 +229,56 @@ def show_pdf_page(*args, **kwargs) -> int:
     return xref
 
 
-def insertImage(*args, **kwargs) -> None:
-    """Insert an image in a rectangle on the current page.
+def insert_image(page, rect, **kwargs):
+    CheckParent(page)
+    doc = page.parent
+    if not doc.is_pdf:
+        raise ValueError("not a PDF")
 
-    Notes:
-        Exactly one of filename, pixmap or stream must be provided.
-    Args:
-        rect: (rect-like) where to place the source image
-        filename: (str) name of an image file
-        pixmap: a Pixmap object
-        stream: (bytes) an image in memory
-        mask: (bytes) enforce this image mask
-        rotate: (int) degrees (int multiple of 90)
-        xref: (int) xref of some existing image
-        oc: (int) xref of an optional content object
-        keep_proportion: (bool) whether to maintain aspect ratio
-        overlay: (bool) put in foreground
-    """
-    if len(args) != 2:
-        raise ValueError("bad number of positional parameters")
-    page, rect = args
+    valid_keys = {
+        "filename",
+        "pixmap",
+        "stream",
+        "mask",
+        "rotate",
+        "width",
+        "height",
+        "alpha",
+        "oc",
+        "xref",
+        "filename",
+        "overlay",
+        "keep_proportion",
+    }
+    s = set(kwargs.keys()).difference(valid_keys)
+    if s != set():
+        raise ValueError("bad key argument(s) %s" % s)
     filename = kwargs.get("filename")
     pixmap = kwargs.get("pixmap")
     stream = kwargs.get("stream")
     mask = kwargs.get("mask")
     rotate = int(kwargs.get("rotate", 0))
+    width = int(kwargs.get("width", 0))
+    height = int(kwargs.get("height", 0))
+    alpha = int(kwargs.get("alpha", -1))
     oc = int(kwargs.get("oc", 0))
     xref = int(kwargs.get("xref", 0))
     keep_proportion = bool(kwargs.get("keep_proportion", True))
     overlay = bool(kwargs.get("overlay", True))
 
-    def calc_hash(stream):
-        m = hashlib.md5()
-        m.update(stream)
-        return m.digest()
-
-    def calc_matrix(fw, fh, tr, rotate=0):
-        """Calculate transformation matrix for image insertion.
-
-        Notes:
-            The result is basically a multiplication of four matrices in this
-            sequence: number one moves the image rectangle (always a unit rect!)
-                      to (0,0), number two rotates as desired, number three
-                      scales using the width-height-ratio, and number four moves
-                      to the target rect.
-        Args:
-            fw, fh: width / height ratio factors 0 < f <= 1.
-                    The longer one must be 1.
-            tr: target rect in PDF (!) coordinates
-            rotate: (degrees) rotation angle.
-        Returns:
-            Transformation matrix.
-        """
-        # compute scale matrix parameters
-        small = min(fw, fh)  # factor of the smaller side
-
-        if rotate not in (0, 180):
-            fw, fh = fh, fw  # width / height exchange their roles
-
-        if fw < 1:  # portrait
-            if tr.width / fw > tr.height / fh:
-                w = tr.height * small
-                h = tr.height
-            else:
-                w = tr.width
-                h = tr.width / small
-
-        elif fw != fh:  # landscape
-            if tr.width / fw > tr.height / fh:
-                w = tr.height / small
-                h = tr.height
-            else:
-                w = tr.width
-                h = tr.width * small
-
-        else:
-            w = tr.width
-            h = tr.height
-
-        # center point of target rectangle
-        tmp = (tr.tl + tr.br) / 2.0
-
-        # move image center to (0, 0), then rotate
-        m = Matrix(1, 0, 0, 1, -0.5, -0.5) * Matrix(rotate)
-        m *= Matrix(w, h)  # concat scale matrix
-        m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
-        return m
-
-    def xref_img_profile(xref):
-        """Extract required information from an existing xref."""
-        t, temp = doc.xref_get_key(xref, "Subtype")
-        if temp != "/Image":
-            raise ValueError("xref %i is no image" % xref)
-        t, temp = doc.xref_get_key(xref, "Width")
-        if t != "int":
-            raise ValueError("xref %i has no 'Width'" % xref)
-        w = int(temp)
-        t, temp = doc.xref_get_key(xref, "Height")
-        if t != "int":
-            raise ValueError("xref %i has no 'Height'" % xref)
-        h = int(temp)
-        l_xref = [(d, x) for d, x in doc.InsertedImages.items() if x == xref]
-        if l_xref != []:
-            digest = l_xref[0][0]
-            return w, h, digest
-        img = doc.extract_image(xref)
-        digest = calc_hash(img["image"])
-        return w, h, digest
-
-    # ------------------------------------------------------------------------
-    CheckParent(page)
-    doc = page.parent
-    if not doc.is_pdf:
-        raise ValueError("not a PDF")
     if xref == 0 and (bool(filename) + bool(stream) + bool(pixmap) != 1):
-        raise ValueError("xref 0 needs exactly one of filename, pixmap, stream")
+        raise ValueError("xref=0 needs exactly one of filename, pixmap, stream")
 
     if filename and not os.path.exists(filename):
         raise FileNotFoundError("No such file: '%s'" % filename)
     elif stream and type(stream) not in (bytes, bytearray, io.BytesIO):
-        raise ValueError("stream must be bytes-like or BytesIO")
+        raise ValueError("stream must be bytes-like / BytesIO")
     elif pixmap and type(pixmap) is not Pixmap:
         raise ValueError("pixmap must be a Pixmap")
-    if mask and not stream:
-        raise ValueError("mask requires stream")
+    if mask and not (stream or filename):
+        raise ValueError("mask requires stream or filename")
     if mask and type(mask) not in (bytes, bytearray, io.BytesIO):
-        raise ValueError("mask must be bytes-like or BytesIO")
+        raise ValueError("mask must be bytes-like / BytesIO")
     while rotate < 0:
         rotate += 360
     while rotate >= 360:
@@ -365,54 +289,7 @@ def insertImage(*args, **kwargs) -> None:
     r = Rect(rect)
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
-
-    _imgpointer = None
-
-    # -------------------------------------------------------------------------
-    # Calculate the matrix for image insertion.
-    # -------------------------------------------------------------------------
-    # If aspect ratio must be kept, we need to know image width and height.
-    # Easy for pixmaps. For file and stream cases, we make an fz_image and
-    # take those values from it. In this case, we also hand the fz_image over
-    # to the actual C-level function (_imgpointer), and set all other
-    # parameters to None.
-    # -------------------------------------------------------------------------
-
-    if pixmap:
-        w = pixmap.width
-        h = pixmap.height
-        alpha = pixmap.alpha
-        digest = calc_hash(pixmap.samples)
-    elif stream:
-        pix = Pixmap(stream)
-        w = pix.width
-        h = pix.height
-        alpha = pix.alpha
-        digest = calc_hash(pix.samples)
-        del pix
-        if type(stream) is io.BytesIO:
-            stream = stream.getvalue()
-    elif xref > 0:
-        w, h, digest = xref_img_profile(xref)
-        alpha = 0
-    else:
-        pix = Pixmap(filename)
-        w = pix.width
-        h = pix.height
-        alpha = pix.alpha
-        digest = calc_hash(pix.samples)
-        del pix
-
-    if keep_proportion is True:  # for this we need the image dimension
-        maxf = max(w, h)
-        fw = w / maxf
-        fh = h / maxf
-    else:
-        fw = fh = 1.0
-
-    clip = r * ~page.transformation_matrix  # target rect in PDF coordinates
-
-    matrix = calc_matrix(fw, fh, clip, rotate=rotate)  # calculate matrix
+    clip = r * ~page.transformation_matrix
 
     # Create a unique image reference name.
     ilst = [i[7] for i in doc.get_page_images(page.number)]
@@ -425,25 +302,28 @@ def insertImage(*args, **kwargs) -> None:
         i += 1
         _imgname = n + str(i)  # try new name
 
-    # reuse any previously inserted image
-    if xref == 0:
-        xref = doc.InsertedImages.get(digest, 0)
+    digests = doc.InsertedImages
 
-    xref = page._insertImage(
-        filename=filename,  # image in file
-        pixmap=pixmap,  # image in pixmap
-        stream=stream,  # image in memory
+    xref, digests = page._insert_image(
+        filename=filename,
+        pixmap=pixmap,
+        stream=stream,
         imask=mask,
-        matrix=matrix,  # generated matrix
+        clip=clip,
         overlay=overlay,
-        oc=oc,  # optional content object
+        oc=oc,
         xref=xref,
+        rotate=rotate,
+        keep_proportion=keep_proportion,
+        width=width,
+        height=height,
         alpha=alpha,
-        _imgname=_imgname,  # generated PDF resource name
-        _imgpointer=_imgpointer,  # address of fz_image
+        _imgname=_imgname,
+        digests=digests,
     )
-    if xref > 0:
-        doc.InsertedImages[digest] = xref
+
+    if digests != None:
+        doc.InsertedImages = digests
 
     return xref
 
@@ -578,11 +458,19 @@ def get_image_info(page: Page, hashes: bool = False, xrefs: bool = False) -> lis
         xrefs: (bool) try to find the xref for each image. Sets hashes to true.
     """
     doc = page.parent
-    tp = page.get_textpage(flags=TEXT_PRESERVE_IMAGES)
     if xrefs and doc.is_pdf:
         hashes = True
-    imginfo = tp.extractIMGINFO(hashes=hashes)
-    del tp
+    if not doc.is_pdf:
+        xrefs = False
+    imginfo = getattr(page, "_image_info", None)
+    if imginfo and not xrefs:
+        return imginfo
+    if not imginfo:
+        tp = page.get_textpage(flags=TEXT_PRESERVE_IMAGES)
+        imginfo = tp.extractIMGINFO(hashes=hashes)
+        del tp
+        if hashes:
+            page._image_info = imginfo
     if not xrefs or not doc.is_pdf:
         return imginfo
     imglist = page.get_images()
@@ -621,14 +509,17 @@ def get_image_rects(page: Page, name, transform=False) -> list:
         elif len(imglist) != 1:
             raise ValueError("multiple image names found")
         xref = imglist[0][0]
-    infos = page.get_image_info(xrefs=True)
+    pix = Pixmap(page.parent, xref)
+    digest = pix.digest
+    del pix
+    infos = page.get_image_info(hashes=True)
     if not transform:
-        bboxes = [Rect(im["bbox"]) for im in infos if im["xref"] == xref]
+        bboxes = [Rect(im["bbox"]) for im in infos if im["digest"] == digest]
     else:
         bboxes = [
             (Rect(im["bbox"]), Matrix(im["transform"]))
             for im in infos
-            if im["xref"] == xref
+            if im["digest"] == digest
         ]
     return bboxes
 

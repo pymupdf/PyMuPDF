@@ -37,7 +37,7 @@ def recoverpix(doc, item):
         return getimage(pix1)  # return the pixmap as is
 
     pix = fitz.Pixmap(pix1)  # copy of pix1, with an alpha channel added
-    pix.setAlpha(pix2.samples)  # treat pix2.samples as the alpha values
+    pix.set_alpha(pix2.samples)  # treat pix2.samples as the alpha values
     pix1 = pix2 = None  # free temp pixmaps
 
     # we may need to adjust something for CMYK pixmaps here:
@@ -525,7 +525,7 @@ def extract_objects(args):
                             if pix.colorspace.n < 4
                             else fitz.Pixmap(fitz.csRGB, pix)
                         )
-                        pix2.writeImage(outname)
+                        pix2.save(outname)
 
     if args.fonts:
         print("saved %i fonts to '%s'" % (len(font_xrefs), out_dir))

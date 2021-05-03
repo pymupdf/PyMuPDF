@@ -89,7 +89,7 @@ fitz.Page.get_text_blocks = fitz.utils.getTextBlocks
 fitz.Page.get_text_selection = fitz.utils.getTextSelection
 fitz.Page.get_text_words = fitz.utils.getTextWords
 fitz.Page.get_textbox = fitz.utils.getTextbox
-fitz.Page.insert_image = fitz.utils.insertImage
+fitz.Page.insert_image = fitz.utils.insert_image
 fitz.Page.insert_link = fitz.utils.insertLink
 fitz.Page.insert_text = fitz.utils.insert_text
 fitz.Page.insert_textbox = fitz.utils.insert_textbox
@@ -276,6 +276,24 @@ def restore_aliases():
     # deprecated DisplayList aliases
     fitz.DisplayList.getPixmap = fitz.DisplayList.get_pixmap
     fitz.DisplayList.getTextPage = fitz.DisplayList.get_textpage
+
+    # deprecated Pixmap aliases
+    fitz.Pixmap.setAlpha = fitz.Pixmap.set_alpha
+    fitz.Pixmap.gammaWith = fitz.Pixmap.gamma_with
+    fitz.Pixmap.tintWith = fitz.Pixmap.tint_with
+    fitz.Pixmap.clearWith = fitz.Pixmap.clear_with
+    fitz.Pixmap.copyPixmap = fitz.Pixmap.copy
+    fitz.Pixmap.getImageData = fitz.Pixmap.tobytes
+    fitz.Pixmap.getPNGData = fitz.Pixmap.tobytes
+    fitz.Pixmap.writeImage = fitz.Pixmap.save
+    fitz.Pixmap.writePNG = fitz.Pixmap.save
+    fitz.Pixmap.pillowWrite = fitz.Pixmap.pil_save
+    fitz.Pixmap.pillowData = fitz.Pixmap.pil_tobytes
+    fitz.Pixmap.invertIRect = fitz.Pixmap.invert_irect
+    fitz.Pixmap.setPixel = fitz.Pixmap.set_pixel
+    fitz.Pixmap.setOrigin = fitz.Pixmap.set_origin
+    fitz.Pixmap.setRect = fitz.Pixmap.set_rect
+    fitz.Pixmap.setResolution = fitz.Pixmap.set_dpi
 
 
 fitz.__doc__ = """

@@ -4097,7 +4097,8 @@ struct Page {
         """Get rectangle occupied by image 'name'.
 
         'name' is either an item of the image list, or the referencing
-        name string - elem[7] of the resp. item."""
+        name string - elem[7] of the resp. item.
+        """
         CheckParent(self)
         doc = self.parent
         if doc.is_closed or doc.is_encrypted:
@@ -4115,7 +4116,7 @@ struct Page {
                 raise ValueError("need item of full page image list")
             item = name
         else:
-            imglist = [i for i in doc.get_page_images(self.number, True) if name == i[-3]]
+            imglist = [i for i in doc.get_page_images(self.number, True) if name == i[7]]
             if len(imglist) == 1:
                 item = imglist[0]
             elif imglist == []:
@@ -4124,9 +4125,10 @@ struct Page {
                 raise ValueError("found multiple images named '%s'." % name)
         xref = item[-1]
         if xref != 0:
-            xobjs = [x for x in self.get_xobjects() if x[0] == xref and x[2] == 0]
-            if xobjs == []:
-                raise ValueError("image in unsupported Form XObject")
+            #xobjs = [x for x in self.get_xobjects() if x[0] == xref and x[2] == 0]
+            #if xobjs == []:
+            #    raise ValueError("image in unsupported Form XObject")
+            return self.get_image_rects(item, transform=transform)[0]
         %}
         %pythonappend get_image_bbox %{
         if not bool(val):
@@ -5956,130 +5958,166 @@ if not sanitize and not self.is_wrapped:
         //----------------------------------------------------------------
         // insert an image
         //----------------------------------------------------------------
-        FITZEXCEPTION(_insertImage, !result)
-        PyObject *_insertImage(const char *filename=NULL, struct Pixmap *pixmap=NULL, PyObject *stream=NULL, PyObject *imask=NULL, int overlay=1, int oc=0, int xref=0, int alpha=0, PyObject *matrix=NULL,
-        const char *_imgname=NULL, PyObject *_imgpointer=NULL)
+        FITZEXCEPTION(_insert_image, !result)
+        PyObject *_insert_image(char *filename=NULL,
+                struct Pixmap *pixmap=NULL,
+                PyObject *stream=NULL,
+                PyObject *imask=NULL,
+                PyObject *clip=NULL,
+                int overlay=1,
+                int rotate=0,
+                int keep_proportion=1,
+                int oc=0,
+                int width=0,
+                int height=0,
+                int xref=0,
+                int alpha=-1,
+                const char *_imgname=NULL,
+                PyObject *digests=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            pdf_document *pdf;
+            pdf_document *pdf = page->doc;
+            float w = width, h = height;
             fz_pixmap *pm = NULL;
             fz_pixmap *pix = NULL;
             fz_image *mask = NULL, *zimg = NULL, *image = NULL, *freethis = NULL;
-            fz_separations *seps = NULL;
             pdf_obj *resources, *xobject, *ref;
             fz_buffer *nres = NULL,  *imgbuf = NULL, *maskbuf = NULL;
-            fz_matrix mat = JM_matrix_from_py(matrix); // pre-calculated
             fz_compressed_buffer *cbuf1 = NULL;
-            int img_xref = 0;
-            int xres, yres, w, h, bpc;
+            int xres, yres, bpc, img_xref = xref, rc_digest = 0;
+            unsigned char digest[16];
+            PyObject *md5_py = NULL, *temp;
             const char *template = "\nq\n%g %g %g %g %g %g cm\n/%s Do\nQ\n";
+
             fz_try(gctx) {
                 if (xref > 0) {
-                    goto image_exists;
-                }
-                //-------------------------------------------------------------
-                // create the image
-                //-------------------------------------------------------------
-                if (filename || EXISTS(stream) || EXISTS(_imgpointer)) {
-                    if (filename) {
-                        image = fz_new_image_from_file(gctx, filename);
-                    } else if (EXISTS(stream)) {
-                        imgbuf = JM_BufferFromBytes(gctx, stream);
-                        image = fz_new_image_from_buffer(gctx, imgbuf);
-                    } else {  // fz_image pointer has been handed in
-                        image = (fz_image *)PyLong_AsVoidPtr(_imgpointer);
+                    ref = pdf_new_indirect(gctx, pdf, xref, 0);
+                    w = pdf_to_int(gctx,
+                        pdf_dict_geta(gctx, ref,
+                        PDF_NAME(Width), PDF_NAME(W)));
+                    h = pdf_to_int(gctx,
+                        pdf_dict_geta(gctx, ref,
+                        PDF_NAME(Height), PDF_NAME(H)));
+                    if ((w + h) == 0) {
+                        THROWMSG(gctx, "xref is no image");
                     }
-                    w = image->w;
-                    h = image->h;
-                    bpc = image->bpc;
-                    fz_colorspace *colorspace = image->colorspace;
-                    fz_image_resolution(image, &xres, &yres);
-                    if (EXISTS(imask)) {
-                        cbuf1 = fz_compressed_image_buffer(gctx, image);
-                        if (!cbuf1) THROWMSG(gctx, "cannot mask uncompressed image");
-                        maskbuf = JM_BufferFromBytes(gctx, imask);
-                        mask = fz_new_image_from_buffer(gctx, maskbuf);
-                        zimg = fz_new_image_from_compressed_buffer(gctx, w, h,
-                                    bpc, colorspace, xres, yres, 1, 0, NULL,
-                                    NULL, cbuf1, mask);
-                        zimg->xres = xres;
-                        zimg->yres = yres;
-                        freethis = image;
-                        image = zimg;
-                        zimg = NULL;
-                    } else if (alpha == 1) {
-                            // have alpha: create an SMask
-                            pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
-                            pix->xres = xres;
-                            pix->yres = yres;
-                            pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, fz_default_color_params, 1);
-                            pm->alpha = 0;
-                            pm->colorspace = NULL; //fz_keep_colorspace(gctx, fz_device_gray(gctx));
-                            pm->xres = xres;
-                            pm->yres = yres;
-                            mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                            mask->xres = xres;
-                            mask->yres = yres;
-                            zimg = fz_new_image_from_pixmap(gctx, pix, mask);
-                            zimg->xres = xres;
-                            zimg->yres = yres;
-                            fz_drop_image(gctx, image);
-                            image = zimg;
-                            zimg = NULL;
-                    }
-                } else {  // pixmap specified
-                    fz_pixmap *arg_pix = (fz_pixmap *) pixmap;
-                    xres = arg_pix->xres;
-                    yres = arg_pix->yres;
-                    if (arg_pix->alpha == 0) {
-                        image = fz_new_image_from_pixmap(gctx, arg_pix, NULL);
-                    } else {  // pixmap has alpha: create an SMask
-                        pm = fz_convert_pixmap(gctx, arg_pix, NULL, NULL, NULL, fz_default_color_params, 1);
-                        pm->xres = xres;
-                        pm->yres = yres;
-                        pm->alpha = 0;
-                        pm->colorspace = NULL; //fz_keep_colorspace(gctx, fz_device_gray(gctx));
-                        mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                        mask->xres = xres;
-                        mask->yres = yres;
-                        image = fz_new_image_from_pixmap(gctx, arg_pix, mask);
-                        image->xres = xres;
-                        image->yres = yres;
-                    }
+                    goto have_xref;
                 }
-
-                //-------------------------------------------------------------
-                // image created - now put it in the PDF
-                //-------------------------------------------------------------
-                image_exists:;
-                pdf = page->doc;  // owning PDF
-
-                // get /Resources, /XObject
-                resources = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Resources));
-                xobject = pdf_dict_get(gctx, resources, PDF_NAME(XObject));
-                if (!xobject) {  // has no XObject yet, create one
-                    xobject = pdf_dict_put_dict(gctx, resources, PDF_NAME(XObject), 5);
+                if (EXISTS(stream)) {
+                    imgbuf = JM_BufferFromBytes(gctx, stream);
+                    goto have_stream;
                 }
-                if (xref > 0) {
-                    ref = pdf_new_indirect(gctx, page->doc, xref, 0);
-                    img_xref = xref;
+                if (filename) {
+                    imgbuf = fz_read_file(gctx, filename);
+                    goto have_stream;
+                }
+            // process pixmap ---------------------------------
+                fz_pixmap *arg_pix = (fz_pixmap *) pixmap;
+                w = arg_pix->w;
+                h = arg_pix->h;
+                fz_md5_pixmap(gctx, arg_pix, digest);
+                md5_py = PyBytes_FromStringAndSize(digest, 16);
+                temp = PyDict_GetItem(digests, md5_py);
+                if (temp) {
+                    img_xref = (int) PyLong_AsLong(temp);
+                    ref = pdf_new_indirect(gctx, page->doc, img_xref, 0);
+                    goto have_xref;
+                }
+                if (arg_pix->alpha == 0) {
+                    image = fz_new_image_from_pixmap(gctx, arg_pix, NULL);
                 } else {
-                    ref = pdf_add_image(gctx, pdf, image);
-                    img_xref = pdf_to_num(gctx, ref);
+                    pm = fz_convert_pixmap(gctx, arg_pix, NULL, NULL, NULL,
+                            fz_default_color_params, 1);
+                    pm->alpha = 0;
+                    pm->colorspace = NULL;
+                    mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                    image = fz_new_image_from_pixmap(gctx, arg_pix, mask);
                 }
-                if (oc && xref == 0) {
+                goto have_image;
+
+            // process stream ---------------------------------
+            have_stream:;
+                fz_md5_buffer(gctx, imgbuf, digest);
+                md5_py = PyBytes_FromStringAndSize(digest, 16);
+                temp = PyDict_GetItem(digests, md5_py);
+                if (temp) {
+                    img_xref = (int) PyLong_AsLong(temp);
+                    ref = pdf_new_indirect(gctx, page->doc, img_xref, 0);
+                    w = pdf_to_int(gctx,
+                        pdf_dict_geta(gctx, ref,
+                        PDF_NAME(Width), PDF_NAME(W)));
+                    h = pdf_to_int(gctx,
+                        pdf_dict_geta(gctx, ref,
+                        PDF_NAME(Height), PDF_NAME(H)));
+                    goto have_xref;
+                }
+                image = fz_new_image_from_buffer(gctx, imgbuf);
+                w = image->w;
+                h = image->h;
+                if (EXISTS(imask)) {
+                    goto have_imask;
+                }
+                if (alpha==0) {
+                    goto have_image;
+                }
+                pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
+                if (!pix->alpha) {
+                    goto have_image;
+                }
+                pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
+                pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL,
+                            fz_default_color_params, 1);
+                pm->alpha = 0;
+                pm->colorspace = NULL;
+                mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                fz_drop_image(gctx, image);
+                image = zimg;
+                zimg = NULL;
+                goto have_image;
+
+            have_imask:;
+                cbuf1 = fz_compressed_image_buffer(gctx, image);
+                if (!cbuf1) THROWMSG(gctx, "cannot mask uncompressed image");
+                bpc = image->bpc;
+                fz_colorspace *colorspace = image->colorspace;
+                fz_image_resolution(image, &xres, &yres);
+                maskbuf = JM_BufferFromBytes(gctx, imask);
+                mask = fz_new_image_from_buffer(gctx, maskbuf);
+                zimg = fz_new_image_from_compressed_buffer(gctx, w, h,
+                            bpc, colorspace, xres, yres, 1, 0, NULL,
+                            NULL, cbuf1, mask);
+                freethis = image;
+                image = zimg;
+                zimg = NULL;
+                goto have_image;
+
+            have_image:;
+                ref =  pdf_add_image(gctx, pdf, image);
+                if (oc) {
                     JM_add_oc_object(gctx, pdf, ref, oc);
                 }
-
-                pdf_dict_puts_drop(gctx, xobject, _imgname, ref);  // update XObject
-                // make contents stream that invokes the image
+                img_xref = pdf_to_num(gctx, ref);
+                DICT_SETITEM_DROP(digests, md5_py, Py_BuildValue("i", img_xref));
+                rc_digest = 1;
+            have_xref:;
+                resources = pdf_dict_get_inheritable(gctx, page->obj,
+                                PDF_NAME(Resources));
+                if (!resources) {
+                    resources = pdf_dict_put_dict(gctx, page->obj,
+                                    PDF_NAME(Resources), 2);
+                }
+                xobject = pdf_dict_get(gctx, resources, PDF_NAME(XObject));
+                if (!xobject) {
+                    xobject = pdf_dict_put_dict(gctx, resources,
+                                  PDF_NAME(XObject), 2);
+                }
+                fz_matrix mat = calc_image_matrix(w, h, clip, rotate, keep_proportion);
+                pdf_dict_puts_drop(gctx, xobject, _imgname, ref);
                 nres = fz_new_buffer(gctx, 50);
                 fz_append_printf(gctx, nres, template,
-                                 mat.a, mat.b, mat.c, mat.d, mat.e, mat.f,
-                                 _imgname);
+                                 mat.a, mat.b, mat.c, mat.d, mat.e, mat.f, _imgname);
                 JM_insert_contents(gctx, pdf, page->obj, nres, overlay);
-                fz_drop_buffer(gctx, nres);
-                nres = NULL;
             }
             fz_always(gctx) {
                 if (freethis) {
@@ -6098,9 +6136,14 @@ if not sanitize and not self.is_wrapped:
             fz_catch(gctx) {
                 return NULL;
             }
-            pdf->dirty = 1;
-            return Py_BuildValue("i", img_xref);
+
+            if (rc_digest) {
+                return Py_BuildValue("iO", img_xref, digests);
+            } else {
+                return Py_BuildValue("iO", img_xref, Py_None);
+            }
         }
+
 
         //----------------------------------------------------------------
         // Page.refresh()
@@ -6425,6 +6468,7 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
 
         def _erase(self):
             self._reset_annot_refs()
+            self._image_infos = None
             try:
                 self.parent._forget_page(self)
             except:
@@ -6729,10 +6773,10 @@ E.g. factor=1 shrinks to 25% of original size (in place)."""%}
         //----------------------------------------------------------------
         // apply gamma correction
         //----------------------------------------------------------------
-        %pythonprepend gammaWith
+        %pythonprepend gamma_with
 %{"""Apply correction with some float.
-gamma=1 is a no-op."""}
-        void gammaWith(float gamma)
+gamma=1 is a no-op."""%}
+        void gamma_with(float gamma)
         {
             if (!fz_pixmap_colorspace(gctx, (fz_pixmap *) $self))
             {
@@ -6745,13 +6789,13 @@ gamma=1 is a no-op."""}
         //----------------------------------------------------------------
         // tint pixmap with color
         //----------------------------------------------------------------
-        %pythonprepend tintWith
+        %pythonprepend tint_with
 %{"""Tint colors with modifiers for black and white."""
 
 if not self.colorspace or self.colorspace.n > 3:
     print("warning: colorspace invalid for function")
     return%}
-        void tintWith(int black, int white)
+        void tint_with(int black, int white)
         {
             fz_tint_pixmap(gctx, (fz_pixmap *) $self, black, white);
         }
@@ -6759,9 +6803,9 @@ if not self.colorspace or self.colorspace.n > 3:
         //-----------------------------------------------------------------
         // clear all of pixmap samples to 0x00 */
         //-----------------------------------------------------------------
-        %pythonprepend clearWith
+        %pythonprepend clear_with
         %{"""Fill all color components with same value."""%}
-        void clearWith()
+        void clear_with()
         {
             fz_clear_pixmap(gctx, (fz_pixmap *) $self);
         }
@@ -6769,7 +6813,7 @@ if not self.colorspace or self.colorspace.n > 3:
         //-----------------------------------------------------------------
         // clear total pixmap with value */
         //-----------------------------------------------------------------
-        void clearWith(int value)
+        void clear_with(int value)
         {
             fz_clear_pixmap_with_value(gctx, (fz_pixmap *) $self, value);
         }
@@ -6777,7 +6821,7 @@ if not self.colorspace or self.colorspace.n > 3:
         //-----------------------------------------------------------------
         // clear pixmap rectangle with value
         //-----------------------------------------------------------------
-        void clearWith(int value, PyObject *bbox)
+        void clear_with(int value, PyObject *bbox)
         {
             JM_clear_pixmap_rect_with_value(gctx, (fz_pixmap *) $self, value, JM_irect_from_py(bbox));
         }
@@ -6785,9 +6829,9 @@ if not self.colorspace or self.colorspace.n > 3:
         //-----------------------------------------------------------------
         // copy pixmaps
         //-----------------------------------------------------------------
-        FITZEXCEPTION(copyPixmap, !result)
-        %pythonprepend copyPixmap %{"""Copy bbox from another Pixmap."""%}
-        PyObject *copyPixmap(struct Pixmap *src, PyObject *bbox)
+        FITZEXCEPTION(copy, !result)
+        %pythonprepend copy %{"""Copy bbox from another Pixmap."""%}
+        PyObject *copy(struct Pixmap *src, PyObject *bbox)
         {
             fz_try(gctx) {
                 fz_pixmap *pm = (fz_pixmap *) $self, *src_pix = (fz_pixmap *) src;
@@ -6806,11 +6850,11 @@ if not self.colorspace or self.colorspace.n > 3:
         //-----------------------------------------------------------------
         // set alpha values
         //-----------------------------------------------------------------
-        FITZEXCEPTION(setAlpha, !result)
-        %pythonprepend setAlpha
+        FITZEXCEPTION(set_alpha, !result)
+        %pythonprepend set_alpha
 %{"""Set alpha channel to values contained in a byte array.
 If omitted, set alphas to 255."""%}
-        PyObject *setAlpha(PyObject *alphavalues=NULL, int premultiply=1, PyObject *opaque=NULL)
+        PyObject *set_alpha(PyObject *alphavalues=NULL, int premultiply=1, PyObject *opaque=NULL)
         {
             fz_buffer *res = NULL;
             fz_pixmap *pix = (fz_pixmap *) $self;
@@ -6885,10 +6929,10 @@ If omitted, set alphas to 255."""%}
         }
 
         //-----------------------------------------------------------------
-        // Pixmap._getImageData
+        // Pixmap._tobytes
         //-----------------------------------------------------------------
-        FITZEXCEPTION(_getImageData, !result)
-        PyObject *_getImageData(int format)
+        FITZEXCEPTION(_tobytes, !result)
+        PyObject *_tobytes(int format)
         {
             fz_output *out = NULL;
             fz_buffer *res = NULL;
@@ -6933,7 +6977,7 @@ If omitted, set alphas to 255."""%}
         }
 
         %pythoncode %{
-def getImageData(self, output="png"):
+def tobytes(self, output="png"):
     """Convert to binary image stream of desired type.
 
     Can be used as input to GUI packages like tkinter.
@@ -6952,17 +6996,7 @@ def getImageData(self, output="png"):
         raise ValueError("'%s' cannot have alpha" % output)
     if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
         raise ValueError("unsupported colorspace for '%s'" % output)
-    barray = self._getImageData(idx)
-    return barray
-
-def getPNGdata(self):
-    """Wrapper for Pixmap.getImageData("png")."""
-    barray = self._getImageData(1)
-    return barray
-
-def getPNGData(self):
-    """Wrapper for Pixmap.getImageData("png")."""
-    barray = self._getImageData(1)
+    barray = self._tobytes(idx)
     return barray
     %}
 
@@ -7001,7 +7035,7 @@ def getPNGData(self):
             Py_RETURN_NONE;
         }
         %pythoncode %{
-def writeImage(self, filename, output=None):
+def save(self, filename, output=None):
     """Output as image in format determined by filename extension.
 
     Args:
@@ -7030,16 +7064,11 @@ def writeImage(self, filename, output=None):
 
     return self._writeIMG(filename, idx)
 
-def writePNG(self, filename):
-    """Wrapper for Pixmap.writeImage(filename, "png")."""
-    return self._writeIMG(filename, 1)
-
-
-def pillowWrite(self, *args, **kwargs):
+def pil_save(self, *args, **kwargs):
     """Write to image file using Pillow.
 
     Arguments are passed to Pillow's Image.save() method.
-    Use instead of writeImage when other output formats are desired.
+    Use instead of save when other output formats are desired.
     """
     try:
         from PIL import Image
@@ -7064,24 +7093,24 @@ def pillowWrite(self, *args, **kwargs):
 
     img.save(*args, **kwargs)
 
-def pillowData(self, *args, **kwargs):
+def pil_tobytes(self, *args, **kwargs):
     """Convert to binary image stream using pillow.
 
     Arguments are passed to Pillow's Image.save() method.
-    Use it instead of writeImage when other output formats are needed.
+    Use it instead of save when other output formats are needed.
     """
     from io import BytesIO
     bytes_out = BytesIO()
-    self.pillowWrite(bytes_out, *args, **kwargs)
+    self.pil_save(bytes_out, *args, **kwargs)
     return bytes_out.getvalue()
 
         %}
         //-----------------------------------------------------------------
-        // invertIRect
+        // invert_irect
         //-----------------------------------------------------------------
-        %pythonprepend invertIRect
+        %pythonprepend invert_irect
         %{"""Invert the colors inside a bbox."""%}
-        PyObject *invertIRect(PyObject *bbox = NULL)
+        PyObject *invert_irect(PyObject *bbox = NULL)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
             if (!fz_pixmap_colorspace(gctx, pm))
@@ -7128,10 +7157,10 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         //-----------------------------------------------------------------
         // Set one pixel to a given color tuple
         //-----------------------------------------------------------------
-        FITZEXCEPTION(setPixel, !result)
-        %pythonprepend setPixel
+        FITZEXCEPTION(set_pixel, !result)
+        %pythonprepend set_pixel
         %{"""Set color of pixel (x, y)."""%}
-        PyObject *setPixel(int x, int y, PyObject *color)
+        PyObject *set_pixel(int x, int y, PyObject *color)
         {
             fz_try(gctx) {
                 fz_pixmap *pm = (fz_pixmap *) $self;
@@ -7164,11 +7193,11 @@ Last item is the alpha if Pixmap.alpha is true."""%}
 
 
         //-----------------------------------------------------------------
-        // Set Pixmap resolution
+        // Set Pixmap origin
         //-----------------------------------------------------------------
-        %pythonprepend setOrigin
+        %pythonprepend set_origin
         %{"""Set top-left coordinates."""%}
-        PyObject *setOrigin(int x, int y)
+        PyObject *set_origin(int x, int y)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
             pm->x = x;
@@ -7176,11 +7205,11 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             Py_RETURN_NONE;
         }
 
-        %pythonprepend setResolution
+        %pythonprepend set_dpi
 %{"""Set resolution in both dimensions.
 
-Use pillowWrite to reflect this in output image."""%}
-        PyObject *setResolution(int xres, int yres)
+Use pil_save to reflect this in output image."""%}
+        PyObject *set_dpi(int xres, int yres)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
             pm->xres = xres;
@@ -7191,10 +7220,10 @@ Use pillowWrite to reflect this in output image."""%}
         //-----------------------------------------------------------------
         // Set a rect to a given color tuple
         //-----------------------------------------------------------------
-        FITZEXCEPTION(setRect, !result)
-        %pythonprepend setRect
+        FITZEXCEPTION(set_rect, !result)
+        %pythonprepend set_rect
         %{"""Set color of all pixels in bbox."""%}
-        PyObject *setRect(PyObject *bbox, PyObject *color)
+        PyObject *set_rect(PyObject *bbox, PyObject *color)
         {
             PyObject *rc = NULL;
             fz_try(gctx) {
@@ -7240,7 +7269,7 @@ Use pillowWrite to reflect this in output image."""%}
         {
             unsigned char digest[16];
             fz_md5_pixmap(gctx, (fz_pixmap *) $self, digest);
-            return PyBytes_FromStringAndSize(digest,16);
+            return PyBytes_FromStringAndSize(digest, 16);
         }
 
         //-----------------------------------------------------------------
@@ -8741,7 +8770,7 @@ struct Annot
                 if abs(apnmat - Matrix(1, 1)) < 1e-5:
                     return  # matrix already is a no-op
                 quad = self.rect.morph(M, ~apnmat)  # derotate rect
-                self.setRect(quad.rect)
+                self.set_rect(quad.rect)
                 self.set_apn_matrix(Matrix(1, 1))  # appearance matrix = no-op
                 return
 

@@ -10,7 +10,7 @@ Changes in Version 1.18.13
 * **Added** documentation for handling transparent image insertions, :meth:`Page.insert_image`.
 * **Added** :meth:`Page.get_image_rects`, an improved version of :meth:`Page.get_image_bbox`.
 * **Changed** :meth:`Page.insert_image` to also accept the xref of an existing image in the file. This allows "copying" images between pages, and extremely fast mutiple insertions.
-* **Changed** :meth:`Pixmap.setAlpha` to support new parameters for pre-multiplying colors with their alpha values and setting a specific color to fully transparent (e.g. white).
+* **Changed** :meth:`Pixmap.set_alpha` to support new parameters for pre-multiplying colors with their alpha values and setting a specific color to fully transparent (e.g. white).
 * **Changed** :meth:`Document.embfile_add` to automatically set creation and modification date-time. Correspondingly, :meth:`Document.embfile_upd` automatically maintains modification date-time (``/ModDate`` PDF key), and :meth:`Document.embfile_info` correspondingly reports these data. In addition, the embedded file's associated "collection item" is included via its :data:`xref`. This supports the development of PDF portfolio applications.
 
 Changes in Version 1.18.11 / 1.18.12
@@ -194,7 +194,7 @@ This is the first PyMuPDF version supporting MuPDF v1.18. The focus here is on e
 Changes in Version 1.17.7
 ---------------------------
 * **Fixed** issue `#651 <https://github.com/pymupdf/PyMuPDF/issues/651>`_. An upstream bug causing interpreter crashes in corner case redaction processings was fixed by backporting MuPDF changes from their development repo.
-* **Fixed** issue `#645 <https://github.com/pymupdf/PyMuPDF/issues/645>`_. Pixmap top-left coordinates can be set (again) by their own method, :meth:`Pixmap.setOrigin`.
+* **Fixed** issue `#645 <https://github.com/pymupdf/PyMuPDF/issues/645>`_. Pixmap top-left coordinates can be set (again) by their own method, :meth:`Pixmap.set_origin`.
 * **Fixed** issue `#622 <https://github.com/pymupdf/PyMuPDF/issues/622>`_. :meth:`Page.insertImage` again accepts a :data:`rect_like` parameter.
 * **Added** severeal new methods to improve and speed-up table of contents (TOC) handling. Among other things, TOC items can now changed or deleted individually -- without always replacing the complete TOC. Furthermore, access to some PDF page attributes is now possible without first **loading** the page. This has a very significant impact on the performance of TOC manipulation.
 * **Added** an option to :meth:`Document.insert_pdf` which allows displaying progress messages. Adresses `#640 <https://github.com/pymupdf/PyMuPDF/issues/640>`_.
@@ -299,7 +299,7 @@ Changes in Version 1.16.17
 ---------------------------
 
 * **Fixed** issue `#479 <https://github.com/pymupdf/PyMuPDF/issues/479>`_. PyMuPDF should now more correctly report image resolutions. This applies to both, images (either from images files or extracted from PDF documents) and pixmaps created from images.
-* **Added** :meth:`Pixmap.setResolution` which sets the image resolution in x and y directions.
+* **Added** :meth:`Pixmap.set_dpi` which sets the image resolution in x and y directions.
 
 Changes in Version 1.16.16
 ---------------------------
@@ -354,7 +354,7 @@ Changes in Version 1.16.11
 
 Changes in Version 1.16.10
 ---------------------------
-* **Fixed** issue #421 ("annot.setRect(rect) has no effect on text Annotation")
+* **Fixed** issue #421 ("annot.set_rect(rect) has no effect on text Annotation")
 * **Fixed** issue #417 ("Strange behavior for page.deleteAnnot on 1.16.9 compare to 1.13.20")
 * **Fixed** issue #415 ("Annot.setOpacity throws mupdf warnings")
 * **Changed** all "add annotation / widget" methods to store a unique name in the */NM* PDF key.
@@ -542,27 +542,27 @@ Changes in Version 1.14.9
 
 Changes in Version 1.14.8
 ---------------------------
-* **Added** :meth:`Pixmap.setRect` to change the pixel values in a rectangle. This is also an alternative to setting the color of a complete pixmap (:meth:`Pixmap.clearWith`).
+* **Added** :meth:`Pixmap.set_rect` to change the pixel values in a rectangle. This is also an alternative to setting the color of a complete pixmap (:meth:`Pixmap.clear_with`).
 * **Fixed** an image extraction issue with JBIG2 (monochrome) encoded PDF images. The issue occurred in :meth:`Page.getText` (parameters "dict" and "rawdict") and in :meth:`Document.extractImage` methods.
-* **Fixed** an issue with not correctly clearing a non-alpha :ref:`Pixmap` (:meth:`Pixmap.clearWith`).
-* **Fixed** an issue with not correctly inverting colors of a non-alpha :ref:`Pixmap` (:meth:`Pixmap.invertIRect`).
+* **Fixed** an issue with not correctly clearing a non-alpha :ref:`Pixmap` (:meth:`Pixmap.clear_with`).
+* **Fixed** an issue with not correctly inverting colors of a non-alpha :ref:`Pixmap` (:meth:`Pixmap.invert_irect`).
 
 Changes in Version 1.14.7
 ---------------------------
-* **Added** :meth:`Pixmap.setPixel` to change one pixel value.
+* **Added** :meth:`Pixmap.set_pixel` to change one pixel value.
 * **Added** documentation for image conversion in the :ref:`FAQ`.
 * **Added** new function :meth:`getTextlength` to determine the string length for a given font.
-* **Added** Postscript image output (changed :meth:`Pixmap.writeImage` and :meth:`Pixmap.getImageData`).
-* **Changed** :meth:`Pixmap.writeImage` and :meth:`Pixmap.getImageData` to ensure valid combinations of colorspace, alpha and output format.
-* **Changed** :meth:`Pixmap.writeImage`: the desired format is now inferred from the filename.
+* **Added** Postscript image output (changed :meth:`Pixmap.save` and :meth:`Pixmap.tobytes`).
+* **Changed** :meth:`Pixmap.save` and :meth:`Pixmap.tobytes` to ensure valid combinations of colorspace, alpha and output format.
+* **Changed** :meth:`Pixmap.save`: the desired format is now inferred from the filename.
 * **Changed** FreeText annotations can now have a transparent background - see :meth:`Annot.update`.
 
 Changes in Version 1.14.5
 ---------------------------
 * **Changed:** :ref:`Shape` methods now strictly use the transformation matrix of the :ref:`Page` -- instead of "manually" calculating locations.
 * **Added** method :meth:`Pixmap.pixel` which returns the pixel value (a list) for given pixel coordinates.
-* **Added** method :meth:`Pixmap.getImageData` which returns a bytes object representing the pixmap in a variety of formats. Previously, this could be done for PNG outputs only (:meth:`Pixmap.getPNGData`).
-* **Changed:** output of methods :meth:`Pixmap.writeImage` and (the new) :meth:`Pixmap.getImageData` may now also be PSD (Adobe Photoshop Document).
+* **Added** method :meth:`Pixmap.tobytes` which returns a bytes object representing the pixmap in a variety of formats. Previously, this could be done for PNG outputs only (:meth:`Pixmap.tobytes`).
+* **Changed:** output of methods :meth:`Pixmap.save` and (the new) :meth:`Pixmap.tobytes` may now also be PSD (Adobe Photoshop Document).
 * **Added** method :meth:`Shape.drawQuad` which draws a :ref:`Quad`. This actually is a shorthand for a :meth:`Shape.drawPolyline` with the edges of the quad.
 * **Changed** method :meth:`Shape.drawOval`: the argument can now be **either** a rectangle (:data:`rect_like`) **or** a quadrilateral (:data:`quad_like`).
 
@@ -760,7 +760,7 @@ Changes in Version 1.12.3
 --------------------------
 This is an extension of 1.12.2.
 
-* Many functions now return *None* instead of *0*, if the result has no other meaning than just indicating successful execution (:meth:`Document.close`, :meth:`Document.save`, :meth:`Document.select`, :meth:`Pixmap.writePNG` and many others).
+* Many functions now return *None* instead of *0*, if the result has no other meaning than just indicating successful execution (:meth:`Document.close`, :meth:`Document.save`, :meth:`Document.select`, :meth:`Pixmap.save` and many others).
 
 Changes in Version 1.12.2
 --------------------------
@@ -958,7 +958,7 @@ Changes in version 1.9.1 compared to version 1.8.0 are the following:
 * The new document method *select(list)* removes all pages from a document that are not contained in the list. Pages can also be duplicated and re-arranged.
 * Various improvements and new members in our demo and examples collections. Perhaps most prominently: *PDF_display* now supports scrolling with the mouse wheel, and there is a new example program *wxTableExtract* which allows to graphically identify and extract table data in documents.
 * *fitz.open()* is now an alias of *fitz.Document()*.
-* New pixmap method *getPNGData()* which will return a bytearray formatted as a PNG image of the pixmap.
+* New pixmap method *tobytes()* which will return a bytearray formatted as a PNG image of the pixmap.
 * New pixmap method *samplesRGB()* providing a *samples* version with alpha bytes stripped off (RGB colorspaces only).
 * New pixmap method *samplesAlpha()* providing the alpha bytes only of the *samples* area.
 * New iterator *fitz.Pages(doc)* over a document's set of pages.
