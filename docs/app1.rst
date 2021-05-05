@@ -142,7 +142,7 @@ We have tested rendering speed of MuPDF against the *pdftopng.exe*, a command li
      doc=fitz.open(datei)
      for p in fitz.Pages(doc):
          pix = p.get_pixmap(matrix=mat, alpha = False)
-         pix.writePNG("t-%s.png" % p.number)
+         pix.save("t-%s.png" % p.number)
          pix = None
      doc.close()
      return

@@ -23,24 +23,22 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 ============================= ===================================================
 **Method / Attribute**        **Short Description**
 ============================= ===================================================
-:meth:`Pixmap.clearWith`      clear parts of a pixmap
-:meth:`Pixmap.copyPixmap`     copy parts of another pixmap
-:meth:`Pixmap.gammaWith`      apply a gamma factor to the pixmap
-:meth:`Pixmap.getImageData`   return a memory area in a variety of formats
-:meth:`Pixmap.getPNGData`     return a PNG as a memory area
-:meth:`Pixmap.invertIRect`    invert the pixels of a given area
-:meth:`Pixmap.pillowWrite`    save as image using pillow (experimental)
-:meth:`Pixmap.pillowData`     write image stream using pillow (experimental)
+:meth:`Pixmap.clear_with`     clear parts of a pixmap
+:meth:`Pixmap.copy`           copy parts of another pixmap
+:meth:`Pixmap.gamma_with`     apply a gamma factor to the pixmap
+:meth:`Pixmap.tobytes`        return a memory area in a variety of formats
+:meth:`Pixmap.invert_irect`   invert the pixels of a given area
+:meth:`Pixmap.pil_save`       save as image using pillow (experimental)
+:meth:`Pixmap.pil_tobytes`    write image stream using pillow (experimental)
 :meth:`Pixmap.pixel`          return the value of a pixel
-:meth:`Pixmap.setAlpha`       set alpha values
-:meth:`Pixmap.setPixel`       set the color of a pixel
-:meth:`Pixmap.setRect`        set the color of a rectangle
-:meth:`Pixmap.setResolution`  set the image resolution
-:meth:`Pixmap.setOrigin`      set pixmap x,y values
+:meth:`Pixmap.set_alpha`      set alpha values
+:meth:`Pixmap.set_pixel`      set the color of a pixel
+:meth:`Pixmap.set_rect`       set the color of a rectangle
+:meth:`Pixmap.set_dpi`        set the image resolution
+:meth:`Pixmap.set_origin`     set pixmap x,y values
 :meth:`Pixmap.shrink`         reduce size keeping proportions
-:meth:`Pixmap.tintWith`       tint a pixmap with a color
-:meth:`Pixmap.writeImage`     save a pixmap in a variety of formats
-:meth:`Pixmap.writePNG`       save a pixmap as a PNG file
+:meth:`Pixmap.tint_with`      tint a pixmap with a color
+:meth:`Pixmap.save`           save a pixmap in a variety of formats
 :attr:`Pixmap.alpha`          transparency indicator
 :attr:`Pixmap.colorspace`     pixmap's :ref:`Colorspace`
 :attr:`Pixmap.digest`         MD5 hashcode of the pixmap
@@ -64,7 +62,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: __init__(self, colorspace, irect, alpha)
 
-      **New empty pixmap:** Create an empty pixmap of size and origin given by the rectangle. So, *irect.top_left* designates the top left corner of the pixmap, and its width and height are *irect.width* resp. *irect.height*. Note that the image area is **not initialized** and will contain crap data -- use eg. :meth:`clearWith` or :meth:`setRect` to be sure.
+      **New empty pixmap:** Create an empty pixmap of size and origin given by the rectangle. So, *irect.top_left* designates the top left corner of the pixmap, and its width and height are *irect.width* resp. *irect.height*. Note that the image area is **not initialized** and will contain crap data -- use eg. :meth:`clear_with` or :meth:`set_rect` to be sure.
 
       :arg colorspace: colorspace.
       :type colorspace: :ref:`Colorspace`
@@ -162,7 +160,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg int xref: the :data:`xref` of an image object. For example, you can make a list of images used on a particular page with :meth:`Document.get_page_images`, which also shows the :data:`xref` numbers of each image.
 
-   .. method:: clearWith([value [, irect]])
+   .. method:: clear_with([value [, irect]])
 
       Initialize the samples area.
 
@@ -170,7 +168,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like irect: the area to be cleared. Omit to clear the whole pixmap. Can only be specified, if *value* is also specified.
 
-   .. method:: tintWith(red, green, blue)
+   .. method:: tint_with(red, green, blue)
 
       Colorize (tint) a pixmap with a color provided as an integer triple (red, green, blue). Only colorspaces :data:`CS_GRAY` and :data:`CS_RGB` are supported, others are ignored with a warning.
 
@@ -182,7 +180,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg int blue: *blue* component.
 
-   .. method:: gammaWith(gamma)
+   .. method:: gamma_with(gamma)
 
       Apply a gamma factor to a pixmap, i.e. lighten or darken it. Pixmaps with colorspace *None* are ignored with a warning.
 
@@ -206,7 +204,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :rtype: list
       :returns: a list of color values and, potentially the alpha value. Its length and content depend on the pixmap's colorspace and the presence of an alpha. For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are integers in *range(256)*.
 
-   .. method:: setPixel(x, y, color)
+   .. method:: set_pixel(x, y, color)
 
       *New in version 1.14.7:* Set the color of the pixel at location (x, y) (column, line).
 
@@ -214,7 +212,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg int y: the line number of the pixel. Must be in *range(pix.height)*.
       :arg sequence color: the desired color given as a sequence of integers in *range(256)*. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
-   .. method:: setRect(irect, color)
+   .. method:: set_rect(irect, color)
 
       *New in version 1.14.8:* Set the pixels of a rectangle to a color.
 
@@ -226,10 +224,10 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       .. note::
 
-         1. This method is equivalent to :meth:`Pixmap.setPixel` executed for each pixel in the rectangle, but is obviously **very much faster** if many pixels are involved.
-         2. This method can be used similar to :meth:`Pixmap.clearWith` to initialize a pixmap with a certain color like this: *pix.setRect(pix.irect, (255, 255, 0))* (RGB example, colors the complete pixmap with yellow).
+         1. This method is equivalent to :meth:`Pixmap.set_pixel` executed for each pixel in the rectangle, but is obviously **very much faster** if many pixels are involved.
+         2. This method can be used similar to :meth:`Pixmap.clear_with` to initialize a pixmap with a certain color like this: *pix.set_rect(pix.irect, (255, 255, 0))* (RGB example, colors the complete pixmap with yellow).
 
-   .. method:: setOrigin(x, y)
+   .. method:: set_origin(x, y)
 
       *(New in v1.17.7)* Set the x and y values.
 
@@ -237,7 +235,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg int y: y coordinate
 
 
-   .. method:: setResolution(xres, yres)
+   .. method:: set_dpi(xres, yres)
 
       *(New in v1.16.17)* Set the resolution (dpi) in x and y direction.
 
@@ -247,7 +245,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg int yres: resolution in y direction.
 
 
-   .. method:: setAlpha(alphavalues, premultiply=1, opaque=None)
+   .. method:: set_alpha(alphavalues, premultiply=1, opaque=None)
 
       *(Changed in v 1.18.13)*
 
@@ -258,26 +256,26 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg list,tuple opaque: make this color fully invisible (transparent). A sequence of integers 0 <= i <= 255 with a length of :attr:`Pixmap.n`. Default is *None*. E.g. in the RGB case a typical choice would be ``opaque=(255, 255, 255)`` for white.
 
 
-   .. method:: invertIRect([irect])
+   .. method:: invert_irect([irect])
 
       Invert the color of all pixels in :ref:`IRect` *irect*. Will have no effect if colorspace is *None*.
 
       :arg irect_like irect: The area to be inverted. Omit to invert everything.
 
-   .. method:: copyPixmap(source, irect)
+   .. method:: copy(source, irect)
 
       Copy the *irect* part of the *source* pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and can each have :data:`CS_GRAY` or :data:`CS_RGB` colorspaces, but they currently **must** have the same alpha property [#f2]_. The copy mechanism automatically adjusts discrepancies between source and target like so:
 
       If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, *(r + g + b) / 3* will be taken as the gray-shade value of the target.
 
-      Between *irect* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values ``source.x`` and ``source.y`` (which you are free to modify for this purpose via :meth:`Pixmap.setOrigin`). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
+      Between *irect* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values ``source.x`` and ``source.y`` (which you are free to modify for this purpose via :meth:`Pixmap.set_origin`). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
 
       :arg source: source pixmap.
       :type source: :ref:`Pixmap`
 
       :arg irect_like irect: The area to be copied.
 
-   .. method:: writeImage(filename, output=None)
+   .. method:: save(filename, output=None)
 
       Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the *savealpha* option is no longer supported and will be silently ignored.
 
@@ -285,27 +283,19 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
 
-   .. method:: writePNG(filename)
+   .. method:: save(filename)
 
-      Equal to *pix.writeImage(filename, "png")*.
+      Equal to *pix.save(filename, "png")*.
 
-   .. method:: getImageData(output="png")
+   .. method:: tobytes(output="png")
 
-      *New in version 1.14.5:* Return the pixmap as a *bytes* memory object of the specified format -- similar to :meth:`writeImage`.
+      *New in version 1.14.5:* Return the pixmap as a *bytes* memory object of the specified format -- similar to :meth:`save`.
 
-      :arg str output: The requested image format. The default is "png" for which this function equals :meth:`getPNGData`. For other possible values see :ref:`PixmapOutput`.
-
-      :rtype: bytes
-
-   .. method:: getPNGdata()
-
-   .. method:: getPNGData()
-
-      Equal to *pix.getImageData("png")*.
+      :arg str output: The requested image format. The default is "png" for which this function equals :meth:`tobytes`. For other possible values see :ref:`PixmapOutput`.
 
       :rtype: bytes
 
-   ..  method:: pillowWrite(*args, **kwargs)
+   ..  method:: pil_save(*args, **kwargs)
 
       *(New in v1.17.3)*
 
@@ -315,15 +305,15 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       * Storing EXIF information.
       * If you do not provide dpi information, the values *xres*, *yres* stored with the pixmap are automatically used.
 
-      A simple example: ``pix.pillowWrite("some.jpg", optimize=True, dpi=(150, 150))``. For details on other parameters see the Pillow documentation.
+      A simple example: ``pix.pil_save("some.jpg", optimize=True, dpi=(150, 150))``. For details on other parameters see the Pillow documentation.
 
-      .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.writeImage` and :meth:`Pixmap.writePNG` now also set resolution / dpi from *xres* / *yres* automatically, when saving a PNG image.
+      .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.save` and :meth:`Pixmap.save` now also set resolution / dpi from *xres* / *yres* automatically, when saving a PNG image.
 
-   ..  method:: pillowData(*args, **kwargs)
+   ..  method:: pil_tobytes(*args, **kwargs)
 
       *(New in v1.17.3)*
 
-      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pillowData(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation.
+      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pil_tobytes(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation.
 
 
    .. attribute:: alpha
@@ -395,13 +385,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: x
 
-      X-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.setOrigin`.
+      X-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.set_origin`.
 
       :type: int
 
    .. attribute:: y
 
-      Y-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.setOrigin`.
+      Y-coordinate of top-left corner in pixels. Cannot directly be changed -- use :meth:`Pixmap.set_origin`.
 
       :type: int
 
@@ -445,7 +435,7 @@ The following file types are supported as **input** to construct pixmaps: **BMP,
 
 Supported Output Image Formats
 ---------------------------------------------------------------------------
-A number of image **output** formats are supported. You have the option to either write an image directly to a file (:meth:`Pixmap.writeImage`), or to generate a bytes object (:meth:`Pixmap.getImageData`). Both methods accept a 3-letter string identifying the desired format (**Format** column below). Please note that not all combinations of pixmap colorspace, transparency support (alpha) and image format are possible.
+A number of image **output** formats are supported. You have the option to either write an image directly to a file (:meth:`Pixmap.save`), or to generate a bytes object (:meth:`Pixmap.tobytes`). Both methods accept a 3-letter string identifying the desired format (**Format** column below). Please note that not all combinations of pixmap colorspace, transparency support (alpha) and image format are possible.
 
 ========== =============== ========= ============== ===========================
 **Format** **Colorspaces** **alpha** **Extensions** **Description**
@@ -464,7 +454,7 @@ psd        gray, rgb, cmyk yes       .psd           Adobe Photoshop Document
     * Not all image file types are supported (or at least common) on all OS platforms. E.g. PAM and the Portable Anymap formats are rare or even unknown on Windows.
     * Especially pertaining to CMYK colorspaces, you can always convert a CMYK pixmap to an RGB pixmap with *rgb_pix = fitz.Pixmap(fitz.csRGB, cmyk_pix)* and then save that in the desired format.
     * As can be seen, MuPDF's image support range is different for input and output. Among those supported both ways, PNG is probably the most popular. We recommend using Pillow whenever you face a support gap.
-    * We also recommend using "ppm" formats as input to tkinter's *PhotoImage* method like this: *tkimg = tkinter.PhotoImage(data=pix.getImageData("ppm"))* (also see the tutorial). This is **very** fast (**60 times** faster than PNG) and will work under Python 2 or 3.
+    * We also recommend using "ppm" formats as input to tkinter's *PhotoImage* method like this: *tkimg = tkinter.PhotoImage(data=pix.tobytes("ppm"))* (also see the tutorial). This is **very** fast (**60 times** faster than PNG) and will work under Python 2 or 3.
 
 
 

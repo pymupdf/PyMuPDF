@@ -1,6 +1,6 @@
 """
 Pixmap tests
-* make pixmap of a page and confirm equality of bbox
+* make pixmap of a page and assert bbox size
 * make pixmap from a PDF xref and compare with extracted image
 * pixmap from file and from binary image and compare
 """
@@ -28,8 +28,11 @@ def test_pagepixmap():
 def test_pdfpixmap():
     # pixmap from xref in a PDF
     doc = fitz.open(pdf)
+    # take first image item of first page
     img = doc.get_page_images(0)[0]
+    # make pixmap of it
     pix = fitz.Pixmap(doc, img[0])
+    # assert pixmap properties
     assert pix.width == img[2]
     assert pix.height == img[3]
     # extract image and compare metadata
@@ -40,6 +43,7 @@ def test_pdfpixmap():
 
 def test_filepixmap():
     # pixmaps from file and from stream
+    # should lead to same result
     pix1 = fitz.Pixmap(imgfile)
     stream = open(imgfile, "rb").read()
     pix2 = fitz.Pixmap(stream)

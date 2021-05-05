@@ -35,7 +35,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.copy_page`              PDF only: copy a page reference
 :meth:`Document.del_toc_item`           PDF only: remove a single TOC item
 :meth:`Document.delete_page`            PDF only: delete a page
-:meth:`Document.delete_pages`           PDF only: delete a page range
+:meth:`Document.delete_pages`           PDF only: delete multiple pages
 :meth:`Document.embfile_add`            PDF only: add a new embedded file from buffer
 :meth:`Document.embfile_count`          PDF only: number of embedded files
 :meth:`Document.embfile_del`            PDF only: delete an embedded file entry
@@ -600,7 +600,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.17.7)*
 
-      PDF only: Return the :data:`xref` of the page -- **without reading the page (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
+      PDF only: Return the :data:`xref` of the page -- **without reading the page** (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
 
       :arg int pno: 0-based page number.
 
@@ -1211,37 +1211,36 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int pno: the page to be deleted. Negative number count backwards from the end of the document (like with indices). Default is the last page.
 
-    .. method:: delete_pages(from_page=-1, to_page=-1)
+    .. method:: delete_pages(*args, **kwds)
 
-      PDF only: Delete a range of pages given as 0-based numbers. Any *-1* parameter will first be replaced by *doc.page_count - 1* (ie. last page number). After that, condition *0 <= from_page <= to_page < doc.page_count* must be true. If the parameters are equal, this is equivalent to :meth:`delete_page`.
+      *Changed in v1.18.13: more flexibility specifying pages to delete.*
 
-      :arg int from_page: the first page to be deleted.
+      PDF only: Delete multiple pages given as 0-based numbers. *Changed in v1.18.13:* introduced much more flexibility for specifying pages.
 
-      :arg int to_page: the last page to be deleted.
+      **Format 1:** Use keywords. Represents the old format.
+        * "from_page": first page to delete. Zero if omitted.
+        * "to_page": last page to delete. Last page in document if omitted. Must not be less then "from_page".
+
+      **Format 2:** A sequence as one positional parameter. A list, tuple or range object specifying pages to delete. Pages need not be consecutive.
+
+      **Format 3:** Page number as a single positional parameter. Equivalent to :meth:`Page.delete_page`.
+
+      **Format 4:** Two page numbers as positional parameters. Handled like Format 1.
 
       .. note::
 
-        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". So the overall TOC structure is left intact.
+        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". The overall TOC structure is left intact.
 
-        Similarly, it will remove any **links on remaining pages** that point to a deleted page. This action may have an extended response time for documents with many pages.
+        Similarly, it will remove any **links on remaining pages** that point to a deleted one. This action may have an extended response time for documents with many pages.
 
-        Example: Delete the page range 500 to 520 from a large PDF, using different methods.
+        Following examples all delete pages 500 through 519:
+        
+        * ``doc.delete_pages(500, 519)``
+        * ``doc.delete_pages(from_page=500, to_page=519)``
+        * ``doc.delete_pages([500, 501, 502, ... , 519])``
+        * ``doc.delete_pages(range(500, 520))``
 
-        Method 1 - *delete_pages*::
-
-          import time, fitz
-          doc = fitz.open("Adobe PDF Reference 1-7.pdf")
-          t0=time.perf_counter();doc.delete_pages(500, 520);t1=time.perf_counter()
-          round(t1 - t0, 2)
-          0.66
-
-
-        Method 2 - *select*, this is more than 10 times **slower**::
-
-          l = list(range(500)) + list(range(521, 1310))
-          t0=time.perf_counter();doc.select(l);t1=time.perf_counter()
-          round(t1 - t0, 2)
-          7.62
+        For the :ref:`AdobeManual` the above takes about 0.5 to 0.6 seconds, because on every of the remaining 1290 pages all links must be removed, which point to a deleted pages.
 
 
     .. method:: copy_page(pno, to=-1)
@@ -1736,10 +1735,10 @@ Other Examples
          xref = img[0]                  # xref number
          pix = fitz.Pixmap(doc, xref)   # make pixmap from image
          if pix.n - pix.alpha < 4:      # can be saved as PNG
-             pix.writePNG("p%s-%s.png" % (i, xref))
+             pix.save("p%s-%s.png" % (i, xref))
          else:                          # CMYK: must convert first
              pix0 = fitz.Pixmap(fitz.csRGB, pix)
-             pix0.writePNG("p%s-%s.png" % (i, xref))
+             pix0.save("p%s-%s.png" % (i, xref))
              pix0 = None                # free Pixmap resources
          pix = None                     # free Pixmap resources
 

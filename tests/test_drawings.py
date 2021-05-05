@@ -1,6 +1,5 @@
 """
-Extract drawings of a PDF page and compare result with content of
-a stored text file.
+Extract drawings of a PDF page and compare with stored expected result.
 """
 import io
 import os
@@ -14,10 +13,10 @@ symbols = os.path.join(scriptdir, "resources", "symbols.txt")
 
 
 def test_drawings():
-    symbols_text = open(symbols).read()
+    symbols_text = open(symbols).read()  # expected result
     doc = fitz.open(filename)
     page = doc[0]
     paths = page.get_drawings()
-    out = io.StringIO()
+    out = io.StringIO()  # pprint output goes here
     pprint(paths, stream=out)
     assert symbols_text == out.getvalue()

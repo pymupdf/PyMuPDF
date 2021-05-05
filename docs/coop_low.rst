@@ -35,7 +35,7 @@ For this we need to create a :ref:`TextPage`.
 >>> tp = dl.get_textpage()                    # display list from above
 >>> rlist = tp.search("needle")              # look up "needle" locations
 >>> for r in rlist:                          # work with the found locations, e.g.
-        pix.invertIRect(r.irect)             # invert colors in the rectangles
+        pix.invert_irect(r.irect)             # invert colors in the rectangles
 
 Extract Text
 ----------------

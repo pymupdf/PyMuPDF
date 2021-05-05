@@ -57,7 +57,7 @@ def render_page(vector):
         # page.get_text("rawdict")  # use any page-related type of work here, eg
         pix = page.get_pixmap(alpha=False, matrix=mat)
         # store away the result somewhere ...
-        # pix.writePNG("p-%i.png" % i)
+        # pix.save("p-%i.png" % i)
     print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
 
 

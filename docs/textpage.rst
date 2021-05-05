@@ -162,7 +162,7 @@ In addition, **the full quad information is not lost**: it can be recovered as n
 * :meth:`recover_line_quad` -- the quad of a line
 * :meth:`recover_char_quad` -- the quad of a character
 
-As mentioned, using these functions is ever only needed, if the text is **not written horizontally** and you need the quad for text marker annotations (:meth:`Page.addHighlightAnnot` and friends).
+As mentioned, using these functions is ever only needed, if the text is **not written horizontally** and you need the quad for text marker annotations (:meth:`Page.add_highlight_annot` and friends).
 
 
 .. image:: images/img-textpage.*

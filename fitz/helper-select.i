@@ -321,23 +321,24 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
     pdf_drop_obj(ctx, root);
 }
 
-PyObject *remove_dest_range(fz_context *ctx, pdf_document *pdf, int first, int last)
+void remove_dest_range(fz_context *ctx, pdf_document *pdf, PyObject *numbers)
 {
-    int i, pno, pagecount = pdf_count_pages(ctx, pdf);
-    if (!INRANGE(first, 0, pagecount-1) ||
-        !INRANGE(last, 0, pagecount-1) ||
-        (first > last))
-        Py_RETURN_NONE;
+    int i, j, pno, len, pagecount = pdf_count_pages(ctx, pdf);
+    PyObject *n1 = NULL;
     fz_try(ctx) {
         for (i = 0; i < pagecount; i++) {
-            if (INRANGE(i, first, last)) continue;
+            n1 = PyLong_FromLong((long) i);
+            if (PySequence_Contains(numbers, n1)) {
+                Py_DECREF(n1);
+                continue;
+            }
+            Py_DECREF(n1);
 
             pdf_obj *pageref = pdf_lookup_page_obj(ctx, pdf, i);
             pdf_obj *annots = pdf_dict_get(ctx, pageref, PDF_NAME(Annots));
             pdf_obj *target;
             if (!annots) continue;
-            int len = pdf_array_len(ctx, annots);
-            int j;
+            len = pdf_array_len(ctx, annots);
             for (j = len - 1; j >= 0; j -= 1) {
                 pdf_obj *o = pdf_array_get(ctx, annots, j);
                 if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME(Subtype)), PDF_NAME(Link)))
@@ -360,15 +361,20 @@ PyObject *remove_dest_range(fz_context *ctx, pdf_document *pdf, int first, int l
                                             pdf_to_text_string(ctx, dest),
                                             NULL, NULL);
                 }
-                if (INRANGE(pno, first, last)) {
+                if (pno < 0) { // page lookup did not work
+                    continue;
+                }
+                n1 = PyLong_FromLong((long) pno);
+                if (PySequence_Contains(numbers, n1)) {
                     pdf_array_delete(ctx, annots, j);
                 }
+                Py_DECREF(n1);
             }
         }
     }
     fz_catch(ctx) {
-        return NULL;
+        fz_rethrow(ctx);
     }
-    Py_RETURN_NONE;
+    return;
 }
 %}

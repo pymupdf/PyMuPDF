@@ -150,7 +150,7 @@ Saving the Page Image in a File
 -----------------------------------
 We can simply store the image in a PNG file::
 
-    pix.writeImage("page-%i.png" % page.number)
+    pix.save("page-%i.png" % page.number)
 
 Displaying the Image in GUIs
 -------------------------------------------
@@ -180,7 +180,7 @@ The following **avoids using Pillow**::
 
     # remove alpha if present
     pix1 = fitz.Pixmap(pix, 0) if pix.alpha else pix  # PPM does not support transparency
-    imgdata = pix1.getImageData("ppm")  # extremely fast!
+    imgdata = pix1.tobytes("ppm")  # extremely fast!
     tkimg = tkinter.PhotoImage(data = imgdata)
 
 If you are looking for a complete Tkinter script paging through **any supported** document, `here it is! <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/doc-browser.py>`_ It can also zoom into pages, and it runs under Python 2 or 3. It requires the extremely handy `PySimpleGUI <https://pypi.org/project/PySimpleGUI/>`_ pure Python package.

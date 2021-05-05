@@ -35,23 +35,23 @@ In a nutshell, this is what you can do with PyMuPDF:
 ================================== =======================================================
 **Method / Attribute**             **Short Description**
 ================================== =======================================================
-:meth:`Page.addCaretAnnot`         PDF only: add a caret annotation
-:meth:`Page.addCircleAnnot`        PDF only: add a circle annotation
-:meth:`Page.addFileAnnot`          PDF only: add a file attachment annotation
-:meth:`Page.addFreetextAnnot`      PDF only: add a text annotation
-:meth:`Page.addHighlightAnnot`     PDF only: add a "highlight" annotation
-:meth:`Page.addInkAnnot`           PDF only: add an ink annotation
-:meth:`Page.addLineAnnot`          PDF only: add a line annotation
-:meth:`Page.addPolygonAnnot`       PDF only: add a polygon annotation
-:meth:`Page.addPolylineAnnot`      PDF only: add a multi-line annotation
-:meth:`Page.addRectAnnot`          PDF only: add a rectangle annotation
-:meth:`Page.addRedactAnnot`        PDF only: add a redaction annotation
-:meth:`Page.addSquigglyAnnot`      PDF only: add a "squiggly" annotation
-:meth:`Page.addStampAnnot`         PDF only: add a "rubber stamp" annotation
-:meth:`Page.addStrikeoutAnnot`     PDF only: add a "strike-out" annotation
-:meth:`Page.addTextAnnot`          PDF only: add a comment
-:meth:`Page.addUnderlineAnnot`     PDF only: add an "underline" annotation
-:meth:`Page.addWidget`             PDF only: add a PDF Form field
+:meth:`Page.add_caret_annot`       PDF only: add a caret annotation
+:meth:`Page.add_circle_annot`      PDF only: add a circle annotation
+:meth:`Page.add_file_annot`        PDF only: add a file attachment annotation
+:meth:`Page.add_freetext_annot`    PDF only: add a text annotation
+:meth:`Page.add_highlight_annot`   PDF only: add a "highlight" annotation
+:meth:`Page.add_ink_annot`         PDF only: add an ink annotation
+:meth:`Page.add_line_annot`        PDF only: add a line annotation
+:meth:`Page.add_polygon_annot`     PDF only: add a polygon annotation
+:meth:`Page.add_polyline_annot`    PDF only: add a multi-line annotation
+:meth:`Page.add_rect_annot`        PDF only: add a rectangle annotation
+:meth:`Page.add_redact_annot`      PDF only: add a redaction annotation
+:meth:`Page.add_squiggly_annot`    PDF only: add a "squiggly" annotation
+:meth:`Page.add_stamp_annot`       PDF only: add a "rubber stamp" annotation
+:meth:`Page.add_strikeout_annot`   PDF only: add a "strike-out" annotation
+:meth:`Page.add_text_annot`        PDF only: add a comment
+:meth:`Page.add_underline_annot`   PDF only: add an "underline" annotation
+:meth:`Page.add_widget`            PDF only: add a PDF Form field
 :meth:`Page.annot_names`           PDF only: a list of annotation and widget names
 :meth:`Page.annots`                return a generator over the annots on the page
 :meth:`Page.apply_redactions`      PDF olny: process the redactions of the page
@@ -128,7 +128,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :rtype: :ref:`Rect`
 
-   .. method:: addCaretAnnot(point)
+   .. method:: add_caret_annot(point)
 
       *(New in version 1.16.0)*
 
@@ -142,7 +142,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image:: images/img-caret-annot.*
          :scale: 70
 
-   .. method:: addTextAnnot(point, text, icon="Note")
+   .. method:: add_text_annot(point, text, icon="Note")
 
       PDF only: Add a comment icon ("sticky note") with accompanying text. Only the icon is visible, the accompanying text is hidden and can be visualized by many PDF viewers by hovering the mouse over the symbol.
 
@@ -155,14 +155,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       :returns: the created annotation.
 
    .. index::
-      pair: color; addFreetextAnnot
-      pair: fontname; addFreetextAnnot
-      pair: fontsize; addFreetextAnnot
-      pair: rect; addFreetextAnnot
-      pair: rotate; addFreetextAnnot
-      pair: align; addFreetextAnnot
+      pair: color; add_freetext_annot
+      pair: fontname; add_freetext_annot
+      pair: fontsize; add_freetext_annot
+      pair: rect; add_freetext_annot
+      pair: rotate; add_freetext_annot
+      pair: align; add_freetext_annot
 
-   .. method:: addFreetextAnnot(rect, text, fontsize=12, fontname="helv", text_color=0, fill_color=1, rotate=0, align=TEXT_ALIGN_LEFT)
+   .. method:: add_freetext_annot(rect, text, fontsize=12, fontname="helv", text_color=0, fill_color=1, rotate=0, align=TEXT_ALIGN_LEFT)
 
       PDF only: Add text in a given rectangle.
 
@@ -182,7 +182,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation. Color properties **can only be changed** using special parameters of :meth:`Annot.update`. There, you can also set a border color different from the text color.
 
-   .. method:: addFileAnnot(pos, buffer, filename, ufilename=None, desc=None, icon="PushPin")
+   .. method:: add_file_annot(pos, buffer, filename, ufilename=None, desc=None, icon="PushPin")
 
       PDF only: Add a file attachment annotation with a "PushPin" icon at the specified location.
 
@@ -200,7 +200,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation. Use methods of :ref:`Annot` to make any changes.
 
-   .. method:: addInkAnnot(list)
+   .. method:: add_ink_annot(list)
 
       PDF only: Add a "freehand" scribble annotation.
 
@@ -209,7 +209,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation in default appearance (black line of width 1). Use annotation methods with a subsequent :meth:`Annot.update` to modify.
 
-   .. method:: addLineAnnot(p1, p2)
+   .. method:: add_line_annot(p1, p2)
 
       PDF only: Add a line annotation.
 
@@ -220,9 +220,9 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation. It is drawn with line color black and line width 1. The **rectangle** is automatically created to contain both points, each one surrounded by a circle of radius 3 * line width to make room for any line end symbols.
 
-   .. method:: addRectAnnot(rect)
+   .. method:: add_rect_annot(rect)
 
-   .. method:: addCircleAnnot(rect)
+   .. method:: add_circle_annot(rect)
 
       PDF only: Add a rectangle, resp. circle annotation.
 
@@ -231,7 +231,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation. It is drawn with line color red, no fill color and line width 1.
 
-   .. method:: addRedactAnnot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
+   .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
 
       PDF only: *(new in version 1.16.11)* Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
@@ -252,7 +252,7 @@ In a nutshell, this is what you can do with PyMuPDF:
                    fontfile="...",  # desired font file
                    render_mode=3,  # makes the text invisible
                )
-               page.addRedactAnnot(..., fontname="newname")
+               page.add_redact_annot(..., fontname="newname")
 
       :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing the fontsize to no less than 4. If then the text will still not fit, no text insertion will take place at all.
 
@@ -269,9 +269,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. image:: images/img-redact.*
 
-   .. method:: addPolylineAnnot(points)
+   .. method:: add_polyline_annot(points)
 
-   .. method:: addPolygonAnnot(points)
+   .. method:: add_polygon_annot(points)
 
       PDF only: Add an annotation consisting of lines which connect the given points. A **Polygon's** first and last points are automatically connected, which does not happen for a **PolyLine**. The **rectangle** is automatically created as the smallest rectangle containing the points, each one surrounded by a circle of radius 3 (= 3 * line width). The following shows a 'PolyLine' that has been modified with colors and line ends.
 
@@ -283,13 +283,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image:: images/img-polyline.*
          :scale: 70
 
-   .. method:: addUnderlineAnnot(quads=None, start=None, stop=None, clip=None)
+   .. method:: add_underline_annot(quads=None, start=None, stop=None, clip=None)
 
-   .. method:: addStrikeoutAnnot(quads=None, start=None, stop=None, clip=None)
+   .. method:: add_strikeout_annot(quads=None, start=None, stop=None, clip=None)
 
-   .. method:: addSquigglyAnnot(quads=None, start=None, stop=None, clip=None)
+   .. method:: add_squiggly_annot(quads=None, start=None, stop=None, clip=None)
 
-   .. method:: addHighlightAnnot(quads=None, start=None, stop=None, clip=None)
+   .. method:: add_highlight_annot(quads=None, start=None, stop=None, clip=None)
 
       PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`Page.search_for`). But this is not required: you are free to "mark" just anything.
 
@@ -303,7 +303,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
            >>> # always prefer quads=True in text searching!
            >>> quads = page.search_for("pymupdf", quads=True)
-           >>> page.addHighlightAnnot(quads)
+           >>> page.add_highlight_annot(quads)
 
       .. note::
         Obviously, text marker annotations need to know what is the top, the bottom, the left, and the right side of the area(s) to be marked. If the arguments are quads, this information is given by the sequence of the quad points. In contrast, a rectangle delivers much less information -- this is illustrated by the fact, that 4! = 24 different quads can be constructed with the four corners of a reactangle.
@@ -323,7 +323,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image:: images/img-markers.*
          :scale: 100
 
-   .. method:: addStampAnnot(rect, stamp=0)
+   .. method:: add_stamp_annot(rect, stamp=0)
 
       PDF only: Add a "rubber stamp" like annotation to e.g. indicate the document's intended use ("DRAFT", "CONFIDENTIAL", etc.).
 
@@ -342,7 +342,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image :: images/img-stampannot.*
          :scale: 80
 
-   .. method:: addWidget(widget)
+   .. method:: add_widget(widget)
 
       PDF only: Add a PDF Form field ("widget") to a page. This also **turns the PDF into a Form PDF**. Because of the large amount of different options available for widgets, we have developed a new class :ref:`Widget`, which contains the possible PDF field attributes. It must be used for both, form field creation and updates.
 
@@ -847,16 +847,18 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: pixmap; insert_image
       pair: rotate; insert_image
       pair: stream; insert_image
+      pair: alpha; insert_image
       pair: mask; insert_image
+      pair: alpha; insert_image
       pair: oc; insert_image
       pair: xref; insert_image
 
-   .. method:: insert_image(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, oc=0, xref=0, keep_proportion=True, overlay=True)
+   .. method:: insert_image(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, alpha=-1, oc=0, xref=0, keep_proportion=True, overlay=True)
 
-      PDF only: Put an image inside the given rectangle. The image can be taken either from an existing image in the PDF, provided as xref number, or otherwise from a pixmap, a file, or a memory area - of these parameters **exactly one** must be specified.
+      PDF only: Put an image inside the given rectangle. The image may already exist in the PDF or be taken from a pixmap, a file, or a memory area.
 
          * Changed in version 1.14.1: By default, the image keeps its aspect ratio.
-         * Changed in version 1.18.13: Allow providing the image as xref of an existing one.
+         * Changed in version 1.18.13: Allow providing the image as the xref of an existing one.
 
       :arg rect_like rect: where to put the image. Must be finite and not empty.
 
@@ -864,22 +866,24 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          *(Changed in version 1.14.13)* The image is now always placed **centered** in the rectangle, i.e. the centers of image and rectangle are equal.
 
-      :arg str filename: name of an image file (all formats supported by MuPDF -- see :ref:`ImageFiles`). If the same image is to be inserted multiple times, choose one of the other two options to avoid some overhead.
+      :arg str filename: name of an image file (all formats supported by MuPDF -- see :ref:`ImageFiles`).
 
-      :arg bytes,bytearray,io.BytesIO stream: image in memory (all formats supported by MuPDF -- see :ref:`ImageFiles`). This is the most efficient option.
+      :arg bytes,bytearray,io.BytesIO stream: image in memory (all formats supported by MuPDF -- see :ref:`ImageFiles`).
 
          Changed in version 1.14.13: *io.BytesIO* is now also supported.
 
       :arg pixmap: a pixmap containing the image.
       :type pixmap: :ref:`Pixmap`
 
-      :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask for the base image. When specified, the base image must also be provided as an in-memory image (*stream* parameter).
+      :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask (alpha values) for the base image. When specified, the base image must be provided as a filename or a stream.
 
-      :arg int xref: *(New in v1.18.13)* the :data:`xref` of an image already present in the PDF. If given (xref > 0), parameters ``filename``, ``pixmap``, ``stream`` and ``mask`` are ignored. The page will simply receive a reference to the exsting image.
+      :arg int xref: *(New in v1.18.13)* the :data:`xref` of an image already present in the PDF. If given, parameters ``filename``, ``pixmap``, ``stream``, ``alpha`` and ``mask`` are ignored. The page will simply receive a reference to the exsting image.
+
+      :arg int alpha: *(New in v1.18.13)* if set to 0, the method will assume and not check that the image has no alpha channel. This can speed up execution considerably. Use if image information is available from other sources. Affects insertions from files or streams.
 
       :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convert_to_pdf`) first and then use :meth:`Page.show_pdf_page` instead.
 
-      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this OCG (optional content group). This only happens, when inserting the image for the first time -- and consequently is ignored if xref is specified. This property is stored with the generated PDF image object and therefore controls the image's visibility throughout the PDF.
+      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this :data:`OCG` or :data:`OCMD`. Ignored after the first of multiple insertions. The property is stored with the generated PDF image object and therefore controls the image's visibility throughout the PDF.
       :arg bool keep_proportion: *(new in version v1.14.11)* maintain the aspect ratio of the image.
 
       For a description of *overlay* see :ref:`CommonParms`.
@@ -887,14 +891,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       *Changed in v1.18.13:* Return xref of stored image.
 
       :rtype: int
-      :returns: The xref of the embedded image. This can be used as the ``xref`` argument for very significant performance boosts, if the image must be inserted again.
+      :returns: The xref of the embedded image. This can be used as the ``xref`` argument for very significant performance boosts, if the image is inserted again.
 
       This example puts the same image on every page of a document::
 
          >>> doc = fitz.open(...)
          >>> rect = fitz.Rect(0, 0, 50, 50)       # put thumbnail in upper left corner
          >>> img = open("some.jpg", "rb").read()  # an image file
-         >>> img_xref = 0                         # first execution embeds image
+         >>> img_xref = 0                         # first execution embeds the image
          >>> for page in doc:
                img_xref = page.insert_image(rect, stream=img,
                           xref=img_xref,  2nd time reuses existing image
@@ -905,9 +909,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          1. The method detects multiple insertions of the same image (like in above example) and will store its data only on the first execution. This is even true, if using the default ``xref=0``.
          
-         2. The method cannot detect if the same image had already been part of the file before opening it. This type of situation can only be resolved by saving with ``garbage=4``.
+         2. The method cannot detect if the same image had already been part of the file before opening it.
 
-         3. You can use this method to provide a background or foreground image for the page, like a copyright or a watermark. Please remember, that watermarks require a transparent image ...
+         3. You can use this method to provide a background or foreground image for the page, like a copyright or a watermark. Please remember, that watermarks require a transparent image if put in foreground ...
 
          4. The image may be inserted uncompressed, e.g. if a *Pixmap* is used or if the image has an alpha channel. Therefore, consider using *deflate=True* when saving the file. In addition, there exist effective ways to control the image size -- even if transparency comes into play. Have a look at `this <https://pymupdf.readthedocs.io/en/latest/faq.html#how-to-add-images-to-a-pdf-page>`_ section of the documentation.
 

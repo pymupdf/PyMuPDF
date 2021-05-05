@@ -71,6 +71,5 @@ widget.field_name = "Make bold"  # arbitrary name
 widget.field_value = "Off"  # arbitrary value
 widget.fill_color = (0, 0, 1)  # make button visible
 
-annot = page.addWidget(widget)  # add the widget to the page
+annot = page.add_widget(widget)  # add the widget to the page
 doc.save(o_fn)  # output the file
-

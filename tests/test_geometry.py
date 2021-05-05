@@ -28,9 +28,10 @@ def test_inversion():
     alpha = 255
     m1 = fitz.Matrix(alpha)
     m2 = fitz.Matrix(-alpha)
-    m3 = m1 * m2
+    m3 = m1 * m2  # should equal identity matrix
     assert abs(m3 - fitz.Identity) < fitz.EPSILON
     m = fitz.Matrix(1, 0, 1, 0, 1, 0)  # not invertible!
+    # inverted matrix must be zero
     assert ~m == fitz.Matrix()
 
 

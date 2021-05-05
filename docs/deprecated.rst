@@ -26,6 +26,74 @@
 
     :attr:`Page.is_wrapped`
 
+.. data:: addCaretAnnot
+
+    :meth:`Page.add_caret_annot`
+
+.. data:: addCircleAnnot
+
+    :meth:`Page.add_circle_annot`
+
+.. data:: addFileAnnot
+
+    :meth:`Page.add_file_annot`
+
+.. data:: addFreetextAnnot
+
+    :meth:`Page.add_freetext_annot`
+
+.. data:: addHighlightAnnot
+
+    :meth:`Page.add_highlight_annot`
+
+.. data:: addInkAnnot
+
+    :meth:`Page.add_ink_annot`
+
+.. data:: addLineAnnot
+
+    :meth:`Page.add_line_annot`
+
+.. data:: addPolygonAnnot
+
+    :meth:`Page.add_polygon_annot`
+
+.. data:: addPolylineAnnot
+
+    :meth:`Page.add_polyline_annot`
+
+.. data:: addRectAnnot
+
+    :meth:`Page.add_rect_annot`
+
+.. data:: addRedactAnnot
+
+    :meth:`Page.add_redact_annot`
+
+.. data:: addSquigglyAnnot
+
+    :meth:`Page.add_squiggly_annot`
+
+.. data:: addStampAnnot
+
+    :meth:`Page.add_stamp_annot`
+
+.. data:: addStrikeoutAnnot
+
+    :meth:`Page.add_strikeout_annot`
+
+.. data:: addTextAnnot
+
+    :meth:`Page.add_text_annot`
+
+.. data:: addUnderlineAnnot
+
+    :meth:`Page.add_underline_annot`
+
+.. data:: addWidget
+
+    :meth:`Page.add_widget`
+
 .. data:: chapterCount
 
     :attr:`Document.chapter_count`
@@ -38,6 +106,10 @@
 
     :meth:`Page.clean_contents`
 
+.. data:: clearWith
+
+    :meth:`Pixmap.clear_with`
+
 .. data:: convertToPDF
 
     :meth:`Document.convert_to_pdf`
@@ -45,6 +117,10 @@
 .. data:: copyPage
 
     :meth:`Document.copy_page`
+
+.. data:: copyPixmap
+
+    :meth:`Pixmap.copy`
 
 .. data:: deleteAnnot
 
@@ -204,6 +280,10 @@
 
     :meth:`Document.fullcopy_page`
 
+.. data:: gammaWith
+
+    :meth:`Pixmap.gamma_with`
+
 .. data:: getCharWidths
 
     :meth:`Document.get_char_widths`
@@ -228,6 +308,10 @@
 
     :meth:`Page.get_image_bbox`
 
+.. data:: getImageData
+
+    :meth:`Pixmap.tobytes`
+
 .. data:: getImageList
 
     :meth:`Page.get_images`
@@ -239,6 +323,10 @@
 .. data:: getOCGs
 
     :meth:`Document.get_ocgs`
+
+.. data:: getPNGData
+
+    :meth:`Pixmap.tobytes`
 
 .. data:: getPageFontList
 
@@ -344,6 +432,10 @@
 
     :meth:`Shape.insert_textbox`
 
+.. data:: invertIRect
+
+    :meth:`Pixmap.invert_irect`
+
 .. data:: isDirty
 
     :attr:`Document.is_dirty`
@@ -428,6 +520,14 @@
 
     :meth:`Document.page_xref`
 
+.. data:: pillowData
+
+    :meth:`Pixmap.pil_tobytes`
+
+.. data:: pillowWrite
+
+    :meth:`Pixmap.pil_save`
+
 .. data:: previousLocation
 
     :meth:`Document.prev_location`
@@ -451,6 +551,10 @@
 .. data:: searchPageFor
 
     :meth:`Document.search_page_for`
+
+.. data:: setAlpha
+
+    :meth:`Pixmap.set_alpha`
 
 .. data:: setBlendMode
 
@@ -504,9 +608,23 @@
 
     :meth:`Annot.set_opacity`
 
+.. data:: setOrigin
+
+    :meth:`Pixmap.set_origin`
+
+.. data:: setPixel
+
+    :meth:`Pixmap.set_pixel`
+
 .. data:: setRect
 
     :meth:`Annot.set_rect`
+
+    :meth:`Pixmap.set_rect`
+
+.. data:: setResolution
+
+    :meth:`Pixmap.set_dpi`
 
 .. data:: setRotation
 
@@ -528,6 +646,10 @@
 
     :meth:`Annot.get_sound`
 
+.. data:: tintWith
+
+    :meth:`Pixmap.tint_with`
+
 .. data:: transformationMatrix
 
     :attr:`Page.transformation_matrix`
@@ -547,6 +669,14 @@
 .. data:: wrapContents
 
     :meth:`Page.wrap_contents`
+
+.. data:: writeImage
+
+    :meth:`Pixmap.save`
+
+.. data:: writePNG
+
+    :meth:`Pixmap.save`
 
 .. data:: writeText
 

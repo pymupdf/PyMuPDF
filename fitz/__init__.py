@@ -192,6 +192,23 @@ def restore_aliases():
 
     # deprecated Page aliases
     fitz.Page._isWrapped = fitz.Page.is_wrapped
+    fitz.Page.addCaretAnnot = fitz.Page.add_caret_annot
+    fitz.Page.addCircleAnnot = fitz.Page.add_circle_annot
+    fitz.Page.addFileAnnot = fitz.Page.add_file_annot
+    fitz.Page.addFreetextAnnot = fitz.Page.add_freetext_annot
+    fitz.Page.addHighlightAnnot = fitz.Page.add_highlight_annot
+    fitz.Page.addInkAnnot = fitz.Page.add_ink_annot
+    fitz.Page.addLineAnnot = fitz.Page.add_line_annot
+    fitz.Page.addPolygonAnnot = fitz.Page.add_polygon_annot
+    fitz.Page.addPolylineAnnot = fitz.Page.add_polyline_annot
+    fitz.Page.addRectAnnot = fitz.Page.add_rect_annot
+    fitz.Page.addRedactAnnot = fitz.Page.add_redact_annot
+    fitz.Page.addSquigglyAnnot = fitz.Page.add_squiggly_annot
+    fitz.Page.addStampAnnot = fitz.Page.add_stamp_annot
+    fitz.Page.addStrikeoutAnnot = fitz.Page.add_strikeout_annot
+    fitz.Page.addTextAnnot = fitz.Page.add_text_annot
+    fitz.Page.addUnderlineAnnot = fitz.Page.add_underline_annot
+    fitz.Page.addWidget = fitz.Page.add_widget
     fitz.Page.cleanContents = fitz.Page.clean_contents
     fitz.Page.CropBox = fitz.Page.cropbox
     fitz.Page.CropBoxPosition = fitz.Page.cropbox_position

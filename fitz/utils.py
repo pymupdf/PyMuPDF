@@ -230,25 +230,53 @@ def show_pdf_page(*args, **kwargs) -> int:
 
 
 def insert_image(page, rect, **kwargs):
+    """Insert an image for display in a rectangle.
+
+    Args:
+        rect: (rect_like) position of image on the page.
+        alpha: (int, optional) set to 0 if image has no transparency.
+        filename: (str, Path, file object) image filename.
+        keep_proportion: (bool) keep width / height ratio (default).
+        mask: (bytes, optional) image consisting of alpha values to use.
+        oc: (int) xref of OCG or OCMD to declare as Optional Content.
+        overlay: (bool) put in foreground (default) or background.
+        pixmap: (Pixmap) use this as image.
+        rotate: (int) rotate by 0, 90, 180 or 270 degrees.
+        stream: (bytes) use this as image.
+        xref: (int) use this as image.
+
+    'page' and 'rect' are positional, all other parameters are keywords.
+
+    If 'xref' is given, that image is used. Other input options are ignored.
+    Else, exactly one of pixmap, stream or filename must be given.
+
+    'alpha=0' for non-transparent images improves performance significantly.
+    Affects stream and filename only.
+
+    Optimum transparent insertions are possible by using filename / stream in
+    conjunction with a 'mask' image of alpha values.
+
+    Returns:
+        xref (int) of inserted image. Re-use as argument for multiple insertions.
+    """
     CheckParent(page)
     doc = page.parent
     if not doc.is_pdf:
         raise ValueError("not a PDF")
 
     valid_keys = {
-        "filename",
-        "pixmap",
-        "stream",
-        "mask",
-        "rotate",
-        "width",
-        "height",
         "alpha",
-        "oc",
-        "xref",
         "filename",
-        "overlay",
+        "height",
         "keep_proportion",
+        "mask",
+        "oc",
+        "overlay",
+        "pixmap",
+        "rotate",
+        "stream",
+        "width",
+        "xref",
     }
     s = set(kwargs.keys()).difference(valid_keys)
     if s != set():
@@ -268,6 +296,16 @@ def insert_image(page, rect, **kwargs):
 
     if xref == 0 and (bool(filename) + bool(stream) + bool(pixmap) != 1):
         raise ValueError("xref=0 needs exactly one of filename, pixmap, stream")
+
+    if filename:
+        if type(filename) is str:
+            pass
+        elif hasattr(filename, "absolute"):
+            filename = str(filename)
+        elif hasattr(filename, "name"):
+            filename = filename.name
+        else:
+            raise ValueError("bad filename")
 
     if filename and not os.path.exists(filename):
         raise FileNotFoundError("No such file: '%s'" % filename)

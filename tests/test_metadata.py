@@ -1,6 +1,6 @@
 """
 1. Read metadata and compare with stored expected result.
-2. Erase metadata and ensure object has indeed been emptied.
+2. Erase metadata and assert object has indeed been deleted.
 """
 import json
 import os
@@ -19,6 +19,8 @@ def test_metadata():
 
 def test_erase_meta():
     doc.set_metadata({})
-    info_str = doc.xref_get_key(-1, "Info")[1].split()[0]
-    info_xref = int(info_str)
-    assert doc.xref_object(info_xref, compressed=True) == "<<>>"
+    # Check PDF trailer and assert that there is no more /Info object
+    # or is set to "null".
+    statement1 = doc.xref_get_key(-1, "Info")[1] == "null"
+    statement2 = "Info" not in doc.xref_get_keys(-1)
+    assert statement2 or statement1

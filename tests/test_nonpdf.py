@@ -1,6 +1,6 @@
 """
 * Check EPUB document is no PDF
-* Check page access using chapter notation
+* Check page access using (chapter, page) notation
 * Re-layout EPUB ensuring a previous location is memorized
 """
 import os
@@ -26,6 +26,7 @@ def test_pageids():
 
 
 def test_layout():
+    """Memorize a page location, re-layout with ISO-A4, assert pre-determined location."""
     loc = doc.make_bookmark((5, 11))
     doc.layout(fitz.Rect(fitz.PaperRect("a4")))
     assert doc.find_bookmark(loc) == (5, 6)

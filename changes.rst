@@ -9,7 +9,9 @@ Changes in Version 1.18.13
 * **Added** documentation for maintaining private entries in PDF metadata.
 * **Added** documentation for handling transparent image insertions, :meth:`Page.insert_image`.
 * **Added** :meth:`Page.get_image_rects`, an improved version of :meth:`Page.get_image_bbox`.
+* **Changed** :meth:`Document.delete_pages` to support various ways of specifying pages to delete. Implements `#1042 <https://github.com/pymupdf/PyMuPDF/issues/1042>`_.
 * **Changed** :meth:`Page.insert_image` to also accept the xref of an existing image in the file. This allows "copying" images between pages, and extremely fast mutiple insertions.
+* **Changed** :meth:`Page.insert_image` to also accept the integer parameter ``alpha``. To be used for performance improvements.
 * **Changed** :meth:`Pixmap.set_alpha` to support new parameters for pre-multiplying colors with their alpha values and setting a specific color to fully transparent (e.g. white).
 * **Changed** :meth:`Document.embfile_add` to automatically set creation and modification date-time. Correspondingly, :meth:`Document.embfile_upd` automatically maintains modification date-time (``/ModDate`` PDF key), and :meth:`Document.embfile_info` correspondingly reports these data. In addition, the embedded file's associated "collection item" is included via its :data:`xref`. This supports the development of PDF portfolio applications.
 
@@ -240,7 +242,7 @@ Changes in Version 1.17.3
 * **Fixed** issue `#540 <https://github.com/pymupdf/PyMuPDF/issues/540>`_. Text extraction for EPUB should again work correctly.
 * **Fixed** issue `#548 <https://github.com/pymupdf/PyMuPDF/issues/548>`_. Documentation now includes ``LINK_NAMED``.
 * **Added** new parameter to control start of text in :meth:`TextWriter.fillTextbox`. Implements `#549 <https://github.com/pymupdf/PyMuPDF/issues/549>`_.
-* **Changed** documentation of :meth:`Page.addRedactAnnot` to explain the usage of non-builtin fonts.
+* **Changed** documentation of :meth:`Page.add_redact_annot` to explain the usage of non-builtin fonts.
 
 Changes in Version 1.17.2
 ---------------------------
@@ -270,7 +272,7 @@ Other changes:
 
 * **Changed** :meth:`TextWriter.writeText` to support the *"morph"* parameter.
 * **Added** methods :meth:`Rect.morph`, :meth:`IRect.morph`, and :meth:`Quad.morph`, which return a new :ref:`Quad`.
-* **Changed** :meth:`Page.addFreetextAnnot` to support text alignment via a new *"align"* parameter.
+* **Changed** :meth:`Page.add_freetext_annot` to support text alignment via a new *"align"* parameter.
 * **Fixed** issue `#508 <https://github.com/pymupdf/PyMuPDF/issues/508>`_. Improved image rectangle calculation to hopefully deliver correct values in most if not all cases.
 * **Fixed** issue `#502 <https://github.com/pymupdf/PyMuPDF/issues/502>`_.
 * **Fixed** issue `#500 <https://github.com/pymupdf/PyMuPDF/issues/500>`_. :meth:`Document.convertToPDF` should no longer cause memory leaks.
@@ -348,7 +350,7 @@ Changes in Version 1.16.12
 
 Changes in Version 1.16.11
 ---------------------------
-* **Added** Support for redaction annotations via method :meth:`Page.addRedactAnnot` and :meth:`Page.apply_redactions`.
+* **Added** Support for redaction annotations via method :meth:`Page.add_redact_annot` and :meth:`Page.apply_redactions`.
 * **Fixed** issue #426 ("PolygonAnnotation in 1.16.10 version").
 * **Fixed** documentation only issues `#443 <https://github.com/pymupdf/PyMuPDF/issues/443>`_ and `#444 <https://github.com/pymupdf/PyMuPDF/issues/444>`_.
 
@@ -462,7 +464,7 @@ List of change details:
 * **Changed** font support for widgets: only *Cour* (Courier), *Helv* (Helvetica, default), *TiRo* (Times-Roman) and *ZaDb* (ZapfDingBats) are accepted when **adding or changing** form fields. Only the plain versions are possible -- not their italic or bold variations. **Reading** widgets, however will show its original font.
 * **Changed** the name of the warnings buffer to :meth:`Tools.mupdf_warnings` and the function to empty this buffer is now called :meth:`Tools.reset_mupdf_warnings`.
 * **Changed** :meth:`Page.getPixmap`, :meth:`Document.get_page_pixmap`: a new bool argument *annots* can now be used to **suppress the rendering of annotations** on the page.
-* **Changed** :meth:`Page.addFileAnnot` and :meth:`Page.addTextAnnot` to enable setting an icon.
+* **Changed** :meth:`Page.add_file_annot` and :meth:`Page.add_text_annot` to enable setting an icon.
 * **Removed** widget-related methods and attributes from the :ref:`Annot` object.
 * **Removed** :ref:`Document` attributes *openErrCode*, *openErrMsg*, and :ref:`Tools` attributes / methods *stderr*, *reset_stderr*, *stdout*, and *reset_stdout*.
 * **Removed** **thirdparty zlib** dependency in PyMuPDF: there are now compression functions available in MuPDF. Source installers of PyMuPDF may now omit this extra installation step.
@@ -663,7 +665,7 @@ This patch version contains several improvements for embedded files and file att
 * **Changed** :meth:`Document.embfile_Add` to now automatically compress file content. Accompanying metadata can now be unicode (had to be ASCII in the past).
 * **Changed** :meth:`Document.embfile_Del` to now automatically delete **all entries** having the supplied identifying name. The return code is now an integer count of the removed entries (was *None* previously).
 * **Changed** embedded file methods to now also accept or show the PDF unicode filename as additional parameter *ufilename*.
-* **Added** :meth:`Page.addFileAnnot` which adds a new file attachment annotation.
+* **Added** :meth:`Page.add_file_annot` which adds a new file attachment annotation.
 * **Changed** :meth:`Annot.fileUpd` (file attachment annot) to now also accept the PDF unicode *ufilename* parameter. The description parameter *desc* correctly works with unicode. Furthermore, **all** parameters are optional, so metadata may be changed without also replacing the file content.
 * **Changed** :meth:`Annot.fileInfo` (file attachment annot) to now also show the PDF unicode filename as parameter *ufilename*.
 * **Fixed** issue #180 ("page.getText(output='dict') return invalid bbox") to now also work for vertical text.

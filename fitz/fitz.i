@@ -480,14 +480,11 @@ struct Document
 
 
         FITZEXCEPTION(_remove_links_to, !result)
-        PyObject *_remove_links_to(int first, int last)
+        PyObject *_remove_links_to(PyObject *numbers)
         {
             fz_try(gctx) {
-                fz_document *doc = (fz_document *) $self;
-                pdf_document *pdf = pdf_specifics(gctx, doc);
-                pdf_drop_page_tree(gctx, pdf);
-                pdf_load_page_tree(gctx, pdf);
-                remove_dest_range(gctx, pdf, first, last);
+                pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+                remove_dest_range(gctx, pdf, numbers);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -3870,13 +3867,19 @@ if basestate:
                     if item[2] == pno + 1:
                         self.del_toc_item(i)
 
-                self._remove_links_to(pno, pno)
+                self._remove_links_to((pno,))
                 self._delete_page(pno)
                 self._reset_page_refs()
 
 
-            def delete_pages(self, from_page: int =-1, to_page: int =-1):
+            def delete_pages(self, *args, **kw):
                 """Delete pages from a PDF.
+
+                Args:
+                    Either keywords 'from_page'/'to_page', or two integers to
+                    specify the first/last page to delete.
+                    Or a list/tuple/range object, which can contain arbitrary
+                    page numbers.
                 """
                 if not self.is_pdf:
                     raise ValueError("not a PDF")
@@ -3884,23 +3887,47 @@ if basestate:
                     raise ValueError("document closed")
 
                 page_count = self.page_count  # page count of document
-                f = from_page  # first page to delete
-                t = to_page  # last page to delete
-                while f < 0:
-                    f += page_count
-                while t < 0:
-                    t += page_count
-                if not f <= t < page_count:
-                    raise ValueError("bad page number(s)")
+                f = t = -1
+                if kw:  # check if keywords were used
+                    if args != []:  # then no positional args are allowed
+                        raise ValueError("cannot mix keyword and positional argument")
+                    f = kw.get("from_page", -1)  # first page to delete
+                    t = kw.get("to_page", -1)  # last page to delete
+                    while f < 0:
+                        f += page_count
+                    while t < 0:
+                        t += page_count
+                    if not f <= t < page_count:
+                        raise ValueError("bad page number(s)")
+                    numbers = tuple(range(f, t + 1))
+                else:
+                    if len(args) > 2 or args == []:
+                        raise ValueError("need 1 or 2 positional arguments")
+                    if len(args) == 2:
+                        f, t = args
+                        if not (type(f) is int and type(t) is int):
+                            raise ValueError("both arguments must be int")
+                        if f > t:
+                            f, t = t, f
+                        numbers = tuple(range(f, t + 1))
+                    else:
+                        r = args[0]
+                        if type(r) not in (int, range, list, tuple):
+                            raise ValueError("need int or sequence if one argument")
+                        numbers = tuple(r)
 
+                numbers = list(map(int, set(numbers)))  # ensure unique integers
+                numbers.sort()
+                if numbers[0] < 0 or numbers[-1] >= page_count:
+                    raise ValueError("bad page number(s)")
                 old_toc = self.get_toc()
                 for i, item in enumerate(old_toc):
-                    if f + 1 <= item[2] <= t + 1:
+                    if item[2] - 1 in numbers:  # a deleted page number
                         self.del_toc_item(i)
 
-                self._remove_links_to(f, t)
+                self._remove_links_to(numbers)
 
-                for i in range(t, f - 1, -1):  # delete pages, last to first
+                for i in reversed(numbers):  # delete pages, last to first
                     self._delete_page(i)
 
                 self._reset_page_refs()
@@ -4351,7 +4378,7 @@ struct Page {
         }
 
         //----------------------------------------------------------------
-        // page addCaretAnnot
+        // page add_caret_annot
         //----------------------------------------------------------------
         FITZEXCEPTION(_add_caret_annot, !result)
         struct Annot *
@@ -4815,7 +4842,7 @@ struct Page {
             """Reflects page de-rotation."""
             return Matrix(TOOLS._derotate_matrix(self))
 
-        def addCaretAnnot(self, point: point_like) -> "struct Annot *":
+        def add_caret_annot(self, point: point_like) -> "struct Annot *":
             """Add a 'Caret' annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4827,7 +4854,7 @@ struct Page {
             return annot
 
 
-        def addStrikeoutAnnot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
+        def add_strikeout_annot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
             """Add a 'StrikeOut' annotation."""
             if quads is None:
                 q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -4836,7 +4863,7 @@ struct Page {
             return self._add_text_marker(q, PDF_ANNOT_STRIKE_OUT)
 
 
-        def addUnderlineAnnot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
+        def add_underline_annot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
             """Add a 'Underline' annotation."""
             if quads is None:
                 q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -4845,7 +4872,7 @@ struct Page {
             return self._add_text_marker(q, PDF_ANNOT_UNDERLINE)
 
 
-        def addSquigglyAnnot(self, quads=None, start=None,
+        def add_squiggly_annot(self, quads=None, start=None,
                              stop=None, clip=None) -> "struct Annot *":
             """Add a 'Squiggly' annotation."""
             if quads is None:
@@ -4855,7 +4882,7 @@ struct Page {
             return self._add_text_marker(q, PDF_ANNOT_SQUIGGLY)
 
 
-        def addHighlightAnnot(self, quads=None, start=None,
+        def add_highlight_annot(self, quads=None, start=None,
                               stop=None, clip=None) -> "struct Annot *":
             """Add a 'Highlight' annotation."""
             if quads is None:
@@ -4865,7 +4892,7 @@ struct Page {
             return self._add_text_marker(q, PDF_ANNOT_HIGHLIGHT)
 
 
-        def addRectAnnot(self, rect: rect_like) -> "struct Annot *":
+        def add_rect_annot(self, rect: rect_like) -> "struct Annot *":
             """Add a 'Square' (rectangle) annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4877,7 +4904,7 @@ struct Page {
             return annot
 
 
-        def addCircleAnnot(self, rect: rect_like) -> "struct Annot *":
+        def add_circle_annot(self, rect: rect_like) -> "struct Annot *":
             """Add a 'Circle' (ellipse, oval) annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4889,7 +4916,7 @@ struct Page {
             return annot
 
 
-        def addTextAnnot(self, point: point_like, text: str, icon: str ="Note") -> "struct Annot *":
+        def add_text_annot(self, point: point_like, text: str, icon: str ="Note") -> "struct Annot *":
             """Add a 'Text' (sticky note) annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4901,7 +4928,7 @@ struct Page {
             return annot
 
 
-        def addLineAnnot(self, p1: point_like, p2: point_like) -> "struct Annot *":
+        def add_line_annot(self, p1: point_like, p2: point_like) -> "struct Annot *":
             """Add a 'Line' annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4913,7 +4940,7 @@ struct Page {
             return annot
 
 
-        def addPolylineAnnot(self, points: list) -> "struct Annot *":
+        def add_polyline_annot(self, points: list) -> "struct Annot *":
             """Add a 'PolyLine' annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4925,7 +4952,7 @@ struct Page {
             return annot
 
 
-        def addPolygonAnnot(self, points: list) -> "struct Annot *":
+        def add_polygon_annot(self, points: list) -> "struct Annot *":
             """Add a 'Polygon' annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4937,7 +4964,7 @@ struct Page {
             return annot
 
 
-        def addStampAnnot(self, rect: rect_like, stamp: int =0) -> "struct Annot *":
+        def add_stamp_annot(self, rect: rect_like, stamp: int =0) -> "struct Annot *":
             """Add a ('rubber') 'Stamp' annotation."""
             old_rotation = annot_preprocess(self)
             try:
@@ -4949,7 +4976,7 @@ struct Page {
             return annot
 
 
-        def addInkAnnot(self, handwriting: list) -> "struct Annot *":
+        def add_ink_annot(self, handwriting: list) -> "struct Annot *":
             """Add a 'Ink' ('handwriting') annotation.
 
             The argument must be a list of lists of point_likes.
@@ -4964,7 +4991,7 @@ struct Page {
             return annot
 
 
-        def addFileAnnot(self, point: point_like,
+        def add_file_annot(self, point: point_like,
             buffer: typing.ByteString,
             filename: str,
             ufilename: OptStr =None,
@@ -4987,7 +5014,7 @@ struct Page {
             return annot
 
 
-        def addFreetextAnnot(self, rect: rect_like, text: str, fontsize: float =11,
+        def add_freetext_annot(self, rect: rect_like, text: str, fontsize: float =11,
                              fontname: OptStr =None, text_color: OptSeq =None,
                              fill_color: OptSeq =None, align: int =0, rotate: int =0) -> "struct Annot *":
             """Add a 'FreeText' annotation."""
@@ -5004,7 +5031,7 @@ struct Page {
             return annot
 
 
-        def addRedactAnnot(self, quad, text: OptStr =None, fontname: OptStr =None,
+        def add_redact_annot(self, quad, text: OptStr =None, fontname: OptStr =None,
                            fontsize: float =11, align: int =0, fill: OptSeq =None, text_color: OptSeq =None,
                            cross_out: bool =True) -> "struct Annot *":
             """Add a 'Redact' annotation."""
@@ -5213,7 +5240,7 @@ def get_oc_items(self) -> list:
         #---------------------------------------------------------------------
         # page addWidget
         #---------------------------------------------------------------------
-        def addWidget(self, widget: Widget) -> "struct Annot *":
+        def add_widget(self, widget: Widget) -> "struct Annot *":
             """Add a 'Widget' (form field)."""
             CheckParent(self)
             doc = self.parent

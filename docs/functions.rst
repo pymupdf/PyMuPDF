@@ -546,13 +546,13 @@ Yet others are handy, general-purpose utilities.
       102
       >>> imgout.close()
 
-      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
+      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
 
          * xref 1268 is a PNG -- Comparable execution time and identical output::
 
-            In [23]: %timeit pix = fitz.Pixmap(doc, 1268);pix.getPNGData()
+            In [23]: %timeit pix = fitz.Pixmap(doc, 1268);pix.tobytes()
             10.8 ms ± 52.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-            In [24]: len(pix.getPNGData())
+            In [24]: len(pix.tobytes())
             Out[24]: 21462
 
             In [25]: %timeit img = doc.extract_image(1268)
@@ -562,9 +562,9 @@ Yet others are handy, general-purpose utilities.
 
          * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
 
-            In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.getPNGData()
+            In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.tobytes()
             341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-            In [28]: len(pix.getPNGData())
+            In [28]: len(pix.tobytes())
             Out[28]: 2599433
 
             In [29]: %timeit img = doc.extract_image(1186)

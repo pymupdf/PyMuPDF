@@ -1,5 +1,5 @@
 """
-Fill a given text in rectangle of some PDF page using
+Fill a given text in a rectangle on some PDF page using
 1. TextWriter object
 2. Basic text output
 
@@ -45,6 +45,7 @@ def test_textbox2():
         text,
         align=fitz.TEXT_ALIGN_LEFT,
         fontsize=12,
+        color=blue,
     )
     # check text containment
     assert page.get_text() == page.get_text(clip=rect)

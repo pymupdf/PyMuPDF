@@ -29,7 +29,7 @@ The script works as a command line tool which expects the filename being supplie
     doc = fitz.open(fname)  # open document
     for page in doc:  # iterate through the pages
         pix = page.get_pixmap(alpha = False)  # render page to an image
-        pix.writePNG("page-%i.png" % page.number)  # store image as a PNG
+        pix.save("page-%i.png" % page.number)  # store image as a PNG
 
 The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 72 dpi in x and y dimension and have no transparency. You can change all that -- for how to do this, read the next sections.
 
@@ -127,7 +127,7 @@ Like any other "object" in a PDF, images are identified by a cross reference num
 
 1. **Create** a :ref:`Pixmap` of the image with instruction *pix = fitz.Pixmap(doc, xref)*. This method is **very** fast (single digit micro-seconds). The pixmap's properties (width, height, ...) will reflect the ones of the image. In this case there is no way to tell which image format the embedded original has.
 
-2. **Extract** the image with *img = doc.extract_image(xref)*. This is a dictionary containing the binary image data as *img["image"]*. A number of meta data are also provided -- mostly the same as you would find in the pixmap of the image. The major difference is string *img["ext"]*, which specifies the image format: apart from "png", strings like "jpeg", "bmp", "tiff", etc. can also occur. Use this string as the file extension if you want to store to disk. The execution speed of this method should be compared to the combined speed of the statements *pix = fitz.Pixmap(doc, xref);pix.getPNGData()*. If the embedded image is in PNG format, the speed of :meth:`Document.extract_image` is about the same (and the binary image data are identical). Otherwise, this method is **thousands of times faster**, and the **image data is much smaller**.
+2. **Extract** the image with *img = doc.extract_image(xref)*. This is a dictionary containing the binary image data as *img["image"]*. A number of meta data are also provided -- mostly the same as you would find in the pixmap of the image. The major difference is string *img["ext"]*, which specifies the image format: apart from "png", strings like "jpeg", "bmp", "tiff", etc. can also occur. Use this string as the file extension if you want to store to disk. The execution speed of this method should be compared to the combined speed of the statements *pix = fitz.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG format, the speed of :meth:`Document.extract_image` is about the same (and the binary image data are identical). Otherwise, this method is **thousands of times faster**, and the **image data is much smaller**.
 
 The question remains: **"How do I know those 'xref' numbers of images?"**. There are two answers to this:
 
@@ -167,7 +167,7 @@ To recover the original image using PyMuPDF, the procedure depicted as follows m
 >>> pix1 = fitz.Pixmap(doc, xref)    # (1) pixmap of image w/o alpha
 >>> pix2 = fitz.Pixmap(doc, smask)   # (2) stencil pixmap
 >>> pix = fitz.Pixmap(pix1)          # (3) copy of pix1, empty alpha channel added
->>> pix.setAlpha(pix2.samples)       # (4) fill alpha channel
+>>> pix.set_alpha(pix2.samples)       # (4) fill alpha channel
 
 Step (1) creates a pixmap of the "netto" image. Step (2) does the same with the stencil mask. Please note that the :attr:`Pixmap.samples` attribute of *pix2* contains the alpha bytes that must be stored in the final pixmap. This is what happens in step (3) and (4).
 
@@ -180,7 +180,7 @@ The scripts `extract-imga.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blo
    pair: show_pdf_page;examples
    pair: insert_image;examples
    pair: embfile_add;examples
-   pair: addFileAnnot;examples
+   pair: add_file_annot;examples
 
 How to Make one PDF of all your Pictures (or Files)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -282,8 +282,8 @@ Instruction *svg = page.get_svg_image(matrix=fitz.Identity)* delivers a UTF-8 st
 ----------
 
 .. index::
-   pair: writeImage;examples
-   pair: getImageData;examples
+   pair: save;examples
+   pair: tobytes;examples
    pair: Photoshop;examples
    pair: Postscript;examples
    pair: JPEG;examples
@@ -317,19 +317,19 @@ PAM               PAM                Portable Arbitrary Map
 The general scheme is just the following two lines::
 
     pix = fitz.Pixmap("input.xxx")  # any supported input format
-    pix.writeImage("output.yyy")  # any supported output format
+    pix.save("output.yyy")  # any supported output format
 
 **Remarks**
 
 1. The **input** argument of *fitz.Pixmap(arg)* can be a file or a bytes / io.BytesIO object containing an image.
-2. Instead of an output **file**, you can also create a bytes object via *pix.getImageData("yyy")* and pass this around.
+2. Instead of an output **file**, you can also create a bytes object via *pix.tobytes("yyy")* and pass this around.
 3. As a matter of course, input and output formats must be compatible in terms of colorspace and transparency. The *Pixmap* class has batteries included if adjustments are needed.
 
 .. note::
         **Convert JPEG to Photoshop**::
 
           pix = fitz.Pixmap("myfamily.jpg")
-          pix.writeImage("myfamily.psd")
+          pix.save("myfamily.psd")
 
 
 .. note::
@@ -348,7 +348,7 @@ The general scheme is just the following two lines::
           else:  # Python 3 or later!
               import tkinter as tk
           pix = fitz.Pixmap("input.jpg")  # or any RGB / no-alpha image
-          tkimg = tk.PhotoImage(data=pix.getImageData("ppm"))
+          tkimg = tk.PhotoImage(data=pix.tobytes("ppm"))
 
 .. note::
         Convert **PNG with alpha** to Tkinter PhotoImage. This requires **removing the alpha bytes**, before we can do the PPM conversion::
@@ -360,12 +360,12 @@ The general scheme is just the following two lines::
           pix = fitz.Pixmap("input.png")  # may have an alpha channel
           if pix.alpha:  # we have an alpha channel!
               pix = fitz.Pixmap(pix, 0)  # remove it
-          tkimg = tk.PhotoImage(data=pix.getImageData("ppm"))
+          tkimg = tk.PhotoImage(data=pix.tobytes("ppm"))
 
 ----------
 
 .. index::
-   pair: copyPixmap;examples
+   pair: copy;examples
 
 How to Use Pixmaps: Gluing Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -385,10 +385,10 @@ This shows how pixmaps can be used for purely graphical, non-document purposes. 
  # now fill target with the tiles
  for i in range(col):
      for j in range(lin):
-         src.setOrigin(src.width * i, src.height * j)
-         tar_pix.copyPixmap(src, src.irect) # copy input to new loc
+         src.set_origin(src.width * i, src.height * j)
+         tar_pix.copy(src, src.irect) # copy input to new loc
 
- tar_pix.writePNG("tar.png")
+ tar_pix.save("tar.png")
 
 This is the input picture:
 
@@ -403,10 +403,10 @@ Here is the output:
 ----------
 
 .. index::
-   pair: setRect;examples
-   pair: invertIRect;examples
-   pair: copyPixmap;examples
-   pair: writeImage;examples
+   pair: set_rect;examples
+   pair: invert_irect;examples
+   pair: copy;examples
+   pair: save;examples
 
 How to Use Pixmaps: Making a Fractal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -425,14 +425,14 @@ This script creates a approximate image of it as a PNG, by going down to one-pix
     ir = (0, 0, d, d)                 # the pixmap rectangle
 
     pm = fitz.Pixmap(fitz.csRGB, ir, False)
-    pm.setRect(pm.irect, (255,255,0)) # fill it with some background color
+    pm.set_rect(pm.irect, (255,255,0)) # fill it with some background color
 
     color = (0, 0, 255)               # color to fill the punch holes
 
     # alternatively, define a 'fill' pixmap for the punch holes
     # this could be anything, e.g. some photo image ...
     fill = fitz.Pixmap(fitz.csRGB, ir, False) # same size as 'pm'
-    fill.setRect(fill.irect, (0, 255, 255))   # put some color in
+    fill.set_rect(fill.irect, (0, 255, 255))   # put some color in
 
     def punch(x, y, step):
         """Recursively "punch a hole" in the central square of a pixmap.
@@ -450,9 +450,9 @@ This script creates a approximate image of it as a PNG, by going down to one-pix
                     if s >= 3:        # recursing needed?
                         punch(x+i*s, y+j*s, s)       # recurse
                 else:                 # punching alternatives are:
-                    pm.setRect((x+s, y+s, x+2*s, y+2*s), color)     # fill with a color
-                    #pm.copyPixmap(fill, (x+s, y+s, x+2*s, y+2*s))  # copy from fill
-                    #pm.invertIRect((x+s, y+s, x+2*s, y+2*s))       # invert colors
+                    pm.set_rect((x+s, y+s, x+2*s, y+2*s), color)     # fill with a color
+                    #pm.copy(fill, (x+s, y+s, x+2*s, y+2*s))  # copy from fill
+                    #pm.invert_irect((x+s, y+s, x+2*s, y+2*s))       # invert colors
 
         return
 
@@ -462,7 +462,7 @@ This script creates a approximate image of it as a PNG, by going down to one-pix
     # now start punching holes into the pixmap
     punch(0, 0, d)
     t1 = time.perf_counter()
-    pm.writeImage("sierpinski-punch.png")
+    pm.save("sierpinski-punch.png")
     t2 = time.perf_counter()
     print ("%g sec to create / fill the pixmap" % round(t1-t0,3))
     print ("%g sec to save the image" % round(t2-t1,3))
@@ -495,7 +495,7 @@ This shows how to create a PNG file from a numpy array (several times faster tha
 
  samples = bytearray(bild.tostring())    # get plain pixel data from numpy array
  pix = fitz.Pixmap(fitz.csRGB, width, height, samples, alpha=False)
- pix.writePNG("test.png")
+ pix.save("test.png")
 
 
 ----------
@@ -559,24 +559,29 @@ How to Control the Size of Inserted Images
 
 For the following discussion, please also consult the previous section.
 
-If the ``pixmap`` parameter is used in :meth:`Page.insert_image`, the image format stored in the PDF is **always PNG**. This is independent from in which way the pixmap has originally been created.
+If the ``pixmap`` parameter is used in :meth:`Page.insert_image`, the image is always **stored in uncompressed PNG format**. This is independent from in which way the pixmap has originally been created.
 
-For ``filename`` and ``stream`` parameters, the **original image format**, quality and size are preserved (JPEG, BMP, JPEG2000, etc.). **However:** if :meth:`Page.insert_image` detects an alpha channel, then the image is internally converted to a pixmap, which is then inserted instead -- obviously as a PNG, so the original format is lost. This may lead to an increased image size (even after compression), or be otherwise undesireable.
+For ``filename`` and ``stream`` parameters, the **original image format, quality and size** are preserved (JPEG, BMP, JPEG2000, etc.). **However:** the method takes the following actions:
 
-Here is a way to prevent this from happening and take a more direct control over the result.
+1. Create an internal pixmap to see if the image is transparent.
+2. If not transparent, discard pixmap and insert image in original format.
+3. If transparent, create a new internal image and an image mask containing transparency information -- both in pixmap format -- and store both pixmap images. This will be **uncompressed PNG format** again.
 
-* Use ``filename`` or ``stream`` whenever possible. If there is no alpha channel, the original image will be inserted as is.
-* If possible, provide a transparent image as two separate binary (``bytes``) objects, by using both parameters ``stream=baseimage, mask=alphaimage``. This will store both parts in their original formats and prevent internal pixmap generation.
-* Check whether your file or stream has an alpha channel via ``fitz.Pixmap(filename).alpha == 1`` or looking at ``img.mode`` for a PIL image. If ``img.mode.endswith("A")`` (e.g. "RGBA"), then an alpha channel is present. Split the image up into base image and transparency mask like this::
-    
+Here is what you can do to take a closer control:
+
+1. Often you **know already** before, whether an image is transparent. For example, if you have a PIL image, check the last letter of ``img.mode``. If you see "RGBA" you have an RGB image with an alpha channel.
+2. If your image is not transparent, include ``alpha=0`` in your method arguments. The method will then skip internal pixmap creation and store the image as is.
+3. If your image has alpha, you can use the following snippet to create two sub-images: (1) the base-image, (2) the mask image (alpha values). Then insert them combined using the ``stream`` and ``mask`` arguments. Again, the method will omit any alpha-checking or conversion and store image and mask as is::
+
+    # example: 'stream' contains a transparent PNG image:
     pix = fitz.Pixmap(stream)  # intermediate pixmap
-    pix0 = fitz.Pixmap(pix, 0)  # extract base image without alpha
-    baseimage = pix0.pillowData("FORMAT")  # best use original image format
-    pix1 = fitz.Pixmap(None, pix)  # extract alpha channel to make mask image
-    pixmask = fitz.Pixmap(fitz.csGRAY, pix1.width, pix1.height, pix1.samples, 0)
-    page.insert_image(rect, stream=baseimage, mask=pixmask.getPNGData())
+    base = fitz.Pixmap(pix, 0)  # extract base image without alpha
+    mask = fitz.Pixmap(None, pix)  # extract alpha channel for the mask image
+    basestream = base.pil_tobytes("JPEG")
+    maskstream = mask.pil_tobytes("JPEG")
+    page.insert_image(rect, stream=basestream, mask=maskstream)
 
-* In a similar way, you can **provide an alpha channel** for intransparent images to store them with a desired opacity::
+You can also use this technique to **add transparency** to an image::
 
     stream = open("example.jpg", "rb").read()
     basepix = fitz.Pixmap(stream)
@@ -585,7 +590,7 @@ Here is a way to prevent this from happening and take a more direct control over
     alphas = [value] * (basepix.width * basepix.height)
     alphas = bytearray(alphas)  # convert to a bytearray
     pixmask = fitz.Pixmap(fitz.csGRAY, basepix.width, basepix.height, alphas, 0)
-    page.insert_image(rect, stream=stream, mask=pixmask.getPNGData())
+    page.insert_image(rect, stream=stream, mask=pixmask.tobytes())
 
 
 Text
@@ -787,7 +792,7 @@ But you also have other options::
          if text in w[4]:  # w[4] is the word's string
              found += 1  # count
              r = fitz.Rect(w[:4])  # make rect from word bbox
-             page.addUnderlineAnnot(r)  # underline
+             page.add_underline_annot(r)  # underline
      return found
 
  fname = sys.argv[1]  # filename
@@ -842,7 +847,7 @@ This script searches for text and marks it::
     rl = page.search_for(t, quads = True)
 
     # mark all found quads with one annotation
-    page.addSquigglyAnnot(rl)
+    page.add_squiggly_annot(rl)
 
     # save to a new PDF
     doc.save("a-squiggly.pdf")
@@ -863,12 +868,12 @@ But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_t
 The "bboxes" returned by the method however are rectangles only -- not quads. So, to mark span text correctly, its quad must be recovered from the data contained in the line and span dictionary. Do this with the following utility function (new in v1.18.9)::
 
     span_quad = fitz.recover_quad(line["dir"], span)
-    annot = page.addHighlightAnnot(span_quad)  # this will mark the complete span text
+    annot = page.add_highlight_annot(span_quad)  # this will mark the complete span text
 
 If you want to **mark the complete line** or a subset of its spans in one go, use the following snippet (works for v1.18.10 or later)::
 
     line_quad = fitz.recover_line_quad(line, spans=line["spans"][1:-1])
-    page.addHighlightAnnot(line_quad)
+    page.add_highlight_annot(line_quad)
 
 .. image:: images/img-linequad.*
 
@@ -1136,9 +1141,9 @@ This script shows a couple of ways to deal with 'FreeText' annotations::
     t = "¡Un pequeño texto para practicar!"
 
     # add 3 annots, modify the last one somewhat
-    a1 = page.addFreetextAnnot(r1, t, color=red)
-    a2 = page.addFreetextAnnot(r2, t, fontname="Ti", color=blue)
-    a3 = page.addFreetextAnnot(r3, t, fontname="Co", color=blue, rotate=90)
+    a1 = page.add_freetext_annot(r1, t, color=red)
+    a2 = page.add_freetext_annot(r2, t, fontname="Ti", color=blue)
+    a3 = page.add_freetext_annot(r3, t, fontname="Co", color=blue, rotate=90)
     a3.set_border(width=0)
     a3.update(fontsize=8, fill_color=gold)
 
@@ -1416,7 +1421,7 @@ How to :index:`Embed or Attach Files <triple: attach;embed;file>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PDF supports incorporating arbitrary data. This can be done in one of two ways: "embedding" or "attaching". PyMuPDF supports both options.
 
-1. Attached Files: data are **attached to a page** by way of a *FileAttachment* annotation with this statement: *annot = page.addFileAnnot(pos, ...)*, for details see :meth:`Page.addFileAnnot`. The first parameter "pos" is the :ref:`Point`, where a "PushPin" icon should be placed on the page.
+1. Attached Files: data are **attached to a page** by way of a *FileAttachment* annotation with this statement: *annot = page.add_file_annot(pos, ...)*, for details see :meth:`Page.add_file_annot`. The first parameter "pos" is the :ref:`Point`, where a "PushPin" icon should be placed on the page.
 
 2. Embedded Files: data are embedded on the **document level** via method :meth:`Document.embfile_add`.
 
