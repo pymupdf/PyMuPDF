@@ -65,7 +65,7 @@ Our **documentation**, written using Sphinx, is available in various formats fro
 
 # Installation
 
-For Windows, Linux and Mac OSX platforms, there are wheels in the [download](https://pypi.org/project/PyMuPDF/#files) section of PyPI. This includes Python 64bit versions **3.6 through 3.9**. For Windows only, 32bit versions are available too.
+For Windows, Linux and Mac OSX platforms, there are wheels in the [download](https://pypi.org/project/PyMuPDF/#files) section of PyPI. This includes Python 64bit versions **3.6 through 3.9**. For Windows only, 32bit versions are available too. Since version 1.18.13 there also exist wheels for the Linux ARM architecture - look for platform tag ``manylinux2014_aarch64``.
 
 If your platform is not supported with one of our wheels, you need to generate PyMuPDF yourself as follows. This requires the development version of Python.
 
