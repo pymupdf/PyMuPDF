@@ -151,7 +151,7 @@ annot = page.add_file_annot(
 print_descr(annot)  # annot.rect
 
 r += displ
-annot = page.addStampAnnot(r, stamp=10)  # 'Stamp'
+annot = page.add_stamp_annot(r, stamp=10)  # 'Stamp'
 annot.set_colors(stroke=green)
 annot.update()
 print_descr(annot)

@@ -10,7 +10,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
 
 .. note::
 
-   * If the corners of a rectangle are transformed with a **rotation**, **scale** or **translation** :ref:`Matrix`, then the resulting quad is **rectangular**, i.e. its corners again enclose angles of 90 degrees. Property :attr:`Quad.isRectangular` checks whether a quad can be thought of being the result of such an operation.
+   * If the corners of a rectangle are transformed with a **rotation**, **scale** or **translation** :ref:`Matrix`, then the resulting quad is **rectangular** (= congruent to a rectangle), i.e. all of its corners again enclose angles of 90 degrees. Property :attr:`Quad.is_rectangular` checks whether a quad can be thought of being the result of such an operation.
 
    * This is not true for all matrices: e.g. shear matrices produce parallelograms, and non-invertible matrices deliver "degenerate" tetragons like triangles or lines.
 
@@ -26,9 +26,9 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
 :attr:`Quad.ur`               upper right point
 :attr:`Quad.ll`               lower left point
 :attr:`Quad.lr`               lower right point
-:attr:`Quad.isConvex`         true if quad is a convex set
-:attr:`Quad.isEmpty`          true if quad is an empty set
-:attr:`Quad.isRectangular`    true if quad is a (rotated) rectangle
+:attr:`Quad.is_convex`        true if quad is a convex set
+:attr:`Quad.is_empty`         true if quad is an empty set
+:attr:`Quad.is_rectangular`   true if quad is congruent to a rectangle
 :attr:`Quad.rect`             smallest containing :ref:`Rect`
 :attr:`Quad.width`            the longest width value
 :attr:`Quad.height`           the longest height value
@@ -67,7 +67,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
       :arg matrix_like matrix: the matrix.
       :returns: a new quad. The effect is achieved by using the following code::
 
-         >>> T = fitz.Matrix(1, 1).preTranslate(fixpoint.x, fixpoint.y)
+         >>> T = fitz.Matrix(1, 1).pretranslate(fixpoint.x, fixpoint.y)
          >>> result = self * ~T * matrix * T
 
       So the quad is translated such, that fixpoint becomes the origin (0, 0), then the matrix is applied to it, and finally a reverse translation is done.
@@ -106,21 +106,21 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
 
       :type: :ref:`Point`
 
-   .. attribute:: isConvex
+   .. attribute:: is_convex
 
       *(New in version 1.16.1)*
 
-      True if every line connecting two points of the quad is inside the quad. We in addition also make sure here, that the quad is not "degenerate", i.e. not all corners are on the same line (which would still qualify as convexity in the mathematical sense).
+      Checks if for any two points of the quad, all points on their connecting line also belong to the quad.
 
       :type: bool
 
-   .. attribute:: isEmpty
+   .. attribute:: is_empty
 
       True if enclosed area is zero, which means that at least three of the four corners are on the same line. If this is false, the quad may still be degenerate or not look like a tetragon at all (triangles, parallelograms, trapezoids, ...).
 
       :type: bool
 
-   .. attribute:: isRectangular
+   .. attribute:: is_rectangular
 
       True if all corner angles are 90 degrees. This implies that the quad is **convex and not empty**.
 

@@ -21,10 +21,10 @@ Please note:
 ================================ ==============================================
 **Method / Attribute**             **Description**
 ================================ ==============================================
-:meth:`Matrix.preRotate`         perform a rotation
-:meth:`Matrix.preScale`          perform a scaling
-:meth:`Matrix.preShear`          perform a shearing (skewing)
-:meth:`Matrix.preTranslate`      perform a translation (shifting)
+:meth:`Matrix.prerotate`         perform a rotation
+:meth:`Matrix.prescale`          perform a scaling
+:meth:`Matrix.preshear`          perform a shearing (skewing)
+:meth:`Matrix.pretranslate`      perform a translation (shifting)
 :meth:`Matrix.concat`            perform a matrix multiplication
 :meth:`Matrix.invert`            calculate the inverted matrix
 :meth:`Matrix.norm`              the Euclidean norm
@@ -34,7 +34,7 @@ Please note:
 :attr:`Matrix.d`                 zoom factor Y direction
 :attr:`Matrix.e`                 horizontal shift
 :attr:`Matrix.f`                 vertical shift
-:attr:`Matrix.isRectilinear`     true if rect corners will remain rect corners
+:attr:`Matrix.is_rectilinear`     true if rect corners will remain rect corners
 ================================ ==============================================
 
 **Class API**
@@ -75,7 +75,7 @@ Please note:
       
       Return the Euclidean norm of the matrix as a vector.
 
-   .. method:: preRotate(deg)
+   .. method:: prerotate(deg)
 
       Modify the matrix to perform a counter-clockwise rotation for positive *deg* degrees, else clockwise. The matrix elements of an identity matrix will change in the following way:
 
@@ -83,7 +83,7 @@ Please note:
 
       :arg float deg: The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).
 
-   .. method:: preScale(sx, sy)
+   .. method:: prescale(sx, sy)
 
       Modify the matrix to scale by the zoom factors sx and sy. Has effects on attributes *a* thru *d* only: *[a, b, c, d, e, f] -> [a*sx, b*sx, c*sy, d*sy, e, f]*.
 
@@ -91,7 +91,7 @@ Please note:
 
       :arg float sy: Zoom factor in Y direction. For the effect see description of attribute *d*.
 
-   .. method:: preShear(sx, sy)
+   .. method:: preshear(sx, sy)
 
       Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes *a* thru *d* only: *[a, b, c, d, e, f] -> [c*sy, d*sy, a*sx, b*sx, e, f]*.
 
@@ -99,7 +99,7 @@ Please note:
 
       :arg float sy: Shearing effect in Y direction. See attribute *b*.
 
-   .. method:: preTranslate(tx, ty)
+   .. method:: pretranslate(tx, ty)
 
       Modify the matrix to perform a shifting / translation operation along the x and / or y axis. Has effects on attributes *e* and *f* only: *[a, b, c, d, e, f] -> [a, b, c, d, tx*a + ty*c, tx*b + ty*d]*.
 
@@ -162,7 +162,7 @@ Please note:
 
       :type: float
 
-   .. attribute:: isRectilinear
+   .. attribute:: is_rectilinear
 
       Rectilinear means that no shearing is present and that any rotations are integer multiples of 90 degrees. Usually this is used to confirm that (axis-aligned) rectangles before the transformation are still axis-aligned rectangles afterwards.
 
@@ -238,6 +238,6 @@ Rotating
 ---------
 .. |rot60| image:: images/img-rot-60.*
 
-Finally a rotation by 30 clockwise degrees (*preRotate(-30)*).
+Finally a rotation by 30 clockwise degrees (*prerotate(-30)*).
 
 |rot60|

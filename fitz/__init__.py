@@ -46,18 +46,18 @@ fitz.Document.get_ocmd = fitz.utils.get_ocmd
 fitz.Document.get_page_labels = fitz.utils.get_page_labels
 fitz.Document.get_page_numbers = fitz.utils.get_page_numbers
 fitz.Document.get_page_pixmap = fitz.utils.get_page_pixmap
-fitz.Document.get_page_text = fitz.utils.getPageText
-fitz.Document.get_toc = fitz.utils.getToC
+fitz.Document.get_page_text = fitz.utils.get_page_text
+fitz.Document.get_toc = fitz.utils.get_toc
 fitz.Document.has_annots = fitz.utils.has_annots
 fitz.Document.has_links = fitz.utils.has_links
-fitz.Document.insert_page = fitz.utils.insertPage
-fitz.Document.new_page = fitz.utils.newPage
+fitz.Document.insert_page = fitz.utils.insert_page
+fitz.Document.new_page = fitz.utils.new_page
 fitz.Document.scrub = fitz.utils.scrub
-fitz.Document.search_page_for = fitz.utils.searchPageFor
+fitz.Document.search_page_for = fitz.utils.search_page_for
 fitz.Document.set_metadata = fitz.utils.set_metadata
 fitz.Document.set_ocmd = fitz.utils.set_ocmd
 fitz.Document.set_page_labels = fitz.utils.set_page_labels
-fitz.Document.set_toc = fitz.utils.setToC
+fitz.Document.set_toc = fitz.utils.set_toc
 fitz.Document.set_toc_item = fitz.utils.set_toc_item
 fitz.Document.tobytes = fitz.Document.write
 fitz.Document.subset_fonts = fitz.utils.subset_fonts
@@ -69,7 +69,7 @@ fitz.Document.set_oc = fitz.utils.set_oc
 # Page
 # ------------------------------------------------------------------------------
 fitz.Page.apply_redactions = fitz.utils.apply_redactions
-fitz.Page.delete_widget = fitz.utils.deleteWidget
+fitz.Page.delete_widget = fitz.utils.delete_widget
 fitz.Page.draw_bezier = fitz.utils.draw_bezier
 fitz.Page.draw_circle = fitz.utils.draw_circle
 fitz.Page.draw_curve = fitz.utils.draw_curve
@@ -83,20 +83,20 @@ fitz.Page.draw_squiggle = fitz.utils.draw_squiggle
 fitz.Page.draw_zigzag = fitz.utils.draw_zigzag
 fitz.Page.get_links = fitz.utils.get_links
 fitz.Page.get_pixmap = fitz.utils.get_pixmap
-fitz.Page.get_text = fitz.utils.getText
+fitz.Page.get_text = fitz.utils.get_text
 fitz.Page.get_image_info = fitz.utils.get_image_info
-fitz.Page.get_text_blocks = fitz.utils.getTextBlocks
-fitz.Page.get_text_selection = fitz.utils.getTextSelection
-fitz.Page.get_text_words = fitz.utils.getTextWords
-fitz.Page.get_textbox = fitz.utils.getTextbox
+fitz.Page.get_text_blocks = fitz.utils.get_text_blocks
+fitz.Page.get_text_selection = fitz.utils.get_text_selection
+fitz.Page.get_text_words = fitz.utils.get_text_words
+fitz.Page.get_textbox = fitz.utils.get_textbox
 fitz.Page.insert_image = fitz.utils.insert_image
-fitz.Page.insert_link = fitz.utils.insertLink
+fitz.Page.insert_link = fitz.utils.insert_link
 fitz.Page.insert_text = fitz.utils.insert_text
 fitz.Page.insert_textbox = fitz.utils.insert_textbox
 fitz.Page.new_shape = lambda x: fitz.utils.Shape(x)
-fitz.Page.search_for = fitz.utils.searchFor
+fitz.Page.search_for = fitz.utils.search_for
 fitz.Page.show_pdf_page = fitz.utils.show_pdf_page
-fitz.Page.update_link = fitz.utils.updateLink
+fitz.Page.update_link = fitz.utils.update_link
 fitz.Page.write_text = fitz.utils.write_text
 fitz.Page.get_label = fitz.utils.get_label
 fitz.Page.get_image_rects = fitz.utils.get_image_rects
@@ -104,21 +104,14 @@ fitz.Page.get_image_rects = fitz.utils.get_image_rects
 # ------------------------------------------------------------------------
 # Annot
 # ------------------------------------------------------------------------
-fitz.Annot.get_text = fitz.utils.getText
-fitz.Annot.get_textbox = fitz.utils.getTextbox
+fitz.Annot.get_text = fitz.utils.get_text
+fitz.Annot.get_textbox = fitz.utils.get_textbox
 
 # ------------------------------------------------------------------------
-# Rect
+# Rect and IRect
 # ------------------------------------------------------------------------
-fitz.Rect.getRectArea = fitz.utils.getRectArea
-fitz.Rect.getArea = fitz.utils.getRectArea
-
-# ------------------------------------------------------------------------
-# IRect
-# ------------------------------------------------------------------------
-
-fitz.IRect.getRectArea = fitz.utils.getRectArea
-fitz.IRect.getArea = fitz.utils.getRectArea
+fitz.Rect.get_area = fitz.utils.get_area
+fitz.IRect.get_area = fitz.utils.get_area
 
 # ------------------------------------------------------------------------
 # TextWriter
@@ -126,191 +119,300 @@ fitz.IRect.getArea = fitz.utils.getRectArea
 fitz.TextWriter.fill_textbox = fitz.utils.fill_textbox
 
 
+class FitzDeprecation(DeprecationWarning):
+    pass
+
+
 def restore_aliases():
+    import warnings
+
+    warnings.filterwarnings(
+        "once",
+        category=FitzDeprecation,
+    )
+
+    def showthis(msg, cat, filename, lineno, file=None, line=None):
+        text = warnings.formatwarning(msg, cat, filename, lineno, line=line)
+        s = text.find("FitzDeprecation")
+        if s < 0:
+            print(text, file=sys.stderr)
+            return
+        text = text[s:].splitlines()[0][4:]
+        print(text, file=sys.stderr)
+
+    warnings.showwarning = showthis
+
+    def _alias(fitz_class, old, new):
+        fname = getattr(fitz_class, new)
+        r = str(fitz_class)[1:-1]
+        objname = " ".join(r.split()[:2])
+        objname = objname.replace("fitz.fitz.", "")
+        objname = objname.replace("fitz.utils.", "")
+        if callable(fname):
+
+            def deprecated_function(*args, **kw):
+                msg = "'%s' removed from %s after v1.19.0 - use '%s'." % (
+                    old,
+                    objname,
+                    new,
+                )
+                if not VersionBind.startswith("1.18"):
+                    warnings.warn(msg, category=FitzDeprecation)
+                return fname(*args, **kw)
+
+            setattr(fitz_class, old, deprecated_function)
+        else:
+            if type(fname) is property:
+                setattr(fitz_class, old, property(fname.fget))
+            else:
+                setattr(fitz_class, old, fname)
+
+        eigen = getattr(fitz_class, old)
+        x = fname.__doc__
+        if not x:
+            x = ""
+        try:
+            if callable(fname) or type(fname) is property:
+                eigen.__doc__ = (
+                    "*** Deprecated and removed in version following 1.19.0 - use '%s'. ***\n"
+                    % new
+                    + x
+                )
+        except:
+            pass
+
     # deprecated Document aliases
-    fitz.Document.chapterCount = fitz.Document.chapter_count
-    fitz.Document.chapterPageCount = fitz.Document.chapter_page_count
-    fitz.Document.convertToPDF = fitz.Document.convert_to_pdf
-    fitz.Document.copyPage = fitz.Document.copy_page
-    fitz.Document.deletePage = fitz.Document.delete_page
-    fitz.Document.deletePageRange = fitz.Document.delete_pages
-    fitz.Document.embeddedFileAdd = fitz.Document.embfile_add
-    fitz.Document.embeddedFileCount = fitz.Document.embfile_count
-    fitz.Document.embeddedFileDel = fitz.Document.embfile_del
-    fitz.Document.embeddedFileGet = fitz.Document.embfile_get
-    fitz.Document.embeddedFileInfo = fitz.Document.embfile_info
-    fitz.Document.embeddedFileNames = fitz.Document.embfile_names
-    fitz.Document.embeddedFileUpd = fitz.Document.embfile_upd
-    fitz.Document.extractFont = fitz.Document.extract_font
-    fitz.Document.extractImage = fitz.Document.extract_image
-    fitz.Document.findBookmark = fitz.Document.find_bookmark
-    fitz.Document.fullcopyPage = fitz.Document.fullcopy_page
-    fitz.Document.getCharWidths = fitz.Document.get_char_widths
-    fitz.Document.getOCGs = fitz.Document.get_ocgs
-    fitz.Document.getPageFontList = fitz.Document.get_page_fonts
-    fitz.Document.getPageImageList = fitz.Document.get_page_images
-    fitz.Document.getPagePixmap = fitz.Document.get_page_pixmap
-    fitz.Document.getPageText = fitz.Document.get_page_text
-    fitz.Document.getPageXObjectList = fitz.Document.get_page_xobjects
-    fitz.Document.getSigFlags = fitz.Document.get_sigflags
-    fitz.Document.getToC = fitz.Document.get_toc
-    fitz.Document.getXmlMetadata = fitz.Document.get_xml_metadata
-    fitz.Document.insertPage = fitz.Document.insert_page
-    fitz.Document.insertPDF = fitz.Document.insert_pdf
-    fitz.Document.isDirty = fitz.Document.is_dirty
-    fitz.Document.isFormPDF = fitz.Document.is_form_pdf
-    fitz.Document.isPDF = fitz.Document.is_pdf
-    fitz.Document.isReflowable = fitz.Document.is_reflowable
-    fitz.Document.isRepaired = fitz.Document.is_repaired
-    fitz.Document.isStream = fitz.Document.is_stream
-    fitz.Document.lastLocation = fitz.Document.last_location
-    fitz.Document.loadPage = fitz.Document.load_page
-    fitz.Document.makeBookmark = fitz.Document.make_bookmark
-    fitz.Document.metadataXML = fitz.Document.xref_xml_metadata
-    fitz.Document.movePage = fitz.Document.move_page
-    fitz.Document.needsPass = fitz.Document.needs_pass
-    fitz.Document.newPage = fitz.Document.new_page
-    fitz.Document.nextLocation = fitz.Document.next_location
-    fitz.Document.pageCount = fitz.Document.page_count
-    fitz.Document.pageCropBox = fitz.Document.page_cropbox
-    fitz.Document.pageXref = fitz.Document.page_xref
-    fitz.Document.PDFCatalog = fitz.Document.pdf_catalog
-    fitz.Document.PDFTrailer = fitz.Document.pdf_trailer
-    fitz.Document.previousLocation = fitz.Document.prev_location
-    fitz.Document.resolveLink = fitz.Document.resolve_link
-    fitz.Document.searchPageFor = fitz.Document.search_page_for
-    fitz.Document.setLanguage = fitz.Document.set_language
-    fitz.Document.setMetadata = fitz.Document.set_metadata
-    fitz.Document.setToC = fitz.Document.set_toc
-    fitz.Document.setXmlMetadata = fitz.Document.set_xml_metadata
-    fitz.Document.updateObject = fitz.Document.update_object
-    fitz.Document.updateStream = fitz.Document.update_stream
-    fitz.Document.xrefLength = fitz.Document.xref_length
-    fitz.Document.xrefObject = fitz.Document.xref_object
-    fitz.Document.xrefStream = fitz.Document.xref_stream
-    fitz.Document.xrefStreamRaw = fitz.Document.xref_stream_raw
+    _alias(fitz.Document, "chapterCount", "chapter_count")
+    _alias(fitz.Document, "chapterPageCount", "chapter_page_count")
+    _alias(fitz.Document, "convertToPDF", "convert_to_pdf")
+    _alias(fitz.Document, "copyPage", "copy_page")
+    _alias(fitz.Document, "deletePage", "delete_page")
+    _alias(fitz.Document, "deletePageRange", "delete_pages")
+    _alias(fitz.Document, "embeddedFileAdd", "embfile_add")
+    _alias(fitz.Document, "embeddedFileCount", "embfile_count")
+    _alias(fitz.Document, "embeddedFileDel", "embfile_del")
+    _alias(fitz.Document, "embeddedFileGet", "embfile_get")
+    _alias(fitz.Document, "embeddedFileInfo", "embfile_info")
+    _alias(fitz.Document, "embeddedFileNames", "embfile_names")
+    _alias(fitz.Document, "embeddedFileUpd", "embfile_upd")
+    _alias(fitz.Document, "extractFont", "extract_font")
+    _alias(fitz.Document, "extractImage", "extract_image")
+    _alias(fitz.Document, "findBookmark", "find_bookmark")
+    _alias(fitz.Document, "fullcopyPage", "fullcopy_page")
+    _alias(fitz.Document, "getCharWidths", "get_char_widths")
+    _alias(fitz.Document, "getOCGs", "get_ocgs")
+    _alias(fitz.Document, "getPageFontList", "get_page_fonts")
+    _alias(fitz.Document, "getPageImageList", "get_page_images")
+    _alias(fitz.Document, "getPagePixmap", "get_page_pixmap")
+    _alias(fitz.Document, "getPageText", "get_page_text")
+    _alias(fitz.Document, "getPageXObjectList", "get_page_xobjects")
+    _alias(fitz.Document, "getSigFlags", "get_sigflags")
+    _alias(fitz.Document, "getToC", "get_toc")
+    _alias(fitz.Document, "getXmlMetadata", "get_xml_metadata")
+    _alias(fitz.Document, "insertPage", "insert_page")
+    _alias(fitz.Document, "insertPDF", "insert_pdf")
+    _alias(fitz.Document, "isDirty", "is_dirty")
+    _alias(fitz.Document, "isFormPDF", "is_form_pdf")
+    _alias(fitz.Document, "isPDF", "is_pdf")
+    _alias(fitz.Document, "isReflowable", "is_reflowable")
+    _alias(fitz.Document, "isRepaired", "is_repaired")
+    _alias(fitz.Document, "isStream", "is_stream")
+    _alias(fitz.Document, "lastLocation", "last_location")
+    _alias(fitz.Document, "loadPage", "load_page")
+    _alias(fitz.Document, "makeBookmark", "make_bookmark")
+    _alias(fitz.Document, "metadataXML", "xref_xml_metadata")
+    _alias(fitz.Document, "movePage", "move_page")
+    _alias(fitz.Document, "needsPass", "needs_pass")
+    _alias(fitz.Document, "newPage", "new_page")
+    _alias(fitz.Document, "nextLocation", "next_location")
+    _alias(fitz.Document, "pageCount", "page_count")
+    _alias(fitz.Document, "pageCropBox", "page_cropbox")
+    _alias(fitz.Document, "pageXref", "page_xref")
+    _alias(fitz.Document, "PDFCatalog", "pdf_catalog")
+    _alias(fitz.Document, "PDFTrailer", "pdf_trailer")
+    _alias(fitz.Document, "previousLocation", "prev_location")
+    _alias(fitz.Document, "resolveLink", "resolve_link")
+    _alias(fitz.Document, "searchPageFor", "search_page_for")
+    _alias(fitz.Document, "setLanguage", "set_language")
+    _alias(fitz.Document, "setMetadata", "set_metadata")
+    _alias(fitz.Document, "setToC", "set_toc")
+    _alias(fitz.Document, "setXmlMetadata", "set_xml_metadata")
+    _alias(fitz.Document, "updateObject", "update_object")
+    _alias(fitz.Document, "updateStream", "update_stream")
+    _alias(fitz.Document, "xrefLength", "xref_length")
+    _alias(fitz.Document, "xrefObject", "xref_object")
+    _alias(fitz.Document, "xrefStream", "xref_stream")
+    _alias(fitz.Document, "xrefStreamRaw", "xref_stream_raw")
 
     # deprecated Page aliases
-    fitz.Page._isWrapped = fitz.Page.is_wrapped
-    fitz.Page.addCaretAnnot = fitz.Page.add_caret_annot
-    fitz.Page.addCircleAnnot = fitz.Page.add_circle_annot
-    fitz.Page.addFileAnnot = fitz.Page.add_file_annot
-    fitz.Page.addFreetextAnnot = fitz.Page.add_freetext_annot
-    fitz.Page.addHighlightAnnot = fitz.Page.add_highlight_annot
-    fitz.Page.addInkAnnot = fitz.Page.add_ink_annot
-    fitz.Page.addLineAnnot = fitz.Page.add_line_annot
-    fitz.Page.addPolygonAnnot = fitz.Page.add_polygon_annot
-    fitz.Page.addPolylineAnnot = fitz.Page.add_polyline_annot
-    fitz.Page.addRectAnnot = fitz.Page.add_rect_annot
-    fitz.Page.addRedactAnnot = fitz.Page.add_redact_annot
-    fitz.Page.addSquigglyAnnot = fitz.Page.add_squiggly_annot
-    fitz.Page.addStampAnnot = fitz.Page.add_stamp_annot
-    fitz.Page.addStrikeoutAnnot = fitz.Page.add_strikeout_annot
-    fitz.Page.addTextAnnot = fitz.Page.add_text_annot
-    fitz.Page.addUnderlineAnnot = fitz.Page.add_underline_annot
-    fitz.Page.addWidget = fitz.Page.add_widget
-    fitz.Page.cleanContents = fitz.Page.clean_contents
-    fitz.Page.CropBox = fitz.Page.cropbox
-    fitz.Page.CropBoxPosition = fitz.Page.cropbox_position
-    fitz.Page.deleteAnnot = fitz.Page.delete_annot
-    fitz.Page.deleteLink = fitz.Page.delete_link
-    fitz.Page.deleteWidget = fitz.Page.delete_widget
-    fitz.Page.derotationMatrix = fitz.Page.derotation_matrix
-    fitz.Page.drawBezier = fitz.Page.draw_bezier
-    fitz.Page.drawCircle = fitz.Page.draw_circle
-    fitz.Page.drawCurve = fitz.Page.draw_curve
-    fitz.Page.drawLine = fitz.Page.draw_line
-    fitz.Page.drawOval = fitz.Page.draw_oval
-    fitz.Page.drawPolyline = fitz.Page.draw_polyline
-    fitz.Page.drawQuad = fitz.Page.draw_quad
-    fitz.Page.drawRect = fitz.Page.draw_rect
-    fitz.Page.drawSector = fitz.Page.draw_sector
-    fitz.Page.drawSquiggle = fitz.Page.draw_squiggle
-    fitz.Page.drawZigzag = fitz.Page.draw_zigzag
-    fitz.Page.firstAnnot = fitz.Page.first_annot
-    fitz.Page.firstLink = fitz.Page.first_link
-    fitz.Page.firstWidget = fitz.Page.first_widget
-    fitz.Page.getContents = fitz.Page.get_contents
-    fitz.Page.getDisplayList = fitz.Page.get_displaylist
-    fitz.Page.getDrawings = fitz.Page.get_drawings
-    fitz.Page.getFontList = fitz.Page.get_fonts
-    fitz.Page.getImageBbox = fitz.Page.get_image_bbox
-    fitz.Page.getImageList = fitz.Page.get_images
-    fitz.Page.getLinks = fitz.Page.get_links
-    fitz.Page.getPixmap = fitz.Page.get_pixmap
-    fitz.Page.getSVGimage = fitz.Page.get_svg_image
-    fitz.Page.getText = fitz.Page.get_text
-    fitz.Page.getTextBlocks = fitz.Page.get_text_blocks
-    fitz.Page.getTextbox = fitz.Page.get_textbox
-    fitz.Page.getTextPage = fitz.Page.get_textpage
-    fitz.Page.getTextWords = fitz.Page.get_text_words
-    fitz.Page.insertFont = fitz.Page.insert_font
-    fitz.Page.insertImage = fitz.Page.insert_image
-    fitz.Page.insertLink = fitz.Page.insert_link
-    fitz.Page.insertText = fitz.Page.insert_text
-    fitz.Page.insertTextbox = fitz.Page.insert_textbox
-    fitz.Page.loadAnnot = fitz.Page.load_annot
-    fitz.Page.loadLinks = fitz.Page.load_links
-    fitz.Page.MediaBox = fitz.Page.mediabox
-    fitz.Page.MediaBoxSize = fitz.Page.mediabox_size
-    fitz.Page.newShape = fitz.Page.new_shape
-    fitz.Page.readContents = fitz.Page.read_contents
-    fitz.Page.rotationMatrix = fitz.Page.rotation_matrix
-    fitz.Page.searchFor = fitz.Page.search_for
-    fitz.Page.setCropBox = fitz.Page.set_cropbox
-    fitz.Page.setMediaBox = fitz.Page.set_mediabox
-    fitz.Page.setRotation = fitz.Page.set_rotation
-    fitz.Page.showPDFpage = fitz.Page.show_pdf_page
-    fitz.Page.transformationMatrix = fitz.Page.transformation_matrix
-    fitz.Page.updateLink = fitz.Page.update_link
-    fitz.Page.wrapContents = fitz.Page.wrap_contents
-    fitz.Page.writeText = fitz.Page.write_text
+    _alias(fitz.Page, "_isWrapped", "is_wrapped")
+    _alias(fitz.Page, "addCaretAnnot", "add_caret_annot")
+    _alias(fitz.Page, "addCircleAnnot", "add_circle_annot")
+    _alias(fitz.Page, "addFileAnnot", "add_file_annot")
+    _alias(fitz.Page, "addFreetextAnnot", "add_freetext_annot")
+    _alias(fitz.Page, "addHighlightAnnot", "add_highlight_annot")
+    _alias(fitz.Page, "addInkAnnot", "add_ink_annot")
+    _alias(fitz.Page, "addLineAnnot", "add_line_annot")
+    _alias(fitz.Page, "addPolygonAnnot", "add_polygon_annot")
+    _alias(fitz.Page, "addPolylineAnnot", "add_polyline_annot")
+    _alias(fitz.Page, "addRectAnnot", "add_rect_annot")
+    _alias(fitz.Page, "addRedactAnnot", "add_redact_annot")
+    _alias(fitz.Page, "addSquigglyAnnot", "add_squiggly_annot")
+    _alias(fitz.Page, "addStampAnnot", "add_stamp_annot")
+    _alias(fitz.Page, "addStrikeoutAnnot", "add_strikeout_annot")
+    _alias(fitz.Page, "addTextAnnot", "add_text_annot")
+    _alias(fitz.Page, "addUnderlineAnnot", "add_underline_annot")
+    _alias(fitz.Page, "addWidget", "add_widget")
+    _alias(fitz.Page, "cleanContents", "clean_contents")
+    _alias(fitz.Page, "CropBox", "cropbox")
+    _alias(fitz.Page, "CropBoxPosition", "cropbox_position")
+    _alias(fitz.Page, "deleteAnnot", "delete_annot")
+    _alias(fitz.Page, "deleteLink", "delete_link")
+    _alias(fitz.Page, "deleteWidget", "delete_widget")
+    _alias(fitz.Page, "derotationMatrix", "derotation_matrix")
+    _alias(fitz.Page, "drawBezier", "draw_bezier")
+    _alias(fitz.Page, "drawCircle", "draw_circle")
+    _alias(fitz.Page, "drawCurve", "draw_curve")
+    _alias(fitz.Page, "drawLine", "draw_line")
+    _alias(fitz.Page, "drawOval", "draw_oval")
+    _alias(fitz.Page, "drawPolyline", "draw_polyline")
+    _alias(fitz.Page, "drawQuad", "draw_quad")
+    _alias(fitz.Page, "drawRect", "draw_rect")
+    _alias(fitz.Page, "drawSector", "draw_sector")
+    _alias(fitz.Page, "drawSquiggle", "draw_squiggle")
+    _alias(fitz.Page, "drawZigzag", "draw_zigzag")
+    _alias(fitz.Page, "firstAnnot", "first_annot")
+    _alias(fitz.Page, "firstLink", "first_link")
+    _alias(fitz.Page, "firstWidget", "first_widget")
+    _alias(fitz.Page, "getContents", "get_contents")
+    _alias(fitz.Page, "getDisplayList", "get_displaylist")
+    _alias(fitz.Page, "getDrawings", "get_drawings")
+    _alias(fitz.Page, "getFontList", "get_fonts")
+    _alias(fitz.Page, "getImageBbox", "get_image_bbox")
+    _alias(fitz.Page, "getImageList", "get_images")
+    _alias(fitz.Page, "getLinks", "get_links")
+    _alias(fitz.Page, "getPixmap", "get_pixmap")
+    _alias(fitz.Page, "getSVGimage", "get_svg_image")
+    _alias(fitz.Page, "getText", "get_text")
+    _alias(fitz.Page, "getTextBlocks", "get_text_blocks")
+    _alias(fitz.Page, "getTextbox", "get_textbox")
+    _alias(fitz.Page, "getTextPage", "get_textpage")
+    _alias(fitz.Page, "getTextWords", "get_text_words")
+    _alias(fitz.Page, "insertFont", "insert_font")
+    _alias(fitz.Page, "insertImage", "insert_image")
+    _alias(fitz.Page, "insertLink", "insert_link")
+    _alias(fitz.Page, "insertText", "insert_text")
+    _alias(fitz.Page, "insertTextbox", "insert_textbox")
+    _alias(fitz.Page, "loadAnnot", "load_annot")
+    _alias(fitz.Page, "loadLinks", "load_links")
+    _alias(fitz.Page, "MediaBox", "mediabox")
+    _alias(fitz.Page, "MediaBoxSize", "mediabox_size")
+    _alias(fitz.Page, "newShape", "new_shape")
+    _alias(fitz.Page, "readContents", "read_contents")
+    _alias(fitz.Page, "rotationMatrix", "rotation_matrix")
+    _alias(fitz.Page, "searchFor", "search_for")
+    _alias(fitz.Page, "setCropBox", "set_cropbox")
+    _alias(fitz.Page, "setMediaBox", "set_mediabox")
+    _alias(fitz.Page, "setRotation", "set_rotation")
+    _alias(fitz.Page, "showPDFpage", "show_pdf_page")
+    _alias(fitz.Page, "transformationMatrix", "transformation_matrix")
+    _alias(fitz.Page, "updateLink", "update_link")
+    _alias(fitz.Page, "wrapContents", "wrap_contents")
+    _alias(fitz.Page, "writeText", "write_text")
+
+    # deprecated Shape aliases
+    _alias(fitz.utils.Shape, "drawBezier", "draw_bezier")
+    _alias(fitz.utils.Shape, "drawCircle", "draw_circle")
+    _alias(fitz.utils.Shape, "drawCurve", "draw_curve")
+    _alias(fitz.utils.Shape, "drawLine", "draw_line")
+    _alias(fitz.utils.Shape, "drawOval", "draw_oval")
+    _alias(fitz.utils.Shape, "drawPolyline", "draw_polyline")
+    _alias(fitz.utils.Shape, "drawQuad", "draw_quad")
+    _alias(fitz.utils.Shape, "drawRect", "draw_rect")
+    _alias(fitz.utils.Shape, "drawSector", "draw_sector")
+    _alias(fitz.utils.Shape, "drawSquiggle", "draw_squiggle")
+    _alias(fitz.utils.Shape, "drawZigzag", "draw_zigzag")
+    _alias(fitz.utils.Shape, "insertText", "insert_text")
+    _alias(fitz.utils.Shape, "insertTextbox", "insert_textbox")
 
     # deprecated Annot aliases
-    fitz.Annot.getText = fitz.Annot.get_text
-    fitz.Annot.getTextbox = fitz.Annot.get_textbox
-    fitz.Annot.fileGet = fitz.Annot.get_file
-    fitz.Annot.fileUpd = fitz.Annot.update_file
-    fitz.Annot.getPixmap = fitz.Annot.get_pixmap
-    fitz.Annot.getTextPage = fitz.Annot.get_textpage
-    fitz.Annot.lineEnds = fitz.Annot.line_ends
-    fitz.Annot.setBlendMode = fitz.Annot.set_blendmode
-    fitz.Annot.setBorder = fitz.Annot.set_border
-    fitz.Annot.setColors = fitz.Annot.set_colors
-    fitz.Annot.setFlags = fitz.Annot.set_flags
-    fitz.Annot.setInfo = fitz.Annot.set_info
-    fitz.Annot.setLineEnds = fitz.Annot.set_line_ends
-    fitz.Annot.setName = fitz.Annot.set_name
-    fitz.Annot.setOpacity = fitz.Annot.set_opacity
-    fitz.Annot.setRect = fitz.Annot.set_rect
-    fitz.Annot.setOC = fitz.Annot.set_oc
-    fitz.Annot.soundGet = fitz.Annot.get_sound
+    _alias(fitz.Annot, "getText", "get_text")
+    _alias(fitz.Annot, "getTextbox", "get_textbox")
+    _alias(fitz.Annot, "fileGet", "get_file")
+    _alias(fitz.Annot, "fileUpd", "update_file")
+    _alias(fitz.Annot, "getPixmap", "get_pixmap")
+    _alias(fitz.Annot, "getTextPage", "get_textpage")
+    _alias(fitz.Annot, "lineEnds", "line_ends")
+    _alias(fitz.Annot, "setBlendMode", "set_blendmode")
+    _alias(fitz.Annot, "setBorder", "set_border")
+    _alias(fitz.Annot, "setColors", "set_colors")
+    _alias(fitz.Annot, "setFlags", "set_flags")
+    _alias(fitz.Annot, "setInfo", "set_info")
+    _alias(fitz.Annot, "setLineEnds", "set_line_ends")
+    _alias(fitz.Annot, "setName", "set_name")
+    _alias(fitz.Annot, "setOpacity", "set_opacity")
+    _alias(fitz.Annot, "setRect", "set_rect")
+    _alias(fitz.Annot, "setOC", "set_oc")
+    _alias(fitz.Annot, "soundGet", "get_sound")
 
     # deprecated TextWriter aliases
-    fitz.TextWriter.writeText = fitz.TextWriter.write_text
-    fitz.TextWriter.fillTextbox = fitz.TextWriter.fill_textbox
+    _alias(fitz.TextWriter, "writeText", "write_text")
+    _alias(fitz.TextWriter, "fillTextbox", "fill_textbox")
 
     # deprecated DisplayList aliases
-    fitz.DisplayList.getPixmap = fitz.DisplayList.get_pixmap
-    fitz.DisplayList.getTextPage = fitz.DisplayList.get_textpage
+    _alias(fitz.DisplayList, "getPixmap", "get_pixmap")
+    _alias(fitz.DisplayList, "getTextPage", "get_textpage")
 
     # deprecated Pixmap aliases
-    fitz.Pixmap.setAlpha = fitz.Pixmap.set_alpha
-    fitz.Pixmap.gammaWith = fitz.Pixmap.gamma_with
-    fitz.Pixmap.tintWith = fitz.Pixmap.tint_with
-    fitz.Pixmap.clearWith = fitz.Pixmap.clear_with
-    fitz.Pixmap.copyPixmap = fitz.Pixmap.copy
-    fitz.Pixmap.getImageData = fitz.Pixmap.tobytes
-    fitz.Pixmap.getPNGData = fitz.Pixmap.tobytes
-    fitz.Pixmap.writeImage = fitz.Pixmap.save
-    fitz.Pixmap.writePNG = fitz.Pixmap.save
-    fitz.Pixmap.pillowWrite = fitz.Pixmap.pil_save
-    fitz.Pixmap.pillowData = fitz.Pixmap.pil_tobytes
-    fitz.Pixmap.invertIRect = fitz.Pixmap.invert_irect
-    fitz.Pixmap.setPixel = fitz.Pixmap.set_pixel
-    fitz.Pixmap.setOrigin = fitz.Pixmap.set_origin
-    fitz.Pixmap.setRect = fitz.Pixmap.set_rect
-    fitz.Pixmap.setResolution = fitz.Pixmap.set_dpi
+    _alias(fitz.Pixmap, "setAlpha", "set_alpha")
+    _alias(fitz.Pixmap, "gammaWith", "gamma_with")
+    _alias(fitz.Pixmap, "tintWith", "tint_with")
+    _alias(fitz.Pixmap, "clearWith", "clear_with")
+    _alias(fitz.Pixmap, "copyPixmap", "copy")
+    _alias(fitz.Pixmap, "getImageData", "tobytes")
+    _alias(fitz.Pixmap, "getPNGData", "tobytes")
+    _alias(fitz.Pixmap, "getPNGdata", "tobytes")
+    _alias(fitz.Pixmap, "writeImage", "save")
+    _alias(fitz.Pixmap, "writePNG", "save")
+    _alias(fitz.Pixmap, "pillowWrite", "pil_save")
+    _alias(fitz.Pixmap, "pillowData", "pil_tobytes")
+    _alias(fitz.Pixmap, "invertIRect", "invert_irect")
+    _alias(fitz.Pixmap, "setPixel", "set_pixel")
+    _alias(fitz.Pixmap, "setOrigin", "set_origin")
+    _alias(fitz.Pixmap, "setRect", "set_rect")
+    _alias(fitz.Pixmap, "setResolution", "set_dpi")
+
+    # deprecated geometry aliases
+    _alias(fitz.Rect, "getArea", "get_area")
+    _alias(fitz.IRect, "getArea", "get_area")
+    _alias(fitz.Rect, "getRectArea", "get_area")
+    _alias(fitz.IRect, "getRectArea", "get_area")
+    _alias(fitz.Rect, "includePoint", "include_point")
+    _alias(fitz.IRect, "includePoint", "include_point")
+    _alias(fitz.Rect, "includeRect", "include_rect")
+    _alias(fitz.IRect, "includeRect", "include_rect")
+    _alias(fitz.Rect, "isInfinite", "is_infinite")
+    _alias(fitz.IRect, "isInfinite", "is_infinite")
+    _alias(fitz.Rect, "isEmpty", "is_empty")
+    _alias(fitz.IRect, "isEmpty", "is_empty")
+    _alias(fitz.Quad, "isEmpty", "is_empty")
+    _alias(fitz.Quad, "isRectangular", "is_rectangular")
+    _alias(fitz.Quad, "isConvex", "is_convex")
+    _alias(fitz.Matrix, "isRectilinear", "is_rectilinear")
+    _alias(fitz.Matrix, "preRotate", "prerotate")
+    _alias(fitz.Matrix, "preScale", "prescale")
+    _alias(fitz.Matrix, "preShear", "preshear")
+    _alias(fitz.Matrix, "preTranslate", "pretranslate")
+
+    # deprecated other aliases
+    _alias(fitz, "getPDFstr", "get_pdf_str")
+    _alias(fitz, "getPDFnow", "get_pdf_now")
+    _alias(fitz, "PaperSize", "paper_size")
+    _alias(fitz, "PaperRect", "paper_rect")
+    _alias(fitz, "paperSizes", "paper_sizes")
+    _alias(fitz, "ImageProperties", "image_properties")
+    _alias(fitz, "planishLine", "planish_line")
+    _alias(fitz, "getTextLength", "get_text_length")
 
 
 fitz.__doc__ = """

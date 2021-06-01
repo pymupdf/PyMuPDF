@@ -49,11 +49,9 @@ Now perform a *python setup.py install*.
 
 Option 2: Install from Binaries
 --------------------------------
-You can install PyMuPDF from Python wheels. The wheels are *self-contained*, i.e. you will **not need any other software** nor download / install MuPDF to run PyMuPDF scripts.
-This installation option is available for all MS Windows and the most **popular 64-bit** Mac OSX and Linux platforms for Python versions 3.6 through 3.9.
-Windows binaries are provided for Python **32-bit and 64-bit** versions.
-
-.. note:: For the time being, wheels for Python versions 2.7 and 3.5 are generated as well, but not uploaded to PyPI until explicitely requested via an issue. Starting year 2021, support for these wheel versions will be dropped entirely.
+You can install PyMuPDF from Python wheels. Wheels are *self-contained*, i.e. you will **not need any other software** nor download / install MuPDF to run PyMuPDF scripts.
+This installation option is available for all MS Windows and the most **popular 64-bit** Mac OSX and Linux platforms for Python versions 3.6 through 3.9. Since version 1.18.13, Linux ARM 64-bit architectures are also supported.
+Windows binaries are provided for Python 64-bit **and** 32-bit versions.
 
 **Overview of wheel names (PyMuPDF version is x.xx.xx):**
 

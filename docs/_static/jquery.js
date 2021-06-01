@@ -379,7 +379,7 @@
             for (b in a);
             return b === w || aa.call(a, b)
         },
-        isEmptyObject: function (a) {
+        is_emptyObject: function (a) {
             for (var b in a) return false;
             return true
         },
@@ -642,7 +642,7 @@
                 if (b) {
                     if (e) {
                         delete e[b];
-                        c.isEmptyObject(e) && c.removeData(a)
+                        c.is_emptyObject(e) && c.removeData(a)
                     }
                 } else {
                     if (c.support.deleteExpando) delete a[c.expando];
@@ -1006,11 +1006,11 @@
                                         }
                                     }
                         }
-                        if (c.isEmptyObject(C)) {
+                        if (c.is_emptyObject(C)) {
                             if (b = z.handle) b.elem = null;
                             delete z.events;
                             delete z.handle;
-                            c.isEmptyObject(z) && c.removeData(a)
+                            c.is_emptyObject(z) && c.removeData(a)
                         }
                     }
                 }
@@ -3098,7 +3098,7 @@
         },
         animate: function (a, b, d, f) {
             var e = c.speed(b, d, f);
-            if (c.isEmptyObject(a)) return this.each(e.complete);
+            if (c.is_emptyObject(a)) return this.each(e.complete);
             return this[e.queue === false ? "each" : "queue"](function () {
                 var j = c.extend({}, e),
                     i, o = this.nodeType === 1 && c(this).is(":hidden"),

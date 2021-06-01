@@ -340,7 +340,7 @@
             if (!b.isEqual(a[f], c[f])) return false;
         return true
     };
-    b.isEmpty = function (a) {
+    b.is_empty = function (a) {
         return b.keys(a).length ==
             0
     };

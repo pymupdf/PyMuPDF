@@ -28,8 +28,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.gamma_with`     apply a gamma factor to the pixmap
 :meth:`Pixmap.tobytes`        return a memory area in a variety of formats
 :meth:`Pixmap.invert_irect`   invert the pixels of a given area
-:meth:`Pixmap.pil_save`       save as image using pillow (experimental)
-:meth:`Pixmap.pil_tobytes`    write image stream using pillow (experimental)
+:meth:`Pixmap.pil_save`       save as image using pillow
+:meth:`Pixmap.pil_tobytes`    write to ``bytes`` object using pillow
 :meth:`Pixmap.pixel`          return the value of a pixel
 :meth:`Pixmap.set_alpha`      set alpha values
 :meth:`Pixmap.set_pixel`      set the color of a pixel
@@ -94,7 +94,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like clip: restrict the resulting pixmap to this region of the **scaled** pixmap.
 
-      .. note:: If width or height are not *de facto* integers (i.e. *float(int(value) != value*), then the resulting pixmap will have an alpha channel.
+      .. note:: If width or height are not *de facto* integers (i.e. ``value.is_integer() != True``), then the resulting pixmap **will have an alpha channel**.
 
    .. method:: __init__(self, source, alpha=1)
 
@@ -268,7 +268,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, *(r + g + b) / 3* will be taken as the gray-shade value of the target.
 
-      Between *irect* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values ``source.x`` and ``source.y`` (which you are free to modify for this purpose via :meth:`Pixmap.set_origin`). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
+      Between *irect* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values :attr:`Pixmap.x` and :attr:`Pixmap.y` (which you are free to modify for this purpose via :meth:`Pixmap.set_origin`). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
 
       :arg source: source pixmap.
       :type source: :ref:`Pixmap`
@@ -283,9 +283,6 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
 
-   .. method:: save(filename)
-
-      Equal to *pix.save(filename, "png")*.
 
    .. method:: tobytes(output="png")
 
@@ -307,13 +304,15 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       A simple example: ``pix.pil_save("some.jpg", optimize=True, dpi=(150, 150))``. For details on other parameters see the Pillow documentation.
 
-      .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.save` and :meth:`Pixmap.save` now also set resolution / dpi from *xres* / *yres* automatically, when saving a PNG image.
+      .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.save` now also sets dpi from *xres* / *yres* automatically, when saving a PNG image.
 
    ..  method:: pil_tobytes(*args, **kwargs)
 
       *(New in v1.17.3)*
 
       Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pil_tobytes(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation.
+
+      :rtype: bytes
 
 
    .. attribute:: alpha
@@ -324,7 +323,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: digest
 
-      The MD5 hashcode of the pixmap. This is a technical value used for unique identifications.
+      The MD5 hashcode (16 bytes) of the pixmap. This is a technical value used for unique identifications.
 
       :type: bytes
 
@@ -403,13 +402,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: xres
 
-      Horizontal resolution in dpi (dots per inch). Please also see :data:`resolution`.
+      Horizontal resolution in dpi (dots per inch). Please also see :data:`resolution`. Cannot directly be changed -- use :meth:`Pixmap.set_dpi`.
 
       :type: int
 
    .. attribute:: yres
 
-      Vertical resolution in dpi (dots per inch). Please also see :data:`resolution`.
+      Vertical resolution in dpi (dots per inch). Please also see :data:`resolution`. Cannot directly be changed -- use :meth:`Pixmap.set_dpi`.
 
       :type: int
 

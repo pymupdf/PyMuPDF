@@ -1079,13 +1079,13 @@ calc_image_matrix(int width, int height, PyObject *tr, int rotate, int keep)
     w = trw;
     h = trh;
     if (keep) {
-        large = (float) MAX(width, height);
+        large = (float) Py_MAX(width, height);
         fw = (float) width / large;
         fh = (float) height / large;
     } else {
         fw = fh = 1;
     }
-    small = MIN(fw, fh);
+    small = Py_MIN(fw, fh);
     if (rotate != 0 && rotate != 180) {
         f = fw;
         fw = fh;

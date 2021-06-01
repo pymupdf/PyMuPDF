@@ -75,7 +75,7 @@ def write_text(page: Page, **kwargs) -> None:
             writers = (writers,)
     clip = writers[0].text_rect
     textdoc = Document()
-    tpage = textdoc.newPage(width=page.rect.width, height=page.rect.height)
+    tpage = textdoc.new_page(width=page.rect.width, height=page.rect.height)
     for writer in writers:
         clip |= writer.text_rect
         writer.write_text(tpage, opacity=opacity, color=color)
@@ -166,7 +166,7 @@ def show_pdf_page(*args, **kwargs) -> int:
         raise ValueError("not a PDF")
 
     rect = page.rect & rect  # intersect with page rectangle
-    if rect.isEmpty or rect.isInfinite:
+    if rect.is_empty or rect.is_infinite:
         raise ValueError("rect must be finite and not empty")
 
     if reuse_xref > 0:
@@ -181,7 +181,7 @@ def show_pdf_page(*args, **kwargs) -> int:
     tar_rect = rect * ~page.transformation_matrix  # target rect in PDF coordinates
 
     src_rect = src_page.rect if not clip else src_page.rect & clip  # source rect
-    if src_rect.isEmpty or src_rect.isInfinite:
+    if src_rect.is_empty or src_rect.is_infinite:
         raise ValueError("clip must be finite and not empty")
     src_rect = src_rect * ~src_page.transformation_matrix  # ... in PDF coord
 
@@ -325,7 +325,7 @@ def insert_image(page, rect, **kwargs):
         raise ValueError("bad rotate value")
 
     r = Rect(rect)
-    if r.isEmpty or r.isInfinite:
+    if r.is_empty or r.is_infinite:
         raise ValueError("rect must be finite and not empty")
     clip = r * ~page.transformation_matrix
 
@@ -366,7 +366,7 @@ def insert_image(page, rect, **kwargs):
     return xref
 
 
-def searchFor(*args, **kwargs) -> list:
+def search_for(*args, **kwargs) -> list:
     """Search for a string on a page.
 
     Args:
@@ -393,7 +393,7 @@ def searchFor(*args, **kwargs) -> list:
     return rlist
 
 
-def searchPageFor(
+def search_page_for(
     doc: Document,
     pno: int,
     text: str,
@@ -414,7 +414,7 @@ def searchPageFor(
         a list of rectangles or quads, each containing an occurrence.
     """
 
-    return doc[pno].searchFor(
+    return doc[pno].search_for(
         text,
         quads=quads,
         clip=clip,
@@ -422,7 +422,7 @@ def searchPageFor(
     )
 
 
-def getTextBlocks(
+def get_text_blocks(
     page: Page,
     clip: rect_like = None,
     flags: OptInt = None,
@@ -446,7 +446,7 @@ def getTextBlocks(
     return blocks
 
 
-def getTextWords(
+def get_text_words(
     page: Page,
     clip: rect_like = None,
     flags: OptInt = None,
@@ -465,17 +465,17 @@ def getTextWords(
     return words
 
 
-def getTextbox(
+def get_textbox(
     page: Page,
     rect: rect_like,
 ) -> str:
-    rc = page.getText("text", clip=rect, flags=0)
+    rc = page.get_text("text", clip=rect, flags=0)
     if rc.endswith("\n"):
         rc = rc[:-1]
     return rc
 
 
-def getTextSelection(
+def get_text_selection(
     page: Page,
     p1: point_like,
     p2: point_like,
@@ -562,7 +562,7 @@ def get_image_rects(page: Page, name, transform=False) -> list:
     return bboxes
 
 
-def getText(
+def get_text(
     page: Page,
     option: str = "text",
     clip: rect_like = None,
@@ -578,7 +578,7 @@ def getText(
         flags: bit switches to e.g. exclude images or decompose ligatures
 
     Returns:
-        the output of methods getTextWords / getTextBlocks or TextPage
+        the output of methods get_text_words / get_text_blocks or TextPage
         methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT,
         extractXHTML or etractXML respectively.
         Default and misspelling choice is "text".
@@ -604,9 +604,9 @@ def getText(
             flags += TEXT_PRESERVE_IMAGES
 
     if option == "words":
-        return getTextWords(page, clip=clip, flags=flags)
+        return get_text_words(page, clip=clip, flags=flags)
     if option == "blocks":
-        return getTextBlocks(page, clip=clip, flags=flags)
+        return get_text_blocks(page, clip=clip, flags=flags)
     CheckParent(page)
     cb = None
     if option in ("html", "xml", "xhtml"):  # no clipping for MuPDF functions
@@ -640,7 +640,7 @@ def getText(
     return t
 
 
-def getPageText(
+def get_page_text(
     doc: Document,
     pno: int,
     option: str = "text",
@@ -650,14 +650,14 @@ def getPageText(
     """Extract a document page's text by page number.
 
     Notes:
-        Convenience function calling page.getText().
+        Convenience function calling page.get_text().
     Args:
         pno: page number
         option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
     Returns:
         output from page.TextPage().
     """
-    return doc[pno].getText(option, clip=clip, flags=flags)
+    return doc[pno].get_text(option, clip=clip, flags=flags)
 
 
 def get_pixmap(page: Page, **kw) -> Pixmap:
@@ -776,20 +776,13 @@ def get_links(page: Page) -> list:
     """
 
     CheckParent(page)
-    ln = page.firstLink
+    ln = page.first_link
     links = []
     while ln:
         nl = getLinkDict(ln)
-        # if nl["kind"] == LINK_GOTO:
-        #    if type(nl["to"]) is Point and nl["page"] >= 0:
-        #        doc = page.parent
-        #        target_page = doc[nl["page"]]
-        #        ctm = target_page.transformation_matrix
-        #        point = nl["to"] * ctm
-        #        nl["to"] = point
         links.append(nl)
         ln = ln.next
-    if len(links) > 0:
+    if links != []:
         linkxrefs = [x for x in page.annot_xrefs() if x[1] == PDF_ANNOT_LINK]
         if len(linkxrefs) == len(links):
             for i in range(len(linkxrefs)):
@@ -798,7 +791,7 @@ def get_links(page: Page) -> list:
     return links
 
 
-def getToC(
+def get_toc(
     doc: Document,
     simple: bool = True,
 ) -> list:
@@ -881,13 +874,13 @@ def set_toc_item(
     It allows changing the item's title and link destination.
 
     Args:
-        idx: (int) desired index of the TOC list, as created by getTOC.
-        dest_dict: (dict) destination dictionary as created by getTOC(False).
+        idx: (int) desired index of the TOC list, as created by get_toc.
+        dest_dict: (dict) destination dictionary as created by get_toc(False).
             Outrules all other parameters. If None, the remaining parameters
             are used to make a dest dictionary.
         kind: (int) kind of link (LINK_GOTO, etc.). If None, then only the
             title will be updated. If LINK_NONE, the TOC item will be deleted.
-        pno: (int) page number (1-based like in getTOC). Required if LINK_GOTO.
+        pno: (int) page number (1-based like in get_toc). Required if LINK_GOTO.
         uri: (str) the URL, required if LINK_URI.
         title: (str) the new title. No change if None.
         to: (point-like) destination on the target page. If omitted, (72, 36)
@@ -961,7 +954,7 @@ def set_toc_item(
     return doc._update_toc_item(xref, action=action[2:], title=title)
 
 
-def getRectArea(*args) -> float:
+def get_area(*args) -> float:
     """Calculate area of rectangle.\nparameter is one of 'px' (default), 'in', 'cm', or 'mm'."""
     rect = args[0]
     if len(args) > 1:
@@ -1031,7 +1024,7 @@ def set_metadata(doc: Document, m: dict) -> None:
         if not bool(val) or not type(val) is str or val == "none":
             val = "null"
         else:
-            val = fitz.getPDFstr(val)
+            val = get_pdf_str(val)
         doc.xref_set_key(info_xref, pdf_key, val)
     doc.init_doc()
     return
@@ -1067,21 +1060,21 @@ def getDestStr(xref: int, ddict: dict) -> str:
         return dest
 
     if ddict["kind"] == LINK_URI:
-        dest = str_uri % (getPDFstr(ddict["uri"]),)
+        dest = str_uri % (get_pdf_str(ddict["uri"]),)
         return dest
 
     if ddict["kind"] == LINK_LAUNCH:
-        fspec = getPDFstr(ddict["file"])
+        fspec = get_pdf_str(ddict["file"])
         dest = str_launch % (fspec, fspec)
         return dest
 
     if ddict["kind"] == LINK_GOTOR and ddict["page"] < 0:
-        fspec = getPDFstr(ddict["file"])
-        dest = str_gotor2 % (getPDFstr(ddict["to"]), fspec, fspec)
+        fspec = get_pdf_str(ddict["file"])
+        dest = str_gotor2 % (get_pdf_str(ddict["to"]), fspec, fspec)
         return dest
 
     if ddict["kind"] == LINK_GOTOR and ddict["page"] >= 0:
-        fspec = getPDFstr(ddict["file"])
+        fspec = get_pdf_str(ddict["file"])
         dest = str_gotor1 % (
             ddict["page"],
             ddict["to"].x,
@@ -1095,7 +1088,7 @@ def getDestStr(xref: int, ddict: dict) -> str:
     return ""
 
 
-def setToC(
+def set_toc(
     doc: Document,
     toc: list,
     collapse: int = 1,
@@ -1165,7 +1158,7 @@ def setToC(
     for i in range(toclen):
         o = toc[i]
         lvl = o[0]  # level
-        title = getPDFstr(o[1])  # title
+        title = get_pdf_str(o[1])  # title
         pno = min(doc.page_count - 1, max(0, o[2] - 1))  # page number
         page_xref = doc.page_xref(pno)
         page_height = doc.page_cropbox(pno).height
@@ -1314,7 +1307,7 @@ def do_links(
                 )
             else:
                 txt = annot_skel["gotor2"]  # annot_gotor_n
-                to = getPDFstr(lnk["to"])
+                to = get_pdf_str(lnk["to"])
                 to = to[1:-1]
                 f = lnk["file"]
                 annot = txt % (to, f, rect)
@@ -1413,7 +1406,7 @@ def getLinkText(page: Page, lnk: dict) -> str:
             annot = txt % (xref, ipnt.x, ipnt.y, rect)
         else:
             txt = annot_skel["goto2"]  # annot_goto_n
-            annot = txt % (getPDFstr(lnk["to"]), rect)
+            annot = txt % (get_pdf_str(lnk["to"]), rect)
 
     elif lnk["kind"] == LINK_GOTOR:
         if lnk["page"] >= 0:
@@ -1424,7 +1417,7 @@ def getLinkText(page: Page, lnk: dict) -> str:
             annot = txt % (lnk["page"], pnt.x, pnt.y, lnk["file"], lnk["file"], rect)
         else:
             txt = annot_skel["gotor2"]  # annot_gotor_n
-            annot = txt % (getPDFstr(lnk["to"]), lnk["file"], rect)
+            annot = txt % (get_pdf_str(lnk["to"]), lnk["file"], rect)
 
     elif lnk["kind"] == LINK_LAUNCH:
         txt = annot_skel["launch"]  # annot_launch
@@ -1463,14 +1456,14 @@ def getLinkText(page: Page, lnk: dict) -> str:
     return annot
 
 
-def deleteWidget(page: Page, widget: Widget) -> Widget:
+def delete_widget(page: Page, widget: Widget) -> Widget:
     """Delete widget from page and return the next one."""
     CheckParent(page)
     annot = getattr(widget, "_annot", None)
     if annot is None:
         raise ValueError("bad type: widget")
     nextwidget = widget.next
-    page.deleteAnnot(annot)
+    page.delete_annot(annot)
     widget._annot.__del__()
     widget._annot.parent = None
     keylist = list(widget.__dict__.keys())
@@ -1479,7 +1472,7 @@ def deleteWidget(page: Page, widget: Widget) -> Widget:
     return nextwidget
 
 
-def updateLink(page: Page, lnk: dict) -> None:
+def update_link(page: Page, lnk: dict) -> None:
     """ Update a link on the current page. """
     CheckParent(page)
     annot = getLinkText(page, lnk)
@@ -1490,7 +1483,7 @@ def updateLink(page: Page, lnk: dict) -> None:
     return
 
 
-def insertLink(page: Page, lnk: dict, mark: bool = True) -> None:
+def insert_link(page: Page, lnk: dict, mark: bool = True) -> None:
     """ Insert a new link for the current page. """
     CheckParent(page)
     annot = getLinkText(page, lnk)
@@ -1617,18 +1610,26 @@ def insert_text(
     return rc
 
 
-def newPage(
+def new_page(
     doc: Document,
     pno: int = -1,
     width: float = 595,
     height: float = 842,
 ) -> Page:
-    """Create and return a new page object."""
+    """Create and return a new page object.
+
+    Args:
+        pno: (int) insert before this page. Default: after last page.
+        width: (float) page width in points. Default: 595 (ISO A4 width).
+        height: (float) page height in points. Default 842 (ISO A4 height).
+    Returns:
+        A Page object.
+    """
     doc._newPage(pno, width=width, height=height)
     return doc[pno]
 
 
-def insertPage(
+def insert_page(
     doc: Document,
     pno: int,
     text: typing.Union[str, list, None] = None,
@@ -1642,10 +1643,10 @@ def insertPage(
     """Create a new PDF page and insert some text.
 
     Notes:
-        Function combining Document.newPage() and Page.insert_text().
+        Function combining Document.new_page() and Page.insert_text().
         For parameter details see these methods.
     """
-    page = doc.newPage(pno=pno, width=width, height=height)
+    page = doc.new_page(pno=pno, width=width, height=height)
     if not bool(text):
         return 0
     rc = page.insert_text(
@@ -3386,7 +3387,7 @@ class Shape(object):
             unused or deficit rectangle area (float)
         """
         rect = Rect(rect)
-        if rect.isEmpty or rect.isInfinite:
+        if rect.is_empty or rect.is_infinite:
             raise ValueError("text box must be finite and not empty")
 
         color_str = ColorCode(color, "c")
@@ -3805,7 +3806,7 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
         if not text:
             return annot_rect
         try:
-            text_width = getTextlength(text, font, fsize)
+            text_width = get_text_length(text, font, fsize)
         except ValueError:  # unsupported font
             return annot_rect
         line_height = fsize * 1.2
@@ -4035,8 +4036,8 @@ def fill_textbox(
 
     Args:
         writer: TextWriter object (= "self")
-        text: string or list/tuple of strings.
         rect: rect-like to receive the text.
+        text: string or list/tuple of strings.
         pos: point-like start position of first word.
         font: Font object (default Font('helv')).
         fontsize: the fontsize.
@@ -4046,13 +4047,16 @@ def fill_textbox(
         right_to_left: (bool) indicate right-to-left language.
     """
     rect = Rect(rect)
-    if rect.isEmpty or rect.isInfinite:
+    if rect.is_empty or rect.is_infinite:
         raise ValueError("fill rect must be finite and not empty.")
     if type(font) is not Font:
         font = Font("helv")
 
     def textlen(x):
-        return font.text_length(x, fontsize)  # abbreviation
+        return font.text_length(x, fontsize=fontsize)  # abbreviation
+
+    def char_lengths(x):
+        return font.char_lengths(x, fontsize=fontsize)
 
     def append_this(pos, text):
         return writer.append(pos, text, font=font, fontsize=fontsize)
@@ -4063,29 +4067,30 @@ def fill_textbox(
     std_start = rect.x0 + tolerance
 
     def norm_words(width, words):
-        """Cut any word in pieces that is longer than 'width'."""
+        """Cut any word in pieces no longer than 'width'."""
         nwords = []
+        word_lengths = []
         for w in words:
-            wl = textlen(w)
+            wl_lst = char_lengths(w)
+            wl = sum(wl_lst)
             if wl <= width:  # nothing to do - copy over
                 nwords.append(w)
+                word_lengths.append(wl)
                 continue
-            # word longer than rect width - look at single chars
-            wl_lst = [textlen(c) for c in w]  # lengths of chars
-            while True:
-                wls = 0  # length of word piece
-                for i in range(len(wl_lst)):
-                    wls += wl_lst[i]
-                    if wls > width:
-                        break
 
-                if i == len(wl_lst) - 1:  # reached end of the word?
-                    nwords.append(w)
-                    break
-                nwords.append(w[:i])  # output word segment
-                w = w[i:]  # remainder of word
-                wl_lst = wl_lst[i:]  # remainder of char lengths
-        return nwords
+            # word longer than rect width - split it in parts
+            n = len(wl_lst)
+            while n > 0:
+                wl = sum(wl_lst[:n])
+                if wl <= width:
+                    nwords.append(w[: n + 1])
+                    word_lengths.append(wl)
+                    w = w[n + 1 :]
+                    wl_lst = wl_lst[n + 1 :]
+                    n = len(wl_lst)
+                else:
+                    n -= 1
+        return nwords, word_lengths
 
     def output_justify(start, line):
         """Justified output of a line."""
@@ -4120,8 +4125,6 @@ def fill_textbox(
     # starting point of text
     if pos is not None:
         pos = Point(pos)
-        if not pos in rect:
-            raise ValueError("'pos' must be inside 'rect'")
     else:  # default is just below rect top-left
         pos = rect.tl + (tolerance, fontsize * asc)
     if not pos in rect:
@@ -4136,7 +4139,7 @@ def fill_textbox(
         factor = 0
 
     # split in lines if just a string was given
-    if type(text) not in (tuple, list):
+    if type(text) is str:
         textlines = text.splitlines()
     else:
         textlines = []
@@ -4146,7 +4149,7 @@ def fill_textbox(
     max_lines = int((rect.y1 - pos.y) / (lheight * fontsize))
 
     new_lines = []  # the final list of textbox lines
-    no_justify = []  # do not justify these line numbers
+    no_justify = []  # no justify for these line numbers
     for i, line in enumerate(textlines):
         if line in ("", " "):
             new_lines.append((line, space_len))
@@ -4161,7 +4164,7 @@ def fill_textbox(
         if right_to_left:  # reverses Arabic / Hebrew text front to back
             line = writer.clean_rtl(line)
         tl = textlen(line)
-        if textlen(line) <= width:  # line short enough
+        if tl <= width:  # line short enough
             new_lines.append((line, tl))
             no_justify.append((len(new_lines) - 1))
             continue
@@ -4170,22 +4173,23 @@ def fill_textbox(
         words = line.split(" ")  # the words in the line
 
         # cut in parts any words that are longer than rect width
-        words = norm_words(std_width, words)
+        words, word_lengths = norm_words(std_width, words)
 
-        j = 1
-        while len(words) > 0:
-            line0 = " ".join(words[:-j]) if j > 0 else " ".join(words)
-            tl = textlen(line0)
-            if tl <= width:
-                new_lines.append((line0, tl))  # shortened line fits
-                if j == 0:  # this was the last part of line
-                    no_justify.append((len(new_lines) - 1))
-                    break
-                del words[:-j]
-                j = 0
-                width = rect.width - tolerance
+        n = len(words)
+        while True:
+            line0 = " ".join(words[:n])
+            wl = sum(word_lengths[:n]) + space_len * (len(word_lengths[:n]) - 1)
+            if wl <= width:
+                new_lines.append((line0, wl))
+                words = words[n:]
+                word_lengths = word_lengths[n:]
+                n = len(words)
+                line0 = None
             else:
-                j += 1
+                n -= 1
+
+            if len(words) == 0:
+                break
 
     nlines = len(new_lines)
     if nlines > max_lines:
@@ -4696,8 +4700,8 @@ def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> Quad:
 
     height = d * span["size"]  # the quad's rectangle height
     # The following are distances from the bbox corners, at wich we find the
-    # respective quad points. The calculation depends, on in which circle
-    # quadrant the text writing angle is positioned.
+    # respective quad points. The computat depends on in which circle
+    # quadrant the text writing angle is located.
     hs = height * sin
     hc = height * cos
     if hc >= 0 and hs <= 0:  # quadrant 1
@@ -4768,7 +4772,7 @@ def recover_line_quad(line: dict, spans: list = None) -> Quad:
     line_ll = q0.ll  # lower-left of line quad
     line_lr = q1.lr  # lower-right of line quad
 
-    mat0 = planishLine(line_ll, line_lr)
+    mat0 = planish_line(line_ll, line_lr)
 
     # map base line to x-axis such that line_ll goes to (0, 0)
     x_lr = line_lr * mat0
@@ -4815,7 +4819,7 @@ def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> Quad:
 
     span_ll = q0.ll  # lower-left of span quad
     span_lr = q1.lr  # lower-right of span quad
-    mat0 = planishLine(span_ll, span_lr)
+    mat0 = planish_line(span_ll, span_lr)
     # map base line to x-axis such that span_ll goes to (0, 0)
     x_lr = span_lr * mat0
 

@@ -4,8 +4,9 @@ This folder contains a number of basic tests to confirm that PyMuPDF is correctl
 The following areas are currently covered:
 * encryption and decryption
 * extraction of drawings
-* "geometry": correct working of points, rectangles, matrices
+* "geometry": correct working of points, rectangles, matrices and operator algebra
 * image bbox computation
+* handling of embedded files
 * image insertion
 * PDF document joining
 * computation of quadrilaterals for non-horizontal text
@@ -17,9 +18,13 @@ The following areas are currently covered:
 * handling of PDF page labels
 * pixmap handling
 * show PDF pages inside other PDF pages
-* textbox text extraction
+* text extraction
 * text searching
 * handling of PDF Tables of Contents
+* annotation handling
+* field / widget handling
+
+This is **_not a coverage test_**, although a significant part of the Python part **_does_** get executed (ca. 60%). Achieving a much higher code coverage remains an ongoing task.
 
 To use these scripts, you must have installed `pytest`:
 
@@ -32,26 +37,32 @@ python3.8 -m pytest
 ============================ test session starts =====================
 platform linux -- Python 3.8.5, pytest-6.2.3, py-1.10.0, pluggy-0.13.1
 rootdir: .../pymupdf
-collected 31 items
+collected 72 items
 
-test_badfonts.py .                                            [  3%]
-test_crypting.py .                                            [  6%]
-test_drawings.py .                                            [  9%]
-test_geometry.py ...                                          [ 19%]
-test_imagebbox.py .                                           [ 22%]
-test_insertimage.py .                                         [ 25%]
-test_insertpdf.py .                                           [ 29%]
-test_linequad.py .                                            [ 32%]
-test_metadata.py ..                                           [ 38%]
-test_nonpdf.py ...                                            [ 48%]
-test_object_manipulation.py ...                               [ 58%]
-test_pagedelete.py .                                          [ 61%]
-test_pagelabels.py .                                          [ 64%]
-test_pixmap.py ...                                            [ 74%]
-test_showpdfpage.py .                                         [ 77%]
-test_textbox.py ..                                            [ 83%]
+test_annots.py ...............                                [ 20%]
+test_badfonts.py .                                            [ 22%]
+test_crypting.py .                                            [ 23%]
+test_drawings.py .                                            [ 25%]
+test_embeddedfiles.py .                                       [ 26%]
+test_font.py ..                                               [ 29%]
+test_general.py ...........                                   [ 44%]
+test_geometry.py .......                                      [ 54%]
+test_imagebbox.py .                                           [ 55%]
+test_insertimage.py .                                         [ 56%]
+test_insertpdf.py .                                           [ 58%]
+test_linequad.py .                                            [ 59%]
+test_metadata.py ..                                           [ 62%]
+test_nonpdf.py ...                                            [ 66%]
+test_object_manipulation.py ...                               [ 70%]
+test_pagedelete.py .                                          [ 72%]
+test_pagelabels.py .                                          [ 73%]
+test_pixmap.py .....                                          [ 80%]
+test_showpdfpage.py .                                         [ 81%]
+test_textbox.py ..                                            [ 84%]
+test_textextract.py .                                         [ 86%]
 test_textsearch.py .                                          [ 87%]
-test_toc.py ....                                              [100%]
+test_toc.py ....                                              [ 93%]
+test_widgets.py .....                                         [100%]
 
-======================== 31 passed in 2.25s ==========================
+====================== 72 passed in 1.43s ===========================
 ```

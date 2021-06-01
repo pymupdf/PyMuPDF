@@ -16,7 +16,8 @@ A Font object also contains useful general information, like the font bbox, the 
 :meth:`~Font.glyph_bbox`             Glyph rectangle
 :meth:`~Font.glyph_name_to_unicode`  Get unicode from glyph name
 :meth:`~Font.has_glyph`              Return glyph id of unicode
-:meth:`~Font.text_length`            Compute text length under a fontsize
+:meth:`~Font.text_length`            Compute string length
+:meth:`~Font.char_lengths`           Tuple of char widths of a string
 :meth:`~Font.unicode_to_glyph_name`  Get glyph name of a unicode
 :meth:`~Font.valid_codepoints`       Array of supported unicodes
 :attr:`~Font.ascender`               Font ascender
@@ -75,15 +76,15 @@ A Font object also contains useful general information, like the font bbox, the 
          * a font file will **always** be embedded in your PDF,
          * Greek and Cyrillic characters are supported without needing the *encoding* parameter.
 
-        Using *ordering >= 0*, or fontnames "cjk", "china-t", "china-s", "japan" or "korea" will **always create the same "universal"** font **"Droid Sans Fallback Regular"**. This font supports **all CJK and all Latin characters**, including Greek and Cyrillic.
+        Using *ordering >= 0*, or fontnames "cjk", "china-t", "china-s", "japan" or "korea" will **always create the same "universal"** font **"Droid Sans Fallback Regular"**. This font supports **all Chinese, Japanese, Korean and Latin characters**, including Greek and Cyrillic. This is a sans-serif font.
 
-        Actually, you would rarely ever need another font than **"Droid Sans Fallback Regular"**. **Except** that this font file is relatively large and adds about 1.65 MB (compressed) to your PDF file size. If you do not need CJK support, stick with specifying "helv", "tiro" etc., and you will get away with about 35 KB compressed.
+        Actually, you would rarely ever need another sans-serif font than **"Droid Sans Fallback Regular"**. **Except** that this font file is relatively large and adds about 1.65 MB (compressed) to your PDF file size. If you do not need CJK support, stick with specifying "helv", "tiro" etc., and you will get away with about 35 KB compressed.
 
-        If you **know** you have a mixture of CJK and Latin text, consider just using ``Font("cjk")`` because this supports everything and also significantly (by a factor of two to three) speeds up execution: MuPDF will always find any character in this single font and need not check fallbacks.
+        If you **know** you have a mixture of CJK and Latin text, consider just using ``Font("cjk")`` because this supports everything and also significantly (by a factor of up to three) speeds up execution: MuPDF will always find any character in this single font and never needs to check fallbacks.
 
-        But if you do specify a Base-14 fontname, you will still be able to also write CJK characters: MuPDF detects this situation and silently falls back to the universal font (which will then of course also be embedded in your PDF).
+        But if you do use some other font, you will still automatically be able to also write CJK characters: MuPDF detects this situation and silently falls back to the universal font (which will then of course also be embedded in your PDF).
 
-        *(New in v1.17.5)* Optionally, some new "reserved" fontname codes become available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. **"Fira Mono"** is a nice mono-spaced sans font set and **FiraGO** is another non-serifed "universal" font, set which supports all Latin (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- but none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- **and** it provides the weight bold, italic, bold-italic -- which the universal font doesn't.
+        *(New in v1.17.5)* Optionally, some new "reserved" fontname codes become available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_, ``pip install pymupdf-fonts``. **"Fira Mono"** is a mono-spaced sans font set and **FiraGO** is another non-serifed "universal" font set which supports all Latin (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- but none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- **and** it provides the weights bold, italic, bold-italic -- which the universal font doesn't.
 
         **"Space Mono"** is another nice and small mono-spaced font from Google Fonts, which supports Latin Extended characters and comes with all 4 important weights.
 
@@ -115,7 +116,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: has_glyph(chr, language=None, script=0, fallback=False)
 
-      Check whether the unicode *chr* exists in the font or some fallback font. May be used to check whether any "TOFU" symbols will appear on output.
+      Check whether the unicode *chr* exists in the font or (option) some fallback font. May be used to check whether any "TOFU" symbols will appear on output.
 
       :arg int chr: the unicode of the character (i.e. *ord()*).
       :arg str language: the language -- currently unused.
@@ -203,15 +204,56 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: text_length(text, fontsize=11)
 
-      Calculate the length of a unicode string.
+      Calculate the length in points of a unicode string.
 
-      :arg str text: a text string -- UTF-8 encoded.
+      .. note:: There is a functional overlap with :meth:`get_text_length` for Base-14 fonts only.
+
+      :arg str text: a text string, UTF-8 encoded.
 
       :arg float fontsize: the fontsize.
 
       :rtype: float
 
-      :returns: the length of the string when stored in the PDF. Internally :meth:`glyph_advance` is used on a by-character level. If the font does not have a character, it will automatically be looked up in a fallback font.
+      :returns: the length of the string in points when stored in the PDF. If a character is not contained in the font, it will automatically be looked up in a fallback font.
+
+         .. note:: This method was originally implemented in Python, based on calling :meth:`Font.glyph_advance`. For performance reasons, it has been rewritten in C for v1.18.14. To compute the width of a single character, you can now use either of the following without performance penalty:
+
+            1. ``font.glyph_advance(ord("Ä")) * fontsize``
+            2. ``font.text_length("Ä", fontsize=fontsize)``
+
+            For multi-character strings, the method offers a huge performance advantage compared to the previous implementation: instead of about 0.5 microseconds for each character, only 12.5 nanoseconds are required for the second and subsequent ones.
+
+   .. method:: char_lengths(text, fontsize=11)
+
+      *New in v1.18.14*
+
+      Sequence of character lengths in points of a unicode string.
+
+      :arg str text: a text string, UTF-8 encoded.
+
+      :arg float fontsize: the fontsize.
+
+      :rtype: tuple
+
+      :returns: the lengths in points of the characters of a string when stored in the PDF. It works like :meth:`Font.text_length` broken down to single characters. This is a high speed method, used e.g. in :meth:`TextWriter.fill_textbox`. The following is true (allowing rounding errors): ``font.text_length(text) == sum(font.char_lengths(text))``.
+
+         >>> font = fitz.Font("helv")
+         >>> text = "PyMuPDF"
+         >>> font.text_length(text)
+         50.115999937057495
+         >>> fitz.get_text_length(text, fontname="helv")
+         50.115999937057495
+         >>> sum(font.char_lengths(text))
+         50.115999937057495
+         >>> pprint(font.char_lengths(text))
+         (7.336999952793121,  # P
+         5.5,                 # y
+         9.163000047206879,   # M
+         6.115999937057495,   # u
+         7.336999952793121,   # P
+         7.942000031471252,   # D
+         6.721000015735626)   # F
+
 
    .. attribute:: buffer
 

@@ -870,8 +870,8 @@ class Widget(object):
     def _validate(self):
         """Validate the class entries.
         """
-        if (self.rect.isInfinite
-            or self.rect.isEmpty
+        if (self.rect.is_infinite
+            or self.rect.is_empty
            ):
             raise ValueError("bad rect")
 

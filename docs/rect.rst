@@ -24,10 +24,9 @@ Hence some useful classification:
 **Methods / Attributes**      **Short Description**
 ============================= =======================================================
 :meth:`Rect.contains`         checks containment of another object
-:meth:`Rect.getArea`          calculate rectangle area
-:meth:`Rect.getRectArea`      calculate rectangle area
-:meth:`Rect.includePoint`     enlarge rectangle to also contain a point
-:meth:`Rect.includeRect`      enlarge rectangle to also contain another one
+:meth:`Rect.get_area`         calculate rectangle area
+:meth:`Rect.include_point`    enlarge rectangle to also contain a point
+:meth:`Rect.include_rect`     enlarge rectangle to also contain another one
 :meth:`Rect.intersect`        common part with another rectangle
 :meth:`Rect.intersects`       checks for non-empty intersections
 :meth:`Rect.morph`            transform with a point and a matrix
@@ -39,8 +38,8 @@ Hence some useful classification:
 :attr:`Rect.bottom_right`     bottom right point, synonym *br*
 :attr:`Rect.height`           rectangle height
 :attr:`Rect.irect`            equals result of method *round()*
-:attr:`Rect.isEmpty`          whether rectangle is empty
-:attr:`Rect.isInfinite`       whether rectangle is infinite
+:attr:`Rect.is_empty`         whether rectangle is empty
+:attr:`Rect.is_infinite`      whether rectangle is infinite
 :attr:`Rect.top_left`         top left point, synonym *tl*
 :attr:`Rect.top_right`        top_right point, synonym *tr*
 :attr:`Rect.quad`             :ref:`Quad` made from rectangle corners
@@ -87,11 +86,11 @@ Hence some useful classification:
       3. **Possible paradox:** The result may be empty, **even if** the rectangle is **not** empty! In such cases, the result obviously does **not** contain the rectangle. This is because MuPDF's algorithm allows for a small tolerance (1e-3). Example:
 
       >>> r = fitz.Rect(100, 100, 200, 100.001)
-      >>> r.isEmpty  # rect is NOT empty
+      >>> r.is_empty  # rect is NOT empty
       False
       >>> r.round()  # but its irect IS empty!
       fitz.IRect(100, 100, 200, 100)
-      >>> r.round().isEmpty
+      >>> r.round().is_empty
       True
 
       :rtype: :ref:`IRect`
@@ -113,23 +112,22 @@ Hence some useful classification:
       :arg r: Second rectangle
       :type r: :ref:`Rect`
 
-   .. method:: includeRect(r)
+   .. method:: include_rect(r)
 
       The smallest rectangle containing the current one and *r* is calculated and **replaces the current** one. If either rectangle is infinite, the result is also infinite. If one is empty, the other one will be taken as the result.
 
       :arg r: Second rectangle
       :type r: :ref:`Rect`
 
-   .. method:: includePoint(p)
+   .. method:: include_point(p)
 
-      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **Infinite rectangles remain unchanged.** To create a rectangle containing a series of points, start with (the empty) *fitz.Rect(p1, p1)* and successively perform *includePoint* operations for the other points.
+      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **Infinite rectangles remain unchanged.** To create a rectangle containing a series of points, start with (the empty) *fitz.Rect(p1, p1)* and successively perform *include_point* operations for the other points.
 
       :arg p: Point to include.
       :type p: :ref:`Point`
 
-   .. method:: getRectArea([unit])
 
-   .. method:: getArea([unit])
+   .. method:: get_area([unit])
 
       Calculate the area of the rectangle and, with no parameter, equals *abs(rect)*. Like an empty rectangle, the area of an infinite rectangle is also zero. So, at least one of *fitz.Rect(p1, p2)* and *fitz.Rect(p2, p1)* has a zero area.
 
@@ -251,13 +249,13 @@ Hence some useful classification:
 
       :type: float
 
-   .. attribute:: isInfinite
+   .. attribute:: is_infinite
 
       *True* if rectangle is infinite, *False* otherwise.
 
       :type: bool
 
-   .. attribute:: isEmpty
+   .. attribute:: is_empty
 
       *True* if rectangle is empty, *False* otherwise.
 

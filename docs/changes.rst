@@ -1,6 +1,25 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.14
+---------------------------
+* **Finished** implementing new, "snake_cased" names for methods and properties, that were "camelCased" and awkward in many aspects. At the end of this documentation, there is section :ref:`Deprecated` with more background and a mapping of old to new names.
+
+* **Fixed** issue `#1053 <https://github.com/pymupdf/PyMuPDF/issues/1053>`_. :meth:`Page.insert_image`: when given, include image mask in the hash computation.
+
+* **Fixed** issue `#1043 <https://github.com/pymupdf/PyMuPDF/issues/1043>`_. Added ``Pixmap.getPNGdata`` to the aliases of :meth:`Pixmap.tobytes`.
+
+* **Fixed** an internal error when computing the envelopping rectangle of drawn paths as returned by :meth:`Page.get_drawings`.
+
+* **Fixed** an internal error occasionally causing loops when outputting text via :meth:`TextWriter.fill_textbox`.
+
+* **Added** :meth:`Font.char_lengths`, which returns a tuple of character widths of a string.
+
+* **Added** more ways to specify pages in :meth:`Document.delete_pages`. Now a sequence (list, tuple or range) can be specified, and the Python ``del`` statement can be used. In the latter case, Python ``slices`` are also accepted.
+
+* **Changed** :meth:`Document.del_toc_item`, which disables a single item of the TOC: previously, the title text was removed. Instead, now the complete item will be shown grayed-out by supporting viewers.
+
+
 Changes in Version 1.18.13
 ---------------------------
 * **Fixed** issue `#1014 <https://github.com/pymupdf/PyMuPDF/issues/1014>`_.
@@ -426,13 +445,13 @@ Minor changes compared to version 1.16.2. The code of the "dict" and "rawdict" v
 Changes in Version 1.16.2
 ---------------------------
 * **Changed** text extraction methods of :ref:`Page` to allow detail control of the amount of extracted data.
-* **Added** :meth:`planishLine` which maps a given line (defined as a pair of points) to the x-axis.
+* **Added** :meth:`planish_line` which maps a given line (defined as a pair of points) to the x-axis.
 * **Fixed** an issue (w/o Github number) which brought down the interpreter when encountering certain non-UTF-8 encodable characters while using :meth:`Page.getText` with te "dict" option.
 * **Fixed** issue #362 ("Memory Leak with getText('rawDICT')").
 
 Changes in Version 1.16.1
 ---------------------------
-* **Added** property :attr:`Quad.isConvex` which checks whether a line is contained in the quad if it connects two points of it.
+* **Added** property :attr:`Quad.is_convex` which checks whether a line is contained in the quad if it connects two points of it.
 * **Changed** :meth:`Document.insert_pdf` to now allow dropping or including links and annotations independently during the copy. Fixes issue #352 ("Corrupt PDF data and ..."), which seemed to intermittently occur when using the method for some problematic PDF files.
 * **Fixed** a bug which, in matrix division using the syntax *"m1/m2"*, caused matrix *"m1"* to be **replaced** by the result instead of delivering a new matrix.
 * **Fixed** issue #354 ("SyntaxWarning with Python 3.8"). We now always use *"=="* for literals (instead of the *"is"* Python keyword).
@@ -540,7 +559,7 @@ Changes in Version 1.14.9
 * **Added** new low-level method :meth:`Document._getTrailerString`, which returns the trailer object of a PDF. This is much like :meth:`Document._getXrefString` except that the PDF trailer has no / needs no :data:`xref` to identify it.
 * **Added** new parameters for text insertion methods. You can now set stroke and fill colors of glyphs (text characters) independently, as well as the thickness of the glyph border. A new parameter *render_mode* controls the use of these colors, and whether the text should be visible at all.
 * **Fixed** issue #258 ("Copying image streams to new PDF without size increase"): For JPX images embedded in a PDF, :meth:`Document.extractImage` will now return them in their original format. Previously, the MuPDF base library was used, which returns them in PNG format (entailing a massive size increase).
-* **Fixed** issue #259 ("Morphing text to fit inside rect"). Clarified use of :meth:`getTextlength` and removed extra line breaks for long words.
+* **Fixed** issue #259 ("Morphing text to fit inside rect"). Clarified use of :meth:`get_text_length` and removed extra line breaks for long words.
 
 Changes in Version 1.14.8
 ---------------------------
@@ -553,7 +572,7 @@ Changes in Version 1.14.7
 ---------------------------
 * **Added** :meth:`Pixmap.set_pixel` to change one pixel value.
 * **Added** documentation for image conversion in the :ref:`FAQ`.
-* **Added** new function :meth:`getTextlength` to determine the string length for a given font.
+* **Added** new function :meth:`get_text_length` to determine the string length for a given font.
 * **Added** Postscript image output (changed :meth:`Pixmap.save` and :meth:`Pixmap.tobytes`).
 * **Changed** :meth:`Pixmap.save` and :meth:`Pixmap.tobytes` to ensure valid combinations of colorspace, alpha and output format.
 * **Changed** :meth:`Pixmap.save`: the desired format is now inferred from the filename.
@@ -634,7 +653,7 @@ Changes in Version 1.13.17
 * **Changed** method :meth:`Document.extractImage` to now return more meta information about the extracted imgage. Also, its performance has been greatly improved. Several demo scripts have been changed to make use of this method.
 * **Changed** method :meth:`Document._getXrefStream` to now return *None* if the object is no stream and no longer raise an exception if otherwise.
 * **Added** method :meth:`Document._deleteObject` which deletes a PDF object identified by its :data:`xref`. Only to be used by the experienced PDF expert.
-* **Added** a method :meth:`PaperRect` which returns a :ref:`Rect` for a supplied paper format string. Example: *fitz.PaperRect("letter") = fitz.Rect(0.0, 0.0, 612.0, 792.0)*.
+* **Added** a method :meth:`paper_rect` which returns a :ref:`Rect` for a supplied paper format string. Example: *fitz.paper_rect("letter") = fitz.Rect(0.0, 0.0, 612.0, 792.0)*.
 * **Added** a :ref:`FAQ` chapter to this document.
 
 Changes in Version 1.13.16
@@ -950,7 +969,7 @@ Please have a look at MuPDF's website to see which changes and enhancements are 
 
 Changes in version 1.9.1 compared to version 1.8.0 are the following:
 
-* New methods *getRectArea()* for both *fitz.Rect* and *fitz.IRect*
+* New methods *get_area()* for both *fitz.Rect* and *fitz.IRect*
 * Pixmaps can now be created directly from files using the new constructor *fitz.Pixmap(filename)*.
 * The Pixmap constructor *fitz.Pixmap(image)* has been extended accordingly.
 * *fitz.Rect* can now be created with all possible combinations of points and coordinates.
@@ -964,9 +983,9 @@ Changes in version 1.9.1 compared to version 1.8.0 are the following:
 * New pixmap method *samplesRGB()* providing a *samples* version with alpha bytes stripped off (RGB colorspaces only).
 * New pixmap method *samplesAlpha()* providing the alpha bytes only of the *samples* area.
 * New iterator *fitz.Pages(doc)* over a document's set of pages.
-* New matrix methods *invert()* (calculate inverted matrix), *concat()* (calculate matrix product), *preTranslate()* (perform a shift operation).
+* New matrix methods *invert()* (calculate inverted matrix), *concat()* (calculate matrix product), *pretranslate()* (perform a shift operation).
 * New *IRect* methods *intersect()* (intersection with another rectangle), *translate()* (perform a shift operation).
-* New *Rect* methods *intersect()* (intersection with another rectangle), *transform()* (transformation with a matrix), *includePoint()* (enlarge rectangle to also contain a point), *includeRect()* (enlarge rectangle to also contain another one).
+* New *Rect* methods *intersect()* (intersection with another rectangle), *transform()* (transformation with a matrix), *include_point()* (enlarge rectangle to also contain a point), *include_rect()* (enlarge rectangle to also contain another one).
 * Documented *Point.transform()* (transform a point with a matrix).
 * *Matrix*, *IRect*, *Rect* and *Point* classes now support compact, algebraic formulations for manipulating such objects.
 * Incremental saves for changes are possible now using the call pattern *doc.save(doc.name, incremental=True)*.

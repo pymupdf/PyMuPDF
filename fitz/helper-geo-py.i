@@ -52,7 +52,7 @@ class Matrix(object):
         self.a, self.b, self.c, self.d, self.e, self.f = dst[1]
         return 0
 
-    def preTranslate(self, tx, ty):
+    def pretranslate(self, tx, ty):
         """Calculate pre translation and replace current matrix."""
         tx = float(tx)
         ty = float(ty)
@@ -60,7 +60,7 @@ class Matrix(object):
         self.f += tx * self.b + ty * self.d
         return self
 
-    def preScale(self, sx, sy):
+    def prescale(self, sx, sy):
         """Calculate pre scaling and replace current matrix."""
         sx = float(sx)
         sy = float(sy)
@@ -70,7 +70,7 @@ class Matrix(object):
         self.d *= sy
         return self
 
-    def preShear(self, h, v):
+    def preshear(self, h, v):
         """Calculate pre shearing and replace current matrix."""
         h = float(h)
         v = float(v)
@@ -81,7 +81,7 @@ class Matrix(object):
         self.d += h * b
         return self
 
-    def preRotate(self, theta):
+    def prerotate(self, theta):
         """Calculate pre rotation and replace current matrix."""
         theta = float(theta)
         while theta < 0: theta += 360
@@ -218,7 +218,7 @@ class Matrix(object):
     norm = __abs__
 
     @property
-    def isRectilinear(self):
+    def is_rectilinear(self):
         """True if rectangles are mapped to rectangles."""
         return (abs(self.b) < EPSILON and abs(self.c) < EPSILON) or \
             (abs(self.a) < EPSILON and abs(self.d) < EPSILON);
@@ -239,10 +239,10 @@ class IdentityMatrix(Matrix):
     def checkargs(*args):
         raise NotImplementedError("Identity is readonly")
 
-    preRotate    = checkargs
-    preShear     = checkargs
-    preScale     = checkargs
-    preTranslate = checkargs
+    prerotate    = checkargs
+    preshear     = checkargs
+    prescale     = checkargs
+    pretranslate = checkargs
     concat       = checkargs
     invert       = checkargs
 
@@ -480,12 +480,12 @@ class Rect(object):
         return self
 
     @property
-    def isEmpty(self):
+    def is_empty(self):
         """True if rectangle area is empty."""
         return self.x0 == self.x1 or self.y0 == self.y1
 
     @property
-    def isInfinite(self):
+    def is_infinite(self):
         """True if rectangle is infinite."""
         return self.x0 > self.x1 or self.y0 > self.y1
 
@@ -535,14 +535,14 @@ class Rect(object):
     width  = property(lambda self: abs(self.x1 - self.x0))
     height = property(lambda self: abs(self.y1 - self.y0))
 
-    def includePoint(self, p):
+    def include_point(self, p):
         """Extend to include point-like p."""
         if len(p) != 2:
             raise ValueError("bad Point: sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._include_point_in_rect(self, p)
         return self
 
-    def includeRect(self, r):
+    def include_rect(self, r):
         """Extend to include rect-like r."""
         if len(r) != 4:
             raise ValueError("bad Rect: sequ. length")
@@ -604,7 +604,7 @@ class Rect(object):
         return len(rect) == 4 and bool(self - rect) is False
 
     def __abs__(self):
-        if self.isEmpty or self.isInfinite:
+        if self.is_empty or self.is_infinite:
             return 0.0
         return (self.x1 - self.x0) * (self.y1 - self.y0)
 
@@ -652,9 +652,9 @@ class Rect(object):
         l = len(x)
         r = Rect(self).normalize()
         if l == 4:
-            if r.isEmpty: return False
+            if r.is_empty: return False
             xr = Rect(x).normalize()
-            if xr.isEmpty: return True
+            if xr.is_empty: return True
             if r.x0 <= xr.x0 and r.y0 <= xr.y0 and \
                r.x1 >= xr.x1 and r.y1 >= xr.y1:
                return True
@@ -664,7 +664,8 @@ class Rect(object):
                r.y0 <= x[1] <= r.y1:
                return True
             return False
-        return False
+        msg = "bad type or sequence: '%s'" % repr(x)
+        raise ValueError(msg)
 
     def __or__(self, x):
         if not hasattr(x, "__len__"):
@@ -672,9 +673,9 @@ class Rect(object):
 
         r = Rect(self)
         if len(x) == 2:
-            return r.includePoint(x)
+            return r.include_point(x)
         if len(x) == 4:
-            return r.includeRect(x)
+            return r.include_rect(x)
         raise ValueError("bad type op 2")
 
     def __and__(self, x):
@@ -688,10 +689,10 @@ class Rect(object):
     def intersects(self, x):
         """Check if intersection with rectangle x is not empty."""
         r1 = Rect(x)
-        if self.isEmpty or self.isInfinite or r1.isEmpty or r1.isInfinite:
+        if self.is_empty or self.is_infinite or r1.is_empty or r1.is_infinite:
             return False
         r = Rect(self)
-        if r.intersect(r1).isEmpty:
+        if r.intersect(r1).is_empty:
             return False
         return True
 
@@ -721,17 +722,20 @@ class IRect(Rect):
     def __repr__(self):
         return "IRect" + str(tuple(self))
 
-    def includePoint(self, p):
+    def include_point(self, p):
         """Extend rectangle to include point p."""
-        return Rect.includePoint(self, p).round()
+        rect = self.rect.include_point(p)
+        return rect.irect
 
-    def includeRect(self, r):
+    def include_rect(self, r):
         """Extend rectangle to include rectangle r."""
-        return Rect.includeRect(self, r).round()
+        rect = self.rect.include_rect(r)
+        return rect.irect
 
     def intersect(self, r):
         """Restrict rectangle to intersection with rectangle r."""
-        return Rect.intersect(self, r).round()
+        rect = self.rect.intersect(r)
+        return rect.irect
 
     def __setitem__(self, i, v):
         v = int(v)
@@ -793,7 +797,7 @@ class Quad(object):
         raise ValueError("bad Quad constructor")
 
     @property
-    def isRectangular(self)->bool:
+    def is_rectangular(self)->bool:
         """Check if quad is rectangular.
 
         Notes:
@@ -819,53 +823,33 @@ class Quad(object):
 
 
     @property
-    def isConvex(self)->bool:
+    def is_convex(self)->bool:
         """Check if quad is convex and not degenerate.
 
         Notes:
-            For convexity, every line connecting two points of the quad must be
-            inside the quad. This is equivalent to that every corner encloses
-            an angle with 0 < angle < 180 degrees.
-            Excluding the "degenerate" case (all corners on same line),
-            it suffices to check that the sines of three angles are > 0.
+            Check that for the two diagonals, the other two corners are not
+            on the same side of the diagonal.
         Returns:
             True or False.
         """
-        count = 0
-        sine = TOOLS._sine_between(self.ul, self.ur, self.lr)
-        if sine > 0:
-            count += 1
-        elif sine < 0:
+        m = planish_line(self.ul, self.lr)  # puts this diagonal on x-axis
+        p1 = self.ll * m  # transform the
+        p2 = self.ur * m  # other two points
+        if p1.y * p2.y > 0:
             return False
-
-        sine = TOOLS._sine_between(self.ur, self.lr, self.ll)
-        if sine > 0:
-            count += 1
-        elif sine < 0:
+        m = planish_line(self.ll, self.ur)  # puts other diagonal on x-axis
+        p1 = self.lr * m  # tranform the
+        p2 = self.ul * m  # remaining points
+        if p1.y * p2.y > 0:
             return False
+        return True
 
-        sine = TOOLS._sine_between(self.lr, self.ll, self.ul)
-        if sine > 0:
-            count += 1
-        elif sine < 0:
-            return False
-
-        sine = TOOLS._sine_between(self.ll, self.ul, self.ur)
-        if sine > 0:
-            count += 1
-        elif sine < 0:
-            return False
-
-        if count >= 2:
-            return True
-
-        return False
 
     width  = property(lambda self: max(abs(self.ul - self.ur), abs(self.ll - self.lr)))
     height = property(lambda self: max(abs(self.ul - self.ll), abs(self.ur - self.lr)))
 
     @property
-    def isEmpty(self):
+    def is_empty(self):
         """Check whether all quad corners are on the same line.
 
         This is the case if width or height is zero.
@@ -893,9 +877,9 @@ class Quad(object):
             return False
         if CheckRect(x):
             r = Rect(x)
-            if r.isInfinite:
+            if r.is_infinite:
                 return False
-            if r.isEmpty:
+            if r.is_empty:
                 return True
             return TOOLS._point_in_quad(x[:2], self) and TOOLS._point_in_quad(x[2:], self)
         if CheckQuad(x):
@@ -931,10 +915,10 @@ class Quad(object):
         return Quad(-self.ul, -self.ur, -self.ll, -self.lr)
 
     def __bool__(self):
-        return not self.isEmpty
+        return not self.is_empty
 
     def __nonzero__(self):
-        return not self.isEmpty
+        return not self.is_empty
 
     def __eq__(self, quad):
         if not hasattr(quad, "__len__"):
@@ -947,7 +931,7 @@ class Quad(object):
         )
 
     def __abs__(self):
-        if self.isEmpty:
+        if self.is_empty:
             return 0.0
         return abs(self.ul - self.ur) * abs(self.ul - self.ll)
 
@@ -957,7 +941,7 @@ class Quad(object):
 
         Return a new quad."""
 
-        delta = Matrix(1, 1).preTranslate(p.x, p.y)
+        delta = Matrix(1, 1).pretranslate(p.x, p.y)
         q = self * ~delta * m * delta
         return q
 

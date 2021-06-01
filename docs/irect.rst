@@ -10,9 +10,7 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 **Attribute / Method**          **Short Description**
 ============================== ===========================================
 :meth:`IRect.contains`         checks containment of another object
-:meth:`IRect.getArea`          calculate rectangle area
-:meth:`IRect.getRect`          return a :ref:`Rect` with same coordinates
-:meth:`IRect.getRectArea`      calculate rectangle area
+:meth:`IRect.get_area`         calculate rectangle area
 :meth:`IRect.intersect`        common part with another rectangle
 :meth:`IRect.intersects`       checks for non-empty intersection
 :meth:`IRect.morph`            transform with a point and a matrix
@@ -21,9 +19,9 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 :attr:`IRect.bottom_left`      bottom left point, synonym *bl*
 :attr:`IRect.bottom_right`     bottom right point, synonym *br*
 :attr:`IRect.height`           height of the rectangle
-:attr:`IRect.isEmpty`          whether rectangle is empty
-:attr:`IRect.isInfinite`       whether rectangle is infinite
-:attr:`IRect.rect`             equals result of method *getRect()*
+:attr:`IRect.is_empty`         whether rectangle is empty
+:attr:`IRect.is_infinite`      whether rectangle is infinite
+:attr:`IRect.rect`             the :ref:`Rect` equivalent
 :attr:`IRect.top_left`         top left point, synonym *tl*
 :attr:`IRect.top_right`        top_right point, synonym *tr*
 :attr:`IRect.quad`             :ref:`Quad` made from rectangle corners
@@ -54,15 +52,8 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
       The other parameters mean integer coordinates.
 
-   .. method:: getRect()
 
-      A convenience function returning a :ref:`Rect` with the same coordinates. Also available as attribute *rect*.
-
-      :rtype: :ref:`Rect`
-
-   .. method:: getRectArea([unit])
-
-   .. method:: getArea([unit])
+   .. method:: get_area([unit])
 
       Calculates the area of the rectangle and, with no parameter, equals *abs(IRect)*. Like an empty rectangle, the area of an infinite rectangle is also zero.
 
@@ -145,6 +136,12 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
       :type: :ref:`Point`
 
+   .. attribute:: rect
+
+      The :ref:`Rect` with the same coordinates as floats.
+
+      :type: :ref:`Rect`
+
    .. attribute:: quad
 
       The quadrilateral *Quad(irect.tl, irect.tr, irect.bl, irect.br)*.
@@ -187,13 +184,13 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
       :type: int
 
-   .. attribute:: isInfinite
+   .. attribute:: is_infinite
 
       *True* if rectangle is infinite, *False* otherwise.
 
       :type: bool
 
-   .. attribute:: isEmpty
+   .. attribute:: is_empty
 
       *True* if rectangle is empty, *False* otherwise.
 

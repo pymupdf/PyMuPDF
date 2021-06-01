@@ -4,11 +4,11 @@
 * Verify manipulation of single TOC item works
 """
 import os
-
 import fitz
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
+filename2 = os.path.join(scriptdir, "resources", "2.pdf")
 full_toc = os.path.join(scriptdir, "resources", "full_toc.txt")
 simple_toc = os.path.join(scriptdir, "resources", "simple_toc.txt")
 doc = fitz.open(filename)
@@ -32,6 +32,7 @@ def test_erase_toc():
 
 
 def test_setcolors():
+    doc = fitz.open(filename2)
     toc = doc.get_toc(False)
     for i in range(len(toc)):
         d = toc[i][3]
@@ -40,9 +41,11 @@ def test_setcolors():
         d["italic"] = True
         doc.set_toc_item(i, dest_dict=d)
 
-    toc = doc.get_toc(False)
-    for t in toc:
+    toc2 = doc.get_toc(False)
+    assert len(toc2) == len(toc)
+
+    for t in toc2:
         d = t[3]
         assert d["bold"]
-        assert d["iatlic"]
-        assrtd["color"] == (1, 0, 0)
+        assert d["italic"]
+        assert d["color"] == (1, 0, 0)

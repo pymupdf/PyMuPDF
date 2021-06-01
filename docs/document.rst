@@ -25,7 +25,7 @@ For details on **embedded files** refer to Appendix 3.
 ======================================= ==========================================================
 **Method / Attribute**                  **Short Description**
 ======================================= ==========================================================
-:meth:`Document.add_layer_config`       PDF only: make new optional content configuration
+:meth:`Document.add_layer`              PDF only: make new optional content configuration
 :meth:`Document.add_ocg`                PDF only: add new optional content group
 :meth:`Document.authenticate`           gain access to an encrypted document
 :meth:`Document.can_save_incrementally` check if incremental save is possible
@@ -46,7 +46,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
 :meth:`Document.find_bookmark`          retrieve page location after layouting
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
-:meth:`Document.get_oc_states`          PDF only: lists of OCGs in ON, OFF, RBGroups
+:meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
 :meth:`Document.get_ocgs`               PDF only: info on all optional content groups
 :meth:`Document.get_ocmd`               PDF only: retrieve definition of an :data:`OCMD`
@@ -224,15 +224,15 @@ For details on **embedded files** refer to Appendix 3.
         {'number': 0, 'name': 'my-config', 'creator': ''}
         >>> # use 'number' as config identifyer in add_ocg
 
-    .. method:: add_layer_config(name, creator=None, on=None)
+    .. method:: add_layer(name, creator=None, on=None)
 
       *(New in v1.18.3)*
 
-      Add an optional content configuration. Layers serve as a collection of ON / OFF states for optional content groups. They allow fast visibility switches between different views on the same document.
+      Add an optional content configuration. Layers serve as a collection of ON / OFF states for optional content groups and allow fast visibility switches between different views on the same document.
 
       :arg str name: arbitrary name.
-      :arg str creator: creating software.
-      :arg sequ on: a sequence of OCG :data:`xref` numbers which should be set to ON (visible). All other OCGs will be set to OFF.
+      :arg str creator: (optional) creating software.
+      :arg sequ on: a sequence of OCG :data:`xref` numbers which should be set to ON when this layer gets activated. All OCGs not listed here will be set to OFF.
 
 
     .. method:: switch_layer(number, as_default=False)
@@ -268,7 +268,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in v1.18.4)*
 
-      Create or update an :data:`OCMD` (optional content membership dictionary).
+      Create or update an :data:`OCMD`, **Optional Content Membership Dictionary.**
 
       :arg int xref: :data:`xref` of the OCMD to be updated, or 0 for a new OCMD.
       :arg list ocgs: a sequence of :data:`xref` numbers of existing :data:`OCG` PDF objects.
@@ -279,9 +279,9 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note::
 
-        The purpose of OCMDs is to more flexibly determine visibility. An OCMD actually is a boolean expression: it evaluates the current visibility of one or more optional content groups and then computes its own ON (true) or OFF (false) state.
+        Like an OCG, an OCMD has a visibility state ON or OFF, and it can be used like an OCG. In contrast to an OCG, the OCMD state is determined by evaluating the state of one or more OCGs via special forms of **boolean expressions.** If the expression evaluates to true, the OCMD state is ON and OFF for false.
 
-        There are two ways to formulate the OCMD's visibility:
+        There are two ways to formulate OCMD visibility:
 
         1. Use the combination of *ocgs* and *policy*: The *policy* value is interpreted as follows:
 
@@ -294,11 +294,11 @@ For details on **embedded files** refer to Appendix 3.
 
           Solution: use an **OCG** for object 1 and an **OCMD** for object 2. Create the OCMD via ``set_ocmd(ocgs=[xref], policy="AllOff")``, with the :data:`xref` of the OCG.
 
-        2. Use the **visibility expression** *ve*: This is a list of a logical expression keyword (string) followed by integers or other lists. The possible logical expressions are **"and"**, **"or"**, and **"not"**. The integers must be :data:`xref` numbers of OCGs. The syntax of this parameter is a bit awkward, but quite powerful:
+        2. Use the **visibility expression** *ve*: This is a list of two or more items. The **first item** is a logical keyword: one of the strings **"and"**, **"or"**, or **"not"**. The **second** and all subsequent items must either be an integer or another list. An integer must be the :data:`xref` number of an OCG. A list must again have at least two items starting with one of the boolean keywords. This syntax is a bit awkward, but quite powerful:
 
-          - Each list, including the top one, must start with a logical expression.
-          - If the first item is a **"not"**, then the list must have exactly two items. If it is **"and"** or **"or"**, any number of other items may follow.
-          - Items following the logical expression may be either integers or other lists. An *integer* must be the xref of an OCG. A *list* must conform to the rules above.
+          - Each list must start with a logical keyword.
+          - If the keyword is a **"not"**, then the list must have exactly two items. If it is **"and"** or **"or"**, any number of other items may follow.
+          - Items following the logical keyword may be either integers or again a list. An *integer* must be the xref of an OCG. A *list* must conform to the previous rules.
 
           **Examples:**
 
@@ -307,21 +307,21 @@ For details on **embedded files** refer to Appendix 3.
 
           For more details and examples see page 367 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
 
-          Visibility expressions, ``/VE``, are part of the PDF version 1.6 specification. If you are using an older PDF consumer software, you hence may find it unsupported (i.e. ignored).
+          Visibility expressions, ``/VE``, are part of PDF specification version 1.6. So not all PDF viewers / readers may already support this feature and hence will react in some standard way for those cases.
 
 
     .. method:: get_ocmd(xref)
 
       *(New in v1.18.4)*
 
-      Retrieve the definition of an OCMD (optional content membership dictionary).
+      Retrieve the definition of an :data:`OCMD`.
 
       :arg int xref: the :data:`xref` of the OCMD.
       :rtype: dict
       :returns: a dictionary with the keys *xref*, *ocgs*, *policy* and *ve*.
 
 
-    .. method:: get_oc_states(config=-1)
+    .. method:: get_layer(config=-1)
 
       *(New in v1.18.3)*
 
@@ -329,7 +329,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int config: the configuration layer (default is the standard config layer).
 
-      >>> pprint(doc.get_oc_states())
+      >>> pprint(doc.get_layer())
       {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
       >>>
 
@@ -348,7 +348,7 @@ For details on **embedded files** refer to Appendix 3.
       Values *None* will not change the corresponding PDF array.
 
         >>> doc.set_layer(-1, basestate="OFF")  # only changes the base state
-        >>> pprint(doc.get_oc_states())
+        >>> pprint(doc.get_layer())
         {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
 
 
@@ -583,7 +583,8 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: :ref:`Page`
 
       :returns: a new copy of the same page. All pending updates (e.g. to annotations or widgets) will be finalized and a fresh copy of the page will be loaded.
-        .. note:: In a typical use case, a page :ref:`Pixmap` should be taken after annotations / widgets have been added or changed. To force all those changes being reflected in the page structure, this method re-instates a fresh copy while keeping the object hierarchy "document -> page -> annotation(s)" intact.
+
+        .. note:: In a typical use case, a page :ref:`Pixmap` should be taken after annotations / widgets have been added or changed. To force all those changes being reflected in the page structure, this method re-instates a fresh copy while keeping the object hierarchy "document -> page -> annotations/widgets" intact.
 
 
     .. method:: page_cropbox(pno)
@@ -775,13 +776,13 @@ For details on **embedded files** refer to Appendix 3.
           * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
           * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 56 of the :ref:`AdobeManual`.
-          * **string** -- a valid PDF string. **All PDF strings** must be enclosed by some type of brackets. Denote the empty string as ``"()"``. Depending on its content, the possible bracket types are "(...)" or "<...>". Reserved PDF characters must be escaped. If in doubt, we **strongly recommend** to use :meth:`getPDFstr`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
+          * **string** -- a valid PDF string. **All PDF strings** must be enclosed by some type of brackets. Denote the empty string as ``"()"``. Depending on its content, the possible bracket types are "(...)" or "<...>". Reserved PDF characters must be escaped. If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
 
             >>> # because of €, the following yields UTF-16BE BOM
-            >>> fitz.getPDFstr("Pay in $ or €.")
+            >>> fitz.get_pdf_str("Pay in $ or €.")
             '<feff00500061007900200069006e002000240020006f0072002020ac002e>'
             >>> # escapes for brackets and non-ASCII
-            >>> fitz.getPDFstr("Prices in EUR (USD also accepted). Areas are in m².")
+            >>> fitz.get_pdf_str("Prices in EUR (USD also accepted). Areas are in m².")
             '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
 
 
@@ -982,20 +983,20 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: del_toc_item(idx)
 
-      *(New in v1.17.7)*
+      * New in v1.17.7
+      * Changed in v1.18.14: no longer remove the item's text, but show it grayed-out.
 
-      PDF only: Remove this TOC item. This is a high-speed method primarily meant for *disabling* items, which are pointing to deleted pages. Physically, the item still exists in the TOC tree, but will show an empty title and no longer point to a destination. So the overall TOC structure remains intact.
+      PDF only: Remove this TOC item. This is a high-speed method, which **disables** the respective item, but leaves the overall TOC struture intact. Physically, the item still exists in the TOC tree, but is shown grayed-out and will no longer point to any destination.
 
-      This also implies that you can reassign the item to a destination when required.
+      This also implies that you can reassign the item to a new destination using :meth:`Document.set_toc_item`, when required.
 
       :arg int idx: the index of the item in list :meth:`Document.get_toc`.
 
 
     .. method:: set_toc_item(idx, dest_dict=None, kind=None, pno=None, uri=None, title=None, to=None, filename=None, zoom=0)
 
-      *(New in v1.17.7)*
-
-      *(Changed in v1.18.6)*
+      * New in v1.17.7
+      * Changed in v1.18.6
 
       PDF only: Changes the TOC item identified by its index. Change the item **title**, **destination**, **appearance** (color, bold, italic) or collapsing sub-items -- or to remove the item altogether.
 
@@ -1113,8 +1114,6 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: saves the document incrementally. This is a convenience abbreviation for *doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)*.
 
 
-    .. method:: ez_save()
-
     .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
 
       *(Changed in v1.18.7)*
@@ -1207,40 +1206,48 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Delete a page given by its 0-based number in -inf < pno < page_count - 1.
 
-      Changed in version 1.14.17
+      * Changed in v1.18.14: support Python's ``del`` statement.
 
       :arg int pno: the page to be deleted. Negative number count backwards from the end of the document (like with indices). Default is the last page.
 
     .. method:: delete_pages(*args, **kwds)
 
-      *Changed in v1.18.13: more flexibility specifying pages to delete.*
+      * Changed in v1.18.13: more flexibility specifying pages to delete.
+      * Changed in v1.18.14: support Python's ``del`` statement.
 
-      PDF only: Delete multiple pages given as 0-based numbers. *Changed in v1.18.13:* introduced much more flexibility for specifying pages.
+      PDF only: Delete multiple pages given as 0-based numbers.
 
-      **Format 1:** Use keywords. Represents the old format.
+      **Format 1:** Use keywords. Represents the old format. A contiguous range of pages is removed.
         * "from_page": first page to delete. Zero if omitted.
         * "to_page": last page to delete. Last page in document if omitted. Must not be less then "from_page".
 
-      **Format 2:** A sequence as one positional parameter. A list, tuple or range object specifying pages to delete. Pages need not be consecutive.
+      **Format 2:** Two page numbers as positional parameters. Handled like Format 1.
 
-      **Format 3:** Page number as a single positional parameter. Equivalent to :meth:`Page.delete_page`.
+      **Format 3:** One positional integer parameter. Equivalent to :meth:`Page.delete_page`.
 
-      **Format 4:** Two page numbers as positional parameters. Handled like Format 1.
+      **Format 4:** One positional parameter of type *list*, *tuple* or *range()* of page numbers. The items of this sequence may be in any order and may contain duplicates.
+
+      **Format 5:** *(New in v1.18.14)* Using the Python ``del`` statement and index / slice notation is now possible.
 
       .. note::
 
-        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also invalidate items in the table of contents which happen to point to deleted pages. "Invalidation" here means, that the bookmark will point to nowhere and the title will show the string "<>". The overall TOC structure is left intact.
+        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also deactivate items in the table of contents which point to deleted pages. "Deactivation" here means, that the bookmark will point to nowhere and the title will be shown grayed-out by supporting PDF viewers. The overall TOC structure is left intact.
 
-        Similarly, it will remove any **links on remaining pages** that point to a deleted one. This action may have an extended response time for documents with many pages.
+        It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
 
-        Following examples all delete pages 500 through 519:
+        Following examples will all delete pages 500 through 519:
         
         * ``doc.delete_pages(500, 519)``
         * ``doc.delete_pages(from_page=500, to_page=519)``
-        * ``doc.delete_pages([500, 501, 502, ... , 519])``
+        * ``doc.delete_pages((500, 501, 502, ... , 519))``
         * ``doc.delete_pages(range(500, 520))``
+        * ``del doc[500:520]``
+        * ``del doc[(500, 501, 502, ... , 519)]``
+        * ``del doc[range(500, 520)]``
 
-        For the :ref:`AdobeManual` the above takes about 0.5 to 0.6 seconds, because on every of the remaining 1290 pages all links must be removed, which point to a deleted pages.
+        For the :ref:`AdobeManual` the above takes about 0.6 seconds, because the remaining 1290 pages must be cleaned from invalid links.
+
+        In general, the performance of this method is dependent on the number of remaining pages -- **not** on the number of deleted pages: in the above example, **deleting all pages except** those 20, will need much less time.
 
 
     .. method:: copy_page(pno, to=-1)
@@ -1288,10 +1295,9 @@ For details on **embedded files** refer to Appendix 3.
 
       :rtype: bool
       :returns:
-         * None: not a Form PDF or property not defined.
-         * True / False: the value of the property (either just set or existing for inquiries).
+         * None: not a Form PDF, or property not defined.
+         * True / False: the value of the property (either just set or existing for inquiries). Has no effect if no Form PDF.
 
-         Once set, the property cannot be removed again (which is no problem).
 
 
     .. method:: get_sigflags()
@@ -1547,12 +1553,6 @@ For details on **embedded files** refer to Appendix 3.
     .. attribute:: is_dirty
 
       *True* if this is a PDF document and contains unsaved changes, else *False*.
-
-      :type: bool
-
-    .. attribute:: is_pdf
-
-      *True* if this is a PDF document, else *False*.
 
       :type: bool
 

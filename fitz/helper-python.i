@@ -111,13 +111,13 @@ annot_skel = {
 }
 
 
-def getTextlength(text: str, fontname: str ="helv", fontsize: float =11, encoding: int =0) -> float:
-    """Calculate length of a string for a given built-in font.
+def get_text_length(text: str, fontname: str ="helv", fontsize: float =11, encoding: int =0) -> float:
+    """Calculate length of a string for a built-in font.
 
     Args:
         fontname: name of the font.
-        fontsize: size of font in points.
-        encoding: encoding to use (0=Latin, 1=Greek, 2=Cyrillic).
+        fontsize: font size points.
+        encoding: encoding to use, 0=Latin (default), 1=Greek, 2=Cyrillic.
     Returns:
         (float) length of text.
     """
@@ -745,7 +745,7 @@ class linkDest(object):
 # -------------------------------------------------------------------------------
 # "Now" timestamp in PDF Format
 # -------------------------------------------------------------------------------
-def getPDFnow() -> str:
+def get_pdf_now() -> str:
     import time
 
     tz = "%s'%s'" % (
@@ -762,7 +762,7 @@ def getPDFnow() -> str:
     return tstamp
 
 
-def getPDFstr(s: str) -> str:
+def get_pdf_str(s: str) -> str:
     """ Return a PDF string depending on its coding.
 
     Notes:
@@ -852,61 +852,64 @@ def getTJstr(text: str, glyphs: typing.Union[list, tuple, None], simple: bool, o
     return "[<" + otxt + ">]"
 
 
-"""
-Information taken from the following web sites:
-www.din-formate.de
-www.din-formate.info/amerikanische-formate.html
-www.directtools.de/wissen/normen/iso.htm
-"""
-paperSizes = {  # known paper formats @ 72 dpi
-    "a0": (2384, 3370),
-    "a1": (1684, 2384),
-    "a10": (74, 105),
-    "a2": (1191, 1684),
-    "a3": (842, 1191),
-    "a4": (595, 842),
-    "a5": (420, 595),
-    "a6": (298, 420),
-    "a7": (210, 298),
-    "a8": (147, 210),
-    "a9": (105, 147),
-    "b0": (2835, 4008),
-    "b1": (2004, 2835),
-    "b10": (88, 125),
-    "b2": (1417, 2004),
-    "b3": (1001, 1417),
-    "b4": (709, 1001),
-    "b5": (499, 709),
-    "b6": (354, 499),
-    "b7": (249, 354),
-    "b8": (176, 249),
-    "b9": (125, 176),
-    "c0": (2599, 3677),
-    "c1": (1837, 2599),
-    "c10": (79, 113),
-    "c2": (1298, 1837),
-    "c3": (918, 1298),
-    "c4": (649, 918),
-    "c5": (459, 649),
-    "c6": (323, 459),
-    "c7": (230, 323),
-    "c8": (162, 230),
-    "c9": (113, 162),
-    "card-4x6": (288, 432),
-    "card-5x7": (360, 504),
-    "commercial": (297, 684),
-    "executive": (522, 756),
-    "invoice": (396, 612),
-    "ledger": (792, 1224),
-    "legal": (612, 1008),
-    "legal-13": (612, 936),
-    "letter": (612, 792),
-    "monarch": (279, 540),
-    "tabloid-extra": (864, 1296),
-}
+def paper_sizes():
+    """Known paper formats @ 72 dpi as a dictionary. Key is the format string
+    like "a4" for ISO-A4. Value is the tuple (width, height).
+
+    Information taken from the following web sites:
+    www.din-formate.de
+    www.din-formate.info/amerikanische-formate.html
+    www.directtools.de/wissen/normen/iso.htm
+    """
+    return {
+        "a0": (2384, 3370),
+        "a1": (1684, 2384),
+        "a10": (74, 105),
+        "a2": (1191, 1684),
+        "a3": (842, 1191),
+        "a4": (595, 842),
+        "a5": (420, 595),
+        "a6": (298, 420),
+        "a7": (210, 298),
+        "a8": (147, 210),
+        "a9": (105, 147),
+        "b0": (2835, 4008),
+        "b1": (2004, 2835),
+        "b10": (88, 125),
+        "b2": (1417, 2004),
+        "b3": (1001, 1417),
+        "b4": (709, 1001),
+        "b5": (499, 709),
+        "b6": (354, 499),
+        "b7": (249, 354),
+        "b8": (176, 249),
+        "b9": (125, 176),
+        "c0": (2599, 3677),
+        "c1": (1837, 2599),
+        "c10": (79, 113),
+        "c2": (1298, 1837),
+        "c3": (918, 1298),
+        "c4": (649, 918),
+        "c5": (459, 649),
+        "c6": (323, 459),
+        "c7": (230, 323),
+        "c8": (162, 230),
+        "c9": (113, 162),
+        "card-4x6": (288, 432),
+        "card-5x7": (360, 504),
+        "commercial": (297, 684),
+        "executive": (522, 756),
+        "invoice": (396, 612),
+        "ledger": (792, 1224),
+        "legal": (612, 1008),
+        "legal-13": (612, 936),
+        "letter": (612, 792),
+        "monarch": (279, 540),
+        "tabloid-extra": (864, 1296),
+    }
 
 
-def PaperSize(s: str) -> tuple:
+def paper_size(s: str) -> tuple:
     """Return a tuple (width, height) for a given paper format string.
 
     Notes:
@@ -920,16 +923,16 @@ def PaperSize(s: str) -> tuple:
         size = size[:-2]
     if size.endswith("-p"):
         size = size[:-2]
-    rc = paperSizes.get(size, (-1, -1))
+    rc = paper_sizes().get(size, (-1, -1))
     if f == "p":
         return rc
     return (rc[1], rc[0])
 
 
-def PaperRect(s: str) -> Rect:
+def paper_rect(s: str) -> Rect:
     """Return a Rect for the paper size indicated in string 's'. Must conform to the argument of method 'PaperSize', which will be invoked.
     """
-    width, height = PaperSize(s)
+    width, height = paper_size(s)
     return Rect(0.0, 0.0, width, height)
 
 
@@ -980,11 +983,11 @@ def CheckRect(r: typing.Any) -> bool:
         r = Rect(r)
     except:
         return False
-    return not (r.isEmpty or r.isInfinite)
+    return not (r.is_empty or r.is_infinite)
 
 
 def CheckQuad(q: typing.Any) -> bool:
-    """Check whether an object is convex, not empty  quad-like.
+    """Check whether an object is convex, not empty quad-like.
 
     It must be a sequence of 4 number pairs.
     """
@@ -992,7 +995,7 @@ def CheckQuad(q: typing.Any) -> bool:
         q0 = Quad(q)
     except:
         return False
-    return q0.isConvex
+    return q0.is_convex
 
 
 def CheckMarkerArg(quads: typing.Any) -> tuple:
@@ -1054,13 +1057,14 @@ def DUMMY(*args, **kw):
     return
 
 
-def planishLine(p1: point_like, p2: point_like) -> Matrix:
-    """Return matrix which flattens out the line from p1 to p2.
+def planish_line(p1: point_like, p2: point_like) -> Matrix:
+    """Compute matrix which maps line from p1 to p2 to the x-axis, such that it
+    maintains its length and p1 * matrix = Point(0, 0).
 
     Args:
         p1, p2: point_like
     Returns:
-        Matrix which maps p1 to Point(0,0) and p2 to a point on the x axis at
+        Matrix which maps p1 to Point(0, 0) and p2 to a point on the x axis at
         the same distance to Point(0,0). Will always combine a rotation and a
         transformation.
     """
@@ -1069,7 +1073,7 @@ def planishLine(p1: point_like, p2: point_like) -> Matrix:
     return Matrix(TOOLS._hor_matrix(p1, p2))
 
 
-def ImageProperties(img: typing.ByteString) -> dict:
+def image_properties(img: typing.ByteString) -> dict:
     """ Return basic properties of an image.
 
     Args:
@@ -1160,40 +1164,6 @@ def ConversionTrailer(i: str):
     return r
 
 
-def DerotateRect(cropbox: rect_like, rect: rect_like, deg: float) -> Rect:
-    """Calculate the non-rotated rect version.
-
-    Args:
-        cropbox: the page's /CropBox
-        rect: rectangle
-        deg: the page's /Rotate value
-    Returns:
-        Rectangle in original (/CropBox) coordinates
-    """
-    while deg < 0:
-        deg += 360
-    while deg >= 360:
-        deg -= 360
-    if deg % 90 > 0:
-        deg = 0
-    if deg == 0:  # no rotation: no-op
-        return rect
-    points = []  # store the new rect points here
-    for p in rect.quad:  # run through the rect's quad points
-        if deg == 90:
-            q = (p.y, cropbox.height - p.x)
-        elif deg == 270:
-            q = (cropbox.width - p.y, p.x)
-        else:
-            q = (cropbox.width - p.x, cropbox.height - p.y)
-        points.append(q)
-
-    r = Rect(points[0], points[0])
-    for p in points[1:]:
-        r |= p
-    return r
-
-
 def get_highlight_selection(page, start: point_like =None, stop: point_like =None, clip: rect_like =None) -> list:
     """Return rectangles of text lines between two points.
 
@@ -1219,7 +1189,7 @@ def get_highlight_selection(page, start: point_like =None, stop: point_like =Non
         stop = clip.br
     clip.y0 = start.y
     clip.y1 = stop.y
-    if clip.isEmpty or clip.isInfinite:
+    if clip.is_empty or clip.is_infinite:
         return []
 
     # extract text of page, clip only, no images, expand ligatures
@@ -1241,7 +1211,7 @@ def get_highlight_selection(page, start: point_like =None, stop: point_like =Non
     bboxf = lines.pop(0)
     if bboxf.y0 - start.y <= 0.1 * bboxf.height:  # close enough?
         r = Rect(start.x, bboxf.y0, bboxf.br)  # intersection rectangle
-        if not (r.isEmpty or r.isInfinite):
+        if not (r.is_empty or r.is_infinite):
             lines.insert(0, r)  # insert again if not empty
     else:
         lines.insert(0, bboxf)  # insert again
@@ -1253,7 +1223,7 @@ def get_highlight_selection(page, start: point_like =None, stop: point_like =Non
     bboxl = lines.pop()
     if stop.y - bboxl.y1 <= 0.1 * bboxl.height:  # close enough?
         r = Rect(bboxl.tl, stop.x, bboxl.y1)  # intersection rectangle
-        if not (r.isEmpty or r.isInfinite):
+        if not (r.is_empty or r.is_infinite):
             lines.append(r)  # append if not empty
     else:
         lines.append(bboxl)  # append again
@@ -1330,7 +1300,7 @@ def make_table(rect: rect_like =(0, 0, 1, 1), cols: int =1, rows: int =1) -> lis
         PyMuPDF Rect objects of equal sizes.
     """
     rect = Rect(rect)  # ensure this is a Rect
-    if rect.isEmpty or rect.isInfinite:
+    if rect.is_empty or rect.is_infinite:
         raise ValueError("rect must be finite and not empty")
     tl = rect.tl
 

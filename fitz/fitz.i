@@ -69,8 +69,6 @@ CheckParent(self)%}
 #define THROWMSG(gctx, msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 #define ASSERT_PDF(cond) if (cond == NULL) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
-#define MAX(a, b) ((a) < (b)) ? (b) : (a)
-#define MIN(a, b) ((a) < (b)) ? (a) : (b)
 
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
 
@@ -967,7 +965,7 @@ struct Document
                 if (!filespec) THROWMSG(gctx, "bad PDF: /EF object not found");
                 res = JM_BufferFromBytes(gctx, buffer);
                 if (EXISTS(buffer) && !res) THROWMSG(gctx, "bad type: 'buffer'");
-                if (res)
+                if (res && buffer != Py_None)
                 {
                     JM_update_stream(gctx, pdf, filespec, res, 1);
                     // adjust /DL and /Size parameters
@@ -1172,8 +1170,8 @@ struct Document
                                          filename=filename,
                                          ufilename=ufilename,
                                          desc=desc)
-            date = getPDFnow()
-            self.xref_set_key(xref, "Params/ModDate", getPDFstr(date))
+            date = get_pdf_now()
+            self.xref_set_key(xref, "Params/ModDate", get_pdf_str(date))
             return xref
 
         def embfile_add(self, name: str, buffer: typing.ByteString,
@@ -1204,10 +1202,10 @@ struct Document
                                          filename=filename,
                                          ufilename=ufilename,
                                          desc=desc)
-            date = getPDFnow()
+            date = get_pdf_now()
             self.xref_set_key(xref, "Type", "/EmbeddedFile")
-            self.xref_set_key(xref, "Params/CreationDate", getPDFstr(date))
-            self.xref_set_key(xref, "Params/ModDate", getPDFstr(date))
+            self.xref_set_key(xref, "Params/CreationDate", get_pdf_str(date))
+            self.xref_set_key(xref, "Params/ModDate", get_pdf_str(date))
             return xref
         %}
 
@@ -1928,14 +1926,14 @@ struct Document
             int fp = from_page, tp = to_page, sa = start_at;
 
             // normalize page numbers
-            fp = MAX(fp, 0);                // -1 = first page
-            fp = MIN(fp, srcCount - 1);     // but do not exceed last page
+            fp = Py_MAX(fp, 0);                // -1 = first page
+            fp = Py_MIN(fp, srcCount - 1);     // but do not exceed last page
 
             if (tp < 0) tp = srcCount - 1;  // -1 = last page
-            tp = MIN(tp, srcCount - 1);     // but do not exceed last page
+            tp = Py_MIN(tp, srcCount - 1);     // but do not exceed last page
 
             if (sa < 0) sa = outCount;      // -1 = behind last page
-            sa = MIN(sa, outCount);         // but that is also the limit
+            sa = Py_MIN(sa, outCount);         // but that is also the limit
 
             fz_try(gctx) {
                 if (!pdfout || !pdfsrc) THROWMSG(gctx, "source or target not a PDF");
@@ -3161,13 +3159,18 @@ if not self.is_form_pdf:
         PyObject *_remove_toc_item(int xref)
         {
             // "remove" bookmark by letting it point to nowhere
-            pdf_obj *item = NULL;
+            pdf_obj *item = NULL, *color;
+            int i;
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             fz_try(gctx) {
                 item = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_dict_del(gctx, item, PDF_NAME(Dest));
                 pdf_dict_del(gctx, item, PDF_NAME(A));
-                pdf_dict_put_text_string(gctx, item, PDF_NAME(Title), "<>");
+                color = pdf_new_array(gctx, pdf, 3);
+                for (i=0; i < 3; i++) {
+                    pdf_array_push_real(gctx, color, 0.8);
+                }
+                pdf_dict_put_drop(gctx, item, PDF_NAME(C), color);
             }
             fz_always(gctx) {
                 pdf_drop_obj(gctx, item);
@@ -3766,6 +3769,11 @@ if basestate:
                     raise ValueError("document closed or encrypted")
                 if not self.is_pdf:
                     return ()
+                if type(pno) is not int:
+                    try:
+                        pno = pno.number
+                    except:
+                        raise ValueError("need a Page or page number")
                 val = self._getPageInfo(pno, 1)
                 if full is False:
                     return [v[:-1] for v in val]
@@ -3779,6 +3787,11 @@ if basestate:
                     raise ValueError("document closed or encrypted")
                 if not self.is_pdf:
                     return ()
+                if type(pno) is not int:
+                    try:
+                        pno = pno.number
+                    except:
+                        raise ValueError("need a Page or page number")
                 val = self._getPageInfo(pno, 2)
                 if full is False:
                     return [v[:-1] for v in val]
@@ -3792,6 +3805,11 @@ if basestate:
                     raise ValueError("document closed or encrypted")
                 if not self.is_pdf:
                     return ()
+                if type(pno) is not int:
+                    try:
+                        pno = pno.number
+                    except:
+                        raise ValueError("need a Page or page number")
                 val = self._getPageInfo(pno, 3)
                 rc = [(v[0], v[1], v[2], Rect(v[3])) for v in val]
                 return rc
@@ -3858,16 +3876,17 @@ if basestate:
                 while pno < 0:
                     pno += page_count
 
-                if not pno in range(page_count):
+                if pno >= page_count:
                     raise ValueError("bad page number(s)")
 
                 # remove TOC bookmarks pointing to deleted page
-                old_toc = self.get_toc()
-                for i, item in enumerate(old_toc):
+                toc = self.get_toc()
+                ol_xrefs = self.get_outline_xrefs()
+                for i, item in enumerate(toc):
                     if item[2] == pno + 1:
-                        self.del_toc_item(i)
+                        self._remove_toc_item(ol_xrefs[i])
 
-                self._remove_links_to((pno,))
+                self._remove_links_to(frozenset((pno,)))
                 self._delete_page(pno)
                 self._reset_page_refs()
 
@@ -3909,6 +3928,8 @@ if basestate:
                             raise ValueError("both arguments must be int")
                         if f > t:
                             f, t = t, f
+                        if not f <= t < page_count:
+                            raise ValueError("bad page number(s)")
                         numbers = tuple(range(f, t + 1))
                     else:
                         r = args[0]
@@ -3917,15 +3938,19 @@ if basestate:
                         numbers = tuple(r)
 
                 numbers = list(map(int, set(numbers)))  # ensure unique integers
+                if numbers == []:
+                    print("nothing to delete")
+                    return
                 numbers.sort()
                 if numbers[0] < 0 or numbers[-1] >= page_count:
                     raise ValueError("bad page number(s)")
-                old_toc = self.get_toc()
-                for i, item in enumerate(old_toc):
-                    if item[2] - 1 in numbers:  # a deleted page number
-                        self.del_toc_item(i)
+                frozen_numbers = frozenset(numbers)
+                toc = self.get_toc()
+                for i, xref in enumerate(self.get_outline_xrefs()):
+                    if toc[i][2] - 1 in frozen_numbers:
+                        self._remove_toc_item(xref)  # remove target in PDF object
 
-                self._remove_links_to(numbers)
+                self._remove_links_to(frozen_numbers)
 
                 for i in reversed(numbers):  # delete pages, last to first
                     self._delete_page(i)
@@ -4015,6 +4040,31 @@ if basestate:
                 if i not in self:
                     raise IndexError("page not in document")
                 return self.load_page(i)
+
+
+            def __delitem__(self, i: AnyType)->None:
+                if not self.is_pdf:
+                    raise ValueError("not a PDF")
+                if type(i) is int:
+                    return self.delete_page(i)
+                if type(i) in (list, tuple, range):
+                    return self.delete_pages(i)
+                if type(i) is not slice:
+                    raise ValueError("bad argument type")
+                pc = self.page_count
+                start = i.start if i.start else 0
+                stop = i.stop if i.stop else pc
+                step = i.step if i.step else 1
+                while start < 0:
+                    start += pc
+                if start >= pc:
+                    raise ValueError("bad page number(s)")
+                while stop < 0:
+                    stop += pc
+                if stop > pc:
+                    raise ValueError("bad page number(s)")
+                return self.delete_pages(range(start, stop, step))
+
 
             def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None)->"Page":
                 """Return a generator iterator over a page range.
@@ -5339,7 +5389,7 @@ def get_oc_items(self) -> list:
 
                 For this, it must be exactly three connected lines, of which
                 the first and the last one must be horizontal and line two
-                must be vertical.
+                must be vertical. Also, 'closePath' must be true.
                 """
                 if not path["closePath"]:
                     return False
@@ -5352,6 +5402,12 @@ def get_oc_items(self) -> list:
                     return False
                 if p1.y != p2.y or p3.x != p4.x or p5.y != p6.y:
                     return False
+                r = Rect(p1, p2).normalize()
+                r |= p3
+                r |= p4
+                r |= p5
+                r |= p6
+                path["rect"] = r
                 return True
 
             def check_and_merge(this, prev):
@@ -5419,27 +5475,34 @@ def get_oc_items(self) -> list:
                     if item[0] == "m":
                         p = Point(item[1]) * ctm
                         current = p
-                        path["rect"] = Rect(p, p)
                     elif item[0] == "l":
                         p2 = Point(item[1]) * ctm
                         path["items"].append(("l", current, p2))
                         current = p2
-                        path["rect"] |= p2
                     elif item[0] == "c":
                         p2 = Point(item[1]) * ctm
                         p3 = Point(item[2]) * ctm
                         p4 = Point(item[3]) * ctm
                         path["items"].append(("c", current, p2, p3, p4))
                         current = p4
-                        path["rect"] |= p2
-                        path["rect"] |= p3
-                        path["rect"] |= p4
                 elif item == "closePath":
                     path["closePath"] = True
                 elif item in ("estroke", "efill", "eclip", "eclip-stroke"):
                     if is_rectangle(path):
                         path["items"] = [("re", path["rect"])]
                         path["closePath"] = False
+                    # make path rectangle for items
+                    else:
+                        for i, item in enumerate(path["items"]):
+                            for j, p in enumerate(item[1:]):
+                                if i == 0 and j == 0:
+                                    x0 = x1 = p.x
+                                    y0 = y1 = p.y
+                                x0 = min(x0, p.x)
+                                x1 = max(x1, p.x)
+                                y0 = min(y0, p.y)
+                                y1 = max(y1, p.y)
+                        path["rect"] = Rect(x0, y0, x1, y1)
 
                     try:  # check if path is "stroke" duplicate of previous
                         prev = paths.pop()  # get previous path in list
@@ -6064,7 +6127,14 @@ if not sanitize and not self.is_wrapped:
 
             // process stream ---------------------------------
             have_stream:;
-                fz_md5_buffer(gctx, imgbuf, digest);
+                fz_md5 state;
+                fz_md5_init(&state);
+                fz_md5_update(&state, imgbuf->data, imgbuf->len);
+                if (EXISTS(imask)) {
+                    maskbuf = JM_BufferFromBytes(gctx, imask);
+                    fz_md5_update(&state, maskbuf->data, maskbuf->len);
+                }
+                fz_md5_final(&state, digest);
                 md5_py = PyBytes_FromStringAndSize(digest, 16);
                 temp = PyDict_GetItem(digests, md5_py);
                 if (temp) {
@@ -6109,7 +6179,6 @@ if not sanitize and not self.is_wrapped:
                 bpc = image->bpc;
                 fz_colorspace *colorspace = image->colorspace;
                 fz_image_resolution(image, &xres, &yres);
-                maskbuf = JM_BufferFromBytes(gctx, imask);
                 mask = fz_new_image_from_buffer(gctx, maskbuf);
                 zimg = fz_new_image_from_compressed_buffer(gctx, w, h,
                             bpc, colorspace, xres, yres, 1, 0, NULL,
@@ -6880,7 +6949,13 @@ if not self.colorspace or self.colorspace.n > 3:
         FITZEXCEPTION(set_alpha, !result)
         %pythonprepend set_alpha
 %{"""Set alpha channel to values contained in a byte array.
-If omitted, set alphas to 255."""%}
+If omitted, set alphas to 255.
+
+Args:
+    alphavalues: (bytes) with length (width * height) values in range(255).
+    premultiply: (bool, True) premultiply colors with alpha values.
+    opaque: (tuple) length colorspace.n, color value to set to opacity 0.
+"""%}
         PyObject *set_alpha(PyObject *alphavalues=NULL, int premultiply=1, PyObject *opaque=NULL)
         {
             fz_buffer *res = NULL;
@@ -7094,7 +7169,7 @@ def save(self, filename, output=None):
 def pil_save(self, *args, **kwargs):
     """Write to image file using Pillow.
 
-    Arguments are passed to Pillow's Image.save() method.
+    Args are passed to Pillow's Image.save method, see their documentation.
     Use instead of save when other output formats are desired.
     """
     try:
@@ -7123,8 +7198,8 @@ def pil_save(self, *args, **kwargs):
 def pil_tobytes(self, *args, **kwargs):
     """Convert to binary image stream using pillow.
 
-    Arguments are passed to Pillow's Image.save() method.
-    Use it instead of save when other output formats are needed.
+    Args are passed to Pillow's Image.save method, see their documentation.
+    Use instead of 'tobytes' when other output formats are needed.
     """
     from io import BytesIO
     bytes_out = BytesIO()
@@ -8429,29 +8504,29 @@ struct Annot
         //----------------------------------------------------------------
         // annotation update appearance
         //----------------------------------------------------------------
-        PyObject *_update_appearance(float opacity=-1, char *blend_mode=NULL,
-            PyObject *fill_color=NULL,
-            int rotate = -1)
+        PyObject *_update_appearance(float opacity=-1,
+                    char *blend_mode=NULL,
+                    PyObject *fill_color=NULL,
+                    int rotate = -1)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             int type = pdf_annot_type(gctx, annot);
             float fcol[4] = {1,1,1,1};  // std fill color: white
-            int nfcol = 0;  // number of color components
+            int i, nfcol = 0;  // number of color components
             JM_color_FromSequence(fill_color, &nfcol, fcol);
             fz_try(gctx) {
-                pdf_dirty_annot(gctx, annot); // enforce MuPDF /AP formatting
-                if (type == PDF_ANNOT_FREE_TEXT) {
-                    if (EXISTS(fill_color)) {
-                        pdf_set_annot_color(gctx, annot, nfcol, fcol);
-                    } else {
-                        pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
-                    }
-                } else {
-                    if (EXISTS(fill_color)) {
-                        pdf_set_annot_interior_color(gctx, annot, nfcol, fcol);
-                    } else if (fill_color != Py_None) {
-                        pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
-                    }
+                pdf_dirty_annot(gctx, annot); // enforce new /AP
+                // remove fill color from unsupported annots
+                // or if so requested
+                if (type != PDF_ANNOT_SQUARE
+                    && type != PDF_ANNOT_CIRCLE
+                    && type != PDF_ANNOT_LINE
+                    && type != PDF_ANNOT_POLY_LINE
+                    && type != PDF_ANNOT_POLYGON
+                    || nfcol == 0 && fill_color != Py_None) {
+                    pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
+                } else if (nfcol > 0) {
+                    pdf_set_annot_interior_color(gctx, annot, nfcol, fcol);
                 }
 
                 int insert_rot = (rotate >= 0) ? 1 : 0;
@@ -8470,11 +8545,25 @@ struct Annot
                     default: insert_rot = 0;
                 }
 
-                if (insert_rot)
+                if (insert_rot) {
                     pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Rotate), rotate);
-                annot->needs_new_ap = 1;  // re-create appearance stream
-                pdf_update_annot(gctx, annot);  // update the annotation
+                }
 
+                annot->needs_new_ap = 1;  // re-create appearance stream
+                pdf_update_annot(gctx, annot);  // let MuPDF update
+
+                // insert fill color
+                if (type == PDF_ANNOT_FREE_TEXT) {
+                    if (nfcol > 0) {
+                        pdf_set_annot_color(gctx, annot, nfcol, fcol);
+                    }
+                } else if (nfcol > 0) {
+                    pdf_obj *col = pdf_new_array(gctx, annot->page->doc, nfcol);
+                    for (i = 0; i < nfcol; i++) {
+                        pdf_array_push_real(gctx, col, fcol[i]);
+                    }
+                    pdf_dict_put_drop(gctx,annot->obj, PDF_NAME(IC), col);
+                }
             }
             fz_catch(gctx) {
                 PySys_WriteStderr("cannot update annot: '%s'\n", fz_caught_message(gctx));
@@ -8575,9 +8664,9 @@ struct Annot
             dt = self.border["dashes"]  # get the dashes spec
             bwidth = self.border["width"]  # get border line width
             stroke = self.colors["stroke"]  # get the stroke color
-            if fill_color != None:
+            if fill_color != None:  # change of fill color requested
                 fill = fill_color
-            else:
+            else:  # put in current annot value
                 fill = self.colors["fill"]
 
             rect = None  # self.rect  # prevent MuPDF fiddling with it
@@ -8612,9 +8701,8 @@ struct Annot
                 fill_color=fill,
                 rotate=rotate,
             )
-            if not val:  # something went wrong, skip the rest
-                return val
-
+            if val == False:
+                raise ValueError("Error updating annotation.")
             bfill = color_string(fill, "f")
             bstroke = color_string(stroke, "s")
 
@@ -9835,7 +9923,7 @@ struct TextPage {
         while i < items - 1:
             v1 = val[i]
             v2 = val[i + 1]
-            if v1.y1 != v2.y1 or (v1 & v2).isEmpty:
+            if v1.y1 != v2.y1 or (v1 & v2).is_empty:
                 i += 1
                 continue  # no overlap on same line
             val[i] = v1 | v2  # join rectangles
@@ -10502,7 +10590,7 @@ struct TextWriter
 
         if morph:
             p = morph[0] * self.ictm
-            delta = Matrix(1, 1).preTranslate(p.x, p.y)
+            delta = Matrix(1, 1).pretranslate(p.x, p.y)
             matrix = ~delta * morph[1] * delta
         if morph or matrix:
             new_cont_lines.append("%g %g %g %g %g %g cm" % JM_TUPLE(matrix))
@@ -10660,13 +10748,76 @@ struct Font
 
         %pythonprepend glyph_advance
         %{"""Return the glyph width of a unicode (font size 1)."""%}
-        float glyph_advance(int chr, char *language=NULL, int script=0, int wmode=0)
+        PyObject *glyph_advance(int chr, char *language=NULL, int script=0, int wmode=0)
         {
             fz_font *font;
             fz_text_language lang = fz_text_language_from_string(language);
             int gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
-            return fz_advance_glyph(gctx, font, gid, wmode);
+            return PyFloat_FromDouble((double) fz_advance_glyph(gctx, font, gid, wmode));
         }
+        
+
+        FITZEXCEPTION(text_length, !result)
+        %pythonprepend text_length
+        %{"""Return length of unicode 'text' under a fontsize."""%}
+        PyObject *text_length(PyObject *text, double fontsize=11, char *language=NULL, int script=0, int wmode=0)
+        {
+            fz_font *font=NULL, *thisfont = (fz_font *) $self;
+            fz_text_language lang = fz_text_language_from_string(language);
+            double rc = 0;
+            fz_try(gctx) {
+                if (!PyUnicode_Check(text) || PyUnicode_READY(text) != 0) {
+                    THROWMSG(gctx, "bad type: text");
+                }
+                Py_ssize_t i, len = PyUnicode_GET_LENGTH(text);
+                int kind = PyUnicode_KIND(text);
+                void *data = PyUnicode_DATA(text);
+                for (i = 0; i < len; i++) {
+                    int c = PyUnicode_READ(kind, data, i);
+                    int gid = fz_encode_character_with_fallback(gctx,thisfont, c, script, lang, &font);
+                    rc += (double) fz_advance_glyph(gctx, font, gid, wmode);
+                }
+            }
+            fz_catch(gctx) {
+                PyErr_Clear();
+                return NULL;
+            }
+            rc *= fontsize;
+            return PyFloat_FromDouble(rc);
+        }
+
+
+        FITZEXCEPTION(char_lengths, !result)
+        %pythonprepend char_lengths
+        %{"""Return tuple of char lengths of unicode 'text' under a fontsize."""%}
+        PyObject *char_lengths(PyObject *text, double fontsize=11, char *language=NULL, int script=0, int wmode=0)
+        {
+            fz_font *font, *thisfont = (fz_font *) $self;
+            fz_text_language lang = fz_text_language_from_string(language);
+            PyObject *rc = NULL;
+            fz_try(gctx) {
+                if (!PyUnicode_Check(text) || PyUnicode_READY(text) != 0) {
+                    THROWMSG(gctx, "bad type: text");
+                }
+                Py_ssize_t i, len = PyUnicode_GET_LENGTH(text);
+                int kind = PyUnicode_KIND(text);
+                void *data = PyUnicode_DATA(text);
+                rc = PyTuple_New(len);
+                for (i = 0; i < len; i++) {
+                    int c = PyUnicode_READ(kind, data, i);
+                    int gid = fz_encode_character_with_fallback(gctx,thisfont, c, script, lang, &font);
+                    PyTuple_SET_ITEM(rc, i,
+                        PyFloat_FromDouble(fontsize * (double) fz_advance_glyph(gctx, font, gid, wmode)));
+                }
+            }
+            fz_catch(gctx) {
+                PyErr_Clear();
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
 
         %pythonprepend glyph_bbox
         %{"""Return the glyph bbox of a unicode (font size 1)."""%}
@@ -10797,10 +10948,6 @@ struct Font
             def unicode_to_glyph_name(self, ch):
                 """Return the glyph name for a unicode."""
                 return unicode_to_glyph_name(ch)
-
-            def text_length(self, text, fontsize=11, wmode=0):
-                """Calculate the length of a string for this font."""
-                return fontsize * sum([self.glyph_advance(ord(c), wmode=wmode) for c in text])
 
             def __repr__(self):
                 return "Font('%s')" % self.name
@@ -11317,28 +11464,38 @@ struct Tools
         }
 
 
-        float _measure_string(const char *text, const char *fontname, float fontsize, int encoding = 0)
+        FITZEXCEPTION(_measure_string, !result)
+        PyObject *_measure_string(const char *text, const char *fontname, double fontsize, int encoding = 0)
         {
-            fz_font *font = fz_new_base14_font(gctx, fontname);
-            float w = 0;
-            while (*text)
-            {
-                int c, g;
-                text += fz_chartorune(&c, text);
-                switch (encoding)
+            double w = 0;
+            fz_font *font = NULL;
+            fz_try(gctx) {
+                font = fz_new_base14_font(gctx, fontname);
+                while (*text)
                 {
-                    case PDF_SIMPLE_ENCODING_GREEK:
-                        c = fz_iso8859_7_from_unicode(c); break;
-                    case PDF_SIMPLE_ENCODING_CYRILLIC:
-                        c = fz_windows_1251_from_unicode(c); break;
-                    default:
-                        c = fz_windows_1252_from_unicode(c); break;
+                    int c, g;
+                    text += fz_chartorune(&c, text);
+                    switch (encoding)
+                    {
+                        case PDF_SIMPLE_ENCODING_GREEK:
+                            c = fz_iso8859_7_from_unicode(c); break;
+                        case PDF_SIMPLE_ENCODING_CYRILLIC:
+                            c = fz_windows_1251_from_unicode(c); break;
+                        default:
+                            c = fz_windows_1252_from_unicode(c); break;
+                    }
+                    if (c < 0) c = 0xB7;
+                    g = fz_encode_character(gctx, font, c);
+                    w += (double) fz_advance_glyph(gctx, font, g, 0);
                 }
-                if (c < 0) c = 0xB7;
-                g = fz_encode_character(gctx, font, c);
-                w += fz_advance_glyph(gctx, font, g, 0);
             }
-            return w * fontsize;
+            fz_always(gctx) {
+                fz_drop_font(gctx, font);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return PyFloat_FromDouble(w * fontsize);
         }
 
         PyObject *

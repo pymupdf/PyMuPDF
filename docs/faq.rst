@@ -950,7 +950,7 @@ With this method, only the **number of lines** will be controlled to not go beyo
 
 Line **width is ignored**. The surplus part of a line will simply be invisible.
 
-However, for built-in fonts there are ways to calculate the line width beforehand - see :meth:`getTextlength`.
+However, for built-in fonts there are ways to calculate the line width beforehand - see :meth:`get_text_length`.
 
 Here is another example. It inserts 4 text strings using the four different rotation options, and thereby explains, how the text insertion point must be chosen to achieve the desired result::
 
@@ -1508,10 +1508,10 @@ To create a page in *landscape* format, just exchange the width and height value
 
 Use this to create the page with another pre-defined paper format:
 
->>> w, h = fitz.PaperSize("letter-l")  # 'Letter' landscape
+>>> w, h = fitz.paper_size("letter-l")  # 'Letter' landscape
 >>> page = doc.new_page(width = w, height = h)
 
-The convenience function :meth:`PaperSize` knows over 40 industry standard paper formats to choose from. To see them, inspect dictionary :attr:`paperSizes`. Pass the desired dictionary key to :meth:`PaperSize` to retrieve the paper dimensions. Upper and lower case is supported. If you append "-L" to the format name, the landscape version is returned.
+The convenience function :meth:`paper_size` knows over 40 industry standard paper formats to choose from. To see them, inspect dictionary :attr:`paperSizes`. Pass the desired dictionary key to :meth:`paper_size` to retrieve the paper dimensions. Upper and lower case is supported. If you append "-L" to the format name, the landscape version is returned.
 
 .. note:: Here is a 3-liner that creates a PDF with one empty page. Its file size is 470 bytes:
 
@@ -1691,7 +1691,7 @@ This deals with joining PDF pages to form a new PDF with pages each combining tw
     src = fitz.open(infile)
     doc = fitz.open()  # empty output PDF
 
-    width, height = fitz.PaperSize("a4")  # A4 portrait output page format
+    width, height = fitz.paper_size("a4")  # A4 portrait output page format
     r = fitz.Rect(0, 0, width, height)
 
     # define the 4 rectangles per page
@@ -1774,7 +1774,7 @@ It features maintaining any metadata, table of contents and links contained in t
 
     if not meta["creator"]:
         meta["creator"] = "PyMuPDF PDF converter"
-    meta["modDate"] = fitz.getPDFnow()
+    meta["modDate"] = fitz.get_pdf_now()
     meta["creationDate"] = meta["modDate"]
     pdf.set_metadata(meta)
 
@@ -2188,11 +2188,11 @@ ID      array       File identifier consisting of two byte strings.
 XRefStm int         Offset of a cross-reference stream. See :ref:`AdobeManual` p. 109.
 ======= =========== ===================================================================================
 
-Access this information via PyMuPDF with :meth:`Document.pdf_trailer`.
+Access this information via PyMuPDF with :meth:`Document.pdf_trailer` or, equivalently, via :meth:`Document.xref_object` using -1 instead of a valid :data:`xref` number.
 
     >>> import fitz
     >>> doc=fitz.open("PyMuPDF.pdf")
-    >>> print(doc.xref_object(-1))
+    >>> print(doc.xref_object(-1))  # or: print(doc.pdf_trailer())
     <<
     /Type /XRef
     /Index [ 0 8263 ]
@@ -2294,7 +2294,7 @@ Vice cersa, you can also **store private metadata items** in a PDF. It is your r
         raise ValueError("PDF has no metadata")
     xref = int(value.replace("0 R", ""))  # extract the metadata xref
     # add some private information
-    doc.xref_set_key(xref, "mykey", fitz.getPDFstr("北京 is Beijing"))
+    doc.xref_set_key(xref, "mykey", fitz.get_pdf_str("北京 is Beijing"))
     #
     # after executing the previous code snippet, we will see this:
     pprint(metadata)

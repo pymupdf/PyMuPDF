@@ -21,18 +21,16 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
 :meth:`Document.delete_object`       PDF only: delete an object
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
-:meth:`Document._getOLRootNumber`    PDF only: return / create :data:`xref` of */Outline*
 :meth:`Document.xml_metadata_xref`   PDF only: return XML metadata :data:`xref` number
 :meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
 :meth:`Document.extract_font`        PDF only: extract embedded font
 :meth:`Document.extract_image`       PDF only: extract embedded image
 :meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
 :meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
-:attr:`Document.FontInfos`           PDF only: information on inserted fonts
-:meth:`ImageProperties`              return a dictionary of basic image properties
-:meth:`getPDFnow`                    return the current timestamp in PDF format
-:meth:`getPDFstr`                    return PDF-compatible string
-:meth:`getTextlength`                return string length for a given font & fontsize
+:meth:`image_properties`             return a dictionary of basic image properties
+:meth:`get_pdf_now`                  return the current timestamp in PDF format
+:meth:`get_pdf_str`                  return PDF-compatible string
+:meth:`get_text_length`              return string length for a given font & fontsize
 :meth:`Page.clean_contents`          PDF only: clean the page's :data:`contents` objects
 :meth:`Page.get_contents`            PDF only: return a list of content :data:`xref` numbers
 :meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
@@ -43,26 +41,26 @@ Yet others are handy, general-purpose utilities.
 :meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
 :meth:`Page.wrap_contents`           wrap contents with stacking commands
 :attr:`Page.is_wrapped`              check whether contents wrapping is present
-:meth:`planishLine`                  matrix to map a line to the x-axis
-:meth:`PaperSize`                    return width, height for a known paper format
-:meth:`PaperRect`                    return rectangle for a known paper format
-:meth:`sRGB_to_pdf`                  return PDF RGB color tuple from a sRGB integer
-:meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from a sRGB integer
+:meth:`planish_line`                 matrix to map a line to the x-axis
+:meth:`paper_size`                   return width, height for a known paper format
+:meth:`paper_rect`                   return rectangle for a known paper format
+:meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
+:meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`recover_quad`                 return the quad for a text span ("dict" / "rawdict")
 :meth:`glyph_name_to_unicode`        return unicode from a glyph name
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :meth:`make_table`                   split rectangle in sub-rectangles
 :meth:`adobe_glyph_names`            list of glyph names defined in **Adobe Glyph List**
 :meth:`adobe_glyph_unicodes`         list of unicodes defined in **Adobe Glyph List**
-:attr:`paperSizes`                   dictionary of pre-defined paper formats
+:meth:`paper_sizes`                  dictionary of pre-defined paper formats
+:meth:`recover_quad`                 compute the quad of a span ("dict", "rawdict")
+:meth:`recover_char_quad`            compute the quad of a char ("rawdict")
+:meth:`recover_span_quad`            compute the quad of a subset of span characters
+:meth:`recover_line_quad`            compute the quad of a subset of line spans
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
-:attr:`recover_quad`                 compute the quad of a span ("dict", "rawdict")
-:attr:`recover_char_quad`            compute the quad of a char ("rawdict")
-:attr:`recover_span_quad`            compute the quad of a subset of span characters
-:attr:`recover_line_quad`            compute the quad of a subset of line spans
 ==================================== ==============================================================
 
-   .. method:: PaperSize(s)
+   .. method:: paper_size(s)
 
       Convenience function to return width and height of a known paper format code. These values are given in pixels for the standard resolution 72 pixels = 1 inch.
 
@@ -70,24 +68,24 @@ Yet others are handy, general-purpose utilities.
 
       A format name must be supplied as a string (case **in** \sensitive), optionally suffixed with "-L" (landscape) or "-P" (portrait). No suffix defaults to portrait.
 
-      :arg str s: any format name from above (upper or lower case), like *"A4"* or *"letter-l"*.
+      :arg str s: any format name from above in upper or lower case, like *"A4"* or *"letter-l"*.
 
       :rtype: tuple
-      :returns: *(width, height)* of the paper format. For an unknown format *(-1, -1)* is returned. Esamples: *fitz.PaperSize("A4")* returns *(595, 842)* and *fitz.PaperSize("letter-l")* delivers *(792, 612)*.
+      :returns: *(width, height)* of the paper format. For an unknown format *(-1, -1)* is returned. Examples: *fitz.paper_size("A4")* returns *(595, 842)* and *fitz.paper_size("letter-l")* delivers *(792, 612)*.
 
 -----
 
-   .. method:: PaperRect(s)
+   .. method:: paper_rect(s)
 
       Convenience function to return a :ref:`Rect` for a known paper format.
 
-      :arg str s: any format name supported by :meth:`PaperSize`.
+      :arg str s: any format name supported by :meth:`paper_size`.
 
       :rtype: :ref:`Rect`
-      :returns: *fitz.Rect(0, 0, width, height)* with *width, height=fitz.PaperSize(s)*.
+      :returns: *fitz.Rect(0, 0, width, height)* with *width, height=fitz.paper_size(s)*.
 
       >>> import fitz
-      >>> fitz.PaperRect("letter-l")
+      >>> fitz.paper_rect("letter-l")
       fitz.Rect(0.0, 0.0, 792.0, 612.0)
       >>>
 
@@ -101,7 +99,19 @@ Yet others are handy, general-purpose utilities.
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
-      :returns: a tuple (red, green, blue) with float items in intervall *0 <= item <= 1* representing the same color.
+      :returns: a tuple (red, green, blue) with float items in intervall *0 <= item <= 1* representing the same color. Example ``sRGB_to_pdf(0xff0000) = (1, 0, 0)`` (red).
+
+-----
+
+   .. method:: sRGB_to_rgb(srgb)
+
+      *New in v1.17.4*
+
+      Convenience function returning a color (red, green, blue) for a given *sRGB* color integer.
+
+      :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
+
+      :returns: a tuple (red, green, blue) with integer items in ``range(256)`` representing the same color. Example ``sRGB_to_pdf(0xff0000) = (255, 0, 0)`` (red).
 
 -----
 
@@ -126,7 +136,7 @@ Yet others are handy, general-purpose utilities.
 
       Return the glyph name of a unicode number, based on the **Adobe Glyph List**.
 
-      :arg int che: the unicode given by e.g. ``ord("ß")``. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+      :arg int ch: the unicode given by e.g. ``ord("ß")``. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
 
       :rtype: str
       :returns: the glyph name. E.g. ``fitz.unicode_to_glyph_name(ord("Ä"))`` returns ``'Adieresis'``.
@@ -161,18 +171,6 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: sRGB_to_rgb(srgb)
-
-      *New in v1.17.4*
-
-      Convenience function returning a color (red, green, blue) for a given *sRGB* color integer.
-
-      :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
-
-      :returns: a tuple (red, green, blue) with integer items in intervall *0 <= item <= 255* representing the same color.
-
------
-
    .. method:: recover_quad(line_dir, span)
 
       *New in v1.18.9*
@@ -203,7 +201,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: planishLine(p1, p2)
+   .. method:: planish_line(p1, p2)
 
       *(New in version 1.16.2)*
 
@@ -213,21 +211,19 @@ Yet others are handy, general-purpose utilities.
       :arg point_like p2: end point of the line.
 
       :rtype: :ref:`Matrix`
-      :returns:
+      :returns: a matrix which combines a rotation and a translation::
 
-         a matrix which combines a rotation and a translation::
-
-            p1 = fitz.Point(1, 1)
-            p2 = fitz.Point(4, 5)
-            abs(p2 - p1)  # distance of points
+            >>> p1 = fitz.Point(1, 1)
+            >>> p2 = fitz.Point(4, 5)
+            >>> abs(p2 - p1)  # distance of points
             5.0
-            m = fitz.planishLine(p1, p2)
-            p1 * m
+            >>> m = fitz.planish_line(p1, p2)
+            >>> p1 * m
             Point(0.0, 0.0)
-            p2 * m
+            >>> p2 * m
             Point(5.0, -5.960464477539063e-08)
-            # distance of the resulting points
-            abs(p2 * m - p1 * m)
+            >>> # distance of the resulting points
+            >>> abs(p2 * m - p1 * m)
             5.0
 
 
@@ -237,9 +233,9 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. attribute:: paperSizes
+   .. method:: paper_sizes
 
-      A dictionary of pre-defines paper formats. Used as basis for :meth:`PaperSize`.
+      A dictionary of pre-defines paper formats. Used as basis for :meth:`paper_size`.
 
 -----
 
@@ -263,10 +259,13 @@ Yet others are handy, general-purpose utilities.
          'serif': True,
          'glyphs': 1485}
 
+      If ``pymupdf-fonts`` is not installed, the dictionary is empty.
+
+      The dictionary keys can be used to define a :ref:`Font` via e.g. ``font = fitz.Font("fimo")`` -- just like you can do it with the builtin fonts "Helvetica" and friends.
 
 -----
 
-   .. method:: getPDFnow()
+   .. method:: get_pdf_now()
 
       Convenience function to return the current local timestamp in PDF compatible format, e.g. *D:20170501121525-04'00'* for local datetime May 1, 2017, 12:15:25 in a timezone 4 hours westward of the UTC meridian.
 
@@ -275,7 +274,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: getTextlength(text, fontname="helv", fontsize=11, encoding=TEXT_ENCODING_LATIN)
+   .. method:: get_text_length(text, fontname="helv", fontsize=11, encoding=TEXT_ENCODING_LATIN)
 
       *(New in version 1.14.7)*
 
@@ -283,20 +282,22 @@ Yet others are handy, general-purpose utilities.
 
       :arg str text: the text string.
       :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth.`Page.insert_font`).
-      :arg float fontsize: size of the font.
+      :arg float fontsize: the fontsize.
       :arg int encoding: the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic (Russian) are available. Relevant for Base-14 fonts "Helvetica", "Courier" and "Times" and their variants only. Make sure to use the same value as in the corresponding text insertion.
       :rtype: float
       :returns: the length in points the string will have (e.g. when used in :meth:`Page.insert_text`).
 
-      .. note:: This function will only do the calculation -- it won't insert font or text.
+      .. note:: This function will only do the calculation -- it won't insert font nor text.
 
-      .. warning:: If you use this function to determine the required rectangle width for the (:ref:`Page` or :ref:`Shape`) *insert_textbox* methods, be aware that they calculate on a **by-character level**. Because of rounding effects, this will mostly lead to a slightly larger number: *sum([fitz.getTextlength(c) for c in text]) > fitz.getTextlength(text)*. So either (1) do the same, or (2) use something like *fitz.getTextlength(text + "'")* for your calculation.
+      .. note:: The :ref:`Font` class offers a similar method, :meth:`Font.text_length`, which supports Base-14 fonts and any font with a character map (CMap, Type 0 fonts).
+
+      .. warning:: If you use this function to determine the required rectangle width for the (:ref:`Page` or :ref:`Shape`) *insert_textbox* methods, be aware that they calculate on a **by-character level**. Because of rounding effects, this will mostly lead to a slightly larger number: *sum([fitz.get_text_length(c) for c in text]) > fitz.get_text_length(text)*. So either (1) do the same, or (2) use something like *fitz.get_text_length(text + "'")* for your calculation.
 
 -----
 
-   .. method:: getPDFstr(text)
+   .. method:: get_pdf_str(text)
 
-      Make a PDF-compatible string: if the text contains code points *ord(c) > 255*, then it will be converted to UTF-16BE with BOM as a hexadecimal character string enclosed in "<>" brackets like *<feff...>*. Otherwise, it will return the string enclosed in (round) brackets, replacing any characters outside the ASCII range with some special code. Also, every "(", ")" or backslash is escaped with an additional backslash.
+      Make a PDF-compatible string: if the text contains code points *ord(c) > 255*, then it will be converted to UTF-16BE with BOM as a hexadecimal character string enclosed in "<>" brackets like *<feff...>*. Otherwise, it will return the string enclosed in (round) brackets, replacing any characters outside the ASCII range with some special code. Also, every "(", ")" or backslash is escaped with a backslash.
 
       :arg str text: the object to convert
 
@@ -305,7 +306,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: ImageProperties(stream)
+   .. method:: image_properties(stream)
 
       *(New in version 1.14.14)*
 
@@ -329,7 +330,7 @@ Yet others are handy, general-purpose utilities.
 
       Example:
 
-      >>> fitz.ImageProperties(open("img-clip.jpg","rb"))
+      >>> fitz.image_properties(open("img-clip.jpg","rb"))
       {'bpc': 8, 'format': 9, 'colorspace': 3, 'height': 325, 'width': 244, 'ext': 'jpeg', 'size': 14161}
       >>>
 
@@ -442,7 +443,7 @@ Yet others are handy, general-purpose utilities.
 
       PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.get_contents` for more details.
 
-      Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
+      Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot.clean_contents` separately.
 
       :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the ``/Resources/Font`` object.
 
@@ -597,22 +598,6 @@ Yet others are handy, general-purpose utilities.
       .. warning:: The basename is returned unchanged from the PDF. So it may contain characters (such as blanks) which may disqualify it as a filename for your operating system. Take appropriate action.
 
       .. note: The returned *basename* in general is **not** the original file name, but it probably has some similarity.
-
-   .. attribute:: Document.FontInfos
-
-       Contains following information for any font inserted via :meth:`Page.insert_font` in **this** session of PyMuPDF:
-
-       * xref *(int)* -- XREF number of the */Type/Font* object.
-       * info *(dict)* -- detail font information with the following keys:
-
-            * name *(str)* -- name of the basefont
-            * idx *(int)* -- index number for multi-font files
-            * type *(str)* -- font type (like "TrueType", "Type0", etc.)
-            * ext *(str)* -- extension to be used, when font is extracted to a file (see :ref:`FontExtensions`).
-            * glyphs (*list*) -- list of glyph numbers and widths (filled by textinsertion methods).
-
-      :rtype: list
-
 
 -----
 

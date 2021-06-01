@@ -5,6 +5,7 @@ Pixmap tests
 * pixmap from file and from binary image and compare
 """
 import os
+import tempfile
 
 import fitz
 
@@ -48,4 +49,41 @@ def test_filepixmap():
     stream = open(imgfile, "rb").read()
     pix2 = fitz.Pixmap(stream)
     assert repr(pix1) == repr(pix2)
-    assert pix1.samples == pix2.samples
+    assert pix1.digest == pix2.digest
+
+
+def test_pilsave():
+    # pixmaps from file then save to pillow image
+    # make pixmap from this and confirm equality
+    pix1 = fitz.Pixmap(imgfile)
+    stream = pix1.pil_tobytes("JPEG")
+    pix2 = fitz.Pixmap(stream)
+    assert repr(pix1) == repr(pix2)
+
+
+def test_save():
+    # pixmaps from file then save to image
+    # make pixmap from this and confirm equality
+    pix1 = fitz.Pixmap(imgfile)
+    stream2 = pix1.tobytes("png")
+    fp = tempfile.TemporaryFile()
+    pix1.save(str(fp.name), output="png")
+    try:
+        os.remove(fp.name)
+    except:
+        pass
+
+
+def test_setalpha():
+    # pixmap from JPEG file, then add an alpha channel
+    # with 30% transparency
+    pix1 = fitz.Pixmap(imgfile)
+    opa = int(255 * 0.3)  # corresponding to 30% transparency
+    alphas = [opa] * (pix1.width * pix1.height)
+    alphas = bytearray(alphas)
+    pix2 = fitz.Pixmap(pix1, 1)  # add alpha channel
+    pix2.set_alpha(alphas)  # make image 30% transparent
+    samples = pix2.samples  # copy of samples
+    # confirm correct the alpha bytes
+    t = bytearray([samples[i] for i in range(3, len(samples), 4)])
+    assert t == alphas

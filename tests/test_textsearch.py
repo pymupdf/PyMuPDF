@@ -15,5 +15,6 @@ def test_search():
     page = doc[0]
     needle = "mupdf"
     rlist = page.search_for(needle)
+    assert rlist != []
     for rect in rlist:
         assert needle in page.get_textbox(rect).lower()

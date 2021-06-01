@@ -24,8 +24,7 @@ def test_quadcalc():
     # let text search find the text returning quad coordinates
     rl = page.search_for(text, quads=True)
     searchq = rl[0]
-    for i in range(4):
-        assert abs(searchq.ul - lineq.ul) <= 1e-4
-        assert abs(searchq.ur - lineq.ur) <= 1e-4
-        assert abs(searchq.ll - lineq.ll) <= 1e-4
-        assert abs(searchq.lr - lineq.lr) <= 1e-4
+    assert abs(searchq.ul - lineq.ul) <= 1e-4
+    assert abs(searchq.ur - lineq.ur) <= 1e-4
+    assert abs(searchq.ll - lineq.ll) <= 1e-4
+    assert abs(searchq.lr - lineq.lr) <= 1e-4

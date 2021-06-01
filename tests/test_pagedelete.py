@@ -42,7 +42,7 @@ def test_deletion():
 
     # Test page deletion.
     # Delete pages in range and verify result
-    doc.delete_pages(r)
+    del doc[r]
     assert not doc.has_links()  # verify all links have gone
     assert doc.page_count == page_count - len(r)  # correct number deleted?
     toc_new = doc.get_toc()  # this is the modified TOC
@@ -60,3 +60,10 @@ def test_deletion():
         text = doc[pno].get_text().replace("\n", "")
         # toc text must equal text on page
         assert text == item[1]
+
+    doc.delete_page(0)  # just for the coverage stats
+    del doc[5:10]
+    doc.select(range(doc.page_count))
+    doc.copy_page(0)
+    doc.move_page(0)
+    doc.fullcopy_page(0)
