@@ -28,10 +28,10 @@ The script works as a command line tool which expects the filename being supplie
     fname = sys.argv[1]  # get filename from command line
     doc = fitz.open(fname)  # open document
     for page in doc:  # iterate through the pages
-        pix = page.get_pixmap(alpha = False)  # render page to an image
+        pix = page.get_pixmap()  # render page to an image
         pix.save("page-%i.png" % page.number)  # store image as a PNG
 
-The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 72 dpi in x and y dimension and have no transparency. You can change all that -- for how to do this, read the next sections.
+The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages with width and height rounded to integers, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 96 dpi in x and y dimension and have no transparency. You can change all that -- for how to do this, read the next sections.
 
 ----------
 
@@ -56,7 +56,7 @@ In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 t
 
 How to Create :index:`Partial Pixmaps` (Clips)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-You do not always need the full image of a page. This may be the case e.g. when you display the image in a GUI and would like to zoom into a part of the page.
+You do not always need the full image of a page. This may be the case e.g. when you display the image in a GUI and would like to fill the respective window with a zoomed part of the page.
 
 Let's assume your GUI window has room to display a full document page, but you now want to fill this room with the bottom right quarter of your page, thus using a four times better resolution.
 
@@ -77,13 +77,35 @@ In the above we construct *clip* by specifying two diagonally opposite points: t
 
 ----------
 
+How to Fit a Clip to a GUI Window
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is similar to the previous section. This time, we want to **compute the zoom factor** for a clip such, that its image best fits a given GUI window. This means, that either the clip image's width or height (or both) will equal the window dimension.
+
+::
+
+    # WIDTH: width of the GUI window
+    # HEIGHT: height of the GUI window
+    # clip: a subrectangle of the document page
+    # compare width/height ratios of image and window
+
+    if clip.width / clip.height < WIDTH / HEIGHT:
+        # clip is narrower
+        zoom = HEIGHT / clip.height  # hence fit window height
+    else:
+        zoom = WIDTH / clip.width  # else fit window width
+    mat = fitz.Matrix(zoom, zoom)
+    pix = page.get_pixmap(matrix=mat, clip=clip)
+
+
+----------
+
 How to Create or Suppress Annotation Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Normally, the pixmap of a page also shows the page's annotations. Occasionally, this may not be desirable.
 
-To suppress the annotation images on a rendered page, just specify *annots=False* in :meth:`Page.get_pixmap`.
+To suppress the annotation images on a rendered page, just specify ``annots=False`` in :meth:`Page.get_pixmap`.
 
-You can also render annotations separately: :ref:`Annot` objects have their own :meth:`Annot.get_pixmap` method. The resulting pixmap has the same dimensions as the annotation rectangle.
+You can also render annotations separately: they have their own :meth:`Annot.get_pixmap` method. The resulting pixmap has the same dimensions as the annotation rectangle.
 
 ----------
 
@@ -104,15 +126,24 @@ If you want recreate the original image in file form or as a memory area, you ha
     >>> pdf = fitz.open("pdf", pdfbytes)  # open it as a PDF document
     >>> # now use 'pdf' like any PDF document
 
-2. Use :meth:`Page.get_text` with the "dict" parameter. This will extract all text and images shown on the page, formatted as a Python dictionary. Every image will occur in an image block, containing meta information and the binary image data. For details of the dictionary's structure, see :ref:`TextPage`. The method works equally well for PDF files. This creates a list of all images shown on a page::
+2. Use :meth:`Page.get_text` with the "dict" parameter. This works for all document types. It will extract all text and images shown on the page, formatted as a Python dictionary. Every image will occur in an image block, containing meta information and **the binary image data**. For details of the dictionary's structure, see :ref:`TextPage`. The method works equally well for PDF files. This creates a list of all images shown on a page::
 
     >>> d = page.get_text("dict")
-    >>> blocks = d["blocks"]
+    >>> blocks = d["blocks"]  # the list of block dictionaries
     >>> imgblocks = [b for b in blocks if b["type"] == 1]
-
-Each item if "imgblocks" is a dictionary which looks like this::
-
-    {"type": 1, "bbox": (x0, y0, x1, y1), "width": w, "height": h, "ext": "png", "image": b"..."}
+    >>> pprint(imgblocks[0])
+    {'bbox': (100.0, 135.8769989013672, 300.0, 364.1230163574219),
+     'bpc': 8,
+     'colorspace': 3,
+     'ext': 'jpeg',
+     'height': 501,
+     'image': b'\xff\xd8\xff\xe0\x00\x10JFIF\...',  # CAUTION: LARGE!
+     'size': 80518,
+     'transform': (200.0, 0.0, -0.0, 228.2460174560547, 100.0, 135.8769989013672),
+     'type': 1,
+     'width': 439,
+     'xres': 96,
+     'yres': 96}
 
 ----------
 
@@ -167,7 +198,7 @@ To recover the original image using PyMuPDF, the procedure depicted as follows m
 >>> pix1 = fitz.Pixmap(doc, xref)    # (1) pixmap of image w/o alpha
 >>> pix2 = fitz.Pixmap(doc, smask)   # (2) stencil pixmap
 >>> pix = fitz.Pixmap(pix1)          # (3) copy of pix1, empty alpha channel added
->>> pix.set_alpha(pix2.samples)       # (4) fill alpha channel
+>>> pix.set_alpha(pix2.samples)      # (4) fill alpha channel
 
 Step (1) creates a pixmap of the "netto" image. Step (2) does the same with the stencil mask. Please note that the :attr:`Pixmap.samples` attribute of *pix2* contains the alpha bytes that must be stored in the final pixmap. This is what happens in step (3) and (4).
 
@@ -510,17 +541,16 @@ There are two methods to add images to a PDF page: :meth:`Page.insert_image` and
 ============================== ===================================== =========================================
 displayable content            image file, image in memory, pixmap   PDF page
 display resolution             image resolution                      vectorized (except raster page content)
-rotation                       multiple of 90 degrees                any angle
+rotation                       0, 90, 180 or 270 degrees             any angle
 clipping                       no (full image only)                  yes
 keep aspect ratio              yes (default option)                  yes (default option)
-transparency (water marking)   depends on image                      depends on the page
+transparency (water marking)   depends on the image                  depends on the page
 location / placement           scaled to fit target rectangle        scaled to fit target rectangle
 performance                    automatic prevention of duplicates;   automatic prevention of duplicates;
-                               MD5 calculation on every execution    faster than :meth:`Page.insert_image`
 multi-page image support       no                                    yes
 ease of use                    simple, intuitive;                    simple, intuitive;
-                               performance considerations apply      **usable for all document types**
-                               for multiple insertions of same image (including images!) after conversion to
+                                                                     **usable for all document types**
+                                                                     (including images!) after conversion to
                                                                      PDF via :meth:`Document.convert_to_pdf`
 ============================== ===================================== =========================================
 

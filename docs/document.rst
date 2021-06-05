@@ -1526,11 +1526,11 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in v1.18.7, changed in v1.18.9)*
 
-      PDF only: **Experimental:** Investigate eligible fonts for their use by text in the document. If a font is supported and a size reduction is possible, that font is replaced by a version with a character subset.
+      PDF only: Investigate eligible fonts for their use by text in the document. If a font is supported and a size reduction is possible, that font is replaced by a version with a character subset.
 
       Use this method immediately before saving the document. The following features and restrictions apply for the time being:
 
-      * Package `fontTools <https://pypi.org/project/fonttools/>`_ **must be installed**. It is required for creating the font subsets.
+      * Package `fontTools <https://pypi.org/project/fonttools/>`_ **must be installed**. It is required for creating the font subsets. If not installed, the method raises an ``ImportError`` exception.
       * Supported font types only include embedded OTF, TTF and WOFF that are **not already subsets**.
       * The script directory must be available for writing temporary files during the subsetting process.
       * **Changed in v1.18.9:** A subset font directly replaces its original -- text remains untouched and **is not rewritten.** It thus should retain all its properties, like spacing, hiddenness, control by Optional Content, etc.

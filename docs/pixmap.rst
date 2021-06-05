@@ -306,11 +306,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.save` now also sets dpi from *xres* / *yres* automatically, when saving a PNG image.
 
+         If Pillow is not installed an ``ImportError`` exception is raised.
+
    ..  method:: pil_tobytes(*args, **kwargs)
 
       *(New in v1.17.3)*
 
-      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pil_tobytes(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation.
+      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pil_tobytes(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation. If Pillow is not installed, an ``ImportError`` exception is raised.
 
       :rtype: bytes
 
