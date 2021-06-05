@@ -96,6 +96,18 @@ This is similar to the previous section. This time, we want to **compute the zoo
     mat = fitz.Matrix(zoom, zoom)
     pix = page.get_pixmap(matrix=mat, clip=clip)
 
+Now assume you **have the zoom factor** and need to compute the fitting clip.
+
+In this case we again have ``zoom = HEIGHT/clip.height = WIDTH/clip.width``, so we must set ``clip.height = HEIGHT/zoom`` and, similarly ``clip.width = WIDTH/zoom``. Now you only need to choose a top-left point ``tl`` of the clip on the page to compute the right pixmap::
+
+    width = WIDTH / zoom
+    height = HEIGHT / zoom
+    clip = fitz.Rect(tl, tl.x + width, tl.y + height)  
+    # make sure we still are inside the page
+    clip &= page.rect
+    mat = fitz.Matrix(zoom, zoom)
+    pix = fitz.Pixmap(matrix=mat, clip=clip)
+
 
 ----------
 
