@@ -24,7 +24,7 @@ The following areas are currently covered:
 * annotation handling
 * field / widget handling
 
-This is **_not a coverage test_**, although a significant part of the Python part **_does_** get executed (ca. 60%). Achieving a much higher code coverage remains an ongoing task.
+This is **_not a coverage test_**, although a significant part of the Python part **_does_** get executed (ca. 80%). Achieving a much higher code coverage remains an ongoing task.
 
 To use these scripts, you must have installed `pytest`:
 
