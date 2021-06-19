@@ -4,7 +4,7 @@
 
 Release date: June 1, 2021
 
-**Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
+**Travis-CI:** [![Build Status](https://travis-ci.com/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.com/JorjMcKie/py-mupdf)
 
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://pepy.tech/badge/pymupdf)](https://pepy.tech/project/pymupdf)
