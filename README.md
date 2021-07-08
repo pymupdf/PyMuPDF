@@ -56,9 +56,9 @@ For **PDF documents,** there exists a plethorea of additional features: they can
 
 Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo), the [examples](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/pymupdf/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
-**_New:_**
+**_New: Layout preserving text extraction!_**
 
-> Script [textlayout.py](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/text-extraction/textlayout.py) extracts document text in a **_layout-preserving_** manner. So text in tables or multi-column pages should deliver quite faithful text output.
+> Script [textlayout.py](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/text-extraction/textlayout.py) extracts document text in a **_layout-preserving_** manner. So text in tables or multi-column pages should deliver quite faithful text output. Works for all supported document types, not just PDF.
 
 Our **documentation**, written using Sphinx, is available in various formats from the following sources. It currently is a combination of a reference guide and a user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
 
