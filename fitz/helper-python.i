@@ -1,4 +1,13 @@
 %pythoncode %{
+# ------------------------------------------------------------------------
+# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
+#
+# Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
+# lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
+# maintained and developed by Artifex Software, Inc. https://artifex.com.
+# ------------------------------------------------------------------------
+
 # ------------------------------------------------------------------------------
 # link kinds and link flags
 # ------------------------------------------------------------------------------
@@ -682,7 +691,7 @@ class linkDest(object):
     """link or outline destination details"""
 
     def __init__(self, obj, rlink):
-        isExt = obj.isExternal
+        isExt = obj.is_external
         isInt = not isExt
         self.dest = ""
         self.fileSpec = ""
@@ -698,7 +707,7 @@ class linkDest(object):
         self.uri = obj.uri
         if rlink and not self.uri.startswith("#"):
             self.uri = "#%i,%g,%g" % (rlink[0] + 1, rlink[1], rlink[2])
-        if obj.isExternal:
+        if obj.is_external:
             self.page = -1
             self.kind = LINK_URI
         if not self.uri:
@@ -722,7 +731,7 @@ class linkDest(object):
             else:
                 self.kind = LINK_NAMED
                 self.named = self.uri
-        if obj.isExternal:
+        if obj.is_external:
             if self.uri.startswith(("http://", "https://", "mailto:", "ftp://")):
                 self.isUri = True
                 self.kind = LINK_URI
@@ -937,7 +946,7 @@ def paper_rect(s: str) -> Rect:
 
 
 def CheckParent(o: typing.Any):
-    if not hasattr(o, "parent") or o.parent is None:
+    if getattr(o, "parent", None) == None:
         raise ValueError("orphaned object: parent is None")
 
 
@@ -1335,14 +1344,25 @@ def repair_mono_font(page: "Page", font: "Font") -> None:
     Notes:
         Some mono-spaced fonts are displayed with a too large character
         distance, e.g. "a b c" instead of "abc". This utility adds an entry
-        "/W[0 65535 w]" to the descendent font(s) of font. The float w is
-        taken to be the width of 0x20 (space).
+        "/DW w" to the descendent font of font. The int w is
+        taken to be the first width > 0 of the font's unicodes.
         This should enforce viewers to use 'w' as the character width.
 
     Args:
         page: fitz.Page object.
         font: fitz.Font object.
     """
+    def set_font_width(doc, xref, width):
+        df = doc.xref_get_key(xref, "DescendantFonts")
+        if df[0] != "array":
+            return False
+        df_xref = int(df[1][1:-1].replace("0 R",""))
+        W = doc.xref_get_key(df_xref, "W")
+        if W[1] != "null":
+            doc.xref_set_key(df_xref, "W", "null")
+        doc.xref_set_key(df_xref, "DW", str(width))
+        return True
+
     if not font.flags["mono"]:  # font not flagged as monospaced
         return None
     doc = page.parent  # the document
@@ -1355,9 +1375,10 @@ def repair_mono_font(page: "Page", font: "Font") -> None:
     if xrefs == []:  # our font does not occur
         return
     xrefs = set(xrefs)  # drop any double counts
-    width = int(round((font.glyph_advance(32) * 1000)))
+    maxadv = max([font.glyph_advance(cp) for cp in font.valid_codepoints()[:3]])
+    width = int(round((maxadv * 1000)))
     for xref in xrefs:
-        if not TOOLS.set_font_width(doc, xref, width):
+        if not set_font_width(doc, xref, width):
             print("Cannot set width for '%s' in xref %i" % (font.name, xref))
 
 

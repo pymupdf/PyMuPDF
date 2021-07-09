@@ -1,4 +1,14 @@
 %{
+/*
+# ------------------------------------------------------------------------
+# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
+#
+# Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
+# lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
+# maintained and developed by Artifex Software, Inc. https://artifex.com.
+# ------------------------------------------------------------------------
+*/
 #define SETATTR(a, v) PyObject_SetAttrString(Widget, a, v)
 #define GETATTR(a) PyObject_GetAttrString(Widget, a)
 #define CALLATTR(m, p) PyObject_CallMethod(Widget, m, p)
@@ -1006,6 +1016,38 @@ class Widget(object):
         TOOLS._save_widget(self._annot, self)
         self._text_da = ""
 
+
+    def button_states(self):
+        """Return the on/off state names for button widgets.
+
+        A button may have 'normal' or 'pressed down' appearances. While the 'Off'
+        state is usually called like this, the 'On' state is often given a name
+        relating to the functional context.
+        """
+        if self.field_type not in (1, 2, 3, 5):
+            return None  # no button type
+        doc = self.parent.parent
+        xref = self.xref
+        states = {"normal": None, "down": None}
+        APN = doc.xref_get_key(xref, "AP/N")
+        if APN[0] == "dict":
+            nstates = []
+            APN = APN[1][2:-2]
+            apnt = APN.split("/")[1:]
+            for x in apnt:
+                nstates.append(x.split()[0])
+            states["normal"] = nstates
+        APD = doc.xref_get_key(xref, "AP/D")
+        if APD[0] == "dict":
+            dstates = []
+            APD = APD[1][2:-2]
+            apdt = APD.split("/")[1:]
+            for x in apdt:
+                dstates.append(x.split()[0])
+            states["down"] = dstates
+        return states
+
+
     def reset(self):
         """Reset the field value to its default.
         """
@@ -1015,7 +1057,9 @@ class Widget(object):
         return "'%s' widget on %s" % (self.field_type_string, str(self.parent))
 
     def __del__(self):
-        self._annot.__del__()
+        annot = getattr(self, "_annot")
+        if annot:
+            self._annot.__del__()
 
     @property
     def next(self):

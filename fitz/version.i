@@ -1,6 +1,6 @@
 %pythoncode %{
 VersionFitz = "1.18.0"
-VersionBind = "1.18.14"
-VersionDate = "2021-06-01 08:11:38"
-version = (VersionBind, VersionFitz, "20210601081138")
+VersionBind = "1.18.15"
+VersionDate = "2021-07-10 00:00:01"
+version = (VersionBind, VersionFitz, "20210710000001")
 %}

@@ -1,4 +1,14 @@
 %{
+/*
+# ------------------------------------------------------------------------
+# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
+#
+# Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
+# lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
+# maintained and developed by Artifex Software, Inc. https://artifex.com.
+# ------------------------------------------------------------------------
+*/
 //------------------------------------------------------------------------
 // return pdf_obj "border style" from Python str
 //------------------------------------------------------------------------
@@ -199,29 +209,36 @@ PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *d
 PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
 {
     PyObject *res = PyDict_New();
-    PyObject *bc = PyList_New(0);        // stroke colors
-    PyObject *fc = PyList_New(0);        // fill colors
-    int i;
+    PyObject *color = NULL;
+    int i, n;
     float col;
-    pdf_obj *o = pdf_dict_get(ctx, annot_obj, PDF_NAME(C));
+    pdf_obj *o = NULL;
+    
+    o = pdf_dict_get(ctx, annot_obj, PDF_NAME(C));
     if (pdf_is_array(ctx, o)) {
-        int n = pdf_array_len(ctx, o);
+        n = pdf_array_len(ctx, o);
+        color = PyTuple_New((Py_ssize_t) n);
         for (i = 0; i < n; i++) {
             col = pdf_to_real(ctx, pdf_array_get(ctx, o, i));
-            LIST_APPEND_DROP(bc, Py_BuildValue("f", col));
+            PyTuple_SET_ITEM(color, i, Py_BuildValue("f", col));
         }
+        DICT_SETITEM_DROP(res, dictkey_stroke, color);
+    } else {
+        DICT_SETITEM_DROP(res, dictkey_stroke, Py_BuildValue("s", NULL));
     }
-    DICT_SETITEM_DROP(res, dictkey_stroke, bc);
 
-    o = pdf_dict_gets(ctx, annot_obj, "IC");
+    o = pdf_dict_get(ctx, annot_obj, PDF_NAME(IC));
     if (pdf_is_array(ctx, o)) {
-        int n = pdf_array_len(ctx, o);
+        n = pdf_array_len(ctx, o);
+        color = PyTuple_New((Py_ssize_t) n);
         for (i = 0; i < n; i++) {
             col = pdf_to_real(ctx, pdf_array_get(ctx, o, i));
-            LIST_APPEND_DROP(fc, Py_BuildValue("f", col));
+            PyTuple_SET_ITEM(color, i, Py_BuildValue("f", col));
         }
+        DICT_SETITEM_DROP(res, dictkey_fill, color);
+    } else {
+        DICT_SETITEM_DROP(res, dictkey_fill, Py_BuildValue("s", NULL));
     }
-    DICT_SETITEM_DROP(res, dictkey_fill, fc);
 
     return res;
 }

@@ -1,5 +1,14 @@
 %{
-
+/*
+# ------------------------------------------------------------------------
+# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
+#
+# Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
+# lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
+# maintained and developed by Artifex Software, Inc. https://artifex.com.
+# ------------------------------------------------------------------------
+*/
 // Switch for computing glyph of fontsize height
 static int small_glyph_heights = 0;
 
@@ -386,6 +395,8 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_stext_char *ch;
     fz_rect rect = page->mediabox;
     int last_char = 0;
+    char utf[10];
+    int i, n;
 
     for (block = page->first_block; block; block = block->next) {
         if (block->type == FZ_STEXT_BLOCK_TEXT) {
@@ -395,10 +406,15 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                     if (fz_is_infinite_rect(rect) ||
                         fz_contains_rect(rect, JM_char_bbox(ctx, line, ch))) {
                         last_char = ch->c;
-                        fz_write_rune(ctx, out, ch->c);
+                        n = fz_runetochar(utf, ch->c);
+                        for (i = 0; i < n; i++) {
+                            fz_write_byte(ctx, out, utf[i]);
+                        }
                     }
                 }
-                if (last_char != 10 && last_char) fz_write_string(ctx, out, "\n");
+                if (last_char != 10 && last_char > 0) {
+                    fz_write_string(ctx, out, "\n");
+                }
             }
         }
     }
@@ -803,6 +819,38 @@ PyObject *JM_merge_resources(fz_context *ctx, pdf_page *page, pdf_obj *temp_res)
         pdf_dict_puts(ctx, main_fonts, text, val);
     }
     return Py_BuildValue("ii", max_alp, max_fonts); // next available numbers
+}
+
+
+//-----------------------------------------------------------------------------
+// version of fz_show_string, which covers SMALL CAPS
+//-----------------------------------------------------------------------------
+fz_matrix
+JM_show_string_cs(fz_context *ctx, fz_text *text, fz_font *user_font, fz_matrix trm, const char *s,
+	int wmode, int bidi_level, fz_bidi_direction markup_dir, fz_text_language language)
+{
+	fz_font *font=NULL;
+	int gid, ucs;
+	float adv;
+
+	while (*s)
+	{
+		s += fz_chartorune(&ucs, s);
+        gid = fz_encode_character_sc(ctx, user_font, ucs);
+        if (gid == 0) {
+		    gid = fz_encode_character_with_fallback(ctx, user_font, ucs, 0, language, &font);
+        } else {
+            font = user_font;
+        }
+		fz_show_glyph(ctx, text, font, trm, gid, ucs, wmode, bidi_level, markup_dir, language);
+		adv = fz_advance_glyph(ctx, font, gid, wmode);
+		if (wmode == 0)
+			trm = fz_pre_translate(trm, adv, 0);
+		else
+			trm = fz_pre_translate(trm, 0, -adv);
+	}
+
+	return trm;
 }
 
 

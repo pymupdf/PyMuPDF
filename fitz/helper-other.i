@@ -1,4 +1,14 @@
 %{
+/*
+# ------------------------------------------------------------------------
+# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
+#
+# Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
+# lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
+# maintained and developed by Artifex Software, Inc. https://artifex.com.
+# ------------------------------------------------------------------------
+*/
 fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *val, int a, int b);
 PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff);
 pdf_obj *JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, char *src);
@@ -349,24 +359,31 @@ PyObject *JM_fitz_config()
 //----------------------------------------------------------------------------
 void JM_color_FromSequence(PyObject *color, int *n, float col[4])
 {
-    if (!color || (!PySequence_Check(color) && !PyFloat_Check(color))) {
-        *n = 1;
+    if (!color || color == Py_None) {
+        *n = -1;
         return;
     }
     if (PyFloat_Check(color)) { // maybe just a single float
+        *n = 1;
         float c = (float) PyFloat_AsDouble(color);
         if (!INRANGE(c, 0, 1)) {
-            *n = 1;
-            return;
+            c = 1;
         }
         col[0] = c;
-        *n = 1;
         return;
     }
 
+    if (!PySequence_Check(color)) {
+        *n = -1;
+        return;
+    }
     int len = (int) PySequence_Size(color), rc;
+    if (len == 0) {
+        *n = 0;
+        return;
+    }
     if (!INRANGE(len, 1, 4) || len == 2) {
-        *n = 1;
+        *n = -1;
         return;
     }
 
@@ -1012,23 +1029,6 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
         weiter: ;
         font_obj = pdf_keep_obj(ctx, font_obj);
         ixref = pdf_to_num(ctx, font_obj);
-        if (fz_font_is_monospaced(ctx, font)) {
-            float adv = fz_advance_glyph(ctx, font,
-                            fz_encode_character(ctx, font, 32), 0);
-            int width = (int) floor(adv * 1000.0f + 0.5f);
-            pdf_obj *dfonts = pdf_dict_get(ctx, font_obj, PDF_NAME(DescendantFonts));
-            if (pdf_is_array(ctx, dfonts)) {
-                int i, n = pdf_array_len(ctx, dfonts);
-                for (i = 0; i < n; i++) {
-                    pdf_obj *dfont = pdf_array_get(ctx, dfonts, i);
-                    pdf_obj *warray = pdf_new_array(ctx, pdf, 3);
-                    pdf_array_push(ctx, warray, pdf_new_int(ctx, 0));
-                    pdf_array_push(ctx, warray, pdf_new_int(ctx, 65535));
-                    pdf_array_push(ctx, warray, pdf_new_int(ctx, (int64_t) width));
-                    pdf_dict_put_drop(ctx, dfont, PDF_NAME(W), warray);
-                }
-            }
-        }
         name = JM_EscapeStrFromStr(pdf_to_name(ctx,
                     pdf_dict_get(ctx, font_obj, PDF_NAME(BaseFont))));
 

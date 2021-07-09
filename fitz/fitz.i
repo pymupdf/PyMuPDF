@@ -250,7 +250,7 @@ except ImportError:
 %include helper-pdfinfo.i
 %include helper-convert.i
 %include helper-fileobj.i
-%include helper-trace.i
+%include helper-devices.i
 
 //------------------------------------------------------------------------
 // fz_document
@@ -697,6 +697,12 @@ struct Document
             int i, n;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
+                if (!key) {
+                    THROWMSG(gctx, "bad 'key'");
+                }
+                if (!value) {
+                    THROWMSG(gctx, "bad 'value'");
+                }
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1) && xref != -1)
                     THROWMSG(gctx, "bad xref");
@@ -4138,7 +4144,25 @@ if basestate:
                 return self
 
             def __exit__(self, *args):
-                self.close()
+                if hasattr(self, "_reset_page_refs"):
+                    self._reset_page_refs()
+                if hasattr(self, "Graftmaps"):
+                    for k in self.Graftmaps.keys():
+                        self.Graftmaps[k] = None
+                if hasattr(self, "this") and self.thisown:
+                    try:
+                        self.__swig_destroy__(self)
+                    except:
+                        pass
+                    self.thisown = False
+
+                self.Graftmaps = {}
+                self.ShownPages = {}
+                self.InsertedImages  = {}
+                self.stream = None
+                self._reset_page_refs = DUMMY
+                self.__swig_destroy__ = DUMMY
+                self.is_closed = True
             %}
     }
 };
@@ -4183,7 +4207,7 @@ struct Page {
 
         inf_rect = Rect(1, 1, -1, -1)
         null_mat = Matrix()
-        if transform == 1:
+        if transform:
             rc = (inf_rect, null_mat)
         else:
             rc = inf_rect
@@ -4202,10 +4226,10 @@ struct Page {
                 raise ValueError("found multiple images named '%s'." % name)
         xref = item[-1]
         if xref != 0:
-            #xobjs = [x for x in self.get_xobjects() if x[0] == xref and x[2] == 0]
-            #if xobjs == []:
-            #    raise ValueError("image in unsupported Form XObject")
-            return self.get_image_rects(item, transform=transform)[0]
+            try:
+                return self.get_image_rects(item, transform=transform)[0]
+            except:
+                return inf_rect
         %}
         %pythonappend get_image_bbox %{
         if not bool(val):
@@ -4482,8 +4506,7 @@ struct Page {
                 if (EXISTS(fill)) {
                     JM_color_FromSequence(fill, &nfcol, fcol);
                     pdf_obj *arr = pdf_new_array(gctx, page->doc, nfcol);
-                    for (i = 0; i < nfcol; i++)
-                    {
+                    for (i = 0; i < nfcol; i++) {
                         pdf_array_push_real(gctx, arr, fcol[i]);
                     }
                     pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(IC), arr);
@@ -4864,7 +4887,7 @@ struct Page {
                 pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Rotate), rotate);
                 pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Q), align);
 
-                if (fill_color) {
+                if (nfcol > 0) {
                     pdf_set_annot_color(gctx, annot, nfcol, fcol);
                 }
 
@@ -5538,6 +5561,40 @@ def get_oc_items(self) -> list:
                 fz_close_device(gctx, dev);
             }
             fz_always(gctx) {
+                fz_drop_device(gctx, dev);
+            }
+            fz_catch(gctx) {
+                Py_CLEAR(rc);
+                return NULL;
+            }
+            return rc;
+        }
+
+
+        FITZEXCEPTION(_getTexttrace, !result)
+        PyObject *
+        _getTexttrace()
+        {
+            fz_page *page = (fz_page *) $self;
+            fz_device *dev = NULL;
+            PyObject *rc = NULL;
+            fz_try(gctx) {
+                rc = PyList_New(0);
+                dev = JM_new_tracetext_device(gctx, rc);
+                trace_text_linewidth = 0;
+                fz_rect prect = fz_bound_page(gctx, page);
+                trace_text_rot = fz_identity;
+                pdf_page *pdfpage = pdf_page_from_fz_page(gctx, page);
+                if (pdfpage) {
+                    trace_text_rot = JM_derotate_page_matrix(gctx, pdfpage);
+                    prect = JM_cropbox(gctx, pdfpage->obj);
+                }
+                trace_text_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
+                trace_text_ptm = fz_invert_matrix(trace_text_ptm);
+                fz_run_page(gctx, page, dev, fz_identity, NULL);
+            }
+            fz_always(gctx) {
+                fz_close_device(gctx, dev);
                 fz_drop_device(gctx, dev);
             }
             fz_catch(gctx) {
@@ -7725,7 +7782,7 @@ struct Outline {
         }
 
         %pythoncode %{@property%}
-        PyObject *isExternal()
+        PyObject *is_external()
         {
             fz_outline *ol = (fz_outline *) $self;
             if (!ol->uri) Py_RETURN_FALSE;
@@ -7767,7 +7824,6 @@ struct Outline {
             return JM_BOOL(ol->is_open);
         }
 
-        %pythoncode %{isOpen = is_open%}
         %pythoncode %{
         @property
         def dest(self):
@@ -8523,7 +8579,8 @@ struct Annot
                     && type != PDF_ANNOT_LINE
                     && type != PDF_ANNOT_POLY_LINE
                     && type != PDF_ANNOT_POLYGON
-                    || nfcol == 0 && fill_color != Py_None) {
+                    || nfcol == 0
+                    ) {
                     pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
                 } else if (nfcol > 0) {
                     pdf_set_annot_interior_color(gctx, annot, nfcol, fcol);
@@ -8898,57 +8955,51 @@ struct Annot
         //----------------------------------------------------------------
         // annotation set colors
         //----------------------------------------------------------------
-        %pythonprepend set_colors %{
-        """Set 'stroke' and 'fill' colors.
+        %pythoncode %{
+        def set_colors(self, colors=None, stroke=None, fill=None):
+            """Set 'stroke' and 'fill' colors.
 
-        Use either a dict or the direct arguments.
-        """
-        CheckParent(self)
-        if type(colors) is not dict:
-            colors = {"fill": fill, "stroke": stroke}
+            Use either a dict or the direct arguments.
+            """
+            CheckParent(self)
+            doc = self.parent.parent
+            if type(colors) is not dict:
+                colors = {"fill": fill, "stroke": stroke}
+            fill = colors.get("fill")
+            stroke = colors.get("stroke")
+            fill_annots = (PDF_ANNOT_CIRCLE, PDF_ANNOT_SQUARE, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE, PDF_ANNOT_POLYGON,
+                           PDF_ANNOT_REDACT,)
+            if stroke in ([], ()):
+                doc.xref_set_key(self.xref, "C", "[]")
+            elif stroke is not None:
+                if hasattr(stroke, "__float__"):
+                    stroke = [float(stroke)]
+                CheckColor(stroke)
+                if len(stroke) == 1:
+                    s = "[%g]" % stroke[0]
+                elif len(stroke) == 3:
+                    s = "[%g %g %g]" % tuple(stroke)
+                else:
+                    s = "[%g %g %g %g]" % tuple(stroke)
+                doc.xref_set_key(self.xref, "C", s)
+
+            if self.type[0] not in fill_annots:
+                print("warning: annot type '%s' has no fill color" % self.type[0])
+                return
+            if fill in ([], ()):
+                doc.xref_set_key(self.xref, "IC", "[]")
+            elif fill is not None:
+                if hasattr(fill, "__float__"):
+                    fill = [float(fill)]
+                CheckColor(fill)
+                if len(fill) == 1:
+                    s = "[%g]" % fill[0]
+                elif len(fill) == 3:
+                    s = "[%g %g %g]" % tuple(fill)
+                else:
+                    s = "[%g %g %g %g]" % tuple(fill)
+                doc.xref_set_key(self.xref, "IC", s)
         %}
-        void set_colors(PyObject *colors=NULL, PyObject *fill=NULL, PyObject *stroke=NULL)
-        {
-            if (!PyDict_Check(colors)) return;
-            pdf_annot *annot = (pdf_annot *) $self;
-            int type = pdf_annot_type(gctx, annot);
-            PyObject *ccol, *icol;
-            ccol = PyDict_GetItem(colors, dictkey_stroke);
-            icol = PyDict_GetItem(colors, dictkey_fill);
-            int i, n;
-            float col[4];
-            n = 0;
-            if (EXISTS(ccol)) {
-                JM_color_FromSequence(ccol, &n, col);
-                fz_try(gctx) {
-                    pdf_set_annot_color(gctx, annot, n, col);
-                }
-                fz_catch(gctx) {
-                    JM_Warning("annot type has no stroke color");
-                }
-            } else if (ccol != Py_None) {
-                pdf_dict_del(gctx, annot->obj, PDF_NAME(C));
-            }
-            n = 0;
-            if (EXISTS(icol)) {
-                JM_color_FromSequence(icol, &n, col);
-                if (type != PDF_ANNOT_REDACT) {
-                    fz_try(gctx)
-                        pdf_set_annot_interior_color(gctx, annot, n, col);
-                    fz_catch(gctx)
-                        JM_Warning("annot type has no fill color");
-                } else {
-                    pdf_obj *arr = pdf_new_array(gctx, annot->page->doc, n);
-                    for (i = 0; i < n; i++) {
-                        pdf_array_push_real(gctx, arr, col[i]);
-                    }
-                    pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(IC), arr);
-                }
-            } else if (icol != Py_None) {
-                pdf_dict_del(gctx, annot->obj, PDF_NAME(IC));
-            }
-            return;
-        }
 
 
         //----------------------------------------------------------------
@@ -9610,53 +9661,36 @@ struct Link
             return b;
         }
 
+        FITZEXCEPTION(_colors, !result)
         PyObject *_colors(struct Document *doc, int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
             if (!pdf) Py_RETURN_NONE;
-            pdf_obj *link_obj = pdf_new_indirect(gctx, pdf, xref, 0);
-            if (!link_obj) Py_RETURN_NONE;
-            PyObject *b = JM_annot_colors(gctx, link_obj);
-            pdf_drop_obj(gctx, link_obj);
+            PyObject *b = NULL;
+            pdf_obj *link_obj;
+            fz_try(gctx) {
+                link_obj = pdf_new_indirect(gctx, pdf, xref, 0);
+                if (!link_obj) {
+                    THROWMSG(gctx, "bad xref");
+                }
+                b = JM_annot_colors(gctx, link_obj);
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, link_obj);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
             return b;
         }
 
-        PyObject *_setColors(PyObject *colors, struct Document *doc, int xref)
-        {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
-            pdf_obj *arr = NULL;
-            int i;
-            if (!pdf) Py_RETURN_NONE;
-            if (!PyDict_Check(colors)) Py_RETURN_NONE;
-            float scol[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-            int nscol = 0;
-            float fcol[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-            int nfcol = 0;
-            PyObject *stroke = PyDict_GetItem(colors, dictkey_stroke);
-            PyObject *fill = PyDict_GetItem(colors, dictkey_fill);
-            JM_color_FromSequence(stroke, &nscol, scol);
-            JM_color_FromSequence(fill, &nfcol, fcol);
-            if (!nscol && !nfcol) Py_RETURN_NONE;
-            pdf_obj *link_obj = pdf_new_indirect(gctx, pdf, xref, 0);
-            if (!link_obj) Py_RETURN_NONE;
-            if (nscol > 0)
-            {
-                arr = pdf_new_array(gctx, pdf, nscol);
-                for (i = 0; i < nscol; i++)
-                    pdf_array_push_real(gctx, arr, scol[i]);
-                pdf_dict_put_drop(gctx, link_obj, PDF_NAME(C), arr);
-            }
-            if (nfcol > 0) JM_Warning("this annot type has no fill color)");
-            pdf_drop_obj(gctx, link_obj);
-            Py_RETURN_NONE;
-        }
 
         %pythoncode %{
         @property
         def border(self):
             return self._border(self.parent.parent.this, self.xref)
 
-        def setBorder(self, border=None, width=0, dashes=None, style=None):
+        def set_border(self, border=None, width=0, dashes=None, style=None):
             if type(border) is not dict:
                 border = {"width": width, "style": style, "dashes": dashes}
             return self._setBorder(border, self.parent.parent.this, self.xref)
@@ -9665,10 +9699,29 @@ struct Link
         def colors(self):
             return self._colors(self.parent.parent.this, self.xref)
 
-        def setColors(self, colors=None, stroke=None, fill=None):
+        def set_colors(self, colors=None, stroke=None, fill=None):
+            """Set border colors."""
+            CheckParent(self)
+            doc = self.parent.parent
             if type(colors) is not dict:
                 colors = {"fill": fill, "stroke": stroke}
-            return self._setColors(colors, self.parent.parent.this, self.xref)
+            fill = colors.get("fill")
+            stroke = colors.get("stroke")
+            if fill is not None:
+                print("warning: links have no fill color")
+            if stroke in ([], ()):
+                doc.xref_set_key(self.xref, "C", "[]")
+                return
+            if hasattr(stroke, "__float__"):
+                stroke = [float(stroke)]
+            CheckColor(stroke)
+            if len(stroke) == 1:
+                s = "[%g]" % stroke[0]
+            elif len(stroke) == 3:
+                s = "[%g %g %g]" % tuple(stroke)
+            else:
+                s = "[%g %g %g %g]" % tuple(stroke)
+            doc.xref_set_key(self.xref, "C", s)
         %}
         %pythoncode %{@property%}
         PARENTCHECK(uri, """Uri string.""")
@@ -9679,8 +9732,8 @@ struct Link
         }
 
         %pythoncode %{@property%}
-        PARENTCHECK(isExternal, """External indicator.""")
-        PyObject *isExternal()
+        PARENTCHECK(is_external, """Flag the link as external.""")
+        PyObject *is_external()
         {
             fz_link *this_link = (fz_link *) $self;
             if (!this_link->uri) Py_RETURN_FALSE;
@@ -9699,7 +9752,7 @@ struct Link
                 raise ValueError("document closed or encrypted")
             doc = self.parent.parent
 
-            if self.isExternal or self.uri.startswith("#"):
+            if self.is_external or self.uri.startswith("#"):
                 uri = None
             else:
                 uri = doc.resolve_link(self.uri)
@@ -10454,14 +10507,20 @@ struct TextWriter
             self.used_fonts.add(font)
         %}
         PyObject *
-        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int right_to_left=0)
+        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int right_to_left=0, int small_caps=0)
         {
             fz_text_language lang = fz_text_language_from_string(language);
             fz_point p = JM_point_from_py(pos);
             fz_matrix trm = fz_make_matrix(fontsize, 0, 0, fontsize, p.x, p.y);
             int markup_dir = 0, wmode = 0;
             fz_try(gctx) {
-                trm = fz_show_string(gctx, (fz_text *) $self, (fz_font *) font, trm, text, wmode, right_to_left, markup_dir, lang);
+                if (small_caps == 0) {
+                    trm = fz_show_string(gctx, (fz_text *) $self, (fz_font *) font,
+                                trm, text, wmode, right_to_left, markup_dir, lang);
+                } else {
+                    trm = JM_show_string_cs(gctx, (fz_text *) $self, (fz_font *) font,
+                                trm, text, wmode, right_to_left, markup_dir, lang);
+                }
             }
             fz_catch(gctx) {
                 return NULL;
@@ -10471,12 +10530,12 @@ struct TextWriter
 
         %pythoncode %{
         def appendv(self, pos, text, font=None, fontsize=11,
-            language=None):
+            language=None, small_caps=False):
             """Append text in vertical write mode."""
             lheight = fontsize * 1.2
             for c in text:
                 self.append(pos, c, font=font, fontsize=fontsize,
-                    language=language)
+                    language=language, small_caps=small_caps)
                 pos.y += lheight
             return self.text_rect, self.last_point
 
@@ -10607,6 +10666,12 @@ struct TextWriter
                 line = "/Alp%i gs" % alp
             elif line.endswith(" Tf"):
                 temp = line.split()
+                fsize = float(temp[1])
+                if render_mode != 0:
+                    w = fsize * 0.05
+                else:
+                    w = 1
+                new_cont_lines.append("%g w" % w)
                 font = int(temp[0][2:]) + max_font
                 line = " ".join(["/F%i" % font] + temp[1:])
             elif line.endswith(" rg"):
@@ -10640,7 +10705,9 @@ struct TextWriter
             fz_colorspace *colorspace;
             int ncol = 1;
             float dev_color[4] = {0, 0, 0, 0};
-            if (color) JM_color_FromSequence(color, &ncol, dev_color);
+            if (EXISTS(color)) {
+                JM_color_FromSequence(color, &ncol, dev_color);
+            }
             switch(ncol) {
                 case 3: colorspace = fz_device_rgb(gctx); break;
                 case 4: colorspace = fz_device_cmyk(gctx); break;
@@ -10748,11 +10815,17 @@ struct Font
 
         %pythonprepend glyph_advance
         %{"""Return the glyph width of a unicode (font size 1)."""%}
-        PyObject *glyph_advance(int chr, char *language=NULL, int script=0, int wmode=0)
+        PyObject *glyph_advance(int chr, char *language=NULL, int script=0, int wmode=0, int small_caps=0)
         {
-            fz_font *font;
+            fz_font *font, *thisfont = (fz_font *) $self;
+            int gid;
             fz_text_language lang = fz_text_language_from_string(language);
-            int gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
+            if (small_caps) {
+                gid = fz_encode_character_sc(gctx, thisfont, chr);
+                if (gid >= 0) font = thisfont;
+            } else {
+                gid = fz_encode_character_with_fallback(gctx, thisfont, chr, script, lang, &font);
+            }
             return PyFloat_FromDouble((double) fz_advance_glyph(gctx, font, gid, wmode));
         }
         
@@ -10760,11 +10833,12 @@ struct Font
         FITZEXCEPTION(text_length, !result)
         %pythonprepend text_length
         %{"""Return length of unicode 'text' under a fontsize."""%}
-        PyObject *text_length(PyObject *text, double fontsize=11, char *language=NULL, int script=0, int wmode=0)
+        PyObject *text_length(PyObject *text, double fontsize=11, char *language=NULL, int script=0, int wmode=0, int small_caps=0)
         {
             fz_font *font=NULL, *thisfont = (fz_font *) $self;
             fz_text_language lang = fz_text_language_from_string(language);
             double rc = 0;
+            int gid;
             fz_try(gctx) {
                 if (!PyUnicode_Check(text) || PyUnicode_READY(text) != 0) {
                     THROWMSG(gctx, "bad type: text");
@@ -10774,7 +10848,12 @@ struct Font
                 void *data = PyUnicode_DATA(text);
                 for (i = 0; i < len; i++) {
                     int c = PyUnicode_READ(kind, data, i);
-                    int gid = fz_encode_character_with_fallback(gctx,thisfont, c, script, lang, &font);
+                    if (small_caps) {
+                        gid = fz_encode_character_sc(gctx, thisfont, c);
+                        if (gid >= 0) font = thisfont;
+                    } else {
+                        gid = fz_encode_character_with_fallback(gctx,thisfont, c, script, lang, &font);
+                    }
                     rc += (double) fz_advance_glyph(gctx, font, gid, wmode);
                 }
             }
@@ -10790,11 +10869,12 @@ struct Font
         FITZEXCEPTION(char_lengths, !result)
         %pythonprepend char_lengths
         %{"""Return tuple of char lengths of unicode 'text' under a fontsize."""%}
-        PyObject *char_lengths(PyObject *text, double fontsize=11, char *language=NULL, int script=0, int wmode=0)
+        PyObject *char_lengths(PyObject *text, double fontsize=11, char *language=NULL, int script=0, int wmode=0, int small_caps=0)
         {
             fz_font *font, *thisfont = (fz_font *) $self;
             fz_text_language lang = fz_text_language_from_string(language);
             PyObject *rc = NULL;
+            int gid;
             fz_try(gctx) {
                 if (!PyUnicode_Check(text) || PyUnicode_READY(text) != 0) {
                     THROWMSG(gctx, "bad type: text");
@@ -10805,7 +10885,12 @@ struct Font
                 rc = PyTuple_New(len);
                 for (i = 0; i < len; i++) {
                     int c = PyUnicode_READ(kind, data, i);
-                    int gid = fz_encode_character_with_fallback(gctx,thisfont, c, script, lang, &font);
+                    if (small_caps) {
+                        gid = fz_encode_character_sc(gctx, thisfont, c);
+                        if (gid >= 0) font = thisfont;
+                    } else {
+                        gid = fz_encode_character_with_fallback(gctx,thisfont, c, script, lang, &font);
+                    }
                     PyTuple_SET_ITEM(rc, i,
                         PyFloat_FromDouble(fontsize * (double) fz_advance_glyph(gctx, font, gid, wmode)));
                 }
@@ -10822,26 +10907,36 @@ struct Font
         %pythonprepend glyph_bbox
         %{"""Return the glyph bbox of a unicode (font size 1)."""%}
         %pythonappend glyph_bbox %{val = Rect(val)%}
-        PyObject *glyph_bbox(int chr, char *language=NULL, int script=0)
+        PyObject *glyph_bbox(int chr, char *language=NULL, int script=0, int small_caps=0)
         {
-            fz_font *font;
+            fz_font *font, *thisfont = (fz_font *) $self;
+            int gid;
             fz_text_language lang = fz_text_language_from_string(language);
-            int gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
+            if (small_caps) {
+                gid = fz_encode_character_sc(gctx, thisfont, chr);
+                if (gid >= 0) font = thisfont;
+            } else {
+                gid = fz_encode_character_with_fallback(gctx, thisfont, chr, script, lang, &font);
+            }
             return JM_py_from_rect(fz_bound_glyph(gctx, font, gid, fz_identity));
         }
 
         %pythonprepend has_glyph
         %{"""Check whether font has a glyph for this unicode."""%}
-        PyObject *has_glyph(int chr, char *language=NULL, int script=0, int fallback=0)
+        PyObject *has_glyph(int chr, char *language=NULL, int script=0, int fallback=0, int small_caps=0)
         {
-            fz_font *font;
+            fz_font *font, *thisfont = (fz_font *) $self;
             fz_text_language lang;
             int gid = 0;
             if (fallback) {
                 lang = fz_text_language_from_string(language);
                 gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
             } else {
-                gid = fz_encode_character(gctx, (fz_font *) $self, chr);
+                if (!small_caps) {
+                    gid = fz_encode_character(gctx, thisfont, chr);
+                } else {
+                    gid = fz_encode_character_sc(gctx, thisfont, chr);
+                }
             }
             return Py_BuildValue("i", gid);
         }
@@ -11537,38 +11632,6 @@ struct Tools
             fz_point p = JM_point_from_py(P);
             fz_quad q = JM_quad_from_py(Q);
             return JM_BOOL(fz_is_point_inside_quad(p, q));
-        }
-
-
-        FITZEXCEPTION(set_font_width, !result)
-        PyObject *
-        set_font_width(struct Document *doc, int xref, int width)
-        {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
-            if (!pdf) Py_RETURN_FALSE;
-            pdf_obj *font=NULL, *dfonts=NULL;
-            fz_try(gctx) {
-                font = pdf_load_object(gctx, pdf, xref);
-                dfonts = pdf_dict_get(gctx, font, PDF_NAME(DescendantFonts));
-                if (pdf_is_array(gctx, dfonts)) {
-                    int i, n = pdf_array_len(gctx, dfonts);
-                    for (i = 0; i < n; i++) {
-                        pdf_obj *dfont = pdf_array_get(gctx, dfonts, i);
-                        pdf_obj *warray = pdf_new_array(gctx, pdf, 3);
-                        pdf_array_push(gctx, warray, pdf_new_int(gctx, 0));
-                        pdf_array_push(gctx, warray, pdf_new_int(gctx, 65535));
-                        pdf_array_push(gctx, warray, pdf_new_int(gctx, (int64_t) width));
-                        pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
-                    }
-                }
-            }
-            fz_always(gctx) {
-                pdf_drop_obj(gctx, font);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            Py_RETURN_TRUE;
         }
 
 
