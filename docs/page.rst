@@ -793,7 +793,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg str fontfile: a path to a font file. If used, *fontname* must be **different from all reserved names**.
 
-      :arg bytes/bytearray fontbuffer: the memory image of a font file. If used, *fontname* must be **different from all reserved names**. This parameter would typically be used to transfer fonts between different pages of the same or different PDFs.
+      :arg bytes/bytearray fontbuffer: the memory image of a font file. If used, *fontname* must be **different from all reserved names**. This parameter would typically be used with :attr:`Font.buffer` for fonts supported / available via :ref:`Font`.
 
       :arg int set_simple: applicable for *fontfile* / *fontbuffer* cases only: enforce treatment as a "simple" font, i.e. one that only uses character codes up to 255.
 

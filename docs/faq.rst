@@ -77,9 +77,9 @@ In the above we construct *clip* by specifying two diagonally opposite points: t
 
 ----------
 
-How to Fit a Clip to a GUI Window
+How to Zoom a Clip to a GUI Window
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This is similar to the previous section. This time, we want to **compute the zoom factor** for a clip such, that its image best fits a given GUI window. This means, that either the clip image's width or height (or both) will equal the window dimension.
+Please also read the previous section. This time we want to **compute the zoom factor** for a clip such that its image best fits a given GUI window. This means, that the image's width or height (or both) will equal the window dimension.
 
 ::
 
@@ -89,21 +89,21 @@ This is similar to the previous section. This time, we want to **compute the zoo
     # compare width/height ratios of image and window
 
     if clip.width / clip.height < WIDTH / HEIGHT:
-        # clip is narrower
-        zoom = HEIGHT / clip.height  # hence fit window height
-    else:
-        zoom = WIDTH / clip.width  # else fit window width
+        # clip is narrower: zoom to window height
+        zoom = HEIGHT / clip.height
+    else:  # else zoom to window width
+        zoom = WIDTH / clip.width
     mat = fitz.Matrix(zoom, zoom)
     pix = page.get_pixmap(matrix=mat, clip=clip)
 
-Now assume you **have the zoom factor** and need to compute the fitting clip.
+Now assume you **have** the zoom factor and need to compute the fitting clip.
 
-In this case we again have ``zoom = HEIGHT/clip.height = WIDTH/clip.width``, so we must set ``clip.height = HEIGHT/zoom`` and, similarly ``clip.width = WIDTH/zoom``. Now you only need to choose a top-left point ``tl`` of the clip on the page to compute the right pixmap::
+In this case we have ``zoom = HEIGHT/clip.height = WIDTH/clip.width``, so we must set ``clip.height = HEIGHT/zoom`` and, ``clip.width = WIDTH/zoom``. Choose the top-left point ``tl`` of the clip on the page to compute the right pixmap::
 
     width = WIDTH / zoom
     height = HEIGHT / zoom
     clip = fitz.Rect(tl, tl.x + width, tl.y + height)  
-    # make sure we still are inside the page
+    # ensure we still are inside the page
     clip &= page.rect
     mat = fitz.Matrix(zoom, zoom)
     pix = fitz.Pixmap(matrix=mat, clip=clip)
@@ -410,7 +410,7 @@ The general scheme is just the following two lines::
 .. index::
    pair: copy;examples
 
-How to Use Pixmaps: Gluing Images
+How to Use Pixmaps: Glueing Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This shows how pixmaps can be used for purely graphical, non-document purposes. The script reads an image file and creates a new image which consist of 3 * 4 tiles of the original::
@@ -956,6 +956,7 @@ All of the above is provided by three basic :ref:`Page`, resp. :ref:`Shape` meth
 * :meth:`Page.insert_font` -- install a font for the page for later reference. The result is reflected in the output of :meth:`Document.get_page_fonts`. The font can be:
 
     - provided as a file,
+    - via :ref:`Font` (then use :attr:`Font.buffer`)
     - already present somewhere in **this or another** PDF, or
     - be a **built-in** font.
 
@@ -1353,9 +1354,45 @@ Extracting Drawings
 
 The drawing commands issued by a page can be extracted. Interestingly, this is possible for **all supported document types** -- not just PDF: so you can use it for XPS, EPUB and others as well.
 
-A new page method, :meth:`Page.get_drawings()` accesses draw commands and converts them into a list of Python dictionaries. Each dictionary -- called a "path" -- represents a separate drawing -- it may be simple like a single line, or a complex combination of lines and curves representing one of the shapes of the previous section.
+Page method, :meth:`Page.get_drawings()` accesses draw commands and converts them into a list of Python dictionaries. Each dictionary -- called a "path" -- represents a separate drawing -- it may be simple like a single line, or a complex combination of lines and curves representing one of the shapes of the previous section.
 
-The *path* dictionary has been designed such that it can easily be used by the :ref:`Shape` class and its methods.
+The *path* dictionary has been designed such that it can easily be used by the :ref:`Shape` class and its methods. Here is an example for a page with one path, that draws a red-bordered yellow circle inside rectangle `Rect(100, 100, 200, 200)`::
+
+    >>> pprint(page.get_drawings())
+    [{'closePath': True,
+    'color': [1.0, 0.0, 0.0],
+    'dashes': '[] 0',
+    'even_odd': False,
+    'fill': [1.0, 1.0, 0.0],
+    'items': [('c',
+                Point(100.0, 150.0),
+                Point(100.0, 177.614013671875),
+                Point(122.38600158691406, 200.0),
+                Point(150.0, 200.0)),
+                ('c',
+                Point(150.0, 200.0),
+                Point(177.61399841308594, 200.0),
+                Point(200.0, 177.614013671875),
+                Point(200.0, 150.0)),
+                ('c',
+                Point(200.0, 150.0),
+                Point(200.0, 122.385986328125),
+                Point(177.61399841308594, 100.0),
+                Point(150.0, 100.0)),
+                ('c',
+                Point(150.0, 100.0),
+                Point(122.38600158691406, 100.0),
+                Point(100.0, 122.385986328125),
+                Point(100.0, 150.0))],
+    'lineCap': (0, 0, 0),
+    'lineJoin': 0,
+    'opacity': 1.0,
+    'rect': Rect(100.0, 100.0, 200.0, 200.0),
+    'width': 1.0}]
+    >>> 
+
+.. note:: You need (at least) 4 Bézier curves (of 3rd order) to draw a circle with acceptable precision. See this `Wikipedia article<https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ for some background.
+
 
 The following is a code snippet which extracts the drawings of a page and re-draws them on a new page::
 

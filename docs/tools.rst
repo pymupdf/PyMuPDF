@@ -60,11 +60,12 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Set or inquire reduced bbox heights in text extract and text search methods.
 
-      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If *False* (the standard setting when PyMuPDF is imported), bbox height will be based on font properties and normally equal *line height*.
+      :arg bool on: if omitted or ``None``, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If ``True``, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If ``False`` (standard setting when PyMuPDF is imported), bbox height will be based on font properties and normally equal *line height*.
 
       :rtype: bool
       :returns: *True* or *False*.
 
+      .. note:: Text extraction options "xml", "xhtml" and "html", which directly wrap MuPDF code, are not influenced by this.
 
    .. method:: set_subset_fontnames(on=None)
 
@@ -72,7 +73,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Control suppression of subset fontname tags in text extractions.
 
-      :arg bool on: if omitted / ``None``, the current setting is returned. For other values the *bool()* built-in function is applied to set a global variable. If *True*, options "dict", "json", "rawdict" and "rawjson" will return e.g. ``"NOHSJV+Calibri-Light"``, otherwise (default) only ``"Calibri-Light"`` (the default).
+      :arg bool on: if omitted / ``None``, the current setting is returned. Arguments evaluating to ``True`` or ``False`` set a global variable. If ``True``, options "dict", "json", "rawdict" and "rawjson" will return e.g. ``"NOHSJV+Calibri-Light"``, otherwise only ``"Calibri-Light"`` (the default). The setting remains in effect until changed again.
 
       :rtype: bool
       :returns: *True* or *False*.
@@ -86,7 +87,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Enable / disable PyMuPDF-specific code, that tries to rebuild valid character quads when encountering nonsense in :meth:`Page.get_text` text extractions. This code depends on certain font properties (ascender and descender), which do not exist in rare situations and cause segmentation faults when trying to access them. This method sets a global parameter in PyMuPDF, which suppresses execution of this code.
 
-      :arg bool on: if omitted, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If *True*, PyMuPDF will not try to access the resp. font properties and use values ``ascender=0.8`` and ``descender=-0.2`` instead.
+      :arg bool on: if omitted or ``None``, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If ``True``, PyMuPDF will not try to access the resp. font properties and use values ``ascender=0.8`` and ``descender=-0.2`` instead.
 
       :rtype: bool
       :returns: *True* or *False*.

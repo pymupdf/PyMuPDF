@@ -264,7 +264,7 @@ Text Extraction Flags Defaults
 =================== ==== ==== ===== === ==== ======= ===== ====== ======
 Indicator           text html xhtml xml dict rawdict words blocks search
 =================== ==== ==== ===== === ==== ======= ===== ====== ======
-preserve ligatures  1    1    1     1   1    1       1     1       0
+preserve ligatures  1    1    1     1   1    1       1     1       1
 preserve whitespace 1    1    1     1   1    1       1     1       1
 preserve images     n/a  1    1     n/a 1    1       n/a   0       0
 inhibit spaces      0    0    0     0   0    0       0     0       0
@@ -298,7 +298,7 @@ To show the effect of *TEXT_INHIBIT_SPACES* have a look at this example::
 
 Performance
 ~~~~~~~~~~~~
-The text extraction methods differ significantly: in terms of information they supply, and in terms of resource requirements and runtimes. Generally, more information of course means that more processing is required and a higher data volume is generated.
+The text extraction methods differ significantly: in terms of information they supply, and in terms of resource requirements and runtimes. Generally, more information of course means, that more processing is required and a higher data volume is generated.
 
 .. note:: Especially images have a **very significant** impact. Make sure to exclude them (via the *flags* parameter) whenever you do not need them. To process the below mentioned 2'700 total pages with default flags settings required 160 seconds across all extraction methods. When all images where excluded, less than 50% of that time (77 seconds) were needed.
 
@@ -319,6 +319,6 @@ DICT     3.93  **binary** images, **span** level text, layout and font details  
 RAWDICT  4.50  **binary** images, **char** level text, layout and font details        1.68
 ======= ====== ===================================================================== ==========
 
-As mentioned: when excluding all images (last column), the relative speeds are changing drastically: except RAWDICT and XML, the other methods are almost equally fast, and RAWDICT requires 40% less execution time than the **now slowest XML**.
+As mentioned: when excluding image extraction (last column), the relative speeds are changing drastically: except RAWDICT and XML, the other methods are almost equally fast, and RAWDICT requires 40% less execution time than the **now slowest XML**.
 
 Look at chapter **Appendix 1** for more performance information.

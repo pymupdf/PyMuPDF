@@ -1,6 +1,23 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.15
+---------------------------
+* **Fixed** issue `#1088 <https://github.com/pymupdf/PyMuPDF/issues/1088>`_. Removing an annotation's fill color should now work again both ways, using the ``fill_color=[]`` argument in :meth:`Annot.update` as well as ``fill=[]`` in :meth:`Annot.set_colors`.
+
+* **Fixed** issue `#1081 <https://github.com/pymupdf/PyMuPDF/issues/1081>`_. :meth:`Document.subset_fonts`: fixed an error which created wrong character widths for some fonts.
+
+* **Fixed** issue `#1078 <https://github.com/pymupdf/PyMuPDF/issues/1078>`_. :meth:`Page.get_text` and other methods related to text extraction: changed the default value of the :ref:`TextPage` ``flags`` parameter. All whitespace and ligatures are now preserved.
+
+* **Fixed** issue `#1085 <https://github.com/pymupdf/PyMuPDF/issues/1085>`_. The old *snake_cased* alias of ``fitz.detTextlength`` is now defined correctly.
+
+* **Changed** :meth:`Document.subset_fonts` will now correctly prefix font subsets with an appropriate six letter uppercase tag, complying with the PDF specification.
+
+* **Added** new method :meth:`Widget.button_states` which returns the possible values that a button-type field can have when being set to "on" or "off".
+
+* **Added** support of text with **Small Capital** letters to the :ref:`Font` and :ref:`TextWriter` classes. This is reflected by an additional bool parameter ``small_caps`` in various of their methods.
+
+
 Changes in Version 1.18.14
 ---------------------------
 * **Finished** implementing new, "snake_cased" names for methods and properties, that were "camelCased" and awkward in many aspects. At the end of this documentation, there is section :ref:`Deprecated` with more background and a mapping of old to new names.

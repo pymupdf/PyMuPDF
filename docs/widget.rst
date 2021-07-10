@@ -15,6 +15,20 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
 .. class:: Widget
 
+    .. method:: button_states
+
+      *New in version 1.18.15*
+
+       Return the names of On / Off (i.e. selected / clicked or not) states a button field may have. While the 'Off' state usually is also named like so, the 'On' state is often given a name relating to the functional context, for example 'Yes', 'Female', etc.
+
+       This method helps finding out the possible values of :attr:`field_value` in these cases.
+
+       :returns: a dictionary with the names of 'On' and 'Off' for the *normal* and the *pressed-down* appearance of button widgets. Example:
+
+         >>> print(field.field_name, field.button_states())
+         Gender Second person {'down': ['Male', 'Off'], 'normal': ['Male', 'Off']}
+
+
     .. method:: update
 
        After any changes to a widget, this method **must be used** to store them in the PDF [#f1]_.

@@ -279,7 +279,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg sequence stroke: see above.
       :arg sequence fill: see above.
 
-      *Changed in v1.18.5:* To completely remove a color specification, use an empty sequence like ``[]``. 
+      *Changed in v1.18.5:* To completely remove a color specification, use an empty sequence like ``[]``. If you specify ``None``, an existing specification will not be changed.
 
 
    .. method:: delete_responses()

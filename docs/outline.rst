@@ -13,11 +13,10 @@ Outline
 :attr:`Outline.next`         next item same level
 :attr:`Outline.page`         page number (0-based)
 :attr:`Outline.title`        title
-:attr:`Outline.uri`          string further specifying the outline target
-:attr:`Outline.isExternal`   target is outside this document
+:attr:`Outline.uri`          string further specifying outline target
+:attr:`Outline.is_external`  target outside document
 :attr:`Outline.is_open`      whether sub-outlines are open or collapsed
-:attr:`Outline.isOpen`       whether sub-outlines are open or collapsed
-:attr:`Outline.dest`         points to link destination details
+:attr:`Outline.dest`         points to destination details object
 ============================ ==================================================
 
 **Class API**
@@ -50,11 +49,11 @@ Outline
 
    .. attribute:: is_open
 
-      Or *isOpen* -- an indicator showing whether any sub-outlines should be expanded (*True*) or be collapsed (*False*). This information should be interpreted by PDF display software accordingly.
+      Indicator showing whether any sub-outlines should be expanded (*True*) or be collapsed (*False*). This information is interpreted by PDF reader software.
 
       :type: bool
 
-   .. attribute:: isExternal
+   .. attribute:: is_external
 
       A bool specifying whether the target is outside (*True*) of the current document.
 

@@ -22,9 +22,9 @@ A text writer is an elegant alternative to methods :meth:`Page.insert_text` and 
 
 Using this object entails three steps:
 
-1. When **created**, a TextWriter requires a fixed **page rectangle** in relation to which it calculates text positions. A text writer can write to a page with the same size only.
-2. Store text in the TextWriter using methods :meth:`TextWriter.append`, :meth:`TextWriter.appendv` and :meth:`TextWriter.fill_textbox` as often as desired.
-3. Output the TextWriter object on some PDF page.
+1. When **created**, a TextWriter requires a fixed **page rectangle** in relation to which it calculates text positions. A text writer can write to pages of this size only.
+2. Store text in the TextWriter using methods :meth:`TextWriter.append`, :meth:`TextWriter.appendv` and :meth:`TextWriter.fill_textbox` as often as is desired.
+3. Output the TextWriter object on some PDF page(s).
 
 .. note::
 
@@ -59,9 +59,10 @@ Using this object entails three steps:
       :arg float,sequ color: the color of the text. All colors are specified as floats *0 <= color <= 1*. A single float represents some gray level, a sequence implies the colorspace via its length.
 
 
-   .. method:: append(pos, text, font=None, fontsize=11, language=None, right_to_left=False)
+   .. method:: append(pos, text, font=None, fontsize=11, language=None, right_to_left=False, small_caps=0)
 
-      *(Changed in v1.18.9)*
+      * *Changed in v1.18.9*
+      * *Changed in v1.18.15*
 
       Add some new text in horizontal writing.
 
@@ -71,11 +72,28 @@ Using this object entails three steps:
       :arg float fontsize: the fontsize, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts within the text will automatically converted. There are no other consequences, i.e. :attr:`TextWriter.last_point` will still be the rightmost character, and there neither is any alignment taking place. Hence you may want to use :meth:`TextWriter.fill_textbox` instead.
+      :arg bool small_caps: *(New in v1.18.15)* look for the character's Small Capital version in the font. If present, take that value instead. Otherwise the original character (this font or the fallback font) will be taken. The fallback font will never return small caps. For example, this snippet::
+
+         >>> doc = fitz.open()
+         >>> page = doc.new_page()
+         >>> text = "PyMuPDF: the Python bindings for MuPDF"
+         >>> font = fitz.Font("figo")  # choose a font with small caps
+         >>> tw = fitz.TextWriter(page.rect)
+         >>> tw.append((50,100), text, font=font, small_caps=True)
+         >>> tw.write_text(page)
+         >>> doc.ez_save("x.pdf")
+
+         will produce this PDF text:
+      
+         .. image:: images/img-smallcaps.*
+
 
       :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
 
-   .. method:: appendv(pos, text, font=None, fontsize=11, language=None)
+   .. method:: appendv(pos, text, font=None, fontsize=11, language=None, small_caps=0)
+
+      *Changed in v1.18.15*
 
       Add some new text in vertical, top-to-bottom writing.
 
@@ -84,14 +102,16 @@ Using this object entails three steps:
       :arg font: a :ref:`Font`. If omitted, ``fitz.Font("helv")`` will be used.
       :arg float fontsize: the fontsize, a positive float, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
+      :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.
 
       :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
-   .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, align=0, right_to_left=False, warn=None)
+   .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, align=0, right_to_left=False, warn=None, small_caps=0)
 
-      *(Changed in v1.18.9)*
+      * *Changed in v1.18.9*
+      * *Changed in v1.18.15*
 
-      Fill a given rectangle with text in horizontal writing mode. This is a convenience method to use as an alternative to :meth:`append`.
+      Fill a given rectangle with text in horizontal writing mode. This is a convenience method to use as an alternative for :meth:`append`.
 
       :arg rect_like rect: the area to fill. No part of the text will appear outside of this.
       :arg str,sequ text: the text. Can be specified as a (UTF-8) string or a list / tuple of strings. A string will first be converted to a list using *splitlines()*. Every list item will begin on a new line (forced line breaks).
@@ -105,10 +125,10 @@ Using this object entails three steps:
         * Default is *None*.
         * The list of overflow lines will be returned.
 
-      *(New in v1.18.9)*
+      :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.
 
       :rtype: list
-      :returns: List of lines that did not fit in the rectangle. Each item is a tuple `(text, length)` containing a string and its length (on the page).
+      :returns: *New in v1.18.9* -- List of lines that did not fit in the rectangle. Each item is a tuple `(text, length)` containing a string and its length (on the page).
 
    .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix :meth:`append` and text boxes and have multiple of both. Text positioning is exclusively controlled by the insertion point. Therefore there is no need to adhere to any order. *(Changed in v1.18.0:)* Raise an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
@@ -123,7 +143,9 @@ Using this object entails three steps:
       :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*. 
       :arg bool overlay: put in foreground (default) or background.
       :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
-      :arg int render_mode: The PDF ``Tr`` operator value.
+      :arg int render_mode: The PDF ``Tr`` operator value. Values: 0 (default), 1, 2, 3 (invisible).
+
+         .. image:: images/img-rendermode.*
 
 
    .. attribute:: text_rect
@@ -163,5 +185,5 @@ Using this object entails three steps:
   2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
   4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`last_point` of the previously added item.
-  5. You can use the *pos* argument of :meth:`TextWriter.fill_textbox` to indent the first line, so its text may continue any preceeding one in a continuous manner.
-  6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.is_writable`.
+  5. You can use the *pos* argument of :meth:`TextWriter.fill_textbox` to set the position of the first text character. This allows filling the same textbox with contents from different :ref:`TextWriter` objects, thus allowing for multiple colors, opacities, etc.
+  6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.is_writable`. This attribute is also checked when using :ref:`TextWriter` methods.

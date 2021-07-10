@@ -1046,7 +1046,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg bool attached_files: Search for 'FileAttachment' annotations and remove the file content.
       :arg bool clean_pages: Remove any comments from page painting sources. If this option is set to *False*, then this is also done for *hidden_text* and *redactions*.
       :arg bool embedded_files: Remove embedded files.
-      :arg bool hidden_text: Remove OCR-ed text and invisible text.
+      :arg bool hidden_text: Remove OCR-ed text and invisible text [#f7]_.
       :arg bool javascript: Remove JavaScript sources.
       :arg bool metadata: Remove PDF standard metadata.
       :arg bool redactions: Apply redaction annotations.
@@ -1752,7 +1752,7 @@ Other Examples
 
 .. [#f2] However, you **can** use :meth:`Document.get_toc` and :meth:`Page.get_links` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
 
-.. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods / attributes :meth:`Document.next_location`, :meth:`Document.prev_location` and :attr:`Document.last_location` for maintaining a high level of coding efficiency.
+.. [#f3] For applicable (EPUB) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this performance impact, prefer chapter-based access. Use convenience methods and attributes :meth:`Document.next_location`, :meth:`Document.prev_location` and :attr:`Document.last_location` for maintaining a high level of coding efficiency.
 
 .. [#f4] These parameters cause separate handling of stream categories: use it together with ``expand`` to restrict decompression to streams other than images / fontfiles.
 
@@ -1760,3 +1760,4 @@ Other Examples
 
 .. [#f6] For a *False* the **complete document** must be scanned. Both methods **do not load pages,** but only scan object definitions. This makes them at least 10 times faster than application-level loops (where total response time roughly equals the time for loading all pages). For the :ref:`AdobeManual` (1'310 pages) and the Pandas documentation (over 3'070 pages) -- both havo no annotations -- the method needs about 11 ms for the answer *False*. So response times will probably become significant only well beyond this order of magnitude.
 
+.. [#f7] This only works under certain conditions. For example, if there is normal text covered by some image on top of it, then this is undetectable and the respective text is **not** removed. Similar is true for white text on white background, and so on.

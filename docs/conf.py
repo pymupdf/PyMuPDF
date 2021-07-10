@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.abspath("."))
 extensions = [
     "extensions.searchrepair",
     "extensions.fulltoc",
+    "rinoh.frontend.sphinx",
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -42,7 +43,7 @@ copyright = "2015-2021, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.18.14"
+release = "1.18.15"
 
 # The short X.Y version
 version = release
