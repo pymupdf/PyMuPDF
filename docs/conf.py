@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath("."))
 extensions = [
     "extensions.searchrepair",
     "extensions.fulltoc",
-    "rinoh.frontend.sphinx",
+    # "rinoh.frontend.sphinx",
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
