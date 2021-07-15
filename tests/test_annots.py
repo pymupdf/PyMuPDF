@@ -23,6 +23,8 @@ def test_caret():
     annot = page.add_caret_annot(rect.tl)
     assert annot.type == (14, "Caret")
     annot.update(rotate=20)
+    page.annot_names()
+    page.annot_xrefs()
 
 
 def test_freetext():

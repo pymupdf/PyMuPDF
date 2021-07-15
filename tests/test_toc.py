@@ -31,6 +31,11 @@ def test_erase_toc():
     assert doc.get_toc() == []
 
 
+def test_replace_toc():
+    toc = doc.get_toc(False)
+    doc.set_toc(toc)
+
+
 def test_setcolors():
     doc = fitz.open(filename2)
     toc = doc.get_toc(False)

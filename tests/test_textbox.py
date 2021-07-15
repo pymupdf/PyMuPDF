@@ -32,6 +32,7 @@ def test_textbox1():
     tw.write_text(page, morph=(rect.tl, fitz.Matrix(1, 1)))
     # check text containment
     assert page.get_text() == page.get_text(clip=rect)
+    page.write_text(writers=tw)
 
 
 def test_textbox2():
@@ -40,7 +41,8 @@ def test_textbox2():
     ocg = doc.add_ocg("ocg1")
     page = doc.new_page()
     rect = fitz.Rect(50, 50, 400, 400)
-    blue = (0, 0, 1)
+    blue = fitz.utils.getColor("lightblue")
+    red = fitz.utils.getColorHSV("red")
     page.insert_textbox(
         rect,
         text,
@@ -57,6 +59,7 @@ def test_textbox3():
     """Use TextWriter for text insertion."""
     doc = fitz.open()
     page = doc.new_page()
+    font = fitz.Font("cjk")
     rect = fitz.Rect(50, 50, 400, 400)
     blue = (0, 0, 1)
     tw = fitz.TextWriter(page.rect, color=blue)
@@ -64,6 +67,7 @@ def test_textbox3():
         rect,
         text,
         align=fitz.TEXT_ALIGN_LEFT,
+        font=font,
         fontsize=12,
         right_to_left=True,
     )

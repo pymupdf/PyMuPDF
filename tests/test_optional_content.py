@@ -60,3 +60,4 @@ def test_oc2():
     assert set(ocmds) <= set(xobj_ocmds)
     assert set((ocg0, ocg1, ocg2, ocg3)) == set(tuple(doc.get_ocgs().keys()))
     doc.get_ocmd(ocmd0)
+    page.get_oc_items()

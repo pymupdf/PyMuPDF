@@ -24,7 +24,7 @@ The following areas are currently covered:
 * annotation handling
 * field / widget handling
 
-This is **_not a coverage test_**, although a significant part of the Python part **_does_** get executed (ca. 80%). Achieving a much higher code coverage remains an ongoing task.
+This is **_not a coverage test_**, although a significant part of the relevant Python part **_does_** get executed (ca. 80%). Achieving a much higher code coverage remains an ongoing task.
 
 To use these scripts, you must have installed `pytest`:
 
@@ -33,36 +33,48 @@ To use these scripts, you must have installed `pytest`:
 Then simply execute `python -m pytest` in a terminal of this folder. `pytest` will automatically locate all scripts and execute them. All tests should run successfully and you will see an output like this:
 
 ```
-python3.8 -m pytest
-============================ test session starts =====================
-platform linux -- Python 3.8.5, pytest-6.2.3, py-1.10.0, pluggy-0.13.1
-rootdir: .../pymupdf
-collected 72 items
+pytest --cov=fitz
+============================ test session starts =============================
+platform linux -- Python 3.8.5, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
+rootdir: /mnt/d/harald/desktop/fitzPython118/pymupdf
+plugins: cov-2.12.0
+collected 79 items
 
-test_annots.py ...............                                [ 20%]
-test_badfonts.py .                                            [ 22%]
-test_crypting.py .                                            [ 23%]
-test_drawings.py .                                            [ 25%]
-test_embeddedfiles.py .                                       [ 26%]
-test_font.py ..                                               [ 29%]
-test_general.py ...........                                   [ 44%]
-test_geometry.py .......                                      [ 54%]
-test_imagebbox.py .                                           [ 55%]
-test_insertimage.py .                                         [ 56%]
-test_insertpdf.py .                                           [ 58%]
-test_linequad.py .                                            [ 59%]
-test_metadata.py ..                                           [ 62%]
-test_nonpdf.py ...                                            [ 66%]
-test_object_manipulation.py ...                               [ 70%]
-test_pagedelete.py .                                          [ 72%]
-test_pagelabels.py .                                          [ 73%]
-test_pixmap.py .....                                          [ 80%]
-test_showpdfpage.py .                                         [ 81%]
-test_textbox.py ..                                            [ 84%]
-test_textextract.py .                                         [ 86%]
-test_textsearch.py .                                          [ 87%]
-test_toc.py ....                                              [ 93%]
-test_widgets.py .....                                         [100%]
+test_annots.py ...............                                          [ 18%]
+test_badfonts.py .                                                      [ 20%]
+test_crypting.py .                                                      [ 21%]
+test_drawings.py ..                                                     [ 24%]
+test_embeddedfiles.py .                                                 [ 25%]
+test_font.py ..                                                         [ 27%]
+test_general.py ............                                            [ 43%]
+test_geometry.py .......                                                [ 51%]
+test_imagebbox.py .                                                     [ 53%]
+test_insertimage.py .                                                   [ 54%]
+test_insertpdf.py .                                                     [ 55%]
+test_linequad.py .                                                      [ 56%]
+test_metadata.py ..                                                     [ 59%]
+test_nonpdf.py ...                                                      [ 63%]
+test_object_manipulation.py ...                                         [ 67%]
+test_optional_content.py ..                                             [ 69%]
+test_pagedelete.py .                                                    [ 70%]
+test_pagelabels.py .                                                    [ 72%]
+test_pixmap.py ......                                                   [ 79%]
+test_showpdfpage.py .                                                   [ 81%]
+test_textbox.py ....                                                    [ 86%]
+test_textextract.py .                                                   [ 87%]
+test_textsearch.py .                                                    [ 88%]
+test_toc.py ....                                                        [ 93%]
+test_widgets.py .....                                                   [100%]
 
-====================== 72 passed in 1.43s ===========================
+----------- coverage: platform linux, python 3.8.5-final-0 -----------
+Name                                                      Stmts   Miss  Cover
+-----------------------------------------------------------------------------
+/usr/local/lib/python3.8/dist-packages/fitz/__init__.py     335     13    96%
+/usr/local/lib/python3.8/dist-packages/fitz/fitz.py        4183    740    82%
+/usr/local/lib/python3.8/dist-packages/fitz/utils.py       2196    669    70%
+-----------------------------------------------------------------------------
+TOTAL                                                      6714   1422    79%
+
+
+============================ 79 passed in 5.76s ==============================
 ```

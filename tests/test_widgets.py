@@ -3,6 +3,11 @@
 Test PDF field (widget) insertion.
 """
 import fitz
+import os
+
+scriptdir = os.path.abspath(os.path.dirname(__file__))
+filename = os.path.join(scriptdir, "resources", "widgettest.pdf")
+
 
 doc = fitz.open()
 page = doc.new_page()
@@ -137,3 +142,10 @@ def test_text2():
     widgets = [w for w in page.widgets()]
     field = widgets[0]
     assert field.field_type_string == "Text"
+
+
+# def test_deletewidget():
+#     pdf = fitz.open(filename)
+#     page = pdf[0]
+#     field = page.first_widget
+#     page.delete_widget(field)

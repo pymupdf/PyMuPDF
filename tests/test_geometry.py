@@ -138,11 +138,11 @@ def test_matrix():
     assert fitz.Matrix(2, 3, 1) == fitz.Matrix(1, 3, 2, 1, 0, 0)
     m = fitz.Matrix(2, 3, 1)
     m.invert()
-    assert m * fitz.Matrix(2, 3, 1) == fitz.Matrix(1, 0, 0, 1, 0, 0)
+    assert abs(m * fitz.Matrix(2, 3, 1) - fitz.Identity) < fitz.EPSILON
     assert fitz.Matrix(1, 1).pretranslate(2, 3) == fitz.Matrix(1, 0, 0, 1, 2, 3)
     assert fitz.Matrix(1, 1).prescale(2, 3) == fitz.Matrix(2, 0, 0, 3, 0, 0)
     assert fitz.Matrix(1, 1).preshear(2, 3) == fitz.Matrix(1, 3, 2, 1, 0, 0)
-    assert abs(fitz.Matrix(1, 1).prerotate(30) == fitz.Matrix(30)) < fitz.EPSILON
+    assert abs(fitz.Matrix(1, 1).prerotate(30) - fitz.Matrix(30)) < fitz.EPSILON
     small = 1e-6
     assert fitz.Matrix(1, 1).prerotate(90 + small) == fitz.Matrix(90)
     assert fitz.Matrix(1, 1).prerotate(180 + small) == fitz.Matrix(180)
