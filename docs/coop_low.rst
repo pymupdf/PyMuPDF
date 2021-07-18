@@ -41,7 +41,7 @@ Extract Text
 ----------------
 With the same :ref:`TextPage` object from above, we can now immediately use any or all of the 5 text extraction methods.
 
-.. note:: Above, we have created our text page without argument. This leads to a default argument of 3 (ligatures and white-space are preserved), IAW images will **not** be extracted -- see below.
+.. note:: Above, we have created our text page without argument. This leads to a default argument of 3 (:data:`ligatures` and white-space are preserved), IAW images will **not** be extracted -- see below.
 
 >>> txt  = tp.extractText()                  # plain text format
 >>> json = tp.extractJSON()                  # json format

@@ -7,7 +7,7 @@ Changes in Version 1.18.15
 
 * **Fixed** issue `#1081 <https://github.com/pymupdf/PyMuPDF/issues/1081>`_. :meth:`Document.subset_fonts`: fixed an error which created wrong character widths for some fonts.
 
-* **Fixed** issue `#1078 <https://github.com/pymupdf/PyMuPDF/issues/1078>`_. :meth:`Page.get_text` and other methods related to text extraction: changed the default value of the :ref:`TextPage` ``flags`` parameter. All whitespace and ligatures are now preserved.
+* **Fixed** issue `#1078 <https://github.com/pymupdf/PyMuPDF/issues/1078>`_. :meth:`Page.get_text` and other methods related to text extraction: changed the default value of the :ref:`TextPage` ``flags`` parameter. All whitespace and :data:`ligatures` are now preserved.
 
 * **Fixed** issue `#1085 <https://github.com/pymupdf/PyMuPDF/issues/1085>`_. The old *snake_cased* alias of ``fitz.detTextlength`` is now defined correctly.
 

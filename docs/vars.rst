@@ -150,33 +150,35 @@ Text Alignment
 
 .. _TextPreserve:
 
-Preserve Text Flags
---------------------
-Options controlling the amount of data a text device parses into a :ref:`TextPage`.
+Text Extraction Flags
+---------------------
+Option bits controlling the amount of data, that are parsed into a :ref:`TextPage` -- this class is mainly used only internally in PyMuPDF.
+
+For the PyMuPDF programmer, some combination (using Python's ``|`` operator, or simply use ``+``) of these values are aggregated in the ``flags`` integer, a parameter of all text search and text extraction methods. Depending on the individual method, different default combinations of the values are used. Please use a value that meets your situation. Especially make sure to switch off image extraction unless you really need them. The impact on performance and memory is significant!
 
 .. py:data:: TEXT_PRESERVE_LIGATURES
 
-    1 -- If set, ligatures are passed through to the application in their original form. Otherwise ligatures are expanded into their constituent parts, e.g. the ligature ffi is expanded into three  eparate characters f, f and i.
+    1 -- If set, ligatures are passed through to the application in their original form. Otherwise ligatures are expanded into their constituent parts, e.g. the ligature "ffi" is expanded into three  eparate characters f, f and i. Default is "on" in PyMuPDF.
 
 .. py:data:: TEXT_PRESERVE_WHITESPACE
 
-    2 -- If set, whitespace is passed through to the application in its original form. Otherwise any type of horizontal whitespace (including horizontal tabs) will be replaced with space characters of variable width.
+    2 -- If set, whitespace is passed through to the application in its original form. Otherwise any type of horizontal whitespace (including horizontal tabs) will be replaced with space characters of variable width. Default is "on" in PyMuPDF.
 
 .. py:data:: TEXT_PRESERVE_IMAGES
 
-    4 -- If set, then images will be stored in the structured text structure.
+    4 -- If set, then images will be stored in the structured text structure. This causes the presence of (usually large!) binary image contents in the output of text extractions of types "dict", "json", "rawdict", "rawjson", "html", and "xhtml" and is the default here. If used with "blocks" however (default "off"), only image metadata will be returned, not the image itself.
 
 .. py:data:: TEXT_INHIBIT_SPACES
 
-    8 -- If set, we will not try to add missing space characters where there are large gaps between characters.
+    8 -- If set, we will not try to add missing space characters where there are large gaps between characters. In PDF, the creator usually does not insert (multiple) spaces to point to the next character's position, but will provide a direct location address for the character. The default in PyMuPDF is "off".
 
 .. py:data:: TEXT_DEHYPHENATE
 
-    16 -- Ignore hyphens at line ends and join with next line. Used mainly with search function
+    16 -- Ignore hyphens at line ends and join with next line. Used internally with the text search functions.
 
 .. py:data:: TEXT_PRESERVE_SPANS
 
-    32 -- Generate a new line for every span. Not used in PyMuPDF.
+    32 -- Generate a new line for every span. Not used ("off") in PyMuPDF, but available for your use. Every line in "dict", "json", "rawdict", "rawjson" will contain exactly one span.
 
 
 .. _linkDest Kinds:

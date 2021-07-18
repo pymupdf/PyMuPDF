@@ -136,3 +136,7 @@ Glossary
 .. data:: OCMD
         
         Optional content membership dictionary -- a :data:`dictionary` object which can be used like an :data:`OCG`: it has a visibility state. The visibility of an OCMD is **computed:** it is a logical expression, which uses the state of one or more OCGs to produce a boolean value. The expression's result is interpreted as ON (true) or OFF (false).
+
+.. data:: ligatures
+        
+        Some frequent character combinations are represented by their own special glyph in some more advanced fonts. Typical examples are "fi", "fl", and "ffi". In PyMuPDF text extractions there is the option to either return the corresponding unicode unchanged, or split the ligatures up into their constituent parts: "fi" ==> "f" + "i", etc.

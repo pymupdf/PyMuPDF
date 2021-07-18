@@ -137,7 +137,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg point_like point: the top left point of a 20 x 20 rectangle containing the MuPDF-provided icon.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation.
+      :returns: the created annotation. Stroke color blue = (0, 0, 1), no fill color support.
 
       .. image:: images/img-caret-annot.*
          :scale: 70
@@ -152,7 +152,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str icon: *(new in version 1.16.0)* choose one of "Note" (default), "Comment", "Help", "Insert", "Key", "NewParagraph", "Paragraph" as the visual symbol for the embodied text [#f4]_.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation.
+      :returns: the created annotation. Stroke color yellow = (1, 1, 0), no fill color support.
 
    .. index::
       pair: color; add_freetext_annot
@@ -198,7 +198,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str icon: *(new in version 1.16.0)* choose one of "PushPin" (default), "Graph", "Paperclip", "Tag" as the visual symbol for the attached data [#f4]_.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. Use methods of :ref:`Annot` to make any changes.
+      :returns: the created annotation.  Stroke color yellow = (1, 1, 0), no fill color support.
 
    .. method:: add_ink_annot(list)
 
@@ -207,7 +207,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg sequence list: a list of one or more lists, each containing :data:`point_like` items. Each item in these sublists is interpreted as a :ref:`Point` through which a connecting line is drawn. Separate sublists thus represent separate drawing lines.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation in default appearance (black line of width 1). Use annotation methods with a subsequent :meth:`Annot.update` to modify.
+      :returns: the created annotation in default appearance black =(0, 0, 0),line width 1. No fill color support.
 
    .. method:: add_line_annot(p1, p2)
 
@@ -218,7 +218,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg point_like p2: the end point of the line.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. It is drawn with line color black and line width 1. The **rectangle** is automatically created to contain both points, each one surrounded by a circle of radius 3 * line width to make room for any line end symbols.
+      :returns: the created annotation. It is drawn with line (stroke) color red = (1, 0, 0) and line width 1. No fill color support. The **annot rectangle** is automatically created to contain both points, each one surrounded by a circle of radius 3 * line width to make room for any line end symbols.
 
    .. method:: add_rect_annot(rect)
 
@@ -229,7 +229,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect_like rect: the rectangle in which the circle or rectangle is drawn, must be finite and not empty. If the rectangle is not equal-sided, an ellipse is drawn.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. It is drawn with line color red, no fill color and line width 1.
+      :returns: the created annotation. It is drawn with line (stroke) color red = (1, 0, 0), line width 1, fill color is supported.
 
    .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
 
@@ -278,7 +278,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg list points: a list of :data:`point_like` objects.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. It is drawn with line color black, no fill color and line width 1. Use methods of :ref:`Annot` to make any changes to achieve something like this:
+      :returns: the created annotation. It is drawn with line color black, line width 1 no fill color but fill color support. Use methods of :ref:`Annot` to make any changes to achieve something like this:
 
       .. image:: images/img-polyline.*
          :scale: 70
@@ -293,7 +293,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`Page.search_for`). But this is not required: you are free to "mark" just anything.
 
-      Standard colors are chosen per annotation type: **yellow** for highlighting, **red** for striking out, **green** for underlining, and **magenta** for wavy underlining.
+      Standard (stroke only -- no fill color support) colors are chosen per annotation type: **yellow** for highlighting, **red** for striking out, **green** for underlining, and **magenta** for wavy underlining.
 
       All these four methods convert the arguments into a list of :ref:`Quad` objects. The **annotation** rectangle is then calculated to envelop all these quadrilaterals.
 
@@ -953,7 +953,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this rectangle. If None, the full page is taken. Has **no effect** for options "html", "xhtml" and "xml".
 
-      :arg int flags: *(new in version 1.16.2)* indicator bits to control whether to include images or how text should be handled with respect to white spaces and ligatures. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings.
+      :arg int flags: *(new in version 1.16.2)* indicator bits to control whether to include images or how text should be handled with respect to white spaces and :data:`ligatures`. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings.
 
       :rtype: *str, list, dict*
       :returns: The page's content as a string, a list or a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
