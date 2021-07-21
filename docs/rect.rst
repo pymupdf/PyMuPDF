@@ -4,13 +4,17 @@
 Rect
 ==========
 
-*Rect* represents a rectangle defined by four floating point numbers x0, y0, x1, y1. They are treated as being coordinates of two diagonally opposite points. The first two numbers are regarded as the "top left" corner P\ :sub:`x0,y0` and P\ :sub:`x1,y1` as the "bottom right" one. However, these two properties need not coincide with their intuitive meanings -- read on.
+*Rect* represents a rectangle defined by four floating point numbers x0, y0, x1, y1. They are treated as being coordinates of two diagonally opposite points. The first two numbers are regarded as the "top left" corner P\ :sub:`(x0,y0)` and P\ :sub:`(x1,y1)` as the "bottom right" one. However, these two properties need not coincide with their intuitive meanings -- read on.
 
 The following remarks are also valid for :ref:`IRect` objects:
 
-* A rectangle in the sense of (Py-) MuPDF always has **borders parallel to the respective X- and Y-axes**. An orthogonal tetragon in general **is not a rectangle** -- in contrast to the mathematical definition.
+* A rectangle in the sense of (Py-) MuPDF and PDF always has **borders parallel to the respective X- and Y-axes**. A general orthogonal tetragon **is not a rectangle** -- in contrast to the mathematical definition.
 * The constructing points can be anywhere in the plane -- they need not even be different, and e.g. "top left" need not be the geometrical "north-western" point.
-* For any given quadruple of numbers, the geometrically "same" rectangle can be defined in (up to) four different ways: Rect(P\ :sub:`(x0,y0)`, P\ :sub:`(x1,y1)`\ ), Rect(P\ :sub:`(x1,y1)`, P\ :sub:`(x0,y0)`\ ), Rect(P\ :sub:`(x0,y1)`, P\ :sub:`(x1,y0)`\ ), and Rect(P\ :sub:`(x1,y0)`, P\ :sub:`(x0,y1)`\ ).
+* For any given quadruple of numbers, the geometrically "same" rectangle can be defined in (up to) four different ways:
+   1. Rect(P\ :sub:`(x0,y0)`, P\ :sub:`(x1,y1)`\ ),
+   2. Rect(P\ :sub:`(x1,y1)`, P\ :sub:`(x0,y0)`\ ),
+   3. Rect(P\ :sub:`(x0,y1)`, P\ :sub:`(x1,y0)`\ ), and
+   4. Rect(P\ :sub:`(x1,y0)`, P\ :sub:`(x0,y1)`\ ).
 
 Hence some useful classification:
 
@@ -23,7 +27,7 @@ Hence some useful classification:
 ============================= =======================================================
 **Methods / Attributes**      **Short Description**
 ============================= =======================================================
-:meth:`Rect.contains`         checks containment of another object
+:meth:`Rect.contains`         checks containment of other objects
 :meth:`Rect.get_area`         calculate rectangle area
 :meth:`Rect.include_point`    enlarge rectangle to also contain a point
 :meth:`Rect.include_rect`     enlarge rectangle to also contain another one

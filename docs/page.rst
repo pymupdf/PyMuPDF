@@ -1302,8 +1302,9 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. index::
       pair: flags; search_for
       pair: quads; search_for
+      pair: clip; search_for
 
-   .. method:: search_for(needle, clip=clip, quads=False, flags=TEXT_DEHYPHENATE)
+   .. method:: search_for(needle, clip=clip, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES)
 
       *(Changed in v1.18.2)*
 
@@ -1312,7 +1313,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str needle: Text to search for. Upper / lower case is ignored. May contain spaces.
       :arg rect_like clip: *(New in v1.18.2)* only search within this area.
       :arg bool quads: Return object type :ref:`Quad` instead of :ref:`Rect`.
-      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default ligatures are expanded, white space is replaced with spaces and hyphenation is detected.
+      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default ligatures and white spaces are kept, and hyphenation is detected.
 
       :rtype: list
 
@@ -1389,6 +1390,8 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. attribute:: cropbox
 
       The page's */CropBox* for a PDF. Always the **unrotated** page rectangle is returned. For a non-PDF this will always equal the page rectangle.
+
+      .. note:: In PDF, the relationship between ``/MediaBox``, ``/CropBox`` and page rectangle may sometimes be confusing, please do lookup the glossary for :data:`MediaBox`.
 
       :type: :ref:`Rect`
 

@@ -26,15 +26,19 @@ Glossary
 
 .. data:: inheritable
 
-        A number of values in a PDF can be specified once and then be inherited by objects further down in a parent-child relationship. The mediabox (physical size) of pages can for example be specified in some node(s) of the :data:`pagetree` and will then be taken as value for all *kids*, which do not specify their own value.
+        A number of values in a PDF can inherited by objects further down in a parent-child relationship. The mediabox (physical size) of pages may for example be specified only once or in some node(s) of the :data:`pagetree` and will then be taken as value for all *kids*, that do not specify their own value.
 
 .. data:: MediaBox
 
-        A PDF array of 4 floats specifying a physical page size -- (:data:`inheritable`).
+        A PDF array of 4 floats specifying a physical page size -- (:data:`inheritable`, mandatory). This rectangle should contain all other PDF  -- optional -- page rectangles, which may be specified in addition: CropBox, TrimBox, ArtBox and BleedBox. Please consult :ref:`AdobeManual` for details. The MediaBox is the only rectangle, for which there is no difference between MuPDF and PDF coordinate systems: :attr:`Page.mediabox` will always show the same coordinates as the ``/MediaBox`` key in a page's object definition. For all other rectangles, MuPDF transforms coordinates such that the **top-left** corner is the point of reference. This can sometimes be confusing -- you may for example encounter a situation like this one:
+
+        * The page definition contains the following identical values: ``/MediaBox [ 36 45 607.5 765 ]``, ``/CropBox [ 36 45 607.5 765 ]``.
+        * PyMuPDF accordingly shows ``page.mediabox = Rect(36.0, 45.0, 607.5, 765.0)``.
+        * **BUT:** ``page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)``, because the two y-coordinates have been transformed (45 subtracted from both of them).
 
 .. data:: CropBox
 
-        A PDF array of 4 floats specifying a page's visible area -- (:data:`inheritable`). This value is **not affected** if the page is rotated. In contrast to the page rectangle, :attr:`Page.rect`, the top-left corner of the cropbox may or may not be *(0, 0)*.
+        A PDF array of 4 floats specifying a page's visible area -- (:data:`inheritable`, optional). It is the default for TrimBox, ArtBox and BleedBox. If not present, it defaults to MediaBox. This value is **not affected** if the page is rotated -- in contrast to :attr:`Page.rect`. Also, other than the page rectangle, the top-left corner of the cropbox may or may not be *(0, 0)*.
 
 
 .. data:: catalog
