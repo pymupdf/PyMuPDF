@@ -5,7 +5,7 @@
 Release date: July 10, 2021
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://pepy.tech/badge/pymupdf)](https://pepy.tech/project/pymupdf)
-
+ 
 # Authors
 * [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de)
 * [Ruikai Liu](mailto:lrk700@gmail.com)
