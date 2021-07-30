@@ -4,7 +4,7 @@
 
 Release date: July 10, 2021
 
-On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![downloads](https://pepy.tech/badge/pymupdf)](https://pepy.tech/project/pymupdf)
+On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
  
 # Authors
 * [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de)
