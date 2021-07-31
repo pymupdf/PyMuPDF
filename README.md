@@ -55,7 +55,9 @@ Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tr
 
 **_New: Layout preserving text extraction!_**
 
-> Script [textlayout.py](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/text-extraction/textlayout.py) extracts document text in a **_layout-preserving_** manner. So text in tables or multi-column pages should deliver quite faithful text output. Works for all supported document types, not just PDF.
+> Via its subcommand "gettext", script [fitzcli.py](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/text-extraction/fitzcli.py) offers text extraction in different formats. Of special interest surely is layout preservation, which produces text as close to the original physical layout as possible, surrounding areas where there are images, or reproducing text in tables and multi-column text.
+
+See [here](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-extraction#layout-preserving-text-extraction) for more information on layout preserving text extraction.
 
 Our **documentation**, written using Sphinx, is available in various formats from the following sources. It currently is a combination of a reference guide and a user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
 
