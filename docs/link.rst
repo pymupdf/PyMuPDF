@@ -12,10 +12,12 @@ There is a parent-child relationship between a link and its page. If the page ob
 ========================= ============================================
 :meth:`Link.set_border`   modify border properties
 :meth:`Link.set_colors`   modify color properties
+:meth:`Link.set_flags`    modify link flags
 :attr:`Link.border`       border characteristics
 :attr:`Link.colors`       border line color
 :attr:`Link.dest`         points to destination details
 :attr:`Link.is_external`  external destination?
+:attr:`Link.flags`        link annotation flags
 :attr:`Link.next`         points to next link
 :attr:`Link.rect`         clickable area in untransformed coordinates.
 :attr:`Link.uri`          link destination
@@ -40,7 +42,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
    .. method:: set_colors(colors=None, stroke=None)
 
-      Changes the "stroke" color.
+      PDF only: Changes the "stroke" color.
       
       .. note:: In PDF, links are a subtype of annotations technically and **do not support fill colors**. However, to keep a consistent API, we do allow specifying a ``fill=`` parameter like with all annotations, which will be ignored with a warning.
 
@@ -48,6 +50,19 @@ There is a parent-child relationship between a link and its page. If the page ob
 
       :arg dict colors: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the *colors* property and then modify this dictionary as required.
       :arg sequence stroke: see above.
+
+   .. method:: set_flags(flags)
+
+      *New in v1.18.16*
+
+      Set the PDF ``/F`` property of the link annotation. See :meth:`Annot.set_flags` for details. If not a PDF, this method is a no-op.
+
+
+   .. attribute:: flags
+
+      *New in v1.18.16*
+
+      Return the link annotation flags, an integer (see :attr:`Annot.flags` for details). Zero if not a PDF.
 
 
    .. attribute:: colors

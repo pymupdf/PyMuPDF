@@ -2103,6 +2103,38 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
             page.wrap_contents()
     >>> # start inserting text, images or annotations here
 
+
+Missing or Unreadable Extracted Text
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This can be a number of different problems.
+
+Problem: no text
+^^^^^^^^^^^^^^^^
+Your PDF viewer does display text, but you cannot select it with your cursor, and text extraction delivers nothing.
+
+Cause
+^^^^^^
+1. You may be looking at an image embedded in the PDF page (e.g. a scanned PDF).
+2. The PDF creator used no font, but **simulated** text by painting it, using little lines and curves. E.g. a capital "D" could be painted by a line "|" and a left-open semi-circle, an "o" by an ellipse, and so on.
+
+Solution
+^^^^^^^^^^
+Use an OCR software like `OCRmyPDF <https://pypi.org/project/ocrmypdf/>`_ to insert a hidden text layer underneath the visible page. The resulting PDF should behave as expected.
+
+Problem: unreadable text
+^^^^^^^^^^^^^^^^^^^^^^^^
+Text extraction does not deliver the text in readable order, duplicates some text, or is otherwise garbled.
+
+Cause
+^^^^^^
+1. The single characters are redable as such (no "<?>" symbols), but the sequence in which the text is **coded in the file** deviates from the reading order. The motivation behind may be technical or protection of data against unwanted copies.
+2. Many "<?>" symbols occur indicating MuPDF could not interpret these characters. The PDF creator may haved used a font that displays readable text, but obfuscates the unicode character that leads to the readable symbol (glyph).
+
+Solution
+^^^^^^^^
+1. Use layout preserving text extraction: ``python -m fitz gettext file.pdf``.
+2. If other text extraction tools also don't work, then the only solution again is OCR-ing the page.
+
 --------------------------
 
 Low-Level Interfaces

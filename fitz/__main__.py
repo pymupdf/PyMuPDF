@@ -581,7 +581,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
     eop = b"\n" if noformfeed else bytes([12])
 
     # --------------------------------------------------------------------
-    def find_line_index(values: list[int], value: int) -> int:
+    def find_line_index(values: list, value: int) -> int:
         """Find the right row coordinate.
 
         Args:

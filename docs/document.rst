@@ -1103,6 +1103,8 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg str user_pw: *(new in version 1.16.0)* set the document's user password.
 
+      .. note:: The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
+
     .. method:: ez_save(*args, **kwargs)
 
       *(New in v1.18.11)*
