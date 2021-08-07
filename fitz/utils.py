@@ -391,6 +391,8 @@ def search_for(*args, **kwargs) -> list:
     page, text = args
     quads = kwargs.get("quads", 0)
     clip = kwargs.get("clip")
+    if clip != None:
+        clip = Rect(clip)
     flags = kwargs.get(
         "flags", TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES
     )
@@ -398,7 +400,6 @@ def search_for(*args, **kwargs) -> list:
     CheckParent(page)
     tp = page.get_textpage(clip=clip, flags=flags)  # create TextPage
     rlist = tp.search(text, quads=quads)
-    tp = None
     return rlist
 
 
@@ -4066,11 +4067,13 @@ def fill_textbox(
         font = Font("helv")
 
     def textlen(x):
+        """Return length of a string."""
         return font.text_length(
             x, fontsize=fontsize, small_caps=small_caps
         )  # abbreviation
 
     def char_lengths(x):
+        """Return list of single character lengths for a string."""
         return font.char_lengths(x, fontsize=fontsize, small_caps=small_caps)
 
     def append_this(pos, text):
@@ -4137,6 +4140,7 @@ def fill_textbox(
     else:
         lheight = lineheight
 
+    LINEHEIGHT = fontsize * lheight  # effective line height
     width = std_width  # available horizontal space
 
     # starting point of text
@@ -4163,7 +4167,7 @@ def fill_textbox(
         for line in text:
             textlines.extend(line.splitlines())
 
-    max_lines = int((rect.y1 - pos.y) / (lheight * fontsize))
+    max_lines = int((rect.y1 - pos.y) / LINEHEIGHT)
 
     new_lines = []  # the final list of textbox lines
     no_justify = []  # no justify for these line numbers
@@ -4208,6 +4212,11 @@ def fill_textbox(
             if len(words) == 0:
                 break
 
+    # -------------------------------------------------------------------------
+    # List of lines created. Each item is (text, tl), where 'tl' is the PDF
+    # output length (float) and 'text' is the text. Except for justified text,
+    # this is output-ready.
+    # -------------------------------------------------------------------------
     nlines = len(new_lines)
     if nlines > max_lines:
         msg = "Only fitting %i of %i lines." % (max_lines, nlines)
@@ -4216,7 +4225,6 @@ def fill_textbox(
         elif warn == False:
             raise ValueError(msg)
 
-    lh = fontsize * lheight
     start = Point()
     for i, (line, tl) in enumerate(new_lines):
         if i > max_lines:  # do not exceed space
@@ -4235,7 +4243,7 @@ def fill_textbox(
         ):
             output_justify(start, line)
             start.x = std_start
-            start.y += lh
+            start.y += LINEHEIGHT
             continue
 
         if i > 0 or pos.x == std_start:  # left, center, right alignments
@@ -4243,9 +4251,9 @@ def fill_textbox(
 
         append_this(start, line)
         start.x = std_start
-        start.y += lh
+        start.y += LINEHEIGHT
 
-    return new_lines[max_lines:]  # return non-written lines
+    return new_lines[i + 1 :]  # return non-written lines
 
 
 # ------------------------------------------------------------------------

@@ -191,6 +191,7 @@ jm_trace_text_linewidth(fz_context *ctx, fz_device *dev_, const fz_path *path, c
 static void
 jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type, fz_matrix ctm, fz_rect scissor, fz_colorspace *colorspace, const float *color, float alpha)
 {
+	fz_font *out_font = NULL;
 	int i, n;
 	const char *fontname = JM_font_name(ctx, span->font);
 	PyObject *chars = PyTuple_New(span->len);
@@ -210,6 +211,12 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		asc = 1 + dsc;
 	}
 	
+	int fflags = 0;
+	int mono = fz_font_is_monospaced(ctx, span->font);
+	fflags += mono * TEXT_FONT_MONOSPACED;
+	fflags += fz_font_is_italic(ctx, span->font) * TEXT_FONT_ITALIC;
+	fflags += fz_font_is_serif(ctx, span->font) * TEXT_FONT_SERIFED;
+	fflags += fz_font_is_bold(ctx, span->font) * TEXT_FONT_BOLD;
 	fz_matrix mat = trace_text_ptm;
 	fz_matrix ctm_rot = fz_concat(ctm, trace_text_rot);
 	mat = fz_concat(mat, ctm_rot);
@@ -238,16 +245,25 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 			span->items[i].ucs, span->items[i].gid,
 			char_orig.x, char_orig.y, adv));
 	}
-	if (space_adv == 0) {
-		space_adv = fz_advance_glyph(ctx, span->font, fz_encode_character_by_glyph_name(ctx, span->font, "space"), span->wmode);
-		space_adv *= fsize;
+	if (!space_adv) {
+		if (!mono) {
+			space_adv = fz_advance_glyph(ctx, span->font,
+			fz_encode_character_with_fallback(ctx, span->font, 32, 0, 0, &out_font),
+			span->wmode);
+			space_adv *= fsize;
+			if (!space_adv) {
+				space_adv = last_adv;
+			}
+		} else {
+			space_adv = last_adv;
+		}
 	}
-
 	// make the span dictionary
 	PyObject *span_dict = PyDict_New();
 	DICT_SETITEMSTR_DROP(span_dict, "dir", JM_py_from_point(fz_normalize_vector(dir)));
 	DICT_SETITEM_DROP(span_dict, dictkey_font, Py_BuildValue("s",fontname));
 	DICT_SETITEM_DROP(span_dict, dictkey_wmode, PyLong_FromLong((long) span->wmode));
+	DICT_SETITEM_DROP(span_dict, dictkey_flags, PyLong_FromLong((long) fflags));
 	DICT_SETITEMSTR_DROP(span_dict, "bidi", PyLong_FromLong((long) span->bidi_level));
 	DICT_SETITEMSTR_DROP(span_dict, "ascender", PyFloat_FromDouble(asc));
 	DICT_SETITEMSTR_DROP(span_dict, "descender", PyFloat_FromDouble(dsc));

@@ -38,7 +38,7 @@ fz_buffer *JM_read_contents(fz_context * ctx, pdf_obj * pageref)
 
 //-----------------------------------------------------------------------------
 // Make an XObject from a PDF page
-// For a positive xref assume that that object can be used instead
+// For a positive xref assume that its object can be used instead
 //-----------------------------------------------------------------------------
 pdf_obj *JM_xobject_from_page(fz_context * ctx, pdf_document * pdfout, fz_page * fsrcpage, int xref, pdf_graft_map *gmap)
 {

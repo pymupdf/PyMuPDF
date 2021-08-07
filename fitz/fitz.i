@@ -5603,6 +5603,11 @@ def get_oc_items(self) -> list:
             }
             return rc;
         }
+        %pythoncode %{
+        def _get_texttrace(self):
+            """Return low-level text information of the page."""
+            return self._getTexttrace()
+        %}
 
 
         //----------------------------------------------------------------
@@ -5970,21 +5975,23 @@ except:
                     txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
                     text = JM_StrAsChar(txtpy);
                     Py_CLEAR(txtpy);
-                    if (!text) THROWMSG(gctx, "bad linklist item");
-                    annot = pdf_add_object_drop(gctx, page->doc,
-                            JM_pdf_obj_from_str(gctx, page->doc, text));
-                    ind_obj = pdf_new_indirect(gctx, page->doc, pdf_to_num(gctx, annot), 0);
-                    pdf_array_push_drop(gctx, annots, ind_obj);
-                    pdf_drop_obj(gctx, annot);
+                    if (!text) {
+                        PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                        continue;
+                    }
+                    fz_try(gctx) {
+                        annot = pdf_add_object_drop(gctx, page->doc,
+                                JM_pdf_obj_from_str(gctx, page->doc, text));
+                        ind_obj = pdf_new_indirect(gctx, page->doc, pdf_to_num(gctx, annot), 0);
+                        pdf_array_push_drop(gctx, annots, ind_obj);
+                        pdf_drop_obj(gctx, annot);
+                    }
+                    fz_catch(gctx) {
+                        PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                    }
                 }
             }
             fz_catch(gctx) {
-                if (text) {
-                    PySys_WriteStderr("%s (%i): '%s'\n", fz_caught_message(gctx), i, text);
-                }
-                else if (i >= 0) {
-                    PySys_WriteStderr("%s (%i)\n", fz_caught_message(gctx), i);
-                }
                 PyErr_Clear();
                 return NULL;
             }
@@ -8983,8 +8990,8 @@ struct Annot
                     s = "[%g %g %g %g]" % tuple(stroke)
                 doc.xref_set_key(self.xref, "C", s)
 
-            if self.type[0] not in fill_annots:
-                print("warning: annot type '%s' has no fill color" % self.type[0])
+            if fill and self.type[0] not in fill_annots:
+                print("Warning: fill color ignored for annot type '%s'." % self.type[1])
                 return
             if fill in ([], ()):
                 doc.xref_set_key(self.xref, "IC", "[]")
@@ -9690,6 +9697,27 @@ struct Link
         def border(self):
             return self._border(self.parent.parent.this, self.xref)
 
+        @property
+        def flags(self)->int:
+            CheckParent(self)
+            doc = self.parent.parent
+            if not doc.is_pdf:
+                return 0
+            f = doc.xref_get_key(self.xref, "F")
+            if f[1] != "null":
+                return int(f[1])
+            return 0
+
+        def set_flags(self, flags):
+            CheckParent(self)
+            doc = self.parent.parent
+            if not doc.is_pdf:
+                raise ValueError("not a PDF")
+            if not type(flags) is int:
+                raise ValueError("bad 'flags' value")
+            doc.xref_set_key(self.xref, "F", str(flags))
+            return None
+
         def set_border(self, border=None, width=0, dashes=None, style=None):
             if type(border) is not dict:
                 border = {"width": width, "style": style, "dashes": dashes}
@@ -10140,7 +10168,7 @@ struct TextPage {
                                 last_char = ch->c;
                                 linerect = fz_union_rect(linerect, cbbox);
                             }
-                            if (last_char != 10) {
+                            if (last_char != 10 && !fz_is_empty_rect(linerect)) {
                                 fz_append_byte(gctx, res, 10);
                             }
                             blockrect = fz_union_rect(blockrect, linerect);

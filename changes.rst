@@ -1,19 +1,36 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.16
+---------------------------
+* **Fixed** issue `#1184 <https://github.com/pymupdf/PyMuPDF/issues/1184>`_. Existing PDF widget fonts in a PDF are now accepted (i.e. not forcedly changed to a Base-14 font).
+
+* **Fixed** issue `#1154 <https://github.com/pymupdf/PyMuPDF/issues/1154>`_. Text search hits should now be correct when ``clip`` is specified.
+
+* **Fixed** issue `#1152 <https://github.com/pymupdf/PyMuPDF/issues/1152>`_.
+
+* **Fixed** issue `#1146 <https://github.com/pymupdf/PyMuPDF/issues/1146>`_.
+
+* **Added** :attr:`Link.flags` and :meth:`Link.set_flags` to the :ref:`Link` class. Implements enhancement requests `#1187 <https://github.com/pymupdf/PyMuPDF/issues/1187>`_.
+
+* **Added** option to *simulate* :meth:`TextWriter.fill_textbox` output for predicting the number of lines, that a given text would occupy in the textbox.
+
+* **Added** text output support as subcommand `gettext` to the ``fitz`` CLI module. Most importantly, original **physical text layout** reproduction is now supported.
+
+
 Changes in Version 1.18.15
 ---------------------------
 * **Fixed** issue `#1088 <https://github.com/pymupdf/PyMuPDF/issues/1088>`_. Removing an annotation's fill color should now work again both ways, using the ``fill_color=[]`` argument in :meth:`Annot.update` as well as ``fill=[]`` in :meth:`Annot.set_colors`.
 
 * **Fixed** issue `#1081 <https://github.com/pymupdf/PyMuPDF/issues/1081>`_. :meth:`Document.subset_fonts`: fixed an error which created wrong character widths for some fonts.
 
-* **Fixed** issue `#1078 <https://github.com/pymupdf/PyMuPDF/issues/1078>`_. :meth:`Page.get_text` and other methods related to text extraction: changed the default value of the :ref:`TextPage` ``flags`` parameter. All whitespace and ligatures are now preserved.
+* **Fixed** issue `#1078 <https://github.com/pymupdf/PyMuPDF/issues/1078>`_. :meth:`Page.get_text` and other methods related to text extraction: changed the default value of the :ref:`TextPage` ``flags`` parameter. All whitespace and :data:`ligatures` are now preserved.
 
 * **Fixed** issue `#1085 <https://github.com/pymupdf/PyMuPDF/issues/1085>`_. The old *snake_cased* alias of ``fitz.detTextlength`` is now defined correctly.
 
-* **Changed** :meth:`Document.subset_fonts` will now prefix fonts that were successfully subsetted with an appropriate six letter uppercase tag as prescribed by the PDF specification.
+* **Changed** :meth:`Document.subset_fonts` will now correctly prefix font subsets with an appropriate six letter uppercase tag, complying with the PDF specification.
 
-* **Added** new method :meth:`Widget.button_states` which returns the possible values that a button-type field can have when being set "on" or "off".
+* **Added** new method :meth:`Widget.button_states` which returns the possible values that a button-type field can have when being set to "on" or "off".
 
 * **Added** support of text with **Small Capital** letters to the :ref:`Font` and :ref:`TextWriter` classes. This is reflected by an additional bool parameter ``small_caps`` in various of their methods.
 

@@ -1,15 +1,21 @@
 # -----------------------------------------------------------------------------
 # Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
-
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
 # lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
 # maintained and developed by Artifex Software, Inc. https://artifex.com.
 # -----------------------------------------------------------------------------
+import argparse
+import bisect
 import os
 import sys
 
 import fitz
+from fitz.fitz import (
+    TEXT_INHIBIT_SPACES,
+    TEXT_PRESERVE_LIGATURES,
+    TEXT_PRESERVE_WHITESPACE,
+)
 
 mycenter = lambda x: (" %s " % x).center(75, "-")
 
@@ -540,12 +546,299 @@ def extract_objects(args):
     doc.close()
 
 
+def page_simple(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
+    eop = b"\n" if noformfeed else bytes([12])
+    text = page.get_text("text", flags=flags)
+    if not text:
+        if not skip_empty:
+            textout.write(eop)  # write formfeed
+        return
+    textout.write(text.encode("utf8"))
+    textout.write(eop)
+    return
+
+
+def page_blocksort(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
+    eop = b"\n" if noformfeed else bytes([12])
+    blocks = page.get_text("blocks", flags=flags)
+    if blocks == []:
+        if not skip_empty:
+            textout.write(eop)  # write formfeed
+        return
+    blocks.sort(key=lambda b: (b[3], b[0]))
+    for b in blocks:
+        textout.write(b[4].encode("utf8"))
+    textout.write(eop)
+    return
+
+
+def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
+    left = page.rect.width  # left most used coordinate
+    right = 0  # rightmost coordinate
+    rowheight = page.rect.height  # smallest row height in use
+    chars = []  # all chars here
+    rows = set()  # bottom coordinates of lines
+    eop = b"\n" if noformfeed else bytes([12])
+
+    # --------------------------------------------------------------------
+    def find_line_index(values: list[int], value: int) -> int:
+        """Find the right row coordinate.
+
+        Args:
+            values: (list) y-coordinates of rows.
+            value: (int) lookup for this value (y-origin of char).
+        Returns:
+            y-ccordinate of appropriate line for value.
+        """
+        i = bisect.bisect_right(values, value)
+        if i:
+            return values[i - 1]
+        raise RuntimeError("Line for %g not found in %s" % (value, values))
+
+    # --------------------------------------------------------------------
+    def curate_rows(rows, GRID):
+        rows = list(rows)
+        rows.sort()  # sort ascending
+        nrows = [rows[0]]
+        for h in rows[1:]:
+            if h >= nrows[-1] + GRID:  # only keep significant differences
+                nrows.append(h)
+        return nrows  # curated list of line bottom coordinates
+
+    def process_blocks(blocks, rows, chars, rowheight, left, right, page):
+        for block in blocks:
+            for line in block["lines"]:
+                if line["dir"] != (1, 0):  # ignore non-horizontal text
+                    continue
+                x0, y0, x1, y1 = line["bbox"]
+                if y1 < 0 or y0 > page.rect.height:  # ignore if outside CropBox
+                    continue
+                # upd row height
+                height = y1 - y0
+
+                if rowheight > height:
+                    rowheight = height
+                for span in line["spans"]:
+                    if span["size"] <= fontsize:
+                        continue
+                    for c in span["chars"]:
+                        x0, _, x1, _ = c["bbox"]
+                        cwidth = x1 - x0
+                        ox, oy = c["origin"]
+                        oy = int(round(oy))
+                        rows.add(oy)
+                        ch = c["c"]
+                        if left > ox and ch != " ":
+                            left = ox  # update left coordinate
+                        if right < x1:
+                            right = x1  # update right coordinate
+                        # handle ligatures:
+                        if cwidth == 0 and chars != []:  # potential ligature
+                            old_ch, old_ox, old_oy, old_cwidth = chars[-1]
+                            if old_oy == oy:  # ligature
+                                if old_ch != chr(0xFB00):  # previous "ff" char lig?
+                                    lig = joinligature(old_ch + ch)  # no
+                                # convert to one of the 3-char ligatures:
+                                elif ch == "i":
+                                    lig = chr(0xFB03)  # "ffi"
+                                elif ch == "l":
+                                    lig = chr(0xFB04)  # "ffl"
+                                else:  # something wrong, leave old char in place
+                                    lig = old_ch
+                                chars[-1] = (lig, old_ox, old_oy, old_cwidth)
+                                continue
+                        chars.append((ch, ox, oy, cwidth))  # all chars on page
+        return left, right
+
+    def joinligature(lig):
+        """Return ligature character for a given pair / triple of characters.
+
+        Args:
+            lig: (str) 2/3 characters, e.g. "ff"
+        Returns:
+            Ligature, e.g. "ff" -> chr(0xFB00)
+        """
+
+        if lig == "ff":
+            return chr(0xFB00)
+        elif lig == "fi":
+            return chr(0xFB01)
+        elif lig == "fl":
+            return chr(0xFB02)
+        elif lig == "ffi":
+            return chr(0xFB03)
+        elif lig == "ffl":
+            return chr(0xFB04)
+        elif lig == "ft":
+            return chr(0xFB05)
+        elif lig == "st":
+            return chr(0xFB06)
+        return lig
+
+    # --------------------------------------------------------------------
+    def make_textline(left, slot, minslot, lchars):
+        """Produce the text of one output line.
+
+        Args:
+            left: (float) left most coordinate used on page
+            slot: (float) avg width of one character in any font in use.
+            minslot: (float) min width for the characters in this line.
+            chars: (list[tuple]) characters of this line.
+        Returns:
+            text: (str) text string for this line
+        """
+        text = ""  # we output this
+        old_x1 = 0  # end coordinate of last char
+        old_ox = 0  # x-origin of last char
+        if minslot <= fitz.EPSILON:
+            raise RuntimeError("program error: minslot too small = %g" % minslot)
+
+        for c in lchars:  # loop over characters
+            char, ox, _, cwidth = c
+            ox = ox - left  # its (relative) start coordinate
+            x1 = ox + cwidth  # ending coordinate
+
+            # eliminate overprint effect
+            if (
+                old_ox <= ox < old_x1
+                and char == text[-1]
+                and abs(ox - old_ox) <= cwidth * 0.1
+            ):
+                continue
+
+            # omit spaces overlapping previous char
+            if char == " " and (old_x1 - ox) / cwidth > 0.8:
+                continue
+
+            # close enough to previous?
+            if ox < old_x1 + minslot:  # assume char adjacent to previous
+                text += char  # append to output
+                old_x1 = x1  # new end coord
+                old_ox = ox  # new origin.x
+                continue
+
+            # else next char starts after some gap:
+            # fill in right number of spaces, so char is positioned
+            # in the right slot of the line
+            if char == " ":  # rest relevant for non-space only
+                continue
+            delta = int(ox / slot) - len(text)
+            if ox > old_x1 and delta > 1:
+                text += " " * delta
+            # now append char
+            text += char
+            old_x1 = x1  # new end coordinate
+            old_ox = ox  # new origin
+        return text.rstrip()
+
+    # extract page text by single characters ("rawdict")
+    blocks = page.get_text("rawdict", flags=flags)["blocks"]
+
+    if blocks == []:
+        if not skip_empty:
+            textout.write(eop)  # write formfeed
+        return
+    left, right = process_blocks(blocks, rows, chars, rowheight, left, right, page)
+
+    # compute list of line coordinates - ignoring small (GRID) differences
+    rows = curate_rows(rows, GRID)
+
+    # sort all chars by x-coordinates, so every line will receive char info
+    # sorted from left to right.
+    chars.sort(key=lambda c: c[1])
+
+    # populate the lines with their char info
+    lines = {}  # key: y1-ccordinate, value: char list
+    for c in chars:
+        _, _, oy, _ = c
+        y = find_line_index(rows, oy)  # y-coord of the right line
+        lchars = lines.get(y, [])  # read line chars so far
+        lchars.append(c)  # append this char
+        lines[y] = lchars  # write back to line
+
+    # ensure line coordinates are ascending
+    keys = list(lines.keys())
+    keys.sort()
+
+    # -------------------------------------------------------------------------
+    # Compute "char resolution" for the page: the char width corresponding to
+    # 1 text char position on output - call it 'slot'.
+    # For each line, compute median of its char widths. The minimum across all
+    # lines is 'slot'.
+    # The minimum char width of each line is used to determine if spaces must
+    # be inserted in between two characters.
+    # -------------------------------------------------------------------------
+    slot = right - left
+    minslots = {}
+    for k in keys:
+        lchars = lines[k]
+        ccount = len(lchars)
+        if ccount < 2:
+            minslots[k] = 1
+            continue
+        widths = [c[3] for c in lchars]
+        widths.sort()
+        i = int(ccount / 2 + 0.5)  # index of median value
+        this_slot = widths[i]  # take median value
+        if this_slot < slot:
+            slot = this_slot
+        minslots[k] = min(widths)
+
+    # compute line advance in text output
+    rowheight = rowheight * (rows[-1] - rows[0]) / (rowheight * len(rows)) * 1.2
+    rowpos = rows[0]  # first line positioned here
+    textout.write(b"\n")
+    for k in keys:  # walk through the lines
+        while rowpos < k:  # honor distance between lines
+            textout.write(b"\n")
+            rowpos += rowheight
+        text = make_textline(left, slot, minslots[k], lines[k])
+        textout.write((text + "\n").encode("utf8"))
+        rowpos = k + rowheight
+
+    textout.write(eop)  # write formfeed
+
+
+def gettext(args):
+    doc = open_file(args.input, args.password, pdf=False)
+    pagel = get_list(args.pages, doc.page_count + 1)
+    output = args.output
+    if output == None:
+        filename, _ = os.path.splitext(doc.name)
+        output = filename + ".txt"
+    textout = open(output, "wb")
+    flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+    if args.convert_white:
+        flags ^= TEXT_PRESERVE_WHITESPACE
+    if args.noligatures:
+        flags ^= TEXT_PRESERVE_LIGATURES
+    if args.extra_spaces:
+        flags ^= TEXT_INHIBIT_SPACES
+    func = {
+        "simple": page_simple,
+        "blocks": page_blocksort,
+        "layout": page_layout,
+    }
+    for pno in pagel:
+        page = doc[pno - 1]
+        func[args.mode](
+            page,
+            textout,
+            args.grid,
+            args.fontsize,
+            args.noformfeed,
+            args.skip_empty,
+            flags=flags,
+        )
+
+    textout.close()
+
+
 def main():
     """Define command configurations."""
-    import argparse
-
     parser = argparse.ArgumentParser(
-        description=mycenter("Basic PyMuPDF Functions"), prog="fitz"
+        prog="fitz",
+        description=mycenter("Basic PyMuPDF Functions"),
     )
     subps = parser.add_subparsers(
         title="Subcommands", help="Enter 'command -h' for subcommand specific help"
@@ -759,6 +1052,75 @@ def main():
         "-name", nargs="*", help="restrict copy to these entries"
     )
     ps_embed_copy.set_defaults(func=embedded_copy)
+
+    # -------------------------------------------------------------------------
+    # 'textlayout' command
+    # -------------------------------------------------------------------------
+    ps_gettext = subps.add_parser(
+        "gettext", description=mycenter("extract text in various formatting modes")
+    )
+    ps_gettext.add_argument("input", type=str, help="input document filename")
+    ps_gettext.add_argument("-password", help="password for input document")
+    ps_gettext.add_argument(
+        "-mode",
+        type=str,
+        help="mode: simple, block sort, or layout (default)",
+        choices=("simple", "blocks", "layout"),
+        default="layout",
+    )
+    ps_gettext.add_argument(
+        "-pages",
+        type=str,
+        help="select pages, format: 1,5-7,50-N",
+        default="1-N",
+    )
+    ps_gettext.add_argument(
+        "-noligatures",
+        action="store_true",
+        help="expand ligature characters (default False)",
+        default=False,
+    )
+    ps_gettext.add_argument(
+        "-convert-white",
+        action="store_true",
+        help="convert whitespace characters to white (default False)",
+        default=False,
+    )
+    ps_gettext.add_argument(
+        "-extra-spaces",
+        action="store_true",
+        help="fill gaps with spaces (default False)",
+        default=False,
+    )
+    ps_gettext.add_argument(
+        "-noformfeed",
+        action="store_true",
+        help="write linefeeds, no formfeeds (default False)",
+        default=False,
+    )
+    ps_gettext.add_argument(
+        "-skip-empty",
+        action="store_true",
+        help="suppress pages with no text (default False)",
+        default=False,
+    )
+    ps_gettext.add_argument(
+        "-output",
+        help="store text in this file (default inputfilename.txt)",
+    )
+    ps_gettext.add_argument(
+        "-grid",
+        type=float,
+        help="merge lines if closer than this (default 2)",
+        default=2,
+    )
+    ps_gettext.add_argument(
+        "-fontsize",
+        type=float,
+        help="only include text with a larger fontsize (default 3)",
+        default=3,
+    )
+    ps_gettext.set_defaults(func=gettext)
 
     # -------------------------------------------------------------------------
     # start program

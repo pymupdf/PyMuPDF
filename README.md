@@ -1,18 +1,17 @@
-# PyMuPDF 1.18.15
+# PyMuPDF 1.18.16
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: July 10, 2021
+Release date: August 8, 2021
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
- 
-# Authors
-* [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de)
-* [Ruikai Liu](mailto:lrk700@gmail.com)
+
+# Author
+[Jorj X. McKie](mailto:jorj.x.mckie@outlook.de), based on original code by [Ruikai Liu](mailto:lrk700@gmail.com).
 
 # Introduction
 
-PyMuPDF (current version 1.18.15) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
+PyMuPDF (current version 1.18.16) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -36,19 +35,20 @@ For **PDF documents,** there exists a plethora of additional features: they can 
 * Images and fonts can be extracted or inserted.
     > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/image-maintenance.py) cool GUI example script, which lets you **_insert, delete, replace_** or **_re-position_** images under your visual control.
 
-    > Since v1.18.8 there is a new experimental `Document` method `subset_fonts()`, which automatically builds subsets based on the usage of all eligible fonts in the document. Especially for new documents, this can lead to significant file size reductions. The method was developed in cooperation with our user @cuteufo - again thanks a lot for the contribution.
+    > Since v1.18.8 there is a `Document` method `subset_fonts()`, which automatically builds subsets based on the usage of all eligible fonts in the document. Especially for new documents, this can lead to significant file size reductions. The method was developed in cooperation with our user @cuteufo - again thanks a lot for the contribution.
 * Embedded files are fully supported.
 * PDFs can be reformatted to support double-sided printing, posterizing, applying logos or watermarks
 * Password protection is fully supported: decryption, encryption, encryption method selection, permmission level and user / owner password setting.
 * Support of the **PDF Optional Content** concept for images, text and drawings.
 * Low-level PDF structures can be accessed and modified.
-* PyMuPDF can also be used as a **module in the command line** using ``"python -m fitz ..."``. This is a versatile utility, which we will further develop going forward. It currently supports PDF document
+* **Command line module** ``"python -m fitz ..."``. A versatile utility with the following features
 
     - **encryption / decryption / optimization**
-    - creating **sub-documents**
+    - creation of **sub-documents**
     - document **joining**
     - **image / font extraction**
-    - full support of **embedded files**.
+    - full support of **embedded files**
+    - **_layout-preserving text extraction_** (all documents)
 
 
 Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo), the [examples](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/pymupdf/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.

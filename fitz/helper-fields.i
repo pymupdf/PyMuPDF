@@ -940,13 +940,15 @@ class Widget(object):
 
 
     def _adjust_font(self):
-        """Ensure text_font is from our list and correctly spelled.
+        """Ensure text_font is correctly spelled if empty or from our list.
+
+        Otherwise assume the font is in an existing field.
         """
         if not self.text_font:
             self.text_font = "Helv"
             return
-        valid_fonts = ("Cour", "TiRo", "Helv", "ZaDb")
-        for f in valid_fonts:
+        doc = self.parent.parent
+        for f in doc.FormFonts + ["Cour", "TiRo", "Helv", "ZaDb"]:
             if self.text_font.lower() == f.lower():
                 self.text_font = f
                 return

@@ -327,6 +327,7 @@ JM_search_stext_page(fz_context *ctx, fz_stext_page *page, const char *needle)
     fz_stext_char *ch;
     fz_buffer *buffer = NULL;
     const char *haystack, *begin, *end;
+    fz_rect rect = page->mediabox;
     int c, inside;
 
     if (strlen(needle) == 0) Py_RETURN_NONE;
@@ -349,6 +350,10 @@ JM_search_stext_page(fz_context *ctx, fz_stext_page *page, const char *needle)
             }
             for (line = block->u.t.first_line; line; line = line->next) {
                 for (ch = line->first_char; ch; ch = ch->next) {
+                    if (!fz_is_infinite_rect(rect) &&
+                        !fz_contains_rect(rect, JM_char_bbox(ctx, line, ch))) {
+                            goto next_char;
+                        }
 try_new_match:
                     if (!inside) {
                         if (haystack >= begin) inside = 1;
@@ -364,6 +369,7 @@ try_new_match:
                         }
                     }
                     haystack += fz_chartorune(&c, haystack);
+next_char:;
                 }
                 assert(*haystack == '\n');
                 ++haystack;
