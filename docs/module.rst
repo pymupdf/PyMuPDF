@@ -435,45 +435,45 @@ Command::
 
     python -m fitz gettext -h
     usage: fitz gettext [-h] [-password PASSWORD] [-mode {simple,blocks,layout}] [-pages PAGES] [-noligatures]
-                        [-whitespace] [-extra-spaces] [-noformfeed] [-skip-empty] [-output OUTPUT] [-grid GRID]
+                        [-convert-white] [-extra-spaces] [-noformfeed] [-skip-empty] [-output OUTPUT] [-grid GRID]
                         [-fontsize FONTSIZE]
                         input
 
     ----------------- extract text in various formatting modes ----------------
 
     positional arguments:
-    input                 input document path
+    input                 input document filename
 
     optional arguments:
     -h, --help            show this help message and exit
     -password PASSWORD    password for input document
     -mode {simple,blocks,layout}
-                          mode: simple, block sort, or layout (default)
+                            mode: simple, block sort, or layout (default)
     -pages PAGES          select pages, format: 1,5-7,50-N
     -noligatures          expand ligature characters (default False)
-    -whitespace           keep whitespace characters (default False)
+    -convert-white        convert whitespace characters to space (default False)
     -extra-spaces         fill gaps with spaces (default False)
     -noformfeed           write linefeeds, no formfeeds (default False)
     -skip-empty           suppress pages with no text (default False)
-    -output OUTPUT        store text in this file (default filename.txt)
+    -output OUTPUT        store text in this file (default inputfilename.txt)
     -grid GRID            merge lines if closer than this (default 2)
     -fontsize FONTSIZE    only include text with a larger fontsize (default 3)
 
 .. note:: Command options may be abbreviated as long as no ambiguities are introduced. So the following do the same:
 
-   * ``... -output text.txt -noligatures -noformfeed -whitespace -grid 3 -extra-spaces ...``
-   * ``... -o text.txt -nol -nof -w -g 3 -e ...``
+    * ``... -output text.txt -noligatures -noformfeed -convert-white -grid 3 -extra-spaces ...``
+    * ``... -o text.txt -nol -nof -c -g 3 -e ...``
 
-   The output filename defaults to the input with its extension replaced by ``.txt``. As with other commands, you can select page ranges **(caution: 1-based!)** in ``mutool`` format, as indicated above.
+  The output filename defaults to the input with its extension replaced by ``.txt``. As with other commands, you can select page ranges **(caution: 1-based!)** in ``mutool`` format, as indicated above.
 
 * **mode:** (str) select a formatting mode -- default is "layout".
 * **noligatures:** (bool) corresponds to **not** :data:`TEXT_PRESERVE_LIGATURES`. If specified, ligatures (present in advanced fonts: glyphs combining multiple characters like "fi") are split up into their components (i.e. "f", "i"). Default is passing them through.
-* **whitespace:** (bool) corresponds to :data:`TEXT_PRESERVE_WHITESPACE`. If specified, all white space characters (like tabs) are replaced with one or more spaces. Default is passing them through.
+* **convert-white:** corresponds to **not** :data:`TEXT_PRESERVE_WHITESPACE`. If specified, all white space characters (like tabs) are replaced with one or more spaces. Default is passing them through.
 * **extra-spaces:**  (bool) corresponds to **not** :data:`TEXT_INHIBIT_SPACES`. If specified, large gaps between adjacent characters will be filled with one or more spaces. Default is off.
 * **noformfeed:**  (bool) instead of ``hex(12)`` (formfeed), write linebreaks ``\n`` at end of output pages.
 * **skip-empty:**  (bool) skip pages with no text.
-* **grid:** (float) lines with a vertical coordinate difference of no more than this value (in points) will be merged into the same output line. Only relevant for "layout" mode. **Use with care:** the default 2 should be adequate in most cases. If **too large**, lines that are *intended* to be different in the original may be merged and will result in garbled and / or incomplete output. If **too low**, artifact separate output lines may be generated for text spans just because they are coded in a different font with slightly deviating properties.
-* **fontsize:** (float) include text with fontsize larger than this value only (default 3). Only relevant for "layout" option.
+* **grid:** lines with a vertical coordinate difference of no more than this value (in points) will be merged into the same output line. Only relevant for "layout" mode. **Use with care:** 3 or the default 2 should be adequate in most cases. If **too large**, lines that are *intended* to be different in the original may be merged and will result in garbled and / or incomplete output. If **too low**, artifact separate output lines may be generated for some spans in the input line, just because they are coded in a different font with slightly deviating properties.
+* **fontsize:** include text with fontsize larger than this value only (default 3). Only relevant for "layout" option.
 
 
 .. highlight:: python
