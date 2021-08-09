@@ -1,7 +1,7 @@
 export CFLAGS=-fPIC
 
 # install the pre-required tool
-pkg install swig git gmake python3 wget
+pkg_add swig git gmake python3 wget
 
 wget https://mupdf.com/downloads/archive/mupdf-1.18.0-source.tar.gz
 tar -zxvf mupdf-1.18.0-source.tar.gz
