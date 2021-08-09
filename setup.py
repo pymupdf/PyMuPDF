@@ -92,7 +92,7 @@ if sys.platform.startswith("linux") or "gnu" in sys.platform:
         ],
         libraries=load_libraries(),
     )
-elif sys.platform.startswith(("darwin", "freebsd","openbsd")):
+elif sys.platform.startswith(("darwin", "freebsd", "openbsd")):
     module = Extension(
         "fitz._fitz",  # name of the module
         ["fitz/fitz.i"],
@@ -157,7 +157,7 @@ long_desc = "\n".join(long_dtab)
 setup(
     name="PyMuPDF",
     version="1.18.16",
-    description="Python bindings for the PDF rendering library MuPDF",
+    description="Python bindings for the PDF toolkit and renderer MuPDF",
     long_description=long_desc,
     classifiers=classifier,
     url="https://github.com/pymupdf/PyMuPDF",
