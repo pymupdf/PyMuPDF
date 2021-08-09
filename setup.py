@@ -92,7 +92,7 @@ if sys.platform.startswith("linux") or "gnu" in sys.platform:
         ],
         libraries=load_libraries(),
     )
-elif sys.platform.startswith(("darwin", "freebsd")):
+elif sys.platform.startswith(("darwin", "freebsd","openbsd")):
     module = Extension(
         "fitz._fitz",  # name of the module
         ["fitz/fitz.i"],
@@ -102,6 +102,7 @@ elif sys.platform.startswith(("darwin", "freebsd")):
             "/usr/local/include",
             "/usr/include/freetype2",
             "/usr/local/include/freetype2",
+            "/usr/X11R6/include/freetype2",
             "/opt/homebrew/include",
             "/opt/homebrew/include/mupdf",
             "/opt/homebrew/include/freetype2",
