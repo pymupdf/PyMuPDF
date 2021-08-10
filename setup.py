@@ -36,6 +36,9 @@ OPENSUSE = ARCH_LINUX + [
 FEDORA = ARCH_LINUX + [
     "harfbuzz",
 ]
+NIX = ARCH_LINUX + [
+    "harfbuzz"
+]
 LIBRARIES = {
     "default": DEFAULT,
     "ubuntu": DEFAULT,
@@ -45,10 +48,14 @@ LIBRARIES = {
     "opensuse": OPENSUSE,
     "fedora": FEDORA,
     "alpine": ALPINE,
+    "nix": NIX
 }
 
 
 def load_libraries():
+    if os.getenv("NIX_STORE"):
+        return LIBRARIES["nix"]
+
     try:
         import distro
 
