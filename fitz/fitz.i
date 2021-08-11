@@ -4072,7 +4072,7 @@ if basestate:
                 return self.delete_pages(range(start, stop, step))
 
 
-            def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None)->"Page":
+            def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None)->typing.Generator["Page"]:
                 """Return a generator iterator over a page range.
 
                 Arguments have the same meaning as for the range() built-in.
