@@ -23,6 +23,7 @@ The following areas are currently covered:
 * handling of PDF Tables of Contents
 * annotation handling
 * field / widget handling
+* extraction images
 
 This is **_not a coverage test_**, although a significant part of the relevant Python part **_does_** get executed (ca. 80%). Achieving a much higher code coverage remains an ongoing task.
 
