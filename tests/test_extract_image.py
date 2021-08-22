@@ -20,23 +20,18 @@ def extract_image(pdf_file_path):
     images_directory_path = pdf_file_path[:-pdf_file_path[::-1].find(
         '/')]+'images_from_'+pdf_file_path[-pdf_file_path[::-1].find('/'):].replace('.', '_')
 
-    # following branch: if(corresponding folder exist), save in directly; else, create the folder first
-    image_count = 1
-    if os.path.exists(images_directory_path):
-        for index in range(1, pdf_file.xref_length()-1):
-            pix = pdf_file.extract_image(index)
-            if isinstance(pix, dict):
-                with open(images_directory_path+'/image_'+str(image_count)+'.'+pix['ext'], 'wb') as image_out:
-                    image_out.write(pix["image"])
-                image_count += 1
-    else:
+    # if the test output folder does not exist yet, create it
+    if not os.path.exists(images_directory_path):
         os.mkdir(images_directory_path)
-        for index in range(1, pdf_file.xref_length()-1):
-            pix = pdf_file.extract_image(index)
-            if isinstance(pix, dict):
-                with open(images_directory_path+'/image_'+str(image_count)+'.'+pix['ext'], 'wb') as image_out:
-                    image_out.write(pix["image"])
-                image_count += 1
+    
+    image_count = 1
+    for index in range(1, pdf_file.xref_length()-1):
+        pix = pdf_file.extract_image(index)
+        if isinstance(pix, dict):
+            with open(images_directory_path+'/image_'+str(image_count)+'.'+pix['ext'], 'wb') as image_out:
+                image_out.write(pix["image"])
+            image_count += 1
+    
     delete_image_after_extract(pdf_file_path)
 
 
