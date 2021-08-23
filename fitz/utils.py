@@ -3871,7 +3871,7 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
                     fontname=redact["fontname"],
                     fontsize=fsize,
                     color=redact["text_color"],
-                    align=redact["align"],
+                    align=redact.get("align", TEXT_ALIGN_LEFT),
                 )
                 fsize -= 0.5  # reduce font if unsuccessful
     shape.commit()  # append new contents object
@@ -3964,7 +3964,6 @@ def scrub(
             # reset form fields (widgets)
             for widget in page.widgets():
                 widget.reset()
-                widget.update()
 
         if remove_links:
             links = page.get_links()  # list of all links on page
@@ -4014,6 +4013,9 @@ def scrub(
     else:
         xref_limit = doc.xref_length()
     for xref in range(1, xref_limit):
+        if not doc.xref_object(xref):
+            msg = "bad xref %i - clean PDF before scrubbing" % xref
+            raise ValueError(msg)
         if javascript and doc.xref_get_key(xref, "S")[1] == "/JavaScript":
             # a /JavaScript action object
             obj = "<</S/JavaScript/JS()>>"  # replace with a null JavaScript

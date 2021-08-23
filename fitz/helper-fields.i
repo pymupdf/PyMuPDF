@@ -459,20 +459,29 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
 void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
 {
     if (!liste) return;
-    if (!PySequence_Check(liste)) return;
-    Py_ssize_t i, n = PySequence_Size(liste);
+    if (!PyList_Check(liste)) return;
+    Py_ssize_t i, n = PyList_Size(liste);
     if (n < 1) return;
     pdf_document *pdf = pdf_get_bound_document(ctx, annot->obj);
-    char *opt = NULL;
+    const char *opt = NULL;
+    const char *opt1 = NULL, *opt2 = NULL;
     pdf_obj *optarr = pdf_new_array(ctx, pdf, n);
+    pdf_obj *optarrsub = NULL;
     PyObject *val = NULL;
     for (i = 0; i < n; i++) {
-        val = PySequence_ITEM(liste, i);
-        opt = JM_StrAsChar(val);
-        pdf_array_push_text_string(ctx, optarr, (const char *) opt);
-        Py_CLEAR(val);
+        val = PyList_GetItem(liste, i);
+        opt = PyUnicode_AsUTF8(val);
+        if (opt) {
+            pdf_array_push_text_string(ctx, optarr, opt);
+        } else {
+            opt1 = PyUnicode_AsUTF8(PyTuple_GetItem(val, 0));
+            opt2 = PyUnicode_AsUTF8(PyTuple_GetItem(val, 1));
+            if (!opt1 || !opt2) return;
+            optarrsub = pdf_array_push_array(ctx, optarr, 2);
+            pdf_array_push_text_string(ctx, optarrsub, opt1);
+            pdf_array_push_text_string(ctx, optarrsub, opt2);
+        }
     }
-
     pdf_dict_put(ctx, annot->obj, PDF_NAME(Opt), optarr);
     return;
 }

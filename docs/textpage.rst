@@ -302,9 +302,9 @@ The following shows the original span rectangle in red and the rectangle with re
    :scale: 200
 
 
-*"flags"* is an integer, interpreted as a bit field like this:
+*"flags"* is an integer, which represents font properties except for the first bit 0. They are to be interpreted like this:
 
-* bit 0: superscripted (2\ :sup:`0`)
+* bit 0: superscripted (2\ :sup:`0`) -- not a font property, detected by MuPDF code.
 * bit 1: italic (2\ :sup:`1`)
 * bit 2: serifed (2\ :sup:`2`)
 * bit 3: monospaced (2\ :sup:`3`)
@@ -314,6 +314,8 @@ Test these characteristics like so:
 
 >>> if flags & 2**1: print("italic")
 >>> # etc.
+
+Bits 1 thru 4 are font properties, i.e. encoded in the font program. Please note, that this information is not necessarily correct or complete: fonts quite often contain wrong data here.
 
 Character Dictionary for :meth:`extractRAWDICT`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

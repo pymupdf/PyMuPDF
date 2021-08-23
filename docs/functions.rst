@@ -39,8 +39,8 @@ Yet others are handy, general-purpose utilities.
 :meth:`Page.get_text_words`          extract text words as a Python list
 :meth:`Page.run`                     run a page through a device
 :meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
+:meth:`Page._get_texttrace`          low-level text information
 :meth:`Page.wrap_contents`           wrap contents with stacking commands
-:meth:`Page._get_texttrace()`        low-level text information
 :attr:`Page.is_wrapped`              check whether contents wrapping is present
 :meth:`planish_line`                 matrix to map a line to the x-axis
 :meth:`paper_size`                   return width, height for a known paper format
@@ -397,19 +397,11 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.wrap_contents()
-
-      Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
-
-      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves.
-
------
-
    .. method:: Page._get_texttrace()
 
       *New in v1.18.16*
 
-      Return low-level text information of the page (**all** document types). This is a list of Python dictionaries with the following content::
+      Return low-level text information of the page. The method is available for **all** document types. The result is a list of Python dictionaries with the following content::
 
         {
             'ascender': 0.75,                   # font ascender (1)
@@ -419,7 +411,7 @@ Yet others are handy, general-purpose utilities.
                    3,                           # glyph id (font dependent)
                    (470.3800354003906,          # origin.x (1)
                     755.3758544921875),         # origin.y (1)
-                   2.495859366375953            # width (points) 
+                   2.495859366375953            # width (points) (6)
                   ),
                ),
             'color': (0.0,),                    # text color, tuple[float] (1)
@@ -428,53 +420,75 @@ Yet others are handy, general-purpose utilities.
             'dir': (1.0, 0.0),                  # writing direction (1)
             'flags': 4,                         # font flags (1)
             'font': 'Calibri',                  # font name (1)
-            'linewidth': 0.5519999980926514,    # last know line width value (3)
+            'linewidth': 0.5519999980926514,    # current line width value (3)
             'opacity': 1.0,                     # alpha value of the text (5)
             'scissor': (1.0, 1.0, -1.0, -1.0),  # <ignore>
             'size': 11.039999961853027,         # font size (1)
-            'spacewidth': 2.495859366375953,    # width of space character (synthesized)
+            'spacewidth': 2.495859366375953,    # width of space char
             'type': 0,                          # span type (2)
             'wmode': 0                          # writing mode (1)
         }
 
       Details:
 
-      1. Same meaning as explained in :ref:`TextPage`.
+      1. Information above tagged with "(1)" has the same meaning and value as explained in :ref:`TextPage`. Please note that the font ``flags`` value will never contain a *superscript* value: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
       2. There are 5 text span types:
 
-         0. Filled text -- equivalent to PDF text rendering mode 0 (``0 Tr``), only the characters' inside is shown.
+         0. Filled text -- equivalent to PDF text rendering mode 0 (``0 Tr``, the default in PDF), only each character's "inside" is shown.
          1. Stroked text -- equivalent to ``1 Tr``, only the character borders are shown.
          2. Clipped text -- details yet unknown.
          3. Clip-stroked text -- details yet unknown.
-         4. Ignored text -- equivalent to ``3 Tr``.
+         4. Ignored text -- equivalent to ``3 Tr`` (hidden text).
       
-      3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of stroked lines. This value may not be provided in the data. In this case, a value of ``span["size"] * 0,05`` is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent text span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except one is ``span["type"] = 0`` and the other one ``span["type"] = 1``.
-      4. For data compactness, the character's unicode is provided here. Use function ``chr()`` for the character itself.
-      5. The alpha / pacity value of the span's text, 0 <= opacity <= 1. Zero is invisible text, 1 (100%) covers what is behind.
+      3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing it for you.
+      4. For data compactness, the character's unicode is provided here. Use builtin function ``chr()`` for the character itself.
+      5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent.
+      6. This value is equal / close to the width of ``char["bbox"]``. However, on occasion you may find a small delta.
 
       Here is a list of similarities and differences of ``page._get_texttrace()`` compared to ``page.get_text("rawdict")``:
 
       * The method is up to **twice as fast.**
-      * The returned information is very **much smaller in size.**
+      * The returned information is very **much smaller in size** -- although it provides more information.
       * Additional types of text **invisibility can be detected**: opacity = 0 and type = 4.
       * Character bboxes are not provided; if needed, compute them from available information.
-      * If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you may still be able to deduct required information from the glyph id.
-      * The ``span["chars"]`` **contains no spaces**, **except** the document creator has coded them. They **will never be generated** like it happens in :meth:`Page.get_text` methods. To provide some help for doing your own computations here, the width of a space character is given. This value is derived from the font where possible. Otherwise a synthetic value is taken.
-      * There is no effort to organize text like it happens for a :ref:`TextPage` (the hierarchy of blocks, lines, spans, and characters). Characters are simply extracted in sequence, one by one, and put in a span. Whenever any of the span's characteristics change, a new span is started. So you may find characters with different ``origin.y`` values in the same span. You cannot assume, that span characters are sorted in any particular order -- you must make sense of the info yourself, taking ``span["dir"]``, ``span["wmode"]``, etc. into account.
+      * If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you may still be able to deduct desired information from the glyph id.
+      * The ``span["chars"]`` **contains no spaces**, **except** the document creator has coded them. They **will never be generated** like it happens in :meth:`Page.get_text` methods. To provide some help for doing your own computations here, the width of a space character is given. This value is derived from the font where possible. Otherwise the value of a fallback font is taken.
+      * There is no effort to organize text like it happens for a :ref:`TextPage` (the hierarchy of blocks, lines, spans, and characters). Characters are simply extracted in sequence, one by one, and put in a span. Whenever any of the span's characteristics changes, a new span is started. So you may find characters with different ``origin.y`` values in the same span. You cannot assume, that span characters are sorted in any particular order -- you must make sense of the info yourself, taking ``span["dir"]``, ``span["wmode"]``, etc. into account.
       * Ligatures are represented like this:
-         - MuPDF handles these ligatures: "fi", "ff", "fl", "ft", "st", "ffi", and "ffl". If the page contains e.g. ligature "fi", you will find the following two character items subsequent to each other::
+         - MuPDF handles the following ligatures: "fi", "ff", "fl", "ft", "st", "ffi", and "ffl" (only the first 3 are mostly ever used). If the page contains e.g. ligature "fi", you will find the following two character items subsequent to each other::
          
             (102, glyph, (x, y), width)  # 102 = ord("f")
             (105, -1, (x, y), 0)         # 105 = ord("i")
 
-         - This means that the ligature character components are shown combined within the space given by width. It is up to you, how you want to handle these cases in your text extraction. This is similar to ``page.get_text("rawdict")``: a glyph id is never available there, but you can assume a ligature if you encounter one of the character combinations above, having the **same origin** and ``bbox.width = 0`` except for the first character.
+         - This means that the ligature character components are shown combined within the space given by ``width``. It is up to you, how you want to handle these cases in your text extraction. This is similar to ``page.get_text("rawdict")``: a glyph id is never available there, but you can assume a ligature if you encounter one of the character combinations above, having the **same origin** and ``bbox.width = 0`` except for the first character.
+         - You may want to replace those 2 or 3 char tuples by one, that represents the ligature itself. In that case, use the following list of ligatures to unicodes:
+         
+            + ``"ff" -> 0xFB00``
+            + ``"fi" -> 0xFB01``
+            + ``"fl" -> 0xFB02``
+            + ``"ffi" -> 0xFB03``
+            + ``"ffl" -> 0xFB04``
+            + ``"ft" -> 0xFB05``
+            + ``"st" -> 0xFB06``
 
+            So you may want to replace the two example tuples above by the following single one: ``(0xFB01, glyph, (x, y), width)`` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute ``font.has_glyph(0xFB01)`` and use its return value).
+
+      .. note :: If you plan to extract more / other information from this page after this method has been executed, please make sure to first **reload it**: ``page = doc.reload_page(page)``.
+
+
+-----
+
+   .. method:: Page.wrap_contents()
+
+      Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
+
+      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves. Multiple executions of this method have no functional impact: ``b"q q ... q contents Q Q ... Q"`` is treated like ``b"q contents Q"``.
 
 -----
 
    .. attribute:: Page.is_wrapped
 
-      Indicate whether :meth:`Page.wrap_contents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
+      Indicate whether :meth:`Page.wrap_contents` may be required for object insertions in standard PDF geometry. Note that this is a quick, basic check only: a value of *False* may still be a false alarm. But nevertheless executing :meth:`Page.wrap_contents` will have no negative side effects.
 
 -----
 

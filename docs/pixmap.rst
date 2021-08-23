@@ -46,7 +46,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :attr:`Pixmap.interpolate`    interpolation method indicator
 :attr:`Pixmap.irect`          :ref:`IRect` of the pixmap
 :attr:`Pixmap.n`              bytes per pixel
-:attr:`Pixmap.samples`        pixel area
+:attr:`Pixmap.samples`        ``bytes`` copy of pixel area
+:attr:`Pixmap.samples_mv`     ``memoryview`` of pixel area
+:attr:`Pixmap.samples_ptr`    Python pointer to pixel area
 :attr:`Pixmap.size`           pixmap's total length
 :attr:`Pixmap.stride`         size of one image row
 :attr:`Pixmap.width`          pixmap width
@@ -352,15 +354,38 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: samples
 
-      The color and (if :attr:`Pixmap.alpha` is true) transparency values for all pixels. It is an area of *width * height * n* bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, *samples* is a sequence of bytes like *..., R, G, B, A, ...*, and the four byte values R, G, B, A define one pixel.
+      The color and (if :attr:`Pixmap.alpha` is true) transparency values for all pixels. It is an area of ``width * height * n`` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, *samples* is a sequence of bytes like *..., R, G, B, A, ...*, and the four byte values R, G, B, A define one pixel.
 
       This area can be passed to other graphics libraries like PIL (Python Imaging Library) to do additional processing like saving the pixmap in other image formats.
 
       .. note::
-         * The underlying data is a typically **large** memory area from which a *bytes* copy is made for this attribute: for example an RGB-rendered letter page has a samples size of almost 1.4 MB. So consider assigning a new variable if you repeatedly use it.
-         * Any changes to the underlying data are available only after again accessing this attribute.
+         * The underlying data is a typically **large** memory area from which a ``bytes`` copy is made for this attribute: for example an RGB-rendered letter page has a samples size of almost 1.4 MB. So consider assigning a new variable to it or use the ``memoryview`` version :attr:`Pixmap.samples_mv` (new in v1.18.17).
+         * Any changes to the underlying data are available only after accessing this attribute again. This is different from using the memoryview version.
 
       :type: bytes
+
+   .. attribute:: samples_mv
+
+      *(New in v1.18.17)*
+
+      Like :attr:`Pixmap.samples`, but in Python ``memoryview`` format.The memoryview is built directly from the memory in the pixmap -- not from a copy of it. Therefore any changes to pixels will immediately be available to it. Depending on the pixmap size, building / accessing this attribute can be several hundred times faster.
+
+      Copies ``bytearray(pix.samples_mv)`` or ``bytes(pixmap.samples_mv)`` of the pixels are equivalent to and can be used in place of ``pix.samples``. There also is ``len(pix.samples) == len(pix.samples_mv)``.
+
+      :type: memoryview
+
+   .. attribute:: samples_ptr
+
+      *(New in v1.18.17)*
+
+      This is a Python pointer to the pixel area. This is special integer format, which can be used by supporting applications (PyQt) to directly address the samples area and thus build their images extremely fast::
+
+         img = QtGui.QImage(pix.samples, pix.width, pix.height, format) # (1)
+         img = QtGui.QImage(pix.samples_ptr, pix.width, pix.height, format) # (2)
+
+      Both of the above lead to the same Qt image, but (2) can be **many hundred times faster**, because one memory copy of pixels is saved.
+
+      :type: void pointer
 
    .. attribute:: size
 

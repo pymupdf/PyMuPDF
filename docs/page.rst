@@ -994,46 +994,75 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :returns: :ref:`TextPage`
 
-   .. method:: get_drawings()
+   .. method:: get_drawings(clippings=False)
 
-      *(New in v1.18.0)*
+      * *New in v1.18.0*
+      * *Changed in v1.18.17*
 
-      Return the draw commands of the page. These are instructions which draw lines, rectangles or curves, including properties like colors, transparency, line width and dashing, etc.
+      Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
-      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands which belong together: their lines are connected and they have the same properties (colors, dashing, etc.). This is called a **"path"** in the PDF specification, but the method works the same for **all document types**.
+      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands which belong together: they have the same properties (colors, dashing, etc.). This is called a **"path"** in the PDF specification, but the method works the same for **all document types**.
 
       The path dictionary has been designed to be compatible with the methods and terminology of class :ref:`Shape`. There are the following keys:
 
-            ============== =========================================================================
+            ============== ============================================================================
             Key            Value
-            ============== =========================================================================
+            ============== ============================================================================
             closePath      Same as the parameter in :ref:`Shape`.
-            color          Same as the parameter in :ref:`Shape`.
-            dashes         Same as the parameter in :ref:`Shape`.
-            even_odd       Same as the parameter in :ref:`Shape`.
-            fill           Same as the parameter in :ref:`Shape`.
-            items          List of draw commands: lines, rectangle or curves.
+            color          Stroke color (see :ref:`Shape`).
+            dashes         Dashed line specification (see :ref:`Shape`).
+            even_odd       Handle colors of overlapping areas -- same as the parameter in :ref:`Shape`.
+            fill           Fill color  (see :ref:`Shape`).
+            items          List of draw commands: lines, rectangles, quads or curves.
             lineCap        Number 3-tuple, use its max value on output with :ref:`Shape`.
             lineJoin       Same as the parameter in :ref:`Shape`.
-            opacity        represents *fill_opacity* and *stroke_opacity* in :ref:`Shape`.
+            fill_opacity   (new in v1.18.17) fill color transparency (see :ref:`Shape`).
+            stroke_opacity (new in v1.18.17) stroke color transparency  (see :ref:`Shape`).
             rect           Page area covered by this path. Information only.
-            width          Same as the parameter in :ref:`Shape`.
-            ============== =========================================================================
+            scissor        (new in v1.18.17) limit display to this area (clippings only).
+            type           (new in v1.18.17) type of this path.
+            width          Stroke line width  (see :ref:`Shape`).
+            ============== ============================================================================
 
-            Each entry in ``path["items"]`` is one of the following:
+            * *(Changed in v1.18.17)* Key ``"opacity"`` has been removed and was replaced by the new keys ``"fill_opacity"`` and ``"stroke_opacity"``. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
+
+            Path key ``"type"`` takes one of the following values:
+
+            * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, irrelevant ones have been added with default values for backward compatibility: ``"color"``, ``"lineCap"``, ``"lineJoin"``, ``"width"``, ``"closePath"``, ``"dashes"`` and should be ignored.
+            * **"s"** -- this is a *stroke-only* path. Similar to previous, key ``"fill"`` is present with value ``None``.
+            * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
+
+            Each item in ``path["items"]`` is one of the following:
 
             * ``("l", p1, p2)`` - a line from p1 to p2 (:ref:`Point` objects).
-            * ``("c", p1, p2, p3, p4)`` - cubic Bézier curve from p1 to p4, p2 and p3 are the control points. All objects are of type :ref:`Point`.
-            * ``("re", rect)`` - a :ref:`Rect`.
+            * ``("c", p1, p2, p3, p4)`` - cubic Bézier curve **from p1 to p4** (p2 and p3 are the control points). All objects are of type :ref:`Point`.
+            * ``("re", rect)`` - a :ref:`Rect`. *Changed in v1.18.17:* Multiple rectangles within the same path are now detected.
+            * ``("qu", quad)`` - a :ref:`Quad`. *New in v1.18.17:* In many -- not all! -- situations, 3 or 4 consecutive lines are detected to actually represent a :ref:`Quad`.
 
-            Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
+            Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity, but see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
 
-            The following limitations exist by design:
+            The following **limitations** exist by design:
 
-            * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of any item (drawings and other objects) depending on whatever condition: a watermark may be supressed if the page is shown by a viewer, but is visible if printed on paper.
-            * Only drawings are extracted, other page content is ignored. The method therefore does not detect whether a drawing is covered, hidden or overlaid in the original document, e.g. by some text or an image.
+            * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of any item (drawings and other objects) depending on whatever condition: for example showing or suppressing a watermark depending on the current output device (screen, paper, ...), or option-based inclusion / omission of details in a technical document, and so on.
+            * Only drawings are extracted, other page content is ignored. The method therefore does not detect whether a drawing is covered, hidden or overlaid in the original document (e.g. by some text or by an image).
 
-            Effects like these are ignored by the method -- it will return all paths unconditionally.
+            Effects like these are ignored by the method -- it will **unconditionally return all paths**.
+
+      .. note:: This method is much faster than in earlier version. It is based on the output of :meth:`Page.get_cdrawings` -- which in turn is faster but requires some more attention processing its output.
+
+      .. note:: The ``"clippings"`` parameter requests to also return clipping paths. These are paths which do not display drawings, but instead suppress the visibility of other paths outside some rectangle given as path key "scissor". The detail workings of this mechanism are yet under investigation.
+
+   .. method:: get_cdrawings(clippings=False)
+
+      * *New in v1.18.17*
+
+      Extract the drawing paths on the page. Apart from minor technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster (factor 3 or more).
+
+      * Every path type only contains the relevant keys, e.g. a stroke path has no ``"fill"`` color key. See comment in method :meth:`Page.get_drawings`.
+      * Coordinates are given as :data:`point_like`, :data:`rect_like` and :data:`quad_like` **tuples** -- not as :ref:`Point`, :ref:`Rect`, :ref:`Quad` objects.
+
+      .. note:: If performance is your concern, because you need to process pages with ten thousands of drawing commands, consider using this method: Compared to versions before 1.18.17, you should experience much shorter response times. We have seen pages that required 2 seconds now only needing 200 ms with this method.
+
 
    .. method:: get_fonts(full=False)
 

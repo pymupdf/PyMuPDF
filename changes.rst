@@ -1,6 +1,22 @@
 Change Logs
 ===============
 
+Changes in Version 1.18.17
+---------------------------
+Focus of this version are major performance improvements of selected functions.
+
+* **Fixed** issue `#1199 <https://github.com/pymupdf/PyMuPDF/issues/1199>`_. Using a non-existing page number in :meth:`Document.get_page_images` and friends will no longer lead to segfaults.
+
+* **Changed** :meth:`Page.get_drawings` to now differentiate between "stroke", "fill" and combined paths. Paths containing more than one rectangle are now supported. Extracting "clipped" paths is now available as an option.
+
+* **Added** :meth:`Page.get_cdrawings`, a performance-optimized version of :meth:`Page.get_drawings` (up to or beyond 10 times faster).
+
+* **Added** :attr:`Pixmap.samples_mv`, a Python ``memoryview`` of a pixmap's pixel area. Avoids making ``bytes`` copies.
+
+* **Added** :attr:`Pixmap.samples_ptr`, a Python "pointer" to a pixmap's pixel area. Allow much faster creation of 
+
+
+
 Changes in Version 1.18.16
 ---------------------------
 * **Fixed** issue `#1184 <https://github.com/pymupdf/PyMuPDF/issues/1184>`_. Existing PDF widget fonts in a PDF are now accepted (i.e. not forcedly changed to a Base-14 font).

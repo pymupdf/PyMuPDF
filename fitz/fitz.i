@@ -145,6 +145,7 @@ fz_set_error_callback(gctx, JM_mupdf_error, &user);
 // init global constants
 //------------------------------------------------------------------------
 dictkey_align = PyUnicode_InternFromString("align");
+dictkey_align = PyUnicode_InternFromString("ascender");
 dictkey_bbox = PyUnicode_InternFromString("bbox");
 dictkey_blocks = PyUnicode_InternFromString("blocks");
 dictkey_bpc = PyUnicode_InternFromString("bpc");
@@ -158,6 +159,7 @@ dictkey_cs_name = PyUnicode_InternFromString("cs-name");
 dictkey_da = PyUnicode_InternFromString("da");
 dictkey_dashes = PyUnicode_InternFromString("dashes");
 dictkey_desc = PyUnicode_InternFromString("desc");
+dictkey_desc = PyUnicode_InternFromString("descender");
 dictkey_dir = PyUnicode_InternFromString("dir");
 dictkey_effect = PyUnicode_InternFromString("effect");
 dictkey_ext = PyUnicode_InternFromString("ext");
@@ -168,6 +170,7 @@ dictkey_font = PyUnicode_InternFromString("font");
 dictkey_height = PyUnicode_InternFromString("height");
 dictkey_id = PyUnicode_InternFromString("id");
 dictkey_image = PyUnicode_InternFromString("image");
+dictkey_items = PyUnicode_InternFromString("items");
 dictkey_length = PyUnicode_InternFromString("length");
 dictkey_lines = PyUnicode_InternFromString("lines");
 dictkey_matrix = PyUnicode_InternFromString("transform");
@@ -175,6 +178,7 @@ dictkey_modDate = PyUnicode_InternFromString("modDate");
 dictkey_name = PyUnicode_InternFromString("name");
 dictkey_number = PyUnicode_InternFromString("number");
 dictkey_origin = PyUnicode_InternFromString("origin");
+dictkey_rect = PyUnicode_InternFromString("rect");
 dictkey_size = PyUnicode_InternFromString("size");
 dictkey_smask = PyUnicode_InternFromString("smask");
 dictkey_spans = PyUnicode_InternFromString("spans");
@@ -2237,10 +2241,10 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 }
             }
             fz_always(gctx) {
-                Py_DECREF(tracer);
+                Py_CLEAR(tracer);
             }
             fz_catch(gctx) {
-                Py_XDECREF(liste);
+                Py_CLEAR(liste);
                 return NULL;
             }
             return liste;
@@ -4072,7 +4076,7 @@ if basestate:
                 return self.delete_pages(range(start, stop, step))
 
 
-            def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None)->typing.Generator["Page"]:
+            def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None):
                 """Return a generator iterator over a page range.
 
                 Arguments have the same meaning as for the range() built-in.
@@ -4486,8 +4490,8 @@ struct Page {
         FITZEXCEPTION(_add_redact_annot, !result)
         struct Annot *
         _add_redact_annot(PyObject *quad,
-            char *text=NULL,
-            const char *da_str=NULL,
+            PyObject *text=NULL,
+            PyObject *da_str=NULL,
             int align=0,
             PyObject *fill=NULL,
             PyObject *text_color=NULL)
@@ -4511,10 +4515,11 @@ struct Page {
                     }
                     pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(IC), arr);
                 }
-                if (text) {
+                if (EXISTS(text)) {
+                    const char *otext = PyUnicode_AsUTF8(text);
                     pdf_dict_puts_drop(gctx, annot->obj, "OverlayText",
-                                       pdf_new_text_string(gctx, text));
-                    pdf_dict_put_text_string(gctx,annot->obj, PDF_NAME(DA), da_str);
+                                       pdf_new_text_string(gctx, otext));
+                    pdf_dict_put_text_string(gctx,annot->obj, PDF_NAME(DA), PyUnicode_AsUTF8(da_str));
                     pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Q), (int64_t) align);
                 }
                 JM_add_annot_id(gctx, annot, "A");
@@ -5384,183 +5389,85 @@ def get_oc_items(self) -> list:
         // Page.get_drawings
         //----------------------------------------------------------------
         %pythoncode %{
-        def get_drawings(self):
-            """Get page draw paths."""
+        def get_drawings(self, clippings=False):
+            """Get page drawings paths.
+            
+            By default, only 'stroke' and 'fill' drawings are considered. To also extract
+            clipping paths, set the parameter to True.
 
-            CheckParent(self)
-            val = self._getDrawings()  # read raw list from trace device
+            Note:
+            For greater comfort, this method converts point-likes and rect-likes
+            of the C version to respective Point and Rect objects. It also adds dict keys
+            that are missing in original path types.
+            """
+            allkeys = (
+                    ("closePath", False), ("fill", None),
+                    ("color", None), ("width", 0), ("lineCap", (0,0,0)),
+                    ("lineJoin", 0), ("dashes", "[] 0")
+                )
+            val = self.get_cdrawings(clippings=clippings)
             paths = []
-
-            def new_path():
-                """Return empty path dict to use as template."""
-                return {
-                    "color": None,
-                    "fill": None,
-                    "width": 1.0,
-                    "lineJoin": 0,
-                    "lineCap": (0, 0, 0),
-                    "dashes": "[] 0",
-                    "closePath": False,
-                    "even_odd": False,
-                    "rect": Rect(),
-                    "items": [],
-                    "opacity": 1.0,
-                }
-
-            def is_rectangle(path):
-                """Check if path represents a rectangle.
-
-                For this, it must be exactly three connected lines, of which
-                the first and the last one must be horizontal and line two
-                must be vertical. Also, 'closePath' must be true.
-                """
-                if not path["closePath"]:
-                    return False
-                if [item[0] for item in path["items"]] != ["l", "l", "l"]:
-                    return False
-                p1, p2 = path["items"][0][1:]  # first line
-                p3, p4 = path["items"][1][1:]  # second line
-                p5, p6 = path["items"][2][1:]  # third line
-                if p2 != p3 or p4 != p5:  # must be connected
-                    return False
-                if p1.y != p2.y or p3.x != p4.x or p5.y != p6.y:
-                    return False
-                r = Rect(p1, p2).normalize()
-                r |= p3
-                r |= p4
-                r |= p5
-                r |= p6
-                path["rect"] = r
-                return True
-
-            def check_and_merge(this, prev):
-                """Check if "this" is the "stroke" version of "prev".
-
-                If so, update "prev" with appropriate values and return True,
-                else do nothing and return False.
-                """
-                if prev is None:
-                    return False
-                if this["items"] != prev["items"]:  # must have same items
-                    return False
-                if this["closePath"] != prev["closePath"]:
-                    return False
-                if this["color"] is not None:
-                    prev["color"] = this["color"]
-                if this["width"] != 1:
-                    prev["width"] = this["width"]
-                if this["dashes"] != "[] 0":
-                    prev["dashes"] = this["dashes"]
-                if this["lineCap"] != (0, 0, 0):
-                    prev["lineCap"] = this["lineCap"]
-                if this["lineJoin"] != 0:
-                    prev["lineJoin"] = this["lineJoin"]
-                return True
-
-            for item in val:
-                if type(item) is list:
-                    if item[0] in ("fill", "stroke", "clip", "clip-stroke"):
-                        # this begins a new path
-                        path = new_path()
-                        ctm = Matrix(1, 1)
-                        factor = 1  # modify width and dash length
-                        current = None  # the current point
-                        for x in item[1:]:  # loop through path parms that follow
-                            if x == "non-zero":
-                                path["even_odd"] = False
-                            elif x == "even-odd":
-                                path["even_odd"] = True
-                            elif x[0] == "matrix":
-                                ctm = Matrix(x[1])
-                                if abs(ctm.a) == abs(ctm.d):
-                                    factor = abs(ctm.a)
-                            elif x[0] == "w":
-                                path["width"] = x[1] * factor
-                            elif x[0] == "lineCap":
-                                path["lineCap"] = x[1:]
-                            elif x[0] == "lineJoin":
-                                path["lineJoin"] = x[1]
-                            elif x[0] == "color":
-                                if item[0] == "fill":
-                                    path["fill"] = x[1:]
-                                else:
-                                    path["color"] = x[1:]
-                            elif x[0] == "dashPhase":
-                                dashPhase = x[1] * factor
-                            elif x[0] == "dashes":
-                                dashes = x[1:]
-                                l = list(map(lambda y: float(y) * factor, dashes))
-                                l = list(map(str, l))
-                                path["dashes"] = "[%s] %g" % (" ".join(l), dashPhase)
-                            elif x[0] == "alpha":
-                                path["opacity"] = round(x[1], 2)
-
-                    if item[0] == "m":
-                        p = Point(item[1]) * ctm
-                        current = p
-                    elif item[0] == "l":
-                        p2 = Point(item[1]) * ctm
-                        path["items"].append(("l", current, p2))
-                        current = p2
-                    elif item[0] == "c":
-                        p2 = Point(item[1]) * ctm
-                        p3 = Point(item[2]) * ctm
-                        p4 = Point(item[3]) * ctm
-                        path["items"].append(("c", current, p2, p3, p4))
-                        current = p4
-                elif item == "closePath":
-                    path["closePath"] = True
-                elif item in ("estroke", "efill", "eclip", "eclip-stroke"):
-                    if is_rectangle(path):
-                        path["items"] = [("re", path["rect"])]
-                        path["closePath"] = False
-                    # make path rectangle for items
+            for path in val:
+                npath = path.copy()
+                npath["rect"] = Rect(path["rect"])
+                scissor = path.get("scissor")
+                if scissor:
+                    npath["scissor"] = Rect(scissor)
+                items = path["items"]
+                newitems = []
+                for item in items:
+                    cmd = item[0]
+                    rest = item[1:]
+                    if  cmd == "re":
+                        item = ("re", Rect(rest[0]))
+                    elif cmd == "qu":
+                        item = ("qu", Quad(rest[0]))
                     else:
-                        for i, item in enumerate(path["items"]):
-                            for j, p in enumerate(item[1:]):
-                                if i == 0 and j == 0:
-                                    x0 = x1 = p.x
-                                    y0 = y1 = p.y
-                                x0 = min(x0, p.x)
-                                x1 = max(x1, p.x)
-                                y0 = min(y0, p.y)
-                                y1 = max(y1, p.y)
-                        path["rect"] = Rect(x0, y0, x1, y1)
-
-                    try:  # check if path is "stroke" duplicate of previous
-                        prev = paths.pop()  # get previous path in list
-                    except IndexError:
-                        prev = None  # we are the first
-                    if prev is None:
-                        paths.append(path)
-                    elif check_and_merge(path, prev) is False:  # no duplicates
-                        paths.append(prev)  # re-append old one
-                        paths.append(path)  # append new one
-                    else:
-                        paths.append(prev)  # append modified old one
-
-                    path = None
-                else:
-                    print("unexpected item:", item)
-
+                        item = tuple([cmd] + [Point(i) for i in rest])
+                    newitems.append(item)
+                npath["items"] = newitems
+                for k, v in allkeys:
+                    npath[k] = npath.get(k, v)
+                paths.append(npath)
+            val = None
             return paths
         %}
 
 
-        FITZEXCEPTION(_getDrawings, !result)
+        FITZEXCEPTION(get_cdrawings, !result)
+        %pythonprepend get_cdrawings %{
+        """Extract drawing paths from the page.
+
+        Default are just 'fill' and 'stroke' paths. Set clippings to True to also
+        extract 'clip' and 'clip-stroke' paths.
+        """
+        CheckParent(self)
+        old_rotation = self.rotation
+        if old_rotation != 0:
+            self.set_rotation(0)
+        %}
+        %pythonappend get_cdrawings %{
+        if old_rotation != 0:
+            self.set_rotation(old_rotation)
+        %}
         PyObject *
-        _getDrawings()
+        get_cdrawings(int clippings=0)
         {
             fz_page *page = (fz_page *) $self;
             fz_device *dev = NULL;
             PyObject *rc = NULL;
+            fz_var(rc);
             fz_try(gctx) {
                 rc = PyList_New(0);
+                trace_device_Linewidth = 0;
+                trace_device_clippings = clippings;
+                fz_rect prect = fz_bound_page(gctx, page);
+                trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
                 dev = JM_new_tracedraw_device(gctx, rc);
                 fz_run_page(gctx, page, dev, fz_identity, NULL);
-                fz_close_device(gctx, dev);
             }
             fz_always(gctx) {
+                fz_close_device(gctx, dev);
                 fz_drop_device(gctx, dev);
             }
             fz_catch(gctx) {
@@ -5571,9 +5478,19 @@ def get_oc_items(self) -> list:
         }
 
 
-        FITZEXCEPTION(_getTexttrace, !result)
+        FITZEXCEPTION(_get_texttrace, !result)
+        %pythonprepend _get_texttrace %{
+        CheckParent(self)
+        old_rotation = self.rotation
+        if old_rotation != 0:
+            self.set_rotation(0)
+        %}
+        %pythonappend _get_texttrace %{
+        if self.old_rotation != 0:
+            self.set_rotation(old_rotation)
+        %}
         PyObject *
-        _getTexttrace()
+        _get_texttrace()
         {
             fz_page *page = (fz_page *) $self;
             fz_device *dev = NULL;
@@ -5581,16 +5498,10 @@ def get_oc_items(self) -> list:
             fz_try(gctx) {
                 rc = PyList_New(0);
                 dev = JM_new_tracetext_device(gctx, rc);
-                trace_text_linewidth = 0;
+                trace_device_Linewidth = 0;
                 fz_rect prect = fz_bound_page(gctx, page);
-                trace_text_rot = fz_identity;
-                pdf_page *pdfpage = pdf_page_from_fz_page(gctx, page);
-                if (pdfpage) {
-                    trace_text_rot = JM_derotate_page_matrix(gctx, pdfpage);
-                    prect = JM_cropbox(gctx, pdfpage->obj);
-                }
-                trace_text_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
-                trace_text_ptm = fz_invert_matrix(trace_text_ptm);
+                trace_device_rot = fz_identity;
+                trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
                 fz_run_page(gctx, page, dev, fz_identity, NULL);
             }
             fz_always(gctx) {
@@ -5604,9 +5515,9 @@ def get_oc_items(self) -> list:
             return rc;
         }
         %pythoncode %{
-        def _get_texttrace(self):
+        def _getTexttrace(self):
             """Return low-level text information of the page."""
-            return self._getTexttrace()
+            return self._get_texttrace()
         %}
 
 
@@ -7552,7 +7463,7 @@ Use pil_save to reflect this in output image."""%}
         // samples
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend samples %{"""The area of all pixels."""%}
+        %pythonprepend samples %{"""Bytes copy of the pixels area."""%}
         PyObject *samples()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
@@ -7560,6 +7471,25 @@ Use pil_save to reflect this in output image."""%}
             s *= pm->h;
             s *= pm->n;
             return PyBytes_FromStringAndSize((const char *) pm->samples, s);
+        }
+
+        %pythoncode %{@property%}
+        %pythonprepend samples_mv %{"""Memoryview of the pixels area."""%}
+        PyObject *samples_mv()
+        {
+            fz_pixmap *pm = (fz_pixmap *) $self;
+            Py_ssize_t s = (Py_ssize_t) pm->w;
+            s *= pm->h;
+            s *= pm->n;
+            return PyMemoryView_FromMemory((char *) pm->samples, s, PyBUF_READ);
+        }
+
+        %pythoncode %{@property%}
+        %pythonprepend samples_ptr %{"""Pointer to the pixels area."""%}
+        PyObject *samples_ptr()
+        {
+            fz_pixmap *pm = (fz_pixmap *) $self;
+            return PyLong_FromVoidPtr((void *) pm->samples);
         }
 
         %pythoncode %{
@@ -11000,6 +10930,50 @@ struct Font
             "stretch", f->ft_stretch, "fake-bold", f->fake_bold,
             "fake-italic", f->fake_italic, "opentype", f->has_opentype,
             "invalid-bbox", f->invalid_bbox);
+        }
+
+
+        %pythoncode %{@property%}
+        PyObject *is_bold()
+        {
+            fz_font *font = (fz_font *) $self;
+            if (fz_font_is_bold(gctx,font)) {
+                Py_RETURN_TRUE;
+            }
+            Py_RETURN_FALSE;
+        }
+
+
+        %pythoncode %{@property%}
+        PyObject *is_serif()
+        {
+            fz_font *font = (fz_font *) $self;
+            if (fz_font_is_serif(gctx,font)) {
+                Py_RETURN_TRUE;
+            }
+            Py_RETURN_FALSE;
+        }
+
+
+        %pythoncode %{@property%}
+        PyObject *is_italic()
+        {
+            fz_font *font = (fz_font *) $self;
+            if (fz_font_is_italic(gctx,font)) {
+                Py_RETURN_TRUE;
+            }
+            Py_RETURN_FALSE;
+        }
+
+
+        %pythoncode %{@property%}
+        PyObject *is_monospaced()
+        {
+            fz_font *font = (fz_font *) $self;
+            if (fz_font_is_monospaced(gctx,font)) {
+                Py_RETURN_TRUE;
+            }
+            Py_RETURN_FALSE;
         }
 
 

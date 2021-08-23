@@ -9,6 +9,7 @@ import argparse
 import bisect
 import os
 import sys
+from typing import List, Tuple, Dict, Set
 
 import fitz
 from fitz.fitz import (
@@ -573,15 +574,10 @@ def page_blocksort(page, textout, GRID, fontsize, noformfeed, skip_empty, flags)
 
 
 def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
-    left = page.rect.width  # left most used coordinate
-    right = 0  # rightmost coordinate
-    rowheight = page.rect.height  # smallest row height in use
-    chars = []  # all chars here
-    rows = set()  # bottom coordinates of lines
     eop = b"\n" if noformfeed else bytes([12])
 
     # --------------------------------------------------------------------
-    def find_line_index(values: list, value: int) -> int:
+    def find_line_index(values: List[int], value: int) -> int:
         """Find the right row coordinate.
 
         Args:
@@ -596,7 +592,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
         raise RuntimeError("Line for %g not found in %s" % (value, values))
 
     # --------------------------------------------------------------------
-    def curate_rows(rows, GRID):
+    def curate_rows(rows: Set[int], GRID) -> List:
         rows = list(rows)
         rows.sort()  # sort ascending
         nrows = [rows[0]]
@@ -605,7 +601,14 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
                 nrows.append(h)
         return nrows  # curated list of line bottom coordinates
 
-    def process_blocks(blocks, rows, chars, rowheight, left, right, page):
+    def process_blocks(blocks: List[Dict], page: fitz.Page):
+        rows = set()
+        page_width = page.rect.width
+        page_height = page.rect.height
+        rowheight = page_height
+        left = page_width
+        right = 0
+        chars = []
         for block in blocks:
             for line in block["lines"]:
                 if line["dir"] != (1, 0):  # ignore non-horizontal text
@@ -648,9 +651,9 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
                                 chars[-1] = (lig, old_ox, old_oy, old_cwidth)
                                 continue
                         chars.append((ch, ox, oy, cwidth))  # all chars on page
-        return left, right
+        return chars, rows, left, right, rowheight
 
-    def joinligature(lig):
+    def joinligature(lig: str) -> str:
         """Return ligature character for a given pair / triple of characters.
 
         Args:
@@ -688,6 +691,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
             text: (str) text string for this line
         """
         text = ""  # we output this
+        old_char = ""
         old_x1 = 0  # end coordinate of last char
         old_ox = 0  # x-origin of last char
         if minslot <= fitz.EPSILON:
@@ -699,17 +703,14 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
             x1 = ox + cwidth  # ending coordinate
 
             # eliminate overprint effect
-            if (
-                old_ox <= ox < old_x1
-                and char == text[-1]
-                and abs(ox - old_ox) <= cwidth * 0.1
-            ):
+            if old_char == char and ox - old_ox <= cwidth * 0.2:
                 continue
 
             # omit spaces overlapping previous char
             if char == " " and (old_x1 - ox) / cwidth > 0.8:
                 continue
 
+            old_char = char
             # close enough to previous?
             if ox < old_x1 + minslot:  # assume char adjacent to previous
                 text += char  # append to output
@@ -733,13 +734,12 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
 
     # extract page text by single characters ("rawdict")
     blocks = page.get_text("rawdict", flags=flags)["blocks"]
+    chars, rows, left, right, rowheight = process_blocks(blocks, page)
 
-    if blocks == []:
+    if chars == []:
         if not skip_empty:
             textout.write(eop)  # write formfeed
         return
-    left, right = process_blocks(blocks, rows, chars, rowheight, left, right, page)
-
     # compute list of line coordinates - ignoring small (GRID) differences
     rows = curate_rows(rows, GRID)
 

@@ -371,6 +371,7 @@
 %{
 // Global Constants - Python dictionary keys
 PyObject *dictkey_align;
+PyObject *dictkey_ascender;
 PyObject *dictkey_bbox;
 PyObject *dictkey_blocks;
 PyObject *dictkey_bpc;
@@ -384,6 +385,7 @@ PyObject *dictkey_cs_name;
 PyObject *dictkey_da;
 PyObject *dictkey_dashes;
 PyObject *dictkey_desc;
+PyObject *dictkey_descender;
 PyObject *dictkey_dir;
 PyObject *dictkey_effect;
 PyObject *dictkey_ext;
@@ -394,6 +396,7 @@ PyObject *dictkey_font;
 PyObject *dictkey_height;
 PyObject *dictkey_id;
 PyObject *dictkey_image;
+PyObject *dictkey_items;
 PyObject *dictkey_length;
 PyObject *dictkey_lines;
 PyObject *dictkey_matrix;
@@ -401,6 +404,7 @@ PyObject *dictkey_modDate;
 PyObject *dictkey_name;
 PyObject *dictkey_number;
 PyObject *dictkey_origin;
+PyObject *dictkey_rect;
 PyObject *dictkey_size;
 PyObject *dictkey_smask;
 PyObject *dictkey_spans;
