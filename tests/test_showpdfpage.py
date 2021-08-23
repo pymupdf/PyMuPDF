@@ -1,7 +1,7 @@
 """
 Tests:
     * Convert some image to a PDF
-    * Insert it in a PDF page in given rectangle
+    * Insert it in given rectangle of a PDF page
     * Assert PDF Form XObject has been created
     * Assert inserted PDF is inside given retangle
 """
@@ -25,7 +25,7 @@ def test_insert():
     assert img[-1] > 0  # xref of Form XObject!
     img = page.get_image_info()[0]  # read the page's images
 
-    # Multiple comutations may lead to rounding issues, so we need
+    # Multiple computations may lead to rounding issues, so we need
     # some generosity here:
-    bbox = list(map(lambda x: round(x, 2), img["bbox"]))
+    bbox = list(map(round, img["bbox"]))
     assert bbox in r1

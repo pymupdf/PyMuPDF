@@ -16,7 +16,7 @@ def test_drawings1():
     symbols_text = open(symbols).read()  # expected result
     doc = fitz.open(filename)
     page = doc[0]
-    paths = page.get_drawings()
+    paths = page.get_cdrawings()
     out = io.StringIO()  # pprint output goes here
     pprint(paths, stream=out)
     assert symbols_text == out.getvalue()
