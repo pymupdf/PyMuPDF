@@ -732,28 +732,39 @@ For details on **embedded files** refer to Appendix 3.
       :arg int xref: the :data:`xref`. *Changed in v1.18.10:* Use ``-1`` to access the special dictionary "PDF trailer" (it has no identifying xref).
       :arg str key: the desired PDF key. Must **exactly** match (case-sensitive) one of the keys contained in :meth:`Document.xref_get_keys`.
 
-      :returns: a tuple (type, value), where type is one of "xref", "array", "dict", "int", "float", "null", "bool", "float", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and a faithful reflection of what is stored in the PDF. An argument like the returned value can be used to modify the value of a key of :data:`xref`.
+      :returns: a tuple (type, value) of strings, where type is one of "xref", "array", "dict", "int", "float", "null", "bool", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and (almost always) a faithful reflection of what is stored in the PDF. In most cases, the format of the value string also gives a clue about the key type:
 
-          >>> for key in doc.xref_get_keys(xref):
-                  print(key, "=" , doc.xref_get_key(xref, key))
-          Type = ('name', '/Page')
-          Contents = ('xref', '1297 0 R')
-          Resources = ('xref', '1296 0 R')
-          MediaBox = ('array', '[0 0 612 792]')
-          Parent = ('xref', '1301 0 R')
-          >>> # same thing for the PDF trailer:
-          >>> for key in doc.xref_get_keys(-1):
-                  print(key, "=", doc.xref_get_key(-1, key))
-          Type = ('name', '/XRef')
-          Index = ('array', '[0 8802]')
-          Size = ('int', '8802')
-          W = ('array', '[1 3 1]')
-          Root = ('xref', '8799 0 R')
-          Info = ('xref', '8800 0 R')
-          ID = ('array', '[<DC9D56A6277EFFD82084E64F9441E18C><DC9D56A6277EFFD82084E64F9441E18C>]')
-          Length = ('int', '21111')
-          Filter = ('name', '/FlateDecode')
-          >>>
+        * A "name" always starts with a "/" slash.
+        * An "xref" always ends with " 0 R".
+        * An "array" is always enclosed in "[...]" brackets.
+        * A "dict" is always enclosed in "<<...>>" brackets.
+        * A "bool", resp. "null" always equal either "true", "false", resp. "null".
+        * "float" and "int" are represented by their string format -- and are thus not always distinguishable.
+        * A "string" is converted to UTF-8 and may therefore deviate from what is stored in the PDF. For example, the PDF key "Author" may have a value of "<FEFF004A006F0072006A00200058002E0020004D0063004B00690065>", but the method will return ``('string', 'Jorj X. McKie')``.
+
+            >>> for key in doc.xref_get_keys(xref):
+                    print(key, "=" , doc.xref_get_key(xref, key))
+            Type = ('name', '/Page')
+            Contents = ('xref', '1297 0 R')
+            Resources = ('xref', '1296 0 R')
+            MediaBox = ('array', '[0 0 612 792]')
+            Parent = ('xref', '1301 0 R')
+            >>> #
+            >>> # Now same thing for the PDF trailer.
+            >>> # It has no xref, so -1 must be used instead.
+            >>> #
+            >>> for key in doc.xref_get_keys(-1):
+                    print(key, "=", doc.xref_get_key(-1, key))
+            Type = ('name', '/XRef')
+            Index = ('array', '[0 8802]')
+            Size = ('int', '8802')
+            W = ('array', '[1 3 1]')
+            Root = ('xref', '8799 0 R')
+            Info = ('xref', '8800 0 R')
+            ID = ('array', '[<DC9D56A6277EFFD82084E64F9441E18C><DC9D56A6277EFFD82084E64F9441E18C>]')
+            Length = ('int', '21111')
+            Filter = ('name', '/FlateDecode')
+            >>>
 
 
     .. method:: xref_set_key(xref, key, value)
