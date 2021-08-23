@@ -776,7 +776,7 @@ For details on **embedded files** refer to Appendix 3.
           * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
           * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 56 of the :ref:`AdobeManual`.
-          * **string** -- a valid PDF string. **All PDF strings** must be enclosed by some type of brackets. Denote the empty string as ``"()"``. Depending on its content, the possible bracket types are "(...)" or "<...>". Reserved PDF characters must be escaped. If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
+          * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as ``"()"``. Depending on its content, the possible brackets are "(...)" or "<...>". Reserved PDF characters must be backslash-escaped. If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
 
             >>> # because of €, the following yields UTF-16BE BOM
             >>> fitz.get_pdf_str("Pay in $ or €.")
@@ -1429,7 +1429,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int xref: the object's :data`xref`. *Changed in v1.18.10:* A value of -1 returns the PDF trailer source.
       :arg bool compressed: whether to generate a compact output with no line breaks or spaces.
-      :arg bool: ascii: whether to ASCII-encode binary data.
+      :arg bool ascii: whether to ASCII-encode binary data.
 
       :rtype: str
       :returns: The object definition source.

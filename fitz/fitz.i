@@ -5486,7 +5486,7 @@ def get_oc_items(self) -> list:
             self.set_rotation(0)
         %}
         %pythonappend _get_texttrace %{
-        if self.old_rotation != 0:
+        if old_rotation != 0:
             self.set_rotation(old_rotation)
         %}
         PyObject *

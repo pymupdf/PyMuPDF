@@ -378,14 +378,14 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       *(New in v1.18.17)*
 
-      This is a Python pointer to the pixel area. This is special integer format, which can be used by supporting applications (PyQt) to directly address the samples area and thus build their images extremely fast::
+      Python pointer to the pixel area. This is a special integer format, which can be used by supporting applications (such as PyQt) to directly address the samples area and thus build their images extremely fast. For example::
 
          img = QtGui.QImage(pix.samples, pix.width, pix.height, format) # (1)
          img = QtGui.QImage(pix.samples_ptr, pix.width, pix.height, format) # (2)
 
-      Both of the above lead to the same Qt image, but (2) can be **many hundred times faster**, because one memory copy of pixels is saved.
+      Both of the above lead to the same Qt image, but (2) can be **many hundred times faster**, because the pixel area is not copied.
 
-      :type: void pointer
+      :type: int
 
    .. attribute:: size
 

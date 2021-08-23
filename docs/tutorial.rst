@@ -196,13 +196,13 @@ Please also see section 3.16 of the `Pillow documentation <https://Pillow.readth
     img = Image.frombytes(mode, [pix.width, pix.height], pix.samples)
     qtimg = ImageQt.ImageQt(img)
 
-Again, you also can get along **without using Pillow** if you use the :attr:`Pixmap.stride` property::
+Again, you also can get along **without using Pillow.** Qt's `QImage` luckily supports native Python pointers, so the following is the recommended way to create Qt images::
 
-    from PyQt<x>.QtGui import QImage
+    from PyQt5.QtGui import QImage
 
     # set the correct QImage format depending on alpha
     fmt = QImage.Format_RGBA8888 if pix.alpha else QImage.Format_RGB888
-    qtimg = QImage(pix.samples, pix.width, pix.height, pix.stride, fmt)
+    qtimg = QImage(pix.samples_ptr, pix.width, pix.height, fmt)
 
 
 Extracting Text and Images

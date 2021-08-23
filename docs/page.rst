@@ -1001,9 +1001,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
-      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands which belong together: they have the same properties (colors, dashing, etc.). This is called a **"path"** in the PDF specification, but the method works the same for **all document types**.
+      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands belonging together: they have the same properties (colors, dashing, etc.). This is called a **"path"** in PDF, but the method **works for all document types**.
 
-      The path dictionary has been designed to be compatible with the methods and terminology of class :ref:`Shape`. There are the following keys:
+      The path dictionary has been designed to be compatible with class :ref:`Shape`. There are the following keys:
 
             ============== ============================================================================
             Key            Value
@@ -1024,13 +1024,15 @@ In a nutshell, this is what you can do with PyMuPDF:
             width          Stroke line width  (see :ref:`Shape`).
             ============== ============================================================================
 
-            * *(Changed in v1.18.17)* Key ``"opacity"`` has been removed and was replaced by the new keys ``"fill_opacity"`` and ``"stroke_opacity"``. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
+            * *(Changed in v1.18.17)* Key ``"opacity"`` has been replaced by the new keys ``"fill_opacity"`` and ``"stroke_opacity"``. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
 
-            Path key ``"type"`` takes one of the following values:
+            Key ``"type"`` takes one of the following values:
 
             * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, irrelevant ones have been added with default values for backward compatibility: ``"color"``, ``"lineCap"``, ``"lineJoin"``, ``"width"``, ``"closePath"``, ``"dashes"`` and should be ignored.
             * **"s"** -- this is a *stroke-only* path. Similar to previous, key ``"fill"`` is present with value ``None``.
             * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
+            * **"c"** -- this is a *clip* path. Only included if *clippings=True*.
+            * **"cs"** -- this is a *clip-stroke* path. Only included if *clippings=True*.
 
             Each item in ``path["items"]`` is one of the following:
 
@@ -1044,11 +1046,11 @@ In a nutshell, this is what you can do with PyMuPDF:
             The following **limitations** exist by design:
 
             * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of any item (drawings and other objects) depending on whatever condition: for example showing or suppressing a watermark depending on the current output device (screen, paper, ...), or option-based inclusion / omission of details in a technical document, and so on.
-            * Only drawings are extracted, other page content is ignored. The method therefore does not detect whether a drawing is covered, hidden or overlaid in the original document (e.g. by some text or by an image).
+            * Only drawings are considered, other page content is ignored. The method therefore does not detect, whether a drawing is covered, hidden or overlaid in the original document (e.g. by some text or by an image).
 
             Effects like these are ignored by the method -- it will **unconditionally return all paths**.
 
-      .. note:: This method is much faster than in earlier version. It is based on the output of :meth:`Page.get_cdrawings` -- which in turn is faster but requires some more attention processing its output.
+      .. note:: This method is much faster than in earlier version. It is based on the output of :meth:`Page.get_cdrawings` -- which in turn is faster but requires more attention processing its output.
 
       .. note:: The ``"clippings"`` parameter requests to also return clipping paths. These are paths which do not display drawings, but instead suppress the visibility of other paths outside some rectangle given as path key "scissor". The detail workings of this mechanism are yet under investigation.
 
@@ -1056,12 +1058,12 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * *New in v1.18.17*
 
-      Extract the drawing paths on the page. Apart from minor technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster (factor 3 or more).
+      Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster (factor 3 or more):
 
       * Every path type only contains the relevant keys, e.g. a stroke path has no ``"fill"`` color key. See comment in method :meth:`Page.get_drawings`.
       * Coordinates are given as :data:`point_like`, :data:`rect_like` and :data:`quad_like` **tuples** -- not as :ref:`Point`, :ref:`Rect`, :ref:`Quad` objects.
 
-      .. note:: If performance is your concern, because you need to process pages with ten thousands of drawing commands, consider using this method: Compared to versions before 1.18.17, you should experience much shorter response times. We have seen pages that required 2 seconds now only needing 200 ms with this method.
+      .. note:: If performance is your concern, because your page has tens of thousands of drawings, consider using this method: Compared to versions earlier than 1.18.17, you should see much shorter response times. We have seen pages that required 2 seconds then, now only needing 200 ms with this method.
 
 
    .. method:: get_fonts(full=False)
@@ -1194,7 +1196,7 @@ In a nutshell, this is what you can do with PyMuPDF:
      :arg matrix_like matrix: default is :ref:`Identity`.
      :arg colorspace: The desired colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
      :type colorspace: str or :ref:`Colorspace`
-     :arg irect_like clip: restrict rendering to this area.
+     :arg irect_like clip: restrict rendering to this area. Default is the page's :attr:`Page.cropbox`.
      :arg bool alpha: whether to add an alpha channel. Always accept the default *False* if you do not really need transparency. This will save a lot of memory (25% in case of RGB ... and pixmaps are typically **large**!), and also processing time. Also note an **important difference** in how the image will be rendered: with *True* the pixmap's samples area will be pre-cleared with *0x00*. This results in **transparent** areas where the page is empty. With *False* the pixmap's samples will be pre-cleared with *0xff*. This results in **white** where the page has nothing to show.
 
       Changed in version 1.14.17
@@ -1213,6 +1215,25 @@ In a nutshell, this is what you can do with PyMuPDF:
 
      :rtype: :ref:`Pixmap`
      :returns: Pixmap of the page. For fine-controlling the generated image, the by far most important parameter is **matrix**. E.g. you can increase or decrease the image resolution by using **Matrix(xzoom, yzoom)**. If zoom > 1, you will get a higher resolution: zoom=2 will double the number of pixels in that direction and thus generate a 2 times larger image. Non-positive values will flip horizontally, resp. vertically. Similarly, matrices also let you rotate or shear, and you can combine effects via e.g. matrix multiplication. See the :ref:`Matrix` section to learn more.
+
+     .. note::
+         The method will respect any page rotation and will not exceed the intersection of ``clip`` and :attr:`Page.cropbox`. If you need the page's mediabox (and if this is a different rectangle), you can use a snippet like the following to achieve this::
+
+            In [1]: import fitz
+            In [2]: doc=fitz.open("demo1.pdf")
+            In [3]: page=doc[0]
+            In [4]: rotation = page.rotation
+            In [5]: cropbox = page.cropbox
+            In [6]: page.set_cropbox(page.mediabox)
+            In [7]: page.set_rotation(0)
+            In [8]: pix = page.get_pixmap()
+            In [9]: page.set_cropbox(cropbox)
+            In [10]: if rotation != 0:
+               ...:     page.set_rotation(rotation)
+               ...:
+            In [11]:
+
+
 
    .. method:: annot_names()
 

@@ -35,6 +35,17 @@ A Font object also contains useful general information, like the font bbox, the 
 
 .. class:: Font
 
+   .. index::
+      pair: Font, fontfile
+      pair: Font, fontbuffer
+      pair: Font, script
+      pair: Font, ordering
+      pair: Font, is_bold
+      pair: Font, is_italic
+      pair: Font, is_serif
+      pair: Font, fontname
+      pair: Font, language
+
    .. method:: __init__(self, fontname=None, fontfile=None,
                   fontbuffer=None, script=0, language=None, ordering=-1, is_bold=0,
                   is_italic=0, is_serif=0)
@@ -113,6 +124,10 @@ A Font object also contains useful general information, like the font bbox, the 
             notosbi     Noto Sans BoldItalic        v1.0.3
             =========== =========================== ======= =============================
 
+   .. index::
+      pair: has_glyph, language
+      pair: has_glyph, script
+      pair: has_glyph, fallback
 
    .. method:: has_glyph(chr, language=None, script=0, fallback=False)
 
@@ -160,6 +175,11 @@ A Font object also contains useful general information, like the font bbox, the 
 
       .. note:: This method only returns meaningful data for fonts having a CMAP (character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array will have length 1 and contain zero only.
 
+   .. index::
+      pair: glyph_advance, language
+      pair: glyph_advance, script
+      pair: glyph_advance, wmode
+
    .. method:: glyph_advance(chr, language=None, script=0, wmode=0)
 
       Calculate the "width" of the character's glyph (visual representation).
@@ -183,6 +203,10 @@ A Font object also contains useful general information, like the font bbox, the 
          >>> font.has_glyph(font.glyph_name_to_unicode("infinity"))
          True
 
+   .. index::
+      pair: glyph_bbox, language
+      pair: glyph_bbox, script
+
    .. method:: glyph_bbox(chr, language=None, script=0)
 
       The glyph rectangle relative to fontsize 1.
@@ -201,6 +225,9 @@ A Font object also contains useful general information, like the font bbox, the 
       :returns: a string representing the glyph's name. E.g. ``font.glyph_name(ord("#")) = "numbersign"``. For an invalid code ".notfound" is returned.
       
         .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as ``fitz.unicode_to_glyph_name()`` and resp. ``fitz.glyph_name_to_unicode()``.
+
+   .. index::
+      pair: text_length, fontsize
 
    .. method:: text_length(text, fontsize=11)
 
@@ -222,6 +249,9 @@ A Font object also contains useful general information, like the font bbox, the 
             2. ``font.text_length("Ä", fontsize=fontsize)``
 
             For multi-character strings, the method offers a huge performance advantage compared to the previous implementation: instead of about 0.5 microseconds for each character, only 12.5 nanoseconds are required for the second and subsequent ones.
+
+   .. index::
+      pair: char_lengths, fontsize
 
    .. method:: char_lengths(text, fontsize=11)
 

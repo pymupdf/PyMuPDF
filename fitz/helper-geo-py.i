@@ -662,13 +662,9 @@ class Rect(object):
         l = len(x)
         r = Rect(self).normalize()
         if l == 4:
-            if r.is_empty: return False
             xr = Rect(x).normalize()
-            if xr.is_empty: return True
-            if r.x0 <= xr.x0 and r.y0 <= xr.y0 and \
-               r.x1 >= xr.x1 and r.y1 >= xr.y1:
-               return True
-            return False
+            return r.intersect(xr) == xr
+
         if l == 2:
             if r.x0 <= x[0] <= r.x1 and \
                r.y0 <= x[1] <= r.y1:
