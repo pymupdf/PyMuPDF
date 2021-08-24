@@ -1,5 +1,5 @@
 """
-* Insert same image in two places of a page.
+* Insert same image with different rotations in two places of a page.
 * Extract bboxes and transformation matrices via different methods
 * Assert equality of bboxes and transformations
 * Assert image locations are inside given rectangles
@@ -19,7 +19,7 @@ def test_insert():
     r1 = fitz.Rect(50, 50, 100, 100)
     r2 = fitz.Rect(50, 150, 200, 400)
     page.insert_image(r1, filename=imgfile)
-    page.insert_image(r2, filename=imgfile)
+    page.insert_image(r2, filename=imgfile, rotate=270)
     imglist = page.get_images(True)
     assert len(imglist) == 2
     bbox1, transform1 = page.get_image_bbox(imglist[0], transform=True)
