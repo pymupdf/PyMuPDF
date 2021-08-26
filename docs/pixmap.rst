@@ -277,6 +277,23 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like irect: The area to be copied.
 
+      .. note:: Example: Suppose you have two pixmaps, ``pix1`` and ``pix2`` and you want to copy the lower right quarter of ``pix2`` to ``pix1`` such that it starts at the top-left point of ``pix1``. Use the following snippet::
+
+         >>> # safeguard: set top-left of pix1 and pix2 to (0, 0)
+         >>> pix1.set_origin(0, 0)
+         >>> pix2.set_origin(0, 0)
+         >>> # compute top-left coordinates of pix2 region to copy
+         >>> x1 = int(pix2.width / 2)
+         >>> y1 = int(pix2.height / 2)
+         >>> # shift top-left of pix2 such, that the to-be-copied
+         >>> # area starts at (0, 0):
+         >>> pix2.set_origin(-x1, -y1)
+         >>> # now copy ...
+         >>> pix1.copy(pix2, (0, 0, x1, y1))
+
+         .. image:: images/img-pixmapcopy.*
+             :scale: 33
+
    .. method:: save(filename, output=None)
 
       Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the *savealpha* option is no longer supported and will be silently ignored.
@@ -368,9 +385,16 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       *(New in v1.18.17)*
 
-      Like :attr:`Pixmap.samples`, but in Python ``memoryview`` format.The memoryview is built directly from the memory in the pixmap -- not from a copy of it. Therefore any changes to pixels will immediately be available to it. Depending on the pixmap size, building / accessing this attribute can be several hundred times faster.
+      Like :attr:`Pixmap.samples`, but in Python ``memoryview`` format. It is built pointing to the memory in the pixmap -- not from a copy of it. So its creation speed is independent from the pixmap size, and any changes to pixels will be available immediately.
 
-      Copies ``bytearray(pix.samples_mv)`` or ``bytes(pixmap.samples_mv)`` of the pixels are equivalent to and can be used in place of ``pix.samples``. There also is ``len(pix.samples) == len(pix.samples_mv)``.
+      Copies like ``bytearray(pix.samples_mv)``, or ``bytes(pixmap.samples_mv)`` are equivalent to and can be used in place of ``pix.samples``.
+      
+      We also have ``len(pix.samples) == len(pix.samples_mv)``, but the memoryview version for this example from a 2 MB JPEG is **ten thousand times faster**::
+
+         In [3]: %timeit len(pix.samples_mv)
+         367 ns ± 1.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+         In [4]: %timeit len(pix.samples)
+         3.52 ms ± 57.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
       :type: memoryview
 
@@ -383,7 +407,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          img = QtGui.QImage(pix.samples, pix.width, pix.height, format) # (1)
          img = QtGui.QImage(pix.samples_ptr, pix.width, pix.height, format) # (2)
 
-      Both of the above lead to the same Qt image, but (2) can be **many hundred times faster**, because the pixel area is not copied.
+      Both of the above lead to the same Qt image, but (2) can be **many hundred times faster**, because it avoids an additional copy of the pixel area.
 
       :type: int
 

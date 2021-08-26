@@ -413,6 +413,7 @@ Yet others are handy, general-purpose utilities.
                     755.3758544921875),         # origin.y (1)
                    2.495859366375953            # width (points) (6)
                   ),
+                  ( ... )
                ),
             'color': (0.0,),                    # text color, tuple[float] (1)
             'colorspace': 1,                    # number of colorspace components (1)
@@ -431,7 +432,11 @@ Yet others are handy, general-purpose utilities.
 
       Details:
 
-      1. Information above tagged with "(1)" has the same meaning and value as explained in :ref:`TextPage`. Please note that the font ``flags`` value will never contain a *superscript* value: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
+      1. Information above tagged with "(1)" has the same meaning and value as explained in :ref:`TextPage`.
+      
+         - Please note that the font ``flags`` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
+         - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on ``span["type"]``, interpret the color as fill color or stroke color.
+
       2. There are 5 text span types:
 
          0. Filled text -- equivalent to PDF text rendering mode 0 (``0 Tr``, the default in PDF), only each character's "inside" is shown.
@@ -442,14 +447,14 @@ Yet others are handy, general-purpose utilities.
       
       3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing it for you.
       4. For data compactness, the character's unicode is provided here. Use builtin function ``chr()`` for the character itself.
-      5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent.
+      5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent. Depending in ``span["type"]``, interpret this value as *fill* opacity or, resp. *stroke* opacity.
       6. This value is equal / close to the width of ``char["bbox"]``. However, on occasion you may find a small delta.
 
       Here is a list of similarities and differences of ``page._get_texttrace()`` compared to ``page.get_text("rawdict")``:
 
-      * The method is up to **twice as fast.**
+      * The method is up to **twice as fast,** compared to "rawdict" extraction.
       * The returned information is very **much smaller in size** -- although it provides more information.
-      * Additional types of text **invisibility can be detected**: opacity = 0 and type = 4.
+      * Additional types of text **invisibility can be detected**: opacity = 0 and type > 1.
       * Character bboxes are not provided; if needed, compute them from available information.
       * If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you may still be able to deduct desired information from the glyph id.
       * The ``span["chars"]`` **contains no spaces**, **except** the document creator has coded them. They **will never be generated** like it happens in :meth:`Page.get_text` methods. To provide some help for doing your own computations here, the width of a space character is given. This value is derived from the font where possible. Otherwise the value of a fallback font is taken.
