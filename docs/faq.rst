@@ -47,8 +47,8 @@ This method has many options for influencing the result. The most important amon
 In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 to each dimension, which will generate an image with a four times better resolution for us (and also about 4 times the size)::
 
     zoom_x = 2.0  # horizontal zoom
-    zomm_y = 2.0  # vertical zoom
-    mat = fitz.Matrix(zoom_x, zomm_y)  # zoom factor 2 in each dimension
+    zoom_y = 2.0  # vertical zoom
+    mat = fitz.Matrix(zoom_x, zoom_y)  # zoom factor 2 in each dimension
     pix = page.get_pixmap(matrix=mat)  # use 'mat' instead of the identity matrix
 
 
@@ -102,7 +102,7 @@ In this case we have ``zoom = HEIGHT/clip.height = WIDTH/clip.width``, so we mus
 
     width = WIDTH / zoom
     height = HEIGHT / zoom
-    clip = fitz.Rect(tl, tl.x + width, tl.y + height)  
+    clip = fitz.Rect(tl, tl.x + width, tl.y + height)
     # ensure we still are inside the page
     clip &= page.rect
     mat = fitz.Matrix(zoom, zoom)
@@ -456,7 +456,7 @@ How to Use Pixmaps: Making a Fractal
 
 Here is another Pixmap example that creates **Sierpinski's Carpet** -- a fractal generalizing the **Cantor Set** to two dimensions. Given a square carpet, mark its 9 sub-suqares (3 times 3) and cut out the one in the center. Treat each of the remaining eight sub-squares in the same way, and continue *ad infinitum*. The end result is a set with area zero and fractal dimension 1.8928...
 
-This script creates a approximate image of it as a PNG, by going down to one-pixel granularity. To increase the image precision, change the value of n (precision)::
+This script creates an approximate image of it as a PNG, by going down to one-pixel granularity. To increase the image precision, change the value of n (precision)::
 
     import fitz, time
     if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 8]:
