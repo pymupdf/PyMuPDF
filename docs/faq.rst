@@ -47,8 +47,8 @@ This method has many options for influencing the result. The most important amon
 In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 to each dimension, which will generate an image with a four times better resolution for us (and also about 4 times the size)::
 
     zoom_x = 2.0  # horizontal zoom
-    zomm_y = 2.0  # vertical zoom
-    mat = fitz.Matrix(zoom_x, zomm_y)  # zoom factor 2 in each dimension
+    zoom_y = 2.0  # vertical zoom
+    mat = fitz.Matrix(zoom_x, zoom_y)  # zoom factor 2 in each dimension
     pix = page.get_pixmap(matrix=mat)  # use 'mat' instead of the identity matrix
 
 
