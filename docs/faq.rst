@@ -1419,6 +1419,8 @@ The following is a code snippet which extracts the drawings of a page and re-dra
                 shape.draw_line(item[1], item[2])
             elif item[0] == "re":  # rectangle
                 shape.draw_rect(item[1])
+            elif item[0] == "qu":  # quad
+                shape.draw_rect(item[1])
             elif item[0] == "c":  # curve
                 shape.draw_bezier(item[1], item[2], item[3], item[4])
             else:
@@ -1431,13 +1433,13 @@ The following is a code snippet which extracts the drawings of a page and re-dra
             fill=path["fill"],  # fill color
             color=path["color"],  # line color
             dashes=path["dashes"],  # line dashing
-            even_odd=path["even_odd"],  # control color of overlaps
+            even_odd=path.get("even_odd", True),  # control color of overlaps
             closePath=path["closePath"],  # whether to connect last and first point
             lineJoin=path["lineJoin"],  # how line joins should look like
             lineCap=max(path["lineCap"]),  # how line ends should look like
             width=path["width"],  # line width
-            stroke_opacity=path["opacity"],  # same value for both
-            fill_opacity=path["opacity"],  # opacity parameters
+            stroke_opacity=path.get("stroke_opacity", 1),  # same value for both
+            fill_opacity=path.get("fill_opacity", 1),  # opacity parameters
             )
     # all paths processed - commit the shape to its page
     shape.commit()

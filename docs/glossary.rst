@@ -47,7 +47,14 @@ Glossary
 
 .. data:: contents
 
-        "A **content stream** is a PDF :data:`object` with an attached :data:`stream`, whose data consists of a sequence of instructions describing the graphical elements to be painted on a page." (:ref:`AdobeManual` p. 151). For an overview of the mini-language used in these streams see chapter "Operator Summary" on page 985 of the :ref:`AdobeManual`. A PDF :data:`page` can have none to many contents objects. If it has none, the page is empty (but still may show annotations). If it has several, they will be interpreted in sequence as if their instructions had been present in one such object (i.e. like in a concatenated string). It should be noted that there are more stream object types which use the same syntax: e.g. appearance dictionaries associated with annotations and Form XObjects.
+        "A **content stream** is a PDF :data:`object` with an attached :data:`stream`, whose data consists of a sequence of instructions describing the graphical elements to be painted on a page." (:ref:`AdobeManual` p. 151). For an overview of the mini-language used in these streams, see chapter "Operator Summary" on page 985 of the :ref:`AdobeManual`. A PDF :data:`page` can have none to many contents objects. If it has none, the page is empty (but still may show annotations). If it has several, they will be interpreted in sequence as if their instructions had been present in one such object (i.e. like in a concatenated string). It should be noted that there are more stream object types which use the same syntax: e.g. appearance dictionaries associated with annotations and Form XObjects.
+
+        PyMuPDF provides a number of methods to deal with contents of PDF pages:
+
+        * :meth:`Page.read_contents()` -- reads and concatenates all page contents into one ``bytes`` object.
+        * :meth:`Page.clean_contents()` -- a wrapper of a MuPDF function that reads, concatenates and syntax-cleans all page contents. After this, only one ``/Contents`` object will exist. In addition, page :data:`resources` will have been synchronized with it such that it will contain exactly those images, fonts and other objects that the page actually references.
+        * :meth:`Page.get_contents()` -- return a list of :data:`xref` numbers of a page's :data:`contents` objects. May be empty. Use :meth:`Document.xref_stream()` with one of these xrefs to read the resp. contents section.
+        * :meth:`Page.set_contents()` -- set a page's ``/Contents`` key to the provided :data:`xref` number.
 
 .. data:: resources
 

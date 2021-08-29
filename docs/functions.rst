@@ -524,6 +524,12 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
+   .. method:: Page.set_contents(xref)
+
+      PDF only: Let the page's ``/Contents`` key point to this xref. Any previously used contents objects will be ignored and can be removed via garbage collection.
+
+-----
+
    .. method:: Page.clean_contents(sanitize=True)
 
       *(Changed in v1.17.6)*

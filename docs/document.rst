@@ -591,7 +591,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.17.7)*
 
-      PDF only: Return the unrotated page rectangle -- **without reading the page (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
+      PDF only: Return the unrotated page rectangle -- **without loading the page** (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
 
       :arg int pno: 0-based page number.
 
@@ -601,7 +601,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.17.7)*
 
-      PDF only: Return the :data:`xref` of the page -- **without reading the page** (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
+      PDF only: Return the :data:`xref` of the page -- **without loading the page** (via :meth:`Document.load_page`). This is meant for internal purpose requiring best possible performance.
 
       :arg int pno: 0-based page number.
 
@@ -624,7 +624,7 @@ For details on **embedded files** refer to Appendix 3.
           * "doc.pages(0, None, 2)" emits all pages with even numbers.
           * "doc.pages(-2)" emits the last two pages.
           * "doc.pages(-1, -1)" emits all pages in reversed order.
-          * "doc.pages(-1, -10)" emits pages in reversed order, starting with the last page **repeatedly**. For a 4-page document the following page numbers are emitted: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3.
+          * "doc.pages(-1, -10)" always emits 10 pages in reversed order, starting with the last page -- **repeatedly** if the document has less than 10 pages. So for a 4-page document the following page numbers are emitted: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3.
 
     .. index::
        pair: from_page; convert_to_pdf (Document method)
@@ -740,7 +740,7 @@ For details on **embedded files** refer to Appendix 3.
         * A "dict" is always enclosed in "<<...>>" brackets.
         * A "bool", resp. "null" always equal either "true", "false", resp. "null".
         * "float" and "int" are represented by their string format -- and are thus not always distinguishable.
-        * A "string" is converted to UTF-8 and may therefore deviate from what is stored in the PDF. For example, the PDF key "Author" may have a value of "<FEFF004A006F0072006A00200058002E0020004D0063004B00690065>", but the method will return ``('string', 'Jorj X. McKie')``.
+        * A "string" is converted to UTF-8 and may therefore deviate from what is stored in the PDF. For example, the PDF key "Author" may have a value of "<FEFF004A006F0072006A00200058002E0020004D0063004B00690065>" in the file, but the method will return ``('string', 'Jorj X. McKie')``.
 
             >>> for key in doc.xref_get_keys(xref):
                     print(key, "=" , doc.xref_get_key(xref, key))
@@ -787,9 +787,14 @@ For details on **embedded files** refer to Appendix 3.
           * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
           * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 56 of the :ref:`AdobeManual`.
-          * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as ``"()"``. Depending on its content, the possible brackets are "(...)" or "<...>". Reserved PDF characters must be backslash-escaped. If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
+          * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as ``"()"``. Depending on its content, the possible brackets are
+          
+            - "(...)" for ASCII-only text. Reserved PDF characters must be backslash-escaped and non-ASCII characters must be provided as 3-digit backslash-escaped octals -- including leading zeros. Example: 12 = 0x0C must be encoded as ``\014``.
+            - "<...>" for hex-encoded text. Every character must be represented by two hex-digits (lower or upper case).
+          
+          * If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
 
-            >>> # because of €, the following yields UTF-16BE BOM
+            >>> # because of the € symbol, the following yields UTF-16BE BOM
             >>> fitz.get_pdf_str("Pay in $ or €.")
             '<feff00500061007900200069006e002000240020006f0072002020ac002e>'
             >>> # escapes for brackets and non-ASCII
