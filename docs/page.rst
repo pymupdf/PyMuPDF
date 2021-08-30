@@ -1319,7 +1319,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like clip: choose which part of the source page to show. Default is the full page, else must be finite and its intersection with the source page must not be empty.
 
-      .. note:: In contrast to method :meth:`Document.insert_pdf`, this method does not copy annotations or links, so they are not shown. But all its **other resources (text, images, fonts, etc.)** will be imported into the current PDF. They will therefore appear in text extractions and in :meth:`get_fonts` and :meth:`get_images` lists -- even if they are not contained in the visible area given by *clip*.
+      .. note:: In contrast to method :meth:`Document.insert_pdf`, this method does not copy annotations, widgets or links, so these are not included in the target [#f6]_. But all its **other resources (text, images, fonts, etc.)** will be imported into the current PDF. They will therefore appear in text extractions and in :meth:`get_fonts` and :meth:`get_images` lists -- even if they are not contained in the visible area given by *clip*.
 
       Example: Show the same source page, rotated by 90 and by -90 degrees:
 
@@ -1599,3 +1599,5 @@ The page number "pno" is a 0-based integer *-inf < pno < page_count*.
 .. [#f4] You are generally free to choose any of the :ref:`mupdficons` you consider adequate.
 
 .. [#f5] The previous algorithm caused images to be **shrunk** to this intersection. Now the image can be anywhere on :attr:`Page.mediabox`, potentially being invisible or only partially visible if the cropbox (representing the visible page part) is smaller.
+
+.. [#f6] If you need to also see annotations or fields in the target page, you can try and convert the source PDF to another PDF using :meth:`Document.convert_to_pdf`. The underlying MuPDF function of that method will convert these objects to normal page content. Then use :meth:`Page.show_pdf_page` with the converted PDF page.

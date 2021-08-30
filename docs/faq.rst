@@ -24,7 +24,7 @@ The document can be any supported type like PDF, XPS, etc.
 
 The script works as a command line tool which expects the filename being supplied as a parameter. The generated image files (1 per page) are stored in the directory of the script::
 
-    import sys, fitz  # import the binding
+    import sys, fitz  # import the bindings
     fname = sys.argv[1]  # get filename from command line
     doc = fitz.open(fname)  # open document
     for page in doc:  # iterate through the pages

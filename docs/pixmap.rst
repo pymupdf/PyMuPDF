@@ -389,7 +389,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Copies like ``bytearray(pix.samples_mv)``, or ``bytes(pixmap.samples_mv)`` are equivalent to and can be used in place of ``pix.samples``.
       
-      We also have ``len(pix.samples) == len(pix.samples_mv)``, but the memoryview version for this example from a 2 MB JPEG is **ten thousand times faster**::
+      We also have ``len(pix.samples) == len(pix.samples_mv)``.
+      
+      Look at this example from a 2 MB JPEG: the memoryview is **ten thousand times faster**::
 
          In [3]: %timeit len(pix.samples_mv)
          367 ns ± 1.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
