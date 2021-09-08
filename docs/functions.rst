@@ -324,7 +324,7 @@ Yet others are handy, general-purpose utilities.
          height     (int) height in pixels
          colorspace (int) colorspace.n (e.g. 3 = RGB)
          bpc        (int) bits per component (usually 8)
-         format     (int) image format in *range(15)*
+         format     (int) image format in ``range(15)``
          ext        (str) image file extension indicating the format
          size       (int) length of the image in bytes
          ========== ====================================================
@@ -378,7 +378,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document.xml_metadata_xref()
 
-      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document._delXmlMetadata`. You can use it to retrieve the content via :meth:`Document.xref_stream` and then work with it using some XML software.
+      Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document.del_xml_metadata`. You can use it to retrieve the content via :meth:`Document.xref_stream` and then work with it using some XML software.
 
       :rtype: int
       :returns: :data:`xref` of PDF file level XML metadata -- or 0 if none exists.
@@ -435,7 +435,7 @@ Yet others are handy, general-purpose utilities.
       1. Information above tagged with "(1)" has the same meaning and value as explained in :ref:`TextPage`.
       
          - Please note that the font ``flags`` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
-         - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on ``span["type"]``, interpret the color as fill color or stroke color.
+         - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on ``span["type"]``, interpret this as fill color or stroke color.
 
       2. There are 5 text span types:
 
@@ -446,14 +446,14 @@ Yet others are handy, general-purpose utilities.
          4. Ignored text -- equivalent to ``3 Tr`` (hidden text).
       
       3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing it for you.
-      4. For data compactness, the character's unicode is provided here. Use builtin function ``chr()`` for the character itself.
+      4. For data compactness, the character's unicode is provided here. Use built-in function ``chr()`` for the character itself.
       5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent. Depending in ``span["type"]``, interpret this value as *fill* opacity or, resp. *stroke* opacity.
       6. This value is equal / close to the width of ``char["bbox"]``. However, on occasion you may find a small delta.
 
       Here is a list of similarities and differences of ``page._get_texttrace()`` compared to ``page.get_text("rawdict")``:
 
       * The method is up to **twice as fast,** compared to "rawdict" extraction.
-      * The returned information is very **much smaller in size** -- although it provides more information.
+      * The returned data is very **much smaller in size** -- although it provides more information.
       * Additional types of text **invisibility can be detected**: opacity = 0 and type > 1.
       * Character bboxes are not provided; if needed, compute them from available information.
       * If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you may still be able to deduct desired information from the glyph id.
@@ -466,7 +466,7 @@ Yet others are handy, general-purpose utilities.
             (105, -1, (x, y), 0)         # 105 = ord("i")
 
          - This means that the ligature character components are shown combined within the space given by ``width``. It is up to you, how you want to handle these cases in your text extraction. This is similar to ``page.get_text("rawdict")``: a glyph id is never available there, but you can assume a ligature if you encounter one of the character combinations above, having the **same origin** and ``bbox.width = 0`` except for the first character.
-         - You may want to replace those 2 or 3 char tuples by one, that represents the ligature itself. In that case, use the following list of ligatures to unicodes:
+         - You may want to replace those 2 or 3 char tuples by one, that represents the ligature itself. In that case, use the following mapping of ligatures to unicodes:
          
             + ``"ff" -> 0xFB00``
             + ``"fi" -> 0xFB01``
@@ -495,17 +495,23 @@ Yet others are handy, general-purpose utilities.
 
       Indicate whether :meth:`Page.wrap_contents` may be required for object insertions in standard PDF geometry. Note that this is a quick, basic check only: a value of *False* may still be a false alarm. But nevertheless executing :meth:`Page.wrap_contents` will have no negative side effects.
 
+      :rtype: bool
+
 -----
 
    .. method:: Page.get_text_blocks(flags=None)
 
       Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.  Use :meth:`Page.get_text` with the "blocks" option instead.
 
+      :rtype: list[tuple]
+
 -----
 
    .. method:: Page.get_text_words(flags=None)
 
       Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use :meth:`Page.get_text` with the "words" option instead.
+
+      :rtype: list[tuple]
 
 -----
 
@@ -521,6 +527,8 @@ Yet others are handy, general-purpose utilities.
    .. method:: Page.get_contents()
 
       PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of a page. May be empty or contain multiple integers. If the page is cleaned (:meth:`Page.clean_contents`), it will be one entry at most. The "source" of each `/Contents` object can be individually read by :meth:`Document.xref_stream` using an item of this list. Method :meth:`Page.read_contents` in contrast walks through this list and concatenates the corresponding sources into one ``bytes`` object.
+
+      :rtype: list[int]
 
 -----
 
@@ -549,6 +557,7 @@ Yet others are handy, general-purpose utilities.
       *New in version 1.17.0.*
       Return the concatenation of all :data:`contents` objects associated with the page -- without cleaning or otherwise modifying them. Use this method whenever you need to parse this source in its entirety whithout having to bother how many separate contents objects exist.
 
+      :rtype: bytes
 
 -----
 
@@ -573,11 +582,10 @@ Yet others are handy, general-purpose utilities.
       This function calculates the pixel width of a string called *text*::
 
        def pixlen(text, widthlist, fontsize):
-       try:
-           return sum([widthlist[ord(c)] for c in text]) * fontsize
-       except IndexError:
-           m = max([ord(c) for c in text])
-           raise ValueError:("max. code point found: %i, increase limit" % m)
+           try:
+               return sum([widthlist[ord(c)] for c in text]) * fontsize
+           except IndexError:
+               raise ValueError:("max. code point found: %i, increase limit" % ord(max(text)))
 
 -----
 
@@ -598,7 +606,7 @@ Yet others are handy, general-purpose utilities.
       Increase the :data:`xref` by one entry and return that number. This can then be used to insert a new object.
 
       :rtype: int
-      :returns: the number of the new :data:`xref` entry.
+            :returns: the number of the new :data:`xref` entry. Please note, that only a new entry in the PDF's cross reference table is created. At this point, there will not yet exist a PDF object associated with it. To create an (empty) object with this number use ``doc.update_xref(xref, "<<>>")``.
 
 -----
 
@@ -615,7 +623,7 @@ Yet others are handy, general-purpose utilities.
 
       PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
 
-      :arg int xref: :data:`xref` of an image object. If this is not in *range(1, doc.xref_length())*, or the object is no image or other errors occur, *None* is returned and no exception is raised.
+      :arg int xref: :data:`xref` of an image object. If this is not in ``range(1, doc.xref_length())``, or the object is no image or other errors occur, *None* is returned and no exception is raised.
 
       :rtype: dict
       :returns: a dictionary with the following keys
@@ -677,7 +685,7 @@ Yet others are handy, general-purpose utilities.
       :returns: a tuple *(basename, ext, subtype, buffer)*, where *ext* is a 3-byte suggested file extension (*str*), *basename* is the font's name (*str*), *subtype* is the font's type (e.g. "Type1") and *buffer* is a bytes object containing the font file's content (or *b""*). For possible extension values and their meaning see :ref:`FontExtensions`. Return details on error:
 
             * *("", "", "", b"")* -- invalid xref or xref is not a (valid) font object.
-            * *(basename, "n/a", "Type1", b"")* -- *basename* is one of the :ref:`Base-14-Fonts`, which cannot be extracted.
+            * *(basename, "n/a", "Type1", b"")* -- *basename* is not embedded and thus cannot be extracted. This is the case for e.g. the :ref:`Base-14-Fonts`.
 
       Example:
 

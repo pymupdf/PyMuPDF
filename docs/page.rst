@@ -393,11 +393,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
          * Text contained in a redaction rectangle will be **physically** removed from the page (assuming :meth:`Document.save` with a suitable garbage option) and will no longer appear in e.g. text extractions or anywhere else. All redaction annotations will also be removed. Other annotations are unaffected.
 
-         * All overlapping links will be removed.
+         * All overlapping links will be removed. If the rectangle of the link was covering text, then only the overlapping part of the text is being removed. Similar applies to images covered by link rectangles.
 
          * *(Changed in v1.18.0)* The overlapping parts of **images** will be blanked-out for default option ``PDF_REDACT_IMAGE_PIXELS``. Option 0 does not touch any images and 1 will remove any image with an overlap. Please be aware that there is a bug for option *PDF_REDACT_IMAGE_PIXELS = 2*: transparent images will be incorrectly handled!
 
-         * For option ``images=PDF_REDACT_IMAGE_PIXELS`` a new image of format PNG is created, which the page will use in place of the original one. The original image is not deleted as part of this process, so other pages might still show it. In addition, the new, modified PNG image currently is **stored uncompressed**. Do keep these aspects in mind when choosing the right garbage collection method and compression options during save.
+         * For option ``images=PDF_REDACT_IMAGE_REMOVE`` only this page's **references to the images** are removed - not necessarily the images themselves. Images are completely removed from the file only, if no longer referenced at all (assuming suitable garbage collection options).
+
+         * For option ``images=PDF_REDACT_IMAGE_PIXELS`` a new image of format PNG is created, which the page will use in place of the original one. The original image is not deleted or replaced as part of this process, so other pages may still show the original. In addition, the new, modified PNG image currently is **stored uncompressed**. Do keep these aspects in mind when choosing the right garbage collection method and compression options during save.
 
          * **Text removal** is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle *(changed in MuPDF v1.17)*. Depending on the font properties and / or the chosen line height, deletion may occur for undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a *True* argument before text search may help to prevent this.
 
@@ -1360,10 +1362,10 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Search for *needle* on a page. Wrapper for :meth:`TextPage.search`.
 
-      :arg str needle: Text to search for. Upper / lower case is ignored. May contain spaces.
+      :arg str needle: Text to search for. May contain spaces. Upper / lower case is ignored, but only works for ASCII characters: For example, "COMPÉTENCES" will not be found if needle is "compétences" -- "compÉtences" however will. Similar is true for German umlauts and the like.
       :arg rect_like clip: *(New in v1.18.2)* only search within this area.
       :arg bool quads: Return object type :ref:`Quad` instead of :ref:`Rect`.
-      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default ligatures and white spaces are kept, and hyphenation is detected.
+      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default, ligatures and white spaces are kept, and hyphenation is detected.
 
       :rtype: list
 
@@ -1374,7 +1376,7 @@ In a nutshell, this is what you can do with PyMuPDF:
         **Changes in v1.18.2:**
 
           * There no longer is a limit on the list length (removal of the ``hit_max`` parameter).
-          * If a word is **hyphenated** at a line break, it will still be found. E.g. the word "method" will be found even if hyphenated as "meth-od" by a line break, and two rectangles will be returned: one surrounding "meth" (without the hyphen) and another one surrounding "od".
+          * If a word is **hyphenated** at a line break, it will still be found. E.g. the needle "method" will be found even if hyphenated as "meth-od" at a line break, and two rectangles will be returned: one surrounding "meth" (without the hyphen) and another one surrounding "od".
 
       .. note:: The method supports multi-line text marker annotations: you can use the full returned list as **one single** parameter for creating the annotation.
 

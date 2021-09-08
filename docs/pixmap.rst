@@ -200,26 +200,26 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       *New in version:: 1.14.5:* Return the value of the pixel at location (x, y) (column, line).
 
-      :arg int x: the column number of the pixel. Must be in *range(pix.width)*.
-      :arg int y: the line number of the pixel, Must be in *range(pix.height)*.
+      :arg int x: the column number of the pixel. Must be in ``range(pix.width)``.
+      :arg int y: the line number of the pixel, Must be in ``range(pix.height)``.
 
       :rtype: list
-      :returns: a list of color values and, potentially the alpha value. Its length and content depend on the pixmap's colorspace and the presence of an alpha. For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are integers in *range(256)*.
+      :returns: a list of color values and, potentially the alpha value. Its length and content depend on the pixmap's colorspace and the presence of an alpha. For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are integers in ``range(256)``.
 
    .. method:: set_pixel(x, y, color)
 
-      *New in version 1.14.7:* Set the color of the pixel at location (x, y) (column, line).
+      *New in version 1.14.7:* Manipulate the pixel at location (x, y) (column, line).
 
-      :arg int x: the column number of the pixel. Must be in *range(pix.width)*.
-      :arg int y: the line number of the pixel. Must be in *range(pix.height)*.
-      :arg sequence color: the desired color given as a sequence of integers in *range(256)*. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
+      :arg int x: the column number of the pixel. Must be in ``range(pix.width)``.
+      :arg int y: the line number of the pixel. Must be in ``range(pix.height)``.
+      :arg sequence color: the desired pixel value given as a sequence of integers in ``range(256)``. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
    .. method:: set_rect(irect, color)
 
-      *New in version 1.14.8:* Set the pixels of a rectangle to a color.
+      *New in version 1.14.8:* Set the pixels of a rectangle to a value.
 
-      :arg irect_like irect: the rectangle to be filled with the color. The actual area is the intersection of this parameter and :attr:`Pixmap.irect`. For an empty intersection (or an invalid parameter), no change will happen.
-      :arg sequence color: the desired color given as a sequence of integers in *range(256)*. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
+      :arg irect_like irect: the rectangle to be filled with the value. The actual area is the intersection of this parameter and :attr:`Pixmap.irect`. For an empty intersection (or an invalid parameter), no change will happen.
+      :arg sequence color: the desired value, given as a sequence of integers in ``range(256)``. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
       :rtype: bool
       :returns: *False* if the rectangle was invalid or had an empty intersection with :attr:`Pixmap.irect`, else *True*.
@@ -231,7 +231,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: set_origin(x, y)
 
-      *(New in v1.17.7)* Set the x and y values.
+      *(New in v1.17.7)* Set the x and y values of the pixmap's top-left point.
 
       :arg int x: x coordinate
       :arg int y: y coordinate
@@ -255,7 +255,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted (``None``), all alpha values are set to 255 (no transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also accepted.
       :arg bool premultiply: *New in v1.18.13:* whether to premultiply color components with the alpha value.
-      :arg list,tuple opaque: make this color fully invisible (transparent). A sequence of integers 0 <= i <= 255 with a length of :attr:`Pixmap.n`. Default is *None*. E.g. in the RGB case a typical choice would be ``opaque=(255, 255, 255)`` for white.
+      :arg list,tuple opaque: specify a color that should be fully transparent -- ignoring the alpha value of the parameter. A sequence of integers in ``range(256)`` with a length of :attr:`Pixmap.n`. Default is *None*. E.g. in the RGB case a typical choice would be ``opaque=(255, 255, 255)`` for white.
 
 
    .. method:: invert_irect([irect])

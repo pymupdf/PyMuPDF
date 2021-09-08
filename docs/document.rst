@@ -708,7 +708,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return the PDF dictionary keys of the object provided by its xref number.
 
-      :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use ``-1`` to access the special dictionary "PDF trailer" (it has no identifying xref).
+      :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use ``-1`` to access the special dictionary "PDF trailer".
 
       :returns: a tuple of dictionary keys present in object :data:`xref`. Examples:
 
@@ -729,7 +729,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return type and value of a PDF dictionary key of an xref.
 
-      :arg int xref: the :data:`xref`. *Changed in v1.18.10:* Use ``-1`` to access the special dictionary "PDF trailer" (it has no identifying xref).
+      :arg int xref: the :data:`xref`. *Changed in v1.18.10:* Use ``-1`` to access the special dictionary "PDF trailer".
       :arg str key: the desired PDF key. Must **exactly** match (case-sensitive) one of the keys contained in :meth:`Document.xref_get_keys`.
 
       :returns: a tuple (type, value) of strings, where type is one of "xref", "array", "dict", "int", "float", "null", "bool", "name", "string" or "unknown" (should not occur). Independent of "type", the value of the key is **always** formatted as a string -- see the following example -- and (almost always) a faithful reflection of what is stored in the PDF. In most cases, the format of the value string also gives a clue about the key type:
@@ -926,7 +926,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: select(s)
 
-      PDF only: Keeps only those pages of the document whose numbers occur in the list. Empty sequences or elements outside *range(len(doc))* will cause a *ValueError*. For more details see remarks at the bottom or this chapter.
+      PDF only: Keeps only those pages of the document whose numbers occur in the list. Empty sequences or elements outside ``range(doc.page_count)`` will cause a *ValueError*. For more details see remarks at the bottom or this chapter.
 
       :arg sequence s: The sequence (see :ref:`SequenceTypes`) of page numbers (zero-based) to be included. Pages not in the sequence will be deleted (from memory) and become unavailable until the document is reopened. **Page numbers can occur multiple times and in any order:** the resulting document will reflect the sequence exactly as specified.
 
@@ -1210,7 +1210,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Insert a new page and insert some text. Convenience function which combines :meth:`Document.new_page` and (parts of) :meth:`Page.insert_text`.
 
-      :arg int pno: page number (0-based) **in front of which** to insert. Must be in *range(-1, len(doc) + 1)*. Special values -1 and *len(doc)* insert **after** the last page.
+      :arg int pno: page number (0-based) **in front of which** to insert. Must be in ``range(-1, doc.page_count + 1)``. Special values -1 and ``doc.page_count`` insert **after** the last page.
 
           Changed in version 1.14.12
              This is now a positional parameter
@@ -1222,7 +1222,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: delete_page(pno=-1)
 
-      PDF only: Delete a page given by its 0-based number in -inf < pno < page_count - 1.
+      PDF only: Delete a page given by its 0-based number in ``-inf < pno < page_count - 1``.
 
       * Changed in v1.18.14: support Python's ``del`` statement.
 
@@ -1537,7 +1537,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Check whether there are links, resp. annotations anywhere in the document.
 
-      :returns: *True* / *False*. As opposed to fields, which are stored in a central place of a PDF document, the existence of links / annotations can only be detected by parsing each page. These methods are tuned to do this efficiently and will immediately return, if the answer is *True* for a page. For PDFs with many thousand pages however, an answer may take some time [#f6]_ if no link, resp. no annotation is found.
+      :returns: *True* / *False*. As opposed to fields, which are also stored in a central place of a PDF document, the existence of links / annotations can only be detected by parsing each page. These methods are tuned to do this efficiently and will immediately return, if the answer is *True* for a page. For PDFs with many thousand pages however, an answer may take some time [#f6]_ if no link, resp. no annotation is found.
 
 
     .. method:: subset_fonts()

@@ -572,7 +572,7 @@ Common Parameters
 
 **render_mode** (*int*)
 
-  *New in version 1.14.9:* Integer in *range(8)* which controls the text appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). See page 398 in :ref:`AdobeManual`. New in v1.14.9. These methods now also differentiate between fill and stroke colors.
+  *New in version 1.14.9:* Integer in ``range(8)`` which controls the text appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). See page 398 in :ref:`AdobeManual`. New in v1.14.9. These methods now also differentiate between fill and stroke colors.
 
   * For default 0, only the text fill color is used to paint the text. For backward compatibility, using the *color* parameter instead also works.
   * For render mode 1, only the border of each glyph (i.e. text character) is drawn with a thickness as set in argument *border_width*. The color chosen in the *color* argument is taken for this, the *fill* parameter is ignored.

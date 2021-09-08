@@ -34,10 +34,10 @@ Description:
         Installation
         ============
         
-        For all MS Windows versions as well as popular Max OSX and Linux versions, we are providing Python wheels - see the download section of this site and the current `release directory <https://github.com/pymupdf/PyMuPDF/releases/latest>`_ of our home page. Other platforms need to download and generate MuPDF first and then build PyMuPDF from sources. Do visit our GitHub home, which has more details on this, including latest bugfixes, pre-releases, etc.
+        For all MS Windows versions as well as popular Max OSX and Linux versions, we are providing Python wheels - see the download section of this site and the current `release directory <https://github.com/pymupdf/PyMuPDF/releases/latest>`_ of our homepage. Other platforms need to download and generate MuPDF first and then build PyMuPDF from sources. Do visit our GitHub home, which has more details on this, including latest bugfixes, pre-releases, etc.
         
-        Usage and Documentation
-        ========================
+        Usage
+        ======
         
         For all document types you can render pages in raster (PNG) or vector (SVG) formats, extract text and access meta information, links, annotations and bookmarks, as well as decrypt the document. For PDF files, these objects can also be created, modified or deleted. Plus you can rotate, re-arrange, duplicate, create, or delete pages and join or split documents.
         
@@ -49,12 +49,22 @@ Description:
         
         You can also create **PDF Form fields** with support for text, checkbox, listbox and combobox widgets.
         
-        Our home page provides many examples and How-Tos for all of this. At a minimum, read the `tutorial <https://pymupdf.readthedocs.io/en/latest/tutorial.html>`_ and the the `recipes <https://pymupdf.readthedocs.io/en/latest/faq.html>`_ sections of our documentation.
+        Our homepage provides many examples and How-Tos for all of this. At a minimum, read the `tutorial <https://pymupdf.readthedocs.io/en/latest/tutorial.html>`_ and the the `recipes <https://pymupdf.readthedocs.io/en/latest/faq.html>`_ sections of our documentation.
+        
+        Documentation
+        ==============
         
         Written using **Sphinx**, documentation is available here:
         
         * `Read The Docs <https://pymupdf.readthedocs.io/en/latest/>`_.
         * `Windows CHM <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_.
+        
+        Notable Links
+        --------------
+        
+        * `tutorial <https://pymupdf.readthedocs.io/en/latest/tutorial.html>`_
+        * `recipes <https://pymupdf.readthedocs.io/en/latest/faq.html>`_
+        * `changelog <https://pymupdf.readthedocs.io/en/latest/changes.html>`_
         
         License and Copyright Information
         ==================================

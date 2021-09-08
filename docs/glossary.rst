@@ -43,7 +43,15 @@ Glossary
 
 .. data:: catalog
 
-        A central PDF :data:`dictionary` -- also called the "root" -- containing document-wide parameters and pointers to many other information.
+        A central PDF :data:`dictionary` -- also called the "root" -- containing document-wide parameters and pointers to many other information. Its :data:`xref` is returned by :meth:`Document.pdf_catalog`.
+
+.. data:: trailer
+
+        More precisely, the **PDF trailer** contains information in :data:`dictionary` format. It is ususally located at the file's end. In this dictionary, you will find things like the xrefs of the catalog and the metadata, the number of :data:`xref` numbers, etc. Here is the definition of the PDF spec:
+        
+        *"The trailer of a PDF file enables an application reading the file to quickly find the cross-reference table and certain special objects. Applications should read a PDF file from its end."*
+
+        To access the trailer in PyMuPDF, use the usual methods :meth:`Document.xref_object`, :meth:`Document.xref_get_key` and :meth:`Document.xref_get_keys` with ``-1`` instead of a positive xref number.
 
 .. data:: contents
 
