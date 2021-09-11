@@ -5,6 +5,8 @@ linkDest
 ================
 Class representing the `dest` property of an outline entry or a link. Describes the destination to which such entries point.
 
+.. note:: Up to MuPDF v1.9.0 this class existed inside MuPDF and was dropped in version 1.10.0. For backward compatibility, PyMuPDF is still maintaining it, although some of its attributes are no longer backed by data actually available via MuPDF.
+
 =========================== ====================================
 **Attribute**               **Short Description**
 =========================== ====================================

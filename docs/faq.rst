@@ -2085,13 +2085,13 @@ Since v1.16.0, there is the property :attr:`Page.is_wrapped`, which lets you che
 
 If it is *False* or if you want to be on the safe side, pick one of the following:
 
-1. The easiest way: in your script, do a :meth:`Page.cleanContents` before you do your first item insertion.
+1. The easiest way: in your script, do a :meth:`Page.clean_contents` before you do your first item insertion.
 2. Pre-process your PDF with the MuPDF command line utility *mutool clean -c ...* and work with its output file instead.
 3. Directly wrap the page's :data:`contents` with the stacking commands before you do your first item insertion.
 
 **Solutions 1. and 2.** use the same technical basis and **do a lot more** than what is required in this context: they also clean up other inconsistencies or redundancies that may exist, multiple */Contents* objects will be concatenated into one, and much more.
 
-.. note:: For **incremental saves,** solution 1. has an unpleasant implication: it will bloat the update delta, because it changes so many things and, in addition, stores the **cleaned contents uncompressed**. So, if you use :meth:`Page.cleanContents` you should consider **saving to a new file** with (at least) *garbage=3* and *deflate=True*.
+.. note:: For **incremental saves,** solution 1. has an unpleasant implication: it will bloat the update delta, because it changes so many things and, in addition, stores the **cleaned contents uncompressed**. So, if you use :meth:`Page.clean_contents` you should consider **saving to a new file** with (at least) *garbage=3* and *deflate=True*.
 
 **Solution 3.** is completely under your control and only does the minimum corrective action. There exists a handy low-level utility function which you can use for this. Suggested procedure:
 
@@ -2245,19 +2245,15 @@ However, there are also situations when a **single** :data:`contents` object is 
 
 Here are two ways of combining multiple contents of a page::
 
-    >>> # method 1: use the clean function
-    >>> for page in doc:
-            page.clean_contents()  # cleans and combines multiple Contents
-            xref = page.get_contents()[0]  # only one /Contents now!
-            cont = doc.xref_stream(xref)
-            # do something with the cleaned, combined contents
+    >>> # method 1: use the MuPDF clean function
+    >>> page.clean_contents()  # cleans and combines multiple Contents
+    >>> xref = page.get_contents()[0]  # only one /Contents now!
+    >>> cont = doc.xref_stream(xref)
+    >>> # this has also reformatted the PDF commands
 
-    >>> # method 2: concatenate multiple contents yourself
-    >>> for page in doc:
-            cont = b""              # initialize contents
-            for xref in page.get_contents(): # loop through content xrefs
-                cont += doc.xref_stream(xref)
-            # do something with the combined contents
+    >>> # method 2: extract concatenated contents
+    >>> cont = page.read_contents()
+    >>> # the /Contents source itself is unmodified
 
 The clean function :meth:`Page.clean_contents` does a lot more than just glueing :data:`contents` objects: it also corrects and optimizes the PDF operator syntax of the page and removes any inconsistencies with the page's object definition.
 
