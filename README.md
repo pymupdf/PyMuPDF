@@ -19,7 +19,7 @@ With PyMuPDF you can access files with extensions like ".pdf", ".xps", ".oxps", 
 
 > In partnership with [Artifex](https://artifex.com/), PyMuPDF is now also available for commercial licensing. This agreement has no impact on use cases, that are compliant with the open-source license AGPL. Please see the "License and Copyright" section below for additional information.
 
-# Usage and Documentation
+# Usage
 For all supported document types (i.e. **_including images_**) you can
 * decrypt the document
 * access meta information, links and bookmarks
@@ -59,54 +59,45 @@ Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tr
 
 See [here](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-extraction#layout-preserving-text-extraction) for more information on layout preserving text extraction.
 
-Our **documentation**, written using Sphinx, is available in various formats from the following sources. It currently is a combination of a reference guide and a user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
+# Documentation
 
-Have a look [here](https://pymupdf.readthedocs.io/en/latest/changes.html) at the changelog.
+Our documentation, written using Sphinx, is available in various formats from the following sources. It currently is a combination of reference guide and user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
 
 * You can view it online at [Read the Docs](https://readthedocs.org/projects/pymupdf/). This site also provides download options for PDF.
 * The search function on Read the Docs does not work for me currently. If you want a working searchable local version, please download a zipped HTML for [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
 * Find a Windows help file [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 
+The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/latest/changes.html).
+
 
 # Installation
 
-For Windows, Linux and Mac OSX platforms, there are wheels in the [download](https://pypi.org/project/PyMuPDF/#files) section of PyPI. This includes Python 64bit versions **3.6 through 3.9**. For Windows only, 32bit versions are available too. Since recently, there also exist wheels for the Linux ARM architecture - look for platform tag ``manylinux2014_aarch64``.
+PyMuPDF requires **Python 3.6 or later**. For Windows (32bit and 64bit), Linux (64bit, Intel and ARM) and Mac OSX (64bit, Intel only) it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
 
-If your platform is not supported with one of our wheels, you need to generate PyMuPDF yourself as follows. This requires the development version of Python.
+```
+python -m pip install --upgrade pip
+python -m pip install --upgrade pymupdf
+```
 
-Before you can do that, you must first build MuPDF. For most platforms, the MuPDF sources contain prepared procedures for achieving this. Please observe the following general steps:
+There are **no mandatory** external dependencies. However, a few **optional methods** are available only if additional packages are installed:
 
-* Be sure to download the **_official MuPDF source release_** from [here](https://mupdf.com/downloads/archive). Do not use MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their development source for future versions.
+* [Pillow](https://pypi.org/project/Pillow/) is required for outputting pixmaps in image formats only supported by Pillow.
+* [fontTools](https://pypi.org/project/fonttools/) is required for creating font subsets on PDF output.
+* [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) is a collection of nice fonts you may want to use for text output.
 
-* This repo's [fitz](https://github.com/pymupdf/PyMuPDF/tree/master/fitz) folder contains one or more files whose names start with a single underscore `"_"`. These files contain configuration data and potentially other fixes. Copy-rename each of them to their correct target location within the downloaded MuPDF source. Currently, these files are:
-  - **Optional:** fitz configuration file `_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support. If omitting this change, the binary extension module will be over 30 MB (compared to around 11 MB). Does not impact functionality.
 
-  - Now MuPDF can be generated.
+Older wheels - also with Python support prior to 3.6 - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and in this repository's [releases](https://github.com/pymupdf/PyMuPDF/releases).
 
-* Please note that you will need the interface generator [SWIG](http://www.swig.org/) when building PyMuPDF from the sources of this repository (please refer to issue #312 for some background on this).
-    - PyMuPDF wheels are being generated using **SWIG v4.0.2**.
+Other platforms require **installation from sources**, follow [these](https://pymupdf.readthedocs.io/en/latest/installation.html) instructions in the documentation.
 
-* If you do **not use SWIG**, please download the **sources from PyPI** - they contain sources pre-processed by SWIG, so installation should work like any other Python extension generation on your system.
+> **Note:** If you try installing from PyPI for a platform with no available wheel, pip will automatically start a source installation process - which will fail if there is no MuPDF installed.
 
-Once this is done, adjust directories in ``setup.py`` and run ``python setup.py install``.
+The folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
 
-The following sections contain further comments for some platforms.
+* [Ubuntu installation experience](https://github.com/pymupdf/PyMuPDF/wiki/Ubuntu-Installation-Experience).
 
-## Ubuntu
-Our users (thanks to **@gileadslostson** and **@jbarlow83**!) have documented their MuPDF installation experiences from sources in this [Wiki page](https://github.com/pymupdf/PyMuPDF/wiki/Ubuntu-Installation-Experience).
+* [Windows wheels](https://github.com/pymupdf/PyMuPDF/wiki/Windows-Binaries-Generation).
 
-## OSX
-First, install the MuPDF headers and libraries, which are provided by mupdf-tools: ``brew install mupdf-tools``.
-
-Then you might need to ``export ARCHFLAGS='-arch x86_64'``, since ``libmupdf.a`` is for x86_64 only.
-
-Finally, please double check ``setup.py`` before building. Update ``include_dirs`` and ``library_dirs`` if necessary.
-
-## MS Windows
-If you are looking to make your own binary, consult this [Wiki page](https://github.com/pymupdf/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail.
-
-# Earlier Versions
-Earlier versions are available in the [releases](https://github.com/pymupdf/PyMuPDF/releases) directory.
 
 # License and Copyright
 In order to comply with MuPDF’s dual licensing model, PyMuPDF has entered into an agreement with Artifex who has the right to sublicense PyMuPDF to third parties.
@@ -120,4 +111,4 @@ Artifex is the exclusive commercial licensing agent for MuPDF.
 Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
 
 # Contact
-Please use the [Discussions](https://github.com/pymupdf/PyMuPDF/discussions) menu for questions, comments, or asking others for help, and submit issues [here](https://github.com/pymupdf/PyMuPDF/issues). If you wish, you can also contact me directly via jorj.x.mckie@outlook.de.
+Please use the [Discussions](https://github.com/pymupdf/PyMuPDF/discussions) menu for questions, comments, or asking for help, and submit issues [here](https://github.com/pymupdf/PyMuPDF/issues). If you wish, you can also contact me directly via jorj.x.mckie@outlook.de.
