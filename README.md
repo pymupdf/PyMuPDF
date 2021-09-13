@@ -74,7 +74,7 @@ The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/late
 
 PyMuPDF requires **Python 3.6 or later**.
 
-Python wheels exist for Windows (32bit and 64bit), Linux (64bit, Intel and ARM) and Mac OSX (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
+Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
 
 ```
 python -m pip install --upgrade pip
