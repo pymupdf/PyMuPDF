@@ -72,7 +72,9 @@ The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/late
 
 # Installation
 
-PyMuPDF requires **Python 3.6 or later**. For Windows (32bit and 64bit), Linux (64bit, Intel and ARM) and Mac OSX (64bit, Intel only) wheels exist, so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
+PyMuPDF requires **Python 3.6 or later**.
+
+Python wheels exist for Windows (32bit and 64bit), Linux (64bit, Intel and ARM) and Mac OSX (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
 
 ```
 python -m pip install --upgrade pip
@@ -81,18 +83,18 @@ python -m pip install --upgrade pymupdf
 
 There are **no mandatory** external dependencies. However, a few **optional methods** become available if additional packages are installed:
 
-* [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly in PyMuPDF.
+* [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly from PyMuPDF.
 * [fontTools](https://pypi.org/project/fonttools/) for creating font subsets on PDF output.
 * [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) to extend your text output options with some nice fonts.
 
 
 Older wheels - also with Python support prior to 3.6 - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and in this repository's [releases](https://github.com/pymupdf/PyMuPDF/releases).
 
-Other platforms require **installation from sources**, follow [these](https://pymupdf.readthedocs.io/en/latest/installation.html) instructions in the documentation.
+Other platforms **require installation from sources**, follow [these](https://pymupdf.readthedocs.io/en/latest/installation.html) instructions in the documentation.
 
-> **Note:** If you try installing from PyPI for a platform with no available wheel, pip will automatically start a source installation process - which will fail if there is no MuPDF installed.
+> **Note:** If you try installing from PyPI for a platform with no available wheel, pip will automatically start a source installation process - which will fail if it finds no MuPDF installation.
 
-The folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
+Folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
 
 * [Ubuntu installation experience](https://github.com/pymupdf/PyMuPDF/wiki/Ubuntu-Installation-Experience).
 
