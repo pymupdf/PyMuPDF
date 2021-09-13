@@ -79,11 +79,11 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade pymupdf
 ```
 
-There are **no mandatory** external dependencies. However, a few **optional methods** are available only if additional packages are installed:
+There are **no mandatory** external dependencies. However, a few **optional methods** become available if additional packages are installed:
 
-* [Pillow](https://pypi.org/project/Pillow/) is required for outputting pixmaps in image formats only supported by Pillow.
-* [fontTools](https://pypi.org/project/fonttools/) is required for creating font subsets on PDF output.
-* [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) is a collection of nice fonts you may want to use for text output.
+* [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly in PyMuPDF.
+* [fontTools](https://pypi.org/project/fonttools/) for creating font subsets on PDF output.
+* [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) to extend your text output options with some nice fonts.
 
 
 Older wheels - also with Python support prior to 3.6 - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and in this repository's [releases](https://github.com/pymupdf/PyMuPDF/releases).
