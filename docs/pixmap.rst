@@ -83,6 +83,18 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg source: the source pixmap.
       :type source: *Pixmap*
 
+   .. method:: __init__(self, source, mask)
+
+      * New in v1.18.18
+
+      **Copy and add image mask:** Copy *source* pixmap, add an alpha channel with transparency data from a mask pixmap.
+
+      :arg source: pixmap without alpha channel.
+      :type source: :ref:`Pixmap`
+
+      :arg mask: a mask pixmap. Must be a graysale pixmap.
+      :type mask: :ref:`Pixmap`
+
    .. method:: __init__(self, source, width, height, [clip])
 
       **Copy and scale:** Copy *source* pixmap, scaling new width and height values -- the image will appear stretched or shrunk accordingly. Supports partial copying. The source colorspace may be *None*.
@@ -96,7 +108,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like clip: restrict the resulting pixmap to this region of the **scaled** pixmap.
 
-      .. note:: If width or height are not *de facto* integers (i.e. ``value.is_integer() != True``), then the resulting pixmap **will have an alpha channel**.
+      .. note:: If width or height do not *represent* integers (i.e. ``value.is_integer() != True``), then the resulting pixmap **will have an alpha channel**.
 
    .. method:: __init__(self, source, alpha=1)
 
@@ -255,7 +267,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted (``None``), all alpha values are set to 255 (no transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also accepted.
       :arg bool premultiply: *New in v1.18.13:* whether to premultiply color components with the alpha value.
-      :arg list,tuple opaque: specify a color that should be fully transparent -- ignoring the alpha value of the parameter. A sequence of integers in ``range(256)`` with a length of :attr:`Pixmap.n`. Default is *None*. E.g. in the RGB case a typical choice would be ``opaque=(255, 255, 255)`` for white.
+      :arg list,tuple opaque: ignore the alpha value and set this color to fully transparent. A sequence of integers in ``range(256)`` with a length of :attr:`Pixmap.n`. Default is *None*. For example, a typical choice for RGB would be ``opaque=(255, 255, 255)`` (white).
 
 
    .. method:: invert_irect([irect])

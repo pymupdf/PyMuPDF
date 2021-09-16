@@ -191,14 +191,14 @@ and `extract-imgb.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master
 
 ----------
 
-How to Handle Stencil Masks
+How to Handle Image Masks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Some images in PDFs are accompanied by **stencil masks**. In their simplest form stencil masks represent alpha (transparency) bytes stored as separate images. In order to reconstruct the original of an image, which has a stencil mask, it must be "enriched" with transparency bytes taken from its stencil mask.
+Some images in PDFs are accompanied by **image masks**. In their simplest form, masks represent alpha (transparency) bytes stored as separate images. In order to reconstruct the original of an image, which has a mask, it must be "enriched" with transparency bytes taken from its mask.
 
-Whether an image does have such a stencil mask can be recognized in one of two ways in PyMuPDF:
+Whether an image does have such a mask can be recognized in one of two ways in PyMuPDF:
 
-1. An item of :meth:`Document.get_page_images` has the general format *[xref, smask, ...]*, where *xref* is the image's :data:`xref` and *smask*, if positive, is the :data:`xref` of a stencil mask.
-2. The (dictionary) results of :meth:`Document.extract_image` have a key *"smask"*, which also contains any stencil mask's :data:`xref` if positive.
+1. An item of :meth:`Document.get_page_images` has the general format ``(xref, smask, ...)``, where *xref* is the image's :data:`xref` and *smask*, if positive, is the :data:`xref` of a mask.
+2. The (dictionary) results of :meth:`Document.extract_image` have a key *"smask"*, which also contains any mask's :data:`xref` if positive.
 
 If *smask == 0* then the image encountered via :data:`xref` can be processed as it is.
 
@@ -207,12 +207,11 @@ To recover the original image using PyMuPDF, the procedure depicted as follows m
 .. image:: images/img-stencil.*
    :scale: 60
 
->>> pix1 = fitz.Pixmap(doc, xref)    # (1) pixmap of image w/o alpha
->>> pix2 = fitz.Pixmap(doc, smask)   # (2) stencil pixmap
->>> pix = fitz.Pixmap(pix1)          # (3) copy of pix1, empty alpha channel added
->>> pix.set_alpha(pix2.samples)      # (4) fill alpha channel
+>>> pix1 = fitz.Pixmap(doc.extract_image(xref)["image"])    # (1) pixmap of image w/o alpha
+>>> mask = fitz.Pixmap(doc.extract_image(smask)["image"])   # (2) mask pixmap
+>>> pix = fitz.Pixmap(pix1, mask)                           # (3) copy of pix1, image mask added
 
-Step (1) creates a pixmap of the "netto" image. Step (2) does the same with the stencil mask. Please note that the :attr:`Pixmap.samples` attribute of *pix2* contains the alpha bytes that must be stored in the final pixmap. This is what happens in step (3) and (4).
+Step (1) creates a pixmap of the basic image. Step (2) does the same with the image mask. Step (3) adds an alpha channel and fills it with transparency information.
 
 The scripts `extract-imga.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imga.py>`_, and `extract-imgb.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imgb.py>`_ above also contain this logic.
 
@@ -2108,10 +2107,10 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 Missing or Unreadable Extracted Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This can be a number of different problems.
+Fairly often, text extraction does not work text as you would expect: text may be missing at all, or may not appear in the reading sequence visible on your screen, or contain garbled characters (like a ? or a "TOFU" symbol), etc. This can be caused by a number of different problems.
 
-Problem: no text
-^^^^^^^^^^^^^^^^
+Problem: no text is extracted
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Your PDF viewer does display text, but you cannot select it with your cursor, and text extraction delivers nothing.
 
 Cause
@@ -2130,7 +2129,7 @@ Text extraction does not deliver the text in readable order, duplicates some tex
 Cause
 ^^^^^^
 1. The single characters are redable as such (no "<?>" symbols), but the sequence in which the text is **coded in the file** deviates from the reading order. The motivation behind may be technical or protection of data against unwanted copies.
-2. Many "<?>" symbols occur indicating MuPDF could not interpret these characters. The PDF creator may haved used a font that displays readable text, but obfuscates the unicode character that leads to the readable symbol (glyph).
+2. Many "<?>" symbols occur, indicating MuPDF could not interpret these characters. The font may indeed be unsupported by MuPDF, or the PDF creator may haved used a font that displays readable text, but on purpose obfuscates the originating corresponding unicode character.
 
 Solution
 ^^^^^^^^

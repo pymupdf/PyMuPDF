@@ -3,6 +3,22 @@ Change Logs
 
 ------
 
+**Changes in Version 1.18.18**
+
+* **Fixed** issue `#1257 <https://github.com/pymupdf/PyMuPDF/issues/1257>`_. Removing the read-only flag from PDF fields is now possible.
+
+* **Fixed** issue `#1252 <https://github.com/pymupdf/PyMuPDF/issues/1252>`_. Now correctly specifying the ``zoom`` value for PDF link annotations.
+
+* **Fixed** issue `#1244 <https://github.com/pymupdf/PyMuPDF/issues/1244>`_. Now correctly computing the transform matrix in :meth:`Page.get_image__bbox`.
+
+* **Fixed** issue `#1241 <https://github.com/pymupdf/PyMuPDF/issues/1241>`_. Prevent returning artifact characters in :meth:`Page.get_textbox`, which happened in certain constellations.
+
+* **Fixed** issue `#1234 <https://github.com/pymupdf/PyMuPDF/issues/1234>`_. Avoid creating infinite rectangles in corner cases -- :meth:`Page.get_drawings`, :meth:`Page.get_cdrawings`.
+
+* **Added** test data and test scripts to the source PyPI source distribution.
+
+------
+
 **Changes in Version 1.18.17**
 
 Focus of this version are major performance improvements of selected functions.

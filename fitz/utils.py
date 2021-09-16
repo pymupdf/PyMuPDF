@@ -704,8 +704,6 @@ def get_pixmap(page: Page, **kw) -> Pixmap:
     pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
     dl = None
     return pix
-    # doc = page.parent
-    # return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
 
 
 def get_page_pixmap(

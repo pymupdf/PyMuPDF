@@ -9566,6 +9566,11 @@ cspaces = {"gray": csGRAY, "rgb": csRGB, "cmyk": csCMYK}
 if type(colorspace) is str:
     colorspace = cspaces.get(colorspace.lower(), None)
 %}
+        %pythonappend get_pixmap
+%{
+        val.samples_mv = val._samples_mv()
+        val.samples_ptr = val._samples_ptr()
+%}
         struct Pixmap *
         get_pixmap(PyObject *matrix = NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
         {
@@ -9883,7 +9888,12 @@ struct DisplayList {
         // DisplayList.get_pixmap
         //----------------------------------------------------------------
         FITZEXCEPTION(get_pixmap, !result)
-        %pythonappend get_pixmap %{val.thisown = True%}
+        %pythonappend get_pixmap
+%{
+val.thisown = True
+val.samples_mv = val._samples_mv()
+val.samples_ptr = val._samples_ptr()
+%}
         struct Pixmap *get_pixmap(PyObject *matrix=NULL,
                                       struct Colorspace *colorspace=NULL,
                                       int alpha=0,
