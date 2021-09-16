@@ -1,6 +1,6 @@
 """
 Ensure equality of bboxes and transformation matrices computed via
-* page.get_image_bbox()
+* page.get_image_rects()
 and
 * page.get_image_info()
 """
@@ -16,18 +16,13 @@ doc = fitz.open(filename)
 def test_image_bbox():
     page = doc[0]
     imglist = page.get_images(True)
-    bbox_list = []
+    img_rect_list = set()
+    img_info_list = set()
     for item in imglist:
-        bbox_list.append(page.get_image_bbox(item, transform=True))
-    infos = page.get_image_info(xrefs=True)
-    for im in infos:
-        bbox1 = im["bbox"]
-        transform1 = im["transform"]
-        match = False
-        for bbox2, transform2 in bbox_list:
-            abs_bbox = (bbox2 - bbox1).norm()
-            abs_matrix = (transform2 - transform1).norm()
-            if abs_bbox < 1e-4 and abs_matrix < 1e-4:
-                match = True
-                break
-    assert match
+        for bbox, transform in page.get_image_rects(item, transform=True):
+            img_rect_list.add((tuple(bbox), tuple(transform)))
+    for im in page.get_image_info(xrefs=True):
+        bbox = im["bbox"]
+        transform = im["transform"]
+        img_info_list.add((tuple(bbox), tuple(transform)))
+    assert img_rect_list == img_info_list

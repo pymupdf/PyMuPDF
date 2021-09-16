@@ -35,6 +35,7 @@ static float trace_pathfactor;
 static int
 jm_checkrect()
 {
+	float ftemp;
 	PyObject *cmd, *rect, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8;
 	PyObject *line0, *line1, *line2, *line4;
 	PyObject *items = PyDict_GetItem(trace_pathdict, dictkey_items);
@@ -96,6 +97,16 @@ jm_checkrect()
 	// rect is represented by Rect(p6, p2)
 	fz_point tl = JM_point_from_py(p6);
 	fz_point br = JM_point_from_py(p2);
+	if (tl.x > br.x) {
+		ftemp = tl.x;
+		tl.x = br.x;
+		br.x = ftemp;
+	}
+	if (tl.y > br.y) {
+		ftemp = tl.y;
+		tl.y = br.y;
+		br.y = ftemp;
+	}
 	fz_rect r = fz_make_rect(tl.x, tl.y, br.x, br.y);
 	rect = PyTuple_New(2);
 	PyTuple_SET_ITEM(rect, 0, PyUnicode_FromString("re"));
@@ -113,7 +124,7 @@ jm_checkrect()
 	fz_point lr = JM_point_from_py(p2);
 	fz_quad q = fz_make_quad(ul.x, ul.y, ur.x, ur.y, ll.x, ll.y, lr.x, lr.y);
 	PyTuple_SET_ITEM(rect, 1, JM_py_from_quad(q));
-	// check if item[-4] is connected with line0 and line2
+	// check if item[-4] is a line connected with line0 and line2
 	if (len >= 4) {
 		line4 = PyList_GET_ITEM(items, len - 4);
 		cmd = PyTuple_GET_ITEM(line4, 0);
@@ -122,8 +133,8 @@ jm_checkrect()
 			p8 = PyTuple_GET_ITEM(line4, 2);
 			if (PyObject_RichCompareBool(p7, p6, Py_EQ) &&
 				PyObject_RichCompareBool(p8, p1, Py_EQ)) {
-					PyList_SetItem(items, len - 4, rect);
-					PyList_SetSlice(items, len - 3, len, NULL);
+				PyList_SetItem(items, len - 4, rect);
+				PyList_SetSlice(items, len - 3, len, NULL);
 			}
 		}
 	} else {
@@ -279,7 +290,6 @@ jm_tracedraw_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 		trace_pathfactor = fz_abs(ctm.a);
 	}
 	trace_device_ctm = ctm; //fz_concat(ctm, trace_device_ptm);
-
 	DICT_SETITEM_DROP(trace_pathdict, dictkey_items, PyList_New(0));
 	DICT_SETITEM_DROP(trace_pathdict, dictkey_type, PyUnicode_FromString("f"));
 	DICT_SETITEMSTR_DROP(trace_pathdict, "even_odd", JM_BOOL(even_odd));
@@ -313,7 +323,6 @@ jm_tracedraw_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 		trace_pathfactor = fz_abs(ctm.a);
 	}
 	trace_device_ctm = ctm; //fz_concat(ctm, trace_device_ptm);
-
 	DICT_SETITEM_DROP(trace_pathdict, dictkey_items, PyList_New(0));
 	DICT_SETITEM_DROP(trace_pathdict, dictkey_type, PyUnicode_FromString("s"));
 	DICT_SETITEMSTR_DROP(trace_pathdict, "stroke_opacity", Py_BuildValue("f", alpha));

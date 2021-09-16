@@ -110,9 +110,9 @@ Base14_fontdict["symb"] = "Symbol"
 Base14_fontdict["zadb"] = "ZapfDingbats"
 
 annot_skel = {
-    "goto1": "<</A<</S/GoTo/D[%i 0 R/XYZ %g %g 0]>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "goto1": "<</A<</S/GoTo/D[%i 0 R/XYZ %g %g %g]>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
     "goto2": "<</A<</S/GoTo/D%s>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-    "gotor1": "<</A<</S/GoToR/D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "gotor1": "<</A<</S/GoToR/D[%i /XYZ %g %g %g]/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
     "gotor2": "<</A<</S/GoToR/D%s/F(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
     "launch": "<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
     "uri": "<</A<</S/URI/URI(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
@@ -1343,7 +1343,7 @@ def repair_mono_font(page: "Page", font: "Font") -> None:
 
     Notes:
         Some mono-spaced fonts are displayed with a too large character
-        distance, e.g. "a b c" instead of "abc". This utility adds an entry
+        width, e.g. "a b c" instead of "abc". This utility adds an entry
         "/DW w" to the descendent font of font. The int w is
         taken to be the first width > 0 of the font's unicodes.
         This should enforce viewers to use 'w' as the character width.

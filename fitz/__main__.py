@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
 # Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
-# Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
+# Part of "PyMuPDF", Python bindings for "MuPDF" (http://mupdf.com), a
 # lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
 # maintained and developed by Artifex Software, Inc. https://artifex.com.
 # -----------------------------------------------------------------------------
@@ -9,7 +9,8 @@ import argparse
 import bisect
 import os
 import sys
-from typing import List, Tuple, Dict, Set
+import statistics
+from typing import Dict, List, Set, Tuple
 
 import fitz
 from fitz.fitz import (
@@ -743,7 +744,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
     # compute list of line coordinates - ignoring small (GRID) differences
     rows = curate_rows(rows, GRID)
 
-    # sort all chars by x-coordinates, so every line will receive char info
+    # sort all chars by x-coordinates, so every line will receive char info,
     # sorted from left to right.
     chars.sort(key=lambda c: c[1])
 
@@ -778,11 +779,10 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
             continue
         widths = [c[3] for c in lchars]
         widths.sort()
-        i = int(ccount / 2 + 0.5)  # index of median value
-        this_slot = widths[i]  # take median value
+        this_slot = statistics.median(widths)  # take median value
         if this_slot < slot:
             slot = this_slot
-        minslots[k] = min(widths)
+        minslots[k] = widths[0]
 
     # compute line advance in text output
     rowheight = rowheight * (rows[-1] - rows[0]) / (rowheight * len(rows)) * 1.2

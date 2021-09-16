@@ -1247,7 +1247,7 @@ struct Document
         {
             PyObject *ret;
             fz_try(gctx) {
-                ret = Py_BuildValue("i", fz_count_pages(gctx, (fz_document *) $self));
+                ret = PyLong_FromLong((long) fz_count_pages(gctx, (fz_document *) $self));
             }
             fz_catch(gctx) {
                 PyErr_Clear();
@@ -1263,7 +1263,7 @@ struct Document
         {
             PyObject *ret;
             fz_try(gctx) {
-                ret = Py_BuildValue("i", fz_count_chapters(gctx, (fz_document *) $self));
+                ret = PyLong_FromLong((long) fz_count_chapters(gctx, (fz_document *) $self));
             }
             fz_catch(gctx) {
                 return NULL;
@@ -1292,17 +1292,17 @@ struct Document
         CLOSECHECK0(chapter_page_count, """Page count of chapter.""")
         PyObject *chapter_page_count(int chapter)
         {
-            int pages = 0;
+            long pages = 0;
             fz_try(gctx) {
                 int chapters = fz_count_chapters(gctx, (fz_document *) $self);
                 if (chapter < 0 || chapter >= chapters)
                     THROWMSG(gctx, "bad chapter number");
-                pages = fz_count_chapter_pages(gctx, (fz_document *) $self, chapter);
+                pages = (long) fz_count_chapter_pages(gctx, (fz_document *) $self, chapter);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", pages);
+            return PyLong_FromLong(pages);
         }
 
         FITZEXCEPTION(prev_location, !result)
@@ -1424,7 +1424,7 @@ struct Document
         {
             fz_document *this_doc = (fz_document *) $self;
             fz_location loc;
-            int page_n = -1;
+            long page_n = -1;
             PyObject *val;
             int pno;
             fz_try(gctx) {
@@ -1441,13 +1441,13 @@ struct Document
                 if (PyErr_Occurred()) THROWMSG(gctx, "bad page id");
 
                 loc = fz_make_location(chapter, pno);
-                page_n = fz_page_number_from_location(gctx, this_doc, loc);
+                page_n = (long) fz_page_number_from_location(gctx, this_doc, loc);
             }
             fz_catch(gctx) {
                 PyErr_Clear();
                 return NULL;
             }
-            return Py_BuildValue("i", page_n);
+            return PyLong_FromLong(page_n);
         }
 
         FITZEXCEPTION(_getMetadata, !result)
@@ -1494,7 +1494,7 @@ struct Document
             fz_text_language lang = pdf_document_language(gctx, pdf);
             char buf[8];
             if (lang == FZ_LANG_UNSET) Py_RETURN_NONE;
-            return Py_BuildValue("s", fz_string_from_text_language(buf, lang));
+            return PyUnicode_FromString(fz_string_from_text_language(buf, lang));
         }
 
         FITZEXCEPTION(set_language, !result)
@@ -1794,7 +1794,7 @@ struct Document
         save(PyObject *filename, int garbage=0, int clean=0,
             int deflate=0, int deflate_images=0, int deflate_fonts=0,
             int incremental=0, int ascii=0, int expand=0, int linear=0,
-            int pretty=0, int encryption=1, int permissions=-1,
+            int pretty=0, int encryption=1, int permissions=4095,
             char *owner_pw=NULL, char *user_pw=NULL)
         {
             pdf_write_options opts = pdf_default_write_options;
@@ -1847,7 +1847,7 @@ struct Document
         def write(self, garbage=False, clean=False,
             deflate=False, deflate_images=False, deflate_fonts=False,
             incremental=False, ascii=False, expand=False, linear=False,
-            pretty=False, encryption=1, permissions=-1,
+            pretty=False, encryption=1, permissions=4095,
             owner_pw=None, user_pw=None):
             from io import BytesIO
             bio = BytesIO()
@@ -2455,12 +2455,11 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         //------------------------------------------------------------------
         // Check: is xref a stream object?
         //------------------------------------------------------------------
-        CLOSECHECK0(is_stream, """Check if xref is a stream object.""")
-        PyObject *is_stream(int xref=0)
+        CLOSECHECK0(xref_is_stream, """Check if xref is a stream object.""")
+        PyObject *xref_is_stream(int xref=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) Py_RETURN_FALSE;  // not a PDF
-            if (xref == -1) return JM_BOOL(pdf_is_stream(gctx, pdf_trailer(gctx, pdf)));
             return JM_BOOL(pdf_obj_num_is_stream(gctx, pdf, xref));
         }
 
@@ -3825,6 +3824,30 @@ if basestate:
                 return rc
 
 
+            def xref_is_image(self, xref):
+                """Check if xref is an image object."""
+                if self.is_closed or self.is_encrypted:
+                    raise ValueError("document closed or encrypted")
+                if self.xref_get_key(xref, "Subtype")[1] == "/Image":
+                    return True
+                return False
+
+            def xref_is_font(self, xref):
+                """Check if xref is a font object."""
+                if self.is_closed or self.is_encrypted:
+                    raise ValueError("document closed or encrypted")
+                if self.xref_get_key(xref, "Type")[1] == "/Font":
+                    return True
+                return False
+
+            def xref_is_xobject(self, xref):
+                """Check if xref is a form xobject."""
+                if self.is_closed or self.is_encrypted:
+                    raise ValueError("document closed or encrypted")
+                if self.xref_get_key(xref, "Subtype")[1] == "/Form":
+                    return True
+                return False
+
             def copy_page(self, pno: int, to: int =-1):
                 """Copy a page within a PDF document.
 
@@ -3976,7 +3999,7 @@ if basestate:
             def ez_save(self, filename, garbage=3, clean=False,
             deflate=True, deflate_images=True, deflate_fonts=True,
             incremental=False, ascii=False, expand=False, linear=False,
-            pretty=False, encryption=1, permissions=-1,
+            pretty=False, encryption=1, permissions=4095,
             owner_pw=None, user_pw=None):
                 """ Save PDF using some different defaults"""
                 return self.save(filename, garbage=garbage,
@@ -4203,6 +4226,7 @@ struct Page {
 
         'name' is either an item of the image list, or the referencing
         name string - elem[7] of the resp. item.
+        Option 'transform' also returns the image transformation matrix.
         """
         CheckParent(self)
         doc = self.parent
@@ -4229,7 +4253,7 @@ struct Page {
             else:
                 raise ValueError("found multiple images named '%s'." % name)
         xref = item[-1]
-        if xref != 0:
+        if xref != 0 or transform == True:
             try:
                 return self.get_image_rects(item, transform=transform)[0]
             except:
@@ -5396,14 +5420,15 @@ def get_oc_items(self) -> list:
             clipping paths, set the parameter to True.
 
             Note:
-            For greater comfort, this method converts point-likes and rect-likes
-            of the C version to respective Point and Rect objects. It also adds dict keys
-            that are missing in original path types.
+            For greater comfort, this method converts point-likes, rect-likes, quad-likes
+            of the C version to respective Point / Rect / Quad objects.
+            It also adds default items that are missing in original path types.
             """
             allkeys = (
                     ("closePath", False), ("fill", None),
-                    ("color", None), ("width", 0), ("lineCap", (0,0,0)),
-                    ("lineJoin", 0), ("dashes", "[] 0")
+                    ("color", None), ("width", 0), ("lineCap", [0]),
+                    ("lineJoin", 0), ("dashes", "[] 0"), ("stroke_opacity", 1),
+                    ("fill_opacity", 1), ("even_odd", True),
                 )
             val = self.get_cdrawings(clippings=clippings)
             paths = []
@@ -6604,14 +6629,19 @@ struct Pixmap
 Pixmap(colorspace, src) - copy changing colorspace.
 Pixmap(src, width, height,[clip]) - scaled copy, float dimensions.
 Pixmap(src, alpha=1) - copy and add or drop alpha channel.
-Pixmap(filename) - from an image in a file.
-Pixmap(image) - from an image in memory (bytes).
+Pixmap(source, mask) - add mask pixmap to non-alpha pixmap.
+Pixmap(file) - from an image file.
+Pixmap(memory) - from an image in memory (bytes).
 Pixmap(colorspace, width, height, samples, alpha) - from samples data.
 Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
 """%}
         //----------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
         //----------------------------------------------------------------
+        %pythonappend Pixmap %{
+        self.samples_ptr = self._samples_ptr()
+        self.samples_mv = self._samples_mv()
+        %}
         Pixmap(struct Colorspace *cs, PyObject *bbox, int alpha = 0)
         {
             fz_pixmap *pm = NULL;
@@ -6626,21 +6656,59 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
 
         //----------------------------------------------------------------
         // copy pixmap, converting colorspace
-        // New in v1.11: option to remove alpha
-        // Changed in v1.13: alpha = 0 does not work since at least v1.12
         //----------------------------------------------------------------
         Pixmap(struct Colorspace *cs, struct Pixmap *spix)
         {
             fz_pixmap *pm = NULL;
             fz_try(gctx) {
                 if (!fz_pixmap_colorspace(gctx, (fz_pixmap *) spix))
-                    THROWMSG(gctx, "cannot copy pixmap with NULL colorspace");
+                    THROWMSG(gctx, "cannot copy pixmap without colorspace");
                 pm = fz_convert_pixmap(gctx, (fz_pixmap *) spix, (fz_colorspace *) cs, NULL, NULL, fz_default_color_params, 1);
             }
             fz_catch(gctx) {
                 return NULL;
             }
             return (struct Pixmap *) pm;
+        }
+
+
+        //----------------------------------------------------------------
+        // add mask to a non-transparent pixmap
+        //----------------------------------------------------------------
+        Pixmap(struct Pixmap *spix, struct Pixmap *mpix)
+        {
+            fz_pixmap *dst = NULL;
+            fz_pixmap *color = (fz_pixmap *) spix;
+            fz_pixmap *mask = (fz_pixmap *) mpix;
+            int w = color->w;
+            int h = color->h;
+            int n = color->n;
+            int x, y, k;
+            fz_try(gctx) {
+                if (color->alpha)
+                    THROWMSG(gctx, "color pixmap must not have an alpha channel");
+                if (mask->n != 1)
+                    THROWMSG(gctx, "mask pixmap must have exactly one channel");
+                if (mask->w != color->w || mask->h != color->h)
+                    THROWMSG(gctx, "color and mask pixmaps must be the same size");
+
+                dst = fz_new_pixmap_with_bbox(gctx, color->colorspace, fz_pixmap_bbox(gctx, color), NULL, 1);
+                for (y = 0; y < h; ++y) {
+                    unsigned char *cs = &color->samples[y * color->stride];
+                    unsigned char *ms = &mask->samples[y * mask->stride];
+                    unsigned char *ds = &dst->samples[y * dst->stride];
+                    for (x = 0; x < w; ++x) {
+                        unsigned char a = *ms++;
+                        for (k = 0; k < n; ++k)
+                            *ds++ = fz_mul255(*cs++, a);
+                        *ds++ = a;
+                    }
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Pixmap *) dst;
         }
 
 
@@ -7272,8 +7340,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         //-----------------------------------------------------------------
         // Set Pixmap origin
         //-----------------------------------------------------------------
-        %pythonprepend set_origin
-        %{"""Set top-left coordinates."""%}
+        %pythonprepend set_origin %{"""Set top-left coordinates."""%}
         PyObject *set_origin(int x, int y)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
@@ -7282,10 +7349,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             Py_RETURN_NONE;
         }
 
-        %pythonprepend set_dpi
-%{"""Set resolution in both dimensions.
-
-Use pil_save to reflect this in output image."""%}
+        %pythonprepend set_dpi %{"""Set resolution in both dimensions."""%}
         PyObject *set_dpi(int xres, int yres)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
@@ -7451,31 +7515,13 @@ Use pil_save to reflect this in output image."""%}
         %pythonprepend size %{"""Pixmap size."""%}
         PyObject *size()
         {
-            fz_pixmap *pix = (fz_pixmap *) $self;
-            size_t s = (size_t) pix->w;
-            s *= pix->h;
-            s *= pix->n;
-            s += sizeof(*pix);
-            return PyLong_FromSize_t(s);
+            return PyLong_FromSize_t(fz_pixmap_size(gctx, (fz_pixmap *) $self));
         }
 
         //-----------------------------------------------------------------
         // samples
         //-----------------------------------------------------------------
-        %pythoncode %{@property%}
-        %pythonprepend samples %{"""Bytes copy of the pixels area."""%}
-        PyObject *samples()
-        {
-            fz_pixmap *pm = (fz_pixmap *) $self;
-            Py_ssize_t s = (Py_ssize_t) pm->w;
-            s *= pm->h;
-            s *= pm->n;
-            return PyBytes_FromStringAndSize((const char *) pm->samples, s);
-        }
-
-        %pythoncode %{@property%}
-        %pythonprepend samples_mv %{"""Memoryview of the pixels area."""%}
-        PyObject *samples_mv()
+        PyObject *_samples_mv()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
             Py_ssize_t s = (Py_ssize_t) pm->w;
@@ -7484,15 +7530,18 @@ Use pil_save to reflect this in output image."""%}
             return PyMemoryView_FromMemory((char *) pm->samples, s, PyBUF_READ);
         }
 
-        %pythoncode %{@property%}
-        %pythonprepend samples_ptr %{"""Pointer to the pixels area."""%}
-        PyObject *samples_ptr()
+
+        PyObject *_samples_ptr()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
             return PyLong_FromVoidPtr((void *) pm->samples);
         }
 
         %pythoncode %{
+        @property
+        def samples(self)->bytes:
+            return bytes(self.samples_mv)
+
         width  = w
         height = h
 
@@ -10171,6 +10220,9 @@ struct TextPage {
                         buflen = 0;                       // reset char counter
                         for (ch = line->first_char; ch; ch = ch->next) {
                             fz_rect cbbox = JM_char_bbox(gctx, line, ch);
+                            if (fz_is_empty_rect(cbbox)) {
+                                continue;
+                            }
                             if (!fz_contains_rect(tp_rect, cbbox) &&
                                 !fz_is_infinite_rect(tp_rect)) {
                                 continue;
@@ -10178,8 +10230,10 @@ struct TextPage {
                             if (ch->c == 32 && buflen == 0)
                                 continue;  // skip spaces at line start
                             if (ch->c == 32) {
-                                word_n = JM_append_word(gctx, lines, buff, &wbbox,
+                                if (!fz_is_empty_rect(wbbox)) {
+                                    word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                         block_n, line_n, word_n);
+                                }
                                 fz_clear_buffer(gctx, buff);
                                 buflen = 0;  // reset char counter
                                 continue;
@@ -10194,8 +10248,8 @@ struct TextPage {
                             word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                     block_n, line_n, word_n);
                             fz_clear_buffer(gctx, buff);
-                            buflen = 0;
                         }
+                        buflen = 0;
                         line_n++;
                     }
                 }

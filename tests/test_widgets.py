@@ -50,7 +50,6 @@ def test_checkbox():
     widget.field_name = "Button-1"
     widget.field_label = "a simple check box button"
     widget.field_type = fitz.PDF_WIDGET_TYPE_CHECKBOX
-    # widget.field_flags =
     widget.fill_color = gold
     widget.rect = rect
     widget.text_color = blue
@@ -94,10 +93,12 @@ def test_combobox():
     doc = fitz.open()
     page = doc.new_page()
     widget = fitz.Widget()
-    widget.field_flags = fitz.PDF_CH_FIELD_IS_EDIT  # make field editable
     widget.field_name = "ComboBox-1"
     widget.field_label = "an editable combo box ..."
     widget.field_type = fitz.PDF_WIDGET_TYPE_COMBOBOX
+    widget.field_flags = (
+        fitz.PDF_CH_FIELD_IS_COMBO | fitz.PDF_CH_FIELD_IS_EDIT
+    )  # make field editable
     widget.fill_color = gold
     widget.choice_values = (
         "Spanien",
@@ -116,7 +117,7 @@ def test_combobox():
     widget.rect = rect
     widget.text_color = blue
     widget.text_fontsize = fontsize
-    widget.field_flags = fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE
+
     widget.field_value = widget.choice_values[-1]
     page.add_widget(widget)  # create the field
     field = page.first_widget
@@ -142,10 +143,3 @@ def test_text2():
     widgets = [w for w in page.widgets()]
     field = widgets[0]
     assert field.field_type_string == "Text"
-
-
-# def test_deletewidget():
-#     pdf = fitz.open(filename)
-#     page = pdf[0]
-#     field = page.first_widget
-#     page.delete_widget(field)

@@ -400,6 +400,7 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_stext_line *line;
     fz_stext_char *ch;
     fz_rect rect = page->mediabox;
+    fz_rect chbbox;
     int last_char = 0;
     char utf[10];
     int i, n;
@@ -409,8 +410,12 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
             for (line = block->u.t.first_line; line; line = line->next) {
                 last_char = 0;
                 for (ch = line->first_char; ch; ch = ch->next) {
+                    chbbox = JM_char_bbox(ctx, line, ch);
+                    if (fz_is_empty_rect(chbbox)) {
+                        continue;
+                    }
                     if (fz_is_infinite_rect(rect) ||
-                        fz_contains_rect(rect, JM_char_bbox(ctx, line, ch))) {
+                        fz_contains_rect(rect, chbbox)) {
                         last_char = ch->c;
                         n = fz_runetochar(utf, ch->c);
                         for (i = 0; i < n; i++) {

@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.18.17
+Version: 1.18.18
 Author: Jorj McKie
 Author-email: jorj.x.mckie@outlook.de
 License: GNU AFFERO GPL 3.0
@@ -10,18 +10,17 @@ Home-page: https://github.com/pymupdf/PyMuPDF
 Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the document renderer and toolkit MuPDF
 Description:
-        Release date: August 23, 2021
+        Release date: September 16, 2021
         
         Authors
         =======
         
-        * Jorj X. McKie
-        * Ruikai Liu
+        Jorj X. McKie, based on original code by Ruikai Liu.
         
         Introduction
         ============
         
-        PyMuPDF (current version 1.18.17) is a Python binding with support for `MuPDF <http://mupdf.com/>`_ (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer and toolkit, which is maintained and developed by Artifex Software, Inc.
+        PyMuPDF (current version 1.18.18) is a Python binding with support for `MuPDF <http://mupdf.com/>`_ (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer and toolkit, which is maintained and developed by Artifex Software, Inc.
         
         MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
         
@@ -34,7 +33,9 @@ Description:
         Installation
         ============
         
-        For all MS Windows versions as well as popular Max OSX and Linux versions, we are providing Python wheels - see the download section of this site and the current `release directory <https://github.com/pymupdf/PyMuPDF/releases/latest>`_ of our homepage. Other platforms need to download and generate MuPDF first and then build PyMuPDF from sources. Do visit our GitHub home, which has more details on this, including latest bugfixes, pre-releases, etc.
+        For all MS Windows versions as well as popular Max OSX and Linux versions, we are providing **Python wheels** - see the download section of this site.
+        
+        To install from sources, you must first install MuPDF. For details please consult our `installation <https://pymupdf.readthedocs.io/en/latest/installation.html>`_ documentation.
         
         Usage
         ======

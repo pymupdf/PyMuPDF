@@ -204,12 +204,12 @@ void JM_set_field_type(fz_context *ctx, pdf_document *doc, pdf_obj *obj, int typ
 		typename = PDF_NAME(Btn);
 		setbits = PDF_BTN_FIELD_IS_PUSHBUTTON;
 		break;
-	case PDF_WIDGET_TYPE_CHECKBOX:
+	case PDF_WIDGET_TYPE_RADIOBUTTON:
 		typename = PDF_NAME(Btn);
 		clearbits = PDF_BTN_FIELD_IS_PUSHBUTTON;
 		setbits = PDF_BTN_FIELD_IS_RADIO;
 		break;
-	case PDF_WIDGET_TYPE_RADIOBUTTON:
+	case PDF_WIDGET_TYPE_CHECKBOX:
 		typename = PDF_NAME(Btn);
 		clearbits = (PDF_BTN_FIELD_IS_PUSHBUTTON|PDF_BTN_FIELD_IS_RADIO);
 		break;
@@ -766,17 +766,17 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_dict_del(ctx, annot->obj, PDF_NAME(RC)); /* not supported by MuPDF */
 
     // field flags ------------------------------------------------------------
-    int field_flags = 0, Ff = 0;
-    if (field_type != PDF_WIDGET_TYPE_CHECKBOX) {
+    int field_flags = 0;
+    if (field_type != PDF_WIDGET_TYPE_CHECKBOX &&
+        field_type != PDF_WIDGET_TYPE_BUTTON &&
+        field_type != PDF_WIDGET_TYPE_RADIOBUTTON) {
         value = GETATTR("field_flags");
         field_flags = (int) PyInt_AsLong(value);
         if (!PyErr_Occurred()) {
-            Ff = pdf_field_flags(ctx, annot->obj);
-            Ff |= field_flags;
+            pdf_dict_put_int(ctx, annot->obj, PDF_NAME(Ff), field_flags);
         }
         Py_XDECREF(value);
     }
-    pdf_dict_put_int(ctx, annot->obj, PDF_NAME(Ff), Ff);
 
     // button caption ---------------------------------------------------------
     value = GETATTR("button_caption");
@@ -861,7 +861,7 @@ class Widget(object):
         self.field_name = None  # field name
         self.field_label = None  # field label
         self.field_value = None
-        self.field_flags = None
+        self.field_flags = 0
         self.field_display = 0
         self.field_type = 0  # valid range 1 through 7
         self.field_type_string = None  # field type as string

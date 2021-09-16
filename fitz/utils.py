@@ -1302,7 +1302,7 @@ def do_links(
             txt = annot_skel["goto1"]  # annot_goto
             idx = pno_src.index(lnk["page"])
             p = lnk["to"] * ctm  # target point in PDF coordinates
-            annot = txt % (xref_dst[idx], p.x, p.y, rect)
+            annot = txt % (xref_dst[idx], p.x, p.y, lnk["zoom"], rect)
 
         elif lnk["kind"] == LINK_GOTOR:
             if lnk["page"] >= 0:
@@ -1314,6 +1314,7 @@ def do_links(
                     lnk["page"],
                     pnt.x,
                     pnt.y,
+                    lnk["zoom"],
                     lnk["file"],
                     lnk["file"],
                     rect,
@@ -1416,7 +1417,7 @@ def getLinkText(page: Page, lnk: dict) -> str:
             xref = page.parent.page_xref(pno)
             pnt = lnk.get("to", Point(0, 0))  # destination point
             ipnt = pnt * ictm
-            annot = txt % (xref, ipnt.x, ipnt.y, rect)
+            annot = txt % (xref, ipnt.x, ipnt.y, lnk.get("zoom", 0), rect)
         else:
             txt = annot_skel["goto2"]  # annot_goto_n
             annot = txt % (get_pdf_str(lnk["to"]), rect)
@@ -1427,7 +1428,15 @@ def getLinkText(page: Page, lnk: dict) -> str:
             pnt = lnk.get("to", Point(0, 0))  # destination point
             if type(pnt) is not Point:
                 pnt = Point(0, 0)
-            annot = txt % (lnk["page"], pnt.x, pnt.y, lnk["file"], lnk["file"], rect)
+            annot = txt % (
+                lnk["page"],
+                pnt.x,
+                pnt.y,
+                lnk.get("zoom", 0),
+                lnk["file"],
+                lnk["file"],
+                rect,
+            )
         else:
             txt = annot_skel["gotor2"]  # annot_gotor_n
             annot = txt % (get_pdf_str(lnk["to"]), lnk["file"], rect)
