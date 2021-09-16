@@ -88,11 +88,13 @@ There are **no mandatory** external dependencies. However, a few **optional meth
 * [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) to extend your text output options with some nice fonts.
 
 
-Older wheels - also with Python support prior to 3.6 - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and in this repository's [releases](https://github.com/pymupdf/PyMuPDF/releases).
+Older wheels - also with support for older Python versions - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and on PyPI.
+
+> Starting with v1.18.15, to minimize network traffic we no longer redundantly store wheels in this repository's releases folder. You can find older versions back to v1.9.2 on [PyPI](https://pypi.org/project/PyMuPDF/#history). Sources for every release continue to be stored in [here](https://github.com/pymupdf/PyMuPDF/releases).
 
 Other platforms **require installation from sources**, follow [these](https://pymupdf.readthedocs.io/en/latest/installation.html) instructions in the documentation.
 
-> **Note:** If you try installing from PyPI for a platform with no available wheel, pip will automatically start a source installation process - which will fail if it finds no MuPDF installation.
+> **Note:** If you try installing from PyPI for a platform with no available wheel, pip will automatically start a source installation process - **_which will fail_** if it finds no MuPDF installation.
 
 Folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
 
