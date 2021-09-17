@@ -50,11 +50,11 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
 :meth:`Document.get_ocgs`               PDF only: info on all optional content groups
 :meth:`Document.get_ocmd`               PDF only: retrieve definition of an :data:`OCMD`
-:meth:`Document.get_page_fonts`         PDF only: make a list of fonts on a page
-:meth:`Document.get_page_images`        PDF only: make a list of images on a page
+:meth:`Document.get_page_fonts`         PDF only: list of fonts referenced by a page
+:meth:`Document.get_page_images`        PDF only: list of images referenced by a page
 :meth:`Document.get_page_labels`        PDF only: list of page label definitions
 :meth:`Document.get_page_numbers`       PDF only: get page numbers having a given label
-:meth:`Document.get_page_xobjects`      PDF only: make a list of XObjects on a page
+:meth:`Document.get_page_xobjects`      PDF only: list of XObjects referenced by a page
 :meth:`Document.get_toc`                extract the table of contents
 :meth:`Document.get_page_pixmap`        create a pixmap of a page by page number
 :meth:`Document.get_page_text`          extract the text of a page by page number
@@ -836,30 +836,23 @@ For details on **embedded files** refer to Appendix 3.
 
       :rtype: list
 
-      :returns: a list of images shown on this page. Each item looks like
+      :returns: a list of images **referenced** by this page. Each item looks like
 
-      **(xref, smask, width, height, bpc, colorspace, alt. colorspace, name, filter, referencer)**
+          ``(xref, smask, width, height, bpc, colorspace, alt. colorspace, name, filter, referencer)``
 
-      Where
+          Where
 
-        * **xref** (*int*) is the image object number
-        * **smask** (*int*) is the object number of its soft-mask image
-        * **width** and **height** (*ints*) are the image dimensions
-        * **bpc** (*int*) denotes the number of bits per component (normally 8)
-        * **colorspace** (*str*) a string naming the colorspace (like **DeviceRGB**)
-        * **alt. colorspace** (*str*) is any alternate colorspace depending on the value of **colorspace**
-        * **name** (*str*) is the symbolic name by which the image is referenced
-        * **filter** (*str*) is the decode filter of the image (:ref:`AdobeManual`, pp. 65).
-        * **referencer** (*int*) the :data:`xref` of the referencer. Zero if directly referenced by the page. Only present if *full=True*.
+            * **xref** (*int*) is the image object number
+            * **smask** (*int*) is the object number of its soft-mask image
+            * **width** and **height** (*ints*) are the image dimensions
+            * **bpc** (*int*) denotes the number of bits per component (normally 8)
+            * **colorspace** (*str*) a string naming the colorspace (like **DeviceRGB**)
+            * **alt. colorspace** (*str*) is any alternate colorspace depending on the value of **colorspace**
+            * **name** (*str*) is the symbolic name by which the image is referenced
+            * **filter** (*str*) is the decode filter of the image (:ref:`AdobeManual`, pp. 65).
+            * **referencer** (*int*) the :data:`xref` of the referencer. Zero if directly referenced by the page. Only present if *full=True*.
 
-      See below how this information can be used to extract PDF images as separate files. Another demonstration::
-
-        >>> doc = fitz.open("pymupdf.pdf")
-        >>> doc.get_page_images(0, full=True)
-        [[316, 0, 261, 115, 8, 'DeviceRGB', '', 'Im1', 'DCTDecode', 0]]
-        >>> pix = fitz.Pixmap(doc, 316)  # 316 is the xref of the image
-        >>> pix
-        fitz.Pixmap(DeviceRGB, fitz.IRect(0, 0, 261, 115), 0)
+      .. note:: In general, this is not the list of images that are **actually displayed**. This method only parses several PDF objects to collect references to embedded images. It does not analyse the page's :data:`contents`, where all the actual image display commands are defined. To get this information, please use :meth:`Page.get_image_info`. Also have a look at the discussion in section :ref:`textpagedict`.
 
 
     .. method:: get_page_fonts(pno, full=False)
@@ -897,7 +890,9 @@ For details on **embedded files** refer to Appendix 3.
            (18, 'ttf', 'Type0', 'ECPLRU+Calibri', 'R23', 'Identity-H'),
            (19, 'ttf', 'Type0', 'TONAYT+CourierNewPSMT', 'R27', 'Identity-H')]
 
-      .. note:: This list has no duplicate entries: the combination of :data:`xref`, *name* and *referencer* is unique.
+      .. note::
+          * This list has no duplicate entries: the combination of :data:`xref`, *name* and *referencer* is unique.
+          * In general, this is a superset of the fonts actually in use by this page. The PDF creator may e.g. have specified some global list, of which each page only makes partial use.
 
     .. method:: get_page_text(pno, output="text")
 
@@ -1035,7 +1030,7 @@ For details on **embedded files** refer to Appendix 3.
         >>> import fitz
         >>> doc=fitz.open("SWIGDocumentation.pdf")
         >>> toc = doc.get_toc(False)  # we need the detailed TOC
-        >>> # make a list of level 1 indices and their titles
+        >>> # list of level 1 indices and their titles
         >>> lvl1 = [(i, item[1]) for i, item in enumerate(toc) if item[0] == 1]
         >>> for i, title in lvl1:
                 d = toc[i][3]  # get the destination dict

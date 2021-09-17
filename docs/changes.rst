@@ -3,7 +3,9 @@ Change Logs
 
 ------
 
-**Changes in Version 1.18.18**
+**Changes in Version 1.18.18 / 1.18.19**
+
+* **Fixed** issue `#1266 <https://github.com/pymupdf/PyMuPDF/issues/1266>`_. Failure to set :attr:`Pixmap.samples` in important cases was hotfixed.
 
 * **Fixed** issue `#1257 <https://github.com/pymupdf/PyMuPDF/issues/1257>`_. Removing the read-only flag from PDF fields is now possible.
 

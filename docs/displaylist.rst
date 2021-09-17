@@ -18,8 +18,8 @@ A display list is populated with objects from a page, usually by executing :meth
 **Method**                        **Short Description**
 ================================= ============================================
 :meth:`~DisplayList.run`          Run a display list through a device.
-:meth:`~DisplayList.get_pixmap`    generate a pixmap
-:meth:`~DisplayList.get_textpage`  generate a text page
+:meth:`~DisplayList.get_pixmap`   generate a pixmap
+:meth:`~DisplayList.get_textpage` generate a text page
 :attr:`~DisplayList.rect`         mediabox of the display list
 ================================= ============================================
 
@@ -70,8 +70,7 @@ A display list is populated with objects from a page, usually by executing :meth
 
       :arg int alpha: determine whether or not (0, default) to include a transparency channel.
 
-      :arg clip: an area of the full mediabox to which the pixmap should be restricted.
-      :type clip: :ref:`IRect` or :ref:`Rect`
+      :arg irect_like clip: restrict rendering to the intersection of this area with :attr:`DisplayList.rect`.
 
       :rtype: :ref:`Pixmap`
       :returns: pixmap of the display list.

@@ -57,8 +57,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.apply_redactions`      PDF olny: process the redactions of the page
 :meth:`Page.bound`                 rectangle of the page
 :meth:`Page.delete_annot`          PDF only: delete an annotation
-:meth:`Page.delete_widget`         PDF only: delete a widget / field
 :meth:`Page.delete_link`           PDF only: delete a link
+:meth:`Page.delete_widget`         PDF only: delete a widget / field
 :meth:`Page.draw_bezier`           PDF only: draw a cubic Bezier curve
 :meth:`Page.draw_circle`           PDF only: draw a circle
 :meth:`Page.draw_curve`            PDF only: draw a special Bezier curve
@@ -71,19 +71,19 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.draw_squiggle`         PDF only: draw a squiggly line
 :meth:`Page.draw_zigzag`           PDF only: draw a zig-zagged line
 :meth:`Page.get_drawings`          get list of the draw commands contained in the page
-:meth:`Page.get_fonts`             PDF only: get list of used fonts
+:meth:`Page.get_fonts`             PDF only: get list of referenced fonts
 :meth:`Page.get_image_bbox`        PDF only: get bbox and matrix of embedded image
-:meth:`Page.get_image_rects`       PDF only: improved version of :meth:`Page.get_image_bbox`
-:meth:`Page.get_images`            PDF only: get list of used images
 :meth:`Page.get_image_info`        get list of meta information for all used images
-:meth:`Page.get_xobjects`          PDF only: get list of used xobjects
-:meth:`Page.get_links`             get all links
+:meth:`Page.get_image_rects`       PDF only: improved version of :meth:`Page.get_image_bbox`
+:meth:`Page.get_images`            PDF only: get list of referenced images
 :meth:`Page.get_label`             PDF only: return the label of the page
+:meth:`Page.get_links`             get all links
 :meth:`Page.get_pixmap`            create a page image in raster format
 :meth:`Page.get_svg_image`         create a page image in SVG format
 :meth:`Page.get_text`              extract the page's text
 :meth:`Page.get_textbox`           extract text contained in a rectangle
 :meth:`Page.get_textpage`          create a TextPage for the page
+:meth:`Page.get_xobjects`          PDF only: get list of referenced xobjects
 :meth:`Page.insert_font`           PDF only: insert a font for use by the page
 :meth:`Page.insert_image`          PDF only: insert an image
 :meth:`Page.insert_link`           PDF only: insert a link
@@ -101,20 +101,20 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.update_link`           PDF only: modify a link
 :meth:`Page.widgets`               return a generator over the fields on the page
 :meth:`Page.write_text`            write one or more :ref:`Textwriter` objects
-:attr:`Page.cropbox`               the page's :data:`cropbox`
 :attr:`Page.cropbox_position`      displacement of the :data:`cropbox`
+:attr:`Page.cropbox`               the page's :data:`cropbox`
+:attr:`Page.derotation_matrix`     PDF only: get coordinates in unrotated page space
 :attr:`Page.first_annot`           first :ref:`Annot` on the page
 :attr:`Page.first_link`            first :ref:`Link` on the page
 :attr:`Page.first_widget`          first widget (form field) on the page
-:attr:`Page.mediabox`              the page's :data:`mediabox`
 :attr:`Page.mediabox_size`         bottom-right point of :data:`mediabox`
-:attr:`Page.derotation_matrix`     PDF only: get coordinates in unrotated page space
-:attr:`Page.rotation_matrix`       PDF only: get coordinates in rotated page space
-:attr:`Page.transformation_matrix` PDF only: translate between PDF and MuPDF space
+:attr:`Page.mediabox`              the page's :data:`mediabox`
 :attr:`Page.number`                page number
 :attr:`Page.parent`                owning document object
 :attr:`Page.rect`                  rectangle of the page
+:attr:`Page.rotation_matrix`       PDF only: get coordinates in rotated page space
 :attr:`Page.rotation`              PDF only: page rotation
+:attr:`Page.transformation_matrix` PDF only: translate between PDF and MuPDF space
 :attr:`Page.xref`                  PDF only: page :data:`xref`
 ================================== =======================================================
 
@@ -1198,7 +1198,7 @@ In a nutshell, this is what you can do with PyMuPDF:
      :arg matrix_like matrix: default is :ref:`Identity`.
      :arg colorspace: The desired colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
      :type colorspace: str or :ref:`Colorspace`
-     :arg irect_like clip: restrict rendering to this area. Default is the page's :attr:`Page.cropbox`.
+     :arg irect_like clip: restrict rendering to the intersection of this area with the page's rectangle.
      :arg bool alpha: whether to add an alpha channel. Always accept the default *False* if you do not really need transparency. This will save a lot of memory (25% in case of RGB ... and pixmaps are typically **large**!), and also processing time. Also note an **important difference** in how the image will be rendered: with *True* the pixmap's samples area will be pre-cleared with *0x00*. This results in **transparent** areas where the page is empty. With *False* the pixmap's samples will be pre-cleared with *0xff*. This results in **white** where the page has nothing to show.
 
       Changed in version 1.14.17
