@@ -1,11 +1,19 @@
-from distutils.core import setup, Extension
-from distutils.command.build_py import build_py as build_py_orig
-import re, sys, os
+import os
+import re
+import sys
+import json
 
-# custom build_py command which runs build_ext first
-# this is necessary because build_py needs the fitz.py which is only generated
-# by SWIG in the build_ext step
+from setuptools import Extension, setup
+from setuptools.command.build_py import build_py as build_py_orig
+
+
 class build_ext_first(build_py_orig):
+    """
+    custom build_py command which runs build_ext first
+    this is necessary because build_py needs the fitz.py which is only generated
+    by SWIG in the build_ext step
+    """
+
     def run(self):
         self.run_command("build_ext")
         return super().run()
@@ -36,9 +44,7 @@ OPENSUSE = ARCH_LINUX + [
 FEDORA = ARCH_LINUX + [
     "harfbuzz",
 ]
-NIX = ARCH_LINUX + [
-    "harfbuzz"
-]
+NIX = ARCH_LINUX + ["harfbuzz"]
 LIBRARIES = {
     "default": DEFAULT,
     "ubuntu": DEFAULT,
@@ -48,7 +54,7 @@ LIBRARIES = {
     "opensuse": OPENSUSE,
     "fedora": FEDORA,
     "alpine": ALPINE,
-    "nix": NIX
+    "nix": NIX,
 }
 
 
@@ -86,93 +92,99 @@ def load_libraries():
     return LIBRARIES[os_id]
 
 
-# check the platform
+# define include_dirs and library_dirs
 if sys.platform.startswith("linux") or "gnu" in sys.platform:
-    module = Extension(
-        "fitz._fitz",  # name of the module
-        ["fitz/fitz.i"],
-        include_dirs=[  # we need the path of the MuPDF headers
-            "/usr/include/mupdf",
-            "/usr/local/include/mupdf",
-            "mupdf/thirdparty/freetype/include",
-            "/usr/include/freetype2",
-        ],
-        libraries=load_libraries(),
-    )
+    include_dirs = [
+        "/usr/include/mupdf",
+        "/usr/local/include/mupdf",
+        "mupdf/thirdparty/freetype/include",
+        "/usr/include/freetype2",
+    ]
+    library_dirs = []
+    libraries = load_libraries()
+    extra_link_args = []
+
 elif sys.platform.startswith(("darwin", "freebsd", "openbsd")):
-    module = Extension(
-        "fitz._fitz",  # name of the module
-        ["fitz/fitz.i"],
-        # directories containing mupdf's header files
-        include_dirs=[
-            "/usr/local/include/mupdf",
-            "/usr/local/include",
-            "/usr/include/freetype2",
-            "/usr/local/include/freetype2",
-            "/usr/X11R6/include/freetype2",
-            "/opt/homebrew/include",
-            "/opt/homebrew/include/mupdf",
-            "/opt/homebrew/include/freetype2",
-        ],
-        # libraries should already be linked here by brew
-        library_dirs=["/usr/local/lib", "/opt/homebrew/lib"],
-        # library_dirs=['/usr/local/Cellar/mupdf-tools/1.8/lib/',
-        #'/usr/local/Cellar/openssl/1.0.2g/lib/',
-        #'/usr/local/Cellar/jpeg/8d/lib/',
-        #'/usr/local/Cellar/freetype/2.6.3/lib/',
-        #'/usr/local/Cellar/jbig2dec/0.12/lib/'
-        # ],
-        libraries=["mupdf", "mupdf-third"],
-    )
+    include_dirs = [
+        "/usr/local/include/mupdf",
+        "/usr/local/include",
+        "/usr/include/freetype2",
+        "/usr/local/include/freetype2",
+        "/usr/X11R6/include/freetype2",
+        "/opt/homebrew/include",
+        "/opt/homebrew/include/mupdf",
+        "/opt/homebrew/include/freetype2",
+    ]
+    library_dirs = ["/usr/local/lib", "/opt/homebrew/lib"]
+    libraries = ["mupdf", "mupdf-third"]
+    extra_link_args = []
 
 else:
-    # ===============================================================================
-    # Build / set up PyMuPDF under Windows
-    # ===============================================================================
-    module = Extension(
-        "fitz._fitz",
-        ["fitz/fitz.i"],
-        include_dirs=[  # we need the path of the MuPDF's headers
-            "./mupdf/include",
-            "./mupdf/include/mupdf",
-            "./mupdf/thirdparty/freetype/include",
-        ],
-        libraries=[  # these are needed in Windows
-            "libmupdf",
-            "libresources",
-            "libthirdparty",
-        ],
-        extra_link_args=["/NODEFAULTLIB:MSVCRT"],
-        # x86 dir of libmupdf.lib etc.
-        library_dirs=["./mupdf/platform/win32/Release"],
-        # x64 dir of libmupdf.lib etc.
-        # library_dirs=['./mupdf/platform/win32/x64/Release'],
-    )
+    include_dirs = [
+        "./mupdf/include",
+        "./mupdf/include/mupdf",
+        "./mupdf/thirdparty/freetype/include",
+    ]
+    library_dirs = ["./mupdf/platform/win32/x64/Release"]
+    libraries = ["libmupdf", "libresources", "libthirdparty"]
+    extra_link_args = ["/NODEFAULTLIB:MSVCRT"]
 
-pkg_tab = open("PKG-INFO", "rb").read().splitlines()
-long_dtab = []  # long description lines
-classifier = []  # classifier lines
-for line in pkg_tab:
-    line = line.decode()
-    if line.startswith("Classifier: "):
-        classifier.append(line[12:])
-        continue
-    if line.startswith(" ") or line == "":
-        long_dtab.append(line.strip())
-long_desc = "\n".join(long_dtab)
+# add any local include and library folders
+pymupdf_dirs = os.environ.get("PYMUPDF-DIRS", None)
+if pymupdf_dirs:
+    with open(pymupdf_dirs) as dirfile:
+        local_dirs = json.load(dirfile)
+        include_dirs += local_dirs.get("include_dirs", [])
+        library_dirs += local_dirs.get("library_dirs", [])
+
+
+module = Extension(
+    "fitz._fitz",
+    ["fitz/fitz.i"],
+    include_dirs=include_dirs,
+    library_dirs=library_dirs,
+    libraries=libraries,
+    extra_link_args=extra_link_args,
+)
+
+
+setup_py_cwd = os.path.dirname(__file__)
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Utilities",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Software Development :: Libraries",
+]
+with open(os.path.join(setup_py_cwd, "README.md"), encoding="utf-8") as f:
+    readme = f.read()
 
 setup(
     name="PyMuPDF",
     version="1.18.19",
     description="Python bindings for the PDF toolkit and renderer MuPDF",
-    long_description=long_desc,
-    classifiers=classifier,
+    long_description=readme,
+    long_description_content_type="text/markdown",
+    classifiers=classifiers,
     url="https://github.com/pymupdf/PyMuPDF",
     author="Jorj McKie",
     author_email="jorj.x.mckie@outlook.de",
     cmdclass={"build_py": build_ext_first},
     ext_modules=[module],
+    python_requires=">=3.6",
     py_modules=["fitz.fitz", "fitz.utils", "fitz.__main__"],
     license="GNU AFFERO GPL 3.0",
-    data_files=["README.md"],
+    project_urls={
+        "Documentation": "https://pymupdf.readthedocs.io/",
+        "Source": "https://github.com/pymupdf/pymupdf",
+        "Tracker": "https://github.com/pymupdf/PyMuPDF/issues",
+        "Changelog": "https://pymupdf.readthedocs.io/en/latest/changes.html",
+    },
 )
