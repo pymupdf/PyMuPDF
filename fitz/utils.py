@@ -14,6 +14,7 @@ import random
 import string
 import typing
 import warnings
+import tempfile
 
 from fitz import *
 
@@ -704,6 +705,8 @@ def get_pixmap(page: Page, **kw) -> Pixmap:
     pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
     dl = None
     return pix
+    # doc = page.parent
+    # return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
 
 
 def get_page_pixmap(
@@ -1300,7 +1303,7 @@ def do_links(
             txt = annot_skel["goto1"]  # annot_goto
             idx = pno_src.index(lnk["page"])
             p = lnk["to"] * ctm  # target point in PDF coordinates
-            annot = txt % (xref_dst[idx], p.x, p.y, lnk["zoom"], rect)
+            annot = txt % (xref_dst[idx], p.x, p.y, rect)
 
         elif lnk["kind"] == LINK_GOTOR:
             if lnk["page"] >= 0:
@@ -1312,7 +1315,6 @@ def do_links(
                     lnk["page"],
                     pnt.x,
                     pnt.y,
-                    lnk["zoom"],
                     lnk["file"],
                     lnk["file"],
                     rect,
@@ -1415,7 +1417,7 @@ def getLinkText(page: Page, lnk: dict) -> str:
             xref = page.parent.page_xref(pno)
             pnt = lnk.get("to", Point(0, 0))  # destination point
             ipnt = pnt * ictm
-            annot = txt % (xref, ipnt.x, ipnt.y, lnk.get("zoom", 0), rect)
+            annot = txt % (xref, ipnt.x, ipnt.y, rect)
         else:
             txt = annot_skel["goto2"]  # annot_goto_n
             annot = txt % (get_pdf_str(lnk["to"]), rect)
@@ -1426,15 +1428,7 @@ def getLinkText(page: Page, lnk: dict) -> str:
             pnt = lnk.get("to", Point(0, 0))  # destination point
             if type(pnt) is not Point:
                 pnt = Point(0, 0)
-            annot = txt % (
-                lnk["page"],
-                pnt.x,
-                pnt.y,
-                lnk.get("zoom", 0),
-                lnk["file"],
-                lnk["file"],
-                rect,
-            )
+            annot = txt % (lnk["page"], pnt.x, pnt.y, lnk["file"], lnk["file"], rect)
         else:
             txt = annot_skel["gotor2"]  # annot_gotor_n
             annot = txt % (get_pdf_str(lnk["to"]), lnk["file"], rect)
@@ -4988,10 +4982,14 @@ def subset_fonts(doc: Document) -> None:
         except ImportError:
             print("This method requires fontTools to be installed.")
             raise
+        tmp_dir = tempfile.gettempdir()
+        oldfont_path = f"{tmp_dir}/oldfont.ttf"
+        newfont_path = f"{tmp_dir}/newfont.ttf"
+        uncfile_path = f"{tmp_dir}/uncfile.txt"
         args = [
-            "oldfont.ttf",
+            oldfont_path,
             "--retain-gids",
-            "--output-file=newfont.ttf",
+            f"--output-file={newfont_path}",
             "--layout-features='*'",
             "--passthrough-tables",
             "--ignore-missing-glyphs",
@@ -4999,46 +4997,46 @@ def subset_fonts(doc: Document) -> None:
             "--symbol-cmap",
         ]
 
-        unc_file = open("uncfile.txt", "w")  # store glyph ids or unicodes as file
+        unc_file = open(f"{tmp_dir}/uncfile.txt", "w")  # store glyph ids or unicodes as file
         if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
-            args.append("--gids-file=uncfile.txt")
+            args.append(f"--gids-file={uncfile_path}")
             gid_set.add(189)
             unc_list = list(gid_set)
             for unc in unc_list:
                 unc_file.write("%i\n" % unc)
         else:
-            args.append("--unicodes-file=uncfile.txt")
+            args.append(f"--unicodes-file={uncfile_path}")
             unc_set.add(255)
             unc_list = list(unc_set)
             for unc in unc_list:
                 unc_file.write("%04x\n" % unc)
 
         unc_file.close()
-        fontfile = open("oldfont.ttf", "wb")  # store fontbuffer as a file
+        fontfile = open(oldfont_path, "wb")  # store fontbuffer as a file
         fontfile.write(buffer)
         fontfile.close()
         try:
-            os.remove("newfont.ttf")  # remove old file
+            os.remove(newfont_path)  # remove old file
         except:
             pass
         try:  # invoke fontTools subsetter
             fts.main(args)
-            font = fitz.Font(fontfile="newfont.ttf")
+            font = fitz.Font(fontfile=newfont_path)
             new_buffer = font.buffer
             if len(font.valid_codepoints()) == 0:
                 new_buffer = None
         except:
             new_buffer = None
         try:
-            os.remove("uncfile.txt")
+            os.remove(uncfile_path)
         except:
             pass
         try:
-            os.remove("oldfont.ttf")
+            os.remove(oldfont_path)
         except:
             pass
         try:
-            os.remove("newfont.ttf")
+            os.remove(newfont_path)
         except:
             pass
         return new_buffer
