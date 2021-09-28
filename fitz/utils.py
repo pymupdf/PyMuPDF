@@ -14,6 +14,7 @@ import random
 import string
 import typing
 import warnings
+import tempfile
 
 from fitz import *
 
@@ -4988,10 +4989,14 @@ def subset_fonts(doc: Document) -> None:
         except ImportError:
             print("This method requires fontTools to be installed.")
             raise
+        tmp_dir = tempfile.gettempdir()
+        oldfont_path = f"{tmp_dir}/oldfont.ttf"
+        newfont_path = f"{tmp_dir}/newfont.ttf"
+        uncfile_path = f"{tmp_dir}/uncfile.txt"
         args = [
-            "oldfont.ttf",
+            oldfont_path,
             "--retain-gids",
-            "--output-file=newfont.ttf",
+            f"--output-file={newfont_path}",
             "--layout-features='*'",
             "--passthrough-tables",
             "--ignore-missing-glyphs",
@@ -4999,46 +5004,46 @@ def subset_fonts(doc: Document) -> None:
             "--symbol-cmap",
         ]
 
-        unc_file = open("uncfile.txt", "w")  # store glyph ids or unicodes as file
+        unc_file = open(f"{tmp_dir}/uncfile.txt", "w")  # store glyph ids or unicodes as file
         if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
-            args.append("--gids-file=uncfile.txt")
+            args.append(f"--gids-file={uncfile_path}")
             gid_set.add(189)
             unc_list = list(gid_set)
             for unc in unc_list:
                 unc_file.write("%i\n" % unc)
         else:
-            args.append("--unicodes-file=uncfile.txt")
+            args.append(f"--unicodes-file={uncfile_path}")
             unc_set.add(255)
             unc_list = list(unc_set)
             for unc in unc_list:
                 unc_file.write("%04x\n" % unc)
 
         unc_file.close()
-        fontfile = open("oldfont.ttf", "wb")  # store fontbuffer as a file
+        fontfile = open(oldfont_path, "wb")  # store fontbuffer as a file
         fontfile.write(buffer)
         fontfile.close()
         try:
-            os.remove("newfont.ttf")  # remove old file
+            os.remove(newfont_path)  # remove old file
         except:
             pass
         try:  # invoke fontTools subsetter
             fts.main(args)
-            font = fitz.Font(fontfile="newfont.ttf")
+            font = fitz.Font(fontfile=newfont_path)
             new_buffer = font.buffer
             if len(font.valid_codepoints()) == 0:
                 new_buffer = None
         except:
             new_buffer = None
         try:
-            os.remove("uncfile.txt")
+            os.remove(uncfile_path)
         except:
             pass
         try:
-            os.remove("oldfont.ttf")
+            os.remove(oldfont_path)
         except:
             pass
         try:
-            os.remove("newfont.ttf")
+            os.remove(newfont_path)
         except:
             pass
         return new_buffer
