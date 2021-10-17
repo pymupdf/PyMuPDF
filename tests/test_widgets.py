@@ -67,6 +67,7 @@ def test_listbox():
     widget.field_name = "ListBox-1"
     widget.field_label = "is not a drop down: scroll with cursor in field"
     widget.field_type = fitz.PDF_WIDGET_TYPE_LISTBOX
+    widget.field_flags = fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE
     widget.fill_color = gold
     widget.choice_values = (
         "Frankfurt",
@@ -81,7 +82,6 @@ def test_listbox():
     widget.rect = rect
     widget.text_color = blue
     widget.text_fontsize = fontsize
-    widget.field_flags = fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE
     widget.field_value = widget.choice_values[-1]
     print("About to add '%s'" % widget.field_name)
     page.add_widget(widget)  # create the field
@@ -97,8 +97,10 @@ def test_combobox():
     widget.field_label = "an editable combo box ..."
     widget.field_type = fitz.PDF_WIDGET_TYPE_COMBOBOX
     widget.field_flags = (
-        fitz.PDF_CH_FIELD_IS_COMBO | fitz.PDF_CH_FIELD_IS_EDIT
-    )  # make field editable
+        fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE
+        | fitz.PDF_CH_FIELD_IS_EDIT
+        | fitz.PDF_WIDGET_TYPE_COMBOBOX
+    )
     widget.fill_color = gold
     widget.choice_values = (
         "Spanien",
@@ -117,7 +119,6 @@ def test_combobox():
     widget.rect = rect
     widget.text_color = blue
     widget.text_fontsize = fontsize
-
     widget.field_value = widget.choice_values[-1]
     page.add_widget(widget)  # create the field
     field = page.first_widget
@@ -143,3 +144,10 @@ def test_text2():
     widgets = [w for w in page.widgets()]
     field = widgets[0]
     assert field.field_type_string == "Text"
+
+
+# def test_deletewidget():
+#     pdf = fitz.open(filename)
+#     page = pdf[0]
+#     field = page.first_widget
+#     page.delete_widget(field)

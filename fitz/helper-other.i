@@ -37,6 +37,18 @@ int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value)
     return rc;
 }
 
+
+//--------------------------------------
+// Ensure valid journalling state
+//--------------------------------------
+int JM_have_operation(fz_context *ctx, pdf_document *pdf)
+{
+    if (pdf->journal && !pdf_undoredo_step(ctx, pdf, 0)) {
+        return 0;
+    }
+    return 1;
+}
+
 //----------------------------------
 // Set a PDF dict key to some value
 //----------------------------------
@@ -977,9 +989,10 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
     fz_buffer *res = NULL;
     const unsigned char *data = NULL;
     int size, ixref = 0, index = 0, simple = 0;
-    PyObject *value, *name, *subt, *exto = NULL;
+    PyObject *value=NULL, *name=NULL, *subt=NULL, *exto = NULL;
 
     fz_try(ctx) {
+        ENSURE_OPERATION(ctx, pdf);
         //-------------------------------------------------------------
         // check for CJK font
         //-------------------------------------------------------------

@@ -1,11 +1,11 @@
-wget https://mupdf.com/downloads/mupdf-1.18.0-source.tar.gz
-tar -zxvf mupdf-1.18.0-source.tar.gz
+wget https://mupdf.com/downloads/mupdf-1.19.0-source.tar.gz
+tar -zxvf mupdf-1.19.0-source.tar.gz
 
-cd mupdf-1.18.0-source
+cd mupdf-1.19.0-source
 export CFLAGS="-fPIC -std=gnu99"
 
-make HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local
-sudo make HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local install
+make HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no HAVE_LEPTONICA=yes HAVE_TESSERACT=yes prefix=/usr/local
+sudo make HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no HAVE_LEPTONICA=yes HAVE_TESSERACT=yes prefix=/usr/local install
 
 cd ..
 

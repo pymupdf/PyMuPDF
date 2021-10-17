@@ -8,26 +8,37 @@ Rect
 
 The following remarks are also valid for :ref:`IRect` objects:
 
-* A rectangle in the sense of (Py-) MuPDF and PDF always has **borders parallel to the respective X- and Y-axes**. A general orthogonal tetragon **is not a rectangle** -- in contrast to the mathematical definition.
-* The constructing points can be anywhere in the plane -- they need not even be different, and e.g. "top left" need not be the geometrical "north-western" point.
-* For any given quadruple of numbers, the geometrically "same" rectangle can be defined in (up to) four different ways:
-   1. Rect(P\ :sub:`(x0,y0)`, P\ :sub:`(x1,y1)`\ ),
-   2. Rect(P\ :sub:`(x1,y1)`, P\ :sub:`(x0,y0)`\ ),
-   3. Rect(P\ :sub:`(x0,y1)`, P\ :sub:`(x1,y0)`\ ), and
-   4. Rect(P\ :sub:`(x1,y0)`, P\ :sub:`(x0,y1)`\ ).
+* A rectangle in the sense of (Py-) MuPDF **(and PDF)** always has **borders parallel to the x- resp. y-axis**. A general orthogonal tetragon **is not a rectangle** -- in contrast to the mathematical definition.
+* The constructing points can be (almost! -- see below) anywhere in the plane -- they need not even be different, and e.g. "top left" need not be the geometrical "north-western" point.
+* For any given quadruple of numbers, the geometrically "same" rectangle can be defined in four different ways:
+   1. Rect(P\ :sub:`(x0,y0)`, P\ :sub:`(x1,y1)`\ )
+   2. Rect(P\ :sub:`(x1,y1)`, P\ :sub:`(x0,y0)`\ )
+   3. Rect(P\ :sub:`(x0,y1)`, P\ :sub:`(x1,y0)`\ )
+   4. Rect(P\ :sub:`(x1,y0)`, P\ :sub:`(x0,y1)`\ )
 
-Hence some useful classification:
+**(Changed in v1.19.0)** Hence some classification:
 
-* A rectangle is called **finite** if *x0 <= x1* and *y0 <= y1* (i.e. the bottom right point is "south-eastern" to the top left one), otherwise **infinite**. Of the four alternatives above, **only one** is finite (disregarding degenerate cases). Please take into account, that in MuPDF's coordinate system the y-axis is oriented from **top to bottom**.
+* A rectangle is called **valid** if ``x0 <= x1`` and ``y0 <= y1`` (i.e. the bottom right point is "south-eastern" to the top left one), otherwise **invalid**. Of the four alternatives above, **only number 1.** is valid. Please take into account, that in MuPDF's coordinate system, the y-axis is oriented from **top to bottom**.
 
-* A rectangle is called **empty** if *x0 = x1* or *y0 = y1*, i.e. if its area is zero.
+* A rectangle is called **empty** if ``x0 >= x1`` or ``y0 >= y1``. This implies, that **invalid rectangles are always empty.** And ``width`` (resp. ``height``) is set to zero if ``x0 > x1`` (resp. ``y0 > y1``).
 
-.. note:: It sounds like a paradox: a rectangle can be both, infinite **and** empty ...
+.. note:: Compared to earlier versions, to a large extent, **invalid** rectangles have taken over the role of "infinite" rectangles.
+
+* Rectangle coordinates cannot be outside the number range from ``FZ_MIN_INF_RECT = -2147483648`` to ``FZ_MAX_INF_RECT = 2147483520``. Both values have been chosen, because they are the smallest / largest 32bit integers that survive C float conversion roundtrips.
+
+* There is **exactly one "infinite" rectangle**, defined by ``x0 = y0 = FZ_MIN_INF_RECT`` and ``x1 = y1 = FZ_MAX_INF_RECT``. It contains every other rectangle. It is mainly used for technical purposes -- e.g. when a function call should ignore a formally required rectangle argument.
+
+* Rectangles are **open:** The right and the bottom edge are not considered part of the rectangle. This implies, that only the top-left corner ``(x0, y0)`` can belong to a rectangle - the other three corners never do. Hence: an empty rectangle contains none of its corners.
+
+   .. image:: images/img-rect-contains.*
+      :scale: 30
+      :align: center
+
 
 ============================= =======================================================
 **Methods / Attributes**      **Short Description**
 ============================= =======================================================
-:meth:`Rect.contains`         checks containment of other objects
+:meth:`Rect.contains`         checks containment of point_likes and rect_likes
 :meth:`Rect.get_area`         calculate rectangle area
 :meth:`Rect.include_point`    enlarge rectangle to also contain a point
 :meth:`Rect.include_rect`     enlarge rectangle to also contain another one
@@ -35,7 +46,7 @@ Hence some useful classification:
 :meth:`Rect.intersects`       checks for non-empty intersections
 :meth:`Rect.morph`            transform with a point and a matrix
 :meth:`Rect.norm`             the Euclidean norm
-:meth:`Rect.normalize`        makes a rectangle finite
+:meth:`Rect.normalize`        makes a rectangle valid
 :meth:`Rect.round`            create smallest :ref:`Irect` containing rectangle
 :meth:`Rect.transform`        transform rectangle with a matrix
 :attr:`Rect.bottom_left`      bottom left point, synonym *bl*
@@ -43,15 +54,16 @@ Hence some useful classification:
 :attr:`Rect.height`           rectangle height
 :attr:`Rect.irect`            equals result of method *round()*
 :attr:`Rect.is_empty`         whether rectangle is empty
+:attr:`Rect.is_valid`         whether rectangle is valid
 :attr:`Rect.is_infinite`      whether rectangle is infinite
 :attr:`Rect.top_left`         top left point, synonym *tl*
 :attr:`Rect.top_right`        top_right point, synonym *tr*
 :attr:`Rect.quad`             :ref:`Quad` made from rectangle corners
 :attr:`Rect.width`            rectangle width
-:attr:`Rect.x0`               top left corner's X-coordinate
-:attr:`Rect.x1`               bottom right corner's X-coordinate
-:attr:`Rect.y0`               top left corner's Y-coordinate
-:attr:`Rect.y1`               bottom right corner's Y-coordinate
+:attr:`Rect.x0`               left corners' x coordinate
+:attr:`Rect.x1`               right corners' x -coordinate
+:attr:`Rect.y0`               top corners' y coordinate
+:attr:`Rect.y1`               bottom corners' y coordinate
 ============================= =======================================================
 
 **Class API**
@@ -191,7 +203,7 @@ Hence some useful classification:
 
    .. attribute:: tr
 
-      Equals *Point(x1, y0)*.
+      Equals ``Point(x1, y0)``.
 
       :type: :ref:`Point`
 
@@ -199,7 +211,7 @@ Hence some useful classification:
 
    .. attribute:: bl
 
-      Equals *Point(x0, y1)*.
+      Equals ``Point(x0, y1)``.
 
       :type: :ref:`Point`
 
@@ -207,25 +219,25 @@ Hence some useful classification:
 
    .. attribute:: br
 
-      Equals *Point(x1, y1)*.
+      Equals ``Point(x1, y1)``.
 
       :type: :ref:`Point`
 
    .. attribute:: quad
 
-      The quadrilateral *Quad(rect.tl, rect.tr, rect.bl, rect.br)*.
+      The quadrilateral ``Quad(rect.tl, rect.tr, rect.bl, rect.br)``.
 
       :type: :ref:`Quad`
 
    .. attribute:: width
 
-      Width of the rectangle. Equals *abs(x1 - x0)*.
+      Width of the rectangle. Equals ``max(x1 - x0, 0)``.
 
       :rtype: float
 
    .. attribute:: height
 
-      Height of the rectangle. Equals *abs(y1 - y0)*.
+      Height of the rectangle. Equals ``max(y1 - y0, 0)``.
 
       :rtype: float
 
@@ -255,13 +267,19 @@ Hence some useful classification:
 
    .. attribute:: is_infinite
 
-      *True* if rectangle is infinite, *False* otherwise.
+      ``True`` if rectangle is infinite.
 
       :type: bool
 
    .. attribute:: is_empty
 
-      *True* if rectangle is empty, *False* otherwise.
+      ``True`` if rectangle is empty.
+
+      :type: bool
+
+   .. attribute:: is_valid
+
+      ``True`` if rectangle is valid.
 
       :type: bool
 

@@ -58,7 +58,8 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
         fz_append_printf(ctx, buf, "/%s %g Tf", JM_expand_fname(&fontname), fontsize);
         unsigned char *da = NULL;
         size_t len = fz_buffer_storage(ctx, buf, &da);
-        pdf_dict_put_string(ctx, annot->obj, PDF_NAME(DA), (const char *) da, len);
+        pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
+        pdf_dict_put_string(ctx, annot_obj, PDF_NAME(DA), (const char *) da, len);
     }
     fz_always(ctx) fz_drop_buffer(ctx, buf);
     fz_catch(ctx) fz_rethrow(ctx);
@@ -68,19 +69,18 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
 //------------------------------------------------------------------------
 // refreshes the link and annotation tables of a page
 //------------------------------------------------------------------------
-void JM_refresh_link_table(fz_context *ctx, pdf_page *page)
+void JM_refresh_page(fz_context *ctx, pdf_page *page)
 {
+    if (!page) return;
     fz_try(ctx)
     {
-        pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
-        if (annots_arr) {
-            fz_rect page_mediabox;
-            fz_matrix page_ctm;
-            pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
-            page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
-                                            pdf_to_num(ctx, page->obj), page_ctm);
-            pdf_load_annots(ctx, page, annots_arr);
+        pdf_document *pdf = page->doc;
+        int pno = pdf_lookup_page_number(ctx, pdf, page->obj);
+        if (pno < 0) {
+            THROWMSG(ctx, "bad page object");
         }
+        fz_drop_page(ctx, &page->super);
+        page = pdf_load_page(ctx, pdf, pno);
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);
@@ -243,42 +243,6 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
     return res;
 }
 
-//------------------------------------------------------------------------
-// delete an annotation using mupdf functions, but first delete the /AP
-// dict key in annot->obj.
-//------------------------------------------------------------------------
-void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
-{
-    if (!annot) return;
-    fz_try(ctx) {
-        // first get any existing popup for the annotation
-        pdf_obj *popup = pdf_dict_get(ctx, annot->obj, PDF_NAME(Popup));
-
-        // next delete the /Popup and /AP entries from annot dictionary
-        pdf_dict_del(ctx, annot->obj, PDF_NAME(AP));
-
-        pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
-        int i, n = pdf_array_len(ctx, annots);
-        for (i = n - 1; i >= 0; i--) {
-            pdf_obj *o = pdf_array_get(ctx, annots, i);
-            pdf_obj *p = pdf_dict_get(ctx, o, PDF_NAME(Parent));
-            if (!p) continue;
-            if (!pdf_objcmp(ctx, p, annot->obj)) {
-                pdf_array_delete(ctx, annots, i);
-            }
-        }
-        int type = pdf_annot_type(ctx, annot);
-        if (type != PDF_ANNOT_WIDGET) {
-            pdf_delete_annot(ctx, page, annot);
-        } else {
-            JM_delete_widget(ctx, page, annot);
-        }
-    }
-    fz_catch(ctx) {
-        fz_warn(ctx, "could not delete annotation");
-    }
-    return;
-}
 
 //------------------------------------------------------------------------
 // Return the first annotation whose /IRT key ("In Response To") points to
@@ -287,29 +251,31 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
 pdf_annot *JM_find_annot_irt(fz_context *ctx, pdf_annot *annot)
 {
     pdf_annot *irt_annot = NULL;  // returning this
+    pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
     pdf_obj *o = NULL;
-    pdf_annot **annotptr;
     int found = 0;
     fz_try(ctx) {   // loop thru MuPDF's internal annots array
-        pdf_page *page = annot->page;
-        for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next) {
-            irt_annot = *annotptr;  // check if this is what we are looking for
-            o = pdf_dict_gets(ctx, irt_annot->obj, "IRT");
+        pdf_page *page = pdf_annot_page(ctx, annot);
+        irt_annot = pdf_first_annot(ctx, page);
+        while (irt_annot) {
+            pdf_obj *irt_annot_obj = pdf_annot_obj(ctx, irt_annot);
+            o = pdf_dict_gets(ctx, irt_annot_obj, "IRT");
             if (o) {
-                if (!pdf_objcmp(ctx, o, annot->obj)) {
+                if (!pdf_objcmp(ctx, o, annot_obj)) {
                     found = 1;
                     break;
                 }
             }
+            irt_annot = pdf_next_annot(ctx, irt_annot);
         }
     }
     fz_catch(ctx) {;}
-    if (found) return irt_annot;
+    if (found) return pdf_keep_annot(ctx, irt_annot);
     return NULL;
 }
 
 //------------------------------------------------------------------------
-// return the identifications of a page's annotations (list of /NM entries)
+// return the annotation names (list of /NM entries)
 //------------------------------------------------------------------------
 PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 {
@@ -355,8 +321,8 @@ PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_obj *page_obj)
                 const char *name = pdf_to_name(ctx, subtype);
                 type = pdf_annot_type_from_string(ctx, name);
             }
-            id = pdf_dict_gets(gctx, annot_obj, "NM");
-            LIST_APPEND_DROP(names, Py_BuildValue("iis", xref, type,pdf_to_text_string(gctx, id)));
+            id = pdf_dict_gets(ctx, annot_obj, "NM");
+            LIST_APPEND_DROP(names, Py_BuildValue("iis", xref, type,pdf_to_text_string(ctx, id)));
         }
     }
     fz_catch(ctx) {
@@ -375,7 +341,9 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
 {
     fz_try(ctx) {
         PyObject *names = NULL;
-        names = JM_get_annot_id_list(ctx, annot->page);
+        pdf_page *page = pdf_annot_page(ctx, annot);
+        pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
+        names = JM_get_annot_id_list(ctx, page);
         int i = 0;
         PyObject *stem_id = NULL;
         while (1) {
@@ -386,7 +354,7 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
         }
         char *response = JM_StrAsChar(stem_id);
         pdf_obj *name = pdf_new_string(ctx, (const char *) response, strlen(response));
-        pdf_dict_puts_drop(ctx, annot->obj, "NM", name);
+        pdf_dict_puts_drop(ctx, annot_obj, "NM", name);
         Py_CLEAR(stem_id);
         Py_CLEAR(names);
     }
@@ -403,18 +371,19 @@ pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
     if (!name || strlen(name) == 0) {
         return NULL;
     }
-    pdf_annot **annotptr = NULL;
     pdf_annot *annot = NULL;
     int found = 0;
     size_t len = 0;
 
     fz_try(ctx) {   // loop thru MuPDF's internal annots and widget arrays
-        for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next) {
-            annot = *annotptr;
-            const char *response = pdf_to_string(ctx, pdf_dict_gets(ctx, annot->obj, "NM"), &len);
+        annot = pdf_first_annot(ctx, page);
+        while (annot) {
+            pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
+            const char *response = pdf_to_string(ctx, pdf_dict_gets(ctx, annot_obj, "NM"), &len);
             if (strcmp(name, response) == 0) {
                 found = 1;
                 break;
+            annot = pdf_next_annot(ctx, annot);
             }
         }
         if (!found) {
@@ -432,18 +401,18 @@ pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
 //------------------------------------------------------------------------
 pdf_annot *JM_get_annot_by_xref(fz_context *ctx, pdf_page *page, int xref)
 {
-    pdf_annot **annotptr = NULL;
     pdf_annot *annot = NULL;
     int found = 0;
-    size_t len = 0;
 
     fz_try(ctx) {   // loop thru MuPDF's internal annots array
-        for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next) {
-            annot = *annotptr;
-            if (xref == pdf_to_num(ctx, annot->obj)) {
+        annot = pdf_first_annot(ctx, page);
+        while (annot) {
+            pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
+            if (xref == pdf_to_num(ctx, annot_obj)) {
                 found = 1;
                 break;
             }
+            annot = pdf_next_annot(ctx, annot);
         }
         if (!found) {
             fz_throw(ctx, FZ_ERROR_GENERIC, "xref %d is not an annot of this page", xref);

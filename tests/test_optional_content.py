@@ -31,7 +31,7 @@ def test_oc2():
 
     # new PDF with one page
     doc = fitz.open()
-    page = doc.newPage()
+    page = doc.new_page()
 
     # define the 4 rectangle quadrants to receive the source pages
     r0 = page.rect / 2
@@ -52,10 +52,10 @@ def test_oc2():
     ocmd3 = doc.set_ocmd(ve=["and", ocg3, ["not", ["or", ocg1, ocg2, ocg0]]])
     ocmds = (ocmd0, ocmd1, ocmd2, ocmd3)
     # insert the 4 source page images, each connected to one OCG
-    page.showPDFpage(r0, src, 0, oc=ocmd0)
-    page.showPDFpage(r1, src, 1, oc=ocmd1)
-    page.showPDFpage(r2, src, 2, oc=ocmd2)
-    page.showPDFpage(r3, src, 3, oc=ocmd3)
+    page.show_pdf_page(r0, src, 0, oc=ocmd0)
+    page.show_pdf_page(r1, src, 1, oc=ocmd1)
+    page.show_pdf_page(r2, src, 2, oc=ocmd2)
+    page.show_pdf_page(r3, src, 3, oc=ocmd3)
     xobj_ocmds = [doc.get_oc(item[0]) for item in page.get_xobjects() if item[1] != 0]
     assert set(ocmds) <= set(xobj_ocmds)
     assert set((ocg0, ocg1, ocg2, ocg3)) == set(tuple(doc.get_ocgs().keys()))

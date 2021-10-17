@@ -22,8 +22,8 @@ def test_rect():
     r = fitz.Rect(10, 20, 100, 200)
     # include empty rect makes no change
     assert tuple(r.include_rect((0, 0, 0, 0))) == r_tuple
-    # include infinite rect delivers infinite rect
-    assert tuple(r.include_rect((1, 1, -1, -1))) == (1, 1, -1, -1)
+    # include invalid rect makes no change
+    assert tuple(r.include_rect((1, 1, -1, -1))) == r_tuple
     r = fitz.Rect()
     for i in range(4):
         r[i] = i + 1
@@ -247,11 +247,14 @@ def test_algebra():
     assert r - r == fitz.Rect()
     assert p + 5 == fitz.Point(6, 7)
     assert m + 5 == fitz.Matrix(6, 7, 8, 9, 10, 11)
-    assert p in r
+    assert r.tl in r
+    assert r.tr not in r
+    assert r.br not in r
+    assert r.bl not in r
     assert p * m == fitz.Point(12, 16)
     assert r * m == fitz.Rect(9, 12, 13, 18)
-    assert (fitz.Rect(1, 1, 2, 2) & fitz.Rect(3, 3, 4, 4)).is_empty
-    assert not fitz.Rect(1, 1, 2, 2).intersects((3, 3, 4, 4))
+    assert (fitz.Rect(1, 1, 2, 2) & fitz.Rect(2, 2, 3, 3)).is_empty
+    assert not fitz.Rect(1, 1, 2, 2).intersects((2, 2, 4, 4))
     failed = False
     try:
         x = m + p

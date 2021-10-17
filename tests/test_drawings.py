@@ -23,16 +23,39 @@ def test_drawings1():
 
 
 def test_drawings2():
+    delta = (0, 20, 0, 20)
     doc = fitz.open()
     page = doc.new_page()
+
     r = fitz.Rect(100, 100, 200, 200)
     page.draw_circle(r.br, 2)
+    r += delta
+
     page.draw_line(r.tl, r.br)
+    r += delta
+
     page.draw_oval(r)
+    r += delta
+
     page.draw_rect(r)
+    r += delta
+
     page.draw_quad(r.quad)
+    r += delta
+
     page.draw_polyline((r.tl, r.tr, r.br))
+    r += delta
+
     page.draw_bezier(r.tl, r.tr, r.br, r.bl)
+    r += delta
+
     page.draw_curve(r.tl, r.tr, r.br)
-    # page.draw_zigzag(r.tl, r.br)
+    r += delta
+
     page.draw_squiggle(r.tl, r.br)
+    r += delta
+
+    rects = [p["rect"] for p in page.get_cdrawings()]
+    bboxes = [b[1] for b in page.get_bboxlog()]
+    for i, r in enumerate(rects):
+        assert fitz.Rect(r) in fitz.Rect(bboxes[i])

@@ -1,8 +1,8 @@
-# PyMuPDF 1.18.19
+# PyMuPDF 1.19.0
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: September 16, 2021
+Release date: October 17, 2021
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
@@ -11,7 +11,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads]
 
 # Introduction
 
-PyMuPDF (current version 1.18.19) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.18.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
+PyMuPDF (current version 1.19.0) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.19.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -27,6 +27,7 @@ For all supported document types (i.e. **_including images_**) you can
 * search for text
 * extract text and images
 * convert to other formats: PDF, (X)HTML, XML, JSON, text
+* perform Optical Character Recognition if Tesseract is installed
 
 > To some degree, PyMuPDF can therefore be used as an [image converter](https://github.com/pymupdf/PyMuPDF/wiki/How-to-Convert-Images): it can read a range of input formats and can produce **Portable Network Graphics (PNG)**, **Portable Anymaps** (**PNM**, etc.), **Portable Arbitrary Maps (PAM)**, **Adobe Postscript** and **Adobe Photoshop** documents, making the use of other graphics packages obselete in these cases. But interfacing with e.g. PIL/Pillow for image input and output is easy as well.
 
@@ -35,7 +36,7 @@ For **PDF documents,** there exists a plethora of additional features: they can 
 * Images and fonts can be extracted or inserted.
     > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/image-maintenance.py) cool GUI example script, which lets you **_insert, delete, replace_** or **_re-position_** images under your visual control.
 
-    > Since v1.18.8 there is a `Document` method `subset_fonts()`, which automatically builds subsets based on the usage of all eligible fonts in the document. Especially for new documents, this can lead to significant file size reductions. The method was developed in cooperation with our user @cuteufo - again thanks a lot for the contribution.
+    > For eligible fonts, subsets can be built based on their usage in the document. Especially for new PDFs, this can lead to significant file size reductions.
 * Embedded files are fully supported.
 * PDFs can be reformatted to support double-sided printing, posterizing, applying logos or watermarks
 * Password protection is fully supported: decryption, encryption, encryption method selection, permmission level and user / owner password setting.
@@ -53,11 +54,6 @@ For **PDF documents,** there exists a plethora of additional features: they can 
 
 Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo), the [examples](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/pymupdf/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
-**_New: Layout preserving text extraction!_**
-
-> Via its subcommand "gettext", script [fitzcli.py](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/text-extraction/fitzcli.py) offers text extraction in different formats. Of special interest surely is layout preservation, which produces text as close to the original physical layout as possible, surrounding areas where there are images, or reproducing text in tables and multi-column text.
-
-See [here](https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-extraction#layout-preserving-text-extraction) for more information on layout preserving text extraction.
 
 # Documentation
 
@@ -81,25 +77,25 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade pymupdf
 ```
 
-There are **no mandatory** external dependencies. However, a few **optional methods** become available if additional packages are installed:
+There are **no mandatory** external dependencies. However, a some **optional features** become available if additional packages are installed:
 
-* [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly from PyMuPDF.
-* [fontTools](https://pypi.org/project/fonttools/) for creating font subsets on PDF output.
-* [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) to extend your text output options with some nice fonts.
+* [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly from PyMuPDF
+* [fontTools](https://pypi.org/project/fonttools/) for creating font subsets
+* [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) contains some nice fonts for your text output
+* [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract) for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location
 
 
 Older wheels - also with support for older Python versions - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and on PyPI.
 
-> Starting with v1.18.15, to minimize network traffic we no longer redundantly store wheels in this repository's releases folder. You can find older versions back to v1.9.2 on [PyPI](https://pypi.org/project/PyMuPDF/#history). Sources for every release continue to be stored in [here](https://github.com/pymupdf/PyMuPDF/releases).
+> Starting with v1.18.15, to minimize network traffic we no longer redundantly store wheels in this repository's `releases` folder. You can find older versions back to v1.9.2 on [PyPI](https://pypi.org/project/PyMuPDF/#history). Sources for every release continue to be stored in [here](https://github.com/pymupdf/PyMuPDF/releases).
 
 Other platforms **require installation from sources**, follow [these](https://pymupdf.readthedocs.io/en/latest/installation.html) instructions in the documentation.
 
-> **Note:** If you try installing from PyPI for a platform with no available wheel, pip will automatically start a source installation process - **_which will fail_** if it finds no MuPDF installation.
+> **Note:** If `pip` cannot find a wheel that is compatible with your platform, it will automatically start an installation from sources - **_which will fail_** if MuPDF is not installed on your system.
 
-Folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
+This repo's folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains several platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
 
 * [Ubuntu installation experience](https://github.com/pymupdf/PyMuPDF/wiki/Ubuntu-Installation-Experience).
-
 * [Windows wheels](https://github.com/pymupdf/PyMuPDF/wiki/Windows-Binaries-Generation).
 
 

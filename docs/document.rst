@@ -64,6 +64,16 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.has_links`              PDF only: check if PDF contains any links
 :meth:`Document.insert_page`            PDF only: insert a new page
 :meth:`Document.insert_pdf`             PDF only: insert pages from another PDF
+:meth:`Document.journal_enable`         PDF only: enables journalling for the document
+:meth:`Document.journal_start_op`       PDF only: start an "operation" giving it a name
+:meth:`Document.journal_stop_op`        PDF only: end current operation
+:meth:`Document.journal_position`       PDF only: return journalling status
+:meth:`Document.journal_op_name`        PDF only: return name of a journalling step
+:meth:`Document.journal_can_do`         PDF only: which journal actions are possible
+:meth:`Document.journal_undo`           PDF only: undo current operation
+:meth:`Document.journal_redo`           PDF only: redo current operation
+:meth:`Document.journal_save`           PDF only: save joural to a file
+:meth:`Document.journal_load`           PDF only: load joural from a file
 :meth:`Document.layer_configs`          PDF only: list of optional content configurations
 :meth:`Document.layer_ui_configs`       PDF only: list of optional content intents
 :meth:`Document.layout`                 re-paginate the document (if supported)
@@ -611,7 +621,7 @@ For details on **embedded files** refer to Appendix 3.
 
       *(New in version 1.16.4)*
 
-      A generator for a given range of pages. Parameters have the same meaning as in the built-in function *range()*. Intended for expressions of the form *"for page in doc.pages(start, stop, step): ..."*.
+      A generator for a range of pages. Parameters have the same meaning as in the built-in function *range()*. Intended for expressions of the form *"for page in doc.pages(start, stop, step): ..."*.
 
       :arg int start: start iteration with this page number. Default is zero, allowed values are -inf < start < page_count. While this is negative, :attr:`page_count` is added **before** starting the iteration.
       :arg int stop: stop iteration at this page number. Default is :attr:`page_count`, possible are -inf < stop <= page_count. Larger values are **silently replaced** by the default. Negative values will cyclically emit the pages in reversed order. As with the built-in *range()*, this is the first page **not** returned.
@@ -1069,9 +1079,10 @@ For details on **embedded files** refer to Appendix 3.
       :arg bool xml_metadata: Remove XML metadata.
 
 
-    .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+    .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
 
-      *(Changed in v1.18.7)*
+      * Changed in v1.18.7
+      * Changed in v1.19.0
 
       PDF only: Saves the document in its **current state**.
 
@@ -1106,6 +1117,8 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg bool pretty: Prettify the document source for better readability. PDF objects will be reformatted to look like the default output of :meth:`Document.xref_object`.
 
+      :arg bool no_new_id: Suppress the update of the file's ``/ID`` field. If the file happen to have no such field at all, also supporess creation of a new one. Default is ``False``, so every save will lead to an updated file iddentification.
+
       :arg int permissions: *(new in version 1.16.0)* Set the desired permission levels. See :ref:`PermissionCodes` for possible values. Default is granting all.
 
       :arg int encryption: *(new in version 1.16.0)* set the desired encryption method. See :ref:`EncryptionMethods` for possible values.
@@ -1127,9 +1140,10 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: saves the document incrementally. This is a convenience abbreviation for *doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)*.
 
 
-    .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+    .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
 
-      *(Changed in v1.18.7)*
+      * Changed in v1.18.7
+      * Changed in v1.19.0
 
       PDF only: Writes the **current content of the document** to a bytes object instead of to a file. Obviously, you should be wary about memory requirements. The meanings of the parameters exactly equal those in :meth:`save`. Chapter :ref:`FAQ` contains an example for using this method as a pre-processor to `pdfrw <https://pypi.python.org/pypi/pdfrw/0.3>`_.
 
@@ -1549,6 +1563,94 @@ For details on **embedded files** refer to Appendix 3.
       * **Changed in v1.18.9:** A subset font directly replaces its original -- text remains untouched and **is not rewritten.** It thus should retain all its properties, like spacing, hiddenness, control by Optional Content, etc.
 
       The greatest benefit can be achieved when creating new PDFs using large fonts like is typical for Asian scripts. In these cases, the set of actually used unicodes mostly is small compared to the number of glyphs in the font. Using this feature can easily reduce the embedded font binary by two orders of magnitude -- from several megabytes to a low two-digit kilobyte amount.
+
+
+    .. method:: journal_enable()
+
+      * New in v1.19.0
+
+      PDF only: Enable journalling. Use this before you start logging operations.
+
+    .. method:: journal_start_op(name)
+
+      * New in v1.19.0
+
+      PDF only: Start journalling an *"operation"* identified by a string "name". Updates will fail for a journal-enabled PDF, if no operation has been started.
+
+
+    .. method:: journal_stop_op()
+
+      * New in v1.19.0
+
+      PDF only: Stop the current operation. The updates between start and stop of an operation belong to the same unit of work and will be undone / redone together.
+
+
+    .. method:: journal_position()
+
+      * New in v1.19.0
+
+      PDF only: Return the numbers of the current operation and the total operation count.
+
+      :returns: a tuple ``(step, steps)`` containing the current operation number and the total number of operations in the journal. If **step** is 0, we are at the top of the journal. If **step** equals **steps**, we are at the bottom. Updating the PDF with anything other than undo or redo will automatically remove all journal entries after the current one and the new update will become the new last entry in the journal. The updates corresponding to the removed journal entries will be permanently lost.
+
+
+    .. method:: journal_op_name(step)
+
+      * New in v1.19.0
+
+      PDF only: Return the name of operation number *step.*
+
+
+    .. method:: journal_can_do()
+
+      * New in v1.19.0
+
+      PDF only: Show whether forward ("redo") and / or backward ("undo") executions are possible from the current journal postion.
+
+      :returns: a dictionary ``{"undo": bool, "redo": bool}``. The respective method is available if its value is ``True``.
+
+
+    .. method:: journal_undo()
+
+      * New in v1.19.0
+
+      PDF only: Revert (undo) the current step in the journal. This moves towards the journal's top.
+
+
+    .. method:: journal_redo()
+
+      * New in v1.19.0
+
+      PDF only: Re-apply (redo) the current step in the journal. This moves towards the journal's bottom.
+
+
+    .. method:: journal_save(filename)
+
+      * New in v1.19.0
+
+      PDF only: Save the journal to a file.
+
+      :arg str,fp filename: either a filename as string or a file object opened as "wb" (or an ``io.BytesIO()`` object).
+
+
+    .. method:: journal_load(filename)
+
+      * New in v1.19.0
+
+      PDF only: Load journal from a file. Enables journalling for the document. If journalling is already enabled, an exception is raised.
+
+      :arg str,fp filename: the filename (str) of the journal or a file object opened as "rb" (or an ``io.BytesIO()`` object).
+
+
+    .. method:: save_snapshot()
+
+      * New in v1.19.0
+
+      PDF only: Saves a "snapshot" of the document. This is a PDF document with a special, incremental-save format compatible with journalling -- therefore no save options are available. Saving a snapshot is not possible for new documents.
+
+      This is a normal PDF document with no usage restrictions whatsoever. If it is not being changed in any way, it can be used together with its journal to undo / redo operations or continue updating.
+
+
 
 
     .. attribute:: outline

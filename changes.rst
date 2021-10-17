@@ -1,9 +1,51 @@
-Change Logs
-===============
+Change Log
+===========
 
 ------
 
-**Changes in Version 1.18.18**
+**Changes in Version 1.19.0**
+
+This is the first version supporting MuPDF 1.19.*, published 2021-10-05. It introduces many new features compared to the previous version 1.18.*.
+
+PyMuPDF has now picked up integrated Tesseract OCR support, which was already present in MuPDF v1.18.0.
+
+* Supported images can be OCR-ed via their :ref:`Pixmap` which results in a 1-page PDF with a text layer.
+* All supported document pages (i.e. not only PDFs), can be OCR-ed using specialized text extraction methods. The result is a mixture of standard and OCR text (depending on which part of the page was deemed to require OCR-ing) that can be searched and extracted.
+* All this requires an independent installation of Tesseract. MuPDF actually (only) needs the location of Tesseract's ``"tessdata"`` folder, where its language support data are stored. This location must be available as environment variable ``TESSDATA_PREFIX``.
+
+A new MuPDF feature is **journalling PDF updates**, which is also supported by this PyMuPDF version. Changes may be logged, rolled back or replayed, allowing to implement a whole new level of control over PDF document integrity -- similar to functions present in modern database systems.
+
+A third feature (unrelated to the new MuPDF version) includes the ability to detect when page **objects cover or hide each other**. It is now e.g. possible to see that text is covered by a drawing or an image.
+
+* **Changed** terminology and meaning of important geometry concepts: Rectangles are now characterized as *finite*, *valid* or *empty*, while the definitions of these terms have changed. Rectangles specifically are now thought of being "open": not all corners and sides are considered part of the retangle. Please do read the :ref:`Rect` section for details.
+
+* **Added** new parameter `"no_new_id"` to :meth:`Document.save` / :meth:`Document.tobytes` methods. Use it to suppress updating the second item of the document ``/ID`` which in PDF indicates that the original file has been updated. If the PDF has no ``/ID`` at all yet, then no new one will be created either.
+
+* **Added** a **journalling facility** for PDF updates. This allows logging changes, undoing or redoing them, or saving the journal for later use. Refer to :meth:`Document.journal_enable` and friends.
+
+* **Added** new :ref:`Pixmap` methods :meth:`Pixmap.ocr_save` and :meth:`Pixmap.ocr_tobytes`, which generate a 1-page PDF containing the pixmap as PNG image with OCR text layer.
+
+* **Added** :meth:`Page.get_textpage_ocr` which executes optical character recognition for the page, then extracts the results and stores them together with "normal" page content in a :ref:`TextPage`. Use or reuse this object in subsequent text extractions and text searches to avoid multiple efforts. The existing text search and text extraction methods have been extended to support a separately created textpage -- see next item.
+
+* **Added** a new parameter ``textpage`` to text extraction and text search methods. This allows reuse of a previously created :ref:`TextPage` and thus achieves significant runtime benefits -- which is especially important for the new OCR features. But "normal" text extractions can definitely also benefit.
+
+* **Added** :meth:`Page.get_texttrace`, a technical method delivering low-level text character properties. It was present before as a private method, but the author felt it now is mature enough to be officially available. It specifically includes a "sequence number" which indicates the page appearance build operation that painted the text.
+
+* **Added** :meth:`Page.get_bboxlog` which delivers the list of rectangles of page objects like text, images or drawings. Its significance lies in its sequence: rectangles intersecting areas with a lower index are covering or hiding them.
+
+* **Changed** methods :meth:`Page.get_drawings` and :meth:`Page.get_cdrawings` to include a "sequence number" indicating the page appearance build operation that created the drawing.
+
+* **Fixed** `#1311 <https://github.com/pymupdf/PyMuPDF/issues/1311>`_. Field values in comboboxes should now be handled correctly.
+* **Fixed** `#1290 <https://github.com/pymupdf/PyMuPDF/issues/1290>`_. Error was caused by incorrect rectangle emptiness check, which is fixed due to new geometry logic of this version.
+* **Fixed** `#1286 <https://github.com/pymupdf/PyMuPDF/issues/1286>`_. Text alignment for redact annotations is working again.
+* **Fixed** `#1287 <https://github.com/pymupdf/PyMuPDF/issues/1287>`_. Infinite loop issue for non-Windows systems when applying some redactions has been resolved.
+* **Fixed** `#1284 <https://github.com/pymupdf/PyMuPDF/issues/1284>`_. Text layout destruction after applying redactions in some cases has been resolved.
+
+------
+
+**Changes in Version 1.18.18 / 1.18.19**
+
+* **Fixed** issue `#1266 <https://github.com/pymupdf/PyMuPDF/issues/1266>`_. Failure to set :attr:`Pixmap.samples` in important cases, was hotfixed in a new version 1.18.19.
 
 * **Fixed** issue `#1257 <https://github.com/pymupdf/PyMuPDF/issues/1257>`_. Removing the read-only flag from PDF fields is now possible.
 
@@ -25,7 +67,7 @@ Focus of this version are major performance improvements of selected functions.
 
 * **Fixed** issue `#1199 <https://github.com/pymupdf/PyMuPDF/issues/1199>`_. Using a non-existing page number in :meth:`Document.get_page_images` and friends will no longer lead to segfaults.
 
-* **Changed** :meth:`Page.get_drawings` to now differentiate between "stroke", "fill" and combined paths. Paths containing more than one rectangle are now supported. Extracting "clipped" paths is now available as an option.
+* **Changed** :meth:`Page.get_drawings` to now differentiate between "stroke", "fill" and combined paths. Paths containing more than one rectangle (i.e. "re" items) are now supported. Extracting "clipped" paths is now available as an option.
 
 * **Added** :meth:`Page.get_cdrawings`, performance-optimized version of :meth:`Page.get_drawings`.
 

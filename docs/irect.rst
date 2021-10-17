@@ -4,7 +4,7 @@
 IRect
 ==========
 
-IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering. Otherwise, many similarities exist, e.g. considerations concerning emptiness and finiteness of rectangles also apply to this class.
+IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering. Otherwise, e.g. considerations concerning emptiness and validity of rectangles also apply to this class. Methods and attributes have the same names, and in many cases are implemented by re-using the respective :ref:`Rect` counterparts.
 
 ============================== ===========================================
 **Attribute / Method**          **Short Description**
@@ -48,7 +48,7 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
       If another irect is specified, a **new copy** will be made.
 
-      If sequence is specified, it must be a Python sequence type of 4 numbers (see :ref:`SequenceTypes`). Non-integer numbers will be truncated, non-numeric entries will raise an exception.
+      If sequence is specified, it must be a Python sequence type of 4 numbers (see :ref:`SequenceTypes`). Non-integer numbers will be truncated, non-numeric values will raise an exception.
 
       The other parameters mean integer coordinates.
 

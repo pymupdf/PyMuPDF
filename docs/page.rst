@@ -83,6 +83,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.get_text`              extract the page's text
 :meth:`Page.get_textbox`           extract text contained in a rectangle
 :meth:`Page.get_textpage`          create a TextPage for the page
+:meth:`Page.get_textpage_ocr`      create a TextPage with OCR for the page
 :meth:`Page.get_xobjects`          PDF only: get list of referenced xobjects
 :meth:`Page.insert_font`           PDF only: insert a font for use by the page
 :meth:`Page.insert_image`          PDF only: insert an image
@@ -933,8 +934,11 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: words; get_text
       pair: xhtml; get_text
       pair: xml; get_text
+      pair: textpage; get_text
 
-   .. method:: get_text(opt="text", clip=None, flags=None)
+   .. method:: get_text(opt="text", clip=None, flags=None, textpage=None)
+
+      * Changed in v1.19.0
 
       Retrieves the content of a page in a variety of formats. This is a wrapper for :ref:`TextPage` methods by choosing the output option as follows:
 
@@ -957,6 +961,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int flags: *(new in version 1.16.2)* indicator bits to control whether to include images or how text should be handled with respect to white spaces and :data:`ligatures`. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings.
 
+      :arg textpage: reuse a previously created :ref:`TextPage`. This reduces execution time **significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored.
+
       :rtype: *str, list, dict*
       :returns: The page's content as a string, a list or a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
 
@@ -965,15 +971,21 @@ In a nutshell, this is what you can do with PyMuPDF:
         1. You can use this method as a **document conversion tool** from any supported document type (not only PDF!) to one of TEXT, HTML, XHTML or XML documents.
         2. The inclusion of text via the *clip* parameter is decided on a by-character level: **(changed in v1.18.2)** a character becomes part of the output, if its bbox is contained in *clip*. This **deviates** from the algorithm used in redaction annotations: a character will be removed if its bbox intersects with some redaction annotation.
 
-   .. method:: get_textbox(rect)
+   .. index::
+      pair: rect; get_textbox
+      pair: textpage; get_textbox
 
-      *(New in v1.17.7)*
+   .. method:: get_textbox(rect, textpage=None)
+
+      * New in v1.17.7
+      * Changed in v1.19.0
 
       Retrieve the text contained in a rectangle.
 
       :arg rect-like rect: rect-like.
+      :arg textpage: a :ref:`TextPage` to use. If omitted, a textpage will be created and deleted again afterwards.
 
-      :returns: a string with interspersed linebreaks where necessary. This is the same as ``page.get_text("text", clip=rect, flags=0)`` with one removed final line break. A tyical use is checking the result of :meth:`Page.search_for`:
+      :returns: a string with interspersed linebreaks where necessary. Changed in v1.19.0: It is based on dedicated code. A tyical use is checking the result of :meth:`Page.search_for`:
 
         >>> rl = page.search_for("currency:")
         >>> page.get_textbox(rl[0])
@@ -983,6 +995,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. index::
       pair: flags; get_textpage
+      pair: clip; get_textpage
 
    .. method:: get_textpage(clip=None, flags=3)
 
@@ -996,10 +1009,30 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :returns: :ref:`TextPage`
 
-   .. method:: get_drawings(clippings=False)
 
-      * *New in v1.18.0*
-      * *Changed in v1.18.17*
+   .. index::
+      pair: clip; get_textpage_ocr
+      pair: flags; get_textpage_ocr
+      pair: lang; get_textpage_ocr
+
+   .. method:: get_textpage_ocr(clip=None, flags=3, language="eng")
+
+      *(New in version 1.19.0)*
+
+      Create a :ref:`TextPage` for the page including normal **and** OCR-ed text.
+
+      :arg in flags: indicator bits controlling the content available for subsequent extraction -- see the parameter of :meth:`Page.get_text`.
+      :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this area -- to be used by text extraction methods.
+      :arg str language: the expected language(s).
+
+      :returns: :ref:`TextPage`. Excution may be significantly longer than :meth:`Page.get_textpage`. To provide an opportunity to **explicitely** request OCR, we have added a new argument ``textpage`` to text extraction and text search methods. Letting these methods choose the underlying textpage helps makeing sure, that the page parsing results are kept available in a :ref:`TextPage` object. Your performance will already benefit if you use more then one text extraction method for the same page.
+
+
+   .. method:: get_drawings()
+
+      * New in v1.18.0
+      * Changed in v1.18.17
+      * Changed in v1.19.0
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
@@ -1021,7 +1054,7 @@ In a nutshell, this is what you can do with PyMuPDF:
             fill_opacity   (new in v1.18.17) fill color transparency (see :ref:`Shape`).
             stroke_opacity (new in v1.18.17) stroke color transparency  (see :ref:`Shape`).
             rect           Page area covered by this path. Information only.
-            scissor        (new in v1.18.17) limit display to this area (clippings only).
+            seqno          (new in v1.19.0) command number when building page appearance
             type           (new in v1.18.17) type of this path.
             width          Stroke line width  (see :ref:`Shape`).
             ============== ============================================================================
@@ -1033,8 +1066,6 @@ In a nutshell, this is what you can do with PyMuPDF:
             * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, irrelevant ones have been added with default values for backward compatibility: ``"color"``, ``"lineCap"``, ``"lineJoin"``, ``"width"``, ``"closePath"``, ``"dashes"`` and should be ignored.
             * **"s"** -- this is a *stroke-only* path. Similar to previous, key ``"fill"`` is present with value ``None``.
             * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
-            * **"c"** -- this is a *clip* path. Only included if *clippings=True*.
-            * **"cs"** -- this is a *clip-stroke* path. Only included if *clippings=True*.
 
             Each item in ``path["items"]`` is one of the following:
 
@@ -1045,27 +1076,26 @@ In a nutshell, this is what you can do with PyMuPDF:
 
             Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity, but see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
 
-            The following **limitations** exist by design:
+      .. note::
+           * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of any item (drawings and other objects) depending on whatever condition: for example showing or suppressing a watermark depending on the current output device (screen, paper, ...), or option-based inclusion / omission of details in a technical document, and so on. Effects like these are ignored by the method -- it will **unconditionally return all paths**.
+           
+           * When a viewer software builds a page's appearance, it will sequentially walk through a list of commands (in PDF, those are stored in the ``/Contents`` object), containing instructions like "draw this path, show this image, paint this text, etc.". The key ``"seqno"`` (new in v1.19.0) is the command number, that draws this path. You can use it to determine if objects cover other objects on the page. For example, the rectangle of a "fill" path will cover objects drawn earlier -- i.e. having a smaller ``"seqno"`` -- if the rectangles overlap. Please also see :meth:`Page.get_bboxlog` and :meth:`Page.get_texttrace`.
 
-            * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of any item (drawings and other objects) depending on whatever condition: for example showing or suppressing a watermark depending on the current output device (screen, paper, ...), or option-based inclusion / omission of details in a technical document, and so on.
-            * Only drawings are considered, other page content is ignored. The method therefore does not detect, whether a drawing is covered, hidden or overlaid in the original document (e.g. by some text or by an image).
+      .. note:: This method is based on the output of :meth:`Page.get_cdrawings` -- which is faster, but requires somewhat more attention processing its output.
 
-            Effects like these are ignored by the method -- it will **unconditionally return all paths**.
+      .. note:: The ``"clippings"`` key present in an earlier version has been removed again in v1.19.0.
 
-      .. note:: This method is much faster than in earlier version. It is based on the output of :meth:`Page.get_cdrawings` -- which in turn is faster but requires more attention processing its output.
+   .. method:: get_cdrawings()
 
-      .. note:: The ``"clippings"`` parameter requests to also return clipping paths. These are paths which do not display drawings, but instead suppress the visibility of other paths outside some rectangle given as path key "scissor". The detail workings of this mechanism are yet under investigation.
-
-   .. method:: get_cdrawings(clippings=False)
-
-      * *New in v1.18.17*
+      * New in v1.18.17
+      * Changed in v1.19.0: removed *clippings* key, added *seqno* key.
 
       Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster (factor 3 or more):
 
       * Every path type only contains the relevant keys, e.g. a stroke path has no ``"fill"`` color key. See comment in method :meth:`Page.get_drawings`.
       * Coordinates are given as :data:`point_like`, :data:`rect_like` and :data:`quad_like` **tuples** -- not as :ref:`Point`, :ref:`Rect`, :ref:`Quad` objects.
 
-      .. note:: If performance is your concern, because your page has tens of thousands of drawings, consider using this method: Compared to versions earlier than 1.18.17, you should see much shorter response times. We have seen pages that required 2 seconds then, now only needing 200 ms with this method.
+      .. note:: If performance is a concern (e.g. because your page has tens of thousands of drawings), consider using this method: Compared to versions earlier than 1.18.17, you should see much shorter response times. We have seen pages that required 2 seconds then, now only need 200 ms with this method.
 
 
    .. method:: get_fonts(full=False)
@@ -1356,7 +1386,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: quads; search_for
       pair: clip; search_for
 
-   .. method:: search_for(needle, clip=clip, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES)
+   .. method:: search_for(needle, clip=clip, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES, textpage=None)
 
       *(Changed in v1.18.2)*
 
@@ -1366,6 +1396,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect_like clip: *(New in v1.18.2)* only search within this area.
       :arg bool quads: Return object type :ref:`Quad` instead of :ref:`Rect`.
       :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default, ligatures and white spaces are kept, and hyphenation is detected.
+      :arg textpage: reuse a previously created :ref:`TextPage`. This reduces execution time **significantly.** If specified, the 'flags' and 'clip' arguments are ignored.
 
       :rtype: list
 

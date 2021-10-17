@@ -126,11 +126,17 @@ else:
         "./mupdf/thirdparty/freetype/include",
     ]
     library_dirs = ["./mupdf/platform/win32/x64/Release"]
-    libraries = ["libmupdf", "libresources", "libthirdparty"]
+    libraries = [
+        "libmupdf",
+        "libresources",
+        "libthirdparty",
+        "libleptonica",
+        "libtesseract",
+    ]
     extra_link_args = ["/NODEFAULTLIB:MSVCRT"]
 
 # add any local include and library folders
-pymupdf_dirs = os.environ.get("PYMUPDF-DIRS", None)
+pymupdf_dirs = os.environ.get("PYMUPDF_DIRS", None)
 if pymupdf_dirs:
     with open(pymupdf_dirs) as dirfile:
         local_dirs = json.load(dirfile)
@@ -141,6 +147,7 @@ if pymupdf_dirs:
 module = Extension(
     "fitz._fitz",
     ["fitz/fitz.i"],
+    language="c++",
     include_dirs=include_dirs,
     library_dirs=library_dirs,
     libraries=libraries,
@@ -168,7 +175,7 @@ with open(os.path.join(setup_py_cwd, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="PyMuPDF",
-    version="1.18.19",
+    version="1.19.0",
     description="Python bindings for the PDF toolkit and renderer MuPDF",
     long_description=readme,
     long_description_content_type="text/markdown",

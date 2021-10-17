@@ -48,7 +48,8 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, fz_re
     fz_device *dev = NULL;
     fz_var(dev);
     fz_var(tp);
-    fz_stext_options options = { 0 };
+    fz_stext_options options;
+    memset(&options, 0, sizeof options);
     options.flags = flags;
     fz_try(ctx) {
         tp = fz_new_stext_page(ctx, rect);
@@ -58,6 +59,45 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, fz_re
     }
     fz_always(ctx) {
         fz_drop_device(ctx, dev);
+    }
+    fz_catch(ctx) {
+        fz_drop_stext_page(ctx, tp);
+        fz_rethrow(ctx);
+    }
+    return tp;
+}
+
+
+//-----------------------------------------------------------------------------
+// Make OCR text page directly from an fz_page
+//-----------------------------------------------------------------------------
+fz_stext_page *
+JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, int flags,
+        const char *lang)
+{
+    if (!page) return NULL;
+    int with_list = 1;
+    fz_stext_page *tp = NULL;
+    fz_device *dev = NULL, *ocr_dev = NULL;
+    fz_var(dev);
+    fz_var(ocr_dev);
+    fz_var(tp);
+    fz_stext_options options;
+    memset(&options, 0, sizeof options);
+    options.flags = flags;
+    fz_matrix ctm = fz_identity;
+
+    fz_try(ctx) {
+        tp = fz_new_stext_page(ctx, rect);
+        dev = fz_new_stext_device(ctx, tp, &options);
+        ocr_dev = fz_new_ocr_device(ctx, dev, ctm, rect, with_list, lang, NULL, NULL);
+        fz_run_page(ctx, page, ocr_dev, ctm, NULL);
+        fz_close_device(ctx, ocr_dev);
+        fz_close_device(ctx, dev);
+    }
+    fz_always(ctx) {
+        fz_drop_device(ctx, dev);
+        fz_drop_device(ctx, ocr_dev);
     }
     fz_catch(ctx) {
         fz_drop_stext_page(ctx, tp);
@@ -739,6 +779,57 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
     DICT_SETITEM_DROP(page_dict, dictkey_blocks, block_list);
     fz_drop_buffer(ctx, text_buffer);
 }
+
+
+
+//---------------------------------------------------------------------
+char *
+JM_copy_rectangle(fz_context *ctx, fz_stext_page *page, fz_rect area)
+{
+	fz_stext_block *block;
+	fz_stext_line *line;
+	fz_stext_char *ch;
+	fz_buffer *buffer;
+	unsigned char *s;
+	int need_new_line = 0;
+
+	buffer = fz_new_buffer(ctx, 1024);
+	fz_try(ctx) {
+		for (block = page->first_block; block; block = block->next) {
+			if (block->type != FZ_STEXT_BLOCK_TEXT)
+				continue;
+			for (line = block->u.t.first_line; line; line = line->next) {
+				int line_had_text = 0;
+				for (ch = line->first_char; ch; ch = ch->next) {
+					fz_rect r = JM_char_bbox(ctx, line, ch);
+					if (fz_contains_rect(area, r)) {
+						line_had_text = 1;
+						if (need_new_line) {
+							fz_append_string(ctx, buffer, "\n");
+							need_new_line = 0;
+						}
+						fz_append_rune(ctx, buffer, ch->c < 32 ? FZ_REPLACEMENT_CHARACTER : ch->c);
+					}
+				}
+				if (line_had_text)
+					need_new_line = 1;
+			}
+		}
+		fz_terminate_buffer(ctx, buffer);
+	}
+	fz_catch(ctx) {
+		fz_drop_buffer(ctx, buffer);
+		fz_rethrow(ctx);
+	}
+
+
+	fz_buffer_extract(ctx, buffer, &s); /* take over the data */
+	fz_drop_buffer(ctx, buffer);
+	return (char*)s;
+}
+//---------------------------------------------------------------------
+
+
 
 
 fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *what, int compress, int ascii)

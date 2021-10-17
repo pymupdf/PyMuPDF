@@ -174,7 +174,7 @@ For the PyMuPDF programmer, some combination (using Python's ``|`` operator, or 
 
 .. py:data:: TEXT_DEHYPHENATE
 
-    16 -- Ignore hyphens at line ends and join with next line. Used internally with the text search functions.
+    16 -- Ignore hyphens at line ends and join with next line. Used internally with the text search functions. However, it is generally available: if on, text extractions will return joined text lines (or spans) with the ending hyphen of the first line eliminated. So two separate spans **"first meth-"** and **"od leads to wrong results"** on different lines will be joined to one span **"first method leads to wrong results"** and correspondingly updated bboxes: the characters of the resulting span will no longer have identical y-coordinates.
 
 .. py:data:: TEXT_PRESERVE_SPANS
 

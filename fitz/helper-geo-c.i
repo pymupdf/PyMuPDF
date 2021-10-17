@@ -17,8 +17,16 @@ JM_INT_ITEM(PyObject *obj, Py_ssize_t idx, int *result)
 {
     PyObject *temp = PySequence_ITEM(obj, idx);
     if (!temp) return 1;
-    *result = (int) PyLong_AsLong(temp);
-    Py_DECREF(temp);
+    if (PyLong_Check(temp)) {
+        *result = (int) PyLong_AsLong(temp);
+        Py_DECREF(temp);
+    } else if (PyFloat_Check(temp)) {
+        *result = (int) PyFloat_AsDouble(temp);
+        Py_DECREF(temp);
+    } else {
+        Py_DECREF(temp);
+        return 1;
+    }
     if (PyErr_Occurred()) {
         PyErr_Clear();
         return 1;

@@ -20,43 +20,45 @@ In PyMuPDF, there exist several ways to create a pixmap. Except the first one, a
 
 Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
-============================= ===================================================
-**Method / Attribute**        **Short Description**
-============================= ===================================================
-:meth:`Pixmap.clear_with`     clear parts of a pixmap
-:meth:`Pixmap.copy`           copy parts of another pixmap
-:meth:`Pixmap.gamma_with`     apply a gamma factor to the pixmap
-:meth:`Pixmap.tobytes`        return a memory area in a variety of formats
-:meth:`Pixmap.invert_irect`   invert the pixels of a given area
-:meth:`Pixmap.pil_save`       save as image using pillow
-:meth:`Pixmap.pil_tobytes`    write to ``bytes`` object using pillow
-:meth:`Pixmap.pixel`          return the value of a pixel
-:meth:`Pixmap.set_alpha`      set alpha values
-:meth:`Pixmap.set_pixel`      set the color of a pixel
-:meth:`Pixmap.set_rect`       set the color of a rectangle
-:meth:`Pixmap.set_dpi`        set the image resolution
-:meth:`Pixmap.set_origin`     set pixmap x,y values
-:meth:`Pixmap.shrink`         reduce size keeping proportions
-:meth:`Pixmap.tint_with`      tint a pixmap with a color
-:meth:`Pixmap.save`           save a pixmap in a variety of formats
-:attr:`Pixmap.alpha`          transparency indicator
-:attr:`Pixmap.colorspace`     pixmap's :ref:`Colorspace`
-:attr:`Pixmap.digest`         MD5 hashcode of the pixmap
-:attr:`Pixmap.height`         pixmap height
-:attr:`Pixmap.interpolate`    interpolation method indicator
-:attr:`Pixmap.irect`          :ref:`IRect` of the pixmap
-:attr:`Pixmap.n`              bytes per pixel
-:attr:`Pixmap.samples`        ``bytes`` copy of pixel area
-:attr:`Pixmap.samples_mv`     ``memoryview`` of pixel area
-:attr:`Pixmap.samples_ptr`    Python pointer to pixel area
-:attr:`Pixmap.size`           pixmap's total length
-:attr:`Pixmap.stride`         size of one image row
-:attr:`Pixmap.width`          pixmap width
-:attr:`Pixmap.x`              X-coordinate of top-left corner
-:attr:`Pixmap.xres`           resolution in X-direction
-:attr:`Pixmap.y`              Y-coordinate of top-left corner
-:attr:`Pixmap.yres`           resolution in Y-direction
-============================= ===================================================
+================================ ===================================================
+**Method / Attribute**           **Short Description**
+================================ ===================================================
+:meth:`Pixmap.clear_with`        clear parts of the pixmap
+:meth:`Pixmap.copy`              copy parts of another pixmap
+:meth:`Pixmap.gamma_with`        apply a gamma factor to the pixmap
+:meth:`Pixmap.invert_irect`      invert the pixels of a given area
+:meth:`Pixmap.ocr_save`          save the pixmap as an OCR-ed 1-page PDF
+:meth:`Pixmap.ocr_tobytes`       save the pixmap as an OCR-ed 1-page PDF
+:meth:`Pixmap.pil_save`          save as image using pillow
+:meth:`Pixmap.pil_tobytes`       write to ``bytes`` object using pillow
+:meth:`Pixmap.pixel`             return the value of a pixel
+:meth:`Pixmap.save`              save the pixmap in a variety of formats
+:meth:`Pixmap.set_alpha`         set alpha values
+:meth:`Pixmap.set_dpi`           set the image resolution
+:meth:`Pixmap.set_origin`        set pixmap x,y values
+:meth:`Pixmap.set_pixel`         set color and alpha of a pixel
+:meth:`Pixmap.set_rect`          set color and alpha of all pixels in a rectangle
+:meth:`Pixmap.shrink`            reduce size keeping proportions
+:meth:`Pixmap.tint_with`         tint the pixmap with a color
+:meth:`Pixmap.tobytes`           return a memory area in a variety of formats
+:attr:`Pixmap.alpha`             transparency indicator
+:attr:`Pixmap.colorspace`        pixmap's :ref:`Colorspace`
+:attr:`Pixmap.digest`            MD5 hashcode of the pixmap
+:attr:`Pixmap.height`            pixmap height
+:attr:`Pixmap.interpolate`       interpolation method indicator
+:attr:`Pixmap.irect`             :ref:`IRect` of the pixmap
+:attr:`Pixmap.n`                 bytes per pixel
+:attr:`Pixmap.samples_mv`        ``memoryview`` of pixel area
+:attr:`Pixmap.samples_ptr`       Python pointer to pixel area
+:attr:`Pixmap.samples`           ``bytes`` copy of pixel area
+:attr:`Pixmap.size`              pixmap's total length
+:attr:`Pixmap.stride`            size of one image row
+:attr:`Pixmap.width`             pixmap width
+:attr:`Pixmap.x`                 X-coordinate of top-left corner
+:attr:`Pixmap.xres`              resolution in X-direction
+:attr:`Pixmap.y`                 Y-coordinate of top-left corner
+:attr:`Pixmap.yres`              resolution in Y-direction
+================================ ===================================================
 
 **Class API**
 
@@ -313,6 +315,48 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg str,Path,file filename: The file to save to. May be provided as a string, as a ``pathlib.Path`` or as a Python file object. In the latter two cases, the filename is taken from the resp. object. The filename's extension determines the image format, which can be overruled by the output parameter.
 
       :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
+
+   .. method:: ocr_save(filename, compress=True, language="eng")
+
+      * New in v1.19.0
+
+      Perform text recognition using Tesseract and save the image as a 1-page PDF with an OCR text layer.
+
+      :arg str,fp filename: identifies the file to save to. May be either a string or a pointer to a file opened with "wb" (includes ``io.BytesIO()`` objects).
+      :arg bool compress: whether to compress the resulting PDF, default is ``True``.
+      :arg str language: the languages occurring in the image. This must be specified in Tesseract format. Default is "eng" for English. Use comma-separated Tesseract language codes for multiple languages, like "eng,spa" for English and Spanish.
+
+      .. note:: **Will fail** if Tesseract is not installed or if the environment variable "TESSDATA_PREFIX" is not set to the ``tessdata`` folder name. This is what you would typically see on a Windows platform:
+
+         >>> import os
+         >>> print(os.environ["TESSDATA_PREFIX"])
+         C:\Program Files\Tesseract-OCR\tessdata
+
+      Respectively on a Linux system:
+
+         >>> import os
+         >>> print(os.environ["TESSDATA_PREFIX"])
+         /usr/share/tesseract-ocr/4.00/tessdata
+
+
+   .. method:: ocr_tobytes(compress=True, language="eng")
+
+      * New in v1.19.0
+
+      Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.ocr_save`.
+
+      :returns: A 1-page PDF file in memory. Could be opened like ``doc=fitz.open("pdf", pix.ocr_tobytes())``, and text extractions could be performed on its ``page=doc[0]``.
+      
+         .. note::
+         
+            Another possible use is insertion into some pdf. The following snippet reads the images of a folder and stores them as pages in a new PDF that contain an OCR text layer::
+
+               doc = fitz.open()
+               for imgfile in os.listdir(folder):
+                  pix = fitz.Pixmap(imgfile)
+                  imgpdf = fitz.open("pdf", pix.ocr_tobytes())
+                  doc.insert_pdf(imgpdf)
+               doc.save("ocr-images.pdf")
 
 
    .. method:: tobytes(output="png")

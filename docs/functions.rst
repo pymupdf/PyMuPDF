@@ -34,12 +34,13 @@ Yet others are handy, general-purpose utilities.
 :meth:`Page.clean_contents`          PDF only: clean the page's :data:`contents` objects
 :meth:`Page.get_contents`            PDF only: return a list of content :data:`xref` numbers
 :meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
+:meth:`Page.get_bboxlog`             list of rectangles that envelop text, drawing or image objects
 :meth:`Page.get_displaylist`         create the page's display list
 :meth:`Page.get_text_blocks`         extract text blocks as a Python list
 :meth:`Page.get_text_words`          extract text words as a Python list
 :meth:`Page.run`                     run a page through a device
 :meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
-:meth:`Page._get_texttrace`          low-level text information
+:meth:`Page.get_texttrace`           low-level text information
 :meth:`Page.wrap_contents`           wrap contents with stacking commands
 :attr:`Page.is_wrapped`              check whether contents wrapping is present
 :meth:`planish_line`                 matrix to map a line to the x-axis
@@ -397,38 +398,65 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page._get_texttrace()
+   .. method:: Page.get_bboxlog()
 
-      *New in v1.18.16*
+      * New in v1.19.0
+
+      :returns: a list of rectangles that envelop text, image or drawing objects. Each item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple consists of rectangle coordinates, and type is one of the following values:
+
+         * ``"fill-text"`` -- normal text (painted without character borders)
+         * ``"stroke-text"`` -- text showing character borders only
+         * ``"ignore-text"`` -- text that should not be displayed (e.g. as used by OCR text layers)
+         * ``"fill-path"`` -- drawing with fill color (and no border)
+         * ``"stroke-path"`` -- drawing with border (and no fill color)
+         * ``"fill-image"`` -- displays an image
+         * ``"fill-shade"`` -- display a shading
+
+         The item sequence represents the **sequence in which these commands are executed** to build the page's appearance. Therefore, if an item's bbox intersects or contains that of a previous item, then the previous item may be (partially) covered / hidden.
+
+         So this list is useful to detect such situations. An item's index in this list equals the value of ``"seqno"` keys you will find in the dictionaries returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`.
+
+-----
+
+   .. method:: Page.get_texttrace()
+
+      * New in v1.18.16
+      * Changed in v1.19.0
 
       Return low-level text information of the page. The method is available for **all** document types. The result is a list of Python dictionaries with the following content::
 
-        {
-            'ascender': 0.75,                   # font ascender (1)
+         {
+            'ascender': 0.83251953125,          # font ascender (1)
+            'bbox': (458.14019775390625,        # span bbox x0 (7)
+                     749.4671630859375,         # span bbox y0
+                     467.76458740234375,        # span bbox x1
+                     757.5071411132812),        # span bbox y1
             'bidi': 0,                          # bidirectional level (1)
             'chars': (                          # char information, tuple[tuple]
-                  (32,                          # unicode (4)
-                   3,                           # glyph id (font dependent)
-                   (470.3800354003906,          # origin.x (1)
-                    755.3758544921875),         # origin.y (1)
-                   2.495859366375953            # width (points) (6)
-                  ),
-                  ( ... )
-               ),
+                        (45,                    # unicode (4)
+                        16,                     # glyph id (font dependent)
+                        (458.14019775390625,    # origin.x (1)
+                        755.3758544921875),     # origin.y (1)
+                        (458.14019775390625,    # char bbox x0 (6)
+                        749.4671630859375,      # char bbox y0
+                        462.9649963378906,      # char bbox x1
+                        757.5071411132812)),    # char bbox y1
+                        ( ... ),                # more characters
+                     ),
             'color': (0.0,),                    # text color, tuple[float] (1)
             'colorspace': 1,                    # number of colorspace components (1)
-            'descender': -0.25,                 # font descender (1)
+            'descender': -0.30029296875,        # font descender (1)
             'dir': (1.0, 0.0),                  # writing direction (1)
-            'flags': 4,                         # font flags (1)
-            'font': 'Calibri',                  # font name (1)
-            'linewidth': 0.5519999980926514,    # current line width value (3)
+            'flags': 12,                        # font flags (1)
+            'font': 'CourierNewPSMT',           # font name (1)
+            'linewidth': 0.4019999980926514,    # current line width value (3)
             'opacity': 1.0,                     # alpha value of the text (5)
-            'scissor': (1.0, 1.0, -1.0, -1.0),  # <ignore>
-            'size': 11.039999961853027,         # font size (1)
-            'spacewidth': 2.495859366375953,    # width of space char
+            'seqno': 246,                       # sequence number (8)
+            'size': 8.039999961853027,          # font size (1)
+            'spacewidth': 4.824785133358091,    # width of space char
             'type': 0,                          # span type (2)
             'wmode': 0                          # writing mode (1)
-        }
+         }
 
       Details:
 
@@ -437,36 +465,35 @@ Yet others are handy, general-purpose utilities.
          - Please note that the font ``flags`` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
          - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on ``span["type"]``, interpret this as fill color or stroke color.
 
-      2. There are 5 text span types:
+      2. There are 3 text span types:
 
-         0. Filled text -- equivalent to PDF text rendering mode 0 (``0 Tr``, the default in PDF), only each character's "inside" is shown.
-         1. Stroked text -- equivalent to ``1 Tr``, only the character borders are shown.
-         2. Clipped text -- details yet unknown.
-         3. Clip-stroked text -- details yet unknown.
-         4. Ignored text -- equivalent to ``3 Tr`` (hidden text).
+         - 0: Filled text -- equivalent to PDF text rendering mode 0 (``0 Tr``, the default in PDF), only each character's "inside" is shown.
+         - 1: Stroked text -- equivalent to ``1 Tr``, only the character borders are shown.
+         - 3: Ignored text -- equivalent to ``3 Tr`` (hidden text).
       
       3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing it for you.
       4. For data compactness, the character's unicode is provided here. Use built-in function ``chr()`` for the character itself.
       5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent. Depending in ``span["type"]``, interpret this value as *fill* opacity or, resp. *stroke* opacity.
-      6. This value is equal / close to the width of ``char["bbox"]``. However, on occasion you may find a small delta.
+      6. *(Changd in v1.19.0)* This value is equal / close to the width of ``char["bbox"]``. However, on occasion you may find a small delta. In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
+      7. *(New in v1.19.0)* This is the union of all character bboxes.
+      8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, whch are painted "later", or over some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans may have identical sequence numbers if they have been created consecutively.
 
-      Here is a list of similarities and differences of ``page._get_texttrace()`` compared to ``page.get_text("rawdict")``:
+      Here is a list of similarities and differences of ``page.get_texttrace()`` compared to ``page.get_text("rawdict")``:
 
-      * The method is up to **twice as fast,** compared to "rawdict" extraction.
+      * The method is up to **twice as fast,** compared to "rawdict" extraction. Depends on the amount of text.
       * The returned data is very **much smaller in size** -- although it provides more information.
-      * Additional types of text **invisibility can be detected**: opacity = 0 and type > 1.
-      * Character bboxes are not provided; if needed, compute them from available information.
+      * Additional types of text **invisibility can be detected**: opacity = 0 or type > 1 or overlapping bbox of an object with a higher sequence number.
       * If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you may still be able to deduct desired information from the glyph id.
-      * The ``span["chars"]`` **contains no spaces**, **except** the document creator has coded them. They **will never be generated** like it happens in :meth:`Page.get_text` methods. To provide some help for doing your own computations here, the width of a space character is given. This value is derived from the font where possible. Otherwise the value of a fallback font is taken.
-      * There is no effort to organize text like it happens for a :ref:`TextPage` (the hierarchy of blocks, lines, spans, and characters). Characters are simply extracted in sequence, one by one, and put in a span. Whenever any of the span's characteristics changes, a new span is started. So you may find characters with different ``origin.y`` values in the same span. You cannot assume, that span characters are sorted in any particular order -- you must make sense of the info yourself, taking ``span["dir"]``, ``span["wmode"]``, etc. into account.
+      * The ``span["chars"]`` **contains no spaces**, **except** the document creator has explicitely coded them. They **will never be generated** like it happens in :meth:`Page.get_text` methods. To provide some help for doing your own computations here, the width of a space character is given. This value is derived from the font where possible. Otherwise the value of a fallback font is taken.
+      * There is no effort to organize text like it happens for a :ref:`TextPage` (the hierarchy of blocks, lines, spans, and characters). Characters are simply extracted in sequence, one by one, and put in a span. Whenever any of the span's characteristics changes, a new span is started. So you may find characters with different ``origin.y`` values in the same span (which means they would appear in different lines). You cannot assume, that span characters are sorted in any particular order -- you must make sense of the info yourself, taking ``span["dir"]``, ``span["wmode"]``, etc. into account.
       * Ligatures are represented like this:
          - MuPDF handles the following ligatures: "fi", "ff", "fl", "ft", "st", "ffi", and "ffl" (only the first 3 are mostly ever used). If the page contains e.g. ligature "fi", you will find the following two character items subsequent to each other::
          
-            (102, glyph, (x, y), width)  # 102 = ord("f")
-            (105, -1, (x, y), 0)         # 105 = ord("i")
+            (102, glyph, (x, y), (x0, y0, x1, y1))  # 102 = ord("f")
+            (105, -1, (x, y), (x0, y0, x0, y1))     # 105 = ord("i"), empty bbox!
 
-         - This means that the ligature character components are shown combined within the space given by ``width``. It is up to you, how you want to handle these cases in your text extraction. This is similar to ``page.get_text("rawdict")``: a glyph id is never available there, but you can assume a ligature if you encounter one of the character combinations above, having the **same origin** and ``bbox.width = 0`` except for the first character.
-         - You may want to replace those 2 or 3 char tuples by one, that represents the ligature itself. In that case, use the following mapping of ligatures to unicodes:
+         - This means that the bbox of the first ligature character is the area containing the complete, compound glyph. Subsequent ligature components are recognizable by their glyph value -1 and a bbox of width zero.
+         - You may want to replace those 2 or 3 char tuples by one, that represents the ligature itself. Use the following mapping of ligatures to unicodes:
          
             + ``"ff" -> 0xFB00``
             + ``"fi" -> 0xFB01``
@@ -476,9 +503,11 @@ Yet others are handy, general-purpose utilities.
             + ``"ft" -> 0xFB05``
             + ``"st" -> 0xFB06``
 
-            So you may want to replace the two example tuples above by the following single one: ``(0xFB01, glyph, (x, y), width)`` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute ``font.has_glyph(0xFB01)`` and use its return value).
+            So you may want to replace the two example tuples above by the following single one: ``(0xFB01, glyph, (x, y), (x0, y0, x1, y1))`` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute ``font.has_glyph(0xFB01)`` and use its return value).
 
-      .. note :: If you plan to extract more / other information from this page after this method has been executed, please make sure to first **reload it**: ``page = doc.reload_page(page)``.
+      * Similar to other text extraction methods, the character and span bboxes are correct only if text is written horizontally, left to right. This is indicated by ``span["dir"] == (1, 0)`` -- which is the case in the vast majority of situations. Otherwise, you must transform character and span bboxes: Because ``span["dir"] = (cos, sin)`` of the writing angle, you can compute the **quad** of the character bbox like this: ``bbox.morph(origin, mat)``, with the character's origin (``fitz.Point(c[2])``), and the rotation matrix ``mat = fitz.Matrix(cos, sin, -sin, cos, 0, 0)`` derived from ``span["dir"]``. To compute the quad of the complete span (or any number of adjacent characters), sum up the characters' widths and build the rectangle ``rect = fitz.Rect(x0, y0, x0 + width, y1)`` where x0, y0 and y1 are the values of the first character's bbox. Then the span quad is ``span_quad = rect.morph(origin, mat)`` with the origin of the first character.
+
+      .. note :: If you plan to extract more / other information from this page after this method has been executed, you might need to first **reload it**: ``page = doc.reload_page(page)``.
 
 
 -----

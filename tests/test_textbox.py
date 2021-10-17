@@ -97,3 +97,27 @@ def test_textbox4():
     tw.write_text(page, oc=ocg, morph=(rect.tl, fitz.Matrix(1, 1)))
     # check text containment
     assert page.get_text() == page.get_text(clip=rect)
+
+
+def test_textbox5():
+    """Using basic text insertion."""
+    fitz.TOOLS.set_small_glyph_heights(True)
+    doc = fitz.open()
+    page = doc.new_page()
+    r = fitz.Rect(100, 100, 150, 150)
+    text = "words and words and words and more words..."
+    rc = -1
+    fontsize = 12
+    page.draw_rect(r)
+    while rc < 0:
+        rc = page.insert_textbox(
+            r,
+            text,
+            fontsize=fontsize,
+            align=fitz.TEXT_ALIGN_JUSTIFY,
+        )
+        fontsize -= 0.5
+
+    blocks = page.get_text("blocks")
+    bbox = fitz.Rect(blocks[0][:4])
+    assert bbox in r

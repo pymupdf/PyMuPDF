@@ -384,6 +384,7 @@ def search_for(*args, **kwargs) -> list:
         clip: restrict search to this rectangle
         quads: (bool) return quads instead of rectangles
         flags: bit switches, default: join hyphened words
+        textpage: a pre-created TextPage
     Returns:
         a list of rectangles or quads, each containing one occurrence.
     """
@@ -392,6 +393,7 @@ def search_for(*args, **kwargs) -> list:
     page, text = args
     quads = kwargs.get("quads", 0)
     clip = kwargs.get("clip")
+    textpage = kwargs.get("textpage")
     if clip != None:
         clip = Rect(clip)
     flags = kwargs.get(
@@ -399,8 +401,14 @@ def search_for(*args, **kwargs) -> list:
     )
 
     CheckParent(page)
-    tp = page.get_textpage(clip=clip, flags=flags)  # create TextPage
+    tp = textpage
+    if tp is None:
+        tp = page.get_textpage(clip=clip, flags=flags)  # create TextPage
+    elif getattr(tp, "parent") != page:
+        raise ValueError("not a textpage of this page")
     rlist = tp.search(text, quads=quads)
+    if textpage is None:
+        del tp
     return rlist
 
 
@@ -408,10 +416,10 @@ def search_page_for(
     doc: Document,
     pno: int,
     text: str,
-    hit_max: int = 0,
     quads: bool = False,
     clip: rect_like = None,
     flags: int = TEXT_DEHYPHENATE | TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE,
+    textpage: TextPage = None,
 ) -> list:
     """Search for a string on a page.
 
@@ -421,6 +429,7 @@ def search_page_for(
         clip: restrict search to this rectangle
         quads: (bool) return quads instead of rectangles
         flags: bit switches, default: join hyphened words
+        textpage: reuse a prepared textpage
     Returns:
         a list of rectangles or quads, each containing an occurrence.
     """
@@ -430,6 +439,7 @@ def search_page_for(
         quads=quads,
         clip=clip,
         flags=flags,
+        textpage=textpage,
     )
 
 
@@ -437,6 +447,7 @@ def get_text_blocks(
     page: Page,
     clip: rect_like = None,
     flags: OptInt = None,
+    textpage: TextPage = None,
 ) -> list:
     """Return the text blocks on a page.
 
@@ -453,9 +464,15 @@ def get_text_blocks(
         flags = (
             TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_IMAGES | TEXT_PRESERVE_LIGATURES
         )
-    tp = page.get_textpage(clip=clip, flags=flags)
+    tp = textpage
+    if tp is None:
+        tp = page.get_textpage(clip=clip, flags=flags)
+    elif getattr(tp, "parent") != page:
+        raise ValueError("not a textpage of this page")
+
     blocks = tp.extractBLOCKS()
-    del tp
+    if textpage is None:
+        del tp
     return blocks
 
 
@@ -463,6 +480,7 @@ def get_text_words(
     page: Page,
     clip: rect_like = None,
     flags: OptInt = None,
+    textpage: TextPage = None,
 ) -> list:
     """Return the text words as a list with the bbox for each word.
 
@@ -472,19 +490,30 @@ def get_text_words(
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES
-    tp = page.get_textpage(clip=clip, flags=flags)
+    tp = textpage
+    if tp is None:
+        tp = page.get_textpage(clip=clip, flags=flags)
+    elif getattr(tp, "parent") != page:
+        raise ValueError("not a textpage of this page")
     words = tp.extractWORDS()
-    del tp
+    if textpage is None:
+        del tp
     return words
 
 
 def get_textbox(
     page: Page,
     rect: rect_like,
+    textpage: TextPage = None,
 ) -> str:
-    rc = page.get_text("text", clip=rect)
-    if rc.endswith("\n"):
-        rc = rc[:-1]
+    tp = textpage
+    if tp is None:
+        tp = page.get_textpage()
+    elif getattr(tp, "parent") != page:
+        raise ValueError("not a textpage of this page")
+    rc = tp.extractTextbox(rect)
+    if textpage is None:
+        del tp
     return rc
 
 
@@ -493,11 +522,17 @@ def get_text_selection(
     p1: point_like,
     p2: point_like,
     clip: rect_like = None,
+    textpage: TextPage = None,
 ):
     CheckParent(page)
-    tp = page.get_textpage(clip=clip, flags=TEXT_DEHYPHENATE)
+    tp = textpage
+    if tp is None:
+        tp = page.get_textpage(clip=clip, flags=TEXT_DEHYPHENATE)
+    elif getattr(tp, "parent") != page:
+        raise ValueError("not a textpage of this page")
     rc = tp.extractSelection(p1, p2)
-    del tp
+    if textpage is None:
+        del tp
     return rc
 
 
@@ -581,6 +616,7 @@ def get_text(
     option: str = "text",
     clip: rect_like = None,
     flags: OptInt = None,
+    textpage: TextPage = None,
 ):
     """Extract text from a page or an annotation.
 
@@ -589,7 +625,9 @@ def get_text(
     Args:
         option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
         clip: (rect-like) restrict output to this area.
-        flags: bit switches to e.g. exclude images or decompose ligatures
+        flags: bit switches to e.g. exclude images or decompose ligatures.
+        textpage: reuse this TextPage and make no new one. If specified,
+            'flags' and 'clip' are ignored.
 
     Returns:
         the output of methods get_text_words / get_text_blocks or TextPage
@@ -618,9 +656,9 @@ def get_text(
             flags |= TEXT_PRESERVE_IMAGES
 
     if option == "words":
-        return get_text_words(page, clip=clip, flags=flags)
+        return get_text_words(page, clip=clip, flags=flags, textpage=textpage)
     if option == "blocks":
-        return get_text_blocks(page, clip=clip, flags=flags)
+        return get_text_blocks(page, clip=clip, flags=flags, textpage=textpage)
     CheckParent(page)
     cb = None
     if option in ("html", "xml", "xhtml"):  # no clipping for MuPDF functions
@@ -631,7 +669,11 @@ def get_text(
     elif type(page) is Page:
         cb = page.cropbox
     # TextPage with or without images
-    tp = page.get_textpage(clip=clip, flags=flags)
+    tp = textpage
+    if tp is None:
+        tp = page.get_textpage(clip=clip, flags=flags)
+    elif getattr(tp, "parent") != page:
+        raise ValueError("not a textpage of this page")
 
     if option == "json":
         t = tp.extractJSON(cb=cb)
@@ -650,7 +692,8 @@ def get_text(
     else:
         t = tp.extractText()
 
-    del tp
+    if textpage is None:
+        del tp
     return t
 
 
@@ -660,6 +703,7 @@ def get_page_text(
     option: str = "text",
     clip: rect_like = None,
     flags: OptInt = None,
+    textpage: TextPage = None,
 ) -> typing.Any:
     """Extract a document page's text by page number.
 
@@ -1494,7 +1538,7 @@ def delete_widget(page: Page, widget: Widget) -> Widget:
 
 
 def update_link(page: Page, lnk: dict) -> None:
-    """ Update a link on the current page. """
+    """Update a link on the current page."""
     CheckParent(page)
     annot = getLinkText(page, lnk)
     if annot == "":
@@ -1505,7 +1549,7 @@ def update_link(page: Page, lnk: dict) -> None:
 
 
 def insert_link(page: Page, lnk: dict, mark: bool = True) -> None:
-    """ Insert a new link for the current page. """
+    """Insert a new link for the current page."""
     CheckParent(page)
     annot = getLinkText(page, lnk)
     if annot == "":
@@ -3622,8 +3666,8 @@ class Shape(object):
         nres = "\nq\n%s%sBT\n" % (bdc, alpha) + cm  # initialize output buffer
         templ = "1 0 0 1 %g %g Tm /%s %g Tf "
         # center, right, justify: output each line with its own specifics
-        spacing = 0
         text_t = text.splitlines()  # split text in lines again
+        just_tab[-1] = False  # never justify last line
         for i, t in enumerate(text_t):
             pl = maxwidth - pixlen(t)  # length of empty line part
             pnt = point + c_pnt * (i * lheight_factor)  # text start of line
@@ -3658,8 +3702,9 @@ class Shape(object):
             nres += templ % (left, top, fname, fontsize)
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
-            if spacing != 0:
+            if align == 3:
                 nres += "%g Tw " % spacing
+
             if color is not None:
                 nres += color_str
             if fill is not None:
@@ -3867,19 +3912,24 @@ def apply_redactions(page: Page, images: int = 2) -> bool:
             shape.draw_rect(annot_rect)  # colorize the rect background
             shape.finish(fill=fill, color=fill)
         if "text" in redact.keys():  # if we also have text
-            trect = center_rect(  # try finding vertical centered sub-rect
-                annot_rect, redact["text"], redact["fontname"], redact["fontsize"]
-            )
-            fsize = redact["fontsize"]  # start with stored fontsize
+            text = redact["text"]
+            align = redact.get("align", 0)
+            fname = redact["fontname"]
+            fsize = redact["fontsize"]
+            color = redact["text_color"]
+            # try finding vertical centered sub-rect
+            trect = center_rect(annot_rect, text, fname, fsize)
+
             rc = -1
             while rc < 0 and fsize >= 4:  # while not enough room
-                rc = shape.insert_textbox(  # (re-) try insertion
+                # (re-) try insertion
+                rc = shape.insert_textbox(
                     trect,
-                    redact["text"],
-                    fontname=redact["fontname"],
+                    text,
+                    fontname=fname,
                     fontsize=fsize,
-                    color=redact["text_color"],
-                    align=redact.get("align", TEXT_ALIGN_LEFT),
+                    color=color,
+                    align=align,
                 )
                 fsize -= 0.5  # reduce font if unsuccessful
     shape.commit()  # append new contents object
@@ -3965,7 +4015,7 @@ def scrub(
         redactions = False
 
     if metadata:
-        doc.setMetadata({})  # remove standard metadata
+        doc.set_metadata({})  # remove standard metadata
 
     for page in doc:
         if reset_fields:
@@ -5004,7 +5054,9 @@ def subset_fonts(doc: Document) -> None:
             "--symbol-cmap",
         ]
 
-        unc_file = open(f"{tmp_dir}/uncfile.txt", "w")  # store glyph ids or unicodes as file
+        unc_file = open(
+            f"{tmp_dir}/uncfile.txt", "w"
+        )  # store glyph ids or unicodes as file
         if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
             args.append(f"--gids-file={uncfile_path}")
             gid_set.add(189)
@@ -5150,7 +5202,7 @@ def subset_fonts(doc: Document) -> None:
     for page in doc:
         # go through the text and extend set of used glyphs by font
         # we use a modified MuPDF trace device, which delivers us glyph ids.
-        for span in page._getTexttrace():
+        for span in page.get_texttrace():
             if type(span) is not dict:  # skip useless information
                 continue
             fontname = span["font"][:33]  # fontname for the span

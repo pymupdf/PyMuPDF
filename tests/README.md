@@ -37,7 +37,7 @@ Then simply execute `python -m pytest` in a terminal of this folder. `pytest` wi
 pytest --cov=fitz
 ============================ test session starts =============================
 platform linux -- Python 3.8.5, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /mnt/d/harald/desktop/fitzPython118/pymupdf
+rootdir: /mnt/d/harald/desktop/fitzPython119/pymupdf
 plugins: cov-2.12.0
 collected 79 items
 

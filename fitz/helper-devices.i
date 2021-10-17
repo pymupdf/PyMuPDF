@@ -13,10 +13,10 @@ typedef struct
 {
 	fz_device super;
 	PyObject *out;
+	size_t seqno;
 } jm_tracedraw_device;
 
 static float trace_device_Linewidth = 0;  // border width if present
-static int trace_device_clippings = 0;  // whether to extract clip paths
 static fz_matrix trace_device_ptm;  // page transformation matrix
 static fz_matrix trace_device_ctm;  // trace device matrix
 static fz_matrix trace_device_rot;
@@ -24,6 +24,14 @@ static fz_point trace_pathpoint = {0, 0};
 static PyObject *trace_pathdict = NULL;
 static fz_rect trace_pathrect;
 static float trace_pathfactor;
+
+
+static void
+jm_increase_seqno(fz_context *ctx, fz_device *dev_, ...)
+{
+	jm_tracedraw_device *dev = (jm_tracedraw_device *) dev_;
+	dev->seqno += 1;
+}
 
 
 //--------------------------------------------------------------------------
@@ -273,8 +281,8 @@ jm_append_merge(PyObject *out)
 	append:;
 	PyList_Append(out, trace_pathdict);
 	Py_CLEAR(trace_pathdict);
-
 }
+
 
 static void
 jm_tracedraw_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
@@ -303,8 +311,9 @@ jm_tracedraw_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 		Py_CLEAR(trace_pathdict);
 		return;
 	}
+	DICT_SETITEMSTR_DROP(trace_pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
+	dev->seqno += 1;
 	jm_append_merge(out);
-
 }
 
 static void
@@ -352,54 +361,9 @@ jm_tracedraw_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 		Py_CLEAR(trace_pathdict);
 		return;
 	}
+	DICT_SETITEMSTR_DROP(trace_pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
+	dev->seqno += 1;
 	jm_append_merge(out);
-}
-
-static void
-jm_tracedraw_clip_path(fz_context *ctx, fz_device *dev_, const fz_path *path, int even_odd, fz_matrix ctm, fz_rect scissor)
-{
-	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
-	PyObject *out = dev->out;
-	trace_pathdict = PyDict_New();
-	trace_pathrect = fz_infinite_rect;
-	trace_device_ctm = ctm;
-
-	DICT_SETITEM_DROP(trace_pathdict, dictkey_items, PyList_New(0));
-	DICT_SETITEM_DROP(trace_pathdict, dictkey_type, PyUnicode_FromString("c"));
-	DICT_SETITEMSTR_DROP(trace_pathdict, "even_odd", JM_BOOL(even_odd));
-	fz_rect schere = fz_transform_rect(scissor, trace_device_ctm);
-	DICT_SETITEMSTR_DROP(trace_pathdict, "scissor", JM_py_from_rect(schere));
-	jm_tracedraw_path(ctx, dev, path);
-	DICT_SETITEM_DROP(trace_pathdict, dictkey_rect, JM_py_from_rect(trace_pathrect));
-	Py_ssize_t item_count = PyList_Size(PyDict_GetItem(trace_pathdict, dictkey_items));
-	if (item_count == 0) {
-		Py_CLEAR(trace_pathdict);
-		return;
-	}
-	LIST_APPEND_DROP(out, trace_pathdict);
-}
-
-static void
-jm_tracedraw_clip_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path, const fz_stroke_state *stroke, fz_matrix ctm, fz_rect scissor)
-{
-	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
-	PyObject *out = dev->out;
-	trace_pathdict = PyDict_New();
-	trace_pathrect = fz_infinite_rect;
-	trace_device_ctm = ctm;
-
-	DICT_SETITEM_DROP(trace_pathdict, dictkey_items, PyList_New(0));
-	DICT_SETITEM_DROP(trace_pathdict, dictkey_type, PyUnicode_FromString("cs"));
-	fz_rect schere = fz_transform_rect(scissor, trace_device_ctm);
-	DICT_SETITEMSTR_DROP(trace_pathdict, "scissor", JM_py_from_rect(schere));
-	jm_tracedraw_path(ctx, dev, path);
-	DICT_SETITEM_DROP(trace_pathdict, dictkey_rect, JM_py_from_rect(trace_pathrect));
-	Py_ssize_t item_count = PyList_Size(PyDict_GetItem(trace_pathdict, dictkey_items));
-	if (item_count == 0) {
-		Py_CLEAR(trace_pathdict);
-		return;
-	}
-	LIST_APPEND_DROP(out, trace_pathdict);
 }
 
 
@@ -407,11 +371,12 @@ static void
 jm_trace_device_Linewidth(fz_context *ctx, fz_device *dev_, const fz_path *path, const fz_stroke_state *stroke, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, fz_color_params color_params)
 {
 	trace_device_Linewidth = stroke->linewidth;
+	jm_increase_seqno(ctx, dev_);
 }
 
 
 static void
-jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type, fz_matrix ctm, fz_rect scissor, fz_colorspace *colorspace, const float *color, float alpha)
+jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, size_t seqno)
 {
 	fz_font *out_font = NULL;
 	int i, n;
@@ -422,6 +387,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	double fsize = sqrt((double) dir.x * dir.x + (double) dir.y * dir.y);
 	double linewidth, adv, asc, dsc;
 	double space_adv = 0;
+	float x0, y0, x1, y1;
 	asc = (double) JM_font_ascender(ctx, span->font);
 	dsc = (double) JM_font_descender(ctx, span->font);
 	if (asc - dsc >= 1 && small_glyph_heights == 0) {
@@ -432,7 +398,8 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		}
 		asc = 1 + dsc;
 	}
-	
+	double ascsize = asc * fsize / (asc - dsc);
+	double dscsize = dsc * fsize / (asc - dsc);
 	int fflags = 0;
 	int mono = fz_font_is_monospaced(ctx, span->font);
 	fflags += mono * TEXT_FONT_MONOSPACED;
@@ -450,6 +417,9 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	}
 	fz_point char_orig;
 	double last_adv = 0;
+
+	// walk through characters of span
+	fz_rect span_bbox;
 	for (i = 0; i < span->len; i++) {
 		adv = 0;
 		if (span->items[i].gid >= 0) {
@@ -463,9 +433,19 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		char_orig = fz_make_point(span->items[i].x, span->items[i].y);
 		char_orig.y = trace_device_ptm.f - char_orig.y;
 		char_orig = fz_transform_point(char_orig, mat);
-		PyTuple_SET_ITEM(chars, (Py_ssize_t) i, Py_BuildValue("ii(ff)f",
+		x0 = char_orig.x;
+		x1 = x0 + adv;
+		y0 = char_orig.y - ascsize;
+		y1 = char_orig.y - dscsize;
+		fz_rect char_bbox = fz_make_rect(x0, y0, x1, y1);
+		PyTuple_SET_ITEM(chars, (Py_ssize_t) i, Py_BuildValue("ii(ff)(ffff)",
 			span->items[i].ucs, span->items[i].gid,
-			char_orig.x, char_orig.y, adv));
+			char_orig.x, char_orig.y, x0, y0, x1, y1));
+		if (i > 0) {
+			span_bbox = fz_union_rect(span_bbox, char_bbox);
+		} else {
+			span_bbox = char_bbox;
+		}
 	}
 	if (!space_adv) {
 		if (!mono) {
@@ -506,33 +486,33 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	DICT_SETITEMSTR_DROP(span_dict, "linewidth", PyFloat_FromDouble((double) linewidth));
 	DICT_SETITEMSTR_DROP(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
 	DICT_SETITEM_DROP(span_dict, dictkey_type, PyLong_FromLong((long) type));
-	DICT_SETITEMSTR_DROP(span_dict, "scissor", JM_py_from_rect(fz_transform_rect(scissor, mat)));
 	DICT_SETITEM_DROP(span_dict, dictkey_chars, chars);
+	DICT_SETITEM_DROP(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
+	DICT_SETITEMSTR_DROP(span_dict, "seqno", PyLong_FromSize_t(seqno));
 	LIST_APPEND_DROP(out, span_dict);
 }
 
 static void
-jm_trace_text(fz_context *ctx, PyObject *out, const fz_text *text, int type, fz_matrix ctm, fz_rect rect, fz_colorspace *colorspace, const float *color, float alpha)
+jm_trace_text(fz_context *ctx, PyObject *out, const fz_text *text, int type, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, size_t seqno)
 {
 	fz_text_span *span;
 	for (span = text->head; span; span = span->next)
-		jm_trace_text_span(ctx, out, span, type, ctm, rect, colorspace, color, alpha);
+		jm_trace_text_span(ctx, out, span, type, ctm, colorspace, color, alpha, seqno);
 }
 
 /*---------------------------------------------------------
-There are 5 text trace types:
+There are 3 text trace types:
 0 - fill text (PDF Tr 0)
 1 - stroke text (PDF Tr 1)
-2 - clip text
-3 - clip-stroke text
-4 - ignore text (PDF Tr 3)
+3 - ignore text (PDF Tr 3)
 ---------------------------------------------------------*/
 static void
 jm_tracedraw_fill_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, fz_color_params color_params)
 {
 	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
 	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 0, ctm, fz_infinite_rect, colorspace, color, alpha);
+	jm_trace_text(ctx, out, text, 0, ctm, colorspace, color, alpha, dev->seqno);
+	dev->seqno += 1;
 }
 
 static void
@@ -540,31 +520,18 @@ jm_tracedraw_stroke_text(fz_context *ctx, fz_device *dev_, const fz_text *text, 
 {
 	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
 	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 1, ctm, fz_infinite_rect, colorspace, color, alpha);
+	jm_trace_text(ctx, out, text, 1, ctm, colorspace, color, alpha, dev->seqno);
+	dev->seqno += 1;
 }
 
-static void
-jm_tracedraw_clip_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz_matrix ctm, fz_rect scissor)
-{
-	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
-	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 2, ctm, scissor, NULL, NULL, 1);
-}
-
-static void
-jm_tracedraw_clip_stroke_text(fz_context *ctx, fz_device *dev_, const fz_text *text, const fz_stroke_state *stroke, fz_matrix ctm, fz_rect scissor)
-{
-	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
-	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 3, ctm, scissor, NULL, NULL, 1);
-}
 
 static void
 jm_tracedraw_ignore_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz_matrix ctm)
 {
 	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
 	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 4, ctm, fz_infinite_rect, NULL, NULL, 1);
+	jm_trace_text(ctx, out, text, 3, ctm, NULL, NULL, 1, dev->seqno);
+	dev->seqno += 1;
 }
 
 
@@ -574,23 +541,18 @@ fz_device *JM_new_tracedraw_device(fz_context *ctx, PyObject *out)
 
 	dev->super.fill_path = jm_tracedraw_fill_path;
 	dev->super.stroke_path = jm_tracedraw_stroke_path;
-	if (trace_device_clippings) {
-		dev->super.clip_path = jm_tracedraw_clip_path;
-		dev->super.clip_stroke_path = jm_tracedraw_clip_stroke_path;
-	} else {
-		dev->super.clip_path = NULL;
-		dev->super.clip_stroke_path = NULL;
-	}
+	dev->super.clip_path = NULL;
+	dev->super.clip_stroke_path = NULL;
 
-	dev->super.fill_text = NULL;
-	dev->super.stroke_text = NULL;
+	dev->super.fill_text = jm_increase_seqno;
+	dev->super.stroke_text = jm_increase_seqno;
 	dev->super.clip_text = NULL;
 	dev->super.clip_stroke_text = NULL;
-	dev->super.ignore_text = NULL;
+	dev->super.ignore_text = jm_increase_seqno;
 
-	dev->super.fill_shade = NULL;
-	dev->super.fill_image = NULL;
-	dev->super.fill_image_mask = NULL;
+	dev->super.fill_shade = jm_increase_seqno;
+	dev->super.fill_image = jm_increase_seqno;
+	dev->super.fill_image_mask = jm_increase_seqno;
 	dev->super.clip_image_mask = NULL;
 
 	dev->super.pop_clip = NULL;
@@ -610,7 +572,7 @@ fz_device *JM_new_tracedraw_device(fz_context *ctx, PyObject *out)
 	dev->super.set_default_colorspaces = NULL;
 
 	dev->out = out;
-
+	dev->seqno = 0;
 	return (fz_device *)dev;
 }
 
@@ -618,20 +580,20 @@ fz_device *JM_new_tracetext_device(fz_context *ctx, PyObject *out)
 {
 	jm_tracedraw_device *dev = fz_new_derived_device(ctx, jm_tracedraw_device);
 
-	dev->super.fill_path = NULL;
+	dev->super.fill_path = jm_increase_seqno;
 	dev->super.stroke_path = jm_trace_device_Linewidth;
 	dev->super.clip_path = NULL;
 	dev->super.clip_stroke_path = NULL;
 
 	dev->super.fill_text = jm_tracedraw_fill_text;
 	dev->super.stroke_text = jm_tracedraw_stroke_text;
-	dev->super.clip_text = jm_tracedraw_clip_text;
-	dev->super.clip_stroke_text = jm_tracedraw_clip_stroke_text;
+	dev->super.clip_text = NULL;
+	dev->super.clip_stroke_text = NULL;
 	dev->super.ignore_text = jm_tracedraw_ignore_text;
 
-	dev->super.fill_shade = NULL;
-	dev->super.fill_image = NULL;
-	dev->super.fill_image_mask = NULL;
+	dev->super.fill_shade = jm_increase_seqno;
+	dev->super.fill_image = jm_increase_seqno;
+	dev->super.fill_image_mask = jm_increase_seqno;
 	dev->super.clip_image_mask = NULL;
 
 	dev->super.pop_clip = NULL;
@@ -651,6 +613,111 @@ fz_device *JM_new_tracetext_device(fz_context *ctx, PyObject *out)
 	dev->super.set_default_colorspaces = NULL;
 
 	dev->out = out;
+	dev->seqno = 0;
+	return (fz_device *)dev;
+}
+typedef struct jm_bbox_device_s
+{
+	fz_device super;
+	PyObject *result;
+} jm_bbox_device;
+
+static void
+jm_bbox_add_rect(fz_context *ctx, fz_device *dev, fz_rect rect, char *code)
+{
+	jm_bbox_device *bdev = (jm_bbox_device *)dev;
+	LIST_APPEND_DROP(bdev->result, Py_BuildValue("sN", code, JM_py_from_rect(rect)));
+}
+
+static void
+jm_bbox_fill_path(fz_context *ctx, fz_device *dev, const fz_path *path, int even_odd, fz_matrix ctm,
+				  fz_colorspace *colorspace, const float *color, float alpha, fz_color_params color_params)
+{
+	jm_bbox_add_rect(ctx, dev, fz_bound_path(ctx, path, NULL, ctm), "fill-path");
+}
+
+static void
+jm_bbox_stroke_path(fz_context *ctx, fz_device *dev, const fz_path *path, const fz_stroke_state *stroke,
+					fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, fz_color_params color_params)
+{
+	jm_bbox_add_rect(ctx, dev, fz_bound_path(ctx, path, stroke, ctm), "stroke-path");
+}
+
+static void
+jm_bbox_fill_text(fz_context *ctx, fz_device *dev, const fz_text *text, fz_matrix ctm, ...)
+{
+	jm_bbox_add_rect(ctx, dev, fz_bound_text(ctx, text, NULL, ctm), "fill-text");
+}
+
+static void
+jm_bbox_ignore_text(fz_context *ctx, fz_device *dev, const fz_text *text, fz_matrix ctm)
+{
+	jm_bbox_add_rect(ctx, dev, fz_bound_text(ctx, text, NULL, ctm), "ignore-text");
+}
+
+static void
+jm_bbox_stroke_text(fz_context *ctx, fz_device *dev, const fz_text *text, const fz_stroke_state *stroke, fz_matrix ctm, ...)
+{
+	jm_bbox_add_rect(ctx, dev, fz_bound_text(ctx, text, stroke, ctm), "stroke-text");
+}
+
+static void
+jm_bbox_fill_shade(fz_context *ctx, fz_device *dev, fz_shade *shade, fz_matrix ctm, float alpha, fz_color_params color_params)
+{
+	jm_bbox_add_rect(ctx, dev, fz_bound_shade(ctx, shade, ctm), "fill-shade");
+}
+
+static void
+jm_bbox_fill_image(fz_context *ctx, fz_device *dev, fz_image *image, fz_matrix ctm, float alpha, fz_color_params color_params)
+{
+	jm_bbox_add_rect(ctx, dev, fz_transform_rect(fz_unit_rect, ctm), "fill-image");
+}
+
+static void
+jm_bbox_fill_image_mask(fz_context *ctx, fz_device *dev, fz_image *image, fz_matrix ctm,
+						fz_colorspace *colorspace, const float *color, float alpha, fz_color_params color_params)
+{
+	jm_bbox_add_rect(ctx, dev, fz_transform_rect(fz_unit_rect, ctm), "fill-imgmask");
+}
+
+fz_device *
+JM_new_bbox_device(fz_context *ctx, PyObject *result)
+{
+	jm_bbox_device *dev = fz_new_derived_device(ctx, jm_bbox_device);
+
+	dev->super.fill_path = jm_bbox_fill_path;
+	dev->super.stroke_path = jm_bbox_stroke_path;
+	dev->super.clip_path = NULL;
+	dev->super.clip_stroke_path = NULL;
+
+	dev->super.fill_text = jm_bbox_fill_text;
+	dev->super.stroke_text = jm_bbox_stroke_text;
+	dev->super.clip_text = NULL;
+	dev->super.clip_stroke_text = NULL;
+	dev->super.ignore_text = jm_bbox_ignore_text;
+
+	dev->super.fill_shade = jm_bbox_fill_shade;
+	dev->super.fill_image = jm_bbox_fill_image;
+	dev->super.fill_image_mask = jm_bbox_fill_image_mask;
+	dev->super.clip_image_mask = NULL;
+
+	dev->super.pop_clip = NULL;
+
+	dev->super.begin_mask = NULL;
+	dev->super.end_mask = NULL;
+	dev->super.begin_group = NULL;
+	dev->super.end_group = NULL;
+
+	dev->super.begin_tile = NULL;
+	dev->super.end_tile = NULL;
+
+	dev->super.begin_layer = NULL;
+	dev->super.end_layer = NULL;
+
+	dev->super.render_flags = NULL;
+	dev->super.set_default_colorspaces = NULL;
+
+	dev->result = result;
 
 	return (fz_device *)dev;
 }
