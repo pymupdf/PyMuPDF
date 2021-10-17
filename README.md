@@ -39,7 +39,7 @@ For **PDF documents,** there exists a plethora of additional features: they can 
     > If [fontTools](https://pypi.org/project/fonttools/) is installed, subsets can be built for eligible fonts based on their usage in the document. Especially for new PDFs, this can lead to significant file size reductions.
 * Embedded files are fully supported.
 * PDFs can be reformatted to support double-sided printing, posterizing, applying logos or watermarks
-* Password protection is fully supported: decryption, encryption, encryption method selection, permmission level and user / owner password setting.
+* Password protection is fully supported: decryption, encryption, encryption method selection, permission level and user / owner password setting.
 * Support of the **PDF Optional Content** concept for images, text and drawings.
 * Low-level PDF structures can be accessed and modified.
 * **Command line module** ``"python -m fitz ..."``. A versatile utility with the following features
