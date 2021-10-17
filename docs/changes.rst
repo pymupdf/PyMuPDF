@@ -23,7 +23,7 @@ A third feature (unrelated to the new MuPDF version) includes the ability to det
 
 * **Added** a **journalling facility** for PDF updates. This allows logging changes, undoing or redoing them, or saving the journal for later use. Refer to :meth:`Document.journal_enable` and friends.
 
-* **Added** new :ref:`Pixmap` methods :meth:`Pixmap.ocr_save` and :meth:`Pixmap.ocr_tobytes`, which generate a 1-page PDF containing the pixmap as PNG image with OCR text layer.
+* **Added** new :ref:`Pixmap` methods :meth:`Pixmap.pdfocr_save` and :meth:`Pixmap.pdfocr_tobytes`, which generate a 1-page PDF containing the pixmap as PNG image with OCR text layer.
 
 * **Added** :meth:`Page.get_textpage_ocr` which executes optical character recognition for the page, then extracts the results and stores them together with "normal" page content in a :ref:`TextPage`. Use or reuse this object in subsequent text extractions and text searches to avoid multiple efforts. The existing text search and text extraction methods have been extended to support a separately created textpage -- see next item.
 

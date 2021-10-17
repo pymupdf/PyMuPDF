@@ -27,8 +27,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.copy`              copy parts of another pixmap
 :meth:`Pixmap.gamma_with`        apply a gamma factor to the pixmap
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
-:meth:`Pixmap.ocr_save`          save the pixmap as an OCR-ed 1-page PDF
-:meth:`Pixmap.ocr_tobytes`       save the pixmap as an OCR-ed 1-page PDF
+:meth:`Pixmap.pdfocr_save`       save the pixmap as an OCR-ed 1-page PDF
+:meth:`Pixmap.pdfocr_tobytes`    save the pixmap as an OCR-ed 1-page PDF
 :meth:`Pixmap.pil_save`          save as image using pillow
 :meth:`Pixmap.pil_tobytes`       write to ``bytes`` object using pillow
 :meth:`Pixmap.pixel`             return the value of a pixel
@@ -316,7 +316,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
 
-   .. method:: ocr_save(filename, compress=True, language="eng")
+   .. method:: pdfocr_save(filename, compress=True, language="eng")
 
       * New in v1.19.0
 
@@ -339,13 +339,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          /usr/share/tesseract-ocr/4.00/tessdata
 
 
-   .. method:: ocr_tobytes(compress=True, language="eng")
+   .. method:: pdfocr_tobytes(compress=True, language="eng")
 
       * New in v1.19.0
 
-      Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.ocr_save`.
+      Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.pdfocr_save`.
 
-      :returns: A 1-page PDF file in memory. Could be opened like ``doc=fitz.open("pdf", pix.ocr_tobytes())``, and text extractions could be performed on its ``page=doc[0]``.
+      :returns: A 1-page PDF file in memory. Could be opened like ``doc=fitz.open("pdf", pix.pdfocr_tobytes())``, and text extractions could be performed on its ``page=doc[0]``.
       
          .. note::
          
@@ -354,7 +354,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
                doc = fitz.open()
                for imgfile in os.listdir(folder):
                   pix = fitz.Pixmap(imgfile)
-                  imgpdf = fitz.open("pdf", pix.ocr_tobytes())
+                  imgpdf = fitz.open("pdf", pix.pdfocr_tobytes())
                   doc.insert_pdf(imgpdf)
                doc.save("ocr-images.pdf")
 
