@@ -36,7 +36,7 @@ For **PDF documents,** there exists a plethora of additional features: they can 
 * Images and fonts can be extracted or inserted.
     > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/image-maintenance.py) cool GUI example script, which lets you **_insert, delete, replace_** or **_re-position_** images under your visual control.
 
-    > For eligible fonts, subsets can be built based on their usage in the document. Especially for new PDFs, this can lead to significant file size reductions.
+    > If [fontTools](https://pypi.org/project/fonttools/) is installed, subsets can be built for eligible fonts based on their usage in the document. Especially for new PDFs, this can lead to significant file size reductions.
 * Embedded files are fully supported.
 * PDFs can be reformatted to support double-sided printing, posterizing, applying logos or watermarks
 * Password protection is fully supported: decryption, encryption, encryption method selection, permmission level and user / owner password setting.
