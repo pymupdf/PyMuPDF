@@ -302,7 +302,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
         :meth:`search_for` delivers a list of either :ref:`Rect` or :ref:`Quad` objects. Such a list can be directly used as an argument for these annotation types and will deliver **one common annotation** for all occurrences of the search string::
 
-           >>> # always prefer quads=True in text searching!
+           >>> # prefer quads=True in text searching for annotations!
            >>> quads = page.search_for("pymupdf", quads=True)
            >>> page.add_highlight_annot(quads)
 
@@ -935,10 +935,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: xhtml; get_text
       pair: xml; get_text
       pair: textpage; get_text
+      pair: sort; get_text
 
-   .. method:: get_text(opt="text", clip=None, flags=None, textpage=None)
+   .. method:: get_text(opt="text", clip=None, flags=None, textpage=None, sort=False)
 
-      * Changed in v1.19.0
+      * Changed in v1.19.0: added ``textpage`` parameter
+      * Changed in v1.19.1: added ``sort`` parameter
 
       Retrieves the content of a page in a variety of formats. This is a wrapper for :ref:`TextPage` methods by choosing the output option as follows:
 
@@ -961,7 +963,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int flags: *(new in version 1.16.2)* indicator bits to control whether to include images or how text should be handled with respect to white spaces and :data:`ligatures`. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings.
 
-      :arg textpage: reuse a previously created :ref:`TextPage`. This reduces execution time **significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored.
+      :arg textpage: (new in v1.19.0) use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored, because they are textpage only properties. If omitted, a new, temporary textpage will be created.
+
+      :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order. Has no effect on (X)HTML and XML. Output option **"words"** sorts by ``(y1, x0)`` of the words' bboxes. Similar is true for "blocks", "dict", "json", "rawdict", "rawjson": they all are sorted by ``(y1, x0)`` of the resp. block bbox. If specified for "text", then internally "blocks" is used.
 
       :rtype: *str, list, dict*
       :returns: The page's content as a string, a list or a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
@@ -969,7 +973,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
 
         1. You can use this method as a **document conversion tool** from any supported document type (not only PDF!) to one of TEXT, HTML, XHTML or XML documents.
-        2. The inclusion of text via the *clip* parameter is decided on a by-character level: **(changed in v1.18.2)** a character becomes part of the output, if its bbox is contained in *clip*. This **deviates** from the algorithm used in redaction annotations: a character will be removed if its bbox intersects with some redaction annotation.
+        2. The inclusion of text via the *clip* parameter is decided on a by-character level: **(changed in v1.18.2)** a character becomes part of the output, if its bbox is contained in *clip*. This **deviates** from the algorithm used in redaction annotations: a character will be **removed if its bbox intersects** any redaction annotation.
 
    .. index::
       pair: rect; get_textbox
@@ -978,12 +982,12 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: get_textbox(rect, textpage=None)
 
       * New in v1.17.7
-      * Changed in v1.19.0
+      * Changed in v1.19.0: add ``textpage`` parameter
 
       Retrieve the text contained in a rectangle.
 
       :arg rect-like rect: rect-like.
-      :arg textpage: a :ref:`TextPage` to use. If omitted, a textpage will be created and deleted again afterwards.
+      :arg textpage: a :ref:`TextPage` to use. If omitted, a new, temporary textpage will be created.
 
       :returns: a string with interspersed linebreaks where necessary. Changed in v1.19.0: It is based on dedicated code. A tyical use is checking the result of :meth:`Page.search_for`:
 
@@ -1001,38 +1005,54 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in version 1.16.5)*
 
-      Create a :ref:`TextPage` for the page. This method avoids using an intermediate :ref:`DisplayList`.
+      Create a :ref:`TextPage` for the page.
 
-      :arg in flags: indicator bits controlling the content available for subsequent extraction -- see the parameter of :meth:`Page.get_text`.
+      :arg in flags: indicator bits controlling the content available for subsequent text extractions and searches -- see the parameter of :meth:`Page.get_text`.
 
-      :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this area -- to be used by text extraction methods.
+      :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this area.
 
       :returns: :ref:`TextPage`
 
 
    .. index::
-      pair: clip; get_textpage_ocr
       pair: flags; get_textpage_ocr
-      pair: lang; get_textpage_ocr
+      pair: language; get_textpage_ocr
+      pair: dpi; get_textpage_ocr
+      pair: full; get_textpage_ocr
 
-   .. method:: get_textpage_ocr(clip=None, flags=3, language="eng")
+   .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False)
 
-      *(New in version 1.19.0)*
+      * New in v.1.19.0
+      * Changed in v1.19.1: support full and partial OCRing a page.
 
-      Create a :ref:`TextPage` for the page including normal **and** OCR-ed text.
+      Create a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
 
-      :arg in flags: indicator bits controlling the content available for subsequent extraction -- see the parameter of :meth:`Page.get_text`.
-      :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this area -- to be used by text extraction methods.
-      :arg str language: the expected language(s).
+      :arg in flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
+      :arg str language: the expected language(s). Use comma-separated values if multiple languages are expected, "eng,spa" for English and Spanish.
+      :arg int dpi: the desired resolution in dots per inch. Influences recognition quality (and execution time).
+      :arg bool full: whether to OCR the full page, or just the displayed images.
 
-      :returns: :ref:`TextPage`. Excution may be significantly longer than :meth:`Page.get_textpage`. To provide an opportunity to **explicitely** request OCR, we have added a new argument ``textpage`` to text extraction and text search methods. Letting these methods choose the underlying textpage helps makeing sure, that the page parsing results are kept available in a :ref:`TextPage` object. Your performance will already benefit if you use more then one text extraction method for the same page.
+      .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
+
+      :returns:
+      
+         a :ref:`TextPage`. Excution may be significantly longer than :meth:`Page.get_textpage`.
+
+         For a full page OCR, **all text** will have the font "GlyphlessFont" from Tesseract. In case of partial OCR, normal text will keep its properties, and only text coming from images will have the GlyphlessFont.
+
+         .. note::
+         
+            **OCRed text is only available** to PyMuPDF's text extractions and searches if their ``textpage`` parameter specifies the output of this method.
+
+            `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
 
 
    .. method:: get_drawings()
 
       * New in v1.18.0
       * Changed in v1.18.17
-      * Changed in v1.19.0
+      * Changed in v1.19.0: add "seqno" key, remove "clippings" key
+      * Changed in v1.19.1: "color" / "fill" keys now always are either are RGB tuples or ``None``. This addresses issues caused by exotic colorspaces.
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
@@ -1081,14 +1101,15 @@ In a nutshell, this is what you can do with PyMuPDF:
            
            * When a viewer software builds a page's appearance, it will sequentially walk through a list of commands (in PDF, those are stored in the ``/Contents`` object), containing instructions like "draw this path, show this image, paint this text, etc.". The key ``"seqno"`` (new in v1.19.0) is the command number, that draws this path. You can use it to determine if objects cover other objects on the page. For example, the rectangle of a "fill" path will cover objects drawn earlier -- i.e. having a smaller ``"seqno"`` -- if the rectangles overlap. Please also see :meth:`Page.get_bboxlog` and :meth:`Page.get_texttrace`.
 
-      .. note:: This method is based on the output of :meth:`Page.get_cdrawings` -- which is faster, but requires somewhat more attention processing its output.
+      .. note:: The method is now based on the output of :meth:`Page.get_cdrawings` -- which is faster, but requires somewhat more attention processing its output.
 
       .. note:: The ``"clippings"`` key present in an earlier version has been removed again in v1.19.0.
 
    .. method:: get_cdrawings()
 
       * New in v1.18.17
-      * Changed in v1.19.0: removed *clippings* key, added *seqno* key.
+      * Changed in v1.19.0: removed "clippings" key, added "seqno" key.
+      * Changed in v1.19.1: always generate RGB color tuples.
 
       Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster (factor 3 or more):
 
@@ -1385,10 +1406,12 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: flags; search_for
       pair: quads; search_for
       pair: clip; search_for
+      pair: textpage; search_for
 
    .. method:: search_for(needle, clip=clip, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES, textpage=None)
 
-      *(Changed in v1.18.2)*
+      * Changed in v1.18.2
+      * Changed in v1.19.0: added ``textpage`` parameter
 
       Search for *needle* on a page. Wrapper for :meth:`TextPage.search`.
 
@@ -1396,7 +1419,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect_like clip: *(New in v1.18.2)* only search within this area.
       :arg bool quads: Return object type :ref:`Quad` instead of :ref:`Rect`.
       :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default, ligatures and white spaces are kept, and hyphenation is detected.
-      :arg textpage: reuse a previously created :ref:`TextPage`. This reduces execution time **significantly.** If specified, the 'flags' and 'clip' arguments are ignored.
+      :arg textpage: (new in v1.19.0) use a previously created :ref:`TextPage`. This reduces execution time **significantly.** If specified, the 'flags' and 'clip' arguments are ignored. If omitted, a temporary textpage will be created.
 
       :rtype: list
 

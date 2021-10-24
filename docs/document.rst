@@ -904,13 +904,13 @@ For details on **embedded files** refer to Appendix 3.
           * This list has no duplicate entries: the combination of :data:`xref`, *name* and *referencer* is unique.
           * In general, this is a superset of the fonts actually in use by this page. The PDF creator may e.g. have specified some global list, of which each page only makes partial use.
 
-    .. method:: get_page_text(pno, output="text")
+    .. method:: get_page_text(pno, output="text", flags=3, textpage=None, sort=False)
 
       Extracts the text of a page given its page number *pno* (zero-based). Invokes :meth:`Page.get_text`.
 
       :arg int pno: page number, 0-based, any value *-inf < pno < page_count*.
 
-      :arg str output: A string specifying the requested output format: text, html, json or xml. Default is *text*.
+      For other parameter refer to the page method.
 
       :rtype: str
 
@@ -1067,7 +1067,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg bool attached_files: Search for 'FileAttachment' annotations and remove the file content.
       :arg bool clean_pages: Remove any comments from page painting sources. If this option is set to *False*, then this is also done for *hidden_text* and *redactions*.
       :arg bool embedded_files: Remove embedded files.
-      :arg bool hidden_text: Remove OCR-ed text and invisible text [#f7]_.
+      :arg bool hidden_text: Remove OCRed text and invisible text [#f7]_.
       :arg bool javascript: Remove JavaScript sources.
       :arg bool metadata: Remove PDF standard metadata.
       :arg bool redactions: Apply redaction annotations.

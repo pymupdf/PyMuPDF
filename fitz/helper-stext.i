@@ -38,36 +38,7 @@ JM_font_descender(fz_context *ctx, fz_font *font)
 }
 
 
-//-----------------------------------------------------------------------------
-// Make a text page directly from an fz_page
-//-----------------------------------------------------------------------------
-fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, fz_rect rect, int flags)
-{
-    if (!page) return NULL;
-    fz_stext_page *tp = NULL;
-    fz_device *dev = NULL;
-    fz_var(dev);
-    fz_var(tp);
-    fz_stext_options options;
-    memset(&options, 0, sizeof options);
-    options.flags = flags;
-    fz_try(ctx) {
-        tp = fz_new_stext_page(ctx, rect);
-        dev = fz_new_stext_device(ctx, tp, &options);
-        fz_run_page(ctx, page, dev, fz_identity, NULL);
-        fz_close_device(ctx, dev);
-    }
-    fz_always(ctx) {
-        fz_drop_device(ctx, dev);
-    }
-    fz_catch(ctx) {
-        fz_drop_stext_page(ctx, tp);
-        fz_rethrow(ctx);
-    }
-    return tp;
-}
-
-
+/*  inactive
 //-----------------------------------------------------------------------------
 // Make OCR text page directly from an fz_page
 //-----------------------------------------------------------------------------
@@ -85,13 +56,15 @@ JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, in
     fz_stext_options options;
     memset(&options, 0, sizeof options);
     options.flags = flags;
-    fz_matrix ctm = fz_identity;
+    //fz_matrix ctm = fz_identity;
+    fz_matrix ctm1 = fz_make_matrix(100/72, 0, 0, 100/72, 0, 0);
+    fz_matrix ctm2 = fz_make_matrix(400/72, 0, 0, 400/72, 0, 0);
 
     fz_try(ctx) {
         tp = fz_new_stext_page(ctx, rect);
         dev = fz_new_stext_device(ctx, tp, &options);
-        ocr_dev = fz_new_ocr_device(ctx, dev, ctm, rect, with_list, lang, NULL, NULL);
-        fz_run_page(ctx, page, ocr_dev, ctm, NULL);
+        ocr_dev = fz_new_ocr_device(ctx, dev, fz_identity, rect, with_list, lang, NULL, NULL);
+        fz_run_page(ctx, page, ocr_dev, fz_identity, NULL);
         fz_close_device(ctx, ocr_dev);
         fz_close_device(ctx, dev);
     }
@@ -105,7 +78,7 @@ JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, in
     }
     return tp;
 }
-
+*/
 
 //---------------------------------------------------------------------------
 // APPEND non-ascii runes in unicode escape format to fz_buffer
@@ -487,7 +460,7 @@ int JM_append_word(fz_context *ctx, PyObject *lines, fz_buffer *buff, fz_rect *w
                                     block_n, line_n, word_n);
     LIST_APPEND_DROP(lines, litem);
     Py_DECREF(s);
-    wbbox->x0 = wbbox->y0 = wbbox->x1 = wbbox->y1 = 0;
+    *wbbox = fz_empty_rect;
     return word_n + 1;                 // word counter
 }
 

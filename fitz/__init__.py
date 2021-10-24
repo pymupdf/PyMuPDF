@@ -108,6 +108,7 @@ fitz.Page.update_link = fitz.utils.update_link
 fitz.Page.write_text = fitz.utils.write_text
 fitz.Page.get_label = fitz.utils.get_label
 fitz.Page.get_image_rects = fitz.utils.get_image_rects
+fitz.Page.get_textpage_ocr = fitz.utils.get_textpage_ocr
 
 # ------------------------------------------------------------------------
 # Annot
@@ -445,3 +446,27 @@ Built for Python %i.%i on %s (%i-bit).
 )
 
 restore_aliases()
+
+# some special geometry objects
+def EMPTY_RECT():
+    return Rect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
+
+
+def INFINITE_RECT():
+    return Rect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
+
+
+def EMPTY_IRECT():
+    return IRect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
+
+
+def INFINITE_IRECT():
+    return IRect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
+
+
+def INFINITE_QUAD():
+    return INFINITE_RECT().quad
+
+
+def EMPTY_QUAD():
+    return EMPTY_RECT().quad

@@ -448,6 +448,7 @@ def get_text_blocks(
     clip: rect_like = None,
     flags: OptInt = None,
     textpage: TextPage = None,
+    sort: bool = False,
 ) -> list:
     """Return the text blocks on a page.
 
@@ -473,6 +474,8 @@ def get_text_blocks(
     blocks = tp.extractBLOCKS()
     if textpage is None:
         del tp
+    if sort is True:
+        blocks.sort(key=lambda b: (b[3], b[0]))
     return blocks
 
 
@@ -481,6 +484,7 @@ def get_text_words(
     clip: rect_like = None,
     flags: OptInt = None,
     textpage: TextPage = None,
+    sort: bool = False,
 ) -> list:
     """Return the text words as a list with the bbox for each word.
 
@@ -498,6 +502,8 @@ def get_text_words(
     words = tp.extractWORDS()
     if textpage is None:
         del tp
+    if sort is True:
+        words.sort(key=lambda w: (w[3], w[0]))
     return words
 
 
@@ -534,6 +540,57 @@ def get_text_selection(
     if textpage is None:
         del tp
     return rc
+
+
+def get_textpage_ocr(
+    page: Page,
+    flags: int = 0,
+    language: str = "eng",
+    dpi: int = 72,
+    full: bool = False,
+) -> TextPage:
+    """Create a Textpage from combined results of normal and OCR text parsing.
+
+    Args:
+        flags: (int) control content becoming part of the result.
+        language: (str) specify expected language(s). Deafault is "eng" (English).
+        dpi: (int) resolution in dpi, default 72.
+        full: (bool) whether to OCR the full page image, or only its images (default)
+    """
+    CheckParent(page)
+    # if OCR for the full page, OCR its pixmap @ desired dpi
+    if full is True:
+        zoom = dpi / 72
+        mat = Matrix(zoom, zoom)
+        pix = page.get_pixmap(matrix=mat)
+        ocr_pdf = Document("pdf", pix.pdfocr_tobytes(compress=False, language=language))
+        ocr_page = ocr_pdf.load_page(0)
+        unzoom = page.rect.width / ocr_page.rect.width
+        ctm = Matrix(unzoom, unzoom) * page.derotation_matrix
+        tpage = ocr_page.get_textpage(flags=flags, matrix=ctm)
+        ocr_pdf.close()
+        pix = None
+        tpage.parent = weakref.proxy(page)
+        return tpage
+
+    # for partial OCR, make a normal textpage, then extend it with text that
+    # is OCRed from each image.
+    tpage = page.get_textpage(flags=flags)
+    for block in page.get_text("dict")["blocks"]:
+        if block["type"] != 1:
+            continue
+        pix = Pixmap(block["image"])  # get image pixmap
+        imgdoc = Document("pdf", pix.pdfocr_tobytes())  # pdf with OCRed page
+        imgpage = imgdoc.load_page(0)  # read image as a page
+        pix = None
+        # compute matrix to transform coordinates back to that of 'page'
+        imgrect = imgpage.rect  # page size of image PDF
+        shrink = Matrix(1 / imgrect.width, 1 / imgrect.height)
+        mat = shrink * block["transform"]
+        imgpage.extend_textpage(tpage, flags=0, matrix=mat)
+        imgdoc.close()
+
+    return tpage
 
 
 def get_image_info(page: Page, hashes: bool = False, xrefs: bool = False) -> list:
@@ -617,6 +674,7 @@ def get_text(
     clip: rect_like = None,
     flags: OptInt = None,
     textpage: TextPage = None,
+    sort: bool = False,
 ):
     """Extract text from a page or an annotation.
 
@@ -656,9 +714,13 @@ def get_text(
             flags |= TEXT_PRESERVE_IMAGES
 
     if option == "words":
-        return get_text_words(page, clip=clip, flags=flags, textpage=textpage)
+        return get_text_words(
+            page, clip=clip, flags=flags, textpage=textpage, sort=sort
+        )
     if option == "blocks":
-        return get_text_blocks(page, clip=clip, flags=flags, textpage=textpage)
+        return get_text_blocks(
+            page, clip=clip, flags=flags, textpage=textpage, sort=sort
+        )
     CheckParent(page)
     cb = None
     if option in ("html", "xml", "xhtml"):  # no clipping for MuPDF functions
@@ -676,13 +738,13 @@ def get_text(
         raise ValueError("not a textpage of this page")
 
     if option == "json":
-        t = tp.extractJSON(cb=cb)
+        t = tp.extractJSON(cb=cb, sort=sort)
     elif option == "rawjson":
-        t = tp.extractRAWJSON(cb=cb)
+        t = tp.extractRAWJSON(cb=cb, sort=sort)
     elif option == "dict":
-        t = tp.extractDICT(cb=cb)
+        t = tp.extractDICT(cb=cb, sort=sort)
     elif option == "rawdict":
-        t = tp.extractRAWDICT(cb=cb)
+        t = tp.extractRAWDICT(cb=cb, sort=sort)
     elif option == "html":
         t = tp.extractHTML()
     elif option == "xml":
@@ -690,7 +752,7 @@ def get_text(
     elif option == "xhtml":
         t = tp.extractXHTML()
     else:
-        t = tp.extractText()
+        t = tp.extractText(sort=sort)
 
     if textpage is None:
         del tp
@@ -704,6 +766,7 @@ def get_page_text(
     clip: rect_like = None,
     flags: OptInt = None,
     textpage: TextPage = None,
+    sort: bool = False,
 ) -> typing.Any:
     """Extract a document page's text by page number.
 
@@ -715,7 +778,7 @@ def get_page_text(
     Returns:
         output from page.TextPage().
     """
-    return doc[pno].get_text(option, clip=clip, flags=flags)
+    return doc[pno].get_text(option, clip=clip, flags=flags, sort=sort)
 
 
 def get_pixmap(page: Page, **kw) -> Pixmap:

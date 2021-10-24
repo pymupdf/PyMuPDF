@@ -292,7 +292,7 @@ These numbers may be used to compute the minimum height of a character (or span)
 >>> r.y0 = r.y1 - span["size"]
 >>> # r now is a rectangle of height 'fontsize'
 
-.. caution:: The above calculation may deliver a **larger** height! This may e.g. happen for OCR-ed documents, where the risk of all sorts of text artifacts is high. MuPDF tries to come up with a reasonable bbox height, independently from the fontsize found in the PDF. So please ensure that the height of ``span["bbox"]`` is **larger** than ``span["size"]``.
+.. caution:: The above calculation may deliver a **larger** height! This may e.g. happen for OCRed documents, where the risk of all sorts of text artifacts is high. MuPDF tries to come up with a reasonable bbox height, independently from the fontsize found in the PDF. So please ensure that the height of ``span["bbox"]`` is **larger** than ``span["size"]``.
 
 .. note:: You may request PyMuPDF to do all of the above automatically by executing ``fitz.TOOLS.set_small_glyph_heights(True)``. This sets a global parameter so that all subsequent text searches and text extractions are based on reduced glyph heights, where meaningful.
 

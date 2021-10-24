@@ -117,12 +117,12 @@ JM_py_from_irect(fz_irect r)
 
 
 //-----------------------------------------------------------------------------
-// PySequence to fz_point. Default: (0, 0)
+// PySequence to fz_point. Default: (FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
 //-----------------------------------------------------------------------------
 static fz_point
 JM_point_from_py(PyObject *p)
 {
-    fz_point p0 = fz_make_point(0, 0);
+    fz_point p0 = fz_make_point(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT);
     double x, y;
 
     if (!p || !PySequence_Check(p) || PySequence_Size(p) != 2)
@@ -178,7 +178,10 @@ JM_py_from_matrix(fz_matrix m)
 static fz_quad
 JM_quad_from_py(PyObject *r)
 {
-    fz_quad q = fz_make_quad(0, 0, 0, 0, 0, 0, 0, 0);
+    fz_quad q = fz_make_quad(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT,
+                             FZ_MAX_INF_RECT, FZ_MIN_INF_RECT,
+                             FZ_MIN_INF_RECT, FZ_MAX_INF_RECT,
+                             FZ_MAX_INF_RECT, FZ_MAX_INF_RECT);
     fz_point p[4];
     double test, x, y;
     Py_ssize_t i;

@@ -4570,31 +4570,75 @@ struct Page {
         }
 
         //----------------------------------------------------------------
-        // Page.get_textpage
+        // Page.extend_textpage
         //----------------------------------------------------------------
-        FITZEXCEPTION(_get_text_page, !result)
-        %pythonappend _get_text_page %{val.thisown = True%}
-        struct TextPage *
-        _get_text_page(PyObject *clip=NULL, int flags=0)
+        FITZEXCEPTION(extend_textpage, !result)
+        PyObject *
+        extend_textpage(struct TextPage *tpage, int flags=0, PyObject *matrix=NULL)
         {
-            fz_stext_page *textpage=NULL;
+            fz_page *page = (fz_page *) $self;
+            fz_stext_page *tp = (fz_stext_page *) tpage;
+            fz_device *dev = NULL;
+            fz_stext_options options;
+            memset(&options, 0, sizeof options);
+            options.flags = flags;
             fz_try(gctx) {
-                fz_rect rect = JM_rect_from_py(clip);
-                textpage = JM_new_stext_page_from_page(gctx, (fz_page *) $self, rect, flags);
+                fz_matrix ctm = JM_matrix_from_py(matrix);
+                dev = fz_new_stext_device(gctx, tp, &options);
+                fz_run_page(gctx, page, dev, ctm, NULL);
+                fz_close_device(gctx, dev);
+            }
+            fz_always(gctx) {
+                fz_drop_device(gctx, dev);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return (struct TextPage *) textpage;
+            Py_RETURN_NONE;
         }
+
+
+        //----------------------------------------------------------------
+        // Page.get_textpage
+        //----------------------------------------------------------------
+        FITZEXCEPTION(_get_textpage, !result)
+        struct TextPage *
+        _get_textpage(PyObject *clip=NULL, int flags=0, PyObject *matrix=NULL)
+        {
+            fz_stext_page *tpage=NULL;
+            fz_page *page = (fz_page *) $self;
+            fz_device *dev = NULL;
+            fz_stext_options options;
+            memset(&options, 0, sizeof options);
+            options.flags = flags;
+            fz_try(gctx) {
+                fz_rect rect = JM_rect_from_py(clip);
+                fz_matrix ctm = JM_matrix_from_py(matrix);
+                tpage = fz_new_stext_page(gctx, rect);
+                dev = fz_new_stext_device(gctx, tpage, &options);
+                fz_run_page(gctx, page, dev, ctm, NULL);
+                fz_close_device(gctx, dev);
+            }
+            fz_always(gctx) {
+                fz_drop_device(gctx, dev);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct TextPage *) tpage;
+        }
+
+
         %pythoncode %{
-        def get_textpage(self, clip: rect_like =None, flags: int =0) -> "TextPage":
+        def get_textpage(self, clip: rect_like = None, flags: int = 0, matrix=None) -> "TextPage":
             CheckParent(self)
+            if matrix is None:
+                matrix = Matrix(1, 1)
             old_rotation = self.rotation
             if old_rotation != 0:
                 self.set_rotation(0)
             try:
-                textpage = self._get_text_page(clip, flags=flags)
+                textpage = self._get_textpage(clip, flags=flags, matrix=matrix)
             finally:
                 if old_rotation != 0:
                     self.set_rotation(old_rotation)
@@ -4602,14 +4646,14 @@ struct Page {
             return textpage
         %}
 
-
+        /*  inactive
         //----------------------------------------------------------------
         // Page.get_textpage_ocr
         //----------------------------------------------------------------
-        FITZEXCEPTION(_get_text_page_ocr, !result)
-        %pythonappend _get_text_page_ocr %{val.thisown = True%}
+        FITZEXCEPTION(_get_textpage_ocr, !result)
+        %pythonappend _get_textpage_ocr %{val.thisown = True%}
         struct TextPage *
-        _get_text_page_ocr(PyObject *clip=NULL, int flags=0, const char *language=NULL)
+        _get_textpage_ocr(PyObject *clip=NULL, int flags=0, const char *language=NULL)
         {
             fz_stext_page *textpage=NULL;
             fz_try(gctx) {
@@ -4621,30 +4665,7 @@ struct Page {
             }
             return (struct TextPage *) textpage;
         }
-        %pythoncode %{
-        def get_textpage_ocr(self, clip: rect_like =None, flags: int =0, language: str ="eng") -> "TextPage":
-            """Create a Textpage from combined results of normal and OCR text parsing.
-
-            Args:
-                clip: (rect_like) restrict to this part of the page.
-                flags: (int) control content becoming part of the result.
-                language: (str) specify expected language(s). Deafault is "eng" (English).
-            """
-            CheckParent(self)
-            old_rotation = self.rotation
-            if old_rotation != 0:
-                self.set_rotation(0)
-            try:
-                if not clip:
-                    clip = self.rect
-                textpage = self._get_text_page_ocr(clip, flags=flags, language=language)
-            finally:
-                if old_rotation != 0:
-                    self.set_rotation(old_rotation)
-            textpage.parent = weakref.proxy(self)
-            return textpage
-        %}
-
+        */
 
         //----------------------------------------------------------------
         // Page.language
@@ -6950,12 +6971,12 @@ struct Pixmap
 %{"""Pixmap(colorspace, irect, alpha) - empty pixmap.
 Pixmap(colorspace, src) - copy changing colorspace.
 Pixmap(src, width, height,[clip]) - scaled copy, float dimensions.
-Pixmap(src, alpha=1) - copy and add or drop alpha channel.
-Pixmap(source, mask) - add mask pixmap to non-alpha pixmap.
+Pixmap(src, alpha=True) - copy adding / dropping alpha.
+Pixmap(source, mask) - from a non-alpha and a mask pixmap.
 Pixmap(file) - from an image file.
 Pixmap(memory) - from an image in memory (bytes).
 Pixmap(colorspace, width, height, samples, alpha) - from samples data.
-Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
+Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
 """%}
         //----------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
@@ -6984,7 +7005,7 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
             fz_pixmap *pm = NULL;
             fz_try(gctx) {
                 if (!fz_pixmap_colorspace(gctx, (fz_pixmap *) spix))
-                    THROWMSG(gctx, "cannot copy pixmap without colorspace");
+                    THROWMSG(gctx, "source colorspace must not be None");
                 pm = fz_convert_pixmap(gctx, (fz_pixmap *) spix, (fz_colorspace *) cs, NULL, NULL, fz_default_color_params, 1);
             }
             fz_catch(gctx) {
@@ -6995,37 +7016,15 @@ Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
 
 
         //----------------------------------------------------------------
-        // add mask to a non-transparent pixmap
+        // add mask to a pixmap w/o alpha channel
         //----------------------------------------------------------------
         Pixmap(struct Pixmap *spix, struct Pixmap *mpix)
         {
             fz_pixmap *dst = NULL;
-            fz_pixmap *color = (fz_pixmap *) spix;
-            fz_pixmap *mask = (fz_pixmap *) mpix;
-            int w = color->w;
-            int h = color->h;
-            int n = color->n;
-            int x, y, k;
             fz_try(gctx) {
-                if (color->alpha)
-                    THROWMSG(gctx, "color pixmap must not have an alpha channel");
-                if (mask->n != 1)
-                    THROWMSG(gctx, "mask pixmap must have exactly one channel");
-                if (mask->w != color->w || mask->h != color->h)
-                    THROWMSG(gctx, "color and mask pixmaps must be the same size");
-
-                dst = fz_new_pixmap_with_bbox(gctx, color->colorspace, fz_pixmap_bbox(gctx, color), NULL, 1);
-                for (y = 0; y < h; ++y) {
-                    unsigned char *cs = &color->samples[y * color->stride];
-                    unsigned char *ms = &mask->samples[y * mask->stride];
-                    unsigned char *ds = &dst->samples[y * dst->stride];
-                    for (x = 0; x < w; ++x) {
-                        unsigned char a = *ms++;
-                        for (k = 0; k < n; ++k)
-                            *ds++ = fz_mul255(*cs++, a);
-                        *ds++ = a;
-                    }
-                }
+                dst = fz_new_pixmap_from_color_and_mask(gctx,
+                          (fz_pixmap *) spix,
+                          (fz_pixmap *) mpix);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -10382,7 +10381,6 @@ struct TextPage {
         }
 
         FITZEXCEPTION(TextPage, !result)
-        %pythonappend TextPage %{self.thisown = True%}
         TextPage(PyObject *mediabox)
         {
             fz_stext_page *tp = NULL;
@@ -10429,9 +10427,6 @@ struct TextPage {
             PyObject *liste = NULL;
             fz_try(gctx) {
                 liste = JM_search_stext_page(gctx, (fz_stext_page *) $self, needle);
-            }
-            fz_always(gctx) {
-                ;
             }
             fz_catch(gctx) {
                 return NULL;
@@ -10634,7 +10629,7 @@ struct TextPage {
             fz_var(buff);
             size_t buflen = 0;
             int block_n = -1, line_n, word_n;
-            fz_rect wbbox = {0,0,0,0};  // word bbox
+            fz_rect wbbox = fz_empty_rect;  // word bbox
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_rect tp_rect = this_tpage->mediabox;
 
@@ -10814,16 +10809,19 @@ struct TextPage {
         }
 
         %pythoncode %{
-            def extractText(self) -> str:
+            def extractText(self, sort=False) -> str:
                 """Return simple, bare text on the page."""
-                return self._extractText(0)
-
+                if sort is False:
+                    return self._extractText(0)
+                blocks = self.extractBLOCKS()[:]
+                blocks.sort(key=lambda b: (b[3], b[0]))
+                return "".join([b[4] for b in blocks])
 
             def extractHTML(self) -> str:
                 """Return page content as a HTML string."""
                 return self._extractText(1)
 
-            def extractJSON(self, cb=None) -> str:
+            def extractJSON(self, cb=None, sort=False) -> str:
                 """Return 'extractDICT' converted to JSON format."""
                 import base64, json
                 val = self._textpage_dict(raw=False)
@@ -10836,10 +10834,14 @@ struct TextPage {
                 if cb is not None:
                     val["width"] = cb.width
                     val["height"] = cb.height
+                if sort is True:
+                    blocks = val["blocks"]
+                    blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
+                    val["blocks"] = blocks
                 val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
                 return val
 
-            def extractRAWJSON(self, cb=None) -> str:
+            def extractRAWJSON(self, cb=None, sort=False) -> str:
                 """Return 'extractRAWDICT' converted to JSON format."""
                 import base64, json
                 val = self._textpage_dict(raw=True)
@@ -10852,6 +10854,10 @@ struct TextPage {
                 if cb is not None:
                     val["width"] = cb.width
                     val["height"] = cb.height
+                if sort is True:
+                    blocks = val["blocks"]
+                    blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
+                    val["blocks"] = blocks
                 val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
                 return val
 
@@ -10863,27 +10869,33 @@ struct TextPage {
                 """Return page content as a XHTML string."""
                 return self._extractText(4)
 
-            def extractDICT(self, cb=None) -> dict:
+            def extractDICT(self, cb=None, sort=False) -> dict:
                 """Return page content as a Python dict of images and text spans."""
                 val = self._textpage_dict(raw=False)
                 if cb is not None:
                     val["width"] = cb.width
                     val["height"] = cb.height
+                if sort is True:
+                    blocks = val["blocks"]
+                    blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
+                    val["blocks"] = blocks
                 return val
 
-            def extractRAWDICT(self, cb=None) -> dict:
+            def extractRAWDICT(self, cb=None, sort=False) -> dict:
                 """Return page content as a Python dict of images and text characters."""
                 val =  self._textpage_dict(raw=True)
                 if cb is not None:
                     val["width"] = cb.width
                     val["height"] = cb.height
+                if sort is True:
+                    blocks = val["blocks"]
+                    blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
+                    val["blocks"] = blocks
                 return val
 
             def __del__(self):
                 if not type(self) is TextPage: return
-                if getattr(self, "thisown", False):
-                    self.__swig_destroy__(self)
-                self.thisown = False
+                self.__swig_destroy__(self)
         %}
     }
 };

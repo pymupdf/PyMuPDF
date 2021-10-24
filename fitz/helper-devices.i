@@ -155,18 +155,13 @@ jm_checkrect()
 static PyObject *
 jm_tracedraw_color(fz_context *ctx, fz_colorspace *colorspace, const float *color)
 {
-	int i, n;
-	PyObject *xlist = NULL;
-	if (colorspace)
-	{
-		n = fz_colorspace_n(ctx, colorspace);
-		xlist = PyTuple_New(n);
-		for (i = 0; i < n; i++)
-			PyTuple_SET_ITEM(xlist, (Py_ssize_t) i, Py_BuildValue("f", color[i]));
-	} else {
-		xlist = PyTuple_New(0);
+	float rgb[3];
+	if (colorspace) {
+		fz_convert_color(ctx, colorspace, color, fz_device_rgb(ctx),
+		                 rgb, NULL, fz_default_color_params);
+		return Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]);
 	}
-	return xlist;
+	return PyTuple_New(0);
 }
 
 static void
@@ -381,6 +376,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	fz_font *out_font = NULL;
 	int i, n;
 	const char *fontname = JM_font_name(ctx, span->font);
+	float rgb[3];
 	PyObject *chars = PyTuple_New(span->len);
 	fz_matrix join = fz_concat(span->trm, ctm);
 	fz_point dir = fz_transform_vector(fz_make_point(1, 0), join);
@@ -469,14 +465,11 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	DICT_SETITEMSTR_DROP(span_dict, "bidi", PyLong_FromLong((long) span->bidi_level));
 	DICT_SETITEM_DROP(span_dict, dictkey_ascender, PyFloat_FromDouble(asc));
 	DICT_SETITEM_DROP(span_dict, dictkey_descender, PyFloat_FromDouble(dsc));
-	if (colorspace && color) {
-		n = fz_colorspace_n(ctx, colorspace);
-		PyObject *col_tuple = PyTuple_New(n);
-		for (i = 0; i < n; i++) {
-			PyTuple_SET_ITEM(col_tuple, (Py_ssize_t) i, PyFloat_FromDouble((double) color[i]));
-		}
-		DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong((long) n));
-		DICT_SETITEM_DROP(span_dict, dictkey_color, col_tuple);
+	if (colorspace) {
+		fz_convert_color(ctx, colorspace, color, fz_device_rgb(ctx),
+						 rgb, NULL, fz_default_color_params);
+		DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(3));
+		DICT_SETITEM_DROP(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
 	} else {
 		DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(1));
 		DICT_SETITEM_DROP(span_dict, dictkey_color, PyFloat_FromDouble(1));

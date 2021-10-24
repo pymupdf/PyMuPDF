@@ -27,8 +27,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.copy`              copy parts of another pixmap
 :meth:`Pixmap.gamma_with`        apply a gamma factor to the pixmap
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
-:meth:`Pixmap.pdfocr_save`       save the pixmap as an OCR-ed 1-page PDF
-:meth:`Pixmap.pdfocr_tobytes`    save the pixmap as an OCR-ed 1-page PDF
+:meth:`Pixmap.pdfocr_save`       save the pixmap as an OCRed 1-page PDF
+:meth:`Pixmap.pdfocr_tobytes`    save the pixmap as an OCRed 1-page PDF
 :meth:`Pixmap.pil_save`          save as image using pillow
 :meth:`Pixmap.pil_tobytes`       write to ``bytes`` object using pillow
 :meth:`Pixmap.pixel`             return the value of a pixel

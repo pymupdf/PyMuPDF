@@ -421,7 +421,8 @@ Yet others are handy, general-purpose utilities.
    .. method:: Page.get_texttrace()
 
       * New in v1.18.16
-      * Changed in v1.19.0
+      * Changed in v1.19.0: added key "seqno".
+      * Changed in v1.19.1: stroke and fill colors now always are either RGB or GRAY
 
       Return low-level text information of the page. The method is available for **all** document types. The result is a list of Python dictionaries with the following content::
 
@@ -471,7 +472,7 @@ Yet others are handy, general-purpose utilities.
          - 1: Stroked text -- equivalent to ``1 Tr``, only the character borders are shown.
          - 3: Ignored text -- equivalent to ``3 Tr`` (hidden text).
       
-      3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing it for you.
+      3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
       4. For data compactness, the character's unicode is provided here. Use built-in function ``chr()`` for the character itself.
       5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent. Depending in ``span["type"]``, interpret this value as *fill* opacity or, resp. *stroke* opacity.
       6. *(Changd in v1.19.0)* This value is equal / close to the width of ``char["bbox"]``. However, on occasion you may find a small delta. In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.

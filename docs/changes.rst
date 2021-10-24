@@ -3,21 +3,36 @@ Change Log
 
 ------
 
+**Changes in Version 1.19.1**
+
+This is the first patch version to support MuPDF v1.19.0. Apart from one bug fix, it includes important improvements for OCR support and the option to **sort extracted text** to the standard reading order "from top-left to bottom-right".
+
+* **Fixed** `#1328 <https://github.com/pymupdf/PyMuPDF/issues/1328>`_. "words" text extraction again returns correct ``(x0, y0)`` coordinates.
+
+* **Changed** :meth:`Page.get_textpage_ocr`: it now supports parameter ``dpi`` to control OCR quality. It is also possible to choose whether the **full page** should be OCRed or **only the images displayed** by the page.
+
+* **Changed** :meth:`Page.get_drawings` and :meth:`Page.get_cdrawings` to automatically convert colors to RGB color tuples. Implements `#1332 <https://github.com/pymupdf/PyMuPDF/discussions/1332>`_. Similar change was applied to :meth:`Page.get_texttrace`.
+
+* **Changed** :meth:`Page.get_text` to support a parameter ``sort``. If set to ``True`` the output is conveniently sorted.
+
+
+------
+
 **Changes in Version 1.19.0**
 
 This is the first version supporting MuPDF 1.19.*, published 2021-10-05. It introduces many new features compared to the previous version 1.18.*.
 
 PyMuPDF has now picked up integrated Tesseract OCR support, which was already present in MuPDF v1.18.0.
 
-* Supported images can be OCR-ed via their :ref:`Pixmap` which results in a 1-page PDF with a text layer.
-* All supported document pages (i.e. not only PDFs), can be OCR-ed using specialized text extraction methods. The result is a mixture of standard and OCR text (depending on which part of the page was deemed to require OCR-ing) that can be searched and extracted.
+* Supported images can be OCRed via their :ref:`Pixmap` which results in a 1-page PDF with a text layer.
+* All supported document pages (i.e. not only PDFs), can be OCRed using specialized text extraction methods. The result is a mixture of standard and OCR text (depending on which part of the page was deemed to require OCRing) that can be searched and extracted without restrictions.
 * All this requires an independent installation of Tesseract. MuPDF actually (only) needs the location of Tesseract's ``"tessdata"`` folder, where its language support data are stored. This location must be available as environment variable ``TESSDATA_PREFIX``.
 
 A new MuPDF feature is **journalling PDF updates**, which is also supported by this PyMuPDF version. Changes may be logged, rolled back or replayed, allowing to implement a whole new level of control over PDF document integrity -- similar to functions present in modern database systems.
 
 A third feature (unrelated to the new MuPDF version) includes the ability to detect when page **objects cover or hide each other**. It is now e.g. possible to see that text is covered by a drawing or an image.
 
-* **Changed** terminology and meaning of important geometry concepts: Rectangles are now characterized as *finite*, *valid* or *empty*, while the definitions of these terms have changed. Rectangles specifically are now thought of being "open": not all corners and sides are considered part of the retangle. Please do read the :ref:`Rect` section for details.
+* **Changed** terminology and meaning of important geometry concepts: Rectangles are now characterized as *finite*, *valid* or *empty*, while the definitions of these terms have also changed. Rectangles specifically are now thought of being "open": not all corners and sides are considered part of the retangle. Please do read the :ref:`Rect` section for details.
 
 * **Added** new parameter `"no_new_id"` to :meth:`Document.save` / :meth:`Document.tobytes` methods. Use it to suppress updating the second item of the document ``/ID`` which in PDF indicates that the original file has been updated. If the PDF has no ``/ID`` at all yet, then no new one will be created either.
 
@@ -212,7 +227,7 @@ This is a bug fix version only. We are publishing early because of the potential
 * **Implemented** request `#843 <https://github.com/pymupdf/PyMuPDF/Discussions/843>`_: :meth:`Document.tobytes` now supports linearized PDF output. :meth:`Document.save` now also supports writing to Python **file objects**. In addition, the open function now also supports Python file objects.
 * **Fixed** issue `#844 <https://github.com/pymupdf/PyMuPDF/issues/844>`_.
 * **Fixed** issue `#838 <https://github.com/pymupdf/PyMuPDF/issues/838>`_.
-* **Fixed** issue `#823 <https://github.com/pymupdf/PyMuPDF/issues/823>`_. More logic for better support of OCR-ed text output (Tesseract, ABBYY).
+* **Fixed** issue `#823 <https://github.com/pymupdf/PyMuPDF/issues/823>`_. More logic for better support of OCRed text output (Tesseract, ABBYY).
 * **Fixed** issue `#818 <https://github.com/pymupdf/PyMuPDF/issues/818>`_.
 * **Fixed** issue `#814 <https://github.com/pymupdf/PyMuPDF/issues/814>`_.
 * **Added** :meth:`Document.get_page_labels` which returns a list of page label definitions of a PDF.
