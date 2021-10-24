@@ -43,6 +43,8 @@ OPENSUSE = ARCH_LINUX + [
 ]
 FEDORA = ARCH_LINUX + [
     "harfbuzz",
+    "leptonica",
+    "tesseract",
 ]
 NIX = ARCH_LINUX + ["harfbuzz"]
 LIBRARIES = {
