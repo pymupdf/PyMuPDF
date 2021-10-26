@@ -143,3 +143,17 @@ Remark
 This class adheres to the sequence protocol, so components can be dealt with via their indices, too. Also refer to :ref:`SequenceTypes`.
 
 We are still in process to extend algebraic operations to quads. Multiplication and division with / by numbers and matrices are already defined. Addition, subtraction and any unary operations may follow when we see an actual need.
+
+Containment Checks
+---------------------
+Independent from the previous remark, the following **containment checks are possible**:
+
+* ``point in quad`` -- check whether a point is inside a quadrilateral.
+* ``rect in quad`` -- check whether a rectangle is inside a quadrilateral. This is done by checking the containment of its four corners.
+* ``quad in quad`` -- check whether some quad is contained in some other quadrilateral. This is done by checking the containment of its four corners.
+
+Please note the following interesting detail:
+
+* For a rectangle, only its top-left point belongs to it. Since v1.19.0, rectangles are re-defined to be "open", such that its bottom and its right edge do not belong to it.
+* So you will see ``False`` for the check ``rect.br in rect``.
+* But quadrilaterals have no notion of "openness", so you will see ``True`` for the check ``rect.br in rect.quad``!
