@@ -17,7 +17,7 @@ import time
 import multiprocessing as mp
 import queue
 import fitz
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 my_timer = time.clock if str is bytes else time.perf_counter
 
@@ -64,7 +64,7 @@ class DocForm(QtWidgets.QWidget):
 
         self.labelImg = QtWidgets.QLabel("Document", self)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding
         )
         self.labelImg.setSizePolicy(sizePolicy)
         vbox.addWidget(self.labelImg)
@@ -79,7 +79,7 @@ class DocForm(QtWidgets.QWidget):
             "Open Document",
             self.lastDir,
             "All Supported Files (*.pdf;*.epub;*.xps;*.oxps;*.cbz;*.fb2);;PDF Files (*.pdf);;EPUB Files (*.epub);;XPS Files (*.xps);;OpenXPS Files (*.oxps);;CBZ Files (*.cbz);;FB2 Files (*.fb2)",
-            options=QtWidgets.QFileDialog.Options(),
+            #options=QtWidgets.QFileDialog.Options(),
         )
         if path:
             self.lastDir, self.file = os.path.split(path)
@@ -122,9 +122,9 @@ class DocForm(QtWidgets.QWidget):
                 self.curPageNum = num
                 self.label.setText("{}/{}".format(self.curPageNum + 1, self.page_count))
                 fmt = (
-                    QtGui.QImage.Format_RGBA8888
+                    QtGui.QImage.Format.Format_RGBA8888
                     if alpha
-                    else QtGui.QImage.Format_RGB888
+                    else QtGui.QImage.Format.Format_RGB888
                 )
                 qimg = QtGui.QImage(samples, width, height, stride, fmt)
                 self.labelImg.setPixmap(QtGui.QPixmap.fromImage(qimg))
@@ -164,4 +164,4 @@ def openDocInProcess(path, queNum, quePageInfo):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     form = DocForm()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
