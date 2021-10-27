@@ -17,7 +17,30 @@ import time
 import multiprocessing as mp
 import queue
 import fitz
-from PyQt5 import QtCore, QtGui, QtWidgets
+
+''' PyQt and PySide namespace unifier shim
+    https://www.pythonguis.com/faq/pyqt6-vs-pyside6/
+    simple "if 'PyQt6' in sys.modules:" test fails for me, so the more complex pkgutil use
+    overkill for most people who might have one or the other, why both?
+'''
+
+from pkgutil import iter_modules
+
+def module_exists(module_name):
+    return module_name in (name for loader, name, ispkg in iter_modules())
+
+if  module_exists("PyQt6"):
+    # PyQt6
+    from PyQt6 import QtGui, QtWidgets, QtCore
+    from PyQt6.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
+    wrapper = "PyQt6"
+
+elif module_exists("PySide6"):
+    # PySide6
+    from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6.QtCore import Signal, Slot
+    wrapper = "PySide6"
+
 
 my_timer = time.clock if str is bytes else time.perf_counter
 
@@ -46,28 +69,28 @@ class DocForm(QtWidgets.QWidget):
         hbox = QtWidgets.QHBoxLayout()
         self.btnOpen = QtWidgets.QPushButton("OpenDocument", self)
         self.btnOpen.clicked.connect(self.openDoc)
-        hbox.add_widget(self.btnOpen)
+        hbox.addWidget(self.btnOpen)
 
         self.btnPlay = QtWidgets.QPushButton("PlayDocument", self)
         self.btnPlay.clicked.connect(self.playDoc)
-        hbox.add_widget(self.btnPlay)
+        hbox.addWidget(self.btnPlay)
 
         self.btnStop = QtWidgets.QPushButton("Stop", self)
         self.btnStop.clicked.connect(self.stopPlay)
-        hbox.add_widget(self.btnStop)
+        hbox.addWidget(self.btnStop)
 
         self.label = QtWidgets.QLabel("0/0", self)
         self.label.setFont(QtGui.QFont("Verdana", 20))
-        hbox.add_widget(self.label)
+        hbox.addWidget(self.label)
 
         vbox.addLayout(hbox)
 
         self.labelImg = QtWidgets.QLabel("Document", self)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding
         )
         self.labelImg.setSizePolicy(sizePolicy)
-        vbox.add_widget(self.labelImg)
+        vbox.addWidget(self.labelImg)
 
         self.setGeometry(100, 100, 400, 600)
         self.setWindowTitle("PyMuPDF Document Player")
@@ -79,7 +102,7 @@ class DocForm(QtWidgets.QWidget):
             "Open Document",
             self.lastDir,
             "All Supported Files (*.pdf;*.epub;*.xps;*.oxps;*.cbz;*.fb2);;PDF Files (*.pdf);;EPUB Files (*.epub);;XPS Files (*.xps);;OpenXPS Files (*.oxps);;CBZ Files (*.cbz);;FB2 Files (*.fb2)",
-            options=QtWidgets.QFileDialog.Options(),
+            #options=QtWidgets.QFileDialog.Options(),
         )
         if path:
             self.lastDir, self.file = os.path.split(path)
@@ -122,9 +145,9 @@ class DocForm(QtWidgets.QWidget):
                 self.curPageNum = num
                 self.label.setText("{}/{}".format(self.curPageNum + 1, self.page_count))
                 fmt = (
-                    QtGui.QImage.Format_RGBA8888
+                    QtGui.QImage.Format.Format_RGBA8888
                     if alpha
-                    else QtGui.QImage.Format_RGB888
+                    else QtGui.QImage.Format.Format_RGB888
                 )
                 qimg = QtGui.QImage(samples, width, height, stride, fmt)
                 self.labelImg.setPixmap(QtGui.QPixmap.fromImage(qimg))
@@ -164,4 +187,4 @@ def openDocInProcess(path, queNum, quePageInfo):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     form = DocForm()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
