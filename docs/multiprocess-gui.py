@@ -17,7 +17,30 @@ import time
 import multiprocessing as mp
 import queue
 import fitz
-from PyQt6 import QtCore, QtGui, QtWidgets
+
+''' PyQt and PySide namespace unifier shim
+    https://www.pythonguis.com/faq/pyqt6-vs-pyside6/
+    simple "if 'PyQt6' in sys.modules:" test fails for me, so the more complex pkgutil use
+    overkill for most people who might have one or the other, why both?
+'''
+
+from pkgutil import iter_modules
+
+def module_exists(module_name):
+    return module_name in (name for loader, name, ispkg in iter_modules())
+
+if  module_exists("PyQt6"):
+    # PyQt6
+    from PyQt6 import QtGui, QtWidgets, QtCore
+    from PyQt6.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
+    wrapper = "PyQt6"
+
+elif module_exists("PySide6"):
+    # PySide6
+    from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6.QtCore import Signal, Slot
+    wrapper = "PySide6"
+
 
 my_timer = time.clock if str is bytes else time.perf_counter
 
