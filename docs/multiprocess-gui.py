@@ -46,19 +46,19 @@ class DocForm(QtWidgets.QWidget):
         hbox = QtWidgets.QHBoxLayout()
         self.btnOpen = QtWidgets.QPushButton("OpenDocument", self)
         self.btnOpen.clicked.connect(self.openDoc)
-        hbox.add_widget(self.btnOpen)
+        hbox.addWidget(self.btnOpen)
 
         self.btnPlay = QtWidgets.QPushButton("PlayDocument", self)
         self.btnPlay.clicked.connect(self.playDoc)
-        hbox.add_widget(self.btnPlay)
+        hbox.addWidget(self.btnPlay)
 
         self.btnStop = QtWidgets.QPushButton("Stop", self)
         self.btnStop.clicked.connect(self.stopPlay)
-        hbox.add_widget(self.btnStop)
+        hbox.addWidget(self.btnStop)
 
         self.label = QtWidgets.QLabel("0/0", self)
         self.label.setFont(QtGui.QFont("Verdana", 20))
-        hbox.add_widget(self.label)
+        hbox.addWidget(self.label)
 
         vbox.addLayout(hbox)
 
@@ -67,7 +67,7 @@ class DocForm(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding
         )
         self.labelImg.setSizePolicy(sizePolicy)
-        vbox.add_widget(self.labelImg)
+        vbox.addWidget(self.labelImg)
 
         self.setGeometry(100, 100, 400, 600)
         self.setWindowTitle("PyMuPDF Document Player")
