@@ -37,16 +37,19 @@ ARCH_LINUX = DEFAULT + [
     "freetype",
     "gumbo",
 ]
-OPENSUSE = ARCH_LINUX + [
+NIX = ARCH_LINUX + [
     "harfbuzz",
+]
+OPENSUSE = NIX + [
     "png16",
 ]
-FEDORA = ARCH_LINUX + [
-    "harfbuzz",
+DEBIAN = OPENSUSE + [
+    "mujs",
+]
+FEDORA = NIX + [
     "leptonica",
     "tesseract",
 ]
-NIX = ARCH_LINUX + ["harfbuzz"]
 LIBRARIES = {
     "default": DEFAULT,
     "ubuntu": DEFAULT,
@@ -57,6 +60,7 @@ LIBRARIES = {
     "fedora": FEDORA,
     "alpine": ALPINE,
     "nix": NIX,
+    "debian": DEBIAN,
 }
 
 
