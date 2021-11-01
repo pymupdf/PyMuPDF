@@ -43,6 +43,8 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.embfile_info`           PDF only: metadata of an embedded file
 :meth:`Document.embfile_names`          PDF only: list of embedded files
 :meth:`Document.embfile_upd`            PDF only: change an embedded file
+:meth:`Document.extract_font`           PDF only: extract a font by :data:`xref`
+:meth:`Document.extract_image`          PDF only: extract an embedded image by :data:`xref`
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
 :meth:`Document.find_bookmark`          retrieve page location after layouting
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
