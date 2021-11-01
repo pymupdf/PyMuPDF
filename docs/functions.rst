@@ -23,8 +23,6 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document.xml_metadata_xref`   PDF only: return XML metadata :data:`xref` number
 :meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
-:meth:`Document.extract_font`        PDF only: extract embedded font
-:meth:`Document.extract_image`       PDF only: extract embedded image
 :meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
 :meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
 :meth:`image_properties`             return a dictionary of basic image properties
@@ -649,89 +647,6 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document.extract_image(xref)
-
-      PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
-
-      :arg int xref: :data:`xref` of an image object. If this is not in ``range(1, doc.xref_length())``, or the object is no image or other errors occur, *None* is returned and no exception is raised.
-
-      :rtype: dict
-      :returns: a dictionary with the following keys
-
-        * *ext* (*str*) image type (e.g. *'jpeg'*), usable as image file extension
-        * *smask* (*int*) :data:`xref` number of a stencil (/SMask) image or zero
-        * *width* (*int*) image width
-        * *height* (*int*) image height
-        * *colorspace* (*int*) the image's *colorspace.n* number.
-        * *cs-name* (*str*) the image's *colorspace.name*.
-        * *xres* (*int*) resolution in x direction. Please also see :data:`resolution`.
-        * *yres* (*int*) resolution in y direction. Please also see :data:`resolution`.
-        * *image* (*bytes*) image data, usable as image file content
-
-      >>> d = doc.extract_image(1373)
-      >>> d
-      {'ext': 'png', 'smask': 2934, 'width': 5, 'height': 629, 'colorspace': 3, 'xres': 96,
-      'yres': 96, 'cs-name': 'DeviceRGB',
-      'image': b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x05\ ...'}
-      >>> imgout = open("image." + d["ext"], "wb")
-      >>> imgout.write(d["image"])
-      102
-      >>> imgout.close()
-
-      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
-
-         * xref 1268 is a PNG -- Comparable execution time and identical output::
-
-            In [23]: %timeit pix = fitz.Pixmap(doc, 1268);pix.tobytes()
-            10.8 ms ± 52.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-            In [24]: len(pix.tobytes())
-            Out[24]: 21462
-
-            In [25]: %timeit img = doc.extract_image(1268)
-            10.8 ms ± 86 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-            In [26]: len(img["image"])
-            Out[26]: 21462
-
-         * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
-
-            In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.tobytes()
-            341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-            In [28]: len(pix.tobytes())
-            Out[28]: 2599433
-
-            In [29]: %timeit img = doc.extract_image(1186)
-            15.7 µs ± 116 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-            In [30]: len(img["image"])
-            Out[30]: 371177
-
-   .. method:: Document.extract_font(xref, info_only=False)
-
-      PDF Only: Return an embedded font file's data and appropriate file extension. This can be used to store the font as an external file. The method does not throw exceptions (other than via checking for PDF and valid :data:`xref`).
-
-      :arg int xref: PDF object number of the font to extract.
-      :arg bool info_only: only return font information, not the buffer. To be used for information-only purposes, avoids allocation of large buffer areas.
-
-      :rtype: tuple
-      :returns: a tuple *(basename, ext, subtype, buffer)*, where *ext* is a 3-byte suggested file extension (*str*), *basename* is the font's name (*str*), *subtype* is the font's type (e.g. "Type1") and *buffer* is a bytes object containing the font file's content (or *b""*). For possible extension values and their meaning see :ref:`FontExtensions`. Return details on error:
-
-            * *("", "", "", b"")* -- invalid xref or xref is not a (valid) font object.
-            * *(basename, "n/a", "Type1", b"")* -- *basename* is not embedded and thus cannot be extracted. This is the case for e.g. the :ref:`Base-14-Fonts`.
-
-      Example:
-
-      >>> # store font as an external file
-      >>> name, ext, buffer = doc.extract_font(4711)
-      >>> # assuming buffer is not None:
-      >>> ofile = open(name + "." + ext, "wb")
-      >>> ofile.write(buffer)
-      >>> ofile.close()
-
-      .. warning:: The basename is returned unchanged from the PDF. So it may contain characters (such as blanks) which may disqualify it as a filename for your operating system. Take appropriate action.
-
-      .. note: The returned *basename* in general is **not** the original file name, but it probably has some similarity.
-
------
-
    .. method:: recover_quad(line_dir, span)
 
       Compute the quadrilateral of a text span extracted via options "dict" or "rawdict" of :meth:`Page.get_text`.
@@ -771,4 +686,3 @@ Yet others are handy, general-purpose utilities.
       :arg dict line: the line.
       :arg list spans: a sub-list of ``line["spans"]``. If omitted, the full line quad will be returned.
       :returns: the :ref:`Quad` of the selected line spans, usable for text marker annotations ('Highlight', etc.).
-
