@@ -46,7 +46,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.extract_font`           PDF only: extract a font by :data:`xref`
 :meth:`Document.extract_image`          PDF only: extract an embedded image by :data:`xref`
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
-:meth:`Document.find_bookmark`          retrieve page location after layouting
+:meth:`Document.find_bookmark`          retrieve page location after layouting document
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
 :meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
@@ -108,7 +108,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.set_toc_item`           PDF only: change a single TOC item
 :meth:`Document.set_toc`                PDF only: set the table of contents (TOC)
 :meth:`Document.set_xml_metadata`       PDF only: create or update document XML metadata
-:meth:`Document.subset_fonts`           PDF only: create font subsets **(experimental)**
+:meth:`Document.subset_fonts`           PDF only: create font subsets
 :meth:`Document.switch_layer`           PDF only: activate OC configuration
 :meth:`Document.tobytes`                PDF only: writes document to memory
 :meth:`Document.xref_object`            PDF only: get the definition source of :data:`xref`
@@ -567,7 +567,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int,tuple page_id: *(Changed in v1.17.0)*
 
-          Either a 0-based page number, or a tuple *(chapter, pno)*. For an **integer**, any *-inf < page_id < page_count* is acceptable. While page_id is negative, :attr:`page_count` will be added to it. For example: to load the last page, you can use *doc.load_page(-1)*. After this you have page.number = doc.page_count - 1.
+          Either a 0-based page number, or a tuple *(chapter, pno)*. For an **integer**, any ``-∞ < page_id < page_count`` is acceptable. While page_id is negative, :attr:`page_count` will be added to it. For example: to load the last page, you can use *doc.load_page(-1)*. After this you have page.number = doc.page_count - 1.
 
           For a tuple, *chapter* must be in range :attr:`Document.chapter_count`, and *pno* must be in range :meth:`Document.chapter_page_count` of that chapter. Both values are 0-based. Using this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types whith chapter support (EPUB currently).
 
@@ -625,8 +625,8 @@ For details on **embedded files** refer to Appendix 3.
 
       A generator for a range of pages. Parameters have the same meaning as in the built-in function *range()*. Intended for expressions of the form *"for page in doc.pages(start, stop, step): ..."*.
 
-      :arg int start: start iteration with this page number. Default is zero, allowed values are -inf < start < page_count. While this is negative, :attr:`page_count` is added **before** starting the iteration.
-      :arg int stop: stop iteration at this page number. Default is :attr:`page_count`, possible are -inf < stop <= page_count. Larger values are **silently replaced** by the default. Negative values will cyclically emit the pages in reversed order. As with the built-in *range()*, this is the first page **not** returned.
+      :arg int start: start iteration with this page number. Default is zero, allowed values are ``-∞ < start < page_count``. While this is negative, :attr:`page_count` is added **before** starting the iteration.
+      :arg int stop: stop iteration at this page number. Default is :attr:`page_count`, possible are ``-∞ < stop <= page_count``. Larger values are **silently replaced** by the default. Negative values will cyclically emit the pages in reversed order. As with the built-in *range()*, this is the first page **not** returned.
       :arg int step: stepping value. Defaults are 1 if start < stop and -1 if start > stop. Zero is not allowed.
 
       :returns: a generator iterator over the document's pages. Some examples:
@@ -818,7 +818,7 @@ For details on **embedded files** refer to Appendix 3.
 
       Creates a pixmap from page *pno* (zero-based). Invokes :meth:`Page.get_pixmap`.
 
-      :arg int pno: page number, 0-based in -inf < pno < page_count.
+      :arg int pno: page number, 0-based in ``-∞ < pno < page_count``.
 
       :rtype: :ref:`Pixmap`
 
@@ -828,7 +828,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: *(New in v1.16.13)* Return a list of all XObjects referenced by a page.
 
-      :arg int pno: page number, 0-based, *-inf < pno < page_count*.
+      :arg int pno: page number, 0-based, ``-∞ < pno < page_count``.
 
       :rtype: list
       :returns: a list of (non-image) XObjects. These objects typically represent pages *embedded* (not copied) from other PDFs. For example, :meth:`Page.show_pdf_page` will create this type of object. An item of this list has the following layout: ``(xref, name, invoker, bbox)``, where
@@ -843,7 +843,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return a list of all images (directly or indirectly) referenced by the page.
 
-      :arg int pno: page number, 0-based, *-inf < pno < page_count*.
+      :arg int pno: page number, 0-based, ``-∞ < pno < page_count``.
       :arg bool full: whether to also include the referencer's :data:`xref` (which is zero if this is the page).
 
       :rtype: list
@@ -871,7 +871,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return a list of all fonts (directly or indirectly) referenced by the page.
 
-      :arg int pno: page number, 0-based, -inf < pno < page_count.
+      :arg int pno: page number, 0-based, ``-∞ < pno < page_count``.
       :arg bool full: whether to also include the referencer's :data:`xref`. If *True*, the returned items are one entry longer. Use this option if you need to know, whether the page directly references the font. In this case the last entry is 0. If the font is referenced by an ``/XObject`` of the page, you will find its :data:`xref` here.
 
       :rtype: list
@@ -910,7 +910,7 @@ For details on **embedded files** refer to Appendix 3.
 
       Extracts the text of a page given its page number *pno* (zero-based). Invokes :meth:`Page.get_text`.
 
-      :arg int pno: page number, 0-based, any value *-inf < pno < page_count*.
+      :arg int pno: page number, 0-based, any value ``-∞ < pno < page_count``.
 
       For other parameter refer to the page method.
 
@@ -1156,7 +1156,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: search_page_for(pno, text, quads=False)
 
-       Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.search_for`. Any integer -inf < pno < page_count is acceptable.
+       Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.search_for`. Any integer ``-∞ < pno < page_count`` is acceptable.
 
     .. index::
        pair: from_page; insert_pdf (Document method)
@@ -1233,7 +1233,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: delete_page(pno=-1)
 
-      PDF only: Delete a page given by its 0-based number in ``-inf < pno < page_count - 1``.
+      PDF only: Delete a page given by its 0-based number in ``-∞ < pno < page_count - 1``.
 
       * Changed in v1.18.14: support Python's ``del`` statement.
 
@@ -1473,6 +1473,90 @@ For details on **embedded files** refer to Appendix 3.
       *(New in version 1.16.8)*
 
       PDF only: Return the trailer source of the PDF,  which is usually located at the PDF file's end. This is :meth:`Document.xref_object` with an *xref* argument of -1.
+
+
+   .. method:: Document.extract_image(xref)
+
+      PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
+
+      :arg int xref: :data:`xref` of an image object. If this is not in ``range(1, doc.xref_length())``, or the object is no image or other errors occur, *None* is returned and no exception is raised.
+
+      :rtype: dict
+      :returns: a dictionary with the following keys
+
+        * *ext* (*str*) image type (e.g. *'jpeg'*), usable as image file extension
+        * *smask* (*int*) :data:`xref` number of a stencil (/SMask) image or zero
+        * *width* (*int*) image width
+        * *height* (*int*) image height
+        * *colorspace* (*int*) the image's *colorspace.n* number.
+        * *cs-name* (*str*) the image's *colorspace.name*.
+        * *xres* (*int*) resolution in x direction. Please also see :data:`resolution`.
+        * *yres* (*int*) resolution in y direction. Please also see :data:`resolution`.
+        * *image* (*bytes*) image data, usable as image file content
+
+      >>> d = doc.extract_image(1373)
+      >>> d
+      {'ext': 'png', 'smask': 2934, 'width': 5, 'height': 629, 'colorspace': 3, 'xres': 96,
+      'yres': 96, 'cs-name': 'DeviceRGB',
+      'image': b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x05\ ...'}
+      >>> imgout = open("image." + d["ext"], "wb")
+      >>> imgout.write(d["image"])
+      102
+      >>> imgout.close()
+
+      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
+
+         * xref 1268 is a PNG -- Comparable execution time and identical output::
+
+            In [23]: %timeit pix = fitz.Pixmap(doc, 1268);pix.tobytes()
+            10.8 ms ± 52.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+            In [24]: len(pix.tobytes())
+            Out[24]: 21462
+
+            In [25]: %timeit img = doc.extract_image(1268)
+            10.8 ms ± 86 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+            In [26]: len(img["image"])
+            Out[26]: 21462
+
+         * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
+
+            In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.tobytes()
+            341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+            In [28]: len(pix.tobytes())
+            Out[28]: 2599433
+
+            In [29]: %timeit img = doc.extract_image(1186)
+            15.7 µs ± 116 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+            In [30]: len(img["image"])
+            Out[30]: 371177
+
+
+   .. method:: Document.extract_font(xref, info_only=False)
+
+      PDF Only: Return an embedded font file's data and appropriate file extension. This can be used to store the font as an external file. The method does not throw exceptions (other than via checking for PDF and valid :data:`xref`).
+
+      :arg int xref: PDF object number of the font to extract.
+      :arg bool info_only: only return font information, not the buffer. To be used for information-only purposes, avoids allocation of large buffer areas.
+
+      :rtype: tuple
+      :returns: a tuple *(basename, ext, subtype, buffer)*, where *ext* is a 3-byte suggested file extension (*str*), *basename* is the font's name (*str*), *subtype* is the font's type (e.g. "Type1") and *buffer* is a bytes object containing the font file's content (or *b""*). For possible extension values and their meaning see :ref:`FontExtensions`. Return details on error:
+
+            * *("", "", "", b"")* -- invalid xref or xref is not a (valid) font object.
+            * *(basename, "n/a", "Type1", b"")* -- *basename* is not embedded and thus cannot be extracted. This is the case for e.g. the :ref:`Base-14-Fonts`.
+
+      Example:
+
+      >>> # store font as an external file
+      >>> name, ext, buffer = doc.extract_font(4711)
+      >>> # assuming buffer is not None:
+      >>> ofile = open(name + "." + ext, "wb")
+      >>> ofile.write(buffer)
+      >>> ofile.close()
+
+      .. warning:: The basename is returned unchanged from the PDF. So it may contain characters (such as blanks) which may disqualify it as a filename for your operating system. Take appropriate action.
+
+      .. note: The returned *basename* in general is **not** the original file name, but it probably has some similarity.
+
 
 
     .. method:: xref_xml_metadata()
