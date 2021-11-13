@@ -77,7 +77,7 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade pymupdf
 ```
 
-There are **no mandatory** external dependencies. However, a some **optional features** become available if additional packages are installed:
+There are **no mandatory** external dependencies. However, some **optional features** become available only if additional packages are installed:
 
 * [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly from PyMuPDF
 * [fontTools](https://pypi.org/project/fonttools/) for creating font subsets
