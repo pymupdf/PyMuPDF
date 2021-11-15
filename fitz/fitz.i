@@ -8657,7 +8657,7 @@ struct Outline {
         int page()
         {
             fz_outline *ol = (fz_outline *) $self;
-            return ol->page;
+            return ol->page.page;
         }
 
         %pythoncode %{@property%}
