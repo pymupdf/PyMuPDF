@@ -65,14 +65,8 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
 
       :arg point_like fixpoint: the point.
       :arg matrix_like matrix: the matrix.
-      :returns: a new quad. The effect is achieved by using the following code::
+      :returns: a new quad (no operation if this is the infinite quad).
 
-         >>> T = fitz.Matrix(1, 1).pretranslate(fixpoint.x, fixpoint.y)
-         >>> result = self * ~T * matrix * T
-
-      So the quad is translated such, that fixpoint becomes the origin (0, 0), then the matrix is applied to it, and finally a reverse translation is done.
-
-      Typical uses include rotating the quad around a desired point.
 
    .. attribute:: rect
 
@@ -111,6 +105,9 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
       *(New in version 1.16.1)*
 
       Checks if for any two points of the quad, all points on their connecting line also belong to the quad.
+
+         .. image:: images/img-convexity.*
+            :scale: 30
 
       :type: bool
 
@@ -154,6 +151,10 @@ Independent from the previous remark, the following **containment checks are pos
 
 Please note the following interesting detail:
 
-* For a rectangle, only its top-left point belongs to it. Since v1.19.0, rectangles are re-defined to be "open", such that its bottom and its right edge do not belong to it.
-* So you will see ``False`` for the check ``rect.br in rect``.
-* But quadrilaterals have no notion of "openness", so you will see ``True`` for the check ``rect.br in rect.quad``!
+For a rectangle, only its top-left point belongs to it. Since v1.19.0, rectangles are defined to be "open", such that its bottom and its right edge do not belong to it -- including the respective corners. But for quads there exists no notion like "openness", so we have the following surprising situation:
+
+   >>> rect.br in rect
+   False
+   >>> # but:
+   >>> rect.br in rect.quad
+   True

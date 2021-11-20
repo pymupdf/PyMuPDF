@@ -18,21 +18,34 @@ The following remarks are also valid for :ref:`IRect` objects:
 
 **(Changed in v1.19.0)** Hence some classification:
 
-* A rectangle is called **valid** if ``x0 <= x1`` and ``y0 <= y1`` (i.e. the bottom right point is "south-eastern" to the top left one), otherwise **invalid**. Of the four alternatives above, **only number 1.** is valid. Please take into account, that in MuPDF's coordinate system, the y-axis is oriented from **top to bottom**.
+* A rectangle is called **valid** if ``x0 <= x1`` and ``y0 <= y1`` (i.e. the bottom right point is "south-eastern" to the top left one), otherwise **invalid**. Of the four alternatives above, **only the first** is valid. Please take into account, that in MuPDF's coordinate system, the y-axis is oriented from **top to bottom**. Invalid rectangles have been called infinite in earlier versions.
 
-* A rectangle is called **empty** if ``x0 >= x1`` or ``y0 >= y1``. This implies, that **invalid rectangles are always empty.** And ``width`` (resp. ``height``) is set to zero if ``x0 > x1`` (resp. ``y0 > y1``).
+* A rectangle is called **empty** if ``x0 >= x1`` or ``y0 >= y1``. This implies, that **invalid rectangles are also always empty.** And ``width`` (resp. ``height``) is **set to zero** if ``x0 > x1`` (resp. ``y0 > y1``). In previous versions, a rectangle was empty only if one of width or height was zero.
 
-.. note:: Compared to earlier versions, to a large extent, **invalid** rectangles have taken over the role of "infinite" rectangles.
+* Rectangle coordinates **cannot be outside** the number range from ``FZ_MIN_INF_RECT = -2147483648`` to ``FZ_MAX_INF_RECT = 2147483520``. Both values have been chosen, because they are the smallest / largest 32bit integers that survive C float conversion roundtrips. In previous versions there was no limit for coordinate values.
 
-* Rectangle coordinates cannot be outside the number range from ``FZ_MIN_INF_RECT = -2147483648`` to ``FZ_MAX_INF_RECT = 2147483520``. Both values have been chosen, because they are the smallest / largest 32bit integers that survive C float conversion roundtrips.
+* There is **exactly one "infinite" rectangle**, defined by ``x0 = y0 = FZ_MIN_INF_RECT`` and ``x1 = y1 = FZ_MAX_INF_RECT``. It contains every other rectangle. It is mainly used for technical purposes -- e.g. when a function call should ignore a formally required rectangle argument. This rectangle is not empty.
 
-* There is **exactly one "infinite" rectangle**, defined by ``x0 = y0 = FZ_MIN_INF_RECT`` and ``x1 = y1 = FZ_MAX_INF_RECT``. It contains every other rectangle. It is mainly used for technical purposes -- e.g. when a function call should ignore a formally required rectangle argument.
-
-* Rectangles are **open:** The right and the bottom edge are not considered part of the rectangle. This implies, that only the top-left corner ``(x0, y0)`` can belong to a rectangle - the other three corners never do. Hence: an empty rectangle contains none of its corners.
+* **Rectangles are (semi-) open:** The right and the bottom edges (including the resp. corners) are not considered part of the rectangle. This implies, that only the top-left corner ``(x0, y0)`` can ever belong to the rectangle - the other three corners never do. An empty rectangle contains no corners at all.
 
    .. image:: images/img-rect-contains.*
       :scale: 30
       :align: center
+
+* Here is an overview of the changes.
+
+   ================= ========================================= ===============================================
+   Notion            Versions < 1.19.0                         Versions >= 1.19.0
+   ================= ========================================= ===============================================
+   empty             x0 = x1 or y0 = y1                        x0 >= x1 or y0 >= y1 -- includes invalid rects
+   valid             n/a                                       x0 <= x1 and y0 <= y1
+   infinite          all rects where x0 > x1 or y1 > y0        **exactly one** infinite rect!
+   coordinate values numeric without limitations               inside ``[FZ_MIN_INF_RECT, FZ_MAX_INF_RECT]``
+   ================= ========================================= ===============================================
+
+
+
+
 
 
 ============================= =======================================================
@@ -123,7 +136,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: intersect(r)
 
-      The intersection (common rectangular area) of the current rectangle and *r* is calculated and **replaces the current** rectangle. If either rectangle is empty, the result is also empty. If *r* is infinite, this is a no-operation.
+      The intersection (common rectangular area, largest rectangle contained in both) of the current rectangle and *r* is calculated and **replaces the current** rectangle. If either rectangle is empty, the result is also empty. If *r* is infinite, this is a no-operation. If the rectangles are (mathematically) disjoint, then the result is invalid. If the result is valid but empty, then the rectangles touch each other in a corner or (part of) one side.
 
       :arg r: Second rectangle
       :type r: :ref:`Rect`
@@ -137,7 +150,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: include_point(p)
 
-      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **Infinite rectangles remain unchanged.** To create a rectangle containing a series of points, start with (the empty) *fitz.Rect(p1, p1)* and successively perform *include_point* operations for the other points.
+      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **The infinite rectangle remains unchanged.** To create a rectangle containing a series of points, start with (the empty) *fitz.Rect(p1, p1)* and successively include the other points.
 
       :arg p: Point to include.
       :type p: :ref:`Point`
@@ -152,10 +165,10 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: contains(x)
 
-      Checks whether *x* is contained in the rectangle. It may be an *IRect*, *Rect*, *Point* or number. If *x* is an empty rectangle, this is always true. If the rectangle is empty this is always *False* for all non-empty rectangles and for all points. If *x* is a number, it will be checked against the four components. *x in rect* and *rect.contains(x)* are equivalent.
+      Checks whether *x* is contained in the rectangle. It may be an *IRect*, *Rect*, *Point* or number. If *x* is an empty rectangle, this is always true. If the rectangle is empty this is always *False* for all non-empty rectangles and for all points. ``x in rect`` and ``rect.contains(x)`` are equivalent.
 
       :arg x: the object to check.
-      :type x: :ref:`IRect` or :ref:`Rect` or :ref:`Point` or number
+      :type x: :data:`rect_like` or :data:`point_like`.
 
       :rtype: bool
 
@@ -171,11 +184,11 @@ The following remarks are also valid for :ref:`IRect` objects:
 
       *(New in version 1.17.0)*
       
-      Return a new quad after applying a matrix to it using a fixed point.
+      Return a new quad after applying a matrix to the rectangle using the fixed point ``fixpoint``.
 
       :arg point_like fixpoint: the fixed point.
       :arg matrix_like matrix: the matrix.
-      :returns: a new :ref:`Quad`. This a wrapper for the same-named quad method.
+      :returns: a new :ref:`Quad`. This a wrapper for the same-named quad method. If infinite, the infinite quad is returned.
 
    .. method:: norm()
 
@@ -185,7 +198,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: normalize()
 
-      **Replace** the rectangle with its finite version. This is done by shuffling the rectangle corners. After completion of this method, the bottom right corner will indeed be south-eastern to the top left one.
+      **Replace** the rectangle with its valid version. This is done by shuffling the rectangle corners. After completion of this method, the bottom right corner will indeed be south-eastern to the top left one (but may still be empty).
 
    .. attribute:: irect
 
@@ -267,7 +280,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. attribute:: is_infinite
 
-      ``True`` if rectangle is infinite.
+      ``True`` if this is the infinite rectangle.
 
       :type: bool
 

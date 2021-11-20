@@ -55,8 +55,9 @@ The relationship between image dimension and its bbox on a page is the following
     Matrix(0.0, -0.39920157194137573, 0.3992016017436981, 0.0, 100.0, 287.6247253417969)
     >>> #------------------------------------------------
     >>> # the above shows:
-    >>> # image sides scaled by same factor 0.4
-    >>> # image rotated by 90 degrees anti-clockwise
+    >>> # image sides are scaled by same factor ~0.4,
+    >>> # and the image is rotated by 90 degrees clockwise
+    >>> # compare this with fitz.Matrix(-90) * 0.4
     >>> #------------------------------------------------
 
 
@@ -110,9 +111,9 @@ To see how these fonts can be used -- including the **CJK built-in** fonts -- lo
 Adobe PDF References
 ---------------------------
 
-This PDF Reference manual published by Adobe is frequently quoted throughout this documentation. It can be viewed and downloaded from `here <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_.
+This PDF Reference manual published by Adobe is frequently quoted throughout this documentation. It can be viewed and downloaded from `here <https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf>`_.
 
-There is a newer version of this, which can be found `here <https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf>`_. Redaction annotations are an example contained in this one, but not in the earlier version.
+.. note:: For a long time, an older version was also available under `this <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_ link. It seems to be taken off the web site in October 2021. Earlier (pre 1.19.*) versions of the PyMuPDF documentation used to refer to this document. We have undertaken an effort to replace referrals to the current specification above.
 
 ------------
 
@@ -120,23 +121,23 @@ There is a newer version of this, which can be found `here <https://www.adobe.co
 
 Using Python Sequences as Arguments in PyMuPDF
 ------------------------------------------------
-When PyMuPDF objects and methods require a Python **list** of numerical values, other Python **sequence types** are also allowed. Python classes are said to implement the **sequence protocol**, if they have a *__getitem__()* method.
+When PyMuPDF objects and methods require a Python **list** of numerical values, other Python **sequence types** are also allowed. Python classes are said to implement the **sequence protocol**, if they have a ``__getitem__()`` method.
 
 This basically means, you can interchangeably use Python *list* or *tuple* or even *array.array*, *numpy.array* and *bytearray* types in these cases.
 
-For example, specifying a sequence *"s"* in any of the following ways
+For example, specifying a sequence ``"s"`` in any of the following ways
 
-* *s = [1, 2]*
-* *s = (1, 2)*
-* *s = array.array("i", (1, 2))*
-* *s = numpy.array((1, 2))*
-* *s = bytearray((1, 2))*
+* ``s = [1, 2]`` -- a list
+* ``s = (1, 2)`` -- a tuple
+* ``s = array.array("i", (1, 2))`` -- an array.array
+* ``s = numpy.array((1, 2))`` -- a numpy array
+* ``s = bytearray((1, 2))`` -- a bytearray
 
 will make it usable in the following example expressions:
 
-* *fitz.Point(s)*
-* *fitz.Point(x, y) + s*
-* *doc.select(s)*
+* ``fitz.Point(s)``
+* ``fitz.Point(x, y) + s``
+* ``doc.select(s)``
 
 Similarly with all geometry objects :ref:`Rect`, :ref:`IRect`, :ref:`Matrix` and :ref:`Point`.
 
@@ -258,7 +259,7 @@ Use cases include (but are not limited to) the following:
 Technical Implementation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is done using PDF **"Form XObjects"**, see section 4.9 on page 355 of :ref:`AdobeManual`. On execution of a *Page.show_pdf_page(rect, src, pno, ...)*, the following things happen:
+This is done using PDF **"Form XObjects"**, see section 8.10 on page 217 of :ref:`AdobeManual`. On execution of a *Page.show_pdf_page(rect, src, pno, ...)*, the following things happen:
 
     1. The :data:`resources` and :data:`contents` objects of page *pno* in document *src* are copied over to the current document, jointly creating a new **Form XObject** with the following properties. The PDF :data:`xref` number of this object is returned by the method.
 
@@ -295,5 +296,5 @@ PyMuPDF will put error messages to *sys.stderr* prefixed with the string "mupdf:
 
 .. [#f1] MuPDF supports "deep-copying" objects between PDF documents. To avoid duplicate data in the target, it uses so-called "graftmaps", like a form of scratchpad: for each object to be copied, its :data:`xref` number is looked up in the graftmap. If found, copying is skipped. Otherwise, the new :data:`xref` is recorded and the copy takes place. PyMuPDF makes use of this technique in two places so far: :meth:`Document.insert_pdf` and :meth:`Page.show_pdf_page`. This process is fast and very efficient, because it prevents multiple copies of typically large and frequently referenced data, like images and fonts. However, you may still want to consider using garbage collection (option 4) in any of the following cases:
 
-    1. The target PDF is not new / empty: grafting does not check for resource types that already existed (e.g. images, fonts) in the target document
-    2. Using :meth:`Page.show_pdf_page` for more than one source document: each grafting occurs **within one source** PDF only, not across multiple.
+    1. The target PDF is not new / empty: grafting does not check for resources that already existed (e.g. images, fonts) in the target document before opening it.
+    2. Using :meth:`Page.show_pdf_page` for more than one source document: each grafting occurs **within one source** PDF only, not across multiple. So if e.g. the same image exists in pages from different source PDFs, then this will not be detected until garbage collection.

@@ -55,7 +55,7 @@ Glossary
 
 .. data:: contents
 
-        "A **content stream** is a PDF :data:`object` with an attached :data:`stream`, whose data consists of a sequence of instructions describing the graphical elements to be painted on a page." (:ref:`AdobeManual` p. 151). For an overview of the mini-language used in these streams, see chapter "Operator Summary" on page 985 of the :ref:`AdobeManual`. A PDF :data:`page` can have none to many contents objects. If it has none, the page is empty (but still may show annotations). If it has several, they will be interpreted in sequence as if their instructions had been present in one such object (i.e. like in a concatenated string). It should be noted that there are more stream object types which use the same syntax: e.g. appearance dictionaries associated with annotations and Form XObjects.
+        A **content stream** is a PDF :data:`object` with an attached :data:`stream`, whose data consists of a sequence of instructions describing the graphical elements to be painted on a page, see "Stream Objects" on page 19 of :ref:`AdobeManual`. For an overview of the mini-language used in these streams, see chapter "Operator Summary" on page 643 of the :ref:`AdobeManual`. A PDF :data:`page` can have none to many contents objects. If it has none, the page is empty (but still may show annotations). If it has several, they will be interpreted in sequence as if their instructions had been present in one such object (i.e. like in a concatenated string). It should be noted that there are more stream object types which use the same syntax: e.g. appearance dictionaries associated with annotations and Form XObjects.
 
         PyMuPDF provides a number of methods to deal with contents of PDF pages:
 
@@ -66,11 +66,11 @@ Glossary
 
 .. data:: resources
 
-        A :data:`dictionary` containing references to any resources (like images or fonts) required by a PDF :data:`page` (required, inheritable, :ref:`AdobeManual` p. 145) and certain other objects (Form XObjects). This dictionary appears as a sub-dictionary in the object definition under the key */Resources*. Being an inheritable object type, there may exist "parent" resources for all pages or certain subsets of pages.
+        A :data:`dictionary` containing references to any resources (like images or fonts) required by a PDF :data:`page` (required, inheritable, :ref:`AdobeManual` p. 81) and certain other objects (Form XObjects). This dictionary appears as a sub-dictionary in the object definition under the key */Resources*. Being an inheritable object type, there may exist "parent" resources for all pages or certain subsets of pages.
 
 .. data:: dictionary
 
-        A PDF :data:`object` type, which is somewhat comparable to the same-named Python notion: "A dictionary object is an associative table containing pairs of objects, known as the dictionary's entries. The first element of each entry is the key and the second element is the value. The key must be a name (...). The value can be any kind of object, including another dictionary. A dictionary entry whose value is null (...) is equivalent to an absent entry." (:ref:`AdobeManual` p. 59).
+        A PDF :data:`object` type, which is somewhat comparable to the same-named Python notion: "A dictionary object is an associative table containing pairs of objects, known as the dictionary's entries. The first element of each entry is the key and the second element is the value. The key must be a name (...). The value can be any kind of object, including another dictionary. A dictionary entry whose value is null (...) is equivalent to an absent entry." (:ref:`AdobeManual` p. 18).
 
         Dictionaries are the most important :data:`object` type in PDF. Here is an example (describing a :data:`page`)::
 
@@ -97,11 +97,11 @@ Glossary
 
 .. data:: page
 
-        A PDF page is a :data:`dictionary` object which defines one page in a PDF, see :ref:`AdobeManual` p. 145.
+        A PDF page is a :data:`dictionary` object which defines one page in a PDF, see :ref:`AdobeManual` p. 71.
 
 .. data:: pagetree
 
-        "The pages of a document are accessed through a structure known as the page tree, which defines the ordering of pages in the document. The tree structure allows PDF consumer applications, using only limited memory, to quickly open a document containing thousands of pages. The tree contains nodes of two types: intermediate nodes, called page tree nodes, and leaf nodes, called page objects." (:ref:`AdobeManual` p. 143).
+        The pages of a document are accessed through a structure known as the page tree, which defines the ordering of pages in the document. The tree structure allows PDF consumer applications, using only limited memory, to quickly open a document containing thousands of pages. The tree contains nodes of two types: intermediate nodes, called page tree nodes, and leaf nodes, called page objects. (:ref:`AdobeManual` p. 75).
 
         While it is possible to list all page references in just one array, PDFs with many pages are often created using *balanced tree* structures ("page trees") for faster access to any single page. In relation to the total number of pages, this can reduce the average page access time by page number from a linear to some logarithmic order of magnitude.
 
@@ -109,7 +109,7 @@ Glossary
 
 .. data:: object
 
-        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values, integer and real numbers, strings, names, arrays, dictionaries, streams, and the null object (:ref:`AdobeManual` p. 51). Objects can be made identifyable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xref_object`.
+        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values, integer and real numbers, strings, names, arrays, dictionaries, streams, and the null object (:ref:`AdobeManual` p. 13). Objects can be made identifyable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xref_object`.
 
 .. data:: stream
 
@@ -124,7 +124,7 @@ Glossary
             endstream
             endobj
 
-        See :ref:`AdobeManual` p. 60. PyMuPDF supports retrieving stream content via :meth:`Document.xref_stream`. Use :meth:`Document.is_stream` to determine whether an object is of stream type.
+        See :ref:`AdobeManual` p. 19. PyMuPDF supports retrieving stream content via :meth:`Document.xref_stream`. Use :meth:`Document.is_stream` to determine whether an object is of stream type.
 
 .. data:: unitvector
 

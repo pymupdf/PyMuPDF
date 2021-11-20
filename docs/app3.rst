@@ -7,7 +7,8 @@ This chapter provides some background on embedded files support in PyMuPDF.
 
 General
 ----------
-Starting with version 1.4, PDF supports embedding arbitrary files as part ("Embedded File Streams") of a PDF document file (see chapter 3.10.3, pp. 184 of the :ref:`AdobeManual`).
+Starting with version 1.4, PDF supports embedding arbitrary files as part ("Embedded File Streams") of a PDF document file (see chapter "7.11.4
+Embedded File Streams", pp. 103 of the :ref:`AdobeManual`).
 
 In many aspects, this is comparable to concepts also found in ZIP files or the OLE technique in MS Windows. PDF embedded files do, however, *not* support directory structures as does the ZIP format. An embedded file can in turn contain embedded files itself.
 

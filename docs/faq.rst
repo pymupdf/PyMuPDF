@@ -40,7 +40,7 @@ How to Increase :index:`Image Resolution <pair: image; resolution>`
 
 The image of a document page is represented by a :ref:`Pixmap`, and the simplest way to create a pixmap is via method :meth:`Page.get_pixmap`.
 
-This method has many options for influencing the result. The most important among them is the :ref:`Matrix`, which lets you :index:`zoom`, rotate, distort or mirror the outcome.
+This method has many options to influence the result. The most important among them is the :ref:`Matrix`, which lets you :index:`zoom`, rotate, distort or mirror the outcome.
 
 :meth:`Page.get_pixmap` by default will use the :ref:`Identity` matrix, which does nothing.
 
@@ -52,15 +52,17 @@ In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 t
     pix = page.get_pixmap(matrix=mat)  # use 'mat' instead of the identity matrix
 
 
+Since version 1.19.2 there is a more direct way to set the resolution: Parameter ``"dpi"`` (dots per inch) can be used in place of ``"matrix"``. To create a 300 dpi image of a page specify ``pix = page.get_pixmap(dpi=300)``. Apart from notation brevity, this approach has the additonal advantage that the **dpi value is saved with the image** file -- which does not happen automatically when using the Matrix notation.
+
 ----------
 
 How to Create :index:`Partial Pixmaps` (Clips)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-You do not always need the full image of a page. This may be the case e.g. when you display the image in a GUI and would like to fill the respective window with a zoomed part of the page.
+You do not always need or want the full image of a page. This is the case e.g. when you display the image in a GUI and would like to fill the respective window with a zoomed part of the page.
 
 Let's assume your GUI window has room to display a full document page, but you now want to fill this room with the bottom right quarter of your page, thus using a four times better resolution.
 
-To achieve this, we define a rectangle equal to the area we want to appear in the GUI and call it "clip". One way of constructing rectangles in PyMuPDF is by providing two diagonally opposite corners, which is what we are doing here.
+To achieve this, define a rectangle equal to the area you want to appear in the GUI and call it "clip". One way of constructing rectangles in PyMuPDF is by providing two diagonally opposite corners, which is what we are doing here.
 
 .. image:: images/img-clip.*
    :scale: 80
@@ -79,7 +81,7 @@ In the above we construct *clip* by specifying two diagonally opposite points: t
 
 How to Zoom a Clip to a GUI Window
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Please also read the previous section. This time we want to **compute the zoom factor** for a clip such that its image best fits a given GUI window. This means, that the image's width or height (or both) will equal the window dimension.
+Please also read the previous section. This time we want to **compute the zoom factor** for a clip, such that its image best fits a given GUI window. This means, that the image's width or height (or both) will equal the window dimension. For the following code snippet you need to provide the WIDTH and HEIGHT of your GUI's window that should receive the page's clip rectangle.
 
 ::
 
@@ -89,14 +91,14 @@ Please also read the previous section. This time we want to **compute the zoom f
     # compare width/height ratios of image and window
 
     if clip.width / clip.height < WIDTH / HEIGHT:
-        # clip is narrower: zoom to window height
+        # clip is narrower: zoom to window HEIGHT
         zoom = HEIGHT / clip.height
-    else:  # else zoom to window width
+    else:  # clip is broader: zoom to window WIDTH
         zoom = WIDTH / clip.width
     mat = fitz.Matrix(zoom, zoom)
     pix = page.get_pixmap(matrix=mat, clip=clip)
 
-Now assume you **have** the zoom factor and need to compute the fitting clip.
+For the other way round, now assume you **have** the zoom factor and need to **compute the fitting clip**.
 
 In this case we have ``zoom = HEIGHT/clip.height = WIDTH/clip.width``, so we must set ``clip.height = HEIGHT/zoom`` and, ``clip.width = WIDTH/zoom``. Choose the top-left point ``tl`` of the clip on the page to compute the right pixmap::
 
@@ -1271,7 +1273,7 @@ Drawing and Graphics
 
 PDF files support elementary drawing operations as part of their syntax. This includes basic geometrical objects like lines, curves, circles, rectangles including specifying colors.
 
-The syntax for such operations is defined in "A Operator Summary" on page 985 of the :ref:`AdobeManual`. Specifying these operators for a PDF page happens in its :data:`contents` objects.
+The syntax for such operations is defined in "A Operator Summary" on page 643 of the :ref:`AdobeManual`. Specifying these operators for a PDF page happens in its :data:`contents` objects.
 
 PyMuPDF implements a large part of the available features via its :ref:`Shape` class, which is comparable to notions like "canvas" in other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_).
 
@@ -1544,7 +1546,7 @@ This snippet creates the respective sub documents which can then be used to prin
 For more information also have a look at this Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Rearranging-Pages-of-a-PDF>`_.
 
 
-The following example will reverse the order of all pages (**extremely fast:** sub-second time for the 1310 pages of the :ref:`AdobeManual`):
+The following example will reverse the order of all pages (**extremely fast:** sub-second time for the 756 pages of the :ref:`AdobeManual`):
 
 >>> lastPage = len(doc) - 1
 >>> for i in range(lastPage):
@@ -2046,7 +2048,7 @@ Cause
 
 The creator of the PDF has established a non-standard page geometry without keeping it "local" (as they should!). Most commonly, the PDF standard point (0,0) at *bottom-left* has been changed to the *top-left* point. So top and bottom are reversed -- causing your insertion to be misplaced.
 
-The visible image of a PDF page is controlled by commands coded in a special mini-language. For an overview of this language consult "Operator Summary" on pp. 985 of the :ref:`AdobeManual`. These commands are stored in :data:`contents` objects as strings (*bytes* in PyMuPDF).
+The visible image of a PDF page is controlled by commands coded in a special mini-language. For an overview of this language consult "Operator Summary" on pp. 643 of the :ref:`AdobeManual`. These commands are stored in :data:`contents` objects as strings (*bytes* in PyMuPDF).
 
 There are commands in that language, which change the coordinate system of the page for all the following commands. In order to limit the scope of such commands local, they must be wrapped by the command pair *q* ("save graphics state", or "stack") and *Q* ("restore graphics state", or "unstack").
 
@@ -2150,7 +2152,7 @@ Anyway -- it is a matter of documentation only: in which chapter of the document
 
 How to Iterate through the :data:`xref` Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A PDF's :data:`xref` table is a list of all objects defined in the file. This table may easily contain many thousand entries -- the manual :ref:`AdobeManual` for example has over 330'000 objects. Table entry "0" is reserved and must not be touched.
+A PDF's :data:`xref` table is a list of all objects defined in the file. This table may easily contain many thousand entries -- the manual :ref:`AdobeManual` for example has 127'000 objects. Table entry "0" is reserved and must not be touched.
 The following script loops through the :data:`xref` table and prints each object's definition::
 
     >>> xreflen = doc.xref_length()  # length of objects table
@@ -2227,7 +2229,7 @@ Assume that the following snippet wants to read all streams of a PDF for whateve
 
 How to Handle Page Contents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A PDF page can have zero or multiple :data:`contents` objects. These are stream objects describing **what** appears **where** and **how** on a page (like text and images). They are written in a special mini-language described e.g. in chapter "APPENDIX A - Operator Summary" on page 985 of the :ref:`AdobeManual`.
+A PDF page can have zero or multiple :data:`contents` objects. These are stream objects describing **what** appears **where** and **how** on a page (like text and images). They are written in a special mini-language described e.g. in chapter "APPENDIX A - Operator Summary" on page 643 of the :ref:`AdobeManual`.
 
 Every PDF reader application must be able to interpret the contents syntax to reproduce the intended appearance of the page.
 
@@ -2276,13 +2278,13 @@ This is a central ("root") object of a PDF. It serves as a starting point to rea
         /Outlines 3835 0 R            % points to outline tree
     >>
 
-.. note:: Indentation, line breaks and comments are inserted here for clarification purposes only and will not normally appear. For more information on the PDF catalog see section 3.6.1 on page 137 of the :ref:`AdobeManual`.
+.. note:: Indentation, line breaks and comments are inserted here for clarification purposes only and will not normally appear. For more information on the PDF catalog see section 7.7.2 on page 71 of the :ref:`AdobeManual`.
 
 ----------------------------------
 
 How to Access the PDF File Trailer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The trailer of a PDF file is a :data:`dictionary` located towards the end of the file. It contains special objects, and pointers to important other information. See :ref:`AdobeManual` p. 96. Here is an overview:
+The trailer of a PDF file is a :data:`dictionary` located towards the end of the file. It contains special objects, and pointers to important other information. See :ref:`AdobeManual` p. 42. Here is an overview:
 
 ======= =========== ===================================================================================
 **Key** **Type**    **Value**
@@ -2293,7 +2295,7 @@ Root    dictionary  (indirect) Pointer to the catalog. See previous section.
 Encrypt dictionary  Pointer to encryption object (encrypted files only).
 Info    dictionary  (indirect) Pointer to information (metadata).
 ID      array       File identifier consisting of two byte strings.
-XRefStm int         Offset of a cross-reference stream. See :ref:`AdobeManual` p. 109.
+XRefStm int         Offset of a cross-reference stream. See :ref:`AdobeManual` p. 49.
 ======= =========== ===================================================================================
 
 Access this information via PyMuPDF with :meth:`Document.pdf_trailer` or, equivalently, via :meth:`Document.xref_object` using -1 instead of a valid :data:`xref` number.
@@ -2395,7 +2397,7 @@ Use the following code to see **all items** stored the metadata object::
     # ---------------------------------------------------------------
 
 
-Vice cersa, you can also **store private metadata items** in a PDF. It is your responsibility making sure, that these items do conform to PDF specifications - especially they must be (unicode) strings. Consult section 10.2.1 (p. 843) of the :ref:`AdobeManual` for details and caveats::
+Vice cersa, you can also **store private metadata items** in a PDF. It is your responsibility making sure, that these items do conform to PDF specifications - especially they must be (unicode) strings. Consult section 14.3 (p. 548) of the :ref:`AdobeManual` for details and caveats::
 
     what, value = doc.xref_get_key(-1, "Info")  # /Info key in the trailer
     if what != "xref":

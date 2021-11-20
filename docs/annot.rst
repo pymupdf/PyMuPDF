@@ -68,12 +68,17 @@ There is a parent-child relationship between an annotation and its page. If the 
       pair: matrix; get_pixmap
       pair: colorspace; get_pixmap
       pair: alpha; get_pixmap
+      pair: dpi; get_pixmap
 
-   .. method:: get_pixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, alpha=False)
+   .. method:: get_pixmap(matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, alpha=False)
+
+      * Changed in v1.19.2: added support of dpi parameter.
 
       Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap's :ref:`IRect` equals *Annot.rect.irect* (see below). **All parameters are keyword only.**
 
-      :arg matrix_like matrix: a matrix to be used for image creation. Default is the *fitz.Identity* matrix.
+      :arg matrix_like matrix: a matrix to be used for image creation. Default is :ref:`Identity`.
+
+      :arg int dpi: (new n v1.19.2) desired resolution in dots per inch. If not ``None``, the matrix parameter is ignored.
 
       :arg colorspace: a colorspace to be used for image creation. Default is *fitz.csRGB*.
       :type colorspace: :ref:`Colorspace`
@@ -201,7 +206,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       *(New in v1.18.4)*
 
-      The annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations.
+      The annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations.
 
       :rtype: str
       :returns: the blend mode or *None*.
@@ -213,7 +218,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_blendmode(blendmode)
 
-      *(New in v1.16.14)* Set the annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations. The blend mode can also be set in :meth:`Annot.update`.
+      *(New in v1.16.14)* Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations. The blend mode can also be set in :meth:`Annot.update`.
 
       :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use ``PDF_BM_Normal`` to **remove** a blend mode.
 
@@ -443,7 +448,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. attribute:: line_ends
 
-      A pair of integers specifying start and end symbol of annotations types 'FreeText', 'Line', 'PolyLine', and 'Polygon'. *None* if not applicable. For possible values and descriptions in this list, see the :ref:`AdobeManual`, table 8.27 on page 630.
+      A pair of integers specifying start and end symbol of annotations types 'FreeText', 'Line', 'PolyLine', and 'Polygon'. *None* if not applicable. For possible values and descriptions in this list, see the :ref:`AdobeManual`, table 1.76 on page 400.
 
       :rtype: tuple
 
@@ -454,7 +459,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       * 'Line' -- the starting and ending coordinates (2 float pairs).
       * 'FreeText' -- 2 or 3 float pairs designating the starting, the (optional) knee point, and the ending coordinates.
       * 'PolyLine' / 'Polygon' -- the coordinates of the edges connected by line pieces (n float pairs for n points).
-      * text markup annotations -- 4 float pairs specifying the *QuadPoints* of the marked text span (see :ref:`AdobeManual`, page 634).
+      * text markup annotations -- 4 float pairs specifying the *QuadPoints* of the marked text span (see :ref:`AdobeManual`, page 403).
       * 'Ink' -- list of one to many sublists of vertex coordinates. Each such sublist represents a separate line in the drawing.
 
       :rtype: list
@@ -502,7 +507,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       * *width* -- a float indicating the border thickness in points. The value is -1.0 if no width is specified.
 
-      * *dashes* -- a sequence of integers specifying a line dash pattern. *[]* means no dashes, *[n]* means equal on-off lengths of *n* points, longer lists will be interpreted as specifying alternating on-off length values. See the :ref:`AdobeManual` page 217 for more details.
+      * *dashes* -- a sequence of integers specifying a line dash pattern. *[]* means no dashes, *[n]* means equal on-off lengths of *n* points, longer lists will be interpreted as specifying alternating on-off length values. See the :ref:`AdobeManual` page 126 for more details.
 
       * *style* -- 1-byte border style: **"S"** (Solid) = solid rectangle surrounding the annotation, **"D"** (Dashed) = dashed rectangle surrounding the annotation, the dash pattern is specified by the *dashes* entry, **"B"** (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, **"I"** (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, **"U"** (Underline) = a single line along the bottom of the annotation rectangle.
 

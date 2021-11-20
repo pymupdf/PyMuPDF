@@ -92,7 +92,7 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
       :arg point_like fixpoint: the fixed point.
       :arg matrix_like matrix: the matrix.
-      :returns: a new :ref:`Quad`. This a wrapper of the same-named quad method.
+      :returns: a new :ref:`Quad`. This a wrapper of the same-named quad method. If infinite, the infinite quad is returned.
 
    .. method:: norm()
 

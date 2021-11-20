@@ -93,7 +93,7 @@ First, a :ref:`Page` must be created. This is a method of :ref:`Document`::
     page = doc.load_page(pno)  # loads page number 'pno' of the document (0-based)
     page = doc[pno]  # the short form
 
-Any integer *-inf < pno < page_count* is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
+Any integer ``-∞ < pno < page_count`` is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
 
 Some more advanced way would be using the document as an **iterator** over its pages::
 

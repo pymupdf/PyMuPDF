@@ -317,7 +317,7 @@ For details on **embedded files** refer to Appendix 3.
           - ``set_ocmd(ve=["or", 4, ["not", 5], ["and", 6, 7]])``. This delivers ON if the following is true: **"4 is ON, or 5 is OFF, or 6 and 7 are both ON"**.
           - ``set_ocmd(ve=["not", xref])``. This has the same effect as the OCMD example created under 1.
 
-          For more details and examples see page 367 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
+          For more details and examples see page 224 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
 
           Visibility expressions, ``/VE``, are part of PDF specification version 1.6. So not all PDF viewers / readers may already support this feature and hence will react in some standard way for those cases.
 
@@ -785,7 +785,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Set (add, update, delete) the value of a PDF key for the object given by an xref.
       
-      .. caution:: This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 51) and the structure of special dictionary types like page objects.
+      .. caution:: This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 18) and the structure of special dictionary types like page objects.
 
       :arg int xref: the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, specify -1.
       :arg str key: the desired PDF key (without leading "/"). Must not be empty. Any valid PDF key -- whether already present in the object (which will be overwritten) -- or new. It is possible to use PDF path notation like ``"Resources/ExtGState"`` -- which sets the value for key ``"/ExtGState"`` as a sub-object of ``"/Resources"``.
@@ -798,7 +798,7 @@ For details on **embedded files** refer to Appendix 3.
           * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is **not allowed by PDF**.
           * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
-          * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 56 of the :ref:`AdobeManual`.
+          * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 16 of the :ref:`AdobeManual`.
           * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as ``"()"``. Depending on its content, the possible brackets are
           
             - "(...)" for ASCII-only text. Reserved PDF characters must be backslash-escaped and non-ASCII characters must be provided as 3-digit backslash-escaped octals -- including leading zeros. Example: 12 = 0x0C must be encoded as ``\014``.
@@ -861,7 +861,7 @@ For details on **embedded files** refer to Appendix 3.
             * **colorspace** (*str*) a string naming the colorspace (like **DeviceRGB**)
             * **alt. colorspace** (*str*) is any alternate colorspace depending on the value of **colorspace**
             * **name** (*str*) is the symbolic name by which the image is referenced
-            * **filter** (*str*) is the decode filter of the image (:ref:`AdobeManual`, pp. 65).
+            * **filter** (*str*) is the decode filter of the image (:ref:`AdobeManual`, pp. 22).
             * **referencer** (*int*) the :data:`xref` of the referencer. Zero if directly referenced by the page. Only present if *full=True*.
 
       .. note:: In general, this is not the list of images that are **actually displayed**. This method only parses several PDF objects to collect references to embedded images. It does not analyse the page's :data:`contents`, where all the actual image display commands are defined. To get this information, please use :meth:`Page.get_image_info`. Also have a look at the discussion in section :ref:`textpagedict`.
@@ -887,7 +887,7 @@ For details on **embedded files** refer to Appendix 3.
           * **type** (*str*) is the font type (like "Type1" or "TrueType" etc.)
           * **basefont** (*str*) is the base font name,
           * **name** (*str*) is the symbolic name, by which the font is referenced
-          * **encoding** (*str*) the font's character encoding if different from its built-in encoding (:ref:`AdobeManual`, p. 414):
+          * **encoding** (*str*) the font's character encoding if different from its built-in encoding (:ref:`AdobeManual`, p. 254):
           * **referencer** (*int* optional) the :data:`xref` of the referencer. Zero if directly referenced by the page, otherwise the xref of an XObject. Only present if *full=True*.
 
       Example::
@@ -1602,9 +1602,10 @@ For details on **embedded files** refer to Appendix 3.
       :returns: zero if successful, otherwise an exception will be raised.
 
 
-    .. method:: update_stream(xref, data, new=False)
+    .. method:: update_stream(xref, data, new=False, compress=True)
 
-      *(New in version 1.16.8)*
+      * New in v.1.16.8
+      * Changed in v1.19.2: added parameter "compress"
 
       Replace the stream of an object identified by *xref*. If the object has no stream, an exception is raised unless *new=True* is used. The function automatically performs a compress operation ("deflate") where beneficial.
 
@@ -1615,10 +1616,11 @@ For details on **embedded files** refer to Appendix 3.
          *(Changed in version 1.14.13:)* *io.BytesIO* objects are now also supported.
 
       :arg bool new: whether to force accepting the stream, and thus **turning it into a stream object**.
+      :arg bool compress: whether to compress the inserted stream. If ``True`` (default), the stream will be inserted using ``/FlateDecode`` compression, otherwise the stream will inserted as is.
 
-        .. caution:: The object of :data:`xref` must be a PDF dictionary for this to work, and especially must not be empty -- as is the case if you just created the xref via :meth:`Document.get_new_xref`. To avoid this, execute ``doc.update_object(xref, "<<>>")`` before inserting the stream.
+        .. caution:: The object of :data:`xref` must be a PDF dictionary for this to work, and especially must not be empty -- as is the case if you just created the xref via :meth:`Document.get_new_xref`. To avoid this, at a minimum execute ``doc.update_object(xref, "<<>>")`` before inserting the stream.
 
-      This method is intended to manipulate streams containing PDF operator syntax (see pp. 985 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
+      This method is primarily intended to manipulate streams containing PDF operator syntax (see pp. 643 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
 
       If you update a contents stream, you should use save parameter *clean=True*. This ensures consistency between PDF operator source and the object structure.
 
@@ -1949,7 +1951,7 @@ Other Examples
 
 .. rubric:: Footnotes
 
-.. [#f1] Content streams describe what (e.g. text or images) appears where and how on a page. PDF uses a specialized mini language similar to PostScript to do this (pp. 985 in :ref:`AdobeManual`), which gets interpreted when a page is loaded.
+.. [#f1] Content streams describe what (e.g. text or images) appears where and how on a page. PDF uses a specialized mini language similar to PostScript to do this (pp. 643 in :ref:`AdobeManual`), which gets interpreted when a page is loaded.
 
 .. [#f2] However, you **can** use :meth:`Document.get_toc` and :meth:`Page.get_links` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
 
@@ -1959,6 +1961,6 @@ Other Examples
 
 .. [#f5] Examples for "Form XObjects" are created by :meth:`Page.show_pdf_page`.
 
-.. [#f6] For a *False* the **complete document** must be scanned. Both methods **do not load pages,** but only scan object definitions. This makes them at least 10 times faster than application-level loops (where total response time roughly equals the time for loading all pages). For the :ref:`AdobeManual` (1'310 pages) and the Pandas documentation (over 3'070 pages) -- both havo no annotations -- the method needs about 11 ms for the answer *False*. So response times will probably become significant only well beyond this order of magnitude.
+.. [#f6] For a *False* the **complete document** must be scanned. Both methods **do not load pages,** but only scan object definitions. This makes them at least 10 times faster than application-level loops (where total response time roughly equals the time for loading all pages). For the :ref:`AdobeManual` (756 pages) and the Pandas documentation (over 3'070 pages) -- both havo no annotations -- the method needs about 11 ms for the answer *False*. So response times will probably become significant only well beyond this order of magnitude.
 
 .. [#f7] This only works under certain conditions. For example, if there is normal text covered by some image on top of it, then this is undetectable and the respective text is **not** removed. Similar is true for white text on white background, and so on.

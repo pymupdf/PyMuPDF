@@ -428,8 +428,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg dict linkdict: the link to be modified.
 
-      .. warning:: If updating / inserting a URI link (``"kind": LINK_URI``), please make sure to start the value for the ``"uri"`` key with an unambiguous string like ``"http://"``, ``"https://"``, ``"file://"``, ``"ftp://"``, ``"mailto:"``, etc. Otherwise -- depending on the browser -- unexpected default assumptions may lead to unwanted behaviours.
-
+      .. warning:: If updating / inserting a URI link (``"kind": LINK_URI``), please make sure to start the value for the ``"uri"`` key with a disambiguating string like ``"http://"``, ``"https://"``, ``"file://"``, ``"ftp://"``, ``"mailto:"``, etc. Otherwise -- depending on your browser or other "consumer" software -- unexpected default assumptions may lead to unwanted behaviours.
 
 
    .. method:: get_label()
@@ -791,7 +790,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       PDF only: Add a new font to be used by text output methods and return its :data:`xref`. If not already present in the file, the font definition will be added. Supported are the built-in :data:`Base14_Fonts` and the CJK fonts via **"reserved"** fontnames. Fonts can also be provided as a file path or a memory area containing the image of a font file.
 
-      :arg str fontname: The name by which this font shall be referenced when outputting text on this page. In general, you have a "free" choice here (but consult the :ref:`AdobeManual`, page 56, section 3.2.4 for a formal description of building legal PDF names). However, if it matches one of the :data:`Base14_Fonts` or one of the CJK fonts, *fontfile* and *fontbuffer* **are ignored**.
+      :arg str fontname: The name by which this font shall be referenced when outputting text on this page. In general, you have a "free" choice here (but consult the :ref:`AdobeManual`, page 16, section 7.3.5 for a formal description of building legal PDF names). However, if it matches one of the :data:`Base14_Fonts` or one of the CJK fonts, *fontfile* and *fontbuffer* **are ignored**.
 
       In other words, you cannot insert a font via *fontfile* / *fontbuffer* and also give it a reserved *fontname*.
 
@@ -1031,7 +1030,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       Create a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
 
       :arg in flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
-      :arg str language: the expected language(s). Use comma-separated values if multiple languages are expected, "eng,spa" for English and Spanish.
+      :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
       :arg int dpi: the desired resolution in dots per inch. Influences recognition quality (and execution time).
       :arg bool full: whether to OCR the full page, or just the displayed images.
 
@@ -1055,7 +1054,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.18.0
       * Changed in v1.18.17
       * Changed in v1.19.0: add "seqno" key, remove "clippings" key
-      * Changed in v1.19.1: "color" / "fill" keys now always are either are RGB tuples or ``None``. This addresses issues caused by exotic colorspaces.
+      * Changed in v1.19.1: "color" / "fill" keys now always are either are RGB tuples or ``None``. This resolves issues caused by exotic colorspaces.
+      * Changed in v1.19.2: add an indicator for the *"orientation"* of the area covered by an "re" item.
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
@@ -1069,7 +1069,7 @@ In a nutshell, this is what you can do with PyMuPDF:
             closePath      Same as the parameter in :ref:`Shape`.
             color          Stroke color (see :ref:`Shape`).
             dashes         Dashed line specification (see :ref:`Shape`).
-            even_odd       Handle colors of overlapping areas -- same as the parameter in :ref:`Shape`.
+            even_odd       Fill colors of area overlaps -- same as the parameter in :ref:`Shape`.
             fill           Fill color  (see :ref:`Shape`).
             items          List of draw commands: lines, rectangles, quads or curves.
             lineCap        Number 3-tuple, use its max value on output with :ref:`Shape`.
@@ -1094,19 +1094,20 @@ In a nutshell, this is what you can do with PyMuPDF:
 
             * ``("l", p1, p2)`` - a line from p1 to p2 (:ref:`Point` objects).
             * ``("c", p1, p2, p3, p4)`` - cubic Bézier curve **from p1 to p4** (p2 and p3 are the control points). All objects are of type :ref:`Point`.
-            * ``("re", rect)`` - a :ref:`Rect`. *Changed in v1.18.17:* Multiple rectangles within the same path are now detected.
-            * ``("qu", quad)`` - a :ref:`Quad`. *New in v1.18.17:* In many -- not all! -- situations, 3 or 4 consecutive lines are detected to actually represent a :ref:`Quad`.
+            * ``("re", rect, orientation)`` - a :ref:`Rect`. *Changed in v1.18.17:* Multiple rectangles within the same path are now detected. *Changed in v1.19.2:* added integer ``orientation`` which is 1 resp. -1 indicating whether the enclosed area is rotated left (1 = anti-clockwise), or resp. right [#f7]_.
+            * ``("qu", quad)`` - a :ref:`Quad`. *New in v1.18.17, changed in v1.19.2:* 3 or 4 consecutive lines are detected to actually represent a :ref:`Quad`.
+
+            .. note:: Starting with v1.19.2, quads and rectangles are reliably recognized as such.
 
             Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity, but see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
 
       .. note::
-           * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of any item (drawings and other objects) depending on whatever condition: for example showing or suppressing a watermark depending on the current output device (screen, paper, ...), or option-based inclusion / omission of details in a technical document, and so on. Effects like these are ignored by the method -- it will **unconditionally return all paths**.
+           * The visual appearance of a page may have been designed in a very complex way. For example in PDF, layers (Optional Content Groups) can control the visibility of items (drawings and other objects) depending on whatever condition: for example showing or suppressing a watermark depending on the current output device (screen, paper, ...), or option-based inclusion / omission of details in a technical document, and so on. Effects like these are ignored by the method -- it will **unconditionally return all paths**.
            
            * When a viewer software builds a page's appearance, it will sequentially walk through a list of commands (in PDF, those are stored in the ``/Contents`` object), containing instructions like "draw this path, show this image, paint this text, etc.". The key ``"seqno"`` (new in v1.19.0) is the command number, that draws this path. You can use it to determine if objects cover other objects on the page. For example, the rectangle of a "fill" path will cover objects drawn earlier -- i.e. having a smaller ``"seqno"`` -- if the rectangles overlap. Please also see :meth:`Page.get_bboxlog` and :meth:`Page.get_texttrace`.
 
       .. note:: The method is now based on the output of :meth:`Page.get_cdrawings` -- which is faster, but requires somewhat more attention processing its output.
 
-      .. note:: The ``"clippings"`` key present in an earlier version has been removed again in v1.19.0.
 
    .. method:: get_cdrawings()
 
@@ -1244,12 +1245,16 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: clip; get_pixmap
       pair: colorspace; get_pixmap
       pair: matrix; get_pixmap
+      pair: dpi; get_pixmap
 
-   .. method:: get_pixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
+   .. method:: get_pixmap(matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
+
+     * Changed in v1.19.2: added support of parameter dpi.
 
      Create a pixmap from the page. This is probably the most often used method to create a :ref:`Pixmap`.
 
      :arg matrix_like matrix: default is :ref:`Identity`.
+     :arg int dpi: (new in v1.19.2) desired resolution in x and y direction. If not ``None``, the ``"matrix"`` parameter is ignored.
      :arg colorspace: The desired colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
      :type colorspace: str or :ref:`Colorspace`
      :arg irect_like clip: restrict rendering to the intersection of this area with the page's rectangle.
@@ -1364,7 +1369,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg docsrc: source PDF document containing the page. Must be a different document object, but may be the same file.
       :type docsrc: :ref:`Document`
 
-      :arg int pno: page number (0-based, in *-inf < pno < docsrc.page_count*) to be shown.
+      :arg int pno: page number (0-based, in ``-∞ < pno < docsrc.page_count``) to be shown.
 
       :arg bool keep_proportion: whether to maintain the width-height-ratio (default). If false, all 4 corners are always positioned on the border of the target rectangle -- whatever the rotation value. In general, this will deliver distorted and /or non-rectangular images.
 
@@ -1441,6 +1446,14 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * There is a tricky aspect: the search logic regards **contiguous multiple occurrences** of *needle* as one: assuming *needle* is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one for "abc", and a second one for "abcabc".
          * You can always use :meth:`Page.get_textbox` to check what text actually is being surrounded by each rectangle.
+
+      .. note:: A feature repeatedly asked for is supporting regular expressions when specifying the ``"needle"`` string: **There is no way to do this.** If you need something in that direction, first extract text in a suitable format and then subselect the result by matching its text portions with some regex pattern::
+
+         >>> pattern = re.compile(r"...")
+         >>> words = page.get_text("words")
+         >>> matches = [w for w in words if pattern.search(w[4])]
+
+      The ``matches`` list will contain the words matching the regex pattern.
 
 
    .. method:: set_mediabox(r)
@@ -1639,7 +1652,7 @@ This is an overview of homologous methods on the :ref:`Document` and on the :ref
 *Document.search_page_for(pno, ...)*   :meth:`Page.search_for`
 ====================================== =====================================
 
-The page number "pno" is a 0-based integer *-inf < pno < page_count*.
+The page number "pno" is a 0-based integer ``-∞ < pno < page_count``.
 
 .. note::
 
@@ -1660,3 +1673,5 @@ The page number "pno" is a 0-based integer *-inf < pno < page_count*.
 .. [#f5] The previous algorithm caused images to be **shrunk** to this intersection. Now the image can be anywhere on :attr:`Page.mediabox`, potentially being invisible or only partially visible if the cropbox (representing the visible page part) is smaller.
 
 .. [#f6] If you need to also see annotations or fields in the target page, you can try and convert the source PDF to another PDF using :meth:`Document.convert_to_pdf`. The underlying MuPDF function of that method will convert these objects to normal page content. Then use :meth:`Page.show_pdf_page` with the converted PDF page.
+
+.. [#f7] In PDF, an area enclosed by some lines or curves can have a property called "orientation". This is significant for switching on or off the fill color of that area when there exist multiple area overlaps - see discussion in method :meth:`Shape.finish` using the "non-zero winding number" rule. While orientation of curves, quads, triangles and other shapes enclosed by lines always was detectable, this has been impossible for "re" (rectangle) items in the past. Adding the orientation parameter now delivers the missing information.

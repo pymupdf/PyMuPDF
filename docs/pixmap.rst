@@ -24,6 +24,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 **Method / Attribute**           **Short Description**
 ================================ ===================================================
 :meth:`Pixmap.clear_with`        clear parts of the pixmap
+:meth:`Pixmap.color_count`       determine the colors used in the pixmaps
 :meth:`Pixmap.copy`              copy parts of another pixmap
 :meth:`Pixmap.gamma_with`        apply a gamma factor to the pixmap
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
@@ -46,6 +47,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :attr:`Pixmap.digest`            MD5 hashcode of the pixmap
 :attr:`Pixmap.height`            pixmap height
 :attr:`Pixmap.interpolate`       interpolation method indicator
+:attr:`Pixmap.is_monochrome`     check if only black and white occur
+:attr:`Pixmap.is_unicolor`       check if only one color occurs
 :attr:`Pixmap.irect`             :ref:`IRect` of the pixmap
 :attr:`Pixmap.n`                 bytes per pixel
 :attr:`Pixmap.samples_mv`        ``memoryview`` of pixel area
@@ -324,17 +327,15 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg str,fp filename: identifies the file to save to. May be either a string or a pointer to a file opened with "wb" (includes ``io.BytesIO()`` objects).
       :arg bool compress: whether to compress the resulting PDF, default is ``True``.
-      :arg str language: the languages occurring in the image. This must be specified in Tesseract format. Default is "eng" for English. Use comma-separated Tesseract language codes for multiple languages, like "eng,spa" for English and Spanish.
+      :arg str language: the languages occurring in the image. This must be specified in Tesseract format. Default is "eng" for English. Use "+"-separated Tesseract language codes for multiple languages, like "eng+spa" for English and Spanish.
 
       .. note:: **Will fail** if Tesseract is not installed or if the environment variable "TESSDATA_PREFIX" is not set to the ``tessdata`` folder name. This is what you would typically see on a Windows platform:
 
-         >>> import os
          >>> print(os.environ["TESSDATA_PREFIX"])
          C:\Program Files\Tesseract-OCR\tessdata
 
       Respectively on a Linux system:
 
-         >>> import os
          >>> print(os.environ["TESSDATA_PREFIX"])
          /usr/share/tesseract-ocr/4.00/tessdata
 
@@ -392,6 +393,22 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :rtype: bytes
 
 
+   ..  method:: color_count(colors=False)
+
+      *(New in v1.19.2)*
+
+      Determine the pixmap's unique colors.
+
+      :arg bool colors: if ``True`` return a tuple of unique color pixels (each as a bytes object of length :attr:`Pixmap.n`), else the number of colors only.
+      :rtype: tuple[bytes] or int
+      :returns: either the number of unique colors, or a typle of bytes which each represent one pixel value. To recover the **tuple** of such a value, use ``tuple(map(int, colors[i]))`` for the i-th item.
+      
+         .. note::
+         
+            * The response time depends on the pixmap's samples size and may be more than a second for very large pixmaps.
+            * Where applicable, pixels with different alpha values will be treated as different colors.
+
+
    .. attribute:: alpha
 
       Indicates whether the pixmap contains transparency information.
@@ -414,10 +431,29 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Contains the length of one row of image data in :attr:`Pixmap.samples`. This is primarily used for calculation purposes. The following expressions are true:
 
-      * *len(samples) == height * stride*
-      * *width * n == stride*.
+      * ``len(samples) == height * stride``
+      * ``width * n == stride``
 
       :type: int
+
+
+   .. attribute:: is_monochrome
+
+      * New in v1.19.2
+
+      Is ``True`` for a gray pixmap which only has the colors black and white.
+
+      :type: bool
+
+
+   .. attribute:: is_unicolor
+
+      * New in v1.19.2
+
+      Is ``True`` if all pixels are identical (any colorspace). Where applicable, pixels with different alpha values will be treated as different colors.
+
+      :type: bool
+
 
    .. attribute:: irect
 

@@ -175,12 +175,6 @@ Please note:
    * Changes of matrix properties and execution of matrix methods can be executed consecutively. This is the same as multiplying the respective matrices.
    * Matrix multiplication is **not commutative** -- changing the execution sequence in general changes the result. So it can quickly become unclear which result a transformation will yield.
 
-To keep results foreseeable for a series of matrix operations, Adobe recommends the following approach (:ref:`AdobeManual`, page 206):
-
-1. Shift ("translate")
-2. Rotate
-3. Scale or shear ("skew")
-
 
 Examples
 -------------

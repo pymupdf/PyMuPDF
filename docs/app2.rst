@@ -12,7 +12,7 @@ Information of interest are
 
 General structure of a TextPage
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:ref:`TextPage` is one of PyMuPDF's classes. It is normally created behind the curtain, when :ref:`Page` text extraction methods are used, but it is also available directly. In any case, an intermediate class, :ref:`DisplayList` must be created first (display lists contain interpreted pages, they also provide the input for :ref:`Pixmap` creation). Information contained in a :ref:`TextPage` has the following hierarchy. Other than its name suggests, images may optionally also be part of a text page::
+:ref:`TextPage` is one of (Py-) MuPDF's classes. It is normally created (and destroyed again) behind the curtain, when :ref:`Page` text extraction methods are used, but it is also available directly and can be used as a persistent object. Other than its name suggests, images may optionally also be part of a text page::
 
  <page>
      <text block>
@@ -33,12 +33,14 @@ A **span** consists of adjacent characters with identical font properties: name,
 Plain Text
 ~~~~~~~~~~
 
-Function :meth:`TextPage.extractText` (or *Page.get_text("text")*) extracts a page's plain **text in original order** as specified by the creator of the document (which may not equal a natural reading order).
+Function :meth:`TextPage.extractText` (or *Page.get_text("text")*) extracts a page's plain **text in original order** as specified by the creator of the document.
 
 An example output::
 
     >>> print(page.get_text("text"))
     Some text on first page.
+
+.. note:: The output may not equal an accustomed "natural" reading order. However, you can request a reordering following the scheme "top-left to bottom-right" by executing `page.get_text("text", sort=True)`.
 
 
 BLOCKS
@@ -50,11 +52,13 @@ Function :meth:`TextPage.extractBLOCKS` (or *Page.get_text("blocks")*) extracts 
 
 Where the first 4 items are the float coordinates of the block's bbox. The lines within each block are concatenated by a new-line character.
 
-This is a high-speed method with enough information to re-arrange the page's text in natural reading order where required.
+This is a high-speed method, which by default also extracts image meta information: Each image appears as a block with one text line, which contains meta information. The image itself is not shown.
+
+As with simple text output above, the ``sort`` argument can be used as well to obtain a reading order.
 
 Example output::
 
-    >>> print(page.get_text("blocks"))
+    >>> print(page.get_text("blocks", sort=False))
     [(50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375,
     'Some text on first page.', 0, 0)]
 
@@ -68,11 +72,11 @@ Function :meth:`TextPage.extractWORDS` (or *Page.get_text("words")*) extracts a 
 
 Where the first 4 items are the float coordinates of the words's bbox. The last three integers provide some more information on the word's whereabouts.
 
-This is a high-speed method with enough information to extract text contained in a given rectangle.
+This is a high-speed method. As with the previous methods, argument ``sort=True`` will reorder the words.
 
 Example output::
 
-    >>> for word in page.get_text("words"):
+    >>> for word in page.get_text("words", sort=False):
             print(word)
     (50.0, 88.17500305175781, 78.73200225830078, 103.28900146484375,
     'Some', 0, 0, 0)
@@ -153,7 +157,7 @@ To address the font issue, you can use a simple utility script to scan through t
 DICT (or JSON)
 ~~~~~~~~~~~~~~~~
 
-:meth:`TextPage.extractDICT` (or *Page.get_text("dict")*) output fully reflects the structure of a *TextPage* and provides image content and position details (*bbox* -- boundary boxes in pixel units) for every block and line. This information can be used to present text in another reading order if required (e.g. from top-left to bottom-right). Images are stored as *bytes* (*bytearray* in Python 2) for DICT output and base64 encoded strings for JSON output.
+:meth:`TextPage.extractDICT` (or *Page.get_text("dict", sort=False)*) output fully reflects the structure of a *TextPage* and provides image content and position detail (*bbox* -- boundary boxes in pixel units) for every block, line and span. Images are stored as *bytes* for DICT output and base64 encoded strings for JSON output.
 
 For a visuallization of the dictionary structure have a look at :ref:`textpagedict`.
 
@@ -164,51 +168,52 @@ Here is how this looks like::
         "height": 350.0,
         "blocks": [{
             "type": 0,
-            "bbox": [50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375],
-            "lines": [{
+            "bbox": (50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375),
+            "lines": ({
                 "wmode": 0,
-                "dir": [1.0, 0.0],
-                "bbox": [50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375],
-                "spans": [{
+                "dir": (1.0, 0.0),
+                "bbox": (50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375),
+                "spans": ({
                     "size": 11.0,
                     "flags": 0,
                     "font": "Helvetica",
                     "color": 0,
+                    "origin": (50.0, 100.0),
                     "text": "Some text on first page.",
-                    "bbox": [50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375]
-                }]
+                    "bbox": (50.0, 88.17500305175781, 166.1709747314453, 103.28900146484375)
+                })
             }]
         }]
     }
 
-RAWDICT
-~~~~~~~~~~~~~~~~
-:meth:`TextPage.extractRAWDICT` (or *Page.get_text("rawdict")*) is an **information superset of DICT** and takes the detail level one step deeper. It looks exactly like the above, except that the *"text"* items (*string*) are replaced by *"chars"* items (*list*). Each *"chars"* entry is a character *dict*. For example, here is what you would see in place of item *"text": "Text in black color."* above::
+RAWDICT (or RAWJSON)
+~~~~~~~~~~~~~~~~~~~~~
+:meth:`TextPage.extractRAWDICT` (or *Page.get_text("rawdict", sort=False)*) is an **information superset of DICT** and takes the detail level one step deeper. It looks exactly like the above, except that the *"text"* items (*string*) in the spans are replaced by the list *"chars"*. Each *"chars"* entry is a character *dict*. For example, here is what you would see in place of item *"text": "Text in black color."* above::
 
     "chars": [{
-        "origin": [50.0, 100.0],
-        "bbox": [50.0, 88.17500305175781, 57.336997985839844, 103.28900146484375],
+        "origin": (50.0, 100.0),
+        "bbox": (50.0, 88.17500305175781, 57.336997985839844, 103.28900146484375),
         "c": "S"
     }, {
-        "origin": [57.33700180053711, 100.0],
-        "bbox": [57.33700180053711, 88.17500305175781, 63.4530029296875, 103.28900146484375],
+        "origin": (57.33700180053711, 100.0),
+        "bbox": (57.33700180053711, 88.17500305175781, 63.4530029296875, 103.28900146484375),
         "c": "o"
     }, {
-        "origin": [63.4530029296875, 100.0],
-        "bbox": [63.4530029296875, 88.17500305175781, 72.61600494384766, 103.28900146484375],
+        "origin": (63.4530029296875, 100.0),
+        "bbox": (63.4530029296875, 88.17500305175781, 72.61600494384766, 103.28900146484375),
         "c": "m"
     }, {
-        "origin": [72.61600494384766, 100.0],
-        "bbox": [72.61600494384766, 88.17500305175781, 78.73200225830078, 103.28900146484375],
+        "origin": (72.61600494384766, 100.0),
+        "bbox": (72.61600494384766, 88.17500305175781, 78.73200225830078, 103.28900146484375),
         "c": "e"
     }, {
-        "origin": [78.73200225830078, 100.0],
-        "bbox": [78.73200225830078, 88.17500305175781, 81.79000091552734, 103.28900146484375],
+        "origin": (78.73200225830078, 100.0),
+        "bbox": (78.73200225830078, 88.17500305175781, 81.79000091552734, 103.28900146484375),
         "c": " "
     < ... deleted ... >
     }, {
-        "origin": [163.11297607421875, 100.0],
-        "bbox": [163.11297607421875, 88.17500305175781, 166.1709747314453, 103.28900146484375],
+        "origin": (163.11297607421875, 100.0),
+        "bbox": (163.11297607421875, 88.17500305175781, 166.1709747314453, 103.28900146484375),
         "c": "."
     }],
 
@@ -269,6 +274,7 @@ preserve whitespace 1    1    1     1   1    1       1     1       1
 preserve images     n/a  1    1     n/a 1    1       n/a   0       0
 inhibit spaces      0    0    0     0   0    0       0     0       0
 dehyphenate         0    0    0     0   0    0       0     0       1
+clip to mediabox    1    1    1     1   1    1       1     1       1
 =================== ==== ==== ===== === ==== ======= ===== ====== ======
 
 * **search** refers to the text search function.
@@ -298,7 +304,7 @@ To show the effect of *TEXT_INHIBIT_SPACES* have a look at this example::
 
 Performance
 ~~~~~~~~~~~~
-The text extraction methods differ significantly: in terms of information they supply, and in terms of resource requirements and runtimes. Generally, more information of course means, that more processing is required and a higher data volume is generated.
+The text extraction methods differ significantly both: in terms of information they supply, and in terms of resource requirements and runtimes. Generally, more information of course means, that more processing is required and a higher data volume is generated.
 
 .. note:: Especially images have a **very significant** impact. Make sure to exclude them (via the *flags* parameter) whenever you do not need them. To process the below mentioned 2'700 total pages with default flags settings required 160 seconds across all extraction methods. When all images where excluded, less than 50% of that time (77 seconds) were needed.
 

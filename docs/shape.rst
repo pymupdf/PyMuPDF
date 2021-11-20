@@ -144,47 +144,46 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Draw an "ellipse" inside the given tetragon (quadrilateral). If it is a square, a regular circle is drawn, a general rectangle will result in an ellipse. If a quadrilateral is used instead, a plethora of shapes can be the result.
 
-      The drawing starts and ends at the middle point of the line connecting bottom-left and top-left corners in an anti-clockwise movement.
+      The drawing starts and ends at the middle point of the line ``bottom-left -> top-left`` corners in an anti-clockwise movement.
 
       :arg rect_like,quad_like tetra: :data:`rect_like` or :data:`quad_like`.
 
-          *Changed in version 1.14.5:*  tetragons are now also supported.
+          *Changed in version 1.14.5:*  Quads are now also supported.
 
       :rtype: :ref:`Point`
-      :returns: the middle point of line from *rect.bl* to *rect.tl*, or from *quad.ll* to *quad.ul*, respectively. Look at just a few examples here, or at the *quad-show?.py* scripts in the PyMuPDF-Utilities repository.
+      :returns: the middle point of line ``rect.bl -> rect.tl``, or resp. ``quad.ll -> quad.ul``. Look at just a few examples here, or at the *quad-show?.py* scripts in the PyMuPDF-Utilities repository.
 
       .. image:: images/img-drawquad.*
          :scale: 50
 
    .. method:: draw_circle(center, radius)
 
-      Draw a circle given its center and radius. The drawing starts and ends at point *center - (radius, 0)* in an anti-clockwise movement. This corresponds to the middle point of the enclosing rectangle's left side.
+      Draw a circle given its center and radius. The drawing starts and ends at point ``center - (radius, 0)`` in an **anti-clockwise** movement. This point is the middle of the enclosing square's left side.
 
-      The method is a shortcut for *draw_sector(center, start, 360, fullSector=False)*. To draw a circle in a clockwise movement, change the sign of the degree.
+      This is a shortcut for ``draw_sector(center, start, 360, fullSector=False)``. To draw the same circle in a **clockwise** movement, use ``-360`` as degrees.
 
-      :arg center: the center of the circle.
-      :type center: point_like
+      :arg point_like center: the center of the circle.
 
       :arg float radius: the radius of the circle. Must be positive.
 
       :rtype: :ref:`Point`
-      :returns: *center - (radius, 0)*.
+      :returns: ``Point(center.x - radius, center.y)``.
 
-      .. image:: images/img-drawcircle.*
-         :scale: 60
+         .. image:: images/img-drawcircle.*
+            :scale: 60
 
    .. method:: draw_curve(p1, p2, p3)
 
-      A special case of *draw_bezier()*: Draw a cubic Bezier curve from *p1* to *p3*. On each of the two lines from *p1* to *p2* and from *p2* to *p3* one control point is generated. This guaranties that the curve's curvature does not change its sign. If these two connecting lines intersect with an angle of 90 degrees, then the resulting curve is a quarter ellipse (or quarter circle, if of same length) circumference.
+      A special case of *draw_bezier()*: Draw a cubic Bezier curve from *p1* to *p3*. On each of the two lines ``p1 -> p2`` and ``p3 -> p2`` one control point is generated. Both control points will therefore be on the same side of the line ``p1 -> p3``. This guaranties that the curve's curvature does not change its sign. If the lines to p2 intersect with an angle of 90 degrees, then the resulting curve is a quarter ellipse (resp. quarter circle, if of same length).
 
       All arguments are :data:`point_like`.
 
       :rtype: :ref:`Point`
-      :returns: the end point, *p3*.
+      :returns: the end point, *p3*. The following is a filled quarter ellipse segment. The yellow area is oriented **clockwise:**
 
-      Example: a filled quarter ellipse segment.
+         .. image:: images/img-drawCurve.png
+            :align: center
 
-      .. image:: images/img-drawCurve.png
 
    .. index::
       pair: fullSector; draw_sector
@@ -201,14 +200,12 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       :arg bool fullSector: whether to draw connecting lines from the ends of the arc to the circle center. If a fill color is specified, the full "pie" is colored, otherwise just the sector.
 
-      :returns: the other end point of the arc. Can be used as starting point for a following invocation to create logically connected pies charts.
       :rtype: :ref:`Point`
+      :returns: the other end point of the arc. Can be used as starting point for a following invocation to create logically connected pies charts. Examples:
 
-      Examples:
+         .. image:: images/img-drawSector1.*
 
-      .. image:: images/img-drawSector1.*
-
-      .. image:: images/img-drawSector2.*
+         .. image:: images/img-drawSector2.*
 
 
    .. method:: draw_rect(rect)
@@ -222,7 +219,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: draw_quad(quad)
 
-      Draw a quadrilateral. The drawing starts and ends at the top-left corner (:attr:`Quad.ul`) in an anti-clockwise movement. It invokes :meth:`draw_polyline` with the argument *[ul, ll, lr, ur, ul]*.
+      Draw a quadrilateral. The drawing starts and ends at the top-left corner (:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of :meth:`draw_polyline` with the argument ``(ul, ll, lr, ur, ul)``.
 
       :arg quad_like quad: where to put the tetragon on the page.
 
@@ -243,6 +240,49 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: stroke_opacity; insert_text
       pair: fill_opacity; insert_text
       pair: oc; insert_text
+
+   .. index::
+      pair: closePath; finish
+      pair: color; finish
+      pair: dashes; finish
+      pair: even_odd; finish
+      pair: fill; finish
+      pair: lineCap; finish
+      pair: lineJoin; finish
+      pair: morph; finish
+      pair: width; finish
+      pair: stroke_opacity; finish
+      pair: fill_opacity; finish
+      pair: oc; finish
+
+
+   .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
+
+      Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them.
+      
+      It has **no effect on** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`.
+
+      The method also supports **morphing the compound drawing** using :ref:`Point` *fixpoint* and :ref:`matrix` *matrix*.
+
+      :arg sequence morph: morph the text or the compound drawing around some arbitrary :ref:`Point` *fixpoint* by applying :ref:`Matrix` *matrix* to it. This implies that *fixpoint* is a **fixed point** of this operation: it will not change its position. Default is no morphing (*None*). The matrix can contain any values in its first 4 components, *matrix.e == matrix.f == 0* must be true, however. This means that any combination of scaling, shearing, rotating, flipping, etc. is possible, but translations are not.
+
+      :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors. Value < 0 or > 1 will be ignored. Default is 1 (intransparent).
+      :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent).
+
+      :arg bool even_odd: request the **"even-odd rule"** for filling operations. Default is *False*, so that the **"nonzero winding number rule"** is used. These rules are alternative methods to apply the fill color where areas overlap. Only with fairly complex shapes a different behavior is to be expected with these rules. For an in-depth explanation, see :ref:`AdobeManual`, pp. 137 ff. Here is an example to demonstrate the difference.
+
+      :arg int oc: *(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or :data:`OCMD` to make this drawing conditionally displayable.
+
+      .. image:: images/img-even-odd.*
+
+      .. note:: For each pixel in a shape, the following will happen:
+
+         1. Rule **"even-odd"** counts, how many areas contain the pixel. If this count is **odd,** the pixel is regarded **inside** the shape, if it is **even**, the pixel is **outside**.
+
+         2. The default rule **"nonzero winding"** in addition looks at the *"orientation"* of each area containing the pixel: it **adds 1** if an area is drawn anti-clockwise and it **subtracts 1** for clockwise areas. If the result is zero, the pixel is regarded **outside,** pixels with a non-zero count are **inside** the shape.
+
+         Of the four shapes in above image, the top two each show three circles drawn in standard manner (anti-clockwise, look at the arrows). The lower two shapes contain one (the top-left) circle drawn clockwise. As can be seen, area orientation is irrelevant for the right column (even-odd rule).
+
 
    .. method:: insert_text(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
@@ -285,13 +325,13 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: insert_textbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
-      PDF only: Insert text into the specified rectangle. The text will be split into lines and words and then filled into the available space, starting from one of the four rectangle corners, which depends on *rotate*. Line feeds will be respected as well as multiple spaces will be.
+      PDF only: Insert text into the specified rectangle. The text will be split into lines and words and then filled into the available space, starting from one of the four rectangle corners, which depends on *rotate*. Line feeds and multiple space will be respected.
 
       :arg rect_like rect: the area to use. It must be finite and not empty.
 
       :arg str/sequence buffer: the text to be inserted. Must be specified as a string or a sequence of strings. Line breaks are respected also when occurring in a sequence entry.
 
-      :arg int align: align each text line. Default is 0 (left). Centered, right and justified are the other supported options, see :ref:`TextAlign`. Please note that the effect of parameter value *TEXT_ALIGN_JUSTIFY* is only achievable with "simple" (single-byte) fonts (including the :ref:`Base-14-Fonts`). Refer to :ref:`AdobeManual`, section 5.2.2, page 399.
+      :arg int align: align each text line. Default is 0 (left). Centered, right and justified are the other supported options, see :ref:`TextAlign`. Please note that the effect of parameter value *TEXT_ALIGN_JUSTIFY* is only achievable with "simple" (single-byte) fonts (including the :ref:`Base-14-Fonts`).
 
       :arg int expandtabs: controls handling of tab characters *\t* using the *string.expandtabs()* method **per each line**.
 
@@ -314,53 +354,23 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       For a description of the other parameters see :ref:`CommonParms`.
 
-   .. index::
-      pair: closePath; finish
-      pair: color; finish
-      pair: dashes; finish
-      pair: even_odd; finish
-      pair: fill; finish
-      pair: lineCap; finish
-      pair: lineJoin; finish
-      pair: morph; finish
-      pair: width; finish
-      pair: stroke_opacity; finish
-      pair: fill_opacity; finish
-      pair: oc; finish
-
-   .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
-
-      Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them. This method also supports morphing the resulting compound drawing using a fixpoint :ref:`Point`.
-
-      :arg sequence morph: morph the text or the compound drawing around some arbitrary :ref:`Point` *fixpoint* by applying :ref:`Matrix` *matrix* to it. This implies that *fixpoint* is a **fixed point** of this operation: it will not change its position. Default is no morphing (*None*). The matrix can contain any values in its first 4 components, *matrix.e == matrix.f == 0* must be true, however. This means that any combination of scaling, shearing, rotating, flipping, etc. is possible, but translations are not.
-
-      :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors. Value < 0 or > 1 will be ignored. Default is 1 (intransparent).
-      :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent).
-
-      :arg bool even_odd: request the **"even-odd rule"** for filling operations. Default is *False*, so that the **"nonzero winding number rule"** is used. These rules are alternative methods to apply the fill color where areas overlap. Only with fairly complex shapes a different behavior is to be expected with these rules. For an in-depth explanation, see :ref:`AdobeManual`, pp. 136. Here is an example to demonstrate the difference.
-
-      :arg int oc: *(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or :data:`OCMD` to make this drawing conditionally displayable.
-
-      .. image:: images/img-even-odd.*
-
-      .. note:: For each pixel in a drawing the following will happen:
-
-         1. Rule **"even-odd"** counts, how many areas contain the pixel. If this count is **odd,** the pixel is regarded **inside**, if it is **even**, the pixel is **outside**.
-
-         2. Default rule **"nonzero winding"** also looks at the *"orientation"* of each area containing the pixel: it **adds 1** if an area is drawn anit-clockwise and it **subtracts 1** for clockwise areas. If the result is zero, the pixel is regarded **outside**, pixels with a non-zero count are **inside**.
-
-         Of the four shapes in above image, the top two each show three circles drawn in standard manner (anti-clockwise, look at the arrows). The lower two shapes contain one (the top-left) circle drawn clockwise. As can be seen, area orientation is irrelevant for the even-odd rule.
 
    .. index::
       pair: overlay; commit
 
    .. method:: commit(overlay=True)
 
-      Update the page's :data:`contents` with the accumulated draw commands and text insertions. If a *Shape* is **not committed, the page will not be changed!**
+      Update the page's :data:`contents` with the accumulated drawings, followed by any text insertions. If text overlaps drawings, it will be written on top of the drawings.
+      
+      .. warning:: **Do not forget to execute this method:**
+      
+            If a shape is **not committed, it will be ignored and the page will not be changed!**
 
       The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, :attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, the shape object can be reused for the **same page**.
 
       :arg bool overlay: determine whether to put content in foreground (default) or background. Relevant only, if the page already has a non-empty :data:`contents` object.
+
+   **---------- Attributes ----------**
 
    .. attribute:: doc
 
@@ -388,13 +398,13 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. attribute:: draw_cont
 
-      Accumulated command buffer for **draw methods** since last finish.
+      Accumulated command buffer for **draw methods** since last finish. Every finish method will append its commands to :attr:`Shape.totalcont`.
 
       :type: str
 
    .. attribute:: text_cont
 
-      Accumulated text buffer. All **text insertions** go here. On :meth:`commit` this buffer will be appended to :attr:`totalcont`, so that text will never be covered by drawings in the same Shape.
+      Accumulated text buffer. All **text insertions** go here. This buffer will be appended to :attr:`totalcont` :meth:`commit`, so that text will never be covered by drawings in the same Shape.
 
       :type: str
 
@@ -572,7 +582,7 @@ Common Parameters
 
 **render_mode** (*int*)
 
-  *New in version 1.14.9:* Integer in ``range(8)`` which controls the text appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). See page 398 in :ref:`AdobeManual`. New in v1.14.9. These methods now also differentiate between fill and stroke colors.
+  *New in version 1.14.9:* Integer in ``range(8)`` which controls the text appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). See page 246 in :ref:`AdobeManual`. New in v1.14.9. These methods now also differentiate between fill and stroke colors.
 
   * For default 0, only the text fill color is used to paint the text. For backward compatibility, using the *color* parameter instead also works.
   * For render mode 1, only the border of each glyph (i.e. text character) is drawn with a thickness as set in argument *border_width*. The color chosen in the *color* argument is taken for this, the *fill* parameter is ignored.

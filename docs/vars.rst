@@ -158,19 +158,19 @@ For the PyMuPDF programmer, some combination (using Python's ``|`` operator, or 
 
 .. py:data:: TEXT_PRESERVE_LIGATURES
 
-    1 -- If set, ligatures are passed through to the application in their original form. Otherwise ligatures are expanded into their constituent parts, e.g. the ligature "ffi" is expanded into three  eparate characters f, f and i. Default is "on" in PyMuPDF.
+    1 -- If set, ligatures are passed through to the application in their original form. Otherwise ligatures are expanded into their constituent parts, e.g. the ligature "ffi" is expanded into three  eparate characters f, f and i. Default is "on" in PyMuPDF. MuPDF supports the following 7 ligatures: "ff", "fi", "fl", "ffi", "ffl", , "ft", "st".
 
 .. py:data:: TEXT_PRESERVE_WHITESPACE
 
-    2 -- If set, whitespace is passed through to the application in its original form. Otherwise any type of horizontal whitespace (including horizontal tabs) will be replaced with space characters of variable width. Default is "on" in PyMuPDF.
+    2 -- If set, whitespace is passed through. Otherwise any type of horizontal whitespace (including horizontal tabs) will be replaced with space characters of variable width. Default is "on" in PyMuPDF.
 
 .. py:data:: TEXT_PRESERVE_IMAGES
 
-    4 -- If set, then images will be stored in the structured text structure. This causes the presence of (usually large!) binary image contents in the output of text extractions of types "dict", "json", "rawdict", "rawjson", "html", and "xhtml" and is the default here. If used with "blocks" however (default "off"), only image metadata will be returned, not the image itself.
+    4 -- If set, then images will be stored in the :ref:`TextPage`. This causes the presence of (usually large!) binary image content in the output of text extractions of types "blocks", "dict", "json", "rawdict", "rawjson", "html", and "xhtml" and is the default there. If used with "blocks" however, only image metadata will be returned, not the image itself.
 
 .. py:data:: TEXT_INHIBIT_SPACES
 
-    8 -- If set, we will not try to add missing space characters where there are large gaps between characters. In PDF, the creator usually does not insert (multiple) spaces to point to the next character's position, but will provide a direct location address for the character. The default in PyMuPDF is "off".
+    8 -- If set, Mupdf will not try to add missing space characters where there are large gaps between characters. In PDF, the creator often does not insert spaces to point to the next character's position, but will provide the direct location address. The default in PyMuPDF is "off" -- so spaces **will be generated**.
 
 .. py:data:: TEXT_DEHYPHENATE
 
@@ -180,12 +180,16 @@ For the PyMuPDF programmer, some combination (using Python's ``|`` operator, or 
 
     32 -- Generate a new line for every span. Not used ("off") in PyMuPDF, but available for your use. Every line in "dict", "json", "rawdict", "rawjson" will contain exactly one span.
 
+.. py:data:: TEXT_MEDIABOX_CLIP
+
+    64 -- If set, characters entirely outside a page's **mediabox** will be ignored. This is default n PyMuPDF.
+
 
 .. _linkDest Kinds:
 
 Link Destination Kinds
 -----------------------
-Possible values of :attr:`linkDest.kind` (link destination kind). For details consult :ref:`AdobeManual`, chapter 8.2 on pp. 581.
+Possible values of :attr:`linkDest.kind` (link destination kind).
 
 .. py:data:: LINK_NONE
 
@@ -419,7 +423,7 @@ Widget flags (*field_flags*)
 PDF Standard Blend Modes
 ----------------------------
 
-For an explanation see :ref:`AdobeManual`, page 520::
+For an explanation see :ref:`AdobeManual`, page 324::
 
     PDF_BM_Color "Color"
     PDF_BM_ColorBurn "ColorBurn"

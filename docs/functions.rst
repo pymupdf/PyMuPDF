@@ -57,6 +57,11 @@ Yet others are handy, general-purpose utilities.
 :meth:`recover_char_quad`            compute the quad of a char ("rawdict")
 :meth:`recover_span_quad`            compute the quad of a subset of span characters
 :meth:`recover_line_quad`            compute the quad of a subset of line spans
+:meth:`INFINITE_RECT`                return the (only existing) infinite rectangle
+:meth:`INFINITE_IRECT`               return the (only existing) infinite rectangle
+:meth:`EMPTY_RECT`                   return the (standard) empty / invalid rectangle
+:meth:`EMPTY_IRECT`                  return the (standard) empty / invalid rectangle
+:meth:`INFINITE_QUAD`                return the (only existing) infinite quad
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 ==================================== ==============================================================
 
@@ -686,3 +691,23 @@ Yet others are handy, general-purpose utilities.
       :arg dict line: the line.
       :arg list spans: a sub-list of ``line["spans"]``. If omitted, the full line quad will be returned.
       :returns: the :ref:`Quad` of the selected line spans, usable for text marker annotations ('Highlight', etc.).
+
+-----
+
+   .. method:: INFINITE_QUAD()
+
+   .. method:: INFINITE_RECT()
+
+   .. method:: INFINITE_IRECT()
+
+      Return the (unique) infinite rectangle ``Rect(-2147483648.0, -2147483648.0, 2147483520.0, 2147483520.0)``, resp. the :ref:`IRect` and :ref:`Quad` counterparts. It is the largest possible rectangle: all rectangles are contained in it. It is not possible to create a rectangle with smaller / larger coordinates. Methods :meth:`Rect.is_infinite` checks for equality with this object.
+
+-----
+
+   .. method:: EMPTY_QUAD()
+
+   .. method:: EMPTY_RECT()
+
+   .. method:: EMPTY_IRECT()
+   
+      Return the "standard" empty / invalid rectangle ``Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)`` resp. quad. Its top-left and bottom-right point values are reversed compared to the infinite rectangle. It will e.g. be used to indicate empty bboxes in ``page.get_text("dict")`` dictionaries. There are however infinitely many empty or invalid rectangles.

@@ -6,13 +6,13 @@ TextPage
 
 This class represents text and images shown on a document page. All MuPDF document types are supported.
 
-The usual ways to create a textpage are :meth:`DisplayList.get_textpage` and :meth:`Page.get_textpage`. Because there is a limited set of methods in this class, there exist wrappers in the :ref:`Page` class, which incorporate creating an intermediate text page and then invoke one of the following methods. The last column of this table shows these corresponding :ref:`Page` methods.
+The usual ways to create a textpage are :meth:`DisplayList.get_textpage` and :meth:`Page.get_textpage`. Because there is a limited set of methods in this class, there exist wrappers in :ref:`Page` which are handier to use. The last column of this table shows these corresponding :ref:`Page` methods.
 
 For a description of what this class is all about, see Appendix 2.
 
-======================== ================================ =============================
-**Method**               **Description**                  page getText or search method
-======================== ================================ =============================
+======================== ================================ ==============================
+**Method**               **Description**                  page get_text or search method
+======================== ================================ ==============================
 :meth:`~.extractText`    extract plain text               "text"
 :meth:`~.extractTEXT`    synonym of previous              "text"
 :meth:`~.extractBLOCKS`  plain text grouped in blocks     "blocks"
@@ -24,8 +24,8 @@ For a description of what this class is all about, see Appendix 2.
 :meth:`~.extractJSON`    page content in JSON format      "json"
 :meth:`~.extractRAWDICT` page content in *dict* format    "rawdict"
 :meth:`~.extractRAWJSON` page content in JSON format      "rawjson"
-:meth:`~.search`         Search for a string in the page  :meth:`Page.search`
-======================== ================================ =============================
+:meth:`~.search`         Search for a string in the page  :meth:`Page.search_for`
+======================== ================================ ==============================
 
 **Class API**
 
@@ -112,7 +112,7 @@ For a description of what this class is all about, see Appendix 2.
 
       Search for *string* and return a list of found locations.
 
-      :arg str needle: the string to search for. Upper and lower cases will all match. But beware: this does not yet work for "Ä" versus "ä", etc.
+      :arg str needle: the string to search for. Upper and lower cases will all match if needle consists of ASCII letters only -- it does not yet work for "Ä" versus "ä", etc.
       :arg bool quads: return quadrilaterals instead of rectangles.
       :rtype: list
       :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *needle* occurrence. As the search string may contain spaces, its parts may be found on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method **now supports dehyphenation**, so it will find e.g. "method", even if it was hyphenated in two parts "meth-" and "od" across two lines. The two returned rectangles will contain "meth" (no hyphen) and "od".
@@ -162,7 +162,7 @@ In addition, **the full quad information is not lost**: it can be recovered as n
 * :meth:`recover_line_quad` -- the quad of a line
 * :meth:`recover_char_quad` -- the quad of a character
 
-As mentioned, using these functions is ever only needed, if the text is **not written horizontally** and you need the quad for text marker annotations (:meth:`Page.add_highlight_annot` and friends).
+As mentioned, using these functions is ever only needed, if the text is **not written horizontally** -- ``line["dir"] != (1, 0)`` -- and you need the quad for text marker annotations (:meth:`Page.add_highlight_annot` and friends).
 
 
 .. image:: images/img-textpage.*
@@ -216,7 +216,7 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
 
    2. :ref:`TextPage` and corresponding method :meth:`Page.get_text` are **available for all document types**. Only for PDF documents, methods :meth:`Document.get_page_images` / :meth:`Page.get_images` offer some overlapping functionality as far as image lists are concerned. But both lists **may or may not** contain the same items. Any differences are most probably caused by one of the following:
 
-       - "Inline" images (see page 352 of the :ref:`AdobeManual`) of a PDF page are contained in a textpage, but **do not appear** in :meth:`Page.get_images`.
+       - "Inline" images (see page 214 of the :ref:`AdobeManual`) of a PDF page are contained in a textpage, but **do not appear** in :meth:`Page.get_images`.
        - Annotations may also contain images -- these will **not appear** in :meth:`Page.get_images`.
        - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will list each image only once (per reference name).
        - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
