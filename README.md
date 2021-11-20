@@ -4,8 +4,7 @@
 
 Release date: November 20, 2021
 
-On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
-
+On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://pepy.tech/badge/pymupdf)](https://pepy.tech/project/pymupdf)
 # Author
 [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de), based on original code by [Ruikai Liu](mailto:lrk700@gmail.com).
 
@@ -77,7 +76,7 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade pymupdf
 ```
 
-There are **no mandatory** external dependencies. However, some **optional features** become available if additional packages are installed:
+There are **no mandatory** external dependencies. However, some **optional features** become available only if additional packages are installed:
 
 * [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly from PyMuPDF
 * [fontTools](https://pypi.org/project/fonttools/) for creating font subsets

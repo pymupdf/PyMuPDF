@@ -428,6 +428,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg dict linkdict: the link to be modified.
 
+      .. warning:: If updating / inserting a URI link (``"kind": LINK_URI``), please make sure to start the value for the ``"uri"`` key with an unambiguous string like ``"http://"``, ``"https://"``, ``"file://"``, ``"ftp://"``, ``"mailto:"``, etc. Otherwise -- depending on the browser -- unexpected default assumptions may lead to unwanted behaviours.
+
+
 
    .. method:: get_label()
 
@@ -1596,7 +1599,7 @@ Each entry of the :meth:`Page.get_links` list is a dictionay with the following 
 
 * *file*: a string specifying the destination file. Required for *LINK_GOTOR* and *LINK_LAUNCH*, else ignored.
 
-* *uri*:  a string specifying the destination internet resource. Required for *LINK_URI*, else ignored.
+* *uri*:  a string specifying the destination internet resource. Required for *LINK_URI*, else ignored. You should make sure to start this string with an unambiguous substring, that classifies the subtype of the URL, like ``"http://"``, ``"https://"``, ``"file://"``, ``"ftp://"``, ``"mailto:"``, etc. Otherwise your browser will try to interpret the text and come to unwanted / unexpected conclusions about the intended URL type.
 
 * *xref*: an integer specifying the PDF :data:`xref` of the link object. Do not change this entry in any way. Required for link deletion and update, otherwise ignored. For non-PDF documents, this entry contains *-1*. It is also *-1* for **all** entries in the *get_links()* list, if **any** of the links is not supported by MuPDF - see the note below.
 
