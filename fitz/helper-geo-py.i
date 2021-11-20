@@ -476,7 +476,7 @@ class Rect(object):
 
     @property
     def is_infinite(self):
-        """True if rectangle is infinite."""
+        """True if this is the infinite rectangle."""
         return self.x0 == self.y0 == FZ_MIN_INF_RECT and self.x1 == self.y1 == FZ_MAX_INF_RECT
 
     @property
@@ -513,6 +513,8 @@ class Rect(object):
         """Morph with matrix-like m and point-like p.
 
         Returns a new quad."""
+        if self.is_infinite:
+            return INFINITE_QUAD()
         return self.quad.morph(p, m)
 
     def round(self):
@@ -768,6 +770,8 @@ class IRect(object):
         """Morph with matrix-like m and point-like p.
 
         Returns a new quad."""
+        if self.is_infinite:
+            return INFINITE_QUAD()
         return self.quad.morph(p, m)
 
     @property
@@ -972,6 +976,11 @@ class Quad(object):
         return self.width < EPSILON or self.height < EPSILON
 
     @property
+    def is_infinite(self):
+        """Check whether this is the infinite quad."""
+        return self.rect.is_infinite
+
+    @property
     def rect(self):
         r = Rect()
         r.x0 = min(self.ul.x, self.ur.x, self.lr.x, self.ll.x)
@@ -991,10 +1000,7 @@ class Quad(object):
         if l != 4:
             return False
         if CheckRect(x):
-            r = Rect(x)
-            if r.is_infinite:
-                return False
-            if r.is_empty:
+            if Rect(x).is_empty:
                 return True
             return TOOLS._point_in_quad(x[:2], self) and TOOLS._point_in_quad(x[2:], self)
         if CheckQuad(x):
@@ -1055,7 +1061,8 @@ class Quad(object):
         """Morph the quad with matrix-like 'm' and point-like 'p'.
 
         Return a new quad."""
-
+        if self.is_infinite:
+            return INFINITE_QUAD()
         delta = Matrix(1, 1).pretranslate(p.x, p.y)
         q = self * ~delta * m * delta
         return q

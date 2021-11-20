@@ -45,6 +45,7 @@ TEXT_PRESERVE_IMAGES = 4
 TEXT_INHIBIT_SPACES = 8
 TEXT_DEHYPHENATE = 16
 TEXT_PRESERVE_SPANS = 32
+TEXT_MEDIABOX_CLIP = 64
 
 # ------------------------------------------------------------------------------
 # Simple text encoding options

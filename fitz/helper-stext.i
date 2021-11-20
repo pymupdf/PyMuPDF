@@ -85,7 +85,7 @@ JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, in
 //---------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
-    if (ch >= 32 && ch <= 127 || ch == 10) {
+    if (ch >= 32 && ch <= 255 || ch == 10) {
         fz_append_byte(ctx, buff, ch);
     } else if (ch <= 0xffff) {  // 4 hex digits
         fz_append_printf(ctx, buff, "\\u%04x", ch);
@@ -424,9 +424,6 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                 last_char = 0;
                 for (ch = line->first_char; ch; ch = ch->next) {
                     chbbox = JM_char_bbox(ctx, line, ch);
-                    if (fz_is_empty_rect(chbbox)) {
-                        continue;
-                    }
                     if (fz_is_infinite_rect(rect) ||
                         fz_contains_rect(rect, chbbox)) {
                         last_char = ch->c;
@@ -506,37 +503,34 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
     PyObject *span_list = PyList_New(0);
     fz_clear_buffer(ctx, buff);
     fz_stext_char *ch;
-    fz_rect span_rect;
+    fz_rect span_rect = fz_empty_rect;
     fz_rect line_rect = fz_empty_rect;
     fz_point span_origin;
-    typedef struct style_s
-    {float size; int flags; const char *font; int color; float asc; float desc;} char_style;
-
+    typedef struct style_s {
+        float size; int flags; const char *font; int color;
+        float asc; float desc;
+    } char_style;
     char_style old_style = { -1, -1, "", -1, 0, 0 }, style;
 
     for (ch = line->first_char; ch; ch = ch->next) {
-//start-trace
         fz_rect r = JM_char_bbox(ctx, line, ch);
         if (!fz_contains_rect(tp_rect, r) &&
             !fz_is_infinite_rect(tp_rect)) {
             continue;
         }
-
         int flags = JM_char_font_flags(ctx, ch->font, line, ch);
         fz_point origin = ch->origin;
         style.size = ch->size;
         style.flags = flags;
         style.font = JM_font_name(ctx, ch->font);
+        style.color = ch->color;
         style.asc = JM_font_ascender(ctx, ch->font);
         style.desc = JM_font_descender(ctx, ch->font);
-        style.color = ch->color;
 
         if (style.size != old_style.size ||
             style.flags != old_style.flags ||
             style.color != old_style.color ||
             strcmp(style.font, old_style.font) != 0) {
-
-            // style changed -> make new span
 
             if (old_style.size >= 0) {
                 // not first one, output previous
@@ -555,11 +549,7 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
                 DICT_SETITEM_DROP(span, dictkey_bbox,
                     JM_py_from_rect(span_rect));
                 line_rect = fz_union_rect(line_rect, span_rect);
-                if (!fz_is_empty_rect(span_rect)) {
-                    LIST_APPEND_DROP(span_list, span);
-                } else {
-                    Py_DECREF(span);
-                }
+                LIST_APPEND_DROP(span_list, span);
                 span = NULL;
             }
 
@@ -589,7 +579,6 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
 
         if (raw) {  // make and append a char dict
             char_dict = PyDict_New();
-
             DICT_SETITEM_DROP(char_dict, dictkey_origin,
                           JM_py_from_point(ch->origin));
 
@@ -632,7 +621,6 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
     } else {
         DICT_SETITEM_DROP(line_dict, dictkey_spans, span_list);
     }
-//stop-trace
     return line_rect;
 }
 

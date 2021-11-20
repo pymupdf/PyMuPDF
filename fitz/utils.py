@@ -132,7 +132,6 @@ def show_pdf_page(*args, **kwargs) -> int:
     keep_proportion = bool(kwargs.get("keep_proportion", True))
     rotate = float(kwargs.get("rotate", 0))
     oc = int(kwargs.get("oc", 0))
-    reuse_xref = int(kwargs.get("reuse_xref", 0))
     clip = kwargs.get("clip")
 
     def calc_matrix(sr, tr, keep=True, rotate=0):
@@ -175,12 +174,8 @@ def show_pdf_page(*args, **kwargs) -> int:
     if not doc.is_pdf or not src.is_pdf:
         raise ValueError("not a PDF")
 
-    rect = page.rect & rect  # intersect with page rectangle
     if rect.is_empty or rect.is_infinite:
         raise ValueError("rect must be finite and not empty")
-
-    if reuse_xref > 0:
-        warnings.warn("ignoring 'reuse_xref'", DeprecationWarning)
 
     while pno < 0:  # support negative page numbers
         pno += src.page_count
@@ -397,7 +392,11 @@ def search_for(*args, **kwargs) -> list:
     if clip != None:
         clip = Rect(clip)
     flags = kwargs.get(
-        "flags", TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES
+        "flags",
+        TEXT_DEHYPHENATE
+        | TEXT_PRESERVE_WHITESPACE
+        | TEXT_PRESERVE_LIGATURES
+        | TEXT_MEDIABOX_CLIP,
     )
 
     CheckParent(page)
@@ -418,7 +417,10 @@ def search_page_for(
     text: str,
     quads: bool = False,
     clip: rect_like = None,
-    flags: int = TEXT_DEHYPHENATE | TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE,
+    flags: int = TEXT_DEHYPHENATE
+    | TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP,
     textpage: TextPage = None,
 ) -> list:
     """Search for a string on a page.
@@ -463,7 +465,10 @@ def get_text_blocks(
     CheckParent(page)
     if flags is None:
         flags = (
-            TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_IMAGES | TEXT_PRESERVE_LIGATURES
+            TEXT_PRESERVE_WHITESPACE
+            | TEXT_PRESERVE_IMAGES
+            | TEXT_PRESERVE_LIGATURES
+            | TEXT_MEDIABOX_CLIP
         )
     tp = textpage
     if tp is None:
@@ -493,7 +498,7 @@ def get_text_words(
     """
     CheckParent(page)
     if flags is None:
-        flags = TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES
+        flags = TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES | TEXT_MEDIABOX_CLIP
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
@@ -558,8 +563,8 @@ def get_textpage_ocr(
         full: (bool) whether to OCR the full page image, or only its images (default)
     """
     CheckParent(page)
-    # if OCR for the full page, OCR its pixmap @ desired dpi
-    if full is True:
+
+    def full_ocr(page, dpi, language, flags):
         zoom = dpi / 72
         mat = Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
@@ -573,22 +578,41 @@ def get_textpage_ocr(
         tpage.parent = weakref.proxy(page)
         return tpage
 
-    # for partial OCR, make a normal textpage, then extend it with text that
+    # if OCR for the full page, OCR its pixmap @ desired dpi
+    if full is True:
+        return full_ocr(page, dpi, language, flags)
+
+    # For partial OCR, make a normal textpage, then extend it with text that
     # is OCRed from each image.
+    # Because of this, we need the images flag bit set ON.
     tpage = page.get_textpage(flags=flags)
-    for block in page.get_text("dict")["blocks"]:
-        if block["type"] != 1:
+    for block in page.get_text("dict", flags=TEXT_PRESERVE_IMAGES)["blocks"]:
+        if block["type"] != 1:  # only look at images
             continue
-        pix = Pixmap(block["image"])  # get image pixmap
-        imgdoc = Document("pdf", pix.pdfocr_tobytes())  # pdf with OCRed page
-        imgpage = imgdoc.load_page(0)  # read image as a page
-        pix = None
-        # compute matrix to transform coordinates back to that of 'page'
-        imgrect = imgpage.rect  # page size of image PDF
-        shrink = Matrix(1 / imgrect.width, 1 / imgrect.height)
-        mat = shrink * block["transform"]
-        imgpage.extend_textpage(tpage, flags=0, matrix=mat)
-        imgdoc.close()
+        bbox = Rect(block["bbox"])
+        if bbox.width <= 3 or bbox.height <= 3:  # ignore tiny stuff
+            continue
+        try:
+            pix = Pixmap(block["image"])  # get image pixmap
+            if pix.n - pix.alpha != 3:  # we need to convert this to RGB!
+                pix = Pixmap(csRGB, pix)
+            if pix.alpha:  # must remove alpha channel
+                pix = Pixmap(pix, 0)
+            imgdoc = Document(
+                "pdf", pix.pdfocr_tobytes(language=language)
+            )  # pdf with OCRed page
+            imgpage = imgdoc.load_page(0)  # read image as a page
+            pix = None
+            # compute matrix to transform coordinates back to that of 'page'
+            imgrect = imgpage.rect  # page size of image PDF
+            shrink = Matrix(1 / imgrect.width, 1 / imgrect.height)
+            mat = shrink * block["transform"]
+            imgpage.extend_textpage(tpage, flags=0, matrix=mat)
+            imgdoc.close()
+        except RuntimeError:
+            tpage = None
+            print("Falling back to full page OCR")
+            return full_ocr(page, dpi, language, flags)
 
     return tpage
 
@@ -709,7 +733,7 @@ def get_text(
     if option not in formats:
         option = "text"
     if flags is None:
-        flags = TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES
+        flags = TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES | TEXT_MEDIABOX_CLIP
         if formats[option] == 1:
             flags |= TEXT_PRESERVE_IMAGES
 
@@ -781,18 +805,25 @@ def get_page_text(
     return doc[pno].get_text(option, clip=clip, flags=flags, sort=sort)
 
 
-def get_pixmap(page: Page, **kw) -> Pixmap:
+def get_pixmap(page: Page, *args, **kw) -> Pixmap:
     """Create pixmap of page.
 
-    Args:
+    Keyword args:
         matrix: Matrix for transformation (default: Identity).
+        dpi: desired dots per inch. If given, matrix is ignored.
         colorspace: (str/Colorspace) cmyk, rgb, gray - case ignored, default csRGB.
         clip: (irect-like) restrict rendering to this area.
         alpha: (bool) whether to include alpha channel
         annots: (bool) whether to also render annotations
     """
+    if args:
+        raise ValueError("method accepts keywords only")
     CheckParent(page)
     matrix = kw.get("matrix", Identity)
+    dpi = kw.get("dpi", None)
+    if dpi:
+        zoom = dpi / 72
+        matrix = Matrix(zoom, zoom)
     colorspace = kw.get("colorspace", csRGB)
     clip = kw.get("clip")
     alpha = bool(kw.get("alpha", False))
@@ -811,6 +842,8 @@ def get_pixmap(page: Page, **kw) -> Pixmap:
     dl = page.get_displaylist(annots=annots)
     pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
     dl = None
+    if dpi:
+        pix.set_dpi(dpi, dpi)
     return pix
 
 
@@ -4960,7 +4993,7 @@ def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> Quad:
     """
     if chars == None:  # no sub-selection
         return recover_quad(line_dir, span)
-    if not hasattr(span, "chars"):
+    if not "chars" in span.keys():
         raise ValueError("need 'rawdict' option to sub-select chars")
 
     q0 = recover_char_quad(line_dir, span, chars[0])  # quad of first char

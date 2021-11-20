@@ -3,15 +3,43 @@ Change Log
 
 ------
 
+**Changes in Version 1.19.2**
+
+This patch version implements minor improvements for :meth:`Page.get_drawings` and also some important fixes.
+
+* **Fixed** `#1388 <https://github.com/pymupdf/PyMuPDF/discussions/1388>`_. Fixed intermittent memory corruption when insert or updating annotations.
+
+* **Fixed** `#1375 <https://github.com/pymupdf/PyMuPDF/discussions/1375>`_. Inconsistencies between line numbers as returned by the "words" and the "dict" options of :meth:`Page.get_text` have been corrected.
+
+* **Fixed** `#1364 <https://github.com/pymupdf/PyMuPDF/issues/1342>`_. The check for being a ``"rawdict"`` span in :meth:`recover_span_quad` now works correctly.
+
+* **Fixed** `#1342 <https://github.com/pymupdf/PyMuPDF/issues/1364>`_. Corrected the check for rectangle infiniteness in :meth:`Page.show_pdf_page`.
+
+* **Changed** :meth:`Page.get_drawings`, :meth:`Page.get_cdrawings` to return an indicator on the area orientation covered by a rectangle. This implements `#1355 <https://github.com/pymupdf/PyMuPDF/issues/1355>`_. Also, the recognition rate for rectangles and quads has been significantly improved.
+
+* **Changed** all text search and extraction methods to set the new ``flags`` option ``TEXT_MEDIABOX_CLIP`` to ON by default. That bit causes the automatic suppression of all characters that are completely outside a page's mediabox (in as far as that notion is supported for a document type). This eliminates the need for using ``clip=page.rect`` or similar for omitting text outside the visible area.
+
+* **Added** parameter ``"dpi"`` to :meth:`Page.get_pixmap` and :meth:`Annot.get_pixmap`. When given, parameter ``"matrix"`` is ignored, and a :ref:`Pixmap` with the desired dots per inch is created.
+
+* **Added** attributes :attr:`Pixmap.is_monochrome` and :attr:`Pixmap.is_unicolor` allowing fast checks of pixmap properties. Addresses `#1397 <https://github.com/pymupdf/PyMuPDF/discussions/1397>`_.
+
+* **Added** method :meth:`Pixmap.color_count` to determine the unique colors in the pixmap.
+
+* **Added** boolean parameter ``"compress"`` to PDF document method :meth:`Document.update_stream`. Addresses / enables solution for `#1408 <https://github.com/pymupdf/PyMuPDF/discussions/1408>`_.
+
+------
+
 **Changes in Version 1.19.1**
 
-* **Fixed** `#1328 <https://github.com/pymupdf/PyMuPDF/issues/1328>`_. "words" text extraction again returns correct coordinates.
+This is the first patch version to support MuPDF v1.19.0. Apart from one bug fix, it includes important improvements for OCR support and the option to **sort extracted text** to the standard reading order "from top-left to bottom-right".
 
-* **Changed** :meth:`Page.get_textpage_ocr` -- support specifying the desired OCR quality via parameter ``dpi``, support choice between full page OCR versus only OCRing displayed images.
+* **Fixed** `#1328 <https://github.com/pymupdf/PyMuPDF/issues/1328>`_. "words" text extraction again returns correct ``(x0, y0)`` coordinates.
+
+* **Changed** :meth:`Page.get_textpage_ocr`: it now supports parameter ``dpi`` to control OCR quality. It is also possible to choose whether the **full page** should be OCRed or **only the images displayed** by the page.
 
 * **Changed** :meth:`Page.get_drawings` and :meth:`Page.get_cdrawings` to automatically convert colors to RGB color tuples. Implements `#1332 <https://github.com/pymupdf/PyMuPDF/discussions/1332>`_. Similar change was applied to :meth:`Page.get_texttrace`.
 
-* **Changed** :meth:`Page.get_text` to support a new parameter ``sort``. If set to ``True`` the output is conveniently sorted.
+* **Changed** :meth:`Page.get_text` to support a parameter ``sort``. If set to ``True`` the output is conveniently sorted.
 
 
 ------

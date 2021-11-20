@@ -54,7 +54,7 @@ CheckParent(self)%}
 #define SWIG_PYTHON_2_UNICODE
 
 // memory allocation macros
-#define JM_MEMORY 1
+#define JM_MEMORY 0
 
 #if JM_MEMORY == 1
     #define JM_Alloc(type, len) PyMem_New(type, len)
@@ -100,6 +100,7 @@ static void JM_get_page_labels(fz_context *ctx, PyObject *liste, pdf_obj *nums);
 
 // additional headers ----------------------------------------------
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
+void pdf_load_annots(fz_context *ctx, pdf_page *page, pdf_obj *obj);
 fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, float w, float h, const fz_irect *clip);
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
@@ -1962,10 +1963,11 @@ struct Document
             struct Graftmap *_gmap=NULL)
         {
             fz_document *doc = (fz_document *) $self;
+            fz_document *src = (fz_document *) docsrc;
             pdf_document *pdfout = pdf_specifics(gctx, doc);
-            pdf_document *pdfsrc = pdf_specifics(gctx, (fz_document *) docsrc);
+            pdf_document *pdfsrc = pdf_specifics(gctx, src);
             int outCount = fz_count_pages(gctx, doc);
-            int srcCount = fz_count_pages(gctx, (fz_document *) docsrc);
+            int srcCount = fz_count_pages(gctx, src);
 
             // local copies of page numbers
             int fp = from_page, tp = to_page, sa = start_at;
@@ -3195,7 +3197,8 @@ if not self.is_form_pdf:
                 pdf_update_object(gctx, pdf, xref, new_obj);
                 pdf_drop_obj(gctx, new_obj);
                 if (page) {
-                    JM_refresh_page(gctx, pdf_page_from_fz_page(gctx, (fz_page *)page));
+                    pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
+                    JM_refresh_links(gctx, pdfpage);
                 }
             }
             fz_catch(gctx) {
@@ -3210,7 +3213,7 @@ if not self.is_form_pdf:
         //------------------------------------------------------------------
         FITZEXCEPTION(update_stream, !result)
         CLOSECHECK(update_stream, """Replace xref stream part.""")
-        PyObject *update_stream(int xref = 0, PyObject *stream = NULL, int new=0)
+        PyObject *update_stream(int xref = 0, PyObject *stream = NULL, int new=0, int compress=1)
         {
             pdf_obj *obj = NULL;
             fz_var(obj);
@@ -3229,7 +3232,7 @@ if not self.is_form_pdf:
                     THROWMSG(gctx, "no stream object at xref");
                 res = JM_BufferFromBytes(gctx, stream);
                 if (!res) THROWMSG(gctx, "bad type: 'stream'");
-                JM_update_stream(gctx, pdf, obj, res, 1);
+                JM_update_stream(gctx, pdf, obj, res, compress);
             }
             fz_always(gctx) {
                 fz_drop_buffer(gctx, res);
@@ -4440,7 +4443,6 @@ if basestate:
                         self.__swig_destroy__(self)
                     except:
                         pass
-                    self.thisown = False
 
                 self.Graftmaps = {}
                 self.ShownPages = {}
@@ -4449,6 +4451,7 @@ if basestate:
                 self._reset_page_refs = DUMMY
                 self.__swig_destroy__ = DUMMY
                 self.is_closed = True
+                self.thisown = False
             %}
     }
 };
@@ -5745,9 +5748,6 @@ def get_oc_items(self) -> list:
         %pythoncode %{
         def get_drawings(self):
             """Get page drawings paths.
-            
-            By default, only 'stroke' and 'fill' drawings are considered. To also extract
-            clipping paths, set the parameter to True.
 
             Note:
             For greater comfort, this method converts point-likes, rect-likes, quad-likes
@@ -5765,16 +5765,13 @@ def get_oc_items(self) -> list:
             for path in val:
                 npath = path.copy()
                 npath["rect"] = Rect(path["rect"])
-                scissor = path.get("scissor")
-                if scissor:
-                    npath["scissor"] = Rect(scissor)
                 items = path["items"]
                 newitems = []
                 for item in items:
                     cmd = item[0]
                     rest = item[1:]
                     if  cmd == "re":
-                        item = ("re", Rect(rest[0]))
+                        item = ("re", Rect(rest[0]), rest[1])
                     elif cmd == "qu":
                         item = ("qu", Quad(rest[0]))
                     else:
@@ -5809,7 +5806,6 @@ def get_oc_items(self) -> list:
             PyObject *rc = PyList_New(0);
             fz_var(rc);
             fz_try(gctx) {
-                trace_device_Linewidth = 0;
                 fz_rect prect = fz_bound_page(gctx, page);
                 trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
                 dev = JM_new_tracedraw_device(gctx, rc);
@@ -5879,7 +5875,6 @@ def get_oc_items(self) -> list:
             PyObject *rc = PyList_New(0);
             fz_try(gctx) {
                 dev = JM_new_tracetext_device(gctx, rc);
-                trace_device_Linewidth = 0;
                 fz_rect prect = fz_bound_page(gctx, page);
                 trace_device_rot = fz_identity;
                 trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
@@ -6081,15 +6076,15 @@ def get_oc_items(self) -> list:
         // Page.delete_link() - delete link
         //----------------------------------------------------------------
         PARENTCHECK(delete_link, """Delete a Link.""")
-        %pythonappend delete_link
-%{if linkdict["xref"] == 0: return
-try:
-    linkid = linkdict["id"]
-    linkobj = self._annot_refs[linkid]
-    linkobj._erase()
-except:
-    pass
-%}
+        %pythonappend delete_link %{
+        if linkdict["xref"] == 0: return
+        try:
+            linkid = linkdict["id"]
+            linkobj = self._annot_refs[linkid]
+            linkobj._erase()
+        except:
+            pass
+        %}
         void delete_link(PyObject *linkdict)
         {
             if (!PyDict_Check(linkdict)) return; // have no dictionary
@@ -6111,10 +6106,11 @@ except:
 
                 if (xref != oxref) goto finished;  // xref not in annotations
                 pdf_array_delete(gctx, annots, i);   // delete entry in annotations
-                pdf_delete_object(gctx, page->doc, xref);      // delete link object
+                pdf_delete_object(gctx, page->doc, xref);  // delete link obj
                 pdf_dict_put(gctx, page->obj, PDF_NAME(Annots), annots);
-                JM_refresh_page(gctx, page);  // reload link / annot tables
+                JM_refresh_links(gctx, page);
                 finished:;
+
             }
             fz_catch(gctx) {;}
         }
@@ -6588,19 +6584,12 @@ if not sanitize and not self.is_wrapped:
         //----------------------------------------------------------------
         // Page.refresh()
         //----------------------------------------------------------------
-        FITZEXCEPTION(refresh, !result)
-        PARENTCHECK(refresh, """Refresh page after link/annot/widget updates.""")
-        PyObject *refresh()
-        {
-            pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            fz_try(gctx) {
-                JM_refresh_page(gctx, page);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            Py_RETURN_NONE;
-        }
+        %pythoncode %{
+        def refresh(self):
+            doc = self.parent
+            page = doc.reload_page(self)
+            self = page
+        %}
 
 
         //----------------------------------------------------------------
@@ -7006,7 +6995,18 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
             fz_try(gctx) {
                 if (!fz_pixmap_colorspace(gctx, (fz_pixmap *) spix))
                     THROWMSG(gctx, "source colorspace must not be None");
-                pm = fz_convert_pixmap(gctx, (fz_pixmap *) spix, (fz_colorspace *) cs, NULL, NULL, fz_default_color_params, 1);
+                fz_colorspace *cspace = NULL;
+                if (cs) {
+                    cspace = (fz_colorspace *) cs;
+                }
+                if (cspace) {
+                    pm = fz_convert_pixmap(gctx, (fz_pixmap *) spix, cspace, NULL, NULL, fz_default_color_params, 1);
+                } else {
+                    pm = fz_new_pixmap_from_alpha_channel(gctx, spix);
+                    if (!pm) {
+                        THROWMSG(gctx, "source pixmap has no alpha channel");
+                    }
+                }
             }
             fz_catch(gctx) {
                 return NULL;
@@ -7021,10 +7021,19 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
         Pixmap(struct Pixmap *spix, struct Pixmap *mpix)
         {
             fz_pixmap *dst = NULL;
+            fz_pixmap *spm = (fz_pixmap *) spix;
+            fz_pixmap *mpm = (fz_pixmap *) mpix;
             fz_try(gctx) {
-                dst = fz_new_pixmap_from_color_and_mask(gctx,
+                if (!spix) {  // intercept NULL for spix: make alpha only pix
+                    dst = fz_new_pixmap_from_alpha_channel(gctx, mpix);
+                    if (!dst) {
+                        THROWMSG(gctx, "source pixmap has no alpha channel");
+                    }
+                } else {
+                    dst = fz_new_pixmap_from_color_and_mask(gctx,
                           (fz_pixmap *) spix,
                           (fz_pixmap *) mpix);
+                }
             }
             fz_catch(gctx) {
                 return NULL;
@@ -7496,7 +7505,7 @@ def tobytes(self, output="png"):
             fz_pixmap *pix = (fz_pixmap *) $self;
             fz_try(gctx) {
                 if (PyUnicode_Check(filename)) {
-                    fz_save_pixmap_as_pdfocr(gctx, pix, PyUnicode_AsUTF8(filename), 0, &opts);
+                    fz_save_pixmap_as_pdfocr(gctx, pix, (char *) PyUnicode_AsUTF8(filename), 0, &opts);
                 } else {
                     out = JM_new_output_fileptr(gctx, filename);
                     fz_write_pixmap_as_pdfocr(gctx, out, pix, &opts);
@@ -7785,6 +7794,56 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         PyObject *is_monochrome()
         {
             return JM_BOOL(fz_is_pixmap_monochrome(gctx, (fz_pixmap *) $self));
+        }
+
+        //-----------------------------------------------------------------
+        // check if unicolor (only one color there)
+        //-----------------------------------------------------------------
+        %pythoncode %{@property%}
+        %pythonprepend is_unicolor %{"""Check if pixmap has only one color."""%}
+        PyObject *is_unicolor()
+        {
+            fz_pixmap *pm = (fz_pixmap *) $self;
+            size_t i, n = pm->n, count = pm->w * pm->h;
+            unsigned char *s = pm->samples;
+            for (i = 1; i < count; i++) {
+                if (memcmp(s, s + i * n, n) != 0) {
+                    Py_RETURN_FALSE;
+                }
+            }
+            Py_RETURN_TRUE;
+        }
+
+
+        //-----------------------------------------------------------------
+        // count the pixmap colors
+        //-----------------------------------------------------------------
+        FITZEXCEPTION(color_count, !result)
+        %pythonprepend color_count %{"""Count or return unique colors of pixmap."""%}
+        PyObject *color_count(int colors=0)
+        {
+            fz_pixmap *pm = (fz_pixmap *) $self;
+            int i, n = pm->n, count = pm->w * pm->h * n;
+            unsigned char *s = pm->samples;
+            PyObject *rc = PySet_New(NULL);
+            fz_try(gctx) {
+                for (i = 0; i < count; i += n) {
+                    PySet_Add(rc, PyBytes_FromStringAndSize(s + i, n));
+                }
+            }
+            fz_catch(gctx) {
+                Py_DECREF(rc);
+                return NULL;
+            }
+            if (colors == 0) {
+                Py_ssize_t len = PySet_GET_SIZE(rc);
+                Py_DECREF(rc);
+                return PyLong_FromSsize_t(len);
+            } else {
+                PyObject *t = PySequence_Tuple(rc);
+                Py_DECREF(rc);
+                return t;
+            }
         }
 
         //-----------------------------------------------------------------
@@ -9055,7 +9114,6 @@ struct Annot
                 Py_RETURN_FALSE;
             }
             normal_exit:;
-            JM_refresh_page(gctx, page);
             Py_RETURN_TRUE;
         }
 
@@ -9155,6 +9213,7 @@ struct Annot
             )
             if val == False:
                 raise ValueError("Error updating annotation.")
+
             bfill = color_string(fill, "f")
             bstroke = color_string(stroke, "s")
 
@@ -9988,14 +10047,18 @@ CheckParent(self)
 cspaces = {"gray": csGRAY, "rgb": csRGB, "cmyk": csCMYK}
 if type(colorspace) is str:
     colorspace = cspaces.get(colorspace.lower(), None)
+if dpi:
+    matrix = Matrix(dpi / 72, dpi / 72)
 %}
         %pythonappend get_pixmap
 %{
         val.samples_mv = val._samples_mv()
         val.samples_ptr = val._samples_ptr()
+        if dpi:
+            val.set_dpi(dpi, dpi)
 %}
         struct Pixmap *
-        get_pixmap(PyObject *matrix = NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
+        get_pixmap(PyObject *matrix = NULL, PyObject *dpi=NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
         {
             fz_matrix ctm = JM_matrix_from_py(matrix);
             fz_colorspace *cs = (fz_colorspace *) colorspace;
@@ -10642,16 +10705,14 @@ struct TextPage {
                     if (block->type != FZ_STEXT_BLOCK_TEXT) {
                         continue;
                     }
-                    line_n = 0;
+                    line_n = -1;
                     for (line = block->u.t.first_line; line; line = line->next) {
+                        line_n++;
                         word_n = 0;                       // word counter per line
                         fz_clear_buffer(gctx, buff);      // reset word buffer
                         buflen = 0;                       // reset char counter
                         for (ch = line->first_char; ch; ch = ch->next) {
                             fz_rect cbbox = JM_char_bbox(gctx, line, ch);
-                            if (fz_is_empty_rect(cbbox)) {
-                                continue;
-                            }
                             if (!fz_contains_rect(tp_rect, cbbox) &&
                                 !fz_is_infinite_rect(tp_rect)) {
                                 continue;
@@ -10673,13 +10734,12 @@ struct TextPage {
                             // enlarge word bbox
                             wbbox = fz_union_rect(wbbox, JM_char_bbox(gctx, line, ch));
                         }
-                        if (buflen) {
+                        if (buflen && !fz_is_empty_rect(wbbox)) {
                             word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                     block_n, line_n, word_n);
-                            fz_clear_buffer(gctx, buff);
                         }
+                        fz_clear_buffer(gctx, buff);
                         buflen = 0;
-                        line_n++;
                     }
                 }
             }

@@ -555,7 +555,7 @@ def page_simple(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
         if not skip_empty:
             textout.write(eop)  # write formfeed
         return
-    textout.write(text.encode("utf8"))
+    textout.write(text.encode("utf8", errors="surrogatepass"))
     textout.write(eop)
     return
 
@@ -569,7 +569,7 @@ def page_blocksort(page, textout, GRID, fontsize, noformfeed, skip_empty, flags)
         return
     blocks.sort(key=lambda b: (b[3], b[0]))
     for b in blocks:
-        textout.write(b[4].encode("utf8"))
+        textout.write(b[4].encode("utf8", errors="surrogatepass"))
     textout.write(eop)
     return
 
@@ -793,7 +793,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
             textout.write(b"\n")
             rowpos += rowheight
         text = make_textline(left, slot, minslots[k], lines[k])
-        textout.write((text + "\n").encode("utf8"))
+        textout.write((text + "\n").encode("utf8", errors="surrogatepass"))
         rowpos = k + rowheight
 
     textout.write(eop)  # write formfeed

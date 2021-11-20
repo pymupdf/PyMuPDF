@@ -53,7 +53,7 @@ def test_wrapcontents():
 
 
 def test_config():
-    assert fitz.TOOLS.fitz_config["py-memory"] == True
+    assert fitz.TOOLS.fitz_config["py-memory"] in (True, False)
 
 
 def test_glyphnames():

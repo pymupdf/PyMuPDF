@@ -625,7 +625,7 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
                 pdf_obj *new_annots = pdf_dict_put_array(ctx, page_dict, PDF_NAME(Annots), n);
                 for (i = 0; i < n; i++) {
                     pdf_obj *o = pdf_array_get(ctx, old_annots, i);
-                    if (pdf_dict_gets(ctx, o, "IRT")) continue;
+                    if (pdf_dict_get(ctx, o, PDF_NAME(IRT))) continue;
                     pdf_obj *subtype = pdf_dict_get(ctx, o, PDF_NAME(Subtype));
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Link))) continue;
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Popup))) continue;

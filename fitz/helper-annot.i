@@ -69,18 +69,21 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
 //------------------------------------------------------------------------
 // refreshes the link and annotation tables of a page
 //------------------------------------------------------------------------
-void JM_refresh_page(fz_context *ctx, pdf_page *page)
+void JM_refresh_links(fz_context *ctx, pdf_page *page)
 {
     if (!page) return;
     fz_try(ctx)
     {
-        pdf_document *pdf = page->doc;
-        int pno = pdf_lookup_page_number(ctx, pdf, page->obj);
-        if (pno < 0) {
-            THROWMSG(ctx, "bad page object");
-        }
-        fz_drop_page(ctx, &page->super);
-        page = pdf_load_page(ctx, pdf, pno);
+		pdf_obj *obj = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
+		if (obj)
+		{
+			pdf_document *pdf = page->doc;
+            int number = pdf_lookup_page_number(ctx, pdf, page->obj);
+            fz_rect page_mediabox;
+			fz_matrix page_ctm;
+			pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
+			page->links = pdf_load_link_annots(ctx, pdf, obj, number, page_ctm);
+		}
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);
