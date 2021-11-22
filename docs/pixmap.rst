@@ -401,8 +401,15 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg bool colors: if ``True`` return a tuple of unique color pixels (each as a bytes object of length :attr:`Pixmap.n`), else the number of colors only.
       :rtype: tuple[bytes] or int
-      :returns: either the number of unique colors, or a typle of bytes which each represent one pixel value. To recover the **tuple** of such a value, use ``tuple(map(int, colors[i]))`` for the i-th item.
-      
+      :returns: either the number of unique colors, or a tuple of bytes which each represent one pixel value. To recover the **tuple** of such a pixel value, use ``tuple(map(int, colors[i]))`` for the i-th item. For example:
+
+         >>> pix=fitz.Pixmap("sierpinski-carpet.png")
+         >>> colors = pix.color_count(True)
+         >>> colors
+           (b'\xff\xef\xd5', b'\x00\x00\xff')
+         >>> [tuple(map(int, c)) for c in colors]
+           [(255, 239, 213), (0, 0, 255)]
+
          .. note::
          
             * The response time depends on the pixmap's samples size and may be more than a second for very large pixmaps.

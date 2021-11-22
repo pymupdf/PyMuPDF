@@ -34,18 +34,17 @@ The following remarks are also valid for :ref:`IRect` objects:
 
 * Here is an overview of the changes.
 
-   ================= ========================================= ===============================================
-   Notion            Versions < 1.19.0                         Versions >= 1.19.0
-   ================= ========================================= ===============================================
-   empty             x0 = x1 or y0 = y1                        x0 >= x1 or y0 >= y1 -- includes invalid rects
-   valid             n/a                                       x0 <= x1 and y0 <= y1
-   infinite          all rects where x0 > x1 or y1 > y0        **exactly one** infinite rect!
-   coordinate values numeric without limitations               inside ``[FZ_MIN_INF_RECT, FZ_MAX_INF_RECT]``
-   ================= ========================================= ===============================================
+   ================= =================================== ==================================================
+   Notion            Versions < 1.19.0                   Versions 1.19.*
+   ================= =================================== ==================================================
+   empty             x0 = x1 or y0 = y1                  x0 >= x1 or y0 >= y1 -- includes invalid rects
+   valid             n/a                                 x0 <= x1 and y0 <= y1
+   infinite          all rects where x0 > x1 or y1 > y0  **exactly one infinite rect / irect!**
+   coordinate values all numbers                         ``FZ_MIN_INF_RECT <= number <= FZ_MAX_INF_RECT``
+   borders, corners  are parts of the rectangle          right and bottom corners and edges **are outside**
+   ================= =================================== ==================================================
 
-
-
-
+* There are new top level functions defining infinite and standard empty rectangles and quads, see :meth:`INFINITE_RECT` and friends.
 
 
 ============================= =======================================================
@@ -136,7 +135,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: intersect(r)
 
-      The intersection (common rectangular area, largest rectangle contained in both) of the current rectangle and *r* is calculated and **replaces the current** rectangle. If either rectangle is empty, the result is also empty. If *r* is infinite, this is a no-operation. If the rectangles are (mathematically) disjoint, then the result is invalid. If the result is valid but empty, then the rectangles touch each other in a corner or (part of) one side.
+      The intersection (common rectangular area, largest rectangle contained in both) of the current rectangle and *r* is calculated and **replaces the current** rectangle. If either rectangle is empty, the result is also empty. If *r* is infinite, this is a no-operation. If the rectangles are (mathematically) disjoint sets, then the result is invalid. If the result is valid but empty, then the rectangles touch each other in a corner or (part of) a side.
 
       :arg r: Second rectangle
       :type r: :ref:`Rect`
@@ -150,7 +149,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: include_point(p)
 
-      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **The infinite rectangle remains unchanged.** To create a rectangle containing a series of points, start with (the empty) *fitz.Rect(p1, p1)* and successively include the other points.
+      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **The infinite rectangle remains unchanged.** To create a rectangle containing a series of points, start with (the empty) *fitz.Rect(p1, p1)* and successively include the remaining points.
 
       :arg p: Point to include.
       :type p: :ref:`Point`

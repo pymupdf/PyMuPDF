@@ -11,57 +11,58 @@ Yet others are handy, general-purpose utilities.
 ==================================== ==============================================================
 **Function**                         **Short Description**
 ==================================== ==============================================================
-:meth:`Annot.clean_contents`         PDF only: clean the annot's :data:`contents` object
-:meth:`Annot.set_apn_matrix`         PDF only: set the matrix of the appearance object
-:meth:`Annot.set_apn_bbox`           PDF only: set the bbox of the appearance object
-:attr:`Annot.apn_matrix`             PDF only: the matrix of the appearance object
 :attr:`Annot.apn_bbox`               PDF only: bbox of the appearance object
+:attr:`Annot.apn_matrix`             PDF only: the matrix of the appearance object
+:attr:`Page.is_wrapped`              check whether contents wrapping is present
+:meth:`adobe_glyph_names`            list of glyph names defined in **Adobe Glyph List**
+:meth:`adobe_glyph_unicodes`         list of unicodes defined in **Adobe Glyph List**
+:meth:`Annot.clean_contents`         PDF only: clean the annot's :data:`contents` object
+:meth:`Annot.set_apn_bbox`           PDF only: set the bbox of the appearance object
+:meth:`Annot.set_apn_matrix`         PDF only: set the matrix of the appearance object
 :meth:`ConversionHeader`             return header string for *get_text* methods
 :meth:`ConversionTrailer`            return trailer string for *get_text* methods
 :meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
 :meth:`Document.delete_object`       PDF only: delete an object
+:meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
+:meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
 :meth:`Document.xml_metadata_xref`   PDF only: return XML metadata :data:`xref` number
 :meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
-:meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
-:meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
-:meth:`image_properties`             return a dictionary of basic image properties
+:meth:`EMPTY_IRECT`                  return the (standard) empty / invalid rectangle
+:meth:`EMPTY_QUAD`                   return the (standard) empty / invalid quad
+:meth:`EMPTY_RECT`                   return the (standard) empty / invalid rectangle
 :meth:`get_pdf_now`                  return the current timestamp in PDF format
 :meth:`get_pdf_str`                  return PDF-compatible string
 :meth:`get_text_length`              return string length for a given font & fontsize
+:meth:`glyph_name_to_unicode`        return unicode from a glyph name
+:meth:`image_properties`             return a dictionary of basic image properties
+:meth:`INFINITE_IRECT`               return the (only existing) infinite rectangle
+:meth:`INFINITE_QUAD`                return the (only existing) infinite quad
+:meth:`INFINITE_RECT`                return the (only existing) infinite rectangle
+:meth:`make_table`                   split rectangle in sub-rectangles
 :meth:`Page.clean_contents`          PDF only: clean the page's :data:`contents` objects
-:meth:`Page.get_contents`            PDF only: return a list of content :data:`xref` numbers
-:meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
 :meth:`Page.get_bboxlog`             list of rectangles that envelop text, drawing or image objects
+:meth:`Page.get_contents`            PDF only: return a list of content :data:`xref` numbers
 :meth:`Page.get_displaylist`         create the page's display list
 :meth:`Page.get_text_blocks`         extract text blocks as a Python list
 :meth:`Page.get_text_words`          extract text words as a Python list
-:meth:`Page.run`                     run a page through a device
-:meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
 :meth:`Page.get_texttrace`           low-level text information
+:meth:`Page.read_contents`           PDF only: get complete, concatenated /Contents source
+:meth:`Page.run`                     run a page through a device
+:meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
 :meth:`Page.wrap_contents`           wrap contents with stacking commands
-:attr:`Page.is_wrapped`              check whether contents wrapping is present
-:meth:`planish_line`                 matrix to map a line to the x-axis
-:meth:`paper_size`                   return width, height for a known paper format
 :meth:`paper_rect`                   return rectangle for a known paper format
+:meth:`paper_size`                   return width, height for a known paper format
+:meth:`paper_sizes`                  dictionary of pre-defined paper formats
+:meth:`planish_line`                 matrix to map a line to the x-axis
+:meth:`recover_char_quad`            compute the quad of a char ("rawdict")
+:meth:`recover_line_quad`            compute the quad of a subset of line spans
+:meth:`recover_quad`                 compute the quad of a span ("dict", "rawdict")
+:meth:`recover_quad`                 return the quad for a text span ("dict" / "rawdict")
+:meth:`recover_span_quad`            compute the quad of a subset of span characters
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
-:meth:`recover_quad`                 return the quad for a text span ("dict" / "rawdict")
-:meth:`glyph_name_to_unicode`        return unicode from a glyph name
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
-:meth:`make_table`                   split rectangle in sub-rectangles
-:meth:`adobe_glyph_names`            list of glyph names defined in **Adobe Glyph List**
-:meth:`adobe_glyph_unicodes`         list of unicodes defined in **Adobe Glyph List**
-:meth:`paper_sizes`                  dictionary of pre-defined paper formats
-:meth:`recover_quad`                 compute the quad of a span ("dict", "rawdict")
-:meth:`recover_char_quad`            compute the quad of a char ("rawdict")
-:meth:`recover_span_quad`            compute the quad of a subset of span characters
-:meth:`recover_line_quad`            compute the quad of a subset of line spans
-:meth:`INFINITE_RECT`                return the (only existing) infinite rectangle
-:meth:`INFINITE_IRECT`               return the (only existing) infinite rectangle
-:meth:`EMPTY_RECT`                   return the (standard) empty / invalid rectangle
-:meth:`EMPTY_IRECT`                  return the (standard) empty / invalid rectangle
-:meth:`INFINITE_QUAD`                return the (only existing) infinite quad
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 ==================================== ==============================================================
 
