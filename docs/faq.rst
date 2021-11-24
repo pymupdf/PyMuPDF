@@ -1421,7 +1421,7 @@ The following is a code snippet which extracts the drawings of a page and re-dra
             elif item[0] == "re":  # rectangle
                 shape.draw_rect(item[1])
             elif item[0] == "qu":  # quad
-                shape.draw_rect(item[1])
+                shape.draw_quad(item[1])
             elif item[0] == "c":  # curve
                 shape.draw_bezier(item[1], item[2], item[3], item[4])
             else:
