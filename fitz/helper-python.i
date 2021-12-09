@@ -951,6 +951,11 @@ def CheckParent(o: typing.Any):
         raise ValueError("orphaned object: parent is None")
 
 
+def EnsureOwnership(o: typing.Any):
+    if getattr(o, "this", None) and not o.this.own():
+        raise RuntimeError("object destroyed")
+
+
 def CheckColor(c: OptSeq):
     if c:
         if (

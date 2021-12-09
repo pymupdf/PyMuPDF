@@ -112,7 +112,7 @@ static pdf_obj
         newstr = PyUnicode_Replace(objstr, nullval, newval, 1);
 
         // make PDF object from resulting string
-        new_obj = JM_pdf_obj_from_str(gctx, pdf, JM_StrAsChar(newstr));
+        new_obj = JM_pdf_obj_from_str(ctx, pdf, JM_StrAsChar(newstr));
     }
     fz_always(ctx) {
         fz_drop_buffer(ctx, res);
@@ -1079,7 +1079,7 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
 
 
 //-----------------------------------------------------------------------------
-// compute image isnertion matrix
+// compute image insertion matrix
 //-----------------------------------------------------------------------------
 fz_matrix
 calc_image_matrix(int width, int height, PyObject *tr, int rotate, int keep)

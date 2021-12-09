@@ -180,7 +180,7 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
         image = fz_new_image_from_buffer(ctx, res);
         int xres, yres;
         fz_image_resolution(image, &xres, &yres);
-        const char *cs_name = fz_colorspace_name(gctx, image->colorspace);
+        const char *cs_name = fz_colorspace_name(ctx, image->colorspace);
         result = PyDict_New();
         DICT_SETITEM_DROP(result, dictkey_width,
                 Py_BuildValue("i", image->w));
@@ -254,9 +254,13 @@ JM_pixmap_from_display_list(fz_context *ctx,
     fz_try(ctx) {
         if (!fz_is_infinite_rect(rclip)) {
             dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
+            if (no_device_caching)
+                fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
             fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
         } else {
             dev = fz_new_draw_device(ctx, matrix, pix);
+            if (no_device_caching)
+                fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
             fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
         }
 
@@ -353,6 +357,8 @@ JM_pixmap_from_page(fz_context *ctx,
         }
 
         dev = fz_new_draw_device(ctx, matrix, pix);
+        if (no_device_caching)
+            fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
         if (annots) {
             fz_run_page(ctx, page, dev, fz_identity, NULL);
         } else {
@@ -369,5 +375,52 @@ JM_pixmap_from_page(fz_context *ctx,
         fz_rethrow(ctx);
     }
     return pix;
+}
+
+PyObject *JM_color_count(fz_context *ctx, fz_pixmap *pm, PyObject *clip)
+{
+    PyObject *rc = PyDict_New(), *pixel=NULL, *c=NULL;
+    long cnt=0;
+    fz_irect irect = fz_pixmap_bbox(ctx, pm);
+    irect = fz_intersect_irect(irect, fz_round_rect(JM_rect_from_py(clip)));
+    size_t stride = pm->stride;
+    size_t width = irect.x1 - irect.x0, height = irect.y1 - irect.y0;
+    size_t i, j, n = (size_t) pm->n, substride = width * n;
+    unsigned char *s = pm->samples + stride * (irect.y0 - pm->y) + (irect.x0 - pm->x) * n;
+    unsigned char oldpix[10], newpix[10];
+    memcpy(oldpix, s, n);
+    cnt = 0;
+    fz_try(ctx) {
+        if (fz_is_empty_irect(irect)) goto finished;
+        for (i = 0; i < height; i++) {
+            for (j = 0; j < substride; j += n) {
+                memcpy(newpix, s + j, n);
+                if (memcmp(oldpix, newpix,n) != 0) {
+                    pixel = PyBytes_FromStringAndSize(oldpix, n);
+                    c = PyDict_GetItem(rc, pixel);
+                    if (c) cnt += PyLong_AsLong(c);
+                    DICT_SETITEM_DROP(rc, pixel, PyLong_FromLong(cnt));
+                    Py_DECREF(pixel);
+                    cnt = 1;
+                    memcpy(oldpix, newpix, n);
+                } else {
+                    cnt += 1;
+                }
+            }
+            s += stride;
+        }
+        pixel = PyBytes_FromStringAndSize(oldpix, n);
+        c = PyDict_GetItem(rc, pixel);
+        if (c) cnt += PyLong_AsLong(c);
+        DICT_SETITEM_DROP(rc, pixel, PyLong_FromLong(cnt));
+        Py_DECREF(pixel);
+        finished:;
+    }
+    fz_catch(ctx) {
+        Py_CLEAR(rc);
+        fz_rethrow(ctx);
+    }
+    PyErr_Clear();
+    return rc;
 }
 %}

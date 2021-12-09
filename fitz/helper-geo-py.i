@@ -509,6 +509,18 @@ class Rect(object):
         """Return Quad version of rectangle."""
         return Quad(self.tl, self.tr, self.bl, self.br)
 
+    def torect(self, r):
+        """Return matrix that converts to target rect."""
+
+        r = Rect(r)
+        if self.is_infinite or self.is_empty or r.is_infinite or r.is_empty:
+            raise ValueError("rectangles must be finite and not empty")
+        return (
+            Matrix(1, 0, 0, 1, -self.x0, -self.y0)
+            * Matrix(r.width / self.width, r.height / self.height)
+            * Matrix(1, 0, 0, 1, r.x0, r.y0)
+        )
+
     def morph(self, p, m):
         """Morph with matrix-like m and point-like p.
 
@@ -765,6 +777,19 @@ class IRect(object):
     def quad(self):
         """Return Quad version of rectangle."""
         return Quad(self.tl, self.tr, self.bl, self.br)
+
+
+    def torect(self, r):
+        """Return matrix that converts to target rect."""
+
+        r = Rect(r)
+        if self.is_infinite or self.is_empty or r.is_infinite or r.is_empty:
+            raise ValueError("rectangles must be finite and not empty")
+        return (
+            Matrix(1, 0, 0, 1, -self.x0, -self.y0)
+            * Matrix(r.width / self.width, r.height / self.height)
+            * Matrix(1, 0, 0, 1, r.x0, r.y0)
+        )
 
     def morph(self, p, m):
         """Morph with matrix-like m and point-like p.

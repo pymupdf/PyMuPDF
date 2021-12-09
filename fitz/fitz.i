@@ -36,6 +36,15 @@ CheckParent(self)%}
 %enddef
 
 
+//------------------------------------------------------------------------
+// SWIG macro: ensure object still exists
+//------------------------------------------------------------------------
+%define ENSURE_OWNERSHIP(meth, doc)
+%pythonprepend meth %{doc
+EnsureOwnership(self)%}
+%enddef
+
+
 %{
 #define MEMDEBUG 0
 #if MEMDEBUG == 1
@@ -148,7 +157,6 @@ fz_set_error_callback(gctx, JM_mupdf_error, &user);
 //------------------------------------------------------------------------
 dictkey_align = PyUnicode_InternFromString("align");
 dictkey_ascender = PyUnicode_InternFromString("ascender");
-dictkey_descender = PyUnicode_InternFromString("descender");
 dictkey_bbox = PyUnicode_InternFromString("bbox");
 dictkey_blocks = PyUnicode_InternFromString("blocks");
 dictkey_bpc = PyUnicode_InternFromString("bpc");
@@ -163,6 +171,7 @@ dictkey_da = PyUnicode_InternFromString("da");
 dictkey_dashes = PyUnicode_InternFromString("dashes");
 dictkey_desc = PyUnicode_InternFromString("desc");
 dictkey_desc = PyUnicode_InternFromString("descender");
+dictkey_descender = PyUnicode_InternFromString("descender");
 dictkey_dir = PyUnicode_InternFromString("dir");
 dictkey_effect = PyUnicode_InternFromString("effect");
 dictkey_ext = PyUnicode_InternFromString("ext");
@@ -170,6 +179,7 @@ dictkey_filename = PyUnicode_InternFromString("filename");
 dictkey_fill = PyUnicode_InternFromString("fill");
 dictkey_flags = PyUnicode_InternFromString("flags");
 dictkey_font = PyUnicode_InternFromString("font");
+dictkey_glyph = PyUnicode_InternFromString("glyph");
 dictkey_height = PyUnicode_InternFromString("height");
 dictkey_id = PyUnicode_InternFromString("id");
 dictkey_image = PyUnicode_InternFromString("image");
@@ -243,16 +253,17 @@ except ImportError:
 %}
 %include version.i
 %include helper-defines.i
+%include helper-globals.i
 %include helper-geo-c.i
 %include helper-other.i
 %include helper-pixmap.i
 %include helper-geo-py.i
 %include helper-annot.i
-%include helper-stext.i
 %include helper-fields.i
 %include helper-python.i
 %include helper-portfolio.i
 %include helper-select.i
+%include helper-stext.i
 %include helper-xobject.i
 %include helper-pdfinfo.i
 %include helper-convert.i
@@ -4419,7 +4430,6 @@ if basestate:
                         self.__swig_destroy__(self)
                     except:
                         pass
-                    self.thisown = False
 
                 self.Graftmaps = {}
                 self.ShownPages = {}
@@ -4433,25 +4443,7 @@ if basestate:
                 return self
 
             def __exit__(self, *args):
-                if hasattr(self, "_reset_page_refs"):
-                    self._reset_page_refs()
-                if hasattr(self, "Graftmaps"):
-                    for k in self.Graftmaps.keys():
-                        self.Graftmaps[k] = None
-                if hasattr(self, "this") and self.thisown:
-                    try:
-                        self.__swig_destroy__(self)
-                    except:
-                        pass
-
-                self.Graftmaps = {}
-                self.ShownPages = {}
-                self.InsertedImages  = {}
-                self.stream = None
-                self._reset_page_refs = DUMMY
-                self.__swig_destroy__ = DUMMY
-                self.is_closed = True
-                self.thisown = False
+                self.close()
             %}
     }
 };
@@ -4588,6 +4580,8 @@ struct Page {
             fz_try(gctx) {
                 fz_matrix ctm = JM_matrix_from_py(matrix);
                 dev = fz_new_stext_device(gctx, tp, &options);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dev, FZ_NO_CACHE);
                 fz_run_page(gctx, page, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
             }
@@ -4619,6 +4613,8 @@ struct Page {
                 fz_matrix ctm = JM_matrix_from_py(matrix);
                 tpage = fz_new_stext_page(gctx, rect);
                 dev = fz_new_stext_device(gctx, tpage, &options);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dev, FZ_NO_CACHE);
                 fz_run_page(gctx, page, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
             }
@@ -4741,6 +4737,8 @@ struct Page {
                             tbounds.x1-tbounds.x0,  // width
                             tbounds.y1-tbounds.y0,  // height
                             text_option, 1);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dev, FZ_NO_CACHE);
                 fz_run_page(gctx, (fz_page *) $self, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
                 text = JM_EscapeStrFromBuffer(gctx, res);
@@ -5809,6 +5807,8 @@ def get_oc_items(self) -> list:
                 fz_rect prect = fz_bound_page(gctx, page);
                 trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
                 dev = JM_new_tracedraw_device(gctx, rc);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dev, FZ_NO_CACHE);
                 fz_run_page(gctx, page, dev, fz_identity, NULL);
                 fz_close_device(gctx, dev);
             }
@@ -5842,6 +5842,8 @@ def get_oc_items(self) -> list:
             PyObject *rc = PyList_New(0);
             fz_try(gctx) {
                 dev = JM_new_bbox_device(gctx, rc);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dev, FZ_NO_CACHE);
                 fz_run_page(gctx, page, dev, fz_identity, NULL);
                 fz_close_device(gctx, dev);
             }
@@ -5875,6 +5877,8 @@ def get_oc_items(self) -> list:
             PyObject *rc = PyList_New(0);
             fz_try(gctx) {
                 dev = JM_new_tracetext_device(gctx, rc);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dev, FZ_NO_CACHE);
                 fz_rect prect = fz_bound_page(gctx, page);
                 trace_device_rot = fz_identity;
                 trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
@@ -6389,7 +6393,8 @@ if not sanitize and not self.is_wrapped:
         // insert an image
         //----------------------------------------------------------------
         FITZEXCEPTION(_insert_image, !result)
-        PyObject *_insert_image(char *filename=NULL,
+        PyObject *
+        _insert_image(char *filename=NULL,
                 struct Pixmap *pixmap=NULL,
                 PyObject *stream=NULL,
                 PyObject *imask=NULL,
@@ -6428,6 +6433,7 @@ if not sanitize and not self.is_wrapped:
                     h = pdf_to_int(gctx,
                         pdf_dict_geta(gctx, ref,
                         PDF_NAME(Height), PDF_NAME(H)));
+                    pdf_drop_obj(gctx, ref);
                     if ((w + h) == 0) {
                         THROWMSG(gctx, "xref is no image");
                     }
@@ -6470,7 +6476,7 @@ if not sanitize and not self.is_wrapped:
                 fz_md5 state;
                 fz_md5_init(&state);
                 fz_md5_update(&state, imgbuf->data, imgbuf->len);
-                if (EXISTS(imask)) {
+                if (imask != Py_None) {
                     maskbuf = JM_BufferFromBytes(gctx, imask);
                     fz_md5_update(&state, maskbuf->data, maskbuf->len);
                 }
@@ -6491,31 +6497,13 @@ if not sanitize and not self.is_wrapped:
                 image = fz_new_image_from_buffer(gctx, imgbuf);
                 w = image->w;
                 h = image->h;
-                if (EXISTS(imask)) {
-                    goto have_imask;
-                }
-                if (alpha==0) {
+                if (imask == Py_None) {
                     goto have_image;
                 }
-                pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
-                if (!pix->alpha) {
-                    goto have_image;
-                }
-                pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
-                pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL,
-                            fz_default_color_params, 1);
-                pm->alpha = 0;
-                pm->colorspace = NULL;
-                mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                zimg = fz_new_image_from_pixmap(gctx, pix, mask);
-                fz_drop_image(gctx, image);
-                image = zimg;
-                zimg = NULL;
-                goto have_image;
 
             have_imask:;
                 cbuf1 = fz_compressed_image_buffer(gctx, image);
-                if (!cbuf1) THROWMSG(gctx, "cannot mask uncompressed image");
+                if (!cbuf1) THROWMSG(gctx, "uncompressed image cannot have mask");
                 bpc = image->bpc;
                 fz_colorspace *colorspace = image->colorspace;
                 fz_image_resolution(image, &xres, &yres);
@@ -6904,7 +6892,6 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
             if getattr(self, "thisown", False):
                 self.__swig_destroy__(self)
             self.parent = None
-            self.thisown = False
             self.number = None
 
 
@@ -6970,10 +6957,6 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
         //----------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
         //----------------------------------------------------------------
-        %pythonappend Pixmap %{
-        self.samples_ptr = self._samples_ptr()
-        self.samples_mv = self._samples_mv()
-        %}
         Pixmap(struct Colorspace *cs, PyObject *bbox, int alpha = 0)
         {
             fz_pixmap *pm = NULL;
@@ -7002,7 +6985,7 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
                 if (cspace) {
                     pm = fz_convert_pixmap(gctx, (fz_pixmap *) spix, cspace, NULL, NULL, fz_default_color_params, 1);
                 } else {
-                    pm = fz_new_pixmap_from_alpha_channel(gctx, spix);
+                    pm = fz_new_pixmap_from_alpha_channel(gctx, (fz_pixmap *) spix);
                     if (!pm) {
                         THROWMSG(gctx, "source pixmap has no alpha channel");
                     }
@@ -7025,14 +7008,12 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
             fz_pixmap *mpm = (fz_pixmap *) mpix;
             fz_try(gctx) {
                 if (!spix) {  // intercept NULL for spix: make alpha only pix
-                    dst = fz_new_pixmap_from_alpha_channel(gctx, mpix);
+                    dst = fz_new_pixmap_from_alpha_channel(gctx, mpm);
                     if (!dst) {
                         THROWMSG(gctx, "source pixmap has no alpha channel");
                     }
                 } else {
-                    dst = fz_new_pixmap_from_color_and_mask(gctx,
-                          (fz_pixmap *) spix,
-                          (fz_pixmap *) mpix);
+                    dst = fz_new_pixmap_from_color_and_mask(gctx, spm, mpm);
                 }
             }
             fz_catch(gctx) {
@@ -7224,11 +7205,38 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
 
 
         //----------------------------------------------------------------
+        // warp
+        //----------------------------------------------------------------
+        FITZEXCEPTION(warp, !result)
+        %pythonprepend warp %{
+        """Return pixmap from a warped quad."""
+        EnsureOwnership(self)
+        if not quad.is_convex: raise ValueError("quad must be convex")%}
+        struct Pixmap *warp(PyObject *quad, int width, int height)
+        {
+            fz_point points[4];
+            fz_quad q = JM_quad_from_py(quad);
+            fz_pixmap *dst = NULL;
+            points[0] = q.ul;
+            points[1] = q.ur;
+            points[2] = q.lr;
+            points[3] = q.ll;
+
+            fz_try(gctx) {
+                dst = fz_warp_pixmap(gctx, (fz_pixmap *) $self, points, width, height);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Pixmap *) dst;
+        }
+
+
+        //----------------------------------------------------------------
         // shrink
         //----------------------------------------------------------------
-        %pythonprepend shrink
-%{"""Divide width and height by 2**factor.
-E.g. factor=1 shrinks to 25% of original size (in place)."""%}
+        ENSURE_OWNERSHIP(shrink, """Divide width and height by 2**factor.
+        E.g. factor=1 shrinks to 25% of original size (in place).""")
         void shrink(int factor)
         {
             if (factor < 1)
@@ -7242,9 +7250,8 @@ E.g. factor=1 shrinks to 25% of original size (in place)."""%}
         //----------------------------------------------------------------
         // apply gamma correction
         //----------------------------------------------------------------
-        %pythonprepend gamma_with
-%{"""Apply correction with some float.
-gamma=1 is a no-op."""%}
+        ENSURE_OWNERSHIP(gamma_with, """Apply correction with some float.
+gamma=1 is a no-op.""")
         void gamma_with(float gamma)
         {
             if (!fz_pixmap_colorspace(gctx, (fz_pixmap *) $self))
@@ -7260,7 +7267,7 @@ gamma=1 is a no-op."""%}
         //----------------------------------------------------------------
         %pythonprepend tint_with
 %{"""Tint colors with modifiers for black and white."""
-
+EnsureOwnership(self)
 if not self.colorspace or self.colorspace.n > 3:
     print("warning: colorspace invalid for function")
     return%}
@@ -7272,8 +7279,7 @@ if not self.colorspace or self.colorspace.n > 3:
         //-----------------------------------------------------------------
         // clear all of pixmap samples to 0x00 */
         //-----------------------------------------------------------------
-        %pythonprepend clear_with
-        %{"""Fill all color components with same value."""%}
+        ENSURE_OWNERSHIP(clear_with, """Fill all color components with same value.""")
         void clear_with()
         {
             fz_clear_pixmap(gctx, (fz_pixmap *) $self);
@@ -7299,7 +7305,7 @@ if not self.colorspace or self.colorspace.n > 3:
         // copy pixmaps
         //-----------------------------------------------------------------
         FITZEXCEPTION(copy, !result)
-        %pythonprepend copy %{"""Copy bbox from another Pixmap."""%}
+        ENSURE_OWNERSHIP(copy, """Copy bbox from another Pixmap.""")
         PyObject *copy(struct Pixmap *src, PyObject *bbox)
         {
             fz_try(gctx) {
@@ -7320,15 +7326,14 @@ if not self.colorspace or self.colorspace.n > 3:
         // set alpha values
         //-----------------------------------------------------------------
         FITZEXCEPTION(set_alpha, !result)
-        %pythonprepend set_alpha
-%{"""Set alpha channel to values contained in a byte array.
+        ENSURE_OWNERSHIP(set_alpha, """Set alpha channel to values contained in a byte array.
 If omitted, set alphas to 255.
 
 Args:
     alphavalues: (bytes) with length (width * height) values in range(255).
     premultiply: (bool, True) premultiply colors with alpha values.
     opaque: (tuple) length colorspace.n, color value to set to opacity 0.
-"""%}
+""")
         PyObject *set_alpha(PyObject *alphavalues=NULL, int premultiply=1, PyObject *opaque=NULL)
         {
             fz_buffer *res = NULL;
@@ -7463,6 +7468,7 @@ def tobytes(self, output="png"):
     Returns:
         Bytes object.
     """
+    EnsureOwnership(self)
     valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
                      "pam": 3, "tga": 4, "tpic": 4,
                      "psd": 5, "ps": 6}
@@ -7480,19 +7486,7 @@ def tobytes(self, output="png"):
         // output as PDF-OCR
         //-----------------------------------------------------------------
         FITZEXCEPTION(pdfocr_save, !result)
-        %pythonprepend %pdfocr_save %{
-        """Save pixmap as an OCR-ed PDF page.
-
-        Args:
-            filename: (str or filepointer) to save the PDF to.
-            compress: (bool) compress, default 1 (True).
-            language: (str) language(s) occurring on page, default "eng" (English),
-                      multiples like "eng,ger" for English and German.
-        Notes:
-            On failure, make sure you have set the environment variable "TESSDATA_PREFIX"
-            to the folder containing your Tesseract's language support data.
-        """
-        %}
+        ENSURE_OWNERSHIP(pdfocr_save, """Save pixmap as an OCR-ed PDF page.""")
         PyObject *pdfocr_save(PyObject *filename, int compress=1, char *language=NULL)
         {
             fz_pdfocr_options opts;
@@ -7533,6 +7527,7 @@ def tobytes(self, output="png"):
                 environment variable "TESSDATA_PREFIX" to the folder containing your
                 Tesseract's language support data.
             """
+            EnsureOwnership(self)
             from io import BytesIO
             bio = BytesIO()
             self.pdfocr_save(bio, compress=compress, language=language)
@@ -7582,6 +7577,7 @@ def save(self, filename, output=None):
         output: (str) only use to overrule filename extension. Default is PNG.
                 Others are PNM, PGM, PPM, PBM, PAM, PSD, PS.
     """
+    EnsureOwnership(self)
     valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
                      "pam": 3, "tga": 4, "tpic": 4,
                      "psd": 5, "ps": 6}
@@ -7610,6 +7606,7 @@ def pil_save(self, *args, **kwargs):
     Args are passed to Pillow's Image.save method, see their documentation.
     Use instead of save when other output formats are desired.
     """
+    EnsureOwnership(self)
     try:
         from PIL import Image
     except ImportError:
@@ -7639,6 +7636,7 @@ def pil_tobytes(self, *args, **kwargs):
     Args are passed to Pillow's Image.save method, see their documentation.
     Use instead of 'tobytes' when other output formats are needed.
     """
+    EnsureOwnership(self)
     from io import BytesIO
     bytes_out = BytesIO()
     self.pil_save(bytes_out, *args, **kwargs)
@@ -7670,9 +7668,8 @@ def pil_tobytes(self, *args, **kwargs):
         // get one pixel as a list
         //-----------------------------------------------------------------
         FITZEXCEPTION(pixel, !result)
-        %pythonprepend pixel
-%{"""Get color tuple of pixel (x, y).
-Last item is the alpha if Pixmap.alpha is true."""%}
+        ENSURE_OWNERSHIP(pixel, """Get color tuple of pixel (x, y).
+Includes alpha byte if applicable.""")
         PyObject *pixel(int x, int y)
         {
             PyObject *p = NULL;
@@ -7698,8 +7695,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // Set one pixel to a given color tuple
         //-----------------------------------------------------------------
         FITZEXCEPTION(set_pixel, !result)
-        %pythonprepend set_pixel
-        %{"""Set color of pixel (x, y)."""%}
+        ENSURE_OWNERSHIP(set_pixel, """Set color of pixel (x, y).""")
         PyObject *set_pixel(int x, int y, PyObject *color)
         {
             fz_try(gctx) {
@@ -7735,7 +7731,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         //-----------------------------------------------------------------
         // Set Pixmap origin
         //-----------------------------------------------------------------
-        %pythonprepend set_origin %{"""Set top-left coordinates."""%}
+        ENSURE_OWNERSHIP(set_origin, """Set top-left coordinates.""")
         PyObject *set_origin(int x, int y)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
@@ -7744,7 +7740,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             Py_RETURN_NONE;
         }
 
-        %pythonprepend set_dpi %{"""Set resolution in both dimensions."""%}
+        ENSURE_OWNERSHIP(set_dpi, """Set resolution in both dimensions.""")
         PyObject *set_dpi(int xres, int yres)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
@@ -7757,8 +7753,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // Set a rect to a given color tuple
         //-----------------------------------------------------------------
         FITZEXCEPTION(set_rect, !result)
-        %pythonprepend set_rect
-        %{"""Set color of all pixels in bbox."""%}
+        ENSURE_OWNERSHIP(set_rect, """Set color of all pixels in bbox.""")
         PyObject *set_rect(PyObject *bbox, PyObject *color)
         {
             PyObject *rc = NULL;
@@ -7790,7 +7785,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // check if monochrome
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend is_monochrome %{"""Check if pixmap is monochrome."""%}
+        ENSURE_OWNERSHIP(is_monochrome, """Check if pixmap is monochrome.""")
         PyObject *is_monochrome()
         {
             return JM_BOOL(fz_is_pixmap_monochrome(gctx, (fz_pixmap *) $self));
@@ -7800,14 +7795,14 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // check if unicolor (only one color there)
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend is_unicolor %{"""Check if pixmap has only one color."""%}
+        ENSURE_OWNERSHIP(is_unicolor, """Check if pixmap has only one color.""")
         PyObject *is_unicolor()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
-            size_t i, n = pm->n, count = pm->w * pm->h;
+            size_t i, n = pm->n, count = pm->w * pm->h * n;
             unsigned char *s = pm->samples;
-            for (i = 1; i < count; i++) {
-                if (memcmp(s, s + i * n, n) != 0) {
+            for (i = n; i < count; i += n) {
+                if (memcmp(s, s + i, n) != 0) {
                     Py_RETURN_FALSE;
                 }
             }
@@ -7816,41 +7811,95 @@ Last item is the alpha if Pixmap.alpha is true."""%}
 
 
         //-----------------------------------------------------------------
-        // count the pixmap colors
+        // count each pixmap color
         //-----------------------------------------------------------------
         FITZEXCEPTION(color_count, !result)
-        %pythonprepend color_count %{"""Count or return unique colors of pixmap."""%}
-        PyObject *color_count(int colors=0)
+        ENSURE_OWNERSHIP(color_count, """Return count of each color.""")
+        PyObject *color_count(int colors=0, PyObject *clip=NULL)
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
-            int i, n = pm->n, count = pm->w * pm->h * n;
-            unsigned char *s = pm->samples;
-            PyObject *rc = PySet_New(NULL);
+            PyObject *rc = NULL;
             fz_try(gctx) {
-                for (i = 0; i < count; i += n) {
-                    PySet_Add(rc, PyBytes_FromStringAndSize(s + i, n));
-                }
+                rc = JM_color_count(gctx, pm, clip);
+                if (!rc) THROWMSG(gctx, "color count failed");
             }
             fz_catch(gctx) {
-                Py_DECREF(rc);
                 return NULL;
             }
-            if (colors == 0) {
-                Py_ssize_t len = PySet_GET_SIZE(rc);
+            if (!colors) {
+                Py_ssize_t len = PyDict_Size(rc);
                 Py_DECREF(rc);
                 return PyLong_FromSsize_t(len);
-            } else {
-                PyObject *t = PySequence_Tuple(rc);
-                Py_DECREF(rc);
-                return t;
             }
+            return rc;
         }
+
+        %pythoncode %{
+        def color_topusage(self, clip=None):
+            """Return most frequent color and its usage ratio."""
+            EnsureOwnership(self)
+            allpixels = 0
+            cnt = 0
+            for pixel, count in self.color_count(colors=True,clip=clip).items():
+                allpixels += count
+                if count > cnt:
+                    cnt = count
+                    maxpixel = pixel
+            return (cnt / allpixels, maxpixel)
+
+        %}
+        /*
+        //-----------------------------------------------------------------
+        // percentage of top color
+        //-----------------------------------------------------------------
+        FITZEXCEPTION(color_topusage, !result)
+        %pythonprepend color_topusage %{"""Return most frequent color and its ratio."""%}
+        PyObject *color_topusage(PyObject *clip=NULL)
+        {
+            fz_pixmap *pm = (fz_pixmap *) $self;
+            PyObject *rc = NULL, *coloritems = NULL, *color=NULL;
+            long items, maxcount=0, cnt;
+            PyObject *result=NULL;
+            fz_try(gctx) {
+                char maxpixel[10];
+                rc = JM_color_count(gctx, pm, clip);
+                if (!rc) THROWMSG(gctx, "color count failed");
+                fz_irect irect = fz_intersect_irect(fz_pixmap_bbox(gctx, pm),
+                                 fz_round_rect(JM_rect_from_py(clip)));
+                items = (long) (irect.x1 - irect.x0) * (irect.y1 - irect.y0);
+                coloritems = PyDict_Items(rc);
+                if (PyErr_Occurred()) THROWMSG(gctx, "get color items failed");
+                Py_ssize_t i, len = PyList_Size(coloritems);
+                for (i = 0; i < len; i++) {
+                    color = PyList_GetItem(coloritems, i);
+                    cnt = PyLong_AsLong(PyTuple_GET_ITEM(color, 1));
+                    if (cnt > maxcount) {
+                        maxcount = cnt;
+                        memcpy(maxpixel, PyBytes_AS_STRING(PyTuple_GET_ITEM(color, 0)), pm->n);
+                    }
+                }
+                result = PyTuple_New(2);
+                PyTuple_SET_ITEM(result, 0,
+                                 PyFloat_FromDouble((double) maxcount / (double) items));
+                PyTuple_SET_ITEM(result, 1,
+                                 PyBytes_FromStringAndSize(maxpixel, pm->n));
+            }
+            fz_always(gctx) {
+                Py_XDECREF(rc);
+                Py_XDECREF(coloritems);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return result;
+        }
+        */
 
         //-----------------------------------------------------------------
         // MD5 digest of pixmap
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend digest %{"""MD5 digest of pixmap (bytes)."""%}
+        ENSURE_OWNERSHIP(digest, """MD5 digest of pixmap (bytes).""")
         PyObject *digest()
         {
             unsigned char digest[16];
@@ -7862,7 +7911,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // get length of one image row
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend stride %{"""Length of one image line (width * n)."""%}
+        ENSURE_OWNERSHIP(stride, """Length of one image line (width * n).""")
         PyObject *stride()
         {
             return PyLong_FromSize_t((size_t) fz_pixmap_stride(gctx, (fz_pixmap *) $self));
@@ -7872,7 +7921,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // x, y, width, height, xres, yres, n
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend xres %{"""Resolution in x direction."""%}
+        ENSURE_OWNERSHIP(xres, """Resolution in x direction.""")
         int xres()
         {
             fz_pixmap *this_pix = (fz_pixmap *) $self;
@@ -7880,7 +7929,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         }
 
         %pythoncode %{@property%}
-        %pythonprepend yres %{"""Resolution in y direction."""%}
+        ENSURE_OWNERSHIP(yres, """Resolution in y direction.""")
         int yres()
         {
             fz_pixmap *this_pix = (fz_pixmap *) $self;
@@ -7888,35 +7937,35 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         }
 
         %pythoncode %{@property%}
-        %pythonprepend w %{"""The width."""%}
+        ENSURE_OWNERSHIP(w, """The width.""")
         PyObject *w()
         {
             return PyLong_FromSize_t((size_t) fz_pixmap_width(gctx, (fz_pixmap *) $self));
         }
 
         %pythoncode %{@property%}
-        %pythonprepend h %{"""The height."""%}
+        ENSURE_OWNERSHIP(h, """The height.""")
         PyObject *h()
         {
             return PyLong_FromSize_t((size_t) fz_pixmap_height(gctx, (fz_pixmap *) $self));
         }
 
         %pythoncode %{@property%}
-        %pythonprepend x %{"""x component of Pixmap origin."""%}
+        ENSURE_OWNERSHIP(x, """x component of Pixmap origin.""")
         int x()
         {
             return fz_pixmap_x(gctx, (fz_pixmap *) $self);
         }
 
         %pythoncode %{@property%}
-        %pythonprepend y %{"""y component of Pixmap origin."""%}
+        ENSURE_OWNERSHIP(y, """y component of Pixmap origin.""")
         int y()
         {
             return fz_pixmap_y(gctx, (fz_pixmap *) $self);
         }
 
         %pythoncode %{@property%}
-        %pythonprepend n %{"""The size of one pixel."""%}
+        ENSURE_OWNERSHIP(n, """The size of one pixel.""")
         int n()
         {
             return fz_pixmap_components(gctx, (fz_pixmap *) $self);
@@ -7926,7 +7975,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // check alpha channel
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend alpha %{"""Indicates presence of alpha channel."""%}
+        ENSURE_OWNERSHIP(alpha, """Indicates presence of alpha channel.""")
         int alpha()
         {
             return fz_pixmap_alpha(gctx, (fz_pixmap *) $self);
@@ -7936,7 +7985,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // get colorspace of pixmap
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend colorspace %{"""Pixmap Colorspace."""%}
+        ENSURE_OWNERSHIP(colorspace, """Pixmap Colorspace.""")
         struct Colorspace *colorspace()
         {
             return (struct Colorspace *) fz_pixmap_colorspace(gctx, (fz_pixmap *) $self);
@@ -7946,7 +7995,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // return irect of pixmap
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend irect %{"""Pixmap bbox - an IRect object."""%}
+        ENSURE_OWNERSHIP(irect, """Pixmap bbox - an IRect object.""")
         %pythonappend irect %{val = IRect(val)%}
         PyObject *irect()
         {
@@ -7957,7 +8006,7 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         // return size of pixmap
         //-----------------------------------------------------------------
         %pythoncode %{@property%}
-        %pythonprepend size %{"""Pixmap size."""%}
+        ENSURE_OWNERSHIP(size, """Pixmap size.""")
         PyObject *size()
         {
             return PyLong_FromSize_t(fz_pixmap_size(gctx, (fz_pixmap *) $self));
@@ -7966,7 +8015,9 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         //-----------------------------------------------------------------
         // samples
         //-----------------------------------------------------------------
-        PyObject *_samples_mv()
+        %pythoncode %{@property%}
+        ENSURE_OWNERSHIP(samples_mv, """Pixmap samples memoryview.""")
+        PyObject *samples_mv()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
             Py_ssize_t s = (Py_ssize_t) pm->w;
@@ -7976,7 +8027,9 @@ Last item is the alpha if Pixmap.alpha is true."""%}
         }
 
 
-        PyObject *_samples_ptr()
+        %pythoncode %{@property%}
+        ENSURE_OWNERSHIP(samples_ptr, """Pixmap samples pointer.""")
+        PyObject *samples_ptr()
         {
             fz_pixmap *pm = (fz_pixmap *) $self;
             return PyLong_FromVoidPtr((void *) pm->samples);
@@ -7994,14 +8047,17 @@ Last item is the alpha if Pixmap.alpha is true."""%}
             return self.size
 
         def __repr__(self):
+            EnsureOwnership(self)
             if not type(self) is Pixmap: return
             if self.colorspace:
                 return "Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)
             else:
                 return "Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)
 
-        def __del__(self):
-            if not type(self) is Pixmap: return
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
             self.__swig_destroy__(self)
         %}
     }
@@ -8092,6 +8148,8 @@ struct DeviceWrapper
                     dw->device = fz_new_draw_device(gctx, fz_identity, (fz_pixmap *) pm);
                 else
                     dw->device = fz_new_draw_device_with_bbox(gctx, fz_identity, (fz_pixmap *) pm, &bbox);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dw->device, FZ_NO_CACHE);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -8103,6 +8161,8 @@ struct DeviceWrapper
             fz_try(gctx) {
                 dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
                 dw->device = fz_new_list_device(gctx, (fz_display_list *) dl);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dw->device, FZ_NO_CACHE);
                 dw->list = (fz_display_list *) dl;
                 fz_keep_display_list(gctx, (fz_display_list *) dl);
             }
@@ -8118,6 +8178,8 @@ struct DeviceWrapper
                 fz_stext_options opts = { 0 };
                 opts.flags = flags;
                 dw->device = fz_new_stext_device(gctx, (fz_stext_page *) tp, &opts);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dw->device, FZ_NO_CACHE);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -10052,8 +10114,6 @@ if dpi:
 %}
         %pythonappend get_pixmap
 %{
-        val.samples_mv = val._samples_mv()
-        val.samples_ptr = val._samples_ptr()
         if dpi:
             val.set_dpi(dpi, dpi)
 %}
@@ -10083,7 +10143,6 @@ if dpi:
                 return
             if getattr(self, "thisown", False):
                 self.__swig_destroy__(self)
-                self.thisown = False
             self.parent = None
 
         def __str__(self):
@@ -10307,7 +10366,6 @@ struct Link
             if getattr(self, "thisown", False):
                 self.__swig_destroy__(self)
             self.parent = None
-            self.thisown = False
 
         def __str__(self):
             CheckParent(self)
@@ -10335,7 +10393,6 @@ struct DisplayList {
             DEBUGMSG2;
         }
         FITZEXCEPTION(DisplayList, !result)
-        %pythonappend DisplayList %{self.thisown = True%}
         DisplayList(PyObject *mediabox)
         {
             fz_display_list *dl = NULL;
@@ -10374,12 +10431,7 @@ struct DisplayList {
         // DisplayList.get_pixmap
         //----------------------------------------------------------------
         FITZEXCEPTION(get_pixmap, !result)
-        %pythonappend get_pixmap
-%{
-val.thisown = True
-val.samples_mv = val._samples_mv()
-val.samples_ptr = val._samples_ptr()
-%}
+        %pythonappend get_pixmap %{val.thisown = True%}
         struct Pixmap *get_pixmap(PyObject *matrix=NULL,
                                       struct Colorspace *colorspace=NULL,
                                       int alpha=0,
@@ -10421,13 +10473,6 @@ val.samples_ptr = val._samples_ptr()
             }
             return (struct TextPage *) tp;
         }
-        %pythoncode %{
-        def __del__(self):
-            if not type(self) is DisplayList: return
-            if getattr(self, "thisown", False):
-                self.__swig_destroy__(self)
-            self.thisown = False
-        %}
     }
 };
 
@@ -10952,10 +10997,6 @@ struct TextPage {
                     blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
                     val["blocks"] = blocks
                 return val
-
-            def __del__(self):
-                if not type(self) is TextPage: return
-                self.__swig_destroy__(self)
         %}
     }
 };
@@ -10975,7 +11016,6 @@ struct Graftmap
         }
 
         FITZEXCEPTION(Graftmap, !result)
-        %pythonappend Graftmap %{self.thisown = True%}
         Graftmap(struct Document *doc)
         {
             pdf_graft_map *map = NULL;
@@ -10989,14 +11029,6 @@ struct Graftmap
             }
             return (struct Graftmap *) pdf_keep_graft_map(gctx, map);
         }
-        %pythoncode %{
-        def __del__(self):
-            if not type(self) is Graftmap:
-                return
-            if getattr(self, "thisown", False):
-                self.__swig_destroy__(self)
-            self.thisown = False
-        %}
     }
 };
 
@@ -11025,7 +11057,8 @@ struct TextWriter
         self.ictm = ~self.ctm
         self.last_point = Point()
         self.last_point.__doc__ = "Position following last text insertion."
-        self.text_rect = Rect(0, 0, -1, -1)
+        self.text_rect = Rect()
+
         self.text_rect.__doc__ = "Accumulated area of text spans."
         self.used_fonts = set()
         %}
@@ -11275,6 +11308,8 @@ struct TextWriter
                 contents = fz_new_buffer(gctx, 1024);
                 dev = pdf_new_pdf_device(gctx, pdfpage->doc, fz_identity,
                                          resources, contents);
+                if (no_device_caching)
+                    fz_enable_device_hints(gctx, dev, FZ_NO_CACHE);
                 fz_fill_text(gctx, dev, (fz_text *) $self, fz_identity,
                     colorspace, dev_color, alpha, fz_default_color_params);
                 fz_close_device(gctx, dev);
@@ -11296,15 +11331,6 @@ struct TextWriter
             }
             return result;
         }
-        %pythoncode %{
-        def __del__(self):
-            if not type(self) is TextWriter:
-                return
-            try:
-                self.__swig_destroy__(self)
-            except:
-                pass
-        %}
     }
 };
 
@@ -11645,14 +11671,6 @@ struct Font
 
             def __repr__(self):
                 return "Font('%s')" % self.name
-
-            def __del__(self):
-                if type(self) is not Font:
-                    return None
-                try:
-                    self.__swig_destroy__(self)
-                except:
-                    pass
         %}
     }
 };
@@ -11740,6 +11758,22 @@ struct Tools
                 subset_fontnames = 0;
             }
             return JM_BOOL(subset_fontnames);
+        }
+
+
+        %pythonprepend set_low_memory
+        %{"""Set / unset MuPDF device caching."""%}
+        PyObject *set_low_memory(PyObject *on=NULL)
+        {
+            if (!on || on == Py_None) {
+                return JM_BOOL(no_device_caching);
+            }
+            if (PyObject_IsTrue(on)) {
+                no_device_caching = 1;
+            } else {
+                no_device_caching = 0;
+            }
+            return JM_BOOL(no_device_caching);
         }
 
 

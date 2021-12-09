@@ -33,6 +33,29 @@ OptSeq = typing.Optional[typing.Sequence]
 """
 This is a collection of functions to extend PyMupdf.
 """
+# some special geometry objects
+def EMPTY_RECT():
+    return Rect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
+
+
+def INFINITE_RECT():
+    return Rect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
+
+
+def EMPTY_IRECT():
+    return IRect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
+
+
+def INFINITE_IRECT():
+    return IRect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
+
+
+def INFINITE_QUAD():
+    return INFINITE_RECT().quad
+
+
+def EMPTY_QUAD():
+    return EMPTY_RECT().quad
 
 
 def write_text(page: Page, **kwargs) -> None:
@@ -4217,8 +4240,8 @@ def fill_textbox(
         right_to_left: (bool) indicate right-to-left language.
     """
     rect = Rect(rect)
-    if rect.is_empty or rect.is_infinite:
-        raise ValueError("fill rect must be finite and not empty.")
+    if rect.is_empty:
+        raise ValueError("fill rect must not empty.")
     if type(font) is not Font:
         font = Font("helv")
 
@@ -4323,7 +4346,7 @@ def fill_textbox(
         for line in text:
             textlines.extend(line.splitlines())
 
-    max_lines = int((rect.y1 - pos.y) / LINEHEIGHT)
+    max_lines = int((rect.y1 - pos.y) / LINEHEIGHT) + 1
 
     new_lines = []  # the final list of textbox lines
     no_justify = []  # no justify for these line numbers
@@ -4382,8 +4405,11 @@ def fill_textbox(
             raise ValueError(msg)
 
     start = Point()
-    for i, (line, tl) in enumerate(new_lines):
-        if i > max_lines:  # do not exceed space
+    no_justify += [len(new_lines) - 1]  # no justifying of last line
+    for i in range(max_lines):
+        try:
+            line, tl = new_lines.pop(0)
+        except IndexError:
             break
 
         if right_to_left:  # Arabic, Hebrew
@@ -4392,11 +4418,7 @@ def fill_textbox(
         if i == 0:  # may have different start for first line
             start = pos
 
-        if (
-            align == TEXT_ALIGN_JUSTIFY
-            and i not in no_justify + [len(new_lines) - 1]
-            and tl < std_width
-        ):
+        if align == TEXT_ALIGN_JUSTIFY and i not in no_justify and tl < std_width:
             output_justify(start, line)
             start.x = std_start
             start.y += LINEHEIGHT
@@ -4409,7 +4431,7 @@ def fill_textbox(
         start.x = std_start
         start.y += LINEHEIGHT
 
-    return new_lines[i + 1 :]  # return non-written lines
+    return new_lines  # return non-written lines
 
 
 # ------------------------------------------------------------------------
@@ -4870,12 +4892,14 @@ def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> Quad:
     The bbox may be any of the resp. tuples occurring inside the given span.
 
     Args:
-        line_dir: (tuple) 'line["dir"]' of the owning line.
-        span: (dict) the span.
+        line_dir: (tuple) 'line["dir"]' of the owning line or None.
+        span: (dict) the span. May be from get_texttrace() method.
         bbox: (tuple) the bbox of the span or any of its characters.
     Returns:
         The quad which is wrapped by the bbox.
     """
+    if line_dir == None:
+        line_dir = span["dir"]
     cos, sin = line_dir
     bbox = Rect(bbox)  # make it a rect
     if TOOLS.set_small_glyph_heights():  # ==> just fontsize as height
@@ -4991,6 +5015,8 @@ def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> Quad:
     Returns:
         Quad covering selected characters.
     """
+    if line_dir == None:  # must be a span from get_texttrace()
+        line_dir = span["dir"]
     if chars == None:  # no sub-selection
         return recover_quad(line_dir, span)
     if not "chars" in span.keys():
@@ -5029,13 +5055,19 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> Quad:
     Returns:
         The quadrilateral envelopping the character.
     """
+    if line_dir == None:
+        line_dir = span["dir"]
     if type(line_dir) is not tuple or len(line_dir) != 2:
         raise ValueError("bad line dir argument")
     if type(span) is not dict:
         raise ValueError("bad span argument")
-    if type(char) is not dict:
+    if type(char) is dict:
+        bbox = Rect(char["bbox"])
+    elif type(char) is tuple:
+        bbox = Rect(char[3])
+    else:
         raise ValueError("bad span argument")
-    bbox = Rect(char["bbox"])
+
     return recover_bbox_quad(line_dir, span, bbox)
 
 

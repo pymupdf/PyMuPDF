@@ -852,9 +852,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: pixmap; insert_image
       pair: rotate; insert_image
       pair: stream; insert_image
-      pair: alpha; insert_image
       pair: mask; insert_image
-      pair: alpha; insert_image
       pair: oc; insert_image
       pair: xref; insert_image
 
@@ -880,11 +878,11 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg pixmap: a pixmap containing the image.
       :type pixmap: :ref:`Pixmap`
 
-      :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask (alpha values) for the base image. When specified, the base image must be provided as a filename or a stream.
+      :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask (alpha values) for the base image. When specified, the base image must be provided as a filename or a stream -- and must not be an image that already has a mask.
 
       :arg int xref: *(New in v1.18.13)* the :data:`xref` of an image already present in the PDF. If given, parameters ``filename``, ``pixmap``, ``stream``, ``alpha`` and ``mask`` are ignored. The page will simply receive a reference to the exsting image.
 
-      :arg int alpha: *(New in v1.18.13)* if set to 0, the method will assume and not check that the image has no alpha channel. This can speed up execution considerably. Use if image information is available from other sources. Affects insertions from files or streams.
+      :arg int alpha: *(Changed in v1.19.3)* deprecated. No longer needed -- ignored when given.
 
       :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convert_to_pdf`) first and then use :meth:`Page.show_pdf_page` instead.
 

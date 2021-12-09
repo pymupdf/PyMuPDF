@@ -427,6 +427,7 @@ Yet others are handy, general-purpose utilities.
       * New in v1.18.16
       * Changed in v1.19.0: added key "seqno".
       * Changed in v1.19.1: stroke and fill colors now always are either RGB or GRAY
+      * Changed in v1.19.3: span and character bboxes are now also correct if ``dir != (1, 0)``.
 
       Return low-level text information of the page. The method is available for **all** document types. The result is a list of Python dictionaries with the following content::
 
@@ -479,9 +480,9 @@ Yet others are handy, general-purpose utilities.
       3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
       4. For data compactness, the character's unicode is provided here. Use built-in function ``chr()`` for the character itself.
       5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent. Depending in ``span["type"]``, interpret this value as *fill* opacity or, resp. *stroke* opacity.
-      6. *(Changd in v1.19.0)* This value is equal / close to the width of ``char["bbox"]``. However, on occasion you may find a small delta. In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
+      6. *(Changd in v1.19.0)* This value is equal or close to ``char["bbox"]`` of "rawdict". In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
       7. *(New in v1.19.0)* This is the union of all character bboxes.
-      8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, whch are painted "later", or over some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans may have identical sequence numbers if they have been created consecutively.
+      8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, whch are painted "later", or *over* some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans have identical sequence numbers if they were created in one go.
 
       Here is a list of similarities and differences of ``page.get_texttrace()`` compared to ``page.get_text("rawdict")``:
 
@@ -510,10 +511,7 @@ Yet others are handy, general-purpose utilities.
 
             So you may want to replace the two example tuples above by the following single one: ``(0xFB01, glyph, (x, y), (x0, y0, x1, y1))`` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute ``font.has_glyph(0xFB01)`` and use its return value).
 
-      * Similar to other text extraction methods, the character and span bboxes are correct only if text is written horizontally, left to right. This is indicated by ``span["dir"] == (1, 0)`` -- which is the case in the vast majority of situations. Otherwise, you must transform character and span bboxes: Because ``span["dir"] = (cos, sin)`` of the writing angle, you can compute the **quad** of the character bbox like this: ``bbox.morph(origin, mat)``, with the character's origin (``fitz.Point(c[2])``), and the rotation matrix ``mat = fitz.Matrix(cos, sin, -sin, cos, 0, 0)`` derived from ``span["dir"]``. To compute the quad of the complete span (or any number of adjacent characters), sum up the characters' widths and build the rectangle ``rect = fitz.Rect(x0, y0, x0 + width, y1)`` where x0, y0 and y1 are the values of the first character's bbox. Then the span quad is ``span_quad = rect.morph(origin, mat)`` with the origin of the first character.
-
-      .. note :: If you plan to extract more / other information from this page after this method has been executed, you might need to first **reload it**: ``page = doc.reload_page(page)``.
-
+      * **Changed in v1.19.3:** Similar to other text extraction methods, the character and span bboxes envelop the character quads. To recover the quads, follow the same methods :meth:`recover_quad`, :meth:`recover_char_quad` or :meth:´recover_span_quad` as explained in :ref:`textpagedict`. Use either ``None`` or ``span["dir"]`` for the writing direction.
 
 -----
 
@@ -521,7 +519,7 @@ Yet others are handy, general-purpose utilities.
 
       Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
 
-      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves. Multiple executions of this method have no functional impact: ``b"q q ... q contents Q Q ... Q"`` is treated like ``b"q contents Q"``.
+      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves. Multiple executions of this method are no problem and have no functional impact: ``b"q q contents Q Q"`` is treated like ``b"q contents Q"``.
 
 -----
 
@@ -657,7 +655,7 @@ Yet others are handy, general-purpose utilities.
 
       Compute the quadrilateral of a text span extracted via options "dict" or "rawdict" of :meth:`Page.get_text`.
 
-      :arg tuple line_dir: ``line["dir"]`` of the owning line.
+      :arg tuple line_dir: ``line["dir"]`` of the owning line.  Use ``None`` for a span from :meth:`Page.get_texttrace`.
       :arg dict span: the span.
       :returns: the :ref:`Quad` of the span, usable for text marker annotations ('Highlight', etc.).
 
@@ -667,7 +665,7 @@ Yet others are handy, general-purpose utilities.
 
       Compute the quadrilateral of a text character extracted via option "rawdict" of :meth:`Page.get_text`.
 
-      :arg tuple line_dir: ``line["dir"]`` of the owning line.
+      :arg tuple line_dir: ``line["dir"]`` of the owning line. Use ``None`` for a span from :meth:`Page.get_texttrace`.
       :arg dict span: the span.
       :arg dict char: the character.
       :returns: the :ref:`Quad` of the character, usable for text marker annotations ('Highlight', etc.).
@@ -678,7 +676,7 @@ Yet others are handy, general-purpose utilities.
 
       Compute the quadrilateral of a subset of characters of a span extracted via option "rawdict" of :meth:`Page.get_text`.
 
-      :arg tuple line_dir: ``line["dir"]`` of the owning line.
+      :arg tuple line_dir: ``line["dir"]`` of the owning line. Use ``None`` for a span from :meth:`Page.get_texttrace`.
       :arg dict span: the span.
       :arg list chars: the characters to consider. If omitted, identical to :meth:`recoer_span`. If given, the selected extraction option must be "rawdict".
       :returns: the :ref:`Quad` of the selected characters, usable for text marker annotations ('Highlight', etc.).
@@ -701,7 +699,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: INFINITE_IRECT()
 
-      Return the (unique) infinite rectangle ``Rect(-2147483648.0, -2147483648.0, 2147483520.0, 2147483520.0)``, resp. the :ref:`IRect` and :ref:`Quad` counterparts. It is the largest possible rectangle: all rectangles are contained in it. It is not possible to create a rectangle with smaller / larger coordinates. Methods :meth:`Rect.is_infinite` checks for equality with this object.
+      Return the (unique) infinite rectangle ``Rect(-2147483648.0, -2147483648.0, 2147483520.0, 2147483520.0)``, resp. the :ref:`IRect` and :ref:`Quad` counterparts. It is the largest possible rectangle: all valid rectangles are contained in it.
 
 -----
 
@@ -711,4 +709,4 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: EMPTY_IRECT()
    
-      Return the "standard" empty / invalid rectangle ``Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)`` resp. quad. Its top-left and bottom-right point values are reversed compared to the infinite rectangle. It will e.g. be used to indicate empty bboxes in ``page.get_text("dict")`` dictionaries. There are however infinitely many empty or invalid rectangles.
+      Return the "standard" empty and invalid rectangle ``Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)`` resp. quad. Its top-left and bottom-right point values are reversed compared to the infinite rectangle. It will e.g. be used to indicate empty bboxes in ``page.get_text("dict")`` dictionaries. There are however infinitely many empty or invalid rectangles.

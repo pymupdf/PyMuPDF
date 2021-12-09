@@ -200,7 +200,7 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
     fz_buffer *buffer;
     int struct_parents;
     fz_matrix ctm = fz_identity;
-    pdf_page_transform(gctx, page, NULL, &ctm);
+    pdf_page_transform(ctx, page, NULL, &ctm);
     struct_parents_obj = pdf_dict_get(ctx, page->obj, PDF_NAME(StructParents));
     struct_parents = -1;
     if (pdf_is_number(ctx, struct_parents_obj))

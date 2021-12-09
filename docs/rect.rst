@@ -57,6 +57,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 :meth:`Rect.intersect`        common part with another rectangle
 :meth:`Rect.intersects`       checks for non-empty intersections
 :meth:`Rect.morph`            transform with a point and a matrix
+:meth:`Rect.torect`           the matrix that converts to another rectangle
 :meth:`Rect.norm`             the Euclidean norm
 :meth:`Rect.normalize`        makes a rectangle valid
 :meth:`Rect.round`            create smallest :ref:`Irect` containing rectangle
@@ -104,14 +105,13 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: round()
 
-      Creates the smallest containing :ref:`IRect`, This is **not** the same as simply rounding the rectangle's edges: The top left corner is rounded upwards and left while the bottom right corner is rounded downwards and to the right.
+      Creates the smallest containing :ref:`IRect`. This is **not** the same as simply rounding the rectangle's edges: The top left corner is rounded upwards and to the left while the bottom right corner is rounded downwards and to the right.
 
       >>> fitz.Rect(0.5, -0.01, 123.88, 455.123456).round()
       IRect(0, -1, 124, 456)
 
-      1. If the rectangle is **infinite**, the "normalized" (finite) version of it will be taken. The result of this method is always a finite *IRect*.
-      2. If the rectangle is **empty**, the result is also empty.
-      3. **Possible paradox:** The result may be empty, **even if** the rectangle is **not** empty! In such cases, the result obviously does **not** contain the rectangle. This is because MuPDF's algorithm allows for a small tolerance (1e-3). Example:
+      1. If the rectangle is **empty**, the result is also empty.
+      2. **Possible paradox:** The result may be empty, **even if** the rectangle is **not** empty! In such cases, the result obviously does **not** contain the rectangle. This is because MuPDF's algorithm allows for a small tolerance (1e-3). Example:
 
       >>> r = fitz.Rect(100, 100, 200, 100.001)
       >>> r.is_empty  # rect is NOT empty
@@ -178,6 +178,32 @@ The following remarks are also valid for :ref:`IRect` objects:
       :arg rect_like r: the rectangle to check.
 
       :rtype: bool
+
+   .. method:: torect(rect)
+
+      *(New in version 1.19.3)*
+      
+      Compute the matrix which transform this rectangle to a given one.
+
+      :arg rect_like rect: the target rectangle. Must not be empty or infinite.
+      :rtype: :ref:`Matrix`
+      :returns: a matrix ``mat`` such ``self * mat = rect``. Can for example be used to switch between page coordinates and corresponding positions of its pixmap.
+
+         .. note:: Suppose you want to check whether any of the words "pixmap" is located in an area with the same color as the text (e.g. white on white). We can find out whether the text's area mostly consists of pixels of identical color:
+
+            >>> pix = page.get_pixmap(dpi=150)
+            >>> mat = page.rect.torect(pix.irect)
+            >>> # "mat" converts page coordinates to pixmap coordinates
+            >>> rlist = page.search_for("pixmap")
+            >>> # then the following makes rectangles on the page's pixmap,
+            >>> # wich each encircle one "pixmap" occurrence:
+            >>> for r in rlist:
+                    if pix.color_topusage(clip=r * mat) > 0.95:
+                        print("Word 'pixmap' is invisible!")
+            >>> 
+
+         Method :meth:`Pixmap.color_topusage` computes the percentage of pixels showing the same color.
+
 
    .. method:: morph(fixpoint, matrix)
 

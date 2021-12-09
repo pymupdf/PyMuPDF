@@ -6,14 +6,15 @@ IRect
 
 IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering. Otherwise, e.g. considerations concerning emptiness and validity of rectangles also apply to this class. Methods and attributes have the same names, and in many cases are implemented by re-using the respective :ref:`Rect` counterparts.
 
-============================== ===========================================
+============================== ==============================================
 **Attribute / Method**          **Short Description**
-============================== ===========================================
+============================== ==============================================
 :meth:`IRect.contains`         checks containment of another object
 :meth:`IRect.get_area`         calculate rectangle area
 :meth:`IRect.intersect`        common part with another rectangle
 :meth:`IRect.intersects`       checks for non-empty intersection
 :meth:`IRect.morph`            transform with a point and a matrix
+:meth:`IRect.torect`           the matrix that converts to another rectangle
 :meth:`IRect.norm`             the Euclidean norm
 :meth:`IRect.normalize`        makes a rectangle finite
 :attr:`IRect.bottom_left`      bottom left point, synonym *bl*
@@ -30,7 +31,7 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 :attr:`IRect.x1`               X-coordinate of the bottom right corner
 :attr:`IRect.y0`               Y-coordinate of the top left corner
 :attr:`IRect.y1`               Y-coordinate of the bottom right corner
-============================== ===========================================
+============================== ==============================================
 
 **Class API**
 
@@ -83,6 +84,17 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
       :arg rect_like r: the rectangle to check.
 
       :rtype: bool
+
+   .. method:: torect(rect)
+
+      *(New in version 1.19.3)*
+      
+      Compute the matrix which transform this rectangle to a given one. See same-naed method of :ref:`Rect`.
+
+      :arg rect_like rect: the target rectangle. Must not be empty or infinite.
+      :rtype: :ref:`Matrix`
+      :returns: a matrix ``mat`` such ``self * mat = rect``. Can for example be used to switch between page coordinates and corresponding positions of its pixmap.
+
 
    .. method:: morph(fixpoint, matrix)
 

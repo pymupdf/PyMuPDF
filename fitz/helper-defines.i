@@ -408,6 +408,7 @@ PyObject *dictkey_filename;
 PyObject *dictkey_fill;
 PyObject *dictkey_flags;
 PyObject *dictkey_font;
+PyObject *dictkey_glyph;
 PyObject *dictkey_height;
 PyObject *dictkey_id;
 PyObject *dictkey_image;
@@ -435,5 +436,4 @@ PyObject *dictkey_wmode;
 PyObject *dictkey_xref;
 PyObject *dictkey_xres;
 PyObject *dictkey_yres;
-
 %}

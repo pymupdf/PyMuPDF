@@ -1,16 +1,17 @@
-# PyMuPDF 1.19.2
+# PyMuPDF 1.19.3
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: November 20, 2021
+Release date: December 15, 2021
 
-On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://pepy.tech/badge/pymupdf)](https://pepy.tech/project/pymupdf)
+On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
+
 # Author
 [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de), based on original code by [Ruikai Liu](mailto:lrk700@gmail.com).
 
 # Introduction
 
-PyMuPDF (current version 1.19.2) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.19.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
+PyMuPDF (current version 1.19.3) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.19.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -59,7 +60,11 @@ Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tr
 Documentation is written using Sphinx and is available in various formats from the following sources. It currently is a combination of reference guide and user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq.html) chapters.
 
 * You can view it online at [Read the Docs](https://readthedocs.org/projects/pymupdf/). This site also provides download options for PDF.
+<<<<<<< Updated upstream
 * The search function on Read the Docs does not work for me currently. If you want a working searchable local version, please download a zipped HTML for [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
+=======
+* The search function on Read the Docs does not work for me currently. If you want a working searchable local version, please download a zipped HTML from [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
+>>>>>>> Stashed changes
 * Find a Windows help file [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 
 The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/latest/changes.html).
@@ -76,7 +81,7 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade pymupdf
 ```
 
-There are **no mandatory** external dependencies. However, some **optional features** become available only if additional packages are installed:
+There are **no mandatory** external dependencies. However, some **optional features** become available if additional packages are installed:
 
 * [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly from PyMuPDF
 * [fontTools](https://pypi.org/project/fonttools/) for creating font subsets

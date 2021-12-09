@@ -9,15 +9,6 @@
 # maintained and developed by Artifex Software, Inc. https://artifex.com.
 # ------------------------------------------------------------------------
 */
-// Switch for computing glyph of fontsize height
-static int small_glyph_heights = 0;
-
-// Switch for returning fontnames including subset prefix
-static int subset_fontnames = 0;
-
-// Unset ascender / descender corrections
-static int skip_quad_corrections = 0;
-
 // need own versions of ascender / descender
 static const float
 JM_font_ascender(fz_context *ctx, fz_font *font)
@@ -108,32 +99,32 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     fz_font *font = ch->font;
     float asc = JM_font_ascender(ctx, font);
     float dsc = JM_font_descender(ctx, font);
-    if (asc - dsc >= 1 && small_glyph_heights == 0) {  // no problem
+    float c, s, fsize = ch->size;
+    float asc_dsc = asc - dsc;
+    if (asc_dsc >= 1 && small_glyph_heights == 0) {  // no problem
        return ch->quad;
     }
+    if (asc < 1e-3) {  // probably Tesseract glyphless font
+        dsc = -0.1f;
+        asc = 0.9f;
+        asc_dsc = 1.0f;
+    }
+
+    if (small_glyph_heights || asc_dsc < 1) {
+        dsc = dsc / asc_dsc;
+        asc = asc / asc_dsc;
+    }
+    asc_dsc = asc - dsc;
+    asc = asc * fsize / asc_dsc;
+    dsc = dsc * fsize / asc_dsc;
+
     /* ------------------------------
     Re-compute quad with adjusted ascender / descender values:
     Move ch->origin to (0,0) and de-rotate quad, then adjust the corners,
     re-rotate and move back to ch->origin location.
     ------------------------------ */
-    float c, s, fsize = ch->size;
     fz_matrix trm1, trm2, xlate1, xlate2;
     fz_quad quad;
-    fz_rect bbox = fz_font_bbox(ctx, font);
-    float fwidth = bbox.x1 - bbox.x0;
-    if (asc < 1e-3) {  // probably Tesseract glyphless font
-        dsc = -0.1f;
-    }
-
-    // Re-compute asc, dsc if there are problems.
-    // In that case, we also do not trust dsc and try correcting it.
-    if (asc - dsc < 1) {
-        if (bbox.y0 < dsc) {
-            dsc = bbox.y0;
-        }
-        asc = 1 + dsc;
-    }
-
     c = line->dir.x;  // cosine
     s = line->dir.y;  // sine
     trm1 = fz_make_matrix(c, -s, s, c, 0, 0);  // derotate
@@ -144,18 +135,28 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     quad = fz_transform_quad(ch->quad, xlate1);  // move origin to (0,0)
     quad = fz_transform_quad(quad, trm1);  // de-rotate corners
 
-    // adjust vertical coordinates if meaningful
-    if ((quad.ll.y - quad.ul.y) > fsize) {
-        quad.ll.y = -fsize * dsc / (asc - dsc);
-        quad.ul.y = quad.ll.y - fsize;
-        quad.lr.y = quad.ll.y;
-        quad.ur.y = quad.ul.y;
-    }
+    // adjust vertical coordinates
 
-    // adjust crazy horizontal coordinates
-    if ((quad.lr.x - quad.ll.x) < FLT_EPSILON) {
-        quad.lr.x = quad.ll.x + fwidth * fsize;
-        quad.ur.x = quad.lr.x;
+    quad.ll.y = -dsc;
+    quad.lr.y = -dsc;
+    quad.ul.y = -asc;
+    quad.ur.y = -asc;
+
+    // adjust horizontal coordinates that are too crazy:
+    // (1) left x must be >= 0
+    // (2) if bbox width is 0, lookup char advance in font.
+    if (quad.ll.x < 0) {
+        quad.ll.x = 0;
+        quad.ul.x = 0;
+    }
+    float cwidth = quad.lr.x - quad.ll.x;
+    if (cwidth < FLT_EPSILON) {
+        int glyph = fz_encode_character(ctx, font, ch->c);
+        if (glyph) {
+            float fwidth = fz_advance_glyph(ctx, font, glyph, line->wmode);
+            quad.lr.x = quad.ll.x + fwidth * fsize;
+            quad.ur.x = quad.lr.x;
+        }
     }
 
     quad = fz_transform_quad(quad, trm2);  // rotate back

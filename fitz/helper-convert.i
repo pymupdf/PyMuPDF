@@ -37,6 +37,8 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
             page = fz_load_page(ctx, doc, i);
             mediabox = fz_bound_page(ctx, page);
             dev = pdf_page_write(ctx, pdfout, mediabox, &resources, &contents);
+            if (no_device_caching)
+                fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
             fz_run_page(ctx, page, dev, fz_identity, NULL);
             fz_close_device(ctx, dev);
             fz_drop_device(ctx, dev);
@@ -78,7 +80,7 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
         out = fz_new_output_with_buffer(ctx, res);
         pdf_write_document(ctx, pdfout, out, &opts);
         unsigned char *c = NULL;
-        size_t len = fz_buffer_storage(gctx, res, &c);
+        size_t len = fz_buffer_storage(ctx, res, &c);
         r = PyBytes_FromStringAndSize((const char *) c, (Py_ssize_t) len);
     }
     fz_always(ctx) {

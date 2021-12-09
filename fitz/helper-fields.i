@@ -248,7 +248,7 @@ pdf_annot *JM_create_widget(fz_context *ctx, pdf_document *doc, pdf_page *page, 
 	pdf_obj *form = NULL;
 	int old_sigflags = pdf_to_int(ctx, pdf_dict_getp(ctx, pdf_trailer(ctx, doc), "Root/AcroForm/SigFlags"));
 	pdf_annot *annot = pdf_create_annot_raw(ctx, page, PDF_ANNOT_WIDGET);
-    pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+    pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
 	fz_try(ctx) {
 		JM_set_field_type(ctx, doc, annot_obj, type);
 		pdf_dict_put_text_string(ctx, annot_obj, PDF_NAME(T), fieldname);
@@ -302,7 +302,7 @@ PyObject *JM_pushbtn_state(fz_context *ctx, pdf_annot *annot)
 //-----------------------------------------------------------------------------
 PyObject *JM_checkbox_state(fz_context *ctx, pdf_annot *annot)
 {
-    pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+    pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
     pdf_obj *leafv = pdf_dict_get_inheritable(ctx, annot_obj, PDF_NAME(V));
     pdf_obj *leafas = pdf_dict_get_inheritable(ctx, annot_obj, PDF_NAME(AS));
     if (!leafv) Py_RETURN_FALSE;
@@ -331,7 +331,7 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
     const char *text = NULL;
     fz_var(text);
     fz_try(ctx) {
-        pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+        pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
         text = pdf_field_value(ctx, annot_obj);
     }
     fz_catch(ctx) Py_RETURN_NONE;
@@ -344,7 +344,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 {
     int i = 0, n = 0;
     // may be single value or array
-    pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+    pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
     pdf_obj *optarr = pdf_dict_get(ctx, annot_obj, PDF_NAME(V));
     if (pdf_is_string(ctx, optarr))         // a single string
         return PyString_FromString(pdf_to_text_string(ctx, optarr));
@@ -381,7 +381,7 @@ PyObject *JM_signature_value(fz_context *ctx, pdf_annot *annot)
 //-----------------------------------------------------------------------------
 PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
 {   // return list of choices for list or combo boxes
-    pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+    pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
     pdf_document *pdf = pdf_get_bound_document(ctx, annot_obj);
     PyObject *val;
     int n = pdf_choice_widget_options(ctx, annot, 0, NULL);
@@ -416,7 +416,7 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
     Py_ssize_t i, n = PySequence_Size(liste);
     if (n < 1) return;
     PyObject *tuple = PySequence_Tuple(liste);
-    pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+    pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
     pdf_document *pdf = pdf_get_bound_document(ctx, annot_obj);
     const char *opt = NULL, *opt1 = NULL, *opt2 = NULL;
     pdf_obj *optarr = pdf_new_array(ctx, pdf, n);
@@ -448,15 +448,15 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
 //-----------------------------------------------------------------------------
 void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widget)
 {
-    pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
-    pdf_page *page = pdf_annot_page(gctx, annot);
+    pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
+    pdf_page *page = pdf_annot_page(ctx, annot);
     pdf_document *pdf = page->doc;
     pdf_annot *tw = annot;
     pdf_obj *obj = NULL, *js = NULL, *o = NULL;
     fz_buffer *res = NULL;
     Py_ssize_t i = 0, n = 0;
     fz_try(ctx) {
-        int field_type = pdf_widget_type(gctx, tw);
+        int field_type = pdf_widget_type(ctx, tw);
         SETATTR_DROP(Widget, "field_type", Py_BuildValue("i", field_type));
         if (field_type == PDF_WIDGET_TYPE_SIGNATURE) {
             if (pdf_signature_is_signed(ctx, pdf, annot_obj)) {

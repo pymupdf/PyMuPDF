@@ -24,7 +24,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 **Method / Attribute**           **Short Description**
 ================================ ===================================================
 :meth:`Pixmap.clear_with`        clear parts of the pixmap
-:meth:`Pixmap.color_count`       determine the colors used in the pixmaps
+:meth:`Pixmap.color_count`       determine used colors
+:meth:`Pixmap.color_topusage`    determine share of top used color
 :meth:`Pixmap.copy`              copy parts of another pixmap
 :meth:`Pixmap.gamma_with`        apply a gamma factor to the pixmap
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
@@ -42,6 +43,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.shrink`            reduce size keeping proportions
 :meth:`Pixmap.tint_with`         tint the pixmap with a color
 :meth:`Pixmap.tobytes`           return a memory area in a variety of formats
+:meth:`Pixmap.warp`              return a pixmap made from a quad inside
 :attr:`Pixmap.alpha`             transparency indicator
 :attr:`Pixmap.colorspace`        pixmap's :ref:`Colorspace`
 :attr:`Pixmap.digest`            MD5 hashcode of the pixmap
@@ -357,6 +359,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
                   pix = fitz.Pixmap(imgfile)
                   imgpdf = fitz.open("pdf", pix.pdfocr_tobytes())
                   doc.insert_pdf(imgpdf)
+                  pix = None
+                  imgpdf.close()
                doc.save("ocr-images.pdf")
 
 
@@ -393,27 +397,58 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :rtype: bytes
 
 
-   ..  method:: color_count(colors=False)
+   ..  method:: warp(quad, width, height)
 
-      *(New in v1.19.2)*
+      * New in v1.19.3
 
-      Determine the pixmap's unique colors.
+      Return a new pixmap by "warping" the quad such that the quad corners become the new pixmap's corners. The target pixmap's ``irect`` will be ``(0, 0, width, height)``.
 
-      :arg bool colors: if ``True`` return a tuple of unique color pixels (each as a bytes object of length :attr:`Pixmap.n`), else the number of colors only.
-      :rtype: tuple[bytes] or int
-      :returns: either the number of unique colors, or a tuple of bytes which each represent one pixel value. To recover the **tuple** of such a pixel value, use ``tuple(map(int, colors[i]))`` for the i-th item. For example:
+      :arg quad_like quad: a convex quad with coordinates inside :attr:`Pixmap.irect` (including the border points).
+      :arg int width: desired resulting width.
+      :arg int height: desired resulting height.
+      :returns: A new pixmap where the quad corners are mapped to the pixmap corners in a clockwise fashion: ``quad.ul -> irect.tl``, ``quad.ur -> irect.tr``, etc.
+      :rtype: :ref:`Pixmap`
 
-         >>> pix=fitz.Pixmap("sierpinski-carpet.png")
-         >>> colors = pix.color_count(True)
-         >>> colors
-           (b'\xff\xef\xd5', b'\x00\x00\xff')
-         >>> [tuple(map(int, c)) for c in colors]
-           [(255, 239, 213), (0, 0, 255)]
+         .. image:: images/img-warp.*
+              :scale: 40
+              :align: center
 
-         .. note::
-         
+
+   ..  method:: color_count(colors=False, clip=None)
+
+      * New in v1.19.2
+      * Changed in v1.19.3
+
+      Determine the pixmap's unique colors and their count.
+
+      :arg bool colors: *(changed in v1.19.3)* If ``True`` return a dictionary of color pixels and their usage count, else just the number of unique colors.
+      :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
+      :rtype: dict or int
+      :returns: either the number of colors, or a dictionary with the items ``pixel: count``. The pixel key is a ``bytes`` object of length :attr:`Pixmap.n`.
+      
+         .. note:: To recover the **tuple** of a pixel, use ``tuple(map(int, colors.keys()[i]))`` for the i-th item. For example:
+
+               >>> pix=fitz.Pixmap("sierpinski-carpet.png")
+               >>> colors = pix.color_count(True)
+               >>> print(colors)
+               {b'\xff\xef\xd5': 262144, b'\x00\x00\xff': 269297}
+               >>> [tuple(map(int, c)) for c in colors.keys()]
+               [(255, 239, 213), (0, 0, 255)]
+
+
             * The response time depends on the pixmap's samples size and may be more than a second for very large pixmaps.
             * Where applicable, pixels with different alpha values will be treated as different colors.
+
+
+   ..  method:: color_topusage(clip=None)
+
+      * New in v1.19.3
+
+      Return the most frequently used color and its relative frequency.
+
+      :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
+      :rtype: tuple[float, bytes]
+      :returns: A tuple ``(ratio, pixel)`` where ``0 < ratio <= 1`` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: e.g. a response ``(0.95, b"\x00\x00\x00")`` means that 95% of all pixels are black.
 
 
    .. attribute:: alpha
@@ -475,7 +510,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       This area can be passed to other graphics libraries like PIL (Python Imaging Library) to do additional processing like saving the pixmap in other image formats.
 
       .. note::
-         * The underlying data is a typically **large** memory area from which a ``bytes`` copy is made for this attribute: for example an RGB-rendered letter page has a samples size of almost 1.4 MB. So consider assigning a new variable to it or use the ``memoryview`` version :attr:`Pixmap.samples_mv` (new in v1.18.17).
+         * The underlying data is typically a **large** memory area, from which a ``bytes`` copy is made for this attribute ... each time you access it: for example an RGB-rendered letter page has a samples size of almost 1.4 MB. So consider assigning a new variable to it or use the ``memoryview`` version :attr:`Pixmap.samples_mv` (new in v1.18.17).
          * Any changes to the underlying data are available only after accessing this attribute again. This is different from using the memoryview version.
 
       :type: bytes

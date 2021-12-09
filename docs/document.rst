@@ -49,6 +49,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.find_bookmark`          retrieve page location after layouting document
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
 :meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
+:meth:`Document.get_layers`             PDF only: list of optional content configurations
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
 :meth:`Document.get_ocgs`               PDF only: info on all optional content groups
 :meth:`Document.get_ocmd`               PDF only: retrieve definition of an :data:`OCMD`
@@ -76,7 +77,6 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.journal_redo`           PDF only: redo current operation
 :meth:`Document.journal_save`           PDF only: save joural to a file
 :meth:`Document.journal_load`           PDF only: load joural from a file
-:meth:`Document.layer_configs`          PDF only: list of optional content configurations
 :meth:`Document.layer_ui_configs`       PDF only: list of optional content intents
 :meth:`Document.layout`                 re-paginate the document (if supported)
 :meth:`Document.load_page`              read a page
@@ -226,13 +226,13 @@ For details on **embedded files** refer to Appendix 3.
       :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
 
 
-    .. method:: layer_configs()
+    .. method:: get_layers()
 
       *(New in v1.18.3)*
 
       Show optional layer configurations. There always is a standard one, which is not included in the response.
 
-        >>> for item in doc.layer_configs: print(item)
+        >>> for item in doc.get_layers(): print(item)
         {'number': 0, 'name': 'my-config', 'creator': ''}
         >>> # use 'number' as config identifyer in add_ocg
 

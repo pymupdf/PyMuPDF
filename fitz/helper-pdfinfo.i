@@ -34,7 +34,7 @@ JM_ensure_ocproperties(fz_context *ctx, pdf_document *pdf)
 {
     pdf_obj *D, *ocp;
     fz_try(ctx) {
-        ocp = pdf_dict_get(ctx, pdf_dict_get(gctx, pdf_trailer(ctx, pdf), PDF_NAME(Root)), PDF_NAME(OCProperties));
+        ocp = pdf_dict_get(ctx, pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME(Root)), PDF_NAME(OCProperties));
         if (ocp) goto finished;
         pdf_obj *root = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME(Root));
         ocp = pdf_dict_put_dict(ctx, root, PDF_NAME(OCProperties), 2);

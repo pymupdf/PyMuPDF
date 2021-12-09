@@ -42,6 +42,12 @@ fitz.recover_bbox_quad = fitz.utils.recover_bbox_quad
 fitz.recover_line_quad = fitz.utils.recover_line_quad
 fitz.recover_span_quad = fitz.utils.recover_span_quad
 fitz.recover_char_quad = fitz.utils.recover_char_quad
+fitz.EMPTY_RECT = fitz.utils.EMPTY_RECT
+fitz.EMPTY_IRECT = fitz.utils.EMPTY_IRECT
+fitz.EMPTY_QUAD = fitz.utils.EMPTY_QUAD
+fitz.INFINITE_RECT = fitz.utils.INFINITE_RECT
+fitz.INFINITE_IRECT = fitz.utils.INFINITE_IRECT
+fitz.INFINITE_QUAD = fitz.utils.INFINITE_QUAD
 
 # ------------------------------------------------------------------------------
 # Document
@@ -160,7 +166,7 @@ def restore_aliases():
         if callable(fname):
 
             def deprecated_function(*args, **kw):
-                msg = "'%s' removed from %s after v1.19.0 - use '%s'." % (
+                msg = "'%s' removed from %s after v1.19 - use '%s'." % (
                     old,
                     objname,
                     new,
@@ -183,9 +189,7 @@ def restore_aliases():
         try:
             if callable(fname) or type(fname) is property:
                 eigen.__doc__ = (
-                    "*** Deprecated and removed in version following 1.19.0 - use '%s'. ***\n"
-                    % new
-                    + x
+                    "*** Deprecated and removed after v1.19 - use '%s'. ***\n" % new + x
                 )
         except:
             pass
@@ -446,27 +450,3 @@ Built for Python %i.%i on %s (%i-bit).
 )
 
 restore_aliases()
-
-# some special geometry objects
-def EMPTY_RECT():
-    return Rect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
-
-
-def INFINITE_RECT():
-    return Rect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
-
-
-def EMPTY_IRECT():
-    return IRect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
-
-
-def INFINITE_IRECT():
-    return IRect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
-
-
-def INFINITE_QUAD():
-    return INFINITE_RECT().quad
-
-
-def EMPTY_QUAD():
-    return EMPTY_RECT().quad

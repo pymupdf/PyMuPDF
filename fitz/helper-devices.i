@@ -436,13 +436,13 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	float x0, y0, x1, y1;
 	asc = (double) JM_font_ascender(ctx, span->font);
 	dsc = (double) JM_font_descender(ctx, span->font);
-	if (asc - dsc >= 1 && small_glyph_heights == 0) {
+	if ((asc - dsc) >= 1 && small_glyph_heights == 0) {
 		;
 	} else {
 		if (asc < 1e-3) {
 			dsc = -0.1;
+			asc = 0.9;
 		}
-		asc = 1 + dsc;
 	}
 	double ascsize = asc * fsize / (asc - dsc);
 	double dscsize = dsc * fsize / (asc - dsc);
@@ -466,6 +466,8 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 
 	// walk through characters of span
 	fz_rect span_bbox;
+	dir = fz_normalize_vector(dir);
+	fz_matrix rot = fz_make_matrix(dir.x, dir.y, -dir.y, dir.x, 0, 0);
 	for (i = 0; i < span->len; i++) {
 		adv = 0;
 		if (span->items[i].gid >= 0) {
@@ -479,14 +481,18 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		char_orig = fz_make_point(span->items[i].x, span->items[i].y);
 		char_orig.y = trace_device_ptm.f - char_orig.y;
 		char_orig = fz_transform_point(char_orig, mat);
+		fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -char_orig.x, -char_orig.y);
+		m1 = fz_concat(m1, rot);
+		m1 = fz_concat(m1, fz_make_matrix(1, 0, 0, 1, char_orig.x, char_orig.y));
 		x0 = char_orig.x;
 		x1 = x0 + adv;
 		y0 = char_orig.y - ascsize;
 		y1 = char_orig.y - dscsize;
 		fz_rect char_bbox = fz_make_rect(x0, y0, x1, y1);
+		char_bbox = fz_transform_rect(char_bbox, m1);
 		PyTuple_SET_ITEM(chars, (Py_ssize_t) i, Py_BuildValue("ii(ff)(ffff)",
 			span->items[i].ucs, span->items[i].gid,
-			char_orig.x, char_orig.y, x0, y0, x1, y1));
+			char_orig.x, char_orig.y, char_bbox.x0, char_bbox.y0, char_bbox.x1, char_bbox.y1));
 		if (i > 0) {
 			span_bbox = fz_union_rect(span_bbox, char_bbox);
 		} else {
@@ -503,12 +509,12 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 				space_adv = last_adv;
 			}
 		} else {
-			space_adv = last_adv; // in mono fonts this suffices
+			space_adv = last_adv; // for mono fonts this suffices
 		}
 	}
 	// make the span dictionary
 	PyObject *span_dict = PyDict_New();
-	DICT_SETITEMSTR_DROP(span_dict, "dir", JM_py_from_point(fz_normalize_vector(dir)));
+	DICT_SETITEMSTR_DROP(span_dict, "dir", JM_py_from_point(dir));
 	DICT_SETITEM_DROP(span_dict, dictkey_font, Py_BuildValue("s",fontname));
 	DICT_SETITEM_DROP(span_dict, dictkey_wmode, PyLong_FromLong((long) span->wmode));
 	DICT_SETITEM_DROP(span_dict, dictkey_flags, PyLong_FromLong((long) fflags));
