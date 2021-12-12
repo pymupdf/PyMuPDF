@@ -586,7 +586,7 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
     pdf_obj *obj = NULL, *ref = NULL;
 
     // list of object types (per page) we want to copy
-    pdf_obj *known_page_objs[] = {
+    static pdf_obj * const known_page_objs[] = {
         PDF_NAME(Contents),
         PDF_NAME(Resources),
         PDF_NAME(MediaBox),
@@ -597,20 +597,21 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
         PDF_NAME(Rotate),
         PDF_NAME(UserUnit)
     };
-    int i, n = (int) nelem(known_page_objs);  // number of list elements
+
+    int i, n;
+
     fz_var(ref);
     fz_var(page_dict);
+
     fz_try(ctx) {
         page_ref = pdf_lookup_page_obj(ctx, doc_src, page_from);
-        pdf_flatten_inheritable_page_items(ctx, page_ref);
 
         // make new page dict in dest doc
         page_dict = pdf_new_dict(ctx, doc_des, 4);
         pdf_dict_put(ctx, page_dict, PDF_NAME(Type), PDF_NAME(Page));
 
-        // copy objects of source page into it
-        for (i = 0; i < n; i++) {
-            obj = pdf_dict_get(ctx, page_ref, known_page_objs[i]);
+        for (i = 0; i < (int) nelem(known_page_objs); i++) {
+            obj = pdf_dict_get_inheritable(ctx, page_ref, known_page_objs[i]);
             if (obj != NULL) {
                 pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_mapped_object(ctx, graft_map, obj));
             }
@@ -629,6 +630,10 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
                     pdf_obj *subtype = pdf_dict_get(ctx, o, PDF_NAME(Subtype));
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Link))) continue;
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Popup))) continue;
+                    if (pdf_name_eq(ctx, subtype, PDF_NAME(Widget))) {
+                        fz_warn(ctx, "skipping widget annotation");
+                        continue;
+                    }
                     pdf_dict_del(ctx, o, PDF_NAME(Popup));
                     pdf_dict_del(ctx, o, PDF_NAME(P));
                     pdf_obj *copy_o = pdf_graft_mapped_object(ctx, graft_map, o);
@@ -651,8 +656,8 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
 
     }
     fz_always(ctx) {
-        pdf_drop_obj(ctx, ref);
         pdf_drop_obj(ctx, page_dict);
+        pdf_drop_obj(ctx, ref);
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);

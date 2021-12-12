@@ -8,13 +8,23 @@ Change Log
 This patch version implements minor improvements for :ref:`Pixmap` and also some important fixes.
 
 * **Fixed** `#1351 <https://github.com/pymupdf/PyMuPDF/discussions/1351>`_. Reverted code that introduced the memory growth in v1.18.15.
+
 * **Fixed** `#1417 <https://github.com/pymupdf/PyMuPDF/discussions/1417>`_. Developped circumvention for growth of open file handles using :meth:`Document.insert_pdf`.
+
 * **Fixed** `#1418 <https://github.com/pymupdf/PyMuPDF/discussions/1418>`_. Developped circumvention for memory growth using :meth:`Document.insert_pdf`.
+
 * **Fixed** `#1430 <https://github.com/pymupdf/PyMuPDF/discussions/1430>`_. Developped circumvention for mass pixmap generations of document pages.
+
 * **Fixed** `#1433 <https://github.com/pymupdf/PyMuPDF/discussions/1433>`_. Solves a bbox error for some Type 3 font in PyMuPDF text processing.
+
 * **Added** :meth:`Pixmap.color_topusage` to determine the share of the most frequently used color. Solves `#1397 <https://github.com/pymupdf/PyMuPDF/discussions/1397>`_.
+
 * **Added** :meth:`Pixmap.warp` which makes a new pixmap from a given arbitrary convex quad inside the pixmap.
+
+* **Added** :attr:`Annot.irt_xref` and :meth:`Annot.set_irt_xref` to inquire or set the `/IRT` ("In Responde To") property of an annotation. Implements `#1450 <https://github.com/pymupdf/PyMuPDF/discussions/1450>`_.
+
 * **Added** :meth:`Rect.torect` and :meth:`IRect.torect` which compute a matrix that transforms to a given other rectangle.
+
 * **Changed** :meth:`Pixmap.color_count` to also return the count of each color.
 * **Changed** :meth:`Page.get_texttrace` to also return correct span and character bboxes if ``span["dir"] != (1, 0)``.
 

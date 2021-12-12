@@ -14,7 +14,7 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 :meth:`IRect.intersect`        common part with another rectangle
 :meth:`IRect.intersects`       checks for non-empty intersection
 :meth:`IRect.morph`            transform with a point and a matrix
-:meth:`IRect.torect`           the matrix that converts to another rectangle
+:meth:`IRect.torect`           matrix that transforms to another rectangle
 :meth:`IRect.norm`             the Euclidean norm
 :meth:`IRect.normalize`        makes a rectangle finite
 :attr:`IRect.bottom_left`      bottom left point, synonym *bl*
@@ -89,11 +89,11 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
       *(New in version 1.19.3)*
       
-      Compute the matrix which transform this rectangle to a given one. See same-naed method of :ref:`Rect`.
+      Compute the matrix which transforms this rectangle to a given one. See :meth:`Rect.torect`.
 
       :arg rect_like rect: the target rectangle. Must not be empty or infinite.
       :rtype: :ref:`Matrix`
-      :returns: a matrix ``mat`` such ``self * mat = rect``. Can for example be used to switch between page coordinates and corresponding positions of its pixmap.
+      :returns: a matrix ``mat`` such that ``self * mat = rect``. Can for example be used to transform between the page and the pixmap coordinates.
 
 
    .. method:: morph(fixpoint, matrix)

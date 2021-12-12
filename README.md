@@ -2,7 +2,7 @@
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: December 15, 2021
+Release date: December 12, 2021
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
@@ -60,11 +60,7 @@ Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tr
 Documentation is written using Sphinx and is available in various formats from the following sources. It currently is a combination of reference guide and user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq.html) chapters.
 
 * You can view it online at [Read the Docs](https://readthedocs.org/projects/pymupdf/). This site also provides download options for PDF.
-<<<<<<< Updated upstream
-* The search function on Read the Docs does not work for me currently. If you want a working searchable local version, please download a zipped HTML for [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
-=======
 * The search function on Read the Docs does not work for me currently. If you want a working searchable local version, please download a zipped HTML from [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
->>>>>>> Stashed changes
 * Find a Windows help file [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 
 The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/latest/changes.html).
@@ -81,12 +77,12 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade pymupdf
 ```
 
-There are **no mandatory** external dependencies. However, some **optional features** become available if additional packages are installed:
+There are **no mandatory** external dependencies. However, some **optional features** become available only if additional packages are installed:
 
 * [Pillow](https://pypi.org/project/Pillow/) for using pillow image output directly from PyMuPDF
-* [fontTools](https://pypi.org/project/fonttools/) for creating font subsets
-* [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) contains some nice fonts for your text output
-* [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract) for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location
+* [fontTools](https://pypi.org/project/fonttools/) for creating font subsets.
+* [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) contains some nice fonts for your text output.
+* [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract) for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location.
 
 
 Older wheels - also with support for older Python versions - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and on PyPI.

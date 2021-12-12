@@ -57,7 +57,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 :meth:`Rect.intersect`        common part with another rectangle
 :meth:`Rect.intersects`       checks for non-empty intersections
 :meth:`Rect.morph`            transform with a point and a matrix
-:meth:`Rect.torect`           the matrix that converts to another rectangle
+:meth:`Rect.torect`           the matrix that transforms to another rectangle
 :meth:`Rect.norm`             the Euclidean norm
 :meth:`Rect.normalize`        makes a rectangle valid
 :meth:`Rect.round`            create smallest :ref:`Irect` containing rectangle
@@ -183,26 +183,28 @@ The following remarks are also valid for :ref:`IRect` objects:
 
       *(New in version 1.19.3)*
       
-      Compute the matrix which transform this rectangle to a given one.
+      Compute the matrix which transforms this rectangle to a given one.
 
       :arg rect_like rect: the target rectangle. Must not be empty or infinite.
       :rtype: :ref:`Matrix`
-      :returns: a matrix ``mat`` such ``self * mat = rect``. Can for example be used to switch between page coordinates and corresponding positions of its pixmap.
+      :returns: a matrix ``mat`` such that ``self * mat = rect``. Can for example be used to transform between the page and the pixmap coordinates.
 
-         .. note:: Suppose you want to check whether any of the words "pixmap" is located in an area with the same color as the text (e.g. white on white). We can find out whether the text's area mostly consists of pixels of identical color:
+         .. note:: Suppose you want to check whether any of the words "pixmap" is invisible, because the text color equals the ambient color -- e.g. white on white. We make a pixmap and check the "color environment" of each word:
 
+            >>> # make a pixmap of the page
             >>> pix = page.get_pixmap(dpi=150)
+            >>> # make a matrix that transforms to pixmap coordinates
             >>> mat = page.rect.torect(pix.irect)
-            >>> # "mat" converts page coordinates to pixmap coordinates
+            >>> # search for text locations
             >>> rlist = page.search_for("pixmap")
-            >>> # then the following makes rectangles on the page's pixmap,
-            >>> # wich each encircle one "pixmap" occurrence:
+            >>> # check color environment of each occurrence
+            >>> # we will check for "almost unicolor"
             >>> for r in rlist:
                     if pix.color_topusage(clip=r * mat) > 0.95:
-                        print("Word 'pixmap' is invisible!")
+                        print("'pixmap' invisible here:", r)
             >>> 
 
-         Method :meth:`Pixmap.color_topusage` computes the percentage of pixels showing the same color.
+            Method :meth:`Pixmap.color_topusage` computes the percentage of pixels showing the same color.
 
 
    .. method:: morph(fixpoint, matrix)

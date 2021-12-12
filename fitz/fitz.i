@@ -8371,6 +8371,48 @@ struct Annot
         }
 
         //----------------------------------------------------------------
+        // annotation get IRT xref number
+        //----------------------------------------------------------------
+        PARENTCHECK(irt_xref, """annotation IRT xref""")
+        %pythoncode %{@property%}
+        PyObject *irt_xref()
+        {
+            pdf_annot *annot = (pdf_annot *) $self;
+            pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+            pdf_obj *irt = pdf_dict_get(gctx, annot_obj, PDF_NAME(IRT));
+            if (!irt) return PyLong_FromLong(0);
+            return PyLong_FromLong((long) pdf_to_num(gctx, irt));
+        }
+
+        //----------------------------------------------------------------
+        // annotation set IRT xref number
+        //----------------------------------------------------------------
+        FITZEXCEPTION(set_irt_xref, !result)
+        PARENTCHECK(set_irt_xref, """Set annotation IRT xref""")
+        PyObject *set_irt_xref(int xref)
+        {
+            fz_try(gctx) {
+                pdf_annot *annot = (pdf_annot *) $self;
+                pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
+                pdf_page *page = pdf_annot_page(gctx, annot);
+                if (!INRANGE(xref, 1, pdf_xref_len(gctx, page->doc) - 1))
+                    THROWMSG(gctx, "bad xref");
+                pdf_obj *irt = pdf_new_indirect(gctx, page->doc, xref, 0);
+                pdf_obj *subt = pdf_dict_get(gctx, irt, PDF_NAME(Subtype));
+                int irt_subt = pdf_annot_type_from_string(gctx, pdf_to_name(gctx, subt));
+                if (irt_subt < 0) {
+                    pdf_drop_obj(gctx, irt);
+                    THROWMSG(gctx, "xref not an annot");
+                }
+                pdf_dict_put_drop(gctx, annot_obj, PDF_NAME(IRT), irt);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------------------------------------
         // annotation get AP/N Matrix
         //----------------------------------------------------------------
         PARENTCHECK(apn_matrix, """annotation appearance matrix""")

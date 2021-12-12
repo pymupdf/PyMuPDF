@@ -32,6 +32,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 :meth:`Annot.set_blendmode`        set annotation's blend mode
 :meth:`Annot.set_colors`           set annotation's colors
 :meth:`Annot.set_flags`            set annotation's flags field
+:meth:`Annot.set_irt_xref`         define the annotation to being "In Response To"
 :meth:`Annot.set_name`             set annotation's name field
 :meth:`Annot.set_oc`               set :data:`xref` to an :data:`OCG` / :data:`OCMD`
 :meth:`Annot.set_opacity`          change transparency
@@ -46,6 +47,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 :attr:`Annot.colors`               border / background and fill colors
 :attr:`Annot.flags`                annotation flags
 :attr:`Annot.has_popup`            whether annotation has a Popup
+:attr:`Annot.irt_xref`             annotation to which this one responds
 :attr:`Annot.info`                 various information
 :attr:`Annot.is_open`              whether annotation or its Popup is open
 :attr:`Annot.line_ends`            start / end appearance of line-type annotations
@@ -171,6 +173,17 @@ There is a parent-child relationship between an annotation and its page. If the 
       Return the :data:`xref` of an optional content object, or zero if there is none.
 
       :returns: zero or the xref of an OCG (or OCMD).
+
+
+   .. method:: set_irt_xref(xref)
+
+      * New in v1.19.3
+
+      Set annotation to be "In Response To" another one.
+
+      :arg int xref: The :data:`xref` of another annotation.
+
+         .. note:: Must refer to an existing annotation on this page. Setting this property requires no subsequent ``update()``.
 
 
    .. method:: set_open(value)
@@ -474,6 +487,12 @@ There is a parent-child relationship between an annotation and its page. If the 
    .. attribute:: xref
 
       The PDF :data:`xref`.
+
+      :rtype: int
+
+   .. attribute:: irt_xref
+
+      The PDF :data:`xref` of an annotation to which this one responds. Return zero if this is no response annotation.
 
       :rtype: int
 

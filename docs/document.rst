@@ -1169,6 +1169,8 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: insert_pdf(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0, final=1)
 
+      * Changed in v1.19.3 - as a fix to issue `#537 <https://github.com/pymupdf/PyMuPDF/issues/537>`_, form fields are always excluded.
+
       PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Value -1 indicates default values. All pages thus copied will be rotated as specified. Links and annotations can be excluded in the target, see below. All page numbers are 0-based.
 
       :arg docsrc: An opened PDF *Document* which must not be the current document. However, it may refer to the same underlying file.
@@ -1183,7 +1185,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int rotate: All copied pages will be rotated by the provided value (degrees, integer multiple of 90).
 
       :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is *True*. Internal links to outside the copied page range are **always excluded**.
-      :arg bool annots: *(new in version 1.16.1)* choose whether annotations should be included in the copy.
+      :arg bool annots: *(new in version 1.16.1)* choose whether annotations should be included in the copy. *(Fixed in v1.19.3)* Form fields can never be copied.
       :arg int show_progress: *(new in version 1.17.7)* specify an interval size greater zero to see progress messages on ``sys.stdout``. After each interval, a message like ``Inserted 30 of 47 pages.`` will be printed.
       :arg int final: *(new in v1.18.0)* controls whether the list of already copied objects should be **dropped** after this method, default *True*. Set it to 0 except for the last one of multiple insertions from the same source PDF. This saves target file size and speeds up execution considerably.
 
