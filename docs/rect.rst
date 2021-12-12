@@ -200,7 +200,7 @@ The following remarks are also valid for :ref:`IRect` objects:
             >>> # check color environment of each occurrence
             >>> # we will check for "almost unicolor"
             >>> for r in rlist:
-                    if pix.color_topusage(clip=r * mat) > 0.95:
+                    if pix.color_topusage(clip=r * mat)[0] > 0.95:
                         print("'pixmap' invisible here:", r)
             >>> 
 
