@@ -19,31 +19,21 @@ PyMuPDF provides access to many important functions of MuPDF from within a Pytho
 
 PyMuPDF runs and has been tested on Mac, Linux and Windows for Python versions 3.6 and up. Other platforms should work too, as long as MuPDF and Python support them.
 
-PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_. We also are registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
+PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 
-For MS Windows and popular Python versions on Mac OSX and Linux we have created wheels. So installation should be convenient enough for hopefully most of our users: just issue
+For MS Windows, Mac OSX and Linux Python wheels are available -- please see the installation chapter.
 
-*pip install --upgrade pymupdf*
-
-If your platform is not among those supported with a wheel, your installation consists of two separate steps:
-
-1. Installation of MuPDF: this involves downloading the source from their website and then compiling it on your machine. Adjust *setup.py* to point to the right directories (next step), before you try generating PyMuPDF.
-
-2. Installation of PyMuPDF: this step is normal Python procedure. Usually you will have to adapt the *setup.py* to point to correct *include* and *lib* directories of your generated MuPDF.
-
-For installation details check out the respective chapter.
-
-There exist several `demo <https://github.com/pymupdf/PyMuPDF/tree/master/demo>`_ and `example <https://github.com/pymupdf/PyMuPDF/tree/master/examples>`_ programs in the main repository, ranging from simple code snippets to full-featured utilities, like text extraction, PDF joiners and bookmark maintenance.
-
-Interesting **PDF manipulation and generation** functions have been added over time, including metadata and bookmark maintenance, document restructuring, annotation / link handling and document or page creation.
+The GitHub repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
 
 Note on the Name *fitz*
 --------------------------
-The standard Python import statement for this library is *import fitz*. This has a historical reason:
+The top level Python import name for this library is **"fitz"**. This has historical reasons:
 
 The original rendering library for MuPDF was called *Libart*.
 
 *"After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called "Fitz". Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF."* (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
+
+So PyMuPDF **cannot coexist** with packages named "fitz" in the same Python environment.
 
 License and Copyright
 ----------------------
