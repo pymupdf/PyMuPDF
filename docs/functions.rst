@@ -22,7 +22,6 @@ Yet others are handy, general-purpose utilities.
 :meth:`ConversionHeader`             return header string for *get_text* methods
 :meth:`ConversionTrailer`            return trailer string for *get_text* methods
 :meth:`Document.del_xml_metadata`    PDF only: remove XML metadata
-:meth:`Document.delete_object`       PDF only: delete an object
 :meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
@@ -362,16 +361,6 @@ Yet others are handy, general-purpose utilities.
       :arg str output: type of document. Use the same as the output parameter of *get_text()*.
 
       :rtype: str
-
------
-
-   .. method:: Document.delete_object(xref)
-
-      PDF only: Delete an object given by its cross reference number.
-
-      :arg int xref: the cross reference number. Must be within the document's valid :data:`xref` range.
-
-      .. warning:: Only use with extreme care: this may make the PDF unreadable.
 
 -----
 
