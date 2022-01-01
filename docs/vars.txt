@@ -115,7 +115,7 @@ PDF_ENCRYPT_UNKNOWN unknown
 
 Font File Extensions
 -----------------------
-The table show file extensions you should use when extracting fonts from a PDF file.
+The table show file extensions you should use when saving fontfile buffers extracted from a PDF. This string is returned by :meth:`Document.get_page_fonts`, :meth:`Page.get_fonts` and :meth:`Document.extract_font`.
 
 ==== ============================================================================
 Ext  Description
@@ -125,7 +125,7 @@ pfa  Postscript for ASCII font (various subtypes)
 cff  Type1C font (compressed font equivalent to Type1)
 cid  character identifier font (postscript format)
 otf  OpenType font
-n/a  built-in font (:ref:`Base-14-Fonts` or CJK: cannot be extracted)
+n/a  not extractable, e.g. :ref:`Base-14-Fonts`, Type 3 fonts and others
 ==== ============================================================================
 
 .. _TextAlign:

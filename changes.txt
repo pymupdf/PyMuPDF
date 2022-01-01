@@ -5,7 +5,8 @@ Change Log
 
 **Changes in Version 1.19.4**
 
-The following is a preview of changes for verion 1.19.4.
+
+* **Fixed** `#1505 <https://github.com/pymupdf/PyMuPDF/issues/1505>`_. Immunize against circular outline items.
 
 * **Fixed** `#1484 <https://github.com/pymupdf/PyMuPDF/issues/1484>`_. Correct CropBox coordinates are now returned in all situations.
 

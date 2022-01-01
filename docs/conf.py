@@ -36,7 +36,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "PyMuPDF"
-copyright = "2015-2021, Jorj X. McKie"
+copyright = "2015-2022, Jorj X. McKie"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -164,8 +164,8 @@ html_use_index = True
 html_split_index = True
 
 # If true, links to the reST sources are added to the pages.
-html_show_sourcelink = False
-html_sourcelink_suffix = ""
+html_show_sourcelink = True
+html_sourcelink_suffix = ".txt"
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = True
 

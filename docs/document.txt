@@ -1534,31 +1534,37 @@ For details on **embedded files** refer to Appendix 3.
             Out[30]: 371177
 
 
-   .. method:: Document.extract_font(xref, info_only=False)
+   .. method:: Document.extract_font(xref, info_only=False, named=None)
+
+      * Changed in v1.19.4: return a dictionary if ``named == True``.
 
       PDF Only: Return an embedded font file's data and appropriate file extension. This can be used to store the font as an external file. The method does not throw exceptions (other than via checking for PDF and valid :data:`xref`).
 
       :arg int xref: PDF object number of the font to extract.
       :arg bool info_only: only return font information, not the buffer. To be used for information-only purposes, avoids allocation of large buffer areas.
+      :arg bool named: If true, a dictionary with the following keys is returned: 'name' (font base name), 'ext' (font file extension), 'type' (font type), 'content' (font file content).
 
-      :rtype: tuple
-      :returns: a tuple *(basename, ext, subtype, buffer)*, where *ext* is a 3-byte suggested file extension (*str*), *basename* is the font's name (*str*), *subtype* is the font's type (e.g. "Type1") and *buffer* is a bytes object containing the font file's content (or *b""*). For possible extension values and their meaning see :ref:`FontExtensions`. Return details on error:
+      :rtype: tuple,dict
+      :returns: a tuple ``(basename, ext, type, content)``, where *ext* is a 3-byte suggested file extension (*str*), *basename* is the font's name (*str*), *type* is the font's type (e.g. "Type1") and *content* is a bytes object containing the font file's content (or *b""*). For possible extension values and their meaning see :ref:`FontExtensions`. Return details on error:
 
-            * *("", "", "", b"")* -- invalid xref or xref is not a (valid) font object.
-            * *(basename, "n/a", "Type1", b"")* -- *basename* is not embedded and thus cannot be extracted. This is the case for e.g. the :ref:`Base-14-Fonts`.
+            * ``("", "", "", b"")`` -- invalid xref or xref is not a (valid) font object.
+            * ``(basename, "n/a", "Type1", b"")`` -- *basename* is not embedded and thus cannot be extracted. This is the case for e.g. the :ref:`Base-14-Fonts` and Type 3 fonts.
 
       Example:
 
       >>> # store font as an external file
-      >>> name, ext, buffer = doc.extract_font(4711)
-      >>> # assuming buffer is not None:
+      >>> name, ext, _, content = doc.extract_font(4711)
+      >>> # assuming content is not None:
       >>> ofile = open(name + "." + ext, "wb")
-      >>> ofile.write(buffer)
+      >>> ofile.write(content)
       >>> ofile.close()
 
       .. warning:: The basename is returned unchanged from the PDF. So it may contain characters (such as blanks) which may disqualify it as a filename for your operating system. Take appropriate action.
 
-      .. note: The returned *basename* in general is **not** the original file name, but it probably has some similarity.
+      .. note::
+         * The returned *basename* in general is **not** the original file name, but it probably has some similarity.
+         * If parameter ``named == True``, a dictionary with the following keys is returned: ``{'name': 'T1', 'ext': 'n/a', 'type': 'Type3', 'content': b''}``.
+
 
 
 
