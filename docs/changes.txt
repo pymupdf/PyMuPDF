@@ -19,6 +19,8 @@ The following is a preview of changes for verion 1.19.4.
 
 * **Changed** :meth:`Document.xref_set_key` such that dictionary keys will physically be removed if set to value ``"null"``.
 
+* **Changed** :meth:`Document.extract_font` to optionally return a dictionary (instead of a tuple).
+
 ------
 
 **Changes in Version 1.19.3**
