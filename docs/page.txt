@@ -82,8 +82,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.get_svg_image`         create a page image in SVG format
 :meth:`Page.get_text`              extract the page's text
 :meth:`Page.get_textbox`           extract text contained in a rectangle
-:meth:`Page.get_textpage`          create a TextPage for the page
 :meth:`Page.get_textpage_ocr`      create a TextPage with OCR for the page
+:meth:`Page.get_textpage`          create a TextPage for the page
 :meth:`Page.get_xobjects`          PDF only: get list of referenced xobjects
 :meth:`Page.insert_font`           PDF only: insert a font for use by the page
 :meth:`Page.insert_image`          PDF only: insert an image
@@ -95,15 +95,21 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
 :meth:`Page.search_for`            search for a string
-:meth:`Page.set_cropbox`           PDF only: modify the visible page
-:meth:`Page.set_mediabox`          PDF only: modify the mediabox
+:meth:`Page.set_artbox`            PDF only: modify ``/ArtBox``
+:meth:`Page.set_bleedbox`          PDF only: modify ``/BleedBox``
+:meth:`Page.set_cropbox`           PDF only: modify the :data:`cropbox` (visible page)
+:meth:`Page.set_mediabox`          PDF only: modify ``/MediaBox``
 :meth:`Page.set_rotation`          PDF only: set page rotation
+:meth:`Page.set_trimbox`           PDF only: modify ``/TrimBox``
 :meth:`Page.show_pdf_page`         PDF only: display PDF page image
 :meth:`Page.update_link`           PDF only: modify a link
 :meth:`Page.widgets`               return a generator over the fields on the page
 :meth:`Page.write_text`            write one or more :ref:`Textwriter` objects
 :attr:`Page.cropbox_position`      displacement of the :data:`cropbox`
 :attr:`Page.cropbox`               the page's :data:`cropbox`
+:attr:`Page.artbox`                the page's ``/ArtBox``
+:attr:`Page.bleedbox`              the page's ``/BleedBox``
+:attr:`Page.trimbox`               the page's ``/TrimBox``
 :attr:`Page.derotation_matrix`     PDF only: get coordinates in unrotated page space
 :attr:`Page.first_annot`           first :ref:`Annot` on the page
 :attr:`Page.first_link`            first :ref:`Link` on the page
@@ -923,21 +929,21 @@ In a nutshell, this is what you can do with PyMuPDF:
          6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
    .. index::
-      pair: blocks; get_text
-      pair: dict; get_text
-      pair: clip; get_text
-      pair: flags; get_text
-      pair: html; get_text
-      pair: json; get_text
-      pair: rawdict; get_text
-      pair: text; get_text
-      pair: words; get_text
-      pair: xhtml; get_text
-      pair: xml; get_text
-      pair: textpage; get_text
-      pair: sort; get_text
+      pair: blocks; Page.get_text
+      pair: dict; Page.get_text
+      pair: clip; Page.get_text
+      pair: flags; Page.get_text
+      pair: html; Page.get_text
+      pair: json; Page.get_text
+      pair: rawdict; Page.get_text
+      pair: text; Page.get_text
+      pair: words; Page.get_text
+      pair: xhtml; Page.get_text
+      pair: xml; Page.get_text
+      pair: textpage; Page.get_text
+      pair: sort; Page.get_text
 
-   .. method:: get_text(opt="text", clip=None, flags=None, textpage=None, sort=False)
+   .. method:: get_text(opt,*, clip=None, flags=None, textpage=None, sort=False)
 
       * Changed in v1.19.0: added ``textpage`` parameter
       * Changed in v1.19.1: added ``sort`` parameter
@@ -1245,11 +1251,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: matrix; get_pixmap
       pair: dpi; get_pixmap
 
-   .. method:: get_pixmap(matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
+   .. method:: get_pixmap(*, matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
 
      * Changed in v1.19.2: added support of parameter dpi.
 
      Create a pixmap from the page. This is probably the most often used method to create a :ref:`Pixmap`.
+
+     All parameters are *keyword-only.*
 
      :arg matrix_like matrix: default is :ref:`Identity`.
      :arg int dpi: (new in v1.19.2) desired resolution in x and y direction. If not ``None``, the ``"matrix"`` parameter is ignored.
@@ -1338,7 +1346,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: set_rotation(rotate)
 
-      PDF only: Sets the rotation of the page.
+      PDF only: Set the rotation of the page.
 
       :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
 
@@ -1445,43 +1453,45 @@ In a nutshell, this is what you can do with PyMuPDF:
          * There is a tricky aspect: the search logic regards **contiguous multiple occurrences** of *needle* as one: assuming *needle* is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one for "abc", and a second one for "abcabc".
          * You can always use :meth:`Page.get_textbox` to check what text actually is being surrounded by each rectangle.
 
-      .. note:: A feature repeatedly asked for is supporting regular expressions when specifying the ``"needle"`` string: **There is no way to do this.** If you need something in that direction, first extract text in a suitable format and then subselect the result by matching its text portions with some regex pattern::
+      .. note:: A feature repeatedly asked for is supporting **regular expressions** when specifying the ``"needle"`` string: **There is no way to do this.** If you need something in that direction, first extract text in the desired format and then subselect the result by matching with some regex pattern. Here is an example for matching words::
 
-         >>> pattern = re.compile(r"...")
-         >>> words = page.get_text("words")
+         >>> pattern = re.compile(r"...")  # the regex pattern
+         >>> words = page.get_text("words")  # extract words on page
          >>> matches = [w for w in words if pattern.search(w[4])]
 
-      The ``matches`` list will contain the words matching the regex pattern.
+         The ``matches`` list will contain the words matching the given pattern. In the same way you can select ``span["text"]`` from the output of ``page.get_text("dict")``.
 
 
    .. method:: set_mediabox(r)
+
+      * Changed in v1.19.4: remove all other rectangle definitions.
 
       PDF only: *(New in v1.16.13)* Change the physical page dimension by setting :data:`mediabox` in the page's object definition.
 
       :arg rect-like r: the new :data:`mediabox` value.
 
-      .. note:: This method also sets the page's :data:`cropbox` to the same value -- to prevent mismatches caused by values further up in the parent hierarchy.
+      .. note:: This method also removes the page's other (optional) rectangles (:data:`cropbox`, ArtBox, TrimBox and Bleedbox) to prevent inconsistent situations. This will cause those to assume their default values.
 
-      .. caution:: For non-empty pages this may have undesired effects, because content depends on this value and will change position or even disappear.
+      .. caution:: For non-empty pages this may have undesired effects, because the location of all content depends on this value and will therefore change position or even disappear.
 
 
    .. method:: set_cropbox(r)
 
       PDF only: change the visible part of the page.
 
-      :arg rect_like r: the new visible area of the page. Note that this **must** be specified in **unrotated coordinates**.
+      :arg rect_like r: the new visible area of the page. Note that this **must** be specified in **unrotated coordinates**, not empty, nor infinite and be completely contained in the :attr:`Page.mediabox`.
 
-      After execution if the page is not rotated, :attr:`Page.rect` will equal this rectangle, but shifted to the top-left position (0, 0) if necessary. Example session:
+      After execution **(if the page is not rotated)**, :attr:`Page.rect` will equal this rectangle, but be shifted to the top-left position (0, 0) if necessary. Example session:
 
       >>> page = doc.new_page()
       >>> page.rect
       fitz.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
-      >>> page.cropbox                   # cropbox and mediabox still equal
+      >>> page.cropbox  # cropbox and mediabox still equal
       fitz.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
       >>> # now set cropbox to a part of the page
-      >>> page.setcropbox(fitz.Rect(100, 100, 400, 400))
+      >>> page.set_cropbox(fitz.Rect(100, 100, 400, 400))
       >>> # this will also change the "rect" property:
       >>> page.rect
       fitz.Rect(0.0, 0.0, 300.0, 300.0)
@@ -1490,10 +1500,22 @@ In a nutshell, this is what you can do with PyMuPDF:
       >>> page.mediabox
       fitz.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
-      >>> # revert everything we did
-      >>> page.setcropbox(page.mediabox)
-      >>> page.rect
-      fitz.Rect(0.0, 0.0, 595.0, 842.0)
+      >>> # revert CropBox change
+      >>> # either set it to MediaBox
+      >>> page.set_cropbox(page.mediabox)
+      >>> # or 'refresh' MediaBox: will remove all other rectangles
+      >>> page.set_mediabox(page.mediabox)
+
+   .. method:: set_artbox(r)
+
+   .. method:: set_bleedbox(r)
+
+   .. method:: set_trimbox(r)
+
+      * New in v1.19.4
+
+      PDF only: Set the resp. rectangle in the page object. For the meaning of these objects see :ref:`AdobeManual`, page 77. Parameter and restrictions are the same as for :meth:`Page.set_cropbox`.
+
 
    .. attribute:: rotation
 
@@ -1503,17 +1525,27 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. attribute:: cropbox_position
 
-      Contains the top-left point of the page's */CropBox* for a PDF, otherwise *Point(0, 0)*.
+      Contains the top-left point of the page's ``/CropBox`` for a PDF, otherwise *Point(0, 0)*.
 
       :type: :ref:`Point`
 
    .. attribute:: cropbox
 
-      The page's */CropBox* for a PDF. Always the **unrotated** page rectangle is returned. For a non-PDF this will always equal the page rectangle.
+      The page's ``/CropBox`` for a PDF. Always the **unrotated** page rectangle is returned. For a non-PDF this will always equal the page rectangle.
 
       .. note:: In PDF, the relationship between ``/MediaBox``, ``/CropBox`` and page rectangle may sometimes be confusing, please do lookup the glossary for :data:`MediaBox`.
 
       :type: :ref:`Rect`
+
+   .. attribute:: artbox
+
+   .. attribute:: bleedbox
+
+   .. attribute:: trimbox
+
+      The page's ``/ArtBox``, ``/BleedBox``, ``/TrimBox``, respectively. If not provided, defaulting to :attr:`Page.cropbox`.
+
+      :type: :ref:`Rect:
 
    .. attribute:: mediabox_size
 
@@ -1527,7 +1559,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :type: :ref:`Rect`
 
-      .. note:: For most PDF documents and for **all other document types**, *page.rect == page.cropbox == page.mediabox* is true. However, for some PDFs the visible page is a true subset of :data:`mediabox`. Also, if the page is rotated, its ``Page.rect`` may not equal ``Page.cropbox``. In these cases the above attributes help to correctly locate page elements.
+      .. note:: For most PDF documents and for **all other document types**, ``page.rect == page.cropbox == page.mediabox`` is true. However, for some PDFs the visible page is a true subset of :data:`mediabox`. Also, if the page is rotated, its ``Page.rect`` may not equal ``Page.cropbox``. In these cases the above attributes help to correctly locate page elements.
 
    .. attribute:: transformation_matrix
 

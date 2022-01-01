@@ -639,9 +639,9 @@ For details on **embedded files** refer to Appendix 3.
           * "doc.pages(-1, -10)" always emits 10 pages in reversed order, starting with the last page -- **repeatedly** if the document has less than 10 pages. So for a 4-page document the following page numbers are emitted: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3.
 
     .. index::
-       pair: from_page; convert_to_pdf (Document method)
-       pair: to_page; convert_to_pdf (Document method)
-       pair: rotate; convert_to_pdf (Document method)
+       pair: from_page; Document.convert_to_pdf
+       pair: to_page; Document.convert_to_pdf
+       pair: rotate; Document.convert_to_pdf
 
     .. method:: convert_to_pdf(from_page=-1, to_page=-1, rotate=0)
 
@@ -660,11 +660,11 @@ For details on **embedded files** refer to Appendix 3.
           >>> xps = fitz.open("some.xps")
           >>> pdfbytes = xps.convert_to_pdf()
           >>>
-          >>> # either do this --->
+          >>> # either do this -->
           >>> pdf = fitz.open("pdf", pdfbytes)
           >>> pdf.save("some.pdf")
           >>>
-          >>> # or this --->
+          >>> # or this -->
           >>> pdfout = open("some.pdf", "wb")
           >>> pdfout.tobytes(pdfbytes)
           >>> pdfout.close()
@@ -781,7 +781,8 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: xref_set_key(xref, key, value)
 
-      *(New in v 1.18.7, changed in v 1.18.13)*
+      * New in v1.18.7, changed in v 1.18.13
+      * Changed in v1.19.4: remove a key "physically" if set to "null".
 
       PDF only: Set (add, update, delete) the value of a PDF key for the object given by an xref.
       
@@ -789,14 +790,14 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int xref: the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, specify -1.
       :arg str key: the desired PDF key (without leading "/"). Must not be empty. Any valid PDF key -- whether already present in the object (which will be overwritten) -- or new. It is possible to use PDF path notation like ``"Resources/ExtGState"`` -- which sets the value for key ``"/ExtGState"`` as a sub-object of ``"/Resources"``.
-      :arg str value: the value for the key. It must be a non-empty string and, depending on the desired PDF object type, the following rules must be observed. There is some syntax checking, but **no type checking** and no checking if it makes sense PDF-wise, i.e. **no semantics checking**. Upper or lower case are important!
+      :arg str value: the value for the key. It must be a non-empty string and, depending on the desired PDF object type, the following rules must be observed. There is some syntax checking, but **no type checking** and no checking if it makes sense PDF-wise, i.e. **no semantics checking**. Upper / lower case is important!
 
           * **xref** -- must be provided as ``"nnn 0 R"`` with a valid :data:`xref` number nnn of the PDF. The suffix "``0 R``" is required to be recognizable as an xref by PDF applications.
-          * **array** -- a string like ``"[a b c d e f]"``. The brackets are required. Array items must be separated by at least one space (not commas like in Python). An empty array ``"[]"`` is possible and equivalent to removing the key. Array items may be any PDF objects, like dictionaries, xrefs, other arrays, etc. Like in Python, array items may be of different types.
-          * **dict** -- a string like ``"<< ... >>"``. The brackets are required and must enclose a valid PDF dictionary definition. The empty dictionary ``"<<>>"`` is possible and equivalent to removing the key.
+          * **array** -- a string like ``"[a b c d e f]"``. The brackets are required. Array items must be separated by at least one space (not commas like in Python). An empty array ``"[]"`` is possible and *equivalent* to removing the key. Array items may be any PDF objects, like dictionaries, xrefs, other arrays, etc. Like in Python, array items may be of different types.
+          * **dict** -- a string like ``"<< ... >>"``. The brackets are required and must enclose a valid PDF dictionary definition. The empty dictionary ``"<<>>"`` is possible and *equivalent* to removing the key.
           * **int** -- an integer formatted **as a string**.
           * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is **not allowed by PDF**.
-          * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection.
+          * **null** -- the string ``"null"``. This is the PDF equivalent to Python's ``None`` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection. *Changed in v1.19.4:* If the key is no path hierarchy (i.e. contains no slash "/"), then it will be completely removed.
           * **bool** -- one of the strings ``"true"`` or ``"false"``.
           * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 16 of the :ref:`AdobeManual`.
           * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as ``"()"``. Depending on its content, the possible brackets are
@@ -804,14 +805,14 @@ For details on **embedded files** refer to Appendix 3.
             - "(...)" for ASCII-only text. Reserved PDF characters must be backslash-escaped and non-ASCII characters must be provided as 3-digit backslash-escaped octals -- including leading zeros. Example: 12 = 0x0C must be encoded as ``\014``.
             - "<...>" for hex-encoded text. Every character must be represented by two hex-digits (lower or upper case).
           
-          * If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. E.g. it will do conversions like these:
+            - If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. It will for example do conversions like these:
 
-            >>> # because of the € symbol, the following yields UTF-16BE BOM
-            >>> fitz.get_pdf_str("Pay in $ or €.")
-            '<feff00500061007900200069006e002000240020006f0072002020ac002e>'
-            >>> # escapes for brackets and non-ASCII
-            >>> fitz.get_pdf_str("Prices in EUR (USD also accepted). Areas are in m².")
-            '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
+              >>> # because of the € symbol, the following yields UTF-16BE BOM
+              >>> fitz.get_pdf_str("Pay in $ or €.")
+              '<feff00500061007900200069006e002000240020006f0072002020ac002e>'
+              >>> # escapes for brackets and non-ASCII
+              >>> fitz.get_pdf_str("Prices in EUR (USD also accepted). Areas are in m².")
+              '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
 
 
     .. method:: get_page_pixmap(pno, *args, **kwargs)
@@ -917,10 +918,10 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: str
 
     .. index::
-       pair: fontsize; layout (Document method)
-       pair: rect; layout (Document method)
-       pair: width; layout (Document method)
-       pair: height; layout (Document method)
+       pair: fontsize; Document.layout
+       pair: rect; Document.layout
+       pair: width; Document.layout
+       pair: height; Document.layout
 
     .. method:: layout(rect=None, width=0, height=0, fontsize=11)
 
@@ -1159,13 +1160,13 @@ For details on **embedded files** refer to Appendix 3.
        Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.search_for`. Any integer ``-∞ < pno < page_count`` is acceptable.
 
     .. index::
-       pair: from_page; insert_pdf (Document method)
-       pair: to_page; insert_pdf (Document method)
-       pair: start_at; insert_pdf (Document method)
-       pair: rotate; insert_pdf (Document method)
-       pair: links; insert_pdf (Document method)
-       pair: annots; insert_pdf (Document method)
-       pair: show_progress; insert_pdf (Document method)
+       pair: from_page; Document.insert_pdf
+       pair: to_page; Document.insert_pdf
+       pair: start_at; Document.insert_pdf
+       pair: rotate; Document.insert_pdf
+       pair: links; Document.insert_pdf
+       pair: annots; Document.insert_pdf
+       pair: show_progress; Document.insert_pdf
 
     .. method:: insert_pdf(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0, final=1)
 
@@ -1196,8 +1197,8 @@ For details on **embedded files** refer to Appendix 3.
        2. *docsrc* TOC entries **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
     .. index::
-       pair: width; new_page (Document method)
-       pair: height; new_page (Document method)
+       pair: width; Document.new_page
+       pair: height; Document.new_page
 
     .. method:: new_page(pno=-1, width=595, height=842)
 
@@ -1212,12 +1213,12 @@ For details on **embedded files** refer to Appendix 3.
       :returns: the created page object.
 
     .. index::
-       pair: fontsize; insert_page (Document method)
-       pair: width; insert_page (Document method)
-       pair: height; insert_page (Document method)
-       pair: fontname; insert_page (Document method)
-       pair: fontfile; insert_page (Document method)
-       pair: color; insert_page (Document method)
+       pair: fontsize; Document.insert_page
+       pair: width; Document.insert_page
+       pair: height; Document.insert_page
+       pair: fontname; Document.insert_page
+       pair: fontfile; Document.insert_page
+       pair: color; Document.insert_page
 
     .. method:: insert_page(pno, text=None, fontsize=11, width=595, height=842, fontname="helv", fontfile=None, color=None)
 
@@ -1297,7 +1298,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Make a full copy (duplicate) of a page.
 
-      :arg int pno: the page to be duplicated. Must be in range *0 <= pno < len(doc)*.
+      :arg int pno: the page to be duplicated. Must be in range ``0 <= pno < page_count``.
 
       :arg int to: the page number in front of which to copy. The default inserts **after** the last page.
 
@@ -1311,7 +1312,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Move (copy and then delete original) a page within the document.
 
-      :arg int pno: the page to be moved. Must be in range *0 <= pno < len(doc)*.
+      :arg int pno: the page to be moved. Must be in range ``0 <= pno < page_count``.
 
       :arg int to: the page number in front of which to insert the moved page. The default moves **after** the last page.
 
@@ -1333,7 +1334,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: get_sigflags()
 
-      PDF only: Return whether the document contains signature fields. This is an optional PDF property: if not present (return value -1), no conclusions can be drawn -- the PDF creator may just not have bothered to use it.
+      PDF only: Return whether the document contains signature fields. This is an optional PDF property: if not present (return value -1), no conclusions can be drawn -- the PDF creator may just not have bothered using it.
 
       :rtype: int
       :returns:
@@ -1342,9 +1343,9 @@ For details on **embedded files** refer to Appendix 3.
          * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
 
     .. index::
-       pair: filename; embfile_add (Document method)
-       pair: ufilename; embfile_add (Document method)
-       pair: desc; embfile_add (Document method)
+       pair: filename; Document.embfile_add
+       pair: ufilename; Document.embfile_add
+       pair: desc; Document.embfile_add
 
     .. method:: embfile_add(name, buffer, filename=None, ufilename=None, desc=None)
 
@@ -1423,9 +1424,9 @@ For details on **embedded files** refer to Appendix 3.
       :rtype: list
 
     .. index::
-       pair: filename; embfile_upd (Document method)
-       pair: ufilename; embfile_upd (Document method)
-       pair: desc; embfile_upd (Document method)
+       pair: filename; Document.embfile_upd
+       pair: ufilename; Document.embfile_upd
+       pair: desc; Document.embfile_upd
 
     .. method:: embfile_upd(item, buffer=None, filename=None, ufilename=None, desc=None)
 
@@ -1448,7 +1449,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: close()
 
-      Release objects and space allocations associated with the document. If created from a file, also closes *filename* (releasing control to the OS).
+      Release objects and space allocations associated with the document. If created from a file, also closes *filename* (releasing control to the OS). Explicitely closing a document is equivalent to deleting it, ``del doc``, or assigning it to something else like ``doc = None``.
 
     .. method:: xref_object(xref, compressed=False, ascii=False)
 

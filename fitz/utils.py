@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 #
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
@@ -18,6 +18,7 @@ import tempfile
 
 from fitz import *
 
+TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
 rect_like = "rect_like"
 matrix_like = "matrix_like"
@@ -586,6 +587,8 @@ def get_textpage_ocr(
         full: (bool) whether to OCR the full page image, or only its images (default)
     """
     CheckParent(page)
+    if not TESSDATA_PREFIX:
+        raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
 
     def full_ocr(page, dpi, language, flags):
         zoom = dpi / 72
@@ -1177,26 +1180,21 @@ def set_metadata(doc: Document, m: dict) -> None:
         info_xref = 0
     else:
         info_xref = int(temp.replace("0 R", ""))
-    if m == {} and info_xref == 0:
+
+    if m == {} and info_xref == 0:  # nothing to do
         return
 
-    if info_xref == 0:
-        info_xref = doc.get_new_xref()  # get a new xref
+    if info_xref == 0:  # no prev metadata: get new xref
+        info_xref = doc.get_new_xref()
         doc.update_object(info_xref, "<<>>")  # fill it with empty object
         doc.xref_set_key(-1, "Info", "%i 0 R" % info_xref)
-    elif m == {}:
+    elif m == {}:  # remove existing metadata
         doc.xref_set_key(-1, "Info", "null")
+        return
 
-    for v in keymap.values():
-        if v == None:
-            continue
-        doc.xref_set_key(info_xref, v, "null")
-    for k in m.keys():
-        if keymap[k] == None:
-            continue
-        pdf_key = keymap[k]
-        val = m[k]
-        if not bool(val) or not type(val) is str or val == "none":
+    for key, val in [(k, v) for k, v in m.items() if keymap[k] != None]:
+        pdf_key = keymap[key]
+        if not bool(val) or val in ("none", "null"):
             val = "null"
         else:
             val = get_pdf_str(val)

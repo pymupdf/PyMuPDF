@@ -1,6 +1,6 @@
 %pythoncode %{
 # ------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 #
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
@@ -952,7 +952,7 @@ def CheckParent(o: typing.Any):
 
 
 def EnsureOwnership(o: typing.Any):
-    if getattr(o, "this", None) and not o.this.own():
+    if not getattr(o, "thisown", False):
         raise RuntimeError("object destroyed")
 
 

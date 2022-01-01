@@ -426,15 +426,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :rtype: dict or int
       :returns: either the number of colors, or a dictionary with the items ``pixel: count``. The pixel key is a ``bytes`` object of length :attr:`Pixmap.n`.
       
-         .. note:: To recover the **tuple** of a pixel, use ``tuple(map(int, colors.keys()[i]))`` for the i-th item. For example:
-
-               >>> pix=fitz.Pixmap("sierpinski-carpet.png")
-               >>> colors = pix.color_count(True)
-               >>> print(colors)
-               {b'\xff\xef\xd5': 262144, b'\x00\x00\xff': 269297}
-               >>> [tuple(map(int, c)) for c in colors.keys()]
-               [(255, 239, 213), (0, 0, 255)]
-
+         .. note:: To recover the **tuple** of a pixel, use ``tuple(colors.keys()[i])`` for the i-th item.
 
             * The response time depends on the pixmap's samples size and may be more than a second for very large pixmaps.
             * Where applicable, pixels with different alpha values will be treated as different colors.
@@ -448,7 +440,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
       :rtype: tuple[float, bytes]
-      :returns: A tuple ``(ratio, pixel)`` where ``0 < ratio <= 1`` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: e.g. a response ``(0.95, b"\x00\x00\x00")`` means that 95% of all pixels are black.
+      :returns: A tuple ``(ratio, pixel)`` where ``0 < ratio <= 1`` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: a response ``(0.95, b"\x00\x00\x00")`` means that 95% of all pixels are black.
 
 
    .. attribute:: alpha

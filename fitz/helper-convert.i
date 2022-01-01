@@ -1,7 +1,7 @@
 %{
 /*
 # ------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 #
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
@@ -37,8 +37,6 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
             page = fz_load_page(ctx, doc, i);
             mediabox = fz_bound_page(ctx, page);
             dev = pdf_page_write(ctx, pdfout, mediabox, &resources, &contents);
-            if (no_device_caching)
-                fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
             fz_run_page(ctx, page, dev, fz_identity, NULL);
             fz_close_device(ctx, dev);
             fz_drop_device(ctx, dev);

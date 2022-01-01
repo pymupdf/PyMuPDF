@@ -10,7 +10,7 @@ def modify_search_index(app, exception):
             searchfile.close()
             p1 = data1.find("filenames:[")
             p2 = data1.find("]", p1)
-            s = data1[p1:p2].replace(".rst", "")
+            s = data1[p1:p2].replace(".txt", "")
             data2 = data1[:p1]
             data2 += s
             data2 += data1[p2:]

@@ -63,6 +63,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
+:attr:`TESSDATA_PREFIX`              a copy of ``os.environ["TESSDATA_PREFIX"]``
 ==================================== ==============================================================
 
    .. method:: paper_size(s)
@@ -267,6 +268,18 @@ Yet others are handy, general-purpose utilities.
       If ``pymupdf-fonts`` is not installed, the dictionary is empty.
 
       The dictionary keys can be used to define a :ref:`Font` via e.g. ``font = fitz.Font("fimo")`` -- just like you can do it with the builtin fonts "Helvetica" and friends.
+
+-----
+
+   .. attribute:: TESSDATA_PREFIX
+
+      *(New in v1.19.4)*
+
+      Copy of ``os.environ["TESSDATA_PREFIX"]`` for convenient checking whether there is integrated Tesseract OCR support.
+
+      If this attribute is ``None``, Tesseract-OCR is either not installed, or the environment variable is not set to point to Tesseract's language support folder.
+
+      .. note:: This variable is now checked before OCR functions are tried. This prevents verbose messages from MuPDF.
 
 -----
 

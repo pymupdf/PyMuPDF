@@ -99,7 +99,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
         **"Space Mono"** is another nice and small mono-spaced font from Google Fonts, which supports Latin Extended characters and comes with all 4 important weights.
 
-        The following table maps a fontname code to the corresponding font:
+        The following table maps a fontname code to the corresponding font. For the current content of the package please see its documentation:
 
             =========== =========================== ======= =============================
             Code        Fontname                    New in  Comment
@@ -125,9 +125,9 @@ A Font object also contains useful general information, like the font bbox, the 
             =========== =========================== ======= =============================
 
    .. index::
-      pair: has_glyph, language
-      pair: has_glyph, script
-      pair: has_glyph, fallback
+      pair: Font.has_glyph, language
+      pair: Font.has_glyph, script
+      pair: Font.has_glyph, fallback
 
    .. method:: has_glyph(chr, language=None, script=0, fallback=False)
 
@@ -176,9 +176,9 @@ A Font object also contains useful general information, like the font bbox, the 
       .. note:: This method only returns meaningful data for fonts having a CMAP (character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array will have length 1 and contain zero only.
 
    .. index::
-      pair: glyph_advance, language
-      pair: glyph_advance, script
-      pair: glyph_advance, wmode
+      pair: Font.glyph_advance, language
+      pair: Font.glyph_advance, script
+      pair: Font.glyph_advance, wmode
 
    .. method:: glyph_advance(chr, language=None, script=0, wmode=0)
 
@@ -204,8 +204,8 @@ A Font object also contains useful general information, like the font bbox, the 
          True
 
    .. index::
-      pair: glyph_bbox, language
-      pair: glyph_bbox, script
+      pair: Font.glyph_bbox, language
+      pair: Font.glyph_bbox, script
 
    .. method:: glyph_bbox(chr, language=None, script=0)
 

@@ -53,10 +53,10 @@ A display list is populated with objects from a page, usually by executing :meth
       :type area: :ref:`Rect`
 
    .. index::
-      pair: matrix; get_pixmap
-      pair: colorspace; get_pixmap
-      pair: clip; get_pixmap
-      pair: alpha; get_pixmap
+      pair: matrix; DisplayList.get_pixmap
+      pair: colorspace; DisplayList.get_pixmap
+      pair: clip; DisplayList.get_pixmap
+      pair: alpha; DisplayList.get_pixmap
 
    .. method:: get_pixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, alpha=0, clip=None)
 

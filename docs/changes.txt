@@ -3,6 +3,24 @@ Change Log
 
 ------
 
+**Changes in Version 1.19.4**
+
+The following is a preview of changes for verion 1.19.4.
+
+* **Fixed** `#1484 <https://github.com/pymupdf/PyMuPDF/issues/1484>`_. Correct CropBox coordinates are now returned in all situations.
+
+* **Fixed** `#1479 <https://github.com/pymupdf/PyMuPDF/issues/1479>`_.
+
+* **Fixed** `#1474 <https://github.com/pymupdf/PyMuPDF/issues/1474>`_. TextPage objects are now properly deleted again.
+
+* **Added** :ref:`Page` methods and attributes for PDF ``/ArtBox``, ``/BleedBox``, ``/TrimBox``.
+
+* **Added** global attribute :attr:`TESSDATA_PREFIX` for easy checking of OCR support.
+
+* **Changed** :meth:`Document.xref_set_key` such that dictionary keys will physically be removed if set to value ``"null"``.
+
+------
+
 **Changes in Version 1.19.3**
 
 This patch version implements minor improvements for :ref:`Pixmap` and also some important fixes.

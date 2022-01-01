@@ -1,0 +1,23 @@
+**PyMuPDF Documentation**
+=================================
+
+.. toctree::
+   :maxdepth: 4
+
+   intro.txt
+   installation.txt
+   tutorial.txt
+   faq.txt
+   module.txt
+   classes.txt
+   algebra.txt
+   lowlevel.txt
+   glossary.txt
+   vars.txt
+   colors.txt
+   app1.txt
+   app2.txt
+   app3.txt
+   app4.txt
+   changes.txt
+   znames.txt

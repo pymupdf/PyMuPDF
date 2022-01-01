@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 # Part of "PyMuPDF", Python bindings for "MuPDF" (http://mupdf.com), a
 # lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is

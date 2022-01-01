@@ -26,7 +26,7 @@ extensions = [
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-# source_suffix = ""
+source_suffix = ".txt"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -43,7 +43,7 @@ copyright = "2015-2021, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.19.3"
+release = "1.19.4"
 
 # The short X.Y version
 version = release

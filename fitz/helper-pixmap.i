@@ -1,7 +1,7 @@
 %{
 /*
 # ------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 #
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
@@ -254,13 +254,9 @@ JM_pixmap_from_display_list(fz_context *ctx,
     fz_try(ctx) {
         if (!fz_is_infinite_rect(rclip)) {
             dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
-            if (no_device_caching)
-                fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
             fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
         } else {
             dev = fz_new_draw_device(ctx, matrix, pix);
-            if (no_device_caching)
-                fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
             fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
         }
 
@@ -357,8 +353,6 @@ JM_pixmap_from_page(fz_context *ctx,
         }
 
         dev = fz_new_draw_device(ctx, matrix, pix);
-        if (no_device_caching)
-            fz_enable_device_hints(ctx, dev, FZ_NO_CACHE);
         if (annots) {
             fz_run_page(ctx, page, dev, fz_identity, NULL);
         } else {

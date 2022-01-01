@@ -67,10 +67,10 @@ There is a parent-child relationship between an annotation and its page. If the 
 .. class:: Annot
 
    .. index::
-      pair: matrix; get_pixmap
-      pair: colorspace; get_pixmap
-      pair: alpha; get_pixmap
-      pair: dpi; get_pixmap
+      pair: matrix; Annot.get_pixmap
+      pair: colorspace; Annot.get_pixmap
+      pair: alpha; Annot.get_pixmap
+      pair: dpi; Annot.get_pixmap
 
    .. method:: get_pixmap(matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, alpha=False)
 
@@ -306,13 +306,13 @@ There is a parent-child relationship between an annotation and its page. If the 
 
 
    .. index::
-      pair: blend_mode; update
-      pair: fontsize; update
-      pair: text_color; update
-      pair: border_color; update
-      pair: fill_color; update
-      pair: cross_out; update
-      pair: rotate; update
+      pair: blend_mode; Annot.update
+      pair: fontsize; Annot.update
+      pair: text_color; Annot.update
+      pair: border_color; Annot.update
+      pair: fill_color; Annot.update
+      pair: cross_out; Annot.update
+      pair: rotate; Annot.update
 
    .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, cross_out=True, rotate=-1)
 
@@ -360,10 +360,10 @@ There is a parent-child relationship between an annotation and its page. If the 
       :returns: the content of the attached file.
 
    .. index::
-      pair: buffer; update_file
-      pair: filename; update_file
-      pair: ufilename; update_file
-      pair: desc; update_file
+      pair: buffer; Annot.update_file
+      pair: filename; Annot.update_file
+      pair: ufilename; Annot.update_file
+      pair: desc; Annot.update_file
 
    .. method:: update_file(buffer=None, filename=None, ufilename=None, desc=None)
 

@@ -1,7 +1,7 @@
 %{
 /*
 # ------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 #
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
@@ -74,8 +74,11 @@ JM_rect_from_py(PyObject *r)
     Py_ssize_t i;
     double f[4];
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         if (JM_FLOAT_ITEM(r, i, &f[i]) == 1) return fz_infinite_rect;
+        if (f[i] < FZ_MIN_INF_RECT) f[i] = FZ_MIN_INF_RECT;
+        if (f[i] > FZ_MAX_INF_RECT) f[i] = FZ_MAX_INF_RECT;
+    }
 
     return fz_make_rect((float) f[0], (float) f[1], (float) f[2], (float) f[3]);
 }
@@ -100,8 +103,11 @@ JM_irect_from_py(PyObject *r)
     int x[4];
     Py_ssize_t i;
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         if (JM_INT_ITEM(r, i, &x[i]) == 1) return fz_infinite_irect;
+        if (x[i] < FZ_MIN_INF_RECT) x[i] = FZ_MIN_INF_RECT;
+        if (x[i] > FZ_MAX_INF_RECT) x[i] = FZ_MAX_INF_RECT;
+    }
 
     return fz_make_irect(x[0], x[1], x[2], x[3]);
 }
@@ -130,6 +136,10 @@ JM_point_from_py(PyObject *p)
 
     if (JM_FLOAT_ITEM(p, 0, &x) == 1) return p0;
     if (JM_FLOAT_ITEM(p, 1, &y) == 1) return p0;
+    if (x < FZ_MIN_INF_RECT) x = FZ_MIN_INF_RECT;
+    if (y < FZ_MIN_INF_RECT) y = FZ_MIN_INF_RECT;
+    if (x > FZ_MAX_INF_RECT) x = FZ_MAX_INF_RECT;
+    if (y > FZ_MAX_INF_RECT) y = FZ_MAX_INF_RECT;
 
     return fz_make_point((float) x, (float) y);
 }
@@ -200,6 +210,10 @@ JM_quad_from_py(PyObject *r)
 
         if (JM_FLOAT_ITEM(obj, 0, &x) == 1) goto exit_result;
         if (JM_FLOAT_ITEM(obj, 1, &y) == 1) goto exit_result;
+        if (x < FZ_MIN_INF_RECT) x = FZ_MIN_INF_RECT;
+        if (y < FZ_MIN_INF_RECT) y = FZ_MIN_INF_RECT;
+        if (x > FZ_MAX_INF_RECT) x = FZ_MAX_INF_RECT;
+        if (y > FZ_MAX_INF_RECT) y = FZ_MAX_INF_RECT;
         p[i] = fz_make_point((float) x, (float) y);
 
         Py_CLEAR(obj);

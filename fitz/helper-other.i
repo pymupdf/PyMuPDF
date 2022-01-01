@@ -1,7 +1,7 @@
 %{
 /*
 # ------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 #
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
@@ -710,9 +710,15 @@ PyObject *JM_outline_xrefs(fz_context *ctx, pdf_obj *obj, PyObject *xrefs)
 {
     pdf_obj *first, *parent, *thisobj;
     if (!obj) return xrefs;
+    PyObject *newxref = NULL;
     thisobj = obj;
     while (thisobj) {
-        LIST_APPEND_DROP(xrefs, Py_BuildValue("i", pdf_to_num(ctx, thisobj)));
+        newxref = PyLong_FromLong((long) pdf_to_num(ctx, thisobj));
+        if (PySequence_Contains(xrefs, newxref)) {
+            Py_DECREF(newxref);
+            break;
+        }
+        LIST_APPEND_DROP(xrefs, newxref);
         first = pdf_dict_get(ctx, thisobj, PDF_NAME(First));  // try go down
         if (first) xrefs = JM_outline_xrefs(ctx, first, xrefs);
         thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME(Next));  // try go next
@@ -859,7 +865,7 @@ pdf_obj *JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, char *src)
 }
 
 //----------------------------------------------------------------------------
-// return normalized /Rotate value
+// return normalized /Rotate value:one of 0, 90, 180, 270
 //----------------------------------------------------------------------------
 int JM_norm_rotation(int rotate)
 {
@@ -926,7 +932,7 @@ fz_rect JM_cropbox(fz_context *ctx, pdf_obj *page_obj)
     fz_rect cropbox = pdf_to_rect(ctx,
                 pdf_dict_get_inheritable(ctx, page_obj, PDF_NAME(CropBox)));
     if (fz_is_infinite_rect(cropbox) || fz_is_empty_rect(cropbox))
-        return mediabox;
+        cropbox = mediabox;
     float y0 = mediabox.y1 - cropbox.y1;
     float y1 = mediabox.y1 - cropbox.y0;
     cropbox.y0 = y0;

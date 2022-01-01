@@ -1,7 +1,7 @@
 %{
 /*
 # ------------------------------------------------------------------------
-# Copyright 2020-2021, Harald Lieder, mailto:harald.lieder@outlook.com
+# Copyright 2020-2022, Harald Lieder, mailto:harald.lieder@outlook.com
 # License: GNU AFFERO GPL 3.0, https://www.gnu.org/licenses/agpl-3.0.html
 #
 # Part of "PyMuPDF", a Python binding for "MuPDF" (http://mupdf.com), a
@@ -100,7 +100,7 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     float asc = JM_font_ascender(ctx, font);
     float dsc = JM_font_descender(ctx, font);
     float c, s, fsize = ch->size;
-    float asc_dsc = asc - dsc;
+    float asc_dsc = asc - dsc + FLT_EPSILON;
     if (asc_dsc >= 1 && small_glyph_heights == 0) {  // no problem
        return ch->quad;
     }
