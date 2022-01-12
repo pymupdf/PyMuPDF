@@ -3,6 +3,7 @@
 * Compare with stored earlier result:
     - must have identical object definitions
     - must have different trailers
+* Try inserting files in a loop.
 """
 import os
 
@@ -35,3 +36,13 @@ def test_joining():
         )
     assert old_output.xref_get_keys(-1) == new_output.xref_get_keys(-1)
     assert old_output.xref_get_key(-1, "ID") != new_output.xref_get_key(-1, "ID")
+
+
+def test_issue1417_insertpdf_in_loop():
+    """Using a context manager instead of explicitly closing files"""
+    f = os.path.join(resources, "1.pdf")
+    big_doc = fitz.open()
+    for n in range(0, 1025):
+        with fitz.open(f) as pdf:
+            big_doc.insert_pdf(pdf)
+    big_doc.close()
