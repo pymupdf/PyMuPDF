@@ -64,17 +64,15 @@ def test_pilsave():
         pass
 
 
-def test_save():
+def test_save(tmpdir):
     # pixmaps from file then save to image
     # make pixmap from this and confirm equality
     pix1 = fitz.Pixmap(imgfile)
-    stream2 = pix1.tobytes("png")
-    fp = tempfile.TemporaryFile()
-    pix1.save(str(fp.name), output="png")
-    try:
-        os.remove(fp.name)
-    except:
-        pass
+    outfile = os.path.join(tmpdir, "foo.png")
+    pix1.save(outfile, output="png")
+    # read it back
+    pix2 = fitz.Pixmap(outfile)
+    assert repr(pix1) == repr(pix2)
 
 
 def test_setalpha():
