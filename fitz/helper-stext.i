@@ -119,7 +119,7 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     dsc = dsc * fsize / asc_dsc;
 
     /* ------------------------------
-    Re-compute quad with adjusted ascender / descender values:
+    Re-compute quad with the adjusted ascender / descender values:
     Move ch->origin to (0,0) and de-rotate quad, then adjust the corners,
     re-rotate and move back to ch->origin location.
     ------------------------------ */
@@ -129,6 +129,10 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     s = line->dir.y;  // sine
     trm1 = fz_make_matrix(c, -s, s, c, 0, 0);  // derotate
     trm2 = fz_make_matrix(c, s, -s, c, 0, 0);  // rotate
+    if (c == -1) {  // left-right flip
+        trm1.d = 1;
+        trm2.d = 1;
+    }
     xlate1 = fz_make_matrix(1, 0, 0, 1, -ch->origin.x, -ch->origin.y);
     xlate2 = fz_make_matrix(1, 0, 0, 1, ch->origin.x, ch->origin.y);
 
@@ -136,11 +140,17 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     quad = fz_transform_quad(quad, trm1);  // de-rotate corners
 
     // adjust vertical coordinates
-
-    quad.ll.y = -dsc;
-    quad.lr.y = -dsc;
-    quad.ul.y = -asc;
-    quad.ur.y = -asc;
+    if (c == 1 && quad.ul.y > 0) {  // up-down flip
+        quad.ul.y = asc;
+        quad.ur.y = asc;
+        quad.ll.y = dsc;
+        quad.lr.y = dsc;
+    } else {
+        quad.ul.y = -asc;
+        quad.ur.y = -asc;
+        quad.ll.y = -dsc;
+        quad.lr.y = -dsc;
+    }
 
     // adjust horizontal coordinates that are too crazy:
     // (1) left x must be >= 0
@@ -574,9 +584,6 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
 
         }
         span_rect = fz_union_rect(span_rect, r);
-        if (origin.y > span_origin.y) {
-            span_origin.y = origin.y;
-        }
 
         if (raw) {  // make and append a char dict
             char_dict = PyDict_New();

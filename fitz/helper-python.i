@@ -1088,7 +1088,7 @@ def planish_line(p1: point_like, p2: point_like) -> Matrix:
     return Matrix(TOOLS._hor_matrix(p1, p2))
 
 
-def image_properties(img: typing.ByteString) -> dict:
+def image_profile(img: typing.ByteString) -> dict:
     """ Return basic properties of an image.
 
     Args:

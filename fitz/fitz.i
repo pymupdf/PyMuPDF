@@ -282,6 +282,9 @@ struct Document
         {
             DEBUGMSG1("Document");
             fz_document *this_doc = (fz_document *) $self;
+            while (this_doc->refs > 1) {
+                fz_drop_document(gctx, this_doc);
+            }
             fz_drop_document(gctx, this_doc);
             DEBUGMSG2;
         }
@@ -764,8 +767,11 @@ struct Document
                 if (!first) goto finished;
                 xrefs = PyList_New(0);  // pre-allocate an empty list
                 xrefs = JM_outline_xrefs(gctx, first, xrefs);
-                Py_ssize_t i, n = PySequence_Size(xrefs);
+                Py_ssize_t i, n = PySequence_Size(xrefs), m = PySequence_Size(items);
                 if (!n) goto finished;
+                if (n != m) {
+                    THROWMSG(gctx, "internal error finding outline xrefs");
+                }
                 int xref;
 
                 // update all TOC item dictionaries
@@ -3832,9 +3838,9 @@ if basestate:
                         case (2): type = "radiobox"; break;
                         default: type = "label"; break;
                     }
-                    PyObject *item = Py_BuildValue("{s:i,s:s,s:i,s:s,s:O,s:O}",
+                    PyObject *item = Py_BuildValue("{s:i,s:N,s:i,s:s,s:N,s:N}",
                         "number", i,
-                        "text", info.text,
+                        "text", JM_EscapeStrFromStr(info.text),
                         "depth", info.depth,
                         "type", type,
                         "on", JM_BOOL(info.selected),
@@ -6221,7 +6227,7 @@ def get_oc_items(self) -> list:
             if rect == None:
                 return self.cropbox
             mb = self.mediabox
-            return Rect(rect[0], mb.y1 - rect[1], rect[2], mb.y1 - rect[3])
+            return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
 
         @property
         def trimbox(self):
@@ -6230,7 +6236,7 @@ def get_oc_items(self) -> list:
             if rect == None:
                 return self.cropbox
             mb = self.mediabox
-            return Rect(rect[0], mb.y1 - rect[1], rect[2], mb.y1 - rect[3])
+            return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
 
         @property
         def bleedbox(self):
@@ -6239,7 +6245,7 @@ def get_oc_items(self) -> list:
             if rect == None:
                 return self.cropbox
             mb = self.mediabox
-            return Rect(rect[0], mb.y1 - rect[1], rect[2], mb.y1 - rect[3])
+            return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
 
         def _set_pagebox(self, boxtype, rect):
             doc = self.parent
@@ -6713,7 +6719,18 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
         del pymupdf_fonts
 
     # install the font for the page
-    val = self._insertFont(fontname, bfname, fontfile, fontbuffer, set_simple, idx,
+    if fontfile != None:
+        if type(fontfile) is str:
+            fontfile_str = fontfile
+        elif hasattr(fontfile, "absolute"):
+            fontfile_str = str(fontfile)
+        elif hasattr(fontfile, "name"):
+            fontfile_str = fontfile.name
+        else:
+            raise ValueError("bad fontfile")
+    else:
+        fontfile_str = None
+    val = self._insertFont(fontname, bfname, fontfile_str, fontbuffer, set_simple, idx,
                            wmode, serif, encoding, CJK_number)
 
     if not val:                   # did not work, error return
@@ -7111,6 +7128,9 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
             fz_pixmap *src_pix = (fz_pixmap *) spix;
             fz_try(gctx) {
                 fz_irect bbox = JM_irect_from_py(clip);
+                if (clip != Py_None && (fz_is_infinite_irect(bbox) || fz_is_empty_irect(bbox))) {
+                    THROWMSG(gctx, "bad clip parameter");
+                }
                 if (!fz_is_infinite_irect(bbox)) {
                     pm = fz_scale_pixmap(gctx, src_pix, src_pix->x, src_pix->y, w, h, &bbox);
                 } else {
@@ -7266,7 +7286,9 @@ Pixmap(PDFdoc, xref) - from an image xref in a PDF document.
                     THROWMSG(gctx, "bad xref");
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
                 type = pdf_dict_get(gctx, ref, PDF_NAME(Subtype));
-                if (!pdf_name_eq(gctx, type, PDF_NAME(Image)))
+                if (!pdf_name_eq(gctx, type, PDF_NAME(Image)) &&
+                    !pdf_name_eq(gctx, type, PDF_NAME(Alpha)) &&
+                    !pdf_name_eq(gctx, type, PDF_NAME(Luminosity)))
                     THROWMSG(gctx, "not an image");
                 img = pdf_load_image(gctx, pdf, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
@@ -8159,12 +8181,14 @@ Includes alpha byte if applicable.""")
             return self
 
         def __exit__(self, *args):
-            self.__swig_destroy__(self)
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
 
         def __del__(self):
             if not type(self) is Pixmap:
                 return
-            self.__swig_destroy__(self)
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
 
         %}
     }
@@ -8440,7 +8464,8 @@ struct Annot
         ~Annot()
         {
             DEBUGMSG1("Annot");
-            pdf_drop_annot(gctx, (pdf_annot *) $self);
+            pdf_annot *this_annot = (pdf_annot *) $self;
+            pdf_drop_annot(gctx, this_annot);
             DEBUGMSG2;
         }
         //----------------------------------------------------------------
@@ -10313,7 +10338,8 @@ struct Link
     %extend {
         ~Link() {
             DEBUGMSG1("Link");
-            fz_drop_link(gctx, (fz_link *) $self);
+            fz_link *this_link = (fz_link *) $self;
+            fz_drop_link(gctx, this_link);
             DEBUGMSG2;
         }
 
@@ -10530,7 +10556,8 @@ struct DisplayList {
     {
         ~DisplayList() {
             DEBUGMSG1("DisplayList");
-            fz_drop_display_list(gctx, (fz_display_list *) $self);
+            fz_display_list *this_dl = (fz_display_list *) $self;
+            fz_drop_display_list(gctx, this_dl);
             DEBUGMSG2;
         }
         FITZEXCEPTION(DisplayList, !result)
@@ -10618,7 +10645,8 @@ struct DisplayList {
         def __del__(self):
             if not type(self) is DisplayList:
                 return
-            self.__swig_destroy__(self)
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
         %}
     }
 };
@@ -10631,7 +10659,8 @@ struct TextPage {
         ~TextPage()
         {
             DEBUGMSG1("TextPage");
-            fz_drop_stext_page(gctx, (fz_stext_page *) $self);
+            fz_stext_page *this_tp = (fz_stext_page *) $self;
+            fz_drop_stext_page(gctx, this_tp);
             DEBUGMSG2;
         }
 
@@ -11146,8 +11175,10 @@ struct TextPage {
                 return val
 
             def __del__(self):
-                if not type(self) is TextPage: return
-                self.__swig_destroy__(self)
+                if not type(self) is TextPage:
+                    return
+                if getattr(self, "thisown", False):
+                    self.__swig_destroy__(self)
         %}
     }
 };
@@ -11162,7 +11193,8 @@ struct Graftmap
         ~Graftmap()
         {
             DEBUGMSG1("Graftmap");
-            pdf_drop_graft_map(gctx, (pdf_graft_map *) $self);
+            pdf_graft_map *this_gm = (pdf_graft_map *) $self;
+            pdf_drop_graft_map(gctx, this_gm);
             DEBUGMSG2;
         }
 
@@ -11183,8 +11215,10 @@ struct Graftmap
 
         %pythoncode %{
         def __del__(self):
-            if not type(self) is Graftmap: return
-            self.__swig_destroy__(self)
+            if not type(self) is Graftmap:
+                return
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
         %}
     }
 };
@@ -11199,7 +11233,8 @@ struct TextWriter
         ~TextWriter()
         {
             DEBUGMSG1("TextWriter");
-            fz_drop_text(gctx, (fz_text *) $self);
+            fz_text *this_tw = (fz_text *) $self;
+            fz_drop_text(gctx, this_tw);
             DEBUGMSG2;
         }
 
@@ -11488,8 +11523,10 @@ struct TextWriter
         }
         %pythoncode %{
         def __del__(self):
-            if not type(self) is TextWriter: return
-            self.__swig_destroy__(self)
+            if not type(self) is TextWriter:
+                return
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
         %}
     }
 };
@@ -11505,7 +11542,8 @@ struct Font
         ~Font()
         {
             DEBUGMSG1("Font");
-            fz_drop_font(gctx, (fz_font *) $self);
+            fz_font *this_font = (fz_font *) $self;
+            fz_drop_font(gctx, this_font);
             DEBUGMSG2;
         }
 
@@ -11833,8 +11871,10 @@ struct Font
                 return "Font('%s')" % self.name
 
             def __del__(self):
-                if not type(self) is Font: return
-                self.__swig_destroy__(self)
+                if not type(self) is Font:
+                    return
+                if getattr(self, "thisown", False):
+                    self.__swig_destroy__(self)
         %}
     }
 };
@@ -12846,8 +12886,10 @@ def _le_rclosedarrow(self, annot, p1, p2, lr, fill_color):
     return ap
 
 def __del__(self):
-    if not type(self) is Tools: return
-    self.__swig_destroy__(self)
+    if not type(self) is Tools:
+        return
+    if getattr(self, "thisown", False):
+        self.__swig_destroy__(self)
         %}
     }
 };

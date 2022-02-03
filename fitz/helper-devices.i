@@ -25,6 +25,9 @@ static fz_point dev_lastpoint = {0, 0};
 static fz_rect dev_pathrect;
 static float dev_pathfactor = 0;
 static int dev_linecount = 0;
+static int path_type = 0;
+#define FILL_PATH 1
+#define STROKE_PATH 2
 
 
 static void
@@ -103,9 +106,9 @@ jm_checkquad()
 	PyTuple_SET_ITEM(rect, 0, PyUnicode_FromString("qu"));
 	/*
 	relationship of float array to quad points:
-	(0, 1) = ul, (2, 3) = ur, (6, 7) = ll, (4, 5) = lr
+	(0, 1) = ul, (2, 3) = ll, (6, 7) = ur, (4, 5) = lr
 	*/
-	fz_quad q = fz_make_quad(f[0], f[1], f[2], f[3], f[6], f[7], f[4], f[5]);
+	fz_quad q = fz_make_quad(f[0], f[1], f[6], f[7], f[2], f[3], f[4], f[5]);
 	PyTuple_SET_ITEM(rect, 1, JM_py_from_quad(q));
 	finish:;
 	PyList_SetItem(items, len - 4, rect); // replace item -4 by rect
@@ -155,13 +158,13 @@ jm_checkrect()
 	---------------------------------------------------------------------
 	*/
 	if (ll.y != lr.y) {  // not horizontal
-		goto make_quad;
+		goto drop_out;
 	}
 	if (lr.x != ur.x) {  // not vertical
-		goto make_quad;
+		goto drop_out;
 	}
 	if (ur.y != ul.y) {  // not horizontal
-		goto make_quad;
+		goto drop_out;
 	}
 	// we have a rect, determine orientation
 	if (ll.x < lr.x) {  // move left to right
@@ -186,16 +189,9 @@ jm_checkrect()
 	PyTuple_SET_ITEM(rect, 0, PyUnicode_FromString("re"));
 	PyTuple_SET_ITEM(rect, 1, JM_py_from_rect(r));
 	PyTuple_SET_ITEM(rect, 2, PyLong_FromLong(orientation));
-	goto finish;
-
-	make_quad:;
-	rect = PyTuple_New(2);
-	PyTuple_SET_ITEM(rect, 0, PyUnicode_FromString("qu"));
-	fz_quad q = fz_make_quad(ul.x, ul.y, ur.x, ur.y, ll.x, ll.y, lr.x, lr.y);
-	PyTuple_SET_ITEM(rect, 1, JM_py_from_quad(q));
-	finish:;
 	PyList_SetItem(items, len - 3, rect); // replace item -3 by rect
 	PyList_SetSlice(items, len - 2, len, NULL); // delete remaining 2 items
+	drop_out:;
 	return 1;
 }
 
@@ -235,7 +231,7 @@ trace_lineto(fz_context *ctx, void *dev_, float x, float y)
 	PyObject *items = PyDict_GetItem(dev_pathdict, dictkey_items);
 	LIST_APPEND_DROP(items, list);
 	dev_linecount += 1;  // counts consecutive lines
-	if (dev_linecount >= 4) {  // shrink to "re" or "qu" item
+	if (dev_linecount >= 4 && path_type != FILL_PATH) {  // shrink to "re" or "qu" item
 		jm_checkquad();
 	}
 }
@@ -350,7 +346,7 @@ jm_tracedraw_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	jm_tracedraw_device *dev = (jm_tracedraw_device *) dev_;
 	PyObject *out = dev->out;
 	trace_device_ctm = ctm; //fz_concat(ctm, trace_device_ptm);
-
+	path_type = FILL_PATH;
 	jm_tracedraw_path(ctx, dev, path);
 	if (!dev_pathdict) {
 		return;
@@ -380,6 +376,7 @@ jm_tracedraw_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 		dev_pathfactor = fz_abs(ctm.a);
 	}
 	trace_device_ctm = ctm; // fz_concat(ctm, trace_device_ptm);
+	path_type = STROKE_PATH;
 
 	jm_tracedraw_path(ctx, dev, path);
 	if (!dev_pathdict) {
@@ -436,14 +433,11 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	float x0, y0, x1, y1;
 	asc = (double) JM_font_ascender(ctx, span->font);
 	dsc = (double) JM_font_descender(ctx, span->font);
-	if ((asc - dsc) >= 1 && small_glyph_heights == 0) {
-		;
-	} else {
-		if (asc < 1e-3) {
-			dsc = -0.1;
-			asc = 0.9;
-		}
+	if (asc < 1e-3) {  // probably Tesseract font
+		dsc = -0.1;
+		asc = 0.9;
 	}
+
 	double ascsize = asc * fsize / (asc - dsc);
 	double dscsize = dsc * fsize / (asc - dsc);
 	int fflags = 0;
@@ -468,6 +462,10 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	fz_rect span_bbox;
 	dir = fz_normalize_vector(dir);
 	fz_matrix rot = fz_make_matrix(dir.x, dir.y, -dir.y, dir.x, 0, 0);
+	if (dir.x == -1) {  // left-right flip
+		rot.d = 1;
+	}
+
 	for (i = 0; i < span->len; i++) {
 		adv = 0;
 		if (span->items[i].gid >= 0) {
@@ -486,8 +484,13 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		m1 = fz_concat(m1, fz_make_matrix(1, 0, 0, 1, char_orig.x, char_orig.y));
 		x0 = char_orig.x;
 		x1 = x0 + adv;
-		y0 = char_orig.y - ascsize;
-		y1 = char_orig.y - dscsize;
+		if (dir.x == 1 && span->trm.d < 0) {  // up-down flip
+			y0 = char_orig.y + dscsize;
+			y1 = char_orig.y + ascsize;
+		} else {
+			y0 = char_orig.y - ascsize;
+			y1 = char_orig.y - dscsize;
+		}
 		fz_rect char_bbox = fz_make_rect(x0, y0, x1, y1);
 		char_bbox = fz_transform_rect(char_bbox, m1);
 		PyTuple_SET_ITEM(chars, (Py_ssize_t) i, Py_BuildValue("ii(ff)(ffff)",
@@ -518,7 +521,8 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	DICT_SETITEM_DROP(span_dict, dictkey_font, Py_BuildValue("s",fontname));
 	DICT_SETITEM_DROP(span_dict, dictkey_wmode, PyLong_FromLong((long) span->wmode));
 	DICT_SETITEM_DROP(span_dict, dictkey_flags, PyLong_FromLong((long) fflags));
-	DICT_SETITEMSTR_DROP(span_dict, "bidi", PyLong_FromLong((long) span->bidi_level));
+	DICT_SETITEMSTR_DROP(span_dict, "bidi_lvl", PyLong_FromLong((long) span->bidi_level));
+	DICT_SETITEMSTR_DROP(span_dict, "bidi_dir", PyLong_FromLong((long) span->markup_dir));
 	DICT_SETITEM_DROP(span_dict, dictkey_ascender, PyFloat_FromDouble(asc));
 	DICT_SETITEM_DROP(span_dict, dictkey_descender, PyFloat_FromDouble(dsc));
 	if (colorspace) {

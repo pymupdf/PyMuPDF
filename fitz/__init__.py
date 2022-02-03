@@ -77,6 +77,7 @@ fitz.Document.tobytes = fitz.Document.write
 fitz.Document.subset_fonts = fitz.utils.subset_fonts
 fitz.Document.get_oc = fitz.utils.get_oc
 fitz.Document.set_oc = fitz.utils.set_oc
+fitz.Document.xref_copy = fitz.utils.xref_copy
 
 
 # ------------------------------------------------------------------------------
@@ -429,7 +430,7 @@ def restore_aliases():
     _alias(fitz, "PaperSize", "paper_size")
     _alias(fitz, "PaperRect", "paper_rect")
     _alias(fitz, "paperSizes", "paper_sizes")
-    _alias(fitz, "ImageProperties", "image_properties")
+    _alias(fitz, "ImageProperties", "image_profile")
     _alias(fitz, "planishLine", "planish_line")
     _alias(fitz, "getTextLength", "get_text_length")
     _alias(fitz, "getTextlength", "get_text_length")
@@ -449,4 +450,5 @@ Built for Python %i.%i on %s (%i-bit).
     64 if sys.maxsize > 2 ** 32 else 32,
 )
 
-restore_aliases()
+if VersionBind.startswith("1.19"):  # don't generate aliases after this
+    restore_aliases()

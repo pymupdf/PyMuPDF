@@ -98,7 +98,7 @@ JM_py_from_rect(fz_rect r)
 static fz_irect
 JM_irect_from_py(PyObject *r)
 {
-    if (!PySequence_Check(r) || PySequence_Size(r) != 4)
+    if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
         return fz_infinite_irect;
     int x[4];
     Py_ssize_t i;

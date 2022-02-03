@@ -178,14 +178,20 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
             res = fz_new_buffer_from_shared_data(ctx, c, (size_t) len);
         }
         image = fz_new_image_from_buffer(ctx, res);
-        int xres, yres;
+        int xres, yres, orientation;
+        fz_matrix ctm = fz_image_orientation_matrix(ctx, image);
         fz_image_resolution(image, &xres, &yres);
+        orientation = (int) fz_image_orientation(ctx, image);
         const char *cs_name = fz_colorspace_name(ctx, image->colorspace);
         result = PyDict_New();
         DICT_SETITEM_DROP(result, dictkey_width,
                 Py_BuildValue("i", image->w));
         DICT_SETITEM_DROP(result, dictkey_height,
                 Py_BuildValue("i", image->h));
+        DICT_SETITEMSTR_DROP(result, "orientation",
+                Py_BuildValue("i", orientation));
+        DICT_SETITEM_DROP(result, dictkey_matrix,
+                JM_py_from_matrix(ctm));
         DICT_SETITEM_DROP(result, dictkey_xres,
                 Py_BuildValue("i", xres));
         DICT_SETITEM_DROP(result, dictkey_yres,

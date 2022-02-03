@@ -1,8 +1,8 @@
-# PyMuPDF 1.19.4
+# PyMuPDF 1.19.5
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: January 01, 2022
+Release date: February 01, 2022
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
@@ -11,7 +11,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads]
 
 # Introduction
 
-PyMuPDF (current version 1.19.4) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.19.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
+PyMuPDF (current version 1.19.5) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.19.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -70,7 +70,7 @@ The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/late
 
 PyMuPDF **requires Python 3.6 or later**.
 
-Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
+For versions 3.7 and up, Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
 
 ```
 python -m pip install --upgrade pip
@@ -87,11 +87,9 @@ There are **no mandatory** external dependencies. However, some **optional featu
 
 Older wheels - also with support for older Python versions - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>) and on PyPI.
 
-> Starting with v1.18.15, to minimize network traffic we no longer redundantly store wheels in this repository's `releases` folder. You can find older versions back to v1.9.2 on [PyPI](https://pypi.org/project/PyMuPDF/#history). Sources for every release continue to be stored in [here](https://github.com/pymupdf/PyMuPDF/releases).
-
 Other platforms **require installation from sources**, follow [these](https://pymupdf.readthedocs.io/en/latest/installation.html) instructions in the documentation.
 
-> **Note:** If `pip` cannot find a wheel that is compatible with your platform, it will automatically start an installation from sources - **_which will fail_** if MuPDF is not installed on your system.
+> **Note:** If `pip` cannot find a wheel that is compatible with your platform, it will automatically try an installation from sources - **_which will fail_** if MuPDF (including its sources) is not installed on your system.
 
 This repo's folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains several platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
 

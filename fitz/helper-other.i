@@ -714,16 +714,20 @@ PyObject *JM_outline_xrefs(fz_context *ctx, pdf_obj *obj, PyObject *xrefs)
     thisobj = obj;
     while (thisobj) {
         newxref = PyLong_FromLong((long) pdf_to_num(ctx, thisobj));
-        if (PySequence_Contains(xrefs, newxref)) {
+        if (PySequence_Contains(xrefs, newxref) ||
+            pdf_dict_get(ctx, thisobj, PDF_NAME(Type))) {
+            // circular ref or top of chain: terminate
             Py_DECREF(newxref);
             break;
         }
         LIST_APPEND_DROP(xrefs, newxref);
         first = pdf_dict_get(ctx, thisobj, PDF_NAME(First));  // try go down
-        if (first) xrefs = JM_outline_xrefs(ctx, first, xrefs);
+        if (pdf_is_dict(ctx, first)) xrefs = JM_outline_xrefs(ctx, first, xrefs);
         thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME(Next));  // try go next
         parent = pdf_dict_get(ctx, thisobj, PDF_NAME(Parent));  // get parent
-        if (!thisobj) thisobj = parent;  // goto parent if no next
+        if (!pdf_is_dict(ctx, thisobj)) {
+            thisobj = parent;
+        }
     }
     return xrefs;
 }
