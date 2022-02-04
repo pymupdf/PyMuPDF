@@ -181,7 +181,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: torect(rect)
 
-      *(New in version 1.19.3)*
+      * New in version 1.19.3
       
       Compute the matrix which transforms this rectangle to a given one.
 
@@ -209,7 +209,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: morph(fixpoint, matrix)
 
-      *(New in version 1.17.0)*
+      * New in version 1.17.0
       
       Return a new quad after applying a matrix to the rectangle using the fixed point ``fixpoint``.
 
@@ -219,7 +219,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: norm()
 
-      *(New in version 1.16.0)*
+      * New in version 1.16.0
       
       Return the Euclidean norm of the rectangle treated as a vector of four numbers.
 

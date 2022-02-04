@@ -250,7 +250,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: set_origin(x, y)
 
-      *(New in v1.17.7)* Set the x and y values of the pixmap's top-left point.
+      * New in v1.17.7
+      
+      Set the x and y values of the pixmap's top-left point.
 
       :arg int x: x coordinate
       :arg int y: y coordinate
@@ -258,9 +260,11 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: set_dpi(xres, yres)
 
-      *(New in v1.16.17)* Set the resolution (dpi) in x and y direction.
+      * New in v1.16.17
 
-      *(Changed in v1.18.0)* When saving as a PNG image, these values will be stored now.
+      * Changed in v1.18.0: When saving as a PNG image, these values will be stored now.
+
+      Set the resolution (dpi) in x and y direction.
 
       :arg int xres: resolution in x direction.
       :arg int yres: resolution in y direction.
@@ -268,7 +272,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: set_alpha(alphavalues, premultiply=1, opaque=None)
 
-      *(Changed in v 1.18.13)*
+      * Changed in v 1.18.13
 
       Change the alpha values. The pixmap must have an alpha channel.
 
@@ -311,7 +315,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          >>> pix1.copy(pix2, (0, 0, x1, y1))
 
          .. image:: images/img-pixmapcopy.*
-             :scale: 33
+             :scale: 20
 
    .. method:: save(filename, output=None)
 
@@ -374,7 +378,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    ..  method:: pil_save(*args, **kwargs)
 
-      *(New in v1.17.3)*
+      * New in v1.17.3
 
       Write the pixmap as an image file using Pillow. Use this method for output unsupported by MuPDF. Examples are
 
@@ -390,7 +394,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    ..  method:: pil_tobytes(*args, **kwargs)
 
-      *(New in v1.17.3)*
+      * New in v1.17.3
 
       Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pil_tobytes(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation. If Pillow is not installed, an ``ImportError`` exception is raised.
 
@@ -509,7 +513,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: samples_mv
 
-      *(New in v1.18.17)*
+      * New in v1.18.17
 
       Like :attr:`Pixmap.samples`, but in Python ``memoryview`` format. It is built pointing to the memory in the pixmap -- not from a copy of it. So its creation speed is independent from the pixmap size, and any changes to pixels will be available immediately.
 
@@ -528,7 +532,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: samples_ptr
 
-      *(New in v1.18.17)*
+      * New in v1.18.17
 
       Python pointer to the pixel area. This is a special integer format, which can be used by supporting applications (such as PyQt) to directly address the samples area and thus build their images extremely fast. For example::
 

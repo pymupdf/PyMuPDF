@@ -5,13 +5,13 @@ Shape
 
 This class allows creating interconnected graphical elements on a PDF page. Its methods have the same meaning and name as the corresponding :ref:`Page` methods.
 
-In fact, each :ref:`Page` draw method is just a convenience wrapper for (1) one shape draw method, (2) the :meth:`finish` method, and (3) the :meth:`commit` method. For page text insertion, only the :meth:`commit` method is invoked. If many draw and text operations are executed for a page, you should always consider using a Shape object.
+In fact, each :ref:`Page` draw method is just a convenience wrapper for (1) one shape draw method, (2) the :meth:`Shape.finish` method, and (3) the :meth:`Shape.commit` method. For page text insertion, only the :meth:`Shape.commit` method is invoked. If many draw and text operations are executed for a page, you should always consider using a Shape object.
 
-Several draw methods can be executed in a row and each one of them will contribute to one drawing. Once the drawing is complete, the :meth:`finish` method must be invoked to apply color, dashing, width, morphing and other attributes.
+Several draw methods can be executed in a row and each one of them will contribute to one drawing. Once the drawing is complete, the :meth:`Shape.finish` method must be invoked to apply color, dashing, width, morphing and other attributes.
 
-**Draw** methods of this class (and :meth:`insert_textbox`) are logging the area they are covering in a rectangle (:attr:`Shape.rect`). This property can for instance be used to set :attr:`Page.cropbox_position`.
+**Draw** methods of this class (and :meth:`Shape.insert_textbox`) are logging the area they are covering in a rectangle (:attr:`Shape.rect`). This property can for instance be used to set :attr:`Page.cropbox_position`.
 
-**Text insertions** :meth:`insert_text` and :meth:`insert_textbox` implicitely execute a "finish" and therefore only require :meth:`commit` to become effective. As a consequence, both include parameters for controlling prperties like colors, etc.
+**Text insertions** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox` implicitely execute a "finish" and therefore only require :meth:`Shape.commit` to become effective. As a consequence, both include parameters for controlling prperties like colors, etc.
 
 ================================ =====================================================
 **Method / Attribute**             **Description**
@@ -219,7 +219,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: draw_quad(quad)
 
-      Draw a quadrilateral. The drawing starts and ends at the top-left corner (:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of :meth:`draw_polyline` with the argument ``(ul, ll, lr, ur, ul)``.
+      Draw a quadrilateral. The drawing starts and ends at the top-left corner (:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of :meth:`Shape.draw_polyline` with the argument ``(ul, ll, lr, ur, ul)``.
 
       :arg quad_like quad: where to put the tetragon on the page.
 
@@ -404,7 +404,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. attribute:: text_cont
 
-      Accumulated text buffer. All **text insertions** go here. This buffer will be appended to :attr:`totalcont` :meth:`commit`, so that text will never be covered by drawings in the same Shape.
+      Accumulated text buffer. All **text insertions** go here. This buffer will be appended to :attr:`totalcont` :meth:`Shape.commit`, so that text will never be covered by drawings in the same Shape.
 
       :type: str
 
@@ -519,7 +519,7 @@ Common Parameters
   2. Choose a font already in use by the page. Then specify its **reference** name prefixed with a slash "/", see example below.
   3. Specify a font file present on your system. In this case choose an arbitrary, but new name for this parameter (without "/" prefix).
 
-  If inserted text should re-use one of the page's fonts, use its reference name appearing in :meth:`get_fonts` like so:
+  If inserted text should re-use one of the page's fonts, use its reference name appearing in :meth:`Page.get_fonts` like so:
 
   Suppose the font list has the item *[1024, 0, 'Type1', 'NimbusMonL-Bold', 'R366']*, then specify *fontname = "/R366", fontfile = None* to use font *NimbusMonL-Bold*.
 

@@ -4,7 +4,7 @@
 Module *fitz*
 ============================
 
-*(New in version 1.16.8)*
+* New in version 1.16.8
 
 PyMuPDF can also be used in the command line as a **module** to perform utility functions. This feature should obsolete writing some of the most basic scripts.
 
@@ -410,7 +410,7 @@ Copy embedded files between PDFs::
 
 Text Extraction 
 ----------------
-*(New in v1.18.16)*
+* New in v1.18.16
 
 Extract text from arbitrary supported documents **(not only PDF)** to a textfile. Currently, there are three output formatting modes available: simple, block sorting and reproduction of physical layout.
 

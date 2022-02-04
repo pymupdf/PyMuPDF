@@ -34,7 +34,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`get_pdf_str`                  return PDF-compatible string
 :meth:`get_text_length`              return string length for a given font & fontsize
 :meth:`glyph_name_to_unicode`        return unicode from a glyph name
-:meth:`image_properties`             return a dictionary of basic image properties
+:meth:`image_profile`                return a dictionary of basic image properties
 :meth:`INFINITE_IRECT`               return the (only existing) infinite rectangle
 :meth:`INFINITE_QUAD`                return the (only existing) infinite quad
 :meth:`INFINITE_RECT`                return the (only existing) infinite rectangle
@@ -209,7 +209,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: planish_line(p1, p2)
 
-      *(New in version 1.16.2)*
+      * New in version 1.16.2)*
 
       Return a matrix which maps the line from p1 to p2 to the x-axis such that p1 will become (0,0) and p2 a point with the same distance to (0,0).
 
@@ -247,7 +247,7 @@ Yet others are handy, general-purpose utilities.
 
    .. attribute:: fitz_fontdescriptors
 
-      *(New in v1.17.5)*
+      * New in v1.17.5
 
       A dictionary of usable fonts from repository `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. Items are keyed by their reserved fontname and provide information like this::
 
@@ -273,7 +273,7 @@ Yet others are handy, general-purpose utilities.
 
    .. attribute:: TESSDATA_PREFIX
 
-      *(New in v1.19.4)*
+      * New in v1.19.4
 
       Copy of ``os.environ["TESSDATA_PREFIX"]`` for convenient checking whether there is integrated Tesseract OCR support.
 
@@ -294,7 +294,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: get_text_length(text, fontname="helv", fontsize=11, encoding=TEXT_ENCODING_LATIN)
 
-      *(New in version 1.14.7)*
+      * New in version 1.14.7
 
       Calculate the length of text on output with a given **builtin** font, fontsize and encoding.
 
@@ -324,33 +324,50 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: image_properties(stream)
+   .. method:: image_profile(stream)
 
-      *(New in version 1.14.14)*
+      * New in v1.16.7
+      * Changed in v1.19.5: also return natural image orientation extracted from EXIF data if present.
 
-      Return a number of basic properties for an image.
+      Show important properties of an image provided as a memory area. Its main purpose is to avoid using other Python packages just to determine them.
 
       :arg bytes|bytearray|BytesIO|file stream: an image either in memory or an **opened** file. A memory resident image maybe any of the formats *bytes*, *bytearray* or *io.BytesIO*.
 
-      :returns: a dictionary with the following keys (an empty dictionary for any error):
+      :rtype: dict
+      :returns:
+         No exception is ever raised: in case of error, the empty dictionary ``{}`` is returned. Otherwise, there are the following items::
 
-         ========== ====================================================
-         **Key**    **Value**
-         ========== ====================================================
-         width      (int) width in pixels
-         height     (int) height in pixels
-         colorspace (int) colorspace.n (e.g. 3 = RGB)
-         bpc        (int) bits per component (usually 8)
-         format     (int) image format in ``range(15)``
-         ext        (str) image file extension indicating the format
-         size       (int) length of the image in bytes
-         ========== ====================================================
+            In [2]: fitz.image_profile(open("nur-ruhig.jpg", "rb").read())
+            Out[2]:
+            {'width': 439,
+            'height': 501,
+            'orientation': 0,  # natural orientation (from EXIF)
+            'transform': (1.0, 0.0, 0.0, 1.0, 0.0, 0.0),  # orientation matrix
+            'xres': 96,
+            'yres': 96,
+            'colorspace': 3,
+            'bpc': 8,
+            'ext': 'jpeg',
+            'cs-name': 'DeviceRGB'}
 
-      Example:
+         There is the following relation to *Exif* information encoded in ``orientation``, and correspondingly in the ``transform`` matrix-like (quoted from MuPDF documentation, *ccw* = counter-clockwise):
 
-      >>> fitz.image_properties(open("img-clip.jpg","rb"))
-      {'bpc': 8, 'format': 9, 'colorspace': 3, 'height': 325, 'width': 244, 'ext': 'jpeg', 'size': 14161}
-      >>>
+            0. Undefined
+            1. 0 degree ccw rotation. (Exif = 1)
+            2. 90 degree ccw rotation. (Exif = 8)
+            3. 180 degree ccw rotation. (Exif = 3)
+            4. 270 degree ccw rotation. (Exif = 6)
+            5. flip on X. (Exif = 2)
+            6. flip on X, then rotate ccw by 90 degrees. (Exif = 5)
+            7. flip on X, then rotate ccw by 180 degrees. (Exif = 4)
+            8. flip on X, then rotate ccw by 270 degrees. (Exif = 7)
+
+
+         .. note::
+
+            * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via ``Pixmap(doc, xref)``. These methods will automatically convert exotic images to the PNG format before returning results.
+            * You can also get the properties of images embedded in a PDF, via their :data:`xref`. In this case make sure to extract the raw stream: `fitz.image_profile(doc.xref_stream_raw(xref))`.
+            * Images as returned by the image blocks of :meth:`Page.get_text` using "dict" or "rawdict" options are also supported.
 
 
 -----
@@ -408,7 +425,7 @@ Yet others are handy, general-purpose utilities.
 
       * New in v1.19.0
 
-      :returns: a list of rectangles that envelop text, image or drawing objects. Each item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple consists of rectangle coordinates, and type is one of the following values:
+      :returns: a list of rectangles that envelop text, image or drawing objects. Each item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple consists of rectangle coordinates, and *type* is one of the following values:
 
          * ``"fill-text"`` -- normal text (painted without character borders)
          * ``"stroke-text"`` -- text showing character borders only
@@ -574,7 +591,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Page.clean_contents(sanitize=True)
 
-      *(Changed in v1.17.6)*
+      * Changed in v1.17.6
 
       PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.get_contents` for more details.
 
@@ -625,7 +642,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Document.is_stream(xref)
 
-      *(New in version 1.14.14)*
+      * New in version 1.14.14
 
       PDF only: Check whether the object represented by :data:`xref` is a :data:`stream` type. Return is *False* if not a PDF or if the number is outside the valid xref range.
 

@@ -43,7 +43,7 @@ copyright = "2015-2022, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.19.4"
+release = "1.19.5"
 
 # The short X.Y version
 version = release
@@ -106,6 +106,7 @@ html_theme_options = {
     # "root_name": "",
     # "root_url": "",
     # "root_icon": "pymupdf.ico",
+    "body_max_width": "none",
     "sidebarbgcolor": "gray",
 }
 

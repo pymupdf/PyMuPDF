@@ -57,7 +57,7 @@ Point
 
    .. method:: norm()
 
-      *(New in version 1.16.0)*
+      * New in version 1.16.0
       
       Return the Euclidean norm (the length) of the point as a vector. Equals result of function *abs()*.
 

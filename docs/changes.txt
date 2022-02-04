@@ -3,6 +3,31 @@ Change Log
 
 ------
 
+**Changes in Version 1.19.5**
+
+* **Fixed** `#1518 <https://github.com/pymupdf/PyMuPDF/issues/1518>`_. A limited "fix": in some cases, rectangles and quadrupels were not correctly encoded to support re-drawing by :ref:`Shape`.
+
+* **Fixed** `#1521 <https://github.com/pymupdf/PyMuPDF/issues/1521>`_. This had the same ultimate reason behind issue #1510.
+
+* **Fixed** `#1513 <https://github.com/pymupdf/PyMuPDF/issues/1513>`_. Some Optional Content functions did not support non-ASCII characters.
+
+* **Fixed** `#1510 <https://github.com/pymupdf/PyMuPDF/issues/1510>`_. Support more soft-mask image subtypes.
+
+* **Fixed** `#1507 <https://github.com/pymupdf/PyMuPDF/issues/1507>`_. Immunize against items in the outlines chain, that are ``"null"`` objects.
+
+* **Fixed** re-opened `#1417 <https://github.com/pymupdf/PyMuPDF/issues/1417>`_. ("too many open files"). This was due to insufficient calls to MuPDF's ``fz_drop_document()``. This also fixes `#1550 <https://github.com/pymupdf/PyMuPDF/issues/1550>`_.
+
+* **Fixed** several undocumented issues in relation to incorrectly setting the text span origin :data:`point_like`.
+
+* **Fixed** undocumented error computing the character bbox in method :meth:`Page.get_texttrace` when text is **flipped** (as opposed to just rotated).
+
+* **Added** items to the dictionary returned by :meth:`image_properties`: ``orientation`` and ``transform`` report the natural image orientation (EXIF data).
+
+* **Added** method :meth:`Document.xref_copy`. It will make a given target PDF object an exact copy of a source object.
+
+
+------
+
 **Changes in Version 1.19.4**
 
 

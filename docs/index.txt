@@ -18,6 +18,5 @@
    app1.txt
    app2.txt
    app3.txt
-   app4.txt
    changes.txt
    znames.txt

@@ -108,7 +108,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: search(needle, quads=False)
 
-      *(Changed in v1.18.2)*
+      * Changed in v1.18.2
 
       Search for *string* and return a list of found locations.
 
@@ -257,8 +257,8 @@ Span Dictionary
 
 Spans contain the actual text. A line contains **more than one span only**, if it contains text with different font properties.
 
-*(Changed in version 1.14.17)* Spans now also have a *bbox* key (again).
-*(Changed in version 1.17.6)* Spans now also have an *origin* key.
+* Changed in version 1.14.17 Spans now also have a *bbox* key (again).
+* Changed in version 1.17.6 Spans now also have an *origin* key.
 
 =============== =====================================================================
 **Key**             **Value**

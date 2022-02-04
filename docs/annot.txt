@@ -107,7 +107,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: get_text(opt, clip=None, flags=None)
 
-      *(New in 1.18.0)*
+      * New in 1.18.0
 
       Retrieves the content of the annotation in a variety of formats -- much like the same method for :ref:`Page`.. This currently only delivers relevant data for annotation types 'FreeText' and 'Stamp'. Other types return an empty string (or equivalent objects).
 
@@ -128,7 +128,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: get_textbox(rect)
 
-      *(New in 1.18.0)*
+      * New in 1.18.0
 
       Return the annotation text. Mostly (except line breaks) equal to :meth:`Annot.get_text` with the "text" option.
 
@@ -137,7 +137,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_info(info=None, content=None, title=None, creationDate=None, modDate=None, subject=None)
 
-      *(Changed in version 1.16.10)*
+      * Changed in version 1.16.10
 
       Changes annotation properties. These include dates, contents, subject and author (title). Changes for *name* and *id* will be ignored. The update happens selectively: To leave a property unchanged, set it to *None*. To delete existing data, use an empty string.
 
@@ -188,7 +188,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_open(value)
 
-      *(New in v1.18.4)*
+      * New in v1.18.4
 
       Set the annotation's Popup annotation to open or closed -- **or** the annotation itself, if its type is 'Text' ("sticky note").
 
@@ -197,7 +197,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_popup(rect)
 
-      *(New in v1.18.4)*
+      * New in v1.18.4
 
       Create a Popup annotation for the annotation and specify its rectangle. If the Popup already exists, only its rectangle is updated.
 
@@ -217,7 +217,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. attribute:: blendmode
 
-      *(New in v1.18.4)*
+      * New in v1.18.4
 
       The annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations.
 
@@ -231,7 +231,9 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_blendmode(blendmode)
 
-      *(New in v1.16.14)* Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations. The blend mode can also be set in :meth:`Annot.update`.
+      * New in v1.16.14
+      
+      Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations. The blend mode can also be set in :meth:`Annot.update`.
 
       :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use ``PDF_BM_Normal`` to **remove** a blend mode.
 
@@ -242,7 +244,9 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_name(name)
 
-      *(New in version 1.16.0)* Change the name field of any annotation type. For 'FileAttachment' and 'Text' annotations, this is the icon name, for 'Stamp' annotations the text in the stamp. The visual result (if any) depends on your PDF viewer. See also :ref:`mupdficons`.
+      * New in version 1.16.0
+      
+      Change the name field of any annotation type. For 'FileAttachment' and 'Text' annotations, this is the icon name, for 'Stamp' annotations the text in the stamp. The visual result (if any) depends on your PDF viewer. See also :ref:`mupdficons`.
 
       :arg str name: the new name.
 
@@ -271,9 +275,10 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_border(border=None, width=0, style=None, dashes=None)
 
+      * Changed in version 1.16.9: Allow specification without using a dictionary. The direct parameters are used if *border* is not a dictionary.
+
       PDF only: Change border width and dashing properties.
 
-      *Changed in version 1.16.9:* Allow specification without using a dictionary. The direct parameters are used if *border* is not a dictionary.
 
       :arg dict border: a dictionary as returned by the :attr:`border` property, with keys *"width"* (*float*), *"style"* (*str*) and *"dashes"* (*sequence*). Omitted keys will leave the resp. property unchanged. To e.g. remove dashing use: *"dashes": []*. If dashes is not an empty sequence, "style" will automatically be set to "D" (dashed).
 
@@ -289,9 +294,9 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_colors(colors=None, stroke=None, fill=None)
 
-      Changes the "stroke" and "fill" colors for supported annotation types -- not all annotations accept both.
+      * Changed in version 1.16.9: Allow colors to be directly set. These parameters are used if *colors* is not a dictionary.
 
-      *Changed in version 1.16.9:* Allow colors to be directly set. These parameters are used if *colors* is not a dictionary.
+      Changes the "stroke" and "fill" colors for supported annotation types -- not all annotations accept both.
 
       :arg dict colors: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the *colors* property and then modify this dictionary as required.
       :arg sequence stroke: see above.
@@ -302,7 +307,9 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: delete_responses()
 
-      *(New in version 1.16.12)* Delete annotations referring to this one. This includes any 'Popup' annotations and all annotations responding to it.
+      * New in version 1.16.12
+      
+      Delete annotations referring to this one. This includes any 'Popup' annotations and all annotations responding to it.
 
 
    .. index::

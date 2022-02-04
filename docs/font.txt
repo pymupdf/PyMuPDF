@@ -4,7 +4,9 @@
 Font
 ================
 
-*(New in v1.16.18)* This class represents a font as defined in MuPDF (*fz_font_s* structure). It is required for the new class :ref:`TextWriter` and the new :meth:`Page.write_text`. Currently, it has no connection to how fonts are used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`, respectively.
+* New in v1.16.18
+
+This class represents a font as defined in MuPDF (*fz_font_s* structure). It is required for the new class :ref:`TextWriter` and the new :meth:`Page.write_text`. Currently, it has no connection to how fonts are used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`, respectively.
 
 A Font object also contains useful general information, like the font bbox, the number of defined glyphs, glyph names or the bbox of a single glyph.
 
@@ -141,7 +143,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: valid_codepoints()
 
-      *(New in v1.17.5)*
+      * New in v1.17.5
 
       Return an array of unicodes supported by this font.
 
@@ -287,7 +289,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. attribute:: buffer
 
-      *(New in v1.17.6)*
+      * New in v1.17.6
 
       Copy of the binary font file content.
       
@@ -331,7 +333,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. attribute:: ascender
 
-      *(New in v1.18.0)*
+      * New in v1.18.0
 
       The ascender value of the font, see `here <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details. Please note that there is a difference to the strict definition: our value includes everything above the baseline -- not just the height difference between upper case "A" and and lower case "a".
 
@@ -339,7 +341,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. attribute:: descender
 
-      *(New in v1.18.0)*
+      * New in v1.18.0
 
       The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details. This value always is negative and is the portion that some glyphs descend below the base line, for example "g" or "y". As a consequence, the value ``ascender - descender`` is the total height, that every glyph of the font fits into. This is true at least for most fonts -- as always, there are exceptions, especially for calligraphic fonts, etc.
 
@@ -347,7 +349,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. attribute:: is_writable
 
-      *(New in v1.18.0)*
+      * New in v1.18.0
 
       Indicates whether this font can be used with :ref:`TextWriter`.
 

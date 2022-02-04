@@ -102,7 +102,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
 
    .. attribute:: is_convex
 
-      *(New in version 1.16.1)*
+      * New in version 1.16.1
 
       Checks if for any two points of the quad, all points on their connecting line also belong to the quad.
 

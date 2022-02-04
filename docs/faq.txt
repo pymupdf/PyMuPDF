@@ -379,28 +379,20 @@ The general scheme is just the following two lines::
 .. note::
         **Save to JPEG** using PIL/Pillow::
 
-          from PIL import Image
           pix = fitz.Pixmap(...)
-          img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-          img.save("output.jpg", "JPEG")
+          pix.pil_save("output.jpg")
 
 .. note::
         Convert **JPEG to Tkinter PhotoImage**. Any **RGB / no-alpha** image works exactly the same. Conversion to one of the **Portable Anymap** formats (PPM, PGM, etc.) does the trick, because they are supported by all Tkinter versions::
 
-          if str is bytes:  # this is Python 2!
-              import Tkinter as tk
-          else:  # Python 3 or later!
-              import tkinter as tk
+          import tkinter as tk
           pix = fitz.Pixmap("input.jpg")  # or any RGB / no-alpha image
           tkimg = tk.PhotoImage(data=pix.tobytes("ppm"))
 
 .. note::
         Convert **PNG with alpha** to Tkinter PhotoImage. This requires **removing the alpha bytes**, before we can do the PPM conversion::
 
-          if str is bytes:  # this is Python 2!
-              import Tkinter as tk
-          else:  # Python 3 or later!
-              import tkinter as tk
+          import tkinter as tk
           pix = fitz.Pixmap("input.png")  # may have an alpha channel
           if pix.alpha:  # we have an alpha channel!
               pix = fitz.Pixmap(pix, 0)  # remove it
@@ -594,46 +586,6 @@ Basic code pattern for :meth:`Page.show_pdf_page`. Source and target PDF must be
         keep_proportion=True,  # keep aspect ratio
         overlay=True,          # put in foreground
     )
-
-----------
-
-How to Control the Size of Inserted Images
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-For the following discussion, please also consult the previous section.
-
-If the ``pixmap`` parameter is used in :meth:`Page.insert_image`, the image is always **stored in uncompressed PNG format**. This is independent from in which way the pixmap has originally been created.
-
-For ``filename`` and ``stream`` parameters, the **original image format, quality and size** are preserved (JPEG, BMP, JPEG2000, etc.). **However:** the method takes the following actions:
-
-1. Create an internal pixmap to see if the image is transparent.
-2. If not transparent, discard pixmap and insert image in original format.
-3. If transparent, create a new internal image and an image mask containing transparency information -- both in pixmap format -- and store both pixmap images. This will be **uncompressed PNG format** again.
-
-Here is what you can do to take a closer control:
-
-1. Often you **know already** before, whether an image is transparent. For example, if you have a PIL image, check the last letter of ``img.mode``. If you see "RGBA" you have an RGB image with an alpha channel.
-2. If your image is not transparent, include ``alpha=0`` in your method arguments. The method will then skip internal pixmap creation and store the image as is.
-3. If your image has alpha, you can use the following snippet to create two sub-images: (1) the base-image, (2) the mask image (alpha values). Then insert them combined using the ``stream`` and ``mask`` arguments. Again, the method will omit any alpha-checking or conversion and store image and mask as is::
-
-    # example: 'stream' contains a transparent PNG image:
-    pix = fitz.Pixmap(stream)  # intermediate pixmap
-    base = fitz.Pixmap(pix, 0)  # extract base image without alpha
-    mask = fitz.Pixmap(None, pix)  # extract alpha channel for the mask image
-    basestream = base.pil_tobytes("JPEG")
-    maskstream = mask.pil_tobytes("JPEG")
-    page.insert_image(rect, stream=basestream, mask=maskstream)
-
-You can also use this technique to **add transparency** to an image::
-
-    stream = open("example.jpg", "rb").read()
-    basepix = fitz.Pixmap(stream)
-    opacity = 0.3  # 30% opacity, choose a value 0 < opacity < 1
-    value = int(255 * opacity)  # we need an integer between 0 and 255
-    alphas = [value] * (basepix.width * basepix.height)
-    alphas = bytearray(alphas)  # convert to a bytearray
-    pixmask = fitz.Pixmap(fitz.csGRAY, basepix.width, basepix.height, alphas, 0)
-    page.insert_image(rect, stream=stream, mask=pixmask.tobytes())
 
 
 Text
@@ -1266,7 +1218,7 @@ This is the script's outcome:
 Extracting Drawings
 ---------------------
 
-*(New in v1.18.0)*
+* New in v1.18.0
 
 The drawing commands issued by a page can be extracted. Interestingly, this is possible for **all supported document types** -- not just PDF: so you can use it for XPS, EPUB and others as well.
 
