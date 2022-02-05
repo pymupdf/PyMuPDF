@@ -60,8 +60,8 @@ Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tr
 Documentation is written using Sphinx and is available in various formats from the following sources. It currently is a combination of reference guide and user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq.html) chapters.
 
 * You can view it online at [Read the Docs](https://readthedocs.org/projects/pymupdf/). This site also provides download options for PDF.
-* The search function on Read the Docs does not work for me currently. If you want a working searchable local version, please download a zipped HTML from [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
-* Find a Windows help file [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
+* [Zipped HTML](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
+* [Windows help file](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 
 The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/latest/changes.html).
 
@@ -70,7 +70,7 @@ The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/late
 
 PyMuPDF **requires Python 3.6 or later**.
 
-For versions 3.7 and up, Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way:
+For versions 3.7 and up, Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way. To ensure pip support for the latest wheel platform tags, we strongly recommend to always upgrade pip first.
 
 ```
 python -m pip install --upgrade pip
