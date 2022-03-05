@@ -106,10 +106,11 @@ Using this object entails three steps:
 
       :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
-   .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, align=0, right_to_left=False, warn=None, small_caps=0)
+   .. method:: fill_textbox(rect, text, *, pos=None, font=None, fontsize=11, align=0, right_to_left=False, warn=None, small_caps=0)
 
-      * *Changed in v1.18.9*
-      * *Changed in v1.18.15*
+      * Changed in 1.17.3: New parameter ``pos`` to specify where to start writing within rectangle.
+      * Changed in v1.18.9: Return list of lines which do not fit in rectangle. Support writing right-to-left (e.g. Arabian, Hebrew).
+      * Changed in v1.18.15: Prefer small caps if supported by the font.
 
       Fill a given rectangle with text in horizontal writing mode. This is a convenience method to use as an alternative for :meth:`append`.
 

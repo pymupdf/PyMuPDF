@@ -32,7 +32,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 :meth:`Shape.insert_text`        insert text lines
 :meth:`Shape.insert_textbox`     fit text into a rectangle
 :attr:`Shape.doc`                stores the page's document
-:attr:`Shape.draw_cont`          draw commands since last *finish()*
+:attr:`Shape.draw_cont`          draw commands since last :meth:`Shape.finish`
 :attr:`Shape.height`             stores the page's height
 :attr:`Shape.lastPoint`          stores the current point
 :attr:`Shape.page`               stores the owning page
@@ -563,6 +563,8 @@ Common Parameters
   To simplify color specification, method *getColor()* in *fitz.utils* may be used to get predefined RGB color triples by name. It accepts a string as the name of the color and returns the corresponding triple. The method knows over 540 color names -- see section :ref:`ColorDatabase`.
 
   Please note that the term *color* usually means "stroke" color when used in conjunction with fill color.
+
+  If letting default a color parameter to ``None``, then no resp. color selection command will be generated. If *fill* and *color* are both ``None``, then the drawing will contain no color specification. But it will still be "stroked", which causes PDF's default color "black" be used by Adobe Acrobat and all other viewers.
 
 ----
 

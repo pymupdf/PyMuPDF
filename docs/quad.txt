@@ -139,19 +139,15 @@ Remark
 ------
 This class adheres to the sequence protocol, so components can be dealt with via their indices, too. Also refer to :ref:`SequenceTypes`.
 
-We are still in process to extend algebraic operations to quads. Multiplication and division with / by numbers and matrices are already defined. Addition, subtraction and any unary operations may follow when we see an actual need.
+Algebra and Containment Checks
+-------------------------------
+Starting with v1.19.6, quads can be used in algebraic expressions like the other geometry object -- the respective restrictions have been lifted. In particular, all the following combinations of containment checking are now possible:
 
-Containment Checks
----------------------
-Independent from the previous remark, the following **containment checks are possible**:
-
-* ``point in quad`` -- check whether a point is inside a quadrilateral.
-* ``rect in quad`` -- check whether a rectangle is inside a quadrilateral. This is done by checking the containment of its four corners.
-* ``quad in quad`` -- check whether some quad is contained in some other quadrilateral. This is done by checking the containment of its four corners.
+``{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}``
 
 Please note the following interesting detail:
 
-For a rectangle, only its top-left point belongs to it. Since v1.19.0, rectangles are defined to be "open", such that its bottom and its right edge do not belong to it -- including the respective corners. But for quads there exists no notion like "openness", so we have the following surprising situation:
+For a rectangle, only its top-left point belongs to it. Since v1.19.0, rectangles are defined to be "open", such that its bottom and its right edge do not belong to it -- including the respective corners. But for quads there exists no such notion like "openness", so we have the following somewhat surprising implication:
 
    >>> rect.br in rect
    False

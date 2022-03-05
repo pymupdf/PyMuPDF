@@ -154,21 +154,22 @@ For details on **embedded files** refer to Appendix 3.
        pair: rect; Document
        pair: fontsize; Document
 
-    .. method:: __init__(self, filename=None, stream=None, filetype=None, rect=None, width=0, height=0, fontsize=11)
+    .. method:: __init__(self, filename=None, stream=None, *, filetype=None, rect=None, width=0, height=0, fontsize=11)
+
+      * Changed in v1.14.13: support ``io.BytesIO`` for memory documents.
+      * Changed in v1.19.6: Clearer, shorter and more consistent exception messages. File type "pdf" is always assumed if not specified. Empty files and memory areas will always lead to exceptions.
 
       Creates a *Document* object.
 
       * With default parameters, a **new empty PDF** document will be created.
-      * If *stream* is given, then the document is created from memory and either *filename* or *filetype* must indicate its type.
-      * If *stream* is *None*, then a document is created from the file given by *filename*. Its type is inferred from the extension, which can be overruled by specifying *filetype*.
+      * If *stream* is given, then the document is created from memory and, if not a PDF, either *filename* or *filetype* must indicate its type.
+      * If *stream* is *None*, then a document is created from the file given by *filename*. Its type is inferred from the extension. This can be overruled by *filetype.*
 
-      :arg str,pathlib filename: A UTF-8 string or *pathlib* object containing a file path (or a file type, see below).
+      :arg str,pathlib filename: A UTF-8 string or *pathlib* object containing a file path. The document type is inferred from the filename extension. If not present or not matching a supported type, a PDF document is assumed. For memory documents, this argument may be used instead of ``filetype``, see below.
 
-      :arg bytes,bytearray,BytesIO stream: A memory area containing a supported document. Its type **must** be specified by either *filename* or *filetype*.
+      :arg bytes,bytearray,BytesIO stream: A memory area containing a supported document. If not a PDF, its type **must** be specified by either ``filename`` or ``filetype``.
 
-         *(Changed in v1.14.13)* *io.BytesIO* is now also supported.
-
-      :arg str filetype: A string specifying the type of document. This may be something looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like *application/pdf*. Just using strings like "pdf" will also work.
+      :arg str filetype: A string specifying the type of document. This may be anything looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like *application/pdf*. Just using strings like "pdf"  or ".pdf" will also work. May be omitted for PDF documents, otherwise must match a supported document type.
 
       :arg rect_like rect: a rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter *fontsize*, each page will be accordingly laid out and hence also determine the number of pages.
 
@@ -178,22 +179,40 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg float fontsize: the default fontsize for reflowable document types. This parameter is ignored if none of the parameters *rect* or *width* and *height* are specified. Will be used to calculate the page layout.
 
-      Overview of possible forms (*open* is a synonym of *Document*)::
+      :raises TypeError: if the *type* of any parameter does not conform.
+      :raises FileNotFoundError: if the file / path cannot be found. Re-implemented as subclass of ``RuntimeError``.
+      :raises EmptyFileError: if the file / path is empty or the ``bytes`` object in memory has zero length. A subclass of ``FileDataError`` and ``RuntimeError``.
+      :raises ValueError: if an unknown file type is explicitely specified.
+      :raises FileDataError: if the document has an invalid structure for the given type -- or is no file at all (but e.g. a folder). A subclass of ``RuntimeError``.
+
+      :return: A document object. If the document cannot be created, an exception is raised in the above sequence. Note that PyMuPDF-specific exceptions, ``FileNotFoundError``, ``EmptyFileError`` and ``FileDataError`` are intercepted if you check for ``RuntimeError``.
+
+        In case of problems you can see more detail in the internal messages store: ``print(fitz.TOOLS.mupdf_warnings())`` (which will be emptied by this call, but you can also prevent this -- consult :meth:`Tools.mupdf_warnings`).
+
+      .. note:: Not all document types are checked for valid formats already at open time. Raster images for example will raise exceptions only later, when trying to access the content. Other types (notably with non-binary content) may also be opened (and sometimes **accessed**) successfully -- sometimes even when having invalid content for the format:
+
+        * HTM, HTML, XHTML: **always** opened, ``metadata["format"]`` is "HTML5", resp. "XHTML". 
+        * XML, FB2: **always** opened, ``metadata["format"]`` is "FictionBook2".
+
+      Overview of possible forms, note: ``open`` is a synonym of ``Document``::
 
           >>> # from a file
-          >>> doc = fitz.open("some.pdf")
-          >>> doc = fitz.open("some.file", None, "pdf")  # copes with wrong extension
-          >>> doc = fitz.open("some.file", filetype="pdf")  # copes with wrong extension
+          >>> doc = fitz.open("some.xps")
+          >>> # handle wrong extension
+          >>> doc = fitz.open("some.file", filetype="xps")
           >>>
-          >>> # from memory
-          >>> doc = fitz.open("pdf", mem_area)
-          >>> doc = fitz.open(None, mem_area, "pdf")
-          >>> doc = fitz.open(stream=mem_area, filetype="pdf")
+          >>> # from memory, filetype is required if not a PDF
+          >>> doc = fitz.open("xps", mem_area)
+          >>> doc = fitz.open(None, mem_area, "xps")
+          >>> doc = fitz.open(stream=mem_area, filetype="xps")
           >>>
           >>> # new empty PDF
           >>> doc = fitz.open()
-          >>>
+          >>> doc = fitz.open(None)
+          >>> doc = fitz.open("")
 
+      .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So ``fitz.open("file.jpg")`` will work even for a PNG image.
+      
       The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
 
           >>> import fitz
@@ -206,6 +225,7 @@ For details on **embedded files** refer to Appendix 3.
           >>> doc.is_closed
           True
           >>>
+
 
     .. method:: get_oc(xref)
 
@@ -1303,7 +1323,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Copy a page reference within the document.
 
-      :arg int pno: the page to be copied. Must be in range *0 <= pno < len(doc)*.
+      :arg int pno: the page to be copied. Must be in range ``0 <= pno < page_count``.
 
       :arg int to: the page number in front of which to copy. The default inserts **after** the last page.
 
@@ -1534,8 +1554,9 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v.1.16.8
       * Changed in v1.19.2: added parameter "compress"
+      * Changed in v1.19.6: deprecated parameter "new". Now confirms that the object is a PDF dictionary object.
 
-      Replace the stream of an object identified by *xref*. If the object has no stream, an exception is raised unless *new=True* is used. The function automatically performs a compress operation ("deflate") where beneficial.
+      Replace the stream of an object identified by *xref*, which must be a PDF dictionary. If the object is no :data:`stream`, it will be turned into one. The function automatically performs a compress operation ("deflate") where beneficial.
 
       :arg int xref: :data:`xref` number.
 
@@ -1543,14 +1564,14 @@ For details on **embedded files** refer to Appendix 3.
 
          *(Changed in v1.14.13:)* *io.BytesIO* objects are now also supported.
 
-      :arg bool new: whether to force accepting the stream, and thus **turning it into a stream object**.
-      :arg bool compress: whether to compress the inserted stream. If ``True`` (default), the stream will be inserted using ``/FlateDecode`` compression, otherwise the stream will inserted as is.
+      :arg bool new: *deprecated* and ignored. Will be removed in v1.20.0.
+      :arg bool compress: whether to compress the inserted stream. If ``True`` (default), the stream will be inserted using ``/FlateDecode`` compression (if beneficial), otherwise the stream will inserted as is.
 
-        .. caution:: The object of :data:`xref` must be a PDF dictionary for this to work, and especially must not be empty -- as is the case if you just created the xref via :meth:`Document.get_new_xref`. To avoid this, at a minimum execute ``doc.update_object(xref, "<<>>")`` before inserting the stream.
+      :raises ValueError: if *xref* does not represent a PDF :data:`dict`. An empty dictionary ``<<>>`` is accepted. So if you just created the xref and want to give it a stream, first execute ``doc.update_object(xref, "<<>>")``, and then insert the stream data with this method.
 
-      This method is primarily intended to manipulate streams containing PDF operator syntax (see pp. 643 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
+      The method is primarily (but not exclusively) intended to manipulate streams containing PDF operator syntax (see pp. 643 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
 
-      If you update a contents stream, you should use save parameter *clean=True*. This ensures consistency between PDF operator source and the object structure.
+      If you update a contents stream, consider using save parameter *clean=True* to ensure consistency between PDF operator source and the object structure.
 
       Example: Let us assume that you no longer want a certain image appear on a page. This can be achieved by deleting the respective reference in its contents source(s) -- and indeed: the image will be gone after reloading the page. But the page's :data:`resources` object would still show the image as being referenced by the page. This save option will clean up any such mismatches.
 
@@ -1874,7 +1895,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. Attribute:: page_count
 
-      Contains the number of pages of the document. May return 0 for documents with no pages. Function *len(doc)* will also deliver this result.
+      Contains the number of pages of the document. May return 0 for documents with no pages. Function ``len(doc)`` will also deliver this result.
 
       :type: int
 
@@ -1890,7 +1911,7 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v1.17.0
 
-      Contains (chapter, pno) of the document's last page. Relevant only for document types with chapter support (EPUB currently). Other documents will return *(0, len(doc) - 1)* and *(0, -1)* if it has no pages.
+      Contains (chapter, pno) of the document's last page. Relevant only for document types with chapter support (EPUB currently). Other documents will return ``(0, page_count - 1)`` and ``(0, -1)`` if it has no pages.
 
       :type: int
 
@@ -1973,7 +1994,7 @@ Other Examples
 ----------------
 **Extract all page-referenced images of a PDF into separate PNG files**::
 
- for i in range(len(doc)):
+ for i in range(doc.page_count):
      imglist = doc.get_page_images(i)
      for img in imglist:
          xref = img[0]                  # xref number

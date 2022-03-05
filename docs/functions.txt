@@ -64,6 +64,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 :attr:`TESSDATA_PREFIX`              a copy of ``os.environ["TESSDATA_PREFIX"]``
+:attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
 ==================================== ==============================================================
 
    .. method:: paper_size(s)
@@ -280,6 +281,20 @@ Yet others are handy, general-purpose utilities.
       If this attribute is ``None``, Tesseract-OCR is either not installed, or the environment variable is not set to point to Tesseract's language support folder.
 
       .. note:: This variable is now checked before OCR functions are tried. This prevents verbose messages from MuPDF.
+
+-----
+
+   .. attribute:: pdfcolor
+
+      * New in v1.19.6
+
+      Contains about 500 RGB colors in PDF format with the color name as key. To see what is there, you can obviously look at ``fitz.pdfcolor.keys()``.
+
+      Examples:
+      
+        * ``fitz.pdfcolor["red"] = (1.0, 0.0, 0.0)``
+        * ``fitz.pdfcolor["skyblue"] = (0.5294117647058824, 0.807843137254902, 0.9215686274509803)``
+        * ``fitz.pdfcolor["wheat"] = (0.9607843137254902, 0.8705882352941177, 0.7019607843137254)``
 
 -----
 

@@ -5,7 +5,7 @@ Operator Algebra for Geometry Objects
 
 .. highlight:: python
 
-Instances of classes :ref:`Point`, :ref:`IRect`, :ref:`Rect` and :ref:`Matrix` are collectively also called "geometry" objects.
+Instances of classes :ref:`Point`, :ref:`IRect`, :ref:`Rect`, :ref:`Quad` and :ref:`Matrix` are collectively also called "geometry" objects.
 
 They all are special cases of Python sequences, see :ref:`SequenceTypes` for more background.
 
@@ -24,11 +24,11 @@ General Remarks
 4. The binary operators *+, -, *, /* are defined for all classes. They *roughly* do what you would expect -- **except, that the second operand ...**
 
     - may always be a number which then performs the operation on every component of the first one,
-    - may always be a numeric sequence of the same length (2, 4 or 6) -- we call such sequences :data:`point_like`, :data:`rect_like` or :data:`matrix_like`, respectively.
+    - may always be a numeric sequence of the same length (2, 4 or 6) -- we call such sequences :data:`point_like`, :data:`rect_like`, :data:`quad_like` or :data:`matrix_like`, respectively.
 
 5. Rectangles support additional binary operations: **intersection** (operator *"&"*), **union** (operator *"|"*) and **containment** checking.
 
-6. Binary operators fully support in-place operations, so expressions like *"a /= b"* are valid if b is numeric or "a_like".
+6. Binary operators fully support in-place operations, so expressions like ``a /= b`` are valid if b is numeric or "a_like".
 
 
 Unary Operations
@@ -65,19 +65,26 @@ a&b       **intersection rectangle:** "a" must be a rectangle and
 a|b       **union rectangle:** "a" must be a rectangle, and "b" may be
           :data:`point_like` or :data:`rect_like`.
           Delivers the **smallest rectangle** containing both operands.
-b in a    if "b" is a number, then *"b in tuple(a)"* is returned.
-          If "b" is :data:`point_like` or :data:`rect_like`, then "a"
-          must be a rectangle, and *"a.contains(b)"* is returned.
+b in a    if "b" is a number, then ``b in tuple(a)`` is returned.
+          If "b" is :data:`point_like`, :data:`rect_like` or :data:`quad_like`,
+          then "a" must be a rectangle, and ``a.contains(b)`` is returned.
 a == b    *True* if *bool(a-b)* is *False* ("b" may be "a-like").
 ========= =======================================================================
 
 
 .. note:: Please note an important difference to usual arithmetics:
 
-        Matrix multiplication is **not commutative**, i.e. in general we have ``m*n != n*m`` for two matrices. Also, there are non-zero matrices which have no inverse, for example ``m = Matrix(1, 0, 1, 0, 1, 0)``. If you try to divide by any of these you will receive a *ZeroDivisionError* exception using operator *"/"*, e.g. for the expression ``fitz.Identity / m``. But if you formulate ``fitz.Identity * ~m``, the result will be ``fitz.Matrix()`` (the null matrix).
+        Matrix multiplication is **not commutative**, i.e. in general we have ``m*n != n*m`` for two matrices. Also, there are non-zero matrices which have no inverse, for example ``m = Matrix(1, 0, 1, 0, 1, 0)``. If you try to divide by any of these, you will receive a ``ZeroDivisionError`` exception using operator *"/"*, e.g. for the expression ``fitz.Identity / m``. But if you formulate ``fitz.Identity * ~m``, the result will be ``fitz.Matrix()`` (the null matrix).
 
         Admittedly, this represents an inconsistency, and we are considering to remove it. For the time being, you can choose to avoid an exception and check whether ~m is the null matrix, or accept a potential *ZeroDivisionError* by using ``fitz.Identity / m``.
 
+.. note::
+
+  * With these conventions, all the usual algebra rules apply. For example, arbitrarily using brackets **(among objects of the same class!)** is possible: if r1, r2 are rectangles and m1, m2 are matrices, you can do this ``(r1 + r2) * m1 * m2``.
+  * For all objects of the same class, ``a + b + c == (a + b) + c == a + (b + c)`` is true.
+  * For matrices in addition the following is true: ``(m1 + m2) * m3 == m1 * m3 + m2 * m3`` (distributivity property).
+  * **But the sequence of applying matrices is important:** If r is a rectangle and m1, m2 are matrices, then -- **caution!:**
+     - ``r * m1 * m2 == (r * m1) * m2 != r * (m1 * m2)``
 
 Some Examples
 --------------

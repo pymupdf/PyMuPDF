@@ -30,7 +30,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    If you add or update annotations, links or form fields on the page and immediately afterwards need to work with them (i.e. **without leaving the page**), you should reload the page using :meth:`Document.reload_page` before referring to these new or updated items.
 
-   This ensures all your changes have been fully applied to PDF structures, so can safely create Pixmaps or successfully iterate over annotations, links and form fields.
+   Reloading the page is generally recommended -- although not strictly required in all cases. However, some annotation and widget types have extended features in PyMuPDF compared to MuPDF. More of these extensions may also be added in the future.
+
+   Releoading the page ensures all your changes have been fully applied to PDF structures, so you can safely create Pixmaps or successfully iterate over annotations, links and form fields.
 
 ================================== =======================================================
 **Method / Attribute**             **Short Description**
@@ -93,6 +95,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.insert_textbox`        PDF only: insert a text box
 :meth:`Page.links`                 return a generator of the links on the page
 :meth:`Page.load_annot`            PDF only: load a specific annotation
+:meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
 :meth:`Page.search_for`            search for a string
@@ -169,8 +172,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: rect; add_freetext_annot
       pair: rotate; add_freetext_annot
       pair: align; add_freetext_annot
+      pair: text_color; add_freetext_annot
+      pair: border_color; add_freetext_annot
+      pair: fill_color; add_freetext_annot
 
-   .. method:: add_freetext_annot(rect, text, fontsize=12, fontname="helv", text_color=0, fill_color=1, rotate=0, align=TEXT_ALIGN_LEFT)
+   .. method:: add_freetext_annot(rect, text, fontsize=12, fontname="helv", border_color=None, text_color=0, fill_color=1, rotate=0, align=TEXT_ALIGN_LEFT)
+
+      * Changed in v1.19.6: add border color parameter
 
       PDF only: Add text in a given rectangle.
 
@@ -182,7 +190,9 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg sequence,float text_color: *(new in v1.16.0)* the text color. Default is black.
 
       :arg sequence,float fill_color: *(new in v1.16.0)* the fill color. Default is white.
-      :arg int align: *(new in v1.17.0)* text alignment, one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT - justify is not supported.
+      :arg sequence,float text_color: the text color. Default is black.
+      :arg sequence,float border_color: *(new in v1.19.6)* the border color. Default is ``None``.
+      :arg int align: *(new in v1.17.0)* text alignment, one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT - justify is **not supported**.
 
 
       :arg int rotate: the text orientation. Accepted values are 0, 90, 270, invalid entries are set to zero.
@@ -476,10 +486,20 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's annotations.
 
-      :arg sequence types: a sequence of integers to down-select to one or annotation types. Default is all annotations. Example: *types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)* will only return 'FreeText' and 'Text' annotations.
+      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: *types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)* will only return 'FreeText' and 'Text' annotations.
 
       :rtype: generator
       :returns: an :ref:`Annot` for each iteration.
+
+         .. caution::
+              You **cannot safely update annotations** from within this generator. This is because most annotation updates require reloading the page via ``page = doc.reload_page(page)``. To circumvent this restriction, make a list of annotations xref numbers first and then iterate over these numbers::
+
+               In [4]: xrefs = [annot.xref for annot in page.annots(types=[...])]
+               In [5]: for xref in xrefs:
+                  ...:     annot = page.load_annot(xref)
+                  ...:     annot.update()
+                  ...:     page = doc.reload_page(page)
+               In [6]:
 
    .. method:: widgets(types=None)
 
@@ -487,7 +507,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's form fields.
 
-      :arg sequence types: a sequence of integers to down-select to one or more widget types. Default is all form fields. Example: *types=(fitz.PDF_WIDGET_TYPE_TEXT,)* will only return 'Text' fields.
+      :arg sequence types: a sequence of integers to down-select to one or more widget types. Default is all form fields. Example: ``types=(fitz.PDF_WIDGET_TYPE_TEXT,)`` will only return 'Text' fields.
 
       :rtype: generator
       :returns: a :ref:`Widget` for each iteration.
@@ -946,6 +966,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * Changed in v1.19.0: added ``textpage`` parameter
       * Changed in v1.19.1: added ``sort`` parameter
+      * Changed in v1.19.6: added new constants for defining default flags per method.
 
       Retrieves the content of a page in a variety of formats. This is a wrapper for :ref:`TextPage` methods by choosing the output option as follows:
 
@@ -968,7 +989,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int flags: *(new in v1.16.2)* indicator bits to control whether to include images or how text should be handled with respect to white spaces and :data:`ligatures`. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings.
 
-      :arg textpage: (new in v1.19.0) use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored, because they are textpage only properties. If omitted, a new, temporary textpage will be created.
+      :arg textpage: (new in v1.19.0) use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored, because they are textpage-only properties. If omitted, a new, temporary textpage will be created.
 
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order. Has no effect on (X)HTML and XML. Output option **"words"** sorts by ``(y1, x0)`` of the words' bboxes. Similar is true for "blocks", "dict", "json", "rawdict", "rawjson": they all are sorted by ``(y1, x0)`` of the resp. block bbox. If specified for "text", then internally "blocks" is used.
 
@@ -1336,6 +1357,19 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note:: Methods :meth:`Page.annot_names`, :meth:`Page.annot_xrefs` provide lists of names or xrefs, respectively, from where an item may be picked and loaded via this method.
 
+   .. method:: load_widget(xref)
+
+      * New in v1.19.6
+
+      PDF only: return the field identified by *xref*.
+
+      :arg int xref: the field's xref.
+
+      :rtype: :ref:`Widget`
+      :returns: the field or *None*.
+
+      .. note:: This is similar to the analogous method :meth:`Page.load_annot` -- except that here only the xref is supported as identifier.
+
    .. method:: load_links()
 
       Return the first link on a page. Synonym of property :attr:`first_link`.
@@ -1430,7 +1464,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str needle: Text to search for. May contain spaces. Upper / lower case is ignored, but only works for ASCII characters: For example, "COMPÉTENCES" will not be found if needle is "compétences" -- "compÉtences" however will. Similar is true for German umlauts and the like.
       :arg rect_like clip: *(New in v1.18.2)* only search within this area.
       :arg bool quads: Return object type :ref:`Quad` instead of :ref:`Rect`.
-      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default, ligatures and white spaces are kept, and hyphenation is detected.
+      :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. By default, ligatures and white spaces are kept, and hyphenation [#f8]_ is detected.
       :arg textpage: (new in v1.19.0) use a previously created :ref:`TextPage`. This reduces execution time **significantly.** If specified, the 'flags' and 'clip' arguments are ignored. If omitted, a temporary textpage will be created.
 
       :rtype: list
@@ -1704,3 +1738,5 @@ The page number "pno" is a 0-based integer ``-∞ < pno < page_count``.
 .. [#f6] If you need to also see annotations or fields in the target page, you can try and convert the source PDF to another PDF using :meth:`Document.convert_to_pdf`. The underlying MuPDF function of that method will convert these objects to normal page content. Then use :meth:`Page.show_pdf_page` with the converted PDF page.
 
 .. [#f7] In PDF, an area enclosed by some lines or curves can have a property called "orientation". This is significant for switching on or off the fill color of that area when there exist multiple area overlaps - see discussion in method :meth:`Shape.finish` using the "non-zero winding number" rule. While orientation of curves, quads, triangles and other shapes enclosed by lines always was detectable, this has been impossible for "re" (rectangle) items in the past. Adding the orientation parameter now delivers the missing information.
+
+.. [#f8] Hyphenation detection simply means that if the last character of a line is "-", it will be assumed to be a continuation character. That character will not be found by text searching with its default flag setting. Please take note, that a MuPDF *line* may not always be what you expect: words separated by overly large gaps (e.g. caused by text justification) may constitute seperate MuPDF lines. If then any of these words ends with a hyphen, it will only be found by text searching if hyphenation is switched off.

@@ -649,7 +649,7 @@ Responsible for this effect is the PDF creator (software or a human). For exampl
         page.insert_text((50, 50), header)  # insert header
         page.insert_text(  # insert footer 50 points above page bottom
             (50, page.rect.height - 50),
-            footer % (page.number + 1, len(doc)),
+            footer % (page.number + 1, doc.page_count),
         )
 
 The text sequence extracted from a page modified in this way will look like this:
@@ -1360,9 +1360,13 @@ If you have a document with a wrong file extension for its type, you can still c
 
 Assume that "some.file" is actually an XPS. Open it like so:
 
->>> doc = fitz.open("some.file", filetype = "xps")
+>>> doc = fitz.open("some.file", filetype="xps")
 
-.. note:: MuPDF itself does not try to determine the file type from the file contents. **You** are responsible for supplying the filetype info in some way -- either implicitly via the file extension, or explicitly as shown. There are pure Python packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
+.. note::
+
+    MuPDF itself does not try to determine the file type from the file contents. **You** are responsible for supplying the filetype info in some way -- either implicitly via the file extension, or explicitly as shown. There are pure Python packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
+
+    If MuPDF encounters a file with an unknown / missing extension, it will try to open it as a PDF. So in these cases there is no need to for additional precautions. Similarly, for memory documents, you can just specify ``doc=fitz.open(stream=mem_area)`` to open it as a PDF document.
 
 ----------
 
@@ -1396,10 +1400,10 @@ Or you alternatively prepare a complete new page layout in form of a Python sequ
 
 Now let's prepare a PDF for double-sided printing (on a printer not directly supporting this):
 
-The number of pages is given by *len(doc)* (equal to *doc.page_count*). The following lists represent the even and the odd page numbers, respectively:
+The number of pages is given by ``len(doc)`` (equal to ``doc.page_count``). The following lists represent the even and the odd page numbers, respectively:
 
->>> p_even = [p in range(len(doc)) if p % 2 == 0]
->>> p_odd  = [p in range(len(doc)) if p % 2 == 1]
+>>> p_even = [p in range(doc.page_count) if p % 2 == 0]
+>>> p_odd  = [p in range(doc.page_count) if p % 2 == 1]
 
 This snippet creates the respective sub documents which can then be used to print the document:
 
@@ -1415,7 +1419,7 @@ For more information also have a look at this Wiki `article <https://github.com/
 
 The following example will reverse the order of all pages (**extremely fast:** sub-second time for the 756 pages of the :ref:`AdobeManual`):
 
->>> lastPage = len(doc) - 1
+>>> lastPage = doc.page_count - 1
 >>> for i in range(lastPage):
         doc.move_page(lastPage, i)  # move current last page to the front
 

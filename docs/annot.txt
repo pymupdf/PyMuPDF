@@ -323,19 +323,19 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, cross_out=True, rotate=-1)
 
-      Synchronize the appearance of an annotation with its properties after any changes. 
+      Synchronize the appearance of an annotation with its properties after relevant changes. 
 
-      You can safely omit this method **only** for the following changes:
+      You can safely **omit** this method **only** for the following changes:
 
-         * :meth:`set_rect`
-         * :meth:`set_flags`
-         * :meth:`set_oc`
-         * :meth:`update_file`
-         * :meth:`set_info` (except any changes to *"content"*)
+         * :meth:`Annot.set_rect`
+         * :meth:`Annot.set_flags`
+         * :meth:`Annot.set_oc`
+         * :meth:`Annot.update_file`
+         * :meth:`Annot.set_info` (except any changes to *"content"*)
 
       All arguments are optional. *(Changed in v1.16.14)* Blend mode and opacity are applicable to **all annotation types**. The other arguments are mostly special use, as described below.
 
-      Color specifications may be made in the usual format used in PuMuPDF as sequences of floats ranging from 0.0 to 1.0 (including both). The sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK colorspaces respectively). For mono-color, just a float is also acceptable and yields some shade of gray.
+      Color specifications may be made in the usual format used in PuMuPDF as sequences of floats ranging from 0.0 to 1.0 (including both). The sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK colorspaces respectively). For GRAY, just a float is also acceptable.
 
       :arg float opacity: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's transparency. Valid values are *0 <= opacity < 1*.
       :arg str blend_mode: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's blend mode. For valid values see :ref:`BlendModes`.
@@ -350,6 +350,8 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see :meth:`Annot.set_rotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
 
       :rtype: bool
+
+      .. note:: Using this method inside a :meth:`Page.annots` loop is **not recommended!** This is because most annotation updates require the owning page to be reloaded -- which cannot be done inside this loop. Please use the example coding pattern given in the documentation of this generator.
 
 
    .. method:: file_info()
@@ -566,11 +568,11 @@ Change the graphical image of an annotation. Also update the "author" and the te
  # text in popup window ...
  info["content"] = "I changed border and colors and enlarged the image by 20%."
  info["subject"] = "Demonstration of PyMuPDF"     # some PDF viewers also show this
- annot.set_info(info)                    # update info dict
+ annot.set_info(info)                   # update info dict
  r = annot.rect                         # take annot rect
  r.x1 = r.x0 + r.width  * 1.2           # new location has same top-left
  r.y1 = r.y0 + r.height * 1.2           # but 20% longer sides
- annot.set_rect(r)                       # update rectangle
+ annot.set_rect(r)                      # update rectangle
  annot.update()                         # update the annot's appearance
  doc.save("circle-out.pdf")             # save
 

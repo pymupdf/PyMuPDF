@@ -264,7 +264,14 @@ XHTML
 
 Text Extraction Flags Defaults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*(New in version 1.16.2)* Method :meth:`Page.get_text` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than *None*, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
+* New in version 1.16.2: Method :meth:`Page.get_text` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than *None*, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
+
+* New in v1.19.6: The default combinations in the following table are now available as Python constants: :data:`TEXTFLAGS_TEXT`, :data:`TEXTFLAGS_WORDS`, :data:`TEXTFLAGS_BLOCKS`, :data:`TEXTFLAGS_DICT`, :data:`TEXTFLAGS_RAWDICT`, :data:`TEXTFLAGS_HTML`, :data:`TEXTFLAGS_XHTML`, :data:`TEXTFLAGS_XML`, and :data:`TEXTFLAGS_SEARCH`. You can now easily modify a default flag, e.g.
+
+    - **include** images in a "blocks" output: ``flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES``
+    - **exclude** images from a "dict" output: ``flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES``
+    - set **dehyphenation off** in text searches: ``flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE``
+
 
 =================== ==== ==== ===== === ==== ======= ===== ====== ======
 Indicator           text html xhtml xml dict rawdict words blocks search

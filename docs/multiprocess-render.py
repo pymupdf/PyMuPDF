@@ -45,7 +45,7 @@ def render_page(vector):
     filename = vector[2]  # document filename
     mat = vector[3]  # the matrix for rendering
     doc = fitz.open(filename)  # open the document
-    num_pages = len(doc)  # get number of pages
+    num_pages = doc.page_count  # get number of pages
 
     # pages per segment: make sure that cpu * seg_size >= num_pages!
     seg_size = int(num_pages / cpu + 1)

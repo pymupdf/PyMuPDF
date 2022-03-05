@@ -182,7 +182,27 @@ For the PyMuPDF programmer, some combination (using Python's ``|`` operator, or 
 
 .. py:data:: TEXT_MEDIABOX_CLIP
 
-    64 -- If set, characters entirely outside a page's **mediabox** will be ignored. This is default n PyMuPDF.
+    64 -- If set, characters entirely outside a page's **mediabox** will be ignored. This is default in PyMuPDF.
+
+The following constants represent the default combinations of the above for text extraction and searching:
+
+.. py:data:: TEXTFLAGS_TEXT
+
+.. py:data:: TEXTFLAGS_WORDS
+
+.. py:data:: TEXTFLAGS_BLOCKS
+
+.. py:data:: TEXTFLAGS_DICT
+
+.. py:data:: TEXTFLAGS_RAWDICT
+
+.. py:data:: TEXTFLAGS_HTML
+
+.. py:data:: TEXTFLAGS_XHTML
+
+.. py:data:: TEXTFLAGS_XML
+
+.. py:data:: TEXTFLAGS_SEARCH
 
 
 .. _linkDest Kinds:
