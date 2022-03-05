@@ -51,7 +51,7 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
         buf = fz_new_buffer(ctx, 50);
        if (ncol == 1)
             fz_append_printf(ctx, buf, "%g g ", col[0]);
-        else if (ncol == 3)
+        else if (ncol == 3 || ncol == 0)
             fz_append_printf(ctx, buf, "%g %g %g rg ", col[0], col[1], col[2]);
         else
             fz_append_printf(ctx, buf, "%g %g %g %g k ", col[0], col[1], col[2], col[3]);
@@ -325,7 +325,7 @@ PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_obj *page_obj)
                 type = pdf_annot_type_from_string(ctx, name);
             }
             id = pdf_dict_gets(ctx, annot_obj, "NM");
-            LIST_APPEND_DROP(names, Py_BuildValue("iis", xref, type,pdf_to_text_string(ctx, id)));
+            LIST_APPEND_DROP(names, Py_BuildValue("iis", xref, type, pdf_to_text_string(ctx, id)));
         }
     }
     fz_catch(ctx) {
@@ -360,6 +360,7 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
         pdf_dict_puts_drop(ctx, annot_obj, "NM", name);
         Py_CLEAR(stem_id);
         Py_CLEAR(names);
+        page->doc->resynth_required = 0;
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);
@@ -419,6 +420,34 @@ pdf_annot *JM_get_annot_by_xref(fz_context *ctx, pdf_page *page, int xref)
         }
         if (!found) {
             fz_throw(ctx, FZ_ERROR_GENERIC, "xref %d is not an annot of this page", xref);
+        }
+    }
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+    return pdf_keep_annot(ctx, annot);
+}
+
+//------------------------------------------------------------------------
+// retrieve widget by its xref
+//------------------------------------------------------------------------
+pdf_annot *JM_get_widget_by_xref(fz_context *ctx, pdf_page *page, int xref)
+{
+    pdf_annot *annot = NULL;
+    int found = 0;
+
+    fz_try(ctx) {   // loop thru MuPDF's internal annots array
+        annot = pdf_first_widget(ctx, page);
+        while (annot) {
+            pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
+            if (xref == pdf_to_num(ctx, annot_obj)) {
+                found = 1;
+                break;
+            }
+            annot = pdf_next_widget(ctx, annot);
+        }
+        if (!found) {
+            fz_throw(ctx, FZ_ERROR_GENERIC, "xref %d is not a widget of this page", xref);
         }
     }
     fz_catch(ctx) {

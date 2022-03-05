@@ -1009,7 +1009,9 @@ fz_font *JM_get_font(fz_context *ctx,
         goto fertig;
 
         fertig:;
-        if (!font) THROWMSG(ctx, "could not create font");
+        if (!font) {
+            RAISEPY(ctx, MSG_FONT_FAILED, PyExc_RuntimeError);
+        }
     }
     fz_always(ctx) {
         fz_drop_buffer(ctx, res);

@@ -13,7 +13,16 @@ fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *val, int a, int b);
 PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff);
 pdf_obj *JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, char *src);
 
-int LIST_APPEND_DROP(PyObject *list, PyObject *item)
+// exception handling
+void *JM_ReturnException(fz_context *ctx)
+{
+    PyErr_SetString(JM_Exc_CurrentException, fz_caught_message(ctx));
+    JM_Exc_CurrentException = PyExc_RuntimeError;
+    return NULL;
+}
+
+
+static int LIST_APPEND_DROP(PyObject *list, PyObject *item)
 {
     if (!list || !PyList_Check(list) || !item) return -2;
     int rc = PyList_Append(list, item);
@@ -21,7 +30,7 @@ int LIST_APPEND_DROP(PyObject *list, PyObject *item)
     return rc;
 }
 
-int DICT_SETITEM_DROP(PyObject *dict, PyObject *key, PyObject *value)
+static int DICT_SETITEM_DROP(PyObject *dict, PyObject *key, PyObject *value)
 {
     if (!dict || !PyDict_Check(dict) || !key || !value) return -2;
     int rc = PyDict_SetItem(dict, key, value);
@@ -29,7 +38,7 @@ int DICT_SETITEM_DROP(PyObject *dict, PyObject *key, PyObject *value)
     return rc;
 }
 
-int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value)
+static int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value)
 {
     if (!dict || !PyDict_Check(dict) || !key || !value) return -2;
     int rc = PyDict_SetItemString(dict, key, value);
@@ -281,14 +290,6 @@ const fz_alloc_context JM_Alloc_Context =
 	JM_PY_Free
 };
 #endif
-
-// return Python bool for a given integer
-PyObject *JM_BOOL(int v)
-{
-    if (v == 0)
-        Py_RETURN_FALSE;
-    Py_RETURN_TRUE;
-}
 
 PyObject *JM_fitz_config()
 {
@@ -1041,7 +1042,7 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
         } else {
             res = JM_BufferFromBytes(ctx, fontbuffer);
             if (!res) {
-                THROWMSG(ctx, "need one of fontfile, fontbuffer");
+                RAISEPY(ctx, MSG_FILE_OR_BUFFER, PyExc_ValueError);
             }
             font = fz_new_font_from_buffer(ctx, NULL, res, idx, 0);
         }

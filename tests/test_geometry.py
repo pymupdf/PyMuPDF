@@ -279,12 +279,7 @@ def test_algebra():
     except:
         failed = True
     assert failed
-    failed = False
-    try:
-        m in r
-    except:
-        failed = True
-    assert failed
+    assert m not in r
 
 
 def test_quad():
@@ -313,3 +308,23 @@ def test_quad():
     except:
         failed = True
     assert failed
+
+
+def test_pageboxes():
+    """Tests concerning ArtBox, TrimBox, BleedBox."""
+    doc = fitz.open()
+    page = doc.new_page()
+    assert page.cropbox == page.artbox == page.bleedbox == page.trimbox
+    rect_methods = (
+        page.set_cropbox,
+        page.set_artbox,
+        page.set_bleedbox,
+        page.set_trimbox,
+    )
+    keys = ("CropBox", "ArtBox", "BleedBox", "TrimBox")
+    rect = fitz.Rect(100, 200, 400, 700)
+    for f in rect_methods:
+        f(rect)
+    for key in keys:
+        assert doc.xref_get_key(page.xref, key) == ("array", "[100 142 400 642]")
+    assert page.cropbox == page.artbox == page.bleedbox == page.trimbox

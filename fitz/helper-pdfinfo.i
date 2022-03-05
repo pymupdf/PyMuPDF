@@ -295,7 +295,9 @@ JM_set_resource_property(fz_context *ctx, pdf_obj *ref, const char *name, int xr
     pdf_document *pdf = pdf_get_bound_document(ctx, ref);
     fz_try(ctx) {
         ind = pdf_new_indirect(ctx, pdf, xref, 0);
-        if (!ind) THROWMSG(ctx, "bad xref");
+        if (!ind) {
+            RAISEPY(ctx, MSG_BAD_XREF, PyExc_ValueError);
+        }
         pdf_obj *resources = pdf_dict_get(ctx, ref, PDF_NAME(Resources));
         if (!resources) {
             resources = pdf_dict_put_dict(ctx, ref, PDF_NAME(Resources), 1);
@@ -325,13 +327,15 @@ JM_add_oc_object(fz_context *ctx, pdf_document *pdf, pdf_obj *ref, int xref)
     pdf_obj *indobj = NULL;
     fz_try(ctx) {
         indobj = pdf_new_indirect(ctx, pdf, xref, 0);
-        if (!pdf_is_dict(ctx, indobj)) THROWMSG(ctx, "bad 'oc' reference");
+        if (!pdf_is_dict(ctx, indobj)) {
+            RAISEPY(ctx, MSG_BAD_OC_REF, PyExc_ValueError);
+        }
         pdf_obj *type = pdf_dict_get(ctx, indobj, PDF_NAME(Type));
         if (pdf_objcmp(ctx, type, PDF_NAME(OCG)) == 0 ||
             pdf_objcmp(ctx, type, PDF_NAME(OCMD)) == 0) {
             pdf_dict_put(ctx, ref, PDF_NAME(OC), indobj);
         } else {
-            THROWMSG(ctx, "bad 'oc' type");
+            RAISEPY(ctx, MSG_BAD_OC_REF, PyExc_ValueError);
         }
     }
     fz_always(ctx) {
@@ -369,16 +373,20 @@ int JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
 
         subtype = pdf_dict_get(ctx, fontdict, PDF_NAME(Subtype));
         basefont = pdf_dict_get(ctx, fontdict, PDF_NAME(BaseFont));
-        if (!basefont || pdf_is_null(ctx, basefont))
+        if (!basefont || pdf_is_null(ctx, basefont)) {
             name = pdf_dict_get(ctx, fontdict, PDF_NAME(Name));
-        else
+        } else {
             name = basefont;
+        }
         encoding = pdf_dict_get(ctx, fontdict, PDF_NAME(Encoding));
-        if (pdf_is_dict(ctx, encoding))
+        if (pdf_is_dict(ctx, encoding)) {
             encoding = pdf_dict_get(ctx, encoding, PDF_NAME(BaseEncoding));
+        }
         int xref = pdf_to_num(ctx, fontdict);
         char *ext = "n/a";
-        if (xref) ext = JM_get_fontextension(ctx, pdf, xref);
+        if (xref) {
+            ext = JM_get_fontextension(ctx, pdf, xref);
+        }
         PyObject *entry = PyTuple_New(7);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
         PyTuple_SET_ITEM(entry, 1, Py_BuildValue("s", ext));
@@ -442,8 +450,9 @@ int JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
             if (pdf_name_eq(ctx, cs, PDF_NAME(DeviceN)) ||
                 pdf_name_eq(ctx, cs, PDF_NAME(Separation))) {
                 altcs = pdf_array_get(ctx, cses, 2);
-                if (pdf_is_array(ctx, altcs))
+                if (pdf_is_array(ctx, altcs)) {
                     altcs = pdf_array_get(ctx, altcs, 0);
+                }
             }
         }
 

@@ -28,7 +28,7 @@ class Matrix(object):
             self.a = self.b = self.c = self.d = self.e = self.f = 0.0
             return None
         if len(args) > 6:
-            raise ValueError("bad Matrix: sequ. length")
+            raise ValueError("Matrix: bad seq len")
         if len(args) == 6:  # 6 numbers
             self.a, self.b, self.c, self.d, self.e, self.f = map(float, args)
             return None
@@ -53,16 +53,16 @@ class Matrix(object):
             self.a, self.b, self.c, self.d, self.e, self.f = 1.0, \
                 float(args[1]), float(args[0]), 1.0, 0.0, 0.0
             return None
-        raise ValueError("bad Matrix constructor")
+        raise ValueError("Matrix: bad args")
 
     def invert(self, src=None):
         """Calculate the inverted matrix. Return 0 if successful and replace
         current one. Else return 1 and do nothing.
         """
         if src is None:
-            dst = TOOLS._invert_matrix(self)
+            dst = util_invert_matrix(self)
         else:
-            dst = TOOLS._invert_matrix(src)
+            dst = util_invert_matrix(src)
         if dst[0] == 1:
             return 1
         self.a, self.b, self.c, self.d, self.e, self.f = dst[1]
@@ -143,8 +143,8 @@ class Matrix(object):
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
         if not len(one) == len(two) == 6:
-            raise ValueError("bad Matrix: sequ. length")
-        self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
+            raise ValueError("Matrix: bad seq len")
+        self.a, self.b, self.c, self.d, self.e, self.f = util_concat_matrix(one, two)
         return self
 
     def __getitem__(self, i):
@@ -186,7 +186,7 @@ class Matrix(object):
         if hasattr(m, "__float__"):
             return Matrix(self.a * 1./m, self.b * 1./m, self.c * 1./m,
                           self.d * 1./m, self.e * 1./m, self.f * 1./m)
-        m1 = TOOLS._invert_matrix(m)[1]
+        m1 = util_invert_matrix(m)[1]
         if not m1:
             raise ZeroDivisionError("matrix not invertible")
         m2 = Matrix(1,1)
@@ -198,7 +198,7 @@ class Matrix(object):
             return Matrix(self.a + m, self.b + m, self.c + m,
                           self.d + m, self.e + m, self.f + m)
         if len(m) != 6:
-            raise ValueError("bad Matrix: sequ. length")
+            raise ValueError("Matrix: bad seq len")
         return Matrix(self.a + m[0], self.b + m[1], self.c + m[2],
                           self.d + m[3], self.e + m[4], self.f + m[5])
 
@@ -207,7 +207,7 @@ class Matrix(object):
             return Matrix(self.a - m, self.b - m, self.c - m,
                           self.d - m, self.e - m, self.f - m)
         if len(m) != 6:
-            raise ValueError("bad Matrix: sequ. length")
+            raise ValueError("Matrix: bad seq len")
         return Matrix(self.a - m[0], self.b - m[1], self.c - m[2],
                           self.d - m[3], self.e - m[4], self.f - m[5])
 
@@ -280,7 +280,7 @@ class Point(object):
             return None
 
         if len(args) > 2:
-            raise ValueError("bad Point: sequ. length")
+            raise ValueError("Point: bad seq len")
         if len(args) == 2:
             self.x = float(args[0])
             self.y = float(args[1])
@@ -288,19 +288,19 @@ class Point(object):
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("bad Point constructor")
+                raise ValueError("Point: bad args")
             if len(l) != 2:
-                raise ValueError("bad Point: sequ. length")
+                raise ValueError("Point: bad seq len")
             self.x = float(l[0])
             self.y = float(l[1])
             return None
-        raise ValueError("bad Point constructor")
+        raise ValueError("Point: bad args")
 
     def transform(self, m):
         """Replace point by its transformation with matrix-like m."""
         if len(m) != 6:
-            raise ValueError("bad Matrix: sequ. length")
-        self.x, self.y = TOOLS._transform_point(self, m)
+            raise ValueError("Matrix: bad seq len")
+        self.x, self.y = util_transform_point(self, m)
         return self
 
     @property
@@ -414,14 +414,14 @@ class Point(object):
         if hasattr(p, "__float__"):
             return Point(self.x + p, self.y + p)
         if len(p) != 2:
-            raise ValueError("bad Point: sequ. length")
+            raise ValueError("Point: bad seq len")
         return Point(self.x + p[0], self.y + p[1])
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x - p, self.y - p)
         if len(p) != 2:
-            raise ValueError("bad Point: sequ. length")
+            raise ValueError("Point: bad seq len")
         return Point(self.x - p[0], self.y - p[1])
 
     def __mul__(self, m):
@@ -433,7 +433,7 @@ class Point(object):
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
             return Point(self.x * 1./m, self.y * 1./m)
-        m1 = TOOLS._invert_matrix(m)[1]
+        m1 = util_invert_matrix(m)[1]
         if not m1:
             raise ZeroDivisionError("matrix not invertible")
         p = Point(self)
@@ -453,7 +453,7 @@ class Rect(object):
     Rect(sequ) - new from sequence or rect-like
     """
     def __init__(self, *args):
-        self.x0, self.y0, self.x1, self.y1 = TOOLS._make_rect(args)
+        self.x0, self.y0, self.x1, self.y1 = util_make_rect(args)
         return None
 
     def normalize(self):
@@ -531,7 +531,7 @@ class Rect(object):
 
     def round(self):
         """Return the IRect."""
-        return IRect(TOOLS._round_rect(self))
+        return IRect(util_round_rect(self))
 
     irect = property(round)
 
@@ -541,14 +541,14 @@ class Rect(object):
     def include_point(self, p):
         """Extend to include point-like p."""
         if len(p) != 2:
-            raise ValueError("bad Point: sequ. length")
-        self.x0, self.y0, self.x1, self.y1 = TOOLS._include_point_in_rect(self, p)
+            raise ValueError("Point: bad seq len")
+        self.x0, self.y0, self.x1, self.y1 = util_include_point_in_rect(self, p)
         return self
 
     def include_rect(self, r):
         """Extend to include rect-like r."""
         if len(r) != 4:
-            raise ValueError("bad Rect: sequ. length")
+            raise ValueError("Rect: bad seq len")
         r = Rect(r)
         if r.is_infinite or self.is_infinite:
             self.x0, self.y0, self.x1, self.y1 = FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT
@@ -557,13 +557,13 @@ class Rect(object):
         elif self.is_empty:
             self.x0, self.y0, self.x1, self.y1 = r.x0, r.y0, r.x1, r.y1
         else:
-            self.x0, self.y0, self.x1, self.y1 = TOOLS._union_rect(self, r)
+            self.x0, self.y0, self.x1, self.y1 = util_union_rect(self, r)
         return self
 
     def intersect(self, r):
         """Restrict to common rect with rect-like r."""
         if not len(r) == 4:
-            raise ValueError("bad Rect: sequ. length")
+            raise ValueError("Rect: bad seq len")
         r = Rect(r)
         if r.is_infinite:
             return self
@@ -574,7 +574,7 @@ class Rect(object):
         elif self.is_empty:
             return self
         else:
-            self.x0, self.y0, self.x1, self.y1 = TOOLS._intersect_rect(self, r)
+            self.x0, self.y0, self.x1, self.y1 = util_intersect_rect(self, r)
         return self
 
     def contains(self, x):
@@ -584,8 +584,8 @@ class Rect(object):
     def transform(self, m):
         """Replace with the transformation by matrix-like m."""
         if not len(m) == 6:
-            raise ValueError("bad Matrix: sequ. length")
-        self.x0, self.y0, self.x1, self.y1 = TOOLS._transform_rect(self, m)
+            raise ValueError("Matrix: bad seq len")
+        self.x0, self.y0, self.x1, self.y1 = util_transform_rect(self, m)
         return self
 
     def __getitem__(self, i):
@@ -634,21 +634,19 @@ class Rect(object):
 
     def __add__(self, p):
         if hasattr(p, "__float__"):
-            r = Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
-        else:
-            if len(p) != 4:
-                raise ValueError("bad Rect: sequ. length")
-            r = Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
-        return r
+            return Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
+        if len(p) != 4:
+            raise ValueError("Rect: bad seq len")
+        return Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
+
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
-            r = Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
-        else:
-            if len(p) != 4:
-                raise ValueError("bad Rect: sequ. length")
-            r = Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
-        return r
+            return Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
+        if len(p) != 4:
+            raise ValueError("Rect: bad seq len")
+        return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
+
 
     def __mul__(self, m):
         if hasattr(m, "__float__"):
@@ -660,9 +658,9 @@ class Rect(object):
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
             return Rect(self.x0 * 1./m, self.y0 * 1./m, self.x1 * 1./m, self.y1 * 1./m)
-        im = TOOLS._invert_matrix(m)[1]
+        im = util_invert_matrix(m)[1]
         if not im:
-            raise ZeroDivisionError("matrix not invertible")
+            raise ZeroDivisionError("Matrix not invertible")
         r = Rect(self)
         r = r.transform(im)
         return r
@@ -673,15 +671,18 @@ class Rect(object):
         if hasattr(x, "__float__"):
             return x in tuple(self)
         l = len(x)
-        if l == 4:
-            r = Rect(x)
-            return self.x0 <= r.x0 <= r.x1 <= self.x1 and self.y0 <= r.y0 <= r.y1 <= self.y1
-
         if l == 2:
-            return TOOLS._is_point_in_rect(x, self)
+            return util_is_point_in_rect(x, self)
+        if l == 4:
+            r = INFINITE_RECT()
+            try:
+                r = Rect(x)
+            except:
+                r = Quad(x).rect
+            return (self.x0 <= r.x0 <= r.x1 <= self.x1 and
+                    self.y0 <= r.y0 <= r.y1 <= self.y1)
+        return False
     
-        msg = "bad type or sequence: '%s'" % repr(x)
-        raise ValueError(msg)
 
     def __or__(self, x):
         if not hasattr(x, "__len__"):
@@ -722,7 +723,7 @@ class IRect(object):
     IRect(sequ) - new from sequence or rect-like
     """
     def __init__(self, *args):
-        self.x0, self.y0, self.x1, self.y1 = TOOLS._make_irect(args)
+        self.x0, self.y0, self.x1, self.y1 = util_make_irect(args)
         return None
 
     def normalize(self):
@@ -884,18 +885,7 @@ class IRect(object):
 
 
     def __contains__(self, x):
-        if hasattr(x, "__float__"):
-            return x in tuple(self)
-        l = len(x)
-        if l == 4:
-            r = Rect(x)
-            return self.x0 <= r.x0 <= r.x1 <= self.x1 and self.y0 <= r.y0 <= r.y1 <= self.y1
-
-        if l == 2:
-            return TOOLS._is_point_in_rect(x, self)
-    
-        msg = "bad type or sequence: '%s'" % repr(x)
-        raise ValueError(msg)
+        return Rect.__contains__(self, x)
 
 
     def __or__(self, x):
@@ -905,14 +895,7 @@ class IRect(object):
         return Rect.__and__(self, x).round()
 
     def intersects(self, x):
-        """Check if intersection with rectangle x is not empty."""
-        r1 = Rect(x)
-        if self.is_empty or self.is_infinite or r1.is_empty or r1.is_infinite:
-            return False
-        r = Rect(self)
-        if r.intersect(r1).is_empty:
-            return False
-        return True
+        return Rect.intersects(self, x)
 
     def __hash__(self):
         return hash(tuple(self))
@@ -926,19 +909,19 @@ class Quad(object):
             return None
 
         if len(args) > 4:
-            raise ValueError("bad Quad: sequ. length")
+            raise ValueError("Quad: bad seq len")
         if len(args) == 4:
             self.ul, self.ur, self.ll, self.lr = map(Point, args)
             return None
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("bad Quad constructor")
+                raise ValueError("Quad: bad args")
             if len(l) != 4:
-                raise ValueError("bad Quad: sequ. length")
+                raise ValueError("Quad: bad seq len")
             self.ul, self.ur, self.ll, self.lr = map(Point, l)
             return None
-        raise ValueError("bad Quad constructor")
+        raise ValueError("Quad: bad args")
 
     @property
     def is_rectangular(self)->bool:
@@ -951,15 +934,15 @@ class Quad(object):
             True or False.
         """
 
-        sine = TOOLS._sine_between(self.ul, self.ur, self.lr)
+        sine = util_sine_between(self.ul, self.ur, self.lr)
         if abs(sine - 1) > EPSILON:  # the sine of the angle
             return False
 
-        sine = TOOLS._sine_between(self.ur, self.lr, self.ll)
+        sine = util_sine_between(self.ur, self.lr, self.ll)
         if abs(sine - 1) > EPSILON:
             return False
 
-        sine = TOOLS._sine_between(self.lr, self.ll, self.ul)
+        sine = util_sine_between(self.lr, self.ll, self.ul)
         if abs(sine - 1) > EPSILON:
             return False
 
@@ -1021,16 +1004,16 @@ class Quad(object):
         except:
             return False
         if l == 2:
-            return TOOLS._point_in_quad(x, self)
+            return util_point_in_quad(x, self)
         if l != 4:
             return False
         if CheckRect(x):
             if Rect(x).is_empty:
                 return True
-            return TOOLS._point_in_quad(x[:2], self) and TOOLS._point_in_quad(x[2:], self)
+            return util_point_in_quad(x[:2], self) and util_point_in_quad(x[2:], self)
         if CheckQuad(x):
             for i in range(4):
-                if not TOOLS._point_in_quad(x[i], self):
+                if not util_point_in_quad(x[i], self):
                     return False
             return True
         return False
@@ -1095,8 +1078,10 @@ class Quad(object):
 
     def transform(self, m):
         """Replace quad by its transformation with matrix m."""
-        if len(m) != 6:
-            raise ValueError("bad Matrix: sequ. length")
+        if hasattr(m, "__float__"):
+            pass
+        elif len(m) != 6:
+            raise ValueError("Matrix: bad seq len")
         self.ul *= m
         self.ur *= m
         self.ll *= m
@@ -1104,23 +1089,67 @@ class Quad(object):
         return self
 
     def __mul__(self, m):
-        r = Quad(self)
-        r = r.transform(m)
-        return r
+        q = Quad(self)
+        q = q.transform(m)
+        return q
+
+    def __add__(self, q):
+        if hasattr(q, "__float__"):
+            return Quad(self.ul + q, self.ur + q, self.ll + q, self.lr + q)
+        if len(p) != 4:
+            raise ValueError("Quad: bad seq len")
+        return Quad(self.ul + q[0], self.ur + q[1], self.ll + q[2], self.lr + q[3])
+
+
+    def __sub__(self, q):
+        if hasattr(q, "__float__"):
+            return Quad(self.ul - q, self.ur - q, self.ll - q, self.lr - q)
+        if len(p) != 4:
+            raise ValueError("Quad: bad seq len")
+        return Quad(self.ul - q[0], self.ur - q[1], self.ll - q[2], self.lr - q[3])
+
 
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
             im = 1. / m
         else:
-            im = TOOLS._invert_matrix(m)[1]
+            im = util_invert_matrix(m)[1]
             if not im:
-                raise ZeroDivisionError("matrix not invertible")
-        r = Quad(self)
-        r = r.transform(im)
-        return r
+                raise ZeroDivisionError("Matrix not invertible")
+        q = Quad(self)
+        q = q.transform(im)
+        return q
 
     __div__ = __truediv__
 
+
     def __hash__(self):
         return hash(tuple(self))
+
+
+# some special geometry objects
+def EMPTY_RECT():
+    return Rect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
+
+
+def INFINITE_RECT():
+    return Rect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
+
+
+def EMPTY_IRECT():
+    return IRect(FZ_MAX_INF_RECT, FZ_MAX_INF_RECT, FZ_MIN_INF_RECT, FZ_MIN_INF_RECT)
+
+
+def INFINITE_IRECT():
+    return IRect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
+
+
+def INFINITE_QUAD():
+    return INFINITE_RECT().quad
+
+
+def EMPTY_QUAD():
+    return EMPTY_RECT().quad
+
+
 %}

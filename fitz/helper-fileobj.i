@@ -9,9 +9,10 @@ JM_bytesio_write(fz_context *ctx, void *opaque, const void *data, size_t len)
     fz_try(ctx){
         b = PyBytes_FromStringAndSize((const char *) data, (Py_ssize_t) len);
         name = PyUnicode_FromString("write");
-        rc = PyObject_CallMethodObjArgs(bio, name, b, NULL);
-        if (!rc) {
-            THROWMSG(ctx, "could not write to Py file obj");
+        PyObject_CallMethodObjArgs(bio, name, b, NULL);
+        rc = PyErr_Occurred();
+        if (rc) {
+            RAISEPY(ctx, "could not write to Py file obj", rc);
         }
     }
     fz_always(ctx) {
@@ -33,9 +34,10 @@ JM_bytesio_truncate(fz_context *ctx, void *opaque)
         trunc = PyUnicode_FromString("truncate");
         tell = PyUnicode_FromString("tell");
         rctell = PyObject_CallMethodObjArgs(bio, tell, NULL);
-        rc = PyObject_CallMethodObjArgs(bio, trunc, rctell, NULL);
-        if (!rc) {
-            THROWMSG(ctx, "could not truncate Py file obj");
+        PyObject_CallMethodObjArgs(bio, trunc, rctell, NULL);
+        rc = PyErr_Occurred();
+        if (rc) {
+            RAISEPY(ctx, "could not truncate Py file obj", rc);
         }
     }
     fz_always(ctx) {
@@ -59,7 +61,7 @@ JM_bytesio_tell(fz_context *ctx, void *opaque)
         name = PyUnicode_FromString("tell");
         rc = PyObject_CallMethodObjArgs(bio, name, NULL);
         if (!rc) {
-            THROWMSG(ctx, "could not tell Py file obj");
+            RAISEPY(ctx, "could not tell Py file obj", PyErr_Occurred());
         }
         pos = (int64_t) PyLong_AsUnsignedLongLong(rc);
     }
@@ -82,9 +84,10 @@ JM_bytesio_seek(fz_context *ctx, void *opaque, int64_t off, int whence)
     fz_try(ctx) {
         name = PyUnicode_FromString("seek");
         pos = PyLong_FromUnsignedLongLong((unsigned long long) off);
-        rc = PyObject_CallMethodObjArgs(bio, name, pos, whence, NULL);
-        if (!rc) {
-            THROWMSG(ctx, "could not seek Py file obj");
+        PyObject_CallMethodObjArgs(bio, name, pos, whence, NULL);
+        rc = PyErr_Occurred();
+        if (rc) {
+            RAISEPY(ctx, "could not seek Py file obj", rc);
         }
     }
     fz_always(ctx) {

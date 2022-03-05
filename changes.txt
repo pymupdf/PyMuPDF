@@ -3,6 +3,31 @@ Change Log
 
 ------
 
+**Changes in Version 1.19.6**
+
+* **Fixed** `#1620 <https://github.com/pymupdf/PyMuPDF/issues/1620>`_. The :ref:`TextPage` created by :meth:`Page.get_textpage` will now be freed correctly (removed memory leak).
+* **Fixed** `#1601 <https://github.com/pymupdf/PyMuPDF/issues/1601>`_. Document open errors should now be more concise and easier to interpret. In the course of this, two PyMuPDF-specific Python exceptions have been **added:**
+
+    - ``EmptyFileError`` -- raised when trying to create a :ref:`Document` (``fitz.open()``) from an empty file or zero-length memory.
+    - ``FileDataError`` -- raised when MuPDF encounters irrecoverable document structure issues.
+
+* **Added** :meth:`Page.load_widget` given a PDF field's xref.
+
+* **Added** Dictionary :attr:`pdfcolor` which provide the about 500 colors defined as PDF color values with the lower case color name as key.
+
+* **Added** algebra functionality to the :ref:`Quad` class. These objects can now also be added and subtracted among themselves, and be multiplied by numbers and matrices.
+
+* **Added** new constants defining the default text extraction flags for more comfortable handling. Their naming convention is like :data:`TEXTFLAGS_WORDS` for ``page.get_text("words")``. See :ref:`text_extraction_flags`.
+
+* **Changed** :meth:`Page.annots` and :meth:`Page.widgets` to detect and prevent reloading the page (illegally) inside the iterator loops via :meth:`Document.reload_page`. Doing this brings down the interpretor. Documented clean ways to do annotation and widget mass updates within properly designed loops.
+
+* **Changed** several internal utility functions to become standalone ("SWIG inline") as opposed to be part of the :ref:`Tools` class. This, among other things, increases the performance of geometry object creation.
+
+* **Changed** :meth:`Document.update_stream` to always accept stream updates - whether or not the dictionary object behind the xref already is a stream. Thus the former ``new`` parameter is now ignored and will be removed in v1.20.0.
+
+
+------
+
 **Changes in Version 1.19.5**
 
 * **Fixed** `#1518 <https://github.com/pymupdf/PyMuPDF/issues/1518>`_. A limited "fix": in some cases, rectangles and quadrupels were not correctly encoded to support re-drawing by :ref:`Shape`.
@@ -1352,7 +1377,7 @@ This version is also based on MuPDF v1.9a. Changes compared to version 1.9.1:
 
   Type of memory area *stream* may be *bytes* or *bytearray*. Thus, e.g. *area = open("file.pdf", "rb").read()* may be used directly (without first converting it to bytearray).
 * New method *Document.insert_pdf()* (PDFs only) inserts a range of pages from another PDF.
-* *Document* objects doc now support the *len()* function: *len(doc) == doc.pageCount*.
+* *Document* objects doc now support the *len()* function: ``len(doc) == doc.pageCount``.
 * New method *Document.getPageImageList()* creates a list of images used on a page.
 * New method *Document.getPageFontList()* creates a list of fonts referenced by a page.
 * New pixmap constructor *fitz.Pixmap(doc, xref)* creates a pixmap based on an opened PDF document and an :data:`xref` number of the image.

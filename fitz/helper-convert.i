@@ -27,7 +27,7 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     fz_device *dev = NULL;
     fz_buffer *contents = NULL;
     pdf_obj *resources = NULL;
-    fz_page *page;
+    fz_page *page=NULL;
     fz_var(dev);
     fz_var(contents);
     fz_var(resources);
@@ -50,6 +50,10 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
             fz_drop_buffer(ctx, contents);
             fz_drop_device(ctx, dev);
             fz_drop_page(ctx, page);
+            page = NULL;
+            dev = NULL;
+            contents = NULL;
+            resources = NULL;
         }
         fz_catch(ctx) {
             fz_rethrow(ctx);

@@ -2,6 +2,7 @@
 * Verify equality of generated TOCs and expected results.
 * Verify TOC deletion works
 * Verify manipulation of single TOC item works
+* Verify stability against circular TOC items
 """
 import os
 import fitz
@@ -9,6 +10,7 @@ import fitz
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
 filename2 = os.path.join(scriptdir, "resources", "2.pdf")
+circular = os.path.join(scriptdir, "resources", "circular-toc.pdf")
 full_toc = os.path.join(scriptdir, "resources", "full_toc.txt")
 simple_toc = os.path.join(scriptdir, "resources", "simple_toc.txt")
 doc = fitz.open(filename)
@@ -54,3 +56,9 @@ def test_setcolors():
         assert d["bold"]
         assert d["italic"]
         assert d["color"] == (1, 0, 0)
+
+
+def test_circular():
+    """The test file contains circular bookmarks."""
+    doc = fitz.open(circular)
+    toc = doc.get_toc(False)  # this must not loop

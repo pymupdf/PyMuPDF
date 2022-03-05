@@ -28,31 +28,31 @@ def test_drawings2():
     page = doc.new_page()
 
     r = fitz.Rect(100, 100, 200, 200)
-    page.draw_circle(r.br, 2)
+    page.draw_circle(r.br, 2, color=0)
     r += delta
 
-    page.draw_line(r.tl, r.br)
+    page.draw_line(r.tl, r.br, color=0)
     r += delta
 
-    page.draw_oval(r)
+    page.draw_oval(r, color=0)
     r += delta
 
-    page.draw_rect(r)
+    page.draw_rect(r, color=0)
     r += delta
 
-    page.draw_quad(r.quad)
+    page.draw_quad(r.quad, color=0)
     r += delta
 
-    page.draw_polyline((r.tl, r.tr, r.br))
+    page.draw_polyline((r.tl, r.tr, r.br), color=0)
     r += delta
 
-    page.draw_bezier(r.tl, r.tr, r.br, r.bl)
+    page.draw_bezier(r.tl, r.tr, r.br, r.bl, color=0)
     r += delta
 
-    page.draw_curve(r.tl, r.tr, r.br)
+    page.draw_curve(r.tl, r.tr, r.br, color=0)
     r += delta
 
-    page.draw_squiggle(r.tl, r.br)
+    page.draw_squiggle(r.tl, r.br, color=0)
     r += delta
 
     rects = [p["rect"] for p in page.get_cdrawings()]

@@ -47,6 +47,52 @@ TEXT_DEHYPHENATE = 16
 TEXT_PRESERVE_SPANS = 32
 TEXT_MEDIABOX_CLIP = 64
 
+TEXTFLAGS_WORDS = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+)
+TEXTFLAGS_BLOCKS = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+)
+TEXTFLAGS_DICT = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+    | TEXT_PRESERVE_IMAGES
+)
+TEXTFLAGS_RAWDICT = TEXTFLAGS_DICT
+TEXTFLAGS_SEARCH = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+    | TEXT_DEHYPHENATE
+)
+TEXTFLAGS_HTML = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+    | TEXT_PRESERVE_IMAGES
+)
+TEXTFLAGS_XHTML = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+    | TEXT_PRESERVE_IMAGES
+)
+TEXTFLAGS_XML = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+)
+TEXTFLAGS_TEXT = (
+    TEXT_PRESERVE_LIGATURES
+    | TEXT_PRESERVE_WHITESPACE
+    | TEXT_MEDIABOX_CLIP
+)
+
 # ------------------------------------------------------------------------------
 # Simple text encoding options
 # ------------------------------------------------------------------------------
@@ -120,6 +166,20 @@ annot_skel = {
     "named": "<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
 }
 
+class FileDataError(RuntimeError):
+    """Raised for documents with file structure issues."""
+    pass
+
+class FileNotFoundError(RuntimeError):
+    """Raised if file does not exist."""
+    pass
+
+class EmptyFileError(FileDataError):
+    """Raised when creating documents from zero-length data."""
+    pass
+
+# propagate exception class to C-level code
+_set_FileDataError(FileDataError)
 
 def get_text_length(text: str, fontname: str ="helv", fontsize: float =11, encoding: int =0) -> float:
     """Calculate length of a string for a built-in font.
@@ -144,7 +204,7 @@ def get_text_length(text: str, fontname: str ="helv", fontsize: float =11, encod
         return w * fontsize
 
     if fontname in Base14_fontdict.keys():
-        return TOOLS._measure_string(
+        return util_measure_string(
             text, Base14_fontdict[fontname], fontsize, encoding
         )
 
@@ -989,6 +1049,10 @@ def JM_TUPLE(o: typing.Sequence) -> tuple:
     return tuple(map(lambda x: round(x, 5) if abs(x) >= 1e-4 else 0, o))
 
 
+def JM_TUPLE3(o: typing.Sequence) -> tuple:
+    return tuple(map(lambda x: round(x, 3) if abs(x) >= 1e-3 else 0, o))
+
+
 def CheckRect(r: typing.Any) -> bool:
     """Check whether an object is non-degenerate rect-like.
 
@@ -1085,7 +1149,7 @@ def planish_line(p1: point_like, p2: point_like) -> Matrix:
     """
     p1 = Point(p1)
     p2 = Point(p2)
-    return Matrix(TOOLS._hor_matrix(p1, p2))
+    return Matrix(util_hor_matrix(p1, p2))
 
 
 def image_profile(img: typing.ByteString) -> dict:
@@ -1254,7 +1318,7 @@ def annot_preprocess(page: "Page") -> int:
     """
     CheckParent(page)
     if not page.parent.is_pdf:
-        raise ValueError("not a PDF")
+        raise ValueError("is no PDF")
     old_rotation = page.rotation
     if old_rotation != 0:
         page.set_rotation(0)

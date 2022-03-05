@@ -42,12 +42,6 @@ fitz.recover_bbox_quad = fitz.utils.recover_bbox_quad
 fitz.recover_line_quad = fitz.utils.recover_line_quad
 fitz.recover_span_quad = fitz.utils.recover_span_quad
 fitz.recover_char_quad = fitz.utils.recover_char_quad
-fitz.EMPTY_RECT = fitz.utils.EMPTY_RECT
-fitz.EMPTY_IRECT = fitz.utils.EMPTY_IRECT
-fitz.EMPTY_QUAD = fitz.utils.EMPTY_QUAD
-fitz.INFINITE_RECT = fitz.utils.INFINITE_RECT
-fitz.INFINITE_IRECT = fitz.utils.INFINITE_IRECT
-fitz.INFINITE_QUAD = fitz.utils.INFINITE_QUAD
 
 # ------------------------------------------------------------------------------
 # Document
@@ -447,8 +441,15 @@ Built for Python %i.%i on %s (%i-bit).
     sys.version_info[0],
     sys.version_info[1],
     sys.platform,
-    64 if sys.maxsize > 2 ** 32 else 32,
+    64 if sys.maxsize > 2**32 else 32,
 )
 
-if VersionBind.startswith("1.19"):  # don't generate aliases after this
+if VersionBind.startswith("1.19"):  # don't generate aliases after v1.19.*
     restore_aliases()
+
+pdfcolor = dict(
+    [
+        (k, (r / 255, g / 255, b / 255))
+        for k, (r, g, b) in fitz.utils.getColorInfoDict().items()
+    ]
+)

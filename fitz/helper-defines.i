@@ -381,6 +381,337 @@
 #define UCDN_SCRIPT_NYIAKENG_PUACHUE_HMONG 151
 #define UCDN_SCRIPT_WANCHO 152
 
+
+// exceptions
+PyObject *_set_FileDataError(PyObject *value)
+{
+	if (!value) {
+		Py_RETURN_FALSE;
+	}
+	JM_Exc_FileDataError = value;
+	Py_RETURN_TRUE;
+}
+
+// minor tools
+PyObject *util_sine_between(PyObject *C, PyObject *P, PyObject *Q)
+{
+	// for points C, P, Q compute the sine between lines CP and QP
+	fz_point c = JM_point_from_py(C);
+	fz_point p = JM_point_from_py(P);
+	fz_point q = JM_point_from_py(Q);
+	fz_point s = JM_normalize_vector(q.x - p.x, q.y - p.y);
+	fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -p.x, -p.y);
+	fz_matrix m2 = fz_make_matrix(s.x, -s.y, s.y, s.x, 0, 0);
+	m1 = fz_concat(m1, m2);
+	c = fz_transform_point(c, m1);
+	c = JM_normalize_vector(c.x, c.y);
+	return Py_BuildValue("f", c.y);
+}
+
+
+// Return matrix that maps point C to (0,0) and point P to the
+// x-axis such that abs(x) equals abs(P - C).
+PyObject *util_hor_matrix(PyObject *C, PyObject *P)
+{
+	fz_point c = JM_point_from_py(C);
+	fz_point p = JM_point_from_py(P);
+
+	// compute (cosine, sine) of vector P-C with double precision:
+	fz_point s = JM_normalize_vector(p.x - c.x, p.y - c.y);
+
+	fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -c.x, -c.y);
+	fz_matrix m2 = fz_make_matrix(s.x, -s.y, s.y, s.x, 0, 0);
+	return JM_py_from_matrix(fz_concat(m1, m2));
+}
+
+
+//-----------------------------------------------------------
+// Compute Rect coordinates using different alternatives
+//-----------------------------------------------------------
+PyObject *util_make_rect(PyObject *a)
+{
+	Py_ssize_t i, n = PyTuple_GET_SIZE(a);
+	PyObject *p1, *p2, *l = a;
+	char *msg = "Rect: bad args";
+	double c[4] = { 0, 0, 0, 0 };
+	switch (n) {
+		case 0: goto exit_normal;
+		case 1: goto size1;
+		case 2: goto size2;
+		case 3: goto size31;
+		case 4: goto size4;
+		default:
+			msg = "Rect: bad seq len";
+			goto exit_error;
+	}
+
+	size4:;
+		for (i = 0; i < 4; i++) {
+			if (JM_FLOAT_ITEM(l, i, &c[i]) == 1) {
+				goto exit_error;
+			}
+		}
+		goto exit_normal;
+
+	size1:;
+		l = PyTuple_GET_ITEM(a, 0);
+		if (!PySequence_Check(l) || PySequence_Size(l) != 4) {
+			msg = "Rect: bad seq len";
+			goto exit_error;
+		}
+		goto size4;
+
+	size2:;
+		msg = "Rect: bad args";
+		p1 = PyTuple_GET_ITEM(a, 0);
+		p2 = PyTuple_GET_ITEM(a, 1);
+		if (!PySequence_Check(p1) || PySequence_Size(p1) != 2) {
+			goto exit_error;
+		}
+		if (!PySequence_Check(p2) || PySequence_Size(p2) != 2) {
+			goto exit_error;
+		}
+		if (JM_FLOAT_ITEM(p1, 0, &c[0]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(p1, 1, &c[1]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(p2, 0, &c[2]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(p2, 1, &c[3]) == 1) goto exit_error;
+		goto exit_normal;
+
+	size31:;
+		p1 = PyTuple_GET_ITEM(a, 0);
+		if (PySequence_Check(p1)) goto size32;
+		if (JM_FLOAT_ITEM(a, 0, &c[0]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(a, 1, &c[1]) == 1) goto exit_error;
+		p2 = PyTuple_GET_ITEM(a, 2);
+		if (!PySequence_Check(p2) || PySequence_Size(p2) != 2) {
+			goto exit_error;
+		}
+		if (JM_FLOAT_ITEM(p2, 0, &c[2]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(p2, 1, &c[3]) == 1) goto exit_error;
+		goto exit_normal;
+
+	size32:;
+		if (PySequence_Size(p1) != 2) goto exit_error;
+		if (JM_FLOAT_ITEM(p1, 0, &c[0]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(p1, 1, &c[1]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(a, 1, &c[2]) == 1) goto exit_error;
+		if (JM_FLOAT_ITEM(a, 2, &c[3]) == 1) goto exit_error;
+		goto exit_normal;
+
+	exit_normal:;
+		for (i = 0; i < 4; i++) {
+			if (c[i] < FZ_MIN_INF_RECT) c[i] = FZ_MIN_INF_RECT;
+			if (c[i] > FZ_MAX_INF_RECT) c[i] = FZ_MAX_INF_RECT;
+		}
+		return Py_BuildValue("dddd", c[0], c[1], c[2], c[3]);
+
+	exit_error:;
+		PyErr_SetString(PyExc_ValueError, msg);
+		return NULL;
+}
+
+
+//-----------------------------------------------------------
+// Compute IRect coordinates using different alternatives
+//-----------------------------------------------------------
+PyObject *util_make_irect(PyObject *a)
+{
+	Py_ssize_t i, n = PyTuple_GET_SIZE(a);
+	PyObject *p1, *p2, *l = a;
+	char *msg = "IRect: bad args";
+	int c[4] = { 0, 0, 0, 0 };
+	switch (n) {
+		case 0: goto exit_normal;
+		case 1: goto size1;
+		case 2: goto size2;
+		case 3: goto size31;
+		case 4: goto size4;
+		default:
+			msg = "IRect: bad seq len";
+			goto exit_error;
+	}
+
+	size4:;
+		for (i = 0; i < 4; i++) {
+			if (JM_INT_ITEM(l, i, &c[i]) == 1) {
+				goto exit_error;
+			}
+		}
+		goto exit_normal;
+
+	size1:;
+		l = PyTuple_GET_ITEM(a, 0);
+		if (!PySequence_Check(l) || PySequence_Size(l) != 4) {
+			msg = "IRect: bad seq len";
+			goto exit_error;
+		}
+		goto size4;
+
+	size2:;
+		p1 = PyTuple_GET_ITEM(a, 0);
+		p2 = PyTuple_GET_ITEM(a, 1);
+		if (!PySequence_Check(p1) || PySequence_Size(p1) != 2) {
+			goto exit_error;
+		}
+		if (!PySequence_Check(p2) || PySequence_Size(p2) != 2) {
+			goto exit_error;
+		}
+		msg = "IRect: bad int values";
+		if (JM_INT_ITEM(p1, 0, &c[0]) == 1) goto exit_error;
+		if (JM_INT_ITEM(p1, 1, &c[1]) == 1) goto exit_error;
+		if (JM_INT_ITEM(p2, 0, &c[2]) == 1) goto exit_error;
+		if (JM_INT_ITEM(p2, 1, &c[3]) == 1) goto exit_error;
+		goto exit_normal;
+
+	size31:;
+		p1 = PyTuple_GET_ITEM(a, 0);
+		if (PySequence_Check(p1)) goto size32;
+		if (JM_INT_ITEM(a, 0, &c[0]) == 1) goto exit_error;
+		if (JM_INT_ITEM(a, 1, &c[1]) == 1) goto exit_error;
+		p2 = PyTuple_GET_ITEM(a, 2);
+		if (!PySequence_Check(p2) || PySequence_Size(p2) != 2) {
+			goto exit_error;
+		}
+		if (JM_INT_ITEM(p2, 0, &c[2]) == 1) goto exit_error;
+		if (JM_INT_ITEM(p2, 1, &c[3]) == 1) goto exit_error;
+		goto exit_normal;
+
+	size32:;
+		if (PySequence_Size(p1) != 2) goto exit_error;
+		if (JM_INT_ITEM(p1, 0, &c[0]) == 1) goto exit_error;
+		if (JM_INT_ITEM(p1, 1, &c[1]) == 1) goto exit_error;
+		if (JM_INT_ITEM(a, 1, &c[2]) == 1) goto exit_error;
+		if (JM_INT_ITEM(a, 2, &c[3]) == 1) goto exit_error;
+		goto exit_normal;
+
+	exit_normal:;
+		for (i = 0; i < 4; i++) {
+			if (c[i] < FZ_MIN_INF_RECT) c[i] = FZ_MIN_INF_RECT;
+			if (c[i] > FZ_MAX_INF_RECT) c[i] = FZ_MAX_INF_RECT;
+		}
+		return Py_BuildValue("iiii", c[0], c[1], c[2], c[3]);
+
+	exit_error:;
+		PyErr_SetString(PyExc_ValueError, msg);
+		return NULL;
+}
+
+
+PyObject *util_round_rect(PyObject *rect)
+{
+	return JM_py_from_irect(fz_round_rect(JM_rect_from_py(rect)));
+}
+
+
+PyObject *util_transform_rect(PyObject *rect, PyObject *matrix)
+{
+	return JM_py_from_rect(fz_transform_rect(JM_rect_from_py(rect), JM_matrix_from_py(matrix)));
+}
+
+
+PyObject *util_intersect_rect(PyObject *r1, PyObject *r2)
+{
+	return JM_py_from_rect(fz_intersect_rect(JM_rect_from_py(r1),
+												JM_rect_from_py(r2)));
+}
+
+
+PyObject *util_is_point_in_rect(PyObject *p, PyObject *r)
+{
+	return JM_BOOL(fz_is_point_inside_rect(JM_point_from_py(p), JM_rect_from_py(r)));
+}
+
+
+PyObject *util_include_point_in_rect(PyObject *r, PyObject *p)
+{
+	return JM_py_from_rect(fz_include_point_in_rect(JM_rect_from_py(r),
+												JM_point_from_py(p)));
+}
+
+
+PyObject *util_point_in_quad(PyObject *P, PyObject *Q)
+{
+	fz_point p = JM_point_from_py(P);
+	fz_quad q = JM_quad_from_py(Q);
+	return JM_BOOL(fz_is_point_inside_quad(p, q));
+}
+
+
+PyObject *util_transform_point(PyObject *point, PyObject *matrix)
+{
+	return JM_py_from_point(fz_transform_point(JM_point_from_py(point), JM_matrix_from_py(matrix)));
+}
+
+
+PyObject *util_union_rect(PyObject *r1, PyObject *r2)
+{
+	return JM_py_from_rect(fz_union_rect(JM_rect_from_py(r1),
+											JM_rect_from_py(r2)));
+}
+
+
+PyObject *util_concat_matrix(PyObject *m1, PyObject *m2)
+{
+	return JM_py_from_matrix(fz_concat(JM_matrix_from_py(m1),
+										JM_matrix_from_py(m2)));
+}
+
+
+PyObject *util_invert_matrix(PyObject *matrix)
+{
+	fz_matrix src = JM_matrix_from_py(matrix);
+	float a = src.a;
+	float det = a * src.d - src.b * src.c;
+	if (det < -FLT_EPSILON || det > FLT_EPSILON)
+	{
+		fz_matrix dst;
+		float rdet = 1 / det;
+		dst.a = src.d * rdet;
+		dst.b = -src.b * rdet;
+		dst.c = -src.c * rdet;
+		dst.d = a * rdet;
+		a = -src.e * dst.a - src.f * dst.c;
+		dst.f = -src.e * dst.b - src.f * dst.d;
+		dst.e = a;
+		return Py_BuildValue("iN", 0, JM_py_from_matrix(dst));
+	}
+	return Py_BuildValue("(i, ())", 1);
+}
+
+
+PyObject *util_measure_string(const char *text, const char *fontname, double fontsize, int encoding)
+{
+	double w = 0;
+	fz_font *font = NULL;
+	fz_try(gctx) {
+		font = fz_new_base14_font(gctx, fontname);
+		while (*text)
+		{
+			int c, g;
+			text += fz_chartorune(&c, text);
+			switch (encoding)
+			{
+				case PDF_SIMPLE_ENCODING_GREEK:
+					c = fz_iso8859_7_from_unicode(c); break;
+				case PDF_SIMPLE_ENCODING_CYRILLIC:
+					c = fz_windows_1251_from_unicode(c); break;
+				default:
+					c = fz_windows_1252_from_unicode(c); break;
+			}
+			if (c < 0) c = 0xB7;
+			g = fz_encode_character(gctx, font, c);
+			w += (double) fz_advance_glyph(gctx, font, g, 0);
+		}
+	}
+	fz_always(gctx) {
+		fz_drop_font(gctx, font);
+	}
+	fz_catch(gctx) {
+		return PyFloat_FromDouble(0);
+	}
+	return PyFloat_FromDouble(w * fontsize);
+}
+
 %}
 
 %{
