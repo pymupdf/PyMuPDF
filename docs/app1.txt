@@ -268,9 +268,17 @@ Text Extraction Flags Defaults
 
 * New in v1.19.6: The default combinations in the following table are now available as Python constants: :data:`TEXTFLAGS_TEXT`, :data:`TEXTFLAGS_WORDS`, :data:`TEXTFLAGS_BLOCKS`, :data:`TEXTFLAGS_DICT`, :data:`TEXTFLAGS_RAWDICT`, :data:`TEXTFLAGS_HTML`, :data:`TEXTFLAGS_XHTML`, :data:`TEXTFLAGS_XML`, and :data:`TEXTFLAGS_SEARCH`. You can now easily modify a default flag, e.g.
 
-    - **include** images in a "blocks" output: ``flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES``
-    - **exclude** images from a "dict" output: ``flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES``
-    - set **dehyphenation off** in text searches: ``flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE``
+    - **include** images in a "blocks" output:
+    
+    ``flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES``
+    
+    - **exclude** images from a "dict" output:
+    
+    ``flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES``
+    
+    - set **dehyphenation off** in text searches:
+    
+    ``flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE``
 
 
 =================== ==== ==== ===== === ==== ======= ===== ====== ======
