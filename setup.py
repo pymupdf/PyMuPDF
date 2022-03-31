@@ -58,7 +58,7 @@ FEDORA = NIX + [
 
 LIBRARIES = {
     "default": DEFAULT,
-    "ubuntu": DEFAULT,
+    "ubuntu": DEBIAN,
     "arch": ARCH_LINUX,
     "manjaro": ARCH_LINUX,
     "artix": ARCH_LINUX,
