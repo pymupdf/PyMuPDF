@@ -1564,7 +1564,7 @@ For details on **embedded files** refer to Appendix 3.
 
          *(Changed in v1.14.13:)* *io.BytesIO* objects are now also supported.
 
-      :arg bool new: *deprecated* and ignored. Will be removed in v1.20.0.
+      :arg bool new: *deprecated* and ignored. Will be removed some time after v1.20.0.
       :arg bool compress: whether to compress the inserted stream. If ``True`` (default), the stream will be inserted using ``/FlateDecode`` compression (if beneficial), otherwise the stream will inserted as is.
 
       :raises ValueError: if *xref* does not represent a PDF :data:`dict`. An empty dictionary ``<<>>`` is accepted. So if you just created the xref and want to give it a stream, first execute ``doc.update_object(xref, "<<>>")``, and then insert the stream data with this method.

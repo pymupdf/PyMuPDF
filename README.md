@@ -1,17 +1,17 @@
-# PyMuPDF 1.19.6
+# PyMuPDF 1.20.0
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: March 3, 2022
+Release date: June 6, 2022
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
 # Author
-[Jorj X. McKie](mailto:jorj.x.mckie@outlook.de), based on original code by [Ruikai Liu](mailto:lrk700@gmail.com).
+[Artifex], based on code by [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de), based on original code by [Ruikai Liu](mailto:lrk700@gmail.com).
 
 # Introduction
 
-PyMuPDF (current version 1.19.6) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.19.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
+PyMuPDF (current version 1.20.0) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.20.*), a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -109,4 +109,4 @@ Artifex is the exclusive commercial licensing agent for MuPDF.
 Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
 
 # Contact
-Please use the [Discussions](https://github.com/pymupdf/PyMuPDF/discussions) menu for questions, comments, or asking for help, and submit issues [here](https://github.com/pymupdf/PyMuPDF/issues). If you wish, you can also contact me directly via jorj.x.mckie@outlook.de.
+Please use the [Discussions](https://github.com/pymupdf/PyMuPDF/discussions) menu for questions, comments, or asking for help, and submit issues [here](https://github.com/pymupdf/PyMuPDF/issues).

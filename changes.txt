@@ -3,6 +3,22 @@ Change Log
 
 ------
 
+**Changes in Version 1.20.0**
+
+This release has minimal functional changes, to work with MuPDF-1.20.
+
+* Cope with new MuPDF link uri format, changed from `#<int>,<int>,<int>` to `#page=<int>&zoom=<float>,<float>,<float>`.
+
+ * In `tests/test_insertpdf.py`, use new reference output `joined-1.20.pdf`. We also do check that new output values are approximately the same as the old ones.
+
+Changes to build/release process:
+
+* Various changes to setup.py to always use the required version of MuPDF. See comment at start of setup.py for details.
+
+* Added `.github/workflows/build_wheels.yml` to control building of wheels on Github.
+
+------
+
 **Changes in Version 1.19.6**
 
 * **Fixed** `#1620 <https://github.com/pymupdf/PyMuPDF/issues/1620>`_. The :ref:`TextPage` created by :meth:`Page.get_textpage` will now be freed correctly (removed memory leak).
