@@ -767,7 +767,7 @@ class linkDest(object):
         self.rb = Point(0, 0)
         self.uri = obj.uri
         if rlink and not self.uri.startswith("#"):
-            self.uri = "#%i,%g,%g" % (rlink[0] + 1, rlink[1], rlink[2])
+            self.uri = "#page=%i&zoom=0,%g,%g" % (rlink[0] + 1, rlink[1], rlink[2])
         if obj.is_external:
             self.page = -1
             self.kind = LINK_URI
@@ -778,15 +778,16 @@ class linkDest(object):
             if self.uri.startswith("#"):
                 self.named = ""
                 self.kind = LINK_GOTO
-                ftab = self.uri[1:].split(",")
-                if len(ftab) == 3:
-                    self.page = int(ftab[0]) - 1
-                    self.lt = Point(float(ftab[1]), float(ftab[2]))
+                m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),([0-9.]+),([0-9.]+)$', self.uri)
+                if m:
+                    self.page = int(m.group(1)) - 1
+                    self.lt = Point(float((m.group(3))), float(m.group(4)))
                     self.flags = self.flags | LINK_FLAG_L_VALID | LINK_FLAG_T_VALID
                 else:
-                    try:
-                        self.page = int(ftab[0]) - 1
-                    except:
+                    m = re.match('^#page=([0-9]+)$')
+                    if m:
+                        self.page = int(m.group(1)) - 1
+                    else:
                         self.kind = LINK_NAMED
                         self.named = self.uri[1:]
             else:

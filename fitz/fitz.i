@@ -268,6 +268,7 @@ import weakref
 import hashlib
 import typing
 import binascii
+import re
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
