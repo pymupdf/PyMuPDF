@@ -128,7 +128,7 @@ elif sys.platform.startswith(("darwin", "freebsd", "openbsd")):
         "/opt/homebrew/include/freetype2",
     ]
     library_dirs = ["/usr/local/lib", "/opt/homebrew/lib"]
-    libraries = ["mupdf", "mupdf-third"]
+    libraries = ["mupdf", "mupdf-third", "freetype", "harfbuzz"]
     extra_link_args = []
 
 else:
