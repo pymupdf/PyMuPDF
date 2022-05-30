@@ -1,0 +1,56 @@
+name: Build wheels
+
+#on: [push, pull_request]
+on: workflow_dispatch
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
+        #os: [ubuntu-20.04]
+        #os: [windows-2019]
+        #os: [macos-10.15]
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      # Get Python for running cibuildwheel. This also ensures that 'python'
+      # works on MacOS, where it seems only 'python3' is available by default.
+      #
+      - uses: actions/setup-python@v2
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.6.0
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        
+        # Set extra cibuildwheel options using environmental variables.
+        #
+        env:
+            # These exclusions are copied from PyMuPDF-1.19.
+            #
+            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
+
+            # For testing, build for single python version.
+            #
+            #CIBW_BUILD: "cp39*"
+
+            # Get cibuildwheel to run pytest with each wheel.
+            #
+            # Setting verbosity here sometimes seems to result in SEGV's when
+            # running pytest.
+            #
+            #CIBW_TEST_REQUIRES: "fontTools pytest"
+            #CIBW_TEST_COMMAND: "pytest -s {project}/tests"
+            #CIBW_BUILD_VERBOSITY: 3
+
+      # Upload generated wheels, to be accessible from github Actions page.
+      #
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./wheelhouse/*.whl
