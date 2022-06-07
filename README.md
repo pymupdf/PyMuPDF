@@ -7,7 +7,7 @@ Release date: June 6, 2022
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
 # Author
-[Artifex], based on code by [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de), based on original code by [Ruikai Liu](mailto:lrk700@gmail.com).
+[Artifex](support@artifex.com), based on code by [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de), based on original code by [Ruikai Liu](mailto:lrk700@gmail.com).
 
 # Introduction
 
@@ -68,14 +68,12 @@ The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/late
 
 # Installation
 
-PyMuPDF **requires Python 3.6 or later**.
+PyMuPDF **requires Python 3.7 or later**.
 
 For versions 3.7 and up, Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way. To ensure pip support for the latest wheel platform tags, we strongly recommend to always upgrade pip first.
 
-```
-python -m pip install --upgrade pip
-python -m pip install --upgrade pymupdf
-```
+    python -m pip install --upgrade pip
+    python -m pip install --upgrade pymupdf
 
 There are **no mandatory** external dependencies. However, some **optional features** become available only if additional packages are installed:
 
@@ -87,18 +85,11 @@ There are **no mandatory** external dependencies. However, some **optional featu
 
 Older wheels - also with support for older Python versions - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5) and on PyPI.
 
-Other platforms **require installation from sources**, follow [these](https://pymupdf.readthedocs.io/en/latest/installation.html) instructions in the documentation.
+> **Note:** If `pip` cannot find a wheel that is compatible with your platform, it will automatically build and install from source using the PyMuPDF sdist; this requires only that SWIG is installed on your system.
 
-> **Note:** If `pip` cannot find a wheel that is compatible with your platform, it will automatically try an installation from sources - **_which will fail_** if MuPDF (including its sources) is not installed on your system.
-
-This repo's folder [installation](https://github.com/pymupdf/PyMuPDF/tree/master/installation) contains several platform-specific source installation scripts contributed by users. You may also find the following Wiki pages useful:
-
-* [Ubuntu installation experience](https://github.com/pymupdf/PyMuPDF/wiki/Ubuntu-Installation-Experience).
-* [Windows wheels](https://github.com/pymupdf/PyMuPDF/wiki/Windows-Binaries-Generation).
-
+> [New in `PyMuPDF-1.20`: there is no need to separately build or install MuPDF; the required MuPDF source code is already in the sdist and is automatically built into PyMuPDF.]
 
 # License and Copyright
-In order to comply with MuPDF’s dual licensing model, PyMuPDF has entered into an agreement with Artifex who has the right to sublicense PyMuPDF to third parties.
 
 PyMuPDF and MuPDF are now available under both, open-source AGPL and commercial license agreements.
 
@@ -106,7 +97,7 @@ Please read the full text of the [AGPL license agreement](https://www.gnu.org/li
 
 Artifex is the exclusive commercial licensing agent for MuPDF.
 
-Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
+Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. &copy; 2021 Artifex Software, Inc. All rights reserved.
 
 # Contact
 Please use the [Discussions](https://github.com/pymupdf/PyMuPDF/discussions) menu for questions, comments, or asking for help, and submit issues [here](https://github.com/pymupdf/PyMuPDF/issues).

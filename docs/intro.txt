@@ -43,6 +43,6 @@ PyMuPDF and MuPDF are now available under both, open-source AGPL and commercial 
 
 Artifex is the exclusive commercial licensing agent for MuPDF.
 
-Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
+Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2022 Artifex Software, Inc. All rights reserved.
 
 .. include:: version.txt

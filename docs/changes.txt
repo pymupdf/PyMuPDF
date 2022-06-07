@@ -5,17 +5,19 @@ Change Log
 
 **Changes in Version 1.20.0**
 
-This release has minimal functional changes, to work with MuPDF-1.20.
+This release has minimal functional changes, to work with ``MuPDF-1.20``.
 
-* Cope with new MuPDF link uri format, changed from `#<int>,<int>,<int>` to `#page=<int>&zoom=<float>,<float>,<float>`.
+* Cope with new MuPDF link uri format, changed from ``#<int>,<int>,<int>`` to ``#page=<int>&zoom=<float>,<float>,<float>``.
 
- * In `tests/test_insertpdf.py`, use new reference output `joined-1.20.pdf`. We also do check that new output values are approximately the same as the old ones.
+ * In ``tests/test_insertpdf.py``, use new reference output ``joined-1.20.pdf``. We also check that new output values are approximately the same as the old ones.
 
 Changes to build/release process:
 
-* Various changes to setup.py to always use the required version of MuPDF. See comment at start of setup.py for details.
+* If pip builds from source because an appropriate wheel is not available, we no longer require MuPDF to be pre-installed. Instead the required MuPDF source is embedded in the sdist and automatically built into PyMuPDF.
 
-* Added `.github/workflows/build_wheels.yml` to control building of wheels on Github.
+* Various changes to ``setup.py`` to download the required MuPDF release as required. See comments at start of setup.py for details.
+
+* Added ``.github/workflows/build_wheels.yml`` to control building of wheels on Github.
 
 ------
 

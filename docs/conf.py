@@ -36,14 +36,14 @@ master_doc = "index"
 
 # General information about the project.
 project = "PyMuPDF"
-copyright = "2015-2022, Jorj X. McKie"
+copyright = "2015-2022, Artifex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.19.6"
+release = "1.20.0"
 
 # The short X.Y version
 version = release
@@ -193,7 +193,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ("index", "PyMuPDF.tex", u"PyMuPDF Documentation", u"Jorj X. McKie", "manual")
+    ("index", "PyMuPDF.tex", u"PyMuPDF Documentation", u"Artifex", "manual")
 ]
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
