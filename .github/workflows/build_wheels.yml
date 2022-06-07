@@ -23,18 +23,30 @@ jobs:
       #
       - uses: actions/setup-python@v2
 
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.6.0
+      # On Linux, get qemu so we can build for aarch64.
+      #
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
 
+      # Get cibuildwheel.
+      #
       - name: Build wheels
-        run: python -m cibuildwheel --output-dir wheelhouse
-        
+        uses: pypa/cibuildwheel@v2.6.1
+               
         # Set extra cibuildwheel options using environmental variables.
         #
         env:
             # These exclusions are copied from PyMuPDF-1.19.
             #
             CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
+            
+            # On Linux, tell cibuildwheel to build native archs ('auto'), and
+            # aarch64.
+            #
+            CIBW_ARCHS_LINUX: auto aarch64
 
             # For testing, build for single python version.
             #
