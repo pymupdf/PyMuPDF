@@ -1,16 +1,20 @@
 '''
 Overview:
 
-    We hard-code the URL of the MuPDF release's .tgz file that we require.
+    We hard-code the URL of the MuPDF .tar.gz file that we require. This
+    generally points to a particular source release on mupdf.com.
 
-    When we build an sdist, this .tgz file is downloaded and embedded in the
-    sdist.
+    Default behaviour:
 
-    When building PyMuPDF, if we are not in an sdist we download the .tar.gz
-    file. Then we extracted and built MuPDF locally, before setuptools builds
-    PyMuPDF. So PyMuPDF will always be built with the exact MuPDF release that
-    we require.
+        Building an sdist:
+            We download the MuPDF .tar.gz file and embed within the sdist.
 
+        Building PyMuPDF:
+            If we are not in an sdist we first download the mupdf .tar.gz file.
+
+            Then we extract and build MuPDF locally, before setuptools builds
+            PyMuPDF. So PyMuPDF will always be built with the exact MuPDF
+            release that we require.
 
 Environmental variables:
     
@@ -19,9 +23,11 @@ Environmental variables:
         hard-coded default locations; if that fails we use just 'devenv.com'.
     
     PYMUPDF_SETUP_MUPDF_BUILD
-        Location of MuPDF when building wheel. If undefined (the default) we
-        extract the sdist's mupdf.tgz. Otherwise this must be a mupdf directory
-        and we build MuPDF in this directory.
+        If set, overrides location of mupdf when building PyMuPDF:
+            Empty string:
+                Build PyMuPDF with the system mupdf.
+            Otherwise:
+                Location of mupdf directory.
     
     PYMUPDF_SETUP_MUPDF_BUILD_TYPE
         Unix only. Controls build type of MuPDF. Supported values are:
@@ -30,38 +36,26 @@ Environmental variables:
             release (default)
 
     PYMUPDF_SETUP_MUPDF_CLEAN
-        If '1', we do a clean MuPDF build when building a wheel.
+        If '1', we do a clean MuPDF build.
 
-    PYMUPDF_SETUP_MUPDF_SDIST
-        Location of MuPDF, used when creating an sdist. We usually create a
-        mupdf.tgz file in the sdist containing MuPDF source.
-        
-        Accepted values:
-        
-            If undefined (the default):
-                Download mupdf from internal hard-coded release URL and rename to
-                'mupdf.tgz' within the sdist.
-            
+    PYMUPDF_SETUP_MUPDF_TGZ
+        If set, overrides location of MuPDF .tar.gz file:
             Empty string:
-                The sdist will not contain a mupdf.tgz file; building a
-                wheel from the sdist will use the system mupdf, unless
-                PYMUPDF_SETUP_MUPDF_BUILD is defined.
+                Do not download MuPDF .tar.gz file. Sdist's will not contain
+                MuPDF.
             
             A string containing '://':
-                We treat this as a URL, from which we download to file
-                mupdf.tgz within the sdist.
+                The URL from which to download the MuPDF .tar.gz file. Leaf
+                must match mupdf-*.tar.gz.
             
             Otherwise:
-                Must be the path of local mupdf directory (if not absolute,
-                this might need to be relative to the PyMuPDF directory). We
-                put all files in this checkout known to git into tar archive
-                mupdf.tgz within the sdist.
-        
-        When building PyMuPDF from an sdist, we first extract mupdf.tgz,
-        overwrite its include/mupdf/fitz/config.h with fitz/_config.h, and do
-        a PyMuPDF-specific build. Then we use Python's setuptools to build
-        PyMuPDF itself, linking with the MuPDF we have just built.
+                The path of local mupdf git checkout. We put all files in this
+                checkout known to git into a local tar archive.
     
+Building MuPDF:
+    When building MuPDF, we overwrite the mupdf's include/mupdf/fitz/config.h
+    with fitz/_config.h and do a PyMuPDF-specific build.
+
 Known build failures:
     Linux:
         *musllinux*.
@@ -386,21 +380,19 @@ def get_mupdf_tgz():
     '''
     Creates .tgz file containing MuPDF source, for inclusion in an sdist.
     
-    What we do depends on environmental variable PYMUPDF_SETUP_MUPDF_SDIST; see
+    What we do depends on environmental variable PYMUPDF_SETUP_MUPDF_TGZ; see
     docs at start of this file for details.
 
     Returns name of top-level directory within the .tgz file.
     '''
     mupdf_url_or_local = os.environ.get(
-            'PYMUPDF_SETUP_MUPDF_SDIST',
-            'https://mupdf.com/downloads/archive/mupdf-1.20.0-rc2-source.tar.gz',
+            'PYMUPDF_SETUP_MUPDF_TGZ',
+            'https://mupdf.com/downloads/archive/mupdf-1.20.0-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
-        # No mupdf in sdist; building PyMuPDF from sdist will use system mupdf.
+        # No mupdf in sdist.
         remove( mupdf_tgz)
-        # todo: perhaps create zero-length mupdf_tgz file to indicate that
-        # building should use system mupdf, not download.
         return
     
     if '://' in mupdf_url_or_local:
@@ -440,27 +432,28 @@ def get_mupdf_tgz():
 
 def get_mupdf():
     '''
-    Extracts sdist's mupdf.tgz into current directory, returning extracted
-    directory name such as 'mupdf-1.20.0-source'. We remove any existing
-    top-directory before extracting.
+    Downloads and/or extracts mupdf and returns location of mupdf directory.
 
-    If mupdf.tgz does not exist we download as though we were building an
-    sdist. This is required because github's cibuildwheel action appears to
-    build directly instead of first creating an sdist.
-
-    todo: If mupdf.tgz is zero-length, return None to indicate to our caller
-    that they should use the system mupdf.
+    Exact behaviour depends on environmental variable
+    PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
     '''
     path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
-    if path is not None:
+    if path is None:
+        # Default.
+        if not os.path.exists( mupdf_tgz):
+            get_mupdf_tgz()
+        return tar_extract( mupdf_tgz, exists='return')
+    
+    elif path == '':
+        # Use system mupdf.
+        log( f'PYMUPDF_SETUP_MUPDF_BUILD="", using system mupdf')
+        return None
+    
+    else:
+        # Use custom mupdf directory.
         log( f'Using custom mupdf directory from $PYMUPDF_SETUP_MUPDF_BUILD: {path}')
         assert os.path.isdir( path), f'$PYMUPDF_SETUP_MUPDF_BUILD is not a directory: {path}'
         return path
-
-    # If we are not an sdist, there will be no mupdf.tgz file.
-    if not os.path.exists( mupdf_tgz):
-        get_mupdf_tgz()
-    return tar_extract( mupdf_tgz, exists='return')
 
 
 include_dirs = []
@@ -592,7 +585,8 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
                 #
                 extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf.a')
                 extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf-third.a')
-            
+                if os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE') == 'memento':
+                    extra_link_args.append( f'-lexecinfo')
             else:
                 libraries = [
                         f'mupdf',
@@ -679,7 +673,7 @@ with open(os.path.join(setup_py_cwd, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="PyMuPDF",
-    version="1.20.0rc1",
+    version="1.20.0rc2",
     description="Python bindings for the PDF toolkit and renderer MuPDF",
     long_description=readme,
     long_description_content_type="text/markdown",
