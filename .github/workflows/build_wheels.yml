@@ -4,6 +4,24 @@ name: Build wheels
 on: workflow_dispatch
 
 jobs:
+
+  build_sdist:
+    name: Build sdist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      #with:
+      #  fetch-depth: 0  # Optional, use if you use setuptools_scm
+      #  submodules: true  # Optional, use if you have submodules
+
+    - name: Build sdist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.tar.gz    
+
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
