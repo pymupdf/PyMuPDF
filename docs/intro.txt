@@ -1,9 +1,9 @@
 Introduction
 ==============
 
-.. image:: images/img-pymupdf.*
+.. image:: images/pymupdf-logo.png
    :align: center
-   :scale: 20
+   :scale: 25
 
 **PyMuPDF** is a Python binding for `MuPDF <http://www.mupdf.com/>`_ --  a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc
 

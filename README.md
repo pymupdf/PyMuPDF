@@ -1,6 +1,6 @@
 # PyMuPDF 1.20.0
 
-![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
+![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png?raw=True)
 
 Release date: June 6, 2022
 

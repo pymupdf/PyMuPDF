@@ -105,7 +105,7 @@ html_theme = "classic"
 html_theme_options = {
     # "root_name": "",
     # "root_url": "",
-    # "root_icon": "pymupdf.ico",
+    # "root_icon": "_static/PyMuPDF.ico",
     "body_max_width": "none",
     "sidebarbgcolor": "gray",
 }
@@ -123,17 +123,22 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = "images/img-pymupdf.jpg"
+html_logo = "images/pymupdf-sidebar-logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "PyMuPDF.ico"
+html_favicon = "_static/PyMuPDF.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# A list of CSS files. The entry must be a filename string or a tuple containing
+# the filename string and the attributes dictionary. The filename must be
+# relative to the html_static_path, or a full URI
+html_css_files = ['custom.css']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -197,7 +202,7 @@ latex_documents = [
 ]
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = "images/img-pymupdf.jpg"
+latex_logo = "images/pymupdf-logo.png"
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
@@ -219,7 +224,7 @@ latex_domain_indices = True
 # Grouping the document tree into PDF files. List of tuples
 # (source start file, target name, title, author).
 
-pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Jorj McKie")]
+pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
 
 # A comma-separated list of custom stylesheets. Example:
 pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]

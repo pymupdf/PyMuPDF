@@ -1,0 +1,24 @@
+div.sidebar, .sphinxsidebar {
+    background-color: #333;
+}
+
+div.document {
+    background-color: #333;
+}
+
+.sphinxsidebarwrapper .logo {
+    margin-top: 0;
+}
+
+.sphinxsidebarwrapper .logo img {
+    width: 72px;
+    height: auto;
+}
+
+.sphinxsidebarwrapper ul li {
+    margin-bottom: 5px;
+}
+
+.bodywrapper .body {
+    min-height: 100vh;
+}

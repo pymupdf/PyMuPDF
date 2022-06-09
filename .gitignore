@@ -4,3 +4,4 @@
 *.swp
 build/
 demo/README.rst
+docs/build
