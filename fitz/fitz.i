@@ -10551,6 +10551,7 @@ if dpi:
 %}
         %pythonappend get_pixmap
 %{
+        val.thisown = True
         if dpi:
             val.set_dpi(dpi, dpi)
 %}
