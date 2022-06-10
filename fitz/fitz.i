@@ -11480,7 +11480,7 @@ struct Graftmap
             fz_catch(gctx) {
                 return NULL;
             }
-            return (struct Graftmap *) pdf_keep_graft_map(gctx, map);
+            return map;
         }
 
         %pythoncode %{
