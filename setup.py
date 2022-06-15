@@ -673,7 +673,7 @@ with open(os.path.join(setup_py_cwd, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="PyMuPDF",
-    version="1.20.0rc2",
+    version="1.20.0rc3",
     description="Python bindings for the PDF toolkit and renderer MuPDF",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -683,7 +683,7 @@ setup(
     author_email="support@artifex.com",
     cmdclass={"build_py": build_ext_first},
     ext_modules=[module],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     py_modules=["fitz.fitz", "fitz.utils", "fitz.__main__"],
     license="GNU AFFERO GPL 3.0",
     project_urls={
