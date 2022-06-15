@@ -1,8 +1,8 @@
 # PyMuPDF 1.20.0
 
-![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png?raw=True)
+![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
-Release date: June 6, 2022
+Release date: June 16, 2022
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
@@ -11,7 +11,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads]
 
 # Introduction
 
-PyMuPDF (current version 1.20.0) is a Python binding with support for [MuPDF](https://mupdf.com/) (current version 1.20.*), a lightweight PDF, XPS, and eBook viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
+PyMuPDF adds Python bindings and abstractions to [MuPDF](https://mupdf.com/), a lightweight PDF, XPS, and eBook viewer, renderer, and toolkit. Both PyMuPDF and MuPDF are maintained and developed by Artifex Software, Inc.
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (eBooks) formats, and it is known for its top performance and exceptional rendering quality.
 
