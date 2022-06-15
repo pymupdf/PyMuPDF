@@ -321,9 +321,6 @@ struct Document
         {
             DEBUGMSG1("Document");
             fz_document *this_doc = (fz_document *) $self;
-            while (this_doc->refs > 1) {
-                fz_drop_document(gctx, this_doc);
-            }
             fz_drop_document(gctx, this_doc);
             DEBUGMSG2;
         }
