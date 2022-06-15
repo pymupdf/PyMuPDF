@@ -107,7 +107,14 @@ def test_issue1417_insertpdf_in_loop():
     """Using a context manager instead of explicitly closing files"""
     f = os.path.join(resources, "1.pdf")
     big_doc = fitz.open()
+    fd1 = os.open( f, os.O_RDONLY)
+    os.close( fd1)
     for n in range(0, 1025):
         with fitz.open(f) as pdf:
             big_doc.insert_pdf(pdf)
+        # Create a raw file descriptor. If the above fitz.open() context leaks
+        # a file descriptor, fd will be seen to increment.
+        fd2 = os.open( f, os.O_RDONLY)
+        assert fd2 == fd1
+        os.close( fd2)
     big_doc.close()
