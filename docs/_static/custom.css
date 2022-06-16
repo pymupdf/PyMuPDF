@@ -1,3 +1,63 @@
+body {
+    font-family:"Source Sans Pro", sans-serif; /* 200 = ExtraLight, 300 = Light, 400 = regular, 600 = semi-bold, 700 = bold, 900 = black */
+}
+
+
+div.sphinxsidebar h3 {
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+div.sphinxsidebar h3 a {
+    color: #ffffff;
+}
+
+div.sphinxsidebar h4 {
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+/* -- body styles ----------------------------------------------------------- */
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+
+div.body {
+    /* this is what is defined in basic.css */
+    /*min-width: 450px;
+    max-width: none;*/
+    min-width: calc(100% - 40px);
+}
+
+div.sphinxsidebar {
+    /* this is what is defined in basic.css */
+    /*
+    float: left;
+    width: 230px;
+    margin-left: -100%;
+    font-size: 90%;
+    word-wrap: break-word;
+    overflow-wrap : break-word;
+    */
+
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    /* this defines either 20% or 200px for the width - it takes the max value from the list, so if 20% < 200px then we take 200px instead */
+    width: max(200px, 20%);
+}
+
+div.bodywrapper {
+    margin: 0 0 0 max(200px, 20%);
+}
+
 div.sidebar, .sphinxsidebar {
     background-color: #333;
 }
@@ -5,6 +65,11 @@ div.sidebar, .sphinxsidebar {
 div.document {
     background-color: #333;
 }
+
+.sphinxsidebarwrapper {
+    margin-bottom: 100px;
+}
+
 
 .sphinxsidebarwrapper .logo {
     margin-top: 0;

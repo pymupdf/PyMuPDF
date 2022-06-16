@@ -138,7 +138,7 @@ html_static_path = ["_static"]
 # A list of CSS files. The entry must be a filename string or a tuple containing
 # the filename string and the attributes dictionary. The filename must be
 # relative to the html_static_path, or a full URI
-html_css_files = ['custom.css']
+html_css_files = ['https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i','custom.css']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
