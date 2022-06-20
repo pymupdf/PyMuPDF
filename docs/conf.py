@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath("."))
 # ones.
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
 extensions = [
-    "extensions.searchrepair",
-    "extensions.fulltoc",
+    # "extensions.searchrepair",
+    # "extensions.fulltoc",
     # "rinoh.frontend.sphinx",
 ]
 # Add any paths that contain templates here, relative to this directory.
@@ -91,23 +91,13 @@ keep_warnings = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# html_theme = "agogo"
-# html_theme = "bizstyle"
-# html_theme = "pyramid"
-# html_theme = "sphinxdoc"
-# html_theme = "python_docs_theme"
-# html_theme = "sphinx_rtd_theme"
-html_theme = "classic"
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    # "root_name": "",
-    # "root_url": "",
-    # "root_icon": "_static/PyMuPDF.ico",
-    "body_max_width": "none",
-    "sidebarbgcolor": "gray",
+
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -138,7 +128,7 @@ html_static_path = ["_static"]
 # A list of CSS files. The entry must be a filename string or a tuple containing
 # the filename string and the attributes dictionary. The filename must be
 # relative to the html_static_path, or a full URI
-html_css_files = ['https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i','custom.css']
+html_css_files = ['custom.css']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
