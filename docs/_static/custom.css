@@ -1,89 +1,57 @@
-body {
-    font-family:"Source Sans Pro", sans-serif; /* 200 = ExtraLight, 300 = Light, 400 = regular, 600 = semi-bold, 700 = bold, 900 = black */
-}
-
-
-div.sphinxsidebar h3 {
-    font-family: "Source Sans Pro", sans-serif;
-}
-
-div.sphinxsidebar h3 a {
-    color: #ffffff;
-}
-
-div.sphinxsidebar h4 {
-    font-family: "Source Sans Pro", sans-serif;
-}
-
-/* -- body styles ----------------------------------------------------------- */
-
-div.body h1,
-div.body h2,
-div.body h3,
-div.body h4,
-div.body h5,
-div.body h6 {
-    font-family: "Source Sans Pro", sans-serif;
-}
-
-
-div.body {
-    /* this is what is defined in basic.css */
-    /*min-width: 450px;
-    max-width: none;*/
-    min-width: calc(100% - 40px);
-}
-
-div.sphinxsidebar {
-    /* this is what is defined in basic.css */
-    /*
-    float: left;
-    width: 230px;
-    margin-left: -100%;
-    font-size: 90%;
-    word-wrap: break-word;
-    overflow-wrap : break-word;
-    */
-
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    top: 0;
-    max-height: 100vh;
-    overflow-y: auto;
-    /* this defines either 20% or 200px for the width - it takes the max value from the list, so if 20% < 200px then we take 200px instead */
-    width: max(200px, 20%);
-}
-
-div.bodywrapper {
-    margin: 0 0 0 max(200px, 20%);
-}
-
-div.sidebar, .sphinxsidebar {
-    background-color: #333;
-}
-
-div.document {
-    background-color: #333;
-}
-
-.sphinxsidebarwrapper {
-    margin-bottom: 100px;
-}
-
-
-.sphinxsidebarwrapper .logo {
-    margin-top: 0;
-}
-
-.sphinxsidebarwrapper .logo img {
-    width: 72px;
+/* icon sizing in the left menu */
+.icon-home {
+    width: 100px;
     height: auto;
 }
 
-.sphinxsidebarwrapper ul li {
-    margin-bottom: 5px;
+/* main document page: ensures pages fit to the available width and height */
+.wy-nav-content {
+    min-width: 100%;
+    min-height: 100vh;
 }
 
-.bodywrapper .body {
-    min-height: 100vh;
+/* Accessibility: Artifex color for main document links */
+.wy-nav-content a {
+    color: #007aff;
+}
+
+/* Artifex blue color for background elements */
+.wy-side-nav-search, .wy-nav-top {
+    background-color: #007aff;
+}
+
+/* Accessibility: ensures that the version number is readable against the background color */
+.wy-side-nav-search>div.version {
+    color:hsla(0,0%,100%,1);
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+
+    /* main document page */
+    .wy-nav-content {
+        background-color: #000;
+        color: #fff;
+    }
+
+    th {
+        color: #fff;
+    }
+
+    td {
+        background-color: #000 !important;
+    }
+
+    tr:nth-child(2n-1) td{
+        background-color: #333 !important;
+    }
+
+    pre {
+        color: #000;
+    }
+
+    .admonition {
+        color: #000;
+    }
+
 }
