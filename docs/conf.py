@@ -18,15 +18,14 @@ sys.path.insert(0, os.path.abspath("."))
 # ones.
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
 extensions = [
-    # "extensions.searchrepair",
-    # "extensions.fulltoc",
-    # "rinoh.frontend.sphinx",
+    'rst2pdf.pdfbuilder'
 ]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".txt"
+source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -60,7 +59,7 @@ version = release
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build"]
+exclude_patterns = ["_build","build"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -161,7 +160,7 @@ html_split_index = True
 
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = True
-html_sourcelink_suffix = ".txt"
+html_sourcelink_suffix = ".rst"
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = True
 
@@ -217,7 +216,7 @@ latex_domain_indices = True
 pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
 
 # A comma-separated list of custom stylesheets. Example:
-pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]
+#pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]
 
 # Create a compressed PDF
 pdf_compressed = True
