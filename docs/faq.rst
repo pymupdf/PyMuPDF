@@ -65,7 +65,7 @@ Let's assume your GUI window has room to display a full document page, but you n
 To achieve this, define a rectangle equal to the area you want to appear in the GUI and call it "clip". One way of constructing rectangles in PyMuPDF is by providing two diagonally opposite corners, which is what we are doing here.
 
 .. image:: images/img-clip.*
-   :scale: 80
+   :width: 50%
 
 ::
 
