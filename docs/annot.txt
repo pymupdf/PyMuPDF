@@ -80,7 +80,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg matrix_like matrix: a matrix to be used for image creation. Default is :ref:`Identity`.
 
-      :arg int dpi: (new n v1.19.2) desired resolution in dots per inch. If not ``None``, the matrix parameter is ignored.
+      :arg int dpi: (new in v1.19.2) desired resolution in dots per inch. If not ``None``, the matrix parameter is ignored.
 
       :arg colorspace: a colorspace to be used for image creation. Default is *fitz.csRGB*.
       :type colorspace: :ref:`Colorspace`

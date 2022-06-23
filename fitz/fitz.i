@@ -268,6 +268,7 @@ import weakref
 import hashlib
 import typing
 import binascii
+import re
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -320,9 +321,6 @@ struct Document
         {
             DEBUGMSG1("Document");
             fz_document *this_doc = (fz_document *) $self;
-            while (this_doc->refs > 1) {
-                fz_drop_document(gctx, this_doc);
-            }
             fz_drop_document(gctx, this_doc);
             DEBUGMSG2;
         }
@@ -8657,7 +8655,7 @@ struct Outline {
         int page()
         {
             fz_outline *ol = (fz_outline *) $self;
-            return ol->page;
+            return ol->page.page;
         }
 
         %pythoncode %{@property%}
@@ -10550,6 +10548,7 @@ if dpi:
 %}
         %pythonappend get_pixmap
 %{
+        val.thisown = True
         if dpi:
             val.set_dpi(dpi, dpi)
 %}
@@ -11479,7 +11478,7 @@ struct Graftmap
             fz_catch(gctx) {
                 return NULL;
             }
-            return (struct Graftmap *) pdf_keep_graft_map(gctx, map);
+            return map;
         }
 
         %pythoncode %{

@@ -1,9 +1,9 @@
 Introduction
 ==============
 
-.. image:: images/img-pymupdf.*
+.. image:: images/pymupdf-logo.png
    :align: center
-   :scale: 20
+   :scale: 25
 
 **PyMuPDF** is a Python binding for `MuPDF <http://www.mupdf.com/>`_ --  a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc
 
@@ -43,6 +43,6 @@ PyMuPDF and MuPDF are now available under both, open-source AGPL and commercial 
 
 Artifex is the exclusive commercial licensing agent for MuPDF.
 
-Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2021 Artifex Software, Inc. All rights reserved.
+Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks of Artifex Software Inc. © 2022 Artifex Software, Inc. All rights reserved.
 
 .. include:: version.txt
