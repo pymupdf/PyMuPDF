@@ -607,6 +607,12 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append("/opt/homebrew/include/freetype2")
 
         library_dirs.append("/opt/homebrew/lib")
+        
+        if sys.platform.startswith( 'freebsd'):
+            libraries += [
+                    'freetype',
+                    'harfbuzz',
+                    ]
 
     else:
         # Windows.
