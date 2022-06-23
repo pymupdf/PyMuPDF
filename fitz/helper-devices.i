@@ -125,6 +125,7 @@ guaranteed to be a polyline, because of the way we are counting.
 Line 1 and 3 must be horizontal, line 2 must be vertical.
 If all is true, modify the path accordngly.
 If the lines are not parallel to axes, generate a quad.
+Returns 1 if we have modified the path, otherwise 0.
 --------------------------------------------------------------------------
 */
 static int
@@ -191,8 +192,9 @@ jm_checkrect()
 	PyTuple_SET_ITEM(rect, 2, PyLong_FromLong(orientation));
 	PyList_SetItem(items, len - 3, rect); // replace item -3 by rect
 	PyList_SetSlice(items, len - 2, len, NULL); // delete remaining 2 items
-	drop_out:;
 	return 1;
+	drop_out:;
+	return 0;
 }
 
 static PyObject *
@@ -265,10 +267,11 @@ static void
 trace_close(fz_context *ctx, void *dev_)
 {
 	if (dev_linecount == 3) {
-		jm_checkrect();
-	} else {
-		DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(1));
+		if (jm_checkrect()) {
+			return;
+		}
 	}
+	DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(1));
 }
 
 static const fz_path_walker trace_path_walker =
@@ -378,6 +381,7 @@ jm_tracedraw_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	trace_device_ctm = ctm; // fz_concat(ctm, trace_device_ptm);
 	path_type = STROKE_PATH;
 
+	DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(0));
 	jm_tracedraw_path(ctx, dev, path);
 	if (!dev_pathdict) {
 		return;
@@ -388,7 +392,6 @@ jm_tracedraw_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_width, Py_BuildValue("f", dev_pathfactor * stroke->linewidth));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "lineCap", Py_BuildValue("iii", stroke->start_cap, stroke->dash_cap, stroke->end_cap));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "lineJoin", Py_BuildValue("f", dev_pathfactor * stroke->linejoin));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(0));
 
 	if (stroke->dash_len) {
 		fz_buffer *buff = fz_new_buffer(ctx, 50);
