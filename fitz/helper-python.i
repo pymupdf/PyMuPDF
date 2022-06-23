@@ -784,7 +784,7 @@ class linkDest(object):
                     self.lt = Point(float((m.group(3))), float(m.group(4)))
                     self.flags = self.flags | LINK_FLAG_L_VALID | LINK_FLAG_T_VALID
                 else:
-                    m = re.match('^#page=([0-9]+)$')
+                    m = re.match('^#page=([0-9]+)$', self.uri)
                     if m:
                         self.page = int(m.group(1)) - 1
                     else:
