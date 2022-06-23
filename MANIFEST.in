@@ -1,0 +1,5 @@
+include fitz/*.i
+include fitz/_config.h
+include mupdf.tgz
+recursive-include tests *
+global-exclude __pycache__/*

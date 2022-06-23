@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath("."))
 # ones.
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
 extensions = [
-    "extensions.searchrepair",
-    "extensions.fulltoc",
+    # "extensions.searchrepair",
+    # "extensions.fulltoc",
     # "rinoh.frontend.sphinx",
 ]
 # Add any paths that contain templates here, relative to this directory.
@@ -36,14 +36,14 @@ master_doc = "index"
 
 # General information about the project.
 project = "PyMuPDF"
-copyright = "2015-2022, Jorj X. McKie"
+copyright = "2015-2022, Artifex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.19.6"
+release = "1.20.0"
 
 # The short X.Y version
 version = release
@@ -91,23 +91,13 @@ keep_warnings = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# html_theme = "agogo"
-# html_theme = "bizstyle"
-# html_theme = "pyramid"
-# html_theme = "sphinxdoc"
-# html_theme = "python_docs_theme"
-# html_theme = "sphinx_rtd_theme"
-html_theme = "classic"
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    # "root_name": "",
-    # "root_url": "",
-    # "root_icon": "pymupdf.ico",
-    "body_max_width": "none",
-    "sidebarbgcolor": "gray",
+
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -123,17 +113,22 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = "images/img-pymupdf.jpg"
+html_logo = "images/pymupdf-sidebar-logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "PyMuPDF.ico"
+html_favicon = "_static/PyMuPDF.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# A list of CSS files. The entry must be a filename string or a tuple containing
+# the filename string and the attributes dictionary. The filename must be
+# relative to the html_static_path, or a full URI
+html_css_files = ['custom.css']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -193,11 +188,11 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ("index", "PyMuPDF.tex", u"PyMuPDF Documentation", u"Jorj X. McKie", "manual")
+    ("index", "PyMuPDF.tex", u"PyMuPDF Documentation", u"Artifex", "manual")
 ]
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = "images/img-pymupdf.jpg"
+latex_logo = "images/pymupdf-logo.png"
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
@@ -219,7 +214,7 @@ latex_domain_indices = True
 # Grouping the document tree into PDF files. List of tuples
 # (source start file, target name, title, author).
 
-pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Jorj McKie")]
+pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
 
 # A comma-separated list of custom stylesheets. Example:
 pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]

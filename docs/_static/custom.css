@@ -1,0 +1,57 @@
+/* icon sizing in the left menu */
+.icon-home {
+    width: 100px;
+    height: auto;
+}
+
+/* main document page: ensures pages fit to the available width and height */
+.wy-nav-content {
+    min-width: 100%;
+    min-height: 100vh;
+}
+
+/* Accessibility: Artifex color for main document links */
+.wy-nav-content a {
+    color: #007aff;
+}
+
+/* Artifex blue color for background elements */
+.wy-side-nav-search, .wy-nav-top {
+    background-color: #007aff;
+}
+
+/* Accessibility: ensures that the version number is readable against the background color */
+.wy-side-nav-search>div.version {
+    color:hsla(0,0%,100%,1);
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+
+    /* main document page */
+    .wy-nav-content {
+        background-color: #000;
+        color: #fff;
+    }
+
+    th {
+        color: #fff;
+    }
+
+    td {
+        background-color: #000 !important;
+    }
+
+    tr:nth-child(2n-1) td{
+        background-color: #333 !important;
+    }
+
+    pre {
+        color: #000;
+    }
+
+    .admonition {
+        color: #000;
+    }
+
+}
