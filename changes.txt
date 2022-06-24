@@ -1,7 +1,6 @@
 Change Log
 ===========
 
-------
 
 **Changes in Version 1.20.0**
 
