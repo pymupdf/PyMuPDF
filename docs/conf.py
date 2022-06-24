@@ -162,7 +162,7 @@ html_split_index = True
 html_show_sourcelink = True
 html_sourcelink_suffix = ".rst"
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-html_show_sphinx = True
+html_show_sphinx = False
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 html_show_copyright = True
