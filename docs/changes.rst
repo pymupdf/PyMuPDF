@@ -2,6 +2,27 @@ Change Log
 ===========
 
 
+**Changes in Version 1.20.1**
+
+* **Fixed** `#1724 <https://github.com/pymupdf/PyMuPDF/issues/1724>`_.
+  Fix for building on FreeBSD.
+
+* **Fixed** `#1771 <https://github.com/pymupdf/PyMuPDF/issues/1771>`_.
+  `linkDest()` had a broken call to `re.match()`, introduced in 1.20.0.
+
+* **Fixed** `#1751 <https://github.com/pymupdf/PyMuPDF/issues/1751>`_.
+  `get_drawings()` and `get_cdrawings()` previously always returned with `closePath=False`.
+
+* **Fixed** `#1645 <https://github.com/pymupdf/PyMuPDF/issues/1645>`_.
+  Default FreeText annotation text color is now black.
+
+* Improvements to sphinx-generated documentation:
+
+  * Use readthedocs theme with enhancements.
+  * Renamed the `.txt` files to have `.rst` suffixes.
+
+------
+
 **Changes in Version 1.20.0**
 
 This release uses ``MuPDF-1.20.0``, released 2022-06-15.
