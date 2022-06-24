@@ -1578,7 +1578,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       The page's ``/ArtBox``, ``/BleedBox``, ``/TrimBox``, respectively. If not provided, defaulting to :attr:`Page.cropbox`.
 
-      :type: :ref:`Rect:
+      :type: :ref:`Rect`
 
    .. attribute:: mediabox_size
 

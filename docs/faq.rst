@@ -8,12 +8,11 @@ Collection of Recipes
 
 A collection of recipes in "How-To" format for using PyMuPDF. We aim to extend this section over time. Where appropriate we will refer to the corresponding `Wiki <https://github.com/pymupdf/PyMuPDF/wiki>`_ pages, but some duplication may still occur.
 
-----------
+
 
 Images
 -------
 
-----------
 
 How to Make Images from Document Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -591,7 +590,6 @@ Basic code pattern for :meth:`Page.show_pdf_page`. Source and target PDF must be
 Text
 -----
 
-----------
 
 How to Extract all Document Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1259,7 +1257,7 @@ The *path* dictionary has been designed such that it can easily be used by the :
     'width': 1.0}]
     >>> 
 
-.. note:: You need (at least) 4 Bézier curves (of 3rd order) to draw a circle with acceptable precision. See this `Wikipedia article<https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ for some background.
+.. note:: You need (at least) 4 Bézier curves (of 3rd order) to draw a circle with acceptable precision. See this `Wikipedia article <https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ for some background.
 
 
 The following is a code snippet which extracts the drawings of a page and re-draws them on a new page::

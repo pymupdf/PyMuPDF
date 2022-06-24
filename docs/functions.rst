@@ -452,7 +452,7 @@ Yet others are handy, general-purpose utilities.
 
          The item sequence represents the **sequence in which these commands are executed** to build the page's appearance. Therefore, if an item's bbox intersects or contains that of a previous item, then the previous item may be (partially) covered / hidden.
 
-         So this list is useful to detect such situations. An item's index in this list equals the value of ``"seqno"` keys you will find in the dictionaries returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`.
+         So this list is useful to detect such situations. An item's index in this list equals the value of ``"seqno"`` keys you will find in the dictionaries returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`.
 
 -----
 
