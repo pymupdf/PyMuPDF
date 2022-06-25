@@ -49,9 +49,9 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
     fz_try(ctx)
     {
         buf = fz_new_buffer(ctx, 50);
-       if (ncol == 1)
+       if (ncol <= 1)
             fz_append_printf(ctx, buf, "%g g ", col[0]);
-        else if (ncol == 3 || ncol == 0)
+        else if (ncol < 4)
             fz_append_printf(ctx, buf, "%g %g %g rg ", col[0], col[1], col[2]);
         else
             fz_append_printf(ctx, buf, "%g %g %g %g k ", col[0], col[1], col[2], col[3]);

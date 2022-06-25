@@ -3,6 +3,7 @@
 Test PDF annotation insertions.
 """
 import fitz
+import os
 
 fitz.TOOLS.set_annot_stem("jorj")
 
@@ -166,3 +167,24 @@ def test_redact():
     s = annot.popup_rect
     assert s == r
     page.apply_redactions()
+
+def test_1645():
+    '''
+    Test fix for #1645.
+    '''
+    path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
+    path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected.pdf')
+    path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
+    doc = fitz.open(path_in)
+    page = doc[0]
+    page_bounds = page.bound()
+    annot_loc = fitz.Rect(page_bounds.x0, page_bounds.y0, page_bounds.x0 + 75, page_bounds.y0 + 15)
+    page.add_freetext_annot(annot_loc * page.derotation_matrix, "TEST", fontsize=18,
+    fill_color=fitz.utils.getColor("FIREBRICK1"), rotate=page.rotation)
+    doc.save(path_out, garbage=1, deflate=True, no_new_id=True)
+    print(f'Have created {path_out}. comparing with {path_expected}.')
+    with open( path_out, 'rb') as f:
+        out = f.read()
+    with open( path_expected, 'rb') as f:
+        expected = f.read()
+    assert out == expected, f'Files differ: {path_out} {path_expected}'
