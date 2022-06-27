@@ -129,6 +129,9 @@ html_static_path = ["_static"]
 # relative to the html_static_path, or a full URI
 html_css_files = ['custom.css']
 
+# A way of embedding your own JS in the <head>
+html_js_files = ['app.js']
+
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
