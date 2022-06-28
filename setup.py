@@ -530,7 +530,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             make = 'make'
             if os.uname()[0] == 'Linux':
                 env += ' CFLAGS="-fPIC"'
-            if os.uname()[0] == 'OpenBSD':
+            if os.uname()[0] in ('OpenBSD', 'FreeBSD'):
                 make = 'gmake'
                 env += ' CFLAGS="-fPIC" CXX=clang++'
             unix_build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
@@ -578,7 +578,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             #
             library_dirs.append(f'{mupdf_local}build/{unix_build_type}')
             
-            if sys.platform.startswith('openbsd'):
+            if sys.platform.startswith(('openbsd', 'freebsd')):
                 # setuptools' link command always seems to put '-L
                 # /usr/local/lib' before any <library_dirs> that we specify,
                 # so '-l mupdf -l mupdf-third' will end up using the system
