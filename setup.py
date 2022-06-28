@@ -468,7 +468,12 @@ if 'sdist' in sys.argv:
 
 
 if ('-h' not in sys.argv and '--help' not in sys.argv
-        and ('bdist_wheel' in sys.argv or 'build' in sys.argv or 'bdist' in sys.argv)
+        and (
+            'bdist_wheel' in sys.argv
+            or 'build' in sys.argv
+            or 'bdist' in sys.argv
+            or 'install' in sys.argv
+            )
         ):
 
     # Build MuPDF before setuptools runs, so that it can link with the MuPDF
