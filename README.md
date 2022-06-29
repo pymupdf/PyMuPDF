@@ -55,11 +55,10 @@ Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tr
 
 # Documentation
 
-Documentation is written using Sphinx and is available in various formats from the following sources. It currently is a combination of reference guide and user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq.html) chapters.
+Documentation is written using Sphinx and is available online. It is currently a combination of a reference guide and user manual.
 
-* You can view it online at [Read the Docs](https://readthedocs.org/projects/pymupdf/). This site also provides download options for PDF.
-* [Zipped HTML](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/pymupdf.zip).
-* [Windows help file](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io). This site also provides download options for PDF.
+* For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq.html) chapters.
 
 The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/latest/changes.html).
 
