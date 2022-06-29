@@ -8,16 +8,30 @@ PyMuPDF should be installed using pip with::
 
 This will install from a Python wheel if one is available for your platform.
 
-Otherwise it will automatically build from source using a Python sdist:
+If a suitable Python wheel is not available, pip will automatically build from
+source using a Python sdist. **This requires that SWIG is installed**:
 
-* This requires that SWIG is installed.
-* As of ``PyMuPDF-1.20.0``, the required MuPDF source code is already in the sdist and is automatically built into PyMuPDF.
+* On Unix-style systems such as Linux, OpenBSD and FreeBSD,
+  use the system package manager to install SWIG.
+
+  * For example on Debian Linux, do: ``sudo apt install swig``
+
+* On Windows, install SWIG by following the instructions at:
+  https://swig.org/Doc4.0/Windows.html#Windows_installation.
+
+* On MacOS, install MacPorts using the instructions at:
+  https://www.macports.org/install.php
+
+  * Then install SWIG with: ``sudo port install swig``
+
+As of ``PyMuPDF-1.20.0``, the required MuPDF source code is already in the
+sdist and is automatically built into PyMuPDF.
 
 
 Notes
 ~~~~~
 
-Wheels are available for Windows (32bit and 64bit), Linux (64bit, Intel and ARM) and Mac OSX (64bit, Intel), Python versions 3.7 and up.
+Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel), Python versions 3.7 and up.
 
 PyMuPDF does not support Python versions prior to 3.7. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
@@ -35,13 +49,27 @@ There are no **mandatory** external dependencies. However, some optional feature
 Install from source without using an sdist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Install SWIG on the system. Then::
+First get a PyMuPDF source tree:
 
-  python setup.py install
+* Clone the git repository at https://github.com/pymupdf/PyMuPDF,
+  for example::
 
-This will automatically download a specific hard-coded MuPDF release, and build it into PyMuPDF.
+      git clone https://github.com/pymupdf/PyMuPDF.git
 
-See comments at the start of ``setup.py`` for more information.
+* Or download a ``.zip`` or ``.tar.gz`` source release from
+  https://github.com/pymupdf/PyMuPDF/releases.
+
+Install SWIG as described above, then build PyMuPDF::
+
+  cd PyMuPDF && python setup.py install
+
+* This will automatically download a specific hard-coded MuPDF source release,
+  and build it into PyMuPDF.
+
+* One can build with a different MuPDF (for example one installed on the
+  system, or a local custom build) by setting environmental variables.
+
+  * See the documentation at the start of ``setup.py`` for more information.
 
 
 Enabling Integrated OCR Support
