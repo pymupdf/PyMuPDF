@@ -173,10 +173,12 @@ def tar_extract(path, mode='r:gz', prefix=None, exists='raise'):
         elif exists == 'remove':
             remove( prefix_actual)
         elif exists == 'return':
+            log( f'Not extracting {path} because already exists: {prefix_actual}')
             return prefix_actual
         else:
             assert 0, f'Unrecognised exists={exists!r}'
     assert not os.path.exists( prefix_actual), f'Path already exists: {prefix_actual}'
+    log( f'Extracting {path}')
     with tarfile.open( path, mode) as t:
         t.extractall()
     return prefix_actual
@@ -392,6 +394,7 @@ def get_mupdf_tgz():
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
         # No mupdf in sdist.
+        log( 'mupdf_url_or_local is empty string so removing any mupdf_tgz={mupdf_tgz}')
         remove( mupdf_tgz)
         return
     
@@ -440,7 +443,9 @@ def get_mupdf():
     path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
     if path is None:
         # Default.
-        if not os.path.exists( mupdf_tgz):
+        if os.path.exists( mupdf_tgz):
+            log( f'mupdf_tgz already exists: {mupdf_tgz}')
+        else:
             get_mupdf_tgz()
         return tar_extract( mupdf_tgz, exists='return')
     
@@ -483,6 +488,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     if mupdf_local:
         if not mupdf_local.endswith( '/'):
             mupdf_local += '/'
+    log( f'mupdf_local={mupdf_local!r}')
     unix_build_type = None
     
     # Force clean build of MuPDF.
@@ -557,54 +563,55 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         if unix_build_type:
             library_dirs.append( f'{mupdf_local}build/{unix_build_type}')
 
-    if sys.platform.startswith("linux") or "gnu" in sys.platform:
-        if not mupdf_local:
-            include_dirs.append( '/usr/include/mupdf')
-            include_dirs.append( '/usr/local/include/mupdf')
-
+    log( f'sys.platform={sys.platform!r}')
+    
+    linux = sys.platform.startswith( 'linux') or 'gnu' in sys.platform
+    openbsd = sys.platform.startswith( 'openbsd')
+    freebsd = sys.platform.startswith( 'freebsd')
+    darwin = sys.platform.startswith( 'darwin')
+    
+    if mupdf_local and (linux or openbsd or freebsd):
+        # setuptools' link command always seems to put '-L
+        # /usr/local/lib' before any <library_dirs> that we specify,
+        # so '-l mupdf -l mupdf-third' will end up using the system
+        # libmupdf.so (if installed) instead of the one we've built in
+        # <mupdf_local>.
+        #
+        # So we force linking with our mupdf libraries by specifying
+        # them in <extra_link_args>.
+        #
+        extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf.a')
+        extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf-third.a')
+        library_dirs = []
+        libraries = []
+        if openbsd or freebsd:
+            if os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE') == 'memento':
+                extra_link_args.append( f'-lexecinfo')
+    
+    elif mupdf_local and darwin:
+        library_dirs.append(f'{mupdf_local}build/{unix_build_type}')
+        libraries = [
+                f'mupdf',
+                f'mupdf-third',
+                ]
+    
+    elif linux:
+        # Use system libraries.
+        include_dirs.append( '/usr/include/mupdf')
+        include_dirs.append( '/usr/local/include/mupdf')
         include_dirs.append( '/usr/include/freetype2')
         libraries = load_libraries()
         extra_link_args = []
 
-    elif sys.platform.startswith(("darwin", "freebsd", "openbsd")):
-        if mupdf_local:
-            # On OpenBSD this seems to not work, possibly because setuptools'
-            # link command includes '-L /usr/local/lib', the resulting library
-            # is only 2M, and at runtime we get lots of missing MuPDF symbols.
-            #
-            # If we manually add ../mupdf/build/release/libmupdf{,-third}.a,
-            # the resulting library is 19M but at runtime the Python module
-            # 'fitz' fails to load, we don't even get to see missing symbols.
-            #
-            library_dirs.append(f'{mupdf_local}build/{unix_build_type}')
-            
-            if sys.platform.startswith(('openbsd', 'freebsd')):
-                # setuptools' link command always seems to put '-L
-                # /usr/local/lib' before any <library_dirs> that we specify,
-                # so '-l mupdf -l mupdf-third' will end up using the system
-                # libmupdf.so (if installed) instead of the one we've built in
-                # <mupdf_local>.
-                #
-                # So we force linking with our mupdf libraries by specifying
-                # them in <extra_link_args>.
-                #
-                extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf.a')
-                extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf-third.a')
-                if os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE') == 'memento':
-                    extra_link_args.append( f'-lexecinfo')
-            else:
-                libraries = [
-                        f'mupdf',
-                        f'mupdf-third',
-                        ]
-        else:
-            include_dirs.append("/usr/local/include/mupdf")
-            include_dirs.append("/usr/local/include")
-            include_dirs.append("/opt/homebrew/include/mupdf")
-            library_dirs.append("/usr/local/lib")
-            libraries = ["mupdf", "mupdf-third"]
-            library_dirs.append("/opt/homebrew/lib")
-            
+    elif darwin or openbsd or freebsd:
+        # Use system libraries.
+        include_dirs.append("/usr/local/include/mupdf")
+        include_dirs.append("/usr/local/include")
+        include_dirs.append("/opt/homebrew/include/mupdf")
+        library_dirs.append("/usr/local/lib")
+        libraries = ["mupdf", "mupdf-third"]
+        library_dirs.append("/opt/homebrew/lib")
+
         include_dirs.append("/usr/include/freetype2")
         include_dirs.append("/usr/local/include/freetype2")
         include_dirs.append("/usr/X11R6/include/freetype2")
@@ -612,7 +619,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append("/opt/homebrew/include/freetype2")
 
         library_dirs.append("/opt/homebrew/lib")
-        
+
         if sys.platform.startswith( 'freebsd'):
             libraries += [
                     'freetype',
@@ -632,8 +639,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             "libmupdf",
             "libresources",
             "libthirdparty",
-            #"libleptonica",
-            #"libtesseract",
         ]
         extra_link_args = ["/NODEFAULTLIB:MSVCRT"]
 
