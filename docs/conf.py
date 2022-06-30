@@ -17,9 +17,10 @@ sys.path.insert(0, os.path.abspath("."))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
-extensions = [
-    'rst2pdf.pdfbuilder'
-]
+extensions = []
+# rst2pdf is not available on OpenBSD.
+if os.uname()[0] != 'OpenBSD':
+    extensions.append('rst2pdf.pdfbuilder')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
