@@ -76,7 +76,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg colorspace: colorspace.
       :type colorspace: :ref:`Colorspace`
 
-      :arg irect_like irect: Tte pixmap's position and dimension.
+      :arg irect_like irect: The pixmap's position and dimension.
 
       :arg bool alpha: Specifies whether transparency bytes should be included. Default is *False*.
 
