@@ -81,7 +81,15 @@ EnsureOwnership(self)%}
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
 
-// memory allocation macros
+// JM_MEMORY controls what allocators we tell MuPDF to use when we call
+// fz_new_context():
+//
+//  JM_MEMORY=0: MuPDF uses malloc()/free().
+//  JM_MEMORY=1: MuPDF uses PyMem_Malloc()/PyMem_Free().
+//
+// There are also a small number of places where we call malloc() or
+// PyMem_Malloc() ourselves, depending on JM_MEMORY.
+//
 #define JM_MEMORY 0
 
 #if JM_MEMORY == 1
