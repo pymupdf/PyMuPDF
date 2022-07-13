@@ -8575,6 +8575,8 @@ struct DeviceWrapper
                 fz_drop_display_list(gctx, list);
                 DEBUGMSG2;
             }
+            /* todo: should we do free($self) here to match earlier call to
+            calloc() ? */
         }
     }
 };
@@ -12154,6 +12156,190 @@ struct Font
                 if getattr(self, "thisown", False):
                     self.__swig_destroy__(self)
         %}
+    }
+};
+
+//------------------------------------------------------------------------
+// DocumentWriter
+//------------------------------------------------------------------------
+struct DocumentWriter
+{
+    %extend
+    {
+        ~DocumentWriter()
+        {
+            fz_drop_document_writer( gctx, $self);
+        }
+        
+        FITZEXCEPTION(Xml, !result)
+        DocumentWriter( const char* path, const char* options)
+        {
+            fz_document_writer* ret = fz_new_pdf_writer( gctx, path, options);
+            return (struct DocumentWriter*) ret;
+        }
+        
+        struct DeviceWrapper* begin_page( PyObject* mediabox)
+        {
+            fz_rect mediabox2 = JM_rect_from_py(mediabox);
+            fz_device* device = fz_begin_page( gctx, $self, mediabox2);
+            struct DeviceWrapper* device_wrapper
+                = (struct DeviceWrapper*) calloc(1, sizeof(struct DeviceWrapper))
+                ;
+            device_wrapper->device = device;
+            device_wrapper->list = NULL;
+            return device_wrapper;
+        }
+        
+        void end_page()
+        {
+            fz_end_page( gctx, $self);
+        }
+        
+        void close()
+        {
+            fz_close_document_writer( gctx, $self);
+        }
+    }
+};
+
+//------------------------------------------------------------------------
+// Xml
+//------------------------------------------------------------------------
+struct Xml
+{
+    %extend
+    {
+        ~Xml()
+        {
+            fz_drop_xml( gctx, (fz_xml*) $self);
+        }
+        
+        FITZEXCEPTION(Xml, !result)
+        %pythonprepend Xml
+        %{
+            #self._xml = xml
+        %}
+        Xml(fz_xml* xml)
+        {
+            fz_keep_xml( gctx, xml);
+            return (struct Xml*) xml;
+        }
+        
+        struct Xml* body()
+        {
+            return (struct Xml*) fz_keep_xml( gctx, fz_dom_body( gctx, $self));
+        }
+        
+        void append_child( struct Xml* child)
+        {
+            fz_dom_append_child( gctx, $self, child);
+        }
+        
+        struct Xml* create_text_node( const char *text)
+        {
+            fz_xml* ret = fz_dom_create_text_node( gctx, $self, text);
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+        
+        struct Xml* create_element( const char *tag)
+        {
+            fz_xml* ret = fz_dom_create_element( gctx, $self, tag);
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+        
+        struct Xml* find( const char *tag, const char *att, const char *match)
+        {
+            fz_xml* ret = fz_dom_find( gctx, $self, tag, att, match);
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+        struct Xml* clone()
+        {
+            fz_xml* ret = fz_dom_clone( gctx, $self);
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+        struct Xml* parent()
+        {
+            fz_xml* ret = fz_dom_parent( gctx, $self);
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+        void remove()
+        {
+            fz_dom_remove( gctx, $self);
+        }
+    }
+};
+
+//------------------------------------------------------------------------
+// HtmlStory
+//------------------------------------------------------------------------
+struct HtmlStory
+{
+    %extend
+    {
+        ~HtmlStory()
+        {
+            DEBUGMSG1("HtmlStory");
+            fz_html_story *this_html_story = (fz_html_story *) $self;
+            fz_drop_html_story(gctx, this_html_story);
+            DEBUGMSG2;
+        }
+
+        FITZEXCEPTION(HtmlStory, !result)
+        %pythonprepend HtmlStory
+        %{
+        %}
+        HtmlStory(const char* html=NULL, const char *user_css=NULL, double em=12)
+        {
+            fz_html_story*  html_story = NULL;
+            fz_buffer*  buffer = NULL;
+            fz_var( html_story);
+            fz_var( buffer);
+            if (!html) html = "";
+            fz_try(gctx)
+            {
+                buffer = fz_new_buffer_from_copied_data(gctx, html, strlen(html)+1);
+                html_story = fz_new_html_story(gctx, buffer, user_css, em);
+            }
+            fz_always(gctx)
+            {
+                fz_drop_buffer( gctx, buffer);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            struct HtmlStory* ret = (struct HtmlStory *) html_story;
+            return ret;
+        }
+        
+        PyObject* place( PyObject* where)
+        {
+            fz_rect where2 = JM_rect_from_py(where);
+            fz_rect filled;
+            int done = fz_place_story( gctx, (fz_html_story*) $self, where2, &filled);
+            PyObject* ret = PyTuple_New(2);
+            PyTuple_SET_ITEM( ret, 0, Py_BuildValue( "i", done));
+            PyTuple_SET_ITEM( ret, 1, JM_py_from_rect( filled));
+            return ret;
+        }
+        
+        void draw( struct DeviceWrapper* device, PyObject* ctm)
+        {
+            fz_matrix ctm2 = JM_matrix_from_py( ctm);
+            fz_draw_story( gctx, (fz_html_story*) $self, device->device, ctm2);
+        }
+        
+        struct Xml* document()
+        {
+            fz_xml* dom = fz_html_story_document( gctx, (fz_html_story*) $self);
+            fz_keep_xml( gctx, dom);
+            return (struct Xml*) dom;
+        }
     }
 };
 
