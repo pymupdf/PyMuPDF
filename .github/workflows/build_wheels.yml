@@ -1,11 +1,20 @@
 name: Build wheels
 
 #on: [push, pull_request]
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      sdist:
+        type: boolean
+      wheels:
+        type: boolean
+      wheels_linux_aarch64:
+        type: boolean
 
 jobs:
 
   build_sdist:
+    if: ${{ inputs.sdist }}
     name: Build sdist
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +32,7 @@ jobs:
 
 
   build_wheels:
+    if: ${{ inputs.wheels }}
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -64,7 +74,16 @@ jobs:
             # On Linux, tell cibuildwheel to build native archs ('auto'), and
             # aarch64.
             #
-            CIBW_ARCHS_LINUX: auto aarch64
+            #CIBW_ARCHS_LINUX: auto aarch64
+            
+            # https://github.community/t/possible-to-use-conditional-in-the-env-section-of-a-job/135170
+            # Note that it seems that there must not be a space after the ':' in the following, i.e.
+            # ok:   {"false":"auto", "true":"auto aarch64"}
+            # bad:  {"false": "auto", "true": "auto aarch64"}
+            #
+            # This is useful: https://yamlchecker.com/
+            #
+            CIBW_ARCHS_LINUX: ${{ fromJSON('{"false":"auto", "true":"auto aarch64"}')[inputs.wheels_linux_aarch64] }}
 
             # For testing, build for single python version.
             #
