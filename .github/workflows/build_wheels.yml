@@ -95,7 +95,7 @@ jobs:
             # running pytest.
             #
             CIBW_TEST_REQUIRES: "fontTools pytest"
-            CIBW_TEST_COMMAND: "pytest -s {project}/tests || true"
+            CIBW_TEST_COMMAND: "pytest -s {project}/tests"
             CIBW_BUILD_VERBOSITY: 3
 
       # Upload generated wheels, to be accessible from github Actions page.
