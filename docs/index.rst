@@ -7,7 +7,15 @@
    intro.rst
    installation.rst
    tutorial.rst
-   faq.rst
+   recipes-images.rst
+   recipes-text.rst
+   recipes-annotations.rst
+   recipes-drawing-and-graphics.rst
+   recipes-multiprocessing.rst
+   recipes-general.rst
+   recipes-common-issues-and-their-solutions.rst
+   recipes-low-level-interfaces.rst
+   recipes-journalling.rst
    module.rst
    classes.rst
    algebra.rst
