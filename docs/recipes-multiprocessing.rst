@@ -10,7 +10,7 @@ MuPDF has no integrated support for threading - they call themselves "threading-
 
 Using PyMuPDF in a Python threading environment will lead to blocking effects for the main thread.
 
-However, there exists the option to use Python's *multiprocessing* module in a variety of ways.
+However, there is the option to use Python's *multiprocessing* module in a variety of ways.
 
 If you are looking to speed up page-oriented processing for a large document, use this script as a starting point. It should be at least twice as fast as the corresponding sequential processing.
 

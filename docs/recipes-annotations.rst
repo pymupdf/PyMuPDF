@@ -7,7 +7,7 @@ Recipes: Annotations
 
 In v1.14.0, annotation handling has been considerably extended:
 
-* New annotation type support for 'Ink', 'Rubber Stamp' and 'Squiggly' annotations. Ink annots simulate handwriting by combining one or more lists of interconnected points. Stamps are intended to visually inform about a document's status or intended usage (like "draft", "confidential", etc.). 'Squiggly' is a text marker annot, which underlines selected text with a zigzagged line.
+* New annotation type support for 'Ink', 'Rubber Stamp' and 'Squiggly' annotations. Ink annots simulate handwriting by combining one or more lists of interconnected points. Stamps are intended to visually inform about a document's status or intended usage (like "draft", "confidential", etc.). 'Squiggly' is a text marker annot, which underlines selected text with a zig-zagged line.
 
 * Extended 'FreeText' support:
     1. all characters from the *Latin* character set are now available,
@@ -94,7 +94,7 @@ A big **thank you** to our user `@kurokawaikki <https://github.com/kurokawaikki>
 
 How to Use Ink Annotations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Ink annotations are used to contain freehand scribbling. A typical example maybe an image of your signature consisting of first name and last name. Technically an ink annotation is implemented as a **list of lists of points**. Each point list is regarded as a continuous line connecting the points. Different point lists represent independent line segments of the annotation.
+Ink annotations are used to contain freehand scribbling. A typical example may be an image of your signature consisting of first name and last name. Technically an ink annotation is implemented as a **list of lists of points**. Each point list is regarded as a continuous line connecting the points. Different point lists represent independent line segments of the annotation.
 
 The following script creates an ink annotation with two mathematical curves (sine and cosine function graphs) as line segments::
 

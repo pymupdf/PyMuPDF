@@ -26,13 +26,13 @@ The script works as a command line tool which expects the document filename supp
 
 The output will be plain text as it is coded in the document. No effort is made to prettify in any way. Specifically for PDF, this may mean output not in usual reading order, unexpected line breaks and so forth.
 
-You have many options to cure this -- see chapter :ref:`Appendix2`. Among them are:
+You have many options to rectify this -- see chapter :ref:`Appendix2`. Among them are:
 
 1. Extract text in HTML format and store it as a HTML document, so it can be viewed in any browser.
 2. Extract text as a list of text blocks via *Page.get_text("blocks")*. Each item of this list contains position information for its text, which can be used to establish a convenient reading order.
 3. Extract a list of single words via *Page.get_text("words")*. Its items are words with position information. Use it to determine text contained in a given rectangle -- see next section.
 
-See the following two section for examples and further explanations.
+See the following two sections for examples and further explanations.
 
 
 .. index::
@@ -52,7 +52,7 @@ How to Extract Text in Natural Reading Order
 
 One of the common issues with PDF text extraction is, that text may not appear in any particular reading order.
 
-Responsible for this effect is the PDF creator (software or a human). For example, page headers may have been inserted in a separate step -- after the document had been produced. In such a case, the header text will appear at the end of a page text extraction (although it will be correctly shown by PDF viewer software). For example, the following snippet will add some header and footer lines to an existing PDF::
+This is the responsibility of the PDF creator (software or a human). For example, page headers may have been inserted in a separate step -- after the document had been produced. In such a case, the header text will appear at the end of a page text extraction (although it will be correctly shown by PDF viewer software). For example, the following snippet will add some header and footer lines to an existing PDF::
 
     doc = fitz.open("some.pdf")
     header = "Header"  # text in header
@@ -93,12 +93,12 @@ How to Mark Extracted Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 There is a standard search function to search for arbitrary text on a page: :meth:`Page.search_for`. It returns a list of :ref:`Rect` objects which surround a found occurrence. These rectangles can for example be used to automatically insert annotations which visibly mark the found text.
 
-This method has advantages and drawbacks. Pros are
+This method has advantages and drawbacks. Pros are:
 
 * The search string can contain blanks and wrap across lines
 * Upper or lower case characters are treated equal
 * Word hyphenation at line ends is detected and resolved
-* return may also be a list of :ref:`Quad` objects to precisely locate text that is **not parallel** to either axis -- using :ref:`Quad` output is also recommend, when page rotation is not zero.
+* Return may also be a list of :ref:`Quad` objects to precisely locate text that is **not parallel** to either axis -- using :ref:`Quad` output is also recommend, when page rotation is not zero
 
 But you also have other options::
 
@@ -134,7 +134,7 @@ But you also have other options::
  if new_doc:
      doc.save("marked-" + doc.name)
 
-This script uses :meth:`Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Therefore the words in this lists do not contain these characters. Further remarks:
+This script uses :meth:`Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
 
 * If found, the **complete word containing the string** is marked (underlined) -- not only the search string.
 * The search string may **not contain spaces** or other white space.

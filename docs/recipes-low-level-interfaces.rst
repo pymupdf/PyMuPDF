@@ -7,15 +7,15 @@ Recipes: Low-Level Interfaces
 
 Numerous methods are available to access and manipulate PDF files on a fairly low level. Admittedly, a clear distinction between "low level" and "normal" functionality is not always possible or subject to personal taste.
 
-It also may happen, that functionality previously deemed low-level is later on assessed as being part of the normal interface. This has happened in v1.14.0 for the class :ref:`Tools` -- you now find it as an item in the Classes chapter.
+It also may happen, that functionality previously deemed low-level is later on assessed as being part of the normal interface. This has happened in v1.14.0 for the class :ref:`Tools` - you now find it as an item in the Classes chapter.
 
-Anyway -- it is a matter of documentation only: in which chapter of the documentation do you find what. Everything is available always and always via the same interface.
+It is a matter of documentation only in which chapter of the documentation you find what you are looking for. Everything is available and always via the same interface.
 
 ----------------------------------
 
 How to Iterate through the :data:`xref` Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A PDF's :data:`xref` table is a list of all objects defined in the file. This table may easily contain many thousand entries -- the manual :ref:`AdobeManual` for example has 127'000 objects. Table entry "0" is reserved and must not be touched.
+A PDF's :data:`xref` table is a list of all objects defined in the file. This table may easily contain many thousands of entries -- the manual :ref:`AdobeManual` for example has 127,000 objects. Table entry "0" is reserved and must not be touched.
 The following script loops through the :data:`xref` table and prints each object's definition::
 
     >>> xreflen = doc.xref_length()  # length of objects table
@@ -105,7 +105,7 @@ There are good technical arguments for having multiple :data:`contents` objects:
 
 For example, PyMuPDF adds new, small :data:`contents` objects in methods :meth:`Page.insert_image`, :meth:`Page.show_pdf_page` and the :ref:`Shape` methods.
 
-However, there are also situations when a **single** :data:`contents` object is beneficial: it is easier to interpret and better compressible than multiple smaller ones.
+However, there are also situations when a **single** :data:`contents` object is beneficial: it is easier to interpret and more compressible than multiple smaller ones.
 
 Here are two ways of combining multiple contents of a page::
 
@@ -232,7 +232,7 @@ As an example, look at this standard metadata output of some PDF::
      'title': 'Full page fax print',
      'trapped': ''}
 
-Use the following code to see **all items** stored the metadata object::
+Use the following code to see **all items** stored in the metadata object::
 
     # ----------------------------------
     # metadata including private items
@@ -260,7 +260,7 @@ Use the following code to see **all items** stored the metadata object::
     # ---------------------------------------------------------------
 
 
-Vice cersa, you can also **store private metadata items** in a PDF. It is your responsibility making sure, that these items do conform to PDF specifications - especially they must be (unicode) strings. Consult section 14.3 (p. 548) of the :ref:`AdobeManual` for details and caveats::
+*Vice versa*, you can also **store private metadata items** in a PDF. It is your responsibility to make sure that these items conform to PDF specifications - especially they must be (unicode) strings. Consult section 14.3 (p. 548) of the :ref:`AdobeManual` for details and caveats::
 
     what, value = doc.xref_get_key(-1, "Info")  # /Info key in the trailer
     if what != "xref":
@@ -282,7 +282,7 @@ Vice cersa, you can also **store private metadata items** in a PDF. It is your r
      'Title': 'Full page fax print',
      'mykey': '北京 is Beijing'}
 
-To delete selected keys, use ``doc.xref_set_key(xref, "mykey", "null")``. As explained in the next section, string "null" is the PDF equivalent to Python's ``None``. A key with that value will be treated like being not specified -- and physically removed in garbage collections.
+To delete selected keys, use ``doc.xref_set_key(xref, "mykey", "null")``. As explained in the next section, string "null" is the PDF equivalent to Python's ``None``. A key with that value will be treated as not being specified -- and physically removed in garbage collections.
 
 ----------------------------------
 
@@ -314,7 +314,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       /Parent 1301 0 R
     >>
 
-* Single keys can also be accessed directly via :meth:`Document.xref_get_key`. The value **always is a string** together with type information, that helps interpreting it::
+* Single keys can also be accessed directly via :meth:`Document.xref_get_key`. The value **always is a string** together with type information, that helps with interpreting it::
 
     In [7]: doc.xref_get_key(page.xref, "MediaBox")
     Out[7]: ('array', '[0 0 612 792]')
@@ -437,4 +437,4 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
     --- ... ---
     RuntimeError: path to 'F' has indirects
 
-.. caution:: These are expert functions! There are no validations as to whether valid PDF objects, xrefs, etc. are specified. As with other low-level methods there exists the risk to render the PDF, or parts of it unusable.
+.. caution:: These are expert functions! There are no validations as to whether valid PDF objects, xrefs, etc. are specified. As with other low-level methods there is the risk to render the PDF, or parts of it unusable.
