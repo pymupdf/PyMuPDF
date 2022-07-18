@@ -63,7 +63,7 @@ The creator of the PDF has established a non-standard page geometry without keep
 
 The visible image of a PDF page is controlled by commands coded in a special mini-language. For an overview of this language consult "Operator Summary" on pp. 643 of the :ref:`AdobeManual`. These commands are stored in :data:`contents` objects as strings (*bytes* in PyMuPDF).
 
-There are commands in that language, which change the coordinate system of the page for all the following commands. In order to limit the scope of such commands local, they must be wrapped by the command pair *q* ("save graphics state", or "stack") and *Q* ("restore graphics state", or "unstack").
+There are commands in that language, which change the coordinate system of the page for all the following commands. In order to limit the scope of such commands to "local", they must be wrapped by the command pair *q* ("save graphics state", or "stack") and *Q* ("restore graphics state", or "unstack").
 
 .. highlight:: text
 
@@ -107,7 +107,7 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 .. note:: For **incremental saves,** solution 1. has an unpleasant implication: it will bloat the update delta, because it changes so many things and, in addition, stores the **cleaned contents uncompressed**. So, if you use :meth:`Page.clean_contents` you should consider **saving to a new file** with (at least) *garbage=3* and *deflate=True*.
 
-**Solution 3.** is completely under your control and only does the minimum corrective action. There exists a handy low-level utility function which you can use for this. Suggested procedure:
+**Solution 3.** is completely under your control and only does the minimum corrective action. There is a handy low-level utility function which you can use for this. Suggested procedure:
 
 * **Prepend** the missing stacking command by executing *fitz.TOOLS._insert_contents(page, b"q\n", False)*.
 * **Append** an unstacking command by executing *fitz.TOOLS._insert_contents(page, b"\nQ", True)*.
@@ -122,7 +122,7 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 Missing or Unreadable Extracted Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Fairly often, text extraction does not work text as you would expect: text may be missing at all, or may not appear in the reading sequence visible on your screen, or contain garbled characters (like a ? or a "TOFU" symbol), etc. This can be caused by a number of different problems.
+Fairly often, text extraction does not work text as you would expect: text may be missing, or may not appear in the reading sequence visible on your screen, or contain garbled characters (like a ? or a "TOFU" symbol), etc. This can be caused by a number of different problems.
 
 Problem: no text is extracted
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -143,7 +143,7 @@ Text extraction does not deliver the text in readable order, duplicates some tex
 
 Cause
 ^^^^^^
-1. The single characters are redable as such (no "<?>" symbols), but the sequence in which the text is **coded in the file** deviates from the reading order. The motivation behind may be technical or protection of data against unwanted copies.
+1. The single characters are readable as such (no "<?>" symbols), but the sequence in which the text is **coded in the file** deviates from the reading order. The motivation behind may be technical or protection of data against unwanted copies.
 2. Many "<?>" symbols occur, indicating MuPDF could not interpret these characters. The font may indeed be unsupported by MuPDF, or the PDF creator may haved used a font that displays readable text, but on purpose obfuscates the originating corresponding unicode character.
 
 Solution

@@ -42,7 +42,7 @@ In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 t
     pix = page.get_pixmap(matrix=mat)  # use 'mat' instead of the identity matrix
 
 
-Since version 1.19.2 there is a more direct way to set the resolution: Parameter ``"dpi"`` (dots per inch) can be used in place of ``"matrix"``. To create a 300 dpi image of a page specify ``pix = page.get_pixmap(dpi=300)``. Apart from notation brevity, this approach has the additonal advantage that the **dpi value is saved with the image** file -- which does not happen automatically when using the Matrix notation.
+Since version 1.19.2 there is a more direct way to set the resolution: Parameter ``"dpi"`` (dots per inch) can be used in place of ``"matrix"``. To create a 300 dpi image of a page specify ``pix = page.get_pixmap(dpi=300)``. Apart from notation brevity, this approach has the additional advantage that the **dpi value is saved with the image** file -- which does not happen automatically when using the Matrix notation.
 
 ----------
 
@@ -122,7 +122,7 @@ How to Extract Images: Non-PDF Documents
 
 In contrast to the previous sections, this section deals with **extracting** images **contained** in documents, so they can be displayed as part of one or more pages.
 
-If you want recreate the original image in file form or as a memory area, you have basically two options:
+If you want to recreate the original image in file form or as a memory area, you have basically two options:
 
 1. Convert your document to a PDF, and then use one of the PDF-only extraction methods. This snippet will convert a document to PDF::
 
@@ -189,7 +189,7 @@ Some images in PDFs are accompanied by **image masks**. In their simplest form, 
 
 Whether an image does have such a mask can be recognized in one of two ways in PyMuPDF:
 
-1. An item of :meth:`Document.get_page_images` has the general format ``(xref, smask, ...)``, where *xref* is the image's :data:`xref` and *smask*, if positive, is the :data:`xref` of a mask.
+1. An item of :meth:`Document.get_page_images` has the general format ``(xref, smask, ...)``, where *xref* is the image's :data:`xref` and *smask*, if positive, then it is the :data:`xref` of a mask.
 2. The (dictionary) results of :meth:`Document.extract_image` have a key *"smask"*, which also contains any mask's :data:`xref` if positive.
 
 If *smask == 0* then the image encountered via :data:`xref` can be processed as it is.
@@ -529,7 +529,7 @@ This shows how to create a PNG file from a numpy array (several times faster tha
 How to Add Images to a PDF Page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are two methods to add images to a PDF page: :meth:`Page.insert_image` and :meth:`Page.show_pdf_page`. Both methods have things in common, but there also exist differences.
+There are two methods to add images to a PDF page: :meth:`Page.insert_image` and :meth:`Page.show_pdf_page`. Both methods have things in common, but there are also differences.
 
 ============================== ===================================== =========================================
 **Criterion**                  :meth:`Page.insert_image`              :meth:`Page.show_pdf_page`

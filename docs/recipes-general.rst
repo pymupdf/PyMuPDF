@@ -417,7 +417,7 @@ MuPDF warnings continue to be stored in an internal buffer and can be viewed usi
 
 Please note that MuPDF errors may or may not lead to Python exceptions. In other words, you may see error messages from which MuPDF can recover and continue processing.
 
-Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a few information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that the open had to repair the document:
+Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during ``fitz.open`` the document had to be repaired:
 
 >>> import fitz
 >>> doc = fitz.open("damaged-file.pdf")  # leads to a sys.stderr message:
