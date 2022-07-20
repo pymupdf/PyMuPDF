@@ -188,3 +188,13 @@ def test_1645():
     with open( path_expected, 'rb') as f:
         expected = f.read()
     assert out == expected, f'Files differ: {path_out} {path_expected}'
+
+def test_1824():
+    '''
+    Test for fix for #1824: SegFault when applying redactions overlapping a
+    transparent image.
+    '''
+    path = os.path.abspath( f'{__file__}/../resources/test_1824.pdf')
+    doc=fitz.open(path)
+    page=doc[0]
+    page.apply_redactions()
