@@ -3422,7 +3422,7 @@ if not self.is_form_pdf:
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", pdf->rev_page_count);
+            return Py_BuildValue("i", pdf->map_page_count);
         }
 
 
@@ -8575,7 +8575,7 @@ struct DeviceWrapper
                 fz_drop_display_list(gctx, list);
                 DEBUGMSG2;
             }
-            /* todo: should we do free($self) here to match earlier call to
+            /* TODO: should we do free($self) here to match earlier call to
             calloc() ? */
         }
     }
@@ -11488,7 +11488,7 @@ struct Graftmap
             fz_catch(gctx) {
                 return NULL;
             }
-            return map;
+            return (struct Graftmap *) map;
         }
 
         %pythoncode %{
@@ -12159,6 +12159,7 @@ struct Font
     }
 };
 
+
 //------------------------------------------------------------------------
 // DocumentWriter
 //------------------------------------------------------------------------
@@ -12168,20 +12169,47 @@ struct DocumentWriter
     {
         ~DocumentWriter()
         {
-            fz_drop_document_writer( gctx, $self);
+            DEBUGMSG1("DocumentWriter");
+            fz_drop_document_writer( gctx, (fz_document_writer*) $self);
+            // FIXME: how to drop the fz_output created when using a filepointer?
+            DEBUGMSG2;
         }
         
-        FITZEXCEPTION(Xml, !result)
-        DocumentWriter( const char* path, const char* options)
+        FITZEXCEPTION(DocumentWriter, !result)
+        %pythonprepend DocumentWriter
+        %{
+            # support of pathlib and Python file-likes
+            if type(path) is str:
+                pass
+            elif hasattr(path, "absolute"):
+                path = str(path)
+            elif hasattr(path, "name"):
+                path = path.name
+        %}
+        DocumentWriter( PyObject* path, const char* options)
         {
-            fz_document_writer* ret = fz_new_pdf_writer( gctx, path, options);
+            fz_output *out = NULL;
+            fz_document_writer* ret=NULL;
+            fz_try(gctx) {
+                if (PyUnicode_Check(path)) {
+                    ret = fz_new_pdf_writer( gctx, PyUnicode_AsUTF8(path), options);
+                } else {
+                    // supporting output to io.BytesIO()
+                    out = JM_new_output_fileptr(gctx, path);
+                    ret = fz_new_pdf_writer_with_output(gctx, out, options);
+                }
+            }
+
+            fz_catch(gctx) {
+                return NULL;
+            }
             return (struct DocumentWriter*) ret;
         }
         
         struct DeviceWrapper* begin_page( PyObject* mediabox)
         {
             fz_rect mediabox2 = JM_rect_from_py(mediabox);
-            fz_device* device = fz_begin_page( gctx, $self, mediabox2);
+            fz_device* device = fz_begin_page( gctx, (fz_document_writer*) $self, mediabox2);
             struct DeviceWrapper* device_wrapper
                 = (struct DeviceWrapper*) calloc(1, sizeof(struct DeviceWrapper))
                 ;
@@ -12192,12 +12220,12 @@ struct DocumentWriter
         
         void end_page()
         {
-            fz_end_page( gctx, $self);
+            fz_end_page( gctx, (fz_document_writer*) $self);
         }
         
         void close()
         {
-            fz_close_document_writer( gctx, $self);
+            fz_close_document_writer( gctx, (fz_document_writer*) $self);
         }
     }
 };
@@ -12211,7 +12239,9 @@ struct Xml
     {
         ~Xml()
         {
+            DEBUGMSG1("Xml");
             fz_drop_xml( gctx, (fz_xml*) $self);
+            DEBUGMSG2;
         }
         
         FITZEXCEPTION(Xml, !result)
@@ -12227,49 +12257,49 @@ struct Xml
         
         struct Xml* body()
         {
-            return (struct Xml*) fz_keep_xml( gctx, fz_dom_body( gctx, $self));
+            return (struct Xml*) fz_keep_xml( gctx, fz_dom_body( gctx, (fz_xml *) $self));
         }
         
         void append_child( struct Xml* child)
         {
-            fz_dom_append_child( gctx, $self, child);
+            fz_dom_append_child( gctx, (fz_xml *) $self, (fz_xml *) child);
         }
         
         struct Xml* create_text_node( const char *text)
         {
-            fz_xml* ret = fz_dom_create_text_node( gctx, $self, text);
+            fz_xml* ret = fz_dom_create_text_node( gctx,(fz_xml *) $self, text);
             fz_keep_xml( gctx, ret);
             return (struct Xml*) ret;
         }
         
         struct Xml* create_element( const char *tag)
         {
-            fz_xml* ret = fz_dom_create_element( gctx, $self, tag);
+            fz_xml* ret = fz_dom_create_element( gctx, (fz_xml *)$self, tag);
             fz_keep_xml( gctx, ret);
             return (struct Xml*) ret;
         }
         
         struct Xml* find( const char *tag, const char *att, const char *match)
         {
-            fz_xml* ret = fz_dom_find( gctx, $self, tag, att, match);
+            fz_xml* ret = fz_dom_find( gctx, (fz_xml *)$self, tag, att, match);
             fz_keep_xml( gctx, ret);
             return (struct Xml*) ret;
         }
         struct Xml* clone()
         {
-            fz_xml* ret = fz_dom_clone( gctx, $self);
+            fz_xml* ret = fz_dom_clone( gctx, (fz_xml *)$self);
             fz_keep_xml( gctx, ret);
             return (struct Xml*) ret;
         }
         struct Xml* parent()
         {
-            fz_xml* ret = fz_dom_parent( gctx, $self);
+            fz_xml* ret = fz_dom_parent( gctx, (fz_xml *)$self);
             fz_keep_xml( gctx, ret);
             return (struct Xml*) ret;
         }
         void remove()
         {
-            fz_dom_remove( gctx, $self);
+            fz_dom_remove( gctx, (fz_xml *)$self);
         }
     }
 };
