@@ -219,11 +219,11 @@ def test_simple():
     while 1:
         i += 1
         device = writer.begin_page( mediabox)
-        done, filled = story.place( where)
-        print( f'i={i} done={done}')
+        more, filled = story.place( where)
+        print( f'i={i} more={more}')
         story.draw( device, None)
         writer.end_page()
-        if done:
+        if not more:
             break
     writer.close()
 
@@ -244,11 +244,11 @@ def test_dom():
     i = 0
     while 1:
         device = writer.begin_page( mediabox)
-        done, filled = story.place( where)
-        print( f'i={i} done={done}')
+        more, filled = story.place( where)
+        print( f'i={i} more={more}')
         story.draw( device, None)
         writer.end_page()
-        if done:
+        if not more:
             break
     writer.close()
 
@@ -283,11 +283,29 @@ def test_combination():
     i = 0
     while 1:
         device = writer.begin_page( mediabox)
-        done, filled = story.place( where)
-        print( f'i={i} done={done}')
+        more, filled = story.place( where)
+        print( f'i={i} more={more}')
         story.draw( device, None)
         writer.end_page()
-        if done:
+        if not more:
             break
     writer.close()
 
+
+HTML = """<p>Der (Große) <b>Schwertwal</b> <i>(Orcinus orca)</i>, auch <b>Mörderwal</b>, <b>Killerwal</b>, <b>Orca</b> oder <b>Butzkopf</b> (auch Butskopf) genannt, ist eine Art der Wale aus der Familie der Delfine <i>(Delphinidae)</i>. Die Art ist weltweit verbreitet, bewohnt jedoch bevorzugt küstennahe Gewässer in höheren Breiten.</p>"""
+
+def test_harald():
+    print( 'creating fitz.HtmlStory')
+    story = fitz.HtmlStory( HTML)
+    writer = fitz.DocumentWriter( 'out2.pdf', '')
+    i = 0
+    while 1:
+        i += 1
+        device = writer.begin_page( mediabox)
+        more, filled = story.place( where)
+        print( f'i={i} more={more}')
+        story.draw( device, None)
+        writer.end_page()
+        if not more:
+            break
+    writer.close()
