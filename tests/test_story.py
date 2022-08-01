@@ -292,20 +292,41 @@ def test_combination():
     writer.close()
 
 
-HTML = """<p>Der (Große) <b>Schwertwal</b> <i>(Orcinus orca)</i>, auch <b>Mörderwal</b>, <b>Killerwal</b>, <b>Orca</b> oder <b>Butzkopf</b> (auch Butskopf) genannt, ist eine Art der Wale aus der Familie der Delfine <i>(Delphinidae)</i>. Die Art ist weltweit verbreitet, bewohnt jedoch bevorzugt küstennahe Gewässer in höheren Breiten.</p>"""
-
-def test_harald():
-    print( 'creating fitz.HtmlStory')
-    story = fitz.HtmlStory( HTML)
-    writer = fitz.DocumentWriter( 'out2.pdf', '')
-    i = 0
+def make_pdf(text, rect):
+    """Make a memory DocumentWriter from HTML text and a rect."""
+    import io
+    mediabox = (0, 0, rect.width, rect.height)
+    story = fitz.HtmlStory(text, user_css=None, em=13)
+    fp = io.BytesIO()  # temporary output
+    writer = fitz.DocumentWriter(fp, "")
     while 1:
-        i += 1
-        device = writer.begin_page( mediabox)
-        more, filled = story.place( where)
-        print( f'i={i} more={more}')
-        story.draw( device, None)
+        device = writer.begin_page(mediabox)
+        more, filled = story.place(mediabox)
+        story.draw(device, None)
         writer.end_page()
         if not more:
             break
     writer.close()
+    rcbytes = fp.getvalue()[:]  # make copy of memory PDF
+    return fitz.Rect(filled), rcbytes
+
+
+HTML = """<p>Der (Große) <b>Schwertwal</b> <i>(Orcinus orca)</i>, auch <b>Mörderwal</b>, <b>Killerwal</b>, <b>Orca</b> oder <b>Butzkopf</b> (auch Butskopf) genannt, ist eine Art der Wale aus der Familie der Delfine <i>(Delphinidae)</i>. Die Art ist weltweit verbreitet, bewohnt jedoch bevorzugt küstennahe Gewässer in höheren Breiten.</p>"""
+
+def test_modify():
+    doc = fitz.open()
+    page = doc.new_page()
+    rect = fitz.Rect(100, 100, 300, 300)  # target rectangle existing page
+
+    filled, pdfbytes = make_pdf(HTML, rect)
+    if filled.is_empty:  # target rect was too small
+        raise ValueError("target rect too small")
+
+    src = fitz.open("pdf", pdfbytes)  # open the returned DocumentWriter PDF
+    src.ez_save("out4a.pdf")  # demo purpose only
+    # place result in target rect, clip=None means full page
+    page.show_pdf_page(rect, src, 0, clip=None)
+
+    # debug: wrap rect with red border
+    page.draw_rect(rect, color=(1, 0, 0), width=0.3)
+    doc.ez_save("out4b.pdf")
