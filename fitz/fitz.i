@@ -4413,7 +4413,7 @@ if basestate:
                 page_count = self.page_count  # page count of document
                 f = t = -1
                 if kw:  # check if keywords were used
-                    if args != []:  # then no positional args are allowed
+                    if args:  # then no positional args are allowed
                         raise ValueError("cannot mix keyword and positional argument")
                     f = kw.get("from_page", -1)  # first page to delete
                     t = kw.get("to_page", -1)  # last page to delete
