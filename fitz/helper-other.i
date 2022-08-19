@@ -1149,6 +1149,32 @@ calc_image_matrix(int width, int height, PyObject *tr, int rotate, int keep)
     return mat;
 }
 
+// Callback function for the Story class
+void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *pos)
+{
+    // ------------------------------------------------------------------------
+    // 'opaque' is a tuple (userfunc, userdict), where 'userfunc' is a function
+    // in the user's script and 'userdict' is a dictionary containing any
+    // additional parameters of the user
+    // userfunc will be invoked with the joined dict of userdict and pos.
+    // ------------------------------------------------------------------------
+    PyObject *callarg = (PyObject *) opaque;
+    PyObject *userfunc = PyTuple_GET_ITEM(callarg, 0);
+    PyObject *userdict = PyTuple_GET_ITEM(callarg, 1);
+    PyObject *arg = PyDict_New();
+    DICT_SETITEMSTR_DROP(arg, "depth", Py_BuildValue("i", pos->depth));
+    DICT_SETITEMSTR_DROP(arg, "heading", Py_BuildValue("i", pos->heading));
+    DICT_SETITEMSTR_DROP(arg, "id", Py_BuildValue("s", pos->id));
+    DICT_SETITEMSTR_DROP(arg, "rect", JM_py_from_rect(pos->rect));
+    DICT_SETITEMSTR_DROP(arg, "text", Py_BuildValue("s", pos->text));
+    DICT_SETITEMSTR_DROP(arg, "open-close", Py_BuildValue("i", pos->open_close));
+    DICT_SETITEMSTR_DROP(arg, "rect-num", Py_BuildValue("i", pos->rectangle_num));
+    if (PyDict_Check(userdict)) {
+        PyDict_Merge(arg, userdict, 0);
+    }
+    PyObject_CallOneArg(userfunc, arg);
+    Py_DECREF(arg);
+}
 
 //-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities

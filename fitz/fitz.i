@@ -81,7 +81,15 @@ EnsureOwnership(self)%}
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
 
-// memory allocation macros
+// JM_MEMORY controls what allocators we tell MuPDF to use when we call
+// fz_new_context():
+//
+//  JM_MEMORY=0: MuPDF uses malloc()/free().
+//  JM_MEMORY=1: MuPDF uses PyMem_Malloc()/PyMem_Free().
+//
+// There are also a small number of places where we call malloc() or
+// PyMem_Malloc() ourselves, depending on JM_MEMORY.
+//
 #define JM_MEMORY 0
 
 #if JM_MEMORY == 1
@@ -3414,7 +3422,7 @@ if not self.is_form_pdf:
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", pdf->rev_page_count);
+            return Py_BuildValue("i", pdf->map_page_count);
         }
 
 
@@ -8567,6 +8575,8 @@ struct DeviceWrapper
                 fz_drop_display_list(gctx, list);
                 DEBUGMSG2;
             }
+            /* TODO: should we do free($self) here to match earlier call to
+            calloc() ? */
         }
     }
 };
@@ -11478,7 +11488,7 @@ struct Graftmap
             fz_catch(gctx) {
                 return NULL;
             }
-            return map;
+            return (struct Graftmap *) map;
         }
 
         %pythoncode %{
@@ -12142,6 +12152,850 @@ struct Font
 
             def __del__(self):
                 if not type(self) is Font:
+                    return
+                if getattr(self, "thisown", False):
+                    self.__swig_destroy__(self)
+        %}
+    }
+};
+
+
+//------------------------------------------------------------------------
+// DocumentWriter
+//------------------------------------------------------------------------
+
+struct DocumentWriter
+{
+    %extend
+    {
+        ~DocumentWriter()
+        {
+            // need this structure to free any fz_output the writer may have
+            typedef struct { // copied from pdf_write.c
+                fz_document_writer super;
+                pdf_document *pdf;
+                pdf_write_options opts;
+                fz_output *out;
+                fz_rect mediabox;
+                pdf_obj *resources;
+                fz_buffer *contents;
+            } pdf_writer;
+
+            fz_document_writer *writer_fz = (fz_document_writer *) $self;
+            fz_output *out = NULL;
+            pdf_writer *writer_pdf = (pdf_writer *) writer_fz;
+            if (writer_pdf) {
+                out = writer_pdf->out;
+                if (out) {
+                    DEBUGMSG1("Output of DocumentWriter");
+                    fz_drop_output(gctx, out);
+                    writer_pdf->out = NULL;
+                    DEBUGMSG2;
+                }
+            }
+            DEBUGMSG1("DocumentWriter");
+            fz_drop_document_writer( gctx, writer_fz);
+            DEBUGMSG2;
+        }
+        
+        FITZEXCEPTION(DocumentWriter, !result)
+        %pythonprepend DocumentWriter
+        %{
+            if type(path) is str:
+                pass
+            elif hasattr(path, "absolute"):
+                path = str(path)
+            elif hasattr(path, "name"):
+                path = path.name
+        %}
+        %pythonappend DocumentWriter
+        %{
+        %}
+        DocumentWriter( PyObject* path, const char* options)
+        {
+            fz_output *out = NULL;
+            fz_document_writer* ret=NULL;
+            fz_try(gctx) {
+            if (PyUnicode_Check(path)) {
+                ret = fz_new_pdf_writer( gctx, PyUnicode_AsUTF8(path), options);
+            } else {
+                out = JM_new_output_fileptr(gctx, path);
+                ret = fz_new_pdf_writer_with_output(gctx, out, options);
+            }
+            }
+
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct DocumentWriter*) ret;
+        }
+        
+        struct DeviceWrapper* begin_page( PyObject* mediabox)
+        {
+            fz_rect mediabox2 = JM_rect_from_py(mediabox);
+            fz_device* device = fz_begin_page( gctx, (fz_document_writer*) $self, mediabox2);
+            struct DeviceWrapper* device_wrapper
+                = (struct DeviceWrapper*) calloc(1, sizeof(struct DeviceWrapper))
+                ;
+            device_wrapper->device = device;
+            device_wrapper->list = NULL;
+            return device_wrapper;
+        }
+        
+        void end_page()
+        {
+            fz_end_page( gctx, (fz_document_writer*) $self);
+        }
+        
+        void close()
+        {
+            fz_document_writer *writer = (fz_document_writer*) $self;
+            fz_close_document_writer( gctx, writer);
+        }
+        %pythoncode
+        %{
+            def __del__(self):
+                if not type(self) is DocumentWriter:
+                    return
+                if getattr(self, "thisown", False):
+                    self.__swig_destroy__(self)
+        %}
+    }
+};
+
+//------------------------------------------------------------------------
+// Xml
+//------------------------------------------------------------------------
+struct Xml
+{
+    %extend
+    {
+        ~Xml()
+        {
+            DEBUGMSG1("Xml");
+            fz_drop_xml( gctx, (fz_xml*) $self);
+            DEBUGMSG2;
+        }
+        
+        FITZEXCEPTION(Xml, !result)
+        %pythonprepend Xml
+        %{
+            #self._xml = xml
+        %}
+        %pythonappend Xml
+        %{
+        %}
+        Xml(fz_xml* xml)
+        {
+            fz_keep_xml( gctx, xml);
+            return (struct Xml*) xml;
+        }
+        
+        FITZEXCEPTION (debug, !result)
+        PyObject *debug()
+        {
+            fz_try(gctx) {
+                fz_debug_xml((fz_xml *) $self, 1);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+        
+        FITZEXCEPTION (body, !result)
+        struct Xml* body()
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_keep_xml( gctx, fz_dom_body( gctx, (fz_xml *) $self));
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Xml*) ret;
+        }
+        
+        FITZEXCEPTION (append_child, !result)
+        PyObject *append_child( struct Xml* child)
+        {
+            fz_try(gctx) {
+                fz_dom_append_child( gctx, (fz_xml *) $self, (fz_xml *) child);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+        
+        FITZEXCEPTION (create_text_node, !result)
+        struct Xml* create_text_node( const char *text)
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_dom_create_text_node( gctx,(fz_xml *) $self, text);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+        
+        FITZEXCEPTION (create_element, !result)
+        struct Xml* create_element( const char *tag)
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_dom_create_element( gctx, (fz_xml *)$self, tag);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *find(const char *tag, const char *att, const char *match)
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_find( gctx, (fz_xml *)$self, tag, att, match);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *find_next( const char *tag, const char *att, const char *match)
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_find_next( gctx, (fz_xml *)$self, tag, att, match);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *next()
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_next( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *previous()
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_previous( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        FITZEXCEPTION (add_attribute, !result)
+        PyObject *add_attribute(const char *key, const char *value)
+        {
+            fz_try(gctx) {
+                if (strlen(key)==0 || strlen(value)==0) {
+                    RAISEPY(gctx, "key and value must not be empty", PyExc_ValueError);
+                }
+                fz_dom_add_attribute(gctx, (fz_xml *)$self, key, value);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION (remove_attribute, !result)
+        PyObject *remove_attribute(const char *key)
+        {
+            fz_try(gctx) {
+                if (strlen(key)==0) {
+                    RAISEPY(gctx, "key must not be empty", PyExc_ValueError);
+                }
+                fz_xml *elt = (fz_xml *)$self;
+                fz_dom_remove_attribute(gctx, elt, key);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        FITZEXCEPTION (get_attribute_value, !result)
+        PyObject *get_attribute_value(const char *key)
+        {
+            const char *ret=NULL;
+            fz_try(gctx) {
+                if (strlen(key)==0) {
+                    RAISEPY(gctx, "key must not be empty", PyExc_ValueError);
+                }
+                fz_xml *elt = (fz_xml *)$self;
+                ret=fz_dom_attribute(gctx, elt, key);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("s", ret);
+        }
+
+
+        FITZEXCEPTION (get_attributes, !result)
+        PyObject *get_attributes()
+        {
+            fz_xml *this = (fz_xml *) $self;
+            if (fz_xml_text(this)) { // text node has none
+                Py_RETURN_NONE;
+            }
+            PyObject *result=PyDict_New();
+            fz_try(gctx) {
+                int i=0;
+                const char *key=NULL;
+                const char *val=NULL;
+                while (1) {
+                    val = fz_dom_get_attribute(gctx, this, i, &key);
+                    if (!val || !key) {
+                        break;
+                    }
+                    PyObject *temp = Py_BuildValue("s",val);
+                    PyDict_SetItemString(result, key, temp);
+                    Py_DECREF(temp);
+                    i += 1;
+                }
+            }
+            fz_catch(gctx) {
+                Py_DECREF(result);
+                return NULL;
+            }
+            return result;
+        }
+
+
+        FITZEXCEPTION (insert_before, !result)
+        PyObject *insert_before(struct Xml *node)
+        {
+            fz_xml *existing = (fz_xml *) $self;
+            fz_xml *what = (fz_xml *) node;
+            fz_try(gctx)
+            {
+                fz_dom_insert_before(gctx, existing, what);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION (insert_after, !result)
+        PyObject *insert_after(struct Xml *node)
+        {
+            fz_xml *existing = (fz_xml *) $self;
+            fz_xml *what = (fz_xml *) node;
+            fz_try(gctx)
+            {
+                fz_dom_insert_after(gctx, existing, what);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION (clone, !result)
+        struct Xml* clone()
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_dom_clone( gctx, (fz_xml *)$self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *parent()
+        {
+            fz_xml* ret = NULL;
+            ret = fz_dom_parent( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *first_child()
+        {
+            fz_xml* ret = NULL;
+            fz_xml *this = (fz_xml *)$self;
+            if (fz_xml_text(this)) { // a text node has no child
+                return NULL;
+            }
+            ret = fz_dom_first_child( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+
+        FITZEXCEPTION (remove, !result)
+        PyObject *remove()
+        {
+            fz_try(gctx) {
+                fz_dom_remove( gctx, (fz_xml *)$self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode %{@property%}
+        PyObject *text()
+        {
+            return Py_BuildValue("s", fz_xml_text((fz_xml *)$self));
+        }
+
+        %pythoncode %{@property%}
+        PyObject *tagname()
+        {
+            return Py_BuildValue("s", fz_xml_tag((fz_xml *)$self));
+        }
+
+
+        %pythoncode %{
+        @property
+        def is_text(self):
+            """Check if this is a text node."""
+            return self.text != None
+
+        def last_child(self):
+            """Find the last child node."""
+            child = self.first_child()
+            if child==None:
+                return None
+            while True:
+                if child.next() == None:
+                    return child
+                child = child.next()
+
+        @staticmethod
+        def color_text(color):
+            if type(color) is str:
+                return color
+            if type(color) is int:
+                return f"rgb({sRGB_to_rgb(color)})"
+            if type(color) in (tuple, list):
+                return f"rgb{tuple(color)}"
+            return color
+
+
+        def create_tagged_text(self, text, tags=None):
+            """Build text with multiple tags."""
+            lines = text.splitlines()
+            line_count = len(lines)
+            if tags == None:
+                tags = []
+
+            if tags == [] and line_count == 1:  # simple case: no tags
+                return self.create_text_node(text)
+            if tags == [] and line_count > 1:
+                tags = ["p"]
+            nodes = [self]
+            for tag in tags:  # build stack of tags
+                node = nodes[-1].create_element(tag)
+                nodes.append(node)
+
+            # the last node element receives the text
+            last = nodes[-1]
+            prev = nodes[-2]
+            for i, line in enumerate(lines):
+                last.append_child(prev.create_text_node(line))
+                if i < line_count - 1:
+                    last.append_child(prev.create_element("br"))
+            nodes_len = len(nodes)
+
+            # now append each tag to its predecessor
+            if nodes_len == 2:  # already done
+                return nodes[-1]
+            for i in range(nodes_len - 1, -1, -1):
+                node1 = nodes[i]
+                node0 = nodes[i - 1]
+                if i == 1:
+                    return node1
+                node0.append_child(node1)
+
+
+        def insert_textfull(
+            self,
+            text,
+            tags=None,
+            style=None,
+            font=None,
+            fontsize=None,
+            lineheight=None,
+            align=None,
+            color=None,
+            bg_color=None,
+            opacity=None,
+            underline=False,
+            cls=None,
+            extend=False,
+        ):
+            child = self.create_tagged_text(text, tags=tags)
+            if align == 1:
+                align = "text-align: center"
+            elif align == 2:
+                align = "text-align: right"
+            elif align == 3:
+                align = "text-align: justify"
+            if type(align) is str:
+                if not style:
+                    style = align
+                else:
+                    style += ";" + align
+
+            if underline:
+                underline = "text-decoration: underline"
+                if not style:
+                    style = underline
+                else:
+                    style += ";" + underline
+
+            if font:
+                ffamily="font-family: " + font
+                if not style:
+                    style= ffamily
+                else:
+                    style+=";" + ffamily
+
+            if fontsize:
+                fontsize = f"font-size: {fontsize}px"
+                if not style:
+                    style = fontsize
+                else:
+                    style += ";" + fontsize
+
+            if lineheight:
+                lineheight = f"line-height: {lineheight}"
+                if not style:
+                    style = lineheight
+                else:
+                    style += ";" + lineheight
+
+            if opacity:
+                opacity = f"opacity: {opacity}"
+                if not style:
+                    style = opacity
+                else:
+                    style += ";" + opacity
+
+            if color:
+                color = f"color: {self.color_text(color)}"
+                if not style:
+                    style = color
+                else:
+                    style += ";" + color
+
+            if bg_color:
+                bg_color = f"background-color: {self.color_text(bg_color)}"
+                if not style:
+                    style = bg_color
+                else:
+                    style += ";" + bg_color
+
+            if type(style) is str:
+                child.add_attribute("style", style)
+            if type(cls) is str:
+                child.add_attribute("class", cls)
+            if not extend:
+                self.append_child(child)
+            else:
+                last_child = self.last_child()
+                last_child.append_child(child)
+
+        def add_span(self):
+            child = self.create_element("span")
+            self.append_child(child)
+            return child
+
+        def add_paragraph(self):
+            child = self.create_element("p")
+            self.append_child(child)
+            return child
+
+        def add_header(self, level=1):
+            if level not in range(1, 7):
+                raise ValueError("Header level must be in [1, 6]")
+            child = self.create_element(f"h{level}")
+            self.append_child(child)
+            return child
+
+        def add_section(self):
+            child = self.create_element("div")
+            self.append_child(child)
+            return child
+
+        def add_link(self):
+            child = self.create_element("a")
+            self.append_child(child)
+            return child
+
+        def add_codeblock(self):
+            child = self.create_element("pre")
+            self.append_child(child)
+            return child
+
+        def set_font(self, font):
+            text = "font-family: %s" % font
+            self.set_style(text)
+            return
+
+
+        def set_color(self, color):
+            text = f"color: %s" % self.color_text(color)
+            self.set_style(text)
+            return
+
+
+        def set_bgcolor(self, color):
+            text = f"background-color: %s" % self.color_text(color)
+            self.set_style(text)
+            return
+
+
+        def set_opacity(self, opacity):
+            text = f"opacity: {opacity}"
+            self.set_style(text)
+            return
+
+
+        def set_align(self, align):
+            text = "text-align: %s"
+            if align == TEXT_ALIGN_CENTER:
+                t = "center"
+            elif align == TEXT_ALIGN_RIGHT:
+                t = "right"
+            elif align == TEXT_ALIGN_JUSTIFY:
+                t = "justify"
+            else:
+                t = "left"
+            self.set_style(text % t)
+            return
+
+        def set_underline(self, val="underline"):
+            text = "text-decoration: %s" % val
+            self.set_style(text)
+            return
+
+        def set_fontsize(self, fontsize):
+            text = f"font-size: {fontsize}px"
+            self.set_style(text)
+            return
+
+        def set_lineheight(self, lineheight):
+            text = f"line-height: {lineheight}"
+            self.set_style(text)
+            return
+
+        def set_bold(self, val="bold"):
+            text = "font-weight: %s" % val
+            self.set_style(text)
+            return
+
+        def set_italic(self, value="italic"):
+            text = "font-style: %s" % val
+            self.set_style(text)
+            return
+
+        def set_style(self, text):
+            style = self.get_attribute_value("style")
+            if style != None and text in style:
+                return
+            self.remove_attribute("style")
+            if style == None:
+                style = text
+            else:
+                style += ";" + text
+            self.add_attribute("style", style)
+            return
+
+        def set_class(self, text):
+            cls = self.get_attribute_value("class")
+            if cls != None and text in cls:
+                return
+            self.remove_attribute("class")
+            if cls == None:
+                cls = text
+            else:
+                cls += " " + text
+            self.add_attribute("class", cls)
+            return
+
+        def set_id(self, unique):
+            # check uniqueness
+            tagname = self.tagname
+            if tagname == "body":
+                if self.find(None, "id", unique):
+                    raise ValueError(f"id '{unique}' already exists")
+            else:
+                pnode = self.parent()
+                tagname = pnode.tagname
+                while tagname != "body":
+                    pnode = pnode.parent()
+                    tagname = pnode.tagname
+                if pnode.find(None, "id", unique):
+                    raise ValueError(f"id '{unique}' already exists")
+            self.add_attribute("id", unique)
+            return
+
+        def insert_text(self, text):
+            lines = text.splitlines()
+            line_count = len(lines)
+            for i, line in enumerate(lines):
+                self.append_child(self.create_text_node(line))
+                if i < line_count - 1:
+                    self.append_child(self.create_element("br"))
+            return
+
+        def __del__(self):
+            if not type(self) is Xml:
+                return
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
+        %}
+    }
+};
+
+//------------------------------------------------------------------------
+// Story
+//------------------------------------------------------------------------
+struct Story
+{
+    %extend
+    {
+        ~Story()
+        {
+            DEBUGMSG1("Story");
+            fz_story *this_story = (fz_story *) $self;
+            fz_drop_story(gctx, this_story);
+            DEBUGMSG2;
+        }
+
+        FITZEXCEPTION(Story, !result)
+        Story(const char* html=NULL, const char *user_css=NULL, double em=12)
+        {
+            fz_story* story = NULL;
+            fz_buffer* buffer = NULL;
+            fz_var( story);
+            fz_var( buffer);
+            const char *html2="";
+            if (html) {
+                html2=html;
+            }
+
+            fz_try(gctx)
+            {
+                buffer = fz_new_buffer_from_copied_data(gctx, html2, strlen(html2)+1);
+                story = fz_new_story(gctx, buffer, user_css, em);
+            }
+            fz_always(gctx)
+            {
+                fz_drop_buffer( gctx, buffer);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            struct Story* ret = (struct Story *) story;
+            return ret;
+        }
+        
+        PyObject* reset()
+        {
+            fz_reset_story(gctx, (fz_story *)$self);
+            Py_RETURN_NONE;
+        }
+        
+        PyObject* place( PyObject* where)
+        {
+            fz_rect where2 = JM_rect_from_py(where);
+            fz_rect filled;
+            int done = fz_place_story( gctx, (fz_story*) $self, where2, &filled);
+            PyObject* ret = PyTuple_New(2);
+            PyTuple_SET_ITEM( ret, 0, Py_BuildValue( "i", done));
+            PyTuple_SET_ITEM( ret, 1, JM_py_from_rect( filled));
+            return ret;
+        }
+        
+        void draw( struct DeviceWrapper* device, PyObject* matrix=NULL)
+        {
+            fz_matrix ctm2 = JM_matrix_from_py( matrix);
+            fz_draw_story( gctx, (fz_story*) $self, device->device, ctm2);
+        }
+
+        FITZEXCEPTION(document, !result)
+        struct Xml* document()
+        {
+            fz_xml* dom=NULL;
+            fz_try(gctx) {
+                dom = fz_story_document( gctx, (fz_story*) $self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, dom);
+            return (struct Xml*) dom;
+        }
+
+        FITZEXCEPTION(warnings, !result)
+        PyObject* warnings()
+        {
+            char *text=NULL;
+            fz_try(gctx) {
+                text = fz_story_warnings(gctx, (fz_story *)$self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("s", text);
+        }
+
+        FITZEXCEPTION(element_positions, !result)
+        PyObject* element_positions(PyObject *function, PyObject *args)
+        {
+            PyObject *callarg=NULL;
+            fz_try(gctx) {
+                callarg = Py_BuildValue("OO", function, args);
+                fz_story_positions(gctx, (fz_story *) $self, Story_Callback, callarg);
+            }
+            fz_always(gctx) {
+                Py_DECREF(callarg);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode
+        %{
+            def __del__(self):
+                if not type(self) is Story:
                     return
                 if getattr(self, "thisown", False):
                     self.__swig_destroy__(self)
