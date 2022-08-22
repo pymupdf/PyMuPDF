@@ -12278,13 +12278,6 @@ struct Xml
         }
         
         FITZEXCEPTION(Xml, !result)
-        %pythonprepend Xml
-        %{
-            #self._xml = xml
-        %}
-        %pythonappend Xml
-        %{
-        %}
         Xml(fz_xml* xml)
         {
             fz_keep_xml( gctx, xml);
@@ -12343,6 +12336,7 @@ struct Xml
         }
         
         FITZEXCEPTION (create_element, !result)
+        %pythonappend create_element %{
         struct Xml* create_element( const char *tag)
         {
             fz_xml* ret = NULL;
@@ -12741,8 +12735,14 @@ struct Xml
         def add_header(self, level=1):
             if level not in range(1, 7):
                 raise ValueError("Header level must be in [1, 6]")
-            child = self.create_element(f"h{level}")
-            self.append_child(child)
+            this_tag = self.tagname
+            new_tag = f"h{level}"
+            child = self.create_element(new_tag)
+            prev = self
+            if this_tag not in ("h1", "h2", "h3", "h4", "h5", "h6", "p"):
+                self.append_child(child)
+                return child
+            self.parent().append_child(child)
             return child
 
         def add_section(self):
@@ -12760,27 +12760,47 @@ struct Xml
             self.append_child(child)
             return child
 
+        def span_bottom(self):
+            """Find last one in stacked spans."""
+            parent = self
+            fc = self.first_child()
+            while True:
+                if fc == None:
+                    return parent
+                if fc.tagname in ("head", "body") or fc.is_text:
+                    fc = fc.next()
+                    continue
+                if fc.tagname == "span":
+                    parent = fc
+                    fc = fc.first_child()
+
+        def append_styled_span(self, style):
+            span = self.create_element("span")
+            span.set_style(style)
+            prev = self.span_bottom()
+            prev.append_child(span)
+
         def set_font(self, font):
             text = "font-family: %s" % font
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
 
         def set_color(self, color):
             text = f"color: %s" % self.color_text(color)
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
 
         def set_bgcolor(self, color):
             text = f"background-color: %s" % self.color_text(color)
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
 
         def set_opacity(self, opacity):
             text = f"opacity: {opacity}"
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
 
@@ -12794,32 +12814,41 @@ struct Xml
                 t = "justify"
             else:
                 t = "left"
-            self.set_style(text % t)
+            text = text % t
+            self.append_styled_span(text)
             return
 
         def set_underline(self, val="underline"):
             text = "text-decoration: %s" % val
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
         def set_fontsize(self, fontsize):
             text = f"font-size: {fontsize}px"
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
         def set_lineheight(self, lineheight):
             text = f"line-height: {lineheight}"
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
-        def set_bold(self, val="bold"):
+        def set_bold(self, val=True):
+            if val==True:
+                val="bold"
+            elif val==False:
+                val="normal"
             text = "font-weight: %s" % val
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
-        def set_italic(self, value="italic"):
+        def set_italic(self, val=True):
+            if val==True:
+                val="italic"
+            elif val==False:
+                val="normal"
             text = "font-style: %s" % val
-            self.set_style(text)
+            self.append_styled_span(text)
             return
 
         def set_style(self, text):
@@ -12861,6 +12890,17 @@ struct Xml
                 if pnode.find(None, "id", unique):
                     raise ValueError(f"id '{unique}' already exists")
             self.add_attribute("id", unique)
+            return
+
+        def add_text(self, text):
+            lines = text.splitlines()
+            line_count = len(lines)
+            prev = self.span_bottom()
+
+            for i, line in enumerate(lines):
+                prev.append_child(self.create_text_node(line))
+                if i < line_count - 1:
+                    prev.append_child(self.create_element("br"))
             return
 
         def insert_text(self, text):
