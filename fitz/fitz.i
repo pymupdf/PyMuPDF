@@ -12336,7 +12336,6 @@ struct Xml
         }
         
         FITZEXCEPTION (create_element, !result)
-        %pythonappend create_element %{
         struct Xml* create_element( const char *tag)
         {
             fz_xml* ret = NULL;
@@ -12729,7 +12728,10 @@ struct Xml
 
         def add_paragraph(self):
             child = self.create_element("p")
-            self.append_child(child)
+            if self.tagname != "p":
+                self.append_child(child)
+            else:
+                self.parent().append_child(child)
             return child
 
         def add_header(self, level=1):
@@ -12752,11 +12754,16 @@ struct Xml
 
         def add_link(self):
             child = self.create_element("a")
-            self.append_child(child)
+            if self.tagname != "a":
+                self.append_child(child)
+            else:
+                self.parent().append_child(child)
             return child
 
-        def add_codeblock(self):
+        def add_codeblock(self, width=None):
             child = self.create_element("pre")
+            if width != None:
+                child.set_style(f"width: {width}")
             self.append_child(child)
             return child
 
@@ -12794,7 +12801,7 @@ struct Xml
 
         def set_bgcolor(self, color):
             text = f"background-color: %s" % self.color_text(color)
-            self.append_styled_span(text)
+            self.set_style(text)  # does not work on span level
             return
 
 
@@ -12815,7 +12822,7 @@ struct Xml
             else:
                 t = "left"
             text = text % t
-            self.append_styled_span(text)
+            self.set_style(text)
             return
 
         def set_underline(self, val="underline"):
