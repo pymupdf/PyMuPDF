@@ -277,6 +277,7 @@ import hashlib
 import typing
 import binascii
 import re
+from contextlib import contextmanager
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -12721,6 +12722,36 @@ struct Xml
                 last_child = self.last_child()
                 last_child.append_child(child)
 
+
+        def add_ordered_list(self):
+            child = self.create_element("ol")
+            self.append_child(child)
+            return child
+
+        @contextmanager
+        def new_ordered_list(self):
+            yield self.add_ordered_list()
+
+        def add_unordered_list(self):
+            child = self.create_element("ul")
+            self.append_child(child)
+            return child
+
+        @contextmanager
+        def new_unordered_list(self):
+            yield self.add_unordered_list()
+
+        def add_list_item(self):
+            child = self.create_element("li")
+            if self.tagname not in ("ol", "ul"):
+                raise ValueError("cannot add list item to", self.tagname)
+            self.append_child(child)
+            return child
+
+        @contextmanager
+        def new_list_item(self):
+            yield self.add_list_item()
+
         def add_span(self):
             child = self.create_element("span")
             self.append_child(child)
@@ -12733,6 +12764,10 @@ struct Xml
             else:
                 self.parent().append_child(child)
             return child
+
+        @contextmanager
+        def new_paragraph(self):
+            yield self.add_paragraph()
 
         def add_header(self, level=1):
             if level not in range(1, 7):
@@ -12747,10 +12782,18 @@ struct Xml
             self.parent().append_child(child)
             return child
 
+        @contextmanager
+        def new_header(self, level=1):
+            yield self.add_header(level)
+
         def add_section(self):
             child = self.create_element("div")
             self.append_child(child)
             return child
+
+        @contextmanager
+        def new_section(self):
+            yield self.add_section(level)
 
         def add_link(self):
             child = self.create_element("a")
@@ -12766,6 +12809,10 @@ struct Xml
                 child.set_style(f"width: {width}")
             self.append_child(child)
             return child
+
+        @contextmanager
+        def new_codeblock(self):
+            yield self.add_codeblock()
 
         def span_bottom(self):
             """Find last one in stacked spans."""
@@ -12787,11 +12834,15 @@ struct Xml
             prev = self.span_bottom()
             prev.append_child(span)
 
+        def set_margins(self, val):
+            text = "margins: %s" % val
+            self.append_styled_span(text)
+            return
+
         def set_font(self, font):
             text = "font-family: %s" % font
             self.append_styled_span(text)
             return
-
 
         def set_color(self, color):
             text = f"color: %s" % self.color_text(color)
