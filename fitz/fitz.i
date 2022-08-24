@@ -12793,7 +12793,7 @@ struct Xml
 
         @contextmanager
         def new_section(self):
-            yield self.add_section(level)
+            yield self.add_section()
 
         def add_link(self):
             child = self.create_element("a")
@@ -12936,17 +12936,15 @@ struct Xml
         def set_id(self, unique):
             # check uniqueness
             tagname = self.tagname
-            if tagname == "body":
-                if self.find(None, "id", unique):
-                    raise ValueError(f"id '{unique}' already exists")
-            else:
-                pnode = self.parent()
-                tagname = pnode.tagname
-                while tagname != "body":
-                    pnode = pnode.parent()
-                    tagname = pnode.tagname
-                if pnode.find(None, "id", unique):
-                    raise ValueError(f"id '{unique}' already exists")
+            temp = self
+            while True:
+                parent = temp.parent()
+                if parent == None:
+                    break
+                temp = parent
+
+            if temp.find(None, "id", unique):
+                raise ValueError(f"id '{unique}' already exists")
             self.add_attribute("id", unique)
             return
 
