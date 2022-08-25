@@ -1246,6 +1246,14 @@ def ConversionTrailer(i: str):
 
     return r
 
+class ElementPosition(object):
+    """Convert a dictionary with element position information to an object."""
+    def __init__(self):
+        pass
+
+def make_story_elpos():
+    return ElementPosition()
+
 
 def get_highlight_selection(page, start: point_like =None, stop: point_like =None, clip: rect_like =None) -> list:
     """Return rectangles of text lines between two points.

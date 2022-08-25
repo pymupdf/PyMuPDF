@@ -12597,132 +12597,6 @@ struct Xml
                 return f"rgb{tuple(color)}"
             return color
 
-
-        def create_tagged_text(self, text, tags=None):
-            """Build text with multiple tags."""
-            lines = text.splitlines()
-            line_count = len(lines)
-            if tags == None:
-                tags = []
-
-            if tags == [] and line_count == 1:  # simple case: no tags
-                return self.create_text_node(text)
-            if tags == [] and line_count > 1:
-                tags = ["p"]
-            nodes = [self]
-            for tag in tags:  # build stack of tags
-                node = nodes[-1].create_element(tag)
-                nodes.append(node)
-
-            # the last node element receives the text
-            last = nodes[-1]
-            prev = nodes[-2]
-            for i, line in enumerate(lines):
-                last.append_child(prev.create_text_node(line))
-                if i < line_count - 1:
-                    last.append_child(prev.create_element("br"))
-            nodes_len = len(nodes)
-
-            # now append each tag to its predecessor
-            if nodes_len == 2:  # already done
-                return nodes[-1]
-            for i in range(nodes_len - 1, -1, -1):
-                node1 = nodes[i]
-                node0 = nodes[i - 1]
-                if i == 1:
-                    return node1
-                node0.append_child(node1)
-
-
-        def insert_textfull(
-            self,
-            text,
-            tags=None,
-            style=None,
-            font=None,
-            fontsize=None,
-            lineheight=None,
-            align=None,
-            color=None,
-            bg_color=None,
-            opacity=None,
-            underline=False,
-            cls=None,
-            extend=False,
-        ):
-            child = self.create_tagged_text(text, tags=tags)
-            if align == 1:
-                align = "text-align: center"
-            elif align == 2:
-                align = "text-align: right"
-            elif align == 3:
-                align = "text-align: justify"
-            if type(align) is str:
-                if not style:
-                    style = align
-                else:
-                    style += ";" + align
-
-            if underline:
-                underline = "text-decoration: underline"
-                if not style:
-                    style = underline
-                else:
-                    style += ";" + underline
-
-            if font:
-                ffamily="font-family: " + font
-                if not style:
-                    style= ffamily
-                else:
-                    style+=";" + ffamily
-
-            if fontsize:
-                fontsize = f"font-size: {fontsize}px"
-                if not style:
-                    style = fontsize
-                else:
-                    style += ";" + fontsize
-
-            if lineheight:
-                lineheight = f"line-height: {lineheight}"
-                if not style:
-                    style = lineheight
-                else:
-                    style += ";" + lineheight
-
-            if opacity:
-                opacity = f"opacity: {opacity}"
-                if not style:
-                    style = opacity
-                else:
-                    style += ";" + opacity
-
-            if color:
-                color = f"color: {self.color_text(color)}"
-                if not style:
-                    style = color
-                else:
-                    style += ";" + color
-
-            if bg_color:
-                bg_color = f"background-color: {self.color_text(bg_color)}"
-                if not style:
-                    style = bg_color
-                else:
-                    style += ";" + bg_color
-
-            if type(style) is str:
-                child.add_attribute("style", style)
-            if type(cls) is str:
-                child.add_attribute("class", cls)
-            if not extend:
-                self.append_child(child)
-            else:
-                last_child = self.last_child()
-                last_child.append_child(child)
-
-
         def add_ordered_list(self):
             child = self.create_element("ol")
             self.append_child(child)
@@ -12730,6 +12604,15 @@ struct Xml
 
         @contextmanager
         def new_ordered_list(self):
+            yield self.add_ordered_list()
+
+        def add_description_list(self):
+            child = self.create_element("dl")
+            self.append_child(child)
+            return child
+
+        @contextmanager
+        def new_description_list(self):
             yield self.add_ordered_list()
 
         def add_unordered_list(self):
@@ -12742,9 +12625,9 @@ struct Xml
             yield self.add_unordered_list()
 
         def add_list_item(self):
-            child = self.create_element("li")
             if self.tagname not in ("ol", "ul"):
                 raise ValueError("cannot add list item to", self.tagname)
+            child = self.create_element("li")
             self.append_child(child)
             return child
 
@@ -12786,14 +12669,19 @@ struct Xml
         def new_header(self, level=1):
             yield self.add_header(level)
 
-        def add_section(self):
+        def add_div(self):
             child = self.create_element("div")
             self.append_child(child)
             return child
 
         @contextmanager
-        def new_section(self):
-            yield self.add_section()
+        def new_div(self):
+            yield self.add_div()
+
+        def add_horizontal_line(self):
+            child = self.create_element("hr")
+            self.append_child(child)
+            return child
 
         def add_link(self):
             child = self.create_element("a")
