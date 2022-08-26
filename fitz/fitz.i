@@ -12208,11 +12208,13 @@ struct DocumentWriter
                 path = str(path)
             elif hasattr(path, "name"):
                 path = path.name
+            if options==None:
+                options=""
         %}
         %pythonappend DocumentWriter
         %{
         %}
-        DocumentWriter( PyObject* path, const char* options)
+        DocumentWriter( PyObject* path, const char* options=NULL)
         {
             fz_output *out = NULL;
             fz_document_writer* ret=NULL;
@@ -12296,9 +12298,24 @@ struct Xml
             }
             Py_RETURN_NONE;
         }
-        
-        FITZEXCEPTION (body, !result)
-        struct Xml* body()
+
+
+        %pythoncode %{@property%}
+        FITZEXCEPTION (root, !result)
+        struct Xml* root()
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_xml_root((fz_xml_doc *) $self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Xml*) ret;
+        }
+
+        FITZEXCEPTION (bodytag, !result)
+        struct Xml* bodytag()
         {
             fz_xml* ret = NULL;
             fz_try(gctx) {
@@ -12309,7 +12326,7 @@ struct Xml
             }
             return (struct Xml*) ret;
         }
-        
+
         FITZEXCEPTION (append_child, !result)
         PyObject *append_child( struct Xml* child)
         {
@@ -12321,7 +12338,7 @@ struct Xml
             }
             Py_RETURN_NONE;
         }
-        
+
         FITZEXCEPTION (create_text_node, !result)
         struct Xml* create_text_node( const char *text)
         {
@@ -12335,7 +12352,7 @@ struct Xml
             fz_keep_xml( gctx, ret);
             return (struct Xml*) ret;
         }
-        
+
         FITZEXCEPTION (create_element, !result)
         struct Xml* create_element( const char *tag)
         {
@@ -12372,6 +12389,7 @@ struct Xml
             return (struct Xml*) ret;
         }
 
+        %pythoncode %{@property%}
         struct Xml *next()
         {
             fz_xml* ret=NULL;
@@ -12383,6 +12401,7 @@ struct Xml
             return (struct Xml*) ret;
         }
 
+        %pythoncode %{@property%}
         struct Xml *previous()
         {
             fz_xml* ret=NULL;
@@ -12394,8 +12413,8 @@ struct Xml
             return (struct Xml*) ret;
         }
 
-        FITZEXCEPTION (add_attribute, !result)
-        PyObject *add_attribute(const char *key, const char *value)
+        FITZEXCEPTION (set_attribute, !result)
+        PyObject *set_attribute(const char *key, const char *value)
         {
             fz_try(gctx) {
                 if (strlen(key)==0 || strlen(value)==0) {
@@ -12519,6 +12538,7 @@ struct Xml
             return (struct Xml*) ret;
         }
 
+        %pythoncode %{@property%}
         struct Xml *parent()
         {
             fz_xml* ret = NULL;
@@ -12530,6 +12550,7 @@ struct Xml
             return (struct Xml*) ret;
         }
 
+        %pythoncode %{@property%}
         struct Xml *first_child()
         {
             fz_xml* ret = NULL;
@@ -12577,8 +12598,9 @@ struct Xml
             """Check if this is a text node."""
             return self.text != None
 
+        @property
         def last_child(self):
-            """Find the last child node."""
+            """Return last child node."""
             child = self.first_child()
             if child==None:
                 return None
@@ -12598,33 +12620,40 @@ struct Xml
             return color
 
         def add_ordered_list(self):
+            """Add numbered list ("ol" tag)"""
             child = self.create_element("ol")
             self.append_child(child)
             return child
 
         @contextmanager
         def new_ordered_list(self):
+            """Add numbered list ("ol" tag, context mgr)"""
             yield self.add_ordered_list()
 
         def add_description_list(self):
+            """Add description list ("dl" tag)"""
             child = self.create_element("dl")
             self.append_child(child)
             return child
 
         @contextmanager
         def new_description_list(self):
+            """Add description list ("dl" tag, context mgr)"""
             yield self.add_ordered_list()
 
         def add_unordered_list(self):
+            """Add bulleted list ("ul" tag)"""
             child = self.create_element("ul")
             self.append_child(child)
             return child
 
         @contextmanager
         def new_unordered_list(self):
+            """Add bulleted list ("ul" tag, context mgr)"""
             yield self.add_unordered_list()
 
         def add_list_item(self):
+            """Add item ("li" tag) under a (numbered or bulleted) list."""
             if self.tagname not in ("ol", "ul"):
                 raise ValueError("cannot add list item to", self.tagname)
             child = self.create_element("li")
@@ -12633,6 +12662,7 @@ struct Xml
 
         @contextmanager
         def new_list_item(self):
+            """Add "li" tag (context mgr)"""
             yield self.add_list_item()
 
         def add_span(self):
@@ -12641,6 +12671,7 @@ struct Xml
             return child
 
         def add_paragraph(self):
+            """Add "p" tag"""
             child = self.create_element("p")
             if self.tagname != "p":
                 self.append_child(child)
@@ -12650,9 +12681,11 @@ struct Xml
 
         @contextmanager
         def new_paragraph(self):
+            """New "p" tag (context manager)"""
             yield self.add_paragraph()
 
         def add_header(self, level=1):
+            """Add header tag"""
             if level not in range(1, 7):
                 raise ValueError("Header level must be in [1, 6]")
             this_tag = self.tagname
@@ -12667,18 +12700,22 @@ struct Xml
 
         @contextmanager
         def new_header(self, level=1):
+            """Add header tag (context manager)"""
             yield self.add_header(level)
 
-        def add_div(self):
+        def add_division(self):
+            """Add "div" tag"""
             child = self.create_element("div")
             self.append_child(child)
             return child
 
         @contextmanager
-        def new_div(self):
-            yield self.add_div()
+        def new_division(self):
+            """Add "div" tag (context manager)"""
+            yield self.add_division()
 
         def add_horizontal_line(self):
+            """Add horizontal line ("hr" tag)"""
             child = self.create_element("hr")
             self.append_child(child)
             return child
@@ -12691,15 +12728,15 @@ struct Xml
                 self.parent().append_child(child)
             return child
 
-        def add_codeblock(self, width=None):
+        def add_codeblock(self):
+            """Add monospaced lines ("pre" node)"""
             child = self.create_element("pre")
-            if width != None:
-                child.set_style(f"width: {width}")
             self.append_child(child)
             return child
 
         @contextmanager
         def new_codeblock(self):
+            """Add monospaced lines ("pre" node, context mgr)"""
             yield self.add_codeblock()
 
         def span_bottom(self):
@@ -12723,22 +12760,26 @@ struct Xml
             prev.append_child(span)
 
         def set_margins(self, val):
+            """Set margin values via CSS style"""
             text = "margins: %s" % val
             self.append_styled_span(text)
             return
 
         def set_font(self, font):
+            """Set font-family name via CSS style"""
             text = "font-family: %s" % font
             self.append_styled_span(text)
             return
 
         def set_color(self, color):
+            """Set text color via CSS style"""
             text = f"color: %s" % self.color_text(color)
             self.append_styled_span(text)
             return
 
 
         def set_bgcolor(self, color):
+            """Set background color via CSS style"""
             text = f"background-color: %s" % self.color_text(color)
             self.set_style(text)  # does not work on span level
             return
@@ -12751,6 +12792,7 @@ struct Xml
 
 
         def set_align(self, align):
+            """Set text alignment via CSS style"""
             text = "text-align: %s"
             if align == TEXT_ALIGN_CENTER:
                 t = "center"
@@ -12770,16 +12812,19 @@ struct Xml
             return
 
         def set_fontsize(self, fontsize):
+            """Set font size name via CSS style"""
             text = f"font-size: {fontsize}px"
             self.append_styled_span(text)
             return
 
         def set_lineheight(self, lineheight):
+            """Set line height name via CSS style"""
             text = f"line-height: {lineheight}"
             self.append_styled_span(text)
             return
 
         def set_bold(self, val=True):
+            """Set bold on / off via CSS style"""
             if val==True:
                 val="bold"
             elif val==False:
@@ -12789,6 +12834,7 @@ struct Xml
             return
 
         def set_italic(self, val=True):
+            """Set italic on / off via CSS style"""
             if val==True:
                 val="italic"
             elif val==False:
@@ -12798,6 +12844,7 @@ struct Xml
             return
 
         def set_style(self, text):
+            """Set some style via CSS style. Replaces complete style spec."""
             style = self.get_attribute_value("style")
             if style != None and text in style:
                 return
@@ -12806,10 +12853,11 @@ struct Xml
                 style = text
             else:
                 style += ";" + text
-            self.add_attribute("style", style)
+            self.set_attribute("style", style)
             return
 
         def set_class(self, text):
+            """Set some class via CSS style. Replaces complete class spec."""
             cls = self.get_attribute_value("class")
             if cls != None and text in cls:
                 return
@@ -12818,25 +12866,21 @@ struct Xml
                 cls = text
             else:
                 cls += " " + text
-            self.add_attribute("class", cls)
+            self.set_attribute("class", cls)
             return
 
         def set_id(self, unique):
+            """Set a unique id."""
             # check uniqueness
             tagname = self.tagname
-            temp = self
-            while True:
-                parent = temp.parent()
-                if parent == None:
-                    break
-                temp = parent
-
-            if temp.find(None, "id", unique):
+            root = self.root
+            if root.find(None, "id", unique):
                 raise ValueError(f"id '{unique}' already exists")
-            self.add_attribute("id", unique)
+            self.set_attribute("id", unique)
             return
 
         def add_text(self, text):
+            """Add text. Line breaks are honored."""
             lines = text.splitlines()
             line_count = len(lines)
             prev = self.span_bottom()
@@ -12881,10 +12925,11 @@ struct Story
         }
 
         FITZEXCEPTION(Story, !result)
-        Story(const char* html=NULL, const char *user_css=NULL, double em=12)
+        Story(const char* html=NULL, const char *user_css=NULL, double em=12, void *archive=NULL)
         {
             fz_story* story = NULL;
             fz_buffer* buffer = NULL;
+            fz_archive* archive_data = (fz_archive *) archive;
             fz_var( story);
             fz_var( buffer);
             const char *html2="";
@@ -12895,7 +12940,7 @@ struct Story
             fz_try(gctx)
             {
                 buffer = fz_new_buffer_from_copied_data(gctx, html2, strlen(html2)+1);
-                story = fz_new_story(gctx, buffer, user_css, em);
+                story = fz_new_story(gctx, buffer, user_css, em, archive_data);
             }
             fz_always(gctx)
             {
@@ -12978,6 +13023,11 @@ struct Story
 
         %pythoncode
         %{
+            @property
+            def body(self):
+                dom = self.document()
+                return dom.bodytag()
+
             def __del__(self):
                 if not type(self) is Story:
                     return

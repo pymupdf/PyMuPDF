@@ -1157,18 +1157,18 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     // ------------------------------------------------------------------------
     // 'opaque' is a tuple (userfunc, userdict), where 'userfunc' is a function
     // in the user's script and 'userdict' is a dictionary containing any
-    // additional parameters of the user.
+    // additional parameters of the user
     // userfunc will be invoked with the joined dict of userdict and pos.
     // ------------------------------------------------------------------------
-    PyObject *temp = NULL;  // needed by macro SETATTR
+    PyObject *temp = NULL;
     PyObject *callarg = (PyObject *) opaque;
     PyObject *userfunc = PyTuple_GET_ITEM(callarg, 0);
     PyObject *userdict = PyTuple_GET_ITEM(callarg, 1);
     PyObject *this_module = PyImport_AddModule("fitz");  // get our module
-    if (!make_story_elpos) {  // locate ElementPosition maker once only
+    if (!make_story_elpos) {  // locate ElementPosition maker
         make_story_elpos = Py_BuildValue("s", "make_story_elpos");
     }
-    // get access to ElementPosition() instance
+    // get access to ElementPosition() object
     PyObject *arg = PyObject_CallMethodNoArgs(this_module, make_story_elpos);
     SETATTR("depth", Py_BuildValue("i", pos->depth));
     SETATTR("heading", Py_BuildValue("i", pos->heading));
@@ -1179,17 +1179,15 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     SETATTR("rect_num", Py_BuildValue("i", pos->rectangle_num));
 
     // iterate over userdict items and set their attributes
-    PyObject *pkey = NULL;  // userdict key (borrowed ref!)
-    PyObject *pval = NULL;  // userdict value (borrowed ref!)
-    Py_ssize_t ppos = 0;  // userdict iteration index
-    char *ckey = NULL;  // char version of pkey
+    PyObject *pkey = NULL;
+    PyObject *pval = NULL;
+    Py_ssize_t ppos = 0;
+    char *ckey = NULL;
     if (PyDict_Check(userdict)) {
         while (PyDict_Next(userdict, &ppos, &pkey, &pval)) {
             ckey = PyUnicode_AsUTF8(pkey);
             if (ckey) {
                 PyObject_SetAttrString(arg, ckey, pval);
-            } else {
-                ; // TODO: raise exception
             }
         }
     }
