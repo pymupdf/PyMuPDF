@@ -12418,7 +12418,7 @@ struct Xml
         {
             fz_try(gctx) {
                 if (strlen(key)==0 || strlen(value)==0) {
-                    RAISEPY(gctx, "key and value must not be empty", PyExc_ValueError);
+                    RAISEPY(gctx, "key / value must not be empty", PyExc_ValueError);
                 }
                 fz_dom_add_attribute(gctx, (fz_xml *)$self, key, value);
             }
@@ -12601,13 +12601,13 @@ struct Xml
         @property
         def last_child(self):
             """Return last child node."""
-            child = self.first_child()
+            child = self.first_child
             if child==None:
                 return None
             while True:
-                if child.next() == None:
+                if child.next == None:
                     return child
-                child = child.next()
+                child = child.next
 
         @staticmethod
         def color_text(color):
@@ -12619,16 +12619,15 @@ struct Xml
                 return f"rgb{tuple(color)}"
             return color
 
-        def add_ordered_list(self):
+        def add_number_list(self, start=1, numtype=None):
             """Add numbered list ("ol" tag)"""
             child = self.create_element("ol")
+            if start > 1:
+                child.set_attribute("start", str(start))
+            if numtype != None:
+                child.set_attribute("type", numtype)
             self.append_child(child)
             return child
-
-        @contextmanager
-        def new_ordered_list(self):
-            """Add numbered list ("ol" tag, context mgr)"""
-            yield self.add_ordered_list()
 
         def add_description_list(self):
             """Add description list ("dl" tag)"""
@@ -12636,21 +12635,11 @@ struct Xml
             self.append_child(child)
             return child
 
-        @contextmanager
-        def new_description_list(self):
-            """Add description list ("dl" tag, context mgr)"""
-            yield self.add_ordered_list()
-
-        def add_unordered_list(self):
+        def add_bullet_list(self):
             """Add bulleted list ("ul" tag)"""
             child = self.create_element("ul")
             self.append_child(child)
             return child
-
-        @contextmanager
-        def new_unordered_list(self):
-            """Add bulleted list ("ul" tag, context mgr)"""
-            yield self.add_unordered_list()
 
         def add_list_item(self):
             """Add item ("li" tag) under a (numbered or bulleted) list."""
@@ -12659,11 +12648,6 @@ struct Xml
             child = self.create_element("li")
             self.append_child(child)
             return child
-
-        @contextmanager
-        def new_list_item(self):
-            """Add "li" tag (context mgr)"""
-            yield self.add_list_item()
 
         def add_span(self):
             child = self.create_element("span")
@@ -12676,13 +12660,8 @@ struct Xml
             if self.tagname != "p":
                 self.append_child(child)
             else:
-                self.parent().append_child(child)
+                self.parent.append_child(child)
             return child
-
-        @contextmanager
-        def new_paragraph(self):
-            """New "p" tag (context manager)"""
-            yield self.add_paragraph()
 
         def add_header(self, level=1):
             """Add header tag"""
@@ -12695,24 +12674,14 @@ struct Xml
             if this_tag not in ("h1", "h2", "h3", "h4", "h5", "h6", "p"):
                 self.append_child(child)
                 return child
-            self.parent().append_child(child)
+            self.parent.append_child(child)
             return child
-
-        @contextmanager
-        def new_header(self, level=1):
-            """Add header tag (context manager)"""
-            yield self.add_header(level)
 
         def add_division(self):
             """Add "div" tag"""
             child = self.create_element("div")
             self.append_child(child)
             return child
-
-        @contextmanager
-        def new_division(self):
-            """Add "div" tag (context manager)"""
-            yield self.add_division()
 
         def add_horizontal_line(self):
             """Add horizontal line ("hr" tag)"""
@@ -12725,7 +12694,7 @@ struct Xml
             if self.tagname != "a":
                 self.append_child(child)
             else:
-                self.parent().append_child(child)
+                self.parent.append_child(child)
             return child
 
         def add_codeblock(self):
@@ -12734,24 +12703,21 @@ struct Xml
             self.append_child(child)
             return child
 
-        @contextmanager
-        def new_codeblock(self):
-            """Add monospaced lines ("pre" node, context mgr)"""
-            yield self.add_codeblock()
-
         def span_bottom(self):
             """Find last one in stacked spans."""
             parent = self
-            fc = self.first_child()
+            fc = self.first_child
             while True:
                 if fc == None:
                     return parent
                 if fc.tagname in ("head", "body") or fc.is_text:
-                    fc = fc.next()
+                    fc = fc.next
                     continue
                 if fc.tagname == "span":
                     parent = fc
-                    fc = fc.first_child()
+                    fc = fc.first_child
+                else:
+                    return parent
 
         def append_styled_span(self, style):
             span = self.create_element("span")
@@ -12899,6 +12865,12 @@ struct Xml
                 if i < line_count - 1:
                     self.append_child(self.create_element("br"))
             return
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
 
         def __del__(self):
             if not type(self) is Xml:
