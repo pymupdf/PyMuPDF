@@ -12704,18 +12704,27 @@ struct Xml
             return child
 
         def span_bottom(self):
-            """Find last one in stacked spans."""
+            """Find deepest level in stacked spans."""
             parent = self
-            fc = self.first_child
+            child = self.last_child
+            if child == None:
+                return None
+            while child.is_text:
+                child = child.previous
+                if child == None:
+                    break
+            if child == None or child.tagname != "span":
+                return None
+
             while True:
-                if fc == None:
+                if child == None:
                     return parent
-                if fc.tagname in ("head", "body") or fc.is_text:
-                    fc = fc.next
+                if child.tagname in ("head", "body") or child.is_text:
+                    child = child.next
                     continue
-                if fc.tagname == "span":
-                    parent = fc
-                    fc = fc.first_child
+                if child.tagname == "span":
+                    parent = child
+                    child = child.first_child
                 else:
                     return parent
 
@@ -12723,6 +12732,8 @@ struct Xml
             span = self.create_element("span")
             span.set_style(style)
             prev = self.span_bottom()
+            if prev == None:
+                prev = self
             prev.append_child(span)
 
         def set_margins(self, val):
@@ -12850,6 +12861,8 @@ struct Xml
             lines = text.splitlines()
             line_count = len(lines)
             prev = self.span_bottom()
+            if prev == None:
+                prev = self
 
             for i, line in enumerate(lines):
                 prev.append_child(self.create_text_node(line))
@@ -12977,6 +12990,14 @@ struct Story
         }
 
         FITZEXCEPTION(element_positions, !result)
+        %pythonprepend element_positions %{
+        if type(args) is dict:
+            for k in args.keys():
+                if not (type(k) is str and k.isidentifier()):
+                    raise ValueError(f"invalid key '{k}'")
+        else:
+            args = {}
+        %}
         PyObject* element_positions(PyObject *function, PyObject *args)
         {
             PyObject *callarg=NULL;
