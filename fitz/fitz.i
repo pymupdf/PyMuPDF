@@ -12735,38 +12735,37 @@ struct Xml
             if prev == None:
                 prev = self
             prev.append_child(span)
+            return prev
 
         def set_margins(self, val):
             """Set margin values via CSS style"""
             text = "margins: %s" % val
             self.append_styled_span(text)
-            return
+            return self
 
         def set_font(self, font):
             """Set font-family name via CSS style"""
             text = "font-family: %s" % font
             self.append_styled_span(text)
-            return
+            return self
 
         def set_color(self, color):
             """Set text color via CSS style"""
             text = f"color: %s" % self.color_text(color)
             self.append_styled_span(text)
-            return
-
+            return self
 
         def set_bgcolor(self, color):
             """Set background color via CSS style"""
             text = f"background-color: %s" % self.color_text(color)
             self.set_style(text)  # does not work on span level
-            return
-
+            return self
 
         def set_opacity(self, opacity):
+            """Set opacity via CSS style"""
             text = f"opacity: {opacity}"
             self.append_styled_span(text)
-            return
-
+            return self
 
         def set_align(self, align):
             """Set text alignment via CSS style"""
@@ -12781,24 +12780,58 @@ struct Xml
                 t = "left"
             text = text % t
             self.set_style(text)
-            return
+            return self
 
         def set_underline(self, val="underline"):
             text = "text-decoration: %s" % val
             self.append_styled_span(text)
-            return
+            return self
+
+        def set_pagebreak_before(self):
+            text = "page-break-before: always"
+            self.append_styled_span(text)
+            return self
+
+        def set_pagebreak_after(self):
+            text = "page-break-after: always"
+            self.append_styled_span(text)
+            return self
 
         def set_fontsize(self, fontsize):
             """Set font size name via CSS style"""
             text = f"font-size: {fontsize}px"
             self.append_styled_span(text)
-            return
+            return self
 
         def set_lineheight(self, lineheight):
             """Set line height name via CSS style"""
             text = f"line-height: {lineheight}"
             self.append_styled_span(text)
-            return
+            return self
+
+        def set_leading(self, leading):
+            """Set inter-line spacing value via CSS style"""
+            text = f"-mupdf-leading: {leading}"
+            self.append_styled_span(text)
+            return self
+
+        def set_word_spacing(self, spacing):
+            """Set inter-word spacing value via CSS style"""
+            text = f"word-spacing: {spacing}"
+            self.append_styled_span(text)
+            return self
+
+        def set_letter_spacing(self, spacing):
+            """Set inter-letter spacing value via CSS style"""
+            text = f"letter-spacing: {spacing}"
+            self.append_styled_span(text)
+            return self
+
+        def set_text_indent(self, indent):
+            """Set text indentation name via CSS style"""
+            text = f"text-indent: {indent}"
+            self.append_styled_span(text)
+            return self
 
         def set_bold(self, val=True):
             """Set bold on / off via CSS style"""
@@ -12808,7 +12841,7 @@ struct Xml
                 val="normal"
             text = "font-weight: %s" % val
             self.append_styled_span(text)
-            return
+            return self
 
         def set_italic(self, val=True):
             """Set italic on / off via CSS style"""
@@ -12818,33 +12851,33 @@ struct Xml
                 val="normal"
             text = "font-style: %s" % val
             self.append_styled_span(text)
-            return
+            return self
 
         def set_style(self, text):
             """Set some style via CSS style. Replaces complete style spec."""
             style = self.get_attribute_value("style")
             if style != None and text in style:
-                return
+                return self
             self.remove_attribute("style")
             if style == None:
                 style = text
             else:
                 style += ";" + text
             self.set_attribute("style", style)
-            return
+            return self
 
         def set_class(self, text):
             """Set some class via CSS style. Replaces complete class spec."""
             cls = self.get_attribute_value("class")
             if cls != None and text in cls:
-                return
+                return self
             self.remove_attribute("class")
             if cls == None:
                 cls = text
             else:
                 cls += " " + text
             self.set_attribute("class", cls)
-            return
+            return self
 
         def set_id(self, unique):
             """Set a unique id."""
@@ -12854,7 +12887,7 @@ struct Xml
             if root.find(None, "id", unique):
                 raise ValueError(f"id '{unique}' already exists")
             self.set_attribute("id", unique)
-            return
+            return self
 
         def add_text(self, text):
             """Add text. Line breaks are honored."""
@@ -12868,7 +12901,7 @@ struct Xml
                 prev.append_child(self.create_text_node(line))
                 if i < line_count - 1:
                     prev.append_child(self.create_element("br"))
-            return
+            return self
 
         def insert_text(self, text):
             lines = text.splitlines()
@@ -12877,7 +12910,7 @@ struct Xml
                 self.append_child(self.create_text_node(line))
                 if i < line_count - 1:
                     self.append_child(self.create_element("br"))
-            return
+            return self
 
         def __enter__(self):
             return self
