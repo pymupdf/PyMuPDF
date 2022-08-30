@@ -109,7 +109,7 @@ But you also have other options::
      """Underline each word that contains 'text'.
      """
      found = 0
-     wlist = page.getTex("words")  # make the word list
+     wlist = page.get_text("words")  # make the word list
      for w in wlist:  # scan through all words on page
          if text in w[4]:  # w[4] is the word's string
              found += 1  # count
@@ -134,7 +134,7 @@ But you also have other options::
  if new_doc:
      doc.save("marked-" + doc.name)
 
-This script uses :meth:`Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
+This script uses ``Page.get_text("words")`` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
 
 * If found, the **complete word containing the string** is marked (underlined) -- not only the search string.
 * The search string may **not contain spaces** or other white space.
