@@ -12788,13 +12788,15 @@ struct Xml
             return self
 
         def set_pagebreak_before(self):
+            """Insert a page break before this node."""
             text = "page-break-before: always"
-            self.append_styled_span(text)
+            self.set_style(text)
             return self
 
         def set_pagebreak_after(self):
+            """Insert a page break after this node."""
             text = "page-break-after: always"
-            self.append_styled_span(text)
+            self.set_style(text)
             return self
 
         def set_fontsize(self, fontsize):
@@ -12804,15 +12806,15 @@ struct Xml
             return self
 
         def set_lineheight(self, lineheight):
-            """Set line height name via CSS style"""
+            """Set line height name via CSS style - block-level only."""
             text = f"line-height: {lineheight}"
-            self.append_styled_span(text)
+            self.set_style(text)
             return self
 
         def set_leading(self, leading):
-            """Set inter-line spacing value via CSS style"""
+            """Set inter-line spacing value via CSS style - block-level only."""
             text = f"-mupdf-leading: {leading}"
-            self.append_styled_span(text)
+            self.set_style(text)
             return self
 
         def set_word_spacing(self, spacing):
@@ -12828,9 +12830,9 @@ struct Xml
             return self
 
         def set_text_indent(self, indent):
-            """Set text indentation name via CSS style"""
+            """Set text indentation name via CSS style - block-level only."""
             text = f"text-indent: {indent}"
-            self.append_styled_span(text)
+            self.set_style(text)
             return self
 
         def set_bold(self, val=True):
@@ -12853,30 +12855,77 @@ struct Xml
             self.append_styled_span(text)
             return self
 
-        def set_style(self, text):
-            """Set some style via CSS style. Replaces complete style spec."""
-            style = self.get_attribute_value("style")
-            if style != None and text in style:
-                return self
-            self.remove_attribute("style")
-            if style == None:
-                style = text
-            else:
-                style += ";" + text
-            self.set_attribute("style", style)
-            return self
+        def set_properties(
+            self,
+            align=None,
+            bgcolor=None,
+            bold=None,
+            color=None,
+            font=None,
+            fontsize=None,
+            indent=None,
+            italic=None,
+            leading=None,
+            letter_spacing=None,
+            lineheight=None,
+            margins=None,
+            pagebreak_after=False,
+            pagebreak_before=False,
+            word_spacing=None,
+            unqid=None,
+            cls=None,
+        ):
+            """Set any or all properties of a node.
+            
+            To be used for existing nodes preferrably.
+            """
+            root = self.root
+            temp = root.add_division()
+            if align:
+                temp.set_align(align)
+            if bgcolor:
+                temp.set_bgcolor(bgcolor)
+            if bold:
+                temp.set_bold()
+            if color:
+                temp.set_color(color)
+            if font:
+                temp.set_font(font)
+            if fontsize:
+                temp.set_fontsize(fontsize)
+            if indent:
+                temp.set_text_indent(indent)
+            if italic:
+                temp.set_italic(italic)
+            if leading:
+                temp.set_leading(leading)
+            if letter_spacing:
+                temp.set_letter_spacing(letter_spacing)
+            if lineheight:
+                temp.set_lineheight(lineheight)
+            if margins:
+                temp.set_margins(margins)
+            if pagebreak_after:
+                temp.set_pagebreak_after()
+            if pagebreak_before:
+                temp.set_pagebreak_before()
+            if word_spacing:
+                temp.set_word_spacing(word_spacing)
+            if unqid:
+                self.set_id(unqid)
+            if cls:
+                self.set_class(cls)
 
-        def set_class(self, text):
-            """Set some class via CSS style. Replaces complete class spec."""
-            cls = self.get_attribute_value("class")
-            if cls != None and text in cls:
-                return self
-            self.remove_attribute("class")
-            if cls == None:
-                cls = text
-            else:
-                cls += " " + text
-            self.set_attribute("class", cls)
+            styles = []
+            top_style = temp.get_attribute_value("style")
+            if top_style != None:
+                styles.append(top_style)
+            child = temp.first_child
+            while child:
+                styles.append(child.get_attribute_value("style"))
+                child = child.first_child
+            self.set_attribute("style", ";".join(styles))
+            temp.remove()
             return self
 
         def set_id(self, unique):
@@ -12901,6 +12950,32 @@ struct Xml
                 prev.append_child(self.create_text_node(line))
                 if i < line_count - 1:
                     prev.append_child(self.create_element("br"))
+            return self
+
+        def set_style(self, text):
+            """Set some style via CSS style. Replaces complete style spec."""
+            style = self.get_attribute_value("style")
+            if style != None and text in style:
+                return self
+            self.remove_attribute("style")
+            if style == None:
+                style = text
+            else:
+                style += ";" + text
+            self.set_attribute("style", style)
+            return self
+
+        def set_class(self, text):
+            """Set some class via CSS. Replaces complete class spec."""
+            cls = self.get_attribute_value("class")
+            if cls != None and text in cls:
+                return self
+            self.remove_attribute("class")
+            if cls == None:
+                cls = text
+            else:
+                cls += " " + text
+            self.set_attribute("class", cls)
             return self
 
         def insert_text(self, text):
