@@ -12689,13 +12689,38 @@ struct Xml
             self.append_child(child)
             return child
 
-        def add_link(self):
+        def add_link(self, text=None):
+            """Add a hyperlink ("a" tag)"""
             child = self.create_element("a")
-            if self.tagname != "a":
-                self.append_child(child)
-            else:
-                self.parent.append_child(child)
-            return child
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
+
+        def add_superscript(self, text=None):
+            """Add a superscript ("sup" tag)"""
+            child = self.create_element("sup")
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
+
+        def add_subscript(self, text=None):
+            """Add a subscript ("sub" tag)"""
+            child = self.create_element("sub")
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
 
         def add_codeblock(self):
             """Add monospaced lines ("pre" node)"""
@@ -12719,7 +12744,7 @@ struct Xml
             while True:
                 if child == None:
                     return parent
-                if child.tagname in ("head", "body") or child.is_text:
+                if child.tagname in ("a", "sub","sup","body") or child.is_text:
                     child = child.next
                     continue
                 if child.tagname == "span":
@@ -12801,7 +12826,11 @@ struct Xml
 
         def set_fontsize(self, fontsize):
             """Set font size name via CSS style"""
-            text = f"font-size: {fontsize}px"
+            if type(fontsize) is str:
+                px=""
+            else:
+                px="px"
+            text = f"font-size: {fontsize}{px}"
             self.append_styled_span(text)
             return self
 
