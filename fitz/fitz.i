@@ -12635,6 +12635,17 @@ struct Xml
             self.append_child(child)
             return child
 
+        def add_image(self, name, width=None, height=None):
+            """Add image node (tag "img")."""
+            child = self.create_element("img")
+            if width != None:
+                child.set_attribute("width", f"{width}")
+            if height != None:
+                child.set_attribute("height", f"{height}")
+            child.set_attribute("src", f"{name}")
+            self.append_child(child)
+            return child
+
         def add_bullet_list(self):
             """Add bulleted list ("ul" tag)"""
             child = self.create_element("ul")
@@ -13047,13 +13058,17 @@ struct Story
         }
 
         FITZEXCEPTION(Story, !result)
-        Story(const char* html=NULL, const char *user_css=NULL, double em=12, void *archive=NULL)
+        %pythonprepend Story %{
+        if archive == None:
+            archive = os.path.abspath(os.path.dirname(__file__))
+        %}
+        Story(const char* html=NULL, const char *user_css=NULL, double em=12, const char *archive=NULL)
         {
             fz_story* story = NULL;
             fz_buffer* buffer = NULL;
-            fz_archive* archive_data = (fz_archive *) archive;
-            fz_var( story);
-            fz_var( buffer);
+            fz_archive* archive_data = NULL;
+            fz_var(story);
+            fz_var(buffer);
             const char *html2="";
             if (html) {
                 html2=html;
@@ -13061,12 +13076,21 @@ struct Story
 
             fz_try(gctx)
             {
+                if (archive) {
+                    if (fz_is_directory(gctx, archive)) {
+                        archive_data = fz_open_directory(gctx, archive);
+                    } else {
+                        archive_data = fz_open_archive(gctx, archive);
+                    }
+                }
+
                 buffer = fz_new_buffer_from_copied_data(gctx, html2, strlen(html2)+1);
                 story = fz_new_story(gctx, buffer, user_css, em, archive_data);
             }
             fz_always(gctx)
             {
-                fz_drop_buffer( gctx, buffer);
+                fz_drop_buffer(gctx, buffer);
+                fz_drop_archive(gctx, archive_data);
             }
             fz_catch(gctx)
             {
