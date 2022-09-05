@@ -3422,7 +3422,7 @@ if not self.is_form_pdf:
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", pdf->rev_page_count);
+            return Py_BuildValue("i", pdf->map_page_count);
         }
 
 
