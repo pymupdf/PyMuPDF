@@ -82,7 +82,7 @@ void JM_refresh_links(fz_context *ctx, pdf_page *page)
             fz_rect page_mediabox;
 			fz_matrix page_ctm;
 			pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
-			page->links = pdf_load_link_annots(ctx, pdf, obj, number, page_ctm);
+			page->links = pdf_load_link_annots(ctx, pdf, page, obj, number, page_ctm);
 		}
     }
     fz_catch(ctx) {
