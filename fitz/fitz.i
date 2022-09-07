@@ -293,10 +293,12 @@ OptBytes = typing.Optional[typing.ByteString]
 OptSeq = typing.Optional[typing.Sequence]
 
 try:
-    from pymupdf_fonts import fontdescriptors
+    from pymupdf_fonts import fontdescriptors, fontbuffers
 
     fitz_fontdescriptors = fontdescriptors.copy()
-    del fontdescriptors
+    for k in fitz_fontdescriptors.keys():
+        fitz_fontdescriptors[k]["loader"] = fontbuffers[k]
+    del fontdescriptors, fontbuffers
 except ImportError:
     fitz_fontdescriptors = {}
 %}
@@ -12286,19 +12288,24 @@ struct Xml
             fz_keep_xml( gctx, xml);
             return (struct Xml*) xml;
         }
-        
-        FITZEXCEPTION (debug, !result)
-        PyObject *debug()
+
+        Xml(const char *html)
         {
+            fz_buffer *buff = NULL;
+            fz_xml *ret = NULL;
             fz_try(gctx) {
-                fz_debug_xml((fz_xml *) $self, 1);
+                buff = fz_new_buffer_from_copied_data(gctx, html, strlen(html)+1);
+                ret = fz_parse_xml_from_html5(gctx, buff);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            Py_RETURN_NONE;
+            fz_keep_xml(gctx, ret);
+            return (struct Xml*) ret;
         }
-
 
         %pythoncode %{@property%}
         FITZEXCEPTION (root, !result)
@@ -12417,8 +12424,8 @@ struct Xml
         PyObject *set_attribute(const char *key, const char *value)
         {
             fz_try(gctx) {
-                if (strlen(key)==0 || strlen(value)==0) {
-                    RAISEPY(gctx, "key / value must not be empty", PyExc_ValueError);
+                if (strlen(key)==0) {
+                    RAISEPY(gctx, "key must not be empty", PyExc_ValueError);
                 }
                 fz_dom_add_attribute(gctx, (fz_xml *)$self, key, value);
             }
@@ -12593,6 +12600,34 @@ struct Xml
 
 
         %pythoncode %{
+        def _get_node_tree(self):
+            def show_node(node, items, shift):
+                while node != None:
+                    if node.is_text:
+                        items.append((shift, f'"{node.text}"'))
+                        node = node.next
+                        continue
+                    items.append((shift, f"({node.tagname}"))
+                    for k, v in node.get_attributes().items():
+                        items.append((shift, f"={k} '{v}'"))
+                    child = node.first_child
+                    if child:
+                        items = show_node(child, items, shift + 1)
+                    items.append((shift, f"){node.tagname}"))
+                    node = node.next
+                return items
+
+            shift = 0
+            items = []
+            items = show_node(self, items, shift)
+            return items
+
+        def debug(self):
+            """Print a list of the node tree below self."""
+            items = self._get_node_tree()
+            for item in items:
+                print("  " * item[0] + item[1].replace("\n", "\\n"))
+
         @property
         def is_text(self):
             """Check if this is a text node."""
@@ -12791,6 +12826,12 @@ struct Xml
             self.append_styled_span(text)
             return self
 
+        def set_columns(self, cols):
+            """Set number of text columns via CSS style"""
+            text = f"columns: {cols}"
+            self.append_styled_span(text)
+            return self
+
         def set_bgcolor(self, color):
             """Set background color via CSS style"""
             text = f"background-color: %s" % self.color_text(color)
@@ -12901,6 +12942,7 @@ struct Xml
             bgcolor=None,
             bold=None,
             color=None,
+            columns=None,
             font=None,
             fontsize=None,
             indent=None,
@@ -12929,6 +12971,8 @@ struct Xml
                 temp.set_bold()
             if color:
                 temp.set_color(color)
+            if columns:
+                temp.set_color(columns)
             if font:
                 temp.set_font(font)
             if fontsize:
@@ -13062,11 +13106,14 @@ struct Story
         if archive == None:
             archive = os.path.abspath(os.path.dirname(__file__))
         %}
-        Story(const char* html=NULL, const char *user_css=NULL, double em=12, const char *archive=NULL)
+        Story(const char* html=NULL, const char *user_css=NULL, double em=12, PyObject *archive=NULL)
         {
             fz_story* story = NULL;
-            fz_buffer* buffer = NULL;
+            fz_buffer *buffer = NULL, *archive_buff = NULL;
+            fz_stream *archive_stream = NULL;
             fz_archive* archive_data = NULL;
+            const char *archive_char = "";
+            
             fz_var(story);
             fz_var(buffer);
             const char *html2="";
@@ -13076,11 +13123,21 @@ struct Story
 
             fz_try(gctx)
             {
-                if (archive) {
-                    if (fz_is_directory(gctx, archive)) {
-                        archive_data = fz_open_directory(gctx, archive);
+                if (archive && PyObject_IsTrue(archive)) {
+                    if (PyUnicode_Check(archive)) {
+                        archive_char = PyUnicode_AsUTF8(archive);
                     } else {
-                        archive_data = fz_open_archive(gctx, archive);
+                        if (PyBytes_Check(archive)) {
+                            archive_buff = JM_BufferFromBytes(gctx, archive);
+                        }
+                    }
+                    if (fz_is_directory(gctx, archive_char)) {
+                        archive_data = fz_open_directory(gctx, archive_char);
+                    } else if (strlen(archive_char) > 0) {
+                        archive_data = fz_open_archive(gctx, archive_char);
+                    } else if (archive_buff) {
+                        archive_stream = fz_open_buffer(gctx, archive_buff);
+                        archive_data = fz_open_archive_with_stream(gctx, archive_stream);
                     }
                 }
 
@@ -13090,6 +13147,8 @@ struct Story
             fz_always(gctx)
             {
                 fz_drop_buffer(gctx, buffer);
+                fz_drop_buffer(gctx, archive_buff);
+                fz_drop_stream(gctx, archive_stream);
                 fz_drop_archive(gctx, archive_data);
             }
             fz_catch(gctx)

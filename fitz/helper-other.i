@@ -1149,8 +1149,10 @@ calc_image_matrix(int width, int height, PyObject *tr, int rotate, int keep)
     return mat;
 }
 
+// --------------------------------------------------------
 // Callback function for the Story class
-static PyObject *make_story_elpos = NULL;
+// --------------------------------------------------------
+static PyObject *make_story_elpos = NULL; // Py function returning object
 void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *pos)
 {
 #define SETATTR(a, v) temp=v;PyObject_SetAttrString(arg, a, v);Py_DECREF(v)
@@ -1158,18 +1160,20 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     // 'opaque' is a tuple (userfunc, userdict), where 'userfunc' is a function
     // in the user's script and 'userdict' is a dictionary containing any
     // additional parameters of the user
-    // userfunc will be invoked with the joined dict of userdict and pos.
+    // userfunc will be called with the joined info of userdict and pos.
     // ------------------------------------------------------------------------
     PyObject *temp = NULL;
     PyObject *callarg = (PyObject *) opaque;
     PyObject *userfunc = PyTuple_GET_ITEM(callarg, 0);
     PyObject *userdict = PyTuple_GET_ITEM(callarg, 1);
+
     PyObject *this_module = PyImport_AddModule("fitz");  // get our module
-    if (!make_story_elpos) {  // locate ElementPosition maker
+    if (!make_story_elpos) {  // locate ElementPosition maker once
         make_story_elpos = Py_BuildValue("s", "make_story_elpos");
     }
     // get access to ElementPosition() object
     PyObject *arg = PyObject_CallMethodNoArgs(this_module, make_story_elpos);
+    
     SETATTR("depth", Py_BuildValue("i", pos->depth));
     SETATTR("heading", Py_BuildValue("i", pos->heading));
     SETATTR("id", Py_BuildValue("s", pos->id));
@@ -1182,14 +1186,8 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     PyObject *pkey = NULL;
     PyObject *pval = NULL;
     Py_ssize_t ppos = 0;
-    char *ckey = NULL;
-    if (PyDict_Check(userdict)) {
-        while (PyDict_Next(userdict, &ppos, &pkey, &pval)) {
-            ckey = PyUnicode_AsUTF8(pkey);
-            if (ckey) {
-                PyObject_SetAttrString(arg, ckey, pval);
-            }
-        }
+    while (PyDict_Next(userdict, &ppos, &pkey, &pval)) {
+            PyObject_SetAttr(arg, pkey, pval);
     }
     PyObject_CallOneArg(userfunc, arg);
     Py_DECREF(arg);
