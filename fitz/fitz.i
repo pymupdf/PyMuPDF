@@ -12269,6 +12269,224 @@ struct DocumentWriter
 };
 
 //------------------------------------------------------------------------
+// Archive
+//------------------------------------------------------------------------
+struct Archive
+{
+    %extend
+    {
+        ~Archive()
+        {
+            DEBUGMSG1("Archive");
+            fz_drop_archive( gctx, (fz_archive *) $self);
+            DEBUGMSG2;
+        }
+        FITZEXCEPTION(Archive, !result)
+        %pythonappend Archive %{
+        self.thisown = True
+        self.subarchives = []
+        if self.fmt == "dir":
+            self.entries = os.listdir()
+        else:
+            self.entries = []
+        self.path = path
+        %}
+        Archive(const char *path=NULL, const char *fmt=NULL)
+        {
+            fz_archive *arch=NULL;
+            fz_try(gctx) {
+                if (path) {
+                    if (fz_is_directory(gctx, path)) {
+                        arch = fz_open_directory(gctx, path);
+                    } else {
+                        arch = fz_open_archive(gctx, path);
+                    }
+                } else {
+                    if (fmt && strcmp(fmt, "tree") == 0) {
+                        arch = fz_new_tree_archive(gctx, NULL);
+                    } else if (fmt && strcmp(fmt, "multi") == 0) {
+                        arch = fz_new_multi_archive(gctx);
+                    } else {
+                        RAISEPY(gctx, "specify 'path' or a valid 'fmt'", PyExc_ValueError);
+                    }
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Archive *) arch;
+        }
+
+        FITZEXCEPTION(fmt, !result)
+        %pythoncode %{@property%}
+        PyObject *fmt()
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            const char *ret = NULL;
+            fz_try(gctx) {
+                ret = fz_archive_format(gctx, arch);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("s", ret);
+        }
+
+        FITZEXCEPTION(entry_count, !result)
+        %pythoncode %{@property%}
+        %pythonprepend entry_count %{
+        if self.fmt not in ("zip", "tar"):
+            return len(self.entries)
+        %}
+        PyObject *entry_count()
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            int ret = 0;
+            fz_try(gctx) {
+                ret = fz_count_archive_entries(gctx, arch);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("i", ret);
+        }
+
+        FITZEXCEPTION(has_entry, !result)
+        PyObject *has_entry(const char *name)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            int ret = 0;
+            fz_try(gctx) {
+                ret = fz_has_archive_entry(gctx, arch, name);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_BOOL(ret);
+        }
+
+        FITZEXCEPTION(entry_list, !result)
+        %pythoncode %{@property%}
+        %pythonprepend entry_list %{
+        if self.format not in ("zip", "tar"):
+            return tuple(self.entries)
+        %}
+        PyObject *entry_list()
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            PyObject *ret = NULL;
+            fz_try(gctx) {
+                Py_ssize_t i, n = (Py_ssize_t) fz_count_archive_entries(gctx, arch);
+                ret = PyTuple_New(n);
+                for (i = 0; i < n; i++) {
+                    PyTuple_SET_ITEM(ret, i, Py_BuildValue("s", fz_list_archive_entry(gctx, arch, (int) i)));
+                }
+            }
+            fz_always(gctx) {
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return ret;
+        }
+
+        FITZEXCEPTION(read_entry, !result)
+        PyObject *read_entry(const char *name)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            PyObject *ret = NULL;
+            fz_buffer *buff = NULL;
+            fz_try(gctx) {
+                buff = fz_read_archive_entry(gctx, arch, name);
+                ret = JM_BinFromBuffer(gctx, buff);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return ret;
+        }
+
+        FITZEXCEPTION(add_entry, !result)
+        %pythonappend add_entry %{
+        self.entries.append(name)
+        %}
+        PyObject *add_entry(const char *name, PyObject *buffer)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_buffer *buff=NULL;
+            fz_try(gctx) {
+                const char *format = fz_archive_format(gctx, arch);
+                if (strcmp(format, "tree") != 0) {
+                    RAISEPY(gctx, "can add entries to 'tree' archives only", PyExc_ValueError);
+                }
+                if (!buffer || !PyBytes_Check(buffer) || !PyObject_IsTrue(buffer)) {
+                    RAISEPY(gctx, "arg2: must be non-empty bytes-like", PyExc_ValueError);
+                }
+                if (fz_has_archive_entry(gctx, arch, name)) {
+                    RAISEPY(gctx, "name already in archive", PyExc_ValueError);
+                }
+                buff = JM_BufferFromBytes(gctx, buffer);
+                //unsigned char *data = NULL;
+                //size_t size = fz_buffer_storage(gctx, buff, &data);
+                //fz_tree_archive_add_data(gctx, arch, name, &data, size);
+                fz_tree_archive_add_buffer(gctx, arch, name, buff);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION(add_archive, !result)
+        %pythonappend add_archive %{
+        self.subarchives.append({"prefix": prefix, "path": subarch.path, "fmt": subarch.fmt, "entries": subarch.entry_count})
+        %}
+        PyObject *add_archive(struct Archive *subarch, const char *prefix=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = (fz_archive *) subarch;
+            const char *thisprefix=NULL;
+            if (prefix) {
+                thisprefix = prefix;
+            }
+            fz_try(gctx) {
+                const char *format = fz_archive_format(gctx, arch);
+                if (strcmp(format, "multi") != 0) {
+                    RAISEPY(gctx, "can only add to 'multi' archives", PyExc_ValueError);
+                }
+                fz_mount_multi_archive(gctx, arch, sub, thisprefix);
+            }
+            fz_always(gctx) {
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode %{
+        def __repr__(self):
+            if self.fmt == "multi":
+                return f"fmt: multi, subarchives: {self.subarchives}"
+            else:
+                return f"fmt: {self.fmt}, path: '{self.path}', entries: {self.entry_count}"
+
+
+        def __del__(self):
+            if not type(self) is Archive:
+                return
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
+        %}
+    }
+};
+//------------------------------------------------------------------------
 // Xml
 //------------------------------------------------------------------------
 struct Xml
@@ -12746,6 +12964,21 @@ struct Xml
             prev.append_child(child)
             return self
 
+        def add_code(self, text=None):
+            """Add a "code" tag"""
+            child = self.create_element("code")
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
+
+        add_var = add_code
+        add_samp = add_code
+        add_kbd = add_code
+
         def add_superscript(self, text=None):
             """Add a superscript ("sup" tag)"""
             child = self.create_element("sup")
@@ -13104,16 +13337,25 @@ struct Story
         FITZEXCEPTION(Story, !result)
         %pythonprepend Story %{
         if archive == None:
-            archive = os.path.abspath(os.path.dirname(__file__))
+            archive = Archive(path=".")
+        elif type(archive) is str:
+            archive = Archive(path=archive)
+        elif type(archive) in (tuple, list):
+            newarch = Archive(fmt="multi")
+            for arch in archive:
+                if type(arch) is str:
+                    arch = Archive(arch)
+                newarch.add_archive(arch)
+            archive = newarch
         %}
-        Story(const char* html=NULL, const char *user_css=NULL, double em=12, PyObject *archive=NULL)
+        Story(const char* html=NULL, const char *user_css=NULL, double em=12, struct Archive *archive=NULL)
         {
             fz_story* story = NULL;
-            fz_buffer *buffer = NULL, *archive_buff = NULL;
-            fz_stream *archive_stream = NULL;
+            fz_buffer *buffer = NULL;
             fz_archive* archive_data = NULL;
-            const char *archive_char = "";
-            
+            if (archive) {
+                archive_data = (fz_archive *) archive;
+            }
             fz_var(story);
             fz_var(buffer);
             const char *html2="";
@@ -13123,33 +13365,12 @@ struct Story
 
             fz_try(gctx)
             {
-                if (archive && PyObject_IsTrue(archive)) {
-                    if (PyUnicode_Check(archive)) {
-                        archive_char = PyUnicode_AsUTF8(archive);
-                    } else {
-                        if (PyBytes_Check(archive)) {
-                            archive_buff = JM_BufferFromBytes(gctx, archive);
-                        }
-                    }
-                    if (fz_is_directory(gctx, archive_char)) {
-                        archive_data = fz_open_directory(gctx, archive_char);
-                    } else if (strlen(archive_char) > 0) {
-                        archive_data = fz_open_archive(gctx, archive_char);
-                    } else if (archive_buff) {
-                        archive_stream = fz_open_buffer(gctx, archive_buff);
-                        archive_data = fz_open_archive_with_stream(gctx, archive_stream);
-                    }
-                }
-
                 buffer = fz_new_buffer_from_copied_data(gctx, html2, strlen(html2)+1);
                 story = fz_new_story(gctx, buffer, user_css, em, archive_data);
             }
             fz_always(gctx)
             {
                 fz_drop_buffer(gctx, buffer);
-                fz_drop_buffer(gctx, archive_buff);
-                fz_drop_stream(gctx, archive_stream);
-                fz_drop_archive(gctx, archive_data);
             }
             fz_catch(gctx)
             {
