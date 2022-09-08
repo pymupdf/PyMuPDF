@@ -12335,8 +12335,12 @@ struct Archive
         FITZEXCEPTION(entry_count, !result)
         %pythoncode %{@property%}
         %pythonprepend entry_count %{
-        if self.fmt not in ("zip", "tar"):
+        if self.fmt in ("zip", "tar"):
+            pass
+        elif self.fmt in ("dir", "tree"):
             return len(self.entries)
+        elif self.fmt == "multi":
+            return len(self.subarchives)
         %}
         PyObject *entry_count()
         {
@@ -12368,8 +12372,12 @@ struct Archive
         FITZEXCEPTION(entry_list, !result)
         %pythoncode %{@property%}
         %pythonprepend entry_list %{
-        if self.format not in ("zip", "tar"):
+        if self.fmt in ("zip", "tar"):
+            pass
+        elif self.fmt in ("dir", "tree"):
             return tuple(self.entries)
+        elif self.fmt == "multi":
+            return tuple(self.subarchives)
         %}
         PyObject *entry_list()
         {
