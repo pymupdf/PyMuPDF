@@ -23,6 +23,7 @@ source using a Python sdist. **This requires that SWIG is installed**:
   https://www.macports.org/install.php
 
   * Then install SWIG with: ``sudo port install swig``
+  * You may also need: ``sudo port install swig-python``
 
 As of ``PyMuPDF-1.20.0``, the required MuPDF source code is already in the
 sdist and is automatically built into PyMuPDF.
