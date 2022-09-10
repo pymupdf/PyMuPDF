@@ -12289,15 +12289,25 @@ struct Archive
         %pythonappend Archive %{
         self.thisown = True
         acount = len(args)
-        if acount == 1:
-            self._subarchives.append({"path": args[0], "mount": None})
-        elif acount == 2:
-            if type(args[1]) is str:
-                self._subarchives.append({"path": args[0], "mount": args[1]})
+        if acount == 0:
+            return
+        a0 = args[0]
+        a1 = None if acount == 1 else args[1]
+        a2 = None if acount < 3 else args[2]
+        if type(a0) is str:
+            if os.path.isdir(a0):
+                fmt = "dir"
             else:
-                self._subarchives.append({"name": args[0], "bytes": len(args[1]), "mount": None})
+                fmt = "file"
+        if acount == 1:
+            self._subarchives.append({"fmt": fmt, "path": a0, "mount": None})
+        elif acount == 2:
+            if type(a1) is str:
+                self._subarchives.append({"fmt": fmt, "path": a0, "mount": a1})
+            else:
+                self._subarchives.append({"fmt": "tree", "name": a0, "bytes": len(a1), "mount": None})
         elif acount == 3:
-            self._subarchives.append({"name": args[0], "bytes": len(args[1]), "mount": args[2]})
+            self._subarchives.append({"fmt": "tree", "name": a0, "bytes": len(a1), "mount": a2})
         %}
 
         Archive()
@@ -12444,7 +12454,17 @@ struct Archive
 
         FITZEXCEPTION(add, !result)
         %pythonappend add %{
-        self._subarchives.append(val)
+        if val["fmt"] == "tree" and self._subarchives != []:
+            ltree = self._subarchives[-1]
+            if ltree["fmt"] == "tree" and ltree["mount"] == val["mount"]:
+                ltree["bytes"] += val["bytes"]
+                if type(ltree["name"]) is list:
+                    ltree["name"].append(val["name"])
+                else:
+                    ltree["name"] = [ltree["name"], val["name"]]
+                self._subarchives[-1] = ltree
+        else:
+            self._subarchives.append(val)
         val = None
         %}
         PyObject *add(struct Archive *subarch, const char *mount=NULL)
@@ -12469,21 +12489,28 @@ struct Archive
             fz_archive *sub = NULL;
             fz_buffer *buff = NULL;
             PyObject *ret = NULL;
+            int drop = 0;
             fz_try(gctx) {
                 if (!data || !PyObject_IsTrue(data) ||
                    (!PyBytes_Check(data) && !PyByteArray_Check(data)))
                 {
                     RAISEPY(gctx, "need non-empty bytes-like data", PyExc_ValueError);
                 }
+                sub = JM_last_tree(gctx, arch, mount);
+                if (!sub) {
+                    sub = fz_new_tree_archive(gctx, NULL);
+                    drop = 1;
+                }
                 buff = JM_BufferFromBytes(gctx, data);
-                sub = fz_new_tree_archive(gctx, NULL);
                 fz_tree_archive_add_buffer(gctx, sub, name, buff);
                 fz_mount_multi_archive(gctx, arch, sub, mount);
                 ret = Py_BuildValue("{s:s,s:s,s:i,s:s}", "fmt", "tree", "name",name,"bytes", (int) PySequence_Size(data),"mount",mount);
             }
 
             fz_always(gctx) {
-                fz_drop_archive(gctx, sub);
+                if (drop) {
+                    fz_drop_archive(gctx, sub);
+                }
                 fz_drop_buffer(gctx, buff);
             }
 
@@ -12499,7 +12526,7 @@ struct Archive
             fz_archive *sub = NULL;
             PyObject *ret = NULL;
             fz_try(gctx) {
-                int count = 0;
+                int count = -1;
                 if (fz_is_directory(gctx, path)) {
                     sub = fz_open_directory(gctx, path);
                 } else {

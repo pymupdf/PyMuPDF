@@ -1194,6 +1194,43 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
 #undef SETATTR
 }
 
+// -----------------------------------------------------------
+// Return last archive if it is a tree and mount points match
+// -----------------------------------------------------------
+fz_archive *JM_last_tree(fz_context *ctx, fz_archive *arch, const char *mount)
+{
+    typedef struct
+    {
+        fz_archive *arch;
+        char *dir;
+    } multi_archive_entry;
+
+    typedef struct
+    {
+        fz_archive super;
+        int len;
+        int max;
+        multi_archive_entry *sub;
+    } fz_multi_archive;
+
+    fz_multi_archive *multi = (fz_multi_archive *) arch;
+    if (multi->len == 0) {
+        return NULL;
+    }
+    int i = multi->len - 1;
+    multi_archive_entry *e = &multi->sub[i];
+    fz_archive *arch_ = e->arch;
+    const char *mount_ = e->dir;
+    const char *fmt = fz_archive_format(ctx, arch_);
+    if (strcmp(fmt, "tree") != 0) {
+        return NULL;
+    }
+    if ((mount_ && mount && strcmp(mount, mount_) == 0) || (!mount && !mount_)) {
+        return arch_;
+    }
+    return NULL;
+}
+
 //-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities
 //-----------------------------------------------------------------------------
@@ -1232,6 +1269,5 @@ struct fz_store
 	int defer_reap_count;
 	int needs_reaping;
 };
-
 
 %}
