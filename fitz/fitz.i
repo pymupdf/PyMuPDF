@@ -12454,17 +12454,19 @@ struct Archive
 
         FITZEXCEPTION(add, !result)
         %pythonappend add %{
-        if val["fmt"] == "tree" and self._subarchives != []:
+        if val["fmt"] != "tree" or self._subarchives == []:
+            self._subarchives.append(val)
+        else:
             ltree = self._subarchives[-1]
-            if ltree["fmt"] == "tree" and ltree["mount"] == val["mount"]:
+            if ltree["fmt"] != "tree" or ltree["mount"] != val["mount"]:
+                self._subarchives.append(val)
+            else:
                 ltree["bytes"] += val["bytes"]
                 if type(ltree["name"]) is list:
                     ltree["name"].append(val["name"])
                 else:
                     ltree["name"] = [ltree["name"], val["name"]]
                 self._subarchives[-1] = ltree
-        else:
-            self._subarchives.append(val)
         val = None
         %}
         PyObject *add(struct Archive *subarch, const char *mount=NULL)
