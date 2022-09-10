@@ -12282,34 +12282,29 @@ struct Archive
             DEBUGMSG2;
         }
         FITZEXCEPTION(Archive, !result)
+        %pythonprepend Archive %{
+        self._entries = []
+        self._subarchives = []
+        %}
         %pythonappend Archive %{
         self.thisown = True
-        self.subarchives = []
-        if self.fmt == "dir":
-            self.entries = os.listdir()
-        else:
-            self.entries = []
-        self.path = path
+        acount = len(args)
+        if acount == 1:
+            self._subarchives.append({"path": args[0], "mount": None})
+        elif acount == 2:
+            if type(args[1]) is str:
+                self._subarchives.append({"path": args[0], "mount": args[1]})
+            else:
+                self._subarchives.append({"name": args[0], "bytes": len(args[1]), "mount": None})
+        elif acount == 3:
+            self._subarchives.append({"name": args[0], "bytes": len(args[1]), "mount": args[2]})
         %}
-        Archive(const char *path=NULL, const char *fmt=NULL)
+
+        Archive()
         {
             fz_archive *arch=NULL;
             fz_try(gctx) {
-                if (path) {
-                    if (fz_is_directory(gctx, path)) {
-                        arch = fz_open_directory(gctx, path);
-                    } else {
-                        arch = fz_open_archive(gctx, path);
-                    }
-                } else {
-                    if (fmt && strcmp(fmt, "tree") == 0) {
-                        arch = fz_new_tree_archive(gctx, NULL);
-                    } else if (fmt && strcmp(fmt, "multi") == 0) {
-                        arch = fz_new_multi_archive(gctx);
-                    } else {
-                        RAISEPY(gctx, "specify 'path' or a valid 'fmt'", PyExc_ValueError);
-                    }
-                }
+                arch = fz_new_multi_archive(gctx);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -12317,43 +12312,102 @@ struct Archive
             return (struct Archive *) arch;
         }
 
-        FITZEXCEPTION(fmt, !result)
-        %pythoncode %{@property%}
-        PyObject *fmt()
+        Archive(struct Archive *arch)
         {
-            fz_archive *arch = (fz_archive *) $self;
-            const char *ret = NULL;
-            fz_try(gctx) {
-                ret = fz_archive_format(gctx, arch);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return Py_BuildValue("s", ret);
+            return arch;
         }
 
-        FITZEXCEPTION(entry_count, !result)
-        %pythoncode %{@property%}
-        %pythonprepend entry_count %{
-        if self.fmt in ("zip", "tar"):
-            pass
-        elif self.fmt in ("dir", "tree"):
-            return len(self.entries)
-        elif self.fmt == "multi":
-            return len(self.subarchives)
-        %}
-        PyObject *entry_count()
+        Archive(const char *path, const char *mount=NULL)
         {
-            fz_archive *arch = (fz_archive *) $self;
-            int ret = 0;
+            fz_archive *arch = NULL;
+            fz_archive *sub = NULL;
             fz_try(gctx) {
-                ret = fz_count_archive_entries(gctx, arch);
+                if (fz_is_directory(gctx, path)) {
+                    sub = fz_open_directory(gctx, path);
+                } else {
+                    sub = fz_open_archive(gctx, path);
+                }
+                arch = fz_new_multi_archive(gctx);
+                fz_mount_multi_archive(gctx, arch, sub, mount);
+            }
+            fz_always(gctx) {
+                fz_drop_archive(gctx, sub);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", ret);
+            return (struct Archive *) arch;
         }
+
+        Archive(const char *name, PyObject *data, const char *mount=NULL)
+        {
+            fz_archive *arch = NULL;
+            fz_archive *sub = NULL;
+            fz_buffer *buff = NULL;
+            fz_try(gctx) {
+                arch = fz_new_multi_archive(gctx);
+                if (!data || !PyObject_IsTrue(data) ||
+                   (!PyBytes_Check(data) && !PyByteArray_Check(data)))
+                {
+                    RAISEPY(gctx, "need non-empty bytes-like data", PyExc_ValueError);
+                }
+                buff = JM_BufferFromBytes(gctx, data);
+                sub = fz_new_tree_archive(gctx, NULL);
+                fz_tree_archive_add_buffer(gctx, sub, name, buff);
+                fz_mount_multi_archive(gctx, arch, sub, mount);
+            }
+            fz_always(gctx) {
+                fz_drop_archive(gctx, sub);
+                fz_drop_buffer(gctx, buff);
+            }
+            fz_catch(gctx) {
+                fz_drop_archive(gctx, arch);
+                return NULL;
+            }
+            return (struct Archive *) arch;
+        }
+
+        /*-----------------------------
+        FITZEXCEPTION(enumerate, !result)
+        PyObject *enumerate()
+        {
+            typedef struct
+            {
+                fz_archive *arch;
+                char *dir;
+            } multi_archive_entry;
+
+            typedef struct
+            {
+                fz_archive super;
+                int len;
+                int max;
+                multi_archive_entry *sub;
+            } fz_multi_archive;
+
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *arch_ = NULL;
+            PyObject *ret=NULL;
+            fz_try(gctx) {
+                
+                fz_multi_archive *multi = (fz_multi_archive *) arch;
+                ret = PyTuple_New(multi->len);
+                int i;
+                for (i = 0; i < multi->len; i++) {
+                    multi_archive_entry *e = &multi->sub[i];
+                    arch_ = e->arch;
+                    const char *mount = e->dir;
+                    const char *fmt = fz_archive_format(gctx, arch_);
+                    PyTuple_SET_ITEM(ret, (Py_ssize_t) i, Py_BuildValue("ss", fmt, mount));
+                }
+            }
+            fz_catch(gctx) {
+                Py_DECREF(ret);
+                return NULL;
+            }
+            return ret;
+        }
+        ------------------*/
 
         FITZEXCEPTION(has_entry, !result)
         PyObject *has_entry(const char *name)
@@ -12367,35 +12421,6 @@ struct Archive
                 return NULL;
             }
             return JM_BOOL(ret);
-        }
-
-        FITZEXCEPTION(entry_list, !result)
-        %pythoncode %{@property%}
-        %pythonprepend entry_list %{
-        if self.fmt in ("zip", "tar"):
-            pass
-        elif self.fmt in ("dir", "tree"):
-            return tuple(self.entries)
-        elif self.fmt == "multi":
-            return tuple(self.subarchives)
-        %}
-        PyObject *entry_list()
-        {
-            fz_archive *arch = (fz_archive *) $self;
-            PyObject *ret = NULL;
-            fz_try(gctx) {
-                Py_ssize_t i, n = (Py_ssize_t) fz_count_archive_entries(gctx, arch);
-                ret = PyTuple_New(n);
-                for (i = 0; i < n; i++) {
-                    PyTuple_SET_ITEM(ret, i, Py_BuildValue("s", fz_list_archive_entry(gctx, arch, (int) i)));
-                }
-            }
-            fz_always(gctx) {
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return ret;
         }
 
         FITZEXCEPTION(read_entry, !result)
@@ -12417,74 +12442,93 @@ struct Archive
             return ret;
         }
 
-        FITZEXCEPTION(add_entry, !result)
-        %pythonappend add_entry %{
-        self.entries.append(name)
+        FITZEXCEPTION(add, !result)
+        %pythonappend add %{
+        self._subarchives.append(val)
+        val = None
         %}
-        PyObject *add_entry(const char *name, PyObject *buffer)
-        {
-            fz_archive *arch = (fz_archive *) $self;
-            fz_buffer *buff=NULL;
-            fz_try(gctx) {
-                const char *format = fz_archive_format(gctx, arch);
-                if (strcmp(format, "tree") != 0) {
-                    RAISEPY(gctx, "can add entries to 'tree' archives only", PyExc_ValueError);
-                }
-                if (!buffer || !PyBytes_Check(buffer) || !PyObject_IsTrue(buffer)) {
-                    RAISEPY(gctx, "arg2: must be non-empty bytes-like", PyExc_ValueError);
-                }
-                if (fz_has_archive_entry(gctx, arch, name)) {
-                    RAISEPY(gctx, "name already in archive", PyExc_ValueError);
-                }
-                buff = JM_BufferFromBytes(gctx, buffer);
-                //unsigned char *data = NULL;
-                //size_t size = fz_buffer_storage(gctx, buff, &data);
-                //fz_tree_archive_add_data(gctx, arch, name, &data, size);
-                fz_tree_archive_add_buffer(gctx, arch, name, buff);
-            }
-            fz_always(gctx) {
-                fz_drop_buffer(gctx, buff);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            Py_RETURN_NONE;
-        }
-
-        FITZEXCEPTION(add_archive, !result)
-        %pythonappend add_archive %{
-        self.subarchives.append({"prefix": prefix, "path": subarch.path, "fmt": subarch.fmt, "entries": subarch.entry_count})
-        %}
-        PyObject *add_archive(struct Archive *subarch, const char *prefix=NULL)
+        PyObject *add(struct Archive *subarch, const char *mount=NULL)
         {
             fz_archive *arch = (fz_archive *) $self;
             fz_archive *sub = (fz_archive *) subarch;
-            const char *thisprefix=NULL;
-            if (prefix) {
-                thisprefix = prefix;
-            }
+            PyObject *ret = NULL;
             fz_try(gctx) {
-                const char *format = fz_archive_format(gctx, arch);
-                if (strcmp(format, "multi") != 0) {
-                    RAISEPY(gctx, "can only add to 'multi' archives", PyExc_ValueError);
+                ret = Py_BuildValue("{s:s,s:s}","fmt", fz_archive_format(gctx, sub), "mount",mount);
+                fz_mount_multi_archive(gctx, arch, sub, mount);
+            }
+            fz_catch(gctx) {
+                Py_DECREF(ret);
+                return NULL;
+            }
+            return ret;
+        }
+
+        PyObject *add(const char *name, PyObject *data, const char *mount=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            fz_buffer *buff = NULL;
+            PyObject *ret = NULL;
+            fz_try(gctx) {
+                if (!data || !PyObject_IsTrue(data) ||
+                   (!PyBytes_Check(data) && !PyByteArray_Check(data)))
+                {
+                    RAISEPY(gctx, "need non-empty bytes-like data", PyExc_ValueError);
                 }
-                fz_mount_multi_archive(gctx, arch, sub, thisprefix);
+                buff = JM_BufferFromBytes(gctx, data);
+                sub = fz_new_tree_archive(gctx, NULL);
+                fz_tree_archive_add_buffer(gctx, sub, name, buff);
+                fz_mount_multi_archive(gctx, arch, sub, mount);
+                ret = Py_BuildValue("{s:s,s:s,s:i,s:s}", "fmt", "tree", "name",name,"bytes", (int) PySequence_Size(data),"mount",mount);
             }
+
             fz_always(gctx) {
+                fz_drop_archive(gctx, sub);
+                fz_drop_buffer(gctx, buff);
             }
+
             fz_catch(gctx) {
                 return NULL;
             }
-            Py_RETURN_NONE;
+            return ret;
         }
 
-        %pythoncode %{
-        def __repr__(self):
-            if self.fmt == "multi":
-                return f"fmt: multi, subarchives: {self.subarchives}"
-            else:
-                return f"fmt: {self.fmt}, path: '{self.path}', entries: {self.entry_count}"
+        PyObject *add(const char *path, const char *mount=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            PyObject *ret = NULL;
+            fz_try(gctx) {
+                int count = 0;
+                if (fz_is_directory(gctx, path)) {
+                    sub = fz_open_directory(gctx, path);
+                } else {
+                    sub = fz_open_archive(gctx, path);
+                    count = fz_count_archive_entries(gctx, sub);
+                }
+                fz_mount_multi_archive(gctx, arch, sub, mount);
+                ret = Py_BuildValue("{s:s,s:s,s:i,s:s}", "fmt", fz_archive_format(gctx, sub),"path",path,
+                "entries",count,"mount",mount);
+            }
 
+            fz_always(gctx) {
+                fz_drop_archive(gctx, sub);
+            }
+
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return ret;
+        }
+
+
+        %pythoncode %{
+        @property
+        def entry_list(self):
+            return self._subarchives
+
+        def __repr__(self):
+            return f"Archive, sub-archives: {len(self._subarchives)}"
 
         def __del__(self):
             if not type(self) is Archive:
@@ -13345,25 +13389,23 @@ struct Story
         FITZEXCEPTION(Story, !result)
         %pythonprepend Story %{
         if archive == None:
-            archive = Archive(path=".")
+            archive = Archive(".")
         elif type(archive) is str:
-            archive = Archive(path=archive)
+            archive = Archive(archive)
         elif type(archive) in (tuple, list):
-            newarch = Archive(fmt="multi")
+            newarch = Archive()
             for arch in archive:
-                if type(arch) is str:
-                    arch = Archive(arch)
-                newarch.add_archive(arch)
+                if type(arch) in (str, Archive):
+                    newarch.add(arch)
+                elif type(arch) in (tuple, list):
+                    newarch.add(*tuple(arch))
             archive = newarch
         %}
         Story(const char* html=NULL, const char *user_css=NULL, double em=12, struct Archive *archive=NULL)
         {
             fz_story* story = NULL;
             fz_buffer *buffer = NULL;
-            fz_archive* archive_data = NULL;
-            if (archive) {
-                archive_data = (fz_archive *) archive;
-            }
+            fz_archive* arch = NULL;
             fz_var(story);
             fz_var(buffer);
             const char *html2="";
@@ -13374,7 +13416,10 @@ struct Story
             fz_try(gctx)
             {
                 buffer = fz_new_buffer_from_copied_data(gctx, html2, strlen(html2)+1);
-                story = fz_new_story(gctx, buffer, user_css, em, archive_data);
+                if (archive) {
+                    arch = (fz_archive *) archive;
+                }
+                story = fz_new_story(gctx, buffer, user_css, em, arch);
             }
             fz_always(gctx)
             {
