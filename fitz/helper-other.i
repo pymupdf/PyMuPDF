@@ -743,7 +743,7 @@ fz_buffer *JM_get_fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
     o = pdf_load_object(ctx, doc, xref);
     desft = pdf_dict_get(ctx, o, PDF_NAME(DescendantFonts));
-    char *ext = NULL;
+    char *ext = NULL;   // fixme: unused but set here and below.
     if (desft) {
         obj = pdf_resolve_indirect(ctx, pdf_array_get(ctx, desft, 0));
         obj = pdf_dict_get(ctx, obj, PDF_NAME(FontDescriptor));

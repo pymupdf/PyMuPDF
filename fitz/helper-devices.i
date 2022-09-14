@@ -317,7 +317,7 @@ jm_append_merge(PyObject *out)
 	}
 	PyObject *prev = PyList_GET_ITEM(out, len - 1);  // get prev path
 	const char *prevtype = PyUnicode_AsUTF8(PyDict_GetItem(prev, dictkey_type));
-	if (strcmp(prevtype, "f") != 0 && strcmp(prevtype, "s") != 0
+	if ((strcmp(prevtype, "f") != 0 && strcmp(prevtype, "s") != 0)
 		|| strcmp(prevtype, thistype) == 0) {
 		goto append;
 	}

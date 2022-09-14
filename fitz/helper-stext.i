@@ -76,7 +76,7 @@ JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, in
 //---------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
-    if (ch >= 32 && ch <= 255 || ch == 10) {
+    if ((ch >= 32 && ch <= 255) || ch == 10) {
         fz_append_byte(ctx, buff, ch);
     } else if (ch <= 0xffff) {  // 4 hex digits
         fz_append_printf(ctx, buff, "\\u%04x", ch);
@@ -516,7 +516,7 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
     fz_stext_char *ch;
     fz_rect span_rect = fz_empty_rect;
     fz_rect line_rect = fz_empty_rect;
-    fz_point span_origin;
+    fz_point span_origin = {0, 0};
     typedef struct style_s {
         float size; int flags; const char *font; int color;
         float asc; float desc;

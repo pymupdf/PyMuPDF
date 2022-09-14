@@ -111,9 +111,11 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     do {
         unsigned char *s = destp;
         for (x = 0; x < w; x++) {
-            for (i = 0; i < n0; i++)
-                *s++ = 255 - *s;
-            if (dest->alpha) *s++;
+            for (i = 0; i < n0; i++) {
+                *s = 255 - *s;
+                s++;
+            }
+            if (dest->alpha) s++;
         }
         destp += destspan;
     } while (--y);
@@ -123,7 +125,9 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
 int
 JM_is_jbig2_image(fz_context *ctx, pdf_obj *dict)
 {
+    // fixme: should we remove this function?
 	return 0;
+    /*
     pdf_obj *filter;
 	int i, n;
 
@@ -135,6 +139,7 @@ JM_is_jbig2_image(fz_context *ctx, pdf_obj *dict)
 		if (pdf_name_eq(ctx, pdf_array_get(ctx, filter, i), PDF_NAME(JBIG2Decode)))
 			return 1;
 	return 0;
+    */
 }
 
 //-----------------------------------------------------------------------------
