@@ -199,7 +199,7 @@ JM_set_ocg_arrays(fz_context *ctx, pdf_obj *conf, const char *basestate,
                   PyObject *on, PyObject *off, PyObject *rbgroups)
 {
     int i, n;
-    pdf_obj *arr = NULL, *obj = NULL, *indobj = NULL;
+    pdf_obj *arr = NULL, *obj = NULL;
     fz_try(ctx) {
         if (basestate) {
             pdf_dict_put_name(ctx, conf, PDF_NAME(BaseState), basestate);

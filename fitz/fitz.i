@@ -318,6 +318,19 @@ except ImportError:
 %include helper-fileobj.i
 %include helper-devices.i
 
+%{
+// Declaring these structs here prevents gcc from generating warnings like:
+//
+//      warning: 'struct Document' declared inside parameter list will not be visible outside of this definition or declaration
+//
+struct Colorspace;
+struct Document;
+struct Font;
+struct Graftmap;
+struct TextPage;
+struct TextWriter;
+%}
+
 //------------------------------------------------------------------------
 // fz_document
 //------------------------------------------------------------------------
@@ -520,7 +533,6 @@ struct Document
             fz_page *page = NULL;
             fz_document *doc = (fz_document *) $self;
             int pno = 0, chapter = 0;
-            PyObject *val = NULL;
             fz_try(gctx) {
                 if (PySequence_Check(page_id)) {
                     if (JM_INT_ITEM(page_id, 0, &chapter) == 1) {
@@ -1117,8 +1129,7 @@ struct Document
             fz_buffer *data = NULL;
             unsigned char *buffdata;
             fz_var(data);
-            int entry = 0;
-            size_t size = 0;
+            size_t size = 0;    // fixme: unused but set here and below.
             pdf_obj *names = NULL;
             int xref = 0; // xref of file entry
             fz_try(gctx) {
@@ -1459,7 +1470,6 @@ struct Document
         {
             fz_document *this_doc = (fz_document *) $self;
             fz_location next_loc, loc;
-            int page_n = -1;
             PyObject *val;
             int pno;
             fz_try(gctx) {
@@ -2468,11 +2478,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             int i, glyph, mylimit;
             mylimit = limit;
             if (mylimit < 256) mylimit = 256;
-            int cwlen = 0;
-            int lang = 0;
             const unsigned char *data;
             int size, index;
-            fz_font *font = NULL, *fb_font= NULL;
+            fz_font *font = NULL;
             fz_buffer *buf = NULL;
 
             fz_try(gctx) {
@@ -2649,7 +2657,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             PyObject *bytes = NULL;
             char *ext = NULL;
             PyObject *rc;
-            Py_ssize_t len = 0;
             fz_try(gctx) {
                 obj = pdf_load_object(gctx, pdf, xref);
                 pdf_obj *type = pdf_dict_get(gctx, obj, PDF_NAME(Type));
@@ -3437,7 +3444,6 @@ if not self.is_form_pdf:
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             int page_count = pdf_count_pages(gctx, pdf);
             fz_buffer *res = NULL, *nres=NULL;
-            pdf_obj *page2 = NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (!INRANGE(pno, 0, page_count - 1) ||
@@ -3525,6 +3531,7 @@ if not self.is_form_pdf:
                 kids1 = pdf_dict_get(gctx, parent1, PDF_NAME(Kids));
 
                 pdf_obj *page2 = pdf_lookup_page_loc(gctx, pdf, nb, &parent2, &i2);
+                (void) page2;
                 kids2 = pdf_dict_get(gctx, parent2, PDF_NAME(Kids));
 
                 if (before)  // calc index of source page in target /Kids
@@ -3673,7 +3680,6 @@ if not self.is_form_pdf:
         {
             pdf_obj *obj, *nums, *kids;
             PyObject *rc = NULL;
-            fz_buffer *res = NULL;
             int i, n;
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
 
@@ -4891,7 +4897,6 @@ struct Page {
             PyObject *text = NULL;
             fz_matrix ctm = JM_matrix_from_py(matrix);
             fz_output *out = NULL;
-            fz_separations *seps = NULL;
             fz_var(out);
             fz_var(dev);
             fz_var(res);
@@ -6806,7 +6811,7 @@ if not sanitize and not self.is_wrapped:
                     goto have_image;
                 }
 
-            have_imask:;
+            //have_imask:;  // fixme: unused label.
                 cbuf1 = fz_compressed_image_buffer(gctx, image);
                 if (!cbuf1) {
                     RAISEPY(gctx, "uncompressed image cannot have mask", PyExc_ValueError);
@@ -9520,11 +9525,12 @@ struct Annot
             fz_try(gctx) {
                 // remove fill color from unsupported annots
                 // or if so requested
-                if (type != PDF_ANNOT_SQUARE
+                if ((type != PDF_ANNOT_SQUARE
                     && type != PDF_ANNOT_CIRCLE
                     && type != PDF_ANNOT_LINE
                     && type != PDF_ANNOT_POLY_LINE
                     && type != PDF_ANNOT_POLYGON
+                    )
                     || nfcol == 0
                     ) {
                     pdf_dict_del(gctx, annot_obj, PDF_NAME(IC));
@@ -10211,10 +10217,8 @@ CheckParent(self)%}
         update_file(PyObject *buffer=NULL, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
         {
             pdf_document *pdf = NULL;       // to be filled in
-            char *data = NULL;              // for new file content
             fz_buffer *res = NULL;          // for compressed content
             pdf_obj *stream = NULL, *fs = NULL;
-            int64_t size = 0;
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
             fz_try(gctx) {
@@ -11121,7 +11125,6 @@ struct TextPage {
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         fz_clear_buffer(gctx, res);  // set text buffer to empty
                         int line_n = -1;
-                        float last_y0 = 0.0;
                         int last_char = 0;
                         for (line = block->u.t.first_line; line; line = line->next) {
                             line_n++;
@@ -11486,7 +11489,7 @@ struct Graftmap
             fz_catch(gctx) {
                 return NULL;
             }
-            return map;
+            return (struct Graftmap *) map;
         }
 
         %pythoncode %{

@@ -382,7 +382,6 @@ PyObject *JM_signature_value(fz_context *ctx, pdf_annot *annot)
 PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
 {   // return list of choices for list or combo boxes
     pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
-    pdf_document *pdf = pdf_get_bound_document(ctx, annot_obj);
     PyObject *val;
     int n = pdf_choice_widget_options(ctx, annot, 0, NULL);
     if (n == 0) Py_RETURN_NONE;                     // wrong widget type
@@ -452,8 +451,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_page *page = pdf_annot_page(ctx, annot);
     pdf_document *pdf = page->doc;
     pdf_annot *tw = annot;
-    pdf_obj *obj = NULL, *js = NULL, *o = NULL;
-    fz_buffer *res = NULL;
+    pdf_obj *obj = NULL;
     Py_ssize_t i = 0, n = 0;
     fz_try(ctx) {
         int field_type = pdf_widget_type(ctx, tw);
@@ -588,7 +586,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_obj *dashes = NULL;
     Py_ssize_t i, n = 0;
     int d;
-    int result = 0;
+    int result = 0; // fixme: unused but set here and below.
     PyObject *value = GETATTR("field_type");
     int field_type = (int) PyInt_AsLong(value);
     Py_DECREF(value);
