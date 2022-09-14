@@ -465,7 +465,7 @@ include_dirs = []
 library_dirs = []
 libraries = []
 extra_link_args = []
-
+extra_compile_args = []
 
 if 'sdist' in sys.argv:
     # Create local mupdf.tgz, for inclusion in sdist.
@@ -641,6 +641,13 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             "libthirdparty",
         ]
         extra_link_args = ["/NODEFAULTLIB:MSVCRT"]
+    
+    if linux or openbsd or freebsd or darwin:
+        extra_compile_args.append( '-Wno-incompatible-pointer-types')
+        extra_compile_args.append( '-Wno-pointer-sign')
+        extra_compile_args.append( '-Wno-sign-compare')
+    if openbsd:
+        extra_compile_args.append( '-Wno-deprecated-declarations')
 
     # add any local include and library folders
     pymupdf_dirs = os.environ.get("PYMUPDF_DIRS", None)
@@ -657,6 +664,11 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         log( f'include_dirs={include_dirs}')
         log( f'extra_link_args={extra_link_args}')
 
+log( f'include_dirs={include_dirs}')
+log( f'library_dirs={library_dirs}')
+log( f'libraries={libraries}')
+log( f'extra_compile_args={extra_compile_args}')
+log( f'extra_link_args={extra_link_args}')
 
 module = Extension(
     "fitz._fitz",
@@ -665,6 +677,7 @@ module = Extension(
     include_dirs=include_dirs,
     library_dirs=library_dirs,
     libraries=libraries,
+    extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
 )
 
