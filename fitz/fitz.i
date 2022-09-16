@@ -12356,7 +12356,7 @@ struct Archive
             fmt = "multi"
         if args != ():
             args = (a0, a1)
-        subarch = {"fmt": fmt, "entries": entries, "count": count, "mount": mount}
+        subarch = {"fmt": fmt, "entries": entries, "count": count, "path": mount}
         %}
         %pythonappend Archive %{
         self.thisown = True
@@ -12560,7 +12560,7 @@ struct Archive
             fmt = "multi"
 
         args = (a0, a1)
-        subarch = {"fmt": fmt, "entries": entries, "count": count, "mount": mount}
+        subarch = {"fmt": fmt, "entries": entries, "count": count, "path": mount}
         %}
         %pythonappend add %{
         if subarch["fmt"] != "tree" or self._subarchives == []:
