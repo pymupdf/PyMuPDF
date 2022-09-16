@@ -12567,7 +12567,7 @@ struct Archive
             self._subarchives.append(subarch)
         else:
             ltree = self._subarchives[-1]
-            if ltree["fmt"] != "tree" or ltree["mount"] != subarch["mount"]:
+            if ltree["fmt"] != "tree" or ltree["path"] != subarch["path"]:
                 self._subarchives.append(subarch)
             else:
                 ltree["entries"].extend(subarch["entries"])
