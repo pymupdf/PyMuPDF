@@ -1194,6 +1194,59 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
 #undef SETATTR
 }
 
+
+// -----------------------------------------------------------
+// Return buffer of ZIP file object in memory
+// ZipFile has attribute "fp" which is a BytesIO
+// -----------------------------------------------------------
+fz_buffer *JM_zip_buffer(fz_context *ctx, PyObject *path)
+{
+    fz_buffer *buff = NULL;
+    PyObject *fp = PyObject_GetAttrString(path, "fp");
+    if (!fp) return NULL;  // not a zip
+    if (!PyObject_HasAttrString(fp, "getvalue")) {
+        Py_DECREF(fp);
+        return NULL;  // not a zip
+    }
+    fz_try(ctx) {
+        buff = JM_BufferFromBytes(ctx, fp);
+    }
+    fz_always(ctx) {
+        Py_DECREF(fp);
+    }
+    fz_catch(ctx){
+        fz_rethrow(ctx);
+    }
+    return buff;
+}
+
+// -----------------------------------------------------------
+// Return buffer of TAR file object in memory
+// TarFile has attribute "fileobj.fileobj" which is a BytesIO
+// -----------------------------------------------------------
+fz_buffer *JM_tar_buffer(fz_context *ctx, PyObject *path)
+{
+    fz_buffer *buff = NULL;
+    PyObject *fp1 = PyObject_GetAttrString(path, "fileobj");
+    if (!fp1) return NULL;  // not a tar
+    PyObject *fp2 = PyObject_GetAttrString(fp1, "fileobj");
+    if (!fp2) {
+        Py_CLEAR(fp1);
+        return NULL;  // not a tar
+    }
+    fz_try(ctx) {
+        buff = JM_BufferFromBytes(ctx, fp2);
+    }
+    fz_always(ctx) {
+        Py_CLEAR(fp1);
+        Py_CLEAR(fp2);
+    }
+    fz_catch(ctx){
+        fz_rethrow(ctx);
+    }
+    return buff;
+}
+
 // -----------------------------------------------------------
 // Return last archive if it is a tree and mount points match
 // -----------------------------------------------------------
@@ -1213,23 +1266,100 @@ fz_archive *JM_last_tree(fz_context *ctx, fz_archive *arch, const char *mount)
         multi_archive_entry *sub;
     } fz_multi_archive;
 
-    fz_multi_archive *multi = (fz_multi_archive *) arch;
-    if (multi->len == 0) {
+    if (!arch) {
         return NULL;
     }
-    int i = multi->len - 1;
+
+    fz_multi_archive *multi = (fz_multi_archive *) arch;
+    if (multi->len == 0) {  // archive is empty
+        return NULL;
+    }
+    int i = multi->len - 1;  // read last sub archive
     multi_archive_entry *e = &multi->sub[i];
     fz_archive *arch_ = e->arch;
     const char *mount_ = e->dir;
     const char *fmt = fz_archive_format(ctx, arch_);
-    if (strcmp(fmt, "tree") != 0) {
+    if (strcmp(fmt, "tree") != 0) {  // not a tree archive
         return NULL;
     }
-    if ((mount_ && mount && strcmp(mount, mount_) == 0) || (!mount && !mount_)) {
+    if ((mount_ && mount && strcmp(mount, mount_) == 0) || (!mount && !mount_)) {  // last sub archive is eligible!
         return arch_;
     }
     return NULL;
 }
+
+fz_archive *JM_archive_from_py(fz_context *ctx, fz_archive *arch, PyObject *path, const char *mount, int *drop_sub)
+{
+    fz_stream *stream = NULL;
+    fz_buffer *buff = NULL;
+    *drop_sub = 1;
+    fz_archive *sub = NULL;
+    const char *my_mount = mount;
+    fz_try(ctx) {
+        if (PyTuple_Check(path)) goto have_tuple;
+        //--------------------------------
+        // Python zip or tar file objects
+        //--------------------------------
+        buff = JM_zip_buffer(ctx, path);
+        if (buff) goto zip_tar;
+
+        buff = JM_tar_buffer(ctx, path);
+        if (buff) goto zip_tar;
+
+        zip_tar:; // zip or tar file object
+        stream = fz_open_buffer(ctx, buff);
+        sub = fz_open_archive_with_stream(ctx, stream);
+        goto finished;
+
+        have_tuple:;
+        // tree archive: tuple of memory items
+        // check if we can add to last sub-archive
+        sub = JM_last_tree(ctx, arch, my_mount);
+        if (!sub) {
+            sub = fz_new_tree_archive(ctx, NULL);
+        } else {
+            *drop_sub = 0;  // never drop last sub-archive
+        }
+
+        // a single tree item
+        if (PyBytes_Check(path) || PyByteArray_Check(path) || PyObject_HasAttrString(path, "getvalue")) {
+            buff = JM_BufferFromBytes(ctx, path);
+            fz_tree_archive_add_buffer(ctx, sub, mount, buff);
+            goto finished;
+        }
+
+        // a tuple of tree items
+        Py_ssize_t i, n = PyTuple_Size(path);
+        for (i = 0; i < n; i++) {
+            PyObject *item = PyTuple_GET_ITEM(path, i);
+            PyObject *i0 = PySequence_GetItem(item, 0);  // data
+            PyObject *i1 = PySequence_GetItem(item, 1);  // name
+            buff = JM_BufferFromBytes(ctx, i0);
+            fz_tree_archive_add_buffer(ctx, sub, PyUnicode_AsUTF8(i1), buff);
+            fz_drop_buffer(ctx, buff);
+            Py_DECREF(i0);
+            Py_DECREF(i1);
+        }
+        buff = NULL;
+        goto finished;
+
+        finished:;
+    }
+
+    fz_always(ctx) {
+        fz_drop_buffer(ctx, buff);
+        fz_drop_stream(ctx, stream);
+    }
+
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+
+    return sub;
+}
+
+
+
 
 //-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities

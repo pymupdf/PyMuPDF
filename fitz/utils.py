@@ -5052,7 +5052,7 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> Quad:
 # -------------------------------------------------------------------
 # Building font subsets using fontTools
 # -------------------------------------------------------------------
-def subset_fonts(doc: Document) -> None:
+def subset_fonts(doc: Document, verbose: bool = False) -> None:
     """Build font subsets of a PDF. Requires package 'fontTools'.
 
     Eligible fonts are potentially replaced by smaller versions. Page text is
@@ -5296,7 +5296,8 @@ def subset_fonts(doc: Document) -> None:
     # -----------------
     repl_fontnames(doc)  # populate font information
     if not font_buffers:  # nothing found to do
-        print("No fonts to subset.")
+        if verbose:
+            print("No fonts to subset.")
         return 0
 
     old_fontsize = 0
@@ -5328,9 +5329,11 @@ def subset_fonts(doc: Document) -> None:
         fontname = list(name_set)[0]
         if new_buffer == None or len(new_buffer) >= len(old_buffer):
             # subset was not created or did not get smaller
-            print("Cannot subset '%s'." % fontname)
+            if verbose:
+                print(f"Cannot subset '{fontname}'.")
             continue
-        print("Built subset of font '%s'." % fontname)
+        if verbose:
+            print(f"Built subset of font '{fontname}'.")
         val = doc._insert_font(fontbuffer=new_buffer)  # store subset font in PDF
         new_xref = val[0]  # get its xref
         set_subset_fontname(new_xref)  # tag fontname as subset font
