@@ -321,6 +321,19 @@ except ImportError:
 %include helper-fileobj.i
 %include helper-devices.i
 
+%{
+// Declaring these structs here prevents gcc from generating warnings like:
+//
+//      warning: 'struct Document' declared inside parameter list will not be visible outside of this definition or declaration
+//
+struct Colorspace;
+struct Document;
+struct Font;
+struct Graftmap;
+struct TextPage;
+struct TextWriter;
+%}
+
 //------------------------------------------------------------------------
 // fz_document
 //------------------------------------------------------------------------
@@ -9525,11 +9538,12 @@ struct Annot
             fz_try(gctx) {
                 // remove fill color from unsupported annots
                 // or if so requested
-                if (type != PDF_ANNOT_SQUARE
+                if ((type != PDF_ANNOT_SQUARE
                     && type != PDF_ANNOT_CIRCLE
                     && type != PDF_ANNOT_LINE
                     && type != PDF_ANNOT_POLY_LINE
                     && type != PDF_ANNOT_POLYGON
+					)
                     || nfcol == 0
                     ) {
                     pdf_dict_del(gctx, annot_obj, PDF_NAME(IC));
@@ -12283,80 +12297,10 @@ struct Archive
         }
         FITZEXCEPTION(Archive, !result)
         %pythonprepend Archive %{
-        bin_ok = lambda x: type(x) in (bytes, bytearray) or hasattr(x, "getvalue")
-
         self._subarchives = []
-        a0 = None if args == () else args[0]
-        a1 = None if len(args) < 2 else args[1]
-        fmt = None
-        mount = a1
-        entries = []
-        count = -1
-        if type(a0) is not str:
-            if hasattr(a0, "absolute"):
-                a0 = str(a0)
-            elif hasattr(a0, "name"):
-                a0 = a0.name
-            elif hasattr(a0, "filename"):
-                a0 = a0.filename
-            elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "filename"):
-                a0 = a0.fileobj.filename
-
-        if type(a0) is str:
-            if os.path.isdir(a0):
-                fmt = "dir"
-                entries = os.listdir(a0)
-                count = len(entries)
-            elif zipfile.is_zipfile(a0):
-                fmt = "zip"
-                _ = zipfile.ZipFile(a0)
-                entries = _.namelist()
-                count = len(entries)
-                _.close()
-            elif tarfile.is_tarfile(a0):
-                fmt = "tar"
-                _ = tarfile.open(a0)
-                entries = _.getnames()
-                count = len(entries)
-                _.close()
-            else:
-                raise ValueError("arg0 must be a folder, zipfile, tarfile or Archive")
-        else:
-            if hasattr(a0, "fp"):
-                fmt = "zip"
-                _ = zipfile.ZipFile(a0)
-                entries = _.namelist()
-                count = len(entries)
-                _.close()
-            elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "fileobj"):
-                fmt = "tar"
-                _ = tarfile.open(a0)
-                entries = _.getnames()
-                count = len(entries)
-                _.close()
-            elif bin_ok(a0):
-                fmt = "tree"
-                mount = None
-                if a1 == None:
-                    raise ValueError("need item name for binary content")
-                a0 = [[a0, a1]]
-                a1 = None
-
-        if type(a0) in (tuple, list):
-            count = 0
-            a0 = tuple(a0)
-            fmt = "tree"
-            for content, name in a0:
-                if bin_ok(content) and type(name) is str:
-                    entries.append(name)
-                    count += 1
-                    continue
-                raise ValueError("bad item in list of entries")
-        if type(a0) is Archive:
-            fmt = "multi"
+        a0, a1, subarch = self._clean_args(*args)
         if args != ():
             args = (a0, a1)
-        subarch = {"fmt": fmt, "entries": entries, "count": count, "path": mount}
         %}
         %pythonappend Archive %{
         self.thisown = True
@@ -12479,88 +12423,17 @@ struct Archive
 
         FITZEXCEPTION(add, !result)
         %pythonprepend add %{
-        """Add sub-archive at optional mount point.
-        add(archive [, mount]) - archive
-        add(file [, mount]) - zip/tar file or file ptr
-        add(dirname [, mount]) - folder
-        add(data, name) - single item in memory
-        add(sequence, [, mount]) - sequence of memory items
+        """Add a sub-archive:
+        add(dirname [, path]) - from folder
+        add(file [, path]) - from file name or object
+        add(data, name) - from memory item
+        add(sequence, [, path]) - from list of memory items
+        add(archive [, path]) - from archive
         """
-        bin_ok = lambda x: type(x) in (bytes, bytearray) or hasattr(x, "getvalue")
-
-        a0 = args[0]
-        a1 = None if len(args) == 1 else args[1]
-        fmt = None
-        entries = []
-        count = -1
-        mount = a1
-        if type(a0) is not str:
-            # resolve any pathlib.Path and file object names
-            if hasattr(a0, "absolute"):
-                a0 = str(a0)
-            elif hasattr(a0, "name"):
-                a0 = a0.name
-            elif hasattr(a0, "filename"):
-                a0 = a0.filename
-            elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "filename"):
-                a0 = a0.fileobj.filename
-
-        if type(a0) is str:
-            if os.path.isdir(a0):
-                fmt = "dir"
-                entries = os.listdir(a0)
-                count = len(entries)
-            elif zipfile.is_zipfile(a0):
-                fmt = "zip"
-                _ = zipfile.ZipFile(a0)
-                entries = _.namelist()
-                count = len(entries)
-                _.close()
-            elif tarfile.is_tarfile(a0):
-                fmt = "tar"
-                _ = tarfile.open(a0)
-                entries = _.getnames()
-                count = len(entries)
-                _.close()
-            else:
-                raise ValueError("arg0 must be a folder, zipfile, tarfile or Archive")
-        else:
-            # 
-            if hasattr(a0, "fp"):
-                fmt = "zip"
-                _ = zipfile.ZipFile(a0)
-                entries = _.namelist()
-                count = len(entries)
-                _.close()
-            elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "fileobj"):
-                fmt = "tar"
-                _ = tarfile.open(a0)
-                entries = _.getnames()
-                count = len(entries)
-                _.close()
-            elif bin_ok(a0):
-                fmt = "tree"
-                mount = None
-                if a1 == None:
-                    raise ValueError("need item name for binary content")
-                a0 = [[a0, a1]]
-                a1 = None
-
-        if type(a0) in (tuple, list):
-            count = 0
-            fmt = "tree"
-            a0 = tuple(a0)
-            for content, name in a0:
-                if bin_ok(content) and type(name) is str:
-                    entries.append(name)
-                    count += 1
-                    continue
-                raise ValueError("bad item in list of entries")
-        if type(a0) is Archive:
-            fmt = "multi"
-
+        a0, a1, subarch = self._clean_args(*args)
+        if a0 == None:
+            raise ValueError("bad positional argument 0")
         args = (a0, a1)
-        subarch = {"fmt": fmt, "entries": entries, "count": count, "path": mount}
         %}
         %pythonappend add %{
         if subarch["fmt"] != "tree" or self._subarchives == []:
@@ -12648,12 +12521,99 @@ struct Archive
         }
 
         %pythoncode %{
-        __doc__ = """Archive(dir [, mount]) - from folder
-        Archive(file [, mount]) - from zip/tar filename or object
-        Archive(data, name) - from item data and name
-        Archive() - new archive
-        Archive(archive [, mount])
+        __doc__ = """Archive(dirname [, path]) - from folder
+        Archive(file [, path]) - from file name or object
+        Archive(data, name) - from memory item
+        Archive() - empty archive
+        Archive(archive [, path]) - from archive
         """
+
+        def _clean_args(self, *args):
+            """Clean up the arguments for Archive creation and add method.
+
+            Both ways, args is either one or two items. This method analyzes
+            and standardizes the arguments and prepares a dictionary that will
+            represent the newly created sub-archive.
+
+            Returns:
+                args[0], args[1], sub-archive.
+            """
+            bin_ok = lambda x: type(x) in (bytes, bytearray) or hasattr(x, "getvalue")
+
+            if args == ():
+                return None, None, {}
+            a0 = args[0]
+            a1 = None if len(args) < 2 else args[1]
+            fmt = None
+            entries = []
+            count = -1
+            mount = a1
+            if type(a0) is not str:
+                # resolve any pathlib.Path and file object names
+                if hasattr(a0, "absolute"):
+                    a0 = str(a0)
+                elif hasattr(a0, "name"):
+                    a0 = a0.name
+                elif hasattr(a0, "filename"):
+                    a0 = a0.filename
+                elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "filename"):
+                    a0 = a0.fileobj.filename
+
+            if type(a0) is str:
+                if os.path.isdir(a0):
+                    fmt = "dir"
+                    entries = os.listdir(a0)
+                    count = len(entries)
+                elif zipfile.is_zipfile(a0):
+                    fmt = "zip"
+                    _ = zipfile.ZipFile(a0)
+                    entries = _.namelist()
+                    count = len(entries)
+                    _.close()
+                elif tarfile.is_tarfile(a0):
+                    fmt = "tar"
+                    _ = tarfile.open(a0)
+                    entries = _.getnames()
+                    count = len(entries)
+                    _.close()
+                else:
+                    raise ValueError("arg0 must be a folder, zipfile, tarfile or Archive")
+            else:
+                if hasattr(a0, "fp"):
+                    fmt = "zip"
+                    _ = zipfile.ZipFile(a0)
+                    entries = _.namelist()
+                    count = len(entries)
+                    _.close()
+                elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "fileobj"):
+                    fmt = "tar"
+                    _ = tarfile.open(a0)
+                    entries = _.getnames()
+                    count = len(entries)
+                    _.close()
+                elif bin_ok(a0):
+                    fmt = "tree"
+                    mount = None
+                    if a1 == None:
+                        raise ValueError("need item name for binary content")
+                    a0 = [[a0, a1]]
+                    a1 = None
+
+            if type(a0) in (tuple, list):
+                count = 0
+                fmt = "tree"
+                a0 = tuple(a0)
+                for content, name in a0:
+                    if bin_ok(content) and type(name) is str:
+                        entries.append(name)
+                        count += 1
+                        continue
+                    raise ValueError("bad item in list of entries")
+            if type(a0) is Archive:
+                fmt = "multi"
+
+            subarch = {"fmt": fmt, "entries": entries, "count": count, "path": mount}
+            return a0, a1, subarch
 
         @property
         def entry_list(self):
