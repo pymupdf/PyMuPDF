@@ -12544,19 +12544,21 @@ struct Archive
                 return None, None, {}
             a0 = args[0]
             a1 = None if len(args) < 2 else args[1]
-            fmt = None
-            entries = []
-            count = -1
+            fmt = None  # archive format
+            entries = []  # list of items in archive
+            count = -1  # count of items
             mount = a1
-            if type(a0) is not str:
+            if type(a0) is not str:  # cover pathlib.Path and file objects
                 # resolve any pathlib.Path and file object names
                 if hasattr(a0, "absolute"):
                     a0 = str(a0)
                 elif hasattr(a0, "name"):
                     a0 = a0.name
                 elif hasattr(a0, "filename"):
+                    # a zipfile.ZipFile
                     a0 = a0.filename
                 elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "filename"):
+                    # a tarfile.TarFile
                     a0 = a0.fileobj.filename
 
             if type(a0) is str:
@@ -12564,6 +12566,8 @@ struct Archive
                     fmt = "dir"
                     entries = os.listdir(a0)
                     count = len(entries)
+                elif os.path.isfile(a0) == False:
+                    raise FileNotFoundError("arg0 must be a folder or a file")
                 elif zipfile.is_zipfile(a0):
                     fmt = "zip"
                     _ = zipfile.ZipFile(a0)
@@ -12577,8 +12581,11 @@ struct Archive
                     count = len(entries)
                     _.close()
                 else:
-                    raise ValueError("arg0 must be a folder, zipfile, tarfile or Archive")
-            else:
+                    _ = open(a0, "rb")
+                    a0 = _.read()
+                    _.close()
+
+            if type(a0) is not str:  # must be zipfile/tarfile or binary items in memory
                 if hasattr(a0, "fp"):
                     fmt = "zip"
                     _ = zipfile.ZipFile(a0)
@@ -12598,17 +12605,27 @@ struct Archive
                         raise ValueError("need item name for binary content")
                     a0 = [[a0, a1]]
                     a1 = None
+                elif type(a0) is not Archive and not hasattr(a0, "__getitem__"):
+                    t = str(type(a0)).replace("<class ","").replace(">","")
+                    raise ValueError(f"arg0 bad object type {t}")
 
-            if type(a0) in (tuple, list):
+            if hasattr(a0, "__getitem__"):  # e.g. tuple, list
                 count = 0
                 fmt = "tree"
-                a0 = tuple(a0)
+                new_a0 = []
                 for content, name in a0:
-                    if bin_ok(content) and type(name) is str:
-                        entries.append(name)
-                        count += 1
+                    if type(name) is not str or (not bin_ok(content) and not os.path.isfile(content)):
+                        raise ValueError("bad item in list of entries")
+                    entries.append(name)
+                    count += 1
+                    if bin_ok(content):
+                        new_a0.append((content, name))
                         continue
-                    raise ValueError("bad item in list of entries")
+                    _ = open(content, "rb")
+                    new_a0.append((_.read(), name))
+                    _.close()
+                a0 = tuple(new_a0)
+                    
             if type(a0) is Archive:
                 fmt = "multi"
 
