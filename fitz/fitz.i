@@ -12548,68 +12548,53 @@ struct Archive
             entries = []  # list of items in archive
             count = -1  # count of items
             mount = a1
-            if type(a0) is not str:  # cover pathlib.Path and file objects
-                # resolve any pathlib.Path and file object names
-                if hasattr(a0, "absolute"):
-                    a0 = str(a0)
-                elif hasattr(a0, "name"):
-                    a0 = a0.name
-                elif hasattr(a0, "filename"):
-                    # a zipfile.ZipFile
+
+            if isinstance(a0, zipfile.ZipFile):
+                fmt = "zip"
+                entries = a0.namelist()
+                count = len(entries)
+                if hasattr(a0, "filename"):
                     a0 = a0.filename
-                elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "filename"):
-                    # a tarfile.TarFile
-                    a0 = a0.fileobj.filename
 
-            if type(a0) is str:
-                if os.path.isdir(a0):
-                    fmt = "dir"
-                    entries = os.listdir(a0)
-                    count = len(entries)
-                elif os.path.isfile(a0) == False:
-                    raise FileNotFoundError("arg0 must be a folder or a file")
-                elif zipfile.is_zipfile(a0):
-                    fmt = "zip"
-                    _ = zipfile.ZipFile(a0)
-                    entries = _.namelist()
-                    count = len(entries)
-                    _.close()
-                elif tarfile.is_tarfile(a0):
-                    fmt = "tar"
-                    _ = tarfile.open(a0)
-                    entries = _.getnames()
-                    count = len(entries)
-                    _.close()
-                else:
-                    _ = open(a0, "rb")
-                    a0 = _.read()
-                    _.close()
+            elif isinstance(a0, tarfile.TarFile):
+                fmt = "tar"
+                entries = a0.getnames()
+                count = len(entries)
+                if hasattr(a0, "fileobj") and hasattr(a0.fileobj, "name"):
+                    a0 = a0.fileobj.name
 
-            if type(a0) is not str:  # must be zipfile/tarfile or binary items in memory
-                if hasattr(a0, "fp"):
-                    fmt = "zip"
-                    _ = zipfile.ZipFile(a0)
-                    entries = _.namelist()
-                    count = len(entries)
-                    _.close()
-                elif hasattr(a0, "fileobj") and hasattr(a0.fileobj, "fileobj"):
-                    fmt = "tar"
-                    _ = tarfile.open(a0)
-                    entries = _.getnames()
-                    count = len(entries)
-                    _.close()
-                elif bin_ok(a0):
-                    fmt = "tree"
-                    mount = None
-                    if a1 == None:
-                        raise ValueError("need item name for binary content")
-                    a0 = [[a0, a1]]
-                    a1 = None
-                elif type(a0) is not Archive and not hasattr(a0, "__getitem__"):
-                    t = str(type(a0)).replace("<class ","").replace(">","")
-                    raise ValueError(f"arg0 bad object type {t}")
+            elif os.path.isdir(str(a0)):
+                a0 = str(a0)
+                fmt = "dir"
+                entries = os.listdir(a0)
+                count = len(entries)
+                return a0, a1, {"fmt": fmt, "entries": entries, "count": count, "path": mount}
 
-            if hasattr(a0, "__getitem__"):  # e.g. tuple, list
+            elif os.path.isfile(str(a0)):
+                if a1 == None:
+                    raise ValueError("need name for binary content")
+                _ = open(a0, "rb")
+                a0 = _.read()
+                _.close()
+                a0 = [[a0, a1]]
+                a1 = None
+                mount = None
+
+            elif bin_ok(a0):
+                mount = None
+                if a1 == None:
+                    raise ValueError("need name for binary content")
+                a0 = [[a0, a1]]
+                a1 = None
+
+            elif isinstance(a0, Archive):
+                fmt = "multi"
+
+            elif type(a0) not in (tuple, list):
+                t = str(type(a0)).replace("<class ","").replace(">","")
+                raise ValueError(f"arg0 bad object type {t}")
+
+            if type(a0) in (tuple, list):  # e.g. tuple, list
                 count = 0
                 fmt = "tree"
                 new_a0 = []
@@ -12625,9 +12610,6 @@ struct Archive
                     new_a0.append((_.read(), name))
                     _.close()
                 a0 = tuple(new_a0)
-                    
-            if type(a0) is Archive:
-                fmt = "multi"
 
             subarch = {"fmt": fmt, "entries": entries, "count": count, "path": mount}
             return a0, a1, subarch
