@@ -278,6 +278,7 @@ import binascii
 import re
 import tarfile
 import zipfile
+import pathlib
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -12298,20 +12299,17 @@ struct Archive
         FITZEXCEPTION(Archive, !result)
         %pythonprepend Archive %{
         self._subarchives = []
-        a0, a1, subarch = self._clean_args(*args)
-        if args != ():
-            args = (a0, a1)
         %}
         %pythonappend Archive %{
         self.thisown = True
         if args != ():
-            self._subarchives.append(subarch)
+            self.add(*args)
         %}
 
         //---------------------------------------
         // new empty archive
         //---------------------------------------
-        Archive()
+        Archive(struct Archive *a0=NULL, const char *path=NULL)
         {
             fz_archive *arch=NULL;
             fz_try(gctx) {
@@ -12322,67 +12320,13 @@ struct Archive
             }
             return (struct Archive *) arch;
         }
-
-        //---------------------------------------
-        // new archive with mount
-        //---------------------------------------
-        Archive(struct Archive *subarch, const char *mount=NULL)
+        Archive(PyObject *a0=NULL, const char *path=NULL)
         {
-            fz_archive *arch = NULL;
-            fz_archive *sub = (fz_archive *) subarch;
+            fz_archive *arch=NULL;
             fz_try(gctx) {
                 arch = fz_new_multi_archive(gctx);
-                fz_mount_multi_archive(gctx, arch, sub, mount);
             }
             fz_catch(gctx) {
-                return NULL;
-            }
-            return (struct Archive *) arch;
-        }
-
-        //----------------------------------------
-        // archive from dir/zip/tar as (str, str)
-        //----------------------------------------
-        Archive(const char *path, const char *mount=NULL)
-        {
-            fz_archive *arch = NULL;
-            fz_archive *sub = NULL;
-            fz_try(gctx) {
-                if (fz_is_directory(gctx, path)) {
-                    sub = fz_open_directory(gctx, path);
-                } else {
-                    sub = fz_open_archive(gctx, path);
-                }
-                arch = fz_new_multi_archive(gctx);
-                fz_mount_multi_archive(gctx, arch, sub, mount);
-            }
-            fz_always(gctx) {
-                fz_drop_archive(gctx, sub);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return (struct Archive *) arch;
-        }
-
-        //-----------------------------------------------------------
-        // From Python zip/tar objects or memory items
-        //-----------------------------------------------------------
-        Archive(PyObject *path, const char *mount=NULL)
-        {
-            fz_archive *arch = NULL;
-            fz_archive *sub = NULL;
-            int drop_sub=0;
-            fz_try(gctx) {
-                arch = fz_new_multi_archive(gctx);
-                sub = JM_archive_from_py(gctx, arch, path, mount, &drop_sub);
-                fz_mount_multi_archive(gctx, arch, sub, mount);
-            }
-            fz_always(gctx) {
-                fz_drop_archive(gctx, sub);
-            }
-            fz_catch(gctx) {
-                fz_drop_archive(gctx, arch);
                 return NULL;
             }
             return (struct Archive *) arch;
@@ -12421,42 +12365,20 @@ struct Archive
             return ret;
         }
 
-        FITZEXCEPTION(add, !result)
-        %pythonprepend add %{
-        """Add a sub-archive:
-        add(dirname [, path]) - from folder
-        add(file [, path]) - from file name or object
-        add(data, name) - from memory item
-        add(sequence, [, path]) - from list of memory items
-        add(archive [, path]) - from archive
-        """
-        a0, a1, subarch = self._clean_args(*args)
-        if a0 == None:
-            raise ValueError("bad positional argument 0")
-        args = (a0, a1)
-        %}
-        %pythonappend add %{
-        if subarch["fmt"] != "tree" or self._subarchives == []:
-            self._subarchives.append(subarch)
-        else:
-            ltree = self._subarchives[-1]
-            if ltree["fmt"] != "tree" or ltree["path"] != subarch["path"]:
-                self._subarchives.append(subarch)
-            else:
-                ltree["entries"].extend(subarch["entries"])
-                ltree["count"] += subarch["count"]
-                self._subarchives[-1] = ltree
-        %}
-
-        //----------------------------------
-        // add archive
-        //----------------------------------
-        PyObject *add(struct Archive *subarch, const char *mount=NULL)
+        //--------------------------------------
+        // add dir
+        //--------------------------------------
+        FITZEXCEPTION(_add_dir, !result)
+        PyObject *_add_dir(const char *folder, const char *path=NULL)
         {
             fz_archive *arch = (fz_archive *) $self;
-            fz_archive *sub = (fz_archive *) subarch;
+            fz_archive *sub = NULL;
             fz_try(gctx) {
-                fz_mount_multi_archive(gctx, arch, sub, mount);
+                sub = fz_open_directory(gctx, folder);
+                fz_mount_multi_archive(gctx, arch, sub, path);
+            }
+            fz_always(gctx) {
+                fz_drop_archive(gctx, sub);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -12464,28 +12386,107 @@ struct Archive
             Py_RETURN_NONE;
         }
 
-        //--------------------------------------
-        // add dir/zip/tar - pattern (str, str)
-        //--------------------------------------
-        PyObject *add(const char *path, const char *mount=NULL)
+        //----------------------------------
+        // add archive
+        //----------------------------------
+        FITZEXCEPTION(_add_arch, !result)
+        PyObject *_add_arch(struct Archive *subarch, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = (fz_archive *) subarch;
+            fz_try(gctx) {
+                fz_mount_multi_archive(gctx, arch, sub, path);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------
+        // add ZIP/TAR from file
+        //----------------------------------
+        FITZEXCEPTION(_add_ziptarfile, !result)
+        PyObject *_add_ziptarfile(const char *filepath, int type, const char *path=NULL)
         {
             fz_archive *arch = (fz_archive *) $self;
             fz_archive *sub = NULL;
             fz_try(gctx) {
-                int count = -1;
-                if (fz_is_directory(gctx, path)) {
-                    sub = fz_open_directory(gctx, path);
+                if (type==1) {
+                    sub = fz_open_zip_archive(gctx, filepath);
                 } else {
-                    sub = fz_open_archive(gctx, path);
-                    count = fz_count_archive_entries(gctx, sub);
+                    sub = fz_open_tar_archive(gctx, filepath);
                 }
-                fz_mount_multi_archive(gctx, arch, sub, mount);
+                fz_mount_multi_archive(gctx, arch, sub, path);
             }
-
             fz_always(gctx) {
                 fz_drop_archive(gctx, sub);
             }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
 
+        //----------------------------------
+        // add ZIP/TAR from memory
+        //----------------------------------
+        FITZEXCEPTION(_add_ziptarmemory, !result)
+        PyObject *_add_ziptarmemory(PyObject *memory, int type, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            fz_stream *stream = NULL;
+            fz_buffer *buff = NULL;
+            fz_try(gctx) {
+                buff = JM_BufferFromBytes(gctx, memory);
+                stream = fz_open_buffer(gctx, buff);
+                if (type==1) {
+                    sub = fz_open_zip_archive_with_stream(gctx, stream);
+                } else {
+                    sub = fz_open_tar_archive_with_stream(gctx, stream);
+                }
+                fz_mount_multi_archive(gctx, arch, sub, path);
+            }
+            fz_always(gctx) {
+                fz_drop_stream(gctx, stream);
+                fz_drop_buffer(gctx, buff);
+                fz_drop_archive(gctx, sub);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------
+        // add "tree" item
+        //----------------------------------
+        FITZEXCEPTION(_add_treeitem, !result)
+        PyObject *_add_treeitem(PyObject *memory, const char *name, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            fz_buffer *buff = NULL;
+            int drop_sub = 0;
+            fz_try(gctx) {
+                buff = JM_BufferFromBytes(gctx, memory);
+                sub = JM_last_tree(gctx, arch, path);
+                if (!sub) {
+                    sub = fz_new_tree_archive(gctx, NULL);
+                    drop_sub = 1;
+                }
+                fz_tree_archive_add_buffer(gctx, sub, name, buff);
+                if (drop_sub) {
+                    fz_mount_multi_archive(gctx, arch, sub, path);
+                }
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+                if (drop_sub) {
+                    fz_drop_archive(gctx, sub);
+                }
+            }
             fz_catch(gctx) {
                 return NULL;
             }
@@ -12495,25 +12496,24 @@ struct Archive
         //---------------------------------------
         // Add zip/tar file obj, or single items
         //---------------------------------------
-        PyObject *add(PyObject *path, const char *mount=NULL)
+        FITZEXCEPTION(_add_treetuple, !result)
+        PyObject *_add_treetuple(PyObject *entries, const char *path=NULL)
         {
             fz_archive *arch = (fz_archive *) $self;
             fz_archive *sub = NULL;
             int drop_sub = 1;  // switch controls drop of sub
             fz_try(gctx) {
-                sub = JM_archive_from_py(gctx, arch, path, mount, &drop_sub);
+                sub = JM_archive_from_py(gctx, arch, entries, path, &drop_sub);
                 // if new sub-archive, mount it
                 if (drop_sub) {
-                    fz_mount_multi_archive(gctx, arch, sub, mount);
+                    fz_mount_multi_archive(gctx, arch, sub, path);
                 }
             }
-
             fz_always(gctx) {
                 if (drop_sub) {
                     fz_drop_archive(gctx, sub);
                 }
             }
-
             fz_catch(gctx) {
                 return NULL;
             }
@@ -12521,98 +12521,143 @@ struct Archive
         }
 
         %pythoncode %{
+        def add(self, content, path=None):
+            """Add a sub-archive.
+
+            Args:
+                content: content to be added. May be one of Archive, folder
+                     name, file name, raw bytes (bytes, bytearray), zipfile,
+                     tarfile, or a sequence of any of these types.
+                path: (str) a "virtual" path name, under which the elements
+                    of content can be retrieved. Use it to e.g. cope with
+                    duplicate element names.
+            """
+            bin_ok = lambda x: isinstance(x, (bytes, bytearray, io.BytesIO))
+
+            entries = []
+            mount = None
+            fmt = None
+
+            def make_subarch():
+                subarch = {"fmt": fmt, "entries": entries, "path": mount}
+                if fmt != "tree" or self._subarchives == []:
+                    self._subarchives.append(subarch)
+                else:
+                    ltree = self._subarchives[-1]
+                    if ltree["fmt"] != "tree" or ltree["path"] != subarch["path"]:
+                        self._subarchives.append(subarch)
+                    else:
+                        ltree["entries"].extend(subarch["entries"])
+                        self._subarchives[-1] = ltree
+                return
+
+            if isinstance(content, zipfile.ZipFile):
+                fmt = "zip"
+                entries = content.namelist()
+                mount = path
+                filename = getattr(content, "filename", None)
+                fp = getattr(content, "fp", None)
+                if filename:
+                    self._add_ziptarfile(filename, 1, path)
+                else:
+                    self._add_ziptarmemory(fp.getvalue(), 1, path)
+                return make_subarch()
+            
+            if isinstance(content, tarfile.TarFile):
+                fmt = "tar"
+                entries = content.getnames()
+                mount = path
+                filename = getattr(content.fileobj, "name", None)
+                fp = content.fileobj
+                if not isinstance(fp, io.BytesIO) and not filename:
+                    fp = fp.fileobj
+                if filename:
+                    self._add_ziptarfile(filename, 0, path)
+                else:
+                    self._add_ziptarmemory(fp.getvalue(), 0, path)
+                return make_subarch()
+
+            if isinstance(content, Archive):
+                fmt = "multi"
+                mount = path
+                self._add_arch(content, path)
+                return make_subarch()
+
+            if bin_ok(content):
+                if not (path and type(path) is str):
+                    raise ValueError("need name for binary content")
+                fmt = "tree"
+                mount = None
+                entries = [path]
+                self._add_treeitem(content, path)
+                return make_subarch()
+
+            if hasattr(content, "name"):
+                content = content.name
+            elif isinstance(content, pathlib.Path):
+                content = str(content)
+            
+            if os.path.isdir(str(content)):
+                a0 = str(content)
+                fmt = "dir"
+                mount = path
+                entries = os.listdir(a0)
+                self._add_dir(a0, path)
+                return make_subarch()
+            
+            if os.path.isfile(str(content)):
+                if not (path and type(path) is str):
+                    raise ValueError("need name for binary content")
+                a0 = str(content)
+                _ = open(a0, "rb")
+                ff = _.read()
+                _.close()
+                fmt = "tree"
+                mount = None
+                entries = [path]
+                self._add_treeitem(ff, path)
+                return make_subarch()
+            
+            if type(content) is str or not getattr(content, "__getitem__", None):
+                raise ValueError("bad archive content")
+
+            #----------------------------------------
+            # handling sequence types here
+            #----------------------------------------
+
+            # check for tuples of tree items
+            test = [t for t in content if type(t) in (tuple, list) and len(t) == 2]
+            if len(test) == len(content):  # list of tree items
+                test = []
+                fmt = "tree"
+                mount = path
+                for item, name in content:
+                    if not name or not type(name) is str or (not bin_ok(item) and not os.path.isfile(str(item))):
+                        raise ValueError(f"bad item {name} in entries")
+                    entries.append(name)
+                    if bin_ok(item):
+                        test.append((item, name))
+                        continue
+                    _ = open(str(item), "rb")
+                    test.append((_.read(), name))
+                    _.close()
+                test = tuple(test)
+                self._add_treetuple(test, path=path)
+                return make_subarch()
+            
+            # deal with sequence of disparate items
+            for item in content:
+                if type(item) in (list, tuple) and len(item) == 2:
+                    self.add(item[0], item[1])
+                else:
+                    self.add(item, path)
+
         __doc__ = """Archive(dirname [, path]) - from folder
         Archive(file [, path]) - from file name or object
         Archive(data, name) - from memory item
         Archive() - empty archive
         Archive(archive [, path]) - from archive
         """
-
-        def _clean_args(self, *args):
-            """Clean up the arguments for Archive creation and add method.
-
-            Both ways, args is either one or two items. This method analyzes
-            and standardizes the arguments and prepares a dictionary that will
-            represent the newly created sub-archive.
-
-            Returns:
-                args[0], args[1], sub-archive.
-            """
-            bin_ok = lambda x: type(x) in (bytes, bytearray) or hasattr(x, "getvalue")
-
-            if args == ():
-                return None, None, {}
-            a0 = args[0]
-            a1 = None if len(args) < 2 else args[1]
-            fmt = None  # archive format
-            entries = []  # list of items in archive
-            count = -1  # count of items
-            mount = a1
-
-            if isinstance(a0, zipfile.ZipFile):
-                fmt = "zip"
-                entries = a0.namelist()
-                count = len(entries)
-                if hasattr(a0, "filename"):
-                    a0 = a0.filename
-
-            elif isinstance(a0, tarfile.TarFile):
-                fmt = "tar"
-                entries = a0.getnames()
-                count = len(entries)
-                if hasattr(a0, "fileobj") and hasattr(a0.fileobj, "name"):
-                    a0 = a0.fileobj.name
-
-            elif os.path.isdir(str(a0)):
-                a0 = str(a0)
-                fmt = "dir"
-                entries = os.listdir(a0)
-                count = len(entries)
-                return a0, a1, {"fmt": fmt, "entries": entries, "count": count, "path": mount}
-
-            elif os.path.isfile(str(a0)):
-                if a1 == None:
-                    raise ValueError("need name for binary content")
-                _ = open(a0, "rb")
-                a0 = _.read()
-                _.close()
-                a0 = [[a0, a1]]
-                a1 = None
-                mount = None
-
-            elif bin_ok(a0):
-                mount = None
-                if a1 == None:
-                    raise ValueError("need name for binary content")
-                a0 = [[a0, a1]]
-                a1 = None
-
-            elif isinstance(a0, Archive):
-                fmt = "multi"
-
-            elif type(a0) not in (tuple, list):
-                t = str(type(a0)).replace("<class ","").replace(">","")
-                raise ValueError(f"arg0 bad object type {t}")
-
-            if type(a0) in (tuple, list):  # e.g. tuple, list
-                count = 0
-                fmt = "tree"
-                new_a0 = []
-                for content, name in a0:
-                    if type(name) is not str or (not bin_ok(content) and not os.path.isfile(content)):
-                        raise ValueError("bad item in list of entries")
-                    entries.append(name)
-                    count += 1
-                    if bin_ok(content):
-                        new_a0.append((content, name))
-                        continue
-                    _ = open(content, "rb")
-                    new_a0.append((_.read(), name))
-                    _.close()
-                a0 = tuple(new_a0)
-
-            subarch = {"fmt": fmt, "entries": entries, "count": count, "path": mount}
-            return a0, a1, subarch
 
         @property
         def entry_list(self):

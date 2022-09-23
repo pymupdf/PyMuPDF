@@ -1194,59 +1194,6 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
 #undef SETATTR
 }
 
-
-// -----------------------------------------------------------
-// Return buffer of ZIP file object in memory
-// ZipFile has attribute "fp" which is a BytesIO
-// -----------------------------------------------------------
-fz_buffer *JM_zip_buffer(fz_context *ctx, PyObject *path)
-{
-    fz_buffer *buff = NULL;
-    PyObject *fp = PyObject_GetAttrString(path, "fp");
-    if (!fp) return NULL;  // not a zip
-    if (!PyObject_HasAttrString(fp, "getvalue")) {
-        Py_DECREF(fp);
-        return NULL;  // not a zip
-    }
-    fz_try(ctx) {
-        buff = JM_BufferFromBytes(ctx, fp);
-    }
-    fz_always(ctx) {
-        Py_DECREF(fp);
-    }
-    fz_catch(ctx){
-        fz_rethrow(ctx);
-    }
-    return buff;
-}
-
-// -----------------------------------------------------------
-// Return buffer of TAR file object in memory
-// TarFile has attribute "fileobj.fileobj" which is a BytesIO
-// -----------------------------------------------------------
-fz_buffer *JM_tar_buffer(fz_context *ctx, PyObject *path)
-{
-    fz_buffer *buff = NULL;
-    PyObject *fp1 = PyObject_GetAttrString(path, "fileobj");
-    if (!fp1) return NULL;  // not a tar
-    PyObject *fp2 = PyObject_GetAttrString(fp1, "fileobj");
-    if (!fp2) {
-        Py_CLEAR(fp1);
-        return NULL;  // not a tar
-    }
-    fz_try(ctx) {
-        buff = JM_BufferFromBytes(ctx, fp2);
-    }
-    fz_always(ctx) {
-        Py_CLEAR(fp1);
-        Py_CLEAR(fp2);
-    }
-    fz_catch(ctx){
-        fz_rethrow(ctx);
-    }
-    return buff;
-}
-
 // -----------------------------------------------------------
 // Return last archive if it is a tree and mount points match
 // -----------------------------------------------------------
@@ -1296,22 +1243,6 @@ fz_archive *JM_archive_from_py(fz_context *ctx, fz_archive *arch, PyObject *path
     fz_archive *sub = NULL;
     const char *my_mount = mount;
     fz_try(ctx) {
-        if (PyTuple_Check(path)) goto have_tuple;
-        //--------------------------------
-        // Python zip or tar file objects
-        //--------------------------------
-        buff = JM_zip_buffer(ctx, path);
-        if (buff) goto zip_tar;
-
-        buff = JM_tar_buffer(ctx, path);
-        if (buff) goto zip_tar;
-
-        zip_tar:; // zip or tar file object
-        stream = fz_open_buffer(ctx, buff);
-        sub = fz_open_archive_with_stream(ctx, stream);
-        goto finished;
-
-        have_tuple:;
         // tree archive: tuple of memory items
         // check if we can add to last sub-archive
         sub = JM_last_tree(ctx, arch, my_mount);
