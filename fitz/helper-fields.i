@@ -241,13 +241,14 @@ void JM_set_field_type(fz_context *ctx, pdf_document *doc, pdf_obj *obj, int typ
 }
 
 // Copied from MuPDF v1.14
-// Create widget
+// Create widget.
+// Returns a kept reference to a pdf_annot - caller must drop it.
 //-----------------------------------------------------------------------------
 pdf_annot *JM_create_widget(fz_context *ctx, pdf_document *doc, pdf_page *page, int type, char *fieldname)
 {
 	pdf_obj *form = NULL;
 	int old_sigflags = pdf_to_int(ctx, pdf_dict_getp(ctx, pdf_trailer(ctx, doc), "Root/AcroForm/SigFlags"));
-	pdf_annot *annot = pdf_create_annot_raw(ctx, page, PDF_ANNOT_WIDGET);
+	pdf_annot *annot = pdf_create_annot_raw(ctx, page, PDF_ANNOT_WIDGET);   // returns a kept reference.
     pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
 	fz_try(ctx) {
 		JM_set_field_type(ctx, doc, annot_obj, type);
@@ -436,7 +437,7 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
         }
     }
     Py_DECREF(tuple);
-    pdf_dict_put(ctx, annot_obj, PDF_NAME(Opt), optarr);
+    pdf_dict_put_drop(ctx, annot_obj, PDF_NAME(Opt), optarr);
     return;
 }
 
@@ -586,7 +587,6 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_obj *dashes = NULL;
     Py_ssize_t i, n = 0;
     int d;
-    int result = 0; // fixme: unused but set here and below.
     PyObject *value = GETATTR("field_type");
     int field_type = (int) PyInt_AsLong(value);
     Py_DECREF(value);
@@ -779,17 +779,17 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         if (PyObject_RichCompareBool(value, Py_True, Py_EQ)) {
             pdf_obj *onstate = pdf_button_field_on_state(ctx, annot_obj);
             const char *on = pdf_to_name(ctx, onstate);
-            result = pdf_set_field_value(ctx, pdf, annot_obj, on, 1);
+            pdf_set_field_value(ctx, pdf, annot_obj, on, 1);
             pdf_dict_put_name(ctx, annot_obj, PDF_NAME(V), on);
         } else {
-            result = pdf_set_field_value(ctx, pdf, annot_obj, "Off", 1);
+            pdf_set_field_value(ctx, pdf, annot_obj, "Off", 1);
             pdf_dict_put(ctx, annot_obj, PDF_NAME(V), PDF_NAME(Off));
         }
         break;
     default:
         text = JM_StrAsChar(value);
         if (text) {
-            result = pdf_set_field_value(ctx, pdf, annot_obj, (const char *)text, 1);
+            pdf_set_field_value(ctx, pdf, annot_obj, (const char *)text, 1);
             if (field_type == PDF_WIDGET_TYPE_COMBOBOX || field_type == PDF_WIDGET_TYPE_LISTBOX) {
                 pdf_dict_del(ctx, annot_obj, PDF_NAME(I));
             }
@@ -813,6 +813,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 #------------------------------------------------------------------------------
 class Widget(object):
     def __init__(self):
+        self.thisown = True
         self.border_color = None
         self.border_style = "S"
         self.border_width = 0
@@ -1031,7 +1032,7 @@ class Widget(object):
     def __del__(self):
         annot = getattr(self, "_annot")
         if annot:
-            self._annot.__del__()
+            del self._annot
 
     @property
     def next(self):

@@ -293,6 +293,9 @@ JM_set_resource_property(fz_context *ctx, pdf_obj *ref, const char *name, int xr
     pdf_obj *ind = NULL;
     pdf_obj *properties = NULL;
     pdf_document *pdf = pdf_get_bound_document(ctx, ref);
+    pdf_obj *name2 = NULL;
+    fz_var(ind);
+    fz_var(name2);
     fz_try(ctx) {
         ind = pdf_new_indirect(ctx, pdf, xref, 0);
         if (!ind) {
@@ -306,10 +309,12 @@ JM_set_resource_property(fz_context *ctx, pdf_obj *ref, const char *name, int xr
         if (!properties) {
             properties = pdf_dict_put_dict(ctx, resources, PDF_NAME(Properties), 1);
         }
-        pdf_dict_put(ctx, properties, pdf_new_name(ctx, name), ind);
+        name2 = pdf_new_name(ctx, name);
+        pdf_dict_put(ctx, properties, name2, ind);
     }
     fz_always(ctx) {
         pdf_drop_obj(ctx, ind);
+        pdf_drop_obj(ctx, name2);
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);

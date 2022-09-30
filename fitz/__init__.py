@@ -17,9 +17,26 @@ csRGB = fitz.csRGB
 csGRAY = fitz.csGRAY
 csCMYK = fitz.csCMYK
 
-# create the TOOLS object
+# create the TOOLS object.
+#
+# Unfortunately it seems that this is never be destructed even if we use an
+# atexit() handler, which makes MuPDF's Memento list it as a leak. In fitz.i
+# we use Memento_startLeaking()/Memento_stopLeaking() when allocating
+# the Tools instance so at least the leak is marked as known.
+#
 TOOLS = fitz.Tools()
+TOOLS.thisown = True
 fitz.TOOLS = TOOLS
+
+# This atexit handler runs, but doesn't cause ~Tools() to be run.
+#
+import atexit
+def cleanup_tools( TOOLS):
+    #print(f'cleanup_tools: TOOLS={TOOLS} id(TOOLS)={id(TOOLS)}')
+    #print(f'TOOLS.thisown={TOOLS.thisown}')
+    del TOOLS
+    del fitz.TOOLS
+atexit.register( cleanup_tools, TOOLS)
 
 if fitz.VersionFitz != fitz.TOOLS.mupdf_version():
     v1 = fitz.VersionFitz.split(".")
