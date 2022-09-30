@@ -646,6 +646,8 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         extra_compile_args.append( '-Wno-incompatible-pointer-types')
         extra_compile_args.append( '-Wno-pointer-sign')
         extra_compile_args.append( '-Wno-sign-compare')
+        if unix_build_type == 'memento':
+            extra_compile_args.append( '-DMEMENTO')
     if openbsd:
         extra_compile_args.append( '-Wno-deprecated-declarations')
 
