@@ -743,7 +743,6 @@ fz_buffer *JM_get_fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
     o = pdf_load_object(ctx, doc, xref);
     desft = pdf_dict_get(ctx, o, PDF_NAME(DescendantFonts));
-    char *ext = NULL;   // fixme: unused but set here and below.
     if (desft) {
         obj = pdf_resolve_indirect(ctx, pdf_array_get(ctx, desft, 0));
         obj = pdf_dict_get(ctx, obj, PDF_NAME(FontDescriptor));
@@ -776,11 +775,11 @@ fz_buffer *JM_get_fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
         }
 
         if (pdf_name_eq(ctx, obj, PDF_NAME(Type1C)))
-            ext = "cff";
+            ; /*Prev code did: ext = "cff", but this has no effect. */
         else if (pdf_name_eq(ctx, obj, PDF_NAME(CIDFontType0C)))
-            ext = "cid";
+            ; /*Prev code did: ext = "cid", but this has no effect. */
         else if (pdf_name_eq(ctx, obj, PDF_NAME(OpenType)))
-            ext = "otf";
+            ; /*Prev code did: ext = "otf", but this has no effect. */
         else
             PySys_WriteStdout("warning: unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
@@ -1000,13 +999,19 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
     PyObject *fontbuffer, int set_simple, int idx, int wmode, int serif,
     int encoding, int ordering)
 {
-    pdf_obj *font_obj;
+    pdf_obj *font_obj = NULL;
     fz_font *font = NULL;
     fz_buffer *res = NULL;
     const unsigned char *data = NULL;
     int size, ixref = 0, index = 0, simple = 0;
     PyObject *value=NULL, *name=NULL, *subt=NULL, *exto = NULL;
 
+    fz_var(exto);
+    fz_var(name);
+    fz_var(subt);
+    fz_var(res);
+    fz_var(font);
+    fz_var(font_obj);
     fz_try(ctx) {
         ENSURE_OPERATION(ctx, pdf);
         //-------------------------------------------------------------
@@ -1056,7 +1061,6 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
         }
 
         weiter: ;
-        font_obj = pdf_keep_obj(ctx, font_obj);
         ixref = pdf_to_num(ctx, font_obj);
         name = JM_EscapeStrFromStr(pdf_to_name(ctx,
                     pdf_dict_get(ctx, font_obj, PDF_NAME(BaseFont))));
@@ -1086,6 +1090,7 @@ JM_insert_font(fz_context *ctx, pdf_document *pdf, char *bfname, char *fontfile,
         Py_CLEAR(subt);
         fz_drop_buffer(ctx, res);
         fz_drop_font(ctx, font);
+        pdf_drop_obj(ctx, font_obj);
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);
