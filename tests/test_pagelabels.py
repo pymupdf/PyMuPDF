@@ -35,6 +35,6 @@ def test_setlabels():
     doc.set_page_labels(make_labels())
     page_labels = [p.get_label() for p in doc]
     answer = ["A-1", "A-2", "A-3", "A-4", "I", "II", "III", "IV", "V", "VI"]
-    assert page_labels == answer
+    assert page_labels == answer, f'page_labels={page_labels}'
     assert doc.get_page_numbers("V") == [8]
     assert doc.get_page_labels() == make_labels()
