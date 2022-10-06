@@ -9345,6 +9345,7 @@ struct Annot
         //----------------------------------------------------------------
         // annotation set name
         //----------------------------------------------------------------
+        FITZEXCEPTION(set_name, !result)
         PARENTCHECK(set_name, """Set /Name (icon) of annotation.""")
         PyObject *
         set_name(char *name)
@@ -9365,6 +9366,7 @@ struct Annot
         // annotation set rectangle
         //----------------------------------------------------------------
         PARENTCHECK(set_rect, """Set annotation rectangle.""")
+        FITZEXCEPTION(set_rect, !result)
         PyObject *
         set_rect(PyObject *rect)
         {
