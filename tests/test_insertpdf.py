@@ -57,7 +57,11 @@ def approx_compare( a, b, max_delta):
         
 
 def test_joining():
-    """Join 4 files and compare result with previously stored one."""
+    """Join 4 files and compare result with previously stored one.
+    
+    This test can fail between different versions of MuPDF because arrangements
+    of objects can change arbitrarily.
+    """
     flist = ("1.pdf", "2.pdf", "3.pdf", "4.pdf")
     doc = fitz.open()
     for f in flist:
@@ -68,20 +72,21 @@ def test_joining():
 
     tobytes = doc.tobytes(deflate=True, garbage=4)
     new_output = fitz.open("pdf", tobytes)
-    #new_output.save( os.path.join(resources, "joined-1.20.pdf"))
     old_output = fitz.open(oldfile)
-    old_output_1_20 = fitz.open(oldfile_1_20)
     # result must have same objects, because MuPDF garbage
     # collection is a predictable process.
     
-    # We do approximate comparison if new_output with old_output, and an exact
-    # comparison of new_output with old_output_1_20.
+    # We do approximate comparison if new_output with old_output.
     #
-    assert old_output.xref_length() == new_output.xref_length() == old_output_1_20.xref_length()
+    assert old_output.xref_length() == new_output.xref_length()
+    def xref_str( p):
+        ret = ''
+        for xref in range(1, p.xref_length()):
+            ret += f' {xref}={p.xref_object(xref, compressed=True)}'
+        return ret
     num_fails = 0
     for xref in range(1, old_output.xref_length()):
         old = old_output.xref_object(xref, compressed=True)
-        old_1_20 = old_output_1_20.xref_object(xref, compressed=True)
         new = new_output.xref_object(xref, compressed=True)
         if approx_compare( old, new, max_delta=1.5):
             num_fails += 1
@@ -90,17 +95,9 @@ def test_joining():
                     f'\nold={old_output.xref_object(xref, compressed=True)}'
                     f'\nnew={new_output.xref_object(xref, compressed=True)}'
                     )
-        assert old_1_20 == new, (
-                f'xref={xref}'
-                f'\nold_1_20: {old_1_20}'
-                f'\nnew@      {new}'
-                )
     assert not num_fails
     assert old_output.xref_get_keys(-1) == new_output.xref_get_keys(-1)
     assert old_output.xref_get_key(-1, "ID") != new_output.xref_get_key(-1, "ID")
-
-    assert old_output_1_20.xref_get_keys(-1) == new_output.xref_get_keys(-1)
-    assert old_output_1_20.xref_get_key(-1, "ID") != new_output.xref_get_key(-1, "ID")
 
 
 def test_issue1417_insertpdf_in_loop():
