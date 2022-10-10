@@ -1,7 +1,7 @@
 Installation
 =============
 
-PyMuPDF should be installed using pip with::
+PyMuPDF must be installed using pip as it is described next::
 
   python -m pip install --upgrade pip
   python -m pip install --upgrade pymupdf
