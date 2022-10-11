@@ -1,0 +1,51 @@
+name: Test latest MuPDF
+
+on:
+  schedule:
+    - cron: '13 6 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  test_latest_mupdf:
+    # Simple build+test on single platform using latest MuPDF from git. This is
+    # a cut-down version of `build_wheels` except that we use latest MuPDF from
+    # git and use a single platform and python version.
+    #
+    name: Test latest mupdf
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      # Set up cibuildwheel.
+      #
+      - name: cibuildwheel
+        uses: pypa/cibuildwheel@v2.6.1
+
+        env:
+            # PYMUPDF_SETUP_MUPDF_TGZ="": don't embed mupdf in sdist - no need
+            # because the build stage gets MuPDF using `git clone ...`.
+            #
+            # PYMUPDF_SETUP_MUPDF_BUILD="git:...": build with mupdf from a `git
+            # clone` command.
+            #
+            CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
+
+            PYMUPDF_SETUP_MUPDF_BUILD: "git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
+
+            # Build on single cpu.
+            CIBW_ARCHS_LINUX: x86_64
+
+            # Build for single python version.
+            CIBW_BUILD: "cp310*"
+
+            # Get cibuildwheel to run pytest with each wheel.
+            CIBW_TEST_REQUIRES: "fontTools pytest"
+            CIBW_TEST_COMMAND: "pytest -s {project}/tests"
+            CIBW_BUILD_VERBOSITY: 3
