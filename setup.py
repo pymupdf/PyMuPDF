@@ -26,6 +26,12 @@ Environmental variables:
         If set, overrides location of mupdf when building PyMuPDF:
             Empty string:
                 Build PyMuPDF with the system mupdf.
+            A string starting with 'git:':
+                Use `git clone` to get a mupdf directory. We use the string in
+                the git clone command; it must contain the git URL from which
+                to clone, and can also contain other `git clone` args, for
+                example:
+                    PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
             Otherwise:
                 Location of mupdf directory.
     
@@ -454,7 +460,40 @@ def get_mupdf():
         log( f'PYMUPDF_SETUP_MUPDF_BUILD="", using system mupdf')
         return None
     
-    else:
+    git_prefix = 'git:'
+    if path.startswith( git_prefix):
+        # Get git clone of mupdf.
+        #
+        # `mupdf_url_or_local` is taken to be portion of a `git clone` command,
+        # for example:
+        #
+        #   PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master git://git.ghostscript.com/mupdf.git"
+        #   PYMUPDF_SETUP_MUPDF_BUILD="git:--branch 1.20.x https://github.com/ArtifexSoftware/mupdf.git"
+        #   PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
+        #
+        # One would usually also set PYMUPDF_SETUP_MUPDF_TGZ= (empty string) to
+        # avoid the need to download a .tgz into an sdist.
+        #
+        command_suffix = path[ len(git_prefix):]
+        path = 'mupdf'
+        assert not os.path.exists( path), \
+                f'Cannot use git clone because local directory already exists: {path}'
+        command = (''
+                + f'git clone'
+                + f' --recursive'
+                #+ f' --single-branch'
+                #+ f' --recurse-submodules'
+                + f' --depth 1'
+                + f' --shallow-submodules'
+                #+ f' --branch {branch}'
+                #+ f' git://git.ghostscript.com/mupdf.git'
+                + f' {command_suffix}'
+                + f' {path}'
+                )
+        log( f'Running: {command}')
+        subprocess.run( command, shell=True, check=True)
+    
+    if 1:
         # Use custom mupdf directory.
         log( f'Using custom mupdf directory from $PYMUPDF_SETUP_MUPDF_BUILD: {path}')
         assert os.path.isdir( path), f'$PYMUPDF_SETUP_MUPDF_BUILD is not a directory: {path}'
