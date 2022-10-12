@@ -252,10 +252,18 @@ dictkey_wmode = PyUnicode_InternFromString("wmode");
 dictkey_xref = PyUnicode_InternFromString("xref");
 dictkey_xres = PyUnicode_InternFromString("xres");
 dictkey_yres = PyUnicode_InternFromString("yres");
+
+atexit( cleanup);
 %}
 
 %header %{
 fz_context *gctx;
+
+static void cleanup()
+{
+    fz_drop_context( gctx);
+}
+
 static int JM_UNIQUE_ID = 0;
 
 struct DeviceWrapper {
@@ -333,6 +341,10 @@ struct Font;
 struct Graftmap;
 struct TextPage;
 struct TextWriter;
+struct DocumentWriter;
+struct Xml;
+struct Archive;
+struct Story;
 %}
 
 //------------------------------------------------------------------------
@@ -537,7 +549,6 @@ struct Document
             fz_page *page = NULL;
             fz_document *doc = (fz_document *) $self;
             int pno = 0, chapter = 0;
-            PyObject *val = NULL;
             fz_try(gctx) {
                 if (PySequence_Check(page_id)) {
                     if (JM_INT_ITEM(page_id, 0, &chapter) == 1) {
@@ -1132,10 +1143,7 @@ struct Document
             fz_document *doc = (fz_document *) $self;
             pdf_document *pdf = pdf_document_from_fz_document(gctx, doc);
             fz_buffer *data = NULL;
-            unsigned char *buffdata;
             fz_var(data);
-            int entry = 0;
-            size_t size = 0;
             pdf_obj *names = NULL;
             int xref = 0; // xref of file entry
             fz_try(gctx) {
@@ -1144,7 +1152,6 @@ struct Document
                 if (!data) {
                     RAISEPY(gctx, MSG_BAD_BUFFER, PyExc_TypeError);
                 }
-                size = fz_buffer_storage(gctx, data, &buffdata);
 
                 names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
                                       PDF_NAME(Root),
@@ -1169,7 +1176,7 @@ struct Document
                                                    desc, 1);
                 xref = pdf_to_num(gctx, pdf_dict_getl(gctx, fileentry,
                                     PDF_NAME(EF), PDF_NAME(F), NULL));
-                pdf_array_push(gctx, names, pdf_new_text_string(gctx, name));
+                pdf_array_push_drop(gctx, names, pdf_new_text_string(gctx, name));
                 pdf_array_push_drop(gctx, names, fileentry);
             }
             fz_always(gctx) {
@@ -1476,7 +1483,6 @@ struct Document
         {
             fz_document *this_doc = (fz_document *) $self;
             fz_location next_loc, loc;
-            int page_n = -1;
             PyObject *val;
             int pno;
             fz_try(gctx) {
@@ -2143,6 +2149,9 @@ struct Document
             mediabox.y1 = height;
             pdf_obj *resources = NULL, *page_obj = NULL;
             fz_buffer *contents = NULL;
+            fz_var(contents);
+            fz_var(page_obj);
+            fz_var(resources);
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (pno < -1) {
@@ -2157,6 +2166,7 @@ struct Document
             fz_always(gctx) {
                 fz_drop_buffer(gctx, contents);
                 pdf_drop_obj(gctx, page_obj);
+                pdf_drop_obj(gctx, resources);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -2485,17 +2495,15 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             int i, glyph, mylimit;
             mylimit = limit;
             if (mylimit < 256) mylimit = 256;
-            int cwlen = 0;
-            int lang = 0;
             const unsigned char *data;
             int size, index;
-            fz_font *font = NULL, *fb_font= NULL;
+            fz_font *font = NULL;
             fz_buffer *buf = NULL;
 
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (ordering >= 0) {
-                    data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
+                    data = fz_lookup_cjk_font(gctx, Py_MAX(ordering, 4), &size, &index);
                     font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
                     goto weiter;
                 }
@@ -2666,7 +2674,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             PyObject *bytes = NULL;
             char *ext = NULL;
             PyObject *rc;
-            Py_ssize_t len = 0;
             fz_try(gctx) {
                 obj = pdf_load_object(gctx, pdf, xref);
                 pdf_obj *type = pdf_dict_get(gctx, obj, PDF_NAME(Type));
@@ -3048,28 +3055,36 @@ if not self.is_form_pdf:
         PyObject *_getOLRootNumber()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            pdf_obj *root, *olroot, *ind_obj;
+            pdf_obj *ind_obj = NULL;
+            pdf_obj *olroot2 = NULL;
+            int ret;
+            fz_var(ind_obj);
+            fz_var(olroot2);
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 // get main root
-                root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
                 // get outline root
-                olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
+                pdf_obj *olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
                 if (!olroot)
                 {
-                    olroot = pdf_new_dict(gctx, pdf, 4);
-                    pdf_dict_put(gctx, olroot, PDF_NAME(Type), PDF_NAME(Outlines));
-                    ind_obj = pdf_add_object(gctx, pdf, olroot);
+                    olroot2 = pdf_new_dict(gctx, pdf, 4);
+                    pdf_dict_put(gctx, olroot2, PDF_NAME(Type), PDF_NAME(Outlines));
+                    ind_obj = pdf_add_object(gctx, pdf, olroot2);
                     pdf_dict_put(gctx, root, PDF_NAME(Outlines), ind_obj);
                     olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
-                    pdf_drop_obj(gctx, ind_obj);
                     
                 }
+                ret = pdf_to_num(gctx, olroot);
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, ind_obj);
+                pdf_drop_obj(gctx, olroot2);
             }
             fz_catch(gctx) {
                 return NULL;
             }
-            return Py_BuildValue("i", pdf_to_num(gctx, olroot));
+            return Py_BuildValue("i", ret);
         }
 
         //------------------------------------------------------------------
@@ -3454,7 +3469,11 @@ if not self.is_form_pdf:
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             int page_count = pdf_count_pages(gctx, pdf);
             fz_buffer *res = NULL, *nres=NULL;
-            pdf_obj *page2 = NULL;
+            fz_buffer *contents_buffer = NULL;
+            fz_var(pdf);
+            fz_var(res);
+            fz_var(nres);
+            fz_var(contents_buffer);
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 if (!INRANGE(pno, 0, page_count - 1) ||
@@ -3495,8 +3514,8 @@ if not self.is_form_pdf:
 
                 // create new /Contents object for page2
                 if (res) {
-                    pdf_obj *contents = pdf_add_stream(gctx, pdf,
-                               fz_new_buffer_from_copied_data(gctx, "  ", 1), NULL, 0);
+                    contents_buffer = fz_new_buffer_from_copied_data(gctx, "  ", 1);
+                    pdf_obj *contents = pdf_add_stream(gctx, pdf, contents_buffer, NULL, 0);
                     JM_update_stream(gctx, pdf, contents, res, 1);
                     pdf_dict_put_drop(gctx, page2, PDF_NAME(Contents), contents);
                 }
@@ -3514,6 +3533,7 @@ if not self.is_form_pdf:
                 pdf_drop_page_tree(gctx, pdf);
                 fz_drop_buffer(gctx, res);
                 fz_drop_buffer(gctx, nres);
+                fz_drop_buffer(gctx, contents_buffer);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -3542,6 +3562,7 @@ if not self.is_form_pdf:
                 kids1 = pdf_dict_get(gctx, parent1, PDF_NAME(Kids));
 
                 pdf_obj *page2 = pdf_lookup_page_loc(gctx, pdf, nb, &parent2, &i2);
+                (void) page2;
                 kids2 = pdf_dict_get(gctx, parent2, PDF_NAME(Kids));
 
                 if (before)  // calc index of source page in target /Kids
@@ -3690,14 +3711,15 @@ if not self.is_form_pdf:
         {
             pdf_obj *obj, *nums, *kids;
             PyObject *rc = NULL;
-            fz_buffer *res = NULL;
             int i, n;
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
 
+            pdf_obj *pagelabels = NULL;
+            fz_var(pagelabels);
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 rc = PyList_New(0);
-                pdf_obj *pagelabels = pdf_new_name(gctx, "PageLabels");
+                pagelabels = pdf_new_name(gctx, "PageLabels");
                 obj = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
                                    PDF_NAME(Root), pagelabels, NULL);
                 if (!obj) {
@@ -3737,6 +3759,7 @@ if not self.is_form_pdf:
             }
             fz_always(gctx) {
                 PyErr_Clear();
+                pdf_drop_obj(gctx, pagelabels);
             }
             fz_catch(gctx){
                 Py_CLEAR(rc);
@@ -3756,15 +3779,18 @@ if not self.is_form_pdf:
         _set_page_labels(char *labels)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            pdf_obj *pagelabels = NULL;
+            fz_var(pagelabels);
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
-                pdf_obj *pagelabels = pdf_new_name(gctx, "PageLabels");
+                pagelabels = pdf_new_name(gctx, "PageLabels");
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
                 pdf_dict_del(gctx, root, pagelabels);
                 pdf_dict_putl_drop(gctx, root, pdf_new_array(gctx, pdf, 0), pagelabels, PDF_NAME(Nums), NULL);
             }
             fz_always(gctx) {
                 PyErr_Clear();
+                pdf_drop_obj(gctx, pagelabels);
             }
             fz_catch(gctx){
                 return NULL;
@@ -4109,6 +4135,11 @@ if basestate:
             int xref = 0;
             pdf_obj *obj = NULL, *cfg = NULL;
             pdf_obj *indocg = NULL;
+            pdf_obj *ocg = NULL;
+            pdf_obj *ci_name = NULL;
+            fz_var(indocg);
+            fz_var(ocg);
+            fz_var(ci_name);
             fz_try(gctx) {
                 pdf_document *pdf = pdf_specifics(gctx, (fz_document *) self);
                 ASSERT_PDF(pdf);
@@ -4116,7 +4147,7 @@ if basestate:
                 // ------------------------------
                 // make the OCG
                 // ------------------------------
-                pdf_obj *ocg = pdf_add_new_dict(gctx, pdf, 3);
+                ocg = pdf_add_new_dict(gctx, pdf, 3);
                 pdf_dict_put(gctx, ocg, PDF_NAME(Type), PDF_NAME(OCG));
                 pdf_dict_put_text_string(gctx, ocg, PDF_NAME(Name), name);
                 pdf_obj *intents = pdf_dict_put_array(gctx, ocg, PDF_NAME(Intent), 2);
@@ -4128,18 +4159,18 @@ if basestate:
                         PyObject *item = PySequence_ITEM(intent, i);
                         char *c = JM_StrAsChar(item);
                         if (c) {
-                            pdf_array_push(gctx, intents, pdf_new_name(gctx, c));
+                            pdf_array_push_drop(gctx, intents, pdf_new_name(gctx, c));
                         }
                         Py_DECREF(item);
                     }
                 } else {
                     char *c = JM_StrAsChar(intent);
                     if (c) {
-                        pdf_array_push(gctx, intents, pdf_new_name(gctx, c));
+                        pdf_array_push_drop(gctx, intents, pdf_new_name(gctx, c));
                     }
                 }
                 pdf_obj *use_for = pdf_dict_put_dict(gctx, ocg, PDF_NAME(Usage), 3);
-                pdf_obj *ci_name = pdf_new_name(gctx, "CreatorInfo");
+                ci_name = pdf_new_name(gctx, "CreatorInfo");
                 pdf_obj *cre_info = pdf_dict_put_dict(gctx, use_for, ci_name, 2);
                 pdf_dict_put_text_string(gctx, cre_info, PDF_NAME(Creator), "PyMuPDF");
                 if (usage) {
@@ -4194,6 +4225,8 @@ if basestate:
             }
             fz_always(gctx) {
                 pdf_drop_obj(gctx, indocg);
+                pdf_drop_obj(gctx, ocg);
+                pdf_drop_obj(gctx, ci_name);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -4210,6 +4243,8 @@ if basestate:
                 if self.is_encrypted:
                     raise ValueError("cannot initialize - document still encrypted")
                 self._outline = self._loadOutline()
+                if self._outline:
+                    self._outline.thisown = True
                 self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format', 'title':'info:Title', 'author':'info:Author','subject':'info:Subject', 'keywords':'info:Keywords','creator':'info:Creator', 'producer':'info:Producer', 'creationDate':'info:CreationDate', 'modDate':'info:ModDate', 'trapped':'info:Trapped'}.items()])
                 self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
@@ -4595,9 +4630,6 @@ if basestate:
 
 
             def _cleanup(self):
-                if getattr(self, "_outline", None):
-                    self._dropOutline(self._outline)
-                    self._outline = None
                 self._reset_page_refs()
                 for k in self.Graftmaps.keys():
                     self.Graftmaps[k] = None
@@ -4908,7 +4940,6 @@ struct Page {
             PyObject *text = NULL;
             fz_matrix ctm = JM_matrix_from_py(matrix);
             fz_output *out = NULL;
-            fz_separations *seps = NULL;
             fz_var(out);
             fz_var(dev);
             fz_var(res);
@@ -5013,7 +5044,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5063,7 +5093,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5088,7 +5117,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5122,7 +5150,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5184,7 +5211,6 @@ struct Page {
                 Py_CLEAR(sublist);
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5227,7 +5253,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5251,7 +5276,7 @@ struct Page {
             fz_buffer *filebuf = NULL;
             fz_rect r;
             fz_point p = JM_point_from_py(point);
-            fz_var(annot);
+            fz_var(filebuf);
             fz_try(gctx) {
                 ASSERT_PDF(page);
                 filebuf = JM_BufferFromBytes(gctx, buffer);
@@ -5271,17 +5296,19 @@ struct Page {
 
                 pdf_obj *val = JM_embed_file(gctx, page->doc, filebuf,
                                     filename, uf, d, 1);
-                pdf_dict_put(gctx, annot_obj, PDF_NAME(FS), val);
+                pdf_dict_put_drop(gctx, annot_obj, PDF_NAME(FS), val);
                 pdf_dict_put_text_string(gctx, annot_obj, PDF_NAME(Contents), filename);
                 pdf_update_annot(gctx, annot);
                 pdf_set_annot_rect(gctx, annot, r);
                 pdf_set_annot_flags(gctx, annot, flags);
                 JM_add_annot_id(gctx, annot, "A");
             }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, filebuf);
+            }
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5335,7 +5362,6 @@ struct Page {
                 pdf_drop_annot(gctx, annot);
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5362,7 +5388,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5399,7 +5424,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5478,7 +5502,6 @@ struct Page {
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -5970,7 +5993,6 @@ def get_oc_items(self) -> list:
             fz_catch(gctx) {
                 return NULL;
             }
-            annot = pdf_keep_annot(gctx, annot);
             return (struct Annot *) annot;
         }
 
@@ -6644,11 +6666,13 @@ if not sanitize and not self.is_wrapped:
         FITZEXCEPTION(_show_pdf_page, !result)
         PyObject *_show_pdf_page(struct Page *fz_srcpage, int overlay=1, PyObject *matrix=NULL, int xref=0, int oc=0, PyObject *clip = NULL, struct Graftmap *graftmap = NULL, char *_imgname = NULL)
         {
-            pdf_obj *xobj1, *xobj2, *resources;
+            pdf_obj *xobj1=NULL, *xobj2=NULL, *resources;
             fz_buffer *res=NULL, *nres=NULL;
             fz_rect cropbox = JM_rect_from_py(clip);
             fz_matrix mat = JM_matrix_from_py(matrix);
             int rc_xref = xref;
+            fz_var(xobj1);
+            fz_var(xobj2);
             fz_try(gctx) {
                 pdf_page *tpage = pdf_page_from_fz_page(gctx, (fz_page *) $self);
                 pdf_obj *tpageref = tpage->obj;
@@ -6704,6 +6728,10 @@ if not sanitize and not self.is_wrapped:
 
                 JM_insert_contents(gctx, pdfout, tpageref, nres, overlay);
                 fz_drop_buffer(gctx, nres);
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, xobj1);
+                pdf_drop_obj(gctx, xobj2);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -6823,7 +6851,6 @@ if not sanitize and not self.is_wrapped:
                     goto have_image;
                 }
 
-            // have_imask:;
                 cbuf1 = fz_compressed_image_buffer(gctx, image);
                 if (!cbuf1) {
                     RAISEPY(gctx, "uncompressed image cannot have mask", PyExc_ValueError);
@@ -8592,8 +8619,6 @@ struct DeviceWrapper
                 fz_drop_display_list(gctx, list);
                 DEBUGMSG2;
             }
-            /* TODO: should we do free($self) here to match earlier call to
-            calloc() ? */
         }
     }
 };
@@ -8604,34 +8629,6 @@ struct DeviceWrapper
 %nodefaultctor;
 struct Outline {
     %immutable;
-/*
-    fz_outline doesn't keep a ref number in mupdf's code,
-    which means that if the root outline node is dropped,
-    all the outline nodes will also be destroyed.
-
-    As a result, if the root Outline python object drops ref,
-    then other Outline will point to already freed area. E.g.:
-    import fitz
-    doc=fitz.Document('3.pdf')
-    ol=doc.loadOutline()
-    oln=ol.next
-    oln.dest.page
-    5
-    #drops root outline
-    ...
-    ol=4
-    free outline
-    oln.dest.page
-    0
-
-    I do not like to change struct of fz_document, so I decide
-    to delegate the outline destruction work to fz_document. That is,
-    when the Document is created, its outline is loaded in advance.
-    The outline will only be freed when the doc is destroyed, which means
-    in the python code, we must keep ref to doc if we still want to use outline
-    This is a nasty way but it requires little change to the mupdf code.
-    */
-/*
     %extend {
         ~Outline()
         {
@@ -8640,9 +8637,7 @@ struct Outline {
             fz_drop_outline(gctx, this_ol);
             DEBUGMSG2;
         }
-    }
-*/
-    %extend {
+
         %pythoncode %{@property%}
         PyObject *uri()
         {
@@ -8650,6 +8645,12 @@ struct Outline {
             return JM_UnicodeFromStr(ol->uri);
         }
 
+        /* `%newobject foo;` is equivalent to wrapping C fn in python like:
+            ret = _foo()
+            ret.thisown=true
+            return ret.
+        */
+        %newobject next;
         %pythoncode %{@property%}
         struct Outline *next()
         {
@@ -8660,6 +8661,7 @@ struct Outline {
             return (struct Outline *) next_ol;
         }
 
+        %newobject down;
         %pythoncode %{@property%}
         struct Outline *down()
         {
@@ -9350,6 +9352,7 @@ struct Annot
         //----------------------------------------------------------------
         // annotation set name
         //----------------------------------------------------------------
+        FITZEXCEPTION(set_name, !result)
         PARENTCHECK(set_name, """Set /Name (icon) of annotation.""")
         PyObject *
         set_name(char *name)
@@ -9370,11 +9373,18 @@ struct Annot
         // annotation set rectangle
         //----------------------------------------------------------------
         PARENTCHECK(set_rect, """Set annotation rectangle.""")
+        FITZEXCEPTION(set_rect, !result)
         PyObject *
         set_rect(PyObject *rect)
         {
+            pdf_annot *annot = (pdf_annot *) $self;
+            int type = pdf_annot_type(gctx, annot);
+            if (type == PDF_ANNOT_LINE || type == PDF_ANNOT_POLY_LINE ||
+                type == PDF_ANNOT_POLYGON) {
+                    fz_warn(gctx, "setting rectangle ignored for annot type %s", pdf_string_from_annot_type(gctx, type));
+                    Py_RETURN_NONE;
+                }
             fz_try(gctx) {
-                pdf_annot *annot = (pdf_annot *) $self;
                 pdf_page *pdfpage = pdf_annot_page(gctx, annot);
                 fz_matrix rot = JM_rotate_page_matrix(gctx, pdfpage);
                 fz_rect r = fz_transform_rect(JM_rect_from_py(rect), rot);
@@ -10231,10 +10241,8 @@ CheckParent(self)%}
         update_file(PyObject *buffer=NULL, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
         {
             pdf_document *pdf = NULL;       // to be filled in
-            char *data = NULL;              // for new file content
             fz_buffer *res = NULL;          // for compressed content
             pdf_obj *stream = NULL, *fs = NULL;
-            int64_t size = 0;
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
             fz_try(gctx) {
@@ -11141,7 +11149,6 @@ struct TextPage {
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         fz_clear_buffer(gctx, res);  // set text buffer to empty
                         int line_n = -1;
-                        float last_y0 = 0.0;
                         int last_char = 0;
                         for (line = block->u.t.first_line; line; line = line->next) {
                             line_n++;
@@ -11791,6 +11798,9 @@ struct TextWriter
                 default: colorspace = fz_device_gray(gctx); break;
             }
 
+            fz_var(contents);
+            fz_var(resources);
+            fz_var(dev);
             fz_try(gctx) {
                 ASSERT_PDF(pdfpage);
                 resources = pdf_new_dict(gctx, pdfpage->doc, 5);
@@ -11859,7 +11869,7 @@ struct Font
                 print("Warning: did you mean a fontfile?")
 
             if fontname.lower() in ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s", "cjk"):
-                ordering = 0
+                ordering = 4
 
             elif fontname.lower() in fitz_fontdescriptors.keys():
                 import pymupdf_fonts  # optional fonts
@@ -13673,6 +13683,26 @@ struct Tools
 {
     %extend
     {
+        Tools()
+        {
+            /* It looks like global objects are never destructed when running
+            with SWIG, so we use Memento_startLeaking()/Memento_stopLeaking().
+            */
+            Memento_startLeaking();
+            void* p = malloc( sizeof(struct Tools));
+            Memento_stopLeaking();
+            //fprintf(stderr, "Tools constructor p=%p\n", p);
+            return (struct Tools*) p;
+        }
+
+        ~Tools()
+        {
+            /* This is not called. */
+            struct Tools* p = (struct Tools*) $self;
+            //fprintf(stderr, "~Tools() p=%p\n", p);
+            free(p);
+        }
+
         %pythonprepend gen_id
         %{"""Return a unique positive integer."""%}
         PyObject *gen_id()

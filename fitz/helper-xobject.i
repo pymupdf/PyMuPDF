@@ -91,9 +91,13 @@ int JM_insert_contents(fz_context * ctx, pdf_document * pdf,
                         pdf_obj * pageref, fz_buffer * newcont, int overlay)
 {
     int xref = 0;
+    pdf_obj *newconts = NULL;
+    pdf_obj *carr = NULL;
+    fz_var(newconts);
+    fz_var(carr);
     fz_try(ctx) {
         pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME(Contents));
-        pdf_obj *newconts = pdf_add_stream(ctx, pdf, newcont, NULL, 0);
+        newconts = pdf_add_stream(ctx, pdf, newcont, NULL, 0);
         xref = pdf_to_num(ctx, newconts);
         if (pdf_is_array(ctx, contents)) {
             if (overlay) // append new object
@@ -101,18 +105,22 @@ int JM_insert_contents(fz_context * ctx, pdf_document * pdf,
             else // prepend new object
                 pdf_array_insert(ctx, contents, newconts, 0);
         } else {
-            pdf_obj *carr = pdf_new_array(ctx, pdf, 5);
+            carr = pdf_new_array(ctx, pdf, 5);
             if (overlay) {
                 if (contents)
                     pdf_array_push(ctx, carr, contents);
                 pdf_array_push(ctx, carr, newconts);
             } else {
-                pdf_array_push_drop(ctx, carr, newconts);
+                pdf_array_push(ctx, carr, newconts);
                 if (contents)
                     pdf_array_push(ctx, carr, contents);
             }
             pdf_dict_put(ctx, pageref, PDF_NAME(Contents), carr);
         }
+    }
+    fz_always(ctx) {
+        pdf_drop_obj(ctx, newconts);
+        pdf_drop_obj(ctx, carr);
     }
     fz_catch(ctx) {
         fz_rethrow(ctx);

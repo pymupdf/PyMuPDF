@@ -387,8 +387,8 @@ pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
             if (strcmp(name, response) == 0) {
                 found = 1;
                 break;
-            annot = pdf_next_annot(ctx, annot);
             }
+            annot = pdf_next_annot(ctx, annot);
         }
         if (!found) {
             fz_throw(ctx, FZ_ERROR_GENERIC, "'%s' is not an annot of this page", name);

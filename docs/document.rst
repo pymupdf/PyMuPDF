@@ -1375,11 +1375,9 @@ For details on **embedded files** refer to Appendix 3.
 
       :rtype: int
       :returns:
-        If present, the PDF value is represented by an integer (unsigned 32-bit). Only bits 0 and 1 contain meaningful information.
-
-         * `rc == -1`: not a Form PDF / no signature fields recorded / no *SigFlags* found.
-         * `rc & 2**0` is true: at least one signature field exists.
-         * `rc & 2**1` is true: contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
+         * -1: not a Form PDF / no signature fields recorded / no *SigFlags* found.
+         * 1: at least one signature field exists.
+         * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
 
     .. index::
        pair: filename; Document.embfile_add

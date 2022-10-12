@@ -712,21 +712,6 @@ PyObject *util_measure_string(const char *text, const char *fontname, double fon
 	return PyFloat_FromDouble(w * fontsize);
 }
 
-
-PyObject *util_noto_fontname(int ucdn, int lang)
-{
-	int len=0;
-	int subfont=0;
-	const unsigned char *fontdata=NULL;
-	fz_try(gctx) {
-		fontdata = fz_lookup_noto_font(gctx, ucdn, lang, &len, &subfont);
-	}
-	fz_catch(gctx) {
-		return NULL;
-	}
-	return PyBytes_FromStringAndSize((const char *) fontdata, (Py_ssize_t) len);
-}
-
 %}
 
 %{

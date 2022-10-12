@@ -59,14 +59,14 @@
 	By default all are enabled. To avoid building unwanted
 	ones, define FZ_ENABLE_..._OUTPUT to 0.
 */
-#define FZ_ENABLE_OCR_OUTPUT 1
-#define FZ_ENABLE_DOCX_OUTPUT 1
-#define FZ_ENABLE_ODT_OUTPUT 1
+/* #define FZ_ENABLE_OCR_OUTPUT 1 */
+/* #define FZ_ENABLE_DOCX_OUTPUT 1 */
+/* #define FZ_ENABLE_ODT_OUTPUT 1 */
 
 /**
 	Choose whether to enable ICC color profiles.
 */
-#define FZ_ENABLE_ICC 1
+/* #define FZ_ENABLE_ICC 1 */
 
 /**
 	Choose whether to enable JPEG2000 decoding.
@@ -92,27 +92,27 @@
 	unwanted fonts.
 */
 /* To avoid all noto fonts except CJK, enable: */
-#define TOFU // <=== PyMuPDF: not the complete NOTO!
+/* #define TOFU*/
 
 /* To skip the CJK font, enable: (this implicitly enables TOFU_CJK_EXT
  * and TOFU_CJK_LANG) */
-/* #define TOFU_CJK */
+ /* #define TOFU_CJK */
 
-/* To skip CJK Extension A, enable: (this implicitly enables
- * TOFU_CJK_LANG) */
-#define TOFU_CJK_EXT // <=== PyMuPDF: causes 1.5 MB extra size
+ /* To skip CJK Extension A, enable: (this implicitly enables
+  * TOFU_CJK_LANG) */
+#define TOFU_CJK_EXT
 
-/* To skip CJK language specific fonts, enable: */
-#define TOFU_CJK_LANG // <=== PyMuPDF
+  /* To skip CJK language specific fonts, enable: */
+/* #define TOFU_CJK_LANG */
 
 /* To skip the Emoji font, enable: */
-#define TOFU_EMOJI // <=== PyMuPDF
+/* #define TOFU_EMOJI */
 
 /* To skip the ancient/historic scripts, enable: */
-#define TOFU_HISTORIC // <=== PyMuPDF
+/* #define TOFU_HISTORIC */
 
 /* To skip the symbol font, enable: */
-#define TOFU_SYMBOL // <=== PyMuPDF
+/* #define TOFU_SYMBOL */
 
 /* To skip the SIL fonts, enable: */
 /* #define TOFU_SIL */
@@ -122,7 +122,7 @@
 /* (You probably really don't want to do that except for measurement
  * purposes!) */
 
-/* ---------- DO NOT EDIT ANYTHING UNDER THIS LINE ---------- */
+ /* ---------- DO NOT EDIT ANYTHING UNDER THIS LINE ---------- */
 
 #ifndef FZ_ENABLE_SPOT_RENDERING
 #define FZ_ENABLE_SPOT_RENDERING 1

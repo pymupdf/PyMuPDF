@@ -171,12 +171,12 @@ b. **"No need to know:"** Loop through the list of **all xrefs** of the document
 
 For both extraction approaches, there exist ready-to-use general purpose scripts:
 
-`extract-imga.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imga.py>`_ extracts images page by page:
+`extract-imga.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imga.py>`_ extracts images page by page:
 
 .. image:: images/img-extract-imga.*
    :scale: 80
 
-and `extract-imgb.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imgb.py>`_ extracts images by xref table:
+and `extract-imgb.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imgb.py>`_ extracts images by xref table:
 
 .. image:: images/img-extract-imgb.*
    :scale: 80
@@ -205,7 +205,7 @@ To recover the original image using PyMuPDF, the procedure depicted as follows m
 
 Step (1) creates a pixmap of the basic image. Step (2) does the same with the image mask. Step (3) adds an alpha channel and fills it with transparency information.
 
-The scripts `extract-imga.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imga.py>`_, and `extract-imgb.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/extract-imgb.py>`_ above also contain this logic.
+The scripts `extract-imga.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imga.py>`_, and `extract-imgb.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imgb.py>`_ above also contain this logic.
 
 ----------
 
@@ -252,7 +252,7 @@ The above script needed about 1 minute on my machine for 149 pictures with a tot
 .. image:: images/img-import-progress.*
    :scale: 80
 
-Look `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-inserted.py>`_ for a more complete source code: it offers a directory selection dialog and skips unsupported files and non-file entries.
+Look `here <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/all-my-pics-inserted.py>`_ for a more complete source code: it offers a directory selection dialog and skips unsupported files and non-file entries.
 
 .. note:: We might have used :meth:`Page.insert_image` instead of :meth:`Page.show_pdf_page`, and the result would have been a similar looking file. However, depending on the image type, it may store **images uncompressed**. Therefore, the save option *deflate = True* must be used to achieve a reasonable file size, which hugely increases the runtime for large numbers of images. So this alternative **cannot be recommended** here.
 
@@ -283,11 +283,11 @@ The second script **embeds** arbitrary files -- not only images. The resulting P
 .. image:: images/img-embed-progress.*
    :scale: 80
 
-This is by far the fastest method, and it also produces the smallest possible output file size. The above pictures needed 20 seconds on my machine and yielded a PDF size of 510 MB. Look `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-embedded.py>`_ for a more complete source code: it offers a directory selection dialog and skips non-file entries.
+This is by far the fastest method, and it also produces the smallest possible output file size. The above pictures needed 20 seconds on my machine and yielded a PDF size of 510 MB. Look `here <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/all-my-pics-embedded.py>`_ for a more complete source code: it offers a directory selection dialog and skips non-file entries.
 
 **Method 3: Attaching Files**
 
-A third way to achieve this task is **attaching files** via page annotations see `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-attached.py>`_ for the complete source code.
+A third way to achieve this task is **attaching files** via page annotations see `here <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/all-my-pics-attached.py>`_ for the complete source code.
 
 This has a similar performance as the previous script and it also produces a similar file size. It will produce PDF pages which show a 'FileAttachment' icon for each attached file.
 
