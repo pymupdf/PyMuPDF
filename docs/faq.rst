@@ -9,21 +9,6 @@ A collection of recipes in “How-To” format for using PyMuPDF.
 
 Please see:
 
-:ref:`RecipesImages`
+:ref:`Recipes: Table of Contents<RecipesTOC>`
 
-:ref:`RecipesText`
-
-:ref:`RecipesAnnotations`
-
-:ref:`RecipesDrawingAndGraphics`
-
-:ref:`RecipesMultiprocessing`
-
-:ref:`RecipesGeneral`
-
-:ref:`RecipesCommonIssuesAndTheirSolutions`
-
-:ref:`RecipesLowLevelInterfaces`
-
-:ref:`RecipesJournalling`
 

@@ -25,6 +25,13 @@
     color:hsla(0,0%,100%,1);
 }
 
+.htmltag {
+    padding: 2px 5px;
+    background-color: #fbff68;
+    border-radius: 4px;
+    border: 1px solid #222;
+}
+
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {
 
@@ -32,6 +39,10 @@
     .wy-nav-content {
         background-color: #000;
         color: #fff;
+    }
+
+    .htmltag {
+        color: #000;
     }
 
     th {

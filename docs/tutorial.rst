@@ -241,6 +241,26 @@ This delivers a list of rectangles (see :ref:`Rect`), each of which surrounds on
 
 Please also do have a look at chapter :ref:`cooperation` and at demo programs `demo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py>`_ and `demo-lowlevel.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py>`_. Among other things they contain details on how the :ref:`TextPage`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations suggest it.
 
+
+
+.. _WorkingWithStories:
+
+Working with Stories
+======================
+
+**TODO**
+
+Explain what Stories are.
+
+Top level principles etc.
+
+What it could be typically used for etc.
+
+
+See :ref:`the Stories API<StoriesAPI>` and :ref:`Stories recipes<RecipesStories>` for more.
+
+
+
 PDF Maintenance
 ==================
 PDFs are the only document type that can be **modified** using PyMuPDF. Other file types are read-only.
