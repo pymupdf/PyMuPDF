@@ -56,48 +56,48 @@ def approx_compare( a, b, max_delta):
     return ret
         
 
-def test_joining():
-    """Join 4 files and compare result with previously stored one.
-    
-    This test can fail between different versions of MuPDF because arrangements
-    of objects can change arbitrarily.
-    """
-    flist = ("1.pdf", "2.pdf", "3.pdf", "4.pdf")
-    doc = fitz.open()
-    for f in flist:
-        fname = os.path.join(resources, f)
-        x = fitz.open(fname)
-        doc.insert_pdf(x, links=True, annots=True)
-        x.close()
+def test_insert():
+    all_text_original = []  # text on input pages
+    all_text_combined = []  # text on resulting output pages
+    # prepare input PDFs
+    doc1 = fitz.open()
+    for i in range(5):  # just arbitrary number of pages
+        text = f"doc 1, page {i}"  # the 'globally' unique text
+        page = doc1.new_page()
+        page.insert_text((100, 72), text)
+        all_text_original.append(text)
 
-    tobytes = doc.tobytes(deflate=True, garbage=4)
-    new_output = fitz.open("pdf", tobytes)
-    old_output = fitz.open(oldfile)
-    # result must have same objects, because MuPDF garbage
-    # collection is a predictable process.
-    
-    # We do approximate comparison if new_output with old_output.
-    #
-    assert old_output.xref_length() == new_output.xref_length()
-    def xref_str( p):
-        ret = ''
-        for xref in range(1, p.xref_length()):
-            ret += f' {xref}={p.xref_object(xref, compressed=True)}'
-        return ret
-    num_fails = 0
-    for xref in range(1, old_output.xref_length()):
-        old = old_output.xref_object(xref, compressed=True)
-        new = new_output.xref_object(xref, compressed=True)
-        if approx_compare( old, new, max_delta=1.5):
-            num_fails += 1
-            print(
-                    f'xref={xref}'
-                    f'\nold={old_output.xref_object(xref, compressed=True)}'
-                    f'\nnew={new_output.xref_object(xref, compressed=True)}'
-                    )
-    assert not num_fails
-    assert old_output.xref_get_keys(-1) == new_output.xref_get_keys(-1)
-    assert old_output.xref_get_key(-1, "ID") != new_output.xref_get_key(-1, "ID")
+    doc2 = fitz.open()
+    for i in range(4):
+        text = f"doc 2, page {i}"
+        page = doc2.new_page()
+        page.insert_text((100, 72), text)
+        all_text_original.append(text)
+
+    doc3 = fitz.open()
+    for i in range(3):
+        text = f"doc 3, page {i}"
+        page = doc3.new_page()
+        page.insert_text((100, 72), text)
+        all_text_original.append(text)
+
+    doc4 = fitz.open()
+    for i in range(6):
+        text = f"doc 4, page {i}"
+        page = doc4.new_page()
+        page.insert_text((100, 72), text)
+        all_text_original.append(text)
+
+    new_doc = fitz.open()  # make combined PDF of input files
+    new_doc.insert_pdf(doc1)
+    new_doc.insert_pdf(doc2)
+    new_doc.insert_pdf(doc3)
+    new_doc.insert_pdf(doc4)
+    # read text from all pages and store in list
+    for page in new_doc:
+        all_text_combined.append(page.get_text().replace("\n", ""))
+    # the lists must be equal
+    assert all_text_combined == all_text_original
 
 
 def test_issue1417_insertpdf_in_loop():
