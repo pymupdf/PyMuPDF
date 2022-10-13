@@ -79,7 +79,6 @@ EnsureOwnership(self)%}
 #endif
 
 #define SWIG_FILE_WITH_INIT
-#define SWIG_PYTHON_2_UNICODE
 
 // JM_MEMORY controls what allocators we tell MuPDF to use when we call
 // fz_new_context():
@@ -6845,7 +6844,7 @@ if not sanitize and not self.is_wrapped:
                     goto have_image;
                 }
 
-            //have_imask:;  // fixme: unused label.
+            // have_imask:;
                 cbuf1 = fz_compressed_image_buffer(gctx, image);
                 if (!cbuf1) {
                     RAISEPY(gctx, "uncompressed image cannot have mask", PyExc_ValueError);
