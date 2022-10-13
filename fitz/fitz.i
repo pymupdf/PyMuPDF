@@ -12503,33 +12503,6 @@ struct Archive
             Py_RETURN_NONE;
         }
 
-        //---------------------------------------
-        // Add zip/tar file obj, or single items
-        //---------------------------------------
-        FITZEXCEPTION(_add_treetuple, !result)
-        PyObject *_add_treetuple(PyObject *entries, const char *path=NULL)
-        {
-            fz_archive *arch = (fz_archive *) $self;
-            fz_archive *sub = NULL;
-            int drop_sub = 1;  // switch controls drop of sub
-            fz_try(gctx) {
-                sub = JM_archive_from_py(gctx, arch, entries, path, &drop_sub);
-                // if new sub-archive, mount it
-                if (drop_sub) {
-                    fz_mount_multi_archive(gctx, arch, sub, path);
-                }
-            }
-            fz_always(gctx) {
-                if (drop_sub) {
-                    fz_drop_archive(gctx, sub);
-                }
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            Py_RETURN_NONE;
-        }
-
         %pythoncode %{
         def add(self, content, path=None):
             """Add a sub-archive.
@@ -12635,32 +12608,26 @@ struct Archive
             # handling sequence types here
             #----------------------------------------
 
-            # check for tuples of tree items
-            test = [t for t in content if type(t) in (tuple, list) and len(t) == 2]
-            if len(test) == len(content):  # list of tree items
-                test = []
-                fmt = "tree"
-                mount = path
-                for item, name in content:
-                    if not name or not type(name) is str or (not bin_ok(item) and not os.path.isfile(str(item))):
-                        raise ValueError(f"bad item {name} in entries")
-                    entries.append(name)
-                    if bin_ok(item):
-                        test.append((item, name))
-                        continue
-                    _ = open(str(item), "rb")
-                    test.append((_.read(), name))
-                    _.close()
-                test = tuple(test)
-                self._add_treetuple(test, path=path)
-                return make_subarch()
-            
+            if len(content) == 2: # covers the tree item plus path
+                data, name = content
+                if bin_ok(data) or os.path.isfile(str(data)):
+                    if not type(name) is str:
+                        raise ValueError(f"bad item name {name}")
+                    mount = path
+                    fmt = "tree"
+                    if bin_ok(data):
+                        self._add_treeitem(data, name, path=mount)
+                    else:
+                        _ = open(str(data), "rb")
+                        ff = _.read()
+                        _.close()
+                        seld._add_treeitem(ff, name, path=mount)
+                    entries = [name]
+                    return make_subarch()
+
             # deal with sequence of disparate items
             for item in content:
-                if type(item) in (list, tuple) and len(item) == 2:
-                    self.add(item[0], item[1])
-                else:
-                    self.add(item, path)
+                self.add(item, path)
 
         __doc__ = """Archive(dirname [, path]) - from folder
         Archive(file [, path]) - from file name or object
@@ -13237,7 +13204,7 @@ struct Xml
 
         def append_styled_span(self, style):
             span = self.create_element("span")
-            span.set_style(style)
+            span.add_style(style)
             prev = self.span_bottom()
             if prev == None:
                 prev = self
@@ -13271,7 +13238,7 @@ struct Xml
         def set_bgcolor(self, color):
             """Set background color via CSS style"""
             text = f"background-color: %s" % self.color_text(color)
-            self.set_style(text)  # does not work on span level
+            self.add_style(text)  # does not work on span level
             return self
 
         def set_opacity(self, opacity):
@@ -13289,10 +13256,12 @@ struct Xml
                 t = "right"
             elif align == TEXT_ALIGN_JUSTIFY:
                 t = "justify"
+            elif type(align) is str:
+                t = align
             else:
                 t = "left"
             text = text % t
-            self.set_style(text)
+            self.add_style(text)
             return self
 
         def set_underline(self, val="underline"):
@@ -13303,13 +13272,13 @@ struct Xml
         def set_pagebreak_before(self):
             """Insert a page break before this node."""
             text = "page-break-before: always"
-            self.set_style(text)
+            self.add_style(text)
             return self
 
         def set_pagebreak_after(self):
             """Insert a page break after this node."""
             text = "page-break-after: always"
-            self.set_style(text)
+            self.add_style(text)
             return self
 
         def set_fontsize(self, fontsize):
@@ -13325,13 +13294,13 @@ struct Xml
         def set_lineheight(self, lineheight):
             """Set line height name via CSS style - block-level only."""
             text = f"line-height: {lineheight}"
-            self.set_style(text)
+            self.add_style(text)
             return self
 
         def set_leading(self, leading):
             """Set inter-line spacing value via CSS style - block-level only."""
             text = f"-mupdf-leading: {leading}"
-            self.set_style(text)
+            self.add_style(text)
             return self
 
         def set_word_spacing(self, spacing):
@@ -13349,7 +13318,7 @@ struct Xml
         def set_text_indent(self, indent):
             """Set text indentation name via CSS style - block-level only."""
             text = f"text-indent: {indent}"
-            self.set_style(text)
+            self.add_style(text)
             return self
 
         def set_bold(self, val=True):
@@ -13404,7 +13373,7 @@ struct Xml
             if bgcolor:
                 temp.set_bgcolor(bgcolor)
             if bold:
-                temp.set_bold()
+                temp.set_bold(bold)
             if color:
                 temp.set_color(color)
             if columns:
@@ -13434,7 +13403,7 @@ struct Xml
             if unqid:
                 self.set_id(unqid)
             if cls:
-                self.set_class(cls)
+                self.add_class(cls)
 
             styles = []
             top_style = temp.get_attribute_value("style")
@@ -13472,7 +13441,7 @@ struct Xml
                     prev.append_child(self.create_element("br"))
             return self
 
-        def set_style(self, text):
+        def add_style(self, text):
             """Set some style via CSS style. Replaces complete style spec."""
             style = self.get_attribute_value("style")
             if style != None and text in style:
@@ -13485,7 +13454,7 @@ struct Xml
             self.set_attribute("style", style)
             return self
 
-        def set_class(self, text):
+        def add_class(self, text):
             """Set some class via CSS. Replaces complete class spec."""
             cls = self.get_attribute_value("class")
             if cls != None and text in cls:
@@ -13539,18 +13508,8 @@ struct Story
 
         FITZEXCEPTION(Story, !result)
         %pythonprepend Story %{
-        if archive == None:
-            archive = Archive(".")
-        elif type(archive) is str:
+        if archive != None and isinstance(archive, Archive) == False:
             archive = Archive(archive)
-        elif type(archive) in (tuple, list):
-            newarch = Archive()
-            for arch in archive:
-                if type(arch) in (str, Archive):
-                    newarch.add(arch)
-                elif type(arch) in (tuple, list):
-                    newarch.add(*tuple(arch))
-            archive = newarch
         %}
         Story(const char* html=NULL, const char *user_css=NULL, double em=12, struct Archive *archive=NULL)
         {
