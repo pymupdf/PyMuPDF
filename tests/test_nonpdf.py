@@ -20,10 +20,13 @@ def test_pageids():
     assert doc.chapter_count == 7
     assert doc.last_location == (6, 1)
     assert doc.prev_location((6, 0)) == (5, 11)
-    assert doc.page_number_from_location((5, 11)) == 37
-    assert doc.location_from_page_number(37) == (5, 11)
     assert doc.next_location((5, 11)) == (6, 0)
-
+    # Check page numbers have no gaps:
+    i = 0
+    for chapter in range(doc.chapter_count):
+        for cpno in range(doc.chapter_page_count(chapter)):
+            assert doc.page_number_from_location((chapter, cpno)) == i
+            i += 1
 
 def test_layout():
     """Memorize a page location, re-layout with ISO-A4, assert pre-determined location."""
