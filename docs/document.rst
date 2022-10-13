@@ -519,7 +519,7 @@ For details on **embedded files** refer to Appendix 3.
 
           - ``startpage``: (int) the first page number (0-based) to apply the label rule. This key **must be present**. The rule is applied to all subsequent pages until either end of document or superseded by the rule with the next larger page number.
           - ``prefix``: (str) an arbitrary string to start the label with, e.g. "A-". Default is "".
-          - ``style``: (str) the numbering style. Available are "D" (decimal), "r"/"R" (Roman numbers, lower / upper case), and "a"/"A" (lower / upper case alphabetical numbering: "a" through "z", then "aa" through "az", etc.). Default is "". If "", no numbering will take place and the pages in that range will receive the same label consisting of the ``prefix`` value. If prefix is also omitted, then the label will be "".
+          - ``style``: (str) the numbering style. Available are "D" (decimal), "r"/"R" (Roman numbers, lower / upper case), and "a"/"A" (lower / upper case alphabetical numbering: "a" through "z", then "aa" through "zz", etc.). Default is "". If "", no numbering will take place and the pages in that range will receive the same label consisting of the ``prefix`` value. If prefix is also omitted, then the label will be "".
           - ``firstpagenum``: (int) start numbering with this value. Default is 1, smaller values are ignored.
 
        For example::
