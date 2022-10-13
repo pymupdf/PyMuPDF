@@ -6844,7 +6844,6 @@ if not sanitize and not self.is_wrapped:
                     goto have_image;
                 }
 
-            // have_imask:;
                 cbuf1 = fz_compressed_image_buffer(gctx, image);
                 if (!cbuf1) {
                     RAISEPY(gctx, "uncompressed image cannot have mask", PyExc_ValueError);
@@ -8645,7 +8644,7 @@ struct Outline {
             return ret.
         */
         %newobject next;
-        %pythoncode %{ @property %}
+        %pythoncode %{@property%}
         struct Outline *next()
         {
             fz_outline *ol = (fz_outline *) $self;
@@ -8656,7 +8655,7 @@ struct Outline {
         }
 
         %newobject down;
-        %pythoncode %{ @property %}
+        %pythoncode %{@property%}
         struct Outline *down()
         {
             fz_outline *ol = (fz_outline *) $self;
@@ -9371,8 +9370,14 @@ struct Annot
         PyObject *
         set_rect(PyObject *rect)
         {
+            pdf_annot *annot = (pdf_annot *) $self;
+            int type = pdf_annot_type(gctx, annot);
+            if (type == PDF_ANNOT_LINE || type == PDF_ANNOT_POLY_LINE ||
+                type == PDF_ANNOT_POLYGON) {
+                    fz_warn(gctx, "setting rectangle ignored for annot type %s", pdf_string_from_annot_type(gctx, type));
+                    Py_RETURN_NONE;
+                }
             fz_try(gctx) {
-                pdf_annot *annot = (pdf_annot *) $self;
                 pdf_page *pdfpage = pdf_annot_page(gctx, annot);
                 fz_matrix rot = JM_rotate_page_matrix(gctx, pdfpage);
                 fz_rect r = fz_transform_rect(JM_rect_from_py(rect), rot);
