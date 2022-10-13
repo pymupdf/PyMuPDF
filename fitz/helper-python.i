@@ -1108,8 +1108,6 @@ def CheckFont(page: "struct Page *", fontname: str) -> tuple:
     for f in page.get_fonts():
         if f[4] == fontname:
             return f
-        if f[3].lower() == fontname.lower():
-            return f
 
 
 def CheckFontInfo(doc: "struct Document *", xref: int) -> list:
