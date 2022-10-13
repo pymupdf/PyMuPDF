@@ -1199,6 +1199,104 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
 #undef SETATTR
 }
 
+// -----------------------------------------------------------
+// Return last archive if it is a tree and mount points match
+// -----------------------------------------------------------
+fz_archive *JM_last_tree(fz_context *ctx, fz_archive *arch, const char *mount)
+{
+    typedef struct
+    {
+        fz_archive *arch;
+        char *dir;
+    } multi_archive_entry;
+
+    typedef struct
+    {
+        fz_archive super;
+        int len;
+        int max;
+        multi_archive_entry *sub;
+    } fz_multi_archive;
+
+    if (!arch) {
+        return NULL;
+    }
+
+    fz_multi_archive *multi = (fz_multi_archive *) arch;
+    if (multi->len == 0) {  // archive is empty
+        return NULL;
+    }
+    int i = multi->len - 1;  // read last sub archive
+    multi_archive_entry *e = &multi->sub[i];
+    fz_archive *arch_ = e->arch;
+    const char *mount_ = e->dir;
+    const char *fmt = fz_archive_format(ctx, arch_);
+    if (strcmp(fmt, "tree") != 0) {  // not a tree archive
+        return NULL;
+    }
+    if ((mount_ && mount && strcmp(mount, mount_) == 0) || (!mount && !mount_)) {  // last sub archive is eligible!
+        return arch_;
+    }
+    return NULL;
+}
+
+fz_archive *JM_archive_from_py(fz_context *ctx, fz_archive *arch, PyObject *path, const char *mount, int *drop_sub)
+{
+    fz_stream *stream = NULL;
+    fz_buffer *buff = NULL;
+    *drop_sub = 1;
+    fz_archive *sub = NULL;
+    const char *my_mount = mount;
+    fz_try(ctx) {
+        // tree archive: tuple of memory items
+        // check if we can add to last sub-archive
+        sub = JM_last_tree(ctx, arch, my_mount);
+        if (!sub) {
+            sub = fz_new_tree_archive(ctx, NULL);
+        } else {
+            *drop_sub = 0;  // never drop last sub-archive
+        }
+
+        // a single tree item
+        if (PyBytes_Check(path) || PyByteArray_Check(path) || PyObject_HasAttrString(path, "getvalue")) {
+            buff = JM_BufferFromBytes(ctx, path);
+            fz_tree_archive_add_buffer(ctx, sub, mount, buff);
+            goto finished;
+        }
+
+        // a tuple of tree items
+        Py_ssize_t i, n = PyTuple_Size(path);
+        for (i = 0; i < n; i++) {
+            PyObject *item = PyTuple_GET_ITEM(path, i);
+            PyObject *i0 = PySequence_GetItem(item, 0);  // data
+            PyObject *i1 = PySequence_GetItem(item, 1);  // name
+            buff = JM_BufferFromBytes(ctx, i0);
+            fz_tree_archive_add_buffer(ctx, sub, PyUnicode_AsUTF8(i1), buff);
+            fz_drop_buffer(ctx, buff);
+            Py_DECREF(i0);
+            Py_DECREF(i1);
+        }
+        buff = NULL;
+        goto finished;
+
+        finished:;
+    }
+
+    fz_always(ctx) {
+        fz_drop_buffer(ctx, buff);
+        fz_drop_stream(ctx, stream);
+    }
+
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
+
+    return sub;
+}
+
+
+
+
 //-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities
 //-----------------------------------------------------------------------------
@@ -1237,6 +1335,5 @@ struct fz_store
 	int defer_reap_count;
 	int needs_reaping;
 };
-
 
 %}
