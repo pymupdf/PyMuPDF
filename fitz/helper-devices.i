@@ -52,7 +52,6 @@ jm_checkquad()
 {
 	PyObject *items = PyDict_GetItem(dev_pathdict, dictkey_items);
 	Py_ssize_t i, len = PyList_Size(items);
-	long orientation;
 	float f[8];
 	fz_point temp, lp;
 	PyObject *rect;
@@ -66,51 +65,19 @@ jm_checkquad()
 	}
 	if (lp.x != f[0] || lp.y != f[1]) {
 		// not a polygon!
-		dev_linecount -= 1;
+		//dev_linecount -= 1;
 		return 0;
 	}
 	dev_linecount = 0;  // reset this
-	if (f[1] != f[3] || f[2] != f[4] ||
-		f[5] != f[7] || f[6] != f[0]) {
-		// not a rect
-		goto make_quad;
-	}
-	
-	// Have a rect, check orientation
-	if (f[0] < f[2]) {  // move left to right
-		if (f[3] > f[5]) {  // move upwards
-			orientation = 1;
-		} else {
-			orientation = -1;
-		}
-	} else {  // move right to left
-		if (f[3] < f[5]) {  // move downwards
-			orientation = 1;
-		} else {
-			orientation = -1;
-		}
-	}
-	// Replace the 4 "l" items by one "re" item.
-	fz_rect r = fz_make_rect(f[0], f[1], f[0], f[1]);
-	r = fz_include_point_in_rect(r, fz_make_point(f[2], f[3]));
-	r = fz_include_point_in_rect(r, fz_make_point(f[4], f[5]));
-	r = fz_include_point_in_rect(r, fz_make_point(f[6], f[7]));
-	rect = PyTuple_New(3);
-	PyTuple_SET_ITEM(rect, 0, PyUnicode_FromString("re"));
-	PyTuple_SET_ITEM(rect, 1, JM_py_from_rect(r));
-	PyTuple_SET_ITEM(rect, 2, PyLong_FromLong(orientation));
-	goto finish;
 
-	make_quad:;
 	rect = PyTuple_New(2);
 	PyTuple_SET_ITEM(rect, 0, PyUnicode_FromString("qu"));
-	/*
-	relationship of float array to quad points:
-	(0, 1) = ul, (2, 3) = ll, (6, 7) = ur, (4, 5) = lr
-	*/
+	/* ----------------------------------------------------
+	* relationship of float array to quad points:
+	* (0, 1) = ul, (2, 3) = ll, (6, 7) = ur, (4, 5) = lr
+	---------------------------------------------------- */
 	fz_quad q = fz_make_quad(f[0], f[1], f[6], f[7], f[2], f[3], f[4], f[5]);
 	PyTuple_SET_ITEM(rect, 1, JM_py_from_quad(q));
-	finish:;
 	PyList_SetItem(items, len - 4, rect); // replace item -4 by rect
 	PyList_SetSlice(items, len - 3, len, NULL); // delete remaining 3 items
 	return 1;
@@ -233,7 +200,7 @@ trace_lineto(fz_context *ctx, void *dev_, float x, float y)
 	PyObject *items = PyDict_GetItem(dev_pathdict, dictkey_items);
 	LIST_APPEND_DROP(items, list);
 	dev_linecount += 1;  // counts consecutive lines
-	if (dev_linecount >= 4 && path_type != FILL_PATH) {  // shrink to "re" or "qu" item
+	if (dev_linecount == 4 && path_type != FILL_PATH) {  // shrink to "re" or "qu" item
 		jm_checkquad();
 	}
 }
@@ -272,6 +239,7 @@ trace_close(fz_context *ctx, void *dev_)
 		}
 	}
 	DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(1));
+	dev_linecount = 0;  // reset # of consec. lines
 }
 
 static const fz_path_walker trace_path_walker =
@@ -430,7 +398,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	PyObject *chars = PyTuple_New(span->len);
 	fz_matrix join = fz_concat(span->trm, ctm);
 	fz_point dir = fz_transform_vector(fz_make_point(1, 0), join);
-	double fsize = sqrt((double) dir.x * dir.x + (double) dir.y * dir.y);
+	double fsize = sqrt(fabs((double) join.a * (double) join.d));
 	double linewidth, adv, asc, dsc;
 	double space_adv = 0;
 	float x0, y0, x1, y1;
