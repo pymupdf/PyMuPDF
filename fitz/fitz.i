@@ -12621,7 +12621,7 @@ struct Archive
                         _ = open(str(data), "rb")
                         ff = _.read()
                         _.close()
-                        seld._add_treeitem(ff, name, path=mount)
+                        self._add_treeitem(ff, name, path=mount)
                     entries = [name]
                     return make_subarch()
 
