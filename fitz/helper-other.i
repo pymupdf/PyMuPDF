@@ -1154,6 +1154,50 @@ calc_image_matrix(int width, int height, PyObject *tr, int rotate, int keep)
     return mat;
 }
 
+// --------------------------------------------------------
+// Callback function for the Story class
+// --------------------------------------------------------
+static PyObject *make_story_elpos = NULL; // Py function returning object
+void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *pos)
+{
+#define SETATTR(a, v) temp=v;PyObject_SetAttrString(arg, a, v);Py_DECREF(v)
+    // ------------------------------------------------------------------------
+    // 'opaque' is a tuple (userfunc, userdict), where 'userfunc' is a function
+    // in the user's script and 'userdict' is a dictionary containing any
+    // additional parameters of the user
+    // userfunc will be called with the joined info of userdict and pos.
+    // ------------------------------------------------------------------------
+    PyObject *temp = NULL;
+    PyObject *callarg = (PyObject *) opaque;
+    PyObject *userfunc = PyTuple_GET_ITEM(callarg, 0);
+    PyObject *userdict = PyTuple_GET_ITEM(callarg, 1);
+
+    PyObject *this_module = PyImport_AddModule("fitz");  // get our module
+    if (!make_story_elpos) {  // locate ElementPosition maker once
+        make_story_elpos = Py_BuildValue("s", "make_story_elpos");
+    }
+    // get access to ElementPosition() object
+    PyObject *arg = PyObject_CallMethodNoArgs(this_module, make_story_elpos);
+    
+    SETATTR("depth", Py_BuildValue("i", pos->depth));
+    SETATTR("heading", Py_BuildValue("i", pos->heading));
+    SETATTR("id", Py_BuildValue("s", pos->id));
+    SETATTR("rect", JM_py_from_rect(pos->rect));
+    SETATTR("text", Py_BuildValue("s", pos->text));
+    SETATTR("open_close", Py_BuildValue("i", pos->open_close));
+    SETATTR("rect_num", Py_BuildValue("i", pos->rectangle_num));
+
+    // iterate over userdict items and set their attributes
+    PyObject *pkey = NULL;
+    PyObject *pval = NULL;
+    Py_ssize_t ppos = 0;
+    while (PyDict_Next(userdict, &ppos, &pkey, &pval)) {
+            PyObject_SetAttr(arg, pkey, pval);
+    }
+    PyObject_CallOneArg(userfunc, arg);
+    Py_DECREF(arg);
+#undef SETATTR
+}
 
 //-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities
