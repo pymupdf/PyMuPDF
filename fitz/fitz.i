@@ -300,10 +300,12 @@ OptBytes = typing.Optional[typing.ByteString]
 OptSeq = typing.Optional[typing.Sequence]
 
 try:
-    from pymupdf_fonts import fontdescriptors
+    from pymupdf_fonts import fontdescriptors, fontbuffers
 
     fitz_fontdescriptors = fontdescriptors.copy()
-    del fontdescriptors
+    for k in fitz_fontdescriptors.keys():
+        fitz_fontdescriptors[k]["loader"] = fontbuffers[k]
+    del fontdescriptors, fontbuffers
 except ImportError:
     fitz_fontdescriptors = {}
 %}
