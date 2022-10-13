@@ -734,9 +734,9 @@ PyObject *JM_outline_xrefs(fz_context *ctx, pdf_obj *obj, PyObject *xrefs)
 }
 
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------
 // Return the contents of a font file, identified by xref
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------
 fz_buffer *JM_get_fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
 {
     if (xref < 1) return NULL;
@@ -809,9 +809,9 @@ char *JM_get_fontextension(fz_context *ctx, pdf_document *doc, int xref)
     }
 
     pdf_drop_obj(ctx, o);
-    if (!obj) return "n/a";           // this is a base-14 font
+    if (!obj) return "n/a";  // this is a base-14 font
 
-    o = obj;                           // we have the FontDescriptor
+    o = obj;  // we have the FontDescriptor
 
     obj = pdf_dict_get(ctx, o, PDF_NAME(FontFile));
     if (obj) return "pfa";
