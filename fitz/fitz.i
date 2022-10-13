@@ -284,6 +284,9 @@ import hashlib
 import typing
 import binascii
 import re
+import tarfile
+import zipfile
+import pathlib
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -338,6 +341,10 @@ struct Font;
 struct Graftmap;
 struct TextPage;
 struct TextWriter;
+struct DocumentWriter;
+struct Xml;
+struct Archive;
+struct Story;
 %}
 
 //------------------------------------------------------------------------
@@ -12173,6 +12180,1455 @@ struct Font
 
             def __del__(self):
                 if not type(self) is Font:
+                    return
+                if getattr(self, "thisown", False):
+                    self.__swig_destroy__(self)
+        %}
+    }
+};
+
+
+//------------------------------------------------------------------------
+// DocumentWriter
+//------------------------------------------------------------------------
+
+struct DocumentWriter
+{
+    %extend
+    {
+        ~DocumentWriter()
+        {
+            // need this structure to free any fz_output the writer may have
+            typedef struct { // copied from pdf_write.c
+                fz_document_writer super;
+                pdf_document *pdf;
+                pdf_write_options opts;
+                fz_output *out;
+                fz_rect mediabox;
+                pdf_obj *resources;
+                fz_buffer *contents;
+            } pdf_writer;
+
+            fz_document_writer *writer_fz = (fz_document_writer *) $self;
+            fz_output *out = NULL;
+            pdf_writer *writer_pdf = (pdf_writer *) writer_fz;
+            if (writer_pdf) {
+                out = writer_pdf->out;
+                if (out) {
+                    DEBUGMSG1("Output of DocumentWriter");
+                    fz_drop_output(gctx, out);
+                    writer_pdf->out = NULL;
+                    DEBUGMSG2;
+                }
+            }
+            DEBUGMSG1("DocumentWriter");
+            fz_drop_document_writer( gctx, writer_fz);
+            DEBUGMSG2;
+        }
+        
+        FITZEXCEPTION(DocumentWriter, !result)
+        %pythonprepend DocumentWriter
+        %{
+            if type(path) is str:
+                pass
+            elif hasattr(path, "absolute"):
+                path = str(path)
+            elif hasattr(path, "name"):
+                path = path.name
+            if options==None:
+                options=""
+        %}
+        %pythonappend DocumentWriter
+        %{
+        %}
+        DocumentWriter( PyObject* path, const char* options=NULL)
+        {
+            fz_output *out = NULL;
+            fz_document_writer* ret=NULL;
+            fz_try(gctx) {
+            if (PyUnicode_Check(path)) {
+                ret = fz_new_pdf_writer( gctx, PyUnicode_AsUTF8(path), options);
+            } else {
+                out = JM_new_output_fileptr(gctx, path);
+                ret = fz_new_pdf_writer_with_output(gctx, out, options);
+            }
+            }
+
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct DocumentWriter*) ret;
+        }
+        
+        struct DeviceWrapper* begin_page( PyObject* mediabox)
+        {
+            fz_rect mediabox2 = JM_rect_from_py(mediabox);
+            fz_device* device = fz_begin_page( gctx, (fz_document_writer*) $self, mediabox2);
+            struct DeviceWrapper* device_wrapper
+                = (struct DeviceWrapper*) calloc(1, sizeof(struct DeviceWrapper))
+                ;
+            device_wrapper->device = device;
+            device_wrapper->list = NULL;
+            return device_wrapper;
+        }
+        
+        void end_page()
+        {
+            fz_end_page( gctx, (fz_document_writer*) $self);
+        }
+        
+        void close()
+        {
+            fz_document_writer *writer = (fz_document_writer*) $self;
+            fz_close_document_writer( gctx, writer);
+        }
+        %pythoncode
+        %{
+            def __del__(self):
+                if not type(self) is DocumentWriter:
+                    return
+                if getattr(self, "thisown", False):
+                    self.__swig_destroy__(self)
+        %}
+    }
+};
+
+//------------------------------------------------------------------------
+// Archive
+//------------------------------------------------------------------------
+struct Archive
+{
+    %extend
+    {
+        ~Archive()
+        {
+            DEBUGMSG1("Archive");
+            fz_drop_archive( gctx, (fz_archive *) $self);
+            DEBUGMSG2;
+        }
+        FITZEXCEPTION(Archive, !result)
+        %pythonprepend Archive %{
+        self._subarchives = []
+        %}
+        %pythonappend Archive %{
+        self.thisown = True
+        if args != ():
+            self.add(*args)
+        %}
+
+        //---------------------------------------
+        // new empty archive
+        //---------------------------------------
+        Archive(struct Archive *a0=NULL, const char *path=NULL)
+        {
+            fz_archive *arch=NULL;
+            fz_try(gctx) {
+                arch = fz_new_multi_archive(gctx);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Archive *) arch;
+        }
+        Archive(PyObject *a0=NULL, const char *path=NULL)
+        {
+            fz_archive *arch=NULL;
+            fz_try(gctx) {
+                arch = fz_new_multi_archive(gctx);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Archive *) arch;
+        }
+
+        FITZEXCEPTION(has_entry, !result)
+        PyObject *has_entry(const char *name)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            int ret = 0;
+            fz_try(gctx) {
+                ret = fz_has_archive_entry(gctx, arch, name);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return JM_BOOL(ret);
+        }
+
+        FITZEXCEPTION(read_entry, !result)
+        PyObject *read_entry(const char *name)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            PyObject *ret = NULL;
+            fz_buffer *buff = NULL;
+            fz_try(gctx) {
+                buff = fz_read_archive_entry(gctx, arch, name);
+                ret = JM_BinFromBuffer(gctx, buff);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return ret;
+        }
+
+        //--------------------------------------
+        // add dir
+        //--------------------------------------
+        FITZEXCEPTION(_add_dir, !result)
+        PyObject *_add_dir(const char *folder, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            fz_try(gctx) {
+                sub = fz_open_directory(gctx, folder);
+                fz_mount_multi_archive(gctx, arch, sub, path);
+            }
+            fz_always(gctx) {
+                fz_drop_archive(gctx, sub);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------
+        // add archive
+        //----------------------------------
+        FITZEXCEPTION(_add_arch, !result)
+        PyObject *_add_arch(struct Archive *subarch, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = (fz_archive *) subarch;
+            fz_try(gctx) {
+                fz_mount_multi_archive(gctx, arch, sub, path);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------
+        // add ZIP/TAR from file
+        //----------------------------------
+        FITZEXCEPTION(_add_ziptarfile, !result)
+        PyObject *_add_ziptarfile(const char *filepath, int type, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            fz_try(gctx) {
+                if (type==1) {
+                    sub = fz_open_zip_archive(gctx, filepath);
+                } else {
+                    sub = fz_open_tar_archive(gctx, filepath);
+                }
+                fz_mount_multi_archive(gctx, arch, sub, path);
+            }
+            fz_always(gctx) {
+                fz_drop_archive(gctx, sub);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------
+        // add ZIP/TAR from memory
+        //----------------------------------
+        FITZEXCEPTION(_add_ziptarmemory, !result)
+        PyObject *_add_ziptarmemory(PyObject *memory, int type, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            fz_stream *stream = NULL;
+            fz_buffer *buff = NULL;
+            fz_try(gctx) {
+                buff = JM_BufferFromBytes(gctx, memory);
+                stream = fz_open_buffer(gctx, buff);
+                if (type==1) {
+                    sub = fz_open_zip_archive_with_stream(gctx, stream);
+                } else {
+                    sub = fz_open_tar_archive_with_stream(gctx, stream);
+                }
+                fz_mount_multi_archive(gctx, arch, sub, path);
+            }
+            fz_always(gctx) {
+                fz_drop_stream(gctx, stream);
+                fz_drop_buffer(gctx, buff);
+                fz_drop_archive(gctx, sub);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        //----------------------------------
+        // add "tree" item
+        //----------------------------------
+        FITZEXCEPTION(_add_treeitem, !result)
+        PyObject *_add_treeitem(PyObject *memory, const char *name, const char *path=NULL)
+        {
+            fz_archive *arch = (fz_archive *) $self;
+            fz_archive *sub = NULL;
+            fz_buffer *buff = NULL;
+            int drop_sub = 0;
+            fz_try(gctx) {
+                buff = JM_BufferFromBytes(gctx, memory);
+                sub = JM_last_tree(gctx, arch, path);
+                if (!sub) {
+                    sub = fz_new_tree_archive(gctx, NULL);
+                    drop_sub = 1;
+                }
+                fz_tree_archive_add_buffer(gctx, sub, name, buff);
+                if (drop_sub) {
+                    fz_mount_multi_archive(gctx, arch, sub, path);
+                }
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+                if (drop_sub) {
+                    fz_drop_archive(gctx, sub);
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode %{
+        def add(self, content, path=None):
+            """Add a sub-archive.
+
+            Args:
+                content: content to be added. May be one of Archive, folder
+                     name, file name, raw bytes (bytes, bytearray), zipfile,
+                     tarfile, or a sequence of any of these types.
+                path: (str) a "virtual" path name, under which the elements
+                    of content can be retrieved. Use it to e.g. cope with
+                    duplicate element names.
+            """
+            bin_ok = lambda x: isinstance(x, (bytes, bytearray, io.BytesIO))
+
+            entries = []
+            mount = None
+            fmt = None
+
+            def make_subarch():
+                subarch = {"fmt": fmt, "entries": entries, "path": mount}
+                if fmt != "tree" or self._subarchives == []:
+                    self._subarchives.append(subarch)
+                else:
+                    ltree = self._subarchives[-1]
+                    if ltree["fmt"] != "tree" or ltree["path"] != subarch["path"]:
+                        self._subarchives.append(subarch)
+                    else:
+                        ltree["entries"].extend(subarch["entries"])
+                        self._subarchives[-1] = ltree
+                return
+
+            if isinstance(content, zipfile.ZipFile):
+                fmt = "zip"
+                entries = content.namelist()
+                mount = path
+                filename = getattr(content, "filename", None)
+                fp = getattr(content, "fp", None)
+                if filename:
+                    self._add_ziptarfile(filename, 1, path)
+                else:
+                    self._add_ziptarmemory(fp.getvalue(), 1, path)
+                return make_subarch()
+            
+            if isinstance(content, tarfile.TarFile):
+                fmt = "tar"
+                entries = content.getnames()
+                mount = path
+                filename = getattr(content.fileobj, "name", None)
+                fp = content.fileobj
+                if not isinstance(fp, io.BytesIO) and not filename:
+                    fp = fp.fileobj
+                if filename:
+                    self._add_ziptarfile(filename, 0, path)
+                else:
+                    self._add_ziptarmemory(fp.getvalue(), 0, path)
+                return make_subarch()
+
+            if isinstance(content, Archive):
+                fmt = "multi"
+                mount = path
+                self._add_arch(content, path)
+                return make_subarch()
+
+            if bin_ok(content):
+                if not (path and type(path) is str):
+                    raise ValueError("need name for binary content")
+                fmt = "tree"
+                mount = None
+                entries = [path]
+                self._add_treeitem(content, path)
+                return make_subarch()
+
+            if hasattr(content, "name"):
+                content = content.name
+            elif isinstance(content, pathlib.Path):
+                content = str(content)
+            
+            if os.path.isdir(str(content)):
+                a0 = str(content)
+                fmt = "dir"
+                mount = path
+                entries = os.listdir(a0)
+                self._add_dir(a0, path)
+                return make_subarch()
+            
+            if os.path.isfile(str(content)):
+                if not (path and type(path) is str):
+                    raise ValueError("need name for binary content")
+                a0 = str(content)
+                _ = open(a0, "rb")
+                ff = _.read()
+                _.close()
+                fmt = "tree"
+                mount = None
+                entries = [path]
+                self._add_treeitem(ff, path)
+                return make_subarch()
+            
+            if type(content) is str or not getattr(content, "__getitem__", None):
+                raise ValueError("bad archive content")
+
+            #----------------------------------------
+            # handling sequence types here
+            #----------------------------------------
+
+            if len(content) == 2: # covers the tree item plus path
+                data, name = content
+                if bin_ok(data) or os.path.isfile(str(data)):
+                    if not type(name) is str:
+                        raise ValueError(f"bad item name {name}")
+                    mount = path
+                    fmt = "tree"
+                    if bin_ok(data):
+                        self._add_treeitem(data, name, path=mount)
+                    else:
+                        _ = open(str(data), "rb")
+                        ff = _.read()
+                        _.close()
+                        seld._add_treeitem(ff, name, path=mount)
+                    entries = [name]
+                    return make_subarch()
+
+            # deal with sequence of disparate items
+            for item in content:
+                self.add(item, path)
+
+        __doc__ = """Archive(dirname [, path]) - from folder
+        Archive(file [, path]) - from file name or object
+        Archive(data, name) - from memory item
+        Archive() - empty archive
+        Archive(archive [, path]) - from archive
+        """
+
+        @property
+        def entry_list(self):
+            """List of sub archives."""
+            return self._subarchives
+
+        def __repr__(self):
+            return f"Archive, sub-archives: {len(self._subarchives)}"
+
+        def __del__(self):
+            if not type(self) is Archive:
+                return
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
+        %}
+    }
+};
+//------------------------------------------------------------------------
+// Xml
+//------------------------------------------------------------------------
+struct Xml
+{
+    %extend
+    {
+        ~Xml()
+        {
+            DEBUGMSG1("Xml");
+            fz_drop_xml( gctx, (fz_xml*) $self);
+            DEBUGMSG2;
+        }
+        
+        FITZEXCEPTION(Xml, !result)
+        Xml(fz_xml* xml)
+        {
+            fz_keep_xml( gctx, xml);
+            return (struct Xml*) xml;
+        }
+
+        Xml(const char *html)
+        {
+            fz_buffer *buff = NULL;
+            fz_xml *ret = NULL;
+            fz_try(gctx) {
+                buff = fz_new_buffer_from_copied_data(gctx, html, strlen(html)+1);
+                ret = fz_parse_xml_from_html5(gctx, buff);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, buff);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml(gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        %pythoncode %{@property%}
+        FITZEXCEPTION (root, !result)
+        struct Xml* root()
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_xml_root((fz_xml_doc *) $self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Xml*) ret;
+        }
+
+        FITZEXCEPTION (bodytag, !result)
+        struct Xml* bodytag()
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_keep_xml( gctx, fz_dom_body( gctx, (fz_xml *) $self));
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Xml*) ret;
+        }
+
+        FITZEXCEPTION (append_child, !result)
+        PyObject *append_child( struct Xml* child)
+        {
+            fz_try(gctx) {
+                fz_dom_append_child( gctx, (fz_xml *) $self, (fz_xml *) child);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION (create_text_node, !result)
+        struct Xml* create_text_node( const char *text)
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_dom_create_text_node( gctx,(fz_xml *) $self, text);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        FITZEXCEPTION (create_element, !result)
+        struct Xml* create_element( const char *tag)
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_dom_create_element( gctx, (fz_xml *)$self, tag);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *find(const char *tag, const char *att, const char *match)
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_find( gctx, (fz_xml *)$self, tag, att, match);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        struct Xml *find_next( const char *tag, const char *att, const char *match)
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_find_next( gctx, (fz_xml *)$self, tag, att, match);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        %pythoncode %{@property%}
+        struct Xml *next()
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_next( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        %pythoncode %{@property%}
+        struct Xml *previous()
+        {
+            fz_xml* ret=NULL;
+            ret = fz_dom_previous( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        FITZEXCEPTION (set_attribute, !result)
+        PyObject *set_attribute(const char *key, const char *value)
+        {
+            fz_try(gctx) {
+                if (strlen(key)==0) {
+                    RAISEPY(gctx, "key must not be empty", PyExc_ValueError);
+                }
+                fz_dom_add_attribute(gctx, (fz_xml *)$self, key, value);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION (remove_attribute, !result)
+        PyObject *remove_attribute(const char *key)
+        {
+            fz_try(gctx) {
+                if (strlen(key)==0) {
+                    RAISEPY(gctx, "key must not be empty", PyExc_ValueError);
+                }
+                fz_xml *elt = (fz_xml *)$self;
+                fz_dom_remove_attribute(gctx, elt, key);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+
+        FITZEXCEPTION (get_attribute_value, !result)
+        PyObject *get_attribute_value(const char *key)
+        {
+            const char *ret=NULL;
+            fz_try(gctx) {
+                if (strlen(key)==0) {
+                    RAISEPY(gctx, "key must not be empty", PyExc_ValueError);
+                }
+                fz_xml *elt = (fz_xml *)$self;
+                ret=fz_dom_attribute(gctx, elt, key);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("s", ret);
+        }
+
+
+        FITZEXCEPTION (get_attributes, !result)
+        PyObject *get_attributes()
+        {
+            fz_xml *this = (fz_xml *) $self;
+            if (fz_xml_text(this)) { // text node has none
+                Py_RETURN_NONE;
+            }
+            PyObject *result=PyDict_New();
+            fz_try(gctx) {
+                int i=0;
+                const char *key=NULL;
+                const char *val=NULL;
+                while (1) {
+                    val = fz_dom_get_attribute(gctx, this, i, &key);
+                    if (!val || !key) {
+                        break;
+                    }
+                    PyObject *temp = Py_BuildValue("s",val);
+                    PyDict_SetItemString(result, key, temp);
+                    Py_DECREF(temp);
+                    i += 1;
+                }
+            }
+            fz_catch(gctx) {
+                Py_DECREF(result);
+                return NULL;
+            }
+            return result;
+        }
+
+
+        FITZEXCEPTION (insert_before, !result)
+        PyObject *insert_before(struct Xml *node)
+        {
+            fz_xml *existing = (fz_xml *) $self;
+            fz_xml *what = (fz_xml *) node;
+            fz_try(gctx)
+            {
+                fz_dom_insert_before(gctx, existing, what);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION (insert_after, !result)
+        PyObject *insert_after(struct Xml *node)
+        {
+            fz_xml *existing = (fz_xml *) $self;
+            fz_xml *what = (fz_xml *) node;
+            fz_try(gctx)
+            {
+                fz_dom_insert_after(gctx, existing, what);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        FITZEXCEPTION (clone, !result)
+        struct Xml* clone()
+        {
+            fz_xml* ret = NULL;
+            fz_try(gctx) {
+                ret = fz_dom_clone( gctx, (fz_xml *)$self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        %pythoncode %{@property%}
+        struct Xml *parent()
+        {
+            fz_xml* ret = NULL;
+            ret = fz_dom_parent( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+        %pythoncode %{@property%}
+        struct Xml *first_child()
+        {
+            fz_xml* ret = NULL;
+            fz_xml *this = (fz_xml *)$self;
+            if (fz_xml_text(this)) { // a text node has no child
+                return NULL;
+            }
+            ret = fz_dom_first_child( gctx, (fz_xml *)$self);
+            if (!ret) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, ret);
+            return (struct Xml*) ret;
+        }
+
+
+        FITZEXCEPTION (remove, !result)
+        PyObject *remove()
+        {
+            fz_try(gctx) {
+                fz_dom_remove( gctx, (fz_xml *)$self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode %{@property%}
+        PyObject *text()
+        {
+            return Py_BuildValue("s", fz_xml_text((fz_xml *)$self));
+        }
+
+        %pythoncode %{@property%}
+        PyObject *tagname()
+        {
+            return Py_BuildValue("s", fz_xml_tag((fz_xml *)$self));
+        }
+
+
+        %pythoncode %{
+        def _get_node_tree(self):
+            def show_node(node, items, shift):
+                while node != None:
+                    if node.is_text:
+                        items.append((shift, f'"{node.text}"'))
+                        node = node.next
+                        continue
+                    items.append((shift, f"({node.tagname}"))
+                    for k, v in node.get_attributes().items():
+                        items.append((shift, f"={k} '{v}'"))
+                    child = node.first_child
+                    if child:
+                        items = show_node(child, items, shift + 1)
+                    items.append((shift, f"){node.tagname}"))
+                    node = node.next
+                return items
+
+            shift = 0
+            items = []
+            items = show_node(self, items, shift)
+            return items
+
+        def debug(self):
+            """Print a list of the node tree below self."""
+            items = self._get_node_tree()
+            for item in items:
+                print("  " * item[0] + item[1].replace("\n", "\\n"))
+
+        @property
+        def is_text(self):
+            """Check if this is a text node."""
+            return self.text != None
+
+        @property
+        def last_child(self):
+            """Return last child node."""
+            child = self.first_child
+            if child==None:
+                return None
+            while True:
+                if child.next == None:
+                    return child
+                child = child.next
+
+        @staticmethod
+        def color_text(color):
+            if type(color) is str:
+                return color
+            if type(color) is int:
+                return f"rgb({sRGB_to_rgb(color)})"
+            if type(color) in (tuple, list):
+                return f"rgb{tuple(color)}"
+            return color
+
+        def add_number_list(self, start=1, numtype=None):
+            """Add numbered list ("ol" tag)"""
+            child = self.create_element("ol")
+            if start > 1:
+                child.set_attribute("start", str(start))
+            if numtype != None:
+                child.set_attribute("type", numtype)
+            self.append_child(child)
+            return child
+
+        def add_description_list(self):
+            """Add description list ("dl" tag)"""
+            child = self.create_element("dl")
+            self.append_child(child)
+            return child
+
+        def add_image(self, name, width=None, height=None, imgfloat=None, align=None):
+            """Add image node (tag "img")."""
+            child = self.create_element("img")
+            if width != None:
+                child.set_attribute("width", f"{width}")
+            if height != None:
+                child.set_attribute("height", f"{height}")
+            if imgfloat != None:
+                child.set_attribute("style", f"float: {imgfloat}")
+            if align != None:
+                child.set_attribute("align", f"{align}")
+            child.set_attribute("src", f"{name}")
+            self.append_child(child)
+            return child
+
+        def add_bullet_list(self):
+            """Add bulleted list ("ul" tag)"""
+            child = self.create_element("ul")
+            self.append_child(child)
+            return child
+
+        def add_list_item(self):
+            """Add item ("li" tag) under a (numbered or bulleted) list."""
+            if self.tagname not in ("ol", "ul"):
+                raise ValueError("cannot add list item to", self.tagname)
+            child = self.create_element("li")
+            self.append_child(child)
+            return child
+
+        def add_span(self):
+            child = self.create_element("span")
+            self.append_child(child)
+            return child
+
+        def add_paragraph(self):
+            """Add "p" tag"""
+            child = self.create_element("p")
+            if self.tagname != "p":
+                self.append_child(child)
+            else:
+                self.parent.append_child(child)
+            return child
+
+        def add_header(self, level=1):
+            """Add header tag"""
+            if level not in range(1, 7):
+                raise ValueError("Header level must be in [1, 6]")
+            this_tag = self.tagname
+            new_tag = f"h{level}"
+            child = self.create_element(new_tag)
+            prev = self
+            if this_tag not in ("h1", "h2", "h3", "h4", "h5", "h6", "p"):
+                self.append_child(child)
+                return child
+            self.parent.append_child(child)
+            return child
+
+        def add_division(self):
+            """Add "div" tag"""
+            child = self.create_element("div")
+            self.append_child(child)
+            return child
+
+        def add_horizontal_line(self):
+            """Add horizontal line ("hr" tag)"""
+            child = self.create_element("hr")
+            self.append_child(child)
+            return child
+
+        def add_link(self, text=None):
+            """Add a hyperlink ("a" tag)"""
+            child = self.create_element("a")
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
+
+        def add_code(self, text=None):
+            """Add a "code" tag"""
+            child = self.create_element("code")
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
+
+        add_var = add_code
+        add_samp = add_code
+        add_kbd = add_code
+
+        def add_superscript(self, text=None):
+            """Add a superscript ("sup" tag)"""
+            child = self.create_element("sup")
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
+
+        def add_subscript(self, text=None):
+            """Add a subscript ("sub" tag)"""
+            child = self.create_element("sub")
+            if type(text) is str:
+               child.append_child(self.create_text_node(text)) 
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(child)
+            return self
+
+        def add_codeblock(self):
+            """Add monospaced lines ("pre" node)"""
+            child = self.create_element("pre")
+            self.append_child(child)
+            return child
+
+        def span_bottom(self):
+            """Find deepest level in stacked spans."""
+            parent = self
+            child = self.last_child
+            if child == None:
+                return None
+            while child.is_text:
+                child = child.previous
+                if child == None:
+                    break
+            if child == None or child.tagname != "span":
+                return None
+
+            while True:
+                if child == None:
+                    return parent
+                if child.tagname in ("a", "sub","sup","body") or child.is_text:
+                    child = child.next
+                    continue
+                if child.tagname == "span":
+                    parent = child
+                    child = child.first_child
+                else:
+                    return parent
+
+        def append_styled_span(self, style):
+            span = self.create_element("span")
+            span.add_style(style)
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+            prev.append_child(span)
+            return prev
+
+        def set_margins(self, val):
+            """Set margin values via CSS style"""
+            text = "margins: %s" % val
+            self.append_styled_span(text)
+            return self
+
+        def set_font(self, font):
+            """Set font-family name via CSS style"""
+            text = "font-family: %s" % font
+            self.append_styled_span(text)
+            return self
+
+        def set_color(self, color):
+            """Set text color via CSS style"""
+            text = f"color: %s" % self.color_text(color)
+            self.append_styled_span(text)
+            return self
+
+        def set_columns(self, cols):
+            """Set number of text columns via CSS style"""
+            text = f"columns: {cols}"
+            self.append_styled_span(text)
+            return self
+
+        def set_bgcolor(self, color):
+            """Set background color via CSS style"""
+            text = f"background-color: %s" % self.color_text(color)
+            self.add_style(text)  # does not work on span level
+            return self
+
+        def set_opacity(self, opacity):
+            """Set opacity via CSS style"""
+            text = f"opacity: {opacity}"
+            self.append_styled_span(text)
+            return self
+
+        def set_align(self, align):
+            """Set text alignment via CSS style"""
+            text = "text-align: %s"
+            if isinstance( align, str):
+                t = align
+            elif align == TEXT_ALIGN_LEFT:
+                t = "left"
+            elif align == TEXT_ALIGN_CENTER:
+                t = "center"
+            elif align == TEXT_ALIGN_RIGHT:
+                t = "right"
+            elif align == TEXT_ALIGN_JUSTIFY:
+                t = "justify"
+            else:
+                raise ValueError(f"Unrecognised align={align}")
+            text = text % t
+            self.add_style(text)
+            return self
+
+        def set_underline(self, val="underline"):
+            text = "text-decoration: %s" % val
+            self.append_styled_span(text)
+            return self
+
+        def set_pagebreak_before(self):
+            """Insert a page break before this node."""
+            text = "page-break-before: always"
+            self.add_style(text)
+            return self
+
+        def set_pagebreak_after(self):
+            """Insert a page break after this node."""
+            text = "page-break-after: always"
+            self.add_style(text)
+            return self
+
+        def set_fontsize(self, fontsize):
+            """Set font size name via CSS style"""
+            if type(fontsize) is str:
+                px=""
+            else:
+                px="px"
+            text = f"font-size: {fontsize}{px}"
+            self.append_styled_span(text)
+            return self
+
+        def set_lineheight(self, lineheight):
+            """Set line height name via CSS style - block-level only."""
+            text = f"line-height: {lineheight}"
+            self.add_style(text)
+            return self
+
+        def set_leading(self, leading):
+            """Set inter-line spacing value via CSS style - block-level only."""
+            text = f"-mupdf-leading: {leading}"
+            self.add_style(text)
+            return self
+
+        def set_word_spacing(self, spacing):
+            """Set inter-word spacing value via CSS style"""
+            text = f"word-spacing: {spacing}"
+            self.append_styled_span(text)
+            return self
+
+        def set_letter_spacing(self, spacing):
+            """Set inter-letter spacing value via CSS style"""
+            text = f"letter-spacing: {spacing}"
+            self.append_styled_span(text)
+            return self
+
+        def set_text_indent(self, indent):
+            """Set text indentation name via CSS style - block-level only."""
+            text = f"text-indent: {indent}"
+            self.add_style(text)
+            return self
+
+        def set_bold(self, val=True):
+            """Set bold on / off via CSS style"""
+            if val:
+                val="bold"
+            else:
+                val="normal"
+            text = "font-weight: %s" % val
+            self.append_styled_span(text)
+            return self
+
+        def set_italic(self, val=True):
+            """Set italic on / off via CSS style"""
+            if val:
+                val="italic"
+            else:
+                val="normal"
+            text = "font-style: %s" % val
+            self.append_styled_span(text)
+            return self
+
+        def set_properties(
+            self,
+            align=None,
+            bgcolor=None,
+            bold=None,
+            color=None,
+            columns=None,
+            font=None,
+            fontsize=None,
+            indent=None,
+            italic=None,
+            leading=None,
+            letter_spacing=None,
+            lineheight=None,
+            margins=None,
+            pagebreak_after=None,
+            pagebreak_before=None,
+            word_spacing=None,
+            unqid=None,
+            cls=None,
+        ):
+            """Set any or all properties of a node.
+            
+            To be used for existing nodes preferrably.
+            """
+            root = self.root
+            temp = root.add_division()
+            if align is not None:
+                temp.set_align(align)
+            if bgcolor is not None:
+                temp.set_bgcolor(bgcolor)
+            if bold is not None:
+                temp.set_bold(bold)
+            if color is not None:
+                temp.set_color(color)
+            if columns is not None:
+                temp.set_columns(columns)
+            if font is not None:
+                temp.set_font(font)
+            if fontsize is not None:
+                temp.set_fontsize(fontsize)
+            if indent is not None:
+                temp.set_text_indent(indent)
+            if italic is not None:
+                temp.set_italic(italic)
+            if leading is not None:
+                temp.set_leading(leading)
+            if letter_spacing is not None:
+                temp.set_letter_spacing(letter_spacing)
+            if lineheight is not None:
+                temp.set_lineheight(lineheight)
+            if margins is not None:
+                temp.set_margins(margins)
+            if pagebreak_after is not None:
+                temp.set_pagebreak_after()
+            if pagebreak_before is not None:
+                temp.set_pagebreak_before()
+            if word_spacing is not None:
+                temp.set_word_spacing(word_spacing)
+            if unqid is not None:
+                self.set_id(unqid)
+            if cls is not None:
+                self.add_class(cls)
+
+            styles = []
+            top_style = temp.get_attribute_value("style")
+            if top_style is not None:
+                styles.append(top_style)
+            child = temp.first_child
+            while child:
+                styles.append(child.get_attribute_value("style"))
+                child = child.first_child
+            self.set_attribute("style", ";".join(styles))
+            temp.remove()
+            return self
+
+        def set_id(self, unique):
+            """Set a unique id."""
+            # check uniqueness
+            tagname = self.tagname
+            root = self.root
+            if root.find(None, "id", unique):
+                raise ValueError(f"id '{unique}' already exists")
+            self.set_attribute("id", unique)
+            return self
+
+        def add_text(self, text):
+            """Add text. Line breaks are honored."""
+            lines = text.splitlines()
+            line_count = len(lines)
+            prev = self.span_bottom()
+            if prev == None:
+                prev = self
+
+            for i, line in enumerate(lines):
+                prev.append_child(self.create_text_node(line))
+                if i < line_count - 1:
+                    prev.append_child(self.create_element("br"))
+            return self
+
+        def add_style(self, text):
+            """Set some style via CSS style. Replaces complete style spec."""
+            style = self.get_attribute_value("style")
+            if style != None and text in style:
+                return self
+            self.remove_attribute("style")
+            if style == None:
+                style = text
+            else:
+                style += ";" + text
+            self.set_attribute("style", style)
+            return self
+
+        def add_class(self, text):
+            """Set some class via CSS. Replaces complete class spec."""
+            cls = self.get_attribute_value("class")
+            if cls != None and text in cls:
+                return self
+            self.remove_attribute("class")
+            if cls == None:
+                cls = text
+            else:
+                cls += " " + text
+            self.set_attribute("class", cls)
+            return self
+
+        def insert_text(self, text):
+            lines = text.splitlines()
+            line_count = len(lines)
+            for i, line in enumerate(lines):
+                self.append_child(self.create_text_node(line))
+                if i < line_count - 1:
+                    self.append_child(self.create_element("br"))
+            return self
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def __del__(self):
+            if not type(self) is Xml:
+                return
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
+        %}
+    }
+};
+
+//------------------------------------------------------------------------
+// Story
+//------------------------------------------------------------------------
+struct Story
+{
+    %extend
+    {
+        ~Story()
+        {
+            DEBUGMSG1("Story");
+            fz_story *this_story = (fz_story *) $self;
+            fz_drop_story(gctx, this_story);
+            DEBUGMSG2;
+        }
+
+        FITZEXCEPTION(Story, !result)
+        %pythonprepend Story %{
+        if archive != None and isinstance(archive, Archive) == False:
+            archive = Archive(archive)
+        %}
+        Story(const char* html=NULL, const char *user_css=NULL, double em=12, struct Archive *archive=NULL)
+        {
+            fz_story* story = NULL;
+            fz_buffer *buffer = NULL;
+            fz_archive* arch = NULL;
+            fz_var(story);
+            fz_var(buffer);
+            const char *html2="";
+            if (html) {
+                html2=html;
+            }
+
+            fz_try(gctx)
+            {
+                buffer = fz_new_buffer_from_copied_data(gctx, html2, strlen(html2)+1);
+                if (archive) {
+                    arch = (fz_archive *) archive;
+                }
+                story = fz_new_story(gctx, buffer, user_css, em, arch);
+            }
+            fz_always(gctx)
+            {
+                fz_drop_buffer(gctx, buffer);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            struct Story* ret = (struct Story *) story;
+            return ret;
+        }
+        
+        PyObject* reset()
+        {
+            fz_reset_story(gctx, (fz_story *)$self);
+            Py_RETURN_NONE;
+        }
+        
+        PyObject* place( PyObject* where)
+        {
+            fz_rect where2 = JM_rect_from_py(where);
+            fz_rect filled;
+            int done = fz_place_story( gctx, (fz_story*) $self, where2, &filled);
+            PyObject* ret = PyTuple_New(2);
+            PyTuple_SET_ITEM( ret, 0, Py_BuildValue( "i", done));
+            PyTuple_SET_ITEM( ret, 1, JM_py_from_rect( filled));
+            return ret;
+        }
+        
+        void draw( struct DeviceWrapper* device, PyObject* matrix=NULL)
+        {
+            fz_matrix ctm2 = JM_matrix_from_py( matrix);
+            fz_draw_story( gctx, (fz_story*) $self, device->device, ctm2);
+        }
+
+        FITZEXCEPTION(document, !result)
+        struct Xml* document()
+        {
+            fz_xml* dom=NULL;
+            fz_try(gctx) {
+                dom = fz_story_document( gctx, (fz_story*) $self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            fz_keep_xml( gctx, dom);
+            return (struct Xml*) dom;
+        }
+
+        FITZEXCEPTION(warnings, !result)
+        PyObject* warnings()
+        {
+            const char *text=NULL;
+            fz_try(gctx) {
+                text = fz_story_warnings(gctx, (fz_story *)$self);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_BuildValue("s", text);
+        }
+
+        FITZEXCEPTION(element_positions, !result)
+        %pythonprepend element_positions %{
+        if type(args) is dict:
+            for k in args.keys():
+                if not (type(k) is str and k.isidentifier()):
+                    raise ValueError(f"invalid key '{k}'")
+        else:
+            args = {}
+        %}
+        PyObject* element_positions(PyObject *function, PyObject *args)
+        {
+            PyObject *callarg=NULL;
+            fz_try(gctx) {
+                callarg = Py_BuildValue("OO", function, args);
+                fz_story_positions(gctx, (fz_story *) $self, Story_Callback, callarg);
+            }
+            fz_always(gctx) {
+                Py_DECREF(callarg);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        %pythoncode
+        %{
+            @property
+            def body(self):
+                dom = self.document()
+                return dom.bodytag()
+
+            def __del__(self):
+                if not type(self) is Story:
                     return
                 if getattr(self, "thisown", False):
                     self.__swig_destroy__(self)
