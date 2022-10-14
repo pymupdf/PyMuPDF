@@ -1177,7 +1177,7 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
         make_story_elpos = Py_BuildValue("s", "make_story_elpos");
     }
     // get access to ElementPosition() object
-    PyObject *arg = PyObject_CallMethodNoArgs(this_module, make_story_elpos);
+    PyObject *arg = PyObject_CallMethodObjArgs(this_module, make_story_elpos, NULL);
     
     SETATTR("depth", Py_BuildValue("i", pos->depth));
     SETATTR("heading", Py_BuildValue("i", pos->heading));
@@ -1194,7 +1194,7 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     while (PyDict_Next(userdict, &ppos, &pkey, &pval)) {
             PyObject_SetAttr(arg, pkey, pval);
     }
-    PyObject_CallOneArg(userfunc, arg);
+    PyObject_CallFunctionObjArgs(userfunc, arg, NULL);
     Py_DECREF(arg);
 #undef SETATTR
 }
