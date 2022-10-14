@@ -3,7 +3,7 @@ Introduction
 
 .. image:: images/pymupdf-logo.png
    :align: center
-   :scale: 25%
+   :scale: 10%
 
 ..
    Don't delete the bar symbol - it forces a line break beneath the image - which is required.
