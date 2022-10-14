@@ -6783,7 +6783,6 @@ if not sanitize and not self.is_wrapped:
                     h = pdf_to_int(gctx,
                         pdf_dict_geta(gctx, ref,
                         PDF_NAME(Height), PDF_NAME(H)));
-                    pdf_drop_obj(gctx, ref);
                     if ((w + h) == 0) {
                         RAISEPY(gctx, MSG_IS_NO_IMAGE, PyExc_ValueError);
                     }
