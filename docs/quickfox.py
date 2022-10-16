@@ -73,7 +73,7 @@ while more:  # loop until all input text has been written out
     dev = writer.begin_page(MEDIABOX)  # prepare a new output page
     for cell in CELLS:
         # content may be complete after any cell, ...
-        if more > 0:  # so check this status first
+        if more:  # so check this status first
             more, _ = story.place(cell)
             story.draw(dev)
     writer.end_page()  # finish the PDF page
