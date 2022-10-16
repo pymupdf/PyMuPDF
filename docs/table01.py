@@ -58,10 +58,10 @@ writer = fitz.DocumentWriter(__file__.replace(".py", ".pdf"), "compress")
 mediabox = fitz.paper_rect("letter")
 where = mediabox + (36, 36, -36, -36)
 
-done = 1
-while done > 0:
+more = 1
+while more:
     dev = writer.begin_page(mediabox)
-    done, filled = story.place(where)
+    more, filled = story.place(where)
     story.draw(dev, None)
     writer.end_page()
 writer.close()

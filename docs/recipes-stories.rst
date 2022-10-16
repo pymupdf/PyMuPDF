@@ -34,11 +34,11 @@ Variant using an existing HTML source -- which in this case is defined as a cons
     story = fitz.Story(html=HTML)  # create story from HTML
     writer = fitz.DocumentWriter("output.pdf")  # create the writer
     
-    done = 1  # will indicate end of input once it is set to 0
+    more = 1  # will indicate end of input once it is set to 0
 
-    while done > 0:  # loop outputting the story
+    while more:  # loop outputting the story
         device = writer.begin_page(MEDIABOX)  # make new page
-        done, _ = story.place(WHERE)  # layout into allowed rectangle
+        more, _ = story.place(WHERE)  # layout into allowed rectangle
         story.draw(device)  # write on page
         writer.end_page()  # finish page
     
@@ -81,11 +81,11 @@ The Python API variant -- everything is created programmatically::
 
     writer = fitz.DocumentWriter("output.pdf")
     
-    done = 1
+    more = 1
 
-    while done > 0:
+    while more:
         device = writer.begin_page(MEDIABOX)
-        done, _ = story.place(WHERE)
+        more, _ = story.place(WHERE)
         story.draw(device)
         writer.end_page()
     writer.close()
@@ -118,11 +118,11 @@ We extend our "Hello World" example from above and display an image of our plane
 
     writer = fitz.DocumentWriter("output.pdf")
     
-    done = 1
+    more = 1
 
-    while done > 0:
+    while more:
         device = writer.begin_page(MEDIABOX)
-        done, _ = story.place(WHERE)
+        more, _ = story.place(WHERE)
         story.draw(device)
         writer.end_page()
     writer.close()
@@ -201,7 +201,7 @@ This script reflects existing features.
 How to Generate a Table of Contents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This script lists the source code of all Python scripts in its own directory.
+This script lists the source code of all Python scripts that live in the script's directory.
 
 It is a more complex example -- too large to list its source code here. It features the following capabilities:
 
@@ -211,7 +211,7 @@ It is a more complex example -- too large to list its source code here. It featu
 
     - The page **footer is automatically changed** to show the name of the current Python file.
 
-* Use of :meth:`Story.element_positions` to collect the data for the TOC and for the dynamic adjustment of page footers. This is an example of a bidirectional communication between a story and the script.
+* Use of :meth:`Story.element_positions` to collect the data for the TOC and for the dynamic adjustment of page footers. This is an example of a **bidirectional communication** between the story output process and the script.
 
 * The main PDF with the Python sources is being written to memory by its :ref:`DocumentWriter`. Another :ref:`Story` / :ref:`DocumentWriter` pair is then used to create a (memory) PDF for the TOC pages. Finally, both these PDFs are joined and the result stored to disk.
 

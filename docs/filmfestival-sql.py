@@ -102,11 +102,11 @@ writer = fitz.DocumentWriter(__file__.replace(".py", ".pdf"), "compress")
 mediabox = fitz.paper_rect("a4")  # use pages in ISO-A4 format
 where = mediabox + (72, 36, -36, -72)  # leave page borders
 
-done = 1  # end of output indicator
+more = 1  # end of output indicator
 
-while done > 1:
+while more:
     dev = writer.begin_page(mediabox)  # make a new page
-    done, filled = story.place(where)  # arrange content for this page
+    more, filled = story.place(where)  # arrange content for this page
     story.draw(dev, None)  # write content to page
     writer.end_page()  # finish the page
 
