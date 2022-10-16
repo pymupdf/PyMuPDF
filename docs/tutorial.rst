@@ -25,7 +25,7 @@ Opening a Document
 ======================
 To access a supported document, it must be opened with the following statement::
 
-    doc = fitz.open(filename)     # or fitz.Document(filename)
+    doc = fitz.open(filename)  # or fitz.Document(filename)
 
 This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a ``pathlib.Path``) specifying the name of an existing file.
 
@@ -248,17 +248,37 @@ Please also do have a look at chapter :ref:`cooperation` and at demo programs `d
 Working with Stories
 ======================
 
-**TODO**
+The :ref:`Story` class is a new feature of PyMuPDF version 1.21.0. It represents support for MuPDF's **"story"** interface.
 
-Explain what Stories are.
+The following is a quote from the book `"MuPDF Explored" <https://mupdf.com/docs/mupdf-explored.html>`_ by Robin Watts from `Artifex <www.artifex.com>`_:
 
-Top level principles etc.
+-----
 
-What it could be typically used for etc.
+*Stories provide a way to easily layout styled content for use with devices, such as those offered by Document Writers (...). The concept of a story comes from desktop publishing, which in turn (...) gets it from newspapers. If you consider a traditional newspaper layout, it will consist of various news articles (stories) that are laid out into multiple columns, possibly across multiple pages.*
+
+*Accordingly, MuPDF uses a story to represent a flow of text with styling information. The user of the story can then supply a sequence of rectangles into which the story will be laid out, and the positioned text can then be drawn to an output device. This keeps the concept of the text itself (the story) to be separated from the areas into which the text should be flowed (the layout).*
+
+-----
+
+.. note:: A Story works somewhat similar to an internet browser: It faithfully parses and renders HTML hypertext and also optional stylesheets (CSS). But its **output is a PDF** -- not web pages.
 
 
-See :ref:`the Stories API<StoriesAPI>` and :ref:`Stories recipes<RecipesStories>` for more.
+When creating a :ref:`Story`, the input from up to three different information sources is taken into account. All these items are optional.
 
+1. HTML source code, provided as a Python string, from which a so-called **Document Object Model (DOM)** is created. As usual, this string may be read from a file, be stored in a Python variable of the script, **or** be programmatically created by the script itself via an API (:ref:`Stories API<StoriesAPI>`, :ref:`Xml`).
+
+2. CSS (Cascaded Style Sheet) source code, provided as a Python string. CSS can be used to provide styling information (text font size, color, etc.) like it would happen for web pages. Obviously, this string may also be read from a file.
+
+3. An :ref:`Archive` **must be used** whenever the DOM references images, or uses text fonts except the standard :ref:`Base-14-Fonts`, CJK fonts and the NOTO fonts generated into the PyMuPDF binary.
+
+
+The :ref:`Stories API<StoriesAPI>` allows creating DOMs completely from scratch, including desired styling information. It can also be used to modify or extend **provided** HTML: text can be deleted or replaced, or its styling can be changed. Text -- for example extracted from databases -- can also be added and fill template-like HTML documents.
+
+After the story DOM is considered complete, it can be used to create a PDF document. This happens via the new :ref:`DocumentWriter` class. During the output page creation, the programmer will provide a number of rectangles where the story should place its content.
+
+The story in turn will return completion codes indicating whether or not more content is waiting to be written. Which part of the content will land in which rectangle or on which page is automatically determined by the story itself -- it cannot be influenced other than by providing the rectangles.
+
+Please see the :ref:`Stories recipes<RecipesStories>` for a number of typical use cases.
 
 
 PDF Maintenance

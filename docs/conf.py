@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath("."))
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
 extensions = []
 # rst2pdf is not available on OpenBSD.
-if os.uname()[0] != 'OpenBSD':
-    extensions.append('rst2pdf.pdfbuilder')
+if hasattr(os, "uname") and os.uname()[0] != "OpenBSD":
+    extensions.append("rst2pdf.pdfbuilder")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -60,7 +60,7 @@ version = release
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build","build"]
+exclude_patterns = ["_build", "build"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -96,9 +96,7 @@ html_theme = "sphinx_rtd_theme"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-
-}
+html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -128,7 +126,7 @@ html_static_path = ["_static"]
 # A list of CSS files. The entry must be a filename string or a tuple containing
 # the filename string and the attributes dictionary. The filename must be
 # relative to the html_static_path, or a full URI
-html_css_files = ['custom.css']
+html_css_files = ["custom.css"]
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -187,9 +185,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    ("toc", "PyMuPDF.tex", u"PyMuPDF Documentation", u"Artifex", "manual")
-]
+latex_documents = [("toc", "PyMuPDF.tex", "PyMuPDF Documentation", "Artifex", "manual")]
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
 latex_logo = "images/pymupdf-logo.png"
@@ -217,7 +213,7 @@ latex_domain_indices = True
 pdf_documents = [("toc", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
 
 # A comma-separated list of custom stylesheets. Example:
-#pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]
+# pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]
 
 # Create a compressed PDF
 pdf_compressed = True
