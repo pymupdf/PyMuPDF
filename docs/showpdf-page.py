@@ -38,13 +38,13 @@ def make_pdf(fileptr, text, rect, font="sans-serif", archive=None):
     body = story.body
     body.set_properties(font=font)
     writer = fitz.DocumentWriter(fileptr)
-    while True:
+    more = 1
+    while more:
         device = writer.begin_page(mediabox)
-        done, _ = story.place(mediabox)
+        more, _ = story.place(mediabox)
         story.draw(device)
         writer.end_page()
-        if done == 0:
-            break
+
     writer.close()
     return matrix
 

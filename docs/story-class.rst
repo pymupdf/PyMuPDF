@@ -64,7 +64,7 @@ Story
       :arg rect_like where: layout the current part of the content to fit into this rectangle. This must be a sub-rectangle of the page's MediaBox.
 
       :rtype: tuple[bool, rect_like]
-      :returns: a bool (int) `done` and a rectangle `filled`. If `done == 0`, all content of the story has been written, otherwise more is waiting to be written to subsequent rectangles / pages. Rectangle `filled` is the part of `where` that has actually been filled.
+      :returns: a bool (int) `more` and a rectangle `filled`. If `more == 0`, all content of the story has been written, otherwise more is waiting to be written to subsequent rectangles / pages. Rectangle `filled` is the part of `where` that has actually been filled.
 
    .. method:: draw(dev, matrix=None)
 
@@ -126,10 +126,10 @@ A typical loop for executing a Story with using this method would look like this
     story =  fitz.Story(html=HTML)  # make the story
     writer = fitz.DocumentWriter("test.pdf")  # make the writer
     pno = 0 # current page number
-    done = 1  # will be set to 0 when done
-    while done > 0:  # loop until all story content is processed
+    more = 1  # will be set to 0 when done
+    while more:  # loop until all story content is processed
         dev = writer.begin_page(MEDIABOX)  # make a device to write on the page
-        done, filled = story.place(WHERE)  # compute content positions on page
+        more, filled = story.place(WHERE)  # compute content positions on page
         story.element_positions(recorder, {"page": pno})  # provide page number in addition
         story.draw(dev)
         writer.end_page()

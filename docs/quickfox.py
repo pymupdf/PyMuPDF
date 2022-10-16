@@ -68,13 +68,13 @@ CELLS = [TABLE[i][j] for i in range(ROWS) for j in range(COLS)]
 fileobject = io.BytesIO()  # let DocumentWriter write to memory
 writer = fitz.DocumentWriter(fileobject)  # define the writer
 
-done = 1
-while done > 0:  # loop until all input text has been written out
+more = 1
+while more:  # loop until all input text has been written out
     dev = writer.begin_page(MEDIABOX)  # prepare a new output page
     for cell in CELLS:
         # content may be complete after any cell, ...
-        if done > 0:  # so check this status first
-            done, _ = story.place(cell)
+        if more > 0:  # so check this status first
+            more, _ = story.place(cell)
             story.draw(dev)
     writer.end_page()  # finish the PDF page
 
