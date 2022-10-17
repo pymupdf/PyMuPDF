@@ -13554,9 +13554,9 @@ struct Story
         {
             fz_rect where2 = JM_rect_from_py(where);
             fz_rect filled;
-            int done = fz_place_story( gctx, (fz_story*) $self, where2, &filled);
+            int more = fz_place_story( gctx, (fz_story*) $self, where2, &filled);
             PyObject* ret = PyTuple_New(2);
-            PyTuple_SET_ITEM( ret, 0, Py_BuildValue( "i", done));
+            PyTuple_SET_ITEM( ret, 0, Py_BuildValue( "i", more));
             PyTuple_SET_ITEM( ret, 1, JM_py_from_rect( filled));
             return ret;
         }
