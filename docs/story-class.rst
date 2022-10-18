@@ -6,7 +6,7 @@ Story
 
 .. role:: htmlTag(emphasis)
 
-* New in v1.20.0
+* New in v1.21.0
 
 ================================= =============================================================
 **Method / Attribute**            **Short Description**
@@ -33,13 +33,13 @@ Story
 
       * The :ref:`Story` constructor parses and validates the provided HTML and CSS sources. PyMuPDF provides a number of ways to manipulate the HTML source by providing access to the *nodes* of the underlying DOM. HTML documents can be completely built from ground up programmatically, or existing HTML can be modified pretty arbitrarily. For details of this interface, please see the :ref:`StoriesAPI` and the :ref:`Xml` class.
       
-      * If no (or no more) changes to the DOM are required, the story is ready to produce PDF pages via some :ref:`DocumentWriter`. To achieve this, the following loop should be used.
+      * If no (or no more) changes to the DOM are required, the story is ready to produce PDF pages via some :ref:`DocumentWriter`. To achieve this, the following loop should be used:
       
         1. Request a new, empty page from a :ref:`DocumentWriter`.
         
         2. Determine one or more rectangles on the page, that should receive story data. Note that not every page needs to have the same set of rectangles.
         
-        3. Pass each rectangle to the story, each time checking whether the story's data are exhausted. If so, leave the loop, otherwise pass the next rectangle to it, resp. restart the loop requesting the next page.
+        3. Pass each rectangle to the story, each time checking whether the story's data is exhausted. If so, leave the loop, otherwise pass the next rectangle to it, respectively restart the loop requesting the next page.
 
       * Which part of the story will land on which rectangle / which page, is fully under control of the :ref:`Story` object and cannot be predicted.
       
@@ -53,15 +53,15 @@ Story
       :arg str html: HTML source code. If omitted, a basic minimum is generated (see below).
       :arg str user_css: CSS source code. If provided, must contain valid CSS specifications.
       :arg float em: the default text font size.
-      :arg archive: an :ref:`Archive` from which to load resources for rendering. Currently supported resource types are images and text fonts. If omitted, the Story will not try to look up any such data and may thus produce incomplete output.
+      :arg archive: an :ref:`Archive` from which to load resources for rendering. Currently supported resource types are images and text fonts. If omitted, the story will not try to look up any such data and may thus produce incomplete output.
       
          .. note:: Instead of an actual archive, valid arguments for **creating** an :ref:`Archive` can also be provided -- in which case an archive will temporarily be constructed. So, instead of ``story = fitz.Story(archive=fitz.Archive("myfolder"))``, one can also shorter write ``story = fitz.Story(archive="myfolder")``.
 
    .. method:: place(where)
 
-      Calculate that part of the Story's content, that will fit in the provided rectangle. The method maintains a pointer which part of the story's content has already been written and upon the next invocation resumes from that pointer's position.
+      Calculate that part of the story's content, that will fit in the provided rectangle. The method maintains a pointer which part of the story's content has already been written and upon the next invocation resumes from that pointer's position.
 
-      :arg rect_like where: layout the current part of the content to fit into this rectangle. This must be a sub-rectangle of the page's MediaBox.
+      :arg rect_like where: layout the current part of the content to fit into this rectangle. This must be a sub-rectangle of the page's :ref:`MediaBox<Glossary_MediaBox>`.
 
       :rtype: tuple[bool, rect_like]
       :returns: a bool (int) `more` and a rectangle `filled`. If `more == 0`, all content of the story has been written, otherwise more is waiting to be written to subsequent rectangles / pages. Rectangle `filled` is the part of `where` that has actually been filled.
@@ -107,9 +107,9 @@ Story
 Element Positioning CallBack function
 --------------------------------------
 
-The callback function can be used to log information about Story output. The function's access to the information is read-only: it has no way to influence the story's output.
+The callback function can be used to log information about story output. The function's access to the information is read-only: it has no way to influence the story's output.
 
-A typical loop for executing a Story with using this method would look like this::
+A typical loop for executing a story with using this method would look like this::
 
     HTML = """
     <html>
@@ -144,15 +144,15 @@ Attributes of the Element Positions object
 
 The parameter passed to the ``recorder`` function is an object with the following attributes:
 
-* ``elpos.depth`` (int) -- depth of this element in the box structure
+* ``elpos.depth`` (int) -- depth of this element in the box structure.
 
-* ``elpos.heading`` (int) -- the header level, 0 if no header, 1-6 for h1 - h6
+* ``elpos.heading`` (int) -- the header level, 0 if no header, 1-6 for :htmlTag:`h1` - :htmlTag:`h6`.
 
-* ``elpos.id`` (str) -- value of the ``id`` field, or "" if n/a
+* ``elpos.id`` (str) -- value of the ``id`` field, or "" if n/a.
 
-* ``elpos.rect`` (tuple) -- element position on page
+* ``elpos.rect`` (tuple) -- element position on page.
 
-* ``elpos.text`` (str) -- immediate text of the element
+* ``elpos.text`` (str) -- immediate text of the element.
 
 * ``elpos.open_close`` (int bit field) -- bit 0 set: opens element, bit 1 set: closes element. Relevant for elements that may contain other elements and thus may not immediately be closed after being created / opened.
 

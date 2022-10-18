@@ -1,21 +1,35 @@
 .. _RecipesStories:
 
+
+.. |toggleStart| raw:: html
+
+   <details>
+   <summary><a>See recipe</a></summary>
+
+.. |toggleEnd| raw:: html
+
+   </details>
+
 ==============================
 Recipes: Stories
 ==============================
 
 This document showcases some typical use cases for :ref:`Stories<WorkingWithStories>`.
 
-As mentioned in the :ref:`tutorial<WorkingWithStories>`, stories may be created using up to three input sources: HTML, CSS and Archives -- all of which are optional, resp. can be provided programmatically.
+As mentioned in the :ref:`tutorial<WorkingWithStories>`, stories may be created using up to three input sources: HTML, CSS and Archives -- all of which are optional and which, respectively, can be provided programmatically.
 
 The following examples will showcase combinations for using these inputs.
+
+.. note::
+
+        Many of these recipe's source code are included as examples in the ``docs`` folder.
 
 How to add a line of text with some formatting
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is the inevitable "Hello World" example. We will show two variants:
 
-1. Create using existing HTML source, that may come from wherever.
+1. Create using existing HTML source, that may come from anywhere.
 2. Create using the Python API.
 
 -----
@@ -52,7 +66,7 @@ Variant using an existing HTML source -- which in this case is defined as a cons
 
         CSS = """
         body {
-            font-familiy: sans-serif;
+            font-family: sans-serif;
             color: blue;
         }
         """
@@ -60,7 +74,7 @@ Variant using an existing HTML source -- which in this case is defined as a cons
         HTML = """
         <p>Hello World!</p>
         """
-        
+
         # the story would then be created like this:
         story = fitz.Story(html=HTML, user_css=CSS)
 
@@ -88,9 +102,12 @@ The Python API variant -- everything is created programmatically::
         more, _ = story.place(WHERE)
         story.draw(device)
         writer.end_page()
+
     writer.close()
 
 Both variants will produce the same output PDF.
+
+-----
 
 How to use images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -102,22 +119,25 @@ Images can be referenced in the provided HTML source, or the reference to a desi
 We extend our "Hello World" example from above and display an image of our planet right after the text. Assuming the image has the name "world.jpg" and is present in the script's folder, then this is the modified version of the above Python API variant::
 
     import fitz
-    
+
     MEDIABOX = fitz.paper_rect("letter")
     WHERE = MEDIABOX + (36, 36, -36, -36)
 
     # create story, let it look at script folder for resources
     story = fitz.Story(archive=".")
     body = story.body  # access the body of its DOM
-    with body.add_paragraph() as para:  # store desired content
+
+    with body.add_paragraph() as para:
+        # store desired content
         para.set_font("sans-serif").set_color("blue").add_text("Hello World!")
-    
+
     # another paragraph for our image:
-    with body.add_paragraph() as para:  # store image in another paragraph
+    with body.add_paragraph() as para:
+        # store image in another paragraph
         para.add_image("world.jpg")
 
     writer = fitz.DocumentWriter("output.pdf")
-    
+
     more = 1
 
     while more:
@@ -125,8 +145,11 @@ We extend our "Hello World" example from above and display an image of our plane
         more, _ = story.place(WHERE)
         story.draw(device)
         writer.end_page()
+
     writer.close()
 
+
+-----
 
 
 Reading External HTML and CSS for a Story
@@ -148,10 +171,15 @@ As a general recommendation, HTML and CSS sources should be **read as binary fil
     story = fitz.Story(html=HTML, user_css=CSS)
 
 
+-----
+
+
 How to Output Database Content with Story Templates 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script demonstrates how to report SQL database content using an **HTML template**.
+
+
 
 The example SQL database contains two tables:
 
@@ -160,7 +188,17 @@ The example SQL database contains two tables:
 
 The story DOM consists of a template for one film, which reports film data together with a list of casted actors.
 
+``docs/`` files ``filmfestival-sql.py`` & ``filmfestival-sql.db``.
+
+
+|toggleStart|
+
 .. literalinclude:: filmfestival-sql.py
+
+|toggleEnd|
+
+
+-----
 
 
 How to integrate with existing PDFs
@@ -170,8 +208,16 @@ Because a :ref:`DocumentWriter` can only write to a new file, stories cannot be 
 
 The basic idea is letting :ref:`DocumentWriter` output to a PDF in memory. Once the story has finished, we re-open this memory PDF and put its pages to desired locations on **existing** pages via method :meth:`Page.show_pdf_page`.
 
+``docs/`` file ``showpdf-page.py``.
+
+|toggleStart|
+
 .. literalinclude:: showpdf-page.py
 
+|toggleEnd|
+
+
+-----
 
 
 How to Make Multi-Columned Layouts and Access Fonts from Package `pymupdf-fonts <https://github.com/pymupdf/pymupdf-fonts>`_
@@ -183,8 +229,18 @@ In addition, two "Ubuntu" font families from package `pymupdf-fonts <https://git
 
 Yet another feature used here is that all data -- the images and the article HTML -- are jointly stored in a ZIP file.
 
+
+``docs/`` files ``quickfox.py`` & ``quickfox.zip``.
+
+
+|toggleStart|
+
 .. literalinclude:: quickfox.py
 
+|toggleEnd|
+
+
+-----
 
 
 How to output a table
@@ -194,8 +250,16 @@ Support for HTML tables is yet not complete in MuPDF. It is however possible to 
 
 This script reflects existing features.
 
+``docs/`` file ``table01.py``.
+
+|toggleStart|
+
 .. literalinclude:: table01.py
 
+|toggleEnd|
+
+
+-----
 
 
 How to Generate a Table of Contents
@@ -203,7 +267,16 @@ How to Generate a Table of Contents
 
 This script lists the source code of all Python scripts that live in the script's directory.
 
-It is a more complex example -- too large to list its source code here. It features the following capabilities:
+``docs/`` file ``code-printer.py``.
+
+|toggleStart|
+
+.. literalinclude:: code-printer.py
+
+|toggleEnd|
+
+
+It features the following capabilities:
 
 * Automatic generation of a Table of Contents (TOC) on separately numbered pages at the start of the document - using a specialized :ref:`Story`.
 

@@ -6,7 +6,7 @@ Xml
 
 .. role:: htmlTag(emphasis)
 
-* New in v1.20.0
+* New in v1.21.0
 
 This represents an HTML or an XML node. It is a helper class intended to access the DOM (Document Object Model) content of a :ref:`Story` object.
 
@@ -18,7 +18,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_bullet_list()
 
-       Add a :htmlTag:`ul` tag - bulleted list, context manager. See `ul <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_.
+       Add an :htmlTag:`ul` tag - bulleted list, context manager. See `ul <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_.
 
     .. method:: add_codeblock()
 
@@ -44,7 +44,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_image(name, width=None, height=None)
 
-       Add a :htmlTag:`img` tag. This causes the inclusion of the named image in the DOM.
+       Add an :htmlTag:`img` tag. This causes the inclusion of the named image in the DOM.
 
        :arg str name: the filename of the image. This **must be the member name** of some entry of the :ref:`Archive` parameter of the :ref:`Story` constructor.
        :arg width: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the width of the specified ``where`` rectangle in :meth:`Story.place`. If this value is provided and ``height`` is omitted, the image will be included keeping its aspect ratio.
@@ -52,11 +52,11 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_link
 
-       Add a :htmlTag:`a` tag.
+       Add an :htmlTag:`a` tag.
 
     .. method:: add_number_list
 
-       Add a :htmlTag:`ol` tag, context manager.
+       Add an :htmlTag:`ol` tag, context manager.
 
     .. method:: add_paragraph
 
@@ -68,27 +68,27 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_subscript
 
-       Add subscript text(:htmlTag:`sub` tag) - inline element, treated like text.
+       Add "subscript" text(:htmlTag:`sub` tag) - inline element, treated like text.
 
     .. method:: add_superscript
 
-       Add subscript text (:htmlTag:`sup` tag) - inline element, treated like text.
+       Add "superscript" text (:htmlTag:`sup` tag) - inline element, treated like text.
 
     .. method:: add_code
 
-       Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+       Add "code" text (:htmlTag:`code` tag) - inline element, treated like text.
 
     .. method:: add_var
 
-       Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+       Add "variable" text (:htmlTag:`var` tag) - inline element, treated like text.
 
     .. method:: add_samp
 
-       Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+       Add "sample output" text (:htmlTag:`samp` tag) - inline element, treated like text.
 
     .. method:: add_kbd
 
-       Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+       Add "keyboard input" text (:htmlTag:`kbd` tag) - inline element, treated like text.
 
     .. method:: add_text
 
@@ -334,7 +334,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 Setting Text properties
 ------------------------
 
-In HTML tags can be nested such that innermost text **inherits properties** from the tag envelopping its parent tag. For example ``<p><b>some bold text<i>this is bold and italic</i></b>regular text</p>``.
+In HTML tags can be nested such that innermost text **inherits properties** from the tag enveloping its parent tag. For example ``<p><b>some bold text<i>this is bold and italic</i></b>regular text</p>``.
 
 To achieve the same effect, methods like :meth:`Xml.set_bold` and :meth:`Xml.set_italic` each open a temporary :htmlTag:`span` with the desired property underneath the current node.
 

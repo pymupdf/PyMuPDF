@@ -4,7 +4,7 @@
 Archive
 ================
 
-* New in v1.20.0
+* New in v1.21.0
 
 This class represents a generalization of file folders and container files like ZIP and TAR archives. Archives allow accessing arbitrary collections of file folders, ZIP / TAR files and single binary data elements as if they all were part of one hierarchical tree of folders.
 
@@ -40,7 +40,7 @@ In PyMuPDF, archives are currently only used by :ref:`Story` objects to specify 
 
       * a Python binary object (``bytes``, ``bytearray``, ``io.BytesIO``): this will add a single-member sub-archive. In this case, the ``path`` parameter is **mandatory** and should be the member name under which this item can be found / retrieved.
 
-      * a 2-tuple ``(data, name)``: This will add a single-member sub-archive with the member name ``name``. ``data`` may be a Python binary object or a local file name (in which case its binary file content is used). Use this format if you need to specify ``path``.
+      * a tuple ``(data, name)``: This will add a single-member sub-archive with the member name ``name``. ``data`` may be a Python binary object or a local file name (in which case its binary file content is used). Use this format if you need to specify ``path``.
 
       * a Python sequence: This is a convenience format to specify any combination of the above.
 
@@ -48,7 +48,7 @@ In PyMuPDF, archives are currently only used by :ref:`Story` objects to specify 
       
       * If ``content`` is either binary data or a file name, this parameter is mandatory and must be the name under which the data can be found.
 
-      * Otherwise this parameter is obtional. It can be used to simulate a folder name or a mount point, under which this sub_archive's elements can be found. For example this specification ``Archive((data, "name"), "path")`` means that ``data`` will be found using the element name ``"path/name"``. Similar is true for other sub-archives: to retrieve members of a ZIP sub-archive, their names must be prefixed with `"path/"`. The main purpose of this parameter probably is to differentiate between duplicate names.
+      * Otherwise this parameter is optional. It can be used to simulate a folder name or a mount point, under which this sub-archive's elements can be found. For example this specification ``Archive((data, "name"), "path")`` means that ``data`` will be found using the element name ``"path/name"``. Similar is true for other sub-archives: to retrieve members of a ZIP sub-archive, their names must be prefixed with `"path/"`. The main purpose of this parameter probably is to differentiate between duplicate names.
 
       .. note:: If duplicate entry names exist in the archive, always the last entry with that name will be found / retrieved. During archive creation, or appending more data to an archive (see :meth:`Archive.add`) no check for duplicates will be made. Use the `path` parameter to prevent this from happening.
 
