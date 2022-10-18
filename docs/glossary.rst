@@ -28,6 +28,8 @@ Glossary
 
         A number of values in a PDF can inherited by objects further down in a parent-child relationship. The mediabox (physical size) of pages may for example be specified only once or in some node(s) of the :data:`pagetree` and will then be taken as value for all *kids*, that do not specify their own value.
 
+.. _Glossary_MediaBox:
+
 .. data:: MediaBox
 
         A PDF array of 4 floats specifying a physical page size -- (:data:`inheritable`, mandatory). This rectangle should contain all other PDF  -- optional -- page rectangles, which may be specified in addition: CropBox, TrimBox, ArtBox and BleedBox. Please consult :ref:`AdobeManual` for details. The MediaBox is the only rectangle, for which there is no difference between MuPDF and PDF coordinate systems: :attr:`Page.mediabox` will always show the same coordinates as the ``/MediaBox`` key in a page's object definition. For all other rectangles, MuPDF transforms coordinates such that the **top-left** corner is the point of reference. This can sometimes be confusing -- you may for example encounter a situation like this one:

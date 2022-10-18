@@ -82,5 +82,4 @@ writer.close()  # close DocumentWriter output
 
 # for housekeeping work re-open from memory
 doc = fitz.open("pdf", fileobject)
-doc.subset_fonts()  # build subset fonts
 doc.ez_save(docname)
