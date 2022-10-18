@@ -1,5 +1,43 @@
 Change Log
-===========
+==========
+
+
+**Changes in Version 1.21.0**
+
+* This release uses ``MuPDF-1.21.0``.
+
+* New feature: Stories.
+
+* Bug fixes:
+
+  * **Fixed** `#1701 <https://github.com/pymupdf/PyMuPDF/issues/1701>`_: Broken custom image insertion.
+  * **Fixed** `#1854 <https://github.com/pymupdf/PyMuPDF/issues/1854>`_: `Document.delete_pages()` declines keyword arguments.
+  * **Fixed** `#1868 <https://github.com/pymupdf/PyMuPDF/issues/1868>`_: Access Violation Error at `page.apply_redactions()`.
+  * **Fixed** `#1909 <https://github.com/pymupdf/PyMuPDF/issues/1909>`_: Adding text with `fontname="Helvetica"` can silently fail.
+  * **Fixed** `#1913 <https://github.com/pymupdf/PyMuPDF/issues/1913>`_: `draw_rect()`: does not respect width if color is not specified.
+  * **Fixed** `#1917 <https://github.com/pymupdf/PyMuPDF/issues/1917>`_: `subset_fonts()`: make it possible to silence the stdout.
+  * **Fixed** `#1936 <https://github.com/pymupdf/PyMuPDF/issues/1936>`_: Rectangle detection can be incorrect producing wrong output.
+  * **Fixed** `#1945 <https://github.com/pymupdf/PyMuPDF/issues/1945>`_: Segmentation fault when saving with `clean=True`.
+  * **Fixed** `#1965 <https://github.com/pymupdf/PyMuPDF/issues/1965>`_: `pdfocr_save()` Hard Crash.
+  * **Fixed** `#1971 <https://github.com/pymupdf/PyMuPDF/issues/1971>`_: Segmentation fault when using `get_drawings()`.
+
+* Misc changes to core code:
+
+  * Fixed various compiler warnings and a sequence-point bug.
+  * Added support for Memento builds.
+  * Fixed leaks detected by Memento in test suite.
+  * Fixed handling of exceptions in set_name() and set_rect().
+  * Allow build with latest MuPDF, for regular testing of PyMuPDF master.
+  * Cope with new MuPDF exceptions when setting rect for some Annot types.
+  * Reduced cosmetic differences between MuPDF's config.h and PyMuPDF's _config.h.
+  * Cope with various changes to MuPDF API.
+
+* Other:
+
+  * Fixed various broken links and typos in docs.
+  * Mention install of `swig-python` on MacOS for #875.
+  
+
 
 
 **Changes in Version 1.20.2**
