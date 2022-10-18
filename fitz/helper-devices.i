@@ -256,6 +256,9 @@ jm_tracedraw_path(fz_context *ctx, jm_tracedraw_device *dev, const fz_path *path
 	dev_pathrect = fz_infinite_rect;
 	dev_linecount = 0;
 	dev_lastpoint = fz_make_point(0, 0);
+	if (dev_pathdict) {
+		Py_CLEAR(dev_pathdict);
+	}
 	dev_pathdict = PyDict_New();
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_items, PyList_New(0));
 	fz_walk_path(ctx, path, &trace_path_walker, dev);
@@ -297,6 +300,7 @@ jm_append_merge(PyObject *out)
 	int rc = PyDict_Merge(dev_pathdict, prev, 0);  // merge, do not override
 	if (rc == 0) {
 		DICT_SETITEM_DROP(dev_pathdict, dictkey_type, PyUnicode_FromString("fs"));
+		Py_XINCREF( dev_pathdict);  // PyList_SetItem() does not increment refcount.
 		PyList_SetItem(out, len - 1, dev_pathdict);
 		return;
 	} else {
@@ -558,11 +562,19 @@ jm_tracedraw_ignore_text(fz_context *ctx, fz_device *dev_, const fz_text *text, 
 	dev->seqno += 1;
 }
 
+static void jm_tracedraw_drop_device(fz_context *ctx, fz_device *dev_)
+{
+	jm_tracedraw_device *dev = (jm_tracedraw_device *)dev_;
+	Py_CLEAR(dev->out);
+	dev->out = NULL;
+}
 
 fz_device *JM_new_tracedraw_device(fz_context *ctx, PyObject *out)
 {
 	jm_tracedraw_device *dev = fz_new_derived_device(ctx, jm_tracedraw_device);
 
+	dev->super.close_device = NULL;    
+	dev->super.drop_device = jm_tracedraw_drop_device;    
 	dev->super.fill_path = jm_tracedraw_fill_path;
 	dev->super.stroke_path = jm_tracedraw_stroke_path;
 	dev->super.clip_path = NULL;
@@ -595,6 +607,7 @@ fz_device *JM_new_tracedraw_device(fz_context *ctx, PyObject *out)
 	dev->super.render_flags = NULL;
 	dev->super.set_default_colorspaces = NULL;
 
+	Py_XINCREF(out);
 	dev->out = out;
 	dev->seqno = 0;
 	return (fz_device *)dev;
@@ -604,6 +617,8 @@ fz_device *JM_new_tracetext_device(fz_context *ctx, PyObject *out)
 {
 	jm_tracedraw_device *dev = fz_new_derived_device(ctx, jm_tracedraw_device);
 
+	dev->super.close_device = NULL;    
+	dev->super.drop_device = jm_tracedraw_drop_device;    
 	dev->super.fill_path = jm_increase_seqno;
 	dev->super.stroke_path = jm_dev_linewidth;
 	dev->super.clip_path = NULL;
@@ -636,6 +651,7 @@ fz_device *JM_new_tracetext_device(fz_context *ctx, PyObject *out)
 	dev->super.render_flags = NULL;
 	dev->super.set_default_colorspaces = NULL;
 
+	Py_XINCREF(out);
 	dev->out = out;
 	dev->seqno = 0;
 	return (fz_device *)dev;
