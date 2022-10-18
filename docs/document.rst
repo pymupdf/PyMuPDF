@@ -1157,7 +1157,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg bool pretty: Prettify the document source for better readability. PDF objects will be reformatted to look like the default output of :meth:`Document.xref_object`.
 
-      :arg bool no_new_id: Suppress the update of the file's ``/ID`` field. If the file happen to have no such field at all, also supporess creation of a new one. Default is ``False``, so every save will lead to an updated file iddentification.
+      :arg bool no_new_id: Suppress the update of the file's ``/ID`` field. If the file happens to have no such field at all, also suppress creation of a new one. Default is ``False``, so every save will lead to an updated file identification.
 
       :arg int permissions: *(new in v1.16.0)* Set the desired permission levels. See :ref:`PermissionCodes` for possible values. Default is granting all.
 
@@ -1178,6 +1178,10 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: saveIncr()
 
       PDF only: saves the document incrementally. This is a convenience abbreviation for *doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)*.
+
+    .. note::
+
+        Saving incrementally may be required if the document contains verified signatures which would be invalidated by saving to a new file.
 
 
     .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)

@@ -188,12 +188,12 @@ The example SQL database contains two tables:
 
 The story DOM consists of a template for one film, which reports film data together with a list of casted actors.
 
-``docs/`` files ``filmfestival-sql.py`` & ``filmfestival-sql.db``.
+``docs/samples`` files ``filmfestival-sql.py`` & ``filmfestival-sql.db``.
 
 
 |toggleStart|
 
-.. literalinclude:: filmfestival-sql.py
+.. literalinclude:: samples/filmfestival-sql.py
 
 |toggleEnd|
 
@@ -208,11 +208,11 @@ Because a :ref:`DocumentWriter` can only write to a new file, stories cannot be 
 
 The basic idea is letting :ref:`DocumentWriter` output to a PDF in memory. Once the story has finished, we re-open this memory PDF and put its pages to desired locations on **existing** pages via method :meth:`Page.show_pdf_page`.
 
-``docs/`` file ``showpdf-page.py``.
+``docs/samples`` file ``showpdf-page.py``.
 
 |toggleStart|
 
-.. literalinclude:: showpdf-page.py
+.. literalinclude:: samples/showpdf-page.py
 
 |toggleEnd|
 
@@ -230,12 +230,12 @@ In addition, two "Ubuntu" font families from package `pymupdf-fonts <https://git
 Yet another feature used here is that all data -- the images and the article HTML -- are jointly stored in a ZIP file.
 
 
-``docs/`` files ``quickfox.py`` & ``quickfox.zip``.
+``docs/samples`` files ``quickfox.py`` & ``quickfox.zip``.
 
 
 |toggleStart|
 
-.. literalinclude:: quickfox.py
+.. literalinclude:: samples/quickfox.py
 
 |toggleEnd|
 
@@ -250,11 +250,11 @@ Support for HTML tables is yet not complete in MuPDF. It is however possible to 
 
 This script reflects existing features.
 
-``docs/`` file ``table01.py``.
+``docs/samples`` file ``table01.py``.
 
 |toggleStart|
 
-.. literalinclude:: table01.py
+.. literalinclude:: samples/table01.py
 
 |toggleEnd|
 
@@ -267,11 +267,11 @@ How to Generate a Table of Contents
 
 This script lists the source code of all Python scripts that live in the script's directory.
 
-``docs/`` file ``code-printer.py``.
+``docs/samples`` file ``code-printer.py``.
 
 |toggleStart|
 
-.. literalinclude:: code-printer.py
+.. literalinclude:: samples/code-printer.py
 
 |toggleEnd|
 
