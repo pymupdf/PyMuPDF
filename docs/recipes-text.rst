@@ -207,7 +207,7 @@ How to Analyze Font Characteristics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 To analyze the characteristics of text in a PDF use this elementary script as a starting point:
 
-.. literalinclude:: text-lister.py
+.. literalinclude:: samples/text-lister.py
    :language: python
 
 Here is the PDF page and the script output:

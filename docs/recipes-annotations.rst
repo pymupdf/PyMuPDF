@@ -28,7 +28,7 @@ In contrast to many other tools, initial insert of annotations happens with a mi
 
 As an overview for these capabilities, look at the following script that fills a PDF page with most of the available annotations. Look in the next sections for more special situations:
 
-.. literalinclude:: new-annots.py
+.. literalinclude:: samples/new-annots.py
    :language: python
 
 
@@ -87,7 +87,7 @@ Since MuPDF v1.16, 'FreeText' annotations no longer support bold or italic versi
 
 A big **thank you** to our user `@kurokawaikki <https://github.com/kurokawaikki>`_, who contributed the following script to **circumvent this restriction**.
 
-.. literalinclude:: make-bold.py
+.. literalinclude:: samples/make-bold.py
    :language: python
 
 --------------------------

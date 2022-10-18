@@ -2,7 +2,7 @@
 Demo of Story class in PyMuPDF
 -------------------------------
 
-This script demonstrates how the results of a fitz.Story output can be
+This script demonstrates how to the results of a fitz.Story output can be
 placed in a rectangle of an existing (!) PDF page.
 
 """
@@ -38,13 +38,13 @@ def make_pdf(fileptr, text, rect, font="sans-serif", archive=None):
     body = story.body
     body.set_properties(font=font)
     writer = fitz.DocumentWriter(fileptr)
-    more = 1
-    while more:
+    while True:
         device = writer.begin_page(mediabox)
-        more, _ = story.place(mediabox)
+        done, _ = story.place(mediabox)
         story.draw(device)
         writer.end_page()
-
+        if done == 0:
+            break
     writer.close()
     return matrix
 
@@ -52,27 +52,17 @@ def make_pdf(fileptr, text, rect, font="sans-serif", archive=None):
 # -------------------------------------------------------------
 # We want to put this in a given rectangle of an existing page
 # -------------------------------------------------------------
-HTML = (
-    '<div style="margin-left:-12px;margin-right:-12px">Der (Große) '
-    "<b>Schwertwal</b> <i>(Orcinus orca)</i>, auch <b>Mörderwal</b>, "
-    "<b>Killerwal</b>, <b>Orca</b> oder <b>Butzkopf</b> (auch Butskopf) genannt,"
-    " ist eine Art der Wale aus der Familie der Delfine <i>(Delphinidae)</i>. "
-    "Die Art ist weltweit verbreitet, bewohnt jedoch bevorzugt küstennahe "
-    "Gewässer in höheren Breiten.</div>"
-)
+HTML = """
+<p>PyMuPDF is a great package! And it still improves significantly from one version to the next one!</p>
+<p>It is a Python binding for <b>MuPDF</b>, a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit.<br> Both are maintained and developed by Artifex Software, Inc.</p>
+<p>Via MuPDF it can access files in PDF, XPS, OpenXPS, CBZ, EPUB, MOBI and FB2 (e-books) formats,<br> and it is known for its top
+<b><i>performance</i></b> and <b><i>rendering quality.</p>"""
 
 # Make a PDF page for demo purposes
-doc = fitz.open()
-page = doc.new_page()
-page.insert_text(  # store some header on the page
-    (72, 50),
-    "Red rectangle: WHERE",
-    fontname="hebo",
-    color=(1, 0, 0),
-    fontsize=14,
-)
+doc = fitz.open("mupdf-title.pdf")
+page = doc[0]
 
-WHERE = fitz.Rect(100, 100, 300, 300)  # target rectangle on existing page
+WHERE = fitz.Rect(50, 100, 250, 500)  # target rectangle on existing page
 
 fileptr = io.BytesIO()  # let DocumentWriter use this as its file
 
@@ -87,6 +77,4 @@ if src.page_count > 1:  # target rect was too small
 # its page 0 contains our result
 page.show_pdf_page(WHERE, src, 0)
 
-# debug: wrap rectangles with borders
-page.draw_rect(WHERE, color=(1, 0, 0), width=0.3)
-doc.ez_save(__file__.replace(".py", ".pdf"))
+doc.ez_save("mupdf-title-after.pdf")
