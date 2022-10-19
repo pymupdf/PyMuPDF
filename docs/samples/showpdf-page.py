@@ -7,6 +7,7 @@ placed in a rectangle of an existing (!) PDF page.
 
 """
 import io
+import os
 
 import fitz
 
@@ -59,7 +60,8 @@ HTML = """
 <b><i>performance</i></b> and <b><i>rendering quality.</p>"""
 
 # Make a PDF page for demo purposes
-doc = fitz.open("mupdf-title.pdf")
+root = os.path.abspath( f"{__file__}/..")
+doc = fitz.open(f"{root}/mupdf-title.pdf")
 page = doc[0]
 
 WHERE = fitz.Rect(50, 100, 250, 500)  # target rectangle on existing page
@@ -77,4 +79,4 @@ if src.page_count > 1:  # target rect was too small
 # its page 0 contains our result
 page.show_pdf_page(WHERE, src, 0)
 
-doc.ez_save("mupdf-title-after.pdf")
+doc.ez_save(f"{root}/mupdf-title-after.pdf")

@@ -28,6 +28,7 @@ Comment 2
 The SQLITE database has been created using https://sqlitebrowser.org/, a free
 multi-platform tool to maintain or manipulate SQLITE databases.
 """
+import os
 import sqlite3
 
 import fitz
@@ -58,6 +59,7 @@ festival_template = (
 # define database access
 # -------------------------------------------------------------------
 dbfilename = __file__.replace(".py", ".db")  # the SQLITE database file name
+assert os.path.isfile(dbfilename), f'{dbfilename}'
 database = sqlite3.connect(dbfilename)  # open database
 cursor_films = database.cursor()  # cursor for selecting the films
 cursor_casts = database.cursor()  # cursor for selecting actors per film
