@@ -191,6 +191,8 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
+.. _Functions_make_table:
+
    .. method:: make_table(rect, cols=1, rows=1)
 
       *New in v1.17.4*
