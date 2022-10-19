@@ -25,9 +25,13 @@ thisdir = os.path.dirname(os.path.abspath(__file__))
 myzip = zipfile.ZipFile(os.path.join(thisdir, "quickfox.zip"))
 arch = fitz.Archive(myzip)
 
-# we want to use the Ubuntu fonts for sans-serif and for monospace
-CSS = fitz.css_for_pymupdf_font("ubuntu", archive=arch, name="sans-serif")
-CSS = fitz.css_for_pymupdf_font("ubuntm", CSS=CSS, archive=arch, name="monospace")
+if fitz.fitz_fontdescriptors:
+    # we want to use the Ubuntu fonts for sans-serif and for monospace
+    CSS = fitz.css_for_pymupdf_font("ubuntu", archive=arch, name="sans-serif")
+    CSS = fitz.css_for_pymupdf_font("ubuntm", CSS=CSS, archive=arch, name="monospace")
+else:
+    # No pymupdf-fonts available.
+    CSS=""
 
 docname = __file__.replace(".py", ".pdf")  # output PDF file name
 
