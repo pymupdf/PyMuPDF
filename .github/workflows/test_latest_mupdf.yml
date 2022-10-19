@@ -45,6 +45,9 @@ jobs:
             # Build for single python version.
             CIBW_BUILD: "cp310*"
 
+            # Don't build for unsupported platforms.
+            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
+
             # Get cibuildwheel to run pytest with each wheel.
             CIBW_TEST_REQUIRES: "fontTools pytest"
             CIBW_TEST_COMMAND: "pytest -s {project}/tests"
