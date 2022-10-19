@@ -492,6 +492,11 @@ def get_mupdf():
                 )
         log( f'Running: {command}')
         subprocess.run( command, shell=True, check=True)
+
+        # Show sha of checkout.
+        command = f'cd {path} && git show --pretty=oneline|head -n 1'
+        log( f'Running: {command}')
+        subprocess.run( command, shell=True, check=False)
     
     if 1:
         # Use custom mupdf directory.
