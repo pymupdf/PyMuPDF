@@ -11,8 +11,6 @@ import fitz
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 resources = os.path.join(scriptdir, "resources")
-oldfile = os.path.join(resources, "joined.pdf")
-oldfile_1_20 = os.path.join(resources, "joined-1.20.pdf")
 
 def approx_parse( text):
     '''
