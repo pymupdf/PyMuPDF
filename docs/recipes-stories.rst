@@ -243,6 +243,7 @@ Yet another feature used here is that all data -- the images and the article HTM
 -----
 
 
+
 How to output a table
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -255,6 +256,23 @@ This script reflects existing features.
 |toggleStart|
 
 .. literalinclude:: samples/table01.py
+
+|toggleEnd|
+
+
+-----
+
+
+How to create a simple grid layout
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By creating a sequence of :ref:`Story` objects within a grid created via the :ref:`make_table<Functions_make_table>` function a developer can create grid layouts as required.
+
+``docs/samples`` file ``simple-grid.py``.
+
+|toggleStart|
+
+.. literalinclude:: samples/simple-grid.py
 
 |toggleEnd|
 
@@ -287,4 +305,39 @@ It features the following capabilities:
 * Use of :meth:`Story.element_positions` to collect the data for the TOC and for the dynamic adjustment of page footers. This is an example of a **bidirectional communication** between the story output process and the script.
 
 * The main PDF with the Python sources is being written to memory by its :ref:`DocumentWriter`. Another :ref:`Story` / :ref:`DocumentWriter` pair is then used to create a (memory) PDF for the TOC pages. Finally, both these PDFs are joined and the result stored to disk.
+
+
+
+
+
+
+
+
+
+
+Known issues
+~~~~~~~~~~~~~~~
+
+CSS2 property list: https://www.w3.org/TR/CSS2/propidx.html
+
+
+In an external HTML file
+
+Error: ``mupdf: cannot read archive entry``
+
+Cannot parse:
+
+<link rel="stylesheet" type="text/css" href="grid.css" />
+
+
+
+
+CSS
+
+Use:
+background-color
+
+not:
+
+background
 
