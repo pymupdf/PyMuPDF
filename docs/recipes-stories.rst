@@ -29,12 +29,12 @@ How to add a line of text with some formatting
 
 Here is the inevitable "Hello World" example. We will show two variants:
 
-1. Create using existing HTML source, that may come from anywhere.
+1. Create using existing HTML source :ref:`[1]<RecipesStories_Note_1>`, that may come from anywhere.
 2. Create using the Python API.
 
 -----
 
-Variant using an existing HTML source -- which in this case is defined as a constant in the script::
+Variant using an existing HTML source :ref:`[1]<RecipesStories_Note_1>` -- which in this case is defined as a constant in the script::
 
     import fitz
 
@@ -309,35 +309,28 @@ It features the following capabilities:
 
 
 
+Notes
+~~~~~~~~~
+
+.. _RecipesStories_Note_1:
+
+:ref:`[1]<RecipesStories_Note_1>` HTML & CSS support
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+.. note::
+
+    At the time of writing the HTML engine for Stories is fairly basic and supports a subset of CSS2 attributes.
+
+Some important CSS support to consider:
+
+- The only available layout is relative layout.
+- ``background`` is unavalable, use ``background-color`` instead.
+- ``float`` is unavailable.
 
 
 
 
 
 
-Known issues
-~~~~~~~~~~~~~~~
 
-CSS2 property list: https://www.w3.org/TR/CSS2/propidx.html
-
-
-In an external HTML file
-
-Error: ``mupdf: cannot read archive entry``
-
-Cannot parse:
-
-<link rel="stylesheet" type="text/css" href="grid.css" />
-
-
-
-
-CSS
-
-Use:
-background-color
-
-not:
-
-background
 
