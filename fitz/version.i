@@ -1,6 +1,6 @@
 %pythoncode %{
-VersionFitz = "1.20.3"
-VersionBind = "1.20.2"
+VersionFitz = "1.20.3" # MuPDF version.
+VersionBind = "1.21.0" # PyMuPDF version.
 VersionDate = "2022-08-13 00:00:01"
 version = (VersionBind, VersionFitz, "20220813000001")
 %}
