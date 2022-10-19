@@ -4,6 +4,7 @@
 * Confirm proper release of file handles via Document.close()
 * Confirm properly raising exceptions in document creation
 """
+import io
 import os
 
 import fitz
@@ -104,6 +105,13 @@ def test_open_exceptions():
         doc = fitz.open("pdf", b"")
     except RuntimeError as e:
         assert repr(e).startswith("EmptyFileError")
+
+
+def test_bug1945():
+    pdf = fitz.open(f'{scriptdir}/resources/bug1945.pdf')
+    buffer_ = io.BytesIO()
+    pdf.save(buffer_, clean=True)
+
 
 def test_bug1971():
     for _ in range(2):
