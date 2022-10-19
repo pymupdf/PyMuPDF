@@ -104,3 +104,11 @@ def test_open_exceptions():
         doc = fitz.open("pdf", b"")
     except RuntimeError as e:
         assert repr(e).startswith("EmptyFileError")
+
+def test_bug1971():
+    for _ in range(2):
+        doc = fitz.Document(f'{scriptdir}/resources/bug1971.pdf')
+        page = next(doc.pages())
+        page.get_drawings()
+        doc.close()
+
