@@ -1160,14 +1160,13 @@ calc_image_matrix(int width, int height, PyObject *tr, int rotate, int keep)
 static PyObject *make_story_elpos = NULL; // Py function returning object
 void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *pos)
 {
-#define SETATTR(a, v) temp=v;PyObject_SetAttrString(arg, a, v);Py_DECREF(v)
+#define SETATTR(a, v) PyObject_SetAttrString(arg, a, v);Py_DECREF(v)
     // ------------------------------------------------------------------------
     // 'opaque' is a tuple (userfunc, userdict), where 'userfunc' is a function
     // in the user's script and 'userdict' is a dictionary containing any
     // additional parameters of the user
     // userfunc will be called with the joined info of userdict and pos.
     // ------------------------------------------------------------------------
-    PyObject *temp = NULL;
     PyObject *callarg = (PyObject *) opaque;
     PyObject *userfunc = PyTuple_GET_ITEM(callarg, 0);
     PyObject *userdict = PyTuple_GET_ITEM(callarg, 1);
