@@ -29,12 +29,12 @@ How to add a line of text with some formatting
 
 Here is the inevitable "Hello World" example. We will show two variants:
 
-1. Create using existing HTML source :ref:`[1]<RecipesStories_Note_1>`, that may come from anywhere.
+1. Create using existing HTML source [#f1]_, that may come from anywhere.
 2. Create using the Python API.
 
 -----
 
-Variant using an existing HTML source :ref:`[1]<RecipesStories_Note_1>` -- which in this case is defined as a constant in the script::
+Variant using an existing HTML source [#f1]_ -- which in this case is defined as a constant in the script::
 
     import fitz
 
@@ -307,25 +307,23 @@ It features the following capabilities:
 * The main PDF with the Python sources is being written to memory by its :ref:`DocumentWriter`. Another :ref:`Story` / :ref:`DocumentWriter` pair is then used to create a (memory) PDF for the TOC pages. Finally, both these PDFs are joined and the result stored to disk.
 
 
+-----
 
 
-Notes
-~~~~~~~~~
 
-.. _RecipesStories_Note_1:
+.. rubric:: Footnotes
 
-:ref:`[1]<RecipesStories_Note_1>` HTML & CSS support
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.. [#f1] HTML & CSS support
 
-.. note::
+    .. note::
 
-    At the time of writing the HTML engine for Stories is fairly basic and supports a subset of CSS2 attributes.
+        At the time of writing the HTML engine for Stories is fairly basic and supports a subset of CSS2 attributes.
 
-Some important CSS support to consider:
+    Some important CSS support to consider:
 
-- The only available layout is relative layout.
-- ``background`` is unavalable, use ``background-color`` instead.
-- ``float`` is unavailable.
+    - The only available layout is relative layout.
+    - ``background`` is unavalable, use ``background-color`` instead.
+    - ``float`` is unavailable.
 
 
 

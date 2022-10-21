@@ -12,6 +12,59 @@ This represents an HTML or an XML node. It is a helper class intended to access 
 
 There is no need to ever directly construct an :ref:`Xml` object: after creating a :ref:`Story`, simply take :attr:`Story.body` -- which is an Xml node -- and use it to navigate your way through the story's DOM.
 
+
+================================ ===========================================================================================
+**Method / Attribute**             **Description**
+================================ ===========================================================================================
+:meth:`~.add_bullet_list`        add a :htmlTag:`ul` tag - bulleted list, context manager.
+:meth:`~.add_codeblock`          add a :htmlTag:`pre` tag, context manager.
+:meth:`~.add_description_list`   add a :htmlTag:`dl` tag, context manager.
+:meth:`~.add_division`           add a :htmlTag:`div` tag (renamed from “section”), context manager.
+:meth:`~.add_header`             add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context manager.
+:meth:`~.add_horizontal_line`    add a :htmlTag:`hr` tag.
+:meth:`~.add_image`              add a :htmlTag:`img` tag.
+:meth:`~.add_link`               add a :htmlTag:`a` tag.
+:meth:`~.add_number_list`        add a :htmlTag:`ol` tag, context manager.
+:meth:`~.add_paragraph`          add a :htmlTag:`p` tag.
+:meth:`~.add_span`               add a :htmlTag:`span` tag, context manager.
+:meth:`~.add_subscript`          add subscript text(:htmlTag:`sub` tag) - inline element, treated like text.
+:meth:`~.add_superscript`        add subscript text (:htmlTag:`sup` tag) - inline element, treated like text.
+:meth:`~.add_code`               add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_var`                add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_samp`               add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_kbd`                add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_text`               add a text string. Line breaks ``\n`` are honored as :htmlTag:`br` tags.
+:meth:`~.set_align`              sets the alignment using a CSS style spec. Only works for block-level tags.
+:meth:`~.set_attribute`          sets an arbitrary key to some value (which may be empty).
+:meth:`~.set_bgcolor`            sets the background color. Only works for block-level tags.
+:meth:`~.set_bold`               sets bold on or off or to some string value.
+:meth:`~.set_color`              sets text color.
+:meth:`~.set_columns`            sets the number of columns. Argument may be any valid number or string.
+:meth:`~.set_font`               sets the font-family, e.g. “sans-serif”.
+:meth:`~.set_fontsize`           sets the font size. Either a float or a valid HTML/CSS string.
+:meth:`~.set_id`                 sets a :htmlTag:`id`. A check for uniqueness is performed.
+:meth:`~.set_italic`             sets italic on or off or to some string value.
+:meth:`~.set_leading`            set inter-block text distance (``-mupdf-leading``), only works on block-level nodes.
+:meth:`~.set_lineheight`         set height of a line. Float like 1.5, which sets to `1.5 * fontsize`.
+:meth:`~.set_margins`            sets the margin(s), float or string with up to 4 values.
+:meth:`~.set_pagebreak_after`    insert a page break after this node.
+:meth:`~.set_pagebreak_before`   insert a page break before this node.
+:meth:`~.set_properties`         set any or all desired properties in one call.
+:meth:`~.add_style`              set (add) some “style” attribute not supported by its own ``set_`` method.
+:meth:`~.add_class`              set (add) some “class” attribute.
+:meth:`~.set_text_indent`        set indentation for first textblock line. Only works for block-level nodes.
+:attr:`~.tagname`                either the HTML tag name like :htmlTag:`p` or ``None`` if a text node.
+:attr:`~.text`                   either the node's text or ``None`` if a tag node.
+:attr:`~.is_text`                check if the node is a text.
+:attr:`~.first_child`            contains the first node one level below this one (or ``None``).
+:attr:`~.last_child`             contains the last node one level below this one (or ``None``).
+:attr:`~.next`                   the next node at the same level (or ``None``).
+:attr:`~.previous`               the previous node at the same level.
+:attr:`~.root`                   the top node of the DOM, which hence has the tagname :htmlTag:`html`.
+================================ ===========================================================================================
+
+
+
 **Class API**
 
 .. class:: Xml

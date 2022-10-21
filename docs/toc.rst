@@ -7,7 +7,6 @@
    intro.rst
    installation.rst
    tutorial.rst
-   stories-api.rst
    recipes.rst
    module.rst
    classes.rst
