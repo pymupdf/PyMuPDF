@@ -2,6 +2,7 @@
 Test sample scripts in docs/samples/.
 '''
 
+import glob
 import os
 import pytest
 import runpy
@@ -11,16 +12,17 @@ import runpy
 #
 root = os.path.abspath(f'{__file__}/../..')
 samples = []
-for p in (
-        'docs/samples/code-printer.py',
-        'docs/samples/filmfestival-sql.py',
-        'docs/samples/new-annots.py',
-        'docs/samples/quickfox.py',
-        'docs/samples/showpdf-page.py',
-        'docs/samples/table01.py',
-        ):
-    p = os.path.relpath(f'{root}/{p}')
-    samples.append(p)
+for p in glob.glob(f'{root}/docs/samples/*.py'):
+    if os.path.basename(p) in (
+             'make-bold.py',    # Needs sys.argv[1].
+             'multiprocess-gui.py', # GUI.
+             'multiprocess-render.py',  # Needs sys.argv[1].
+             'text-lister.py',  # Needs sys.argv[1].
+            ):
+        print(f'Not testing: {p}')
+    else:
+        p = os.path.relpath(p)
+        samples.append(p)
 
 # We use pytest.mark.parametrize() to run sample scripts via a fn, which
 # ensures that pytest treats each script as a test.
