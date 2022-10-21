@@ -64,9 +64,9 @@ creator        creating application
 subject        subject
 ============== =================================
 
-.. note:: Apart from these standard metadata, **PDF documents** starting from PDF version 1.4 may also contain so-called *"metadata streams"* (see also :data:`stream`). Information in such streams is coded in XML. PyMuPDF deliberately contains no XML components, so we do not directly support access to information contained therein. But you can extract the stream as a whole, inspect or modify it using a package like `lxml <https://pypi.org/project/lxml/>`_ and then store the result back into the PDF. If you want, you can also delete these data altogether.
+.. note:: Apart from these standard metadata, **PDF documents** starting from PDF version 1.4 may also contain so-called *"metadata streams"* (see also :data:`stream`). Information in such streams is coded in XML. PyMuPDF deliberately contains no XML components for this purpose (the :ref:`PyMuPDF Xml class<Xml>` is a helper class intended to access the DOM content of a :ref:`Story` object), so we do not directly support access to information contained therein. But you can extract the stream as a whole, inspect or modify it using a package like `lxml`_ and then store the result back into the PDF. If you want, you can also delete this data altogether.
 
-.. note:: There are two utility scripts in the repository that `import (PDF only) <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2meta.py>`_ resp. `export <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/meta2csv.py>`_ metadata from resp. to CSV files.
+.. note:: There are two utility scripts in the repository that `metadata import (PDF only)`_ resp. `metadata export`_ metadata from resp. to CSV files.
 
 Working with Outlines
 =========================
@@ -78,7 +78,7 @@ This will return a Python list of lists *[[lvl, title, page, ...], ...]* which l
 
 *lvl* is the hierarchy level of the entry (starting from 1), *title* is the entry's title, and *page* the page number (1-based!). Other parameters describe details of the bookmark target.
 
-.. note:: There are two utility scripts in the repository that `import (PDF only) <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2toc.py>`_ resp. `export <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/toc2csv.py>`_ table of contents from resp. to CSV files.
+.. note:: There are two utility scripts in the repository that `toc import (PDF only)`_ resp. `toc export`_ table of contents from resp. to CSV files.
 
 Working with Pages
 ======================
@@ -144,7 +144,7 @@ This example creates a **raster** image of a page's content::
 
 A :ref:`Pixmap` contains a number of methods and attributes which are referenced below. Among them are the integers *width*, *height* (each in pixels) and *stride* (number of bytes of one horizontal image line). Attribute *samples* represents a rectangular area of bytes representing the image data (a Python *bytes* object).
 
-.. note:: You can also create a **vector** image of a page by using :meth:`Page.get_svg_image`. Refer to this `Wiki <https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support>`_ for details.
+.. note:: You can also create a **vector** image of a page by using :meth:`Page.get_svg_image`. Refer to this `Vector Image Support page`_ for details.
 
 Saving the Page Image in a File
 -----------------------------------
@@ -154,7 +154,7 @@ We can simply store the image in a PNG file::
 
 Displaying the Image in GUIs
 -------------------------------------------
-We can also use it in GUI dialog managers. :attr:`Pixmap.samples` represents an area of bytes of all the pixels as a Python bytes object. Here are some examples, find more in the `examples <https://github.com/pymupdf/PyMuPDF/tree/master/examples>`_ directory.
+We can also use it in GUI dialog managers. :attr:`Pixmap.samples` represents an area of bytes of all the pixels as a Python bytes object. Here are some examples, find more in the `examples`_ directory.
 
 wxPython
 ~~~~~~~~~~~~~
@@ -167,7 +167,7 @@ Consult their documentation for adjustments to RGB(A) pixmaps and, potentially, 
 
 Tkinter
 ~~~~~~~~~~
-Please also see section 3.19 of the `Pillow documentation <https://Pillow.readthedocs.io>`_::
+Please also see section 3.19 of the `Pillow documentation`_::
 
     from PIL import Image, ImageTk
 
@@ -183,11 +183,11 @@ The following **avoids using Pillow**::
     imgdata = pix1.tobytes("ppm")  # extremely fast!
     tkimg = tkinter.PhotoImage(data = imgdata)
 
-If you are looking for a complete Tkinter script paging through **any supported** document, `here it is! <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/doc-browser.py>`_ It can also zoom into pages, and it runs under Python 2 or 3. It requires the extremely handy `PySimpleGUI <https://pypi.org/project/PySimpleGUI/>`_ pure Python package.
+If you are looking for a complete Tkinter script paging through **any supported** document, `here it is!`_. It can also zoom into pages, and it runs under Python 2 or 3. It requires the extremely handy `PySimpleGUI`_ pure Python package.
 
 PyQt4, PyQt5, PySide
 ~~~~~~~~~~~~~~~~~~~~~
-Please also see section 3.16 of the `Pillow documentation <https://Pillow.readthedocs.io>`_::
+Please also see section 3.16 of the `Pillow documentation`_::
 
     from PIL import Image, ImageQt
 
@@ -239,7 +239,7 @@ You can find out, exactly where on a page a certain text string appears::
 
 This delivers a list of rectangles (see :ref:`Rect`), each of which surrounds one occurrence of the string "mupdf" (case insensitive). You could use this information to e.g. highlight those areas (PDF only) or create a cross reference of the document.
 
-Please also do have a look at chapter :ref:`cooperation` and at demo programs `demo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py>`_ and `demo-lowlevel.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py>`_. Among other things they contain details on how the :ref:`TextPage`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations suggest it.
+Please also do have a look at chapter :ref:`cooperation` and at demo programs `demo.py`_ and `demo-lowlevel.py`_. Among other things they contain details on how the :ref:`TextPage`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations suggest it.
 
 
 
@@ -250,7 +250,7 @@ Working with Stories
 
 The :ref:`Story` class is a new feature of PyMuPDF version 1.21.0. It represents support for MuPDF's **"story"** interface.
 
-The following is a quote from the book `"MuPDF Explored" <https://mupdf.com/docs/mupdf-explored.html>`_ by Robin Watts from `Artifex <www.artifex.com>`_:
+The following is a quote from the book `"MuPDF Explored"`_ by Robin Watts from `Artifex`_:
 
 -----
 
@@ -265,14 +265,14 @@ The following is a quote from the book `"MuPDF Explored" <https://mupdf.com/docs
 
 When creating a :ref:`Story`, the input from up to three different information sources is taken into account. All these items are optional.
 
-1. HTML source code, provided as a Python string, from which a so-called **Document Object Model (DOM)** is created. As usual, this string may be read from a file, be stored in a Python variable of the script, **or** be programmatically created by the script itself via an API (:ref:`Stories API<StoriesAPI>`, :ref:`Xml`).
+1. HTML source code, provided as a Python string, from which a so-called **Document Object Model (DOM)** is created. As usual, this string may be read from a file, be stored in a Python variable of the script, **or** be programmatically created by the script itself via an API (:ref:`Xml`).
 
 2. CSS (Cascaded Style Sheet) source code, provided as a Python string. CSS can be used to provide styling information (text font size, color, etc.) like it would happen for web pages. Obviously, this string may also be read from a file.
 
 3. An :ref:`Archive` **must be used** whenever the DOM references images, or uses text fonts except the standard :ref:`Base-14-Fonts`, CJK fonts and the NOTO fonts generated into the PyMuPDF binary.
 
 
-The :ref:`Stories API<StoriesAPI>` allows creating DOMs completely from scratch, including desired styling information. It can also be used to modify or extend **provided** HTML: text can be deleted or replaced, or its styling can be changed. Text -- for example extracted from databases -- can also be added and fill template-like HTML documents.
+The :ref:`API<Xml>` allows creating DOMs completely from scratch, including desired styling information. It can also be used to modify or extend **provided** HTML: text can be deleted or replaced, or its styling can be changed. Text -- for example extracted from databases -- can also be added and fill template-like HTML documents.
 
 After the story DOM is considered complete, it can be used to create a PDF document. This happens via the new :ref:`DocumentWriter` class. During the output page creation, the programmer will provide a number of rectangles where the story should place its content.
 
@@ -285,7 +285,7 @@ PDF Maintenance
 ==================
 PDFs are the only document type that can be **modified** using PyMuPDF. Other file types are read-only.
 
-However, you can convert **any document** (including images) to a PDF and then apply all PyMuPDF features to the conversion result. Find out more here :meth:`Document.convert_to_pdf`, and also look at the demo script `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_ which can convert any supported document to PDF.
+However, you can convert **any document** (including images) to a PDF and then apply all PyMuPDF features to the conversion result. Find out more here :meth:`Document.convert_to_pdf`, and also look at the demo script `pdf-converter.py`_ which can convert any supported document to PDF.
 
 :meth:`Document.save()` always stores a PDF in its current (potentially modified) state on disk.
 
@@ -333,14 +333,14 @@ Here is a snippet that **splits** *doc1*. It creates a new document of its first
     doc2.insert_pdf(doc1, from_page = len(doc1) - 10) # last 10 pages
     doc2.save("first-and-last-10.pdf")
 
-More can be found in the :ref:`Document` chapter. Also have a look at `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_.
+More can be found in the :ref:`Document` chapter. Also have a look at `PDFjoiner.py`_.
 
 Embedding Data
 ---------------
 
 PDFs can be used as containers for abitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
-PyMuPDF fully supports this feature via :ref:`Document` *embfile_** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `embedding files <https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files>`_, or the example scripts `embedded-copy.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py>`_, `embedded-export.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py>`_, `embedded-import.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py>`_, and `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_.
+PyMuPDF fully supports this feature via :ref:`Document` *embfile_** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py>`_, `embedded-export.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py>`_, `embedded-import.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py>`_, and `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_.
 
 
 Saving
@@ -380,9 +380,13 @@ This can be achieved by the :meth:`Document.close` method. Apart from closing th
 
 Further Reading
 ================
-Also have a look at PyMuPDF's `Wiki <https://github.com/pymupdf/PyMuPDF/wiki>`_ pages. Especially those named in the sidebar under title **"Recipes"** cover over 15 topics written in "How-To" style.
+Also have a look at PyMuPDF's `Wiki`_ pages. Especially those named in the sidebar under title **"Recipes"** cover over 15 topics written in "How-To" style.
 
 This document also contains a :ref:`FAQ`. This chapter has close connection to the aforementioned recipes, and it will be extended with more content over time.
+
+
+-----
+
 
 .. rubric:: Footnotes
 
@@ -391,3 +395,34 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 .. [#f2] :meth:`Page.get_text` is a convenience wrapper for several methods of another PyMuPDF class, :ref:`TextPage`. The names of these methods correspond to the argument string passed to :meth:`Page.get_text` \:  *Page.get_text("dict")* is equivalent to *TextPage.extractDICT()* \.
 
 .. [#f3] "Sequences" are Python objects conforming to the sequence protocol. These objects implement a method named *__getitem__()*. Best known examples are Python tuples and lists. But *array.array*, *numpy.array* and PyMuPDF's "geometry" objects (:ref:`Algebra`) are sequences, too. Refer to :ref:`SequenceTypes` for details.
+
+
+
+
+.. External links:
+
+
+.. _lxml: https://pypi.org/project/lxml/
+.. _metadata import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2meta.py
+.. _metadata export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/meta2csv.py
+.. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2toc.py
+.. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/toc2csv.py
+.. _Vector Image Support page: https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support
+.. _examples: https://github.com/pymupdf/PyMuPDF/tree/master/examples
+.. _Pillow documentation: https://Pillow.readthedocs.io
+.. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/doc-browser.py
+.. _PySimpleGUI: https://pypi.org/project/PySimpleGUI/
+.. _demo.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py
+.. _demo-lowlevel.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py
+.. _"MuPDF Explored": https://mupdf.com/docs/mupdf-explored.html
+.. _Artifex: https://www.artifex.com
+.. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py
+.. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py
+.. _dealing with embedding files: https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files
+.. _embedded-copy.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py
+.. _embedded-export.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py
+.. _embedded-import.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py
+.. _embedded-list.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py
+.. _Wiki: https://github.com/pymupdf/PyMuPDF/wiki
+
+

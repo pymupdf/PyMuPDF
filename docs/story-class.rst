@@ -31,7 +31,7 @@ Story
 
       Here are some general remarks:
 
-      * The :ref:`Story` constructor parses and validates the provided HTML and CSS sources. PyMuPDF provides a number of ways to manipulate the HTML source by providing access to the *nodes* of the underlying DOM. HTML documents can be completely built from ground up programmatically, or existing HTML can be modified pretty arbitrarily. For details of this interface, please see the :ref:`StoriesAPI` and the :ref:`Xml` class.
+      * The :ref:`Story` constructor parses and validates the provided HTML and CSS sources. PyMuPDF provides a number of ways to manipulate the HTML source by providing access to the *nodes* of the underlying DOM. HTML documents can be completely built from ground up programmatically, or existing HTML can be modified pretty arbitrarily. For details of this interface, please see the :ref:`Xml` class.
       
       * If no (or no more) changes to the DOM are required, the story is ready to produce PDF pages via some :ref:`DocumentWriter`. To achieve this, the following loop should be used:
       
