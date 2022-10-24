@@ -20,6 +20,7 @@ Change Log
   * **Fixed** `#1945 <https://github.com/pymupdf/PyMuPDF/issues/1945>`_: Segmentation fault when saving with `clean=True`.
   * **Fixed** `#1965 <https://github.com/pymupdf/PyMuPDF/issues/1965>`_: `pdfocr_save()` Hard Crash.
   * **Fixed** `#1971 <https://github.com/pymupdf/PyMuPDF/issues/1971>`_: Segmentation fault when using `get_drawings()`.
+  * **Fixed** `#1946 <https://github.com/pymupdf/PyMuPDF/issues/1946>`_: `block_no` and `block_type` switched in `get_text()` docs.
 
 * Misc changes to core code:
 
