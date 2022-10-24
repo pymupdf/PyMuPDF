@@ -69,11 +69,11 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
 .. class:: Xml
 
-    .. method:: add_bullet_list()
+    .. method:: add_bullet_list
 
        Add an :htmlTag:`ul` tag - bulleted list, context manager. See `ul <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_.
 
-    .. method:: add_codeblock()
+    .. method:: add_codeblock
 
        Add a :htmlTag:`pre` tag, context manager. See `pre <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre>`_.
 
@@ -82,7 +82,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
        Add a :htmlTag:`dl` tag, context manager. See `dl <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl>`_.
 
     .. method:: add_division
-        
+
        Add a :htmlTag:`div` tag, context manager. See `div <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div>`_.
 
     .. method:: add_header(value)
@@ -103,7 +103,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
        :arg width: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the width of the specified ``where`` rectangle in :meth:`Story.place`. If this value is provided and ``height`` is omitted, the image will be included keeping its aspect ratio.
        :arg height: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the height of the specified ``where`` rectangle in :meth:`Story.place`. If this value is provided and ``width`` is omitted, the image's aspect ratio will be honored.
 
-    .. method:: add_link
+    .. method:: add_link(link)
 
        Add an :htmlTag:`a` tag.
 
@@ -117,33 +117,33 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_span
 
-       Add a :htmlTag:`span` tag, context manager.
+       Add a :htmlTag:`span` tag, context manager. See `span`_
 
-    .. method:: add_subscript
+    .. method:: add_subscript(text)
 
        Add "subscript" text(:htmlTag:`sub` tag) - inline element, treated like text.
 
-    .. method:: add_superscript
+    .. method:: add_superscript(text)
 
        Add "superscript" text (:htmlTag:`sup` tag) - inline element, treated like text.
 
-    .. method:: add_code
+    .. method:: add_code(text)
 
        Add "code" text (:htmlTag:`code` tag) - inline element, treated like text.
 
-    .. method:: add_var
+    .. method:: add_var(text)
 
        Add "variable" text (:htmlTag:`var` tag) - inline element, treated like text.
 
-    .. method:: add_samp
+    .. method:: add_samp(text)
 
        Add "sample output" text (:htmlTag:`samp` tag) - inline element, treated like text.
 
-    .. method:: add_kbd
+    .. method:: add_kbd(text)
 
        Add "keyboard input" text (:htmlTag:`kbd` tag) - inline element, treated like text.
 
-    .. method:: add_text
+    .. method:: add_text(text)
 
        Add a text string. Line breaks ``\n`` are honored as :htmlTag:`br` tags.
 
@@ -209,13 +209,13 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
     .. method:: set_font(value)
 
        Set the font-family.
-       
+
        :arg str value: e.g. "sans-serif".
 
     .. method:: set_fontsize(value)
 
        Set the font size for text following.
-       
+
        :arg value: a float or a valid `font-size <https://developer.mozilla.org/en-US/docs/Web/CSS/font-size>`_ value.
 
     .. method:: set_id(unqid)
@@ -259,7 +259,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
     .. method:: set_properties(align=None, bgcolor=None, bold=None, color=None, columns=None, font=None, fontsize=None, indent=None, italic=None, leading=None, lineheight=None, margins=None, pagebreak_after=False, pagebreak_before=False, unqid=None, cls=None)
 
        Set any or all desired properties in one call. The meaning of argument values equal the values of the corresponding ``set_`` methods.
-       
+
        .. note:: The properties set by this method are directly attached to the node, whereas every ``set_`` method generates a new :htmlTag:`span` below the current node that has the respective property. So to e.g. "globally" set some property for the :htmlTag:`body`, this method must be used.
 
     .. method:: add_style(value)
@@ -280,13 +280,13 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        :arg value: a valid `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS/text-indent>`_ value. Please note that negative values do not work.
 
-    
+
     .. method:: append_child(node)
 
        Append a child node. This is a low-level method used by other methods like :meth:`Xml.add_paragraph`.
 
        :arg node: the :ref:`Xml` node to append.
-    
+
     .. method:: create_text_node(text)
 
        Create direct text for the current node
@@ -295,7 +295,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        :rtype: :ref:`Xml`
        :returns: the created element.
-    
+
     .. method:: create_element(tag)
 
        Create a new node with a given tag. This a low-level method used by other methods like :meth:`Xml.add_paragraph`.
@@ -304,7 +304,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        :rtype: :ref:`Xml`
        :returns: the created element. To actually bind it to the DOM, use :meth:`Xml.append_child`.
-    
+
     .. method:: insert_before(elem)
 
        Insert the given element ``elem`` before this node.
@@ -350,9 +350,9 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
        :rtype: :ref:`Xml`.
        :returns: ``None`` if none more found, otherwise the next matching node.
 
-    
+
     .. attribute:: tagname
-       
+
        Either the HTML tag name like :htmlTag:`p` or ``None`` if a text node.
 
     .. attribute:: text
@@ -407,7 +407,7 @@ The standard way to add nodes to a DOM is this::
    para.add_txt("this is bold and italic")
    para.set_italic(False).set_bold(False)  # all following text will be regular
    para.add_text("regular text")
-   
+
 
 
 Methods that are flagged as "context managers" can conveniently be used in this way::
@@ -419,3 +419,8 @@ Methods that are flagged as "context managers" can conveniently be used in this 
       para.set_italic(False).set_bold(False).add_text("regular text")
       para.add_text("more regular text")
 
+
+
+.. External links:
+
+.. _span: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span
