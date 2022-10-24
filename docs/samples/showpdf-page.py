@@ -41,10 +41,10 @@ def make_pdf(fileptr, text, rect, font="sans-serif", archive=None):
     writer = fitz.DocumentWriter(fileptr)
     while True:
         device = writer.begin_page(mediabox)
-        done, _ = story.place(mediabox)
+        more, _ = story.place(mediabox)
         story.draw(device)
         writer.end_page()
-        if done == 0:
+        if not more:
             break
     writer.close()
     return matrix
