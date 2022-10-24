@@ -1,3 +1,5 @@
+import sys
+
 import fitz
 
 
@@ -21,7 +23,7 @@ def flags_decomposer(flags):
     return ", ".join(l)
 
 
-doc = fitz.open("text-tester.pdf")
+doc = fitz.open(sys.argv[1])
 page = doc[0]
 
 # read page text as a dictionary, suppressing extra spaces in CJK fonts
