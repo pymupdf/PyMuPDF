@@ -152,7 +152,7 @@ We extend our "Hello World" example from above and display an image of our plane
 -----
 
 
-Reading External HTML and CSS for a Story
+Reading external HTML and CSS for a Story
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These cases are fairly straightforward.
@@ -174,7 +174,7 @@ As a general recommendation, HTML and CSS sources should be **read as binary fil
 -----
 
 
-How to Output Database Content with Story Templates 
+How to output database content with Story templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script demonstrates how to report SQL database content using an **HTML template**.
@@ -220,12 +220,12 @@ The basic idea is letting :ref:`DocumentWriter` output to a PDF in memory. Once 
 -----
 
 
-How to Make Multi-Columned Layouts and Access Fonts from Package `pymupdf-fonts <https://github.com/pymupdf/pymupdf-fonts>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How to make multi-columned layouts and access fonts from package `pymupdf-fonts`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script outputs an article (taken from Wikipedia) that contains text and multiple images and uses a 2-column page layout.
 
-In addition, two "Ubuntu" font families from package `pymupdf-fonts <https://github.com/pymupdf/pymupdf-fonts>`_ are used instead of defaulting to Base-14 fonts.
+In addition, two "Ubuntu" font families from package `pymupdf-fonts`_ are used instead of defaulting to Base-14 fonts.
 
 Yet another feature used here is that all data -- the images and the article HTML -- are jointly stored in a ZIP file.
 
@@ -236,6 +236,54 @@ Yet another feature used here is that all data -- the images and the article HTM
 |toggleStart|
 
 .. literalinclude:: samples/quickfox.py
+
+|toggleEnd|
+
+
+-----
+
+
+
+How make a layout which wraps around a predefined "no go area" layout
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+This is a demo script using PyMuPDF's Story class to output text as a PDF with
+a two-column page layout.
+
+The script demonstrates the following features:
+
+* Layout text around images of an existing ("target") PDF.
+* Based on a few global parameters, areas on each page are identified, that
+  can be used to receive text layouted by a Story.
+* These global parameters are not stored anywhere in the target PDF and
+  must therefore be provided in some way.
+  - The width of the border(s) on each page.
+  - The fontsize to use for text. This value determines whether the provided
+    text will fit in the empty spaces of the (fixed) pages of target PDF. It
+    cannot be predicted in any way. The script ends with an exception if
+    target PDF has not enough pages, and prints a warning message if not all
+    pages receive at least some text. In both cases, the FONTSIZE value
+    can be changed (a float value).
+  - Use of a 2-column page layout for the text.
+* The layout creates a temporary (memory) PDF. Its produced page content
+  (the text) is used to overlay the corresponding target page. If text
+  requires more pages than are available in target PDF, an exception is raised.
+  If not all target pages receive at least some text, a warning is printed.
+* The script reads "image-no-go.pdf" in its own folder. This is the "target" PDF.
+  It contains 2 pages with each 2 images (from the original article), which are
+  positioned at places that create a broad overall test coverage. Otherwise the
+  pages are empty.
+* The script produces "quickfox-image-no-go.pdf" which contains the original pages
+  and image positions, but with the original article text laid out around them.
+
+
+``docs/samples`` files ``quickfox-image-no-go.py``, ``image-no-go.pdf`` & ``quickfox.zip``.
+
+
+|toggleStart|
+
+.. literalinclude:: samples/quickfox-image-no-go.py
 
 |toggleEnd|
 
@@ -280,7 +328,7 @@ By creating a sequence of :ref:`Story` objects within a grid created via the :re
 -----
 
 
-How to Generate a Table of Contents
+How to generate a Table of Contents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script lists the source code of all Python scripts that live in the script's directory.
@@ -310,6 +358,24 @@ It features the following capabilities:
 -----
 
 
+How to display a list from JSON data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example takes some JSON data input which it uses to populate a :ref:`Story`. It also contains some visual text formatting and shows how to add links.
+
+
+``docs/samples`` file ``json-example.py``.
+
+|toggleStart|
+
+.. literalinclude:: samples/json-example.py
+
+|toggleEnd|
+
+
+
+-----
+
 
 .. rubric:: Footnotes
 
@@ -328,7 +394,9 @@ It features the following capabilities:
 
 
 
+.. External Links:
 
+.. _pymupdf-fonts: https://github.com/pymupdf/pymupdf-fonts
 
 
 
