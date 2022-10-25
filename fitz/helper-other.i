@@ -1185,6 +1185,7 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     SETATTR("text", Py_BuildValue("s", pos->text));
     SETATTR("open_close", Py_BuildValue("i", pos->open_close));
     SETATTR("rect_num", Py_BuildValue("i", pos->rectangle_num));
+    SETATTR("href", Py_BuildValue("s", pos->href));
 
     // iterate over userdict items and set their attributes
     PyObject *pkey = NULL;

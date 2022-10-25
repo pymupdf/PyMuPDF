@@ -1314,6 +1314,11 @@ class ElementPosition(object):
     """Convert a dictionary with element position information to an object."""
     def __init__(self):
         pass
+    def __str__(self):
+        ret = ""
+        for n, v in self.__dict__.items():
+            ret += f" {n}={v!r}"
+        return ret
 
 def make_story_elpos():
     return ElementPosition()
