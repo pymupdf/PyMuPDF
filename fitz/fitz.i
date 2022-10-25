@@ -8014,7 +8014,7 @@ def pil_save(self, *args, **kwargs):
     try:
         from PIL import Image
     except ImportError:
-        print("PIL/Pillow not instralled")
+        print("PIL/Pillow not installed")
         raise
 
     cspace = self.colorspace
@@ -13564,7 +13564,8 @@ struct Story
         void draw( struct DeviceWrapper* device, PyObject* matrix=NULL)
         {
             fz_matrix ctm2 = JM_matrix_from_py( matrix);
-            fz_draw_story( gctx, (fz_story*) $self, device->device, ctm2);
+            fz_device *dev = (device) ? device->device : NULL;
+            fz_draw_story( gctx, (fz_story*) $self, dev, ctm2);
         }
 
         FITZEXCEPTION(document, !result)
@@ -13621,6 +13622,305 @@ struct Story
 
         %pythoncode
         %{
+            def write(self, writer, rectfn, positionfn=None, pagefn=None):
+                """
+                Places and writes Story instance `self` to a
+                `DocumentWriter`. Avoids the need for calling code to implement
+                a loop that calls `story.place()` and `story.draw()` etc,
+                at the expense of having to provide at least the `rectfn()`
+                callback.
+                
+                Equivalent to MuPDF's `fz_write_story()`.
+
+                Args:
+                    writer:
+                        A `DocumentWriter` or None.
+                    rectfn:
+                        A callable taking `(rect_num: int, filled: Rect)` and
+                        returning `(mediabox, rect, ctm)`:
+                            mediabox:
+                                None or rect for new page.
+                            rect:
+                                The next rect into which content should be
+                                placed.
+                            ctm:
+                                None or a `Matrix`.
+                    positionfn:
+                        None, or a callable taking `(position: ElementPosition)`:
+                            position:
+                                An `ElementPosition` with an extra `.page_num`
+                                member. Keys are:
+                                    "depth": int
+                                    "heading": int
+                                    "href": str
+                                    "id": str
+                                    "open_close": int
+                                    "page_num": int
+                                    "rect": rect
+                                    "rect_num": int
+                                    "text": str
+
+                        Typically called multiple times as we generate
+                        elements that are headings or have an id. Related to
+                        `fz_story_positions()`.
+                    pagefn:
+                        None, or a callable taking `(page_num, mediabox,
+                        dev, after)`; called at start (`after=0`) and end
+                        (`after=1`) of each page.
+                """
+                dev = None
+                page_num = 0
+                rect_num = 0
+                filled = Rect(0, 0, 0, 0)
+                while 1:
+                    mediabox, rect, ctm = rectfn(rect_num, filled)
+                    rect_num += 1
+                    if mediabox:
+                        # new page.
+                        page_num += 1
+                    more, filled = self.place( rect)
+                    #print(f"write(): positionfn={positionfn}")
+                    if positionfn:
+                        def positionfn2(position):
+                            # We add a `.page_num` member to the
+                            # `ElementPosition` instance.
+                            position.page_num = page_num
+                            #print(f"write(): position={position}")
+                            positionfn(position)
+                        self.element_positions(positionfn2, {})
+                    if writer:
+                        if mediabox:
+                            # new page.
+                            if dev:
+                                if pagefn:
+                                    pagefn(page_num, medibox, dev, 1)
+                                writer.end_page()
+                            dev = writer.begin_page( mediabox)
+                            if pagefn:
+                                pagefn(page_num, mediabox, dev, 0)
+                        self.draw( dev, ctm)
+                        if not more:
+                            if pagefn:
+                                pagefn( page_num, mediabox, dev, 1)
+                            writer.end_page()
+                    else:
+                        self.draw(None, ctm)
+                    if not more:
+                        break
+
+            @staticmethod
+            def write_stabilized(writer, contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True):
+                """
+                Does iterative layout of html content to a `DocumentWriter`.
+
+                For example this allows one to add a table of contents section
+                while ensuring that page numbers are patched up until stable.
+
+                Repeatedly creates a new `Story` from `(contentfn(),
+                user_css, em, archive)` and lays it out with internal call
+                to `Story.write()`; uses a None writer and extracts the list
+                of `ElementPosition`'s which is passed to the next call of
+                `contentfn()`.
+
+                When the html from `contentfn()` becomes unchanged, we do a
+                final iteration using `writer`.
+
+                Equivalent to MuPDF's `fz_write_stabilized_story()`, but
+                `add_header_ids` is extra functionality.
+                
+                Args:
+                    writer:
+                        A `DocumentWriter`.
+                    contentfn:
+                        A function taking a list of `ElementPositions` and
+                        returning a string containing html. The returned html
+                        can depend on the list of positions, for example with a
+                        table of contents near the start.
+                    rectfn:
+                        A callable taking `(rect_num: int, filled: Rect)` and
+                        returning `(mediabox, rect, ctm)`:
+                            mediabox:
+                                None or rect for new page.
+                            rect:
+                                The next rect into which content should be
+                                placed.
+                            ctm:
+                                A `Matrix`.
+                    pagefn:
+                        None, or a callable taking `(page_num, medibox,
+                        dev, after)`; called at start (`after=0`) and end
+                        (`after=1`) of each page.
+                    archive:
+                        .
+                    add_header_ids:
+                        If true, we add unique ids to all header tags that
+                        don't already have an id. This can help automatic
+                        generation of tables of contents.
+                Returns:
+                    None.
+                """
+                positions = list()
+                content = None
+                # Iterate until stable.
+                while 1:
+                    content_prev = content
+                    content = contentfn( positions)
+                    stable = False
+                    if content == content_prev:
+                        stable = True
+                    content2 = content
+                    story = Story(content2, user_css, em, archive)
+
+                    if add_header_ids:
+                        story.add_header_ids()
+
+                    positions = list()
+                    def positionfn2(position):
+                        #print(f"write_stabilized(): stable={stable} positionfn={positionfn} position={position}")
+                        positions.append(position)
+                        if stable and positionfn:
+                            positionfn(position)
+                    story.write(
+                            writer if stable else None,
+                            rectfn,
+                            positionfn2,
+                            pagefn,
+                            )
+                    if stable:
+                        break
+
+            def add_header_ids(self):
+                '''
+                Look for `<h1..6>` items in `self` and adds unique `id`
+                attributes if not already present.
+                '''
+                dom = self.body
+                i = 0
+                x = dom.find(None, None, None)
+                while x:
+                    name = x.tagname
+                    if len(name) == 2 and name[0]=="h" and name[1] in "123456":
+                        attr = x.get_attribute_value("id")
+                        if not attr:
+                            id_ = f"h_id_{i}"
+                            #print(f"name={name}: setting id={id_}")
+                            x.set_attribute("id", id_)
+                            i += 1
+                    x = x.find_next(None, None, None)
+
+            def write_with_links(self, rectfn, positionfn=None, pagefn=None):
+                """
+                Similar to `write()` except that we don't have a `writer` arg
+                and we return a PDF `Document` in which links have been created
+                for each internal html link.
+                """
+                #print("write_with_links()")
+                stream = io.BytesIO()
+                writer = DocumentWriter(stream)
+                positions = []
+                def positionfn2(position):
+                    #print(f"write_with_links(): position={position}")
+                    positions.append(position)
+                    if positionfn:
+                        positionfn(position)
+                self.write(writer, rectfn, positionfn=positionfn2, pagefn=pagefn)
+                writer.close()
+                stream.seek(0)
+                return Story.add_pdf_links(stream, positions)
+
+            @staticmethod
+            def write_stabilized_with_links(contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True):
+                """
+                Similar to `write_stabilized()` except that we don't have a
+                `writer` arg and instead return a PDF `Document` in which links
+                have been created for each internal html link.
+                """
+                #print("write_stabilized_with_links()")
+                stream = io.BytesIO()
+                writer = DocumentWriter(stream)
+                positions = []
+                def positionfn2(position):
+                    #print(f"write_stabilized_with_links(): position={position}")
+                    positions.append(position)
+                    if positionfn:
+                        positionfn(position)
+                Story.write_stabilized(writer, contentfn, rectfn, user_css, em, positionfn2, pagefn, archive, add_header_ids)
+                writer.close()
+                stream.seek(0)
+                return Story.add_pdf_links(stream, positions)
+
+            @staticmethod
+            def add_pdf_links(document_or_stream, positions):
+                """
+                Adds links to PDF document.
+                Args:
+                    document_or_stream:
+                        A PDF `Document` or raw PDF content, for example an
+                        `io.BytesIO` instance.
+                    positions:
+                        List of `ElementPosition`'s for `document_or_stream`,
+                        typically from Story.element_positions(). We raise an
+                        exception if two or more positions have same id.
+                Returns:
+                    `document_or_stream` if a `Document` instance, otherwise a
+                    new `Document` instance.
+                We raise an exception if an `href` in `positions` refers to an
+                internal position `#<name>` but no item in `postions` has `id =
+                name`.
+                """
+                if isinstance(document_or_stream, Document):
+                    document = document_or_stream
+                else:
+                    document = Document("pdf", document_or_stream)
+
+                # Create dict from id to position, which we will use to find
+                # link destinations.
+                #
+                id_to_position = dict()
+                #print(f"positions: {positions}")
+                for position in positions:
+                    #print(f"add_pdf_links(): position: {position}")
+                    if (position.open_close & 1) and position.id:
+                        #print(f"add_pdf_links(): position with id: {position}")
+                        if position.id in id_to_position:
+                            #print(f"Ignoring duplicate positions with id={position.id!r}")
+                            pass
+                        else:
+                            id_to_position[ position.id] = position
+
+                # Insert links for all positions that have an `href` starting
+                # with '#'.
+                #
+                for position_from in positions:
+                    if ((position_from.open_close & 1)
+                            and position_from.href
+                            and position_from.href.startswith("#")
+                            ):
+                        # This is a `<a href="#...">...</a>` internal link.
+                        #print(f"add_pdf_links(): position with href: {position}")
+                        target_id = position_from.href[1:]
+                        try:
+                            position_to = id_to_position[ target_id]
+                        except Exception as e:
+                            raise RuntimeError(f"No destination with id={target_id}, required by position_from: {position_from}")
+                        # Make link from `position_from`'s rect to top-left of
+                        # `position_to`'s rect.
+                        if 0:
+                            print(f"add_pdf_links(): making link from:")
+                            print(f"add_pdf_links():    {position_from}")
+                            print(f"add_pdf_links(): to:")
+                            print(f"add_pdf_links():    {position_to}")
+                        link = dict()
+                        link["kind"] = LINK_GOTO
+                        link["from"] = Rect(position_from.rect)
+                        x0, y0, x1, y1 = position_to.rect
+                        # This appears to work well with viewers which scroll
+                        # to make destination point top-left of window.
+                        link["to"] = Point(x0, y0)
+                        link["page"] = position_to.page_num - 1
+                        document[position_from.page_num - 1].insert_link(link)
+                return document
+
             @property
             def body(self):
                 dom = self.document()
