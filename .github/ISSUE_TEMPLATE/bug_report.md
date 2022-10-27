@@ -2,8 +2,8 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
-assignees: JorjMcKie
+labels:
+assignees:
 
 ---
 
@@ -14,6 +14,8 @@ A clear and concise description of what the bug is.
 
 ## To Reproduce (mandatory)
 Explain the steps to reproduce the behavior, For example, include a minimal code snippet, example files, etc.
+
+For problems when building or installing PyMuPDF, give the full output of the build/install command so that, for example, all pip/compiler/linker errors/warnings can be seen.
 
 ## Expected behavior (optional)
 Describe what you expected to happen (if not obvious).
