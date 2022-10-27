@@ -62,7 +62,7 @@ jobs:
       # Get cibuildwheel.
       #
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.6.1
+        uses: pypa/cibuildwheel@v2.11.2
                
         # Set extra cibuildwheel options using environmental variables.
         #

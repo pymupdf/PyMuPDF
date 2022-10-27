@@ -26,7 +26,7 @@ jobs:
       # Set up cibuildwheel.
       #
       - name: cibuildwheel
-        uses: pypa/cibuildwheel@v2.6.1
+        uses: pypa/cibuildwheel@v2.11.2
 
         env:
             # PYMUPDF_SETUP_MUPDF_TGZ="": don't embed mupdf in sdist - no need
@@ -43,7 +43,7 @@ jobs:
             CIBW_ARCHS_LINUX: x86_64
 
             # Build for single python version.
-            CIBW_BUILD: "cp310*"
+            CIBW_BUILD: "cp311*"
 
             # Don't build for unsupported platforms.
             CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
