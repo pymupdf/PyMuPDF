@@ -13623,51 +13623,6 @@ struct Story
         %pythoncode
         %{
             def write(self, writer, rectfn, positionfn=None, pagefn=None):
-                """
-                Places and writes Story instance `self` to a
-                `DocumentWriter`. Avoids the need for calling code to implement
-                a loop that calls `story.place()` and `story.draw()` etc,
-                at the expense of having to provide at least the `rectfn()`
-                callback.
-                
-                Equivalent to MuPDF's `fz_write_story()`.
-
-                Args:
-                    writer:
-                        A `DocumentWriter` or None.
-                    rectfn:
-                        A callable taking `(rect_num: int, filled: Rect)` and
-                        returning `(mediabox, rect, ctm)`:
-                            mediabox:
-                                None or rect for new page.
-                            rect:
-                                The next rect into which content should be
-                                placed.
-                            ctm:
-                                None or a `Matrix`.
-                    positionfn:
-                        None, or a callable taking `(position: ElementPosition)`:
-                            position:
-                                An `ElementPosition` with an extra `.page_num`
-                                member. Keys are:
-                                    "depth": int
-                                    "heading": int
-                                    "href": str
-                                    "id": str
-                                    "open_close": int
-                                    "page_num": int
-                                    "rect": rect
-                                    "rect_num": int
-                                    "text": str
-
-                        Typically called multiple times as we generate
-                        elements that are headings or have an id. Related to
-                        `fz_story_positions()`.
-                    pagefn:
-                        None, or a callable taking `(page_num, mediabox,
-                        dev, after)`; called at start (`after=0`) and end
-                        (`after=1`) of each page.
-                """
                 dev = None
                 page_num = 0
                 rect_num = 0
@@ -13710,55 +13665,6 @@ struct Story
 
             @staticmethod
             def write_stabilized(writer, contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True):
-                """
-                Does iterative layout of html content to a `DocumentWriter`.
-
-                For example this allows one to add a table of contents section
-                while ensuring that page numbers are patched up until stable.
-
-                Repeatedly creates a new `Story` from `(contentfn(),
-                user_css, em, archive)` and lays it out with internal call
-                to `Story.write()`; uses a None writer and extracts the list
-                of `ElementPosition`'s which is passed to the next call of
-                `contentfn()`.
-
-                When the html from `contentfn()` becomes unchanged, we do a
-                final iteration using `writer`.
-
-                Equivalent to MuPDF's `fz_write_stabilized_story()`, but
-                `add_header_ids` is extra functionality.
-                
-                Args:
-                    writer:
-                        A `DocumentWriter`.
-                    contentfn:
-                        A function taking a list of `ElementPositions` and
-                        returning a string containing html. The returned html
-                        can depend on the list of positions, for example with a
-                        table of contents near the start.
-                    rectfn:
-                        A callable taking `(rect_num: int, filled: Rect)` and
-                        returning `(mediabox, rect, ctm)`:
-                            mediabox:
-                                None or rect for new page.
-                            rect:
-                                The next rect into which content should be
-                                placed.
-                            ctm:
-                                A `Matrix`.
-                    pagefn:
-                        None, or a callable taking `(page_num, medibox,
-                        dev, after)`; called at start (`after=0`) and end
-                        (`after=1`) of each page.
-                    archive:
-                        .
-                    add_header_ids:
-                        If true, we add unique ids to all header tags that
-                        don't already have an id. This can help automatic
-                        generation of tables of contents.
-                Returns:
-                    None.
-                """
                 positions = list()
                 content = None
                 # Iterate until stable.
@@ -13809,11 +13715,6 @@ struct Story
                     x = x.find_next(None, None, None)
 
             def write_with_links(self, rectfn, positionfn=None, pagefn=None):
-                """
-                Similar to `write()` except that we don't have a `writer` arg
-                and we return a PDF `Document` in which links have been created
-                for each internal html link.
-                """
                 #print("write_with_links()")
                 stream = io.BytesIO()
                 writer = DocumentWriter(stream)
@@ -13830,11 +13731,6 @@ struct Story
 
             @staticmethod
             def write_stabilized_with_links(contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True):
-                """
-                Similar to `write_stabilized()` except that we don't have a
-                `writer` arg and instead return a PDF `Document` in which links
-                have been created for each internal html link.
-                """
                 #print("write_stabilized_with_links()")
                 stream = io.BytesIO()
                 writer = DocumentWriter(stream)
