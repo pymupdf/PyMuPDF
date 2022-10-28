@@ -77,8 +77,8 @@ Story
 
       Let the Story provide positioning information about certain HTML elements once their place on the current page has been computed - i.e. invoke this method **directly after** :meth:`Story.place`.
 
-      :arg function: a Python function which will be invoked by this method to process positioning information.
-      :arg dict args: an optional dictionary with any **additional** information that you want to provide to ``function``. Like for example the current output page number. Every key in this dictionary must be a string that conforms to the rules for a valid Python identifier. The complete set of information is explained below.
+      :arg function: a Python function taking a :ref:`ElementPostion` instance, which will be invoked by this method to process positioning information.
+      :arg dict args: an optional dictionary with any **additional** information that should be added to the ElementPosition instance passed to ``function``. Like for example the current output page number. Every key in this dictionary must be a string that conforms to the rules for a valid Python identifier. The complete set of information is explained below.
 
    .. method:: reset()
 
@@ -139,8 +139,8 @@ A typical loop for executing a story with using this method would look like this
     def recorder(elpos):
         pass
 
-Attributes of the Element Positions object
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Attributes of the ElementPosition class
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The parameter passed to the ``recorder`` function is an object with the following attributes:
 
@@ -148,7 +148,9 @@ The parameter passed to the ``recorder`` function is an object with the followin
 
 * ``elpos.heading`` (int) -- the header level, 0 if no header, 1-6 for :htmlTag:`h1` - :htmlTag:`h6`.
 
-* ``elpos.id`` (str) -- value of the ``id`` field, or "" if n/a.
+* ``elpos.href`` (str) -- value of the ``href`attribute, or None if not defined.
+
+* ``elpos.id`` (str) -- value of the ``id`` attribute, or None if not defined.
 
 * ``elpos.rect`` (tuple) -- element position on page.
 
@@ -158,5 +160,5 @@ The parameter passed to the ``recorder`` function is an object with the followin
 
 * ``elpos.rect_num`` (int) -- count of rectangles filled by the story so far.
 
-* ``elpos.page`` -- any additional, user-supplied information, like in this case the page number.
+* ``elpos.page_num`` (int) -- page number; only present when using `fitz.Story.write*()` functions.
 
