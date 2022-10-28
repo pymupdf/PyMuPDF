@@ -50,7 +50,8 @@ def contentfn(positions):
             ret += f"        <li>page={position.page_num}\n"
             ret += f"        <li>depth={position.depth}\n"
             ret += f"        <li>heading={position.heading}\n"
-            ret += f"        <li>id='{position.id}'\n"
+            ret += f"        <li>id={position.id!r}\n"
+            ret += f"        <li>href={position.href!r}\n"
             ret += f"        <li>rect={position.rect}\n"
             ret += f"        <li>text={text!r}\n"
             ret += f"        <li>open_close={position.open_close}\n"
@@ -83,5 +84,5 @@ def contentfn(positions):
 
 out_path = __file__.replace('.py', '.pdf')
 writer = fitz.DocumentWriter(out_path)
-fitz.Story.write_stabilized(writer, contentfn, rectfn)
+fitz.Story.write_stabilized(writer, contentfn, rectfn, add_header_ids=0)
 writer.close()
