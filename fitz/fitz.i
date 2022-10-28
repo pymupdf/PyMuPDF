@@ -13122,11 +13122,13 @@ struct Xml
             self.append_child(child)
             return child
 
-        def add_link(self, text=None):
+        def add_link(self, href, text=None):
             """Add a hyperlink ("a" tag)"""
             child = self.create_element("a")
-            if type(text) is str:
-               child.append_child(self.create_text_node(text)) 
+            if not isinstance(text, str):
+                text = href
+            child.set_attribute("href", href)
+            child.append_child(self.create_text_node(text)) 
             prev = self.span_bottom()
             if prev == None:
                 prev = self

@@ -103,9 +103,12 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
        :arg width: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the width of the specified ``where`` rectangle in :meth:`Story.place`. If this value is provided and ``height`` is omitted, the image will be included keeping its aspect ratio.
        :arg height: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the height of the specified ``where`` rectangle in :meth:`Story.place`. If this value is provided and ``width`` is omitted, the image's aspect ratio will be honored.
 
-    .. method:: add_link(link)
+    .. method:: add_link(href, text=None)
 
-       Add an :htmlTag:`a` tag.
+       Add an :htmlTag:`a` tag - inline element, treated like text.
+
+       :arg str href: the URL target.
+       :arg str text: the text to display. If omitted, the ``href`` text is shown instead.
 
     .. method:: add_number_list
 
@@ -113,7 +116,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_paragraph
 
-       Add a :htmlTag:`p` tag.
+       Add a :htmlTag:`p` tag, context manager.
 
     .. method:: add_span
 
