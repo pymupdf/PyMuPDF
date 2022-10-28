@@ -84,5 +84,5 @@ def contentfn(positions):
 
 out_path = __file__.replace('.py', '.pdf')
 writer = fitz.DocumentWriter(out_path)
-fitz.Story.write_stabilized(writer, contentfn, rectfn, add_header_ids=0)
+fitz.Story.write_stabilized(writer, contentfn, rectfn)
 writer.close()

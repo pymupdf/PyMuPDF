@@ -13,11 +13,11 @@ import html
 import fitz
 
 
+# Create html containing multiple copies of our own source code.
+#
 with open(__file__) as f:
     text = f.read()
-
 text = html.escape(text)
-
 html = f'''
 <!DOCTYPE html>
 <body>
