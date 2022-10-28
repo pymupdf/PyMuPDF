@@ -377,6 +377,90 @@ This example takes some JSON data input which it uses to populate a :ref:`Story`
 -----
 
 
+Using the alternative :meth:`Story.write*()` functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :meth:`Story.write*()` functions provide a different way to use the
+:ref:`Story` functionality, removing the need for calling code to implement
+a loop that calls :meth:`Story.place()` and :meth:`Story.draw()` etc, at the
+expense of having to provide at least a ``rectfn()`` callback.
+
+
+How to do basic layout with :meth:`Story.write()`
+-------------------------------------------------
+
+This script lays out multiple copies of its own source code, into four
+rectangles per page.
+
+``docs/samples`` file ``story-write.py``.
+
+|toggleStart|
+
+.. literalinclude:: samples/story-write.py
+
+|toggleEnd|
+
+
+-----
+
+How to do iterative layout for a table of contents with :meth:`Story.write_stabilized()`
+----------------------------------------------------------------------------------------
+
+This script creates html content dynamically, adding a contents section based
+on :ref:`ElementPosition` items that have non-zero ``.heading`` values.
+
+The contents section is at the start of the document, so modifications to the
+contents can change page numbers in the rest of the document, which in turn can
+cause page numbers in the contents section to be incorrect.
+
+So the script uses :meth:`Story.write_stabilized()` to repeatedly lay things
+out until things are stable.
+
+
+``docs/samples`` file ``story-write-stabilized.py``.
+
+|toggleStart|
+
+.. literalinclude:: samples/story-write-stabilized.py
+
+|toggleEnd|
+
+
+
+-----
+
+
+How to do iterative layout and create PDF links with :meth:`Story.write_stabilized_links()`
+-------------------------------------------------------------------------------------------
+
+This script is similar to the one described in "How to use
+:meth:`Story.write_stabilized()`" above, except that the generated PDF also
+contains links that correspond to the internal links in the original html.
+
+This is done by using :meth:`Story.write_stabilized_links()`; this is slightly
+different from :meth:`Story.write_stabilized()`:
+
+* It does not take a :ref:`DocumentWriter` ``writer`` arg.
+* It returns a PDF :ref:`Document` instance.
+
+[The reasons for this are a little involved; for example a
+:ref:`DocumentWriter` is not necessarily a PDF writer, so doesn't really work
+in a PDF-specific API.]
+
+
+``docs/samples`` file ``story-write-stabilized-links.py``.
+
+|toggleStart|
+
+.. literalinclude:: samples/story-write-stabilized-links.py
+
+|toggleEnd|
+
+
+
+-----
+
+
 .. rubric:: Footnotes
 
 .. [#f1] HTML & CSS support
