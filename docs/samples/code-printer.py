@@ -174,7 +174,7 @@ def code_printer(outfile):
     writer.close()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" or os.environ.get('PYTEST_CURRENT_TEST'):
     fileptr1 = io.BytesIO()
     t0 = time.perf_counter()
     code_printer(fileptr1)  # make the PDF
