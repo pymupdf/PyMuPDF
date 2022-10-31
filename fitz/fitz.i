@@ -13582,19 +13582,6 @@ struct Story
             return (struct Xml*) dom;
         }
 
-        FITZEXCEPTION(warnings, !result)
-        PyObject* warnings()
-        {
-            const char *text=NULL;
-            fz_try(gctx) {
-                text = fz_story_warnings(gctx, (fz_story *)$self);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return Py_BuildValue("s", text);
-        }
-
         FITZEXCEPTION(element_positions, !result)
         %pythonprepend element_positions %{
         if type(args) is dict:
