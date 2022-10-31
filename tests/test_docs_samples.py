@@ -21,7 +21,6 @@ for p in glob.glob(f'{root}/docs/samples/*.py'):
             ):
         print(f'Not testing: {p}')
     else:
-        p = os.path.relpath(p)
         samples.append(p)
 
 # We use pytest.mark.parametrize() to run sample scripts via a fn, which
