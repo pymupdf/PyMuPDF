@@ -28,30 +28,71 @@ Story
 
    .. method:: __init__(self, html=None, user_css=None, em=12, archive=None)
 
-      Create a story, optionally providing HTML and CSS source. In any case, this object points to a HTML structure, a so-called DOM (Document Object Model). This structure may be modified: content (text, images) may be added, copied, modified or removed by using methods of the :ref:`Xml` class.
+      Create a **story**, optionally providing HTML and CSS source.
+      The HTML is parsed, and held within the Story as a DOM (Document Object Model).
 
-      When finished, the story can be written to pages provided by a :ref:`DocumentWriter`.
+      This structure may be modified: content (text, images) may be added,
+      copied, modified or removed by using methods of the :ref:`Xml` class.
+
+      When finished, the **story** can be written to any device;
+      in typical usage the device may be provided by a :ref:`DocumentWriter` to make new pages.
 
       Here are some general remarks:
 
-      * The :ref:`Story` constructor parses and validates the provided HTML and CSS sources. PyMuPDF provides a number of ways to manipulate the HTML source by providing access to the *nodes* of the underlying DOM. HTML documents can be completely built from ground up programmatically, or existing HTML can be modified pretty arbitrarily. For details of this interface, please see the :ref:`Xml` class.
-      
-      * If no (or no more) changes to the DOM are required, the story is ready to produce PDF pages via some :ref:`DocumentWriter`. To achieve this, the following loop should be used:
-      
-        1. Request a new, empty page from a :ref:`DocumentWriter`.
+      * The :ref:`Story` constructor parses and validates the provided HTML to create the DOM.
+      * PyMuPDF provides a number of ways to manipulate the HTML source by
+        providing access to the *nodes* of the underlying DOM.
+        Documents can be completely built from ground up programmatically,
+        or the existing DOM can be modified pretty arbitrarily.
+        For details of this interface, please see the :ref:`Xml` class.
+      * If no (or no more) changes to the DOM are required,
+        the story is ready to be laid out and to be fed to a series of devices
+        (typically devices provided by a :ref:`DocumentWriter` to produce new pages).
+      * The next step is to place the story and write it out.
+        This can either be done directly, by looping around calling `place()` and `draw()`,
+        or alternatively,
+        the looping can handled for you using the `write()` or `write_stabilised()` methods.
+        Which method you choose is largely a matter of taste.
         
-        2. Determine one or more rectangles on the page, that should receive story data. Note that not every page needs to have the same set of rectangles.
+        * To work in the first of these styles, the following loop should be used:
         
-        3. Pass each rectangle to the story, each time checking whether the story's data is exhausted. If so, leave the loop, otherwise pass the next rectangle to it, respectively restart the loop requesting the next page.
-
-      * Which part of the story will land on which rectangle / which page, is fully under control of the :ref:`Story` object and cannot be predicted.
-      
-      * Optionally, a story can pass back information to a Python callback function about page positions of HTML headers (tags :htmlTag:`h1` - :htmlTag:`h6`) and nodes with an ``"id"`` attribute. This can conveniently be used for automatic generation of a Table of Contents, an index of images or the like.
-
-      * Images may be part of a story. They will be placed together with any surrounding text.
-
-      * Multiple stories may -- independently from each other -- write to the same page. For example, one may have separate stories for page header, page footer, regular text, comment boxes, etc.
-
+            1. Obtain a suitable device to write to;
+               typically by requesting a new,
+               empty page from a :ref:`DocumentWriter`.
+            2. Determine one or more rectangles on the page,
+               that should receive **story** data.
+               Note that not every page needs to have the same set of rectangles.
+            3. Pass each rectangle to the **story** to place it,
+               learning what part of that rectangle has been filled,
+               and whether there is more story data that did not fit.
+               This step can be repeated several times with adjusted rectangles
+               until the caller is happy with the results. 
+            4. Optionally, at this point,
+               we can request details of where interesting items have been placed,
+               by calling the `element_positions()` method.
+               Items are deemed to be interesting if their integer ``heading`` attribute is a non-zero
+               (corresponding to HTML tags :htmlTag:`h1` - :htmlTag:`h6`),
+               if their ``id`` attribute is not `None` (corresponding to HTML tag :htmlTag:`id`),
+               or if their ``href`` attribute is not `None` (responding to HTML tag :htmlTag:`href`).
+               This can conveniently be used for automatic generation of a Table of Contents,
+               an index of images or the like.
+            5. Next, draw that rectangle out to the device with the `draw()` method.
+            6. If the most recent call to `place()` indicated that all the story data had fitted,
+               stop now.
+            7. Otherwise, we can loop back.
+               If there are more rectangles to be placed on the current device (page),
+               we jump back to step 3 - if not, we jump back to step 1 to get a new device.
+        * Alternatively, in the case where you are using a :ref:`DocumentWriter`,
+          the `write()` or `write_stabilized()` methods can be used.
+          These handle all the looping for you,
+          in exchange for being provided with callbacks that control the behaviour
+          (notably a callback that enumerates the rectangles/pages to use).
+      * Which part of the **story** will land on which rectangle / which page,
+        is fully under control of the :ref:`Story` object and cannot be predicted.
+      * Images may be part of a **story**. They will be placed together with any surrounding text.
+      * Multiple stories may - independently from each other - write to the same page.
+        For example, one may have separate stories for page header,
+        page footer, regular text, comment boxes, etc.
 
       :arg str html: HTML source code. If omitted, a basic minimum is generated (see below).
       :arg str user_css: CSS source code. If provided, must contain valid CSS specifications.
