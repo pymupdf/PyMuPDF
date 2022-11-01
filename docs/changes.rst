@@ -8,6 +8,8 @@ Change Log
 
 * New feature: Stories.
 
+* Added wheels for Python-3.11.
+
 * Bug fixes:
 
   * **Fixed** `#1701 <https://github.com/pymupdf/PyMuPDF/issues/1701>`_: Broken custom image insertion.
@@ -37,6 +39,7 @@ Change Log
 
   * Fixed various broken links and typos in docs.
   * Mention install of `swig-python` on MacOS for #875.
+  * Added (untested) wheels for macos-arm64.
   
 
 
