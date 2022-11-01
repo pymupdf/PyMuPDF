@@ -60,7 +60,7 @@ Variant using an existing HTML source [#f1]_ -- which in this case is defined as
 
 .. note::
     
-    The above effect (sanf-serif and blue text) could have been achieved by using a separate CSS source like so::
+    The above effect (sans-serif and blue text) could have been achieved by using a separate CSS source like so::
 
         import fitz
 
