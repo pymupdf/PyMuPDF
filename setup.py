@@ -533,7 +533,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         if not mupdf_local.endswith( '/'):
             mupdf_local += '/'
     log( f'mupdf_local={mupdf_local!r}')
-    unix_build_type = None
+    unix_build_dir = None
     
     # Force clean build of MuPDF.
     #
@@ -574,6 +574,8 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
                     )
         else:
             # Unix build.
+            #
+            
             flags = 'HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no HAVE_LEPTONICA=yes HAVE_TESSERACT=yes'
             flags += ' verbose=yes'
             env = ''
@@ -583,12 +585,41 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             if os.uname()[0] in ('OpenBSD', 'FreeBSD'):
                 make = 'gmake'
                 env += ' CFLAGS="-fPIC" CXX=clang++'
+            
             unix_build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
             assert unix_build_type in ('debug', 'memento', 'release')
             flags += f' build={unix_build_type}'
+            
+            # This is for MacOS cross-compilation, where ARCHFLAGS can be
+            # '-arch arm64'.
+            #
+            archflags = os.environ.get( 'ARCHFLAGS')
+            if archflags:
+                flags += f' XCFLAGS="{archflags}" XLIBS="{archflags}"'
+            
+            # We specify a build directory path containing 'pymupdf' so that we
+            # coexist with non-pymupdf builds (because pymupdf builds have a
+            # different config.h).
+            #
+            # We also append further text to try to allow different builds to
+            # work if they reuse the mupdf directory.
+            #
+            # Using platform.machine() (e.g. 'amd64') ensures that different
+            # builds of mupdf on a shared filesystem can coexist. Using
+            # $_PYTHON_HOST_PLATFORM allows cross-compiled cibuildwheel builds
+            # to coexist, e.g. on github.
+            #
+            build_prefix = f'pymupdf-{platform.machine()}-'
+            build_prefix_extra = os.environ.get( '_PYTHON_HOST_PLATFORM')
+            if build_prefix_extra:
+                build_prefix += f'{build_prefix_extra}-'
+            flags += f' build_prefix={build_prefix}'
+            
+            unix_build_dir = f'{mupdf_local}build/{build_prefix}{unix_build_type}'
+            
             command = f'cd {mupdf_local} && {env} {make} {flags}'
-            command += f' && echo "build/{unix_build_type}:"'
-            command += f' && ls -l build/{unix_build_type}'
+            command += f' && echo {unix_build_dir}:'
+            command += f' && ls -l build/{build_prefix}{unix_build_type}'
         
         log( f'Building MuPDF by running: {command}')
         subprocess.run( command, shell=True, check=True)
@@ -604,8 +635,8 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append( f'{mupdf_local}include')
         include_dirs.append( f'{mupdf_local}include/mupdf')
         include_dirs.append( f'{mupdf_local}thirdparty/freetype/include')
-        if unix_build_type:
-            library_dirs.append( f'{mupdf_local}build/{unix_build_type}')
+        if unix_build_dir:
+            library_dirs.append( unix_build_dir)
 
     log( f'sys.platform={sys.platform!r}')
     
@@ -624,8 +655,8 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         # So we force linking with our mupdf libraries by specifying
         # them in <extra_link_args>.
         #
-        extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf.a')
-        extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf-third.a')
+        extra_link_args.append( f'{unix_build_dir}/libmupdf.a')
+        extra_link_args.append( f'{unix_build_dir}/libmupdf-third.a')
         library_dirs = []
         libraries = []
         if openbsd or freebsd:
@@ -633,7 +664,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
                 extra_link_args.append( f'-lexecinfo')
     
     elif mupdf_local and darwin:
-        library_dirs.append(f'{mupdf_local}build/{unix_build_type}')
+        library_dirs.append(f'{unix_build_dir}')
         libraries = [
                 f'mupdf',
                 f'mupdf-third',
