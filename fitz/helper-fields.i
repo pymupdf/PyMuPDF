@@ -1030,8 +1030,7 @@ class Widget(object):
         return "'%s' widget on %s" % (self.field_type_string, str(self.parent))
 
     def __del__(self):
-        annot = getattr(self, "_annot")
-        if annot:
+        if hasattr(self, "_annot"):
             del self._annot
 
     @property
