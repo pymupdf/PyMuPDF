@@ -188,7 +188,10 @@ The example SQL database contains two tables:
 
 The story DOM consists of a template for one film, which reports film data together with a list of casted actors.
 
-``docs/samples`` files ``filmfestival-sql.py`` & ``filmfestival-sql.db``.
+**Files:**
+
+* ``docs/samples/filmfestival-sql.py``
+* ``docs/samples/filmfestival-sql.db``
 
 
 |toggleStart|
@@ -208,7 +211,9 @@ Because a :ref:`DocumentWriter` can only write to a new file, stories cannot be 
 
 The basic idea is letting :ref:`DocumentWriter` output to a PDF in memory. Once the story has finished, we re-open this memory PDF and put its pages to desired locations on **existing** pages via method :meth:`Page.show_pdf_page`.
 
-``docs/samples`` file ``showpdf-page.py``.
+**Files:**
+
+* ``docs/samples/showpdf-page.py``
 
 |toggleStart|
 
@@ -230,7 +235,10 @@ In addition, two "Ubuntu" font families from package `pymupdf-fonts`_ are used i
 Yet another feature used here is that all data -- the images and the article HTML -- are jointly stored in a ZIP file.
 
 
-``docs/samples`` files ``quickfox.py`` & ``quickfox.zip``.
+**Files:**
+
+* ``docs/samples/quickfox.py``
+* ``docs/samples/quickfox.zip``
 
 
 |toggleStart|
@@ -257,7 +265,8 @@ The script demonstrates the following features:
 * Based on a few global parameters, areas on each page are identified, that
   can be used to receive text layouted by a Story.
 * These global parameters are not stored anywhere in the target PDF and
-  must therefore be provided in some way.
+  must therefore be provided in some way:
+
   - The width of the border(s) on each page.
   - The fontsize to use for text. This value determines whether the provided
     text will fit in the empty spaces of the (fixed) pages of target PDF. It
@@ -277,8 +286,11 @@ The script demonstrates the following features:
 * The script produces "quickfox-image-no-go.pdf" which contains the original pages
   and image positions, but with the original article text laid out around them.
 
+**Files:**
 
-``docs/samples`` files ``quickfox-image-no-go.py``, ``image-no-go.pdf`` & ``quickfox.zip``.
+* ``docs/samples/quickfox-image-no-go.py``
+* ``docs/samples/quickfox-image-no-go.pdf``
+* ``docs/samples/quickfox.zip``
 
 
 |toggleStart|
@@ -299,7 +311,9 @@ Support for HTML tables is yet not complete in MuPDF. It is however possible to 
 
 This script reflects existing features.
 
-``docs/samples`` file ``table01.py``.
+**Files:**
+
+* ``docs/samples/table01.py``
 
 |toggleStart|
 
@@ -316,7 +330,9 @@ How to create a simple grid layout
 
 By creating a sequence of :ref:`Story` objects within a grid created via the :ref:`make_table<Functions_make_table>` function a developer can create grid layouts as required.
 
-``docs/samples`` file ``simple-grid.py``.
+**Files:**
+
+* ``docs/samples/simple-grid.py``
 
 |toggleStart|
 
@@ -333,7 +349,9 @@ How to generate a Table of Contents
 
 This script lists the source code of all Python scripts that live in the script's directory.
 
-``docs/samples`` file ``code-printer.py``.
+**Files:**
+
+* ``docs/samples/code-printer.py``
 
 |toggleStart|
 
@@ -364,7 +382,9 @@ How to display a list from JSON data
 This example takes some JSON data input which it uses to populate a :ref:`Story`. It also contains some visual text formatting and shows how to add links.
 
 
-``docs/samples`` file ``json-example.py``.
+**Files:**
+
+* ``docs/samples/json-example.py``
 
 |toggleStart|
 
@@ -392,7 +412,9 @@ How to do basic layout with :meth:`Story.write()`
 This script lays out multiple copies of its own source code, into four
 rectangles per page.
 
-``docs/samples`` file ``story-write.py``.
+**Files:**
+
+* ``docs/samples/story-write.py``
 
 |toggleStart|
 
@@ -417,7 +439,9 @@ So the script uses :meth:`Story.write_stabilized()` to repeatedly lay things
 out until things are stable.
 
 
-``docs/samples`` file ``story-write-stabilized.py``.
+**Files:**
+
+* ``docs/samples/story-write-stabilized.py``
 
 |toggleStart|
 
@@ -448,7 +472,9 @@ different from :meth:`Story.write_stabilized()`:
 in a PDF-specific API.]
 
 
-``docs/samples`` file ``story-write-stabilized-links.py``.
+**Files:**
+
+* ``docs/samples/story-write-stabilized-links.py``
 
 |toggleStart|
 
