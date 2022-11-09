@@ -756,6 +756,9 @@ module = Extension(
     libraries=libraries,
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
+    # Disable bogus SWIG warning 509, 'Overloaded method ... effectively
+    # ignored, as it is shadowed by ...'.
+    swig_opts=['-w509']
 )
 
 
