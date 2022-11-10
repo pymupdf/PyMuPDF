@@ -8,16 +8,28 @@ PyMuPDF should be installed using pip with::
 
 This will install from a Python wheel if one is available for your platform.
 
+
+Installation when a suitable wheel is not available
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 If a suitable Python wheel is not available, pip will automatically build from
-source using a Python sdist. **This requires that SWIG is installed**:
+source using a Python sdist.
+
+**This requires C/C++ development tools and SWIG to be installed**:
 
 * On Unix-style systems such as Linux, OpenBSD and FreeBSD,
   use the system package manager to install SWIG.
 
   * For example on Debian Linux, do: ``sudo apt install swig``
 
-* On Windows, install SWIG by following the instructions at:
-  https://swig.org/Doc4.0/Windows.html#Windows_installation.
+* On Windows:
+
+  * Install Visual Studio 2019. If not installed in a standard location, set
+    environmental variable ``PYMUPDF_SETUP_DEVENV`` to the location of the
+    ``devenv.com`` binary.
+
+  * Install SWIG by following the instructions at:
+    https://swig.org/Doc4.0/Windows.html#Windows_installation
 
 * On MacOS, install MacPorts using the instructions at:
   https://www.macports.org/install.php
@@ -60,7 +72,7 @@ First get a PyMuPDF source tree:
 * Or download a ``.zip`` or ``.tar.gz`` source release from
   https://github.com/pymupdf/PyMuPDF/releases.
 
-Install SWIG as described above, then build PyMuPDF::
+Install SWIG etc as described above, then build PyMuPDF::
 
   cd PyMuPDF && python setup.py install
 
