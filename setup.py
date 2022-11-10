@@ -634,6 +634,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     else:
         # Use installed MuPDF.
         log( f'Using system mupdf.')
+        unix_build_type = ''
     
     # Set include and library paths for building PyMuPDF.
     #
