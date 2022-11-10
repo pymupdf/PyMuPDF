@@ -88,8 +88,15 @@ from setuptools import Extension, setup
 from setuptools.command.build_py import build_py as build_py_orig
 
 
+_log_prefix = None
 def log( text):
-    print(f'PyMuPDF/setup.py: {text}', file=sys.stderr)
+    global _log_prefix
+    if not _log_prefix:
+        p = os.path.abspath( __file__)
+        p, p1 = os.path.split( p)
+        p, p0 = os.path.split( p)
+        _log_prefix = os.path.join( p0, p1)
+    print(f'{_log_prefix}: {text}', file=sys.stderr)
     sys.stderr.flush()
 
 
