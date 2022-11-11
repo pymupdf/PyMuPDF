@@ -44,7 +44,12 @@ sdist and is automatically built into PyMuPDF.
 Notes
 ~~~~~
 
-Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel), Python versions 3.7 and up.
+Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), Python versions 3.7 and up.
+
+Wheels are not available for Python installed with `Chocolatey
+<https://chocolatey.org/>`_ on Windows. Instead install Python
+using the Windows installer from the python.org website, see:
+http://www.python.org/downloads
 
 PyMuPDF does not support Python versions prior to 3.7. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
