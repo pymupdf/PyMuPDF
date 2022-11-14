@@ -493,7 +493,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	// make the span dictionary
 	PyObject *span_dict = PyDict_New();
 	DICT_SETITEMSTR_DROP(span_dict, "dir", JM_py_from_point(dir));
-	DICT_SETITEM_DROP(span_dict, dictkey_font, Py_BuildValue("s",fontname));
+	DICT_SETITEM_DROP(span_dict, dictkey_font, JM_EscapeStrFromStr(fontname));
 	DICT_SETITEM_DROP(span_dict, dictkey_wmode, PyLong_FromLong((long) span->wmode));
 	DICT_SETITEM_DROP(span_dict, dictkey_flags, PyLong_FromLong((long) fflags));
 	DICT_SETITEMSTR_DROP(span_dict, "bidi_lvl", PyLong_FromLong((long) span->bidi_level));
