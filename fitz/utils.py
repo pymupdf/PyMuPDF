@@ -854,6 +854,7 @@ def get_pixmap(page: Page, *args, **kw) -> Pixmap:
 def get_page_pixmap(
     doc: Document,
     pno: int,
+    dpi: int,
     matrix: matrix_like = Identity,
     colorspace: Colorspace = csRGB,
     clip: rect_like = None,
@@ -866,6 +867,7 @@ def get_page_pixmap(
         Convenience function calling page.get_pixmap.
     Args:
         pno: (int) page number
+        dpi: (int) dpi
         matrix: Matrix for transformation (default: Identity).
         colorspace: (str,Colorspace) rgb, rgb, gray - case ignored, default csRGB.
         clip: (irect-like) restrict rendering to this area.
@@ -873,7 +875,7 @@ def get_page_pixmap(
         annots: (bool) also render annotations
     """
     return doc[pno].get_pixmap(
-        matrix=matrix, colorspace=colorspace, clip=clip, alpha=alpha, annots=annots
+        matrix=matrix, colorspace=colorspace, clip=clip, alpha=alpha, annots=annots, dpi=dpi
     )
 
 
