@@ -4829,7 +4829,8 @@ struct Page {
             memset(&options, 0, sizeof options);
             options.flags = flags;
             fz_try(gctx) {
-                fz_rect rect = JM_rect_from_py(clip);
+                // Default to page's rect if `clip` not specified, for #2048.
+                fz_rect rect = (clip==Py_None) ? fz_bound_page(gctx, page) : JM_rect_from_py(clip);
                 fz_matrix ctm = JM_matrix_from_py(matrix);
                 tpage = fz_new_stext_page(gctx, rect);
                 dev = fz_new_stext_device(gctx, tpage, &options);
