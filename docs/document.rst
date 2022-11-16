@@ -849,9 +849,11 @@ For details on **embedded files** refer to Appendix 3.
           '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
 
 
-    .. method:: get_page_pixmap(pno, *args, **kwargs)
+    .. method:: get_page_pixmap(pno: int, *, matrix: matrix_like = Identity, dpi=None, colorspace: Colorspace = csRGB, clip: rect_like = None, alpha: bool = False, annots: bool = True)
 
       Creates a pixmap from page *pno* (zero-based). Invokes :meth:`Page.get_pixmap`.
+
+      All parameters except ``pno`` are *keyword-only.*
 
       :arg int pno: page number, 0-based in ``-∞ < pno < page_count``.
 
