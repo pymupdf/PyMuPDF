@@ -97,6 +97,25 @@ Install from source without using an sdist
   ``fitz/`` directory, which will fail because it only contains source files.
 
 
+Running tests
+~~~~~~~~~~~~~
+
+PyMuPDF has a set of ``pytest`` scripts within the ``tests/`` directory.
+
+Run tests with::
+
+    pip install pytest fontTools
+    pytest PyMuPDF/tests
+
+If PyMuPDF has been built with a non-default build of MuPDF (using
+environmental variable ``PYMUPDF_SETUP_MUPDF_BUILD``), it is possible that
+``tests/test_textbox.py:test_textbox3()`` will fail, because it relies on MuPDF
+having been built with PyMuPDF's customized configuration, ``fitz/_config.h``.
+
+One can skip this particular test by adding ``-k 'not test_textbox3'`` to the
+``pytest`` command line.
+
+
 Enabling Integrated OCR Support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
