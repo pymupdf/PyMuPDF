@@ -67,27 +67,34 @@ There are no **mandatory** external dependencies. However, some optional feature
 Install from source without using an sdist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First get a PyMuPDF source tree:
+* First get a PyMuPDF source tree:
 
-* Clone the git repository at https://github.com/pymupdf/PyMuPDF,
-  for example::
+  * Clone the git repository at https://github.com/pymupdf/PyMuPDF,
+    for example::
 
       git clone https://github.com/pymupdf/PyMuPDF.git
 
-* Or download a ``.zip`` or ``.tar.gz`` source release from
-  https://github.com/pymupdf/PyMuPDF/releases.
+  * Or download and extract a ``.zip`` or ``.tar.gz`` source release from
+    https://github.com/pymupdf/PyMuPDF/releases.
 
-Install SWIG etc as described above, then build PyMuPDF::
+* Install C/C++ development tools and SWIG as described above.
 
-  cd PyMuPDF && python setup.py install
+* Build and install PyMuPDF::
 
-* This will automatically download a specific hard-coded MuPDF source release,
+    cd PyMuPDF && python setup.py install
+
+  This will automatically download a specific hard-coded MuPDF source release,
   and build it into PyMuPDF.
+  
+  One can build with a non-default MuPDF (for example one installed on the
+  system, or a local checkout) by setting environmental variables. See the
+  comments at the start of ``PyMuPDF/setup.py`` for more information.
 
-* One can build with a different MuPDF (for example one installed on the
-  system, or a local custom build) by setting environmental variables.
+.. note:: When running Python scripts that use PyMuPDF, make sure that the
+  current directory is not the ``PyMuPDF/`` directory.
 
-  * See the documentation at the start of ``setup.py`` for more information.
+  Otherwise, confusingly, Python will attempt to import ``fitz`` from the local
+  ``fitz/`` directory, which will fail because it only contains source files.
 
 
 Enabling Integrated OCR Support
