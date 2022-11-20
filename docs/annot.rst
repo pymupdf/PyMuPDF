@@ -21,7 +21,6 @@ There is a parent-child relationship between an annotation and its page. If the 
 **Attribute**                      **Short Description**
 ================================== ==============================================================
 :meth:`Annot.delete_responses`     delete all responding annotions
-:meth:`Annot.file_info`            get attached file information
 :meth:`Annot.get_file`             get attached file content
 :meth:`Annot.get_oc`               get :data:`xref` of an :data:`OCG` / :data:`OCMD`
 :meth:`Annot.get_pixmap`           image of the annotation as a pixmap
@@ -45,6 +44,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 :attr:`Annot.blendmode`            annotation BlendMode
 :attr:`Annot.border`               border details
 :attr:`Annot.colors`               border / background and fill colors
+:attr:`Annot.file_info`            get attached file information
 :attr:`Annot.flags`                annotation flags
 :attr:`Annot.has_popup`            whether annotation has a Popup
 :attr:`Annot.irt_xref`             annotation to which this one responds
@@ -354,7 +354,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       .. note:: Using this method inside a :meth:`Page.annots` loop is **not recommended!** This is because most annotation updates require the owning page to be reloaded -- which cannot be done inside this loop. Please use the example coding pattern given in the documentation of this generator.
 
 
-   .. method:: file_info()
+   .. attribute:: file_info
 
       Basic information of the annot's attached file.
 
@@ -585,4 +585,4 @@ This is how the circle annotation looks like before and after the change (pop-up
 
 .. rubric:: Footnotes
 
-.. [#f1] Rotating an annotation generally also changes its rectangle. Depending on how the annotation was defined, the original rectangle in general is **not reconstructible** by setting the rotation value to zero. This information may be lost. 
+.. [#f1] Rotating an annotation also changes its rectangle. Depending on how the annotation was defined, the original rectangle is **not reconstructible** by setting the rotation value to zero again and will be lost.
