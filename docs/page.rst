@@ -1701,6 +1701,17 @@ PyMuPDF writes (updates, inserts) links by constructing and writing the appropri
 
 Indirect *LINK_GOTOR* destinations can in general of course not be checked for validity and are therefore **always accepted**.
 
+**Example: How to insert a link pointing to another page in the same document**
+
+1. Determine the rectangle on the current page, where the link should be placed. This may be the bbox of an image or some text.
+
+2. Determine the target page number ("pno", 0-based) and a :ref:`Point` on it, where the link should be directed to.
+
+3. Create a dictionary ``d = {"kind": fitz.LINK_GOTO, "page": pno, "from": bbox, "to": point}``.
+
+4. Execute ``page.insert_link(d)``.
+
+
 Homologous Methods of :ref:`Document` and :ref:`Page`
 --------------------------------------------------------
 This is an overview of homologous methods on the :ref:`Document` and on the :ref:`Page` level.

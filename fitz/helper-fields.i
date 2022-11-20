@@ -780,10 +780,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             pdf_obj *onstate = pdf_button_field_on_state(ctx, annot_obj);
             const char *on = pdf_to_name(ctx, onstate);
             pdf_set_field_value(ctx, pdf, annot_obj, on, 1);
-            pdf_dict_put_name(ctx, annot_obj, PDF_NAME(V), on);
         } else {
             pdf_set_field_value(ctx, pdf, annot_obj, "Off", 1);
-            pdf_dict_put(ctx, annot_obj, PDF_NAME(V), PDF_NAME(Off));
         }
         break;
     default:
