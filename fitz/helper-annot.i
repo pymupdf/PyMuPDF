@@ -310,19 +310,21 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_obj *page_obj)
 {
     PyObject *names = PyList_New(0);
-    pdf_obj *id, *annot_obj = NULL;
-    pdf_obj *annots = pdf_dict_get(ctx, page_obj, PDF_NAME(Annots));
-    if (!annots) return names;
+    pdf_obj *id, *subtype, *annots, *annot_obj;
+    int xref, type, i, n;
     fz_try(ctx) {
-        int i, n = pdf_array_len(ctx, annots);
+        annots = pdf_dict_get(ctx, page_obj, PDF_NAME(Annots));
+        n = pdf_array_len(ctx, annots);
         for (i = 0; i < n; i++) {
             annot_obj = pdf_array_get(ctx, annots, i);
-            int xref = pdf_to_num(ctx, annot_obj);
-            pdf_obj *subtype = pdf_dict_get(ctx, annot_obj, PDF_NAME(Subtype));
-            int type = PDF_ANNOT_UNKNOWN;
-            if (subtype) {
-                const char *name = pdf_to_name(ctx, subtype);
-                type = pdf_annot_type_from_string(ctx, name);
+            xref = pdf_to_num(ctx, annot_obj);
+            subtype = pdf_dict_get(ctx, annot_obj, PDF_NAME(Subtype));
+            if (!subtype) {
+                continue;  // subtype is required
+            }
+            type = pdf_annot_type_from_string(ctx, pdf_to_name(ctx, subtype));
+            if (type == PDF_ANNOT_UNKNOWN) {
+                continue;  // only accept valid annot types
             }
             id = pdf_dict_gets(ctx, annot_obj, "NM");
             LIST_APPEND_DROP(names, Py_BuildValue("iis", xref, type, pdf_to_text_string(ctx, id)));
