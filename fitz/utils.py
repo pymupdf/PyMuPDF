@@ -809,7 +809,16 @@ def get_page_text(
     return doc[pno].get_text(option, clip=clip, flags=flags, sort=sort)
 
 
-def get_pixmap(page: Page, *args, **kw) -> Pixmap:
+def get_pixmap(
+        page: Page,
+        *,
+        matrix: matrix_like=Identity,
+        dpi=None,
+        colorspace: Colorspace=csRGB,
+        clip: rect_like=None,
+        alpha: bool=False,
+        annots: bool=True,
+        ) -> Pixmap:
     """Create pixmap of page.
 
     Keyword args:
@@ -820,18 +829,10 @@ def get_pixmap(page: Page, *args, **kw) -> Pixmap:
         alpha: (bool) whether to include alpha channel
         annots: (bool) whether to also render annotations
     """
-    if args:
-        raise ValueError("method accepts keywords only")
     CheckParent(page)
-    matrix = kw.get("matrix", Identity)
-    dpi = kw.get("dpi", None)
     if dpi:
         zoom = dpi / 72
         matrix = Matrix(zoom, zoom)
-    colorspace = kw.get("colorspace", csRGB)
-    clip = kw.get("clip")
-    alpha = bool(kw.get("alpha", False))
-    annots = bool(kw.get("annots", True))
 
     if type(colorspace) is str:
         if colorspace.upper() == "GRAY":
@@ -854,7 +855,9 @@ def get_pixmap(page: Page, *args, **kw) -> Pixmap:
 def get_page_pixmap(
     doc: Document,
     pno: int,
+    *,
     matrix: matrix_like = Identity,
+    dpi=None,
     colorspace: Colorspace = csRGB,
     clip: rect_like = None,
     alpha: bool = False,
@@ -873,7 +876,7 @@ def get_page_pixmap(
         annots: (bool) also render annotations
     """
     return doc[pno].get_pixmap(
-        matrix=matrix, colorspace=colorspace, clip=clip, alpha=alpha, annots=annots
+        matrix=matrix, dpi=dpi, colorspace=colorspace, clip=clip, alpha=alpha, annots=annots
     )
 
 
