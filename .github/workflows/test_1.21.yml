@@ -1,0 +1,48 @@
+name: Test branch 1.21.
+
+on:
+  schedule:
+    - cron: '13 5 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  test_branch_121:
+    # Simple build+test on single platform using latest MuPDF from git. This is
+    # a cut-down version of `build_wheels` except that we use latest MuPDF from
+    # git and use a single platform and python version.
+    #
+    name: Test branch 1.21
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          ref: 1.21
+      - uses: actions/setup-python@v2
+
+      # Set up cibuildwheel.
+      #
+      - name: cibuildwheel
+        uses: pypa/cibuildwheel@v2.11.2
+
+        env:
+            # We test building with the default hard-coded mupdf URL.
+
+            # Build on single cpu.
+            CIBW_ARCHS_LINUX: x86_64
+
+            # Build for single python version.
+            CIBW_BUILD: "cp311*"
+
+            # Don't build for unsupported platforms.
+            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
+
+            # Get cibuildwheel to run pytest with each wheel.
+            CIBW_TEST_REQUIRES: "fontTools pytest"
+            CIBW_TEST_COMMAND: "pytest -s {project}/tests"
+            CIBW_BUILD_VERBOSITY: 3
