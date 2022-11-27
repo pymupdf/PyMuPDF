@@ -50,6 +50,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`Page.run`                     run a page through a device
 :meth:`Page.set_contents`            PDF only: set page's :data:`contents` to some :data:`xref`
 :meth:`Page.wrap_contents`           wrap contents with stacking commands
+:meth:`css_for_pymupdf_font`         create CSS source for a font in package pymupdf_fonts
 :meth:`paper_rect`                   return rectangle for a known paper format
 :meth:`paper_size`                   return width, height for a known paper format
 :meth:`paper_sizes`                  dictionary of pre-defined paper formats
@@ -175,6 +176,50 @@ Yet others are handy, general-purpose utilities.
       :returns: list of integers.
 
       .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+
+-----
+
+   .. method:: css_for_pymupdf_font(fontcode, *, CSS=None, archive=None, name=None)
+
+      *New in v1.21.0*
+
+      **Utility function for use with "Story" applications.**
+
+      Create CSS ``@font-face`` items for the given fontcode in pymupdf-fonts. Creates a CSS font-family for all fonts starting with string "fontcode".
+
+      The font naming convention in package pymupdf-fonts is "fontcode<sf>", where the suffix "sf" is one of "" (empty), "it"/"i", "bo"/"b" or "bi". These suffixes thus represent the regular, italic, bold or bold-italic variants of that font.
+      
+      For example, font code "notos" refers to fonts
+
+      *  "notos" - "Noto Sans Regular"
+      *  "notosit" - "Noto Sans Italic"
+      *  "notosbo" - "Noto Sans Bold"
+      *  "notosbi" - "Noto Sans Bold Italic"
+
+      The function creates (up to) four CSS ``@font-face`` definitions and collectively assigns the ``font-family`` name "notos" to them (or the "name" value if provided). Associated font buffers are placed / added to the provided archive.
+      
+      To use the font in the Python API for :ref:`Story`, execute ``.set_font(fontcode)`` (or "name" if given). The correct font weight or style will automatically be selected as required.
+
+      For example to replace the "sans-serif" HTML standard (i.e. Helvetica) with the above "notos", execute the following. Whenever "sans-serif" is used (whether explicitely or implicitely), the Noto Sans fonts will be selected.
+
+      ``CSS = fitz.css_for_pymupdf_font("notos", name="sans-serif", archive=...)``
+
+      Expects and returns the CSS source, with the new CSS definitions appended.
+
+      :arg str fontcode: one of the font codes present in package `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ (usually) representing the regular version of the font family.
+      :arg str CSS: any already existing CSS source, or ``None``. The function will append its new definitions to this. This is the string that **must be used** as ``user_css`` when creating the :ref:`Story`.
+      :arg archive: :ref:`Archive`, **mandatory**. All font binaries (i.e. up to four) found for "fontcode" will be added to the archive. This is the archive that **must be used** as ``archive`` when creating the :ref:`Story`.
+      :arg str name: the name under which the "fontcode" fonts should be found. If omitted, "fontcode" will be used.
+
+      :rtype: str
+      :returns: Modified CSS, with appended ``@font-face`` statements for each font variant of fontcode. Fontbuffers associated with "fontcode" will have been added to 'archive'. The function will automatically find up to 4 font variants. All pymupdf-fonts (that are no special purpose like math or music, etc.) have regular, bold, italic and bold-italic variants. To see currently available font codes check ``fitz.fitz_fontdescriptors.keys()``. This will show something like ``dict_keys(['cascadia', 'cascadiai', 'cascadiab', 'cascadiabi', 'figbo', 'figo', 'figbi', 'figit', 'fimbo', 'fimo', 'spacembo', 'spacembi', 'spacemit', 'spacemo', 'math', 'music', 'symbol1', 'symbol2', 'notosbo', 'notosbi', 'notosit', 'notos', 'ubuntu', 'ubuntubo', 'ubuntubi', 'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', 'ubuntmit'])```.
+
+      Here is a complete snippet for using the "Noto Sans" font instead of "Helvetica"::
+
+         arch = fitz.Archive()
+         CSS = fitz.css_for_pymupdf_font("notos", name="sans-serif", archive=arch)
+         story = fitz.Story(user_css=CSS, archive=arch)
+
 
 -----
 

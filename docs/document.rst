@@ -1165,9 +1165,9 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int encryption: *(new in v1.16.0)* set the desired encryption method. See :ref:`EncryptionMethods` for possible values.
 
-      :arg str owner_pw: *(new in v1.16.0)* set the document's owner password. *(Changed in v1.18.3)* If not provided, the user password is taken if provided.
+      :arg str owner_pw: *(new in v1.16.0)* set the document's owner password. *(Changed in v1.18.3)* If not provided, the user password is taken if provided. The string length must not exceed 40 characters.
 
-      :arg str user_pw: *(new in v1.16.0)* set the document's user password.
+      :arg str user_pw: *(new in v1.16.0)* set the document's user password. The string length must not exceed 40 characters.
 
       .. note:: The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
 
