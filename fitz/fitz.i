@@ -1958,7 +1958,7 @@ struct Document
         if incremental:
             if self.name != filename or self.stream:
                 raise ValueError("incremental needs original file")
-        if user_pw and len(user_pw) > 40 or owner_py and len(owner_pw) > 40:
+        if user_pw and len(user_pw) > 40 or owner_pw and len(owner_pw) > 40:
             raise ValueError("password length must not exceed 40")
         %}
 
