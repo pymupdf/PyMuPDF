@@ -2773,15 +2773,17 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
                 if (pdf_is_jpx_image(gctx, obj)) {
                     img_type = FZ_IMAGE_JPX;
+                    res = pdf_load_stream(gctx, obj);
                     ext = "jpx";
                 }
                 if (JM_is_jbig2_image(gctx, obj)) {
                     img_type = FZ_IMAGE_JBIG2;
+                    res = pdf_load_stream(gctx, obj);
                     ext = "jb2";
                 }
-                res = pdf_load_raw_stream(gctx, obj);
                 if (img_type == FZ_IMAGE_UNKNOWN) {
-                    unsigned char *c = NULL;
+                    res = pdf_load_raw_stream(gctx, obj);
+                     unsigned char *c = NULL;
                     fz_buffer_storage(gctx, res, &c);
                     img_type = fz_recognize_image_format(gctx, c);
                     ext = JM_image_extension(img_type);
@@ -2793,9 +2795,10 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     res = fz_new_buffer_from_image_as_png(gctx, img,
                                 fz_default_color_params);
                     ext = "png";
-                } else /*if (smask == 0)*/ {
+                } else {
                     img = fz_new_image_from_buffer(gctx, res);
                 }
+
                 fz_image_resolution(img, &xres, &yres);
                 width = img->w;
                 height = img->h;
@@ -2833,7 +2836,8 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
             fz_catch(gctx) {
                 Py_CLEAR(rc);
-                Py_RETURN_NONE;
+                fz_warn(gctx, fz_caught_message(gctx));
+                Py_RETURN_FALSE;
             }
             if (!rc)
                 Py_RETURN_NONE;
