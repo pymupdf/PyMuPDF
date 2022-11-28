@@ -16,7 +16,11 @@ JM_font_ascender(fz_context *ctx, fz_font *font)
     if (skip_quad_corrections) {
         return 0.8f;
     }
-    return fz_font_ascender(ctx, font);
+    float asc = fz_font_ascender(ctx, font);
+    if (asc > 10) {
+        return 1.0f;
+    }
+    return asc;
 }
 
 static const float
@@ -25,7 +29,11 @@ JM_font_descender(fz_context *ctx, fz_font *font)
     if (skip_quad_corrections) {
         return -0.2f;
     }
-    return fz_font_descender(ctx, font);
+    float dsc =fz_font_descender(ctx, font);
+    if (dsc < -10) {
+        return -0.2f;
+    }
+    return dsc;
 }
 
 
@@ -97,16 +105,18 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
         return ch->quad;
     }
     fz_font *font = ch->font;
+    fz_matrix trm1, trm2, xlate1, xlate2;
+    fz_quad quad;
+    float c, s, fsize = ch->size;
     float asc = JM_font_ascender(ctx, font);
     float dsc = JM_font_descender(ctx, font);
-    float c, s, fsize = ch->size;
     float asc_dsc = asc - dsc + FLT_EPSILON;
     if (asc_dsc >= 1 && small_glyph_heights == 0) {  // no problem
        return ch->quad;
     }
     if (asc < 1e-3) {  // probably Tesseract glyphless font
-        dsc = -0.1f;
-        asc = 0.9f;
+        dsc = -0.2f;
+        asc = 0.8f;
         asc_dsc = 1.0f;
     }
 
@@ -123,8 +133,6 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     Move ch->origin to (0,0) and de-rotate quad, then adjust the corners,
     re-rotate and move back to ch->origin location.
     ------------------------------ */
-    fz_matrix trm1, trm2, xlate1, xlate2;
-    fz_quad quad;
     c = line->dir.x;  // cosine
     s = line->dir.y;  // sine
     trm1 = fz_make_matrix(c, -s, s, c, 0, 0);  // derotate
@@ -139,13 +147,18 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     quad = fz_transform_quad(ch->quad, xlate1);  // move origin to (0,0)
     quad = fz_transform_quad(quad, trm1);  // de-rotate corners
 
+    quad.ul.y = -asc;
+    quad.ur.y = -asc;
+    quad.ll.y = -dsc;
+    quad.lr.y = -dsc;
+
     // adjust vertical coordinates
     if (c == 1 && quad.ul.y > 0) {  // up-down flip
         quad.ul.y = asc;
         quad.ur.y = asc;
         quad.ll.y = dsc;
         quad.lr.y = dsc;
-    } else {
+    } else if (abs(c) == 1) {
         quad.ul.y = -asc;
         quad.ur.y = -asc;
         quad.ll.y = -dsc;
@@ -153,21 +166,25 @@ JM_char_quad(fz_context *ctx, fz_stext_line *line, fz_stext_char *ch)
     }
 
     // adjust horizontal coordinates that are too crazy:
-    // (1) left x must be >= 0
+    // (1) left and right x must be >= 0
     // (2) if bbox width is 0, lookup char advance in font.
     if (quad.ll.x < 0) {
-        quad.ll.x = 0;
-        quad.ul.x = 0;
+        quad.ll.x = quad.ul.x = 0;
+    }
+    if (quad.lr.x <= 0) {
+        quad.lr.x = quad.ur.x = 0.5 * fsize;
     }
     float cwidth = quad.lr.x - quad.ll.x;
     if (cwidth < FLT_EPSILON) {
         int glyph = fz_encode_character(ctx, font, ch->c);
-        if (glyph) {
+        if (glyph>=0) {
             float fwidth = fz_advance_glyph(ctx, font, glyph, line->wmode);
-            quad.lr.x = quad.ll.x + fwidth * fsize;
-            quad.ur.x = quad.lr.x;
-        }
-    }
+            if (fwidth > cwidth) {
+                quad.lr.x = quad.ll.x + fwidth;
+            	quad.ur.x = quad.lr.x;
+        	}
+    	}
+	}
 
     quad = fz_transform_quad(quad, trm2);  // rotate back
     quad = fz_transform_quad(quad, xlate2);  // translate back
@@ -567,8 +584,8 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
             span = PyDict_New();
             float asc = style.asc, desc = style.desc;
             if (style.asc < 1e-3) {
-                asc = 0.9f;
-                desc = -0.1f;
+                asc = 0.8f;
+                desc = -0.2f;
             }
 
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
