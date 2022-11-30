@@ -101,7 +101,6 @@ jm_checkrect()
 	dev_linecount = 0; // reset line count
 	long orientation = 0;
 	fz_point ll, lr, ur, ul;
-	fz_rect r;
 	PyObject *rect;
 	PyObject *line0, *line2;
 	PyObject *items = PyDict_GetItem(dev_pathdict, dictkey_items);
@@ -110,13 +109,15 @@ jm_checkrect()
 	line0 = PyList_GET_ITEM(items, len - 3);
 	ll = JM_point_from_py(PyTuple_GET_ITEM(line0, 1));
 	lr = JM_point_from_py(PyTuple_GET_ITEM(line0, 2));
-	// no need to extract "line1"!
+
 	line2 = PyList_GET_ITEM(items, len - 1);
 	ur = JM_point_from_py(PyTuple_GET_ITEM(line2, 1));
 	ul = JM_point_from_py(PyTuple_GET_ITEM(line2, 2));
 
 	/*
 	---------------------------------------------------------------------
+	Three connected lines: at least a quad! Check whether even a rect.
+	For this, the lines must be parallel to the axes.
 	Assumption:
 	For decomposing rects, MuPDF always starts with a horizontal line,
 	followed by a vertical line, followed by a horizontal line.
@@ -124,21 +125,34 @@ jm_checkrect()
 	as '+1' for anti-clockwise, '-1' for clockwise orientation.
 	---------------------------------------------------------------------
 	*/
-	if (ll.y != lr.y ||
-		ll.x != ul.x ||
-		ur.y != ul.y ||
-		ur.x != lr.x) {
-		goto drop_out;  // not a rectangle
+	if (ll.y != lr.y) {  // not horizontal
+		goto drop_out;
 	}
-
-	// we have a rect, replace last 3 "l" items by one "re" item.
-	if (ul.y < lr.y) {
-		r = fz_make_rect(ul.x, ul.y, lr.x, lr.y);
-		orientation = 1;
-	} else {
-		r = fz_make_rect(ll.x, ll.y, ur.x, ur.y);
-		orientation = -1;
+	if (lr.x != ur.x) {  // not vertical
+		goto drop_out;
 	}
+	if (ur.y != ul.y) {  // not horizontal
+		goto drop_out;
+	}
+	// we have a rect, determine orientation
+	if (ll.x < lr.x) {  // move left to right
+		if (lr.y > ur.y) {  // move upwards
+			orientation = 1;
+		} else {
+			orientation = -1;
+		}
+	} else {  // move right to left
+		if (lr.y < ur.y) {  // move downwards
+			orientation = 1;
+		} else {
+			orientation = -1;
+		}
+	}
+	// Replace last 3 "l" items by one "re" item.
+	fz_rect r = fz_make_rect(ul.x, ul.y, ul.x, ul.y);
+	r = fz_include_point_in_rect(r, ur);
+	r = fz_include_point_in_rect(r, ll);
+	r = fz_include_point_in_rect(r, lr);
 	rect = PyTuple_New(3);
 	PyTuple_SET_ITEM(rect, 0, PyUnicode_FromString("re"));
 	PyTuple_SET_ITEM(rect, 1, JM_py_from_rect(r));
