@@ -32,7 +32,7 @@ For all supported document types (i.e. **_including images_**) you can
 For **PDF documents,** there exists a plethora of additional features: they can be created, joined or split up. Pages can be inserted, deleted, re-arranged or modified in many ways (including annotations and form fields).
 
 * Images and fonts can be extracted or inserted.
-    > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/image-maintenance.py) cool GUI example script, which lets you **_insert, delete, replace_** or **_re-position_** images under your visual control.
+    > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/edit-images/edit.py) cool GUI example script, which lets you **_insert, delete, replace_** or **_re-position_** images under your visual control.
 
     > If [fontTools](https://pypi.org/project/fonttools/) is installed, subsets can be built for eligible fonts based on their usage in the document. Especially for new PDFs, this can lead to significant file size reductions.
 * Embedded files are fully supported.
