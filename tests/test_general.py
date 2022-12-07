@@ -120,3 +120,7 @@ def test_bug1971():
         page.get_drawings()
         doc.close()
 
+def test_default_font():
+    f = fitz.Font()
+    assert str(f) == "Font('Noto Serif Regular')"
+    assert repr(f) == "Font('Noto Serif Regular')"
