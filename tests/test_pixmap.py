@@ -88,3 +88,24 @@ def test_setalpha():
     # confirm correct the alpha bytes
     t = bytearray([samples[i] for i in range(3, len(samples), 4)])
     assert t == alphas
+
+def test_color_count():
+    pm = fitz.Pixmap(imgfile)
+    assert pm.color_count() == 40624
+
+def test_memoryview():
+    pm = fitz.Pixmap(imgfile)
+    samples = pm.samples_mv
+    assert isinstance( samples, memoryview)
+    print( f'{samples=} {samples.itemsize=} {samples.nbytes=} {samples.ndim=} {samples.shape=} {samples.strides=}')
+    assert samples.itemsize == 1
+    assert samples.nbytes == 659817
+    assert samples.ndim == 1
+    assert samples.shape == (659817,)
+    assert samples.strides == (1,)
+
+def test_samples_ptr():
+    pm = fitz.Pixmap(imgfile)
+    samples = pm.samples_ptr
+    print( f'{samples=}')
+    assert isinstance( samples, int)
