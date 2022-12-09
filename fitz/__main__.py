@@ -512,7 +512,7 @@ def extract_objects(args):
                     if ext == "n/a" or not buffer:
                         continue
                     outname = os.path.join(
-                        out_dir, fontname.replace(" ", "-") + "." + ext
+                        out_dir, f"{fontname.replace(' ', '-')}-{xref}.{ext}"
                     )
                     outfile = open(outname, "wb")
                     outfile.write(buffer)
