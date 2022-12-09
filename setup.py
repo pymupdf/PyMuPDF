@@ -518,14 +518,23 @@ libraries = []
 extra_link_args = []
 extra_compile_args = []
 
+log( f'platform.system()={platform.system()!r}')
+log( f'sys.platform={sys.platform!r}')
+
+linux   = platform.system() == 'Linux'
+openbsd = platform.system() == 'OpenBSD'
+freebsd = platform.system() == 'FreeBSD'
+darwin  = platform.system() == 'Darwin'
+windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
+
 if 'sdist' in sys.argv:
     # Create local mupdf.tgz, for inclusion in sdist.
     get_mupdf_tgz()
 
 
 if ('-h' not in sys.argv and '--help' not in sys.argv
-        and (
-            'bdist_wheel' in sys.argv
+        and (0
+            or 'bdist_wheel' in sys.argv
             or 'build' in sys.argv
             or 'bdist' in sys.argv
             or 'install' in sys.argv
@@ -560,7 +569,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         log( f'Building mupdf.')
         shutil.copy2( 'fitz/_config.h', f'{mupdf_local}include/mupdf/fitz/config.h')
     
-        if platform.system() == 'Windows' or platform.system().startswith('CYGWIN'):
+        if windows:
             # Windows build.
             devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
             if not devenv:
@@ -587,9 +596,9 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             flags += ' verbose=yes'
             env = ''
             make = 'make'
-            if os.uname()[0] == 'Linux':
+            if linux:
                 env += ' CFLAGS="-fPIC"'
-            if os.uname()[0] in ('OpenBSD', 'FreeBSD'):
+            if openbsd or freebsd:
                 make = 'gmake'
                 env += ' CFLAGS="-fPIC" CXX=clang++'
             
@@ -646,13 +655,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         if unix_build_dir:
             library_dirs.append( unix_build_dir)
 
-    log( f'sys.platform={sys.platform!r}')
-    
-    linux = sys.platform.startswith( 'linux') or 'gnu' in sys.platform
-    openbsd = sys.platform.startswith( 'openbsd')
-    freebsd = sys.platform.startswith( 'freebsd')
-    darwin = sys.platform.startswith( 'darwin')
-    
     if mupdf_local and (linux or openbsd or freebsd):
         # setuptools' link command always seems to put '-L
         # /usr/local/lib' before any <library_dirs> that we specify,
@@ -703,13 +705,13 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
 
         library_dirs.append("/opt/homebrew/lib")
 
-        if sys.platform.startswith( 'freebsd'):
+        if freebsd:
             libraries += [
                     'freetype',
                     'harfbuzz',
                     ]
 
-    else:
+    elif windows:
         # Windows.
         assert mupdf_local
         if word_size() == 32:
@@ -724,6 +726,9 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             "libthirdparty",
         ]
         extra_link_args = ["/NODEFAULTLIB:MSVCRT"]
+    
+    else:
+        assert 0, 'Unrecognised OS'
     
     if linux or openbsd or freebsd or darwin:
         extra_compile_args.append( '-Wno-incompatible-pointer-types')
@@ -741,13 +746,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             local_dirs = json.load(dirfile)
             include_dirs += local_dirs.get("include_dirs", [])
             library_dirs += local_dirs.get("library_dirs", [])
-
-    if 1:
-        # Diagnostics.
-        log( f'library_dirs={library_dirs}')
-        log( f'libraries={libraries}')
-        log( f'include_dirs={include_dirs}')
-        log( f'extra_link_args={extra_link_args}')
 
 log( f'include_dirs={include_dirs}')
 log( f'library_dirs={library_dirs}')
