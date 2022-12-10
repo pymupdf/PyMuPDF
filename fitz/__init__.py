@@ -7,6 +7,7 @@
 # maintained and developed by Artifex Software, Inc. https://artifex.com.
 # ------------------------------------------------------------------------
 import sys
+
 from fitz.fitz import *
 
 # define the supported colorspaces for convenience
@@ -31,12 +32,16 @@ fitz.TOOLS = TOOLS
 # This atexit handler runs, but doesn't cause ~Tools() to be run.
 #
 import atexit
-def cleanup_tools( TOOLS):
-    #print(f'cleanup_tools: TOOLS={TOOLS} id(TOOLS)={id(TOOLS)}')
-    #print(f'TOOLS.thisown={TOOLS.thisown}')
+
+
+def cleanup_tools(TOOLS):
+    # print(f'cleanup_tools: TOOLS={TOOLS} id(TOOLS)={id(TOOLS)}')
+    # print(f'TOOLS.thisown={TOOLS.thisown}')
     del TOOLS
     del fitz.TOOLS
-atexit.register( cleanup_tools, TOOLS)
+
+
+atexit.register(cleanup_tools, TOOLS)
 
 if fitz.VersionFitz != fitz.TOOLS.mupdf_version():
     v1 = fitz.VersionFitz.split(".")
@@ -49,7 +54,6 @@ if fitz.VersionFitz != fitz.TOOLS.mupdf_version():
 
 # copy functions in 'utils' to their respective fitz classes
 import fitz.utils
-
 
 # ------------------------------------------------------------------------------
 # General
@@ -127,6 +131,8 @@ fitz.Page.write_text = fitz.utils.write_text
 fitz.Page.get_label = fitz.utils.get_label
 fitz.Page.get_image_rects = fitz.utils.get_image_rects
 fitz.Page.get_textpage_ocr = fitz.utils.get_textpage_ocr
+fitz.Page.delete_image = fitz.utils.delete_image
+fitz.Page.replace_image = fitz.utils.replace_image
 
 # ------------------------------------------------------------------------
 # Annot

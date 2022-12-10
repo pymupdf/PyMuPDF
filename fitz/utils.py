@@ -12,12 +12,11 @@ import math
 import os
 import random
 import string
+import tempfile
 import typing
 import warnings
-import tempfile
 
 from fitz import *
-
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -234,6 +233,51 @@ def show_pdf_page(*args, **kwargs) -> int:
     doc.ShownPages[pno_id] = xref
 
     return xref
+
+
+def replace_image(page: Page, xref: int, *, filename=None, pixmap=None, stream=None):
+    """Replace the image referred to by xref.
+
+    Replace the image by changing the object definition stored under xref. This
+    will leave the pages appearance instructions intact, so the new image is
+    being displayed with the same bbox, rotation etc.
+    By providing a small fully transparent image, an effect as if the image had
+    been deleted can be achieved.
+    A typical use may include replacing large images by a smaller version,
+    e.g. with a lower resolution or graylevel instead of colored.
+
+    Args:
+        xref: the xref of the image to replace.
+        filename, pixmap, stream: exactly one of these must be provided. The
+            meaning being the same as in Page.insert_image.
+    """
+    doc = page.parent  # the owning document
+    if not doc.is_image(xref):
+        raise ValueError("xref not an image")  # insert new image anywhere in page
+    if bool(filename) + bool(stream) + bool(pixmap) != 1:
+        raise ValueError("Exactly one of filename/stream/pixmap must be given")
+    new_xref = page.insert_image(
+        page.rect, filename=filename, stream=stream, pixmap=pixmap
+    )
+    doc.xref_copy(new_xref, xref)  # copy over new to old
+    last_contents_xref = page.get_contents()[-1]
+    # new image insertion has created a new /Contents source,
+    # which we will set to spaces now
+    doc.update_stream(last_contents_xref, b" ")
+
+
+def delete_image(page: Page, xref: int):
+    """Delete the image referred to by xef.
+
+    Actually replaces by a small transparent Pixmap using method Page.replace_image.
+
+    Args:
+        xref: xref of the image to delete.
+    """
+    # make a small 100% transparent pixmap (of just any dimension)
+    pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)
+    pix.clear_with()  # clear all samples bytes to 0x00
+    page.replace_image(xref, pixmap=pix)
 
 
 def insert_image(page, rect, **kwargs):
@@ -810,15 +854,15 @@ def get_page_text(
 
 
 def get_pixmap(
-        page: Page,
-        *,
-        matrix: matrix_like=Identity,
-        dpi=None,
-        colorspace: Colorspace=csRGB,
-        clip: rect_like=None,
-        alpha: bool=False,
-        annots: bool=True,
-        ) -> Pixmap:
+    page: Page,
+    *,
+    matrix: matrix_like = Identity,
+    dpi=None,
+    colorspace: Colorspace = csRGB,
+    clip: rect_like = None,
+    alpha: bool = False,
+    annots: bool = True,
+) -> Pixmap:
     """Create pixmap of page.
 
     Keyword args:
@@ -876,7 +920,12 @@ def get_page_pixmap(
         annots: (bool) also render annotations
     """
     return doc[pno].get_pixmap(
-        matrix=matrix, dpi=dpi, colorspace=colorspace, clip=clip, alpha=alpha, annots=annots
+        matrix=matrix,
+        dpi=dpi,
+        colorspace=colorspace,
+        clip=clip,
+        alpha=alpha,
+        annots=annots,
     )
 
 
