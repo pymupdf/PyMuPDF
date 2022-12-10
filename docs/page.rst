@@ -62,6 +62,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.apply_redactions`      PDF olny: process the redactions of the page
 :meth:`Page.bound`                 rectangle of the page
 :meth:`Page.delete_annot`          PDF only: delete an annotation
+:meth:`Page.delete_image`          PDF only: delete an image
 :meth:`Page.delete_link`           PDF only: delete a link
 :meth:`Page.delete_widget`         PDF only: delete a widget / field
 :meth:`Page.draw_bezier`           PDF only: draw a cubic Bezier curve
@@ -100,6 +101,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
 :meth:`Page.set_artbox`            PDF only: modify ``/ArtBox``
 :meth:`Page.set_bleedbox`          PDF only: modify ``/BleedBox``
@@ -949,6 +951,45 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
+   
+   .. index::
+      pair: filename; replace_image
+      pair: pixmap; replace_image
+      pair: stream; replace_image
+      pair: xref; replace_image
+
+   .. method:: replace_image(xref, filename=None, pixmap=None, stream=None)
+
+      * New in v1.21.0
+
+      Replace the image at xref with another one.
+
+      :arg int xref: the :data:`xref` of the image.
+      :arg filename: the filename of the new image.
+      :arg pixmap: the :ref:`Pixmap` of the new image.
+      :arg stream: the memory area containing the new image.
+
+      Arguments ``filename``, ``pixmap``, ``stream`` have the same meaning as in :meth:`Page.insert_image`, especially exactly one of these must be provided.
+
+      This is a **global replacement:** the new image will also be shown wherever the old one has been displayed throughout the file.
+
+      This method mainly exists for technical purposes. Typical uses include replacing large images by smaller versions, like a lower resolution, graylevel instead of colored, etc., or changing transparency.
+   
+   
+   .. index::
+      pair: xref; delete_image
+
+   .. method:: delete_image(xref)
+
+      * New in v1.21.0
+
+      Delete the image at xref. This is slightly misleading: actually the image is being replaced with a small transparent :ref:`Pixmap` using above :meth:`Page.replace_image`. The visible effect however is equivalent.
+
+      :arg int xref: the :data:`xref` of the image.
+
+      This is a **global replacement:** the image will disappear wherever the old one has been displayed throughout the file.
+   
+   
    .. index::
       pair: blocks; Page.get_text
       pair: dict; Page.get_text
