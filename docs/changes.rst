@@ -3,8 +3,41 @@
 Change Log
 ==========
 
+**Changes in Version 1.21.1rc1 (2022-12-12)**
 
-**Changes in Version 1.21.0**
+* This release uses ``MuPDF-1.21.1``.
+
+* Bug fixes:
+
+  * **Fixed** `#2110 <https://github.com/pymupdf/PyMuPDF/issues/2110>`_: Fully embedded font is extracted only partially if it occupies more than one objects
+  * **Fixed** `#2094 <https://github.com/pymupdf/PyMuPDF/issues/2094>`_: Rectangle Detection Logic
+  * **Fixed** `#2088 <https://github.com/pymupdf/PyMuPDF/issues/2088>`_: Destination point not set for named links in toc
+  * **Fixed** `#2087 <https://github.com/pymupdf/PyMuPDF/issues/2087>`_: Image with Filter "[/FlateDecode/JPXDecode]" not extracted
+  * **Fixed** `#2086 <https://github.com/pymupdf/PyMuPDF/issues/2086>`_: Document.save() owner_pw & user_pw has buffer overflow bug
+  * **Fixed** `#2076 <https://github.com/pymupdf/PyMuPDF/issues/2076>`_: Segfault in fitz.py
+  * **Fixed** `#2051 <https://github.com/pymupdf/PyMuPDF/issues/2051>`_: Missing DPI Parameter
+  * **Fixed** `#2048 <https://github.com/pymupdf/PyMuPDF/issues/2048>`_: Invalid size of TextPage and bbox with newest version 1.21.0
+  * **Fixed** `#2045 <https://github.com/pymupdf/PyMuPDF/issues/2045>`_: SystemError: <built-in function Page_get_texttrace> returned a result with an error set
+  * **Fixed** `#2039 <https://github.com/pymupdf/PyMuPDF/issues/2039>`_: 1.21.0 fails to build against system libmupdf
+  * **Fixed** `#2036 <https://github.com/pymupdf/PyMuPDF/issues/2036>`_: Archive::Archive defined twice
+
+* Other
+
+  * Swallow "&zoom=nan" in link uri strings.
+  * Add new Page utility methods ``Page.replace_image()`` and ``Page.delete_image()``.
+
+* Documentation:
+
+  * `#2040 <https://github.com/pymupdf/PyMuPDF/issues/2040>`_: Added note about test failure with non-default build of MuPDF, to ``tests/README.md``.
+  * `#2037 <https://github.com/pymupdf/PyMuPDF/issues/2037>`_: In ``docs/installation.rst``, mention incompatibility with chocolatey.org on Windows.
+  * `#2061 <https://github.com/pymupdf/PyMuPDF/issues/2061>`_: Fixed description of ``Annot.file_info``.
+  * `#2065 <https://github.com/pymupdf/PyMuPDF/issues/2065>`_: Show how to insert internal PDF link.
+  * Improved description of building from source without an sdist.
+  * Added information about running tests.
+  * `#2084 <https://github.com/pymupdf/PyMuPDF/issues/2084>`_: Fixed broken link to PyMuPDF-Utilities.
+
+
+**Changes in Version 1.21.0 (2022-11-8)**
 
 * This release uses ``MuPDF-1.21.0``.
 
