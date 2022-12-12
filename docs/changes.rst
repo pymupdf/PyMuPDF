@@ -9,7 +9,7 @@ Change Log
 
 * Bug fixes:
 
-  * **Fixed** `#2110 <https://github.com/pymupdf/PyMuPDF/issues/2110>`_: Fully embedded font is extracted only partially if it occupies more than one objects
+  * **Fixed** `#2110 <https://github.com/pymupdf/PyMuPDF/issues/2110>`_: Fully embedded font is extracted only partially if it occupies more than one object
   * **Fixed** `#2094 <https://github.com/pymupdf/PyMuPDF/issues/2094>`_: Rectangle Detection Logic
   * **Fixed** `#2088 <https://github.com/pymupdf/PyMuPDF/issues/2088>`_: Destination point not set for named links in toc
   * **Fixed** `#2087 <https://github.com/pymupdf/PyMuPDF/issues/2087>`_: Image with Filter "[/FlateDecode/JPXDecode]" not extracted

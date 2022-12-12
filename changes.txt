@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 Change Log
 ==========
 
@@ -1561,3 +1563,5 @@ Changes in version 1.9.1 compared to version 1.8.0 are the following:
 * Incremental saves for changes are possible now using the call pattern *doc.save(doc.name, incremental=True)*.
 * A PDF's metadata can now be deleted, set or changed by document method *set_metadata()*. Supports incremental saves.
 * A PDF's bookmarks (or table of contents) can now be deleted, set or changed with the entries of a list using document method *set_toc(list)*. Supports incremental saves.
+
+.. include:: footer.rst
