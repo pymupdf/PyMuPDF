@@ -1,3 +1,4 @@
+.. include:: header.rst
 
 .. _Annot:
 
@@ -586,3 +587,5 @@ This is how the circle annotation looks like before and after the change (pop-up
 .. rubric:: Footnotes
 
 .. [#f1] Rotating an annotation also changes its rectangle. Depending on how the annotation was defined, the original rectangle is **not reconstructible** by setting the rotation value to zero again and will be lost.
+
+.. include:: footer.rst

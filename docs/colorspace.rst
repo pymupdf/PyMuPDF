@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Colorspace:
 
 ================
@@ -37,3 +39,5 @@ Represents the color space of a :ref:`Pixmap`.
     * :data:`csRGB`  = *fitz.Colorspace(fitz.CS_RGB)*
     * :data:`csGRAY` = *fitz.Colorspace(fitz.CS_GRAY)*
     * :data:`csCMYK` = *fitz.Colorspace(fitz.CS_CMYK)*
+
+.. include:: footer.rst

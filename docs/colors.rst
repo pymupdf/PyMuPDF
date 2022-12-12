@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _ColorDatabase:
 
 ================
@@ -41,3 +43,5 @@ If you want to actually see how the many available colors look like, use scripts
 This is a screen print of what these files look like.
 
 .. image:: images/img-colordb.*
+
+.. include:: footer.rst

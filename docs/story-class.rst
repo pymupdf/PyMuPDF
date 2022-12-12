@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Story:
 
 ================
@@ -282,3 +284,4 @@ The parameter passed to the ``recorder`` function is an object with the followin
 
 * ``elpos.page_num`` (int) -- page number; only present when using `fitz.Story.write*()` functions.
 
+.. include:: footer.rst

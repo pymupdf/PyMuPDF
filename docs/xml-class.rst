@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Xml:
 
 ================
@@ -422,7 +424,7 @@ Methods that are flagged as "context managers" can conveniently be used in this 
       para.set_italic(False).set_bold(False).add_text("regular text")
       para.add_text("more regular text")
 
-
+.. include:: footer.rst
 
 .. External links:
 

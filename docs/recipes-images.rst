@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesImages:
 
 ==============================
@@ -576,3 +578,5 @@ Basic code pattern for :meth:`Page.show_pdf_page`. Source and target PDF must be
         keep_proportion=True,  # keep aspect ratio
         overlay=True,          # put in foreground
     )
+
+.. include:: footer.rst

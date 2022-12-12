@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 **PyMuPDF Documentation**
 =================================
 
@@ -20,3 +22,5 @@
    app3.rst
    changes.rst
    znames.rst
+
+.. include:: footer.rst

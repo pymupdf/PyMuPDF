@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesJournalling:
 
 =========================================
@@ -134,3 +136,5 @@ Description:
     >>> # this has changed the journal:
     >>> # previous last 3 text line operations were removed, and
     >>> # we have only 4 operations: drawing the line is the new last one
+
+.. include:: footer.rst

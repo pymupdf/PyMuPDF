@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Shape:
 
 Shape
@@ -628,3 +630,5 @@ Common Parameters
 **closePath** (*bool*)
 
   Causes the end point of a drawing to be automatically connected with the starting point (by a straight line).
+
+.. include:: footer.rst

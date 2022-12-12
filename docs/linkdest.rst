@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _linkDest:
 
 ================
@@ -99,3 +101,5 @@ Class representing the `dest` property of an outline entry or a link. Describes 
       The name of the URI this destination points to.
 
       :type: str
+
+.. include:: footer.rst

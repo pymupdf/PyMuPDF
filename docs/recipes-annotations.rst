@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesAnnotations:
 
 ==============================
@@ -146,3 +148,4 @@ This is the result:
 .. image:: images/img-inkannot.*
     :scale: 50
 
+.. include:: footer.rst

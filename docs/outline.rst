@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Outline:
 
 ================
@@ -70,3 +72,5 @@ Outline
       The link destination details object.
 
       :type: :ref:`linkDest`
+
+.. include:: footer.rst

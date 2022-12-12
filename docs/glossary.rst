@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Glossary:
 
 ==============
@@ -161,3 +163,5 @@ Glossary
 .. data:: ligature
         
         Some frequent character combinations are represented by their own special glyphs in more advanced fonts. Typical examples are "fi", "fl", "ffi" and "ffl". These compounds are called *ligatures*. In PyMuPDF text extractions, there is the option to either return the corresponding unicode unchanged, or split ligatures up into their constituent parts: "fi" ==> "f" + "i", etc.
+
+.. include:: footer.rst
