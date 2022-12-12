@@ -97,7 +97,7 @@ def test_memoryview():
     pm = fitz.Pixmap(imgfile)
     samples = pm.samples_mv
     assert isinstance( samples, memoryview)
-    print( f'{samples=} {samples.itemsize=} {samples.nbytes=} {samples.ndim=} {samples.shape=} {samples.strides=}')
+    print( f'samples={samples} samples.itemsize={samples.itemsize} samples.nbytes={samples.nbytes} samples.ndim={samples.ndim} samples.shape={samples.shape} samples.strides={samples.strides}')
     assert samples.itemsize == 1
     assert samples.nbytes == 659817
     assert samples.ndim == 1
@@ -107,5 +107,5 @@ def test_memoryview():
 def test_samples_ptr():
     pm = fitz.Pixmap(imgfile)
     samples = pm.samples_ptr
-    print( f'{samples=}')
+    print( f'samples={samples}')
     assert isinstance( samples, int)
