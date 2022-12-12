@@ -2838,7 +2838,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
             fz_catch(gctx) {
                 Py_CLEAR(rc);
-                fz_warn(gctx, fz_caught_message(gctx));
+                fz_warn(gctx, "%s", fz_caught_message(gctx));
                 Py_RETURN_FALSE;
             }
             if (!rc)
