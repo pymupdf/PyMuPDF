@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Rect:
 
 ==========
@@ -328,3 +330,4 @@ The following remarks are also valid for :ref:`IRect` objects:
    * This class adheres to the Python sequence protocol, so components can be accessed via their index, too. Also refer to :ref:`SequenceTypes`.
    * Rectangles can be used with arithmetic operators -- see chapter :ref:`Algebra`.
 
+.. include:: footer.rst

@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 Installation
 =============
 
@@ -141,3 +143,5 @@ So for a working OCR functionality, make sure to complete this checklist:
 .. rubric:: Footnotes
 
 .. [#f1] In the next MuPDF version, it will be possible to pass this value as a parameter -- directly in the OCR invocations.
+
+.. include:: footer.rst

@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Algebra:
 
 Operator Algebra for Geometry Objects
@@ -204,3 +206,4 @@ Here is an example for creating the smallest rectangle enclosing given points::
   True
   >>>
 
+.. include:: footer.rst

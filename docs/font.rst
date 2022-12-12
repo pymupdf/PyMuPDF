@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Font:
 
 ================
@@ -360,3 +362,5 @@ A Font object also contains useful general information, like the font bbox, the 
 .. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues. The :ref:`TextWriter` methods check :attr:`Font.is_writable`.
 
 .. [#f2] The built-in module *array* has been chosen for its speed and its compact representation of values.
+
+.. include:: footer.rst

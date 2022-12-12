@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 ============
 Functions
 ============
@@ -791,3 +793,5 @@ Yet others are handy, general-purpose utilities.
    .. method:: EMPTY_IRECT()
    
       Return the "standard" empty and invalid rectangle ``Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)`` resp. quad. Its top-left and bottom-right point values are reversed compared to the infinite rectangle. It will e.g. be used to indicate empty bboxes in ``page.get_text("dict")`` dictionaries. There are however infinitely many empty or invalid rectangles.
+
+.. include:: footer.rst

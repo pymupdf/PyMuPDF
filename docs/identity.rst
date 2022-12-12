@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Identity:
 
 ============
@@ -14,3 +16,5 @@ If you need a **mutable** identity matrix as a starting point, use one of the fo
     >>> m = fitz.Matrix(1, 1)              # use scaling by factor 1
     >>> m = fitz.Matrix(0)                 # use rotation by zero degrees
     >>> m = fitz.Matrix(fitz.Identity)     # make a copy of Identity
+
+.. include:: footer.rst

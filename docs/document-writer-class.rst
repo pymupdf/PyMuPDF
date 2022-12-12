@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _DocumentWriter:
 
 ================
@@ -49,3 +51,5 @@ Using DocumentWriter_ also for other document types might happen in the future.
       Close the output file. This method is required for writing any pending data.
 
    For usage examples consult the section of :ref:`Story`.
+
+.. include:: footer.rst

@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _TextWriter:
 
 ================
@@ -188,3 +190,5 @@ Using this object entails three steps:
   4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`last_point` of the previously added item.
   5. You can use the *pos* argument of :meth:`TextWriter.fill_textbox` to set the position of the first text character. This allows filling the same textbox with contents from different :ref:`TextWriter` objects, thus allowing for multiple colors, opacities, etc.
   6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.is_writable`. This attribute is also checked when using :ref:`TextWriter` methods.
+
+.. include:: footer.rst

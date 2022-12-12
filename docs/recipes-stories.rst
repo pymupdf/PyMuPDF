@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesStories:
 
 
@@ -502,7 +504,7 @@ in a PDF-specific API.]
     - ``float`` is unavailable.
 
 
-
+.. include:: footer.rst
 
 .. External Links:
 

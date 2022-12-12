@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Appendix2:
 
 ================================================
@@ -31,3 +33,5 @@ PyMuPDF Support
 We continue to support the full old API with respect to embedded files -- with only minor, cosmetic changes.
 
 There even also is a new function, which delivers a list of all names under which embedded data are resgistered in a PDF, :meth:`Document.embfile_names`.
+
+.. include:: footer.rst

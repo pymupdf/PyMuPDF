@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Widget:
 
 ================
@@ -202,3 +204,5 @@ PyMuPDF supports the creation and update of many, but not all widget types.
 .. rubric:: Footnotes
 
 .. [#f1] If you intend to re-access a new or updated field (e.g. for making a pixmap), make sure to reload the page first. Either close and re-open the document, or load another page first, or simply do ``page = doc.reload_page(page)``.
+
+.. include:: footer.rst

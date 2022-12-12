@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Deprecated:
 
 ================
@@ -41,3 +43,5 @@ Deprecated names are not separately documented. The following list will help you
 .. note:: This is automatically generated. One or two items refer to yet undocumented methods - please simply ignore them.
 
 .. include:: deprecated.rst
+
+.. include:: footer.rst
