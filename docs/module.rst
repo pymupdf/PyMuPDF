@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Module:
 
 ============================
@@ -477,3 +479,5 @@ Command::
 
 
 .. highlight:: python
+
+.. include:: footer.rst

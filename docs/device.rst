@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Device:
 
 ================
@@ -28,3 +30,5 @@ The different format handlers (pdf, xps, etc.) interpret pages to a "device". De
       :type textpage: :ref:`TextPage`
 
       :arg int flags: control the way how text is parsed into the text page. Currently 3 options can be coded into this parameter, see :ref:`TextPreserve`. To set these options use something like *flags=0 | TEXT_PRESERVE_LIGATURES | ...*.
+
+.. include:: footer.rst

@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Tools:
 
 Tools
@@ -266,3 +268,5 @@ Example Session
 .. [#f1] This memory area is internally used by MuPDF, and it serves as a cache for objects that have already been read and interpreted, thus improving performance. The most bulky object types are images and also fonts. When an application starts up the MuPDF library (in our case this happens as part of *import fitz*), it must specify a maximum size for this area. PyMuPDF's uses the default value (256 MB) to limit memory consumption. Use the methods here to control or investigate store usage. For example: even after a document has been closed and all related objects have been deleted, the store usage may still not drop down to zero. So you might want to enforce that before opening another document.
 
 .. [#f2] By default PyMuPDF and MuPDF use ``malloc()``/``free()`` for dynamic memory management. One can instead force them to use the Python allocation functions ``PyMem_New()``/``PyMem_Del()``, by modifying *fitz/fitz.i* to do ``#define JM_MEMORY 1`` and rebuilding PyMuPDF.
+
+.. include:: footer.rst

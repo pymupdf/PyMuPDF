@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesDrawingAndGraphics:
 
 ==============================
@@ -193,3 +195,4 @@ Here is a comparison between input and output of an example page, created by the
 
 .. note:: You can use the path list to make your own lists of e.g. all lines or all rectangles on the page and subselect them by criteria, like color or position on the page etc.
 
+.. include:: footer.rst

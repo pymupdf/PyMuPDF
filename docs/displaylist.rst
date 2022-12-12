@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _DisplayList:
 
 ================
@@ -89,3 +91,6 @@ A display list is populated with objects from a page, usually by executing :meth
       Contains the display list's mediabox. This will equal the page's rectangle if it was created via :meth:`Page.get_displaylist`.
 
       :type: :ref:`Rect`
+
+
+.. include:: footer.rst

@@ -32,6 +32,24 @@
     border: 1px solid #222;
 }
 
+.discordLink {
+    display:flex;
+    justify-content:flex-end;
+    margin:0;
+    padding:0;
+    font-size: 13px;
+}
+
+.discordLink a {
+    color: #000;
+}
+
+.discordLink img {
+    width: 30px;
+    height: 30px;
+    margin-left: 8px;
+}
+
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {
 
@@ -63,6 +81,10 @@
 
     .admonition {
         color: #000;
+    }
+
+    .discordLink a {
+        color: #fff;
     }
 
 }

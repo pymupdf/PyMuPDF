@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Appendix3:
 
 ================================================
@@ -298,3 +300,5 @@ PyMuPDF will put error messages to *sys.stderr* prefixed with the string "mupdf:
 
     1. The target PDF is not new / empty: grafting does not check for resources that already existed (e.g. images, fonts) in the target document before opening it.
     2. Using :meth:`Page.show_pdf_page` for more than one source document: each grafting occurs **within one source** PDF only, not across multiple. So if e.g. the same image exists in pages from different source PDFs, then this will not be detected until garbage collection.
+
+.. include:: footer.rst

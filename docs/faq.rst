@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _FAQ:
 
 ==============================
@@ -12,3 +14,4 @@ Please see:
 :ref:`Recipes: Table of Contents<RecipesTOC>`
 
 
+.. include:: footer.rst
