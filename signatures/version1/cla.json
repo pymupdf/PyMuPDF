@@ -1,3 +1,12 @@
 {
-   "signedContributors": []
+  "signedContributors": [
+    {
+      "name": "jamie-lemon",
+      "id": 107279992,
+      "comment_id": 1346836521,
+      "created_at": "2022-12-12T16:30:10Z",
+      "repoId": 6105714,
+      "pullRequestNo": 2118
+    }
+  ]
 }
