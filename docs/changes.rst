@@ -15,6 +15,7 @@ Change Log
   * **Fixed** `#2087 <https://github.com/pymupdf/PyMuPDF/issues/2087>`_: Image with Filter "[/FlateDecode/JPXDecode]" not extracted
   * **Fixed** `#2086 <https://github.com/pymupdf/PyMuPDF/issues/2086>`_: Document.save() owner_pw & user_pw has buffer overflow bug
   * **Fixed** `#2076 <https://github.com/pymupdf/PyMuPDF/issues/2076>`_: Segfault in fitz.py
+  * **Fixed** `#2057 <https://github.com/pymupdf/PyMuPDF/issues/2057>`_: Document.save garbage parameter not working in PyMuPDF 1.21.0
   * **Fixed** `#2051 <https://github.com/pymupdf/PyMuPDF/issues/2051>`_: Missing DPI Parameter
   * **Fixed** `#2048 <https://github.com/pymupdf/PyMuPDF/issues/2048>`_: Invalid size of TextPage and bbox with newest version 1.21.0
   * **Fixed** `#2045 <https://github.com/pymupdf/PyMuPDF/issues/2045>`_: SystemError: <built-in function Page_get_texttrace> returned a result with an error set
