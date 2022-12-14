@@ -148,6 +148,7 @@ static PyObject *JM_py_from_matrix(fz_matrix m);
 static PyObject *JM_py_from_point(fz_point p);
 static PyObject *JM_py_from_quad(fz_quad q);
 static PyObject *JM_py_from_rect(fz_rect r);
+static void show(const char* prefix, PyObject* obj);
 
 
 // additional headers ----------------------------------------------
@@ -6646,6 +6647,23 @@ if not sanitize and not self.is_wrapped:
             if (!page) {
                 Py_RETURN_NONE;
             }
+            #ifdef MUPDF_BRANCH_master
+            pdf_filter_factory list[2] = { 0 };
+            pdf_sanitize_filter_options sopts = { 0 };
+            pdf_filter_options filter = {
+                1,     // recurse: true
+                1,     // instance forms
+                0,     // do not ascii-escape binary data
+                1,     // no_update
+                NULL,  // end_page_opaque
+                NULL,  // end page
+                list,  // filters
+                };
+            if (sanitize) {
+              list[0].filter = pdf_new_sanitize_filter;
+              list[0].options = &sopts;
+            }
+            #else
             pdf_filter_options filter = {
                 NULL,  // opaque
                 NULL,  // image filter
@@ -6658,6 +6676,7 @@ if not sanitize and not self.is_wrapped:
                 0      // do not ascii-escape binary data
                 };
             filter.sanitize = sanitize;
+            #endif
             fz_try(gctx) {
                 pdf_filter_page_contents(gctx, page->doc, page, &filter);
             }
@@ -7280,7 +7299,8 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
         def get_images(self, full=False):
             """List of images defined in the page object."""
             CheckParent(self)
-            return self.parent.get_page_images(self.number, full=full)
+            ret = self.parent.get_page_images(self.number, full=full)
+            return ret
 
 
         def get_xobjects(self):
@@ -10462,6 +10482,23 @@ CheckParent(self)%}
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_document *pdf = pdf_get_bound_document(gctx, pdf_annot_obj(gctx, annot));
+            #ifdef MUPDF_BRANCH_master
+            pdf_filter_factory list[2] = { 0 };
+            pdf_sanitize_filter_options sopts = { 0 };
+            pdf_filter_options filter = {
+                1,     // recurse: true
+                1,     // instance forms
+                0,     // do not ascii-escape binary data
+                1,     // no_update
+                NULL,  // end_page_opaque
+                NULL,  // end page
+                list,  // filters
+                };
+            if (sanitize) {
+              list[0].filter = pdf_new_sanitize_filter;
+              list[0].options = &sopts;
+            }
+            #else
             pdf_filter_options filter = {
                 NULL,  // opaque
                 NULL,  // image filter
@@ -10474,6 +10511,7 @@ CheckParent(self)%}
                 0      // do not ascii-escape binary data
                 };
             filter.sanitize = sanitize;
+            #endif
             fz_try(gctx) {
                 pdf_filter_annot_contents(gctx, pdf, annot, &filter);
             }
