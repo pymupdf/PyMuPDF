@@ -34,6 +34,20 @@ Environmental variables:
                     PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
             Otherwise:
                 Location of mupdf directory.
+            
+            In addition if MuPDF is a git checkout and the branch is 'master',
+            PyMuPDF is configured to build with MuPDF master branch, which may
+            have a slightly different API from the current release banch.
+    
+    PYMUPDF_SETUP_MUPDF_BUILD_BRANCH
+        If set to 'master', PyMuPDF is configured to build with MuPDF master
+        branch, which may have a slightly different API from the current
+        release banch.
+
+        Other values are ignored.
+
+        This is typically only useful if PYMUPDF_SETUP_MUPDF_BUILD is also set,
+        and not required if mupdf is a git checkout.
     
     PYMUPDF_SETUP_MUPDF_BUILD_TYPE
         Unix only. Controls build type of MuPDF. Supported values are:
@@ -423,7 +437,7 @@ def get_mupdf_tgz():
         mupdf_url_leaf = os.path.basename( mupdf_url)
         leaf = '.tar.gz'
         assert mupdf_url_leaf.endswith(leaf), f'Unrecognised suffix in mupdf_url={mupdf_url!r}'
-        mupdf_local = mupdf_url_leaf[ : -len(leaf)] + '/'
+        mupdf_local = mupdf_url_leaf[ : -len(leaf)]
         assert mupdf_local.startswith( 'mupdf-')
         log(f'Downloading from: {mupdf_url}')
         remove( mupdf_url_leaf)
@@ -439,8 +453,8 @@ def get_mupdf_tgz():
         # Create archive <mupdf_tgz> contining local mupdf directory's git
         # files.
         mupdf_local = mupdf_url_or_local
-        if not mupdf_local.endswith( '/'):
-            mupdf_local += '/'
+        if mupdf_local.endswith( '/'):
+            del mupdf_local[-1]
         assert os.path.isdir( mupdf_local), f'Not a directory: {mupdf_local!r}'
         log( f'Creating .tgz from git files in: {mupdf_local}')
         remove( mupdf_tgz)
@@ -460,6 +474,7 @@ def get_mupdf():
     PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
     '''
     path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
+    log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
     if path is None:
         # Default.
         if os.path.exists( mupdf_tgz):
@@ -521,6 +536,7 @@ def get_mupdf():
 include_dirs = []
 library_dirs = []
 libraries = []
+extra_swig_args = []
 extra_link_args = []
 extra_compile_args = []
 
@@ -533,9 +549,29 @@ freebsd = platform.system() == 'FreeBSD'
 darwin  = platform.system() == 'Darwin'
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
 
+mupdf_branch = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_BRANCH')
+
+
 if 'sdist' in sys.argv:
     # Create local mupdf.tgz, for inclusion in sdist.
     get_mupdf_tgz()
+
+
+def git_get_branch( directory):
+    command = f'cd {directory} && git branch --show-current'
+    log( f'Running: {command}')
+    p = subprocess.run(
+            command,
+            shell=True,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            )
+    ret = None
+    if p.returncode == 0:
+        ret = p.stdout.strip()
+        log( f'Have found MuPDF git branch: ret={ret!r}')
+    return ret
 
 
 if ('-h' not in sys.argv and '--help' not in sys.argv
@@ -552,15 +588,20 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     #
     mupdf_local = get_mupdf()
     if mupdf_local:
-        if not mupdf_local.endswith( '/'):
-            mupdf_local += '/'
+        if mupdf_local.endswith( '/'):
+            del mupdf_local[-1]
+        if mupdf_branch is None and os.path.exists( f'{mupdf_local}/.git'):
+            mupdf_branch = git_get_branch( mupdf_local)
+            if mupdf_branch:
+                log( f'Have found MuPDF git branch: mupdf_branch={mupdf_branch!r}')
+            
     log( f'mupdf_local={mupdf_local!r}')
     unix_build_dir = None
     
     # Force clean build of MuPDF.
     #
     if mupdf_local and os.environ.get( 'PYMUPDF_SETUP_MUPDF_CLEAN') == '1':
-        remove( f'{mupdf_local}build')
+        remove( f'{mupdf_local}/build')
 
     # Always force clean build of PyMuPDF SWIG files etc, because setuptools
     # doesn't seem to notice when our mupdf headers etc are newer than the
@@ -573,7 +614,11 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     # which excludes various fonts in the MuPDF binaries.
     if mupdf_local:
         log( f'Building mupdf.')
-        shutil.copy2( 'fitz/_config.h', f'{mupdf_local}include/mupdf/fitz/config.h')
+        if mupdf_branch == 'master':
+            log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h because mupdf_branch={mupdf_branch}')
+        else:
+            log( f'Copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h')
+            shutil.copy2( 'fitz/_config.h', f'{mupdf_local}/include/mupdf/fitz/config.h')
     
         if windows:
             # Windows build.
@@ -638,7 +683,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
                 build_prefix += f'{build_prefix_extra}-'
             flags += f' build_prefix={build_prefix}'
             
-            unix_build_dir = f'{mupdf_local}build/{build_prefix}{unix_build_type}'
+            unix_build_dir = f'{mupdf_local}/build/{build_prefix}{unix_build_type}'
             
             command = f'cd {mupdf_local} && {env} {make} {flags}'
             command += f' && echo {unix_build_dir}:'
@@ -656,9 +701,9 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     #
     if mupdf_local:
         assert os.path.isdir( mupdf_local), f'Not a directory: {mupdf_local!r}'
-        include_dirs.append( f'{mupdf_local}include')
-        include_dirs.append( f'{mupdf_local}include/mupdf')
-        include_dirs.append( f'{mupdf_local}thirdparty/freetype/include')
+        include_dirs.append( f'{mupdf_local}/include')
+        include_dirs.append( f'{mupdf_local}/include/mupdf')
+        include_dirs.append( f'{mupdf_local}/thirdparty/freetype/include')
         if unix_build_dir:
             library_dirs.append( unix_build_dir)
 
@@ -722,11 +767,11 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         # Windows.
         assert mupdf_local
         if word_size() == 32:
-            library_dirs.append( f'{mupdf_local}platform/win32/ReleaseTesseract')
-            library_dirs.append( f'{mupdf_local}platform/win32/Release')
+            library_dirs.append( f'{mupdf_local}/platform/win32/ReleaseTesseract')
+            library_dirs.append( f'{mupdf_local}/platform/win32/Release')
         else:
-            library_dirs.append( f'{mupdf_local}platform/win32/x64/ReleaseTesseract')
-            library_dirs.append( f'{mupdf_local}platform/win32/x64/Release')
+            library_dirs.append( f'{mupdf_local}/platform/win32/x64/ReleaseTesseract')
+            library_dirs.append( f'{mupdf_local}/platform/win32/x64/Release')
         libraries = [
             "libmupdf",
             "libresources",
@@ -754,9 +799,31 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             include_dirs += local_dirs.get("include_dirs", [])
             library_dirs += local_dirs.get("library_dirs", [])
 
+
+arg = ''
+if mupdf_branch is None:
+    pass
+elif mupdf_branch == 'master':
+    # SWIG seems to evaluate top-level pre-processor directives, but not those
+    # within functions, so we need to add -D options to both the swig command
+    # and the compiler command.
+    #
+    arg = '-DMUPDF_BRANCH_master'
+    extra_swig_args.append( arg)
+    extra_compile_args.append( arg)
+elif mupdf_branch == '1.21.x':
+    pass
+else:
+    assert 0, f'Unrecognised PYMUPDF_SETUP_MUPDF_BUILD_BRANCH={mupdf_branch!r}'
+
+# Disable bogus SWIG warning 509, 'Overloaded method ... effectively ignored,
+# as it is shadowed by ...'.
+extra_swig_args.append( '-w509')
+
 log( f'include_dirs={include_dirs}')
 log( f'library_dirs={library_dirs}')
 log( f'libraries={libraries}')
+log( f'extra_swig_args={extra_swig_args}')
 log( f'extra_compile_args={extra_compile_args}')
 log( f'extra_link_args={extra_link_args}')
 
@@ -769,9 +836,7 @@ module = Extension(
     libraries=libraries,
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
-    # Disable bogus SWIG warning 509, 'Overloaded method ... effectively
-    # ignored, as it is shadowed by ...'.
-    swig_opts=['-w509']
+    swig_opts=extra_swig_args,
 )
 
 
