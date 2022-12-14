@@ -111,6 +111,12 @@ if 1:
         log( f'    {k}: {v}')
 
 
+# setuptools seems to require current directory to be PyMuPDF.
+#
+assert os.path.abspath( os.getcwd()) == os.path.abspath( f'{__file__}/..'), \
+        f'Current directory must be the PyMuPDF directory'
+
+
 def remove(path):
     '''
     Removes file or directory, without raising exception if it doesn't exist.
@@ -572,6 +578,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         if windows:
             # Windows build.
             devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
+            log( 'PYMUPDF_SETUP_DEVENV={PYMUPDF_SETUP_DEVENV!r}')
             if not devenv:
                 # Search for devenv in some known locations.
                 devenv = glob.glob('C:/Program Files (x86)/Microsoft Visual Studio/2019/*/Common7/IDE/devenv.com')
