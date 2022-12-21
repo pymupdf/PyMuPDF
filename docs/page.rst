@@ -947,6 +947,52 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
+<<<<<<< Updated upstream
+=======
+   
+   .. index::
+      pair: filename; replace_image
+      pair: pixmap; replace_image
+      pair: stream; replace_image
+      pair: xref; replace_image
+
+   .. method:: replace_image(xref, filename=None, pixmap=None, stream=None)
+
+      * New in v1.21.1
+
+      Replace the image at xref with another one.
+
+      :arg int xref: the :data:`xref` of the image.
+      :arg filename: the filename of the new image.
+      :arg pixmap: the :ref:`Pixmap` of the new image.
+      :arg stream: the memory area containing the new image.
+
+      Arguments ``filename``, ``pixmap``, ``stream`` have the same meaning as in :meth:`Page.insert_image`, especially exactly one of these must be provided.
+
+      This is a **global replacement:** the new image will also be shown wherever the old one has been displayed throughout the file.
+
+      This method mainly exists for technical purposes. Typical uses include replacing large images by smaller versions, like a lower resolution, graylevel instead of colored, etc., or changing transparency.
+
+      The page is not "aware" of this replacement and will treat the new image like it did the old one, so for example the same bbox will be used.
+   
+   
+   .. index::
+      pair: xref; delete_image
+
+   .. method:: delete_image(xref)
+
+      * New in v1.21.1
+
+      Delete the image at xref. This is slightly misleading: actually the image is being replaced with a small transparent :ref:`Pixmap` using above :meth:`Page.replace_image`. The visible effect is as if there were no image.
+
+      :arg int xref: the :data:`xref` of the image.
+
+      This is a **global "deletion":** the image will disappear wherever the old one has been displayed throughout the file.
+
+      If you inspect / extract a page's images by methods like :meth:`Page.get_images`, :meth:`Page.get_image_info` or :meth:`Page.get_text`, the replacing "dummy" image will be detected like so `(45, 47, 1, 1, 8, 'DeviceGray', '', 'Im1', 'FlateDecode')` and also seem to "cover" the same boundary box on the page.
+   
+   
+>>>>>>> Stashed changes
    .. index::
       pair: blocks; Page.get_text
       pair: dict; Page.get_text

@@ -50,12 +50,10 @@ Story
       * Multiple stories may -- independently from each other -- write to the same page. For example, one may have separate stories for page header, page footer, regular text, comment boxes, etc.
 
 
-      :arg str html: HTML source code. If omitted, a basic minimum is generated (see below).
+      :arg str html: HTML source code. If omitted, a basic minimum is generated (see below). If provided, not a complete HTML document is needed. The in-built source parser will forgive (many / most) HTML syntax errors and also accepts HTML fragments like `"<b>Hello, <i>World!</i></b>"`.
       :arg str user_css: CSS source code. If provided, must contain valid CSS specifications.
       :arg float em: the default text font size.
-      :arg archive: an :ref:`Archive` from which to load resources for rendering. Currently supported resource types are images and text fonts. If omitted, the story will not try to look up any such data and may thus produce incomplete output.
-      
-         .. note:: Instead of an actual archive, valid arguments for **creating** an :ref:`Archive` can also be provided -- in which case an archive will temporarily be constructed. So, instead of ``story = fitz.Story(archive=fitz.Archive("myfolder"))``, one can also shorter write ``story = fitz.Story(archive="myfolder")``.
+      :arg archive: an :ref:`Archive` from which to load resources for rendering. Currently supported resource types are images and text fonts. If omitted, the story will not try to look up any such data and may thus produce incomplete output. Instead of an actual archive, valid arguments for **creating** one may also be provided -- in which case an archive will temporarily be constructed. So you can write either ``story = fitz.Story(archive=fitz.Archive("myfolder"))``, or shorter ``story = fitz.Story(archive="myfolder")``.
 
    .. method:: place(where)
 
@@ -77,8 +75,13 @@ Story
 
       Let the Story provide positioning information about certain HTML elements once their place on the current page has been computed - i.e. invoke this method **directly after** :meth:`Story.place`.
 
+<<<<<<< Updated upstream
       :arg function: a Python function which will be invoked by this method to process positioning information.
       :arg dict args: an optional dictionary with any **additional** information that you want to provide to ``function``. Like for example the current output page number. Every key in this dictionary must be a string that conforms to the rules for a valid Python identifier. The complete set of information is explained below.
+=======
+      :arg function: a Python callback function taking a :ref:`ElementPostion` instance, which will be invoked by this method to process positioning information.
+      :arg dict args: an optional dictionary with any **additional** information that should be added to the ElementPosition instance passed to ``function``. Like for example the current output page number. Every key in this dictionary must be a string that conforms to the rules for a valid Python identifier. The complete set of information is explained below.
+>>>>>>> Stashed changes
 
    .. method:: reset()
 
