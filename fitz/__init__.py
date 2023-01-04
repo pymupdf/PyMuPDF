@@ -8,6 +8,17 @@
 # ------------------------------------------------------------------------
 import sys
 
+import glob
+import os
+if os.path.exists( 'fitz/__init__.py'):
+    if not glob.glob( 'fitz/_fitz*'):
+        print( '#' * 40)
+        print( '# Warning: current directory appears to contain an incomplete')
+        print( '# fitz/ installation directory so "import fitz" may fail.')
+        print( '# This can happen if current directory is a PyMuPDF source tree.')
+        print( '# Suggest changing to a different current directory.')
+        print( '#' * 40)
+
 from fitz.fitz import *
 
 # define the supported colorspaces for convenience
