@@ -24,7 +24,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
 .. note::
 
-   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: expcept :attr:`Page.rect`, resp. :meth:`Page.bound` (both *reflect* when the page is rotated), all coordinates returned by methods and attributes pertain to the unrotated page.
+   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: except :attr:`Page.rect`, resp. :meth:`Page.bound` (both *reflect* when the page is rotated), all coordinates returned by methods and attributes pertain to the unrotated page.
 
    So the returned value of e.g. :meth:`Page.get_image_bbox` will not change if you do a :meth:`Page.set_rotation`. The same is true for coordinates returned by :meth:`Page.get_text`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiply the coordinates with :attr:`Page.rotation_matrix`. There also is its inverse, :attr:`Page.derotation_matrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
 
