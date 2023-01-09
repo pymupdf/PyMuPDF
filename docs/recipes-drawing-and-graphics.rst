@@ -3,7 +3,7 @@
 .. _RecipesDrawingAndGraphics:
 
 ==============================
-Recipes: Drawing and Graphics
+Drawing and Graphics
 ==============================
 
 

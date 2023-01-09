@@ -3,7 +3,7 @@
 .. _RecipesLowLevelInterfaces:
 
 =========================================
-Recipes: Low-Level Interfaces
+Low-Level Interfaces
 =========================================
 
 

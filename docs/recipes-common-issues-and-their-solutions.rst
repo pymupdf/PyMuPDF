@@ -3,7 +3,7 @@
 .. _RecipesCommonIssuesAndTheirSolutions:
 
 ==========================================
-Recipes: Common Issues and their Solutions
+Common Issues and their Solutions
 ==========================================
 
 

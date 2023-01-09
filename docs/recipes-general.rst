@@ -3,7 +3,7 @@
 .. _RecipesGeneral:
 
 ==============================
-Recipes: General
+General
 ==============================
 
 

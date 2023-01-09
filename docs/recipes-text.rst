@@ -3,12 +3,12 @@
 .. _RecipesText:
 
 ==============================
-Recipes: Text
+Text
 ==============================
 
 
 How to Extract all Document Text
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script will take a document filename and generate a text file from all of its text.
 

@@ -13,7 +13,7 @@
    </details>
 
 ==============================
-Recipes: Stories
+Stories
 ==============================
 
 This document showcases some typical use cases for :ref:`Stories<WorkingWithStories>`.
@@ -500,7 +500,7 @@ in a PDF-specific API.]
     Some important CSS support to consider:
 
     - The only available layout is relative layout.
-    - ``background`` is unavalable, use ``background-color`` instead.
+    - ``background`` is unavailable, use ``background-color`` instead.
     - ``float`` is unavailable.
 
 

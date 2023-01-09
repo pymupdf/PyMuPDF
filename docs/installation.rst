@@ -1,21 +1,25 @@
 .. include:: header.rst
 
+
+.. _Installation:
+
+
 Installation
 =============
 
-PyMuPDF should be installed using pip with::
+:title:`PyMuPDF` should be installed using :title:`pip` with::
 
   python -m pip install --upgrade pip
   python -m pip install --upgrade pymupdf
 
-This will install from a Python wheel if one is available for your platform.
+This will install from a :title:`Python` wheel if one is available for your platform.
 
 
 Installation when a suitable wheel is not available
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If a suitable Python wheel is not available, pip will automatically build from
-source using a Python sdist.
+If a suitable :title:`Python` wheel is not available, :title:`pip` will automatically build from
+source using a :title:`Python` sdist.
 
 **This requires C/C++ development tools and SWIG to be installed**:
 
@@ -39,37 +43,37 @@ source using a Python sdist.
   * Then install SWIG with: ``sudo port install swig``
   * You may also need: ``sudo port install swig-python``
 
-As of ``PyMuPDF-1.20.0``, the required MuPDF source code is already in the
-sdist and is automatically built into PyMuPDF.
+As of ``PyMuPDF-1.20.0``, the required :title:`MuPDF` source code is already in the
+sdist and is automatically built into :title:`PyMuPDF`.
 
 
 Notes
 ~~~~~
 
-Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), Python versions 3.7 and up.
+Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), :title:`Python` versions 3.7 and up.
 
-Wheels are not available for Python installed with `Chocolatey
+Wheels are not available for :title:`Python` installed with `Chocolatey
 <https://chocolatey.org/>`_ on Windows. Instead install Python
 using the Windows installer from the python.org website, see:
 http://www.python.org/downloads
 
-PyMuPDF does not support Python versions prior to 3.7. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
-Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
+:title:`PyMuPDF` does not support :title:`Python` versions prior to 3.7. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
+Please note that we generally follow the official :title:`Python` release schedules. For :title:`Python` versions dropping out of official support this means, that generation of wheels will also be ceased for them.
 
 There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
 
 * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
 * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
 * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable ``"TESSDATA_PREFIX"`` must be defined and contain the ``tessdata`` folder name of the Tesseract installation location. See below.
+* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a :title:`Python` package. To enable OCR functions in :title:`PyMuPDF`, the software must be installed and the system environment variable ``"TESSDATA_PREFIX"`` must be defined and contain the ``tessdata`` folder name of the Tesseract installation location. See below.
 
-.. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
+.. note:: You can install these additional components at any time -- before or after installing :title:`PyMuPDF`. :title:`PyMuPDF` will detect their presence during import or when the respective functions are being used.
 
 
 Install from source without using an sdist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* First get a PyMuPDF source tree:
+* First get a :title:`PyMuPDF` source tree:
 
   * Clone the git repository at https://github.com/pymupdf/PyMuPDF,
     for example::
@@ -81,38 +85,38 @@ Install from source without using an sdist
 
 * Install C/C++ development tools and SWIG as described above.
 
-* Build and install PyMuPDF::
+* Build and install :title:`PyMuPDF`::
 
     cd PyMuPDF && python setup.py install
 
-  This will automatically download a specific hard-coded MuPDF source release,
-  and build it into PyMuPDF.
+  This will automatically download a specific hard-coded :title:`MuPDF` source release,
+  and build it into :title:`PyMuPDF`.
   
-  One can build with a non-default MuPDF (for example one installed on the
+  One can build with a non-default :title:`MuPDF` (for example one installed on the
   system, or a local checkout) by setting environmental variables. See the
   comments at the start of ``PyMuPDF/setup.py`` for more information.
 
-.. note:: When running Python scripts that use PyMuPDF, make sure that the
+.. note:: When running :title:`Python` scripts that use :title:`PyMuPDF`, make sure that the
   current directory is not the ``PyMuPDF/`` directory.
 
-  Otherwise, confusingly, Python will attempt to import ``fitz`` from the local
+  Otherwise, confusingly, :title:`Python` will attempt to import ``fitz`` from the local
   ``fitz/`` directory, which will fail because it only contains source files.
 
 
 Running tests
 ~~~~~~~~~~~~~
 
-PyMuPDF has a set of ``pytest`` scripts within the ``tests/`` directory.
+:title:`PyMuPDF` has a set of ``pytest`` scripts within the ``tests/`` directory.
 
 Run tests with::
 
     pip install pytest fontTools
     pytest PyMuPDF/tests
 
-If PyMuPDF has been built with a non-default build of MuPDF (using
+If :title:`PyMuPDF` has been built with a non-default build of :title:`MuPDF` (using
 environmental variable ``PYMUPDF_SETUP_MUPDF_BUILD``), it is possible that
-``tests/test_textbox.py:test_textbox3()`` will fail, because it relies on MuPDF
-having been built with PyMuPDF's customized configuration, ``fitz/_config.h``.
+``tests/test_textbox.py:test_textbox3()`` will fail, because it relies on :title:`MuPDF`
+having been built with :title:`PyMuPDF's` customized configuration, ``fitz/_config.h``.
 
 One can skip this particular test by adding ``-k 'not test_textbox3'`` to the
 ``pytest`` command line.
@@ -122,7 +126,7 @@ Enabling Integrated OCR Support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
 
-PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
+:title:`PyMuPDF` will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
 
 The language support folder location must currently [#f1]_ be communicated via storing it in the environment variable ``"TESSDATA_PREFIX"``.
 
@@ -138,10 +142,10 @@ So for a working OCR functionality, make sure to complete this checklist:
     - Windows: ``set TESSDATA_PREFIX=C:\Program Files\Tesseract-OCR\tessdata``
     - Unix systems: ``export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata``
 
-.. note:: This must happen outside Python -- before starting your script. Just manipulating ``os.environ`` will not work!
+.. note:: This must happen outside :title:`Python` -- before starting your script. Just manipulating ``os.environ`` will not work!
 
 .. rubric:: Footnotes
 
-.. [#f1] In the next MuPDF version, it will be possible to pass this value as a parameter -- directly in the OCR invocations.
+.. [#f1] In the next :title:`MuPDF` version, it will be possible to pass this value as a parameter -- directly in the OCR invocations.
 
 .. include:: footer.rst

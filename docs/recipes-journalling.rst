@@ -3,7 +3,7 @@
 .. _RecipesJournalling:
 
 =========================================
-Recipes: Journalling
+Journalling
 =========================================
 
 
