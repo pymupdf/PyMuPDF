@@ -50,6 +50,13 @@
     margin-left: 8px;
 }
 
+cite {
+    font-family: monospace;
+    font-weight: bold;
+}
+
+
+
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {
 

@@ -8,9 +8,9 @@ Tutorial
 
 .. highlight:: python
 
-This tutorial will show you the use of PyMuPDF, MuPDF in Python, step by step.
+This tutorial will show you the use of :title:`PyMuPDF`, :title:`MuPDF` in :title:`Python`, step by step.
 
-Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitely.
+Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitely.
 
 Importing the Bindings
 ==========================
@@ -21,6 +21,20 @@ The Python bindings to MuPDF are made available by this import statement. We als
     PyMuPDF 1.16.0: Python bindings for the MuPDF 1.16.0 library.
     Version date: 2019-07-28 07:30:14.
     Built for Python 3.7 on win32 (64-bit).
+
+
+Note on the Name *fitz*
+--------------------------
+The top level Python import name for this library is **"fitz"**. This has historical reasons:
+
+The original rendering library for MuPDF was called *Libart*.
+
+*"After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called "Fitz". Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF."* (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
+
+
+.. note::
+
+    So :title:`PyMuPDF` **cannot coexist** with packages named "fitz" in the same Python environment.
 
 
 Opening a Document

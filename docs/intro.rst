@@ -1,34 +1,40 @@
 .. include:: header.rst
 
-Introduction
-==============
+Welcome to :title:`PyMuPDF`
+================================
 
 .. image:: images/pymupdf-logo.png
-   :align: center
+   :align: left
    :scale: 10%
 
 ..
    Don't delete the bar symbol - it forces a line break beneath the image - which is required.
 
-|
 
-**PyMuPDF** is a Python binding for `MuPDF <https://www.mupdf.com/>`_ --  a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc
+:title:`PyMuPDF` is a Python binding for `MuPDF <https://www.mupdf.com/>`_ --  a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which is maintained and developed by Artifex Software, Inc.
+
+:title:`PyMuPDF` is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
+
+
+
+
+.. raw:: html
+
+   <br/><div style="clear:both;"></div>
+
+
+User Guide
+---------------
+
+
+
+
+
+
+Appendix ...
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB, MOBI and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
-MuPDF stands out among all similar products for its top rendering capability and unsurpassed processing speed. At the same time, its "light weight" makes it an excellent choice for platforms where resources are typically limited, like smartphones.
-
-Check this out yourself and compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top (apart from MuPDF's own standalone viewer) -- since it has changed its library basis to  MuPDF!
-
-With PyMuPDF you can access files with extensions like “.pdf”, “.xps”, “.oxps”, “.cbz”, “.fb2”, ".mobi" or “.epub”. In addition, about 10 popular image formats can also be opened and handled like documents.
-
-PyMuPDF provides access to many important functions of MuPDF from within a Python environment, and we are continuously seeking to expand this function set.
-
-PyMuPDF runs and has been tested on Mac, Linux and Windows for Python versions 3.7 [#f1]_ and up. Other platforms should work too, as long as MuPDF and Python support them.
-
-PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
-
-For MS Windows, Mac OSX and Linux Python wheels are available -- please see the installation chapter.
 
 The GitHub repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
 
