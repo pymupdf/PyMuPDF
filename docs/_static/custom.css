@@ -50,6 +50,24 @@
     margin-left: 8px;
 }
 
+.intro-title {
+    font-size: 22px;
+    margin: 0 0 20px 0;
+}
+
+h1, h2, h3, h4 {
+    padding: 10px;
+    border: 1px solid #007aff;
+    background-color: #007aff;
+    color: #fff;
+    border-radius: 5px;
+}
+
+h1 a, h2 a, h3 a, h4 a, h1 a span, h2 a span, h3 a span, h4 a span {
+    color: #fff;
+    text-decoration: underline;
+}
+
 cite {
     font-family: monospace;
     font-weight: bold;

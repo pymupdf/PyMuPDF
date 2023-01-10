@@ -7,6 +7,8 @@ Text
 ==============================
 
 
+.. _RecipesText_A:
+
 How to Extract all Document Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -40,6 +42,9 @@ See the following two sections for examples and further explanations.
 .. index::
    triple: extract;text;rectangle
 
+
+.. _RecipesText_B:
+
 How to Extract Text from within a Rectangle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 There is now (v1.18.0) more than one way to achieve this. We therefore have created a `folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textbox-extraction>`_ in the PyMuPDF-Utilities repository specifically dealing with this topic.
@@ -48,6 +53,8 @@ There is now (v1.18.0) more than one way to achieve this. We therefore have crea
 
 .. index::
     pair: text;reading order
+
+.. _RecipesText_C:
 
 How to Extract Text in Natural Reading Order
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,6 +88,8 @@ You can also use the above mentioned `script <https://github.com/pymupdf/PyMuPDF
 
 ----------
 
+.. _RecipesText_D:
+
 How to :index:`Extract Tables <pair: extract; table>` from Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you see a table in a document, you are not normally looking at something like an embedded Excel or other identifiable object. It usually is just text, formatted to appear as appropriate.
@@ -90,6 +99,8 @@ Extracting a tabular data from such a page area therefore means that you must fi
 The wxPython GUI script `wxTableExtract.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/wxTableExtract.py>`_ strives to exactly do that. You may want to have a look at it and adjust it to your liking.
 
 ----------
+
+.. _RecipesText_E:
 
 How to Mark Extracted Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,6 +161,9 @@ This script uses ``Page.get_text("words")`` to look for a string, handed in via 
 
 ----------------------------------------------
 
+
+.. _RecipesText_F:
+
 How to Mark Searched Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 This script searches for text and marks it::
@@ -183,6 +197,9 @@ The result looks like this:
 
 ----------------------------------------------
 
+
+.. _RecipesText_G:
+
 How to Mark Non-horizontal Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The previous section already shows an example for marking non-horizontal text, that was detected by text **searching**.
@@ -205,6 +222,8 @@ The ``spans`` argument above may specify any sub-list of ``line["spans"]``. In t
 
 ------------------------------
 
+.. _RecipesText_H:
+
 How to Analyze Font Characteristics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 To analyze the characteristics of text in a PDF use this elementary script as a starting point:
@@ -218,6 +237,9 @@ Here is the PDF page and the script output:
    :scale: 80
 
 -----------------------------------------
+
+
+.. _RecipesText_I:
 
 How to Insert Text
 ~~~~~~~~~~~~~~~~~~~~
@@ -247,6 +269,9 @@ All of the above is provided by three basic :ref:`Page`, resp. :ref:`Shape` meth
 * :meth:`Page.insert_textbox` -- fit text in a given rectangle. Here you can choose text alignment features (left, right, centered, justified) and you keep control as to whether text actually fits. Internally, this uses :meth:`Shape.insert_textbox`.
 
 .. note:: Both text insertion methods automatically install the font as necessary.
+
+
+.. _RecipesText_I_a:
 
 How to Write Text Lines
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -322,6 +347,8 @@ This is the result:
 
 ------------------------------------------
 
+.. _RecipesText_I_b:
+
 How to Fill a Text Box
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 This script fills 4 different rectangles with text, each time choosing a different rotation value::
@@ -365,6 +392,8 @@ Several default values were used above: font "Helvetica", font size 11 and text 
    :scale: 50
 
 ------------------------------------------
+
+.. _RecipesText_I_c:
 
 How to Use Non-Standard Encoding
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

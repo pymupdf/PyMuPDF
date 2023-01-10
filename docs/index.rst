@@ -59,46 +59,57 @@ Welcome to :title:`PyMuPDF`
 .. raw:: html
 
    <br/><div style="clear:both;"></div><hr/>
+   <div class="intro-title"><span>&bullet; </span><a href="installation.html">Install PyMuPDF</a></div>
+   <div class="intro-title"><span>&bullet; Read the  </span><a href="tutorial.html">Tutorial</a></div>
+   <div class="intro-title"><span>&bullet; Some popular </span><a href="recipes.html">Recipes</a> :</div>
+
+
+
+- :ref:`General<RecipesGeneral>`
+    - How to :ref:`Delete and Re-Arrange Pages<RecipesGeneral_C>`
+    - How to :ref:`Join PDFs<RecipesGeneral_D>`
+    - How to :ref:`Add Pages<RecipesGeneral_E>`
+    - How to :ref:`Combine Single Pages<RecipesGeneral_H>`
+    - How to :ref:`Convert Any Document to PDF<RecipesGeneral_I>`
+
+
+- :ref:`Text<RecipesText>`
+    - How to :ref:`Extract all Document Text<RecipesText_A>`
+    - How to :ref:`Extract Text in Natural Reading Order<RecipesText_C>`
+    - How to :ref:`Extract Tables from Documents<RecipesText_D>`
+    - How to :ref:`Mark Searched Text<RecipesText_F>`
+    - How to :ref:`Insert Text<RecipesText_I>`
+
+
+- :ref:`Images<RecipesImages>`
+    - How to :ref:`Make Images from Document Pages<RecipesImages_A>`
+    - How to :ref:`Create or Suppress Annotation Images<RecipesImages_E>`
+    - How to :ref:`Extract Images: PDF Documents<RecipesImages_G>`
+    - How to :ref:`Make one PDF of all your Pictures (or Files)<RecipesImages_I>`
+    - How to :ref:`Create Vector Images<RecipesImages_J>`
+    - How to :ref:`Add Images to a PDF Page<RecipesImages_O>`
+
+
+- :ref:`Annotations<RecipesAnnotations>`
+    - How to :ref:`Add and Modify Annotations<RecipesAnnotations_A>`
+    - How to :ref:`Use Ink Annotations<RecipesAnnotations_C>`
+
+- :ref:`Stories<RecipesStories>`
+    - How to :ref:`Add a Line of Text with Some Formatting<RecipesStories_A>`
+    - How to :ref:`Read External HTML and CSS for a Story<RecipesStories_C>`
+    - How to :ref:`Output Database Content with Story Templates<RecipesStories_D>`
+    - How to :ref:`Output a Table<RecipesStories_H>`
+    - How to :ref:`Generate a Table of Contents<RecipesStories_J>`
+    - How to :ref:`Display a List from JSON Data<RecipesStories_K>`
+
+
+
+.. _RecipesStories_A:
 
 
 
 
 
-How to :ref:`Install PyMuPDF<Installation>`
--------------------------------------------------
-
-
-Read the :ref:`Tutorial<Tutorial>`
--------------------------------------------------
-
-
-
-Some popular :ref:`Recipes<RecipesTOC>`
--------------------------------------------------
-
-
-
-   .. toctree::
-
-      recipes-general.rst
-
-
-
-   .. toctree::
-
-      recipes-images.rst
-
-
-
-   .. toctree::
-
-      recipes-text.rst
-
-
-
-   .. toctree::
-
-      recipes-annotations.rst
 
 
 
@@ -123,19 +134,8 @@ In order to comply with :title:`MuPDF’s` dual licensing model, :title:`PyMuPDF
 
 .. include:: version.rst
 
------
-
-.. rubric:: Footnotes
-
-
-.. [#f1] PyMuPDF generally only supports Python versions that are still maintained by the Python Software Foundation. Once a Python version is being retired, PyMuPDF support will also be ended. This means that wheels for a retired Python platform will no longer be provided, and that Python language features may be used that did not exist in the retired Python version.
 
 .. include:: footer.rst
-
-
-
-
-
 
 
 

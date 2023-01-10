@@ -7,6 +7,8 @@ General
 ==============================
 
 
+.. _RecipesGeneral_A:
+
 How to Open with :index:`a Wrong File Extension <pair: wrong; file extension>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you have a document with a wrong file extension for its type, you can still correctly open it.
@@ -22,6 +24,9 @@ Assume that "some.file" is actually an XPS. Open it like so:
     If MuPDF encounters a file with an unknown / missing extension, it will try to open it as a PDF. So in these cases there is no need to for additional precautions. Similarly, for memory documents, you can just specify ``doc=fitz.open(stream=mem_area)`` to open it as a PDF document.
 
 ----------
+
+
+.. _RecipesGeneral_B:
 
 How to :index:`Embed or Attach Files <triple: attach;embed;file>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -42,6 +47,9 @@ Also look at the sections above and at chapter :ref:`Appendix 3`.
 .. index::
    pair: delete;pages
    pair: rearrange;pages
+
+
+.. _RecipesGeneral_C:
 
 How to Delete and Re-Arrange Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,9 +92,13 @@ This snippet duplicates the PDF with itself so that it will contain the pages *0
 
 ----------
 
-How to Join PDFs
-~~~~~~~~~~~~~~~~~~
-It is easy to join PDFs with method :meth:`Document.insert_pdf`. Given open PDF documents, you can copy page ranges from one to the other. You can select the point where the copied pages should be placed, you can revert the page sequence and also change page rotation. This Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ contains a full description.
+
+.. _RecipesGeneral_D:
+
+How to Join :title:`PDFs`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is easy to join PDFs with method :meth:`Document.insert_pdf`. Given open :title:`PDF` documents, you can copy page ranges from one to the other. You can select the point where the copied pages should be placed, you can revert the page sequence and also change page rotation. This Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ contains a full description.
 
 The GUI script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
 
@@ -95,9 +107,12 @@ The GUI script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/
 
 ----------
 
+
+.. _RecipesGeneral_E:
+
 How to Add Pages
 ~~~~~~~~~~~~~~~~~~
-There two methods for adding new pages to a PDF: :meth:`Document.insert_page` and :meth:`Document.new_page` (and they share a common code base).
+There two methods for adding new pages to a :title:`PDF`: :meth:`Document.insert_page` and :meth:`Document.new_page` (and they share a common code base).
 
 **new_page**
 
@@ -144,10 +159,13 @@ The text parameter can be a (sequence of) string (assuming UTF-8 encoding). Inse
 
 ----------
 
-How To Dynamically Clean Up Corrupt PDFs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This shows a potential use of PyMuPDF with another Python PDF library (the excellent pure Python package `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ is used here as an example).
+.. _RecipesGeneral_F:
+
+How To Dynamically Clean Up Corrupt :title:`PDFs`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This shows a potential use of :title:`PyMuPDF` with another Python PDF library (the excellent pure Python package `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ is used here as an example).
 
 If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invoke PyMuPDF to recover from many problems like so::
 
@@ -186,6 +204,9 @@ If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invo
  # do further processing
 
 With the command line utility *pdftk* (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only, but reported to also run under `Wine <https://www.winehq.org/>`_) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. However, you must invoke it as a separate process via *subprocess.Popen*, using stdin and stdout as communication vehicles.
+
+
+.. _RecipesGeneral_G:
 
 How to Split Single Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -260,10 +281,13 @@ This shows what happens to an input page:
 
 --------------------------
 
+
+.. _RecipesGeneral_H:
+
 How to Combine Single Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This deals with joining PDF pages to form a new PDF with pages each combining two or four original ones (also called "2-up", "4-up", etc.). This could be used to create booklets or thumbnail-like overviews::
+This deals with joining :title:`PDF` pages to form a new :title:`PDF` with pages each combining two or four original ones (also called "2-up", "4-up", etc.). This could be used to create booklets or thumbnail-like overviews::
 
     '''
     Copy an input PDF to output combining every 4 pages
@@ -330,10 +354,14 @@ Example effect:
 
 --------------------------
 
-How to Convert Any Document to PDF
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is a script that converts any PyMuPDF supported document to a PDF. These include XPS, EPUB, FB2, CBZ and all image formats, including multi-page TIFF images.
+.. _RecipesGeneral_I:
+
+
+How to Convert Any Document to :title:`PDF`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is a script that converts any :title:`PyMuPDF` supported document to a :title:`PDF`. These include XPS, EPUB, FB2, CBZ and all image formats, including multi-page TIFF images.
 
 It features maintaining any metadata, table of contents and links contained in the source document::
 
@@ -406,11 +434,14 @@ It features maintaining any metadata, table of contents and links contained in t
 
 --------------------------
 
-How to Deal with Messages Issued by MuPDF
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Since PyMuPDF v1.16.0, **error messages** issued by the underlying MuPDF library are being redirected to the Python standard device *sys.stderr*. So you can handle them like any other output going to this devices.
 
-In addition, these messages go to the internal buffer together with any MuPDF warnings -- see below.
+.. _RecipesGeneral_J:
+
+How to Deal with Messages Issued by :title:`MuPDF`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Since :title:`PyMuPDF` v1.16.0, **error messages** issued by the underlying :title:`MuPDF` library are being redirected to the Python standard device *sys.stderr*. So you can handle them like any other output going to this devices.
+
+In addition, these messages go to the internal buffer together with any :title:`MuPDF` warnings -- see below.
 
 We always prefix these messages with an identifying string *"mupdf:"*.
 If you prefer to not see recoverable MuPDF errors at all, issue the command ``fitz.TOOLS.mupdf_display_errors(False)``.
@@ -455,9 +486,12 @@ RuntimeError: cannot open does-not-exist.pdf: No such file or directory
 
 --------------------------
 
-How to Deal with PDF Encryption
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Starting with version 1.16.0, PDF decryption and encryption (using passwords) are fully supported. You can do the following:
+
+.. _RecipesGeneral_K:
+
+How to Deal with :title:`PDF` Encryption
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Starting with version 1.16.0, :title:`PDF` decryption and encryption (using passwords) are fully supported. You can do the following:
 
 * Check whether a document is password protected / (still) encrypted (:attr:`Document.needs_pass`, :attr:`Document.is_encrypted`).
 * Gain access authorization to a document (:meth:`Document.authenticate`).
@@ -507,8 +541,8 @@ Opening this document with some viewer (Nitro Reader 5) reflects these settings:
 
 **Decrypting** will automatically happen on save as before when no encryption parameters are provided.
 
-To **keep the encryption method** of a PDF save it using *encryption=fitz.PDF_ENCRYPT_KEEP*. If *doc.can_save_incrementally() == True*, an incremental save is also possible.
+To **keep the encryption method** of a PDF save it using ``encryption=fitz.PDF_ENCRYPT_KEEP``. If ``doc.can_save_incrementally() == True``, an incremental save is also possible.
 
-To **change the encryption method** specify the full range of options above (encryption, owner_pw, user_pw, permissions). An incremental save is **not possible** in this case.
+To **change the encryption method** specify the full range of options above (``encryption``, ``owner_pw``, ``user_pw``, ``permissions``). An incremental save is **not possible** in this case.
 
 .. include:: footer.rst

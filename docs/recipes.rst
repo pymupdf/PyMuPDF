@@ -15,17 +15,20 @@ Some common use cases, that we like to call *"Recipes"*, can be found as follows
 
    recipes-general.rst
 
-----
-
-.. toctree::
-
-   recipes-images.rst
 
 ----
 
 .. toctree::
 
    recipes-text.rst
+
+
+----
+
+.. toctree::
+
+   recipes-images.rst
+
 
 ----
 

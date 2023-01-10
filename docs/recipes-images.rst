@@ -7,6 +7,9 @@ Images
 ==============================
 
 
+
+.. _RecipesImages_A:
+
 How to Make Images from Document Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -26,6 +29,9 @@ The script works as a command line tool which expects the filename being supplie
 The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages with width and height rounded to integers, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 96 dpi in x and y dimension and have no transparency. You can change all that -- for how to do this, read the next sections.
 
 ----------
+
+
+.. _RecipesImages_B:
 
 How to Increase :index:`Image Resolution <pair: image; resolution>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,6 +53,9 @@ In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 t
 Since version 1.19.2 there is a more direct way to set the resolution: Parameter ``"dpi"`` (dots per inch) can be used in place of ``"matrix"``. To create a 300 dpi image of a page specify ``pix = page.get_pixmap(dpi=300)``. Apart from notation brevity, this approach has the additional advantage that the **dpi value is saved with the image** file -- which does not happen automatically when using the Matrix notation.
 
 ----------
+
+
+.. _RecipesImages_C:
 
 How to Create :index:`Partial Pixmaps` (Clips)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -70,6 +79,9 @@ To achieve this, define a rectangle equal to the area you want to appear in the 
 In the above we construct *clip* by specifying two diagonally opposite points: the middle point *mp* of the page rectangle, and its bottom right, *rect.br*.
 
 ----------
+
+
+.. _RecipesImages_D:
 
 How to Zoom a Clip to a GUI Window
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -105,6 +117,9 @@ In this case we have ``zoom = HEIGHT/clip.height = WIDTH/clip.width``, so we mus
 
 ----------
 
+
+.. _RecipesImages_E:
+
 How to Create or Suppress Annotation Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Normally, the pixmap of a page also shows the page's annotations. Occasionally, this may not be desirable.
@@ -118,6 +133,9 @@ You can also render annotations separately: they have their own :meth:`Annot.get
 .. index::
    triple: extract;image;non-PDF
    pair: convert_to_pdf;examples
+
+
+.. _RecipesImages_F:
 
 How to Extract Images: Non-PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,6 +175,9 @@ If you want to recreate the original image in file form or as a memory area, you
    triple: extract;image;PDF
    pair: extract_image;examples
 
+
+.. _RecipesImages_G:
+
 How to Extract Images: PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -184,6 +205,9 @@ and `extract-imgb.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/e
    :scale: 80
 
 ----------
+
+
+.. _RecipesImages_H:
 
 How to Handle Image Masks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -217,6 +241,10 @@ The scripts `extract-imga.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/
    pair: insert_image;examples
    pair: embfile_add;examples
    pair: add_file_annot;examples
+
+
+.. _RecipesImages_I:
+
 
 How to Make one PDF of all your Pictures (or Files)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -307,6 +335,9 @@ This has a similar performance as the previous script and it also produces a sim
    pair: insert_image;examples
    pair: embfile_add;examples
 
+
+.. _RecipesImages_J:
+
 How to Create Vector Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The usual way to create an image from a document page is :meth:`Page.get_pixmap`. A pixmap represents a raster image, so you must decide on its quality (i.e. resolution) at creation time. It cannot be changed later.
@@ -324,6 +355,9 @@ Instruction *svg = page.get_svg_image(matrix=fitz.Identity)* delivers a UTF-8 st
    pair: Postscript;examples
    pair: JPEG;examples
    pair: PhotoImage;examples
+
+
+.. _RecipesImages_K:
 
 How to Convert Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -395,6 +429,9 @@ The general scheme is just the following two lines::
 .. index::
    pair: copy;examples
 
+
+.. _RecipesImages_L:
+
 How to Use Pixmaps: Glueing Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -435,6 +472,9 @@ Here is the output:
    pair: invert_irect;examples
    pair: copy;examples
    pair: save;examples
+
+
+.. _RecipesImages_M:
 
 How to Use Pixmaps: Making a Fractal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -502,6 +542,8 @@ The result should look something like this:
 
 ----------
 
+.. _RecipesImages_N:
+
 How to Interface with NumPy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -527,6 +569,9 @@ This shows how to create a PNG file from a numpy array (several times faster tha
 
 
 ----------
+
+
+.. _RecipesImages_O:
 
 How to Add Images to a PDF Page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
