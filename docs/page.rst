@@ -1123,17 +1123,18 @@ In a nutshell, this is what you can do with PyMuPDF:
             `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
 
 
-   .. method:: get_drawings()
+   .. method:: get_drawings(extended=False)
 
       * New in v1.18.0
       * Changed in v1.18.17
       * Changed in v1.19.0: add "seqno" key, remove "clippings" key
       * Changed in v1.19.1: "color" / "fill" keys now always are either are RGB tuples or ``None``. This resolves issues caused by exotic colorspaces.
       * Changed in v1.19.2: add an indicator for the *"orientation"* of the area covered by an "re" item.
+      * Changed in v1.21.2: add new key ``"layer"`` which contains the name of the Optional Content Group of the path (or ``None``). Add parameter ``extended`` to also return clipping paths.
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
-      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands belonging together: they have the same properties (colors, dashing, etc.). This is called a **"path"** in PDF, but the method **works for all document types**.
+      :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands belonging together: they have the same properties (colors, dashing, etc.). This is called a **"path"** in PDF, so we adopted that name here, but the method **works for all document types**.
 
       The path dictionary has been designed to be compatible with class :ref:`Shape`. There are the following keys:
 
@@ -1151,10 +1152,46 @@ In a nutshell, this is what you can do with PyMuPDF:
             fill_opacity   (new in v1.18.17) fill color transparency (see :ref:`Shape`).
             stroke_opacity (new in v1.18.17) stroke color transparency  (see :ref:`Shape`).
             rect           Page area covered by this path. Information only.
+            layer          (new in v1.21.2) name of applicable Optional Content Group
+            level          (new in v1.21.2) the hierarchy level if ``extended=True``
             seqno          (new in v1.19.0) command number when building page appearance
             type           (new in v1.18.17) type of this path.
             width          Stroke line width  (see :ref:`Shape`).
             ============== ============================================================================
+
+      **New in v1.21.1:** If ``extended=True``, three additional dictionary types may be present in the returned list:
+
+         * "clip" and "clip-stroke" dictionaries. Its values (most importantly "scissor") remain valid / apply as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level ends this clip.
+
+            ============== ============================================================================
+            Key            Value
+            ============== ============================================================================
+            closePath      Same as in "stroke" or "fill" dictionaries
+            even_odd       Same as in "stroke" or "fill" dictionaries
+            items          Same as in "stroke" or "fill" dictionaries
+            rect           Same as in "stroke" or "fill" dictionaries
+            layer          Same as in "stroke" or "fill" dictionaries
+            level          Same as in "stroke" or "fill" dictionaries
+            scissor        the clip rectangle
+            type           One of "clip" or "clip-stroke"
+            ============== ============================================================================
+
+         * "group" dictionary. Its values remain valid (apply) as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level end this group.
+
+            ============== ============================================================================
+            Key            Value
+            ============== ============================================================================
+            rect           Same as in "stroke" or "fill" dictionaries
+            layer          Same as in "stroke" or "fill" dictionaries
+            level          Same as in "stroke" or "fill" dictionaries
+            isolated       (bool) Whether this group is isolated
+            knockout       (bool) Whether this is a "Knockout Group"
+            blendmode      Name of the BlendMode, default is "Normal"
+            opacity        Float value in range [0, 1].
+            type           "group"
+            ============== ============================================================================
+
+
 
             * *(Changed in v1.18.17)* Key ``"opacity"`` has been replaced by the new keys ``"fill_opacity"`` and ``"stroke_opacity"``. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
 
@@ -1175,30 +1212,22 @@ In a nutshell, this is what you can do with PyMuPDF:
 
             Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
 
-      .. note::
-           * The visual appearance of a page may have been designed in a very complex way. For example in PDF:
-           
-              - Layers (Optional Content Groups) can control the visibility of items (drawings and other objects) depending on whatever condition: for example showing or suppressing a watermark depending on the current output device (screen, paper, ...), or option-based inclusion / omission of details in a technical document, and so on. Effects like these are ignored by the method -- it will **unconditionally return all paths**.
-              - Clipping paths are ignored by the method.
-              - Shadings (gradient colorization effects) are not supported.
-           
-           * When a viewer software builds a page's appearance, it will sequentially walk through a list of commands (in PDF, those are stored in the ``/Contents`` object), containing instructions like "draw this path, show this image, paint this text, etc.". The key ``"seqno"`` (new in v1.19.0) is the command number, that draws this path. You can use it to determine if objects cover other objects on the page. For example, the rectangle of a "fill" path will cover objects drawn earlier -- i.e. having a smaller ``"seqno"`` -- if the rectangles overlap. Please also see :meth:`Page.get_bboxlog` and :meth:`Page.get_texttrace`.
-
-      .. note:: The method is now based on the output of :meth:`Page.get_cdrawings` -- which is much faster, but requires somewhat more attention processing its output.
+      .. note:: The method is based on the output of :meth:`Page.get_cdrawings` -- which is much faster, but requires somewhat more attention processing its output.
 
 
-   .. method:: get_cdrawings()
+   .. method:: get_cdrawings(extended=False)
 
       * New in v1.18.17
       * Changed in v1.19.0: removed "clippings" key, added "seqno" key.
       * Changed in v1.19.1: always generate RGB color tuples.
+      * Changed in v1.21.2: added new key ``"layer"`` which contains the name of the Optional Content Group of the path (or ``None``). Added parameter ``extended`` to also return clipping paths.
 
-      Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster (factor 3 or more):
+      Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster:
 
       * Every path type only contains the relevant keys, e.g. a stroke path has no ``"fill"`` color key. See comment in method :meth:`Page.get_drawings`.
       * Coordinates are given as :data:`point_like`, :data:`rect_like` and :data:`quad_like` **tuples** -- not as :ref:`Point`, :ref:`Rect`, :ref:`Quad` objects.
 
-      .. note:: If performance is a concern (e.g. because your page has tens of thousands of drawings), consider using this method: Compared to versions earlier than 1.18.17, you should see much shorter response times. We have seen pages that required 2 seconds then, now only need 200 ms with this method.
+      If performance is a concern, consider using this method: Compared to versions earlier than 1.18.17, you should see much shorter response times. We have seen pages that required 2 seconds then, now only need 200 ms with this method.
 
 
    .. method:: get_fonts(full=False)
