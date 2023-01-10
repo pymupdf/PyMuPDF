@@ -69,8 +69,8 @@ h1 a, h2 a, h3 a, h4 a, h1 a span, h2 a span, h3 a span, h4 a span {
 }
 
 cite {
-    font-family: monospace;
     font-weight: bold;
+    font-style: normal;
 }
 
 
