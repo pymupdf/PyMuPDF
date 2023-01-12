@@ -103,6 +103,10 @@ def test_memoryview():
     assert samples.ndim == 1
     assert samples.shape == (659817,)
     assert samples.strides == (1,)
+    
+    color = pm.pixel( 100, 100)
+    print( f'{color=}')
+    assert color == (83, 66, 40)
 
 def test_samples_ptr():
     pm = fitz.Pixmap(imgfile)

@@ -124,3 +124,75 @@ def test_default_font():
     f = fitz.Font()
     assert str(f) == "Font('Noto Serif Regular')"
     assert repr(f) == "Font('Noto Serif Regular')"
+
+def test_add_ink_annot():
+    import math
+    document = fitz.Document()
+    page = document.new_page()
+    line1 = []
+    line2 = []
+    for a in range( 0, 360*2, 15):
+        x = a
+        c = 300 + 200 * math.cos( a * math.pi/180)
+        s = 300 + 100 * math.sin( a * math.pi/180)
+        line1.append( (x, c))
+        line2.append( (x, s))
+    page.add_ink_annot( [line1, line2])
+    page.insert_text((100, 72), 'Hello world')
+    page.add_text_annot((200,200), "Some Text")
+    page.get_bboxlog()
+    path = f'{scriptdir}/resources/test_add_ink_annot.pdf'
+    document.save( path)
+    print( f'Have saved to: {path=}')
+
+def test_techwriter_append():
+    print(fitz.__doc__)
+    doc = fitz.open()
+    page = doc.new_page()
+    tw = fitz.TextWriter(page.rect)
+    text = "Red rectangle = TextWriter.text_rect, blue circle = .last_point"
+    r = tw.append((100, 100), text)
+    print(f'{r=}')
+    tw.write_text(page)
+    page.draw_rect(tw.text_rect, color=fitz.pdfcolor["red"])
+    page.draw_circle(tw.last_point, 2, color=fitz.pdfcolor["blue"])
+    path = f"{scriptdir}/resources/test_techwriter_append.pdf"
+    doc.ez_save(path)
+    print( f'Have saved to: {path}')
+
+def test_opacity():
+    doc = fitz.open()
+    page = doc.new_page()
+
+    annot1 = page.add_circle_annot((50, 50, 100, 100))
+    annot1.set_colors(fill=(1, 0, 0), stroke=(1, 0, 0))
+    annot1.set_opacity(2 / 3)
+    annot1.update(blend_mode="Multiply")
+
+    annot2 = page.add_circle_annot((75, 75, 125, 125))
+    annot2.set_colors(fill=(0, 0, 1), stroke=(0, 0, 1))
+    annot2.set_opacity(1 / 3)
+    annot2.update(blend_mode="Multiply")
+    outfile = f'{scriptdir}/resources/opacity.pdf'
+    doc.save(outfile, expand=True, pretty=True)
+    print("saved", outfile)
+
+def test_get_text_dict():
+    import json
+    doc=fitz.open(f'{scriptdir}/resources/v110-changes.pdf')
+    page=doc[0]
+    blocks=page.get_text("dict")["blocks"]
+    # Check no opaque types in `blocks`.
+    json.dumps( blocks, indent=4)
+
+def test_font():
+    font = fitz.Font()
+    print(repr(font))
+    bbox = font.glyph_bbox( 65)
+    print( f'{bbox=}')
+
+def test_insert_font():
+    doc=fitz.open(f'{scriptdir}/resources/v110-changes.pdf')
+    page = doc[0]
+    i = page.insert_font()
+    print( f'page.insert_font() => {i}')
