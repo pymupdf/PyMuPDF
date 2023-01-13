@@ -1,8 +1,9 @@
-# PyMuPDF 1.21.0
+# PyMuPDF 1.21.1
 
 ![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
-Release date: August 13, 2022
+
+Release date: December 13, 2022
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
@@ -32,7 +33,7 @@ For all supported document types (i.e. **_including images_**) you can
 For **PDF documents,** there exists a plethora of additional features: they can be created, joined or split up. Pages can be inserted, deleted, re-arranged or modified in many ways (including annotations and form fields).
 
 * Images and fonts can be extracted or inserted.
-    > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/image-maintenance.py) cool GUI example script, which lets you **_insert, delete, replace_** or **_re-position_** images under your visual control.
+    > You may want to have a look at [this](https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/edit-images/edit.py) cool GUI example script, which lets you **_insert, delete, replace_** or **_re-position_** images under your visual control.
 
     > If [fontTools](https://pypi.org/project/fonttools/) is installed, subsets can be built for eligible fonts based on their usage in the document. Especially for new PDFs, this can lead to significant file size reductions.
 * Embedded files are fully supported.

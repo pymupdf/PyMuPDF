@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Tutorial:
 
 =========
@@ -397,7 +399,7 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 .. [#f3] "Sequences" are Python objects conforming to the sequence protocol. These objects implement a method named *__getitem__()*. Best known examples are Python tuples and lists. But *array.array*, *numpy.array* and PyMuPDF's "geometry" objects (:ref:`Algebra`) are sequences, too. Refer to :ref:`SequenceTypes` for details.
 
 
-
+.. include:: footer.rst
 
 .. External links:
 

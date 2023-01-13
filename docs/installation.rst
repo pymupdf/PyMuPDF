@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 Installation
 =============
 
@@ -8,16 +10,28 @@ PyMuPDF should be installed using pip with::
 
 This will install from a Python wheel if one is available for your platform.
 
+
+Installation when a suitable wheel is not available
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 If a suitable Python wheel is not available, pip will automatically build from
-source using a Python sdist. **This requires that SWIG is installed**:
+source using a Python sdist.
+
+**This requires C/C++ development tools and SWIG to be installed**:
 
 * On Unix-style systems such as Linux, OpenBSD and FreeBSD,
   use the system package manager to install SWIG.
 
   * For example on Debian Linux, do: ``sudo apt install swig``
 
-* On Windows, install SWIG by following the instructions at:
-  https://swig.org/Doc4.0/Windows.html#Windows_installation.
+* On Windows:
+
+  * Install Visual Studio 2019. If not installed in a standard location, set
+    environmental variable ``PYMUPDF_SETUP_DEVENV`` to the location of the
+    ``devenv.com`` binary.
+
+  * Install SWIG by following the instructions at:
+    https://swig.org/Doc4.0/Windows.html#Windows_installation
 
 * On MacOS, install MacPorts using the instructions at:
   https://www.macports.org/install.php
@@ -32,7 +46,12 @@ sdist and is automatically built into PyMuPDF.
 Notes
 ~~~~~
 
-Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel), Python versions 3.7 and up.
+Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), Python versions 3.7 and up.
+
+Wheels are not available for Python installed with `Chocolatey
+<https://chocolatey.org/>`_ on Windows. Instead install Python
+using the Windows installer from the python.org website, see:
+http://www.python.org/downloads
 
 PyMuPDF does not support Python versions prior to 3.7. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
@@ -50,27 +69,53 @@ There are no **mandatory** external dependencies. However, some optional feature
 Install from source without using an sdist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First get a PyMuPDF source tree:
+* First get a PyMuPDF source tree:
 
-* Clone the git repository at https://github.com/pymupdf/PyMuPDF,
-  for example::
+  * Clone the git repository at https://github.com/pymupdf/PyMuPDF,
+    for example::
 
       git clone https://github.com/pymupdf/PyMuPDF.git
 
-* Or download a ``.zip`` or ``.tar.gz`` source release from
-  https://github.com/pymupdf/PyMuPDF/releases.
+  * Or download and extract a ``.zip`` or ``.tar.gz`` source release from
+    https://github.com/pymupdf/PyMuPDF/releases.
 
-Install SWIG as described above, then build PyMuPDF::
+* Install C/C++ development tools and SWIG as described above.
 
-  cd PyMuPDF && python setup.py install
+* Build and install PyMuPDF::
 
-* This will automatically download a specific hard-coded MuPDF source release,
+    cd PyMuPDF && python setup.py install
+
+  This will automatically download a specific hard-coded MuPDF source release,
   and build it into PyMuPDF.
+  
+  One can build with a non-default MuPDF (for example one installed on the
+  system, or a local checkout) by setting environmental variables. See the
+  comments at the start of ``PyMuPDF/setup.py`` for more information.
 
-* One can build with a different MuPDF (for example one installed on the
-  system, or a local custom build) by setting environmental variables.
+.. note:: When running Python scripts that use PyMuPDF, make sure that the
+  current directory is not the ``PyMuPDF/`` directory.
 
-  * See the documentation at the start of ``setup.py`` for more information.
+  Otherwise, confusingly, Python will attempt to import ``fitz`` from the local
+  ``fitz/`` directory, which will fail because it only contains source files.
+
+
+Running tests
+~~~~~~~~~~~~~
+
+PyMuPDF has a set of ``pytest`` scripts within the ``tests/`` directory.
+
+Run tests with::
+
+    pip install pytest fontTools
+    pytest PyMuPDF/tests
+
+If PyMuPDF has been built with a non-default build of MuPDF (using
+environmental variable ``PYMUPDF_SETUP_MUPDF_BUILD``), it is possible that
+``tests/test_textbox.py:test_textbox3()`` will fail, because it relies on MuPDF
+having been built with PyMuPDF's customized configuration, ``fitz/_config.h``.
+
+One can skip this particular test by adding ``-k 'not test_textbox3'`` to the
+``pytest`` command line.
 
 
 Enabling Integrated OCR Support
@@ -98,3 +143,5 @@ So for a working OCR functionality, make sure to complete this checklist:
 .. rubric:: Footnotes
 
 .. [#f1] In the next MuPDF version, it will be possible to pass this value as a parameter -- directly in the OCR invocations.
+
+.. include:: footer.rst

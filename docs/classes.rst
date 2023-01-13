@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 ============
 Classes
 ============
@@ -30,3 +32,5 @@ Classes
    tools.rst
    widget.rst
    xml-class.rst
+
+.. include:: footer.rst

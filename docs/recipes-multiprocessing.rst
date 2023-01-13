@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesMultiprocessing:
 
 ==============================
@@ -21,3 +23,5 @@ Here is a more complex example involving inter-process communication between a m
 
 .. literalinclude:: samples/multiprocess-gui.py
    :language: python
+
+.. include:: footer.rst

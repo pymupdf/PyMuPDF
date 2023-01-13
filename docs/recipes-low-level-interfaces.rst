@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesLowLevelInterfaces:
 
 =========================================
@@ -438,3 +440,5 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
     RuntimeError: path to 'F' has indirects
 
 .. caution:: These are expert functions! There are no validations as to whether valid PDF objects, xrefs, etc. are specified. As with other low-level methods there is the risk to render the PDF, or parts of it unusable.
+
+.. include:: footer.rst

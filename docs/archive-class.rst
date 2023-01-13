@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Archive:
 
 ================
@@ -97,3 +99,5 @@ In PyMuPDF, archives are currently only used by :ref:`Story` objects to specify 
       'fmt': 'dir',
       'path': 'mypath'}]
       >>> 
+
+.. include:: footer.rst

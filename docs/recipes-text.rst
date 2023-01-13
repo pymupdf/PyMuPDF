@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesText:
 
 ==============================
@@ -399,3 +401,5 @@ The snippet above indeed leads to three different copies of the Helvetica font i
     [6, 'n/a', 'Type1', 'Helvetica', 'helv', 'WinAnsiEncoding']
     [7, 'n/a', 'Type1', 'Helvetica', 'HElv', 'WinAnsiEncoding']
     [8, 'n/a', 'Type1', 'Helvetica', 'HELV', 'WinAnsiEncoding']
+
+.. include:: footer.rst

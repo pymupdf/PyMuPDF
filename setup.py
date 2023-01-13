@@ -88,8 +88,15 @@ from setuptools import Extension, setup
 from setuptools.command.build_py import build_py as build_py_orig
 
 
+_log_prefix = None
 def log( text):
-    print(f'PyMuPDF/setup.py: {text}', file=sys.stderr)
+    global _log_prefix
+    if not _log_prefix:
+        p = os.path.abspath( __file__)
+        p, p1 = os.path.split( p)
+        p, p0 = os.path.split( p)
+        _log_prefix = os.path.join( p0, p1)
+    print(f'{_log_prefix}: {text}', file=sys.stderr)
     sys.stderr.flush()
 
 
@@ -395,7 +402,7 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.21.0-rc1-source.tar.gz',
+            'https://mupdf.com/downloads/archive/mupdf-1.21.1-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
@@ -511,14 +518,23 @@ libraries = []
 extra_link_args = []
 extra_compile_args = []
 
+log( f'platform.system()={platform.system()!r}')
+log( f'sys.platform={sys.platform!r}')
+
+linux   = platform.system() == 'Linux'
+openbsd = platform.system() == 'OpenBSD'
+freebsd = platform.system() == 'FreeBSD'
+darwin  = platform.system() == 'Darwin'
+windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
+
 if 'sdist' in sys.argv:
     # Create local mupdf.tgz, for inclusion in sdist.
     get_mupdf_tgz()
 
 
 if ('-h' not in sys.argv and '--help' not in sys.argv
-        and (
-            'bdist_wheel' in sys.argv
+        and (0
+            or 'bdist_wheel' in sys.argv
             or 'build' in sys.argv
             or 'bdist' in sys.argv
             or 'install' in sys.argv
@@ -533,7 +549,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         if not mupdf_local.endswith( '/'):
             mupdf_local += '/'
     log( f'mupdf_local={mupdf_local!r}')
-    unix_build_type = None
+    unix_build_dir = None
     
     # Force clean build of MuPDF.
     #
@@ -553,7 +569,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         log( f'Building mupdf.')
         shutil.copy2( 'fitz/_config.h', f'{mupdf_local}include/mupdf/fitz/config.h')
     
-        if platform.system() == 'Windows' or platform.system().startswith('CYGWIN'):
+        if windows:
             # Windows build.
             devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
             if not devenv:
@@ -574,21 +590,52 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
                     )
         else:
             # Unix build.
+            #
+            
             flags = 'HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no HAVE_LEPTONICA=yes HAVE_TESSERACT=yes'
             flags += ' verbose=yes'
             env = ''
             make = 'make'
-            if os.uname()[0] == 'Linux':
+            if linux:
                 env += ' CFLAGS="-fPIC"'
-            if os.uname()[0] in ('OpenBSD', 'FreeBSD'):
+            if openbsd or freebsd:
                 make = 'gmake'
                 env += ' CFLAGS="-fPIC" CXX=clang++'
+            
             unix_build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
             assert unix_build_type in ('debug', 'memento', 'release')
             flags += f' build={unix_build_type}'
+            
+            # This is for MacOS cross-compilation, where ARCHFLAGS can be
+            # '-arch arm64'.
+            #
+            archflags = os.environ.get( 'ARCHFLAGS')
+            if archflags:
+                flags += f' XCFLAGS="{archflags}" XLIBS="{archflags}"'
+            
+            # We specify a build directory path containing 'pymupdf' so that we
+            # coexist with non-pymupdf builds (because pymupdf builds have a
+            # different config.h).
+            #
+            # We also append further text to try to allow different builds to
+            # work if they reuse the mupdf directory.
+            #
+            # Using platform.machine() (e.g. 'amd64') ensures that different
+            # builds of mupdf on a shared filesystem can coexist. Using
+            # $_PYTHON_HOST_PLATFORM allows cross-compiled cibuildwheel builds
+            # to coexist, e.g. on github.
+            #
+            build_prefix = f'pymupdf-{platform.machine()}-'
+            build_prefix_extra = os.environ.get( '_PYTHON_HOST_PLATFORM')
+            if build_prefix_extra:
+                build_prefix += f'{build_prefix_extra}-'
+            flags += f' build_prefix={build_prefix}'
+            
+            unix_build_dir = f'{mupdf_local}build/{build_prefix}{unix_build_type}'
+            
             command = f'cd {mupdf_local} && {env} {make} {flags}'
-            command += f' && echo "build/{unix_build_type}:"'
-            command += f' && ls -l build/{unix_build_type}'
+            command += f' && echo {unix_build_dir}:'
+            command += f' && ls -l build/{build_prefix}{unix_build_type}'
         
         log( f'Building MuPDF by running: {command}')
         subprocess.run( command, shell=True, check=True)
@@ -596,6 +643,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     else:
         # Use installed MuPDF.
         log( f'Using system mupdf.')
+        unix_build_type = ''
     
     # Set include and library paths for building PyMuPDF.
     #
@@ -604,16 +652,9 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append( f'{mupdf_local}include')
         include_dirs.append( f'{mupdf_local}include/mupdf')
         include_dirs.append( f'{mupdf_local}thirdparty/freetype/include')
-        if unix_build_type:
-            library_dirs.append( f'{mupdf_local}build/{unix_build_type}')
+        if unix_build_dir:
+            library_dirs.append( unix_build_dir)
 
-    log( f'sys.platform={sys.platform!r}')
-    
-    linux = sys.platform.startswith( 'linux') or 'gnu' in sys.platform
-    openbsd = sys.platform.startswith( 'openbsd')
-    freebsd = sys.platform.startswith( 'freebsd')
-    darwin = sys.platform.startswith( 'darwin')
-    
     if mupdf_local and (linux or openbsd or freebsd):
         # setuptools' link command always seems to put '-L
         # /usr/local/lib' before any <library_dirs> that we specify,
@@ -624,8 +665,8 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         # So we force linking with our mupdf libraries by specifying
         # them in <extra_link_args>.
         #
-        extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf.a')
-        extra_link_args.append( f'{mupdf_local}build/{unix_build_type}/libmupdf-third.a')
+        extra_link_args.append( f'{unix_build_dir}/libmupdf.a')
+        extra_link_args.append( f'{unix_build_dir}/libmupdf-third.a')
         library_dirs = []
         libraries = []
         if openbsd or freebsd:
@@ -633,7 +674,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
                 extra_link_args.append( f'-lexecinfo')
     
     elif mupdf_local and darwin:
-        library_dirs.append(f'{mupdf_local}build/{unix_build_type}')
+        library_dirs.append(f'{unix_build_dir}')
         libraries = [
                 f'mupdf',
                 f'mupdf-third',
@@ -664,13 +705,13 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
 
         library_dirs.append("/opt/homebrew/lib")
 
-        if sys.platform.startswith( 'freebsd'):
+        if freebsd:
             libraries += [
                     'freetype',
                     'harfbuzz',
                     ]
 
-    else:
+    elif windows:
         # Windows.
         assert mupdf_local
         if word_size() == 32:
@@ -685,6 +726,9 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             "libthirdparty",
         ]
         extra_link_args = ["/NODEFAULTLIB:MSVCRT"]
+    
+    else:
+        assert 0, 'Unrecognised OS'
     
     if linux or openbsd or freebsd or darwin:
         extra_compile_args.append( '-Wno-incompatible-pointer-types')
@@ -703,13 +747,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             include_dirs += local_dirs.get("include_dirs", [])
             library_dirs += local_dirs.get("library_dirs", [])
 
-    if 1:
-        # Diagnostics.
-        log( f'library_dirs={library_dirs}')
-        log( f'libraries={libraries}')
-        log( f'include_dirs={include_dirs}')
-        log( f'extra_link_args={extra_link_args}')
-
 log( f'include_dirs={include_dirs}')
 log( f'library_dirs={library_dirs}')
 log( f'libraries={libraries}')
@@ -725,6 +762,9 @@ module = Extension(
     libraries=libraries,
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
+    # Disable bogus SWIG warning 509, 'Overloaded method ... effectively
+    # ignored, as it is shadowed by ...'.
+    swig_opts=['-w509']
 )
 
 
@@ -748,7 +788,7 @@ with open(os.path.join(setup_py_cwd, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="PyMuPDF",
-    version="1.21.0",
+    version="1.21.1",
     description="Python bindings for the PDF toolkit and renderer MuPDF",
     long_description=readme,
     long_description_content_type="text/markdown",

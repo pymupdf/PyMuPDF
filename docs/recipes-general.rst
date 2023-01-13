@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesGeneral:
 
 ==============================
@@ -509,3 +511,4 @@ To **keep the encryption method** of a PDF save it using *encryption=fitz.PDF_EN
 
 To **change the encryption method** specify the full range of options above (encryption, owner_pw, user_pw, permissions). An incremental save is **not possible** in this case.
 
+.. include:: footer.rst

@@ -1,3 +1,4 @@
+.. include:: header.rst
 
 .. _cooperation:
 
@@ -69,3 +70,5 @@ This will save ca. 25% overall execution time for the HTML, XHTML and JSON text 
 If you however do need images, use a value of 7 for flags:
 
 >>> flags = fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_WHITESPACE | fitz.TEXT_PRESERVE_IMAGES
+
+.. include:: footer.rst

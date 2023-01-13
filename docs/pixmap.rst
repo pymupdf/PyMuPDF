@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Pixmap:
 
 ================
@@ -645,3 +647,5 @@ psd        gray, rgb, cmyk yes       .psd           Adobe Photoshop Document
 .. [#f1] If you need a **vector image** from the SVG, you must first convert it to a PDF. Try :meth:`Document.convert_to_pdf`. If this is not good enough, look for other SVG-to-PDF conversion tools like the Python packages `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ or the Java solution `Apache Batik <https://github.com/apache/batik>`_. Have a look at our Wiki for more examples.
 
 .. [#f2] To also set the alpha property, add an additional step to this method by dropping or adding an alpha channel to the result.
+
+.. include:: footer.rst

@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _TextPage:
 
 ================
@@ -338,3 +340,5 @@ This image shows the relationship between a character's bbox and its quad: |text
 .. rubric:: Footnotes
 
 .. [#f1] Image specifications for a PDF page are done in a page's (sub-) :data:`dictionary`, called *"/Resources"*. Resource dictionaries can be **inherited** from the page's parent object (usually the :data:`catalog`). The PDF creator may e.g. define one */Resources* on file level, naming all images and all fonts ever used by any page. In these cases, :meth:`Page.get_images` and :meth:`Page.get_fonts` will return the same lists for all pages.
+
+.. include:: footer.rst

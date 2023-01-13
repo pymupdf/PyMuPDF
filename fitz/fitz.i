@@ -1958,6 +1958,8 @@ struct Document
         if incremental:
             if self.name != filename or self.stream:
                 raise ValueError("incremental needs original file")
+        if user_pw and len(user_pw) > 40 or owner_pw and len(owner_pw) > 40:
+            raise ValueError("password length must not exceed 40")
         %}
 
         PyObject *
@@ -2773,14 +2775,16 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
                 if (pdf_is_jpx_image(gctx, obj)) {
                     img_type = FZ_IMAGE_JPX;
+                    res = pdf_load_stream(gctx, obj);
                     ext = "jpx";
                 }
                 if (JM_is_jbig2_image(gctx, obj)) {
                     img_type = FZ_IMAGE_JBIG2;
+                    res = pdf_load_stream(gctx, obj);
                     ext = "jb2";
                 }
-                res = pdf_load_raw_stream(gctx, obj);
                 if (img_type == FZ_IMAGE_UNKNOWN) {
+                    res = pdf_load_raw_stream(gctx, obj);
                     unsigned char *c = NULL;
                     fz_buffer_storage(gctx, res, &c);
                     img_type = fz_recognize_image_format(gctx, c);
@@ -2793,9 +2797,10 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     res = fz_new_buffer_from_image_as_png(gctx, img,
                                 fz_default_color_params);
                     ext = "png";
-                } else /*if (smask == 0)*/ {
+                } else {
                     img = fz_new_image_from_buffer(gctx, res);
                 }
+
                 fz_image_resolution(img, &xres, &yres);
                 width = img->w;
                 height = img->h;
@@ -2833,7 +2838,8 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
             fz_catch(gctx) {
                 Py_CLEAR(rc);
-                Py_RETURN_NONE;
+                fz_warn(gctx, "%s", fz_caught_message(gctx));
+                Py_RETURN_FALSE;
             }
             if (!rc)
                 Py_RETURN_NONE;
@@ -4829,7 +4835,8 @@ struct Page {
             memset(&options, 0, sizeof options);
             options.flags = flags;
             fz_try(gctx) {
-                fz_rect rect = JM_rect_from_py(clip);
+                // Default to page's rect if `clip` not specified, for #2048.
+                fz_rect rect = (clip==Py_None) ? fz_bound_page(gctx, page) : JM_rect_from_py(clip);
                 fz_matrix ctm = JM_matrix_from_py(matrix);
                 tpage = fz_new_stext_page(gctx, rect);
                 dev = fz_new_stext_device(gctx, tpage, &options);
@@ -12329,6 +12336,7 @@ struct Archive
             }
             return (struct Archive *) arch;
         }
+
         Archive(PyObject *a0=NULL, const char *path=NULL)
         {
             fz_archive *arch=NULL;
@@ -13563,6 +13571,7 @@ struct Story
             return ret;
         }
         
+
         void draw( struct DeviceWrapper* device, PyObject* matrix=NULL)
         {
             fz_matrix ctm2 = JM_matrix_from_py( matrix);
@@ -13582,19 +13591,6 @@ struct Story
             }
             fz_keep_xml( gctx, dom);
             return (struct Xml*) dom;
-        }
-
-        FITZEXCEPTION(warnings, !result)
-        PyObject* warnings()
-        {
-            const char *text=NULL;
-            fz_try(gctx) {
-                text = fz_story_warnings(gctx, (fz_story *)$self);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return Py_BuildValue("s", text);
         }
 
         FITZEXCEPTION(element_positions, !result)
@@ -13625,51 +13621,6 @@ struct Story
         %pythoncode
         %{
             def write(self, writer, rectfn, positionfn=None, pagefn=None):
-                """
-                Places and writes Story instance `self` to a
-                `DocumentWriter`. Avoids the need for calling code to implement
-                a loop that calls `story.place()` and `story.draw()` etc,
-                at the expense of having to provide at least the `rectfn()`
-                callback.
-                
-                Equivalent to MuPDF's `fz_write_story()`.
-
-                Args:
-                    writer:
-                        A `DocumentWriter` or None.
-                    rectfn:
-                        A callable taking `(rect_num: int, filled: Rect)` and
-                        returning `(mediabox, rect, ctm)`:
-                            mediabox:
-                                None or rect for new page.
-                            rect:
-                                The next rect into which content should be
-                                placed.
-                            ctm:
-                                None or a `Matrix`.
-                    positionfn:
-                        None, or a callable taking `(position: ElementPosition)`:
-                            position:
-                                An `ElementPosition` with an extra `.page_num`
-                                member. Keys are:
-                                    "depth": int
-                                    "heading": int
-                                    "href": str
-                                    "id": str
-                                    "open_close": int
-                                    "page_num": int
-                                    "rect": rect
-                                    "rect_num": int
-                                    "text": str
-
-                        Typically called multiple times as we generate
-                        elements that are headings or have an id. Related to
-                        `fz_story_positions()`.
-                    pagefn:
-                        None, or a callable taking `(page_num, mediabox,
-                        dev, after)`; called at start (`after=0`) and end
-                        (`after=1`) of each page.
-                """
                 dev = None
                 page_num = 0
                 rect_num = 0
@@ -13712,55 +13663,6 @@ struct Story
 
             @staticmethod
             def write_stabilized(writer, contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True):
-                """
-                Does iterative layout of html content to a `DocumentWriter`.
-
-                For example this allows one to add a table of contents section
-                while ensuring that page numbers are patched up until stable.
-
-                Repeatedly creates a new `Story` from `(contentfn(),
-                user_css, em, archive)` and lays it out with internal call
-                to `Story.write()`; uses a None writer and extracts the list
-                of `ElementPosition`'s which is passed to the next call of
-                `contentfn()`.
-
-                When the html from `contentfn()` becomes unchanged, we do a
-                final iteration using `writer`.
-
-                Equivalent to MuPDF's `fz_write_stabilized_story()`, but
-                `add_header_ids` is extra functionality.
-                
-                Args:
-                    writer:
-                        A `DocumentWriter`.
-                    contentfn:
-                        A function taking a list of `ElementPositions` and
-                        returning a string containing html. The returned html
-                        can depend on the list of positions, for example with a
-                        table of contents near the start.
-                    rectfn:
-                        A callable taking `(rect_num: int, filled: Rect)` and
-                        returning `(mediabox, rect, ctm)`:
-                            mediabox:
-                                None or rect for new page.
-                            rect:
-                                The next rect into which content should be
-                                placed.
-                            ctm:
-                                A `Matrix`.
-                    pagefn:
-                        None, or a callable taking `(page_num, medibox,
-                        dev, after)`; called at start (`after=0`) and end
-                        (`after=1`) of each page.
-                    archive:
-                        .
-                    add_header_ids:
-                        If true, we add unique ids to all header tags that
-                        don't already have an id. This can help automatic
-                        generation of tables of contents.
-                Returns:
-                    None.
-                """
                 positions = list()
                 content = None
                 # Iterate until stable.
@@ -13811,11 +13713,6 @@ struct Story
                     x = x.find_next(None, None, None)
 
             def write_with_links(self, rectfn, positionfn=None, pagefn=None):
-                """
-                Similar to `write()` except that we don't have a `writer` arg
-                and we return a PDF `Document` in which links have been created
-                for each internal html link.
-                """
                 #print("write_with_links()")
                 stream = io.BytesIO()
                 writer = DocumentWriter(stream)
@@ -13832,11 +13729,6 @@ struct Story
 
             @staticmethod
             def write_stabilized_with_links(contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True):
-                """
-                Similar to `write_stabilized()` except that we don't have a
-                `writer` arg and instead return a PDF `Document` in which links
-                have been created for each internal html link.
-                """
                 #print("write_stabilized_with_links()")
                 stream = io.BytesIO()
                 writer = DocumentWriter(stream)

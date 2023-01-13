@@ -1,3 +1,4 @@
+.. include:: header.rst
 
 .. _Matrix:
 
@@ -235,3 +236,5 @@ Rotating
 Finally a rotation by 30 clockwise degrees (*prerotate(-30)*).
 
 |rot60|
+
+.. include:: footer.rst

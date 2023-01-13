@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Quad:
 
 ==========
@@ -154,3 +156,5 @@ For a rectangle, only its top-left point belongs to it. Since v1.19.0, rectangle
    >>> # but:
    >>> rect.br in rect.quad
    True
+
+.. include:: footer.rst

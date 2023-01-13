@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Page:
 
 ================
@@ -22,7 +24,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
 .. note::
 
-   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: expcept :attr:`Page.rect`, resp. :meth:`Page.bound` (both *reflect* when the page is rotated), all coordinates returned by methods and attributes pertain to the unrotated page.
+   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: except :attr:`Page.rect`, resp. :meth:`Page.bound` (both *reflect* when the page is rotated), all coordinates returned by methods and attributes pertain to the unrotated page.
 
    So the returned value of e.g. :meth:`Page.get_image_bbox` will not change if you do a :meth:`Page.set_rotation`. The same is true for coordinates returned by :meth:`Page.get_text`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiply the coordinates with :attr:`Page.rotation_matrix`. There also is its inverse, :attr:`Page.derotation_matrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
 
@@ -60,6 +62,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.apply_redactions`      PDF olny: process the redactions of the page
 :meth:`Page.bound`                 rectangle of the page
 :meth:`Page.delete_annot`          PDF only: delete an annotation
+:meth:`Page.delete_image`          PDF only: delete an image
 :meth:`Page.delete_link`           PDF only: delete a link
 :meth:`Page.delete_widget`         PDF only: delete a widget / field
 :meth:`Page.draw_bezier`           PDF only: draw a cubic Bezier curve
@@ -98,6 +101,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
 :meth:`Page.set_artbox`            PDF only: modify ``/ArtBox``
 :meth:`Page.set_bleedbox`          PDF only: modify ``/BleedBox``
@@ -1776,6 +1780,17 @@ PyMuPDF writes (updates, inserts) links by constructing and writing the appropri
 
 Indirect *LINK_GOTOR* destinations can in general of course not be checked for validity and are therefore **always accepted**.
 
+**Example: How to insert a link pointing to another page in the same document**
+
+1. Determine the rectangle on the current page, where the link should be placed. This may be the bbox of an image or some text.
+
+2. Determine the target page number ("pno", 0-based) and a :ref:`Point` on it, where the link should be directed to.
+
+3. Create a dictionary ``d = {"kind": fitz.LINK_GOTO, "page": pno, "from": bbox, "to": point}``.
+
+4. Execute ``page.insert_link(d)``.
+
+
 Homologous Methods of :ref:`Document` and :ref:`Page`
 --------------------------------------------------------
 This is an overview of homologous methods on the :ref:`Document` and on the :ref:`Page` level.
@@ -1815,3 +1830,5 @@ The page number "pno" is a 0-based integer ``-∞ < pno < page_count``.
 .. [#f7] In PDF, an area enclosed by some lines or curves can have a property called "orientation". This is significant for switching on or off the fill color of that area when there exist multiple area overlaps - see discussion in method :meth:`Shape.finish` using the "non-zero winding number" rule. While orientation of curves, quads, triangles and other shapes enclosed by lines always was detectable, this has been impossible for "re" (rectangle) items in the past. Adding the orientation parameter now delivers the missing information.
 
 .. [#f8] Hyphenation detection simply means that if the last character of a line is "-", it will be assumed to be a continuation character. That character will not be found by text searching with its default flag setting. Please take note, that a MuPDF *line* may not always be what you expect: words separated by overly large gaps (e.g. caused by text justification) may constitute seperate MuPDF lines. If then any of these words ends with a hyphen, it will only be found by text searching if hyphenation is switched off.
+
+.. include:: footer.rst

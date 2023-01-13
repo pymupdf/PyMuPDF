@@ -844,6 +844,7 @@ class linkDest(object):
             self.page = -1
             self.kind = LINK_NONE
         if isInt and self.uri:
+            self.uri = self.uri.replace("&zoom=nan", "&zoom=0")
             if self.uri.startswith("#"):
                 self.named = ""
                 self.kind = LINK_GOTO

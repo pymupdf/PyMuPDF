@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _IRect:
 
 ==========
@@ -213,4 +215,6 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
    * This class adheres to the Python sequence protocol, so components can be accessed via their index, too. Also refer to :ref:`SequenceTypes`.
    * Rectangles can be used with arithmetic operators -- see chapter :ref:`Algebra`.
+
+.. include:: footer.rst
 

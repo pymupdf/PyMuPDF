@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Appendix1:
 
 ======================================
@@ -343,3 +345,5 @@ RAWDICT  4.50  **binary** images, **char** level text, layout and font details  
 As mentioned: when excluding image extraction (last column), the relative speeds are changing drastically: except RAWDICT and XML, the other methods are almost equally fast, and RAWDICT requires 40% less execution time than the **now slowest XML**.
 
 Look at chapter **Appendix 1** for more performance information.
+
+.. include:: footer.rst

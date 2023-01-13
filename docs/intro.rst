@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 Introduction
 ==============
 
@@ -58,3 +60,5 @@ Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks o
 
 
 .. [#f1] PyMuPDF generally only supports Python versions that are still maintained by the Python Software Foundation. Once a Python version is being retired, PyMuPDF support will also be ended. This means that wheels for a retired Python platform will no longer be provided, and that Python language features may be used that did not exist in the retired Python version.
+
+.. include:: footer.rst

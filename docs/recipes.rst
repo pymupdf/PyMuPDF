@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _RecipesTOC:
 
 
@@ -45,3 +47,5 @@ Recipes
 .. toctree::
 
    recipes-stories.rst
+
+.. include:: footer.rst

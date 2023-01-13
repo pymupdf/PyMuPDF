@@ -1,3 +1,5 @@
+.. include:: header.rst
+
 .. _Document:
 
 ================
@@ -849,9 +851,11 @@ For details on **embedded files** refer to Appendix 3.
           '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
 
 
-    .. method:: get_page_pixmap(pno, *args, **kwargs)
+    .. method:: get_page_pixmap(pno: int, *, matrix: matrix_like = Identity, dpi=None, colorspace: Colorspace = csRGB, clip: rect_like = None, alpha: bool = False, annots: bool = True)
 
       Creates a pixmap from page *pno* (zero-based). Invokes :meth:`Page.get_pixmap`.
+
+      All parameters except ``pno`` are *keyword-only.*
 
       :arg int pno: page number, 0-based in ``-∞ < pno < page_count``.
 
@@ -1163,9 +1167,9 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int encryption: *(new in v1.16.0)* set the desired encryption method. See :ref:`EncryptionMethods` for possible values.
 
-      :arg str owner_pw: *(new in v1.16.0)* set the document's owner password. *(Changed in v1.18.3)* If not provided, the user password is taken if provided.
+      :arg str owner_pw: *(new in v1.16.0)* set the document's owner password. *(Changed in v1.18.3)* If not provided, the user password is taken if provided. The string length must not exceed 40 characters.
 
-      :arg str user_pw: *(new in v1.16.0)* set the document's user password.
+      :arg str user_pw: *(new in v1.16.0)* set the document's user password. The string length must not exceed 40 characters.
 
       .. note:: The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
 
@@ -2030,3 +2034,5 @@ Other Examples
 .. [#f6] For a *False* the **complete document** must be scanned. Both methods **do not load pages,** but only scan object definitions. This makes them at least 10 times faster than application-level loops (where total response time roughly equals the time for loading all pages). For the :ref:`AdobeManual` (756 pages) and the Pandas documentation (over 3070 pages) -- both have no annotations -- the method needs about 11 ms for the answer *False*. So response times will probably become significant only well beyond this order of magnitude.
 
 .. [#f7] This only works under certain conditions. For example, if there is normal text covered by some image on top of it, then this is undetectable and the respective text is **not** removed. Similar is true for white text on white background, and so on.
+
+.. include:: footer.rst

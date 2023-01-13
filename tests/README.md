@@ -79,3 +79,13 @@ TOTAL                                                      6714   1422    79%
 
 ============================ 79 passed in 5.76s ==============================
 ```
+
+## Known test failure with non-default build of MuPDF
+
+If PyMuPDF has been built with a non-default build of MuPDF (using
+environmental variable ``PYMUPDF_SETUP_MUPDF_BUILD``), it is possible that
+``tests/test_textbox.py:test_textbox3()`` will fail, because it relies on MuPDF
+having been built with PyMuPDF's customized configuration, ``fitz/_config.h``.
+
+One can skip this particular test by adding ``-k 'not test_textbox3'`` to the
+pytest command line.
