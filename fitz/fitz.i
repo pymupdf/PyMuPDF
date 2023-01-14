@@ -8545,6 +8545,7 @@ struct Colorspace
                     cs = fz_device_rgb(gctx);
                     break;
             }
+            fz_keep_colorspace(gctx, cs);
             return (struct Colorspace *) cs;
         }
         //-----------------------------------------------------------------
