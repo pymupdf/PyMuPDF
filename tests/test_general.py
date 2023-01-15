@@ -196,3 +196,10 @@ def test_insert_font():
     page = doc[0]
     i = page.insert_font()
     print( f'page.insert_font() => {i}')
+
+def test_2173():
+    from fitz import IRect, Pixmap, CS_RGB, Colorspace
+    for i in range( 100):
+        #print( f'{i=}')
+        image = Pixmap(Colorspace(CS_RGB), IRect(0, 0, 13, 37))
+    print( 'test_2173() finished')
