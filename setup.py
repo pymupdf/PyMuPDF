@@ -443,7 +443,7 @@ def get_mupdf_tgz():
         remove( mupdf_url_leaf)
         urllib.request.urlretrieve( mupdf_url, mupdf_url_leaf)
         assert os.path.exists( mupdf_url_leaf)
-        tar_check( mupdf_url_leaf, 'r:gz', mupdf_local)
+        tar_check( mupdf_url_leaf, 'r:gz', f'{mupdf_local}/')
         if mupdf_url_leaf != mupdf_tgz:
             remove( mupdf_tgz)
             os.rename( mupdf_url_leaf, mupdf_tgz)
@@ -589,7 +589,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     mupdf_local = get_mupdf()
     if mupdf_local:
         if mupdf_local.endswith( '/'):
-            del mupdf_local[-1]
+            mupdf_local = mupdf_local[:-1]
         if mupdf_branch is None and os.path.exists( f'{mupdf_local}/.git'):
             mupdf_branch = git_get_branch( mupdf_local)
             if mupdf_branch:
