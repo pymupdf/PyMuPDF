@@ -8,15 +8,15 @@ on:
 jobs:
 
   test_branch_121:
-    # Simple build+test on single platform using latest MuPDF from git. This is
-    # a cut-down version of `build_wheels` except that we use latest MuPDF from
-    # git and use a single platform and python version.
+    # Simple build+test using latest MuPDF branch 1.21 from git. This is a
+    # cut-down version of `build_wheels` except that we use latest MuPDF from
+    # git and use a single python version.
     #
     name: Test branch 1.21
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
 
     steps:
 
@@ -39,8 +39,8 @@ jobs:
             # Build for single python version.
             CIBW_BUILD: "cp311*"
 
-            # Don't build for unsupported platforms.
-            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
+            # Don't build for unsupported platforms or win32.
+            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36* *win32*"
 
             # Get cibuildwheel to run pytest with each wheel.
             CIBW_TEST_REQUIRES: "fontTools pytest"
