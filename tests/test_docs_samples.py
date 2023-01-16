@@ -23,6 +23,22 @@ for p in glob.glob(f'{root}/docs/samples/*.py'):
     else:
         samples.append(p)
 
+def _test_all():
+    # Allow runnings tests directly without pytest.
+    import subprocess
+    import sys
+    e = 0
+    for sample in samples:
+        print( f'Running: {sample}')
+        sys.stdout.flush()
+        try:
+            subprocess.check_call( f'{sys.executable} {sample}', shell=1, text=1)
+        except Exception:
+            print( f'Failed: {sample}')
+            e += 1
+    if e:
+        raise Exception( f'Errors: {e}')
+
 # We use pytest.mark.parametrize() to run sample scripts via a fn, which
 # ensures that pytest treats each script as a test.
 #
