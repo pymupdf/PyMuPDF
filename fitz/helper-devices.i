@@ -29,6 +29,24 @@ static int path_type = 0;
 #define FILL_PATH 1
 #define STROKE_PATH 2
 
+static void trace_device_reset()
+{
+    Py_CLEAR(dev_pathdict);
+    dev_linewidth = 0;
+    trace_device_ptm = fz_identity;
+    trace_device_ctm = fz_identity;
+    trace_device_rot = fz_identity;
+    dev_lastpoint.x = 0;
+    dev_lastpoint.y = 0;
+    dev_pathrect.x0 = 0;
+    dev_pathrect.y0 = 0;
+    dev_pathrect.x1 = 0;
+    dev_pathrect.y1 = 0;
+    dev_pathfactor = 0;
+    dev_linecount = 0;
+    path_type = 0;
+}
+
 
 static void
 jm_increase_seqno(fz_context *ctx, fz_device *dev_, ...)
@@ -596,6 +614,9 @@ fz_device *JM_new_tracedraw_device(fz_context *ctx, PyObject *out)
 	Py_XINCREF(out);
 	dev->out = out;
 	dev->seqno = 0;
+
+	trace_device_reset();
+
 	return (fz_device *)dev;
 }
 
@@ -640,6 +661,9 @@ fz_device *JM_new_tracetext_device(fz_context *ctx, PyObject *out)
 	Py_XINCREF(out);
 	dev->out = out;
 	dev->seqno = 0;
+    
+    trace_device_reset();
+    
 	return (fz_device *)dev;
 }
 typedef struct jm_bbox_device_s
@@ -744,6 +768,8 @@ JM_new_bbox_device(fz_context *ctx, PyObject *result)
 	dev->super.set_default_colorspaces = NULL;
 
 	dev->result = result;
+
+	trace_device_reset();
 
 	return (fz_device *)dev;
 }
