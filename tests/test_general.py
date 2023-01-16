@@ -203,3 +203,21 @@ def test_2173():
         #print( f'{i=}')
         image = Pixmap(Colorspace(CS_RGB), IRect(0, 0, 13, 37))
     print( 'test_2173() finished')
+
+def test_texttrace():
+    import time
+    document = fitz.Document( f'{scriptdir}/resources/joined.pdf')
+    t = time.time()
+    for page in document:
+        tt = page.get_texttrace()
+    t = time.time() - t
+    print( f'test_texttrace(): {t=}')
+    
+    # Repeat, this time writing data to file.
+    import json
+    path = f'{scriptdir}/resources/test_texttrace.txt'
+    print( f'Writing to: {path}')
+    with open( path, 'w') as f:
+        for i, page in enumerate(document):
+            tt = page.get_texttrace()
+            print( f'page {i} json:\n{json.dumps(tt, indent="    ")}', file=f)
