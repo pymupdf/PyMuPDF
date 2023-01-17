@@ -3,6 +3,28 @@
 Change Log
 ==========
 
+
+..
+    **Changes in next release**
+
+    * Bug fixes:
+
+      * **Fixed** `#2173 <https://github.com/pymupdf/PyMuPDF/issues/2173>`_: Double free of Colorspace used in Pixmap
+
+    * Added missing fix for #2057 to release 1.21.1's changelog.
+
+    * Fixed issue where trace devices' state was not being initialised correctly;
+      data returned from things like ``fitz.Page.get_texttrace`` might be slightly
+      altered, e.g. ``linewidth`` values.
+
+    * Mention use of venv in installation documentation.
+
+    * Output warn to ``stderr`` if it looks like we are being used with current
+      directory containing an invalid ``fitz/`` directory, because this can break
+      import of ``fitz`` module. For example this happens if one attempts to use
+      ``fitz`` when current directory is a PyMuPDF checkout.
+
+
 **Changes in Version 1.21.1 (2022-12-13)**
 
 * This release uses ``MuPDF-1.21.1``.
