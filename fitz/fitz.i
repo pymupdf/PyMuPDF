@@ -7381,12 +7381,6 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
                 x = "<new PDF, doc# %i>" % self.parent._graft_id
             return "page %s of %s" % (self.number, x)
 
-        def _forget_annot(self, annot):
-            """Remove an annot from reference dictionary."""
-            aid = id(annot)
-            if aid in self._annot_refs:
-                self._annot_refs[aid] = None
-
         def _reset_annot_refs(self):
             """Invalidate / delete all annots of this page."""
             for annot in self._annot_refs.values():
@@ -10780,10 +10774,6 @@ if dpi:
         }
         %pythoncode %{
         def _erase(self):
-            try:
-                self.parent._forget_annot(self)
-            except:
-                return
             self.__swig_destroy__(self)
             self.parent = None
 
@@ -11002,10 +10992,6 @@ struct Link
 
         %pythoncode %{
         def _erase(self):
-            try:
-                self.parent._forget_annot(self)
-            except:
-                pass
             self.__swig_destroy__(self)
             self.parent = None
 
