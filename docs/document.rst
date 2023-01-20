@@ -1205,6 +1205,9 @@ For details on **embedded files** refer to Appendix 3.
        Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.search_for`. Any integer ``-∞ < pno < page_count`` is acceptable.
 
     .. index::
+       pair: append; Document.insert_pdf
+       pair: join; Document.insert_pdf
+       pair: merge; Document.insert_pdf
        pair: from_page; Document.insert_pdf
        pair: to_page; Document.insert_pdf
        pair: start_at; Document.insert_pdf
@@ -1240,6 +1243,28 @@ For details on **embedded files** refer to Appendix 3.
        1. If *from_page > to_page*, pages will be **copied in reverse order**. If *0 <= from_page == to_page*, then one page will be copied.
 
        2. *docsrc* TOC entries **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+
+
+    .. index::
+       pair: append; Document.insert_file
+       pair: join; Document.insert_file
+       pair: merge; Document.insert_file
+       pair: from_page; Document.insert_file
+       pair: to_page; Document.insert_file
+       pair: start_at; Document.insert_file
+       pair: rotate; Document.insert_file
+       pair: links; Document.insert_file
+       pair: annots; Document.insert_file
+       pair: show_progress; Document.insert_file
+
+    .. method:: insert_file(infile, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0, final=1)
+
+      * New in v1.21.2
+
+      PDF only: Add an arbitrary supported document to the current PDF. Opens "infile" as a document, converts it to a PDF and then invokes :meth:`Document.insert_pdf`. Parameters are the same as for that method. Among other things, this features an easy way to append images as full pages to an output PDF.
+
+      :arg multiple infile: the input document to insert. May be a filename specification as is valid for creating a :ref:`Document`, a :ref:`Document` or a :ref:`Pixmap`.
+
 
     .. index::
        pair: width; Document.new_page
