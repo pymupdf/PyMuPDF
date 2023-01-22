@@ -252,7 +252,7 @@ def replace_image(page: Page, xref: int, *, filename=None, pixmap=None, stream=N
             meaning being the same as in Page.insert_image.
     """
     doc = page.parent  # the owning document
-    if not doc.is_image(xref):
+    if not doc.xref_is_image(xref):
         raise ValueError("xref not an image")  # insert new image anywhere in page
     if bool(filename) + bool(stream) + bool(pixmap) != 1:
         raise ValueError("Exactly one of filename/stream/pixmap must be given")
@@ -331,7 +331,7 @@ def insert_image(page, rect, **kwargs):
     }
     s = set(kwargs.keys()).difference(valid_keys)
     if s != set():
-        raise ValueError("bad key argument(s) %s" % s)
+        raise ValueError(f"bad key argument(s): {s}.")
     filename = kwargs.get("filename")
     pixmap = kwargs.get("pixmap")
     stream = kwargs.get("stream")
@@ -1105,7 +1105,7 @@ def set_toc_item(
             pno = dest_dict["page"]
             page_xref = doc.page_xref(pno)
             page_height = doc.page_cropbox(pno).height
-            to = dest_dict.get(to, Point(72, 36))
+            to = dest_dict.get("to", Point(72, 36))
             to.y = page_height - to.y
             dest_dict["to"] = to
         action = getDestStr(page_xref, dest_dict)
@@ -1142,7 +1142,7 @@ def set_toc_item(
         page_xref = doc.page_xref(pno - 1)
         page_height = doc.page_cropbox(pno - 1).height
         if to is None:
-            to = Point(72, page_height - 38)
+            to = Point(72, page_height - 36)
         else:
             to = Point(to)
             to.y = page_height - to.y
@@ -4944,8 +4944,8 @@ def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> Quad:
 
     height = d * span["size"]  # the quad's rectangle height
     # The following are distances from the bbox corners, at wich we find the
-    # respective quad points. The computat depends on in which circle
-    # quadrant the text writing angle is located.
+    # respective quad points. The computation depends on in which quadrant
+    # the text writing angle is located.
     hs = height * sin
     hc = height * cos
     if hc >= 0 and hs <= 0:  # quadrant 1
