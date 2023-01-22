@@ -1350,7 +1350,10 @@ struct Document
             fz_catch(gctx) {
                 return NULL;
             }
-            return doc;
+            if (doc) {
+                return doc;
+            }
+            Py_RETURN_NONE;
         }
 
 
@@ -2142,6 +2145,30 @@ struct Document
             }
             Py_RETURN_NONE;
         }
+
+        %pythoncode %{
+        def insert_file(self, infile, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True,show_progress=0, final=1):
+            """Insert an arbitrary supported document to an existing PDF.
+            
+            The infile may be given as a filename, a Document or a Pixmap.
+            Other paramters - where applicable - equal those of insert_pdf().
+            """
+            src = None
+            if isinstance(infile, Pixmap):
+                if infile.colorspace.n > 3:
+                    infile = Pixmap(csRGB, infile)
+                src = Document("png", infile.tobytes())
+            elif isinstance(infile, Document):
+                src = infile
+            else:
+                src = Document(infile)
+            if not src:
+                raise ValueError("bad infile parameter")
+            if not src.is_pdf:
+                pdfbytes = src.convert_to_pdf()
+                src = Document("pdf", pdfbytes)
+            return self.insert_pdf(src, from_page=from_page, to_page=to_page, start_at=start_at, rotate=rotate,links=links, annots=annots, show_progress=show_progress, final=final)
+        %}
 
         //------------------------------------------------------------------
         // Create and insert a new page (PDF)
@@ -3296,7 +3323,7 @@ if not self.is_form_pdf:
         PyObject *xref_stream_raw(int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            PyObject *r = Py_None;
+            PyObject *r = NULL;
             pdf_obj *obj = NULL;
             fz_var(obj);
             fz_buffer *res = NULL;
@@ -3329,6 +3356,7 @@ if not self.is_form_pdf:
                 Py_CLEAR(r);
                 return NULL;
             }
+            if (!r) Py_RETURN_NONE;
             return r;
         }
 
@@ -4528,6 +4556,124 @@ if basestate:
                     annot.parent = page_proxy  # refresh parent to new page
                     page._annot_refs[k] = annot
                 return page
+
+
+            @property
+            def pagemode(self) -> str:
+                """Return the PDF PageMode value.
+                """
+                xref = self.pdf_catalog()
+                if xref == 0:
+                    return None
+                rc = self.xref_get_key(xref, "PageMode")
+                if rc[0] == "null":
+                    return "UseNone"
+                if rc[0] == "name":
+                    return rc[1][1:]
+                return "UseNone"
+
+
+            def set_pagemode(self, pagemode: str):
+                """Set the PDF PageMode value."""
+                valid = ("UseNone", "UseOutlines", "UseThumbs", "FullScreen", "UseOC", "UseAttachments")
+                xref = self.pdf_catalog()
+                if xref == 0:
+                    raise ValueError("not a PDF")
+                if not pagemode:
+                    raise ValueError("bad PageMode value")
+                if pagemode[0] == "/":
+                    pagemode = pagemode[1:]
+                for v in valid:
+                    if pagemode.lower() == v.lower():
+                        self.xref_set_key(xref, "PageMode", f"/{v}")
+                        return True
+                raise ValueError("bad PageMode value")
+
+
+            @property
+            def pagelayout(self) -> str:
+                """Return the PDF PageLayout value.
+                """
+                xref = self.pdf_catalog()
+                if xref == 0:
+                    return None
+                rc = self.xref_get_key(xref, "PageLayout")
+                if rc[0] == "null":
+                    return "SinglePage"
+                if rc[0] == "name":
+                    return rc[1][1:]
+                return "SinglePage"
+
+
+            def set_pagelayout(self, pagelayout: str):
+                """Set the PDF PageLayout value."""
+                valid = ("SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "TwoPageLeft", "TwoPageRight")
+                xref = self.pdf_catalog()
+                if xref == 0:
+                    raise ValueError("not a PDF")
+                if not pagelayout:
+                    raise ValueError("bad PageLayout value")
+                if pagelayout[0] == "/":
+                    pagelayout = pagelayout[1:]
+                for v in valid:
+                    if pagelayout.lower() == v.lower():
+                        self.xref_set_key(xref, "PageLayout", f"/{v}")
+                        return True
+                raise ValueError("bad PageLayout value")
+
+
+            @property
+            def markinfo(self) -> dict:
+                """Return the PDF MarkInfo value."""
+                xref = self.pdf_catalog()
+                if xref == 0:
+                    return None
+                rc = self.xref_get_key(xref, "MarkInfo")
+                if rc[0] == "null":
+                    return {}
+                if rc[0] == "xref":
+                    xref = int(rc[1].split()[0])
+                    val = self.xref_object(xref, compressed=True)
+                elif rc[0] == "dict":
+                    val = rc[1]
+                else:
+                    val = None
+                if val == None or not (val[:2] == "<<" and val[-2:] == ">>"):
+                    return {}
+                valid = {"Marked": False, "UserProperties": False, "Suspects": False}
+                val = val[2:-2].split("/")
+                for v in val[1:]:
+                    try:
+                        key, value = v.split()
+                    except:
+                        return valid
+                    if value == "true":
+                        valid[key] = True
+                return valid
+
+
+            def set_markinfo(self, markinfo: dict) -> bool:
+                """Set the PDF MarkInfo values."""
+                xref = self.pdf_catalog()
+                if xref == 0:
+                    raise ValueError("not a PDF")
+                if not markinfo or not isinstance(markinfo, dict):
+                    return False
+                valid = {"Marked": False, "UserProperties": False, "Suspects": False}
+                
+                if not set(valid.keys()).issuperset(markinfo.keys()):
+                    badkeys = f"bad MarkInfo key(s): {set(markinfo.keys()).difference(valid.keys())}"
+                    raise ValueError(badkeys)
+                pdfdict = "<<"
+                valid.update(markinfo)
+                for key, value in valid.items():
+                    value=str(value).lower()
+                    if not value in ("true", "false"):
+                        raise ValueError(f"bad key value '{key}': '{value}'")
+                    pdfdict += f"/{key} {value}"
+                pdfdict += ">>"
+                self.xref_set_key(xref, "MarkInfo", pdfdict)
+                return True
 
 
             def __repr__(self) -> str:
@@ -6084,7 +6230,7 @@ def get_oc_items(self) -> list:
 
         FITZEXCEPTION(get_cdrawings, !result)
         %pythonprepend get_cdrawings %{
-        """Extract drawing paths from the page."""
+        """Extract vector graphics ("line art") from the page."""
         CheckParent(self)
         old_rotation = self.rotation
         if old_rotation != 0:
@@ -11895,26 +12041,32 @@ struct Font
         if fontbuffer:
             if hasattr(fontbuffer, "getvalue"):
                 fontbuffer = fontbuffer.getvalue()
-            elif type(fontbuffer) is bytearray:
+            elif isinstance(fontbuffer, bytearray):
                 fontbuffer = bytes(fontbuffer)
-            if type(fontbuffer) is not bytes:
+            if not isinstance(fontbuffer, bytes):
                 raise ValueError("bad type: 'fontbuffer'")
 
-        if fontname:
-            if "/" in fontname or "\\" in fontname or "." in fontname:
+        if isinstance(fontname, str):
+            fname_lower = fontname.lower()
+            if "/" in fname_lower or "\\" in fname_lower or "." in fname_lower:
                 print("Warning: did you mean a fontfile?")
 
-            if fontname.lower() in ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s", "cjk"):
+            if fname_lower in ("cjk", "china-t", "china-ts"):
                 ordering = 0
-
-            elif fontname.lower() in fitz_fontdescriptors.keys():
+            elif fname_lower.startswith("china-s"):
+                ordering = 1
+            elif fname_lower.startswith("korea"):
+                ordering = 3
+            elif fname_lower.startswith("japan"):
+                ordering = 2
+            elif fname_lower in fitz_fontdescriptors.keys():
                 import pymupdf_fonts  # optional fonts
-                fontbuffer = pymupdf_fonts.myfont(fontname)  # make a copy
+                fontbuffer = pymupdf_fonts.myfont(fname_lower)  # make a copy
                 fontname = None  # ensure using fontbuffer only
                 del pymupdf_fonts  # remove package again
 
             elif ordering < 0:
-                fontname = Base14_fontdict.get(fontname.lower(), fontname)
+                fontname = Base14_fontdict.get(fontname, fontname)
         %}
         %pythonappend Font %{self.thisown = True%}
         Font(char *fontname=NULL, char *fontfile=NULL,
@@ -14158,6 +14310,48 @@ struct Tools
                 pdf_obj *this_annot_obj = pdf_annot_obj(gctx, this_annot);
                 pdf_document *pdf = pdf_get_bound_document(gctx, this_annot_obj);
                 pdf_field_reset(gctx, pdf, this_annot_obj);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_NONE;
+        }
+
+        // Ensure that widgets with a /AA/C JavaScript are in AcroForm/CO
+        FITZEXCEPTION(_ensure_widget_calc, !result)
+        PyObject *_ensure_widget_calc(struct Annot *annot)
+        {
+            pdf_obj *PDFNAME_CO=NULL;
+            fz_try(gctx) {
+                pdf_obj *annot_obj = pdf_annot_obj(gctx, (pdf_annot *) annot);
+                pdf_document *pdf = pdf_get_bound_document(gctx, annot_obj);
+                PDFNAME_CO = pdf_new_name(gctx, "CO");  // = PDF_NAME(CO)
+                pdf_obj *acro = pdf_dict_getl(gctx,  // get AcroForm dict
+                                pdf_trailer(gctx, pdf),
+                                PDF_NAME(Root),
+                                PDF_NAME(AcroForm),
+                                NULL);
+
+                pdf_obj *CO = pdf_dict_get(gctx, acro, PDFNAME_CO);  // = AcroForm/CO
+                if (!CO) {
+                    CO = pdf_dict_put_array(gctx, acro, PDFNAME_CO, 2);
+                }
+                int i, n = pdf_array_len(gctx, CO);
+                int xref, nxref, found = 0;
+                xref = pdf_to_num(gctx, annot_obj);
+                for (i = 0; i < n; i++) {
+                    nxref = pdf_to_num(gctx, pdf_array_get(gctx, CO, i));
+                    if (xref == nxref) {
+                        found = 1;
+                        break;
+                    }
+                }
+                if (!found) {
+                    pdf_array_push_drop(gctx, CO, pdf_new_indirect(gctx, pdf, xref, 0));
+                }
+            }
+            fz_always(gctx) {
+                pdf_drop_obj(gctx, PDFNAME_CO);
             }
             fz_catch(gctx) {
                 return NULL;
