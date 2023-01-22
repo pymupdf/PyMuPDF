@@ -1360,8 +1360,14 @@ def get_highlight_selection(page, start: point_like =None, stop: point_like =Non
 
     lines = []  # will return this list of rectangles
     for b in blocks:
+        bbox = Rect(b["bbox"])
+        if bbox.is_infinite or bbox.is_empty:
+            continue
         for line in b["lines"]:
-            lines.append(Rect(line["bbox"]))
+            bbox = Rect(line["bbox"])
+            if bbox.is_infinite or bbox.is_empty:
+                continue
+            lines.append(bbox)
 
     if lines == []:  # did not select anything
         return lines

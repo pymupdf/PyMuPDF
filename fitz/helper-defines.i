@@ -392,7 +392,9 @@ PyObject *_set_FileDataError(PyObject *value)
 	Py_RETURN_TRUE;
 }
 
+//-------------------------------------------------------------------
 // minor tools
+//-------------------------------------------------------------------
 PyObject *util_sine_between(PyObject *C, PyObject *P, PyObject *Q)
 {
 	// for points C, P, Q compute the sine between lines CP and QP
@@ -409,8 +411,8 @@ PyObject *util_sine_between(PyObject *C, PyObject *P, PyObject *Q)
 }
 
 
-// Return matrix that maps point C to (0,0) and point P to the
-// x-axis such that abs(x) equals abs(P - C).
+// Return the matrix that maps two points C, P to the x-axis such that
+// C -> (0,0) and the image of P have the same distance.
 PyObject *util_hor_matrix(PyObject *C, PyObject *P)
 {
 	fz_point c = JM_point_from_py(C);
@@ -422,6 +424,48 @@ PyObject *util_hor_matrix(PyObject *C, PyObject *P)
 	fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -c.x, -c.y);
 	fz_matrix m2 = fz_make_matrix(s.x, -s.y, s.y, s.x, 0, 0);
 	return JM_py_from_matrix(fz_concat(m1, m2));
+}
+
+// Ensure that widgets with /AA/C JavaScript are in array AcroForm/CO
+PyObject *util_ensure_widget_calc(struct Annot *annot)
+{
+	pdf_obj *PDFNAME_CO=NULL;
+	fz_try(gctx) {
+		pdf_obj *annot_obj = pdf_annot_obj(gctx, (pdf_annot *) annot);
+		pdf_document *pdf = pdf_get_bound_document(gctx, annot_obj);
+		PDFNAME_CO = pdf_new_name(gctx, "CO");  // = PDF_NAME(CO)
+		pdf_obj *acro = pdf_dict_getl(gctx,  // get AcroForm dict
+						pdf_trailer(gctx, pdf),
+						PDF_NAME(Root),
+						PDF_NAME(AcroForm),
+						NULL);
+
+		pdf_obj *CO = pdf_dict_get(gctx, acro, PDFNAME_CO);  // = AcroForm/CO
+		if (!CO) {
+			CO = pdf_dict_put_array(gctx, acro, PDFNAME_CO, 2);
+		}
+		int i, n = pdf_array_len(gctx, CO);
+		int xref, nxref, found = 0;
+		xref = pdf_to_num(gctx, annot_obj);
+		for (i = 0; i < n; i++) {
+			nxref = pdf_to_num(gctx, pdf_array_get(gctx, CO, i));
+			if (xref == nxref) {
+				found = 1;
+				break;
+			}
+		}
+		if (!found) {
+			pdf_array_push_drop(gctx, CO, pdf_new_indirect(gctx, pdf, xref, 0));
+		}
+	}
+	fz_always(gctx) {
+		pdf_drop_obj(gctx, PDFNAME_CO);
+	}
+	fz_catch(gctx) {
+		PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+		return NULL;
+	}
+	Py_RETURN_NONE;
 }
 
 
