@@ -54,14 +54,25 @@ def cleanup_tools(TOOLS):
 
 atexit.register(cleanup_tools, TOOLS)
 
-if fitz.VersionFitz != fitz.TOOLS.mupdf_version():
-    v1 = fitz.VersionFitz.split(".")
-    v2 = fitz.TOOLS.mupdf_version().split(".")
-    if v1[:-1] != v2[:-1]:
-        raise ValueError(
-            "MuPDF library mismatch %s <> %s"
-            % (fitz.VersionFitz, fitz.TOOLS.mupdf_version())
-        )
+
+# Require that MuPDF matches fitz.TOOLS.mupdf_version(); also allow use with
+# next minor version (e.g. 1.21.2 => 1.22), so we can test with mupdf master.
+#
+def v_str_to_tuple(s):
+    return tuple(map(int, s.split('.')))
+
+def v_tuple_to_string(t):
+    return '.'.join(map(str, t))
+
+mupdf_version_tuple = v_str_to_tuple(fitz.TOOLS.mupdf_version())
+mupdf_version_tuple_required = v_str_to_tuple(fitz.VersionFitz)
+mupdf_version_tuple_required_next = (mupdf_version_tuple_required[0], mupdf_version_tuple_required[1]+1)
+
+if mupdf_version_tuple[:2] not in (
+        mupdf_version_tuple_required[:2], 
+        mupdf_version_tuple_required_next[:2],
+        ):
+    raise ValueError(f'MuPDF library {v_tuple_to_string(mupdf_version_tuple)!r} mismatch: require {v_tuple_to_string(mupdf_version_tuple_required)!r} or (master) {v_tuple_to_string(mupdf_version_tuple_required_next)!r}.')
 
 # copy functions in 'utils' to their respective fitz classes
 import fitz.utils
