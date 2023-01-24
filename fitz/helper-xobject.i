@@ -149,16 +149,16 @@ static fz_image *
 JM_image_filter(fz_context *ctx, void *opaque, fz_matrix ctm, const char *name, fz_image *image)
 {
     fz_quad q = fz_transform_quad(fz_quad_from_rect(fz_unit_rect), ctm);
-    #ifdef MUPDF_BRANCH_master
+    #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
     q = fz_transform_quad( q, g_img_info_matrix);
     #endif
     PyObject *temp = Py_BuildValue("sN", name, JM_py_from_quad(q));
     
-    LIST_APPEND_DROP(img_info, temp);
+    LIST_APPEND_DROP(g_img_info, temp);
     return image;
 }
 
-#ifdef MUPDF_BRANCH_master
+#if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
 
 static PyObject *
 JM_image_reporter(fz_context *ctx, pdf_page *page)

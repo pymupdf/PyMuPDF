@@ -63,6 +63,7 @@ CheckParent(self)%}
 EnsureOwnership(self)%}
 %enddef
 
+%include "mupdf/fitz/version.h"
 
 %{
 #define MEMDEBUG 0
@@ -1848,6 +1849,9 @@ struct Document
             else Py_RETURN_FALSE;
         }
 
+        #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR <= 21
+        /* The underlying struct members that these methods give access to, are
+        not in mupdf-1.22. */
         CLOSECHECK0(has_xref_streams, """Check if xref table is a stream.""")
         %pythoncode%{@property%}
         PyObject *has_xref_streams()
@@ -1867,6 +1871,7 @@ struct Document
             if (pdf->has_old_style_xrefs) Py_RETURN_TRUE;
             Py_RETURN_FALSE;
         }
+        #endif
 
         CLOSECHECK0(is_dirty, """True if PDF has unsaved changes.""")
         %pythoncode%{@property%}
@@ -6647,7 +6652,7 @@ if not sanitize and not self.is_wrapped:
             if (!page) {
                 Py_RETURN_NONE;
             }
-            #ifdef MUPDF_BRANCH_master
+            #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
             pdf_filter_factory list[2] = { 0 };
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {
@@ -10477,7 +10482,7 @@ CheckParent(self)%}
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_document *pdf = pdf_get_bound_document(gctx, pdf_annot_obj(gctx, annot));
-            #ifdef MUPDF_BRANCH_master
+            #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
             pdf_filter_factory list[2] = { 0 };
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {

@@ -549,29 +549,10 @@ freebsd = platform.system() == 'FreeBSD'
 darwin  = platform.system() == 'Darwin'
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
 
-mupdf_branch = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_BRANCH')
-
 
 if 'sdist' in sys.argv:
     # Create local mupdf.tgz, for inclusion in sdist.
     get_mupdf_tgz()
-
-
-def git_get_branch( directory):
-    command = f'cd {directory} && git branch --show-current'
-    log( f'Running: {command}')
-    p = subprocess.run(
-            command,
-            shell=True,
-            check=False,
-            text=True,
-            stdout=subprocess.PIPE,
-            )
-    ret = None
-    if p.returncode == 0:
-        ret = p.stdout.strip()
-        log( f'Have found MuPDF git branch: ret={ret!r}')
-    return ret
 
 
 if ('-h' not in sys.argv and '--help' not in sys.argv
@@ -590,10 +571,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     if mupdf_local:
         if mupdf_local.endswith( '/'):
             mupdf_local = mupdf_local[:-1]
-        if mupdf_branch is None and os.path.exists( f'{mupdf_local}/.git'):
-            mupdf_branch = git_get_branch( mupdf_local)
-            if mupdf_branch:
-                log( f'Have found MuPDF git branch: mupdf_branch={mupdf_branch!r}')
             
     log( f'mupdf_local={mupdf_local!r}')
     unix_build_dir = None
@@ -614,7 +591,8 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     # which excludes various fonts in the MuPDF binaries.
     if mupdf_local:
         log( f'Building mupdf.')
-        if mupdf_branch == 'master':
+        if 0:
+            # Want to use MuPDF default config eventually, but not yet.
             log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h because mupdf_branch={mupdf_branch}')
         else:
             log( f'Copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h')
@@ -799,22 +777,12 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             include_dirs += local_dirs.get("include_dirs", [])
             library_dirs += local_dirs.get("library_dirs", [])
 
-
-arg = ''
-if mupdf_branch is None:
-    pass
-elif mupdf_branch == 'master':
-    # SWIG seems to evaluate top-level pre-processor directives, but not those
-    # within functions, so we need to add -D options to both the swig command
-    # and the compiler command.
+if mupdf_local:
+    # Add MuPDF's include directory to SWIG's include path so that fitz/fitz.i
+    # can do `%include "mupdf/fitz/version.h"` and .i code can use `#if` with
+    # FZ_VERSION_* macros.
     #
-    arg = '-DMUPDF_BRANCH_master'
-    extra_swig_args.append( arg)
-    extra_compile_args.append( arg)
-elif mupdf_branch == '1.21.x':
-    pass
-else:
-    assert 0, f'Unrecognised PYMUPDF_SETUP_MUPDF_BUILD_BRANCH={mupdf_branch!r}'
+    extra_swig_args.append(f'-I{mupdf_local}/include')
 
 # Disable bogus SWIG warning 509, 'Overloaded method ... effectively ignored,
 # as it is shadowed by ...'.
