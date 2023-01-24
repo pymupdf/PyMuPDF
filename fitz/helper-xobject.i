@@ -142,7 +142,7 @@ static void show(const char* prefix, PyObject* obj)
     fflush(stdout);
 }
 
-static PyObject *img_info = NULL;
+static PyObject *g_img_info = NULL;
 static fz_matrix g_img_info_matrix = {0};
 
 static fz_image *
@@ -182,12 +182,12 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
     
     filter_options.filters = &filter_factory;
     
-    img_info = PyList_New(0);
+    g_img_info = PyList_New(0);
     
     pdf_filter_page_contents(ctx, doc, page, &filter_options);
     
-    PyObject *rc = PySequence_Tuple(img_info);
-    Py_CLEAR(img_info);
+    PyObject *rc = PySequence_Tuple(g_img_info);
+    Py_CLEAR(g_img_info);
     
     return rc;
 }
@@ -271,12 +271,12 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
 
     contents = pdf_page_contents(ctx, page);
     old_res = pdf_page_resources(ctx, page);
-    img_info = PyList_New(0);
+    g_img_info = PyList_New(0);
     JM_filter_content_stream(ctx, doc, contents, old_res, ctm, &filter, struct_parents, &buffer, &new_res);
     fz_drop_buffer(ctx, buffer);
     pdf_drop_obj(ctx, new_res);
-    PyObject *rc = PySequence_Tuple(img_info);
-    Py_CLEAR(img_info);
+    PyObject *rc = PySequence_Tuple(g_img_info);
+    Py_CLEAR(g_img_info);
     return rc;
 }
 
