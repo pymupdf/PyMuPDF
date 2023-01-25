@@ -21,6 +21,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v2
+        with:
+          ref: 1.21
       - uses: actions/setup-python@v2
 
       # Set up cibuildwheel.
@@ -36,8 +38,6 @@ jobs:
             # clone` command.
             #
             CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
-
-            PYMUPDF_SETUP_MUPDF_BUILD: "git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
 
             # Build on single cpu.
             CIBW_ARCHS_LINUX: x86_64
