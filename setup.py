@@ -587,10 +587,13 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     remove( os.path.abspath( f'{__file__}/../build/'))
     remove( os.path.abspath( f'{__file__}/../install/'))
     
-    # Copy PyMuPDF's config file into mupdf. For example this #define's TOFU,
-    # which excludes various fonts in the MuPDF binaries.
     if mupdf_local:
+        # Build MuPDF before deferring to setuptools.setup().
+        #
+        
         log( f'Building mupdf.')
+        # Copy PyMuPDF's config file into mupdf. For example it #define's TOFU,
+        # which excludes various fonts in the MuPDF binaries.
         if 0:
             # Want to use MuPDF default config eventually, but not yet.
             log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h because mupdf_branch={mupdf_branch}')
@@ -621,7 +624,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         else:
             # Unix build.
             #
-            
             flags = 'HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no HAVE_LEPTONICA=yes HAVE_TESSERACT=yes'
             flags += ' verbose=yes'
             env = ''
@@ -677,6 +679,10 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     
     # Set include and library paths for building PyMuPDF.
     #
+    # We also add MuPDF's include directory to include path for Swig so that
+    # fitz/fitz.i can do `%include "mupdf/fitz/version.h"` and .i code can use
+    # `#if` with FZ_VERSION_* macros.
+    #
     if mupdf_local:
         assert os.path.isdir( mupdf_local), f'Not a directory: {mupdf_local!r}'
         include_dirs.append( f'{mupdf_local}/include')
@@ -684,6 +690,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append( f'{mupdf_local}/thirdparty/freetype/include')
         if unix_build_dir:
             library_dirs.append( unix_build_dir)
+        extra_swig_args.append(f'-I{mupdf_local}/include')
 
     if mupdf_local and (linux or openbsd or freebsd):
         # setuptools' link command always seems to put '-L
@@ -717,6 +724,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append( '/usr/include/freetype2')
         libraries = load_libraries()
         extra_link_args = []
+        extra_swig_args.append(f'-I/usr/local/include')
 
     elif darwin or openbsd or freebsd:
         # Use system libraries.
@@ -732,6 +740,9 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append("/usr/X11R6/include/freetype2")
         include_dirs.append("/opt/homebrew/include")
         include_dirs.append("/opt/homebrew/include/freetype2")
+        
+        extra_swig_args.append(f'-I/usr/local/include')
+        extra_swig_args.append(f'-I/opt/homebrew/include')
 
         library_dirs.append("/opt/homebrew/lib")
 
@@ -776,13 +787,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             local_dirs = json.load(dirfile)
             include_dirs += local_dirs.get("include_dirs", [])
             library_dirs += local_dirs.get("library_dirs", [])
-
-if mupdf_local:
-    # Add MuPDF's include directory to SWIG's include path so that fitz/fitz.i
-    # can do `%include "mupdf/fitz/version.h"` and .i code can use `#if` with
-    # FZ_VERSION_* macros.
-    #
-    extra_swig_args.append(f'-I{mupdf_local}/include')
 
 # Disable bogus SWIG warning 509, 'Overloaded method ... effectively ignored,
 # as it is shadowed by ...'.
