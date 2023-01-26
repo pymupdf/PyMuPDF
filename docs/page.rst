@@ -989,6 +989,12 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       This is a **global replacement:** the image will disappear wherever the old one has been displayed throughout the file.
    
+      If you inspect / extract a page's images by methods like :meth:`Page.get_images`,
+      :meth:`Page.get_image_info` or :meth:`Page.get_text`,
+      the replacing "dummy" image will be detected like so
+      `(45, 47, 1, 1, 8, 'DeviceGray', '', 'Im1', 'FlateDecode')`
+      and also seem to "cover" the same boundary box on the page.
+
    
    .. index::
       pair: blocks; Page.get_text

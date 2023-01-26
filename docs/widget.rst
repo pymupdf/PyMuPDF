@@ -158,8 +158,23 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
        JavaScript text (unicode) to be performed to recalculate the value of this field when that of another field changes. *None* if not present.
 
     .. note::
-       1. For **adding** or **changing** one of the above scripts, just put the appropriate JavaScript source code in the widget attribute. To **remove** a script, set the respective attribute to *None*.
-       2. Button fields only support :attr:`script`. Other script entries will automatically be set to *None*.
+
+       1. For **adding** or **changing** one of the above scripts,
+         just put the appropriate JavaScript source code in the widget attribute.
+         To **remove** a script, set the respective attribute to *None*.
+
+       2. Button fields only support :attr:`script`.
+         Other script entries will automatically be set to *None*.
+
+       3. It is worthwhile to look at
+          `this <https://experienceleague.adobe.com/docs/experience-manager-learn/assets/FormsAPIReference.pdf?lang=en>`_
+          manual with lots of information about Adobe's standard scripts for various field types.
+          For example, if you want to add a text field representing a date,
+          you may want to store the following scripts.
+          They will ensure pattern-compatible date formats and display date pickers in supporting viewers::
+
+              widget.script_format = 'AFDate_FormatEx("mm/dd/yyyy");'
+              widget.script_stroke = 'AFDate_KeystrokeEx("mm/dd/yyyy");'
 
 
 Standard Fonts for Widgets
