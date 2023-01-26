@@ -221,3 +221,16 @@ def test_texttrace():
         for i, page in enumerate(document):
             tt = page.get_texttrace()
             print( f'page {i} json:\n{json.dumps(tt, indent="    ")}', file=f)
+
+def test_2108():
+    doc = fitz.open(f'{scriptdir}/resources/test_2108.pdf')
+    page = doc[0]
+    areas = page.search_for("{sig}")
+    rect = areas[0]
+    page.add_redact_annot(rect)
+    page.apply_redactions()
+    text = page.get_text()
+    print(f'test_2108():\n{text}')
+    print(f'test_2108(): {text.encode("utf8")!r}')
+    text_expected = b'Frau\nClaire Dunphy\nTeststra\xc3\x9fe 5\n12345 Stadt\nVertragsnummer:  12345\nSehr geehrte Frau Dunphy,\nText\nMit freundlichen Gr\xc3\xbc\xc3\x9fen\nTestfirma\nVertrag:\n  12345\nAnsprechpartner:\nJay Pritchet\nTelefon:\n123456\nE-Mail:\ntest@test.de\nDatum:\n07.12.2022\n'.decode('utf8')
+    assert text == text_expected
