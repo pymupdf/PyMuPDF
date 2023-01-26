@@ -951,7 +951,6 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
-<<<<<<< Updated upstream
 =======
    
    .. index::
@@ -996,7 +995,6 @@ In a nutshell, this is what you can do with PyMuPDF:
       If you inspect / extract a page's images by methods like :meth:`Page.get_images`, :meth:`Page.get_image_info` or :meth:`Page.get_text`, the replacing "dummy" image will be detected like so `(45, 47, 1, 1, 8, 'DeviceGray', '', 'Im1', 'FlateDecode')` and also seem to "cover" the same boundary box on the page.
    
    
->>>>>>> Stashed changes
    .. index::
       pair: blocks; Page.get_text
       pair: dict; Page.get_text
