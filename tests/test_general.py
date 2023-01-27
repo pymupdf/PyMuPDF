@@ -230,7 +230,38 @@ def test_2108():
     page.add_redact_annot(rect)
     page.apply_redactions()
     text = page.get_text()
-    print(f'test_2108():\n{text}')
-    print(f'test_2108(): {text.encode("utf8")!r}')
+    
     text_expected = b'Frau\nClaire Dunphy\nTeststra\xc3\x9fe 5\n12345 Stadt\nVertragsnummer:  12345\nSehr geehrte Frau Dunphy,\nText\nMit freundlichen Gr\xc3\xbc\xc3\x9fen\nTestfirma\nVertrag:\n  12345\nAnsprechpartner:\nJay Pritchet\nTelefon:\n123456\nE-Mail:\ntest@test.de\nDatum:\n07.12.2022\n'.decode('utf8')
-    assert text == text_expected
+    
+    if 1:
+        # Verbose info.
+        print(f'test_2108(): text is:\n{text}')
+        print(f'')
+        print(f'test_2108(): repr(text) is:\n{text!r}')
+        print(f'')
+        print(f'test_2108(): repr(text.encode("utf8")) is:\n{text.encode("utf8")!r}')
+        print(f'')
+        print(f'test_2108(): text_expected is:\n{text_expected}')
+        print(f'')
+        print(f'test_2108(): repr(text_expected) is:\n{text_expected!r}')
+        print(f'')
+        print(f'test_2108(): repr(text_expected.encode("utf8")) is:\n{text_expected.encode("utf8")!r}')
+
+        ok1 = (text == text_expected)
+        ok2 = (text.encode("utf8") == text_expected.encode("utf8"))
+        ok3 = (repr(text.encode("utf8")) == repr(text_expected.encode("utf8")))
+
+        print(f'')
+        print(f'ok1={ok1}')
+        print(f'ok2={ok2}')
+        print(f'ok3={ok3}')
+
+        print(f'')
+    
+    print(f'fitz.mupdf_version_tuple={fitz.mupdf_version_tuple}')
+    if fitz.mupdf_version_tuple >= (1, 21, 2):
+        print('Asserting text==text_expected')
+        assert text == text_expected
+    else:
+        print('Asserting text!=text_expected')
+        assert text != text_expected
