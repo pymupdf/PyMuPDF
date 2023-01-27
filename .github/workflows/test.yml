@@ -1,4 +1,4 @@
-name: Test branch 1.21.
+name: Test
 
 on:
   schedule:
@@ -7,16 +7,17 @@ on:
 
 jobs:
 
-  test_branch_121:
-    # Simple build+test using latest MuPDF branch 1.21 from git. This is a
-    # cut-down version of `build_wheels` except that we use latest MuPDF from
-    # git and use a single python version.
+  test:
+    # Build+test current PyMuPDF git.
     #
-    name: Test branch 1.21
+    name: Test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
+
+      # Avoid cancelling of all cibuildwheel runs after a single failure.
+      fail-fast: false
 
     steps:
 
@@ -31,7 +32,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.11.2
 
         env:
-            # We test building with the default hard-coded mupdf URL.
+            # Build will use the default hard-coded mupdf URL.
 
             # Build on single cpu.
             CIBW_ARCHS_LINUX: x86_64
