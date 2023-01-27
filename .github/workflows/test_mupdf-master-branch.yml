@@ -1,4 +1,4 @@
-name: Test latest MuPDF
+name: Test mupdf master branch
 
 on:
   schedule:
@@ -7,16 +7,17 @@ on:
 
 jobs:
 
-  test_latest_mupdf:
-    # Simple build+test on single platform using latest MuPDF from git. This is
-    # a cut-down version of `build_wheels` except that we use latest MuPDF from
-    # git and use a single platform and python version.
+  test_mupdf_master_branch:
+    # Build+test current PyMuPDF git with mupdf git master branch.
     #
-    name: Test latest mupdf
+    name: Test mupdf master branch
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
+
+      # Avoid cancelling of all cibuildwheel runs after a single failure.
+      fail-fast: false
 
     steps:
 
@@ -35,9 +36,9 @@ jobs:
             # because the build stage gets MuPDF using `git clone ...`.
             #
             # PYMUPDF_SETUP_MUPDF_BUILD="git:...": build with mupdf from a `git
-            # clone` command.
+            # clone` command, selecting the current master branch.
             #
-            CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
+            CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git"
 
             # Build on single cpu.
             CIBW_ARCHS_LINUX: x86_64
