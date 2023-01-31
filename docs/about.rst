@@ -1,10 +1,10 @@
 .. include:: header.rst
 
-.. This is the TOC in the sidebar!
 
 
-Welcome to :title:`PyMuPDF`
-================================
+
+.. _About:
+
 
 .. image:: images/pymupdf-logo.png
    :align: left
@@ -18,61 +18,31 @@ Welcome to :title:`PyMuPDF`
 
 |
 
-----
+.. _features:
 
-.. toctree::
-   :caption: About
-   :maxdepth: 1
-
-   about.rst
+Features Comparison
+-----------------------------------------------
 
 
-.. toctree::
-   :caption: User Guide
-   :maxdepth: 1
-
-   installation.rst
-   tutorial.rst
+.. include:: feature-matrix.rst
 
 
-.. toctree::
-   :caption: How to Guide
-   :maxdepth: 3
+.. _performance:
 
-   recipes.rst
-
-
-.. toctree::
-   :caption: API Guide
-   :maxdepth: 2
-
-   module.rst
-   classes.rst
-   algebra.rst
-   lowlevel.rst
-   glossary.rst
-   vars.rst
-   colors.rst
-
-
-.. toctree::
-   :caption: Other
-   :maxdepth: 2
-
-   app1.rst
-   app2.rst
-   app3.rst
-   changes.rst
-   znames.rst
+Performance
+-----------------------------------------------
 
 
 
-Find out about PyMuPDF Utilities
--------------------------------------------------
 
-The :title:`GitHub` repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
+..
+   :title:`PyMuPDF` Utilities
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   The :title:`GitHub` repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
 
 
+.. _license:
 
 License and Copyright
 ----------------------
@@ -88,10 +58,4 @@ In order to comply with :title:`MuPDF’s` dual licensing model, :title:`PyMuPDF
 
 
 
-.. include:: version.rst
-
-
 .. include:: footer.rst
-
-
-

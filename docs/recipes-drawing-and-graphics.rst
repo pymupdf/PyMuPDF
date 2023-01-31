@@ -84,8 +84,8 @@ This is the script's outcome:
 
 ------------------------------
 
-Extracting Drawings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How to Extract Drawings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * New in v1.18.0
 

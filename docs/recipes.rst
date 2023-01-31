@@ -6,13 +6,6 @@
 .. _RecipesTOC:
 
 
-==============================
-Recipes
-==============================
-
-
-Some common use cases, that we like to call *"Recipes"*, can be found as follows:
-
 
 .. toctree::
 
