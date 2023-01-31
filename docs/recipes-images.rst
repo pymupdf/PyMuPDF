@@ -171,12 +171,12 @@ b. **"No need to know:"** Loop through the list of **all xrefs** of the document
 
 For both extraction approaches, there exist ready-to-use general purpose scripts:
 
-`extract-imga.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imga.py>`_ extracts images page by page:
+`extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_ extracts images page by page:
 
 .. image:: images/img-extract-imga.*
    :scale: 80
 
-and `extract-imgb.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imgb.py>`_ extracts images by xref table:
+and `extract-from-xref.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_ extracts images by xref table:
 
 .. image:: images/img-extract-imgb.*
    :scale: 80
@@ -205,7 +205,7 @@ To recover the original image using PyMuPDF, the procedure depicted as follows m
 
 Step (1) creates a pixmap of the basic image. Step (2) does the same with the image mask. Step (3) adds an alpha channel and fills it with transparency information.
 
-The scripts `extract-imga.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imga.py>`_, and `extract-imgb.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imgb.py>`_ above also contain this logic.
+The scripts `extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_, and `extract-from-xref.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_ above also contain this logic.
 
 ----------
 
