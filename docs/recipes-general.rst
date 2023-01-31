@@ -31,7 +31,7 @@ PDF supports incorporating arbitrary data. This can be done in one of two ways: 
 
 The basic differences between these options are **(1)** you need edit permission to embed a file, but only annotation permission to attach, **(2)** like all annotations, attachments are visible on a page, embedded files are not.
 
-There exist several example scripts: `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_, `new-annots.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/new-annots.py>`_.
+Please check out these examples: `list-embedded <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/list-embedded>`_ and `new-annots.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/annotations/new-annots.py>`_.
 
 Also look at the sections above and at chapter :ref:`Appendix 3`.
 
@@ -86,7 +86,7 @@ How to Join PDFs
 ~~~~~~~~~~~~~~~~~~
 It is easy to join PDFs with method :meth:`Document.insert_pdf`. Given open PDF documents, you can copy page ranges from one to the other. You can select the point where the copied pages should be placed, you can revert the page sequence and also change page rotation. This Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ contains a full description.
 
-The GUI script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
+The GUI in `join-documents <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/join-documents>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
 
 .. image:: images/img-pdfjoiner.*
    :scale: 60
@@ -508,4 +508,3 @@ Opening this document with some viewer (Nitro Reader 5) reflects these settings:
 To **keep the encryption method** of a PDF save it using *encryption=fitz.PDF_ENCRYPT_KEEP*. If *doc.can_save_incrementally() == True*, an incremental save is also possible.
 
 To **change the encryption method** specify the full range of options above (encryption, owner_pw, user_pw, permissions). An incremental save is **not possible** in this case.
-

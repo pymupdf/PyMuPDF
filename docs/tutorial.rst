@@ -66,7 +66,7 @@ subject        subject
 
 .. note:: Apart from these standard metadata, **PDF documents** starting from PDF version 1.4 may also contain so-called *"metadata streams"* (see also :data:`stream`). Information in such streams is coded in XML. PyMuPDF deliberately contains no XML components for this purpose (the :ref:`PyMuPDF Xml class<Xml>` is a helper class intended to access the DOM content of a :ref:`Story` object), so we do not directly support access to information contained therein. But you can extract the stream as a whole, inspect or modify it using a package like `lxml`_ and then store the result back into the PDF. If you want, you can also delete this data altogether.
 
-.. note:: There are two utility scripts in the repository that `metadata import (PDF only)`_ resp. `metadata export`_ metadata from resp. to CSV files.
+.. note:: Please check out these examples: `import-metadata`_ (PDF only) and `export-metadata`_.
 
 Working with Outlines
 =========================
@@ -78,7 +78,7 @@ This will return a Python list of lists *[[lvl, title, page, ...], ...]* which l
 
 *lvl* is the hierarchy level of the entry (starting from 1), *title* is the entry's title, and *page* the page number (1-based!). Other parameters describe details of the bookmark target.
 
-.. note:: There are two utility scripts in the repository that `toc import (PDF only)`_ resp. `toc export`_ table of contents from resp. to CSV files.
+.. note:: Please check out these examples: `import-toc`_ (PDF only) and `export-toc`_.
 
 Working with Pages
 ======================
@@ -183,7 +183,7 @@ The following **avoids using Pillow**::
     imgdata = pix1.tobytes("ppm")  # extremely fast!
     tkimg = tkinter.PhotoImage(data = imgdata)
 
-If you are looking for a complete Tkinter script paging through **any supported** document, `here it is!`_. It can also zoom into pages, and it runs under Python 2 or 3. It requires the extremely handy `PySimpleGUI`_ pure Python package.
+`browse-document`_ is a complete Tkinter script paging through **any supported** document. It can also zoom into pages, and it runs under Python 2 or 3. It requires the extremely handy `PySimpleGUI`_ pure Python package.
 
 PyQt4, PyQt5, PySide
 ~~~~~~~~~~~~~~~~~~~~~
@@ -333,14 +333,14 @@ Here is a snippet that **splits** *doc1*. It creates a new document of its first
     doc2.insert_pdf(doc1, from_page = len(doc1) - 10) # last 10 pages
     doc2.save("first-and-last-10.pdf")
 
-More can be found in the :ref:`Document` chapter. Also have a look at `PDFjoiner.py`_.
+More can be found in the :ref:`Document` chapter. Also have a look at `join-documents`_.
 
 Embedding Data
 ---------------
 
 PDFs can be used as containers for abitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
-PyMuPDF fully supports this feature via :ref:`Document` *embfile_** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
+PyMuPDF fully supports this feature via :ref:`Document` *embfile_** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `copy-embedded`_, `export-embedded`_, `import-embedded`_, and `list-embedded`_.
 
 
 Saving
@@ -403,26 +403,24 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 
 
 .. _lxml: https://pypi.org/project/lxml/
-.. _metadata import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2meta.py
-.. _metadata export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/meta2csv.py
-.. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2toc.py
-.. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/toc2csv.py
+.. _import-metadata: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/import-metadata
+.. _export-metadata: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-metadata
+.. _import-toc: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/import-toc
+.. _export-toc: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/export-toc
 .. _Vector Image Support page: https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support
-.. _examples: https://github.com/pymupdf/PyMuPDF/tree/master/examples
+.. _examples: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples
 .. _Pillow documentation: https://Pillow.readthedocs.io
-.. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/doc-browser.py
+.. _browse-document: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/browse-document
 .. _PySimpleGUI: https://pypi.org/project/PySimpleGUI/
 .. _demo.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py
 .. _demo-lowlevel.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py
 .. _"MuPDF Explored": https://mupdf.com/docs/mupdf-explored.html
 .. _Artifex: https://www.artifex.com
 .. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py
-.. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py
+.. _join-documents: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents
 .. _dealing with embedding files: https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files
-.. _embedded-copy.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py
-.. _embedded-export.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py
-.. _embedded-import.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py
-.. _embedded-list.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py
+.. _copy-embedded: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/copy-embedded
+.. _export-embedded: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/export-embedded
+.. _import-embedded: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/import-embedded
+.. _list-embedded: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/list-embedded
 .. _Wiki: https://github.com/pymupdf/PyMuPDF/wiki
-
-
