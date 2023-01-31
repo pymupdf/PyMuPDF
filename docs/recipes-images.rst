@@ -252,7 +252,7 @@ The above script needed about 1 minute on my machine for 149 pictures with a tot
 .. image:: images/img-import-progress.*
    :scale: 80
 
-Look `here <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/all-my-pics-inserted.py>`_ for a more complete source code: it offers a directory selection dialog and skips unsupported files and non-file entries.
+Please check out this example: `insert-images <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/insert-images>`_.
 
 .. note:: We might have used :meth:`Page.insert_image` instead of :meth:`Page.show_pdf_page`, and the result would have been a similar looking file. However, depending on the image type, it may store **images uncompressed**. Therefore, the save option *deflate = True* must be used to achieve a reasonable file size, which hugely increases the runtime for large numbers of images. So this alternative **cannot be recommended** here.
 
@@ -283,11 +283,15 @@ The second script **embeds** arbitrary files -- not only images. The resulting P
 .. image:: images/img-embed-progress.*
    :scale: 80
 
-This is by far the fastest method, and it also produces the smallest possible output file size. The above pictures needed 20 seconds on my machine and yielded a PDF size of 510 MB. Look `here <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/all-my-pics-embedded.py>`_ for a more complete source code: it offers a directory selection dialog and skips non-file entries.
+This is by far the fastest method, and it also produces the smallest possible output file size. The above pictures needed 20 seconds on my machine and yielded a PDF size of 510 MB.
+
+Please check out this example: `embed-images <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embed-images>`_.
 
 **Method 3: Attaching Files**
 
-A third way to achieve this task is **attaching files** via page annotations see `here <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/all-my-pics-attached.py>`_ for the complete source code.
+A third way to achieve this task is **attaching files** via page annotations.
+
+Please check out this example: `attach-images <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/attach-images>`_.
 
 This has a similar performance as the previous script and it also produces a similar file size. It will produce PDF pages which show a 'FileAttachment' icon for each attached file.
 
