@@ -37,7 +37,7 @@ As the color database may not be needed very often, one additional import statem
 
 Printing the Color Database
 ----------------------------
-If you want to actually see how the many available colors look like, use scripts `colordbRGB.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/colordbRGB.py>`_ or `colordbHSV.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/colordbHSV.py>`_ in the examples directory. They create PDFs (already existing in the same directory) with all these colors. Their only difference is sorting order: one takes the RGB values, the other one the Hue-Saturation-Values as sort criteria.
+Please check out these examples: `print-rgb <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/print-rgb>`_ and `print-hsv <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/print-hsv>`_. They create PDFs (already existing in the same directory) with all these colors. Their only difference is sorting order: one takes the RGB values, the other one the Hue-Saturation-Values as sort criteria.
 This is a screen print of what these files look like.
 
 .. image:: images/img-colordb.*
