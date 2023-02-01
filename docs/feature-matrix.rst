@@ -61,7 +61,8 @@ The following table illustrates how :title:`PyMuPDF` compares with other typical
         }
 
         #feature-matrix tr td.yes {
-            background-color: #00cc00 !important;
+            background-color: #83e57c !important;
+            color: #000;
         }
 
         #feature-matrix tr td.yes::before {
@@ -69,7 +70,8 @@ The following table illustrates how :title:`PyMuPDF` compares with other typical
         }
 
         #feature-matrix tr td.no {
-            background-color: #cc0000 !important;
+            background-color: #e5887c !important;
+            color: #000;
         }
 
         #feature-matrix tr td.no::before {
@@ -77,7 +79,8 @@ The following table illustrates how :title:`PyMuPDF` compares with other typical
         }
 
         #feature-matrix tr td.limited {
-            background-color: #f39a00 !important;
+            background-color: #e4c07b !important;
+            color: #000;
         }
 
         #feature-matrix .icon-holder {

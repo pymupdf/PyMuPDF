@@ -74,21 +74,8 @@ The :title:`GitHub` repository `PyMuPDF-Utilities <https://github.com/pymupdf/Py
 
 
 
-License and Copyright
-----------------------
-
-In order to comply with :title:`MuPDF’s` dual licensing model, :title:`PyMuPDF` has entered into an agreement with :title:`Artifex` who has the right to sublicense :title:`PyMuPDF` to third parties.
-
-:title:`PyMuPDF` and :title:`MuPDF` are now available under both, open-source :title:`AGPL` and commercial license agreements. Please read the full text of the :title:`AGPL` license agreement, available in the distribution material (file COPYING) and `here <https://www.gnu.org/licenses/agpl-3.0.html>`_, to ensure that your use case complies with the guidelines of the license. If you determine you cannot meet the requirements of the :title:`AGPL`, please contact `Artifex <https://artifex.com/contact/>`_ for more information regarding a commercial license.
-
-:title:`Artifex` is the exclusive commercial licensing agent for :title:`MuPDF`.
-
-:title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the :title:`MuPDF` logo are registered trademarks of :title:`Artifex Software Inc.`
 
 
-
-
-.. include:: version.rst
 
 
 .. include:: footer.rst
