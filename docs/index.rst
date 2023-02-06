@@ -62,6 +62,7 @@ Welcome to :title:`PyMuPDF`
    app1.rst
    app2.rst
    app3.rst
+   app4.rst
    changes.rst
    znames.rst
 

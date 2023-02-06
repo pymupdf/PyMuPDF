@@ -42,6 +42,9 @@ Here are current results, grouped by task:
 .. include:: about-performance.rst
 
 
+.. note::
+
+   For more detail regarding the methodology for these performance timings see: :ref:`Performance Comparison Methodology<Appendix4>`.
 
 .. _license:
 
