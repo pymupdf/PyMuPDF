@@ -43,7 +43,7 @@ To access a supported document, it must be opened with the following statement::
 
     doc = fitz.open(filename)  # or fitz.Document(filename)
 
-This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a ``pathlib.Path``) specifying the name of an existing file.
+This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a `pathlib.Path`) specifying the name of an existing file.
 
 It is also possible to open a document from memory data, or to create a new, empty PDF. See :ref:`Document` for details. You can also use :ref:`Document` as a *context manager*.
 
@@ -109,7 +109,7 @@ First, a :ref:`Page` must be created. This is a method of :ref:`Document`::
     page = doc.load_page(pno)  # loads page number 'pno' of the document (0-based)
     page = doc[pno]  # the short form
 
-Any integer ``-∞ < pno < page_count`` is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
+Any integer `-∞ < pno < page_count` is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
 
 Some more advanced way would be using the document as an **iterator** over its pages::
 

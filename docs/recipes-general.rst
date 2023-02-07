@@ -21,7 +21,7 @@ Assume that "some.file" is actually an XPS. Open it like so:
 
     MuPDF itself does not try to determine the file type from the file contents. **You** are responsible for supplying the filetype info in some way -- either implicitly via the file extension, or explicitly as shown. There are pure Python packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
 
-    If MuPDF encounters a file with an unknown / missing extension, it will try to open it as a PDF. So in these cases there is no need to for additional precautions. Similarly, for memory documents, you can just specify ``doc=fitz.open(stream=mem_area)`` to open it as a PDF document.
+    If MuPDF encounters a file with an unknown / missing extension, it will try to open it as a PDF. So in these cases there is no need to for additional precautions. Similarly, for memory documents, you can just specify `doc=fitz.open(stream=mem_area)` to open it as a PDF document.
 
 ----------
 
@@ -61,7 +61,7 @@ Or you alternatively prepare a complete new page layout in form of a Python sequ
 
 Now let's prepare a PDF for double-sided printing (on a printer not directly supporting this):
 
-The number of pages is given by ``len(doc)`` (equal to ``doc.page_count``). The following lists represent the even and the odd page numbers, respectively:
+The number of pages is given by `len(doc)` (equal to `doc.page_count`). The following lists represent the even and the odd page numbers, respectively:
 
 >>> p_even = [p in range(doc.page_count) if p % 2 == 0]
 >>> p_odd  = [p in range(doc.page_count) if p % 2 == 1]
@@ -444,13 +444,13 @@ Since :title:`PyMuPDF` v1.16.0, **error messages** issued by the underlying :tit
 In addition, these messages go to the internal buffer together with any :title:`MuPDF` warnings -- see below.
 
 We always prefix these messages with an identifying string *"mupdf:"*.
-If you prefer to not see recoverable MuPDF errors at all, issue the command ``fitz.TOOLS.mupdf_display_errors(False)``.
+If you prefer to not see recoverable MuPDF errors at all, issue the command `fitz.TOOLS.mupdf_display_errors(False)`.
 
 MuPDF warnings continue to be stored in an internal buffer and can be viewed using :meth:`Tools.mupdf_warnings`.
 
 Please note that MuPDF errors may or may not lead to Python exceptions. In other words, you may see error messages from which MuPDF can recover and continue processing.
 
-Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during ``fitz.open`` the document had to be repaired:
+Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during `fitz.open` the document had to be repaired:
 
 >>> import fitz
 >>> doc = fitz.open("damaged-file.pdf")  # leads to a sys.stderr message:
@@ -541,8 +541,8 @@ Opening this document with some viewer (Nitro Reader 5) reflects these settings:
 
 **Decrypting** will automatically happen on save as before when no encryption parameters are provided.
 
-To **keep the encryption method** of a PDF save it using ``encryption=fitz.PDF_ENCRYPT_KEEP``. If ``doc.can_save_incrementally() == True``, an incremental save is also possible.
+To **keep the encryption method** of a PDF save it using `encryption=fitz.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() == True`, an incremental save is also possible.
 
-To **change the encryption method** specify the full range of options above (``encryption``, ``owner_pw``, ``user_pw``, ``permissions``). An incremental save is **not possible** in this case.
+To **change the encryption method** specify the full range of options above (`encryption`, `owner_pw`, `user_pw`, `permissions`). An incremental save is **not possible** in this case.
 
 .. include:: footer.rst

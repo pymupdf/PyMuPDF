@@ -81,8 +81,8 @@ The text sequence extracted from a page modified in this way will look like this
 
 PyMuPDF has several means to re-establish some reading sequence or even to re-generate a layout close to the original:
 
-1. Use ``sort`` parameter of :meth:`Page.get_text`. It will sort the output from top-left to bottom-right (ignored for XHTML, HTML and XML output).
-2. Use the ``fitz`` module in CLI: ``python -m fitz gettext ...``, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
+1. Use `sort` parameter of :meth:`Page.get_text`. It will sort the output from top-left to bottom-right (ignored for XHTML, HTML and XML output).
+2. Use the `fitz` module in CLI: `python -m fitz gettext ...`, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
 
 You can also use the above mentioned `script <https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-from-a-rectangle>`_ with your modifications.
 
@@ -147,7 +147,7 @@ But you also have other options::
  if new_doc:
      doc.save("marked-" + doc.name)
 
-This script uses ``Page.get_text("words")`` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
+This script uses `Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
 
 * If found, the **complete word containing the string** is marked (underlined) -- not only the search string.
 * The search string may **not contain spaces** or other white space.
@@ -204,7 +204,7 @@ How to Mark Non-horizontal Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The previous section already shows an example for marking non-horizontal text, that was detected by text **searching**.
 
-But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is indicated by the value of the line dictionary's ``"dir"`` key: it is the tuple ``(cosine, sine)`` for that angle. If ``line["dir"] != (1, 0)``, then the text of all its spans is rotated by (the same) angle != 0.
+But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is indicated by the value of the line dictionary's `"dir"` key: it is the tuple `(cosine, sine)` for that angle. If `line["dir"] != (1, 0)`, then the text of all its spans is rotated by (the same) angle != 0.
 
 The "bboxes" returned by the method however are rectangles only -- not quads. So, to mark span text correctly, its quad must be recovered from the data contained in the line and span dictionary. Do this with the following utility function (new in v1.18.9)::
 
@@ -218,7 +218,7 @@ If you want to **mark the complete line** or a subset of its spans in one go, us
 
 .. image:: images/img-linequad.*
 
-The ``spans`` argument above may specify any sub-list of ``line["spans"]``. In the example above, the second to second-to-last span are marked. If omitted, the complete line is taken.
+The `spans` argument above may specify any sub-list of `line["spans"]`. In the example above, the second to second-to-last span are marked. If omitted, the complete line is taken.
 
 ------------------------------
 

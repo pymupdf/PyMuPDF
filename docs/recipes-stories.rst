@@ -24,7 +24,7 @@ The following examples will showcase combinations for using these inputs.
 
 .. note::
 
-        Many of these recipe's source code are included as examples in the ``docs`` folder.
+        Many of these recipe's source code are included as examples in the `docs` folder.
 
 
 .. _RecipesStories_A:
@@ -168,7 +168,7 @@ How to Read External HTML and CSS for a Story
 
 These cases are fairly straightforward.
 
-As a general recommendation, HTML and CSS sources should be **read as binary files** and decoded before using them in a story. The Python ``pathlib.Path`` provides convenient ways to do this::
+As a general recommendation, HTML and CSS sources should be **read as binary files** and decoded before using them in a story. The Python `pathlib.Path` provides convenient ways to do this::
 
     import pathlib
     import fitz
@@ -204,8 +204,8 @@ The story DOM consists of a template for one film, which reports film data toget
 
 **Files:**
 
-* ``docs/samples/filmfestival-sql.py``
-* ``docs/samples/filmfestival-sql.db``
+* `docs/samples/filmfestival-sql.py`
+* `docs/samples/filmfestival-sql.db`
 
 
 |toggleStart|
@@ -229,7 +229,7 @@ The basic idea is letting :ref:`DocumentWriter` output to a PDF in memory. Once 
 
 **Files:**
 
-* ``docs/samples/showpdf-page.py``
+* `docs/samples/showpdf-page.py`
 
 |toggleStart|
 
@@ -255,8 +255,8 @@ Yet another feature used here is that all data -- the images and the article HTM
 
 **Files:**
 
-* ``docs/samples/quickfox.py``
-* ``docs/samples/quickfox.zip``
+* `docs/samples/quickfox.py`
+* `docs/samples/quickfox.zip`
 
 
 |toggleStart|
@@ -307,9 +307,9 @@ The script demonstrates the following features:
 
 **Files:**
 
-* ``docs/samples/quickfox-image-no-go.py``
-* ``docs/samples/quickfox-image-no-go.pdf``
-* ``docs/samples/quickfox.zip``
+* `docs/samples/quickfox-image-no-go.py`
+* `docs/samples/quickfox-image-no-go.pdf`
+* `docs/samples/quickfox.zip`
 
 
 |toggleStart|
@@ -333,7 +333,7 @@ This script reflects existing features.
 
 **Files:**
 
-* ``docs/samples/table01.py``
+* `docs/samples/table01.py`
 
 |toggleStart|
 
@@ -354,7 +354,7 @@ By creating a sequence of :ref:`Story` objects within a grid created via the :re
 
 **Files:**
 
-* ``docs/samples/simple-grid.py``
+* `docs/samples/simple-grid.py`
 
 |toggleStart|
 
@@ -375,7 +375,7 @@ This script lists the source code of all Python scripts that live in the script'
 
 **Files:**
 
-* ``docs/samples/code-printer.py``
+* `docs/samples/code-printer.py`
 
 |toggleStart|
 
@@ -410,7 +410,7 @@ This example takes some JSON data input which it uses to populate a :ref:`Story`
 
 **Files:**
 
-* ``docs/samples/json-example.py``
+* `docs/samples/json-example.py`
 
 |toggleStart|
 
@@ -431,7 +431,7 @@ Using the Alternative :meth:`Story.write*()` functions
 The :meth:`Story.write*()` functions provide a different way to use the
 :ref:`Story` functionality, removing the need for calling code to implement
 a loop that calls :meth:`Story.place()` and :meth:`Story.draw()` etc, at the
-expense of having to provide at least a ``rectfn()`` callback.
+expense of having to provide at least a `rectfn()` callback.
 
 
 .. _RecipesStories_L_a:
@@ -444,7 +444,7 @@ rectangles per page.
 
 **Files:**
 
-* ``docs/samples/story-write.py``
+* `docs/samples/story-write.py`
 
 |toggleStart|
 
@@ -462,7 +462,7 @@ How to do Iterative Layout for a Table of Contents with :meth:`Story.write_stabi
 ----------------------------------------------------------------------------------------
 
 This script creates html content dynamically, adding a contents section based
-on :ref:`ElementPosition` items that have non-zero ``.heading`` values.
+on :ref:`ElementPosition` items that have non-zero `.heading` values.
 
 The contents section is at the start of the document, so modifications to the
 contents can change page numbers in the rest of the document, which in turn can
@@ -474,7 +474,7 @@ out until things are stable.
 
 **Files:**
 
-* ``docs/samples/story-write-stabilized.py``
+* `docs/samples/story-write-stabilized.py`
 
 |toggleStart|
 
@@ -498,7 +498,7 @@ contains links that correspond to the internal links in the original html.
 This is done by using :meth:`Story.write_stabilized_links()`; this is slightly
 different from :meth:`Story.write_stabilized()`:
 
-* It does not take a :ref:`DocumentWriter` ``writer`` arg.
+* It does not take a :ref:`DocumentWriter` `writer` arg.
 * It returns a PDF :ref:`Document` instance.
 
 [The reasons for this are a little involved; for example a
@@ -508,7 +508,7 @@ in a PDF-specific API.]
 
 **Files:**
 
-* ``docs/samples/story-write-stabilized-links.py``
+* `docs/samples/story-write-stabilized-links.py`
 
 |toggleStart|
 
@@ -532,8 +532,8 @@ in a PDF-specific API.]
     Some important CSS support to consider:
 
     - The only available layout is relative layout.
-    - ``background`` is unavailable, use ``background-color`` instead.
-    - ``float`` is unavailable.
+    - `background` is unavailable, use `background-color` instead.
+    - `float` is unavailable.
 
 
 .. include:: footer.rst

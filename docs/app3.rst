@@ -20,10 +20,10 @@ The transformation matrix contains information about how an image was transforme
 The relationship between image dimension and its bbox on a page is the following:
 
 1. Using the original image's width and height,
-    - define the image rectangle ``imgrect = fitz.Rect(0, 0, width, height)``
-    - define the "shrink matrix" ``shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)``.
+    - define the image rectangle `imgrect = fitz.Rect(0, 0, width, height)`
+    - define the "shrink matrix" `shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)`.
 
-2. Transforming the image rectangle with its shrink matrix, will result in the unit rectangle: ``imgrect * shrink = fitz.Rect(0, 0, 1, 1)``.
+2. Transforming the image rectangle with its shrink matrix, will result in the unit rectangle: `imgrect * shrink = fitz.Rect(0, 0, 1, 1)`.
 
 3. Using the image **transformation matrix** "transform", the following steps will compute the bbox::
 
@@ -31,7 +31,7 @@ The relationship between image dimension and its bbox on a page is the following
     shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)
     bbox = imgrect * shrink * transform
 
-4. Inspecting the matrix product ``shrink * transform`` will reveal all information about what happened to the image rectangle to make it fit into the bbox on the page: rotation, scaling of its sides and translation of its origin. Let us look at an example:
+4. Inspecting the matrix product `shrink * transform` will reveal all information about what happened to the image rectangle to make it fit into the bbox on the page: rotation, scaling of its sides and translation of its origin. Let us look at an example:
 
     >>> imginfo = page.get_images()[0]  # get an image item on a page
     >>> imginfo
@@ -123,23 +123,23 @@ This PDF Reference manual published by Adobe is frequently quoted throughout thi
 
 Using Python Sequences as Arguments in PyMuPDF
 ------------------------------------------------
-When PyMuPDF objects and methods require a Python **list** of numerical values, other Python **sequence types** are also allowed. Python classes are said to implement the **sequence protocol**, if they have a ``__getitem__()`` method.
+When PyMuPDF objects and methods require a Python **list** of numerical values, other Python **sequence types** are also allowed. Python classes are said to implement the **sequence protocol**, if they have a `__getitem__()` method.
 
 This basically means, you can interchangeably use Python *list* or *tuple* or even *array.array*, *numpy.array* and *bytearray* types in these cases.
 
-For example, specifying a sequence ``"s"`` in any of the following ways
+For example, specifying a sequence `"s"` in any of the following ways
 
-* ``s = [1, 2]`` -- a list
-* ``s = (1, 2)`` -- a tuple
-* ``s = array.array("i", (1, 2))`` -- an array.array
-* ``s = numpy.array((1, 2))`` -- a numpy array
-* ``s = bytearray((1, 2))`` -- a bytearray
+* `s = [1, 2]` -- a list
+* `s = (1, 2)` -- a tuple
+* `s = array.array("i", (1, 2))` -- an array.array
+* `s = numpy.array((1, 2))` -- a numpy array
+* `s = bytearray((1, 2))` -- a bytearray
 
 will make it usable in the following example expressions:
 
-* ``fitz.Point(s)``
-* ``fitz.Point(x, y) + s``
-* ``doc.select(s)``
+* `fitz.Point(s)`
+* `fitz.Point(x, y) + s`
+* `doc.select(s)`
 
 Similarly with all geometry objects :ref:`Rect`, :ref:`IRect`, :ref:`Matrix` and :ref:`Point`.
 

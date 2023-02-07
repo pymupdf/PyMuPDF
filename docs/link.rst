@@ -46,7 +46,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
       PDF only: Changes the "stroke" color.
       
-      .. note:: In PDF, links are a subtype of annotations technically and **do not support fill colors**. However, to keep a consistent API, we do allow specifying a ``fill=`` parameter like with all annotations, which will be ignored with a warning.
+      .. note:: In PDF, links are a subtype of annotations technically and **do not support fill colors**. However, to keep a consistent API, we do allow specifying a `fill=` parameter like with all annotations, which will be ignored with a warning.
 
       *(Changed in version 1.16.9)* Allow colors to be directly set. These parameters are used if *colors* is not a dictionary.
 
@@ -57,7 +57,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
       *New in v1.18.16*
 
-      Set the PDF ``/F`` property of the link annotation. See :meth:`Annot.set_flags` for details. If not a PDF, this method is a no-op.
+      Set the PDF `/F` property of the link annotation. See :meth:`Annot.set_flags` for details. If not a PDF, this method is a no-op.
 
 
    .. attribute:: flags
@@ -69,7 +69,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
    .. attribute:: colors
 
-      Meaningful for PDF only: A dictionary of two tuples of floats in range ``0 <= float <= 1`` specifying the *stroke* and the interior (*fill*) colors. If not a PDF, *None* is returned. As mentioned above, the fill color is always ``None`` for links. The stroke color is used for the border of the link rectangle. The length of the tuple implicitely determines the colorspace: 1 = GRAY, 3 = RGB, 4 = CMYK. So ``(1.0, 0.0, 0.0)`` stands for RGB color red. The value of each float *f* is mapped to the integer value *i* in range 0 to 255 via the computation *f = i / 255*.
+      Meaningful for PDF only: A dictionary of two tuples of floats in range `0 <= float <= 1` specifying the *stroke* and the interior (*fill*) colors. If not a PDF, *None* is returned. As mentioned above, the fill color is always `None` for links. The stroke color is used for the border of the link rectangle. The length of the tuple implicitely determines the colorspace: 1 = GRAY, 3 = RGB, 4 = CMYK. So `(1.0, 0.0, 0.0)` stands for RGB color red. The value of each float *f* is mapped to the integer value *i* in range 0 to 255 via the computation *f = i / 255*.
 
       :rtype: dict
 

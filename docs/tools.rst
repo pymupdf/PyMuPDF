@@ -61,7 +61,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Set or inquire reduced bbox heights in text extract and text search methods.
 
-      :arg bool on: if omitted or ``None``, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If ``True``, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If ``False`` (standard setting when PyMuPDF is imported), bbox height will be based on font properties and normally equal *line height*.
+      :arg bool on: if omitted or `None`, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If `True`, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If `False` (standard setting when PyMuPDF is imported), bbox height will be based on font properties and normally equal *line height*.
 
       :rtype: bool
       :returns: *True* or *False*.
@@ -74,12 +74,12 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Control suppression of subset fontname tags in text extractions.
 
-      :arg bool on: if omitted / ``None``, the current setting is returned. Arguments evaluating to ``True`` or ``False`` set a global variable. If ``True``, options "dict", "json", "rawdict" and "rawjson" will return e.g. ``"NOHSJV+Calibri-Light"``, otherwise only ``"Calibri-Light"`` (the default). The setting remains in effect until changed again.
+      :arg bool on: if omitted / `None`, the current setting is returned. Arguments evaluating to `True` or `False` set a global variable. If `True`, options "dict", "json", "rawdict" and "rawjson" will return e.g. `"NOHSJV+Calibri-Light"`, otherwise only `"Calibri-Light"` (the default). The setting remains in effect until changed again.
 
       :rtype: bool
       :returns: *True* or *False*.
 
-      .. note:: Except mentioned above, no other text extraction variants are influenced by this. This is especially true for the options "xml", "xhtml" and "html", which are based on MuPDF code. They extract the font name ``"Calibri-Light"``, or even just the **family** name -- ``Calibri`` in this example.
+      .. note:: Except mentioned above, no other text extraction variants are influenced by this. This is especially true for the options "xml", "xhtml" and "html", which are based on MuPDF code. They extract the font name `"Calibri-Light"`, or even just the **family** name -- `Calibri` in this example.
 
 
    .. method:: unset_quad_corrections(on=None)
@@ -88,7 +88,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       Enable / disable PyMuPDF-specific code, that tries to rebuild valid character quads when encountering nonsense in :meth:`Page.get_text` text extractions. This code depends on certain font properties (ascender and descender), which do not exist in rare situations and cause segmentation faults when trying to access them. This method sets a global parameter in PyMuPDF, which suppresses execution of this code.
 
-      :arg bool on: if omitted or ``None``, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If ``True``, PyMuPDF will not try to access the resp. font properties and use values ``ascender=0.8`` and ``descender=-0.2`` instead.
+      :arg bool on: if omitted or `None`, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If `True`, PyMuPDF will not try to access the resp. font properties and use values `ascender=0.8` and `descender=-0.2` instead.
 
       :rtype: bool
       :returns: *True* or *False*.
@@ -110,7 +110,7 @@ This class is a collection of utility methods and attributes, mainly around memo
       Return the current anti-aliasing values. These values control the rendering quality of graphics and text elements.
 
       :rtype: dict
-      :returns: A dictionary with the following initial content: ``{'graphics': 8, 'text': 8, 'graphics_min_line_width': 0.0}``.
+      :returns: A dictionary with the following initial content: `{'graphics': 8, 'text': 8, 'graphics_min_line_width': 0.0}`.
 
 
    .. method:: set_aa_level(level)
@@ -267,6 +267,6 @@ Example Session
 
 .. [#f1] This memory area is internally used by MuPDF, and it serves as a cache for objects that have already been read and interpreted, thus improving performance. The most bulky object types are images and also fonts. When an application starts up the MuPDF library (in our case this happens as part of *import fitz*), it must specify a maximum size for this area. PyMuPDF's uses the default value (256 MB) to limit memory consumption. Use the methods here to control or investigate store usage. For example: even after a document has been closed and all related objects have been deleted, the store usage may still not drop down to zero. So you might want to enforce that before opening another document.
 
-.. [#f2] By default PyMuPDF and MuPDF use ``malloc()``/``free()`` for dynamic memory management. One can instead force them to use the Python allocation functions ``PyMem_New()``/``PyMem_Del()``, by modifying *fitz/fitz.i* to do ``#define JM_MEMORY 1`` and rebuilding PyMuPDF.
+.. [#f2] By default PyMuPDF and MuPDF use `malloc()`/`free()` for dynamic memory management. One can instead force them to use the Python allocation functions `PyMem_New()`/`PyMem_Del()`, by modifying *fitz/fitz.i* to do `#define JM_MEMORY 1` and rebuilding PyMuPDF.
 
 .. include:: footer.rst

@@ -50,7 +50,7 @@ In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 t
     pix = page.get_pixmap(matrix=mat)  # use 'mat' instead of the identity matrix
 
 
-Since version 1.19.2 there is a more direct way to set the resolution: Parameter ``"dpi"`` (dots per inch) can be used in place of ``"matrix"``. To create a 300 dpi image of a page specify ``pix = page.get_pixmap(dpi=300)``. Apart from notation brevity, this approach has the additional advantage that the **dpi value is saved with the image** file -- which does not happen automatically when using the Matrix notation.
+Since version 1.19.2 there is a more direct way to set the resolution: Parameter `"dpi"` (dots per inch) can be used in place of `"matrix"`. To create a 300 dpi image of a page specify `pix = page.get_pixmap(dpi=300)`. Apart from notation brevity, this approach has the additional advantage that the **dpi value is saved with the image** file -- which does not happen automatically when using the Matrix notation.
 
 ----------
 
@@ -104,7 +104,7 @@ Please also read the previous section. This time we want to **compute the zoom f
 
 For the other way round, now assume you **have** the zoom factor and need to **compute the fitting clip**.
 
-In this case we have ``zoom = HEIGHT/clip.height = WIDTH/clip.width``, so we must set ``clip.height = HEIGHT/zoom`` and, ``clip.width = WIDTH/zoom``. Choose the top-left point ``tl`` of the clip on the page to compute the right pixmap::
+In this case we have `zoom = HEIGHT/clip.height = WIDTH/clip.width`, so we must set `clip.height = HEIGHT/zoom` and, `clip.width = WIDTH/zoom`. Choose the top-left point `tl` of the clip on the page to compute the right pixmap::
 
     width = WIDTH / zoom
     height = HEIGHT / zoom
@@ -124,7 +124,7 @@ How to Create or Suppress Annotation Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Normally, the pixmap of a page also shows the page's annotations. Occasionally, this may not be desirable.
 
-To suppress the annotation images on a rendered page, just specify ``annots=False`` in :meth:`Page.get_pixmap`.
+To suppress the annotation images on a rendered page, just specify `annots=False` in :meth:`Page.get_pixmap`.
 
 You can also render annotations separately: they have their own :meth:`Annot.get_pixmap` method. The resulting pixmap has the same dimensions as the annotation rectangle.
 
@@ -215,7 +215,7 @@ Some images in PDFs are accompanied by **image masks**. In their simplest form, 
 
 Whether an image does have such a mask can be recognized in one of two ways in PyMuPDF:
 
-1. An item of :meth:`Document.get_page_images` has the general format ``(xref, smask, ...)``, where *xref* is the image's :data:`xref` and *smask*, if positive, then it is the :data:`xref` of a mask.
+1. An item of :meth:`Document.get_page_images` has the general format `(xref, smask, ...)`, where *xref* is the image's :data:`xref` and *smask*, if positive, then it is the :data:`xref` of a mask.
 2. The (dictionary) results of :meth:`Document.extract_image` have a key *"smask"*, which also contains any mask's :data:`xref` if positive.
 
 If *smask == 0* then the image encountered via :data:`xref` can be processed as it is.

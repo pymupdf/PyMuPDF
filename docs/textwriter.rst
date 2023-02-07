@@ -57,7 +57,7 @@ Using this object entails three steps:
    .. method:: __init__(self, rect, opacity=1, color=None)
 
       :arg rect-like rect: rectangle internally used for text positioning computations.
-      :arg float opacity: sets the transparency for the text to store here. Values outside the interval ``[0, 1)`` will be ignored. A value of e.g. 0.5 means 50% transparency.
+      :arg float opacity: sets the transparency for the text to store here. Values outside the interval `[0, 1)` will be ignored. A value of e.g. 0.5 means 50% transparency.
       :arg float,sequ color: the color of the text. All colors are specified as floats *0 <= color <= 1*. A single float represents some gray level, a sequence implies the colorspace via its length.
 
 
@@ -70,7 +70,7 @@ Using this object entails three steps:
 
       :arg point_like pos: start position of the text, the bottom left point of the first character.
       :arg str text: a string of arbitrary length. It will be written starting at position "pos".
-      :arg font: a :ref:`Font`. If omitted, ``fitz.Font("helv")`` will be used.
+      :arg font: a :ref:`Font`. If omitted, `fitz.Font("helv")` will be used.
       :arg float fontsize: the fontsize, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts within the text will automatically converted. There are no other consequences, i.e. :attr:`TextWriter.last_point` will still be the rightmost character, and there neither is any alignment taking place. Hence you may want to use :meth:`TextWriter.fill_textbox` instead.
@@ -101,7 +101,7 @@ Using this object entails three steps:
 
       :arg point_like pos: start position of the text, the bottom left point of the first character.
       :arg str text: a string. It will be written starting at position "pos".
-      :arg font: a :ref:`Font`. If omitted, ``fitz.Font("helv")`` will be used.
+      :arg font: a :ref:`Font`. If omitted, `fitz.Font("helv")` will be used.
       :arg float fontsize: the fontsize, a positive float, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
       :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.
@@ -110,7 +110,7 @@ Using this object entails three steps:
 
    .. method:: fill_textbox(rect, text, *, pos=None, font=None, fontsize=11, align=0, right_to_left=False, warn=None, small_caps=0)
 
-      * Changed in 1.17.3: New parameter ``pos`` to specify where to start writing within rectangle.
+      * Changed in 1.17.3: New parameter `pos` to specify where to start writing within rectangle.
       * Changed in v1.18.9: Return list of lines which do not fit in rectangle. Support writing right-to-left (e.g. Arabian, Hebrew).
       * Changed in v1.18.15: Prefer small caps if supported by the font.
 
@@ -146,7 +146,7 @@ Using this object entails three steps:
       :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*. 
       :arg bool overlay: put in foreground (default) or background.
       :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
-      :arg int render_mode: The PDF ``Tr`` operator value. Values: 0 (default), 1, 2, 3 (invisible).
+      :arg int render_mode: The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible).
 
          .. image:: images/img-rendermode.*
 

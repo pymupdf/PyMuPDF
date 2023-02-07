@@ -1,8 +1,5 @@
 .. include:: header.rst
 
-
-
-
 .. _About:
 
 

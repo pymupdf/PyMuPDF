@@ -26,13 +26,13 @@ source using a :title:`Python` sdist.
 * On Unix-style systems such as Linux, OpenBSD and FreeBSD,
   use the system package manager to install SWIG.
 
-  * For example on Debian Linux, do: ``sudo apt install swig``
+  * For example on Debian Linux, do: `sudo apt install swig`
 
 * On Windows:
 
   * Install Visual Studio 2019. If not installed in a standard location, set
-    environmental variable ``PYMUPDF_SETUP_DEVENV`` to the location of the
-    ``devenv.com`` binary.
+    environmental variable `PYMUPDF_SETUP_DEVENV` to the location of the
+    `devenv.com` binary.
 
   * Install SWIG by following the instructions at:
     https://swig.org/Doc4.0/Windows.html#Windows_installation
@@ -40,10 +40,10 @@ source using a :title:`Python` sdist.
 * On MacOS, install MacPorts using the instructions at:
   https://www.macports.org/install.php
 
-  * Then install SWIG with: ``sudo port install swig``
-  * You may also need: ``sudo port install swig-python``
+  * Then install SWIG with: `sudo port install swig`
+  * You may also need: `sudo port install swig-python`
 
-As of ``PyMuPDF-1.20.0``, the required :title:`MuPDF` source code is already in the
+As of `PyMuPDF-1.20.0`, the required :title:`MuPDF` source code is already in the
 sdist and is automatically built into :title:`PyMuPDF`.
 
 
@@ -65,7 +65,7 @@ There are no **mandatory** external dependencies. However, some optional feature
 * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
 * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
 * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a :title:`Python` package. To enable OCR functions in :title:`PyMuPDF`, the software must be installed and the system environment variable ``"TESSDATA_PREFIX"`` must be defined and contain the ``tessdata`` folder name of the Tesseract installation location. See below.
+* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a :title:`Python` package. To enable OCR functions in :title:`PyMuPDF`, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.
 
 .. note:: You can install these additional components at any time -- before or after installing :title:`PyMuPDF`. :title:`PyMuPDF` will detect their presence during import or when the respective functions are being used.
 
@@ -80,7 +80,7 @@ Install from source without using an sdist
 
       git clone https://github.com/pymupdf/PyMuPDF.git
 
-  * Or download and extract a ``.zip`` or ``.tar.gz`` source release from
+  * Or download and extract a `.zip` or `.tar.gz` source release from
     https://github.com/pymupdf/PyMuPDF/releases.
 
 * Install C/C++ development tools and SWIG as described above.
@@ -94,19 +94,19 @@ Install from source without using an sdist
   
   One can build with a non-default :title:`MuPDF` (for example one installed on the
   system, or a local checkout) by setting environmental variables. See the
-  comments at the start of ``PyMuPDF/setup.py`` for more information.
+  comments at the start of `PyMuPDF/setup.py` for more information.
 
 .. note:: When running :title:`Python` scripts that use :title:`PyMuPDF`, make sure that the
-  current directory is not the ``PyMuPDF/`` directory.
+  current directory is not the `PyMuPDF/` directory.
 
-  Otherwise, confusingly, :title:`Python` will attempt to import ``fitz`` from the local
-  ``fitz/`` directory, which will fail because it only contains source files.
+  Otherwise, confusingly, :title:`Python` will attempt to import `fitz` from the local
+  `fitz/` directory, which will fail because it only contains source files.
 
 
 Running tests
 ~~~~~~~~~~~~~
 
-:title:`PyMuPDF` has a set of ``pytest`` scripts within the ``tests/`` directory.
+:title:`PyMuPDF` has a set of `pytest` scripts within the `tests/` directory.
 
 Run tests with::
 
@@ -114,12 +114,12 @@ Run tests with::
     pytest PyMuPDF/tests
 
 If :title:`PyMuPDF` has been built with a non-default build of :title:`MuPDF` (using
-environmental variable ``PYMUPDF_SETUP_MUPDF_BUILD``), it is possible that
-``tests/test_textbox.py:test_textbox3()`` will fail, because it relies on :title:`MuPDF`
-having been built with :title:`PyMuPDF's` customized configuration, ``fitz/_config.h``.
+environmental variable `PYMUPDF_SETUP_MUPDF_BUILD`), it is possible that
+`tests/test_textbox.py:test_textbox3()` will fail, because it relies on :title:`MuPDF`
+having been built with :title:`PyMuPDF's` customized configuration, `fitz/_config.h`.
 
-One can skip this particular test by adding ``-k 'not test_textbox3'`` to the
-``pytest`` command line.
+One can skip this particular test by adding `-k 'not test_textbox3'` to the
+`pytest` command line.
 
 
 Enabling Integrated OCR Support
@@ -128,21 +128,21 @@ If you do not intend to use this feature, skip this step. Otherwise, it is requi
 
 :title:`PyMuPDF` will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
 
-The language support folder location must currently [#f1]_ be communicated via storing it in the environment variable ``"TESSDATA_PREFIX"``.
+The language support folder location must currently [#f1]_ be communicated via storing it in the environment variable `"TESSDATA_PREFIX"`.
 
 So for a working OCR functionality, make sure to complete this checklist:
 
 1. Install Tesseract.
 
 2. Locate Tesseract's language support folder. Typically you will find it here:
-    - Windows: ``C:\Program Files\Tesseract-OCR\tessdata``
-    - Unix systems: ``/usr/share/tesseract-ocr/4.00/tessdata``
+    - Windows: `C:\Program Files\Tesseract-OCR\tessdata`
+    - Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
-3. Set the environment variable ``TESSDATA_PREFIX``
-    - Windows: ``set TESSDATA_PREFIX=C:\Program Files\Tesseract-OCR\tessdata``
-    - Unix systems: ``export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata``
+3. Set the environment variable `TESSDATA_PREFIX`
+    - Windows: `set TESSDATA_PREFIX=C:\Program Files\Tesseract-OCR\tessdata`
+    - Unix systems: `export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
-.. note:: This must happen outside :title:`Python` -- before starting your script. Just manipulating ``os.environ`` will not work!
+.. note:: This must happen outside :title:`Python` -- before starting your script. Just manipulating `os.environ` will not work!
 
 .. rubric:: Footnotes
 

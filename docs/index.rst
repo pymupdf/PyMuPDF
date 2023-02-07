@@ -43,7 +43,7 @@ Welcome to :title:`PyMuPDF`
 
 
 .. toctree::
-   :caption: API Guide
+   :caption: API Reference
    :maxdepth: 2
 
    module.rst
