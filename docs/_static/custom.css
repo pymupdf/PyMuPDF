@@ -85,6 +85,19 @@ cite {
 }
 
 
+.red-color {
+    color: #cc0000;
+}
+
+.orange-color {
+    color: #ff6600;
+}
+
+.green-color {
+    color: #00cc00;
+}
+
+
 
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {

@@ -29,7 +29,7 @@ Features Comparison
 Performance
 -----------------------------------------------
 
-To benchmark :title:`PyMuPDF` performance against a range of tasks a test suite with a fixed set of 15 :title:`PDFs` with a total of 3800 pages containing text & images is used to obtain performance timings.
+To benchmark :title:`PyMuPDF` performance against a range of tasks a test suite with a fixed set of :ref:`8 PDFs with a total of 7,031 pages<Appendix4_Files_Used>` containing text & images is used to obtain performance timings.
 
 
 Here are current results, grouped by task:
