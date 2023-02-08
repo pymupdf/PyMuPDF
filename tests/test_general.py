@@ -124,3 +124,144 @@ def test_default_font():
     f = fitz.Font()
     assert str(f) == "Font('Noto Serif Regular')"
     assert repr(f) == "Font('Noto Serif Regular')"
+
+def test_add_ink_annot():
+    import math
+    document = fitz.Document()
+    page = document.new_page()
+    line1 = []
+    line2 = []
+    for a in range( 0, 360*2, 15):
+        x = a
+        c = 300 + 200 * math.cos( a * math.pi/180)
+        s = 300 + 100 * math.sin( a * math.pi/180)
+        line1.append( (x, c))
+        line2.append( (x, s))
+    page.add_ink_annot( [line1, line2])
+    page.insert_text((100, 72), 'Hello world')
+    page.add_text_annot((200,200), "Some Text")
+    page.get_bboxlog()
+    path = f'{scriptdir}/resources/test_add_ink_annot.pdf'
+    document.save( path)
+    print( f'Have saved to: {path=}')
+
+def test_techwriter_append():
+    print(fitz.__doc__)
+    doc = fitz.open()
+    page = doc.new_page()
+    tw = fitz.TextWriter(page.rect)
+    text = "Red rectangle = TextWriter.text_rect, blue circle = .last_point"
+    r = tw.append((100, 100), text)
+    print(f'{r=}')
+    tw.write_text(page)
+    page.draw_rect(tw.text_rect, color=fitz.pdfcolor["red"])
+    page.draw_circle(tw.last_point, 2, color=fitz.pdfcolor["blue"])
+    path = f"{scriptdir}/resources/test_techwriter_append.pdf"
+    doc.ez_save(path)
+    print( f'Have saved to: {path}')
+
+def test_opacity():
+    doc = fitz.open()
+    page = doc.new_page()
+
+    annot1 = page.add_circle_annot((50, 50, 100, 100))
+    annot1.set_colors(fill=(1, 0, 0), stroke=(1, 0, 0))
+    annot1.set_opacity(2 / 3)
+    annot1.update(blend_mode="Multiply")
+
+    annot2 = page.add_circle_annot((75, 75, 125, 125))
+    annot2.set_colors(fill=(0, 0, 1), stroke=(0, 0, 1))
+    annot2.set_opacity(1 / 3)
+    annot2.update(blend_mode="Multiply")
+    outfile = f'{scriptdir}/resources/opacity.pdf'
+    doc.save(outfile, expand=True, pretty=True)
+    print("saved", outfile)
+
+def test_get_text_dict():
+    import json
+    doc=fitz.open(f'{scriptdir}/resources/v110-changes.pdf')
+    page=doc[0]
+    blocks=page.get_text("dict")["blocks"]
+    # Check no opaque types in `blocks`.
+    json.dumps( blocks, indent=4)
+
+def test_font():
+    font = fitz.Font()
+    print(repr(font))
+    bbox = font.glyph_bbox( 65)
+    print( f'{bbox=}')
+
+def test_insert_font():
+    doc=fitz.open(f'{scriptdir}/resources/v110-changes.pdf')
+    page = doc[0]
+    i = page.insert_font()
+    print( f'page.insert_font() => {i}')
+
+def test_2173():
+    from fitz import IRect, Pixmap, CS_RGB, Colorspace
+    for i in range( 100):
+        #print( f'{i=}')
+        image = Pixmap(Colorspace(CS_RGB), IRect(0, 0, 13, 37))
+    print( 'test_2173() finished')
+
+def test_texttrace():
+    import time
+    document = fitz.Document( f'{scriptdir}/resources/joined.pdf')
+    t = time.time()
+    for page in document:
+        tt = page.get_texttrace()
+    t = time.time() - t
+    print( f'test_texttrace(): {t=}')
+    
+    # Repeat, this time writing data to file.
+    import json
+    path = f'{scriptdir}/resources/test_texttrace.txt'
+    print( f'Writing to: {path}')
+    with open( path, 'w') as f:
+        for i, page in enumerate(document):
+            tt = page.get_texttrace()
+            print( f'page {i} json:\n{json.dumps(tt, indent="    ")}', file=f)
+
+def test_2108():
+    doc = fitz.open(f'{scriptdir}/resources/test_2108.pdf')
+    page = doc[0]
+    areas = page.search_for("{sig}")
+    rect = areas[0]
+    page.add_redact_annot(rect)
+    page.apply_redactions()
+    text = page.get_text()
+    
+    text_expected = b'Frau\nClaire Dunphy\nTeststra\xc3\x9fe 5\n12345 Stadt\nVertragsnummer:  12345\nSehr geehrte Frau Dunphy,\nText\nMit freundlichen Gr\xc3\xbc\xc3\x9fen\nTestfirma\nVertrag:\n  12345\nAnsprechpartner:\nJay Pritchet\nTelefon:\n123456\nE-Mail:\ntest@test.de\nDatum:\n07.12.2022\n'.decode('utf8')
+    
+    if 1:
+        # Verbose info.
+        print(f'test_2108(): text is:\n{text}')
+        print(f'')
+        print(f'test_2108(): repr(text) is:\n{text!r}')
+        print(f'')
+        print(f'test_2108(): repr(text.encode("utf8")) is:\n{text.encode("utf8")!r}')
+        print(f'')
+        print(f'test_2108(): text_expected is:\n{text_expected}')
+        print(f'')
+        print(f'test_2108(): repr(text_expected) is:\n{text_expected!r}')
+        print(f'')
+        print(f'test_2108(): repr(text_expected.encode("utf8")) is:\n{text_expected.encode("utf8")!r}')
+
+        ok1 = (text == text_expected)
+        ok2 = (text.encode("utf8") == text_expected.encode("utf8"))
+        ok3 = (repr(text.encode("utf8")) == repr(text_expected.encode("utf8")))
+
+        print(f'')
+        print(f'ok1={ok1}')
+        print(f'ok2={ok2}')
+        print(f'ok3={ok3}')
+
+        print(f'')
+    
+    print(f'fitz.mupdf_version_tuple={fitz.mupdf_version_tuple}')
+    if fitz.mupdf_version_tuple >= (1, 21, 2):
+        print('Asserting text==text_expected')
+        assert text == text_expected
+    else:
+        print('Asserting text!=text_expected')
+        assert text != text_expected

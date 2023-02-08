@@ -1,7 +1,20 @@
 .. include:: header.rst
 
 
+
 .. _Installation:
+
+Requirements
+============
+
+All the examples below assume that you are running inside a Python virtual
+environment. See: https://docs.python.org/3/library/venv.html for details.
+
+For example::
+
+    python -m venv pymupdf-venv
+    . pymupdf-venv/bin/activate
+
 
 
 Installation
@@ -31,8 +44,14 @@ source using a :title:`Python` sdist.
 * On Windows:
 
   * Install Visual Studio 2019. If not installed in a standard location, set
+
     environmental variable `PYMUPDF_SETUP_DEVENV` to the location of the
     `devenv.com` binary.
+    
+  * Having other installed versions of Visual Studio, for example Visual 
+    Studio 2022, can cause problems because one can end up with MuPDF and
+    PyMuPDF code being compiled with different compiler versions.
+
 
   * Install SWIG by following the instructions at:
     https://swig.org/Doc4.0/Windows.html#Windows_installation
@@ -70,8 +89,8 @@ There are no **mandatory** external dependencies. However, some optional feature
 .. note:: You can install these additional components at any time -- before or after installing :title:`PyMuPDF`. :title:`PyMuPDF` will detect their presence during import or when the respective functions are being used.
 
 
-Install from source without using an sdist
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Installation from source without using an sdist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * First get a :title:`PyMuPDF` source tree:
 
@@ -92,12 +111,10 @@ Install from source without using an sdist
   This will automatically download a specific hard-coded :title:`MuPDF` source release,
   and build it into :title:`PyMuPDF`.
   
-  One can build with a non-default :title:`MuPDF` (for example one installed on the
-  system, or a local checkout) by setting environmental variables. See the
-  comments at the start of `PyMuPDF/setup.py` for more information.
 
-.. note:: When running :title:`Python` scripts that use :title:`PyMuPDF`, make sure that the
+.. note:: When running Python scripts that use PyMuPDF, make sure that the
   current directory is not the `PyMuPDF/` directory.
+
 
   Otherwise, confusingly, :title:`Python` will attempt to import `fitz` from the local
   `fitz/` directory, which will fail because it only contains source files.
@@ -106,20 +123,59 @@ Install from source without using an sdist
 Running tests
 ~~~~~~~~~~~~~
 
-:title:`PyMuPDF` has a set of `pytest` scripts within the `tests/` directory.
-
-Run tests with::
+Having a PyMuPDF tree available allows one to run PyMuPDF's `pytest` test
+suite::
 
     pip install pytest fontTools
     pytest PyMuPDF/tests
 
-If :title:`PyMuPDF` has been built with a non-default build of :title:`MuPDF` (using
-environmental variable `PYMUPDF_SETUP_MUPDF_BUILD`), it is possible that
-`tests/test_textbox.py:test_textbox3()` will fail, because it relies on :title:`MuPDF`
-having been built with :title:`PyMuPDF's` customized configuration, `fitz/_config.h`.
 
-One can skip this particular test by adding `-k 'not test_textbox3'` to the
-`pytest` command line.
+Building and testing with git checkouts of PyMuPDF and MuPDF
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Things to do:
+
+* Install C/C++ development tools and SWIG as described above.
+* Get PyMuPDF.
+* Get MuPDF.
+* Create a Python virtual environment.
+* Build PyMuPDF with environmental variable `PYMUPDF_SETUP_MUPDF_BUILD` set
+  to the path of the local MuPDF checkout.
+* Run PyMuPDF tests.
+
+For example::
+
+    git clone -b 1.21 https://github.com/pymupdf/PyMuPDF.git
+    git clone -b 1.21.x --recursive https://ghostscript.com:/home/git/mupdf.git
+    python -m venv pymupdf-venv
+    . pymupdf-venv/bin/activate
+    cd PyMuPDF
+    PYMUPDF_SETUP_MUPDF_BUILD=../mupdf python setup.py install
+    cd ..
+    pip install pytest fontTools
+    pytest PyMuPDF
+
+
+Using a non-default MuPDF
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using a non-default build of MuPDF by setting environmental variable
+`PYMUPDF_SETUP_MUPDF_BUILD` can cause various things to go wrong and so is
+not generally supported:
+
+* If MuPDF's major version number differs from what PyMuPDF uses by default,
+  PyMuPDF can fail to build, because MuPDF's API can change between major
+  versions.
+
+* Runtime behaviour of PyMuPDF can change because MuPDF's runtime behaviour
+  changes between different minor releases. This can also break some PyMuPDF
+  tests.
+
+* If MuPDF was built with its default config instead of PyMuPDF's customised
+  config (for example if MuPDF is a system install), it is possible that
+  `tests/test_textbox.py:test_textbox3()` will fail. One can skip this
+  particular test by adding `-k 'not test_textbox3'` to the `pytest`
+  command line.
 
 
 Enabling Integrated OCR Support

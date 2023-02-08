@@ -128,16 +128,71 @@ int JM_insert_contents(fz_context * ctx, pdf_document * pdf,
     return xref;
 }
 
-static PyObject *img_info = NULL;
+static void show(const char* prefix, PyObject* obj)
+{
+    if (!obj)
+    {
+        printf( "%s\n", prefix);
+        return;
+    }
+    PyObject* obj_repr = PyObject_Repr( obj);
+    PyObject* obj_repr_u = PyUnicode_AsEncodedString( obj_repr, "utf-8", "~E~");
+    const char* obj_repr_s = PyString_AsString( obj_repr_u);
+    printf( "%s%s\n", prefix, obj_repr_s);
+    fflush(stdout);
+}
+
+static PyObject *g_img_info = NULL;
+static fz_matrix g_img_info_matrix = {0};
 
 static fz_image *
 JM_image_filter(fz_context *ctx, void *opaque, fz_matrix ctm, const char *name, fz_image *image)
 {
     fz_quad q = fz_transform_quad(fz_quad_from_rect(fz_unit_rect), ctm);
+    #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
+    q = fz_transform_quad( q, g_img_info_matrix);
+    #endif
     PyObject *temp = Py_BuildValue("sN", name, JM_py_from_quad(q));
-    LIST_APPEND_DROP(img_info, temp);
-    return NULL;
+    
+    LIST_APPEND_DROP(g_img_info, temp);
+    return image;
 }
+
+#if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
+
+static PyObject *
+JM_image_reporter(fz_context *ctx, pdf_page *page)
+{
+    pdf_document *doc = page->doc;
+    
+    pdf_page_transform(ctx, page, NULL, &g_img_info_matrix);
+    pdf_filter_options filter_options = {0};
+    filter_options.recurse = 0;
+    filter_options.instance_forms = 1;
+    filter_options.ascii = 1;
+    filter_options.no_update = 1;
+    
+    pdf_sanitize_filter_options sanitize_filter_options = {0};
+    sanitize_filter_options.opaque = page;
+    sanitize_filter_options.image_filter = JM_image_filter;
+    
+    pdf_filter_factory filter_factory[2] = {0};
+    filter_factory[0].filter = pdf_new_sanitize_filter;
+    filter_factory[0].options = &sanitize_filter_options;
+    
+    filter_options.filters = &filter_factory;
+    
+    g_img_info = PyList_New(0);
+    
+    pdf_filter_page_contents(ctx, doc, page, &filter_options);
+    
+    PyObject *rc = PySequence_Tuple(g_img_info);
+    Py_CLEAR(g_img_info);
+    
+    return rc;
+}
+
+#else
 
 void
 JM_filter_content_stream(
@@ -216,13 +271,15 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
 
     contents = pdf_page_contents(ctx, page);
     old_res = pdf_page_resources(ctx, page);
-    img_info = PyList_New(0);
+    g_img_info = PyList_New(0);
     JM_filter_content_stream(ctx, doc, contents, old_res, ctm, &filter, struct_parents, &buffer, &new_res);
     fz_drop_buffer(ctx, buffer);
     pdf_drop_obj(ctx, new_res);
-    PyObject *rc = PySequence_Tuple(img_info);
-    Py_CLEAR(img_info);
+    PyObject *rc = PySequence_Tuple(g_img_info);
+    Py_CLEAR(g_img_info);
     return rc;
 }
+
+#endif
 
 %}

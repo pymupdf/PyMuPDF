@@ -34,6 +34,20 @@ Environmental variables:
                     PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
             Otherwise:
                 Location of mupdf directory.
+            
+            In addition if MuPDF is a git checkout and the branch is 'master',
+            PyMuPDF is configured to build with MuPDF master branch, which may
+            have a slightly different API from the current release banch.
+    
+    PYMUPDF_SETUP_MUPDF_BUILD_BRANCH
+        If set to 'master', PyMuPDF is configured to build with MuPDF master
+        branch, which may have a slightly different API from the current
+        release banch.
+
+        Other values are ignored.
+
+        This is typically only useful if PYMUPDF_SETUP_MUPDF_BUILD is also set,
+        and not required if mupdf is a git checkout.
     
     PYMUPDF_SETUP_MUPDF_BUILD_TYPE
         Unix only. Controls build type of MuPDF. Supported values are:
@@ -79,6 +93,7 @@ import os
 import platform
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
@@ -111,6 +126,12 @@ if 1:
         log( f'    {k}: {v}')
 
 
+# setuptools seems to require current directory to be PyMuPDF.
+#
+assert os.path.abspath( os.getcwd()) == os.path.abspath( f'{__file__}/..'), \
+        f'Current directory must be the PyMuPDF directory'
+
+
 def remove(path):
     '''
     Removes file or directory, without raising exception if it doesn't exist.
@@ -118,11 +139,23 @@ def remove(path):
     We assert-fail if the path still exists when we return, in case of
     permission problems etc.
     '''
+    # First try deleting `path` as a file.
     try:
         os.remove( path)
-    except Exception:
+    except Exception as e:
         pass
-    shutil.rmtree( path, ignore_errors=1)
+    
+    if os.path.exists(path):
+        # Try deleting `path` as a directory. Need to use
+        # shutil.rmtree() callback to handle permission problems; see:
+        # https://docs.python.org/3/library/shutil.html#rmtree-example
+        #
+        def error_fn(fn, path, excinfo):
+            # Clear the readonly bit and reattempt the removal.
+            os.chmod(path, stat.S_IWRITE)
+            fn(path)
+        shutil.rmtree( path, onerror=error_fn)
+    
     assert not os.path.exists( path)
 
 
@@ -417,13 +450,13 @@ def get_mupdf_tgz():
         mupdf_url_leaf = os.path.basename( mupdf_url)
         leaf = '.tar.gz'
         assert mupdf_url_leaf.endswith(leaf), f'Unrecognised suffix in mupdf_url={mupdf_url!r}'
-        mupdf_local = mupdf_url_leaf[ : -len(leaf)] + '/'
+        mupdf_local = mupdf_url_leaf[ : -len(leaf)]
         assert mupdf_local.startswith( 'mupdf-')
         log(f'Downloading from: {mupdf_url}')
         remove( mupdf_url_leaf)
         urllib.request.urlretrieve( mupdf_url, mupdf_url_leaf)
         assert os.path.exists( mupdf_url_leaf)
-        tar_check( mupdf_url_leaf, 'r:gz', mupdf_local)
+        tar_check( mupdf_url_leaf, 'r:gz', f'{mupdf_local}/')
         if mupdf_url_leaf != mupdf_tgz:
             remove( mupdf_tgz)
             os.rename( mupdf_url_leaf, mupdf_tgz)
@@ -433,8 +466,8 @@ def get_mupdf_tgz():
         # Create archive <mupdf_tgz> contining local mupdf directory's git
         # files.
         mupdf_local = mupdf_url_or_local
-        if not mupdf_local.endswith( '/'):
-            mupdf_local += '/'
+        if mupdf_local.endswith( '/'):
+            del mupdf_local[-1]
         assert os.path.isdir( mupdf_local), f'Not a directory: {mupdf_local!r}'
         log( f'Creating .tgz from git files in: {mupdf_local}')
         remove( mupdf_tgz)
@@ -454,6 +487,7 @@ def get_mupdf():
     PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
     '''
     path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
+    log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
     if path is None:
         # Default.
         if os.path.exists( mupdf_tgz):
@@ -483,8 +517,13 @@ def get_mupdf():
         #
         command_suffix = path[ len(git_prefix):]
         path = 'mupdf'
-        assert not os.path.exists( path), \
-                f'Cannot use git clone because local directory already exists: {path}'
+        
+        # Remove any existing directory to avoid the clone failing. (We could
+        # assume any existing directory is a git checkout, and do `git pull` or
+        # similar, but that's complicated and fragile.)
+        #
+        remove(path)
+        
         command = (''
                 + f'git clone'
                 + f' --recursive'
@@ -515,6 +554,7 @@ def get_mupdf():
 include_dirs = []
 library_dirs = []
 libraries = []
+extra_swig_args = []
 extra_link_args = []
 extra_compile_args = []
 
@@ -526,6 +566,7 @@ openbsd = platform.system() == 'OpenBSD'
 freebsd = platform.system() == 'FreeBSD'
 darwin  = platform.system() == 'Darwin'
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
+
 
 if 'sdist' in sys.argv:
     # Create local mupdf.tgz, for inclusion in sdist.
@@ -546,15 +587,16 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     #
     mupdf_local = get_mupdf()
     if mupdf_local:
-        if not mupdf_local.endswith( '/'):
-            mupdf_local += '/'
+        if mupdf_local.endswith( '/'):
+            mupdf_local = mupdf_local[:-1]
+            
     log( f'mupdf_local={mupdf_local!r}')
     unix_build_dir = None
     
     # Force clean build of MuPDF.
     #
     if mupdf_local and os.environ.get( 'PYMUPDF_SETUP_MUPDF_CLEAN') == '1':
-        remove( f'{mupdf_local}build')
+        remove( f'{mupdf_local}/build')
 
     # Always force clean build of PyMuPDF SWIG files etc, because setuptools
     # doesn't seem to notice when our mupdf headers etc are newer than the
@@ -563,15 +605,24 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     remove( os.path.abspath( f'{__file__}/../build/'))
     remove( os.path.abspath( f'{__file__}/../install/'))
     
-    # Copy PyMuPDF's config file into mupdf. For example this #define's TOFU,
-    # which excludes various fonts in the MuPDF binaries.
     if mupdf_local:
+        # Build MuPDF before deferring to setuptools.setup().
+        #
+        
         log( f'Building mupdf.')
-        shutil.copy2( 'fitz/_config.h', f'{mupdf_local}include/mupdf/fitz/config.h')
+        # Copy PyMuPDF's config file into mupdf. For example it #define's TOFU,
+        # which excludes various fonts in the MuPDF binaries.
+        if 0:
+            # Want to use MuPDF default config eventually, but not yet.
+            log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h because mupdf_branch={mupdf_branch}')
+        else:
+            log( f'Copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h')
+            shutil.copy2( 'fitz/_config.h', f'{mupdf_local}/include/mupdf/fitz/config.h')
     
         if windows:
             # Windows build.
             devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
+            log( 'PYMUPDF_SETUP_DEVENV={PYMUPDF_SETUP_DEVENV!r}')
             if not devenv:
                 # Search for devenv in some known locations.
                 devenv = glob.glob('C:/Program Files (x86)/Microsoft Visual Studio/2019/*/Common7/IDE/devenv.com')
@@ -591,7 +642,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         else:
             # Unix build.
             #
-            
             flags = 'HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no HAVE_LEPTONICA=yes HAVE_TESSERACT=yes'
             flags += ' verbose=yes'
             env = ''
@@ -631,7 +681,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
                 build_prefix += f'{build_prefix_extra}-'
             flags += f' build_prefix={build_prefix}'
             
-            unix_build_dir = f'{mupdf_local}build/{build_prefix}{unix_build_type}'
+            unix_build_dir = f'{mupdf_local}/build/{build_prefix}{unix_build_type}'
             
             command = f'cd {mupdf_local} && {env} {make} {flags}'
             command += f' && echo {unix_build_dir}:'
@@ -647,13 +697,18 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     
     # Set include and library paths for building PyMuPDF.
     #
+    # We also add MuPDF's include directory to include path for Swig so that
+    # fitz/fitz.i can do `%include "mupdf/fitz/version.h"` and .i code can use
+    # `#if` with FZ_VERSION_* macros.
+    #
     if mupdf_local:
         assert os.path.isdir( mupdf_local), f'Not a directory: {mupdf_local!r}'
-        include_dirs.append( f'{mupdf_local}include')
-        include_dirs.append( f'{mupdf_local}include/mupdf')
-        include_dirs.append( f'{mupdf_local}thirdparty/freetype/include')
+        include_dirs.append( f'{mupdf_local}/include')
+        include_dirs.append( f'{mupdf_local}/include/mupdf')
+        include_dirs.append( f'{mupdf_local}/thirdparty/freetype/include')
         if unix_build_dir:
             library_dirs.append( unix_build_dir)
+        extra_swig_args.append(f'-I{mupdf_local}/include')
 
     if mupdf_local and (linux or openbsd or freebsd):
         # setuptools' link command always seems to put '-L
@@ -687,6 +742,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append( '/usr/include/freetype2')
         libraries = load_libraries()
         extra_link_args = []
+        extra_swig_args.append(f'-I/usr/local/include')
 
     elif darwin or openbsd or freebsd:
         # Use system libraries.
@@ -702,6 +758,9 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         include_dirs.append("/usr/X11R6/include/freetype2")
         include_dirs.append("/opt/homebrew/include")
         include_dirs.append("/opt/homebrew/include/freetype2")
+        
+        extra_swig_args.append(f'-I/usr/local/include')
+        extra_swig_args.append(f'-I/opt/homebrew/include')
 
         library_dirs.append("/opt/homebrew/lib")
 
@@ -715,11 +774,11 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         # Windows.
         assert mupdf_local
         if word_size() == 32:
-            library_dirs.append( f'{mupdf_local}platform/win32/ReleaseTesseract')
-            library_dirs.append( f'{mupdf_local}platform/win32/Release')
+            library_dirs.append( f'{mupdf_local}/platform/win32/ReleaseTesseract')
+            library_dirs.append( f'{mupdf_local}/platform/win32/Release')
         else:
-            library_dirs.append( f'{mupdf_local}platform/win32/x64/ReleaseTesseract')
-            library_dirs.append( f'{mupdf_local}platform/win32/x64/Release')
+            library_dirs.append( f'{mupdf_local}/platform/win32/x64/ReleaseTesseract')
+            library_dirs.append( f'{mupdf_local}/platform/win32/x64/Release')
         libraries = [
             "libmupdf",
             "libresources",
@@ -747,9 +806,14 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             include_dirs += local_dirs.get("include_dirs", [])
             library_dirs += local_dirs.get("library_dirs", [])
 
+# Disable bogus SWIG warning 509, 'Overloaded method ... effectively ignored,
+# as it is shadowed by ...'.
+extra_swig_args.append( '-w509')
+
 log( f'include_dirs={include_dirs}')
 log( f'library_dirs={library_dirs}')
 log( f'libraries={libraries}')
+log( f'extra_swig_args={extra_swig_args}')
 log( f'extra_compile_args={extra_compile_args}')
 log( f'extra_link_args={extra_link_args}')
 
@@ -762,9 +826,7 @@ module = Extension(
     libraries=libraries,
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
-    # Disable bogus SWIG warning 509, 'Overloaded method ... effectively
-    # ignored, as it is shadowed by ...'.
-    swig_opts=['-w509']
+    swig_opts=extra_swig_args,
 )
 
 

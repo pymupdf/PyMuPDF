@@ -191,17 +191,21 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like irect: the area to be cleared. Omit to clear the whole pixmap. Can only be specified, if *value* is also specified.
 
-   .. method:: tint_with(red, green, blue)
+   .. method:: tint_with(black, white)
 
-      Colorize (tint) a pixmap with a color provided as an integer triple (red, green, blue). Only colorspaces :data:`CS_GRAY` and :data:`CS_RGB` are supported, others are ignored with a warning.
+      Colorize (tint) a pixmap (in-place) with a colors provided as an sRGB integers, i.e. 0xRRGGBB. Only colorspaces :data:`CS_GRAY` and :data:`CS_RGB` are supported, others are ignored with a warning.
 
       If the colorspace is :data:`CS_GRAY`, *(red + green + blue)/3* will be taken as the tint value.
 
-      :arg int red: *red* component.
+      :arg int black: replace black with this value. Specifying 0x000000 makes no changes.
+      :arg int white: replace white with this value. Specifying 0xFFFFFF makes no changes.
 
-      :arg int green: *green* component.
+      Examples:
 
-      :arg int blue: *blue* component.
+         * ``tint_with(0x000000, 0xFFFFFF)`` is a no-op.
+         * ``tint_with(0x00FF00, 0xFFFFFF)`` changes black to green, leaves white intact.
+         * ``tint_with(0xFF0000, 0x0000FF)`` changes black to red and white to blue.
+
 
    .. method:: gamma_with(gamma)
 

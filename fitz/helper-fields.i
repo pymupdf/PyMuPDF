@@ -733,8 +733,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             Ff |= field_flags;
         }
         Py_XDECREF(value);
+        pdf_dict_put_int(ctx, annot_obj, PDF_NAME(Ff), Ff);
     }
-    pdf_dict_put_int(ctx, annot_obj, PDF_NAME(Ff), Ff);
 
     // button caption ---------------------------------------------------------
     value = GETATTR("button_caption");
@@ -780,6 +780,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             pdf_obj *onstate = pdf_button_field_on_state(ctx, annot_obj);
             const char *on = pdf_to_name(ctx, onstate);
             pdf_set_field_value(ctx, pdf, annot_obj, on, 1);
+            pdf_dict_put_name(gctx, annot_obj, PDF_NAME(AS), "Yes");
         } else {
             pdf_set_field_value(ctx, pdf, annot_obj, "Off", 1);
         }
@@ -982,8 +983,14 @@ class Widget(object):
             fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf" + self._text_da
         self._text_da = fmt.format(*self.text_color, f=self.text_font,
                                     s=self.text_fontsize)
-        # finally update the widget
 
+        # if widget has a '/AA/C' script, make sure it is in the '/CO'
+        # array of the '/AcroForm' dictionary.
+        if self.script_calc:  # there is a "calculation" script:
+            # make sure we are in the /CO array
+            util_ensure_widget_calc(self._annot)
+
+        # finally update the widget
         TOOLS._save_widget(self._annot, self)
         self._text_da = ""
 
