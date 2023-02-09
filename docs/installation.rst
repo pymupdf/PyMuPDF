@@ -4,8 +4,11 @@
 
 .. _Installation:
 
+Installation
+=============
+
 Requirements
-============
+---------------
 
 All the examples below assume that you are running inside a Python virtual
 environment. See: https://docs.python.org/3/library/venv.html for details.
@@ -17,8 +20,7 @@ For example::
 
 
 
-Installation
-=============
+
 
 :title:`PyMuPDF` should be installed using :title:`pip` with::
 
@@ -29,7 +31,7 @@ This will install from a :title:`Python` wheel if one is available for your plat
 
 
 Installation when a suitable wheel is not available
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------
 
 If a suitable :title:`Python` wheel is not available, :title:`pip` will automatically build from
 source using a :title:`Python` sdist.
@@ -67,7 +69,7 @@ sdist and is automatically built into :title:`PyMuPDF`.
 
 
 Notes
-~~~~~
+---------------
 
 Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), :title:`Python` versions 3.7 and up.
 
@@ -90,7 +92,7 @@ There are no **mandatory** external dependencies. However, some optional feature
 
 
 Installation from source without using an sdist
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------
 
 * First get a :title:`PyMuPDF` source tree:
 
@@ -121,7 +123,7 @@ Installation from source without using an sdist
 
 
 Running tests
-~~~~~~~~~~~~~
+------------------------------
 
 Having a PyMuPDF tree available allows one to run PyMuPDF's `pytest` test
 suite::
@@ -131,7 +133,7 @@ suite::
 
 
 Building and testing with git checkouts of PyMuPDF and MuPDF
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------------------------
 
 Things to do:
 
@@ -157,7 +159,7 @@ For example::
 
 
 Using a non-default MuPDF
-~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------
 
 Using a non-default build of MuPDF by setting environmental variable
 `PYMUPDF_SETUP_MUPDF_BUILD` can cause various things to go wrong and so is
@@ -179,7 +181,7 @@ not generally supported:
 
 
 Enabling Integrated OCR Support
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------
 If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
 
 :title:`PyMuPDF` will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
