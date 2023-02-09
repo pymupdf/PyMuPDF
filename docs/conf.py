@@ -36,7 +36,7 @@ root_doc = "index"
 
 # General information about the project.
 project = "PyMuPDF"
-copyright = "2015-2022, Artifex"
+copyright = "2015-2023, Artifex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -100,7 +100,7 @@ html_theme_options = {
     "canonical_url": "",
     "logo_only": False,
     "display_version": True,
-    "prev_next_buttons_location": "bottom",
+    "prev_next_buttons_location": None,
     # Toc options
     "collapse_navigation": True,
     "sticky_navigation": True,
