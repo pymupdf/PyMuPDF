@@ -3,7 +3,7 @@
 ===============================
 Constants and Enumerations
 ===============================
-Constants and enumerations of MuPDF as implemented by PyMuPDF. Each of the following variables is accessible as *fitz.variable*.
+Constants and enumerations of :title:`MuPDF` as implemented by :title:`PyMuPDF`. Each of the following variables is accessible as *fitz.variable*.
 
 
 Constants
@@ -156,7 +156,7 @@ Text Extraction Flags
 ---------------------
 Option bits controlling the amount of data, that are parsed into a :ref:`TextPage` -- this class is mainly used only internally in PyMuPDF.
 
-For the PyMuPDF programmer, some combination (using Python's ``|`` operator, or simply use ``+``) of these values are aggregated in the ``flags`` integer, a parameter of all text search and text extraction methods. Depending on the individual method, different default combinations of the values are used. Please use a value that meets your situation. Especially make sure to switch off image extraction unless you really need them. The impact on performance and memory is significant!
+For the PyMuPDF programmer, some combination (using Python's `|` operator, or simply use `+`) of these values are aggregated in the `flags` integer, a parameter of all text search and text extraction methods. Depending on the individual method, different default combinations of the values are used. Please use a value that meets your situation. Especially make sure to switch off image extraction unless you really need them. The impact on performance and memory is significant!
 
 .. py:data:: TEXT_PRESERVE_LIGATURES
 

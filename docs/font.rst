@@ -95,11 +95,11 @@ A Font object also contains useful general information, like the font bbox, the 
 
         Actually, you would rarely ever need another sans-serif font than **"Droid Sans Fallback Regular"**. **Except** that this font file is relatively large and adds about 1.65 MB (compressed) to your PDF file size. If you do not need CJK support, stick with specifying "helv", "tiro" etc., and you will get away with about 35 KB compressed.
 
-        If you **know** you have a mixture of CJK and Latin text, consider just using ``Font("cjk")`` because this supports everything and also significantly (by a factor of up to three) speeds up execution: MuPDF will always find any character in this single font and never needs to check fallbacks.
+        If you **know** you have a mixture of CJK and Latin text, consider just using `Font("cjk")` because this supports everything and also significantly (by a factor of up to three) speeds up execution: MuPDF will always find any character in this single font and never needs to check fallbacks.
 
         But if you do use some other font, you will still automatically be able to also write CJK characters: MuPDF detects this situation and silently falls back to the universal font (which will then of course also be embedded in your PDF).
 
-        *(New in v1.17.5)* Optionally, some new "reserved" fontname codes become available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_, ``pip install pymupdf-fonts``. **"Fira Mono"** is a mono-spaced sans font set and **FiraGO** is another non-serifed "universal" font set which supports all Latin (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- but none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- **and** it provides the weights bold, italic, bold-italic -- which the universal font doesn't.
+        *(New in v1.17.5)* Optionally, some new "reserved" fontname codes become available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_, `pip install pymupdf-fonts`. **"Fira Mono"** is a mono-spaced sans font set and **FiraGO** is another non-serifed "universal" font set which supports all Latin (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- but none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- **and** it provides the weights bold, italic, bold-italic -- which the universal font doesn't.
 
         **"Space Mono"** is another nice and small mono-spaced font from Google Fonts, which supports Latin Extended characters and comes with all 4 important weights.
 
@@ -197,11 +197,11 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: glyph_name_to_unicode(name)
 
-      Return the unicode value for a given glyph name. Use it in conjunction with ``chr()`` if you want to output e.g. a certain symbol.
+      Return the unicode value for a given glyph name. Use it in conjunction with `chr()` if you want to output e.g. a certain symbol.
 
       :arg str name: The name of the glyph.
 
-      :returns: The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: ``font.glyph_name_to_unicode("Sigma") = 931``, ``font.glyph_name_to_unicode("sigma") = 963``. Refer to the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names and their unicode numbers. Example:
+      :returns: The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: `font.glyph_name_to_unicode("Sigma") = 931`, `font.glyph_name_to_unicode("sigma") = 963`. Refer to the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names and their unicode numbers. Example:
 
          >>> font = fitz.Font("helv")
          >>> font.has_glyph(font.glyph_name_to_unicode("infinity"))
@@ -226,9 +226,9 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :arg int ch: the unicode number of the character. Use *ord()*, not the character itself.
 
-      :returns: a string representing the glyph's name. E.g. ``font.glyph_name(ord("#")) = "numbersign"``. For an invalid code ".notfound" is returned.
+      :returns: a string representing the glyph's name. E.g. `font.glyph_name(ord("#")) = "numbersign"`. For an invalid code ".notfound" is returned.
       
-        .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as ``fitz.unicode_to_glyph_name()`` and resp. ``fitz.glyph_name_to_unicode()``.
+        .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as `fitz.unicode_to_glyph_name()` and resp. `fitz.glyph_name_to_unicode()`.
 
    .. index::
       pair: text_length, fontsize
@@ -249,8 +249,8 @@ A Font object also contains useful general information, like the font bbox, the 
 
          .. note:: This method was originally implemented in Python, based on calling :meth:`Font.glyph_advance`. For performance reasons, it has been rewritten in C for v1.18.14. To compute the width of a single character, you can now use either of the following without performance penalty:
 
-            1. ``font.glyph_advance(ord("Ä")) * fontsize``
-            2. ``font.text_length("Ä", fontsize=fontsize)``
+            1. `font.glyph_advance(ord("Ä")) * fontsize`
+            2. `font.text_length("Ä", fontsize=fontsize)`
 
             For multi-character strings, the method offers a huge performance advantage compared to the previous implementation: instead of about 0.5 microseconds for each character, only 12.5 nanoseconds are required for the second and subsequent ones.
 
@@ -269,7 +269,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :rtype: tuple
 
-      :returns: the lengths in points of the characters of a string when stored in the PDF. It works like :meth:`Font.text_length` broken down to single characters. This is a high speed method, used e.g. in :meth:`TextWriter.fill_textbox`. The following is true (allowing rounding errors): ``font.text_length(text) == sum(font.char_lengths(text))``.
+      :returns: the lengths in points of the characters of a string when stored in the PDF. It works like :meth:`Font.text_length` broken down to single characters. This is a high speed method, used e.g. in :meth:`TextWriter.fill_textbox`. The following is true (allowing rounding errors): `font.text_length(text) == sum(font.char_lengths(text))`.
 
          >>> font = fitz.Font("helv")
          >>> text = "PyMuPDF"
@@ -345,7 +345,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       * New in v1.18.0
 
-      The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details. This value always is negative and is the portion that some glyphs descend below the base line, for example "g" or "y". As a consequence, the value ``ascender - descender`` is the total height, that every glyph of the font fits into. This is true at least for most fonts -- as always, there are exceptions, especially for calligraphic fonts, etc.
+      The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details. This value always is negative and is the portion that some glyphs descend below the base line, for example "g" or "y". As a consequence, the value `ascender - descender` is the total height, that every glyph of the font fits into. This is true at least for most fonts -- as always, there are exceptions, especially for calligraphic fonts, etc.
 
       :rtype: float
 

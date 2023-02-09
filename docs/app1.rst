@@ -56,7 +56,7 @@ Where the first 4 items are the float coordinates of the block's bbox. The lines
 
 This is a high-speed method, which by default also extracts image meta information: Each image appears as a block with one text line, which contains meta information. The image itself is not shown.
 
-As with simple text output above, the ``sort`` argument can be used as well to obtain a reading order.
+As with simple text output above, the `sort` argument can be used as well to obtain a reading order.
 
 Example output::
 
@@ -74,7 +74,7 @@ Function :meth:`TextPage.extractWORDS` (or *Page.get_text("words")*) extracts a 
 
 Where the first 4 items are the float coordinates of the words's bbox. The last three integers provide some more information on the word's whereabouts.
 
-This is a high-speed method. As with the previous methods, argument ``sort=True`` will reorder the words.
+This is a high-speed method. As with the previous methods, argument `sort=True` will reorder the words.
 
 Example output::
 
@@ -272,15 +272,15 @@ Text Extraction Flags Defaults
 
     - **include** images in a "blocks" output:
     
-    ``flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES``
+    `flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES`
     
     - **exclude** images from a "dict" output:
     
-    ``flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES``
+    `flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES`
     
     - set **dehyphenation off** in text searches:
     
-    ``flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE``
+    `flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE`
 
 
 =================== ==== ==== ===== === ==== ======= ===== ====== ======

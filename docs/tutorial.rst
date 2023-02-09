@@ -8,9 +8,9 @@ Tutorial
 
 .. highlight:: python
 
-This tutorial will show you the use of PyMuPDF, MuPDF in Python, step by step.
+This tutorial will show you the use of :title:`PyMuPDF`, :title:`MuPDF` in :title:`Python`, step by step.
 
-Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitely.
+Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitely.
 
 Importing the Bindings
 ==========================
@@ -23,13 +23,27 @@ The Python bindings to MuPDF are made available by this import statement. We als
     Built for Python 3.7 on win32 (64-bit).
 
 
+Note on the Name *fitz*
+--------------------------
+The top level Python import name for this library is **"fitz"**. This has historical reasons:
+
+The original rendering library for MuPDF was called *Libart*.
+
+*"After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called "Fitz". Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF."* (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
+
+
+.. note::
+
+    So :title:`PyMuPDF` **cannot coexist** with packages named "fitz" in the same Python environment.
+
+
 Opening a Document
 ======================
 To access a supported document, it must be opened with the following statement::
 
     doc = fitz.open(filename)  # or fitz.Document(filename)
 
-This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a ``pathlib.Path``) specifying the name of an existing file.
+This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a `pathlib.Path`) specifying the name of an existing file.
 
 It is also possible to open a document from memory data, or to create a new, empty PDF. See :ref:`Document` for details. You can also use :ref:`Document` as a *context manager*.
 
@@ -95,7 +109,7 @@ First, a :ref:`Page` must be created. This is a method of :ref:`Document`::
     page = doc.load_page(pno)  # loads page number 'pno' of the document (0-based)
     page = doc[pno]  # the short form
 
-Any integer ``-∞ < pno < page_count`` is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
+Any integer `-∞ < pno < page_count` is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
 
 Some more advanced way would be using the document as an **iterator** over its pages::
 

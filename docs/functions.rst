@@ -66,7 +66,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
-:attr:`TESSDATA_PREFIX`              a copy of ``os.environ["TESSDATA_PREFIX"]``
+:attr:`TESSDATA_PREFIX`              a copy of `os.environ["TESSDATA_PREFIX"]`
 :attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
 ==================================== ==============================================================
 
@@ -109,7 +109,7 @@ Yet others are handy, general-purpose utilities.
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
-      :returns: a tuple (red, green, blue) with float items in intervall *0 <= item <= 1* representing the same color. Example ``sRGB_to_pdf(0xff0000) = (1, 0, 0)`` (red).
+      :returns: a tuple (red, green, blue) with float items in intervall *0 <= item <= 1* representing the same color. Example `sRGB_to_pdf(0xff0000) = (1, 0, 0)` (red).
 
 -----
 
@@ -121,7 +121,7 @@ Yet others are handy, general-purpose utilities.
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
-      :returns: a tuple (red, green, blue) with integer items in ``range(256)`` representing the same color. Example ``sRGB_to_pdf(0xff0000) = (255, 0, 0)`` (red).
+      :returns: a tuple (red, green, blue) with integer items in `range(256)` representing the same color. Example `sRGB_to_pdf(0xff0000) = (255, 0, 0)` (red).
 
 -----
 
@@ -134,7 +134,7 @@ Yet others are handy, general-purpose utilities.
       :arg str name: the name of some glyph. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
 
       :rtype: int
-      :returns: the unicode. Invalid *name* entries return ``0xfffd (65533)``.
+      :returns: the unicode. Invalid *name* entries return `0xfffd (65533)`.
 
       .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
 
@@ -146,10 +146,10 @@ Yet others are handy, general-purpose utilities.
 
       Return the glyph name of a unicode number, based on the **Adobe Glyph List**.
 
-      :arg int ch: the unicode given by e.g. ``ord("ß")``. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+      :arg int ch: the unicode given by e.g. `ord("ß")`. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
 
       :rtype: str
-      :returns: the glyph name. E.g. ``fitz.unicode_to_glyph_name(ord("Ä"))`` returns ``'Adieresis'``.
+      :returns: the glyph name. E.g. `fitz.unicode_to_glyph_name(ord("Ä"))` returns `'Adieresis'`.
 
       .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_: in its *agl* sub-package.
 
@@ -187,7 +187,7 @@ Yet others are handy, general-purpose utilities.
 
       **Utility function for use with "Story" applications.**
 
-      Create CSS ``@font-face`` items for the given fontcode in pymupdf-fonts. Creates a CSS font-family for all fonts starting with string "fontcode".
+      Create CSS `@font-face` items for the given fontcode in pymupdf-fonts. Creates a CSS font-family for all fonts starting with string "fontcode".
 
       The font naming convention in package pymupdf-fonts is "fontcode<sf>", where the suffix "sf" is one of "" (empty), "it"/"i", "bo"/"b" or "bi". These suffixes thus represent the regular, italic, bold or bold-italic variants of that font.
       
@@ -198,23 +198,23 @@ Yet others are handy, general-purpose utilities.
       *  "notosbo" - "Noto Sans Bold"
       *  "notosbi" - "Noto Sans Bold Italic"
 
-      The function creates (up to) four CSS ``@font-face`` definitions and collectively assigns the ``font-family`` name "notos" to them (or the "name" value if provided). Associated font buffers are placed / added to the provided archive.
+      The function creates (up to) four CSS `@font-face` definitions and collectively assigns the `font-family` name "notos" to them (or the "name" value if provided). Associated font buffers are placed / added to the provided archive.
       
-      To use the font in the Python API for :ref:`Story`, execute ``.set_font(fontcode)`` (or "name" if given). The correct font weight or style will automatically be selected as required.
+      To use the font in the Python API for :ref:`Story`, execute `.set_font(fontcode)` (or "name" if given). The correct font weight or style will automatically be selected as required.
 
       For example to replace the "sans-serif" HTML standard (i.e. Helvetica) with the above "notos", execute the following. Whenever "sans-serif" is used (whether explicitely or implicitely), the Noto Sans fonts will be selected.
 
-      ``CSS = fitz.css_for_pymupdf_font("notos", name="sans-serif", archive=...)``
+      `CSS = fitz.css_for_pymupdf_font("notos", name="sans-serif", archive=...)`
 
       Expects and returns the CSS source, with the new CSS definitions appended.
 
       :arg str fontcode: one of the font codes present in package `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ (usually) representing the regular version of the font family.
-      :arg str CSS: any already existing CSS source, or ``None``. The function will append its new definitions to this. This is the string that **must be used** as ``user_css`` when creating the :ref:`Story`.
-      :arg archive: :ref:`Archive`, **mandatory**. All font binaries (i.e. up to four) found for "fontcode" will be added to the archive. This is the archive that **must be used** as ``archive`` when creating the :ref:`Story`.
+      :arg str CSS: any already existing CSS source, or `None`. The function will append its new definitions to this. This is the string that **must be used** as `user_css` when creating the :ref:`Story`.
+      :arg archive: :ref:`Archive`, **mandatory**. All font binaries (i.e. up to four) found for "fontcode" will be added to the archive. This is the archive that **must be used** as `archive` when creating the :ref:`Story`.
       :arg str name: the name under which the "fontcode" fonts should be found. If omitted, "fontcode" will be used.
 
       :rtype: str
-      :returns: Modified CSS, with appended ``@font-face`` statements for each font variant of fontcode. Fontbuffers associated with "fontcode" will have been added to 'archive'. The function will automatically find up to 4 font variants. All pymupdf-fonts (that are no special purpose like math or music, etc.) have regular, bold, italic and bold-italic variants. To see currently available font codes check ``fitz.fitz_fontdescriptors.keys()``. This will show something like ``dict_keys(['cascadia', 'cascadiai', 'cascadiab', 'cascadiabi', 'figbo', 'figo', 'figbi', 'figit', 'fimbo', 'fimo', 'spacembo', 'spacembi', 'spacemit', 'spacemo', 'math', 'music', 'symbol1', 'symbol2', 'notosbo', 'notosbi', 'notosit', 'notos', 'ubuntu', 'ubuntubo', 'ubuntubi', 'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', 'ubuntmit'])```.
+      :returns: Modified CSS, with appended `@font-face` statements for each font variant of fontcode. Fontbuffers associated with "fontcode" will have been added to 'archive'. The function will automatically find up to 4 font variants. All pymupdf-fonts (that are no special purpose like math or music, etc.) have regular, bold, italic and bold-italic variants. To see currently available font codes check `fitz.fitz_fontdescriptors.keys()`. This will show something like `dict_keys(['cascadia', 'cascadiai', 'cascadiab', 'cascadiabi', 'figbo', 'figo', 'figbi', 'figit', 'fimbo', 'fimo', 'spacembo', 'spacembi', 'spacemit', 'spacemo', 'math', 'music', 'symbol1', 'symbol2', 'notosbo', 'notosbi', 'notosit', 'notos', 'ubuntu', 'ubuntubo', 'ubuntubi', 'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', 'ubuntmit'])`.
 
       Here is a complete snippet for using the "Noto Sans" font instead of "Helvetica"::
 
@@ -231,7 +231,7 @@ Yet others are handy, general-purpose utilities.
 
       Convenience function returning the quadrilateral envelopping the text of a text span, as returned by :meth:`Page.get_text` using the "dict" or "rawdict" options.
 
-      :arg tuple line_dict: the value ``line["dir"]`` of the span's line.
+      :arg tuple line_dict: the value `line["dir"]` of the span's line.
       :arg dict span: the span sub-dictionary.
 
       :returns: the quadrilateral of the span's text.
@@ -249,7 +249,7 @@ Yet others are handy, general-purpose utilities.
       :arg rect_like rect: the rectangle to split.
       :arg int cols: the desired number of columns.
       :arg int rows: the desired number of rows.
-      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*. Here is the layout of a 3x4 table created by ``cell = fitz.make_table(rect, cols=4, rows=3)``:
+      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*. Here is the layout of a 3x4 table created by `cell = fitz.make_table(rect, cols=4, rows=3)`:
 
       .. image:: images/img-make-table.*
          :scale: 60
@@ -315,9 +315,9 @@ Yet others are handy, general-purpose utilities.
          'serif': True,
          'glyphs': 1485}
 
-      If ``pymupdf-fonts`` is not installed, the dictionary is empty.
+      If `pymupdf-fonts` is not installed, the dictionary is empty.
 
-      The dictionary keys can be used to define a :ref:`Font` via e.g. ``font = fitz.Font("fimo")`` -- just like you can do it with the builtin fonts "Helvetica" and friends.
+      The dictionary keys can be used to define a :ref:`Font` via e.g. `font = fitz.Font("fimo")` -- just like you can do it with the builtin fonts "Helvetica" and friends.
 
 -----
 
@@ -325,9 +325,9 @@ Yet others are handy, general-purpose utilities.
 
       * New in v1.19.4
 
-      Copy of ``os.environ["TESSDATA_PREFIX"]`` for convenient checking whether there is integrated Tesseract OCR support.
+      Copy of `os.environ["TESSDATA_PREFIX"]` for convenient checking whether there is integrated Tesseract OCR support.
 
-      If this attribute is ``None``, Tesseract-OCR is either not installed, or the environment variable is not set to point to Tesseract's language support folder.
+      If this attribute is `None`, Tesseract-OCR is either not installed, or the environment variable is not set to point to Tesseract's language support folder.
 
       .. note:: This variable is now checked before OCR functions are tried. This prevents verbose messages from MuPDF.
 
@@ -337,13 +337,13 @@ Yet others are handy, general-purpose utilities.
 
       * New in v1.19.6
 
-      Contains about 500 RGB colors in PDF format with the color name as key. To see what is there, you can obviously look at ``fitz.pdfcolor.keys()``.
+      Contains about 500 RGB colors in PDF format with the color name as key. To see what is there, you can obviously look at `fitz.pdfcolor.keys()`.
 
       Examples:
       
-        * ``fitz.pdfcolor["red"] = (1.0, 0.0, 0.0)``
-        * ``fitz.pdfcolor["skyblue"] = (0.5294117647058824, 0.807843137254902, 0.9215686274509803)``
-        * ``fitz.pdfcolor["wheat"] = (0.9607843137254902, 0.8705882352941177, 0.7019607843137254)``
+        * `fitz.pdfcolor["red"] = (1.0, 0.0, 0.0)`
+        * `fitz.pdfcolor["skyblue"] = (0.5294117647058824, 0.807843137254902, 0.9215686274509803)`
+        * `fitz.pdfcolor["wheat"] = (0.9607843137254902, 0.8705882352941177, 0.7019607843137254)`
 
 -----
 
@@ -399,7 +399,7 @@ Yet others are handy, general-purpose utilities.
 
       :rtype: dict
       :returns:
-         No exception is ever raised: in case of error, the empty dictionary ``{}`` is returned. Otherwise, there are the following items::
+         No exception is ever raised: in case of error, the empty dictionary `{}` is returned. Otherwise, there are the following items::
 
             In [2]: fitz.image_profile(open("nur-ruhig.jpg", "rb").read())
             Out[2]:
@@ -414,7 +414,7 @@ Yet others are handy, general-purpose utilities.
             'ext': 'jpeg',
             'cs-name': 'DeviceRGB'}
 
-         There is the following relation to *Exif* information encoded in ``orientation``, and correspondingly in the ``transform`` matrix-like (quoted from MuPDF documentation, *ccw* = counter-clockwise):
+         There is the following relation to *Exif* information encoded in `orientation`, and correspondingly in the `transform` matrix-like (quoted from MuPDF documentation, *ccw* = counter-clockwise):
 
             0. Undefined
             1. 0 degree ccw rotation. (Exif = 1)
@@ -429,7 +429,7 @@ Yet others are handy, general-purpose utilities.
 
          .. note::
 
-            * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via ``Pixmap(doc, xref)``. These methods will automatically convert exotic images to the PNG format before returning results.
+            * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via `Pixmap(doc, xref)`. These methods will automatically convert exotic images to the PNG format before returning results.
             * You can also get the properties of images embedded in a PDF, via their :data:`xref`. In this case make sure to extract the raw stream: `fitz.image_profile(doc.xref_stream_raw(xref))`.
             * Images as returned by the image blocks of :meth:`Page.get_text` using "dict" or "rawdict" options are also supported.
 
@@ -490,19 +490,21 @@ Yet others are handy, general-purpose utilities.
       * New in v1.19.0
       * Changed in v1.21.2: optionally also return the OCG name applicable to the boundary box.
 
-      :returns: a list of rectangles that envelop text, image or drawing objects. Each item is a tuple ``(type, (x0, y0, x1, y1))`` where the second tuple consists of rectangle coordinates, and *type* is one of the following values. If ``layers=True``, there is a third item containing the OCG name or ``None``: ``(type, (x0, y0, x1, y1), None)``.
+      :returns: a list of rectangles that envelop text, image or drawing objects. Each item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple consists of rectangle coordinates, and *type* is one of the following values. If `layers=True`, there is a third item containing the OCG name or `None`: `(type, (x0, y0, x1, y1), None)`.
 
-         * ``"fill-text"`` -- normal text (painted without character borders)
-         * ``"stroke-text"`` -- text showing character borders only
-         * ``"ignore-text"`` -- text that should not be displayed (e.g. as used by OCR text layers)
-         * ``"fill-path"`` -- drawing with fill color (and no border)
-         * ``"stroke-path"`` -- drawing with border (and no fill color)
-         * ``"fill-image"`` -- displays an image
-         * ``"fill-shade"`` -- display a shading
+         * `"fill-text"` -- normal text (painted without character borders)
+         * `"stroke-text"` -- text showing character borders only
+         * `"ignore-text"` -- text that should not be displayed (e.g. as used by OCR text layers)
+         * `"fill-path"` -- drawing with fill color (and no border)
+         * `"stroke-path"` -- drawing with border (and no fill color)
+         * `"fill-image"` -- displays an image
+         * `"fill-shade"` -- display a shading
 
          The item sequence represents the **sequence in which these commands are executed** to build the page's appearance. Therefore, if an item's bbox intersects or contains that of a previous item, then the previous item may be (partially) covered / hidden.
 
-         So this list can be used to detect such situations. An item's index in this list equals the value of a ``"seqno"`` in dictionaries as returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`.
+
+         So this list can be used to detect such situations. An item's index in this list equals the value of a `"seqno"` in dictionaries as returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`.
+
 
 -----
 
@@ -511,8 +513,9 @@ Yet others are handy, general-purpose utilities.
       * New in v1.18.16
       * Changed in v1.19.0: added key "seqno".
       * Changed in v1.19.1: stroke and fill colors now always are either RGB or GRAY
-      * Changed in v1.19.3: span and character bboxes are now also correct if ``dir != (1, 0)``.
+      * Changed in v1.19.3: span and character bboxes are now also correct if `dir != (1, 0)`.
       * Changed in v1.21.2: add new dictionary key "layer".
+
 
       Return low-level text information of the page. The method is available for **all** document types. The result is a list of Python dictionaries with the following content::
 
@@ -554,31 +557,31 @@ Yet others are handy, general-purpose utilities.
 
       1. Information above tagged with "(1)" has the same meaning and value as explained in :ref:`TextPage`.
       
-         - Please note that the font ``flags`` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
-         - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on ``span["type"]``, interpret this as fill color or stroke color.
+         - Please note that the font `flags` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
+         - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on `span["type"]`, interpret this as fill color or stroke color.
 
       2. There are 3 text span types:
 
-         - 0: Filled text -- equivalent to PDF text rendering mode 0 (``0 Tr``, the default in PDF), only each character's "inside" is shown.
-         - 1: Stroked text -- equivalent to ``1 Tr``, only the character borders are shown.
-         - 3: Ignored text -- equivalent to ``3 Tr`` (hidden text).
+         - 0: Filled text -- equivalent to PDF text rendering mode 0 (`0 Tr`, the default in PDF), only each character's "inside" is shown.
+         - 1: Stroked text -- equivalent to `1 Tr`, only the character borders are shown.
+         - 3: Ignored text -- equivalent to `3 Tr` (hidden text).
       
-      3. Line width in this context is important only for processing ``span["type"] != 0``: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (``span["size"] * 0,05``) is generated. Often, an "artificial" bold text in PDF is created by ``2 Tr``. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
-      4. For data compactness, the character's unicode is provided here. Use built-in function ``chr()`` for the character itself.
-      5. The alpha / opacity value of the span's text, ``0 <= opacity <= 1``, 0 is invisible text, 1 (100%) is intransparent. Depending on ``span["type"]``, interpret this value as *fill* opacity or, resp. *stroke* opacity.
-      6. *(Changed in v1.19.0)* This value is equal or close to ``char["bbox"]`` of "rawdict". In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
+      3. Line width in this context is important only for processing `span["type"] != 0`: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (`span["size"] * 0,05`) is generated. Often, an "artificial" bold text in PDF is created by `2 Tr`. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
+      4. For data compactness, the character's unicode is provided here. Use built-in function `chr()` for the character itself.
+      5. The alpha / opacity value of the span's text, `0 <= opacity <= 1`, 0 is invisible text, 1 (100%) is intransparent. Depending on `span["type"]`, interpret this value as *fill* opacity or, resp. *stroke* opacity.
+      6. *(Changed in v1.19.0)* This value is equal or close to `char["bbox"]` of "rawdict". In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
       7. *(New in v1.19.0)* This is the union of all character bboxes.
       8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, whch are painted "later", or *over* some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans have identical sequence numbers if they were created in one go.
-      9. *(New in v1.21.2)* The name of the Optional Content Group (OCG) if applicable or ``None``.
+      9. *(New in v1.21.2)* The name of the Optional Content Group (OCG) if applicable or `None`.
 
-      Here is a list of similarities and differences of ``page.get_texttrace()`` compared to ``page.get_text("rawdict")``:
+      Here is a list of similarities and differences of `page.get_texttrace()` compared to `page.get_text("rawdict")`:
 
       * The method is up to **twice as fast,** compared to "rawdict" extraction. Depends on the amount of text.
       * The returned data is very **much smaller in size** -- although it provides more information.
       * Additional types of text **invisibility can be detected**: opacity = 0 or type > 1 or overlapping bbox of an object with a higher sequence number.
       * If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you may still be able to deduct desired information from the glyph id.
-      * The ``span["chars"]`` **contains no spaces**, **except** the document creator has explicitely coded them. They **will never be generated** like it happens in :meth:`Page.get_text` methods. To provide some help for doing your own computations here, the width of a space character is given. This value is derived from the font where possible. Otherwise the value of a fallback font is taken.
-      * There is no effort to organize text like it happens for a :ref:`TextPage` (the hierarchy of blocks, lines, spans, and characters). Characters are simply extracted in sequence, one by one, and put in a span. Whenever any of the span's characteristics changes, a new span is started. So you may find characters with different ``origin.y`` values in the same span (which means they would appear in different lines). You cannot assume, that span characters are sorted in any particular order -- you must make sense of the info yourself, taking ``span["dir"]``, ``span["wmode"]``, etc. into account.
+      * The `span["chars"]` **contains no spaces**, **except** the document creator has explicitely coded them. They **will never be generated** like it happens in :meth:`Page.get_text` methods. To provide some help for doing your own computations here, the width of a space character is given. This value is derived from the font where possible. Otherwise the value of a fallback font is taken.
+      * There is no effort to organize text like it happens for a :ref:`TextPage` (the hierarchy of blocks, lines, spans, and characters). Characters are simply extracted in sequence, one by one, and put in a span. Whenever any of the span's characteristics changes, a new span is started. So you may find characters with different `origin.y` values in the same span (which means they would appear in different lines). You cannot assume, that span characters are sorted in any particular order -- you must make sense of the info yourself, taking `span["dir"]`, `span["wmode"]`, etc. into account.
       * Ligatures are represented like this:
          - MuPDF handles the following ligatures: "fi", "ff", "fl", "ft", "st", "ffi", and "ffl" (only the first 3 are mostly ever used). If the page contains e.g. ligature "fi", you will find the following two character items subsequent to each other::
          
@@ -588,19 +591,19 @@ Yet others are handy, general-purpose utilities.
          - This means that the bbox of the first ligature character is the area containing the complete, compound glyph. Subsequent ligature components are recognizable by their glyph value -1 and a bbox of width zero.
          - You may want to replace those 2 or 3 char tuples by one, that represents the ligature itself. Use the following mapping of ligatures to unicodes:
          
-            + ``"ff" -> 0xFB00``
-            + ``"fi" -> 0xFB01``
-            + ``"fl" -> 0xFB02``
-            + ``"ffi" -> 0xFB03``
-            + ``"ffl" -> 0xFB04``
-            + ``"ft" -> 0xFB05``
-            + ``"st" -> 0xFB06``
+            + `"ff" -> 0xFB00`
+            + `"fi" -> 0xFB01`
+            + `"fl" -> 0xFB02`
+            + `"ffi" -> 0xFB03`
+            + `"ffl" -> 0xFB04`
+            + `"ft" -> 0xFB05`
+            + `"st" -> 0xFB06`
 
-            So you may want to replace the two example tuples above by the following single one: ``(0xFB01, glyph, (x, y), (x0, y0, x1, y1))`` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute ``font.has_glyph(0xFB01)`` and use its return value).
+            So you may want to replace the two example tuples above by the following single one: `(0xFB01, glyph, (x, y), (x0, y0, x1, y1))` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute `font.has_glyph(0xFB01)` and use its return value).
 
-      * **Changed in v1.19.3:** Similar to other text extraction methods, the character and span bboxes envelop the character quads. To recover the quads, follow the same methods :meth:`recover_quad`, :meth:`recover_char_quad` or :meth:´recover_span_quad` as explained in :ref:`textpagedict`. Use either ``None`` or ``span["dir"]`` for the writing direction.
+      * **Changed in v1.19.3:** Similar to other text extraction methods, the character and span bboxes envelop the character quads. To recover the quads, follow the same methods :meth:`recover_quad`, :meth:`recover_char_quad` or :meth:´recover_span_quad` as explained in :ref:`textpagedict`. Use either `None` or `span["dir"]` for the writing direction.
 
-      * **Changed in v1.21.1:** If applicable, the name of the OCG is shown in ``"layer"``.
+      * **Changed in v1.21.1:** If applicable, the name of the OCG is shown in `"layer"`.
 
 -----
 
@@ -608,7 +611,7 @@ Yet others are handy, general-purpose utilities.
 
       Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
 
-      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves. Multiple executions of this method are no problem and have no functional impact: ``b"q q contents Q Q"`` is treated like ``b"q contents Q"``.
+      Use this method as an alternative, minimalistic version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves. Multiple executions of this method are no problem and have no functional impact: `b"q q contents Q Q"` is treated like `b"q contents Q"`.
 
 -----
 
@@ -647,7 +650,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Page.get_contents()
 
-      PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of a page. May be empty or contain multiple integers. If the page is cleaned (:meth:`Page.clean_contents`), it will be one entry at most. The "source" of each `/Contents` object can be individually read by :meth:`Document.xref_stream` using an item of this list. Method :meth:`Page.read_contents` in contrast walks through this list and concatenates the corresponding sources into one ``bytes`` object.
+      PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of a page. May be empty or contain multiple integers. If the page is cleaned (:meth:`Page.clean_contents`), it will be one entry at most. The "source" of each `/Contents` object can be individually read by :meth:`Document.xref_stream` using an item of this list. Method :meth:`Page.read_contents` in contrast walks through this list and concatenates the corresponding sources into one `bytes` object.
 
       :rtype: list[int]
 
@@ -655,7 +658,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Page.set_contents(xref)
 
-      PDF only: Let the page's ``/Contents`` key point to this xref. Any previously used contents objects will be ignored and can be removed via garbage collection.
+      PDF only: Let the page's `/Contents` key point to this xref. Any previously used contents objects will be ignored and can be removed via garbage collection.
 
 -----
 
@@ -667,7 +670,7 @@ Yet others are handy, general-purpose utilities.
 
       Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot.clean_contents` separately.
 
-      :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the ``/Resources/Font`` object.
+      :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the `/Resources/Font` object.
 
       .. warning:: This is a complex function which may generate large amounts of new data and render old data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
 
@@ -727,7 +730,7 @@ Yet others are handy, general-purpose utilities.
       Increase the :data:`xref` by one entry and return that number. This can then be used to insert a new object.
 
       :rtype: int
-            :returns: the number of the new :data:`xref` entry. Please note, that only a new entry in the PDF's cross reference table is created. At this point, there will not yet exist a PDF object associated with it. To create an (empty) object with this number use ``doc.update_xref(xref, "<<>>")``.
+            :returns: the number of the new :data:`xref` entry. Please note, that only a new entry in the PDF's cross reference table is created. At this point, there will not yet exist a PDF object associated with it. To create an (empty) object with this number use `doc.update_xref(xref, "<<>>")`.
 
 -----
 
@@ -744,7 +747,7 @@ Yet others are handy, general-purpose utilities.
 
       Compute the quadrilateral of a text span extracted via options "dict" or "rawdict" of :meth:`Page.get_text`.
 
-      :arg tuple line_dir: ``line["dir"]`` of the owning line.  Use ``None`` for a span from :meth:`Page.get_texttrace`.
+      :arg tuple line_dir: `line["dir"]` of the owning line.  Use `None` for a span from :meth:`Page.get_texttrace`.
       :arg dict span: the span.
       :returns: the :ref:`Quad` of the span, usable for text marker annotations ('Highlight', etc.).
 
@@ -754,7 +757,7 @@ Yet others are handy, general-purpose utilities.
 
       Compute the quadrilateral of a text character extracted via option "rawdict" of :meth:`Page.get_text`.
 
-      :arg tuple line_dir: ``line["dir"]`` of the owning line. Use ``None`` for a span from :meth:`Page.get_texttrace`.
+      :arg tuple line_dir: `line["dir"]` of the owning line. Use `None` for a span from :meth:`Page.get_texttrace`.
       :arg dict span: the span.
       :arg dict char: the character.
       :returns: the :ref:`Quad` of the character, usable for text marker annotations ('Highlight', etc.).
@@ -765,7 +768,7 @@ Yet others are handy, general-purpose utilities.
 
       Compute the quadrilateral of a subset of characters of a span extracted via option "rawdict" of :meth:`Page.get_text`.
 
-      :arg tuple line_dir: ``line["dir"]`` of the owning line. Use ``None`` for a span from :meth:`Page.get_texttrace`.
+      :arg tuple line_dir: `line["dir"]` of the owning line. Use `None` for a span from :meth:`Page.get_texttrace`.
       :arg dict span: the span.
       :arg list chars: the characters to consider. If omitted, identical to :meth:`recoer_span`. If given, the selected extraction option must be "rawdict".
       :returns: the :ref:`Quad` of the selected characters, usable for text marker annotations ('Highlight', etc.).
@@ -777,7 +780,7 @@ Yet others are handy, general-purpose utilities.
       Compute the quadrilateral of a subset of spans of a text line extracted via options "dict" or "rawdict" of :meth:`Page.get_text`.
 
       :arg dict line: the line.
-      :arg list spans: a sub-list of ``line["spans"]``. If omitted, the full line quad will be returned.
+      :arg list spans: a sub-list of `line["spans"]`. If omitted, the full line quad will be returned.
       :returns: the :ref:`Quad` of the selected line spans, usable for text marker annotations ('Highlight', etc.).
 
 -----
@@ -788,7 +791,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: INFINITE_IRECT()
 
-      Return the (unique) infinite rectangle ``Rect(-2147483648.0, -2147483648.0, 2147483520.0, 2147483520.0)``, resp. the :ref:`IRect` and :ref:`Quad` counterparts. It is the largest possible rectangle: all valid rectangles are contained in it.
+      Return the (unique) infinite rectangle `Rect(-2147483648.0, -2147483648.0, 2147483520.0, 2147483520.0)`, resp. the :ref:`IRect` and :ref:`Quad` counterparts. It is the largest possible rectangle: all valid rectangles are contained in it.
 
 -----
 
@@ -798,6 +801,6 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: EMPTY_IRECT()
    
-      Return the "standard" empty and invalid rectangle ``Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)`` resp. quad. Its top-left and bottom-right point values are reversed compared to the infinite rectangle. It will e.g. be used to indicate empty bboxes in ``page.get_text("dict")`` dictionaries. There are however infinitely many empty or invalid rectangles.
+      Return the "standard" empty and invalid rectangle `Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)` resp. quad. Its top-left and bottom-right point values are reversed compared to the infinite rectangle. It will e.g. be used to indicate empty bboxes in `page.get_text("dict")` dictionaries. There are however infinitely many empty or invalid rectangles.
 
 .. include:: footer.rst

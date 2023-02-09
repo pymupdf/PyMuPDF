@@ -3,7 +3,7 @@
 .. _RecipesJournalling:
 
 =========================================
-Recipes: Journalling
+Journalling
 =========================================
 
 
@@ -20,7 +20,7 @@ Journalling is a logging mechanism which permits either **reverting** or **re-ap
 * When loading a journal file, compatibility with the document is checked and journalling is automatically enabled upon success.
 * For an **exising** PDF being journalled, a special new save method is available: :meth:`Document.save_snapshot`. This performs a special incremental save that includes all journalled updates so far. If its journal is saved at the same time (immediately after the document snapshot), then document and journal are in sync and can later on be used together to undo or redo operations or to continue journalled updates -- just as if there had been no interruption.
 * The snapshot PDF is a valid PDF in every aspect and fully usable. If the document is however changed in any way without using its journal file, then a desynchronization will take place and the journal is rendered unusable.
-* Snapshot files are structured like incremental updates. Nevertheless, the internal journalling logic requires, that saving **must happen to a new file**. So the user should develop a file naming convention to support recognizable relationships between an original PDF, like ``original.pdf`` and its snapshot sets, like ``original-snap1.pdf`` / ``original-snap1.log``, ``original-snap2.pdf`` / ``original-snap2.log``, etc.
+* Snapshot files are structured like incremental updates. Nevertheless, the internal journalling logic requires, that saving **must happen to a new file**. So the user should develop a file naming convention to support recognizable relationships between an original PDF, like `original.pdf` and its snapshot sets, like `original-snap1.pdf` / `original-snap1.log`, `original-snap2.pdf` / `original-snap2.log`, etc.
 
 Example Session 1
 ~~~~~~~~~~~~~~~~~~

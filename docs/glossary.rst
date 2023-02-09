@@ -34,11 +34,11 @@ Glossary
 
 .. data:: MediaBox
 
-        A PDF array of 4 floats specifying a physical page size -- (:data:`inheritable`, mandatory). This rectangle should contain all other PDF  -- optional -- page rectangles, which may be specified in addition: CropBox, TrimBox, ArtBox and BleedBox. Please consult :ref:`AdobeManual` for details. The MediaBox is the only rectangle, for which there is no difference between MuPDF and PDF coordinate systems: :attr:`Page.mediabox` will always show the same coordinates as the ``/MediaBox`` key in a page's object definition. For all other rectangles, MuPDF transforms coordinates such that the **top-left** corner is the point of reference. This can sometimes be confusing -- you may for example encounter a situation like this one:
+        A PDF array of 4 floats specifying a physical page size -- (:data:`inheritable`, mandatory). This rectangle should contain all other PDF  -- optional -- page rectangles, which may be specified in addition: CropBox, TrimBox, ArtBox and BleedBox. Please consult :ref:`AdobeManual` for details. The MediaBox is the only rectangle, for which there is no difference between MuPDF and PDF coordinate systems: :attr:`Page.mediabox` will always show the same coordinates as the `/MediaBox` key in a page's object definition. For all other rectangles, MuPDF transforms coordinates such that the **top-left** corner is the point of reference. This can sometimes be confusing -- you may for example encounter a situation like this one:
 
-        * The page definition contains the following identical values: ``/MediaBox [ 36 45 607.5 765 ]``, ``/CropBox [ 36 45 607.5 765 ]``.
-        * PyMuPDF accordingly shows ``page.mediabox = Rect(36.0, 45.0, 607.5, 765.0)``.
-        * **BUT:** ``page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)``, because the two y-coordinates have been transformed (45 subtracted from both of them).
+        * The page definition contains the following identical values: `/MediaBox [ 36 45 607.5 765 ]`, `/CropBox [ 36 45 607.5 765 ]`.
+        * PyMuPDF accordingly shows `page.mediabox = Rect(36.0, 45.0, 607.5, 765.0)`.
+        * **BUT:** `page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)`, because the two y-coordinates have been transformed (45 subtracted from both of them).
 
 .. data:: CropBox
 
@@ -55,7 +55,7 @@ Glossary
         
         *"The trailer of a PDF file enables an application reading the file to quickly find the cross-reference table and certain special objects. Applications should read a PDF file from its end."*
 
-        To access the trailer in PyMuPDF, use the usual methods :meth:`Document.xref_object`, :meth:`Document.xref_get_key` and :meth:`Document.xref_get_keys` with ``-1`` instead of a positive xref number.
+        To access the trailer in PyMuPDF, use the usual methods :meth:`Document.xref_object`, :meth:`Document.xref_get_key` and :meth:`Document.xref_get_keys` with `-1` instead of a positive xref number.
 
 .. data:: contents
 
@@ -63,10 +63,10 @@ Glossary
 
         PyMuPDF provides a number of methods to deal with contents of PDF pages:
 
-        * :meth:`Page.read_contents()` -- reads and concatenates all page contents into one ``bytes`` object.
-        * :meth:`Page.clean_contents()` -- a wrapper of a MuPDF function that reads, concatenates and syntax-cleans all page contents. After this, only one ``/Contents`` object will exist. In addition, page :data:`resources` will have been synchronized with it such that it will contain exactly those images, fonts and other objects that the page actually references.
+        * :meth:`Page.read_contents()` -- reads and concatenates all page contents into one `bytes` object.
+        * :meth:`Page.clean_contents()` -- a wrapper of a MuPDF function that reads, concatenates and syntax-cleans all page contents. After this, only one `/Contents` object will exist. In addition, page :data:`resources` will have been synchronized with it such that it will contain exactly those images, fonts and other objects that the page actually references.
         * :meth:`Page.get_contents()` -- return a list of :data:`xref` numbers of a page's :data:`contents` objects. May be empty. Use :meth:`Document.xref_stream()` with one of these xrefs to read the resp. contents section.
-        * :meth:`Page.set_contents()` -- set a page's ``/Contents`` key to the provided :data:`xref` number.
+        * :meth:`Page.set_contents()` -- set a page's `/Contents` key to the provided :data:`xref` number.
 
 .. data:: resources
 
@@ -113,7 +113,7 @@ Glossary
 
 .. data:: object
 
-        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values ("true" or "false"), integer and real numbers, strings (**always** enclosed in brackets -- either "()", or "<>" to indicate hexadecimal), names (must always start with a "/", e.g. ``/Contents``), arrays (enclosed in brackets "[]"), dictionaries (enclosed in brackets "<<>>"), streams (enclosed by keywords "stream" / "endstream"), and the null object ("null") (:ref:`AdobeManual` p. 13). Objects can be made identifyable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xref_object`.
+        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values ("true" or "false"), integer and real numbers, strings (**always** enclosed in brackets -- either "()", or "<>" to indicate hexadecimal), names (must always start with a "/", e.g. `/Contents`), arrays (enclosed in brackets "[]"), dictionaries (enclosed in brackets "<<>>"), streams (enclosed by keywords "stream" / "endstream"), and the null object ("null") (:ref:`AdobeManual` p. 13). Objects can be made identifyable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xref_object`.
 
 .. data:: stream
 

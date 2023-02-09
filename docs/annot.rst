@@ -15,7 +15,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
   Unfortunately, there exists no single, unique naming convention in PyMuPDF: examples for all of *CamelCases*, *mixedCases* and *lower_case_with underscores* can be found all over the place. We are now in the process of cleaning this up, step by step.
 
-  This class, Annot, is the first candidate for this execise. In this chapter, you will for example find :meth:`Annot.get_pixmap` -- and no longer the old name ``getPixmap``. The method with the old name however **continues to exists** and you can continue using it: your existing code will not break. But we do hope you will start using the new names -- for new code at least.
+  This class, `Annot`, is the first candidate for this exercise. In this chapter, you will for example find :meth:`Annot.get_pixmap` -- and no longer the old name `getPixmap`. The method with the old name however **continues to exist** and you can continue using it: your existing code will not break. But we do hope you will start using the new names -- for new code at least.
 
 
 ================================== ==============================================================
@@ -81,7 +81,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg matrix_like matrix: a matrix to be used for image creation. Default is :ref:`Identity`.
 
-      :arg int dpi: (new in v1.19.2) desired resolution in dots per inch. If not ``None``, the matrix parameter is ignored.
+      :arg int dpi: (new in v1.19.2) desired resolution in dots per inch. If not `None`, the matrix parameter is ignored.
 
       :arg colorspace: a colorspace to be used for image creation. Default is *fitz.csRGB*.
       :type colorspace: :ref:`Colorspace`
@@ -184,7 +184,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg int xref: The :data:`xref` of another annotation.
 
-         .. note:: Must refer to an existing annotation on this page. Setting this property requires no subsequent ``update()``.
+         .. note:: Must refer to an existing annotation on this page. Setting this property requires no subsequent `update()`.
 
 
    .. method:: set_open(value)
@@ -236,7 +236,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       
       Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations. The blend mode can also be set in :meth:`Annot.update`.
 
-      :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use ``PDF_BM_Normal`` to **remove** a blend mode.
+      :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use `PDF_BM_Normal` to **remove** a blend mode.
 
          >>> annot.set_blendmode(fitz.PDF_BM_Multiply)
          >>> annot.update()
@@ -251,7 +251,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str name: the new name.
 
-      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after `"STAMP_"`), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using fontsize 20 must not exceed 190 pixels. So please make sure that the following inequality is true: ``fitz.get_text_length(text, fontname="tibo", fontsize=20) <= 190``.
+      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after `"STAMP_"`), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using fontsize 20 must not exceed 190 pixels. So please make sure that the following inequality is true: `fitz.get_text_length(text, fontname="tibo", fontsize=20) <= 190`.
 
    .. method:: set_rect(rect)
 
@@ -289,7 +289,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_flags(flags)
 
-      Changes the annotation flags. Use the ``|`` operator to combine several.
+      Changes the annotation flags. Use the `|` operator to combine several.
 
       :arg int flags: an integer specifying the required flags.
 
@@ -303,7 +303,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg sequence stroke: see above.
       :arg sequence fill: see above.
 
-      *Changed in v1.18.5:* To completely remove a color specification, use an empty sequence like ``[]``. If you specify ``None``, an existing specification will not be changed.
+      *Changed in v1.18.5:* To completely remove a color specification, use an empty sequence like `[]`. If you specify `None`, an existing specification will not be changed.
 
 
    .. method:: delete_responses()

@@ -35,7 +35,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 :meth:`~.add_var`                add code text (:htmlTag:`code` tag) - inline element, treated like text.
 :meth:`~.add_samp`               add code text (:htmlTag:`code` tag) - inline element, treated like text.
 :meth:`~.add_kbd`                add code text (:htmlTag:`code` tag) - inline element, treated like text.
-:meth:`~.add_text`               add a text string. Line breaks ``\n`` are honored as :htmlTag:`br` tags.
+:meth:`~.add_text`               add a text string. Line breaks `\n` are honored as :htmlTag:`br` tags.
 :meth:`~.set_align`              sets the alignment using a CSS style spec. Only works for block-level tags.
 :meth:`~.set_attribute`          sets an arbitrary key to some value (which may be empty).
 :meth:`~.set_bgcolor`            sets the background color. Only works for block-level tags.
@@ -46,21 +46,21 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 :meth:`~.set_fontsize`           sets the font size. Either a float or a valid HTML/CSS string.
 :meth:`~.set_id`                 sets a :htmlTag:`id`. A check for uniqueness is performed.
 :meth:`~.set_italic`             sets italic on or off or to some string value.
-:meth:`~.set_leading`            set inter-block text distance (``-mupdf-leading``), only works on block-level nodes.
+:meth:`~.set_leading`            set inter-block text distance (`-mupdf-leading`), only works on block-level nodes.
 :meth:`~.set_lineheight`         set height of a line. Float like 1.5, which sets to `1.5 * fontsize`.
 :meth:`~.set_margins`            sets the margin(s), float or string with up to 4 values.
 :meth:`~.set_pagebreak_after`    insert a page break after this node.
 :meth:`~.set_pagebreak_before`   insert a page break before this node.
 :meth:`~.set_properties`         set any or all desired properties in one call.
-:meth:`~.add_style`              set (add) some “style” attribute not supported by its own ``set_`` method.
+:meth:`~.add_style`              set (add) some “style” attribute not supported by its own `set_` method.
 :meth:`~.add_class`              set (add) some “class” attribute.
 :meth:`~.set_text_indent`        set indentation for first textblock line. Only works for block-level nodes.
-:attr:`~.tagname`                either the HTML tag name like :htmlTag:`p` or ``None`` if a text node.
-:attr:`~.text`                   either the node's text or ``None`` if a tag node.
+:attr:`~.tagname`                either the HTML tag name like :htmlTag:`p` or `None` if a text node.
+:attr:`~.text`                   either the node's text or `None` if a tag node.
 :attr:`~.is_text`                check if the node is a text.
-:attr:`~.first_child`            contains the first node one level below this one (or ``None``).
-:attr:`~.last_child`             contains the last node one level below this one (or ``None``).
-:attr:`~.next`                   the next node at the same level (or ``None``).
+:attr:`~.first_child`            contains the first node one level below this one (or `None`).
+:attr:`~.last_child`             contains the last node one level below this one (or `None`).
+:attr:`~.next`                   the next node at the same level (or `None`).
 :attr:`~.previous`               the previous node at the same level.
 :attr:`~.root`                   the top node of the DOM, which hence has the tagname :htmlTag:`html`.
 ================================ ===========================================================================================
@@ -102,15 +102,15 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
        Add an :htmlTag:`img` tag. This causes the inclusion of the named image in the DOM.
 
        :arg str name: the filename of the image. This **must be the member name** of some entry of the :ref:`Archive` parameter of the :ref:`Story` constructor.
-       :arg width: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the width of the specified ``where`` rectangle in :meth:`Story.place`. If this value is provided and ``height`` is omitted, the image will be included keeping its aspect ratio.
-       :arg height: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the height of the specified ``where`` rectangle in :meth:`Story.place`. If this value is provided and ``width`` is omitted, the image's aspect ratio will be honored.
+       :arg width: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the width of the specified `where` rectangle in :meth:`Story.place`. If this value is provided and `height` is omitted, the image will be included keeping its aspect ratio.
+       :arg height: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the height of the specified `where` rectangle in :meth:`Story.place`. If this value is provided and `width` is omitted, the image's aspect ratio will be honored.
 
     .. method:: add_link(href, text=None)
 
        Add an :htmlTag:`a` tag - inline element, treated like text.
 
        :arg str href: the URL target.
-       :arg str text: the text to display. If omitted, the ``href`` text is shown instead.
+       :arg str text: the text to display. If omitted, the `href` text is shown instead.
 
     .. method:: add_number_list
 
@@ -150,7 +150,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_text(text)
 
-       Add a text string. Line breaks ``\n`` are honored as :htmlTag:`br` tags.
+       Add a text string. Line breaks `\n` are honored as :htmlTag:`br` tags.
 
     .. method:: set_align(value)
 
@@ -173,15 +173,15 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: get_attribute_value(key)
 
-       Get the attribute value of ``key``.
+       Get the attribute value of `key`.
 
        :arg str key: the name of the attribute.
 
-       :returns: a string with the value of ``key``.
+       :returns: a string with the value of `key`.
 
     .. method:: remove_attribute(key)
 
-       Remove the attribute ``key`` from the node.
+       Remove the attribute `key` from the node.
 
        :arg str key: the name of the attribute.
 
@@ -195,7 +195,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        Sets bold on or off or to some string value.
 
-       :arg value: ``True``, ``False`` or a valid `font-weight <https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight>`_ value.
+       :arg value: `True`, `False` or a valid `font-weight <https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight>`_ value.
 
     .. method:: set_color(value)
 
@@ -233,11 +233,11 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        Sets italic on or off or to some string value for the text following it.
 
-       :arg value: ``True``, ``False`` or some valid `font-style <https://developer.mozilla.org/en-US/docs/Web/CSS/font-style>`_ value.
+       :arg value: `True`, `False` or some valid `font-style <https://developer.mozilla.org/en-US/docs/Web/CSS/font-style>`_ value.
 
     .. method:: set_leading(value)
 
-       Set inter-block text distance (``-mupdf-leading``), only works on block-level nodes.
+       Set inter-block text distance (`-mupdf-leading`), only works on block-level nodes.
 
        :arg float value: the distance in points to the previous block.
 
@@ -263,13 +263,13 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: set_properties(align=None, bgcolor=None, bold=None, color=None, columns=None, font=None, fontsize=None, indent=None, italic=None, leading=None, lineheight=None, margins=None, pagebreak_after=False, pagebreak_before=False, unqid=None, cls=None)
 
-       Set any or all desired properties in one call. The meaning of argument values equal the values of the corresponding ``set_`` methods.
+       Set any or all desired properties in one call. The meaning of argument values equal the values of the corresponding `set_` methods.
 
-       .. note:: The properties set by this method are directly attached to the node, whereas every ``set_`` method generates a new :htmlTag:`span` below the current node that has the respective property. So to e.g. "globally" set some property for the :htmlTag:`body`, this method must be used.
+       .. note:: The properties set by this method are directly attached to the node, whereas every `set_` method generates a new :htmlTag:`span` below the current node that has the respective property. So to e.g. "globally" set some property for the :htmlTag:`body`, this method must be used.
 
     .. method:: add_style(value)
 
-       Set (add) some style attribute not supported by its own ``set_`` method.
+       Set (add) some style attribute not supported by its own `set_` method.
 
        :arg str value: any valid CSS style value.
 
@@ -312,13 +312,13 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: insert_before(elem)
 
-       Insert the given element ``elem`` before this node.
+       Insert the given element `elem` before this node.
 
        :arg elem: some :ref:`Xml` element.
 
     .. method:: insert_after(elem)
 
-       Insert the given element ``elem`` after this node.
+       Insert the given element `elem` after this node.
 
        :arg elem: some :ref:`Xml` element.
 
@@ -339,30 +339,30 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: find(tag, att, match)
 
-       Under the current node, find a node with the given ``tag``, atribute ``att`` and value ``match``.
+       Under the current node, find a node with the given `tag`, atribute `att` and value `match`.
 
-       :arg str tag: restrict search to this tag. May be ``None`` for unrestricted search.
+       :arg str tag: restrict search to this tag. May be `None` for unrestricted search.
        :arg str att: check this attribute.
        :arg str match: the desired attribute value to match.
 
        :rtype: :ref:`Xml`.
-       :returns: ``None`` if nothing found, otherwise the first matching node.
+       :returns: `None` if nothing found, otherwise the first matching node.
 
     .. method:: find_next( tag, att, match)
 
        Continue a previous :meth:`Xml.find` with the same values.
 
        :rtype: :ref:`Xml`.
-       :returns: ``None`` if none more found, otherwise the next matching node.
+       :returns: `None` if none more found, otherwise the next matching node.
 
 
     .. attribute:: tagname
 
-       Either the HTML tag name like :htmlTag:`p` or ``None`` if a text node.
+       Either the HTML tag name like :htmlTag:`p` or `None` if a text node.
 
     .. attribute:: text
 
-       Either the node's text or ``None`` if a tag node.
+       Either the node's text or `None` if a tag node.
 
     .. attribute:: is_text
 
@@ -370,15 +370,15 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. attribute:: first_child
 
-       Contains the first node one level below this one (or ``None``).
+       Contains the first node one level below this one (or `None`).
 
     .. attribute:: last_child
 
-       Contains the last node one level below this one (or ``None``).
+       Contains the last node one level below this one (or `None`).
 
     .. attribute:: next
 
-       The next node at the same level (or ``None``).
+       The next node at the same level (or `None`).
 
     .. attribute:: previous
 
@@ -392,7 +392,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 Setting Text properties
 ------------------------
 
-In HTML tags can be nested such that innermost text **inherits properties** from the tag enveloping its parent tag. For example ``<p><b>some bold text<i>this is bold and italic</i></b>regular text</p>``.
+In HTML tags can be nested such that innermost text **inherits properties** from the tag enveloping its parent tag. For example `<p><b>some bold text<i>this is bold and italic</i></b>regular text</p>`.
 
 To achieve the same effect, methods like :meth:`Xml.set_bold` and :meth:`Xml.set_italic` each open a temporary :htmlTag:`span` with the desired property underneath the current node.
 

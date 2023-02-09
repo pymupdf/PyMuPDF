@@ -3,7 +3,7 @@
 .. _RecipesLowLevelInterfaces:
 
 =========================================
-Recipes: Low-Level Interfaces
+Low-Level Interfaces
 =========================================
 
 
@@ -284,7 +284,7 @@ Use the following code to see **all items** stored in the metadata object::
      'Title': 'Full page fax print',
      'mykey': '北京 is Beijing'}
 
-To delete selected keys, use ``doc.xref_set_key(xref, "mykey", "null")``. As explained in the next section, string "null" is the PDF equivalent to Python's ``None``. A key with that value will be treated as not being specified -- and physically removed in garbage collections.
+To delete selected keys, use `doc.xref_set_key(xref, "mykey", "null")`. As explained in the next section, string "null" is the PDF equivalent to Python's `None`. A key with that value will be treated as not being specified -- and physically removed in garbage collections.
 
 ----------------------------------
 
@@ -332,7 +332,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
     MediaBox = ('array', '[0 0 612 792]')
     Parent = ('xref', '1301 0 R')
 
-* An undefined key inquiry returns ``('null', 'null')`` -- PDF object type ``null`` corresponds to ``None`` in Python. Similar for the booleans ``true`` and ``false``.
+* An undefined key inquiry returns `('null', 'null')` -- PDF object type `null` corresponds to `None` in Python. Similar for the booleans `true` and `false`.
 * Let us add a new key to the page definition that sets its rotation to 90 degrees (you are aware that there actually exists :meth:`Page.set_rotation` for this?)::
 
     In [11]: doc.xref_get_key(page.xref, "Rotate")  # no rotation set:
@@ -348,9 +348,9 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       /Rotate 90
     >>
 
-* This method can also be used to remove a key from the :data:`xref` dictionary by setting its value to ``null``: The following will remove the rotation specification from the page: ``doc.xref_set_key(page.xref, "Rotate", "null")``. Similarly, to remove all links, annotations and fields from a page, use ``doc.xref_set_key(page.xref, "Annots", "null")``. Because ``Annots`` by definition is an array, setting en empty array with the statement ``doc.xref_set_key(page.xref, "Annots", "[]")`` would do the same job in this case.
+* This method can also be used to remove a key from the :data:`xref` dictionary by setting its value to `null`: The following will remove the rotation specification from the page: `doc.xref_set_key(page.xref, "Rotate", "null")`. Similarly, to remove all links, annotations and fields from a page, use `doc.xref_set_key(page.xref, "Annots", "null")`. Because `Annots` by definition is an array, setting en empty array with the statement `doc.xref_set_key(page.xref, "Annots", "[]")` would do the same job in this case.
 
-* PDF dictionaries can be hierarchically nested. In the following page object definition both, ``Font`` and ``XObject`` are subdictionaries of ``Resources``::
+* PDF dictionaries can be hierarchically nested. In the following page object definition both, `Font` and `XObject` are subdictionaries of `Resources`::
 
     In [15]: print(doc.xref_object(page.xref))
     <<
@@ -370,12 +370,12 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       /Rotate 90
     >>
 
-* The above situation **is supported** by methods :meth:`Document.xref_set_key` and :meth:`Document.xref_get_key`: use a path-like notation to point at the required key. For example, to retrieve the value of key ``Im1`` above, specify the complete chain of dictionaries "above" it in the key argument: ``"Resources/XObject/Im1"``::
+* The above situation **is supported** by methods :meth:`Document.xref_set_key` and :meth:`Document.xref_get_key`: use a path-like notation to point at the required key. For example, to retrieve the value of key `Im1` above, specify the complete chain of dictionaries "above" it in the key argument: `"Resources/XObject/Im1"`::
 
     In [16]: doc.xref_get_key(page.xref, "Resources/XObject/Im1")
     Out[16]: ('xref', '1291 0 R')
 
-* The path notation can also be used to **directly set a value**: use the following to let ``Im1`` point to a different object::
+* The path notation can also be used to **directly set a value**: use the following to let `Im1` point to a different object::
 
     In [17]: doc.xref_set_key(page.xref, "Resources/XObject/Im1", "9999 0 R")
     In [18]: print(doc.xref_object(page.xref))  # confirm success:
@@ -398,7 +398,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
 
   Be aware, that **no semantic checks** whatsoever will take place here: if the PDF has no xref 9999, it won't be detected at this point.
 
-* If a key does not exist, it will be created by setting its value. Moreover, if any intermediate keys do not exist either, they will also be created as necessary. The following creates an array ``D`` several levels below the existing dictionary ``A``. Intermediate dictionaries ``B`` and ``C`` are automatically created::
+* If a key does not exist, it will be created by setting its value. Moreover, if any intermediate keys do not exist either, they will also be created as necessary. The following creates an array `D` several levels below the existing dictionary `A`. Intermediate dictionaries `B` and `C` are automatically created::
 
     In [5]: print(doc.xref_object(xref))  # some existing PDF object:
     <<
@@ -418,7 +418,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
       >>
     >>
 
-* When setting key values, basic **PDF syntax checking** will be done by MuPDF. For example, new keys can only be created **below a dictionary**. The following tries to create some new string item ``E`` below the previously created array ``D``::
+* When setting key values, basic **PDF syntax checking** will be done by MuPDF. For example, new keys can only be created **below a dictionary**. The following tries to create some new string item `E` below the previously created array `D`::
 
     In [9]: # 'D' is an array, no dictionary!
     In [10]: doc.xref_set_key(xref, "A/B/C/D/E", "(hello)")
