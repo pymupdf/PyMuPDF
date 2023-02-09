@@ -3,7 +3,7 @@
 .. _RecipesCommonIssuesAndTheirSolutions:
 
 ==========================================
-Recipes: Common Issues and their Solutions
+Common Issues and their Solutions
 ==========================================
 
 
@@ -150,7 +150,7 @@ Cause
 
 Solution
 ^^^^^^^^
-1. Use layout preserving text extraction: ``python -m fitz gettext file.pdf``.
+1. Use layout preserving text extraction: `python -m fitz gettext file.pdf`.
 2. If other text extraction tools also don't work, then the only solution again is OCRing the page.
 
 .. include:: footer.rst

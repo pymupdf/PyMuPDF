@@ -208,16 +208,16 @@ Supported Widget Types
 -----------------------
 PyMuPDF supports the creation and update of many, but not all widget types.
 
-* text (``PDF_WIDGET_TYPE_TEXT``)
-* push button (``PDF_WIDGET_TYPE_BUTTON``)
-* check box (``PDF_WIDGET_TYPE_CHECKBOX``)
-* combo box (``PDF_WIDGET_TYPE_COMBOBOX``)
-* list box (``PDF_WIDGET_TYPE_LISTBOX``)
-* radio button (``PDF_WIDGET_TYPE_RADIOBUTTON``): PyMuPDF does not currently support groups of (interconnected) buttons, where setting one automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. Setting or unsetting happens via values ``True`` and ``False`` and will always work without affecting other radio buttons.
-* signature (``PDF_WIDGET_TYPE_SIGNATURE``) **read only**.
+* text (`PDF_WIDGET_TYPE_TEXT`)
+* push button (`PDF_WIDGET_TYPE_BUTTON`)
+* check box (`PDF_WIDGET_TYPE_CHECKBOX`)
+* combo box (`PDF_WIDGET_TYPE_COMBOBOX`)
+* list box (`PDF_WIDGET_TYPE_LISTBOX`)
+* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently support groups of (interconnected) buttons, where setting one automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. Setting or unsetting happens via values `True` and `False` and will always work without affecting other radio buttons.
+* signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only**.
 
 .. rubric:: Footnotes
 
-.. [#f1] If you intend to re-access a new or updated field (e.g. for making a pixmap), make sure to reload the page first. Either close and re-open the document, or load another page first, or simply do ``page = doc.reload_page(page)``.
+.. [#f1] If you intend to re-access a new or updated field (e.g. for making a pixmap), make sure to reload the page first. Either close and re-open the document, or load another page first, or simply do `page = doc.reload_page(page)`.
 
 .. include:: footer.rst

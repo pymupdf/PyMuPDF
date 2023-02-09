@@ -50,6 +50,55 @@
     margin-left: 8px;
 }
 
+.feedbackLink {
+    display:flex;
+    justify-content:flex-end;
+    margin:0 0 10px;
+    padding:0;
+    font-size: 13px;
+}
+
+.intro-title {
+    font-size: 22px;
+    margin: 0 0 20px 0;
+}
+
+
+h1, h2, h3, h4 {
+    padding: 10px;
+    border: 1px solid #007aff;
+    background-color: #007aff;
+    color: #fff;
+    border-radius: 5px;
+}
+
+h1 a, h2 a, h3 a, h4 a, h1 a span, h2 a span, h3 a span, h4 a span {
+    color: #fff;
+    text-decoration: underline;
+    background-color: #007aff;
+}
+
+
+cite {
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+.red-color {
+    color: #cc0000;
+}
+
+.orange-color {
+    color: #ff6600;
+}
+
+.green-color {
+    color: #00cc00;
+}
+
+
+
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {
 

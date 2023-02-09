@@ -10,7 +10,7 @@ Module *fitz*
 
 PyMuPDF can also be used in the command line as a **module** to perform utility functions. This feature should obsolete writing some of the most basic scripts.
 
-Admittedly, there is some functional overlap with the MuPDF CLI ``mutool``. On the other hand, PDF embedded files are no longer supported by MuPDF, so PyMuPDF is offering something unique here.
+Admittedly, there is some functional overlap with the MuPDF CLI `mutool`. On the other hand, PDF embedded files are no longer supported by MuPDF, so PyMuPDF is offering something unique here.
 
 Invocation
 -----------
@@ -23,9 +23,9 @@ Invoke the module like this::
 
 General remarks:
 
-* Request help via ``"-h"``, resp. command-specific help via ``"command -h"``.
+* Request help via `"-h"`, resp. command-specific help via `"command -h"`.
 * Parameters may be abbreviated where this does not introduce ambiguities.
-* Several commands support parameters ``-pages`` and ``-xrefs``. They are intended for down-selection. Please note that:
+* Several commands support parameters `-pages` and `-xrefs`. They are intended for down-selection. Please note that:
 
     - **page numbers** for this utility must be given **1-based**.
     - valid :data:`xref` numbers start at 1.
@@ -418,16 +418,16 @@ Extract text from arbitrary supported documents **(not only PDF)** to a textfile
 
 * **Simple** text extraction reproduces all text as it appears in the document pages -- no effort is made to rearrange in any particular reading order.
 * **Block sorting** sorts text blocks (as identified by MuPDF) by ascending vertical, then horizontal coordinates. This should be sufficient to establish a "natural" reading order for basic pages of text.
-* **Layout** strives to reproduce the original appearance of the input pages. You can expect results like this (produced by the command ``python -m fitz gettext -pages 1 demo1.pdf``):
+* **Layout** strives to reproduce the original appearance of the input pages. You can expect results like this (produced by the command `python -m fitz gettext -pages 1 demo1.pdf`):
 
 .. image:: images/img-layout-text.*
     :scale: 60
 
-.. note:: The "gettext" command offers a functionality similar to the CLI tool ``pdftotext`` by XPDF software, http://www.foolabs.com/xpdf/ -- this is especially true for "layout" mode, which combines that tool's ``-layout`` and ``-table`` options.
+.. note:: The "gettext" command offers a functionality similar to the CLI tool `pdftotext` by XPDF software, http://www.foolabs.com/xpdf/ -- this is especially true for "layout" mode, which combines that tool's `-layout` and `-table` options.
 
 
 
-After each page of the output file, a formfeed character, ``hex(12)`` is written -- even if the input page has no text at all. This behavior can be controlled via options.
+After each page of the output file, a formfeed character, `hex(12)` is written -- even if the input page has no text at all. This behavior can be controlled via options.
 
 .. note:: For "layout" mode, **only horizontal, left-to-right, top-to bottom** text is supported, other text is ignored. In this mode, text is also ignored, if its fontsize is too small.
 
@@ -463,16 +463,16 @@ Command::
 
 .. note:: Command options may be abbreviated as long as no ambiguities are introduced. So the following do the same:
 
-    * ``... -output text.txt -noligatures -noformfeed -convert-white -grid 3 -extra-spaces ...``
-    * ``... -o text.txt -nol -nof -c -g 3 -e ...``
+    * `... -output text.txt -noligatures -noformfeed -convert-white -grid 3 -extra-spaces ...`
+    * `... -o text.txt -nol -nof -c -g 3 -e ...`
 
-  The output filename defaults to the input with its extension replaced by ``.txt``. As with other commands, you can select page ranges **(caution: 1-based!)** in ``mutool`` format, as indicated above.
+  The output filename defaults to the input with its extension replaced by `.txt`. As with other commands, you can select page ranges **(caution: 1-based!)** in `mutool` format, as indicated above.
 
 * **mode:** (str) select a formatting mode -- default is "layout".
 * **noligatures:** (bool) corresponds to **not** :data:`TEXT_PRESERVE_LIGATURES`. If specified, ligatures (present in advanced fonts: glyphs combining multiple characters like "fi") are split up into their components (i.e. "f", "i"). Default is passing them through.
 * **convert-white:** corresponds to **not** :data:`TEXT_PRESERVE_WHITESPACE`. If specified, all white space characters (like tabs) are replaced with one or more spaces. Default is passing them through.
 * **extra-spaces:**  (bool) corresponds to **not** :data:`TEXT_INHIBIT_SPACES`. If specified, large gaps between adjacent characters will be filled with one or more spaces. Default is off.
-* **noformfeed:**  (bool) instead of ``hex(12)`` (formfeed), write linebreaks ``\n`` at end of output pages.
+* **noformfeed:**  (bool) instead of `hex(12)` (formfeed), write linebreaks `\n` at end of output pages.
 * **skip-empty:**  (bool) skip pages with no text.
 * **grid:** lines with a vertical coordinate difference of no more than this value (in points) will be merged into the same output line. Only relevant for "layout" mode. **Use with care:** 3 or the default 2 should be adequate in most cases. If **too large**, lines that are *intended* to be different in the original may be merged and will result in garbled and / or incomplete output. If **too low**, artifact separate output lines may be generated for some spans in the input line, just because they are coded in a different font with slightly deviating properties.
 * **fontsize:** include text with fontsize larger than this value only (default 3). Only relevant for "layout" option.

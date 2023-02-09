@@ -3,12 +3,14 @@
 .. _RecipesText:
 
 ==============================
-Recipes: Text
+Text
 ==============================
 
 
+.. _RecipesText_A:
+
 How to Extract all Document Text
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script will take a document filename and generate a text file from all of its text.
 
@@ -40,6 +42,9 @@ See the following two sections for examples and further explanations.
 .. index::
    triple: extract;text;rectangle
 
+
+.. _RecipesText_B:
+
 How to Extract Text from within a Rectangle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 There is now (v1.18.0) more than one way to achieve this. We therefore have created a `folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textbox-extraction>`_ in the PyMuPDF-Utilities repository specifically dealing with this topic.
@@ -48,6 +53,8 @@ There is now (v1.18.0) more than one way to achieve this. We therefore have crea
 
 .. index::
     pair: text;reading order
+
+.. _RecipesText_C:
 
 How to Extract Text in Natural Reading Order
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,12 +81,14 @@ The text sequence extracted from a page modified in this way will look like this
 
 PyMuPDF has several means to re-establish some reading sequence or even to re-generate a layout close to the original:
 
-1. Use ``sort`` parameter of :meth:`Page.get_text`. It will sort the output from top-left to bottom-right (ignored for XHTML, HTML and XML output).
-2. Use the ``fitz`` module in CLI: ``python -m fitz gettext ...``, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
+1. Use `sort` parameter of :meth:`Page.get_text`. It will sort the output from top-left to bottom-right (ignored for XHTML, HTML and XML output).
+2. Use the `fitz` module in CLI: `python -m fitz gettext ...`, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
 
 You can also use the above mentioned `script <https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-from-a-rectangle>`_ with your modifications.
 
 ----------
+
+.. _RecipesText_D:
 
 How to :index:`Extract Tables <pair: extract; table>` from Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,6 +99,8 @@ Extracting a tabular data from such a page area therefore means that you must fi
 The wxPython GUI script `wxTableExtract.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/wxTableExtract.py>`_ strives to exactly do that. You may want to have a look at it and adjust it to your liking.
 
 ----------
+
+.. _RecipesText_E:
 
 How to Mark Extracted Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,7 +147,7 @@ But you also have other options::
  if new_doc:
      doc.save("marked-" + doc.name)
 
-This script uses ``Page.get_text("words")`` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
+This script uses `Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
 
 * If found, the **complete word containing the string** is marked (underlined) -- not only the search string.
 * The search string may **not contain spaces** or other white space.
@@ -149,6 +160,9 @@ This script uses ``Page.get_text("words")`` to look for a string, handed in via 
    :scale: 60
 
 ----------------------------------------------
+
+
+.. _RecipesText_F:
 
 How to Mark Searched Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -183,11 +197,14 @@ The result looks like this:
 
 ----------------------------------------------
 
+
+.. _RecipesText_G:
+
 How to Mark Non-horizontal Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The previous section already shows an example for marking non-horizontal text, that was detected by text **searching**.
 
-But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is indicated by the value of the line dictionary's ``"dir"`` key: it is the tuple ``(cosine, sine)`` for that angle. If ``line["dir"] != (1, 0)``, then the text of all its spans is rotated by (the same) angle != 0.
+But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_text` may also return text with a non-zero angle to the x-axis. This is indicated by the value of the line dictionary's `"dir"` key: it is the tuple `(cosine, sine)` for that angle. If `line["dir"] != (1, 0)`, then the text of all its spans is rotated by (the same) angle != 0.
 
 The "bboxes" returned by the method however are rectangles only -- not quads. So, to mark span text correctly, its quad must be recovered from the data contained in the line and span dictionary. Do this with the following utility function (new in v1.18.9)::
 
@@ -201,9 +218,11 @@ If you want to **mark the complete line** or a subset of its spans in one go, us
 
 .. image:: images/img-linequad.*
 
-The ``spans`` argument above may specify any sub-list of ``line["spans"]``. In the example above, the second to second-to-last span are marked. If omitted, the complete line is taken.
+The `spans` argument above may specify any sub-list of `line["spans"]`. In the example above, the second to second-to-last span are marked. If omitted, the complete line is taken.
 
 ------------------------------
+
+.. _RecipesText_H:
 
 How to Analyze Font Characteristics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,6 +237,9 @@ Here is the PDF page and the script output:
    :scale: 80
 
 -----------------------------------------
+
+
+.. _RecipesText_I:
 
 How to Insert Text
 ~~~~~~~~~~~~~~~~~~~~
@@ -247,6 +269,9 @@ All of the above is provided by three basic :ref:`Page`, resp. :ref:`Shape` meth
 * :meth:`Page.insert_textbox` -- fit text in a given rectangle. Here you can choose text alignment features (left, right, centered, justified) and you keep control as to whether text actually fits. Internally, this uses :meth:`Shape.insert_textbox`.
 
 .. note:: Both text insertion methods automatically install the font as necessary.
+
+
+.. _RecipesText_I_a:
 
 How to Write Text Lines
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -322,6 +347,8 @@ This is the result:
 
 ------------------------------------------
 
+.. _RecipesText_I_b:
+
 How to Fill a Text Box
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 This script fills 4 different rectangles with text, each time choosing a different rotation value::
@@ -365,6 +392,8 @@ Several default values were used above: font "Helvetica", font size 11 and text 
    :scale: 50
 
 ------------------------------------------
+
+.. _RecipesText_I_c:
 
 How to Use Non-Standard Encoding
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

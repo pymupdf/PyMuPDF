@@ -72,10 +72,10 @@ Story
             4. Optionally, at this point,
                we can request details of where interesting items have been placed,
                by calling the `element_positions()` method.
-               Items are deemed to be interesting if their integer ``heading`` attribute is a non-zero
+               Items are deemed to be interesting if their integer `heading` attribute is a non-zero
                (corresponding to HTML tags :htmlTag:`h1` - :htmlTag:`h6`),
-               if their ``id`` attribute is not `None` (corresponding to HTML tag :htmlTag:`id`),
-               or if their ``href`` attribute is not `None` (responding to HTML tag :htmlTag:`href`).
+               if their `id` attribute is not `None` (corresponding to HTML tag :htmlTag:`id`),
+               or if their `href` attribute is not `None` (responding to HTML tag :htmlTag:`href`).
                This can conveniently be used for automatic generation of a Table of Contents,
                an index of images or the like.
             5. Next, draw that rectangle out to the device with the `draw()` method.
@@ -105,7 +105,7 @@ Story
       :arg float em: the default text font size.
       :arg archive: an :ref:`Archive` from which to load resources for rendering. Currently supported resource types are images and text fonts. If omitted, the story will not try to look up any such data and may thus produce incomplete output.
       
-         .. note:: Instead of an actual archive, valid arguments for **creating** an :ref:`Archive` can also be provided -- in which case an archive will temporarily be constructed. So, instead of ``story = fitz.Story(archive=fitz.Archive("myfolder"))``, one can also shorter write ``story = fitz.Story(archive="myfolder")``.
+         .. note:: Instead of an actual archive, valid arguments for **creating** an :ref:`Archive` can also be provided -- in which case an archive will temporarily be constructed. So, instead of `story = fitz.Story(archive=fitz.Archive("myfolder"))`, one can also shorter write `story = fitz.Story(archive="myfolder")`.
 
    .. method:: place(where)
 
@@ -127,13 +127,15 @@ Story
 
       Let the Story provide positioning information about certain HTML elements once their place on the current page has been computed - i.e. invoke this method **directly after** :meth:`Story.place`.
 
+
       :arg function: a Python callback function taking a :ref:`ElementPostion` instance,
         which will be invoked by this method to process positioning information.
       :arg dict args: an optional dictionary with any **additional** information
-        that should be added to the ElementPosition instance passed to ``function``.
+        that should be added to the ElementPosition instance passed to `function`.
         Like for example the current output page number.
         Every key in this dictionary must be a string that conforms to the rules for a valid Python identifier.
         The complete set of information is explained below.
+
 
    .. method:: reset()
 
@@ -273,24 +275,24 @@ A typical loop for executing a story with using this method would look like this
 Attributes of the ElementPosition class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The parameter passed to the ``recorder`` function is an object with the following attributes:
+The parameter passed to the `recorder` function is an object with the following attributes:
 
-* ``elpos.depth`` (int) -- depth of this element in the box structure.
+* `elpos.depth` (int) -- depth of this element in the box structure.
 
-* ``elpos.heading`` (int) -- the header level, 0 if no header, 1-6 for :htmlTag:`h1` - :htmlTag:`h6`.
+* `elpos.heading` (int) -- the header level, 0 if no header, 1-6 for :htmlTag:`h1` - :htmlTag:`h6`.
 
-* ``elpos.href`` (str) -- value of the ``href`attribute, or None if not defined.
+* `elpos.href` (str) -- value of the `href`attribute, or None if not defined.
 
-* ``elpos.id`` (str) -- value of the ``id`` attribute, or None if not defined.
+* `elpos.id` (str) -- value of the `id` attribute, or None if not defined.
 
-* ``elpos.rect`` (tuple) -- element position on page.
+* `elpos.rect` (tuple) -- element position on page.
 
-* ``elpos.text`` (str) -- immediate text of the element.
+* `elpos.text` (str) -- immediate text of the element.
 
-* ``elpos.open_close`` (int bit field) -- bit 0 set: opens element, bit 1 set: closes element. Relevant for elements that may contain other elements and thus may not immediately be closed after being created / opened.
+* `elpos.open_close` (int bit field) -- bit 0 set: opens element, bit 1 set: closes element. Relevant for elements that may contain other elements and thus may not immediately be closed after being created / opened.
 
-* ``elpos.rect_num`` (int) -- count of rectangles filled by the story so far.
+* `elpos.rect_num` (int) -- count of rectangles filled by the story so far.
 
-* ``elpos.page_num`` (int) -- page number; only present when using `fitz.Story.write*()` functions.
+* `elpos.page_num` (int) -- page number; only present when using `fitz.Story.write*()` functions.
 
 .. include:: footer.rst

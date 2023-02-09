@@ -3,7 +3,7 @@
 .. _RecipesAnnotations:
 
 ==============================
-Recipes: Annotations
+Annotations
 ==============================
 
 
@@ -20,6 +20,9 @@ In v1.14.0, annotation handling has been considerably extended:
 * MuPDF now supports line end icons for 'Line' annots (only). PyMuPDF supported that in v1.13.x already -- and for (almost) the full range of applicable types. So we adjusted the appearance of 'Polygon' and 'PolyLine' annots to closely resemble the one of MuPDF for 'Line'.
 * MuPDF now provides its own annotation icons where relevant. PyMuPDF switched to using them (for 'FileAttachment' and 'Text' ["sticky note"] so far).
 * MuPDF now also supports 'Caret', 'Movie', 'Sound' and 'Signature' annotations, which we may include in PyMuPDF at some later time.
+
+
+.. _RecipesAnnotations_A:
 
 How to Add and Modify Annotations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,6 +43,8 @@ This script should lead to the following output:
    :scale: 80
 
 ------------------------------
+
+.. _RecipesAnnotations_B:
 
 How to Use FreeText
 ~~~~~~~~~~~~~~~~~~~~~
@@ -83,6 +88,9 @@ The result looks like this:
 
 ------------------------------
 
+
+
+
 Using Buttons and JavaScript
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Since MuPDF v1.16, 'FreeText' annotations no longer support bold or italic versions of the Times-Roman, Helvetica or Courier fonts.
@@ -93,6 +101,9 @@ A big **thank you** to our user `@kurokawaikki <https://github.com/kurokawaikki>
    :language: python
 
 --------------------------
+
+
+.. _RecipesAnnotations_C:
 
 How to Use Ink Annotations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

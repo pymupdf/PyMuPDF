@@ -145,7 +145,7 @@ Algebra and Containment Checks
 -------------------------------
 Starting with v1.19.6, quads can be used in algebraic expressions like the other geometry object -- the respective restrictions have been lifted. In particular, all the following combinations of containment checking are now possible:
 
-``{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}``
+`{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}`
 
 Please note the following interesting detail:
 

@@ -11,13 +11,13 @@ The original naming convention for methods and properties has been "camelCase". 
 A few versions ago, I therefore decided to shift gears and switch to a "snake_cased" naming standard.
 This was a major effort, which needed a step-wise approach. I think am done with it now (version 1.18.14).
 
-The following list maps deprecated names to their new versions. For example, property ``pageCount`` became ``page_count`` in the :ref:`Document` class. There also are less obvious name changes, e.g. method ``getPNGdata`` was renamed to ``tobytes`` in the :ref:`Pixmap` class.
+The following list maps deprecated names to their new versions. For example, property `pageCount` became `page_count` in the :ref:`Document` class. There also are less obvious name changes, e.g. method `getPNGdata` was renamed to `tobytes` in the :ref:`Pixmap` class.
 
 Names of classes (camel case) and package-wide constants (the majority is upper case) remain untouched.
 
 Old names will remain available as deprecated aliases through MuPDF version 1.19.0 and **be removed** in the version that follows it - probably version 1.20.0, but this depends on upstream decisions (MuPDF).
 
-Starting with version 1.19.0, we will issue deprecation warnings on ``sys.stderr`` like ``Deprecation: 'newPage' removed from class 'Document' after v1.19.0 - use 'new_page'.`` when aliased methods are being used. Using a deprecated property will not cause this type of warning.
+Starting with version 1.19.0, we will issue deprecation warnings on `sys.stderr` like `Deprecation: 'newPage' removed from class 'Document' after v1.19.0 - use 'new_page'.` when aliased methods are being used. Using a deprecated property will not cause this type of warning.
 
 Starting immediately, all deprecated objects (methods and properties) will show a copy of the original's docstring, **prefixed** with the deprecation message, for example::
 

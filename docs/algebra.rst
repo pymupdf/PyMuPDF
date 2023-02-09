@@ -30,7 +30,7 @@ General Remarks
 
 5. Rectangles support additional binary operations: **intersection** (operator *"&"*), **union** (operator *"|"*) and **containment** checking.
 
-6. Binary operators fully support in-place operations, so expressions like ``a /= b`` are valid if b is numeric or "a_like".
+6. Binary operators fully support in-place operations, so expressions like `a /= b` are valid if b is numeric or "a_like".
 
 
 Unary Operations
@@ -67,33 +67,33 @@ a&b       **intersection rectangle:** "a" must be a rectangle and
 a|b       **union rectangle:** "a" must be a rectangle, and "b" may be
           :data:`point_like` or :data:`rect_like`.
           Delivers the **smallest rectangle** containing both operands.
-b in a    if "b" is a number, then ``b in tuple(a)`` is returned.
+b in a    if "b" is a number, then `b in tuple(a)` is returned.
           If "b" is :data:`point_like`, :data:`rect_like` or :data:`quad_like`,
-          then "a" must be a rectangle, and ``a.contains(b)`` is returned.
+          then "a" must be a rectangle, and `a.contains(b)` is returned.
 a == b    *True* if *bool(a-b)* is *False* ("b" may be "a-like").
 ========= =======================================================================
 
 
 .. note:: Please note an important difference to usual arithmetics:
 
-        Matrix multiplication is **not commutative**, i.e. in general we have ``m*n != n*m`` for two matrices. Also, there are non-zero matrices which have no inverse, for example ``m = Matrix(1, 0, 1, 0, 1, 0)``. If you try to divide by any of these, you will receive a ``ZeroDivisionError`` exception using operator *"/"*, e.g. for the expression ``fitz.Identity / m``. But if you formulate ``fitz.Identity * ~m``, the result will be ``fitz.Matrix()`` (the null matrix).
+        Matrix multiplication is **not commutative**, i.e. in general we have `m*n != n*m` for two matrices. Also, there are non-zero matrices which have no inverse, for example `m = Matrix(1, 0, 1, 0, 1, 0)`. If you try to divide by any of these, you will receive a `ZeroDivisionError` exception using operator *"/"*, e.g. for the expression `fitz.Identity / m`. But if you formulate `fitz.Identity * ~m`, the result will be `fitz.Matrix()` (the null matrix).
 
-        Admittedly, this represents an inconsistency, and we are considering to remove it. For the time being, you can choose to avoid an exception and check whether ~m is the null matrix, or accept a potential *ZeroDivisionError* by using ``fitz.Identity / m``.
+        Admittedly, this represents an inconsistency, and we are considering to remove it. For the time being, you can choose to avoid an exception and check whether ~m is the null matrix, or accept a potential *ZeroDivisionError* by using `fitz.Identity / m`.
 
 .. note::
 
-  * With these conventions, all the usual algebra rules apply. For example, arbitrarily using brackets **(among objects of the same class!)** is possible: if r1, r2 are rectangles and m1, m2 are matrices, you can do this ``(r1 + r2) * m1 * m2``.
-  * For all objects of the same class, ``a + b + c == (a + b) + c == a + (b + c)`` is true.
-  * For matrices in addition the following is true: ``(m1 + m2) * m3 == m1 * m3 + m2 * m3`` (distributivity property).
+  * With these conventions, all the usual algebra rules apply. For example, arbitrarily using brackets **(among objects of the same class!)** is possible: if r1, r2 are rectangles and m1, m2 are matrices, you can do this `(r1 + r2) * m1 * m2`.
+  * For all objects of the same class, `a + b + c == (a + b) + c == a + (b + c)` is true.
+  * For matrices in addition the following is true: `(m1 + m2) * m3 == m1 * m3 + m2 * m3` (distributivity property).
   * **But the sequence of applying matrices is important:** If r is a rectangle and m1, m2 are matrices, then -- **caution!:**
-     - ``r * m1 * m2 == (r * m1) * m2 != r * (m1 * m2)``
+     - `r * m1 * m2 == (r * m1) * m2 != r * (m1 * m2)`
 
 Some Examples
 --------------
 
 Manipulation with numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-For the usual arithmetic operations, numbers are always allowed as second operand. In addition, you can formulate ``"x in OBJ"``, where x is a number. It is implemented as ``"x in tuple(OBJ)"``::
+For the usual arithmetic operations, numbers are always allowed as second operand. In addition, you can formulate `"x in OBJ"`, where x is a number. It is implemented as `"x in tuple(OBJ)"`::
 
   >>> fitz.Rect(1, 2, 3, 4) + 5
   fitz.Rect(6.0, 7.0, 8.0, 9.0)
