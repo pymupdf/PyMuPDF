@@ -196,7 +196,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [("toc", "PyMuPDF.tex", "PyMuPDF Documentation", "Artifex", "manual")]
+latex_documents = [("index", "PyMuPDF.tex", "PyMuPDF Documentation", "Artifex", "manual")]
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
 latex_logo = "images/pymupdf-logo.png"
@@ -221,7 +221,7 @@ latex_domain_indices = True
 # Grouping the document tree into PDF files. List of tuples
 # (source start file, target name, title, author).
 
-pdf_documents = [("toc", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
+pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
 
 # A comma-separated list of custom stylesheets. Example:
 # pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]
