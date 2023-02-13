@@ -1,6 +1,6 @@
 .. include:: header.rst
 
-
+.. title:: PyMuPDF: How to Guide
 
 
 .. _RecipesTOC:
