@@ -16,7 +16,7 @@ A text writer is an elegant alternative to methods :meth:`Page.insert_text` and 
 
 * **Improved text positioning:** Choose any point where insertion of text should start. Storing text returns the "cursor position" after the *last character* of the span.
 * **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch when composing a larger text.
-* **Automatic fallback fonts:** If a character is not supported by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs" -- looking like a small rectangle). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
+* **Automatic fallback fonts:** If a character is not supported by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs" -- looking like a small rectangle). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (including Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
 * **Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated support of Cyrillic and Greek characters **without specifying encoding.** Your text may be a mixture of Latin, Greek and Cyrillic.
 * **Transparency support:** Parameter *opacity* is supported. This offers a handy way to create watermark-style text.
 * **Justified text:** Supported for any font -- not just simple fonts as in :meth:`Page.insert_textbox`.
@@ -86,7 +86,7 @@ Using this object entails three steps:
          >>> doc.ez_save("x.pdf")
 
          will produce this PDF text:
-      
+
          .. image:: images/img-smallcaps.*
 
 
@@ -124,7 +124,7 @@ Using this object entails three steps:
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
       :arg bool warn: on text overflow do nothing, warn, or raise an exception. Overflow text will never be written. **Changed in v1.18.9:**
-      
+
         * Default is *None*.
         * The list of overflow lines will be returned.
 
@@ -143,7 +143,7 @@ Using this object entails three steps:
       :arg page: write to this :ref:`Page`.
       :arg float opacity: override the value of the TextWriter for this output.
       :arg sequ color: override the value of the TextWriter for this output.
-      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*. 
+      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*.
       :arg bool overlay: put in foreground (default) or background.
       :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
       :arg int render_mode: The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible).
@@ -165,13 +165,13 @@ Using this object entails three steps:
 
    .. attribute:: opacity
 
-      The text opacity (modifyable).
+      The text opacity (modifiable).
 
       :rtype: float
 
    .. attribute:: color
 
-      The text color (modifyable).
+      The text color (modifiable).
 
       :rtype: float,tuple
 
@@ -184,8 +184,8 @@ Using this object entails three steps:
 
 .. note:: To see some demo scripts dealing with TextWriter, have a look at `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ repository.
 
-  1. Opacity and color apply to **all the text** in this object. 
-  2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.
+  1. Opacity and color apply to **all the text** in this object.
+  2. If you need different colors / transparency, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
   4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`last_point` of the previously added item.
   5. You can use the *pos* argument of :meth:`TextWriter.fill_textbox` to set the position of the first text character. This allows filling the same textbox with contents from different :ref:`TextWriter` objects, thus allowing for multiple colors, opacities, etc.

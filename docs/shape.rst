@@ -13,7 +13,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
 **Draw** methods of this class (and :meth:`Shape.insert_textbox`) are logging the area they are covering in a rectangle (:attr:`Shape.rect`). This property can for instance be used to set :attr:`Page.cropbox_position`.
 
-**Text insertions** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox` implicitely execute a "finish" and therefore only require :meth:`Shape.commit` to become effective. As a consequence, both include parameters for controlling prperties like colors, etc.
+**Text insertions** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox` implicitly execute a "finish" and therefore only require :meth:`Shape.commit` to become effective. As a consequence, both include parameters for controlling properties like colors, etc.
 
 ================================ =====================================================
 **Method / Attribute**             **Description**
@@ -198,7 +198,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       :arg point_like point: one of the two end points of the pie's arc segment. The other one is calculated from the *angle*.
 
-      :arg float angle: the angle of the sector in degrees. Used to calculate the other end point of the arc. Depending on its sign, the arc is drawn anti-clockwise (postive) or clockwise.
+      :arg float angle: the angle of the sector in degrees. Used to calculate the other end point of the arc. Depending on its sign, the arc is drawn anti-clockwise (positive) or clockwise.
 
       :arg bool fullSector: whether to draw connecting lines from the ends of the arc to the circle center. If a fill color is specified, the full "pie" is colored, otherwise just the sector.
 
@@ -261,7 +261,7 @@ Several draw methods can be executed in a row and each one of them will contribu
    .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
 
       Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them.
-      
+
       It has **no effect on** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`.
 
       The method also supports **morphing the compound drawing** using :ref:`Point` *fixpoint* and :ref:`matrix` *matrix*.
@@ -363,9 +363,9 @@ Several draw methods can be executed in a row and each one of them will contribu
    .. method:: commit(overlay=True)
 
       Update the page's :data:`contents` with the accumulated drawings, followed by any text insertions. If text overlaps drawings, it will be written on top of the drawings.
-      
+
       .. warning:: **Do not forget to execute this method:**
-      
+
             If a shape is **not committed, it will be ignored and the page will not be changed!**
 
       The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, :attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, the shape object can be reused for the **same page**.
@@ -548,12 +548,12 @@ Common Parameters
 **dashes** (*str*)
 
   Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. `n` is the dash length, `m` (optional) is the subsequent gap length, and `p` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If `m` is omitted, it defaults to `n`.
-  
+
   A continuous line (no dashes) is drawn with `"[] 0"` or *None* or `""`. Examples:
-  
+
   * Specifying `"[3 4] 0"` means dashes of 3 and gaps of 4 pixels following each other.
   * `"[3 3] 0"` and `"[3] 0"` do the same thing.
-  
+
   For (the rather complex) details on how to achieve sophisticated dashing effects, see :ref:`AdobeManual`, page 217.
 
 ----
@@ -609,7 +609,7 @@ Common Parameters
 
   Causes "morphing" of either a shape, created by the *draw*()* methods, or the text inserted by page methods *insert_textbox()* / *insert_text()*. If not *None*, it must be a pair *(fixpoint, matrix)*, where *fixpoint* is a :ref:`Point` and *matrix* is a :ref:`Matrix`. The matrix can be anything except translations, i.e. *matrix.e == matrix.f == 0* must be true. The point is used as a fixed point for the matrix operation. For example, if *matrix* is a rotation or scaling, then *fixpoint* is its center. Similarly, if *matrix* is a left-right or up-down flip, then the mirroring axis will be the vertical, respectively horizontal line going through *fixpoint*, etc.
 
-  .. note:: Several methods contain checks whether the to be inserted items will actually fit into the page (like :meth:`Shape.insert_text`, or :meth:`Shape.draw_rect`). For the result of a morphing operation there is however no such guaranty: this is entirely the rpogrammer's responsibility.
+  .. note:: Several methods contain checks whether the to be inserted items will actually fit into the page (like :meth:`Shape.insert_text`, or :meth:`Shape.draw_rect`). For the result of a morphing operation there is however no such guaranty: this is entirely the programmer's responsibility.
 
 ----
 

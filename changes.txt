@@ -431,7 +431,7 @@ Focus of this version are major performance improvements of selected functions.
 
 * **Fixed** issue `#1043 <https://github.com/pymupdf/PyMuPDF/issues/1043>`_. Added ``Pixmap.getPNGdata`` to the aliases of :meth:`Pixmap.tobytes`.
 
-* **Fixed** an internal error when computing the envelopping rectangle of drawn paths as returned by :meth:`Page.get_drawings`.
+* **Fixed** an internal error when computing the enveloping rectangle of drawn paths as returned by :meth:`Page.get_drawings`.
 
 * **Fixed** an internal error occasionally causing loops when outputting text via :meth:`TextWriter.fill_textbox`.
 
@@ -776,7 +776,7 @@ This version introduces several new features around PDF text output. The motivat
 One major achievement is using MuPDF's capabilities to dynamically choosing fallback fonts whenever a character cannot be found in the current one. This seemlessly works for Base-14 fonts in combination with CJK fonts (China, Japan, Korea). So a text may contain **any combination of characters** from the Latin, Greek, Russian, Chinese, Japanese and Korean languages.
 
 * **Fixed** issue `#493 <https://github.com/pymupdf/PyMuPDF/issues/493>`_. ``Pixmap(doc, xref)`` should now again correctly resemble the loaded image object.
-* **Fixed** issue `#488 <https://github.com/pymupdf/PyMuPDF/issues/488>`_. Widget names are now modifyable.
+* **Fixed** issue `#488 <https://github.com/pymupdf/PyMuPDF/issues/488>`_. Widget names are now modifiable.
 * **Added** new class :ref:`Font` which represents a font.
 * **Added** new class :ref:`TextWriter` which serves as a container for text to be written on a page.
 * **Added** :meth:`Page.writeText` to write one or more :ref:`TextWriter` objects to the page.
