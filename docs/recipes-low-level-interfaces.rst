@@ -426,7 +426,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
     --- ... ---
     RuntimeError: not a dict (array)
 
-* It is also **not possible**, to create a key if some higher level key is an **"indirect"** object, i.e. an xref. In other words, xrefs can only be modified directly and not implicitely via other objects referencing them::
+* It is also **not possible**, to create a key if some higher level key is an **"indirect"** object, i.e. an xref. In other words, xrefs can only be modified directly and not implicitly via other objects referencing them::
 
     In [13]: # the following object points to an xref
     In [14]: print(doc.xref_object(4))

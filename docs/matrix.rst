@@ -35,7 +35,7 @@ Please note:
 :attr:`Matrix.d`                 zoom factor Y direction
 :attr:`Matrix.e`                 horizontal shift
 :attr:`Matrix.f`                 vertical shift
-:attr:`Matrix.is_rectilinear`     true if rect corners will remain rect corners
+:attr:`Matrix.is_rectilinear`    true if rect corners will remain rect corners
 ================================ ==============================================
 
 **Class API**
@@ -64,16 +64,16 @@ Please note:
 
       For "matrix" a **new copy** of another matrix will be made.
 
-      Float value "degree" specifies the creation of a rotation matrix which rotates anit-clockwise.
+      Float value "degree" specifies the creation of a rotation matrix which rotates anti-clockwise.
 
       A "sequence" must be any Python sequence object with exactly 6 float entries (see :ref:`SequenceTypes`).
 
-      *fitz.Matrix(1, 1)*, *fitz.Matrix(0.0 and *fitz.Matrix(fitz.Identity)* create modifyable versions of the :ref:`Identity` matrix, which looks like *[1, 0, 0, 1, 0, 0]*.
+      *fitz.Matrix(1, 1)*, *fitz.Matrix(0.0 and *fitz.Matrix(fitz.Identity)* create modifiable versions of the :ref:`Identity` matrix, which looks like *[1, 0, 0, 1, 0, 0]*.
 
    .. method:: norm()
 
       * New in version 1.16.0
-      
+
       Return the Euclidean norm of the matrix as a vector.
 
    .. method:: prerotate(deg)
@@ -135,13 +135,13 @@ Please note:
 
    .. attribute:: b
 
-      Causes a shearing effect: each *Point(x, y)* will become *Point(x, y - b*x)*. Therefore, looking from left to right, e.g. horizontal lines will be "tilt" -- downwards if b > 0, upwards otherwise (b is the tangens of the tilting angle).
+      Causes a shearing effect: each *Point(x, y)* will become *Point(x, y - b*x)*. Therefore, looking from left to right, e.g. horizontal lines will be "tilt" -- downwards if b > 0, upwards otherwise (b is the tangent of the tilting angle).
 
       :type: float
 
    .. attribute:: c
 
-      Causes a shearing effect: each *Point(x, y)* will become *Point(x - c*y, y)*. Therefore, looking upwards, vertical lines will be "tilt" -- to the left if c > 0, to the right otherwise (c ist the tangens of the tilting angle).
+      Causes a shearing effect: each *Point(x, y)* will become *Point(x - c*y, y)*. Therefore, looking upwards, vertical lines will be "tilt" -- to the left if c > 0, to the right otherwise (c is the tangent of the tilting angle).
 
       :type: float
 

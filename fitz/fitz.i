@@ -4033,7 +4033,7 @@ if basestate:
 
 
         FITZEXCEPTION(layer_ui_configs, !result)
-        CLOSECHECK0(layer_ui_configs, """Show OC visibility status modifyable by user.""")
+        CLOSECHECK0(layer_ui_configs, """Show OC visibility status modifiable by user.""")
         PyObject *layer_ui_configs()
         {
             typedef struct

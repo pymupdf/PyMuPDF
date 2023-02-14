@@ -18,7 +18,7 @@ For details on **embedded files** refer to Appendix 3.
 
   Starting with v1.17.0, a new page addressing mechanism for **EPUB files only** is supported. This document type is internally organized in chapters such that pages can most efficiently be found by their so-called "location". The location is a tuple *(chapter, pno)* consisting of the chapter number and the page number **in that chapter**. Both numbers are zero-based.
 
-  While it is still possible to locate a page via its (absoute) number, doing so may mean that the complete EPUB document must be layouted before the page can be addressed. This may have a significant performance impact if the document is very large. Using the page's *(chapter, pno)* prevents this from happening.
+  While it is still possible to locate a page via its (absolute) number, doing so may mean that the complete EPUB document must be laid out before the page can be addressed. This may have a significant performance impact if the document is very large. Using the page's *(chapter, pno)* prevents this from happening.
 
   To maintain a consistent API, PyMuPDF supports the page *location* syntax for **all file types** -- documents without this feature simply have just one chapter. :meth:`Document.load_page` and the equivalent index access now also support a *location* argument.
 
@@ -48,7 +48,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.extract_font`           PDF only: extract a font by :data:`xref`
 :meth:`Document.extract_image`          PDF only: extract an embedded image by :data:`xref`
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
-:meth:`Document.find_bookmark`          retrieve page location after layouting document
+:meth:`Document.find_bookmark`          retrieve page location after laid out document
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
 :meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_layers`             PDF only: list of optional content configurations
@@ -71,11 +71,11 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.insert_pdf`             PDF only: insert pages from another PDF
 :meth:`Document.journal_can_do`         PDF only: which journal actions are possible
 :meth:`Document.journal_enable`         PDF only: enables journalling for the document
-:meth:`Document.journal_load`           PDF only: load joural from a file
+:meth:`Document.journal_load`           PDF only: load journal from a file
 :meth:`Document.journal_op_name`        PDF only: return name of a journalling step
 :meth:`Document.journal_position`       PDF only: return journalling status
 :meth:`Document.journal_redo`           PDF only: redo current operation
-:meth:`Document.journal_save`           PDF only: save joural to a file
+:meth:`Document.journal_save`           PDF only: save journal to a file
 :meth:`Document.journal_start_op`       PDF only: start an "operation" giving it a name
 :meth:`Document.journal_stop_op`        PDF only: end current operation
 :meth:`Document.journal_undo`           PDF only: undo current operation
@@ -93,7 +93,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.pages`                  iterator over a page range
 :meth:`Document.pdf_catalog`            PDF only: :data:`xref` of catalog (root)
 :meth:`Document.pdf_trailer`            PDF only: trailer source
-:meth:`Document.prev_location`          return (chapter, pno) of preceeding page
+:meth:`Document.prev_location`          return (chapter, pno) of preceding page
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.save`                   PDF only: save the document
 :meth:`Document.saveIncr`               PDF only: save the document incrementally
@@ -184,7 +184,7 @@ For details on **embedded files** refer to Appendix 3.
       :raises TypeError: if the *type* of any parameter does not conform.
       :raises FileNotFoundError: if the file / path cannot be found. Re-implemented as subclass of `RuntimeError`.
       :raises EmptyFileError: if the file / path is empty or the `bytes` object in memory has zero length. A subclass of `FileDataError` and `RuntimeError`.
-      :raises ValueError: if an unknown file type is explicitely specified.
+      :raises ValueError: if an unknown file type is explicitly specified.
       :raises FileDataError: if the document has an invalid structure for the given type -- or is no file at all (but e.g. a folder). A subclass of `RuntimeError`.
 
       :return: A document object. If the document cannot be created, an exception is raised in the above sequence. Note that PyMuPDF-specific exceptions, `FileNotFoundError`, `EmptyFileError` and `FileDataError` are intercepted if you check for `RuntimeError`.
@@ -214,7 +214,7 @@ For details on **embedded files** refer to Appendix 3.
           >>> doc = fitz.open("")
 
       .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So `fitz.open("file.jpg")` will work even for a PNG image.
-      
+
       The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
 
           >>> import fitz
@@ -257,7 +257,7 @@ For details on **embedded files** refer to Appendix 3.
 
         >>> for item in doc.get_layers(): print(item)
         {'number': 0, 'name': 'my-config', 'creator': ''}
-        >>> # use 'number' as config identifyer in add_ocg
+        >>> # use 'number' as config identifier in add_ocg
 
     .. method:: add_layer(name, creator=None, on=None)
 
@@ -409,7 +409,7 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v1.18.3
 
-      Show the visibility status of optional content that is modifyable by the user interface of supporting PDF viewers. Example:
+      Show the visibility status of optional content that is modifiable by the user interface of supporting PDF viewers. Example:
 
         >>> pprint(doc.layer_ui_configs())
          ({'depth': 0,
@@ -473,7 +473,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: authenticate(password)
 
-      Decrypts the document with the string *password*. If successful, document data can be accessed. For PDF documents, the "owner" and the "user" have different priviledges, and hence different passwords may exist for these authorization levels. The method will automatically establish the appropriate (owner or user) access rights for the provided password.
+      Decrypts the document with the string *password*. If successful, document data can be accessed. For PDF documents, the "owner" and the "user" have different privileges, and hence different passwords may exist for these authorization levels. The method will automatically establish the appropriate (owner or user) access rights for the provided password.
 
       :arg str password: owner or user password.
 
@@ -535,7 +535,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: make_bookmark(loc)
 
       * New in v.1.17.3
-      
+
       Return a page pointer in a reflowable document. After re-layouting the document, the result of this method can be used to find the new location of the page.
 
       .. note:: Do not confuse with items of a table of contents, TOC.
@@ -549,7 +549,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: find_bookmark(bookmark)
 
       * New in v.1.17.3
-      
+
       Return the new page location after re-layouting the document.
 
       :arg pointer bookmark: created by :meth:`Document.make_bookmark`.
@@ -561,13 +561,13 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: chapter_page_count(chapter)
 
       * New in v.1.17.0
-      
+
       Return the number of pages of a chapter.
 
       :arg int chapter: the 0-based chapter number.
 
       :rtype: int
-      :returns: number of pages in chapter. Relevant only for document types whith chapter support (EPUB currently).
+      :returns: number of pages in chapter. Relevant only for document types with chapter support (EPUB currently).
 
 
     .. method:: next_location(page_id)
@@ -578,18 +578,18 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
 
-      :returns: The tuple of the following page, i.e. either *(chapter, pno + 1)* or *(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the last page. Relevant only for document types whith chapter support (EPUB currently).
+      :returns: The tuple of the following page, i.e. either *(chapter, pno + 1)* or *(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the last page. Relevant only for document types with chapter support (EPUB currently).
 
 
     .. method:: prev_location(page_id)
 
       * New in v.1.17.0
-      
-      Return the locator of the preceeding page.
+
+      Return the locator of the preceding page.
 
       :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
 
-      :returns: The tuple of the preceeding page, i.e. either *(chapter, pno - 1)* or the last page of the receeding chapter, **or** the empty tuple *()* if the argument was the first page. Relevant only for document types whith chapter support (EPUB currently).
+      :returns: The tuple of the preceding page, i.e. either *(chapter, pno - 1)* or the last page of the preceding chapter, **or** the empty tuple *()* if the argument was the first page. Relevant only for document types with chapter support (EPUB currently).
 
 
     .. method:: load_page(page_id=0)
@@ -602,7 +602,7 @@ For details on **embedded files** refer to Appendix 3.
 
           Either a 0-based page number, or a tuple *(chapter, pno)*. For an **integer**, any `-∞ < page_id < page_count` is acceptable. While page_id is negative, :attr:`page_count` will be added to it. For example: to load the last page, you can use *doc.load_page(-1)*. After this you have page.number = doc.page_count - 1.
 
-          For a tuple, *chapter* must be in range :attr:`Document.chapter_count`, and *pno* must be in range :meth:`Document.chapter_page_count` of that chapter. Both values are 0-based. Using this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types whith chapter support (EPUB currently).
+          For a tuple, *chapter* must be in range :attr:`Document.chapter_count`, and *pno* must be in range :meth:`Document.chapter_page_count` of that chapter. Both values are 0-based. Using this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types with chapter support (EPUB currently).
 
       :rtype: :ref:`Page`
 
@@ -715,7 +715,7 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note:: The method uses the same logic as the *mutool convert* CLI. This works very well in most cases -- however, beware of the following limitations.
 
-        * Image files: perfect, no issues detected. Apparently however, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insert_image` instead. Otherwise, this method is recommended for its much better prformance.
+        * Image files: perfect, no issues detected. Apparently however, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insert_image` instead. Otherwise, this method is recommended for its much better performance.
         * XPS: appearance very good. Links work fine, outlines (bookmarks) are lost, but can easily be recovered [#f2]_.
         * EPUB, CBZ, FB2: similar to XPS.
         * SVG: medium. Roughly comparable to `svglib <https://github.com/deeplook/svglib>`_.
@@ -821,7 +821,7 @@ For details on **embedded files** refer to Appendix 3.
       * Changed in v1.19.4: remove a key "physically" if set to "null".
 
       PDF only: Set (add, update, delete) the value of a PDF key for the :data:`dictionary` object given by its xref.
-      
+
       .. caution:: This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 18) and the structure of special dictionary types like page objects.
 
       :arg int xref: the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, specify -1.
@@ -837,10 +837,10 @@ For details on **embedded files** refer to Appendix 3.
       * **bool** -- one of the strings `"true"` or `"false"`.
       * **name** -- a valid PDF name with a leading slash: `"/PageLayout"`. See page 16 of the :ref:`AdobeManual`.
       * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as `"()"`. Depending on its content, the possible brackets are
-      
+
         - "(...)" for ASCII-only text. Reserved PDF characters must be backslash-escaped and non-ASCII characters must be provided as 3-digit backslash-escaped octals -- including leading zeros. Example: 12 = 0x0C must be encoded as `\014`.
         - "<...>" for hex-encoded text. Every character must be represented by two hex-digits (lower or upper case).
-      
+
         - If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. It will for example do conversions like these:
 
           >>> # because of the € symbol, the following yields UTF-16BE BOM
@@ -1049,7 +1049,7 @@ For details on **embedded files** refer to Appendix 3.
       * New in v1.17.7
       * Changed in v1.18.14: no longer remove the item's text, but show it grayed-out.
 
-      PDF only: Remove this TOC item. This is a high-speed method, which **disables** the respective item, but leaves the overall TOC struture intact. Physically, the item still exists in the TOC tree, but is shown grayed-out and will no longer point to any destination.
+      PDF only: Remove this TOC item. This is a high-speed method, which **disables** the respective item, but leaves the overall TOC structure intact. Physically, the item still exists in the TOC tree, but is shown grayed-out and will no longer point to any destination.
 
       This also implies that you can reassign the item to a new destination using :meth:`Document.set_toc_item`, when required.
 
@@ -1071,7 +1071,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg int pno: the 1-based page number, i.e. a value 1 <= pno <= doc.page_count. Required for LINK_GOTO.
       :arg str uri: the URL text. Required for LINK_URI.
       :arg str title: the desired new title. None if no change.
-      :arg point_like to: (optional) points to a coordinate on the arget page. Relevant for LINK_GOTO. If omitted, a point near the page's top is chosen.
+      :arg point_like to: (optional) points to a coordinate on the target page. Relevant for LINK_GOTO. If omitted, a point near the page's top is chosen.
       :arg str filename: required for LINK_GOTOR and LINK_LAUNCH.
       :arg float zoom: use this zoom factor when showing the target page.
 
@@ -1105,7 +1105,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
 
       * New in v1.16.14
-      
+
       PDF only: Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options, which are all *True* by default.
 
       :arg bool attached_files: Search for 'FileAttachment' annotations and remove the file content.
@@ -1317,7 +1317,7 @@ For details on **embedded files** refer to Appendix 3.
         It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
 
         Following examples will all delete pages 500 through 519:
-        
+
         * `doc.delete_pages(500, 519)`
         * `doc.delete_pages(from_page=500, to_page=519)`
         * `doc.delete_pages((500, 501, 502, ... , 519))`
@@ -1495,7 +1495,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: close()
 
-      Release objects and space allocations associated with the document. If created from a file, also closes *filename* (releasing control to the OS). Explicitely closing a document is equivalent to deleting it, `del doc`, or assigning it to something else like `doc = None`.
+      Release objects and space allocations associated with the document. If created from a file, also closes *filename* (releasing control to the OS). Explicitly closing a document is equivalent to deleting it, `del doc`, or assigning it to something else like `doc = None`.
 
     .. method:: xref_object(xref, compressed=False, ascii=False)
 

@@ -256,10 +256,10 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
 
       * New in v1.16.11
-      
+
       PDF only: Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
-      :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the envelopping rectangle is taken.
+      :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the enveloping rectangle is taken.
 
       :arg str text: *(New in v1.16.12)* text to be placed in the rectangle after applying the redaction (and thus removing old content).
 
@@ -282,7 +282,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insert_textbox` for available values. The vertical alignment is (approximately) centered if a PDF built-in font is used (CJK or :ref:`Base-14-Fonts`).
 
-      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress a fill color alltogether, specify *False*. In this cases the rectangle remains transparent.
+      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress a fill color altogether, specify *False*. In this cases the rectangle remains transparent.
 
       :arg sequence text_color: *(New in v1.16.12)* the color of the replacing text. Default is *black = (0, 0, 0)*.
 
@@ -342,7 +342,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot` or *(changed in v1.16.14)* *None*
       :returns: the created annotation. *(Changed in v1.16.14)* If *quads* is an empty list, **no annotation** is created.
 
-      .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight on a page with three text columnbs was created by specifying the two red points and setting clip accordingly.
+      .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight on a page with three text columns was created by specifying the two red points and setting clip accordingly.
 
       .. image:: images/img-markers.*
          :scale: 100
@@ -521,7 +521,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * New in v1.16.18
 
-      PDF only: Write the text of one or more :ref:`Textwriter` ojects to the page.
+      PDF only: Write the text of one or more :ref:`Textwriter` objects to the page.
 
       :arg rect_like rect: where to place the text. If omitted, the rectangle union of the text writers is used.
       :arg sequence writers: a non-empty tuple / list of :ref:`TextWriter` objects or a single :ref:`TextWriter`.
@@ -940,7 +940,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
 
          1. The method detects multiple insertions of the same image (like in above example) and will store its data only on the first execution. This is even true (although less performant), if using the default `xref=0`.
-         
+
          2. The method cannot detect if the same image had already been part of the file before opening it.
 
          3. You can use this method to provide a background or foreground image for the page, like a copyright or a watermark. Please remember, that watermarks require a transparent image if put in foreground ...
@@ -951,7 +951,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
-   
+
    .. index::
       pair: filename; replace_image
       pair: pixmap; replace_image
@@ -974,8 +974,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       This is a **global replacement:** the new image will also be shown wherever the old one has been displayed throughout the file.
 
       This method mainly exists for technical purposes. Typical uses include replacing large images by smaller versions, like a lower resolution, graylevel instead of colored, etc., or changing transparency.
-   
-   
+
+
    .. index::
       pair: xref; delete_image
 
@@ -988,14 +988,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int xref: the :data:`xref` of the image.
 
       This is a **global replacement:** the image will disappear wherever the old one has been displayed throughout the file.
-   
+
       If you inspect / extract a page's images by methods like :meth:`Page.get_images`,
       :meth:`Page.get_image_info` or :meth:`Page.get_text`,
       the replacing "dummy" image will be detected like so
       `(45, 47, 1, 1, 8, 'DeviceGray', '', 'Im1', 'FlateDecode')`
       and also seem to "cover" the same boundary box on the page.
 
-   
+
    .. index::
       pair: blocks; Page.get_text
       pair: dict; Page.get_text
@@ -1111,13 +1111,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
 
       :returns:
-      
-         a :ref:`TextPage`. Excution may be significantly longer than :meth:`Page.get_textpage`.
+
+         a :ref:`TextPage`. Execution may be significantly longer than :meth:`Page.get_textpage`.
 
          For a full page OCR, **all text** will have the font "GlyphlessFont" from Tesseract. In case of partial OCR, normal text will keep its properties, and only text coming from images will have the GlyphlessFont.
 
          .. note::
-         
+
             **OCRed text is only available** to PyMuPDF's text extractions and searches if their `textpage` parameter specifies the output of this method.
 
             `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
@@ -1188,7 +1188,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.18.17
       * Changed in v1.19.0: removed "clippings" key, added "seqno" key.
       * Changed in v1.19.1: always generate RGB color tuples.
-      
+
       Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster:
 
       * Every path type only contains the relevant keys, e.g. a stroke path has no `"fill"` color key. See comment in method :meth:`Page.get_drawings`.
@@ -1708,7 +1708,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
 Description of *get_links()* Entries
 ----------------------------------------
-Each entry of the :meth:`Page.get_links` list is a dictionay with the following keys:
+Each entry of the :meth:`Page.get_links` list is a dictionary with the following keys:
 
 * *kind*:  (required) an integer indicating the kind of link. This is one of *LINK_NONE*, *LINK_GOTO*, *LINK_GOTOR*, *LINK_LAUNCH*, or *LINK_URI*. For values and meaning of these names refer to :ref:`linkDest Kinds`.
 
