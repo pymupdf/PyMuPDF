@@ -59,7 +59,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.annot_names`           PDF only: a list of annotation (and widget) names
 :meth:`Page.annot_xrefs`           PDF only: a list of annotation (and widget) xrefs
 :meth:`Page.annots`                return a generator over the annots on the page
-:meth:`Page.apply_redactions`      PDF olny: process the redactions of the page
+:meth:`Page.apply_redactions`      PDF only: process the redactions of the page
 :meth:`Page.bound`                 rectangle of the page
 :meth:`Page.delete_annot`          PDF only: delete an annotation
 :meth:`Page.delete_image`          PDF only: delete an image
