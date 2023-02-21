@@ -96,7 +96,7 @@ If you see a table in a document, you are not normally looking at something like
 
 Extracting a tabular data from such a page area therefore means that you must find a way to **(1)** graphically indicate table and column borders, and **(2)** then extract text based on this information.
 
-The wxPython GUI script `wxTableExtract.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/wxTableExtract.py>`_ strives to exactly do that. You may want to have a look at it and adjust it to your liking.
+The wxPython GUI script `extract.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-table/extract.py>`_ strives to exactly do that. You may want to have a look at it and adjust it to your liking.
 
 ----------
 

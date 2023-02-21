@@ -419,26 +419,26 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 
 
 .. _lxml: https://pypi.org/project/lxml/
-.. _metadata import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2meta.py
-.. _metadata export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/meta2csv.py
-.. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2toc.py
-.. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/toc2csv.py
+.. _metadata import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-metadata/import.py
+.. _metadata export: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-metadata/export.py
+.. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-toc/import.py
+.. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-toc/export.py
 .. _Vector Image Support page: https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support
 .. _examples: https://github.com/pymupdf/PyMuPDF/tree/master/examples
 .. _Pillow documentation: https://Pillow.readthedocs.io
-.. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/doc-browser.py
+.. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/browse-document/browse.py
 .. _PySimpleGUI: https://pypi.org/project/PySimpleGUI/
 .. _demo.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py
 .. _demo-lowlevel.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py
 .. _"MuPDF Explored": https://mupdf.com/docs/mupdf-explored.html
 .. _Artifex: https://www.artifex.com
-.. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py
-.. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py
+.. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/convert-document/convert.py
+.. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py
 .. _dealing with embedding files: https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files
-.. _embedded-copy.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py
-.. _embedded-export.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py
-.. _embedded-import.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py
-.. _embedded-list.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py
+.. _embedded-copy.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/copy-embedded/copy.py
+.. _embedded-export.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-embedded/export.py
+.. _embedded-import.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-embedded/import.py
+.. _embedded-list.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/list-embedded/list.py
 .. _Wiki: https://github.com/pymupdf/PyMuPDF/wiki
 
 

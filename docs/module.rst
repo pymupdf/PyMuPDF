@@ -119,7 +119,7 @@ Extract fonts or images from selected PDF pages to a desired directory::
 
 The output directory must already exist.
 
-.. note:: Except for output directory creation, this feature is **functionally equivalent** to and obsoletes `this script <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/extract-imga.py>`_.
+.. note:: Except for output directory creation, this feature is **functionally equivalent** to and obsoletes `this script <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_.
 
 
 Joining PDF Documents

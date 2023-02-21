@@ -38,7 +38,7 @@ PDF supports incorporating arbitrary data. This can be done in one of two ways: 
 
 The basic differences between these options are **(1)** you need edit permission to embed a file, but only annotation permission to attach, **(2)** like all annotations, attachments are visible on a page, embedded files are not.
 
-There exist several example scripts: `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_, `new-annots.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/new-annots.py>`_.
+There exist several example scripts: `list.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/list-embedded/list.py>`_, `new-annots.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/new-annots.py>`_.
 
 Also look at the sections above and at chapter :ref:`Appendix 3`.
 
@@ -100,7 +100,7 @@ How to Join :title:`PDFs`
 
 It is easy to join PDFs with method :meth:`Document.insert_pdf`. Given open :title:`PDF` documents, you can copy page ranges from one to the other. You can select the point where the copied pages should be placed, you can revert the page sequence and also change page rotation. This Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ contains a full description.
 
-The GUI script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
+The GUI script `join.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
 
 .. image:: images/img-pdfjoiner.*
    :scale: 60
