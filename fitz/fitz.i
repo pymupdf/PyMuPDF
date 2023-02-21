@@ -314,6 +314,7 @@ except ImportError:
     fitz_fontdescriptors = {}
 %}
 %include version.i
+%include helper-git-versions.i
 %include helper-defines.i
 %include helper-globals.i
 %include helper-geo-c.i

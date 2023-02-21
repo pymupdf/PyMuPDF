@@ -72,6 +72,9 @@ Environmental variables:
                 The path of local mupdf git checkout. We put all files in this
                 checkout known to git into a local tar archive.
     
+    PYMUPDF_SETUP_MUPDF_REBUILD
+        If 0 we do not (re)build mupdf.
+
 Building MuPDF:
     When building MuPDF, we overwrite the mupdf's include/mupdf/fitz/config.h
     with fitz/_config.h and do a PyMuPDF-specific build.
@@ -265,16 +268,6 @@ def get_gitfiles( directory, submodules=False):
     return ret
 
 
-def get_git_id_raw( directory):
-    if not os.path.isdir( '%s/.git' % directory):
-        return
-    text = system(
-            f'cd {directory} && (PAGER= git show --pretty=oneline|head -n 1 && git diff)',
-            out='return',
-            )
-    return text
-
-
 def word_size():
     '''
     Returns integer word size (32 or 64) of build.
@@ -396,30 +389,36 @@ def load_libraries():
     return LIBRARIES[os_id]
 
 
-def get_git_id( directory, allow_none=False):
+
+
+def get_git_id( directory):
     '''
-    Returns text where first line is '<git-sha> <commit summary>' and remaining
-    lines contain output from 'git diff' in <directory>.
+    Returns `(sha, comment, diff, branch)`, all items are str or None if not
+    available.
 
     directory:
         Root of git checkout.
-    allow_none:
-        If true, we return None if <directory> is not a git checkout and
-        jtest-git-id file does not exist.
     '''
-    filename = f'{directory}/jtest-git-id'
-    text = get_git_id_raw( directory)
-    if text:
-        with open( filename, 'w') as f:
-            f.write( text)
-    elif os.path.isfile( filename):
-        with open( filename) as f:
-            text = f.read()
-    else:
-        if not allow_none:
-            raise Exception( f'Not in git checkout, and no file called: {filename}.')
-        text = None
-    return text
+    sha, comment, diff, branch = '', '', '', ''
+    cp = subprocess.run(
+            f'cd {directory} && (PAGER= git show --pretty=oneline|head -n 1 && git diff)',
+            capture_output=1,
+            shell=1,
+            text=1,
+            )
+    if cp.returncode == 0:
+        sha, _ = cp.stdout.split(' ', 1)
+        comment, diff = _.split('\n', 1)
+    cp = subprocess.run(
+            f'cd {directory} && git rev-parse --abbrev-ref HEAD',
+            capture_output=1,
+            shell=1,
+            text=1,
+            )
+    if cp.returncode == 0:
+        branch = cp.stdout.strip()
+    log(f'get_git_id(): {directory=} returning {branch=} {sha=} {comment=}')
+    return sha, comment, diff, branch
 
 
 mupdf_tgz = os.path.abspath( f'{__file__}/../mupdf.tgz')
@@ -687,9 +686,12 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             command += f' && echo {unix_build_dir}:'
             command += f' && ls -l build/{build_prefix}{unix_build_type}'
         
-        log( f'Building MuPDF by running: {command}')
-        subprocess.run( command, shell=True, check=True)
-        log( f'Finished building mupdf.')
+        if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
+            log( f'PYMUPDF_SETUP_MUPDF_REBUILD is "0" so not building MuPDF; would have run: {command}')
+        else:
+            log( f'Building MuPDF by running: {command}')
+            subprocess.run( command, shell=True, check=True)
+            log( f'Finished building mupdf.')
     else:
         # Use installed MuPDF.
         log( f'Using system mupdf.')
@@ -805,6 +807,29 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             local_dirs = json.load(dirfile)
             include_dirs += local_dirs.get("include_dirs", [])
             library_dirs += local_dirs.get("library_dirs", [])
+
+    with open(f'fitz/helper-git-versions.i', 'w') as f:
+        f.write('%pythoncode %{\n')
+
+        def repr_escape(text):
+            text = repr(text)
+            text = text.replace('{', '{{')
+            text = text.replace('}', '}}')
+            text = text.replace('%', '{chr(37)})')  # Avoid confusing swig.
+            return 'f' + text
+        def write_git(name, directory):
+            sha, comment, diff, branch = get_git_id(directory)
+            f.write(f'{name}_git_sha = \'{sha}\'\n')
+            f.write(f'{name}_git_comment = {repr_escape(comment)}\n')
+            f.write(f'{name}_git_diff = {repr_escape(diff)}\n')
+            f.write(f'{name}_git_branch = {repr_escape(branch)}\n')
+            f.write('\n')
+
+        write_git('pymupdf', '.')
+        if mupdf_local:
+            write_git('mupdf', mupdf_local)
+
+        f.write('%}\n')
 
 # Disable bogus SWIG warning 509, 'Overloaded method ... effectively ignored,
 # as it is shadowed by ...'.
