@@ -140,7 +140,7 @@ Glossary
 
 .. data:: resolution
 
-        Images and :ref:`Pixmap` objects may contain resolution information provided as "dots per inch", dpi, in each direction (horizontal and vertical). When MuPDF reads an image form a file or from a PDF object, it will parse this information and put it in :attr:`Pixmap.xres`, :attr:`Pixmap.yres`, respectively. When it finds not meaningful information in the input (like non-positive values or values exceeding 4800), it will use "sane" defaults instead. The usual default value is 96, but it may also be 72 in some cases (e.g. for JPX images).
+        Images and :ref:`Pixmap` objects may contain resolution information provided as "dots per inch", dpi, in each direction (horizontal and vertical). When MuPDF reads an image from a file or from a PDF object, it will parse this information and put it in :attr:`Pixmap.xres`, :attr:`Pixmap.yres`, respectively. If it finds no meaningful information in the input (like non-positive values or values exceeding 4800), it will use "sane" defaults instead. The usual default value is 96, but it may also be 72 in some cases (e.g. for JPX images).
 
 .. data:: OCPD
 
