@@ -1246,27 +1246,6 @@ For details on **embedded files** refer to Appendix 3.
 
 
     .. index::
-       pair: append; Document.insert_file
-       pair: join; Document.insert_file
-       pair: merge; Document.insert_file
-       pair: from_page; Document.insert_file
-       pair: to_page; Document.insert_file
-       pair: start_at; Document.insert_file
-       pair: rotate; Document.insert_file
-       pair: links; Document.insert_file
-       pair: annots; Document.insert_file
-       pair: show_progress; Document.insert_file
-
-    .. method:: insert_file(infile, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0, final=1)
-
-      * New in v1.21.2
-
-      PDF only: Add an arbitrary supported document to the current PDF. Opens "infile" as a document, converts it to a PDF and then invokes :meth:`Document.insert_pdf`. Parameters are the same as for that method. Among other things, this features an easy way to append images as full pages to an output PDF.
-
-      :arg multiple infile: the input document to insert. May be a filename specification as is valid for creating a :ref:`Document`, a :ref:`Document` or a :ref:`Pixmap`.
-
-
-    .. index::
        pair: width; Document.new_page
        pair: height; Document.new_page
 

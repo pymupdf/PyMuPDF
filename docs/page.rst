@@ -1123,14 +1123,13 @@ In a nutshell, this is what you can do with PyMuPDF:
             `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
 
 
-   .. method:: get_drawings(extended=False)
+   .. method:: get_drawings()
 
       * New in v1.18.0
       * Changed in v1.18.17
       * Changed in v1.19.0: add "seqno" key, remove "clippings" key
       * Changed in v1.19.1: "color" / "fill" keys now always are either are RGB tuples or `None`. This resolves issues caused by exotic colorspaces.
       * Changed in v1.19.2: add an indicator for the *"orientation"* of the area covered by an "re" item.
-      * Changed in v1.21.2: add new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Add parameter `extended` to also return clipping paths.
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
@@ -1158,40 +1157,6 @@ In a nutshell, this is what you can do with PyMuPDF:
             type           (new in v1.18.17) type of this path.
             width          Stroke line width  (see :ref:`Shape`).
             ============== ============================================================================
-
-      **New in v1.21.1:** If `extended=True`, three additional dictionary types may be present in the returned list:
-
-         * "clip" and "clip-stroke" dictionaries. Its values (most importantly "scissor") remain valid / apply as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level ends this clip.
-
-            ============== ============================================================================
-            Key            Value
-            ============== ============================================================================
-            closePath      Same as in "stroke" or "fill" dictionaries
-            even_odd       Same as in "stroke" or "fill" dictionaries
-            items          Same as in "stroke" or "fill" dictionaries
-            rect           Same as in "stroke" or "fill" dictionaries
-            layer          Same as in "stroke" or "fill" dictionaries
-            level          Same as in "stroke" or "fill" dictionaries
-            scissor        the clip rectangle
-            type           One of "clip" or "clip-stroke"
-            ============== ============================================================================
-
-         * "group" dictionary. Its values remain valid (apply) as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level end this group.
-
-            ============== ============================================================================
-            Key            Value
-            ============== ============================================================================
-            rect           Same as in "stroke" or "fill" dictionaries
-            layer          Same as in "stroke" or "fill" dictionaries
-            level          Same as in "stroke" or "fill" dictionaries
-            isolated       (bool) Whether this group is isolated
-            knockout       (bool) Whether this is a "Knockout Group"
-            blendmode      Name of the BlendMode, default is "Normal"
-            opacity        Float value in range [0, 1].
-            type           "group"
-            ============== ============================================================================
-
-
 
             * *(Changed in v1.18.17)* Key `"opacity"` has been replaced by the new keys `"fill_opacity"` and `"stroke_opacity"`. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
 
@@ -1223,8 +1188,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.18.17
       * Changed in v1.19.0: removed "clippings" key, added "seqno" key.
       * Changed in v1.19.1: always generate RGB color tuples.
-      * Changed in v1.21.2: added new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Added parameter `extended` to also return clipping paths.
-
+      
       Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster:
 
       * Every path type only contains the relevant keys, e.g. a stroke path has no `"fill"` color key. See comment in method :meth:`Page.get_drawings`.
