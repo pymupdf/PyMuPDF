@@ -8182,9 +8182,11 @@ Args:
                     case(6):           // Postscript format
                         fz_write_pixmap_as_ps(gctx, out, pm);
                         break;
+                    #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                     case(7):           // JPEG format
                         fz_write_pixmap_as_jpeg(gctx, out, pm, quality);
                         break;
+                    #endif
                     default:
                         fz_write_pixmap_as_png(gctx, out, pm);
                         break;
@@ -8317,9 +8319,11 @@ def tobytes(self, output="png", quality=95):
                     case(6): // Postscript
                         fz_save_pixmap_as_ps(gctx, pm, filename, 0);
                         break;
+                    #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                     case(7): // JPEG
                         fz_save_pixmap_as_jpeg(gctx, pm, filename, quality);
                         break;
+                    #endif
                     default:
                         fz_save_pixmap_as_png(gctx, pm, filename);
                         break;
@@ -12429,7 +12433,11 @@ struct Font
             fz_font_flags_t *f = fz_font_flags((fz_font *) $self);
             if (!f) Py_RETURN_NONE;
             return Py_BuildValue(
-                "{s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N}",
+                "{s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N"
+                #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
+                    ",s:N,s:N"
+                #endif
+                "}",
                 "mono", JM_BOOL(f->is_mono),
                 "serif", JM_BOOL(f->is_serif),
                 "bold", JM_BOOL(f->is_bold),
@@ -12441,9 +12449,12 @@ struct Font
                 "opentype", JM_BOOL(f->has_opentype),
                 "invalid-bbox", JM_BOOL(f->invalid_bbox),
                 "cjk", JM_BOOL(f->cjk),
-                "cjk-lang", (f->cjk ? PyLong_FromUnsignedLong((unsigned long) f->cjk_lang) : Py_None),
+                "cjk-lang", (f->cjk ? PyLong_FromUnsignedLong((unsigned long) f->cjk_lang) : Py_None)
+                #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
+                ,
                 "embed", JM_BOOL(f->embed),
                 "never-embed", JM_BOOL(f->never_embed)
+                #endif
             );
 
         }

@@ -1011,10 +1011,12 @@ fz_font *JM_get_font(fz_context *ctx,
         if (!font) {
             RAISEPY(ctx, MSG_FONT_FAILED, PyExc_RuntimeError);
         }
+        #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
         // if font allows this, set embedding
         if (!font->flags.never_embed) {
             fz_set_font_embedding(ctx, font, embed);
         }
+        #endif
     }
     fz_always(ctx) {
         fz_drop_buffer(ctx, res);
