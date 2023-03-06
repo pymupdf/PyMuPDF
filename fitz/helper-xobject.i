@@ -180,7 +180,7 @@ JM_image_reporter(fz_context *ctx, pdf_page *page)
     filter_factory[0].filter = pdf_new_sanitize_filter;
     filter_factory[0].options = &sanitize_filter_options;
     
-    filter_options.filters = &filter_factory;
+    filter_options.filters = filter_factory; // was &
     
     g_img_info = PyList_New(0);
     
