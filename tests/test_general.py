@@ -265,3 +265,24 @@ def test_2108():
     else:
         print('Asserting text!=text_expected')
         assert text != text_expected
+
+
+def test_2238():
+    filepath = f'{scriptdir}/resources/test2238.pdf'
+    doc = fitz.open(filepath)
+
+    first_page = doc.load_page(0).get_text('text', fitz.INFINITE_RECT())
+    last_page = doc.load_page(-1).get_text('text', fitz.INFINITE_RECT())
+
+    print(f'{first_page=}')
+    print(f'{last_page=}')
+    assert first_page == 'Hello World\n'
+    assert last_page == 'Hello World\n'
+
+    first_page = doc.load_page(0).get_text('text')
+    last_page = doc.load_page(-1).get_text('text')
+
+    print(f'{first_page=}')
+    print(f'{last_page=}')
+    assert first_page == 'Hello World\n'
+    assert last_page == 'Hello World\n'
