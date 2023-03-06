@@ -741,7 +741,7 @@ static void jm_lineart_drop_device(fz_context *ctx, fz_device *dev_)
 	if (PyList_Check(dev->out)) {
 		Py_CLEAR(dev->out);
 	}
-	Py_DECREF(dev->method);
+	Py_CLEAR(dev->method);
 	Py_CLEAR(scissors);
 }
 
