@@ -1845,6 +1845,16 @@ struct Document
             return idlist;
         }
 
+        CLOSECHECK0(version_count, """Count versions of PDF document.""")
+        %pythoncode%{@property%}
+        PyObject *version_count()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            if (!pdf) Py_BuildValue("i", 0);
+            return Py_BuildValue("i", pdf_count_versions(gctx, pdf));
+        }
+
+
         CLOSECHECK0(is_pdf, """Check for PDF.""")
         %pythoncode%{@property%}
         PyObject *is_pdf()
@@ -1892,6 +1902,15 @@ struct Document
             pdf_document *pdf = pdf_document_from_fz_document(gctx, (fz_document *) $self);
             if (!pdf) Py_RETURN_FALSE; // gracefully handle non-PDF
             return JM_BOOL(pdf_can_be_saved_incrementally(gctx, pdf));
+        }
+
+        CLOSECHECK0(is_fast_webaccess, """Check whether we have a linearized PDF.""")
+        %pythoncode%{@property%}
+        PyObject *is_fast_webaccess()
+        {
+            pdf_document *pdf = pdf_document_from_fz_document(gctx, (fz_document *) $self);
+            if (!pdf) Py_RETURN_FALSE; // gracefully handle non-PDF
+            return JM_BOOL(pdf_doc_was_linearized(gctx, pdf));
         }
 
         CLOSECHECK0(is_repaired, """Check whether PDF was repaired.""")
@@ -3836,7 +3855,6 @@ if not self.is_form_pdf:
             fz_catch(gctx){
                 return NULL;
             }
-            
             Py_RETURN_NONE;
         }
 
@@ -6212,21 +6230,21 @@ def get_oc_items(self) -> list:
                     npath["scissor"] = Rect(npath["scissor"])
                 if npath["type"]!="group":
                     items = npath["items"]
-                newitems = []
-                for item in items:
-                    cmd = item[0]
-                    rest = item[1:]
-                    if  cmd == "re":
-                        item = ("re", Rect(rest[0]), rest[1])
-                    elif cmd == "qu":
-                        item = ("qu", Quad(rest[0]))
-                    else:
-                        item = tuple([cmd] + [Point(i) for i in rest])
-                    newitems.append(item)
-                npath["items"] = newitems
+                    newitems = []
+                    for item in items:
+                        cmd = item[0]
+                        rest = item[1:]
+                        if  cmd == "re":
+                            item = ("re", Rect(rest[0]), rest[1])
+                        elif cmd == "qu":
+                            item = ("qu", Quad(rest[0]))
+                        else:
+                            item = tuple([cmd] + [Point(i) for i in rest])
+                        newitems.append(item)
+                    npath["items"] = newitems
                 if npath["type"] in ("f", "s", "fs"):
-                for k, v in allkeys:
-                    npath[k] = npath.get(k, v)
+                    for k, v in allkeys:
+                        npath[k] = npath.get(k, v)
                 val[i] = npath
             return val
 
@@ -12664,6 +12682,12 @@ struct DocumentWriter
                     return
                 if getattr(self, "thisown", False):
                     self.__swig_destroy__(self)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                self.close()
         %}
     }
 };
@@ -13964,12 +13988,20 @@ struct Story
 
         FITZEXCEPTION(element_positions, !result)
         %pythonprepend element_positions %{
+        """Trigger a callback function to record where items have been placed.
+        
+        Args:
+            function: a function accepting exactly one argument.
+            args: an optional dictionary for passing additional data.
+        """
         if type(args) is dict:
             for k in args.keys():
                 if not (type(k) is str and k.isidentifier()):
                     raise ValueError(f"invalid key '{k}'")
         else:
             args = {}
+        if not callable(function) or function.__code__.co_argcount != 1:
+            raise ValueError("callback 'function' must be a callable with exactly one argument")
         %}
         PyObject* element_positions(PyObject *function, PyObject *args)
         {
@@ -13979,7 +14011,7 @@ struct Story
                 fz_story_positions(gctx, (fz_story *) $self, Story_Callback, callarg);
             }
             fz_always(gctx) {
-                Py_DECREF(callarg);
+                Py_CLEAR(callarg);
             }
             fz_catch(gctx) {
                 return NULL;
