@@ -160,7 +160,7 @@ void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
 static const float JM_font_ascender(fz_context *ctx, fz_font *font);
 static const float JM_font_descender(fz_context *ctx, fz_font *font);
-
+void fz_write_pixmap_as_jpeg(fz_context *ctx, fz_output *out, fz_pixmap *pix, int quality);
 // end of additional headers --------------------------------------------
 
 static PyObject *JM_mupdf_warnings_store;
@@ -6189,12 +6189,12 @@ def get_oc_items(self) -> list:
         // Page.get_drawings
         //----------------------------------------------------------------
         %pythoncode %{
-        def get_drawings(self):
-            """Get page drawings paths.
+        def get_drawings(self, extended: bool = False) -> list:
+            """Retrieve vector graphics. The extended version includes clips.
 
             Note:
-            For greater comfort, this method converts point-likes, rect-likes, quad-likes
-            of the C version to respective Point / Rect / Quad objects.
+            For greater comfort, this method converts point-like, rect-like, quad-like
+            tuples of the C version to respective Point / Rect / Quad objects.
             It also adds default items that are missing in original path types.
             """
             allkeys = (
@@ -6203,12 +6203,15 @@ def get_oc_items(self) -> list:
                     ("lineJoin", 0), ("dashes", "[] 0"), ("stroke_opacity", 1),
                     ("fill_opacity", 1), ("even_odd", True),
                 )
-            val = self.get_cdrawings()
-            paths = []
-            for path in val:
-                npath = path.copy()
-                npath["rect"] = Rect(path["rect"])
-                items = path["items"]
+            val = self.get_cdrawings(extended=extended)
+            for i in range(len(val)):
+                npath = val[i]
+                if not npath["type"].startswith("clip"):
+                    npath["rect"] = Rect(npath["rect"])
+                else:
+                    npath["scissor"] = Rect(npath["scissor"])
+                if npath["type"]!="group":
+                    items = npath["items"]
                 newitems = []
                 for item in items:
                     cmd = item[0]
@@ -6221,9 +6224,152 @@ def get_oc_items(self) -> list:
                         item = tuple([cmd] + [Point(i) for i in rest])
                     newitems.append(item)
                 npath["items"] = newitems
+                if npath["type"] in ("f", "s", "fs"):
                 for k, v in allkeys:
                     npath[k] = npath.get(k, v)
+                val[i] = npath
+            return val
+
+        class Drawpath(object):
+            """Reflects a path dictionary from get_cdrawings()."""
+            def __init__(self, **args):
+                self.__dict__.update(args)
+        
+        class Drawpathlist(object):
+            """List of Path objects representing get_cdrawings() output."""
+            def __init__(self):
+                self.paths = []
+                self.path_count = 0
+                self.group_count = 0
+                self.clip_count = 0
+                self.fill_count = 0
+                self.stroke_count = 0
+                self.fillstroke_count = 0
+
+            def append(self, path):
+                self.paths.append(path)
+                self.path_count += 1
+                if path.type == "clip":
+                    self.clip_count += 1
+                elif path.type == "group":
+                    self.group_count += 1
+                elif path.type == "f":
+                    self.fill_count += 1
+                elif path.type == "s":
+                    self.stroke_count += 1
+                elif path.type == "fs":
+                    self.fillstroke_count += 1
+
+            def clip_parents(self, i):
+                """Return list of parent clip paths.
+
+                Args:
+                    i: (int) return parents of this path.
+                Returns:
+                    List of the clip parents."""
+                if i >= self.path_count:
+                    raise IndexError("bad path index")
+                while i < 0:
+                    i += self.path_count
+                lvl = self.paths[i].level
+                clips = list(  # clip paths before identified one
+                    reversed(
+                        [
+                            p
+                            for p in self.paths[:i]
+                            if p.type == "clip" and p.level < lvl
+                        ]
+                    )
+                )
+                if clips == []:  # none found: empty list
+                    return []
+                nclips = [clips[0]]  # init return list
+                for p in clips[1:]:
+                    if p.level >= nclips[-1].level:
+                        continue  # only accept smaller clip levels
+                    nclips.append(p)
+                return nclips
+
+            def group_parents(self, i):
+                """Return list of parent group paths.
+
+                Args:
+                    i: (int) return parents of this path.
+                Returns:
+                    List of the group parents."""
+                if i >= self.path_count:
+                    raise IndexError("bad path index")
+                while i < 0:
+                    i += self.path_count
+                lvl = self.paths[i].level
+                groups = list(  # group paths before identified one
+                    reversed(
+                        [
+                            p
+                            for p in self.paths[:i]
+                            if p.type == "group" and p.level < lvl
+                        ]
+                    )
+                )
+                if groups == []:  # none found: empty list
+                    return []
+                ngroups = [groups[0]]  # init return list
+                for p in groups[1:]:
+                    if p.level >= ngroups[-1].level:
+                        continue  # only accept smaller group levels
+                    ngroups.append(p)
+                return ngroups
+
+            def __getitem__(self, item):
+                return self.paths.__getitem__(item)
+
+            def __len__(self):
+                return self.paths.__len__()
+
+
+        def get_lineart(self) -> object:
+            """Get page drawings paths.
+
+            Note:
+            For greater comfort, this method converts point-like, rect-like, quad-like
+            tuples of the C version to respective Point / Rect / Quad objects.
+            Also adds default items that are missing in original path types.
+            In contrast to get_drawings(), this output is an object.
+            """
+
+            val = self.get_cdrawings(extended=True)
+            paths = self.Drawpathlist()
+            for path in val:
+                npath = self.Drawpath(**path)
+                if npath.type != "clip":
+                    npath.rect = Rect(path["rect"])
+                else:
+                    npath.scissor = Rect(path["scissor"])
+                if npath.type != "group":
+                    items = path["items"]
+                    newitems = []
+                    for item in items:
+                        cmd = item[0]
+                        rest = item[1:]
+                        if  cmd == "re":
+                            item = ("re", Rect(rest[0]), rest[1])
+                        elif cmd == "qu":
+                            item = ("qu", Quad(rest[0]))
+                        else:
+                            item = tuple([cmd] + [Point(i) for i in rest])
+                        newitems.append(item)
+                    npath.items = newitems
+                
+                if npath.type == "f":
+                    npath.stroke_opacity = None
+                    npath.dashes = None
+                    npath.lineJoin = None
+                    npath.lineCap = None
+                    npath.color = None
+                    npath.width = None
+
                 paths.append(npath)
+
             val = None
             return paths
         %}
@@ -6242,16 +6388,22 @@ def get_oc_items(self) -> list:
             self.set_rotation(old_rotation)
         %}
         PyObject *
-        get_cdrawings()
+        get_cdrawings(PyObject *extended=NULL, PyObject *callback=NULL, PyObject *method=NULL)
         {
             fz_page *page = (fz_page *) $self;
             fz_device *dev = NULL;
-            PyObject *rc = PyList_New(0);
+            PyObject *rc = NULL;
+            int clips = PyObject_IsTrue(extended);
             fz_var(rc);
             fz_try(gctx) {
                 fz_rect prect = fz_bound_page(gctx, page);
                 trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
-                dev = JM_new_tracedraw_device(gctx, rc);
+                if (PyCallable_Check(callback) || method != Py_None) {
+                    dev = JM_new_lineart_device(gctx, callback, clips, method);
+                } else {
+                    rc = PyList_New(0);
+                    dev = JM_new_lineart_device(gctx, rc, clips, method);
+                }
                 fz_run_page(gctx, page, dev, fz_identity, NULL);
                 fz_close_device(gctx, dev);
             }
@@ -6261,6 +6413,9 @@ def get_oc_items(self) -> list:
             fz_catch(gctx) {
                 Py_CLEAR(rc);
                 return NULL;
+            }
+            if (PyCallable_Check(callback) || method != Py_None) {
+                Py_RETURN_NONE;
             }
             return rc;
         }
@@ -6278,13 +6433,14 @@ def get_oc_items(self) -> list:
             self.set_rotation(old_rotation)
         %}
         PyObject *
-        get_bboxlog()
+        get_bboxlog(PyObject *layers=NULL)
         {
             fz_page *page = (fz_page *) $self;
             fz_device *dev = NULL;
             PyObject *rc = PyList_New(0);
+            int inc_layers = PyObject_IsTrue(layers);
             fz_try(gctx) {
-                dev = JM_new_bbox_device(gctx, rc);
+                dev = JM_new_bbox_device(gctx, rc, inc_layers);
                 fz_run_page(gctx, page, dev, fz_identity, NULL);
                 fz_close_device(gctx, dev);
             }
@@ -6317,7 +6473,7 @@ def get_oc_items(self) -> list:
             fz_device *dev = NULL;
             PyObject *rc = PyList_New(0);
             fz_try(gctx) {
-                dev = JM_new_tracetext_device(gctx, rc);
+                dev = JM_new_texttrace_device(gctx, rc);
                 fz_rect prect = fz_bound_page(gctx, page);
                 trace_device_rot = fz_identity;
                 trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);
@@ -7981,7 +8137,7 @@ Args:
         // Pixmap._tobytes
         //-----------------------------------------------------------------
         FITZEXCEPTION(_tobytes, !result)
-        PyObject *_tobytes(int format)
+        PyObject *_tobytes(int format, int quality)
         {
             fz_output *out = NULL;
             fz_buffer *res = NULL;
@@ -8008,6 +8164,9 @@ Args:
                     case(6):           // Postscript format
                         fz_write_pixmap_as_ps(gctx, out, pm);
                         break;
+                    case(7):           // JPEG format
+                        fz_write_pixmap_as_jpeg(gctx, out, pm, quality);
+                        break;
                     default:
                         fz_write_pixmap_as_png(gctx, out, pm);
                         break;
@@ -8026,27 +8185,31 @@ Args:
         }
 
         %pythoncode %{
-def tobytes(self, output="png"):
+def tobytes(self, output="png", quality=95):
     """Convert to binary image stream of desired type.
 
     Can be used as input to GUI packages like tkinter.
 
     Args:
-        output: (str) image type, default is PNG. Others are PNM, PGM, PPM,
+        output: (str) image type, default is PNG. Others are JPG, JPEG, PNM, PGM, PPM,
                 PBM, PAM, PSD, PS.
     Returns:
         Bytes object.
     """
     EnsureOwnership(self)
     valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
-                     "pam": 3, "tga": 4, "tpic": 4,
-                     "psd": 5, "ps": 6}
-    idx = valid_formats.get(output.lower(), 1)
-    if self.alpha and idx in (2, 6):
+                     "pam": 3, "psd": 5, "ps": 6, "jpg": 7, "jpeg": 7}
+                     
+    idx = valid_formats.get(output.lower(), None)
+    if idx==None:
+        raise ValueError(f"Image format {outut} not in {tuple(valid_formats.keys())}")
+    if self.alpha and idx in (2, 6, 7):
         raise ValueError("'%s' cannot have alpha" % output)
     if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
         raise ValueError("unsupported colorspace for '%s'" % output)
-    barray = self._tobytes(idx)
+    if idx == 7:
+        self.set_dpi(self.xres, self.yres)
+    barray = self._tobytes(idx, quality)
     return barray
     %}
 
@@ -8116,7 +8279,7 @@ def tobytes(self, output="png"):
         // _writeIMG
         //-----------------------------------------------------------------
         FITZEXCEPTION(_writeIMG, !result)
-        PyObject *_writeIMG(char *filename, int format)
+        PyObject *_writeIMG(char *filename, int format, int quality)
         {
             fz_try(gctx) {
                 fz_pixmap *pm = (fz_pixmap *) $self;
@@ -8136,6 +8299,9 @@ def tobytes(self, output="png"):
                     case(6): // Postscript
                         fz_save_pixmap_as_ps(gctx, pm, filename, 0);
                         break;
+                    case(7): // JPEG
+                        fz_save_pixmap_as_jpeg(gctx, pm, filename, quality);
+                        break;
                     default:
                         fz_save_pixmap_as_png(gctx, pm, filename);
                         break;
@@ -8147,17 +8313,17 @@ def tobytes(self, output="png"):
             Py_RETURN_NONE;
         }
         %pythoncode %{
-def save(self, filename, output=None):
+def save(self, filename, output=None, quality=95):
     """Output as image in format determined by filename extension.
 
     Args:
         output: (str) only use to overrule filename extension. Default is PNG.
-                Others are PNM, PGM, PPM, PBM, PAM, PSD, PS.
+                Others are JPEG, JPG, PNM, PGM, PPM, PBM, PAM, PSD, PS.
     """
     EnsureOwnership(self)
     valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
-                     "pam": 3, "tga": 4, "tpic": 4,
-                     "psd": 5, "ps": 6}
+                     "pam": 3, "psd": 5, "ps": 6, "jpg": 7, "jpeg": 7}
+                     
     if type(filename) is str:
         pass
     elif hasattr(filename, "absolute"):
@@ -8168,14 +8334,16 @@ def save(self, filename, output=None):
         _, ext = os.path.splitext(filename)
         output = ext[1:]
 
-    idx = valid_formats.get(output.lower(), 1)
-
-    if self.alpha and idx in (2, 6):
+    idx = valid_formats.get(output.lower(), None)
+    if idx == None:
+        raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
+    if self.alpha and idx in (2, 6, 7):
         raise ValueError("'%s' cannot have alpha" % output)
     if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
         raise ValueError("unsupported colorspace for '%s'" % output)
-
-    return self._writeIMG(filename, idx)
+    if idx == 7:
+        self.set_dpi(self.xres, self.yres)
+    return self._writeIMG(filename, idx, quality)
 
 def pil_save(self, *args, **kwargs):
     """Write to image file using Pillow.
@@ -12073,14 +12241,14 @@ struct Font
         Font(char *fontname=NULL, char *fontfile=NULL,
              PyObject *fontbuffer=NULL, int script=0,
              char *language=NULL, int ordering=-1, int is_bold=0,
-             int is_italic=0, int is_serif=0)
+             int is_italic=0, int is_serif=0, int embed=1)
         {
             fz_font *font = NULL;
             fz_try(gctx) {
                 fz_text_language lang = fz_text_language_from_string(language);
                 font = JM_get_font(gctx, fontname, fontfile,
                            fontbuffer, script, lang, ordering,
-                           is_bold, is_italic, is_serif);
+                           is_bold, is_italic, is_serif, embed);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -12242,12 +12410,24 @@ struct Font
         {
             fz_font_flags_t *f = fz_font_flags((fz_font *) $self);
             if (!f) Py_RETURN_NONE;
-            return Py_BuildValue("{s:i,s:i,s:i,s:i,s:i,s:i,s:i,s:i,s:i,s:i}",
-            "mono", f->is_mono, "serif", f->is_serif, "bold", f->is_bold,
-            "italic", f->is_italic, "substitute", f->ft_substitute,
-            "stretch", f->ft_stretch, "fake-bold", f->fake_bold,
-            "fake-italic", f->fake_italic, "opentype", f->has_opentype,
-            "invalid-bbox", f->invalid_bbox);
+            return Py_BuildValue(
+                "{s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N,s:N}",
+                "mono", JM_BOOL(f->is_mono),
+                "serif", JM_BOOL(f->is_serif),
+                "bold", JM_BOOL(f->is_bold),
+                "italic", JM_BOOL(f->is_italic),
+                "substitute", JM_BOOL(f->ft_substitute),
+                "stretch", JM_BOOL(f->ft_stretch),
+                "fake-bold", JM_BOOL(f->fake_bold),
+                "fake-italic", JM_BOOL(f->fake_italic),
+                "opentype", JM_BOOL(f->has_opentype),
+                "invalid-bbox", JM_BOOL(f->invalid_bbox),
+                "cjk", JM_BOOL(f->cjk),
+                "cjk-lang", (f->cjk ? PyLong_FromUnsignedLong((unsigned long) f->cjk_lang) : Py_None),
+                "embed", JM_BOOL(f->embed),
+                "never-embed", JM_BOOL(f->never_embed)
+            );
+
         }
 
 
@@ -12295,17 +12475,18 @@ struct Font
         }
 
 
-        %pythoncode %{@property%}
-        PyObject *is_writable()
-        {
-            fz_font *font = (fz_font *) $self;
-            if (fz_font_t3_procs(gctx, font) ||
-                fz_font_flags(font)->ft_substitute ||
-                !pdf_font_writing_supported(font)) {
-                Py_RETURN_FALSE;
-            }
-            Py_RETURN_TRUE;
-        }
+        /* temporarily disabled
+        * PyObject *is_writable()
+        * {
+        *     fz_font *font = (fz_font *) $self;
+        *     if (fz_font_t3_procs(gctx, font) ||
+        *         fz_font_flags(font)->ft_substitute ||
+        *         !pdf_font_writing_supported(font)) {
+        *         Py_RETURN_FALSE;
+        *     }
+        *     Py_RETURN_TRUE;
+        * }
+        */
 
         %pythoncode %{@property%}
         PyObject *name()
@@ -12356,6 +12537,11 @@ struct Font
 
 
         %pythoncode %{
+
+            @property
+            def is_writable(self):
+                return True
+
             def glyph_name_to_unicode(self, name):
                 """Return the unicode for a glyph name."""
                 return glyph_name_to_unicode(name)

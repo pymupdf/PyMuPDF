@@ -960,7 +960,8 @@ fz_font *JM_get_font(fz_context *ctx,
     int ordering,
     int is_bold,
     int is_italic,
-    int is_serif)
+    int is_serif,
+    int embed)
 {
     const unsigned char *data = NULL;
     int size, index=0;
@@ -973,20 +974,18 @@ fz_font *JM_get_font(fz_context *ctx,
         if (fontname) goto have_base14;
         goto have_noto;
 
-        // Base-14 font
+        // Base-14 or a MuPDF builtin font
         have_base14:;
-        data = fz_lookup_base14_font(ctx, fontname, &size);
-        if (data) font = fz_new_font_from_memory(ctx, fontname, data, size, 0, 0);
-        if(font) goto fertig;
-
-        data = fz_lookup_builtin_font(ctx, fontname, is_bold, is_italic, &size);
-        if (data) font = fz_new_font_from_memory(ctx, fontname, data, size, 0, 0);
+        font = fz_new_base14_font(ctx, fontname);
+        if (font) {
+            goto fertig;
+        }
+        font = fz_new_builtin_font(ctx, fontname, is_bold, is_italic);
         goto fertig;
 
         // CJK font
         have_cjk:;
-        data = fz_lookup_cjk_font(ctx, ordering, &size, &index);
-        if (data) font = fz_new_font_from_memory(ctx, NULL, data, size, index, 0);
+        font = fz_new_cjk_font(ctx, ordering);
         goto fertig;
 
         // fontfile
@@ -1011,6 +1010,10 @@ fz_font *JM_get_font(fz_context *ctx,
         fertig:;
         if (!font) {
             RAISEPY(ctx, MSG_FONT_FAILED, PyExc_RuntimeError);
+        }
+        // if font allows this, set embedding
+        if (!font->flags.never_embed) {
+            fz_set_font_embedding(ctx, font, embed);
         }
     }
     fz_always(ctx) {
