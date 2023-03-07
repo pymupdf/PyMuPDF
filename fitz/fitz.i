@@ -11528,7 +11528,7 @@ struct TextPage {
                             fz_rect linerect = fz_empty_rect;
                             for (ch = line->first_char; ch; ch = ch->next) {
                                 fz_rect cbbox = JM_char_bbox(gctx, line, ch);
-                                if (!fz_contains_rect(tp_rect, cbbox) &&
+                                if (!JM_rects_overlap(tp_rect, cbbox) &&
                                     !fz_is_infinite_rect(tp_rect)) {
                                     continue;
                                 }
@@ -11542,7 +11542,7 @@ struct TextPage {
                             blockrect = fz_union_rect(blockrect, linerect);
                         }
                         text = JM_EscapeStrFromBuffer(gctx, res);
-                    } else if (fz_contains_rect(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect)) {
+                    } else if (JM_rects_overlap(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect)) {
                         fz_image *img = block->u.i.image;
                         fz_colorspace *cs = img->colorspace;
                         text = PyUnicode_FromFormat("<image: %s, width: %d, height: %d, bpc: %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
@@ -11610,7 +11610,7 @@ struct TextPage {
                         buflen = 0;                       // reset char counter
                         for (ch = line->first_char; ch; ch = ch->next) {
                             fz_rect cbbox = JM_char_bbox(gctx, line, ch);
-                            if (!fz_contains_rect(tp_rect, cbbox) &&
+                            if (!JM_rects_overlap(tp_rect, cbbox) &&
                                 !fz_is_infinite_rect(tp_rect)) {
                                 continue;
                             }
