@@ -1295,7 +1295,17 @@ fz_archive *JM_archive_from_py(fz_context *ctx, fz_archive *arch, PyObject *path
 }
 
 
-
+int JM_rects_overlap(const fz_rect a, const fz_rect b)
+{
+    if (0
+            || a.x0 >= b.x1
+            || a.y0 >= b.y1
+            || a.x1 <= b.x0
+            || a.y1 <= b.y0
+            )
+        return 0;
+    return 1;
+}
 
 //-----------------------------------------------------------------------------
 // dummy structure for various tools and utilities

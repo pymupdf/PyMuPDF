@@ -209,7 +209,7 @@ JM_new_buffer_from_stext_page(fz_context *ctx, fz_stext_page *page)
             if (block->type == FZ_STEXT_BLOCK_TEXT) {
                 for (line = block->u.t.first_line; line; line = line->next) {
                     for (ch = line->first_char; ch; ch = ch->next) {
-                        if (!fz_contains_rect(rect, JM_char_bbox(ctx, line, ch)) &&
+                        if (!JM_rects_overlap(rect, JM_char_bbox(ctx, line, ch)) &&
                             !fz_is_infinite_rect(rect)) {
                             continue;
                         }
@@ -375,7 +375,7 @@ JM_search_stext_page(fz_context *ctx, fz_stext_page *page, const char *needle)
             for (line = block->u.t.first_line; line; line = line->next) {
                 for (ch = line->first_char; ch; ch = ch->next) {
                     if (!fz_is_infinite_rect(rect) &&
-                        !fz_contains_rect(rect, JM_char_bbox(ctx, line, ch))) {
+                        !JM_rects_overlap(rect, JM_char_bbox(ctx, line, ch))) {
                             goto next_char;
                         }
 try_new_match:
@@ -436,7 +436,7 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                 for (ch = line->first_char; ch; ch = ch->next) {
                     chbbox = JM_char_bbox(ctx, line, ch);
                     if (fz_is_infinite_rect(rect) ||
-                        fz_contains_rect(rect, chbbox)) {
+                        JM_rects_overlap(rect, chbbox)) {
                         last_char = ch->c;
                         n = fz_runetochar(utf, ch->c);
                         for (i = 0; i < n; i++) {
@@ -525,7 +525,7 @@ JM_make_spanlist(fz_context *ctx, PyObject *line_dict,
 
     for (ch = line->first_char; ch; ch = ch->next) {
         fz_rect r = JM_char_bbox(ctx, line, ch);
-        if (!fz_contains_rect(tp_rect, r) &&
+        if (!JM_rects_overlap(tp_rect, r) &&
             !fz_is_infinite_rect(tp_rect)) {
             continue;
         }
@@ -771,7 +771,7 @@ JM_copy_rectangle(fz_context *ctx, fz_stext_page *page, fz_rect area)
 				int line_had_text = 0;
 				for (ch = line->first_char; ch; ch = ch->next) {
 					fz_rect r = JM_char_bbox(ctx, line, ch);
-					if (fz_contains_rect(area, r)) {
+					if (JM_rects_overlap(area, r)) {
 						line_had_text = 1;
 						if (need_new_line) {
 							fz_append_string(ctx, buffer, "\n");
