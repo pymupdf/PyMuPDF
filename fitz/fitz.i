@@ -13958,29 +13958,54 @@ struct Story
             return ret;
         }
         
+        FITZEXCEPTION(reset, !result)
         PyObject* reset()
         {
-            fz_reset_story(gctx, (fz_story *)$self);
+            fz_try(gctx)
+            {
+                fz_reset_story(gctx, (fz_story *)$self);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
             Py_RETURN_NONE;
         }
         
+        FITZEXCEPTION(place, !result)
         PyObject* place( PyObject* where)
         {
-            fz_rect where2 = JM_rect_from_py(where);
-            fz_rect filled;
-            int more = fz_place_story( gctx, (fz_story*) $self, where2, &filled);
-            PyObject* ret = PyTuple_New(2);
-            PyTuple_SET_ITEM( ret, 0, Py_BuildValue( "i", more));
-            PyTuple_SET_ITEM( ret, 1, JM_py_from_rect( filled));
+            PyObject* ret = NULL;
+            fz_try(gctx)
+            {
+                fz_rect where2 = JM_rect_from_py(where);
+                fz_rect filled;
+                int more = fz_place_story( gctx, (fz_story*) $self, where2, &filled);
+                ret = PyTuple_New(2);
+                PyTuple_SET_ITEM( ret, 0, Py_BuildValue( "i", more));
+                PyTuple_SET_ITEM( ret, 1, JM_py_from_rect( filled));
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
             return ret;
         }
-        
 
-        void draw( struct DeviceWrapper* device, PyObject* matrix=NULL)
+        FITZEXCEPTION(draw, !result)
+        PyObject* draw( struct DeviceWrapper* device, PyObject* matrix=NULL)
         {
-            fz_matrix ctm2 = JM_matrix_from_py( matrix);
-            fz_device *dev = (device) ? device->device : NULL;
-            fz_draw_story( gctx, (fz_story*) $self, dev, ctm2);
+            fz_try(gctx)
+            {
+                fz_matrix ctm2 = JM_matrix_from_py( matrix);
+                fz_device *dev = (device) ? device->device : NULL;
+                fz_draw_story( gctx, (fz_story*) $self, dev, ctm2);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            Py_RETURN_NONE;
         }
 
         FITZEXCEPTION(document, !result)
