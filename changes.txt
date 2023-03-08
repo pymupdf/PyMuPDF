@@ -2,25 +2,98 @@ Change Log
 ==========
 
 
-..
-    **Changes in next release**
+**Changes in version 1.22.0 (2023-03-11)**
 
-    * Bug fixes:
+* This release uses ``MuPDF-1.22.0``.
 
-      * **Fixed** `#2173 <https://github.com/pymupdf/PyMuPDF/issues/2173>`_: Double free of Colorspace used in Pixmap
+* Behavioural changes:
 
-    * Added missing fix for #2057 to release 1.21.1's changelog.
+  * Text extraction now includes glyphs that overlap with clip rect; previously
+    they were included only if they were entirely contained within the clip
+    rect.
 
-    * Fixed issue where trace devices' state was not being initialised correctly;
-      data returned from things like ``fitz.Page.get_texttrace`` might be slightly
-      altered, e.g. ``linewidth`` values.
+* Bug fixes:
 
-    * Mention use of venv in installation documentation.
+  * **Fixed** `#1763 <https://github.com/pymupdf/PyMuPDF/issues/1763>`_: Interactive(smartform) form PDF calculation not working in pymupdf
+  * **Fixed** `#1995 <https://github.com/pymupdf/PyMuPDF/issues/1995>`_: RuntimeError: image is too high for a long paged pdf file when trying 
+  * **Fixed** `#2108 <https://github.com/pymupdf/PyMuPDF/issues/2108>`_: Redaction removing more text than expected
+  * **Fixed** `#2141 <https://github.com/pymupdf/PyMuPDF/issues/2141>`_: Failed to read JPX header when trying to get blocks
+  * **Fixed** `#2144 <https://github.com/pymupdf/PyMuPDF/issues/2144>`_: Replace image throws an error
+  * **Fixed** `#2146 <https://github.com/pymupdf/PyMuPDF/issues/2146>`_: Wrong Handling of Reference Count of "None" Object
+  * **Fixed** `#2161 <https://github.com/pymupdf/PyMuPDF/issues/2161>`_: Support adding images as pages directly
+  * **Fixed** `#2168 <https://github.com/pymupdf/PyMuPDF/issues/2168>`_: ``page.add_highlight_annot(start=pointa, stop=pointb)`` not working
+  * **Fixed** `#2173 <https://github.com/pymupdf/PyMuPDF/issues/2173>`_: Double free of ``Colorspace`` used in ``Pixmap``
+  * **Fixed** `#2179 <https://github.com/pymupdf/PyMuPDF/issues/2179>`_: Incorrect documentation for ``pixmap.tint_with()``
+  * **Fixed** `#2208 <https://github.com/pymupdf/PyMuPDF/issues/2208>`_: Pushbutton widget appears as check box
+  * **Fixed** `#2210 <https://github.com/pymupdf/PyMuPDF/issues/2210>`_: ``apply_redactions()`` move pdf text to right after redaction
+  * **Fixed** `#2220 <https://github.com/pymupdf/PyMuPDF/issues/2220>`_: ``Page.delete_image()`` | object has no attribute ``is_image``
+  * **Fixed** `#2228 <https://github.com/pymupdf/PyMuPDF/issues/2228>`_: open some pdf cost too much time
+  * **Fixed** `#2242 <https://github.com/pymupdf/PyMuPDF/issues/2242>`_: Python quits silently in ``Story.element_positions()`` if callback function prototype is wrong
+  * **Fixed** `#2248 <https://github.com/pymupdf/PyMuPDF/issues/2248>`_: After redacting the content, the position of the remaining text changes
 
-    * Output warn to ``stderr`` if it looks like we are being used with current
-      directory containing an invalid ``fitz/`` directory, because this can break
-      import of ``fitz`` module. For example this happens if one attempts to use
-      ``fitz`` when current directory is a PyMuPDF checkout.
+* Other:
+
+  * Add key "/AS (Yes)" to the underlying annot object of a selected button form field.
+
+  * Remove unused ``Document`` methods ``has_xref_streams()`` and
+    ``has_old_style_xrefs()`` as MuPDF equivalents have been removed.
+
+  * Add new ``Document`` methods and properties for getting/setting
+    ``/PageMode``, ``/PageLayout`` and ``/MarkInfo``.
+
+  * New ``Document`` property ``version_count``, which contains the number of
+    incremental saves plus one.
+
+  * New ``Document`` property ``is_fast_webaccess`` which tells whether the
+    document is linearized.
+
+  * ``DocumentWriter`` is now a context manager.
+
+  * Add support for ``Pixmap`` JPEG output.
+
+  * Add support for drawing rectangles with rounded corners.
+
+  * ``get_drawings()``: added optional ``extended`` arg.
+
+  * Fixed issue where trace devices' state was not being initialised
+    correctly; data returned from things like ``fitz.Page.get_texttrace()``
+    might be slightly altered, e.g. ``linewidth`` values.
+
+  * Output warning to ``stderr`` if it looks like we are being used with
+    current directory containing an invalid ``fitz/`` directory, because
+    this can break import of ``fitz`` module. For example this happens
+    if one attempts to use ``fitz`` when current directory is a PyMuPDF
+    checkout.
+
+* Documentation:
+
+  * General rework:
+
+    * Introduces a new home page and new table of contents.
+    * Structural update to include new About section.
+    * Comparison & performance graphing.
+    * Includes performance methodology in appendix.
+    * Updates conf.py to understand single back-ticks as code.
+    * Converts double back-ticks to single back-ticks.
+    * Removes redundant files.
+
+  * Improve ``insert_file()`` documentation.
+
+  * ``get_bboxlog()``: aded optional ``layers`` to ``get_bboxlog()``.
+  * ``Page.get_texttrace()``: add new dictionary key ``layer``, name of Optional Content Group.
+
+  * Mention use of Python venv in installation documentation.
+
+  * Added missing fix for #2057 to release 1.21.1's changelog.
+
+  * Fixes many links to the PyMuPDF-Utilities repo scripts.
+
+  * Avoid duplication of ``changes.txt`` and ``docs/changes.rst``.
+
+* Build
+
+  * Added ``pyproject.toml`` file to improve builds using pip etc.
+
 
 
 **Changes in Version 1.21.1 (2022-12-13)**
