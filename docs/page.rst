@@ -913,7 +913,13 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int alpha: *(Changed in v1.19.3)* deprecated. No longer needed -- ignored when given.
 
-      :arg int rotate: *(new in version v1.14.11)* rotate the image. Must be an integer multiple of 90 degrees. If you need a rotation by an arbitrary angle, consider converting the image to a PDF (:meth:`Document.convert_to_pdf`) first and then use :meth:`Page.show_pdf_page` instead.
+      :arg int rotate: *(new in version v1.14.11)* rotate the image.
+        Must be an integer multiple of 90 degrees.
+        Positive values rotate anti-clockwise.
+        If you need a rotation by an arbitrary angle,
+        consider converting the image to a PDF
+        (:meth:`Document.convert_to_pdf`)
+        first and then use :meth:`Page.show_pdf_page` instead.
 
       :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this :data:`OCG` or :data:`OCMD`. Ignored after the first of multiple insertions. The property is stored with the generated PDF image object and therefore controls the image's visibility throughout the PDF.
       :arg bool keep_proportion: *(new in version v1.14.11)* maintain the aspect ratio of the image.
