@@ -1182,7 +1182,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
             .. note:: Starting with v1.19.2, quads and rectangles are more reliably recognized as such.
 
-            Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
+            Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "How to Extract Drawings" of chapter :ref:`FAQ`.
 
 
       .. note:: The method is based on the output of :meth:`Page.get_cdrawings` -- which is much faster, but requires somewhat more attention processing its output.
