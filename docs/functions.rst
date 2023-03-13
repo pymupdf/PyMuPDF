@@ -485,11 +485,12 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.get_bboxlog()
+   .. method:: Page.get_bboxlog(layers=False)
 
       * New in v1.19.0
+      * Changed in v1.21.2: optionally also return the OCG name applicable to the boundary box.
 
-      :returns: a list of rectangles that envelop text, image or drawing objects. Each item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple consists of rectangle coordinates, and *type* is one of the following values.
+      :returns: a list of rectangles that envelop text, image or drawing objects. Each item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple consists of rectangle coordinates, and *type* is one of the following values. If `layers=True`, there is a third item containing the OCG name or `None`: `(type, (x0, y0, x1, y1), None)`.
 
          * `"fill-text"` -- normal text (painted without character borders)
          * `"stroke-text"` -- text showing character borders only
@@ -513,6 +514,8 @@ Yet others are handy, general-purpose utilities.
       * Changed in v1.19.0: added key "seqno".
       * Changed in v1.19.1: stroke and fill colors now always are either RGB or GRAY
       * Changed in v1.19.3: span and character bboxes are now also correct if `dir != (1, 0)`.
+      * Changed in v1.21.2: add new dictionary key "layer".
+
 
       Return low-level text information of the page. The method is available for **all** document types. The result is a list of Python dictionaries with the following content::
 
@@ -542,6 +545,7 @@ Yet others are handy, general-purpose utilities.
             'font': 'CourierNewPSMT',           # font name (1)
             'linewidth': 0.4019999980926514,    # current line width value (3)
             'opacity': 1.0,                     # alpha value of the text (5)
+            'layer': None,                      # name of Optional Content Group (9)
             'seqno': 246,                       # sequence number (8)
             'size': 8.039999961853027,          # font size (1)
             'spacewidth': 4.824785133358091,    # width of space char
@@ -568,6 +572,7 @@ Yet others are handy, general-purpose utilities.
       6. *(Changed in v1.19.0)* This value is equal or close to `char["bbox"]` of "rawdict". In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
       7. *(New in v1.19.0)* This is the union of all character bboxes.
       8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, whch are painted "later", or *over* some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans have identical sequence numbers if they were created in one go.
+      9. *(New in v1.21.2)* The name of the Optional Content Group (OCG) if applicable or `None`.
 
       Here is a list of similarities and differences of `page.get_texttrace()` compared to `page.get_text("rawdict")`:
 
@@ -597,6 +602,8 @@ Yet others are handy, general-purpose utilities.
             So you may want to replace the two example tuples above by the following single one: `(0xFB01, glyph, (x, y), (x0, y0, x1, y1))` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute `font.has_glyph(0xFB01)` and use its return value).
 
       * **Changed in v1.19.3:** Similar to other text extraction methods, the character and span bboxes envelop the character quads. To recover the quads, follow the same methods :meth:`recover_quad`, :meth:`recover_char_quad` or :meth:´recover_span_quad` as explained in :ref:`textpagedict`. Use either `None` or `span["dir"]` for the writing direction.
+
+      * **Changed in v1.21.1:** If applicable, the name of the OCG is shown in `"layer"`.
 
 -----
 
