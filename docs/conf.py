@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 #
+import re
 import sys
 import os
 
@@ -43,7 +44,16 @@ copyright = "2015-2023, Artifex"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.21.1"
+_path = os.path.abspath(f'{__file__}/../../fitz/version.i')
+with open(_path) as f:
+    for line in f:
+        match = re.search('VersionBind = "([0-9][.][0-9]+[.][0-9])"', line)
+        if match:
+            release = match.group(1)
+            print(f'{__file__}: setting version from {_path}: {release}')
+            break
+    else:
+        raise Exception(f'Failed to find `VersionBind = ...` in {_path}')
 
 # The short X.Y version
 version = release
