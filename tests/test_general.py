@@ -286,3 +286,67 @@ def test_2238():
     print(f'{last_page=}')
     assert first_page == 'Hello World\n'
     assert last_page == 'Hello World\n'
+
+
+def test_2093():
+    doc = fitz.open(f'{scriptdir}/resources/test2093.pdf')
+
+    def average_color(page):
+        pixmap = page.get_pixmap()
+        p_average = [0] * pixmap.n
+        for y in range(pixmap.height):
+            for x in range(pixmap.width):
+                p = pixmap.pixel(x, y)
+                for i in range(pixmap.n):
+                    p_average[i] += p[i]
+        for i in range(pixmap.n):
+            p_average[i] /= (pixmap.height * pixmap.width)
+        return p_average
+
+    page = doc.load_page(0)
+    pixel_average_before = average_color(page)
+
+    rx=135.123
+    ry=123.56878
+    rw=69.8409
+    rh=9.46397
+
+    x0 = rx
+    y0 = ry
+    x1 = rx + rw
+    y1 = ry + rh
+
+    rect = fitz.Rect(x0, y0, x1, y1)
+
+    font = fitz.Font("Helvetica")
+    fill_color=(0,0,0)
+    page.add_redact_annot(
+        quad=rect,
+        #text="null",
+        fontname=font.name,
+        fontsize=12,
+        align=fitz.TEXT_ALIGN_CENTER,
+        fill=fill_color,
+        text_color=(1,1,1),
+    )
+
+    page.apply_redactions()
+    pixel_average_after = average_color(page)
+
+    print(f'{pixel_average_before=}')
+    print(f'{pixel_average_after=}')
+
+    # Before this bug was fixed:
+    #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
+    #   pixel_average_after=[138.68844553555772, 123.05687162237561, 100.74275056194105]
+    # After fix:
+    #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
+    #   pixel_average_after=[130.8889209934799, 115.25722751837269, 92.94327384463327]
+    #
+    for i in range(len(pixel_average_before)):
+        diff = pixel_average_before[i] - pixel_average_after[i]
+        assert abs(diff) < 0.1
+
+    out = f'{scriptdir}/resources/test2093-out.pdf'
+    doc.save(out)
+    print(f'Have written to: {out}')
