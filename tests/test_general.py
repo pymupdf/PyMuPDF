@@ -350,3 +350,12 @@ def test_2093():
     out = f'{scriptdir}/resources/test2093-out.pdf'
     doc.save(out)
     print(f'Have written to: {out}')
+
+
+def test_2182():
+    print(f'test_2182() started')
+    doc = fitz.open(f'{scriptdir}/resources/test2182.pdf')
+    page = doc[0]
+    for annot in page.annots():
+        print(annot)
+    print(f'test_2182() finished')
