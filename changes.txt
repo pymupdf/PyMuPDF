@@ -28,8 +28,11 @@ Change Log
   * **Fixed** `#2210 <https://github.com/pymupdf/PyMuPDF/issues/2210>`_: ``apply_redactions()`` move pdf text to right after redaction
   * **Fixed** `#2220 <https://github.com/pymupdf/PyMuPDF/issues/2220>`_: ``Page.delete_image()`` | object has no attribute ``is_image``
   * **Fixed** `#2228 <https://github.com/pymupdf/PyMuPDF/issues/2228>`_: open some pdf cost too much time
+  * **Fixed** `#2238 <https://github.com/pymupdf/PyMuPDF/issues/2238>`_: Bug - can not extract data from file in the newest version 1.21.1
   * **Fixed** `#2242 <https://github.com/pymupdf/PyMuPDF/issues/2242>`_: Python quits silently in ``Story.element_positions()`` if callback function prototype is wrong
   * **Fixed** `#2248 <https://github.com/pymupdf/PyMuPDF/issues/2248>`_: After redacting the content, the position of the remaining text changes
+  * **Fixed** `#2270 <https://github.com/pymupdf/PyMuPDF/issues/2270>`_: ``Annot.get_text("words")`` - doesn't return the first line of words
+  * **Fixed** `#2278 <https://github.com/pymupdf/PyMuPDF/issues/2278>`_: Can not make widget (checkbox) to read-only by adding flags PDF_FIELD_IS_READ_ONLY
 
 * Other:
 
