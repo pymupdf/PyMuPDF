@@ -343,9 +343,10 @@ def test_2093():
     #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
     #   pixel_average_after=[130.8889209934799, 115.25722751837269, 92.94327384463327]
     #
-    for i in range(len(pixel_average_before)):
-        diff = pixel_average_before[i] - pixel_average_after[i]
-        assert abs(diff) < 0.1
+    if fitz.mupdf_version_tuple[:2] >= (1, 22):
+        for i in range(len(pixel_average_before)):
+            diff = pixel_average_before[i] - pixel_average_after[i]
+            assert abs(diff) < 0.1
 
     out = f'{scriptdir}/resources/test2093-out.pdf'
     doc.save(out)
