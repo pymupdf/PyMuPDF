@@ -32,11 +32,11 @@ source_suffix = ".rst"
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = "toc"
+root_doc = "index"
 
 # General information about the project.
 project = "PyMuPDF"
-copyright = "2015-2022, Artifex"
+copyright = "2015-2023, Artifex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -64,7 +64,7 @@ exclude_patterns = ["_build", "build"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
-default_role = None
+default_role = 'any'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
@@ -96,7 +96,18 @@ html_theme = "sphinx_rtd_theme"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {}
+html_theme_options = {
+    "canonical_url": "",
+    "logo_only": False,
+    "display_version": True,
+    "prev_next_buttons_location": None,
+    # Toc options
+    "collapse_navigation": True,
+    "sticky_navigation": True,
+    "navigation_depth": 4,
+    "includehidden": True,
+    "titles_only": False,
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -185,7 +196,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [("toc", "PyMuPDF.tex", "PyMuPDF Documentation", "Artifex", "manual")]
+latex_documents = [("index", "PyMuPDF.tex", "PyMuPDF Documentation", "Artifex", "manual")]
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
 latex_logo = "images/pymupdf-logo.png"
@@ -210,7 +221,7 @@ latex_domain_indices = True
 # Grouping the document tree into PDF files. List of tuples
 # (source start file, target name, title, author).
 
-pdf_documents = [("toc", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
+pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Artifex")]
 
 # A comma-separated list of custom stylesheets. Example:
 # pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]

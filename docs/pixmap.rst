@@ -34,7 +34,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.pdfocr_save`       save the pixmap as an OCRed 1-page PDF
 :meth:`Pixmap.pdfocr_tobytes`    save the pixmap as an OCRed 1-page PDF
 :meth:`Pixmap.pil_save`          save as image using pillow
-:meth:`Pixmap.pil_tobytes`       write to ``bytes`` object using pillow
+:meth:`Pixmap.pil_tobytes`       write to `bytes` object using pillow
 :meth:`Pixmap.pixel`             return the value of a pixel
 :meth:`Pixmap.save`              save the pixmap in a variety of formats
 :meth:`Pixmap.set_alpha`         set alpha values
@@ -55,9 +55,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :attr:`Pixmap.is_unicolor`       check if only one color occurs
 :attr:`Pixmap.irect`             :ref:`IRect` of the pixmap
 :attr:`Pixmap.n`                 bytes per pixel
-:attr:`Pixmap.samples_mv`        ``memoryview`` of pixel area
+:attr:`Pixmap.samples_mv`        `memoryview` of pixel area
 :attr:`Pixmap.samples_ptr`       Python pointer to pixel area
-:attr:`Pixmap.samples`           ``bytes`` copy of pixel area
+:attr:`Pixmap.samples`           `bytes` copy of pixel area
 :attr:`Pixmap.size`              pixmap's total length
 :attr:`Pixmap.stride`            size of one image row
 :attr:`Pixmap.width`             pixmap width
@@ -117,7 +117,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like clip: restrict the resulting pixmap to this region of the **scaled** pixmap.
 
-      .. note:: If width or height do not *represent* integers (i.e. ``value.is_integer() != True``), then the resulting pixmap **will have an alpha channel**.
+      .. note:: If width or height do not *represent* integers (i.e. `value.is_integer() != True`), then the resulting pixmap **will have an alpha channel**.
 
    .. method:: __init__(self, source, alpha=1)
 
@@ -202,9 +202,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Examples:
 
-         * ``tint_with(0x000000, 0xFFFFFF)`` is a no-op.
-         * ``tint_with(0x00FF00, 0xFFFFFF)`` changes black to green, leaves white intact.
-         * ``tint_with(0xFF0000, 0x0000FF)`` changes black to red and white to blue.
+         * `tint_with(0x000000, 0xFFFFFF)` is a no-op.
+         * `tint_with(0x00FF00, 0xFFFFFF)` changes black to green, leaves white intact.
+         * `tint_with(0xFF0000, 0x0000FF)` changes black to red and white to blue.
 
 
    .. method:: gamma_with(gamma)
@@ -225,26 +225,26 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       *New in version:: 1.14.5:* Return the value of the pixel at location (x, y) (column, line).
 
-      :arg int x: the column number of the pixel. Must be in ``range(pix.width)``.
-      :arg int y: the line number of the pixel, Must be in ``range(pix.height)``.
+      :arg int x: the column number of the pixel. Must be in `range(pix.width)`.
+      :arg int y: the line number of the pixel, Must be in `range(pix.height)`.
 
       :rtype: list
-      :returns: a list of color values and, potentially the alpha value. Its length and content depend on the pixmap's colorspace and the presence of an alpha. For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are integers in ``range(256)``.
+      :returns: a list of color values and, potentially the alpha value. Its length and content depend on the pixmap's colorspace and the presence of an alpha. For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are integers in `range(256)`.
 
    .. method:: set_pixel(x, y, color)
 
       *New in version 1.14.7:* Manipulate the pixel at location (x, y) (column, line).
 
-      :arg int x: the column number of the pixel. Must be in ``range(pix.width)``.
-      :arg int y: the line number of the pixel. Must be in ``range(pix.height)``.
-      :arg sequence color: the desired pixel value given as a sequence of integers in ``range(256)``. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
+      :arg int x: the column number of the pixel. Must be in `range(pix.width)`.
+      :arg int y: the line number of the pixel. Must be in `range(pix.height)`.
+      :arg sequence color: the desired pixel value given as a sequence of integers in `range(256)`. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
    .. method:: set_rect(irect, color)
 
       *New in version 1.14.8:* Set the pixels of a rectangle to a value.
 
       :arg irect_like irect: the rectangle to be filled with the value. The actual area is the intersection of this parameter and :attr:`Pixmap.irect`. For an empty intersection (or an invalid parameter), no change will happen.
-      :arg sequence color: the desired value, given as a sequence of integers in ``range(256)``. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
+      :arg sequence color: the desired value, given as a sequence of integers in `range(256)`. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
       :rtype: bool
       :returns: *False* if the rectangle was invalid or had an empty intersection with :attr:`Pixmap.irect`, else *True*.
@@ -282,9 +282,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Change the alpha values. The pixmap must have an alpha channel.
 
-      :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted (``None``), all alpha values are set to 255 (no transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also accepted.
+      :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted (`None`), all alpha values are set to 255 (no transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also accepted.
       :arg bool premultiply: *New in v1.18.13:* whether to premultiply color components with the alpha value.
-      :arg list,tuple opaque: ignore the alpha value and set this color to fully transparent. A sequence of integers in ``range(256)`` with a length of :attr:`Pixmap.n`. Default is *None*. For example, a typical choice for RGB would be ``opaque=(255, 255, 255)`` (white).
+      :arg list,tuple opaque: ignore the alpha value and set this color to fully transparent. A sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. Default is *None*. For example, a typical choice for RGB would be `opaque=(255, 255, 255)` (white).
 
 
    .. method:: invert_irect([irect])
@@ -306,7 +306,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like irect: The area to be copied.
 
-      .. note:: Example: Suppose you have two pixmaps, ``pix1`` and ``pix2`` and you want to copy the lower right quarter of ``pix2`` to ``pix1`` such that it starts at the top-left point of ``pix1``. Use the following snippet::
+      .. note:: Example: Suppose you have two pixmaps, `pix1` and `pix2` and you want to copy the lower right quarter of `pix2` to `pix1` such that it starts at the top-left point of `pix1`. Use the following snippet::
 
          >>> # safeguard: set top-left of pix1 and pix2 to (0, 0)
          >>> pix1.set_origin(0, 0)
@@ -327,7 +327,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the *savealpha* option is no longer supported and will be silently ignored.
 
-      :arg str,Path,file filename: The file to save to. May be provided as a string, as a ``pathlib.Path`` or as a Python file object. In the latter two cases, the filename is taken from the resp. object. The filename's extension determines the image format, which can be overruled by the output parameter.
+      :arg str,Path,file filename: The file to save to. May be provided as a string, as a `pathlib.Path` or as a Python file object. In the latter two cases, the filename is taken from the resp. object. The filename's extension determines the image format, which can be overruled by the output parameter.
 
       :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
 
@@ -337,11 +337,11 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Perform text recognition using Tesseract and save the image as a 1-page PDF with an OCR text layer.
 
-      :arg str,fp filename: identifies the file to save to. May be either a string or a pointer to a file opened with "wb" (includes ``io.BytesIO()`` objects).
-      :arg bool compress: whether to compress the resulting PDF, default is ``True``.
+      :arg str,fp filename: identifies the file to save to. May be either a string or a pointer to a file opened with "wb" (includes `io.BytesIO()` objects).
+      :arg bool compress: whether to compress the resulting PDF, default is `True`.
       :arg str language: the languages occurring in the image. This must be specified in Tesseract format. Default is "eng" for English. Use "+"-separated Tesseract language codes for multiple languages, like "eng+spa" for English and Spanish.
 
-      .. note:: **Will fail** if Tesseract is not installed or if the environment variable "TESSDATA_PREFIX" is not set to the ``tessdata`` folder name. This is what you would typically see on a Windows platform:
+      .. note:: **Will fail** if Tesseract is not installed or if the environment variable "TESSDATA_PREFIX" is not set to the `tessdata` folder name. This is what you would typically see on a Windows platform:
 
          >>> print(os.environ["TESSDATA_PREFIX"])
          C:\Program Files\Tesseract-OCR\tessdata
@@ -358,7 +358,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.pdfocr_save`.
 
-      :returns: A 1-page PDF file in memory. Could be opened like ``doc=fitz.open("pdf", pix.pdfocr_tobytes())``, and text extractions could be performed on its ``page=doc[0]``.
+      :returns: A 1-page PDF file in memory. Could be opened like `doc=fitz.open("pdf", pix.pdfocr_tobytes())`, and text extractions could be performed on its `page=doc[0]`.
       
          .. note::
          
@@ -392,17 +392,17 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       * Storing EXIF information.
       * If you do not provide dpi information, the values *xres*, *yres* stored with the pixmap are automatically used.
 
-      A simple example: ``pix.pil_save("some.jpg", optimize=True, dpi=(150, 150))``. For details on other parameters see the Pillow documentation.
+      A simple example: `pix.pil_save("some.jpg", optimize=True, dpi=(150, 150))`. For details on other parameters see the Pillow documentation.
 
       .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.save` now also sets dpi from *xres* / *yres* automatically, when saving a PNG image.
 
-         If Pillow is not installed an ``ImportError`` exception is raised.
+         If Pillow is not installed an `ImportError` exception is raised.
 
    ..  method:: pil_tobytes(*args, **kwargs)
 
       * New in v1.17.3
 
-      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pil_tobytes(format="JPEG", optimize=True)``. Also see above. For details on other parameters see the Pillow documentation. If Pillow is not installed, an ``ImportError`` exception is raised.
+      Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="JPEG", optimize=True)`. Also see above. For details on other parameters see the Pillow documentation. If Pillow is not installed, an `ImportError` exception is raised.
 
       :rtype: bytes
 
@@ -411,12 +411,12 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       * New in v1.19.3
 
-      Return a new pixmap by "warping" the quad such that the quad corners become the new pixmap's corners. The target pixmap's ``irect`` will be ``(0, 0, width, height)``.
+      Return a new pixmap by "warping" the quad such that the quad corners become the new pixmap's corners. The target pixmap's `irect` will be `(0, 0, width, height)`.
 
       :arg quad_like quad: a convex quad with coordinates inside :attr:`Pixmap.irect` (including the border points).
       :arg int width: desired resulting width.
       :arg int height: desired resulting height.
-      :returns: A new pixmap where the quad corners are mapped to the pixmap corners in a clockwise fashion: ``quad.ul -> irect.tl``, ``quad.ur -> irect.tr``, etc.
+      :returns: A new pixmap where the quad corners are mapped to the pixmap corners in a clockwise fashion: `quad.ul -> irect.tl`, `quad.ur -> irect.tr`, etc.
       :rtype: :ref:`Pixmap`
 
          .. image:: images/img-warp.*
@@ -431,12 +431,12 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Determine the pixmap's unique colors and their count.
 
-      :arg bool colors: *(changed in v1.19.3)* If ``True`` return a dictionary of color pixels and their usage count, else just the number of unique colors.
+      :arg bool colors: *(changed in v1.19.3)* If `True` return a dictionary of color pixels and their usage count, else just the number of unique colors.
       :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
       :rtype: dict or int
-      :returns: either the number of colors, or a dictionary with the items ``pixel: count``. The pixel key is a ``bytes`` object of length :attr:`Pixmap.n`.
+      :returns: either the number of colors, or a dictionary with the items `pixel: count`. The pixel key is a `bytes` object of length :attr:`Pixmap.n`.
       
-         .. note:: To recover the **tuple** of a pixel, use ``tuple(colors.keys()[i])`` for the i-th item.
+         .. note:: To recover the **tuple** of a pixel, use `tuple(colors.keys()[i])` for the i-th item.
 
             * The response time depends on the pixmap's samples size and may be more than a second for very large pixmaps.
             * Where applicable, pixels with different alpha values will be treated as different colors.
@@ -450,7 +450,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
       :rtype: tuple[float, bytes]
-      :returns: A tuple ``(ratio, pixel)`` where ``0 < ratio <= 1`` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: a response ``(0.95, b"\x00\x00\x00")`` means that 95% of all pixels are black.
+      :returns: A tuple `(ratio, pixel)` where `0 < ratio <= 1` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: a response `(0.95, b"\x00\x00\x00")` means that 95% of all pixels are black.
 
 
    .. attribute:: alpha
@@ -475,8 +475,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Contains the length of one row of image data in :attr:`Pixmap.samples`. This is primarily used for calculation purposes. The following expressions are true:
 
-      * ``len(samples) == height * stride``
-      * ``width * n == stride``
+      * `len(samples) == height * stride`
+      * `width * n == stride`
 
       :type: int
 
@@ -485,7 +485,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       * New in v1.19.2
 
-      Is ``True`` for a gray pixmap which only has the colors black and white.
+      Is `True` for a gray pixmap which only has the colors black and white.
 
       :type: bool
 
@@ -494,7 +494,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       * New in v1.19.2
 
-      Is ``True`` if all pixels are identical (any colorspace). Where applicable, pixels with different alpha values will be treated as different colors.
+      Is `True` if all pixels are identical (any colorspace). Where applicable, pixels with different alpha values will be treated as different colors.
 
       :type: bool
 
@@ -507,12 +507,12 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: samples
 
-      The color and (if :attr:`Pixmap.alpha` is true) transparency values for all pixels. It is an area of ``width * height * n`` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, *samples* is a sequence of bytes like *..., R, G, B, A, ...*, and the four byte values R, G, B, A define one pixel.
+      The color and (if :attr:`Pixmap.alpha` is true) transparency values for all pixels. It is an area of `width * height * n` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, *samples* is a sequence of bytes like *..., R, G, B, A, ...*, and the four byte values R, G, B, A define one pixel.
 
       This area can be passed to other graphics libraries like PIL (Python Imaging Library) to do additional processing like saving the pixmap in other image formats.
 
       .. note::
-         * The underlying data is typically a **large** memory area, from which a ``bytes`` copy is made for this attribute ... each time you access it: for example an RGB-rendered letter page has a samples size of almost 1.4 MB. So consider assigning a new variable to it or use the ``memoryview`` version :attr:`Pixmap.samples_mv` (new in v1.18.17).
+         * The underlying data is typically a **large** memory area, from which a `bytes` copy is made for this attribute ... each time you access it: for example an RGB-rendered letter page has a samples size of almost 1.4 MB. So consider assigning a new variable to it or use the `memoryview` version :attr:`Pixmap.samples_mv` (new in v1.18.17).
          * Any changes to the underlying data are available only after accessing this attribute again. This is different from using the memoryview version.
 
       :type: bytes
@@ -521,11 +521,11 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       * New in v1.18.17
 
-      Like :attr:`Pixmap.samples`, but in Python ``memoryview`` format. It is built pointing to the memory in the pixmap -- not from a copy of it. So its creation speed is independent from the pixmap size, and any changes to pixels will be available immediately.
+      Like :attr:`Pixmap.samples`, but in Python `memoryview` format. It is built pointing to the memory in the pixmap -- not from a copy of it. So its creation speed is independent from the pixmap size, and any changes to pixels will be available immediately.
 
-      Copies like ``bytearray(pix.samples_mv)``, or ``bytes(pixmap.samples_mv)`` are equivalent to and can be used in place of ``pix.samples``.
+      Copies like `bytearray(pix.samples_mv)`, or `bytes(pixmap.samples_mv)` are equivalent to and can be used in place of `pix.samples`.
       
-      We also have ``len(pix.samples) == len(pix.samples_mv)``.
+      We also have `len(pix.samples) == len(pix.samples_mv)`.
       
       Look at this example from a 2 MB JPEG: the memoryview is **ten thousand times faster**::
 

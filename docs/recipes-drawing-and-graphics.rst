@@ -3,7 +3,7 @@
 .. _RecipesDrawingAndGraphics:
 
 ==============================
-Recipes: Drawing and Graphics
+Drawing and Graphics
 ==============================
 
 
@@ -84,8 +84,8 @@ This is the script's outcome:
 
 ------------------------------
 
-Extracting Drawings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How to Extract Drawings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * New in v1.18.0
 
@@ -182,7 +182,7 @@ The following is a code snippet which extracts the drawings of a page and re-dra
     shape.commit()
     outpdf.save("drawings-page-0.pdf")
 
-As can be seen, there is a high congruence level with the :ref:`Shape` class. With one exception: For technical reasons ``lineCap`` is a tuple of 3 numbers here, whereas it is an integer in :ref:`Shape` (and in PDF). So we simply take the maximum value of that tuple.
+As can be seen, there is a high congruence level with the :ref:`Shape` class. With one exception: For technical reasons `lineCap` is a tuple of 3 numbers here, whereas it is an integer in :ref:`Shape` (and in PDF). So we simply take the maximum value of that tuple.
 
 Here is a comparison between input and output of an example page, created by the previous script:
 

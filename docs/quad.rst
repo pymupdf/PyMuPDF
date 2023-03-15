@@ -16,7 +16,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
 
    * This is not true for all matrices: e.g. shear matrices produce parallelograms, and non-invertible matrices deliver "degenerate" tetragons like triangles or lines.
 
-   * Attribute :attr:`Quad.rect` obtains the envelopping rectangle. Vice versa, rectangles now have attributes :attr:`Rect.quad`, resp. :attr:`IRect.quad` to obtain their respective tetragon versions.
+   * Attribute :attr:`Quad.rect` obtains the enveloping rectangle. Vice versa, rectangles now have attributes :attr:`Rect.quad`, resp. :attr:`IRect.quad` to obtain their respective tetragon versions.
 
 
 ============================= =======================================================
@@ -145,7 +145,7 @@ Algebra and Containment Checks
 -------------------------------
 Starting with v1.19.6, quads can be used in algebraic expressions like the other geometry object -- the respective restrictions have been lifted. In particular, all the following combinations of containment checking are now possible:
 
-``{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}``
+`{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}`
 
 Please note the following interesting detail:
 

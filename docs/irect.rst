@@ -95,7 +95,7 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
       :arg rect_like rect: the target rectangle. Must not be empty or infinite.
       :rtype: :ref:`Matrix`
-      :returns: a matrix ``mat`` such that ``self * mat = rect``. Can for example be used to transform between the page and the pixmap coordinates.
+      :returns: a matrix `mat` such that `self * mat = rect`. Can for example be used to transform between the page and the pixmap coordinates.
 
 
    .. method:: morph(fixpoint, matrix)

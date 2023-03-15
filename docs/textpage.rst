@@ -80,7 +80,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: extractJSON
 
-      Textpage content as a JSON string. Created by ``json.dumps(TextPage.extractDICT())``. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
+      Textpage content as a JSON string. Created by `json.dumps(TextPage.extractDICT())`. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
 
       :rtype: str
 
@@ -104,7 +104,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: extractRAWJSON
 
-      Textpage content as a JSON string. Created by ``json.dumps(TextPage.extractRAWDICT())``. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
+      Textpage content as a JSON string. Created by `json.dumps(TextPage.extractRAWDICT())`. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
 
       :rtype: str
 
@@ -121,8 +121,8 @@ For a description of what this class is all about, see Appendix 2.
 
       .. note:: **Overview of changes in v1.18.2:**
 
-        1. The ``hit_max`` parameter has been removed: all hits are always returned.
-        2. The ``rect`` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered. The wrapper method :meth:`Page.search_for` correspondingly supports a *clip* parameter.
+        1. The `hit_max` parameter has been removed: all hits are always returned.
+        2. The `rect` parameter of the :ref:`TextPage` is now respected: only text inside this area is examined. Only characters with fully contained bboxes are considered. The wrapper method :meth:`Page.search_for` correspondingly supports a *clip* parameter.
         3. **Hyphenated words** are now found.
         4. **Overlapping rectangles** in the same line are now automatically joined. We assume that such separations are an artifact created by multiple marked content groups, containing parts of the same search needle.
 
@@ -132,7 +132,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. attribute:: rect
 
-      The rectangle associated with the text page. This either equals the rectangle of the creating page or the ``clip`` parameter of :meth:`Page.get_textpage` and text extration / searching methods.
+      The rectangle associated with the text page. This either equals the rectangle of the creating page or the `clip` parameter of :meth:`Page.get_textpage` and text extration / searching methods.
 
       .. note:: The output of text searching and most text extractions **is restricted to this rectangle**. (X)HTML and XML output will however always extract the full page.
 
@@ -164,7 +164,7 @@ In addition, **the full quad information is not lost**: it can be recovered as n
 * :meth:`recover_line_quad` -- the quad of a line
 * :meth:`recover_char_quad` -- the quad of a character
 
-As mentioned, using these functions is ever only needed, if the text is **not written horizontally** -- ``line["dir"] != (1, 0)`` -- and you need the quad for text marker annotations (:meth:`Page.add_highlight_annot` and friends).
+As mentioned, using these functions is ever only needed, if the text is **not written horizontally** -- `line["dir"] != (1, 0)` -- and you need the quad for text marker annotations (:meth:`Page.add_highlight_annot` and friends).
 
 
 .. image:: images/img-textpage.*
@@ -177,8 +177,8 @@ Page Dictionary
 =============== ============================================
 **Key**         **Value**
 =============== ============================================
-width           width of the ``clip`` rectangle *(float)*
-height          height of the ``clip`` rectangle *(float)*
+width           width of the `clip` rectangle *(float)*
+height          height of the `clip` rectangle *(float)*
 blocks          *list* of block dictionaries
 =============== ============================================
 
@@ -223,7 +223,7 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
        - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will list each image only once (per reference name).
        - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
 
-   3. The image's "transformation matrix" is defined as the matrix, for which the expression ``bbox / transform == fitz.Rect(0, 0, 1, 1)`` is true, lookup details here: :ref:`ImageTransformation`.
+   3. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
 
 
 **Text block:**
@@ -249,7 +249,7 @@ dir             writing direction, :data:`point_like`
 spans           *list* of span dictionaries
 =============== =====================================================
 
-The value of key *"dir"* is the **unit vector** ``dir = (cosine, sine)`` of the angle, which the text has relative to the x-axis. See the following picture: The word in each quadrant (counter-clockwise from top-right to bottom-right) is rotated by 30, 120, 210 and 300 degrees respectively.
+The value of key *"dir"* is the **unit vector** `dir = (cosine, sine)` of the angle, which the text has relative to the x-axis. See the following picture: The word in each quadrant (counter-clockwise from top-right to bottom-right) is rotated by 30, 120, 210 and 300 degrees respectively.
 
 .. image:: images/img-line-dir.*
    :scale: 100
@@ -294,9 +294,9 @@ These numbers may be used to compute the minimum height of a character (or span)
 >>> r.y0 = r.y1 - span["size"]
 >>> # r now is a rectangle of height 'fontsize'
 
-.. caution:: The above calculation may deliver a **larger** height! This may e.g. happen for OCRed documents, where the risk of all sorts of text artifacts is high. MuPDF tries to come up with a reasonable bbox height, independently from the fontsize found in the PDF. So please ensure that the height of ``span["bbox"]`` is **larger** than ``span["size"]``.
+.. caution:: The above calculation may deliver a **larger** height! This may e.g. happen for OCRed documents, where the risk of all sorts of text artifacts is high. MuPDF tries to come up with a reasonable bbox height, independently from the fontsize found in the PDF. So please ensure that the height of `span["bbox"]` is **larger** than `span["size"]`.
 
-.. note:: You may request PyMuPDF to do all of the above automatically by executing ``fitz.TOOLS.set_small_glyph_heights(True)``. This sets a global parameter so that all subsequent text searches and text extractions are based on reduced glyph heights, where meaningful.
+.. note:: You may request PyMuPDF to do all of the above automatically by executing `fitz.TOOLS.set_small_glyph_heights(True)`. This sets a global parameter so that all subsequent text searches and text extractions are based on reduced glyph heights, where meaningful.
 
 The following shows the original span rectangle in red and the rectangle with re-computed height in blue.
 

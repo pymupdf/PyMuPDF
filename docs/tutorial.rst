@@ -8,9 +8,9 @@ Tutorial
 
 .. highlight:: python
 
-This tutorial will show you the use of PyMuPDF, MuPDF in Python, step by step.
+This tutorial will show you the use of :title:`PyMuPDF`, :title:`MuPDF` in :title:`Python`, step by step.
 
-Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitely.
+Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitly.
 
 Importing the Bindings
 ==========================
@@ -23,13 +23,27 @@ The Python bindings to MuPDF are made available by this import statement. We als
     Built for Python 3.7 on win32 (64-bit).
 
 
+Note on the Name *fitz*
+--------------------------
+The top level Python import name for this library is **"fitz"**. This has historical reasons:
+
+The original rendering library for MuPDF was called *Libart*.
+
+*"After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called "Fitz". Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF."* (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
+
+
+.. note::
+
+    So :title:`PyMuPDF` **cannot coexist** with packages named "fitz" in the same Python environment.
+
+
 Opening a Document
 ======================
 To access a supported document, it must be opened with the following statement::
 
     doc = fitz.open(filename)  # or fitz.Document(filename)
 
-This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a ``pathlib.Path``) specifying the name of an existing file.
+This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a `pathlib.Path`) specifying the name of an existing file.
 
 It is also possible to open a document from memory data, or to create a new, empty PDF. See :ref:`Document` for details. You can also use :ref:`Document` as a *context manager*.
 
@@ -95,7 +109,7 @@ First, a :ref:`Page` must be created. This is a method of :ref:`Document`::
     page = doc.load_page(pno)  # loads page number 'pno' of the document (0-based)
     page = doc[pno]  # the short form
 
-Any integer ``-∞ < pno < page_count`` is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
+Any integer `-∞ < pno < page_count` is possible here. Negative numbers count backwards from the end, so *doc[-1]* is the last page, like with Python sequences.
 
 Some more advanced way would be using the document as an **iterator** over its pages::
 
@@ -405,26 +419,26 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 
 
 .. _lxml: https://pypi.org/project/lxml/
-.. _metadata import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2meta.py
-.. _metadata export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/meta2csv.py
-.. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2toc.py
-.. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/toc2csv.py
+.. _metadata import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-metadata/import.py
+.. _metadata export: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-metadata/export.py
+.. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-toc/import.py
+.. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-toc/export.py
 .. _Vector Image Support page: https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support
 .. _examples: https://github.com/pymupdf/PyMuPDF/tree/master/examples
 .. _Pillow documentation: https://Pillow.readthedocs.io
-.. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/doc-browser.py
+.. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/browse-document/browse.py
 .. _PySimpleGUI: https://pypi.org/project/PySimpleGUI/
 .. _demo.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py
 .. _demo-lowlevel.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py
 .. _"MuPDF Explored": https://mupdf.com/docs/mupdf-explored.html
 .. _Artifex: https://www.artifex.com
-.. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py
-.. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py
+.. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/convert-document/convert.py
+.. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py
 .. _dealing with embedding files: https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files
-.. _embedded-copy.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py
-.. _embedded-export.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py
-.. _embedded-import.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py
-.. _embedded-list.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py
+.. _embedded-copy.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/copy-embedded/copy.py
+.. _embedded-export.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-embedded/export.py
+.. _embedded-import.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-embedded/import.py
+.. _embedded-list.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/list-embedded/list.py
 .. _Wiki: https://github.com/pymupdf/PyMuPDF/wiki
 
 

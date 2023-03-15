@@ -201,3 +201,23 @@ def test_1824():
     doc=fitz.open(path)
     page=doc[0]
     page.apply_redactions()
+
+def test_2270():
+    '''
+    https://github.com/pymupdf/PyMuPDF/issues/2270
+    '''
+    path = os.path.abspath( f'{__file__}/../resources/test_2270.pdf')
+    with fitz.open(path) as document:
+        for page_number, page in enumerate(document):
+            for textBox in page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT,fitz.PDF_ANNOT_TEXT)):
+                print("textBox.type :", textBox.type)
+                print("textBox.get_text('words') : ", textBox.get_text('words'))
+                print("textBox.get_text('text') : ", textBox.get_text('text'))
+                print("textBox.get_textbox(textBox.rect) : ", textBox.get_textbox(textBox.rect))
+                print("textBox.info['content'] : ", textBox.info['content'])
+                assert textBox.type == (2, 'FreeText')
+                assert textBox.get_text('words')[0][4] == 'abc123'
+                assert textBox.get_text('text') == 'abc123\n'
+                assert textBox.get_textbox(textBox.rect) == 'abc123'
+                assert textBox.info['content'] == 'abc123'
+

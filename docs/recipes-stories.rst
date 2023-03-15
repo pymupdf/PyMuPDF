@@ -13,7 +13,7 @@
    </details>
 
 ==============================
-Recipes: Stories
+Stories
 ==============================
 
 This document showcases some typical use cases for :ref:`Stories<WorkingWithStories>`.
@@ -24,9 +24,12 @@ The following examples will showcase combinations for using these inputs.
 
 .. note::
 
-        Many of these recipe's source code are included as examples in the ``docs`` folder.
+        Many of these recipe's source code are included as examples in the `docs` folder.
 
-How to add a line of text with some formatting
+
+.. _RecipesStories_A:
+
+How to Add a Line of Text with Some Formatting
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is the inevitable "Hello World" example. We will show two variants:
@@ -111,7 +114,10 @@ Both variants will produce the same output PDF.
 
 -----
 
-How to use images
+.. _RecipesStories_B:
+
+
+How to use Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Images can be referenced in the provided HTML source, or the reference to a desired image can also be stored via the Python API. In any case, this requires using an :ref:`Archive`, which refers to the place where the image can be found.
@@ -154,12 +160,15 @@ We extend our "Hello World" example from above and display an image of our plane
 -----
 
 
-Reading external HTML and CSS for a Story
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. _RecipesStories_C:
+
+
+How to Read External HTML and CSS for a Story
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These cases are fairly straightforward.
 
-As a general recommendation, HTML and CSS sources should be **read as binary files** and decoded before using them in a story. The Python ``pathlib.Path`` provides convenient ways to do this::
+As a general recommendation, HTML and CSS sources should be **read as binary files** and decoded before using them in a story. The Python `pathlib.Path` provides convenient ways to do this::
 
     import pathlib
     import fitz
@@ -176,7 +185,10 @@ As a general recommendation, HTML and CSS sources should be **read as binary fil
 -----
 
 
-How to output database content with Story templates
+.. _RecipesStories_D:
+
+
+How to Output Database Content with Story Templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script demonstrates how to report SQL database content using an **HTML template**.
@@ -192,8 +204,8 @@ The story DOM consists of a template for one film, which reports film data toget
 
 **Files:**
 
-* ``docs/samples/filmfestival-sql.py``
-* ``docs/samples/filmfestival-sql.db``
+* `docs/samples/filmfestival-sql.py`
+* `docs/samples/filmfestival-sql.db`
 
 
 |toggleStart|
@@ -206,7 +218,9 @@ The story DOM consists of a template for one film, which reports film data toget
 -----
 
 
-How to integrate with existing PDFs
+.. _RecipesStories_E:
+
+How to Integrate with Existing PDFs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Because a :ref:`DocumentWriter` can only write to a new file, stories cannot be placed on existing pages. This script demonstrates a circumvention of this restriction.
@@ -215,7 +229,7 @@ The basic idea is letting :ref:`DocumentWriter` output to a PDF in memory. Once 
 
 **Files:**
 
-* ``docs/samples/showpdf-page.py``
+* `docs/samples/showpdf-page.py`
 
 |toggleStart|
 
@@ -227,7 +241,9 @@ The basic idea is letting :ref:`DocumentWriter` output to a PDF in memory. Once 
 -----
 
 
-How to make multi-columned layouts and access fonts from package `pymupdf-fonts`_
+.. _RecipesStories_F:
+
+How to Make Multi-Columned Layouts and Access Fonts from Package `pymupdf-fonts`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script outputs an article (taken from Wikipedia) that contains text and multiple images and uses a 2-column page layout.
@@ -239,8 +255,8 @@ Yet another feature used here is that all data -- the images and the article HTM
 
 **Files:**
 
-* ``docs/samples/quickfox.py``
-* ``docs/samples/quickfox.zip``
+* `docs/samples/quickfox.py`
+* `docs/samples/quickfox.zip`
 
 
 |toggleStart|
@@ -253,8 +269,9 @@ Yet another feature used here is that all data -- the images and the article HTM
 -----
 
 
+.. _RecipesStories_G:
 
-How make a layout which wraps around a predefined "no go area" layout
+How to Make a Layout which Wraps Around a Predefined "no go area" Layout
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -290,9 +307,9 @@ The script demonstrates the following features:
 
 **Files:**
 
-* ``docs/samples/quickfox-image-no-go.py``
-* ``docs/samples/quickfox-image-no-go.pdf``
-* ``docs/samples/quickfox.zip``
+* `docs/samples/quickfox-image-no-go.py`
+* `docs/samples/quickfox-image-no-go.pdf`
+* `docs/samples/quickfox.zip`
 
 
 |toggleStart|
@@ -305,9 +322,10 @@ The script demonstrates the following features:
 -----
 
 
+.. _RecipesStories_H:
 
-How to output a table
-~~~~~~~~~~~~~~~~~~~~~~~~
+How to Output a Table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Support for HTML tables is yet not complete in MuPDF. It is however possible to output tables with equal column widths that do not cross page boundaries.
 
@@ -315,7 +333,7 @@ This script reflects existing features.
 
 **Files:**
 
-* ``docs/samples/table01.py``
+* `docs/samples/table01.py`
 
 |toggleStart|
 
@@ -327,14 +345,16 @@ This script reflects existing features.
 -----
 
 
-How to create a simple grid layout
+.. _RecipesStories_I:
+
+How to Create a Simple Grid Layout
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 By creating a sequence of :ref:`Story` objects within a grid created via the :ref:`make_table<Functions_make_table>` function a developer can create grid layouts as required.
 
 **Files:**
 
-* ``docs/samples/simple-grid.py``
+* `docs/samples/simple-grid.py`
 
 |toggleStart|
 
@@ -346,14 +366,16 @@ By creating a sequence of :ref:`Story` objects within a grid created via the :re
 -----
 
 
-How to generate a Table of Contents
+.. _RecipesStories_J:
+
+How to Generate a Table of Contents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This script lists the source code of all Python scripts that live in the script's directory.
 
 **Files:**
 
-* ``docs/samples/code-printer.py``
+* `docs/samples/code-printer.py`
 
 |toggleStart|
 
@@ -378,7 +400,9 @@ It features the following capabilities:
 -----
 
 
-How to display a list from JSON data
+.. _RecipesStories_K:
+
+How to Display a List from JSON Data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This example takes some JSON data input which it uses to populate a :ref:`Story`. It also contains some visual text formatting and shows how to add links.
@@ -386,7 +410,7 @@ This example takes some JSON data input which it uses to populate a :ref:`Story`
 
 **Files:**
 
-* ``docs/samples/json-example.py``
+* `docs/samples/json-example.py`
 
 |toggleStart|
 
@@ -399,16 +423,20 @@ This example takes some JSON data input which it uses to populate a :ref:`Story`
 -----
 
 
-Using the alternative :meth:`Story.write*()` functions
+.. _RecipesStories_L:
+
+Using the Alternative :meth:`Story.write*()` functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The :meth:`Story.write*()` functions provide a different way to use the
 :ref:`Story` functionality, removing the need for calling code to implement
 a loop that calls :meth:`Story.place()` and :meth:`Story.draw()` etc, at the
-expense of having to provide at least a ``rectfn()`` callback.
+expense of having to provide at least a `rectfn()` callback.
 
 
-How to do basic layout with :meth:`Story.write()`
+.. _RecipesStories_L_a:
+
+How to do Basic Layout with :meth:`Story.write()`
 -------------------------------------------------
 
 This script lays out multiple copies of its own source code, into four
@@ -416,7 +444,7 @@ rectangles per page.
 
 **Files:**
 
-* ``docs/samples/story-write.py``
+* `docs/samples/story-write.py`
 
 |toggleStart|
 
@@ -427,11 +455,14 @@ rectangles per page.
 
 -----
 
-How to do iterative layout for a table of contents with :meth:`Story.write_stabilized()`
+
+.. _RecipesStories_L_b:
+
+How to do Iterative Layout for a Table of Contents with :meth:`Story.write_stabilized()`
 ----------------------------------------------------------------------------------------
 
 This script creates html content dynamically, adding a contents section based
-on :ref:`ElementPosition` items that have non-zero ``.heading`` values.
+on :ref:`ElementPosition` items that have non-zero `.heading` values.
 
 The contents section is at the start of the document, so modifications to the
 contents can change page numbers in the rest of the document, which in turn can
@@ -443,7 +474,7 @@ out until things are stable.
 
 **Files:**
 
-* ``docs/samples/story-write-stabilized.py``
+* `docs/samples/story-write-stabilized.py`
 
 |toggleStart|
 
@@ -455,8 +486,9 @@ out until things are stable.
 
 -----
 
+.. _RecipesStories_L_c:
 
-How to do iterative layout and create PDF links with :meth:`Story.write_stabilized_links()`
+How to do Iterative Layout and Create PDF Links with :meth:`Story.write_stabilized_links()`
 -------------------------------------------------------------------------------------------
 
 This script is similar to the one described in "How to use
@@ -466,7 +498,7 @@ contains links that correspond to the internal links in the original html.
 This is done by using :meth:`Story.write_stabilized_links()`; this is slightly
 different from :meth:`Story.write_stabilized()`:
 
-* It does not take a :ref:`DocumentWriter` ``writer`` arg.
+* It does not take a :ref:`DocumentWriter` `writer` arg.
 * It returns a PDF :ref:`Document` instance.
 
 [The reasons for this are a little involved; for example a
@@ -476,7 +508,7 @@ in a PDF-specific API.]
 
 **Files:**
 
-* ``docs/samples/story-write-stabilized-links.py``
+* `docs/samples/story-write-stabilized-links.py`
 
 |toggleStart|
 
@@ -500,8 +532,8 @@ in a PDF-specific API.]
     Some important CSS support to consider:
 
     - The only available layout is relative layout.
-    - ``background`` is unavalable, use ``background-color`` instead.
-    - ``float`` is unavailable.
+    - `background` is unavailable, use `background-color` instead.
+    - `float` is unavailable.
 
 
 .. include:: footer.rst

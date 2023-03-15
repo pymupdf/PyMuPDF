@@ -13,7 +13,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
 **Draw** methods of this class (and :meth:`Shape.insert_textbox`) are logging the area they are covering in a rectangle (:attr:`Shape.rect`). This property can for instance be used to set :attr:`Page.cropbox_position`.
 
-**Text insertions** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox` implicitely execute a "finish" and therefore only require :meth:`Shape.commit` to become effective. As a consequence, both include parameters for controlling prperties like colors, etc.
+**Text insertions** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox` implicitly execute a "finish" and therefore only require :meth:`Shape.commit` to become effective. As a consequence, both include parameters for controlling properties like colors, etc.
 
 ================================ =====================================================
 **Method / Attribute**             **Description**
@@ -100,7 +100,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       .. image:: images/img-squiggly.*
 
-      .. note:: Waves drawn are **not** trigonometric (sine / cosine). If you need that, have a look at `draw-sines.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/draw-sines.py>`_.
+      .. note:: Waves drawn are **not** trigonometric (sine / cosine). If you need that, have a look at `draw.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/draw-sines/draw.py>`_.
 
    .. index::
       pair: breadth; draw_zigzag
@@ -146,37 +146,37 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Draw an "ellipse" inside the given tetragon (quadrilateral). If it is a square, a regular circle is drawn, a general rectangle will result in an ellipse. If a quadrilateral is used instead, a plethora of shapes can be the result.
 
-      The drawing starts and ends at the middle point of the line ``bottom-left -> top-left`` corners in an anti-clockwise movement.
+      The drawing starts and ends at the middle point of the line `bottom-left -> top-left` corners in an anti-clockwise movement.
 
       :arg rect_like,quad_like tetra: :data:`rect_like` or :data:`quad_like`.
 
           *Changed in version 1.14.5:*  Quads are now also supported.
 
       :rtype: :ref:`Point`
-      :returns: the middle point of line ``rect.bl -> rect.tl``, or resp. ``quad.ll -> quad.ul``. Look at just a few examples here, or at the *quad-show?.py* scripts in the PyMuPDF-Utilities repository.
+      :returns: the middle point of line `rect.bl -> rect.tl`, or resp. `quad.ll -> quad.ul`. Look at just a few examples here, or at the *quad-show?.py* scripts in the PyMuPDF-Utilities repository.
 
       .. image:: images/img-drawquad.*
          :scale: 50
 
    .. method:: draw_circle(center, radius)
 
-      Draw a circle given its center and radius. The drawing starts and ends at point ``center - (radius, 0)`` in an **anti-clockwise** movement. This point is the middle of the enclosing square's left side.
+      Draw a circle given its center and radius. The drawing starts and ends at point `center - (radius, 0)` in an **anti-clockwise** movement. This point is the middle of the enclosing square's left side.
 
-      This is a shortcut for ``draw_sector(center, start, 360, fullSector=False)``. To draw the same circle in a **clockwise** movement, use ``-360`` as degrees.
+      This is a shortcut for `draw_sector(center, start, 360, fullSector=False)`. To draw the same circle in a **clockwise** movement, use `-360` as degrees.
 
       :arg point_like center: the center of the circle.
 
       :arg float radius: the radius of the circle. Must be positive.
 
       :rtype: :ref:`Point`
-      :returns: ``Point(center.x - radius, center.y)``.
+      :returns: `Point(center.x - radius, center.y)`.
 
          .. image:: images/img-drawcircle.*
             :scale: 60
 
    .. method:: draw_curve(p1, p2, p3)
 
-      A special case of *draw_bezier()*: Draw a cubic Bezier curve from *p1* to *p3*. On each of the two lines ``p1 -> p2`` and ``p3 -> p2`` one control point is generated. Both control points will therefore be on the same side of the line ``p1 -> p3``. This guaranties that the curve's curvature does not change its sign. If the lines to p2 intersect with an angle of 90 degrees, then the resulting curve is a quarter ellipse (resp. quarter circle, if of same length).
+      A special case of *draw_bezier()*: Draw a cubic Bezier curve from *p1* to *p3*. On each of the two lines `p1 -> p2` and `p3 -> p2` one control point is generated. Both control points will therefore be on the same side of the line `p1 -> p3`. This guaranties that the curve's curvature does not change its sign. If the lines to p2 intersect with an angle of 90 degrees, then the resulting curve is a quarter ellipse (resp. quarter circle, if of same length).
 
       All arguments are :data:`point_like`.
 
@@ -198,7 +198,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       :arg point_like point: one of the two end points of the pie's arc segment. The other one is calculated from the *angle*.
 
-      :arg float angle: the angle of the sector in degrees. Used to calculate the other end point of the arc. Depending on its sign, the arc is drawn anti-clockwise (postive) or clockwise.
+      :arg float angle: the angle of the sector in degrees. Used to calculate the other end point of the arc. Depending on its sign, the arc is drawn anti-clockwise (positive) or clockwise.
 
       :arg bool fullSector: whether to draw connecting lines from the ends of the arc to the circle center. If a fill color is specified, the full "pie" is colored, otherwise just the sector.
 
@@ -221,7 +221,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: draw_quad(quad)
 
-      Draw a quadrilateral. The drawing starts and ends at the top-left corner (:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of :meth:`Shape.draw_polyline` with the argument ``(ul, ll, lr, ur, ul)``.
+      Draw a quadrilateral. The drawing starts and ends at the top-left corner (:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of :meth:`Shape.draw_polyline` with the argument `(ul, ll, lr, ur, ul)`.
 
       :arg quad_like quad: where to put the tetragon on the page.
 
@@ -261,7 +261,7 @@ Several draw methods can be executed in a row and each one of them will contribu
    .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
 
       Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them.
-      
+
       It has **no effect on** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`.
 
       The method also supports **morphing the compound drawing** using :ref:`Point` *fixpoint* and :ref:`matrix` *matrix*.
@@ -297,7 +297,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       :arg str/sequence text: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks *\n*, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *text* is discarded -- the return code however contains the number of inserted lines.
 
-      :arg float lineheight: a factor to override the line height calculated from font properties. If not *None*, a line height of ``fontsize * lineheight`` will be used.
+      :arg float lineheight: a factor to override the line height calculated from font properties. If not *None*, a line height of `fontsize * lineheight` will be used.
       :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors. Negative values and values > 1 will be ignored. Default is 1 (intransparent).
       :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent). Use this value to control transparency of the text color. Stroke opacity **only** affects the border line of characters.
 
@@ -363,9 +363,9 @@ Several draw methods can be executed in a row and each one of them will contribu
    .. method:: commit(overlay=True)
 
       Update the page's :data:`contents` with the accumulated drawings, followed by any text insertions. If text overlaps drawings, it will be written on top of the drawings.
-      
+
       .. warning:: **Do not forget to execute this method:**
-      
+
             If a shape is **not committed, it will be ignored and the page will not be changed!**
 
       The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, :attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, the shape object can be reused for the **same page**.
@@ -547,26 +547,26 @@ Common Parameters
 
 **dashes** (*str*)
 
-  Causes lines to be drawn dashed. The general format is ``"[n m] p"`` of (up to) 3 floats denoting pixel lengths. ``n`` is the dash length, ``m`` (optional) is the subsequent gap length, and ``p`` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If ``m`` is omitted, it defaults to ``n``.
-  
-  A continuous line (no dashes) is drawn with ``"[] 0"`` or *None* or ``""``. Examples:
-  
-  * Specifying ``"[3 4] 0"`` means dashes of 3 and gaps of 4 pixels following each other.
-  * ``"[3 3] 0"`` and ``"[3] 0"`` do the same thing.
-  
+  Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. `n` is the dash length, `m` (optional) is the subsequent gap length, and `p` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If `m` is omitted, it defaults to `n`.
+
+  A continuous line (no dashes) is drawn with `"[] 0"` or *None* or `""`. Examples:
+
+  * Specifying `"[3 4] 0"` means dashes of 3 and gaps of 4 pixels following each other.
+  * `"[3 3] 0"` and `"[3] 0"` do the same thing.
+
   For (the rather complex) details on how to achieve sophisticated dashing effects, see :ref:`AdobeManual`, page 217.
 
 ----
 
 **color / fill** (*list, tuple*)
 
-  Stroke and fill colors can be specified as tuples or list of of floats from 0 to 1. These sequences must have a length of 1 (GRAY), 3 (RGB) or 4 (CMYK). For GRAY colorspace, a single float instead of the unwieldy *(float,)* or *[float]* is also accepted. Accept (default) or use ``None`` to not use the parameter.
+  Stroke and fill colors can be specified as tuples or list of of floats from 0 to 1. These sequences must have a length of 1 (GRAY), 3 (RGB) or 4 (CMYK). For GRAY colorspace, a single float instead of the unwieldy *(float,)* or *[float]* is also accepted. Accept (default) or use `None` to not use the parameter.
 
   To simplify color specification, method *getColor()* in *fitz.utils* may be used to get predefined RGB color triples by name. It accepts a string as the name of the color and returns the corresponding triple. The method knows over 540 color names -- see section :ref:`ColorDatabase`.
 
   Please note that the term *color* usually means "stroke" color when used in conjunction with fill color.
 
-  If letting default a color parameter to ``None``, then no resp. color selection command will be generated. If *fill* and *color* are both ``None``, then the drawing will contain no color specification. But it will still be "stroked", which causes PDF's default color "black" be used by Adobe Acrobat and all other viewers.
+  If letting default a color parameter to `None`, then no resp. color selection command will be generated. If *fill* and *color* are both `None`, then the drawing will contain no color specification. But it will still be "stroked", which causes PDF's default color "black" be used by Adobe Acrobat and all other viewers.
 
 ----
 
@@ -586,7 +586,7 @@ Common Parameters
 
 **render_mode** (*int*)
 
-  *New in version 1.14.9:* Integer in ``range(8)`` which controls the text appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). See page 246 in :ref:`AdobeManual`. New in v1.14.9. These methods now also differentiate between fill and stroke colors.
+  *New in version 1.14.9:* Integer in `range(8)` which controls the text appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). See page 246 in :ref:`AdobeManual`. New in v1.14.9. These methods now also differentiate between fill and stroke colors.
 
   * For default 0, only the text fill color is used to paint the text. For backward compatibility, using the *color* parameter instead also works.
   * For render mode 1, only the border of each glyph (i.e. text character) is drawn with a thickness as set in argument *border_width*. The color chosen in the *color* argument is taken for this, the *fill* parameter is ignored.
@@ -609,7 +609,7 @@ Common Parameters
 
   Causes "morphing" of either a shape, created by the *draw*()* methods, or the text inserted by page methods *insert_textbox()* / *insert_text()*. If not *None*, it must be a pair *(fixpoint, matrix)*, where *fixpoint* is a :ref:`Point` and *matrix* is a :ref:`Matrix`. The matrix can be anything except translations, i.e. *matrix.e == matrix.f == 0* must be true. The point is used as a fixed point for the matrix operation. For example, if *matrix* is a rotation or scaling, then *fixpoint* is its center. Similarly, if *matrix* is a left-right or up-down flip, then the mirroring axis will be the vertical, respectively horizontal line going through *fixpoint*, etc.
 
-  .. note:: Several methods contain checks whether the to be inserted items will actually fit into the page (like :meth:`Shape.insert_text`, or :meth:`Shape.draw_rect`). For the result of a morphing operation there is however no such guaranty: this is entirely the rpogrammer's responsibility.
+  .. note:: Several methods contain checks whether the to be inserted items will actually fit into the page (like :meth:`Shape.insert_text`, or :meth:`Shape.draw_rect`). For the result of a morphing operation there is however no such guaranty: this is entirely the programmer's responsibility.
 
 ----
 

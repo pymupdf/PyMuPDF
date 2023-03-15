@@ -1,8 +1,12 @@
 .. include:: header.rst
 
 
+
+Installation
+=============
+
 Requirements
-============
+---------------
 
 All the examples below assume that you are running inside a Python virtual
 environment. See: https://docs.python.org/3/library/venv.html for details.
@@ -13,9 +17,6 @@ For example::
     . pymupdf-venv/bin/activate
 
 
-Installation
-=============
-
 PyMuPDF should be installed using pip with::
 
   python -m pip install --upgrade pip
@@ -25,7 +26,7 @@ This will install from a Python wheel if one is available for your platform.
 
 
 Installation when a suitable wheel is not available
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------
 
 If a suitable Python wheel is not available, pip will automatically build from
 source using a Python sdist.
@@ -35,13 +36,13 @@ source using a Python sdist.
 * On Unix-style systems such as Linux, OpenBSD and FreeBSD,
   use the system package manager to install SWIG.
 
-  * For example on Debian Linux, do: ``sudo apt install swig``
+  * For example on Debian Linux, do: `sudo apt install swig`
 
 * On Windows:
 
   * Install Visual Studio 2019. If not installed in a standard location, set
-    environmental variable ``PYMUPDF_SETUP_DEVENV`` to the location of the
-    ``devenv.com`` binary.
+    environmental variable `PYMUPDF_SETUP_DEVENV` to the location of the
+    `devenv.com` binary.
     
     * Having other installed versions of Visual Studio, for example Visual
       Studio 2022, can cause problems because one can end up with MuPDF and
@@ -53,15 +54,15 @@ source using a Python sdist.
 * On MacOS, install MacPorts using the instructions at:
   https://www.macports.org/install.php
 
-  * Then install SWIG with: ``sudo port install swig``
-  * You may also need: ``sudo port install swig-python``
+  * Then install SWIG with: `sudo port install swig`
+  * You may also need: `sudo port install swig-python`
 
-As of ``PyMuPDF-1.20.0``, the required MuPDF source code is already in the
+As of `PyMuPDF-1.20.0`, the required MuPDF source code is already in the
 sdist and is automatically built into PyMuPDF.
 
 
 Notes
-~~~~~
+---------------------------------------------------------
 
 Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), Python versions 3.7 and up.
 
@@ -78,13 +79,13 @@ There are no **mandatory** external dependencies. However, some optional feature
 * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
 * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
 * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable ``"TESSDATA_PREFIX"`` must be defined and contain the ``tessdata`` folder name of the Tesseract installation location. See below.
+* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.
 
 .. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
 
 
 Installation from source without using an sdist
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------
 
 * First get a PyMuPDF source tree:
 
@@ -93,7 +94,7 @@ Installation from source without using an sdist
 
       git clone https://github.com/pymupdf/PyMuPDF.git
 
-  * Or download and extract a ``.zip`` or ``.tar.gz`` source release from
+  * Or download and extract a `.zip` or `.tar.gz` source release from
     https://github.com/pymupdf/PyMuPDF/releases.
 
 * Install C/C++ development tools and SWIG as described above.
@@ -106,16 +107,16 @@ Installation from source without using an sdist
   and build it into PyMuPDF.
   
 .. note:: When running Python scripts that use PyMuPDF, make sure that the
-  current directory is not the ``PyMuPDF/`` directory.
+  current directory is not the `PyMuPDF/` directory.
 
-  Otherwise, confusingly, Python will attempt to import ``fitz`` from the local
-  ``fitz/`` directory, which will fail because it only contains source files.
+  Otherwise, confusingly, Python will attempt to import `fitz` from the local
+  `fitz/` directory, which will fail because it only contains source files.
 
 
 Running tests
-~~~~~~~~~~~~~
+---------------------------------------------------------
 
-Having a PyMuPDF tree available allows one to run PyMuPDF's ``pytest`` test
+Having a PyMuPDF tree available allows one to run PyMuPDF's `pytest` test
 suite::
 
     pip install pytest fontTools
@@ -123,7 +124,7 @@ suite::
 
 
 Building and testing with git checkouts of PyMuPDF and MuPDF
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------------------------------------------------------------
 
 Things to do:
 
@@ -131,7 +132,7 @@ Things to do:
 * Get PyMuPDF.
 * Get MuPDF.
 * Create a Python virtual environment.
-* Build PyMuPDF with environmental variable ``PYMUPDF_SETUP_MUPDF_BUILD`` set
+* Build PyMuPDF with environmental variable `PYMUPDF_SETUP_MUPDF_BUILD` set
   to the path of the local MuPDF checkout.
 * Run PyMuPDF tests.
 
@@ -149,10 +150,10 @@ For example::
 
 
 Using a non-default MuPDF
-~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------
 
 Using a non-default build of MuPDF by setting environmental variable
-``PYMUPDF_SETUP_MUPDF_BUILD`` can cause various things to go wrong and so is
+`PYMUPDF_SETUP_MUPDF_BUILD` can cause various things to go wrong and so is
 not generally supported:
 
 * If MuPDF's major version number differs from what PyMuPDF uses by default,
@@ -165,32 +166,33 @@ not generally supported:
 
 * If MuPDF was built with its default config instead of PyMuPDF's customised
   config (for example if MuPDF is a system install), it is possible that
-  ``tests/test_textbox.py:test_textbox3()`` will fail. One can skip this
-  particular test by adding ``-k 'not test_textbox3'`` to the ``pytest``
+  `tests/test_textbox.py:test_textbox3()` will fail. One can skip this
+  particular test by adding `-k 'not test_textbox3'` to the `pytest`
   command line.
 
 
 Enabling Integrated OCR Support
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------
+
 If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
 
 PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
 
-The language support folder location must currently [#f1]_ be communicated via storing it in the environment variable ``"TESSDATA_PREFIX"``.
+The language support folder location must currently [#f1]_ be communicated via storing it in the environment variable `"TESSDATA_PREFIX"`.
 
 So for a working OCR functionality, make sure to complete this checklist:
 
 1. Install Tesseract.
 
 2. Locate Tesseract's language support folder. Typically you will find it here:
-    - Windows: ``C:\Program Files\Tesseract-OCR\tessdata``
-    - Unix systems: ``/usr/share/tesseract-ocr/4.00/tessdata``
+    - Windows: `C:\Program Files\Tesseract-OCR\tessdata`
+    - Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
-3. Set the environment variable ``TESSDATA_PREFIX``
-    - Windows: ``set TESSDATA_PREFIX=C:\Program Files\Tesseract-OCR\tessdata``
-    - Unix systems: ``export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata``
+3. Set the environment variable `TESSDATA_PREFIX`
+    - Windows: `set TESSDATA_PREFIX=C:\Program Files\Tesseract-OCR\tessdata`
+    - Unix systems: `export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
-.. note:: This must happen outside Python -- before starting your script. Just manipulating ``os.environ`` will not work!
+.. note:: This must happen outside Python -- before starting your script. Just manipulating `os.environ` will not work!
 
 .. rubric:: Footnotes
 
