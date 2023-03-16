@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.22.0 (2023-03-11)**
+**Changes in version 1.22.0 (2023-03-14)**
 
 * This release uses ``MuPDF-1.22.0``.
 
@@ -15,7 +15,8 @@ Change Log
 * Bug fixes:
 
   * **Fixed** `#1763 <https://github.com/pymupdf/PyMuPDF/issues/1763>`_: Interactive(smartform) form PDF calculation not working in pymupdf
-  * **Fixed** `#1995 <https://github.com/pymupdf/PyMuPDF/issues/1995>`_: RuntimeError: image is too high for a long paged pdf file when trying 
+  * **Fixed** `#1995 <https://github.com/pymupdf/PyMuPDF/issues/1995>`_: RuntimeError: image is too high for a long paged pdf file when trying
+  * **Fixed** `#2093 <https://github.com/pymupdf/PyMuPDF/issues/2093>`_: Image in pdf changes color after applying redactions
   * **Fixed** `#2108 <https://github.com/pymupdf/PyMuPDF/issues/2108>`_: Redaction removing more text than expected
   * **Fixed** `#2141 <https://github.com/pymupdf/PyMuPDF/issues/2141>`_: Failed to read JPX header when trying to get blocks
   * **Fixed** `#2144 <https://github.com/pymupdf/PyMuPDF/issues/2144>`_: Replace image throws an error
