@@ -2847,9 +2847,16 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     fz_drop_buffer(gctx, res);
                     res = NULL;
                     img = pdf_load_image(gctx, pdf, obj);
-                    res = fz_new_buffer_from_image_as_png(gctx, img,
+                    cbuf = fz_compressed_image_buffer(gctx, img);
+                    if (cbuf) {
+                        img_type = cbuf->params.type;
+                        ext = JM_image_extension(img_type);
+                        res = cbuf->buffer;
+                    } else {
+                        res = fz_new_buffer_from_image_as_png(gctx, img,
                                 fz_default_color_params);
-                    ext = "png";
+                        ext = "png";
+                    }
                 } else {
                     img = fz_new_image_from_buffer(gctx, res);
                 }
