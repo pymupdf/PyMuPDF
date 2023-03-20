@@ -4300,6 +4300,10 @@ if basestate:
             return Py_BuildValue("i", xref);
         }
 
+        void internal_keep_annot(struct Annot* annot)
+        {
+            pdf_keep_annot(gctx, (pdf_annot*) annot);
+        }
 
         //------------------------------------------------------------------
         // Initialize document: set outline and metadata properties
@@ -4570,6 +4574,10 @@ if basestate:
                 old_annots = {}  # copy annot references to here
                 pno = page.number  # save the page number
                 for k, v in page._annot_refs.items():  # save the annot dictionary
+                    # We need to call pdf_keep_annot() here, otherwise `v`'s
+                    # refcount can reach zero even if there is an external
+                    # reference.
+                    self.internal_keep_annot(v)
                     old_annots[k] = v
                 page._erase()  # remove the page
                 page = None
@@ -6724,7 +6732,6 @@ def get_oc_items(self) -> list:
             val.thisown = True
             val.parent = weakref.proxy(self) # owning page object
             val.parent._annot_refs[id(val)] = val
-        annot._erase()
         %}
 
         struct Annot *delete_annot(struct Annot *annot)
