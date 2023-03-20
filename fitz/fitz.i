@@ -174,11 +174,25 @@ static PyObject *JM_Exc_CurrentException;
 // global context
 //------------------------------------------------------------------------
 %init %{
+    #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
+    /* Stop Memento backtraces if we reach the Python interpreter.
+    `cfunction_call()` isn't the only way that Python calls C though, so we
+    might need extra calls to Memento_addBacktraceLimitFnname(). */
+    Memento_addBacktraceLimitFnname("cfunction_call");
+    #endif
+
+    /*
+    We end up with Memento leaks from fz_new_context()'s allocs even when our
+    atexit handler calls fz_drop_context(), so remove these from Memento's
+    accounting.
+    */
+    Memento_startLeaking();
 #if JM_MEMORY == 1
     gctx = fz_new_context(&JM_Alloc_Context, NULL, FZ_STORE_DEFAULT);
 #else
     gctx = fz_new_context(NULL, NULL, FZ_STORE_DEFAULT);
 #endif
+    Memento_stopLeaking();
     if(!gctx)
     {
         PyErr_SetString(PyExc_RuntimeError, "Fatal error: cannot create global context.");
