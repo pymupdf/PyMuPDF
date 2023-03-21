@@ -9707,6 +9707,10 @@ struct Annot
         //----------------------------------------------------------------
         // annotation get TextPage
         //----------------------------------------------------------------
+        %pythonappend get_textpage %{
+            if val:
+                val.thisown = True
+        %}
         FITZEXCEPTION(get_textpage, !result)
         PARENTCHECK(get_textpage, """Make annotation TextPage.""")
         struct TextPage *
