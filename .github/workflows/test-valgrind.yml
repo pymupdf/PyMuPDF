@@ -1,0 +1,101 @@
+name: Test valgrind
+
+on:
+  schedule:
+    - cron: '13 5 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  test_valgrind:
+    name: Test valgrind
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+      # Avoid cancelling of all runs after a single failure.
+      fail-fast: false
+
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          ref: 1.21
+
+      - uses: actions/setup-python@v2
+        with:
+          # python-3.11 seems to generate valgrind errors e.g. 'Use of
+          # uninitialised value of size 8' in Py_INCREF.
+          #
+          # python-3.9 works.
+          # python-3.10 works.
+          python-version: '3.10'
+
+      - name: Test valgrind
+      
+        run: |
+            import os
+            import subprocess
+            import sys
+
+            def log(text):
+                print(f'test-valgrind.yml: {text}')
+                sys.stdout.flush()
+            
+            def run(command, env_extra=None):
+                env = None
+                if env_extra:
+                    env = os.environ.copy()
+                    env.update(env_extra)
+                    log(f'Adding environment:')
+                    for n, v in env_extra.items():
+                        log(f'    {n}: {v!r}')
+                log(f'Running: {command}')
+                sys.stdout.flush()
+                subprocess.run(command, check=1, shell=1, env=env)
+
+            # Change into parent directory (we will originally be inside the
+            # PyMuPDF checkout), otherwise there's potential confusion caused
+            # by the `fitz/` directory not being the installed `fitz` module.
+            #
+            log('Changing into parent directory of checkout.')
+            leaf = os.path.basename(os.getcwd())
+            log(f'{os.getcwd()=}')
+            os.chdir('..')
+            log(f'{os.getcwd()=}')
+
+            log('Installing valgrind.')
+            run(f'sudo apt install valgrind')
+
+            log('Creating venv.')
+            run(f'{sys.executable} -m venv pylocal')
+
+            log('Install required python packages.')
+            run(f'./pylocal/bin/python -m pip install -U pip')
+            run(f'./pylocal/bin/python -m pip install pytest fontTools')
+
+            log('Installing PyMuPDF.')
+            if 0:
+                # Useful for quick testing - use pypi.org package instead of
+                # building locally.
+                run(f'./pylocal/bin/python -m pip install pymupdf')
+            else:
+                run(
+                        f'./pylocal/bin/python -m pip install -vv ./{leaf}',
+                        env_extra=dict(
+                            PYMUPDF_SETUP_MUPDF_TGZ='',
+                            PYMUPDF_SETUP_MUPDF_BUILD='git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git',
+                            PYMUPDF_SETUP_MUPDF_BUILD_TYPE='debug',
+                            ),
+                        )
+
+            log('Running PyMuPDF tests under valgrind.')
+            # We ignore memory leaks.
+            run(f'valgrind --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after= ./pylocal/bin/python -m pytest -s -vv {leaf}',
+                    env_extra=dict(
+                        PYTHONMALLOC='malloc',
+                        ),
+                    )
+        
+        shell: python
