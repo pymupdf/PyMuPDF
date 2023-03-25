@@ -8267,7 +8267,7 @@ def tobytes(self, output="png", jpg_quality=95):
                      
     idx = valid_formats.get(output.lower(), None)
     if idx==None:
-        raise ValueError(f"Image format {outut} not in {tuple(valid_formats.keys())}")
+        raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
     if self.alpha and idx in (2, 6, 7):
         raise ValueError("'%s' cannot have alpha" % output)
     if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
