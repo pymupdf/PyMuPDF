@@ -1863,29 +1863,6 @@ struct Document
             else Py_RETURN_FALSE;
         }
 
-        #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR <= 21
-        /* The underlying struct members that these methods give access to, are
-        not in mupdf-1.22. */
-        CLOSECHECK0(has_xref_streams, """Check if xref table is a stream.""")
-        %pythoncode%{@property%}
-        PyObject *has_xref_streams()
-        {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) Py_RETURN_FALSE;
-            if (pdf->has_xref_streams) Py_RETURN_TRUE;
-            Py_RETURN_FALSE;
-        }
-
-        CLOSECHECK0(has_old_style_xrefs, """Check if xref table is old style.""")
-        %pythoncode%{@property%}
-        PyObject *has_old_style_xrefs()
-        {
-            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) Py_RETURN_FALSE;
-            if (pdf->has_old_style_xrefs) Py_RETURN_TRUE;
-            Py_RETURN_FALSE;
-        }
-        #endif
 
         CLOSECHECK0(is_dirty, """True if PDF has unsaved changes.""")
         %pythoncode%{@property%}
