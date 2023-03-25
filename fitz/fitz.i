@@ -4877,10 +4877,27 @@ struct Page {
         //----------------------------------------------------------------
         // bound()
         //----------------------------------------------------------------
+        FITZEXCEPTION(bound, !result)
         PARENTCHECK(bound, """Get page rectangle.""")
-        %pythonappend bound %{val = Rect(val)%}
+        %pythonappend bound %{
+        val = Rect(val)
+        if val.is_infinite and self.parent.is_pdf:
+            cb = self.cropbox
+            w, h = cb.width, cb.height
+            if self.rotation not in (0, 180):
+                w, h = h, w
+            val = Rect(0, 0, w, h)
+            msg = TOOLS.mupdf_warnings(reset=False).splitlines()[-1]
+            print(msg, file=sys.stderr)
+        %}
         PyObject *bound() {
-            fz_rect rect = fz_bound_page(gctx, (fz_page *) $self);
+            fz_rect rect = fz_infinite_rect;
+            fz_try(gctx) {
+                rect = fz_bound_page(gctx, (fz_page *) $self);
+            }
+            fz_catch(gctx) {
+                ;
+            }
             return JM_py_from_rect(rect);
         }
         %pythoncode %{rect = property(bound, doc="page rectangle")%}
