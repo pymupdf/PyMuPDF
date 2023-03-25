@@ -191,7 +191,7 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note:: Not all document types are checked for valid formats already at open time. Raster images for example will raise exceptions only later, when trying to access the content. Other types (notably with non-binary content) may also be opened (and sometimes **accessed**) successfully -- sometimes even when having invalid content for the format:
 
-        * HTM, HTML, XHTML: **always** opened, ``metadata["format"]`` is "HTML5", resp. "XHTML". 
+        * HTM, HTML, XHTML: **always** opened, ``metadata["format"]`` is "HTML5", resp. "XHTML".
         * XML, FB2: **always** opened, ``metadata["format"]`` is "FictionBook2".
 
       Overview of possible forms, note: ``open`` is a synonym of ``Document``::
@@ -212,7 +212,7 @@ For details on **embedded files** refer to Appendix 3.
           >>> doc = fitz.open("")
 
       .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So ``fitz.open("file.jpg")`` will work even for a PNG image.
-      
+
       The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
 
           >>> import fitz
@@ -533,7 +533,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: make_bookmark(loc)
 
       * New in v.1.17.3
-      
+
       Return a page pointer in a reflowable document. After re-layouting the document, the result of this method can be used to find the new location of the page.
 
       .. note:: Do not confuse with items of a table of contents, TOC.
@@ -547,7 +547,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: find_bookmark(bookmark)
 
       * New in v.1.17.3
-      
+
       Return the new page location after re-layouting the document.
 
       :arg pointer bookmark: created by :meth:`Document.make_bookmark`.
@@ -559,7 +559,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: chapter_page_count(chapter)
 
       * New in v.1.17.0
-      
+
       Return the number of pages of a chapter.
 
       :arg int chapter: the 0-based chapter number.
@@ -582,7 +582,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: prev_location(page_id)
 
       * New in v.1.17.0
-      
+
       Return the locator of the preceeding page.
 
       :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
@@ -819,7 +819,7 @@ For details on **embedded files** refer to Appendix 3.
       * Changed in v1.19.4: remove a key "physically" if set to "null".
 
       PDF only: Set (add, update, delete) the value of a PDF key for the :data:`dictionary` object given by its xref.
-      
+
       .. caution:: This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 18) and the structure of special dictionary types like page objects.
 
       :arg int xref: the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, specify -1.
@@ -835,10 +835,10 @@ For details on **embedded files** refer to Appendix 3.
       * **bool** -- one of the strings ``"true"`` or ``"false"``.
       * **name** -- a valid PDF name with a leading slash: ``"/PageLayout"``. See page 16 of the :ref:`AdobeManual`.
       * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as ``"()"``. Depending on its content, the possible brackets are
-      
+
         - "(...)" for ASCII-only text. Reserved PDF characters must be backslash-escaped and non-ASCII characters must be provided as 3-digit backslash-escaped octals -- including leading zeros. Example: 12 = 0x0C must be encoded as ``\014``.
         - "<...>" for hex-encoded text. Every character must be represented by two hex-digits (lower or upper case).
-      
+
         - If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. It will for example do conversions like these:
 
           >>> # because of the € symbol, the following yields UTF-16BE BOM
@@ -1101,7 +1101,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
 
       * New in v1.16.14
-      
+
       PDF only: Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options, which are all *True* by default.
 
       :arg bool attached_files: Search for 'FileAttachment' annotations and remove the file content.
@@ -1235,7 +1235,7 @@ For details on **embedded files** refer to Appendix 3.
 
        1. If *from_page > to_page*, pages will be **copied in reverse order**. If *0 <= from_page == to_page*, then one page will be copied.
 
-       2. *docsrc* TOC entries **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+       2. *docsrc* TOC entries **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below as well as to `join-documents <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/join-documents>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
     .. index::
        pair: width; Document.new_page
@@ -1309,7 +1309,7 @@ For details on **embedded files** refer to Appendix 3.
         It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
 
         Following examples will all delete pages 500 through 519:
-        
+
         * ``doc.delete_pages(500, 519)``
         * ``doc.delete_pages(from_page=500, to_page=519)``
         * ``doc.delete_pages((500, 501, 502, ... , 519))``
@@ -1906,7 +1906,7 @@ For details on **embedded files** refer to Appendix 3.
     .. Attribute:: chapter_count
 
       * New in v1.17.0
-      
+
       Contains the number of chapters in the document. Always at least 1. Relevant only for document types with chapter support (EPUB currently). Other documents will return 1.
 
       :type: int
@@ -1948,7 +1948,7 @@ Clear metadata information. If you do this out of privacy / data protection conc
 
 :meth:`set_toc` Demonstration
 ----------------------------------
-This shows how to modify or add a table of contents. Also have a look at `csv2toc.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/csv2toc.py>`_ and `toc2csv.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/toc2csv.py>`_ in the examples directory.
+This shows how to modify or add a table of contents. Also have a look at `import-toc <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/import-toc>`_ and `export-toc <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/export-toc>`_ in the examples directory.
 
 >>> import fitz
 >>> doc = fitz.open("test.pdf")
@@ -1981,7 +1981,7 @@ This shows how to modify or add a table of contents. Also have a look at `csv2to
         t[2] += pages1                     # by old len(doc1)
 >>> doc1.set_toc(toc1 + toc2)               # now result has total TOC
 
-Obviously, similar ways can be found in more general situations. Just make sure that hierarchy levels in a row do not increase by more than one. Inserting dummy bookmarks before and after *toc2* segments would heal such cases. A ready-to-use GUI (wxPython) solution can be found in script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ of the examples directory.
+Obviously, similar ways can be found in more general situations. Just make sure that hierarchy levels in a row do not increase by more than one. Inserting dummy bookmarks before and after *toc2* segments would heal such cases. A ready-to-use GUI (wxPython) solution can be found in `join-documents <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/join-documents>`_ in the examples directory.
 
 **(2) More examples:**
 
