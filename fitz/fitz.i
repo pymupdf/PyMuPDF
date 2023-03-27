@@ -8236,7 +8236,7 @@ Args:
         }
 
         %pythoncode %{
-def tobytes(self, output="png", quality=95):
+def tobytes(self, output="png", jpg_quality=95):
     """Convert to binary image stream of desired type.
 
     Can be used as input to GUI packages like tkinter.
@@ -8366,7 +8366,7 @@ def tobytes(self, output="png", quality=95):
             Py_RETURN_NONE;
         }
         %pythoncode %{
-def save(self, filename, output=None, quality=95):
+def save(self, filename, output=None, jpg_quality=95):
     """Output as image in format determined by filename extension.
 
     Args:
