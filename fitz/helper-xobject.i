@@ -132,7 +132,7 @@ static void show(const char* prefix, PyObject* obj)
 {
     if (!obj)
     {
-        printf( "%s\n", prefix);
+        printf( "%s <null>\n", prefix);
         return;
     }
     PyObject* obj_repr = PyObject_Repr( obj);
