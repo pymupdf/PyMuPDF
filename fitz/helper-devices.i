@@ -53,6 +53,7 @@ static void trace_device_reset()
     dev_pathfactor = 0;
     dev_linecount = 0;
     path_type = 0;
+    layer_name = NULL;
 }
 
 // Every scissor of a clip is a sub rectangle of the preceeding clip
