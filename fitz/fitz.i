@@ -160,7 +160,7 @@ void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
 static const float JM_font_ascender(fz_context *ctx, fz_font *font);
 static const float JM_font_descender(fz_context *ctx, fz_font *font);
-void fz_write_pixmap_as_jpeg(fz_context *ctx, fz_output *out, fz_pixmap *pix, int quality);
+void fz_write_pixmap_as_jpeg(fz_context *ctx, fz_output *out, fz_pixmap *pix, int jpg_quality);
 // end of additional headers --------------------------------------------
 
 static PyObject *JM_mupdf_warnings_store;
@@ -8200,7 +8200,7 @@ Args:
         // Pixmap._tobytes
         //-----------------------------------------------------------------
         FITZEXCEPTION(_tobytes, !result)
-        PyObject *_tobytes(int format, int quality)
+        PyObject *_tobytes(int format, int jpg_quality)
         {
             fz_output *out = NULL;
             fz_buffer *res = NULL;
@@ -8229,7 +8229,7 @@ Args:
                         break;
                     #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                     case(7):           // JPEG format
-                        fz_write_pixmap_as_jpeg(gctx, out, pm, quality);
+                        fz_write_pixmap_as_jpeg(gctx, out, pm, jpg_quality);
                         break;
                     #endif
                     default:
@@ -8274,7 +8274,7 @@ def tobytes(self, output="png", jpg_quality=95):
         raise ValueError("unsupported colorspace for '%s'" % output)
     if idx == 7:
         self.set_dpi(self.xres, self.yres)
-    barray = self._tobytes(idx, quality)
+    barray = self._tobytes(idx, jpg_quality)
     return barray
     %}
 
@@ -8344,7 +8344,7 @@ def tobytes(self, output="png", jpg_quality=95):
         // _writeIMG
         //-----------------------------------------------------------------
         FITZEXCEPTION(_writeIMG, !result)
-        PyObject *_writeIMG(char *filename, int format, int quality)
+        PyObject *_writeIMG(char *filename, int format, int jpg_quality)
         {
             fz_try(gctx) {
                 fz_pixmap *pm = (fz_pixmap *) $self;
@@ -8366,7 +8366,7 @@ def tobytes(self, output="png", jpg_quality=95):
                         break;
                     #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                     case(7): // JPEG
-                        fz_save_pixmap_as_jpeg(gctx, pm, filename, quality);
+                        fz_save_pixmap_as_jpeg(gctx, pm, filename, jpg_quality);
                         break;
                     #endif
                     default:
@@ -8410,7 +8410,7 @@ def save(self, filename, output=None, jpg_quality=95):
         raise ValueError("unsupported colorspace for '%s'" % output)
     if idx == 7:
         self.set_dpi(self.xres, self.yres)
-    return self._writeIMG(filename, idx, quality)
+    return self._writeIMG(filename, idx, jpg_quality)
 
 def pil_save(self, *args, **kwargs):
     """Write to image file using Pillow.
