@@ -292,6 +292,7 @@ struct DeviceWrapper {
 // include version information and several other helpers
 //------------------------------------------------------------------------
 %pythoncode %{
+import sys
 import io
 import math
 import os
@@ -8662,64 +8663,18 @@ Includes alpha byte if applicable.""")
             EnsureOwnership(self)
             allpixels = 0
             cnt = 0
+            if clip != None and self.irect in Rect(clip):
+                clip = self.irect
             for pixel, count in self.color_count(colors=True,clip=clip).items():
                 allpixels += count
                 if count > cnt:
                     cnt = count
                     maxpixel = pixel
+            if not allpixels:
+                return (1, bytes([255] * self.n))
             return (cnt / allpixels, maxpixel)
 
         %}
-        /*
-        //-----------------------------------------------------------------
-        // percentage of top color
-        //-----------------------------------------------------------------
-        FITZEXCEPTION(color_topusage, !result)
-        %pythonprepend color_topusage %{"""Return most frequent color and its ratio."""%}
-        PyObject *color_topusage(PyObject *clip=NULL)
-        {
-            fz_pixmap *pm = (fz_pixmap *) $self;
-            PyObject *rc = NULL, *coloritems = NULL, *color=NULL;
-            long items, maxcount=0, cnt;
-            PyObject *result=NULL;
-            fz_try(gctx) {
-                char maxpixel[10];
-                rc = JM_color_count(gctx, pm, clip);
-                if (!rc) {
-                    RAISEPY(gctx, MSG_COLOR_COUNT_FAILED, PyExc_RuntimeError);
-                }
-                fz_irect irect = fz_intersect_irect(fz_pixmap_bbox(gctx, pm),
-                                 fz_round_rect(JM_rect_from_py(clip)));
-                items = (long) (irect.x1 - irect.x0) * (irect.y1 - irect.y0);
-                coloritems = PyDict_Items(rc);
-                if (PyErr_Occurred()) {
-                    RAISEPY(gctx, "get color items failed", PyExc_RuntimeError);
-                }
-                Py_ssize_t i, len = PyList_Size(coloritems);
-                for (i = 0; i < len; i++) {
-                    color = PyList_GetItem(coloritems, i);
-                    cnt = PyLong_AsLong(PyTuple_GET_ITEM(color, 1));
-                    if (cnt > maxcount) {
-                        maxcount = cnt;
-                        memcpy(maxpixel, PyBytes_AS_STRING(PyTuple_GET_ITEM(color, 0)), pm->n);
-                    }
-                }
-                result = PyTuple_New(2);
-                PyTuple_SET_ITEM(result, 0,
-                                 PyFloat_FromDouble((double) maxcount / (double) items));
-                PyTuple_SET_ITEM(result, 1,
-                                 PyBytes_FromStringAndSize(maxpixel, pm->n));
-            }
-            fz_always(gctx) {
-                Py_XDECREF(rc);
-                Py_XDECREF(coloritems);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return result;
-        }
-        */
 
         //-----------------------------------------------------------------
         // MD5 digest of pixmap
@@ -12151,8 +12106,13 @@ struct TextWriter
             new_cont_lines.append(bdc)
 
         cb = page.cropbox_position
-        if bool(cb):
-            new_cont_lines.append("1 0 0 1 %g %g cm" % (cb.x, cb.y))
+        if page.rotation in (90, 270):
+            delta = page.rect.height - page.rect.width
+        else:
+            delta = 0
+        mb = page.mediabox
+        if bool(cb) or mb.y0 != 0 or delta != 0:
+            new_cont_lines.append("1 0 0 1 %g %g cm" % (cb.x, cb.y + mb.y0 - delta))
 
         if morph:
             p = morph[0] * self.ictm
