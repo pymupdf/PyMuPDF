@@ -1788,7 +1788,7 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v1.19.0
 
-      PDF only: Show whether forward ("redo") and / or backward ("undo") executions are possible from the current journal postion.
+      PDF only: Show whether forward ("redo") and / or backward ("undo") executions are possible from the current journal position.
 
       :returns: a dictionary `{"undo": bool, "redo": bool}`. The respective method is available if its value is `True`.
 
@@ -1914,7 +1914,7 @@ For details on **embedded files** refer to Appendix 3.
 
           - <TS> is the 12 character ISO timestamp *YYYYMMDDhhmmss* (*YYYY* - year, *MM* - month, *DD* - day, *hh* - hour, *mm* - minute, *ss* - second), and
 
-          - <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (*hh*), and the minute (*'mm'*, note the apostrophies!).
+          - <TZ> is a time zone value (time interval relative to GMT) containing a sign ('+' or '-'), the hour (*hh*), and the minute (*'mm'*, note the apostrophes!).
 
       - A Paraguayan value might hence look like *D:20150415131602-04'00'*, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Asuncion.
 

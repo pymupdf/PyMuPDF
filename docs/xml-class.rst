@@ -339,7 +339,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: find(tag, att, match)
 
-       Under the current node, find a node with the given `tag`, atribute `att` and value `match`.
+       Under the current node, find a node with the given `tag`, attribute `att` and value `match`.
 
        :arg str tag: restrict search to this tag. May be `None` for unrestricted search.
        :arg str att: check this attribute.

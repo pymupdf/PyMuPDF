@@ -133,7 +133,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          >>> # 'pix' is an RGBA pixmap
          >>> pixcolors = fitz.Pixmap(pix, 0)    # extract the RGB part (drop alpha)
          >>> pixalpha = fitz.Pixmap(None, pix)  # extract the alpha part
-         >>> bm = wx.Bitmap.FromBufferAndAlpha(pix.widht, pix.height, pixcolors.samples, pixalpha.samples)
+         >>> bm = wx.Bitmap.FromBufferAndAlpha(pix.width, pix.height, pixcolors.samples, pixalpha.samples)
 
 
    .. method:: __init__(self, filename)

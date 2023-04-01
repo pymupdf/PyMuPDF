@@ -126,7 +126,7 @@ To address the font issue, you can use a simple utility script to scan through t
  font_serif = "font-family:Times"              # enter ...
  font_sans  = "font-family:Helvetica"          # ... your choices ...
  font_mono  = "font-family:Courier"            # ... here
- found_one  = False                            # true if search successfull
+ found_one  = False                            # true if search successful
 
  while True:
      pos0 = otext.find("font-family:", pos1)   # start of a font spec
@@ -161,7 +161,7 @@ DICT (or JSON)
 
 :meth:`TextPage.extractDICT` (or *Page.get_text("dict", sort=False)*) output fully reflects the structure of a *TextPage* and provides image content and position detail (*bbox* -- boundary boxes in pixel units) for every block, line and span. Images are stored as *bytes* for DICT output and base64 encoded strings for JSON output.
 
-For a visuallization of the dictionary structure have a look at :ref:`textpagedict`.
+For a visualization of the dictionary structure have a look at :ref:`textpagedict`.
 
 Here is how this looks like::
 

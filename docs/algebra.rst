@@ -40,7 +40,7 @@ Unary Operations
 Oper.       Result
 =========== ===================================================================
  bool(OBJ)  is false exactly if all components of OBJ are zero
- abs(OBJ)   the rectangle area -- equal to norm(OBJ) for the other tyes
+ abs(OBJ)   the rectangle area -- equal to norm(OBJ) for the other types
  norm(OBJ)  square root of the component squares (Euclidean norm)
  +OBJ       new copy of OBJ
  -OBJ       new copy of OBJ with negated components
@@ -74,7 +74,7 @@ a == b    *True* if *bool(a-b)* is *False* ("b" may be "a-like").
 ========= =======================================================================
 
 
-.. note:: Please note an important difference to usual arithmetics:
+.. note:: Please note an important difference to usual arithmetic:
 
         Matrix multiplication is **not commutative**, i.e. in general we have `m*n != n*m` for two matrices. Also, there are non-zero matrices which have no inverse, for example `m = Matrix(1, 0, 1, 0, 1, 0)`. If you try to divide by any of these, you will receive a `ZeroDivisionError` exception using operator *"/"*, e.g. for the expression `fitz.Identity / m`. But if you formulate `fitz.Identity * ~m`, the result will be `fitz.Matrix()` (the null matrix).
 

@@ -84,7 +84,7 @@ def analyze_page(page):
     )
 
     def free_cells(column):
-        """Return free areas in this colum."""
+        """Return free areas in this column."""
         free_stripes = []  # y-value pairs wrapping a free area stripe
         # intersecting images: block complete intersecting column stripe
         col_imgs = [(b.y0, b.y1) for b in IMG_RECTS if abs(b & column) > 0]

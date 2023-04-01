@@ -69,7 +69,7 @@ The relationship between image dimension and its bbox on a page is the following
 
 PDF Base 14 Fonts
 ---------------------
-The following 14 builtin font names **must be supported by every PDF viewer** application. They are available as a dictionary, which maps their full names amd their abbreviations in lower case to the full font basename. Whereever a **fontname** must be provided in PyMuPDF, any **key or value** from the dictionary may be used::
+The following 14 builtin font names **must be supported by every PDF viewer** application. They are available as a dictionary, which maps their full names amd their abbreviations in lower case to the full font basename. Wherever a **fontname** must be provided in PyMuPDF, any **key or value** from the dictionary may be used::
 
     In [2]: fitz.Base14_fontdict
     Out[2]:
@@ -172,13 +172,13 @@ PyMuPDF is a Python binding for the C library MuPDF. While a lot of effort has b
 
 Python on the other hand implements the OO-model in a very clean way. The interface code between PyMuPDF and MuPDF consists of two basic files: *fitz.py* and *fitz_wrap.c*. They are created by the excellent SWIG tool for each new version.
 
-When you use one of PyMuPDF's objects or methods, this will result in excution of some code in *fitz.py*, which in turn will call some C code compiled with *fitz_wrap.c*.
+When you use one of PyMuPDF's objects or methods, this will result in execution of some code in *fitz.py*, which in turn will call some C code compiled with *fitz_wrap.c*.
 
 Because SWIG goes a long way to keep the Python and the C level in sync, everything works fine, if a certain set of rules is being strictly followed. For example: **never access** a :ref:`Page` object, after you have closed (or deleted or set to *None*) the owning :ref:`Document`. Or, less obvious: **never access** a page or any of its children (links or annotations) after you have executed one of the document methods *select()*, *delete_page()*, *insert_page()* ... and more.
 
 But just no longer accessing invalidated objects is actually not enough: They should rather be actively deleted entirely, to also free C-level resources (meaning allocated memory).
 
-The reason for these rules lies in the fact that there is a hierachical 2-level one-to-many relationship between a document and its pages and also between a page and its links / annotations. To maintain a consistent situation, any of the above actions must lead to a complete reset -- in **Python and, synchronously, in C**.
+The reason for these rules lies in the fact that there is a hierarchical 2-level one-to-many relationship between a document and its pages and also between a page and its links / annotations. To maintain a consistent situation, any of the above actions must lead to a complete reset -- in **Python and, synchronously, in C**.
 
 SWIG cannot know about this and consequently does not do it.
 

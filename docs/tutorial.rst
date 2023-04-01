@@ -129,7 +129,7 @@ Once you have your page, here is what you would typically do with it:
 
 Inspecting the Links, Annotations or Form Fields of a Page
 -----------------------------------------------------------
-Links are shown as "hot areas" when a document is displayed with some viewer software. If you click while your cursor shows a hand symbol, you will usually be taken to the taget that is encoded in that hot area. Here is how to get all links::
+Links are shown as "hot areas" when a document is displayed with some viewer software. If you click while your cursor shows a hand symbol, you will usually be taken to the target that is encoded in that hot area. Here is how to get all links::
 
     # get all links on a page
     links = page.get_links()
@@ -337,7 +337,7 @@ Pages themselves can moreover be modified by a range of methods (e.g. page rotat
 Joining and Splitting PDF Documents
 ------------------------------------
 
-Method :meth:`Document.insert_pdf` copies pages **between different** PDF documents. Here is a simple **joiner** example (*doc1* and *doc2* being openend PDFs)::
+Method :meth:`Document.insert_pdf` copies pages **between different** PDF documents. Here is a simple **joiner** example (*doc1* and *doc2* being opened PDFs)::
 
     # append complete doc2 to the end of doc1
     doc1.insert_pdf(doc2)
@@ -354,7 +354,7 @@ More can be found in the :ref:`Document` chapter. Also have a look at `PDFjoiner
 Embedding Data
 ---------------
 
-PDFs can be used as containers for abitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
+PDFs can be used as containers for arbitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
 PyMuPDF fully supports this feature via :ref:`Document` *embfile_** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
 

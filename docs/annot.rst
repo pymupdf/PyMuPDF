@@ -547,7 +547,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
 Annotation Icons in MuPDF
 -------------------------
-This is a list of icons referencable by name for annotation types 'Text' and 'FileAttachment'. You can use them via the *icon* parameter when adding an annotation, or use the as argument in :meth:`Annot.set_name`. It is left to your discretion which item to choose when -- no mechanism will keep you from using e.g. the "Speaker" icon for a 'FileAttachment'.
+This is a list of icons referenceable by name for annotation types 'Text' and 'FileAttachment'. You can use them via the *icon* parameter when adding an annotation, or use the as argument in :meth:`Annot.set_name`. It is left to your discretion which item to choose when -- no mechanism will keep you from using e.g. the "Speaker" icon for a 'FileAttachment'.
 
 .. image:: images/mupdf-icons.*
 

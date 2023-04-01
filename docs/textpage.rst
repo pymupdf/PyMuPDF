@@ -132,7 +132,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. attribute:: rect
 
-      The rectangle associated with the text page. This either equals the rectangle of the creating page or the `clip` parameter of :meth:`Page.get_textpage` and text extration / searching methods.
+      The rectangle associated with the text page. This either equals the rectangle of the creating page or the `clip` parameter of :meth:`Page.get_textpage` and text extraction / searching methods.
 
       .. note:: The output of text searching and most text extractions **is restricted to this rectangle**. (X)HTML and XML output will however always extract the full page.
 

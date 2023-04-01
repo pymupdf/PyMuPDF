@@ -271,7 +271,7 @@ In a nutshell, this is what you can do with PyMuPDF:
             * For a **new, non-builtin** font, proceed as follows::
 
                page.insert_text(point,  # anywhere, but outside all redaction rectangles
-                   "somthing",  # some non-empty string
+                   "something",  # some non-empty string
                    fontname="newname",  # new, unused reference name
                    fontfile="...",  # desired font file
                    render_mode=3,  # makes the text invisible
@@ -909,7 +909,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask (alpha values) for the base image. When specified, the base image must be provided as a filename or a stream -- and must not be an image that already has a mask.
 
-      :arg int xref: *(New in v1.18.13)* the :data:`xref` of an image already present in the PDF. If given, parameters `filename`, `pixmap`, `stream`, `alpha` and `mask` are ignored. The page will simply receive a reference to the exsting image.
+      :arg int xref: *(New in v1.18.13)* the :data:`xref` of an image already present in the PDF. If given, parameters `filename`, `pixmap`, `stream`, `alpha` and `mask` are ignored. The page will simply receive a reference to the existing image.
 
       :arg int alpha: *(Changed in v1.19.3)* deprecated. No longer needed -- ignored when given.
 
@@ -1388,7 +1388,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          .. image:: images/img-alpha-0.*
 
-     :arg bool annots: *(new in vrsion 1.16.0)* whether to also render annotations or to suppress them. You can create pixmaps for annotations separately.
+     :arg bool annots: *(new in version 1.16.0)* whether to also render annotations or to suppress them. You can create pixmaps for annotations separately.
 
      :rtype: :ref:`Pixmap`
      :returns: Pixmap of the page. For fine-controlling the generated image, the by far most important parameter is **matrix**. E.g. you can increase or decrease the image resolution by using **Matrix(xzoom, yzoom)**. If zoom > 1, you will get a higher resolution: zoom=2 will double the number of pixels in that direction and thus generate a 2 times larger image. Non-positive values will flip horizontally, resp. vertically. Similarly, matrices also let you rotate or shear, and you can combine effects via e.g. matrix multiplication. See the :ref:`Matrix` section to learn more.
@@ -1825,7 +1825,7 @@ The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
 
 .. [#f1] If your existing code already uses the installed base name as a font reference (as it was supported by PyMuPDF versions earlier than 1.14), this will continue to work.
 
-.. [#f2] Not all PDF reader software (including internet browsers and office software) display all of these fonts. And if they do, the difference between the **serifed** and the **non-serifed** version may hardly be noticable. But serifed and non-serifed versions lead to different installed base fonts, thus providing an option to be displayable with your specific PDF viewer.
+.. [#f2] Not all PDF reader software (including internet browsers and office software) display all of these fonts. And if they do, the difference between the **serifed** and the **non-serifed** version may hardly be noticeable. But serifed and non-serifed versions lead to different installed base fonts, thus providing an option to be displayable with your specific PDF viewer.
 
 .. [#f3] Not all PDF readers display these fonts at all. Some others do, but use a wrong character spacing, etc.
 
@@ -1837,6 +1837,6 @@ The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
 
 .. [#f7] In PDF, an area enclosed by some lines or curves can have a property called "orientation". This is significant for switching on or off the fill color of that area when there exist multiple area overlaps - see discussion in method :meth:`Shape.finish` using the "non-zero winding number" rule. While orientation of curves, quads, triangles and other shapes enclosed by lines always was detectable, this has been impossible for "re" (rectangle) items in the past. Adding the orientation parameter now delivers the missing information.
 
-.. [#f8] Hyphenation detection simply means that if the last character of a line is "-", it will be assumed to be a continuation character. That character will not be found by text searching with its default flag setting. Please take note, that a MuPDF *line* may not always be what you expect: words separated by overly large gaps (e.g. caused by text justification) may constitute seperate MuPDF lines. If then any of these words ends with a hyphen, it will only be found by text searching if hyphenation is switched off.
+.. [#f8] Hyphenation detection simply means that if the last character of a line is "-", it will be assumed to be a continuation character. That character will not be found by text searching with its default flag setting. Please take note, that a MuPDF *line* may not always be what you expect: words separated by overly large gaps (e.g. caused by text justification) may constitute separate MuPDF lines. If then any of these words ends with a hyphen, it will only be found by text searching if hyphenation is switched off.
 
 .. include:: footer.rst
