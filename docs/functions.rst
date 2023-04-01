@@ -109,7 +109,7 @@ Yet others are handy, general-purpose utilities.
 
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
-      :returns: a tuple (red, green, blue) with float items in intervall *0 <= item <= 1* representing the same color. Example `sRGB_to_pdf(0xff0000) = (1, 0, 0)` (red).
+      :returns: a tuple (red, green, blue) with float items in interval *0 <= item <= 1* representing the same color. Example `sRGB_to_pdf(0xff0000) = (1, 0, 0)` (red).
 
 -----
 
@@ -571,7 +571,7 @@ Yet others are handy, general-purpose utilities.
       5. The alpha / opacity value of the span's text, `0 <= opacity <= 1`, 0 is invisible text, 1 (100%) is intransparent. Depending on `span["type"]`, interpret this value as *fill* opacity or, resp. *stroke* opacity.
       6. *(Changed in v1.19.0)* This value is equal or close to `char["bbox"]` of "rawdict". In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
       7. *(New in v1.19.0)* This is the union of all character bboxes.
-      8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, whch are painted "later", or *over* some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans have identical sequence numbers if they were created in one go.
+      8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, which are painted "later", or *over* some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans have identical sequence numbers if they were created in one go.
       9. *(New in v1.21.2)* The name of the Optional Content Group (OCG) if applicable or `None`.
 
       Here is a list of similarities and differences of `page.get_texttrace()` compared to `page.get_text("rawdict")`:

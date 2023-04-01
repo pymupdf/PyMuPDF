@@ -51,7 +51,7 @@ Glossary
 
 .. data:: trailer
 
-        More precisely, the **PDF trailer** contains information in :data:`dictionary` format. It is ususally located at the file's end. In this dictionary, you will find things like the xrefs of the catalog and the metadata, the number of :data:`xref` numbers, etc. Here is the definition of the PDF spec:
+        More precisely, the **PDF trailer** contains information in :data:`dictionary` format. It is usually located at the file's end. In this dictionary, you will find things like the xrefs of the catalog and the metadata, the number of :data:`xref` numbers, etc. Here is the definition of the PDF spec:
         
         *"The trailer of a PDF file enables an application reading the file to quickly find the cross-reference table and certain special objects. Applications should read a PDF file from its end."*
 
@@ -113,7 +113,7 @@ Glossary
 
 .. data:: object
 
-        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values ("true" or "false"), integer and real numbers, strings (**always** enclosed in brackets -- either "()", or "<>" to indicate hexadecimal), names (must always start with a "/", e.g. `/Contents`), arrays (enclosed in brackets "[]"), dictionaries (enclosed in brackets "<<>>"), streams (enclosed by keywords "stream" / "endstream"), and the null object ("null") (:ref:`AdobeManual` p. 13). Objects can be made identifyable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xref_object`.
+        Similar to Python, PDF supports the notion *object*, which can come in eight basic types: boolean values ("true" or "false"), integer and real numbers, strings (**always** enclosed in brackets -- either "()", or "<>" to indicate hexadecimal), names (must always start with a "/", e.g. `/Contents`), arrays (enclosed in brackets "[]"), dictionaries (enclosed in brackets "<<>>"), streams (enclosed by keywords "stream" / "endstream"), and the null object ("null") (:ref:`AdobeManual` p. 13). Objects can be made identifiable by assigning a label. This label is then called *indirect* object. PyMuPDF supports retrieving definitions of indirect objects via their cross reference number via :meth:`Document.xref_object`.
 
 .. data:: stream
 

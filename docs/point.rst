@@ -36,7 +36,7 @@ Point
 
       Without parameters, *Point(0, 0)* will be created.
 
-      With another point specified, a **new copy** will be crated, "sequence" is a Python sequence of 2 numbers (see :ref:`SequenceTypes`).
+      With another point specified, a **new copy** will be created, "sequence" is a Python sequence of 2 numbers (see :ref:`SequenceTypes`).
 
      :arg float x: x coordinate of the point
 
