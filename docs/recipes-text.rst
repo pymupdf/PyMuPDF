@@ -134,7 +134,7 @@ But you also have other options::
  text = sys.argv[2]  # search string
  doc = fitz.open(fname)
 
- print("underlining words containing '%s' in document '%s'" % (word, doc.name))
+ print("underlining words containing '%s' in document '%s'" % (text, doc.name))
 
  new_doc = False  # indicator if anything found at all
 
