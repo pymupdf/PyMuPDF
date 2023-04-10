@@ -38,7 +38,7 @@ jobs:
             # PYMUPDF_SETUP_MUPDF_BUILD="git:...": build with mupdf from a `git
             # clone` command, selecting the current release branch.
             #
-            CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--recursive --depth 1 --shallow-submodules --branch 1.21.x https://github.com/ArtifexSoftware/mupdf.git"
+            CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--recursive --depth 1 --shallow-submodules --branch 1.22.x https://github.com/ArtifexSoftware/mupdf.git"
 
             # Build on single cpu.
             CIBW_ARCHS_LINUX: x86_64
