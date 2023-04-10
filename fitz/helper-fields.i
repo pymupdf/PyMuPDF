@@ -471,7 +471,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         SETATTR_DROP(Widget, "field_type_string",
                 JM_UnicodeFromStr(JM_field_type_text(field_type)));
 
-        #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR <= 21
+        #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR <= 22
             char *field_name = pdf_field_name(ctx, annot_obj);
         #else
             char *field_name = pdf_load_field_name(ctx, annot_obj);
@@ -668,7 +668,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     value = GETATTR("field_name");
     if (value != Py_None) {
         char *name = JM_StrAsChar(value);
-        #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR <= 21
+        #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR <= 22
             char *old_name = pdf_field_name(ctx, annot_obj);
         #else
             char *old_name = pdf_load_field_name(ctx, annot_obj);
