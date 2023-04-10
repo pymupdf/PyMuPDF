@@ -745,6 +745,7 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         libraries = load_libraries()
         extra_link_args = []
         extra_swig_args.append(f'-I/usr/local/include')
+        extra_swig_args.append(f'-I/usr/include')
 
     elif darwin or openbsd or freebsd:
         # Use system libraries.
