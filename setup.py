@@ -876,7 +876,7 @@ with open(os.path.join(setup_py_cwd, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="PyMuPDF",
-    version="1.21.1",
+    version="1.22.0",
     description="Python bindings for the PDF toolkit and renderer MuPDF",
     long_description=readme,
     long_description_content_type="text/markdown",
