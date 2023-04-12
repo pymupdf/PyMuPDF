@@ -4006,6 +4006,13 @@ if off:
     if s != set():
         raise ValueError("bad OCGs in 'off': %s" % s)
 
+if locked:
+    if type(locked) not in (list, tuple):
+        raise ValueError("bad type: 'locked'")
+    s = set(locked).difference(ocgs)
+    if s != set():
+        raise ValueError("bad OCGs in 'locked': %s" % s)
+
 if rbgroups:
     if type(rbgroups) not in (list, tuple):
         raise ValueError("bad type: 'rbgroups'")
@@ -4025,7 +4032,7 @@ if basestate:
 %}
         PyObject *
         set_layer(int config, const char *basestate=NULL, PyObject *on=NULL,
-                    PyObject *off=NULL, PyObject *rbgroups=NULL)
+                    PyObject *off=NULL, PyObject *rbgroups=NULL, PyObject *locked=NULL)
         {
             pdf_obj *obj = NULL;
             fz_try(gctx) {
@@ -4044,7 +4051,7 @@ if basestate:
                 if (!obj) {
                     RAISEPY(gctx, MSG_BAD_OC_CONFIG, PyExc_ValueError);
                 }
-                JM_set_ocg_arrays(gctx, obj, basestate, on, off, rbgroups);
+                JM_set_ocg_arrays(gctx, obj, basestate, on, off, rbgroups, locked);
                 pdf_read_ocg(gctx, pdf);
                 finished:;
             }
