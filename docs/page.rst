@@ -1136,7 +1136,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.19.0: add "seqno" key, remove "clippings" key
       * Changed in v1.19.1: "color" / "fill" keys now always are either are RGB tuples or `None`. This resolves issues caused by exotic colorspaces.
       * Changed in v1.19.2: add an indicator for the *"orientation"* of the area covered by an "re" item.
-      * Changed in v1.21.2: add new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Add parameter `extended` to also return clipping paths.
+      * Changed in v1.22.0: add new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Add parameter `extended` to also return clipping paths.
 
       Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
 
@@ -1158,14 +1158,14 @@ In a nutshell, this is what you can do with PyMuPDF:
             fill_opacity   (new in v1.18.17) fill color transparency (see :ref:`Shape`).
             stroke_opacity (new in v1.18.17) stroke color transparency  (see :ref:`Shape`).
             rect           Page area covered by this path. Information only.
-            layer          (new in v1.21.2) name of applicable Optional Content Group
-            level          (new in v1.21.2) the hierarchy level if `extended=True`
+            layer          (new in v1.22.0) name of applicable Optional Content Group
+            level          (new in v1.22.0) the hierarchy level if `extended=True`
             seqno          (new in v1.19.0) command number when building page appearance
             type           (new in v1.18.17) type of this path.
             width          Stroke line width  (see :ref:`Shape`).
             ============== ============================================================================
 
-      **New in v1.21.1:** If `extended=True`, three additional dictionary types may be present in the returned list:
+      **New in v1.22.0:** If `extended=True`, three additional dictionary types may be present in the returned list:
 
          * "clip" and "clip-stroke" dictionaries. Its values (most importantly "scissor") remain valid / apply as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level ends this clip.
 
@@ -1229,7 +1229,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.18.17
       * Changed in v1.19.0: removed "clippings" key, added "seqno" key.
       * Changed in v1.19.1: always generate RGB color tuples.
-      * Changed in v1.21.2: added new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Added parameter `extended` to also return clipping paths.
+      * Changed in v1.22.0: added new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Added parameter `extended` to also return clipping paths.
 
       Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster:
 

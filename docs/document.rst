@@ -1259,7 +1259,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: insert_file(infile, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0, final=1)
 
-      * New in v1.21.2
+      * New in v1.22.0
 
       PDF only: Add an arbitrary supported document to the current PDF. Opens "infile" as a document, converts it to a PDF and then invokes :meth:`Document.insert_pdf`. Parameters are the same as for that method. Among other things, this features an easy way to append images as full pages to an output PDF.
 

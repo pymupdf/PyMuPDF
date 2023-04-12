@@ -32,8 +32,14 @@ Change Log
   * **Fixed** `#2238 <https://github.com/pymupdf/PyMuPDF/issues/2238>`_: Bug - can not extract data from file in the newest version 1.21.1
   * **Fixed** `#2242 <https://github.com/pymupdf/PyMuPDF/issues/2242>`_: Python quits silently in ``Story.element_positions()`` if callback function prototype is wrong
   * **Fixed** `#2248 <https://github.com/pymupdf/PyMuPDF/issues/2248>`_: After redacting the content, the position of the remaining text changes
+  * **Fixed** `#2250 <https://github.com/pymupdf/PyMuPDF/issues/2250>`_: docs: unclear or broken link in page.rst
+  * **Fixed** `#2251 <https://github.com/pymupdf/PyMuPDF/issues/2251>`_: mupdf_display_errors does not apply to Pixmap when loading broken image
   * **Fixed** `#2270 <https://github.com/pymupdf/PyMuPDF/issues/2270>`_: ``Annot.get_text("words")`` - doesn't return the first line of words
+  * **Fixed** `#2275 <https://github.com/pymupdf/PyMuPDF/issues/2275>`_: insert_image: document that rotations are counterclockwise
   * **Fixed** `#2278 <https://github.com/pymupdf/PyMuPDF/issues/2278>`_: Can not make widget (checkbox) to read-only by adding flags PDF_FIELD_IS_READ_ONLY
+  * **Fixed** `#2290 <https://github.com/pymupdf/PyMuPDF/issues/2290>`_: Different image format/data from Page.get_text("dict") and Fitz.get_page_images()
+  * **Fixed** `#2293 <https://github.com/pymupdf/PyMuPDF/issues/2293>`_: 68 failed tests when installing from sdist on my box
+  * **Fixed** `#2300 <https://github.com/pymupdf/PyMuPDF/issues/2300>`_: Too much recursion in tree (parents), makes program terminate
 
 * Other:
 

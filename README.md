@@ -1,4 +1,4 @@
-# PyMuPDF 1.21.1
+# PyMuPDF 1.22.0
 
 ![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
