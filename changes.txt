@@ -40,6 +40,7 @@ Change Log
   * **Fixed** `#2290 <https://github.com/pymupdf/PyMuPDF/issues/2290>`_: Different image format/data from Page.get_text("dict") and Fitz.get_page_images()
   * **Fixed** `#2293 <https://github.com/pymupdf/PyMuPDF/issues/2293>`_: 68 failed tests when installing from sdist on my box
   * **Fixed** `#2300 <https://github.com/pymupdf/PyMuPDF/issues/2300>`_: Too much recursion in tree (parents), makes program terminate
+  * **Fixed** `#2322 <https://github.com/pymupdf/PyMuPDF/issues/2322>`_: add_highlight_annot using clip generates "A Number is Out of Range" error in PDF
 
 * Other:
 
