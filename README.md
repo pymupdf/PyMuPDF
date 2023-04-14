@@ -3,7 +3,7 @@
 ![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
 
-Release date: December 13, 2022
+Release date: April 14, 2023
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 

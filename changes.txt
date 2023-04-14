@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.22.0 (2023-03-14)**
+**Changes in version 1.22.0 (2023-04-14)**
 
 * This release uses ``MuPDF-1.22.0``.
 
