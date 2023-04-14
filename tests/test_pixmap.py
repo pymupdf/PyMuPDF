@@ -105,7 +105,7 @@ def test_memoryview():
     assert samples.strides == (1,)
     
     color = pm.pixel( 100, 100)
-    print( f'{color=}')
+    print( f'color={color}')
     assert color == (83, 66, 40)
 
 def test_samples_ptr():

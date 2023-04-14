@@ -247,7 +247,7 @@ def get_gitfiles( directory, submodules=False):
     '''
     def is_within_git_checkout( d):
         while 1:
-            #log( '{d=}')
+            #log( 'd={d!r}')
             if not d:
                 break
             if os.path.isdir( f'{d}/.git'):
@@ -417,7 +417,7 @@ def get_git_id( directory):
             )
     if cp.returncode == 0:
         branch = cp.stdout.strip()
-    log(f'get_git_id(): {directory=} returning {branch=} {sha=} {comment=}')
+    log(f'get_git_id(): directory={directory!r} returning branch={branch!r} sha={sha!r} comment={comment!r}')
     return sha, comment, diff, branch
 
 

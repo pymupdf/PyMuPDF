@@ -143,7 +143,7 @@ def test_add_ink_annot():
     page.get_bboxlog()
     path = f'{scriptdir}/resources/test_add_ink_annot.pdf'
     document.save( path)
-    print( f'Have saved to: {path=}')
+    print( f'Have saved to: path={path!r}')
 
 def test_techwriter_append():
     print(fitz.__doc__)
@@ -152,7 +152,7 @@ def test_techwriter_append():
     tw = fitz.TextWriter(page.rect)
     text = "Red rectangle = TextWriter.text_rect, blue circle = .last_point"
     r = tw.append((100, 100), text)
-    print(f'{r=}')
+    print(f'r={r!r}')
     tw.write_text(page)
     page.draw_rect(tw.text_rect, color=fitz.pdfcolor["red"])
     page.draw_circle(tw.last_point, 2, color=fitz.pdfcolor["blue"])
@@ -189,7 +189,7 @@ def test_font():
     font = fitz.Font()
     print(repr(font))
     bbox = font.glyph_bbox( 65)
-    print( f'{bbox=}')
+    print( f'bbox={bbox!r}')
 
 def test_insert_font():
     doc=fitz.open(f'{scriptdir}/resources/v110-changes.pdf')
@@ -200,7 +200,7 @@ def test_insert_font():
 def test_2173():
     from fitz import IRect, Pixmap, CS_RGB, Colorspace
     for i in range( 100):
-        #print( f'{i=}')
+        #print( f'i={i!r}')
         image = Pixmap(Colorspace(CS_RGB), IRect(0, 0, 13, 37))
     print( 'test_2173() finished')
 
@@ -211,7 +211,7 @@ def test_texttrace():
     for page in document:
         tt = page.get_texttrace()
     t = time.time() - t
-    print( f'test_texttrace(): {t=}')
+    print( f'test_texttrace(): t={t!r}')
     
     # Repeat, this time writing data to file.
     import json
@@ -274,16 +274,16 @@ def test_2238():
     first_page = doc.load_page(0).get_text('text', fitz.INFINITE_RECT())
     last_page = doc.load_page(-1).get_text('text', fitz.INFINITE_RECT())
 
-    print(f'{first_page=}')
-    print(f'{last_page=}')
+    print(f'first_page={first_page!r}')
+    print(f'last_page={last_page!r}')
     assert first_page == 'Hello World\n'
     assert last_page == 'Hello World\n'
 
     first_page = doc.load_page(0).get_text('text')
     last_page = doc.load_page(-1).get_text('text')
 
-    print(f'{first_page=}')
-    print(f'{last_page=}')
+    print(f'first_page={first_page!r}')
+    print(f'last_page={last_page!r}')
     assert first_page == 'Hello World\n'
     assert last_page == 'Hello World\n'
 
@@ -333,8 +333,8 @@ def test_2093():
     page.apply_redactions()
     pixel_average_after = average_color(page)
 
-    print(f'{pixel_average_before=}')
-    print(f'{pixel_average_after=}')
+    print(f'pixel_average_before={pixel_average_before!r}')
+    print(f'pixel_average_after={pixel_average_after!r}')
 
     # Before this bug was fixed:
     #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
