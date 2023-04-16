@@ -31,6 +31,7 @@ Change Log
   * **Fixed** `#2228 <https://github.com/pymupdf/PyMuPDF/issues/2228>`_: open some pdf cost too much time
   * **Fixed** `#2238 <https://github.com/pymupdf/PyMuPDF/issues/2238>`_: Bug - can not extract data from file in the newest version 1.21.1
   * **Fixed** `#2242 <https://github.com/pymupdf/PyMuPDF/issues/2242>`_: Python quits silently in ``Story.element_positions()`` if callback function prototype is wrong
+  * **Fixed** `#2246 <https://github.com/pymupdf/PyMuPDF/issues/2246>`_: TextWriter write text in a wrong position
   * **Fixed** `#2248 <https://github.com/pymupdf/PyMuPDF/issues/2248>`_: After redacting the content, the position of the remaining text changes
   * **Fixed** `#2250 <https://github.com/pymupdf/PyMuPDF/issues/2250>`_: docs: unclear or broken link in page.rst
   * **Fixed** `#2251 <https://github.com/pymupdf/PyMuPDF/issues/2251>`_: mupdf_display_errors does not apply to Pixmap when loading broken image
