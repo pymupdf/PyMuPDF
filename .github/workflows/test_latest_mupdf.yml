@@ -29,8 +29,15 @@ jobs:
         uses: pypa/cibuildwheel@v2.11.2
 
         env:
-            # We are on a branch so we want to test building with the default
-            # hard-coded mupdf URL.
+            # PYMUPDF_SETUP_MUPDF_TGZ="": don't embed mupdf in sdist - no need
+            # because the build stage gets MuPDF using `git clone ...`.
+            #
+            # PYMUPDF_SETUP_MUPDF_BUILD="git:...": build with mupdf from a `git
+            # clone` command.
+            #
+            CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
+
+            PYMUPDF_SETUP_MUPDF_BUILD: "git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
 
             # Build on single cpu.
             CIBW_ARCHS_LINUX: x86_64

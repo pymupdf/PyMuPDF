@@ -1,5 +1,6 @@
 name: Build wheels
 
+#on: [push, pull_request]
 on:
   workflow_dispatch:
     inputs:
@@ -8,8 +9,6 @@ on:
       wheels:
         type: boolean
       wheels_linux_aarch64:
-        type: boolean
-      wheels_macos_arm64:
         type: boolean
 
 jobs:
@@ -72,9 +71,11 @@ jobs:
             #
             CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
             
-            # On Linux and MacOS, tell cibuildwheel to build archs depending on
-            # inputs.wheels_linux_aarch64 and inputs.wheels_macos_arm64.
+            # On Linux, tell cibuildwheel to build native archs ('auto'), and
+            # aarch64.
             #
+            #CIBW_ARCHS_LINUX: auto aarch64
+            
             # https://github.community/t/possible-to-use-conditional-in-the-env-section-of-a-job/135170
             # Note that it seems that there must not be a space after the ':' in the following, i.e.
             # ok:   {"false":"auto", "true":"auto aarch64"}
@@ -83,11 +84,10 @@ jobs:
             # This is useful: https://yamlchecker.com/
             #
             CIBW_ARCHS_LINUX: ${{ fromJSON('{"false":"auto", "true":"auto aarch64"}')[inputs.wheels_linux_aarch64] }}
-            CIBW_ARCHS_MACOS: ${{ fromJSON('{"false":"auto", "true":"auto arm64"}')[inputs.wheels_macos_arm64] }}
 
             # For testing, build for single python version.
             #
-            #CIBW_BUILD: "cp311*"
+            #CIBW_BUILD: "cp39*"
 
             # Get cibuildwheel to run pytest with each wheel.
             #
