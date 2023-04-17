@@ -5,6 +5,7 @@
 * Verify stability against circular TOC items
 """
 import os
+import sys
 import fitz
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -62,3 +63,24 @@ def test_circular():
     """The test file contains circular bookmarks."""
     doc = fitz.open(circular)
     toc = doc.get_toc(False)  # this must not loop
+
+def test_2355():
+    
+    # Create a test PDF with toc.
+    doc = fitz.Document()
+    for _ in range(10):
+        doc.new_page(doc.page_count)
+    doc.set_toc([[1, 'test', 1], [1, 'test2', 5]])
+    
+    path = 'test_2355.pdf'
+    doc.save(path)
+
+    # Open many times
+    for i in range(10):
+        with fitz.open(path) as new_doc:
+            new_doc.get_toc()
+
+    # Open once and read many times
+    with fitz.open(path) as new_doc:
+        for i in range(10):
+            new_doc.get_toc()
