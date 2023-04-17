@@ -2863,7 +2863,10 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     res = NULL;
                     img = pdf_load_image(gctx, pdf, obj);
                     cbuf = fz_compressed_image_buffer(gctx, img);
-                    if (cbuf) {
+                    if (cbuf && cbuf->params.type != FZ_IMAGE_RAW && 
+                        cbuf->params.type != FZ_IMAGE_FLATE && 
+                        cbuf->params.type != FZ_IMAGE_LZW && 
+                        cbuf->params.type != FZ_IMAGE_RLD) {
                         img_type = cbuf->params.type;
                         ext = JM_image_extension(img_type);
                         res = cbuf->buffer;
