@@ -1596,9 +1596,7 @@ def do_links(
             if l["kind"] == LINK_GOTO and (l["page"] not in pno_src):
                 continue  # GOTO link target not in copied pages
             annot_text = cre_annot(l, xref_dst, pno_src, ctm)
-            if not annot_text:
-                print("cannot create /Annot for kind: " + str(l["kind"]))
-            else:
+            if annot_text:
                 link_tab.append(annot_text)
         if link_tab != []:
             page_dst._addAnnot_FromString(tuple(link_tab))
