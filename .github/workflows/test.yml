@@ -22,8 +22,6 @@ jobs:
     steps:
 
       - uses: actions/checkout@v2
-        with:
-          ref: 1.21
       - uses: actions/setup-python@v2
 
       # Set up cibuildwheel.
