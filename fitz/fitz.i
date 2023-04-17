@@ -9083,6 +9083,12 @@ struct Outline {
         def dest(self):
             '''outline destination details'''
             return linkDest(self, None)
+
+        def __del__(self):
+            if not isinstance(self, Outline):
+                return
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
         %}
     }
 };
