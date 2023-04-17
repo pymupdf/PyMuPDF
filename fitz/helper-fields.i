@@ -730,18 +730,18 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_dict_del(ctx, annot_obj, PDF_NAME(RC)); /* not supported by MuPDF */
 
     // field flags ------------------------------------------------------------
-    int field_flags = 0, Ff = 0;
-    if (field_type != PDF_WIDGET_TYPE_CHECKBOX &&
-        field_type != PDF_WIDGET_TYPE_BUTTON &&
-        field_type != PDF_WIDGET_TYPE_RADIOBUTTON) {
-        value = GETATTR("field_flags");
-        field_flags = (int) PyInt_AsLong(value);
-        if (!PyErr_Occurred()) {
-            Ff = pdf_field_flags(ctx, annot_obj);
-            Ff |= field_flags;
+    value = GETATTR("field_flags");
+    int field_flags = (int) PyInt_AsLong(value);
+    Py_XDECREF(value);
+    if (!PyErr_Occurred()) {
+        if (field_type == PDF_WIDGET_TYPE_COMBOBOX) {
+            field_flags |= PDF_CH_FIELD_IS_COMBO;
+        } else if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON) {
+            field_flags |= PDF_BTN_FIELD_IS_RADIO;
+        } else if (field_type == PDF_WIDGET_TYPE_BUTTON) {
+            field_flags |= PDF_BTN_FIELD_IS_PUSHBUTTON;
         }
-        Py_XDECREF(value);
-        pdf_dict_put_int(ctx, annot_obj, PDF_NAME(Ff), Ff);
+        pdf_dict_put_int(ctx, annot_obj, PDF_NAME(Ff), field_flags);
     }
 
     // button caption ---------------------------------------------------------
