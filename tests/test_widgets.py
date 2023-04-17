@@ -112,7 +112,6 @@ def test_combobox():
     widget.field_flags = (
         fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE
         | fitz.PDF_CH_FIELD_IS_EDIT
-        | fitz.PDF_WIDGET_TYPE_COMBOBOX
     )
     widget.fill_color = gold
     widget.choice_values = (
