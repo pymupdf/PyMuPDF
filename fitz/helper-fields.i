@@ -734,6 +734,13 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     int field_flags = (int) PyInt_AsLong(value);
     Py_XDECREF(value);
     if (!PyErr_Occurred()) {
+        if (field_type == PDF_WIDGET_TYPE_COMBOBOX) {
+            field_flags |= PDF_CH_FIELD_IS_COMBO;
+        } else if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON) {
+            field_flags |= PDF_BTN_FIELD_IS_RADIO;
+        } else if (field_type == PDF_WIDGET_TYPE_BUTTON) {
+            field_flags |= PDF_BTN_FIELD_IS_PUSHBUTTON;
+        }
         pdf_dict_put_int(ctx, annot_obj, PDF_NAME(Ff), field_flags);
     }
 
