@@ -6,6 +6,175 @@
 Common Issues and their Solutions
 ==========================================
 
+How To Dynamically Clean Up Corrupt :title:`PDFs`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This shows a potential use of :title:`PyMuPDF` with another Python PDF library (the excellent pure Python package `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ is used here as an example).
+
+If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invoke PyMuPDF to recover from many problems like so::
+
+ import sys
+ from io import BytesIO
+ from pdfrw import PdfReader
+ import fitz
+
+ #---------------------------------------
+ # 'Tolerant' PDF reader
+ #---------------------------------------
+ def reader(fname, password = None):
+     idata = open(fname, "rb").read()  # read the PDF into memory and
+     ibuffer = BytesIO(idata)  # convert to stream
+     if password is None:
+         try:
+             return PdfReader(ibuffer)  # if this works: fine!
+         except:
+             pass
+
+     # either we need a password or it is a problem-PDF
+     # create a repaired / decompressed / decrypted version
+     doc = fitz.open("pdf", ibuffer)
+     if password is not None:  # decrypt if password provided
+         rc = doc.authenticate(password)
+         if not rc > 0:
+             raise ValueError("wrong password")
+     c = doc.tobytes(garbage=3, deflate=True)
+     del doc  # close & delete doc
+     return PdfReader(BytesIO(c))  # let pdfrw retry
+ #---------------------------------------
+ # Main program
+ #---------------------------------------
+ pdf = reader("pymupdf.pdf", password = None) # include a password if necessary
+ print pdf.Info
+ # do further processing
+
+With the command line utility *pdftk* (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only, but reported to also run under `Wine <https://www.winehq.org/>`_) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. However, you must invoke it as a separate process via *subprocess.Popen*, using stdin and stdout as communication vehicles.
+
+
+
+How to Convert Any Document to :title:`PDF`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is a script that converts any :title:`PyMuPDF` supported document to a :title:`PDF`. These include XPS, EPUB, FB2, CBZ and all image formats, including multi-page TIFF images.
+
+It features maintaining any metadata, table of contents and links contained in the source document::
+
+    """
+    Demo script: Convert input file to a PDF
+    -----------------------------------------
+    Intended for multi-page input files like XPS, EPUB etc.
+
+    Features:
+    ---------
+    Recovery of table of contents and links of input file.
+    While this works well for bookmarks (outlines, table of contents),
+    links will only work if they are not of type "LINK_NAMED".
+    This link type is skipped by the script.
+
+    For XPS and EPUB input, internal links however **are** of type "LINK_NAMED".
+    Base library MuPDF does not resolve them to page numbers.
+
+    So, for anyone expert enough to know the internal structure of these
+    document types, can further interpret and resolve these link types.
+
+    Dependencies
+    --------------
+    PyMuPDF v1.14.0+
+    """
+    import sys
+    import fitz
+    if not (list(map(int, fitz.VersionBind.split("."))) >= [1,14,0]):
+        raise SystemExit("need PyMuPDF v1.14.0+")
+    fn = sys.argv[1]
+
+    print("Converting '%s' to '%s.pdf'" % (fn, fn))
+
+    doc = fitz.open(fn)
+
+    b = doc.convert_to_pdf()  # convert to pdf
+    pdf = fitz.open("pdf", b)  # open as pdf
+
+    toc= doc.het_toc()  # table of contents of input
+    pdf.set_toc(toc)  # simply set it for output
+    meta = doc.metadata  # read and set metadata
+    if not meta["producer"]:
+        meta["producer"] = "PyMuPDF v" + fitz.VersionBind
+
+    if not meta["creator"]:
+        meta["creator"] = "PyMuPDF PDF converter"
+    meta["modDate"] = fitz.get_pdf_now()
+    meta["creationDate"] = meta["modDate"]
+    pdf.set_metadata(meta)
+
+    # now process the links
+    link_cnti = 0
+    link_skip = 0
+    for pinput in doc:  # iterate through input pages
+        links = pinput.get_links()  # get list of links
+        link_cnti += len(links)  # count how many
+        pout = pdf[pinput.number]  # read corresp. output page
+        for l in links:  # iterate though the links
+            if l["kind"] == fitz.LINK_NAMED:  # we do not handle named links
+                print("named link page", pinput.number, l)
+                link_skip += 1  # count them
+                continue
+            pout.insert_link(l)  # simply output the others
+
+    # save the conversion result
+    pdf.save(fn + ".pdf", garbage=4, deflate=True)
+    # say how many named links we skipped
+    if link_cnti > 0:
+        print("Skipped %i named links of a total of %i in input." % (link_skip, link_cnti))
+
+
+
+How to Deal with Messages Issued by :title:`MuPDF`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since :title:`PyMuPDF` v1.16.0, **error messages** issued by the underlying :title:`MuPDF` library are being redirected to the Python standard device *sys.stderr*. So you can handle them like any other output going to this devices.
+
+In addition, these messages go to the internal buffer together with any :title:`MuPDF` warnings -- see below.
+
+We always prefix these messages with an identifying string *"mupdf:"*.
+If you prefer to not see recoverable MuPDF errors at all, issue the command `fitz.TOOLS.mupdf_display_errors(False)`.
+
+MuPDF warnings continue to be stored in an internal buffer and can be viewed using :meth:`Tools.mupdf_warnings`.
+
+Please note that MuPDF errors may or may not lead to Python exceptions. In other words, you may see error messages from which MuPDF can recover and continue processing.
+
+Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during `fitz.open` the document had to be repaired:
+
+>>> import fitz
+>>> doc = fitz.open("damaged-file.pdf")  # leads to a sys.stderr message:
+mupdf: cannot find startxref
+>>> print(fitz.TOOLS.mupdf_warnings())  # check if there is more info:
+cannot find startxref
+trying to repair broken xref
+repairing PDF document
+object missing 'endobj' token
+>>> doc.can_save_incrementally()  # this is to be expected:
+False
+>>> # the following indicates whether there are updates so far
+>>> # this is the case because of the repair actions:
+>>> doc.is_dirty
+True
+>>> # the document has nevertheless been created:
+>>> doc
+fitz.Document('damaged-file.pdf')
+>>> # we now know that any save must occur to a new file
+
+Example output for an **unrecoverable error**:
+
+>>> import fitz
+>>> doc = fitz.open("does-not-exist.pdf")
+mupdf: cannot open does-not-exist.pdf: No such file or directory
+Traceback (most recent call last):
+  File "<pyshell#1>", line 1, in <module>
+    doc = fitz.open("does-not-exist.pdf")
+  File "C:\Users\Jorj\AppData\Local\Programs\Python\Python37\lib\site-packages\fitz\fitz.py", line 2200, in __init__
+    _fitz.Document_swiginit(self, _fitz.new_Document(filename, stream, filetype, rect, width, height, fontsize))
+RuntimeError: cannot open does-not-exist.pdf: No such file or directory
+>>>
+
 
 
 Changing Annotations: Unexpected Behaviour

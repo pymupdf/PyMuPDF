@@ -1,0 +1,80 @@
+<html>
+
+    <head>
+
+        <link rel="stylesheet" type="text/css" href="prism.css">
+
+        <style>
+
+            .copy-to-clipboard-button {
+                background: #007aff !important;
+                color: white !important;
+                padding: 10px !important;
+                border-radius: 5px !important;
+                font-family: Arial !important;
+            }
+
+        </style>
+
+        <script type="text/javascript" src="prism.js"></script>
+
+    </head>
+
+
+    <body>
+        See: https://prismjs.com/download.html
+
+
+            <pre style="background: white;">
+                <code class="language-python line-numbers" data-prismjs-copy="Copy">
+                import fitz
+
+                MEDIABOX = fitz.paper_rect("letter")
+                WHERE = MEDIABOX + (36, 36, -36, -36)
+
+                # create story, let it look at script folder for resources
+                story = fitz.Story(archive=".")
+                body = story.body  # access the body of its DOM
+
+                with body.add_paragraph() as para:
+                    # store desired content
+                    para.set_font("sans-serif").set_color("blue").add_text("Hello World!")
+
+                # another paragraph for our image:
+                with body.add_paragraph() as para:
+                    # store image in another paragraph
+                    para.add_image("world.jpg")
+
+                writer = fitz.DocumentWriter("output.pdf")
+
+                more = 1
+
+                while more:
+                    device = writer.begin_page(MEDIABOX)
+                    more, _ = story.place(WHERE)
+                    story.draw(device)
+                    writer.end_page()
+
+                writer.close()
+            </code>
+            </pre>
+
+    </body>
+
+    <script>
+        Prism.plugins.NormalizeWhitespace.setDefaults({
+    'remove-trailing': true,
+    'remove-indent': true,
+    'left-trim': true,
+    'right-trim': true,
+    'break-lines': 100,
+    'indent': 0,
+    'remove-initial-line-feed': false,
+    'tabs-to-spaces': 4,
+    'spaces-to-tabs': 4
+});
+</script>
+
+Here is some <code>inline code</code> ok...
+
+</html>

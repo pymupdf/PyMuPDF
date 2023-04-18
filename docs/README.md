@@ -28,6 +28,9 @@ Within `docs` update the associated restructured text (`.rst`) files. These file
 This then creates the HTML documentation within `build/html`. 
 
 
+> Use: `sphinx-build -a -b html . build/html` to build all, including the assets in `_static` (important if you have updated CSS).
+
+
 ## Building PDF documentation
 
 

@@ -37,6 +37,8 @@ The original rendering library for MuPDF was called *Libart*.
     So :title:`PyMuPDF` **cannot coexist** with packages named "fitz" in the same Python environment.
 
 
+.. _Tutorial_Opening_a_Document:
+
 Opening a Document
 ======================
 To access a supported document, it must be opened with the following statement::
