@@ -2,6 +2,18 @@ Change Log
 ==========
 
 
+**Changes in version 1.22.1 (2023-04-18)**
+
+* This release uses ``MuPDF-1.22.0``.
+
+* Bug fixes:
+
+  * **Fixed** `#2345 <https://github.com/pymupdf/PyMuPDF/issues/2345>`_: Turn off print statements in utils.py
+  * **Fixed** `#2348 <https://github.com/pymupdf/PyMuPDF/issues/2348>`_: extract_image returns an extension "flate" instead of "png"
+  * **Fixed** `#2350 <https://github.com/pymupdf/PyMuPDF/issues/2350>`_: Can not make widget (checkbox) to read-only by adding flags PDF_FIELD_IS_READ_ONLY
+  * **Fixed** `#2355 <https://github.com/pymupdf/PyMuPDF/issues/2355>`_: 1.22.0 error when using get_toc (AttributeError: 'SwigPyObject' object has no attribute)
+
+
 **Changes in version 1.22.0 (2023-04-14)**
 
 * This release uses ``MuPDF-1.22.0``.
