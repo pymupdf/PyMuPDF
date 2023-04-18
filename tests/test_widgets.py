@@ -59,6 +59,19 @@ def test_checkbox():
     field = page.first_widget
     assert field.field_type_string == "CheckBox"
 
+    # Check #2350 - setting checkbox to readonly.
+    #
+    widget.field_flags |= fitz.PDF_FIELD_IS_READ_ONLY
+    widget.update()
+    path = f'{scriptdir}/test_checkbox.pdf'
+    doc.save(path)
+    
+    doc = fitz.open(path)
+    page = doc[0]
+    widget = page.first_widget
+    assert widget
+    assert widget.field_flags == fitz.PDF_FIELD_IS_READ_ONLY
+
 
 def test_listbox():
     doc = fitz.open()
