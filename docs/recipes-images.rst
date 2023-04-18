@@ -432,7 +432,7 @@ The general scheme is just the following two lines::
 
 .. _RecipesImages_L:
 
-How to Use Pixmaps: Glueing Images
+How to Use Pixmaps: Gluing Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This shows how pixmaps can be used for purely graphical, non-document purposes. The script reads an image file and creates a new image which consist of 3 * 4 tiles of the original::
