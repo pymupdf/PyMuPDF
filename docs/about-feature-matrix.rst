@@ -1,4 +1,4 @@
-The following table illustrates how :title:`PyMuPDF` compares with other typical solutions.
+
 
 .. required image embeds for HTML to reference
 
@@ -37,11 +37,11 @@ The following table illustrates how :title:`PyMuPDF` compares with other typical
 
 .. raw:: html
 
+
     <style>
 
-        #feature-matrix {
-            width: 100%;
-            border: 1px #999 solid;
+        table {
+            border-style: hidden;
         }
 
         #feature-matrix th {
@@ -136,7 +136,7 @@ The following table illustrates how :title:`PyMuPDF` compares with other typical
 
     </style>
 
-    <table id="feature-matrix">
+    <table id="feature-matrix" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <th style="width:20%;">Feature</th>
             <th style="width:20%;">PyMuPDF</th>

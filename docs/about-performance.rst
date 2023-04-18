@@ -16,7 +16,7 @@
         }
 
         .about-graph-y-axis {
-            border-right: 1px solid #000;
+            border-right: 1px solid #999;
         }
 
         .about-graph-y-axis-text .segment {
@@ -34,8 +34,8 @@
         .about-graph-y-axis .segment {
             height: 50px;
             width: 10px;
-            border-top: 1px solid #000;
-            border-right: 1px solid #000;
+            border-top: 1px solid #999;
+            border-right: 1px solid #999;
         }
 
         .about-graph-area {
@@ -141,7 +141,7 @@
             width: 480px;
             height: 20px;
             margin-left: 45px;
-            border-top: 1px solid #000;
+            border-top: 1px solid #999;
         }
 
         .about-graph-x-axis .segment {
@@ -158,22 +158,7 @@
         /* Dark mode colors */
         @media (prefers-color-scheme: dark) {
 
-            .graph {
-                color: #fff;
-            }
 
-            .about-graph-y-axis {
-                border-right: 1px solid #fff;
-            }
-
-            .about-graph-x-axis {
-                border-top: 1px solid #fff;
-            }
-
-            .about-graph-y-axis .segment {
-                border-top: 1px solid #fff;
-                border-right: 1px solid #fff;
-            }
 
         }
 

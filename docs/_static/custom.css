@@ -1,8 +1,11 @@
 /* icon sizing in the left menu */
-.icon-home {
+/*.icon-home {
     width: 100px;
     height: auto;
 }
+*/
+
+
 
 /* main document page: ensures pages fit to the available width and height */
 .wy-nav-content {
@@ -40,10 +43,6 @@
     font-size: 13px;
 }
 
-.discordLink a {
-    color: #000;
-}
-
 .discordLink img {
     width: 30px;
     height: 30px;
@@ -64,11 +63,12 @@
 }
 
 h1 {
-    padding: 10px;
-    background-color: #007aff;
-    color: #fff;
-    border-radius: 5px;
-    margin-left: -10px;
+    padding: 10px !important;
+    background-color: #007aff !important;
+    color: #fff !important;
+    border-radius: 5px !important;
+    margin-top: 20px !important;
+    margin-left: -10px !important;
 }
 
 cite {
@@ -88,43 +88,110 @@ cite {
     color: #00cc00;
 }
 
+button.cta {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border:0;
+    text-transform:uppercase;
+    border-radius:5px;
+    font-size:16px;
+    font-weight:500;
+    min-height:40px;
+    line-height:40px;
+    padding: 0 15px;
+    color:#fff;
+    cursor:pointer;
+}
+
+button.cta.orange {
+    width:auto;
+    background-image: linear-gradient(to right, #ea5842, #ec6343, #ed6d45, #ef7747, #f0804a) !important;
+}
+
+button.cta.orange:hover {
+    background:#ea5842 !important;
+}
+
+button.cta a {
+    color:#fff !important;
+}
+
+
+/*** Furo theme overrides ***/
+
+.bottom-of-page .left-details {
+    display: none;
+}
+
+.bottom-of-page .right-details:after {
+    content: "© Copyright 2023, Artifex";
+}
+
+.sidebar-brand-text {
+    font-size: 13px;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-logo {
+    width: 60px;
+    height: 60px;
+}
+
+.sidebar-container {
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-container .sidebar-search-container {
+    display: none;
+}
+
+.sidebar-search-container.top {
+    /*position:sticky;
+    top:10px;*/
+    border-radius: 20px;
+    border: solid #333 1px;
+    background-color: #fff;
+}
+
+.sidebar-search-container.top .sidebar-search {
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+}
+
+/* really important ! */
+.sidebar-search {
+    color: #000 !important;
+}
+
+.toc-drawer .toc-title {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+:target>h1:first-of-type, span:target~h1:first-of-type {
+    background-color: #007aff !important;
+    color: #fff !important;
+    padding-top: 40px; /* accomodates header search blocking target */
+    margin-top: -40px;
+}
+
+
+:target>h2:first-of-type, :target>h3:first-of-type,
+:target>h4:first-of-type, :target>h5:first-of-type, :target>h6:first-of-type,
+span:target~h2:first-of-type, span:target~h3:first-of-type,
+span:target~h4:first-of-type, span:target~h5:first-of-type, span:target~h6:first-of-type {
+    background-color: transparent !important;
+    padding-top: 40px; /* accomodates header search blocking target */
+    margin-top: -40px;
+    text-decoration: underline;
+}
 
 
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {
 
-    /* main document page */
-    .wy-nav-content {
-        background-color: #000;
-        color: #fff;
-    }
 
-    .htmltag {
-        color: #000;
-    }
-
-    th {
-        color: #fff;
-    }
-
-    td {
-        background-color: #000 !important;
-    }
-
-    tr:nth-child(2n-1) td{
-        background-color: #333 !important;
-    }
-
-    pre {
-        color: #000;
-    }
-
-    .admonition {
-        color: #000;
-    }
-
-    .discordLink a {
-        color: #fff;
-    }
 
 }

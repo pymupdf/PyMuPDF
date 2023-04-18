@@ -6,14 +6,6 @@
 .. _RecipesTOC:
 
 
-
-.. toctree::
-
-   recipes-general.rst
-
-
-----
-
 .. toctree::
 
    recipes-text.rst
