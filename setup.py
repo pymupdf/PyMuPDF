@@ -56,7 +56,7 @@ Environmental variables:
             release (default)
 
     PYMUPDF_SETUP_MUPDF_CLEAN
-        If '1', we do a clean MuPDF build.
+        Unix only. If '1', we do a clean MuPDF build.
 
     PYMUPDF_SETUP_MUPDF_TGZ
         If set, overrides location of MuPDF .tar.gz file:
@@ -71,13 +71,17 @@ Environmental variables:
             Otherwise:
                 The path of local mupdf git checkout. We put all files in this
                 checkout known to git into a local tar archive.
+
+    PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG
+        If '0' we do not overwrite MuPDF's include/mupdf/fitz/config.h.
     
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
 
 Building MuPDF:
     When building MuPDF, we overwrite the mupdf's include/mupdf/fitz/config.h
-    with fitz/_config.h and do a PyMuPDF-specific build.
+    with fitz/_config.h (unless PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG is '0')
+    and do a PyMuPDF-specific build.
 
 Known build failures:
     Linux:
@@ -100,6 +104,7 @@ import stat
 import subprocess
 import sys
 import tarfile
+import time
 import urllib.request
 
 from setuptools import Extension, setup
@@ -592,11 +597,6 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
     log( f'mupdf_local={mupdf_local!r}')
     unix_build_dir = None
     
-    # Force clean build of MuPDF.
-    #
-    if mupdf_local and os.environ.get( 'PYMUPDF_SETUP_MUPDF_CLEAN') == '1':
-        remove( f'{mupdf_local}/build')
-
     # Always force clean build of PyMuPDF SWIG files etc, because setuptools
     # doesn't seem to notice when our mupdf headers etc are newer than the
     # SWIG-generated files.
@@ -611,9 +611,12 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         log( f'Building mupdf.')
         # Copy PyMuPDF's config file into mupdf. For example it #define's TOFU,
         # which excludes various fonts in the MuPDF binaries.
-        if 0:
-            # Want to use MuPDF default config eventually, but not yet.
-            log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h because mupdf_branch={mupdf_branch}')
+        if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '0':
+            # Use MuPDF default config eventually, but not yet. Eventually we'd
+            # like to do this by default.
+            log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h because PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG=0.')
+            s = os.stat( f'{mupdf_local}/include/mupdf/fitz/config.h')
+            log( f'{mupdf_local}/include/mupdf/fitz/config.h: {s} mtime={time.strftime("%F-%T", time.gmtime(s.st_mtime))}')
         else:
             log( f'Copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h')
             shutil.copy2( 'fitz/_config.h', f'{mupdf_local}/include/mupdf/fitz/config.h')
@@ -681,6 +684,12 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
             flags += f' build_prefix={build_prefix}'
             
             unix_build_dir = f'{mupdf_local}/build/{build_prefix}{unix_build_type}'
+            
+            if os.environ.get( 'PYMUPDF_SETUP_MUPDF_CLEAN') == '1':
+                # Force clean build.
+                log(f'Removing {unix_build_dir} because PYMUPDF_SETUP_MUPDF_CLEAN=1')
+                assert '/build/' in unix_build_dir
+                remove(unix_build_dir)
             
             command = f'cd {mupdf_local} && {env} {make} {flags}'
             command += f' && echo {unix_build_dir}:'
