@@ -58,6 +58,11 @@ Environmental variables:
     PYMUPDF_SETUP_MUPDF_CLEAN
         Unix only. If '1', we do a clean MuPDF build.
 
+    PYMUPDF_SETUP_MUPDF_THIRD
+        If '0' and we are building on Linux with the system MuPDF
+        (i.e. PYMUPDF_SETUP_MUPDF_BUILD=''), then don't link with
+        `-lmupdf-third`.
+    
     PYMUPDF_SETUP_MUPDF_TGZ
         If set, overrides location of MuPDF .tar.gz file:
             Empty string:
@@ -309,10 +314,9 @@ class build_ext_first(build_py_orig):
         return super().run()
 
 
-DEFAULT = [
-    "mupdf",
-    "mupdf-third",
-]
+DEFAULT = ["mupdf"]
+if os.environ.get( 'PYMUPDF_SETUP_MUPDF_THIRD') != '0':
+    DEFAULT.append("mupdf-third")
 
 ALPINE = DEFAULT + [
     "jbig2dec",
