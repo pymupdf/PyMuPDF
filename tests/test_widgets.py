@@ -7,6 +7,7 @@ import os
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "widgettest.pdf")
+file_2333 = os.path.join(scriptdir, "resources", "test-2333.pdf")
 
 
 doc = fitz.open()
@@ -158,6 +159,32 @@ def test_text2():
     assert field.field_type_string == "Text"
 
 
+def test_2333():
+    doc = fitz.open(file_2333)
+    page = doc[0]
+
+    def values():
+        return set(
+            (
+                doc.xref_get_key(635, "AS")[1],
+                doc.xref_get_key(636, "AS")[1],
+                doc.xref_get_key(637, "AS")[1],
+                doc.xref_get_key(638, "AS")[1],
+                doc.xref_get_key(127, "V")[1],
+            )
+        )
+
+    for i, xref in enumerate((635, 636, 637, 638)):
+        w = page.load_widget(xref)
+        w.field_value = True
+        w.update()
+        assert values() == set(("/Off", f"{i}", f"/{i}"))
+    w.field_value=False
+    w.update()
+    assert values() == set(("Off", "/Off"))
+
+    
+    
 # def test_deletewidget():
 #     pdf = fitz.open(filename)
 #     page = pdf[0]
