@@ -113,3 +113,19 @@ def test_samples_ptr():
     samples = pm.samples_ptr
     print( f'samples={samples}')
     assert isinstance( samples, int)
+
+def test_2369():
+
+    width, height = 13, 37
+    image = fitz.Pixmap(fitz.csGRAY, width, height, b"\x00" * (width * height), False)
+
+    with fitz.Document(stream=image.tobytes(output="pam"), filetype="pam") as doc:
+        test_pdf_bytes = doc.convert_to_pdf()
+    
+    with fitz.Document(stream=test_pdf_bytes) as doc:
+        page = doc[0]
+        img_xref = page.get_images()[0][0]
+        img = doc.extract_image(img_xref)
+        img_bytes = img["image"]
+        fitz.Pixmap(img_bytes)
+
