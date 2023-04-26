@@ -2,6 +2,15 @@ Change Log
 ==========
 
 
+**Changes in version 1.22.2 (2023-04-26)**
+
+* This release uses ``MuPDF-1.22.0``.
+
+* Bug fixes:
+
+  * **Fixed** `#2369 <https://github.com/pymupdf/PyMuPDF/issues/2369>`_: Image extraction bugs with newer versions
+
+
 **Changes in version 1.22.1 (2023-04-18)**
 
 * This release uses ``MuPDF-1.22.0``.
