@@ -998,13 +998,14 @@ class Widget(object):
         """
         if self.field_type not in range(1, 8):
             raise ValueError("bad field type")
-        doc = self.parent.parent
 
-        # if setting on a radio button, first set Off all other buttons
+
+        # if setting a radio button to ON, first set Off all other buttons
         # in the group - this is not done by MuPDF:
-        if self.field_type == PDF_WIDGET_TYPE_RADIOBUTTON and self.field_value not in (False, "Off"):
+        if self.field_type == PDF_WIDGET_TYPE_RADIOBUTTON and self.field_value not in (False, "Off") and hasattr(self, "parent"):
             # so we are about setting this button to ON/True
             # check other buttons in same group and set them to 'Off'
+            doc = self.parent.parent
             kids_type, kids_value = doc.xref_get_key(self.xref, "Parent/Kids")
             doc.xref_set_key(self.xref, "Parent/V", "(Off)")  # set off old value
             if kids_type == "array":
