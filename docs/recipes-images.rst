@@ -624,4 +624,34 @@ Basic code pattern for :meth:`Page.show_pdf_page`. Source and target PDF must be
         overlay=True,          # put in foreground
     )
 
+.. _RecipesImages_P:
+
+How to Use Pixmaps: Checking Text Visibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Whether or not a given piece of text is actually visible on a page depends on a number of factors:
+
+1. Text is not covered by another object but may have the same color as the background i.e., white-on-white etc.
+2. Text may be covered by an image or vector graphics. Detecting this is an important capability, for example to uncover badly anonymized legal documents.
+3. Text is created hidden. This technique is usually used by OCR tools to store the recognized text in an invisible layer on the page.
+
+The following shows how to detect situation 1. above, or situation 2. if the covering object is unicolor::
+
+    pix = page.get_pixmap(dpi=150)  # make page image with a decent resolution
+     
+    # the following matrix transforms page to pixmap coordinates
+    mat = page.rect.torect(pix.irect)
+     
+    # search for some string "needle"
+    rlist = page.search_for("needle")
+    # check the visibility for each hit rectangle
+    for rect in rlist:
+        if pix.color_topusage(clip=rect * mat)[0] > 0.95:
+            print("'needle' is invisible here:", rect)
+
+Method :meth:`Pixmap.color_topusage` returns a tuple `(ratio, pixel)` where 0 < ratio <= 1 and *pixel* is the pixel value of the color. Please note that we create a **pixmap only once**. This can save a lot of processing time if there are multiple hit rectangles.
+
+The logic of the above code is: If the needle's rectangle is ("almost": > 95%) unicolor, then the text cannot be visible. A typical result for visible text returns the color of the background (mostly white) and a ratio around 0.7 to 0.8, for example `(0.685, b'\xff\xff\xff')`.
+
+
 .. include:: footer.rst

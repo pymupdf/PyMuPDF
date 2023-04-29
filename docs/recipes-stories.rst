@@ -324,20 +324,41 @@ The script demonstrates the following features:
 
 .. _RecipesStories_H:
 
-How to Output a Table
+How to Output an HTML Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Support for HTML tables is yet not complete in MuPDF. It is however possible to output tables with equal column widths that do not cross page boundaries.
+Outputting HTML tables is supported as follows:
 
-This script reflects existing features.
+* Flat table layouts are supported ("rows x columns"), no support of the "colspan" / "rowspan" attributes.
+* Table header tag :htmlTag:`th` supports attribute "scope" with values "row" or "col". Applicable text will be bold by default.
+* Column widths are computed automatically based on column content. They cannot be directly set.
+* Table **cells may contain images** which will be considered in the column width calculation magic.
+* Row heights are computed automatically based on row content - leading to multi-line rows where needed.
+* The potentially multiple lines of a table row will always be kept together on one page (respectively "where" rectangle) and not be splitted.
+* Table header rows are only **shown on the first page / "where" rectangle.**
+* The "style" attribute is ignored when given directly in HTML table elements. Styling for a table and its elements must happen separately, in CSS source or within the :htmlTag:`style` tag.
+* Styling for :htmlTag:`tr` elements is not supported and ignored. Therefore, a table-wide grid or alternating row background colors are not supported. One of the following example scripts however shows an easy way to deal with this limitation.
 
 **Files:**
 
-* `docs/samples/table01.py`
+* `docs/samples/table01.py` This script reflects basic features.
 
 |toggleStart|
 
 .. literalinclude:: samples/table01.py
+
+|toggleEnd|
+
+* `docs/samples/national-capitals.py` Advanced script extending table output options using simple additional code:
+
+    - Multi-page output simulating **repeating header rows**
+    - Alternating table row background colors
+    - Table rows and columns delimited by gridlines
+    - Table rows dynamically generated / filled with data from an SQL database
+
+|toggleStart|
+
+.. literalinclude:: samples/national-capitals.py
 
 |toggleEnd|
 

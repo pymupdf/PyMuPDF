@@ -225,10 +225,6 @@ There is a parent-child relationship between an annotation and its page. If the 
       :rtype: str
       :returns: the blend mode or *None*.
 
-         >>> annot=page.first_annot
-         >>> annot.blendmode
-         'Multiply'
-
 
    .. method:: set_blendmode(blendmode)
 
@@ -238,10 +234,6 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use `PDF_BM_Normal` to **remove** a blend mode.
 
-         >>> annot.set_blendmode(fitz.PDF_BM_Multiply)
-         >>> annot.update()
-         >>> # or in one statement:
-         >>> annot.update(blend_mode=fitz.PDF_BM_Multiply, ...)
 
    .. method:: set_name(name)
 

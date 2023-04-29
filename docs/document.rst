@@ -69,6 +69,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.has_links`              PDF only: check if PDF contains any links
 :meth:`Document.insert_page`            PDF only: insert a new page
 :meth:`Document.insert_pdf`             PDF only: insert pages from another PDF
+:meth:`Document.insert_file`            PDF only: insert pages from arbitrary document
 :meth:`Document.journal_can_do`         PDF only: which journal actions are possible
 :meth:`Document.journal_enable`         PDF only: enables journalling for the document
 :meth:`Document.journal_load`           PDF only: load journal from a file
@@ -102,10 +103,13 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.select`                 PDF only: select a subset of pages
 :meth:`Document.set_layer_ui_config`    PDF only: set OCG visibility temporarily
 :meth:`Document.set_layer`              PDF only: mass changing OCG states
+:meth:`Document.set_markinfo`           PDF only: set the MarkInfo values
 :meth:`Document.set_metadata`           PDF only: set the metadata
 :meth:`Document.set_oc`                 PDF only: attach OCG/OCMD to image / form xobject
 :meth:`Document.set_ocmd`               PDF only: create or update an :data:`OCMD`
 :meth:`Document.set_page_labels`        PDF only: add/update page label definitions
+:meth:`Document.set_pagemode`           PDF only: set the PageMode
+:meth:`Document.set_pagelayout`         PDF only: set the PageLayout
 :meth:`Document.set_toc_item`           PDF only: change a single TOC item
 :meth:`Document.set_toc`                PDF only: set the table of contents (TOC)
 :meth:`Document.set_xml_metadata`       PDF only: create or update document XML metadata
@@ -124,17 +128,22 @@ For details on **embedded files** refer to Appendix 3.
 :attr:`Document.is_closed`              has document been closed?
 :attr:`Document.is_dirty`               PDF only: has document been changed yet?
 :attr:`Document.is_encrypted`           document (still) encrypted?
+:attr:`Document.is_fast_webaccess`      is PDF linearized?
 :attr:`Document.is_form_pdf`            is this a Form PDF?
 :attr:`Document.is_pdf`                 is this a PDF?
 :attr:`Document.is_reflowable`          is this a reflowable document?
 :attr:`Document.is_repaired`            PDF only: has this PDF been repaired during open?
 :attr:`Document.last_location`          (chapter, pno) of last page
 :attr:`Document.metadata`               metadata
+:attr:`Document.markinfo`               PDF MarkInfo value
 :attr:`Document.name`                   filename of document
 :attr:`Document.needs_pass`             require password to access data?
 :attr:`Document.outline`                first `Outline` item
 :attr:`Document.page_count`             number of pages
 :attr:`Document.permissions`            permissions to access the document
+:attr:`Document.pagemode`               PDF PageMode value
+:attr:`Document.pagelayout`             PDF PageLayout value
+:attr:`Document.version_count`          PDF count of versions
 ======================================= ==========================================================
 
 **Class API**
@@ -360,31 +369,33 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v1.18.3
 
-      List of optional content groups by status in the specified configuration. This is a dictionary with lists of cross reference numbers for OCGs that occur in the arrays `/ON`, `/OFF` or in some radio button group (`/RBGroups`).
+      List of optional content groups by status in the specified configuration. This is a dictionary with lists of cross reference numbers for OCGs that occur in the arrays `/ON`, `/OFF`, `/Locked` or in some radio button group (`/RBGroups`).
 
       :arg int config: the configuration layer (default is the standard config layer).
 
       >>> pprint(doc.get_layer())
-      {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
+      {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]], 'locked': []}
       >>>
 
-    .. method:: set_layer(config, on=None, off=None, basestate=None, rbgroups=None)
+    .. method:: set_layer(config, *, on=None, off=None, basestate=None, rbgroups=None, locked=None)
 
       * New in v1.18.3
+      * Changed in v1.22.0: Support of a new keyword argument "locked" for enumerating unchangeable OCGs.
 
       Mass status changes of optional content groups. **Permanently** sets the status of OCGs.
 
       :arg int config: desired configuration layer, choose -1 for the default one.
       :arg list on: list of :data:`xref` of OCGs to set ON. Replaces previous values. An empty list will cause no OCG being set to ON anymore. Should be specified if `basestate="ON"` is used.
       :arg list off: list of :data:`xref` of OCGs to set OFF. Replaces previous values. An empty list will cause no OCG being set to OFF anymore. Should be specified if `basestate="OFF"` is used.
-      :arg str basestate: desired state of OCGs that are not mentioned in *on* resp. *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
+      :arg str basestate: state of OCGs that are not mentioned in *on* or *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
       :arg list rbgroups: a list of lists. Replaces previous values. Each sublist should contain two or more OCG xrefs. OCGs in the same sublist are handled like buttons in a radio button group: setting one to ON automatically sets all other group members to OFF.
+      :arg list locked: a list of :data:'xref' numbers. Specify the xref numbers of OCGs that must not change their ON / OFF state.
 
       Values *None* will not change the corresponding PDF array.
 
         >>> doc.set_layer(-1, basestate="OFF")  # only changes the base state
         >>> pprint(doc.get_layer())
-        {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
+        {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]], 'locked': []}
 
 
     .. method:: get_ocgs()
@@ -715,7 +726,7 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note:: The method uses the same logic as the *mutool convert* CLI. This works very well in most cases -- however, beware of the following limitations.
 
-        * Image files: perfect, no issues detected. Apparently however, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insert_image` instead. Otherwise, this method is recommended for its much better performance.
+        * Image files: perfect, no issues detected. However, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insert_image` instead. Otherwise, this method is recommended for its much better performance.
         * XPS: appearance very good. Links work fine, outlines (bookmarks) are lost, but can easily be recovered [#f2]_.
         * EPUB, CBZ, FB2: similar to XPS.
         * SVG: medium. Roughly comparable to `svglib <https://github.com/deeplook/svglib>`_.
