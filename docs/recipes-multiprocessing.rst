@@ -3,7 +3,6 @@
 .. _RecipesMultiprocessing:
 
 
-
 .. |toggleStart| raw:: html
 
    <details>

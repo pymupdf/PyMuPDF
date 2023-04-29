@@ -210,11 +210,14 @@ Several draw methods can be executed in a row and each one of them will contribu
          .. image:: images/img-drawSector2.*
 
 
-   .. method:: draw_rect(rect)
+   .. method:: draw_rect(rect, *, radius=None)
+
+      * Changed in v1.22.0: Added parameter *radius*.
 
       Draw a rectangle. The drawing starts and ends at the top-left corner in an anti-clockwise movement.
 
       :arg rect_like rect: where to put the rectangle on the page.
+      :arg multiple radius: draw rounded rectangle corners. If not `None`, specifies the radius of the curvature as a percentage of a rectangle side length. This must one or (a tuple of) two floats `0 < radius <= 0.5`, where 0.5 corresponds to 50% of the respective side. If a float, the radius of the curvature is computed as `radius * min(width, height)`, drawing the corner's perimeter as a quarter circle. If a tuple `(rx, ry)` is given, then the curvature is asymmetric with respect to the horizontal and vertical directions. A value of `radius=(0.5, 0.5)` draws an ellipse.
 
       :rtype: :ref:`Point`
       :returns: top-left corner of the rectangle.
@@ -261,7 +264,7 @@ Several draw methods can be executed in a row and each one of them will contribu
    .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
 
       Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them.
-
+      
       It has **no effect on** :meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`.
 
       The method also supports **morphing the compound drawing** using :ref:`Point` *fixpoint* and :ref:`matrix` *matrix*.
@@ -363,9 +366,9 @@ Several draw methods can be executed in a row and each one of them will contribu
    .. method:: commit(overlay=True)
 
       Update the page's :data:`contents` with the accumulated drawings, followed by any text insertions. If text overlaps drawings, it will be written on top of the drawings.
-
+      
       .. warning:: **Do not forget to execute this method:**
-
+      
             If a shape is **not committed, it will be ignored and the page will not be changed!**
 
       The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, :attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, the shape object can be reused for the **same page**.
@@ -548,12 +551,12 @@ Common Parameters
 **dashes** (*str*)
 
   Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. `n` is the dash length, `m` (optional) is the subsequent gap length, and `p` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If `m` is omitted, it defaults to `n`.
-
+  
   A continuous line (no dashes) is drawn with `"[] 0"` or *None* or `""`. Examples:
-
+  
   * Specifying `"[3 4] 0"` means dashes of 3 and gaps of 4 pixels following each other.
   * `"[3 3] 0"` and `"[3] 0"` do the same thing.
-
+  
   For (the rather complex) details on how to achieve sophisticated dashing effects, see :ref:`AdobeManual`, page 217.
 
 ----

@@ -76,7 +76,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.draw_sector`           PDF only: draw a circular sector
 :meth:`Page.draw_squiggle`         PDF only: draw a squiggly line
 :meth:`Page.draw_zigzag`           PDF only: draw a zig-zagged line
-:meth:`Page.get_drawings`          get list of the draw commands contained in the page
+:meth:`Page.get_drawings`          get vector graphics on page
 :meth:`Page.get_fonts`             PDF only: get list of referenced fonts
 :meth:`Page.get_image_bbox`        PDF only: get bbox and matrix of embedded image
 :meth:`Page.get_image_info`        get list of meta information for all used images
@@ -256,7 +256,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
 
       * New in v1.16.11
-
+      
       PDF only: Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the enveloping rectangle is taken.
@@ -334,10 +334,10 @@ In a nutshell, this is what you can do with PyMuPDF:
 
         Therefore, we **strongly recommend** to use the `quads` option for text searches, to ensure correct annotations. A similar consideration applies to marking **text spans** extracted with the "dict" / "rawdict" options of :meth:`Page.get_text`. For more details on how to compute quadrilaterals in this case, see section "How to Mark Non-horizontal Text" of :ref:`FAQ`.
 
-      :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
-      :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*.
-      :arg point_like stop: *(New in v1.16.14)* stop text marking at this point. Defaults to the bottom-right point of *clip*.
-      :arg rect_like clip: *(New in v1.16.14)* only consider text lines intersecting this area. Defaults to the page rectangle.
+      :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments. And vice versa: if not *None*, the remaining parameters must be *None*.
+      :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*. Must be provided if `quads` is *None*.
+      :arg point_like stop: *(New in v1.16.14)* stop text marking at this point. Defaults to the bottom-right point of *clip*. Must be used if `quads` is *None*.
+      :arg rect_like clip: *(New in v1.16.14)* only consider text lines intersecting this area. Defaults to the page rectangle. Only use if `start` and `stop` are provided.
 
       :rtype: :ref:`Annot` or *(changed in v1.16.14)* *None*
       :returns: the created annotation. *(Changed in v1.16.14)* If *quads* is an empty list, **no annotation** is created.
@@ -778,18 +778,15 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: width; draw_rect
       pair: stroke_opacity; draw_rect
       pair: fill_opacity; draw_rect
+      pair: radius; draw_rect
       pair: oc; draw_rect
 
-   .. method:: draw_rect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_rect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, radius=None, oc=0)
 
       * Changed in v1.18.4
+      * Changed in v1.22.0: Added parameter *radius*.
 
       PDF only: Draw a rectangle. See :meth:`Shape.draw_rect`.
-
-      .. note:: An efficient way to background-color a PDF page with the old Python paper color is
-
-          >>> col = fitz.utils.getColor("py_color")
-          >>> page.draw_rect(page.rect, color=col, fill=col, overlay=False)
 
    .. index::
       pair: closePath; draw_quad
@@ -946,7 +943,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
 
          1. The method detects multiple insertions of the same image (like in above example) and will store its data only on the first execution. This is even true (although less performant), if using the default `xref=0`.
-
+         
          2. The method cannot detect if the same image had already been part of the file before opening it.
 
          3. You can use this method to provide a background or foreground image for the page, like a copyright or a watermark. Please remember, that watermarks require a transparent image if put in foreground ...
@@ -957,7 +954,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
-
+   
    .. index::
       pair: filename; replace_image
       pair: pixmap; replace_image
@@ -980,8 +977,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       This is a **global replacement:** the new image will also be shown wherever the old one has been displayed throughout the file.
 
       This method mainly exists for technical purposes. Typical uses include replacing large images by smaller versions, like a lower resolution, graylevel instead of colored, etc., or changing transparency.
-
-
+   
+   
    .. index::
       pair: xref; delete_image
 
@@ -994,14 +991,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int xref: the :data:`xref` of the image.
 
       This is a **global replacement:** the image will disappear wherever the old one has been displayed throughout the file.
-
+   
       If you inspect / extract a page's images by methods like :meth:`Page.get_images`,
       :meth:`Page.get_image_info` or :meth:`Page.get_text`,
       the replacing "dummy" image will be detected like so
       `(45, 47, 1, 1, 8, 'DeviceGray', '', 'Im1', 'FlateDecode')`
       and also seem to "cover" the same boundary box on the page.
 
-
+   
    .. index::
       pair: blocks; Page.get_text
       pair: dict; Page.get_text
@@ -1117,13 +1114,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
 
       :returns:
-
+      
          a :ref:`TextPage`. Execution may be significantly longer than :meth:`Page.get_textpage`.
 
          For a full page OCR, **all text** will have the font "GlyphlessFont" from Tesseract. In case of partial OCR, normal text will keep its properties, and only text coming from images will have the GlyphlessFont.
 
          .. note::
-
+         
             **OCRed text is only available** to PyMuPDF's text extractions and searches if their `textpage` parameter specifies the output of this method.
 
             `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
@@ -1136,13 +1133,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.19.0: add "seqno" key, remove "clippings" key
       * Changed in v1.19.1: "color" / "fill" keys now always are either are RGB tuples or `None`. This resolves issues caused by exotic colorspaces.
       * Changed in v1.19.2: add an indicator for the *"orientation"* of the area covered by an "re" item.
-      * Changed in v1.22.0: add new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Add parameter `extended` to also return clipping paths.
+      * Changed in v1.22.0: add new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`).
+      * Changed in v1.22.0: add parameter `extended` to also return clipping and group paths.
 
-      Return the draw commands of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc.
+      Return the vector graphics of the page. These are instructions which draw lines, rectangles, quadruples or curves, including properties like colors, transparency, line width and dashing, etc. Alternative terms are "line art" and "drawings".
 
       :returns: a list of dictionaries. Each dictionary item contains one or more single draw commands belonging together: they have the same properties (colors, dashing, etc.). This is called a **"path"** in PDF, so we adopted that name here, but the method **works for all document types**.
 
-      The path dictionary has been designed to be compatible with class :ref:`Shape`. There are the following keys:
+      The path dictionary for fill, stroke and fill-stroke paths has been designed to be compatible with class :ref:`Shape`. There are the following keys:
 
             ============== ============================================================================
             Key            Value
@@ -1165,37 +1163,77 @@ In a nutshell, this is what you can do with PyMuPDF:
             width          Stroke line width  (see :ref:`Shape`).
             ============== ============================================================================
 
-      **New in v1.22.0:** If `extended=True`, three additional dictionary types may be present in the returned list:
+      * *(Changed in v1.18.17)* Key `"opacity"` has been replaced by the new keys `"fill_opacity"` and `"stroke_opacity"`. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
 
-         * "clip" and "clip-stroke" dictionaries. Its values (most importantly "scissor") remain valid / apply as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level ends this clip.
 
-            ============== ============================================================================
-            Key            Value
-            ============== ============================================================================
-            closePath      Same as in "stroke" or "fill" dictionaries
-            even_odd       Same as in "stroke" or "fill" dictionaries
-            items          Same as in "stroke" or "fill" dictionaries
-            rect           Same as in "stroke" or "fill" dictionaries
-            layer          Same as in "stroke" or "fill" dictionaries
-            level          Same as in "stroke" or "fill" dictionaries
-            scissor        the clip rectangle
-            type           One of "clip" or "clip-stroke"
-            ============== ============================================================================
+      For paths other than groups or clips, key `"type"` takes one of the following values:
+
+      * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, not applicable ones are present with a value of *None*: `"color"`, `"lineCap"`, `"lineJoin"`, `"width"`, `"closePath"`, `"dashes"` and should be ignored.
+      * **"s"** -- this is a *stroke-only* path. Similar to previous, key `"fill"` is present with value *None*.
+      * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
+
+      Each item in `path["items"]` is one of the following:
+
+      * `("l", p1, p2)` - a line from p1 to p2 (:ref:`Point` objects).
+      * `("c", p1, p2, p3, p4)` - cubic Bézier curve **from p1 to p4** (p2 and p3 are the control points). All objects are of type :ref:`Point`.
+      * `("re", rect, orientation)` - a :ref:`Rect`. *Changed in v1.18.17:* Multiple rectangles within the same path are now detected. *Changed in v1.19.2:* added integer `orientation` which is 1 resp. -1 indicating whether the enclosed area is rotated left (1 = anti-clockwise), or resp. right [#f7]_.
+      * `("qu", quad)` - a :ref:`Quad`. *New in v1.18.17, changed in v1.19.2:* 3 or 4 consecutive lines are detected to actually represent a :ref:`Quad`.
+
+      .. note:: Starting with v1.19.2, quads and rectangles are more reliably recognized as such.
+
+      Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
+
+      **New in v1.22.0:** Specifying `extended=True` significantly alters the output. Most importantly, new dictionary types are present: "clip" and "group". All paths will now be organized in a hierarchic structure which is encoded by the new integer key "level", the hierarchy level. Each group or clip establishes a new hierarchy, which applies to all subsequent paths having a *larger* level value.
+
+      Any path with a smaller level value than its predecessor will end the scope of (at least) the preceeding hierarchy level. A "clip" path with the same level as the preceding clip will end the scope of that clip. Same is true for groups. This is best explained by an example::
+
+         +------+------+--------+------+--------+
+         | line | lvl0 | lvl1   | lvl2 |  lvl3  |
+         +------+------+--------+------+--------+
+         |  0   | clip |        |      |        |
+         |  1   |      | fill   |      |        |
+         |  2   |      | group  |      |        |
+         |  3   |      |        | clip |        |
+         |  4   |      |        |      | stroke |
+         |  5   |      |        | fill |        |  ends scope of clip in line 3
+         |  6   |      | stroke |      |        |  ends scope of group in line 2
+         |  7   |      | clip   |      |        |
+         |  8   | fill |        |      |        |  ends scope of line 0
+         +------+------+--------+------+--------+
+
+      The clip in line 0 applies to line including line 7. Group in line 2 applies to lines 3 to 5, clip in line 3 only applies to line 4.
+
+      "stroke" in line 4 is under control of "group" in line 2 and "clip" in line 3 (which in turn is a subset of line 0 clip).
+
+      * **"clip"** dictionary. Its values (most importantly "scissor") remain valid / apply as long as following dictionaries have a **larger "level"** value.
+
+         ============== ============================================================================
+         Key            Value
+         ============== ============================================================================
+         closePath      Same as in "stroke" or "fill" dictionaries
+         even_odd       Same as in "stroke" or "fill" dictionaries
+         items          Same as in "stroke" or "fill" dictionaries
+         rect           Same as in "stroke" or "fill" dictionaries
+         layer          Same as in "stroke" or "fill" dictionaries
+         level          Same as in "stroke" or "fill" dictionaries
+         scissor        the clip rectangle
+         type           "clip"
+         ============== ============================================================================
 
          * "group" dictionary. Its values remain valid (apply) as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level end this group.
 
-            ============== ============================================================================
-            Key            Value
-            ============== ============================================================================
-            rect           Same as in "stroke" or "fill" dictionaries
-            layer          Same as in "stroke" or "fill" dictionaries
-            level          Same as in "stroke" or "fill" dictionaries
-            isolated       (bool) Whether this group is isolated
-            knockout       (bool) Whether this is a "Knockout Group"
-            blendmode      Name of the BlendMode, default is "Normal"
-            opacity        Float value in range [0, 1].
-            type           "group"
-            ============== ============================================================================
+         ============== ============================================================================
+         Key            Value
+         ============== ============================================================================
+         rect           Same as in "stroke" or "fill" dictionaries
+         layer          Same as in "stroke" or "fill" dictionaries
+         level          Same as in "stroke" or "fill" dictionaries
+         isolated       (bool) Whether this group is isolated
+         knockout       (bool) Whether this is a "Knockout Group"
+         blendmode      Name of the BlendMode, default is "Normal"
+         opacity        Float value in range [0, 1].
+         type           "group"
+         ============== ============================================================================
 
 
 
@@ -1229,9 +1267,10 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.18.17
       * Changed in v1.19.0: removed "clippings" key, added "seqno" key.
       * Changed in v1.19.1: always generate RGB color tuples.
-      * Changed in v1.22.0: added new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`). Added parameter `extended` to also return clipping paths.
+      * Changed in v1.22.0: added new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`).
+      * Changed in v1.22.0  added parameter `extended` to also return clipping paths.
 
-      Extract the drawing paths on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster:
+      Extract the vector graphics on the page. Apart from following technical differences, functionally equivalent to :meth:`Page.get_drawings`, but much faster:
 
       * Every path type only contains the relevant keys, e.g. a stroke path has no `"fill"` color key. See comment in method :meth:`Page.get_drawings`.
       * Coordinates are given as :data:`point_like`, :data:`rect_like` and :data:`quad_like` **tuples** -- not as :ref:`Point`, :ref:`Rect`, :ref:`Quad` objects.

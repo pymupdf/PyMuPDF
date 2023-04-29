@@ -263,8 +263,8 @@ Please also do have a look at chapter :ref:`cooperation` and at demo programs `d
 
 .. _WorkingWithStories:
 
-Working with Stories
-======================
+Stories: Generating PDF from HTML Source
+=========================================
 
 The :ref:`Story` class is a new feature of PyMuPDF version 1.21.0. It represents support for MuPDF's **"story"** interface.
 
@@ -283,7 +283,7 @@ The following is a quote from the book `"MuPDF Explored"`_ by Robin Watts from `
 
 When creating a :ref:`Story`, the input from up to three different information sources is taken into account. All these items are optional.
 
-1. HTML source code, provided as a Python string, from which a so-called **Document Object Model (DOM)** is created. As usual, this string may be read from a file, be stored in a Python variable of the script, **or** be programmatically created by the script itself via an API (:ref:`Xml`).
+1. HTML source code, either a Python string or **created by the script** using methods of :ref:`Xml`.
 
 2. CSS (Cascaded Style Sheet) source code, provided as a Python string. CSS can be used to provide styling information (text font size, color, etc.) like it would happen for web pages. Obviously, this string may also be read from a file.
 
@@ -292,7 +292,9 @@ When creating a :ref:`Story`, the input from up to three different information s
 
 The :ref:`API<Xml>` allows creating DOMs completely from scratch, including desired styling information. It can also be used to modify or extend **provided** HTML: text can be deleted or replaced, or its styling can be changed. Text -- for example extracted from databases -- can also be added and fill template-like HTML documents.
 
-After the story DOM is considered complete, it can be used to create a PDF document. This happens via the new :ref:`DocumentWriter` class. During the output page creation, the programmer will provide a number of rectangles where the story should place its content.
+It is **not required** to provide syntactically complete HTML documents: snippets like `<b>Hello <i>World!</i></b>` are fully accepted, and many / most syntax errors are automatically corrected.
+
+After the HTML is considered complete, it can be used to create a PDF document. This happens via the new :ref:`DocumentWriter` class. The programmer calls its methods to create a new empty page, and passes rectangles to the Story to fill them.
 
 The story in turn will return completion codes indicating whether or not more content is waiting to be written. Which part of the content will land in which rectangle or on which page is automatically determined by the story itself -- it cannot be influenced other than by providing the rectangles.
 

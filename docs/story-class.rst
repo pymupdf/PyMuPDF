@@ -127,11 +127,11 @@ Story
 
       Let the Story provide positioning information about certain HTML elements once their place on the current page has been computed - i.e. invoke this method **directly after** :meth:`Story.place`.
 
+      *Story* will pass position information to *function*. This information can for example be used to generate a Table of Contents.
 
-      :arg function: a Python callback function taking a :ref:`ElementPostion` instance,
-        which will be invoked by this method to process positioning information.
+      :arg callable function: a Python function accepting an :class:`ElementPosition` object. It will be invoked by the Story object to process positioning information. The function **must** be a callable accepting exactly one argument.
       :arg dict args: an optional dictionary with any **additional** information
-        that should be added to the ElementPosition instance passed to `function`.
+        that should be added to the :class:`ElementPosition` instance passed to `function`.
         Like for example the current output page number.
         Every key in this dictionary must be a string that conforms to the rules for a valid Python identifier.
         The complete set of information is explained below.
@@ -143,14 +143,7 @@ Story
 
    .. attribute:: body
 
-      The :htmlTag:`body` part of the story's DOM. Even if `html=None` has been used at story creation, the following minimum HTML source will always be available::
-
-        <html>
-            <head></head>
-            <body></body>
-        </html>
-
-      This attribute contains the :ref:`Xml` node of :htmlTag:`body`. All relevant content for PDF production is contained between "<body>" and "</body>".
+      The :htmlTag:`body` part of the story's DOM. This attribute contains the :ref:`Xml` node of :htmlTag:`body`. All relevant content for PDF production is contained between "<body>" and "</body>".
 
    .. method:: write(writer, rectfn, positionfn=None, pagefn=None)
 
@@ -272,8 +265,10 @@ A typical loop for executing a story with using this method would look like this
     def recorder(elpos):
         pass
 
+
 Attributes of the ElementPosition class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Exactly one parameter must be passed to the function provided by :meth:`Story.element_positions`. It is an object with the following attributes:
 
 The parameter passed to the `recorder` function is an object with the following attributes:
 
