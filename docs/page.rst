@@ -256,7 +256,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
 
       * New in v1.16.11
-
+      
       PDF only: Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the enveloping rectangle is taken.
@@ -778,12 +778,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: width; draw_rect
       pair: stroke_opacity; draw_rect
       pair: fill_opacity; draw_rect
+      pair: radius; draw_rect
       pair: oc; draw_rect
 
-   .. method:: draw_rect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_rect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, radius=None, oc=0)
 
       * Changed in v1.18.4
-      * Changed in v1.22.0: Added parameter *rounded*.
+      * Changed in v1.22.0: Added parameter *radius*.
 
       PDF only: Draw a rectangle. See :meth:`Shape.draw_rect`.
 
@@ -942,7 +943,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
 
          1. The method detects multiple insertions of the same image (like in above example) and will store its data only on the first execution. This is even true (although less performant), if using the default `xref=0`.
-
+         
          2. The method cannot detect if the same image had already been part of the file before opening it.
 
          3. You can use this method to provide a background or foreground image for the page, like a copyright or a watermark. Please remember, that watermarks require a transparent image if put in foreground ...
@@ -953,7 +954,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
-
+   
    .. index::
       pair: filename; replace_image
       pair: pixmap; replace_image
@@ -976,8 +977,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       This is a **global replacement:** the new image will also be shown wherever the old one has been displayed throughout the file.
 
       This method mainly exists for technical purposes. Typical uses include replacing large images by smaller versions, like a lower resolution, graylevel instead of colored, etc., or changing transparency.
-
-
+   
+   
    .. index::
       pair: xref; delete_image
 
@@ -990,14 +991,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int xref: the :data:`xref` of the image.
 
       This is a **global replacement:** the image will disappear wherever the old one has been displayed throughout the file.
-
+   
       If you inspect / extract a page's images by methods like :meth:`Page.get_images`,
       :meth:`Page.get_image_info` or :meth:`Page.get_text`,
       the replacing "dummy" image will be detected like so
       `(45, 47, 1, 1, 8, 'DeviceGray', '', 'Im1', 'FlateDecode')`
       and also seem to "cover" the same boundary box on the page.
 
-
+   
    .. index::
       pair: blocks; Page.get_text
       pair: dict; Page.get_text
@@ -1113,13 +1114,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
 
       :returns:
-
+      
          a :ref:`TextPage`. Execution may be significantly longer than :meth:`Page.get_textpage`.
 
          For a full page OCR, **all text** will have the font "GlyphlessFont" from Tesseract. In case of partial OCR, normal text will keep its properties, and only text coming from images will have the GlyphlessFont.
 
          .. note::
-
+         
             **OCRed text is only available** to PyMuPDF's text extractions and searches if their `textpage` parameter specifies the output of this method.
 
             `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
@@ -1206,33 +1207,33 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * **"clip"** dictionary. Its values (most importantly "scissor") remain valid / apply as long as following dictionaries have a **larger "level"** value.
 
-            ============== ============================================================================
-            Key            Value
-            ============== ============================================================================
-            closePath      Same as in "stroke" or "fill" dictionaries
-            even_odd       Same as in "stroke" or "fill" dictionaries
-            items          Same as in "stroke" or "fill" dictionaries
-            rect           Same as in "stroke" or "fill" dictionaries
-            layer          Same as in "stroke" or "fill" dictionaries
-            level          Same as in "stroke" or "fill" dictionaries
-            scissor        the clip rectangle
-            type           "clip"
-            ============== ============================================================================
+         ============== ============================================================================
+         Key            Value
+         ============== ============================================================================
+         closePath      Same as in "stroke" or "fill" dictionaries
+         even_odd       Same as in "stroke" or "fill" dictionaries
+         items          Same as in "stroke" or "fill" dictionaries
+         rect           Same as in "stroke" or "fill" dictionaries
+         layer          Same as in "stroke" or "fill" dictionaries
+         level          Same as in "stroke" or "fill" dictionaries
+         scissor        the clip rectangle
+         type           "clip"
+         ============== ============================================================================
 
          * "group" dictionary. Its values remain valid (apply) as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level end this group.
 
-            ============== ============================================================================
-            Key            Value
-            ============== ============================================================================
-            rect           Same as in "stroke" or "fill" dictionaries
-            layer          Same as in "stroke" or "fill" dictionaries
-            level          Same as in "stroke" or "fill" dictionaries
-            isolated       (bool) Whether this group is isolated
-            knockout       (bool) Whether this is a "Knockout Group"
-            blendmode      Name of the BlendMode, default is "Normal"
-            opacity        Float value in range [0, 1].
-            type           "group"
-            ============== ============================================================================
+         ============== ============================================================================
+         Key            Value
+         ============== ============================================================================
+         rect           Same as in "stroke" or "fill" dictionaries
+         layer          Same as in "stroke" or "fill" dictionaries
+         level          Same as in "stroke" or "fill" dictionaries
+         isolated       (bool) Whether this group is isolated
+         knockout       (bool) Whether this is a "Knockout Group"
+         blendmode      Name of the BlendMode, default is "Normal"
+         opacity        Float value in range [0, 1].
+         type           "group"
+         ============== ============================================================================
 
 
 
