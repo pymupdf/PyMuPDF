@@ -189,25 +189,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
       :arg rect_like rect: the target rectangle. Must not be empty or infinite.
       :rtype: :ref:`Matrix`
-      :returns: a matrix `mat` such that `self * mat = rect`. Can for example be used to transform between the page and the pixmap coordinates.
-
-         .. note:: Suppose you want to check whether any of the words "pixmap" is invisible, because the text color equals the ambient color -- e.g. white on white. We make a pixmap and check the "color environment" of each word:
-
-            >>> # make a pixmap of the page
-            >>> pix = page.get_pixmap(dpi=150)
-            >>> # make a matrix that transforms to pixmap coordinates
-            >>> mat = page.rect.torect(pix.irect)
-            >>> # search for text locations
-            >>> rlist = page.search_for("pixmap")
-            >>> # check color environment of each occurrence
-            >>> # we will check for "almost unicolor"
-            >>> for r in rlist:
-                    if pix.color_topusage(clip=r * mat)[0] > 0.95:
-                        print("'pixmap' invisible here:", r)
-            >>> 
-
-            Method :meth:`Pixmap.color_topusage` computes the percentage of pixels showing the same color.
-
+      :returns: a matrix `mat` such that `self * mat = rect`. Can for example be used to transform between the page and the pixmap coordinates. See an example use here :ref:`RecipesImages_P`.
 
    .. method:: morph(fixpoint, matrix)
 

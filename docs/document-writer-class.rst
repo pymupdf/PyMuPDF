@@ -30,6 +30,8 @@ Using DocumentWriter_ also for other document types might happen in the future.
 
       Create a document writer object, passing a Python file pointer or a file path. Options to use when saving the file may also be passed.
 
+      This class can also be used as a Python context manager.
+
       :arg path: the output file. This may be a string file name, or any Python file pointer.
       
          .. note:: By using a `io.BytesIO()` object as file pointer, a document writer can create a PDF in memory. Subsequently, this PDF can be re-opened for input and be further manipulated. This technique is used by several example scripts in :ref:`Stories recipes<RecipesStories>`.

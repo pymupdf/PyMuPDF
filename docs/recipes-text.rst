@@ -18,15 +18,12 @@ The document can be any supported type like PDF, XPS, etc.
 
 The script works as a command line tool which expects the document filename supplied as a parameter. It generates one text file named "filename.txt" in the script directory. Text of pages is separated by a form feed character::
 
-    import sys, fitz
+    import sys, pathlib, fitz
     fname = sys.argv[1]  # get document filename
-    doc = fitz.open(fname)  # open document
-    out = open(fname + ".txt", "wb")  # open text output
-    for page in doc:  # iterate the document pages
-        text = page.get_text().encode("utf8")  # get plain text (is in UTF-8)
-        out.write(text)  # write text of page
-        out.write(bytes((12,)))  # write page delimiter (form feed 0x0C)
-    out.close()
+    with fitz.open(fname) as doc:  # open document
+        text = chr(12).join([page.get_text() for page in doc])
+    # write as a binary file to support non-ASCII characters
+    pathlib.Path(fname + ".txt").write_bytes(text.encode())
 
 The output will be plain text as it is coded in the document. No effort is made to prettify in any way. Specifically for PDF, this may mean output not in usual reading order, unexpected line breaks and so forth.
 
@@ -37,6 +34,31 @@ You have many options to rectify this -- see chapter :ref:`Appendix2`. Among the
 3. Extract a list of single words via *Page.get_text("words")*. Its items are words with position information. Use it to determine text contained in a given rectangle -- see next section.
 
 See the following two sections for examples and further explanations.
+
+
+.. index::
+   triple: lookup;text;key-value
+
+
+.. _RecipesText_A1:
+
+How to Extract Key-Value Pairs from a Page
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If the layout of a page is *"predictable"* in some sense, then there is a simple way to find the values for a given set of keywords fast and easily -- without using regular expressions. Please see `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-extraction/lookup-keywords.py>`_ example script.
+
+"Predictable" in this context means:
+
+* Every keyword is followed by its value -- no other text is present in between them.
+* The bottom of the value's boundary box is **not above** the one of the keyword.
+* There are **no other restrictions**: the page layout may or may not be fixed, and the text may also have been stored as one string. Key and value may have any distance from each other.
+
+For example, the following five key-value pairs will be correctly identified::
+
+   key1               value1
+   key2
+   value2
+   key3
+          value3 blah, blah, blah key4 value4 some other text key5 value5 ...
 
 
 .. index::
@@ -90,7 +112,7 @@ You can also use the above mentioned `script <https://github.com/pymupdf/PyMuPDF
 
 .. _RecipesText_D:
 
-How to :index:`Extract Tables <pair: extract; table>` from Documents
+How to :index:`Extract Table Content <pair: extract; table>` from Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you see a table in a document, you are not normally looking at something like an embedded Excel or other identifiable object. It usually is just text, formatted to appear as appropriate.
 
@@ -111,7 +133,7 @@ This method has advantages and drawbacks. Pros are:
 * The search string can contain blanks and wrap across lines
 * Upper or lower case characters are treated equal
 * Word hyphenation at line ends is detected and resolved
-* Return may also be a list of :ref:`Quad` objects to precisely locate text that is **not parallel** to either axis -- using :ref:`Quad` output is also recommend, when page rotation is not zero
+* Return may also be a list of :ref:`Quad` objects to precisely locate text that is **not parallel** to either axis -- using :ref:`Quad` output is also recommended, when page rotation is not zero.
 
 But you also have other options::
 

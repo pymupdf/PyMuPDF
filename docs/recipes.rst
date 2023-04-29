@@ -53,6 +53,12 @@
 
 .. toctree::
 
+   recipes-optional-content.rst
+
+----
+
+.. toctree::
+
    recipes-low-level-interfaces.rst
 
 ----

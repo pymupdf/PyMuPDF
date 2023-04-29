@@ -210,11 +210,14 @@ Several draw methods can be executed in a row and each one of them will contribu
          .. image:: images/img-drawSector2.*
 
 
-   .. method:: draw_rect(rect)
+   .. method:: draw_rect(rect, *, rounded=None)
+
+      * Changed in v1.22.0: Added parameter *rounded*.
 
       Draw a rectangle. The drawing starts and ends at the top-left corner in an anti-clockwise movement.
 
       :arg rect_like rect: where to put the rectangle on the page.
+      :arg multiple rounded: draw rounded rectangle corners. If not `None`, specifies the radius of the curvature as a percentage of a rectangle side length. This must be one or (a tuple of) two floats in the semi-open interval `(0, 0.5]`, where 0.5 corresponds to 50% of the respective side. If a single float, the radius of the curvature is computed as `float * min(width, height)`, drawing the corner's perimeter as a quarter circle. If a tuple `(rx, ry)` is given, then the corner curve is a quarter ellipse. A value of `rounded=(0.5, 0.5)` draws an ellipse.
 
       :rtype: :ref:`Point`
       :returns: top-left corner of the rectangle.
