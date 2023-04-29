@@ -25,10 +25,30 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
        This method helps finding out the possible values of :attr:`field_value` in these cases.
 
-       :returns: a dictionary with the names of 'On' and 'Off' for the *normal* and the *pressed-down* appearance of button widgets. Example:
+       :returns: a dictionary with the names of 'On' and 'Off' for the *normal* and the *pressed-down* appearance of button widgets. The following example shows that the "selected" value is "Male":
 
          >>> print(field.field_name, field.button_states())
          Gender Second person {'down': ['Male', 'Off'], 'normal': ['Male', 'Off']}
+
+
+    .. method:: on_state
+
+      * New in version 1.22.2
+
+       Return the value of the "ON" state of check boxes and radio buttons. For check boxes this is always the value "Yes". For radio buttons, this is the value to select / activate the button.
+
+       :returns: the value that sets the button to "selected". For non-checkbox, non-radiobutton fields, always `None` is returned. For check boxes the return is `True`. For radio buttons this is the value "Male" in the following example:
+
+         >>> print(field.field_name, field.button_states())
+         Gender Second person {'down': ['Male', 'Off'], 'normal': ['Male', 'Off']}
+         >>> print(field.on_state())
+         Male
+
+        So for check boxes and radio buttons, the recommended method to set them to "selected", or to check the state is the following:
+        
+         >>> field.field_value = field.on_state()
+         >>> field.field_value == field.on_state()
+         True
 
 
     .. method:: update
@@ -213,7 +233,7 @@ PyMuPDF supports the creation and update of many, but not all widget types.
 * check box (`PDF_WIDGET_TYPE_CHECKBOX`)
 * combo box (`PDF_WIDGET_TYPE_COMBOBOX`)
 * list box (`PDF_WIDGET_TYPE_LISTBOX`)
-* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently support groups of (interconnected) buttons, where setting one automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. Setting or unsetting happens via values `True` and `False` and will always work without affecting other radio buttons.
+* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently support the **creation** of groups of (interconnected) radio buttons, where setting one automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. However: consistently selecting (or unselecting) a radio button is supported. This includes correctly setting the value maintained in the owning button group. Selecting a radio button may be done by either assigning `True` or `field.on_sate()` to the field value. **De-selecting** the button should be done assigning `False`.
 * signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only**.
 
 .. rubric:: Footnotes

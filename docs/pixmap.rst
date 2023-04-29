@@ -27,7 +27,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 ================================ ===================================================
 :meth:`Pixmap.clear_with`        clear parts of the pixmap
 :meth:`Pixmap.color_count`       determine used colors
-:meth:`Pixmap.color_topusage`    determine share of top used color
+:meth:`Pixmap.color_topusage`    determine share of most used color
 :meth:`Pixmap.copy`              copy parts of another pixmap
 :meth:`Pixmap.gamma_with`        apply a gamma factor to the pixmap
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
@@ -43,7 +43,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.set_pixel`         set color and alpha of a pixel
 :meth:`Pixmap.set_rect`          set color and alpha of all pixels in a rectangle
 :meth:`Pixmap.shrink`            reduce size keeping proportions
-:meth:`Pixmap.tint_with`         tint the pixmap with a color
+:meth:`Pixmap.tint_with`         tint the pixmap
 :meth:`Pixmap.tobytes`           return a memory area in a variety of formats
 :meth:`Pixmap.warp`              return a pixmap made from a quad inside
 :attr:`Pixmap.alpha`             transparency indicator
@@ -193,9 +193,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: tint_with(black, white)
 
-      Colorize (tint) a pixmap (in-place) with a colors provided as an sRGB integers, i.e. 0xRRGGBB. Only colorspaces :data:`CS_GRAY` and :data:`CS_RGB` are supported, others are ignored with a warning.
+      Colorize a pixmap by replacing black and / or white with colors given as **sRGB integer** values. Only colorspaces :data:`CS_GRAY` and :data:`CS_RGB` are supported, others are ignored with a warning.
 
-      If the colorspace is :data:`CS_GRAY`, *(red + green + blue)/3* will be taken as the tint value.
+      If the colorspace is :data:`CS_GRAY`, the average *(red + green + blue)/3* will be taken. The pixmap will be changed in place.
 
       :arg int black: replace black with this value. Specifying 0x000000 makes no changes.
       :arg int white: replace white with this value. Specifying 0xFFFFFF makes no changes.
@@ -323,13 +323,31 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          .. image:: images/img-pixmapcopy.*
              :scale: 20
 
-   .. method:: save(filename, output=None)
+   .. method:: save(filename, output=None, jpg_quality=95)
 
-      Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the *savealpha* option is no longer supported and will be silently ignored.
+      * Changed in v1.22.0: Added **direct support of JPEG** images. Image quality can be controlled via parameter "jpg_quality".
 
-      :arg str,Path,file filename: The file to save to. May be provided as a string, as a `pathlib.Path` or as a Python file object. In the latter two cases, the filename is taken from the resp. object. The filename's extension determines the image format, which can be overruled by the output parameter.
+      Save pixmap as an image file. Depending on the output chosen, only some or all colorspaces are supported and different file extensions can be chosen. Please see the table below.
 
-      :arg str output: The requested image format. The default is the filename's extension. If not recognized, *png* is assumed. For other possible values see :ref:`PixmapOutput`.
+      :arg str,Path,file filename: The file to save to. May be provided as a string, as a ``pathlib.Path`` or as a Python file object. In the latter two cases, the filename is taken from the resp. object. The filename's extension determines the image format, which can be overruled by the output parameter.
+
+      :arg str output: The desired image format. The default is the filename's extension. If both, this value and the file extension are unsupported, an exception is raised. For possible values see :ref:`PixmapOutput`.
+      :arg int jpg_quality: The desired image quality, default 95. Only applies to JPEG images, else ignored. This parameter trades quality against file size. A value of 98 is close to lossless. Higher values should not lead to better quality.
+
+      :raises ValueError: For unsupported image formats.
+
+   .. method:: tobytes(output="png", jpg_quality=95)
+
+      * New in version 1.14.5: Return the pixmap as a *bytes* memory object of the specified format -- similar to :meth:`save`.
+      * Changed in v1.22.0: Added **direct JPEG support**. Image quality can be influenced via new parameter "jpg_quality".
+
+      :arg str output: The desired image format. The default is "png". For possible values see :ref:`PixmapOutput`.
+      :arg int jpg_quality: The desired image quality, default 95. Only applies to JPEG images, else ignored. This parameter trades quality against file size. A value of 98 is close to lossless. Higher values should not lead to better quality.
+
+      :raises ValueError: For unsupported image formats.
+      :rtype: bytes
+
+      :arg str output: The requested image format. The default is "png". For other possible values see :ref:`PixmapOutput`.
 
    .. method:: pdfocr_save(filename, compress=True, language="eng")
 
@@ -374,35 +392,29 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
                doc.save("ocr-images.pdf")
 
 
-   .. method:: tobytes(output="png")
-
-      *New in version 1.14.5:* Return the pixmap as a *bytes* memory object of the specified format -- similar to :meth:`save`.
-
-      :arg str output: The requested image format. The default is "png" for which this function equals :meth:`tobytes`. For other possible values see :ref:`PixmapOutput`.
-
-      :rtype: bytes
-
    ..  method:: pil_save(*args, **kwargs)
 
       * New in v1.17.3
 
       Write the pixmap as an image file using Pillow. Use this method for output unsupported by MuPDF. Examples are
 
-      * Formats JPEG, JPX, J2K, WebP, etc.
+      * Formats JPX, J2K, WebP, etc.
       * Storing EXIF information.
       * If you do not provide dpi information, the values *xres*, *yres* stored with the pixmap are automatically used.
 
-      A simple example: `pix.pil_save("some.jpg", optimize=True, dpi=(150, 150))`. For details on other parameters see the Pillow documentation.
+      A simple example: `pix.pil_save("some.webp", optimize=True, dpi=(150, 150))`. For details on other parameters see the Pillow documentation.
 
-      .. note:: *(Changed in v1.18.0)* :meth:`Pixmap.save` now also sets dpi from *xres* / *yres* automatically, when saving a PNG image.
+      Since v1.22.0, PyMuPDF supports JPEG output directly. For both, performance reasons and for reducing external dependencies, the use of this method is no longer recommended when outputting JPEG images.
 
-         If Pillow is not installed an `ImportError` exception is raised.
+      :raises ImportError: if Pillow is not installed.
 
    ..  method:: pil_tobytes(*args, **kwargs)
 
       * New in v1.17.3
 
-      Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="JPEG", optimize=True)`. Also see above. For details on other parameters see the Pillow documentation. If Pillow is not installed, an `ImportError` exception is raised.
+      Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="WEBP", optimize=True)`. Also see above. For details on other parameters see the Pillow documentation.
+      
+      .raises ImportError: if Pillow is not installed.
 
       :rtype: bytes
 
@@ -448,9 +460,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Return the most frequently used color and its relative frequency.
 
-      :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
-      :rtype: tuple[float, bytes]
-      :returns: A tuple `(ratio, pixel)` where `0 < ratio <= 1` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: a response `(0.95, b"\x00\x00\x00")` means that 95% of all pixels are black.
+      :arg rect_like clip: A rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
+      :rtype: tuple
+      :returns: A tuple `(ratio, pixel)` where `0 < ratio <= 1` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: a response `(0.95, b"\x00\x00\x00")` means that 95% of all pixels are black. See an example here :ref:`RecipesImages_P`.
 
 
    .. attribute:: alpha
@@ -623,11 +635,12 @@ The following file types are supported as **input** to construct pixmaps: **BMP,
 
 Supported Output Image Formats
 ---------------------------------------------------------------------------
-A number of image **output** formats are supported. You have the option to either write an image directly to a file (:meth:`Pixmap.save`), or to generate a bytes object (:meth:`Pixmap.tobytes`). Both methods accept a 3-letter string identifying the desired format (**Format** column below). Please note that not all combinations of pixmap colorspace, transparency support (alpha) and image format are possible.
+A number of image **output** formats are supported. You have the option to either write an image directly to a file (:meth:`Pixmap.save`), or to generate a bytes object (:meth:`Pixmap.tobytes`). Both methods accept a string identifying the desired format (**Format** column below). Please note that not all combinations of pixmap colorspace, transparency support (alpha) and image format are possible.
 
-========== =============== ========= ============== ===========================
+========== =============== ========= ============== =================================
 **Format** **Colorspaces** **alpha** **Extensions** **Description**
-========== =============== ========= ============== ===========================
+========== =============== ========= ============== =================================
+jpg, jpeg  gray, rgb, cmyk no        .jpg, .jpeg    Joint Photographic Experts Group 
 pam        gray, rgb, cmyk yes       .pam           Portable Arbitrary Map
 pbm        gray, rgb       no        .pbm           Portable Bitmap
 pgm        gray, rgb       no        .pgm           Portable Graymap
@@ -636,13 +649,13 @@ pnm        gray, rgb       no        .pnm           Portable Anymap
 ppm        gray, rgb       no        .ppm           Portable Pixmap
 ps         gray, rgb, cmyk no        .ps            Adobe PostScript Image
 psd        gray, rgb, cmyk yes       .psd           Adobe Photoshop Document
-========== =============== ========= ============== ===========================
+========== =============== ========= ============== =================================
 
 .. note::
     * Not all image file types are supported (or at least common) on all OS platforms. E.g. PAM and the Portable Anymap formats are rare or even unknown on Windows.
     * Especially pertaining to CMYK colorspaces, you can always convert a CMYK pixmap to an RGB pixmap with *rgb_pix = fitz.Pixmap(fitz.csRGB, cmyk_pix)* and then save that in the desired format.
-    * As can be seen, MuPDF's image support range is different for input and output. Among those supported both ways, PNG is probably the most popular. We recommend using Pillow whenever you face a support gap.
-    * We also recommend using "ppm" formats as input to tkinter's *PhotoImage* method like this: *tkimg = tkinter.PhotoImage(data=pix.tobytes("ppm"))* (also see the tutorial). This is **very** fast (**60 times** faster than PNG) and will work under Python 2 or 3.
+    * As can be seen, MuPDF's image support range is different for input and output. Among those supported both ways, PNG and JPEG are probably the most popular.
+    * We also recommend using "ppm" formats as input to tkinter's *PhotoImage* method like this: *tkimg = tkinter.PhotoImage(data=pix.tobytes("ppm"))* (also see the tutorial). This is **very** fast (**60 times** faster than PNG).
 
 
 

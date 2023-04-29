@@ -69,6 +69,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.has_links`              PDF only: check if PDF contains any links
 :meth:`Document.insert_page`            PDF only: insert a new page
 :meth:`Document.insert_pdf`             PDF only: insert pages from another PDF
+:meth:`Document.insert_file`            PDF only: insert pages from arbitrary document
 :meth:`Document.journal_can_do`         PDF only: which journal actions are possible
 :meth:`Document.journal_enable`         PDF only: enables journalling for the document
 :meth:`Document.journal_load`           PDF only: load journal from a file
@@ -102,10 +103,13 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.select`                 PDF only: select a subset of pages
 :meth:`Document.set_layer_ui_config`    PDF only: set OCG visibility temporarily
 :meth:`Document.set_layer`              PDF only: mass changing OCG states
+:meth:`Document.set_markinfo`           PDF only: set the MarkInfo values
 :meth:`Document.set_metadata`           PDF only: set the metadata
 :meth:`Document.set_oc`                 PDF only: attach OCG/OCMD to image / form xobject
 :meth:`Document.set_ocmd`               PDF only: create or update an :data:`OCMD`
 :meth:`Document.set_page_labels`        PDF only: add/update page label definitions
+:meth:`Document.set_pagemode`           PDF only: set the PageMode
+:meth:`Document.set_pagelayout`         PDF only: set the PageLayout
 :meth:`Document.set_toc_item`           PDF only: change a single TOC item
 :meth:`Document.set_toc`                PDF only: set the table of contents (TOC)
 :meth:`Document.set_xml_metadata`       PDF only: create or update document XML metadata
@@ -124,17 +128,22 @@ For details on **embedded files** refer to Appendix 3.
 :attr:`Document.is_closed`              has document been closed?
 :attr:`Document.is_dirty`               PDF only: has document been changed yet?
 :attr:`Document.is_encrypted`           document (still) encrypted?
+:attr:`Document.is_fast_webaccess`      is PDF linearized?
 :attr:`Document.is_form_pdf`            is this a Form PDF?
 :attr:`Document.is_pdf`                 is this a PDF?
 :attr:`Document.is_reflowable`          is this a reflowable document?
 :attr:`Document.is_repaired`            PDF only: has this PDF been repaired during open?
 :attr:`Document.last_location`          (chapter, pno) of last page
 :attr:`Document.metadata`               metadata
+:attr:`Document.markinfo`               PDF MarkInfo value
 :attr:`Document.name`                   filename of document
 :attr:`Document.needs_pass`             require password to access data?
 :attr:`Document.outline`                first `Outline` item
 :attr:`Document.page_count`             number of pages
 :attr:`Document.permissions`            permissions to access the document
+:attr:`Document.pagemode`               PDF PageMode value
+:attr:`Document.pagelayout`             PDF PageLayout value
+:attr:`Document.version_count`          PDF count of versions
 ======================================= ==========================================================
 
 **Class API**
@@ -165,7 +174,7 @@ For details on **embedded files** refer to Appendix 3.
 
       * With default parameters, a **new empty PDF** document will be created.
       * If *stream* is given, then the document is created from memory and, if not a PDF, either *filename* or *filetype* must indicate its type.
-      * If *stream* is *None*, then a document is created from the file given by *filename*. Its type is inferred from the extension. This can be overruled by *filetype.*
+      * If *stream* is `None`, then a document is created from the file given by *filename*. Its type is inferred from the extension. This can be overruled by *filetype.*
 
       :arg str,pathlib filename: A UTF-8 string or *pathlib* object containing a file path. The document type is inferred from the filename extension. If not present or not matching a supported type, a PDF document is assumed. For memory documents, this argument may be used instead of `filetype`, see below.
 
@@ -214,7 +223,7 @@ For details on **embedded files** refer to Appendix 3.
           >>> doc = fitz.open("")
 
       .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So `fitz.open("file.jpg")` will work even for a PNG image.
-
+      
       The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
 
           >>> import fitz
@@ -368,7 +377,7 @@ For details on **embedded files** refer to Appendix 3.
       {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
       >>>
 
-    .. method:: set_layer(config, on=None, off=None, basestate=None, rbgroups=None)
+    .. method:: set_layer(config, *, on=None, off=None, basestate=None, rbgroups=None)
 
       * New in v1.18.3
 
@@ -377,10 +386,10 @@ For details on **embedded files** refer to Appendix 3.
       :arg int config: desired configuration layer, choose -1 for the default one.
       :arg list on: list of :data:`xref` of OCGs to set ON. Replaces previous values. An empty list will cause no OCG being set to ON anymore. Should be specified if `basestate="ON"` is used.
       :arg list off: list of :data:`xref` of OCGs to set OFF. Replaces previous values. An empty list will cause no OCG being set to OFF anymore. Should be specified if `basestate="OFF"` is used.
-      :arg str basestate: desired state of OCGs that are not mentioned in *on* resp. *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
+      :arg str basestate: state of OCGs that are not mentioned in *on* or *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
       :arg list rbgroups: a list of lists. Replaces previous values. Each sublist should contain two or more OCG xrefs. OCGs in the same sublist are handled like buttons in a radio button group: setting one to ON automatically sets all other group members to OFF.
 
-      Values *None* will not change the corresponding PDF array.
+      Values `None` will not change the corresponding PDF array.
 
         >>> doc.set_layer(-1, basestate="OFF")  # only changes the base state
         >>> pprint(doc.get_layer())
@@ -535,7 +544,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: make_bookmark(loc)
 
       * New in v.1.17.3
-
+      
       Return a page pointer in a reflowable document. After re-layouting the document, the result of this method can be used to find the new location of the page.
 
       .. note:: Do not confuse with items of a table of contents, TOC.
@@ -549,7 +558,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: find_bookmark(bookmark)
 
       * New in v.1.17.3
-
+      
       Return the new page location after re-layouting the document.
 
       :arg pointer bookmark: created by :meth:`Document.make_bookmark`.
@@ -561,7 +570,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: chapter_page_count(chapter)
 
       * New in v.1.17.0
-
+      
       Return the number of pages of a chapter.
 
       :arg int chapter: the 0-based chapter number.
@@ -584,7 +593,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: prev_location(page_id)
 
       * New in v.1.17.0
-
+      
       Return the locator of the preceding page.
 
       :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
@@ -715,7 +724,7 @@ For details on **embedded files** refer to Appendix 3.
 
       .. note:: The method uses the same logic as the *mutool convert* CLI. This works very well in most cases -- however, beware of the following limitations.
 
-        * Image files: perfect, no issues detected. Apparently however, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insert_image` instead. Otherwise, this method is recommended for its much better performance.
+        * Image files: perfect, no issues detected. However, image transparency is ignored. If you need that (like for a watermark), use :meth:`Page.insert_image` instead. Otherwise, this method is recommended for its much better performance.
         * XPS: appearance very good. Links work fine, outlines (bookmarks) are lost, but can easily be recovered [#f2]_.
         * EPUB, CBZ, FB2: similar to XPS.
         * SVG: medium. Roughly comparable to `svglib <https://github.com/deeplook/svglib>`_.
@@ -821,7 +830,7 @@ For details on **embedded files** refer to Appendix 3.
       * Changed in v1.19.4: remove a key "physically" if set to "null".
 
       PDF only: Set (add, update, delete) the value of a PDF key for the :data:`dictionary` object given by its xref.
-
+      
       .. caution:: This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 18) and the structure of special dictionary types like page objects.
 
       :arg int xref: the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, specify -1.
@@ -835,12 +844,12 @@ For details on **embedded files** refer to Appendix 3.
       * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is **not allowed by PDF**.
       * **null** -- the string `"null"`. This is the PDF equivalent to Python's `None` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection. *Changed in v1.19.4:* If the key is no path hierarchy (i.e. contains no slash "/"), then it will be completely removed.
       * **bool** -- one of the strings `"true"` or `"false"`.
-      * **name** -- a valid PDF name with a leading slash: `"/PageLayout"`. See page 16 of the :ref:`AdobeManual`.
+      * **name** -- a valid PDF name with a leading slash like this: `"/PageLayout"`. See page 16 of the :ref:`AdobeManual`.
       * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as `"()"`. Depending on its content, the possible brackets are
-
+      
         - "(...)" for ASCII-only text. Reserved PDF characters must be backslash-escaped and non-ASCII characters must be provided as 3-digit backslash-escaped octals -- including leading zeros. Example: 12 = 0x0C must be encoded as `\014`.
         - "<...>" for hex-encoded text. Every character must be represented by two hex-digits (lower or upper case).
-
+      
         - If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. It will for example do conversions like these:
 
           >>> # because of the € symbol, the following yields UTF-16BE BOM
@@ -990,7 +999,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Sets or updates the metadata of the document as specified in *m*, a Python dictionary.
 
-      :arg dict m: A dictionary with the same keys as *metadata* (see below). All keys are optional. A PDF's format and encryption method cannot be set or changed and will be ignored. If any value should not contain data, do not specify its key or set the value to *None*. If you use *{}* all metadata information will be cleared to the string *"none"*. If you want to selectively change only some values, modify a copy of *doc.metadata* and use it as the argument. Arbitrary unicode values are possible if specified as UTF-8-encoded.
+      :arg dict m: A dictionary with the same keys as *metadata* (see below). All keys are optional. A PDF's format and encryption method cannot be set or changed and will be ignored. If any value should not contain data, do not specify its key or set the value to `None`. If you use *{}* all metadata information will be cleared to the string *"none"*. If you want to selectively change only some values, modify a copy of *doc.metadata* and use it as the argument. Arbitrary unicode values are possible if specified as UTF-8-encoded.
 
       *(Changed in v1.18.4)* Empty values or "none" are no longer written, but completely omitted.
 
@@ -1006,6 +1015,34 @@ For details on **embedded files** refer to Appendix 3.
       PDF only: Sets or updates XML metadata of the document.
 
       :arg str xml: the new XML metadata. Should be XML syntax, however no checking is done by this method and any string is accepted.
+
+
+    .. method:: set_pagelayout(value)
+
+      * New in v1.22.2
+
+      PDF only: Set the `/PageLayout`.
+
+      :arg str value: one of the strings "SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "TwoPageLeft", "TwoPageRight". Lower case is supported.
+
+
+    .. method:: set_pagemode(value)
+
+      * New in v1.22.2
+
+      PDF only: Set the `/PageMode`.
+
+      :arg str value: one of the strings "UseNone", "UseOutlines", "UseThumbs", "FullScreen", "UseOC", "UseAttachments". Lower case is supported.
+
+
+    .. method:: set_markinfo(value)
+
+      * New in v1.22.2
+
+      PDF only: Set the `/MarkInfo` values.
+
+      :arg dict value: a dictionary like this one: `{"Marked": False, "UserProperties": False, "Suspects": False}`. This dictionary contains information about the usage of Tagged PDF conventions. For details please see the `PDF specifications <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_.
+
 
     .. method:: set_toc(toc, collapse=1)
 
@@ -1105,8 +1142,8 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
 
       * New in v1.16.14
-
-      PDF only: Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options, which are all *True* by default.
+      
+      PDF only: Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options.
 
       :arg bool attached_files: Search for 'FileAttachment' annotations and remove the file content.
       :arg bool clean_pages: Remove any comments from page painting sources. If this option is set to *False*, then this is also done for *hidden_text* and *redactions*.
@@ -1338,7 +1375,7 @@ For details on **embedded files** refer to Appendix 3.
         It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
 
         Following examples will all delete pages 500 through 519:
-
+        
         * `doc.delete_pages(500, 519)`
         * `doc.delete_pages(from_page=500, to_page=519)`
         * `doc.delete_pages((500, 501, 502, ... , 519))`
@@ -1393,7 +1430,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Get or set the */NeedAppearances* property of Form PDFs. Quote: *"(Optional) A flag specifying whether to construct appearance streams and appearance dictionaries for all widget annotations in the document ... Default value: false."* This may help controlling the behavior of some readers / viewers.
 
-      :arg bool value: set the property to this value. If omitted or *None*, inquire the current value.
+      :arg bool value: set the property to this value. If omitted or `None`, inquire the current value.
 
       :rtype: bool
       :returns:
@@ -1428,9 +1465,9 @@ For details on **embedded files** refer to Appendix 3.
 
          *(Changed in v1.14.13)* *io.BytesIO* is now also supported.
 
-      :arg str filename: optional filename. Documentation only, will be set to *name* if *None*.
-      :arg str ufilename: optional unicode filename. Documentation only, will be set to *filename* if *None*.
-      :arg str desc: optional description. Documentation only, will be set to *name* if *None*.
+      :arg str filename: optional filename. Documentation only, will be set to *name* if `None`.
+      :arg str ufilename: optional unicode filename. Documentation only, will be set to *filename* if `None`.
+      :arg str desc: optional description. Documentation only, will be set to *name* if `None`.
 
       :rtype: int
       :returns: *(Changed in v1.18.13)* The method now returns the :data:`xref` of the inserted file. In addition, the file object now will be automatically given the PDF keys `/CreationDate` and `/ModDate` based on the current date-time.
@@ -1631,7 +1668,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
 
-      :arg int xref: :data:`xref` of an image object. If this is not in `range(1, doc.xref_length())`, or the object is no image or other errors occur, *None* is returned and no exception is raised.
+      :arg int xref: :data:`xref` of an image object. If this is not in `range(1, doc.xref_length())`, or the object is no image or other errors occur, `None` is returned and no exception is raised.
 
       :rtype: dict
       :returns: a dictionary with the following keys
@@ -1656,7 +1693,7 @@ For details on **embedded files** refer to Appendix 3.
       102
       >>> imgout.close()
 
-      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
+      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns `None` in error cases (generates no exception). Look at the following example images within the same PDF.
 
          * xref 1268 is a PNG -- Comparable execution time and identical output::
 
@@ -1836,7 +1873,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. attribute:: outline
 
-      Contains the first :ref:`Outline` entry of the document (or *None*). Can be used as a starting point to walk through all outline items. Accessing this property for encrypted, not authenticated documents will raise an *AttributeError*.
+      Contains the first :ref:`Outline` entry of the document (or `None`). Can be used as a starting point to walk through all outline items. Accessing this property for encrypted, not authenticated documents will raise an *AttributeError*.
 
       :type: :ref:`Outline`
 
@@ -1880,6 +1917,46 @@ For details on **embedded files** refer to Appendix 3.
 
       :type: bool
 
+    .. attribute:: is_fast_webaccess
+
+      * New in v1.22.2
+
+      *True* if PDF is in linearized format. *False* for non-PDF documents.
+
+      :type: bool
+
+    .. attribute:: markinfo
+
+      * New in v1.22.2
+
+      A dictionary indicating the `/MarkInfo` value. If not specified, the empty dictionary is returned. If not a PDF, `None` is returned.
+
+      :type: dict
+
+    .. attribute:: pagemode
+
+      * New in v1.22.2
+
+      A string containing the `/PageMode` value. If not specified, the default "UseNone" is returned. If not a PDF, `None` is returned.
+
+      :type: str
+
+    .. attribute:: pagelayout
+
+      * New in v1.22.2
+
+      A string containing the `/PageLayout` value. If not specified, the default "SinglePage" is returned. If not a PDF, `None` is returned.
+
+      :type: str
+
+    .. attribute:: version_count
+
+      * New in v1.22.2
+
+      An integer counting the number of versions present in the document. Zero if not a PDF, otherwise the number of incremental saves plus one.
+
+      :type: int
+
     .. attribute:: needs_pass
 
       Indicates whether the document is password-protected against access. This indicator remains unchanged -- **even after the document has been authenticated**. Precludes incremental saves if true.
@@ -1902,13 +1979,13 @@ For details on **embedded files** refer to Appendix 3.
 
     .. attribute:: metadata
 
-      Contains the document's meta data as a Python dictionary or *None* (if *is_encrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*, *trapped*. All item values are strings or *None*.
+      Contains the document's meta data as a Python dictionary or `None` (if *is_encrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*, *trapped*. All item values are strings or `None`.
 
       Except *format* and *encryption*, for PDF documents, the key names correspond in an obvious way to the PDF keys */Creator*, */Producer*, */CreationDate*, */ModDate*, */Title*, */Author*, */Subject*, */Trapped* and */Keywords* respectively.
 
       - *format* contains the document format (e.g. 'PDF-1.6', 'XPS', 'EPUB').
 
-      - *encryption* either contains *None* (no encryption), or a string naming an encryption method (e.g. *'Standard V4 R4 128-bit RC4'*). Note that an encryption method may be specified **even if** *needs_pass=False*. In such cases not all permissions will probably have been granted. Check :attr:`Document.permissions` for details.
+      - *encryption* either contains `None` (no encryption), or a string naming an encryption method (e.g. *'Standard V4 R4 128-bit RC4'*). Note that an encryption method may be specified **even if** *needs_pass=False*. In such cases not all permissions will probably have been granted. Check :attr:`Document.permissions` for details.
 
       - If the date fields contain valid data (which need not be the case at all!), they are strings in the PDF-specific timestamp format "D:<TS><TZ>", where
 
@@ -1950,7 +2027,7 @@ For details on **embedded files** refer to Appendix 3.
 
     .. Attribute:: FormFonts
 
-      A list of form field font names defined in the */AcroForm* object. *None* if not a PDF.
+      A list of form field font names defined in the */AcroForm* object. `None` if not a PDF.
 
       :type: list
 
