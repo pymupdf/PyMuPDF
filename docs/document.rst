@@ -223,7 +223,7 @@ For details on **embedded files** refer to Appendix 3.
           >>> doc = fitz.open("")
 
       .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So `fitz.open("file.jpg")` will work even for a PNG image.
-
+      
       The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
 
           >>> import fitz
@@ -546,7 +546,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: make_bookmark(loc)
 
       * New in v.1.17.3
-
+      
       Return a page pointer in a reflowable document. After re-layouting the document, the result of this method can be used to find the new location of the page.
 
       .. note:: Do not confuse with items of a table of contents, TOC.
@@ -560,7 +560,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: find_bookmark(bookmark)
 
       * New in v.1.17.3
-
+      
       Return the new page location after re-layouting the document.
 
       :arg pointer bookmark: created by :meth:`Document.make_bookmark`.
@@ -572,7 +572,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: chapter_page_count(chapter)
 
       * New in v.1.17.0
-
+      
       Return the number of pages of a chapter.
 
       :arg int chapter: the 0-based chapter number.
@@ -595,7 +595,7 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: prev_location(page_id)
 
       * New in v.1.17.0
-
+      
       Return the locator of the preceding page.
 
       :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
@@ -832,7 +832,7 @@ For details on **embedded files** refer to Appendix 3.
       * Changed in v1.19.4: remove a key "physically" if set to "null".
 
       PDF only: Set (add, update, delete) the value of a PDF key for the :data:`dictionary` object given by its xref.
-
+      
       .. caution:: This is an expert function: if you do not know what you are doing, there is a high risk to render (parts of) the PDF unusable. Please do consult :ref:`AdobeManual` about object specification formats (page 18) and the structure of special dictionary types like page objects.
 
       :arg int xref: the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, specify -1.
@@ -846,12 +846,12 @@ For details on **embedded files** refer to Appendix 3.
       * **float** -- a float formatted **as a string**. Scientific notation (with exponents) is **not allowed by PDF**.
       * **null** -- the string `"null"`. This is the PDF equivalent to Python's `None` and causes the key to be ignored -- however not necessarily removed, resp. removed on saves with garbage collection. *Changed in v1.19.4:* If the key is no path hierarchy (i.e. contains no slash "/"), then it will be completely removed.
       * **bool** -- one of the strings `"true"` or `"false"`.
-      * **name** -- a valid PDF name with a leading slash: `"/PageLayout"`. See page 16 of the :ref:`AdobeManual`.
+      * **name** -- a valid PDF name with a leading slash like this: `"/PageLayout"`. See page 16 of the :ref:`AdobeManual`.
       * **string** -- a valid PDF string. **All PDF strings must be enclosed by brackets**. Denote the empty string as `"()"`. Depending on its content, the possible brackets are
-
+      
         - "(...)" for ASCII-only text. Reserved PDF characters must be backslash-escaped and non-ASCII characters must be provided as 3-digit backslash-escaped octals -- including leading zeros. Example: 12 = 0x0C must be encoded as `\014`.
         - "<...>" for hex-encoded text. Every character must be represented by two hex-digits (lower or upper case).
-
+      
         - If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. It will for example do conversions like these:
 
           >>> # because of the € symbol, the following yields UTF-16BE BOM
@@ -1018,6 +1018,34 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg str xml: the new XML metadata. Should be XML syntax, however no checking is done by this method and any string is accepted.
 
+
+    .. method:: set_pagelayout(value)
+
+      * New in v1.22.2
+
+      PDF only: Set the page layout.
+
+      :arg str value: one of the strings "SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "TwoPageLeft", "TwoPageRight". Lower case is supported.
+
+
+    .. method:: set_pagemode(value)
+
+      * New in v1.22.2
+
+      PDF only: Set the page mode.
+
+      :arg str value: one of the strings "UseNone", "UseOutlines", "UseThumbs", "FullScreen", "UseOC", "UseAttachments". Lower case is supported.
+
+
+    .. method:: set_markinfo(value)
+
+      * New in v1.22.2
+
+      PDF only: Set the `/MarkInfo` values.
+
+      :arg dict value: a dictionary like this one: `{"Marked": False, "UserProperties": False, "Suspects": False}`. This dictionary contains information about the usage of Tagged PDF conventions. For details please see the `PDF specifications <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_.
+
+
     .. method:: set_toc(toc, collapse=1)
 
       PDF only: Replaces the **complete current outline** tree (table of contents) with the one provided as the argument. After successful execution, the new outline tree can be accessed as usual via :meth:`Document.get_toc` or via :attr:`Document.outline`. Like with other output-oriented methods, changes become permanent only via :meth:`save` (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.
@@ -1116,8 +1144,8 @@ For details on **embedded files** refer to Appendix 3.
     .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
 
       * New in v1.16.14
-
-      PDF only: Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options, which are all *True* by default.
+      
+      PDF only: Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options.
 
       :arg bool attached_files: Search for 'FileAttachment' annotations and remove the file content.
       :arg bool clean_pages: Remove any comments from page painting sources. If this option is set to *False*, then this is also done for *hidden_text* and *redactions*.
@@ -1349,7 +1377,7 @@ For details on **embedded files** refer to Appendix 3.
         It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
 
         Following examples will all delete pages 500 through 519:
-
+        
         * `doc.delete_pages(500, 519)`
         * `doc.delete_pages(from_page=500, to_page=519)`
         * `doc.delete_pages((500, 501, 502, ... , 519))`
@@ -1890,6 +1918,46 @@ For details on **embedded files** refer to Appendix 3.
       *True* if PDF has been repaired during open (because of major structure issues). Always *False* for non-PDF documents. If true, more details have been stored in `TOOLS.mupdf_warnings()`, and :meth:`Document.can_save_incrementally` will return *False*.
 
       :type: bool
+
+    .. attribute:: is_fast_webaccess
+
+      * New in v1.22.2
+
+      *True* if PDF is in linerarized format. *False* for non-PDF documents.
+
+      :type: bool
+
+    .. attribute:: markinfo
+
+      * New in v1.22.2
+
+      A dictionary indicating the `/MarkInfo` value. If not specified, the empty dictionary is returned. If not a PDF, *None* is returned.
+
+      :type: dict
+
+    .. attribute:: pagemode
+
+      * New in v1.22.2
+
+      A string containing the `/PageMode` value. If not specified, the default "UseNone" is returned. If not a PDF, *None* is returned.
+
+      :type: str
+
+    .. attribute:: pagelayout
+
+      * New in v1.22.2
+
+      A string containing the `/PageLayout` value. If not specified, the default "SinglePage" is returned. If not a PDF, *None* is returned.
+
+      :type: str
+
+    .. attribute:: version_count
+
+      * New in v1.22.2
+
+      An integer counting the number of versions present in the document. Zero if not a PDF, otherwise the number of incremental saves plus one.
+
+      :type: int
 
     .. attribute:: needs_pass
 
