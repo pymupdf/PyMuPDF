@@ -127,7 +127,7 @@ Story
 
       Let the Story provide positioning information about certain HTML elements once their place on the current page has been computed - i.e. invoke this method **directly after** :meth:`Story.place`.
 
-      *Story* will pass position information to *function*. This information can for example be used to generate a Table of Content.
+      *Story* will pass position information to *function*. This information can for example be used to generate a Table of Contents.
 
       :arg callable function: a Python function accepting an :class:`ElementPosition` object. It will be invoked by the Story object to process positioning information. The function **must** be a callable accepting exactly one argument.
       :arg dict args: an optional dictionary with any **additional** information

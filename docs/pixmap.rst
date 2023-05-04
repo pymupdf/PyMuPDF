@@ -334,7 +334,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg str output: The desired image format. The default is the filename's extension. If both, this value and the file extension are unsupported, an exception is raised. For possible values see :ref:`PixmapOutput`.
       :arg int jpg_quality: The desired image quality, default 95. Only applies to JPEG images, else ignored. This parameter trades quality against file size. A value of 98 is close to lossless. Higher values should not lead to better quality.
 
-      :raises ValueError: for unsupported image formats.
+      :raises ValueError: For unsupported image formats.
 
    .. method:: tobytes(output="png", jpg_quality=95)
 
@@ -344,7 +344,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg str output: The desired image format. The default is "png". For possible values see :ref:`PixmapOutput`.
       :arg int jpg_quality: The desired image quality, default 95. Only applies to JPEG images, else ignored. This parameter trades quality against file size. A value of 98 is close to lossless. Higher values should not lead to better quality.
 
-      :raises ValueError: for unsupported image formats.
+      :raises ValueError: For unsupported image formats.
       :rtype: bytes
 
       :arg str output: The requested image format. The default is "png". For other possible values see :ref:`PixmapOutput`.
@@ -412,7 +412,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       * New in v1.17.3
 
-      Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="WEBP", optimize=True)`. Also see above. For details on other parameters see the Pillow documentation. If Pillow is not installed, an `ImportError` exception is raised.
+      Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="WEBP", optimize=True)`. Also see above. For details on other parameters see the Pillow documentation.
+      
+      .raises ImportError: if Pillow is not installed.
 
       :rtype: bytes
 
@@ -458,8 +460,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Return the most frequently used color and its relative frequency.
 
-      :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
-      :rtype: tuple[float, bytes]
+      :arg rect_like clip: A rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
+      :rtype: tuple
       :returns: A tuple `(ratio, pixel)` where `0 < ratio <= 1` and *pixel* is the pixel value of the color. Use this to decide if the image is "almost" unicolor: a response `(0.95, b"\x00\x00\x00")` means that 95% of all pixels are black. See an example here :ref:`RecipesImages_P`.
 
 

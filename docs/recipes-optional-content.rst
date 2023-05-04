@@ -46,49 +46,16 @@ One single OCG can be assigned to mutiple PDF objects to control their visibilit
 
 How to Define Complex Optional Content Conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+https://drive.google.com/file/d/11nRaSzp76ruAGW1q9x-4RqQUW6VX4Kxs/view?usp=share_link
+
 Sophisticated logical conditions can be established to address complex visibility needs.
 
-For example, you might have two images, which should be shown alternatively: show one image if the other image is hidden and vice versa.
+For example, you might want to create a multi-language document, so the user may switch between languages as required.
 
-Certainly, your requirements may even be more complex and involve multiple OCGs with ON/OFF states that are connected by some kind of logical relationship.
+Please have a look at [this](https://drive.google.com/file/d/11nRaSzp76ruAGW1q9x-4RqQUW6VX4Kxs/view?usp=share_link) Jupyter Notebook and execute it as desired.
 
-Requirements like these lead us to a new object type: **OC Membership Dictionaries**, OCMD. These objects **represent a logical expression** involving ON/OFF values of one or more OCG. An OCMD is created (or modified) via :meth:`Document.set_ocmd`.
-
-An OCMD's :data:`xref` can be used in `oc=xref` arguments like the xref of an OCG.
-
-Coming back to the above situation: You have two images which you want to show at the same place on some page, but you want to display either one or the other, depending on the choice of the user. This is the approach:
-
-1. Define an OCG and associate it with *image 1* (using its xref, `xref_ocg`).
-2. Define an OCMD having condition "image 1 is hidden" and associate its xref (`xref_ocmd`) with *image 2*.
-
-::
-
-    xref_ocg = doc.add_ocg("Switch images", on=True)  # define the OCG
-    xref_ocmd = set_ocmd(0, ocgs=[xref_ocg], policy="AnyOff")  # define the OCMD
-    page.insert_image(rect, filename="image1.file", oc=xref_ocg)  # insert two images at the same place
-    page.insert_image(rect, filename="image2.file", oc=xref_ocmd)
-
-The "ocgs" parameter of the OCMD definition is a list that may contain mutiple OCG xrefs as required.
-
-The logical condition "image 1 is hidden" is expressed via the "policy" value *"AnyOff"*, which means "if any of the OCGs is off". The parameter may be one of the following four alternatives ("true" here means "visible"):
-
-* AnyOn: (default) true if at least one OCG is ON.
-* AnyOff: true if at least one OCG is OFF.
-* AllOn: true if all OCGs are ON.
-* AllOff: true if all OCGs are OFF.
-
-In our above example, with only one OCG, we might have used "AnyOff" or "AllOff" to achieve the same goal.
-
-When opening the PDF, image 1 is displayed, because of `on=True` in the OCG definition. If the user switches off "Switch images" in his PDF viewer, image 2 is shown in rectangle "rect" instead of image 1, and vice versa.
-
-Setting Visibility in the Program
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In your script, switching visibility is possible as well. The 
-
-
-
-
+Certainly, your requirements may even be more complex and involve multiple OCGs with ON/OFF states that are connected by some kind of logical relationship -- bur it should give you an impression of what is possible and how to plan your next steps.
 
 
 -----
