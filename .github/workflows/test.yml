@@ -14,7 +14,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-10.15]
+        # 2023-05-09: Builds on Windows-latest do not work because our wdev.py
+        # (used to build MuPDF) picks up a later VS than setuptools (when
+        # building SWIG-generated PyMuPDF code).
+        #
+        os: [ubuntu-latest, windows-2019, macos-latest]
 
       # Avoid cancelling of all cibuildwheel runs after a single failure.
       fail-fast: false
