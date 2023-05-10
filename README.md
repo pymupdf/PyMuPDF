@@ -1,9 +1,9 @@
-# PyMuPDF 1.22.2
+# PyMuPDF 1.22.3
 
 ![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
 
-Release date: April 26, 2023
+Release date: May 10, 2023
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 

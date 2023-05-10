@@ -2,6 +2,15 @@ Change Log
 ==========
 
 
+**Changes in version 1.22.3 (2023-05-10)**
+
+* This release uses ``MuPDF-1.22.0``.
+
+* Bug fixes:
+
+  * **Fixed** `#2333 <https://github.com/pymupdf/PyMuPDF/issues/2333>`_: Unable to set any of button radio group in form
+
+
 **Changes in version 1.22.2 (2023-04-26)**
 
 * This release uses ``MuPDF-1.22.0``.
