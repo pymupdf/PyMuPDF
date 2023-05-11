@@ -78,15 +78,11 @@ Environmental variables:
                 checkout known to git into a local tar archive.
 
     PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG
-        If '0' we do not overwrite MuPDF's include/mupdf/fitz/config.h.
+        If '1' we overwrite MuPDF's include/mupdf/fitz/config.h with PyMuPDF's
+        own configuration file, before building MuPDF.
     
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
-
-Building MuPDF:
-    When building MuPDF, we overwrite the mupdf's include/mupdf/fitz/config.h
-    with fitz/_config.h (unless PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG is '0')
-    and do a PyMuPDF-specific build.
 
 Known build failures:
     Linux:
@@ -615,15 +611,15 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         log( f'Building mupdf.')
         # Copy PyMuPDF's config file into mupdf. For example it #define's TOFU,
         # which excludes various fonts in the MuPDF binaries.
-        if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '0':
-            # Use MuPDF default config eventually, but not yet. Eventually we'd
-            # like to do this by default.
-            log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h because PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG=0.')
-            s = os.stat( f'{mupdf_local}/include/mupdf/fitz/config.h')
-            log( f'{mupdf_local}/include/mupdf/fitz/config.h: {s} mtime={time.strftime("%F-%T", time.gmtime(s.st_mtime))}')
-        else:
+        if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '1':
+            # Use our special config in MuPDF.
             log( f'Copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h')
             shutil.copy2( 'fitz/_config.h', f'{mupdf_local}/include/mupdf/fitz/config.h')
+        else:
+            # Use MuPDF default config.
+            log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h.')
+            s = os.stat( f'{mupdf_local}/include/mupdf/fitz/config.h')
+            log( f'{mupdf_local}/include/mupdf/fitz/config.h: {s} mtime={time.strftime("%F-%T", time.gmtime(s.st_mtime))}')
     
         if windows:
             # Windows build.
