@@ -127,7 +127,7 @@ To extract all the images from a :title:`PDF` file, do the following:
                     xref = img[0] # get the XREF of the image
                     pix = fitz.Pixmap(doc, xref) # create a Pixmap
 
-                    if pix.n - pix.alpha > 3 # CMYK: convert to RGB first
+                    if pix.n - pix.alpha > 3: # CMYK: convert to RGB first
                         pix = fitz.Pixmap(fitz.csRGB, pix)
 
                     pix.save("page_%s-image_%s.png" % (page_index, image_index)) # save the image as png
