@@ -29,7 +29,7 @@ static fz_point dev_lastpoint = {0, 0};
 static fz_rect dev_pathrect;
 static float dev_pathfactor = 0;
 static int dev_linecount = 0;
-static const char *layer_name=NULL; // optional content name
+static char *layer_name=NULL; // optional content name
 static int path_type = 0;  // one of the following values:
 #define FILL_PATH 1
 #define STROKE_PATH 2
@@ -547,12 +547,13 @@ jm_lineart_pop_clip(fz_context *ctx, fz_device *dev_)
 static void
 jm_lineart_begin_layer(fz_context *ctx, fz_device *dev_, const char *name)
 {
-	layer_name = name;
+	layer_name = fz_strdup(ctx, name);
 }
 
 static void
 jm_lineart_end_layer(fz_context *ctx, fz_device *dev_)
 {
+	fz_free(ctx, layer_name);
 	layer_name = NULL;
 }
 
