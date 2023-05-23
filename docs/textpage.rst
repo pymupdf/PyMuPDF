@@ -286,7 +286,7 @@ chars           (only for :meth:`extractRAWDICT`) *list* of character dictionari
 
 These numbers may be used to compute the minimum height of a character (or span) -- as opposed to the standard height provided in the "bbox" values (which actually represents the **line height**). The following code recalculates the span bbox to have a height of **fontsize** exactly fitting the text inside:
 
->>> a = span["ascender]
+>>> a = span["ascender"]
 >>> d = span["descender"]
 >>> r = fitz.Rect(span["bbox"])
 >>> o = fitz.Point(span["origin"])  # its y-value is the baseline
