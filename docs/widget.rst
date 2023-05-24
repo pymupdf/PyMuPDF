@@ -35,7 +35,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
       * New in version 1.22.2
 
-       Return the value of the "ON" state of check boxes and radio buttons. For check boxes this is always the value `True`. For radio buttons, this is the value to select / activate the button.
+       Return the value of the "ON" state of check boxes and radio buttons. For check boxes this is always the value "Yes". For radio buttons, this is the value to select / activate the button.
 
        :returns: the value that sets the button to "selected". For non-checkbox, non-radiobutton fields, always `None` is returned. For check boxes the return is `True`. For radio buttons this is the value "Male" in the following example:
 
