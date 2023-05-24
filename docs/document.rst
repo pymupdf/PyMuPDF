@@ -369,18 +369,17 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v1.18.3
 
-      List of optional content groups by status in the specified configuration. This is a dictionary with lists of cross reference numbers for OCGs that occur in the arrays `/ON`, `/OFF`, `/Locked` or in some radio button group (`/RBGroups`).
+      List of optional content groups by status in the specified configuration. This is a dictionary with lists of cross reference numbers for OCGs that occur in the arrays `/ON`, `/OFF` or in some radio button group (`/RBGroups`).
 
       :arg int config: the configuration layer (default is the standard config layer).
 
       >>> pprint(doc.get_layer())
-      {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]], 'locked': []}
+      {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
       >>>
 
-    .. method:: set_layer(config, *, on=None, off=None, basestate=None, rbgroups=None, locked=None)
+    .. method:: set_layer(config, *, on=None, off=None, basestate=None, rbgroups=None)
 
       * New in v1.18.3
-      * Changed in v1.22.0: Support of a new keyword argument "locked" for enumerating unchangeable OCGs.
 
       Mass status changes of optional content groups. **Permanently** sets the status of OCGs.
 
@@ -389,13 +388,12 @@ For details on **embedded files** refer to Appendix 3.
       :arg list off: list of :data:`xref` of OCGs to set OFF. Replaces previous values. An empty list will cause no OCG being set to OFF anymore. Should be specified if `basestate="OFF"` is used.
       :arg str basestate: state of OCGs that are not mentioned in *on* or *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
       :arg list rbgroups: a list of lists. Replaces previous values. Each sublist should contain two or more OCG xrefs. OCGs in the same sublist are handled like buttons in a radio button group: setting one to ON automatically sets all other group members to OFF.
-      :arg list locked: a list of :data:'xref' numbers. Specify the xref numbers of OCGs that must not change their ON / OFF state.
 
       Values `None` will not change the corresponding PDF array.
 
         >>> doc.set_layer(-1, basestate="OFF")  # only changes the base state
         >>> pprint(doc.get_layer())
-        {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]], 'locked': []}
+        {'basestate': 'OFF', 'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
 
 
     .. method:: get_ocgs()

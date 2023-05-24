@@ -47,30 +47,19 @@ One single OCG can be assigned to mutiple PDF objects to control their visibilit
 How to Define Complex Optional Content Conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-https://drive.google.com/file/d/11nRaSzp76ruAGW1q9x-4RqQUW6VX4Kxs/view?usp=share_link
-
 Sophisticated logical conditions can be established to address complex visibility needs.
 
 For example, you might want to create a multi-language document, so the user may switch between languages as required.
 
-Please have a look at [this](https://drive.google.com/file/d/11nRaSzp76ruAGW1q9x-4RqQUW6VX4Kxs/view?usp=share_link) Jupyter Notebook and execute it as desired.
+Please have a look at `this Jupyter Notebook`_ and execute it as desired.
 
 Certainly, your requirements may even be more complex and involve multiple OCGs with ON/OFF states that are connected by some kind of logical relationship -- bur it should give you an impression of what is possible and how to plan your next steps.
-
-
------
-
-
-.. rubric:: Footnotes
-
-.. [#f1] 
-
 
 .. include:: footer.rst
 
 .. External Links:
 
-.. _pymupdf-fonts: https://github.com/pymupdf/pymupdf-fonts
+.. _this Jupyter Notebook: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/optional-content.ipynb
 
 
 

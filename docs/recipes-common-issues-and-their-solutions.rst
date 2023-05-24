@@ -278,17 +278,15 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 .. note:: For **incremental saves,** solution 1. has an unpleasant implication: it will bloat the update delta, because it changes so many things and, in addition, stores the **cleaned contents uncompressed**. So, if you use :meth:`Page.clean_contents` you should consider **saving to a new file** with (at least) *garbage=3* and *deflate=True*.
 
-**Solution 3.** is completely under your control and only does the minimum corrective action. There is a handy low-level utility function which you can use for this. Suggested procedure:
+**Solution 3.** is completely under your control and only does the minimum corrective action. There is a handy utility method :meth:`Page.wrap_contents` which -- as twe name suggests -- **wraps** the page's :data:`contents` object(s) by the PDF commands `q` and `Q`.
 
-* **Prepend** the missing stacking command by executing *fitz.TOOLS._insert_contents(page, b"q\n", False)*.
-* **Append** an unstacking command by executing *fitz.TOOLS._insert_contents(page, b"\nQ", True)*.
-* Alternatively, just use :meth:`Page._wrap_contents`, which executes the previous two functions.
+This solution is extremely fast and the changes to the PDF are minimal. This is useful in situations where incrementally saving the file is desirable -- or even a must when the PDF has been digitally signed and you cannot change this status.
 
-.. note:: If small incremental update deltas are a concern, this approach is the most effective. Other contents objects are not touched. The utility method creates two new PDF :data:`stream` objects and inserts them before, resp. after the page's other :data:`contents`. We therefore recommend the following snippet to get this situation under control:
+We recommend the following snippet to get the situation under control:
 
     >>> if not page.is_wrapped:
             page.wrap_contents()
-    >>> # start inserting text, images or annotations here
+    >>> # start inserting text, images and other objects here
 
 
 Missing or Unreadable Extracted Text
