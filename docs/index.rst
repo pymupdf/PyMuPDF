@@ -12,7 +12,7 @@ Welcome to :title:`PyMuPDF`
       :scale: 10%
 
 
-:title:`PyMuPDF` is an enhanced :title:`Python` binding for `MuPDF <https://www.mupdf.com/>`_ --  a lightweight :title:`PDF`, :title:`XPS`, and :title:`E-book` viewer, renderer, and toolkit, which is maintained and developed by :title:`Artifex Software, Inc`.
+:title:`PyMuPDF` is an enhanced :title:`Python` binding for `MuPDF <https://mupdf.com/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=inline-link>`_ --  a lightweight :title:`PDF`, :title:`XPS`, and :title:`E-book` viewer, renderer, and toolkit, which is maintained and developed by :title:`Artifex Software, Inc`.
 
 :title:`PyMuPDF` is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 
