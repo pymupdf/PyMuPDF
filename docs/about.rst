@@ -49,11 +49,11 @@ License and Copyright
 
 
 
-:title:`PyMuPDF` and :title:`MuPDF` are now available under both, open-source :title:`AGPL` and commercial license agreements. Please read the full text of the :title:`AGPL` license agreement, available in the distribution material (file COPYING) and `here <https://www.gnu.org/licenses/agpl-3.0.html>`_, to ensure that your use case complies with the guidelines of the license. If you determine you cannot meet the requirements of the :title:`AGPL`, please contact `Artifex <https://artifex.com/contact/>`_ for more information regarding a commercial license.
+:title:`PyMuPDF` and :title:`MuPDF` are now available under both, open-source :title:`AGPL` and commercial license agreements. Please read the full text of the :title:`AGPL` license agreement, available in the distribution material (file COPYING) and `here <https://www.gnu.org/licenses/agpl-3.0.html>`_, to ensure that your use case complies with the guidelines of the license. If you determine you cannot meet the requirements of the :title:`AGPL`, please contact `Artifex <https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=inline-link>`_ for more information regarding a commercial license.
 
 .. raw:: html
 
-   <button class="cta orange" onclick="window.location='https://artifex.com/licensing/'">Find out more about Licensing</button>
+   <button class="cta orange" onclick="window.location='https://artifex.com/licensing?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">Find out more about Licensing</button>
    <p></p>
 
 :title:`Artifex` is the exclusive commercial licensing agent for :title:`MuPDF`.
