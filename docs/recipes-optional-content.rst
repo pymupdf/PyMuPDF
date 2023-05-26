@@ -53,7 +53,7 @@ For example, you might want to create a multi-language document, so the user may
 
 Please have a look at `this Jupyter Notebook`_ and execute it as desired.
 
-Certainly, your requirements may even be more complex and involve multiple OCGs with ON/OFF states that are connected by some kind of logical relationship -- bur it should give you an impression of what is possible and how to plan your next steps.
+Certainly, your requirements may even be more complex and involve multiple OCGs with ON/OFF states that are connected by some kind of logical relationship -- but it should give you an impression of what is possible and how to plan your next steps.
 
 .. include:: footer.rst
 
