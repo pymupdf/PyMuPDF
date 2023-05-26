@@ -3,7 +3,7 @@
 .. _RecipesOptionalContent:
 
 ==============================
-Opional Content Support
+Optional Content Support
 ==============================
 
 This document explains PyMuPDF's support of the PDF concept **"Optional Content"**.
