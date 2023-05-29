@@ -30,9 +30,19 @@ def _test_all():
     e = 0
     for sample in samples:
         print( f'Running: {sample}')
-        sys.stdout.flush()
         try:
-            subprocess.check_call( f'{sys.executable} {sample}', shell=1, text=1)
+            if 0:
+                # Curiously this fails in an odd way when testing compound
+                # package with $PYTHONPATH set.
+                print( f'os.environ is:')
+                for n, v in os.environ.items():
+                    print( f'    {n}: {v!r}')
+                command = f'{sys.executable} {sample}'
+                print( f'command is: {command!r}')
+                sys.stdout.flush()
+                subprocess.check_call( command, shell=1, text=1)
+            else:
+                runpy.run_path(sample)
         except Exception:
             print( f'Failed: {sample}')
             e += 1
