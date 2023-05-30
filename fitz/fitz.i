@@ -12467,7 +12467,7 @@ struct Font
                 "opentype", JM_BOOL(f->has_opentype),
                 "invalid-bbox", JM_BOOL(f->invalid_bbox),
                 "cjk", JM_BOOL(f->cjk),
-                "cjk-lang", (f->cjk ? PyLong_FromUnsignedLong((unsigned long) f->cjk_lang) : Py_None)
+                "cjk-lang", (f->cjk ? PyLong_FromUnsignedLong((unsigned long) f->cjk_lang) : Py_BuildValue("s", NULL))
                 #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                 ,
                 "embed", JM_BOOL(f->embed),
