@@ -100,7 +100,7 @@
 
 /* To skip CJK Extension A, enable: (this implicitly enables
  * TOFU_CJK_LANG) */
-#define TOFU_CJK_EXT
+#define TOFU_CJK_EXT 1
 
 /* To skip CJK language specific fonts, enable: */
 /* #define TOFU_CJK_LANG */
