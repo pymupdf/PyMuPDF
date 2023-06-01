@@ -233,7 +233,7 @@ Rotating
 ---------
 .. |rot60| image:: images/img-rot-60.*
 
-Finally a rotation by 30 clockwise degrees (*prerotate(-30)*).
+Finally a rotation by 30 degrees anti-clockwise (*prerotate(30)*).
 
 |rot60|
 
