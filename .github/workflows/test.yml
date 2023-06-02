@@ -1,8 +1,8 @@
 name: Test
 
 on:
-  schedule:
-    - cron: '13 5 * * *'
+  #schedule:
+    #- cron: '13 5 * * *'
   workflow_dispatch:
 
 jobs:
@@ -43,9 +43,9 @@ jobs:
             CIBW_BUILD: "cp311*"
 
             # Don't build for unsupported platforms or win32.
-            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36* *win32*"
+            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
 
             # Get cibuildwheel to run pytest with each wheel.
             CIBW_TEST_REQUIRES: "fontTools pytest"
-            CIBW_TEST_COMMAND: "pytest -s {project}/tests"
+            CIBW_TEST_COMMAND: "python {project}/tests/run_compound.py pytest -s {project}/tests"
             CIBW_BUILD_VERBOSITY: 3

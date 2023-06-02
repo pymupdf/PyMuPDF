@@ -65,6 +65,7 @@ jobs:
 
             log('Installing valgrind.')
             run(f'sudo apt install valgrind')
+            run(f'valgrind --version')
 
             log('Creating venv.')
             run(f'{sys.executable} -m venv pylocal')
@@ -90,7 +91,8 @@ jobs:
 
             log('Running PyMuPDF tests under valgrind.')
             # We ignore memory leaks.
-            run(f'valgrind --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after= ./pylocal/bin/python -m pytest -s -vv {leaf}',
+            run(
+                    f'./pylocal/bin/python {leaf}/tests/run_compound.py valgrind --suppressions={leaf}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after= ./pylocal/bin/python -m pytest -s -vv {leaf}',
                     env_extra=dict(
                         PYTHONMALLOC='malloc',
                         ),
