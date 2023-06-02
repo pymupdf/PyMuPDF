@@ -14,8 +14,8 @@ import typing
 from . import fitz
 from . import mupdf
 
+g_exceptions_verbose = fitz.g_exceptions_verbose
 g_exceptions_verbose = False
-#g_exceptions_verbose = True
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -740,13 +740,13 @@ def get_image_rects(page: fitz.Page, name, transform=False) -> list:
 
 
 def get_text(
-    page: fitz.Page,
-    option: str = "text",
-    clip: rect_like = None,
-    flags: OptInt = None,
-    textpage: fitz.TextPage = None,
-    sort: bool = False,
-):
+        page: fitz.Page,
+        option: str = "text",
+        clip: rect_like = None,
+        flags: OptInt = None,
+        textpage: fitz.TextPage = None,
+        sort: bool = False,
+        ):
     """Extract text from a page or an annotation.
 
     This is a unifying wrapper for various methods of the fitz.TextPage class.
@@ -991,7 +991,12 @@ def get_links(page: fitz.Page) -> list:
         links.append(nl)
         ln = ln.next
     if links != [] and page.parent.is_pdf:
-        linkxrefs = [x for x in page.annot_xrefs() if x[1] == fitz.PDF_ANNOT_LINK]
+        from . import extra
+        linkxrefs = [x for x in
+                #page.annot_xrefs()
+                extra.JM_get_annot_xref_list2(page)
+                if x[1] == fitz.PDF_ANNOT_LINK
+                ]
         if len(linkxrefs) == len(links):
             for i in range(len(linkxrefs)):
                 links[i]["xref"] = linkxrefs[i][0]
@@ -1490,6 +1495,7 @@ def do_links(
     Parameter values **must** equal those of method insert_pdf(), which must
     have been previously executed.
     """
+    #fitz.log( 'utils.do_links()')
     # --------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string
     # --------------------------------------------------------------------------
@@ -1599,6 +1605,7 @@ def do_links(
             page_dst._addAnnot_FromString(link_tab)
         page_dst = None
         page_src = None
+    #fitz.log( 'utils.do_links() returning.')
     return
 
 
