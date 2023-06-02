@@ -16,6 +16,7 @@ import zipfile
 
 def log( text):
     print( f'mupdfpy: {text}', file=sys.stdout)
+    sys.stdout.flush()
 
 # Try to detect if we are being used with current directory set to a mupdfpy/
 # checkout.
@@ -53,21 +54,31 @@ import zipfile
 from . import extra
 
 
+def get_env_bool( name, default):
+    '''
+    Returns `True`, `False` or `default` depending on whether $<name> is '1',
+    '0' or unset. Otherwise assert-fails.
+    '''
+    v = os.environ.get( name)
+    if v is None:
+        ret = default
+    elif v == '1':
+        ret = True
+    elif v == '0':
+        ret = False
+    else:
+        assert 0, f'Unrecognised value for {name}: {v!r}'
+    if ret != default:
+        log(f'Using non-default setting from {name}: {v!r}')
+    return ret
+
 # All our `except ...` blocks output diagnostics if `g_exceptions_verbose` is
 # true.
-g_exceptions_verbose = True
+g_exceptions_verbose = get_env_bool( 'PYMUPDF_EXCEPTIONS_VERBOSE', True)
 
 # $MUPDFPY_USE_EXTRA overrides whether to use optimised C fns in `extra`.
 #
-g_use_extra = True
-ue = os.environ.get( 'MUPDFPY_USE_EXTRA')
-if ue == '0':
-    log(f'Warning: not using optimised routines.')
-    g_use_extra = False
-elif ue == '1':
-    g_use_extra = True
-else:
-    assert ue is None, f'Unrecognised MUPDFPY_USE_EXTRA: {ue}'
+g_use_extra = get_env_bool( 'PYMUPDF_USE_EXTRA', True)
 
 
 # Global switches
@@ -4247,6 +4258,7 @@ class Document:
         # Insert pages from a source PDF into this PDF.
         # For reconstructing the links (_do_links method), we must save the
         # insertion point (start_at) if it was specified as -1.
+        #log( 'insert_pdf(): start')
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if self._graft_id == docsrc._graft_id:
@@ -4264,13 +4276,16 @@ class Document:
             print("Inserting '%s' at '%s'" % (inname, outname))
 
         # retrieve / make a Graftmap to avoid duplicate objects
+        #log( 'insert_pdf(): Graftmaps')
         isrt = docsrc._graft_id
         _gmap = self.Graftmaps.get(isrt, None)
         if _gmap is None:
+            #log( 'insert_pdf(): Graftmaps2')
             _gmap = Graftmap(self)
             self.Graftmaps[isrt] = _gmap
 
         if g_use_extra:
+            #log( 'insert_pdf(): calling extra_FzDocument_insert_pdf()')
             extra_FzDocument_insert_pdf(
                     self.this,
                     docsrc.this,
@@ -4284,6 +4299,7 @@ class Document:
                     final,
                     _gmap,
                     );
+            #log( 'insert_pdf(): extra_FzDocument_insert_pdf() returned.')
         else:
             pdfout = _as_pdf_document(self)
             pdfsrc = _as_pdf_document(docsrc)
@@ -4312,11 +4328,14 @@ class Document:
             ENSURE_OPERATION(pdfout)
             JM_merge_range(pdfout, pdfsrc, fp, tp, sa, rotate, links, annots, show_progress, _gmap)
         
+        #log( 'insert_pdf(): calling self._reset_page_refs()')
         self._reset_page_refs()
         if links:
+            #log( 'insert_pdf(): calling self._do_links()')
             self._do_links(docsrc, from_page = from_page, to_page = to_page, start_at = sa)
         if final == 1:
             self.Graftmaps[isrt] = None
+        #log( 'insert_pdf(): returning')
 
     @property
     def is_dirty(self):
@@ -4601,6 +4620,7 @@ class Document:
         val = Page(page, self)
 
         val.thisown = True
+        val.parent = self
         self._page_refs[id(val)] = val
         val._annot_refs = weakref.WeakValueDictionary()
         val.number = page_id
@@ -6153,11 +6173,11 @@ class Link:
     @property
     def uri(self):
         """Uri string."""
-        CheckParent(self)
+        #CheckParent(self)
+        if g_use_extra:
+            return extra.link_uri(self.this)
         this_link = self.this
-        if 1:
-            return this_link.m_internal.uri if this_link.m_internal else ''
-        return this_link.uri() if this_link.m_internal else ''
+        return this_link.m_internal.uri if this_link.m_internal else ''
 
     page = -1
 
@@ -6889,7 +6909,7 @@ class Page:
         self.lastPoint = None
         self.draw_cont = ''
         self._annot_refs = dict()
-        self._parent = document
+        self.parent = document
         if page.m_internal:
             if isinstance( page, mupdf.PdfPage):
                 self.number = page.m_internal.super.number
@@ -7216,6 +7236,8 @@ class Page:
         """Add links from list of object sources."""
         CheckParent(self)
         if g_use_extra:
+            self.__class__._addAnnot_FromString = extra.Page_addAnnot_FromString
+            log('Page._addAnnot_FromString() deferring to extra.Page_addAnnot_FromString().')
             return extra.Page_addAnnot_FromString( self.this, linklist)
         page = mupdf.pdf_page_from_fz_page(self.this)
         lcount = len(linklist)  # link count
@@ -7268,7 +7290,7 @@ class Page:
         except:
             exception_info()
             pass
-        self._parent = None
+        self.parent = None
         self.thisown = False
         self.number = None
 
@@ -7305,6 +7327,10 @@ class Page:
         return rc
 
     def _get_textpage(self, clip=None, flags=0, matrix=None):
+        if g_use_extra:
+            ll_tpage = extra.page_get_textpage(self.this, clip, flags, matrix)
+            tpage = mupdf.FzStextPage(ll_tpage)
+            return tpage
         page = self.this
         options = mupdf.FzStextOptions(flags)
         rect = JM_rect_from_py(clip)
@@ -7446,7 +7472,7 @@ class Page:
             # return by value. So we need to construct locally from a raw
             # fz_compressed_buffer.
             #cbuf1 = mupdf.fz_compressed_image_buffer(image)
-            cbuf1 = mupdf.FzCompressedBuffer( mupdf.fz_compressed_image_buffer( image.m_internal))
+            cbuf1 = mupdf.FzCompressedBuffer( mupdf.ll_fz_compressed_image_buffer( image.m_internal))
             if not cbuf1.m_internal:
                 raise ValueError( "uncompressed image cannot have mask")
             bpc = image.bpc()
@@ -7955,10 +7981,12 @@ class Page:
             return []
         return JM_get_annot_id_list(page)
 
-    def annot_xrefs(self):
+    def _unused_annot_xrefs(self):
         """List of xref numbers of annotations, fields and links."""
+        assert 0
         CheckParent(self)
-        if 0 and g_use_extra:
+        if 1 and g_use_extra:
+            assert 0    # set globally.
             ret = extra.JM_get_annot_xref_list2( self.this)
             return ret
         page = self._pdf_page()
@@ -8823,11 +8851,12 @@ class Page:
     def mediabox_size(self):
         return Point(self.mediabox.x1, self.mediabox.y1)
 
-    @property
-    def parent( self):
-        if self._parent:
-            return self._parent
-        return Document( self.this.document())
+    #@property
+    #def parent( self):
+    #    assert self._parent
+    #    if self._parent:
+    #        return self._parent
+    #    return Document( self.this.document())
 
     def read_contents(self):
         """All /Contents streams concatenated to one bytes object."""
@@ -8968,8 +8997,8 @@ class Page:
                     all fields are returned. E.g. types=[PDF_WIDGET_TYPE_TEXT]
                     will only yield text fields.
         """
-        for a in self.annot_xrefs():
-            log( '{a=}')
+        #for a in self.annot_xrefs():
+        #    log( '{a=}')
         widget_xrefs = [a[0] for a in self.annot_xrefs() if a[1] == PDF_ANNOT_WIDGET]
         #log(f'widgets(): {widget_xrefs=}')
         for xref in widget_xrefs:
@@ -8992,6 +9021,8 @@ class Page:
 
     rect = property(bound, doc="page rectangle")
 
+if g_use_extra:
+    Page.annot_xrefs = extra.JM_get_annot_xref_list2
 
 class Pixmap:
 
@@ -9183,7 +9214,7 @@ class Pixmap:
                 size, c = mupdf.fz_buffer_storage(res)
                 samples2 = mupdf.python_buffer_data(samples) # raw swig proxy for `const unsigned char*`.
             if stride * h != size:
-                raise ValueError( f"bad samples length {w=} {h=} {alpha=} {n=} {stride=} {size=}")
+                raise ValueError( f"bad samples length w={w} h={h} alpha={alpha} n={n} stride={stride} size={size}")
             mupdf.ll_fz_pixmap_copy_raw( pm.m_internal, samples2)
             self.this = pm
 
@@ -9408,6 +9439,14 @@ class Pixmap:
     @property
     def n(self):
         """The size of one pixel."""
+        if g_use_extra:
+            # Setting self.__class__.n gives a small reduction in overhead of
+            # test_general.py:test_2093, e.g. 1.4x -> 1.3x.
+            #return extra.pixmap_n(self.this)
+            def n2(self):
+                return extra.pixmap_n(self.this)
+            self.__class__.n = property(n2)
+            return self.n
         return mupdf.fz_pixmap_components(self.this)
 
     def pdfocr_save(self, filename, compress=1, language=None):
@@ -9486,6 +9525,8 @@ class Pixmap:
     def pixel(self, x, y):
         """Get color tuple of pixel (x, y).
         Last item is the alpha if Pixmap.alpha is true."""
+        if g_use_extra:
+            return extra.pixmap_pixel(self.this.m_internal, x, y)
         if (0
                 or x < 0
                 or x >= self.this.m_internal.w
@@ -11709,6 +11750,8 @@ class TextPage:
 
     def extractBLOCKS(self):
         """Return a list with text block information."""
+        if g_use_extra:
+            return extra.extractBLOCKS(self.this)
         block_n = -1
         this_tpage = self.this
         tp_rect = mupdf.FzRect(this_tpage.m_internal.mediabox)
@@ -11738,16 +11781,16 @@ class TextPage:
                         mupdf.fz_append_byte(res, 10)
                     blockrect = mupdf.fz_union_rect(blockrect, linerect)
                 text = JM_EscapeStrFromBuffer(res)
-            elif (JM_rects_overlap(tp_rect, block.bbox)
+            elif (JM_rects_overlap(tp_rect, block.m_internal.bbox)
                     or mupdf.fz_is_infinite_rect(tp_rect)
                     ):
                 img = block.i_image()
                 cs = img.colorspace()
                 text = "<image: %s, width: %d, height: %d, bpc: %d>" % (
                         mupdf.fz_colorspace_name(cs),
-                        img.w(), img.h(), img.bpc
+                        img.w(), img.h(), img.bpc()
                         )
-                blockrect = mupdf.fz_union_rect(blockrect, block.bbox)
+                blockrect = mupdf.fz_union_rect(blockrect, mupdf.FzRect(block.m_internal.bbox))
             if not mupdf.fz_is_empty_rect(blockrect):
                 litem = (
                         blockrect.x0,
@@ -11829,6 +11872,7 @@ class TextPage:
             blocks = val["blocks"]
             blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
             val["blocks"] = blocks
+        
         val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
         return val
 
@@ -11893,6 +11937,8 @@ class TextPage:
 
     def extractWORDS(self):
         """Return a list with text word information."""
+        if g_use_extra:
+            return extra.extractWORDS(self.this)
         buflen = 0
         block_n = -1
         wbbox = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)  # word bbox
@@ -11909,9 +11955,9 @@ class TextPage:
             line_n = -1
             for line in block:
                 line_n += 1
-                word_n = 0                        # word counter per line
-                mupdf.fz_clear_buffer(buff)      # reset word buffer
-                buflen = 0                        # reset char counter
+                word_n = 0                  # word counter per line
+                mupdf.fz_clear_buffer(buff) # reset word buffer
+                buflen = 0                  # reset char counter
                 for ch in line:
                     cbbox = JM_char_bbox(line, ch)
                     if (not JM_rects_overlap(tp_rect, cbbox)
@@ -15511,6 +15557,8 @@ def JM_make_annot_DA(annot, ncol, col, fontname, fontsize):
 
 
 def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
+    if g_use_extra:
+        return extra.JM_make_spanlist(line_dict, line, raw, buff, tp_rect)
     char_list = None
     span_list = []
     mupdf.fz_clear_buffer(buff)
@@ -15634,12 +15682,49 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
     return line_rect
 
 
+def JM_make_image_block(block, block_dict):
+    image = block.i_image()
+    n = mupdf.fz_colorspace_n(image.colorspace())
+    w = image.w()
+    h = image.h()
+    type_ = mupdf.FZ_IMAGE_UNKNOWN
+    # fz_compressed_image_buffer() is not available because
+    # `fz_compressed_buffer` is not copyable.
+    ll_fz_compressed_buffer = mupdf.ll_fz_compressed_image_buffer(image.m_internal)
+    if ll_fz_compressed_buffer:
+        type_ = ll_fz_compressed_buffer.params.type
+    if type_ < mupdf.FZ_IMAGE_BMP or type_ == mupdf.FZ_IMAGE_JBIG2:
+        type_ = mupdf.FZ_IMAGE_UNKNOWN
+    bytes_ = None
+    if ll_fz_compressed_buffer and type_ != mupdf.FZ_IMAGE_UNKNOWN:
+        buf = mupdf.FzBuffer( mupdf.ll_fz_keep_buffer( ll_fz_compressed_buffer.buffer))
+        ext = JM_image_extension(type_)
+    else:
+        buf = mupdf.fz_new_buffer_from_image_as_png(image, mupdf.FzColorParams())
+        ext = "png"
+    bytes_ = JM_BinFromBuffer(buf)
+    if not bytes_:
+        bytes_ = JM_BinFromChar("")
+    block_dict[ dictkey_width] = w
+    block_dict[ dictkey_height] = h
+    block_dict[ dictkey_ext] = ext
+    block_dict[ dictkey_colorspace] = n
+    block_dict[ dictkey_xres] = image.xres()
+    block_dict[ dictkey_yres] = image.yres()
+    block_dict[ dictkey_bpc] = image.bpc()
+    block_dict[ dictkey_matrix] = JM_py_from_matrix(block.i_transform())
+    block_dict[ dictkey_size] = mupdf.fz_image_size( image)
+    block_dict[ dictkey_image] = bytes_
+
+
 def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
+    if g_use_extra:
+        return extra.JM_make_text_block(tp.m_internal, page_dict, raw)
     line_list = []
     block_rect = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)
-    #log(f'{block!r=}')
+    #log(f'{block=}')
     for line in block:
-        #log(f'{line!r=}')
+        #log(f'{line=}')
         if (mupdf.fz_is_empty_rect(mupdf.fz_intersect_rect(tp_rect, mupdf.FzRect(line.m_internal.bbox)))
                 and not mupdf.fz_is_infinite_rect(tp_rect)
                 ):
@@ -15656,6 +15741,8 @@ def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
 
 
 def JM_make_textpage_dict(tp, page_dict, raw):
+    if g_use_extra:
+        return extra.JM_make_textpage_dict(tp.m_internal, page_dict, raw)
     text_buffer = mupdf.fz_new_buffer(128)
     block_list = []
     tp_rect = mupdf.FzRect(tp.m_internal.mediabox)
@@ -16269,7 +16356,7 @@ def JM_rotate_page_matrix(page):
         m = mupdf.fz_make_matrix(-1, 0, 0, -1, w, h)
     else:
         m = mupdf.fz_make_matrix(0, -1, 1, 0, 0, w)
-    log( 'returning {m=}')
+    #log( 'returning {m=}')
     return m
 
 
@@ -16333,9 +16420,11 @@ def JM_search_stext_page(page, needle):
                     break
                 haystack += 1
                 #next_char:;
-            assert haystack_string[haystack] == '\n', f'{haystack=} {haystack_string[haystack]=}'
+            assert haystack_string[haystack] == '\n', \
+                    f'haystack={haystack} haystack_string[haystack]={haystack_string[haystack]}'
             haystack += 1
-        assert haystack_string[haystack] == '\n', f'{haystack=} {haystack_string[haystack]=}'
+        assert haystack_string[haystack] == '\n', \
+                f'haystack={haystack} haystack_string[haystack]={haystack_string[haystack]}'
         haystack += 1
     #no_more_matches:;
     return quads
