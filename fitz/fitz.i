@@ -177,8 +177,13 @@ static PyObject *JM_Exc_CurrentException;
     #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
     /* Stop Memento backtraces if we reach the Python interpreter.
     `cfunction_call()` isn't the only way that Python calls C though, so we
-    might need extra calls to Memento_addBacktraceLimitFnname(). */
-    Memento_addBacktraceLimitFnname("cfunction_call");
+    might need extra calls to Memento_addBacktraceLimitFnname().
+    
+    We put this inside `#ifdef MEMENTO` because memento.h's disabling macro
+    causes "warning: statement with no effect" from cc. */
+    #ifdef MEMENTO
+        Memento_addBacktraceLimitFnname("cfunction_call");
+    #endif
     #endif
 
     /*
@@ -4336,6 +4341,8 @@ if basestate:
             }
             return Py_BuildValue("i", xref);
         }
+        
+        struct Annot;
 
         void internal_keep_annot(struct Annot* annot)
         {

@@ -429,6 +429,7 @@ PyObject *util_hor_matrix(PyObject *C, PyObject *P)
 struct Annot;
 
 // Ensure that widgets with /AA/C JavaScript are in array AcroForm/CO
+struct Annot;
 PyObject *util_ensure_widget_calc(struct Annot *annot)
 {
 	pdf_obj *PDFNAME_CO=NULL;
