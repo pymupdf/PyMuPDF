@@ -26,3 +26,48 @@ def test_extract1():
     rects = fitz.get_highlight_selection(page, start=page.rect.tl, stop=page.rect.br)
     text = fitz.ConversionHeader("xml")
     text = fitz.ConversionTrailer("xml")
+
+def test_extract2():
+    import sys
+    import time
+    path = f'{scriptdir}/../../PyMuPDF-performance/adobe.pdf'
+    if not os.path.exists(path):
+        print(f'test_extract2(): not running becase does not exist: {path}')
+        return
+    doc = fitz.open( path)
+    for opt in (
+            'dict',
+            'dict2',
+            'text',
+            'blocks',
+            'words',
+            'html',
+            'xhtml',
+            'xml',
+            'json',
+            'rawdict',
+            'rawjson',
+            ):
+        for flags in None, fitz.TEXTFLAGS_TEXT:
+            t0 = time.time()
+            for page in doc:
+                page.get_text(opt, flags=flags)
+            t = time.time() - t0
+            print(f't={t:.02f}: opt={opt} flags={flags}')
+            sys.stdout.flush()
+
+def _test_extract3():
+    import sys
+    import time
+    path = f'{scriptdir}/../../PyMuPDF-performance/adobe.pdf'
+    if not os.path.exists(path):
+        print(f'test_extract3(): not running becase does not exist: {path}')
+        return
+    doc = fitz.open( path)
+    t0 = time.time()
+    for page in doc:
+        page.get_text('json')
+    t = time.time() - t0
+    print(f't={t}')
+    sys.stdout.flush()
+
