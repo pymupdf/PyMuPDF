@@ -8,11 +8,11 @@ Matrix
 
 Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the :ref:`AdobeManual`). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six float values.
 
-.. |matrix| image:: images/img-matrix.*
 
 Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by *[a, b, c, d, e, f]*. Here is how they are positioned in the matrix:
 
-|matrix|
+.. image:: images/img-matrix.*
+
 
 Please note:
 
@@ -35,7 +35,7 @@ Please note:
 :attr:`Matrix.d`                 zoom factor Y direction
 :attr:`Matrix.e`                 horizontal shift
 :attr:`Matrix.f`                 vertical shift
-:attr:`Matrix.is_rectilinear`    true if rect corners will remain rect corners
+:attr:`Matrix.is_rectilinear`     true if rect corners will remain rect corners
 ================================ ==============================================
 
 **Class API**
@@ -73,7 +73,7 @@ Please note:
    .. method:: norm()
 
       * New in version 1.16.0
-
+      
       Return the Euclidean norm of the matrix as a vector.
 
    .. method:: prerotate(deg)
@@ -135,13 +135,13 @@ Please note:
 
    .. attribute:: b
 
-      Causes a shearing effect: each *Point(x, y)* will become *Point(x, y - b*x)*. Therefore, looking from left to right, e.g. horizontal lines will be "tilt" -- downwards if b > 0, upwards otherwise (b is the tangent of the tilting angle).
+      Causes a shearing effect: each `Point(x, y)` will become `Point(x, y - b*x)`. Therefore, horizontal lines will be "tilt".
 
       :type: float
 
    .. attribute:: c
 
-      Causes a shearing effect: each *Point(x, y)* will become *Point(x - c*y, y)*. Therefore, looking upwards, vertical lines will be "tilt" -- to the left if c > 0, to the right otherwise (c is the tangent of the tilting angle).
+      Causes a shearing effect: each `Point(x, y)` will become `Point(x - c*y, y)`. Therefore, vertical lines will be "tilt".
 
       :type: float
 
@@ -172,69 +172,54 @@ Please note:
 .. note::
 
    * This class adheres to the Python sequence protocol, so components can be accessed via their index, too. Also refer to :ref:`SequenceTypes`.
-   * A matrix can be used with arithmetic operators -- see chapter :ref:`Algebra`.
-   * Changes of matrix properties and execution of matrix methods can be executed consecutively. This is the same as multiplying the respective matrices.
-   * Matrix multiplication is **not commutative** -- changing the execution sequence in general changes the result. So it can quickly become unclear which result a transformation will yield.
+   * Matrices can be used with arithmetic operators almost like ordinary numbers: they can be added, subtracted, multiplied or divided -- see chapter :ref:`Algebra`.
+   * Matrix multiplication is **not commutative** -- changing the sequence of the multiplicands will change the result in general. So it can quickly become unclear which result a transformation will yield.
 
 
 Examples
 -------------
-Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
+Here are examples that illustrate some of the achievable effects. All pictures show some text, inserted under control of some matrix and relative to a fixed reference point (the red dot).
 
-.. |original| image:: images/img-original.*
+1. The :ref:`Identity` matrix performs no operation.
 
-This is the original page image:
+.. image:: images/img-matrix-0.*
+   :scale: 66
 
-|original|
+2. The scaling matrix `Matrix(2, 0.5)` stretches by a factor of 2 in horizontal, and shrinks by factor 0.5 in vertical direction.
 
-Shifting
-------------
-.. |e100| image:: images/img-e-is-100.*
+.. image:: images/img-matrix-1.*
+   :scale: 66
 
-We transform it with a matrix where *e = 100* (right shift by 100 pixels).
+3. Attributes :attr:`Matrix.e` and :attr:`Matrix.f` shift horizontally and, respectively vertically. In the following 10 to the right and 20 down.
 
-|e100|
+.. image:: images/img-matrix-2.*
+   :scale: 66
 
-.. |f100| image:: images/img-f-is-100.*
+4. A negative :attr:`Matrix.a` causes a left-right flip.
 
-Next we do a down shift by 100 pixels: *f = 100*.
+.. image:: images/img-matrix-3.*
+   :scale: 66
 
-|f100|
+5. A negative :attr:`Matrix.d` causes an up-down flip.
 
-Flipping
---------------
-.. |aminus1| image:: images/img-a-is--1.*
+.. image:: images/img-matrix-4.*
+   :scale: 66
 
-Flip the page left-right (*a = -1*).
+6. Attribute :attr:`Matrix.b` tilts upwards / downwards along the x-axis.
 
-|aminus1|
+.. image:: images/img-matrix-5.*
+   :scale: 66
 
-.. |dminus1| image:: images/img-d-is--1.*
+7. Attribute :attr:`Matrix.c` tilts left / right along the y-axis.
 
-Flip up-down (*d = -1*).
+.. image:: images/img-matrix-6.*
+   :scale: 66
 
-|dminus1|
+8. Matrix `Matrix(beta)` performs counterclockwise rotations for positive angles `beta`.
 
-Shearing
-----------------
-.. |bnull5| image:: images/img-b-is-0.5.*
+.. image:: images/img-matrix-7.*
+   :scale: 66
 
-First a shear in Y direction (*b = 0.5*).
 
-|bnull5|
-
-.. |cnull5| image:: images/img-c-is-0.5.*
-
-Second a shear in X direction (*c = 0.5*).
-
-|cnull5|
-
-Rotating
----------
-.. |rot60| image:: images/img-rot-60.*
-
-Finally a rotation by 30 degrees anti-clockwise (*prerotate(30)*).
-
-|rot60|
 
 .. include:: footer.rst
