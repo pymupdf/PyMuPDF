@@ -223,6 +223,9 @@
           },
         });
         window.term = term;
+
+
+
         pyconsole.stdout_callback = (s) => echo(s, { newline: false });
         pyconsole.stderr_callback = (s) => {
           term.error(s.trimEnd());
@@ -250,8 +253,28 @@
         if (searchParams.has("noblink")) {
           $(".cmd-cursor").addClass("noblink");
         }
+
+        setCommands()
+
       }
       window.console_ready = main();
+
+      // triggers at the end of main()
+      function setCommands() {
+        window.term.exec("import pyodide.http");
+        window.term.exec("r = await pyodide.http.pyfetch('https://mupdf.com/docs/mupdf_explored.pdf')");
+        window.term.exec("data = await r.bytes()");
+        window.term.exec("doc = fitz.Document(stream=data)");
+
+        function pressEnter() {
+          window.term.invoke_key("ENTER");
+        }
+
+        setTimeout(pressEnter,1000);
+
+
+      }
+
     </script>
   </body>
 </html>
