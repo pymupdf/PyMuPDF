@@ -35,7 +35,7 @@ Please note:
 :attr:`Matrix.d`                 zoom factor Y direction
 :attr:`Matrix.e`                 horizontal shift
 :attr:`Matrix.f`                 vertical shift
-:attr:`Matrix.is_rectilinear`     true if rect corners will remain rect corners
+:attr:`Matrix.is_rectilinear`    true if rect corners will remain rect corners
 ================================ ==============================================
 
 **Class API**
