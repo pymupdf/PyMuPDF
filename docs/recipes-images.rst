@@ -369,7 +369,7 @@ Notwithstanding that interfacing with Pillow is almost trivial.
 **Input Formats** **Output Formats** **Description**
 ================= ================== =========================================
 BMP               .                  Windows Bitmap
-JPEG              .                  Joint Photographic Experts Group
+JPEG              JPEG               Joint Photographic Experts Group
 JXR               .                  JPEG Extended Range
 JPX/JP2           .                  JPEG 2000
 GIF               .                  Graphics Interchange Format
@@ -380,7 +380,7 @@ PGM               PGM                Portable Graymap
 PBM               PBM                Portable Bitmap
 PPM               PPM                Portable Pixmap
 PAM               PAM                Portable Arbitrary Map
-.                 PSD                Adobe Photoshop Document
+PSD               PSD                Adobe Photoshop Document
 .                 PS                 Adobe Postscript
 ================= ================== =========================================
 
