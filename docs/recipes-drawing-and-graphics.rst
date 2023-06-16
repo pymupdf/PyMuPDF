@@ -89,7 +89,7 @@ How to Extract Drawings
 
 * New in v1.18.0
 
-The drawing commands issued by a page can be extracted. Interestingly, this is possible for **all supported document types** -- not just PDF: so you can use it for XPS, EPUB and others as well.
+The drawing commands issued by a page can be extracted. Interestingly, this is possible for :ref:`all supported document types<Supported_File_Types>` -- not just PDF: so you can use it for XPS, EPUB and others as well.
 
 Page method, :meth:`Page.get_drawings()` accesses draw commands and converts them into a list of Python dictionaries. Each dictionary -- called a "path" -- represents a separate drawing -- it may be simple like a single line, or a complex combination of lines and curves representing one of the shapes of the previous section.
 
