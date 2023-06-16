@@ -18,51 +18,60 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 ================================ ===========================================================================================
 **Method / Attribute**             **Description**
 ================================ ===========================================================================================
-:meth:`~.add_bullet_list`        add a :htmlTag:`ul` tag - bulleted list, context manager.
-:meth:`~.add_codeblock`          add a :htmlTag:`pre` tag, context manager.
-:meth:`~.add_description_list`   add a :htmlTag:`dl` tag, context manager.
+:meth:`~.add_bullet_list`        Add a :htmlTag:`ul` tag - bulleted list, context manager.
+:meth:`~.add_codeblock`          Add a :htmlTag:`pre` tag, context manager.
+:meth:`~.add_description_list`   Add a :htmlTag:`dl` tag, context manager.
 :meth:`~.add_division`           add a :htmlTag:`div` tag (renamed from “section”), context manager.
-:meth:`~.add_header`             add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context manager.
-:meth:`~.add_horizontal_line`    add a :htmlTag:`hr` tag.
-:meth:`~.add_image`              add a :htmlTag:`img` tag.
-:meth:`~.add_link`               add a :htmlTag:`a` tag.
-:meth:`~.add_number_list`        add a :htmlTag:`ol` tag, context manager.
-:meth:`~.add_paragraph`          add a :htmlTag:`p` tag.
-:meth:`~.add_span`               add a :htmlTag:`span` tag, context manager.
-:meth:`~.add_subscript`          add subscript text(:htmlTag:`sub` tag) - inline element, treated like text.
-:meth:`~.add_superscript`        add subscript text (:htmlTag:`sup` tag) - inline element, treated like text.
-:meth:`~.add_code`               add code text (:htmlTag:`code` tag) - inline element, treated like text.
-:meth:`~.add_var`                add code text (:htmlTag:`code` tag) - inline element, treated like text.
-:meth:`~.add_samp`               add code text (:htmlTag:`code` tag) - inline element, treated like text.
-:meth:`~.add_kbd`                add code text (:htmlTag:`code` tag) - inline element, treated like text.
-:meth:`~.add_text`               add a text string. Line breaks `\n` are honored as :htmlTag:`br` tags.
-:meth:`~.set_align`              sets the alignment using a CSS style spec. Only works for block-level tags.
-:meth:`~.set_attribute`          sets an arbitrary key to some value (which may be empty).
-:meth:`~.set_bgcolor`            sets the background color. Only works for block-level tags.
-:meth:`~.set_bold`               sets bold on or off or to some string value.
-:meth:`~.set_color`              sets text color.
-:meth:`~.set_columns`            sets the number of columns. Argument may be any valid number or string.
-:meth:`~.set_font`               sets the font-family, e.g. “sans-serif”.
-:meth:`~.set_fontsize`           sets the font size. Either a float or a valid HTML/CSS string.
-:meth:`~.set_id`                 sets a :htmlTag:`id`. A check for uniqueness is performed.
-:meth:`~.set_italic`             sets italic on or off or to some string value.
-:meth:`~.set_leading`            set inter-block text distance (`-mupdf-leading`), only works on block-level nodes.
-:meth:`~.set_lineheight`         set height of a line. Float like 1.5, which sets to `1.5 * fontsize`.
-:meth:`~.set_margins`            sets the margin(s), float or string with up to 4 values.
-:meth:`~.set_pagebreak_after`    insert a page break after this node.
-:meth:`~.set_pagebreak_before`   insert a page break before this node.
-:meth:`~.set_properties`         set any or all desired properties in one call.
-:meth:`~.add_style`              set (add) some “style” attribute not supported by its own `set_` method.
-:meth:`~.add_class`              set (add) some “class” attribute.
-:meth:`~.set_text_indent`        set indentation for first textblock line. Only works for block-level nodes.
-:attr:`~.tagname`                either the HTML tag name like :htmlTag:`p` or `None` if a text node.
-:attr:`~.text`                   either the node's text or `None` if a tag node.
-:attr:`~.is_text`                check if the node is a text.
-:attr:`~.first_child`            contains the first node one level below this one (or `None`).
-:attr:`~.last_child`             contains the last node one level below this one (or `None`).
-:attr:`~.next`                   the next node at the same level (or `None`).
-:attr:`~.previous`               the previous node at the same level.
-:attr:`~.root`                   the top node of the DOM, which hence has the tagname :htmlTag:`html`.
+:meth:`~.add_header`             Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context manager.
+:meth:`~.add_horizontal_line`    Add a :htmlTag:`hr` tag.
+:meth:`~.add_image`              Add a :htmlTag:`img` tag.
+:meth:`~.add_link`               Add a :htmlTag:`a` tag.
+:meth:`~.add_number_list`        Add a :htmlTag:`ol` tag, context manager.
+:meth:`~.add_paragraph`          Add a :htmlTag:`p` tag.
+:meth:`~.add_span`               Add a :htmlTag:`span` tag, context manager.
+:meth:`~.add_subscript`          Add subscript text(:htmlTag:`sub` tag) - inline element, treated like text.
+:meth:`~.add_superscript`        Add subscript text (:htmlTag:`sup` tag) - inline element, treated like text.
+:meth:`~.add_code`               Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_var`                Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_samp`               Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_kbd`                Add code text (:htmlTag:`code` tag) - inline element, treated like text.
+:meth:`~.add_text`               Add a text string. Line breaks `\n` are honored as :htmlTag:`br` tags.
+:meth:`~.append_child`           Append a child node.
+:meth:`~.clone`                  Make a copy if this node.
+:meth:`~.create_element`         Make a new node with a given tag name.
+:meth:`~.create_text_node`       Create direct text for the current node.
+:meth:`~.find`                   Find a sub-node with given properties.
+:meth:`~.find_next`              Repeat previous "find" with the same criteria.
+:meth:`~.insert_after`           Insert an element after current node.
+:meth:`~.insert_before`          Insert an element before current node.
+:meth:`~.remove`                 Remove this node.
+:meth:`~.set_align`              Set the alignment using a CSS style spec. Only works for block-level tags.
+:meth:`~.set_attribute`          Set an arbitrary key to some value (which may be empty).
+:meth:`~.set_bgcolor`            Set the background color. Only works for block-level tags.
+:meth:`~.set_bold`               Set bold on or off or to some string value.
+:meth:`~.set_color`              Set text color.
+:meth:`~.set_columns`            Set the number of columns. Argument may be any valid number or string.
+:meth:`~.set_font`               Set the font-family, e.g. “sans-serif”.
+:meth:`~.set_fontsize`           Set the font size. Either a float or a valid HTML/CSS string.
+:meth:`~.set_id`                 Set a :htmlTag:`id`. A check for uniqueness is performed.
+:meth:`~.set_italic`             Set italic on or off or to some string value.
+:meth:`~.set_leading`            Set inter-block text distance (`-mupdf-leading`), only works on block-level nodes.
+:meth:`~.set_lineheight`         Set height of a line. Float like 1.5, which sets to `1.5 * fontsize`.
+:meth:`~.set_margins`            Set the margin(s), float or string with up to 4 values.
+:meth:`~.set_pagebreak_after`    Insert a page break after this node.
+:meth:`~.set_pagebreak_before`   Insert a page break before this node.
+:meth:`~.set_properties`         Set any or all desired properties in one call.
+:meth:`~.add_style`              Set (add) a “style” that is not supported by its own `set_` method.
+:meth:`~.add_class`              Set (add) a “class” attribute.
+:meth:`~.set_text_indent`        Set indentation for first textblock line. Only works for block-level nodes.
+:attr:`~.tagname`                Either the HTML tag name like :htmlTag:`p` or `None` if a text node.
+:attr:`~.text`                   Either the node's text or `None` if a tag node.
+:attr:`~.is_text`                Check if the node is a text.
+:attr:`~.first_child`            Contains the first node one level below this one (or `None`).
+:attr:`~.last_child`             Contains the last node one level below this one (or `None`).
+:attr:`~.next`                   The next node at the same level (or `None`).
+:attr:`~.previous`               The previous node at the same level.
+:attr:`~.root`                   The top node of the DOM, which hence has the tagname :htmlTag:`html`.
 ================================ ===========================================================================================
 
 
@@ -187,13 +196,13 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: set_bgcolor(value)
 
-       Sets the background color. Only works for block-level tags.
+       Set the background color. Only works for block-level tags.
 
        :arg value: either an RGB value like (255, 0, 0) (for "red") or a valid `background-color <https://developer.mozilla.org/en-US/docs/Web/CSS/background-color>`_ value.
 
     .. method:: set_bold(value)
 
-       Sets bold on or off or to some string value.
+       Set bold on or off or to some string value.
 
        :arg value: `True`, `False` or a valid `font-weight <https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight>`_ value.
 
@@ -205,7 +214,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: set_columns(value)
 
-       Sets the number of columns.
+       Set the number of columns.
 
        :arg value: a valid `columns <https://developer.mozilla.org/en-US/docs/Web/CSS/columns>`_ value.
 
@@ -225,13 +234,13 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: set_id(unqid)
 
-       Sets a :htmlTag:`id`. This serves as a unique identification of the node within the DOM. Use it to easily locate the node to inspect or modify it. A check for uniqueness is performed.
+       Set a :htmlTag:`id`. This serves as a unique identification of the node within the DOM. Use it to easily locate the node to inspect or modify it. A check for uniqueness is performed.
 
        :arg str unqid: id string of the node.
 
     .. method:: set_italic(value)
 
-       Sets italic on or off or to some string value for the text following it.
+       Set italic on or off or to some string value for the text following it.
 
        :arg value: `True`, `False` or some valid `font-style <https://developer.mozilla.org/en-US/docs/Web/CSS/font-style>`_ value.
 
@@ -249,7 +258,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: set_margins(value)
 
-       Sets the margin(s).
+       Set the margin(s).
 
        :arg value: float or string with up to 4 values. See `CSS documentation <https://developer.mozilla.org/en-US/docs/Web/CSS/margin>`_.
 
@@ -294,7 +303,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: create_text_node(text)
 
-       Create direct text for the current node
+       Create direct text for the current node.
 
        :arg str text: the text to append.
 
@@ -339,18 +348,18 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: find(tag, att, match)
 
-       Under the current node, find a node with the given `tag`, attribute `att` and value `match`.
+       Under the current node, find the first node with the given `tag`, attribute `att` and value `match`.
 
-       :arg str tag: restrict search to this tag. May be `None` for unrestricted search.
-       :arg str att: check this attribute.
-       :arg str match: the desired attribute value to match.
+       :arg str tag: restrict search to this tag. May be `None` for unrestricted searches.
+       :arg str att: check this attribute. May be `None`.
+       :arg str match: the desired attribute value to match. May be `None`.
 
        :rtype: :ref:`Xml`.
        :returns: `None` if nothing found, otherwise the first matching node.
 
     .. method:: find_next( tag, att, match)
 
-       Continue a previous :meth:`Xml.find` with the same values.
+       Continue a previous :meth:`Xml.find` (or ::meth:`find_next`) with the same values.
 
        :rtype: :ref:`Xml`.
        :returns: `None` if none more found, otherwise the next matching node.

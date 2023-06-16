@@ -99,7 +99,8 @@ JM_add_layer_config(fz_context *ctx, pdf_document *pdf, char *name, char *creato
 
 //------------------------------------------------------------------------
 // Get OCG arrays from OC configuration
-// Returns dict {"basestate":name, "on":list, "off":list, "rbg":list}
+// Returns dict
+// {"basestate":name, "on":list, "off":list, "rbg":list, "locked":list}
 //------------------------------------------------------------------------
 static PyObject *
 JM_get_ocg_arrays_imp(fz_context *ctx, pdf_obj *arr)
@@ -139,6 +140,12 @@ JM_get_ocg_arrays(fz_context *ctx, pdf_obj *conf)
         list = JM_get_ocg_arrays_imp(ctx, arr);
         if (PySequence_Size(list)) {
             PyDict_SetItemString(rc, "off", list);
+        }
+        Py_DECREF(list);
+        arr = pdf_dict_get(ctx, conf, PDF_NAME(Locked));
+        list = JM_get_ocg_arrays_imp(ctx, arr);
+        if (PySequence_Size(list)) {
+            PyDict_SetItemString(rc, "locked", list);
         }
         Py_DECREF(list);
         list = PyList_New(0);
@@ -196,7 +203,7 @@ JM_set_ocg_arrays_imp(fz_context *ctx, pdf_obj *arr, PyObject *list)
 
 static void
 JM_set_ocg_arrays(fz_context *ctx, pdf_obj *conf, const char *basestate,
-                  PyObject *on, PyObject *off, PyObject *rbgroups)
+                  PyObject *on, PyObject *off, PyObject *rbgroups, PyObject *locked)
 {
     int i, n;
     pdf_obj *arr = NULL, *obj = NULL;
@@ -218,6 +225,14 @@ JM_set_ocg_arrays(fz_context *ctx, pdf_obj *conf, const char *basestate,
             if (PySequence_Size(off)) {
                 arr = pdf_dict_put_array(ctx, conf, PDF_NAME(OFF), 1);
                 JM_set_ocg_arrays_imp(ctx, arr, off);
+            }
+        }
+
+        if (locked != Py_None) {
+            pdf_dict_del(ctx, conf, PDF_NAME(Locked));
+            if (PySequence_Size(locked)) {
+                arr = pdf_dict_put_array(ctx, conf, PDF_NAME(Locked), 1);
+                JM_set_ocg_arrays_imp(ctx, arr, locked);
             }
         }
 

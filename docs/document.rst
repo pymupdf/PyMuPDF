@@ -377,9 +377,11 @@ For details on **embedded files** refer to Appendix 3.
       {'off': [8, 9, 10], 'on': [5, 6, 7], 'rbgroups': [[7, 10]]}
       >>>
 
-    .. method:: set_layer(config, *, on=None, off=None, basestate=None, rbgroups=None)
+    .. method:: set_layer(config, *, on=None, off=None, basestate=None, rbgroups=None, locked=None)
 
       * New in v1.18.3
+
+      * Changed in v1.22.4: Support list of *locked* OCGs.
 
       Mass status changes of optional content groups. **Permanently** sets the status of OCGs.
 
@@ -388,6 +390,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg list off: list of :data:`xref` of OCGs to set OFF. Replaces previous values. An empty list will cause no OCG being set to OFF anymore. Should be specified if `basestate="OFF"` is used.
       :arg str basestate: state of OCGs that are not mentioned in *on* or *off*. Possible values are "ON", "OFF" or "Unchanged". Upper / lower case possible.
       :arg list rbgroups: a list of lists. Replaces previous values. Each sublist should contain two or more OCG xrefs. OCGs in the same sublist are handled like buttons in a radio button group: setting one to ON automatically sets all other group members to OFF.
+      :arg list locked: a list of OCG xref number that cannot be changed by the user interface.
 
       Values `None` will not change the corresponding PDF array.
 
@@ -418,30 +421,13 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v1.18.3
 
-      Show the visibility status of optional content that is modifiable by the user interface of supporting PDF viewers. Example:
-
-        >>> pprint(doc.layer_ui_configs())
-         ({'depth': 0,
-          'locked': False,
-          'number': 0,
-          'on': True,
-          'text': 'Circle',
-          'type': 'checkbox'},
-         {'depth': 0,
-          'locked': False,
-          'number': 1,
-          'on': False,
-          'text': 'Square',
-          'type': 'checkbox'})
-         >>> # refers to OCGs named "Circle" (ON), resp. "Square" (OFF)
-
-       .. note::
+      Show the visibility status of optional content that is modifiable by the user interface of supporting PDF viewers.
 
           * Only reports items contained in the currently selected layer configuration.
 
           * The meaning of the dictionary keys is as follows:
              - *depth:* item's nesting level in the `/Order` array
-             - *locked:* whether changing the item's state is prohibited
+             - *locked:* true if cannot be changed via user interfaces
              - *number:* running sequence number
              - *on:* item state
              - *text:* text string or name field of the originating OCG
@@ -453,32 +439,13 @@ For details on **embedded files** refer to Appendix 3.
 
       Modify OC visibility status of content groups. This is analog to what supporting PDF viewers would offer.
 
-      .. note::
-        Visibility is **not** a property stored with the OCG. It is not even an information necessarily present in the PDF document at all. Instead, the current visibility is **temporarily** set using the user interface of some supporting PDF consumer software. The same type of functionality is offered by this method.
+        Please note that visibility is **not** a property stored with the OCG. It is not even an information necessarily present in the PDF document at all. Instead, the current visibility is **temporarily** set using the user interface of some supporting PDF consumer software. The same type of functionality is offered by this method.
 
         To make **permanent** changes, use :meth:`Document.set_layer`.
 
-      :arg in number: number as returned by :meth:`Document.layer_ui_configs`.
-      :arg int action: 0 = set on (default), 1 = toggle on/off, 2 = set off.
+      :arg int,str number: either the sequence number of the item in list :meth:`Document.layer_configs` or the "text" of one of these items.
+      :arg int action: `PDF_OC_ON` = set on (default), `PDF_OC_TOGGLE` = toggle on/off, `PDF_OC_OFF` = set off.
 
-      Example:
-
-          >>> # let's make above "Square" visible:
-          >>> doc.set_layer_ui_config(1, action=0)
-          >>> pprint(doc.layer_ui_configs())
-          ({'depth': 0,
-            'locked': False,
-            'number': 0,
-            'on': True,
-            'text': 'Circle',
-            'type': 'checkbox'},
-          {'depth': 0,
-            'locked': False,
-            'number': 1,
-            'on': True,  # <===
-            'text': 'Square',
-            'type': 'checkbox'})
-          >>>
 
     .. method:: authenticate(password)
 
