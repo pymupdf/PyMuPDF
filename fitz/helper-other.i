@@ -70,9 +70,10 @@ static pdf_obj
     PyObject *slash = PyUnicode_FromString("/");  // PDF path separator
     PyObject *list = NULL, *newval=NULL, *newstr=NULL, *nullval=NULL;
     const char eyecatcher[] = "fitz: replace me!";
+    pdf_document *pdf = NULL;
     fz_try(ctx)
     {
-        pdf_document *pdf = pdf_get_bound_document(ctx, obj);
+        pdf = pdf_get_bound_document(ctx, obj);
         // split PDF key at path seps and take last key part
         list = PyUnicode_Split(skey, slash, -1);
         Py_ssize_t len = PySequence_Size(list);
@@ -417,6 +418,7 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
 const char *JM_image_extension(int type)
 {
     switch (type) {
+        case(FZ_IMAGE_FAX): return "fax";
         case(FZ_IMAGE_RAW): return "raw";
         case(FZ_IMAGE_FLATE): return "flate";
         case(FZ_IMAGE_LZW): return "lzw";
@@ -430,6 +432,8 @@ const char *JM_image_extension(int type)
         case(FZ_IMAGE_PNG): return "png";
         case(FZ_IMAGE_PNM): return "pnm";
         case(FZ_IMAGE_TIFF): return "tiff";
+        case(FZ_IMAGE_PSD): return "psd";
+        case(FZ_IMAGE_UNKNOWN): return "n/a";
         default: return "n/a";
     }
 }
@@ -439,12 +443,6 @@ const char *JM_image_extension(int type)
 //----------------------------------------------------------------------------
 PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
 {
-
-#if  PY_VERSION_HEX < 0x03000000
- #define PyBytes_FromString(x) PyString_FromString(x)
- #define PyBytes_FromStringAndSize(c, l) PyString_FromStringAndSize(c, l)
-#endif
-
     if (!buffer) {
         return PyBytes_FromString("");
     }
@@ -531,7 +529,7 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 }
 
 //----------------------------------------------------------------------------
-// Make fz_buffer from a PyBytes, PyByteArray, io.BytesIO object
+// Make fz_buffer from a PyBytes, PyByteArray, or io.BytesIO object
 //----------------------------------------------------------------------------
 fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 {
@@ -1177,7 +1175,7 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     }
     // get access to ElementPosition() object
     PyObject *arg = PyObject_CallMethodObjArgs(this_module, make_story_elpos, NULL);
-    
+    Py_INCREF(arg);
     SETATTR("depth", Py_BuildValue("i", pos->depth));
     SETATTR("heading", Py_BuildValue("i", pos->heading));
     SETATTR("id", Py_BuildValue("s", pos->id));
@@ -1195,7 +1193,6 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
             PyObject_SetAttr(arg, pkey, pval);
     }
     PyObject_CallFunctionObjArgs(userfunc, arg, NULL);
-    Py_DECREF(arg);
 #undef SETATTR
 }
 

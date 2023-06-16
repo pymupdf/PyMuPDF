@@ -11,13 +11,6 @@ Quote from the :ref:`AdobeManual`: "An annotation associates an object such as a
 
 There is a parent-child relationship between an annotation and its page. If the page object becomes unusable (closed document, any document structure change, etc.), then so does every of its existing annotation objects -- an exception is raised saying that the object is "orphaned", whenever an annotation property or method is accessed.
 
-.. note::
-
-  Unfortunately, there exists no single, unique naming convention in PyMuPDF: examples for all of *CamelCases*, *mixedCases* and *lower_case_with underscores* can be found all over the place. We are now in the process of cleaning this up, step by step.
-
-  This class, `Annot`, is the first candidate for this exercise. In this chapter, you will for example find :meth:`Annot.get_pixmap` -- and no longer the old name `getPixmap`. The method with the old name however **continues to exist** and you can continue using it: your existing code will not break. But we do hope you will start using the new names -- for new code at least.
-
-
 ================================== ==============================================================
 **Attribute**                      **Short Description**
 ================================== ==============================================================
@@ -258,7 +251,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       Set the rotation of an annotation. This rotates the annotation rectangle around its center point. Then a **new annotation rectangle** is calculated from the resulting quad.
 
-      :arg int angle: rotation angle in degrees. Arbitrary values are possible, but will be clamped to the interval 0 <= angle < 360.
+      :arg int angle: rotation angle in degrees. Arbitrary values are possible, but will be clamped to the interval `[0, 360)`.
 
       .. note::
         * You **must invoke** :meth:`Annot.update` to activate the effect.
@@ -266,18 +259,21 @@ There is a parent-child relationship between an annotation and its page. If the 
         * Otherwise, only the following :ref:`AnnotationTypes` can be rotated: 'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', 'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op.
 
 
-   .. method:: set_border(border=None, width=0, style=None, dashes=None)
+   .. method:: set_border(border=None, width=None, style=None, dashes=None, clouds=None)
 
       * Changed in version 1.16.9: Allow specification without using a dictionary. The direct parameters are used if *border* is not a dictionary.
 
-      PDF only: Change border width and dashing properties.
+      * Changed in version 1.22.4: Support of the "cloudy" border effect.
+
+      PDF only: Change border width, dashing, style and cloud effect. See the :attr:`Annot.border` attribute for more details.
 
 
-      :arg dict border: a dictionary as returned by the :attr:`border` property, with keys *"width"* (*float*), *"style"* (*str*) and *"dashes"* (*sequence*). Omitted keys will leave the resp. property unchanged. To e.g. remove dashing use: *"dashes": []*. If dashes is not an empty sequence, "style" will automatically be set to "D" (dashed).
+      :arg dict border: a dictionary as returned by the :attr:`border` property, with keys *"width"* (*float*), *"style"* (*str*),  *"dashes"* (*sequence*) and *clouds* (*int*). Omitted keys will leave the resp. property unchanged. Set the border argument to `None` (the default) to use the other arguments.
 
-      :arg float width: see above.
-      :arg str style: see above.
-      :arg sequence dashes: see above.
+      :arg float width: A non-negative value will change the border line width.
+      :arg str style: A value other than `None` will change this border property.
+      :arg sequence dashes: All items of the sequence must be integers, otherwise the parameter is ignored. To remove dashing use: `dashes=[]`. If dashes is a non-empty sequence, "style" will automatically be set to "D" (dashed). 
+      :arg int clouds: A value >= 0 will change this property. Use `clouds=0` to remove the cloudy appearance completely.
 
    .. method:: set_flags(flags)
 
@@ -522,15 +518,21 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: :ref:`Rect`
 
+   .. attribute:: rect_delta
+
+      A tuple of four floats representing the `/RD` entry of the annotation. The four numbers describe the numerical differences (left, top, -right, -bottom) between two rectangles: the :attr:`rect` of the annotation and a rectangle contained within that rectangle. If the entry is missing, this property is `(0, 0, 0, 0)`. If the annotation border is a normal, straight line, these numbers are typically border width divided by 2. If the annotation has a "cloudy" border, you will see the breadth of the cloud semi-circles here. In general, the numbers need not be identical. To compute the inner rectangle do `a.rect + a.rect_delta`.
+
    .. attribute:: border
 
       A dictionary containing border characteristics. Empty if no border information exists. The following keys may be present:
 
       * *width* -- a float indicating the border thickness in points. The value is -1.0 if no width is specified.
 
-      * *dashes* -- a sequence of integers specifying a line dash pattern. *[]* means no dashes, *[n]* means equal on-off lengths of *n* points, longer lists will be interpreted as specifying alternating on-off length values. See the :ref:`AdobeManual` page 126 for more details.
+      * *dashes* -- a sequence of integers specifying a line dashing pattern. *[]* means no dashes, *[n]* means equal on-off lengths of *n* points, longer lists will be interpreted as specifying alternating on-off length values. See the :ref:`AdobeManual` page 126 for more details.
 
-      * *style* -- 1-byte border style: **"S"** (Solid) = solid rectangle surrounding the annotation, **"D"** (Dashed) = dashed rectangle surrounding the annotation, the dash pattern is specified by the *dashes* entry, **"B"** (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, **"I"** (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, **"U"** (Underline) = a single line along the bottom of the annotation rectangle.
+      * *style* -- 1-byte border style: **"S"** (Solid) = solid line surrounding the annotation, **"D"** (Dashed) = dashed line surrounding the annotation, the dash pattern is specified by the *dashes* entry, **"B"** (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, **"I"** (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, **"U"** (Underline) = a single line along the bottom of the annotation rectangle.
+
+      * *clouds* -- an integer indicating a "cloudy" border, where `n` is an integer `-1 <= n <= 2`. A value `n = 0` indicates a straight line (no clouds), 1 means small and 2 means large semi-circles, mimicking the cloudy appearance. If -1, then no specification is present.
 
       :rtype: dict
 

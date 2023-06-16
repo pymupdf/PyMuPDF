@@ -1865,7 +1865,7 @@ struct Document
         PyObject *version_count()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) Py_BuildValue("i", 0);
+            if (!pdf) return Py_BuildValue("i", 0);
             return Py_BuildValue("i", pdf_count_versions(gctx, pdf));
         }
 
@@ -4011,6 +4011,13 @@ if off:
     if s != set():
         raise ValueError("bad OCGs in 'off': %s" % s)
 
+if locked:
+    if type(locked) not in (list, tuple):
+        raise ValueError("bad type: 'locked'")
+    s = set(locked).difference(ocgs)
+    if s != set():
+        raise ValueError("bad OCGs in 'locked': %s" % s)
+
 if rbgroups:
     if type(rbgroups) not in (list, tuple):
         raise ValueError("bad type: 'rbgroups'")
@@ -4030,7 +4037,7 @@ if basestate:
 %}
         PyObject *
         set_layer(int config, const char *basestate=NULL, PyObject *on=NULL,
-                    PyObject *off=NULL, PyObject *rbgroups=NULL)
+                    PyObject *off=NULL, PyObject *rbgroups=NULL, PyObject *locked=NULL)
         {
             pdf_obj *obj = NULL;
             fz_try(gctx) {
@@ -4049,7 +4056,7 @@ if basestate:
                 if (!obj) {
                     RAISEPY(gctx, MSG_BAD_OC_CONFIG, PyExc_ValueError);
                 }
-                JM_set_ocg_arrays(gctx, obj, basestate, on, off, rbgroups);
+                JM_set_ocg_arrays(gctx, obj, basestate, on, off, rbgroups, locked);
                 pdf_read_ocg(gctx, pdf);
                 finished:;
             }
@@ -4125,7 +4132,17 @@ if basestate:
 
 
         FITZEXCEPTION(set_layer_ui_config, !result)
-        CLOSECHECK0(set_layer_ui_config, """Set / unset OC intent configuration.""")
+        CLOSECHECK0(set_layer_ui_config, )
+        %pythonprepend set_layer_ui_config %{
+        """Set / unset OC intent configuration."""
+        # The user might have given the name instead of sequence number, 
+        # so select by that name and continue with corresp. number
+        if isinstance(number, str):
+            select = [ui["number"] for ui in self.layer_ui_configs() if ui["text"] == number]
+            if select == []:
+                raise ValueError(f"bad OCG '{number}'.")
+            number = select[0]  # this is the number for the name
+        %}
         PyObject *set_layer_ui_config(int number, int action=0)
         {
             fz_try(gctx) {
@@ -6967,33 +6984,35 @@ def get_oc_items(self) -> list:
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             PyObject *txtpy = NULL;
             char *text = NULL;
-            int lcount = (int) PySequence_Size(linklist); // link count
+            Py_ssize_t lcount = PyTuple_Size(linklist); // link count
             if (lcount < 1) Py_RETURN_NONE;
-            int i = -1;
+            Py_ssize_t i = -1;
             fz_var(text);
 
             // insert links from the provided sources
             fz_try(gctx) {
                 ASSERT_PDF(page);
+                if (!PyTuple_Check(linklist)) {
+                    RAISEPY(gctx, "bad 'linklist' argument", PyExc_ValueError);
+                }
                 if (!pdf_dict_get(gctx, page->obj, PDF_NAME(Annots))) {
                     pdf_dict_put_array(gctx, page->obj, PDF_NAME(Annots), lcount);
                 }
                 annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
                 for (i = 0; i < lcount; i++) {
-                    text = NULL;
-                    txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
-                    text = JM_StrAsChar(txtpy);
-                    Py_CLEAR(txtpy);
+                    fz_try(gctx) {
+                        for (; i < lcount; i++) {
+                            text = JM_StrAsChar(PyTuple_GET_ITEM(linklist, i));
                     if (!text) {
                         PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
                         continue;
                     }
-                    fz_try(gctx) {
                         annot = pdf_add_object_drop(gctx, page->doc,
                                 JM_pdf_obj_from_str(gctx, page->doc, text));
                         ind_obj = pdf_new_indirect(gctx, page->doc, pdf_to_num(gctx, annot), 0);
                         pdf_array_push_drop(gctx, annots, ind_obj);
                         pdf_drop_obj(gctx, annot);
+                    }
                     }
                     fz_catch(gctx) {
                         PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
@@ -9129,8 +9148,36 @@ struct Annot
             return JM_py_from_rect(r);
         }
 
+        %pythoncode %{@property%}
+        PARENTCHECK(rect_delta, """annotation delta values to rectangle""")
+        PyObject *
+        rect_delta()
+        {
+            PyObject *rc=NULL;
+            float d;
+            fz_try(gctx) {
+                pdf_obj *annot_obj = pdf_annot_obj(gctx, (pdf_annot *) $self);
+                pdf_obj *arr = pdf_dict_get(gctx, annot_obj, PDF_NAME(RD));
+                int i, n = pdf_array_len(gctx, arr);
+                if (n != 4) {
+                    rc = Py_BuildValue("s", NULL);
+                } else {
+                    rc = PyTuple_New(4);
+                    for (i = 0; i < n; i++) {
+                        d = pdf_to_real(gctx, pdf_array_get(gctx, arr, i));
+                        if (i == 2 || i == 3) d *= -1;
+                        PyTuple_SET_ITEM(rc, i, Py_BuildValue("f", d));
+                    }
+                }
+            }
+            fz_catch(gctx) {
+                Py_RETURN_NONE;
+            }
+            return rc;
+        }
+
         //----------------------------------------------------------------
-        // annotation get xref number
+        // annotation xref number
         //----------------------------------------------------------------
         PARENTCHECK(xref, """annotation xref""")
         %pythoncode %{@property%}
@@ -10797,13 +10844,28 @@ CheckParent(self)%}
         %pythonprepend set_border %{
         """Set border properties.
 
-        Either a dict, or direct arguments width, style and dashes."""
+        Either a dict, or direct arguments width, style, dashes or clouds."""
+
         CheckParent(self)
         if type(border) is not dict:
-            border = {"width": width, "style": style, "dashes": dashes}
+            border = {"width": width, "style": style, "dashes": dashes, "clouds": clouds}
+        border.setdefault("width", -1)
+        border.setdefault("style", None)
+        border.setdefault("dashes", None)
+        border.setdefault("clouds", -1)
+        if border["width"] == None:
+            border["width"] = -1
+        if border["clouds"] == None:
+            border["clouds"] = -1
+        if hasattr(border["dashes"], "__getitem__"):  # ensure sequence items are integers
+            border["dashes"] = tuple(border["dashes"])
+            for item in border["dashes"]:
+                if not isinstance(item, int):
+                    border["dashes"] = None
+                    break
         %}
         PyObject *
-        set_border(PyObject *border=NULL, float width=0, char *style=NULL, PyObject *dashes=NULL)
+        set_border(PyObject *border=NULL, float width=-1, char *style=NULL, PyObject *dashes=NULL, int clouds=-1)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
@@ -12467,7 +12529,7 @@ struct Font
                 "opentype", JM_BOOL(f->has_opentype),
                 "invalid-bbox", JM_BOOL(f->invalid_bbox),
                 "cjk", JM_BOOL(f->cjk),
-                "cjk-lang", (f->cjk ? PyLong_FromUnsignedLong((unsigned long) f->cjk_lang) : Py_None)
+                "cjk-lang", (f->cjk ? PyLong_FromUnsignedLong((unsigned long) f->cjk_lang) : Py_BuildValue("s",NULL))
                 #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                 ,
                 "embed", JM_BOOL(f->embed),
