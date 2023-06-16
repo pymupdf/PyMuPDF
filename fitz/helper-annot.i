@@ -23,6 +23,7 @@ pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
     else if (!strncmp(s, "d", 1) || !strncmp(s, "D", 1)) val = PDF_NAME(D);
     else if (!strncmp(s, "i", 1) || !strncmp(s, "I", 1)) val = PDF_NAME(I);
     else if (!strncmp(s, "u", 1) || !strncmp(s, "U", 1)) val = PDF_NAME(U);
+    else if (!strncmp(s, "s", 1) || !strncmp(s, "S", 1)) val = PDF_NAME(S);
     return val;
 }
 
@@ -72,8 +73,7 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
 void JM_refresh_links(fz_context *ctx, pdf_page *page)
 {
     if (!page) return;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
 		pdf_obj *obj = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
 		if (obj)
 		{
@@ -96,18 +96,18 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
 {
     PyObject *res = PyDict_New();
     PyObject *dash_py   = PyList_New(0);
-    PyObject *effect_py = PyList_New(0);
     PyObject *val;
     int i;
-    char *effect2 = NULL, *style = NULL;
+    const char *style = NULL;
     float width = -1.0f;
-    int effect1 = -1;
+    int clouds = -1;
+    pdf_obj *obj = NULL;
 
-    pdf_obj *o = pdf_dict_get(ctx, annot_obj, PDF_NAME(Border));
-    if (pdf_is_array(ctx, o)) {
-        width = pdf_to_real(ctx, pdf_array_get(ctx, o, 2));
-        if (pdf_array_len(ctx, o) == 4) {
-            pdf_obj *dash = pdf_array_get(ctx, o, 3);
+    obj = pdf_dict_get(ctx, annot_obj, PDF_NAME(Border));
+    if (pdf_is_array(ctx, obj)) {
+        width = pdf_to_real(ctx, pdf_array_get(ctx, obj, 2));
+        if (pdf_array_len(ctx, obj) == 4) {
+            pdf_obj *dash = pdf_array_get(ctx, obj, 3);
             for (i = 0; i < pdf_array_len(ctx, dash); i++) {
                 val = Py_BuildValue("i", pdf_to_int(ctx, pdf_array_get(ctx, dash, i)));
                 LIST_APPEND_DROP(dash_py, val);
@@ -116,36 +116,31 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
     }
 
     pdf_obj *bs_o = pdf_dict_get(ctx, annot_obj, PDF_NAME(BS));
-    if (bs_o)
-    {
-        o = pdf_dict_get(ctx, bs_o, PDF_NAME(W));
-        if (o) width = pdf_to_real(ctx, o);
-        o = pdf_dict_get(ctx, bs_o, PDF_NAME(S));
-        if (o) style = (char *) pdf_to_name(ctx, o);
-        o = pdf_dict_get(ctx, bs_o, PDF_NAME(D));
-        if (o) {
-            for (i = 0; i < pdf_array_len(ctx, o); i++) {
-                val = Py_BuildValue("i", pdf_to_int(ctx, pdf_array_get(ctx, o, i)));
+    if (bs_o) {
+        width = pdf_to_real(ctx, pdf_dict_get(ctx, bs_o, PDF_NAME(W)));
+        style = pdf_to_name(ctx, pdf_dict_get(ctx, bs_o, PDF_NAME(S)));
+        if (style && strcmp(style, "") == 0) {
+            style = NULL;
+        }
+        obj = pdf_dict_get(ctx, bs_o, PDF_NAME(D));
+        if (obj) {
+            for (i = 0; i < pdf_array_len(ctx, obj); i++) {
+                val = Py_BuildValue("i", pdf_to_int(ctx, pdf_array_get(ctx, obj, i)));
                 LIST_APPEND_DROP(dash_py, val);
             }
         }
     }
 
-    pdf_obj *be_o = pdf_dict_gets(ctx, annot_obj, "BE");
-    if (be_o) {
-        o = pdf_dict_get(ctx, be_o, PDF_NAME(S));
-        if (o) effect2 = (char *) pdf_to_name(ctx, o);
-        o = pdf_dict_get(ctx, be_o, PDF_NAME(I));
-        if (o) effect1 = pdf_to_int(ctx, o);
+    obj = pdf_dict_get(ctx, annot_obj, PDF_NAME(BE));
+    if (obj) {
+        clouds = pdf_to_int(ctx, pdf_dict_get(ctx, obj, PDF_NAME(I)));
     }
-
-    LIST_APPEND_DROP(effect_py, Py_BuildValue("i", effect1));
-    LIST_APPEND_DROP(effect_py, Py_BuildValue("s", effect2));
+    val = PySequence_Tuple(dash_py);
+    Py_CLEAR(dash_py);
     DICT_SETITEM_DROP(res, dictkey_width, Py_BuildValue("f", width));
-    DICT_SETITEM_DROP(res, dictkey_dashes, dash_py);
+    DICT_SETITEM_DROP(res, dictkey_dashes, val);
     DICT_SETITEM_DROP(res, dictkey_style, Py_BuildValue("s", style));
-    if (effect1 > -1) PyDict_SetItem(res, dictkey_effect, effect_py);
-    Py_CLEAR(effect_py);
+    DICT_SETITEMSTR_DROP(res, "clouds", Py_BuildValue("i", clouds));
     return res;
 }
 
@@ -155,55 +150,54 @@ PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *d
         JM_Warning("arg must be a dict");
         Py_RETURN_NONE;     // not a dict
     }
+    pdf_obj *obj = NULL;
+    Py_ssize_t i = 0, dashlen = 0;
+    int d;
+    double nwidth = PyFloat_AsDouble(PyDict_GetItem(border, dictkey_width));  // new width
+    PyObject *ndashes = PyDict_GetItem(border, dictkey_dashes);  // new dashes
+    PyObject *nstyle  = PyDict_GetItem(border, dictkey_style);  // new style
+    int nclouds  = (int) PyLong_AsLong(PyDict_GetItemString(border, "clouds"));  // new clouds value
 
-    double nwidth = -1;                       // new width
-    double owidth = -1;                       // old width
-    PyObject *ndashes = NULL;                 // new dashes
-    PyObject *odashes = NULL;                 // old dashes
-    PyObject *nstyle  = NULL;                 // new style
-    PyObject *ostyle  = NULL;                 // old style
-
-    nwidth = PyFloat_AsDouble(PyDict_GetItem(border, dictkey_width));
-    ndashes = PyDict_GetItem(border, dictkey_dashes);
-    nstyle  = PyDict_GetItem(border, dictkey_style);
-
-    // first get old border properties
+    // get old border properties
     PyObject *oborder = JM_annot_border(ctx, annot_obj);
-    owidth = PyFloat_AsDouble(PyDict_GetItem(oborder, dictkey_width));
-    odashes = PyDict_GetItem(oborder, dictkey_dashes);
-    ostyle = PyDict_GetItem(oborder, dictkey_style);
 
-    // then delete any relevant entries
+    // delete border-related entries
     pdf_dict_del(ctx, annot_obj, PDF_NAME(BS));
     pdf_dict_del(ctx, annot_obj, PDF_NAME(BE));
     pdf_dict_del(ctx, annot_obj, PDF_NAME(Border));
 
-    Py_ssize_t i, n;
-    int d;
-    // populate new border array
-    if (nwidth < 0) nwidth = owidth;     // no new width: take current
-    if (nwidth < 0) nwidth = 0.0f;       // default if no width given
-    if (!ndashes) ndashes = odashes;     // no new dashes: take old
-    if (!nstyle)  nstyle  = ostyle;      // no new style: take old
+    // populate border items: keep old values for any omitted new ones
+    if (nwidth < 0) nwidth = PyFloat_AsDouble(PyDict_GetItem(oborder, dictkey_width));  // no new width: keep current
+    if (ndashes == Py_None) ndashes = PyDict_GetItem(oborder, dictkey_dashes);  // no new dashes: keep old
+    if (nstyle == Py_None) nstyle  = PyDict_GetItem(oborder, dictkey_style);  // no new style: keep old
+    if (nclouds < 0) nclouds  = (int) PyLong_AsLong(PyDict_GetItemString(oborder, "clouds"));  // no new clouds: keep old
 
-    if (ndashes && PySequence_Check(ndashes) && PySequence_Size(ndashes) > 0) {
-        n = PySequence_Size(ndashes);
-        pdf_obj *darr = pdf_new_array(ctx, doc, n);
-        for (i = 0; i < n; i++) {
-            d = (int) PyInt_AsLong(PySequence_ITEM(ndashes, i));
+    if (ndashes && PyTuple_Check(ndashes) && PyTuple_Size(ndashes) > 0) {
+        dashlen = PyTuple_Size(ndashes);
+        pdf_obj *darr = pdf_new_array(ctx, doc, dashlen);
+        for (i = 0; i < dashlen; i++) {
+            d = (int) PyLong_AsLong(PyTuple_GetItem(ndashes, i));
             pdf_array_push_int(ctx, darr, (int64_t) d);
         }
         pdf_dict_putl_drop(ctx, annot_obj, darr, PDF_NAME(BS), PDF_NAME(D), NULL);
-        nstyle = PyUnicode_FromString("D");
     }
 
-    pdf_dict_putl_drop(ctx, annot_obj, pdf_new_real(ctx, nwidth),
+    pdf_dict_putl_drop(ctx, annot_obj, pdf_new_real(ctx, (float) nwidth),
                                PDF_NAME(BS), PDF_NAME(W), NULL);
 
-    pdf_obj *val = JM_get_border_style(ctx, nstyle);
+    if (dashlen == 0) {
+        obj = JM_get_border_style(ctx, nstyle);
+    } else {
+        obj = PDF_NAME(D);
+    }
+    pdf_dict_putl_drop(ctx, annot_obj, obj, PDF_NAME(BS), PDF_NAME(S), NULL);
 
-    pdf_dict_putl_drop(ctx, annot_obj, val,
-                               PDF_NAME(BS), PDF_NAME(S), NULL);
+    if (nclouds > 0) {
+        pdf_dict_put_dict(ctx, annot_obj, PDF_NAME(BE), 2);
+        pdf_obj *obj = pdf_dict_get(ctx, annot_obj, PDF_NAME(BE));
+        pdf_dict_put(ctx, obj, PDF_NAME(S), PDF_NAME(C));
+        pdf_dict_put_int(ctx, obj, PDF_NAME(I), (int64_t) nclouds);
+    }
 
     PyErr_Clear();
     Py_RETURN_NONE;

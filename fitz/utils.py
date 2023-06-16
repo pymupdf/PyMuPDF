@@ -1480,6 +1480,7 @@ def do_links(
     Parameter values **must** equal those of method insert_pdf(), which must
     have been previously executed.
     """
+
     # --------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string
     # --------------------------------------------------------------------------
@@ -1579,12 +1580,13 @@ def do_links(
             if l["kind"] == LINK_GOTO and (l["page"] not in pno_src):
                 continue  # GOTO link target not in copied pages
             annot_text = cre_annot(l, xref_dst, pno_src, ctm)
-            if annot_text:
+            if not annot_text:
+                print("cannot create /Annot for kind: " + str(l["kind"]))
+            else:
                 link_tab.append(annot_text)
         if link_tab != []:
-            page_dst._addAnnot_FromString(link_tab)
-        page_dst = None
-        page_src = None
+            page_dst._addAnnot_FromString(tuple(link_tab))
+
     return
 
 
@@ -1699,7 +1701,7 @@ def insert_link(page: Page, lnk: dict, mark: bool = True) -> None:
     annot = getLinkText(page, lnk)
     if annot == "":
         raise ValueError("link kind not supported")
-    page._addAnnot_FromString([annot])
+    page._addAnnot_FromString((annot,))
     return
 
 
@@ -1794,7 +1796,6 @@ def insert_text(
     fill_opacity: float = 1,
     oc: int = 0,
 ):
-
     img = page.new_shape()
     rc = img.insert_text(
         point,
@@ -3432,7 +3433,6 @@ class Shape(object):
         fill_opacity: float = 1,
         oc: int = 0,
     ) -> int:
-
         # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer):
             return 0

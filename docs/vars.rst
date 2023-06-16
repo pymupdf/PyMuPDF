@@ -96,6 +96,19 @@ PDF_PERM_ASSEMBLE      Insert, rotate, or delete pages, bookmarks, thumbnail ima
 PDF_PERM_PRINT_HQ      High quality printing
 ====================== =======================================================================
 
+.. _OptionalContentCodes:
+
+PDF Optional Content Codes
+----------------------------
+
+====================== =======================================================================
+Code                   Meaning
+====================== =======================================================================
+PDF_OC_ON              Set an OCG to ON temporarily
+PDF_OC_TOGGLE          Toggle OCG status temporarily
+PDF_OC_OFF             Set an OCG to OFF temporarily
+====================== =======================================================================
+
 .. _EncryptionMethods:
 
 PDF encryption method codes
@@ -190,21 +203,39 @@ The following constants represent the default combinations of the above for text
 
 .. py:data:: TEXTFLAGS_TEXT
 
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
+
 .. py:data:: TEXTFLAGS_WORDS
+
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
 
 .. py:data:: TEXTFLAGS_BLOCKS
 
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
+
 .. py:data:: TEXTFLAGS_DICT
+
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
 
 .. py:data:: TEXTFLAGS_RAWDICT
 
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
+
 .. py:data:: TEXTFLAGS_HTML
+
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
 
 .. py:data:: TEXTFLAGS_XHTML
 
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
+
 .. py:data:: TEXTFLAGS_XML
 
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
+
 .. py:data:: TEXTFLAGS_SEARCH
+
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_DEHYPHENATE`
 
 
 .. _linkDest Kinds:
