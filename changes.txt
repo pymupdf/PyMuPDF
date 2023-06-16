@@ -24,8 +24,6 @@ Change Log
 
   * **Changed** Radio button widgets in the same RB group are now consistently updated **if the grup is defined in the standard way**.
 
-  * **Added** Support for Photoshop images as input when creating :ref:`Pixmap` and :ref.`Document` objects.
-
   * **Added** Support for the `/Locked` key in PDF Optional Content. This array inside the catalog entry `/OCProperties` can now be extracted and set.
 
 **Changes in version 1.22.3 (2023-05-10)**
