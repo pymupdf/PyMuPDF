@@ -380,7 +380,7 @@ PGM               PGM                Portable Graymap
 PBM               PBM                Portable Bitmap
 PPM               PPM                Portable Pixmap
 PAM               PAM                Portable Arbitrary Map
-PSD               PSD                Adobe Photoshop Document
+.                 PSD                Adobe Photoshop Document
 .                 PS                 Adobe Postscript
 ================= ================== =========================================
 
