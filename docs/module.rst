@@ -414,7 +414,7 @@ Text Extraction
 ----------------
 * New in v1.18.16
 
-Extract text from arbitrary supported documents **(not only PDF)** to a textfile. Currently, there are three output formatting modes available: simple, block sorting and reproduction of physical layout.
+Extract text from arbitrary :ref:`supported documents<Supported_File_Types>` to a textfile. Currently, there are three output formatting modes available: simple, block sorting and reproduction of physical layout.
 
 * **Simple** text extraction reproduces all text as it appears in the document pages -- no effort is made to rearrange in any particular reading order.
 * **Block sorting** sorts text blocks (as identified by MuPDF) by ascending vertical, then horizontal coordinates. This should be sufficient to establish a "natural" reading order for basic pages of text.

@@ -211,7 +211,7 @@ Using some XML package, the XML data can be interpreted and / or modified and th
 
 How to Extend PDF Metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Attribute :attr:`Document.metadata` is designed so it works for all supported document types in the same way: it is a Python dictionary with a **fixed set of key-value pairs**. Correspondingly, :meth:`Document.set_metadata` only accepts standard keys.
+Attribute :attr:`Document.metadata` is designed so it works for all :ref:`supported document types<Supported_File_Types>` in the same way: it is a Python dictionary with a **fixed set of key-value pairs**. Correspondingly, :meth:`Document.set_metadata` only accepts standard keys.
 
 However, PDFs may contain items not accessible like this. Also, there may be reasons to store additional information, like copyrights. Here is a way to handle **arbitrary metadata items** by using PyMuPDF low-level functions.
 

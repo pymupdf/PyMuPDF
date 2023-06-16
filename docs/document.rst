@@ -176,11 +176,11 @@ For details on **embedded files** refer to Appendix 3.
       * If *stream* is given, then the document is created from memory and, if not a PDF, either *filename* or *filetype* must indicate its type.
       * If *stream* is `None`, then a document is created from the file given by *filename*. Its type is inferred from the extension. This can be overruled by *filetype.*
 
-      :arg str,pathlib filename: A UTF-8 string or *pathlib* object containing a file path. The document type is inferred from the filename extension. If not present or not matching a supported type, a PDF document is assumed. For memory documents, this argument may be used instead of `filetype`, see below.
+      :arg str,pathlib filename: A UTF-8 string or *pathlib* object containing a file path. The document type is inferred from the filename extension. If not present or not matching :ref:`a supported type<Supported_File_Types>`, a PDF document is assumed. For memory documents, this argument may be used instead of `filetype`, see below.
 
       :arg bytes,bytearray,BytesIO stream: A memory area containing a supported document. If not a PDF, its type **must** be specified by either `filename` or `filetype`.
 
-      :arg str filetype: A string specifying the type of document. This may be anything looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like *application/pdf*. Just using strings like "pdf"  or ".pdf" will also work. May be omitted for PDF documents, otherwise must match a supported document type.
+      :arg str filetype: A string specifying the type of document. This may be anything looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like *application/pdf*. Just using strings like "pdf"  or ".pdf" will also work. May be omitted for PDF documents, otherwise must match :ref:`a supported document type<Supported_File_Types>`.
 
       :arg rect_like rect: a rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter *fontsize*, each page will be accordingly laid out and hence also determine the number of pages.
 
