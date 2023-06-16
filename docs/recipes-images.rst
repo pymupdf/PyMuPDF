@@ -401,15 +401,8 @@ The general scheme is just the following two lines::
           pix = fitz.Pixmap("myfamily.jpg")
           pix.save("myfamily.psd")
 
-
 .. note::
-        **Save to JPEG** using PIL/Pillow::
-
-          pix = fitz.Pixmap(...)
-          pix.pil_save("output.jpg")
-
-.. note::
-        Convert **JPEG to Tkinter PhotoImage**. Any **RGB / no-alpha** image works exactly the same. Conversion to one of the **Portable Anymap** formats (PPM, PGM, etc.) does the trick, because they are supported by all Tkinter versions::
+        Convert **JPEG to Tkinter PhotoImage**. Any **RGB / no-alpha** image works exactly the same. Conversion to one of the **Portable Anymap** formats (PPM, PGM, etc.) does the trick, because they have **fast** supported by all Tkinter versions::
 
           import tkinter as tk
           pix = fitz.Pixmap("input.jpg")  # or any RGB / no-alpha image
