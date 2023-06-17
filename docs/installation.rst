@@ -189,7 +189,7 @@ So for a working OCR functionality, make sure to complete this checklist:
     - Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
 3. Set the environment variable `TESSDATA_PREFIX`
-    - Windows: `set TESSDATA_PREFIX=C:\Program Files\Tesseract-OCR\tessdata`
+    - Windows: `set TESSDATA_PREFIX=C:/Program Files/Tesseract-OCR/tessdata`
     - Unix systems: `export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
 .. note:: This must happen outside Python -- before starting your script. Just manipulating `os.environ` will not work!
