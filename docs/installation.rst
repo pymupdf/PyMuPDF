@@ -185,7 +185,7 @@ So for a working OCR functionality, make sure to complete this checklist:
 1. Install Tesseract.
 
 2. Locate Tesseract's language support folder. Typically you will find it here:
-    - Windows: `C:\Program Files\Tesseract-OCR\tessdata`
+    - Windows: `C:/Program Files/Tesseract-OCR/tessdata`
     - Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
 3. Set the environment variable `TESSDATA_PREFIX`
