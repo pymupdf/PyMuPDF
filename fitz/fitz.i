@@ -305,7 +305,7 @@ import tarfile
 import zipfile
 import pathlib
 
-TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
+TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
 point_like = "point_like"
 rect_like = "rect_like"
 matrix_like = "matrix_like"
@@ -5110,26 +5110,26 @@ struct Page {
             return textpage
         %}
 
-        /*  inactive
+        /*  ****************** currently inactive
         //----------------------------------------------------------------
-        // Page.get_textpage_ocr
+        // Page._get_textpage_ocr
         //----------------------------------------------------------------
         FITZEXCEPTION(_get_textpage_ocr, !result)
         %pythonappend _get_textpage_ocr %{val.thisown = True%}
         struct TextPage *
-        _get_textpage_ocr(PyObject *clip=NULL, int flags=0, const char *language=NULL)
+        _get_textpage_ocr(PyObject *clip=NULL, int flags=0, const char *language=NULL, const char *tessdata=NULL)
         {
             fz_stext_page *textpage=NULL;
             fz_try(gctx) {
                 fz_rect rect = JM_rect_from_py(clip);
-                textpage = JM_new_stext_page_ocr_from_page(gctx, (fz_page *) $self, rect, flags, language);
+                textpage = JM_new_stext_page_ocr_from_page(gctx, (fz_page *) $self, rect, flags, language, tessdata);
             }
             fz_catch(gctx) {
                 return NULL;
             }
             return (struct TextPage *) textpage;
         }
-        */
+        ************************* */
 
         //----------------------------------------------------------------
         // Page.language
@@ -8309,17 +8309,20 @@ def tobytes(self, output="png", jpg_quality=95):
         %pythonprepend pdfocr_save %{
         """Save pixmap as an OCR-ed PDF page."""
         EnsureOwnership(self)
-        if not TESSDATA_PREFIX:
+        if not os.getenv("TESSDATA_PREFIX") and not tessdata:
             raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
         %}
         ENSURE_OWNERSHIP(pdfocr_save, )
-        PyObject *pdfocr_save(PyObject *filename, int compress=1, char *language=NULL)
+        PyObject *pdfocr_save(PyObject *filename, int compress=1, char *language=NULL, char *tessdata=NULL)
         {
             fz_pdfocr_options opts;
             memset(&opts, 0, sizeof opts);
             opts.compress = compress;
             if (language) {
                 fz_strlcpy(opts.language, language, sizeof(opts.language));
+            }
+            if (tessdata) {
+                fz_strlcpy(opts.datadir, tessdata, sizeof(opts.language));
             }
             fz_output *out = NULL;
             fz_pixmap *pix = (fz_pixmap *) $self;
@@ -8341,24 +8344,26 @@ def tobytes(self, output="png", jpg_quality=95):
         }
 
         %pythoncode %{
-        def pdfocr_tobytes(self, compress=True, language="eng"):
+        def pdfocr_tobytes(self, compress=True, language="eng", tessdata=None):
             """Save pixmap as an OCR-ed PDF page.
 
             Args:
                 compress: (bool) compress, default 1 (True).
                 language: (str) language(s) occurring on page, default "eng" (English),
-                        multiples like "eng,ger" for English and German.
+                        multiples like "eng+ger" for English and German.
+                tessdata: (str) folder name of Tesseract's language support. Must be
+                        given if environment variable TESSDATA_PREFIX is not set.
             Notes:
                 On failure, make sure Tesseract is installed and you have set the
                 environment variable "TESSDATA_PREFIX" to the folder containing your
                 Tesseract's language support data.
             """
-            if not TESSDATA_PREFIX:
+            if not os.getenv("TESSDATA_PREFIX") and not tessdata:
                 raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
             EnsureOwnership(self)
             from io import BytesIO
             bio = BytesIO()
-            self.pdfocr_save(bio, compress=compress, language=language)
+            self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata)
             return bio.getvalue()
         %}
 
