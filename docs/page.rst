@@ -1098,8 +1098,9 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: language; get_textpage_ocr
       pair: dpi; get_textpage_ocr
       pair: full; get_textpage_ocr
+      pair: tessdata; get_textpage_ocr
 
-   .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False)
+   .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False, tessdata=None)
 
       * New in v.1.19.0
       * Changed in v1.19.1: support full and partial OCRing a page.
@@ -1110,6 +1111,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
       :arg int dpi: the desired resolution in dots per inch. Influences recognition quality (and execution time).
       :arg bool full: whether to OCR the full page, or just the displayed images.
+      :arg str tessdata: The name of Tesseract's language support folder `tessdata`. If omitted, this information must be present as environment variable `TESSDATA_PREFIX`. Can be determined by function :meth:`get_tessdata`.
 
       .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
 
