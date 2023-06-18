@@ -26,7 +26,7 @@ Change Log
 
   * **Added** Support for the `/Locked` key in PDF Optional Content. This array inside the catalog entry `/OCProperties` can now be extracted and set.
 
-  * **Added** Support for new parameter "tessdata" in OCR functions.
+  * **Added** Support for new parameter "tessdata" in OCR functions. New function :meth:`get_tessdata` locates the language support folder if Tesseract is installed.
 
 **Changes in version 1.22.3 (2023-05-10)**
 

@@ -65,6 +65,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
+:meth:`get_tessdata`                 locates the language support of the Tesseract-OCR installation
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 :attr:`TESSDATA_PREFIX`              a copy of `os.environ["TESSDATA_PREFIX"]`
 :attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
@@ -782,6 +783,16 @@ Yet others are handy, general-purpose utilities.
       :arg dict line: the line.
       :arg list spans: a sub-list of `line["spans"]`. If omitted, the full line quad will be returned.
       :returns: the :ref:`Quad` of the selected line spans, usable for text marker annotations ('Highlight', etc.).
+
+-----
+
+   .. method:: get_tessdata()
+
+      Return the name of Tesseract's language support folder. Use this function if the environment variable `TESSDATA_PREFIX` has not been set.
+
+      :returns: `os.getenv("TESSDATA_PREFIX")` if not `None`. Otherwise, if Tesseract-OCR is installed, locate the name of `tessdata`. If no installation is found, return `False`.
+
+         The folder name can be used as parameter `tessdata` in methods :meth:`Page.get_textpage_ocr`, :meth:`Pixmap.pdfocr_save` and :meth:`Pixmap.pdfocr_tobytes`.
 
 -----
 
