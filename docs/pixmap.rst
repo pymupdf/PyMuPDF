@@ -349,30 +349,26 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg str output: The requested image format. The default is "png". For other possible values see :ref:`PixmapOutput`.
 
-   .. method:: pdfocr_save(filename, compress=True, language="eng")
+   .. method:: pdfocr_save(filename, compress=True, language="eng", tessdata=None)
 
       * New in v1.19.0
+
+      * Changed in v1.22.4: Support of new parameter for Tesseract's tessdata.
 
       Perform text recognition using Tesseract and save the image as a 1-page PDF with an OCR text layer.
 
       :arg str,fp filename: identifies the file to save to. May be either a string or a pointer to a file opened with "wb" (includes `io.BytesIO()` objects).
       :arg bool compress: whether to compress the resulting PDF, default is `True`.
       :arg str language: the languages occurring in the image. This must be specified in Tesseract format. Default is "eng" for English. Use "+"-separated Tesseract language codes for multiple languages, like "eng+spa" for English and Spanish.
+      : arg str tessdata: folder name of Tesseract's language support. If omitted, this information must be present as environment variable `TESSDATA_PREFIX`.
 
-      .. note:: **Will fail** if Tesseract is not installed or if the environment variable "TESSDATA_PREFIX" is not set to the `tessdata` folder name. This is what you would typically see on a Windows platform:
+      .. note:: **Will fail** if Tesseract is not installed or if the environment variable "TESSDATA_PREFIX" is not set to the `tessdata` folder name and not provided as parameter.
 
-         >>> print(os.environ["TESSDATA_PREFIX"])
-         C:\Program Files\Tesseract-OCR\tessdata
-
-      Respectively on a Linux system:
-
-         >>> print(os.environ["TESSDATA_PREFIX"])
-         /usr/share/tesseract-ocr/4.00/tessdata
-
-
-   .. method:: pdfocr_tobytes(compress=True, language="eng")
+   .. method:: pdfocr_tobytes(compress=True, language="eng", tessdata=None)
 
       * New in v1.19.0
+
+      * Changed in v1.22.4: Support of new parameter for Tesseract's tessdata.
 
       Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.pdfocr_save`.
 
