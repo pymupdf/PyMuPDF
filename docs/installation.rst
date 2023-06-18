@@ -178,7 +178,7 @@ If you do not intend to use this feature, skip this step. Otherwise, it is requi
 
 PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
 
-The language support folder location must currently [#f1]_ be communicated via storing it in the environment variable `"TESSDATA_PREFIX"`.
+The language support folder location must be communicated either via storing it in the environment variable `"TESSDATA_PREFIX"`, or as a parameter in the applicable functions.
 
 So for a working OCR functionality, make sure to complete this checklist:
 
@@ -189,13 +189,9 @@ So for a working OCR functionality, make sure to complete this checklist:
     - Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
 3. Set the environment variable `TESSDATA_PREFIX`
-    - Windows: `set TESSDATA_PREFIX=C:/Program Files/Tesseract-OCR/tessdata`
-    - Unix systems: `export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
+    - Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
+    - Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
-.. note:: This must happen outside Python -- before starting your script. Just manipulating `os.environ` will not work!
-
-.. rubric:: Footnotes
-
-.. [#f1] In a future version, it will be possible to pass this value as a parameter -- directly in the OCR invocations.
+.. note:: On Windows systems, this must happen outside Python -- before starting your script. Just manipulating `os.environ` will not work!
 
 .. include:: footer.rst
