@@ -426,6 +426,8 @@ PyObject *util_hor_matrix(PyObject *C, PyObject *P)
 	return JM_py_from_matrix(fz_concat(m1, m2));
 }
 
+struct Annot;
+
 // Ensure that widgets with /AA/C JavaScript are in array AcroForm/CO
 PyObject *util_ensure_widget_calc(struct Annot *annot)
 {

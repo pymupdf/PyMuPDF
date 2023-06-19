@@ -7004,7 +7004,7 @@ def get_oc_items(self) -> list:
                         for (; i < lcount; i++) {
                             text = JM_StrAsChar(PyTuple_GET_ITEM(linklist, i));
                     if (!text) {
-                        PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                        PySys_WriteStderr("skipping bad link / annot item %zi.\n", i);
                         continue;
                     }
                         annot = pdf_add_object_drop(gctx, page->doc,
@@ -7015,7 +7015,7 @@ def get_oc_items(self) -> list:
                     }
                     }
                     fz_catch(gctx) {
-                        PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                        PySys_WriteStderr("skipping bad link / annot item %zi.\n", i);
                     }
                 }
             }
