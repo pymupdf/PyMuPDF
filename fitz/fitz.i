@@ -6133,7 +6133,7 @@ def get_oc_items(self) -> list:
     """
     rc = []
     for pname, xref in self._get_resource_properties():
-        text = self.parent.xrefObject(xref, compressed=True)
+        text = self.parent.xref_object(xref, compressed=True)
         if "/Type/OCG" in text:
             octype = "ocg"
         elif "/Type/OCMD" in text:
