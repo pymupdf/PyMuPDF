@@ -432,7 +432,7 @@ const char *JM_image_extension(int type)
         case(FZ_IMAGE_PNG): return "png";
         case(FZ_IMAGE_PNM): return "pnm";
         case(FZ_IMAGE_TIFF): return "tiff";
-        case(FZ_IMAGE_PSD): return "psd";
+        // case(FZ_IMAGE_PSD): return "psd";
         case(FZ_IMAGE_UNKNOWN): return "n/a";
         default: return "n/a";
     }
