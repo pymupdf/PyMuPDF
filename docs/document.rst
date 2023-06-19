@@ -439,7 +439,7 @@ For details on **embedded files** refer to Appendix 3.
 
       Modify OC visibility status of content groups. This is analog to what supporting PDF viewers would offer.
 
-        Please note that visibility is **not** a property stored with the OCG. It is not even an information necessarily present in the PDF document at all. Instead, the current visibility is **temporarily** set using the user interface of some supporting PDF consumer software. The same type of functionality is offered by this method.
+        Please note that visibility is **not** a property stored with the OCG. It is not even information necessarily present in the PDF document at all. Instead, the current visibility is **temporarily** set using the user interface of some supporting PDF consumer software. The same type of functionality is offered by this method.
 
         To make **permanent** changes, use :meth:`Document.set_layer`.
 

@@ -435,7 +435,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. attribute:: info
 
-      A dictionary containing various information. All fields are optional strings. If an information is not provided, an empty string is returned.
+      A dictionary containing various information. All fields are optional strings. If information is not provided, an empty string is returned.
 
       * *name* -- e.g. for 'Stamp' annotations it will contain the stamp text like "Sold" or "Experimental", for other annot types you will see the name of the annot's icon here ("PushPin" for FileAttachment).
 
