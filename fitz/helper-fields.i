@@ -1057,7 +1057,7 @@ class Widget(object):
         if self.field_type not in (2, 5):
             return None  # no button type
         if hasattr(self, "parent"):  # field already exists on page
-        doc = self.parent.parent
+            doc = self.parent.parent
         else:
             return None
         xref = self.xref
