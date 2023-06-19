@@ -35,7 +35,7 @@ Please note:
 :attr:`Matrix.d`                 zoom factor Y direction
 :attr:`Matrix.e`                 horizontal shift
 :attr:`Matrix.f`                 vertical shift
-:attr:`Matrix.is_rectilinear`     true if rect corners will remain rect corners
+:attr:`Matrix.is_rectilinear`    true if rect corners will remain rect corners
 ================================ ==============================================
 
 **Class API**
@@ -219,6 +219,7 @@ Here are examples that illustrate some of the achievable effects. All pictures s
 
 .. image:: images/img-matrix-7.*
    :scale: 66
+
 
 
 .. include:: footer.rst
