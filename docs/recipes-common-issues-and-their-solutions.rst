@@ -54,7 +54,7 @@ With the command line utility *pdftk* (`available <https://www.pdflabs.com/tools
 How to Convert Any Document to :title:`PDF`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is a script that converts any :title:`PyMuPDF` supported document to a :title:`PDF`. These include XPS, EPUB, FB2, CBZ and all image formats, including multi-page TIFF images.
+Here is a script that converts any :title:`PyMuPDF` :ref:`supported document<Supported_File_Types>` to a :title:`PDF`. These include XPS, EPUB, FB2, CBZ and image formats, including multi-page TIFF images.
 
 It features maintaining any metadata, table of contents and links contained in the source document::
 

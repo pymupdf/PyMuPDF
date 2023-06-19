@@ -15,7 +15,7 @@ How to Make Images from Document Pages
 
 This little script will take a document filename and generate a PNG file from each of its pages.
 
-The document can be any supported type like PDF, XPS, etc.
+The document can be any :ref:`supported type<Supported_File_Types>`.
 
 The script works as a command line tool which expects the filename being supplied as a parameter. The generated image files (1 per page) are stored in the directory of the script::
 
@@ -252,7 +252,7 @@ We show here **three scripts** that take a list of (image and other) files and p
 
 **Method 1: Inserting Images as Pages**
 
-The first one converts each image to a PDF page with the same dimensions. The result will be a PDF with one page per image. It will only work for supported image file formats::
+The first one converts each image to a PDF page with the same dimensions. The result will be a PDF with one page per image. It will only work for :ref:`supported image<Supported_File_Types>` file formats::
 
  import os, fitz
  import PySimpleGUI as psg  # for showing a progress bar

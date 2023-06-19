@@ -8,11 +8,11 @@ Matrix
 
 Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the :ref:`AdobeManual`). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six float values.
 
-.. |matrix| image:: images/img-matrix.*
 
 Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by *[a, b, c, d, e, f]*. Here is how they are positioned in the matrix:
 
-|matrix|
+.. image:: images/img-matrix.*
+
 
 Please note:
 
@@ -183,35 +183,60 @@ Here are examples that illustrate some of the achievable effects. All pictures s
 1. The :ref:`Identity` matrix performs no operation.
 
 .. image:: images/img-matrix-0.*
+   :scale: 66
+
 
 2. The scaling matrix `Matrix(2, 0.5)` stretches by a factor of 2 in horizontal, and shrinks by factor 0.5 in vertical direction.
 
 .. image:: images/img-matrix-1.*
+   :scale: 66
 
 3. Attributes :attr:`Matrix.e` and :attr:`Matrix.f` shift horizontally and respectively vertically.
 
 .. image:: images/img-matrix-2.*
+   :scale: 66
+
+3. Attributes :attr:`Matrix.e` and :attr:`Matrix.f` shift horizontally and, respectively vertically. In the following 10 to the right and 20 down.
+
+.. image:: images/img-matrix-2.*
+   :scale: 66
 
 4. A negative :attr:`Matrix.a` causes a left-right flip.
 
 .. image:: images/img-matrix-3.*
+   :scale: 66
+
 
 5. A negative :attr:`Matrix.d` causes an up-down flip.
 
 .. image:: images/img-matrix-4.*
+   :scale: 66
 
 6. Attribute :attr:`Matrix.b` tilts upwards / downwards.
 
 .. image:: images/img-matrix-5.*
+   :scale: 66
+
 
 7. Attribute :attr:`Matrix.c` tilts left / right.
 
 .. image:: images/img-matrix-6.*
+   :scale: 66
+
+6. Attribute :attr:`Matrix.b` tilts upwards / downwards along the x-axis.
+
+.. image:: images/img-matrix-5.*
+   :scale: 66
+
+7. Attribute :attr:`Matrix.c` tilts left / right along the y-axis.
+
+.. image:: images/img-matrix-6.*
+   :scale: 66
 
 8. Matrix `Matrix(beta)` performs counterclockwise rotations for positive angles `beta`.
 
 .. image:: images/img-matrix-7.*
-
+   :scale: 66
 
 
 .. include:: footer.rst
