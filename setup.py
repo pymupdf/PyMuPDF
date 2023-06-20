@@ -439,7 +439,7 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.22.0-source.tar.gz',
+            'https://mupdf.com/downloads/archive/mupdf-1.22.2-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
