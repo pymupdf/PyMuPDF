@@ -140,3 +140,38 @@ def test_drawings3():
     diff = _dict_difference( drawings3, drawings4)
     assert diff == (set(), set(), {'closePath': (False, True)})
     
+def test_2365():
+    """Draw a filled rectangle on a new page.
+
+    Then extract the page's vector graphics and confirm that only one path
+    was generated which has all the right properties."""
+    doc = fitz.open()
+    page = doc.new_page()
+    rect = fitz.Rect(100, 100, 200, 200)
+    page.draw_rect(
+        rect, color=fitz.pdfcolor["black"], fill=fitz.pdfcolor["yellow"], width=3
+    )
+    paths = page.get_drawings()
+    assert len(paths) == 1
+    path = paths[0]
+    assert path["type"] == "fs"
+    assert path["fill"] == fitz.pdfcolor["yellow"]
+    assert path["fill_opacity"] == 1
+    assert path["color"] == fitz.pdfcolor["black"]
+    assert path["stroke_opacity"] == 1
+    assert path["width"] == 3
+    assert path["rect"] == rect
+
+def test_2462():
+    """
+    Assertion happens, if this code does NOT bring down the interpreter.
+
+    Background:
+    We previously ignored clips for non-vector-graphics. However, ending
+    a clip does not refer back the object(s) that have been clipped.
+    In order to correctly compute the "scissor" rectangle, we now keep track
+    of the clipped object type.
+    """
+    doc = fitz.open(f"{scriptdir}/resources/test-2462.pdf")
+    page = doc[0]
+    vg = page.get_drawings(extended=True)
