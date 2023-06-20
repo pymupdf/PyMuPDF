@@ -421,3 +421,9 @@ def test_2246():
     assert bbox_count(180) == 1
     assert bbox_count(270) == 1
 
+
+def test_2430():
+    """Confirm that multiple font property checks will not destroy Py_None."""
+    font = fitz.Font("helv")
+    for i in range(1000):
+        _ = font.flags
