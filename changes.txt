@@ -4,29 +4,35 @@ Change Log
 
 **Changes in version 1.22.4 (2023-MM-DD)**
 
+* This release uses ``MuPDF-1.22.2``.
+
 * Bug fixes:
 
-  * **Fixed** `#2468 <https://github.com/pymupdf/PyMuPDF/issues/2468>`_: Decode error when trying to get drawings
-
   * **Fixed** `#2365 <https://github.com/pymupdf/PyMuPDF/issues/2365>`_: Incorrect dictionary values for type "fs" drawings.
-
   * **Fixed** `#2391 <https://github.com/pymupdf/PyMuPDF/issues/2391>`_: Check box automatically uncheck when we update same checkbox more than 1 times.
-
   * **Fixed** `#2400 <https://github.com/pymupdf/PyMuPDF/issues/2400>`_: Gaps within text of same line not filled with spaces.
-
   * **Fixed** `#2404 <https://github.com/pymupdf/PyMuPDF/issues/2404>`_: Blacklining an image in PDF won't remove underlying content in version 1.22.X.
-
   * **Fixed** `#2430 <https://github.com/pymupdf/PyMuPDF/issues/2430>`_: Incorrectly reducing ref count of Py_None.
+  * **Fixed** `#2450 <https://github.com/pymupdf/PyMuPDF/issues/2450>`_: Empty fill color and fill opacity for paths with fill and stroke operations with 1.22.*
+  * **Fixed** `#2462 <https://github.com/pymupdf/PyMuPDF/issues/2462>`_: Error at "get_drawing(extended=True )"
+  * **Fixed** `#2468 <https://github.com/pymupdf/PyMuPDF/issues/2468>`_: Decode error when trying to get drawings  
 
 * New features:
 
-  * **Changed** Annotations now support "cloudy" borders. The :attr:`Annot.border` property has the new item "clouds", and method :meth:`Annot.set_border` supports the corresponding "clouds" argument.
+  * **Changed** Annotations now support "cloudy" borders.
+    The :attr:`Annot.border` property has the new item `clouds`,
+    and method :meth:`Annot.set_border` supports the corresponding `clouds` argument.
 
-  * **Changed** Radio button widgets in the same RB group are now consistently updated **if the grup is defined in the standard way**.
+  * **Changed** Radio button widgets in the same RB group
+    are now consistently updated **if the group is defined in the standard way**.
 
-  * **Added** Support for the `/Locked` key in PDF Optional Content. This array inside the catalog entry `/OCProperties` can now be extracted and set.
+  * **Added** Support for the `/Locked` key in PDF Optional Content.
+    This array inside the catalog entry `/OCProperties` can now be extracted and set.
 
-  * **Added** Support for new parameter "tessdata" in OCR functions. New function :meth:`get_tessdata` locates the language support folder if Tesseract is installed.
+  * **Added** Support for new parameter `tessdata` in OCR functions.
+    New function :meth:`get_tessdata` locates the language support folder if Tesseract is installed.
+
+
 
 **Changes in version 1.22.3 (2023-05-10)**
 
