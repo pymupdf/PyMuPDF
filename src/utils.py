@@ -1601,10 +1601,10 @@ def do_links(
             annot_text = cre_annot(l, xref_dst, pno_src, ctm)
             if annot_text:
                 link_tab.append(annot_text)
+            else:
+                print("cannot create /Annot for kind: " + str(l["kind"]))
         if link_tab != []:
-            page_dst._addAnnot_FromString(link_tab)
-        page_dst = None
-        page_src = None
+            page_dst._addAnnot_FromString( tuple(link_tab))
     #fitz.log( 'utils.do_links() returning.')
     return
 
@@ -1719,7 +1719,7 @@ def insert_link(page: fitz.Page, lnk: dict, mark: bool = True) -> None:
     annot = getLinkText(page, lnk)
     if annot == "":
         raise ValueError("link kind not supported")
-    page._addAnnot_FromString([annot])
+    page._addAnnot_FromString((annot,))
     return
 
 

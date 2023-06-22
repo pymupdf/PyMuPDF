@@ -821,6 +821,21 @@ class Annot:
         return val
 
     @property
+    def rect_delta(self):
+        '''
+        annotation delta values to rectangle
+        '''
+        annot_obj = mupdf.pdf_annot_obj(self.this)
+        arr = mupdf.pdf_dict_get( annot_obj, PDF_NAME('RD'))
+        if mupdf.pdf_array_len( arr) == 4:
+            return (
+                    mupdf.pdf_to_real( mupdf.pdf_array_get( arr, 0)),
+                    mupdf.pdf_to_real( mupdf.pdf_array_get( arr, 1)),
+                    -mupdf.pdf_to_real( mupdf.pdf_array_get( arr, 2)),
+                    -mupdf.pdf_to_real( mupdf.pdf_array_get( arr, 3)),
+                    )
+
+    @property
     def rotation(self):
         """annotation rotation"""
         CheckParent(self)
@@ -865,15 +880,32 @@ class Annot:
         annot_obj = mupdf.pdf_annot_obj(annot)
         mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('BM'), blend_mode)
 
-    def set_border(self, border=None, width=0, style=None, dashes=None):
+    def set_border(self, border=None, width=-1, style=None, dashes=None, clouds=-1):
         """Set border properties.
 
-        Either a dict, or direct arguments width, style and dashes."""
+        Either a dict, or direct arguments width, style, dashes or clouds."""
         CheckParent(self)
         if type(border) is not dict:
-            border = {"width": width, "style": style, "dashes": dashes}
+            border = {"width": width, "style": style, "dashes": dashes, "clouds": clouds}
+        border.setdefault("width", -1)
+        border.setdefault("style", None)
+        border.setdefault("dashes", None)
+        border.setdefault("clouds", -1)
+        if border["width"] == None:
+            border["width"] = -1
+        if border["clouds"] == None:
+            border["clouds"] = -1
+        if hasattr(border["dashes"], "__getitem__"):  # ensure sequence items are integers
+            border["dashes"] = tuple(border["dashes"])
+            for item in border["dashes"]:
+                if not isinstance(item, int):
+                    border["dashes"] = None
+                    break
         annot = self.this
-        return JM_annot_set_border(border, annot.pdf_annot_page().doc(), annot.pdf_annot_obj())
+        annot_obj = mupdf.pdf_annot_obj( annot)
+        pdf = mupdf.pdf_get_bound_document( annot_obj)
+        return JM_annot_set_border( border, pdf, annot_obj)
+        #return JM_annot_set_border(border, annot.pdf_annot_page().doc(), annot.pdf_annot_obj())
 
     def set_colors(self, colors=None, stroke=None, fill=None):
         """Set 'stroke' and 'fill' colors.
@@ -1484,7 +1516,7 @@ class Annot:
 
     @property
     def xref(self):
-        """annotation xref"""
+        """annotation xref number"""
         CheckParent(self)
         annot = self.this
         return mupdf.pdf_to_num(annot.pdf_annot_obj())
@@ -5151,7 +5183,7 @@ class Document:
         mupdf.pdf_set_document_language(pdf, lang)
         return True
 
-    def set_layer(self, config, basestate=None, on=None, off=None, rbgroups=None):
+    def set_layer(self, config, basestate=None, on=None, off=None, rbgroups=None, locked=None):
         """Set the PDF keys /ON, /OFF, /RBGroups of an OC layer."""
         if self.is_closed:
             raise ValueError("document closed")
@@ -5172,6 +5204,13 @@ class Document:
             s = set(off).difference(ocgs)
             if s != set():
                 raise ValueError("bad OCGs in 'off': %s" % s)
+
+        if locked:
+            if type(locked) not in (list, tuple):
+                raise ValueError("bad type: 'locked'")
+            s = set(locked).difference(ocgs)
+            if s != set():
+                raise ValueError("bad OCGs in 'locked': %s" % s)
 
         if rbgroups:
             if type(rbgroups) not in (list, tuple):
@@ -5207,11 +5246,18 @@ class Document:
                     )
         if not obj.m_internal:
             raise ValueError( MSG_BAD_OC_CONFIG)
-        JM_set_ocg_arrays( obj, basestate, on, off, rbgroups)
+        JM_set_ocg_arrays( obj, basestate, on, off, rbgroups, locked)
         mupdf.ll_pdf_read_ocg( pdf.m_internal)
 
     def set_layer_ui_config(self, number, action=0):
         """Set / unset OC intent configuration."""
+        # The user might have given the name instead of sequence number, 
+        # so select by that name and continue with corresp. number
+        if isinstance(number, str):
+            select = [ui["number"] for ui in self.layer_ui_configs() if ui["text"] == number]
+            if select == []:
+                raise ValueError(f"bad OCG '{number}'.")
+            number = select[0]  # this is the number for the name
         pdf = _as_pdf_document(self)
         assert pdf
         if action == 1:
@@ -5840,6 +5886,7 @@ class Font:
             fake_italic = b(1)
             has_opentype = b(1)
             invalid_bbox = b(1)
+            cjk_lang = b(1)
             embed = b(1)
             never_embed = b(1)
         return {
@@ -5853,6 +5900,8 @@ class Font:
                 "fake-italic":  fake_italic if mupdf_cppyy else f.fake_italic,
                 "opentype":     has_opentype if mupdf_cppyy else f.has_opentype,
                 "invalid-bbox": invalid_bbox if mupdf_cppyy else f.invalid_bbox,
+                'cjk':          cjk_lang if mupdf_cppyy else f.cjk,
+                'cjk-lang':     cjk_lang if mupdf_cppyy else f.cjk_lang,
                 'embed':        embed if mupdf_cppyy else f.embed,
                 'never-embed':  never_embed if mupdf_cppyy else f.never_embed,
                 }
@@ -6513,9 +6562,10 @@ class Widget:
         self.border_width = 0
         self.border_dashes = None
         self.choice_values = None  # choice fields only
+        self.rb_parent = None   # radio buttons only: xref of owning parent
 
         self.field_name = None  # field name
-        self.field_label = None  # field label
+        self.field_label = None # field label
         self.field_value = None
         self.field_flags = 0
         self.field_display = 0
@@ -6567,15 +6617,15 @@ class Widget:
         if self.field_type not in range(1, 8):
             raise ValueError("bad field type")
 
-        # if setting a radio button to ON, first set Off all other buttons
+        # if setting a radio button to ON, first set Off all buttons
         # in the group - this is not done by MuPDF:
         if self.field_type == PDF_WIDGET_TYPE_RADIOBUTTON and self.field_value not in (False, "Off") and hasattr(self, "parent"):
             # so we are about setting this button to ON/True
             # check other buttons in same group and set them to 'Off'
             doc = self.parent.parent
             kids_type, kids_value = doc.xref_get_key(self.xref, "Parent/Kids")
-            doc.xref_set_key(self.xref, "Parent/V", "(Off)")  # set off old value
             if kids_type == "array":
+                doc.xref_set_key(self.xref, "Parent/V", "(Off)")  # set off old value
                 xrefs = tuple(map(int, kids_value[1:-1].replace("0 R","").split()))
                 for xref in xrefs:
                     if xref != self.xref:
@@ -6650,28 +6700,28 @@ class Widget:
         if not self.script:
             self.script = None
         elif type(self.script) is not str:
-            raise ValueError("script content must be string")
+            raise ValueError("script content must be a string")
 
         # buttons cannot have the following script actions
         if btn_type or not self.script_calc:
             self.script_calc = None
         elif type(self.script_calc) is not str:
-            raise ValueError("script_calc content must be string")
+            raise ValueError("script_calc content must be a string")
 
         if btn_type or not self.script_change:
             self.script_change = None
         elif type(self.script_change) is not str:
-            raise ValueError("script_change content must be string")
+            raise ValueError("script_change content must be a string")
 
         if btn_type or not self.script_format:
             self.script_format = None
         elif type(self.script_format) is not str:
-            raise ValueError("script_format content must be string")
+            raise ValueError("script_format content must be a string")
 
         if btn_type or not self.script_stroke:
             self.script_stroke = None
         elif type(self.script_stroke) is not str:
-            raise ValueError("script_stroke content must be string")
+            raise ValueError("script_stroke content must be a string")
 
         self._checker()  # any field_type specific checks
 
@@ -6684,7 +6734,10 @@ class Widget:
         """
         if self.field_type not in (2, 5):
             return None  # no button type
-        doc = self.parent.parent
+        if hasattr(self, "parent"):  # field already exists on page
+            doc = self.parent.parent
+        else:
+            return
         xref = self.xref
         states = {"normal": None, "down": None}
         APN = doc.xref_get_key(xref, "AP/N")
@@ -6713,14 +6766,18 @@ class Widget:
         """Return the "On" value for button widgets.
         
         This is useful for radio buttons mainly. Checkboxes will always return
-        True. Radio buttons will return the string that is unequal to "Off"
+        "Yes". Radio buttons will return the string that is unequal to "Off"
         as returned by method button_states().
+        If the radio button is new / being created, it does not yet have an
+        "On" value. In this case, a warning is shown and True is returned.
         """
         if self.field_type not in (2, 5):
             return None  # no checkbox or radio button
         if self.field_type == 2:
-            return True
+            return "Yes"
         bstate = self.button_states()
+        if bstate==None:
+            bstate = dict()
         for k in bstate.keys():
             for v in bstate[k]:
                 if v != "Off":
@@ -7247,6 +7304,8 @@ class Page:
 
         # insert links from the provided sources
         ASSERT_PDF(page)
+        if not isinstance(linklist, tuple):
+            raise ValueError( "bad 'linklist' argument")
         if not mupdf.pdf_dict_get( page.obj(), PDF_NAME('Annots')).m_internal:
             mupdf.pdf_dict_put_array( page.obj(), PDF_NAME('Annots'), lcount)
         annots = mupdf.pdf_dict_get( page.obj(), PDF_NAME('Annots'))
@@ -8781,7 +8840,7 @@ class Page:
             xref = ident
             name = None
         else:
-            raise ValueError("identifier must be string or integer")
+            raise ValueError("identifier must be a string or integer")
         val = self._load_annot(name, xref)
         if not val:
             return val
@@ -12578,6 +12637,16 @@ JM_mupdf_show_errors = 1
 JM_mupdf_show_warnings = 0
 
 
+# ------------------------------------------------------------------------------
+# Various PDF Optional Content Flags
+# ------------------------------------------------------------------------------
+PDF_OC_ON = 0
+PDF_OC_TOGGLE = 1
+PDF_OC_OFF = 2
+
+# ------------------------------------------------------------------------------
+# link kinds and link flags
+# ------------------------------------------------------------------------------
 LINK_NONE = 0
 LINK_GOTO = 1
 LINK_URI = 2
@@ -13632,54 +13701,43 @@ def JM_add_oc_object(pdf, ref, xref):
 
 
 def JM_annot_border(annot_obj):
-    assert isinstance(annot_obj, mupdf.PdfObj), f'{annot_obj}'
-    res = {}
-    dash_py   = []
-    effect_py = []
-    width = -1.0
-    effect1 = -1
-    effect2 = None
+    dash_py = list()
     style = None
-    o = annot_obj.pdf_dict_get(mupdf.PDF_ENUM_NAME_Border)
-    if o.pdf_is_array():
-        width = mupdf.pdf_to_real( o.pdf_array_get(2))
-        if o.pdf_array_len() == 4:
-            dash = o.pdf_array_get(3)
-            for i in range(dash.pdf_array_len()):
-                val = mupdf.pdf_to_int( dash.pdf_array_get(i))
-                dash_py.append(val)
+    width = -1
+    clouds = -1
+    obj = None
 
-    bs_o = annot_obj.pdf_dict_get(mupdf.PDF_ENUM_NAME_BS)
+    obj = mupdf.pdf_dict_get( annot_obj, PDF_NAME('Border'))
+    if mupdf.pdf_is_array( obj):
+        width = mupdf.pdf_to_real( mupdf.pdf_array_get( obj, 2))
+        if mupdf.pdf_array_len( obj) == 4:
+            dash = mupdf.pdf_array_get( obj, 3)
+            for i in range( mupdf.pdf_array_len( dash)):
+                val = mupdf.pdf_to_int( mupdf.pdf_array_get( dash, i))
+                dash_py.append( val)
+
+    bs_o = mupdf.pdf_dict_get( annot_obj, PDF_NAME('BS'))
     if bs_o.m_internal:
-        o = bs_o.pdf_dict_get(mupdf.PDF_ENUM_NAME_W)
-        if o.m_internal:
-            width = o.pdf_to_real()
-        o = bs_o.pdf_dict_get(mupdf.PDF_ENUM_NAME_S)
-        if o.m_internal:
-            style = o.pdf_to_name()
-        o = bs_o.pdf_dict_get(mupdf.PDF_ENUM_NAME_D)
-        if o.m_internal:
-            for i in range(o.pdf_array_len()):
-                val = o.pdf_array_get(i).pdf_to_int()
-                dash_py.append(val)
+        width = mupdf.pdf_to_real( mupdf.pdf_dict_get( bs_o, PDF_NAME('W')))
+        style = mupdf.pdf_to_name( mupdf.pdf_dict_get( bs_o, PDF_NAME('S')))
+        if style == '':
+            style = None
+        obj = mupdf.pdf_dict_get( bs_o, PDF_NAME('D'))
+        if obj.m_internal:
+            for i in range( mupdf.pdf_array_len( obj)):
+                val = mupdf.pdf_to_int( mupdf.pdf_array_get( obj, i))
+                dash_py.append( val)
 
-    be_o = annot_obj.pdf_dict_gets("BE")
-    if be_o.m_internal:
-        o = be_o.pdf_dict_get(mupdf.PDF_ENUM_NAME_S)
-        if o.m_internal:
-            effect2 = o.pdf_to_name()
-        o = be_o.pdf_dict_get(mupdf.PDF_ENUM_NAME_I)
-        if o.m_internal:
-            effect1 = o.pdf_to_int()
+    obj = mupdf.pdf_dict_get( annot_obj, PDF_NAME('BE'))
+    if obj.m_internal:
+        clouds = mupdf.pdf_to_int( mupdf.pdf_dict_get( obj, PDF_NAME('I')))
 
-    effect_py.append(effect1)
-    effect_py.append(effect2)
-    res[dictkey_width] = width
-    res[dictkey_dashes] = dash_py
-    res[dictkey_style] = style
-    if effect1 > -1:
-        res[dictkey_effect] = effect_py
-    return res;
+    res = dict()
+    res[ dictkey_width] = width
+    res[ dictkey_dashes] = tuple( dash_py)
+    res[ dictkey_style] = style
+    res[ 'clouds'] = clouds
+    return res
 
 
 def JM_annot_colors(annot_obj):
@@ -13705,53 +13763,59 @@ def JM_annot_colors(annot_obj):
     return res;
 
 
-def JM_annot_set_border(border, doc, annot_obj):
+def JM_annot_set_border( border, doc, annot_obj):
     assert isinstance(border, dict)
+    obj = None
+    i = 0
+    dashlen = 0
+    nwidth = border.get( dictkey_width)     # new width
+    ndashes = border.get( dictkey_dashes)   # new dashes
+    nstyle = border.get( dictkey_style)     # new style
+    nclouds  = border.get( 'clouds')        # new clouds value
 
-    nwidth = border.get(dictkey_width)  # new width
-    ndashes = border.get(dictkey_dashes)# new dashes
-    nstyle  = border.get(dictkey_style) # new style
+    # get old border properties
+    oborder = JM_annot_border( annot_obj)
 
-    # first get old border properties
-    oborder = JM_annot_border(annot_obj)
-    owidth = oborder.get(dictkey_width)     # old width
-    odashes = oborder.get(dictkey_dashes)   # old dashes
-    ostyle = oborder.get(dictkey_style)     # old style
+    # delete border-related entries
+    mupdf.pdf_dict_del( annot_obj, PDF_NAME('BS'))
+    mupdf.pdf_dict_del( annot_obj, PDF_NAME('BE'))
+    mupdf.pdf_dict_del( annot_obj, PDF_NAME('Border'))
 
-    # then delete any relevant entries
-    annot_obj.pdf_dict_del(mupdf.PDF_ENUM_NAME_BS)
-    annot_obj.pdf_dict_del(mupdf.PDF_ENUM_NAME_BE)
-    annot_obj.pdf_dict_del(mupdf.PDF_ENUM_NAME_Border)
-
-    # populate new border array
+    # populate border items: keep old values for any omitted new ones
     if nwidth < 0:
-        nwidth = owidth # no new width: take current
-    if nwidth < 0:
-        nwidth = 0.0    # default if no width given
+        nwidth = oborder.get( dictkey_width)    # no new width: keep current
     if ndashes is None:
-        ndashes = odashes   # no new dashes: take old
+        ndashes = oborder.get( dictkey_dashes)  # no new dashes: keep old
     if nstyle is None:
-        nstyle  = ostyle;   # no new style: take old
+        nstyle  = oborder.get( dictkey_style)   # no new style: keep old
+    if nclouds < 0:
+        nclouds  = oborder.get( "clouds")       # no new clouds: keep old
 
-    if ndashes and isinstance(ndashes, (tuple, list)) and len(ndashes) > 0:
-        n = len(ndashes)
-        darr = mupdf.pdf_new_array(doc, n);
-        for i in range(n):
-            d = ndashes[i]
-            mupdf.pdf_array_push_int(darr, d)
-        mupdf.pdf_dict_putl( annot_obj, darr, mupdf.PDF_ENUM_NAME_BS, mupdf.PDF_ENUM_NAME_D)
-        nstyle = "D"
+    if isinstance( ndashes, tuple) and len( ndashes) > 0:
+        dashlen = len( ndashes)
+        darr = mupdf.pdf_new_array( doc, dashlen)
+        for d in ndashes:
+            mupdf.pdf_array_push_int( darr, d)
+        mupdf.pdf_dict_putl( annot_obj, darr, PDF_NAME('BS'), PDF_NAME('D'))
 
     mupdf.pdf_dict_putl(
             annot_obj,
-            mupdf.pdf_new_real(float(nwidth)),
-            mupdf.PDF_ENUM_NAME_BS,
-            mupdf.PDF_ENUM_NAME_W,
+            mupdf.pdf_new_real( nwidth),
+            PDF_NAME('BS'),
+            PDF_NAME('W'),
             )
 
-    val = JM_get_border_style(nstyle)
+    if dashlen == 0:
+        obj = JM_get_border_style( nstyle)
+    else:
+        obj = PDF_NAME('D')
+    mupdf.pdf_dict_putl( annot_obj, obj, PDF_NAME('BS'), PDF_NAME('S'))
 
-    mupdf.pdf_dict_putl(annot_obj, val, mupdf.PDF_ENUM_NAME_BS, mupdf.PDF_ENUM_NAME_S)
+    if nclouds > 0:
+        mupdf.pdf_dict_put_dict( annot_obj, PDF_NAME('BE'), 2)
+        obj = mupdf.pdf_dict_get( annot_obj, PDF_NAME('BE'))
+        mupdf.pdf_dict_put( obj, PDF_NAME('S'), PDF_NAME('C'))
+        mupdf.pdf_dict_put_int( obj, PDF_NAME('I'), nclouds)
 
 
 def JM_append_rune(buff, ch):
@@ -13944,28 +14008,6 @@ def JM_char_quad(line, ch):
     quad = mupdf.fz_transform_quad(quad, trm2) # rotate back
     quad = mupdf.fz_transform_quad(quad, xlate2)   # translate back
     return quad
-
-
-def JM_checkbox_state( annot):
-    '''
-    CheckBox get state
-    '''
-    annot_obj = mupdf.pdf_annot_obj( annot)
-    leafv = mupdf.pdf_dict_get_inheritable( annot_obj, PDF_NAME('V'))
-    leafas = mupdf.pdf_dict_get_inheritable( annot_obj, PDF_NAME('AS'))
-    if not leafv.m_internal:
-        return False
-    if leafv == PDF_NAME('Off'):
-        return False
-    if leafv == mupdf.pdf_new_name( "Yes"):
-        return True
-    if mupdf.pdf_is_string( leafv) and mupdf.pdf_to_text_string( leafv) == "Off":
-        return False;
-    if mupdf.pdf_is_string( leafv) and mupdf.pdf_to_text_string( leafv) == "Yes":
-        return True;
-    if leafas.m_internal and leafas == PDF_NAME('Off'):
-        return False
-    return True
 
 
 def JM_choice_options(annot):
@@ -14729,6 +14771,7 @@ def JM_get_border_style(style):
     elif s.startswith("d") or s.startswith("D"):    val = mupdf.PDF_ENUM_NAME_D
     elif s.startswith("i") or s.startswith("I"):    val = mupdf.PDF_ENUM_NAME_I
     elif s.startswith("u") or s.startswith("U"):    val = mupdf.PDF_ENUM_NAME_U
+    elif s.startswith("s") or s.startswith("S"):    val = mupdf.PDF_ENUM_NAME_S
     return val
 
 
@@ -14933,6 +14976,9 @@ def JM_get_widget_properties(annot, Widget):
 
     fvalue = None
     if field_type == PDF_WIDGET_TYPE_RADIOBUTTON:
+        obj = mupdf.pdf_dict_get( annot_obj, PDF_NAME('Parent'))    # owning RB group
+        if obj.m_internal:
+            SETATTR_DROP(Widget, "rb_parent", mupdf.pdf_to_num( obj))
         obj = mupdf.pdf_dict_get(annot_obj, PDF_NAME('AS'))
         if obj.m_internal:
             fvalue = mupdf.pdf_to_name(obj)
@@ -15059,7 +15105,7 @@ def JM_get_fontextension(doc, xref):
 def JM_get_ocg_arrays_imp(arr):
     '''
     Get OCG arrays from OC configuration
-    Returns dict {"basestate":name, "on":list, "off":list, "rbg":list}
+    Returns dict {"basestate":name, "on":list, "off":list, "rbg":list, "locked":list}
     '''
     list_ = list()
     if mupdf.pdf_is_array( arr):
@@ -15083,6 +15129,10 @@ def JM_get_ocg_arrays(conf):
     list_ = JM_get_ocg_arrays_imp( arr)
     if list_:
         rc["off"] = list_
+    arr = mupdf.pdf_dict_get( conf, PDF_NAME('Locked'))
+    list_ = JM_get_ocg_arrays_imp( arr)
+    if list_:
+        rc['locked'] = list_
     list_ = list()
     arr = mupdf.pdf_dict_get( conf, PDF_NAME('RBGroups'))
     if mupdf.pdf_is_array( arr):
@@ -15158,6 +15208,7 @@ def JM_image_extension(type_):
     '''
     return extension for fitz image type
     '''
+    if type_ == mupdf.FZ_IMAGE_FAX:     return "fax"
     if type_ == mupdf.FZ_IMAGE_RAW:     return "raw"
     if type_ == mupdf.FZ_IMAGE_FLATE:   return "flate"
     if type_ == mupdf.FZ_IMAGE_LZW:     return "lzw"
@@ -15171,6 +15222,7 @@ def JM_image_extension(type_):
     if type_ == mupdf.FZ_IMAGE_PNG:     return "png"
     if type_ == mupdf.FZ_IMAGE_PNM:     return "pnm"
     if type_ == mupdf.FZ_IMAGE_TIFF:    return "tiff"
+    if type_ == mupdf.FZ_IMAGE_PSD:     return "psd"
     return "n/a"
 
 
@@ -16491,29 +16543,28 @@ def JM_set_choice_options(annot, liste):
     '''
     set ListBox / ComboBox values
     '''
-    if not PySequence_Check(liste):
+    if not liste:
         return
-    n = len(liste)
-    if not n:
+    assert isinstance( liste, (tuple, list))
+    n = len( liste)
+    if n == 0:
         return
-    tuple_ = tuple(liste)
-    annot_obj = mupdf.pdf_annot_obj(annot)
-    pdf = mupdf.pdf_get_bound_document(annot_obj)
-    optarr = mupdf.pdf_new_array(pdf, n)
+    annot_obj = mupdf.pdf_annot_obj( annot)
+    pdf = mupdf.pdf_get_bound_document( annot_obj)
+    optarr = mupdf.pdf_new_array( pdf, n)
     for i in range(n):
-        val = tuple_[i]
+        val = liste[i]
         opt = val
-        if opt:
-            mupdf.pdf_array_push_text_string(optarr, opt)
+        if isinstance(opt, str):
+            mupdf.pdf_array_push_text_string( optarr, opt)
         else:
-            opt1 = PyTuple_GetItem(val, 0)
-            opt2 = PyTuple_GetItem(val, 1)
-            if not opt1 or not opt2:
-                return
-            optarrsub = mupdf.pdf_array_push_array(optarr, 2)
-            mupdf.pdf_array_push_text_string(optarrsub, opt1)
-            mupdf.pdf_array_push_text_string(optarrsub, opt2)
-    mupdf.pdf_dict_put(annot_obj, PDF_NAME('Opt'), optarr)
+            assert isinstance( val, (tuple, list)) and len( val) == 2, 'bad choice field list'
+            opt1, opt2 = val
+            assert opt1 and opt2, 'bad choice field list'
+            optarrsub = mupdf.pdf_array_push_array( optarr, 2)
+            mupdf.pdf_array_push_text_string( optarrsub, opt1)
+            mupdf.pdf_array_push_text_string( optarrsub, opt2)
+    mupdf.pdf_dict_put( annot_obj, PDF_NAME('Opt'), optarr)
 
 
 def JM_set_field_type(doc, obj, type):
@@ -16602,7 +16653,7 @@ def JM_set_object_value(obj, key, value):
     return new_obj;
 
 
-def JM_set_ocg_arrays(conf, basestate, on, off, rbgroups):
+def JM_set_ocg_arrays(conf, basestate, on, off, rbgroups, locked):
     if basestate:
         mupdf.pdf_dict_put_name( conf, PDF_NAME('BaseState'), basestate)
 
@@ -16616,6 +16667,11 @@ def JM_set_ocg_arrays(conf, basestate, on, off, rbgroups):
         if off:
             arr = mupdf.pdf_dict_put_array( conf, PDF_NAME('OFF'), 1)
             JM_set_ocg_arrays_imp( arr, off)
+    if locked is not None:
+        mupdf.pdf_dict_del( conf, PDF_NAME('Locked'))
+        if locked:
+            arr = mupdf.pdf_dict_put_array( conf, PDF_NAME('Locked'), 1)
+            JM_set_ocg_arrays_imp( arr, locked)
     if rbgroups is not None:
         mupdf.pdf_dict_del( conf, PDF_NAME('RBGroups'))
         if rbgroups:
@@ -16797,14 +16853,13 @@ def JM_set_widget_properties(annot, Widget):
     JM_put_script(annot_obj, PDF_NAME('AA'), PDF_NAME('C'), value)
 
     # field value ------------------------------------------------------------
-    value = GETATTR("field_value")
-    text = None
+    value = GETATTR("field_value")  # field value
+    text = JM_StrAsChar(value)  # convert to text (may fail!)
     if field_type == PDF_WIDGET_TYPE_RADIOBUTTON:
         if not value:
             mupdf.pdf_set_field_value(pdf, annot_obj, "Off", 1)
             mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), "Off")
         else:
-            text = value
             # TODO check if another button in the group is ON and if so set it Off
             onstate = mupdf.pdf_button_field_on_state(annot_obj)
             if onstate.m_internal:
@@ -16813,16 +16868,17 @@ def JM_set_widget_properties(annot, Widget):
                 mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), on)
             elif text:
                 mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), text)
-    elif field_type == PDF_WIDGET_TYPE_CHECKBOX:
-         if value == True:
-             onstate = mupdf.pdf_button_field_on_state(annot_obj)
-             on = mupdf.pdf_to_name(onstate)
-             mupdf.pdf_set_field_value(pdf, annot_obj, on, 1)
-             mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), "Yes")
+    elif field_type == PDF_WIDGET_TYPE_CHECKBOX:    # will always be "Yes" or "Off"
+         if value == True or text == 'Yes':
+            onstate = mupdf.pdf_button_field_on_state(annot_obj)
+            on = mupdf.pdf_to_name(onstate)
+            mupdf.pdf_set_field_value(pdf, annot_obj, on, 1)
+            mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), 'Yes')
+            mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('V'), 'Yes')
          else:
-             mupdf.pdf_set_field_value(pdf, annot_obj, 'Off', 1)
+            mupdf.pdf_dict_put_name( annot_obj, PDF_NAME('AS'), 'Off')
+            mupdf.pdf_dict_put_name( annot_obj, PDF_NAME('V'), 'Off')
     else:
-        text = JM_StrAsChar(value)
         if text:
             result = mupdf.pdf_set_field_value(pdf, annot_obj, text, 1)
             if field_type in (PDF_WIDGET_TYPE_COMBOBOX, PDF_WIDGET_TYPE_LISTBOX):
@@ -17431,7 +17487,7 @@ def jm_append_merge(dev):
     
     if callable(dev.method) or dev.method:  # function or method
         # callback.
-        if dev.method == Py_None:
+        if dev.method == None:
             # fixme, this surely cannot happen?
             assert 0
             resp = PyObject_CallFunctionObjArgs(out, dev.pathdict, NULL)
@@ -17446,7 +17502,7 @@ def jm_append_merge(dev):
     def append():
         #log(f'jm_append_merge(): clearing dev.pathdict')
         dev.out.append(dev.pathdict)
-        dev.pathdict = dict()
+        dev.pathdict.clear()
     assert isinstance(dev.out, list)
     len_ = len(dev.out) # len of output list so far
     #log('{len_=}')
@@ -17468,32 +17524,29 @@ def jm_append_merge(dev):
     if previtems != thisitems:
         return append()
     
-    #rc = PyDict_Merge(dev.pathdict, prev, 0);  // merge, do not override
+    #rc = PyDict_Merge(prev, dev.pathdict, 0);  // merge with no override
     try:
-        for k, v in prev.items():
-            if k not in dev.pathdict:
-                dev.pathdict[k] = v
+        for k, v in dev.pathdict.items():
+            if k not in prev:
+                prev[k] = v
         rc = 0
     except Exception as e:
         if g_exceptions_verbose:    exception_info()
         #raise
         rc = -1
     if rc == 0:
-        if dev.pathdict is not None:
-            dev.pathdict[ dictkey_type] = "fs"
-        dev.out[ len_ - 1] = dev.pathdict
-        #log(f'After PyDict_Merge: {getattr(dev, "pathdict", None)=}')
-        return
+        prev[ dictkey_type] = 'fs'
+        dev.pathdict.clear()
     else:
         print("could not merge stroke and fill path", file=sys.stderr)
-        return append()
+        append()
 
 
 def jm_bbox_add_rect( dev, ctx, rect, code):
     if not dev.layers:
         dev.result.append( (code, JM_py_from_rect(rect)))
     else:
-        dev.result.append( (code, JM_py_from_rect(rect), dev.layer_name))
+        dev.result.append( (code, JM_py_from_rect(rect), JM_EscapeStrFromStr( dev.layer_name)))
 
 
 def jm_bbox_fill_image( dev, ctx, image, ctm, alpha, color_params):
@@ -17786,7 +17839,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     span_dict[ 'type'] = type_
     span_dict[ 'chars'] = chars
     span_dict[ 'bbox'] = JM_py_from_rect(span_bbox)
-    span_dict[ 'layer'] = dev.layer_name
+    span_dict[ 'layer'] = JM_EscapeStrFromStr( dev.layer_name)
     span_dict[ "seqno"] = seqno
     dev.out.append( span_dict)
 
@@ -17848,7 +17901,7 @@ def jm_lineart_fill_path( dev, ctx, path, even_odd, ctm, colorspace, color, alph
         dev.pathdict[ dictkey_rect] = JM_py_from_rect(dev.pathrect)
         dev.pathdict[ "seqno"] = dev.seqno
         #jm_append_merge(dev)
-        dev.pathdict[ 'layer'] = dev.layer_name
+        dev.pathdict[ 'layer'] = JM_EscapeStrFromStr( dev.layer_name)
         if dev.clips:
             dev.pathdict[ 'level'] = dev.depth
         jm_append_merge(dev)
@@ -18038,8 +18091,6 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
                 stroke.end_cap,
                 )
         dev.pathdict[ 'lineJoin'] = dev.pathfactor * stroke.linejoin
-        dev.pathdict[ 'fill'] = None
-        dev.pathdict[ 'fill_opacity'] = None
         if 'closePath' not in dev.pathdict:
             #log('setting dev.pathdict["closePath"] to false')
             dev.pathdict['closePath'] = False
@@ -18059,7 +18110,7 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
         else:
             dev.pathdict[ 'dashes'] = '[] 0'
         dev.pathdict[ dictkey_rect] = JM_py_from_rect(dev.pathrect)
-        dev.pathdict['layer'] = dev.layer_name
+        dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
         dev.pathdict[ 'seqno'] = dev.seqno
         if dev.clips:
             dev.pathdict[ 'level'] = dev.depth
@@ -18086,9 +18137,10 @@ def jm_lineart_clip_path(dev, ctx, path, even_odd, ctm, scissor):
    
    dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
    dev.pathdict['level'] = dev.depth
-   dev.pathdict['layer'] = dev.layer_name
+   dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
    jm_append_merge(dev)
    dev.depth += 1
+
 
 def jm_lineart_clip_stroke_path(dev, ctx, path, stroke, ctm, scissor):
    if not dev.clips:
@@ -18104,15 +18156,38 @@ def jm_lineart_clip_stroke_path(dev, ctx, path, stroke, ctm, scissor):
        dev.pathdict['closePath'] = False
    dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
    dev.pathdict['level'] = dev.depth
-   dev.pathdict['layer'] = dev.layer_name
+   dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
    jm_append_merge(dev)
    dev.depth += 1
 
 
+def jm_lineart_clip_stroke_text(dev, ctx, text, stroke, ctm, scissor):
+   if not dev.clips:
+       return
+   compute_scissor(dev)
+   dev.depth += 1
+
+
+def jm_lineart_clip_text(dev, ctx, text, ctm, scissor):
+   if not dev.clips:
+       return
+   compute_scissor(dev);
+   dev.depth += 1
+
+
+def jm_lineart_clip_image_mask( dev, ctx, image, ctm, scissor):
+   if not dev.clips:
+       return
+   compute_scissor(dev);
+   dev.depth += 1
+ 
+
 def jm_lineart_pop_clip(dev, ctx):
-    if not dev.clips:
+    if not dev.clips or not dev.scissors:
         return
     len_ = len(dev.scissors)
+    if len < 1:
+        return
     del dev.scissors[-1]
     dev.depth -= 1
 
@@ -18130,7 +18205,7 @@ def jm_lineart_begin_group(dev, ctx, bbox, cs, isolated, knockout, blendmode, al
     if not dev.clips:
         return;
     out = dev.out
-    dev.pathdict = { #Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:s}",
+    dev.pathdict = { #Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:N}",
             "type": "group",
             "rect": JM_py_from_rect(bbox),
             "isolated": bool(isolated),
@@ -18138,7 +18213,7 @@ def jm_lineart_begin_group(dev, ctx, bbox, cs, isolated, knockout, blendmode, al
             "blendmode": mupdf.fz_blendmode_name(blendmode),
             "opacity": alpha,
             "level": dev.depth,
-            "layer": dev.layer_name,
+            "layer": JM_EscapeStrFromStr( dev.layer_name),
             }
     jm_append_merge(dev)
     dev.depth += 1
@@ -18284,7 +18359,10 @@ class JM_new_lineart_device_Device(mupdf.FzDevice2):
         self.use_virtual_fill_path()
         self.use_virtual_stroke_path()
         self.use_virtual_clip_path()
+        self.use_virtual_clip_image_mask()
         self.use_virtual_clip_stroke_path()
+        self.use_virtual_clip_stroke_text()
+        self.use_virtual_clip_text()
         
         self.use_virtual_fill_text
         self.use_virtual_stroke_text
@@ -18326,8 +18404,11 @@ class JM_new_lineart_device_Device(mupdf.FzDevice2):
     
     fill_path           = jm_lineart_fill_path
     stroke_path         = jm_lineart_stroke_path
+    clip_image_mask     = jm_lineart_clip_image_mask
     clip_path           = jm_lineart_clip_path
     clip_stroke_path    = jm_lineart_clip_stroke_path
+    clip_text           = jm_lineart_clip_text
+    clip_stroke_text    = jm_lineart_clip_stroke_text
     
     fill_text           = jm_increase_seqno
     stroke_text         = jm_increase_seqno

@@ -2335,6 +2335,12 @@ mupdf::FzDevice JM_new_texttrace_device(PyObject* out)
     dev->super.begin_layer = jm_lineart_begin_layer;
     dev->super.end_layer = jm_lineart_end_layer;
 
+    dev->super.begin_structure = nullptr;
+    dev->super.end_structure = nullptr;
+
+    dev->super.begin_metatext = nullptr;
+    dev->super.end_metatext = nullptr;
+
     dev->super.render_flags = nullptr;
     dev->super.set_default_colorspaces = nullptr;
 
@@ -2893,7 +2899,7 @@ jm_lineart_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     DICT_SETITEMSTR_DROP(dev->pathdict, "fill", jm_lineart_color(colorspace, color));
     DICT_SETITEM_DROP(dev->pathdict, dictkey_rect, JM_py_from_rect(dev->pathrect));
     DICT_SETITEMSTR_DROP(dev->pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", Py_BuildValue("s", dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
     if (dev->clips)    {
         DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
     }
@@ -2946,7 +2952,7 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     }
 
     DICT_SETITEM_DROP(dev->pathdict, dictkey_rect, JM_py_from_rect(dev->pathrect));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", Py_BuildValue("s", dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
     DICT_SETITEMSTR_DROP(dev->pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
     if (dev->clips) {
         DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
@@ -2971,7 +2977,7 @@ jm_lineart_clip_path(fz_context *ctx, fz_device *dev_, const fz_path *path, int 
     }
     DICT_SETITEMSTR_DROP(dev->pathdict, "scissor", JM_py_from_rect(compute_scissor(dev)));
     DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", Py_BuildValue("s", dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
     jm_append_merge(dev);
     dev->depth++;
 }
@@ -2991,18 +2997,50 @@ jm_lineart_clip_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *pat
     }
     DICT_SETITEMSTR_DROP(dev->pathdict, "scissor", JM_py_from_rect(compute_scissor(dev)));
     DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", Py_BuildValue("s", dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
     jm_append_merge(dev);
     dev->depth++;
 }
 
 
 static void
+jm_lineart_clip_stroke_text(fz_context *ctx, fz_device *dev_, const fz_text *text, const fz_stroke_state *stroke, fz_matrix ctm, fz_rect scissor)
+{
+   jm_lineart_device *dev = (jm_lineart_device *)dev_;
+   if (!dev->clips) return;
+   PyObject *out = dev->out;
+   compute_scissor(dev);
+   dev->depth++;
+}
+
+static void
+jm_lineart_clip_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz_matrix ctm, fz_rect scissor)
+{
+   jm_lineart_device *dev = (jm_lineart_device *)dev_;
+   if (!dev->clips) return;
+   PyObject *out = dev->out;
+   compute_scissor(dev);
+   dev->depth++;
+}
+
+static void
+jm_lineart_clip_image_mask(fz_context *ctx, fz_device *dev_, fz_image *image, fz_matrix ctm, fz_rect scissor)
+{
+   jm_lineart_device *dev = (jm_lineart_device *)dev_;
+   if (!dev->clips) return;
+   PyObject *out = dev->out;
+   compute_scissor(dev);
+   dev->depth++;
+}
+ 
+static void
 jm_lineart_pop_clip(fz_context *ctx, fz_device *dev_)
 {
     jm_lineart_device *dev = (jm_lineart_device *)dev_;
     if (!dev->clips) return;
+    if (!dev->scissors) return;
     Py_ssize_t len = PyList_Size(dev->scissors);
+    if (len < 1) return;
     PyList_SetSlice(dev->scissors, len - 1, len, NULL);
     dev->depth--;
 }
@@ -3013,7 +3051,7 @@ jm_lineart_begin_group(fz_context *ctx, fz_device *dev_, fz_rect bbox, fz_colors
 {
     jm_lineart_device *dev = (jm_lineart_device *)dev_;
     if (!dev->clips) return;
-    dev->pathdict = Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:s}",
+    dev->pathdict = Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:N}",
                         "type", "group",
                         "rect", JM_py_from_rect(bbox),
                         "isolated", JM_BOOL(isolated),
@@ -3021,7 +3059,7 @@ jm_lineart_begin_group(fz_context *ctx, fz_device *dev_, fz_rect bbox, fz_colors
                         "blendmode", fz_blendmode_name(blendmode),
                         "opacity", alpha,
                         "level", dev->depth,
-                        "layer", dev->layer_name
+                        "layer", JM_EscapeStrFromStr( dev->layer_name)
                     );
     jm_append_merge(dev);
     dev->depth++;
@@ -3082,14 +3120,14 @@ mupdf::FzDevice JM_new_lineart_device(PyObject *out, int clips, PyObject *method
 
     dev->super.fill_text = jm_lineart_fill_text;
     dev->super.stroke_text = jm_lineart_stroke_text;
-    dev->super.clip_text = NULL;
-    dev->super.clip_stroke_text = NULL;
+    dev->super.clip_text = jm_lineart_clip_text;
+    dev->super.clip_stroke_text = jm_lineart_clip_stroke_text;
     dev->super.ignore_text = jm_lineart_ignore_text;
 
     dev->super.fill_shade = jm_lineart_fill_shade;
     dev->super.fill_image = jm_lineart_fill_image;
     dev->super.fill_image_mask = jm_lineart_fill_image_mask;
-    dev->super.clip_image_mask = NULL;
+    dev->super.clip_image_mask = jm_lineart_clip_image_mask;
 
     dev->super.pop_clip = jm_lineart_pop_clip;
 
@@ -3103,6 +3141,12 @@ mupdf::FzDevice JM_new_lineart_device(PyObject *out, int clips, PyObject *method
 
     dev->super.begin_layer = jm_lineart_begin_layer;
     dev->super.end_layer = jm_lineart_end_layer;
+
+    dev->super.begin_structure = NULL;
+    dev->super.end_structure = NULL;
+
+    dev->super.begin_metatext = NULL;
+    dev->super.end_metatext = NULL;
 
     dev->super.render_flags = NULL;
     dev->super.set_default_colorspaces = NULL;
