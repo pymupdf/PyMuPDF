@@ -1974,6 +1974,7 @@ static void jm_trace_text_span(
         size_t seqno
         )
 {
+    //printf("extra.jm_trace_text_span(): seqno=%zi\n", seqno);
     fz_matrix join = mupdf::ll_fz_concat(span->trm, ctm);
     double fsize = sqrt(fabs((double) join.a * (double) join.d));
     double asc = (double) JM_font_ascender(span->font);
@@ -2848,12 +2849,10 @@ jm_append_merge(jm_lineart_device *dev)
     if (PyObject_RichCompareBool(previtems, thisitems, Py_NE)) {
         goto append;
     }
-    rc = PyDict_Merge(dev->pathdict, prev, 0);  // merge, do not override
+    rc = PyDict_Merge(prev, dev->pathdict, 0);  // merge, do not override
     if (rc == 0) {
-        DICT_SETITEM_DROP(dev->pathdict, dictkey_type, PyUnicode_FromString("fs"));
-        Py_XINCREF(dev->pathdict);  // PyList_SetItem() does not increment refcount.
-        PyList_SetItem(dev->out, len - 1, dev->pathdict);
-        return;
+        DICT_SETITEM_DROP(prev, dictkey_type, PyUnicode_FromString("fs"));
+        goto postappend;
     } else {
         PySys_WriteStderr("could not merge stroke and fill path");
         goto append;
@@ -2861,6 +2860,7 @@ jm_append_merge(jm_lineart_device *dev)
     append:;
     //printf("Appending to dev->out. len(dev->out)=%zi\n", PyList_Size(dev->out));
     PyList_Append(dev->out, dev->pathdict);
+    postappend:;
     Py_CLEAR(dev->pathdict);
     return;
 
@@ -2887,6 +2887,7 @@ jm_lineart_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
                 const float *color, float alpha, fz_color_params color_params)
 {
     jm_lineart_device *dev = (jm_lineart_device *) dev_;
+    //printf("extra.jm_lineart_fill_path(): dev->seqno=%zi\n", dev->seqno);
     dev->ctm = ctm; //fz_concat(ctm, trace_device_ptm);
     dev->path_type = FILL_PATH;
     jm_lineart_path(dev, path);
@@ -2914,6 +2915,7 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
                 fz_color_params color_params)
 {
     jm_lineart_device *dev = (jm_lineart_device *)dev_;
+    //printf("extra.jm_lineart_stroke_path(): dev->seqno=%zi\n", dev->seqno);
     int i;
     dev->pathfactor = 1;
     if (fz_abs(ctm.a) == fz_abs(ctm.d)) {
@@ -3107,6 +3109,7 @@ static void jm_lineart_ignore_text(fz_context *ctx, fz_device *dev, const fz_tex
 //-------------------------------------------------------------------
 mupdf::FzDevice JM_new_lineart_device(PyObject *out, int clips, PyObject *method)
 {
+    //printf("extra.JM_new_lineart_device()\n");
     jm_lineart_device* dev = (jm_lineart_device*) mupdf::ll_fz_new_device_of_size(sizeof(jm_lineart_device));
 
     dev->super.close_device = NULL;
