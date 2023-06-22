@@ -597,6 +597,7 @@ def get_textpage_ocr(
     language: str = "eng",
     dpi: int = 72,
     full: bool = False,
+    tessdata: str = None,
 ) -> fitz.TextPage:
     """Create a Textpage from combined results of normal and OCR text parsing.
 
@@ -607,14 +608,21 @@ def get_textpage_ocr(
         full: (bool) whether to OCR the full page image, or only its images (default)
     """
     fitz.CheckParent(page)
-    if not TESSDATA_PREFIX:
+    if not TESSDATA_PREFIX and not tessdata:
         raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
 
     def full_ocr(page, dpi, language, flags):
         zoom = dpi / 72
         mat = fitz.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
-        ocr_pdf = fitz.Document("pdf", pix.pdfocr_tobytes(compress=False, language=language))
+        ocr_pdf = fitz.Document(
+                "pdf",
+                pix.pdfocr_tobytes(
+                    compress=False,
+                    language=language,
+                    tessdata=tessdata,
+                    ),
+                )
         ocr_page = ocr_pdf.load_page(0)
         unzoom = page.rect.width / ocr_page.rect.width
         ctm = fitz.Matrix(unzoom, unzoom) * page.derotation_matrix
@@ -645,8 +653,9 @@ def get_textpage_ocr(
             if pix.alpha:  # must remove alpha channel
                 pix = fitz.Pixmap(pix, 0)
             imgdoc = fitz.Document(
-                "pdf", pix.pdfocr_tobytes(language=language)
-            )  # pdf with OCRed page
+                    "pdf",
+                    pix.pdfocr_tobytes(language=language, tessdata=tessdata),
+                    )  # pdf with OCRed page
             imgpage = imgdoc.load_page(0)  # read image as a page
             pix = None
             # compute matrix to transform coordinates back to that of 'page'

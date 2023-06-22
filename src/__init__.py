@@ -9508,15 +9508,18 @@ class Pixmap:
             return self.n
         return mupdf.fz_pixmap_components(self.this)
 
-    def pdfocr_save(self, filename, compress=1, language=None):
+    def pdfocr_save(self, filename, compress=1, language=None, tessdata=None):
         '''
         Save pixmap as an OCR-ed PDF page.
         '''
+        if not TESSDATA_PREFIX and not tessdata:
+            raise RuntimeError('No OCR support: TESSDATA_PREFIX not set')
         opts = mupdf.PdfocrOptions()
         opts.compress = compress;
         if language:
-            opts.language
-            fz_strlcpy(opts.language, language, sizeof(opts.language));
+            opts.language_set2( language)
+        if tessdata:
+            opts.datadir_set2( tessdata)
         pix = self.this
         if filename:
             mupdf.fz_save_pixmap_as_pdfocr( pix, filename, 0, opts)
@@ -9524,21 +9527,25 @@ class Pixmap:
             out = JM_new_output_fileptr( filename)
             mupdf.fz_write_pixmap_as_pdfocr( out, pix, opts)
 
-    def pdfocr_tobytes(self, compress=True, language="eng"):
+    def pdfocr_tobytes(self, compress=True, language="eng", tessdata=None):
         """Save pixmap as an OCR-ed PDF page.
 
         Args:
             compress: (bool) compress, default 1 (True).
             language: (str) language(s) occurring on page, default "eng" (English),
-                    multiples like "eng,ger" for English and German.
+                    multiples like "eng+ger" for English and German.
+            tessdata: (str) folder name of Tesseract's language support. Must be
+                    given if environment variable TESSDATA_PREFIX is not set.
         Notes:
             On failure, make sure Tesseract is installed and you have set the
             environment variable "TESSDATA_PREFIX" to the folder containing your
             Tesseract's language support data.
         """
+        if not TESSDATA_PREFIX and not tessdata:
+            raise RuntimeError('No OCR support: TESSDATA_PREFIX not set')
         from io import BytesIO
         bio = BytesIO()
-        self.pdfocr_save(bio, compress=compress, language=language)
+        self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata)
         return bio.getvalue()
 
     def pil_save(self, *args, **kwargs):
@@ -15222,7 +15229,7 @@ def JM_image_extension(type_):
     if type_ == mupdf.FZ_IMAGE_PNG:     return "png"
     if type_ == mupdf.FZ_IMAGE_PNM:     return "pnm"
     if type_ == mupdf.FZ_IMAGE_TIFF:    return "tiff"
-    if type_ == mupdf.FZ_IMAGE_PSD:     return "psd"
+    #if type_ == mupdf.FZ_IMAGE_PSD:     return "psd"
     return "n/a"
 
 
