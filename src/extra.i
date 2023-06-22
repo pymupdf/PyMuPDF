@@ -2932,8 +2932,6 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     DICT_SETITEM_DROP(dev->pathdict, dictkey_width, Py_BuildValue("f", dev->pathfactor * stroke->linewidth));
     DICT_SETITEMSTR_DROP(dev->pathdict, "lineCap", Py_BuildValue("iii", stroke->start_cap, stroke->dash_cap, stroke->end_cap));
     DICT_SETITEMSTR_DROP(dev->pathdict, "lineJoin", Py_BuildValue("f", dev->pathfactor * stroke->linejoin));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "fill", Py_BuildValue("s", NULL));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "fill_opacity", Py_BuildValue("s", NULL));
     if (!PyDict_GetItemString(dev->pathdict, "closePath")) {
         DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(0));
     }
