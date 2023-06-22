@@ -573,9 +573,9 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 
 
 //----------------------------------------------------------------------------
-// Deep-copies a specified source page to the target location.
-// Modified copy of function of pdfmerge.c: we also copy annotations, but
-// we skip **link** annotations. In addition we rotate output.
+// Deep-copies a source page to the target.
+// Modified version of function of pdfmerge.c: we also copy annotations, but
+// we skip some subtypes. In addition we rotate output.
 //----------------------------------------------------------------------------
 static void
 page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, int links, int copy_annots, pdf_graft_map *graft_map)
@@ -616,8 +616,8 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
             }
         }
 
-        // Copy the annotations, but skip types Link, Popup, IRT.
-        // Remove dict keys P (parent) and Popup from copied annot.
+        // Copy annotations, but skip Link, Popup, IRT, Widget types
+        // If selected, remove dict keys P (parent) and Popup
         if (copy_annots) {
             pdf_obj *old_annots = pdf_dict_get(ctx, page_ref, PDF_NAME(Annots));
             if (old_annots) {
@@ -625,14 +625,14 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
                 pdf_obj *new_annots = pdf_dict_put_array(ctx, page_dict, PDF_NAME(Annots), n);
                 for (i = 0; i < n; i++) {
                     pdf_obj *o = pdf_array_get(ctx, old_annots, i);
+                    if (!o || pdf_is_null(ctx, o) || !pdf_is_dict(ctx, o)) {
+                        continue;  // skip invalid/null/non-dict items
+                    }
                     if (pdf_dict_get(ctx, o, PDF_NAME(IRT))) continue;
                     pdf_obj *subtype = pdf_dict_get(ctx, o, PDF_NAME(Subtype));
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Link))) continue;
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Popup))) continue;
-                    if (pdf_name_eq(ctx, subtype, PDF_NAME(Widget))) {
-                        fz_warn(ctx, "skipping widget annotation");
-                        continue;
-                    }
+                    if (pdf_name_eq(ctx, subtype, PDF_NAME(Widget))) continue;
                     pdf_dict_del(ctx, o, PDF_NAME(Popup));
                     pdf_dict_del(ctx, o, PDF_NAME(P));
                     pdf_obj *copy_o = pdf_graft_mapped_object(ctx, graft_map, o);
