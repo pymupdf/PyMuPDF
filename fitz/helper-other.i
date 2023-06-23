@@ -620,14 +620,12 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
         // If selected, remove dict keys P (parent) and Popup
         if (copy_annots) {
             pdf_obj *old_annots = pdf_dict_get(ctx, page_ref, PDF_NAME(Annots));
-            if (old_annots) {
-                n = pdf_array_len(ctx, old_annots);
+            n = pdf_array_len(ctx, old_annots);
+            if (n > 0) {
                 pdf_obj *new_annots = pdf_dict_put_array(ctx, page_dict, PDF_NAME(Annots), n);
                 for (i = 0; i < n; i++) {
                     pdf_obj *o = pdf_array_get(ctx, old_annots, i);
-                    if (!o || pdf_is_null(ctx, o) || !pdf_is_dict(ctx, o)) {
-                        continue;  // skip invalid/null/non-dict items
-                    }
+                    if (!pdf_is_dict(ctx, o)) continue;  // skip non-dict items
                     if (pdf_dict_get(ctx, o, PDF_NAME(IRT))) continue;
                     pdf_obj *subtype = pdf_dict_get(ctx, o, PDF_NAME(Subtype));
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Link))) continue;
