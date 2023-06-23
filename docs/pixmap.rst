@@ -353,7 +353,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       * New in v1.19.0
 
-      * Changed in v1.22.4: Support of new parameter for Tesseract's tessdata.
+      * Changed in v1.22.5: Support of new parameter for Tesseract's tessdata.
 
       Perform text recognition using Tesseract and save the image as a 1-page PDF with an OCR text layer.
 
@@ -368,7 +368,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       * New in v1.19.0
 
-      * Changed in v1.22.4: Support of new parameter for Tesseract's tessdata.
+      * Changed in v1.22.5: Support of new parameter for Tesseract's tessdata.
 
       Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.pdfocr_save`.
 

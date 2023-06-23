@@ -381,7 +381,7 @@ For details on **embedded files** refer to Appendix 3.
 
       * New in v1.18.3
 
-      * Changed in v1.22.4: Support list of *locked* OCGs.
+      * Changed in v1.22.5: Support list of *locked* OCGs.
 
       Mass status changes of optional content groups. **Permanently** sets the status of OCGs.
 
