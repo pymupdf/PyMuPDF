@@ -2091,7 +2091,10 @@ def get_tessdata() -> str:
     """
     # Windows systems:
     if sys.platform == "win32":
-        response = os.popen("where tesseract").read().strip()
+        try:
+            response = os.popen("where tesseract").read().strip()
+        except:
+            response = ""
         if not response:
             print("Tesseract-OCR is not installed")
             return False
@@ -2104,7 +2107,10 @@ def get_tessdata() -> str:
             return False
 
     # Unix-like systems:
-    response = os.popen("whereis tesseract-ocr").read().strip().split()
+    try:
+        response = os.popen("whereis tesseract-ocr").read().strip().split()
+    except:
+        response = ""
     if len(response) != 2:  # if not 2 tokens: no tesseract-ocr
         print("Tesseract-OCR is not installed")
         return False

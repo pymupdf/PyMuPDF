@@ -289,6 +289,7 @@ JM_get_resource_properties(fz_context *ctx, pdf_obj *ref)
         finished:;
     }
     fz_catch(ctx) {
+        Py_CLEAR(rc);
         fz_rethrow(ctx);
     }
     return rc;

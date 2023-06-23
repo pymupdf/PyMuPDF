@@ -10835,7 +10835,13 @@ CheckParent(self)%}
         // annotation border
         //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(border, """Border information.""")
+        %pythonprepend border %{
+        """Border information."""
+        CheckParent(self)
+        atype = self.type[0]
+        if atype not in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT, PDF_ANNOT_INK, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            return {}
+        %}
         PyObject *border()
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -10852,6 +10858,14 @@ CheckParent(self)%}
         Either a dict, or direct arguments width, style, dashes or clouds."""
 
         CheckParent(self)
+        atype, atname = self.type[:2]  # annotation type
+        if atype not in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT, PDF_ANNOT_INK, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            print(f"Cannot set border for '{atname}'.")
+            return None
+        if not atype in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            if clouds > 0:
+                print(f"Cannot set cloudy border for '{atname}'.")
+                clouds = -1  # do not set border effect
         if type(border) is not dict:
             border = {"width": width, "style": style, "dashes": dashes, "clouds": clouds}
         border.setdefault("width", -1)
