@@ -62,6 +62,39 @@ def test_wrapcontents():
     page.clean_contents()
 
 
+def test_page_clean_contents():
+    """Assert that page contents cleaning actually is invoked."""
+    doc = fitz.open()
+    page = doc.new_page()
+
+    # draw two rectangles - will lead to two /Contents objects
+    page.draw_rect((10, 10, 20, 20))
+    page.draw_rect((20, 20, 30, 30))
+    assert len(page.get_contents()) == 2
+    assert page.read_contents().startswith(b"q") == False
+
+    # clean / consolidate into one /Contents object
+    page.clean_contents()
+    assert len(page.get_contents()) == 1
+    assert page.read_contents().startswith(b"q") == True
+
+
+def test_annot_clean_contents():
+    """Assert that annot contents cleaning actually is invoked."""
+    doc = fitz.open()
+    page = doc.new_page()
+    annot = page.add_highlight_annot((10, 10, 20, 20))
+
+    # the annotation appearance will not start with command b"q"
+    assert annot._getAP().startswith(b"q") == False
+
+    # invoke appearance stream cleaning and reformatting
+    annot.clean_contents()
+
+    # appearance stream should now indeed start with command b"q"
+    assert annot._getAP().startswith(b"q") == True
+
+
 def test_config():
     assert fitz.TOOLS.fitz_config["py-memory"] in (True, False)
 
