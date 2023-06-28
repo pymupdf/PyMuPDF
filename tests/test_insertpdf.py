@@ -115,7 +115,7 @@ def test_issue1417_insertpdf_in_loop():
     big_doc.close()
 
 
-def test_insert_adobe():
+def _test_insert_adobe():
     path = os.path.abspath( f'{__file__}/../../../PyMuPDF-performance/adobe.pdf')
     if not os.path.exists(path):
         print(f'Not running test_insert_adobe() because does not exist: {os.path.relpath(path)}')

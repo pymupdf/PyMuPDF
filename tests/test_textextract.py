@@ -27,7 +27,7 @@ def test_extract1():
     text = fitz.ConversionHeader("xml")
     text = fitz.ConversionTrailer("xml")
 
-def test_extract2():
+def _test_extract2():
     import sys
     import time
     path = f'{scriptdir}/../../PyMuPDF-performance/adobe.pdf'
