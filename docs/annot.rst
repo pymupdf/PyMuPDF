@@ -240,7 +240,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_rect(rect)
 
-      Change the rectangle of an annotation. The annotation can be moved around and both sides of the rectangle can be independently scaled. However, the annotation appearance will never get rotated, flipped or sheared.
+      Change the rectangle of an annotation. The annotation can be moved around and both sides of the rectangle can be independently scaled. However, the annotation appearance will never get rotated, flipped or sheared. This method only affects certain annotation types [#f2]_ and will lead to a message on Python's `sys.stderr` in other cases. No exception will be raised, but `False` will be returned.
 
       :arg rect_like rect: the new rectangle of the annotation (finite and not empty). E.g. using a value of *annot.rect + (5, 5, 5, 5)* will shift the annot position 5 pixels to the right and downwards.
 
@@ -580,6 +580,8 @@ This is how the circle annotation looks like before and after the change (pop-up
 
 .. rubric:: Footnotes
 
-.. [#f1] Rotating an annotation also changes its rectangle. Depending on how the annotation was defined, the original rectangle is **not reconstructible** by setting the rotation value to zero again and will be lost.
+.. [#f1] Rotating an annotation also changes its rectangle. Depending on how the annotation was defined, the original rectangle is **cannot be reconstructed** by setting the rotation value to zero again and will be lost.
+
+.. [#f2] Only the following annotation types support method :meth:`Annot.set_rect`: Text, FreeText, Square, Circle, Redact, Stamp, Caret, FileAttachment, Sound, and Movie.
 
 .. include:: footer.rst
