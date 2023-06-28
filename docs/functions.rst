@@ -364,7 +364,7 @@ Yet others are handy, general-purpose utilities.
       Calculate the length of text on output with a given **builtin** font, fontsize and encoding.
 
       :arg str text: the text string.
-      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth.`Page.insert_font`).
+      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth:`Page.insert_font`).
       :arg float fontsize: the fontsize.
       :arg int encoding: the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic (Russian) are available. Relevant for Base-14 fonts "Helvetica", "Courier" and "Times" and their variants only. Make sure to use the same value as in the corresponding text insertion.
       :rtype: float
