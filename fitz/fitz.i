@@ -10111,8 +10111,8 @@ struct Annot
                 return (cc + "\n").encode()
 
             annot_type = self.type[0]  # get the annot type
-            dt = self.border["dashes"]  # get the dashes spec
-            bwidth = self.border["width"]  # get border line width
+            dt = self.border.get("dashes", None)  # get the dashes spec
+            bwidth = self.border.get("width", -1)  # get border line width
             stroke = self.colors["stroke"]  # get the stroke color
             if fill_color != None:  # change of fill color requested
                 fill = fill_color
