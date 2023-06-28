@@ -9807,11 +9807,8 @@ struct Annot
         {
             pdf_annot *annot = (pdf_annot *) $self;
             int type = pdf_annot_type(gctx, annot);
-            if (type == PDF_ANNOT_LINE || type == PDF_ANNOT_POLY_LINE ||
-                type == PDF_ANNOT_POLYGON) {
-                    fz_warn(gctx, "setting rectangle ignored for annot type %s", pdf_string_from_annot_type(gctx, type));
-                    Py_RETURN_NONE;
-                }
+            int err_source = 0;  // what raised the error
+            fz_var(err_source);
             fz_try(gctx) {
                 pdf_page *pdfpage = pdf_annot_page(gctx, annot);
                 fz_matrix rot = JM_rotate_page_matrix(gctx, pdfpage);
@@ -9819,10 +9816,15 @@ struct Annot
                 if (fz_is_empty_rect(r) || fz_is_infinite_rect(r)) {
                     RAISEPY(gctx, MSG_BAD_RECT, PyExc_ValueError);
                 }
+                err_source = 1;  // indicate that error was from MuPDF
                 pdf_set_annot_rect(gctx, annot, r);
             }
             fz_catch(gctx) {
-                return NULL;
+                if (err_source == 0) {
+                    return NULL;
+                }
+                PySys_WriteStderr("cannot set rect: '%s'\n", fz_caught_message(gctx));
+                Py_RETURN_FALSE;
             }
             Py_RETURN_NONE;
         }
