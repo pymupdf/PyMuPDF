@@ -188,16 +188,16 @@ static void page_merge(
     if (copy_annots)
     {
         mupdf::PdfObj old_annots = mupdf::pdf_dict_get(page_ref, PDF_NAME(Annots));
-        if (old_annots.m_internal)
+        int n = mupdf::pdf_array_len(old_annots);
+        if (n > 0)
         {
-            int n = mupdf::pdf_array_len(old_annots);
             mupdf::PdfObj new_annots = mupdf::pdf_dict_put_array(page_dict, PDF_NAME(Annots), n);
             for (int i = 0; i < n; i++)
             {
                 mupdf::PdfObj o = mupdf::pdf_array_get(old_annots, i);
-                if (!o.m_internal || mupdf::pdf_is_null(o) || !mupdf::pdf_is_dict(o))
+                if (!o.m_internal || !mupdf::pdf_is_dict(o)) // skip non-dict items
                 {
-                    continue;  // skip invalid/null/non-dict items
+                    continue;   // skip invalid/null/non-dict items
                 }
                 if (mupdf::pdf_dict_get(o, PDF_NAME(IRT)).m_internal) continue;
                 mupdf::PdfObj subtype = mupdf::pdf_dict_get(o, PDF_NAME(Subtype));

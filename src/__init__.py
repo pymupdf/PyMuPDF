@@ -19901,13 +19901,13 @@ def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots,
     # If selected, remove dict keys P (parent) and Popup
     if copy_annots:
         old_annots = mupdf.pdf_dict_get( page_ref, PDF_NAME('Annots'))
-        if old_annots.m_internal:
-            n = mupdf.pdf_array_len( old_annots)
+        n = mupdf.pdf_array_len( old_annots)
+        if n > 0:
             new_annots = mupdf.pdf_dict_put_array( page_dict, PDF_NAME('Annots'), n)
             for i in range(n):
                 o = mupdf.pdf_array_get( old_annots, i)
-                if not o.m_internal or mupdf.pdf_is_null(o) or not mupdf.pdf_is_dict(o):
-                    continue    # skip invalid/null/non-dict items
+                if not o.m_internal or mupdf.pdf_is_dict(o):
+                    continue    # skip non-dict items
                 if mupdf.pdf_dict_gets( o, "IRT").m_internal:
                     continue
                 subtype = mupdf.pdf_dict_get( o, PDF_NAME('Subtype'))
