@@ -123,9 +123,9 @@ PyObject* JM_EscapeStrFromBuffer(fz_buffer* buff)
 
 
 //----------------------------------------------------------------------------
-// Deep-copies a specified source page to the target location.
-// Modified copy of function of pdfmerge.c: we also copy annotations, but
-// we skip **link** annotations. In addition we rotate output.
+// Deep-copies a source page to the target.
+// Modified version of function of pdfmerge.c: we also copy annotations, but
+// we skip some subtypes. In addition we rotate output.
 //----------------------------------------------------------------------------
 static void page_merge(
         mupdf::PdfDocument& doc_des,
@@ -183,8 +183,8 @@ static void page_merge(
         }
     }
 
-    // Copy the annotations, but skip types Link, Popup, IRT.
-    // Remove dict keys P (parent) and Popup from copied annot.
+    // Copy annotations, but skip Link, Popup, IRT, Widget types
+    // If selected, remove dict keys P (parent) and Popup
     if (copy_annots)
     {
         mupdf::PdfObj old_annots = mupdf::pdf_dict_get(page_ref, PDF_NAME(Annots));
@@ -195,6 +195,10 @@ static void page_merge(
             for (int i = 0; i < n; i++)
             {
                 mupdf::PdfObj o = mupdf::pdf_array_get(old_annots, i);
+                if (!o.m_internal || mupdf::pdf_is_null(o) || !mupdf::pdf_is_dict(o))
+                {
+                    continue;  // skip invalid/null/non-dict items
+                }
                 if (mupdf::pdf_dict_get(o, PDF_NAME(IRT)).m_internal) continue;
                 mupdf::PdfObj subtype = mupdf::pdf_dict_get(o, PDF_NAME(Subtype));
                 if (mupdf::pdf_name_eq(subtype, PDF_NAME(Link))) continue;
@@ -204,6 +208,7 @@ static void page_merge(
                     mupdf::fz_warn("skipping widget annotation");
                     continue;
                 }
+                if (mupdf::pdf_name_eq(subtype, PDF_NAME(Widget))) continue;
                 mupdf::pdf_dict_del(o, PDF_NAME(Popup));
                 mupdf::pdf_dict_del(o, PDF_NAME(P));
                 mupdf::PdfObj copy_o = mupdf::pdf_graft_mapped_object(graft_map, o);

@@ -19830,9 +19830,9 @@ def on_highlight_char(hits, line, ch):
 
 def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots, graft_map):
     '''
-    Deep-copies a specified source page to the target location.
-    Modified copy of function of pdfmerge.c: we also copy annotations, but
-    we skip **link** annotations. In addition we rotate output.
+    Deep-copies a source page to the target.
+    Modified version of function of pdfmerge.c: we also copy annotations, but
+    we skip some subtypes. In addition we rotate output.
     '''
     if g_use_extra:
         #log( 'Calling C++ extra.page_merge()')
@@ -19863,8 +19863,8 @@ def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots,
             #log( '{=type(graft_map) type(graft_map.this)}')
             mupdf.pdf_dict_put( page_dict, known_page_objs[i], mupdf.pdf_graft_mapped_object(graft_map.this, obj))
 
-    # Copy the annotations, but skip types Link, Popup, IRT.
-    # Remove dict keys P (parent) and Popup from copied annot.
+    # Copy annotations, but skip Link, Popup, IRT, Widget types
+    # If selected, remove dict keys P (parent) and Popup
     if copy_annots:
         old_annots = mupdf.pdf_dict_get( page_ref, PDF_NAME('Annots'))
         if old_annots.m_internal:
@@ -19872,6 +19872,8 @@ def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots,
             new_annots = mupdf.pdf_dict_put_array( page_dict, PDF_NAME('Annots'), n)
             for i in range(n):
                 o = mupdf.pdf_array_get( old_annots, i)
+                if not o.m_internal or mupdf.pdf_is_null(o) or not mupdf.pdf_is_dict(o):
+                    continue    # skip invalid/null/non-dict items
                 if mupdf.pdf_dict_gets( o, "IRT").m_internal:
                     continue
                 subtype = mupdf.pdf_dict_get( o, PDF_NAME('Subtype'))
@@ -19882,6 +19884,8 @@ def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots,
                 if mupdf.pdf_name_eq( subtype, PDF_NAME('Widget')):
                     mupdf.fz_warn( "skipping widget annotation")
                     continue
+                if mupdf.pdf_name_eq(subtype, PDF_NAME('Widget')):
+                    continue;
                 mupdf.pdf_dict_del( o, PDF_NAME('Popup'))
                 mupdf.pdf_dict_del( o, PDF_NAME('P'))
                 copy_o = mupdf.pdf_graft_mapped_object( graft_map.this, o)
