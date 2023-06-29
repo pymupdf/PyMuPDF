@@ -1592,15 +1592,6 @@ static mupdf::FzLink Link_next(mupdf::FzLink& this_link)
 //-----------------------------------------------------------------------------
 // create PDF object from given string (new in v1.14.0: MuPDF dropped it)
 //-----------------------------------------------------------------------------
-static mupdf::PdfObj JM_pdf_obj_from_str(const mupdf::PdfDocument& doc, const char* src)
-{
-    mupdf::FzStream stream = mupdf::fz_open_memory((unsigned char*) src, strlen(src));
-    mupdf::PdfLexbuf lexbuf(PDF_LEXBUF_SMALL);
-    mupdf::PdfObj result = mupdf::pdf_parse_stm_obj(doc, stream, lexbuf);
-    mupdf::pdf_lexbuf_fin(lexbuf);
-    return result;
-}
-
 static pdf_obj *lll_JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, const char *src)
 {
     pdf_obj *result = NULL;
@@ -1667,20 +1658,6 @@ PyObject* Page_addAnnot_FromString(mupdf::PdfPage& page, PyObject* linklist)
             }
             try
             {
-                /*
-                mupdf::PdfObj annot = mupdf::pdf_add_object(
-                        //page.doc(),
-                        doc,
-                        JM_pdf_obj_from_str(page.doc(), text)
-                        );
-                mupdf::PdfObj ind_obj = mupdf::pdf_new_indirect(
-                        //page.doc(),
-                        doc,
-                        mupdf::pdf_to_num(annot),
-                        0
-                        );
-                mupdf::pdf_array_push(annots, ind_obj);
-                */
                 pdf_obj* obj = lll_JM_pdf_obj_from_str(ctx, doc.m_internal, text);
                 pdf_obj* annot = pdf_add_object_drop(
                         ctx,
@@ -3008,7 +2985,6 @@ jm_lineart_clip_stroke_text(fz_context *ctx, fz_device *dev_, const fz_text *tex
 {
    jm_lineart_device *dev = (jm_lineart_device *)dev_;
    if (!dev->clips) return;
-   PyObject *out = dev->out;
    compute_scissor(dev);
    dev->depth++;
 }
@@ -3018,7 +2994,6 @@ jm_lineart_clip_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz_m
 {
    jm_lineart_device *dev = (jm_lineart_device *)dev_;
    if (!dev->clips) return;
-   PyObject *out = dev->out;
    compute_scissor(dev);
    dev->depth++;
 }
@@ -3028,7 +3003,6 @@ jm_lineart_clip_image_mask(fz_context *ctx, fz_device *dev_, fz_image *image, fz
 {
    jm_lineart_device *dev = (jm_lineart_device *)dev_;
    if (!dev->clips) return;
-   PyObject *out = dev->out;
    compute_scissor(dev);
    dev->depth++;
 }
