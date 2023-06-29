@@ -1104,17 +1104,17 @@ class Annot:
         """Set annotation rectangle."""
         CheckParent(self)
         annot = self.this
-        type_ = mupdf.pdf_annot_type( annot);
-        if type_ in ( mupdf.PDF_ANNOT_LINE, mupdf.PDF_ANNOT_POLY_LINE, PDF_ANNOT_POLYGON):
-            mupdf.fz_warn( f'setting rectangle ignored for annot type {mupdf.pdf_string_from_annot_type( type_)}')
-            return
         
         pdfpage = annot.pdf_annot_page()
         rot = JM_rotate_page_matrix(pdfpage)
         r = mupdf.fz_transform_rect(JM_rect_from_py(rect), rot)
         if mupdf.fz_is_empty_rect(r) or mupdf.fz_is_infinite_rect(r):
             raise ValueError( MSG_BAD_RECT)
-        mupdf.pdf_set_annot_rect(annot, r)
+        try:
+            mupdf.pdf_set_annot_rect(annot, r)
+        except Exception as e:
+            print(f'cannot set rect: {e}')
+            return False
 
     def set_rotation(self, rotate=0):
         """Set annotation rotation."""
