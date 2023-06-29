@@ -7046,7 +7046,7 @@ if not sanitize and not self.is_wrapped:
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {
                 1,     // recurse: true
-                1,     // instance forms
+                0,     // instance forms
                 0,     // do not ascii-escape binary data
                 0,     // no_update
                 NULL,  // end_page_opaque
@@ -10904,7 +10904,7 @@ CheckParent(self)%}
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {
                 1,     // recurse: true
-                1,     // instance forms
+                0,     // instance forms
                 0,     // do not ascii-escape binary data
                 0,     // no_update
                 NULL,  // end_page_opaque
