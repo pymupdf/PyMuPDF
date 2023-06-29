@@ -6910,7 +6910,7 @@ def _make_PdfFilterOptions(recurse, instance_forms, ascii, sanitize, sopts=None)
     filter_.ascii = ascii
     
     if mupdf_version_tuple >= (1, 22):
-        filter_.no_update = 1
+        filter_.no_update = 0
         if sanitize:
             # We want to use a PdfFilterFactory whose `.filter` fn pointer is
             # set to MuPDF's `pdf_new_sanitize_filter()`. But not sure how to
