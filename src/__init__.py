@@ -440,6 +440,17 @@ class Annot:
     def border(self):
         """Border information."""
         CheckParent(self)
+        atype = self.type[0]
+        if atype not in (
+                PDF_ANNOT_CIRCLE,
+                PDF_ANNOT_FREE_TEXT,
+                PDF_ANNOT_INK,
+                PDF_ANNOT_LINE,
+                PDF_ANNOT_POLY_LINE,
+                PDF_ANNOT_POLYGON,
+                PDF_ANNOT_SQUARE,
+                ):
+            return dict()
         ao = self.this.pdf_annot_obj()
         ret = JM_annot_border(ao)
         return ret
@@ -885,6 +896,27 @@ class Annot:
 
         Either a dict, or direct arguments width, style, dashes or clouds."""
         CheckParent(self)
+        atype, atname = self.type[:2]  # annotation type
+        if atype not in (
+                PDF_ANNOT_CIRCLE,
+                PDF_ANNOT_FREE_TEXT,
+                PDF_ANNOT_INK,
+                PDF_ANNOT_LINE,
+                PDF_ANNOT_POLY_LINE,
+                PDF_ANNOT_POLYGON,
+                PDF_ANNOT_SQUARE,
+                ):
+            print(f"Cannot set border for '{atname}'.")
+            return None
+        if not atype in (
+                PDF_ANNOT_CIRCLE,
+                PDF_ANNOT_FREE_TEXT,
+                PDF_ANNOT_POLYGON,
+                PDF_ANNOT_SQUARE,
+                ):
+            if clouds > 0:
+                print(f"Cannot set cloudy border for '{atname}'.")
+                clouds = -1  # do not set border effect
         if type(border) is not dict:
             border = {"width": width, "style": style, "dashes": dashes, "clouds": clouds}
         border.setdefault("width", -1)
@@ -17384,8 +17416,9 @@ def get_tessdata() -> str:
     """
     # Windows systems:
     if sys.platform == "win32":
-        response = os.popen("where tesseract").read().strip()
-        if not response:
+        cp = subprocess.run('where tesseract', shell=1, capture_output=1, check=0)
+        response = cp.stdout.strip()
+        if cp.returncode or not response:
             print("Tesseract-OCR is not installed")
             return False
         dirname = os.path.dirname(response)  # path of tesseract.exe
@@ -17397,8 +17430,9 @@ def get_tessdata() -> str:
             return False
 
     # Unix-like systems:
-    response = os.popen("whereis tesseract-ocr").read().strip().split()
-    if len(response) != 2:  # if not 2 tokens: no tesseract-ocr
+    cp = subprocess('whereis tesseract-ocr', shell=1, capture_output=1, check=0)
+    response = cp.stdout.strip().split()
+    if cp.returncode or len(response) != 2:  # if not 2 tokens: no tesseract-ocr
         print("Tesseract-OCR is not installed")
         return False
 
