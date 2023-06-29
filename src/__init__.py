@@ -449,7 +449,7 @@ class Annot:
         CheckParent(self)
         annot = self.this
         pdf = mupdf.pdf_get_bound_document(mupdf.pdf_annot_obj(annot))
-        filter_ = _make_PdfFilterOptions(recurse=1, instance_forms = 1, ascii=0, sanitize=sanitize)
+        filter_ = _make_PdfFilterOptions(recurse=1, instance_forms=0, ascii=0, sanitize=sanitize)
         mupdf.pdf_filter_annot_contents(pdf, annot, filter_)
 
     @property
@@ -6899,7 +6899,14 @@ class Outline:
     __slots__ = [ 'this']
 
 
-def _make_PdfFilterOptions(recurse, instance_forms, ascii, sanitize, sopts=None):
+def _make_PdfFilterOptions(
+        recurse=0,
+        instance_forms=0,
+        ascii=0,
+        no_update=0,
+        sanitize=0,
+        sopts=None,
+        ):
     '''
     Returns a mupdf.PdfFilterOptions instance.
     '''
@@ -6910,7 +6917,7 @@ def _make_PdfFilterOptions(recurse, instance_forms, ascii, sanitize, sopts=None)
     filter_.ascii = ascii
     
     if mupdf_version_tuple >= (1, 22):
-        filter_.no_update = 0
+        filter_.no_update = no_update
         if sanitize:
             # We want to use a PdfFilterFactory whose `.filter` fn pointer is
             # set to MuPDF's `pdf_new_sanitize_filter()`. But not sure how to
@@ -8117,7 +8124,7 @@ class Page:
         page = mupdf.pdf_page_from_fz_page( self.this)
         if not page.m_internal:
             return
-        filter_ = _make_PdfFilterOptions(recurse=1, instance_forms=1, ascii=0, sanitize=sanitize)
+        filter_ = _make_PdfFilterOptions(recurse=1, sanitize=sanitize)
         mupdf.pdf_filter_page_contents( page.doc(), page, filter_)
     
     @property
@@ -15321,9 +15328,9 @@ if mupdf_version_tuple >= (1, 22):
         sanitize_filter_options = SanitizeFilterOptions()
         
         filter_options = _make_PdfFilterOptions(
-                recurse=0,
                 instance_forms=1,
                 ascii=1,
+                no_update=1,
                 sanitize=1,
                 sopts=sanitize_filter_options,
                 )
