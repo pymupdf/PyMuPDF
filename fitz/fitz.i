@@ -7048,7 +7048,7 @@ if not sanitize and not self.is_wrapped:
                 1,     // recurse: true
                 1,     // instance forms
                 0,     // do not ascii-escape binary data
-                1,     // no_update
+                0,     // no_update
                 NULL,  // end_page_opaque
                 NULL,  // end page
                 list,  // filters
@@ -10906,7 +10906,7 @@ CheckParent(self)%}
                 1,     // recurse: true
                 1,     // instance forms
                 0,     // do not ascii-escape binary data
-                1,     // no_update
+                0,     // no_update
                 NULL,  // end_page_opaque
                 NULL,  // end page
                 list,  // filters
