@@ -17835,7 +17835,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     #PyObject *chars = PyTuple_New(span->len);
     join = mupdf.fz_concat( span.trm(), ctm)
     dir = mupdf.fz_transform_vector( mupdf.fz_make_point(1, 0), join)
-    fsize = math.sqrt( abs( join.a * join.d))
+    fsize = math.sqrt( abs( span.trm().a * span.trm().d))
     space_adv = 0;
     asc = JM_font_ascender( span.font())
     dsc = JM_font_descender( span.font())

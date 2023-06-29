@@ -1958,7 +1958,7 @@ static void jm_trace_text_span(
 {
     //printf("extra.jm_trace_text_span(): seqno=%zi\n", seqno);
     fz_matrix join = mupdf::ll_fz_concat(span->trm, ctm);
-    double fsize = sqrt(fabs((double) join.a * (double) join.d));
+    double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d));
     double asc = (double) JM_font_ascender(span->font);
     double dsc = (double) JM_font_descender(span->font);
     if (asc < 1e-3) {  // probably Tesseract font
