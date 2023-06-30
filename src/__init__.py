@@ -8079,6 +8079,17 @@ class Page:
             return []
         return JM_get_annot_id_list(page)
 
+    def annot_xrefs(self):
+        '''
+        List of xref numbers of annotations, fields and links.
+        '''
+        if g_use_extra:
+            return extra.JM_get_annot_xref_list2(self.this)
+        page = self._pdf_page()
+        if not page.m_internal:
+            return list()
+        return JM_get_annot_xref_list( page.obj())
+    
     def _unused_annot_xrefs(self):
         """List of xref numbers of annotations, fields and links."""
         assert 0
@@ -18303,7 +18314,7 @@ def jm_lineart_pop_clip(dev, ctx):
     if not dev.clips or not dev.scissors:
         return
     len_ = len(dev.scissors)
-    if len < 1:
+    if len_ < 1:
         return
     del dev.scissors[-1]
     dev.depth -= 1
