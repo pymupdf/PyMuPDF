@@ -603,7 +603,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	PyObject *chars = PyTuple_New(span->len);
 	fz_matrix join = fz_concat(span->trm, ctm);
 	fz_point dir = fz_transform_vector(fz_make_point(1, 0), join);
-	double fsize = sqrt(fabs((double) join.a * (double) join.d));
+	double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d));
 	double linewidth, adv, asc, dsc;
 	double space_adv = 0;
 	float x0, y0, x1, y1;

@@ -7046,9 +7046,9 @@ if not sanitize and not self.is_wrapped:
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {
                 1,     // recurse: true
-                1,     // instance forms
+                0,     // instance forms
                 0,     // do not ascii-escape binary data
-                1,     // no_update
+                0,     // no_update
                 NULL,  // end_page_opaque
                 NULL,  // end page
                 list,  // filters
@@ -9807,11 +9807,8 @@ struct Annot
         {
             pdf_annot *annot = (pdf_annot *) $self;
             int type = pdf_annot_type(gctx, annot);
-            if (type == PDF_ANNOT_LINE || type == PDF_ANNOT_POLY_LINE ||
-                type == PDF_ANNOT_POLYGON) {
-                    fz_warn(gctx, "setting rectangle ignored for annot type %s", pdf_string_from_annot_type(gctx, type));
-                    Py_RETURN_NONE;
-                }
+            int err_source = 0;  // what raised the error
+            fz_var(err_source);
             fz_try(gctx) {
                 pdf_page *pdfpage = pdf_annot_page(gctx, annot);
                 fz_matrix rot = JM_rotate_page_matrix(gctx, pdfpage);
@@ -9819,10 +9816,15 @@ struct Annot
                 if (fz_is_empty_rect(r) || fz_is_infinite_rect(r)) {
                     RAISEPY(gctx, MSG_BAD_RECT, PyExc_ValueError);
                 }
+                err_source = 1;  // indicate that error was from MuPDF
                 pdf_set_annot_rect(gctx, annot, r);
             }
             fz_catch(gctx) {
-                return NULL;
+                if (err_source == 0) {
+                    return NULL;
+                }
+                PySys_WriteStderr("cannot set rect: '%s'\n", fz_caught_message(gctx));
+                Py_RETURN_FALSE;
             }
             Py_RETURN_NONE;
         }
@@ -10111,8 +10113,8 @@ struct Annot
                 return (cc + "\n").encode()
 
             annot_type = self.type[0]  # get the annot type
-            dt = self.border["dashes"]  # get the dashes spec
-            bwidth = self.border["width"]  # get border line width
+            dt = self.border.get("dashes", None)  # get the dashes spec
+            bwidth = self.border.get("width", -1)  # get border line width
             stroke = self.colors["stroke"]  # get the stroke color
             if fill_color != None:  # change of fill color requested
                 fill = fill_color
@@ -10835,7 +10837,13 @@ CheckParent(self)%}
         // annotation border
         //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(border, """Border information.""")
+        %pythonprepend border %{
+        """Border information."""
+        CheckParent(self)
+        atype = self.type[0]
+        if atype not in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT, PDF_ANNOT_INK, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            return {}
+        %}
         PyObject *border()
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -10852,6 +10860,14 @@ CheckParent(self)%}
         Either a dict, or direct arguments width, style, dashes or clouds."""
 
         CheckParent(self)
+        atype, atname = self.type[:2]  # annotation type
+        if atype not in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT, PDF_ANNOT_INK, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            print(f"Cannot set border for '{atname}'.")
+            return None
+        if not atype in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            if clouds > 0:
+                print(f"Cannot set cloudy border for '{atname}'.")
+                clouds = -1  # do not set border effect
         if type(border) is not dict:
             border = {"width": width, "style": style, "dashes": dashes, "clouds": clouds}
         border.setdefault("width", -1)
@@ -10904,9 +10920,9 @@ CheckParent(self)%}
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {
                 1,     // recurse: true
-                1,     // instance forms
+                0,     // instance forms
                 0,     // do not ascii-escape binary data
-                1,     // no_update
+                0,     // no_update
                 NULL,  // end_page_opaque
                 NULL,  // end page
                 list,  // filters

@@ -240,7 +240,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_rect(rect)
 
-      Change the rectangle of an annotation. The annotation can be moved around and both sides of the rectangle can be independently scaled. However, the annotation appearance will never get rotated, flipped or sheared.
+      Change the rectangle of an annotation. The annotation can be moved around and both sides of the rectangle can be independently scaled. However, the annotation appearance will never get rotated, flipped or sheared. This method only affects certain annotation types [#f2]_ and will lead to a message on Python's `sys.stderr` in other cases. No exception will be raised, but `False` will be returned.
 
       :arg rect_like rect: the new rectangle of the annotation (finite and not empty). E.g. using a value of *annot.rect + (5, 5, 5, 5)* will shift the annot position 5 pixels to the right and downwards.
 
@@ -263,7 +263,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       * Changed in version 1.16.9: Allow specification without using a dictionary. The direct parameters are used if *border* is not a dictionary.
 
-      * Changed in version 1.22.4: Support of the "cloudy" border effect.
+      * Changed in version 1.22.5: Support of the "cloudy" border effect.
 
       PDF only: Change border width, dashing, style and cloud effect. See the :attr:`Annot.border` attribute for more details.
 
@@ -273,7 +273,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg float width: A non-negative value will change the border line width.
       :arg str style: A value other than `None` will change this border property.
       :arg sequence dashes: All items of the sequence must be integers, otherwise the parameter is ignored. To remove dashing use: `dashes=[]`. If dashes is a non-empty sequence, "style" will automatically be set to "D" (dashed). 
-      :arg int clouds: A value >= 0 will change this property. Use `clouds=0` to remove the cloudy appearance completely.
+      :arg int clouds: A value >= 0 will change this property. Use `clouds=0` to remove the cloudy appearance completely. Only annotation types 'Square', 'Circle', and 'Polygon' are supported with this property.
 
    .. method:: set_flags(flags)
 
@@ -435,7 +435,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. attribute:: info
 
-      A dictionary containing various information. All fields are optional strings. If information is not provided, an empty string is returned.
+      A dictionary containing various information. All fields are optional strings. For information items not provided, an empty string is returned.
 
       * *name* -- e.g. for 'Stamp' annotations it will contain the stamp text like "Sold" or "Experimental", for other annot types you will see the name of the annot's icon here ("PushPin" for FileAttachment).
 
@@ -580,6 +580,8 @@ This is how the circle annotation looks like before and after the change (pop-up
 
 .. rubric:: Footnotes
 
-.. [#f1] Rotating an annotation also changes its rectangle. Depending on how the annotation was defined, the original rectangle is **not reconstructible** by setting the rotation value to zero again and will be lost.
+.. [#f1] Rotating an annotation also changes its rectangle. Depending on how the annotation was defined, the original rectangle is **cannot be reconstructed** by setting the rotation value to zero again and will be lost.
+
+.. [#f2] Only the following annotation types support method :meth:`Annot.set_rect`: Text, FreeText, Square, Circle, Redact, Stamp, Caret, FileAttachment, Sound, and Movie.
 
 .. include:: footer.rst

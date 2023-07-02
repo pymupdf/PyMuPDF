@@ -6,22 +6,6 @@
 Annotations
 ==============================
 
-
-In v1.14.0, annotation handling has been considerably extended:
-
-* New annotation type support for 'Ink', 'Rubber Stamp' and 'Squiggly' annotations. Ink annots simulate handwriting by combining one or more lists of interconnected points. Stamps are intended to visually inform about a document's status or intended usage (like "draft", "confidential", etc.). 'Squiggly' is a text marker annot, which underlines selected text with a zig-zagged line.
-
-* Extended 'FreeText' support:
-    1. all characters from the *Latin* character set are now available,
-    2. colors of text, rectangle background and rectangle border can be independently set
-    3. text in rectangle can be rotated by either +90 or -90 degrees
-    4. text is automatically wrapped (made multi-line) in available rectangle
-    5. all Base-14 fonts are now available (*normal* variants only, i.e. no bold, no italic).
-* MuPDF now supports line end icons for 'Line' annots (only). PyMuPDF supported that in v1.13.x already -- and for (almost) the full range of applicable types. So we adjusted the appearance of 'Polygon' and 'PolyLine' annots to closely resemble the one of MuPDF for 'Line'.
-* MuPDF now provides its own annotation icons where relevant. PyMuPDF switched to using them (for 'FileAttachment' and 'Text' ["sticky note"] so far).
-* MuPDF now also supports 'Caret', 'Movie', 'Sound' and 'Signature' annotations, which we may include in PyMuPDF at some later time.
-
-
 .. _RecipesAnnotations_A:
 
 How to Add and Modify Annotations

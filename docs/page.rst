@@ -490,7 +490,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's annotations.
 
-      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: *types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)* will only return 'FreeText' and 'Text' annotations.
+      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: `types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations.
 
       :rtype: generator
       :returns: an :ref:`Annot` for each iteration.
