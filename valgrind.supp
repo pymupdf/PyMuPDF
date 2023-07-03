@@ -1,0 +1,17 @@
+# Valgrind suppression for false-positives from use of shared-libraries.
+#
+{
+   sharedlibrary-read
+   Memcheck:Addr8
+   fun:strncmp
+   fun:is_dst
+   ...
+   fun:fillin_rpath.isra.0
+   fun:decompose_rpath
+   ...
+   fun:openaux
+   fun:_dl_catch_exception
+   fun:_dl_map_object_deps
+   fun:dl_open_worker_begin
+   fun:_dl_catch_exception
+}
