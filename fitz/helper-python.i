@@ -1460,6 +1460,19 @@ def sRGB_to_pdf(srgb: int) -> tuple:
     return t[0] / 255.0, t[1] / 255.0, t[2] / 255.0
 
 
+def sRGB_to_html(srgb: int) -> str:
+    """Convert sRGB color code to a HTML format '#RRGGBB'.
+
+    There is **no error checking** for performance reasons!
+
+    Args:
+        srgb: (int) RRGGBB (red, green, blue), each color in range(255).
+    Returns:
+        A string formatted as "#RRGGBB".
+    """
+    return '#%02X%02X%02X' % sRGB_to_rgb(srgb)
+
+
 def make_table(rect: rect_like =(0, 0, 1, 1), cols: int =1, rows: int =1) -> list:
     """Return a list of (rows x cols) equal sized rectangles.
 

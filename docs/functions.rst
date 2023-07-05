@@ -64,6 +64,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`recover_span_quad`            compute the quad of a subset of span characters
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
+:meth:`sRGB_to_html`                 return string "#RRGGBB" from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :meth:`get_tessdata`                 locates the language support of the Tesseract-OCR installation
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
@@ -123,6 +124,18 @@ Yet others are handy, general-purpose utilities.
       :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
 
       :returns: a tuple (red, green, blue) with integer items in `range(256)` representing the same color. Example `sRGB_to_pdf(0xff0000) = (255, 0, 0)` (red).
+
+-----
+
+   .. method:: sRGB_to_html(srgb)
+
+      *New in v1.17.4*
+
+      Convenience function returning a HTML-compatible string "#RRGGBB" for a given *sRGB* color integer.
+
+      :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
+
+      :returns: a string "#RRGGBB" representing the same color as used in HTML. Example `sRGB_to_html(0xff0000) = "#FF0000"` (color red).
 
 -----
 
@@ -517,6 +530,7 @@ Yet others are handy, general-purpose utilities.
       * Changed in v1.19.1: stroke and fill colors now always are either RGB or GRAY
       * Changed in v1.19.3: span and character bboxes are now also correct if `dir != (1, 0)`.
       * Changed in v1.22.0: add new dictionary key "layer".
+      * Changed in v1.22.5: dictionary key "layer" now **always** is a string. Previously, `None` was returned if no layer was present, which now is represented by the empty string `""`.
 
 
       Return low-level text information of the page. The method is available for **all** document types. The result is a list of Python dictionaries with the following content::
@@ -539,7 +553,7 @@ Yet others are handy, general-purpose utilities.
                         757.5071411132812)),    # char bbox y1
                         ( ... ),                # more characters
                      ),
-            'color': (0.0,),                    # text color, tuple[float] (1)
+            'color': (0.0, 0.0, 0.0),           # text color, tuple[float] (1)
             'colorspace': 1,                    # number of colorspace components (1)
             'descender': -0.30029296875,        # font descender (1)
             'dir': (1.0, 0.0),                  # writing direction (1)
@@ -547,7 +561,7 @@ Yet others are handy, general-purpose utilities.
             'font': 'CourierNewPSMT',           # font name (1)
             'linewidth': 0.4019999980926514,    # current line width value (3)
             'opacity': 1.0,                     # alpha value of the text (5)
-            'layer': None,                      # name of Optional Content Group (9)
+            'layer': "",                        # name of Optional Content Group (9)
             'seqno': 246,                       # sequence number (8)
             'size': 8.039999961853027,          # font size (1)
             'spacewidth': 4.824785133358091,    # width of space char
@@ -559,7 +573,7 @@ Yet others are handy, general-purpose utilities.
 
       1. Information above tagged with "(1)" has the same meaning and value as explained in :ref:`TextPage`.
 
-         - Please note that the font `flags` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
+         - Please note that the font `flags` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF's :ref:`TextPage` code -- it is not a property of any font.
          - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on `span["type"]`, interpret this as fill color or stroke color.
 
       2. There are 3 text span types:
@@ -568,13 +582,13 @@ Yet others are handy, general-purpose utilities.
          - 1: Stroked text -- equivalent to `1 Tr`, only the character borders are shown.
          - 3: Ignored text -- equivalent to `3 Tr` (hidden text).
 
-      3. Line width in this context is important only for processing `span["type"] != 0`: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (`span["size"] * 0,05`) is generated. Often, an "artificial" bold text in PDF is created by `2 Tr`. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
-      4. For data compactness, the character's unicode is provided here. Use built-in function `chr()` for the character itself.
+      3. Line width in this context is important only for processing `span["type"] != 0` i.e. characters are stroked and not filled: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (`span["size"] * 0,05`) is generated. Often, an "artificial" bold text in PDF is created by `2 Tr`. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
+      4. For data compactness, the character's unicode is provided here. Use built-in function `chr()` to compute the character string.
       5. The alpha / opacity value of the span's text, `0 <= opacity <= 1`, 0 is invisible text, 1 (100%) is intransparent. Depending on `span["type"]`, interpret this value as *fill* opacity or, resp. *stroke* opacity.
       6. *(Changed in v1.19.0)* This value is equal or close to `char["bbox"]` of "rawdict". In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
       7. *(New in v1.19.0)* This is the union of all character bboxes.
       8. *(New in v1.19.0)* Enumerates the commands that build up the page's appearance. Can be used to find out whether text is effectively hidden by objects, which are painted "later", or *over* some object. So if there is a drawing or image with a higher sequence number, whose bbox overlaps (parts of) this text span, one may assume that such an object hides the resp. text. Different text spans have identical sequence numbers if they were created in one go.
-      9. *(New in v1.22.0)* The name of the Optional Content Group (OCG) if applicable or `None`.
+      9. *(New in v1.22.0, changed in v1.22.5)* The name of the Optional Content Group (OCG) if applicable or `""`.
 
       Here is a list of similarities and differences of `page.get_texttrace()` compared to `page.get_text("rawdict")`:
 
