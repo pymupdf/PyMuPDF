@@ -112,6 +112,13 @@ Installation from source without using an sdist
   Otherwise, confusingly, Python will attempt to import `fitz` from the local
   `fitz/` directory, which will fail because it only contains source files.
 
+* Building for different Python versions in same PyMuPDF tree:
+
+  *
+    PyMuPDF will build for the version of Python that runs `setup.py`. So for
+    example on Windows one can build different versions by using `py -3.9 ` or
+    `py -3.10-32`.
+
 
 Running tests
 ---------------------------------------------------------
