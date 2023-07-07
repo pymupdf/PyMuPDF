@@ -666,6 +666,19 @@ def build_mupdf_windows( mupdf_local, env, build_type):
     command = f'cd {mupdf_local} && {sys.executable} ./scripts/mupdfwrap.py'
     if os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE') == '1':
         command += ' --vs-upgrade 1'
+        
+    # Would like to simply do f'... --devenv {shutil.quote(devenv)}', but
+    # it looks like if `devenv` has spaces then `shutil.quote()` puts it
+    # inside single quotes, which then appear to be ignored when run by
+    # subprocess.run().
+    #
+    # So instead we strip any enclosing quotes and the enclose with
+    # double-quotes.
+    #
+    if len(devenv) >= 2:
+        for q in '"', "'":
+            if devenv.startswith( q) and devenv.endswith( q):
+                devenv = devenv[1:-1]
     command += f' -d {windows_build_tail} -b --refcheck-if "#if 1" --devenv "{devenv}" '
     if 'b' in _implementations():
         command += 'all'
@@ -783,12 +796,17 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
     if windows:
         defines = ('FZ_DLL_CLIENT',)
         wp = pipcl.wdev.WindowsPython()
+        if os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE') == '1':
+            # MuPDF C++ build uses a parallel build tree with updated VS files.
+            infix = 'win32-vs-upgrade'
+        else:
+            infix = 'win32'
         libpaths = (
-                f'{mupdf_local}\\platform\\win32\\{wp.cpu.windows_subdir}Release',
-                f'{mupdf_local}\\platform\\win32\\{wp.cpu.windows_subdir}ReleaseTesseract',
+                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}Release',
+                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}ReleaseTesseract',
                 )
         libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
-        libraries = f'{mupdf_local}\\platform\\win32\\{wp.cpu.windows_subdir}Release\\{libs}'
+        libraries = f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}Release\\{libs}'
         compiler_extra = ''
         linker_extra = ''
         optimise = True
