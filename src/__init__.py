@@ -16472,6 +16472,9 @@ def JM_rotate_page_matrix(page):
 
 
 def JM_search_stext_page(page, needle):
+    if g_use_extra:
+        return extra.JM_search_stext_page(page.m_internal, needle)
+    
     rect = mupdf.FzRect(page.m_internal.mediabox)
     if not needle:
         return

@@ -2422,16 +2422,21 @@ JM_char_quad(fz_stext_line *line, fz_stext_char *ch)
 }
 
 
-fz_rect JM_char_bbox(const mupdf::FzStextLine& line, const mupdf::FzStextChar& ch)
+static fz_rect JM_char_bbox(fz_stext_line* line, fz_stext_char* ch)
 {
-    fz_rect r = mupdf::ll_fz_rect_from_quad(JM_char_quad( line.m_internal, ch.m_internal));
-    if (!line.m_internal->wmode) {
+    fz_rect r = mupdf::ll_fz_rect_from_quad(JM_char_quad( line, ch));
+    if (!line->wmode) {
         return r;
     }
-    if (r.y1 < r.y0 + ch.m_internal->size) {
-        r.y0 = r.y1 - ch.m_internal->size;
+    if (r.y1 < r.y0 + ch->size) {
+        r.y0 = r.y1 - ch->size;
     }
     return r;
+}
+
+fz_rect JM_char_bbox(const mupdf::FzStextLine& line, const mupdf::FzStextChar& ch)
+{
+    return JM_char_bbox( line.m_internal, ch.m_internal);
 }
 
 static int JM_rects_overlap(const fz_rect a, const fz_rect b)
@@ -3816,6 +3821,290 @@ int pixmap_n(mupdf::FzPixmap& pixmap)
     return mupdf::fz_pixmap_components( pixmap);
 }
 
+//-------------------------------------------
+// make a buffer from an stext_page's text
+//-------------------------------------------
+fz_buffer *
+JM_new_buffer_from_stext_page(fz_stext_page *page)
+{
+    fz_context* ctx = mupdf::internal_context_get();
+    fz_stext_block *block;
+    fz_stext_line *line;
+    fz_stext_char *ch;
+    fz_rect rect = page->mediabox;
+    fz_buffer *buf = NULL;
+
+    fz_try(ctx)
+    {
+        buf = fz_new_buffer(ctx, 256);
+        for (block = page->first_block; block; block = block->next) {
+            if (block->type == FZ_STEXT_BLOCK_TEXT) {
+                for (line = block->u.t.first_line; line; line = line->next) {
+                    for (ch = line->first_char; ch; ch = ch->next) {
+                        if (!JM_rects_overlap(rect, JM_char_bbox(line, ch)) &&
+                            !fz_is_infinite_rect(rect)) {
+                            continue;
+                        }
+                        fz_append_rune(ctx, buf, ch->c);
+                    }
+                    fz_append_byte(ctx, buf, '\n');
+                }
+                fz_append_byte(ctx, buf, '\n');
+            }
+        }
+    }
+    fz_catch(ctx) {
+        fz_drop_buffer(ctx, buf);
+        fz_rethrow(ctx);
+    }
+    return buf;
+}
+
+static inline int canon(int c)
+{
+    /* TODO: proper unicode case folding */
+    /* TODO: character equivalence (a matches ä, etc) */
+    if (c == 0xA0 || c == 0x2028 || c == 0x2029)
+        return ' ';
+    if (c == '\r' || c == '\n' || c == '\t')
+        return ' ';
+    if (c >= 'A' && c <= 'Z')
+        return c - 'A' + 'a';
+    return c;
+}
+
+static inline int chartocanon(int *c, const char *s)
+{
+    int n = fz_chartorune(c, s);
+    *c = canon(*c);
+    return n;
+}
+
+static const char *match_string(const char *h, const char *n)
+{
+    int hc, nc;
+    const char *e = h;
+    h += chartocanon(&hc, h);
+    n += chartocanon(&nc, n);
+    while (hc == nc)
+    {
+        e = h;
+        if (hc == ' ')
+            do
+                h += chartocanon(&hc, h);
+            while (hc == ' ');
+        else
+            h += chartocanon(&hc, h);
+        if (nc == ' ')
+            do
+                n += chartocanon(&nc, n);
+            while (nc == ' ');
+        else
+            n += chartocanon(&nc, n);
+    }
+    return nc == 0 ? e : NULL;
+}
+
+
+static const char *find_string(const char *s, const char *needle, const char **endp)
+{
+    const char *end;
+    while (*s)
+    {
+        end = match_string(s, needle);
+        if (end)
+        {
+            *endp = end;
+            return s;
+        }
+        ++s;
+    }
+    *endp = NULL;
+    return NULL;
+}
+
+struct highlight
+{
+    Py_ssize_t len;
+    PyObject *quads;
+    float hfuzz, vfuzz;
+};
+
+
+static int
+JM_FLOAT_ITEM(PyObject *obj, Py_ssize_t idx, double *result)
+{
+    PyObject *temp = PySequence_ITEM(obj, idx);
+    if (!temp) return 1;
+    *result = PyFloat_AsDouble(temp);
+    Py_DECREF(temp);
+    if (PyErr_Occurred()) {
+        PyErr_Clear();
+        return 1;
+    }
+    return 0;
+}
+
+
+//-----------------------------------------------------------------------------
+// fz_quad from PySequence. Four floats are treated as rect.
+// Else must be four pairs of floats.
+//-----------------------------------------------------------------------------
+static fz_quad
+JM_quad_from_py(PyObject *r)
+{
+    fz_quad q = fz_make_quad(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT,
+                             FZ_MAX_INF_RECT, FZ_MIN_INF_RECT,
+                             FZ_MIN_INF_RECT, FZ_MAX_INF_RECT,
+                             FZ_MAX_INF_RECT, FZ_MAX_INF_RECT);
+    fz_point p[4];
+    double test, x, y;
+    Py_ssize_t i;
+    PyObject *obj = NULL;
+
+    if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
+        return q;
+
+    if (JM_FLOAT_ITEM(r, 0, &test) == 0)
+        return fz_quad_from_rect(JM_rect_from_py(r));
+
+    for (i = 0; i < 4; i++) {
+        obj = PySequence_ITEM(r, i);  // next point item
+        if (!obj || !PySequence_Check(obj) || PySequence_Size(obj) != 2)
+            goto exit_result;  // invalid: cancel the rest
+
+        if (JM_FLOAT_ITEM(obj, 0, &x) == 1) goto exit_result;
+        if (JM_FLOAT_ITEM(obj, 1, &y) == 1) goto exit_result;
+        if (x < FZ_MIN_INF_RECT) x = FZ_MIN_INF_RECT;
+        if (y < FZ_MIN_INF_RECT) y = FZ_MIN_INF_RECT;
+        if (x > FZ_MAX_INF_RECT) x = FZ_MAX_INF_RECT;
+        if (y > FZ_MAX_INF_RECT) y = FZ_MAX_INF_RECT;
+        p[i] = fz_make_point((float) x, (float) y);
+
+        Py_CLEAR(obj);
+    }
+    q.ul = p[0];
+    q.ur = p[1];
+    q.ll = p[2];
+    q.lr = p[3];
+    return q;
+
+    exit_result:;
+    Py_CLEAR(obj);
+    return q;
+}
+
+static float hdist(fz_point *dir, fz_point *a, fz_point *b)
+{
+    float dx = b->x - a->x;
+    float dy = b->y - a->y;
+    return fz_abs(dx * dir->x + dy * dir->y);
+}
+
+static float vdist(fz_point *dir, fz_point *a, fz_point *b)
+{
+    float dx = b->x - a->x;
+    float dy = b->y - a->y;
+    return fz_abs(dx * dir->y + dy * dir->x);
+}
+
+static void on_highlight_char(fz_context *ctx, void *arg, fz_stext_line *line, fz_stext_char *ch)
+{
+    struct highlight* hits = (struct highlight*) arg;
+    float vfuzz = ch->size * hits->vfuzz;
+    float hfuzz = ch->size * hits->hfuzz;
+    fz_quad ch_quad = JM_char_quad(line, ch);
+    if (hits->len > 0) {
+        PyObject *quad = PySequence_ITEM(hits->quads, hits->len - 1);
+        fz_quad end = JM_quad_from_py(quad);
+        Py_DECREF(quad);
+        if (hdist(&line->dir, &end.lr, &ch_quad.ll) < hfuzz
+            && vdist(&line->dir, &end.lr, &ch_quad.ll) < vfuzz
+            && hdist(&line->dir, &end.ur, &ch_quad.ul) < hfuzz
+            && vdist(&line->dir, &end.ur, &ch_quad.ul) < vfuzz)
+        {
+            end.ur = ch_quad.ur;
+            end.lr = ch_quad.lr;
+            quad = JM_py_from_quad(end);
+            PyList_SetItem(hits->quads, hits->len - 1, quad);
+            return;
+        }
+    }
+    LIST_APPEND_DROP(hits->quads, JM_py_from_quad(ch_quad));
+    hits->len++;
+}
+
+
+PyObject* JM_search_stext_page(fz_stext_page *page, const char *needle)
+{
+    fz_context* ctx = mupdf::internal_context_get();
+    struct highlight hits;
+    fz_stext_block *block;
+    fz_stext_line *line;
+    fz_stext_char *ch;
+    fz_buffer *buffer = NULL;
+    const char *haystack, *begin, *end;
+    fz_rect rect = page->mediabox;
+    int c, inside;
+
+    if (strlen(needle) == 0) Py_RETURN_NONE;
+    PyObject *quads = PyList_New(0);
+    hits.len = 0;
+    hits.quads = quads;
+    hits.hfuzz = 0.2f; /* merge kerns but not large gaps */
+    hits.vfuzz = 0.1f;
+
+    fz_try(ctx) {
+        buffer = JM_new_buffer_from_stext_page( page);
+        haystack = fz_string_from_buffer(ctx, buffer);
+        begin = find_string(haystack, needle, &end);
+        if (!begin) goto no_more_matches;
+
+        inside = 0;
+        for (block = page->first_block; block; block = block->next) {
+            if (block->type != FZ_STEXT_BLOCK_TEXT) {
+                continue;
+            }
+            for (line = block->u.t.first_line; line; line = line->next) {
+                for (ch = line->first_char; ch; ch = ch->next) {
+                    if (!fz_is_infinite_rect(rect) &&
+                        !JM_rects_overlap(rect, JM_char_bbox(line, ch))) {
+                            goto next_char;
+                        }
+try_new_match:
+                    if (!inside) {
+                        if (haystack >= begin) inside = 1;
+                    }
+                    if (inside) {
+                        if (haystack < end) {
+                            on_highlight_char(ctx, &hits, line, ch);
+                        } else {
+                            inside = 0;
+                            begin = find_string(haystack, needle, &end);
+                            if (!begin) goto no_more_matches;
+                            else goto try_new_match;
+                        }
+                    }
+                    haystack += fz_chartorune(&c, haystack);
+next_char:;
+                }
+                assert(*haystack == '\n');
+                ++haystack;
+            }
+            assert(*haystack == '\n');
+            ++haystack;
+        }
+no_more_matches:;
+    }
+    fz_always(ctx)
+        fz_drop_buffer(ctx, buffer);
+    fz_catch(ctx)
+        fz_rethrow(ctx);
+
+    return quads;
+}
+
+
 %}
 
 /* Declarations for functions defined above. */
@@ -3987,3 +4276,5 @@ fz_stext_page* page_get_textpage(
 void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw);
 PyObject *pixmap_pixel(fz_pixmap* pm, int x, int y);
 int pixmap_n(mupdf::FzPixmap& pixmap);
+
+PyObject* JM_search_stext_page(fz_stext_page *page, const char *needle);
