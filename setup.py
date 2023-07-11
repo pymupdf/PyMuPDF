@@ -399,7 +399,7 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.22.0-source.tar.gz',
+            'https://mupdf.com/downloads/archive/mupdf-1.23.0-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
@@ -458,7 +458,12 @@ def get_mupdf():
     Exact behaviour depends on environmental variable
     PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
     '''
-    path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
+    
+    # 2023-07-11: For now we default to mupdf master.
+    path = os.environ.get(
+            'PYMUPDF_SETUP_MUPDF_BUILD',
+            'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git',
+            )
     log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
     if path is None:
         # Default.
