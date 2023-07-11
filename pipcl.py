@@ -2,6 +2,14 @@
 Python packaging operations, including PEP-517 support, for use by a `setup.py`
 script.
 
+The intention is to take care of as many packaging details as possible so that
+setup.py contains only project-specific information, while also giving as much
+flexibility as possible.
+
+For example we provide a function `build_extension()` that can be used to build
+a SWIG extension, but we also give access to the located compiler/linker so
+that a `setup.py` script can take over the details itself.
+
 Run doctests with: `python -m doctest pipcl.py`
 '''
 
@@ -126,8 +134,9 @@ class Package:
         ...             This is Foo.
         ...             """))
 
-        >>> _ = shutil.copy2('pipcl.py', 'pipcl_test/pipcl.py')
-        >>> _ = shutil.copy2('wdev.py', 'pipcl_test/wdev.py')
+        >>> root = os.path.dirname(__file__)
+        >>> _ = shutil.copy2(f'{root}/pipcl.py', 'pipcl_test/pipcl.py')
+        >>> _ = shutil.copy2(f'{root}/wdev.py', 'pipcl_test/wdev.py')
 
     Use `setup.py`'s command-line interface to build and install the extension
     module into root `pipcl_test/install`.
@@ -138,7 +147,10 @@ class Package:
 
     The actual install directory depends on `sysconfig.get_path('platlib')`:
     
-        >>> install_dir = f'pipcl_test/install/{sysconfig.get_path("platlib").lstrip(os.sep)}'
+        >>> if windows():
+        ...     install_dir = 'pipcl_test/install'
+        ... else:
+        ...     install_dir = f'pipcl_test/install/{sysconfig.get_path("platlib").lstrip(os.sep)}'
         >>> assert os.path.isfile( f'{install_dir}/foo/__init__.py')
 
     Create a test script which asserts that Python function call `foo.bar(s)`
@@ -201,7 +213,7 @@ class Package:
         True
     
     Check that touching foo.i.cpp forces rebuild.
-        >>> os.utime('pipcl_test/foo.i.cpp')
+        >>> os.utime('pipcl_test/build/foo.i.cpp')
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} setup.py --verbose bdist_wheel',
         ...         shell=1, check=1)
@@ -322,16 +334,19 @@ class Package:
                 Root of package, defaults to current directory.
             
             fn_build:
-                A function taking no args that builds the package.
+                A function taking no args, or a single `config_settings` dict
+                arg (as described in PEP-517), that builds the package.
 
                 Should return a list of items; each item should be a tuple of
                 two strings `(from_, to_)`, or a single string `path` which is
                 treated as the tuple `(path, path)`.
 
                 `from_` should be the path to a file; if a relative path it is
-                assumed to be relative to `root`. `to_` identifies what the
-                file should be called within a wheel or when installing. If
-                `to_` ends with `/`, the leaf of `from_` is appended to it.
+                assumed to be relative to `root`.
+
+                `to_` identifies what the file should be called within a wheel
+                or when installing. If `to_` ends with `/`, the leaf of `from_`
+                is appended to it.
 
                 Initial `$dist-info/` in `_to` is replaced by
                 `{name}-{version}.dist-info/`; this is useful for license files
@@ -339,14 +354,13 @@ class Package:
 
                 Initial `$data/` in `_to` is replaced by
                 `{name}-{version}.data/`. We do not enforce particular
-                subdirectories, instead it is up to `fn_build()` to use
+                subdirectories, instead it is up to `fn_build()` to specify
                 specific subdirectories such as `purelib`, `headers`,
                 `scripts`, `data` etc.
 
-                If we are building a wheel (e.g. `bdist_wheel` in the
-                argv passed to `self.handle_argv()` or PEP-517 pip calls
-                `self.build_wheel()`), we copy file `from_` to `to_` inside the
-                wheel archive.
+                If we are building a wheel (e.g. `python setup.py bdist_wheel`,
+                or PEP-517 pip calls `self.build_wheel()`), we add file `from_`
+                to the wheel archive with name `to_`.
 
                 If we are installing (e.g. `install` command in
                 the argv passed to `self.handle_argv()`), then
@@ -365,11 +379,14 @@ class Package:
                 within `root`.
             
             fn_sdist:
-                A function taking no args that returns a list of paths, e.g.
-                using `pipcl.git_items()`, for files that should be copied
-                into the sdist. Relative paths are interpreted as relative to
-                `root`. It is an error if a path does not exist or is not a
-                file.
+                A function taking no args, or a single `config_settings` dict
+                arg (as described in PEP517), that returns a list of paths for
+                files that should be copied into the sdist.
+                
+                Relative paths are interpreted as relative to `root`. It is an
+                error if a path does not exist or is not a file.
+
+                It can be convenient to use `pipcl.git_items()`.
                 
                 The specification for sdists requires that the list contains
                 `pyproject.toml`; we enforce this with a diagnostic rather than
@@ -385,9 +402,11 @@ class Package:
             tag_abi:
                 Second element of wheel tag defined in PEP-425. If None we use
                 `none`.
+
             tag_platform:
                 Third element of wheel tag defined in PEP-425. Default is
-                derived from `setuptools.distutils.util.get_platform()` (was
+                `os.environ('AUDITWHEEL_PLAT')` if set, otherwise derived
+                from `setuptools.distutils.util.get_platform()` (was
                 `distutils.util.get_platform()` as specified in the PEP), e.g.
                 `openbsd_7_0_amd64`.
 
@@ -396,6 +415,7 @@ class Package:
             wheel_compression:
                 Used as `zipfile.ZipFile()`'s `compression` parameter when
                 creating wheels.
+
             wheel_compresslevel:
                 Used as `zipfile.ZipFile()`'s `compresslevel` parameter when
                 creating wheels.
@@ -516,12 +536,21 @@ class Package:
         else:
             tag_abi = 'none'
         
-        # Find platform tag used in wheel filename, as described in
-        # PEP-425. E.g. 'openbsd_6_8_amd64', 'win_amd64' or 'win32'.
+        # Find platform tag used in wheel filename.
         #
-        if self.tag_platform:
+        tag_platform = None
+        if not tag_platform:
             tag_platform = self.tag_platform
-        else:
+        if not tag_platform:
+            # Prefer this to PEP-425. Appears to be undocumented,
+            # but set in manylinux docker images and appears
+            # to be used by cibuildwheel and auditwheel, e.g.
+            # https://github.com/rapidsai/shared-action-workflows/issues/80
+            tag_platform = os.environ.get( 'AUDITWHEEL_PLAT')
+        if not tag_platform:
+            # PEP-425. On Linux gives `linux_x86_64` which is rejected by
+            # pypi.org.
+            #
             tag_platform = setuptools.distutils.util.get_platform().replace('-', '_').replace('.', '_')
             
             # We need to patch things on MacOS.
@@ -547,7 +576,7 @@ class Package:
         #
         items = list()
         if self.fn_build:
-            items = self._call_fn_build()
+            items = self._call_fn_build(config_settings)
 
         _log(f'Creating wheel: {path}')
         os.makedirs(wheel_directory, exist_ok=True)
@@ -624,7 +653,10 @@ class Package:
             raise Exception( f'Unsupported: formats={formats}')
         paths = []
         if self.fn_sdist:
-            paths = self.fn_sdist()
+            if inspect.signature(self.fn_sdist).parameters:
+                paths = self.fn_sdist(config_settings)
+            else:
+                paths = self.fn_sdist()
 
         manifest = []
         names_in_tar = []
@@ -690,10 +722,13 @@ class Package:
         return os.path.basename(tarpath)
 
 
-    def _call_fn_build( self):
+    def _call_fn_build( self, config_settings=None):
         assert self.fn_build
         _log(f'calling self.fn_build={self.fn_build}')
-        ret = self.fn_build()
+        if inspect.signature(self.fn_build).parameters:
+            ret = self.fn_build(config_settings)
+        else:
+            ret = self.fn_build()
         assert isinstance( ret, (list, tuple)), \
                 f'Expected list/tuple from {self.fn_build} but got: {ret!r}'
         return ret
@@ -730,18 +765,26 @@ class Package:
         #
         items = list()
         if self.fn_build:
-            items = self._call_fn_build()
+            items = self._call_fn_build( dict())
 
-        r = sysconfig.get_path('platlib')
-        if verbose:
-            _log( f'{r=}')
         if root:
-            # E.g. if `root` is `install' and `sysconfig.get_path('platlib')`
-            # is `/usr/local/lib/python3.9/site-packages`, we set `root2` to
-            # `install/usr/local/lib/python3.9/site-packages`.
-            #
-            r = r.lstrip( os.sep)
-            root2 = os.path.join( root, r)
+            if windows():
+                # If we are in a venv, `sysconfig.get_path('platlib')`
+                # can be absolute, e.g.
+                # `C:\\...\\venv-pypackage-3.11.1-64\\Lib\\site-packages`, so
+                # it's not clear how to append it to `root`. So we just use
+                # `root`.
+                root2 = root
+            else:
+                # E.g. if `root` is `install' and `sysconfig.get_path('platlib')`
+                # is `/usr/local/lib/python3.9/site-packages`, we set `root2` to
+                # `install/usr/local/lib/python3.9/site-packages`.
+                #
+                r = sysconfig.get_path('platlib')
+                if verbose:
+                    _log( f'{r=}')
+                r = r.lstrip( os.sep)
+                root2 = os.path.join( root, r)
         else:
             root2 = r
         # todo: for pure-python we should use sysconfig.get_path('purelib') ?
@@ -892,11 +935,11 @@ class Package:
                             clean
                                 Cleans build files.
                             dist_info
-                                Creates files in <egg-base>/.egg-info/, where
-                                <egg-base> is as specified with --egg-base.
+                                Creates files in <name>-<version>.dist-info/ or
+                                directory specified by --egg-base.
                             egg_info
-                                Creates files in <egg-base>/.egg-info/, where
-                                <egg-base> is as specified with --egg-base.
+                                Creates files in .egg-info/ or directory
+                                directory specified by --egg-base.
                             install
                                 Builds and installs. Writes installation
                                 information to <record> if --record was
@@ -904,9 +947,6 @@ class Package:
                             sdist
                                 Make a source distribution:
                                     <dist-dir>/<name>-<version>.tar.gz
-                            dist_info
-                                Like <egg_info> but creates files in
-                                <egg-base>/<name>.dist-info/
                         Options:
                             --all
                                 Used by "clean".
@@ -1072,6 +1112,8 @@ class Package:
                         add( key, v)
                 else:
                     assert '\n' not in value, f'key={key} value contains newline: {value!r}'
+                    if key == 'Project-URL':
+                        assert value.count(',') == 1, f'For {key=}, should have one comma in {value!r}.'
                     ret[0] += f'{key}: {value}\n'
         #add('Description', self.description)
         add('Metadata-Version', '2.1')
@@ -1182,6 +1224,7 @@ def build_extension(
         name,
         path_i,
         outdir,
+        builddir=None,
         includes=None,
         defines=None,
         libpaths=None,
@@ -1197,7 +1240,10 @@ def build_extension(
         prerequisites_link=None,
         ):
     '''
-    Builds a C++ Python extension module using SWIG. Works on Unix and Windows.
+    Builds a Python extension module using SWIG. Works on Windows, Linux, MacOS
+    and OpenBSD.
+
+    On Unix, sets rpath when linking shared libraries.
     
     Args:
         name:
@@ -1212,6 +1258,9 @@ def build_extension(
                 * `{outdir}/_{name}.so`     # Unix
                 * `{outdir}/_{name}.*.pyd`  # Windows
             We return the leafname of the `.so` or `.pyd` file.
+        builddir:
+            Where to put intermediate files, for example the .cpp file
+            generated by swig and `.d` dependency files. Default is `outdir`.
         includes:
             A string, or a sequence of extra include directories to be prefixed
             with `-I`.
@@ -1234,7 +1283,7 @@ def build_extension(
         swig:
             Base swig command.
         cpp:
-            If true we generate C++ code with swig.
+            If true we tell SWIG to generate C++ code instead of C.
         prerequisites_swig:
         prerequisites_compile:
         prerequisites_link:
@@ -1243,7 +1292,7 @@ def build_extension(
             automatically generate dynamic dependencies using swig/compile/link
             commands' `-MD` and `-MF` args.]
             
-            Lists or tuples of extra input files/directories that should force
+            Sequences of extra input files/directories that should force
             running of swig, compile or link commands if they are newer than
             any existing generated SWIG `.i` file, compiled object file or
             shared library file.
@@ -1252,12 +1301,12 @@ def build_extension(
             or no re-run. Any occurrence of None is ignored. If an item is a
             directory path we look for newest file within the directory tree.
     
-            If not a list or tuple, we convert into a single-item list.
+            If not a sequence, we convert into a single-item list.
             
             prerequisites_swig
             
-                We use swig's -MD and -MF args to generate dynamic dependencies so this
-                is not usually required.
+                We use swig's -MD and -MF args to generate dynamic dependencies
+                automatically, so this is not usually required.
             
             prerequisites_compile
             prerequisites_link
@@ -1268,11 +1317,14 @@ def build_extension(
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
     '''
+    if builddir is None:
+        builddir = outdir
     includes_text = _flags( includes, '-I')
     defines_text = _flags( defines, '-D')
     libpaths_text = _flags( libpaths, '/LIBPATH:', '"') if windows() else _flags( libpaths, '-L')
     libs_text = _flags( libs, '-l')
-    path_cpp = f'{path_i}.cpp' if cpp else f'{path_i}.c'
+    path_cpp = f'{builddir}/{os.path.basename(path_i)}'
+    path_cpp += '.cpp' if cpp else '.c'
     os.makedirs( outdir, exist_ok=True)
     
     # Run SWIG.
@@ -1309,15 +1361,20 @@ def build_extension(
         permissive = '/permissive-'
         EHsc = '/EHsc'
         T = '/Tp' if cpp else '/Tc'
-        optimise2 = '/DNDEBUG /O2' if optimise else ''
-        
+        optimise2 = '/DNDEBUG /O2' if optimise else '/D_DEBUG'
+        debug2 = ''
+        if debug:
+            debug2 = '/Zi'  # Generate .pdb.
+            # debug2 = '/Z7'    # Embded debug info in .obj files.
         command, pythonflags = base_compiler(cpp=cpp)
         command = f'''
                 {command}
                     # General:
                     /c                          # Compiles without linking.
                     {EHsc}                      # Enable "Standard C++ exception handling".
-                    /MD                         # Creates a multithreaded DLL using MSVCRT.lib.
+                    
+                    #/MD                         # Creates a multithreaded DLL using MSVCRT.lib.
+                    {'/MDd' if debug else '/MD'}
 
                     # Input/output files:
                     {T}{path_cpp}               # /Tp specifies C++ source file.
@@ -1329,6 +1386,7 @@ def build_extension(
 
                     # Code generation:
                     {optimise2}
+                    {debug2}
                     {permissive}                # Set standard-conformance mode.
 
                     # Diagnostics:
@@ -1346,6 +1404,7 @@ def build_extension(
             _log(f'Not compiling because up to date: {path_obj}')
 
         command, pythonflags = base_linker(cpp=cpp)
+        debug2 = '/DEBUG' if debug else ''
         command = f'''
                 {command}
                     /DLL                    # Builds a DLL.
@@ -1354,6 +1413,7 @@ def build_extension(
                     {libpaths_text}
                     {pythonflags.ldflags}
                     /OUT:{path_so}          # Specifies the output file name.
+                    {debug2}
                     /nologo
                     {libs_text}
                     {path_obj}
@@ -1408,8 +1468,8 @@ def build_extension(
         
         if pyodide():
             # Looks like pyodide's `cc` can't compile and link in one invocation.
-            prequisites_compile_path = f'{path_cpp}.o.d'
-            prequisites += _get_prerequisites( prequisites_compile_path)
+            prerequisites_compile_path = f'{path_cpp}.o.d'
+            prerequisites += _get_prerequisites( prerequisites_compile_path)
             command = f'''
                     {command}
                         -fPIC
@@ -1417,19 +1477,19 @@ def build_extension(
                         {pythonflags.includes}
                         {includes_text}
                         {defines_text}
-                        -MD -MF {prequisites_compile_path}
+                        -MD -MF {prerequisites_compile_path}
                         -c {path_cpp}
                         -o {path_cpp}.o
                         {compiler_extra}
                     '''
-            prequisites_link_path = f'{path_cpp}.o.d'
-            prequisites += _get_prerequisites( prequisites_link_path)
+            prerequisites_link_path = f'{path_cpp}.o.d'
+            prerequisites += _get_prerequisites( prerequisites_link_path)
             ld, _ = base_linker(cpp=cpp)
             command += f'''
                     && {ld}
                         {path_cpp}.o
                         -o {path_so}
-                        -MD -MF {prequisites_link_path}
+                        -MD -MF {prerequisites_link_path}
                         {rpath_flag}
                         {libpaths_text}
                         {libs_text}
@@ -1458,7 +1518,7 @@ def build_extension(
                         {rpath_flag}
                         {linker_extra}
                         {pythonflags.ldflags}
-                '''
+                    '''
         if _doit( path_so, path_cpp, prerequisites_compile, prerequisites_link, prerequisites):
             run(command)
         else:
@@ -1516,15 +1576,16 @@ def base_compiler(vs=None, pythonflags=None, cpp=False, use_env=True):
     if not pythonflags:
         pythonflags = PythonFlags()
     cc = os.environ.get( 'CXX' if cpp else 'CC') if use_env else None
-    if not cc:
-        if windows():
-            if not vs:
-                vs = wdev.WindowsVS()
-            cc = f'"{vs.vcvars}"&&"{vs.cl}"'
-        elif wasm():
-            cc = 'em++' if cpp else 'emcc'
-        else:
-            cc = 'c++' if cpp else 'cc'
+    if cc:
+        pass
+    elif windows():
+        if not vs:
+            vs = wdev.WindowsVS()
+        cc = f'"{vs.vcvars}"&&"{vs.cl}"'
+    elif wasm():
+        cc = 'em++' if cpp else 'emcc'
+    else:
+        cc = 'c++' if cpp else 'cc'
     return cc, pythonflags
 
 
@@ -1555,7 +1616,9 @@ def base_linker(vs=None, pythonflags=None, cpp=False, use_env=True):
     if not pythonflags:
         pythonflags = PythonFlags()
     linker = os.environ.get( 'LD') if use_env else None
-    if windows():
+    if linker:
+        pass
+    elif windows():
         if not vs:
             vs = wdev.WindowsVS()
         linker = f'"{vs.vcvars}"&&"{vs.link}"'
@@ -1604,7 +1667,7 @@ def git_items( directory, submodules=False):
     return ret
 
 
-def run( command, verbose=1, capture=False):
+def run( command, verbose=1, capture=False, check=1):
     '''
     Runs a command using `subprocess.run()`.
     
@@ -1638,11 +1701,11 @@ def run( command, verbose=1, capture=False):
                 command2,
                 shell=True,
                 capture_output=True,
-                check=True,
+                check=check,
                 encoding='utf8',
                 ).stdout
     else:
-        subprocess.run( command2, shell=True, check=True)
+        subprocess.run( command2, shell=True, check=check)
 
 
 def darwin():
@@ -1678,7 +1741,8 @@ class PythonFlags:
             _log(f'PythonFlags: Pyodide.')
             _include_dir = os.environ[ 'PYO3_CROSS_INCLUDE_DIR']
             _lib_dir = os.environ[ 'PYO3_CROSS_LIB_DIR']
-            _log( f'PythonFlags: Pyodide. {_include_dir=} {_lib_dir=}')
+            _log( f'    {_include_dir=}')
+            _log( f'    {_lib_dir=}')
             self.includes = f'-I {_include_dir}'
             self.ldflags = f'-L {_lib_dir}'
         
@@ -1772,7 +1836,7 @@ def _cpu_name():
     Returns `x32` or `x64` depending on Python build.
     '''
     #log(f'sys.maxsize={hex(sys.maxsize)}')
-    return f'x{32 if sys.maxsize == 2**31 else 64}'
+    return f'x{32 if sys.maxsize == 2**31 - 1 else 64}'
 
 
 def _doit( out, in_, *prerequisites):
@@ -1781,8 +1845,7 @@ def _doit( out, in_, *prerequisites):
     
     out:
         Output path.
-    prerequisites1:
-    prerequisites2:
+    prerequisites:
         List of input paths or true/false/None. If an item is None it is
         ignored, otherwise if an item is not a string we immediately return it
         cast to a bool.
