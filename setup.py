@@ -23,7 +23,7 @@ Overview:
 Environmental variables:
 
     PYMUPDF_SETUP_IMPLEMENTATIONS
-        Must be one of 'a', 'b', 'ab'.
+        Must be one of 'a', 'b', 'ab'. If unset we use 'ab'.
         If contains 'a' we build original implementation.
         If contains 'b' we build rebased implementation.
     
@@ -34,7 +34,7 @@ Environmental variables:
     PYMUPDF_SETUP_FLAVOUR
         Control building of separate wheels for PyMuPDF.
         
-        If set must be one of: 'r', 'rp', 'rb'.
+        If set must be one of: 'r' (the default), 'rp', 'rb'.
         
         'r' or unset:
             Build complete wheel `PyMuPDFr` with all Python and shared
@@ -113,6 +113,9 @@ Environmental variables:
     PYMUPDF_SETUP_REBUILD_GIT_DETAILS
         If '0' we do not rebuild if only fitz/helper-git-versions.i has
         changed.
+
+    PYMUPDF_SETUP_SKELETON
+        If '1' we build minimal wheel for testing.
     
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
@@ -191,19 +194,6 @@ g_root = os.path.abspath( f'{__file__}/..')
 assert os.path.abspath( os.getcwd()) == g_root, \
         f'Current directory must be the PyMuPDF directory'
 
-def _fs_find_in_paths( name, paths=None):
-    '''
-    Looks for `name` in paths and returns complete path. `paths` is list/tuple
-    or colon-separated string; if `None` we use `$PATH`.
-    '''
-    if paths is None:
-        paths = os.environ.get( 'PATH', '')
-    if isinstance( paths, str):
-        paths = paths.split( ':')
-    for path in paths:
-        p = f'{path}/{name}'
-        if os.path.isfile( p):
-            return p
 
 def _fs_remove(path):
     '''
@@ -230,6 +220,11 @@ def _fs_remove(path):
         shutil.rmtree( path, onerror=error_fn)
     
     assert not os.path.exists( path)
+
+
+def run(command, check=1):
+    log(f'Running: {command}')
+    subprocess.run( command, shell=1, check=check)
 
 
 def _git_get_branch( directory):
@@ -399,7 +394,11 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.23.0-source.tar.gz',
+            #'https://mupdf.com/downloads/archive/mupdf-1.23.0-source.tar.gz',
+
+            # For now we don't include mupdf in sdist, because building always
+            # gets latest master.
+            '',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
@@ -540,6 +539,7 @@ darwin = sys.platform.startswith( 'darwin')
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
 wasm = os.environ.get('OS') in ('wasm', 'wasm-mt')
 
+
 def _implementations():
     v = os.environ.get( 'PYMUPDF_SETUP_IMPLEMENTATIONS', 'ab')
     assert v in ('a', 'b', 'ab')
@@ -549,6 +549,45 @@ def build():
     '''
     pipcl.py `build_fn()` callback.
     '''
+    skelepton = os.environ.get( 'PYMUPDF_SETUP_SKELETON')
+    log( f'{skelepton=}')
+    if skelepton == '1':
+        ret = list()
+        log( f'{g_flavour=}')
+        run( f'ls -l wheelhouse', check=0)
+        if g_flavour == 'rb':
+            with open( 'foo.c', 'w') as f:
+                f.write( textwrap.dedent( '''
+                        int foo(int x)
+                        {
+                            return x+1;
+                        }
+                        '''))
+                run(f'cc -fPIC -shared -o {g_root}/libfoo.so foo.c')
+            ret.append( f'{g_root}/libfoo.so')
+            ret.append( (f'{g_root}/READMErb.md', '$dist-info/README.md'))
+        elif g_flavour == 'rp':
+            with open( 'bar.c', 'w') as f:
+                f.write( textwrap.dedent( '''
+                        int bar(int x)
+                        {
+                            return x+1;
+                        }
+                        '''))
+                run(f'cc -fPIC -shared -o {g_root}/_bar.so bar.c')
+            with open( 'bar.py', 'w') as f:
+                f.write( textwrap.dedent( '''
+                        def bar(x):
+                            return x - 1
+                        '''))
+            ret.append( f'{g_root}/bar.py')
+            ret.append( f'{g_root}/_bar.so')
+            ret.append( (f'{g_root}/README.md', '$dist-info/README.md'))
+        else:
+            assert 0, f'{g_flavour=}'
+        return ret
+    
+    
     # Download MuPDF.
     #
     mupdf_local = get_mupdf()
@@ -628,6 +667,8 @@ def build():
                 add( ret_b, f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir)
             elif darwin:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
+            elif wasm:
+                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDFr.libs/')
             else:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
 
@@ -676,9 +717,22 @@ def build():
     return ret
 
 
-def env_add(env, name, value, sep=' '):
+def env_add(env, name, value, sep=' ', prefix=False, verbose=False):
+    '''
+    Appends/prepends `<value>` to `env[name]`.
+    '''
     v = env.get(name)
-    env[ name] =  f'{v}{sep}{value}' if v else value
+    if verbose:
+        log(f'Initally: {name}={v!r}')
+    if v is None:
+        env[ name] = value
+    else:
+        if prefix:
+            env[ name] =  f'{value}{sep}{v}'
+        else:
+            env[ name] =  f'{v}{sep}{value}'
+    if verbose:
+        log(f'Returning with {name}={env[name]!r}')
 
 
 def build_mupdf_windows( mupdf_local, env, build_type):
@@ -828,6 +882,9 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
     compiler_extra = ''
     if build_type == 'memento':
         compiler_extra += ' -DMEMENTO'
+    mupdf_build_dir_flags = os.path.basename( mupdf_build_dir).split( '-')
+    optimise = 'release' in mupdf_build_dir_flags
+    debug = 'debug' in mupdf_build_dir_flags
     if windows:
         defines = ('FZ_DLL_CLIENT',)
         wp = pipcl.wdev.WindowsPython()
@@ -836,18 +893,16 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
             infix = 'win32-vs-upgrade'
         else:
             infix = 'win32'
+        build_type_infix = 'Debug' if debug else 'Release'
         libpaths = (
-                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}Release',
-                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}ReleaseTesseract',
+                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}',
+                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}Tesseract',
                 )
         libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
-        libraries = f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}Release\\{libs}'
+        libraries = f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}\\{libs}'
         compiler_extra = ''
         linker_extra = ''
-        optimise = True
-        debug = False
     else:
-        mupdf_build_dir_flags = os.path.basename( mupdf_build_dir).split( '-')
         defines = None
         libpaths = (mupdf_build_dir,)
         libs = ['mupdf']
@@ -860,8 +915,6 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
         if openbsd:
             compiler_extra += ' -Wno-deprecated-declarations'
         linker_extra = ''
-        optimise = 'release' in mupdf_build_dir_flags
-        debug = 'debug' in mupdf_build_dir_flags
     
     path_so_leaf_a = None
     path_so_leaf_b = None
@@ -1030,6 +1083,8 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
+version = '1.22.5'
+
 tag_python = None
 requires_dist = None,
 
@@ -1041,7 +1096,7 @@ elif g_flavour == 'rp':
     name = 'PyMuPDFrp'
     summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF - without shared libraries'
     readme = readme_
-    requires_dist = f'PyMuPDFrb =={g_version}'
+    requires_dist = f'PyMuPDFrb =={version}'
 elif g_flavour == 'rb':
     name = 'PyMuPDFrb'
     summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF - shared libraries only'
@@ -1052,7 +1107,7 @@ else:
 
 p = pipcl.Package(
         name,
-        '1.22.5',
+        version,
         summary = summary,
         description = readme,
         description_content_type = 'text/markdown',
@@ -1063,10 +1118,10 @@ p = pipcl.Package(
         requires_python = '>=3.7',
         license = 'GNU AFFERO GPL 3.0',
         project_url = [
-            ('Documentation', 'https://pymupdf.readthedocs.io/'),
-            ('Source', 'https://github.com/pymupdf/pymupdf'),
-            ('Tracker', 'https://github.com/pymupdf/PyMuPDF/issues'),
-            ('Changelog', 'https://pymupdf.readthedocs.io/en/latest/changes.html'),
+            ('Documentation, https://pymupdf.readthedocs.io/'),
+            ('Source, https://github.com/pymupdf/pymupdf'),
+            ('Tracker, https://github.com/pymupdf/PyMuPDF/issues'),
+            ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
             ],
         fn_build=build,
         fn_sdist=sdist,
