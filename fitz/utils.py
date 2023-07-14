@@ -4224,7 +4224,7 @@ def scrub(
         found_redacts = False
         for annot in page.annots():
             if annot.type[0] == PDF_ANNOT_FILE_ATTACHMENT and attached_files:
-                annot.fileUpd(buffer=b" ")  # set file content to empty
+                annot.update_file(buffer=b" ")  # set file content to empty
             if reset_responses:
                 annot.delete_responses()
             if annot.type[0] == PDF_ANNOT_REDACT:
