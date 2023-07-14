@@ -141,7 +141,7 @@ rect_like = 'rect_like'
 
 def _as_fz_document(document):
     '''
-    Returns document as a mupdf.FzDocument.
+    Returns document as a mupdf.FzDocument, upcasting as required.
     '''
     if isinstance(document, Document):
         return _as_fz_document(document.this)
@@ -150,13 +150,12 @@ def _as_fz_document(document):
     elif isinstance(document, mupdf.PdfDocument):
         return self.this.super()
     else:
-        assert 0, f'Unrecognised type(self.this)={type(self.this)}'
+        assert 0, f'Unrecognised type(document)={type(document)}'
 
 def _as_pdf_document(document):
     '''
-    Returns self.this as a mupdf.PdfDocument, downcasting as required. If
-    we fail (i.e. self.this is a mupdf.FzDocument(), <ret>.m_internal will be
-    None.
+    Returns document as a mupdf.PdfDocument, downcasting as required. If we
+    fail (i.e. document is a mupdf.FzDocument(), <ret>.m_internal will be None.
     '''
     if isinstance(document, Document):
         return _as_pdf_document(document.this)
@@ -164,8 +163,19 @@ def _as_pdf_document(document):
         return document
     if isinstance(document, mupdf.FzDocument):
         return mupdf.PdfDocument(document)
-        return None
-    assert 0, f'Unrecognised type(self.this)={type(self.this)}'
+    assert 0, f'Unrecognised type(document)={type(document)}'
+
+def _as_fz_page(page):
+    '''
+    Returns page as a mupdf.FzPage, upcasting as required.
+    '''
+    if isinstance(page, Page):
+        page = page.this
+    if isinstance(page, mupdf.PdfPage):
+        return page.super()
+    elif isinstance(page, mupdf.FzPage):
+        return page
+    assert 0, f'Unrecognised type(page)={type(page)}'
 
 
 # Fixme: we don't implement JM_MEMORY.
@@ -8142,11 +8152,8 @@ class Page:
     def bound(self):
         """Get page rectangle."""
         CheckParent(self)
-        pdf_page = self._pdf_page()
-        try:
-            val = mupdf.pdf_bound_page(pdf_page) if pdf_page.m_internal else mupdf.fz_bound_page(self.this)
-        except Exception as e:
-            val = mupdf.FzRect(mupdf.FzRect.Fixed_INFINITE)
+        page = _as_fz_page(self.this)
+        val = mupdf.fz_bound_page(page)
         val = Rect(val)
         
         if val.is_infinite and self.parent.is_pdf:
@@ -20873,9 +20880,13 @@ class TOOLS:
 
     @staticmethod
     def mupdf_warnings(reset=1):
+        '''
+        Get the MuPDF warnings/errors with optional reset (default).
+        '''
+        ret = '\n'.join( JM_mupdf_warnings_store)
         if reset:
             TOOLS.reset_mupdf_warnings()
-        return JM_mupdf_warnings_store
+        return ret
 
     @staticmethod
     def reset_mupdf_warnings():
