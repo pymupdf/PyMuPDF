@@ -198,18 +198,18 @@ class Annot:
 
         values = dict()
         try:
-            obj = mupdf.pdf_dict_gets(annot.pdf_annot_obj(), "RO")
+            obj = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "RO")
             if obj.m_internal:
                 JM_Warning("Ignoring redaction key '/RO'.")
                 xref = mupdf.pdf_to_num(obj)
                 values[dictkey_xref] = xref
-            obj = mupdf.pdf_dict_gets(annot.pdf_annot_obj(), "OverlayText")
+            obj = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "OverlayText")
             if obj.m_internal:
                 text = mupdf.pdf_to_text_string(obj)
                 values[dictkey_text] = JM_UnicodeFromStr(text)
             else:
                 values[dictkey_text] = ''
-            obj = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('Q'))
+            obj = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Q'))
             align = 0;
             if obj.m_internal:
                 align = mupdf.pdf_to_int(obj)
@@ -333,7 +333,7 @@ class Annot:
 
         try:    # create or update /ExtGState
             ap = mupdf.pdf_dict_getl(
-                    annot.pdf_annot_obj(),
+                    mupdf.pdf_annot_obj(annot),
                     PDF_NAME('AP'),
                     PDF_NAME('N')
                     )
@@ -391,10 +391,14 @@ class Annot:
             CheckParent(self)
             annot = self.this
             assert isinstance(annot, mupdf.PdfAnnot)
-            ap = annot.pdf_annot_obj().pdf_dict_getl(mupdf.PDF_ENUM_NAME_AP, mupdf.PDF_ENUM_NAME_N);
+            ap = mupdf.pdf_dict_getl(
+                    mupdf.pdf_annot_obj(annot),
+                    mupdf.PDF_ENUM_NAME_AP,
+                    mupdf.PDF_ENUM_NAME_N
+                    );
             if not ap.m_internal:
                 return JM_py_from_matrix(mupdf.FzMatrix())
-            mat = ap.pdf_dict_get_matrix(mupdf.PDF_ENUM_NAME_Matrix)
+            mat = mupdf.pdf_dict_get_matrix(ap, mupdf.PDF_ENUM_NAME_Matrix)
             val = JM_py_from_matrix(mat)
 
             val = Matrix(val)
@@ -451,7 +455,7 @@ class Annot:
                 PDF_ANNOT_SQUARE,
                 ):
             return dict()
-        ao = self.this.pdf_annot_obj()
+        ao = mupdf.pdf_annot_obj(self.this)
         ret = JM_annot_border(ao)
         return ret
 
@@ -470,7 +474,7 @@ class Annot:
             CheckParent(self)
             annot = self.this
             assert isinstance(annot, mupdf.PdfAnnot)
-            return JM_annot_colors(annot.pdf_annot_obj())
+            return JM_annot_colors(mupdf.pdf_annot_obj(annot))
         except Exception as e:
             if g_exceptions_verbose:    exception_info()
             raise
@@ -566,7 +570,7 @@ class Annot:
         type = mupdf.pdf_annot_type(annot)
         if type != mupdf.PDF_ANNOT_FILE_ATTACHMENT:
             raise TypeError( MSG_BAD_ANNOT_TYPE);
-        stream = annot_obj.pdf_dict_getl(PDF_NAME('FS'), PDF_NAME('EF'), PDF_NAME('F'))
+        stream = mupdf.pdf_dict_getl(annot_obj, PDF_NAME('FS'), PDF_NAME('EF'), PDF_NAME('F'))
         if not stream.m_internal:
             RAISEPY( "bad PDF: file entry not found", JM_Exc_FileDataError);
         buf = mupdf.pdf_load_stream(stream)
@@ -591,7 +595,7 @@ class Annot:
         try:
             ret = getattr( self, 'parent')
         except AttributeError:
-            page = self.this.pdf_annot_page()
+            page = mupdf.pdf_annot_page(self.this)
             assert isinstance( page, mupdf.PdfPage)
             document = Document( page.doc()) if page.m_internal else None
             ret = Page(page, document)
@@ -666,7 +670,7 @@ class Annot:
         """Check if annotation has a Popup."""
         CheckParent(self)
         annot = self.this
-        obj = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('Popup'))
+        obj = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Popup'))
         return True if obj.m_internal else False
 
     @property
@@ -678,27 +682,27 @@ class Annot:
 
         res[dictkey_content] = JM_UnicodeFromStr(mupdf.pdf_annot_contents(annot))
 
-        o = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('Name'))
+        o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Name'))
         res[dictkey_name] = JM_UnicodeFromStr(mupdf.pdf_to_name(o))
 
         # Title (= author)
-        o = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('T'))
+        o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('T'))
         res[dictkey_title] = JM_UnicodeFromStr(mupdf.pdf_to_text_string(o))
 
         # CreationDate
-        o = mupdf.pdf_dict_gets(annot.pdf_annot_obj(), "CreationDate")
+        o = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "CreationDate")
         res[dictkey_creationDate] = JM_UnicodeFromStr(mupdf.pdf_to_text_string(o))
 
         # ModDate
-        o = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('M'))
+        o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('M'))
         res[dictkey_modDate] = JM_UnicodeFromStr(mupdf.pdf_to_text_string(o))
 
         # Subj
-        o = mupdf.pdf_dict_gets(annot.pdf_annot_obj(), "Subj")
+        o = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "Subj")
         res[dictkey_subject] = mupdf.pdf_to_text_string(o)
 
         # Identification (PDF key /NM)
-        o = mupdf.pdf_dict_gets(annot.pdf_annot_obj(), "NM")
+        o = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "NM")
         res[dictkey_id] = JM_UnicodeFromStr(mupdf.pdf_to_text_string(o))
 
         return res
@@ -737,10 +741,10 @@ class Annot:
         CheckParent(self)
         annot = self.this
         # return nothing for invalid annot types
-        if not annot.pdf_annot_has_line_ending_styles():
+        if not mupdf.pdf_annot_has_line_ending_styles(annot):
             return
-        lstart = annot.pdf_annot_line_start_style()
-        lend = annot.pdf_annot_line_end_style()
+        lstart = mupdf.pdf_annot_line_start_style(annot)
+        lend = mupdf.pdf_annot_line_end_style(annot)
         return lstart, lend
 
     @property
@@ -775,9 +779,9 @@ class Annot:
         CheckParent(self)
         annot = self.this
         opy = -1
-        ca = annot.pdf_annot_obj().pdf_dict_get(mupdf.PDF_ENUM_NAME_CA)
-        if ca.pdf_is_number():
-            opy = ca.pdf_to_real()
+        ca = mupdf.pdf_dict_get( mupdf.pdf_annot_obj(annot), mupdf.PDF_ENUM_NAME_CA)
+        if mupdf.pdf_is_number(ca):
+            opy = mupdf.pdf_to_real(ca)
         return opy
 
     @property
@@ -851,7 +855,7 @@ class Annot:
         """annotation rotation"""
         CheckParent(self)
         annot = self.this
-        rotation = annot.pdf_annot_obj().pdf_dict_get(mupdf.PDF_ENUM_NAME_Rotate)
+        rotation = mupdf.pdf_dict_get( mupdf.pdf_annot_obj(annot), mupdf.PDF_ENUM_NAME_Rotate)
         if not rotation.m_internal:
             return -1
         return mupdf.pdf_to_int( rotation)
@@ -867,7 +871,7 @@ class Annot:
         bbox *= rot * ~mat
         pannot = self.this
         annot_obj = mupdf.pdf_annot_obj(annot)
-        ap = annot_obj.pdf_dict_getl(PDF_NAME('AP'), PDF_NAME('N'))
+        ap = mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AP'), PDF_NAME('N'))
         if not ap.m_internal:
             raise RuntimeError( MSG_BAD_APN)
         rect = JM_rect_from_py(bbox)
@@ -878,7 +882,7 @@ class Annot:
         CheckParent(self)
         annot = self.this
         annot_obj = mupdf.pdf_annot_obj(annot)
-        ap = annot_obj.pdf_dict_getl(PDF_NAME('AP'), PDF_NAME('N'))
+        ap = mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AP'), PDF_NAME('N'))
         if not ap.m_internal:
             raise RuntimeError( MSG_BAD_APN)
         mat = JM_matrix_from_py(matrix)
@@ -937,7 +941,6 @@ class Annot:
         annot_obj = mupdf.pdf_annot_obj( annot)
         pdf = mupdf.pdf_get_bound_document( annot_obj)
         return JM_annot_set_border( border, pdf, annot_obj)
-        #return JM_annot_set_border(border, annot.pdf_annot_page().doc(), annot.pdf_annot_obj())
 
     def set_colors(self, colors=None, stroke=None, fill=None):
         """Set 'stroke' and 'fill' colors.
@@ -1011,13 +1014,13 @@ class Annot:
                 mupdf.pdf_set_annot_author(annot, title)
             # creation date
             if creationDate:
-                mupdf.pdf_dict_put_text_string(annot.pdf_annot_obj(), PDF_NAME('CreationDate'), creationDate)
+                mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(annot), PDF_NAME('CreationDate'), creationDate)
             # mod date
             if modDate:
-                mupdf.pdf_dict_put_text_string(annot.pdf_annot_obj(), PDF_NAME('M'), modDate)
+                mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(annot), PDF_NAME('M'), modDate)
             # subject
             if subject:
-                mupdf.pdf_dict_puts(annot.pdf_annot_obj(), "Subj", mupdf.pdf_new_text_string(subject))
+                mupdf.pdf_dict_puts(mupdf.pdf_annot_obj(annot), "Subj", mupdf.pdf_new_text_string(subject))
 
     def set_irt_xref( xref):
         '''
@@ -1105,7 +1108,7 @@ class Annot:
         CheckParent(self)
         annot = self.this
         
-        pdfpage = annot.pdf_annot_page()
+        pdfpage = mupdf.pdf_annot_page(annot)
         rot = JM_rotate_page_matrix(pdfpage)
         r = mupdf.fz_transform_rect(JM_rect_from_py(rect), rot)
         if mupdf.fz_is_empty_rect(r) or mupdf.fz_is_infinite_rect(r):
@@ -1152,12 +1155,12 @@ class Annot:
         CheckParent(self)
         if not self.this.m_internal:
             return 'null'
-        type_ = self.this.pdf_annot_type()
+        type_ = mupdf.pdf_annot_type(self.this)
         c = mupdf.pdf_string_from_annot_type(type_)
-        o = self.this.pdf_annot_obj().pdf_dict_gets("IT")
-        if not o.m_internal or o.pdf_is_name():
+        o = mupdf.pdf_dict_gets( mupdf.pdf_annot_obj(self.this), 'IT')
+        if not o.m_internal or mupdf.pdf_is_name(o):
             return (type_, c)
-        it = o.pdf_to_name()
+        it = mupdf.pdf_to_name(o)
         return (type_, c, it)
 
     def update(self,
@@ -1503,8 +1506,8 @@ class Annot:
         #fz_point point;  # point object to work with
         page_ctm = mupdf.FzMatrix()   # page transformation matrix
         dummy = mupdf.FzRect(0)   # Will have .m_internal=NULL.
-        mupdf.pdf_page_transform(annot.pdf_annot_page(), dummy, page_ctm);
-        derot = JM_derotate_page_matrix(annot.pdf_annot_page())
+        mupdf.pdf_page_transform(mupdf.pdf_annot_page(annot), dummy, page_ctm);
+        derot = JM_derotate_page_matrix(mupdf.pdf_annot_page(annot))
         page_ctm = mupdf.fz_concat(page_ctm, derot)
 
         #----------------------------------------------------------------
@@ -1513,10 +1516,10 @@ class Annot:
         # Every pair of floats is one point, that needs to be separately
         # transformed with the page transformation matrix.
         #----------------------------------------------------------------
-        o = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('Vertices'))
-        if not o.m_internal:    o = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('L'))
-        if not o.m_internal:    o = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('QuadPoints'))
-        if not o.m_internal:    o = mupdf.pdf_dict_gets(annot.pdf_annot_obj(), "CL")
+        o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Vertices'))
+        if not o.m_internal:    o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('L'))
+        if not o.m_internal:    o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('QuadPoints'))
+        if not o.m_internal:    o = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), 'CL')
 
         if o.m_internal:
             # handle lists with 1-level depth --------------------------------
@@ -1551,7 +1554,7 @@ class Annot:
         """annotation xref number"""
         CheckParent(self)
         annot = self.this
-        return mupdf.pdf_to_num(annot.pdf_annot_obj())
+        return mupdf.pdf_to_num(mupdf.pdf_annot_obj(annot))
 
 
 class Archive:
@@ -2382,12 +2385,12 @@ class Colorspace:
         return "Colorspace(CS_%s) - %s" % (x, self.name)
 
     def _name(self):
-        return self.this.fz_colorspace_name()
+        return mupdf.fz_colorspace_name(self.this)
 
     @property
     def n(self):
         """Size of one pixel."""
-        return self.this.fz_colorspace_n()
+        return mupdf.fz_colorspace_n(self.this)
 
     @property
     def name(self):
@@ -2467,7 +2470,7 @@ if g_use_extra:
 class Document:
 
     def __contains__(self, loc) -> bool:
-        page_count = self.this.fz_count_pages()
+        page_count = mupdf.fz_count_pages(self.this)
         if type(loc) is int:
             if loc < self.page_count:
                 return True
@@ -3091,14 +3094,10 @@ class Document:
 
     def _getMetadata(self, key):
         """Get metadata."""
-        if g_use_extra:
-            return extra.getMetadata(self, key)
-        if self.is_closed:
-            raise ValueError("document closed")
-        ret = mupdf.fz_lookup_metadata( self.this, key)
-        if ret is None:
-            ret = ''
-        return ret
+        try:
+            return mupdf.fz_lookup_metadata2( self.this, key)
+        except Exception:
+            return ''
 
     def _getOLRootNumber(self):
         """Get xref of Outline Root, create it if missing."""
@@ -3142,14 +3141,14 @@ class Document:
             raise ValueError("document closed or encrypted")
         doc = self.this
         pdf = _as_pdf_document(self)
-        pageCount = doc.pdf_count_pages() if isinstance(doc, mupdf.PdfDocument) else doc.fz_count_pages()
+        pageCount = mupdf.pdf_count_pages(doc) if isinstance(doc, mupdf.PdfDocument) else mupdf.fz_count_pages(doc)
         n = pno;  # pno < 0 is allowed
         while n < 0:
             n += pageCount  # make it non-negative
         if n >= pageCount:
             raise ValueError( MSG_BAD_PAGENO)
         pageref = mupdf.pdf_lookup_page_obj(pdf, n)
-        rsrc = pageref.pdf_dict_get_inheritable(mupdf.PDF_ENUM_NAME_Resources)
+        rsrc = mupdf.pdf_dict_get_inheritable(pageref, mupdf.PDF_ENUM_NAME_Resources)
         liste = []
         tracer = []
         if rsrc.m_internal:
@@ -3478,7 +3477,7 @@ class Document:
         pdf = _as_pdf_document(self)
         if not pdf:
             return False
-        return pdf.pdf_can_be_saved_incrementally()
+        return mupdf.pdf_can_be_saved_incrementally(pdf)
 
     @property
     def chapter_count(self):
@@ -3862,7 +3861,7 @@ class Document:
         res = mupdf.pdf_load_raw_stream(obj)
         if img_type == mupdf.FZ_IMAGE_UNKNOWN:
             res = mupdf.pdf_load_raw_stream(obj)
-            _, c = res.fz_buffer_storage()
+            _, c = mupdf.fz_buffer_storage(res)
             #log( '{=_ c}')
             img_type = mupdf.fz_recognize_image_format(c)
             ext = JM_image_extension(img_type)
@@ -4003,7 +4002,7 @@ class Document:
             # create new /Contents object for page2
             if res.m_internal:
                 #contents = mupdf.pdf_add_stream( pdf, mupdf.fz_new_buffer_from_copied_data( b"  ", 1), NULL, 0)
-                contents = mupdf.pdf_add_stream( pdf, mupdf.FzBuffer.fz_new_buffer_from_copied_data( b" "), mupdf.PdfObj(), 0)
+                contents = mupdf.pdf_add_stream( pdf, mupdf.fz_new_buffer_from_copied_data( b" "), mupdf.PdfObj(), 0)
                 JM_update_stream( pdf, contents, res, 1)
                 mupdf.pdf_dict_put( page2, PDF_NAME('Contents'), contents)
 
@@ -4406,7 +4405,7 @@ class Document:
         pdf = _as_pdf_document(self)
         if not pdf:
             return False
-        r = pdf.pdf_has_unsaved_changes()
+        r = mupdf.pdf_has_unsaved_changes(pdf)
         return True if r else False
 
     @property
@@ -4428,13 +4427,13 @@ class Document:
         count = -1;
         try:
             fields = mupdf.pdf_dict_getl(
-                    pdf.pdf_trailer(),
+                    mupdf.pdf_trailer(pdf),
                     mupdf.PDF_ENUM_NAME_Root,
                     mupdf.PDF_ENUM_NAME_AcroForm,
                     mupdf.PDF_ENUM_NAME_Fields,
                     )
-            if fields.pdf_is_array():
-                count = fields.pdf_array_len()
+            if mupdf.pdf_is_array(fields):
+                count = mupdf.pdf_array_len(fields)
         except Exception:
             if g_exceptions_verbose:    exception_info()
             return False
@@ -4470,7 +4469,7 @@ class Document:
         pdf = _as_pdf_document(self)
         if not pdf:
             return False
-        r = pdf.pdf_was_repaired()
+        r = mupdf.pdf_was_repaired(pdf)
         if r:
             return True
         return False
@@ -4677,10 +4676,10 @@ class Document:
             while page_id < 0:
                 page_id += np
         if isinstance(page_id, int):
-            page = self.this.fz_load_page(page_id)
+            page = mupdf.fz_load_page(self.this, page_id)
         else:
             chapter, pagenum = page_id
-            page = self.this.fz_load_chapter_page(chapter, pagenum)
+            page = mupdf.fz_load_chapter_page(self.this, chapter, pagenum)
         val = Page(page, self)
 
         val.thisown = True
@@ -4826,16 +4825,16 @@ class Document:
             return extra.page_annot_xrefs( self.this, n)
         
         if isinstance(self.this, mupdf.PdfDocument):
-            page_count = self.this.pdf_count_pages()
+            page_count = mupdf.pdf_count_pages(self.this)
             pdf_document = self.this
         else:
-            page_count = self.this.fz_count_pages()
+            page_count = mupdf.fz_count_pages(self.this)
             pdf_document = _as_pdf_document(self)
         while n < 0:
             n += page_count
         if n > page_count:
             raise ValueError( MSG_BAD_PAGENO)
-        page_obj = pdf_document.pdf_lookup_page_obj(n)
+        page_obj = mupdf.pdf_lookup_page_obj(pdf_document, n)
         annots = JM_get_annot_xref_list(page_obj)
         return annots
 
@@ -7056,13 +7055,13 @@ class Page:
             annot = extra._add_caret_annot( page, JM_point_from_py(point))
         else:
             page = self._pdf_page()
-            annot = page.pdf_create_annot(mupdf.PDF_ANNOT_CARET)
+            annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_CARET)
             if point:
                 p = JM_point_from_py(point)
-                r = annot.pdf_annot_rect()
+                r = mupdf.pdf_annot_rect(annot)
                 r = mupdf.FzRect(p.x, p.y, p.x + r.x1 - r.x0, p.y + r.y1 - r.y0)
-                annot.pdf_set_annot_rect(r)
-            annot.pdf_update_annot()
+                mupdf.pdf_set_annot_rect(annot, r)
+            mupdf.pdf_update_annot(annot)
             JM_add_annot_id(annot, "A")
         return annot;
 
@@ -7086,8 +7085,8 @@ class Page:
             mupdf.pdf_set_annot_icon_name(annot, icon)
 
         val = JM_embed_file(page.doc(), filebuf, filename, uf, d, 1)
-        mupdf.pdf_dict_put(annot.pdf_annot_obj(), PDF_NAME('FS'), val)
-        mupdf.pdf_dict_put_text_string(annot.pdf_annot_obj(), PDF_NAME('Contents'), filename)
+        mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME('FS'), val)
+        mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(annot), PDF_NAME('Contents'), filename)
         mupdf.pdf_update_annot(annot)
         mupdf.pdf_set_annot_rect(annot, r)
         mupdf.pdf_set_annot_flags(annot, flags)
@@ -7109,7 +7108,7 @@ class Page:
         nfcol, fcol = JM_color_FromSequence(fill_color)
         ntcol, tcol = JM_color_FromSequence(text_color)
         r = JM_rect_from_py(rect)
-        if r.fz_is_infinite_rect() or r.fz_is_empty_rect():
+        if mupdf.fz_is_infinite_rect(r) or mupdf.fz_is_empty_rect(r):
             raise ValueError( MSG_BAD_RECT)
         annot = mupdf.pdf_create_annot( page, mupdf.PDF_ANNOT_FREE_TEXT)
         annot_obj = mupdf.pdf_annot_obj( annot)
@@ -7230,15 +7229,15 @@ class Page:
             arr = mupdf.pdf_new_array(page.doc(), nfcol)
             for i in range(nfcol):
                 mupdf.pdf_array_push_real(arr, fcol[i])
-            mupdf.pdf_dict_put(annot.pdf_annot_obj(), PDF_NAME('IC'), arr)
+            mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME('IC'), arr)
         if text:
             mupdf.pdf_dict_puts(
-                    annot.pdf_annot_obj(),
+                    mupdf.pdf_annot_obj(annot),
                     "OverlayText",
                     mupdf.pdf_new_text_string(text),
                     )
-            mupdf.pdf_dict_put_text_string(annot.pdf_annot_obj(), PDF_NAME('DA'), da_str)
-            mupdf.pdf_dict_put_int(annot.pdf_annot_obj(), PDF_NAME('Q'), align)
+            mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(annot), PDF_NAME('DA'), da_str)
+            mupdf.pdf_dict_put_int(mupdf.pdf_annot_obj(annot), PDF_NAME('Q'), align)
         mupdf.pdf_update_annot(annot)
         JM_add_annot_id(annot, "A")
         annot = mupdf.ll_pdf_keep_annot(annot.m_internal)
@@ -7287,13 +7286,13 @@ class Page:
         mupdf.pdf_set_annot_rect(annot, r)
         try:
             n = PDF_NAME('Name')
-            mupdf.pdf_dict_put(annot.pdf_annot_obj(), PDF_NAME('Name'), name)
+            mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME('Name'), name)
         except Exception as e:
             if g_exceptions_verbose:    exception_info()
             raise
         mupdf.pdf_set_annot_contents(
                 annot,
-                mupdf.pdf_dict_get_name(annot.pdf_annot_obj(), PDF_NAME('Name')),
+                mupdf.pdf_dict_get_name(mupdf.pdf_annot_obj(annot), PDF_NAME('Name')),
                 )
         mupdf.pdf_update_annot(annot)
         JM_add_annot_id(annot, "A")
@@ -7500,7 +7499,7 @@ class Page:
             arg_pix = pixmap.this
             w = arg_pix.w
             h = arg_pix.h
-            digest = mupdf.fz_md5_pixmap(arg_pix)
+            digest = mupdf.fz_md5_pixmap2(arg_pix)
             md5_py = digest
             temp = digests.get(md5_py, None)
             if temp is not None:
@@ -7544,7 +7543,7 @@ class Page:
                     mupdf.fz_md5_update_buffer( state, maskbuf)
                 else:
                     fz_md5_update(state, maskbuf.m_internal.data, maskbuf.m_internal.len)
-            digest = state.fz_md5_final2()
+            digest = mupdf.fz_md5_final2(state)
             md5_py = bytes(digest)
             temp = digests.get(md5_py, None)
             if temp is not None:
@@ -7669,7 +7668,7 @@ class Page:
         '''
         if isinstance(self.this, mupdf.PdfPage):
             return self.this
-        return self.this.pdf_page_from_fz_page()
+        return mupdf.pdf_page_from_fz_page(self.this)
 
     def _reset_annot_refs(self):
         """Invalidate / delete all annots of this page."""
@@ -8145,9 +8144,9 @@ class Page:
         CheckParent(self)
         pdf_page = self._pdf_page()
         try:
-            val = pdf_page.pdf_bound_page() if pdf_page.m_internal else self.this.fz_bound_page()
+            val = mupdf.pdf_bound_page(pdf_page) if pdf_page.m_internal else mupdf.fz_bound_page(self.this)
         except Exception as e:
-            val = mupdf.FzRect(mupdf.Rect.Fixed_INFINITE)
+            val = mupdf.FzRect(mupdf.FzRect.Fixed_INFINITE)
         val = Rect(val)
         
         if val.is_infinite and self.parent.is_pdf:
@@ -8370,17 +8369,17 @@ class Page:
         """Get xrefs of /Contents objects."""
         CheckParent(self)
         ret = []
-        page = self.this.pdf_page_from_fz_page()
+        page = mupdf.pdf_page_from_fz_page(self.this)
         obj = page.obj()
-        contents = obj.pdf_dict_get(mupdf.PDF_ENUM_NAME_Contents)
-        if contents.pdf_is_array():
-            n = contents.pdf_array_len()
+        contents = mupdf.pdf_dict_get(obj, mupdf.PDF_ENUM_NAME_Contents)
+        if mupdf.pdf_is_array(contents):
+            n = mupdf.pdf_array_len(contents)
             for i in range(n):
-                icont = contents.pdf_array_get(i)
-                xref = icont.pdf_to_num()
+                icont = mupdf.pdf_array_get(contents, i)
+                xref = mupdf.pdf_to_num(icont)
                 ret.append(xref)
         elif contents.m_internal:
-            xref = contents.pdf_to_num()
+            xref = mupdf.pdf_to_num(contents)
             ret.append( xref)
         return ret
 
@@ -8983,7 +8982,7 @@ class Page:
     def rotation(self):
         """Page rotation."""
         CheckParent(self)
-        page = self.this if isinstance(self.this, mupdf.PdfPage) else self.this.pdf_page_from_fz_page()
+        page = self.this if isinstance(self.this, mupdf.PdfPage) else mupdf.pdf_page_from_fz_page(self.this)
         if not page:
             return 0
         return JM_page_rotation(page);
@@ -9080,7 +9079,7 @@ class Page:
         if not page.m_internal:
             return JM_py_from_matrix(ctm)
         mediabox = mupdf.FzRect(mupdf.FzRect.Fixed_UNIT)    # fixme: original code passed mediabox=NULL.
-        page.pdf_page_transform(mediabox, ctm)
+        mupdf.pdf_page_transform(page, mediabox, ctm)
         val = JM_py_from_matrix(ctm)
 
         if self.rotation % 360 == 0:
@@ -9284,7 +9283,7 @@ class Pixmap:
                 if src_pix.alpha() == pm.alpha():   # identical samples
                     #memcpy(tptr, sptr, w * h * (n + alpha));
                     for i in range(w * h * (n + alpha)):
-                        pm.fz_samples_set(i, src_pix.fz_samples_get(i))
+                        mupdf.fz_samples_set(pm, i, mupdf.fz_samples_get(src_pix, i))
                 else:
                     # t=2.56
                     tptr = 0
@@ -9293,10 +9292,10 @@ class Pixmap:
                     for i in range(w * h):
                         #memcpy(tptr, sptr, n);
                         for j in range(n):
-                            pm.fz_samples_set(tptr + j, src_pix.fz_samples_get(sptr + j))
+                            mupdf.fz_samples_set(pm, tptr + j, mupdf.fz_samples_get(src_pix, sptr + j))
                         tptr += n
                         if pm.alpha():
-                            pm.fz_samples_set(tptr, 255)
+                            mupdf.fz_samples_set(pm, tptr, 255)
                             tptr += 1
                         sptr += n + src_pix_alpha
             self.this = pm
@@ -9355,7 +9354,7 @@ class Pixmap:
                     mupdf.FzIrect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT),
                     mupdf.FzMatrix( img.w(), 0, 0, img.h(), 0, 0),
                     )
-            xres, yres = img.fz_image_resolution()
+            xres, yres = mupdf.fz_image_resolution(img)
             pm.xres = xres
             pm.yres = yres
             self.this = pm
@@ -9492,7 +9491,7 @@ class Pixmap:
     @property
     def digest(self):
         """MD5 digest of pixmap (bytes)."""
-        ret = self.this.fz_md5_pixmap()
+        ret = mupdf.fz_md5_pixmap2(self.this)
         return bytes(ret)
 
     def gamma_with(self, gamma):
@@ -9666,11 +9665,11 @@ class Pixmap:
         '''
         Pixmap samples memoryview.
         '''
-        return self.this.fz_pixmap_samples_memoryview()
+        return mupdf.fz_pixmap_samples_memoryview(self.this)
 
     @property
     def samples_ptr(self):
-        return self.this.fz_pixmap_samples_int()
+        return mupdf.fz_pixmap_samples_int(self.this)
 
     def save(self, filename, output=None, jpg_quality=95):
         """Output as image in format determined by filename extension.
@@ -9782,7 +9781,7 @@ class Pixmap:
                 alpha = data[k]
                 if zero_out:
                     for j in range(i, i+n):
-                        if pix.fz_samples_get(j) != colors[j - i]:
+                        if mupdf.fz_samples_get(pix, j) != colors[j - i]:
                             data_fix = 255
                             break
                         else:
@@ -9794,17 +9793,17 @@ class Pixmap:
                         return x // 256
 
                     if data_fix == 0:
-                        pix.fz_samples_set(i+n, 0)
+                        mupdf.fz_samples_set(pix, i+n, 0)
                     else:
-                        pix.fz_samples_set(i+n, alpha)
+                        mupdf.fz_samples_set(pix, i+n, alpha)
                     if premultiply and not bground:
                         denom = int(data[k])
                         for j in range(i, i+n):
-                            pix.fz_samples_set(j, fz_mul255( pix.fz_samples_get(j), alpha))
+                            mupdf.fz_samples_set(pix, j, fz_mul255( mupdf.fz_samples_get(pix, j), alpha))
                     elif bground:
                         for j in range( i, i+n):
                             m = bgcolor[j - i]
-                            pix.fz_samples_set(j, fz_mul255( pix.fz_samples_get(j) - m, alpha))
+                            mupdf.fz_samples_set(pix, j, fz_mul255( mupdf.fz_samples_get(pix, j) - m, alpha))
                 else:
                     pixsamples_set(i+n, data_fix)
                 i += n+1
@@ -10673,7 +10672,7 @@ class Shape:
             # make /Contents object with dummy stream
             xref = TOOLS._insert_contents(self.page, b" ", overlay)
             # update it with potential compression
-            self.doc.pdf_update_stream(xref, self.totalcont)
+            mupdf.pdf_update_stream(self.doc, xref, self.totalcont)
 
         self.lastPoint = None  # clean up ...
         self.rect = None  #
@@ -11948,10 +11947,10 @@ class TextPage:
             img = block.i_image()
             if hashes:
                 r = mupdf.FzIrect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
-                assert r.fz_is_infinite_irect()
+                assert mupdf.fz_is_infinite_irect(r)
                 m = mupdf.FzMatrix(img.w(), 0, 0, img.h(), 0, 0)
                 pix, w, h = mupdf.fz_get_pixmap_from_image(img, r, m)
-                digest = pix.fz_md5_pixmap()
+                digest = mupdf.fz_md5_pixmap2(pix)
                 digest = bytes(digest)
             cs = mupdf.FzColorspace(mupdf.ll_fz_keep_colorspace(img.m_internal.colorspace))
             block_dict = dict()
@@ -13473,7 +13472,7 @@ def _read_samples( pixmap, offset, n):
     # bytes or similar.
     ret = []
     for i in range( n):
-        ret.append( pixmap.fz_samples_get( offset + i))
+        ret.append( mupdf.fz_samples_get( pixmap, offset + i))
     return bytes( ret)
 
 
@@ -13560,7 +13559,7 @@ def JM_BinFromBuffer(buffer_):
     Turn fz_buffer into a Python bytes object
     '''
     assert isinstance(buffer_, mupdf.FzBuffer)
-    ret = buffer_.fz_buffer_extract_copy()
+    ret = mupdf.fz_buffer_extract_copy(buffer_)
     return ret
 
 
@@ -13608,7 +13607,7 @@ def JM_BufferFromBytes(stream):
             raise Exception(f'.getvalue() returned unexpected type: {type(data)}')
     else:
         return mupdf.FzBuffer()
-    return mupdf.FzBuffer.fz_new_buffer_from_copied_data(data)
+    return mupdf.fz_new_buffer_from_copied_data(data)
 
 
 def JM_FLOAT_ITEM(obj, idx):
@@ -13803,19 +13802,19 @@ def JM_annot_colors(annot_obj):
     res = dict()
     bc = list() # stroke colors
     fc =list()  # fill colors
-    o = annot_obj.pdf_dict_get(mupdf.PDF_ENUM_NAME_C)
-    if o.pdf_is_array():
-        n = o.pdf_array_len()
+    o = mupdf.pdf_dict_get(annot_obj, mupdf.PDF_ENUM_NAME_C)
+    if mupdf.pdf_is_array(o):
+        n = mupdf.pdf_array_len(o)
         for i in range(n):
-            col = o.pdf_array_get(i).pdf_to_real()
+            col = mupdf.pdf_to_real( mupdf.pdf_array_get(o, i))
             bc.append(col)
     res[dictkey_stroke] = bc
 
-    o = annot_obj.pdf_dict_gets("IC")
-    if o.pdf_is_array():
-        n = o.pdf_array_len()
+    o = mupdf.pdf_dict_gets(annot_obj, "IC")
+    if mupdf.pdf_is_array(o):
+        n = mupdf.pdf_array_len(o)
         for i in range(n):
-            col = o.pdf_array_get(i).pdf_to_real()
+            col = mupdf.pdf_to_real( mupdf.pdf_array_get(o, i))
             fc.append(col)
 
     res[dictkey_fill] = fc
@@ -14083,7 +14082,7 @@ def JM_choice_options(annot):
     #
     def pdf_choice_widget_options( annot, exportval):
         #log( '{=type(annot)}')
-        optarr = mupdf.pdf_dict_get_inheritable( annot.this.pdf_annot_obj(), PDF_NAME('Opt'))
+        optarr = mupdf.pdf_dict_get_inheritable( mupdf.pdf_annot_obj(annot.this), PDF_NAME('Opt'))
         #log( '{optarr=}')
         n = mupdf.pdf_array_len(optarr)
         opts = []
@@ -14192,7 +14191,7 @@ def JM_compress_buffer(inbuffer):
     if not data or compressed_length == 0:
         return None
     buf = mupdf.FzBuffer(mupdf.fz_new_buffer_from_data(data, compressed_length))
-    buf.fz_resize_buffer(compressed_length)
+    mupdf.fz_resize_buffer(buf, compressed_length)
     return buf;
 
 
@@ -14219,7 +14218,7 @@ def JM_copy_rectangle(page, area):
                 need_new_line = 1
     mupdf.fz_terminate_buffer(buffer_)
 
-    s = buffer_.fz_buffer_extract()   # take over the data
+    s = mupdf.fz_buffer_extract(buffer_)   # take over the data
     return s
 
 
@@ -14268,7 +14267,7 @@ def JM_convert_to_pdf(doc, fp, tp, rotate):
     res = mupdf.fz_new_buffer(8192)
     out = mupdf.FzOutput(res)
     mupdf.pdf_write_document(pdfout, out, opts)
-    c = res.fz_buffer_extract_copy()
+    c = mupdf.fz_buffer_extract_copy(res)
     assert isinstance(c, bytes)
     return c
 
@@ -14361,10 +14360,10 @@ def JM_delete_annot(page, annot):
     if not annot or not annot.m_internal:
         return
     # first get any existing popup for the annotation
-    popup = mupdf.pdf_dict_get(annot.pdf_annot_obj(), PDF_NAME('Popup'))
+    popup = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Popup'))
 
     # next delete the /Popup and /AP entries from annot dictionary
-    mupdf.pdf_dict_del(annot.pdf_annot_obj(), PDF_NAME('AP'))
+    mupdf.pdf_dict_del(mupdf.pdf_annot_obj(annot), PDF_NAME('AP'))
 
     annots = mupdf.pdf_dict_get(page.obj(), PDF_NAME('Annots'))
     assert annots.m_internal
@@ -14374,7 +14373,7 @@ def JM_delete_annot(page, annot):
         p = mupdf.pdf_dict_get(o, PDF_NAME('Parent'))
         if not p.m_internal:
             continue;
-        if not mupdf.pdf_objcmp(p, annot.pdf_annot_obj()):
+        if not mupdf.pdf_objcmp(p, mupdf.pdf_annot_obj(annot)):
             mupdf.pdf_array_delete(annots, i)
     assert annot.m_internal
     type_ = mupdf.pdf_annot_type(annot)
@@ -14407,13 +14406,13 @@ def JM_embed_file(
     f = mupdf.pdf_add_stream(
             pdf,
             #mupdf.fz_fz_new_buffer_from_copied_data(bs),
-            mupdf.FzBuffer.fz_new_buffer_from_copied_data(bs),
+            mupdf.fz_new_buffer_from_copied_data(bs),
             mupdf.PdfObj(),
             0,
             )
     mupdf.pdf_dict_put(ef, PDF_NAME('F'), f)
     JM_update_stream(pdf, f, buf, compress)
-    len_, _ = buf.fz_buffer_storage()
+    len_, _ = mupdf.fz_buffer_storage(buf)
     mupdf.pdf_dict_put_int(f, PDF_NAME('DL'), len_)
     mupdf.pdf_dict_put_int(f, PDF_NAME('Length'), len_)
     params = mupdf.pdf_dict_put_dict(f, PDF_NAME('Params'), 4)
@@ -14448,7 +14447,7 @@ def JM_embedded_clean(pdf):
 def JM_EscapeStrFromBuffer(buff):
     if not buff.m_internal:
         return ''
-    s = buff.fz_buffer_extract_copy()
+    s = mupdf.fz_buffer_extract_copy(buff)
     val = PyUnicode_DecodeRawUnicodeEscape(s, errors='replace')
     return val;
 
@@ -14538,7 +14537,7 @@ def JM_fill_pixmap_rect_with_color(dest, col, b):
         s = destp;
         for x in range(w):
             for i in range( dest.n()):
-                dest.fz_samples_set(s, col[i])
+                mupdf.fz_samples_set(dest, s, col[i])
                 s += 1
         destp += destspan
         y -= 1
@@ -14555,18 +14554,18 @@ def JM_find_annot_irt(annot):
     assert isinstance(annot, mupdf.PdfAnnot)
     found = 0;
     # loop thru MuPDF's internal annots array
-    page = annot.pdf_annot_page()
-    annotptr = page.pdf_first_annot()
+    page = mupdf.pdf_annot_page(annot)
+    annotptr = mupdf.pdf_first_annot(page)
     while 1:
         assert isinstance(annotptr, mupdf.PdfAnnot)
         if not annotptr.m_internal:
             break
-        o = mupdf.pdf_dict_gets(annotptr.pdf_annot_obj(), 'IRT')
+        o = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annotptr), 'IRT')
         if o:
-            if not mupdf.pdf_objcmp(o, annot.pdf_annot_obj()):
+            if not mupdf.pdf_objcmp(o, mupdf.pdf_annot_obj(annot)):
                 found = 1
                 break
-        annotptr = annotptr.pdf_next_annot()
+        annotptr = mupdf.pdf_next_annot(annotptr)
     return irt_annot if found else None
 
 
@@ -14602,35 +14601,35 @@ def JM_font_name(font):
 
 def JM_gather_fonts(pdf, dict_, fontlist, stream_xref):
     rc = 1
-    n = dict_.pdf_dict_len()
+    n = mupdf.pdf_dict_len(dict_)
     for i in range(n):
 
-        refname = dict_.pdf_dict_get_key(i)
-        fontdict = dict_.pdf_dict_get_val(i)
-        if not fontdict.pdf_is_dict():
-            mupdf.fz_warn( f"'{refname.pdf_to_name()}' is no font dict ({fontdict.pdf_to_num()} 0 R)")
+        refname = mupdf.pdf_dict_get_key(dict_, i)
+        fontdict = mupdf.pdf_dict_get_val(dict_, i)
+        if not mupdf.pdf_is_dict(fontdict):
+            mupdf.fz_warn( f"'{mupdf.pdf_to_name(refname)}' is no font dict ({mupdf.pdf_to_num(fontdict)} 0 R)")
             continue
 
-        subtype = fontdict.pdf_dict_get(mupdf.PDF_ENUM_NAME_Subtype)
-        basefont = fontdict.pdf_dict_get(mupdf.PDF_ENUM_NAME_BaseFont)
-        if not basefont.m_internal or basefont.pdf_is_null():
-            name = fontdict.pdf_dict_get(mupdf.PDF_ENUM_NAME_Name)
+        subtype = mupdf.pdf_dict_get(fontdict, mupdf.PDF_ENUM_NAME_Subtype)
+        basefont = mupdf.pdf_dict_get(fontdict, mupdf.PDF_ENUM_NAME_BaseFont)
+        if not basefont.m_internal or mupdf.pdf_is_null(basefont):
+            name = mupdf.pdf_dict_get(fontdict, mupdf.PDF_ENUM_NAME_Name)
         else:
             name = basefont
-        encoding = fontdict.pdf_dict_get(mupdf.PDF_ENUM_NAME_Encoding)
-        if encoding.pdf_is_dict():
-            encoding = encoding.pdf_dict_get(mupdf.PDF_ENUM_NAME_BaseEncoding)
-        xref = fontdict.pdf_to_num()
+        encoding = mupdf.pdf_dict_get(fontdict, mupdf.PDF_ENUM_NAME_Encoding)
+        if mupdf.pdf_is_dict(encoding):
+            encoding = mupdf.pdf_dict_get(encoding, mupdf.PDF_ENUM_NAME_BaseEncoding)
+        xref = mupdf.pdf_to_num(fontdict)
         ext = "n/a"
         if xref:
             ext = JM_get_fontextension(pdf, xref)
         entry = (
                 xref,
                 ext,
-                subtype.pdf_to_name(),
-                JM_EscapeStrFromStr(name.pdf_to_name()),
-                refname.pdf_to_name(),
-                encoding.pdf_to_name(),
+                mupdf.pdf_to_name(subtype),
+                JM_EscapeStrFromStr(mupdf.pdf_to_name(name)),
+                mupdf.pdf_to_name(refname),
+                mupdf.pdf_to_name(encoding),
                 stream_xref,
                 )
         fontlist.append(entry)
@@ -14742,11 +14741,11 @@ def JM_get_annot_by_xref(page, xref):
     assert isinstance(page, mupdf.PdfPage)
     found = 0
     # loop thru MuPDF's internal annots array
-    annot = page.pdf_first_annot()
+    annot = mupdf.pdf_first_annot(page)
     while 1:
         if not annot.m_internal:
             break
-        if xref == mupdf.pdf_to_num(annot.pdf_annot_obj()):
+        if xref == mupdf.pdf_to_num(mupdf.pdf_annot_obj(annot)):
             found = 1
             break
         annot = mupdf.pdf_next_annot( annot)
@@ -14764,16 +14763,16 @@ def JM_get_annot_by_name(page, name):
         return
     found = 0
     # loop thru MuPDF's internal annots and widget arrays
-    annot = page.pdf_first_annot()
+    annot = mupdf.pdf_first_annot(page)
     while 1:
         if not annot.m_internal:
             break
 
-        response, len_ = mupdf.pdf_to_string(mupdf.pdf_dict_gets(annot.pdf_annot_obj(), "NM"))
+        response, len_ = mupdf.pdf_to_string(mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "NM"))
         if name == response:
             found = 1
             break
-        annot = annot.pdf_next_annot()
+        annot = mupdf.pdf_next_annot(annot)
     if not found:
         raise Exception("'%s' is not an annot of this page" % name)
     return annot
@@ -14781,15 +14780,15 @@ def JM_get_annot_by_name(page, name):
 
 def JM_get_annot_id_list(page):
     names = []
-    annots = page.obj().pdf_dict_get( mupdf.PDF_ENUM_NAME_Annots)
+    annots = mupdf.pdf_dict_get( page.obj(), mupdf.PDF_ENUM_NAME_Annots)
     if not annots.m_internal:
         return names
-    for i in range( annots.pdf_array_len()):
-        annot_obj =annots.pdf_array_get(i)
-        name = annot_obj.pdf_dict_gets("NM")
+    for i in range( mupdf.pdf_array_len(annots)):
+        annot_obj = mupdf.pdf_array_get(annots, i)
+        name = mupdf.pdf_dict_gets(annot_obj, "NM")
         if name.m_internal:
             names.append(
-                name.pdf_to_text_string()
+                mupdf.pdf_to_text_string(name)
                 )
     return names
 
@@ -15217,7 +15216,7 @@ def JM_get_page_labels(liste, nums):
         pno = mupdf.pdf_to_int(key)
         val = mupdf.pdf_resolve_indirect( mupdf.pdf_array_get(nums, i + 1))
         res = JM_object_to_buffer(val, 1, 0)
-        c = res.fz_buffer_extract()
+        c = mupdf.fz_buffer_extract(res)
         assert isinstance(c, bytes)
         c = c.decode('utf-8')
         liste.append( (pno, c))
@@ -15569,14 +15568,14 @@ def JM_invert_pixmap_rect( dest, b):
         s = destp
         for x in range( w):
             for i in range( n0):
-                ss = dest.fz_samples_get( s)
+                ss = mupdf.fz_samples_get( dest, s)
                 ss = 255 - ss
-                dest.fz_samples_set( s, ss)
+                mupdf.fz_samples_set( dest, s, ss)
                 s += 1
             if alpha:
-                ss = dest.fz_samples_get( s)
+                ss = mupdf.fz_samples_get( dest, s)
                 ss += 1
-                dest.fz_samples_set( s, ss)
+                mupdf.fz_samples_set( dest, s, ss)
         destp += destspan
         y -= 1
         if y == 0:
@@ -15664,7 +15663,7 @@ def JM_make_annot_DA(annot, ncol, col, fontname, fontsize):
     else:
         buf += f'{col[0]:g} {col[1]:g} {col[2]:g} {col[3]:g} k '
     buf += f'/{JM_expand_fname(fontname)} {fontsize} Tf'
-    annot.pdf_annot_obj().pdf_dict_put_text_string(mupdf.PDF_ENUM_NAME_DA, buf)
+    mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(annot), mupdf.PDF_ENUM_NAME_DA, buf)
 
 
 def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
@@ -16146,8 +16145,8 @@ def JM_page_rotation(page):
     '''
     rotate = 0
 
-    obj = page.obj().pdf_dict_get_inheritable( mupdf.PDF_ENUM_NAME_Rotate)
-    rotate = obj.pdf_to_int()
+    obj = mupdf.pdf_dict_get_inheritable( page.obj(), mupdf.PDF_ENUM_NAME_Rotate)
+    rotate = mupdf.pdf_to_int(obj)
     rotate = JM_norm_rotation(rotate)
     return rotate
 
@@ -16159,8 +16158,8 @@ def JM_pdf_obj_from_str(doc, src):
     # fixme: seems inefficient to convert to bytes instance then make another
     # copy inside fz_new_buffer_from_copied_data(), but no other way?
     #
-    buffer_ = mupdf.FzBuffer.fz_new_buffer_from_copied_data(bytes(src, 'utf8'))
-    stream = buffer_.fz_open_buffer()
+    buffer_ = mupdf.fz_new_buffer_from_copied_data(bytes(src, 'utf8'))
+    stream = mupdf.fz_open_buffer(buffer_)
     lexbuf = mupdf.PdfLexbuf(mupdf.PDF_LEXBUF_SMALL)
     result = mupdf.pdf_parse_stm_obj(doc, stream, lexbuf)
     return result
@@ -16388,15 +16387,15 @@ def JM_read_contents(pageref):
     Read and concatenate a PDF page's /Conents object(s) in a buffer
     '''
     assert isinstance(pageref, mupdf.PdfObj), f'{type(pageref)}'
-    contents = pageref.pdf_dict_get(mupdf.PDF_ENUM_NAME_Contents)
-    if contents.pdf_is_array():
+    contents = mupdf.pdf_dict_get(pageref, mupdf.PDF_ENUM_NAME_Contents)
+    if mupdf.pdf_is_array(contents):
         res = mupdf.FzBuffer(1024)
-        for i in range(contents.pdf_array_len()):
-            obj = contents.pdf_array_get(i)
-            nres = obj.pdf_load_stream()
-            res.fz_append_buffer(nres)
+        for i in range(mupdf.pdf_array_len(contents)):
+            obj = mupdf.pdf_array_get(contents, i)
+            nres = mupdf.pdf_load_stream(obj)
+            mupdf.fz_append_buffer(res, nres)
     elif contents.m_internal:
-        res = contents.pdf_load_stream()
+        res = mupdf.pdf_load_stream(contents)
     return res
 
 
@@ -16564,14 +16563,14 @@ def JM_scan_resources(pdf, rsrc, liste, what, stream_xref, tracer):
     '''
     Step through /Resources, looking up image, xobject or font information
     '''
-    if rsrc.pdf_mark_obj():
+    if mupdf.pdf_mark_obj(rsrc):
         mupdf.fz_warn('Circular dependencies! Consider page cleaning.')
         return  # Circular dependencies!
     try:
-        xobj = rsrc.pdf_dict_get(mupdf.PDF_ENUM_NAME_XObject)
+        xobj = mupdf.pdf_dict_get(rsrc, mupdf.PDF_ENUM_NAME_XObject)
 
         if what == 1:   # lookup fonts
-            font = rsrc.pdf_dict_get(mupdf.PDF_ENUM_NAME_Font)
+            font = mupdf.pdf_dict_get(rsrc, mupdf.PDF_ENUM_NAME_Font)
             JM_gather_fonts(pdf, font, liste, stream_xref)
         elif what == 2: # look up images
             JM_gather_images(pdf, xobj, liste, stream_xref)
@@ -16581,14 +16580,14 @@ def JM_scan_resources(pdf, rsrc, liste, what, stream_xref, tracer):
             return
 
         # check if we need to recurse into Form XObjects
-        n = xobj.pdf_dict_len()
+        n = mupdf.pdf_dict_len(xobj)
         for i in range(n):
-            obj = xobj.pdf_dict_get_val(i)
-            if obj.pdf_is_stream():
-                sxref = obj.pdf_to_num()
+            obj = mupdf.pdf_dict_get_val(xobj, i)
+            if mupdf.pdf_is_stream(obj):
+                sxref = mupdf.pdf_to_num(obj)
             else:
                 sxref = 0
-            subrsrc = obj.pdf_dict_get(mupdf.PDF_ENUM_NAME_Resources)
+            subrsrc = mupdf.pdf_dict_get(obj, mupdf.PDF_ENUM_NAME_Resources)
             if subrsrc.m_internal:
                 sxref_t = sxref
                 if sxref_t not in tracer:
@@ -16598,7 +16597,7 @@ def JM_scan_resources(pdf, rsrc, liste, what, stream_xref, tracer):
                     mupdf.fz_warn('Circular dependencies! Consider page cleaning.');
                     return
     finally:
-        rsrc.pdf_unmark_obj()
+        mupdf.pdf_unmark_obj(rsrc)
 
 
 def JM_set_choice_options(annot, liste):
@@ -16952,7 +16951,7 @@ def JM_set_widget_properties(annot, Widget):
 
 
 def JM_UnicodeFromBuffer(buff):
-    buff_bytes = buff.fz_buffer_extract_copy()
+    buff_bytes = mupdf.fz_buffer_extract_copy(buff)
     val = buff_bytes.decode(errors='replace')
     z = val.find(chr(0))
     if z >= 0:
@@ -16965,22 +16964,23 @@ def JM_update_stream(doc, obj, buffer_, compress):
     update a stream object
     compress stream when beneficial
     '''
-    len_, _ = buffer_.fz_buffer_storage()
+    len_, _ = mupdf.fz_buffer_storage(buffer_)
     nlen = len_
 
     if len_ > 30:   # ignore small stuff
         nres = JM_compress_buffer(buffer_)
         assert isinstance(nres, mupdf.FzBuffer)
-        nlen, _ = nres.fz_buffer_storage()
+        nlen, _ = mupdf.fz_buffer_storage(nres)
 
     if nlen < len_ and nres and compress==1:   # was it worth the effort?
-        obj.pdf_dict_put(
+        mupdf.pdf_dict_put(
+                obj,
                 mupdf.PDF_ENUM_NAME_Filter,
                 mupdf.PDF_ENUM_NAME_FlateDecode,
                 )
-        doc.pdf_update_stream(obj, nres, 1)
+        mupdf.pdf_update_stream(doc, obj, nres, 1)
     else:
-        doc.pdf_update_stream(obj, buffer_, 0);
+        mupdf.pdf_update_stream(doc, obj, buffer_, 0);
 
 
 def JM_xobject_from_page(pdfout, fsrcpage, xref, gmap):
@@ -20129,44 +20129,44 @@ def pdfobj_string(o, prefix=''):
     '''
     assert 0, 'use mupdf.pdf_debug_obj() ?'
     ret = ''
-    if o.pdf_is_array():
-        l = o.pdf_array_len()
+    if mupdf.pdf_is_array(o):
+        l = mupdf.pdf_array_len(o)
         ret += f'array {l}\n'
         for i in range(l):
-            oo = o.pdf_array_get(i)
+            oo = mupdf.pdf_array_get(o, i)
             ret += pdfobj_string(oo, prefix + '    ')
             ret += '\n'
-    elif o.pdf_is_bool():
+    elif mupdf.pdf_is_bool(o):
         ret += f'bool: {o.array_get_bool()}\n'
-    elif o.pdf_is_dict():
-        l = o.pdf_dict_len()
+    elif mupdf.pdf_is_dict(o):
+        l = mupdf.pdf_dict_len(o)
         ret += f'dict {l}\n'
         for i in range(l):
-            key = o.pdf_dict_get_key(i)
-            value = o.pdf_dict_get( key)
+            key = mupdf.pdf_dict_get_key(o, i)
+            value = mupdf.pdf_dict_get( o, key)
             ret += f'{prefix} {key}: '
             ret += pdfobj_string( value, prefix + '    ')
             ret += '\n'
-    elif o.pdf_is_embedded_file():
+    elif mupdf.pdf_is_embedded_file(o):
         ret += f'embedded_file: {o.embedded_file_name()}\n'
-    elif o.pdf_is_indirect():
+    elif mupdf.pdf_is_indirect(o):
         ret += f'indirect: ...\n'
-    elif o.pdf_is_int():
-        ret += f'int: {o.pdf_to_int()}\n'
-    elif o.pdf_is_jpx_image():
+    elif mupdf.pdf_is_int(o):
+        ret += f'int: {mupdf.pdf_to_int(o)}\n'
+    elif mupdf.pdf_is_jpx_image(o):
         ret += f'jpx_image:\n'
-    elif o.pdf_is_name():
-        ret += f'name: {o.pdf_to_name()}\n'
+    elif mupdf.pdf_is_name(o):
+        ret += f'name: {mupdf.pdf_to_name(o)}\n'
     elif o.pdf_is_null:
         ret += f'null\n'
     #elif o.pdf_is_number:
     #    ret += f'number\n'
     elif o.pdf_is_real:
         ret += f'real: {o.pdf_to_real()}\n'
-    elif o.pdf_is_stream():
+    elif mupdf.pdf_is_stream(o):
         ret += f'stream\n'
-    elif o.pdf_is_string():
-        ret += f'string: {o.pdf_to_string()}\n'
+    elif mupdf.pdf_is_string(o):
+        ret += f'string: {mupdf.pdf_to_string(o)}\n'
     else:
         ret += '<>\n'
 
@@ -20479,7 +20479,7 @@ class TOOLS:
 
     @staticmethod
     def _get_all_contents(page):
-        page = page.this.pdf_page_from_fz_page()
+        page = mupdf.pdf_page_from_fz_page(page.this)
         res = JM_read_contents(page.obj())
         result = JM_BinFromBuffer( res)
         return result
@@ -20811,9 +20811,9 @@ class TOOLS:
             try:
                 this_annot = annot.this
                 assert isinstance(this_annot, mupdf.PdfAnnot)
-                mupdf.pdf_dict_put_text_string(this_annot.pdf_annot_obj(), PDF_NAME('DA'), da_str)
-                mupdf.pdf_dict_del(this_annot.pdf_annot_obj(), PDF_NAME('DS'))    # /* not supported */
-                mupdf.pdf_dict_del(this_annot.pdf_annot_obj(), PDF_NAME('RC'))    # /* not supported */
+                mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(this_annot), PDF_NAME('DA'), da_str)
+                mupdf.pdf_dict_del(mupdf.pdf_annot_obj(this_annot), PDF_NAME('DS'))    # /* not supported */
+                mupdf.pdf_dict_del(mupdf.pdf_annot_obj(this_annot), PDF_NAME('RC'))    # /* not supported */
             except Exception as e:
                 if g_exceptions_verbose:    exception_info()
                 return

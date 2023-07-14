@@ -1851,14 +1851,6 @@ int ll_fz_absi(int i)
     return mupdf::ll_fz_absi(i);
 }
 
-static std::string getMetadata(mupdf::FzDocument& doc, const char* key)
-{
-    int out;
-    std::string value = doc.fz_lookup_metadata(key, &out);
-    return value;
-}
-
-
 enum
 {
     TEXT_FONT_SUPERSCRIPT = 1,
@@ -4239,8 +4231,6 @@ mupdf::FzDocument Document_init(
         );
 
 int ll_fz_absi(int i);
-
-static std::string getMetadata(mupdf::FzDocument& doc, const char* key);
 
 mupdf::FzDevice JM_new_texttrace_device(PyObject* out);
 
