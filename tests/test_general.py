@@ -256,6 +256,24 @@ def test_texttrace():
             print( f'page {i} json:\n{json.dumps(tt, indent="    ")}', file=f)
 
 
+def test_2533():
+    """Assert correct char bbox in page.get_texttrace().
+
+    Search for a unique char on page and confirm that page.get_texttrace()
+    returns the same bbox as the search method.
+    """
+    doc = fitz.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
+    page = doc[0]
+    NEEDLE = "民"
+    ord_NEEDLE = ord(NEEDLE)
+    for span in page.get_texttrace():
+        for char in span["chars"]:
+            if char[0] == ord_NEEDLE:
+                bbox = fitz.Rect(char[3])
+                break
+    assert page.search_for(NEEDLE)[0] == bbox
+
+
 def test_2506():
     """Ensure expected font size across text writing angles."""
     doc = fitz.open()

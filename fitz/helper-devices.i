@@ -601,9 +601,11 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	const char *fontname = JM_font_name(ctx, span->font);
 	float rgb[3];
 	PyObject *chars = PyTuple_New(span->len);
-	fz_matrix join = fz_concat(span->trm, ctm);
-	fz_point dir = fz_transform_vector(fz_make_point(1, 0), join);
-	double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d));
+	fz_matrix mat = fz_concat(span->trm, ctm); // text transformation matrix
+	fz_point dir = fz_transform_vector(fz_make_point(1, 0), mat); // writing direction
+	dir = fz_normalize_vector(dir);
+
+	double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d)); // font size
 	double linewidth, adv, asc, dsc;
 	double space_adv = 0;
 	float x0, y0, x1, y1;
@@ -613,34 +615,34 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		dsc = -0.1;
 		asc = 0.9;
 	}
-
+	// compute effective ascender / descender
 	double ascsize = asc * fsize / (asc - dsc);
 	double dscsize = dsc * fsize / (asc - dsc);
-	int fflags = 0;
+
+	int fflags = 0; // font flags
 	int mono = fz_font_is_monospaced(ctx, span->font);
 	fflags += mono * TEXT_FONT_MONOSPACED;
 	fflags += fz_font_is_italic(ctx, span->font) * TEXT_FONT_ITALIC;
 	fflags += fz_font_is_serif(ctx, span->font) * TEXT_FONT_SERIFED;
 	fflags += fz_font_is_bold(ctx, span->font) * TEXT_FONT_BOLD;
-	fz_matrix mat = trace_device_ptm;
-	fz_matrix ctm_rot = fz_concat(ctm, trace_device_rot);
-	mat = fz_concat(mat, ctm_rot);
 
-	if (dev_linewidth > 0) {
+	if (dev_linewidth > 0) {  // width of character border
 		linewidth = (double) dev_linewidth;
 	} else {
-		linewidth = fsize * 0.05;
+		linewidth = fsize * 0.05;  // default: 5% of font size
 	}
 	fz_point char_orig;
 	double last_adv = 0;
 
 	// walk through characters of span
 	fz_rect span_bbox;
-	dir = fz_normalize_vector(dir);
 	fz_matrix rot = fz_make_matrix(dir.x, dir.y, -dir.y, dir.x, 0, 0);
 	if (dir.x == -1) {  // left-right flip
 		rot.d = 1;
 	}
+
+	//PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
+	//PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
 
 	for (i = 0; i < span->len; i++) {
 		adv = 0;
@@ -653,14 +655,14 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 			space_adv = adv;
 		}
 		char_orig = fz_make_point(span->items[i].x, span->items[i].y);
-		char_orig.y = trace_device_ptm.f - char_orig.y;
-		char_orig = fz_transform_point(char_orig, mat);
+		char_orig = fz_transform_point(char_orig, ctm);
 		fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -char_orig.x, -char_orig.y);
 		m1 = fz_concat(m1, rot);
 		m1 = fz_concat(m1, fz_make_matrix(1, 0, 0, 1, char_orig.x, char_orig.y));
 		x0 = char_orig.x;
 		x1 = x0 + adv;
-		if (dir.x == 1 && span->trm.d < 0) {  // up-down flip
+		if (mat.d > 0 && (dir.x == 1 || dir.x == -1) ||
+		    mat.b !=0 && mat.b == -mat.c) {  // up-down flip
 			y0 = char_orig.y + dscsize;
 			y1 = char_orig.y + ascsize;
 		} else {
@@ -688,7 +690,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 				space_adv = last_adv;
 			}
 		} else {
-			space_adv = last_adv; // for mono fonts this suffices
+			space_adv = last_adv; // for mono, any char width suffices
 		}
 	}
 	// make the span dictionary
@@ -701,24 +703,25 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	DICT_SETITEMSTR_DROP(span_dict, "bidi_dir", PyLong_FromLong((long) span->markup_dir));
 	DICT_SETITEM_DROP(span_dict, dictkey_ascender, PyFloat_FromDouble(asc));
 	DICT_SETITEM_DROP(span_dict, dictkey_descender, PyFloat_FromDouble(dsc));
+	DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(3));
+
 	if (colorspace) {
 		fz_convert_color(ctx, colorspace, color, fz_device_rgb(ctx),
 						 rgb, NULL, fz_default_color_params);
-		DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(3));
-		DICT_SETITEM_DROP(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
 	} else {
-		DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(1));
-		DICT_SETITEM_DROP(span_dict, dictkey_color, PyFloat_FromDouble(1));
+		rgb[0] = rgb[1] = rgb[2] = 0;
 	}
+
+	DICT_SETITEM_DROP(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
 	DICT_SETITEM_DROP(span_dict, dictkey_size, PyFloat_FromDouble(fsize));
 	DICT_SETITEMSTR_DROP(span_dict, "opacity", PyFloat_FromDouble((double) alpha));
 	DICT_SETITEMSTR_DROP(span_dict, "linewidth", PyFloat_FromDouble((double) linewidth));
 	DICT_SETITEMSTR_DROP(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
 	DICT_SETITEM_DROP(span_dict, dictkey_type, PyLong_FromLong((long) type));
-	DICT_SETITEM_DROP(span_dict, dictkey_chars, chars);
 	DICT_SETITEM_DROP(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
 	DICT_SETITEMSTR_DROP(span_dict, "layer", JM_EscapeStrFromStr(layer_name));
 	DICT_SETITEMSTR_DROP(span_dict, "seqno", PyLong_FromSize_t(seqno));
+	DICT_SETITEM_DROP(span_dict, dictkey_chars, chars);
 	LIST_APPEND_DROP(out, span_dict);
 }
 
