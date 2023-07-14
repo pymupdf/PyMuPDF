@@ -150,7 +150,7 @@ def _as_fz_document(document):
     elif isinstance(document, mupdf.PdfDocument):
         return self.this.super()
     else:
-        assert 0, f'Unrecognised type(document)={type(document)}'
+        assert 0, f'Unrecognised {type(document)=}'
 
 def _as_pdf_document(document):
     '''
@@ -163,7 +163,7 @@ def _as_pdf_document(document):
         return document
     if isinstance(document, mupdf.FzDocument):
         return mupdf.PdfDocument(document)
-    assert 0, f'Unrecognised type(document)={type(document)}'
+    assert 0, f'Unrecognised {type(document)=}'
 
 def _as_fz_page(page):
     '''
@@ -175,7 +175,7 @@ def _as_fz_page(page):
         return page.super()
     elif isinstance(page, mupdf.FzPage):
         return page
-    assert 0, f'Unrecognised type(page)={type(page)}'
+    assert 0, f'Unrecognised {type(page)=}'
 
 
 # Fixme: we don't implement JM_MEMORY.
@@ -611,7 +611,7 @@ class Annot:
             ret = Page(page, document)
             #self.parent = weakref.proxy( ret)
             self.parent = ret
-            print(f'No attribute .parent: type(self)={type(self)} id(self)={id(self)}: have set id(self.parent)={id(self.parent)}.')
+            print(f'No attribute .parent: {type(self)=} {id(self)=}: have set {id(self.parent)=}.')
             #print( f'Have set self.parent')
         return ret
 
@@ -2130,7 +2130,7 @@ class Xml:
         elif align == TEXT_ALIGN_JUSTIFY:
             t = "justify"
         else:
-            raise ValueError(f"Unrecognised align={align}")
+            raise ValueError(f"Unrecognised {align=}")
         text = text % t
         self.add_style(text)
         return self
@@ -2442,7 +2442,7 @@ class DisplayList:
         elif len(args) == 1 and isinstance(args[0], mupdf.FzDisplayList):
             self.this = args[0]
         else:
-            assert 0, f'Unrecognised args={args}'
+            assert 0, f'Unrecognised {args=}'
 
     def get_pixmap(self, matrix=None, colorspace=None, alpha=0, clip=None):
         if not colorspace:
@@ -2656,8 +2656,8 @@ class Document:
                         handler = mupdf.ll_fz_recognize_document(filetype);
                         if handler:
                             if handler.open:
-                                #log( f'handler.open={handler.open}')
-                                #log( f'dir(handler.open)={dir(handler.open)}')
+                                #log( f'{handler.open=}')
+                                #log( f'{dir(handler.open)=}')
                                 try:
                                     doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
                                 except Exception as e:
@@ -3044,7 +3044,7 @@ class Document:
         mylimit = limit;
         if mylimit < 256:
             mylimit = 256
-        ASSERT_PDF(pdf), f'pdf={pdf}'
+        ASSERT_PDF(pdf), f'{pdf=}'
         if ordering >= 0:
             data, size, index = mupdf.fz_lookup_cjk_font(ordering);
             font = mupdf.fz_new_font_from_memory(None, data, size, index, 0);
@@ -3320,7 +3320,7 @@ class Document:
             return self.this
         if isinstance(self.this, mupdf.PdfDocument):
             return self.this.super()
-        assert 0, f'Unrecognised type(self.this)={type(self.this)}'
+        assert 0, f'Unrecognised {type(self.this)=}'
 
     def _this_as_pdf_document(self):
         '''
@@ -3332,7 +3332,7 @@ class Document:
             return self.this
         if isinstance(self.this, mupdf.FzDocument):
             return mupdf.PdfDocument(self.this)
-        assert 0, f'Unrecognised type(self.this)={type(self.this)}'
+        assert 0, f'Unrecognised {type(self.this)=}'
 
     def _update_toc_item(self, xref, action=None, title=None, flags=0, collapse=None, color=None):
         '''
@@ -3411,7 +3411,7 @@ class Document:
         if not intent:
             mupdf.pdf_array_push(intents, PDF_NAME('View'))
         elif not isinstance(intent, str):
-            assert 0, f'fixme: intent is not a str. type(intent)={type(intent)} type={type!r}'
+            assert 0, f'fixme: intent is not a str. {type(intent)=} {type=}'
             #n = len(intent)
             #for i in range(n):
             #    item = intent[i]
@@ -7357,7 +7357,7 @@ class Page:
         if not mupdf.pdf_dict_get( page.obj(), PDF_NAME('Annots')).m_internal:
             mupdf.pdf_dict_put_array( page.obj(), PDF_NAME('Annots'), lcount)
         annots = mupdf.pdf_dict_get( page.obj(), PDF_NAME('Annots'))
-        assert annots.m_internal, f'lcount={lcount} annots.m_internal={annots.m_internal}'
+        assert annots.m_internal, f'{lcount=} {annots.m_internal=}'
         for i in range(lcount):
             txtpy = linklist[i]
             text = JM_StrAsChar(txtpy)
@@ -7453,7 +7453,7 @@ class Page:
         elif isinstance(page, mupdf.PdfPage):
             page = page.super()
         else:
-            assert 0, f'Unrecognised type(page)={type(page)}'
+            assert 0, f'Unrecognised {type(page)=}'
         mupdf.fz_run_page(page, dev, ctm, mupdf.FzCookie())
         mupdf.fz_close_device(dev)
         return tpage
@@ -8351,7 +8351,7 @@ class Page:
         if isinstance(page, mupdf.PdfPage):
             # Downcast pdf_page to fz_page.
             page = mupdf.FzPage(page)
-        assert isinstance(page, mupdf.FzPage), f'self.this={self.this}'
+        assert isinstance(page, mupdf.FzPage), f'{self.this=}'
         clips = True if extended else False
         prect = mupdf.fz_bound_page(page)
         if g_use_extra:
@@ -9212,7 +9212,7 @@ class Pixmap:
 
         elif args_match(args, (Pixmap, mupdf.FzPixmap), (float, int), (float, int), None):
             # create pixmap as scaled copy of another one
-            assert 0, f'Cannot handle args={args} because fz_scale_pixmap() and fz_scale_pixmap_cached() are not declared in MuPDF headers'
+            assert 0, f'Cannot handle {args=} because fz_scale_pixmap() and fz_scale_pixmap_cached() are not declared in MuPDF headers'
             spix, w, h, clip = args
             src_pix = spix.this if isinstance(spix, Pixmap) else spix
             bbox = JM_irect_from_py(clip)
@@ -9329,7 +9329,7 @@ class Pixmap:
                 size, c = mupdf.fz_buffer_storage(res)
                 samples2 = mupdf.python_buffer_data(samples) # raw swig proxy for `const unsigned char*`.
             if stride * h != size:
-                raise ValueError( f"bad samples length w={w} h={h} alpha={alpha} n={n} stride={stride} size={size}")
+                raise ValueError( f"bad samples length {w=} {h=} {alpha=} {n=} {stride=} {size=}")
             mupdf.ll_fz_pixmap_copy_raw( pm.m_internal, samples2)
             self.this = pm
 
@@ -11595,7 +11595,7 @@ class Story:
                 attr = x.get_attribute_value("id")
                 if not attr:
                     id_ = f"h_id_{i}"
-                    #print(f"name={name}: setting id={id_}")
+                    #log(f"{name=}: setting {id_=}")
                     x.set_attribute("id", id_)
                     i += 1
             x = x.find_next(None, None, None)
@@ -11785,7 +11785,7 @@ class Story:
 
             positions = list()
             def positionfn2(position):
-                #log(f"write_stabilized(): stable={stable} positionfn={positionfn} position={position}")
+                #log(f"write_stabilized(): {stable=} {positionfn=} {position=}")
                 positions.append(position)
                 if stable and positionfn:
                     positionfn(position)
@@ -11805,7 +11805,7 @@ class Story:
         writer = DocumentWriter(stream)
         positions = []
         def positionfn2(position):
-            #log(f"write_stabilized_with_links(): position={position}")
+            #log(f"write_stabilized_with_links(): {position=}")
             positions.append(position)
             if positionfn:
                 positionfn(position)
@@ -11820,7 +11820,7 @@ class Story:
         writer = DocumentWriter(stream)
         positions = []
         def positionfn2(position):
-            #log(f"write_with_links(): position={position}")
+            #log(f"write_with_links(): {position=}")
             positions.append(position)
             if positionfn:
                 positionfn(position)
@@ -12613,7 +12613,7 @@ if 1:
                     #assert not inspect.isroutine(value)
                     #print(f'fitz/__init__.py: importing {name}')
                     setattr(self, name, value)
-                    #print(f'fitz/__init__.py: getattr( self, name, None)={getattr( self, name, None)}')
+                    #print(f'fitz/__init__.py: {getattr( self, name, None)=}')
     else:
         # This is slow due to importing inspect, e.g. 0.019 instead of 0.004.
         for name, value in inspect.getmembers(mupdf):
@@ -12625,7 +12625,7 @@ if 1:
                     #assert not inspect.isroutine(value)
                     #print(f'fitz/__init__.py: importing {name}')
                     setattr(self, name, value)
-                    #print(f'fitz/__init__.py: getattr( self, name, None)={getattr( self, name, None)}')
+                    #print(f'fitz/__init__.py: {getattr( self, name, None)=}')
     
     # This is a macro so not preserved in mupdf C++/Python bindings.
     #
@@ -13523,7 +13523,7 @@ def _remove_dest_range(pdf, numbers):
 
 
 def ASSERT_PDF(cond):
-    assert isinstance(cond, (mupdf.PdfPage, mupdf.PdfDocument)), f'type(cond)={type(cond)} cond={cond}'
+    assert isinstance(cond, (mupdf.PdfPage, mupdf.PdfDocument)), f'{type(cond)=} {cond=}'
     if not cond.m_internal:
         raise Exception('not a PDF')
 
@@ -13591,7 +13591,7 @@ def JM_EscapeStrFromStr(c):
     #
     if c is None:
         return ''
-    assert isinstance(c, str), f'type(c)={type(c)!r}'
+    assert isinstance(c, str), f'{type(c)=}'
     b = c.encode('utf8', 'surrogateescape')
     ret = ''
     for bb in b:
@@ -13727,7 +13727,7 @@ def JM_UnicodeFromStr(s):
         return ''
     if isinstance(s, bytes):
         s = s.decode('utf8')
-    assert isinstance(s, str), f'type(s)={type(s)} s={s}'
+    assert isinstance(s, str), f'{type(s)=} {s=}'
     return s
 
 
@@ -14284,9 +14284,9 @@ def JM_convert_to_pdf(doc, fp, tp, rotate):
 def JM_create_widget(doc, page, type, fieldname):
     old_sigflags = mupdf.pdf_to_int(mupdf.pdf_dict_getp(mupdf.pdf_trailer(doc), "Root/AcroForm/SigFlags"))
     #log( '*** JM_create_widget()')
-    #log( f'mupdf.pdf_create_annot_raw={mupdf.pdf_create_annot_raw}')
-    #log( f'page={page}')
-    #log( f'mupdf.PDF_ANNOT_WIDGET={mupdf.PDF_ANNOT_WIDGET}')
+    #log( f'{mupdf.pdf_create_annot_raw=}')
+    #log( f'{page=}')
+    #log( f'{mupdf.PDF_ANNOT_WIDGET=}')
     annot = mupdf.pdf_create_annot_raw(page, mupdf.PDF_ANNOT_WIDGET)
     annot_obj = mupdf.pdf_annot_obj(annot)
     try:
@@ -15001,7 +15001,7 @@ def JM_get_widget_properties(annot, Widget):
     Populate a Python Widget object with the values from a PDF form field.
     Called by "Page.first_widget" and "Widget.next".
     '''
-    #log( 'type(annot)={type(annot)}')
+    #log( '{type(annot)=}')
     annot_obj = mupdf.pdf_annot_obj(annot.this)
     #log( 'Have called mupdf.pdf_annot_obj()')
     page = mupdf.pdf_annot_page(annot.this)
@@ -16187,7 +16187,7 @@ def JM_pixmap_from_display_list(
     assert isinstance(list_, mupdf.FzDisplayList)
     if seps is None:
         seps = mupdf.FzSeparations()
-    assert seps is None or isinstance(seps, mupdf.FzSeparations), f'type={type(seps)}: {seps}'
+    assert seps is None or isinstance(seps, mupdf.FzSeparations), f'{type(seps)=}: {seps}'
 
     rect = mupdf.fz_bound_display_list(list_)
     matrix = JM_matrix_from_py(ctm)
@@ -16279,8 +16279,8 @@ def JM_print_stext_page_as_text(out, page):
                         utf = mupdf.fz_runetochar2(last_char)
                         #log( '{=last_char!r utf!r}')
                         for c in utf:
-                            assert isinstance(c, int), f'type(c)={type(c)} c={c}'
-                            assert 0 <= c < 256, f'utf={utf!r} cc={c}'
+                            assert isinstance(c, int), f'{type(c)=} {c=}'
+                            assert 0 <= c < 256, f'{utf=} {c=}'
                             mupdf.fz_write_byte(out, c)
                 if last_char != 10 and last_char > 0:
                     mupdf.fz_write_string(out, "\n")
@@ -16541,10 +16541,10 @@ def JM_search_stext_page(page, needle):
                 haystack += 1
                 #next_char:;
             assert haystack_string[haystack] == '\n', \
-                    f'haystack={haystack} haystack_string[haystack]={haystack_string[haystack]}'
+                    f'{haystack=} {haystack_string[haystack]=}'
             haystack += 1
         assert haystack_string[haystack] == '\n', \
-                f'haystack={haystack} haystack_string[haystack]={haystack_string[haystack]}'
+                f'{haystack=} {haystack_string[haystack]=}'
         haystack += 1
     #no_more_matches:;
     return quads
@@ -16779,7 +16779,7 @@ def JM_set_widget_properties(annot, Widget):
     '''
     if isinstance( annot, Annot):
         annot = annot.this
-    assert isinstance( annot, mupdf.PdfAnnot), f'type(annot)={type(annot)} type={type}'
+    assert isinstance( annot, mupdf.PdfAnnot), f'{type(annot)=} {type=}'
     page = mupdf.pdf_annot_page(annot)
     annot_obj = mupdf.pdf_annot_obj(annot)
     pdf = page.doc()
@@ -16995,7 +16995,7 @@ def JM_xobject_from_page(pdfout, fsrcpage, xref, gmap):
     Make an XObject from a PDF page
     For a positive xref assume that its object can be used instead
     '''
-    assert isinstance(gmap, mupdf.PdfGraftMap), f'type(gmap)={type(gmap)}'
+    assert isinstance(gmap, mupdf.PdfGraftMap), f'{type(gmap)=}'
     if xref > 0:
         xobj1 = mupdf.pdf_new_indirect(pdfout, xref, 0)
     else:
@@ -17143,7 +17143,7 @@ def CheckMorph(o: typing.Any) -> bool:
 def CheckParent(o: typing.Any):
     return
     if not hasattr(o, "parent") or o.parent is None:
-        raise ValueError(f"orphaned object type(o)={type(o)}: parent is None")
+        raise ValueError(f"orphaned object {type(o)=}: parent is None")
 
 
 def CheckQuad(q: typing.Any) -> bool:
@@ -19745,7 +19745,7 @@ def util_invert_matrix(matrix):
             matrix = mupdf.FzMatrix( matrix)
         elif isinstance( matrix, Matrix):
             matrix = mupdf.FzMatrix( matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f)
-        assert isinstance( matrix, mupdf.FzMatrix), f'type(matrix)={type(matrix)}: {matrix}'
+        assert isinstance( matrix, mupdf.FzMatrix), f'{type(matrix)=}: {matrix}'
         ret = mupdf.fz_invert_matrix( matrix)
         if ret == matrix and (0
                 or abs( matrix.a - 1) >= sys.float_info.epsilon
