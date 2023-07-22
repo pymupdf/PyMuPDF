@@ -581,6 +581,12 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
         SETATTR_DROP(Widget, "script_calc",
             JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(C), NULL)));
+
+        SETATTR_DROP(Widget, "script_blur",
+            JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Bl), NULL)));
+
+        SETATTR_DROP(Widget, "script_focus",
+            JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Fo), NULL)));
     }
     fz_always(ctx) PyErr_Clear();
     fz_catch(ctx) fz_rethrow(ctx);
@@ -788,6 +794,16 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     JM_put_script(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(C), value);
     Py_CLEAR(value);
 
+    // script (/AA/Bl) ------------------------------------------------------
+    value = GETATTR("script_blur");
+    JM_put_script(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Bl), value);
+    Py_CLEAR(value);
+
+    // script (/AA/Fo) ------------------------------------------------------
+    value = GETATTR("script_focus");
+    JM_put_script(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Fo), value);
+    Py_CLEAR(value);
+
     // field value ------------------------------------------------------------
     value = GETATTR("field_value");  // field value
     char *text = JM_StrAsChar(value);  // convert to text (may fail!)
@@ -877,6 +893,8 @@ class Widget(object):
         self.script_format = None  # JavaScript (/AA/F)
         self.script_change = None  # JavaScript (/AA/V)
         self.script_calc = None  # JavaScript (/AA/C)
+        self.script_blur = None  # JavaScript (/AA/Bl)
+        self.script_focus = None  # JavaScript (/AA/Fo)
 
         self.rect = None  # annot value
         self.xref = 0  # annot value
@@ -940,6 +958,16 @@ class Widget(object):
             self.script_stroke = None
         elif type(self.script_stroke) is not str:
             raise ValueError("script_stroke content must be a string")
+
+        if btn_type or not self.script_blur:
+            self.script_blur = None
+        elif type(self.script_blur) is not str:
+            raise ValueError("script_blur content must be a string")
+
+        if btn_type or not self.script_focus:
+            self.script_focus = None
+        elif type(self.script_focus) is not str:
+            raise ValueError("script_focus content must be a string")
 
         self._checker()  # any field_type specific checks
 
@@ -1081,7 +1109,7 @@ class Widget(object):
 
     def on_state(self):
         """Return the "On" value for button widgets.
-        
+
         This is useful for radio buttons mainly. Checkboxes will always return
         "Yes". Radio buttons will return the string that is unequal to "Off"
         as returned by method button_states().

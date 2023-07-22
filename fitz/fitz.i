@@ -14632,6 +14632,10 @@ struct Tools
                 widget.script_change = None
             if not widget.script_calc:
                 widget.script_calc = None
+            if not widget.script_blur:
+                widget.script_blur = None
+            if not widget.script_focus:
+                widget.script_focus = None
         %}
         PyObject *_fill_widget(struct Annot *annot, PyObject *widget)
         {
