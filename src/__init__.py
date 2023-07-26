@@ -5169,7 +5169,7 @@ class Document:
             mupdf.pdf_save_document(pdf, filename, opts)
         else:
             out = JM_new_output_fileptr(filename)
-            log( '{=type(out) type(out.this)}')
+            log( f'{type(out)=} {type(out.this)=}')
             mupdf.pdf_write_document(pdf, out, opts)
 
     def save_snapshot(self, filename):
