@@ -34,23 +34,6 @@ catch(...) {
 #include <float.h>
 
 
-#ifdef _WIN32
-    
-    /* Global MuPDF data doesn't seem to be visible on Windows so we define
-    local instances. */
-    
-    static const mupdf::FzRect mupdf_fz_infinite_rect(mupdf::FzRect::Fixed_INFINITE);
-    static const mupdf::FzColorParams mupdf_fz_default_color_params;
-    static const mupdf::FzMatrix mupdf_fz_identity;
-    
-    const fz_rect           fz_infinite_rect        = *mupdf_fz_infinite_rect.internal();
-    const fz_color_params   fz_default_color_params = *mupdf_fz_default_color_params.internal();
-    const fz_matrix         fz_identity             = *mupdf_fz_identity.internal();
-    
-    //mupdf::FzRect   s_infinite_rect(mupdf::Fixed_INFINITE);
-#endif
-
-
 /* Returns equivalent of `repr(x)`. */
 static std::string repr(PyObject* x)
 {
