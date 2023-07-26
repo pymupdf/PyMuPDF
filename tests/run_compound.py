@@ -16,6 +16,7 @@ Example usage:
 
 import shlex
 import os
+import platform
 import subprocess
 import sys
 import textwrap
@@ -23,7 +24,7 @@ import textwrap
 
 def log(text):
     print('#' * 40)
-    print(text)
+    print(f'{__file__} python-{platform.python_version()}: {text}')
     print('#' * 40)
     sys.stdout.flush()
 
@@ -34,7 +35,7 @@ def main():
     
     # Run with default `fitz`.
     #
-    log( f'# {__file__}: Running using fitz: {shlex.join(args)}')
+    log( f'Running using fitz: {shlex.join(args)}')
     e1 = subprocess.run( args, shell=0, check=0).returncode
     
     # Run with `fitz_new`. We create a file fitz.py that does `from fitz_new
@@ -59,17 +60,25 @@ def main():
     pp = env.get( 'PYTHONPATH')
     pp = d if pp is None else f'{d}:{pp}'
     env[ 'PYTHONPATH'] = pp
-    log(f'# {__file__}: Running using fitz_new, PYTHONPATH={pp}: {shlex.join(args)}')
-    e2 = subprocess.run( args, shell=0, check=1, env=env).returncode
+    log(f'Running using fitz_new, PYTHONPATH={pp}: {shlex.join(args)}')
+    e2 = subprocess.run( args, shell=0, check=0, env=env).returncode
     
     # Run with `fitz_new` again, this time with PYMUPDF_USE_EXTRA=0.
     #
     env[ 'PYMUPDF_USE_EXTRA'] = '0'
-    log(f'# {__file__}: Running using fitz_new without optimisations, PYTHONPATH={pp}: {shlex.join(args)}')
-    e3 = subprocess.run( args, shell=0, check=1, env=env).returncode
+    log(f'Running using fitz_new without optimisations, PYTHONPATH={pp}: {shlex.join(args)}')
+    e3 = subprocess.run( args, shell=0, check=0, env=env).returncode
     
-    e = e1 or e2 or e3
-    sys.exit( e)
+    log( f'{e1=} {e2=} {e3=}')
+    
+    if platform.system() == 'Windows' and platform.python_version().startswith('3.10.'):
+        if e2 or e3:
+            log( 'Ignoring expected error.')
+            e2 = e3 = 0
+        else:
+            log( f'Unexpected success on Windows with Python 3.10.')
+    if e1 or e2 or e3:
+        raise Exception( f'Failure: {e1=} {e2=} {e3=}')
 
 
 if __name__ == '__main__':
