@@ -1,9 +1,74 @@
-# PyMuPDF 1.23.0
+# PyMuPDFrp 1.23.0
 
 ![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
 
 Release date: July 28, 2023
+
+
+# Warning - experimental pre-alpha release.
+
+**This is a pre-alpha release adding a new "rebased" implementation of
+PyMuPDF.**
+
+The rebased implementation uses the [MuPDF C++ and Python
+APIs](https://mupdf.readthedocs.io/en/latest/language-bindings.html) instead of
+the MuPDF C API.
+
+
+## Installation
+
+* This release is only available on `test.pypi.org`.
+
+* The wheel name of this experimental release is `PyMuPDFrp`, not `PyMuPDF`.
+
+* Install with:
+
+      pip install -i https://test.pypi.org/simple PyMuPDFrp
+
+  This will automatically install a second wheel called `PyMuPDFrb`, which
+  contains the MuPDF shared library, which is used by both classic and rebased
+  implementations of PyMuPDF.
+
+
+## Usage
+
+Use the classic implementation with:
+
+    import fitz
+
+Use the new rebased implementation with:
+
+    import fitz_new as fitz
+
+
+## Benefits
+
+* Access to the underlying MuPDF Python API.
+
+  The MuPDF Python API is available as `fitz_new.mupdf` - this is not possible
+  with native PyMuPDF, and can give useful flexibility to the user.
+
+* Simplified implementation.
+
+  The underlying MuPDF C++/Python APIs' automated reference counting, automatic
+  contexts, and native C++ and Python exceptions, make the implementation
+  simpler than classic PyMuPDF.
+
+  This also simplifies development of new PyMuPDF functionality.
+
+* Optional tracing of MuPDF C function calls using environment variables.
+
+  This is a feature of the MuPDF C++ and Python APIs, which can be
+  very useful during development and when reporting bugs. See:
+  <https://mupdf.readthedocs.io/en/latest/language-bindings.html#environmental-variables>
+
+* Possible future support for multithreaded use.
+
+  Classic PyMuPDF is explicitly single-threaded, but the MuPDF C++/Python APIs
+  have automated per-thread contexts.
+
+
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
 
