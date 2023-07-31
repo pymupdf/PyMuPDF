@@ -136,9 +136,9 @@ Using this object entails three steps:
    .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix :meth:`append` and text boxes and have multiple of both. Text positioning is exclusively controlled by the insertion point. Therefore there is no need to adhere to any order. *(Changed in v1.18.0:)* Raise an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
 
-   .. method:: write_text(page, opacity=None, color=None, morph=None, overlay=True, oc=0, render_mode=0)
+   .. method:: write_text(page, opacity=None, color=None, morph=None, overlay=True, oc=0, render_mode=0, border_width=0.05)
 
-      Write the TextWriter text to a page, which is the only mandatory parameter. The other parameters can be used to temporarily override the values used when the TextWriter was created.
+      Write the TextWriter text to a page, which is the only mandatory parameter. The other parameters can be used to set or temporarily override the values used when the TextWriter was created.
 
       :arg page: write to this :ref:`Page`.
       :arg float opacity: override the value of the TextWriter for this output.
@@ -147,6 +147,13 @@ Using this object entails three steps:
       :arg bool overlay: put in foreground (default) or background.
       :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
       :arg int render_mode: The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible).
+      :arg float border_width: Set the glyph border width for the PDF `Tr` operator value. This is only relevant for `render_mode > 0`.
+
+      In contrast to `.insert_text()` / `.insert_textbox()` methods of :ref:`Page` / :ref:`Shape`, TextWriter does not support setting different colors for the border and the interior of glyphs in one go. To accomplish this effect, write the same TextWriter multiple times with different parameters like this.
+
+      ::
+         textwriter.write_text(page, color=yellow, render_mode=0)  # write the text interior
+         textwriter.write_text(page, color=blue, render_mode=1, border_width=0.05)  # write the text border
 
          .. image:: images/img-rendermode.*
 

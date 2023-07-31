@@ -1725,7 +1725,7 @@ def insert_textbox(
     align: int = 0,
     rotate: int = 0,
     render_mode: int = 0,
-    border_width: float = 1,
+    border_width: float = 0.05,
     morph: OptSeq = None,
     overlay: bool = True,
     stroke_opacity: float = 1,
@@ -1791,7 +1791,7 @@ def insert_text(
     encoding: int = 0,
     color: OptSeq = None,
     fill: OptSeq = None,
-    border_width: float = 1,
+    border_width: float = 0.05,
     render_mode: int = 0,
     rotate: int = 0,
     morph: OptSeq = None,
@@ -3430,7 +3430,7 @@ class Shape(object):
         color: OptSeq = None,
         fill: OptSeq = None,
         render_mode: int = 0,
-        border_width: float = 1,
+        border_width: float = 0.05,
         rotate: int = 0,
         morph: OptSeq = None,
         stroke_opacity: float = 1,
@@ -3561,10 +3561,11 @@ class Shape(object):
         else:
             alpha = "/%s gs\n" % alpha
         nres = templ1 % (bdc, alpha, cm, left, top, fname, fontsize)
+
         if render_mode > 0:
             nres += "%i Tr " % render_mode
-        if border_width != 1:
-            nres += "%g w " % border_width
+            nres += "%g w " % border_width * fontsize
+
         if color is not None:
             nres += color_str
         if fill is not None:
@@ -3613,7 +3614,7 @@ class Shape(object):
         color: OptSeq = None,
         fill: OptSeq = None,
         expandtabs: int = 1,
-        border_width: float = 1,
+        border_width: float = 0.05,
         align: int = 0,
         render_mode: int = 0,
         rotate: int = 0,
@@ -3634,7 +3635,7 @@ class Shape(object):
             color -- RGB stroke color triple
             fill -- RGB fill color triple
             render_mode -- text rendering control
-            border_width -- thickness of glyph borders
+            border_width -- thickness of glyph borders as percentage of fontsize
             expandtabs -- handles tabulators with string function
             align -- left, center, right, justified
             rotate -- 0, 90, 180, or 270 degrees
@@ -3891,8 +3892,11 @@ class Shape(object):
                 top = -height + pnt.y + self.y
 
             nres += templ % (left, top, fname, fontsize)
+
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
+                nres += "%g w " % border_width * fontsize
+
             if align == 3:
                 nres += "%g Tw " % spacing
 
@@ -3900,8 +3904,6 @@ class Shape(object):
                 nres += color_str
             if fill is not None:
                 nres += fill_str
-            if border_width != 1:
-                nres += "%g w " % border_width
             nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
 
         nres += "ET\n%sQ\n" % emc

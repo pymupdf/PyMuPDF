@@ -4025,7 +4025,7 @@ if rbgroups:
         if not type(x) in (list, tuple):
             raise ValueError("bad RBGroup '%s'" % x)
         s = set(x).difference(ocgs)
-        if f != set():
+        if s != set():
             raise ValueError("bad OCGs in RBGroup: %s" % s)
 
 if basestate:
@@ -5535,8 +5535,6 @@ struct Page {
                 r = pdf_annot_rect(gctx, annot);
                 r = fz_make_rect(p.x, p.y, p.x + r.x1 - r.x0, p.y + r.y1 - r.y0);
                 pdf_set_annot_rect(gctx, annot, r);
-                int flags = PDF_ANNOT_IS_PRINT;
-                pdf_set_annot_flags(gctx, annot, flags);
 
                 if (icon)
                     pdf_set_annot_icon_name(gctx, annot, icon);
@@ -5547,7 +5545,6 @@ struct Page {
                 pdf_dict_put_text_string(gctx, annot_obj, PDF_NAME(Contents), filename);
                 pdf_update_annot(gctx, annot);
                 pdf_set_annot_rect(gctx, annot, r);
-                pdf_set_annot_flags(gctx, annot, flags);
                 JM_add_annot_id(gctx, annot, "A");
             }
             fz_always(gctx) {
@@ -7609,10 +7606,9 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
                 annot_xrefs = [a[0] for a in self.annot_xrefs() if a[1] not in skip_types]
             else:
                 annot_xrefs = [a[0] for a in self.annot_xrefs() if a[1] in types and a[1] not in skip_types]
+
             for xref in annot_xrefs:
-                annot = self.load_annot(xref)
-                annot._yielded=True
-                yield annot
+                yield self.load_annot(xref)
 
 
         def widgets(self, types=None):
@@ -11799,10 +11795,10 @@ struct TextPage {
                         fz_print_stext_page_as_xhtml(gctx, out, this_tpage, 0);
                         break;
                     default:
-                        JM_print_stext_page_as_text(gctx, out, this_tpage);
+                        JM_print_stext_page_as_text(gctx, res, this_tpage);
                         break;
                 }
-                text = JM_UnicodeFromBuffer(gctx, res);
+                text = JM_EscapeStrFromBuffer(gctx, res);
 
             }
             fz_always(gctx) {
@@ -12161,6 +12157,7 @@ struct TextWriter
             morph: tuple(Point, Matrix), apply a matrix with a fixpoint.
             matrix: Matrix to be used instead of 'morph' argument.
             render_mode: (int) PDF render mode operator 'Tr'.
+            border_width: (float) stroke line Width. Relevant for render mode > 0.
         """
 
         CheckParent(page)
@@ -12178,6 +12175,8 @@ struct TextWriter
             opacity = self.opacity
         if color is None:
             color = self.color
+        if render_mode < 0:
+            render_mode = 0
         %}
 
         %pythonappend write_text%{
@@ -12227,7 +12226,7 @@ struct TextWriter
                 temp = line.split()
                 fsize = float(temp[1])
                 if render_mode != 0:
-                    w = fsize * 0.05
+                    w = fsize * border_width
                 else:
                     w = 1
                 new_cont_lines.append("%g w" % w)
@@ -12250,7 +12249,7 @@ struct TextWriter
             repair_mono_font(page, font)
         %}
         PyObject *write_text(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1,
-                    PyObject *morph=NULL, PyObject *matrix=NULL, int render_mode=0, int oc=0)
+                    PyObject *morph=NULL, PyObject *matrix=NULL, int render_mode=0, int oc=0, float border_width=0.05)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
             pdf_obj *resources = NULL;

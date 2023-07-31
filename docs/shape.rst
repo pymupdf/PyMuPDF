@@ -289,7 +289,7 @@ Several draw methods can be executed in a row and each one of them will contribu
          Of the four shapes in above image, the top two each show three circles drawn in standard manner (anti-clockwise, look at the arrows). The lower two shapes contain one (the top-left) circle drawn clockwise. As can be seen, area orientation is irrelevant for the right column (even-odd rule).
 
 
-   .. method:: insert_text(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_text(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, border_width=0.05, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       Insert text lines start at *point*.
 
@@ -328,7 +328,7 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: rotate; insert_textbox
       pair: oc; insert_textbox
 
-   .. method:: insert_textbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_textbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=0.05, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Insert text into the specified rectangle. The text will be split into lines and words and then filled into the available space, starting from one of the four rectangle corners, which depends on *rotate*. Line feeds and multiple space will be respected.
 
@@ -583,7 +583,7 @@ Common Parameters
 
 **border_width** (*float*)
 
-  Set the border width for text insertions. New in v1.14.9. Relevant only if the render mode argument is used with a value greater zero.
+  Set the border width for text insertions as a percentage of the font size. Default value is 0.05 (5%). New in v1.14.9. Relevant only if the render mode argument is used with a value greater zero.
 
 ----
 
@@ -596,7 +596,7 @@ Common Parameters
   * For render mode 2, the glyphs are filled and stroked, using both color parameters and the specified border width. You can use this value to simulate **bold text** without using another font: choose the same value for *fill* and *color* and an appropriate value for *border_width*.
   * For render mode 3, the glyphs are neither stroked nor filled: the text becomes invisible.
 
-  The following examples use border_width=0.3, together with a fontsize of 15. Stroke color is blue and fill color is some yellow.
+  The following examples use border_width=0.02 (2% of the fontsize), together with a fontsize of 15. Stroke color is blue and fill color is some yellow.
 
   .. image:: images/img-rendermode.*
 
