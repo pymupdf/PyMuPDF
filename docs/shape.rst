@@ -583,7 +583,7 @@ Common Parameters
 
 **border_width** (*float*)
 
-  Set the border width for text insertions as a percentage of the font size. Default value is 0.05 (5%). New in v1.14.9. Relevant only if the render mode argument is used with a value greater zero.
+  New in v1.14.9. Set the border width for text insertions, as a percentage of the font size. Default value is 0.05 (5%). Relevant only if `render mode > 0`.
 
 ----
 
