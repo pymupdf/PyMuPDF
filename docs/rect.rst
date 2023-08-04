@@ -12,6 +12,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
 * A rectangle in the sense of (Py-) MuPDF **(and PDF)** always has **borders parallel to the x- resp. y-axis**. A general orthogonal tetragon **is not a rectangle** -- in contrast to the mathematical definition.
 * The constructing points can be (almost! -- see below) anywhere in the plane -- they need not even be different, and e.g. "top left" need not be the geometrical "north-western" point.
+* Units are in points, where 72 points is 1 inch.
 * For any given quadruple of numbers, the geometrically "same" rectangle can be defined in four different ways:
    1. Rect(P\ :sub:`(x0,y0)`, P\ :sub:`(x1,y1)`\ )
    2. Rect(P\ :sub:`(x1,y1)`, P\ :sub:`(x0,y0)`\ )

@@ -3,6 +3,7 @@
 import re
 import sys
 import os
+import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -37,7 +38,8 @@ root_doc = "index"
 
 # General information about the project.
 project = "PyMuPDF"
-copyright = "2015-2023, Artifex"
+thisday = datetime.date.today()
+copyright = "2015-" + str(thisday.year) + ", Artifex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

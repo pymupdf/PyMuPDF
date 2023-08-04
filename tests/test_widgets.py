@@ -184,7 +184,49 @@ def test_2333():
     assert values() == set(("Off", "/Off"))
 
     
+def test_2411():
+    """Add combobox values in different formats."""
+    doc = fitz.open()
+    page = doc.new_page()
+    rect = fitz.Rect(100, 100, 300, 200)
+
+    widget = fitz.Widget()
+    widget.field_flags = (
+        fitz.PDF_CH_FIELD_IS_COMBO
+        | fitz.PDF_CH_FIELD_IS_EDIT
+        | fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE
+    )
+    widget.field_name = "ComboBox-1"
+    widget.field_label = "an editable combo box ..."
+    widget.field_type = fitz.PDF_WIDGET_TYPE_COMBOBOX
+    widget.fill_color = fitz.pdfcolor["gold"]
+    widget.rect = rect
+    widget.choice_values = [
+        ["Spain", "ES"],  # double value as list
+        ("Italy", "I"),  # double value as tuple
+        "Portugal",  # single value
+    ]
+    page.add_widget(widget)
     
+def test_2391():
+    """Confirm that multiple times setting a checkbox to ON/True/Yes will work."""
+    doc = fitz.open(f'{scriptdir}/resources/widgettest.pdf')
+    page = doc[0]
+    # its work when we update first-time
+    for field in page.widgets(types=[fitz.PDF_WIDGET_TYPE_CHECKBOX]):
+        field.field_value = True
+        field.update()
+
+    for i in range(5):
+        pdfdata = doc.tobytes()
+        doc.close()
+        doc = fitz.open("pdf", pdfdata)
+        page = doc[0]
+        for field in page.widgets(types=[fitz.PDF_WIDGET_TYPE_CHECKBOX]):
+            assert field.field_value == field.on_state()
+            field_field_value = field.on_state()
+            field.update()
+
 # def test_deletewidget():
 #     pdf = fitz.open(filename)
 #     page = pdf[0]

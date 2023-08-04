@@ -18,7 +18,7 @@ import warnings
 
 from fitz import *
 
-TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
+TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
 point_like = "point_like"
 rect_like = "rect_like"
 matrix_like = "matrix_like"
@@ -599,6 +599,7 @@ def get_textpage_ocr(
     language: str = "eng",
     dpi: int = 72,
     full: bool = False,
+    tessdata: str = None,
 ) -> TextPage:
     """Create a Textpage from combined results of normal and OCR text parsing.
 
@@ -609,14 +610,17 @@ def get_textpage_ocr(
         full: (bool) whether to OCR the full page image, or only its images (default)
     """
     CheckParent(page)
-    if not TESSDATA_PREFIX:
+    if not os.getenv("TESSDATA_PREFIX") and not tessdata:
         raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
 
     def full_ocr(page, dpi, language, flags):
         zoom = dpi / 72
         mat = Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
-        ocr_pdf = Document("pdf", pix.pdfocr_tobytes(compress=False, language=language))
+        ocr_pdf = Document(
+            "pdf",
+            pix.pdfocr_tobytes(compress=False, language=language, tessdata=tessdata),
+        )
         ocr_page = ocr_pdf.load_page(0)
         unzoom = page.rect.width / ocr_page.rect.width
         ctm = Matrix(unzoom, unzoom) * page.derotation_matrix
@@ -647,7 +651,7 @@ def get_textpage_ocr(
             if pix.alpha:  # must remove alpha channel
                 pix = Pixmap(pix, 0)
             imgdoc = Document(
-                "pdf", pix.pdfocr_tobytes(language=language)
+                "pdf", pix.pdfocr_tobytes(language=language, tessdata=tessdata)
             )  # pdf with OCRed page
             imgpage = imgdoc.load_page(0)  # read image as a page
             pix = None
@@ -1480,6 +1484,7 @@ def do_links(
     Parameter values **must** equal those of method insert_pdf(), which must
     have been previously executed.
     """
+
     # --------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string
     # --------------------------------------------------------------------------
@@ -1579,12 +1584,13 @@ def do_links(
             if l["kind"] == LINK_GOTO and (l["page"] not in pno_src):
                 continue  # GOTO link target not in copied pages
             annot_text = cre_annot(l, xref_dst, pno_src, ctm)
-            if annot_text:
+            if not annot_text:
+                print("cannot create /Annot for kind: " + str(l["kind"]))
+            else:
                 link_tab.append(annot_text)
         if link_tab != []:
-            page_dst._addAnnot_FromString(link_tab)
-        page_dst = None
-        page_src = None
+            page_dst._addAnnot_FromString(tuple(link_tab))
+
     return
 
 
@@ -1699,7 +1705,7 @@ def insert_link(page: Page, lnk: dict, mark: bool = True) -> None:
     annot = getLinkText(page, lnk)
     if annot == "":
         raise ValueError("link kind not supported")
-    page._addAnnot_FromString([annot])
+    page._addAnnot_FromString((annot,))
     return
 
 
@@ -1794,7 +1800,6 @@ def insert_text(
     fill_opacity: float = 1,
     oc: int = 0,
 ):
-
     img = page.new_shape()
     rc = img.insert_text(
         point,
@@ -3432,7 +3437,6 @@ class Shape(object):
         fill_opacity: float = 1,
         oc: int = 0,
     ) -> int:
-
         # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer):
             return 0
@@ -4220,7 +4224,7 @@ def scrub(
         found_redacts = False
         for annot in page.annots():
             if annot.type[0] == PDF_ANNOT_FILE_ATTACHMENT and attached_files:
-                annot.fileUpd(buffer=b" ")  # set file content to empty
+                annot.update_file(buffer=b" ")  # set file content to empty
             if reset_responses:
                 annot.delete_responses()
             if annot.type[0] == PDF_ANNOT_REDACT:
@@ -4352,10 +4356,10 @@ def fill_textbox(
             while n > 0:
                 wl = sum(wl_lst[:n])
                 if wl <= width:
-                    nwords.append(w[: n + 1])
+                    nwords.append(w[:n])
                     word_lengths.append(wl)
-                    w = w[n + 1 :]
-                    wl_lst = wl_lst[n + 1 :]
+                    w = w[n:]
+                    wl_lst = wl_lst[n:]
                     n = len(wl_lst)
                 else:
                     n -= 1

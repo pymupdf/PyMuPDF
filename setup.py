@@ -78,8 +78,8 @@ Environmental variables:
                 checkout known to git into a local tar archive.
 
     PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG
-        If '1' we overwrite MuPDF's include/mupdf/fitz/config.h with PyMuPDF's
-        own configuration file, before building MuPDF.
+        If '0' we do not overwrite MuPDF's include/mupdf/fitz/config.h with
+        PyMuPDF's own configuration file, before building MuPDF.
     
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
@@ -439,7 +439,7 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.22.0-source.tar.gz',
+            'https://mupdf.com/downloads/archive/mupdf-1.22.2-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
@@ -611,15 +611,15 @@ if ('-h' not in sys.argv and '--help' not in sys.argv
         log( f'Building mupdf.')
         # Copy PyMuPDF's config file into mupdf. For example it #define's TOFU,
         # which excludes various fonts in the MuPDF binaries.
-        if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '1':
-            # Use our special config in MuPDF.
-            log( f'Copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h')
-            shutil.copy2( 'fitz/_config.h', f'{mupdf_local}/include/mupdf/fitz/config.h')
-        else:
+        if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '0':
             # Use MuPDF default config.
             log( f'Not copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h.')
             s = os.stat( f'{mupdf_local}/include/mupdf/fitz/config.h')
             log( f'{mupdf_local}/include/mupdf/fitz/config.h: {s} mtime={time.strftime("%F-%T", time.gmtime(s.st_mtime))}')
+        else:
+            # Use our special config in MuPDF.
+            log( f'Copying fitz/_config.h to {mupdf_local}/include/mupdf/fitz/config.h')
+            shutil.copy2( 'fitz/_config.h', f'{mupdf_local}/include/mupdf/fitz/config.h')
     
         if windows:
             # Windows build.
@@ -885,7 +885,7 @@ with open(os.path.join(setup_py_cwd, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="PyMuPDF",
-    version="1.22.3",
+    version="1.22.6",
     description="Python bindings for the PDF toolkit and renderer MuPDF",
     long_description=readme,
     long_description_content_type="text/markdown",

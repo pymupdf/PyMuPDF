@@ -15,7 +15,7 @@ How to Make Images from Document Pages
 
 This little script will take a document filename and generate a PNG file from each of its pages.
 
-The document can be any supported type like PDF, XPS, etc.
+The document can be any :ref:`supported type<Supported_File_Types>`.
 
 The script works as a command line tool which expects the filename being supplied as a parameter. The generated image files (1 per page) are stored in the directory of the script::
 
@@ -252,7 +252,7 @@ We show here **three scripts** that take a list of (image and other) files and p
 
 **Method 1: Inserting Images as Pages**
 
-The first one converts each image to a PDF page with the same dimensions. The result will be a PDF with one page per image. It will only work for supported image file formats::
+The first one converts each image to a PDF page with the same dimensions. The result will be a PDF with one page per image. It will only work for :ref:`supported image<Supported_File_Types>` file formats::
 
  import os, fitz
  import PySimpleGUI as psg  # for showing a progress bar
@@ -369,7 +369,7 @@ Notwithstanding that interfacing with Pillow is almost trivial.
 **Input Formats** **Output Formats** **Description**
 ================= ================== =========================================
 BMP               .                  Windows Bitmap
-JPEG              .                  Joint Photographic Experts Group
+JPEG              JPEG               Joint Photographic Experts Group
 JXR               .                  JPEG Extended Range
 JPX/JP2           .                  JPEG 2000
 GIF               .                  Graphics Interchange Format
@@ -400,13 +400,6 @@ The general scheme is just the following two lines::
 
           pix = fitz.Pixmap("myfamily.jpg")
           pix.save("myfamily.psd")
-
-
-.. note::
-        **Save to JPEG** using PIL/Pillow::
-
-          pix = fitz.Pixmap(...)
-          pix.pil_save("output.jpg")
 
 .. note::
         Convert **JPEG to Tkinter PhotoImage**. Any **RGB / no-alpha** image works exactly the same. Conversion to one of the **Portable Anymap** formats (PPM, PGM, etc.) does the trick, because they are supported by all Tkinter versions::

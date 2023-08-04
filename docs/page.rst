@@ -490,7 +490,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's annotations.
 
-      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: *types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)* will only return 'FreeText' and 'Text' annotations.
+      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: `types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations.
 
       :rtype: generator
       :returns: an :ref:`Annot` for each iteration.
@@ -1050,7 +1050,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note::
 
-        1. You can use this method as a **document conversion tool** from any supported document type (not only PDF!) to one of TEXT, HTML, XHTML or XML documents.
+        1. You can use this method as a **document conversion tool** from :ref:`any supported document type<Supported_File_Types>` to one of TEXT, HTML, XHTML or XML documents.
         2. The inclusion of text via the *clip* parameter is decided on a by-character level: **(changed in v1.18.2)** a character becomes part of the output, if its bbox is contained in *clip*. This **deviates** from the algorithm used in redaction annotations: a character will be **removed if its bbox intersects** any redaction annotation.
 
    .. index::
@@ -1098,8 +1098,9 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: language; get_textpage_ocr
       pair: dpi; get_textpage_ocr
       pair: full; get_textpage_ocr
+      pair: tessdata; get_textpage_ocr
 
-   .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False)
+   .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False, tessdata=None)
 
       * New in v.1.19.0
       * Changed in v1.19.1: support full and partial OCRing a page.
@@ -1110,6 +1111,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
       :arg int dpi: the desired resolution in dots per inch. Influences recognition quality (and execution time).
       :arg bool full: whether to OCR the full page, or just the displayed images.
+      :arg str tessdata: The name of Tesseract's language support folder `tessdata`. If omitted, this information must be present as environment variable `TESSDATA_PREFIX`. Can be determined by function :meth:`get_tessdata`.
 
       .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
 
@@ -1525,7 +1527,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       PDF only: Display a page of another PDF as a **vector image** (otherwise similar to :meth:`Page.insert_image`). This is a multi-purpose method. For example, you can use it to
 
-      * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `4-up.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/4-up.py>`_),
+      * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `combine.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/combine-pages/combine.py>`_),
       * create "posterized" PDF files, i.e. every input page is split up in parts which each create a separate output page (see `posterize.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/posterize-document/posterize.py>`_),
       * include PDF-based vector images like company logos, watermarks, etc., see `svg-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/svg-logo.py>`_, which puts an SVG-based logo on each page (requires additional packages to deal with SVG-to-PDF conversions).
 
@@ -1539,7 +1541,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bool overlay: put image in foreground (default) or background.
 
-      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make visibility dependent on this OCG (optional content group).
+      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make visibility dependent on this :data:`OCG` / :data:`OCMD` (which must be defined in the target PDF) [#f9]_.
       :arg float rotate: *(new in v1.14.10)* show the source rectangle rotated by some angle. *Changed in v1.14.11:* Any angle is now supported.
 
       :arg rect_like clip: choose which part of the source page to show. Default is the full page, else must be finite and its intersection with the source page must not be empty.
@@ -1877,5 +1879,7 @@ The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
 .. [#f7] In PDF, an area enclosed by some lines or curves can have a property called "orientation". This is significant for switching on or off the fill color of that area when there exist multiple area overlaps - see discussion in method :meth:`Shape.finish` using the "non-zero winding number" rule. While orientation of curves, quads, triangles and other shapes enclosed by lines always was detectable, this has been impossible for "re" (rectangle) items in the past. Adding the orientation parameter now delivers the missing information.
 
 .. [#f8] Hyphenation detection simply means that if the last character of a line is "-", it will be assumed to be a continuation character. That character will not be found by text searching with its default flag setting. Please take note, that a MuPDF *line* may not always be what you expect: words separated by overly large gaps (e.g. caused by text justification) may constitute separate MuPDF lines. If then any of these words ends with a hyphen, it will only be found by text searching if hyphenation is switched off.
+
+.. [#f9] Objects inside the source page, like images, text or drawings, are never aware of whether their owning page now is under OC control inside the target PDF. If source page objects are OC-controlled in the source PDF, then this will not be retained on the target: they will become unconditionally visible.
 
 .. include:: footer.rst

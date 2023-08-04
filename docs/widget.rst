@@ -177,6 +177,18 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
        
        JavaScript text (unicode) to be performed to recalculate the value of this field when that of another field changes. *None* if not present.
 
+    .. attribute:: script_blur
+
+       * New in version 1.22.6
+       
+       JavaScript text (unicode) to be performed on losing the focus of this field. *None* if not present.
+
+    .. attribute:: script_focus
+
+       * New in version 1.22.6
+       
+       JavaScript text (unicode) to be performed on focusing this field. *None* if not present.
+
     .. note::
 
        1. For **adding** or **changing** one of the above scripts,

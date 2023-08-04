@@ -118,13 +118,18 @@ button.cta a {
 
 
 /*** Furo theme overrides ***/
-
+/* This is to do with hiding the Furo link text and the "Made with" text */
 .bottom-of-page .left-details {
-    display: none;
+    font-size:0;
 }
 
-.bottom-of-page .right-details:after {
-    content: "© Copyright 2023, Artifex";
+.bottom-of-page .left-details a {
+    display:none;
+}
+
+/* Now ensure that the other copyright text is visible here */
+.bottom-of-page .left-details > * {
+    font-size:12px;
 }
 
 .sidebar-brand-text {

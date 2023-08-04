@@ -35,7 +35,7 @@ JM_font_descender(fz_context *ctx, fz_font *font)
 //-----------------------------------------------------------------------------
 fz_stext_page *
 JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, int flags,
-        const char *lang)
+        const char *lang, const char *tessdata)
 {
     if (!page) return NULL;
     int with_list = 1;
@@ -54,7 +54,7 @@ JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, in
     fz_try(ctx) {
         tp = fz_new_stext_page(ctx, rect);
         dev = fz_new_stext_device(ctx, tp, &options);
-        ocr_dev = fz_new_ocr_device(ctx, dev, fz_identity, rect, with_list, lang, NULL, NULL);
+        ocr_dev = fz_new_ocr_device(ctx, dev, fz_identity, rect, with_list, lang, tessdata, NULL);
         fz_run_page(ctx, page, ocr_dev, fz_identity, NULL);
         fz_close_device(ctx, ocr_dev);
         fz_close_device(ctx, dev);

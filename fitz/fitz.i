@@ -305,7 +305,7 @@ import tarfile
 import zipfile
 import pathlib
 
-TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
+TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
 point_like = "point_like"
 rect_like = "rect_like"
 matrix_like = "matrix_like"
@@ -1865,7 +1865,7 @@ struct Document
         PyObject *version_count()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) Py_BuildValue("i", 0);
+            if (!pdf) return Py_BuildValue("i", 0);
             return Py_BuildValue("i", pdf_count_versions(gctx, pdf));
         }
 
@@ -4011,6 +4011,13 @@ if off:
     if s != set():
         raise ValueError("bad OCGs in 'off': %s" % s)
 
+if locked:
+    if type(locked) not in (list, tuple):
+        raise ValueError("bad type: 'locked'")
+    s = set(locked).difference(ocgs)
+    if s != set():
+        raise ValueError("bad OCGs in 'locked': %s" % s)
+
 if rbgroups:
     if type(rbgroups) not in (list, tuple):
         raise ValueError("bad type: 'rbgroups'")
@@ -4030,7 +4037,7 @@ if basestate:
 %}
         PyObject *
         set_layer(int config, const char *basestate=NULL, PyObject *on=NULL,
-                    PyObject *off=NULL, PyObject *rbgroups=NULL)
+                    PyObject *off=NULL, PyObject *rbgroups=NULL, PyObject *locked=NULL)
         {
             pdf_obj *obj = NULL;
             fz_try(gctx) {
@@ -4049,7 +4056,7 @@ if basestate:
                 if (!obj) {
                     RAISEPY(gctx, MSG_BAD_OC_CONFIG, PyExc_ValueError);
                 }
-                JM_set_ocg_arrays(gctx, obj, basestate, on, off, rbgroups);
+                JM_set_ocg_arrays(gctx, obj, basestate, on, off, rbgroups, locked);
                 pdf_read_ocg(gctx, pdf);
                 finished:;
             }
@@ -4125,7 +4132,17 @@ if basestate:
 
 
         FITZEXCEPTION(set_layer_ui_config, !result)
-        CLOSECHECK0(set_layer_ui_config, """Set / unset OC intent configuration.""")
+        CLOSECHECK0(set_layer_ui_config, )
+        %pythonprepend set_layer_ui_config %{
+        """Set / unset OC intent configuration."""
+        # The user might have given the name instead of sequence number, 
+        # so select by that name and continue with corresp. number
+        if isinstance(number, str):
+            select = [ui["number"] for ui in self.layer_ui_configs() if ui["text"] == number]
+            if select == []:
+                raise ValueError(f"bad OCG '{number}'.")
+            number = select[0]  # this is the number for the name
+        %}
         PyObject *set_layer_ui_config(int number, int action=0)
         {
             fz_try(gctx) {
@@ -5093,26 +5110,26 @@ struct Page {
             return textpage
         %}
 
-        /*  inactive
+        /*  ****************** currently inactive
         //----------------------------------------------------------------
-        // Page.get_textpage_ocr
+        // Page._get_textpage_ocr
         //----------------------------------------------------------------
         FITZEXCEPTION(_get_textpage_ocr, !result)
         %pythonappend _get_textpage_ocr %{val.thisown = True%}
         struct TextPage *
-        _get_textpage_ocr(PyObject *clip=NULL, int flags=0, const char *language=NULL)
+        _get_textpage_ocr(PyObject *clip=NULL, int flags=0, const char *language=NULL, const char *tessdata=NULL)
         {
             fz_stext_page *textpage=NULL;
             fz_try(gctx) {
                 fz_rect rect = JM_rect_from_py(clip);
-                textpage = JM_new_stext_page_ocr_from_page(gctx, (fz_page *) $self, rect, flags, language);
+                textpage = JM_new_stext_page_ocr_from_page(gctx, (fz_page *) $self, rect, flags, language, tessdata);
             }
             fz_catch(gctx) {
                 return NULL;
             }
             return (struct TextPage *) textpage;
         }
-        */
+        ************************* */
 
         //----------------------------------------------------------------
         // Page.language
@@ -6116,7 +6133,7 @@ def get_oc_items(self) -> list:
     """
     rc = []
     for pname, xref in self._get_resource_properties():
-        text = self.parent.xrefObject(xref, compressed=True)
+        text = self.parent.xref_object(xref, compressed=True)
         if "/Type/OCG" in text:
             octype = "ocg"
         elif "/Type/OCMD" in text:
@@ -6967,36 +6984,38 @@ def get_oc_items(self) -> list:
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             PyObject *txtpy = NULL;
             char *text = NULL;
-            int lcount = (int) PySequence_Size(linklist); // link count
+            Py_ssize_t lcount = PyTuple_Size(linklist); // link count
             if (lcount < 1) Py_RETURN_NONE;
-            int i = -1;
+            Py_ssize_t i = -1;
             fz_var(text);
 
             // insert links from the provided sources
             fz_try(gctx) {
                 ASSERT_PDF(page);
+                if (!PyTuple_Check(linklist)) {
+                    RAISEPY(gctx, "bad 'linklist' argument", PyExc_ValueError);
+                }
                 if (!pdf_dict_get(gctx, page->obj, PDF_NAME(Annots))) {
                     pdf_dict_put_array(gctx, page->obj, PDF_NAME(Annots), lcount);
                 }
                 annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
                 for (i = 0; i < lcount; i++) {
-                    text = NULL;
-                    txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
-                    text = JM_StrAsChar(txtpy);
-                    Py_CLEAR(txtpy);
+                    fz_try(gctx) {
+                        for (; i < lcount; i++) {
+                            text = JM_StrAsChar(PyTuple_GET_ITEM(linklist, i));
                     if (!text) {
-                        PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                        PySys_WriteStderr("skipping bad link / annot item %zi.\n", i);
                         continue;
                     }
-                    fz_try(gctx) {
                         annot = pdf_add_object_drop(gctx, page->doc,
                                 JM_pdf_obj_from_str(gctx, page->doc, text));
                         ind_obj = pdf_new_indirect(gctx, page->doc, pdf_to_num(gctx, annot), 0);
                         pdf_array_push_drop(gctx, annots, ind_obj);
                         pdf_drop_obj(gctx, annot);
                     }
+                    }
                     fz_catch(gctx) {
-                        PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                        PySys_WriteStderr("skipping bad link / annot item %zi.\n", i);
                     }
                 }
             }
@@ -7027,9 +7046,9 @@ if not sanitize and not self.is_wrapped:
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {
                 1,     // recurse: true
-                1,     // instance forms
+                0,     // instance forms
                 0,     // do not ascii-escape binary data
-                1,     // no_update
+                0,     // no_update
                 NULL,  // end_page_opaque
                 NULL,  // end page
                 list,  // filters
@@ -8290,17 +8309,20 @@ def tobytes(self, output="png", jpg_quality=95):
         %pythonprepend pdfocr_save %{
         """Save pixmap as an OCR-ed PDF page."""
         EnsureOwnership(self)
-        if not TESSDATA_PREFIX:
+        if not os.getenv("TESSDATA_PREFIX") and not tessdata:
             raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
         %}
         ENSURE_OWNERSHIP(pdfocr_save, )
-        PyObject *pdfocr_save(PyObject *filename, int compress=1, char *language=NULL)
+        PyObject *pdfocr_save(PyObject *filename, int compress=1, char *language=NULL, char *tessdata=NULL)
         {
             fz_pdfocr_options opts;
             memset(&opts, 0, sizeof opts);
             opts.compress = compress;
             if (language) {
                 fz_strlcpy(opts.language, language, sizeof(opts.language));
+            }
+            if (tessdata) {
+                fz_strlcpy(opts.datadir, tessdata, sizeof(opts.language));
             }
             fz_output *out = NULL;
             fz_pixmap *pix = (fz_pixmap *) $self;
@@ -8322,24 +8344,26 @@ def tobytes(self, output="png", jpg_quality=95):
         }
 
         %pythoncode %{
-        def pdfocr_tobytes(self, compress=True, language="eng"):
+        def pdfocr_tobytes(self, compress=True, language="eng", tessdata=None):
             """Save pixmap as an OCR-ed PDF page.
 
             Args:
                 compress: (bool) compress, default 1 (True).
                 language: (str) language(s) occurring on page, default "eng" (English),
-                        multiples like "eng,ger" for English and German.
+                        multiples like "eng+ger" for English and German.
+                tessdata: (str) folder name of Tesseract's language support. Must be
+                        given if environment variable TESSDATA_PREFIX is not set.
             Notes:
                 On failure, make sure Tesseract is installed and you have set the
                 environment variable "TESSDATA_PREFIX" to the folder containing your
                 Tesseract's language support data.
             """
-            if not TESSDATA_PREFIX:
+            if not os.getenv("TESSDATA_PREFIX") and not tessdata:
                 raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
             EnsureOwnership(self)
             from io import BytesIO
             bio = BytesIO()
-            self.pdfocr_save(bio, compress=compress, language=language)
+            self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata)
             return bio.getvalue()
         %}
 
@@ -9129,8 +9153,36 @@ struct Annot
             return JM_py_from_rect(r);
         }
 
+        %pythoncode %{@property%}
+        PARENTCHECK(rect_delta, """annotation delta values to rectangle""")
+        PyObject *
+        rect_delta()
+        {
+            PyObject *rc=NULL;
+            float d;
+            fz_try(gctx) {
+                pdf_obj *annot_obj = pdf_annot_obj(gctx, (pdf_annot *) $self);
+                pdf_obj *arr = pdf_dict_get(gctx, annot_obj, PDF_NAME(RD));
+                int i, n = pdf_array_len(gctx, arr);
+                if (n != 4) {
+                    rc = Py_BuildValue("s", NULL);
+                } else {
+                    rc = PyTuple_New(4);
+                    for (i = 0; i < n; i++) {
+                        d = pdf_to_real(gctx, pdf_array_get(gctx, arr, i));
+                        if (i == 2 || i == 3) d *= -1;
+                        PyTuple_SET_ITEM(rc, i, Py_BuildValue("f", d));
+                    }
+                }
+            }
+            fz_catch(gctx) {
+                Py_RETURN_NONE;
+            }
+            return rc;
+        }
+
         //----------------------------------------------------------------
-        // annotation get xref number
+        // annotation xref number
         //----------------------------------------------------------------
         PARENTCHECK(xref, """annotation xref""")
         %pythoncode %{@property%}
@@ -9755,11 +9807,8 @@ struct Annot
         {
             pdf_annot *annot = (pdf_annot *) $self;
             int type = pdf_annot_type(gctx, annot);
-            if (type == PDF_ANNOT_LINE || type == PDF_ANNOT_POLY_LINE ||
-                type == PDF_ANNOT_POLYGON) {
-                    fz_warn(gctx, "setting rectangle ignored for annot type %s", pdf_string_from_annot_type(gctx, type));
-                    Py_RETURN_NONE;
-                }
+            int err_source = 0;  // what raised the error
+            fz_var(err_source);
             fz_try(gctx) {
                 pdf_page *pdfpage = pdf_annot_page(gctx, annot);
                 fz_matrix rot = JM_rotate_page_matrix(gctx, pdfpage);
@@ -9767,10 +9816,15 @@ struct Annot
                 if (fz_is_empty_rect(r) || fz_is_infinite_rect(r)) {
                     RAISEPY(gctx, MSG_BAD_RECT, PyExc_ValueError);
                 }
+                err_source = 1;  // indicate that error was from MuPDF
                 pdf_set_annot_rect(gctx, annot, r);
             }
             fz_catch(gctx) {
-                return NULL;
+                if (err_source == 0) {
+                    return NULL;
+                }
+                PySys_WriteStderr("cannot set rect: '%s'\n", fz_caught_message(gctx));
+                Py_RETURN_FALSE;
             }
             Py_RETURN_NONE;
         }
@@ -10059,8 +10113,8 @@ struct Annot
                 return (cc + "\n").encode()
 
             annot_type = self.type[0]  # get the annot type
-            dt = self.border["dashes"]  # get the dashes spec
-            bwidth = self.border["width"]  # get border line width
+            dt = self.border.get("dashes", None)  # get the dashes spec
+            bwidth = self.border.get("width", -1)  # get border line width
             stroke = self.colors["stroke"]  # get the stroke color
             if fill_color != None:  # change of fill color requested
                 fill = fill_color
@@ -10783,7 +10837,13 @@ CheckParent(self)%}
         // annotation border
         //----------------------------------------------------------------
         %pythoncode %{@property%}
-        PARENTCHECK(border, """Border information.""")
+        %pythonprepend border %{
+        """Border information."""
+        CheckParent(self)
+        atype = self.type[0]
+        if atype not in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT, PDF_ANNOT_INK, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            return {}
+        %}
         PyObject *border()
         {
             pdf_annot *annot = (pdf_annot *) $self;
@@ -10797,13 +10857,36 @@ CheckParent(self)%}
         %pythonprepend set_border %{
         """Set border properties.
 
-        Either a dict, or direct arguments width, style and dashes."""
+        Either a dict, or direct arguments width, style, dashes or clouds."""
+
         CheckParent(self)
+        atype, atname = self.type[:2]  # annotation type
+        if atype not in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT, PDF_ANNOT_INK, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            print(f"Cannot set border for '{atname}'.")
+            return None
+        if not atype in (PDF_ANNOT_CIRCLE, PDF_ANNOT_FREE_TEXT,PDF_ANNOT_POLYGON, PDF_ANNOT_SQUARE):
+            if clouds > 0:
+                print(f"Cannot set cloudy border for '{atname}'.")
+                clouds = -1  # do not set border effect
         if type(border) is not dict:
-            border = {"width": width, "style": style, "dashes": dashes}
+            border = {"width": width, "style": style, "dashes": dashes, "clouds": clouds}
+        border.setdefault("width", -1)
+        border.setdefault("style", None)
+        border.setdefault("dashes", None)
+        border.setdefault("clouds", -1)
+        if border["width"] == None:
+            border["width"] = -1
+        if border["clouds"] == None:
+            border["clouds"] = -1
+        if hasattr(border["dashes"], "__getitem__"):  # ensure sequence items are integers
+            border["dashes"] = tuple(border["dashes"])
+            for item in border["dashes"]:
+                if not isinstance(item, int):
+                    border["dashes"] = None
+                    break
         %}
         PyObject *
-        set_border(PyObject *border=NULL, float width=0, char *style=NULL, PyObject *dashes=NULL)
+        set_border(PyObject *border=NULL, float width=-1, char *style=NULL, PyObject *dashes=NULL, int clouds=-1)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_obj *annot_obj = pdf_annot_obj(gctx, annot);
@@ -10837,9 +10920,9 @@ CheckParent(self)%}
             pdf_sanitize_filter_options sopts = { 0 };
             pdf_filter_options filter = {
                 1,     // recurse: true
-                1,     // instance forms
+                0,     // instance forms
                 0,     // do not ascii-escape binary data
-                1,     // no_update
+                0,     // no_update
                 NULL,  // end_page_opaque
                 NULL,  // end page
                 list,  // filters
@@ -14549,6 +14632,10 @@ struct Tools
                 widget.script_change = None
             if not widget.script_calc:
                 widget.script_calc = None
+            if not widget.script_blur:
+                widget.script_blur = None
+            if not widget.script_focus:
+                widget.script_focus = None
         %}
         PyObject *_fill_widget(struct Annot *annot, PyObject *widget)
         {

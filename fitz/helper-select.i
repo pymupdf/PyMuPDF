@@ -369,9 +369,10 @@ void remove_dest_range(fz_context *ctx, pdf_document *pdf, PyObject *numbers)
                     pno = pdf_lookup_page_number(ctx, pdf, target);
                 }
                 else if (pdf_is_string(ctx, dest)) {
-                    pno = pdf_lookup_anchor(ctx, pdf,
+                    fz_location location = fz_resolve_link(ctx, &pdf->super,
                                             pdf_to_text_string(ctx, dest),
                                             NULL, NULL);
+                    pno = location.page;
                 }
                 if (pno < 0) { // page number lookup did not work
                     continue;

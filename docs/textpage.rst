@@ -6,7 +6,7 @@
 TextPage
 ================
 
-This class represents text and images shown on a document page. All MuPDF document types are supported.
+This class represents text and images shown on a document page. All :ref:`MuPDF document types<Supported_File_Types>` are supported.
 
 The usual ways to create a textpage are :meth:`DisplayList.get_textpage` and :meth:`Page.get_textpage`. Because there is a limited set of methods in this class, there exist wrappers in :ref:`Page` which are handier to use. The last column of this table shows these corresponding :ref:`Page` methods.
 

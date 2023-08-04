@@ -70,9 +70,10 @@ static pdf_obj
     PyObject *slash = PyUnicode_FromString("/");  // PDF path separator
     PyObject *list = NULL, *newval=NULL, *newstr=NULL, *nullval=NULL;
     const char eyecatcher[] = "fitz: replace me!";
+    pdf_document *pdf = NULL;
     fz_try(ctx)
     {
-        pdf_document *pdf = pdf_get_bound_document(ctx, obj);
+        pdf = pdf_get_bound_document(ctx, obj);
         // split PDF key at path seps and take last key part
         list = PyUnicode_Split(skey, slash, -1);
         Py_ssize_t len = PySequence_Size(list);
@@ -417,6 +418,7 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
 const char *JM_image_extension(int type)
 {
     switch (type) {
+        case(FZ_IMAGE_FAX): return "fax";
         case(FZ_IMAGE_RAW): return "raw";
         case(FZ_IMAGE_FLATE): return "flate";
         case(FZ_IMAGE_LZW): return "lzw";
@@ -430,6 +432,8 @@ const char *JM_image_extension(int type)
         case(FZ_IMAGE_PNG): return "png";
         case(FZ_IMAGE_PNM): return "pnm";
         case(FZ_IMAGE_TIFF): return "tiff";
+        // case(FZ_IMAGE_PSD): return "psd";
+        case(FZ_IMAGE_UNKNOWN): return "n/a";
         default: return "n/a";
     }
 }
@@ -439,12 +443,6 @@ const char *JM_image_extension(int type)
 //----------------------------------------------------------------------------
 PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
 {
-
-#if  PY_VERSION_HEX < 0x03000000
- #define PyBytes_FromString(x) PyString_FromString(x)
- #define PyBytes_FromStringAndSize(c, l) PyString_FromStringAndSize(c, l)
-#endif
-
     if (!buffer) {
         return PyBytes_FromString("");
     }
@@ -531,7 +529,7 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 }
 
 //----------------------------------------------------------------------------
-// Make fz_buffer from a PyBytes, PyByteArray, io.BytesIO object
+// Make fz_buffer from a PyBytes, PyByteArray, or io.BytesIO object
 //----------------------------------------------------------------------------
 fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 {
@@ -575,9 +573,9 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 
 
 //----------------------------------------------------------------------------
-// Deep-copies a specified source page to the target location.
-// Modified copy of function of pdfmerge.c: we also copy annotations, but
-// we skip **link** annotations. In addition we rotate output.
+// Deep-copies a source page to the target.
+// Modified version of function of pdfmerge.c: we also copy annotations, but
+// we skip some subtypes. In addition we rotate output.
 //----------------------------------------------------------------------------
 static void
 page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, int links, int copy_annots, pdf_graft_map *graft_map)
@@ -618,23 +616,21 @@ page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int pa
             }
         }
 
-        // Copy the annotations, but skip types Link, Popup, IRT.
-        // Remove dict keys P (parent) and Popup from copied annot.
+        // Copy annotations, but skip Link, Popup, IRT, Widget types
+        // If selected, remove dict keys P (parent) and Popup
         if (copy_annots) {
             pdf_obj *old_annots = pdf_dict_get(ctx, page_ref, PDF_NAME(Annots));
-            if (old_annots) {
-                n = pdf_array_len(ctx, old_annots);
+            n = pdf_array_len(ctx, old_annots);
+            if (n > 0) {
                 pdf_obj *new_annots = pdf_dict_put_array(ctx, page_dict, PDF_NAME(Annots), n);
                 for (i = 0; i < n; i++) {
                     pdf_obj *o = pdf_array_get(ctx, old_annots, i);
+                    if (!pdf_is_dict(ctx, o)) continue;  // skip non-dict items
                     if (pdf_dict_get(ctx, o, PDF_NAME(IRT))) continue;
                     pdf_obj *subtype = pdf_dict_get(ctx, o, PDF_NAME(Subtype));
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Link))) continue;
                     if (pdf_name_eq(ctx, subtype, PDF_NAME(Popup))) continue;
-                    if (pdf_name_eq(ctx, subtype, PDF_NAME(Widget))) {
-                        fz_warn(ctx, "skipping widget annotation");
-                        continue;
-                    }
+                    if (pdf_name_eq(ctx, subtype, PDF_NAME(Widget))) continue;
                     pdf_dict_del(ctx, o, PDF_NAME(Popup));
                     pdf_dict_del(ctx, o, PDF_NAME(P));
                     pdf_obj *copy_o = pdf_graft_mapped_object(ctx, graft_map, o);
@@ -1177,7 +1173,7 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
     }
     // get access to ElementPosition() object
     PyObject *arg = PyObject_CallMethodObjArgs(this_module, make_story_elpos, NULL);
-    
+    Py_INCREF(arg);
     SETATTR("depth", Py_BuildValue("i", pos->depth));
     SETATTR("heading", Py_BuildValue("i", pos->heading));
     SETATTR("id", Py_BuildValue("s", pos->id));
@@ -1195,7 +1191,6 @@ void Story_Callback(fz_context *ctx, void *opaque, fz_story_element_position *po
             PyObject_SetAttr(arg, pkey, pval);
     }
     PyObject_CallFunctionObjArgs(userfunc, arg, NULL);
-    Py_DECREF(arg);
 #undef SETATTR
 }
 

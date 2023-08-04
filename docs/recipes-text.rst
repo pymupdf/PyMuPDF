@@ -14,7 +14,7 @@ How to Extract all Document Text
 
 This script will take a document filename and generate a text file from all of its text.
 
-The document can be any supported type like PDF, XPS, etc.
+The document can be any :ref:`supported type<Supported_File_Types>`.
 
 The script works as a command line tool which expects the document filename supplied as a parameter. It generates one text file named "filename.txt" in the script directory. Text of pages is separated by a form feed character::
 

@@ -9,6 +9,13 @@
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
+# Various PDF Optional Content Flags
+# ------------------------------------------------------------------------------
+PDF_OC_ON = 0
+PDF_OC_TOGGLE = 1
+PDF_OC_OFF = 2
+
+# ------------------------------------------------------------------------------
 # link kinds and link flags
 # ------------------------------------------------------------------------------
 LINK_NONE = 0
@@ -2054,5 +2061,75 @@ def _get_glyph_text() -> bytes:
     b'vdnOYEzKK/vko+I6oLj+HcLr3KcG4U3zL5Fh0rQwWOjpWRPgzqPnBUQW0lwoYRDYwQNToR'
     b'A/fRiRjQ0s/D79gsABOib2GDDQmK7OEReGQPP0/+7a59v0z+H+SUGTTsMAEA'
     )).decode().splitlines()
+
+
+def get_tessdata() -> str:
+    """Detect Tesseract-OCR and return its language support folder.
+
+    This function can be used to enable OCR via Tesseract even if the
+    environment variable TESSDATA_PREFIX has not been set.
+    If the value of TESSDATA_PREFIX is None, the function tries to locate
+    Tesseract-OCR and fills the required variable.
+
+    Returns:
+        Folder name of tessdata if Tesseract-OCR is available, otherwise False.
+    """
+    TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
+    if TESSDATA_PREFIX != None:
+        return TESSDATA_PREFIX
+
+    if sys.platform == "win32":
+        tessdata = "C:\\Program Files\\Tesseract-OCR\\tessdata"
+    else:
+        tessdata = "/usr/share/tesseract-ocr/4.00/tessdata"
+
+    if os.path.exists(tessdata):
+        return tessdata
+
+    """
+    Try to locate the tesseract-ocr installation.
+    """
+    # Windows systems:
+    if sys.platform == "win32":
+        try:
+            response = os.popen("where tesseract").read().strip()
+        except:
+            response = ""
+        if not response:
+            print("Tesseract-OCR is not installed")
+            return False
+        dirname = os.path.dirname(response)  # path of tesseract.exe
+        tessdata = os.path.join(dirname, "tessdata")  # language support
+        if os.path.exists(tessdata):  # all ok?
+            return tessdata
+        else:  # should not happen!
+            print("unexpected: Tesseract-OCR has no 'tessdata' folder", file=sys.stderr)
+            return False
+
+    # Unix-like systems:
+    try:
+        response = os.popen("whereis tesseract-ocr").read().strip().split()
+    except:
+        response = ""
+    if len(response) != 2:  # if not 2 tokens: no tesseract-ocr
+        print("Tesseract-OCR is not installed")
+        return False
+
+    # determine tessdata via iteration over subfolders
+    tessdata = None
+    for sub_response in response.iterdir():
+        for sub_sub in sub_response.iterdir():
+            if str(sub_sub).endswith("tessdata"):
+                tessdata = sub_sub
+                break
+    if tessdata != None:
+        return tessdata
+    else:
+        print(
+            "unexpected: tesseract-ocr has no 'tessdata' folder",
+            file=sys.stderr,
+        )
+        return False
+    return False
 
 %}

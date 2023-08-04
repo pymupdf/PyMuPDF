@@ -247,10 +247,10 @@ The method displays an image of a ("source") page of another PDF document within
 
 The following variations of the display are currently supported:
 
-* Bool parameter *keep_proportion* controls whether to maintain the aspect ratio (default) or not.
-* Rectangle parameter *clip* restricts the visible part of the source page rectangle. Default is the full page.
-* float *rotation* rotates the display by an arbitrary angle (degrees). If the angle is not an integer multiple of 90, only 2 of the 4 corners may be positioned on the target border if also *keep_proportion* is true.
-* Bool parameter *overlay* controls whether to put the image on top (foreground, default) of current page content or not (background).
+* Bool parameter `"keep_proportion"` controls whether to maintain the aspect ratio (default) or not.
+    * Rectangle parameter `"clip"` restricts the visible part of the source page rectangle. Default is the full page.
+* float `"rotation"` rotates the display by an arbitrary angle (degrees). If the angle is not an integer multiple of 90, only 2 of the 4 corners may be positioned on the target border if also `"keep_proportion"` is true.
+* Bool parameter `"overlay"` controls whether to put the image on top (foreground, default) of current page content or not (background).
 
 Use cases include (but are not limited to) the following:
 
@@ -261,28 +261,35 @@ Use cases include (but are not limited to) the following:
 Technical Implementation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is done using PDF **"Form XObjects"**, see section 8.10 on page 217 of :ref:`AdobeManual`. On execution of a *Page.show_pdf_page(rect, src, pno, ...)*, the following things happen:
+This is done using PDF **"Form XObjects"**, see section 8.10 on page 217 of :ref:`AdobeManual`. On execution of a :meth:`Page.show_pdf_page`, the following things happen:
 
-    1. The :data:`resources` and :data:`contents` objects of page *pno* in document *src* are copied over to the current document, jointly creating a new **Form XObject** with the following properties. The PDF :data:`xref` number of this object is returned by the method.
+    1. The :data:`resources` and :data:`contents` objects of source page in source document are copied over to the target document, jointly creating a new **Form XObject** with the following properties. The PDF :data:`xref` number of this object is returned by the method.
 
-        a. */BBox* equals */Mediabox* of the source page
-        b. */Matrix* equals the identity matrix *[1 0 0 1 0 0]*
-        c. */Resources* equals that of the source page. This involves a “deep-copy” of hierarchically nested other objects (including fonts, images, etc.). The complexity involved here is covered by MuPDF’s grafting [#f1]_ technique functions.
-        d. This is a stream object type, and its stream is an exact copy of the combined data of the source page's */Contents* objects.
+        a. `/BBox` equals `/Mediabox` of the source page
+        b. `/Matrix` equals the identity matrix.
+        c. `/Resources` equals that of the source page. This involves a “deep-copy” of hierarchically nested other objects (including fonts, images, etc.). The complexity involved here is covered by MuPDF's grafting [#f1]_ technique functions.
+        d. This is a stream object type, and its stream is an exact copy of the combined data of the source page's :data:`contents` objects.
 
-        This step is only executed once per shown source page. Subsequent displays of the same page only create pointers (done in next step) to this object.
+        This Form XObject is only executed once per shown source page. Subsequent displays of the same source page will skip this step and only create "pointer" Form XObjects (done in next step) to this object.
 
     2. A second **Form XObject** is then created which the target page uses to invoke the display. This object has the following properties:
 
-        a. */BBox* equals the */CropBox* of the source page (or *clip*).
-        b. */Matrix* represents the mapping of */BBox* to the target rectangle.
-        c. */XObject* references the previous XObject via the fixed name *fullpage*.
-        d. The stream of this object contains exactly one fixed statement: */fullpage Do*.
+        a. `/BBox` equals the `/CropBox` of the source page (or `"clip"`).
+        b. `/Matrix` represents the mapping of `/BBox` to the target rectangle.
+        c. `/XObject` references the previous Form XObject via the fixed name `fullpage`.
+        d. The stream of this object contains exactly one fixed statement: `/fullpage Do`.
+        e. If the method's `"oc"` argument is given, its value is assigned to this Form XObject as `/OC`.
 
     3. The :data:`resources` and :data:`contents` objects of the target page are now modified as follows.
 
-        a. Add an entry to the */XObject* dictionary of */Resources* with the name *fzFrm<n>* (with n chosen such that this entry is unique on the page).
-        b. Depending on *overlay*, prepend or append a new object to the page's */Contents* array, containing the statement *q /fzFrm<n> Do Q*.
+        a. Add an entry to the `/XObject` dictionary of `/Resources` with the name `fzFrm<n>` (with n chosen such that this entry is unique on the page).
+        b. Depending on `"overlay"`, prepend or append a new object to the page's `/Contents` array, containing the statement `q /fzFrm<n> Do Q`.
+
+This design approach ensures that:
+
+1. The (potentially large) source page is only copied once to the target PDF. Only small "pointer" Form XObjects objects are created per each target page to show the source page.
+2. Each referring target page can have its own `"oc"` parameter to control the source page's visibility individually.
+
 
 
 .. _RedirectMessages:
@@ -291,7 +298,7 @@ Redirecting Error and Warning Messages
 --------------------------------------------
 Since MuPDF version 1.16 error and warning messages can be redirected via an official plugin.
 
-PyMuPDF will put error messages to *sys.stderr* prefixed with the string "mupdf:". Warnings are internally stored and can be accessed via *fitz.TOOLS.mupdf_warnings()*. There also is a function to empty this store.
+PyMuPDF will put error messages to `sys.stderr` prefixed with the string "mupdf:". Warnings are internally stored and can be accessed via *fitz.TOOLS.mupdf_warnings()*. There also is a function to empty this store.
 
 
 .. rubric:: Footnotes

@@ -7,6 +7,142 @@
 The Basics
 ==============================
 
+.. _Supported_File_Types:
+
+Supported File Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:title:`PyMuPDF` supports the following file types:
+
+.. raw:: html
+
+    <style>
+
+        table {
+            border-style: hidden;
+        }
+
+        #feature-matrix th {
+            border: 1px #999 solid;
+            padding: 10px;
+            background-color: #007aff;
+            color: white;
+        }
+
+        #feature-matrix tr {
+
+        }
+
+        #feature-matrix td {
+            border: 1px #999 solid;
+            padding: 10px;
+        }
+
+        #feature-matrix tr td.yes {
+            background-color: #83e57c !important;
+            color: #000;
+        }
+
+        #feature-matrix tr td.yes::before {
+            content: "✔︎ ";
+        }
+
+        #feature-matrix tr td.no {
+            background-color: #e5887c !important;
+            color: #000;
+        }
+
+        #feature-matrix tr td.no::before {
+            content: "✕ ";
+        }
+
+        #feature-matrix tr td.limited {
+            background-color: #e4c07b !important;
+            color: #000;
+        }
+
+        #feature-matrix .icon-holder {
+            line-height: 40px;
+        }
+
+        #feature-matrix .icon {
+            text-indent: 45px;
+            line-height: 40px;
+            width: 100px;
+            height: 40px;
+        }
+
+        #feature-matrix .icon.pdf {
+            background: url("_images/icon-pdf.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.xps {
+            background: url("_images/icon-xps.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.epub {
+            background: url("_images/icon-epub.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.mobi {
+            background: url("_images/icon-mobi.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.fb2 {
+            background: url("_images/icon-fb2.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.cbz {
+            background: url("_images/icon-cbz.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.svg {
+            background: url("_images/icon-svg.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.image {
+            background: url("_images/icon-image.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+    </style>
+
+    <table id="feature-matrix" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <th style="width:20%;"></th>
+            <th style="width:20%;">File type</th>
+        </tr>
+
+        <tr>
+            <td><cite>Document Formats</cite></td>
+            <td>
+                <span class="icon pdf"><cite>PDF</cite></span>
+                <span class="icon xps"><cite>XPS</cite></span>
+                <span class="icon epub"><cite>EPUB</cite></span>
+                <span class="icon mobi"><cite>MOBI</cite></span>
+                <span class="icon fb2"><cite>FB2</cite></span>
+                <span class="icon cbz"><cite>CBZ</cite></span>
+                <span class="icon svg"><cite>SVG</cite></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td><cite>Image Formats</cite></td>
+            <td>
+                <span class="icon image"></span>
+                <div><u>Input formats</u> <cite>JPG/JPEG, PNG, BMP, GIF, TIFF, PNM, PGM, PBM, PPM, PAM, JXR, JPX/JP2, PSD</cite></div>
+                <div><u>Output formats</u> <cite>JPG/JPEG, PNG, PNM, PGM, PBM, PPM, PAM, PSD, PS</cite></div>
+            </td>
+        </tr>
+
+    </table>
 
 
 .. _The_Basics_Opening_Files:
@@ -51,7 +187,7 @@ Assume that *"some.file"* is actually an XPS. Open it like so:
 
     **Taking it further**
 
-    There are many file types beyond :title:`PDF` which can be opened by :title:`PyMuPDF`, for more details see :ref:`the list of supported file types<About_Feature_Matrix>`.
+    There are many file types beyond :title:`PDF` which can be opened by :title:`PyMuPDF`, for more details see the list of :ref:`supported file types<Supported_File_Types>`.
 
     :title:`PyMuPDF` itself does not try to determine the file type from the file contents. **You** are responsible for supplying the filetype info in some way -- either implicitly via the file extension, or explicitly as shown. There are pure :title:`Python` packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
 
@@ -177,7 +313,7 @@ To merge :title:`PDF` files, do the following:
 Merging :title:`PDF` files with other types of file
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
-With :meth:`Document.insert_file` you can invoke the method to merge :ref:`supported files<About_Feature_Matrix>` with :title:`PDF`. For example:
+With :meth:`Document.insert_file` you can invoke the method to merge :ref:`supported files<Supported_File_Types>` with :title:`PDF`. For example:
 
 .. raw:: html
 

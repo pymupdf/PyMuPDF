@@ -8,7 +8,7 @@ DocumentWriter
 
 * New in v1.21.0
 
-This class represents a utility which can output various document types supported by MuPDF.
+This class represents a utility which can output various :ref:`document types supported by MuPDF<Supported_File_Types>`.
 
 In PyMuPDF only used for outputting PDF documents whose pages are populated by :ref:`Story` DOMs.
 

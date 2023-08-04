@@ -41,7 +41,8 @@ The original rendering library for MuPDF was called *Libart*.
 
 Opening a Document
 ======================
-To access a supported document, it must be opened with the following statement::
+
+To access a :ref:`supported document<Supported_File_Types>`, it must be opened with the following statement::
 
     doc = fitz.open(filename)  # or fitz.Document(filename)
 
@@ -305,7 +306,7 @@ PDF Maintenance
 ==================
 PDFs are the only document type that can be **modified** using PyMuPDF. Other file types are read-only.
 
-However, you can convert **any document** (including images) to a PDF and then apply all PyMuPDF features to the conversion result. Find out more here :meth:`Document.convert_to_pdf`, and also look at the demo script `pdf-converter.py`_ which can convert any supported document to PDF.
+However, you can convert **any document** (including images) to a PDF and then apply all PyMuPDF features to the conversion result. Find out more here :meth:`Document.convert_to_pdf`, and also look at the demo script `pdf-converter.py`_ which can convert any :ref:`supported document<Supported_File_Types>` to PDF.
 
 :meth:`Document.save()` always stores a PDF in its current (potentially modified) state on disk.
 

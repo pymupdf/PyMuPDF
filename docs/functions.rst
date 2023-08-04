@@ -65,6 +65,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
+:meth:`get_tessdata`                 locates the language support of the Tesseract-OCR installation
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 :attr:`TESSDATA_PREFIX`              a copy of `os.environ["TESSDATA_PREFIX"]`
 :attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
@@ -363,7 +364,7 @@ Yet others are handy, general-purpose utilities.
       Calculate the length of text on output with a given **builtin** font, fontsize and encoding.
 
       :arg str text: the text string.
-      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth.`Page.insert_font`).
+      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth:`Page.insert_font`).
       :arg float fontsize: the fontsize.
       :arg int encoding: the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic (Russian) are available. Relevant for Base-14 fonts "Helvetica", "Courier" and "Times" and their variants only. Make sure to use the same value as in the corresponding text insertion.
       :rtype: float
@@ -392,14 +393,15 @@ Yet others are handy, general-purpose utilities.
 
       * New in v1.16.7
       * Changed in v1.19.5: also return natural image orientation extracted from EXIF data if present.
+      * Changed in v1.22.5: always return `None` in error cases instead of an empty dictionary.
 
       Show important properties of an image provided as a memory area. Its main purpose is to avoid using other Python packages just to determine them.
 
-      :arg bytes|bytearray|BytesIO|file stream: an image either in memory or an **opened** file. A memory resident image maybe any of the formats *bytes*, *bytearray* or *io.BytesIO*.
+      :arg bytes|bytearray|BytesIO|file stream: either an image in memory or an **opened** file. An image in memory may be any of the formats `bytes`, `bytearray` or `io.BytesIO`.
 
       :rtype: dict
       :returns:
-         No exception is ever raised: in case of error, the empty dictionary `{}` is returned. Otherwise, there are the following items::
+         No exception is ever raised. In case of an error, `None` is returned. Otherwise, there are the following items::
 
             In [2]: fitz.image_profile(open("nur-ruhig.jpg", "rb").read())
             Out[2]:
@@ -414,7 +416,7 @@ Yet others are handy, general-purpose utilities.
             'ext': 'jpeg',
             'cs-name': 'DeviceRGB'}
 
-         There is the following relation to *Exif* information encoded in `orientation`, and correspondingly in the `transform` matrix-like (quoted from MuPDF documentation, *ccw* = counter-clockwise):
+         There is the following relation to **Exif** information encoded in `orientation`, and correspondingly in the `transform` matrix-like (quoted from MuPDF documentation, *ccw* = counter-clockwise):
 
             0. Undefined
             1. 0 degree ccw rotation. (Exif = 1)
@@ -429,7 +431,7 @@ Yet others are handy, general-purpose utilities.
 
          .. note::
 
-            * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work and return *None*. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via `Pixmap(doc, xref)`. These methods will automatically convert exotic images to the PNG format before returning results.
+            * For some "exotic" images (FAX encodings, RAW formats and the like), this method will not work. You can however still work with such images in PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps via `Pixmap(doc, xref)`. These methods will automatically convert exotic images to the PNG format before returning results.
             * You can also get the properties of images embedded in a PDF, via their :data:`xref`. In this case make sure to extract the raw stream: `fitz.image_profile(doc.xref_stream_raw(xref))`.
             * Images as returned by the image blocks of :meth:`Page.get_text` using "dict" or "rawdict" options are also supported.
 
@@ -782,6 +784,16 @@ Yet others are handy, general-purpose utilities.
       :arg dict line: the line.
       :arg list spans: a sub-list of `line["spans"]`. If omitted, the full line quad will be returned.
       :returns: the :ref:`Quad` of the selected line spans, usable for text marker annotations ('Highlight', etc.).
+
+-----
+
+   .. method:: get_tessdata()
+
+      Return the name of Tesseract's language support folder. Use this function if the environment variable `TESSDATA_PREFIX` has not been set.
+
+      :returns: `os.getenv("TESSDATA_PREFIX")` if not `None`. Otherwise, if Tesseract-OCR is installed, locate the name of `tessdata`. If no installation is found, return `False`.
+
+         The folder name can be used as parameter `tessdata` in methods :meth:`Page.get_textpage_ocr`, :meth:`Pixmap.pdfocr_save` and :meth:`Pixmap.pdfocr_tobytes`.
 
 -----
 

@@ -40,6 +40,7 @@ static void trace_device_reset()
 {
     Py_CLEAR(dev_pathdict);
     Py_CLEAR(scissors);
+	layer_name = NULL;
     dev_linewidth = 0;
     trace_device_ptm = fz_identity;
     trace_device_ctm = fz_identity;
@@ -53,7 +54,6 @@ static void trace_device_reset()
     dev_pathfactor = 0;
     dev_linecount = 0;
     path_type = 0;
-    layer_name = NULL;
 }
 
 // Every scissor of a clip is a sub rectangle of the preceeding clip
@@ -345,18 +345,17 @@ jm_append_merge(PyObject *out, PyObject *method)
 	if (PyObject_RichCompareBool(previtems, thisitems, Py_NE)) {
 		goto append;
 	}
-	int rc = PyDict_Merge(dev_pathdict, prev, 0);  // merge, do not override
+	int rc = PyDict_Merge(prev, dev_pathdict, 0);  // merge with no override
 	if (rc == 0) {
-		DICT_SETITEM_DROP(dev_pathdict, dictkey_type, PyUnicode_FromString("fs"));
-		Py_XINCREF(dev_pathdict);  // PyList_SetItem() does not increment refcount.
-		PyList_SetItem(out, len - 1, dev_pathdict);
-		return;
+		DICT_SETITEM_DROP(prev, dictkey_type, PyUnicode_FromString("fs"));
+		goto postappend;
 	} else {
 		PySys_WriteStderr("could not merge stroke and fill path");
 		goto append;
 	}
 	append:;
 	PyList_Append(out, dev_pathdict);
+	postappend:;
 	Py_CLEAR(dev_pathdict);
 	return;
 
@@ -397,7 +396,7 @@ jm_lineart_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	DICT_SETITEMSTR_DROP(dev_pathdict, "fill", jm_lineart_color(ctx, colorspace, color));
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_rect, JM_py_from_rect(dev_pathrect));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", Py_BuildValue("s", layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
 	if (dev->clips)	{
 		DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
 	}
@@ -431,8 +430,6 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_width, Py_BuildValue("f", dev_pathfactor * stroke->linewidth));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "lineCap", Py_BuildValue("iii", stroke->start_cap, stroke->dash_cap, stroke->end_cap));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "lineJoin", Py_BuildValue("f", dev_pathfactor * stroke->linejoin));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "fill", Py_BuildValue("s", NULL));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "fill_opacity", Py_BuildValue("s", NULL));
 	if (!PyDict_GetItemString(dev_pathdict, "closePath")) {
 		DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(0));
 	}
@@ -452,7 +449,7 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	}
 
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_rect, JM_py_from_rect(dev_pathrect));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", Py_BuildValue("s",layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
 	if (dev->clips) {
 		DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
@@ -478,7 +475,7 @@ jm_lineart_clip_path(fz_context *ctx, fz_device *dev_, const fz_path *path, int 
 	}
 	DICT_SETITEMSTR_DROP(dev_pathdict, "scissor", JM_py_from_rect(compute_scissor()));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", Py_BuildValue("s", layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
 	jm_append_merge(out, dev->method);
 	dev->depth++;
 }
@@ -499,18 +496,49 @@ jm_lineart_clip_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *pat
 	}
 	DICT_SETITEMSTR_DROP(dev_pathdict, "scissor", JM_py_from_rect(compute_scissor()));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", Py_BuildValue("s", layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
 	jm_append_merge(out, dev->method);
 	dev->depth++;
 }
 
+static void
+jm_lineart_clip_stroke_text(fz_context *ctx, fz_device *dev_, const fz_text *text, const fz_stroke_state *stroke, fz_matrix ctm, fz_rect scissor)
+{
+	jm_lineart_device *dev = (jm_lineart_device *)dev_;
+	if (!dev->clips) return;
+	PyObject *out = dev->out;
+	compute_scissor();
+	dev->depth++;
+}
+
+static void
+jm_lineart_clip_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz_matrix ctm, fz_rect scissor)
+{
+	jm_lineart_device *dev = (jm_lineart_device *)dev_;
+	if (!dev->clips) return;
+	PyObject *out = dev->out;
+	compute_scissor();
+	dev->depth++;
+}
+
+static void
+jm_lineart_clip_image_mask(fz_context *ctx, fz_device *dev_, fz_image *image, fz_matrix ctm, fz_rect scissor)
+{
+	jm_lineart_device *dev = (jm_lineart_device *)dev_;
+	if (!dev->clips) return;
+	PyObject *out = dev->out;
+	compute_scissor();
+	dev->depth++;
+}
 
 static void
 jm_lineart_pop_clip(fz_context *ctx, fz_device *dev_)
 {
 	jm_lineart_device *dev = (jm_lineart_device *)dev_;
 	if (!dev->clips) return;
+	if (!scissors) return;
 	Py_ssize_t len = PyList_Size(scissors);
+	if (len < 1) return;
 	PyList_SetSlice(scissors, len - 1, len, NULL);
 	dev->depth--;
 }
@@ -534,7 +562,7 @@ jm_lineart_begin_group(fz_context *ctx, fz_device *dev_, fz_rect bbox, fz_colors
 	jm_lineart_device *dev = (jm_lineart_device *)dev_;
 	if (!dev->clips) return;
 	PyObject *out = dev->out;
-	dev_pathdict = Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:s}",
+	dev_pathdict = Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:N}",
 						"type", "group",
 						"rect", JM_py_from_rect(bbox),
 						"isolated", JM_BOOL(isolated),
@@ -542,7 +570,7 @@ jm_lineart_begin_group(fz_context *ctx, fz_device *dev_, fz_rect bbox, fz_colors
 						"blendmode", fz_blendmode_name(blendmode),
 						"opacity", alpha,
 						"level", dev->depth,
-						"layer", layer_name
+						"layer", JM_EscapeStrFromStr(layer_name)
 					);
 	jm_append_merge(out, dev->method);
 	dev->depth++;
@@ -573,9 +601,11 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	const char *fontname = JM_font_name(ctx, span->font);
 	float rgb[3];
 	PyObject *chars = PyTuple_New(span->len);
-	fz_matrix join = fz_concat(span->trm, ctm);
-	fz_point dir = fz_transform_vector(fz_make_point(1, 0), join);
-	double fsize = sqrt(fabs((double) join.a * (double) join.d));
+	fz_matrix mat = fz_concat(span->trm, ctm); // text transformation matrix
+	fz_point dir = fz_transform_vector(fz_make_point(1, 0), mat); // writing direction
+	dir = fz_normalize_vector(dir);
+
+	double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d)); // font size
 	double linewidth, adv, asc, dsc;
 	double space_adv = 0;
 	float x0, y0, x1, y1;
@@ -585,34 +615,34 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		dsc = -0.1;
 		asc = 0.9;
 	}
-
+	// compute effective ascender / descender
 	double ascsize = asc * fsize / (asc - dsc);
 	double dscsize = dsc * fsize / (asc - dsc);
-	int fflags = 0;
+
+	int fflags = 0; // font flags
 	int mono = fz_font_is_monospaced(ctx, span->font);
 	fflags += mono * TEXT_FONT_MONOSPACED;
 	fflags += fz_font_is_italic(ctx, span->font) * TEXT_FONT_ITALIC;
 	fflags += fz_font_is_serif(ctx, span->font) * TEXT_FONT_SERIFED;
 	fflags += fz_font_is_bold(ctx, span->font) * TEXT_FONT_BOLD;
-	fz_matrix mat = trace_device_ptm;
-	fz_matrix ctm_rot = fz_concat(ctm, trace_device_rot);
-	mat = fz_concat(mat, ctm_rot);
 
-	if (dev_linewidth > 0) {
+	if (dev_linewidth > 0) {  // width of character border
 		linewidth = (double) dev_linewidth;
 	} else {
-		linewidth = fsize * 0.05;
+		linewidth = fsize * 0.05;  // default: 5% of font size
 	}
 	fz_point char_orig;
 	double last_adv = 0;
 
 	// walk through characters of span
 	fz_rect span_bbox;
-	dir = fz_normalize_vector(dir);
 	fz_matrix rot = fz_make_matrix(dir.x, dir.y, -dir.y, dir.x, 0, 0);
 	if (dir.x == -1) {  // left-right flip
 		rot.d = 1;
 	}
+
+	//PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
+	//PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
 
 	for (i = 0; i < span->len; i++) {
 		adv = 0;
@@ -625,14 +655,14 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 			space_adv = adv;
 		}
 		char_orig = fz_make_point(span->items[i].x, span->items[i].y);
-		char_orig.y = trace_device_ptm.f - char_orig.y;
-		char_orig = fz_transform_point(char_orig, mat);
+		char_orig = fz_transform_point(char_orig, ctm);
 		fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -char_orig.x, -char_orig.y);
 		m1 = fz_concat(m1, rot);
 		m1 = fz_concat(m1, fz_make_matrix(1, 0, 0, 1, char_orig.x, char_orig.y));
 		x0 = char_orig.x;
 		x1 = x0 + adv;
-		if (dir.x == 1 && span->trm.d < 0) {  // up-down flip
+		if (mat.d > 0 && (dir.x == 1 || dir.x == -1) ||
+		    mat.b !=0 && mat.b == -mat.c) {  // up-down flip
 			y0 = char_orig.y + dscsize;
 			y1 = char_orig.y + ascsize;
 		} else {
@@ -660,7 +690,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 				space_adv = last_adv;
 			}
 		} else {
-			space_adv = last_adv; // for mono fonts this suffices
+			space_adv = last_adv; // for mono, any char width suffices
 		}
 	}
 	// make the span dictionary
@@ -673,24 +703,25 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	DICT_SETITEMSTR_DROP(span_dict, "bidi_dir", PyLong_FromLong((long) span->markup_dir));
 	DICT_SETITEM_DROP(span_dict, dictkey_ascender, PyFloat_FromDouble(asc));
 	DICT_SETITEM_DROP(span_dict, dictkey_descender, PyFloat_FromDouble(dsc));
+	DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(3));
+
 	if (colorspace) {
 		fz_convert_color(ctx, colorspace, color, fz_device_rgb(ctx),
 						 rgb, NULL, fz_default_color_params);
-		DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(3));
-		DICT_SETITEM_DROP(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
 	} else {
-		DICT_SETITEM_DROP(span_dict, dictkey_colorspace, PyLong_FromLong(1));
-		DICT_SETITEM_DROP(span_dict, dictkey_color, PyFloat_FromDouble(1));
+		rgb[0] = rgb[1] = rgb[2] = 0;
 	}
+
+	DICT_SETITEM_DROP(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
 	DICT_SETITEM_DROP(span_dict, dictkey_size, PyFloat_FromDouble(fsize));
 	DICT_SETITEMSTR_DROP(span_dict, "opacity", PyFloat_FromDouble((double) alpha));
 	DICT_SETITEMSTR_DROP(span_dict, "linewidth", PyFloat_FromDouble((double) linewidth));
 	DICT_SETITEMSTR_DROP(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
 	DICT_SETITEM_DROP(span_dict, dictkey_type, PyLong_FromLong((long) type));
-	DICT_SETITEM_DROP(span_dict, dictkey_chars, chars);
 	DICT_SETITEM_DROP(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
-	DICT_SETITEMSTR_DROP(span_dict, "layer", Py_BuildValue("s",layer_name));
+	DICT_SETITEMSTR_DROP(span_dict, "layer", JM_EscapeStrFromStr(layer_name));
 	DICT_SETITEMSTR_DROP(span_dict, "seqno", PyLong_FromSize_t(seqno));
+	DICT_SETITEM_DROP(span_dict, dictkey_chars, chars);
 	LIST_APPEND_DROP(out, span_dict);
 }
 
@@ -762,14 +793,14 @@ fz_device *JM_new_lineart_device(fz_context *ctx, PyObject *out, int clips, PyOb
 
 	dev->super.fill_text = jm_increase_seqno;
 	dev->super.stroke_text = jm_increase_seqno;
-	dev->super.clip_text = NULL;
-	dev->super.clip_stroke_text = NULL;
+	dev->super.clip_text = jm_lineart_clip_text;
+	dev->super.clip_stroke_text = jm_lineart_clip_stroke_text;
 	dev->super.ignore_text = jm_increase_seqno;
 
 	dev->super.fill_shade = jm_increase_seqno;
 	dev->super.fill_image = jm_increase_seqno;
 	dev->super.fill_image_mask = jm_increase_seqno;
-	dev->super.clip_image_mask = NULL;
+	dev->super.clip_image_mask = jm_lineart_clip_image_mask;
 
 	dev->super.pop_clip = jm_lineart_pop_clip;
 
@@ -783,6 +814,12 @@ fz_device *JM_new_lineart_device(fz_context *ctx, PyObject *out, int clips, PyOb
 
 	dev->super.begin_layer = jm_lineart_begin_layer;
 	dev->super.end_layer = jm_lineart_end_layer;
+
+	dev->super.begin_structure = NULL;
+	dev->super.end_structure = NULL;
+
+	dev->super.begin_metatext = NULL;
+	dev->super.end_metatext = NULL;
 
 	dev->super.render_flags = NULL;
 	dev->super.set_default_colorspaces = NULL;
@@ -838,6 +875,12 @@ fz_device *JM_new_texttrace_device(fz_context *ctx, PyObject *out)
 	dev->super.begin_layer = jm_lineart_begin_layer;
 	dev->super.end_layer = jm_lineart_end_layer;
 
+	dev->super.begin_structure = NULL;
+	dev->super.end_structure = NULL;
+
+	dev->super.begin_metatext = NULL;
+	dev->super.end_metatext = NULL;
+
 	dev->super.render_flags = NULL;
 	dev->super.set_default_colorspaces = NULL;
 
@@ -871,7 +914,7 @@ jm_bbox_add_rect(fz_context *ctx, fz_device *dev, fz_rect rect, char *code)
 	if (!bdev->layers) {
 		LIST_APPEND_DROP(bdev->result, Py_BuildValue("sN", code, JM_py_from_rect(rect)));
 	} else {
-		LIST_APPEND_DROP(bdev->result, Py_BuildValue("sNs", code, JM_py_from_rect(rect), layer_name));
+		LIST_APPEND_DROP(bdev->result, Py_BuildValue("sNN", code, JM_py_from_rect(rect), JM_EscapeStrFromStr(layer_name)));
 	}
 }
 
@@ -959,6 +1002,12 @@ JM_new_bbox_device(fz_context *ctx, PyObject *result, int layers)
 
 	dev->super.begin_layer = jm_lineart_begin_layer;
 	dev->super.end_layer = jm_lineart_end_layer;
+
+	dev->super.begin_structure = NULL;
+	dev->super.end_structure = NULL;
+
+	dev->super.begin_metatext = NULL;
+	dev->super.end_metatext = NULL;
 
 	dev->super.render_flags = NULL;
 	dev->super.set_default_colorspaces = NULL;
