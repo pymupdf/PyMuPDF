@@ -796,7 +796,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // script (/AA/Bl) ------------------------------------------------------
     value = GETATTR("script_blur");
-    JM_put_script(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Bl), value);
+    JM_put_script(ctx, annot_obj, PDF_NAME(AA), pdf_new_name(ctx, "Bl"), value);
     Py_CLEAR(value);
 
     // script (/AA/Fo) ------------------------------------------------------
