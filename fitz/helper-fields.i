@@ -586,7 +586,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), pdf_new_name(ctx, "Bl"), NULL)));
 
         SETATTR_DROP(Widget, "script_focus",
-            JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Fo), NULL)));
+            JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), pdf_new_name(ctx, "Fo"), NULL)));
     }
     fz_always(ctx) PyErr_Clear();
     fz_catch(ctx) fz_rethrow(ctx);
@@ -801,7 +801,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // script (/AA/Fo) ------------------------------------------------------
     value = GETATTR("script_focus");
-    JM_put_script(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Fo), value);
+    JM_put_script(ctx, annot_obj, PDF_NAME(AA), pdf_new_name(ctx, "Fo"), value);
     Py_CLEAR(value);
 
     // field value ------------------------------------------------------------
