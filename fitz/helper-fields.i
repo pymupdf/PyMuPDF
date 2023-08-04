@@ -583,7 +583,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(C), NULL)));
 
         SETATTR_DROP(Widget, "script_blur",
-            JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Bl), NULL)));
+            JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), pdf_new_name(ctx, "Bl"), NULL)));
 
         SETATTR_DROP(Widget, "script_focus",
             JM_get_script(ctx, pdf_dict_getl(ctx, annot_obj, PDF_NAME(AA), PDF_NAME(Fo), NULL)));
