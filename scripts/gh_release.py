@@ -18,9 +18,10 @@ Args:
         Build using cibuild.
     build-devel
         Build using cibuild with `--platform` set.
-    pip_install_wild <pattern>
-        A workaround on Windows to do the equivalent of `pip install
-        <pattern>` with wildcard expansion.
+    windows_pip_install <prefix>
+        Windows only: run `pip install <prefix>-*-<platform_tag>.whl`,
+        where `platform_tag` will be 'win32' or 'win_amd64' depending on
+        the python we are running on.
     venv
         Run remaining args inside venv.
     test
@@ -38,7 +39,11 @@ We look at these items in the environment, should be unset (treated as '0'),
     inputs_wheels
     inputs_wheels_linux_aarch64
     inputs_wheels_macos_arm64
-    
+
+Example usage:
+
+     PYMUPDF_SETUP_MUPDF_BUILD=../mupdf-master py -3.9-32 PyMuPDF/scripts/gh_release.py venv build-devel
+   
 '''
 
 
@@ -75,8 +80,10 @@ def main():
             else:
                 assert 0, f'Unrecognised {platform.system()=}'
             build(platform_=p)
-        elif arg == 'pip_install_wild':
-            pattern = next(args)
+        elif arg == 'windows_pip_install':
+            assert platform.system() == 'Windows'
+            prefix = next(args)
+            pattern = f'{prefix}-*-{windows_platform_tag()}.whl'
             paths = glob.glob( pattern)
             log( f'{pattern=} {paths=}')
             paths = ' '.join( paths)
@@ -220,11 +227,12 @@ def build( platform_=None):
         # prerequisite.
         #
         if platform.system() == 'Windows':
-            # No native wildcard expansion, so we need to make cibuild
-            # use our special `pip_install_wild` arg.
+            # We need to make cibuild use our special
+            # `windows_pip_install` arg, which selects an appropriate
+            # platform tag so we cope with 32 and 64-bit wheels being
+            # available.
             #
-            #env_set('CIBW_BEFORE_TEST', f'{sys.executable} {sys.argv[0]} pip_install_wild wheelhouse/PyMuPDFrb-*.whl')
-            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py pip_install_wild wheelhouse/PyMuPDFrb-*.whl')
+            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py windows_pip_install wheelhouse/PyMuPDFrb')
         else:
             env_set('CIBW_BEFORE_TEST', 'pip install wheelhouse/PyMuPDFrb-*.whl')
         set_cibuild_test()
@@ -297,7 +305,10 @@ def test( project, package):
     run( f'ls -l {project}/wheelhouse', check=0)
     run( f'ls -l {package}/wheelhouse', check=0)
     
-    wheel_b = glob.glob( f'{project}/wheelhouse/PyMuPDFrb-*.whl')
+    platform_tag = ''
+    if platform.system() == 'Windows':
+        platform_tag = windows_platform_tag()
+    wheel_b = glob.glob( f'{project}/wheelhouse/PyMuPDFrb-*{platform_tag}.whl')
     assert len(wheel_b) == 1, f'{wheel_b=}'
     wheel_b = wheel_b[0]
 
@@ -330,6 +341,14 @@ def run(command, env_extra=None, check=1):
     log(f'Running: {command}')
     sys.stdout.flush()
     subprocess.run(command, check=check, shell=1, env=env)
+
+
+def windows_platform_tag():
+    assert platform.system() == 'Windows'
+    if sys.maxsize == 2**31 - 1:
+        return 'win32'
+    else:
+        return 'win_amd64'
 
 
 if __name__ == '__main__':
