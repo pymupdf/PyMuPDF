@@ -17905,10 +17905,6 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     fflags += mupdf.fz_font_is_serif( span.font()) * TEXT_FONT_SERIFED
     fflags += mupdf.fz_font_is_bold( span.font()) * TEXT_FONT_BOLD
 
-    if dev.linewidth > 0:   # width of character border
-        linewidth = dev.linewidth
-    else:
-        linewidth = fsize * 0.05    # default: 5% of font size
     last_adv = 0
 
     # walk through characters of span
@@ -17938,7 +17934,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
         if (
                 (mat.d > 0 and (dir.x == 1 or dir.x == -1))
                 or
-                (mat.b !=0 and mat.b == -mat.c)
+                (mat.b != 0 and mat.b == -mat.c)
                 ):  # up-down flip
             y0 = char_orig.y + dscsize
             y1 = char_orig.y + ascsize
@@ -17967,6 +17963,8 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
             span_bbox = mupdf.fz_union_rect(span_bbox, char_bbox)
         else:
             span_bbox = char_bbox
+    chars = tuple(chars)
+    
     if not space_adv:
         if not mono:
             c, out_font = mupdf.fz_encode_character_with_fallback( span.font(), 32, 0, 0)
@@ -17996,22 +17994,32 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     if colorspace:
         rgb = mupdf.fz_convert_color(
                 mupdf.FzColorspace( mupdf.ll_fz_keep_colorspace( colorspace)),
-                color, mupdf.fz_device_rgb(),
+                color,
+                mupdf.fz_device_rgb(),
                 mupdf.FzColorspace(),
                 mupdf.FzColorParams(),
                 )
+        rgb = rgb[:3]   # mupdf.fz_convert_color() always returns 4 items.
     else:
         rgb = (0, 0, 0)
+    
+    if dev.linewidth > 0:   # width of character border
+        linewidth = dev.linewidth
+    else:
+        linewidth = fsize * 0.05    # default: 5% of font size
+    #print(f'{dev.linewidth=:.4f} {fsize=:.4f} {linewidth=:.4f}')
+    
     span_dict[ 'color'] = rgb
     span_dict[ 'size'] = fsize
     span_dict[ "opacity"] = alpha
-    span_dict[ "linewidth"] =linewidth
+    span_dict[ "linewidth"] = linewidth
     span_dict[ "spacewidth"] = space_adv
     span_dict[ 'type'] = type_
     span_dict[ 'bbox'] = JM_py_from_rect(span_bbox)
     span_dict[ 'layer'] = JM_EscapeStrFromStr( dev.layer_name)
     span_dict[ "seqno"] = seqno
     span_dict[ 'chars'] = chars
+    #print(f'{span_dict=}')
     dev.out.append( span_dict)
 
 
@@ -18562,7 +18570,7 @@ class JM_new_lineart_device_Device(mupdf.FzDevice2):
         self.layer_name = None  # optional content name
         self.pathrect = None
         
-        self.dev_linewidth = 0
+        self.linewidth = 0
         self.ptm = mupdf.FzMatrix()
         self.ctm = mupdf.FzMatrix()
         self.rot = mupdf.FzMatrix()
@@ -18625,12 +18633,11 @@ class JM_new_texttrace_device(mupdf.FzDevice2):
         self.clips = 0
         self.method = None
         
-        self.linewidth = 0
         self.seqno = 0
 
         self.pathdict = dict()
         self.scissors = list()
-        self.dev_linewidth = 0
+        self.linewidth = 0
         self.ptm = mupdf.FzMatrix()
         self.ctm = mupdf.FzMatrix()
         self.rot = mupdf.FzMatrix()

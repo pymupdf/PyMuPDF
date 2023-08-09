@@ -1869,7 +1869,7 @@ struct jm_lineart_device
     fz_rect pathrect = {};
     int clips = {};
     int linecount = {};
-    int linewidth = {};
+    float linewidth = {};
     int path_type = {};
     long depth = {};
     size_t seqno = {};
@@ -1995,7 +1995,6 @@ static void jm_trace_text_span(
         float x1 = x0 + adv;
         float y0;
         float y1;
-        //if (dir.x == 1 && span->trm.d < 0)
         if (
                 (mat.d > 0 && (dir.x == 1 || dir.x == -1))
                 ||
@@ -2042,9 +2041,11 @@ static void jm_trace_text_span(
         if (!mono)
         {
             fz_font* out_font = nullptr;
-            space_adv = mupdf::ll_fz_advance_glyph(span->font,
-            mupdf::ll_fz_encode_character_with_fallback(span->font, 32, 0, 0, &out_font),
-            span->wmode);
+            space_adv = mupdf::ll_fz_advance_glyph(
+                    span->font,
+                    mupdf::ll_fz_encode_character_with_fallback(span->font, 32, 0, 0, &out_font),
+                    span->wmode
+                    );
             space_adv *= fsize;
             if (!space_adv)
             {
@@ -2092,7 +2093,11 @@ static void jm_trace_text_span(
     {
 	linewidth = fsize * 0.05;  // default: 5% of font size
     }
-    
+    if (0) std::cout
+            << " dev->linewidth=" << dev->linewidth
+            << " fsize=" << fsize
+            << " linewidth=" << linewidth
+            << "\n";
     
     dict_setitem_drop(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
     dict_setitem_drop(span_dict, dictkey_size, PyFloat_FromDouble(fsize));
@@ -2101,9 +2106,10 @@ static void jm_trace_text_span(
     dict_setitemstr_drop(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
     dict_setitem_drop(span_dict, dictkey_type, PyLong_FromLong((long) type));
     dict_setitem_drop(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
+    dict_setitemstr_drop(span_dict, "layer", JM_EscapeStrFromStr(dev->layer_name));
     dict_setitemstr_drop(span_dict, "seqno", PyLong_FromSize_t(seqno));
     dict_setitem_drop(span_dict, dictkey_chars, chars);
-    
+    //std::cout << "span_dict=" << repr(span_dict) << "\n";
     s_list_append_drop(dev->out, span_dict);
 }
 
@@ -2179,6 +2185,9 @@ static void jm_dev_linewidth(
         )
 {
     jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
+    if (0) std::cout << "jm_dev_linewidth(): changing dev->linewidth from " << dev->linewidth
+            << " to stroke->linewidth=" << stroke->linewidth
+            << "\n";
     dev->linewidth = stroke->linewidth;
     jm_increase_seqno(ctx, dev_);
 }
