@@ -6666,7 +6666,6 @@ class Widget:
             doc = self.parent.parent
             kids_type, kids_value = doc.xref_get_key(self.xref, "Parent/Kids")
             if kids_type == "array":
-                doc.xref_set_key(self.xref, "Parent/V", "(Off)")  # set off old value
                 xrefs = tuple(map(int, kids_value[1:-1].replace("0 R","").split()))
                 for xref in xrefs:
                     if xref != self.xref:
