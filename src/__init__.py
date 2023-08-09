@@ -15134,11 +15134,11 @@ def JM_get_widget_properties(annot, Widget):
             )
 
     SETATTR_DROP(Widget, "script_blur",
-            JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), PDF_NAME('Bl')))
+            JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), mupdf.pdf_new_name('Bl')))
             )
 
     SETATTR_DROP(Widget, "script_focus",
-            JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), PDF_NAME('Fo')))
+            JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), mupdf.pdf_new_name('Fo')))
             )
 
 
@@ -16941,11 +16941,11 @@ def JM_set_widget_properties(annot, Widget):
 
     # script (/AA/Bl) -------------------------------------------------------
     value = GETATTR("script_blur")
-    JM_put_script(annot_obj, PDF_NAME('AA'), PDF_NAME('Bl'), value)
+    JM_put_script(annot_obj, PDF_NAME('AA'), mupdf.pdf_new_name('Bl'), value)
 
     # script (/AA/Fo) -------------------------------------------------------
     value = GETATTR("script_focus")
-    JM_put_script(annot_obj, PDF_NAME('AA'), PDF_NAME('Fo'), value)
+    JM_put_script(annot_obj, PDF_NAME('AA'), mupdf.pdf_new_name('Fo'), value)
 
     # field value ------------------------------------------------------------
     value = GETATTR("field_value")  # field value
