@@ -4391,10 +4391,10 @@ def fill_textbox(
             while n > 0:
                 wl = sum(wl_lst[:n])
                 if wl <= width:
-                    nwords.append(w[: n + 1])
+                    nwords.append(w[:n])
                     word_lengths.append(wl)
-                    w = w[n + 1 :]
-                    wl_lst = wl_lst[n + 1 :]
+                    w = w[n:]
+                    wl_lst = wl_lst[n:]
                     n = len(wl_lst)
                 else:
                     n -= 1
