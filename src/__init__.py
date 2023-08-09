@@ -17854,9 +17854,13 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     fontname = JM_font_name( span.font())
     #float rgb[3];
     #PyObject *chars = PyTuple_New(span->len);
-    join = mupdf.fz_concat( span.trm(), ctm)
-    dir = mupdf.fz_transform_vector( mupdf.fz_make_point(1, 0), join)
-    fsize = math.sqrt( abs( span.trm().a * span.trm().d))
+    
+    mat = mupdf.fz_concat(span.trm(), ctm)  # text transformation matrix
+    dir = mupdf.fz_transform_vector(mupdf.fz_make_point(1, 0), mat) # writing direction
+    dir = mupdf.fz_normalize_vector(dir)
+
+    fsize = math.sqrt(abs(span.trm().a * span.trm().d)) # font size
+
     space_adv = 0;
     asc = JM_font_ascender( span.font())
     dsc = JM_font_descender( span.font())
@@ -17864,30 +17868,30 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
         dsc = -0.1
         asc = 0.9
 
+    # compute effective ascender / descender
     ascsize = asc * fsize / (asc - dsc)
     dscsize = dsc * fsize / (asc - dsc)
-    fflags = 0;
+    fflags = 0  # font flags
     mono = mupdf.fz_font_is_monospaced( span.font())
     fflags += mono * TEXT_FONT_MONOSPACED
     fflags += mupdf.fz_font_is_italic( span.font()) * TEXT_FONT_ITALIC
     fflags += mupdf.fz_font_is_serif( span.font()) * TEXT_FONT_SERIFED
     fflags += mupdf.fz_font_is_bold( span.font()) * TEXT_FONT_BOLD
-    mat = dev.ptm
-    ctm_rot = mupdf.fz_concat( ctm, dev.rot)
-    mat = mupdf.fz_concat( mat, ctm_rot)
 
-    if dev.linewidth > 0:
+    if dev.linewidth > 0:   # width of character border
         linewidth = dev.linewidth
     else:
-        linewidth = fsize * 0.05
+        linewidth = fsize * 0.05    # default: 5% of font size
     last_adv = 0
 
     # walk through characters of span
-    dir = mupdf.fz_normalize_vector(dir)
     rot = mupdf.fz_make_matrix(dir.x, dir.y, -dir.y, dir.x, 0, 0)
     if dir.x == -1: # left-right flip
         rot.d = 1
 
+    # PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
+    # PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
+    
     chars = []
     for i in range( span.m_internal.len):
         adv = 0
@@ -17898,14 +17902,17 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
         if span.items(i).ucs == 32:
             space_adv = adv
         char_orig = mupdf.fz_make_point(span.items(i).x, span.items(i).y)
-        char_orig.y = dev.ptm.f - char_orig.y
-        char_orig = mupdf.fz_transform_point(char_orig, mat)
+        char_orig = mupdf.fz_transform_point(char_orig, ctm);
         m1 = mupdf.fz_make_matrix(1, 0, 0, 1, -char_orig.x, -char_orig.y)
         m1 = mupdf.fz_concat(m1, rot)
         m1 = mupdf.fz_concat(m1, mupdf.FzMatrix(1, 0, 0, 1, char_orig.x, char_orig.y))
         x0 = char_orig.x
         x1 = x0 + adv
-        if dir.x == 1 and span.m_internal.trm.d < 0:    # up-down flip
+        if (
+                (mat.d > 0 and (dir.x == 1 or dir.x == -1))
+                or
+                (mat.b !=0 and mat.b == -mat.c)
+                ):  # up-down flip
             y0 = char_orig.y + dscsize
             y1 = char_orig.y + ascsize
         else:
@@ -17945,7 +17952,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
             if not space_adv:
                 space_adv = last_adv
         else:
-            space_adv = last_adv    # for mono fonts this suffices
+            space_adv = last_adv    # for mono, any char width suffices
 
     # make the span dictionary
     span_dict = dict()
@@ -17957,6 +17964,8 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     span_dict[ "bidi_dir"] = span.m_internal.markup_dir
     span_dict[ 'ascender'] = asc
     span_dict[ 'descender'] = dsc
+    span_dict[ 'colorspace'] = 3
+    
     if colorspace:
         rgb = mupdf.fz_convert_color(
                 mupdf.FzColorspace( mupdf.ll_fz_keep_colorspace( colorspace)),
@@ -17964,20 +17973,18 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
                 mupdf.FzColorspace(),
                 mupdf.FzColorParams(),
                 )
-        span_dict[ 'colorspace'] = 3
-        span_dict[ 'color'] = rgb[0], rgb[1], rgb[2]
     else:
-        span_dict[ 'colorspace'] = 1
-        span_dict[ 'color'] =1
+        rgb = (0, 0, 0)
+    span_dict[ 'color'] = rgb
     span_dict[ 'size'] = fsize
     span_dict[ "opacity"] = alpha
     span_dict[ "linewidth"] =linewidth
     span_dict[ "spacewidth"] = space_adv
     span_dict[ 'type'] = type_
-    span_dict[ 'chars'] = chars
     span_dict[ 'bbox'] = JM_py_from_rect(span_bbox)
     span_dict[ 'layer'] = JM_EscapeStrFromStr( dev.layer_name)
     span_dict[ "seqno"] = seqno
+    span_dict[ 'chars'] = chars
     dev.out.append( span_dict)
 
 

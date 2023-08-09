@@ -1932,8 +1932,15 @@ static void jm_trace_text_span(
         )
 {
     //printf("extra.jm_trace_text_span(): seqno=%zi\n", seqno);
-    fz_matrix join = mupdf::ll_fz_concat(span->trm, ctm);
-    double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d));
+    //fz_matrix join = mupdf::ll_fz_concat(span->trm, ctm);
+    //double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d));
+    fz_matrix mat = mupdf::ll_fz_concat(span->trm, ctm); // text transformation matrix
+    fz_point dir = mupdf::ll_fz_transform_vector(mupdf::ll_fz_make_point(1, 0), mat); // writing direction
+    dir = mupdf::ll_fz_normalize_vector(dir);
+
+    double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d)); // font size
+
+    // compute effective ascender / descender
     double asc = (double) JM_font_ascender(span->font);
     double dsc = (double) JM_font_descender(span->font);
     if (asc < 1e-3) {  // probably Tesseract font
@@ -1943,25 +1950,22 @@ static void jm_trace_text_span(
 
     double ascsize = asc * fsize / (asc - dsc);
     double dscsize = dsc * fsize / (asc - dsc);
-    int fflags = 0;
+    int fflags = 0; // font flags
     int mono = mupdf::ll_fz_font_is_monospaced(span->font);
     fflags += mono * TEXT_FONT_MONOSPACED;
     fflags += mupdf::ll_fz_font_is_italic(span->font) * TEXT_FONT_ITALIC;
     fflags += mupdf::ll_fz_font_is_serif(span->font) * TEXT_FONT_SERIFED;
     fflags += mupdf::ll_fz_font_is_bold(span->font) * TEXT_FONT_BOLD;
-    fz_matrix mat = dev->ptm;
-    fz_matrix ctm_rot = mupdf::ll_fz_concat(ctm, dev->rot);
-    mat = mupdf::ll_fz_concat(mat, ctm_rot);
 
     // walk through characters of span
-    fz_point dir = mupdf::ll_fz_transform_vector(fz_make_point(1, 0), join);
-    dir = mupdf::ll_fz_normalize_vector(dir);
     fz_matrix rot = mupdf::ll_fz_make_matrix(dir.x, dir.y, -dir.y, dir.x, 0, 0);
     if (dir.x == -1)
     {
         // left-right flip
         rot.d = 1;
     }
+    // PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
+    // PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
 
     PyObject* chars = PyTuple_New(span->len);
     double space_adv = 0;
@@ -1983,8 +1987,7 @@ static void jm_trace_text_span(
         }
         fz_point char_orig;
         char_orig = fz_make_point(span->items[i].x, span->items[i].y);
-        char_orig.y = dev->ptm.f - char_orig.y;
-        char_orig = mupdf::ll_fz_transform_point(char_orig, mat);
+        char_orig = fz_transform_point(char_orig, ctm);
         fz_matrix m1 = mupdf::ll_fz_make_matrix(1, 0, 0, 1, -char_orig.x, -char_orig.y);
         m1 = mupdf::ll_fz_concat(m1, rot);
         m1 = mupdf::ll_fz_concat(m1, mupdf::ll_fz_make_matrix(1, 0, 0, 1, char_orig.x, char_orig.y));
@@ -1992,7 +1995,12 @@ static void jm_trace_text_span(
         float x1 = x0 + adv;
         float y0;
         float y1;
-        if (dir.x == 1 && span->trm.d < 0)
+        //if (dir.x == 1 && span->trm.d < 0)
+        if (
+                (mat.d > 0 && (dir.x == 1 || dir.x == -1))
+                ||
+                (mat.b !=0 && mat.b == -mat.c)
+                )   // up-down flip
         {
             // up-down flip
             y0 = char_orig.y + dscsize;
@@ -2045,7 +2053,7 @@ static void jm_trace_text_span(
         }
         else
         {
-            space_adv = last_adv; // for mono fonts this suffices
+            space_adv = last_adv; // for mono any char width suffices
         }
     }
     // make the span dictionary
@@ -2058,9 +2066,10 @@ static void jm_trace_text_span(
     dict_setitemstr_drop(span_dict, "bidi_dir", PyLong_FromLong((long) span->markup_dir));
     dict_setitem_drop(span_dict, dictkey_ascender, PyFloat_FromDouble(asc));
     dict_setitem_drop(span_dict, dictkey_descender, PyFloat_FromDouble(dsc));
+    dict_setitem_drop(span_dict, dictkey_colorspace, PyLong_FromLong(3));
+    float rgb[3];
     if (colorspace)
     {
-        float rgb[3];
         mupdf::ll_fz_convert_color(
                 colorspace,
                 color,
@@ -2069,24 +2078,31 @@ static void jm_trace_text_span(
                 nullptr,
                 fz_default_color_params
                 );
-        dict_setitem_drop(span_dict, dictkey_colorspace, PyLong_FromLong(3));
-        dict_setitem_drop(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
     }
     else
     {
-        dict_setitem_drop(span_dict, dictkey_colorspace, PyLong_FromLong(1));
-        dict_setitem_drop(span_dict, dictkey_color, PyFloat_FromDouble(1));
+        rgb[0] = rgb[1] = rgb[2] = 0;
     }
-    double linewidth = (dev->linewidth > 0) ? (double) dev->linewidth : fsize * 0.05;
+    double linewidth;
+    if (dev->linewidth > 0)  // width of character border
+    {
+        linewidth = (double) dev->linewidth;
+    }
+    else
+    {
+	linewidth = fsize * 0.05;  // default: 5% of font size
+    }
     
+    
+    dict_setitem_drop(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
     dict_setitem_drop(span_dict, dictkey_size, PyFloat_FromDouble(fsize));
     dict_setitemstr_drop(span_dict, "opacity", PyFloat_FromDouble((double) alpha));
     dict_setitemstr_drop(span_dict, "linewidth", PyFloat_FromDouble((double) linewidth));
     dict_setitemstr_drop(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
     dict_setitem_drop(span_dict, dictkey_type, PyLong_FromLong((long) type));
-    dict_setitem_drop(span_dict, dictkey_chars, chars);
     dict_setitem_drop(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
     dict_setitemstr_drop(span_dict, "seqno", PyLong_FromSize_t(seqno));
+    dict_setitem_drop(span_dict, dictkey_chars, chars);
     
     s_list_append_drop(dev->out, span_dict);
 }
