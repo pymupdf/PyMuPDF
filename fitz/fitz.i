@@ -1885,7 +1885,7 @@ struct Document
 
         #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR <= 21
         /* The underlying struct members that these methods give access to, are
-        not in mupdf-1.22. */
+        not available. */
         CLOSECHECK0(has_xref_streams, """Check if xref table is a stream.""")
         %pythoncode%{@property%}
         PyObject *has_xref_streams()

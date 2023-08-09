@@ -555,7 +555,7 @@ class Package:
             
             # We need to patch things on MacOS.
             #
-            # E.g. `PyMuPDF-1.22.3-cp311-none-macosx_13_x86_64.whl`
+            # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
             # causes `pip` to fail with: `not a supported wheel on this
             # platform`. We seem to need to add `_0` to the OS version.
             #

@@ -145,8 +145,8 @@ Things to do:
 
 For example::
 
-    git clone -b 1.22 https://github.com/pymupdf/PyMuPDF.git
-    git clone -b 1.22.x --recursive https://ghostscript.com:/home/git/mupdf.git
+    git clone https://github.com/pymupdf/PyMuPDF.git
+    git clone -b 1.23.x --recursive https://ghostscript.com:/home/git/mupdf.git
     python -m venv pymupdf-venv
     . pymupdf-venv/bin/activate
     cd PyMuPDF
