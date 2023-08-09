@@ -6628,6 +6628,8 @@ class Widget:
         self.script_format = None  # JavaScript (/AA/F)
         self.script_change = None  # JavaScript (/AA/V)
         self.script_calc = None  # JavaScript (/AA/C)
+        self.script_blur = None  # JavaScript (/AA/Bl)
+        self.script_focus = None  # JavaScript (/AA/Fo)
 
         self.rect = None  # annot value
         self.xref = 0  # annot value
@@ -6762,6 +6764,16 @@ class Widget:
             self.script_stroke = None
         elif type(self.script_stroke) is not str:
             raise ValueError("script_stroke content must be a string")
+
+        if btn_type or not self.script_blur:
+            self.script_blur = None
+        elif type(self.script_blur) is not str:
+            raise ValueError("script_blur content must be a string")
+
+        if btn_type or not self.script_focus:
+            self.script_focus = None
+        elif type(self.script_focus) is not str:
+            raise ValueError("script_focus content must be a string")
 
         self._checker()  # any field_type specific checks
 
@@ -15118,8 +15130,16 @@ def JM_get_widget_properties(annot, Widget):
             )
 
     SETATTR_DROP(Widget, "script_calc",
-        JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), PDF_NAME('C')))
-        )
+            JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), PDF_NAME('C')))
+            )
+
+    SETATTR_DROP(Widget, "script_blur",
+            JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), PDF_NAME('Bl')))
+            )
+
+    SETATTR_DROP(Widget, "script_focus",
+            JM_get_script(mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AA'), PDF_NAME('Fo')))
+            )
 
 
 def JM_get_fontextension(doc, xref):
@@ -16918,6 +16938,14 @@ def JM_set_widget_properties(annot, Widget):
     # script (/AA/C) -------------------------------------------------------
     value = GETATTR("script_calc")
     JM_put_script(annot_obj, PDF_NAME('AA'), PDF_NAME('C'), value)
+
+    # script (/AA/Bl) -------------------------------------------------------
+    value = GETATTR("script_blur")
+    JM_put_script(annot_obj, PDF_NAME('AA'), PDF_NAME('Bl'), value)
+
+    # script (/AA/Fo) -------------------------------------------------------
+    value = GETATTR("script_focus")
+    JM_put_script(annot_obj, PDF_NAME('AA'), PDF_NAME('Fo'), value)
 
     # field value ------------------------------------------------------------
     value = GETATTR("field_value")  # field value
@@ -20488,6 +20516,10 @@ class TOOLS:
             widget.script_change = None
         if not widget.script_calc:
             widget.script_calc = None
+        if not widget.script_blur:
+            widget.script_blur = None
+        if not widget.script_focus:
+            widget.script_focus = None
         return val
 
     @staticmethod
