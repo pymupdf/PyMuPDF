@@ -394,11 +394,7 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            #'https://mupdf.com/downloads/archive/mupdf-1.23.0-source.tar.gz',
-
-            # For now we don't include mupdf in sdist, because building always
-            # gets latest master.
-            '',
+            'https://mupdf.com/downloads/archive/mupdf-1.23.0-rc1-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
@@ -461,7 +457,7 @@ def get_mupdf():
     # 2023-07-11: For now we default to mupdf master.
     path = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_BUILD',
-            'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git',
+            #'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git',
             )
     log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
     if path is None:
@@ -1115,7 +1111,7 @@ p = pipcl.Package(
         author = 'Artifex',
         author_email = 'support@artifex.com',
         requires_dist = requires_dist,
-        requires_python = '>=3.7',
+        requires_python = '>=3.8',
         license = 'GNU AFFERO GPL 3.0',
         project_url = [
             ('Documentation, https://pymupdf.readthedocs.io/'),

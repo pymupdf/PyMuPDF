@@ -3,12 +3,12 @@
 ![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
 
-Release date: July 28, 2023
+Release date: August  9, 2023
 
 
-# Warning - experimental pre-alpha release.
+# Warning - alpha release.
 
-**This is a pre-alpha release adding a new "rebased" implementation of
+**This is an alpha release adding a new "rebased" implementation of
 PyMuPDF.**
 
 The rebased implementation uses the [MuPDF C++ and Python
@@ -18,17 +18,19 @@ the MuPDF C API.
 
 ## Installation
 
-* This release is only available on `test.pypi.org`.
-
 * The wheel name of this experimental release is `PyMuPDFrp`, not `PyMuPDF`.
 
 * Install with:
 
-      pip install -i https://test.pypi.org/simple PyMuPDFrp
+      pip install PyMuPDFrp
 
-  This will automatically install a second wheel called `PyMuPDFrb`, which
-  contains the MuPDF shared library, which is used by both classic and rebased
-  implementations of PyMuPDF.
+  This will automatically install a second wheel called `PyMuPDFrb`.
+
+*
+  The use of separate `PyMuPDFrb` wheels reduces space requirements on
+  pypi.org because it is independent of Python version and works with
+  both classic and rebased implementations, so a release only needs one
+  `PyMuPDFrb` for each OS.
 
 
 ## Usage
@@ -68,6 +70,10 @@ Use the new rebased implementation with:
   Classic PyMuPDF is explicitly single-threaded, but the MuPDF C++/Python APIs
   have automated per-thread contexts.
 
+
+## Known issues
+
+* On Windows with Python-3.10, `fitz_new` seems to segv on startup.
 
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
@@ -131,9 +137,9 @@ The latest changelog can be viewed [here](https://pymupdf.readthedocs.io/en/late
 
 # Installation
 
-PyMuPDF **requires Python 3.7 or later**.
+PyMuPDF **requires Python 3.8 or later**.
 
-For versions 3.7 and up, Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way. To ensure pip support for the latest wheel platform tags, we strongly recommend to always upgrade pip first.
+For versions 3.8 and up, Python wheels exist for **Windows** (32bit and 64bit), **Linux** (64bit, Intel and ARM) and **Mac OSX** (64bit, Intel only), so it can be installed from [PyPI](https://pypi.org/search/?q=pymupdf) in the usual way. To ensure pip support for the latest wheel platform tags, we strongly recommend to always upgrade pip first.
 
     python -m pip install --upgrade pip
     python -m pip install --upgrade pymupdf

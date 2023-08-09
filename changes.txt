@@ -2,11 +2,86 @@ Change Log
 ==========
 
 
-**Changes in version 1.23.0 (2023-07-28)**
+**Changes in version 1.23.0 (2023-08-09)**
 
-* This release uses ``MuPDF-1.23.0``.
+*
+  Alpha release containing new "rebased" implementation of PyMuPDF as
+  Python module `fitz_new`.
 
-Experimental release to test.pypi.org.
+* Structured as two Python wheels, `PyMuPDFpy` and `PyMuPDFrb`.
+
+* This release uses ``MuPDF-1.23.0-rc1``.
+
+* Bug fixes:
+
+  * * **Fixed** `#2542 <https://github.com/pymupdf/PyMuPDF/issues/2542>`_: fritz.utils.scrub AttributeError Annot object has no attribute fileUpd inside
+  * * **Fixed** `#2533 <https://github.com/pymupdf/PyMuPDF/issues/2533>`_: get_texttrace returned a incorrect character bbox
+  * * **Fixed** `#2537 <https://github.com/pymupdf/PyMuPDF/issues/2537>`_: Validation when setting a grouped RadioButton throws a RuntimeError: path to 'V' has indirects
+
+* Other changes:
+
+  * Dropped support for Python-3.7.
+
+  * Fix for wrong page / annot `/Contents` cleaning.
+    
+    We need to set `pdf_filter_options::no_update` to zero.
+
+  * Added new function get_tessdata().
+
+  * Cope with problem `/Annot` arrays.
+  
+    When copying page annotations in method Document.insert_pdf we
+    previously did not check the validity of members of the `/Annots`
+    array.  For faulty members (like null or non-dictionary items) this
+    could cause unnecessary exceptions. This fix implements more checks
+    and skips such array items.
+
+  * Additional annotation type checks.
+
+    We did not previously check for annotation type when getting /
+    setting annotation border properties. This is now checked in
+    accordance with MuPDF.
+
+  * Increase fault tolerance.
+    
+    Avoid exceptions in method `insert_pdf()` when source pages contains
+    invalid items in the `/Annots` array.
+
+  * Return empty border dict for applicable annots.
+    
+    We previously were returning a non-empty border dictionary even for
+    non-applicable annotation types.  We now return the empty dictionary
+    `{}` in these cases. This requires some corresponding changes in the
+    annotation `.update()` method, namely for dashes and border width.
+
+  * Restrict `set_rect` to applicable annot types.
+
+    We were insufficiently excluding non-applicable annotation types
+    from `set_rect()` method.  We now let MuPDF catch unsupported
+    annotations and return `False` in these cases.
+
+  * Wrong fontsize computation in `page.get_texttrace()`.
+    
+    When computing the font size we were using the final text
+    transformation matrix, where we should have taken `span->trm`
+    instead.  This is corrected here.
+
+  * Updates to cope with changes to latest MuPDF.
+  
+    `pdf_lookup_anchor()` has been removed.
+
+  * Update fill_textbox to better respect rect.width
+
+    The function norm_words in fill_textbox had a bug in its last
+    loop, appending n+1 characters when actually measuring width of n
+    characters.  It led to a bug in fill_texbox when you tried to write
+    a single word mostly composed of "wide" letters (M,m, W, w...),
+    causing the written text to exceed the given rect.
+
+    The fix was just to replace n+1 by n.
+
+  * Add `script_focus` and `script_blur` options to widget.
+
 
 
 **Changes in version 1.22.5 (2023-06-21)**
