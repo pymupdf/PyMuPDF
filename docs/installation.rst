@@ -71,7 +71,7 @@ Wheels are not available for Python installed with `Chocolatey
 using the Windows installer from the python.org website, see:
 http://www.python.org/downloads
 
-PyMuPDF does not support Python versions prior to 3.7. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
+PyMuPDF does not support Python versions prior to 3.8. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
 
 There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
