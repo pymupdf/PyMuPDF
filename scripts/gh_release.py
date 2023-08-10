@@ -171,28 +171,40 @@ def build( platform_=None):
                 ret.append(item)
         return ' '.join(ret)
     
-    set_if_unset(
-            'CIBW_ARCHS_LINUX',
-            make_string(
-                'auto' * inputs_wheels_linux_auto,
-                'aarch64' * inputs_wheels_linux_aarch64,
-                ),
-            )
+    if platform.system() == 'Linux':
+        set_if_unset(
+                'CIBW_ARCHS_LINUX',
+                make_string(
+                    'auto' * inputs_wheels_linux_auto,
+                    'aarch64' * inputs_wheels_linux_aarch64,
+                    ),
+                )
+        if env_extra.get('CIBW_ARCHS_LINUX') == '':
+            log(f'Not running cibuildwheel because CIBW_ARCHS_LINUX is empty string.')
+            return
     
-    set_if_unset(
-            'CIBW_ARCHS_WINDOWS',
-            make_string(
-                'auto' * inputs_wheels_windows_auto,
-                ),
-            )
+    if platform.system() == 'Windows':
+        set_if_unset(
+                'CIBW_ARCHS_WINDOWS',
+                make_string(
+                    'auto' * inputs_wheels_windows_auto,
+                    ),
+                )
+        if env_extra.get('CIBW_ARCHS_WINDOWS') == '':
+            log(f'Not running cibuildwheel because CIBW_ARCHS_WINDOWS is empty string.')
+            return
     
-    set_if_unset(
-            'CIBW_ARCHS_MACOS',
-            make_string(
-                'auto' * inputs_wheels_macos_auto,
-                'arm64' * inputs_wheels_macos_arm64,
-                ),
-            )
+    if platform.system() == 'Darwin':
+        set_if_unset(
+                'CIBW_ARCHS_MACOS',
+                make_string(
+                    'auto' * inputs_wheels_macos_auto,
+                    'arm64' * inputs_wheels_macos_arm64,
+                    ),
+                )
+        if env_extra.get('CIBW_ARCHS_MACOS') == '':
+            log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
+            return
     
     # On Windows:
     #   cp310 gets dll load error at runtime.
@@ -271,18 +283,15 @@ def build( platform_=None):
         set_cibuild_test()
         
         env_set( 'PYMUPDF_SETUP_FLAVOUR', 'p', pass_=1)
-        run( f'cibuildwheel{platform_arg}', env_extra)
-        run( 'echo after flavour=p')
-    
+        
     else:
         # Build and test wheels which contain everything.
         #
         set_cibuild_test()
         env_set( 'PYMUPDF_SETUP_FLAVOUR', 'pb', pass_=1)
-        run( f'cibuildwheel{platform_arg}', env_extra)
-        run( 'echo after flavour=pb')
     
-    run( 'ls -l wheelhouse')
+    run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
+    run( 'ls -lt wheelhouse')
 
 
 def venv( command=None, packages=None):
@@ -360,17 +369,24 @@ def log(text):
     sys.stdout.flush()
 
 
-def run(command, env_extra=None, check=1):
-    env = None
+def run(command, env_extra=None, env=None, check=1):
+    if env is None:
+        env = add_env(env_extra)
+    else:
+        assert env_extra is None
+    log(f'Running: {command}')
+    sys.stdout.flush()
+    subprocess.run(command, check=check, shell=1, env=env)
+
+
+def add_env(env_extra):
+    env = os.environ.copy()
     if env_extra:
-        env = os.environ.copy()
         env.update(env_extra)
         log(f'Adding environment:')
         for n, v in env_extra.items():
             log(f'    {n}: {v!r}')
-    log(f'Running: {command}')
-    sys.stdout.flush()
-    subprocess.run(command, check=check, shell=1, env=env)
+    return env
 
 
 def windows_platform_tag():
