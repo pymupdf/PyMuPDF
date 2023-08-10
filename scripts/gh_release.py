@@ -38,7 +38,10 @@ We look at these items in the environment, should be unset (treated as '0'),
     inputs_sdist
     inputs_wheels
     inputs_wheels_linux_aarch64
+    inputs_wheels_linux_auto
     inputs_wheels_macos_arm64
+    inputs_wheels_macos_auto
+    inputs_wheels_windows_auto
 
 Example usage:
 
@@ -127,18 +130,24 @@ def build( platform_=None):
         else:
             assert 0, f'Bad environ {name=} {v=}'
     inputs_flavours = get_bool('inputs_flavours', 1)
-    inputs_skeleton = get_bool('inputs_skeleton')
     inputs_sdist = get_bool('inputs_sdist')
+    inputs_skeleton = get_bool('inputs_skeleton')
     inputs_wheels = get_bool('inputs_wheels')
     inputs_wheels_linux_aarch64 = get_bool('inputs_wheels_linux_aarch64')
+    inputs_wheels_linux_auto = get_bool('inputs_wheels_linux_auto', 1)
     inputs_wheels_macos_arm64 = get_bool('inputs_wheels_macos_arm64')
+    inputs_wheels_macos_auto = get_bool('inputs_wheels_macos_auto', 1)
+    inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', 1)
     
     log( f'{inputs_flavours=}')
-    log( f'{inputs_skeleton=}')
     log( f'{inputs_sdist=}')
+    log( f'{inputs_skeleton=}')
     log( f'{inputs_wheels=}')
     log( f'{inputs_wheels_linux_aarch64=}')
+    log( f'{inputs_wheels_linux_auto=}')
     log( f'{inputs_wheels_macos_arm64=}')
+    log( f'{inputs_wheels_macos_auto=}')
+    log( f'{inputs_wheels_windows_auto=}')
 
     run('pip install cibuildwheel')
     
@@ -154,14 +163,36 @@ def build( platform_=None):
             log( f'Not changing {name}={v!r} to {value!r}')
     set_if_unset( 'CIBW_BUILD_VERBOSITY', '3')
     set_if_unset( 'CIBW_SKIP', '"pp* *i686 *-musllinux_* cp36* cp37*"')
-    set_if_unset( 'CIBW_ARCHS_LINUX', 'auto')
     
-    # Don't build Windows x86, because MuPDF's workaround for win32 libclang
-    # (where it runs `-b 0` in a separate venv with 64-bit Python) does not
-    # work when run via cibuildwheel - in the 64-bit venv, clang module cannot
-    # find libclang.
-    #
-    #set_if_unset( 'CIBW_ARCHS_WINDOWS', 'AMD64')
+    def make_string(*items):
+        ret = list()
+        for item in items:
+            if item:
+                ret.append(item)
+        return ' '.join(ret)
+    
+    set_if_unset(
+            'CIBW_ARCHS_LINUX',
+            make_string(
+                'auto' * inputs_wheels_linux_auto,
+                'aarch64' * inputs_wheels_linux_aarch64,
+                ),
+            )
+    
+    set_if_unset(
+            'CIBW_ARCHS_WINDOWS',
+            make_string(
+                'auto' * inputs_wheels_windows_auto,
+                ),
+            )
+    
+    set_if_unset(
+            'CIBW_ARCHS_MACOS',
+            make_string(
+                'auto' * inputs_wheels_macos_auto,
+                'arm64' * inputs_wheels_macos_arm64,
+                ),
+            )
     
     # On Windows:
     #   cp310 gets dll load error at runtime.
