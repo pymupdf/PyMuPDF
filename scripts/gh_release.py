@@ -234,6 +234,11 @@ def build( platform_=None):
         else:
             env_set('CIBW_TEST_REQUIRES', 'fontTools pytest')
             env_set('CIBW_TEST_COMMAND', 'python {project}/tests/run_compound.py pytest -s {project}/tests')
+        
+        # Don't attempt to run tests on cross-built wheels. (This
+        # assumes that arm builds are done using cross-builds.)
+        #
+        env_set('CIBW_TEST_SKIP', '*-*linux_aarch64 *-macosx_arm64')
     
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')
     if pymupdf_dir != os.path.abspath( os.getcwd()):
