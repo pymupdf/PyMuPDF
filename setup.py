@@ -34,42 +34,38 @@ Environmental variables:
     PYMUPDF_SETUP_FLAVOUR
         Control building of separate wheels for PyMuPDF.
         
-        If set must be one of: 'r' (the default), 'rp', 'rb'.
+        Must be unset or one of: 'pb', 'p', 'b'.
         
-        'r' or unset:
-            Build complete wheel `PyMuPDFr` with all Python and shared
+        'pb' or unset:
+            Build complete wheel `PyMuPDF` with all Python and shared
             libraries.
         
-        'rp':
-            Build wheel called `PyMuPDFrp` which excludes all shared libraries
-            that are not specific to a particular Python version - e.g. on
-            Linux this will exclude `libmupdf.so` and `libmupdfcpp.so`.
+        'p':
+            Wheel `PyMuPDF` excludes all shared libraries that are not
+            specific to a particular Python version - e.g. on Linux this
+            will exclude `libmupdf.so` and `libmupdfcpp.so`.
 
-            This wheel will require the corresponding PyMuPDFrb wheel
-            - `PyMuPDFrp-<version>.dist-info/METADATA` will contain
-            `Requires-Dist: PyMuPDFrb ==<version>`.
+            This wheel will require the corresponding PyMuPDFb wheel
+            - `PyMuPDF-<version>.dist-info/METADATA` will contain
+            `Requires-Dist: PyMuPDFb ==<version>`.
         
-        'rb':
-            Build wheel called `PyMuPDFrb` containing only shared libraries
+        'b':
+            Build wheel called `PyMuPDFb` containing only shared libraries
             that are not specific to a particular Python version - e.g.
             on Linux this will be `libmupdf.so` and `libmupdfcpp.so`.
         
     PYMUPDF_SETUP_MUPDF_BUILD
-        If set, overrides location of mupdf when building PyMuPDF:
+        If set, overrides location of MuPDF when building PyMuPDF:
             Empty string:
-                Build PyMuPDF with the system mupdf.
+                Build PyMuPDF with the system MuPDF.
             A string starting with 'git:':
-                Use `git clone` to get a mupdf directory. We use the string in
-                the git clone command; it must contain the git URL from which
-                to clone, and can also contain other `git clone` args, for
-                example:
+                Use `git clone` to get a MuPDF checkout. We use the
+                string in the git clone command; it must contain the git
+                URL from which to clone, and can also contain other `git
+                clone` args, for example:
                     PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
             Otherwise:
                 Location of mupdf directory.
-
-            In addition if MuPDF is a git checkout and the branch is 'master',
-            PyMuPDF is configured to build with MuPDF master branch, which may
-            have a slightly different API from the current release banch.
     
     PYMUPDF_SETUP_MUPDF_BUILD_TYPE
         Unix only. Controls build type of MuPDF. Supported values are:
@@ -183,9 +179,9 @@ if 1:
         log( f'    {k}: {v!r}')
 
 
-g_flavour = os.environ.get( 'PYMUPDF_SETUP_FLAVOUR', 'r')
-assert g_flavour in ('r', 'rp', 'rb'), \
-        f'Unrecognised {g_flavour=} should be one of: "r", "rp", "rb"'
+g_flavour = os.environ.get( 'PYMUPDF_SETUP_FLAVOUR', 'pb')
+assert g_flavour in ('p', 'b', 'pb'), \
+        f'Unrecognised {g_flavour=} should be one of: "p", "b", "pb"'
 
 g_root = os.path.abspath( f'{__file__}/..')
 
@@ -551,7 +547,7 @@ def build():
         ret = list()
         log( f'{g_flavour=}')
         run( f'ls -l wheelhouse', check=0)
-        if g_flavour == 'rb':
+        if g_flavour == 'b':
             with open( 'foo.c', 'w') as f:
                 f.write( textwrap.dedent( '''
                         int foo(int x)
@@ -562,7 +558,7 @@ def build():
                 run(f'cc -fPIC -shared -o {g_root}/libfoo.so foo.c')
             ret.append( f'{g_root}/libfoo.so')
             ret.append( (f'{g_root}/READMErb.md', '$dist-info/README.md'))
-        elif g_flavour == 'rp':
+        elif g_flavour == 'p':
             with open( 'bar.c', 'w') as f:
                 f.write( textwrap.dedent( '''
                         int bar(int x)
@@ -640,8 +636,8 @@ def build():
     # shared libraries in a separate list so that we can build specific wheels
     # as determined by g_flavour.
     #
-    ret_p = list()  # For PyMuPDFrp.
-    ret_b = list()  # For PyMuPDFrb.
+    ret_p = list()  # For PyMuPDF.
+    ret_b = list()  # For PyMuPDFb.
     def add( ret, from_, to_):
         ret.append( (from_, to_))
     
@@ -664,7 +660,7 @@ def build():
             elif darwin:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
             elif wasm:
-                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDFr.libs/')
+                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
             else:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
 
@@ -694,16 +690,16 @@ def build():
                 add( ret_b, f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
     
-    if g_flavour == 'r':
+    if g_flavour == 'pb':
         ret = ret_p + ret_b
-    elif g_flavour == 'rp':
+    elif g_flavour == 'p':
         ret = ret_p
-    elif g_flavour == 'rb':
+    elif g_flavour == 'b':
         ret = ret_b
     else:
         assert 0
     
-    if g_flavour == 'rb':
+    if g_flavour == 'b':
         add( ret, f'{g_root}/READMErb.md', '$dist-info/README.md')
     else:
         add( ret, f'{g_root}/README.md', '$dist-info/README.md')
@@ -810,8 +806,8 @@ def build_mupdf_unix( mupdf_local, env, build_type):
         env_add(env, 'XLIBS', archflags)
 
     # We specify a build directory path containing 'pymupdf' so that we
-    # coexist with non-PyMuPDF builds (because PyMuPDF builds have a different
-    # config.h).
+    # coexist with non-PyMuPDF builds (because PyMuPDF builds have a
+    # different config.h).
     #
     # We also append further text to try to allow different builds to
     # work if they reuse the mupdf directory.
@@ -839,7 +835,7 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     for n, v in env.items():
         env_string += f' {n}={shlex.quote(v)}'
     command = f'cd {mupdf_local} &&{env_string} {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
-    if 'b' in _implementations() and g_flavour in ('r', 'rp'):
+    if 'b' in _implementations() and g_flavour in ('bp', 'p'):
         command += 'all'
     else:
         command += 'm01'    # No need for C++/Python bindings.
@@ -1079,22 +1075,22 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.0'
+version = '1.23.0rc1'
 
 tag_python = None
 requires_dist = None,
 
-if g_flavour == 'r':
-    name = 'PyMuPDFr'
+if g_flavour == 'pb':
+    name = 'PyMuPDF'
     summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF'
     readme = readme_
-elif g_flavour == 'rp':
-    name = 'PyMuPDFrp'
+elif g_flavour == 'p':
+    name = 'PyMuPDF'
     summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF - without shared libraries'
     readme = readme_
-    requires_dist = f'PyMuPDFrb =={version}'
-elif g_flavour == 'rb':
-    name = 'PyMuPDFrb'
+    requires_dist = f'PyMuPDFb =={version}'
+elif g_flavour == 'b':
+    name = 'PyMuPDFb'
     summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF - shared libraries only'
     readme = readme_rb
     tag_python = 'py3'  # Works with any Python version.
