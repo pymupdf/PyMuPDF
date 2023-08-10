@@ -24,7 +24,7 @@ With PyMuPDF you can access files with extensions like “.pdf”, “.xps”, �
 
 PyMuPDF provides access to many important functions of MuPDF from within a Python environment, and we are continuously seeking to expand this function set.
 
-PyMuPDF runs and has been tested on Mac, Linux and Windows for Python versions 3.7 [#f1]_ and up. Other platforms should work too, as long as MuPDF and Python support them.
+PyMuPDF runs and has been tested on Mac, Linux and Windows for Python versions 3.8 [#f1]_ and up. Other platforms should work too, as long as MuPDF and Python support them.
 
 PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 
