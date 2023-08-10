@@ -49,7 +49,7 @@ copyright = "2015-" + str(thisday.year) + ", Artifex"
 _path = os.path.abspath(f'{__file__}/../../fitz/version.i')
 with open(_path) as f:
     for line in f:
-        match = re.search('VersionBind = "([0-9][.][0-9]+[.][0-9])"', line)
+        match = re.search('VersionBind = "([0-9][.][0-9]+[.][0-9]+(rc[0-9]+)?)"', line)
         if match:
             release = match.group(1)
             print(f'{__file__}: setting version from {_path}: {release}')
