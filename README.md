@@ -1,79 +1,9 @@
-# PyMuPDFrp 1.23.0
+# PyMuPDF 1.23.0rc1
 
 ![logo](https://artifex.com/images/logos/py-mupdf-github-icon.png)
 
 
-Release date: August  9, 2023
-
-
-# Warning - alpha release.
-
-**This is an alpha release adding a new "rebased" implementation of
-PyMuPDF.**
-
-The rebased implementation uses the [MuPDF C++ and Python
-APIs](https://mupdf.readthedocs.io/en/latest/language-bindings.html) instead of
-the MuPDF C API.
-
-
-## Installation
-
-* The wheel name of this experimental release is `PyMuPDFrp`, not `PyMuPDF`.
-
-* Install with:
-
-      pip install PyMuPDFrp
-
-  This will automatically install a second wheel called `PyMuPDFrb`.
-
-*
-  The use of separate `PyMuPDFrb` wheels reduces space requirements on
-  pypi.org because it is independent of Python version and works with
-  both classic and rebased implementations, so a release only needs one
-  `PyMuPDFrb` for each OS.
-
-
-## Usage
-
-Use the classic implementation with:
-
-    import fitz
-
-Use the new rebased implementation with:
-
-    import fitz_new as fitz
-
-
-## Benefits
-
-* Access to the underlying MuPDF Python API.
-
-  The MuPDF Python API is available as `fitz_new.mupdf` - this is not possible
-  with native PyMuPDF, and can give useful flexibility to the user.
-
-* Simplified implementation.
-
-  The underlying MuPDF C++/Python APIs' automated reference counting, automatic
-  contexts, and native C++ and Python exceptions, make the implementation
-  simpler than classic PyMuPDF.
-
-  This also simplifies development of new PyMuPDF functionality.
-
-* Optional tracing of MuPDF C function calls using environment variables.
-
-  This is a feature of the MuPDF C++ and Python APIs, which can be
-  very useful during development and when reporting bugs. See:
-  <https://mupdf.readthedocs.io/en/latest/language-bindings.html#environmental-variables>
-
-* Possible future support for multithreaded use.
-
-  Classic PyMuPDF is explicitly single-threaded, but the MuPDF C++/Python APIs
-  have automated per-thread contexts.
-
-
-## Known issues
-
-* On Windows with Python-3.10, `fitz_new` seems to segv on startup.
+Release date: August 10, 2023
 
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![Downloads](https://static.pepy.tech/personalized-badge/pymupdf?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pymupdf)
@@ -155,6 +85,56 @@ There are **no mandatory** external dependencies. However, some **optional featu
 Older wheels - also with support for older Python versions - can be found [here](https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5) and on PyPI.
 
 > **Note:** If `pip` cannot find a wheel that is compatible with your platform, it will automatically build and install from source using the PyMuPDF sdist; this requires only that SWIG is installed on your system.
+
+
+# Alternative 'rebased' implementation.
+
+A new implementation of PyMuPDF is available as module `fitz_new`.
+
+*
+  Uses the [MuPDF C++ and Python
+  APIs](https://mupdf.readthedocs.io/en/latest/language-bindings.html)
+  instead of the MuPDF C API.
+
+* Use as a drop-in replace with: `import fitz_new as fitz`
+
+## Benefits
+
+* Access to the underlying MuPDF Python API.
+
+  The MuPDF Python API is available as `fitz_new.mupdf` - this is not possible
+  with native PyMuPDF, and can give useful flexibility to the user.
+
+* Simplified implementation.
+
+  The underlying MuPDF C++/Python APIs' automated reference counting, automatic
+  contexts, and native C++ and Python exceptions, make the implementation
+  simpler than classic PyMuPDF.
+
+  This also simplifies development of new PyMuPDF functionality.
+
+* Optional tracing of MuPDF C function calls using environment variables.
+
+  This is a feature of the MuPDF C++ and Python APIs, which can be
+  very useful during development and when reporting bugs. See:
+  <https://mupdf.readthedocs.io/en/latest/language-bindings.html#environmental-variables>
+
+* Possible future support for multithreaded use.
+
+  Classic PyMuPDF is explicitly single-threaded, but the MuPDF C++/Python APIs
+  have automated per-thread contexts.
+
+
+## Known issues
+
+*
+  `import fitz_new` is known to fail with a SEGV on Windows with Python-3.10.
+
+# Secondary wheel `PyMuPDFb`
+
+Installation of PyMuPDF with pip will automatically install a second
+wheel called `PyMuPDFb` containing Python-independent libraries.
+
 
 # License and Copyright
 

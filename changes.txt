@@ -2,21 +2,26 @@ Change Log
 ==========
 
 
-**Changes in version 1.23.0 (2023-08-09)**
+**Changes in version 1.23.0rc1 (2023-08-10)**
+
+* Contains a new "rebased" implementation of PyMuPDF.
+
+  The rebased implementation is available as Python module
+  `fitz_new`. It can be used as a drop-in replacement with `import
+  fitz_new as fitz`.
 
 *
-  Alpha release containing new "rebased" implementation of PyMuPDF as
-  Python module `fitz_new`.
+  Python-independent MuPDF libraries are now in a second wheel called
+  `PyMuPDFb` that will be automatically installed by pip.
 
-* Structured as two Python wheels, `PyMuPDFpy` and `PyMuPDFrb`.
-
-* This release uses ``MuPDF-1.23.0-rc1``.
+  This is to save space on pypi.org - a full release only needs one
+  `PyMuPDFb` wheel for each OS.
 
 * Bug fixes:
 
-  * * **Fixed** `#2542 <https://github.com/pymupdf/PyMuPDF/issues/2542>`_: fritz.utils.scrub AttributeError Annot object has no attribute fileUpd inside
-  * * **Fixed** `#2533 <https://github.com/pymupdf/PyMuPDF/issues/2533>`_: get_texttrace returned a incorrect character bbox
-  * * **Fixed** `#2537 <https://github.com/pymupdf/PyMuPDF/issues/2537>`_: Validation when setting a grouped RadioButton throws a RuntimeError: path to 'V' has indirects
+  * **Fixed** `#2542 <https://github.com/pymupdf/PyMuPDF/issues/2542>`_: fritz.utils.scrub AttributeError Annot object has no attribute fileUpd inside
+  * **Fixed** `#2533 <https://github.com/pymupdf/PyMuPDF/issues/2533>`_: get_texttrace returned a incorrect character bbox
+  * **Fixed** `#2537 <https://github.com/pymupdf/PyMuPDF/issues/2537>`_: Validation when setting a grouped RadioButton throws a RuntimeError: path to 'V' has indirects
 
 * Other changes:
 
