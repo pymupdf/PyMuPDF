@@ -3,13 +3,13 @@
 '''
 Build+test script for PyMuPDF, mostly for use with github builds.
 
-We run cibuild manually, in order to build and test the two wheel flavours that
-make up PyMuPDF:
+We run cibuild manually, in order to build and test the two wheel
+flavours that make up PyMuPDF:
 
-    PyMuPDFrb
+    PyMuPDFb
         Not specific to particular versions of Python. Contains shared
         libraries for the MuPDF C and C++ bindings.
-    PyMuPDFrp
+    PyMuPDF
         Specific to particular versions of Python. Contains the rest of
         the(classic and rebased) PyMuPDF implementation.
 
@@ -31,8 +31,8 @@ We look at these items in the environment, should be unset (treated as '0'),
 '0' or '1'.
 
     inputs_flavours
-        If '1' Build separate PyMuPDFrb and PyMuPDFrp wheels. Usually
-        this should be set to '1'.
+        If unset or '1', build separate PyMuPDF and PyMuPDFb wheels.
+        If '0', build complete PyMuPDF wheels.
     inputs_skeleton
         Build minimal wheel; for testing only.
     inputs_sdist
@@ -116,15 +116,17 @@ def build( platform_=None):
     # Parameters are in os.environ, as that seems to be the only way that
     # Github workflow .yml files can encode them.
     #
-    def get_bool(name):
+    def get_bool(name, default=0):
         v = os.environ.get(name)
         if v in ('1', 'true'):
             return 1
-        elif v in ('0', 'false', None):
+        elif v in ('0', 'false'):
             return 0
+        elif v is None:
+            return default
         else:
             assert 0, f'Bad environ {name=} {v=}'
-    inputs_flavours = get_bool('inputs_flavours')
+    inputs_flavours = get_bool('inputs_flavours', 1)
     inputs_skeleton = get_bool('inputs_skeleton')
     inputs_sdist = get_bool('inputs_sdist')
     inputs_wheels = get_bool('inputs_wheels')
@@ -196,18 +198,18 @@ def build( platform_=None):
         os.chdir( pymupdf_dir)
     
     if inputs_flavours:
-        # Build and test PyMuPDFrb and PyMuPDFrp wheels.
+        # Build and test PyMuPDF and PyMuPDFb wheels.
         #
         
-        # First build PyMuPDFrb wheel. cibuildwheel will build a single wheel
-        # here, which will work with any python version.
+        # First build PyMuPDFb wheel. cibuildwheel will build a single wheel
+        # here, which will work with any python version on current OS.
         #
-        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'rb', pass_=1)
+        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'b', pass_=1)
         run( f'cibuildwheel{platform_arg}', env_extra)
-        run( 'echo after flavour=rb')
+        run( 'echo after flavour=b')
         run( 'ls -l wheelhouse')
 
-        # Now build PyMuPDFrp wheels. cibuildwheel will build one for each
+        # Now build PyMuPDF wheels. cibuildwheel will build one for each
         # Python version.
         #
         
@@ -222,8 +224,8 @@ def build( platform_=None):
         env_set('CIBW_REPAIR_WHEEL_COMMAND_MACOS', '')
         
         # We tell cibuildwheel to test these wheels, but also tell it to
-        # install the PyMuPDFrb wheel first - otherwise installation of
-        # PyMuPDFrp would fail because it lists the PyMuPDFrb wheel as a
+        # install the PyMuPDFb wheel first - otherwise installation of
+        # PyMuPDF would fail because it lists the PyMuPDFb wheel as a
         # prerequisite.
         #
         if platform.system() == 'Windows':
@@ -232,27 +234,24 @@ def build( platform_=None):
             # platform tag so we cope with 32 and 64-bit wheels being
             # available.
             #
-            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py windows_pip_install wheelhouse/PyMuPDFrb')
+            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py windows_pip_install wheelhouse/PyMuPDFb')
         else:
-            env_set('CIBW_BEFORE_TEST', 'pip install wheelhouse/PyMuPDFrb-*.whl')
+            env_set('CIBW_BEFORE_TEST', 'pip install wheelhouse/PyMuPDFb-*.whl')
         set_cibuild_test()
         
-        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'rp', pass_=1)
+        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'p', pass_=1)
         run( f'cibuildwheel{platform_arg}', env_extra)
-        run( 'echo after flavour=rp')
-        run( 'ls -l wheelhouse')
-
-        wheel_b = glob.glob( 'wheelhouse/PyMuPDFrb-*.whl')
-        assert len(wheel_b) == 1
-        wheel_b = wheel_b[0]
-
-        wheel_p = glob.glob( 'wheelhouse/PyMuPDFrp-*.whl')
+        run( 'echo after flavour=p')
     
     else:
         # Build and test wheels which contain everything.
         #
         set_cibuild_test()
+        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'pb', pass_=1)
         run( f'cibuildwheel{platform_arg}', env_extra)
+        run( 'echo after flavour=pb')
+    
+    run( 'ls -l wheelhouse')
 
 
 def venv( command=None, packages=None):
@@ -308,7 +307,7 @@ def test( project, package):
     platform_tag = ''
     if platform.system() == 'Windows':
         platform_tag = windows_platform_tag()
-    wheel_b = glob.glob( f'{project}/wheelhouse/PyMuPDFrb-*{platform_tag}.whl')
+    wheel_b = glob.glob( f'{project}/wheelhouse/PyMuPDFb-*{platform_tag}.whl')
     assert len(wheel_b) == 1, f'{wheel_b=}'
     wheel_b = wheel_b[0]
 
@@ -316,7 +315,7 @@ def test( project, package):
     py_version = py_version[:2]
     py_version = ''.join( py_version)
     log( '### test(): {py_version=}')
-    wheel_p = glob.glob( f'wheelhouse/PyMuPDFrp-*-cp{py_version}-*.whl')
+    wheel_p = glob.glob( f'wheelhouse/PyMuPDF-*-cp{py_version}-*.whl')
     assert len(wheel_p) == 1, f'{wheel_p=}'
     
     run( f'pip install {wheel_b}')
