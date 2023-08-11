@@ -835,7 +835,7 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     for n, v in env.items():
         env_string += f' {n}={shlex.quote(v)}'
     command = f'cd {mupdf_local} &&{env_string} {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
-    if 'b' in _implementations() and g_flavour in ('bp', 'p'):
+    if 'b' in _implementations() and 'p' in g_flavour:
         command += 'all'
     else:
         command += 'm01'    # No need for C++/Python bindings.
