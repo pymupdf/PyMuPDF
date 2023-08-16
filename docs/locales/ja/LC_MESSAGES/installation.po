@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# FIRST AUTHOR <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -21,112 +21,116 @@ msgstr ""
 
 #: ../../installation.rst:6 a1184d6664a64633892b0afc01ee791d
 msgid "Installation"
-msgstr ""
+msgstr "インストール"
 
 #: ../../installation.rst:9 a5b50932024b4d2e8df680cbe22e631f
 msgid "Requirements"
-msgstr ""
+msgstr "要件"
 
 #: ../../installation.rst:11 47d2bdead0ed40d08643235d3878d754
 msgid ""
 "All the examples below assume that you are running inside a Python "
 "virtual environment. See: https://docs.python.org/3/library/venv.html for"
 " details."
-msgstr ""
+msgstr "以下のすべての例は、Python仮想環境内で実行していると仮定しています。詳細については、こちらを参照してください：https://docs.python.org/3/library/venv.html 。"
 
 #: ../../installation.rst:14 ../../installation.rst:146
 #: 43b91cc889554c9d9be0887e8afb9acf 5b048769357c4a02938dc0956af505c7
 msgid "For example::"
-msgstr ""
+msgstr "例えば、以下のようになります::"
 
 #: ../../installation.rst:20 581117e250614dc090df60b667bf19e5
 msgid "PyMuPDF should be installed using pip with::"
-msgstr ""
+msgstr "PyMuPDFをインストールするには、次のようにpipを使用してください::"
 
 #: ../../installation.rst:25 a51cc32b63da441da98eb0d8200825ef
 msgid ""
 "This will install from a Python wheel if one is available for your "
 "platform."
-msgstr ""
+msgstr "この方法でインストールすると、対象のプラットフォームに対応するPythonのwheelファイルがある場合は、それを使用してインストールされます。"
 
 #: ../../installation.rst:29 ca30c2f1b81f4ab0a4c66137c3d0ad4a
 msgid "Installation when a suitable wheel is not available"
-msgstr ""
+msgstr "適切なwheelファイルが利用できない場合のインストール方法"
 
 #: ../../installation.rst:31 c29ec1e08c184c568c914fa00dedfc85
 msgid ""
 "If a suitable Python wheel is not available, pip will automatically build"
 " from source using a Python sdist."
-msgstr ""
+msgstr "適切なPythonのwheelファイルが利用できない場合、pipは自動的にPythonのsdistからビルドします。"
 
 #: ../../installation.rst:34 f662738ec80f4725b0a5ac5bd59d7c0b
 msgid "**This requires C/C++ development tools and SWIG to be installed**:"
-msgstr ""
+msgstr "**これには、C/C++開発ツールとSWIGがインストールされている必要があります。**:"
 
 #: ../../installation.rst:36 6ea90f70f52642e0bdc63c4dcbd52ba9
 msgid ""
 "On Unix-style systems such as Linux, OpenBSD and FreeBSD, use the system "
 "package manager to install SWIG."
-msgstr ""
+msgstr "Unixスタイルのシステム（Linux、OpenBSD、FreeBSDなど）では、SWIGをインストールするにはシステムのパッケージマネージャを使用してください。"
 
 #: ../../installation.rst:39 ed3eb16635704bfcb6a693d67a1f1b29
 msgid "For example on Debian Linux, do: `sudo apt install swig`"
-msgstr ""
+msgstr "例えば、Debian Linuxの場合は、次のようにしてください： `sudo apt install swig`"
 
 #: ../../installation.rst:41 745bae7cb1a34d5581df32a2645f67e9
 msgid "On Windows:"
-msgstr ""
+msgstr "Windowsの場合:"
 
 #: ../../installation.rst:43 7f4f948198cc4dd59f39f6a6161121cf
 msgid ""
 "Install Visual Studio 2019. If not installed in a standard location, set "
 "environmental variable `PYMUPDF_SETUP_DEVENV` to the location of the "
 "`devenv.com` binary."
-msgstr ""
+msgstr "Visual Studio 2019をインストールしてください。標準の場所にインストールされていない場合は、環境変数 `PYMUPDF_SETUP_DEVENV` を `devenv.com` バイナリの場所に設定してください"
 
 #: ../../installation.rst:47 aa9b418a051c41c8ab9caaa51ed9b4d2
 msgid ""
 "Having other installed versions of Visual Studio, for example Visual "
 "Studio 2022, can cause problems because one can end up with MuPDF and "
 "PyMuPDF code being compiled with different compiler versions."
-msgstr ""
+msgstr "他のバージョンのVisual Studio（例：Visual Studio 2022）がインストールされている場合、異なるコンパイラバージョンでMuPDFとPyMuPDFのコードがコンパイルされる可能性があるため、問題が発生することがあります。"
 
 #: ../../installation.rst:51 695c984cdd764563839473e7b4fff12b
 msgid ""
 "Install SWIG by following the instructions at: "
 "https://swig.org/Doc4.0/Windows.html#Windows_installation"
 msgstr ""
+"以下の指示に従って、SWIGをインストールしてください："
+"https://swig.org/Doc4.0/Windows.html#Windows_installation"
 
 #: ../../installation.rst:54 70ad4c60906848b98e5a0ef0bf4e596d
 msgid ""
 "On MacOS, install MacPorts using the instructions at: "
 "https://www.macports.org/install.php"
 msgstr ""
+"MacOSでMacPortsをインストールする場合は、以下の指示に従ってください："
+"https://www.macports.org/install.php"
 
 #: ../../installation.rst:57 e8d819515b9c40fc84776c03c98a7322
 msgid "Then install SWIG with: `sudo port install swig`"
-msgstr ""
+msgstr "その後、以下のコマンドを使用してSWIGをインストールしてください： `sudo port install swig`"
 
 #: ../../installation.rst:58 a387a4a627b041cdba5685ed59e12e86
 msgid "You may also need: `sudo port install swig-python`"
-msgstr ""
+msgstr "以下も必要になるかもしれません： `sudo port install swig-python`"
 
 #: ../../installation.rst:60 44972de5a9664b00b5fa41bd5487e23e
 msgid ""
 "As of `PyMuPDF-1.20.0`, the required MuPDF source code is already in the "
 "sdist and is automatically built into PyMuPDF."
-msgstr ""
+msgstr "`PyMuPDF-1.20.0` 現在、必要なMuPDFのソースコードがsdistに含まれており、自動的にPyMuPDFに組み込まれています。"
 
 #: ../../installation.rst:65 c3e3b33350184e2e9ec80cf4093a369a
 msgid "Notes"
-msgstr ""
+msgstr "メモ"
 
 #: ../../installation.rst:67 8c08d32138bd48c398143bb7afc43641
 msgid ""
 "Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux "
 "(64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), Python"
 " versions 3.7 and up."
-msgstr ""
+msgstr "Windows（32ビットIntel、64ビットIntel）、Linux（64ビットIntel、64ビットARM）、およびMac OSX（64ビットIntel、64ビットARM）用のホイールが利用可能で、Pythonバージョン3.7以上に対応しています。"
 
 #: ../../installation.rst:69 d92391a57fe5475eb12c4cbcb78406c2
 msgid ""
@@ -134,7 +138,7 @@ msgid ""
 "<https://chocolatey.org/>`_ on Windows. Instead install Python using the "
 "Windows installer from the python.org website, see: "
 "http://www.python.org/downloads"
-msgstr ""
+msgstr "`Chocolatey <https://chocolatey.org/>`_ を使用してWindowsにインストールされたPythonには、ホイールが利用できません。代わりに、python.orgのウェブサイトからWindowsインストーラーを使用してPythonをインストールしてください。詳細は、以下を参照してください：http://www.python.org/downloads"
 
 #: ../../installation.rst:74 24ec9bad908a40cba12d549c8c50f080
 msgid ""
@@ -145,31 +149,32 @@ msgid ""
 "follow the official Python release schedules. For Python versions "
 "dropping out of official support this means, that generation of wheels "
 "will also be ceased for them."
-msgstr ""
+msgstr "PyMuPDFはPythonバージョン3.8以前をサポートしていません。古いバージョンのホイールは、`この <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ リポジトリや `PyPI <https://pypi.org/project/PyMuPDF/>`_ でも見つけることができます。
+なお、通常は公式のPythonリリーススケジュールに従っています。公式サポートが終了したPythonバージョンについては、そのバージョンのホイールの生成も終了することに注意してください。"
 
 #: ../../installation.rst:77 24b3a17651834b5b96be19c6263e76bd
 msgid ""
 "There are no **mandatory** external dependencies. However, some optional "
 "feature are available only if additional components are installed:"
-msgstr ""
+msgstr "必須の外部依存関係はありません。ただし、追加のコンポーネントをインストールした場合にのみ、一部のオプション機能が利用可能です："
 
 #: ../../installation.rst:79 e7883f3a351c46499945ff66950d33ec
 msgid ""
 "`Pillow <https://pypi.org/project/Pillow/>`_ is required for "
 ":meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`."
-msgstr ""
+msgstr "`Pillow <https://pypi.org/project/Pillow/>`_ は :meth:`Pixmap.pil_save` と :meth:`Pixmap.pil_tobytes` の実行に必要です。"
 
 #: ../../installation.rst:80 d913b13607ac42f2a949b665f3be513a
 msgid ""
 "`fontTools <https://pypi.org/project/fonttools/>`_ is required for "
 ":meth:`Document.subset_fonts`."
-msgstr ""
+msgstr "`fontTools <https://pypi.org/project/fonttools/>`_ は :meth:`Document.subset_fonts` の実行に必要です。"
 
 #: ../../installation.rst:81 8dcd78470e614442b3c9a9310e35ee28
 msgid ""
 "`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a "
 "collection of nice fonts to be used for text output methods."
-msgstr ""
+msgstr "`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ は、テキスト出力の方法に使用するための素敵なフォントのコレクションです。"
 
 #: ../../installation.rst:82 9cc61eb655234f818787fed6cb0220e4
 msgid ""
@@ -179,138 +184,142 @@ msgid ""
 "PyMuPDF, the software must be installed and the system environment "
 "variable `\"TESSDATA_PREFIX\"` must be defined and contain the `tessdata`"
 " folder name of the Tesseract installation location. See below."
-msgstr ""
+msgstr "`Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ は、画像やドキュメントページの光学文字認識（OCR）のためのソフトウェアです。TesseractはPythonのパッケージではなく、独立したソフトウェアです。PyMuPDFでOCR機能を有効にするには、Tesseractソフトウェアをインストールし、システム環境変数の `\"TESSDATA_PREFIX\"` を定義して、Tesseractのインストール場所にある `tessdata` フォルダの名前を含める必要があります。以下を参照してください。"
 
 #: ../../installation.rst:84 79a4be51ea2547f18fff63898aa7d507
 msgid ""
 "You can install these additional components at any time -- before or "
 "after installing PyMuPDF. PyMuPDF will detect their presence during "
 "import or when the respective functions are being used."
-msgstr ""
+msgstr "これらの追加コンポーネントはいつでもインストールできます。PyMuPDFのインストール前または後に行うことができます。PyMuPDFは、これらのコンポーネントがインポート時または対応する機能が使用される際に検出します。"
 
 #: ../../installation.rst:88 656428adb0a2411eb5e5d4a16f7f16c9
 msgid "Installation from source without using an sdist"
-msgstr ""
+msgstr "sdistを使用せずにソースからインストールする方法"
 
 #: ../../installation.rst:90 fa1ac7bdc32a4469b90fb9c3adb00782
 msgid "First get a PyMuPDF source tree:"
-msgstr ""
+msgstr "まず、PyMuPDFのソースツリーを取得します:"
 
 #: ../../installation.rst:92 6c9f0c5055a34e99b82108c7e6d3d704
 msgid ""
 "Clone the git repository at https://github.com/pymupdf/PyMuPDF, for "
 "example::"
-msgstr ""
+msgstr "https://github.com/pymupdf/PyMuPDF から git リポジトリをクローンしてください。
+例えば、以下のように実行します：:"
 
 #: ../../installation.rst:97 620bfe7b12ce49bc90ec479759f7eece
 msgid ""
 "Or download and extract a `.zip` or `.tar.gz` source release from "
 "https://github.com/pymupdf/PyMuPDF/releases."
-msgstr ""
+msgstr "または、https://github.com/pymupdf/PyMuPDF/releases から `.zip` または `.tar.gz` 形式のソースリリースをダウンロードして展開してください。"
 
 #: ../../installation.rst:100 ../../installation.rst:138
 #: 2cfecf59e8054877854faf669264e696 69792f917fc04d508a81ff61f23a107f
 msgid "Install C/C++ development tools and SWIG as described above."
-msgstr ""
+msgstr "上記に記載されたように、C/C++開発ツールとSWIGをインストールしてください。"
 
 #: ../../installation.rst:102 817b375842c447f6b431c8bec95c931f
 msgid "Build and install PyMuPDF::"
-msgstr ""
+msgstr "PyMuPDFをビルドしてインストールしてください::"
 
 #: ../../installation.rst:106 b7c040c25cce4467b76876c6776241a3
 msgid ""
 "This will automatically download a specific hard-coded MuPDF source "
 "release, and build it into PyMuPDF."
-msgstr ""
+msgstr "これにより、特定のハードコードされたMuPDFソースリリースが自動的にダウンロードされ、PyMuPDFにビルドされます。"
 
 #: ../../installation.rst:109 24c126093ce1415cb2fceeef6cff98ac
 msgid ""
 "When running Python scripts that use PyMuPDF, make sure that the current "
 "directory is not the `PyMuPDF/` directory."
-msgstr ""
+msgstr "PyMuPDFを使用するPythonスクリプトを実行する際は、現在のディレクトリが `PyMuPDF/` ディレクトリでないことを確認してください。"
 
 #: ../../installation.rst:112 44c02960c9264f208f6b928fa03f70a2
 msgid ""
 "Otherwise, confusingly, Python will attempt to import `fitz` from the "
 "local `fitz/` directory, which will fail because it only contains source "
 "files."
-msgstr ""
+msgstr "そうでない場合、Pythonは混乱する可能性があります。Pythonはローカルの `fitz/` ディレクトリから `fitz` をインポートしようとしますが、それはソースファイルのみを含んでいるため、失敗します。"
 
 #: ../../installation.rst:115 3ee6e98075ec46c58133fb1a24b139c1
 msgid "Building for different Python versions in same PyMuPDF tree:"
-msgstr ""
+msgstr "⚠️---> TODO!!! Building for different Python versions in same PyMuPDF tree:"
 
 #: ../../installation.rst:118 08dc0c1c83ff4577a7565a02e619611f
 msgid ""
 "PyMuPDF will build for the version of Python that runs `setup.py`. So for"
-" example on Windows one can build different versions by using `py -3.9 ` "
+" example on Windows one can build different versions by using `py -3.9` "
 "or `py -3.10-32`."
 msgstr ""
+"⚠️---> TODO!!! PyMuPDF will build for the version of Python that runs `setup.py`. So for"
+" example on Windows one can build different versions by using `py -3.9` "
+"or `py -3.10-32`."
 
 #: ../../installation.rst:124 628a2505858a4428a47a374722a4edc4
 msgid "Running tests"
-msgstr ""
+msgstr "テストの実行"
 
 #: ../../installation.rst:126 22a9d049095947e492adab290762ace6
 msgid ""
 "Having a PyMuPDF tree available allows one to run PyMuPDF's `pytest` test"
 " suite::"
-msgstr ""
+msgstr "PyMuPDFのディレクトリが利用可能な場合、PyMuPDFの `pytest` テストスイートを実行できます。::"
 
 #: ../../installation.rst:134 987ea85f282a444594dc75fbbc0e3c05
 msgid "Building and testing with git checkouts of PyMuPDF and MuPDF"
-msgstr ""
+msgstr "PyMuPDFとMuPDFのgitチェックアウトを使ってビルドとテストを行う"
 
 #: ../../installation.rst:136 04f3d820467142028dd04011256306cf
 msgid "Things to do:"
-msgstr ""
+msgstr "やるべきこと："
 
 #: ../../installation.rst:139 a6d74e91a47f4472bad52575f205cf35
 msgid "Get PyMuPDF."
-msgstr ""
+msgstr "PyMuPDFを取得する。"
 
 #: ../../installation.rst:140 adb9f2907f634f62960460fe9db4b01f
 msgid "Get MuPDF."
-msgstr ""
+msgstr "MuPDFを取得する。"
 
 #: ../../installation.rst:141 50111f32f55840e3b9b57062c99c9500
 msgid "Create a Python virtual environment."
-msgstr ""
+msgstr "Pythonの仮想環境を作成する。"
 
 #: ../../installation.rst:142 ea1e0ae6fbd54da69411844cd85be6af
 msgid ""
 "Build PyMuPDF with environmental variable `PYMUPDF_SETUP_MUPDF_BUILD` set"
 " to the path of the local MuPDF checkout."
-msgstr ""
+msgstr "`PYMUPDF_SETUP_MUPDF_BUILD` 環境変数をローカルのMuPDFチェックアウトのパスに設定して、PyMuPDFをビルドする。"
 
 #: ../../installation.rst:144 7a75f88aff25406cadf8a433bd486d40
 msgid "Run PyMuPDF tests."
-msgstr ""
+msgstr "PyMuPDFのテストを実行する。"
 
 #: ../../installation.rst:160 6fd86d1d7dca45588539b75e3f79cb3d
 msgid "Using a non-default MuPDF"
-msgstr ""
+msgstr "非デフォルトのMuPDFの使用"
 
 #: ../../installation.rst:162 fd685f63cf3f4a4395a902c98d022558
 msgid ""
 "Using a non-default build of MuPDF by setting environmental variable "
 "`PYMUPDF_SETUP_MUPDF_BUILD` can cause various things to go wrong and so "
 "is not generally supported:"
-msgstr ""
+msgstr "環境変数 `PYMUPDF_SETUP_MUPDF_BUILD` を設定して非デフォルトのMuPDFビルドを使用すると、さまざまな問題が発生する可能性があるため、一般的にはサポートされていません。"
 
 #: ../../installation.rst:166 9a94a8afd84c44d4acc0506579134118
 msgid ""
 "If MuPDF's major version number differs from what PyMuPDF uses by "
 "default, PyMuPDF can fail to build, because MuPDF's API can change "
 "between major versions."
-msgstr ""
+msgstr "もしMuPDFのメジャーバージョン番号がPyMuPDFがデフォルトで使用するものと異なる場合、PyMuPDFはビルドに失敗する可能性があります。なぜなら、MuPDFのAPIはメジャーバージョン間で変更されることがあるからです。"
 
 #: ../../installation.rst:170 942a6466e91041109528a1e388bd2005
 msgid ""
 "Runtime behaviour of PyMuPDF can change because MuPDF's runtime behaviour"
 " changes between different minor releases. This can also break some "
 "PyMuPDF tests."
-msgstr ""
+msgstr "PyMuPDFのランタイム動作は、異なるマイナーリリース間でMuPDFのランタイム動作が変更されるため、変わる可能性があります。これは一部のPyMuPDFのテストにも影響を及ぼすことがあります。"
 
 #: ../../installation.rst:174 0286bfc50a814d389ab5655f6d61ae2e
 msgid ""
@@ -319,46 +328,46 @@ msgid ""
 "possible that `tests/test_textbox.py:test_textbox3()` will fail. One can "
 "skip this particular test by adding `-k 'not test_textbox3'` to the "
 "`pytest` command line."
-msgstr ""
+msgstr "MuPDFがPyMuPDFのカスタマイズされた設定ではなく、デフォルトの設定でビルドされた場合（たとえば、MuPDFがシステムにインストールされた場合）、`tests/test_textbox.py:test_textbox3()` が失敗する可能性があります。この特定のテストをスキップするには、`pytest` コマンドラインに `-k 'not test_textbox3'` を追加してください。"
 
 #: ../../installation.rst:182 c152555323174b77afcd9f53d173dbf4
 msgid "Enabling Integrated OCR Support"
-msgstr ""
+msgstr "統合OCRサポートの有効化"
 
 #: ../../installation.rst:184 09fadd55aa814692adf585f0faa9e367
 msgid ""
 "If you do not intend to use this feature, skip this step. Otherwise, it "
 "is required for both installation paths: **from wheels and from "
 "sources.**"
-msgstr ""
+msgstr "もしこの機能を使用しない場合は、このステップをスキップしてください。それ以外の場合は、**ホイールからのインストールとソースからのインストールの両方** に必要です。"
 
 #: ../../installation.rst:186 a73c61b92207492c9996afa58cd2369a
 msgid ""
 "PyMuPDF will already contain all the logic to support OCR functions. But "
 "it additionally does need Tesseract's language support data, so "
 "installation of Tesseract-OCR is still required."
-msgstr ""
+msgstr "PyMuPDFにはすでにOCR機能をサポートするためのロジックが含まれていますが、追加でTesseractの言語サポートデータが必要です。そのため、Tesseract-OCRのインストールが依然として必要です。"
 
 #: ../../installation.rst:188 495d63b71f6c4200aa138ed5efb7a578
 msgid ""
 "The language support folder location must be communicated either via "
 "storing it in the environment variable `\"TESSDATA_PREFIX\"`, or as a "
 "parameter in the applicable functions."
-msgstr ""
+msgstr "言語サポートフォルダの場所は、`\"TESSDATA_PREFIX\"` という環境変数に保存するか、適用される関数のパラメータとして指定する必要があります。"
 
 #: ../../installation.rst:190 ec8bda3786944e40b2ec19e3dc31a18c
 msgid "So for a working OCR functionality, make sure to complete this checklist:"
-msgstr ""
+msgstr "OCR機能を正常に動作させるために、以下のチェックリストを完了してください："
 
 #: ../../installation.rst:192 434ef6e996ff437bb0e1bc964c118c32
 msgid "Install Tesseract."
-msgstr ""
+msgstr "Tesseractをインストールしてください"
 
 #: ../../installation.rst:196 5216eccc39354c76aed87736d813b398
 msgid ""
 "Locate Tesseract's language support folder. Typically you will find it "
 "here:"
-msgstr ""
+msgstr "Tesseractの言語サポートフォルダを見つけてください。通常、以下の場所にあります："
 
 #: ../../installation.rst:195 e6227792f6da49b49d7aaf82c7a4982b
 msgid "Windows: `C:/Program Files/Tesseract-OCR/tessdata`"
@@ -366,11 +375,11 @@ msgstr ""
 
 #: ../../installation.rst:196 c2edd688929c4aa6a920898f71c56c9d
 msgid "Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`"
-msgstr ""
+msgstr "Unixシステム: `/usr/share/tesseract-ocr/4.00/tessdata`"
 
 #: ../../installation.rst:200 7d144470dade4b118287162f6de5bd6a
 msgid "Set the environment variable `TESSDATA_PREFIX`"
-msgstr ""
+msgstr "環境変数 `TESSDATA_PREFIX` を設定してください："
 
 #: ../../installation.rst:199 c9da5fa7db1b4cbe864b75ae185e5e42
 msgid ""
@@ -382,13 +391,13 @@ msgstr ""
 msgid ""
 "Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-"
 "ocr/4.00/tessdata`"
-msgstr ""
+msgstr "Unixシステム: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`"
 
 #: ../../installation.rst:202 a45de6e0f1964b67b5e20e01a48e1a91
 msgid ""
 "On Windows systems, this must happen outside Python -- before starting "
 "your script. Just manipulating `os.environ` will not work!"
-msgstr ""
+msgstr "Windowsシステムでは、これはPythonの外部で行われる必要があります。スクリプトを実行する前に行ってください。`os.environ` を操作するだけではうまく動作しません！"
 
 #: ../../footer.rst:-1 f4cf9fe304c24fd386b7dfed5389c04d
 msgid "Discord logo"
