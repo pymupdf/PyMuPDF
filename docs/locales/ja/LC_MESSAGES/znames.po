@@ -1,0 +1,964 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../znames.rst:7 3b8e03075de74bc29357d3db6ab39e2f
+msgid "Deprecated Names"
+msgstr ""
+
+#: ../../znames.rst:9 62a32e927a01467aab597164c40ce8e3
+msgid ""
+"The original naming convention for methods and properties has been "
+"\"camelCase\". Since its creation around 2013, a tremendous increase of "
+"functionality has happened in PyMuPDF -- and with it a corresponding "
+"increase in classes, methods and properties. In too many cases, this has "
+"led to non-intuitive, illogical and ugly names, difficult to memorize or "
+"guess."
+msgstr ""
+
+#: ../../znames.rst:11 fa9d3f3d0806482eae8f9af6429d15d2
+msgid ""
+"A few versions ago, I therefore decided to shift gears and switch to a "
+"\"snake_cased\" naming standard. This was a major effort, which needed a "
+"step-wise approach. I think am done with it now (version 1.18.14)."
+msgstr ""
+
+#: ../../znames.rst:14 fb628e5d1cbc4cf69a354946006c9efb
+msgid ""
+"The following list maps deprecated names to their new versions. For "
+"example, property `pageCount` became `page_count` in the :ref:`Document` "
+"class. There also are less obvious name changes, e.g. method `getPNGdata`"
+" was renamed to `tobytes` in the :ref:`Pixmap` class."
+msgstr ""
+
+#: ../../znames.rst:16 946a90871d6f48229e4c2ba5c32f8eb1
+msgid ""
+"Names of classes (camel case) and package-wide constants (the majority is"
+" upper case) remain untouched."
+msgstr ""
+
+#: ../../znames.rst:18 d7268acc0e784d7ba363e25e317a166c
+msgid ""
+"Old names will remain available as deprecated aliases through MuPDF "
+"version 1.19.0 and **be removed** in the version that follows it - "
+"probably version 1.20.0, but this depends on upstream decisions (MuPDF)."
+msgstr ""
+
+#: ../../znames.rst:20 5dcd7a58709d4e72b78a6f33ce986446
+msgid ""
+"Starting with version 1.19.0, we will issue deprecation warnings on "
+"`sys.stderr` like `Deprecation: 'newPage' removed from class 'Document' "
+"after v1.19.0 - use 'new_page'.` when aliased methods are being used. "
+"Using a deprecated property will not cause this type of warning."
+msgstr ""
+
+#: ../../znames.rst:22 42008974adc641b596eabce0be0349a6
+msgid ""
+"Starting immediately, all deprecated objects (methods and properties) "
+"will show a copy of the original's docstring, **prefixed** with the "
+"deprecation message, for example::"
+msgstr ""
+
+#: ../../znames.rst:39 06da040c5ab6428f85f46e09a378819d
+msgid ""
+"There is a utility script `alias-changer.py <https://github.com/pymupdf"
+"/PyMuPDF-Utilities/tree/master/alias-changer.py>`_ which can be used to "
+"do mass-renames in your scripts. It accepts either a single file or a "
+"folder as argument. If a folder is supplied, all its Python files and "
+"those of its subfolders are changed. Optionally, backups of the scripts "
+"can be taken."
+msgstr ""
+
+#: ../../znames.rst:41 ff31e4c3bd904201a0cb6860aa0bb409
+msgid ""
+"Deprecated names are not separately documented. The following list will "
+"help you find the documentation of the original."
+msgstr ""
+
+#: ../../znames.rst:43 46e111e6912f4acfbb3ad463b03beaca
+msgid ""
+"This is automatically generated. One or two items refer to yet "
+"undocumented methods - please simply ignore them."
+msgstr ""
+
+#: ../../deprecated.rst:3 b11e52513d464ff2a753f460c9df2a70
+msgid ":index:`_isWrapped` -- :attr:`Page.is_wrapped`"
+msgstr ""
+
+#: ../../deprecated.rst:4 6bb8f9eea690444d9b9d4506673a096a
+msgid ":index:`addCaretAnnot` -- :meth:`Page.add_caret_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:5 388457daa28c420b9897b88484156010
+msgid ":index:`addCircleAnnot` -- :meth:`Page.add_circle_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:6 c918665634154010a296f7b0e98ef281
+msgid ":index:`addFileAnnot` -- :meth:`Page.add_file_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:7 4afca843e72f47e599f74ee1d35096d3
+msgid ":index:`addFreetextAnnot` -- :meth:`Page.add_freetext_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:8 2e61ba13af6245ecb55f48a5f96dca75
+msgid ":index:`addHighlightAnnot` -- :meth:`Page.add_highlight_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:9 da49b410542f409e992f6779c66f1d24
+msgid ":index:`addInkAnnot` -- :meth:`Page.add_ink_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:10 fd0fa7eca59c4367ade7bbe6d6bae2e8
+msgid ":index:`addLineAnnot` -- :meth:`Page.add_line_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:11 28866a379bf6487eb72ed8276419ac2b
+msgid ":index:`addPolygonAnnot` -- :meth:`Page.add_polygon_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:12 a099f3a5d77d4682825e52fe7781faf7
+msgid ":index:`addPolylineAnnot` -- :meth:`Page.add_polyline_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:13 36d2ac6a811e498ca22956a8dc11f608
+msgid ":index:`addRectAnnot` -- :meth:`Page.add_rect_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:14 713c3be36ec546eba9ee65ff50c10ad7
+msgid ":index:`addRedactAnnot` -- :meth:`Page.add_redact_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:15 edcaa691cb0b4e2aa2aa2ed92a2744fd
+msgid ":index:`addSquigglyAnnot` -- :meth:`Page.add_squiggly_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:16 5eba9bbfa2604c30868a6083e4d76599
+msgid ":index:`addStampAnnot` -- :meth:`Page.add_stamp_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:17 35a699dd04754eab959b8d3dfeb20032
+msgid ":index:`addStrikeoutAnnot` -- :meth:`Page.add_strikeout_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:18 dc89fbb4045b494981da264cd32d132c
+msgid ":index:`addTextAnnot` -- :meth:`Page.add_text_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:19 0479147da68249da92888d045ef97236
+msgid ":index:`addUnderlineAnnot` -- :meth:`Page.add_underline_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:20 4e05e847b3774eeda58b76cf6aeeadb2
+msgid ":index:`addWidget` -- :meth:`Page.add_widget`"
+msgstr ""
+
+#: ../../deprecated.rst:21 e7fe24bd068c466196cfb7b383668278
+msgid ":index:`chapterCount` -- :attr:`Document.chapter_count`"
+msgstr ""
+
+#: ../../deprecated.rst:22 63cf9d007abb421eaf231290090024f6
+msgid ":index:`chapterPageCount` -- :meth:`Document.chapter_page_count`"
+msgstr ""
+
+#: ../../deprecated.rst:23 f2937b03b70a4325b01685aee5112c8c
+msgid ":index:`cleanContents` -- :meth:`Page.clean_contents`"
+msgstr ""
+
+#: ../../deprecated.rst:24 658e471705a644aca8b8c8b008435531
+msgid ":index:`clearWith` -- :meth:`Pixmap.clear_with`"
+msgstr ""
+
+#: ../../deprecated.rst:25 e069d91b20764b4da04c573e7acd0a54
+msgid ":index:`convertToPDF` -- :meth:`Document.convert_to_pdf`"
+msgstr ""
+
+#: ../../deprecated.rst:26 5c9b3c7be07940bbb9d51ae0187765f6
+msgid ":index:`copyPage` -- :meth:`Document.copy_page`"
+msgstr ""
+
+#: ../../deprecated.rst:27 fda65ad8042f4eac9b60ea461f15f657
+msgid ":index:`copyPixmap` -- :meth:`Pixmap.copy`"
+msgstr ""
+
+#: ../../deprecated.rst:28 bc01a34a77dc415791c8b611076e2f74
+msgid ":index:`CropBox` -- :attr:`Page.cropbox`"
+msgstr ""
+
+#: ../../deprecated.rst:29 477b00ede9e440ec8fead7f59f1065a3
+msgid ":index:`CropBoxPosition` -- :attr:`Page.cropbox_position`"
+msgstr ""
+
+#: ../../deprecated.rst:30 cbd7c37aca1445cebf8cc9ea4dd6d604
+msgid ":index:`deleteAnnot` -- :meth:`Page.delete_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:31 ddbf2717908e43fd86adc4ed6658a249
+msgid ":index:`deleteLink` -- :meth:`Page.delete_link`"
+msgstr ""
+
+#: ../../deprecated.rst:32 4661bb2f336443838ec25c18708d19f0
+msgid ":index:`deletePage` -- :meth:`Document.delete_page`"
+msgstr ""
+
+#: ../../deprecated.rst:33 6fdb07e88cda437cb632856e056d2f7d
+msgid ":index:`deletePageRange` -- :meth:`Document.delete_pages`"
+msgstr ""
+
+#: ../../deprecated.rst:34 5b4c6c69e79d4a86b28f92d22c67af93
+msgid ":index:`deleteWidget` -- :meth:`Page.delete_widget`"
+msgstr ""
+
+#: ../../deprecated.rst:35 37e2f65cd0f548cfbfe7e0527c92def1
+msgid ":index:`derotationMatrix` -- :attr:`Page.derotation_matrix`"
+msgstr ""
+
+#: ../../deprecated.rst:36 a4b58109568c432b92cbb9addab999e6
+msgid ":index:`drawBezier` -- :meth:`Page.draw_bezier`"
+msgstr ""
+
+#: ../../deprecated.rst:37 bf04aca7c6954037ad88933b6f5c2270
+msgid ":index:`drawBezier` -- :meth:`Shape.draw_bezier`"
+msgstr ""
+
+#: ../../deprecated.rst:38 8daffedb9d6a44428f30b2d8b0f2ce6c
+msgid ":index:`drawCircle` -- :meth:`Page.draw_circle`"
+msgstr ""
+
+#: ../../deprecated.rst:39 ac9cc92f21914db2bb93747dfbe68e48
+msgid ":index:`drawCircle` -- :meth:`Shape.draw_circle`"
+msgstr ""
+
+#: ../../deprecated.rst:40 28cab423f0fd43e8939bd3408a72e182
+msgid ":index:`drawCurve` -- :meth:`Page.draw_curve`"
+msgstr ""
+
+#: ../../deprecated.rst:41 e6ba2832d21c4175afb761a536eae5a1
+msgid ":index:`drawCurve` -- :meth:`Shape.draw_curve`"
+msgstr ""
+
+#: ../../deprecated.rst:42 19a045ffac7e468fb91d6e1898eff462
+msgid ":index:`drawLine` -- :meth:`Page.draw_line`"
+msgstr ""
+
+#: ../../deprecated.rst:43 90aae4ea14494a3b9e1ce79458e66317
+msgid ":index:`drawLine` -- :meth:`Shape.draw_line`"
+msgstr ""
+
+#: ../../deprecated.rst:44 343abf010f004657a89e1536fa226d93
+msgid ":index:`drawOval` -- :meth:`Page.draw_oval`"
+msgstr ""
+
+#: ../../deprecated.rst:45 6b38f991daef4510af4ad4abb51d9777
+msgid ":index:`drawOval` -- :meth:`Shape.draw_oval`"
+msgstr ""
+
+#: ../../deprecated.rst:46 99175092498f435f8d947c7779c2982b
+msgid ":index:`drawPolyline` -- :meth:`Page.draw_polyline`"
+msgstr ""
+
+#: ../../deprecated.rst:47 a68894e60b59442db415f2a6afca71cb
+msgid ":index:`drawPolyline` -- :meth:`Shape.draw_polyline`"
+msgstr ""
+
+#: ../../deprecated.rst:48 a158c86940484252a6c017602bb9098e
+msgid ":index:`drawQuad` -- :meth:`Page.draw_quad`"
+msgstr ""
+
+#: ../../deprecated.rst:49 2d12b5f28fb14ab789452a508699f93d
+msgid ":index:`drawQuad` -- :meth:`Shape.draw_quad`"
+msgstr ""
+
+#: ../../deprecated.rst:50 8cfb0816b1054e2182833047fb18ca63
+msgid ":index:`drawRect` -- :meth:`Page.draw_rect`"
+msgstr ""
+
+#: ../../deprecated.rst:51 0c122478220a496181171407ab665ab3
+msgid ":index:`drawRect` -- :meth:`Shape.draw_rect`"
+msgstr ""
+
+#: ../../deprecated.rst:52 a2d2a81f4ba64578b73b4616f69cfb5b
+msgid ":index:`drawSector` -- :meth:`Page.draw_sector`"
+msgstr ""
+
+#: ../../deprecated.rst:53 699ed3fb915d4876bd9dc156010fcf83
+msgid ":index:`drawSector` -- :meth:`Shape.draw_sector`"
+msgstr ""
+
+#: ../../deprecated.rst:54 edf0119c583845f6bfd953c836b49980
+msgid ":index:`drawSquiggle` -- :meth:`Page.draw_squiggle`"
+msgstr ""
+
+#: ../../deprecated.rst:55 96f1f1d5f0304763a3ba0b0580d39908
+msgid ":index:`drawSquiggle` -- :meth:`Shape.draw_squiggle`"
+msgstr ""
+
+#: ../../deprecated.rst:56 807a6c96970b42daa85e671ee10a7d08
+msgid ":index:`drawZigzag` -- :meth:`Page.draw_zigzag`"
+msgstr ""
+
+#: ../../deprecated.rst:57 cb6d688d7a3445a193f3324017ed280f
+msgid ":index:`drawZigzag` -- :meth:`Shape.draw_zigzag`"
+msgstr ""
+
+#: ../../deprecated.rst:58 33bb4579c4b44fe899e0852cfe9fa99c
+msgid ":index:`embeddedFileAdd` -- :meth:`Document.embfile_add`"
+msgstr ""
+
+#: ../../deprecated.rst:59 24b2f7f98aeb4f42b6ef59cc443b5fd3
+msgid ":index:`embeddedFileCount` -- :meth:`Document.embfile_count`"
+msgstr ""
+
+#: ../../deprecated.rst:60 07d5d3556c144d7390980a6ce0418701
+msgid ":index:`embeddedFileDel` -- :meth:`Document.embfile_del`"
+msgstr ""
+
+#: ../../deprecated.rst:61 4ce88670afab4e478b181acc135f7db2
+msgid ":index:`embeddedFileGet` -- :meth:`Document.embfile_get`"
+msgstr ""
+
+#: ../../deprecated.rst:62 a9d15a81c86b4dae9856f930f2b5315c
+msgid ":index:`embeddedFileInfo` -- :meth:`Document.embfile_info`"
+msgstr ""
+
+#: ../../deprecated.rst:63 7c22765bf7a24073b18f3883a7afe611
+msgid ":index:`embeddedFileNames` -- :meth:`Document.embfile_names`"
+msgstr ""
+
+#: ../../deprecated.rst:64 6bb7c9c36fdc4cb2ac992d37ffdfbc12
+msgid ":index:`embeddedFileUpd` -- :meth:`Document.embfile_upd`"
+msgstr ""
+
+#: ../../deprecated.rst:65 aa178953eac7424ebf438d0780e0f822
+msgid ":index:`extractFont` -- :meth:`Document.extract_font`"
+msgstr ""
+
+#: ../../deprecated.rst:66 cf719dfc1a6c4e3c8d26813edc1f08e0
+msgid ":index:`extractImage` -- :meth:`Document.extract_image`"
+msgstr ""
+
+#: ../../deprecated.rst:67 944b66eb46bb44debbbcd2dbc321c2a3
+msgid ":index:`fileGet` -- :meth:`Annot.get_file`"
+msgstr ""
+
+#: ../../deprecated.rst:68 8326a763f63b41c3b4480e4ccf23e843
+msgid ":index:`fileUpd` -- :meth:`Annot.update_file`"
+msgstr ""
+
+#: ../../deprecated.rst:69 dbe30932dcba40d7aa939501f229ed50
+msgid ":index:`fillTextbox` -- :meth:`TextWriter.fill_textbox`"
+msgstr ""
+
+#: ../../deprecated.rst:70 65ac7263ac134ff4b33d426821a2a510
+msgid ":index:`findBookmark` -- :meth:`Document.find_bookmark`"
+msgstr ""
+
+#: ../../deprecated.rst:71 fd9e2988392d4fb1a008b3309781f2b1
+msgid ":index:`firstAnnot` -- :attr:`Page.first_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:72 86a32d01fc5642628a0350d5cb8c5b18
+msgid ":index:`firstLink` -- :attr:`Page.first_link`"
+msgstr ""
+
+#: ../../deprecated.rst:73 072a70ffcf2446368a0beef92b9f8879
+msgid ":index:`firstWidget` -- :attr:`Page.first_widget`"
+msgstr ""
+
+#: ../../deprecated.rst:74 f5679d89326b456f92ebce9f8cc94eef
+msgid ":index:`fullcopyPage` -- :meth:`Document.fullcopy_page`"
+msgstr ""
+
+#: ../../deprecated.rst:75 e5c217293a39430f83bb41075f6ecf30
+msgid ":index:`gammaWith` -- :meth:`Pixmap.gamma_with`"
+msgstr ""
+
+#: ../../deprecated.rst:76 3d7834c24d644c97a45ac11975266fcc
+msgid ":index:`getArea` -- :meth:`Rect.get_area`"
+msgstr ""
+
+#: ../../deprecated.rst:77 2017ced937b146fba82103ca4db34c86
+msgid ":index:`getArea` -- :meth:`IRect.get_area`"
+msgstr ""
+
+#: ../../deprecated.rst:78 d64b881f279a432c939eea419b2585ae
+msgid ":index:`getCharWidths` -- :meth:`Document.get_char_widths`"
+msgstr ""
+
+#: ../../deprecated.rst:79 5bffcb5be273408cb2c93e05c1e2179b
+msgid ":index:`getContents` -- :meth:`Page.get_contents`"
+msgstr ""
+
+#: ../../deprecated.rst:80 58364386c9e8480b90238bfdda26496e
+msgid ":index:`getDisplayList` -- :meth:`Page.get_displaylist`"
+msgstr ""
+
+#: ../../deprecated.rst:81 47cef4456d5940cab8e499470c0d3b8a
+msgid ":index:`getDrawings` -- :meth:`Page.get_drawings`"
+msgstr ""
+
+#: ../../deprecated.rst:82 c6cf48b94ed9469f8ad8a301a25a2994
+msgid ":index:`getFontList` -- :meth:`Page.get_fonts`"
+msgstr ""
+
+#: ../../deprecated.rst:83 4f9b377f1c3a40fe9d89111141a72711
+msgid ":index:`getImageBbox` -- :meth:`Page.get_image_bbox`"
+msgstr ""
+
+#: ../../deprecated.rst:84 1b454a3494eb47ffbf24d5cb7917030a
+msgid ":index:`getImageData` -- :meth:`Pixmap.tobytes`"
+msgstr ""
+
+#: ../../deprecated.rst:85 95a23e040dd9483eaca2a6f928242233
+msgid ":index:`getImageList` -- :meth:`Page.get_images`"
+msgstr ""
+
+#: ../../deprecated.rst:86 103ce65af6524ce9a41c57b30b12afdc
+msgid ":index:`getLinks` -- :meth:`Page.get_links`"
+msgstr ""
+
+#: ../../deprecated.rst:87 6331d8bce0114b3295fded5f4273755f
+msgid ":index:`getOCGs` -- :meth:`Document.get_ocgs`"
+msgstr ""
+
+#: ../../deprecated.rst:88 83052307864040f381ad2df3f6509aaa
+msgid ":index:`getPageFontList` -- :meth:`Document.get_page_fonts`"
+msgstr ""
+
+#: ../../deprecated.rst:89 cfd45a0c630e4665980395724e855477
+msgid ":index:`getPageImageList` -- :meth:`Document.get_page_images`"
+msgstr ""
+
+#: ../../deprecated.rst:90 41df7b2e16c2466fa55ea9b153ee7085
+msgid ":index:`getPagePixmap` -- :meth:`Document.get_page_pixmap`"
+msgstr ""
+
+#: ../../deprecated.rst:91 64c32d3256de455db80fb5b586143e4f
+msgid ":index:`getPageText` -- :meth:`Document.get_page_text`"
+msgstr ""
+
+#: ../../deprecated.rst:92 3b5055c425c74251842d4582e4d3a899
+msgid ":index:`getPageXObjectList` -- :meth:`Document.get_page_xobjects`"
+msgstr ""
+
+#: ../../deprecated.rst:93 78fd7b80257b4d1188da094268cbfe66
+msgid ":index:`getPDFnow` -- :meth:`get_pdf_now`"
+msgstr ""
+
+#: ../../deprecated.rst:94 2fb33cd712004fb1a06783b005d8d1c7
+msgid ":index:`getPDFstr` -- :meth:`get_pdf_str`"
+msgstr ""
+
+#: ../../deprecated.rst:95 f3792538ee374f0781a900a8f90bc285
+msgid ":index:`getPixmap` -- :meth:`Page.get_pixmap`"
+msgstr ""
+
+#: ../../deprecated.rst:96 8682932bcbfb409cbe0ab68a50c7cc81
+msgid ":index:`getPixmap` -- :meth:`Annot.get_pixmap`"
+msgstr ""
+
+#: ../../deprecated.rst:97 fb7309b088294f19b9d974b0325f2a8b
+msgid ":index:`getPixmap` -- :meth:`DisplayList.get_pixmap`"
+msgstr ""
+
+#: ../../deprecated.rst:98 a46c828f393b455b87c81e75c3f19288
+msgid ":index:`getPNGData` -- :meth:`Pixmap.tobytes`"
+msgstr ""
+
+#: ../../deprecated.rst:99 cf4090e144dd47009a0119cd5716903d
+msgid ":index:`getPNGdata` -- :meth:`Pixmap.tobytes`"
+msgstr ""
+
+#: ../../deprecated.rst:100 4a6b4ed82f5046f7a770f7d1a7815e76
+msgid ":index:`getRectArea` -- :meth:`Rect.get_area`"
+msgstr ""
+
+#: ../../deprecated.rst:101 7699349c8b18467db7c31e4460eac3ee
+msgid ":index:`getRectArea` -- :meth:`IRect.get_area`"
+msgstr ""
+
+#: ../../deprecated.rst:102 42ad3f1f2c824d13aab21f3f394be003
+msgid ":index:`getSigFlags` -- :meth:`Document.get_sigflags`"
+msgstr ""
+
+#: ../../deprecated.rst:103 bce71ee551c84c7e817e80e289939ab4
+msgid ":index:`getSVGimage` -- :meth:`Page.get_svg_image`"
+msgstr ""
+
+#: ../../deprecated.rst:104 3d7219a31a63402b96642f583f1285bd
+msgid ":index:`getText` -- :meth:`Page.get_text`"
+msgstr ""
+
+#: ../../deprecated.rst:105 9baa9703bd144c56a08049a3764af5c7
+msgid ":index:`getText` -- :meth:`Annot.get_text`"
+msgstr ""
+
+#: ../../deprecated.rst:106 2a556b0496594def9344ec77aec06c79
+msgid ":index:`getTextBlocks` -- :meth:`Page.get_text_blocks`"
+msgstr ""
+
+#: ../../deprecated.rst:107 55ea7568c01c47189bc17fe6701ef3d0
+msgid ":index:`getTextbox` -- :meth:`Page.get_textbox`"
+msgstr ""
+
+#: ../../deprecated.rst:108 fa2556cc9b7b406c864dfa4e520f8112
+msgid ":index:`getTextbox` -- :meth:`Annot.get_textbox`"
+msgstr ""
+
+#: ../../deprecated.rst:109 44dc44fba8e64f8886efeaba967ddafe
+msgid ":index:`getTextLength` -- :meth:`get_text_length`"
+msgstr ""
+
+#: ../../deprecated.rst:110 b45f76be531f427095fff381fdf54dfb
+msgid ":index:`getTextPage` -- :meth:`Page.get_textpage`"
+msgstr ""
+
+#: ../../deprecated.rst:111 0fa32fc975f34d24a0847fcd8e33e924
+msgid ":index:`getTextPage` -- :meth:`Annot.get_textpage`"
+msgstr ""
+
+#: ../../deprecated.rst:112 c366f3f6099b4e27a435842e25252dbb
+msgid ":index:`getTextPage` -- :meth:`DisplayList.get_textpage`"
+msgstr ""
+
+#: ../../deprecated.rst:113 8bd90f7989754b7e82bddfa3af536d82
+msgid ":index:`getTextWords` -- :meth:`Page.get_text_words`"
+msgstr ""
+
+#: ../../deprecated.rst:114 9f3e9c87b9204e0098edafae5646f02b
+msgid ":index:`getToC` -- :meth:`Document.get_toc`"
+msgstr ""
+
+#: ../../deprecated.rst:115 e5c56b687bb14831ae4ac4294505c888
+msgid ":index:`getXmlMetadata` -- :meth:`Document.get_xml_metadata`"
+msgstr ""
+
+#: ../../deprecated.rst:116 1ecb6a1f0cfb4a55a1add9491f6fbc96
+msgid ":index:`ImageProperties` -- :meth:`image_properties`"
+msgstr ""
+
+#: ../../deprecated.rst:117 c8507fc0d7d94fbca4bb3758c7bca15d
+msgid ":index:`includePoint` -- :meth:`Rect.include_point`"
+msgstr ""
+
+#: ../../deprecated.rst:118 b95f3356a84a40a697b8d132c9237cb6
+msgid ":index:`includePoint` -- :meth:`IRect.include_point`"
+msgstr ""
+
+#: ../../deprecated.rst:119 3b0b46f0d579411ea8938d6479b622c0
+msgid ":index:`includeRect` -- :meth:`Rect.include_rect`"
+msgstr ""
+
+#: ../../deprecated.rst:120 e9ee06e2d54041e6822d3cdeafd53776
+msgid ":index:`includeRect` -- :meth:`IRect.include_rect`"
+msgstr ""
+
+#: ../../deprecated.rst:121 d6b57bab856b4dcbac25d251e6c9114f
+msgid ":index:`insertFont` -- :meth:`Page.insert_font`"
+msgstr ""
+
+#: ../../deprecated.rst:122 e99f690b80ab494db4c26773f9df0b4d
+msgid ":index:`insertImage` -- :meth:`Page.insert_image`"
+msgstr ""
+
+#: ../../deprecated.rst:123 62f38118ad5c4451bea5f5abb0e7f42e
+msgid ":index:`insertLink` -- :meth:`Page.insert_link`"
+msgstr ""
+
+#: ../../deprecated.rst:124 bc00e3316a0e4d91af45375c6939e9d2
+msgid ":index:`insertPage` -- :meth:`Document.insert_page`"
+msgstr ""
+
+#: ../../deprecated.rst:125 b07870c985514028acd1da8087893846
+msgid ":index:`insertPDF` -- :meth:`Document.insert_pdf`"
+msgstr ""
+
+#: ../../deprecated.rst:126 a8f9a109329243ed922b57a5b24a388f
+msgid ":index:`insertText` -- :meth:`Page.insert_text`"
+msgstr ""
+
+#: ../../deprecated.rst:127 c21400c3c4b2478b9e257f56795b4384
+msgid ":index:`insertText` -- :meth:`Shape.insert_text`"
+msgstr ""
+
+#: ../../deprecated.rst:128 1130a8e0aa6949be9284109343b746eb
+msgid ":index:`insertTextbox` -- :meth:`Page.insert_textbox`"
+msgstr ""
+
+#: ../../deprecated.rst:129 d94f686e932e4c2e8030f6ecfb9edb09
+msgid ":index:`insertTextbox` -- :meth:`Shape.insert_textbox`"
+msgstr ""
+
+#: ../../deprecated.rst:130 7bad5ca5d3194205a902ef03f0c126de
+msgid ":index:`invertIRect` -- :meth:`Pixmap.invert_irect`"
+msgstr ""
+
+#: ../../deprecated.rst:131 cb09ecae991746a7a7a7ec89e713669d
+msgid ":index:`isConvex` -- :attr:`Quad.is_convex`"
+msgstr ""
+
+#: ../../deprecated.rst:132 d96649edb48644be977ba3c42ff5dd2d
+msgid ":index:`isDirty` -- :attr:`Document.is_dirty`"
+msgstr ""
+
+#: ../../deprecated.rst:133 a84182b658bc478c8b77e90f913a22f9
+msgid ":index:`isEmpty` -- :attr:`Rect.is_empty`"
+msgstr ""
+
+#: ../../deprecated.rst:134 2edabb73449f45dd939730a2b1fad33d
+msgid ":index:`isEmpty` -- :attr:`IRect.is_empty`"
+msgstr ""
+
+#: ../../deprecated.rst:135 4fdfd11e142b4de3b3e0115b094a4a93
+msgid ":index:`isEmpty` -- :attr:`Quad.is_empty`"
+msgstr ""
+
+#: ../../deprecated.rst:136 130648c59a8b45a192a03fa785be6b76
+msgid ":index:`isFormPDF` -- :attr:`Document.is_form_pdf`"
+msgstr ""
+
+#: ../../deprecated.rst:137 fbcf75c913ce41b0b9aa5dc3e4117cb6
+msgid ":index:`isInfinite` -- :attr:`Rect.is_infinite`"
+msgstr ""
+
+#: ../../deprecated.rst:138 0d82685835604a99bbc22fd9afb286fc
+msgid ":index:`isInfinite` -- :attr:`IRect.is_infinite`"
+msgstr ""
+
+#: ../../deprecated.rst:139 4e6f6a28e92f4c519ddd77e2678f4ba6
+msgid ":index:`isPDF` -- :attr:`Document.is_pdf`"
+msgstr ""
+
+#: ../../deprecated.rst:140 f401f2e18fbf44a3a11df0b1858acd77
+msgid ":index:`isRectangular` -- :attr:`Quad.is_rectangular`"
+msgstr ""
+
+#: ../../deprecated.rst:141 76f6c9900947413ba542732fd7a370df
+msgid ":index:`isRectilinear` -- :attr:`Matrix.is_rectilinear`"
+msgstr ""
+
+#: ../../deprecated.rst:142 3e6747568ea947e58b07740b88f80cf7
+msgid ":index:`isReflowable` -- :attr:`Document.is_reflowable`"
+msgstr ""
+
+#: ../../deprecated.rst:143 59ec5050a1494de383fbabdeeb979b83
+msgid ":index:`isRepaired` -- :attr:`Document.is_repaired`"
+msgstr ""
+
+#: ../../deprecated.rst:144 0f6b6a93bd9b42b9a05768b104880a47
+msgid ":index:`isStream` -- :meth:`Document.is_stream`"
+msgstr ""
+
+#: ../../deprecated.rst:145 8d99e53713ea4c159ab6dc85b57d5458
+msgid ":index:`lastLocation` -- :attr:`Document.last_location`"
+msgstr ""
+
+#: ../../deprecated.rst:146 1e4fc8654e7b4b07b9fc805e40a861b9
+msgid ":index:`lineEnds` -- :attr:`Annot.line_ends`"
+msgstr ""
+
+#: ../../deprecated.rst:147 666478872a6f4fac84c758d3e48c5183
+msgid ":index:`loadAnnot` -- :meth:`Page.load_annot`"
+msgstr ""
+
+#: ../../deprecated.rst:148 87fa2471ba774245ad942f11557ade8b
+msgid ":index:`loadLinks` -- :meth:`Page.load_links`"
+msgstr ""
+
+#: ../../deprecated.rst:149 3528afe3952c4972b64b9d7f76771d1e
+msgid ":index:`loadPage` -- :meth:`Document.load_page`"
+msgstr ""
+
+#: ../../deprecated.rst:150 191c78a78e2340b2b8cdbe6e0a74e738
+msgid ":index:`makeBookmark` -- :meth:`Document.make_bookmark`"
+msgstr ""
+
+#: ../../deprecated.rst:151 b4bf38b4c5b445768d9288e3cc9351d5
+msgid ":index:`MediaBox` -- :attr:`Page.mediabox`"
+msgstr ""
+
+#: ../../deprecated.rst:152 4c119b1e37a94778818289e875271e0f
+msgid ":index:`MediaBoxSize` -- :attr:`Page.mediabox_size`"
+msgstr ""
+
+#: ../../deprecated.rst:153 4d3ca7ecd54b4171b45912a3f9880c1a
+msgid ":index:`metadataXML` -- :meth:`Document.xref_xml_metadata`"
+msgstr ""
+
+#: ../../deprecated.rst:154 013377510a2b4b15923a092c6df114e8
+msgid ":index:`movePage` -- :meth:`Document.move_page`"
+msgstr ""
+
+#: ../../deprecated.rst:155 2bde2f6782034cfc952e425746523db1
+msgid ":index:`needsPass` -- :attr:`Document.needs_pass`"
+msgstr ""
+
+#: ../../deprecated.rst:156 4b0a4c646ff64571a8b788f38f8b140f
+msgid ":index:`newPage` -- :meth:`Document.new_page`"
+msgstr ""
+
+#: ../../deprecated.rst:157 234a10f09b4442e4b183b96af781c191
+msgid ":index:`newShape` -- :meth:`Page.new_shape`"
+msgstr ""
+
+#: ../../deprecated.rst:158 5f82be9f19bf4e8ea4b29f567aa6bf5b
+msgid ":index:`nextLocation` -- :meth:`Document.next_location`"
+msgstr ""
+
+#: ../../deprecated.rst:159 dcf2aed7feec49c48574cb7d92a7ec94
+msgid ":index:`pageCount` -- :attr:`Document.page_count`"
+msgstr ""
+
+#: ../../deprecated.rst:160 1ea5165ba6ee46ebb1100acf9ef3369e
+msgid ":index:`pageCropBox` -- :meth:`Document.page_cropbox`"
+msgstr ""
+
+#: ../../deprecated.rst:161 bb664db9cf7b485bb5dcdb72337e8c7f
+msgid ":index:`pageXref` -- :meth:`Document.page_xref`"
+msgstr ""
+
+#: ../../deprecated.rst:162 25ecff4635e440c8854ba142999a4545
+msgid ":index:`PaperRect` -- :meth:`paper_rect`"
+msgstr ""
+
+#: ../../deprecated.rst:163 cc90cce7de8f4c6f897fca5c1ada4c72
+msgid ":index:`PaperSize` -- :meth:`paper_size`"
+msgstr ""
+
+#: ../../deprecated.rst:164 69244ff19192402b96dc390d96301ee6
+msgid ":index:`paperSizes` -- :attr:`paper_sizes`"
+msgstr ""
+
+#: ../../deprecated.rst:165 fb3aaa403afc4e61911a3f7bcc92e250
+msgid ":index:`PDFCatalog` -- :meth:`Document.pdf_catalog`"
+msgstr ""
+
+#: ../../deprecated.rst:166 5142ca7a85954158b9534086412fb006
+msgid ":index:`PDFTrailer` -- :meth:`Document.pdf_trailer`"
+msgstr ""
+
+#: ../../deprecated.rst:167 542548edf972427caeda277081b4bb77
+msgid ":index:`pillowData` -- :meth:`Pixmap.pil_tobytes`"
+msgstr ""
+
+#: ../../deprecated.rst:168 6ef98872ca3e49eea54f1e6388bdf551
+msgid ":index:`pillowWrite` -- :meth:`Pixmap.pil_save`"
+msgstr ""
+
+#: ../../deprecated.rst:169 abeb19db7fdc4bc485e0bd4bbcac0469
+msgid ":index:`planishLine` -- :meth:`planish_line`"
+msgstr ""
+
+#: ../../deprecated.rst:170 bb266985faaf470fa6e3351cfface55f
+msgid ":index:`preRotate` -- :meth:`Matrix.prerotate`"
+msgstr ""
+
+#: ../../deprecated.rst:171 c03c058005e14019909cfb3432e979a3
+msgid ":index:`preScale` -- :meth:`Matrix.prescale`"
+msgstr ""
+
+#: ../../deprecated.rst:172 967695b5256f4eb2b5ef734d3c1e71c2
+msgid ":index:`preShear` -- :meth:`Matrix.preshear`"
+msgstr ""
+
+#: ../../deprecated.rst:173 8d7dcd3f5577443680378ae49921c23d
+msgid ":index:`preTranslate` -- :meth:`Matrix.pretranslate`"
+msgstr ""
+
+#: ../../deprecated.rst:174 72c367a6c466477aba809ebb978a47ce
+msgid ":index:`previousLocation` -- :meth:`Document.prev_location`"
+msgstr ""
+
+#: ../../deprecated.rst:175 4cb147a8013d402392a8e0c482b8cf97
+msgid ":index:`readContents` -- :meth:`Page.read_contents`"
+msgstr ""
+
+#: ../../deprecated.rst:176 d8644ae3bf2c4fb8bcd22070d6ceb59a
+msgid ":index:`resolveLink` -- :meth:`Document.resolve_link`"
+msgstr ""
+
+#: ../../deprecated.rst:177 950504d325734cbd8515748e45e675e7
+msgid ":index:`rotationMatrix` -- :attr:`Page.rotation_matrix`"
+msgstr ""
+
+#: ../../deprecated.rst:178 053654b5a09c4694b3e6e1085bb1c8f8
+msgid ":index:`searchFor` -- :meth:`Page.search_for`"
+msgstr ""
+
+#: ../../deprecated.rst:179 b69eb7f3f6d64cc19da5bc997218d8da
+msgid ":index:`searchPageFor` -- :meth:`Document.search_page_for`"
+msgstr ""
+
+#: ../../deprecated.rst:180 8a633e7d41504f9dbba548d80570c7ad
+msgid ":index:`setAlpha` -- :meth:`Pixmap.set_alpha`"
+msgstr ""
+
+#: ../../deprecated.rst:181 339b3c9fea944d8f8d8388d01f5d9c22
+msgid ":index:`setBlendMode` -- :meth:`Annot.set_blendmode`"
+msgstr ""
+
+#: ../../deprecated.rst:182 39e1b7aa70ab40469f1b2b53c8b3577e
+msgid ":index:`setBorder` -- :meth:`Annot.set_border`"
+msgstr ""
+
+#: ../../deprecated.rst:183 007c0ce78ae8431eb4a7ca889f74289c
+msgid ":index:`setColors` -- :meth:`Annot.set_colors`"
+msgstr ""
+
+#: ../../deprecated.rst:184 c168d5f300644feca6933124a2f61748
+msgid ":index:`setCropBox` -- :meth:`Page.set_cropbox`"
+msgstr ""
+
+#: ../../deprecated.rst:185 58824a6077fd4737b68a3c920b172e56
+msgid ":index:`setFlags` -- :meth:`Annot.set_flags`"
+msgstr ""
+
+#: ../../deprecated.rst:186 8203832216914f4a998bcac8fe47508e
+msgid ":index:`setInfo` -- :meth:`Annot.set_info`"
+msgstr ""
+
+#: ../../deprecated.rst:187 32713e82896d4a4dbf960065b54a992d
+msgid ":index:`setLanguage` -- :meth:`Document.set_language`"
+msgstr ""
+
+#: ../../deprecated.rst:188 d8919fbb8ad54e8c8ea9abe8ed330ad8
+msgid ":index:`setLineEnds` -- :meth:`Annot.set_line_ends`"
+msgstr ""
+
+#: ../../deprecated.rst:189 80f9ee21d5124c769d5a66a6cf9ab656
+msgid ":index:`setMediaBox` -- :meth:`Page.set_mediabox`"
+msgstr ""
+
+#: ../../deprecated.rst:190 fdce6b9c22e842c6a254651b49101862
+msgid ":index:`setMetadata` -- :meth:`Document.set_metadata`"
+msgstr ""
+
+#: ../../deprecated.rst:191 fa67b1f2e736486cbd5f3470c169987f
+msgid ":index:`setName` -- :meth:`Annot.set_name`"
+msgstr ""
+
+#: ../../deprecated.rst:192 a3c26becbef44f2fafafa75d153a2b6e
+msgid ":index:`setOC` -- :meth:`Annot.set_oc`"
+msgstr ""
+
+#: ../../deprecated.rst:193 beae43434ab84349a07bf9e4b145dcb4
+msgid ":index:`setOpacity` -- :meth:`Annot.set_opacity`"
+msgstr ""
+
+#: ../../deprecated.rst:194 931b78cba7024de6b2c9c7dea7ab5604
+msgid ":index:`setOrigin` -- :meth:`Pixmap.set_origin`"
+msgstr ""
+
+#: ../../deprecated.rst:195 9e9747e3c8aa47cbad7f68cd2d396b6f
+msgid ":index:`setPixel` -- :meth:`Pixmap.set_pixel`"
+msgstr ""
+
+#: ../../deprecated.rst:196 5df77f81227647c2b5911929b0271a72
+msgid ":index:`setRect` -- :meth:`Annot.set_rect`"
+msgstr ""
+
+#: ../../deprecated.rst:197 b1b3b35edf2a4909807a458213f529bc
+msgid ":index:`setRect` -- :meth:`Pixmap.set_rect`"
+msgstr ""
+
+#: ../../deprecated.rst:198 428f60ffa6864527a587de1448783875
+msgid ":index:`setResolution` -- :meth:`Pixmap.set_dpi`"
+msgstr ""
+
+#: ../../deprecated.rst:199 7c12e93550474f6f9da1ec5448d8c037
+msgid ":index:`setRotation` -- :meth:`Page.set_rotation`"
+msgstr ""
+
+#: ../../deprecated.rst:200 0ae73b140bc3429aa893fe080a3eb560
+msgid ":index:`setToC` -- :meth:`Document.set_toc`"
+msgstr ""
+
+#: ../../deprecated.rst:201 9da5c9761f7c415b9efe99812e95a40e
+msgid ":index:`setXmlMetadata` -- :meth:`Document.set_xml_metadata`"
+msgstr ""
+
+#: ../../deprecated.rst:202 1ab6df0b3cae4f4d95a95d58cd0268e6
+msgid ":index:`showPDFpage` -- :meth:`Page.show_pdf_page`"
+msgstr ""
+
+#: ../../deprecated.rst:203 53d1a90bb6af4380bc29a6524eec82a7
+msgid ":index:`soundGet` -- :meth:`Annot.get_sound`"
+msgstr ""
+
+#: ../../deprecated.rst:204 6f066b4d12f54057a6041f2744098c84
+msgid ":index:`tintWith` -- :meth:`Pixmap.tint_with`"
+msgstr ""
+
+#: ../../deprecated.rst:205 7e03bc0aebc34f6286cf47e405f13fc1
+msgid ":index:`transformationMatrix` -- :attr:`Page.transformation_matrix`"
+msgstr ""
+
+#: ../../deprecated.rst:206 8db984d64fca43e9b9b0a64e5e5fd840
+msgid ":index:`updateLink` -- :meth:`Page.update_link`"
+msgstr ""
+
+#: ../../deprecated.rst:207 ea3c1d96c54540d19e5499c707af5a64
+msgid ":index:`updateObject` -- :meth:`Document.update_object`"
+msgstr ""
+
+#: ../../deprecated.rst:208 8cc08bccc1284d4086497431b10e9e63
+msgid ":index:`updateStream` -- :meth:`Document.update_stream`"
+msgstr ""
+
+#: ../../deprecated.rst:209 43d07e0905eb4bdc91d9b9dfd5088e51
+msgid ":index:`wrapContents` -- :meth:`Page.wrap_contents`"
+msgstr ""
+
+#: ../../deprecated.rst:210 1adcea546c35408da5a7dce8dee49e1c
+msgid ":index:`writeImage` -- :meth:`Pixmap.save`"
+msgstr ""
+
+#: ../../deprecated.rst:211 8d6d15eb003d40aea8a5dd6a76179d92
+msgid ":index:`writePNG` -- :meth:`Pixmap.save`"
+msgstr ""
+
+#: ../../deprecated.rst:212 66d656e80dcf4f35b6b5e89abd0a46b1
+msgid ":index:`writeText` -- :meth:`Page.write_text`"
+msgstr ""
+
+#: ../../deprecated.rst:213 e03cf47ad99f49ae9b83837db47bbce1
+msgid ":index:`writeText` -- :meth:`TextWriter.write_text`"
+msgstr ""
+
+#: ../../deprecated.rst:214 f66e33aa56c54ed3bb974c8af21cad14
+msgid ":index:`xrefLength` -- :meth:`Document.xref_length`"
+msgstr ""
+
+#: ../../deprecated.rst:215 aec8c8474062494287ee9a4d59c8f9bf
+msgid ":index:`xrefObject` -- :meth:`Document.xref_object`"
+msgstr ""
+
+#: ../../deprecated.rst:216 8be5c53cf5744479ab6e68171f3ac389
+msgid ":index:`xrefStream` -- :meth:`Document.xref_stream`"
+msgstr ""
+
+#: ../../deprecated.rst:217 65d9c158dbb94e8e86b6eaea258767f7
+msgid ":index:`xrefStreamRaw` -- :meth:`Document.xref_stream_raw`"
+msgstr ""
+
+#: ../../footer.rst:-1 b4d0f4633117446c83e32734fd294137
+msgid "Discord logo"
+msgstr ""
+

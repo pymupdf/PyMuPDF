@@ -1,0 +1,5281 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../document.rst:7 1e2a5a64167f4a9898ee08390eca7534
+msgid "Document"
+msgstr ""
+
+#: ../../document.rst:11 58ba1757a362440f8264db2e9c55b51e
+msgid ""
+"This class represents a document. It can be constructed from a file or "
+"from memory."
+msgstr ""
+
+#: ../../document.rst:13 7fb3c864334149af82d0e64482448cdb
+msgid ""
+"There exists the alias *open* for this class, i.e. `fitz.Document(...)` "
+"and `fitz.open(...)` do exactly the same thing."
+msgstr ""
+
+#: ../../document.rst:15 788e6122469d4b86b232a3ad7431b06c
+msgid "For details on **embedded files** refer to Appendix 3."
+msgstr ""
+
+#: ../../document.rst:19 8ff8b49798674a5b94cc13eb388c374e
+msgid ""
+"Starting with v1.17.0, a new page addressing mechanism for **EPUB files "
+"only** is supported. This document type is internally organized in "
+"chapters such that pages can most efficiently be found by their so-called"
+" \"location\". The location is a tuple *(chapter, pno)* consisting of the"
+" chapter number and the page number **in that chapter**. Both numbers are"
+" zero-based."
+msgstr ""
+
+#: ../../document.rst:21 c0e7b7fee7bd439abec54fafef56337e
+msgid ""
+"While it is still possible to locate a page via its (absolute) number, "
+"doing so may mean that the complete EPUB document must be laid out before"
+" the page can be addressed. This may have a significant performance "
+"impact if the document is very large. Using the page's *(chapter, pno)* "
+"prevents this from happening."
+msgstr ""
+
+#: ../../document.rst:23 ac1d136caec44a2e96e96ec7798999e1
+msgid ""
+"To maintain a consistent API, PyMuPDF supports the page *location* syntax"
+" for **all file types** -- documents without this feature simply have "
+"just one chapter. :meth:`Document.load_page` and the equivalent index "
+"access now also support a *location* argument."
+msgstr ""
+
+#: ../../document.rst:25 8ca1b67c0796450db915957d6aabc6e8
+msgid ""
+"There are a number of methods for converting between page numbers and "
+"locations, for determining the chapter count, the page count per chapter,"
+" for computing the next and the previous locations, and the last page "
+"location of a document."
+msgstr ""
+
+#: ../../document.rst:28 1e69cd7e75e64a49a53c2b50360b0086
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../document.rst:28 c7703a12491342de9d104106a7e4802c
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../document.rst:30 e3063ce85a4a40abb08c89a09c37fe86
+msgid ":meth:`Document.add_layer`"
+msgstr ""
+
+#: ../../document.rst:30 9c92b3559a9940188125c3be31ac1833
+msgid "PDF only: make new optional content configuration"
+msgstr ""
+
+#: ../../document.rst:31 effe4cc45ab348f8b294877811b58af5
+msgid ":meth:`Document.add_ocg`"
+msgstr ""
+
+#: ../../document.rst:31 12fc59019b2149b094b336f8cb66d907
+msgid "PDF only: add new optional content group"
+msgstr ""
+
+#: ../../document.rst:32 3b8bf656c1234e5599266d54aae3172b
+msgid ":meth:`Document.authenticate`"
+msgstr ""
+
+#: ../../document.rst:32 33ee1808e31442e7943fa547151f5e5e
+msgid "gain access to an encrypted document"
+msgstr ""
+
+#: ../../document.rst:33 ec933d825a3d4a7da061ce55542544a9
+msgid ":meth:`Document.can_save_incrementally`"
+msgstr ""
+
+#: ../../document.rst:33 e4d8332216034d62949c61fd3ea2bf72
+msgid "check if incremental save is possible"
+msgstr ""
+
+#: ../../document.rst:34 22491857e93740f49ced67bf3f2387fe
+msgid ":meth:`Document.chapter_page_count`"
+msgstr ""
+
+#: ../../document.rst:34 0074679e8e674add8e14fa9d19e5e2d4
+msgid "number of pages in chapter"
+msgstr ""
+
+#: ../../document.rst:35 58d9297c9b0c4fef80f3975d1b57bdff
+msgid ":meth:`Document.close`"
+msgstr ""
+
+#: ../../document.rst:35 4e3e89a2e49c4d38bf6e55b83b468ae1
+msgid "close the document"
+msgstr ""
+
+#: ../../document.rst:36 dd0a765b42c741989ac7f243c6a767e5
+msgid ":meth:`Document.convert_to_pdf`"
+msgstr ""
+
+#: ../../document.rst:36 04888a84203e4b209eae8afabb08330b
+msgid "write a PDF version to memory"
+msgstr ""
+
+#: ../../document.rst:37 840dd8abd20e46d3bd124e6874b43658
+msgid ":meth:`Document.copy_page`"
+msgstr ""
+
+#: ../../document.rst:37 098d7d67f97a43c29cf3f12f1148a30b
+msgid "PDF only: copy a page reference"
+msgstr ""
+
+#: ../../document.rst:38 834d731fe13a4a9a96a2e972ca8e900c
+msgid ":meth:`Document.del_toc_item`"
+msgstr ""
+
+#: ../../document.rst:38 525ca2a352d24a04a35cb65b049ad523
+msgid "PDF only: remove a single TOC item"
+msgstr ""
+
+#: ../../document.rst:39 b31c2c425a3e4dc5b74062f46c130c77
+msgid ":meth:`Document.delete_page`"
+msgstr ""
+
+#: ../../document.rst:39 bb74860965a140eb8c9e6a59d5ceee39
+msgid "PDF only: delete a page"
+msgstr ""
+
+#: ../../document.rst:40 09ceb9891b7f49a5bf38616892fb571b
+msgid ":meth:`Document.delete_pages`"
+msgstr ""
+
+#: ../../document.rst:40 0cd5643058f04e198e262ec6cdb3466f
+msgid "PDF only: delete multiple pages"
+msgstr ""
+
+#: ../../document.rst:41 e6f93076a2cb4dac97daf7fea2efaa9c
+msgid ":meth:`Document.embfile_add`"
+msgstr ""
+
+#: ../../document.rst:41 b9327aad2dff4930bf7508cfa3e5a193
+msgid "PDF only: add a new embedded file from buffer"
+msgstr ""
+
+#: ../../document.rst:42 573a7ea6a0f04665a4d5dcfdb4e81400
+msgid ":meth:`Document.embfile_count`"
+msgstr ""
+
+#: ../../document.rst:42 11856b4afb914855a649a222ff72908c
+msgid "PDF only: number of embedded files"
+msgstr ""
+
+#: ../../document.rst:43 9c5a470971a64a19b495b78a05a24b99
+msgid ":meth:`Document.embfile_del`"
+msgstr ""
+
+#: ../../document.rst:43 4882518d2eac4440b17c2d4e62e71e46
+msgid "PDF only: delete an embedded file entry"
+msgstr ""
+
+#: ../../document.rst:44 052d8559478a4c06b5f21c9ceb98a47d
+msgid ":meth:`Document.embfile_get`"
+msgstr ""
+
+#: ../../document.rst:44 a740c101ac1140ffbd9aca31d265d45c
+msgid "PDF only: extract an embedded file buffer"
+msgstr ""
+
+#: ../../document.rst:45 0b8f19a4db57453dbf6548c504be187d
+msgid ":meth:`Document.embfile_info`"
+msgstr ""
+
+#: ../../document.rst:45 9a4f6df66768421193ef7b792dc1fbdc
+msgid "PDF only: metadata of an embedded file"
+msgstr ""
+
+#: ../../document.rst:46 54152c52c98a41ec9d825315590b4cd2
+msgid ":meth:`Document.embfile_names`"
+msgstr ""
+
+#: ../../document.rst:46 084ed06dc3064fd6964b97098256bb79
+msgid "PDF only: list of embedded files"
+msgstr ""
+
+#: ../../document.rst:47 16dffe8be24240b699603849234f177b
+msgid ":meth:`Document.embfile_upd`"
+msgstr ""
+
+#: ../../document.rst:47 3a58b89ae43c4c15adfc5f23a1f8a816
+msgid "PDF only: change an embedded file"
+msgstr ""
+
+#: ../../document.rst:48 da69dc9fcb34429d85c628e4a5a4ac95
+msgid ":meth:`Document.extract_font`"
+msgstr ""
+
+#: ../../document.rst:48 a15e5b6778944634b0b19d70c0154852
+msgid "PDF only: extract a font by :data:`xref`"
+msgstr ""
+
+#: ../../document.rst:49 62bcb1ff320f4099a6f5e0661bf6f343
+msgid ":meth:`Document.extract_image`"
+msgstr ""
+
+#: ../../document.rst:49 4659f5ac403c4458acdc67ea4f983389
+msgid "PDF only: extract an embedded image by :data:`xref`"
+msgstr ""
+
+#: ../../document.rst:50 83f9cdd69e0040299a09975ada3b396e
+msgid ":meth:`Document.ez_save`"
+msgstr ""
+
+#: ../../document.rst:50 421f79e0e6504e20a3e4544fffefdb0c
+msgid "PDF only: :meth:`Document.save` with different defaults"
+msgstr ""
+
+#: ../../document.rst:51 e6b230b9f5414f1480186c8e4475a373
+msgid ":meth:`Document.find_bookmark`"
+msgstr ""
+
+#: ../../document.rst:51 193fb0afe93a4eba8e400ce961609246
+msgid "retrieve page location after laid out document"
+msgstr ""
+
+#: ../../document.rst:52 c24a4a34d292486f87b51a633999d168
+msgid ":meth:`Document.fullcopy_page`"
+msgstr ""
+
+#: ../../document.rst:52 a59c03ebcc7649f4aa981f473d3fb816
+msgid "PDF only: duplicate a page"
+msgstr ""
+
+#: ../../document.rst:53 7ff826563fdf460b87f8d38461bf7930
+msgid ":meth:`Document.get_layer`"
+msgstr ""
+
+#: ../../document.rst:53 f33604d1764147799bc640e427cb9e67
+msgid "PDF only: lists of OCGs in ON, OFF, RBGroups"
+msgstr ""
+
+#: ../../document.rst:54 0899ab84c886498bb53b0f4f39454bcb
+msgid ":meth:`Document.get_layers`"
+msgstr ""
+
+#: ../../document.rst:54 a9fd5131e2c841bc97e364b9485a8712
+msgid "PDF only: list of optional content configurations"
+msgstr ""
+
+#: ../../document.rst:55 019d63b5017a45108b0307a12b1679a8
+msgid ":meth:`Document.get_oc`"
+msgstr ""
+
+#: ../../document.rst:55 9fee80a1647b4251ac8e066a52629e39
+msgid "PDF only: get OCG /OCMD xref of image / form xobject"
+msgstr ""
+
+#: ../../document.rst:56 3da1b323bf104fe5866b811bd0f238fb
+msgid ":meth:`Document.get_ocgs`"
+msgstr ""
+
+#: ../../document.rst:56 170fe00d0bb944aaa60b70d0f649c373
+msgid "PDF only: info on all optional content groups"
+msgstr ""
+
+#: ../../document.rst:57 ea6abe0041df4560bd3f1c533e0cdd63
+msgid ":meth:`Document.get_ocmd`"
+msgstr ""
+
+#: ../../document.rst:57 dc8d6f739a0a48d781870acadda11045
+msgid "PDF only: retrieve definition of an :data:`OCMD`"
+msgstr ""
+
+#: ../../document.rst:58 7ba79bdf5e57447d9767704430a99783
+msgid ":meth:`Document.get_page_fonts`"
+msgstr ""
+
+#: ../../document.rst:58 2c100d900e7e4acbbe2d69def7a6a614
+msgid "PDF only: list of fonts referenced by a page"
+msgstr ""
+
+#: ../../document.rst:59 26efaad2f95f4c879e60866243b70ed8
+msgid ":meth:`Document.get_page_images`"
+msgstr ""
+
+#: ../../document.rst:59 5210f91a3ebf45aa82b604767496ab0f
+msgid "PDF only: list of images referenced by a page"
+msgstr ""
+
+#: ../../document.rst:60 02bbbf06e19c4e6d83429046127ed079
+msgid ":meth:`Document.get_page_labels`"
+msgstr ""
+
+#: ../../document.rst:60 1b6793a3b337480aa2cc6b86870c6d10
+msgid "PDF only: list of page label definitions"
+msgstr ""
+
+#: ../../document.rst:61 81ed6a84553f460980a1ceb9ec0069cc
+msgid ":meth:`Document.get_page_numbers`"
+msgstr ""
+
+#: ../../document.rst:61 c78a85b3f4b44bd19142898e027985d7
+msgid "PDF only: get page numbers having a given label"
+msgstr ""
+
+#: ../../document.rst:62 479225d5ba81430b891404b79d51e85c
+msgid ":meth:`Document.get_page_pixmap`"
+msgstr ""
+
+#: ../../document.rst:62 7a27de8a5a314ed8b187a47c0e9f5ae9
+msgid "create a pixmap of a page by page number"
+msgstr ""
+
+#: ../../document.rst:63 01da9151442b419eab7157ebeb32d284
+msgid ":meth:`Document.get_page_text`"
+msgstr ""
+
+#: ../../document.rst:63 2e69e7f1d35546ae93874ceb25bfe051
+msgid "extract the text of a page by page number"
+msgstr ""
+
+#: ../../document.rst:64 6c301d371cae4b2f882a8740a50e4d83
+msgid ":meth:`Document.get_page_xobjects`"
+msgstr ""
+
+#: ../../document.rst:64 88f0a9abb0d2467aa42f9c19d5070061
+msgid "PDF only: list of XObjects referenced by a page"
+msgstr ""
+
+#: ../../document.rst:65 86a0665f2a3a4579be1e19105c02698e
+msgid ":meth:`Document.get_sigflags`"
+msgstr ""
+
+#: ../../document.rst:65 4228e74b86b245f49a4deddb34a446d7
+msgid "PDF only: determine signature state"
+msgstr ""
+
+#: ../../document.rst:66 53a1b2b9f7094755a874b0a1ad478c84
+msgid ":meth:`Document.get_toc`"
+msgstr ""
+
+#: ../../document.rst:66 c32e06a5919646cb96d7e37522d51590
+msgid "extract the table of contents"
+msgstr ""
+
+#: ../../document.rst:67 f20d8e4041ce4b7e8b245e2fc02d8396
+msgid ":meth:`Document.get_xml_metadata`"
+msgstr ""
+
+#: ../../document.rst:67 da11dab5707a4c59bece6fdf9b686280
+msgid "PDF only: read the XML metadata"
+msgstr ""
+
+#: ../../document.rst:68 cc5fd77dd38a43d0b8b5762f5e3e7a8c
+msgid ":meth:`Document.has_annots`"
+msgstr ""
+
+#: ../../document.rst:68 661281645e0c4da9883c871ae3be0035
+msgid "PDF only: check if PDF contains any annots"
+msgstr ""
+
+#: ../../document.rst:69 5f8ad7c043604f55be380b15dca40797
+msgid ":meth:`Document.has_links`"
+msgstr ""
+
+#: ../../document.rst:69 cc77a55e044b4aebaf7f9fe71bc5cfa0
+msgid "PDF only: check if PDF contains any links"
+msgstr ""
+
+#: ../../document.rst:70 aa44f8eb69e049ba878e440f6daabc7b
+msgid ":meth:`Document.insert_page`"
+msgstr ""
+
+#: ../../document.rst:70 67b719e2bd9e4c8fb9e6e2d177d9f5a7
+msgid "PDF only: insert a new page"
+msgstr ""
+
+#: ../../document.rst:71 f9cba04f5bc746d8a6287457d1d30cb7
+msgid ":meth:`Document.insert_pdf`"
+msgstr ""
+
+#: ../../document.rst:71 ff53cafc159d4d7e8c515843bb57f50d
+msgid "PDF only: insert pages from another PDF"
+msgstr ""
+
+#: ../../document.rst:72 77859f7902354f03a8a40d0ef4fa5264
+msgid ":meth:`Document.insert_file`"
+msgstr ""
+
+#: ../../document.rst:72 b48a13954c7e4df1999ef127df66fde9
+msgid "PDF only: insert pages from arbitrary document"
+msgstr ""
+
+#: ../../document.rst:73 fbfa2027d3e34a11ac24e2198f79ca17
+msgid ":meth:`Document.journal_can_do`"
+msgstr ""
+
+#: ../../document.rst:73 f904cd9105c9435bb8ba4d1e7bc0449e
+msgid "PDF only: which journal actions are possible"
+msgstr ""
+
+#: ../../document.rst:74 666adc4800134355a0b92a3d4046945d
+msgid ":meth:`Document.journal_enable`"
+msgstr ""
+
+#: ../../document.rst:74 b051780419064f8482e6cbc67cbc1e70
+msgid "PDF only: enables journalling for the document"
+msgstr ""
+
+#: ../../document.rst:75 884b403857504209830fd3168ed762f2
+msgid ":meth:`Document.journal_load`"
+msgstr ""
+
+#: ../../document.rst:75 a39c4ff60a1346b589c2b6c10ca9141f
+msgid "PDF only: load journal from a file"
+msgstr ""
+
+#: ../../document.rst:76 dfdc2f0c736547dc9abd816f695c4729
+msgid ":meth:`Document.journal_op_name`"
+msgstr ""
+
+#: ../../document.rst:76 b58cefa3acb44291b30b926d4aec5aef
+msgid "PDF only: return name of a journalling step"
+msgstr ""
+
+#: ../../document.rst:77 8b116db0c314431294656136b6bfbe01
+msgid ":meth:`Document.journal_position`"
+msgstr ""
+
+#: ../../document.rst:77 242dc4dc2e8d4c14943c9dc4b975cb2b
+msgid "PDF only: return journalling status"
+msgstr ""
+
+#: ../../document.rst:78 fdf2fb30684a481e842856f34a73e032
+msgid ":meth:`Document.journal_redo`"
+msgstr ""
+
+#: ../../document.rst:78 79321859013f4b50a05e59092818a40b
+msgid "PDF only: redo current operation"
+msgstr ""
+
+#: ../../document.rst:79 9e5fe5167713472f969495bbabeed89a
+msgid ":meth:`Document.journal_save`"
+msgstr ""
+
+#: ../../document.rst:79 7ebadb98ce294cc0b2b90aae37e9c7d4
+msgid "PDF only: save journal to a file"
+msgstr ""
+
+#: ../../document.rst:80 f3b529a2c74a421f9eb82dc7666138b0
+msgid ":meth:`Document.journal_start_op`"
+msgstr ""
+
+#: ../../document.rst:80 9aa226d27a344610ad1aae1e5432b937
+msgid "PDF only: start an \"operation\" giving it a name"
+msgstr ""
+
+#: ../../document.rst:81 bcfe8f55b8c54ec8a70063c8e4dbb990
+msgid ":meth:`Document.journal_stop_op`"
+msgstr ""
+
+#: ../../document.rst:81 d87ea700c6f74f55bdee185aeccaad94
+msgid "PDF only: end current operation"
+msgstr ""
+
+#: ../../document.rst:82 9b93352abdd04705a91e51b0645b63a0
+msgid ":meth:`Document.journal_undo`"
+msgstr ""
+
+#: ../../document.rst:82 7011c1d7a0254279a6c7974df0296a97
+msgid "PDF only: undo current operation"
+msgstr ""
+
+#: ../../document.rst:83 a08973895b83489aac61d8a847941b97
+msgid ":meth:`Document.layer_ui_configs`"
+msgstr ""
+
+#: ../../document.rst:83 0109d735f4b94c2abc18e65a27922161
+msgid "PDF only: list of optional content intents"
+msgstr ""
+
+#: ../../document.rst:84 663629a9805b40349fa6995585b00d45
+msgid ":meth:`Document.layout`"
+msgstr ""
+
+#: ../../document.rst:84 70f45709e5874183ad352001c851dc92
+msgid "re-paginate the document (if supported)"
+msgstr ""
+
+#: ../../document.rst:85 c241c20fbe4748ebbe3b9f0021af2936
+msgid ":meth:`Document.load_page`"
+msgstr ""
+
+#: ../../document.rst:85 562403d6efcf4bc09a430c9c08e0b661
+msgid "read a page"
+msgstr ""
+
+#: ../../document.rst:86 a67107abe2e14d9b8a764e3388a5f9b8
+msgid ":meth:`Document.make_bookmark`"
+msgstr ""
+
+#: ../../document.rst:86 b77397ef4cc54755bf2c2f3e051e149f
+msgid "create a page pointer in reflowable documents"
+msgstr ""
+
+#: ../../document.rst:87 5cd40bd8f7c64655945e67368c22381b
+msgid ":meth:`Document.move_page`"
+msgstr ""
+
+#: ../../document.rst:87 7e7e8168fa5e4d128b623b5c03b3c126
+msgid "PDF only: move a page to different location in doc"
+msgstr ""
+
+#: ../../document.rst:88 dddd6661c33e4d64806b15767e08171b
+msgid ":meth:`Document.need_appearances`"
+msgstr ""
+
+#: ../../document.rst:88 04ec0c4b372c4f7883302b6038c877d0
+msgid "PDF only: get/set `/NeedAppearances` property"
+msgstr ""
+
+#: ../../document.rst:89 e5742c9eac9d4e2ebd0eff7c989f5266
+msgid ":meth:`Document.new_page`"
+msgstr ""
+
+#: ../../document.rst:89 b0b5fa9f93e042018cc7ba8e8159dd9a
+msgid "PDF only: insert a new empty page"
+msgstr ""
+
+#: ../../document.rst:90 f594d3fe78144af6bc54097901251c8a
+msgid ":meth:`Document.next_location`"
+msgstr ""
+
+#: ../../document.rst:90 bafb3ecb2f294a6984fa90d9130854f7
+msgid "return (chapter, pno) of following page"
+msgstr ""
+
+#: ../../document.rst:91 cb18938e3a1a4de7a4dc32eb535e289c
+msgid ":meth:`Document.outline_xref`"
+msgstr ""
+
+#: ../../document.rst:91 3a33742f72954a06905d2f5ca6fa53ce
+msgid "PDF only: :data:`xref` a TOC item"
+msgstr ""
+
+#: ../../document.rst:92 82485be6d6294e4889df0d082ae90d68
+msgid ":meth:`Document.page_cropbox`"
+msgstr ""
+
+#: ../../document.rst:92 f4505653e57b4e10a3cdf221303b5df0
+msgid "PDF only: the unrotated page rectangle"
+msgstr ""
+
+#: ../../document.rst:93 6899a83eb4a644ad971562199671eb61
+msgid ":meth:`Document.page_xref`"
+msgstr ""
+
+#: ../../document.rst:93 610f55f793024d0aa2cba223bcfe5424
+msgid "PDF only: :data:`xref` of a page number"
+msgstr ""
+
+#: ../../document.rst:94 6d404b2f2f6a49f185a5da82b7fde58a
+msgid ":meth:`Document.pages`"
+msgstr ""
+
+#: ../../document.rst:94 ac1fcc89658140328abddcfd595a00dc
+msgid "iterator over a page range"
+msgstr ""
+
+#: ../../document.rst:95 271a625473c34d4da77087d1702f7e14
+msgid ":meth:`Document.pdf_catalog`"
+msgstr ""
+
+#: ../../document.rst:95 8a7c3d2322b3400a8a13e9badf4f5e26
+msgid "PDF only: :data:`xref` of catalog (root)"
+msgstr ""
+
+#: ../../document.rst:96 58f3b11786c04037ba4c716554b67bb1
+msgid ":meth:`Document.pdf_trailer`"
+msgstr ""
+
+#: ../../document.rst:96 d5ab6ddf1a3f4d6faea978e0225a4c60
+msgid "PDF only: trailer source"
+msgstr ""
+
+#: ../../document.rst:97 5013ad53829e46fca40ee0812a4efb7e
+msgid ":meth:`Document.prev_location`"
+msgstr ""
+
+#: ../../document.rst:97 1f9662ae81a8481d8998aa3bf568b28c
+msgid "return (chapter, pno) of preceding page"
+msgstr ""
+
+#: ../../document.rst:98 09349b31fbbe41c382d9bd588fdc7b01
+msgid ":meth:`Document.reload_page`"
+msgstr ""
+
+#: ../../document.rst:98 85335a88da0f44b0b3e82c229b94d7c9
+msgid "PDF only: provide a new copy of a page"
+msgstr ""
+
+#: ../../document.rst:99 edf9b9a5f8164f18ba18c9216fb7ab0a
+msgid ":meth:`Document.save`"
+msgstr ""
+
+#: ../../document.rst:99 cede0e5084564615ad52d63f71edfdd3
+msgid "PDF only: save the document"
+msgstr ""
+
+#: ../../document.rst:100 6739248c0cde4510a3c8987cd6625fc7
+msgid ":meth:`Document.saveIncr`"
+msgstr ""
+
+#: ../../document.rst:100 55ddc46788a04182a38312566faa7027
+msgid "PDF only: save the document incrementally"
+msgstr ""
+
+#: ../../document.rst:101 f68b0c7bfc3a456abded30a7cb9f3368
+msgid ":meth:`Document.scrub`"
+msgstr ""
+
+#: ../../document.rst:101 805f8ec96a0f46c386266ca55146791e
+msgid "PDF only: remove sensitive data"
+msgstr ""
+
+#: ../../document.rst:102 8849fafb903548f28258a0057d6b05ac
+msgid ":meth:`Document.search_page_for`"
+msgstr ""
+
+#: ../../document.rst:102 dfc7dfdaf5e14f1da5f1aac430f62137
+msgid "search for a string on a page"
+msgstr ""
+
+#: ../../document.rst:103 ff2e3d643c284d14bbd1cddabedf9839
+msgid ":meth:`Document.select`"
+msgstr ""
+
+#: ../../document.rst:103 cf3f2c3122ff47b2bda33040a3a2d329
+msgid "PDF only: select a subset of pages"
+msgstr ""
+
+#: ../../document.rst:104 298d96ade9384e57aba5ebe8261e489d
+msgid ":meth:`Document.set_layer_ui_config`"
+msgstr ""
+
+#: ../../document.rst:104 c545654d24eb4def8a24bd8868a4bcd4
+msgid "PDF only: set OCG visibility temporarily"
+msgstr ""
+
+#: ../../document.rst:105 793489bd1ed14465bf003174e69819c9
+msgid ":meth:`Document.set_layer`"
+msgstr ""
+
+#: ../../document.rst:105 4a29d419c24d4e03967c69bd83ffc7e6
+msgid "PDF only: mass changing OCG states"
+msgstr ""
+
+#: ../../document.rst:106 69c6ca12eba94127b782a0b822485cfa
+msgid ":meth:`Document.set_markinfo`"
+msgstr ""
+
+#: ../../document.rst:106 8b0e52b3703f44d2972a2c2e51a20cae
+msgid "PDF only: set the MarkInfo values"
+msgstr ""
+
+#: ../../document.rst:107 21b48e00187445848b751390cea062ac
+msgid ":meth:`Document.set_metadata`"
+msgstr ""
+
+#: ../../document.rst:107 719a997e238a436b872eb3bea909e3d9
+msgid "PDF only: set the metadata"
+msgstr ""
+
+#: ../../document.rst:108 72f15c1e9f3945b29245a888964b348c
+msgid ":meth:`Document.set_oc`"
+msgstr ""
+
+#: ../../document.rst:108 8eab34b1af7c40e6ab8a176f811ad926
+msgid "PDF only: attach OCG/OCMD to image / form xobject"
+msgstr ""
+
+#: ../../document.rst:109 a0e3957f19324a1bb9b3eebba8b63846
+msgid ":meth:`Document.set_ocmd`"
+msgstr ""
+
+#: ../../document.rst:109 97892a45b8af4c17a76ddebab016686a
+msgid "PDF only: create or update an :data:`OCMD`"
+msgstr ""
+
+#: ../../document.rst:110 b5def5bc670f43339b3574d02d810826
+msgid ":meth:`Document.set_page_labels`"
+msgstr ""
+
+#: ../../document.rst:110 5735ba90591848488c3cd4b255645cca
+msgid "PDF only: add/update page label definitions"
+msgstr ""
+
+#: ../../document.rst:111 92e63d73650542cb81f7236cc239fb04
+msgid ":meth:`Document.set_pagemode`"
+msgstr ""
+
+#: ../../document.rst:111 44d6f44d4014448db044d4916f753dfa
+msgid "PDF only: set the PageMode"
+msgstr ""
+
+#: ../../document.rst:112 185bddb0113847edb654494ddd1147a2
+msgid ":meth:`Document.set_pagelayout`"
+msgstr ""
+
+#: ../../document.rst:112 bdb2698989954668bff79be65ef5e93b
+msgid "PDF only: set the PageLayout"
+msgstr ""
+
+#: ../../document.rst:113 73711b61acd745f2b80f5c8f87b72e16
+msgid ":meth:`Document.set_toc_item`"
+msgstr ""
+
+#: ../../document.rst:113 443cebdf08be42dda544481ab7ae7c98
+msgid "PDF only: change a single TOC item"
+msgstr ""
+
+#: ../../document.rst:114 08597b41acd74658b01630c67d72f47b
+msgid ":meth:`Document.set_toc`"
+msgstr ""
+
+#: ../../document.rst:114 1f31576a42f94fd4973c9c4f8297863f
+msgid "PDF only: set the table of contents (TOC)"
+msgstr ""
+
+#: ../../document.rst:115 11f4d8324e754a51bc0b7c3de24ef38f
+msgid ":meth:`Document.set_xml_metadata`"
+msgstr ""
+
+#: ../../document.rst:115 d67c3cbc10c247849acc1702be33995c
+msgid "PDF only: create or update document XML metadata"
+msgstr ""
+
+#: ../../document.rst:116 e0eb11dd3ab6455a9b02571adc95fc40
+msgid ":meth:`Document.subset_fonts`"
+msgstr ""
+
+#: ../../document.rst:116 e47bc17674444a6aa961063e7ce0d7fb
+msgid "PDF only: create font subsets"
+msgstr ""
+
+#: ../../document.rst:117 b52e159ba49e45c2aea88a3e042353e5
+msgid ":meth:`Document.switch_layer`"
+msgstr ""
+
+#: ../../document.rst:117 5331db565059412f90a0b2936b1a8a43
+msgid "PDF only: activate OC configuration"
+msgstr ""
+
+#: ../../document.rst:118 bcc5cbb8d74e429f8ac5433b4bfec8c4
+msgid ":meth:`Document.tobytes`"
+msgstr ""
+
+#: ../../document.rst:118 cb37e281ea2a42acb71a3a498ac466e7
+msgid "PDF only: writes document to memory"
+msgstr ""
+
+#: ../../document.rst:119 86f985d0005244f1b201c46c467a3e97
+msgid ":meth:`Document.xref_copy`"
+msgstr ""
+
+#: ../../document.rst:119 f1cc2cc94a4745fe8fe45a91e03dc026
+msgid "PDF only: copy a PDF dictionary to another :data:`xref`"
+msgstr ""
+
+#: ../../document.rst:120 183501911b1247119e1582a1b28eadb6
+msgid ":meth:`Document.xref_get_key`"
+msgstr ""
+
+#: ../../document.rst:120 e7496942b7374cedb4c29c5fe1ba6197
+msgid "PDF only: get the value of a dictionary key"
+msgstr ""
+
+#: ../../document.rst:121 b7ff7c808b8a4d678c9a686d4881437b
+msgid ":meth:`Document.xref_get_keys`"
+msgstr ""
+
+#: ../../document.rst:121 0adcf81ba6fb42e38b06f5dd9f02e2e4
+msgid "PDF only: list the keys of object at :data:`xref`"
+msgstr ""
+
+#: ../../document.rst:122 fe6f983453094988b4869f6417df3caf
+msgid ":meth:`Document.xref_object`"
+msgstr ""
+
+#: ../../document.rst:122 5f3c23b7b29349bc8924fa1affa0da2c
+msgid "PDF only: get the definition source of :data:`xref`"
+msgstr ""
+
+#: ../../document.rst:123 a52cfb027b7341498db60dd350b0d651
+msgid ":meth:`Document.xref_set_key`"
+msgstr ""
+
+#: ../../document.rst:123 61e8aa37ad1e4af691f665cc39481842
+msgid "PDF only: set the value of a dictionary key"
+msgstr ""
+
+#: ../../document.rst:124 69a0b2e662c8499dbfccf6313815464a
+msgid ":meth:`Document.xref_stream_raw`"
+msgstr ""
+
+#: ../../document.rst:124 2b01c72b3ccc4c059f22d1ed4455bbb4
+msgid "PDF only: raw stream source at :data:`xref`"
+msgstr ""
+
+#: ../../document.rst:125 e17483881eb04b1b9b36c24acda7cef5
+msgid ":meth:`Document.xref_xml_metadata`"
+msgstr ""
+
+#: ../../document.rst:125 4580eacd8c0949ef9e00c5fa93f3baa1
+msgid "PDF only: :data:`xref` of XML metadata"
+msgstr ""
+
+#: ../../document.rst:126 599a47ae72fb4460aa4379bbd4f243e9
+msgid ":attr:`Document.chapter_count`"
+msgstr ""
+
+#: ../../document.rst:126 eda521fde7484141bae7f416c678bc71
+msgid "number of chapters"
+msgstr ""
+
+#: ../../document.rst:127 7ff455387eca488985b65d919142656e
+msgid ":attr:`Document.FormFonts`"
+msgstr ""
+
+#: ../../document.rst:127 26599db9896443c5b7c92e384d4dcc21
+msgid "PDF only: list of global widget fonts"
+msgstr ""
+
+#: ../../document.rst:128 2749fc563b144860b0a2444acc9a1f70
+msgid ":attr:`Document.is_closed`"
+msgstr ""
+
+#: ../../document.rst:128 1f440402e66e4902a6544e72f42c2414
+msgid "has document been closed?"
+msgstr ""
+
+#: ../../document.rst:129 eda74498906f4e23be1394c10616ebbc
+msgid ":attr:`Document.is_dirty`"
+msgstr ""
+
+#: ../../document.rst:129 86cfaa8d0fa74aecb32229de921638ee
+msgid "PDF only: has document been changed yet?"
+msgstr ""
+
+#: ../../document.rst:130 57bed9df20d74305b1fa1938c3a05085
+msgid ":attr:`Document.is_encrypted`"
+msgstr ""
+
+#: ../../document.rst:130 054330965d254e0ca88e10870997f60a
+msgid "document (still) encrypted?"
+msgstr ""
+
+#: ../../document.rst:131 a8b7f43aff504299b7fe07648e74d881
+msgid ":attr:`Document.is_fast_webaccess`"
+msgstr ""
+
+#: ../../document.rst:131 b2974afe6f6b4fdc8ce0c53b4ad76b20
+msgid "is PDF linearized?"
+msgstr ""
+
+#: ../../document.rst:132 4bf38f3d83de4377a66f7229895ddb6b
+msgid ":attr:`Document.is_form_pdf`"
+msgstr ""
+
+#: ../../document.rst:132 496b162c155245ad9536a21edd619f24
+msgid "is this a Form PDF?"
+msgstr ""
+
+#: ../../document.rst:133 23be69e57c8d4a49a70ed05ecb9f4e6c
+msgid ":attr:`Document.is_pdf`"
+msgstr ""
+
+#: ../../document.rst:133 8b5e821881204f798977b42d03b72bd7
+msgid "is this a PDF?"
+msgstr ""
+
+#: ../../document.rst:134 7b6554964cb44cf28d1659ff833f1536
+msgid ":attr:`Document.is_reflowable`"
+msgstr ""
+
+#: ../../document.rst:134 818165dceba1469cb9dbf99cd6359407
+msgid "is this a reflowable document?"
+msgstr ""
+
+#: ../../document.rst:135 3a918fb2d1d947bbb8f46fe0a92460cd
+msgid ":attr:`Document.is_repaired`"
+msgstr ""
+
+#: ../../document.rst:135 0abb6af1ed284bdc8861eaa1845d5bbd
+msgid "PDF only: has this PDF been repaired during open?"
+msgstr ""
+
+#: ../../document.rst:136 d2a9a75a86d94750a64df2e2e53bc49f
+msgid ":attr:`Document.last_location`"
+msgstr ""
+
+#: ../../document.rst:136 8b08715dd2cd4809a2250ac2495ffc39
+msgid "(chapter, pno) of last page"
+msgstr ""
+
+#: ../../document.rst:137 71ec7a2f2fe54a03b9ab5cc0cad086c4
+msgid ":attr:`Document.metadata`"
+msgstr ""
+
+#: ../../document.rst:137 ad6f1bdb43b04985ba8dc051dba82295
+msgid "metadata"
+msgstr ""
+
+#: ../../document.rst:138 6b78f2f1bc5d45eeb1864bda981bbf49
+msgid ":attr:`Document.markinfo`"
+msgstr ""
+
+#: ../../document.rst:138 4c688319b7e545218a392e4fb80a10f5
+msgid "PDF MarkInfo value"
+msgstr ""
+
+#: ../../document.rst:139 05498faa56fe460cb721302ba11f8a89
+msgid ":attr:`Document.name`"
+msgstr ""
+
+#: ../../document.rst:139 ee2657a24b1e4455afb39ed3960992ca
+msgid "filename of document"
+msgstr ""
+
+#: ../../document.rst:140 eb5ff720d65146849e32b667e7d0a13a
+msgid ":attr:`Document.needs_pass`"
+msgstr ""
+
+#: ../../document.rst:140 7907495cab88431fa032ed6b6080070d
+msgid "require password to access data?"
+msgstr ""
+
+#: ../../document.rst:141 b1e2dd38efc14816a540c6913bba6753
+msgid ":attr:`Document.outline`"
+msgstr ""
+
+#: ../../document.rst:141 90eec173a9d64e24b9a0d7f06ca66edf
+msgid "first `Outline` item"
+msgstr ""
+
+#: ../../document.rst:142 05e115ca3e61493f815bff7c49c39de5
+msgid ":attr:`Document.page_count`"
+msgstr ""
+
+#: ../../document.rst:142 c61c6c75a2284c41b3251c53d760307f
+msgid "number of pages"
+msgstr ""
+
+#: ../../document.rst:143 b888ba810dee4818b0f7ae18aa41154c
+msgid ":attr:`Document.permissions`"
+msgstr ""
+
+#: ../../document.rst:143 1f57361131894a3ba68401116cb82888
+msgid "permissions to access the document"
+msgstr ""
+
+#: ../../document.rst:144 89618857d2f64699a4ea8a6afb3f6fc6
+msgid ":attr:`Document.pagemode`"
+msgstr ""
+
+#: ../../document.rst:144 4b8e5500b9e740d38991ee42362bf618
+msgid "PDF PageMode value"
+msgstr ""
+
+#: ../../document.rst:145 bffeca87aa33407b9275ae280a2896fa
+msgid ":attr:`Document.pagelayout`"
+msgstr ""
+
+#: ../../document.rst:145 06d16ff67e5a46d5a1856799fceae879
+msgid "PDF PageLayout value"
+msgstr ""
+
+#: ../../document.rst:146 a692f65727724e3381ffbbb285018e2c
+msgid ":attr:`Document.version_count`"
+msgstr ""
+
+#: ../../document.rst:146 661656cafa9d46319cb96c690a4c4d17
+msgid "PDF count of versions"
+msgstr ""
+
+#: ../../document.rst:149 c8ba6c0c38af47a39f7464ff17d0d639
+msgid "**Class API**"
+msgstr ""
+
+#: ../../document.rst:170 6421dabd019641c6b59aa2094858d153
+msgid "Changed in v1.14.13: support `io.BytesIO` for memory documents."
+msgstr ""
+
+#: ../../document.rst:171 ec7fb8c21637430986d490541cbb605d
+msgid ""
+"Changed in v1.19.6: Clearer, shorter and more consistent exception "
+"messages. File type \"pdf\" is always assumed if not specified. Empty "
+"files and memory areas will always lead to exceptions."
+msgstr ""
+
+#: ../../document.rst:173 e04cc017a38a449d92a13408f2c9a64e
+msgid "Creates a *Document* object."
+msgstr ""
+
+#: ../../document.rst:175 628ab38fe72045289c5684b3aff1c5d4
+msgid "With default parameters, a **new empty PDF** document will be created."
+msgstr ""
+
+#: ../../document.rst:176 9a6875a48943490eaa96c0765e93fce3
+msgid ""
+"If *stream* is given, then the document is created from memory and, if "
+"not a PDF, either *filename* or *filetype* must indicate its type."
+msgstr ""
+
+#: ../../document.rst:177 b81554f4aa5f441e823230039434acdb
+msgid ""
+"If *stream* is `None`, then a document is created from the file given by "
+"*filename*. Its type is inferred from the extension. This can be "
+"overruled by *filetype.*"
+msgstr ""
+
+#: ../../document.rst 015bba15a5434845ba862e1d33cc1acc
+#: 052f20e8e0e44d1a8ac6e259bd2a3c14 0be0a124ab6e4292a36f119b1e7c9325
+#: 0c61ef66b80449aea961640a2e4cebb3 10bb79b95e174c0289333355eeea8452
+#: 12cc22701a324300bf0bc4c1adfd1a47 13605e04c0864d2ba42676bea5c7c25a
+#: 1816cbdad68d469b92e8c83ae6b67cc7 1bf3d9a4a00647a6ba271dbe41be294b
+#: 202163a4dc9b4f72bc7cf5dc86b68460 244a8117ac434abc9874610bedeb3829
+#: 26f8aad4dfcb4ad2b92443c7ec3d7cb9 2a08fbd171a148199dd6c524171b52b6
+#: 2a8bce1407b14aec8307a56f323a643a 2ad2ea0fff244ed88f2ce7f322c9b94e
+#: 34912c17d1034e9f99bfeda2326c8882 3dc60f49c9f443908fba0ee1650a8f0c
+#: 40dfe071206f47b386c37f29c2b36bf5 4b20d6d5d8d148c18e8a2e65b71b868d
+#: 4d76f9221ab34812951c1e9f51b80789 511ae24fb52949ab930cf8ce159a1125
+#: 52b9598f7183443ab0772d3308e8d308 53b0a12a6b0b4132afddaeebba9757d8
+#: 60417b547b2b4dae956d4d10ac4a4bf4 607dd4463d8446638aed8fb721da257c
+#: 6caa1ebeafd849aebcc61d67a83551fa 6e19410f6d4c49baa178abd38cf54a19
+#: 72bfa49fd3c24afe994d926137417a9a 7ff140473b96419896c4f8c11d52e3ec
+#: 804c84ef600c492191e6739dbc939f9d 81e3e81d85784160ad6d344eb85f5a47
+#: 8257c120eaa44f37affc66016a62a1ae 85936b3ab4eb45aaa66444f53d2fbd2f
+#: 8a0dc2eed7e14ef2a1c90b61e93d40f1 8a222cdddf864323b45ff9b8be3987b8
+#: 8ceeedc5ace94444a62737f42f2ea926 90ef859e3f78427a94bdcf29a663d7ab
+#: 948573a6fd2948e08ee6454623715926 9601f1e824114cd5aaa580f5bc6fb3ac
+#: a276774a244248499616f35c24dd3e98 a5e97e13b70a42ee89905fb650f17e50
+#: a686a95d9d2a4c37909745097217abee abbe9b5aa8fc4a1fa3bf8014624431f9
+#: adc35eda86e745e49fa60b66c62fda90 addf5ab8dd12434d8bdfce03e4eed371
+#: aeadbdc3c89a471eb53d352b76c02d2f afe114d5b5aa410f8376884413cf084c
+#: b145906c02e94772a0eb324dce52eca2 b5f86bef833141beb7ac2eff1e1a3c31
+#: bd0da6fc72ea4c25b6161e26d41146a7 c1bf50a086724d708d96f5ba7491d925
+#: c5cc524a67ba4cdc81701fedb89f1f9d c7452a755220410ba1df3673cb22020c
+#: cc1e8bb598a447dfa7d03db17d6b9f97 ce7a80e0ccaa4a19ab8acda40b9d80be
+#: ceb63a433f784796ac23c590a5243a0d d23c1ea584d94e7aa13bd51baed2bac0
+#: d29152f755b44b249bff4ef1a721db11 dcfd603bc8464d8dbdcb5ef319729bd5
+#: e35d6d3869934d5c81ec709e89a92d3a e571a2a679b8496a80ab86a6a798c9b5
+#: efb97839f21844989e19d4794820181c f0376fb741a64bff980ab4e8c8e6e40c
+#: f249d3ecb25944fcade997a3356f3b03 f641a31ccc884820b26a2e920dd26b18
+#: f7071b66a3ba48faa6a814ced42a716f fb27ba22a9bf4a0089f862cb0357c08a
+#: fc4148e05e4c4fdb92285860f00bdb61
+msgid "Parameters"
+msgstr ""
+
+#: ../../document.rst:179 bc85521d3c164103b7246ecf54843804
+msgid ""
+"A UTF-8 string or *pathlib* object containing a file path. The document "
+"type is inferred from the filename extension. If not present or not "
+"matching :ref:`a supported type<Supported_File_Types>`, a PDF document is"
+" assumed. For memory documents, this argument may be used instead of "
+"`filetype`, see below."
+msgstr ""
+
+#: ../../document.rst:181 0d4e90006b3a45e4ba90af2a95ee85e5
+msgid ""
+"A memory area containing a supported document. If not a PDF, its type "
+"**must** be specified by either `filename` or `filetype`."
+msgstr ""
+
+#: ../../document.rst:183 033cb00b8b8b4e2cb19a6b79043980dc
+msgid ""
+"A string specifying the type of document. This may be anything looking "
+"like a filename (e.g. \"x.pdf\"), in which case MuPDF uses the extension "
+"to determine the type, or a mime type like *application/pdf*. Just using "
+"strings like \"pdf\"  or \".pdf\" will also work. May be omitted for PDF "
+"documents, otherwise must match :ref:`a supported document "
+"type<Supported_File_Types>`."
+msgstr ""
+
+#: ../../document.rst:185 b48f6505652e41ce8a5be209adc5e0ca
+msgid ""
+"a rectangle specifying the desired page size. This parameter is only "
+"meaningful for documents with a variable page layout (\"reflowable\" "
+"documents), like e-books or HTML, and ignored otherwise. If specified, it"
+" must be a non-empty, finite rectangle with top-left coordinates (0, 0). "
+"Together with parameter *fontsize*, each page will be accordingly laid "
+"out and hence also determine the number of pages."
+msgstr ""
+
+#: ../../document.rst:187 84b1b11da9bf4a0789d6fe3c5cf25afd
+msgid ""
+"may used together with *height* as an alternative to *rect* to specify "
+"layout information."
+msgstr ""
+
+#: ../../document.rst:189 857acee400554df79d8fbfaa969bc4e7
+msgid ""
+"may used together with *width* as an alternative to *rect* to specify "
+"layout information."
+msgstr ""
+
+#: ../../document.rst:191 b07ee600221e470899b75d365491c28b
+msgid ""
+"the default fontsize for reflowable document types. This parameter is "
+"ignored if none of the parameters *rect* or *width* and *height* are "
+"specified. Will be used to calculate the page layout."
+msgstr ""
+
+#: ../../document.rst 2cbf413421504c63bd4573d702ea25ac
+#: 3d6fc66c19e4404e8f0d88e1520b0286
+msgid "Raises"
+msgstr ""
+
+#: ../../document.rst:193 a64429f6091d4a77a3b90bccf5dbdafd
+msgid "if the *type* of any parameter does not conform."
+msgstr ""
+
+#: ../../document.rst:194 2a3558878837455d9f79c84ea85faab6
+msgid ""
+"if the file / path cannot be found. Re-implemented as subclass of "
+"`RuntimeError`."
+msgstr ""
+
+#: ../../document.rst:195 0f58dd2f56614f39b67c0ab20f477155
+msgid ""
+"if the file / path is empty or the `bytes` object in memory has zero "
+"length. A subclass of `FileDataError` and `RuntimeError`."
+msgstr ""
+
+#: ../../document.rst:196 0a2a33f446ec48228dd2eb71f9767629
+msgid "if an unknown file type is explicitly specified."
+msgstr ""
+
+#: ../../document.rst:197 2c2184a96f43492d89dcf30154d2acde
+msgid ""
+"if the document has an invalid structure for the given type -- or is no "
+"file at all (but e.g. a folder). A subclass of `RuntimeError`."
+msgstr ""
+
+#: ../../document.rst 0a01696e83984a66bf4816059954f6ce
+#: 0c68a2b789df44deae668a9b257419b0 151a90e53c3d4c40a10eaf35653a89b5
+#: 1627983e4e5748cab258b3de9433562d 1ddbb2cdbeb84430ae329bc3c5ee5d44
+#: 22ed40eb9ba14f41b842ebad06e63f7b 279b059d7af8411d9d00492713d1cbfd
+#: 2f7883ed8a6244c2a768f29c3dad3e56 34f17de5594e4800a4179edb75ad8be1
+#: 4238dc60e2404a80a2725c346289ba26 452f346c45054a1e9d641b749f208781
+#: 4d68dbd19c8149d3ba09b8d591c0e087 4ecd38f58fb04403aed197ecc11a0576
+#: 50f458d741a84cd581d05bcddf0cfb5d 595182ea75d94fcf9d02d089f790ea43
+#: 5cf8accafbdc40eead3c8352ceda47b4 63491b880dcf456cb288557338646971
+#: 6496e8769d114f4083256aea822237f4 64f8e6918c2c4d5e996fd17e90283038
+#: 6692804345724d348dfcc570a71883e4 68d8a42dc6ac45b48960bb40ebef6268
+#: 72ae2741d1094ff99085aa41d1ead432 73567ea06c784d87a12efea095428d14
+#: 83a1396fde254601817a034cfbff6d34 845ca066e749404a9f80647436e063fa
+#: 876da2fa871e4b9a9f9b3a705b43417e 89a607df5e1547eb8a93c9e2ba1f5c62
+#: 8ebc6327955f4bffb98aa915e18f5f07 97583ecc8f2b4192a0650850abb2a8d6
+#: 9bc7fb43a77f4145b7df456c7f699cdb a1f8e85d190b437fb5aad0f8f9eee91d
+#: a79b4ebf43304dfeacaa58d69ca31b58 aa031047dcbf4782876a3cda2fcbbae6
+#: aaf4458c4be04e748342ccc97ab2309e abb2c3a8f70a48919ffeb47c37c35451
+#: abe9be1c326f430097ca1870744c8b2d b27a5bfc80c64e14bb4bd4a03beb1486
+#: b607abe32cf244528c71a5aa37d54950 c02f724a388149ab946c1a18e0a9a288
+#: d973c8fd1f714eaba8db851aa97467f2 dd4bc90f3cfd480a90a7e6c8b1a6fb57
+#: e833bcbbd762475d91ef163cb644fc38 f8741c55b57e45b1a9479964c9e8e1ba
+msgid "Returns"
+msgstr ""
+
+#: ../../document.rst:199 ad812ec84828477080e089494a5bfd65
+msgid ""
+"A document object. If the document cannot be created, an exception is "
+"raised in the above sequence. Note that PyMuPDF-specific exceptions, "
+"`FileNotFoundError`, `EmptyFileError` and `FileDataError` are intercepted"
+" if you check for `RuntimeError`.  In case of problems you can see more "
+"detail in the internal messages store: "
+"`print(fitz.TOOLS.mupdf_warnings())` (which will be emptied by this call,"
+" but you can also prevent this -- consult :meth:`Tools.mupdf_warnings`)."
+msgstr ""
+
+#: ../../document.rst:199 4f05c8d859cd49f28491fd83e6ea9686
+msgid ""
+"A document object. If the document cannot be created, an exception is "
+"raised in the above sequence. Note that PyMuPDF-specific exceptions, "
+"`FileNotFoundError`, `EmptyFileError` and `FileDataError` are intercepted"
+" if you check for `RuntimeError`."
+msgstr ""
+
+#: ../../document.rst:201 09d305b2c3974999a01482589ba93bbc
+msgid ""
+"In case of problems you can see more detail in the internal messages "
+"store: `print(fitz.TOOLS.mupdf_warnings())` (which will be emptied by "
+"this call, but you can also prevent this -- consult "
+":meth:`Tools.mupdf_warnings`)."
+msgstr ""
+
+#: ../../document.rst:203 49a59408c2154dfeb7a5bf91300211d8
+msgid ""
+"Not all document types are checked for valid formats already at open "
+"time. Raster images for example will raise exceptions only later, when "
+"trying to access the content. Other types (notably with non-binary "
+"content) may also be opened (and sometimes **accessed**) successfully -- "
+"sometimes even when having invalid content for the format:"
+msgstr ""
+
+#: ../../document.rst:205 6793da59d507457e804f3e1f0f61f7ce
+msgid ""
+"HTM, HTML, XHTML: **always** opened, `metadata[\"format\"]` is \"HTML5\","
+" resp. \"XHTML\"."
+msgstr ""
+
+#: ../../document.rst:206 4166d5b556594a9689447e0f2ceeae36
+msgid "XML, FB2: **always** opened, `metadata[\"format\"]` is \"FictionBook2\"."
+msgstr ""
+
+#: ../../document.rst:208 8d0ead21d75945859a7e263fdaa41b5d
+msgid "Overview of possible forms, note: `open` is a synonym of `Document`::"
+msgstr ""
+
+#: ../../document.rst:225 e7aaa52081a9492f9a0247ea439c272d
+msgid ""
+"Raster images with a wrong (but supported) file extension **are no "
+"problem**. MuPDF will determine the correct image type when file "
+"**content** is actually accessed and will process it without complaint. "
+"So `fitz.open(\"file.jpg\")` will work even for a PNG image."
+msgstr ""
+
+#: ../../document.rst:227 09667dd74b5d4e84aa1c66e43b0d1cdf
+msgid ""
+"The Document class can be also be used as a **context manager**. On exit,"
+" the document will automatically be closed."
+msgstr ""
+
+#: ../../document.rst:243 ../../document.rst:253 ../../document.rst:313
+#: ../../document.rst:359 0dc9b767c6be4a00992bbf094f48f6fa
+#: 457bebf2f8eb4462824f0e49e44d14db 463ba691459f4e1eb074e43c7a114671
+#: 616d6fc062cd46d6bae9fd422ae0e043
+msgid "New in v1.18.4"
+msgstr ""
+
+#: ../../document.rst:245 ae1a0acd1f6844b38c56fb9a7ddc922b
+msgid ""
+"Return the cross reference number of an :data:`OCG` or :data:`OCMD` "
+"attached to an image or form xobject."
+msgstr ""
+
+#: ../../document.rst:247 4f92de7f3e0149e78cc0638d022ba88f
+msgid ""
+"the :data:`xref` of an image or form xobject. Valid such cross reference "
+"numbers are returned by :meth:`Document.get_page_images`, resp. "
+":meth:`Document.get_page_xobjects`. For invalid numbers, an exception is "
+"raised."
+msgstr ""
+
+#: ../../document.rst 025c32e516514cff9b375530fefd994c
+#: 0b9b4727d83a40519b34792e1ec59393 0f5c02d6facd4bba86ac21b03611bd51
+#: 0ffdbfe9f9bb4cc4936996b8cf0bae31 1371779a83b24945b2c9f1504a853166
+#: 1d15c53d7bb547a4b93127003843c0c9 25ae2c95b28e498eb1e3be8021b6aa67
+#: 26c5129768a34b3da74c9921530c9c64 2b2fc30f039f4cf79951e2840074a5bb
+#: 330764aaf07d492e92e153991c84c18e 353b92b5d6eb49e09b64c5b124b0a098
+#: 3dc4db1818ce4e369c2085961e563a86 3e5e5295448d425b82edefdf556c3710
+#: 3f920d8195eb4b4fb59a0163380c87d8 3f9fcaa9984841728618648f85662fe2
+#: 45cf683454af4436813a66813eee6590 59d78c4f45c54a8dbb4f61cb691f588f
+#: 65c26ea0a114416daddff6bc4f23d8ab 69ac329fb2dd4dfea43ae3f108a82211
+#: 711240437fe545c885bbce0613ade023 7b25fb58ee234f10b48fa5c68d92970b
+#: 841eff6fbdc74901af2a3afbdf14f7fd 8e073a4cc9064eba983b6f0388b3a467
+#: 92d185489d5a441ab3092a1b4ac1540d 9543444fe5044efe8a9b37909b3386ed
+#: 98c0eccb475742d3b5600b34e3635073 9c5733236a7f41f39585cae13bd68480
+#: abcbc4353dc74733b910e5eb05a32ce5 c3c8477028ef44af96c3b5137e448a08
+#: ca6a228df71a4460ae431132c7d67aa7 ce56a7cc7598477994d1eeb0648ba9aa
+#: d7a185dcdae3455bad4ed807719f4b33 dfb57b08402b402cbcf0b4796002d110
+#: ea6eb9f0fa1847da8b4a176de3d69c64 fbf6c2b5bbe04dd987b334b78e6cea86
+msgid "Return type"
+msgstr ""
+
+#: ../../document.rst:249 201271e155f646c48228fa7f764e6dcb
+msgid ""
+"the cross reference number of an optional contents object or zero if "
+"there is none."
+msgstr ""
+
+#: ../../document.rst:255 24e47855789d4b22832f48dad05edfa6
+msgid ""
+"If *xref* represents an image or form xobject, set or remove the cross "
+"reference number *ocxref* of an optional contents object."
+msgstr ""
+
+#: ../../document.rst:257 95b953bbced34952ba58d56b8000b139
+msgid ""
+"the :data:`xref` of an image or form xobject [#f5]_. Valid such cross "
+"reference numbers are returned by :meth:`Document.get_page_images`, resp."
+" :meth:`Document.get_page_xobjects`. For invalid numbers, an exception is"
+" raised."
+msgstr ""
+
+#: ../../document.rst:258 ea1f1f6639e64252863b8bdc61ce09c1
+msgid ""
+"the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an"
+" invalid reference raises an exception. If zero, any OC reference is "
+"removed."
+msgstr ""
+
+#: ../../document.rst:263 ../../document.rst:273 ../../document.rst:284
+#: ../../document.rst:296 ../../document.rst:370 ../../document.rst:382
+#: ../../document.rst:404 ../../document.rst:422 ../../document.rst:438
+#: 0e5022e78b6f466ebc191b15af215bf3 12f4dcde388341ef9f3edd83bdc03b01
+#: 26ce146a82584484993e21f689eeeb57 2c4c4e41c1d9477981b3e7bb84ad9294
+#: 37e13348d8e344098c05a02cd6e18cbc 6c97d33d87434d6eb33eeaf0a9864058
+#: 8e3f60f4ea83460bb108e9076c6cd771 c43403237f984d1a93eb62034b6abf23
+#: db36811d5dbd4b24bd70bfefdc3dcf1c
+msgid "New in v1.18.3"
+msgstr ""
+
+#: ../../document.rst:265 905e03140b684387826140bd9d2b2ccd
+msgid ""
+"Show optional layer configurations. There always is a standard one, which"
+" is not included in the response."
+msgstr ""
+
+#: ../../document.rst:275 ef291c6df2a74d16a2981c77e7bdc543
+msgid ""
+"Add an optional content configuration. Layers serve as a collection of ON"
+" / OFF states for optional content groups and allow fast visibility "
+"switches between different views on the same document."
+msgstr ""
+
+#: ../../document.rst:277 ba7decde4a8841c2bfde42060dc7fd24
+msgid "arbitrary name."
+msgstr ""
+
+#: ../../document.rst:278 8d893e5a620a4ee38fcb50f637db2f9d
+msgid "(optional) creating software."
+msgstr ""
+
+#: ../../document.rst:279 801b744e63534028921d49eaaa2639ef
+msgid ""
+"a sequence of OCG :data:`xref` numbers which should be set to ON when "
+"this layer gets activated. All OCGs not listed here will be set to OFF."
+msgstr ""
+
+#: ../../document.rst:286 7bc3832def27477d8a3f3c9649240fdb
+msgid ""
+"Switch to a document view as defined by the optional layer's "
+"configuration number. This is temporary, except if established as "
+"default."
+msgstr ""
+
+#: ../../document.rst:288 e7b23f661d4644b6bd36bdf43254b350
+msgid "config number as returned by :meth:`Document.layer_configs`."
+msgstr ""
+
+#: ../../document.rst:289 67e637c5f5b64f8f93358f1b7a2b5ef2
+msgid "make this the default configuration."
+msgstr ""
+
+#: ../../document.rst:291 7e7a3c94e54445e6b8bb8c4371ae1dc0
+msgid ""
+"Activates the ON / OFF states of OCGs as defined in the identified layer."
+" If *as_default=True*, then additionally all layers, including the "
+"standard one, are merged and the result is written back to the standard "
+"layer, and **all optional layers are deleted**."
+msgstr ""
+
+#: ../../document.rst:298 f18b380dad1342569f9928bf491bf907
+msgid ""
+"Add an optional content group. An OCG is the most important unit of "
+"information to determine object visibility. For a PDF, in order to be "
+"regarded as having optional content, at least one OCG must exist."
+msgstr ""
+
+#: ../../document.rst:300 6626168721b240e29d1c1411c9f76107
+msgid "arbitrary name. Will show up in supporting PDF viewers."
+msgstr ""
+
+#: ../../document.rst:301 4ca300b43a16445993d89c2483d0e683
+msgid "layer configuration number. Default -1 is the standard configuration."
+msgstr ""
+
+#: ../../document.rst:302 f9c95354271a49caba3a8e1eb5d6d77b
+msgid "standard visibility status for objects pointing to this OCG."
+msgstr ""
+
+#: ../../document.rst:303 0a5030acf6d9405f9993e0ff3f9a49ae
+msgid ""
+"a string or list of strings declaring the visibility intents. There are "
+"two PDF standard values to choose from: \"View\" and \"Design\". Default "
+"is \"View\". Correct **spelling is important**."
+msgstr ""
+
+#: ../../document.rst:304 4d3432702ffc4573a1089bb912ea9b2f
+msgid ""
+"another influencer for OCG visibility. This will become part of the OCG's"
+" `/Usage` key. There are two PDF standard values to choose from: "
+"\"Artwork\" and \"Technical\". Default is \"Artwork\". Please only change"
+" when required."
+msgstr ""
+
+#: ../../document.rst:306 eaa39863414e41319ce1a1eb0b5820ed
+msgid ""
+":data:`xref` of the created OCG. Use as entry for `oc` parameter in "
+"supporting objects."
+msgstr ""
+
+#: ../../document.rst:308 051b22d8ca4f403289d263e8a8836d8f
+msgid ""
+"Multiple OCGs with identical parameters may be created. This will not "
+"cause problems. Garbage option 3 of :meth:`Document.save` will get rid of"
+" any duplicates."
+msgstr ""
+
+#: ../../document.rst:315 fb219c875d0e430f8a4181a357d25ff4
+msgid ""
+"Create or update an :data:`OCMD`, **Optional Content Membership "
+"Dictionary.**"
+msgstr ""
+
+#: ../../document.rst:317 16ae12075a474b9fa663d442c515041d
+msgid ":data:`xref` of the OCMD to be updated, or 0 for a new OCMD."
+msgstr ""
+
+#: ../../document.rst:318 9e66a9475e3842c5b45713c9a533269b
+msgid "a sequence of :data:`xref` numbers of existing :data:`OCG` PDF objects."
+msgstr ""
+
+#: ../../document.rst:319 d0ecdd5f0d464146b9a3c9a95b5643cb
+msgid ""
+"one of \"AnyOn\" (default), \"AnyOff\", \"AllOn\", \"AllOff\" (mixed or "
+"lower case)."
+msgstr ""
+
+#: ../../document.rst:320 83c4a82605f24f44aeb7cd90ad04cfa0
+msgid ""
+"a \"visibility expression\". This is a list of arbitrarily nested other "
+"lists -- see explanation below. Use as an alternative to the combination "
+"*ocgs* / *policy* if you need to formulate more complex conditions."
+msgstr ""
+
+#: ../../document.rst:322 80b0326bd4b5406eb1c780b7acd5f370
+msgid ""
+":data:`xref` of the OCMD. Use as `oc=xref` parameter in supporting "
+"objects, and respectively in :meth:`Document.set_oc` or "
+":meth:`Annot.set_oc`."
+msgstr ""
+
+#: ../../document.rst:326 20202056dc3f45fbbfc5e84fb386c62e
+msgid ""
+"Like an OCG, an OCMD has a visibility state ON or OFF, and it can be used"
+" like an OCG. In contrast to an OCG, the OCMD state is determined by "
+"evaluating the state of one or more OCGs via special forms of **boolean "
+"expressions.** If the expression evaluates to true, the OCMD state is ON "
+"and OFF for false."
+msgstr ""
+
+#: ../../document.rst:328 6859a6c3e7d642a5b8c935e2571743d0
+msgid "There are two ways to formulate OCMD visibility:"
+msgstr ""
+
+#: ../../document.rst:330 2e92b9d1cbd14b9694454ec35bc54dce
+msgid ""
+"Use the combination of *ocgs* and *policy*: The *policy* value is "
+"interpreted as follows:"
+msgstr ""
+
+#: ../../document.rst:332 ad796cb9127448989aa71139173ade2d
+msgid "AnyOn -- (default) true if at least one OCG is ON."
+msgstr ""
+
+#: ../../document.rst:333 b719d2748ed54ccfae5ebff22845cc2b
+msgid "AnyOff -- true if at least one OCG is OFF."
+msgstr ""
+
+#: ../../document.rst:334 6f0f05f038ca419893e7c720c96f1bd6
+msgid "AllOn -- true if all OCGs are ON."
+msgstr ""
+
+#: ../../document.rst:335 b8f56f9f1edb4d6b8963005f11face2b
+msgid "AllOff -- true if all OCGs are OFF."
+msgstr ""
+
+#: ../../document.rst:337 dd49622d3bbb496db5ff3dba7b77c11c
+msgid ""
+"Suppose you want two PDF objects be displayed exactly one at a time (if "
+"one is ON, then the other one must be OFF):"
+msgstr ""
+
+#: ../../document.rst:339 bb6df99ff8d0490cadaecb849ca5c9b4
+msgid ""
+"Solution: use an **OCG** for object 1 and an **OCMD** for object 2. "
+"Create the OCMD via `set_ocmd(ocgs=[xref], policy=\"AllOff\")`, with the "
+":data:`xref` of the OCG."
+msgstr ""
+
+#: ../../document.rst:341 5a707040dc704e32b277a03427e5f96e
+msgid ""
+"Use the **visibility expression** *ve*: This is a list of two or more "
+"items. The **first item** is a logical keyword: one of the strings "
+"**\"and\"**, **\"or\"**, or **\"not\"**. The **second** and all "
+"subsequent items must either be an integer or another list. An integer "
+"must be the :data:`xref` number of an OCG. A list must again have at "
+"least two items starting with one of the boolean keywords. This syntax is"
+" a bit awkward, but quite powerful:"
+msgstr ""
+
+#: ../../document.rst:343 ae428fbc1c4f413296eb8601684e6e5c
+msgid "Each list must start with a logical keyword."
+msgstr ""
+
+#: ../../document.rst:344 031fe6a1ff964477b55b20bf0acaa225
+msgid ""
+"If the keyword is a **\"not\"**, then the list must have exactly two "
+"items. If it is **\"and\"** or **\"or\"**, any number of other items may "
+"follow."
+msgstr ""
+
+#: ../../document.rst:345 48c3725b3e2543508e9d77949e2441c2
+msgid ""
+"Items following the logical keyword may be either integers or again a "
+"list. An *integer* must be the xref of an OCG. A *list* must conform to "
+"the previous rules."
+msgstr ""
+
+#: ../../document.rst:347 4f956133abcf4422b97a339fd790d9fb
+msgid "**Examples:**"
+msgstr ""
+
+#: ../../document.rst:349 df78bd1b1c1a420cbfeb302c75cf60ff
+msgid ""
+"`set_ocmd(ve=[\"or\", 4, [\"not\", 5], [\"and\", 6, 7]])`. This delivers "
+"ON if the following is true: **\"4 is ON, or 5 is OFF, or 6 and 7 are "
+"both ON\"**."
+msgstr ""
+
+#: ../../document.rst:350 4d35b319298c495fba3808befbed7e15
+msgid ""
+"`set_ocmd(ve=[\"not\", xref])`. This has the same effect as the OCMD "
+"example created under 1."
+msgstr ""
+
+#: ../../document.rst:352 c40653210cc94949887f47f0ad22c51b
+msgid ""
+"For more details and examples see page 224 of :ref:`AdobeManual`. Also do"
+" have a look at example scripts `here <https://github.com/pymupdf"
+"/PyMuPDF-Utilities/tree/master/optional-content>`_."
+msgstr ""
+
+#: ../../document.rst:354 5d20a823b0084bf4bd0c227b7074e7e8
+msgid ""
+"Visibility expressions, `/VE`, are part of PDF specification version 1.6."
+" So not all PDF viewers / readers may already support this feature and "
+"hence will react in some standard way for those cases."
+msgstr ""
+
+#: ../../document.rst:361 30927a0a84aa4c87ae69607c1c92724b
+msgid "Retrieve the definition of an :data:`OCMD`."
+msgstr ""
+
+#: ../../document.rst:363 0ef70d3cd5514787a02ac2b147f13060
+msgid "the :data:`xref` of the OCMD."
+msgstr ""
+
+#: ../../document.rst:365 f60d61b2dc9d4ebbbdeeffcedc20e5fb
+msgid "a dictionary with the keys *xref*, *ocgs*, *policy* and *ve*."
+msgstr ""
+
+#: ../../document.rst:372 d3a6482a5d2b4bbc93e7f2d74e108fd9
+msgid ""
+"List of optional content groups by status in the specified configuration."
+" This is a dictionary with lists of cross reference numbers for OCGs that"
+" occur in the arrays `/ON`, `/OFF` or in some radio button group "
+"(`/RBGroups`)."
+msgstr ""
+
+#: ../../document.rst:374 a3dfc0668a2b4f8588a29fcc4e274c68
+msgid "the configuration layer (default is the standard config layer)."
+msgstr ""
+
+#: ../../document.rst:384 1d0761238aab4e84aa16054c0fd31f82
+msgid "Changed in v1.22.5: Support list of *locked* OCGs."
+msgstr ""
+
+#: ../../document.rst:386 026607a98a9043e1a461f0d1860b52c4
+msgid ""
+"Mass status changes of optional content groups. **Permanently** sets the "
+"status of OCGs."
+msgstr ""
+
+#: ../../document.rst:388 5575f8cd01634d748af5028f38b6b534
+msgid "desired configuration layer, choose -1 for the default one."
+msgstr ""
+
+#: ../../document.rst:389 d9b9d3b3e514470fad50ebf1bcfa4b9f
+msgid ""
+"list of :data:`xref` of OCGs to set ON. Replaces previous values. An "
+"empty list will cause no OCG being set to ON anymore. Should be specified"
+" if `basestate=\"ON\"` is used."
+msgstr ""
+
+#: ../../document.rst:390 aeec402782ed4b50b1bc3020c6875e47
+msgid ""
+"list of :data:`xref` of OCGs to set OFF. Replaces previous values. An "
+"empty list will cause no OCG being set to OFF anymore. Should be "
+"specified if `basestate=\"OFF\"` is used."
+msgstr ""
+
+#: ../../document.rst:391 66d0dfa9e33f44cc9f71862d2427a305
+msgid ""
+"state of OCGs that are not mentioned in *on* or *off*. Possible values "
+"are \"ON\", \"OFF\" or \"Unchanged\". Upper / lower case possible."
+msgstr ""
+
+#: ../../document.rst:392 310ca981593e486385d0ab89eeaab961
+msgid ""
+"a list of lists. Replaces previous values. Each sublist should contain "
+"two or more OCG xrefs. OCGs in the same sublist are handled like buttons "
+"in a radio button group: setting one to ON automatically sets all other "
+"group members to OFF."
+msgstr ""
+
+#: ../../document.rst:393 210692947fb3409698064cb4f440610e
+msgid "a list of OCG xref number that cannot be changed by the user interface."
+msgstr ""
+
+#: ../../document.rst:395 f364e7e9e746409d91a77fe3c5f9c1b9
+msgid "Values `None` will not change the corresponding PDF array."
+msgstr ""
+
+#: ../../document.rst:406 0b94ed6c7a4f4386b69eee9f2aaab4e7
+msgid ""
+"Details of all optional content groups. This is a dictionary of "
+"dictionaries like this (key is the OCG's :data:`xref`):"
+msgstr ""
+
+#: ../../document.rst:424 fb7eb8ee9e1040c8905456495bc25ba1
+msgid ""
+"Show the visibility status of optional content that is modifiable by the "
+"user interface of supporting PDF viewers."
+msgstr ""
+
+#: ../../document.rst:426 2f04e8f4652d47c9b5bdae69fb47abaa
+msgid ""
+"Only reports items contained in the currently selected layer "
+"configuration."
+msgstr ""
+
+#: ../../document.rst:433 45869ad968d14d1e854da8a9301214b6
+msgid "The meaning of the dictionary keys is as follows:"
+msgstr ""
+
+#: ../../document.rst:429 b5c7bac7c65a46ebbea1199cece5c194
+msgid "*depth:* item's nesting level in the `/Order` array"
+msgstr ""
+
+#: ../../document.rst:430 4ac23944d3c042d6929aefa7e39f0a39
+msgid "*locked:* true if cannot be changed via user interfaces"
+msgstr ""
+
+#: ../../document.rst:431 2055e4140942441aab1c49c1a5169a43
+msgid "*number:* running sequence number"
+msgstr ""
+
+#: ../../document.rst:432 e04510d06b8942958738c0e8bf5571e9
+msgid "*on:* item state"
+msgstr ""
+
+#: ../../document.rst:433 a784c55c4d654437a4da3ca29a54c8c0
+msgid "*text:* text string or name field of the originating OCG"
+msgstr ""
+
+#: ../../document.rst:434 9f642034b4e545ffa098b00b47a0a675
+msgid ""
+"*type:* one of \"label\" (set by a text string), \"checkbox\" (set by a "
+"single OCG) or \"radiobox\" (set by a set of connected OCGs)"
+msgstr ""
+
+#: ../../document.rst:440 0b6a78799049464bbb550e9268dcf83d
+msgid ""
+"Modify OC visibility status of content groups. This is analog to what "
+"supporting PDF viewers would offer."
+msgstr ""
+
+#: ../../document.rst:442 b954c31ab37d4762a47ce18812af0b6d
+msgid ""
+"Please note that visibility is **not** a property stored with the OCG. It"
+" is not even information necessarily present in the PDF document at all. "
+"Instead, the current visibility is **temporarily** set using the user "
+"interface of some supporting PDF consumer software. The same type of "
+"functionality is offered by this method."
+msgstr ""
+
+#: ../../document.rst:444 b23e97247d34442aa2f2518bd2dd2a76
+msgid "To make **permanent** changes, use :meth:`Document.set_layer`."
+msgstr ""
+
+#: ../../document.rst:446 9f14d7d760fa479290e1b55e5964fa19
+msgid ""
+"either the sequence number of the item in list "
+":meth:`Document.layer_configs` or the \"text\" of one of these items."
+msgstr ""
+
+#: ../../document.rst:447 2f0344ea63134ce6aaf4efd20a0ea477
+msgid ""
+"`PDF_OC_ON` = set on (default), `PDF_OC_TOGGLE` = toggle on/off, "
+"`PDF_OC_OFF` = set off."
+msgstr ""
+
+#: ../../document.rst:452 978bcd5fb6d5446687853a01d7da5cee
+msgid ""
+"Decrypts the document with the string *password*. If successful, document"
+" data can be accessed. For PDF documents, the \"owner\" and the \"user\" "
+"have different privileges, and hence different passwords may exist for "
+"these authorization levels. The method will automatically establish the "
+"appropriate (owner or user) access rights for the provided password."
+msgstr ""
+
+#: ../../document.rst:454 7a180c2fd09f48938b006b0d595b47de
+msgid "owner or user password."
+msgstr ""
+
+#: ../../document.rst:457 162babc6f795496c8d6acdb9243009df
+msgid ""
+"a positive value if successful, zero otherwise (the string does not match"
+" either password). If positive, the indicator "
+":attr:`Document.is_encrypted` is set to *False*. **Positive** return "
+"codes carry the following information detail:  * 1 => authenticated, but "
+"the PDF has neither owner nor user passwords. * 2 => authenticated with "
+"the **user** password. * 4 => authenticated with the **owner** password. "
+"* 6 => authenticated and both passwords are equal -- probably a rare "
+"situation.  .. note::    The document may be protected by an owner, but "
+"**not** by a user password. Detect this situation via "
+"`doc.authenticate(\"\") == 2`. This allows opening and reading the "
+"document without authentication, but, depending on the "
+":attr:`Document.permissions` value, other actions may be prohibited. "
+"PyMuPDF (like MuPDF) in this case **ignores those restrictions**. So, -- "
+"in contrast to any PDF viewers -- you can for example extract text and "
+"add or modify content, even if the respective permission flags "
+"`PDF_PERM_COPY`, `PDF_PERM_MODIFY`, `PDF_PERM_ANNOTATE`, etc. are set "
+"off! It is your responsibility building a legally compliant application "
+"where applicable."
+msgstr ""
+
+#: ../../document.rst:457 dec301046f83456990405616f2a09da5
+msgid ""
+"a positive value if successful, zero otherwise (the string does not match"
+" either password). If positive, the indicator "
+":attr:`Document.is_encrypted` is set to *False*. **Positive** return "
+"codes carry the following information detail:"
+msgstr ""
+
+#: ../../document.rst:459 bec1b0425f8b42a5850e8b05ec10fdf7
+msgid "1 => authenticated, but the PDF has neither owner nor user passwords."
+msgstr ""
+
+#: ../../document.rst:460 ed69dbef500b4d9a82bb811feb37d5aa
+msgid "2 => authenticated with the **user** password."
+msgstr ""
+
+#: ../../document.rst:461 6ea6ccf3da5048108fd78c1c3f8d7e68
+msgid "4 => authenticated with the **owner** password."
+msgstr ""
+
+#: ../../document.rst:462 20b0fcbe089449e48f7297bf6b5dc3f9
+msgid ""
+"6 => authenticated and both passwords are equal -- probably a rare "
+"situation."
+msgstr ""
+
+#: ../../document.rst:466 4f962bddfdb241c68057e00ea10bcfb3
+msgid ""
+"The document may be protected by an owner, but **not** by a user "
+"password. Detect this situation via `doc.authenticate(\"\") == 2`. This "
+"allows opening and reading the document without authentication, but, "
+"depending on the :attr:`Document.permissions` value, other actions may be"
+" prohibited. PyMuPDF (like MuPDF) in this case **ignores those "
+"restrictions**. So, -- in contrast to any PDF viewers -- you can for "
+"example extract text and add or modify content, even if the respective "
+"permission flags `PDF_PERM_COPY`, `PDF_PERM_MODIFY`, `PDF_PERM_ANNOTATE`,"
+" etc. are set off! It is your responsibility building a legally compliant"
+" application where applicable."
+msgstr ""
+
+#: ../../document.rst:470 220cb6a59839442194116c87ced483f6
+msgid "New in v 1.18.6"
+msgstr ""
+
+#: ../../document.rst:472 37ec34a2b82b4ad498889f345eef54b3
+msgid ""
+"PDF only: Return a list of page numbers that have the specified label -- "
+"note that labels may not be unique in a PDF. This implies a sequential "
+"search through **all page numbers** to compare their labels."
+msgstr ""
+
+#: ../../document.rst:474 b87316439cd34b6d90fbfc9b55c23c09
+msgid "Implementation detail -- pages are **not loaded** for this purpose."
+msgstr ""
+
+#: ../../document.rst:476 d1cd68e82b0242ff80221e04cd6b7a6d
+msgid "the label to look for, e.g. \"vii\" (Roman number 7)."
+msgstr ""
+
+#: ../../document.rst:477 599a41725f3c482e86fbd134a9050be3
+msgid ""
+"stop after first hit. Useful e.g. if labelling is known to be unique, or "
+"there are many pages, etc. The default will check every page number."
+msgstr ""
+
+#: ../../document.rst:479 1c798c94653947b696839065bd4fc506
+msgid ""
+"list of page numbers that have this label. Empty if none found, no labels"
+" defined, etc."
+msgstr ""
+
+#: ../../document.rst:484 ../../document.rst:728 ../../document.rst:749
+#: ../../document.rst:1733 0f55a2af62fd441eac6ab5424e58c27d
+#: 3aa9515e2c7b4642a8db065079848673 47a60deb9b194ea5b7fc267a9761ce96
+#: 795fe56d6b9a44039cb14f9b8f094f4c
+msgid "New in v1.18.7"
+msgstr ""
+
+#: ../../document.rst:486 3bd91c0749104da09a14d20eecd010a9
+msgid ""
+"PDF only: Extract the list of page label definitions. Typically used for "
+"modifications before feeding it into :meth:`Document.set_page_labels`."
+msgstr ""
+
+#: ../../document.rst:488 a9771de9befc4a17a5dd88a9a7536bfc
+msgid "a list of dictionaries as defined in :meth:`Document.set_page_labels`."
+msgstr ""
+
+#: ../../document.rst:492 f509921a567949008d0ba14b3d68474f
+msgid "New in v1.18.6"
+msgstr ""
+
+#: ../../document.rst:494 665ee2f8d21b40b5b895e5623fa3e02d
+msgid "PDF only: Add or update the page label definitions of the PDF."
+msgstr ""
+
+#: ../../document.rst:496 a85485ebf815483d9ebf6939c2f90ba8
+msgid ""
+"a list of dictionaries. Each dictionary defines a label building rule and"
+" a 0-based \"start\" page number. That start page is the first for which "
+"the label definition is valid. Each dictionary has up to 4 items and "
+"looks like `{'startpage': int, 'prefix': str, 'style': str, "
+"'firstpagenum': int}` and has the following items.  - `startpage`: (int) "
+"the first page number (0-based) to apply the label rule. This key **must "
+"be present**. The rule is applied to all subsequent pages until either "
+"end of document or superseded by the rule with the next larger page "
+"number. - `prefix`: (str) an arbitrary string to start the label with, "
+"e.g. \"A-\". Default is \"\". - `style`: (str) the numbering style. "
+"Available are \"D\" (decimal), \"r\"/\"R\" (Roman numbers, lower / upper "
+"case), and \"a\"/\"A\" (lower / upper case alphabetical numbering: \"a\" "
+"through \"z\", then \"aa\" through \"zz\", etc.). Default is \"\". If "
+"\"\", no numbering will take place and the pages in that range will "
+"receive the same label consisting of the `prefix` value. If prefix is "
+"also omitted, then the label will be \"\". - `firstpagenum`: (int) start "
+"numbering with this value. Default is 1, smaller values are ignored."
+msgstr ""
+
+#: ../../document.rst:496 998e97d61345484386640ca8bdd4bf41
+msgid ""
+"a list of dictionaries. Each dictionary defines a label building rule and"
+" a 0-based \"start\" page number. That start page is the first for which "
+"the label definition is valid. Each dictionary has up to 4 items and "
+"looks like `{'startpage': int, 'prefix': str, 'style': str, "
+"'firstpagenum': int}` and has the following items."
+msgstr ""
+
+#: ../../document.rst:498 b1e629c272d04b1095550c6a738c018b
+msgid ""
+"`startpage`: (int) the first page number (0-based) to apply the label "
+"rule. This key **must be present**. The rule is applied to all subsequent"
+" pages until either end of document or superseded by the rule with the "
+"next larger page number."
+msgstr ""
+
+#: ../../document.rst:499 c1e4370ff5e54f7abe6cd345dedc77dc
+msgid ""
+"`prefix`: (str) an arbitrary string to start the label with, e.g. \"A-\"."
+" Default is \"\"."
+msgstr ""
+
+#: ../../document.rst:500 9408fa6c2bd4429b8da1d3af6b54d13b
+msgid ""
+"`style`: (str) the numbering style. Available are \"D\" (decimal), "
+"\"r\"/\"R\" (Roman numbers, lower / upper case), and \"a\"/\"A\" (lower /"
+" upper case alphabetical numbering: \"a\" through \"z\", then \"aa\" "
+"through \"zz\", etc.). Default is \"\". If \"\", no numbering will take "
+"place and the pages in that range will receive the same label consisting "
+"of the `prefix` value. If prefix is also omitted, then the label will be "
+"\"\"."
+msgstr ""
+
+#: ../../document.rst:501 37e6ebeaea1140759a53a81b163d5272
+msgid ""
+"`firstpagenum`: (int) start numbering with this value. Default is 1, "
+"smaller values are ignored."
+msgstr ""
+
+#: ../../document.rst:503 15cd6559c5de428c89d94441ca16f88f
+msgid "For example::"
+msgstr ""
+
+#: ../../document.rst:508 539e18f72bab4035bcbcbe390e0c862d
+msgid ""
+"will generate the labels \"A-10\", \"A-11\", \"A-12\", \"A-13\", \"1\", "
+"\"2\", \"3\", ... for pages 6, 7 and so on until end of document. Pages 0"
+" through 5 will have the label \"\"."
+msgstr ""
+
+#: ../../document.rst:513 ../../document.rst:527
+#: 3a464db30b264007906c7c942d779a4b df95714486b64d4aa93ee909d6d771ce
+msgid "New in v.1.17.3"
+msgstr ""
+
+#: ../../document.rst:515 daa10b07bf534620ae1975f1a584c780
+msgid ""
+"Return a page pointer in a reflowable document. After re-layouting the "
+"document, the result of this method can be used to find the new location "
+"of the page."
+msgstr ""
+
+#: ../../document.rst:517 4c330070897049b4b50b38361e04d710
+msgid "Do not confuse with items of a table of contents, TOC."
+msgstr ""
+
+#: ../../document.rst:519 c899e28b42774f2384d2aa8834f085b8
+msgid "page location. Must be a valid *(chapter, pno)*."
+msgstr ""
+
+#: ../../document.rst:522 a46a7f656f9d47108fb8b10292d39c33
+msgid ""
+"a long integer in pointer format. To be used for finding the new location"
+" of the page after re-layouting the document. Do not touch or re-assign."
+msgstr ""
+
+#: ../../document.rst:529 4507e266e3594a6c9577a99c13a615f1
+msgid "Return the new page location after re-layouting the document."
+msgstr ""
+
+#: ../../document.rst:531 f799c1b551b34006970a4782155183d0
+msgid "created by :meth:`Document.make_bookmark`."
+msgstr ""
+
+#: ../../document.rst:534 ea35ad20c8af422aa32b8b806e36c0a6
+msgid "the new (chapter, pno) of the page."
+msgstr ""
+
+#: ../../document.rst:539 ../../document.rst:551 ../../document.rst:562
+#: 4a099649e5924e6eaeadb861cdd7fe2a 6b3f627fdd2c4543aff406695fe5b6af
+#: b933b577ad0b4238925c42a8787ff752
+msgid "New in v.1.17.0"
+msgstr ""
+
+#: ../../document.rst:541 0916c3d7648b47b4bd45255526e3527e
+msgid "Return the number of pages of a chapter."
+msgstr ""
+
+#: ../../document.rst:543 d4091f3c0fad4f4e92a4c502c1851c75
+msgid "the 0-based chapter number."
+msgstr ""
+
+#: ../../document.rst:546 f6c56e236e6b407bac95e9d0024067c8
+msgid ""
+"number of pages in chapter. Relevant only for document types with chapter"
+" support (EPUB currently)."
+msgstr ""
+
+#: ../../document.rst:553 6b9cdc6488ff4520b5cc7088436fb675
+msgid "Return the location of the following page."
+msgstr ""
+
+#: ../../document.rst:555 ../../document.rst:566
+#: 2ceb1241c1bd4d7d8ead124d2c136c6c e81a8bc34eb54b00bad3d4a29cc75e4d
+msgid ""
+"the current page id. This must be a tuple *(chapter, pno)* identifying an"
+" existing page."
+msgstr ""
+
+#: ../../document.rst:557 8abf89cd9fc64e8f96ef70db9f0e7132
+msgid ""
+"The tuple of the following page, i.e. either *(chapter, pno + 1)* or "
+"*(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the "
+"last page. Relevant only for document types with chapter support (EPUB "
+"currently)."
+msgstr ""
+
+#: ../../document.rst:564 bdd3e97cdcd84b6988a237a15ad20c0a
+msgid "Return the locator of the preceding page."
+msgstr ""
+
+#: ../../document.rst:568 4033c6cbeddb4eb281c9f7c61daa7842
+msgid ""
+"The tuple of the preceding page, i.e. either *(chapter, pno - 1)* or the "
+"last page of the preceding chapter, **or** the empty tuple *()* if the "
+"argument was the first page. Relevant only for document types with "
+"chapter support (EPUB currently)."
+msgstr ""
+
+#: ../../document.rst:573 3f0530a1866f42cd966c639ab201f99e
+msgid ""
+"Changed in v1.17.0: For document types supporting a so-called \"chapter "
+"structure\" (like EPUB), pages can also be loaded via the combination of "
+"chapter number and relative page number, instead of the absolute page "
+"number. This should **significantly speed up access** for large "
+"documents."
+msgstr ""
+
+#: ../../document.rst:575 0e2c159fae3045839bfa0664046c035e
+msgid ""
+"Create a :ref:`Page` object for further processing (like rendering, text "
+"searching, etc.)."
+msgstr ""
+
+#: ../../document.rst:577 30b4e64b45e2405fa210140502c0c102
+msgid ""
+"*(Changed in v1.17.0)*  Either a 0-based page number, or a tuple "
+"*(chapter, pno)*. For an **integer**, any `-∞ < page_id < page_count` is "
+"acceptable. While page_id is negative, :attr:`page_count` will be added "
+"to it. For example: to load the last page, you can use "
+"*doc.load_page(-1)*. After this you have page.number = doc.page_count - "
+"1.  For a tuple, *chapter* must be in range "
+":attr:`Document.chapter_count`, and *pno* must be in range "
+":meth:`Document.chapter_page_count` of that chapter. Both values are "
+"0-based. Using this notation, :attr:`Page.number` will equal the given "
+"tuple. Relevant only for document types with chapter support (EPUB "
+"currently)."
+msgstr ""
+
+#: ../../document.rst:577 54e94dd328ed4c91809f8b5f624f5636
+msgid "*(Changed in v1.17.0)*"
+msgstr ""
+
+#: ../../document.rst:579 99257123023c4e9ea4505465c6adef0f
+msgid ""
+"Either a 0-based page number, or a tuple *(chapter, pno)*. For an "
+"**integer**, any `-∞ < page_id < page_count` is acceptable. While page_id"
+" is negative, :attr:`page_count` will be added to it. For example: to "
+"load the last page, you can use *doc.load_page(-1)*. After this you have "
+"page.number = doc.page_count - 1."
+msgstr ""
+
+#: ../../document.rst:581 45dfbe026a2448498b65bb638b72a19d
+msgid ""
+"For a tuple, *chapter* must be in range :attr:`Document.chapter_count`, "
+"and *pno* must be in range :meth:`Document.chapter_page_count` of that "
+"chapter. Both values are 0-based. Using this notation, "
+":attr:`Page.number` will equal the given tuple. Relevant only for "
+"document types with chapter support (EPUB currently)."
+msgstr ""
+
+#: ../../document.rst:583 ../../document.rst:604 ../../document.rst:1286
+#: 4a968175f18b40f990d81f4b723ae0e3 71f43473e71c48a2a65d6d80bfd7a687
+#: f730fc8cc5ce412083b9f2919e0ca00d
+msgid ":ref:`Page`"
+msgstr ""
+
+#: ../../document.rst:587 010d3d0cbf1b4d4ab9e643c6da87ea79
+msgid ""
+"Documents also follow the Python sequence protocol with page numbers as "
+"indices: *doc.load_page(n) == doc[n]*."
+msgstr ""
+
+#: ../../document.rst:589 92e12592ebeb4a7cb3a5865247e0bc70
+msgid ""
+"For **absolute page numbers** only, expressions like *\"for page in doc: "
+"...\"* and *\"for page in reversed(doc): ...\"* will successively yield "
+"the document's pages. Refer to :meth:`Document.pages` which allows "
+"processing pages as with slicing."
+msgstr ""
+
+#: ../../document.rst:591 86d99eda024841bf907abbde410df174
+msgid ""
+"You can also use index notation with the new chapter-based page "
+"identification: use *page = doc[(5, 2)]* to load the third page of the "
+"sixth chapter."
+msgstr ""
+
+#: ../../document.rst:593 2b82f7e5b9fa460faac994a21fe681fc
+msgid ""
+"To maintain a consistent API, for document types not supporting a chapter"
+" structure (like PDFs), :attr:`Document.chapter_count` is 1, and pages "
+"can also be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for "
+"comments on performance improvements."
+msgstr ""
+
+#: ../../document.rst:597 f4850e39130d4053be9b39b394bb4e0f
+msgid "New in v1.16.10"
+msgstr ""
+
+#: ../../document.rst:599 cb74db08e8074d7e85cce63fb0ca4672
+msgid ""
+"PDF only: Provide a new copy of a page after finishing and updating all "
+"pending changes."
+msgstr ""
+
+#: ../../document.rst:601 c5297433cc6c43a680920a911f488453
+msgid "page object."
+msgstr ""
+
+#: ../../document.rst:606 ec2c8fb58a044531855808d7550a004a
+msgid ""
+"a new copy of the same page. All pending updates (e.g. to annotations or "
+"widgets) will be finalized and a fresh copy of the page will be loaded.  "
+".. note:: In a typical use case, a page :ref:`Pixmap` should be taken "
+"after annotations / widgets have been added or changed. To force all "
+"those changes being reflected in the page structure, this method re-"
+"instates a fresh copy while keeping the object hierarchy \"document -> "
+"page -> annotations/widgets\" intact."
+msgstr ""
+
+#: ../../document.rst:606 17f905b4c56c4cc6806a00a9b7c37ea7
+msgid ""
+"a new copy of the same page. All pending updates (e.g. to annotations or "
+"widgets) will be finalized and a fresh copy of the page will be loaded."
+msgstr ""
+
+#: ../../document.rst:608 f16311dcd80a4e03a735c8e2967789a6
+msgid ""
+"In a typical use case, a page :ref:`Pixmap` should be taken after "
+"annotations / widgets have been added or changed. To force all those "
+"changes being reflected in the page structure, this method re-instates a "
+"fresh copy while keeping the object hierarchy \"document -> page -> "
+"annotations/widgets\" intact."
+msgstr ""
+
+#: ../../document.rst:613 ../../document.rst:623 ../../document.rst:1043
+#: ../../document.rst:1053 ../../document.rst:1065
+#: 1ad214d3086d44128918e1f277bea91e 209300f610184ffa903610d4fef554ed
+#: 428c54084c0d4e2f9802f48e0daf9fab a7854a4f9358496ca21bd6782acc56b4
+#: d852e438f91f4617a0b96cd5aac3554b
+msgid "New in v1.17.7"
+msgstr ""
+
+#: ../../document.rst:615 1d42642d17654db0b7e40e53f4fc9b60
+msgid ""
+"PDF only: Return the unrotated page rectangle -- **without loading the "
+"page** (via :meth:`Document.load_page`). This is meant for internal "
+"purpose requiring best possible performance."
+msgstr ""
+
+#: ../../document.rst:617 ../../document.rst:627
+#: 09fb4e4f96b249b99bea976cc8b7f577 94bf4f1dfb1d413aad5e03f569ca6b60
+msgid "0-based page number."
+msgstr ""
+
+#: ../../document.rst:619 ff6da7dfc0a34e29b0c5cb752e2c0f13
+msgid ":ref:`Rect` of the page like :meth:`Page.rect`, but ignoring any rotation."
+msgstr ""
+
+#: ../../document.rst:625 f4e56c2fcc084f2ea5c10c0388e86427
+msgid ""
+"PDF only: Return the :data:`xref` of the page -- **without loading the "
+"page** (via :meth:`Document.load_page`). This is meant for internal "
+"purpose requiring best possible performance."
+msgstr ""
+
+#: ../../document.rst:629 1e42c994f2d442629c975360a7072b73
+msgid ":data:`xref` of the page like :attr:`Page.xref`."
+msgstr ""
+
+#: ../../document.rst:633 513b6ae54bd1401aa1a14ef8de326adc
+msgid "New in v1.16.4"
+msgstr ""
+
+#: ../../document.rst:635 d58c9a594f444b93ac6374085c3455e8
+msgid ""
+"A generator for a range of pages. Parameters have the same meaning as in "
+"the built-in function *range()*. Intended for expressions of the form "
+"*\"for page in doc.pages(start, stop, step): ...\"*."
+msgstr ""
+
+#: ../../document.rst:637 ba715521ac0b4b7fbe9efa838624e254
+msgid ""
+"start iteration with this page number. Default is zero, allowed values "
+"are `-∞ < start < page_count`. While this is negative, :attr:`page_count`"
+" is added **before** starting the iteration."
+msgstr ""
+
+#: ../../document.rst:638 5d748c9139ed4b9a8a6fd96fca78def0
+msgid ""
+"stop iteration at this page number. Default is :attr:`page_count`, "
+"possible are `-∞ < stop <= page_count`. Larger values are **silently "
+"replaced** by the default. Negative values will cyclically emit the pages"
+" in reversed order. As with the built-in *range()*, this is the first "
+"page **not** returned."
+msgstr ""
+
+#: ../../document.rst:639 411404aa3a1d4879be5f8f0369411cb8
+msgid ""
+"stepping value. Defaults are 1 if start < stop and -1 if start > stop. "
+"Zero is not allowed."
+msgstr ""
+
+#: ../../document.rst:641 027398bd9070438e8c7c851ffe7f55da
+msgid ""
+"a generator iterator over the document's pages. Some examples:  * "
+"\"doc.pages()\" emits all pages. * \"doc.pages(4, 9, 2)\" emits pages 4, "
+"6, 8. * \"doc.pages(0, None, 2)\" emits all pages with even numbers. * "
+"\"doc.pages(-2)\" emits the last two pages. * \"doc.pages(-1, -1)\" emits"
+" all pages in reversed order. * \"doc.pages(-1, -10)\" always emits 10 "
+"pages in reversed order, starting with the last page -- **repeatedly** if"
+" the document has less than 10 pages. So for a 4-page document the "
+"following page numbers are emitted: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, "
+"3."
+msgstr ""
+
+#: ../../document.rst:641 8afc02e60b59429487a2f63d59229a84
+msgid "a generator iterator over the document's pages. Some examples:"
+msgstr ""
+
+#: ../../document.rst:643 766eb8356ed046699ef91ce40370a0a0
+msgid "\"doc.pages()\" emits all pages."
+msgstr ""
+
+#: ../../document.rst:644 3a61225131264f68bd4e0cd06bcb6703
+msgid "\"doc.pages(4, 9, 2)\" emits pages 4, 6, 8."
+msgstr ""
+
+#: ../../document.rst:645 1bef2ff221e94030b96bc4fd8cbc3adf
+msgid "\"doc.pages(0, None, 2)\" emits all pages with even numbers."
+msgstr ""
+
+#: ../../document.rst:646 eb41828efd3d40e28083c64bce119af4
+msgid "\"doc.pages(-2)\" emits the last two pages."
+msgstr ""
+
+#: ../../document.rst:647 ca57fd4711f34d66b4067025c51502fb
+msgid "\"doc.pages(-1, -1)\" emits all pages in reversed order."
+msgstr ""
+
+#: ../../document.rst:648 6c192406ae5d4e85a0e42b650f833acf
+msgid ""
+"\"doc.pages(-1, -10)\" always emits 10 pages in reversed order, starting "
+"with the last page -- **repeatedly** if the document has less than 10 "
+"pages. So for a 4-page document the following page numbers are emitted: "
+"3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3."
+msgstr ""
+
+#: ../../document.rst:657 b5de3ef6d28d4214a75d05fedc1634da
+msgid ""
+"Create a PDF version of the current document and write it to memory. "
+"**All document types** are supported. The parameters have the same "
+"meaning as in :meth:`insert_pdf`. In essence, you can restrict the "
+"conversion to a page subset, specify page rotation, and revert page "
+"sequence."
+msgstr ""
+
+#: ../../document.rst:659 746a3a300691432f91fcff1b2e1e020a
+msgid "first page to copy (0-based). Default is first page."
+msgstr ""
+
+#: ../../document.rst:661 8f691d0c812c441abc4c026c48decddf
+msgid "last page to copy (0-based). Default is last page."
+msgstr ""
+
+#: ../../document.rst:663 ff6f28bf2f5d44baa831e24414ee5077
+msgid ""
+"rotation angle. Default is 0 (no rotation). Should be *n * 90* with an "
+"integer n (not checked)."
+msgstr ""
+
+#: ../../document.rst:666 79d48c7d70f7465aad170c6d292a577d
+msgid ""
+"a Python *bytes* object containing a PDF file image. It is created by "
+"internally using `tobytes(garbage=4, deflate=True)`. See :meth:`tobytes`."
+" You can output it directly to disk or open it as a PDF. Here are some "
+"examples::  >>> # convert an XPS file to PDF >>> xps = "
+"fitz.open(\"some.xps\") >>> pdfbytes = xps.convert_to_pdf() >>> >>> # "
+"either do this --> >>> pdf = fitz.open(\"pdf\", pdfbytes) >>> "
+"pdf.save(\"some.pdf\") >>> >>> # or this --> >>> pdfout = "
+"open(\"some.pdf\", \"wb\") >>> pdfout.tobytes(pdfbytes) >>> "
+"pdfout.close()  >>> # copy image files to PDF pages >>> # each page will "
+"have image dimensions >>> doc = fitz.open()                     # new PDF"
+" >>> imglist = [ ... image file names ...] # e.g. a directory listing >>>"
+" for img in imglist:         imgdoc=fitz.open(img)           # open image"
+" as a document         pdfbytes=imgdoc.convert_to_pdf()  # make a 1-page "
+"PDF of it         imgpdf=fitz.open(\"pdf\", pdfbytes)         "
+"doc.insert_pdf(imgpdf)             # insert the image PDF >>> "
+"doc.save(\"allmyimages.pdf\")"
+msgstr ""
+
+#: ../../document.rst:666 5d767de566a34791a799ce91fa03d1fb
+msgid ""
+"a Python *bytes* object containing a PDF file image. It is created by "
+"internally using `tobytes(garbage=4, deflate=True)`. See :meth:`tobytes`."
+" You can output it directly to disk or open it as a PDF. Here are some "
+"examples::"
+msgstr ""
+
+#: ../../document.rst:692 0a024d1d00e547b4a31b0083316792c4
+msgid ""
+"The method uses the same logic as the *mutool convert* CLI. This works "
+"very well in most cases -- however, beware of the following limitations."
+msgstr ""
+
+#: ../../document.rst:694 8897e2f4a2a649819f2d57ed5cccf493
+msgid ""
+"Image files: perfect, no issues detected. However, image transparency is "
+"ignored. If you need that (like for a watermark), use "
+":meth:`Page.insert_image` instead. Otherwise, this method is recommended "
+"for its much better performance."
+msgstr ""
+
+#: ../../document.rst:695 e5ccc14012164e6db1a808fee5c51058
+msgid ""
+"XPS: appearance very good. Links work fine, outlines (bookmarks) are "
+"lost, but can easily be recovered [#f2]_."
+msgstr ""
+
+#: ../../document.rst:696 2dead1263376420a8e0e0d51189a9ad3
+msgid "EPUB, CBZ, FB2: similar to XPS."
+msgstr ""
+
+#: ../../document.rst:697 1a0577c0df2448d8b8001ec031f98006
+msgid ""
+"SVG: medium. Roughly comparable to `svglib "
+"<https://github.com/deeplook/svglib>`_."
+msgstr ""
+
+#: ../../document.rst:701 67ec053fc4c64741a90b32593a97d00d
+msgid "Creates a table of contents (TOC) out of the document's outline chain."
+msgstr ""
+
+#: ../../document.rst:703 330b7bd350734a049d63b9403d123b43
+msgid ""
+"Indicates whether a simple or a detailed TOC is required. If *False*, "
+"each item of the list also contains a dictionary with :ref:`linkDest` "
+"details for each outline entry."
+msgstr ""
+
+#: ../../document.rst:707 e0b60ff0063a43fead122aca6add6828
+msgid ""
+"a list of lists. Each entry has the form *[lvl, title, page, dest]*. Its "
+"entries have the following meanings:  * *lvl* -- hierarchy level "
+"(positive *int*). The first entry is always 1. Entries in a row are "
+"either **equal**, **increase** by 1, or **decrease** by any number. * "
+"*title* -- title (*str*) * *page* -- 1-based page number (*int*). If `-1`"
+" either no destination or outside document. * *dest* -- (*dict*) included"
+" only if *simple=False*. Contains details of the TOC item as follows:    "
+"- kind: destination kind, see :ref:`linkDest Kinds`.   - file: filename "
+"if kind is :data:`LINK_GOTOR` or :data:`LINK_LAUNCH`.   - page: target "
+"page, 0-based, :data:`LINK_GOTOR` or :data:`LINK_GOTO` only.   - to: "
+"position on target page (:ref:`Point`).   - zoom: (float) zoom factor on "
+"target page.   - xref: :data:`xref` of the item (0 if no PDF).   - color:"
+" item color in PDF RGB format `(red, green, blue)`, or omitted (always "
+"omitted if no PDF).   - bold: true if bold item text or omitted. PDF "
+"only.   - italic: true if italic item text, or omitted. PDF only.   - "
+"collapse: true if sub-items are folded, or omitted. PDF only."
+msgstr ""
+
+#: ../../document.rst:707 b9ffb73c9f86467e97605ebf57ed1ea7
+msgid ""
+"a list of lists. Each entry has the form *[lvl, title, page, dest]*. Its "
+"entries have the following meanings:"
+msgstr ""
+
+#: ../../document.rst:709 2e7d663ad095487f906ecd45a5077410
+msgid ""
+"*lvl* -- hierarchy level (positive *int*). The first entry is always 1. "
+"Entries in a row are either **equal**, **increase** by 1, or **decrease**"
+" by any number."
+msgstr ""
+
+#: ../../document.rst:710 2239cb9d8d874b0eb18f6a1c1d81f7ef
+msgid "*title* -- title (*str*)"
+msgstr ""
+
+#: ../../document.rst:711 2ddde9610188455ca9b053bdd7a9e056
+msgid ""
+"*page* -- 1-based page number (*int*). If `-1` either no destination or "
+"outside document."
+msgstr ""
+
+#: ../../document.rst:712 eb297ae5f58541b594221852e1b50bd7
+msgid ""
+"*dest* -- (*dict*) included only if *simple=False*. Contains details of "
+"the TOC item as follows:"
+msgstr ""
+
+#: ../../document.rst:714 0bce7e4fcbe44863ba9b125ae48612a4
+msgid "kind: destination kind, see :ref:`linkDest Kinds`."
+msgstr ""
+
+#: ../../document.rst:715 8b8213e1136f4d2fb590f7b9278254d5
+msgid "file: filename if kind is :data:`LINK_GOTOR` or :data:`LINK_LAUNCH`."
+msgstr ""
+
+#: ../../document.rst:716 c2393960170844a0ac4307fd1b5f2765
+msgid "page: target page, 0-based, :data:`LINK_GOTOR` or :data:`LINK_GOTO` only."
+msgstr ""
+
+#: ../../document.rst:717 591fa360c9b744a98438e1dd959db54d
+msgid "to: position on target page (:ref:`Point`)."
+msgstr ""
+
+#: ../../document.rst:718 d4b8537e626540e0829758c3bbb912db
+msgid "zoom: (float) zoom factor on target page."
+msgstr ""
+
+#: ../../document.rst:719 cdec9fd70dd14a2992d8259f63222fe0
+msgid "xref: :data:`xref` of the item (0 if no PDF)."
+msgstr ""
+
+#: ../../document.rst:720 e9f2cdab2a664a4ababd1ff7f1ce24d1
+msgid ""
+"color: item color in PDF RGB format `(red, green, blue)`, or omitted "
+"(always omitted if no PDF)."
+msgstr ""
+
+#: ../../document.rst:721 b08ba88d5d9344d8b7e289961d0ff0d5
+msgid "bold: true if bold item text or omitted. PDF only."
+msgstr ""
+
+#: ../../document.rst:722 7c4cc6302f6f4c65bc2ffa1e91349f74
+msgid "italic: true if italic item text, or omitted. PDF only."
+msgstr ""
+
+#: ../../document.rst:723 08f0833e25bd423eaead437ac2ddcf9b
+msgid "collapse: true if sub-items are folded, or omitted. PDF only."
+msgstr ""
+
+#: ../../document.rst:730 8b97ef01b48d4f2c8b38719b8caa000c
+msgid ""
+"PDF only: Return the PDF dictionary keys of the :data:`dictionary` object"
+" provided by its xref number."
+msgstr ""
+
+#: ../../document.rst:732 3703b31e15844e9d986b528ba06cba1c
+msgid ""
+"the :data:`xref`. *(Changed in v1.18.10)* Use `-1` to access the special "
+"dictionary \"PDF trailer\"."
+msgstr ""
+
+#: ../../document.rst:734 55a224e59fe3447680ca6cece1d97300
+msgid ""
+"a tuple of dictionary keys present in object :data:`xref`. Examples:  >>>"
+" from pprint import pprint >>> import fitz >>> "
+"doc=fitz.open(\"pymupdf.pdf\") >>> xref = doc.page_xref(0)  # xref of "
+"page 0 >>> pprint(doc.xref_get_keys(xref))  # primary level keys of a "
+"page ('Type', 'Contents', 'Resources', 'MediaBox', 'Parent') >>> "
+"pprint(doc.xref_get_keys(-1))  # primary level keys of the trailer "
+"('Type', 'Index', 'Size', 'W', 'Root', 'Info', 'ID', 'Length', 'Filter') "
+">>>"
+msgstr ""
+
+#: ../../document.rst:734 4699a76751eb419bba5e1f68ae3ddec3
+msgid "a tuple of dictionary keys present in object :data:`xref`. Examples:"
+msgstr ""
+
+#: ../../document.rst:751 86622e8b57f1456b973da5f5de21b72a
+msgid ""
+"PDF only: Return type and value of a PDF dictionary key of a "
+":data:`dictionary` object given by its xref."
+msgstr ""
+
+#: ../../document.rst:753 d43a9a284f364159bebd6b533e043f2e
+msgid ""
+"the :data:`xref`. *Changed in v1.18.10:* Use `-1` to access the special "
+"dictionary \"PDF trailer\"."
+msgstr ""
+
+#: ../../document.rst:755 28e51fbb171840b19cf6fa8e897291e7
+msgid ""
+"the desired PDF key. Must **exactly** match (case-sensitive) one of the "
+"keys contained in :meth:`Document.xref_get_keys`."
+msgstr ""
+
+#: ../../document.rst:759 84d7abc76fb3495eb5c0203b1f75b1b4
+msgid ""
+"A tuple (type, value) of strings, where type is one of \"xref\", "
+"\"array\", \"dict\", \"int\", \"float\", \"null\", \"bool\", \"name\", "
+"\"string\" or \"unknown\" (should not occur). Independent of \"type\", "
+"the value of the key is **always** formatted as a string -- see the "
+"following example -- and (almost always) a faithful reflection of what is"
+" stored in the PDF. In most cases, the format of the value string also "
+"gives a clue about the key type:"
+msgstr ""
+
+#: ../../document.rst:761 2a7765335c9f4f73b06cf6f8e92ae724
+msgid "A \"name\" always starts with a \"/\" slash."
+msgstr ""
+
+#: ../../document.rst:762 e266f2dabcfa457e876b6e0635184620
+msgid "An \"xref\" always ends with \" 0 R\"."
+msgstr ""
+
+#: ../../document.rst:763 cd564700513748d4b5293700b6b7b89f
+msgid "An \"array\" is always enclosed in \"[...]\" brackets."
+msgstr ""
+
+#: ../../document.rst:764 a2b166a635414bdd98a4026a04929872
+msgid "A \"dict\" is always enclosed in \"<<...>>\" brackets."
+msgstr ""
+
+#: ../../document.rst:765 0a8425fcadf94de081e768088ca6371f
+msgid ""
+"A \"bool\", resp. \"null\" always equal either \"true\", \"false\", resp."
+" \"null\"."
+msgstr ""
+
+#: ../../document.rst:766 be0b432516444eb2970a33f99b97e1ff
+msgid ""
+"\"float\" and \"int\" are represented by their string format -- and are "
+"thus not always distinguishable."
+msgstr ""
+
+#: ../../document.rst:767 f12cb3b7686c4d65973362d2d84b9139
+msgid ""
+"A \"string\" is converted to UTF-8 and may therefore deviate from what is"
+" stored in the PDF. For example, the PDF key \"Author\" may have a value "
+"of \"<FEFF004A006F0072006A00200058002E0020004D0063004B00690065>\" in the "
+"file, but the method will return `('string', 'Jorj X. McKie')`."
+msgstr ""
+
+#: ../../document.rst:796 72edac04520f46e08289ad9cf2cb4aa6
+msgid "New in v1.18.7, changed in v 1.18.13"
+msgstr ""
+
+#: ../../document.rst:797 a282f8d865864fd2a956208d8f295afc
+msgid "Changed in v1.19.4: remove a key \"physically\" if set to \"null\"."
+msgstr ""
+
+#: ../../document.rst:799 6180b6f6521d490db00119cdc34bc6f3
+msgid ""
+"PDF only: Set (add, update, delete) the value of a PDF key for the "
+":data:`dictionary` object given by its xref."
+msgstr ""
+
+#: ../../document.rst:801 3fca2db4ff9a483ead8e9951a023fe7a
+msgid ""
+"This is an expert function: if you do not know what you are doing, there "
+"is a high risk to render (parts of) the PDF unusable. Please do consult "
+":ref:`AdobeManual` about object specification formats (page 18) and the "
+"structure of special dictionary types like page objects."
+msgstr ""
+
+#: ../../document.rst:803 0a23af545f46473d86cfd5c10322ef66
+msgid ""
+"the :data:`xref`. *Changed in v1.18.13:* To update the PDF trailer, "
+"specify -1."
+msgstr ""
+
+#: ../../document.rst:804 6f3a1dbe41e04b27abfa101687bf91c9
+msgid ""
+"the desired PDF key (without leading \"/\"). Must not be empty. Any valid"
+" PDF key -- whether already present in the object (which will be "
+"overwritten) -- or new. It is possible to use PDF path notation like "
+"`\"Resources/ExtGState\"` -- which sets the value for key "
+"`\"/ExtGState\"` as a sub-object of `\"/Resources\"`."
+msgstr ""
+
+#: ../../document.rst:805 387b6fbe43ca4473ac565646225e2a97
+msgid ""
+"the value for the key. It must be a non-empty string and, depending on "
+"the desired PDF object type, the following rules must be observed. There "
+"is some syntax checking, but **no type checking** and no checking if it "
+"makes sense PDF-wise, i.e. **no semantics checking**. Upper / lower case "
+"is important!"
+msgstr ""
+
+#: ../../document.rst:807 300c41bf958b46bb8ab67d925f3a9bdf
+msgid ""
+"**xref** -- must be provided as `\"nnn 0 R\"` with a valid :data:`xref` "
+"number nnn of the PDF. The suffix \"`0 R`\" is required to be "
+"recognizable as an xref by PDF applications."
+msgstr ""
+
+#: ../../document.rst:808 1ce8024abfef47298382fece7c584105
+msgid ""
+"**array** -- a string like `\"[a b c d e f]\"`. The brackets are "
+"required. Array items must be separated by at least one space (not commas"
+" like in Python). An empty array `\"[]\"` is possible and *equivalent* to"
+" removing the key. Array items may be any PDF objects, like dictionaries,"
+" xrefs, other arrays, etc. Like in Python, array items may be of "
+"different types."
+msgstr ""
+
+#: ../../document.rst:809 b11b59f5a35e45ce98a9cec9b07344f4
+msgid ""
+"**dict** -- a string like `\"<< ... >>\"`. The brackets are required and "
+"must enclose a valid PDF dictionary definition. The empty dictionary "
+"`\"<<>>\"` is possible and *equivalent* to removing the key."
+msgstr ""
+
+#: ../../document.rst:810 1df54c22588645bcaecf0638f501b354
+msgid "**int** -- an integer formatted **as a string**."
+msgstr ""
+
+#: ../../document.rst:811 f9bd162fa1d945cb8b342bce99657575
+msgid ""
+"**float** -- a float formatted **as a string**. Scientific notation (with"
+" exponents) is **not allowed by PDF**."
+msgstr ""
+
+#: ../../document.rst:812 92c2fa9f2b894c0aa2ac939ba4a9a82c
+msgid ""
+"**null** -- the string `\"null\"`. This is the PDF equivalent to Python's"
+" `None` and causes the key to be ignored -- however not necessarily "
+"removed, resp. removed on saves with garbage collection. *Changed in "
+"v1.19.4:* If the key is no path hierarchy (i.e. contains no slash \"/\"),"
+" then it will be completely removed."
+msgstr ""
+
+#: ../../document.rst:813 136d4feccc284235b2fc9bfa93541f51
+msgid "**bool** -- one of the strings `\"true\"` or `\"false\"`."
+msgstr ""
+
+#: ../../document.rst:814 18c4421b9c724e7ba795d6ab831be045
+msgid ""
+"**name** -- a valid PDF name with a leading slash like this: "
+"`\"/PageLayout\"`. See page 16 of the :ref:`AdobeManual`."
+msgstr ""
+
+#: ../../document.rst:815 34b98e12b8714cc6bb6f8d67ff6c2652
+msgid ""
+"**string** -- a valid PDF string. **All PDF strings must be enclosed by "
+"brackets**. Denote the empty string as `\"()\"`. Depending on its "
+"content, the possible brackets are"
+msgstr ""
+
+#: ../../document.rst:817 41af587732084295805868ad10ba73ea
+msgid ""
+"\"(...)\" for ASCII-only text. Reserved PDF characters must be backslash-"
+"escaped and non-ASCII characters must be provided as 3-digit backslash-"
+"escaped octals -- including leading zeros. Example: 12 = 0x0C must be "
+"encoded as `\\014`."
+msgstr ""
+
+#: ../../document.rst:818 0169627c10064b7ba177c916de58ac89
+msgid ""
+"\"<...>\" for hex-encoded text. Every character must be represented by "
+"two hex-digits (lower or upper case)."
+msgstr ""
+
+#: ../../document.rst:820 7d2902688294428e9de3b95956cb9b7a
+msgid ""
+"If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This "
+"function automatically generates the right brackets, escapes, and overall"
+" format. It will for example do conversions like these:"
+msgstr ""
+
+#: ../../document.rst:832 f296e989f0bb4420a10c5adf58c797ab
+msgid ""
+"Creates a pixmap from page *pno* (zero-based). Invokes "
+":meth:`Page.get_pixmap`."
+msgstr ""
+
+#: ../../document.rst:834 00af5fa1ac744a46a9cfe8515fa69c5a
+msgid "All parameters except `pno` are *keyword-only.*"
+msgstr ""
+
+#: ../../document.rst:836 3afeb8ceee8d49a280213d789d47184f
+msgid "page number, 0-based in `-∞ < pno < page_count`."
+msgstr ""
+
+#: ../../document.rst:838 38114a07b80c457fb66031a2dc1bcb93
+msgid ":ref:`Pixmap`"
+msgstr ""
+
+#: ../../document.rst:842 38fd757294064607aeed50ea97fb9fd7
+msgid "New in v1.16.13"
+msgstr ""
+
+#: ../../document.rst:843 cf1beb74091a415b945b98285d04dfe2
+msgid "Changed in v1.18.11"
+msgstr ""
+
+#: ../../document.rst:845 f89a71b0850e46b9b607362cd051622c
+msgid "PDF only: Return a list of all XObjects referenced by a page."
+msgstr ""
+
+#: ../../document.rst:847 ../../document.rst:862 ../../document.rst:890
+#: 83e80e078ed9480bbc98bcbfa9961b30 a8038787249649048729834854763ffd
+#: ae2424fb2e2645fb8dfdcd26efeb3f94
+msgid "page number, 0-based, `-∞ < pno < page_count`."
+msgstr ""
+
+#: ../../document.rst:850 dc98a64da13048eca53137b97c28e278
+msgid ""
+"a list of (non-image) XObjects. These objects typically represent pages "
+"*embedded* (not copied) from other PDFs. For example, "
+":meth:`Page.show_pdf_page` will create this type of object. An item of "
+"this list has the following layout: `(xref, name, invoker, bbox)`, where"
+"  * **xref** (*int*) is the XObject's :data:`xref`. * **name** (*str*) is"
+" the symbolic name to reference the XObject. * **invoker** (*int*) the "
+":data:`xref` of the invoking XObject or zero if the page directly invokes"
+" it. * **bbox** (:ref:`Rect`) the boundary box of the XObject's location "
+"on the page **in untransformed coordinates**. To get actual, non-rotated "
+"page coordinates, multiply with the page's transformation matrix "
+":attr:`Page.transformation_matrix`. *Changed in v.18.11:* the bbox is now"
+" formatted as :ref:`Rect`."
+msgstr ""
+
+#: ../../document.rst:850 f8a5335b91a34bb99b48bd84fe9fa197
+msgid ""
+"a list of (non-image) XObjects. These objects typically represent pages "
+"*embedded* (not copied) from other PDFs. For example, "
+":meth:`Page.show_pdf_page` will create this type of object. An item of "
+"this list has the following layout: `(xref, name, invoker, bbox)`, where"
+msgstr ""
+
+#: ../../document.rst:852 4cdf771cd816437c9f090608770a1d75
+msgid "**xref** (*int*) is the XObject's :data:`xref`."
+msgstr ""
+
+#: ../../document.rst:853 b04a777530d54a42a0f704a2161d399c
+msgid "**name** (*str*) is the symbolic name to reference the XObject."
+msgstr ""
+
+#: ../../document.rst:854 0487b1fd5c304e409ea1e2bc23ee4485
+msgid ""
+"**invoker** (*int*) the :data:`xref` of the invoking XObject or zero if "
+"the page directly invokes it."
+msgstr ""
+
+#: ../../document.rst:855 5afb60a8aef245d39a13d09e8fb313b5
+msgid ""
+"**bbox** (:ref:`Rect`) the boundary box of the XObject's location on the "
+"page **in untransformed coordinates**. To get actual, non-rotated page "
+"coordinates, multiply with the page's transformation matrix "
+":attr:`Page.transformation_matrix`. *Changed in v.18.11:* the bbox is now"
+" formatted as :ref:`Rect`."
+msgstr ""
+
+#: ../../document.rst:860 9e2ed16536b940a5b0f8dad62b4ddf26
+msgid ""
+"PDF only: Return a list of all images (directly or indirectly) referenced"
+" by the page."
+msgstr ""
+
+#: ../../document.rst:863 68d280ecc6b64f5a8a3e51c70fe9be78
+msgid ""
+"whether to also include the referencer's :data:`xref` (which is zero if "
+"this is the page)."
+msgstr ""
+
+#: ../../document.rst:867 dd526df3c28648e6935d02a8de8eda79
+msgid ""
+"a list of images **referenced** by this page. Each item looks like  "
+"`(xref, smask, width, height, bpc, colorspace, alt. colorspace, name, "
+"filter, referencer)`  Where    * **xref** (*int*) is the image object "
+"number   * **smask** (*int*) is the object number of its soft-mask image"
+"   * **width** and **height** (*ints*) are the image dimensions   * "
+"**bpc** (*int*) denotes the number of bits per component (normally 8)   *"
+" **colorspace** (*str*) a string naming the colorspace (like "
+"**DeviceRGB**)   * **alt. colorspace** (*str*) is any alternate "
+"colorspace depending on the value of **colorspace**   * **name** (*str*) "
+"is the symbolic name by which the image is referenced   * **filter** "
+"(*str*) is the decode filter of the image (:ref:`AdobeManual`, pp. 22)."
+"   * **referencer** (*int*) the :data:`xref` of the referencer. Zero if "
+"directly referenced by the page. Only present if *full=True*."
+msgstr ""
+
+#: ../../document.rst:867 4324d199cc624862b4fcd8927eccc083
+msgid "a list of images **referenced** by this page. Each item looks like"
+msgstr ""
+
+#: ../../document.rst:869 acb16b27b4df4a028ae7cbdd4a9c1069
+msgid ""
+"`(xref, smask, width, height, bpc, colorspace, alt. colorspace, name, "
+"filter, referencer)`"
+msgstr ""
+
+#: ../../document.rst:871 1fea474ffa59469ab68d20e0b6746ab3
+msgid "Where"
+msgstr ""
+
+#: ../../document.rst:873 5afe5ec55bbb45c497e87b6d0a10c5e3
+msgid "**xref** (*int*) is the image object number"
+msgstr ""
+
+#: ../../document.rst:874 5df6cec0e38c4c8e9cb03143411ab60c
+msgid "**smask** (*int*) is the object number of its soft-mask image"
+msgstr ""
+
+#: ../../document.rst:875 b3bd88c522674435942d1f5e6c2c8940
+msgid "**width** and **height** (*ints*) are the image dimensions"
+msgstr ""
+
+#: ../../document.rst:876 bf0fb9b0353e4fc0aaf09a87488d05a8
+msgid "**bpc** (*int*) denotes the number of bits per component (normally 8)"
+msgstr ""
+
+#: ../../document.rst:877 80d07de7dd0f445bb881bd110c9c4283
+msgid "**colorspace** (*str*) a string naming the colorspace (like **DeviceRGB**)"
+msgstr ""
+
+#: ../../document.rst:878 b19a70fe29374274b2ff174f63cdc8d6
+msgid ""
+"**alt. colorspace** (*str*) is any alternate colorspace depending on the "
+"value of **colorspace**"
+msgstr ""
+
+#: ../../document.rst:879 efd04a7d6f4b440f96257347d3da8095
+msgid "**name** (*str*) is the symbolic name by which the image is referenced"
+msgstr ""
+
+#: ../../document.rst:880 a0ab31c9681447a080dbfe59c1619586
+msgid ""
+"**filter** (*str*) is the decode filter of the image (:ref:`AdobeManual`,"
+" pp. 22)."
+msgstr ""
+
+#: ../../document.rst:881 2dd6c1eb323d42ba9679fc1baaae1003
+msgid ""
+"**referencer** (*int*) the :data:`xref` of the referencer. Zero if "
+"directly referenced by the page. Only present if *full=True*."
+msgstr ""
+
+#: ../../document.rst:883 66989033e8f740eb8c9735b1f8c45b38
+msgid ""
+"In general, this is not the list of images that are **actually "
+"displayed**. This method only parses several PDF objects to collect "
+"references to embedded images. It does not analyse the page's "
+":data:`contents`, where all the actual image display commands are "
+"defined. To get this information, please use :meth:`Page.get_image_info`."
+" Also have a look at the discussion in section :ref:`textpagedict`."
+msgstr ""
+
+#: ../../document.rst:888 7ee24c1877bd4854853afa55264524b0
+msgid ""
+"PDF only: Return a list of all fonts (directly or indirectly) referenced "
+"by the page."
+msgstr ""
+
+#: ../../document.rst:891 46211694988c4513ae0aa21dcf8b4a19
+msgid ""
+"whether to also include the referencer's :data:`xref`. If *True*, the "
+"returned items are one entry longer. Use this option if you need to know,"
+" whether the page directly references the font. In this case the last "
+"entry is 0. If the font is referenced by an `/XObject` of the page, you "
+"will find its :data:`xref` here."
+msgstr ""
+
+#: ../../document.rst:895 6a1c0dc449804818b69d556d1075a435
+msgid "a list of fonts referenced by this page. Each entry looks like"
+msgstr ""
+
+#: ../../document.rst:897 0f5c62bef33a4456ab1606b92067e8dd
+msgid "**(xref, ext, type, basefont, name, encoding, referencer)**,"
+msgstr ""
+
+#: ../../document.rst:899 c68fd6fd5eff49399a788d6f3997c697
+msgid "where"
+msgstr ""
+
+#: ../../document.rst:901 9f267b6e5d0d473cbd6d5058c18fb1b9
+msgid ""
+"**xref** (*int*) is the font object number (may be zero if the PDF uses "
+"one of the builtin fonts directly)"
+msgstr ""
+
+#: ../../document.rst:902 fe053fef6c6c43afb85d3708f77a003f
+msgid ""
+"**ext** (*str*) font file extension (e.g. \"ttf\", see "
+":ref:`FontExtensions`)"
+msgstr ""
+
+#: ../../document.rst:903 b34b7cf60d8e4efc904d3aa321aaee0f
+msgid "**type** (*str*) is the font type (like \"Type1\" or \"TrueType\" etc.)"
+msgstr ""
+
+#: ../../document.rst:904 248d1bafe773484e9dce5146e9cef4f0
+msgid "**basefont** (*str*) is the base font name,"
+msgstr ""
+
+#: ../../document.rst:905 380f2f42684c4dfc99ea0d02a361b890
+msgid "**name** (*str*) is the symbolic name, by which the font is referenced"
+msgstr ""
+
+#: ../../document.rst:906 942db33e538046999a61fb915bf5539e
+msgid ""
+"**encoding** (*str*) the font's character encoding if different from its "
+"built-in encoding (:ref:`AdobeManual`, p. 254):"
+msgstr ""
+
+#: ../../document.rst:907 35db9f8e4c724a0ebaf4f17c859e036d
+msgid ""
+"**referencer** (*int* optional) the :data:`xref` of the referencer. Zero "
+"if directly referenced by the page, otherwise the xref of an XObject. "
+"Only present if *full=True*."
+msgstr ""
+
+#: ../../document.rst:909 867c02d4b41b4723a27ca065704d71bc
+msgid "Example::"
+msgstr ""
+
+#: ../../document.rst:922 76e6019e889d45c5b812843a556ba938
+msgid ""
+"This list has no duplicate entries: the combination of :data:`xref`, "
+"*name* and *referencer* is unique."
+msgstr ""
+
+#: ../../document.rst:923 ecac21e0bde74da5bcc2655466ecaf32
+msgid ""
+"In general, this is a superset of the fonts actually in use by this page."
+" The PDF creator may e.g. have specified some global list, of which each "
+"page only makes partial use."
+msgstr ""
+
+#: ../../document.rst:927 248b871c039e47b5a261ade10750ad61
+msgid ""
+"Extracts the text of a page given its page number *pno* (zero-based). "
+"Invokes :meth:`Page.get_text`."
+msgstr ""
+
+#: ../../document.rst:929 9ad2bbfcb1a04530975bdb2263ce836d
+msgid "page number, 0-based, any value `-∞ < pno < page_count`."
+msgstr ""
+
+#: ../../document.rst:931 c41424877bf6472e978e9c894c89551c
+msgid "For other parameter refer to the page method."
+msgstr ""
+
+#: ../../document.rst:943 a99e6c20bfc14d9db6cc7683cec92d34
+msgid ""
+"Re-paginate (\"reflow\") the document based on the given page dimension "
+"and fontsize. This only affects some document types like e-books and "
+"HTML. Ignored if not supported. Supported documents have *True* in "
+"property :attr:`is_reflowable`."
+msgstr ""
+
+#: ../../document.rst:945 32fdaced27484ae48ac47bb359d49aec
+msgid "desired page size. Must be finite, not empty and start at point (0, 0)."
+msgstr ""
+
+#: ../../document.rst:946 bf991878899c4aae8256ddf4fa2cd978
+msgid "use it together with *height* as alternative to *rect*."
+msgstr ""
+
+#: ../../document.rst:947 b1f42251694a47e49b1555423a31de25
+msgid "use it together with *width* as alternative to *rect*."
+msgstr ""
+
+#: ../../document.rst:948 b281a88bc749466e8335ba5f9002f914
+msgid "the desired default fontsize."
+msgstr ""
+
+#: ../../document.rst:952 d54d740a754d48a88a9ef9d38f72c1d0
+msgid ""
+"PDF only: Keeps only those pages of the document whose numbers occur in "
+"the list. Empty sequences or elements outside `range(doc.page_count)` "
+"will cause a *ValueError*. For more details see remarks at the bottom or "
+"this chapter."
+msgstr ""
+
+#: ../../document.rst:954 969209b6f6824c0eb48673bb8f2bb209
+msgid ""
+"The sequence (see :ref:`SequenceTypes`) of page numbers (zero-based) to "
+"be included. Pages not in the sequence will be deleted (from memory) and "
+"become unavailable until the document is reopened. **Page numbers can "
+"occur multiple times and in any order:** the resulting document will "
+"reflect the sequence exactly as specified."
+msgstr ""
+
+#: ../../document.rst:958 11def9a9343e4b96ab05c3fb0cd50ed7
+msgid ""
+"Page numbers in the sequence need not be unique nor be in any particular "
+"order. This makes the method a versatile utility to e.g. select only the "
+"even or the odd pages or meeting some other criteria and so forth."
+msgstr ""
+
+#: ../../document.rst:960 d5bdabd37d4246d1ac840ce5add159fa
+msgid ""
+"On a technical level, the method will always create a new "
+":data:`pagetree`."
+msgstr ""
+
+#: ../../document.rst:962 f02e316e978240fe88732e3860bd6109
+msgid ""
+"When dealing with only a few pages, methods :meth:`copy_page`, "
+":meth:`move_page`, :meth:`delete_page` are easier to use. In fact, they "
+"are also **much faster** -- by at least one order of magnitude when the "
+"document has many pages."
+msgstr ""
+
+#: ../../document.rst:967 ab1bc833df75412b849d00ba8e615555
+msgid ""
+"PDF only: Sets or updates the metadata of the document as specified in "
+"*m*, a Python dictionary."
+msgstr ""
+
+#: ../../document.rst:969 af3cdcca45544c46b6256450626d4a12
+msgid ""
+"A dictionary with the same keys as *metadata* (see below). All keys are "
+"optional. A PDF's format and encryption method cannot be set or changed "
+"and will be ignored. If any value should not contain data, do not specify"
+" its key or set the value to `None`. If you use *{}* all metadata "
+"information will be cleared to the string *\"none\"*. If you want to "
+"selectively change only some values, modify a copy of *doc.metadata* and "
+"use it as the argument. Arbitrary unicode values are possible if "
+"specified as UTF-8-encoded."
+msgstr ""
+
+#: ../../document.rst:971 43435761fc0845908ed40a3358aad409
+msgid ""
+"*(Changed in v1.18.4)* Empty values or \"none\" are no longer written, "
+"but completely omitted."
+msgstr ""
+
+#: ../../document.rst:975 a96d5b27f7124a9ba80b5ac99bc21717
+msgid "PDF only: Get the document XML metadata."
+msgstr ""
+
+#: ../../document.rst:978 87408e9f907e4ad59cb170d537dfa3c9
+msgid "XML metadata of the document. Empty string if not present or not a PDF."
+msgstr ""
+
+#: ../../document.rst:982 a18f443ab384493aaacf4cc5216523f8
+msgid "PDF only: Sets or updates XML metadata of the document."
+msgstr ""
+
+#: ../../document.rst:984 03ac61c133894af6ac9a8755ce99f768
+msgid ""
+"the new XML metadata. Should be XML syntax, however no checking is done "
+"by this method and any string is accepted."
+msgstr ""
+
+#: ../../document.rst:989 ../../document.rst:998 ../../document.rst:1007
+#: ../../document.rst:1889 ../../document.rst:1897 ../../document.rst:1905
+#: ../../document.rst:1913 ../../document.rst:1921
+#: 1364ce56382b480d8dc4b36927b5ada0 2998b5dc060e49bcab73edcd9496cd3d
+#: 44649cb6e9394bf2816537db6b16ec1b 55f1c5ee70fc4f7eb4d34b9e9b9fdfc5
+#: 6eed5eee173c4dd0b62df7b1d445da4d 7236996724894a2396a9b12f2ab114cd
+#: b21f484919ab493ab77d49ffe9640556 f277ee1cd5db4ec1836d73c94a59a5e4
+msgid "New in v1.22.2"
+msgstr ""
+
+#: ../../document.rst:991 733981bbff5940e99e3534eb096ab195
+msgid "PDF only: Set the `/PageLayout`."
+msgstr ""
+
+#: ../../document.rst:993 0ffc898db19443a6a1691c38bb5f9135
+msgid ""
+"one of the strings \"SinglePage\", \"OneColumn\", \"TwoColumnLeft\", "
+"\"TwoColumnRight\", \"TwoPageLeft\", \"TwoPageRight\". Lower case is "
+"supported."
+msgstr ""
+
+#: ../../document.rst:1000 d911ef02767648ef9d81f36ecada9f34
+msgid "PDF only: Set the `/PageMode`."
+msgstr ""
+
+#: ../../document.rst:1002 bc24989da77f4f4388759a5bd44014be
+msgid ""
+"one of the strings \"UseNone\", \"UseOutlines\", \"UseThumbs\", "
+"\"FullScreen\", \"UseOC\", \"UseAttachments\". Lower case is supported."
+msgstr ""
+
+#: ../../document.rst:1009 e230aa6a70024e96a0adf847cc11db08
+msgid "PDF only: Set the `/MarkInfo` values."
+msgstr ""
+
+#: ../../document.rst:1011 c30833a78fb34c1d8cc3fa7140baeac4
+msgid ""
+"a dictionary like this one: `{\"Marked\": False, \"UserProperties\": "
+"False, \"Suspects\": False}`. This dictionary contains information about "
+"the usage of Tagged PDF conventions. For details please see the `PDF "
+"specifications <https://opensource.adobe.com/dc-acrobat-sdk-"
+"docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_."
+msgstr ""
+
+#: ../../document.rst:1016 adbc4ffac0f440fab3de5391b8f4e25b
+msgid ""
+"PDF only: Replaces the **complete current outline** tree (table of "
+"contents) with the one provided as the argument. After successful "
+"execution, the new outline tree can be accessed as usual via "
+":meth:`Document.get_toc` or via :attr:`Document.outline`. Like with other"
+" output-oriented methods, changes become permanent only via :meth:`save` "
+"(incremental save supported). Internally, this method consists of the "
+"following two steps. For a demonstration see example below."
+msgstr ""
+
+#: ../../document.rst:1018 e7538640f77142adb96d93312971004d
+msgid "Step 1 deletes all existing bookmarks."
+msgstr ""
+
+#: ../../document.rst:1020 25ed6297df3c4ffb8588e41e8731db10
+msgid "Step 2 creates a new TOC from the entries contained in *toc*."
+msgstr ""
+
+#: ../../document.rst:1022 e42bf1e15fb847dcbb316e1b60caa6f2
+msgid ""
+"A list / tuple with **all bookmark entries** that should form the new "
+"table of contents. Output variants of :meth:`get_toc` are acceptable. To "
+"completely remove the table of contents specify an empty sequence or "
+"None. Each item must be a list with the following format.  * [lvl, title,"
+" page [, dest]] where    - **lvl** is the hierarchy level (int > 0) of "
+"the item, which **must be 1** for the first item and at most 1 larger "
+"than the previous one.    - **title** (str) is the title to be displayed."
+" It is assumed to be UTF-8-encoded (relevant for multibyte code points "
+"only).    - **page** (int) is the target page number **(attention: "
+"1-based)**. Must be in valid range if positive. Set it to -1 if there is "
+"no target, or the target is external.    - **dest** (optional) is a "
+"dictionary or a number. If a number, it will be interpreted as the "
+"desired height (in points) this entry should point to on the page. Use a "
+"dictionary (like the one given as output by `get_toc(False)`) for a "
+"detailed control of the bookmark's properties, see "
+":meth:`Document.get_toc` for a description."
+msgstr ""
+
+#: ../../document.rst:1024 26086b1ff13d426b9f2bbd2ae843a27c
+msgid ""
+"A list / tuple with **all bookmark entries** that should form the new "
+"table of contents. Output variants of :meth:`get_toc` are acceptable. To "
+"completely remove the table of contents specify an empty sequence or "
+"None. Each item must be a list with the following format."
+msgstr ""
+
+#: ../../document.rst:1026 c03c1234fb4c40cbbe3a4a6161660e41
+msgid "[lvl, title, page [, dest]] where"
+msgstr ""
+
+#: ../../document.rst:1028 721c19fa409d4894a1e8a9b19e9be22b
+msgid ""
+"**lvl** is the hierarchy level (int > 0) of the item, which **must be 1**"
+" for the first item and at most 1 larger than the previous one."
+msgstr ""
+
+#: ../../document.rst:1030 a17f283db2a443d390f2eafdc59141f4
+msgid ""
+"**title** (str) is the title to be displayed. It is assumed to be "
+"UTF-8-encoded (relevant for multibyte code points only)."
+msgstr ""
+
+#: ../../document.rst:1032 6b10e910e98a4b4fa291b24c7c8ee7b7
+msgid ""
+"**page** (int) is the target page number **(attention: 1-based)**. Must "
+"be in valid range if positive. Set it to -1 if there is no target, or the"
+" target is external."
+msgstr ""
+
+#: ../../document.rst:1034 f77a9ea0760a4671b11ef6d19348f9b9
+msgid ""
+"**dest** (optional) is a dictionary or a number. If a number, it will be "
+"interpreted as the desired height (in points) this entry should point to "
+"on the page. Use a dictionary (like the one given as output by "
+"`get_toc(False)`) for a detailed control of the bookmark's properties, "
+"see :meth:`Document.get_toc` for a description."
+msgstr ""
+
+#: ../../document.rst:1036 5b46e02f2c54479b8e00302efa64f990
+msgid ""
+"*(new in v1.16.9)* controls the hierarchy level beyond which outline "
+"entries should initially show up collapsed. The default 1 will hence only"
+" display level 1, higher levels must be unfolded using the PDF viewer. To"
+" unfold everything, specify either a large integer, 0 or None."
+msgstr ""
+
+#: ../../document.rst:1039 0679c4eada374dd997c9e661cd2a58a8
+msgid "the number of inserted, resp. deleted items."
+msgstr ""
+
+#: ../../document.rst:1045 c2a812449f964110b28d1c543c0dea19
+msgid ""
+"PDF only: Return the :data:`xref` of the outline item. This is mainly "
+"used for internal purposes."
+msgstr ""
+
+#: ../../document.rst:1047 b659c81b761f4db4a0d5ba0536d335b1
+msgid "arg int idx: index of the item in list :meth:`Document.get_toc`."
+msgstr ""
+
+#: ../../document.rst:1049 3a675aa36e8f4bdaa202dd46fef46aa0
+msgid ":data:`xref`."
+msgstr ""
+
+#: ../../document.rst:1054 9ae15090c10c418f93594ae8e3aad302
+msgid ""
+"Changed in v1.18.14: no longer remove the item's text, but show it "
+"grayed-out."
+msgstr ""
+
+#: ../../document.rst:1056 57552527d92740408dc663d702d6ef0c
+msgid ""
+"PDF only: Remove this TOC item. This is a high-speed method, which "
+"**disables** the respective item, but leaves the overall TOC structure "
+"intact. Physically, the item still exists in the TOC tree, but is shown "
+"grayed-out and will no longer point to any destination."
+msgstr ""
+
+#: ../../document.rst:1058 1da262438d294404b253756d02595c40
+msgid ""
+"This also implies that you can reassign the item to a new destination "
+"using :meth:`Document.set_toc_item`, when required."
+msgstr ""
+
+#: ../../document.rst:1060 ef570fab433448fc92aaead2ff350ec3
+msgid "the index of the item in list :meth:`Document.get_toc`."
+msgstr ""
+
+#: ../../document.rst:1066 c1c8f702412a49a294501c569a859c21
+msgid "Changed in v1.18.6"
+msgstr ""
+
+#: ../../document.rst:1068 fd09d98d699e423dadf30fd355003640
+msgid ""
+"PDF only: Changes the TOC item identified by its index. Change the item "
+"**title**, **destination**, **appearance** (color, bold, italic) or "
+"collapsing sub-items -- or to remove the item altogether."
+msgstr ""
+
+#: ../../document.rst:1070 18c48e6de39b4070ba459c2ec3daaffb
+msgid ""
+"Use this method if you need specific changes for selected entries only "
+"and want to avoid replacing the complete TOC. This is beneficial "
+"especially when dealing with large table of contents."
+msgstr ""
+
+#: ../../document.rst:1072 ff9ac1d76f944ec686c6417d14f22208
+msgid "the index of the entry in the list created by :meth:`Document.get_toc`."
+msgstr ""
+
+#: ../../document.rst:1073 5d4f4d81ec864b37a29561b6a906f113
+msgid ""
+"the new destination. A dictionary like the last entry of an item in "
+"`doc.get_toc(False)`. Using this as a template is recommended. When "
+"given, **all other parameters are ignored** -- except title."
+msgstr ""
+
+#: ../../document.rst:1074 b35288482ecc46afbdcae341efa73dec
+msgid ""
+"the link kind, see :ref:`linkDest Kinds`. If :data:`LINK_NONE`, then all "
+"remaining parameter will be ignored, and the TOC item will be removed -- "
+"same as :meth:`Document.del_toc_item`. If None, then only the title is "
+"modified and the remaining parameters are ignored. All other values will "
+"lead to making a new destination dictionary using the subsequent "
+"arguments."
+msgstr ""
+
+#: ../../document.rst:1075 5a6381dded454a3a81dd08ec39cbd70f
+msgid ""
+"the 1-based page number, i.e. a value 1 <= pno <= doc.page_count. "
+"Required for LINK_GOTO."
+msgstr ""
+
+#: ../../document.rst:1076 4c69020454494811819bd8b75350d165
+msgid "the URL text. Required for LINK_URI."
+msgstr ""
+
+#: ../../document.rst:1077 763ead03445945eeb36393a2e719674b
+msgid "the desired new title. None if no change."
+msgstr ""
+
+#: ../../document.rst:1078 b74b01c7927248a181e0297d0ff2eb87
+msgid ""
+"(optional) points to a coordinate on the target page. Relevant for "
+"LINK_GOTO. If omitted, a point near the page's top is chosen."
+msgstr ""
+
+#: ../../document.rst:1079 37521ee56f40407498f163d583d8a9ed
+msgid "required for LINK_GOTOR and LINK_LAUNCH."
+msgstr ""
+
+#: ../../document.rst:1080 e71c8539b59d4ef3b45159c03d7fe8c8
+msgid "use this zoom factor when showing the target page."
+msgstr ""
+
+#: ../../document.rst:1082 7fceb2a77ca04341a1c9f272340d9404
+msgid "**Example use:** Change the TOC of the SWIG manual to achieve this:"
+msgstr ""
+
+#: ../../document.rst:1084 53f2853ad4c14853802d94d1ced31897
+msgid ""
+"Collapse everything below top level and show the chapter on Python "
+"support in red, bold and italic::"
+msgstr ""
+
+#: ../../document.rst:1101 d9a4471e44b142eab7589ba8b5c9d7f5
+msgid ""
+"In the previous example, we have changed only 42 of the 1240 TOC items of"
+" the file."
+msgstr ""
+
+#: ../../document.rst:1105 20ce4cb6430a482ca8f7b994d0eb97be
+msgid "New in v1.16.0"
+msgstr ""
+
+#: ../../document.rst:1107 1afd79adfc6045259405d99e7028f64d
+msgid ""
+"Check whether the document can be saved incrementally. Use it to choose "
+"the right option without encountering exceptions."
+msgstr ""
+
+#: ../../document.rst:1111 35e8cfd511764c61b0a2808724c380e5
+msgid "New in v1.16.14"
+msgstr ""
+
+#: ../../document.rst:1113 c757cee022ff4e04bfbfccb33146697f
+msgid ""
+"PDF only: Remove potentially sensitive data from the PDF. This function "
+"is inspired by the similar \"Sanitize\" function in Adobe Acrobat "
+"products. The process is configurable by a number of options."
+msgstr ""
+
+#: ../../document.rst:1115 89234b6fc9a14bd0bcc0f76804a25d24
+msgid "Search for 'FileAttachment' annotations and remove the file content."
+msgstr ""
+
+#: ../../document.rst:1116 ad16cc5a49f9438d82b9c9d7b9a33df3
+msgid ""
+"Remove any comments from page painting sources. If this option is set to "
+"*False*, then this is also done for *hidden_text* and *redactions*."
+msgstr ""
+
+#: ../../document.rst:1117 97de2f97f3514f6d887f52af6cfc50d4
+msgid "Remove embedded files."
+msgstr ""
+
+#: ../../document.rst:1118 09bd7ebd47cc48d496ef9682e51f4bd9
+msgid "Remove OCRed text and invisible text [#f7]_."
+msgstr ""
+
+#: ../../document.rst:1119 32775818e21e4816b5ec94873c2c493d
+msgid "Remove JavaScript sources."
+msgstr ""
+
+#: ../../document.rst:1120 c5af7adbdefe4e3b850cb9b90f38c2ad
+msgid "Remove PDF standard metadata."
+msgstr ""
+
+#: ../../document.rst:1121 057bd3c04d9f4d12a070c9ee7d7f832a
+msgid "Apply redaction annotations."
+msgstr ""
+
+#: ../../document.rst:1122 9c36be176f894409b4bce6e4cb3d9ec2
+msgid ""
+"how to handle images if applying redactions. One of 0 (ignore), 1 (blank "
+"out overlaps) or 2 (remove)."
+msgstr ""
+
+#: ../../document.rst:1123 6f3b702b35d64ade9d87cdb9366adda6
+msgid "Remove all links."
+msgstr ""
+
+#: ../../document.rst:1124 83d0b055056d49ac8e887b502f546c11
+msgid "Reset all form fields to their defaults."
+msgstr ""
+
+#: ../../document.rst:1125 a95729d78694476eaf482468e8ae7b55
+msgid "Remove all responses from all annotations."
+msgstr ""
+
+#: ../../document.rst:1126 2d758fed639c4d7ea1d8102aadc43b66
+msgid "Remove thumbnail images from pages."
+msgstr ""
+
+#: ../../document.rst:1127 cffa6e73cae14bf9aff32dfd60f220fb
+msgid "Remove XML metadata."
+msgstr ""
+
+#: ../../document.rst:1132 ../../document.rst:1197
+#: 3f880652bcca4b0cabc7401011397c95 c3e189e02dcd4fea878daa34c49c292b
+msgid "Changed in v1.18.7"
+msgstr ""
+
+#: ../../document.rst:1133 ../../document.rst:1198
+#: 3130ac74858d42078113f2d728b69563 d0c03612a3254bd2802b44753b5c7882
+msgid "Changed in v1.19.0"
+msgstr ""
+
+#: ../../document.rst:1135 6c91429b7fa845b882873af1f01305f8
+msgid "PDF only: Saves the document in its **current state**."
+msgstr ""
+
+#: ../../document.rst:1137 3929e84a5b25413e9e9fcb2bcb36c19a
+msgid ""
+"The file path, `pathlib.Path` or file object to save to. A file object "
+"must have been created before via `open(...)` or `io.BytesIO()`. Choosing"
+" `io.BytesIO()` is similar to :meth:`Document.tobytes` below, which "
+"equals the `getvalue()` output of an internally created `io.BytesIO()`."
+msgstr ""
+
+#: ../../document.rst:1139 706a9974da7d439bb3621ac91b00a7d1
+msgid ""
+"Do garbage collection. Positive values exclude \"incremental\".  * 0 = "
+"none * 1 = remove unused (unreferenced) objects. * 2 = in addition to 1, "
+"compact the :data:`xref` table. * 3 = in addition to 2, merge duplicate "
+"objects. * 4 = in addition to 3, check :data:`stream` objects for "
+"duplication. This may be slow because such data are typically large."
+msgstr ""
+
+#: ../../document.rst:1139 b077b262cbf54db285b38e3f2513eb02
+msgid "Do garbage collection. Positive values exclude \"incremental\"."
+msgstr ""
+
+#: ../../document.rst:1141 ../../document.rst:1159
+#: 92fb12675d1f4d91b06aa7afd71d94c0 e54e8dbf135842ff8868ab38d052236e
+msgid "0 = none"
+msgstr ""
+
+#: ../../document.rst:1142 328be35ac3054be09e40dc89dd40739b
+msgid "1 = remove unused (unreferenced) objects."
+msgstr ""
+
+#: ../../document.rst:1143 44f4e0ba160a41258103b8b362d183ba
+msgid "2 = in addition to 1, compact the :data:`xref` table."
+msgstr ""
+
+#: ../../document.rst:1144 4d7de456044c43e5bf84904b919e36f0
+msgid "3 = in addition to 2, merge duplicate objects."
+msgstr ""
+
+#: ../../document.rst:1145 900fe2108c6c4e409e8b9e29ad93c35c
+msgid ""
+"4 = in addition to 3, check :data:`stream` objects for duplication. This "
+"may be slow because such data are typically large."
+msgstr ""
+
+#: ../../document.rst:1147 7426abe389064364a866ad0fa01dec9a
+msgid ""
+"Clean and sanitize content streams [#f1]_. Corresponds to \"mutool clean "
+"-sc\"."
+msgstr ""
+
+#: ../../document.rst:1149 f5111ac9d3dc43f69ab779b026119713
+msgid "Deflate (compress) uncompressed streams."
+msgstr ""
+
+#: ../../document.rst:1150 3edd7108a3784e7ca5eaeae383e7720a
+msgid "*(new in v1.18.3)* Deflate (compress) uncompressed image streams [#f4]_."
+msgstr ""
+
+#: ../../document.rst:1151 288e82e3dd9d4de9ac13496840b28465
+msgid ""
+"*(new in v1.18.3)* Deflate (compress) uncompressed fontfile streams "
+"[#f4]_."
+msgstr ""
+
+#: ../../document.rst:1153 5bc690908c714bc68aa3f0917272679e
+msgid ""
+"Only save changes to the PDF. Excludes \"garbage\" and \"linear\". Can "
+"only be used if *outfile* is a string or a `pathlib.Path` and equal to "
+":attr:`Document.name`. Cannot be used for files that are decrypted or "
+"repaired and also in some other cases. To be sure, check "
+":meth:`Document.can_save_incrementally`. If this is false, saving to a "
+"new file is required."
+msgstr ""
+
+#: ../../document.rst:1155 ef7553334e1145b194951da5d50e25dc
+msgid "convert binary data to ASCII."
+msgstr ""
+
+#: ../../document.rst:1157 9f7fe03c232b4340ab02598e4c33fa99
+msgid ""
+"Decompress objects. Generates versions that can be better read by some "
+"other programs and will lead to larger files.  * 0 = none * 1 = images * "
+"2 = fonts * 255 = all"
+msgstr ""
+
+#: ../../document.rst:1157 e54508def5ae46d3afcf728965d69fce
+msgid ""
+"Decompress objects. Generates versions that can be better read by some "
+"other programs and will lead to larger files."
+msgstr ""
+
+#: ../../document.rst:1160 a0db4e5078ff446ea93f928f0a2e8bb7
+msgid "1 = images"
+msgstr ""
+
+#: ../../document.rst:1161 c04292c9f1914536b5f9b08f5e690596
+msgid "2 = fonts"
+msgstr ""
+
+#: ../../document.rst:1162 e885821772994caea994d8ff4292c70b
+msgid "255 = all"
+msgstr ""
+
+#: ../../document.rst:1164 c01b3d6e69af42c2854650fbed2388cb
+msgid ""
+"Save a linearised version of the document. This option creates a file "
+"format for improved performance for Internet access. Excludes "
+"\"incremental\"."
+msgstr ""
+
+#: ../../document.rst:1166 3e76be04a41244608aef73ae4ae2b67d
+msgid ""
+"Prettify the document source for better readability. PDF objects will be "
+"reformatted to look like the default output of "
+":meth:`Document.xref_object`."
+msgstr ""
+
+#: ../../document.rst:1168 f927eebd1adc491982a84f195056a8d4
+msgid ""
+"Suppress the update of the file's `/ID` field. If the file happens to "
+"have no such field at all, also suppress creation of a new one. Default "
+"is `False`, so every save will lead to an updated file identification."
+msgstr ""
+
+#: ../../document.rst:1170 f586ba17de9145d082794f34b2934218
+msgid ""
+"*(new in v1.16.0)* Set the desired permission levels. See "
+":ref:`PermissionCodes` for possible values. Default is granting all."
+msgstr ""
+
+#: ../../document.rst:1172 d0ec00fa43334adcbb904a6f795a5831
+msgid ""
+"*(new in v1.16.0)* set the desired encryption method. See "
+":ref:`EncryptionMethods` for possible values."
+msgstr ""
+
+#: ../../document.rst:1174 9c18c328f23341508ad777390d7ae718
+msgid ""
+"*(new in v1.16.0)* set the document's owner password. *(Changed in "
+"v1.18.3)* If not provided, the user password is taken if provided. The "
+"string length must not exceed 40 characters."
+msgstr ""
+
+#: ../../document.rst:1176 a4e10670641c41878f3bd08b990da0ae
+msgid ""
+"*(new in v1.16.0)* set the document's user password. The string length "
+"must not exceed 40 characters."
+msgstr ""
+
+#: ../../document.rst:1178 038325e6a1724e4c9a04296fc85d7a8e
+msgid ""
+"The method does not check, whether a file of that name already exists, "
+"will hence not ask for confirmation, and overwrite the file. It is your "
+"responsibility as a programmer to handle this."
+msgstr ""
+
+#: ../../document.rst:1182 2c22c3e8ad1649e287dd7f2e91d3b306
+msgid "New in v1.18.11"
+msgstr ""
+
+#: ../../document.rst:1184 75f304867ac8419b8abfe57bcf660758
+msgid ""
+"PDF only: The same as :meth:`Document.save` but with the changed defaults"
+" `deflate=True, garbage=3`."
+msgstr ""
+
+#: ../../document.rst:1188 0e909f69bb7c4783abdcf6d679c00022
+msgid ""
+"PDF only: saves the document incrementally. This is a convenience "
+"abbreviation for *doc.save(doc.name, incremental=True, "
+"encryption=PDF_ENCRYPT_KEEP)*."
+msgstr ""
+
+#: ../../document.rst:1192 15d098ce15104f6a9aac85b96182ff4d
+msgid ""
+"Saving incrementally may be required if the document contains verified "
+"signatures which would be invalidated by saving to a new file."
+msgstr ""
+
+#: ../../document.rst:1200 905f04894be94977b7f459e7cb355da9
+msgid ""
+"PDF only: Writes the **current content of the document** to a bytes "
+"object instead of to a file. Obviously, you should be wary about memory "
+"requirements. The meanings of the parameters exactly equal those in "
+":meth:`save`. Chapter :ref:`FAQ` contains an example for using this "
+"method as a pre-processor to `pdfrw "
+"<https://pypi.python.org/pypi/pdfrw/0.3>`_."
+msgstr ""
+
+#: ../../document.rst:1202 499de08e1c4f40b0b5ad52758a315f16
+msgid "*(Changed in v1.16.0)* for extended encryption support."
+msgstr ""
+
+#: ../../document.rst:1205 9592ce120efe426abf9dcd2cb2e1c27d
+msgid "a bytes object containing the complete document."
+msgstr ""
+
+#: ../../document.rst:1209 ff1ec35942af40449ce7d42c781045fd
+msgid ""
+"Search for \"text\" on page number \"pno\". Works exactly like the "
+"corresponding :meth:`Page.search_for`. Any integer `-∞ < pno < "
+"page_count` is acceptable."
+msgstr ""
+
+#: ../../document.rst:1225 60ca13f06218470cb6317c2fba051bb4
+msgid ""
+"Changed in v1.19.3 - as a fix to issue `#537 "
+"<https://github.com/pymupdf/PyMuPDF/issues/537>`_, form fields are always"
+" excluded."
+msgstr ""
+
+#: ../../document.rst:1227 b3eaa0fc2f2043b58033867a09563de7
+msgid ""
+"PDF only: Copy the page range **[from_page, to_page]** (including both) "
+"of PDF document *docsrc* into the current one. Inserts will start with "
+"page number *start_at*. Value -1 indicates default values. All pages thus"
+" copied will be rotated as specified. Links and annotations can be "
+"excluded in the target, see below. All page numbers are 0-based."
+msgstr ""
+
+#: ../../document.rst:1229 3e2e25f5daf84e0a8f8e170c48c203ba
+msgid ""
+"An opened PDF *Document* which must not be the current document. However,"
+" it may refer to the same underlying file."
+msgstr ""
+
+#: ../../document.rst:1232 4d620897b8a84265a492a9c341733e78
+msgid "First page number in *docsrc*. Default is zero."
+msgstr ""
+
+#: ../../document.rst:1234 2608a987bce146e4b28e4628ec72bc57
+msgid "Last page number in *docsrc* to copy. Defaults to last page."
+msgstr ""
+
+#: ../../document.rst:1236 8d3f22a9474e4a7ea3dfa099121b06b8
+msgid ""
+"First copied page, will become page number *start_at* in the target. "
+"Default -1 appends the page range to the end. If zero, the page range "
+"will be inserted before current first page."
+msgstr ""
+
+#: ../../document.rst:1238 651177dbb9bc451ca7699aafdca955c2
+msgid ""
+"All copied pages will be rotated by the provided value (degrees, integer "
+"multiple of 90)."
+msgstr ""
+
+#: ../../document.rst:1240 2a250f2ae69644f09eef783f15d05d37
+msgid ""
+"Choose whether (internal and external) links should be included in the "
+"copy. Default is *True*. Internal links to outside the copied page range "
+"are **always excluded**."
+msgstr ""
+
+#: ../../document.rst:1241 8568340fe9904e0ea30c862d88d6c6b2
+msgid ""
+"*(new in v1.16.1)* choose whether annotations should be included in the "
+"copy. *(Fixed in v1.19.3)* Form fields can never be copied."
+msgstr ""
+
+#: ../../document.rst:1242 775bfbd613974e7fb194160fded741dc
+msgid ""
+"*(new in v1.17.7)* specify an interval size greater zero to see progress "
+"messages on `sys.stdout`. After each interval, a message like `Inserted "
+"30 of 47 pages.` will be printed."
+msgstr ""
+
+#: ../../document.rst:1243 d718f2fd8f974661a2139013b09f0bcc
+msgid ""
+"*(new in v1.18.0)* controls whether the list of already copied objects "
+"should be **dropped** after this method, default *True*. Set it to 0 "
+"except for the last one of multiple insertions from the same source PDF. "
+"This saves target file size and speeds up execution considerably."
+msgstr ""
+
+#: ../../document.rst:1247 1b29ec1c892a4db2884a7e07d60f73b9
+msgid ""
+"If *from_page > to_page*, pages will be **copied in reverse order**. If "
+"*0 <= from_page == to_page*, then one page will be copied."
+msgstr ""
+
+#: ../../document.rst:1249 d5346e99f53146b9880563657c17c708
+msgid ""
+"*docsrc* TOC entries **will not be copied**. It is easy however, to "
+"recover a table of contents for the resulting document. Look at the "
+"examples below and at program `join.py <https://github.com/pymupdf"
+"/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py>`_ in the "
+"*examples* directory: it can join PDF documents and at the same time "
+"piece together respective parts of the tables of contents."
+msgstr ""
+
+#: ../../document.rst:1266 515affcd6c824c179d0711af7fbd2806
+msgid "New in v1.22.0"
+msgstr ""
+
+#: ../../document.rst:1268 cb01b037a5bd42cb9700d1e83edd1305
+msgid ""
+"PDF only: Add an arbitrary supported document to the current PDF. Opens "
+"\"infile\" as a document, converts it to a PDF and then invokes "
+":meth:`Document.insert_pdf`. Parameters are the same as for that method. "
+"Among other things, this features an easy way to append images as full "
+"pages to an output PDF."
+msgstr ""
+
+#: ../../document.rst:1270 7dd00eb14bd846b99cba8093cd34459d
+msgid ""
+"the input document to insert. May be a filename specification as is valid"
+" for creating a :ref:`Document` or a :ref:`Pixmap`."
+msgstr ""
+
+#: ../../document.rst:1279 8097f1fb1f74430e8150d077b886340d
+msgid "PDF only: Insert an empty page."
+msgstr ""
+
+#: ../../document.rst:1281 09ddcf0b810848aea3442bce5702c16e
+msgid ""
+"page number in front of which the new page should be inserted. Must be in"
+" *1 < pno <= page_count*. Special values -1 and *doc.page_count* insert "
+"**after** the last page."
+msgstr ""
+
+#: ../../document.rst:1283 71dc5751067946a8854301b476a0cfc7
+msgid "page width."
+msgstr ""
+
+#: ../../document.rst:1284 b8bde47ae1204a3f8271939eaeb12602
+msgid "page height."
+msgstr ""
+
+#: ../../document.rst:1287 5a7d34d771324321afdc7568eeb8ada8
+msgid "the created page object."
+msgstr ""
+
+#: ../../document.rst:1299 05627a710c5f496f920fee6289a73734
+msgid ""
+"PDF only: Insert a new page and insert some text. Convenience function "
+"which combines :meth:`Document.new_page` and (parts of) "
+":meth:`Page.insert_text`."
+msgstr ""
+
+#: ../../document.rst:1301 85c500d98fc844dd91e94149d6a10d4a
+msgid ""
+"page number (0-based) **in front of which** to insert. Must be in "
+"`range(-1, doc.page_count + 1)`. Special values -1 and `doc.page_count` "
+"insert **after** the last page.  Changed in v1.14.12    This is now a "
+"positional parameter"
+msgstr ""
+
+#: ../../document.rst:1301 078584a18c6b4ce3aa9318d9f8f18f4b
+msgid ""
+"page number (0-based) **in front of which** to insert. Must be in "
+"`range(-1, doc.page_count + 1)`. Special values -1 and `doc.page_count` "
+"insert **after** the last page."
+msgstr ""
+
+#: ../../document.rst:1304 c6c05e3160a144fe9ea94eb1e7d024ff
+msgid "Changed in v1.14.12"
+msgstr ""
+
+#: ../../document.rst:1304 f05326907fd146f3ad2c5e910da771ff
+msgid "This is now a positional parameter"
+msgstr ""
+
+#: ../../document.rst:1306 0b55a3884dcf42e0a2a9d214bb1f6dc8
+msgid "For the other parameters, please consult the aforementioned methods."
+msgstr ""
+
+#: ../../document.rst:1309 b7c07014fcb445e29b6f18e2231ec3c1
+msgid ""
+"the result of :meth:`Page.insert_text` (number of successfully inserted "
+"lines)."
+msgstr ""
+
+#: ../../document.rst:1313 252f21d36b9142dbb05fd2c3513a7de0
+msgid ""
+"PDF only: Delete a page given by its 0-based number in `-∞ < pno < "
+"page_count - 1`."
+msgstr ""
+
+#: ../../document.rst:1315 ../../document.rst:1322
+#: 0185783c7d044a8b9ad507b7e77c39f1 c192bc824bcc4e2f9b5f0fb513ce445d
+msgid "Changed in v1.18.14: support Python's `del` statement."
+msgstr ""
+
+#: ../../document.rst:1317 d066faa44e614cbfa8bcf890b72b60b6
+msgid ""
+"the page to be deleted. Negative number count backwards from the end of "
+"the document (like with indices). Default is the last page."
+msgstr ""
+
+#: ../../document.rst:1321 7f108cfae1d74fe990f2888839163111
+msgid "Changed in v1.18.13: more flexibility specifying pages to delete."
+msgstr ""
+
+#: ../../document.rst:1324 bb5d1a2639a44beeb2f51a359d342ed0
+msgid "PDF only: Delete multiple pages given as 0-based numbers."
+msgstr ""
+
+#: ../../document.rst:1328 078bd72495a64af3b81944e9a80ddb98
+msgid ""
+"**Format 1:** Use keywords. Represents the old format. A contiguous range"
+" of pages is removed."
+msgstr ""
+
+#: ../../document.rst:1327 e794e304e8fd49789a1a85bc5c4a00ca
+msgid "\"from_page\": first page to delete. Zero if omitted."
+msgstr ""
+
+#: ../../document.rst:1328 be3ef05aa2ab4fc183966c29be398696
+msgid ""
+"\"to_page\": last page to delete. Last page in document if omitted. Must "
+"not be less then \"from_page\"."
+msgstr ""
+
+#: ../../document.rst:1330 49944ed7a2af419e9dc19ab15c924f42
+msgid ""
+"**Format 2:** Two page numbers as positional parameters. Handled like "
+"Format 1."
+msgstr ""
+
+#: ../../document.rst:1332 83fcc4ab7c114e499b4259391e74881b
+msgid ""
+"**Format 3:** One positional integer parameter. Equivalent to "
+":meth:`Page.delete_page`."
+msgstr ""
+
+#: ../../document.rst:1334 9599817b113741d0b2114693024d6b8b
+msgid ""
+"**Format 4:** One positional parameter of type *list*, *tuple* or "
+"*range()* of page numbers. The items of this sequence may be in any order"
+" and may contain duplicates."
+msgstr ""
+
+#: ../../document.rst:1336 ec31c21b86824b858feebe10ebe29798
+msgid ""
+"**Format 5:** *(New in v1.18.14)* Using the Python `del` statement and "
+"index / slice notation is now possible."
+msgstr ""
+
+#: ../../document.rst:1340 280c28074ed84bf8867021747d4f8b07
+msgid ""
+"*(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a "
+"valid PDF structure, this method and :meth:`delete_page` will also "
+"deactivate items in the table of contents which point to deleted pages. "
+"\"Deactivation\" here means, that the bookmark will point to nowhere and "
+"the title will be shown grayed-out by supporting PDF viewers. The overall"
+" TOC structure is left intact."
+msgstr ""
+
+#: ../../document.rst:1342 9b47a29279094a77a589d55ae678a7fd
+msgid ""
+"It will also remove any **links on remaining pages** which point to a "
+"deleted one. This action may have an extended response time for documents"
+" with many pages."
+msgstr ""
+
+#: ../../document.rst:1344 6057633e8fbc41f3846fc6e101034234
+msgid "Following examples will all delete pages 500 through 519:"
+msgstr ""
+
+#: ../../document.rst:1346 13e06c20769b409896fcf343c3e5bb03
+msgid "`doc.delete_pages(500, 519)`"
+msgstr ""
+
+#: ../../document.rst:1347 d5f1a7aa1c2441eeabd9c39ff5d64040
+msgid "`doc.delete_pages(from_page=500, to_page=519)`"
+msgstr ""
+
+#: ../../document.rst:1348 266d33c6b95f48e8a1c6073c98a13c19
+msgid "`doc.delete_pages((500, 501, 502, ... , 519))`"
+msgstr ""
+
+#: ../../document.rst:1349 fcb1183fd4fc440b8bc5bcf9b94768f8
+msgid "`doc.delete_pages(range(500, 520))`"
+msgstr ""
+
+#: ../../document.rst:1350 dc188109404443738c29ab665d2bf0f7
+msgid "`del doc[500:520]`"
+msgstr ""
+
+#: ../../document.rst:1351 147182ac126045a8869c4dd33ee68c3d
+msgid "`del doc[(500, 501, 502, ... , 519)]`"
+msgstr ""
+
+#: ../../document.rst:1352 f3a569e45dd14d8dac7c5d5ca9de31e2
+msgid "`del doc[range(500, 520)]`"
+msgstr ""
+
+#: ../../document.rst:1354 50e383f68b8744a49e996d9f9208596b
+msgid ""
+"For the :ref:`AdobeManual` the above takes about 0.6 seconds, because the"
+" remaining 1290 pages must be cleaned from invalid links."
+msgstr ""
+
+#: ../../document.rst:1356 cc6681c7970d4fa9a13cf4f80d612f04
+msgid ""
+"In general, the performance of this method is dependent on the number of "
+"remaining pages -- **not** on the number of deleted pages: in the above "
+"example, **deleting all pages except** those 20, will need much less "
+"time."
+msgstr ""
+
+#: ../../document.rst:1361 37e24c8adf444f63b62e2ae5f336cd05
+msgid "PDF only: Copy a page reference within the document."
+msgstr ""
+
+#: ../../document.rst:1363 09202da23d8740848128e01c9c856590
+msgid "the page to be copied. Must be in range `0 <= pno < page_count`."
+msgstr ""
+
+#: ../../document.rst:1365 ../../document.rst:1377
+#: 230e24dc1f5749f5971273058801e7b7 39a1136b88d24c96adad7d1573707e90
+msgid ""
+"the page number in front of which to copy. The default inserts **after** "
+"the last page."
+msgstr ""
+
+#: ../../document.rst:1367 b05f0a41a1844f40946316ecdbf39a7a
+msgid ""
+"Only a new **reference** to the page object will be created -- not a new "
+"page object, all copied pages will have identical attribute values, "
+"including the :attr:`Page.xref`. This implies that any changes to one of "
+"these copies will appear on all of them."
+msgstr ""
+
+#: ../../document.rst:1371 a1a5d303a1f844cdbac6555f6928fb78
+msgid "New in v1.14.17"
+msgstr ""
+
+#: ../../document.rst:1373 7d43c885b032422aaa3873b99ea0b044
+msgid "PDF only: Make a full copy (duplicate) of a page."
+msgstr ""
+
+#: ../../document.rst:1375 3a9dc6a7b81644c1bca7a7def02c3894
+msgid "the page to be duplicated. Must be in range `0 <= pno < page_count`."
+msgstr ""
+
+#: ../../document.rst:1381 8d295a3602c647fda38413fb69a7bb1c
+msgid ""
+"In contrast to :meth:`copy_page`, this method creates a new page object "
+"(with a new :data:`xref`), which can be changed independently from the "
+"original."
+msgstr ""
+
+#: ../../document.rst:1383 83f5662399944b28ad85875fa6517f4f
+msgid ""
+"Any Popup and \"IRT\" (\"in response to\") annotations are **not copied**"
+" to avoid potentially incorrect situations."
+msgstr ""
+
+#: ../../document.rst:1387 5232730dcf9c4f989707e1f397fd2dc5
+msgid "PDF only: Move (copy and then delete original) a page within the document."
+msgstr ""
+
+#: ../../document.rst:1389 fd607108147b43b5a3ae58da57b60c8c
+msgid "the page to be moved. Must be in range `0 <= pno < page_count`."
+msgstr ""
+
+#: ../../document.rst:1391 df9c0d350a33453788ff98fdfbde3b91
+msgid ""
+"the page number in front of which to insert the moved page. The default "
+"moves **after** the last page."
+msgstr ""
+
+#: ../../document.rst:1396 8778b8c0c5f344f8a7a46c85d6271fe9
+msgid "New in v1.17.4"
+msgstr ""
+
+#: ../../document.rst:1398 b641360398dd478581ab3a524a9503f2
+msgid ""
+"PDF only: Get or set the */NeedAppearances* property of Form PDFs. Quote:"
+" *\"(Optional) A flag specifying whether to construct appearance streams "
+"and appearance dictionaries for all widget annotations in the document "
+"... Default value: false.\"* This may help controlling the behavior of "
+"some readers / viewers."
+msgstr ""
+
+#: ../../document.rst:1400 619161b6a86d49a5b21a797509949716
+msgid ""
+"set the property to this value. If omitted or `None`, inquire the current"
+" value."
+msgstr ""
+
+#: ../../document.rst:1403 a55ed9b566b24c17a01bb138ae9811f4
+msgid ""
+"* None: not a Form PDF, or property not defined. * True / False: the "
+"value of the property (either just set or existing for inquiries). Has no"
+" effect if no Form PDF."
+msgstr ""
+
+#: ../../document.rst:1404 8fc8b0ccb5b8427a9a0051f15baa7156
+msgid "None: not a Form PDF, or property not defined."
+msgstr ""
+
+#: ../../document.rst:1405 2a49677423f6460cbdd36304ce0d39c8
+msgid ""
+"True / False: the value of the property (either just set or existing for "
+"inquiries). Has no effect if no Form PDF."
+msgstr ""
+
+#: ../../document.rst:1411 cae9d4bec1f94f02874d85cca797f378
+msgid ""
+"PDF only: Return whether the document contains signature fields. This is "
+"an optional PDF property: if not present (return value -1), no "
+"conclusions can be drawn -- the PDF creator may just not have bothered "
+"using it."
+msgstr ""
+
+#: ../../document.rst:1414 0f9ea0b9904d41c5992743b623578fda
+msgid ""
+"* -1: not a Form PDF / no signature fields recorded / no *SigFlags* "
+"found. * 1: at least one signature field exists. * 3:  contains "
+"signatures that may be invalidated if the file is saved (written) in a "
+"way that alters its previous contents, as opposed to an incremental "
+"update."
+msgstr ""
+
+#: ../../document.rst:1415 d2986ee946a2400f81e47ee0aea07594
+msgid "-1: not a Form PDF / no signature fields recorded / no *SigFlags* found."
+msgstr ""
+
+#: ../../document.rst:1416 8e32d0dadf574cb3a8f87cbc942ab78a
+msgid "1: at least one signature field exists."
+msgstr ""
+
+#: ../../document.rst:1417 c5cb35588d6b415e92816008c0dbec36
+msgid ""
+"3:  contains signatures that may be invalidated if the file is saved "
+"(written) in a way that alters its previous contents, as opposed to an "
+"incremental update."
+msgstr ""
+
+#: ../../document.rst:1426 32e45ae8e6f1461b97f495d33fa2a0ff
+msgid ""
+"Changed in v1.14.16: The sequence of positional parameters \"name\" and "
+"\"buffer\" has been changed to comply with the call pattern of other "
+"functions."
+msgstr ""
+
+#: ../../document.rst:1428 a47cf8af547a47c889e662d3b4442195
+msgid ""
+"PDF only: Embed a new file. All string parameters except the name may be "
+"unicode (in previous versions, only ASCII worked correctly). File "
+"contents will be compressed (where beneficial)."
+msgstr ""
+
+#: ../../document.rst:1430 9e2b3fd7ee0e405895a3bbd824df025e
+msgid "entry identifier, **must not already exist**."
+msgstr ""
+
+#: ../../document.rst:1431 777acb578cff473f81038f385bec432c
+msgid ""
+"file contents.  *(Changed in v1.14.13)* *io.BytesIO* is now also "
+"supported."
+msgstr ""
+
+#: ../../document.rst:1431 cf495aedc0ff44a595e3745ec98d0e8a
+msgid "file contents."
+msgstr ""
+
+#: ../../document.rst:1433 ../../document.rst:1509
+#: 255b389de6dd4922846152fbd8364216 8caf7f8bf24f4f4ea09c0dfdf3689907
+msgid "*(Changed in v1.14.13)* *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../document.rst:1435 c216e5017df34c4ca3a566eff7a9505f
+msgid "optional filename. Documentation only, will be set to *name* if `None`."
+msgstr ""
+
+#: ../../document.rst:1436 8ab90748c60841de8d57a05d8ae55f97
+msgid ""
+"optional unicode filename. Documentation only, will be set to *filename* "
+"if `None`."
+msgstr ""
+
+#: ../../document.rst:1437 dfebebef30f44f729b829f0d24ddf253
+msgid "optional description. Documentation only, will be set to *name* if `None`."
+msgstr ""
+
+#: ../../document.rst:1440 685ab2df5b61445eb93ab1767d2df7bd
+msgid ""
+"*(Changed in v1.18.13)* The method now returns the :data:`xref` of the "
+"inserted file. In addition, the file object now will be automatically "
+"given the PDF keys `/CreationDate` and `/ModDate` based on the current "
+"date-time."
+msgstr ""
+
+#: ../../document.rst:1445 3d9f381d6aba46bd8654d0215f316044
+msgid ""
+"Changed in v1.14.16: This is now a method. In previous versions, this was"
+" a property."
+msgstr ""
+
+#: ../../document.rst:1447 15a406ff631344deba2dd7253e8611e3
+msgid "PDF only: Return the number of embedded files."
+msgstr ""
+
+#: ../../document.rst:1451 5377e898d1c644ab918259487bd78c79
+msgid ""
+"PDF only: Retrieve the content of embedded file by its entry number or "
+"name. If the document is not a PDF, or entry cannot be found, an "
+"exception is raised."
+msgstr ""
+
+#: ../../document.rst:1453 ../../document.rst:1473 ../../document.rst:1506
+#: 55d39330954b4d27af2ffe005f7561b1 69ebc824b40542a095ee5d5c9c7e26f4
+#: ecedda5d2a644de481e3d64d5aafd0f3
+msgid "index or name of entry. An integer must be in `range(embfile_count())`."
+msgstr ""
+
+#: ../../document.rst:1459 cd5a885bbb37448394cd01700603cd79
+msgid "Changed in v1.14.16: Items can now be deleted by index, too."
+msgstr ""
+
+#: ../../document.rst:1461 f8091c95a026444c8ad325aee5ebfcec
+msgid ""
+"PDF only: Remove an entry from `/EmbeddedFiles`. As always, physical "
+"deletion of the embedded file content (and file space regain) will occur "
+"only when the document is saved to a new file with a suitable garbage "
+"option."
+msgstr ""
+
+#: ../../document.rst:1463 6f3d4f764d604ec3946794f5211720eb
+msgid "index or name of entry."
+msgstr ""
+
+#: ../../document.rst:1465 eddff131329342d2b0c13db420a8e35a
+msgid ""
+"When specifying an entry name, this function will only **delete the first"
+" item** with that name. Be aware that PDFs not created with PyMuPDF may "
+"contain duplicate names. So you may want to take appropriate precautions."
+msgstr ""
+
+#: ../../document.rst:1469 bd212f024e0d4a66b74b729af5ea35f2
+msgid "Changed in v1.18.13"
+msgstr ""
+
+#: ../../document.rst:1471 165e75d5293f423382253d35e7f6fd49
+msgid ""
+"PDF only: Retrieve information of an embedded file given by its number or"
+" by its name."
+msgstr ""
+
+#: ../../document.rst:1476 709ad8f74c9643d5ba1b0ccb911326c2
+msgid ""
+"a dictionary with the following keys:  * *name* -- (*str*) name under "
+"which this entry is stored * *filename* -- (*str*) filename * *ufilename*"
+" -- (*unicode*) filename * *desc* -- (*str*) description * *size* -- "
+"(*int*) original file size * *length* -- (*int*) compressed file length *"
+" *creationDate* -- *(New in v1.18.13)* (*str*) date-time of item creation"
+" in PDF format * *modDate* -- *(New in v1.18.13)* (*str*) date-time of "
+"last change in PDF format * *collection* -- *(New in v1.18.13)* (*int*) "
+":data:`xref` of the associated PDF portfolio item if any, else zero. * "
+"*checksum* -- *(New in v1.18.13)* (*str*) a hashcode of the stored file "
+"content as a hexadecimal string. Should be MD5 according to PDF "
+"specifications, but be prepared to see other hashing algorithms."
+msgstr ""
+
+#: ../../document.rst:1476 9d4a08fd544e48b6b490740e9997e1ea
+msgid "a dictionary with the following keys:"
+msgstr ""
+
+#: ../../document.rst:1478 d054b8daf4254dff966b3c01f52affb1
+msgid "*name* -- (*str*) name under which this entry is stored"
+msgstr ""
+
+#: ../../document.rst:1479 6bc9672cd6fc4dd8abf2eba23e0acc9b
+msgid "*filename* -- (*str*) filename"
+msgstr ""
+
+#: ../../document.rst:1480 1526ffefdc4b46b5bdfeb449e2c5ee1f
+msgid "*ufilename* -- (*unicode*) filename"
+msgstr ""
+
+#: ../../document.rst:1481 f3355e4e7e9a4cbbae9ed372f49a85f0
+msgid "*desc* -- (*str*) description"
+msgstr ""
+
+#: ../../document.rst:1482 191b51803f58421bb76521ad969bc161
+msgid "*size* -- (*int*) original file size"
+msgstr ""
+
+#: ../../document.rst:1483 3a9ac748411045c297c539596550214d
+msgid "*length* -- (*int*) compressed file length"
+msgstr ""
+
+#: ../../document.rst:1484 d54b54fa29cc480c83e1d129fec93d0b
+msgid ""
+"*creationDate* -- *(New in v1.18.13)* (*str*) date-time of item creation "
+"in PDF format"
+msgstr ""
+
+#: ../../document.rst:1485 be5721ff8a164421a69984a31e6c576d
+msgid ""
+"*modDate* -- *(New in v1.18.13)* (*str*) date-time of last change in PDF "
+"format"
+msgstr ""
+
+#: ../../document.rst:1486 61422d6c332b4d758eb96563fed94780
+msgid ""
+"*collection* -- *(New in v1.18.13)* (*int*) :data:`xref` of the "
+"associated PDF portfolio item if any, else zero."
+msgstr ""
+
+#: ../../document.rst:1487 2fed05de7ba44cd79705d8ddff14d23d
+msgid ""
+"*checksum* -- *(New in v1.18.13)* (*str*) a hashcode of the stored file "
+"content as a hexadecimal string. Should be MD5 according to PDF "
+"specifications, but be prepared to see other hashing algorithms."
+msgstr ""
+
+#: ../../document.rst:1491 a34c50c116d14d37816fd8717e6ffd44
+msgid "New in v1.14.16"
+msgstr ""
+
+#: ../../document.rst:1493 90b796a9e76340c09bf8dbe97c03aa3b
+msgid ""
+"PDF only: Return a list of embedded file names. The sequence of the names"
+" equals the physical sequence in the document."
+msgstr ""
+
+#: ../../document.rst:1504 4f96a700a250469b8cee322718f9e326
+msgid ""
+"PDF only: Change an embedded file given its entry number or name. All "
+"parameters are optional. Letting them default leads to a no-operation."
+msgstr ""
+
+#: ../../document.rst:1507 f969298524ef4b58be8981b6f68861d4
+msgid ""
+"the new file content.  *(Changed in v1.14.13)* *io.BytesIO* is now also "
+"supported."
+msgstr ""
+
+#: ../../document.rst:1507 8d53cd89781f440b98e7eaa6e875eff7
+msgid "the new file content."
+msgstr ""
+
+#: ../../document.rst:1511 525e3fd5cef54c21ae7a532d7a86f198
+msgid "the new filename."
+msgstr ""
+
+#: ../../document.rst:1512 44dbc92577034b108719663f549ee255
+msgid "the new unicode filename."
+msgstr ""
+
+#: ../../document.rst:1513 f8ea4859aa1c4d329a0b036e8cb62eb4
+msgid "the new description."
+msgstr ""
+
+#: ../../document.rst:1515 3e741f91ad14474ea2a90a8ce7c81091
+msgid ""
+"*(Changed in v1.18.13)*  The method now returns the :data:`xref` of the "
+"file object."
+msgstr ""
+
+#: ../../document.rst:1518 67a5c368dae547beafeaabf9e96f47cc
+msgid ""
+"xref of the file object. Automatically, its `/ModDate` PDF key will be "
+"updated with the current date-time."
+msgstr ""
+
+#: ../../document.rst:1523 12c02df4e9ba4399a92209d80dcec4b1
+msgid ""
+"Release objects and space allocations associated with the document. If "
+"created from a file, also closes *filename* (releasing control to the "
+"OS). Explicitly closing a document is equivalent to deleting it, `del "
+"doc`, or assigning it to something else like `doc = None`."
+msgstr ""
+
+#: ../../document.rst:1527 ../../document.rst:1541 ../../document.rst:1548
+#: ../../document.rst:1555 ../../document.rst:1566 ../../document.rst:1575
+#: ../../document.rst:1724 0100e39e914e400b89977de20701928c
+#: 0675440791a044fb95edb1ad23521a43 3dd52da84b814e9bb0990104b7193c0f
+#: 82dcc882b06044a1991c074a4fb947cf c860bee8c22141e0bdf0ffda3b292f7c
+#: e12000ea0e924c7482053930e4bc9b75 e9e82bc284f848c782bc0a0ffd6bdcc3
+msgid "New in v1.16.8"
+msgstr ""
+
+#: ../../document.rst:1528 7f7b3cfa75034b08a13a8cb22a256fe3
+msgid "Changed in v1.18.10"
+msgstr ""
+
+#: ../../document.rst:1530 94d022be275443b68f7950acc14afb33
+msgid "PDF only: Return the definition source of a PDF object."
+msgstr ""
+
+#: ../../document.rst:1532 f5998defbe6e4c1dbf17b2f8297af575
+msgid ""
+"the object's :data`xref`. *Changed in v1.18.10:* A value of -1 returns "
+"the PDF trailer source."
+msgstr ""
+
+#: ../../document.rst:1533 3f03267b3781486ebfbb186745a94170
+msgid "whether to generate a compact output with no line breaks or spaces."
+msgstr ""
+
+#: ../../document.rst:1534 0d03e6b3054c49308f0e4d8337814fc2
+msgid "whether to ASCII-encode binary data."
+msgstr ""
+
+#: ../../document.rst:1537 8da7de1514f844cbabbe15217c967364
+msgid "The object definition source."
+msgstr ""
+
+#: ../../document.rst:1543 4b799bacfe3540ceba2f9a46bd04c87f
+msgid ""
+"PDF only: Return the :data:`xref` number of the PDF catalog (or root) "
+"object. Use that number with :meth:`Document.xref_object` to see its "
+"source."
+msgstr ""
+
+#: ../../document.rst:1550 6fade210ddaa4db69168743d33dd7c41
+msgid ""
+"PDF only: Return the trailer source of the PDF,  which is usually located"
+" at the PDF file's end. This is :meth:`Document.xref_object` with an "
+"*xref* argument of -1."
+msgstr ""
+
+#: ../../document.rst:1557 f07b57753b9a4e59a9e6214b53532c2c
+msgid ""
+"PDF only: Return the **decompressed** contents of the :data:`xref` stream"
+" object."
+msgstr ""
+
+#: ../../document.rst:1559 ../../document.rst:1579 ../../document.rst:1598
+#: 324a4865736e4edd8ac5251f9c24f761 6e6bdc623a074237ba8ba4a7cc335e0f
+#: ae16c0bd23644cd6894ef0cc5c34c54a
+msgid ":data:`xref` number."
+msgstr ""
+
+#: ../../document.rst:1562 f5704c848be348f2b86f250d1f53f7d5
+msgid "the (decompressed) stream of the object."
+msgstr ""
+
+#: ../../document.rst:1568 568b48afbfae4fd7bb796d3890754a0a
+msgid ""
+"PDF only: Return the **unmodified** (esp. **not decompressed**) contents "
+"of the :data:`xref` stream object. Otherwise equal to "
+":meth:`Document.xref_stream`."
+msgstr ""
+
+#: ../../document.rst:1571 33d6b0d845de4284a89ebcf8bab38b74
+msgid "the (original, unmodified) stream of the object."
+msgstr ""
+
+#: ../../document.rst:1577 b5970deacb98421db7603d8f8127facc
+msgid ""
+"PDF only: Replace object definition of :data:`xref` with the provided "
+"string. The xref may also be new, in which case this instruction "
+"completes the object definition. If a page object is also given, its "
+"links and annotations will be reloaded afterwards."
+msgstr ""
+
+#: ../../document.rst:1581 b1e9225e7adf4100bc91204076e60e81
+msgid "a string containing a valid PDF object definition."
+msgstr ""
+
+#: ../../document.rst:1583 e90ff7e1b6b24b0bb0ac902e258ddebf
+msgid ""
+"a page object. If provided, indicates, that annotations of this page "
+"should be refreshed (reloaded) to reflect changes incurred with links and"
+" / or annotations."
+msgstr ""
+
+#: ../../document.rst:1587 0eeb1fbd8090470aa27133a7cf837b9e
+msgid "zero if successful, otherwise an exception will be raised."
+msgstr ""
+
+#: ../../document.rst:1592 9f3502bb8d4c40d6910983d631e6db9d
+msgid "New in v.1.16.8"
+msgstr ""
+
+#: ../../document.rst:1593 0bfb526a56c9462585f03af76cda1e62
+msgid "Changed in v1.19.2: added parameter \"compress\""
+msgstr ""
+
+#: ../../document.rst:1594 0ebc6e56fb9c4624afc0ce520d97684b
+msgid ""
+"Changed in v1.19.6: deprecated parameter \"new\". Now confirms that the "
+"object is a PDF dictionary object."
+msgstr ""
+
+#: ../../document.rst:1596 3a8f52b855ef44ccb9548bfb8772d9c6
+msgid ""
+"Replace the stream of an object identified by *xref*, which must be a PDF"
+" dictionary. If the object is no :data:`stream`, it will be turned into "
+"one. The function automatically performs a compress operation "
+"(\"deflate\") where beneficial."
+msgstr ""
+
+#: ../../document.rst:1600 291b4adcc71440af95bcdae757b14143
+msgid ""
+"the new content of the stream.  *(Changed in v1.14.13:)* *io.BytesIO* "
+"objects are now also supported."
+msgstr ""
+
+#: ../../document.rst:1600 74f5a898fbad4c8697c45f99fe509ad2
+msgid "the new content of the stream."
+msgstr ""
+
+#: ../../document.rst:1602 e96d3e88c52e42969b63fcacc04932df
+msgid "*(Changed in v1.14.13:)* *io.BytesIO* objects are now also supported."
+msgstr ""
+
+#: ../../document.rst:1604 90dc46fc917548fc819327dd55b7239c
+msgid "*deprecated* and ignored. Will be removed some time after v1.20.0."
+msgstr ""
+
+#: ../../document.rst:1605 26506aa3dd484b0bbfde40ceb85cfd6b
+msgid ""
+"whether to compress the inserted stream. If `True` (default), the stream "
+"will be inserted using `/FlateDecode` compression (if beneficial), "
+"otherwise the stream will inserted as is."
+msgstr ""
+
+#: ../../document.rst:1607 dd76cb6474ae4373b3ab7a98897c34a5
+msgid ""
+"if *xref* does not represent a PDF :data:`dict`. An empty dictionary "
+"`<<>>` is accepted. So if you just created the xref and want to give it a"
+" stream, first execute `doc.update_object(xref, \"<<>>\")`, and then "
+"insert the stream data with this method."
+msgstr ""
+
+#: ../../document.rst:1609 3254ee8ec6794c58884c26b7614ff39e
+msgid ""
+"The method is primarily (but not exclusively) intended to manipulate "
+"streams containing PDF operator syntax (see pp. 643 of the "
+":ref:`AdobeManual`) as it is the case for e.g. page content streams."
+msgstr ""
+
+#: ../../document.rst:1611 0085186ae2dd4f5da54704938de3cf52
+msgid ""
+"If you update a contents stream, consider using save parameter "
+"*clean=True* to ensure consistency between PDF operator source and the "
+"object structure."
+msgstr ""
+
+#: ../../document.rst:1613 723a48f95ba84e76adc974106031a46e
+msgid ""
+"Example: Let us assume that you no longer want a certain image appear on "
+"a page. This can be achieved by deleting the respective reference in its "
+"contents source(s) -- and indeed: the image will be gone after reloading "
+"the page. But the page's :data:`resources` object would still show the "
+"image as being referenced by the page. This save option will clean up any"
+" such mismatches."
+msgstr ""
+
+#: ../../document.rst:1618 13500ba88e564a66bfc44eaa9ee45aee
+msgid "New in v1.19.5"
+msgstr ""
+
+#: ../../document.rst:1620 cc244182db2b4805b19dcf47d5f9dd0f
+msgid ""
+"PDF Only: Make *target* xref an exact copy of *source*. If *source* is a "
+":data:`stream`, then these data are also copied."
+msgstr ""
+
+#: ../../document.rst:1622 317b34a84ed344a58bd865b88f4be098
+msgid "the source :data:`xref`. It must be an existing **dictionary** object."
+msgstr ""
+
+#: ../../document.rst:1623 dcb599871a4d40c29a27d6365dcfbb0b
+msgid ""
+"the target xref. Must be an existing **dictionary** object. If the xref "
+"has just been created, make sure to initialize it as a PDF dictionary "
+"with the minimum specification `<<>>`."
+msgstr ""
+
+#: ../../document.rst:1624 935caeb4f7d6423ba1d460928c93f674
+msgid ""
+"an optional list of top-level keys in *target*, that should not be "
+"removed in preparation of the copy process."
+msgstr ""
+
+#: ../../document.rst:1628 cddf45eccd6e4ded8a905e137cee0637
+msgid "This method has much in common with Python's *dict* method `copy()`."
+msgstr ""
+
+#: ../../document.rst:1629 946257c60b8c408f9b7b3bdddc7eb5a2
+msgid "Both xref numbers must represent existing dictionaries."
+msgstr ""
+
+#: ../../document.rst:1630 0b1c524d392b476eb3fa1a16db575734
+msgid ""
+"Before data is copied from *source*, all *target* dictionary keys are "
+"deleted. You can specify exceptions from this in the *keep* list. If "
+"*source* however has a same-named key, its value will still replace the "
+"target."
+msgstr ""
+
+#: ../../document.rst:1631 22493e2bb677440f9c1e7f105fd7741c
+msgid ""
+"If *source* is a :data:`stream` object, then these data will also be "
+"copied over, and *target* will be converted to a stream object."
+msgstr ""
+
+#: ../../document.rst:1632 e513e7a7feb943aabd798778f507243c
+msgid ""
+"A typical use case is to replace or remove an existing image without "
+"using redaction annotations. Example scripts can be seen `here "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples"
+"/replace-image>`_."
+msgstr ""
+
+#: ../../document.rst:1636 868e2b0a2df64a33aeae1bf96ef972ba
+msgid ""
+"PDF Only: Extract data and meta information of an image stored in the "
+"document. The output can directly be used to be stored as an image file, "
+"as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using "
+"pixmaps wherever possible to present the image in its original format "
+"(e.g. as JPEG)."
+msgstr ""
+
+#: ../../document.rst:1638 4daba6522085437b861e860370c859e8
+msgid ""
+":data:`xref` of an image object. If this is not in `range(1, "
+"doc.xref_length())`, or the object is no image or other errors occur, "
+"`None` is returned and no exception is raised."
+msgstr ""
+
+#: ../../document.rst:1641 f025441c9b5744b9b589901ee3b63af3
+msgid ""
+"a dictionary with the following keys  * *ext* (*str*) image type (e.g. "
+"*'jpeg'*), usable as image file extension * *smask* (*int*) :data:`xref` "
+"number of a stencil (/SMask) image or zero * *width* (*int*) image width "
+"* *height* (*int*) image height * *colorspace* (*int*) the image's "
+"*colorspace.n* number. * *cs-name* (*str*) the image's *colorspace.name*."
+" * *xres* (*int*) resolution in x direction. Please also see "
+":data:`resolution`. * *yres* (*int*) resolution in y direction. Please "
+"also see :data:`resolution`. * *image* (*bytes*) image data, usable as "
+"image file content"
+msgstr ""
+
+#: ../../document.rst:1641 3d26306a275a4b28895be536ce930495
+msgid "a dictionary with the following keys"
+msgstr ""
+
+#: ../../document.rst:1643 40609371191740d4824c53138c46a2f6
+msgid "*ext* (*str*) image type (e.g. *'jpeg'*), usable as image file extension"
+msgstr ""
+
+#: ../../document.rst:1644 90df04cb2f7148269b9fa14d1171a19c
+msgid "*smask* (*int*) :data:`xref` number of a stencil (/SMask) image or zero"
+msgstr ""
+
+#: ../../document.rst:1645 029717138a0c4ddaa7e2bf280817d4ba
+msgid "*width* (*int*) image width"
+msgstr ""
+
+#: ../../document.rst:1646 4fd1adfbbc0147028f6307042345b21f
+msgid "*height* (*int*) image height"
+msgstr ""
+
+#: ../../document.rst:1647 d9bde39256f54667b31281dd738126e2
+msgid "*colorspace* (*int*) the image's *colorspace.n* number."
+msgstr ""
+
+#: ../../document.rst:1648 08afe2e53ccd43aebfe8caf422dc1d31
+msgid "*cs-name* (*str*) the image's *colorspace.name*."
+msgstr ""
+
+#: ../../document.rst:1649 c444bdaf647e49efa9f9bebbb843f2b7
+msgid ""
+"*xres* (*int*) resolution in x direction. Please also see "
+":data:`resolution`."
+msgstr ""
+
+#: ../../document.rst:1650 2a78e644b9ca47d68bbdd756e59f89b5
+msgid ""
+"*yres* (*int*) resolution in y direction. Please also see "
+":data:`resolution`."
+msgstr ""
+
+#: ../../document.rst:1651 e50644e40cdb4991b631502e0b2b5a44
+msgid "*image* (*bytes*) image data, usable as image file content"
+msgstr ""
+
+#: ../../document.rst:1663 4b97f33b15a643eda104551fd07e88bc
+msgid ""
+"There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, "
+"followed by a *pix.tobytes()*. Main differences are that extract_image, "
+"**(1)** does not always deliver PNG image formats, **(2)** is **very** "
+"much faster with non-PNG images, **(3)** usually results in much less "
+"disk storage for extracted images, **(4)** returns `None` in error cases "
+"(generates no exception). Look at the following example images within the"
+" same PDF."
+msgstr ""
+
+#: ../../document.rst:1665 d17ec3782a864512a80c25396431bfbc
+msgid "xref 1268 is a PNG -- Comparable execution time and identical output::"
+msgstr ""
+
+#: ../../document.rst:1677 32fbb8d2af0746fe9331e9532931226f
+msgid ""
+"xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times "
+"faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::"
+msgstr ""
+
+#: ../../document.rst:1692 ac85178a9f5845c68b1cc7d006a09dba
+msgid "Changed in v1.19.4: return a dictionary if `named == True`."
+msgstr ""
+
+#: ../../document.rst:1694 4b84aae9c4564c4f967297f49249ae33
+msgid ""
+"PDF Only: Return an embedded font file's data and appropriate file "
+"extension. This can be used to store the font as an external file. The "
+"method does not throw exceptions (other than via checking for PDF and "
+"valid :data:`xref`)."
+msgstr ""
+
+#: ../../document.rst be7456cd325d426bbd9189f9d2f315fb
+msgid "arg int xref"
+msgstr ""
+
+#: ../../document.rst:1696 9bf05e77a0ae432f9000934d454d377d
+msgid "PDF object number of the font to extract."
+msgstr ""
+
+#: ../../document.rst 80647003088f497781ee1e68ccbbedb2
+msgid "arg bool info_only"
+msgstr ""
+
+#: ../../document.rst:1697 f11e99b4d1f546c99d8bc985d126637a
+msgid ""
+"only return font information, not the buffer. To be used for information-"
+"only purposes, avoids allocation of large buffer areas."
+msgstr ""
+
+#: ../../document.rst 846ae3b729f4442a959535a41a4156f4
+msgid "arg bool named"
+msgstr ""
+
+#: ../../document.rst:1698 5009631e50ea4257b3f0807b9bb87f24
+msgid ""
+"If true, a dictionary with the following keys is returned: 'name' (font "
+"base name), 'ext' (font file extension), 'type' (font type), 'content' "
+"(font file content)."
+msgstr ""
+
+#: ../../document.rst 46b8e241f3334f819195647f2108be8a
+msgid "rtype"
+msgstr ""
+
+#: ../../document.rst:1700 b36cf6b0ca85407ea297ec0a8e49c750
+msgid "tuple,dict"
+msgstr ""
+
+#: ../../document.rst 4ed5126141cb4583961eaa2f0544408b
+msgid "returns"
+msgstr ""
+
+#: ../../document.rst:1701 d4b8d30d6d464e1ba23de538181d1b26
+msgid ""
+"a tuple `(basename, ext, type, content)`, where *ext* is a 3-byte "
+"suggested file extension (*str*), *basename* is the font's name (*str*), "
+"*type* is the font's type (e.g. \"Type1\") and *content* is a bytes "
+"object containing the font file's content (or *b\"\"*). For possible "
+"extension values and their meaning see :ref:`FontExtensions`. Return "
+"details on error:"
+msgstr ""
+
+#: ../../document.rst:1703 af1335d515984608ab279779224de8b5
+msgid ""
+"`(\"\", \"\", \"\", b\"\")` -- invalid xref or xref is not a (valid) font"
+" object."
+msgstr ""
+
+#: ../../document.rst:1704 004295092a2e419583791b9e472de2c8
+msgid ""
+"`(basename, \"n/a\", \"Type1\", b\"\")` -- *basename* is not embedded and"
+" thus cannot be extracted. This is the case for e.g. the "
+":ref:`Base-14-Fonts` and Type 3 fonts."
+msgstr ""
+
+#: ../../document.rst:1706 bb6d8132c34e45ef8f2e8ef0d147351c
+msgid "Example:"
+msgstr ""
+
+#: ../../document.rst:1715 8222abf77c0d4cd393cf087aa865408a
+msgid ""
+"The basename is returned unchanged from the PDF. So it may contain "
+"characters (such as blanks) which may disqualify it as a filename for "
+"your operating system. Take appropriate action."
+msgstr ""
+
+#: ../../document.rst:1718 4a91ceb493884498873aa6fe73ff9042
+msgid ""
+"The returned *basename* in general is **not** the original file name, but"
+" it probably has some similarity."
+msgstr ""
+
+#: ../../document.rst:1719 a13d8f6625b64d818f04c41afa02d30f
+msgid ""
+"If parameter `named == True`, a dictionary with the following keys is "
+"returned: `{'name': 'T1', 'ext': 'n/a', 'type': 'Type3', 'content': "
+"b''}`."
+msgstr ""
+
+#: ../../document.rst:1726 f101d8a1e731416db25d0966580e8b05
+msgid "PDF only: Return the :data:`xref` of the document's XML metadata."
+msgstr ""
+
+#: ../../document.rst:1735 08910f07f5684300ad1d537ee4b7047f
+msgid ""
+"PDF only: Check whether there are links, resp. annotations anywhere in "
+"the document."
+msgstr ""
+
+#: ../../document.rst:1737 6319043308d640bb8d813fa311947bc5
+msgid ""
+"*True* / *False*. As opposed to fields, which are also stored in a "
+"central place of a PDF document, the existence of links / annotations can"
+" only be detected by parsing each page. These methods are tuned to do "
+"this efficiently and will immediately return, if the answer is *True* for"
+" a page. For PDFs with many thousand pages however, an answer may take "
+"some time [#f6]_ if no link, resp. no annotation is found."
+msgstr ""
+
+#: ../../document.rst:1742 bde6816c94e34dd1847978708cd0203b
+msgid "New in v1.18.7, changed in v1.18.9"
+msgstr ""
+
+#: ../../document.rst:1744 642fda7988c64e5ea0e9dfdcea548c2d
+msgid ""
+"PDF only: Investigate eligible fonts for their use by text in the "
+"document. If a font is supported and a size reduction is possible, that "
+"font is replaced by a version with a character subset."
+msgstr ""
+
+#: ../../document.rst:1746 70bcc9642de84eb89371a914d69eed8a
+msgid ""
+"Use this method immediately before saving the document. The following "
+"features and restrictions apply for the time being:"
+msgstr ""
+
+#: ../../document.rst:1748 5fccbe1d5f484cd182ac448f287dd69f
+msgid ""
+"Package `fontTools <https://pypi.org/project/fonttools/>`_ **must be "
+"installed**. It is required for creating the font subsets. If not "
+"installed, the method raises an `ImportError` exception."
+msgstr ""
+
+#: ../../document.rst:1749 a7bfe6857e5c48eb8a0a813e75022eb0
+msgid ""
+"Supported font types only include embedded OTF, TTF and WOFF that are "
+"**not already subsets**."
+msgstr ""
+
+#: ../../document.rst:1750 9d783067dd1541db9df711f12a6a9136
+msgid ""
+"**Changed in v1.18.9:** A subset font directly replaces its original -- "
+"text remains untouched and **is not rewritten.** It thus should retain "
+"all its properties, like spacing, hiddenness, control by Optional "
+"Content, etc."
+msgstr ""
+
+#: ../../document.rst:1752 ebe0ba07b85041bc91eb608286cfde7a
+msgid ""
+"The greatest benefit can be achieved when creating new PDFs using large "
+"fonts like is typical for Asian scripts. In these cases, the set of "
+"actually used unicodes mostly is small compared to the number of glyphs "
+"in the font. Using this feature can easily reduce the embedded font "
+"binary by two orders of magnitude -- from several megabytes to a low two-"
+"digit kilobyte amount."
+msgstr ""
+
+#: ../../document.rst:1757 ../../document.rst:1763 ../../document.rst:1770
+#: ../../document.rst:1777 ../../document.rst:1786 ../../document.rst:1793
+#: ../../document.rst:1802 ../../document.rst:1809 ../../document.rst:1816
+#: ../../document.rst:1825 ../../document.rst:1834
+#: 3647fe15bee64a9183af931bf50f0f21 534846fcf2d742589036032dca1b6fb7
+#: 70ee8871e2c3416f89ce4529306191a6 845bca3abc324e978934e159501b2f01
+#: 8c2dc5b1055f4fb5b76c047f50259e8d a127bf22c2e54753b4b6fa4a9d3318da
+#: be53991d5ffa413eb765ba0ea446a658 d9a8439706d9431993208937d500d787
+#: da66b84462eb484cbb7036e4e453ceab e1d34da048224c4e871ad24965c56c04
+#: f0beb299e5d64bea8e6487920937f7eb
+msgid "New in v1.19.0"
+msgstr ""
+
+#: ../../document.rst:1759 97215ada1163464797915a618af520bb
+msgid ""
+"PDF only: Enable journalling. Use this before you start logging "
+"operations."
+msgstr ""
+
+#: ../../document.rst:1765 7452edd8a00b424482a4f524c7ffdd06
+msgid ""
+"PDF only: Start journalling an *\"operation\"* identified by a string "
+"\"name\". Updates will fail for a journal-enabled PDF, if no operation "
+"has been started."
+msgstr ""
+
+#: ../../document.rst:1772 7b983085a7de4f2eba5aa86f4a32539d
+msgid ""
+"PDF only: Stop the current operation. The updates between start and stop "
+"of an operation belong to the same unit of work and will be undone / "
+"redone together."
+msgstr ""
+
+#: ../../document.rst:1779 d851122e06f9493fb68744c09aa3cf74
+msgid ""
+"PDF only: Return the numbers of the current operation and the total "
+"operation count."
+msgstr ""
+
+#: ../../document.rst:1781 c084c3ae1e1a4dd69967c6b5bdcccafd
+msgid ""
+"a tuple `(step, steps)` containing the current operation number and the "
+"total number of operations in the journal. If **step** is 0, we are at "
+"the top of the journal. If **step** equals **steps**, we are at the "
+"bottom. Updating the PDF with anything other than undo or redo will "
+"automatically remove all journal entries after the current one and the "
+"new update will become the new last entry in the journal. The updates "
+"corresponding to the removed journal entries will be permanently lost."
+msgstr ""
+
+#: ../../document.rst:1788 b7b3af3ee5b54a96a8a4ba274cdd76c6
+msgid "PDF only: Return the name of operation number *step.*"
+msgstr ""
+
+#: ../../document.rst:1795 7a28f0b4a88e4331aa72ceb151954348
+msgid ""
+"PDF only: Show whether forward (\"redo\") and / or backward (\"undo\") "
+"executions are possible from the current journal position."
+msgstr ""
+
+#: ../../document.rst:1797 5685cb9fd05848c391233925a47a7135
+msgid ""
+"a dictionary `{\"undo\": bool, \"redo\": bool}`. The respective method is"
+" available if its value is `True`."
+msgstr ""
+
+#: ../../document.rst:1804 f2f1eb491de14e59bcf43c7ee8006886
+msgid ""
+"PDF only: Revert (undo) the current step in the journal. This moves "
+"towards the journal's top."
+msgstr ""
+
+#: ../../document.rst:1811 e402f064ee5b4e69880b33e82b2ebc97
+msgid ""
+"PDF only: Re-apply (redo) the current step in the journal. This moves "
+"towards the journal's bottom."
+msgstr ""
+
+#: ../../document.rst:1818 7b10bb8c97384f87a40a79c0445098b6
+msgid "PDF only: Save the journal to a file."
+msgstr ""
+
+#: ../../document.rst:1820 642137deaf1d46bdbf0ec1637ddce134
+msgid ""
+"either a filename as string or a file object opened as \"wb\" (or an "
+"`io.BytesIO()` object)."
+msgstr ""
+
+#: ../../document.rst:1827 85c7e62dc2ef4c758a9c7243228a313e
+msgid ""
+"PDF only: Load journal from a file. Enables journalling for the document."
+" If journalling is already enabled, an exception is raised."
+msgstr ""
+
+#: ../../document.rst:1829 bc9c2369e3cc43038444147fc44960f9
+msgid ""
+"the filename (str) of the journal or a file object opened as \"rb\" (or "
+"an `io.BytesIO()` object)."
+msgstr ""
+
+#: ../../document.rst:1836 72453436fc23435dbbc57440041cabe1
+msgid ""
+"PDF only: Saves a \"snapshot\" of the document. This is a PDF document "
+"with a special, incremental-save format compatible with journalling -- "
+"therefore no save options are available. Saving a snapshot is not "
+"possible for new documents."
+msgstr ""
+
+#: ../../document.rst:1838 63f2095379034da7b882cd61a10e6dfd
+msgid ""
+"This is a normal PDF document with no usage restrictions whatsoever. If "
+"it is not being changed in any way, it can be used together with its "
+"journal to undo / redo operations or continue updating."
+msgstr ""
+
+#: ../../document.rst:1843 7e9cdf9bfc70405294e6b733a0c70f1f
+msgid ""
+"Contains the first :ref:`Outline` entry of the document (or `None`). Can "
+"be used as a starting point to walk through all outline items. Accessing "
+"this property for encrypted, not authenticated documents will raise an "
+"*AttributeError*."
+msgstr ""
+
+#: ../../document.rst 06fee07c19df4ca4866fda0506504a7d
+#: 07554c08db854b2a935063a7a87cf4df 179032e28ba04644b90ec10bb5e556d4
+#: 27f3285869294e2daafad0c7b62760aa 31c12d86bf784cad99fd7dafaac1d200
+#: 380d044de747491a9ffd15ecd2929ba9 3c2235f3abb149508c15c73f73d90211
+#: 437358658dcd4975bb1e5e7b0b521792 4cff98d714a0409496213634e2642531
+#: 4f1328ac7c2b46f1ad3e10278ac19dd7 509d0537ba494b8b9eff091acc9eed52
+#: 57cf5c6d4f334366a55ab1d08595df80 6a6f10a882e2403282c371e84a0e2dd3
+#: 6f2a7d9f005d4a36ae751727fd17d388 6fcd38e167b54169bd9593a15ae2004c
+#: acdaacee54bc4b2387317a0b461f5839 ad8a461cc9fe4924bd7400876d82fdd0
+#: bee505c03cdb4104962f0d2e50f978cc c4cd6fa137b7418a8e1d124e5365a156
+#: ce05c411fe9b4c6b88b24925fc61e3c3 f4254b0f712c41a78147e19bbafef2c9
+msgid "type"
+msgstr ""
+
+#: ../../document.rst:1845 cd26b25698a84e1ea235b8136213a38e
+msgid ":ref:`Outline`"
+msgstr ""
+
+#: ../../document.rst:1849 f3d6c362a8be4729ba8ef7cd2d511822
+msgid ""
+"*False* if document is still open. If closed, most other attributes and "
+"methods will have been deleted / disabled. In addition, :ref:`Page` "
+"objects referring to this document (i.e. created with "
+":meth:`Document.load_page`) and their dependent objects will no longer be"
+" usable. For reference purposes, :attr:`Document.name` still exists and "
+"will contain the filename of the original document (if applicable)."
+msgstr ""
+
+#: ../../document.rst:1851 ../../document.rst:1857 ../../document.rst:1863
+#: ../../document.rst:1877 ../../document.rst:1885 ../../document.rst:1893
+#: ../../document.rst:1931 ../../document.rst:1937
+#: 38c31b4acc7b4a5dac11e984ec9c6bb5 6c8aeec3d4b34fe69f716d4e9c079b5f
+#: 737610d72f7e488d805f772fe65a489a 81ceb43ff96f4cfa93f42166d2de6ced
+#: a128a6d8bb18446590ce83f62e8d0544 d332175c533d4f18b13c6af19a077064
+#: d884c507b92d48e9a7626843d6110617 dd8cb55d1a434e1e9847a83615b662ea
+msgid "bool"
+msgstr ""
+
+#: ../../document.rst:1855 c25633438512490182882d10fc1a93ad
+msgid ""
+"*True* if this is a PDF document and contains unsaved changes, else "
+"*False*."
+msgstr ""
+
+#: ../../document.rst:1861 71d6ad16750b4ae382a966bb2c26b83d
+msgid "*True* if this is a PDF document, else *False*."
+msgstr ""
+
+#: ../../document.rst:1867 ea21649a05014700ae324fcafb461e73
+msgid ""
+"*False* if this is not a PDF or has no form fields, otherwise the number "
+"of root form fields (fields with no ancestors)."
+msgstr ""
+
+#: ../../document.rst:1869 134f8c24800a4d66b1fc17cb7c7a7f53
+msgid "*(Changed in v1.16.4)* Returns the total number of (root) form fields."
+msgstr ""
+
+#: ../../document.rst:1871 306b2bda142445d78095bf63f4febdd9
+msgid "bool,int"
+msgstr ""
+
+#: ../../document.rst:1875 acdb7958adb546fd8a3e139639a3b904
+msgid ""
+"*True* if document has a variable page layout (like e-books or HTML). In "
+"this case you can set the desired page dimensions during document "
+"creation (open) or via method :meth:`layout`."
+msgstr ""
+
+#: ../../document.rst:1881 883048363c4842c7bd2da4c36f49adfe
+msgid "New in v1.18.2"
+msgstr ""
+
+#: ../../document.rst:1883 91cb1cac30d447238ef699c11a10285f
+msgid ""
+"*True* if PDF has been repaired during open (because of major structure "
+"issues). Always *False* for non-PDF documents. If true, more details have"
+" been stored in `TOOLS.mupdf_warnings()`, and "
+":meth:`Document.can_save_incrementally` will return *False*."
+msgstr ""
+
+#: ../../document.rst:1891 a865784a5e1c453e9af8ff460fe26ceb
+msgid "*True* if PDF is in linearized format. *False* for non-PDF documents."
+msgstr ""
+
+#: ../../document.rst:1899 8b34ed52e262409880b140af1201931a
+msgid ""
+"A dictionary indicating the `/MarkInfo` value. If not specified, the "
+"empty dictionary is returned. If not a PDF, `None` is returned."
+msgstr ""
+
+#: ../../document.rst:1901 ../../document.rst:1965
+#: 06b555b25f624c2c9e3519b50953e6c5 31d5dd408493437c9f02081f4d4904e4
+msgid "dict"
+msgstr ""
+
+#: ../../document.rst:1907 94c234d9f08e4b74aba22ce2c71ba588
+msgid ""
+"A string containing the `/PageMode` value. If not specified, the default "
+"\"UseNone\" is returned. If not a PDF, `None` is returned."
+msgstr ""
+
+#: ../../document.rst:1909 ../../document.rst:1917 ../../document.rst:1971
+#: 0cf6a2fca6a54f1aba337009f4616f9f 8b2400e66c464bf1b86f644965a3c78b
+#: d176710abe7b4f5886b9d32a9aca86b9
+msgid "str"
+msgstr ""
+
+#: ../../document.rst:1915 fb779a4235cb47f995e12a24d859a851
+msgid ""
+"A string containing the `/PageLayout` value. If not specified, the "
+"default \"SinglePage\" is returned. If not a PDF, `None` is returned."
+msgstr ""
+
+#: ../../document.rst:1923 e1c9af49b5ff41d5a9aef6915faca650
+msgid ""
+"An integer counting the number of versions present in the document. Zero "
+"if not a PDF, otherwise the number of incremental saves plus one."
+msgstr ""
+
+#: ../../document.rst:1925 ../../document.rst:1945 ../../document.rst:1977
+#: ../../document.rst:1985 ../../document.rst:1993
+#: 059bb42aff9941f8aa2d7604306f4c48 1b8136aff2af478a99ff71a336e1218b
+#: 1d5cbd9a8cfa479c85bf852e746e70af 48426b15277c47f39b9fbb5fca990887
+#: d88f295905944cf287d5fc11a8a03094
+msgid "int"
+msgstr ""
+
+#: ../../document.rst:1929 f73cba6c721441f0b2ea3b47b35eb7dd
+msgid ""
+"Indicates whether the document is password-protected against access. This"
+" indicator remains unchanged -- **even after the document has been "
+"authenticated**. Precludes incremental saves if true."
+msgstr ""
+
+#: ../../document.rst:1935 514c17d4bc08425795f019ed86bb142c
+msgid ""
+"This indicator initially equals :attr:`Document.needs_pass`. After "
+"successful authentication, it is set to *False* to reflect the situation."
+msgstr ""
+
+#: ../../document.rst:1941 b657a8faac1143759932e69011b90a87
+msgid ""
+"Changed in v1.16.0: This is now an integer comprised of bit indicators. "
+"Was a dictionary previously."
+msgstr ""
+
+#: ../../document.rst:1943 62ee818c5c3d49dcbaee9ca62f93145b
+msgid ""
+"Contains the permissions to access the document. This is an integer "
+"containing bool values in respective bit positions. For example, if "
+"*doc.permissions & fitz.PDF_PERM_MODIFY > 0*, you may change the "
+"document. See :ref:`PermissionCodes` for details."
+msgstr ""
+
+#: ../../document.rst:1949 3eaf4e8d3e3249c4b73548d00f4df4c7
+msgid ""
+"Contains the document's meta data as a Python dictionary or `None` (if "
+"*is_encrypted=True* and *needPass=True*). Keys are *format*, "
+"*encryption*, *title*, *author*, *subject*, *keywords*, *creator*, "
+"*producer*, *creationDate*, *modDate*, *trapped*. All item values are "
+"strings or `None`."
+msgstr ""
+
+#: ../../document.rst:1951 869b3c89ec1e4e42846f062d104db686
+msgid ""
+"Except *format* and *encryption*, for PDF documents, the key names "
+"correspond in an obvious way to the PDF keys */Creator*, */Producer*, "
+"*/CreationDate*, */ModDate*, */Title*, */Author*, */Subject*, */Trapped* "
+"and */Keywords* respectively."
+msgstr ""
+
+#: ../../document.rst:1953 6b4b2ccc712b461d96aaff5210119738
+msgid "*format* contains the document format (e.g. 'PDF-1.6', 'XPS', 'EPUB')."
+msgstr ""
+
+#: ../../document.rst:1955 99c25df72b7f4cb7beb62d45bf3af4e6
+msgid ""
+"*encryption* either contains `None` (no encryption), or a string naming "
+"an encryption method (e.g. *'Standard V4 R4 128-bit RC4'*). Note that an "
+"encryption method may be specified **even if** *needs_pass=False*. In "
+"such cases not all permissions will probably have been granted. Check "
+":attr:`Document.permissions` for details."
+msgstr ""
+
+#: ../../document.rst:1957 ab417c9578ef44d9b3aed39802fa79f4
+msgid ""
+"If the date fields contain valid data (which need not be the case at "
+"all!), they are strings in the PDF-specific timestamp format "
+"\"D:<TS><TZ>\", where"
+msgstr ""
+
+#: ../../document.rst:1959 2b6795f133e4478a847c057bd067d6db
+msgid ""
+"<TS> is the 12 character ISO timestamp *YYYYMMDDhhmmss* (*YYYY* - year, "
+"*MM* - month, *DD* - day, *hh* - hour, *mm* - minute, *ss* - second), and"
+msgstr ""
+
+#: ../../document.rst:1961 26c172a6eb3340a28d6de38e6a5584de
+msgid ""
+"<TZ> is a time zone value (time interval relative to GMT) containing a "
+"sign ('+' or '-'), the hour (*hh*), and the minute (*'mm'*, note the "
+"apostrophes!)."
+msgstr ""
+
+#: ../../document.rst:1963 2bb85a0c8cf645d98a849dc8754b657b
+msgid ""
+"A Paraguayan value might hence look like *D:20150415131602-04'00'*, which"
+" corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time "
+"Asuncion."
+msgstr ""
+
+#: ../../document.rst:1969 0e4c129cb07943e5bb3d7fd6b453aee1
+msgid ""
+"Contains the *filename* or *filetype* value with which *Document* was "
+"created."
+msgstr ""
+
+#: ../../document.rst:1975 6b5810e7de2845f69e8900700fb2131c
+msgid ""
+"Contains the number of pages of the document. May return 0 for documents "
+"with no pages. Function `len(doc)` will also deliver this result."
+msgstr ""
+
+#: ../../document.rst:1981 ../../document.rst:1989
+#: e5ae3f3f161348f08307f79e22d5bf3c fa8213f255af49baad8aa5e49b2114c2
+msgid "New in v1.17.0"
+msgstr ""
+
+#: ../../document.rst:1983 b32f3a555fd54ec8af1a45011a7b69c9
+msgid ""
+"Contains the number of chapters in the document. Always at least 1. "
+"Relevant only for document types with chapter support (EPUB currently). "
+"Other documents will return 1."
+msgstr ""
+
+#: ../../document.rst:1991 2ed09c63b95c4f94a2c9b4c6df271166
+msgid ""
+"Contains (chapter, pno) of the document's last page. Relevant only for "
+"document types with chapter support (EPUB currently). Other documents "
+"will return `(0, page_count - 1)` and `(0, -1)` if it has no pages."
+msgstr ""
+
+#: ../../document.rst:1997 53a00da15ebd4cc5a74b78011c1796d5
+msgid ""
+"A list of form field font names defined in the */AcroForm* object. `None`"
+" if not a PDF."
+msgstr ""
+
+#: ../../document.rst:1999 9645ace7058b432789e627d9c9fb131c
+msgid "list"
+msgstr ""
+
+#: ../../document.rst:2001 d9d4d61647ee44089a8fdd8052add616
+msgid ""
+"For methods that change the structure of a PDF (:meth:`insert_pdf`, "
+":meth:`select`, :meth:`copy_page`, :meth:`delete_page` and others), be "
+"aware that objects or properties in your program may have been "
+"invalidated or orphaned. Examples are :ref:`Page` objects and their "
+"children (links, annotations, widgets), variables holding old page "
+"counts, tables of content and the like. Remember to keep such variables "
+"up to date or delete orphaned objects. Also refer to "
+":ref:`ReferenialIntegrity`."
+msgstr ""
+
+#: ../../document.rst:2004 c65a795d813749749b1842e1c36f21e7
+msgid ":meth:`set_metadata` Example"
+msgstr ""
+
+#: ../../document.rst:2005 99a646ddf8844b7bafa6cfe96a29eea3
+msgid ""
+"Clear metadata information. If you do this out of privacy / data "
+"protection concerns, make sure you save the document as a new file with "
+"*garbage > 0*. Only then the old */Info* object will also be physically "
+"removed from the file. In this case, you may also want to clear any XML "
+"metadata inserted by several PDF editors:"
+msgstr ""
+
+#: ../../document.rst:2023 28fb80877eea4bdab04f3ac53a808a88
+msgid ":meth:`set_toc` Demonstration"
+msgstr ""
+
+#: ../../document.rst:2024 0e91f533f7d2417cbda08bab8e92d6cc
+msgid ""
+"This shows how to modify or add a table of contents. Also have a look at "
+"`import.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/import-toc/import.py>`_ and `export.py "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples"
+"/export-toc/export.py>`_ in the examples directory."
+msgstr ""
+
+#: ../../document.rst:2044 27fcf1d3bac24db79bea4142deabbb1c
+msgid ":meth:`insert_pdf` Examples"
+msgstr ""
+
+#: ../../document.rst:2045 f131edc184cb420b8597ba3812ffb7bb
+msgid "**(1) Concatenate two documents including their TOCs:**"
+msgstr ""
+
+#: ../../document.rst:2057 dcd3b26ac125478a9fe5c848a6948927
+msgid ""
+"Obviously, similar ways can be found in more general situations. Just "
+"make sure that hierarchy levels in a row do not increase by more than "
+"one. Inserting dummy bookmarks before and after *toc2* segments would "
+"heal such cases. A ready-to-use GUI (wxPython) solution can be found in "
+"script `join.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/join-documents/join.py>`_ of the examples "
+"directory."
+msgstr ""
+
+#: ../../document.rst:2059 c0b288150b974561a509eee27870847f
+msgid "**(2) More examples:**"
+msgstr ""
+
+#: ../../document.rst:2071 37f5ef67961b450f96be1e7e68538d53
+msgid "Other Examples"
+msgstr ""
+
+#: ../../document.rst:2072 607060228d9946ad852e3d309188888d
+msgid "**Extract all page-referenced images of a PDF into separate PNG files**::"
+msgstr ""
+
+#: ../../document.rst:2087 f35cc63cfef842d2b9022a26deea047b
+msgid "**Rotate all pages of a PDF:**"
+msgstr ""
+
+#: ../../document.rst:2092 24422de5f37541a2bccbba4e4238f64d
+msgid "Footnotes"
+msgstr ""
+
+#: ../../document.rst:2093 22e9ee335bda435893971712dc5ed38e
+msgid ""
+"Content streams describe what (e.g. text or images) appears where and how"
+" on a page. PDF uses a specialized mini language similar to PostScript to"
+" do this (pp. 643 in :ref:`AdobeManual`), which gets interpreted when a "
+"page is loaded."
+msgstr ""
+
+#: ../../document.rst:2095 3784c86f3f354df0b85606495559a52d
+msgid ""
+"However, you **can** use :meth:`Document.get_toc` and "
+":meth:`Page.get_links` (which are available for all document types) and "
+"copy this information over to the output PDF. See demo `convert.py "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples"
+"/convert-document/convert.py>`_."
+msgstr ""
+
+#: ../../document.rst:2097 c3f979674b604546ac1cc75bce1e229e
+msgid ""
+"For applicable (EPUB) document types, loading a page via its absolute "
+"number may result in layouting a large part of the document, before the "
+"page can be accessed. To avoid this performance impact, prefer chapter-"
+"based access. Use convenience methods and attributes "
+":meth:`Document.next_location`, :meth:`Document.prev_location` and "
+":attr:`Document.last_location` for maintaining a high level of coding "
+"efficiency."
+msgstr ""
+
+#: ../../document.rst:2099 cdc23988a1e74870ad4ef5dbbffb8940
+msgid ""
+"These parameters cause separate handling of stream categories: use it "
+"together with `expand` to restrict decompression to streams other than "
+"images / fontfiles."
+msgstr ""
+
+#: ../../document.rst:2101 12f00e6ff90d434db3dd4ccff3de0576
+msgid "Examples for \"Form XObjects\" are created by :meth:`Page.show_pdf_page`."
+msgstr ""
+
+#: ../../document.rst:2103 c9c6d5400d21431eb62994b7fe2b59ca
+msgid ""
+"For a *False* the **complete document** must be scanned. Both methods "
+"**do not load pages,** but only scan object definitions. This makes them "
+"at least 10 times faster than application-level loops (where total "
+"response time roughly equals the time for loading all pages). For the "
+":ref:`AdobeManual` (756 pages) and the Pandas documentation (over 3070 "
+"pages) -- both have no annotations -- the method needs about 11 ms for "
+"the answer *False*. So response times will probably become significant "
+"only well beyond this order of magnitude."
+msgstr ""
+
+#: ../../document.rst:2105 eaa755b60a4c48ffb96b41a3d72ca09a
+msgid ""
+"This only works under certain conditions. For example, if there is normal"
+" text covered by some image on top of it, then this is undetectable and "
+"the respective text is **not** removed. Similar is true for white text on"
+" white background, and so on."
+msgstr ""
+
+#: ../../footer.rst:-1 fa9a70e56f3f417d9b67bb0ba6813d04
+msgid "Discord logo"
+msgstr ""
+

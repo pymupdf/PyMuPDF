@@ -1,0 +1,4616 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../page.rst:7 867a43a892774ec39232a5bb8b972553
+msgid "Page"
+msgstr ""
+
+#: ../../page.rst:9 8ecacd3db4894287a0b871441e71111f
+msgid ""
+"Class representing a document page. A page object is created by "
+":meth:`Document.load_page` or, equivalently, via indexing the document "
+"like `doc[n]` - it has no independent constructor."
+msgstr ""
+
+#: ../../page.rst:11 9e5203daff0d4a01885ff1d6f30d33e1
+msgid ""
+"There is a parent-child relationship between a document and its pages. If"
+" the document is closed or deleted, all page objects (and their "
+"respective children, too) in existence will become unusable "
+"(\"orphaned\"): If a page property or method is being used, an exception "
+"is raised."
+msgstr ""
+
+#: ../../page.rst:13 75bf2f5f23794e8c9bde12eabc0534d6
+msgid ""
+"Several page methods have a :ref:`Document` counterpart for convenience. "
+"At the end of this chapter you will find a synopsis."
+msgstr ""
+
+#: ../../page.rst:16 339ac03266044f11bfa5332b97d71cab
+msgid "Modifying Pages"
+msgstr ""
+
+#: ../../page.rst:17 a3b8a6c7811e401daa02e230a98081a6
+msgid ""
+"Changing page properties and adding or changing page content is available"
+" for PDF documents only."
+msgstr ""
+
+#: ../../page.rst:19 d968fbfa08c94193997a92ee6139cbef
+msgid "In a nutshell, this is what you can do with PyMuPDF:"
+msgstr ""
+
+#: ../../page.rst:21 f363f2b602004f8cbe44662393bf087c
+msgid "Modify page rotation and the visible part (\"cropbox\") of the page."
+msgstr ""
+
+#: ../../page.rst:22 43d6148cea344f84b6baa899ae0acf87
+msgid "Insert images, other PDF pages, text and simple geometrical objects."
+msgstr ""
+
+#: ../../page.rst:23 f8972c9aaa0a431ebd54b9a0a4f38638
+msgid "Add annotations and form fields."
+msgstr ""
+
+#: ../../page.rst:27 ea749ad8b36848e18a33e7fe4e5c4cd5
+msgid ""
+"Methods require coordinates (points, rectangles) to put content in "
+"desired places. Please be aware that since v1.17.0 these coordinates "
+"**must always** be provided relative to the **unrotated** page. The "
+"reverse is also true: except :attr:`Page.rect`, resp. :meth:`Page.bound` "
+"(both *reflect* when the page is rotated), all coordinates returned by "
+"methods and attributes pertain to the unrotated page."
+msgstr ""
+
+#: ../../page.rst:29 ca3280bda62845d0bfcb9bc13451a070
+msgid ""
+"So the returned value of e.g. :meth:`Page.get_image_bbox` will not change"
+" if you do a :meth:`Page.set_rotation`. The same is true for coordinates "
+"returned by :meth:`Page.get_text`, annotation rectangles, and so on. If "
+"you want to find out, where an object is located in **rotated "
+"coordinates**, multiply the coordinates with "
+":attr:`Page.rotation_matrix`. There also is its inverse, "
+":attr:`Page.derotation_matrix`, which you can use when interfacing with "
+"other readers, which may behave differently in this respect."
+msgstr ""
+
+#: ../../page.rst:33 95146bbbd4ac4ae3acc1c19b4c2b8fb6
+msgid ""
+"If you add or update annotations, links or form fields on the page and "
+"immediately afterwards need to work with them (i.e. **without leaving the"
+" page**), you should reload the page using :meth:`Document.reload_page` "
+"before referring to these new or updated items."
+msgstr ""
+
+#: ../../page.rst:35 7c2f9d2bc28c453eb5628e5bf8e3a0c2
+msgid ""
+"Reloading the page is generally recommended -- although not strictly "
+"required in all cases. However, some annotation and widget types have "
+"extended features in PyMuPDF compared to MuPDF. More of these extensions "
+"may also be added in the future."
+msgstr ""
+
+#: ../../page.rst:37 1313f7e5184a4c95a94d56389e32496f
+msgid ""
+"Releoading the page ensures all your changes have been fully applied to "
+"PDF structures, so you can safely create Pixmaps or successfully iterate "
+"over annotations, links and form fields."
+msgstr ""
+
+#: ../../page.rst:40 6ef10918094a4e05945872b75ee14e27
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../page.rst:40 fd2a92a98b53401d8ad719c72c4af334
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../page.rst:42 a70d68eaa17e421fa19038f1203102c1
+msgid ":meth:`Page.add_caret_annot`"
+msgstr ""
+
+#: ../../page.rst:42 6e6364896a11499ebae10333ef1e399e
+msgid "PDF only: add a caret annotation"
+msgstr ""
+
+#: ../../page.rst:43 9d5f8ca5ce28400cac6edbdb16e580f2
+msgid ":meth:`Page.add_circle_annot`"
+msgstr ""
+
+#: ../../page.rst:43 6940d53f4d784e34ac379dca39f98ba9
+msgid "PDF only: add a circle annotation"
+msgstr ""
+
+#: ../../page.rst:44 0f9628a2f0404760aabf820fdfac40e0
+msgid ":meth:`Page.add_file_annot`"
+msgstr ""
+
+#: ../../page.rst:44 c5808deb24b54e708863772df829e35d
+msgid "PDF only: add a file attachment annotation"
+msgstr ""
+
+#: ../../page.rst:45 5b34427878d44ffd84309578d8dcf698
+msgid ":meth:`Page.add_freetext_annot`"
+msgstr ""
+
+#: ../../page.rst:45 c2f015e07f4a4866aad4e4c12f73664a
+msgid "PDF only: add a text annotation"
+msgstr ""
+
+#: ../../page.rst:46 84f655a94fd9404f885c28206aeaf8b3
+msgid ":meth:`Page.add_highlight_annot`"
+msgstr ""
+
+#: ../../page.rst:46 c8f5a0747f9a40faab89d7913a97e967
+msgid "PDF only: add a \"highlight\" annotation"
+msgstr ""
+
+#: ../../page.rst:47 2d521aadcb1b406b8d9c5d771c244eda
+msgid ":meth:`Page.add_ink_annot`"
+msgstr ""
+
+#: ../../page.rst:47 b9047916e22a4406b7b472836782fc1f
+msgid "PDF only: add an ink annotation"
+msgstr ""
+
+#: ../../page.rst:48 8c048b6c73244fc5b6dbb8e953144e1b
+msgid ":meth:`Page.add_line_annot`"
+msgstr ""
+
+#: ../../page.rst:48 cb1aeae7f2cb4eb0aa1b2f6ab09a8c98
+msgid "PDF only: add a line annotation"
+msgstr ""
+
+#: ../../page.rst:49 0a3b61a30287449f9149fb8781584591
+msgid ":meth:`Page.add_polygon_annot`"
+msgstr ""
+
+#: ../../page.rst:49 3ceb12bd2dd0419ab4a598664975bbbe
+msgid "PDF only: add a polygon annotation"
+msgstr ""
+
+#: ../../page.rst:50 30762559813c475695211805dcd945f9
+msgid ":meth:`Page.add_polyline_annot`"
+msgstr ""
+
+#: ../../page.rst:50 26675dc619e44dbca8d3cd0bb8880ee2
+msgid "PDF only: add a multi-line annotation"
+msgstr ""
+
+#: ../../page.rst:51 63dd8ce3e0f04e83929393d9f1929c36
+msgid ":meth:`Page.add_rect_annot`"
+msgstr ""
+
+#: ../../page.rst:51 b6777529256b4476b56de3f6605e75a1
+msgid "PDF only: add a rectangle annotation"
+msgstr ""
+
+#: ../../page.rst:52 c5ac64aae0db41c3a03a7f00d2d938e3
+msgid ":meth:`Page.add_redact_annot`"
+msgstr ""
+
+#: ../../page.rst:52 92e62e41ec1d48c995dfee9c08b38e74
+msgid "PDF only: add a redaction annotation"
+msgstr ""
+
+#: ../../page.rst:53 caa4c7783e7c4927b7c23da1f307f64e
+msgid ":meth:`Page.add_squiggly_annot`"
+msgstr ""
+
+#: ../../page.rst:53 332691a6d3bf452694cf54fe49ac2cf5
+msgid "PDF only: add a \"squiggly\" annotation"
+msgstr ""
+
+#: ../../page.rst:54 bae01b677c354234abc341a8a198eb58
+msgid ":meth:`Page.add_stamp_annot`"
+msgstr ""
+
+#: ../../page.rst:54 890e4ff8da5e4677bef6638cda0d096b
+msgid "PDF only: add a \"rubber stamp\" annotation"
+msgstr ""
+
+#: ../../page.rst:55 d8a3cd0da8bb41208b2acf0da77d4bf3
+msgid ":meth:`Page.add_strikeout_annot`"
+msgstr ""
+
+#: ../../page.rst:55 0462a0f90380435e9e2d4a6bde7b823d
+msgid "PDF only: add a \"strike-out\" annotation"
+msgstr ""
+
+#: ../../page.rst:56 2c47edb9bb7d40b189c5fc9ab8cd01ae
+msgid ":meth:`Page.add_text_annot`"
+msgstr ""
+
+#: ../../page.rst:56 7632b619a12c4960b78262c184881995
+msgid "PDF only: add a comment"
+msgstr ""
+
+#: ../../page.rst:57 e2a50ffaec6848bdb90b84a8849363e2
+msgid ":meth:`Page.add_underline_annot`"
+msgstr ""
+
+#: ../../page.rst:57 0823a6e1322c4df284bf51d7244e3485
+msgid "PDF only: add an \"underline\" annotation"
+msgstr ""
+
+#: ../../page.rst:58 adf9b34a34274a269bf7a8fb855c43d1
+msgid ":meth:`Page.add_widget`"
+msgstr ""
+
+#: ../../page.rst:58 ec6de31a41ae46c0939bce0684a11d91
+msgid "PDF only: add a PDF Form field"
+msgstr ""
+
+#: ../../page.rst:59 cc58685c609c43dba97e04ba5d192bd4
+msgid ":meth:`Page.annot_names`"
+msgstr ""
+
+#: ../../page.rst:59 a9e0a8b4e8144f70b05ca34d948bd001
+msgid "PDF only: a list of annotation (and widget) names"
+msgstr ""
+
+#: ../../page.rst:60 67dae59b0b5441a0878c34e592fae1ce
+msgid ":meth:`Page.annot_xrefs`"
+msgstr ""
+
+#: ../../page.rst:60 2208e830b0af4a299fba78351ccd8ad5
+msgid "PDF only: a list of annotation (and widget) xrefs"
+msgstr ""
+
+#: ../../page.rst:61 230c38ee1238482eb924f6f63c236c85
+msgid ":meth:`Page.annots`"
+msgstr ""
+
+#: ../../page.rst:61 9f1150592cd74dec81a42a8cae1d1acb
+msgid "return a generator over the annots on the page"
+msgstr ""
+
+#: ../../page.rst:62 e46aa43cf83d4e5ca6322f8499178e23
+msgid ":meth:`Page.apply_redactions`"
+msgstr ""
+
+#: ../../page.rst:62 08451c9033f245548a5bd811622502a9
+msgid "PDF only: process the redactions of the page"
+msgstr ""
+
+#: ../../page.rst:63 ee5cc3a768064072a5c623772c97b2f7
+msgid ":meth:`Page.bound`"
+msgstr ""
+
+#: ../../page.rst:63 ../../page.rst:129 0bcedf83381a4c9abc256167a10c1d25
+#: fef7250af8c0498daddce6b12f78316e
+msgid "rectangle of the page"
+msgstr ""
+
+#: ../../page.rst:64 4820152d01cb4a769e22c41e75fcb7b6
+msgid ":meth:`Page.delete_annot`"
+msgstr ""
+
+#: ../../page.rst:64 618148fbddb04144a5ed42246badfd89
+msgid "PDF only: delete an annotation"
+msgstr ""
+
+#: ../../page.rst:65 7c6aacd3d1fb43508e9234d560d331bc
+msgid ":meth:`Page.delete_image`"
+msgstr ""
+
+#: ../../page.rst:65 2458b13098e240628c4f9ec7cd2bbdf2
+msgid "PDF only: delete an image"
+msgstr ""
+
+#: ../../page.rst:66 09cad762d0924fb38bb4bbda7540ea23
+msgid ":meth:`Page.delete_link`"
+msgstr ""
+
+#: ../../page.rst:66 ee5d31e674a948e296da00b9c49f80d3
+msgid "PDF only: delete a link"
+msgstr ""
+
+#: ../../page.rst:67 1e2356b9ca4f476587b7039f80d677eb
+msgid ":meth:`Page.delete_widget`"
+msgstr ""
+
+#: ../../page.rst:67 5e9728a5686a488d8e36dfb97b0c95bd
+msgid "PDF only: delete a widget / field"
+msgstr ""
+
+#: ../../page.rst:68 c3bdf15c790d48dea2d170a41162a3cb
+msgid ":meth:`Page.draw_bezier`"
+msgstr ""
+
+#: ../../page.rst:68 f974910d00d4472c968b670ffb2728af
+msgid "PDF only: draw a cubic Bezier curve"
+msgstr ""
+
+#: ../../page.rst:69 ca8fa98fac4244868db24dd54f5fb55f
+msgid ":meth:`Page.draw_circle`"
+msgstr ""
+
+#: ../../page.rst:69 e0f077373b0e4224a8bd9ef5c82eeafd
+msgid "PDF only: draw a circle"
+msgstr ""
+
+#: ../../page.rst:70 420425dda5f940459f9286fab460a205
+msgid ":meth:`Page.draw_curve`"
+msgstr ""
+
+#: ../../page.rst:70 b98b2273d40649c29d2374d58c68739e
+msgid "PDF only: draw a special Bezier curve"
+msgstr ""
+
+#: ../../page.rst:71 1799716e952543f6a64d10d61460a2a8
+msgid ":meth:`Page.draw_line`"
+msgstr ""
+
+#: ../../page.rst:71 44091cbb5197438c8402157b0eecc119
+msgid "PDF only: draw a line"
+msgstr ""
+
+#: ../../page.rst:72 6af24e3f07284050a37d84683915a224
+msgid ":meth:`Page.draw_oval`"
+msgstr ""
+
+#: ../../page.rst:72 5d5dc891350e465292e9bcd5b0ba927f
+msgid "PDF only: draw an oval / ellipse"
+msgstr ""
+
+#: ../../page.rst:73 063885ff8942419890179c1d311501dc
+msgid ":meth:`Page.draw_polyline`"
+msgstr ""
+
+#: ../../page.rst:73 7309d55cdfc14c77b10cada388d0ae1d
+msgid "PDF only: connect a point sequence"
+msgstr ""
+
+#: ../../page.rst:74 ebc94853f2c2402c9db7fdbe932edd83
+msgid ":meth:`Page.draw_quad`"
+msgstr ""
+
+#: ../../page.rst:74 51e2d2eb476c40189674746a3e1f42dc
+msgid "PDF only: draw a quad"
+msgstr ""
+
+#: ../../page.rst:75 c9ea1a68c1404fb6b08374804faed950
+msgid ":meth:`Page.draw_rect`"
+msgstr ""
+
+#: ../../page.rst:75 dfb6d896b53446b2b64938c488a35df4
+msgid "PDF only: draw a rectangle"
+msgstr ""
+
+#: ../../page.rst:76 4c62c84915354459866a888cf98c7c51
+msgid ":meth:`Page.draw_sector`"
+msgstr ""
+
+#: ../../page.rst:76 928f8b04ccbd485eb224e652633b711d
+msgid "PDF only: draw a circular sector"
+msgstr ""
+
+#: ../../page.rst:77 20bf755e568d4b47a19910c2ce58210a
+msgid ":meth:`Page.draw_squiggle`"
+msgstr ""
+
+#: ../../page.rst:77 00ae4fe127dd41ce8b18cb37f36f71cd
+msgid "PDF only: draw a squiggly line"
+msgstr ""
+
+#: ../../page.rst:78 3854c467dbbd4bb2973f208705fab27d
+msgid ":meth:`Page.draw_zigzag`"
+msgstr ""
+
+#: ../../page.rst:78 dccd0af7dd0d46979e9295d3f82ec917
+msgid "PDF only: draw a zig-zagged line"
+msgstr ""
+
+#: ../../page.rst:79 56011550f10d4fbdbabf08fdb3e432a1
+msgid ":meth:`Page.get_drawings`"
+msgstr ""
+
+#: ../../page.rst:79 f5c33c08e62249a6ad6a1e72d06bf6f1
+msgid "get vector graphics on page"
+msgstr ""
+
+#: ../../page.rst:80 ../../page.rst:1850 abaae3864b7d497a9840de3e260c2ff4
+#: e94e5ee625d34dfe9da6c5f3a1253740
+msgid ":meth:`Page.get_fonts`"
+msgstr ""
+
+#: ../../page.rst:80 483491e9826d4509bfa2b7693b301ff0
+msgid "PDF only: get list of referenced fonts"
+msgstr ""
+
+#: ../../page.rst:81 396a1fd8d0f34c38864a85dc7c08d00d
+msgid ":meth:`Page.get_image_bbox`"
+msgstr ""
+
+#: ../../page.rst:81 23bcd25ba89b4ff488234b2431092090
+msgid "PDF only: get bbox and matrix of embedded image"
+msgstr ""
+
+#: ../../page.rst:82 70e296c947f24888b93e62994172b400
+msgid ":meth:`Page.get_image_info`"
+msgstr ""
+
+#: ../../page.rst:82 3b7f21b8d8a045b1b0bcfdac4c9d9a7f
+msgid "get list of meta information for all used images"
+msgstr ""
+
+#: ../../page.rst:83 1af40bde656e41a0b75794ca47fec554
+msgid ":meth:`Page.get_image_rects`"
+msgstr ""
+
+#: ../../page.rst:83 aaecad27263c46c4b56765df2f7bd2e2
+msgid "PDF only: improved version of :meth:`Page.get_image_bbox`"
+msgstr ""
+
+#: ../../page.rst:84 ../../page.rst:1851 22c829393b694192957e0782252255f8
+#: d57ba9f6fc7b4dec941b812a37df4aa6
+msgid ":meth:`Page.get_images`"
+msgstr ""
+
+#: ../../page.rst:84 deb2d05f05c04c4889d9ef7e588d79bc
+msgid "PDF only: get list of referenced images"
+msgstr ""
+
+#: ../../page.rst:85 5d0450e1322b45b59ab487f8795eff27
+msgid ":meth:`Page.get_label`"
+msgstr ""
+
+#: ../../page.rst:85 ea8f3c47324f44eb84453e89ca5dd78e
+msgid "PDF only: return the label of the page"
+msgstr ""
+
+#: ../../page.rst:86 6df0e3160697457d85fea57a9f1201b3
+msgid ":meth:`Page.get_links`"
+msgstr ""
+
+#: ../../page.rst:86 4d284c91a6404aac9031501b85f1d97a
+msgid "get all links"
+msgstr ""
+
+#: ../../page.rst:87 ../../page.rst:1852 73fdec3bf9c94be38c3b15d9ea8b638b
+#: 83739f05d9814aaeb2c18ebe98ae9986
+msgid ":meth:`Page.get_pixmap`"
+msgstr ""
+
+#: ../../page.rst:87 c965c038d0a34639b377ab8456348774
+msgid "create a page image in raster format"
+msgstr ""
+
+#: ../../page.rst:88 8f01572da100460895582977632ecde5
+msgid ":meth:`Page.get_svg_image`"
+msgstr ""
+
+#: ../../page.rst:88 6629e29e390c429596e76eacddcc8dee
+msgid "create a page image in SVG format"
+msgstr ""
+
+#: ../../page.rst:89 ../../page.rst:1853 566e41cfcebd499e83febf44072aade8
+#: ef5103e48dda4217a200669756c7227f
+msgid ":meth:`Page.get_text`"
+msgstr ""
+
+#: ../../page.rst:89 544a10228073489ba7bc1ada7b295449
+msgid "extract the page's text"
+msgstr ""
+
+#: ../../page.rst:90 1ebcd5b687ea42929295acf86dbc3958
+msgid ":meth:`Page.get_textbox`"
+msgstr ""
+
+#: ../../page.rst:90 3d6d02815c3545bcb1798bef9489f5fc
+msgid "extract text contained in a rectangle"
+msgstr ""
+
+#: ../../page.rst:91 3e042443fa4640fda884eeed6038c5c6
+msgid ":meth:`Page.get_textpage_ocr`"
+msgstr ""
+
+#: ../../page.rst:91 c49e73b4789343c5806f2922836c6fa0
+msgid "create a TextPage with OCR for the page"
+msgstr ""
+
+#: ../../page.rst:92 a012ba7f78d140f3a813b726c4f6b2a5
+msgid ":meth:`Page.get_textpage`"
+msgstr ""
+
+#: ../../page.rst:92 79c21ae1038c497da6c069f6a240b3b8
+msgid "create a TextPage for the page"
+msgstr ""
+
+#: ../../page.rst:93 720bfbaec3f64e9ba72f49c4ebd3e474
+msgid ":meth:`Page.get_xobjects`"
+msgstr ""
+
+#: ../../page.rst:93 dfccf518b07547bf86906b0e334a93f9
+msgid "PDF only: get list of referenced xobjects"
+msgstr ""
+
+#: ../../page.rst:94 35b1bd74307b4cfc9c47d25010dd7791
+msgid ":meth:`Page.insert_font`"
+msgstr ""
+
+#: ../../page.rst:94 aa96676830884350b380e5265199e27b
+msgid "PDF only: insert a font for use by the page"
+msgstr ""
+
+#: ../../page.rst:95 d3c2617be48b4e34be21fe920dc13861
+msgid ":meth:`Page.insert_image`"
+msgstr ""
+
+#: ../../page.rst:95 ac815c9773cd4d48ab68aa9654b0fa7c
+msgid "PDF only: insert an image"
+msgstr ""
+
+#: ../../page.rst:96 f8637c2385d44f2db98bbc3f0fd3baa7
+msgid ":meth:`Page.insert_link`"
+msgstr ""
+
+#: ../../page.rst:96 fb1951c7f7974cbbb70742b5d0ec80bd
+msgid "PDF only: insert a link"
+msgstr ""
+
+#: ../../page.rst:97 0279e5892f5544059c7a434716770c04
+msgid ":meth:`Page.insert_text`"
+msgstr ""
+
+#: ../../page.rst:97 af654281db1742979e359925b9c3cf86
+msgid "PDF only: insert text"
+msgstr ""
+
+#: ../../page.rst:98 a7763159712348da91aac6aab97086a8
+msgid ":meth:`Page.insert_textbox`"
+msgstr ""
+
+#: ../../page.rst:98 e68d3fa92b554fb6920f74a229948b2e
+msgid "PDF only: insert a text box"
+msgstr ""
+
+#: ../../page.rst:99 fd2b4ba9b6c342e9838b4d42fc5010b9
+msgid ":meth:`Page.links`"
+msgstr ""
+
+#: ../../page.rst:99 5d158ce033ea4f06a825d73ee939c578
+msgid "return a generator of the links on the page"
+msgstr ""
+
+#: ../../page.rst:100 86b6f6f9b2c64f0b9626f93ebae10457
+msgid ":meth:`Page.load_annot`"
+msgstr ""
+
+#: ../../page.rst:100 6f31c941ba324d878aae869f760ebf32
+msgid "PDF only: load a specific annotation"
+msgstr ""
+
+#: ../../page.rst:101 f18e1f5568754ba48f1a3663f61eb35f
+msgid ":meth:`Page.load_widget`"
+msgstr ""
+
+#: ../../page.rst:101 313d444ec46b41edb16f7dd10b38745f
+msgid "PDF only: load a specific field"
+msgstr ""
+
+#: ../../page.rst:102 16417be7d7ef44bebe9640201a754531
+msgid ":meth:`Page.load_links`"
+msgstr ""
+
+#: ../../page.rst:102 0c65ea5b3d9446639854c9e704036d41
+msgid "return the first link on a page"
+msgstr ""
+
+#: ../../page.rst:103 e00ad75cd11e4ba4a533abc715a186e8
+msgid ":meth:`Page.new_shape`"
+msgstr ""
+
+#: ../../page.rst:103 ab83aaa3c4774eef843c9a8038a15d87
+msgid "PDF only: create a new :ref:`Shape`"
+msgstr ""
+
+#: ../../page.rst:104 68248813ae604335a78d870e694f2583
+msgid ":meth:`Page.replace_image`"
+msgstr ""
+
+#: ../../page.rst:104 29c3a34f61a2482e8900512c428308c9
+msgid "PDF only: replace an image"
+msgstr ""
+
+#: ../../page.rst:105 ../../page.rst:1854 2f547bda531046abb765077dcbd82c25
+#: b6c183ca5a224fef841cabc01e482bf7
+msgid ":meth:`Page.search_for`"
+msgstr ""
+
+#: ../../page.rst:105 f6991b22801f479a89a179c16b29afc4
+msgid "search for a string"
+msgstr ""
+
+#: ../../page.rst:106 da5c0726c3c54a1e8bfca44264ea23c5
+msgid ":meth:`Page.set_artbox`"
+msgstr ""
+
+#: ../../page.rst:106 63210ccf6e624fc8aa7e9f5fbdeb7327
+msgid "PDF only: modify `/ArtBox`"
+msgstr ""
+
+#: ../../page.rst:107 89a208213acb45b9bad5670ea26384b1
+msgid ":meth:`Page.set_bleedbox`"
+msgstr ""
+
+#: ../../page.rst:107 ea71387c03474d3cb809ebaccc3e603c
+msgid "PDF only: modify `/BleedBox`"
+msgstr ""
+
+#: ../../page.rst:108 8b426af4fc5f4ca1a800bf9d5e6526af
+msgid ":meth:`Page.set_cropbox`"
+msgstr ""
+
+#: ../../page.rst:108 6d50c038799a46fdb7868df7f5796d03
+msgid "PDF only: modify the :data:`cropbox` (visible page)"
+msgstr ""
+
+#: ../../page.rst:109 3c3427efdbcb43a59f58ce77d3a0df6e
+msgid ":meth:`Page.set_mediabox`"
+msgstr ""
+
+#: ../../page.rst:109 8bf9f8c51ed64d7db5bedf9138a57631
+msgid "PDF only: modify `/MediaBox`"
+msgstr ""
+
+#: ../../page.rst:110 170bf2dc756d428e8d38d88bb95d4493
+msgid ":meth:`Page.set_rotation`"
+msgstr ""
+
+#: ../../page.rst:110 406df9944b9144aaaa73e39f81d7650a
+msgid "PDF only: set page rotation"
+msgstr ""
+
+#: ../../page.rst:111 8c1828f7286240f7be3bc0d2011947a1
+msgid ":meth:`Page.set_trimbox`"
+msgstr ""
+
+#: ../../page.rst:111 b80667bc4900456f9fe4d002a3a7cb00
+msgid "PDF only: modify `/TrimBox`"
+msgstr ""
+
+#: ../../page.rst:112 04d98da1f57d4a5d8171702474dfc0c9
+msgid ":meth:`Page.show_pdf_page`"
+msgstr ""
+
+#: ../../page.rst:112 94ccc827cef44c4fa28abf67d0fefdce
+msgid "PDF only: display PDF page image"
+msgstr ""
+
+#: ../../page.rst:113 e17a17a61bb9481e9d9152615cc133a6
+msgid ":meth:`Page.update_link`"
+msgstr ""
+
+#: ../../page.rst:113 8aa7b9d43c684b389261bfec4168828d
+msgid "PDF only: modify a link"
+msgstr ""
+
+#: ../../page.rst:114 85dd1295ad164e50ab12b6f419a04ca3
+msgid ":meth:`Page.widgets`"
+msgstr ""
+
+#: ../../page.rst:114 21a8a3ed70cc4e77a3f2a4a23f221dd6
+msgid "return a generator over the fields on the page"
+msgstr ""
+
+#: ../../page.rst:115 ed592ed9cb12438184349d1561b52aed
+msgid ":meth:`Page.write_text`"
+msgstr ""
+
+#: ../../page.rst:115 601867564ce74d879d4ea34a98c38a9f
+msgid "write one or more :ref:`Textwriter` objects"
+msgstr ""
+
+#: ../../page.rst:116 59347a27d17749ea851bd14470d522d2
+msgid ":attr:`Page.cropbox_position`"
+msgstr ""
+
+#: ../../page.rst:116 7d11a149095a4e2c9f9ab5b910131ad5
+msgid "displacement of the :data:`cropbox`"
+msgstr ""
+
+#: ../../page.rst:117 e67da4bcf8ea4584ad9be0ec371c52e1
+msgid ":attr:`Page.cropbox`"
+msgstr ""
+
+#: ../../page.rst:117 7fe95f15201a42fa85f8a41c33c9c2ce
+msgid "the page's :data:`cropbox`"
+msgstr ""
+
+#: ../../page.rst:118 235c0518352b47d0924b2e65fcb8191f
+msgid ":attr:`Page.artbox`"
+msgstr ""
+
+#: ../../page.rst:118 fe3437ad7d504a72a5a57d1ec3ba0c2e
+msgid "the page's `/ArtBox`"
+msgstr ""
+
+#: ../../page.rst:119 cfd6eba1e6ff48c9b97a29ef9b4f608c
+msgid ":attr:`Page.bleedbox`"
+msgstr ""
+
+#: ../../page.rst:119 787a4767a042444a9c14232b352a08d7
+msgid "the page's `/BleedBox`"
+msgstr ""
+
+#: ../../page.rst:120 efff3c7dd13143cf8060593d1646b1f4
+msgid ":attr:`Page.trimbox`"
+msgstr ""
+
+#: ../../page.rst:120 23598e68ed5945749b43222ed30bdb02
+msgid "the page's `/TrimBox`"
+msgstr ""
+
+#: ../../page.rst:121 cc03a765573d4e0085ba05dcb0f3c870
+msgid ":attr:`Page.derotation_matrix`"
+msgstr ""
+
+#: ../../page.rst:121 6030db8fd3d44c9484a213b5d9892a0c
+msgid "PDF only: get coordinates in unrotated page space"
+msgstr ""
+
+#: ../../page.rst:122 25141032b4ed4a9c8c8916fa4266f154
+msgid ":attr:`Page.first_annot`"
+msgstr ""
+
+#: ../../page.rst:122 7bed5c50525f432c8369311d079a2ad8
+msgid "first :ref:`Annot` on the page"
+msgstr ""
+
+#: ../../page.rst:123 6d568430901b4e3bae8497b6bd60ba3e
+msgid ":attr:`Page.first_link`"
+msgstr ""
+
+#: ../../page.rst:123 df548d38e91e466f972956dd1fb32319
+msgid "first :ref:`Link` on the page"
+msgstr ""
+
+#: ../../page.rst:124 72aa453b5f46409f8d7edc1b62f9df1f
+msgid ":attr:`Page.first_widget`"
+msgstr ""
+
+#: ../../page.rst:124 45cc4fe985e34802b1a3a1580d039430
+msgid "first widget (form field) on the page"
+msgstr ""
+
+#: ../../page.rst:125 4993ce9cf1e94de49d9f7cbd0f8e364c
+msgid ":attr:`Page.mediabox_size`"
+msgstr ""
+
+#: ../../page.rst:125 4e47f63933ed4446a205c424c81d07df
+msgid "bottom-right point of :data:`mediabox`"
+msgstr ""
+
+#: ../../page.rst:126 7611b80dee154a718f4aa66e6253d9ee
+msgid ":attr:`Page.mediabox`"
+msgstr ""
+
+#: ../../page.rst:126 4d90498c9c2442bea1ea2f808193610b
+msgid "the page's :data:`mediabox`"
+msgstr ""
+
+#: ../../page.rst:127 d45ddb5e19da4729bb54b73d41aef50a
+msgid ":attr:`Page.number`"
+msgstr ""
+
+#: ../../page.rst:127 bce777190d104084927f8efcada709f7
+msgid "page number"
+msgstr ""
+
+#: ../../page.rst:128 aa161cbfbdca4d99a73fd14bf767057c
+msgid ":attr:`Page.parent`"
+msgstr ""
+
+#: ../../page.rst:128 78444c3ecdaf4e78825b07f348888f06
+msgid "owning document object"
+msgstr ""
+
+#: ../../page.rst:129 20ae5b1a37b2423b8a1708a727b16498
+msgid ":attr:`Page.rect`"
+msgstr ""
+
+#: ../../page.rst:130 9a159a2d4d1640b58eda76d639c4d43e
+msgid ":attr:`Page.rotation_matrix`"
+msgstr ""
+
+#: ../../page.rst:130 9933d50594b34e82bae4fd9f1be15ed9
+msgid "PDF only: get coordinates in rotated page space"
+msgstr ""
+
+#: ../../page.rst:131 0d81a311198a49958c24555e4881e663
+msgid ":attr:`Page.rotation`"
+msgstr ""
+
+#: ../../page.rst:131 6444dde4b6c0402f943c9f99d639251b
+msgid "PDF only: page rotation"
+msgstr ""
+
+#: ../../page.rst:132 bcc07b45ab0d4711968c1a4428f735df
+msgid ":attr:`Page.transformation_matrix`"
+msgstr ""
+
+#: ../../page.rst:132 c25546286d444e949dfa8b006342c1a6
+msgid "PDF only: translate between PDF and MuPDF space"
+msgstr ""
+
+#: ../../page.rst:133 818d4dd2fda9403396da239538ed8c50
+msgid ":attr:`Page.xref`"
+msgstr ""
+
+#: ../../page.rst:133 748ab55fb1ec409daaa8756d277b133d
+msgid "PDF only: page :data:`xref`"
+msgstr ""
+
+#: ../../page.rst:136 28f2e4cd9235448abab6bbc89e9d56fb
+msgid "**Class API**"
+msgstr ""
+
+#: ../../page.rst:142 e5e3a62d2a4542dcb072776db1658d13
+msgid ""
+"Determine the rectangle of the page. Same as property :attr:`Page.rect` "
+"below. For PDF documents this **usually** also coincides with "
+":data:`mediabox` and :data:`cropbox`, but not always. For example, if the"
+" page is rotated, then this is reflected by this method -- the "
+":attr:`Page.cropbox` however will not change."
+msgstr ""
+
+#: ../../page.rst 01599fc3926c4d04a1bf4a13576618d4
+#: 01615fbeaf6f443ab25d5a5df0d4f41b 181b64abacd841c1b227c8f11915c83f
+#: 1aff927b42fe43b5b31968efec14b634 2cf467389f184c1bb758a101027a8bbc
+#: 2db6008c43ed4ba9a07350b76f82b93d 335802eb37e34c4ba1882b95372534ab
+#: 3598f658489e4b45836d5d32b76c95ff 42a888677a2748e09b74790a15871247
+#: 4c2ef05d11994521a052f645ad5fc674 4f53be986b214c9eb90451534761a614
+#: 5266fe3160ad41239e7cf267f3fc9059 7210a187f57a453b8d33b226af05fc32
+#: 7d7b920b12bd47fcbb03b6cafe30c074 7e399fa7680a4771b5830d3834d137ca
+#: 89bbe381fc324398bf3afc40fdbf60ab 8b9869122657401d910eca6c3055728d
+#: 92a1e0985fe94215a8e01bfb7e1aed22 999731edab5a42f4b84e70fb8a574165
+#: abae8d8b23b043938b4076ec00ab43bb b8e95059debb4c10baebaf3726ab46ac
+#: bc0a5f0405c04005b5cf7f24a304b734 be59bdbc5c994393a03c9d5eda71aa6a
+#: bfefe4fcc9f4493aad51159483e9345e ceb9c035a88d4f4d8d6a23de02df7efb
+#: d85be6429d19425c81edefa2b8234d26 d906d89cbddd4e7d95ffa43356a199f3
+#: daad9a616b944098834513346adeefb5 e4e05f0ffe7e4f0d81c64ab3b211fbb8
+#: e6f2232764c442d295ae30d7c6b1fbd5 fb591127250c44d5869784672bb6180c
+msgid "Return type"
+msgstr ""
+
+#: ../../page.rst:144 ../../page.rst:1699 ../../page.rst:1709
+#: ../../page.rst:1721 ../../page.rst:1782 ../../page.rst:1788
+#: 0f70eb0083aa49a5a50adbeb8da5991c 11d9cfd248684449af6ccac42ed0a5e5
+#: 5bc248e8383f42f88dd5608eced0ee45 c8bfd9040f7642439a23e8746fc35f32
+#: e64ef03244c544049f40dd4a08886fae edea7d0547ce4d1c9a70595a4c7e4f03
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../page.rst:148 9368fffed9da4ef994e122d22f4d3ef2
+msgid "New in v1.16.0"
+msgstr ""
+
+#: ../../page.rst:150 e671944b5fc94d33bbcff3ef9888564e
+msgid ""
+"PDF only: Add a caret icon. A caret annotation is a visual symbol "
+"normally used to indicate the presence of text edits on the page."
+msgstr ""
+
+#: ../../page.rst 0435b61036a440b88b5a580794bd8ac7
+#: 0907875ea22943ffb6261225b027b3dc 158dd93b152742e8af084059a69625fc
+#: 248857a6c7324b638d596e1dc081bdef 2fc8d061ce6643c2a7c65755c100cca6
+#: 321b463f4fbd4206b3c4e3ff04d43309 36a84a3921844594a641adc946d7aa96
+#: 49f11095992c46a7ac26e414d9141196 51d21582c50a463398bbefd698a25f80
+#: 553b218b0661432e9331b500359ba5c1 5d22c8b5ccc04119b00b3299906247fd
+#: 5eaa0d8e92bb4d12b3a52061103816ad 660d743337a6468d84ea0b851ea1d55b
+#: 662424aa4beb4be18b079a9d52ad4ea3 6c639641d02b424294f80eeffd5128b0
+#: 7351756207d8492abce14daea95b15fc 7e52102756f44aa68e71a3d63c4a54e2
+#: 8b25bf6a67424d088ad7fef1bf95be29 905a8ff5b3b848cf8a646f2588c4e347
+#: 90674d638cf14cfd9936055301d136c4 9709377f8b58444881b6ebf0d0a9f90c
+#: a066b99db4134e19b02fc7b7ed3ea21e a7302b70ae0f48f5a3d5aacd09b028ba
+#: adce0ef849a94f779a231a014b685608 af31683a7be847c8a522841dd2085514
+#: b10c5348bb3e43fabe8f4155ee414ff4 b404c960e2e04e2abcf44de40aa78f06
+#: bff00da4d5ec45dbb36e73956144e3aa c6f4a3aaed684718ab861050823d7236
+#: cafffea7a34a4b6cb0f016c994142ed5 cdf0e1ba07864cd48559fb7884facda6
+#: d79b7463f21e46bcb0f7cbb1283198e6 db129949848a47079b6fe58b60fd6abc
+#: dd263c163c8b4efe92bb62b5f53caadf df14b0b1bb374062b96020a4f9ba3d9b
+#: e3025314d4a54561ad298a7f486e449a ed01b59eb8ae4c0fbfab908a99f88627
+#: ef9d1386bd054507be2472de372cbe67 f35525808589428e8815ef4c9bdf61db
+#: f7fa62ca262e4fbbb5b29b120cc85f5d f8690416ba7c46f4b381ba5351be9812
+#: fb944b295f074a9ca6f540223a0fecf1 fbb8d51e26514288b45e923cf17b8633
+msgid "Parameters"
+msgstr ""
+
+#: ../../page.rst:152 dd4dc88037764f629af2547162c97f18
+msgid ""
+"the top left point of a 20 x 20 rectangle containing the MuPDF-provided "
+"icon."
+msgstr ""
+
+#: ../../page.rst:154 ../../page.rst:169 ../../page.rst:204 ../../page.rst:222
+#: ../../page.rst:231 ../../page.rst:242 ../../page.rst:253 ../../page.rst:291
+#: ../../page.rst:304 ../../page.rst:387 ../../page.rst:1483
+#: ../../page.rst:1757 079cb096f3f64a3e901f9eb4129bfdcd
+#: 18e0ca09e99e474b857f2ff81f97909e 23d9b30d761943e28da3c3cb9df3247d
+#: 3afd0c917deb4910bb26a4a2d78fb281 6f78ad95e5074c58bc83aa896614a9c5
+#: 6fd18be1eb6241e6987a76f6a71e941b 96ad5bfbef524e34be3fcfc178ebdaf1
+#: af9420a6547148f9b3e71fd9effed9ba ba6f86da564247779dcd91f87ab5624e
+#: c7f2788bd3514850b69ccc47392252ea d2d7451a79db4d8a9679e0b247d0110d
+#: dc9f10aea5d84db4aaa2aad314eaf32f
+msgid ":ref:`Annot`"
+msgstr ""
+
+#: ../../page.rst 0004726e3c2e4859b6af5473b4ff6ec6
+#: 0388ea8f233e45c2942ff476e99caef2 0ab2fe56c8384b3bbfdfb53a1c840419
+#: 0f791a5bcd8b4d7d8b743245af6fc832 16f2ee4ce3e74c86b01bd8a730b56e04
+#: 17423ac05cfa40a9a97ba298b642b346 26f5c2a368704ad9bf4edb0c4eff8b78
+#: 304c7d45dddd49d8a23ebc265babfaf3 3073bb6d02ea4274b570f1525f19a969
+#: 3e20cd7cd260473d87ca40c59cf88a1b 4265ab4846064d1fa93262ffe29ee28d
+#: 4bc0c3134e3f4c1c9df03a18f06fbebb 4dfa48ed9aa349d5b6023642680cd404
+#: 53f33a1a786042ecb53a17c79b015134 55227faefe7e48269f5ff6cc0d8d1449
+#: 5ed55071fdde4470b2a2f92b2eecc208 68a47484764b4790a72ad8fe580a4a87
+#: 6a1f733b120a433e859befd66a726787 6b14700b520440699452c0b2466f98f6
+#: 6d430a6de3544764a31832c73efa140d 72e06beb5dc940359a579d051fe4b1a8
+#: 78e945e12a2c4ce6b41ce65d0e4cbf0c 7dcf6c18810f40db816fba723c51fad0
+#: 8841896a6ca54f1dbf9f6f9c513d9b85 907925d2cbe844108ec2fea629a0bbb4
+#: 9221c2c46e8748bcad2e5f2f1cc3193c 961232f825874a2ba1964ae9f5e031e3
+#: a9a6fa51d7f146b6879a4d6ffe901645 aa3185719ae44a4e99c9818a44c6f941
+#: b3ee5d8c30b647509a72b13ad77f49d4 c12544cc5d0b4de19e1e31e6e42c1e88
+#: c2cea151df114abfac94289da78fe688 ca20cb3ccd3042ce9c7bba4213dce013
+#: cf0eac4a11c5422f9580d13ed52ce099 df7fc7c9d41f49c0bb0958c45f1c6d92
+#: e33dc62aefca4ec8b4847ddbb30955f3 fa2609ac010846dfba39101b99a55abe
+msgid "Returns"
+msgstr ""
+
+#: ../../page.rst:155 a1ef4677aeb0472bb3929aa8b78f916d
+msgid ""
+"the created annotation. Stroke color blue = (0, 0, 1), no fill color "
+"support."
+msgstr ""
+
+#: ../../page.rst:162 12b1a198f1f84586bea1c5289d427ca5
+msgid ""
+"PDF only: Add a comment icon (\"sticky note\") with accompanying text. "
+"Only the icon is visible, the accompanying text is hidden and can be "
+"visualized by many PDF viewers by hovering the mouse over the symbol."
+msgstr ""
+
+#: ../../page.rst:164 14ea6a6fba2f4f948ae54db8d2997b26
+msgid ""
+"the top left point of a 20 x 20 rectangle containing the MuPDF-provided "
+"\"note\" icon."
+msgstr ""
+
+#: ../../page.rst:166 526435be54f748f38c47f131b0139e3a
+msgid ""
+"the commentary text. This will be shown on double clicking or hovering "
+"over the icon. May contain any Latin characters."
+msgstr ""
+
+#: ../../page.rst:167 e9db3c19017f4f45a3bb91d570fff533
+msgid ""
+"*(new in v1.16.0)* choose one of \"Note\" (default), \"Comment\", "
+"\"Help\", \"Insert\", \"Key\", \"NewParagraph\", \"Paragraph\" as the "
+"visual symbol for the embodied text [#f4]_."
+msgstr ""
+
+#: ../../page.rst:170 e7eea9186df546bf8019f99e92f3c84b
+msgid ""
+"the created annotation. Stroke color yellow = (1, 1, 0), no fill color "
+"support."
+msgstr ""
+
+#: ../../page.rst:185 52205b97d76348709a4c5f6e83532229
+msgid "Changed in v1.19.6: add border color parameter"
+msgstr ""
+
+#: ../../page.rst:187 fd81386978e34841acb2f5257293c2b5
+msgid "PDF only: Add text in a given rectangle."
+msgstr ""
+
+#: ../../page.rst:189 b00304ad26d14185b7e3676964d80e6c
+msgid ""
+"the rectangle into which the text should be inserted. Text is "
+"automatically wrapped to a new line at box width. Lines not fitting into "
+"the box will be invisible."
+msgstr ""
+
+#: ../../page.rst:191 febd87b869634ec3923482742c9a9a39
+msgid ""
+"the text. *(New in v1.17.0)* May contain any mixture of Latin, Greek, "
+"Cyrillic, Chinese, Japanese and Korean characters. The respective "
+"required font is automatically determined."
+msgstr ""
+
+#: ../../page.rst:192 783f69bbd95f446db1adb9e497d8cb34
+msgid "the font size. Default is 12."
+msgstr ""
+
+#: ../../page.rst:193 34623ed5fb164f41a86f5be86997a069
+msgid ""
+"the font name. Default is \"Helv\". Accepted alternatives are \"Cour\", "
+"\"TiRo\", \"ZaDb\" and \"Symb\". The name may be abbreviated to the first"
+" two characters, like \"Co\" for \"Cour\". Lower case is also accepted. "
+"*(Changed in v1.16.0)* Bold or italic variants of the fonts are **no "
+"longer accepted**. A user-contributed script provides a circumvention for"
+" this restriction -- see section *Using Buttons and JavaScript* in "
+"chapter :ref:`FAQ`. *(New in v1.17.0)* The actual font to use is now "
+"determined on a by-character level, and all required fonts (or sub-fonts)"
+" are automatically included. Therefore, you should rarely ever need to "
+"care about this parameter and let it default (except you insist on a "
+"serifed font for your non-CJK text parts)."
+msgstr ""
+
+#: ../../page.rst:194 c8b3ed3990a8486ebef865c0e5899806
+msgid "*(new in v1.16.0)* the text color. Default is black."
+msgstr ""
+
+#: ../../page.rst:196 9a04b088a6bf4c40af86481a128b8ac4
+msgid "*(new in v1.16.0)* the fill color. Default is white."
+msgstr ""
+
+#: ../../page.rst:197 05d895cda394438b9eea03f5e4428bd0
+msgid "the text color. Default is black."
+msgstr ""
+
+#: ../../page.rst:198 c21a96bf9cb842e4904ccd8740acab41
+msgid "*(new in v1.19.6)* the border color. Default is `None`."
+msgstr ""
+
+#: ../../page.rst:199 1a7f6293d8b94bf590e18f5d76bf89f8
+msgid ""
+"*(new in v1.17.0)* text alignment, one of TEXT_ALIGN_LEFT, "
+"TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT - justify is **not supported**."
+msgstr ""
+
+#: ../../page.rst:202 69a4c1be53024671b2573b234b12bc78
+msgid ""
+"the text orientation. Accepted values are 0, 90, 270, invalid entries are"
+" set to zero."
+msgstr ""
+
+#: ../../page.rst:205 80aff46fabfe41dda393fc06a10f226f
+msgid ""
+"the created annotation. Color properties **can only be changed** using "
+"special parameters of :meth:`Annot.update`. There, you can also set a "
+"border color different from the text color."
+msgstr ""
+
+#: ../../page.rst:209 d6c18c268d3f4971bba06a3a57883e7f
+msgid ""
+"PDF only: Add a file attachment annotation with a \"PushPin\" icon at the"
+" specified location."
+msgstr ""
+
+#: ../../page.rst:211 b116c03d1eb0494194e3841b96d50f8d
+msgid ""
+"the top-left point of a 18x18 rectangle containing the MuPDF-provided "
+"\"PushPin\" icon."
+msgstr ""
+
+#: ../../page.rst:213 af5e64af9c9a44898ec10c7b4e7abe00
+msgid ""
+"the data to be stored (actual file content, any data, etc.).  Changed in "
+"v1.14.13 *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../page.rst:213 0cf97ad8aaa6455589435fffa2d6c0d9
+msgid "the data to be stored (actual file content, any data, etc.)."
+msgstr ""
+
+#: ../../page.rst:215 76e93a21ee784fa18fc8560524c37fa1
+msgid "Changed in v1.14.13 *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../page.rst:217 e3a95a691be54c038a479c26c117fb84
+msgid "the filename to associate with the data."
+msgstr ""
+
+#: ../../page.rst:218 43b9fd8ea5a7474abe643cb1757ce1b0
+msgid "the optional PDF unicode version of filename. Defaults to filename."
+msgstr ""
+
+#: ../../page.rst:219 c4b5bfb23c4a4f4f83acc78ffee842d8
+msgid "an optional description of the file. Defaults to filename."
+msgstr ""
+
+#: ../../page.rst:220 3cc4d72d30cc4f39aceb1ba33264b5a7
+msgid ""
+"*(new in v1.16.0)* choose one of \"PushPin\" (default), \"Graph\", "
+"\"Paperclip\", \"Tag\" as the visual symbol for the attached data [#f4]_."
+msgstr ""
+
+#: ../../page.rst:223 f3e1da994e5641e98c4e1634af97673b
+msgid ""
+"the created annotation.  Stroke color yellow = (1, 1, 0), no fill color "
+"support."
+msgstr ""
+
+#: ../../page.rst:227 086bdfec47fb45bf9d12bee2c22d70f8
+msgid "PDF only: Add a \"freehand\" scribble annotation."
+msgstr ""
+
+#: ../../page.rst:229 18566ed8f4c44b318de9b8b6783d8899
+msgid ""
+"a list of one or more lists, each containing :data:`point_like` items. "
+"Each item in these sublists is interpreted as a :ref:`Point` through "
+"which a connecting line is drawn. Separate sublists thus represent "
+"separate drawing lines."
+msgstr ""
+
+#: ../../page.rst:232 97016ba7ae174da296411c26a96564ac
+msgid ""
+"the created annotation in default appearance black =(0, 0, 0),line width "
+"1. No fill color support."
+msgstr ""
+
+#: ../../page.rst:236 5c4dad20ff564ec6a4f9b55f87da84f9
+msgid "PDF only: Add a line annotation."
+msgstr ""
+
+#: ../../page.rst:238 3fef4f946a47435cac9ecf7c306d9c1a
+msgid "the starting point of the line."
+msgstr ""
+
+#: ../../page.rst:240 23ef7908427f4d64a07d007613385975
+msgid "the end point of the line."
+msgstr ""
+
+#: ../../page.rst:243 803133640786485d9f7c5180c0e854b2
+msgid ""
+"the created annotation. It is drawn with line (stroke) color red = (1, 0,"
+" 0) and line width 1. No fill color support. The **annot rectangle** is "
+"automatically created to contain both points, each one surrounded by a "
+"circle of radius 3 * line width to make room for any line end symbols."
+msgstr ""
+
+#: ../../page.rst:249 40cb670e7daa4830b0ec6cb220260c40
+msgid "PDF only: Add a rectangle, resp. circle annotation."
+msgstr ""
+
+#: ../../page.rst:251 9f700b5f63484cb8b17dd68eaa266676
+msgid ""
+"the rectangle in which the circle or rectangle is drawn, must be finite "
+"and not empty. If the rectangle is not equal-sided, an ellipse is drawn."
+msgstr ""
+
+#: ../../page.rst:254 19355b288d48439ea8bd5e62cdc044ee
+msgid ""
+"the created annotation. It is drawn with line (stroke) color red = (1, 0,"
+" 0), line width 1, fill color is supported."
+msgstr ""
+
+#: ../../page.rst:258 ../../page.rst:404 3f47d4cf566b406a94e0b8be79affaee
+#: d032c218346f4aceb39f2764bb4ba284
+msgid "New in v1.16.11"
+msgstr ""
+
+#: ../../page.rst:260 e10d738a0eae4d7d9b7f8b272aa28c80
+msgid ""
+"PDF only: Add a redaction annotation. A redaction annotation identifies "
+"content to be removed from the document. Adding such an annotation is the"
+" first of two steps. It makes visible what will be removed in the "
+"subsequent step, :meth:`Page.apply_redactions`."
+msgstr ""
+
+#: ../../page.rst:262 5617886ba5ce4b6f94a69965d791f940
+msgid ""
+"specifies the (rectangular) area to be removed which is always equal to "
+"the annotation rectangle. This may be a :data:`rect_like` or "
+":data:`quad_like` object. If a quad is specified, then the enveloping "
+"rectangle is taken."
+msgstr ""
+
+#: ../../page.rst:264 2f1f8c0b723b4aa298f343456c595a60
+msgid ""
+"*(New in v1.16.12)* text to be placed in the rectangle after applying the"
+" redaction (and thus removing old content)."
+msgstr ""
+
+#: ../../page.rst:266 f4da9c6eb8f348acb9d9642f78ab9f27
+msgid ""
+"*(New in v1.16.12)* the font to use when *text* is given, otherwise "
+"ignored. The same rules apply as for :meth:`Page.insert_textbox` -- which"
+" is the method :meth:`Page.apply_redactions` internally invokes. The "
+"replacement text will be **vertically centered**, if this is one of the "
+"CJK or :ref:`Base-14-Fonts`.  .. note::     * For an **existing** font of"
+" the page, use its reference name as *fontname* (this is *item[4]* of its"
+" entry in :meth:`Page.get_fonts`).    * For a **new, non-builtin** font, "
+"proceed as follows::        page.insert_text(point,  # anywhere, but "
+"outside all redaction rectangles           \"something\",  # some non-"
+"empty string           fontname=\"newname\",  # new, unused reference "
+"name           fontfile=\"...\",  # desired font file           "
+"render_mode=3,  # makes the text invisible       )       "
+"page.add_redact_annot(..., fontname=\"newname\")"
+msgstr ""
+
+#: ../../page.rst:266 9860e39e900146b99de30743b5965e46
+msgid ""
+"*(New in v1.16.12)* the font to use when *text* is given, otherwise "
+"ignored. The same rules apply as for :meth:`Page.insert_textbox` -- which"
+" is the method :meth:`Page.apply_redactions` internally invokes. The "
+"replacement text will be **vertically centered**, if this is one of the "
+"CJK or :ref:`Base-14-Fonts`."
+msgstr ""
+
+#: ../../page.rst:270 17a03c6390944fd69fa78ecc00675850
+msgid ""
+"For an **existing** font of the page, use its reference name as "
+"*fontname* (this is *item[4]* of its entry in :meth:`Page.get_fonts`)."
+msgstr ""
+
+#: ../../page.rst:271 d22c186d0c11449885114bbb05a23921
+msgid "For a **new, non-builtin** font, proceed as follows::"
+msgstr ""
+
+#: ../../page.rst:281 5b2e3f425e094825bad48ebf40adee9d
+msgid ""
+"*(New in v1.16.12)* the fontsize to use for the replacing text. If the "
+"text is too large to fit, several insertion attempts will be made, "
+"gradually reducing the fontsize to no less than 4. If then the text will "
+"still not fit, no text insertion will take place at all."
+msgstr ""
+
+#: ../../page.rst:283 78526c39fcf34584bffb705d7f329a2e
+msgid ""
+"*(New in v1.16.12)* the horizontal alignment for the replacing text. See "
+":meth:`insert_textbox` for available values. The vertical alignment is "
+"(approximately) centered if a PDF built-in font is used (CJK or "
+":ref:`Base-14-Fonts`)."
+msgstr ""
+
+#: ../../page.rst:285 78483220c16b49828632258459929177
+msgid ""
+"*(New in v1.16.12)* the fill color of the rectangle **after applying** "
+"the redaction. The default is *white = (1, 1, 1)*, which is also taken if"
+" *None* is specified. *(Changed in v1.16.13)* To suppress a fill color "
+"altogether, specify *False*. In this cases the rectangle remains "
+"transparent."
+msgstr ""
+
+#: ../../page.rst:287 e8158192360b495c8a1a76218cd9bdca
+msgid ""
+"*(New in v1.16.12)* the color of the replacing text. Default is *black = "
+"(0, 0, 0)*."
+msgstr ""
+
+#: ../../page.rst:289 ae909476caa14095be54a0e9adfe6c2c
+msgid "*(new in v1.17.2)* add two diagonal lines to the annotation rectangle."
+msgstr ""
+
+#: ../../page.rst:292 23c4af8bf2d147eb8259b6136db79df2
+msgid ""
+"the created annotation. *(Changed in v1.17.2)* Its standard appearance "
+"looks like a red rectangle (no fill color), optionally showing two "
+"diagonal lines. Colors, line width, dashing, opacity and blend mode can "
+"now be set and applied via :meth:`Annot.update` like with other "
+"annotations."
+msgstr ""
+
+#: ../../page.rst:300 79f95be8e9a64fdaaf816fb7ea961168
+msgid ""
+"PDF only: Add an annotation consisting of lines which connect the given "
+"points. A **Polygon's** first and last points are automatically "
+"connected, which does not happen for a **PolyLine**. The **rectangle** is"
+" automatically created as the smallest rectangle containing the points, "
+"each one surrounded by a circle of radius 3 (= 3 * line width). The "
+"following shows a 'PolyLine' that has been modified with colors and line "
+"ends."
+msgstr ""
+
+#: ../../page.rst:302 6fd9cce8d32b46898b64aa50e1fb3f55
+msgid "a list of :data:`point_like` objects."
+msgstr ""
+
+#: ../../page.rst:305 4ed07e0645da4eaa875af8ade8d216a2
+msgid ""
+"the created annotation. It is drawn with line color black, line width 1 "
+"no fill color but fill color support. Use methods of :ref:`Annot` to make"
+" any changes to achieve something like this:"
+msgstr ""
+
+#: ../../page.rst:318 cab58bd5bb974fc29f3426462af2eabf
+msgid ""
+"PDF only: These annotations are normally used for **marking text** which "
+"has previously been somehow located (for example via "
+":meth:`Page.search_for`). But this is not required: you are free to "
+"\"mark\" just anything."
+msgstr ""
+
+#: ../../page.rst:320 7d11d2f03ba64c61853d83834f5a638e
+msgid ""
+"Standard (stroke only -- no fill color support) colors are chosen per "
+"annotation type: **yellow** for highlighting, **red** for striking out, "
+"**green** for underlining, and **magenta** for wavy underlining."
+msgstr ""
+
+#: ../../page.rst:322 34d63661d0cc4f72a2c9665756d9b5ee
+msgid ""
+"All these four methods convert the arguments into a list of :ref:`Quad` "
+"objects. The **annotation** rectangle is then calculated to envelop all "
+"these quadrilaterals."
+msgstr ""
+
+#: ../../page.rst:326 130e312e488e4d7ea3791d3d9a4da914
+msgid ""
+":meth:`search_for` delivers a list of either :ref:`Rect` or :ref:`Quad` "
+"objects. Such a list can be directly used as an argument for these "
+"annotation types and will deliver **one common annotation** for all "
+"occurrences of the search string::"
+msgstr ""
+
+#: ../../page.rst:333 b43681e0c225430d956859ad8bf4ee83
+msgid ""
+"Obviously, text marker annotations need to know what is the top, the "
+"bottom, the left, and the right side of the area(s) to be marked. If the "
+"arguments are quads, this information is given by the sequence of the "
+"quad points. In contrast, a rectangle delivers much less information -- "
+"this is illustrated by the fact, that 4! = 24 different quads can be "
+"constructed with the four corners of a reactangle."
+msgstr ""
+
+#: ../../page.rst:335 0a7955a064494ea8b20ff0e239ffea63
+msgid ""
+"Therefore, we **strongly recommend** to use the `quads` option for text "
+"searches, to ensure correct annotations. A similar consideration applies "
+"to marking **text spans** extracted with the \"dict\" / \"rawdict\" "
+"options of :meth:`Page.get_text`. For more details on how to compute "
+"quadrilaterals in this case, see section \"How to Mark Non-horizontal "
+"Text\" of :ref:`FAQ`."
+msgstr ""
+
+#: ../../page.rst:337 e8182169ca1e4135bacfc460ebef72f2
+msgid ""
+"*(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to "
+"be marked. A list or tuple must consist of :data:`rect_like` or "
+":data:`quad_like` items (or even a mixture of either). Every item must be"
+" finite, convex and not empty (as applicable). *(Changed in v1.16.14)* "
+"**Set this parameter to** *None* if you want to use the following "
+"arguments. And vice versa: if not *None*, the remaining parameters must "
+"be *None*."
+msgstr ""
+
+#: ../../page.rst:338 76eecfff18204e7cacc8437dcab9287e
+msgid ""
+"*(New in v1.16.14)* start text marking at this point. Defaults to the "
+"top-left point of *clip*. Must be provided if `quads` is *None*."
+msgstr ""
+
+#: ../../page.rst:339 913e07be76c24db2b46f44d721ce1556
+msgid ""
+"*(New in v1.16.14)* stop text marking at this point. Defaults to the "
+"bottom-right point of *clip*. Must be used if `quads` is *None*."
+msgstr ""
+
+#: ../../page.rst:340 e7271599b9434fab8fc0dbabf9bb5364
+msgid ""
+"*(New in v1.16.14)* only consider text lines intersecting this area. "
+"Defaults to the page rectangle. Only use if `start` and `stop` are "
+"provided."
+msgstr ""
+
+#: ../../page.rst:342 f8fb40b9c74e4089a8946a5e82b7b366
+msgid ":ref:`Annot` or *(changed in v1.16.14)* *None*"
+msgstr ""
+
+#: ../../page.rst:343 ffc1d4cc20cd436b849e3cc2f15b771f
+msgid ""
+"the created annotation. *(Changed in v1.16.14)* If *quads* is an empty "
+"list, **no annotation** is created."
+msgstr ""
+
+#: ../../page.rst:345 17a87edd5e1b463b9b8cf0db2736f82f
+msgid ""
+"Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* "
+"to highlight consecutive lines between the points *start* and *stop*. "
+"Make use of *clip* to further reduce the selected line bboxes and thus "
+"deal with e.g. multi-column pages. The following multi-line highlight on "
+"a page with three text columns was created by specifying the two red "
+"points and setting clip accordingly."
+msgstr ""
+
+#: ../../page.rst:352 e2e948fe2bd141c093c24c86fb8b47b8
+msgid ""
+"PDF only: Add a \"rubber stamp\" like annotation to e.g. indicate the "
+"document's intended use (\"DRAFT\", \"CONFIDENTIAL\", etc.)."
+msgstr ""
+
+#: ../../page.rst:354 0734da58d4934231b6272b755b44ebc3
+msgid "rectangle where to place the annotation."
+msgstr ""
+
+#: ../../page.rst:356 0208cd1a346944ba91754b58100d158f
+msgid "id number of the stamp text. For available stamps see :ref:`StampIcons`."
+msgstr ""
+
+#: ../../page.rst:360 60134f90b22b48d7a7ba988dd4e08570
+msgid ""
+"The stamp's text and its border line will automatically be sized and be "
+"put horizontally and vertically centered in the given rectangle. "
+":attr:`Annot.rect` is automatically calculated to fit the given **width**"
+" and will usually be smaller than this parameter."
+msgstr ""
+
+#: ../../page.rst:361 1367193f730f4bbcaa7000140dcbf963
+msgid "The font chosen is \"Times Bold\" and the text will be upper case."
+msgstr ""
+
+#: ../../page.rst:362 c6eacd1941e9465e8faab67d1195b73e
+msgid ""
+"The appearance can be changed using :meth:`Annot.set_opacity` and by "
+"setting the \"stroke\" color (no \"fill\" color supported)."
+msgstr ""
+
+#: ../../page.rst:363 6a14926af9fb4589928e4214264bc35c
+msgid ""
+"This can be used to create watermark images: on a temporary PDF page "
+"create a stamp annotation with a low opacity value, make a pixmap from it"
+" with *alpha=True* (and potentially also rotate it), discard the "
+"temporary PDF page and use the pixmap with :meth:`insert_image` for your "
+"target PDF."
+msgstr ""
+
+#: ../../page.rst:371 eb4a6e86b52c42e68c449a2a3b3d79d8
+msgid ""
+"PDF only: Add a PDF Form field (\"widget\") to a page. This also **turns "
+"the PDF into a Form PDF**. Because of the large amount of different "
+"options available for widgets, we have developed a new class "
+":ref:`Widget`, which contains the possible PDF field attributes. It must "
+"be used for both, form field creation and updates."
+msgstr ""
+
+#: ../../page.rst:373 eadebe77101c4a10a896a71bfeb30580
+msgid "a :ref:`Widget` object which must have been created upfront."
+msgstr ""
+
+#: ../../page.rst:376 f16262ce435b486cbcfda46e048fa58a
+msgid "a widget annotation."
+msgstr ""
+
+#: ../../page.rst:380 b2c6cbd3709848c98eaaae9ff782526c
+msgid ""
+"Changed in v1.16.6: The removal will now include any bound 'Popup' or "
+"response annotations and related objects."
+msgstr ""
+
+#: ../../page.rst:382 d26a1e5415b34415abb6f010131c9310
+msgid "PDF only: Delete annotation from the page and return the next one."
+msgstr ""
+
+#: ../../page.rst:384 7c9c07351b42425a9d3e34f6639059d1
+msgid "the annotation to be deleted."
+msgstr ""
+
+#: ../../page.rst:388 86b11b9d2b41425ba6d6a2aee2eda020
+msgid ""
+"the annotation following the deleted one. Please remember that physical "
+"removal requires saving to a new file with garbage > 0."
+msgstr ""
+
+#: ../../page.rst:392 40a458a293304e7c8c90ded8c14f6353
+msgid "New in v1.18.4"
+msgstr ""
+
+#: ../../page.rst:394 89bf3cb9107b4e1cb2705bd247406866
+msgid "PDF only: Delete field from the page and return the next one."
+msgstr ""
+
+#: ../../page.rst:396 4b66e28343bb4f4bbe180b22c1cbfa15
+msgid "the widget to be deleted."
+msgstr ""
+
+#: ../../page.rst:399 ../../page.rst:1496 ../../page.rst:1763
+#: 1f6e01624ba24385ac0552f2520ef215 bf40cbcc842943f09e3268e909b468b6
+#: ec887a14f0a24021946ff2b4246afa16
+msgid ":ref:`Widget`"
+msgstr ""
+
+#: ../../page.rst:400 6609cdb5926442669f7b8c205d42b059
+msgid ""
+"the widget following the deleted one. Please remember that physical "
+"removal requires saving to a new file with garbage > 0."
+msgstr ""
+
+#: ../../page.rst:405 34a8dd1c6b4541febe5a70231add6db0
+msgid ""
+"Changed in v1.16.12: The previous *mark* parameter is gone. Instead, the "
+"respective rectangles are filled with the individual *fill* color of each"
+" redaction annotation. If a *text* was given in the annotation, then "
+":meth:`insert_textbox` is invoked to insert it, using parameters provided"
+" with the redaction."
+msgstr ""
+
+#: ../../page.rst:406 1db1bc0928114559a964cbedae95b777
+msgid ""
+"Changed in v1.18.0: added option for handling images that overlap "
+"redaction areas."
+msgstr ""
+
+#: ../../page.rst:408 45f8563d884043b4b95966561cef30d7
+msgid ""
+"PDF only: Remove all **text content** contained in any redaction "
+"rectangle."
+msgstr ""
+
+#: ../../page.rst:410 48bd71e0a03e452ca7cb7d4369b575ad
+msgid "**This method applies and then deletes all redactions from the page.**"
+msgstr ""
+
+#: ../../page.rst:412 8e9b64e6da8040c28468434cbc19e3b5
+msgid ""
+"How to redact overlapping images. The default (2) blanks out overlapping "
+"pixels. *PDF_REDACT_IMAGE_NONE* (0) ignores, and "
+"*PDF_REDACT_IMAGE_REMOVE* (1) completely removes all overlapping images."
+msgstr ""
+
+#: ../../page.rst:415 f7be2a224c244839a436dd2f88a2ca85
+msgid ""
+"*True* if at least one redaction annotation has been processed, *False* "
+"otherwise."
+msgstr ""
+
+#: ../../page.rst:418 d7a897c039d94e869e1116b61c97f74e
+msgid ""
+"Text contained in a redaction rectangle will be **physically** removed "
+"from the page (assuming :meth:`Document.save` with a suitable garbage "
+"option) and will no longer appear in e.g. text extractions or anywhere "
+"else. All redaction annotations will also be removed. Other annotations "
+"are unaffected."
+msgstr ""
+
+#: ../../page.rst:420 daee259b85f44cdabe8a22d03f9bdc68
+msgid ""
+"All overlapping links will be removed. If the rectangle of the link was "
+"covering text, then only the overlapping part of the text is being "
+"removed. Similar applies to images covered by link rectangles."
+msgstr ""
+
+#: ../../page.rst:422 ac81fef580f74d15983c5fc8b7a1a46f
+msgid ""
+"*(Changed in v1.18.0)* The overlapping parts of **images** will be "
+"blanked-out for default option `PDF_REDACT_IMAGE_PIXELS`. Option 0 does "
+"not touch any images and 1 will remove any image with an overlap. Please "
+"be aware that there is a bug for option *PDF_REDACT_IMAGE_PIXELS = 2*: "
+"transparent images will be incorrectly handled!"
+msgstr ""
+
+#: ../../page.rst:424 f9e589e64ebc45dcaeb292de56a9c705
+msgid ""
+"For option `images=PDF_REDACT_IMAGE_REMOVE` only this page's **references"
+" to the images** are removed - not necessarily the images themselves. "
+"Images are completely removed from the file only, if no longer referenced"
+" at all (assuming suitable garbage collection options)."
+msgstr ""
+
+#: ../../page.rst:426 0ad3035316334d65b26c8dcca764d387
+msgid ""
+"For option `images=PDF_REDACT_IMAGE_PIXELS` a new image of format PNG is "
+"created, which the page will use in place of the original one. The "
+"original image is not deleted or replaced as part of this process, so "
+"other pages may still show the original. In addition, the new, modified "
+"PNG image currently is **stored uncompressed**. Do keep these aspects in "
+"mind when choosing the right garbage collection method and compression "
+"options during save."
+msgstr ""
+
+#: ../../page.rst:428 cf18adfba1744c8ba885a613c3292fe5
+msgid ""
+"**Text removal** is done by character: A character is removed if its bbox"
+" has a **non-empty overlap** with a redaction rectangle *(changed in "
+"MuPDF v1.17)*. Depending on the font properties and / or the chosen line "
+"height, deletion may occur for undesired text parts. Using "
+":meth:`Tools.set_small_glyph_heights` with a *True* argument before text "
+"search may help to prevent this."
+msgstr ""
+
+#: ../../page.rst:430 61aec0abf5414828a6fa7e6e8e581bdf
+msgid ""
+"Redactions are a simple way to replace single words in a PDF, or to just "
+"physically remove them. Locate the word \"secret\" using some text "
+"extraction or search method and insert a redaction using \"xxxxxx\" as "
+"replacement text for each occurrence."
+msgstr ""
+
+#: ../../page.rst:432 74b90afba78745fa94969340c0744528
+msgid ""
+"Be wary if the replacement is longer than the original -- this may lead "
+"to an awkward appearance, line breaks or no new text at all."
+msgstr ""
+
+#: ../../page.rst:434 b37ca79203a54f6782a8bf5b4de23a4b
+msgid ""
+"For a number of reasons, the new text may not exactly be positioned on "
+"the same line like the old one -- especially true if the replacement font"
+" was not one of CJK or :ref:`Base-14-Fonts`."
+msgstr ""
+
+#: ../../page.rst:438 2e545174b64349e1b2adcd5d0473b656
+msgid ""
+"PDF only: Delete the specified link from the page. The parameter must be "
+"an **original item** of :meth:`get_links()` (see below). The reason for "
+"this is the dictionary's *\"xref\"* key, which identifies the PDF object "
+"to be deleted."
+msgstr ""
+
+#: ../../page.rst:440 e95794b552e746fab20d128f738e618e
+msgid "the link to be deleted."
+msgstr ""
+
+#: ../../page.rst:444 6de1e416aafb45cc811734f1f3f20269
+msgid ""
+"PDF only: Insert a new link on this page. The parameter must be a "
+"dictionary of format as provided by :meth:`get_links()` (see below)."
+msgstr ""
+
+#: ../../page.rst:446 77bc3b00bebd4c62b426124e9cb31631
+msgid "the link to be inserted."
+msgstr ""
+
+#: ../../page.rst:450 2966d6e1d3ac4c11ab414cea8cc9465b
+msgid ""
+"PDF only: Modify the specified link. The parameter must be a (modified) "
+"**original item** of :meth:`get_links()` (see below). The reason for this"
+" is the dictionary's *\"xref\"* key, which identifies the PDF object to "
+"be changed."
+msgstr ""
+
+#: ../../page.rst:452 243565b57cc04138b86aba8de29b7ae3
+msgid "the link to be modified."
+msgstr ""
+
+#: ../../page.rst:454 ee1e996b0f6f462bb29fc709c3c4aa8f
+msgid ""
+"If updating / inserting a URI link (`\"kind\": LINK_URI`), please make "
+"sure to start the value for the `\"uri\"` key with a disambiguating "
+"string like `\"http://\"`, `\"https://\"`, `\"file://\"`, `\"ftp://\"`, "
+"`\"mailto:\"`, etc. Otherwise -- depending on your browser or other "
+"\"consumer\" software -- unexpected default assumptions may lead to "
+"unwanted behaviours."
+msgstr ""
+
+#: ../../page.rst:459 b751c22ad90b4caa987309963ead7027
+msgid "New in v1.18.6"
+msgstr ""
+
+#: ../../page.rst:461 3686264c11954c8ba12a9456928622ed
+msgid "PDF only: Return the label for the page."
+msgstr ""
+
+#: ../../page.rst:465 a8cb84b1242d4713a410b167179a14f5
+msgid "the label string like \"vii\" for Roman numbering or \"\" if not defined."
+msgstr ""
+
+#: ../../page.rst:471 30caab9246c24037a4844602aa78790f
+msgid "Retrieves **all** links of a page."
+msgstr ""
+
+#: ../../page.rst:474 1d1e63f0c8164457b42c77f515c7f56c
+msgid ""
+"A list of dictionaries. For a description of the dictionary entries see "
+"below. Always use this or the :meth:`Page.links` method if you intend to "
+"make changes to the links of a page."
+msgstr ""
+
+#: ../../page.rst:478 ../../page.rst:489 ../../page.rst:510
+#: 287c1a4bf3004ffba9010cbece445251 2f0ac9cb5e2d47a1a334e64d2220f27c
+#: d20727057d0345f58340c2a971ee4ab2
+msgid "New in v1.16.4"
+msgstr ""
+
+#: ../../page.rst:480 16bb202656b24793867b59af5c17ddea
+msgid ""
+"Return a generator over the page's links. The results equal the entries "
+"of :meth:`Page.get_links`."
+msgstr ""
+
+#: ../../page.rst:482 8e354b496c7a422abd6953e22866d499
+msgid ""
+"a sequence of integers to down-select to one or more link kinds. Default "
+"is all links. Example: *kinds=(fitz.LINK_GOTO,)* will only return "
+"internal links."
+msgstr ""
+
+#: ../../page.rst:485 99b2677fdec74744b4b6c4d2fbf34688
+msgid "an entry of :meth:`Page.get_links()` for each iteration."
+msgstr ""
+
+#: ../../page.rst:491 224b78a509b44fd2bd07a7b9edc21d87
+msgid "Return a generator over the page's annotations."
+msgstr ""
+
+#: ../../page.rst:493 fd85b22a44a045879703270c08788bdd
+msgid ""
+"a sequence of integers to down-select to one or more annotation types. "
+"Default is all annotations. Example: `types=(fitz.PDF_ANNOT_FREETEXT, "
+"fitz.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations."
+msgstr ""
+
+#: ../../page.rst:496 f96c9ab0a2854b84b1c43f2457b527ec
+msgid ""
+"an :ref:`Annot` for each iteration.  .. caution::      You **cannot "
+"safely update annotations** from within this generator. This is because "
+"most annotation updates require reloading the page via `page = "
+"doc.reload_page(page)`. To circumvent this restriction, make a list of "
+"annotations xref numbers first and then iterate over these numbers::"
+"        In [4]: xrefs = [annot.xref for annot in "
+"page.annots(types=[...])]       In [5]: for xref in xrefs:          ...:"
+"     annot = page.load_annot(xref)          ...:     annot.update()"
+"          ...:     page = doc.reload_page(page)       In [6]:"
+msgstr ""
+
+#: ../../page.rst:496 6f2bd3069d52451f88579e96d6eb92f5
+msgid "an :ref:`Annot` for each iteration."
+msgstr ""
+
+#: ../../page.rst:499 9ebeaecf545f4ba0a11969cee08265c8
+msgid ""
+"You **cannot safely update annotations** from within this generator. This"
+" is because most annotation updates require reloading the page via `page "
+"= doc.reload_page(page)`. To circumvent this restriction, make a list of "
+"annotations xref numbers first and then iterate over these numbers::"
+msgstr ""
+
+#: ../../page.rst:512 e0a0f460de3f4dd080d130b03b816c49
+msgid "Return a generator over the page's form fields."
+msgstr ""
+
+#: ../../page.rst:514 95f6a5bb3bdd4bd2ba3e5521fb542eb2
+msgid ""
+"a sequence of integers to down-select to one or more widget types. "
+"Default is all form fields. Example: `types=(fitz.PDF_WIDGET_TYPE_TEXT,)`"
+" will only return 'Text' fields."
+msgstr ""
+
+#: ../../page.rst:517 12fb96a5d3074932ab8a3c29673829ee
+msgid "a :ref:`Widget` for each iteration."
+msgstr ""
+
+#: ../../page.rst:522 b22bcc0acb0f4ff68f71d138eb87fdb6
+msgid "New in v1.16.18"
+msgstr ""
+
+#: ../../page.rst:524 32810697de0046b692571fd684cb2d90
+msgid ""
+"PDF only: Write the text of one or more :ref:`Textwriter` objects to the "
+"page."
+msgstr ""
+
+#: ../../page.rst:526 0fe862196435459b954df3db02e0bde6
+msgid ""
+"where to place the text. If omitted, the rectangle union of the text "
+"writers is used."
+msgstr ""
+
+#: ../../page.rst:527 34f70fcfaabe406e86da6d0b83dc02ef
+msgid ""
+"a non-empty tuple / list of :ref:`TextWriter` objects or a single "
+":ref:`TextWriter`."
+msgstr ""
+
+#: ../../page.rst:528 2ba45a05a86149c2a9a49ed999f5c021
+msgid "set transparency, overwrites resp. value in the text writers."
+msgstr ""
+
+#: ../../page.rst:529 fc743f23c334400594b0c016fc097a39
+msgid "set the text color, overwrites  resp. value in the text writers."
+msgstr ""
+
+#: ../../page.rst:530 7c6d205a1fac4678842e1caa2c36023b
+msgid "put the text in foreground or background."
+msgstr ""
+
+#: ../../page.rst:531 587404afd7304e0a9fb24f8a970ab63b
+msgid "maintain the aspect ratio."
+msgstr ""
+
+#: ../../page.rst:532 e49f927719bc44edb2efac39dc1b0594
+msgid "rotate the text by an arbitrary angle."
+msgstr ""
+
+#: ../../page.rst:533 da90ba2a59094b1a8a9a92aea17a1c43
+msgid "*(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`."
+msgstr ""
+
+#: ../../page.rst:535 c47a81babb63462b98a1e468fcc857ff
+msgid ""
+"Parameters *overlay, keep_proportion, rotate* and *oc* have the same "
+"meaning as in :meth:`Page.show_pdf_page`."
+msgstr ""
+
+#: ../../page.rst:556 ../../page.rst:580 ../../page.rst:601 ../../page.rst:622
+#: ../../page.rst:643 ../../page.rst:663 ../../page.rst:683 ../../page.rst:704
+#: ../../page.rst:724 ../../page.rst:745 ../../page.rst:765 ../../page.rst:786
+#: ../../page.rst:807 114d04c75ea0499e957af5c8e644ff68
+#: 129302697dda4f85a02e70eb757a7370 246e8644342343d0a88e0112cbf8d53e
+#: 2542c01e3d7a42718b1e00350ce802dc 6ac31b0fa5164542aa0b40223500d536
+#: 7f21bbfcc4e549d2a4309c9bdb2a6177 7f938ad3488d4bb39e835c123d4750e7
+#: abd2afb07582439282fcb0b81dbeeb05 b1f8e5f2b2b54917bdff8ff9b1da50c9
+#: cc383c8a1434471f995c841f6166251f f1e2425776d049d4a84228651a15f3e1
+#: f4950b52cde44676a790647bc6ad16a3 fb02a76f4ddb4e3aa21dd9a322a46fcc
+msgid "Changed in v1.18.4"
+msgstr ""
+
+#: ../../page.rst:558 950637b4a32041688cf1cfd02df1f737
+msgid ""
+"PDF only: Insert text starting at :data:`point_like` *point*. See "
+":meth:`Shape.insert_text`."
+msgstr ""
+
+#: ../../page.rst:582 1da22f98329a46b49295fc4c514f2990
+msgid ""
+"PDF only: Insert text into the specified :data:`rect_like` *rect*. See "
+":meth:`Shape.insert_textbox`."
+msgstr ""
+
+#: ../../page.rst:603 f295342a9e5c4c94a61f6153398b855f
+msgid ""
+"PDF only: Draw a line from *p1* to *p2* (:data:`point_like` \\s). See "
+":meth:`Shape.draw_line`."
+msgstr ""
+
+#: ../../page.rst:624 d75b788929cb438fbd257b4662366d98
+msgid ""
+"PDF only: Draw a zigzag line from *p1* to *p2* (:data:`point_like` \\s). "
+"See :meth:`Shape.draw_zigzag`."
+msgstr ""
+
+#: ../../page.rst:645 e66b9ef3e99a4756969d0c8732ebf03d
+msgid ""
+"PDF only: Draw a squiggly (wavy, undulated) line from *p1* to *p2* "
+"(:data:`point_like` \\s). See :meth:`Shape.draw_squiggle`."
+msgstr ""
+
+#: ../../page.rst:665 e3471c0162024d91a41b2729b6ac9f97
+msgid ""
+"PDF only: Draw a circle around *center* (:data:`point_like`) with a "
+"radius of *radius*. See :meth:`Shape.draw_circle`."
+msgstr ""
+
+#: ../../page.rst:685 86c2d0c28d2e49fcb44bcde395a6edce
+msgid ""
+"PDF only: Draw an oval (ellipse) within the given :data:`rect_like` or "
+":data:`quad_like`. See :meth:`Shape.draw_oval`."
+msgstr ""
+
+#: ../../page.rst:706 7036ecade86944ceb3a0cd11f01405c1
+msgid ""
+"PDF only: Draw a circular sector, optionally connecting the arc to the "
+"circle's center (like a piece of pie). See :meth:`Shape.draw_sector`."
+msgstr ""
+
+#: ../../page.rst:726 ea1273f78bc24ec19215c09a65ebf39e
+msgid ""
+"PDF only: Draw several connected lines defined by a sequence of "
+":data:`point_like` \\s. See :meth:`Shape.draw_polyline`."
+msgstr ""
+
+#: ../../page.rst:747 8c7de77eefc846418b5090d2596c4d2b
+msgid ""
+"PDF only: Draw a cubic Bézier curve from *p1* to *p4* with the control "
+"points *p2* and *p3* (all are :data:`point_like` \\s). See "
+":meth:`Shape.draw_bezier`."
+msgstr ""
+
+#: ../../page.rst:767 b886cb50a96540138b0d72ff245eb173
+msgid ""
+"PDF only: This is a special case of *draw_bezier()*. See "
+":meth:`Shape.draw_curve`."
+msgstr ""
+
+#: ../../page.rst:787 4e3c87ab1c674513b5b17c45292040a0
+msgid "Changed in v1.22.0: Added parameter *radius*."
+msgstr ""
+
+#: ../../page.rst:789 22ed6b6e87de4f22a2f0fc1607e1243f
+msgid "PDF only: Draw a rectangle. See :meth:`Shape.draw_rect`."
+msgstr ""
+
+#: ../../page.rst:809 09ab421f248e4ece83cb24cb70685870
+msgid "PDF only: Draw a quadrilateral. See :meth:`Shape.draw_quad`."
+msgstr ""
+
+#: ../../page.rst:821 6a68ef1915ed47d7b6c8bebeebbaf5f0
+msgid ""
+"PDF only: Add a new font to be used by text output methods and return its"
+" :data:`xref`. If not already present in the file, the font definition "
+"will be added. Supported are the built-in :data:`Base14_Fonts` and the "
+"CJK fonts via **\"reserved\"** fontnames. Fonts can also be provided as a"
+" file path or a memory area containing the image of a font file."
+msgstr ""
+
+#: ../../page.rst:823 3e2634c3bae64aedaeee8662b3a0564a
+msgid ""
+"The name by which this font shall be referenced when outputting text on "
+"this page. In general, you have a \"free\" choice here (but consult the "
+":ref:`AdobeManual`, page 16, section 7.3.5 for a formal description of "
+"building legal PDF names). However, if it matches one of the "
+":data:`Base14_Fonts` or one of the CJK fonts, *fontfile* and *fontbuffer*"
+" **are ignored**."
+msgstr ""
+
+#: ../../page.rst:825 cd2db768363e43f8914989e9e3613fd7
+msgid ""
+"In other words, you cannot insert a font via *fontfile* / *fontbuffer* "
+"and also give it a reserved *fontname*."
+msgstr ""
+
+#: ../../page.rst:827 6627c3af904e4b81a4e47d0cd02148d7
+msgid ""
+"A reserved fontname can be specified in any mixture of upper or lower "
+"case and still match the right built-in font definition: fontnames "
+"\"helv\", \"Helv\", \"HELV\", \"Helvetica\", etc. all lead to the same "
+"font definition \"Helvetica\". But from a :ref:`Page` perspective, these "
+"are **different references**. You can exploit this fact when using "
+"different *encoding* variants (Latin, Greek, Cyrillic) of the same font "
+"on a page."
+msgstr ""
+
+#: ../../page.rst:829 681d840384e84bb08e7af955e13abae2
+msgid ""
+"a path to a font file. If used, *fontname* must be **different from all "
+"reserved names**."
+msgstr ""
+
+#: ../../page.rst:831 7210674b172b41fcbba7761f46a056fd
+msgid ""
+"the memory image of a font file. If used, *fontname* must be **different "
+"from all reserved names**. This parameter would typically be used with "
+":attr:`Font.buffer` for fonts supported / available via :ref:`Font`."
+msgstr ""
+
+#: ../../page.rst:833 54bfdd3403194678a8011a05ae66f789
+msgid ""
+"applicable for *fontfile* / *fontbuffer* cases only: enforce treatment as"
+" a \"simple\" font, i.e. one that only uses character codes up to 255."
+msgstr ""
+
+#: ../../page.rst:835 376461740edb4c9ab93ad0137270b39f
+msgid ""
+"applicable for the \"Helvetica\", \"Courier\" and \"Times\" sets of "
+":data:`Base14_Fonts` only. Select one of the available encodings Latin "
+"(0), Cyrillic (2) or Greek (1). Only use the default (0 = Latin) for "
+"\"Symbol\" and \"ZapfDingBats\"."
+msgstr ""
+
+#: ../../page.rst 7b48f96ea4534f8a82e66fea1c734ffe
+msgid "rytpe"
+msgstr ""
+
+#: ../../page.rst:837 ../../page.rst:1685 ../../page.rst:1769
+#: 2c7ae35c24fb415cabb2ff82cb9f9acd 51d8ccdf1e6d4aba8c45bc1d33c7ab72
+#: 5d74505ffb2946e4ba159546b24c34de
+msgid "int"
+msgstr ""
+
+#: ../../page.rst:838 ee3734198ea94ca388f872902edaeebd
+msgid "the :data:`xref` of the installed font."
+msgstr ""
+
+#: ../../page.rst:840 72a73208249149eb9e56d6f8277a2380
+msgid ""
+"Built-in fonts will not lead to the inclusion of a font file. So the "
+"resulting PDF file will remain small. However, your PDF viewer software "
+"is responsible for generating an appropriate appearance -- and there "
+"**exist** differences on whether or how each one of them does this. This "
+"is especially true for the CJK fonts. But also Symbol and ZapfDingbats "
+"are incorrectly handled in some cases. Following are the **Font Names** "
+"and their correspondingly installed **Base Font** names:"
+msgstr ""
+
+#: ../../page.rst:842 74d1392a943c407094b684e408755751
+msgid "**Base-14 Fonts** [#f1]_"
+msgstr ""
+
+#: ../../page.rst:845 ../../page.rst:866 ad45cacf505841df92fe4b59b1a6185b
+#: ff7877920c384fd39f71a5126be0d4cd
+msgid "**Font Name**"
+msgstr ""
+
+#: ../../page.rst:845 ../../page.rst:866 3f0209537a114b59b4536efe4770f3b9
+#: b1bd9831282a4d0ca9be6ea24d02f28c
+msgid "**Installed Base Font**"
+msgstr ""
+
+#: ../../page.rst:845 ../../page.rst:866 3ee548353c404cefb70820686b87ec37
+#: 922d7f05a29f471b8e78c15dcc73eba8
+msgid "**Comments**"
+msgstr ""
+
+#: ../../page.rst:847 78cc4400bb88415ca73d63b37833bc55
+msgid "helv"
+msgstr ""
+
+#: ../../page.rst:847 be511bacb63b4326ac1e7dde877293a4
+msgid "Helvetica"
+msgstr ""
+
+#: ../../page.rst:847 ../../page.rst:851 ../../page.rst:855
+#: 07e950c337704689ab87d80cc7f33a3c 86e12621814d43c7a92bee7e6075d6ff
+#: e9ff3bff2ff74bb4b8f2efaa1fafb245
+msgid "normal"
+msgstr ""
+
+#: ../../page.rst:848 d4ef2425fbbd40a18a936e47591c2d0f
+msgid "heit"
+msgstr ""
+
+#: ../../page.rst:848 b368f6f728a042438f1078d700290ed6
+msgid "Helvetica-Oblique"
+msgstr ""
+
+#: ../../page.rst:848 ../../page.rst:852 ../../page.rst:856
+#: 5527daae351044c8ba2741ca5bc0ee72 a1a99f06860643a79b0520ec4d951205
+#: e2e5fa825ef6434e98fb4047bb11099d
+msgid "italic"
+msgstr ""
+
+#: ../../page.rst:849 b31ba19347814f57b1043e863bc04f1c
+msgid "hebo"
+msgstr ""
+
+#: ../../page.rst:849 d28cc182c0874efcb25c4f6125fab1b1
+msgid "Helvetica-Bold"
+msgstr ""
+
+#: ../../page.rst:849 ../../page.rst:853 ../../page.rst:857
+#: 4b39b6ceb59a4009b525b892538dd150 ab389a33ff9547bf8ae764284627be19
+#: e4c2dbb0628a4be6b000747bcc47288b
+msgid "bold"
+msgstr ""
+
+#: ../../page.rst:850 ba4b2dcc36004ace823799b7c98d9128
+msgid "hebi"
+msgstr ""
+
+#: ../../page.rst:850 a3f649a95a804dabbe7bf73646538632
+msgid "Helvetica-BoldOblique"
+msgstr ""
+
+#: ../../page.rst:850 ../../page.rst:854 ../../page.rst:858
+#: 301721f06f904309bbe9a135eb2dcc93 f2850bb077ba416887a291ffcdae3570
+#: f93011f0c0cf45ffaf2b5ddbb443a26d
+msgid "bold-italic"
+msgstr ""
+
+#: ../../page.rst:851 1c940625101c4ad89e9a82430e4f9178
+msgid "cour"
+msgstr ""
+
+#: ../../page.rst:851 6bb9f6b456024dc186d2969697372ce3
+msgid "Courier"
+msgstr ""
+
+#: ../../page.rst:852 dd404f874bae47b88441d7534c0400be
+msgid "coit"
+msgstr ""
+
+#: ../../page.rst:852 14fa52a8156b4bd49bf73a5e1f0227bd
+msgid "Courier-Oblique"
+msgstr ""
+
+#: ../../page.rst:853 ec098535f704474f86382563b8fe8cd0
+msgid "cobo"
+msgstr ""
+
+#: ../../page.rst:853 cff74382efe44bbf86a52dd318acdfd8
+msgid "Courier-Bold"
+msgstr ""
+
+#: ../../page.rst:854 051edb300a6a4aedbcf6b0e6ac6d8ca3
+msgid "cobi"
+msgstr ""
+
+#: ../../page.rst:854 0fe9930b6afc4485802953ea19f34cf0
+msgid "Courier-BoldOblique"
+msgstr ""
+
+#: ../../page.rst:855 3cab3d915059400cbcfb769e8a8c809a
+msgid "tiro"
+msgstr ""
+
+#: ../../page.rst:855 0ad970d4606447afa924d780a1ea0382
+msgid "Times-Roman"
+msgstr ""
+
+#: ../../page.rst:856 24dd2a6e0e984c578d36b068db4fb074
+msgid "tiit"
+msgstr ""
+
+#: ../../page.rst:856 16b2bdd1ea7048f8b4b75b3b68667e26
+msgid "Times-Italic"
+msgstr ""
+
+#: ../../page.rst:857 7f66f82124114034b6830dd51ecfc3ef
+msgid "tibo"
+msgstr ""
+
+#: ../../page.rst:857 d46801929cc4495bb3bf514a0aa45975
+msgid "Times-Bold"
+msgstr ""
+
+#: ../../page.rst:858 ae79135985234e1c9d22393e89d3e55d
+msgid "tibi"
+msgstr ""
+
+#: ../../page.rst:858 138b6816ae514092aae23f07db5880a4
+msgid "Times-BoldItalic"
+msgstr ""
+
+#: ../../page.rst:859 8311fbcd1639439ca737b4be5686012b
+msgid "symb"
+msgstr ""
+
+#: ../../page.rst:859 308b75a7675146469d8e35c591460d82
+msgid "Symbol"
+msgstr ""
+
+#: ../../page.rst:859 ../../page.rst:860 515c511f8b1a4fa3b85218079b863fec
+#: 5f8954ca2c324c619532d6c00a6e1fa2
+msgid "[#f3]_"
+msgstr ""
+
+#: ../../page.rst:860 2892a14ce5ed4b48bf8b1395b7ba1a12
+msgid "zadb"
+msgstr ""
+
+#: ../../page.rst:860 631350e311c14d71bdddaea830b8a3c2
+msgid "ZapfDingbats"
+msgstr ""
+
+#: ../../page.rst:863 8977d47ffb5541668299623936a50032
+msgid "**CJK Fonts** [#f2]_ (China, Japan, Korea)"
+msgstr ""
+
+#: ../../page.rst:868 370513f2d3f145648ab346718a4ce464
+msgid "china-s"
+msgstr ""
+
+#: ../../page.rst:868 f0f7488930f948179faec55f250b4fd1
+msgid "Heiti"
+msgstr ""
+
+#: ../../page.rst:868 994915560fc24c289c2985341a54c5b3
+msgid "simplified Chinese"
+msgstr ""
+
+#: ../../page.rst:869 225e9ad164834b858b1a4b1ceee0b56f
+msgid "china-ss"
+msgstr ""
+
+#: ../../page.rst:869 1aaba4c26cf24074ad7ddbd787c327cb
+msgid "Song"
+msgstr ""
+
+#: ../../page.rst:869 8e9e355bda48424c8fdcc1c32c95bbec
+msgid "simplified Chinese (serif)"
+msgstr ""
+
+#: ../../page.rst:870 4ad6e04dae85445d87f494e35f7fff91
+msgid "china-t"
+msgstr ""
+
+#: ../../page.rst:870 3181ab89fc1a44c7ba8838a56fb0d056
+msgid "Fangti"
+msgstr ""
+
+#: ../../page.rst:870 1fdfcf2b83e647598ea492943458c6cd
+msgid "traditional Chinese"
+msgstr ""
+
+#: ../../page.rst:871 537c4d5b47124adf8ac58897964c3d67
+msgid "china-ts"
+msgstr ""
+
+#: ../../page.rst:871 7493f320c95c4d0680f88073754acd64
+msgid "Ming"
+msgstr ""
+
+#: ../../page.rst:871 84bb9a9780ca4edfbc80d2544d25f654
+msgid "traditional Chinese (serif)"
+msgstr ""
+
+#: ../../page.rst:872 a295373ebbf34a76807234e54932d1a0
+msgid "japan"
+msgstr ""
+
+#: ../../page.rst:872 589aaf9dfce34c6badb4527ec4057246
+msgid "Gothic"
+msgstr ""
+
+#: ../../page.rst:872 d7698b9f8afe4778acdc0f6091906025
+msgid "Japanese"
+msgstr ""
+
+#: ../../page.rst:873 15573d9154414182b73374bd731f7ac5
+msgid "japan-s"
+msgstr ""
+
+#: ../../page.rst:873 36928f1d246f4b74ab168ac51db4d1f7
+msgid "Mincho"
+msgstr ""
+
+#: ../../page.rst:873 b746e9096fd84441a6737d81e4386925
+msgid "Japanese (serif)"
+msgstr ""
+
+#: ../../page.rst:874 9adc3a834f494231bc681ce146bed104
+msgid "korea"
+msgstr ""
+
+#: ../../page.rst:874 85c5e88403514ec58f80bdddb4ed688a
+msgid "Dotum"
+msgstr ""
+
+#: ../../page.rst:874 d5a7483efeaa4fb18f7966b5f6592cd6
+msgid "Korean"
+msgstr ""
+
+#: ../../page.rst:875 25924d37a3eb4b9391eb978249959ebb
+msgid "korea-s"
+msgstr ""
+
+#: ../../page.rst:875 2f8b65341bf24e65837a17b3be8abd8a
+msgid "Batang"
+msgstr ""
+
+#: ../../page.rst:875 ed1cfb6d0e144c70b8991b45a253c8b8
+msgid "Korean (serif)"
+msgstr ""
+
+#: ../../page.rst:891 b93513cf36c64f8baa7844eb648e5244
+msgid ""
+"PDF only: Put an image inside the given rectangle. The image may already "
+"exist in the PDF or be taken from a pixmap, a file, or a memory area."
+msgstr ""
+
+#: ../../page.rst:893 bb6ed58a098e49f6bd63f6ef0ec9b0a6
+msgid "Changed in v1.14.1: By default, the image keeps its aspect ratio."
+msgstr ""
+
+#: ../../page.rst:894 65e739804b1e46589a4ca8bc58c17e75
+msgid ""
+"Changed in v1.14.13: The image is now always placed **centered** in the "
+"rectangle, i.e. the centers of image and rectangle are equal."
+msgstr ""
+
+#: ../../page.rst:895 71d3945b59ad4f9c9f9748f3e1131921
+msgid ""
+"Changed in v1.17.6: Insertion rectangle no longer needs to have a non-"
+"empty intersection with the page's :attr:`Page.cropbox` [#f5]_."
+msgstr ""
+
+#: ../../page.rst:896 597ec9dc17b24be78d731b565038c112
+msgid ""
+"Changed in v1.18.13: Allow providing the image as the xref of an existing"
+" one."
+msgstr ""
+
+#: ../../page.rst:898 af63491513e64fe0a9e2e5da1a8cd6e7
+msgid "where to put the image. Must be finite and not empty."
+msgstr ""
+
+#: ../../page.rst:899 dfceb440309b4393b3f29fbf9e9e7428
+msgid ""
+"name of an image file (all formats supported by MuPDF -- see "
+":ref:`ImageFiles`)."
+msgstr ""
+
+#: ../../page.rst:900 96ebc2a78656499cba634d08b286f8db
+msgid ""
+"image in memory (all formats supported by MuPDF -- see "
+":ref:`ImageFiles`).  Changed in v1.14.13: *io.BytesIO* is now also "
+"supported."
+msgstr ""
+
+#: ../../page.rst:900 b70bbbe68796427aa884b758b144099c
+msgid "image in memory (all formats supported by MuPDF -- see :ref:`ImageFiles`)."
+msgstr ""
+
+#: ../../page.rst:902 746335b0ce164cf3bdaedba30b771300
+msgid "Changed in v1.14.13: *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../page.rst:904 b801019301984a6ab1fc9849462ae947
+msgid "a pixmap containing the image."
+msgstr ""
+
+#: ../../page.rst:907 92c35b3fc60c4a98ac6591e1d398c034
+msgid ""
+"*(new in version v1.18.1)* image in memory -- to be used as image mask "
+"(alpha values) for the base image. When specified, the base image must be"
+" provided as a filename or a stream -- and must not be an image that "
+"already has a mask."
+msgstr ""
+
+#: ../../page.rst:909 0a612c9a713740d5ad503c87baa994b5
+msgid ""
+"*(New in v1.18.13)* the :data:`xref` of an image already present in the "
+"PDF. If given, parameters `filename`, `pixmap`, `stream`, `alpha` and "
+"`mask` are ignored. The page will simply receive a reference to the "
+"existing image."
+msgstr ""
+
+#: ../../page.rst:911 8ee1ddf7108247a8aab892eca0d74de8
+msgid "*(Changed in v1.19.3)* deprecated. No longer needed -- ignored when given."
+msgstr ""
+
+#: ../../page.rst:913 20a54ae82e9d425da6ef7faff3740b76
+msgid ""
+"*(new in version v1.14.11)* rotate the image. Must be an integer multiple"
+" of 90 degrees. Positive values rotate anti-clockwise. If you need a "
+"rotation by an arbitrary angle, consider converting the image to a PDF "
+"(:meth:`Document.convert_to_pdf`) first and then use "
+":meth:`Page.show_pdf_page` instead."
+msgstr ""
+
+#: ../../page.rst:921 6ff770bdef8d4c038d627bc90336f0cd
+msgid ""
+"*(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this"
+" :data:`OCG` or :data:`OCMD`. Ignored after the first of multiple "
+"insertions. The property is stored with the generated PDF image object "
+"and therefore controls the image's visibility throughout the PDF."
+msgstr ""
+
+#: ../../page.rst:922 3d227b97e6484a10bb31619029aa7d2a
+msgid "*(new in version v1.14.11)* maintain the aspect ratio of the image."
+msgstr ""
+
+#: ../../page.rst:924 f4c8d6966a2b4a708e830a33ec9288cd
+msgid "For a description of *overlay* see :ref:`CommonParms`."
+msgstr ""
+
+#: ../../page.rst:926 1f08b3447d8549658bb7913e2ca84483
+msgid "*Changed in v1.18.13:* Return xref of stored image."
+msgstr ""
+
+#: ../../page.rst:929 a42a29307b2b40d5b75a4b3f2d5ff9f4
+msgid ""
+"The xref of the embedded image. This can be used as the `xref` argument "
+"for very significant performance boosts, if the image is inserted again."
+msgstr ""
+
+#: ../../page.rst:931 555a857bb2bf42f89615cd1de42ce7bf
+msgid "This example puts the same image on every page of a document::"
+msgstr ""
+
+#: ../../page.rst:945 427e0c2a9512404cae2dadefc3c8500a
+msgid ""
+"The method detects multiple insertions of the same image (like in above "
+"example) and will store its data only on the first execution. This is "
+"even true (although less performant), if using the default `xref=0`."
+msgstr ""
+
+#: ../../page.rst:947 0d2fb024302d4643a4d3ed1976acd364
+msgid ""
+"The method cannot detect if the same image had already been part of the "
+"file before opening it."
+msgstr ""
+
+#: ../../page.rst:949 52b2ba0bfb9f4faf8e50a5de7a683f88
+msgid ""
+"You can use this method to provide a background or foreground image for "
+"the page, like a copyright or a watermark. Please remember, that "
+"watermarks require a transparent image if put in foreground ..."
+msgstr ""
+
+#: ../../page.rst:951 daa7fc94769347649a7a713c027bafd4
+msgid ""
+"The image may be inserted uncompressed, e.g. if a *Pixmap* is used or if "
+"the image has an alpha channel. Therefore, consider using *deflate=True* "
+"when saving the file. In addition, there exist effective ways to control "
+"the image size -- even if transparency comes into play. Have a look at "
+"`this <https://pymupdf.readthedocs.io/en/latest/faq.html#how-to-add-"
+"images-to-a-pdf-page>`_ section of the documentation."
+msgstr ""
+
+#: ../../page.rst:953 ec06cdffce77422dacb1edff33a03139
+msgid ""
+"The image is stored in the PDF in its original quality. This may be much "
+"better than what you ever need for your display. Consider **decreasing "
+"the image size** before insertion -- e.g. by using the pixmap option and "
+"then shrinking it or scaling it down (see :ref:`Pixmap` chapter). The PIL"
+" method *Image.thumbnail()* can also be used for that purpose. The file "
+"size savings can be very significant."
+msgstr ""
+
+#: ../../page.rst:955 a77ada16df804aaa99e0b882d46b0f98
+msgid ""
+"Another efficient way to display the same image on multiple pages is "
+"another method: :meth:`show_pdf_page`. Consult "
+":meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs "
+"usable for that method. Demo script `fitz-logo.py "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-"
+"logo.py>`_ implements a fairly complete approach."
+msgstr ""
+
+#: ../../page.rst:966 ../../page.rst:987 c4e260d6752f4f0f8f3601b6a8517470
+#: fcc2363c17bd41e8a90ef269b0f75072
+msgid "New in v1.21.0"
+msgstr ""
+
+#: ../../page.rst:968 15d8b0af8f2646e482b8e69fb5701ac6
+msgid "Replace the image at xref with another one."
+msgstr ""
+
+#: ../../page.rst:970 ../../page.rst:991 0e408fab46d54805984e704ae31835fe
+#: 60b63372e7044c0cb5a69c0619aed29f
+msgid "the :data:`xref` of the image."
+msgstr ""
+
+#: ../../page.rst:971 5d9a4e22495445aa9c04c20d7c79ff01
+msgid "the filename of the new image."
+msgstr ""
+
+#: ../../page.rst:972 d511976bba744f41a49c94585d91fe7d
+msgid "the :ref:`Pixmap` of the new image."
+msgstr ""
+
+#: ../../page.rst:973 d6b761655870480ebeda6eae377b55ee
+msgid "the memory area containing the new image."
+msgstr ""
+
+#: ../../page.rst:975 080531abda0d41df962f5b62778411a6
+msgid ""
+"Arguments `filename`, `pixmap`, `stream` have the same meaning as in "
+":meth:`Page.insert_image`, especially exactly one of these must be "
+"provided."
+msgstr ""
+
+#: ../../page.rst:977 555b89cf61ac49fd95bca401885ea240
+msgid ""
+"This is a **global replacement:** the new image will also be shown "
+"wherever the old one has been displayed throughout the file."
+msgstr ""
+
+#: ../../page.rst:979 3f2a46430d0d40d78a82d13aa3601cf2
+msgid ""
+"This method mainly exists for technical purposes. Typical uses include "
+"replacing large images by smaller versions, like a lower resolution, "
+"graylevel instead of colored, etc., or changing transparency."
+msgstr ""
+
+#: ../../page.rst:989 fb3cbaa5b7a04a54896e91a5a04f2941
+msgid ""
+"Delete the image at xref. This is slightly misleading: actually the image"
+" is being replaced with a small transparent :ref:`Pixmap` using above "
+":meth:`Page.replace_image`. The visible effect however is equivalent."
+msgstr ""
+
+#: ../../page.rst:993 69d1bcdd8e85404abc667d067eb15ebb
+msgid ""
+"This is a **global replacement:** the image will disappear wherever the "
+"old one has been displayed throughout the file."
+msgstr ""
+
+#: ../../page.rst:995 135a31c981a34a9d9ddaf5816dcbaa6c
+msgid ""
+"If you inspect / extract a page's images by methods like "
+":meth:`Page.get_images`, :meth:`Page.get_image_info` or "
+":meth:`Page.get_text`, the replacing \"dummy\" image will be detected "
+"like so `(45, 47, 1, 1, 8, 'DeviceGray', '', 'Im1', 'FlateDecode')` and "
+"also seem to \"cover\" the same boundary box on the page."
+msgstr ""
+
+#: ../../page.rst:1019 559c6b1d6d534bb3bf831d253da85de8
+msgid "Changed in v1.19.0: added `textpage` parameter"
+msgstr ""
+
+#: ../../page.rst:1020 6aa3472763604fcf88e05727607a3d1d
+msgid "Changed in v1.19.1: added `sort` parameter"
+msgstr ""
+
+#: ../../page.rst:1021 c092a8a4fd244711946961f211f58183
+msgid ""
+"Changed in v1.19.6: added new constants for defining default flags per "
+"method."
+msgstr ""
+
+#: ../../page.rst:1023 eb21e1e7d5ab442ca845788a8130d7dc
+msgid ""
+"Retrieves the content of a page in a variety of formats. This is a "
+"wrapper for :ref:`TextPage` methods by choosing the output option as "
+"follows:"
+msgstr ""
+
+#: ../../page.rst:1025 bb71200a14fa4c10abd4db30b99d1a9f
+msgid "\"text\" -- :meth:`TextPage.extractTEXT`, default"
+msgstr ""
+
+#: ../../page.rst:1026 e58dca9d22a24cc48729e3133be4f9c9
+msgid "\"blocks\" -- :meth:`TextPage.extractBLOCKS`"
+msgstr ""
+
+#: ../../page.rst:1027 bbaef12143a24d719fd45be8aa1eac2b
+msgid "\"words\" -- :meth:`TextPage.extractWORDS`"
+msgstr ""
+
+#: ../../page.rst:1028 5a706a4129614d90b67ecdbc65620a72
+msgid "\"html\" -- :meth:`TextPage.extractHTML`"
+msgstr ""
+
+#: ../../page.rst:1029 dba1a79422c44f6d8a95b80f8a40bfe2
+msgid "\"xhtml\" -- :meth:`TextPage.extractXHTML`"
+msgstr ""
+
+#: ../../page.rst:1030 345ddb6539d147c38f2b0c3d2378aa60
+msgid "\"xml\" -- :meth:`TextPage.extractXML`"
+msgstr ""
+
+#: ../../page.rst:1031 9a29d4cad78844b1bc89e6d59ab0a27b
+msgid "\"dict\" -- :meth:`TextPage.extractDICT`"
+msgstr ""
+
+#: ../../page.rst:1032 551a55bb84234cfbaf0427226418eb7c
+msgid "\"json\" -- :meth:`TextPage.extractJSON`"
+msgstr ""
+
+#: ../../page.rst:1033 29a00f33f6654c66b6757a7a2ca4ef9f
+msgid "\"rawdict\" -- :meth:`TextPage.extractRAWDICT`"
+msgstr ""
+
+#: ../../page.rst:1034 a7d66734fb0b4688b97dac331062eb43
+msgid "\"rawjson\" -- :meth:`TextPage.extractRAWJSON`"
+msgstr ""
+
+#: ../../page.rst:1036 f9820beb3408468ea92da28e066b4e0c
+msgid ""
+"A string indicating the requested format, one of the above. A mixture of "
+"upper and lower case is supported.  Changed in v1.16.3 Values \"words\" "
+"and \"blocks\" are now also accepted."
+msgstr ""
+
+#: ../../page.rst:1036 bd0926d6a336463191c5a2fafa9a84d5
+msgid ""
+"A string indicating the requested format, one of the above. A mixture of "
+"upper and lower case is supported."
+msgstr ""
+
+#: ../../page.rst:1038 9d6a3b583a004f28a5974bb2ed107813
+msgid "Changed in v1.16.3 Values \"words\" and \"blocks\" are now also accepted."
+msgstr ""
+
+#: ../../page.rst:1040 3b686fd7998241e09c9f46a9a590ff86
+msgid ""
+"*(new in v1.17.7)* restrict extracted text to this rectangle. If None, "
+"the full page is taken. Has **no effect** for options \"html\", \"xhtml\""
+" and \"xml\"."
+msgstr ""
+
+#: ../../page.rst:1042 c1c3a0fed25a458fb92b9195c3ed13f7
+msgid ""
+"*(new in v1.16.2)* indicator bits to control whether to include images or"
+" how text should be handled with respect to white spaces and "
+":data:`ligatures`. See :ref:`TextPreserve` for available indicators and "
+":ref:`text_extraction_flags` for default settings."
+msgstr ""
+
+#: ../../page.rst:1044 0e30ab894f284c3b954623e86e41b256
+msgid ""
+"(new in v1.19.0) use a previously created :ref:`TextPage`. This reduces "
+"execution time **very significantly:** by more than 50% and up to 95%, "
+"depending on the extraction option. If specified, the 'flags' and 'clip' "
+"arguments are ignored, because they are textpage-only properties. If "
+"omitted, a new, temporary textpage will be created."
+msgstr ""
+
+#: ../../page.rst:1046 0c53b8665f134d0bb8bf609b3a28f350
+msgid ""
+"(new in v1.19.1) sort the output by vertical, then horizontal "
+"coordinates. In many cases, this should suffice to generate a \"natural\""
+" reading order. Has no effect on (X)HTML and XML. Output option "
+"**\"words\"** sorts by `(y1, x0)` of the words' bboxes. Similar is true "
+"for \"blocks\", \"dict\", \"json\", \"rawdict\", \"rawjson\": they all "
+"are sorted by `(y1, x0)` of the resp. block bbox. If specified for "
+"\"text\", then internally \"blocks\" is used."
+msgstr ""
+
+#: ../../page.rst:1048 7df6cb1c7b074a8d9100b68728b968fb
+msgid "*str, list, dict*"
+msgstr ""
+
+#: ../../page.rst:1049 c0bbe8e399684e53a0325a6746febffd
+msgid ""
+"The page's content as a string, a list or a dictionary. Refer to the "
+"corresponding :ref:`TextPage` method for details."
+msgstr ""
+
+#: ../../page.rst:1053 3b5c581b2ffe4888b7b9f23e0b5d323f
+msgid ""
+"You can use this method as a **document conversion tool** from :ref:`any "
+"supported document type<Supported_File_Types>` to one of TEXT, HTML, "
+"XHTML or XML documents."
+msgstr ""
+
+#: ../../page.rst:1054 bf4d2fd80181438da9fc7fd4637d7077
+msgid ""
+"The inclusion of text via the *clip* parameter is decided on a by-"
+"character level: **(changed in v1.18.2)** a character becomes part of the"
+" output, if its bbox is contained in *clip*. This **deviates** from the "
+"algorithm used in redaction annotations: a character will be **removed if"
+" its bbox intersects** any redaction annotation."
+msgstr ""
+
+#: ../../page.rst:1062 24c09918842649f391cb93e20d839381
+msgid "New in v1.17.7"
+msgstr ""
+
+#: ../../page.rst:1063 bbda0eab14a14792a8c868f69fd9b692
+msgid "Changed in v1.19.0: add `textpage` parameter"
+msgstr ""
+
+#: ../../page.rst:1065 d5909d5f5951455bb49a7c94a9edbf7c
+msgid "Retrieve the text contained in a rectangle."
+msgstr ""
+
+#: ../../page.rst:1067 9a732c982cd64f29b398d39f55242072
+msgid "rect-like."
+msgstr ""
+
+#: ../../page.rst:1068 ec9f7d20d20d4b77958f268a48b2e8ae
+msgid ""
+"a :ref:`TextPage` to use. If omitted, a new, temporary textpage will be "
+"created."
+msgstr ""
+
+#: ../../page.rst:1070 f56d160a55ed4fcba4743c3e0e31e8af
+msgid ""
+"a string with interspersed linebreaks where necessary. Changed in "
+"v1.19.0: It is based on dedicated code. A tyical use is checking the "
+"result of :meth:`Page.search_for`:  >>> rl = "
+"page.search_for(\"currency:\") >>> page.get_textbox(rl[0]) 'Currency:' "
+">>>"
+msgstr ""
+
+#: ../../page.rst:1070 8480dc27ee0e47b3a00f29aa5b4e7b27
+msgid ""
+"a string with interspersed linebreaks where necessary. Changed in "
+"v1.19.0: It is based on dedicated code. A tyical use is checking the "
+"result of :meth:`Page.search_for`:"
+msgstr ""
+
+#: ../../page.rst:1084 3aeccfcf1ca343eaab601ac2f41ac786
+msgid "New in v1.16.5"
+msgstr ""
+
+#: ../../page.rst:1085 cb5209ff3aa84c2e934a46581f1a6426
+msgid "Changed in v1.17.7: introduced `clip` parameter."
+msgstr ""
+
+#: ../../page.rst:1087 8ca270f9b8de4167ad0dc8d73b4804c9
+msgid "Create a :ref:`TextPage` for the page."
+msgstr ""
+
+#: ../../page.rst:1089 38d6e0a4d4704a7086b00fdb02d268c3
+msgid ""
+"indicator bits controlling the content available for subsequent text "
+"extractions and searches -- see the parameter of :meth:`Page.get_text`."
+msgstr ""
+
+#: ../../page.rst:1091 d991caf5265d43a6afdfaee448b701fd
+msgid "*(new in v1.17.7)* restrict extracted text to this area."
+msgstr ""
+
+#: ../../page.rst:1093 0ab87104a2b84ffa91dd46fde745dc39
+msgid ":ref:`TextPage`"
+msgstr ""
+
+#: ../../page.rst:1105 501c07f8a77c49a5bc2ef59a736afa13
+msgid "New in v.1.19.0"
+msgstr ""
+
+#: ../../page.rst:1106 42caf4309056477087e99f7da3d0ff43
+msgid "Changed in v1.19.1: support full and partial OCRing a page."
+msgstr ""
+
+#: ../../page.rst:1108 6ee9764b5c3146c3bdaca2d8c5ee6d76
+msgid ""
+"Create a :ref:`TextPage` for the page that includes OCRed text. MuPDF "
+"will invoke Tesseract-OCR if this method is used. Otherwise this is a "
+"normal :ref:`TextPage` object."
+msgstr ""
+
+#: ../../page.rst:1110 46f0a002198c4bbeba49b987ee9fec19
+msgid ""
+"indicator bits controlling the content available for subsequent test "
+"extractions and searches -- see the parameter of :meth:`Page.get_text`."
+msgstr ""
+
+#: ../../page.rst:1111 fd106e97114642a78efd67c37f5b4468
+msgid ""
+"the expected language(s). Use \"+\"-separated values if multiple "
+"languages are expected, \"eng+spa\" for English and Spanish."
+msgstr ""
+
+#: ../../page.rst:1112 543404c44ebb4e8583e2b7d57dee5a3c
+msgid ""
+"the desired resolution in dots per inch. Influences recognition quality "
+"(and execution time)."
+msgstr ""
+
+#: ../../page.rst:1113 4d4b1a75d43a45e2a8dda656e5ae66f1
+msgid "whether to OCR the full page, or just the displayed images."
+msgstr ""
+
+#: ../../page.rst:1114 553121eca84b4b5d903528f08cccd9eb
+msgid ""
+"The name of Tesseract's language support folder `tessdata`. If omitted, "
+"this information must be present as environment variable "
+"`TESSDATA_PREFIX`. Can be determined by function :meth:`get_tessdata`."
+msgstr ""
+
+#: ../../page.rst:1116 a9b251e5b40c40e9a606eba79fca4389
+msgid ""
+"This method does **not** support a clip parameter -- OCR will always "
+"happen for the complete page rectangle."
+msgstr ""
+
+#: ../../page.rst:1118 c3b2be08624548b5a9955ad5ed41eefb
+msgid ""
+"a :ref:`TextPage`. Execution may be significantly longer than "
+":meth:`Page.get_textpage`.  For a full page OCR, **all text** will have "
+"the font \"GlyphlessFont\" from Tesseract. In case of partial OCR, normal"
+" text will keep its properties, and only text coming from images will "
+"have the GlyphlessFont.  .. note::     **OCRed text is only available** "
+"to PyMuPDF's text extractions and searches if their `textpage` parameter "
+"specifies the output of this method.     `This "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-"
+"notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example "
+"for using OCR textpages."
+msgstr ""
+
+#: ../../page.rst:1120 01a955eee4974c16bfa16213e1fdf017
+msgid ""
+"a :ref:`TextPage`. Execution may be significantly longer than "
+":meth:`Page.get_textpage`."
+msgstr ""
+
+#: ../../page.rst:1122 d38b4d1bd8da449abf733d6be44f8d06
+msgid ""
+"For a full page OCR, **all text** will have the font \"GlyphlessFont\" "
+"from Tesseract. In case of partial OCR, normal text will keep its "
+"properties, and only text coming from images will have the GlyphlessFont."
+msgstr ""
+
+#: ../../page.rst:1126 52a35720931a4ab7a8e09f4be6915f17
+msgid ""
+"**OCRed text is only available** to PyMuPDF's text extractions and "
+"searches if their `textpage` parameter specifies the output of this "
+"method."
+msgstr ""
+
+#: ../../page.rst:1128 32021611b4d34951ae646714eb1d78d4
+msgid ""
+"`This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-"
+"notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example "
+"for using OCR textpages."
+msgstr ""
+
+#: ../../page.rst:1133 ba44c21dcdb641489f754d2b0328ab0e
+msgid "New in v1.18.0"
+msgstr ""
+
+#: ../../page.rst:1134 0d3cf4d0dc054b3aabd67eea384dd689
+msgid "Changed in v1.18.17"
+msgstr ""
+
+#: ../../page.rst:1135 d818b22a5a4b4502bd2300e1145a1030
+msgid "Changed in v1.19.0: add \"seqno\" key, remove \"clippings\" key"
+msgstr ""
+
+#: ../../page.rst:1136 f82625e599c143aaa85c24dabaa317f7
+msgid ""
+"Changed in v1.19.1: \"color\" / \"fill\" keys now always are either are "
+"RGB tuples or `None`. This resolves issues caused by exotic colorspaces."
+msgstr ""
+
+#: ../../page.rst:1137 be1dab904b5b4c0dbe3d27dc6bc33273
+msgid ""
+"Changed in v1.19.2: add an indicator for the *\"orientation\"* of the "
+"area covered by an \"re\" item."
+msgstr ""
+
+#: ../../page.rst:1138 0f9bddd422d8438b8bd77850c92de14e
+msgid ""
+"Changed in v1.22.0: add new key `\"layer\"` which contains the name of "
+"the Optional Content Group of the path (or `None`)."
+msgstr ""
+
+#: ../../page.rst:1139 121c28be5d654643a0f31778854ffebf
+msgid ""
+"Changed in v1.22.0: add parameter `extended` to also return clipping and "
+"group paths."
+msgstr ""
+
+#: ../../page.rst:1141 06f23a6a613543dc8374f144c6e7e5e9
+msgid ""
+"Return the vector graphics of the page. These are instructions which draw"
+" lines, rectangles, quadruples or curves, including properties like "
+"colors, transparency, line width and dashing, etc. Alternative terms are "
+"\"line art\" and \"drawings\"."
+msgstr ""
+
+#: ../../page.rst:1143 423f6395d66f415791c3f6eefac5d725
+msgid ""
+"a list of dictionaries. Each dictionary item contains one or more single "
+"draw commands belonging together: they have the same properties (colors, "
+"dashing, etc.). This is called a **\"path\"** in PDF, so we adopted that "
+"name here, but the method **works for all document types**."
+msgstr ""
+
+#: ../../page.rst:1145 6992d6f6885a4a00b92675d7fe4e3508
+msgid ""
+"The path dictionary for fill, stroke and fill-stroke paths has been "
+"designed to be compatible with class :ref:`Shape`. There are the "
+"following keys:"
+msgstr ""
+
+#: ../../page.rst:1148 ../../page.rst:1213 ../../page.rst:1228
+#: 17528eae1b6e45c9a0b1effc5b8d2e4f 267d8caa049142899d55fed8df3bdab4
+#: 3db12d98cd544269bf586f24b942e5f1
+msgid "Key"
+msgstr ""
+
+#: ../../page.rst:1148 ../../page.rst:1213 ../../page.rst:1228
+#: 30a39a06f6944f81942145c66d6fb9bc 74b0a9fb604248eebf3899f28a43c4a3
+#: 8457381b04b2447f9967f12f3c7a380a
+msgid "Value"
+msgstr ""
+
+#: ../../page.rst:1150 ../../page.rst:1215 9bab75906ef143cea6d438bafe57aa60
+#: fa8aefb55acc4fb69794e0f794afb1da
+msgid "closePath"
+msgstr ""
+
+#: ../../page.rst:1150 ../../page.rst:1157 8e8c993e3b9e4ecb85f3de297a726654
+#: fdc5363ee5264b088a219fdd92051439
+msgid "Same as the parameter in :ref:`Shape`."
+msgstr ""
+
+#: ../../page.rst:1151 b1f8214e99134ab29fe617022dbd81ee
+msgid "color"
+msgstr ""
+
+#: ../../page.rst:1151 1e24cce7904e486c86b80301e21a6b6f
+msgid "Stroke color (see :ref:`Shape`)."
+msgstr ""
+
+#: ../../page.rst:1152 ef2a5c4536f94b27a5b49d93e1ed6ae8
+msgid "dashes"
+msgstr ""
+
+#: ../../page.rst:1152 441bca32c047468c98691331d93a2d26
+msgid "Dashed line specification (see :ref:`Shape`)."
+msgstr ""
+
+#: ../../page.rst:1153 ../../page.rst:1216 c1dd3acb6c8c4c2db62f50d20fd79dd8
+#: fe5ac4401f2b48c1aca405893944fe9d
+msgid "even_odd"
+msgstr ""
+
+#: ../../page.rst:1153 ab1dea73180d442793973a6fd3f62c63
+msgid "Fill colors of area overlaps -- same as the parameter in :ref:`Shape`."
+msgstr ""
+
+#: ../../page.rst:1154 82db03a63d79478082657974e9fedf90
+msgid "fill"
+msgstr ""
+
+#: ../../page.rst:1154 d0b49d586b8c4e0c962fc65599ad1985
+msgid "Fill color  (see :ref:`Shape`)."
+msgstr ""
+
+#: ../../page.rst:1155 ../../page.rst:1217 7288b505637345a8b8d9cd901b21c105
+#: e0214dac98e74f9282a0c21e81de7bac
+msgid "items"
+msgstr ""
+
+#: ../../page.rst:1155 012ed624099a40c19ddfbf091514fea9
+msgid "List of draw commands: lines, rectangles, quads or curves."
+msgstr ""
+
+#: ../../page.rst:1156 160bef43cc6d462eb8a2bb686dfbb00d
+msgid "lineCap"
+msgstr ""
+
+#: ../../page.rst:1156 95772eede84f4371bced2c9e285ef296
+msgid "Number 3-tuple, use its max value on output with :ref:`Shape`."
+msgstr ""
+
+#: ../../page.rst:1157 d1f78499fded4874aa6daf1ccd3538cb
+msgid "lineJoin"
+msgstr ""
+
+#: ../../page.rst:1158 d8f3c4a057f94d9983f53f7f7269fb34
+msgid "fill_opacity"
+msgstr ""
+
+#: ../../page.rst:1158 b2ea819b98e8470db3b56dcecc2ec387
+msgid "(new in v1.18.17) fill color transparency (see :ref:`Shape`)."
+msgstr ""
+
+#: ../../page.rst:1159 4ebde2a67e1143e3b016b57588abbc6a
+msgid "stroke_opacity"
+msgstr ""
+
+#: ../../page.rst:1159 d76b3e18fdc246c3ba80826280510557
+msgid "(new in v1.18.17) stroke color transparency  (see :ref:`Shape`)."
+msgstr ""
+
+#: ../../page.rst:1160 ../../page.rst:1218 ../../page.rst:1230
+#: 0ce3f6d042694e568e86d1ecb9dc1d4e b7c3116c13924db9a093d795c48996e7
+#: c71c95ae40fb46909b25ded75fe6ffa2
+msgid "rect"
+msgstr ""
+
+#: ../../page.rst:1160 6baece42a99c47dda0fa7f0ae0cec21e
+msgid "Page area covered by this path. Information only."
+msgstr ""
+
+#: ../../page.rst:1161 ../../page.rst:1219 ../../page.rst:1231
+#: c09b1a690d1e419594fa2bf06aead621 c87ca063f60a44358f8dacb1438c1cb1
+#: f3e1bfb46f93489399b653ad0345aa9f
+msgid "layer"
+msgstr ""
+
+#: ../../page.rst:1161 de74666df93b4114a4b04ec98f8dc78d
+msgid "(new in v1.22.0) name of applicable Optional Content Group"
+msgstr ""
+
+#: ../../page.rst:1162 ../../page.rst:1220 ../../page.rst:1232
+#: 1350ce70b71a4d6491f306921412632d 2d105ea7f48f41a79b5d69ffb97cf669
+#: 49edf7b1b7d64c9d8b0044bd5f1a9d32
+msgid "level"
+msgstr ""
+
+#: ../../page.rst:1162 23ff72d652224e88b732f8390def4665
+msgid "(new in v1.22.0) the hierarchy level if `extended=True`"
+msgstr ""
+
+#: ../../page.rst:1163 5a82d5f0d74e415d8ceb83895f34233c
+msgid "seqno"
+msgstr ""
+
+#: ../../page.rst:1163 379a27ebb15f465f94c147ca36df3515
+msgid "(new in v1.19.0) command number when building page appearance"
+msgstr ""
+
+#: ../../page.rst ../../page.rst:1164 ../../page.rst:1222 ../../page.rst:1237
+#: 0620f6ea941e4a47897179e7ac075565 0b11dcafac5249679440457dd4086d24
+#: 2b2ca7c294ca4614a86cc5b8e8df85df 2f1d2d0051884666a62524f2576b84cf
+#: 33dfe2f6a20d453ebf9e640614eafcf6 4557edb9e1f949d2b2f9b884f217586c
+#: 516c067757f1409485c48cf00cd07444 5beca2d266dc4587b18a1c5495da2cb2
+#: 6f93d7da7aa74c3faa5ae6c438e896a1 75194b6a0efe4cb9b765cdd99cab1072
+#: 775dff40dffe4cbfb95e8f6755e7dc29 902f7441375a4a02a2bccfc314120f5f
+#: be18c05e34dc4bdbba81ac5baceb8b68 c0d9638646644d0282613e2b154c631d
+#: c70938c503124bce94f2da275565f02a cf8d29520663402d91baad352cc30786
+#: d16c9215dc504efe916a2a60b9fb24e0 ec354257880c4ccfa5299ddf992b4147
+msgid "type"
+msgstr ""
+
+#: ../../page.rst:1164 3e6f5956d0bf414282a83cc395eb53c2
+msgid "(new in v1.18.17) type of this path."
+msgstr ""
+
+#: ../../page.rst:1165 ../../page.rst:1316 304bba7f5e804f0987c5ea45dcbfcf9b
+#: 504e2044e7e74e648dd474698dd66b04
+msgid "width"
+msgstr ""
+
+#: ../../page.rst:1165 3624f4bde3724f5592abee7334d7b69e
+msgid "Stroke line width  (see :ref:`Shape`)."
+msgstr ""
+
+#: ../../page.rst:1168 ../../page.rst:1242 09d8a697eb384b039af6e30f0e72e2b4
+#: 95bc43c8017947238e38ff6d94968579
+msgid ""
+"*(Changed in v1.18.17)* Key `\"opacity\"` has been replaced by the new "
+"keys `\"fill_opacity\"` and `\"stroke_opacity\"`. This is now compatible "
+"with the corresponding parameters of :meth:`Shape.finish`."
+msgstr ""
+
+#: ../../page.rst:1171 b5baaaa8f73f4e22afbbabc5df0fc0c8
+msgid ""
+"For paths other than groups or clips, key `\"type\"` takes one of the "
+"following values:"
+msgstr ""
+
+#: ../../page.rst:1173 effaf411e3f347de89bf2e9d8a12b4a5
+msgid ""
+"**\"f\"** -- this is a *fill-only* path. Only key-values relevant for "
+"this operation have a meaning, not applicable ones are present with a "
+"value of *None*: `\"color\"`, `\"lineCap\"`, `\"lineJoin\"`, `\"width\"`,"
+" `\"closePath\"`, `\"dashes\"` and should be ignored."
+msgstr ""
+
+#: ../../page.rst:1174 cafa4da4f9954847b81019ed1518f965
+msgid ""
+"**\"s\"** -- this is a *stroke-only* path. Similar to previous, key "
+"`\"fill\"` is present with value *None*."
+msgstr ""
+
+#: ../../page.rst:1175 ../../page.rst:1249 437c41a4d1004b3c9fd011f512e38dc3
+#: c07f03a7494c45c4b23536d888b063f4
+msgid ""
+"**\"fs\"** -- this is a path performing combined *fill* and *stroke* "
+"operations."
+msgstr ""
+
+#: ../../page.rst:1177 ../../page.rst:1251 156fcb0cee0c4259830a7d693a88a78f
+#: 9385ffdfad24409a8b8afad94938100c
+msgid "Each item in `path[\"items\"]` is one of the following:"
+msgstr ""
+
+#: ../../page.rst:1179 ../../page.rst:1253 4f6f418d12414d21a95c6e941df2084d
+#: b20c9b551bbd4d09b35762b9760e89f0
+msgid "`(\"l\", p1, p2)` - a line from p1 to p2 (:ref:`Point` objects)."
+msgstr ""
+
+#: ../../page.rst:1180 ../../page.rst:1254 81fb9cdaaa094e9690ed8bf49a583848
+#: c9c1f732520b4adeb7c0dc2321118571
+msgid ""
+"`(\"c\", p1, p2, p3, p4)` - cubic Bézier curve **from p1 to p4** (p2 and "
+"p3 are the control points). All objects are of type :ref:`Point`."
+msgstr ""
+
+#: ../../page.rst:1181 ../../page.rst:1255 7799ef6fe98d4266a70e761c3c19110f
+#: 973d24f8ecc84138b71e2e0e03a4e04f
+msgid ""
+"`(\"re\", rect, orientation)` - a :ref:`Rect`. *Changed in v1.18.17:* "
+"Multiple rectangles within the same path are now detected. *Changed in "
+"v1.19.2:* added integer `orientation` which is 1 resp. -1 indicating "
+"whether the enclosed area is rotated left (1 = anti-clockwise), or resp. "
+"right [#f7]_."
+msgstr ""
+
+#: ../../page.rst:1182 ../../page.rst:1256 e19e6dac0c0345ac896fa7a3ca468f05
+#: ed54a702d8de4127ad8895f5c43c3323
+msgid ""
+"`(\"qu\", quad)` - a :ref:`Quad`. *New in v1.18.17, changed in v1.19.2:* "
+"3 or 4 consecutive lines are detected to actually represent a "
+":ref:`Quad`."
+msgstr ""
+
+#: ../../page.rst:1184 ../../page.rst:1258 8f9e60590cf545ecadbc8260b8c8bce1
+#: 9d165f5cb594460e8c3c5e43dc620d68
+msgid ""
+"Starting with v1.19.2, quads and rectangles are more reliably recognized "
+"as such."
+msgstr ""
+
+#: ../../page.rst:1186 577c4319977d437fbc6e8cd6b81fc1fc
+msgid ""
+"Using class :ref:`Shape`, you should be able to recreate the original "
+"drawings on a separate (PDF) page with high fidelity under normal, not "
+"too sophisticated circumstances. Please see the following comments on "
+"restrictions. A coding draft can be found in section \"Extractings "
+"Drawings\" of chapter :ref:`FAQ`."
+msgstr ""
+
+#: ../../page.rst:1188 0927241e2693422aae3c49bb0aa1e057
+msgid ""
+"**New in v1.22.0:** Specifying `extended=True` significantly alters the "
+"output. Most importantly, new dictionary types are present: \"clip\" and "
+"\"group\". All paths will now be organized in a hierarchic structure "
+"which is encoded by the new integer key \"level\", the hierarchy level. "
+"Each group or clip establishes a new hierarchy, which applies to all "
+"subsequent paths having a *larger* level value."
+msgstr ""
+
+#: ../../page.rst:1190 23e0fb4971fc46d8b9f568272271737e
+msgid ""
+"Any path with a smaller level value than its predecessor will end the "
+"scope of (at least) the preceeding hierarchy level. A \"clip\" path with "
+"the same level as the preceding clip will end the scope of that clip. "
+"Same is true for groups. This is best explained by an example::"
+msgstr ""
+
+#: ../../page.rst:1206 7590fd93b4f44179965fcf95fbcab231
+msgid ""
+"The clip in line 0 applies to line including line 7. Group in line 2 "
+"applies to lines 3 to 5, clip in line 3 only applies to line 4."
+msgstr ""
+
+#: ../../page.rst:1208 31980a90795c448b8f6fdb1d0b68ebcd
+msgid ""
+"\"stroke\" in line 4 is under control of \"group\" in line 2 and \"clip\""
+" in line 3 (which in turn is a subset of line 0 clip)."
+msgstr ""
+
+#: ../../page.rst:1210 0bf733b47fee4e7db50f30aaffc47edc
+msgid ""
+"**\"clip\"** dictionary. Its values (most importantly \"scissor\") remain"
+" valid / apply as long as following dictionaries have a **larger "
+"\"level\"** value."
+msgstr ""
+
+#: ../../page.rst:1215 ../../page.rst:1216 ../../page.rst:1217
+#: ../../page.rst:1218 ../../page.rst:1219 ../../page.rst:1220
+#: ../../page.rst:1230 ../../page.rst:1231 ../../page.rst:1232
+#: 466456abe6b64baf9e90ef855ebebfb5 52af4bb2bd744295923ed3fffc2f8d89
+#: 848273b59d644bfbb40ea0342401f9cd 99b07f1e92894eecb2d34909360413c4
+#: a6665849a5d246d8a54f123ecf4fdf1e c4fcfc11d43d4f4585acf0b282df0e8c
+#: d2ee9fd8d65a45ddae20b2edc5a33bb2 e1f207f8a6a84795a27012ea9bcead8d
+#: e4c48f58663d4972a278f590bc2229f6
+msgid "Same as in \"stroke\" or \"fill\" dictionaries"
+msgstr ""
+
+#: ../../page.rst:1221 ce14b75c68b84bce895a967813c6a547
+msgid "scissor"
+msgstr ""
+
+#: ../../page.rst:1221 5d48bc782eec4ef18bc9fef54e249651
+msgid "the clip rectangle"
+msgstr ""
+
+#: ../../page.rst:1222 5d715f5a19ed44648b90f53ec543083e
+msgid "\"clip\""
+msgstr ""
+
+#: ../../page.rst:1225 bcef0f6649db46c9b8928f84dfb4b2b6
+msgid ""
+"\"group\" dictionary. Its values remain valid (apply) as long as "
+"following dictionaries have a **larger \"level\"** value. Any dictionary "
+"with an equal or lower level end this group."
+msgstr ""
+
+#: ../../page.rst:1233 149269c33f174a6c9c4273a9689c4719
+msgid "isolated"
+msgstr ""
+
+#: ../../page.rst:1233 db197c7f14864034b0f4d94eef94e569
+msgid "(bool) Whether this group is isolated"
+msgstr ""
+
+#: ../../page.rst:1234 7cd39bf8618443ecb3536f9cac453513
+msgid "knockout"
+msgstr ""
+
+#: ../../page.rst:1234 ce7d1f3a2f2e45acb1ae52d59adcbf5e
+msgid "(bool) Whether this is a \"Knockout Group\""
+msgstr ""
+
+#: ../../page.rst:1235 efe3bd65f79743f6a2cc4f37aa1b3fed
+msgid "blendmode"
+msgstr ""
+
+#: ../../page.rst:1235 4c89498b8f2341fe94e82652c11098d4
+msgid "Name of the BlendMode, default is \"Normal\""
+msgstr ""
+
+#: ../../page.rst:1236 7bb9d21ff94f48b080cf6eec9161dcf4
+msgid "opacity"
+msgstr ""
+
+#: ../../page.rst:1236 aa0b6e4410e748979873c226ddbffd62
+msgid "Float value in range [0, 1]."
+msgstr ""
+
+#: ../../page.rst:1237 15c77d07f5ea4492a778b599ee4c4ed0
+msgid "\"group\""
+msgstr ""
+
+#: ../../page.rst:1245 731d1c81a310410c9b49a8ce21a09b85
+msgid "Key `\"type\"` takes one of the following values:"
+msgstr ""
+
+#: ../../page.rst:1247 c2534d8586b64b429a1dc87879841a26
+msgid ""
+"**\"f\"** -- this is a *fill-only* path. Only key-values relevant for "
+"this operation have a meaning, irrelevant ones have been added with "
+"default values for backward compatibility: `\"color\"`, `\"lineCap\"`, "
+"`\"lineJoin\"`, `\"width\"`, `\"closePath\"`, `\"dashes\"` and should be "
+"ignored."
+msgstr ""
+
+#: ../../page.rst:1248 5f9abfb087124a80ab02743359be28d2
+msgid ""
+"**\"s\"** -- this is a *stroke-only* path. Similar to previous, key "
+"`\"fill\"` is present with value `None`."
+msgstr ""
+
+#: ../../page.rst:1260 360616076bd04f8091940fc38896f0fe
+msgid ""
+"Using class :ref:`Shape`, you should be able to recreate the original "
+"drawings on a separate (PDF) page with high fidelity under normal, not "
+"too sophisticated circumstances. Please see the following comments on "
+"restrictions. A coding draft can be found in section \"How to Extract "
+"Drawings\" of chapter :ref:`FAQ`."
+msgstr ""
+
+#: ../../page.rst:1263 2917628c9582419f971ad072fb603648
+msgid ""
+"The method is based on the output of :meth:`Page.get_cdrawings` -- which "
+"is much faster, but requires somewhat more attention processing its "
+"output."
+msgstr ""
+
+#: ../../page.rst:1269 03ff5d85e08348f3940aa4f032ee6cbd
+msgid "New in v1.18.17"
+msgstr ""
+
+#: ../../page.rst:1270 12ef7deb8dd24ead962f90f5ad897803
+msgid "Changed in v1.19.0: removed \"clippings\" key, added \"seqno\" key."
+msgstr ""
+
+#: ../../page.rst:1271 880357122af74f98bd11a5245abf5dd1
+msgid "Changed in v1.19.1: always generate RGB color tuples."
+msgstr ""
+
+#: ../../page.rst:1272 49261729d1874e4dbc7c753816014c27
+msgid ""
+"Changed in v1.22.0: added new key `\"layer\"` which contains the name of "
+"the Optional Content Group of the path (or `None`)."
+msgstr ""
+
+#: ../../page.rst:1273 7277cb451dd2429aa2e7b38080ee5e9a
+msgid ""
+"Changed in v1.22.0  added parameter `extended` to also return clipping "
+"paths."
+msgstr ""
+
+#: ../../page.rst:1275 708e382d612c430c9dca8b2e617a999f
+msgid ""
+"Extract the vector graphics on the page. Apart from following technical "
+"differences, functionally equivalent to :meth:`Page.get_drawings`, but "
+"much faster:"
+msgstr ""
+
+#: ../../page.rst:1277 50902978ea7e42799387ef807e0d5a80
+msgid ""
+"Every path type only contains the relevant keys, e.g. a stroke path has "
+"no `\"fill\"` color key. See comment in method :meth:`Page.get_drawings`."
+msgstr ""
+
+#: ../../page.rst:1278 ba3750ca178f4e0284443219d39af690
+msgid ""
+"Coordinates are given as :data:`point_like`, :data:`rect_like` and "
+":data:`quad_like` **tuples** -- not as :ref:`Point`, :ref:`Rect`, "
+":ref:`Quad` objects."
+msgstr ""
+
+#: ../../page.rst:1280 f3ef030ccac14fc6950505e5e08a4473
+msgid ""
+"If performance is a concern, consider using this method: Compared to "
+"versions earlier than 1.18.17, you should see much shorter response "
+"times. We have seen pages that required 2 seconds then, now only need 200"
+" ms with this method."
+msgstr ""
+
+#: ../../page.rst:1285 67a4d60608634f899fb9a06f1444c6f1
+msgid ""
+"PDF only: Return a list of fonts referenced by the page. Wrapper for "
+":meth:`Document.get_page_fonts`."
+msgstr ""
+
+#: ../../page.rst:1290 06468b34834d4f15a76405dbe417285d
+msgid ""
+"PDF only: Return a list of images referenced by the page. Wrapper for "
+":meth:`Document.get_page_images`."
+msgstr ""
+
+#: ../../page.rst:1299 209289aadf4c4b6c890b8e75fb47d372
+msgid "*New in v1.18.11*"
+msgstr ""
+
+#: ../../page.rst:1300 82cd4aa8774b47ca8a37f389f0362472
+msgid ""
+"*Changed in v1.18.13:* added image MD5 hashcode computation and "
+":data:`xref` search."
+msgstr ""
+
+#: ../../page.rst:1302 b08ab1c891d54fe4a0f00ec1a82c2c3b
+msgid ""
+"Return a list of meta information dictionaries for all images shown on "
+"the page. This works for all document types. Technically, this is a "
+"subset of the dictionary output of :meth:`Page.get_text`: the image "
+"binary content and any text on the page are ignored."
+msgstr ""
+
+#: ../../page.rst:1304 5db870aa56884170b95b595c94f462f1
+msgid ""
+"*New in v1.18.13:* Compute the MD5 hashcode for each encountered image, "
+"which allows identifying image duplicates. This adds the key `\"digest\"`"
+" to the output, whose value is a 16 byte `bytes` object."
+msgstr ""
+
+#: ../../page.rst:1306 ee7a2f542cb949f1aa78d5c5b906fd6f
+msgid ""
+"*New in v1.18.13:* **PDF only.** Try to find the :data:`xref` for each "
+"image. Implies `hashes=True`. Adds the `\"xref\"` key to the dictionary. "
+"If not found, the value is 0, which means, the image is either \"inline\""
+" or otherwise undetectable. Please note that this option has an extended "
+"response time, because the MD5 hashcode will be computed at least two "
+"times for each image with an xref."
+msgstr ""
+
+#: ../../page.rst:1309 557e16abae1741edb9cf9530057959f0
+msgid ""
+"A list of dictionaries. This includes information for **exactly those** "
+"images, that are shown on the page -- including *\"inline images\"*. In "
+"contrast to images included in :meth:`Page.get_text`, image **binary "
+"content** is not loaded, which drastically reduces memory usage. The "
+"dictionary layout is similar to that of image blocks in "
+"`page.get_text(\"dict\")`.  =============== "
+"=============================================================== **Key**"
+"             **Value** =============== "
+"=============================================================== number"
+"          block number *(int)* bbox            image bbox on page, "
+":data:`rect_like` width           original image width *(int)* height"
+"          original image height *(int)* cs-name         colorspace name "
+"*(str)* colorspace      colorspace.n *(int)* xres            resolution "
+"in x-direction *(int)* yres            resolution in y-direction *(int)* "
+"bpc             bits per component *(int)* size            storage "
+"occupied by image *(int)* digest          MD5 hashcode *(bytes)*, if "
+"*hashes* is true xref            image :data:`xref` or 0, if *xrefs* is "
+"true transform       matrix transforming image rect to bbox, "
+":data:`matrix_like` =============== "
+"===============================================================  Multiple"
+" occurrences of the same image are always reported. You can detect "
+"duplicates by comparing their `digest` values."
+msgstr ""
+
+#: ../../page.rst:1309 54b22374ed6b4822965da643c06f80ff
+msgid ""
+"A list of dictionaries. This includes information for **exactly those** "
+"images, that are shown on the page -- including *\"inline images\"*. In "
+"contrast to images included in :meth:`Page.get_text`, image **binary "
+"content** is not loaded, which drastically reduces memory usage. The "
+"dictionary layout is similar to that of image blocks in "
+"`page.get_text(\"dict\")`."
+msgstr ""
+
+#: ../../page.rst:1312 da37b797a9374bca99c9d5d0b55bf2be
+msgid "**Key**"
+msgstr ""
+
+#: ../../page.rst:1312 02ff32a75ec84f2d86e49d25404cdd9e
+msgid "**Value**"
+msgstr ""
+
+#: ../../page.rst:1314 298dfa6fed1b4d018ae47543322e34f8
+msgid "number"
+msgstr ""
+
+#: ../../page.rst:1314 dbad54c7429e40cab971f8ac7009ca2e
+msgid "block number *(int)*"
+msgstr ""
+
+#: ../../page.rst:1315 00dc7159633244cebde1adec3dafad2e
+msgid "bbox"
+msgstr ""
+
+#: ../../page.rst:1315 6c320ed16d4a4363bfa8f2094c20dd6f
+msgid "image bbox on page, :data:`rect_like`"
+msgstr ""
+
+#: ../../page.rst:1316 445b56d25d8f470599cb6f93144c2670
+msgid "original image width *(int)*"
+msgstr ""
+
+#: ../../page.rst:1317 c622ee730ec04832a42a095082927984
+msgid "height"
+msgstr ""
+
+#: ../../page.rst:1317 cac7d43e70f6419589a692ec4a4bbe28
+msgid "original image height *(int)*"
+msgstr ""
+
+#: ../../page.rst:1318 44e9d851ae3b44fd889e50c7906cfee7
+msgid "cs-name"
+msgstr ""
+
+#: ../../page.rst:1318 c58e3a9b31ca4077a7dfeff8d4e41f30
+msgid "colorspace name *(str)*"
+msgstr ""
+
+#: ../../page.rst:1319 e3500cbda86143859aeb3a83e6c2877a
+msgid "colorspace"
+msgstr ""
+
+#: ../../page.rst:1319 edad67e0bf6f4591b6b5d3e06e226bd8
+msgid "colorspace.n *(int)*"
+msgstr ""
+
+#: ../../page.rst:1320 12b52796c8d24b3a97b3e4d4bc9699a9
+msgid "xres"
+msgstr ""
+
+#: ../../page.rst:1320 a3d3fc441ac145c0b4efc69659507c63
+msgid "resolution in x-direction *(int)*"
+msgstr ""
+
+#: ../../page.rst:1321 05fa370fcef5437787b06391cd541083
+msgid "yres"
+msgstr ""
+
+#: ../../page.rst:1321 46368437d8ce4730bde715dc4d5ea3f0
+msgid "resolution in y-direction *(int)*"
+msgstr ""
+
+#: ../../page.rst:1322 646819dfc7ea4cd482b6124b8eb5d09a
+msgid "bpc"
+msgstr ""
+
+#: ../../page.rst:1322 b3abdd4219b244618723dbcfaff2c4cf
+msgid "bits per component *(int)*"
+msgstr ""
+
+#: ../../page.rst:1323 c649d218ffb747ad89dec5d0f6f9c2dc
+msgid "size"
+msgstr ""
+
+#: ../../page.rst:1323 7fd062ab86c24b67b13980b812da12a2
+msgid "storage occupied by image *(int)*"
+msgstr ""
+
+#: ../../page.rst:1324 13c402881edf4c52938605cd743e7c9b
+msgid "digest"
+msgstr ""
+
+#: ../../page.rst:1324 baf60a481580472bb228f01aa7b060a0
+msgid "MD5 hashcode *(bytes)*, if *hashes* is true"
+msgstr ""
+
+#: ../../page.rst:1325 c700a2a942ff4a78815365c02758b889
+msgid "xref"
+msgstr ""
+
+#: ../../page.rst:1325 2c3f3fa3ae344882ad9ca7f4e3d490e8
+msgid "image :data:`xref` or 0, if *xrefs* is true"
+msgstr ""
+
+#: ../../page.rst:1326 2aebdb40c5024c31aa7d76f24311b830
+msgid "transform"
+msgstr ""
+
+#: ../../page.rst:1326 8c06501acd35418aa7090e2f067e5864
+msgid "matrix transforming image rect to bbox, :data:`matrix_like`"
+msgstr ""
+
+#: ../../page.rst:1329 1c2654af06d94206979f61cde8048372
+msgid ""
+"Multiple occurrences of the same image are always reported. You can "
+"detect duplicates by comparing their `digest` values."
+msgstr ""
+
+#: ../../page.rst:1334 360889183bb04bea87f9e2e5e26806f8
+msgid ""
+"PDF only: Return a list of Form XObjects referenced by the page. Wrapper "
+"for :meth:`Document.get_page_xobjects`."
+msgstr ""
+
+#: ../../page.rst:1342 9ba9129a06e54b56a1641733a91c7292
+msgid "*New in v1.18.13*"
+msgstr ""
+
+#: ../../page.rst:1344 8faf90e21b794d7ba5494b46a4a15577
+msgid ""
+"PDF only: Return boundary boxes and transformation matrices of an "
+"embedded image. This is an improved version of "
+":meth:`Page.get_image_bbox` with the following differences:"
+msgstr ""
+
+#: ../../page.rst:1346 bfb20edc1b414a5ba82bab375f2be259
+msgid ""
+"There is no restriction on **how** the image is invoked (by the page or "
+"one of its Form XObjects). The result is always complete and correct."
+msgstr ""
+
+#: ../../page.rst:1347 606781e43ddf44f486ea5ebca0db6252
+msgid ""
+"The result is a list of :ref:`Rect` or (:ref:`Rect`, :ref:`Matrix`) "
+"objects -- depending on *transform*. Each list item represents one "
+"location of the image on the page. Multiple occurrences might not be "
+"detectable by :meth:`Page.get_image_bbox`."
+msgstr ""
+
+#: ../../page.rst:1348 41d5be04f81a42e49a9646eda1727615
+msgid ""
+"The method invokes :meth:`Page.get_image_info` with `xrefs=True` and "
+"therefore has a noticeably longer response time than "
+":meth:`Page.get_image_bbox`."
+msgstr ""
+
+#: ../../page.rst:1350 cf84f9869ffe40b2a2b5cb845c5bf534
+msgid ""
+"an item of the list :meth:`Page.get_images`, or the reference **name** "
+"entry of such an item (item[7]), or the image :data:`xref`."
+msgstr ""
+
+#: ../../page.rst:1351 d2c84746c02d48e3af41307b73e3fd8d
+msgid ""
+"also return the matrix used to transform the image rectangle to the bbox "
+"on the page. If true, then tuples `(bbox, matrix)` are returned."
+msgstr ""
+
+#: ../../page.rst:1354 26430ce7fde24e989a5f5d07f17f974b
+msgid ""
+"Boundary boxes and respective transformation matrices for each image "
+"occurrence on the page. If the item is not on the page, an empty list "
+"`[]` is returned."
+msgstr ""
+
+#: ../../page.rst:1362 de0cb6ac2fa0456c9856ebd4fb9a1112
+msgid "Changed in v1.18.11: return image transformation matrix"
+msgstr ""
+
+#: ../../page.rst:1364 6b6e193f03024d1c84cf351999a9220c
+msgid ""
+"PDF only: Return boundary box and transformation matrix of an embedded "
+"image."
+msgstr ""
+
+#: ../../page.rst:1366 e14f34a255424cd9be73eea222643f65
+msgid ""
+"an item of the list :meth:`Page.get_images` with *full=True* specified, "
+"or the reference **name** entry of such an item, which is item[-3] (or "
+"item[7] respectively)."
+msgstr ""
+
+#: ../../page.rst:1367 ffc6d4794d2c4a318ce1155ded22eb7f
+msgid ""
+"*(new in v1.18.11)* also return the matrix used to transform the image "
+"rectangle to the bbox on the page. Default is just the bbox. If true, "
+"then a tuple `(bbox, matrix)` is returned."
+msgstr ""
+
+#: ../../page.rst:1369 8d7aedab71e24ccf8042992346c461fd
+msgid ":ref:`Rect` or (:ref:`Rect`, :ref:`Matrix`)"
+msgstr ""
+
+#: ../../page.rst:1370 60568d26346a480580d5f16f0d328223
+msgid ""
+"the boundary box of the image -- optionally also its transformation "
+"matrix.  * *(Changed in v1.16.7)* -- If the page in fact does not display"
+" this image, an infinite rectangle is returned now. In previous versions,"
+" an exception was raised. Formally invalid parameters still raise "
+"exceptions. * *(Changed in v1.17.0)* -- Only images referenced directly "
+"by the page are considered. This means that images occurring in embedded "
+"PDF pages are ignored and an exception is raised. * *(Changed in "
+"v1.18.5)* -- Removed the restriction introduced in v1.17.0: any item of "
+"the page's image list may be specified. * *(Changed in v1.18.11)* -- "
+"Partially re-instated a restriction: only those images are considered, "
+"that are either directly referenced by the page or by a Form XObject "
+"directly referenced by the page. * *(Changed in v1.18.11)* -- Optionally "
+"also return the transformation matrix together with the bbox as the tuple"
+" `(bbox, transform)`."
+msgstr ""
+
+#: ../../page.rst:1370 256ef35966c04331af738f0db0041d00
+msgid ""
+"the boundary box of the image -- optionally also its transformation "
+"matrix."
+msgstr ""
+
+#: ../../page.rst:1372 e604466bdd754266a524e7ab78909aee
+msgid ""
+"*(Changed in v1.16.7)* -- If the page in fact does not display this "
+"image, an infinite rectangle is returned now. In previous versions, an "
+"exception was raised. Formally invalid parameters still raise exceptions."
+msgstr ""
+
+#: ../../page.rst:1373 86cb04e3498e41a4ae660bc7cf9bce71
+msgid ""
+"*(Changed in v1.17.0)* -- Only images referenced directly by the page are"
+" considered. This means that images occurring in embedded PDF pages are "
+"ignored and an exception is raised."
+msgstr ""
+
+#: ../../page.rst:1374 8cf53e24580c450ba7b00d6b1b0d25af
+msgid ""
+"*(Changed in v1.18.5)* -- Removed the restriction introduced in v1.17.0: "
+"any item of the page's image list may be specified."
+msgstr ""
+
+#: ../../page.rst:1375 5fb82f35e8a743709e19a6febf766510
+msgid ""
+"*(Changed in v1.18.11)* -- Partially re-instated a restriction: only "
+"those images are considered, that are either directly referenced by the "
+"page or by a Form XObject directly referenced by the page."
+msgstr ""
+
+#: ../../page.rst:1376 c1b4c973b59846d699a5eadebcb9bb70
+msgid ""
+"*(Changed in v1.18.11)* -- Optionally also return the transformation "
+"matrix together with the bbox as the tuple `(bbox, transform)`."
+msgstr ""
+
+#: ../../page.rst:1380 9e51ae4bf861409d977ec2440240c8a3
+msgid ""
+"Be aware that :meth:`Page.get_images` may contain \"dead\" entries i.e. "
+"images, which the page **does not display**. This is no error, but "
+"intended by the PDF creator. No exception will be raised in this case, "
+"but an infinite rectangle is returned. You can avoid this from happening "
+"by executing :meth:`Page.clean_contents` before this method."
+msgstr ""
+
+#: ../../page.rst:1381 6edf330503b34fe4a3235415f07ad263
+msgid ""
+"The image's \"transformation matrix\" is defined as the matrix, for which"
+" the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, "
+"lookup details here: :ref:`ImageTransformation`."
+msgstr ""
+
+#: ../../page.rst:1388 0232768a22414c33af3152e023e63259
+msgid ""
+"Create an SVG image from the page. Only full page images are currently "
+"supported."
+msgstr ""
+
+#: ../../page.rst:1390 224816c1f6fb4e93ad055d54d3e5fc94
+msgid "a matrix, default is :ref:`Identity`."
+msgstr ""
+
+#: ../../page.rst:1391 12afbe9bf04b44a9b35427e34cf391e8
+msgid ""
+"*(new in v1.17.5)* -- controls how text is represented. *True* outputs "
+"each character as a series of elementary draw commands, which leads to a "
+"more precise text display in browsers, but a **very much larger** output "
+"for text-oriented pages. Display quality for *False* relies on the "
+"presence of the referenced fonts on the current system. For missing "
+"fonts, the internet browser will fall back to some default -- leading to "
+"unpleasant appearances. Choose *False* if you want to parse the text of "
+"the SVG."
+msgstr ""
+
+#: ../../page.rst:1393 4a78e085322c40cca7bb12c41d3719a8
+msgid ""
+"a UTF-8 encoded string that contains the image. Because SVG has XML "
+"syntax it can be saved in a text file, the standard extension is `.svg`."
+"  .. note:: In case of a PDF, you can circumvent the \"full page image "
+"only\" restriction by modifying the page's CropBox before using the "
+"method."
+msgstr ""
+
+#: ../../page.rst:1393 e0c4f6335d474ad78ebead18699adb4b
+msgid ""
+"a UTF-8 encoded string that contains the image. Because SVG has XML "
+"syntax it can be saved in a text file, the standard extension is `.svg`."
+msgstr ""
+
+#: ../../page.rst:1395 acbd3a249d5b4d338456156314ccf4ea
+msgid ""
+"In case of a PDF, you can circumvent the \"full page image only\" "
+"restriction by modifying the page's CropBox before using the method."
+msgstr ""
+
+#: ../../page.rst:1407 511185bf213047baa2c629fafc1c4a2d
+msgid "Changed in v1.19.2: added support of parameter dpi."
+msgstr ""
+
+#: ../../page.rst:1409 d3e9204a61044fc084bd603c0a14955d
+msgid ""
+"Create a pixmap from the page. This is probably the most often used "
+"method to create a :ref:`Pixmap`."
+msgstr ""
+
+#: ../../page.rst:1411 6aea446a806c429c9cfae3d40efc4b03
+msgid "All parameters are *keyword-only.*"
+msgstr ""
+
+#: ../../page.rst:1413 2b096cadd8274ab297d104eccc73e89f
+msgid "default is :ref:`Identity`."
+msgstr ""
+
+#: ../../page.rst:1414 c1c4896587304c10ae3f884c2a051f5f
+msgid ""
+"(new in v1.19.2) desired resolution in x and y direction. If not `None`, "
+"the `\"matrix\"` parameter is ignored."
+msgstr ""
+
+#: ../../page.rst:1415 68b35416524540b09c7449158eb7bfcd
+msgid ""
+"The desired colorspace, one of \"GRAY\", \"RGB\" or \"CMYK\" (case "
+"insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined "
+"ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`."
+msgstr ""
+
+#: ../../page.rst:1417 624f5cb486db4109a63fe43385f00225
+msgid ""
+"restrict rendering to the intersection of this area with the page's "
+"rectangle."
+msgstr ""
+
+#: ../../page.rst:1418 0aaabc0f0bd540579168d7146a76d925
+#, python-format
+msgid ""
+"whether to add an alpha channel. Always accept the default *False* if you"
+" do not really need transparency. This will save a lot of memory (25% in "
+"case of RGB ... and pixmaps are typically **large**!), and also "
+"processing time. Also note an **important difference** in how the image "
+"will be rendered: with *True* the pixmap's samples area will be pre-"
+"cleared with *0x00*. This results in **transparent** areas where the page"
+" is empty. With *False* the pixmap's samples will be pre-cleared with "
+"*0xff*. This results in **white** where the page has nothing to show.  "
+"Changed in v1.14.17    The default alpha value is now *False*.     * "
+"Generated with *alpha=True*     .. image:: images/img-alpha-1.*      * "
+"Generated with *alpha=False*     .. image:: images/img-alpha-0.*"
+msgstr ""
+
+#: ../../page.rst:1418 de3ccd8bb1284735bc11df033bd6edc5
+#, python-format
+msgid ""
+"whether to add an alpha channel. Always accept the default *False* if you"
+" do not really need transparency. This will save a lot of memory (25% in "
+"case of RGB ... and pixmaps are typically **large**!), and also "
+"processing time. Also note an **important difference** in how the image "
+"will be rendered: with *True* the pixmap's samples area will be pre-"
+"cleared with *0x00*. This results in **transparent** areas where the page"
+" is empty. With *False* the pixmap's samples will be pre-cleared with "
+"*0xff*. This results in **white** where the page has nothing to show."
+msgstr ""
+
+#: ../../page.rst:1430 d7c6351994ec499e9a4ef5f1ed149f17
+msgid "Changed in v1.14.17"
+msgstr ""
+
+#: ../../page.rst:1421 da7950125f4f4213922c9568aec85732
+msgid "The default alpha value is now *False*."
+msgstr ""
+
+#: ../../page.rst:1423 8ff7ce8c8cf5463ab9273e682914da0a
+msgid "Generated with *alpha=True*"
+msgstr ""
+
+#: ../../page.rst:1428 ce1c4bd35ffb4ec9aedb3ba98a66f4ba
+msgid "Generated with *alpha=False*"
+msgstr ""
+
+#: ../../page.rst:1432 70de2329efb34139a55d0e2bb2fd0c2a
+msgid ""
+"*(new in version 1.16.0)* whether to also render annotations or to "
+"suppress them. You can create pixmaps for annotations separately."
+msgstr ""
+
+#: ../../page.rst:1434 82f11ac099a247c9b96dcec88fe6cbd9
+msgid ":ref:`Pixmap`"
+msgstr ""
+
+#: ../../page.rst:1435 bfa0a72c976843afbb79e3ec6de72af4
+msgid ""
+"Pixmap of the page. For fine-controlling the generated image, the by far "
+"most important parameter is **matrix**. E.g. you can increase or decrease"
+" the image resolution by using **Matrix(xzoom, yzoom)**. If zoom > 1, you"
+" will get a higher resolution: zoom=2 will double the number of pixels in"
+" that direction and thus generate a 2 times larger image. Non-positive "
+"values will flip horizontally, resp. vertically. Similarly, matrices also"
+" let you rotate or shear, and you can combine effects via e.g. matrix "
+"multiplication. See the :ref:`Matrix` section to learn more."
+msgstr ""
+
+#: ../../page.rst:1438 cdecf52907924fd3ae64f968c937c58f
+msgid ""
+"The method will respect any page rotation and will not exceed the "
+"intersection of `clip` and :attr:`Page.cropbox`. If you need the page's "
+"mediabox (and if this is a different rectangle), you can use a snippet "
+"like the following to achieve this::"
+msgstr ""
+
+#: ../../page.rst:1458 ede92a92dfa24a98a7995aaf5eea3d9e
+msgid "New in v1.16.10"
+msgstr ""
+
+#: ../../page.rst:1460 97d17403e87a4710bb04398c3f314f43
+msgid ""
+"PDF only: return a list of the names of annotations, widgets and links. "
+"Technically, these are the */NM* values of every PDF object found in the "
+"page's */Annots*  array."
+msgstr ""
+
+#: ../../page.rst:1467 ../../page.rst:1477 61c7841a8dde4abda2c3cefd81d8fbb2
+#: b267743d7e654e90b207cd4d6079a4b4
+msgid "New in v1.17.1"
+msgstr ""
+
+#: ../../page.rst:1469 3a866105f16747c19c633277b485f35c
+msgid ""
+"PDF only: return a list of the :data`xref` numbers of annotations, "
+"widgets and links -- technically of all entries found in the page's "
+"*/Annots*  array."
+msgstr ""
+
+#: ../../page.rst:1472 4002a85b76014f0a958372737c7c3630
+msgid ""
+"a list of items *(xref, type)* where type is the annotation type. Use the"
+" type to tell apart links, fields and annotations, see "
+":ref:`AnnotationTypes`."
+msgstr ""
+
+#: ../../page.rst:1479 af45911490aa4ceeb1b12fe56dac6d0d
+msgid ""
+"PDF only: return the annotation identified by *ident*. This may be its "
+"unique name (PDF `/NM` key), or its :data:`xref`."
+msgstr ""
+
+#: ../../page.rst:1481 84ca52130b8d436b904e6691d221363a
+msgid "the annotation name or xref."
+msgstr ""
+
+#: ../../page.rst:1484 c3c4c163cb2f4a058c30cbefe7b8b664
+msgid "the annotation or *None*."
+msgstr ""
+
+#: ../../page.rst:1486 a79a26b21cf6463c994eb6c2aabc3256
+msgid ""
+"Methods :meth:`Page.annot_names`, :meth:`Page.annot_xrefs` provide lists "
+"of names or xrefs, respectively, from where an item may be picked and "
+"loaded via this method."
+msgstr ""
+
+#: ../../page.rst:1490 afd263e23628457386dd78d9f02d42da
+msgid "New in v1.19.6"
+msgstr ""
+
+#: ../../page.rst:1492 e080909ad9984f238f17a95e9e01fb42
+msgid "PDF only: return the field identified by *xref*."
+msgstr ""
+
+#: ../../page.rst:1494 fa38d5da08da4cc09aa1f47bcaa7c6d7
+msgid "the field's xref."
+msgstr ""
+
+#: ../../page.rst:1497 d48f7e5f88544e019e3ab94ba7b7b24e
+msgid "the field or *None*."
+msgstr ""
+
+#: ../../page.rst:1499 6be168dec232402e84afbaabc611a88f
+msgid ""
+"This is similar to the analogous method :meth:`Page.load_annot` -- except"
+" that here only the xref is supported as identifier."
+msgstr ""
+
+#: ../../page.rst:1503 1eb96d6f576544c1917401dd110abe4e
+msgid "Return the first link on a page. Synonym of property :attr:`first_link`."
+msgstr ""
+
+#: ../../page.rst:1505 ../../page.rst:1751 291651f2a62f40a7a7e034e6db15e021
+#: 2bfdd95bd6a7479892f40a289d4e2fae
+msgid ":ref:`Link`"
+msgstr ""
+
+#: ../../page.rst:1506 a8837ca84e814a0493b8a4a3e51534ce
+msgid "first link on the page (or *None*)."
+msgstr ""
+
+#: ../../page.rst:1513 481b6e2f0e934000b137853c0b57117f
+msgid "PDF only: Set the rotation of the page."
+msgstr ""
+
+#: ../../page.rst:1515 169dad5ad8aa4d978532d4e9303aed26
+msgid ""
+"An integer specifying the required rotation in degrees. Must be an "
+"integer multiple of 90. Values will be converted to one of 0, 90, 180, "
+"270."
+msgstr ""
+
+#: ../../page.rst:1525 2f4ae56ccf124059b70546dc90add065
+msgid ""
+"Changed in v1.14.11: Parameter *reuse_xref* has been deprecated. Position"
+" the source rectangle centered in target rectangle. Any rotation angle is"
+" now supported."
+msgstr ""
+
+#: ../../page.rst:1526 74743a1951ec401b851ec4e0efff2170
+msgid "Changed in v1.18.3: New parameter `oc`."
+msgstr ""
+
+#: ../../page.rst:1528 f9fd22530ad24035859807348a44f331
+msgid ""
+"PDF only: Display a page of another PDF as a **vector image** (otherwise "
+"similar to :meth:`Page.insert_image`). This is a multi-purpose method. "
+"For example, you can use it to"
+msgstr ""
+
+#: ../../page.rst:1530 ee7999ccc91f46ee85c26df388b27739
+msgid ""
+"create \"n-up\" versions of existing PDF files, combining several input "
+"pages into **one output page** (see example `combine.py "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples"
+"/combine-pages/combine.py>`_),"
+msgstr ""
+
+#: ../../page.rst:1531 75c600bdf8e94426b930325e33004829
+msgid ""
+"create \"posterized\" PDF files, i.e. every input page is split up in "
+"parts which each create a separate output page (see `posterize.py "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples"
+"/posterize-document/posterize.py>`_),"
+msgstr ""
+
+#: ../../page.rst:1532 a08619375a73440f9e75569c020b6105
+msgid ""
+"include PDF-based vector images like company logos, watermarks, etc., see"
+" `svg-logo.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/tree/master/examples/svg-logo.py>`_, which puts an SVG-based "
+"logo on each page (requires additional packages to deal with SVG-to-PDF "
+"conversions)."
+msgstr ""
+
+#: ../../page.rst:1534 ca853ddd23f6417cbbb9ec0acbb82c21
+msgid ""
+"where to place the image on current page. Must be finite and its "
+"intersection with the page must not be empty."
+msgstr ""
+
+#: ../../page.rst:1535 faa2807289324a618dc4aac348e1b311
+msgid ""
+"source PDF document containing the page. Must be a different document "
+"object, but may be the same file."
+msgstr ""
+
+#: ../../page.rst:1538 5377a2024c064e6f92f61e41e1df2ced
+msgid "page number (0-based, in `-∞ < pno < docsrc.page_count`) to be shown."
+msgstr ""
+
+#: ../../page.rst:1540 3b3aee8abfd046b7a5203c4a8ef95436
+msgid ""
+"whether to maintain the width-height-ratio (default). If false, all 4 "
+"corners are always positioned on the border of the target rectangle -- "
+"whatever the rotation value. In general, this will deliver distorted and "
+"/or non-rectangular images."
+msgstr ""
+
+#: ../../page.rst:1542 b5a3d0203dc64c8e9f844a178076166e
+msgid "put image in foreground (default) or background."
+msgstr ""
+
+#: ../../page.rst:1544 4348a4f6d35a4b619e1e02b31d7cf029
+msgid ""
+"*(new in v1.18.3)* (:data:`xref`) make visibility dependent on this "
+":data:`OCG` / :data:`OCMD` (which must be defined in the target PDF) "
+"[#f9]_."
+msgstr ""
+
+#: ../../page.rst:1545 4042af61898f405bbcc725da1a61af27
+msgid ""
+"*(new in v1.14.10)* show the source rectangle rotated by some angle. "
+"*Changed in v1.14.11:* Any angle is now supported."
+msgstr ""
+
+#: ../../page.rst:1547 0bb1238af00a4209aa8253b6f38c4931
+msgid ""
+"choose which part of the source page to show. Default is the full page, "
+"else must be finite and its intersection with the source page must not be"
+" empty."
+msgstr ""
+
+#: ../../page.rst:1549 604919c858464d1bb3d0570fea3afa31
+msgid ""
+"In contrast to method :meth:`Document.insert_pdf`, this method does not "
+"copy annotations, widgets or links, so these are not included in the "
+"target [#f6]_. But all its **other resources (text, images, fonts, "
+"etc.)** will be imported into the current PDF. They will therefore appear"
+" in text extractions and in :meth:`get_fonts` and :meth:`get_images` "
+"lists -- even if they are not contained in the visible area given by "
+"*clip*."
+msgstr ""
+
+#: ../../page.rst:1551 8af4b9c048924ebca1c29feec2a2ea20
+msgid "Example: Show the same source page, rotated by 90 and by -90 degrees:"
+msgstr ""
+
+#: ../../page.rst:1573 fa6178affed54dc094eb919ebb24e82f
+msgid "PDF only: Create a new :ref:`Shape` object for the page."
+msgstr ""
+
+#: ../../page.rst:1575 5c9ddf905fb84c999fa7ba80ec09aa1b
+msgid ":ref:`Shape`"
+msgstr ""
+
+#: ../../page.rst:1576 5c37fe75eb8d4c75a64105886339b273
+msgid "a new :ref:`Shape` to use for compound drawings. See description there."
+msgstr ""
+
+#: ../../page.rst:1587 81bd1beef62d411da71a5d94f32d0693
+msgid ""
+"Changed in v1.18.2: added `clip` parameter. Remove `hit_max` parameter. "
+"Add default \"dehyphenate\"."
+msgstr ""
+
+#: ../../page.rst:1588 535ef638764f4ab6bc469e5f67dc94df
+msgid "Changed in v1.19.0: added `textpage` parameter."
+msgstr ""
+
+#: ../../page.rst:1590 5b64a2f3f56e482dbad3b542eb901148
+msgid "Search for *needle* on a page. Wrapper for :meth:`TextPage.search`."
+msgstr ""
+
+#: ../../page.rst:1592 f392134343b848b2b72ef9e83e1ef334
+msgid ""
+"Text to search for. May contain spaces. Upper / lower case is ignored, "
+"but only works for ASCII characters: For example, \"COMPÉTENCES\" will "
+"not be found if needle is \"compétences\" -- \"compÉtences\" however "
+"will. Similar is true for German umlauts and the like."
+msgstr ""
+
+#: ../../page.rst:1593 86d970283ffa41648b6b840df30b4e6a
+msgid "*(New in v1.18.2)* only search within this area."
+msgstr ""
+
+#: ../../page.rst:1594 1445013700f94a66bf7298c778a284da
+msgid "Return object type :ref:`Quad` instead of :ref:`Rect`."
+msgstr ""
+
+#: ../../page.rst:1595 0e000cae7ce24adabd291913058f681f
+msgid ""
+"Control the data extracted by the underlying :ref:`TextPage`. By default,"
+" ligatures and white spaces are kept, and hyphenation [#f8]_ is detected."
+msgstr ""
+
+#: ../../page.rst:1596 4628b1453b474f8b8534a9b24b96a487
+msgid ""
+"(new in v1.19.0) use a previously created :ref:`TextPage`. This reduces "
+"execution time **significantly.** If specified, the 'flags' and 'clip' "
+"arguments are ignored. If omitted, a temporary textpage will be created."
+msgstr ""
+
+#: ../../page.rst:1600 2ab6189ab1ee42e7989501ba3e5bfdf5
+msgid ""
+"A list of :ref:`Rect` or  :ref:`Quad` objects, each of which  -- "
+"**normally!** -- surrounds one occurrence of *needle*. **However:** if "
+"parts of *needle* occur on more than one line, then a separate item is "
+"generated for each these parts. So, if `needle = \"search string\"`, two "
+"rectangles may be generated.  **Changes in v1.18.2:**    * There no "
+"longer is a limit on the list length (removal of the `hit_max` "
+"parameter).   * If a word is **hyphenated** at a line break, it will "
+"still be found. E.g. the needle \"method\" will be found even if "
+"hyphenated as \"meth-od\" at a line break, and two rectangles will be "
+"returned: one surrounding \"meth\" (without the hyphen) and another one "
+"surrounding \"od\"."
+msgstr ""
+
+#: ../../page.rst:1602 1323e77f6a094e7eb4aefa0f6d72d0fa
+msgid ""
+"A list of :ref:`Rect` or  :ref:`Quad` objects, each of which  -- "
+"**normally!** -- surrounds one occurrence of *needle*. **However:** if "
+"parts of *needle* occur on more than one line, then a separate item is "
+"generated for each these parts. So, if `needle = \"search string\"`, two "
+"rectangles may be generated."
+msgstr ""
+
+#: ../../page.rst:1604 04d6de6d7bfa43988b88fb212c034874
+msgid "**Changes in v1.18.2:**"
+msgstr ""
+
+#: ../../page.rst:1606 05e2e307bbe3441f9f74d9a65c096964
+msgid ""
+"There no longer is a limit on the list length (removal of the `hit_max` "
+"parameter)."
+msgstr ""
+
+#: ../../page.rst:1607 f001533f21b64c2abc236e31649e1391
+msgid ""
+"If a word is **hyphenated** at a line break, it will still be found. E.g."
+" the needle \"method\" will be found even if hyphenated as \"meth-od\" at"
+" a line break, and two rectangles will be returned: one surrounding "
+"\"meth\" (without the hyphen) and another one surrounding \"od\"."
+msgstr ""
+
+#: ../../page.rst:1609 1858e35e300641d5b8c795d5b9cd802a
+msgid ""
+"The method supports multi-line text marker annotations: you can use the "
+"full returned list as **one single** parameter for creating the "
+"annotation."
+msgstr ""
+
+#: ../../page.rst:1613 4118b2e634b4484ea6d8a1437ec112ea
+msgid ""
+"There is a tricky aspect: the search logic regards **contiguous multiple "
+"occurrences** of *needle* as one: assuming *needle* is \"abc\", and the "
+"page contains \"abc\" and \"abcabc\", then only **two** rectangles will "
+"be returned, one for \"abc\", and a second one for \"abcabc\"."
+msgstr ""
+
+#: ../../page.rst:1614 07bc4d1d17c94f3f81ffe4eef2ca8310
+msgid ""
+"You can always use :meth:`Page.get_textbox` to check what text actually "
+"is being surrounded by each rectangle."
+msgstr ""
+
+#: ../../page.rst:1616 9b04312b1d214eeb9a2602a1f7b66807
+msgid ""
+"A feature repeatedly asked for is supporting **regular expressions** when"
+" specifying the `\"needle\"` string: **There is no way to do this.** If "
+"you need something in that direction, first extract text in the desired "
+"format and then subselect the result by matching with some regex pattern."
+" Here is an example for matching words::"
+msgstr ""
+
+#: ../../page.rst:1622 fe6af83c78864b1eb379d618db60cffd
+msgid ""
+"The `matches` list will contain the words matching the given pattern. In "
+"the same way you can select `span[\"text\"]` from the output of "
+"`page.get_text(\"dict\")`."
+msgstr ""
+
+#: ../../page.rst:1627 d33a4d70167742e6b7ff551f3fb68f56
+msgid "New in v1.16.13"
+msgstr ""
+
+#: ../../page.rst:1628 6ff5e80f17ba4c939c9b95d471faaf75
+msgid "Changed in v1.19.4: remove all other rectangle definitions."
+msgstr ""
+
+#: ../../page.rst:1630 f12cc2d45388496e9607ccf656f65ee0
+msgid ""
+"PDF only: Change the physical page dimension by setting :data:`mediabox` "
+"in the page's object definition."
+msgstr ""
+
+#: ../../page.rst:1632 445c191a2f984d12b59bfb02eb6d9ae4
+msgid "the new :data:`mediabox` value."
+msgstr ""
+
+#: ../../page.rst:1634 12b77045c84e43b6961ad7cdc98e8813
+msgid ""
+"This method also removes the page's other (optional) rectangles "
+"(:data:`cropbox`, ArtBox, TrimBox and Bleedbox) to prevent inconsistent "
+"situations. This will cause those to assume their default values."
+msgstr ""
+
+#: ../../page.rst:1636 c347065560704f06907ac120c438e18d
+msgid ""
+"For non-empty pages this may have undesired effects, because the location"
+" of all content depends on this value and will therefore change position "
+"or even disappear."
+msgstr ""
+
+#: ../../page.rst:1641 9dcabe97ede6414198bb3001f03eaff9
+msgid "PDF only: change the visible part of the page."
+msgstr ""
+
+#: ../../page.rst:1643 afb486222f144196bfaa3a851422fa3c
+msgid ""
+"the new visible area of the page. Note that this **must** be specified in"
+" **unrotated coordinates**, not empty, nor infinite and be completely "
+"contained in the :attr:`Page.mediabox`."
+msgstr ""
+
+#: ../../page.rst:1645 cb678f2a33934923b0bbc1504dc33ba0
+msgid ""
+"After execution **(if the page is not rotated)**, :attr:`Page.rect` will "
+"equal this rectangle, but be shifted to the top-left position (0, 0) if "
+"necessary. Example session:"
+msgstr ""
+
+#: ../../page.rst:1676 9d6ca41b25bf465a91e5db9805ab9bd3
+msgid "New in v1.19.4"
+msgstr ""
+
+#: ../../page.rst:1678 38b601d914e04bf7ab60bc1823a83abb
+msgid ""
+"PDF only: Set the resp. rectangle in the page object. For the meaning of "
+"these objects see :ref:`AdobeManual`, page 77. Parameter and restrictions"
+" are the same as for :meth:`Page.set_cropbox`."
+msgstr ""
+
+#: ../../page.rst:1683 c586c6f7862e4c5fad726e7c3ed89e82
+msgid "Contains the rotation of the page in degrees (always 0 for non-PDF types)."
+msgstr ""
+
+#: ../../page.rst:1689 cd3f10af32a64780a8806d55e4a68fcb
+msgid ""
+"Contains the top-left point of the page's `/CropBox` for a PDF, otherwise"
+" *Point(0, 0)*."
+msgstr ""
+
+#: ../../page.rst:1691 ../../page.rst:1715 13e85e28d9dc4a2cb6ad1ee57c96d8a5
+#: af52cefbf8b541c8899be56d93e40476
+msgid ":ref:`Point`"
+msgstr ""
+
+#: ../../page.rst:1695 166570bc240047688a1a3f5a2df6eacf
+msgid ""
+"The page's `/CropBox` for a PDF. Always the **unrotated** page rectangle "
+"is returned. For a non-PDF this will always equal the page rectangle."
+msgstr ""
+
+#: ../../page.rst:1697 3370ae6813bf44bf9d9e47a5b2e5844d
+msgid ""
+"In PDF, the relationship between `/MediaBox`, `/CropBox` and page "
+"rectangle may sometimes be confusing, please do lookup the glossary for "
+":data:`MediaBox`."
+msgstr ""
+
+#: ../../page.rst:1707 ce0d766e127a4b7a8a775151968bb79f
+msgid ""
+"The page's `/ArtBox`, `/BleedBox`, `/TrimBox`, respectively. If not "
+"provided, defaulting to :attr:`Page.cropbox`."
+msgstr ""
+
+#: ../../page.rst:1713 64bac5d6a60e4a0ba02394f377287fa3
+msgid ""
+"Contains the width and height of the page's :attr:`Page.mediabox` for a "
+"PDF, otherwise the bottom-right coordinates of :attr:`Page.rect`."
+msgstr ""
+
+#: ../../page.rst:1719 38858a804a9f4d33b7634f4600949145
+msgid "The page's :data:`mediabox` for a PDF, otherwise :attr:`Page.rect`."
+msgstr ""
+
+#: ../../page.rst:1723 295bda42b4214f1daf0338fee33464b6
+msgid ""
+"For most PDF documents and for **all other document types**, `page.rect "
+"== page.cropbox == page.mediabox` is true. However, for some PDFs the "
+"visible page is a true subset of :data:`mediabox`. Also, if the page is "
+"rotated, its `Page.rect` may not equal `Page.cropbox`. In these cases the"
+" above attributes help to correctly locate page elements."
+msgstr ""
+
+#: ../../page.rst:1727 b56bc941d2864969848d4e73ce214396
+msgid ""
+"This matrix translates coordinates from the PDF space to the MuPDF space."
+" For example, in PDF `/Rect [x0 y0 x1 y1]` the pair (x0, y0) specifies "
+"the **bottom-left** point of the rectangle -- in contrast to MuPDF's "
+"system, where (x0, y0) specify top-left. Multiplying the PDF coordinates "
+"with this matrix will deliver the (Py-) MuPDF rectangle version. "
+"Obviously, the inverse matrix will again yield the PDF rectangle."
+msgstr ""
+
+#: ../../page.rst:1729 ../../page.rst:1745 7c7a4b86095b43da80dd081830e9d0ed
+#: b699cf7254ab4b5ca85baf390beebf78
+msgid ":ref:`Matrix`"
+msgstr ""
+
+#: ../../page.rst:1735 c478b284987c4b06812cccd7ae9b7d85
+msgid ""
+"These matrices may be used for dealing with rotated PDF pages. When "
+"adding / inserting anything to a PDF page, the coordinates of the "
+"**unrotated** page are always used. These matrices help translating "
+"between the two states. Example: if a page is rotated by 90 degrees -- "
+"what would then be the coordinates of the top-left Point(0, 0) of an A4 "
+"page?"
+msgstr ""
+
+#: ../../page.rst:1749 982e8005c24f400482041674d0e672ea
+msgid "Contains the first :ref:`Link` of a page (or *None*)."
+msgstr ""
+
+#: ../../page.rst:1755 a0ebeb1b06e446b78fffd1c19b4ed785
+msgid "Contains the first :ref:`Annot` of a page (or *None*)."
+msgstr ""
+
+#: ../../page.rst:1761 7fa1fb6af6df431597cac17d8c65610d
+msgid "Contains the first :ref:`Widget` of a page (or *None*)."
+msgstr ""
+
+#: ../../page.rst:1767 5d118200978f454ea68a50c280211c67
+msgid "The page number."
+msgstr ""
+
+#: ../../page.rst:1773 c17da81053674d8dbb64ed4884bba13a
+msgid "The owning document object."
+msgstr ""
+
+#: ../../page.rst:1775 e73a865a959a4145bcb7b13102d9a926
+msgid ":ref:`Document`"
+msgstr ""
+
+#: ../../page.rst:1780 d87c15e1bec74b60bec82ae3de199325
+msgid ""
+"Contains the rectangle of the page. Same as result of "
+":meth:`Page.bound()`."
+msgstr ""
+
+#: ../../page.rst:1786 94523a03e7fd4022b33024b21436562e
+msgid "The page's PDF :data:`xref`. Zero if not a PDF."
+msgstr ""
+
+#: ../../page.rst:1793 9d4c6143afc4431c94b1aced94c81655
+msgid "Description of *get_links()* Entries"
+msgstr ""
+
+#: ../../page.rst:1794 346de344e7824b42b3455e3a108e5a54
+msgid ""
+"Each entry of the :meth:`Page.get_links` list is a dictionary with the "
+"following keys:"
+msgstr ""
+
+#: ../../page.rst:1796 b2e0c3f71a8a4232a78ac08d968aa1f2
+msgid ""
+"*kind*:  (required) an integer indicating the kind of link. This is one "
+"of *LINK_NONE*, *LINK_GOTO*, *LINK_GOTOR*, *LINK_LAUNCH*, or *LINK_URI*. "
+"For values and meaning of these names refer to :ref:`linkDest Kinds`."
+msgstr ""
+
+#: ../../page.rst:1798 cafafc97c5894df4b37528f2363221be
+msgid ""
+"*from*:  (required) a :ref:`Rect` describing the \"hot spot\" location on"
+" the page's visible representation (where the cursor changes to a hand "
+"image, usually)."
+msgstr ""
+
+#: ../../page.rst:1800 fdb1561b29a540bbaaba704a2e4adf0b
+msgid ""
+"*page*:  a 0-based integer indicating the destination page. Required for "
+"*LINK_GOTO* and *LINK_GOTOR*, else ignored."
+msgstr ""
+
+#: ../../page.rst:1802 c08118854f9a496aab2e0f6137b6bda6
+msgid ""
+"*to*:   either a *fitz.Point*, specifying the destination location on the"
+" provided page, default is *fitz.Point(0, 0)*, or a symbolic (indirect) "
+"name. If an indirect name is specified, *page = -1* is required and the "
+"name must be defined in the PDF in order for this to work. Required for "
+"*LINK_GOTO* and *LINK_GOTOR*, else ignored."
+msgstr ""
+
+#: ../../page.rst:1804 d7fe8739e2174a769603331663f2cc7b
+msgid ""
+"*file*: a string specifying the destination file. Required for "
+"*LINK_GOTOR* and *LINK_LAUNCH*, else ignored."
+msgstr ""
+
+#: ../../page.rst:1806 7b4f9058c91a4d7794d0ad4c6802e360
+msgid ""
+"*uri*:  a string specifying the destination internet resource. Required "
+"for *LINK_URI*, else ignored. You should make sure to start this string "
+"with an unambiguous substring, that classifies the subtype of the URL, "
+"like `\"http://\"`, `\"https://\"`, `\"file://\"`, `\"ftp://\"`, "
+"`\"mailto:\"`, etc. Otherwise your browser will try to interpret the text"
+" and come to unwanted / unexpected conclusions about the intended URL "
+"type."
+msgstr ""
+
+#: ../../page.rst:1808 3c6d057e91d040dfa2035ca81b0a5267
+msgid ""
+"*xref*: an integer specifying the PDF :data:`xref` of the link object. Do"
+" not change this entry in any way. Required for link deletion and update,"
+" otherwise ignored. For non-PDF documents, this entry contains *-1*. It "
+"is also *-1* for **all** entries in the *get_links()* list, if **any** of"
+" the links is not supported by MuPDF - see the note below."
+msgstr ""
+
+#: ../../page.rst:1811 b955777e6b7a47fbae35665923d9ca1a
+msgid "Notes on Supporting Links"
+msgstr ""
+
+#: ../../page.rst:1812 616c079589d745b298a8db8672f21ddd
+msgid ""
+"MuPDF's support for links has changed in **v1.10a**. These changes affect"
+" link types :data:`LINK_GOTO` and :data:`LINK_GOTOR`."
+msgstr ""
+
+#: ../../page.rst:1815 83778143358d46768083633e70d7238a
+msgid ""
+"Reading (pertains to method *get_links()* and the *first_link* property "
+"chain)"
+msgstr ""
+
+#: ../../page.rst:1817 19d7fcf6229a4540a6414e0d9ba2311b
+msgid ""
+"If MuPDF detects a link to another file, it will supply either a "
+"*LINK_GOTOR* or a *LINK_LAUNCH* link kind. In case of *LINK_GOTOR* "
+"destination details may either be given as page number (eventually "
+"including position information), or as an indirect destination."
+msgstr ""
+
+#: ../../page.rst:1819 7d2bfa83e2ba48ca840eb888018cdb3f
+msgid ""
+"If an indirect destination is given, then this is indicated by *page = "
+"-1*, and *link.dest.dest* will contain this name. The dictionaries in the"
+" *get_links()* list will contain this information as the *to* value."
+msgstr ""
+
+#: ../../page.rst:1821 2a40d95c1d9644b2aad420ca96bf19ac
+msgid ""
+"**Internal links are always** of kind *LINK_GOTO*. If an internal link "
+"specifies an indirect destination, it **will always be resolved** and the"
+" resulting direct destination will be returned. Names are **never "
+"returned for internal links**, and undefined destinations will cause the "
+"link to be ignored."
+msgstr ""
+
+#: ../../page.rst:1824 08f8791552434efaa8cf0e842bd052ef
+msgid "Writing"
+msgstr ""
+
+#: ../../page.rst:1826 cde9d6294f1743588a44f50c8ceb7dc0
+msgid ""
+"PyMuPDF writes (updates, inserts) links by constructing and writing the "
+"appropriate PDF object **source**. This makes it possible to specify "
+"indirect destinations for *LINK_GOTOR* **and** *LINK_GOTO* link kinds "
+"(pre *PDF 1.2* file formats are **not supported**)."
+msgstr ""
+
+#: ../../page.rst:1828 6deb3e2ad4164123a7e814e0765cf947
+msgid ""
+"If a *LINK_GOTO* indirect destination specifies an undefined name, this "
+"link can later on not be found / read again with MuPDF / PyMuPDF. Other "
+"readers however **will** detect it, but flag it as erroneous."
+msgstr ""
+
+#: ../../page.rst:1830 2bc59cc331dc4dafa355687aa49d4c79
+msgid ""
+"Indirect *LINK_GOTOR* destinations can in general of course not be "
+"checked for validity and are therefore **always accepted**."
+msgstr ""
+
+#: ../../page.rst:1832 f9434dba01e646f6b042f794457c86e0
+msgid ""
+"**Example: How to insert a link pointing to another page in the same "
+"document**"
+msgstr ""
+
+#: ../../page.rst:1834 578c4ffcebec4c0dbfcca5de00840e12
+msgid ""
+"Determine the rectangle on the current page, where the link should be "
+"placed. This may be the bbox of an image or some text."
+msgstr ""
+
+#: ../../page.rst:1836 d6bfe828769243f9a43d39b7467c20a9
+msgid ""
+"Determine the target page number (\"pno\", 0-based) and a :ref:`Point` on"
+" it, where the link should be directed to."
+msgstr ""
+
+#: ../../page.rst:1838 dcad4e628e1e466b836773b72f07d7f1
+msgid ""
+"Create a dictionary `d = {\"kind\": fitz.LINK_GOTO, \"page\": pno, "
+"\"from\": bbox, \"to\": point}`."
+msgstr ""
+
+#: ../../page.rst:1840 3fb35e1a40b64b578e703453a52487de
+msgid "Execute `page.insert_link(d)`."
+msgstr ""
+
+#: ../../page.rst:1844 9b21dca80e0f4efd8cd4d22c758a9d20
+msgid "Homologous Methods of :ref:`Document` and :ref:`Page`"
+msgstr ""
+
+#: ../../page.rst:1845 710af9b73bf64508a10e55c985ecf802
+msgid ""
+"This is an overview of homologous methods on the :ref:`Document` and on "
+"the :ref:`Page` level."
+msgstr ""
+
+#: ../../page.rst:1848 dc056d052fee413883d8d6e8925c83af
+msgid "**Document Level**"
+msgstr ""
+
+#: ../../page.rst:1848 19d0d60e676243498bc0edccc8738183
+msgid "**Page Level**"
+msgstr ""
+
+#: ../../page.rst:1850 32cb08b61f6a4573a443f17e41c71fc3
+msgid "*Document.get_page_fonts(pno)*"
+msgstr ""
+
+#: ../../page.rst:1851 d75e1d72b25149b799ed1e50e39f230a
+msgid "*Document.get_page_images(pno)*"
+msgstr ""
+
+#: ../../page.rst:1852 bc6b8513dc774046bf71e4bd548499fe
+msgid "*Document.get_page_pixmap(pno, ...)*"
+msgstr ""
+
+#: ../../page.rst:1853 086f577792c54931a5b3e886dd6e350e
+msgid "*Document.get_page_text(pno, ...)*"
+msgstr ""
+
+#: ../../page.rst:1854 78c4b30d64014ec6a2232d6ea2aa2eb9
+msgid "*Document.search_page_for(pno, ...)*"
+msgstr ""
+
+#: ../../page.rst:1857 0d645c8d286a43b087a17e189d523968
+msgid "The page number \"pno\" is a 0-based integer `-∞ < pno < page_count`."
+msgstr ""
+
+#: ../../page.rst:1861 e7e46660a6e9497db627c1ac2def0ef3
+msgid ""
+"Most document methods (left column) exist for convenience reasons, and "
+"are just wrappers for: *Document[pno].<page method>*. So they **load and "
+"discard the page** on each execution."
+msgstr ""
+
+#: ../../page.rst:1863 1478ba549e6149e9966da51f1723d34a
+msgid ""
+"However, the first two methods work differently. They only need a page's "
+"object definition statement - the page itself will **not** be loaded. So "
+"e.g. :meth:`Page.get_fonts` is a wrapper the other way round and defined "
+"as follows: *page.get_fonts == page.parent.get_page_fonts(page.number)*."
+msgstr ""
+
+#: ../../page.rst:1866 b34bd570d24d408fafbee219244ac804
+msgid "Footnotes"
+msgstr ""
+
+#: ../../page.rst:1867 a0d00045bcfc42d19c3e78faae49ef5d
+msgid ""
+"If your existing code already uses the installed base name as a font "
+"reference (as it was supported by PyMuPDF versions earlier than 1.14), "
+"this will continue to work."
+msgstr ""
+
+#: ../../page.rst:1869 7ed4b65da91246419792f40912540546
+msgid ""
+"Not all PDF reader software (including internet browsers and office "
+"software) display all of these fonts. And if they do, the difference "
+"between the **serifed** and the **non-serifed** version may hardly be "
+"noticeable. But serifed and non-serifed versions lead to different "
+"installed base fonts, thus providing an option to be displayable with "
+"your specific PDF viewer."
+msgstr ""
+
+#: ../../page.rst:1871 8e17b881b9ea4acc91fd6e73bd084bf3
+msgid ""
+"Not all PDF readers display these fonts at all. Some others do, but use a"
+" wrong character spacing, etc."
+msgstr ""
+
+#: ../../page.rst:1873 ae50a51fc31245cabf7c2a1b7f495e0e
+msgid ""
+"You are generally free to choose any of the :ref:`mupdficons` you "
+"consider adequate."
+msgstr ""
+
+#: ../../page.rst:1875 23fcda357d574e4a8c7ad99d431bba91
+msgid ""
+"The previous algorithm caused images to be **shrunk** to this "
+"intersection. Now the image can be anywhere on :attr:`Page.mediabox`, "
+"potentially being invisible or only partially visible if the cropbox "
+"(representing the visible page part) is smaller."
+msgstr ""
+
+#: ../../page.rst:1877 e65c5133556d4c0f9f865c94a5474bcd
+msgid ""
+"If you need to also see annotations or fields in the target page, you can"
+" try and convert the source PDF to another PDF using "
+":meth:`Document.convert_to_pdf`. The underlying MuPDF function of that "
+"method will convert these objects to normal page content. Then use "
+":meth:`Page.show_pdf_page` with the converted PDF page."
+msgstr ""
+
+#: ../../page.rst:1879 f2d2a20dff094f36a6bb46ac11a96ca4
+msgid ""
+"In PDF, an area enclosed by some lines or curves can have a property "
+"called \"orientation\". This is significant for switching on or off the "
+"fill color of that area when there exist multiple area overlaps - see "
+"discussion in method :meth:`Shape.finish` using the \"non-zero winding "
+"number\" rule. While orientation of curves, quads, triangles and other "
+"shapes enclosed by lines always was detectable, this has been impossible "
+"for \"re\" (rectangle) items in the past. Adding the orientation "
+"parameter now delivers the missing information."
+msgstr ""
+
+#: ../../page.rst:1881 fda2b055a9d0494ba2de64138a701acd
+msgid ""
+"Hyphenation detection simply means that if the last character of a line "
+"is \"-\", it will be assumed to be a continuation character. That "
+"character will not be found by text searching with its default flag "
+"setting. Please take note, that a MuPDF *line* may not always be what you"
+" expect: words separated by overly large gaps (e.g. caused by text "
+"justification) may constitute separate MuPDF lines. If then any of these "
+"words ends with a hyphen, it will only be found by text searching if "
+"hyphenation is switched off."
+msgstr ""
+
+#: ../../page.rst:1883 88681a5388f5473db129e6363bfbe689
+msgid ""
+"Objects inside the source page, like images, text or drawings, are never "
+"aware of whether their owning page now is under OC control inside the "
+"target PDF. If source page objects are OC-controlled in the source PDF, "
+"then this will not be retained on the target: they will become "
+"unconditionally visible."
+msgstr ""
+
+#: ../../footer.rst:-1 8ed5450a25534b35a92c5f6abff127a7
+msgid "Discord logo"
+msgstr ""
+

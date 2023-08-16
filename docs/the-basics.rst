@@ -114,14 +114,16 @@ Supported File Types
 
     </style>
 
+
+
     <table id="feature-matrix" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <th style="width:20%;"></th>
-            <th style="width:20%;">File type</th>
+            <th style="width:20%;"><div id="trans1"></div></th>
         </tr>
 
         <tr>
-            <td><cite>Document Formats</cite></td>
+            <td><cite><div id="trans2"></div></cite></td>
             <td>
                 <span class="icon pdf"><cite>PDF</cite></span>
                 <span class="icon xps"><cite>XPS</cite></span>
@@ -134,15 +136,46 @@ Supported File Types
         </tr>
 
         <tr>
-            <td><cite>Image Formats</cite></td>
+            <td><cite><div id="trans3"></div></cite></td>
             <td>
                 <span class="icon image"></span>
-                <div><u>Input formats</u> <cite>JPG/JPEG, PNG, BMP, GIF, TIFF, PNM, PGM, PBM, PPM, PAM, JXR, JPX/JP2, PSD</cite></div>
-                <div><u>Output formats</u> <cite>JPG/JPEG, PNG, PNM, PGM, PBM, PPM, PAM, PSD, PS</cite></div>
+                <div><u><div id="trans4"></div></u> <cite>JPG/JPEG, PNG, BMP, GIF, TIFF, PNM, PGM, PBM, PPM, PAM, JXR, JPX/JP2, PSD</cite></div>
+                <div><u><div id="trans5"></div></u> <cite>JPG/JPEG, PNG, PNM, PGM, PBM, PPM, PAM, PSD, PS</cite></div>
             </td>
         </tr>
 
     </table>
+
+    <script>
+
+        let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+
+        function getTranslation(str) {
+            if (lang == "ja") {
+                if (str=="File type") {
+                    return "ファイルタイプ";
+                } else if (str=="Document Formats") {
+                    return "文書のフォーマット";
+                } else if (str=="Image Formats") {
+                    return "画像のフォーマット";
+                } else if (str=="Input formats") {
+                    return "入力フォーマット";
+                } else if (str=="Output formats") {
+                    return "出力フォーマット";
+                }
+
+            }
+
+            return str;
+        }
+
+        document.getElementById("trans1").innerHTML = getTranslation("File type");
+        document.getElementById("trans2").innerHTML = getTranslation("Document Formats");
+        document.getElementById("trans3").innerHTML = getTranslation("Image Formats");
+        document.getElementById("trans4").innerHTML = getTranslation("Input formats");
+        document.getElementById("trans5").innerHTML = getTranslation("Output formats");
+
+    </script>
 
 
 .. _The_Basics_Opening_Files:

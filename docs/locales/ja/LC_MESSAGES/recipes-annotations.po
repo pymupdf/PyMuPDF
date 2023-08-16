@@ -1,0 +1,111 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../recipes-annotations.rst:7 fca9c4e6a4f74af9bc327c4187c17074
+msgid "Annotations"
+msgstr ""
+
+#: ../../recipes-annotations.rst:12 7dd9e0f16f9a4eac8f33e49f313f412b
+msgid "How to Add and Modify Annotations"
+msgstr ""
+
+#: ../../recipes-annotations.rst:14 422c8ba5314c4ea29d32a6c08b31a428
+msgid ""
+"In PyMuPDF, new annotations can be added via :ref:`Page` methods. Once an"
+" annotation exists, it can be modified to a large extent using methods of"
+" the :ref:`Annot` class."
+msgstr ""
+
+#: ../../recipes-annotations.rst:16 5b98e8008c944301ac9375e5b40b2bc5
+msgid ""
+"In contrast to many other tools, initial insert of annotations happens "
+"with a minimum number of properties. We leave it to the programmer to "
+"e.g. set attributes like author, creation date or subject."
+msgstr ""
+
+#: ../../recipes-annotations.rst:18 b80efe25ff1d417d808d4360665a2d0d
+msgid ""
+"As an overview for these capabilities, look at the following script that "
+"fills a PDF page with most of the available annotations. Look in the next"
+" sections for more special situations:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:24 b1ea65f64cd145cdbdcee83edcf8ef47
+msgid "This script should lead to the following output:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:34 6d29fab88b624c38b18932e064259d09
+msgid "How to Use FreeText"
+msgstr ""
+
+#: ../../recipes-annotations.rst:35 b082187fc3974bcbac0328898b9f144c
+msgid "This script shows a couple of ways to deal with 'FreeText' annotations::"
+msgstr ""
+
+#: ../../recipes-annotations.rst:68 e61801b0888b426fb4076c53381b3c82
+msgid "The result looks like this:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:79 a48dd471be5c46f5ad426e8b92c89049
+msgid "Using Buttons and JavaScript"
+msgstr ""
+
+#: ../../recipes-annotations.rst:80 2ac36aa3635b42fabc2f108aea3e539d
+msgid ""
+"Since MuPDF v1.16, 'FreeText' annotations no longer support bold or "
+"italic versions of the Times-Roman, Helvetica or Courier fonts."
+msgstr ""
+
+#: ../../recipes-annotations.rst:82 774300ad8c5a442fae28358fd27a7451
+msgid ""
+"A big **thank you** to our user `@kurokawaikki "
+"<https://github.com/kurokawaikki>`_, who contributed the following script"
+" to **circumvent this restriction**."
+msgstr ""
+
+#: ../../recipes-annotations.rst:93 ddd0e3e4c05949c0a6d2f621ec5b5dfd
+msgid "How to Use Ink Annotations"
+msgstr ""
+
+#: ../../recipes-annotations.rst:94 24be590b851c4c1fb2256c0c274964db
+msgid ""
+"Ink annotations are used to contain freehand scribbling. A typical "
+"example may be an image of your signature consisting of first name and "
+"last name. Technically an ink annotation is implemented as a **list of "
+"lists of points**. Each point list is regarded as a continuous line "
+"connecting the points. Different point lists represent independent line "
+"segments of the annotation."
+msgstr ""
+
+#: ../../recipes-annotations.rst:96 a55c500826a04a3bb9ceeb0dfe572617
+msgid ""
+"The following script creates an ink annotation with two mathematical "
+"curves (sine and cosine function graphs) as line segments::"
+msgstr ""
+
+#: ../../recipes-annotations.rst:141 b2edda413cd54962b844b16dee60b2db
+msgid "This is the result:"
+msgstr ""
+
+#: ../../footer.rst:-1 decad967a0724912a6afd25ceca5ca19
+msgid "Discord logo"
+msgstr ""
+

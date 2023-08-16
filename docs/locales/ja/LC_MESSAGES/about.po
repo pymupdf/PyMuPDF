@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../about.rst:10 888b5bf60bc6435e90715e12dc2bdb28
+msgid "Features Comparison"
+msgstr ""
+
+#: ../../about.rst:16 f075f60743ac4eacb93bbfffad517ecc
+msgid "Feature matrix"
+msgstr ""
+
+#: ../../about.rst:18 ff238380567645238b1fbe2e64e623b0
+msgid ""
+"The following table illustrates how :title:`PyMuPDF` compares with other "
+"typical solutions."
+msgstr ""
+
+#: ../../about.rst:27 f2abbb9014ca4c8f82af6cd85a11704f
+msgid "Performance"
+msgstr ""
+
+#: ../../about.rst:31 157fa531655e41478d9852f7c5e61f06
+msgid ""
+"To benchmark :title:`PyMuPDF` performance against a range of tasks a test"
+" suite with a fixed set of :ref:`8 PDFs with a total of 7,031 "
+"pages<Appendix4_Files_Used>` containing text & images is used to obtain "
+"performance timings."
+msgstr ""
+
+#: ../../about.rst:34 6a96665d1db74c969980db1fd2ea12a4
+msgid "Here are current results, grouped by task:"
+msgstr ""
+
+#: ../../about.rst:43 785c3e70fdca4aab9372cdd5273dc82e
+msgid ""
+"For more detail regarding the methodology for these performance timings "
+"see: :ref:`Performance Comparison Methodology<Appendix4>`."
+msgstr ""
+
+#: ../../about.rst:48 986945aa34944c01bc1ea61c44f2fc6c
+msgid "License and Copyright"
+msgstr ""
+
+#: ../../about.rst:52 70fb5ce138354820aca1754304e0ce36
+msgid ""
+":title:`PyMuPDF` and :title:`MuPDF` are now available under both, open-"
+"source :title:`AGPL` and commercial license agreements. Please read the "
+"full text of the :title:`AGPL` license agreement, available in the "
+"distribution material (file COPYING) and `here "
+"<https://www.gnu.org/licenses/agpl-3.0.html>`_, to ensure that your use "
+"case complies with the guidelines of the license. If you determine you "
+"cannot meet the requirements of the :title:`AGPL`, please contact "
+"`Artifex <https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-"
+"pymupdf&utm_medium=rtd&utm_content=inline-link>`_ for more information "
+"regarding a commercial license."
+msgstr ""
+
+#: ../../about.rst:59 f3b337656b7043aaaf9dca11699f7c2d
+msgid ""
+":title:`Artifex` is the exclusive commercial licensing agent for "
+":title:`MuPDF`."
+msgstr ""
+
+#: ../../about.rst:61 1303d3e636b94a99b70c1087641984d5
+msgid ""
+":title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the "
+":title:`MuPDF` logo are registered trademarks of :title:`Artifex Software"
+" Inc.`"
+msgstr ""
+
+#: ../../version.rst:3 ff0d4a3e0de94752b26e51a8a37bf914
+msgid ""
+"This documentation covers **PyMuPDF v1.23.0rc1** features as of "
+"**2023-08-10 00:00:01**."
+msgstr ""
+
+#: ../../version.rst:5 7c2446c0ab554e95b8c263ac5713d6a5
+msgid ""
+"The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
+"the same. Only the third qualifier (patch level) may deviate from that of"
+" **MuPDF**."
+msgstr ""
+
+#: ../../footer.rst:-1 29505b8af3da40eda1190aeaab46fcba
+msgid "Discord logo"
+msgstr ""
+

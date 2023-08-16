@@ -1,0 +1,985 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../font.rst:7 0f1b068035ed4e80a8b08e4138c58a02
+msgid "Font"
+msgstr ""
+
+#: ../../font.rst:9 3ad49886f9fa49e88de00b1b8113305c
+msgid "New in v1.16.18"
+msgstr ""
+
+#: ../../font.rst:11 40410699a1f5479fbb006049eb97632a
+msgid ""
+"This class represents a font as defined in MuPDF (*fz_font_s* structure)."
+" It is required for the new class :ref:`TextWriter` and the new "
+":meth:`Page.write_text`. Currently, it has no connection to how fonts are"
+" used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`,"
+" respectively."
+msgstr ""
+
+#: ../../font.rst:13 b8731678ee164e05949f9282d1b0cba0
+msgid ""
+"A Font object also contains useful general information, like the font "
+"bbox, the number of defined glyphs, glyph names or the bbox of a single "
+"glyph."
+msgstr ""
+
+#: ../../font.rst:17 8c372f61c735472ba072be07ef58806d
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../font.rst:17 f4df5393edbc4b2b844b4fe5be99562b
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../font.rst:19 88ca96bb87d54ebdbdd9e88dda2e5220
+msgid ":meth:`~Font.glyph_advance`"
+msgstr ""
+
+#: ../../font.rst:19 a4dcdcf98ef44a0584e8c98cc86036a6
+msgid "Width of a character"
+msgstr ""
+
+#: ../../font.rst:20 979846dbf28a456e96963b3de95069a2
+msgid ":meth:`~Font.glyph_bbox`"
+msgstr ""
+
+#: ../../font.rst:20 80e0f3af10134bdf971a12cfe6dde83b
+msgid "Glyph rectangle"
+msgstr ""
+
+#: ../../font.rst:21 10e2c69c04f04924952a83e09283f5ae
+msgid ":meth:`~Font.glyph_name_to_unicode`"
+msgstr ""
+
+#: ../../font.rst:21 ff60c4932aff4a9499633bd8584f82b4
+msgid "Get unicode from glyph name"
+msgstr ""
+
+#: ../../font.rst:22 c5f7131a75c34afe82745423b4370b57
+msgid ":meth:`~Font.has_glyph`"
+msgstr ""
+
+#: ../../font.rst:22 b9f700e3f032484791a128ab1d863b54
+msgid "Return glyph id of unicode"
+msgstr ""
+
+#: ../../font.rst:23 f8093fcb05424347b2e8cc8593ba3fc1
+msgid ":meth:`~Font.text_length`"
+msgstr ""
+
+#: ../../font.rst:23 692cbd5da86b4e0d9ee1f39d814c0e31
+msgid "Compute string length"
+msgstr ""
+
+#: ../../font.rst:24 b88cfa697b0f492f89ba54d43e57a1f6
+msgid ":meth:`~Font.char_lengths`"
+msgstr ""
+
+#: ../../font.rst:24 c186370155ad4486a2b1ae75548aa341
+msgid "Tuple of char widths of a string"
+msgstr ""
+
+#: ../../font.rst:25 1a32040a928343a497d10b19a11c29ea
+msgid ":meth:`~Font.unicode_to_glyph_name`"
+msgstr ""
+
+#: ../../font.rst:25 ed9691a792bd486994ae32e75e2e60e9
+msgid "Get glyph name of a unicode"
+msgstr ""
+
+#: ../../font.rst:26 6377149545f042a68844869404620a2e
+msgid ":meth:`~Font.valid_codepoints`"
+msgstr ""
+
+#: ../../font.rst:26 c1f01268064d4e95b141c730fdbd7880
+msgid "Array of supported unicodes"
+msgstr ""
+
+#: ../../font.rst:27 3137cfab26f24dcb90efa49d5e630c95
+msgid ":attr:`~Font.ascender`"
+msgstr ""
+
+#: ../../font.rst:27 5103705aef6340a593b01e1dd294db8b
+msgid "Font ascender"
+msgstr ""
+
+#: ../../font.rst:28 b061fab57bbe40a181f956fea315b5b7
+msgid ":attr:`~Font.descender`"
+msgstr ""
+
+#: ../../font.rst:28 5c3ae9cf49ab4356a46f5c379c82f06a
+msgid "Font descender"
+msgstr ""
+
+#: ../../font.rst:29 d5001e7c18434b6eab4f1755081fb2c5
+msgid ":attr:`~Font.bbox`"
+msgstr ""
+
+#: ../../font.rst:29 835d29fe56cd4ddc83a06c032718bee9
+msgid "Font rectangle"
+msgstr ""
+
+#: ../../font.rst:30 5904b1e195e64ee8b831990ce3250f8f
+msgid ":attr:`~Font.buffer`"
+msgstr ""
+
+#: ../../font.rst:30 89abb82a22dd40c281dabe71b883fcdc
+msgid "Copy of the font's binary image"
+msgstr ""
+
+#: ../../font.rst:31 934b2096d3644f6989bab533538a464d
+msgid ":attr:`~Font.flags`"
+msgstr ""
+
+#: ../../font.rst:31 f4d995a95ec7451489f93e7582aa9974
+msgid "Collection of font properties"
+msgstr ""
+
+#: ../../font.rst:32 3b87d1ec4cdb4f9d87a120007e778092
+msgid ":attr:`~Font.glyph_count`"
+msgstr ""
+
+#: ../../font.rst:32 ffbd95ab7f36417186e41d39ad581ea7
+msgid "Number of supported glyphs"
+msgstr ""
+
+#: ../../font.rst:33 802e7afcc7db424ba07a07d65b3da4bb
+msgid ":attr:`~Font.name`"
+msgstr ""
+
+#: ../../font.rst:33 c404eb0ac0b54068816491e8899ffb3d
+msgid "Name of font"
+msgstr ""
+
+#: ../../font.rst:34 91d6fd040121448db45fb5c7c77f4313
+msgid ":attr:`~Font.is_writable`"
+msgstr ""
+
+#: ../../font.rst:34 d49c8017949f442eba9e92472e938509
+msgid "Font usable with :ref:`TextWriter`"
+msgstr ""
+
+#: ../../font.rst:38 f4688449eee340b6a676ef04e2b7b18d
+msgid "**Class API**"
+msgstr ""
+
+#: ../../font.rst:57 846a333d20134d10a49445b3dbba60ba
+msgid ""
+"Font constructor. The large number of parameters are used to locate font,"
+" which most closely resembles the requirements. Not all parameters are "
+"ever required -- see the below pseudo code explaining the logic how the "
+"parameters are evaluated."
+msgstr ""
+
+#: ../../font.rst 0472bf34c6834d61a9530433f4387580
+#: 339894c0d901480bb2f04742f636cf1c 69b3f8833eec4826884b8040d8ae3dd5
+#: 82ff9bcb4f784979b8ec01ab2a906ce8 b3776e6a1d834d81b034bd5833caf31b
+#: c535ca3e6e624c2983d63730597f611a e6c0dfd3280945ff8768249ff29d21d8
+#: ecab34f6badc46e494bd9be9e15b15e6
+msgid "Parameters"
+msgstr ""
+
+#: ../../font.rst:59 41afeca058eb4b3d825f699ff45b9eb1
+msgid ""
+"one of the :ref:`Base-14-Fonts` or CJK fontnames. Also possible are a "
+"select few other names like (watch the correct spelling): \"Arial\", "
+"\"Times\", \"Times Roman\".  *(Changed in v1.17.5)*  If you have "
+"installed `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_, "
+"there are also new \"reserved\" fontnames available, which are listed in "
+":attr:`fitz_fonts` and in the table further down."
+msgstr ""
+
+#: ../../font.rst:59 aa085906edf24e6ea2f6c675261f1976
+msgid ""
+"one of the :ref:`Base-14-Fonts` or CJK fontnames. Also possible are a "
+"select few other names like (watch the correct spelling): \"Arial\", "
+"\"Times\", \"Times Roman\"."
+msgstr ""
+
+#: ../../font.rst:61 c794afde364643889598b61c8415ea3a
+msgid "*(Changed in v1.17.5)*"
+msgstr ""
+
+#: ../../font.rst:63 da4f12e2eeda4918b287bbe642a68f92
+msgid ""
+"If you have installed `pymupdf-fonts <https://pypi.org/project/pymupdf-"
+"fonts/>`_, there are also new \"reserved\" fontnames available, which are"
+" listed in :attr:`fitz_fonts` and in the table further down."
+msgstr ""
+
+#: ../../font.rst:65 72b64bbea53c4266aac868abd5b5382a
+msgid "the filename of a fontfile somewhere on your system [#f1]_."
+msgstr ""
+
+#: ../../font.rst:66 6abfb7b9849d45f995ce7eb671e7b8a4
+msgid "a fontfile loaded in memory [#f1]_."
+msgstr ""
+
+#: ../../font.rst:67 4190de2ace024fbfb287fc7dd0618d84
+msgid ""
+"the number of a UCDN script. Currently supported in PyMuPDF are numbers "
+"24, and 32 through 35."
+msgstr ""
+
+#: ../../font.rst:68 0b1ba2bbc9e84ea89664d79f7b64af79
+msgid ""
+"one of the values \"zh-Hant\" (traditional Chinese), \"zh-Hans\" "
+"(simplified Chinese), \"ja\" (Japanese) and \"ko\" (Korean). Otherwise, "
+"all ISO 639 codes from the subsets 1, 2, 3 and 5 are also possible, but "
+"are currently documentary only."
+msgstr ""
+
+#: ../../font.rst:69 4860964f65ce46eb9615e551b942e68a
+msgid "an alternative selector for one of the CJK fonts."
+msgstr ""
+
+#: ../../font.rst:70 eb69a3d27b25455a8cdff438fa09d908
+msgid "look for a bold font."
+msgstr ""
+
+#: ../../font.rst:71 5609c81bf55042158b048cce2370e772
+msgid "look for an italic font."
+msgstr ""
+
+#: ../../font.rst:72 d3db35f96e3f4402beff440f873189bd
+msgid "look for a serifed font."
+msgstr ""
+
+#: ../../font.rst 0edd74de27a54a449fba6e0e64936e5a
+#: 11e38f40091d4ff89bf59dbe3bdb2e30 3bc84e333b8c4be596ab09b6d0baaffe
+#: 442bb72cdff54aac9b582abd0275c2fd 5a35293121c84b85b363c59a71a7a34a
+#: 5b72d138d6f74981a6f0f9186f8748ab 71027cdac9544617be965c745149b2eb
+#: 8931de80073443adb2f15493c3a84396 9f2579c073114e589f708287c52759e5
+msgid "Returns"
+msgstr ""
+
+#: ../../font.rst:74 ec169d820ed44f44af6ea896c8540e38
+msgid ""
+"a MuPDF font if successful. This is the overall sequence of checks to "
+"determine an appropriate font:  =========== "
+"============================================================ Argument    "
+"Action =========== "
+"============================================================ fontfile?   "
+"Create font from file, exception if failure. fontbuffer? Create font from"
+" buffer, exception if failure. ordering>=0 Create universal font, always "
+"succeeds. fontname?   Create a Base-14 font, universal font, or font"
+"             provided by `pymupdf-fonts <https://pypi.org/project"
+"/pymupdf-fonts/>`_. See table below. =========== "
+"============================================================"
+msgstr ""
+
+#: ../../font.rst:74 41a3b430829243cea599bae70ce1b8e5
+msgid ""
+"a MuPDF font if successful. This is the overall sequence of checks to "
+"determine an appropriate font:"
+msgstr ""
+
+#: ../../font.rst:77 a19f23e053fd4e54a741c77f34b0ab27
+msgid "Argument"
+msgstr ""
+
+#: ../../font.rst:77 ebb1c92ad5744be8bead1a59f6fad344
+msgid "Action"
+msgstr ""
+
+#: ../../font.rst:79 16b5aa042fd84e8fbab447be377e1ee9
+msgid "fontfile?"
+msgstr ""
+
+#: ../../font.rst:79 e13da5d8301e4533b2b010d80f98e432
+msgid "Create font from file, exception if failure."
+msgstr ""
+
+#: ../../font.rst:80 1569af6b8aaf458084499cf509af288a
+msgid "fontbuffer?"
+msgstr ""
+
+#: ../../font.rst:80 72aaf4dd282d4f758c2cb43783bd4303
+msgid "Create font from buffer, exception if failure."
+msgstr ""
+
+#: ../../font.rst:81 6ba827d7f1844988892b78aec69ea78e
+msgid "ordering>=0"
+msgstr ""
+
+#: ../../font.rst:81 3af3e8ec83f84a2e8d63e475fe8a4a92
+msgid "Create universal font, always succeeds."
+msgstr ""
+
+#: ../../font.rst:82 19610fb7449e42c3a8abed404c69b787
+msgid "fontname?"
+msgstr ""
+
+#: ../../font.rst:82 3e8fcb305b164b1b9b995f48ffdb471e
+msgid ""
+"Create a Base-14 font, universal font, or font provided by `pymupdf-fonts"
+" <https://pypi.org/project/pymupdf-fonts/>`_. See table below."
+msgstr ""
+
+#: ../../font.rst:89 7932fe926a664922baee088c95c4513e
+msgid ""
+"With the usual reserved names \"helv\", \"tiro\", etc., you will create "
+"fonts with the expected names \"Helvetica\", \"Times-Roman\" and so on. "
+"**However**, and in contrast to :meth:`Page.insert_font` and friends,"
+msgstr ""
+
+#: ../../font.rst:91 03fbf6c2f7f646418d6432dbea98a283
+msgid "a font file will **always** be embedded in your PDF,"
+msgstr ""
+
+#: ../../font.rst:92 add2657a4b54402fbb12204e5e0a6d50
+msgid ""
+"Greek and Cyrillic characters are supported without needing the "
+"*encoding* parameter."
+msgstr ""
+
+#: ../../font.rst:94 1fe49d11e7d947dd94bcf3ebdd912981
+msgid ""
+"Using *ordering >= 0*, or fontnames \"cjk\", \"china-t\", \"china-s\", "
+"\"japan\" or \"korea\" will **always create the same \"universal\"** font"
+" **\"Droid Sans Fallback Regular\"**. This font supports **all Chinese, "
+"Japanese, Korean and Latin characters**, including Greek and Cyrillic. "
+"This is a sans-serif font."
+msgstr ""
+
+#: ../../font.rst:96 21ad45638a8b4eb5ae7f87a3aea252f0
+msgid ""
+"Actually, you would rarely ever need another sans-serif font than "
+"**\"Droid Sans Fallback Regular\"**. **Except** that this font file is "
+"relatively large and adds about 1.65 MB (compressed) to your PDF file "
+"size. If you do not need CJK support, stick with specifying \"helv\", "
+"\"tiro\" etc., and you will get away with about 35 KB compressed."
+msgstr ""
+
+#: ../../font.rst:98 5f7ba24ec0344fa895d361d02264ca33
+msgid ""
+"If you **know** you have a mixture of CJK and Latin text, consider just "
+"using `Font(\"cjk\")` because this supports everything and also "
+"significantly (by a factor of up to three) speeds up execution: MuPDF "
+"will always find any character in this single font and never needs to "
+"check fallbacks."
+msgstr ""
+
+#: ../../font.rst:100 f74eace960384ea09b3ec1c850d59479
+msgid ""
+"But if you do use some other font, you will still automatically be able "
+"to also write CJK characters: MuPDF detects this situation and silently "
+"falls back to the universal font (which will then of course also be "
+"embedded in your PDF)."
+msgstr ""
+
+#: ../../font.rst:102 0ca62477b9eb4aaeb498a1e6b625af5d
+msgid ""
+"*(New in v1.17.5)* Optionally, some new \"reserved\" fontname codes "
+"become available if you install `pymupdf-fonts <https://pypi.org/project"
+"/pymupdf-fonts/>`_, `pip install pymupdf-fonts`. **\"Fira Mono\"** is a "
+"mono-spaced sans font set and **FiraGO** is another non-serifed "
+"\"universal\" font set which supports all Latin (including Cyrillic and "
+"Greek) plus Thai, Arabian, Hewbrew and Devanagari -- but none of the CJK "
+"languages. The size of a FiraGO font is only a quarter of the \"Droid "
+"Sans Fallback\" size (compressed 400 KB vs. 1.65 MB) -- **and** it "
+"provides the weights bold, italic, bold-italic -- which the universal "
+"font doesn't."
+msgstr ""
+
+#: ../../font.rst:104 b810a959710b40bf84865f695dda0053
+msgid ""
+"**\"Space Mono\"** is another nice and small mono-spaced font from Google"
+" Fonts, which supports Latin Extended characters and comes with all 4 "
+"important weights."
+msgstr ""
+
+#: ../../font.rst:106 bbb78352c0124b0c93987cc9f310c1a6
+msgid ""
+"The following table maps a fontname code to the corresponding font. For "
+"the current content of the package please see its documentation:"
+msgstr ""
+
+#: ../../font.rst:109 6da6cd8c39bf467e87aa484b95737323
+msgid "Code"
+msgstr ""
+
+#: ../../font.rst:109 a5f700ce67424d81a2d390de5fa3b8c3
+msgid "Fontname"
+msgstr ""
+
+#: ../../font.rst:109 9599eba8d6624fe9af6e3aae3d64542c
+msgid "New in"
+msgstr ""
+
+#: ../../font.rst:109 247c4be0fd224e2c93b0b1708dfa49ca
+msgid "Comment"
+msgstr ""
+
+#: ../../font.rst:111 ed91d6b492a2448c8074cf8326806e30
+msgid "figo"
+msgstr ""
+
+#: ../../font.rst:111 05d13b253cb0451fb04099af9fe19b02
+msgid "FiraGO Regular"
+msgstr ""
+
+#: ../../font.rst:111 ../../font.rst:112 ../../font.rst:113 ../../font.rst:114
+#: ../../font.rst:115 ../../font.rst:116 1a0413570add4f7ebc4cfbc5b4c326d3
+#: 2749fdc30e3343fa8c641b995c9c23ce 38584f80e4854307a5e56b68b7928017
+#: 6cb88e2cc42d42ba833a45d6a5fe24b3 e6c8773c2d734ce591019eacf27e3753
+#: f7d0196f64d643d5a4a0a5db9d2264d1
+msgid "v1.0.0"
+msgstr ""
+
+#: ../../font.rst:111 67ace3b4124e4ba0a6a191fdfe586b75
+msgid "narrower than Helvetica"
+msgstr ""
+
+#: ../../font.rst:112 d9c2a21b037142148a23709c7030e769
+msgid "figbo"
+msgstr ""
+
+#: ../../font.rst:112 9cb1bfb909104c94b7199e14504ee756
+msgid "FiraGO Bold"
+msgstr ""
+
+#: ../../font.rst:113 13d28d65156b430da227fdcd656b1a6c
+msgid "figit"
+msgstr ""
+
+#: ../../font.rst:113 0395e71c1dcb4307b9dfd768f562cf7e
+msgid "FiraGO Italic"
+msgstr ""
+
+#: ../../font.rst:114 fef946249727433b91c9bc526beedb42
+msgid "figbi"
+msgstr ""
+
+#: ../../font.rst:114 4fed419b930c4953a78133aedb133ce3
+msgid "FiraGO Bold Italic"
+msgstr ""
+
+#: ../../font.rst:115 736c344e44ba436d9a21284f57a39662
+msgid "fimo"
+msgstr ""
+
+#: ../../font.rst:115 697f55a5ae4a42b68c5b4026949a04ae
+msgid "Fira Mono Regular"
+msgstr ""
+
+#: ../../font.rst:116 638b3ada9c9248ca8cd3e1392fa04f97
+msgid "fimbo"
+msgstr ""
+
+#: ../../font.rst:116 5e32301a4aa44d01ad07b13694410121
+msgid "Fira Mono Bold"
+msgstr ""
+
+#: ../../font.rst:117 e2235fe36b1a4ffba175fd452f098fe2
+msgid "spacemo"
+msgstr ""
+
+#: ../../font.rst:117 23451c895d6a47f7b80df16f8fe5e703
+msgid "Space Mono Regular"
+msgstr ""
+
+#: ../../font.rst:117 ../../font.rst:118 ../../font.rst:119 ../../font.rst:120
+#: 00ca8b1b51e14808a8098276c8f06c96 261f2d4739764bae96eed4a5e9b65753
+#: 2b507c98e404484e9b73fd0ee74f61ca 5962e3cd183e4383b9d6da2bae742b76
+msgid "v1.0.1"
+msgstr ""
+
+#: ../../font.rst:118 c97ab9913ced4673af00d8ab96d86445
+msgid "spacembo"
+msgstr ""
+
+#: ../../font.rst:118 4751a7fe53d54bd7a913a5dfd73eafd8
+msgid "Space Mono Bold"
+msgstr ""
+
+#: ../../font.rst:119 2ecb762ffa2d4381bad0af46d64452df
+msgid "spacemit"
+msgstr ""
+
+#: ../../font.rst:119 c3c897634cd04a67a094a2b383562c10
+msgid "Space Mono Italic"
+msgstr ""
+
+#: ../../font.rst:120 d9fdbd010e2b413aaaf7b8fb24df689a
+msgid "spacembi"
+msgstr ""
+
+#: ../../font.rst:120 2214e116e2724dd686248ebe72cf0d4d
+msgid "Space Mono Bold-Italic"
+msgstr ""
+
+#: ../../font.rst:121 5200b2f7204347cba7a21a32bd7ed118
+msgid "math"
+msgstr ""
+
+#: ../../font.rst:121 a2a38749cfc64a3183c0fd7612fa08d7
+msgid "Noto Sans Math Regular"
+msgstr ""
+
+#: ../../font.rst:121 ../../font.rst:122 ../../font.rst:123 ../../font.rst:124
+#: 15ff98597151449d816b45b809de6a91 813a0e7743144f2eb539696f322172f5
+#: 9be92d6d16614d70a51fc58928aba348 d257c4684e374fa7b0955403f88347e1
+msgid "v1.0.2"
+msgstr ""
+
+#: ../../font.rst:121 4da5f262ea704269b09f2dd1cc389fbe
+msgid "math symbols"
+msgstr ""
+
+#: ../../font.rst:122 af4851df30884125ac35415b3a29e769
+msgid "music"
+msgstr ""
+
+#: ../../font.rst:122 61e8619e4dc44ffd8098d36943c1e3ff
+msgid "Noto Music Regular"
+msgstr ""
+
+#: ../../font.rst:122 e293939433844b1ba06099330f6a2f58
+msgid "musical symbols"
+msgstr ""
+
+#: ../../font.rst:123 605763008ad34180b1337fdcfdde1d10
+msgid "symbol1"
+msgstr ""
+
+#: ../../font.rst:123 2283004c6f4543ac92239c84be4eb1e8
+msgid "Noto Sans Symbols Regular"
+msgstr ""
+
+#: ../../font.rst:123 77893a7cfa4341e7b4763caa74a47fc4
+msgid "replacement for \"symb\""
+msgstr ""
+
+#: ../../font.rst:124 cdabdffe349b4409a96815353d5f086a
+msgid "symbol2"
+msgstr ""
+
+#: ../../font.rst:124 a28c00922df14a878afabc465fdd89d3
+msgid "Noto Sans Symbols2 Regular"
+msgstr ""
+
+#: ../../font.rst:124 45b6c66e1188478cb500f0c159502d67
+msgid "extended symbol set"
+msgstr ""
+
+#: ../../font.rst:125 aadc3b1747b041dc8cec726fee63b2c9
+msgid "notos"
+msgstr ""
+
+#: ../../font.rst:125 8c62f22dac2f46b586649eb55eef97e7
+msgid "Noto Sans Regular"
+msgstr ""
+
+#: ../../font.rst:125 ../../font.rst:126 ../../font.rst:127 ../../font.rst:128
+#: 70458ff7a57c4ddd90007e3583126473 82fb1080aa7344da9091b195c0db6338
+#: c5edf1c06ddf496bab45827541f2654a ded54d35c71248faa610cee308891ff6
+msgid "v1.0.3"
+msgstr ""
+
+#: ../../font.rst:125 2e66932b417d453c860ff5cad53423ab
+msgid "alternative to Helvetica"
+msgstr ""
+
+#: ../../font.rst:126 f3ee29df2d92492b9583655c8536b63a
+msgid "notosit"
+msgstr ""
+
+#: ../../font.rst:126 cf05937edf4843169a31de5f8271dc4a
+msgid "Noto Sans Italic"
+msgstr ""
+
+#: ../../font.rst:127 91f4be00627e4f0baafd7c36cf2e236b
+msgid "notosbo"
+msgstr ""
+
+#: ../../font.rst:127 f74dfb6af0c74138aed76209bfc037c7
+msgid "Noto Sans Bold"
+msgstr ""
+
+#: ../../font.rst:128 b030c7497bb043ae8e5f6064095ef094
+msgid "notosbi"
+msgstr ""
+
+#: ../../font.rst:128 206bfb38eee642be839af587ef345664
+msgid "Noto Sans BoldItalic"
+msgstr ""
+
+#: ../../font.rst:138 4e288e23a60a48b6a39274690d6418e2
+msgid ""
+"Check whether the unicode *chr* exists in the font or (option) some "
+"fallback font. May be used to check whether any \"TOFU\" symbols will "
+"appear on output."
+msgstr ""
+
+#: ../../font.rst:140 ffa3e9079c974165accbfb18463d6891
+msgid "the unicode of the character (i.e. *ord()*)."
+msgstr ""
+
+#: ../../font.rst:141 cff97c5373484ea59809fa75e7f0312f
+msgid "the language -- currently unused."
+msgstr ""
+
+#: ../../font.rst:142 146f430a6ef7437aafd375274e885110
+msgid "the UCDN script number."
+msgstr ""
+
+#: ../../font.rst:143 d42b27a0d3a549e7be21a3e0305119ec
+msgid ""
+"*(new in v1.17.5)* perform an extended search in fallback fonts or "
+"restrict to current font (default)."
+msgstr ""
+
+#: ../../font.rst:144 3cb57fc277aa4ec9bc1785d047d26dae
+msgid "*(changed in 1.17.7)* the glyph number. Zero indicates no glyph found."
+msgstr ""
+
+#: ../../font.rst:148 5bf903c54a91412e8ead4ee0777f5a90
+msgid "New in v1.17.5"
+msgstr ""
+
+#: ../../font.rst:150 26e3760936ff4f7d83cee7756c16d159
+msgid "Return an array of unicodes supported by this font."
+msgstr ""
+
+#: ../../font.rst:152 b3297d400fdf46c9a7b3cd1ec17a0c3c
+#, python-format
+msgid ""
+"an *array.array* [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. "
+"*chr()* of every item in this array has a glyph in the font without using"
+" fallbacks. This is an example display of the supported glyphs:  >>> "
+"import fitz >>> font = fitz.Font(\"math\") >>> vuc = "
+"font.valid_codepoints() >>> for i in vuc:       print(\"%04X %s (%s)\" % "
+"(i, chr(i), font.unicode_to_glyph_name(i))) 0000 000D   (CR) 0020   "
+"(space) 0021 ! (exclam) 0022 \" (quotedbl) 0023 # (numbersign) 0024 $ "
+"(dollar) 0025 % (percent) ... 00AC ¬ (logicalnot) 00B1 ± (plusminus) ... "
+"21D0 ⇐ (arrowdblleft) 21D1 ⇑ (arrowdblup) 21D2 ⇒ (arrowdblright) 21D3 ⇓ "
+"(arrowdbldown) 21D4 ⇔ (arrowdblboth) ... 221E ∞ (infinity) ..."
+msgstr ""
+
+#: ../../font.rst:152 6b02cafc3ca74e259884268f95445855
+msgid ""
+"an *array.array* [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. "
+"*chr()* of every item in this array has a glyph in the font without using"
+" fallbacks. This is an example display of the supported glyphs:"
+msgstr ""
+
+#: ../../font.rst:180 268a72e3f5ee4bebab20c0bedf532d85
+msgid ""
+"This method only returns meaningful data for fonts having a CMAP "
+"(character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array"
+" will have length 1 and contain zero only."
+msgstr ""
+
+#: ../../font.rst:189 e968deab9e5346318605f5058c9f431c
+msgid "Calculate the \"width\" of the character's glyph (visual representation)."
+msgstr ""
+
+#: ../../font.rst:191 af3767b4a1dd4c44a8b18e1613ceeafa
+msgid ""
+"the unicode number of the character. Use *ord()*, not the character "
+"itself. Again, this should normally work even if a character is not "
+"supported by that font, because fallback fonts will be checked where "
+"necessary."
+msgstr ""
+
+#: ../../font.rst:192 75dfa97a57f24aad8bc2d7bb789adf04
+msgid "write mode, 0 = horizontal, 1 = vertical."
+msgstr ""
+
+#: ../../font.rst:194 9910bf2a31254defa7fec83bcab24ca2
+msgid "The other parameters are not in use currently."
+msgstr ""
+
+#: ../../font.rst:196 979861ecd1c240ba89646763eb1398f7
+msgid "a float representing the glyph's width relative to **fontsize 1**."
+msgstr ""
+
+#: ../../font.rst:200 03dc7eb3c471401b940e0402c47e70e5
+msgid ""
+"Return the unicode value for a given glyph name. Use it in conjunction "
+"with `chr()` if you want to output e.g. a certain symbol."
+msgstr ""
+
+#: ../../font.rst:202 82bb20f132ac411ebaa61ffa29aa7309
+msgid "The name of the glyph."
+msgstr ""
+
+#: ../../font.rst:204 e631b0d42ffc4121a6d42d63a1c87260
+msgid ""
+"The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: "
+"`font.glyph_name_to_unicode(\"Sigma\") = 931`, "
+"`font.glyph_name_to_unicode(\"sigma\") = 963`. Refer to the `Adobe Glyph "
+"List <https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names "
+"and their unicode numbers. Example:  >>> font = fitz.Font(\"helv\") >>> "
+"font.has_glyph(font.glyph_name_to_unicode(\"infinity\")) True"
+msgstr ""
+
+#: ../../font.rst:204 d395b932e89e4aafac25bbdac15ac96d
+msgid ""
+"The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: "
+"`font.glyph_name_to_unicode(\"Sigma\") = 931`, "
+"`font.glyph_name_to_unicode(\"sigma\") = 963`. Refer to the `Adobe Glyph "
+"List <https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names "
+"and their unicode numbers. Example:"
+msgstr ""
+
+#: ../../font.rst:216 01841d9d54c6440b86da4dd61134c34e
+msgid "The glyph rectangle relative to fontsize 1."
+msgstr ""
+
+#: ../../font.rst:218 23e9e39445d04e7e9fcc2458d9d39436
+msgid "*ord()* of the character."
+msgstr ""
+
+#: ../../font.rst:220 e1bc1b1f021b4cc4b1419bd93713402b
+msgid "a :ref:`Rect`."
+msgstr ""
+
+#: ../../font.rst:225 ecd256061ffb45c5b3cd6890e14cde04
+msgid "Show the name of the character's glyph."
+msgstr ""
+
+#: ../../font.rst:227 d6e51f1ad9f34a63971a6d2d190433b6
+msgid ""
+"the unicode number of the character. Use *ord()*, not the character "
+"itself."
+msgstr ""
+
+#: ../../font.rst:229 772649e5005e4e46a4d7fdd52497cd45
+msgid ""
+"a string representing the glyph's name. E.g. `font.glyph_name(ord(\"#\"))"
+" = \"numbersign\"`. For an invalid code \".notfound\" is returned.  .. "
+"note:: *(Changed in v1.18.0)* This method and "
+":meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead"
+" retrieve information from the **Adobe Glyph List**. Also available as "
+"`fitz.unicode_to_glyph_name()` and resp. `fitz.glyph_name_to_unicode()`."
+msgstr ""
+
+#: ../../font.rst:229 a7387dc2d4884668aea612c41e3db343
+msgid ""
+"a string representing the glyph's name. E.g. `font.glyph_name(ord(\"#\"))"
+" = \"numbersign\"`. For an invalid code \".notfound\" is returned."
+msgstr ""
+
+#: ../../font.rst:231 37611262109b409dba31063936edcc41
+msgid ""
+"*(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode`"
+" no longer depend on a font and instead retrieve information from the "
+"**Adobe Glyph List**. Also available as `fitz.unicode_to_glyph_name()` "
+"and resp. `fitz.glyph_name_to_unicode()`."
+msgstr ""
+
+#: ../../font.rst:238 9295dc25b2f944e8b5a2a5674e29ed51
+msgid "Calculate the length in points of a unicode string."
+msgstr ""
+
+#: ../../font.rst:240 6c519a7146684090a7860088ca670236
+msgid ""
+"There is a functional overlap with :meth:`get_text_length` for Base-14 "
+"fonts only."
+msgstr ""
+
+#: ../../font.rst:242 ../../font.rst:266 92eead0f598e48d1b3c8e6b3c7065dd4
+#: 93bafdbaec9349109ad70759b45319e3
+msgid "a text string, UTF-8 encoded."
+msgstr ""
+
+#: ../../font.rst:244 ../../font.rst:268 a6dcc6c9b347456591be94f9afe41fb6
+#: cbdf315acd4e429693e8790b1e2c7ca6
+msgid "the fontsize."
+msgstr ""
+
+#: ../../font.rst 0ef94501afc34963afd3cd1a7ef48682
+#: 12f0d213d48541e9aae8534d297bd2f5 17c3fd2042d940e3a5d41c178172ccac
+#: 5b6b0ffaae404e95a4a0c3a0cc73ffa6 9122f7f4bb074a049623d9939d62f23d
+#: 9a1de1fa0a95456581f63adfa4cf22c8 c33f1059940648a79e2e67937bdd9bb1
+#: dc756d21a3de4b9587c41cfeb752925a f6c5823e31954b009e6e8a63843aef19
+#: fb34a14b8a374cd2bc3519f8f469668d
+msgid "Return type"
+msgstr ""
+
+#: ../../font.rst:248 67ee1ae9e561434eba9dd38f37efb498
+msgid ""
+"the length of the string in points when stored in the PDF. If a character"
+" is not contained in the font, it will automatically be looked up in a "
+"fallback font.  .. note:: This method was originally implemented in "
+"Python, based on calling :meth:`Font.glyph_advance`. For performance "
+"reasons, it has been rewritten in C for v1.18.14. To compute the width of"
+" a single character, you can now use either of the following without "
+"performance penalty:     1. `font.glyph_advance(ord(\"Ä\")) * fontsize`"
+"    2. `font.text_length(\"Ä\", fontsize=fontsize)`     For multi-"
+"character strings, the method offers a huge performance advantage "
+"compared to the previous implementation: instead of about 0.5 "
+"microseconds for each character, only 12.5 nanoseconds are required for "
+"the second and subsequent ones."
+msgstr ""
+
+#: ../../font.rst:248 2f8a789591c5454bb6287393b42e173b
+msgid ""
+"the length of the string in points when stored in the PDF. If a character"
+" is not contained in the font, it will automatically be looked up in a "
+"fallback font."
+msgstr ""
+
+#: ../../font.rst:250 e5dff0ff8564455285ca279e35848c43
+msgid ""
+"This method was originally implemented in Python, based on calling "
+":meth:`Font.glyph_advance`. For performance reasons, it has been "
+"rewritten in C for v1.18.14. To compute the width of a single character, "
+"you can now use either of the following without performance penalty:"
+msgstr ""
+
+#: ../../font.rst:252 20f2bb793d474646a681824b80e01c33
+msgid "`font.glyph_advance(ord(\"Ä\")) * fontsize`"
+msgstr ""
+
+#: ../../font.rst:253 4cce4280c4c347e3b284093dcaac9118
+msgid "`font.text_length(\"Ä\", fontsize=fontsize)`"
+msgstr ""
+
+#: ../../font.rst:255 f812cc5c11c24e88933cb328c0a041e7
+msgid ""
+"For multi-character strings, the method offers a huge performance "
+"advantage compared to the previous implementation: instead of about 0.5 "
+"microseconds for each character, only 12.5 nanoseconds are required for "
+"the second and subsequent ones."
+msgstr ""
+
+#: ../../font.rst:262 57f6363d83ee4506ab99166c87d8a5de
+msgid "*New in v1.18.14*"
+msgstr ""
+
+#: ../../font.rst:264 4e10f79271964e99bec8aa2584097b66
+msgid "Sequence of character lengths in points of a unicode string."
+msgstr ""
+
+#: ../../font.rst:272 bca913adbd2b4608b33672ee47e805f9
+msgid ""
+"the lengths in points of the characters of a string when stored in the "
+"PDF. It works like :meth:`Font.text_length` broken down to single "
+"characters. This is a high speed method, used e.g. in "
+":meth:`TextWriter.fill_textbox`. The following is true (allowing rounding"
+" errors): `font.text_length(text) == sum(font.char_lengths(text))`.  >>> "
+"font = fitz.Font(\"helv\") >>> text = \"PyMuPDF\" >>> "
+"font.text_length(text) 50.115999937057495 >>> fitz.get_text_length(text, "
+"fontname=\"helv\") 50.115999937057495 >>> sum(font.char_lengths(text)) "
+"50.115999937057495 >>> pprint(font.char_lengths(text)) "
+"(7.336999952793121,  # P 5.5,                 # y 9.163000047206879,   # "
+"M 6.115999937057495,   # u 7.336999952793121,   # P 7.942000031471252,   "
+"# D 6.721000015735626)   # F"
+msgstr ""
+
+#: ../../font.rst:272 66b4b12087484b67bbc59165e2587ab3
+msgid ""
+"the lengths in points of the characters of a string when stored in the "
+"PDF. It works like :meth:`Font.text_length` broken down to single "
+"characters. This is a high speed method, used e.g. in "
+":meth:`TextWriter.fill_textbox`. The following is true (allowing rounding"
+" errors): `font.text_length(text) == sum(font.char_lengths(text))`."
+msgstr ""
+
+#: ../../font.rst:294 b9df4ca22c9b46f1876abb3d39bdd72a
+msgid "New in v1.17.6"
+msgstr ""
+
+#: ../../font.rst:296 fd1df5d1ee3d4f17aa30c38d3088f0e5
+msgid "Copy of the binary font file content."
+msgstr ""
+
+#: ../../font.rst:302 6ba599d561624a9f9488c1bbcc64dc6f
+msgid ""
+"A dictionary with various font properties, each represented as bools. "
+"Example for Helvetica::"
+msgstr ""
+
+#: ../../font.rst:322 e8cebffad3854e98bc633b49f3b3b6b6
+msgid "Name of the font. May be \"\" or \"(null)\"."
+msgstr ""
+
+#: ../../font.rst:326 6cd4b80eba8b4308810cdf575e01b2f5
+msgid "The font bbox. This is the maximum of its glyph bboxes."
+msgstr ""
+
+#: ../../font.rst:328 f2af08eec3314c87959c8b9eb3c0a5cb
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../font.rst:334 a41a3d21cd6e4be79ab947ef7d01310e
+msgid "The number of glyphs defined in the font."
+msgstr ""
+
+#: ../../font.rst:338 ../../font.rst:346 ../../font.rst:354
+#: 19e23c4f9b814e218e0acb157f329b02 269c9ce76cca40ccb5c407c68e6681dd
+#: 9ed73f1637d74a79b9ad76b569d21316
+msgid "New in v1.18.0"
+msgstr ""
+
+#: ../../font.rst:340 1e0c9b621992440f91baa84b94d64785
+msgid ""
+"The ascender value of the font, see `here "
+"<https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details. "
+"Please note that there is a difference to the strict definition: our "
+"value includes everything above the baseline -- not just the height "
+"difference between upper case \"A\" and and lower case \"a\"."
+msgstr ""
+
+#: ../../font.rst:348 8683bf7932284c2cbf2232edfb85f5d2
+msgid ""
+"The descender value of the font, see `here "
+"<https://en.wikipedia.org/wiki/Descender>`_ for details. This value "
+"always is negative and is the portion that some glyphs descend below the "
+"base line, for example \"g\" or \"y\". As a consequence, the value "
+"`ascender - descender` is the total height, that every glyph of the font "
+"fits into. This is true at least for most fonts -- as always, there are "
+"exceptions, especially for calligraphic fonts, etc."
+msgstr ""
+
+#: ../../font.rst:356 167e00196d734682aaa043da874c452f
+msgid "Indicates whether this font can be used with :ref:`TextWriter`."
+msgstr ""
+
+#: ../../font.rst:361 80f665343e0e4ed3b1a56a9f5985fa96
+msgid "Footnotes"
+msgstr ""
+
+#: ../../font.rst:362 89601d36d49c4d66af2cc0b1dfe35699
+msgid ""
+"MuPDF does not support all fontfiles with this feature and will raise "
+"exceptions like *\"mupdf: FT_New_Memory_Face((null)): unknown file "
+"format\"*, if it encounters issues. The :ref:`TextWriter` methods check "
+":attr:`Font.is_writable`."
+msgstr ""
+
+#: ../../font.rst:364 6d18c2769ab14c96915aa2886e679884
+msgid ""
+"The built-in module *array* has been chosen for its speed and its compact"
+" representation of values."
+msgstr ""
+
+#: ../../footer.rst:-1 70caca08324041d3b8b9462ebb6811b3
+msgid "Discord logo"
+msgstr ""
+

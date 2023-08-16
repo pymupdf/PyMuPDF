@@ -1,0 +1,376 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../glossary.rst:7 e19f31fe1a1343318ba2195fde4cf473
+msgid "Glossary"
+msgstr ""
+
+#: ../../glossary.rst:11 559ebcfc3a584ee29b53da3adb2bcd7a
+msgid "A Python sequence of 6 numbers."
+msgstr ""
+
+#: ../../glossary.rst:15 a764aa3382144299a0e6403cca4782c7
+msgid "A Python sequence of 4 numbers."
+msgstr ""
+
+#: ../../glossary.rst:19 fd3fd3b9ac3c4e4aab74229818267b31
+msgid "A Python sequence of 4 integers."
+msgstr ""
+
+#: ../../glossary.rst:23 396e5d30e34f4da99da27a5201477013
+msgid "A Python sequence of 2 numbers."
+msgstr ""
+
+#: ../../glossary.rst:27 91ae268aee014865994a9fbbc247432a
+msgid "A Python sequence of 4 :data:`point_like` items."
+msgstr ""
+
+#: ../../glossary.rst:31 7e7e41ff6b68497fbaea6a0926c1a571
+msgid ""
+"A number of values in a PDF can inherited by objects further down in a "
+"parent-child relationship. The mediabox (physical size) of pages may for "
+"example be specified only once or in some node(s) of the :data:`pagetree`"
+" and will then be taken as value for all *kids*, that do not specify "
+"their own value."
+msgstr ""
+
+#: ../../glossary.rst:37 c886e4417d5246afa984847fafd04b47
+msgid ""
+"A PDF array of 4 floats specifying a physical page size -- "
+"(:data:`inheritable`, mandatory). This rectangle should contain all other"
+" PDF  -- optional -- page rectangles, which may be specified in addition:"
+" CropBox, TrimBox, ArtBox and BleedBox. Please consult :ref:`AdobeManual`"
+" for details. The MediaBox is the only rectangle, for which there is no "
+"difference between MuPDF and PDF coordinate systems: "
+":attr:`Page.mediabox` will always show the same coordinates as the "
+"`/MediaBox` key in a page's object definition. For all other rectangles, "
+"MuPDF transforms y coordinates such that the **top** border is the point "
+"of reference. This can sometimes be confusing -- you may for example "
+"encounter a situation like this one:"
+msgstr ""
+
+#: ../../glossary.rst:39 46b64285bfbe4542983ef35a86bed18f
+msgid ""
+"The page definition contains the following identical values: `/MediaBox ["
+" 36 45 607.5 765 ]`, `/CropBox [ 36 45 607.5 765 ]`."
+msgstr ""
+
+#: ../../glossary.rst:40 d013449fe88e4136b688824e1b9bc095
+msgid ""
+"PyMuPDF accordingly shows `page.mediabox = Rect(36.0, 45.0, 607.5, "
+"765.0)`."
+msgstr ""
+
+#: ../../glossary.rst:41 187965af7da04cef902ee744f775c55d
+msgid ""
+"**BUT:** `page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)`, because the two "
+"y-coordinates have been transformed (45 subtracted from both of them)."
+msgstr ""
+
+#: ../../glossary.rst:45 8c465657863242219ad7e4eb6d263c00
+msgid ""
+"A PDF array of 4 floats specifying a page's visible area -- "
+"(:data:`inheritable`, optional). It is the default for TrimBox, ArtBox "
+"and BleedBox. If not present, it defaults to MediaBox. This value is "
+"**not affected** if the page is rotated -- in contrast to "
+":attr:`Page.rect`. Also, other than the page rectangle, the top-left "
+"corner of the cropbox may or may not be *(0, 0)*."
+msgstr ""
+
+#: ../../glossary.rst:50 fac77678829c4900bb6fe73d866f8a9a
+msgid ""
+"A central PDF :data:`dictionary` -- also called the \"root\" -- "
+"containing document-wide parameters and pointers to many other "
+"information. Its :data:`xref` is returned by "
+":meth:`Document.pdf_catalog`."
+msgstr ""
+
+#: ../../glossary.rst:54 b769fdd49acc4f3096bd05b6105ef88d
+msgid ""
+"More precisely, the **PDF trailer** contains information in "
+":data:`dictionary` format. It is usually located at the file's end. In "
+"this dictionary, you will find things like the xrefs of the catalog and "
+"the metadata, the number of :data:`xref` numbers, etc. Here is the "
+"definition of the PDF spec:"
+msgstr ""
+
+#: ../../glossary.rst:56 bff2e60a5bf746bcaa06dab4f283730c
+msgid ""
+"*\"The trailer of a PDF file enables an application reading the file to "
+"quickly find the cross-reference table and certain special objects. "
+"Applications should read a PDF file from its end.\"*"
+msgstr ""
+
+#: ../../glossary.rst:58 450984c6af1740c89061451bfa486632
+msgid ""
+"To access the trailer in PyMuPDF, use the usual methods "
+":meth:`Document.xref_object`, :meth:`Document.xref_get_key` and "
+":meth:`Document.xref_get_keys` with `-1` instead of a positive xref "
+"number."
+msgstr ""
+
+#: ../../glossary.rst:62 27e9d54aac8442b3a607020ce04855ab
+msgid ""
+"A **content stream** is a PDF :data:`object` with an attached "
+":data:`stream`, whose data consists of a sequence of instructions "
+"describing the graphical elements to be painted on a page, see \"Stream "
+"Objects\" on page 19 of :ref:`AdobeManual`. For an overview of the mini-"
+"language used in these streams, see chapter \"Operator Summary\" on page "
+"643 of the :ref:`AdobeManual`. A PDF :data:`page` can have none to many "
+"contents objects. If it has none, the page is empty (but still may show "
+"annotations). If it has several, they will be interpreted in sequence as "
+"if their instructions had been present in one such object (i.e. like in a"
+" concatenated string). It should be noted that there are more stream "
+"object types which use the same syntax: e.g. appearance dictionaries "
+"associated with annotations and Form XObjects."
+msgstr ""
+
+#: ../../glossary.rst:64 5307e714162f441086b60a415ea0263c
+msgid "PyMuPDF provides a number of methods to deal with contents of PDF pages:"
+msgstr ""
+
+#: ../../glossary.rst:66 6bebc7d2da1d406b9223f7a1ccad20b2
+msgid ""
+":meth:`Page.read_contents()` -- reads and concatenates all page contents "
+"into one `bytes` object."
+msgstr ""
+
+#: ../../glossary.rst:67 6d370f100fe4469888fcae21846e90af
+msgid ""
+":meth:`Page.clean_contents()` -- a wrapper of a MuPDF function that "
+"reads, concatenates and syntax-cleans all page contents. After this, only"
+" one `/Contents` object will exist. In addition, page :data:`resources` "
+"will have been synchronized with it such that it will contain exactly "
+"those images, fonts and other objects that the page actually references."
+msgstr ""
+
+#: ../../glossary.rst:68 05cacbd9772e4a05af59a23c8ec92bb9
+msgid ""
+":meth:`Page.get_contents()` -- return a list of :data:`xref` numbers of a"
+" page's :data:`contents` objects. May be empty. Use "
+":meth:`Document.xref_stream()` with one of these xrefs to read the resp. "
+"contents section."
+msgstr ""
+
+#: ../../glossary.rst:69 45dc7c92a6044cceb4c848b18f005358
+msgid ""
+":meth:`Page.set_contents()` -- set a page's `/Contents` key to the "
+"provided :data:`xref` number."
+msgstr ""
+
+#: ../../glossary.rst:73 43e7eb91ddf349a9a28a5a6080f2f7f4
+msgid ""
+"A :data:`dictionary` containing references to any resources (like images "
+"or fonts) required by a PDF :data:`page` (required, inheritable, "
+":ref:`AdobeManual` p. 81) and certain other objects (Form XObjects). This"
+" dictionary appears as a sub-dictionary in the object definition under "
+"the key */Resources*. Being an inheritable object type, there may exist "
+"\"parent\" resources for all pages or certain subsets of pages."
+msgstr ""
+
+#: ../../glossary.rst:77 81f00399bf23449db9d9bd4a02bded95
+msgid ""
+"A PDF :data:`object` type, which is somewhat comparable to the same-named"
+" Python notion: \"A dictionary object is an associative table containing "
+"pairs of objects, known as the dictionary's entries. The first element of"
+" each entry is the key and the second element is the value. The key must "
+"be a name (...). The value can be any kind of object, including another "
+"dictionary. A dictionary entry whose value is null (...) is equivalent to"
+" an absent entry.\" (:ref:`AdobeManual` p. 18)."
+msgstr ""
+
+#: ../../glossary.rst:79 32b02b2c6e6142a0a235926821c0ac1d
+msgid ""
+"Dictionaries are the most important :data:`object` type in PDF. Here is "
+"an example (describing a :data:`page`)::"
+msgstr ""
+
+#: ../../glossary.rst:98 5934c25880aa441aabc7f68ba90e5ad1
+msgid ""
+"*Contents*, *Type*, *MediaBox*, etc. are **keys**, *40 0 R*, *Page*, *[0 "
+"0 595.32 841.92]*, etc. are the respective **values**. The strings "
+"*\"<<\"* and *\">>\"* are used to enclose object definitions."
+msgstr ""
+
+#: ../../glossary.rst:100 4e49b2ebc4e84d28b4921cd1d2515d5a
+msgid ""
+"This example also shows the syntax of **nested** dictionary values: "
+"*Resources* has an object as its value, which in turn is a dictionary "
+"with keys like *ExtGState* (with the value *<</R7 26 0 R>>*, which is "
+"another dictionary), etc."
+msgstr ""
+
+#: ../../glossary.rst:104 f2da80c94c6a4a15b8cff1612cb9665d
+msgid ""
+"A PDF page is a :data:`dictionary` object which defines one page in a "
+"PDF, see :ref:`AdobeManual` p. 71."
+msgstr ""
+
+#: ../../glossary.rst:108 83b04c5507e34a5ca8168c2c9d0baa48
+msgid ""
+"The pages of a document are accessed through a structure known as the "
+"page tree, which defines the ordering of pages in the document. The tree "
+"structure allows PDF consumer applications, using only limited memory, to"
+" quickly open a document containing thousands of pages. The tree contains"
+" nodes of two types: intermediate nodes, called page tree nodes, and leaf"
+" nodes, called page objects. (:ref:`AdobeManual` p. 75)."
+msgstr ""
+
+#: ../../glossary.rst:110 058a874a15384ccabc02f48b1fbcc082
+msgid ""
+"While it is possible to list all page references in just one array, PDFs "
+"with many pages are often created using *balanced tree* structures "
+"(\"page trees\") for faster access to any single page. In relation to the"
+" total number of pages, this can reduce the average page access time by "
+"page number from a linear to some logarithmic order of magnitude."
+msgstr ""
+
+#: ../../glossary.rst:112 790ee2dc242545b886f55659551b585f
+msgid ""
+"For fast page access, MuPDF can use its own array in memory -- "
+"independently from what may or may not be present in the document file. "
+"This array is indexed by page number and therefore much faster than even "
+"the access via a perfectly balanced page tree."
+msgstr ""
+
+#: ../../glossary.rst:116 3d7683cfd5264a2a899a40e01ed457e9
+msgid ""
+"Similar to Python, PDF supports the notion *object*, which can come in "
+"eight basic types: boolean values (\"true\" or \"false\"), integer and "
+"real numbers, strings (**always** enclosed in brackets -- either \"()\", "
+"or \"<>\" to indicate hexadecimal), names (must always start with a "
+"\"/\", e.g. `/Contents`), arrays (enclosed in brackets \"[]\"), "
+"dictionaries (enclosed in brackets \"<<>>\"), streams (enclosed by "
+"keywords \"stream\" / \"endstream\"), and the null object (\"null\") "
+"(:ref:`AdobeManual` p. 13). Objects can be made identifiable by assigning"
+" a label. This label is then called *indirect* object. PyMuPDF supports "
+"retrieving definitions of indirect objects via their cross reference "
+"number via :meth:`Document.xref_object`."
+msgstr ""
+
+#: ../../glossary.rst:120 88f9019142c4408f976381366ddb056f
+msgid ""
+"A PDF :data:`dictionary` :data:`object` type which is followed by a "
+"sequence of bytes, similar to Python *bytes*. \"However, a PDF "
+"application can read a stream incrementally, while a string must be read "
+"in its entirety. Furthermore, a stream can be of unlimited length, "
+"whereas a string is subject to an implementation limit. For this reason, "
+"objects with potentially large amounts of data, such as images and page "
+"descriptions, are represented as streams.\" \"A stream consists of a "
+":data:`dictionary` followed by zero or more bytes bracketed between the "
+"keywords *stream* and *endstream*\"::"
+msgstr ""
+
+#: ../../glossary.rst:131 7db7c44a77f5445da5a37eac3cc06c13
+msgid ""
+"See :ref:`AdobeManual` p. 19. PyMuPDF supports retrieving stream content "
+"via :meth:`Document.xref_stream`. Use :meth:`Document.is_stream` to "
+"determine whether an object is of stream type."
+msgstr ""
+
+#: ../../glossary.rst:135 4a4fa168219840dbacb59e8cec87b707
+msgid ""
+"A mathematical notion meaning a vector of norm (\"length\") 1 -- usually "
+"the Euclidean norm is implied. In PyMuPDF, this term is restricted to "
+":ref:`Point` objects, see :attr:`Point.unit`."
+msgstr ""
+
+#: ../../glossary.rst:139 b0aaa51cb53645a1b9faf7b47c3ce286
+msgid ""
+"Abbreviation for cross-reference number: this is an integer unique "
+"identification for objects in a PDF. There exists a cross-reference table"
+" (which may physically consist of several separate segments) in each PDF,"
+" which stores the relative position of each object for quick lookup. The "
+"cross-reference table is one entry longer than the number of existing "
+"object: item zero is reserved and must not be used in any way. Many "
+"PyMuPDF classes have an *xref* attribute (which is zero for non-PDFs), "
+"and one can find out the total number of objects in a PDF via "
+":meth:`Document.xref_length` *- 1*."
+msgstr ""
+
+#: ../../glossary.rst:143 bbb8c82242d547f3ae9edd391f06113f
+msgid ""
+"Images and :ref:`Pixmap` objects may contain resolution information "
+"provided as \"dots per inch\", dpi, in each direction (horizontal and "
+"vertical). When MuPDF reads an image from a file or from a PDF object, it"
+" will parse this information and put it in :attr:`Pixmap.xres`, "
+":attr:`Pixmap.yres`, respectively. If it finds no meaningful information "
+"in the input (like non-positive values or values exceeding 4800), it will"
+" use \"sane\" defaults instead. The usual default value is 96, but it may"
+" also be 72 in some cases (e.g. for JPX images)."
+msgstr ""
+
+#: ../../glossary.rst:147 9f2372feee4748c49bab853e337a0a0b
+msgid ""
+"Optional content properties dictionary - a sub :data:`dictionary` of the "
+"PDF :data:`catalog`. The central place to store optional content "
+"information, which is identified by the key `/OCProperties`. This "
+"dictionary has two required and one optional entry: (1) `/OCGs`, "
+"required, an array listing all optional content groups, (2) `/D`, "
+"required, the default optional content configuration dictionary (OCCD), "
+"(3) `/Configs`, optional, an array of alternative OCCDs."
+msgstr ""
+
+#: ../../glossary.rst:152 7f4f160f17b14e5fafc83959ebf74d03
+msgid ""
+"Optional content configuration dictionary - a PDF :data:`dictionary` "
+"inside the PDF :data:`OCPD`. It stores a setting of ON / OFF states of "
+"OCGs and how they are presented to a PDF viewer program. Selecting a "
+"configuration is quick way to achieve temporary mass visibility state "
+"changes. After opening a PDF, the `/D` configuration of the :data:`OCPD` "
+"is always activated. Viewer should offer a way to switch between the "
+"`/D`, or one of the optional configurations contained in array "
+"`/Configs`."
+msgstr ""
+
+#: ../../glossary.rst:157 a14b68c194f54194bd364b22e1ee2f0d
+msgid ""
+"Optional content group -- a :data:`dictionary` object used to control the"
+" visibility of other PDF objects like images or annotations. "
+"Independently on which page they are defined, objects with the same OCG "
+"can simultaneously be shown or hidden by setting their OCG to ON or OFF. "
+"This can be achieved via the user interface provided by many PDF viewers "
+"(Adobe Acrobat), or programmatically."
+msgstr ""
+
+#: ../../glossary.rst:161 c08a6898a74240be9ccdaa3386f0ea57
+msgid ""
+"Optional content membership dictionary -- a :data:`dictionary` object "
+"which can be used like an :data:`OCG`: it has a visibility state. The "
+"visibility of an OCMD is **computed:** it is a logical expression, which "
+"uses the state of one or more OCGs to produce a boolean value. The "
+"expression's result is interpreted as ON (true) or OFF (false)."
+msgstr ""
+
+#: ../../glossary.rst:165 360ef640063b4c8284c80368d2913c1e
+msgid ""
+"Some frequent character combinations are represented by their own special"
+" glyphs in more advanced fonts. Typical examples are \"fi\", \"fl\", "
+"\"ffi\" and \"ffl\". These compounds are called *ligatures*. In PyMuPDF "
+"text extractions, there is the option to either return the corresponding "
+"unicode unchanged, or split ligatures up into their constituent parts: "
+"\"fi\" ==> \"f\" + \"i\", etc."
+msgstr ""
+
+#: ../../footer.rst:-1 7db73cbfb26d489a86e4f33044582fc4
+msgid "Discord logo"
+msgstr ""
+

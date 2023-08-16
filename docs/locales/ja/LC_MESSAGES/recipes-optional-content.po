@@ -1,0 +1,176 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../recipes-optional-content.rst:7 0a2ebcb1d8dd4929bc6a7bab9e328d20
+msgid "Optional Content Support"
+msgstr ""
+
+#: ../../recipes-optional-content.rst:9 e8d13546904a43798d1684867934d1fe
+msgid ""
+"This document explains PyMuPDF's support of the PDF concept **\"Optional "
+"Content\"**."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:12 9e83bcfacacf4fd6866cb3e296cb2506
+msgid "Introduction: The Optional Content Concept"
+msgstr ""
+
+#: ../../recipes-optional-content.rst:13 a61165d1b6234dd798a42adcc7997feb
+msgid ""
+"*Optional Content* in PDF is a way to show or hide parts of a document "
+"based on certain conditions: Parameters that can be set to ON or to OFF "
+"when using a supporting PDF consumer (viewer), or programmatically."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:15 6778d30c70b84214a70aa39de3c45f82
+msgid ""
+"This capability is useful in items such as CAD drawings, layered artwork,"
+" maps, and multi-language documents. Typical uses include showing or "
+"hiding details of complex vector graphics like geographical maps, "
+"technical devices, architectural designs and similar, including "
+"automatically switching between different zooming levels. Other use cases"
+" may be to automatically show different detail levels when displaying a "
+"document on screen as opposed to printing it."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:17 240857aa9aa643ba98408d062734036e
+msgid ""
+"Special PDF objects, so-called **Optional Content Groups** (OCGs) are "
+"used to define these different *layers* of content."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:19 f37418abc0ae4ede8d74c9ce0d70ffe0
+msgid ""
+"Assigning an OCG to a \"normal\" PDF object (like a text or an image) "
+"causes that object to be visible or hidden, depending on the current "
+"state of the assigned OCG."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:21 14925cc738fe4be3a316af47bb1362cc
+msgid ""
+"To ease definition of the overall configuration of a PDF's Optional "
+"Content, OCGs can be organized in higher level groupings, called **OC "
+"Configurations**. Each configuration being a collection of OCGs, together"
+" with each OCG's desired initial visibility state. Selecting one of these"
+" configurations (via the PDF viewer or programmatically) causes a "
+"corresponding visibility change of all affected PDF objects throughout "
+"the document."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:23 c371955523ef4a5c94ba3728c8238388
+msgid "Except for the default one, OC Configurations are optional."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:25 6df952cbba124f249c2c149882fd65bf
+msgid ""
+"For more explanations and additional background please refer to PDF "
+"specification manuals."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:28 601b3d28a96746cbb86236b6ce714002
+msgid "PyMuPDF Support for PDF Optional Content"
+msgstr ""
+
+#: ../../recipes-optional-content.rst:29 e8ef216bcfba4ee39b7e3165c4b084f7
+msgid ""
+"PyMuPDF offers full support for viewing, defining, changing and deleting "
+"Option Content Groups, Configurations, maintaining the assignment of OCGs"
+" to PDF objects and programmatically switching between OC Configurations "
+"and the visibility states of each single OCG."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:32 65bdb7b422de445abfee6361ee158947
+msgid "How to Add Optional Content"
+msgstr ""
+
+#: ../../recipes-optional-content.rst:33 d239261fbbed4f8b8b74aecfb5cb1df6
+msgid ""
+"This is as simple as adding an Optional Content Group, OCG, to a PDF: "
+":meth:`Document.add_ocg`."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:35 5c962eafc8054b83a3f9fa1d25f8ae75
+msgid ""
+"If previously the PDF had no OC support at all, the required setup (like "
+"defining the default OC Configuration) will be done at this point "
+"automatically."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:37 69183952bf9e40ef821b0261ed879143
+msgid ""
+"The method returns an :data:`xref` of the created OCG. Use this xref to "
+"associate (mark) any PDF object with it, that you want to make dependent "
+"on this OCG's state. For example, you can insert an image on a page and "
+"refer to the xref like this::"
+msgstr ""
+
+#: ../../recipes-optional-content.rst:41 985cdb24d5414a538bffa837f761ed6b
+msgid ""
+"If you want to put an **existing** image under the control of an OCG, you"
+" must first find out the image's xref number (called `img_xref` here) and"
+" then do `doc.set_oc(img_xref, xref)`. After this, the image will be "
+"(in-) visible everywhere throughout the document if the OCG's state is "
+"\"ON\", respectively \"OFF\". You can also assign a different OCG with "
+"this method."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:43 eea3800d885b4bc5808e9bd861947b90
+msgid "To **remove** an OCG from an image, do `doc.set_oc(img_xref, 0)`."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:45 86ce7d5f3561482382bebb96e87ce802
+msgid ""
+"One single OCG can be assigned to mutiple PDF objects to control their "
+"visibility."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:48 b3c3de4f1cf540ac9cec0ca4ec8f42ba
+msgid "How to Define Complex Optional Content Conditions"
+msgstr ""
+
+#: ../../recipes-optional-content.rst:50 2543d16742ab43b9823e0d087fb0c0f9
+msgid ""
+"Sophisticated logical conditions can be established to address complex "
+"visibility needs."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:52 4112ff01c8924de5a6f0d3a6fb3a4ac2
+msgid ""
+"For example, you might want to create a multi-language document, so the "
+"user may switch between languages as required."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:54 f55ad21e47834314bdd1d63a8bdd0a26
+msgid "Please have a look at `this Jupyter Notebook`_ and execute it as desired."
+msgstr ""
+
+#: ../../recipes-optional-content.rst:56 6959334a835a44a29beafc76a3256764
+msgid ""
+"Certainly, your requirements may even be more complex and involve "
+"multiple OCGs with ON/OFF states that are connected by some kind of "
+"logical relationship -- but it should give you an impression of what is "
+"possible and how to plan your next steps."
+msgstr ""
+
+#: ../../footer.rst:-1 66fed95c5d5046788ab03114ba13b75c
+msgid "Discord logo"
+msgstr ""
+
