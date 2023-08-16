@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../device.rst:7 c189461a93df47a0853fc092ed3cd89e
+msgid "Device"
+msgstr ""
+
+#: ../../device.rst:9 53e79f7d22de463d80f37e5713836ce7
+msgid ""
+"The different format handlers (pdf, xps, etc.) interpret pages to a "
+"\"device\". Devices are the basis for everything that can be done with a "
+"page: rendering, text extraction and searching. The device type is "
+"determined by the selected construction method."
+msgstr ""
+
+#: ../../device.rst:11 811b18f2fa0c4b49882f644216bc62a0
+msgid "**Class API**"
+msgstr ""
+
+#: ../../device.rst:17 aba3421c101a4e7895df4c38794f66c2
+msgid "Constructor for either a pixel map or a display list device."
+msgstr ""
+
+#: ../../device.rst a3415dca6bff4161a1ae6b19e61041df
+#: fd2950cf92e14a1f8bdab281119845c5
+msgid "Parameters"
+msgstr ""
+
+#: ../../device.rst:19 685d643540694929b5fb2e38f8216233
+msgid "either a *Pixmap* or  a *DisplayList*."
+msgstr ""
+
+#: ../../device.rst:22 f7d008f7366d4c958e5fd59065ba6da0
+msgid ""
+"An optional `IRect` for *Pixmap* devices to restrict rendering to a "
+"certain area of the page. If the complete page is required, specify "
+"*None*. For display list devices, this parameter must be omitted."
+msgstr ""
+
+#: ../../device.rst:27 165f2279bc934243b9d014af4b778acd
+msgid "Constructor for a text page device."
+msgstr ""
+
+#: ../../device.rst:29 df0ddba5473142e5bd34faa70b4b4c18
+msgid "*TextPage* object"
+msgstr ""
+
+#: ../../device.rst:32 d327607bc40a41249519ce7095fad412
+msgid ""
+"control the way how text is parsed into the text page. Currently 3 "
+"options can be coded into this parameter, see :ref:`TextPreserve`. To set"
+" these options use something like *flags=0 | TEXT_PRESERVE_LIGATURES | "
+"...*."
+msgstr ""
+
+#: ../../footer.rst:-1 c555ef9f3233499382e52037ad11f668
+msgid "Discord logo"
+msgstr ""
+

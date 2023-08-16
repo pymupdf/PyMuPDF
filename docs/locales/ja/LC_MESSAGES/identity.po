@@ -1,0 +1,48 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../identity.rst:7 731350c4f90143b1ab99d9ed8e733fef
+msgid "Identity"
+msgstr ""
+
+#: ../../identity.rst:9 377835523213419e91cacbc487b265ba
+msgid ""
+"Identity is a :ref:`Matrix` that performs no action -- to be used "
+"whenever the syntax requires a matrix, but no actual transformation "
+"should take place. It has the form *fitz.Matrix(1, 0, 0, 1, 0, 0)*."
+msgstr ""
+
+#: ../../identity.rst:11 84a53943990a473188714f3e97e30c9b
+msgid ""
+"Identity is a constant, an \"immutable\" object. So, all of its matrix "
+"properties are read-only and its methods are disabled."
+msgstr ""
+
+#: ../../identity.rst:13 d57e330a9e19498f93aaf87d32a3d11c
+msgid ""
+"If you need a **mutable** identity matrix as a starting point, use one of"
+" the following statements::"
+msgstr ""
+
+#: ../../footer.rst:-1 bcfcfa3a1a7c4be0a2c41349e995917b
+msgid "Discord logo"
+msgstr ""
+

@@ -1,0 +1,155 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../coop_low.rst:7 f010bbfde5024d8687d4eace83cdb620
+msgid "Working together: DisplayList and TextPage"
+msgstr ""
+
+#: ../../coop_low.rst:8 bf2e76c384454b07a67fa752eda82566
+msgid "Here are some instructions on how to use these classes together."
+msgstr ""
+
+#: ../../coop_low.rst:10 1e5f60e1680747b390a3643e526d3fec
+msgid ""
+"In some situations, performance improvements may be achievable, when you "
+"fall back to the detail level explained here."
+msgstr ""
+
+#: ../../coop_low.rst:13 f10a7386b8aa489cb8f3adb4f99b32fb
+msgid "Create a DisplayList"
+msgstr ""
+
+#: ../../coop_low.rst:14 d7cb4799d99e4d1298a8bac1faa1d95d
+msgid ""
+"A :ref:`DisplayList` represents an interpreted document page. Methods for"
+" pixmap creation, text extraction and text search are  -- behind the "
+"curtain -- all using the page's display list to perform their tasks. If a"
+" page must be rendered several times (e.g. because of changed zoom "
+"levels), or if text search and text extraction should both be performed, "
+"overhead can be saved, if the display list is created only once and then "
+"used for all other tasks."
+msgstr ""
+
+#: ../../coop_low.rst:18 05f56b4999824f3488fdcb992556f8e2
+msgid ""
+"You can also create display lists for many pages \"on stack\" (in a "
+"list), may be during document open, during idling times, or you store it "
+"when a page is visited for the first time (e.g. in GUI scripts)."
+msgstr ""
+
+#: ../../coop_low.rst:20 c2e75af6a8b840009ad7ebf2155e077b
+msgid ""
+"Note, that for everything what follows, only the display list is needed "
+"-- the corresponding :ref:`Page` object could have been deleted."
+msgstr ""
+
+#: ../../coop_low.rst:23 36089181da8b4fdd80ddd7446f24f0a6
+msgid "Generate Pixmap"
+msgstr ""
+
+#: ../../coop_low.rst:24 f215ceccecd5464bbec11453cd447533
+msgid ""
+"The following creates a Pixmap from a :ref:`DisplayList`. Parameters are "
+"the same as for :meth:`Page.get_pixmap`."
+msgstr ""
+
+#: ../../coop_low.rst:28 56d1fbc3e97b431ba3987afe52ef949f
+#, python-format
+msgid ""
+"The execution time of this statement may be up to 50% shorter than that "
+"of :meth:`Page.get_pixmap`."
+msgstr ""
+
+#: ../../coop_low.rst:31 0fa331edb9c1460fb5a0b5b110db1ab8
+msgid "Perform Text Search"
+msgstr ""
+
+#: ../../coop_low.rst:32 52259158182246578ed80f54c8a3f771
+msgid "With the display list from above, we can also search for text."
+msgstr ""
+
+#: ../../coop_low.rst:34 a7c0f435697a4763806828a297ae7b0b
+msgid "For this we need to create a :ref:`TextPage`."
+msgstr ""
+
+#: ../../coop_low.rst:42 0d2cd997ff044e339e3a60b0732f22ea
+msgid "Extract Text"
+msgstr ""
+
+#: ../../coop_low.rst:43 234a416d209b4519aac3466b0ac9a3e3
+msgid ""
+"With the same :ref:`TextPage` object from above, we can now immediately "
+"use any or all of the 5 text extraction methods."
+msgstr ""
+
+#: ../../coop_low.rst:45 0527fd93197446069fb7a053ac9a9c8d
+msgid ""
+"Above, we have created our text page without argument. This leads to a "
+"default argument of 3 (:data:`ligatures` and white-space are preserved), "
+"IAW images will **not** be extracted -- see below."
+msgstr ""
+
+#: ../../coop_low.rst:54 83154e0055ae4523aeba2cc99a46a316
+msgid "Further Performance improvements"
+msgstr ""
+
+#: ../../coop_low.rst:56 516d5df410ef4d988195975727ce248d
+msgid "Pixmap"
+msgstr ""
+
+#: ../../coop_low.rst:57 8201bd00164d409db17c1b48798715d7
+msgid "As explained in the :ref:`Page` chapter:"
+msgstr ""
+
+#: ../../coop_low.rst:59 66280224d19f4202b4010a19363d4df5
+#, python-format
+msgid ""
+"If you do not need transparency set *alpha = 0* when creating pixmaps. "
+"This will save 25% memory (if RGB, the most common case) and possibly 5% "
+"execution time (depending on the GUI software)."
+msgstr ""
+
+#: ../../coop_low.rst:62 9d543c0e730448669ee824223684f6d0
+msgid "TextPage"
+msgstr ""
+
+#: ../../coop_low.rst:63 c076feaedf7046c88f223d3746df9129
+msgid ""
+"If you do not need images extracted alongside the text of a page, you can"
+" set the following option:"
+msgstr ""
+
+#: ../../coop_low.rst:68 6a3fee87a6054cc1b024534d6622bac0
+#, python-format
+msgid ""
+"This will save ca. 25% overall execution time for the HTML, XHTML and "
+"JSON text extractions and **hugely** reduce the amount of storage (both, "
+"memory and disk space) if the document is graphics oriented."
+msgstr ""
+
+#: ../../coop_low.rst:70 772340947d2e4b94be8ad3e7359b810f
+msgid "If you however do need images, use a value of 7 for flags:"
+msgstr ""
+
+#: ../../footer.rst:-1 1a95b894f50242898ce55e853a99756a
+msgid "Discord logo"
+msgstr ""
+

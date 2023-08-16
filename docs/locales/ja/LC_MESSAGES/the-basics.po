@@ -1,0 +1,669 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../the-basics.rst:8 d99474b08e9d4daf91fd5b6e65b88ef9
+msgid "The Basics"
+msgstr "基本"
+
+#: ../../the-basics.rst:13 547677209e264c668d1ce66612bc3fe1
+msgid "Supported File Types"
+msgstr "サポートされているファイルタイプ"
+
+#: ../../the-basics.rst:15 1333787e8f40421bb3bd33da7e84d816
+msgid ":title:`PyMuPDF` supports the following file types:"
+msgstr ":title:`PyMuPDF` は以下のファイルタイプをサポートしています："
+
+#: ../../the-basics.rst:151 d05a318a72824a6a87255d6c646e88b5
+msgid "Opening a File"
+msgstr "ファイルを開く"
+
+#: ../../the-basics.rst:154 d2331a7466454d60a22dc0ed095b6d56
+msgid "To open a file, do the following:"
+msgstr "ファイルを開くには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:168 274aa6e17a0a4aff885b1b6411def711
+msgid "Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`"
+msgstr "間違ったファイル拡張子でファイルを開く"
+
+#: ../../the-basics.rst:170 b10e3d6460ad4c8ea2cd724dda43009f
+msgid ""
+"If you have a document with a wrong file extension for its type, you can "
+"still correctly open it."
+msgstr ""
+"もしドキュメントのファイル拡張子がその種類に対して間違っていても、"
+"正しく開くことができます。"
+
+#: ../../the-basics.rst:172 35a5458f757d499a9fc8b592dbd410f1
+msgid "Assume that *\"some.file\"* is actually an XPS. Open it like so:"
+msgstr "*\"some.file\"* が実際にXPSファイルだと仮定して、以下のようにして開いてください："
+
+#: ../../the-basics.rst:188 ../../the-basics.rst:226 ../../the-basics.rst:277
+#: ../../the-basics.rst:336 ../../the-basics.rst:381 ../../the-basics.rst:423
+#: ../../the-basics.rst:526 ../../the-basics.rst:572 ../../the-basics.rst:625
+#: ../../the-basics.rst:721 ../../the-basics.rst:827 ../../the-basics.rst:891
+#: ../../the-basics.rst:1093 094e37ab72ad47eea71a3efe59800261
+#: 1102de5a8c06425fb5f4adad9fb0014b 371e654147c04993b024a6836102367b
+#: 7ab1ee9cbbd84fa5a2034a1a02d94972 9248e4f1b3b3493192d849b8f4619e01
+#: 9336e008ca884bcd837f84a2ec43a78c a90ade6ec4d94aacabf839db2903efea
+#: b47b4baed4a24d67968c2129682c10f3 b8b22c8f757843be856ebb66b973e867
+#: c2c6764e96ad454cb9c2d85a302c9262 cb4437b424a545a1814949a1b4bb856c
+#: eea3167449f943be9351ab834936e3a4 f5a41dbb5b79418e812a1534d07cacbf
+msgid "**Taking it further**"
+msgstr "**さらに進む**"
+
+#: ../../the-basics.rst:190 91284b1523224c9ca7cd117298209c5f
+msgid ""
+"There are many file types beyond :title:`PDF` which can be opened by "
+":title:`PyMuPDF`, for more details see the list of :ref:`supported file "
+"types<Supported_File_Types>`."
+msgstr ""
+"「PyMuPDF」で開くことができるのは、:title:`PDF` に限らず、多くのファイルタイプがあります。詳細については、:ref:`サポートされているファイルタイプのリスト<Supported_File_Types>` をご覧ください。"
+
+#: ../../the-basics.rst:192 2715e58bd035400da01745003ef8fc9b
+msgid ""
+":title:`PyMuPDF` itself does not try to determine the file type from the "
+"file contents. **You** are responsible for supplying the filetype info in"
+" some way -- either implicitly via the file extension, or explicitly as "
+"shown. There are pure :title:`Python` packages like `filetype "
+"<https://pypi.org/project/filetype/>`_ that help you doing this. Also "
+"consult the :ref:`Document` chapter for a full description."
+msgstr "PyMuPDF自体は、ファイルの内容からファイルタイプを判断しようとはしません。ファイルの拡張子などを通じて暗黙的に、または明示的にファイルタイプ情報を提供する責任があります。`filetype "
+"<https://pypi.org/project/filetype/>`_ などの純粋なPythonパッケージがこのような操作をサポートしています。また、詳細な説明についてはドキュメントの章を参照してください。"
+
+#: ../../the-basics.rst:194 ea10b57f99744caea4b85b9af6fd0d77
+msgid ""
+"If :title:`PyMuPDF` encounters a file with an unknown / missing "
+"extension, it will try to open it as a :title:`PDF`. So in these cases "
+"there is no need for additional precautions. Similarly, for memory "
+"documents, you can just specify `doc=fitz.open(stream=mem_area)` to open "
+"it as a :title:`PDF` document."
+msgstr ":title:`PyMuPDF` が不明な/欠落している拡張子のファイルに遭遇した場合、それをPDFとして開こうと試みます。したがって、これらの場合は追加の注意が必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=fitz.open(stream=mem_area)` と指定するだけでPDFドキュメントとして開くことができます。
+"
+
+#: ../../the-basics.rst:196 b7e78a12187f424c84decd7216f0ad84
+msgid ""
+"If you attempt to open an unsupported file then :title:`PyMuPDF` will "
+"throw a file data error."
+msgstr "サポートされていないファイルを開こうとした場合、PyMuPDFはファイルデータエラーをスローします。"
+
+#: ../../the-basics.rst:204 9394464938f146f2b8e393ebdbe22d00
+msgid "Extract text from a :title:`PDF`"
+msgstr ":title:`PDF` からテキストを抽出する"
+
+#: ../../the-basics.rst:206 23702d468819429ab9754e26a1da57d3
+msgid "To extract all the text from a :title:`PDF` file, do the following:"
+msgstr ":title:`PDF` ファイルからすべてのテキストを抽出するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:228 ../../the-basics.rst:279
+#: 53bdc9c7e5884eae88e9b1e220f13e89 c2a042d2aef943b2983ff915d25a1937
+msgid ""
+"There are many more examples which explain how to extract text from "
+"specific areas or how to extract tables from documents. Please refer to "
+"the :ref:`How to Guide for Text<RecipesText>`."
+msgstr "特定の領域からテキストを抽出する方法や、文書から表を抽出する方法など、さらに多くの例があります。テキストの方法ガイドを参照してください。"
+
+#: ../../the-basics.rst:230 ../../the-basics.rst:281 ../../the-basics.rst:345
+#: ../../the-basics.rst:387 ../../the-basics.rst:427 ../../the-basics.rst:459
+#: ../../the-basics.rst:489 ../../the-basics.rst:532 ../../the-basics.rst:576
+#: ../../the-basics.rst:632 ../../the-basics.rst:661 ../../the-basics.rst:692
+#: ../../the-basics.rst:794 ../../the-basics.rst:853 ../../the-basics.rst:895
+#: ../../the-basics.rst:963 ../../the-basics.rst:1025 ../../the-basics.rst:1105
+#: 169e6572e8c14756b621edbda2f5777d 2869972d7fae414691a69f49673a0c63
+#: 5d0a57e242a0490e94fab40a6763e952 76875aaae3f84b5cb1af8e282bf389a9
+#: 7725513d70c1413ba00015669652f488 7c6558e2d0d84476a0ff74aa838b3b84
+#: 8bbc05a399e543e18b0f78f6d49b7e71 93ce68059d5249e882c84b24397862af
+#: 965b8289442b4bf087a1a20ed673cd23 96624d0f387b42189f3c18c66f7c3a36
+#: a1d804566b9d4fb4b404a62f6a9353b8 bd1c54cb4aa14fc698389afad4ce87b8
+#: bd2b34ab555842b88e3155dda02033c1 c0706a3627904de0846591e03b9262d9
+#: c5c4b95a274e404ebe5da0bc2d69f4fb f42bfa738eb5424b8d4ab2d58af86791
+#: f515c44389aa4f91b01281cffafdb75a f5dc8ec9202241c8b96f6daef5cc7800
+msgid "**API reference**"
+msgstr "**APIリファレンス**"
+
+#: ../../the-basics.rst:232 a3cc47bbdee4488d8e5978466b80a143
+msgid ":meth:`Page.get_text`"
+msgstr ":meth:`Page.get_text`"
+
+#: ../../the-basics.rst:240 8d103299825141fb9650eb8a282961a4
+msgid "Extract images from a :title:`PDF`"
+msgstr ":title:`PDF` から画像を抽出する"
+
+#: ../../the-basics.rst:242 21c64e99c2f944b99dee2024a828831b
+msgid "To extract all the images from a :title:`PDF` file, do the following:"
+msgstr ":title:`PDF` すべての画像を抽出するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:283 463842ad4e4d4e6d8330f145a4dff9e5
+msgid ":meth:`Page.get_images`"
+msgstr ""
+
+#: ../../the-basics.rst:284 41eb56738b6b4cf89692ab3f345c8d65
+msgid ":ref:`Pixmap<Pixmap>`"
+msgstr ""
+
+#: ../../the-basics.rst:294 8432f1e74bb44752b5cbcad06a010ea8
+msgid "Merging :title:`PDF` files"
+msgstr ":title:`PDF` ファイルの結合"
+
+#: ../../the-basics.rst:296 3cb8a3888abd4edba1249c8d8cf87008
+msgid "To merge :title:`PDF` files, do the following:"
+msgstr ":title:`PDF` ファイルを結合するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:314 aa8b57baed404805a8f27216a8bad943
+msgid "Merging :title:`PDF` files with other types of file"
+msgstr ":title:`PDF` ァイルと他の種類のファイルを結合する"
+
+#: ../../the-basics.rst:316 01e1f212404046beb632adbff6951d69
+msgid ""
+"With :meth:`Document.insert_file` you can invoke the method to merge "
+":ref:`supported files<Supported_File_Types>` with :title:`PDF`. For "
+"example:"
+msgstr ":meth:`Document.insert_file` を使用すると、サポートされているファイルをPDFと結合するメソッドを呼び出すことができます。例えば："
+
+#: ../../the-basics.rst:338 4a86c2a681474300aece08091d2aec60
+msgid ""
+"It is easy to join PDFs with :meth:`Document.insert_pdf` & "
+":meth:`Document.insert_file`. Given open :title:`PDF` documents, you can "
+"copy page ranges from one to the other. You can select the point where "
+"the copied pages should be placed, you can revert the page sequence and "
+"also change page rotation. This Wiki `article "
+"<https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-"
+"PDFs>`_ contains a full description."
+msgstr ":meth:`Document.insert_pdf` と :meth:`Document.insert_file` を使用すれば、PDFを簡単に結合できます。開かれたPDF文書がある場合、片方のPDFから別のPDFへページの範囲をコピーすることができます。コピーされたページが配置される位置を選択することができ、ページの順序を元に戻すこともできます。さらに、ページの回転も変更することができます。詳細な説明はこの `Wiki <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ の記事に記載されています。"
+
+#: ../../the-basics.rst:340 baf4c632dfc84c3bb4e78b24173dff4e
+msgid ""
+"The GUI script `join.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/join-documents/join.py>`_ uses this method"
+" to join a list of files while also joining the respective table of "
+"contents segments. It looks like this:"
+msgstr "GUIスクリプト `join.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py>`_ では、この方法を使用してファイルのリストを結合し、それぞれの目次セグメントも結合します。スクリプトの見た目は以下のようになっています:"
+
+#: ../../the-basics.rst:347 49aaf7f83167419f9f64728ccc7254ae
+msgid ":meth:`Document.insert_pdf`"
+msgstr ""
+
+#: ../../the-basics.rst:348 3c4f48c5d0a341f09dbb17961c100681
+msgid ":meth:`Document.insert_file`"
+msgstr ""
+
+#: ../../the-basics.rst:357 05c05ae370574b24b4efc4b6320db5f0
+msgid "Adding a watermark to a :title:`PDF`"
+msgstr ":title:`PDF` ファイルにウォータマークを追加する方法"
+
+#: ../../the-basics.rst:359 da2ab9b94f8048dfb0d037c3abd1690f
+msgid "To add a watermark to a :title:`PDF` file, do the following:"
+msgstr ":title:`PDF` ファイルにウォータマークを追加するには、以下の手順を実行してください:"
+
+#: ../../the-basics.rst:383 28997c1a1b6a49ab96b762d794927fc6
+msgid ""
+"Adding watermarks is essentially as simple as adding an image at the base"
+" of each :title:`PDF` page. You should ensure that the image has the "
+"required opacity and aspect ratio to make it look the way you need it to."
+msgstr "ウォータマークを追加することは、基本的には各PDFページの底辺に画像を追加するだけです。画像が必要な透明度とアスペクト比を持っていることを確認して、必要な見た目になるようにします。"
+
+#: ../../the-basics.rst:385 3da3a9427a624d61986b6158f655dc6d
+msgid ""
+"In the example above a new image is created from each file reference, but"
+" to be more performant (by saving memory and file size) this image data "
+"should be referenced only once - see the code example and explanation on "
+":meth:`Page.insert_image` for the implemetation."
+msgstr "前述の例では、各ファイル参照から新しい画像が作成されていますが、メモリとファイルサイズを節約するために、この画像データは1回だけ参照されるようにすると、パフォーマンスが向上します - Page.insert_image()のコード例と説明を参照してください。"
+
+#: ../../the-basics.rst:389 de7dfefe24eb4f2d9ad8c989ca91d245
+msgid ":meth:`Page.bound`"
+msgstr ""
+
+#: ../../the-basics.rst:390 ../../the-basics.rst:430
+#: 473faf7549f243bcb5e937ad06209147 64b5253bfdba42058ba70760a77d8e07
+msgid ":meth:`Page.insert_image`"
+msgstr ""
+
+#: ../../the-basics.rst:399 1f53c91ebbfc478ca922cf5e5ed9284d
+msgid "Adding an image to a :title:`PDF`"
+msgstr ":title:`PDF` に画像を追加する"
+
+#: ../../the-basics.rst:401 b495a187f905411daae5a320b5c3506d
+msgid ""
+"To add an image to a :title:`PDF` file, for example a logo, do the "
+"following:"
+msgstr "PDFファイルに画像を追加するためには、例えばロゴを追加する場合、以下の手順を実行してください："
+
+#: ../../the-basics.rst:425 99b51742be9a4371a3a8cb60e87883c5
+msgid ""
+"As with the watermark example you should ensure to be more performant by "
+"only referencing the image once if possible - see the code example and "
+"explanation on :meth:`Page.insert_image`."
+msgstr "ウォータマークの例と同様に、できる限り画像を1回だけ参照することで、より効率的な処理を行うようにしてください。詳細は :meth:`Page.insert_image` のコード例と説明を参照してください。"
+
+#: ../../the-basics.rst:429 6f6a9c81b21f4ade9e231b79e54acbe1
+msgid ":ref:`Rect<Rect>`"
+msgstr ""
+
+#: ../../the-basics.rst:439 5efa7b8825164dc38a327c3c56bde91b
+msgid "Rotating a :title:`PDF`"
+msgstr ":title:`PDF` を回転させる"
+
+#: ../../the-basics.rst:441 f433eb4dd11f4eb197c10eed069c8ba9
+msgid "To add a rotation to a page, do the following:"
+msgstr "ページに回転を追加するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:461 13db8226e1bd40faab462c8540cac277
+msgid ":meth:`Page.set_rotation`"
+msgstr ""
+
+#: ../../the-basics.rst:469 887faf4992eb4ac6be534fdb861a359c
+msgid "Cropping a :title:`PDF`"
+msgstr ":title:`PDF` のトリミング"
+
+#: ../../the-basics.rst:471 089f109aedf0406b9438fb22809ad70f
+msgid "To crop a page to a defined :ref:`Rect<Rect>`, do the following:"
+msgstr "定義された矩形 :ref:`Rect<Rect>` にページをトリミングするには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:491 76565215447049f197b278307ac2a6a4
+msgid ":meth:`Page.set_cropbox`"
+msgstr ""
+
+#: ../../the-basics.rst:500 62fb5b3e95444514a66b3b808a9f93c5
+msgid ":index:`Attaching Files <triple: attach;embed;file>`"
+msgstr ":index:`ファイルの添付 <triple: attach;embed;file>`"
+
+#: ../../the-basics.rst:502 83dca5da233848f990e1864368d7831b
+msgid "To attach another file to a page, do the following:"
+msgstr "別のファイルをページに添付するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:528 b7ec891c77aa453aaee9c524b44f188d
+msgid ""
+"When adding the file with :meth:`Page.add_file_annot` note that the third"
+" parameter for the `filename` should include the actual file extension. "
+"Without this the attachment possibly will not be able to be recognized as"
+" being something which can be opened. For example, if the `filename` is "
+"just *\"attachment\"* when view the resulting PDF and attempting to open "
+"the attachment you may well get an error. However, with "
+"*\"attachment.pdf\"* this can be recognized and opened by PDF viewers as "
+"a valid file type."
+msgstr ":meth:`Page.add_file_annot` でファイルを追加する際には、ファイル名を指定する第三引数には実際のファイルの拡張子を含める必要があります。これがないと、添付ファイルが開けるものとして認識されない可能性があります。例えば、ファイル名が単に「attachment」とだけ指定されている場合、生成されたPDFを見て添付ファイルを開こうとするとエラーが発生するかもしれません。しかし、「attachment.pdf」と指定されている場合、PDFビューアーで有効なファイルタイプとして認識され、開くことができます。"
+
+#: ../../the-basics.rst:530 0abc0e6ad8e049af9adf9268df54c95c
+msgid ""
+"The default icon for the attachment is by default a \"push pin\", however"
+" you can change this by setting the `icon` parameter."
+msgstr "添付ファイルのデフォルトアイコンは「押しピン」ですが、 `icon` パラメータを設定することでこれを変更することができます。"
+
+#: ../../the-basics.rst:534 459f605299fc4ca294e9180ff3698542
+msgid ":ref:`Point<Point>`"
+msgstr ""
+
+#: ../../the-basics.rst:535 ../../the-basics.rst:578
+#: 616c76e808d64713a6436d2f8ac8da97 a04686521b674e11a8d1966d6fb1f7b6
+msgid ":meth:`Document.tobytes`"
+msgstr ""
+
+#: ../../the-basics.rst:536 19954cbe4db04f999fc450278a1c64af
+msgid ":meth:`Page.add_file_annot`"
+msgstr ""
+
+#: ../../the-basics.rst:545 d4616ab7c63141c693b9211e03126f4b
+msgid ":index:`Embedding Files <triple: attach;embed;file>`"
+msgstr ":index:`ファイルを埋め込む <triple: attach;embed;file>`"
+
+#: ../../the-basics.rst:547 10159635926b4152b8637cdbf7b193d0
+msgid "To embed a file to a document, do the following:"
+msgstr "ファイルを文書に埋め込むには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:574 aa50d06a58b147f284ec4344e2fff179
+msgid ""
+"As with :ref:`attaching files<The_Basics_Attaching_Files>`, when adding "
+"the file with :meth:`Document.embfile_add` note that the first parameter "
+"for the `filename` should include the actual file extension."
+msgstr "ファイルを添付する場合と同様に、 :meth:`Document.embfile_add` でファイルを追加する際には、ファイル名を指定する第一引数には実際のファイルの拡張子を含める必要があります"
+
+#: ../../the-basics.rst:579 7c5c6a7187db42a0a4f334e18693fee8
+msgid ":meth:`Document.embfile_add`"
+msgstr ""
+
+#: ../../the-basics.rst:589 b0db8f740144491386eb6b5e12078ab2
+msgid "Deleting Pages"
+msgstr "ページを削除する"
+
+#: ../../the-basics.rst:591 9815575fb37448919ec75aed81ef531b
+msgid "To delete a page from a document, do the following:"
+msgstr "文書からページを削除するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:607 b2f24cdaacdb4845accc7d03d2707636
+msgid "To delete a multiple pages from a document, do the following:"
+msgstr "複数のページを文書から削除するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:627 14409e67678e4ff5884840455f469f14
+msgid ""
+"The page index is zero-based, so to delete page 10 of a document you "
+"would do the following `doc.delete_page(9)`."
+msgstr "ページのインデックスは0から始まるため、文書の10ページ目を削除するには、以下のようにします:  `doc.delete_page(9)`。"
+
+#: ../../the-basics.rst:629 bbd494027615443b9f1b0e80a9d6f38b
+msgid ""
+"Similarly, `doc.delete_pages(from_page=9, to_page=14)` will delete pages "
+"10 - 15 inclusive."
+msgstr "同様に、 `doc.delete_pages(from_page=9, to_page=14)` は、ページ10からページ15までを含む範囲のページを削除します。"
+
+#: ../../the-basics.rst:634 5dfc60edad6a49a7b37adb49243a0de6
+msgid ":meth:`Document.delete_page`"
+msgstr ""
+
+#: ../../the-basics.rst:635 6020d5b19719485892b7822fa0e1687c
+msgid ":meth:`Document.delete_pages`"
+msgstr ""
+
+#: ../../the-basics.rst:643 39809ad29fa64948af69226067e1146c
+msgid "Re-Arranging Pages"
+msgstr "ページを再配置する"
+
+#: ../../the-basics.rst:645 0c930f04b64d4a7db94319c66b5190b3
+msgid "To re-arrange pages, do the following:"
+msgstr "ページを再配置するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:663 c75ad1d8e938415e8e99d4213bd38913
+msgid ":meth:`Document.move_page`"
+msgstr ""
+
+#: ../../the-basics.rst:672 3080d333a2ba4a5cbb1db19df1200670
+msgid "Copying Pages"
+msgstr "ページをコピーする"
+
+#: ../../the-basics.rst:675 ca76ae61162b4e81a1dc15ec5e38a915
+msgid "To copy pages, do the following:"
+msgstr "ページをコピーするには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:694 228dae95cd334b84be75b857e61f4abe
+msgid ":meth:`Document.copy_page`"
+msgstr ""
+
+#: ../../the-basics.rst:702 c7946e7b5ef24984808db236db39fbb9
+msgid "Selecting Pages"
+msgstr "ページを選択する"
+
+#: ../../the-basics.rst:705 e780f0c4ccd34798ac8fe6d7db17daaa
+msgid "To select pages, do the following:"
+msgstr "ページを選択するには、以下の手順を実行してください："
+
+#: ../../the-basics.rst:723 60cc1c38015045f4b4f0b53e17d1bda8
+msgid ""
+"With :title:`PyMuPDF` you have all options to copy, move, delete or re-"
+"arrange the pages of a :title:`PDF`. Intuitive methods exist that allow "
+"you to do this on a page-by-page level, like the "
+":meth:`Document.copy_page` method."
+msgstr ":title:`PyMuPDF` を使用すると、 :title:`PDF` のページをコピー、移動、削除、または再配置するためのオプションがすべて揃っています。 :meth:`Document.copy_page` メソッドのように、ページ単位で直感的なメソッドを使用してこれらの操作を行うことができます。"
+
+#: ../../the-basics.rst:725 48a1df1f1a3c4af1a4df1ff866d7e67b
+msgid ""
+"Or you alternatively prepare a complete new page layout in form of a "
+":title:`Python` sequence, that contains the page numbers you want, in the"
+" sequence you want, and as many times as you want each page. The "
+"following may illustrate what can be done with :meth:`Document.select`"
+msgstr "または、 :title:`Python` のシーケンスとして完全な新しいページレイアウトを準備し、希望するページ番号を希望する順序で含め、必要なページ数だけ繰り返すこともできます。次の例は、 :meth:`Document.select` を使用した可能性を示しています。"
+
+#: ../../the-basics.rst:736 ea46bd8ef4c94b0b9437b84acf3d821f
+msgid ""
+"Now let's prepare a PDF for double-sided printing (on a printer not "
+"directly supporting this):"
+msgstr "以下のように、両面印刷用にPDFを準備しましょう（直接これをサポートしていないプリンターで）："
+
+#: ../../the-basics.rst:738 3ca4ffcb29684234b5d2de76aa3c1354
+msgid ""
+"The number of pages is given by `len(doc)` (equal to `doc.page_count`). "
+"The following lists represent the even and the odd page numbers, "
+"respectively:"
+msgstr "ページ数は `len(doc)`（ `doc.page_count` と同じ）で与えられます。以下のリストは、それぞれ偶数ページと奇数ページの番号を表しています："
+
+#: ../../the-basics.rst:750 aa0d215387254ef7b084782c59751bc5
+msgid ""
+"This snippet creates the respective sub documents which can then be used "
+"to print the document:"
+msgstr "このスニペットは、それぞれのサブドキュメントを作成し、それらを使用してドキュメントを印刷することができます："
+
+#: ../../the-basics.rst:765 451577d634524ec6ad4298a1e9fd4431
+msgid ""
+"For more information also have a look at this Wiki `article "
+"<https://github.com/pymupdf/PyMuPDF/wiki/Rearranging-Pages-of-a-PDF>`_."
+msgstr ""
+
+#: ../../the-basics.rst:768 04e364a32ac04069b185eb329a7bd53d
+msgid ""
+"The following example will reverse the order of all pages (**extremely "
+"fast:** sub-second time for the 756 pages of the :ref:`AdobeManual`):"
+msgstr "次の例は、すべてのページの順序を逆にするものです（非常に高速:  :ref:`AdobeManual` リファレンスの756ページをサブセカンドの時間で処理します）。"
+
+#: ../../the-basics.rst:781 3094c9253acf4a979bc46fbd94d6d51d
+msgid ""
+"This snippet duplicates the PDF with itself so that it will contain the "
+"pages *0, 1, ..., n, 0, 1, ..., n* **(extremely fast and without "
+"noticeably increasing the file size!)**:"
+msgstr "このスニペットは、PDFを自身と重複させることで、ページ0、1、…、n、0、1、…、nを含むようにします（非常に高速で、ファイルサイズをほとんど増やさずに実現します！）："
+
+#: ../../the-basics.rst:796 3d5aaf2dbb5f4a1fa26b0354aa6f822e
+msgid ":meth:`Document.select`"
+msgstr ""
+
+#: ../../the-basics.rst:807 6bb5c33bcd7c42c7b917b34802e9fd73
+msgid "Adding Blank Pages"
+msgstr "空白のページを追加する"
+
+#: ../../the-basics.rst:809 555f310e73c24de0baccc5093d288eaa
+msgid "To add a blank page, do the following:"
+msgstr "空白のページを追加するには、以下の手順を行います："
+
+#: ../../the-basics.rst:829 b1b69a0332694a8cb02bcbac9700e18d
+msgid "Use this to create the page with another pre-defined paper format:"
+msgstr "以下の方法を使用して、別の事前定義された用紙フォーマットを使ってページを作成します："
+
+#: ../../the-basics.rst:839 03e24b13dc04416ebef5e11c3d7820fc
+msgid ""
+"The convenience function :meth:`paper_size` knows over 40 industry "
+"standard paper formats to choose from. To see them, inspect dictionary "
+":attr:`paperSizes`. Pass the desired dictionary key to :meth:`paper_size`"
+" to retrieve the paper dimensions. Upper and lower case is supported. If "
+"you append \"-L\" to the format name, the landscape version is returned."
+msgstr "便利な関数 :meth:`paper_size` は、40以上の業界標準の用紙フォーマットを選択できます。それらを確認するには、辞書 attr:`paperSizes`  を調べてください。用紙の寸法を取得するために、希望する辞書キーを :meth:`paper_size` に渡します。大文字と小文字の両方がサポートされています。フォーマット名に「-L」を追加すると、横長バージョンが返されます。"
+
+#: ../../the-basics.rst:841 da990b02a3884629ab9193d00ae050df
+msgid ""
+"Here is a 3-liner that creates a :title:`PDF`: with one empty page. Its "
+"file size is 460 bytes:"
+msgstr "以下は、1ページの空白の :title:`PDF`: を作成するための3行のコードです。ファイルサイズは460バイトです。"
+
+#: ../../the-basics.rst:855 be599ce115354122bcf7fdbdebad93c5
+msgid ":meth:`Document.new_page`"
+msgstr ""
+
+#: ../../the-basics.rst:856 3f456cb4607043529fa1f4b5d8507c60
+msgid ":attr:`paperSizes`"
+msgstr ""
+
+#: ../../the-basics.rst:865 346a8273a0b441068bca8b04adb299f8
+msgid "Inserting Pages with Text Content"
+msgstr "ページにテキストコンテンツを挿入する"
+
+#: ../../the-basics.rst:867 1c804e79a3f6492b8c2cec0e75b32e6a
+msgid ""
+"Using the :meth:`Document.insert_page` method also inserts a new page and"
+" accepts the same `width` and `height` parameters. But it lets you also "
+"insert arbitrary text into the new page and returns the number of "
+"inserted lines."
+msgstr ":meth:`Document.insert_page` メソッドを使用すると、新しいページが挿入され、同じ幅と高さのパラメーターが受け入れられます。しかし、このメソッドでは新しいページに任意のテキストを挿入することができ、挿入された行数が返されます。"
+
+#: ../../the-basics.rst:893 a075a9b2dc054eefa99a6f053fb9991f
+msgid ""
+"The text parameter can be a (sequence of) string (assuming UTF-8 "
+"encoding). Insertion will start at :ref:`Point` (50, 72), which is one "
+"inch below top of page and 50 points from the left. The number of "
+"inserted text lines is returned."
+msgstr "テキストパラメーターは、UTF-8エンコーディングを想定している（シーケンスの）文字列です。挿入はページの上端から1インチ下であるポイント :ref:`Point` (50, 72) から始まり、左から50ポイントの位置です。挿入されたテキストの行数が返されます。"
+
+#: ../../the-basics.rst:897 2362105fdb314ddaae2f2a32795bbfc6
+msgid ":meth:`Document.insert_page`"
+msgstr ""
+
+#: ../../the-basics.rst:908 ed99048089a34b7cab26186d99bcab9b
+msgid "Splitting Single Pages"
+msgstr "単一のページを分割する"
+
+#: ../../the-basics.rst:910 03ab24c2dc1641deaefedf14762d35a4
+msgid ""
+"This deals with splitting up pages of a :title:`PDF` in arbitrary pieces."
+" For example, you may have a :title:`PDF` with *Letter* format pages "
+"which you want to print with a magnification factor of four: each page is"
+" split up in 4 pieces which each going to a separate :title:`PDF` page in"
+" *Letter* format again."
+msgstr "この方法は、 :title:`PDF` のページを任意の部分に分割することに関連しています。例えば、Letterフォーマットのページを含む :title:`PDF` を、4倍の拡大率で印刷したい場合を考えてみましょう。各ページは4つの部分に分割され、それぞれが再びLetterフォーマットの個別の :title:`PDF` ページになります。"
+
+#: ../../the-basics.rst:957 ../../the-basics.rst:1018
+#: 6fc9d524abda4cb58e92940b04ea6245 c39653cceafe4550a24b7d6ea584509b
+msgid "Example:"
+msgstr ""
+
+#: ../../the-basics.rst:965 ../../the-basics.rst:1027
+#: 3d211a1843b74b9b92eff826952066bd 71cd186873074b81a83c15b5fe0d7c62
+msgid ":meth:`Page.cropbox_position`"
+msgstr ""
+
+#: ../../the-basics.rst:966 ../../the-basics.rst:1028
+#: cd1b5f82fffd40aabdeacf2ddbf9d2cd cf24a1da34e046abafd4ef2fc8e35a77
+msgid ":meth:`Page.show_pdf_page`"
+msgstr ""
+
+#: ../../the-basics.rst:976 33d3b20700bb4e2aa2b4a45e1d0c85da
+msgid "Combining Single Pages"
+msgstr "単一のページを結合する"
+
+#: ../../the-basics.rst:978 ae7ee4e63672493bbe792b368af04fa4
+msgid ""
+"This deals with joining :title:`PDF` pages to form a new :title:`PDF` "
+"with pages each combining two or four original ones (also called "
+"\"2-up\", \"4-up\", etc.). This could be used to create booklets or "
+"thumbnail-like overviews."
+msgstr "これは、2つまたは4つの元のページを組み合わせた新しい :title:`PDF` を作成することを意味します（または「2-up」、「4-up」などとも呼ばれます）。これは、ブックレットやサムネイルのような概要を作成するために使用できます。"
+
+#: ../../the-basics.rst:1037 9c33bb0bc0c743fe84d0d2453e85effc
+msgid ":title:`PDF` Encryption & Decryption"
+msgstr ":title:`PDF` の暗号化と復号化"
+
+#: ../../the-basics.rst:1040 6f286407eaf647e990615a24c71e32d4
+msgid ""
+"Starting with version 1.16.0, :title:`PDF` decryption and encryption "
+"(using passwords) are fully supported. You can do the following:"
+msgstr "バージョン1.16.0から、PDFの暗号化と復号化（パスワードを使用）が完全にサポートされています。以下のことができます："
+
+#: ../../the-basics.rst:1042 c0ec8e4870dd4f9d938552057e9d7680
+msgid ""
+"Check whether a document is password protected / (still) encrypted "
+"(:attr:`Document.needs_pass`, :attr:`Document.is_encrypted`)."
+msgstr "ドキュメントがパスワード保護されているか、（まだ）暗号化されているかを確認する（:attr:`Document.needs_pass`, :attr:`Document.is_encrypted`）。"
+
+#: ../../the-basics.rst:1043 b718aebed5a24a348e4dbbb2843dfd4d
+msgid "Gain access authorization to a document (:meth:`Document.authenticate`)."
+msgstr "ドキュメントへのアクセス権を取得する（:meth:`Document.authenticate`）。"
+
+#: ../../the-basics.rst:1044 0bde2bf9878b4ba7900d6d2bd9c86b5d
+msgid ""
+"Set encryption details for PDF files using :meth:`Document.save` or "
+":meth:`Document.write` and"
+msgstr ":meth:`Document.save` または :meth:`Document.write` を使用して、PDFファイルの暗号化詳細を設定する。"
+
+#: ../../the-basics.rst:1046 0edc0fc561c640b4a3c45965529a2ffb
+msgid "decrypt or encrypt the content"
+msgstr "内容の復号化または暗号化"
+
+#: ../../the-basics.rst:1047 a749162bcc344bed86221a109d7de4d5
+msgid "set password(s)"
+msgstr "パスワードの設定"
+
+#: ../../the-basics.rst:1048 f5c17a2227944ecd9b2be4868f21ae71
+msgid "set the encryption method"
+msgstr "暗号化方式の設定"
+
+#: ../../the-basics.rst:1049 8aa24789673240b8a088fa8374868df7
+msgid "set permission details"
+msgstr "権限の詳細設定"
+
+#: ../../the-basics.rst:1051 15937adee3da4606a96846915609d5c2
+msgid "A PDF document may have two different passwords:"
+msgstr "PDF文書には2つの異なるパスワードが存在する場合があります："
+
+#: ../../the-basics.rst:1053 32b9f73bdbaa401381001102cd827cf7
+msgid ""
+"The **owner password** provides full access rights, including changing "
+"passwords, encryption method, or permission detail."
+msgstr "オーナーパスワード：パスワードを変更したり、暗号化方法を変更したり、権限の詳細を含む完全なアクセス権を提供します。"
+
+#: ../../the-basics.rst:1054 ae3b598b634148939fd99fb35a1210cc
+msgid ""
+"The **user password** provides access to document content according to "
+"the established permission details. If present, opening the :title:`PDF` "
+"in a viewer will require providing it."
+msgstr "ユーザーパスワード：文書の内容にアクセスするための権限詳細に基づいてアクセスを提供します。存在する場合、ビューアでPDFを開く際にユーザーパスワードを入力する必要があります。"
+
+#: ../../the-basics.rst:1056 6de343f3441b4503a05d662819fafa99
+msgid ""
+"Method :meth:`Document.authenticate` will automatically establish access "
+"rights according to the password used."
+msgstr "メソッド :meth:`Document.authenticate` は、使用されるパスワードに基づいて自動的にアクセス権を確立します。"
+
+#: ../../the-basics.rst:1058 738984d97f074c408e92fa48b729473f
+msgid ""
+"The following snippet creates a new :title:`PDF` and encrypts it with "
+"separate user and owner passwords. Permissions are granted to print, copy"
+" and annotate, but no changes are allowed to someone authenticating with "
+"the user password."
+msgstr "以下のスニペットは新しい :title:`PDF` を作成し、別々のユーザーパスワードとオーナーパスワードで暗号化します。印刷、コピー、注釈付けの権限が与えられますが、ユーザーパスワードで認証するユーザーに対しては変更は許可されません"
+
+#: ../../the-basics.rst:1095 7db02612da37440882bc23088133de4a
+msgid ""
+"Opening this document with some viewer (Nitro Reader 5) reflects these "
+"settings:"
+msgstr "このドキュメントをいくつかのビューア（Nitro Reader 5など）で開くと、これらの設定が反映されます："
+
+#: ../../the-basics.rst:1099 c347565588464a8f82e45e40c5dc4cd7
+msgid ""
+"**Decrypting** will automatically happen on save as before when no "
+"encryption parameters are provided."
+msgstr "暗号化パラメータが提供されていない場合、保存時に自動的に復号化されます。"
+
+#: ../../the-basics.rst:1101 e25cf33912114d1c890b740d5bcc84a2
+msgid ""
+"To **keep the encryption method** of a PDF save it using "
+"`encryption=fitz.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() == "
+"True`, an incremental save is also possible."
+msgstr "PDFの暗号化方法を保持するには、`encryption=fitz.PDF_ENCRYPT_KEEP` を使用して保存します。また、 `doc.can_save_incrementally() == True` であれば、増分保存も可能です"
+
+#: ../../the-basics.rst:1103 d52b14c170ec42138e80e202cfa2ffd6
+msgid ""
+"To **change the encryption method** specify the full range of options "
+"above (`encryption`, `owner_pw`, `user_pw`, `permissions`). An "
+"incremental save is **not possible** in this case."
+msgstr "暗号化方法を変更する場合は、上記のすべてのオプション（`encryption`、`owner_pw`、`user_pw`、`permissions`）を指定します。この場合、増分保存はできません。"
+
+#: ../../the-basics.rst:1107 73f172b102a9484a8ec268c4c76f2f95
+msgid ":meth:`Document.save`"
+msgstr ""
+
+#: ../../footer.rst:-1 62ae625b28da426b9322011120d520e7
+msgid "Discord logo"
+msgstr ""
+

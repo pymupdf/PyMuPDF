@@ -1,0 +1,1079 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../tutorial.rst:7 5c4a918625fa441db4f227a238b2d5e3
+msgid "Tutorial"
+msgstr ""
+
+#: ../../tutorial.rst:11 719986736a34415595b73358ee800f14
+msgid ""
+"This tutorial will show you the use of :title:`PyMuPDF`, :title:`MuPDF` "
+"in :title:`Python`, step by step."
+msgstr ""
+
+#: ../../tutorial.rst:13 2f8ed09d6ae540cb906d47e1258a9e40
+msgid ""
+"Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ,"
+" CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the"
+" sake of brevity we will only talk about PDF files. At places where "
+"indeed only PDF files are supported, this will be mentioned explicitly."
+msgstr ""
+
+#: ../../tutorial.rst:16 5a69fe535dfc4c1daccd9048b7cc6b23
+msgid "Importing the Bindings"
+msgstr ""
+
+#: ../../tutorial.rst:17 97f710703ce7496f909473dfbf304249
+msgid ""
+"The Python bindings to MuPDF are made available by this import statement."
+" We also show here how your version can be checked::"
+msgstr ""
+
+#: ../../tutorial.rst:27 24caa12f29ee41f792cc2ae6597d590e
+msgid "Note on the Name *fitz*"
+msgstr ""
+
+#: ../../tutorial.rst:28 9f6721a421e84ab9b77009827ef98aed
+msgid ""
+"The top level Python import name for this library is **\"fitz\"**. This "
+"has historical reasons:"
+msgstr ""
+
+#: ../../tutorial.rst:30 066578a83abe44f39ce0848cd0d90876
+msgid "The original rendering library for MuPDF was called *Libart*."
+msgstr ""
+
+#: ../../tutorial.rst:32 cc1ac62c6ded474a992dde3f6cb8b0cc
+msgid ""
+"*\"After Artifex Software acquired the MuPDF project, the development "
+"focus shifted on writing a new modern graphics library called \"Fitz\". "
+"Fitz was originally intended as an R&D project to replace the aging "
+"Ghostscript graphics library, but has instead become the rendering engine"
+" powering MuPDF.\"* (Quoted from `Wikipedia "
+"<https://en.wikipedia.org/wiki/MuPDF>`_)."
+msgstr ""
+
+#: ../../tutorial.rst:37 c2725784bf264b43b81883bd3e0ec5e9
+msgid ""
+"So :title:`PyMuPDF` **cannot coexist** with packages named \"fitz\" in "
+"the same Python environment."
+msgstr ""
+
+#: ../../tutorial.rst:43 75688abd38bb481bb5bdd33716ef5bb8
+msgid "Opening a Document"
+msgstr ""
+
+#: ../../tutorial.rst:45 8d6b755cc0ef4426b4913f3b37df2677
+msgid ""
+"To access a :ref:`supported document<Supported_File_Types>`, it must be "
+"opened with the following statement::"
+msgstr ""
+
+#: ../../tutorial.rst:49 879bec1ccc644d52a0681375074ddf14
+msgid ""
+"This creates the :ref:`Document` object *doc*. *filename* must be a "
+"Python string (or a `pathlib.Path`) specifying the name of an existing "
+"file."
+msgstr ""
+
+#: ../../tutorial.rst:51 39d3a2558d71453480396a912e30ddc3
+msgid ""
+"It is also possible to open a document from memory data, or to create a "
+"new, empty PDF. See :ref:`Document` for details. You can also use "
+":ref:`Document` as a *context manager*."
+msgstr ""
+
+#: ../../tutorial.rst:53 4e4faec30dd34c269046f6feab570861
+msgid ""
+"A document contains many attributes and functions. Among them are meta "
+"information (like \"author\" or \"subject\"), number of total pages, "
+"outline and encryption information."
+msgstr ""
+
+#: ../../tutorial.rst:56 835e65bd2d494d4692f8abe694f1b987
+msgid "Some :ref:`Document` Methods and Attributes"
+msgstr ""
+
+#: ../../tutorial.rst:59 1eda4320dbf84d6c9f5bfd05b3007cb6
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../tutorial.rst:59 8795879481af4ad49e4a7a3119a18023
+msgid "**Description**"
+msgstr ""
+
+#: ../../tutorial.rst:61 d5b4ea892cce42758233431d63a97877
+msgid ":attr:`Document.page_count`"
+msgstr ""
+
+#: ../../tutorial.rst:61 236036b4c46c49cab3a1a3d43139c4d0
+msgid "the number of pages (*int*)"
+msgstr ""
+
+#: ../../tutorial.rst:62 dea038f0da9346f88be7a16f12f87d6f
+msgid ":attr:`Document.metadata`"
+msgstr ""
+
+#: ../../tutorial.rst:62 81d587812a0041a6943353e8fa83d660
+msgid "the metadata (*dict*)"
+msgstr ""
+
+#: ../../tutorial.rst:63 b471251a01e043fdb95b435bf3446430
+msgid ":meth:`Document.get_toc`"
+msgstr ""
+
+#: ../../tutorial.rst:63 c4629463aef646fc9356d956691b4eae
+msgid "get the table of contents (*list*)"
+msgstr ""
+
+#: ../../tutorial.rst:64 330d7ca0afe24de6904039bd2e6502b6
+msgid ":meth:`Document.load_page`"
+msgstr ""
+
+#: ../../tutorial.rst:64 74b6d8be6d324449b2a432fd91cce45d
+msgid "read a :ref:`Page`"
+msgstr ""
+
+#: ../../tutorial.rst:68 84980cf29bf4459688927c49094d3b0f
+msgid "Accessing Meta Data"
+msgstr ""
+
+#: ../../tutorial.rst:69 28c797b0daa148b48b877d8d27f13ade
+msgid ""
+"PyMuPDF fully supports standard metadata. :attr:`Document.metadata` is a "
+"Python dictionary with the following keys. It is available for **all "
+"document types**, though not all entries may always contain data. For "
+"details of their meanings and formats consult the respective manuals, "
+"e.g. :ref:`AdobeManual` for PDF. Further information can also be found in"
+" chapter :ref:`Document`. The meta data fields are strings or *None* if "
+"not otherwise indicated. Also be aware that not all of them always "
+"contain meaningful data -- even if they are not *None*."
+msgstr ""
+
+#: ../../tutorial.rst:72 de7ca7dd8a2c48068edbeb912acad7fb
+msgid "Key"
+msgstr ""
+
+#: ../../tutorial.rst:72 d94628cd03a14b1b9efdebfdf1f828aa
+msgid "Value"
+msgstr ""
+
+#: ../../tutorial.rst:74 72fc727120bc41c6843220db561c7eeb
+msgid "producer"
+msgstr ""
+
+#: ../../tutorial.rst:74 abb8a290f01f44ef8fa9aa8c56bcfbd6
+msgid "producer (producing software)"
+msgstr ""
+
+#: ../../tutorial.rst:75 aef623f716054580ae1228dbccccf217
+msgid "format"
+msgstr ""
+
+#: ../../tutorial.rst:75 a2de1a6bc4a241c2b917b76cc5184d89
+msgid "format: 'PDF-1.4', 'EPUB', etc."
+msgstr ""
+
+#: ../../tutorial.rst:76 34b9516b7f3a45c999df61c961315db6
+msgid "encryption"
+msgstr ""
+
+#: ../../tutorial.rst:76 4a775e12fcb946d7be0479971247063d
+msgid "encryption method used if any"
+msgstr ""
+
+#: ../../tutorial.rst:77 0b32fc24fe464ac1935c938c5f4483a2
+#: fc4e4a5dd8e547b487dd0da1f39f9950
+msgid "author"
+msgstr ""
+
+#: ../../tutorial.rst:78 b911cb543d99448c96b3b37a944fb7e3
+msgid "modDate"
+msgstr ""
+
+#: ../../tutorial.rst:78 0173108974294568ae2e0fa554634116
+msgid "date of last modification"
+msgstr ""
+
+#: ../../tutorial.rst:79 09f9f58cca07444dad122d984cb15b36
+#: 0d27d6b13a7e4418a11d84de39ad0f6e
+msgid "keywords"
+msgstr ""
+
+#: ../../tutorial.rst:80 7b1e94dae4314466a26091f5366085ef
+#: bf9bfefef1ed42078676eb5c82108093
+msgid "title"
+msgstr ""
+
+#: ../../tutorial.rst:81 b700c5e5f38c4e50b95ebeccda7e18b4
+msgid "creationDate"
+msgstr ""
+
+#: ../../tutorial.rst:81 a827c62e8d2f4e588caffa9593aca08b
+msgid "date of creation"
+msgstr ""
+
+#: ../../tutorial.rst:82 b9a5a2faee8241de926834bd8699c14f
+msgid "creator"
+msgstr ""
+
+#: ../../tutorial.rst:82 7b669ca845b94f2a8b8082c66368529b
+msgid "creating application"
+msgstr ""
+
+#: ../../tutorial.rst:83 193d31ea75f84be0b73e220c2f6fe5e4
+#: 1bbfc08453e14f33af467e7ee9dc53ab
+msgid "subject"
+msgstr ""
+
+#: ../../tutorial.rst:86 69a6449ed3f74164a9d494e3686b1e6e
+msgid ""
+"Apart from these standard metadata, **PDF documents** starting from PDF "
+"version 1.4 may also contain so-called *\"metadata streams\"* (see also "
+":data:`stream`). Information in such streams is coded in XML. PyMuPDF "
+"deliberately contains no XML components for this purpose (the "
+":ref:`PyMuPDF Xml class<Xml>` is a helper class intended to access the "
+"DOM content of a :ref:`Story` object), so we do not directly support "
+"access to information contained therein. But you can extract the stream "
+"as a whole, inspect or modify it using a package like `lxml`_ and then "
+"store the result back into the PDF. If you want, you can also delete this"
+" data altogether."
+msgstr ""
+
+#: ../../tutorial.rst:88 6790ef2b4d9544d1b499c823d4710e13
+msgid ""
+"There are two utility scripts in the repository that `metadata import "
+"(PDF only)`_ resp. `metadata export`_ metadata from resp. to CSV files."
+msgstr ""
+
+#: ../../tutorial.rst:91 18397652b156491ca983c4e18d992eca
+msgid "Working with Outlines"
+msgstr ""
+
+#: ../../tutorial.rst:92 bce0efd6dad946f184aeeba9db5ccab2
+msgid ""
+"The easiest way to get all outlines (also called \"bookmarks\") of a "
+"document, is by loading its *table of contents*::"
+msgstr ""
+
+#: ../../tutorial.rst:96 922e8d6314a94c0baf21eececaa23484
+msgid ""
+"This will return a Python list of lists *[[lvl, title, page, ...], ...]* "
+"which looks much like a conventional table of contents found in books."
+msgstr ""
+
+#: ../../tutorial.rst:98 a9d1d761d8244786b2fb834eba377c42
+msgid ""
+"*lvl* is the hierarchy level of the entry (starting from 1), *title* is "
+"the entry's title, and *page* the page number (1-based!). Other "
+"parameters describe details of the bookmark target."
+msgstr ""
+
+#: ../../tutorial.rst:100 de626ab8d30e4db0a4824fe238a4c59e
+msgid ""
+"There are two utility scripts in the repository that `toc import (PDF "
+"only)`_ resp. `toc export`_ table of contents from resp. to CSV files."
+msgstr ""
+
+#: ../../tutorial.rst:103 14dd86b035e64356b4184dd735c1244a
+msgid "Working with Pages"
+msgstr ""
+
+#: ../../tutorial.rst:104 878270fa24d0413dbe553e688199d094
+msgid ":ref:`Page` handling is at the core of MuPDF's functionality."
+msgstr ""
+
+#: ../../tutorial.rst:106 dfa8b2cde8894ec383a078c5799f575f
+msgid ""
+"You can render a page into a raster or vector (SVG) image, optionally "
+"zooming, rotating, shifting or shearing it."
+msgstr ""
+
+#: ../../tutorial.rst:107 20afbcd5bd8d490dbe71e30a014a4c7f
+msgid ""
+"You can extract a page's text and images in many formats and search for "
+"text strings."
+msgstr ""
+
+#: ../../tutorial.rst:108 a3544d9a327047fb95cbfc943edd350a
+msgid ""
+"For PDF documents many more methods are available to add text or images "
+"to pages."
+msgstr ""
+
+#: ../../tutorial.rst:110 5ba4202e226e4adbb099e6690a2cc50f
+msgid ""
+"First, a :ref:`Page` must be created. This is a method of "
+":ref:`Document`::"
+msgstr ""
+
+#: ../../tutorial.rst:115 aea327ad27534ed5bedd2bef1bf334d6
+msgid ""
+"Any integer `-∞ < pno < page_count` is possible here. Negative numbers "
+"count backwards from the end, so *doc[-1]* is the last page, like with "
+"Python sequences."
+msgstr ""
+
+#: ../../tutorial.rst:117 7d87c0d2d1034c76b01d72af78200051
+msgid ""
+"Some more advanced way would be using the document as an **iterator** "
+"over its pages::"
+msgstr ""
+
+#: ../../tutorial.rst:131 ed0d09fe18de4836938eca56fa4a71a7
+msgid "Once you have your page, here is what you would typically do with it:"
+msgstr ""
+
+#: ../../tutorial.rst:134 4b110b01ceea44bb9b3d174a06e74fff
+msgid "Inspecting the Links, Annotations or Form Fields of a Page"
+msgstr ""
+
+#: ../../tutorial.rst:135 cad7f30eddf84559aaeac6ccc3f3c678
+msgid ""
+"Links are shown as \"hot areas\" when a document is displayed with some "
+"viewer software. If you click while your cursor shows a hand symbol, you "
+"will usually be taken to the target that is encoded in that hot area. "
+"Here is how to get all links::"
+msgstr ""
+
+#: ../../tutorial.rst:140 31ac4878f99347a6becb0bbdbfc5771a
+msgid ""
+"*links* is a Python list of dictionaries. For details see "
+":meth:`Page.get_links`."
+msgstr ""
+
+#: ../../tutorial.rst:142 326b0a8d8f5c4f82a48432aa9bd27087
+msgid "You can also use an iterator which emits one link at a time::"
+msgstr ""
+
+#: ../../tutorial.rst:147 68cc7324df514749b6af2321cefac9cc
+msgid ""
+"If dealing with a PDF document page, there may also exist annotations "
+"(:ref:`Annot`) or form fields (:ref:`Widget`), each of which have their "
+"own iterators::"
+msgstr ""
+
+#: ../../tutorial.rst:157 ea4ffe181e3443e0a2102d4425a5fb11
+msgid "Rendering a Page"
+msgstr ""
+
+#: ../../tutorial.rst:158 9d16db8d44924b679b68af5d7fa7e2b1
+msgid "This example creates a **raster** image of a page's content::"
+msgstr ""
+
+#: ../../tutorial.rst:162 f9116518fbd747cfa4276003324bb4cd
+msgid ""
+"*pix* is a :ref:`Pixmap` object which (in this case) contains an **RGB** "
+"image of the page, ready to be used for many purposes. Method "
+":meth:`Page.get_pixmap` offers lots of variations for controlling the "
+"image: resolution / DPI, colorspace (e.g. to produce a grayscale image or"
+" an image with a subtractive color scheme), transparency, rotation, "
+"mirroring, shifting, shearing, etc. For example: to create an **RGBA** "
+"image (i.e. containing an alpha channel), specify *pix = "
+"page.get_pixmap(alpha=True)*."
+msgstr ""
+
+#: ../../tutorial.rst:164 4f67371c65164f04934bfffc53cf0212
+msgid ""
+"A :ref:`Pixmap` contains a number of methods and attributes which are "
+"referenced below. Among them are the integers *width*, *height* (each in "
+"pixels) and *stride* (number of bytes of one horizontal image line). "
+"Attribute *samples* represents a rectangular area of bytes representing "
+"the image data (a Python *bytes* object)."
+msgstr ""
+
+#: ../../tutorial.rst:166 b7c15bcd90c1406ea7867a3b7352be2a
+msgid ""
+"You can also create a **vector** image of a page by using "
+":meth:`Page.get_svg_image`. Refer to this `Vector Image Support page`_ "
+"for details."
+msgstr ""
+
+#: ../../tutorial.rst:169 a4a12f24ea9549bfb5e424648fee2f8e
+msgid "Saving the Page Image in a File"
+msgstr ""
+
+#: ../../tutorial.rst:170 a81b35f1e64a4fb8b557074c332349f0
+msgid "We can simply store the image in a PNG file::"
+msgstr ""
+
+#: ../../tutorial.rst:175 11f7edc0423246159b3e77ff12e9c4ee
+msgid "Displaying the Image in GUIs"
+msgstr ""
+
+#: ../../tutorial.rst:176 11e725972b62427f8363406f2b7fcb73
+msgid ""
+"We can also use it in GUI dialog managers. :attr:`Pixmap.samples` "
+"represents an area of bytes of all the pixels as a Python bytes object. "
+"Here are some examples, find more in the `examples`_ directory."
+msgstr ""
+
+#: ../../tutorial.rst:179 832f9658d8bb48cbb8b4b6a85f1380bf
+msgid "wxPython"
+msgstr ""
+
+#: ../../tutorial.rst:180 6c8fc0ded35e41bd998220410ac37eec
+msgid ""
+"Consult their documentation for adjustments to RGB(A) pixmaps and, "
+"potentially, specifics for your wxPython release::"
+msgstr ""
+
+#: ../../tutorial.rst:188 cfed92bff18a4b3689114215bf928d5c
+msgid "Tkinter"
+msgstr ""
+
+#: ../../tutorial.rst:189 61b81fd31327412b917b3a76c6e6198c
+msgid "Please also see section 3.19 of the `Pillow documentation`_::"
+msgstr ""
+
+#: ../../tutorial.rst:198 82cd3df69e9842fc9b9e958c619b07bb
+msgid "The following **avoids using Pillow**::"
+msgstr ""
+
+#: ../../tutorial.rst:205 4651636cbd21450c861c18bd023463ba
+msgid ""
+"If you are looking for a complete Tkinter script paging through **any "
+"supported** document, `here it is!`_. It can also zoom into pages, and it"
+" runs under Python 2 or 3. It requires the extremely handy `PySimpleGUI`_"
+" pure Python package."
+msgstr ""
+
+#: ../../tutorial.rst:208 80fe1c66cb934c7aaa42e3f3760ea928
+msgid "PyQt4, PyQt5, PySide"
+msgstr ""
+
+#: ../../tutorial.rst:209 76f42a0b7f644048843acb47071e42cf
+msgid "Please also see section 3.16 of the `Pillow documentation`_::"
+msgstr ""
+
+#: ../../tutorial.rst:218 ac906b97455f48f3a0b19f83b59d2462
+msgid ""
+"Again, you also can get along **without using Pillow.** Qt's `QImage` "
+"luckily supports native Python pointers, so the following is the "
+"recommended way to create Qt images::"
+msgstr ""
+
+#: ../../tutorial.rst:228 db764b1aa9734b0986744d62812df2a3
+msgid "Extracting Text and Images"
+msgstr ""
+
+#: ../../tutorial.rst:229 f3d020fd41cf4719ad8a95ebff447cc6
+msgid ""
+"We can also extract all text, images and other information of a page in "
+"many different forms, and levels of detail::"
+msgstr ""
+
+#: ../../tutorial.rst:233 219bda27169f48aabfd1876a44eee34d
+msgid ""
+"Use one of the following strings for *opt* to obtain different formats "
+"[#f2]_:"
+msgstr ""
+
+#: ../../tutorial.rst:235 d7fd8dffe1ba49a7bb8fa1b25cc4dfb0
+msgid ""
+"**\"text\"**: (default) plain text with line breaks. No formatting, no "
+"text position details, no images."
+msgstr ""
+
+#: ../../tutorial.rst:237 3147bdd9d3944998b04054dd2598f6da
+msgid "**\"blocks\"**: generate a list of text blocks (= paragraphs)."
+msgstr ""
+
+#: ../../tutorial.rst:239 b8d880738edc437382038c761693e7f3
+msgid "**\"words\"**: generate a list of words (strings not containing spaces)."
+msgstr ""
+
+#: ../../tutorial.rst:241 c705843da943450881d5a37b51499236
+msgid ""
+"**\"html\"**: creates a full visual version of the page including any "
+"images. This can be displayed with your internet browser."
+msgstr ""
+
+#: ../../tutorial.rst:243 a767c8f6b5434360be3064a7662f42c3
+msgid ""
+"**\"dict\"** / **\"json\"**: same information level as HTML, but provided"
+" as a Python dictionary or resp. JSON string. See "
+":meth:`TextPage.extractDICT` for details of its structure."
+msgstr ""
+
+#: ../../tutorial.rst:245 e3d0b59782cc48a0a10ccaafed8c23bd
+msgid ""
+"**\"rawdict\"** / **\"rawjson\"**: a super-set of **\"dict\"** / "
+"**\"json\"**. It additionally provides character detail information like "
+"XML. See :meth:`TextPage.extractRAWDICT` for details of its structure."
+msgstr ""
+
+#: ../../tutorial.rst:247 bf1c9316fe1f4d55a40668470ee5327c
+msgid ""
+"**\"xhtml\"**: text information level as the TEXT version but includes "
+"images. Can also be displayed by internet browsers."
+msgstr ""
+
+#: ../../tutorial.rst:249 96f75cd5e4bc4e9cb5a68904ec229da1
+msgid ""
+"**\"xml\"**: contains no images, but full position and font information "
+"down to each single text character. Use an XML module to interpret."
+msgstr ""
+
+#: ../../tutorial.rst:251 01e4d79b534f463295bff2865aa792f4
+msgid ""
+"To give you an idea about the output of these alternatives, we did text "
+"example extracts. See :ref:`Appendix2`."
+msgstr ""
+
+#: ../../tutorial.rst:254 36c43c7a121140708a18c892a277cd19
+msgid "Searching for Text"
+msgstr ""
+
+#: ../../tutorial.rst:255 8ac6bfa71d8347c3ab16f6a486a4b350
+msgid "You can find out, exactly where on a page a certain text string appears::"
+msgstr ""
+
+#: ../../tutorial.rst:259 e8c49733f97b465ead9ef31f11895d30
+msgid ""
+"This delivers a list of rectangles (see :ref:`Rect`), each of which "
+"surrounds one occurrence of the string \"mupdf\" (case insensitive). You "
+"could use this information to e.g. highlight those areas (PDF only) or "
+"create a cross reference of the document."
+msgstr ""
+
+#: ../../tutorial.rst:261 f80648ae59784bf389a45230d65c9cb1
+msgid ""
+"Please also do have a look at chapter :ref:`cooperation` and at demo "
+"programs `demo.py`_ and `demo-lowlevel.py`_. Among other things they "
+"contain details on how the :ref:`TextPage`, :ref:`Device` and "
+":ref:`DisplayList` classes can be used for a more direct control, e.g. "
+"when performance considerations suggest it."
+msgstr ""
+
+#: ../../tutorial.rst:268 72cfb8f259b043e98e2684bf39f4c778
+msgid "Stories: Generating PDF from HTML Source"
+msgstr ""
+
+#: ../../tutorial.rst:270 7920d3f74d7947c38fb0abb4ce9ff6c4
+msgid ""
+"The :ref:`Story` class is a new feature of PyMuPDF version 1.21.0. It "
+"represents support for MuPDF's **\"story\"** interface."
+msgstr ""
+
+#: ../../tutorial.rst:272 27046a84d8234c35b370027bf8a36d5a
+msgid ""
+"The following is a quote from the book `\"MuPDF Explored\"`_ by Robin "
+"Watts from `Artifex`_:"
+msgstr ""
+
+#: ../../tutorial.rst:276 00b4135f21254e93a829c508a864e81b
+msgid ""
+"*Stories provide a way to easily layout styled content for use with "
+"devices, such as those offered by Document Writers (...). The concept of "
+"a story comes from desktop publishing, which in turn (...) gets it from "
+"newspapers. If you consider a traditional newspaper layout, it will "
+"consist of various news articles (stories) that are laid out into "
+"multiple columns, possibly across multiple pages.*"
+msgstr ""
+
+#: ../../tutorial.rst:278 d48b4b64725b4be1a49e977ba6b3c0da
+msgid ""
+"*Accordingly, MuPDF uses a story to represent a flow of text with styling"
+" information. The user of the story can then supply a sequence of "
+"rectangles into which the story will be laid out, and the positioned text"
+" can then be drawn to an output device. This keeps the concept of the "
+"text itself (the story) to be separated from the areas into which the "
+"text should be flowed (the layout).*"
+msgstr ""
+
+#: ../../tutorial.rst:282 b26a153f07624828a7aad522a248497a
+msgid ""
+"A Story works somewhat similar to an internet browser: It faithfully "
+"parses and renders HTML hypertext and also optional stylesheets (CSS). "
+"But its **output is a PDF** -- not web pages."
+msgstr ""
+
+#: ../../tutorial.rst:285 4168d93f90af462fa5b3dd8a0381f45d
+msgid ""
+"When creating a :ref:`Story`, the input from up to three different "
+"information sources is taken into account. All these items are optional."
+msgstr ""
+
+#: ../../tutorial.rst:287 7a940d3d338e45ccbaeb75318bc2c8fd
+msgid ""
+"HTML source code, either a Python string or **created by the script** "
+"using methods of :ref:`Xml`."
+msgstr ""
+
+#: ../../tutorial.rst:289 7bb6467df94d4e038318229537988b86
+msgid ""
+"CSS (Cascaded Style Sheet) source code, provided as a Python string. CSS "
+"can be used to provide styling information (text font size, color, etc.) "
+"like it would happen for web pages. Obviously, this string may also be "
+"read from a file."
+msgstr ""
+
+#: ../../tutorial.rst:291 7419a6680aa345c595a56527687d3cde
+msgid ""
+"An :ref:`Archive` **must be used** whenever the DOM references images, or"
+" uses text fonts except the standard :ref:`Base-14-Fonts`, CJK fonts and "
+"the NOTO fonts generated into the PyMuPDF binary."
+msgstr ""
+
+#: ../../tutorial.rst:294 9fddc5925b914ab280b4b7b77109e4cc
+msgid ""
+"The :ref:`API<Xml>` allows creating DOMs completely from scratch, "
+"including desired styling information. It can also be used to modify or "
+"extend **provided** HTML: text can be deleted or replaced, or its styling"
+" can be changed. Text -- for example extracted from databases -- can also"
+" be added and fill template-like HTML documents."
+msgstr ""
+
+#: ../../tutorial.rst:296 e23adc9677b344e19505ecfdc0f56ba5
+msgid ""
+"It is **not required** to provide syntactically complete HTML documents: "
+"snippets like `<b>Hello <i>World!</i></b>` are fully accepted, and many /"
+" most syntax errors are automatically corrected."
+msgstr ""
+
+#: ../../tutorial.rst:298 784cd370d79e47b4b2ef0703a63edfb7
+msgid ""
+"After the HTML is considered complete, it can be used to create a PDF "
+"document. This happens via the new :ref:`DocumentWriter` class. The "
+"programmer calls its methods to create a new empty page, and passes "
+"rectangles to the Story to fill them."
+msgstr ""
+
+#: ../../tutorial.rst:300 6b175a494fa74258bfdd0329ca8606af
+msgid ""
+"The story in turn will return completion codes indicating whether or not "
+"more content is waiting to be written. Which part of the content will "
+"land in which rectangle or on which page is automatically determined by "
+"the story itself -- it cannot be influenced other than by providing the "
+"rectangles."
+msgstr ""
+
+#: ../../tutorial.rst:302 b5428342531747fd8e7975bdaffc75bd
+msgid ""
+"Please see the :ref:`Stories recipes<RecipesStories>` for a number of "
+"typical use cases."
+msgstr ""
+
+#: ../../tutorial.rst:306 484e41f2d0c64834a58b08a72e191482
+msgid "PDF Maintenance"
+msgstr ""
+
+#: ../../tutorial.rst:307 46372e1f0cc042aca4e82a9e5ed55833
+msgid ""
+"PDFs are the only document type that can be **modified** using PyMuPDF. "
+"Other file types are read-only."
+msgstr ""
+
+#: ../../tutorial.rst:309 d0928871fe77487b954e3805bbeaceaa
+msgid ""
+"However, you can convert **any document** (including images) to a PDF and"
+" then apply all PyMuPDF features to the conversion result. Find out more "
+"here :meth:`Document.convert_to_pdf`, and also look at the demo script "
+"`pdf-converter.py`_ which can convert any :ref:`supported "
+"document<Supported_File_Types>` to PDF."
+msgstr ""
+
+#: ../../tutorial.rst:311 f8d0cdbdce9842109fc4a058c536f11c
+msgid ""
+":meth:`Document.save()` always stores a PDF in its current (potentially "
+"modified) state on disk."
+msgstr ""
+
+#: ../../tutorial.rst:313 5804c300f5d94ed594785e51939801e0
+msgid ""
+"You normally can choose whether to save to a new file, or just append "
+"your modifications to the existing one (\"incremental save\"), which "
+"often is very much faster."
+msgstr ""
+
+#: ../../tutorial.rst:315 add7d07e60bf4c749cda96eedc80eaf6
+msgid ""
+"The following describes ways how you can manipulate PDF documents. This "
+"description is by no means complete: much more can be found in the "
+"following chapters."
+msgstr ""
+
+#: ../../tutorial.rst:318 e96581b9ba0a4347b0cc0f4427f7879c
+msgid "Modifying, Creating, Re-arranging and Deleting Pages"
+msgstr ""
+
+#: ../../tutorial.rst:319 7fd2c972ece147fd8a08b7549ab0ba45
+msgid ""
+"There are several ways to manipulate the so-called **page tree** (a "
+"structure describing all the pages) of a PDF:"
+msgstr ""
+
+#: ../../tutorial.rst:321 653e97f79728420a9c6db939347feddb
+msgid ""
+":meth:`Document.delete_page` and :meth:`Document.delete_pages` delete "
+"pages."
+msgstr ""
+
+#: ../../tutorial.rst:323 15e52460fabd4c5ea7683784ba8b2350
+msgid ""
+":meth:`Document.copy_page`, :meth:`Document.fullcopy_page` and "
+":meth:`Document.move_page` copy or move a page to other locations within "
+"the same document."
+msgstr ""
+
+#: ../../tutorial.rst:325 b12c0df310ae4c30985edacdd35a1d92
+msgid ""
+":meth:`Document.select` shrinks a PDF down to selected pages. Parameter "
+"is a sequence [#f3]_ of the page numbers that you want to keep. These "
+"integers must all be in range *0 <= i < page_count*. When executed, all "
+"pages **missing** in this list will be deleted. Remaining pages will "
+"occur **in the sequence and as many times (!) as you specify them**."
+msgstr ""
+
+#: ../../tutorial.rst:327 82e0a740bce14680b20dfc2043912329
+msgid "So you can easily create new PDFs with"
+msgstr ""
+
+#: ../../tutorial.rst:329 dae5af188ea94cc6a67a77efe1136a27
+msgid "the first or last 10 pages,"
+msgstr ""
+
+#: ../../tutorial.rst:330 6ed35cb02b3643f2b5e03f8282a19add
+msgid "only the odd or only the even pages (for doing double-sided printing),"
+msgstr ""
+
+#: ../../tutorial.rst:331 2937331ad048423fa2c8912b274379d5
+msgid "pages that **do** or **don't** contain a given text,"
+msgstr ""
+
+#: ../../tutorial.rst:332 30e9e0ab0ee946d8892dbdd3b6051f98
+msgid "reverse the page sequence, ..."
+msgstr ""
+
+#: ../../tutorial.rst:334 0cc0bda6c9b5499cb0f2361f32a6a335
+msgid "... whatever you can think of."
+msgstr ""
+
+#: ../../tutorial.rst:336 123af1f37a09429a958fc2589ec7e776
+msgid ""
+"The saved new document will contain links, annotations and bookmarks that"
+" are still valid (i.a.w. either pointing to a selected page or to some "
+"external resource)."
+msgstr ""
+
+#: ../../tutorial.rst:338 17f4ced6467c46aab4732c2c0231b0c4
+msgid ""
+":meth:`Document.insert_page` and :meth:`Document.new_page` insert new "
+"pages."
+msgstr ""
+
+#: ../../tutorial.rst:340 f449527ee6704e8ca6ae9200d2981b43
+msgid ""
+"Pages themselves can moreover be modified by a range of methods (e.g. "
+"page rotation, annotation and link maintenance, text and image "
+"insertion)."
+msgstr ""
+
+#: ../../tutorial.rst:343 fa58c77568624babb9f8b6a06fb2509c
+msgid "Joining and Splitting PDF Documents"
+msgstr ""
+
+#: ../../tutorial.rst:345 a8f201649e0c444499f6f6f7ba3fd709
+msgid ""
+"Method :meth:`Document.insert_pdf` copies pages **between different** PDF"
+" documents. Here is a simple **joiner** example (*doc1* and *doc2* being "
+"opened PDFs)::"
+msgstr ""
+
+#: ../../tutorial.rst:350 7ba283d76afc49f8b01dc9ad158f1ab8
+msgid ""
+"Here is a snippet that **splits** *doc1*. It creates a new document of "
+"its first and its last 10 pages::"
+msgstr ""
+
+#: ../../tutorial.rst:357 7f1ccad4f84d4526bab753264dcf634b
+msgid ""
+"More can be found in the :ref:`Document` chapter. Also have a look at "
+"`PDFjoiner.py`_."
+msgstr ""
+
+#: ../../tutorial.rst:360 7a52aaff2742471f80b54369a3007fcf
+msgid "Embedding Data"
+msgstr ""
+
+#: ../../tutorial.rst:362 69d995329db34e3ab1fce445fe1ba175
+msgid ""
+"PDFs can be used as containers for arbitrary data (executables, other "
+"PDFs, text or binary files, etc.) much like ZIP archives."
+msgstr ""
+
+#: ../../tutorial.rst:364 888dea831e6b4614925bc9a87d80c40e
+msgid ""
+"PyMuPDF fully supports this feature via :ref:`Document` *embfile_** "
+"methods and attributes. For some detail read :ref:`Appendix 3`, consult "
+"the Wiki on `dealing with embedding files`_, or the example scripts "
+"`embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and "
+"`embedded-list.py`_."
+msgstr ""
+
+#: ../../tutorial.rst:368 34358840185f492cac2beaf89fc24545
+msgid "Saving"
+msgstr ""
+
+#: ../../tutorial.rst:370 6836889445744460887fe2c25ac5f7df
+msgid ""
+"As mentioned above, :meth:`Document.save` will **always** save the "
+"document in its current state."
+msgstr ""
+
+#: ../../tutorial.rst:372 7114c25e86c346efbed1db6d61e573f6
+msgid ""
+"You can write changes back to the **original PDF** by specifying option "
+"*incremental=True*. This process is (usually) **extremely fast**, since "
+"changes are **appended to the original file** without completely "
+"rewriting it."
+msgstr ""
+
+#: ../../tutorial.rst:374 b09d904cbe53494e81ddf8da17b0cb6f
+msgid ""
+":meth:`Document.save` options correspond to options of MuPDF's command "
+"line utility *mutool clean*, see the following table."
+msgstr ""
+
+#: ../../tutorial.rst:377 efb6628317d84e87a898689c34219534
+msgid "**Save Option**"
+msgstr ""
+
+#: ../../tutorial.rst:377 34cce396c757493280868b26ff93fda7
+msgid "**mutool**"
+msgstr ""
+
+#: ../../tutorial.rst:377 2da048010dcf4b18907873f2b9b23d63
+msgid "**Effect**"
+msgstr ""
+
+#: ../../tutorial.rst:379 d04c4f7fe2d348649bfc9df301fb4106
+msgid "garbage=1"
+msgstr ""
+
+#: ../../tutorial.rst:379 8cdc8a6e4c56415d8606656947bf757f
+msgid "g"
+msgstr ""
+
+#: ../../tutorial.rst:379 5ab04e89ab464c9d8ae1cf807e4bf40f
+msgid "garbage collect unused objects"
+msgstr ""
+
+#: ../../tutorial.rst:380 baf6e1c997e949929acd6f06f10fd506
+msgid "garbage=2"
+msgstr ""
+
+#: ../../tutorial.rst:380 9bbfd314b7a24e3786efd09de2133aa3
+msgid "gg"
+msgstr ""
+
+#: ../../tutorial.rst:380 fc7eaf8bca8e4257aed1ae2aac51a40f
+msgid "in addition to 1, compact :data:`xref` tables"
+msgstr ""
+
+#: ../../tutorial.rst:381 495c3736d28a40d38b64033697c38152
+msgid "garbage=3"
+msgstr ""
+
+#: ../../tutorial.rst:381 64257a9d67204ee984f9e833f6f7058e
+msgid "ggg"
+msgstr ""
+
+#: ../../tutorial.rst:381 d4eef77b100a4af9b5685c4c36ea24a4
+msgid "in addition to 2, merge duplicate objects"
+msgstr ""
+
+#: ../../tutorial.rst:382 de444a775b974ff78a6180fb79b59089
+msgid "garbage=4"
+msgstr ""
+
+#: ../../tutorial.rst:382 3e6c6505680740dc828d9502851b5e68
+msgid "gggg"
+msgstr ""
+
+#: ../../tutorial.rst:382 0794f1c8d1ba47479b7cf12f4d610482
+msgid "in addition to 3, merge duplicate stream content"
+msgstr ""
+
+#: ../../tutorial.rst:383 1e0450ee5e004d1dbf51f02b5bc7df56
+msgid "clean=True"
+msgstr ""
+
+#: ../../tutorial.rst:383 61d50275909f42f9b483bc5560907aaf
+msgid "cs"
+msgstr ""
+
+#: ../../tutorial.rst:383 423641572dcf475990156437a2e71ecf
+msgid "clean and sanitize content streams"
+msgstr ""
+
+#: ../../tutorial.rst:384 3d8e563d8cde4ee193ed1f032ae89c05
+msgid "deflate=True"
+msgstr ""
+
+#: ../../tutorial.rst:384 4a2b23ef1ddc4025a6320b04bdf1b665
+msgid "z"
+msgstr ""
+
+#: ../../tutorial.rst:384 73fbc752a3314295878abe26424e34d8
+msgid "deflate uncompressed streams"
+msgstr ""
+
+#: ../../tutorial.rst:385 2e8a12be6e3a4b01ab3f2eefcdf2d3c8
+msgid "deflate_images=True"
+msgstr ""
+
+#: ../../tutorial.rst:385 a549789436034f7d82ac9a0de9fe2e44
+msgid "i"
+msgstr ""
+
+#: ../../tutorial.rst:385 370d3d88cce048a4b75fe05a78fc6848
+msgid "deflate image streams"
+msgstr ""
+
+#: ../../tutorial.rst:386 c78eaa6dae3843a79f397641d6745f63
+msgid "deflate_fonts=True"
+msgstr ""
+
+#: ../../tutorial.rst:386 162fe12711204d0591c916fcf4b69142
+msgid "f"
+msgstr ""
+
+#: ../../tutorial.rst:386 dbd3721aef9c434ab622dc0212f86908
+msgid "deflate fontfile streams"
+msgstr ""
+
+#: ../../tutorial.rst:387 b461d640b4fe418390aba1a25f460e4d
+msgid "ascii=True"
+msgstr ""
+
+#: ../../tutorial.rst:387 f1db666528d74da2881e60b74994638c
+msgid "a"
+msgstr ""
+
+#: ../../tutorial.rst:387 d697145dd0e74c69a10bad5bbde2b6f2
+msgid "convert binary data to ASCII format"
+msgstr ""
+
+#: ../../tutorial.rst:388 4994c587ad7a4ec9916a3976c603ded8
+msgid "linear=True"
+msgstr ""
+
+#: ../../tutorial.rst:388 5116724085a847a6bd42158091246029
+msgid "l"
+msgstr ""
+
+#: ../../tutorial.rst:388 bf8abaa5ebcb44358f4c63b591e40539
+msgid "create a linearized version"
+msgstr ""
+
+#: ../../tutorial.rst:389 687d7eacc4a648dd8ffb421169c0a61c
+msgid "expand=True"
+msgstr ""
+
+#: ../../tutorial.rst:389 b1763683055e4251bd00a0bd54c233dd
+msgid "d"
+msgstr ""
+
+#: ../../tutorial.rst:389 7498719539bb47238ccfd6fc4a7a296c
+msgid "decompress all streams"
+msgstr ""
+
+#: ../../tutorial.rst:392 a5c9a5db52a3489db62dc5678a5e773e
+msgid ""
+"For an explanation of terms like *object, stream, xref* consult the "
+":ref:`Glossary` chapter."
+msgstr ""
+
+#: ../../tutorial.rst:394 aa12a8dbff3e44f7bf96f84ef3363d72
+msgid ""
+"For example, *mutool clean -ggggz file.pdf* yields excellent compression "
+"results. It corresponds to *doc.save(filename, garbage=4, deflate=True)*."
+msgstr ""
+
+#: ../../tutorial.rst:397 55faca7773c54e25aa39c68e348b51eb
+msgid "Closing"
+msgstr ""
+
+#: ../../tutorial.rst:398 55ef329cbc1b498cb3c1efd11e4093d7
+msgid ""
+"It is often desirable to \"close\" a document to relinquish control of "
+"the underlying file to the OS, while your program continues."
+msgstr ""
+
+#: ../../tutorial.rst:400 0c9d88aeb3ce42b48da9ffe1a8343ec3
+msgid ""
+"This can be achieved by the :meth:`Document.close` method. Apart from "
+"closing the underlying file, buffer areas associated with the document "
+"will be freed."
+msgstr ""
+
+#: ../../tutorial.rst:403 0467691e64fd4a6db56eaf52f3973ed1
+msgid "Further Reading"
+msgstr ""
+
+#: ../../tutorial.rst:404 c4798e7fc1df447e97bee53b665c40ce
+msgid ""
+"Also have a look at PyMuPDF's `Wiki`_ pages. Especially those named in "
+"the sidebar under title **\"Recipes\"** cover over 15 topics written in "
+"\"How-To\" style."
+msgstr ""
+
+#: ../../tutorial.rst:406 0e127d21800a4f55a77e93cd69b577a3
+msgid ""
+"This document also contains a :ref:`FAQ`. This chapter has close "
+"connection to the aforementioned recipes, and it will be extended with "
+"more content over time."
+msgstr ""
+
+#: ../../tutorial.rst:413 57f051984fe34e16bba92889cd04e47e
+msgid "Footnotes"
+msgstr ""
+
+#: ../../tutorial.rst:414 efa5a683610140379948d857195303cd
+msgid ""
+"PyMuPDF lets you also open several image file types just like normal "
+"documents. See section :ref:`ImageFiles` in chapter :ref:`Pixmap` for "
+"more comments."
+msgstr ""
+
+#: ../../tutorial.rst:416 21af3dddafc94410a79c41465405c87d
+msgid ""
+":meth:`Page.get_text` is a convenience wrapper for several methods of "
+"another PyMuPDF class, :ref:`TextPage`. The names of these methods "
+"correspond to the argument string passed to :meth:`Page.get_text` \\:  "
+"*Page.get_text(\"dict\")* is equivalent to *TextPage.extractDICT()* \\."
+msgstr ""
+
+#: ../../tutorial.rst:418 a703bd8e6c0a47488323b2a7f29c9908
+msgid ""
+"\"Sequences\" are Python objects conforming to the sequence protocol. "
+"These objects implement a method named *__getitem__()*. Best known "
+"examples are Python tuples and lists. But *array.array*, *numpy.array* "
+"and PyMuPDF's \"geometry\" objects (:ref:`Algebra`) are sequences, too. "
+"Refer to :ref:`SequenceTypes` for details."
+msgstr ""
+
+#: ../../footer.rst:-1 f89dcdb6d2504b5ea7fecff9fdc5ab40
+msgid "Discord logo"
+msgstr ""
+

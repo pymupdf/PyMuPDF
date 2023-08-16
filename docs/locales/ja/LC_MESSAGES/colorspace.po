@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../colorspace.rst:7 a086efe19d644d6a9a81f87d808e4adb
+msgid "Colorspace"
+msgstr ""
+
+#: ../../colorspace.rst:9 d9a7d696c581492b90c82c9abc6b885f
+msgid "Represents the color space of a :ref:`Pixmap`."
+msgstr ""
+
+#: ../../colorspace.rst:12 1f2c331405804319b0b3d6ca8ce00221
+msgid "**Class API**"
+msgstr ""
+
+#: ../../colorspace.rst:18 711f6a6009294915af6aa216becba436
+msgid "Constructor"
+msgstr ""
+
+#: ../../colorspace.rst 7db7c78c0dc74cde9f70f28b78c44182
+msgid "Parameters"
+msgstr ""
+
+#: ../../colorspace.rst:20 3bcc93b28913457b901886504a9c7d61
+msgid ""
+"A number identifying the colorspace. Possible values are :data:`CS_RGB`, "
+":data:`CS_GRAY` and :data:`CS_CMYK`."
+msgstr ""
+
+#: ../../colorspace.rst:24 dd5148c548834c1fb5cdda367cca92a0
+msgid ""
+"The name identifying the colorspace. Example: *fitz.csCMYK.name = "
+"'DeviceCMYK'*."
+msgstr ""
+
+#: ../../colorspace.rst 889aa9982a5b45efb8a7470956499445
+#: 8bc0f0b07eae469faae2f36e3abbf02d
+msgid "type"
+msgstr ""
+
+#: ../../colorspace.rst:26 5151039dbfce44188e155c42919b292f
+msgid "str"
+msgstr ""
+
+#: ../../colorspace.rst:30 232b8e7cd11f4521a068c54501d208d1
+msgid ""
+"The number of bytes required to define the color of one pixel. Example: "
+"*fitz.csCMYK.n == 4*."
+msgstr ""
+
+#: ../../colorspace.rst:32 afad5de574fd4094944915c6cf25dd21
+msgid "int"
+msgstr ""
+
+#: ../../colorspace.rst:35 aa85b4ae9c2c4f6c97f9fa99dd11e371
+msgid "**Predefined Colorspaces**"
+msgstr ""
+
+#: ../../colorspace.rst:37 67ac2bb221074744ae5bee2866d6bf19
+msgid ""
+"For saving some typing effort, there exist predefined colorspace objects "
+"for the three available cases."
+msgstr ""
+
+#: ../../colorspace.rst:39 adbdf7e983d242cc9776a96cb86dbe93
+msgid ":data:`csRGB`  = *fitz.Colorspace(fitz.CS_RGB)*"
+msgstr ""
+
+#: ../../colorspace.rst:40 52b57770cbef4f809423d966fa37a4b0
+msgid ":data:`csGRAY` = *fitz.Colorspace(fitz.CS_GRAY)*"
+msgstr ""
+
+#: ../../colorspace.rst:41 9e3e0b378ffc40d2a92864ae2cc15ab2
+msgid ":data:`csCMYK` = *fitz.Colorspace(fitz.CS_CMYK)*"
+msgstr ""
+
+#: ../../footer.rst:-1 456edaf1fb20488cb1b86e10a4f89d5a
+msgid "Discord logo"
+msgstr ""
+

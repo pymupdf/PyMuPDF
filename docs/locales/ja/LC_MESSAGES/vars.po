@@ -1,0 +1,632 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../vars.rst:5 13a9c435b4fb4808aaf87a646666089e
+msgid "Constants and Enumerations"
+msgstr ""
+
+#: ../../vars.rst:6 edfeee758184420e9e6d2f43ac99291d
+msgid ""
+"Constants and enumerations of :title:`MuPDF` as implemented by "
+":title:`PyMuPDF`. Each of the following variables is accessible as "
+"*fitz.variable*."
+msgstr ""
+
+#: ../../vars.rst:10 39215ef37bcb4748b0047f693ba0b935
+msgid "Constants"
+msgstr ""
+
+#: ../../vars.rst:14 3c878d3a511e4ce4a30c25085a6b74f8
+msgid "Predefined Python list of valid :ref:`Base-14-Fonts`."
+msgstr ""
+
+#: ../../vars.rst 02785071f0514a18b26e637e01c37fe0
+#: 086fc206b05d4b89a811ffefe209a9be 2a52ba2004da4fa29bb9cd77150cd9bb
+#: 31467abfb6f34f72b7e8052830625785 4c52a03efb754bf5b6f1b6eec66cd172
+#: 51ee94ccca9f4a2ab5fa5ac7e9ad92ba 5a896dd4f93e42818673f37134293f68
+#: 60a484c1f1ad48ad94c4c0c9c09d05a7 6e6a34b3858d4888b9eb95e5edc90e1d
+#: 7810e85533f149de9636e60027aab69f 78944d61f7f64c52a0bc10700a7d6844
+#: 808b6db4b3dc416184cd5e7582afeda0 80a54b43224e44d2a2e9c7bac00100fc
+#: 8adfa0d53a5240f7bd479dac4d81a1cf a709e0c9f0df4a04bdddce7d90fade9a
+#: c0647499da3c4c978cbc6450094b3956 c1b7071acd194a368bd48f15fd08ec09
+#: d80b4b9a5d7140f08a439a766664b464 e0befa9dc82343cabd1932746cdd1677
+#: e4007115154746ee8a75be2cfe846467 eaf1f629489a4863ba1de180890420c8
+#: ef7e23e42a34454799bca6354e66b428 fbccef7c9e0345dbae7f15f3153fcccd
+#: fd85b70e25d246a48a28f19a54d050df
+msgid "Return type"
+msgstr ""
+
+#: ../../vars.rst:20 866f952708574548a503bb60807a9b78
+msgid "Predefined RGB colorspace *fitz.Colorspace(fitz.CS_RGB)*."
+msgstr ""
+
+#: ../../vars.rst:22 ../../vars.rst:28 ../../vars.rst:34
+#: 21c7240d7c46450690c9f7e46e265349 4102bd863cbb49709adb9803af8540d0
+#: 692cec7bfe4142a59f1c4c58e24fdfad
+msgid ":ref:`Colorspace`"
+msgstr ""
+
+#: ../../vars.rst:26 f11344348fa943e29e6b47ff0b604c53
+msgid "Predefined GRAY colorspace *fitz.Colorspace(fitz.CS_GRAY)*."
+msgstr ""
+
+#: ../../vars.rst:32 469db11ec52d4ccfbd98c3937e516dca
+msgid "Predefined CMYK colorspace *fitz.Colorspace(fitz.CS_CMYK)*."
+msgstr ""
+
+#: ../../vars.rst:38 4ae06e6b327a4062984e8ee93d856033
+msgid "1 -- Type of :ref:`Colorspace` is RGBA"
+msgstr ""
+
+#: ../../vars.rst:44 d47533dbda5149d18091eaef5f08b493
+msgid "2 -- Type of :ref:`Colorspace` is GRAY"
+msgstr ""
+
+#: ../../vars.rst:50 16077722016d43a5a6c9655616265e09
+msgid "3 -- Type of :ref:`Colorspace` is CMYK"
+msgstr ""
+
+#: ../../vars.rst:56 3ca86393b866420d818d357a66c5b0e2
+msgid "'x.xx.x' -- version of PyMuPDF (these bindings)"
+msgstr ""
+
+#: ../../vars.rst:62 2f6a83ac0ce34bc9a67b45452a80a443
+msgid "'x.xxx' -- version of MuPDF"
+msgstr ""
+
+#: ../../vars.rst:68 e9b57851d2874c17a4059839b3a31cf3
+msgid "ISO timestamp *YYYY-MM-DD HH:MM:SS* when these bindings were built."
+msgstr ""
+
+#: ../../vars.rst:72 58164b903cdc44b2a3368b5f4c15c947
+msgid ""
+"The docstring of *fitz* contains information of the above which can be "
+"retrieved like so: *print(fitz.__doc__)*, and should look like: *PyMuPDF "
+"1.10.0: Python bindings for the MuPDF 1.10 library, built on 2016-11-30 "
+"13:09:13*."
+msgstr ""
+
+#: ../../vars.rst:76 0938755cf23549bc873f6be89deed69c
+msgid ""
+"(VersionBind, VersionFitz, timestamp) -- combined version information "
+"where *timestamp* is the generation point in time formatted as "
+"\"YYYYMMDDhhmmss\"."
+msgstr ""
+
+#: ../../vars.rst:84 bd0ac665e4d744babee78fb231e33b66
+msgid "Document Permissions"
+msgstr ""
+
+#: ../../vars.rst:87 ../../vars.rst:105 ../../vars.rst:118
+#: 1aae7a71de4f4b359786fdc03a0bffff 5fb860c5e04b4d8d857d76b83f472aa6
+#: e84bc17b25d94b7aa2cfb2d1875629ad
+msgid "Code"
+msgstr ""
+
+#: ../../vars.rst:87 bf4ec133957340a4be9dfa6de1a1299a
+msgid "Permitted Action"
+msgstr ""
+
+#: ../../vars.rst:89 099145ae5ce34e5a8f36ce0437f4563e
+msgid "PDF_PERM_PRINT"
+msgstr ""
+
+#: ../../vars.rst:89 2212f5d1a8424a6ba47813cf864612be
+msgid "Print the document"
+msgstr ""
+
+#: ../../vars.rst:90 4b90a071ff6f4416b65d7ec2660a708c
+msgid "PDF_PERM_MODIFY"
+msgstr ""
+
+#: ../../vars.rst:90 22f7457c358c427e9dd9187183d2e064
+msgid "Modify the document's contents"
+msgstr ""
+
+#: ../../vars.rst:91 e2dc814b9db54722879e6e1a199178a4
+msgid "PDF_PERM_COPY"
+msgstr ""
+
+#: ../../vars.rst:91 59384384562e4f1a9cda506eceabae3c
+msgid "Copy or otherwise extract text and graphics"
+msgstr ""
+
+#: ../../vars.rst:92 4fdea2034e30472ba1c19c66db07833f
+msgid "PDF_PERM_ANNOTATE"
+msgstr ""
+
+#: ../../vars.rst:92 af33feed6ae0464aa1c67d30c5528714
+msgid "Add or modify text annotations and interactive form fields"
+msgstr ""
+
+#: ../../vars.rst:93 dc4e74b2175948a7ba34dca88976a2a2
+msgid "PDF_PERM_FORM"
+msgstr ""
+
+#: ../../vars.rst:93 324494cc65b14c61b4913becdfea457c
+msgid "Fill in forms and sign the document"
+msgstr ""
+
+#: ../../vars.rst:94 e7f29cad5faf476a999972e61c429f9f
+msgid "PDF_PERM_ACCESSIBILITY"
+msgstr ""
+
+#: ../../vars.rst:94 c57866df8ec6452b8d252dd38dca587a
+msgid "Obsolete, always permitted"
+msgstr ""
+
+#: ../../vars.rst:95 c57de1b7e5304f5a94620f134118b981
+msgid "PDF_PERM_ASSEMBLE"
+msgstr ""
+
+#: ../../vars.rst:95 7da892659a8844bfa572872e5450af9b
+msgid "Insert, rotate, or delete pages, bookmarks, thumbnail images"
+msgstr ""
+
+#: ../../vars.rst:96 4e77da93685c4a94938c4ae21078ad35
+msgid "PDF_PERM_PRINT_HQ"
+msgstr ""
+
+#: ../../vars.rst:96 d46478fc97114ca5938f5b6f72dbae29
+msgid "High quality printing"
+msgstr ""
+
+#: ../../vars.rst:102 ac9198e86e0544b2aea29e4e10b93077
+msgid "PDF Optional Content Codes"
+msgstr ""
+
+#: ../../vars.rst:105 ../../vars.rst:118 87b7b0f1457e41c1a09bc43752d947aa
+#: ee446124f83f4b5b8a64f0368aa2d79b
+msgid "Meaning"
+msgstr ""
+
+#: ../../vars.rst:107 da8e9a62e38742d19aa3f2e19d4826b7
+msgid "PDF_OC_ON"
+msgstr ""
+
+#: ../../vars.rst:107 a1dea393b93b45df8d45a87e7f040f6f
+msgid "Set an OCG to ON temporarily"
+msgstr ""
+
+#: ../../vars.rst:108 01b3242228324b41ad16708c75f20493
+msgid "PDF_OC_TOGGLE"
+msgstr ""
+
+#: ../../vars.rst:108 92e15dd9ff154f7a9097126ea89e6f96
+msgid "Toggle OCG status temporarily"
+msgstr ""
+
+#: ../../vars.rst:109 413140cd949c49be97454baff52d0111
+msgid "PDF_OC_OFF"
+msgstr ""
+
+#: ../../vars.rst:109 949797aefee042f0a71ed3a9aa0f67f3
+msgid "Set an OCG to OFF temporarily"
+msgstr ""
+
+#: ../../vars.rst:115 56fc76e8d4ee42ae9892c2f8ea125bf7
+msgid "PDF encryption method codes"
+msgstr ""
+
+#: ../../vars.rst:120 6af50af80e144941b69ce081fdace986
+msgid "PDF_ENCRYPT_KEEP"
+msgstr ""
+
+#: ../../vars.rst:120 8ad438060f424ddcaa8d91bca11edca6
+msgid "do not change"
+msgstr ""
+
+#: ../../vars.rst:121 161fab2c28424bbfbb4a40c21c48559a
+msgid "PDF_ENCRYPT_NONE"
+msgstr ""
+
+#: ../../vars.rst:121 13509cf83ec94384b66b067d66272d13
+msgid "remove any encryption"
+msgstr ""
+
+#: ../../vars.rst:122 c4f163b0ea7146a6b3174522733ef550
+msgid "PDF_ENCRYPT_RC4_40"
+msgstr ""
+
+#: ../../vars.rst:122 000350cfd5cd433cb9b98cec5e60e636
+msgid "RC4 40 bit"
+msgstr ""
+
+#: ../../vars.rst:123 4f021eda019442d98c6422ccfa6f1eae
+msgid "PDF_ENCRYPT_RC4_128"
+msgstr ""
+
+#: ../../vars.rst:123 c277864d96674a7a81a20e458c5348e4
+msgid "RC4 128 bit"
+msgstr ""
+
+#: ../../vars.rst:124 528bc5ac01594e6ca9aeaf047e3e6414
+msgid "PDF_ENCRYPT_AES_128"
+msgstr ""
+
+#: ../../vars.rst:124 9910f0008cfe423d964e0e30f24a56e1
+msgid "*Advanced Encryption Standard* 128 bit"
+msgstr ""
+
+#: ../../vars.rst:125 8cd814b0d890468f92f0f1ce9a05356a
+msgid "PDF_ENCRYPT_AES_256"
+msgstr ""
+
+#: ../../vars.rst:125 2cd94a657d2a4d5eac5849a4fbd5bf3d
+msgid "*Advanced Encryption Standard* 256 bit"
+msgstr ""
+
+#: ../../vars.rst:126 082b0b44a7d047bb8457ff3090e4ec17
+msgid "PDF_ENCRYPT_UNKNOWN"
+msgstr ""
+
+#: ../../vars.rst:126 54b9971bf2ed4441a93fe5dea1bafac8
+msgid "unknown"
+msgstr ""
+
+#: ../../vars.rst:132 90dd48f5850c4c3c84331c8af3d6cc03
+msgid "Font File Extensions"
+msgstr ""
+
+#: ../../vars.rst:133 a1141d4f88474c3399698b6084db3149
+msgid ""
+"The table show file extensions you should use when saving fontfile "
+"buffers extracted from a PDF. This string is returned by "
+":meth:`Document.get_page_fonts`, :meth:`Page.get_fonts` and "
+":meth:`Document.extract_font`."
+msgstr ""
+
+#: ../../vars.rst:136 78e3151d05a94c6bbba1f96d6b077125
+msgid "Ext"
+msgstr ""
+
+#: ../../vars.rst:136 bc73c6ccc1d842c6ab1cc91e56a2028b
+msgid "Description"
+msgstr ""
+
+#: ../../vars.rst:138 d9f9793ee7354031acdbd4ccc476d8ad
+msgid "ttf"
+msgstr ""
+
+#: ../../vars.rst:138 298047d991234dc596db9f0c4fed230d
+msgid "TrueType font"
+msgstr ""
+
+#: ../../vars.rst:139 bb416467cae74c0a87f249b6ba8d8913
+msgid "pfa"
+msgstr ""
+
+#: ../../vars.rst:139 ecf4a549aa9b4abb9b969a95a95dea81
+msgid "Postscript for ASCII font (various subtypes)"
+msgstr ""
+
+#: ../../vars.rst:140 e401332a02d84361931d913c4c785000
+msgid "cff"
+msgstr ""
+
+#: ../../vars.rst:140 89490baeebb5476eae4e159d026c8edc
+msgid "Type1C font (compressed font equivalent to Type1)"
+msgstr ""
+
+#: ../../vars.rst:141 043c8723543f424eb48f05cd154d99d6
+msgid "cid"
+msgstr ""
+
+#: ../../vars.rst:141 60b32f7914ae4296b3f22ee0472d8aea
+msgid "character identifier font (postscript format)"
+msgstr ""
+
+#: ../../vars.rst:142 f8d149fbd4c44534a9b9d68fdfa6ddfb
+msgid "otf"
+msgstr ""
+
+#: ../../vars.rst:142 9e899a1fe36a4c5c9aab4ada34c471cd
+msgid "OpenType font"
+msgstr ""
+
+#: ../../vars.rst:143 095c63aea31b48278c9c31e7ca0f368b
+msgid "n/a"
+msgstr ""
+
+#: ../../vars.rst:143 08968524b26e42fd99d51f9a3087b8e0
+msgid "not extractable, e.g. :ref:`Base-14-Fonts`, Type 3 fonts and others"
+msgstr ""
+
+#: ../../vars.rst:149 5516680222e64dfc87106457945d4d2e
+msgid "Text Alignment"
+msgstr ""
+
+#: ../../vars.rst:152 2da44d464e374bbea8c8ec936d3bfdd8
+msgid "0 -- align left."
+msgstr ""
+
+#: ../../vars.rst:156 dc8af1af12b746608f1b9bc266fcaed7
+msgid "1 -- align center."
+msgstr ""
+
+#: ../../vars.rst:160 1ca48589bbc445fc8e34c32d312bca62
+msgid "2 -- align right."
+msgstr ""
+
+#: ../../vars.rst:164 20547ed92d274dd3ab2e1efb42aac73b
+msgid "3 -- align justify."
+msgstr ""
+
+#: ../../vars.rst:169 f7402c2578234fe78eaa355597064b36
+msgid "Text Extraction Flags"
+msgstr ""
+
+#: ../../vars.rst:170 cd42307d3a934664ad84d9fcd7a9c1b1
+msgid ""
+"Option bits controlling the amount of data, that are parsed into a "
+":ref:`TextPage` -- this class is mainly used only internally in PyMuPDF."
+msgstr ""
+
+#: ../../vars.rst:172 1786bc533e2c4020b5661329a84ccc01
+msgid ""
+"For the PyMuPDF programmer, some combination (using Python's `|` "
+"operator, or simply use `+`) of these values are aggregated in the "
+"`flags` integer, a parameter of all text search and text extraction "
+"methods. Depending on the individual method, different default "
+"combinations of the values are used. Please use a value that meets your "
+"situation. Especially make sure to switch off image extraction unless you"
+" really need them. The impact on performance and memory is significant!"
+msgstr ""
+
+#: ../../vars.rst:176 cf4fb784cd5649d89648e7adac92e2b7
+msgid ""
+"1 -- If set, ligatures are passed through to the application in their "
+"original form. Otherwise ligatures are expanded into their constituent "
+"parts, e.g. the ligature \"ffi\" is expanded into three  eparate "
+"characters f, f and i. Default is \"on\" in PyMuPDF. MuPDF supports the "
+"following 7 ligatures: \"ff\", \"fi\", \"fl\", \"ffi\", \"ffl\", , "
+"\"ft\", \"st\"."
+msgstr ""
+
+#: ../../vars.rst:180 0a95532c0a4a4277a3f89788739eda8f
+msgid ""
+"2 -- If set, whitespace is passed through. Otherwise any type of "
+"horizontal whitespace (including horizontal tabs) will be replaced with "
+"space characters of variable width. Default is \"on\" in PyMuPDF."
+msgstr ""
+
+#: ../../vars.rst:184 378bac256c884154a80c9db4e7aa8e33
+msgid ""
+"4 -- If set, then images will be stored in the :ref:`TextPage`. This "
+"causes the presence of (usually large!) binary image content in the "
+"output of text extractions of types \"blocks\", \"dict\", \"json\", "
+"\"rawdict\", \"rawjson\", \"html\", and \"xhtml\" and is the default "
+"there. If used with \"blocks\" however, only image metadata will be "
+"returned, not the image itself."
+msgstr ""
+
+#: ../../vars.rst:188 2bffab76a52b41e7a6f1ccc2ba6aeaa9
+msgid ""
+"8 -- If set, Mupdf will not try to add missing space characters where "
+"there are large gaps between characters. In PDF, the creator often does "
+"not insert spaces to point to the next character's position, but will "
+"provide the direct location address. The default in PyMuPDF is \"off\" --"
+" so spaces **will be generated**."
+msgstr ""
+
+#: ../../vars.rst:192 5c23c43d9f024f189479547d35badc0a
+msgid ""
+"16 -- Ignore hyphens at line ends and join with next line. Used "
+"internally with the text search functions. However, it is generally "
+"available: if on, text extractions will return joined text lines (or "
+"spans) with the ending hyphen of the first line eliminated. So two "
+"separate spans **\"first meth-\"** and **\"od leads to wrong results\"** "
+"on different lines will be joined to one span **\"first method leads to "
+"wrong results\"** and correspondingly updated bboxes: the characters of "
+"the resulting span will no longer have identical y-coordinates."
+msgstr ""
+
+#: ../../vars.rst:196 91cad6c3750f44c2b99c71753850a114
+msgid ""
+"32 -- Generate a new line for every span. Not used (\"off\") in PyMuPDF, "
+"but available for your use. Every line in \"dict\", \"json\", "
+"\"rawdict\", \"rawjson\" will contain exactly one span."
+msgstr ""
+
+#: ../../vars.rst:200 9e74742865d54ef7873a4113b96905f4
+msgid ""
+"64 -- If set, characters entirely outside a page's **mediabox** will be "
+"ignored. This is default in PyMuPDF."
+msgstr ""
+
+#: ../../vars.rst:202 b6d4bf73d4b94bbeb66dc3fd83c8b1ad
+msgid ""
+"The following constants represent the default combinations of the above "
+"for text extraction and searching:"
+msgstr ""
+
+#: ../../vars.rst:206 ../../vars.rst:210 ../../vars.rst:214 ../../vars.rst:234
+#: 1a570c887e554980b8981e72d3780732 3ccee9fa94dd4df29cc2fd68329dc585
+#: e20746c04d2c47ebacddd0b0c6e102f4 ed9e1e778680466f9cf25400a2632825
+msgid "`TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`"
+msgstr ""
+
+#: ../../vars.rst:218 ../../vars.rst:222 ../../vars.rst:226 ../../vars.rst:230
+#: 1a22e3aeaa06435b86d37543875a5a89 4b3cddd428104881971970380a4bb719
+#: 634b57c524b84e14a6ee08ce5faf030e 9b4531984266449fad18655916a24c68
+msgid ""
+"`TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP "
+"| TEXT_PRESERVE_IMAGES`"
+msgstr ""
+
+#: ../../vars.rst:238 1ab461971c254eb9aa563943a3595f0b
+msgid ""
+"`TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP "
+"| TEXT_DEHYPHENATE`"
+msgstr ""
+
+#: ../../vars.rst:244 676eda0d737d4b87b21d3e4c78463a01
+msgid "Link Destination Kinds"
+msgstr ""
+
+#: ../../vars.rst:245 e8660ef597264e7aa2de401fc2c4c0c3
+msgid "Possible values of :attr:`linkDest.kind` (link destination kind)."
+msgstr ""
+
+#: ../../vars.rst:249 aca5863efce649efa7b87ea66dea745f
+msgid "0 -- No destination. Indicates a dummy link."
+msgstr ""
+
+#: ../../vars.rst:255 d3080c1371494d698a109bd7eced0591
+msgid "1 -- Points to a place in this document."
+msgstr ""
+
+#: ../../vars.rst:261 54715366035943d4901d2694dacbf047
+msgid ""
+"2 -- Points to a URI -- typically a resource specified with internet "
+"syntax."
+msgstr ""
+
+#: ../../vars.rst:267 96a9bbbd9f2c478fbda0c58c23cad0f3
+msgid "3 -- Launch (open) another file (of any \"executable\" type)."
+msgstr ""
+
+#: ../../vars.rst:273 3898a2289ff04e48833630d93e968520
+msgid "4 -- points to a named location."
+msgstr ""
+
+#: ../../vars.rst:279 c4fb3bc54e434845b7f2bbb91c1d534d
+msgid "5 -- Points to a place in another PDF document."
+msgstr ""
+
+#: ../../vars.rst:286 a811cc5d04a84f6fac14298055f4d297
+msgid "Link Destination Flags"
+msgstr ""
+
+#: ../../vars.rst:288 5e153b36b3e04e0793ec6bc1d43847bb
+msgid ""
+"The rightmost byte of this integer is a bit field, so test the truth of "
+"these bits with the *&* operator."
+msgstr ""
+
+#: ../../vars.rst:292 2c33ff7730024e5e8912d37b894451dd
+msgid "1  (bit 0) Top left x value is valid"
+msgstr ""
+
+#: ../../vars.rst:298 266604d01d2147f68d5dbd9898cb4edd
+msgid "2  (bit 1) Top left y value is valid"
+msgstr ""
+
+#: ../../vars.rst:304 58bf062ea62247be92b1161a0d0d99ee
+msgid "4  (bit 2) Bottom right x value is valid"
+msgstr ""
+
+#: ../../vars.rst:310 7b87c859405f4f00a83584717887c8f8
+msgid "8  (bit 3) Bottom right y value is valid"
+msgstr ""
+
+#: ../../vars.rst:316 0497f78944824f0081d895ec73319f89
+msgid "16 (bit 4) Horizontal fit"
+msgstr ""
+
+#: ../../vars.rst:322 cfcbf55e8a9848b9a0ba22fde0472c91
+msgid "32 (bit 5) Vertical fit"
+msgstr ""
+
+#: ../../vars.rst:328 4c67e16673a549a0bf3415f534986d08
+msgid "64 (bit 6) Bottom right x is a zoom figure"
+msgstr ""
+
+#: ../../vars.rst:334 2aff1a7067e24ffa9b2f4ab3b82a6afb
+msgid "Annotation Related Constants"
+msgstr ""
+
+#: ../../vars.rst:335 5b36a530969a46f7ad217c74718ed704
+msgid "See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for details."
+msgstr ""
+
+#: ../../vars.rst:340 ebf4dcbadb944860ae29390c58973ec5
+msgid "Annotation Types"
+msgstr ""
+
+#: ../../vars.rst:341 d988884be2cd47b68d2bb5ce4c0dda7b
+msgid ""
+"These identifiers also cover **links** and **widgets**: the PDF "
+"specification technically handles them all in the same way, whereas "
+"**MuPDF** (and PyMuPDF) treats them as three basically different types of"
+" objects."
+msgstr ""
+
+#: ../../vars.rst:378 02b6f26bc2c240579ea13a7db8a7eea6
+msgid "Annotation Flag Bits"
+msgstr ""
+
+#: ../../vars.rst:395 b58b3f61c2ee4e0f9f18b64a483e3676
+msgid "Annotation Line Ending Styles"
+msgstr ""
+
+#: ../../vars.rst:411 783da63409904d89a50a91ca73c2c0c9
+msgid "Widget Constants"
+msgstr ""
+
+#: ../../vars.rst:416 851f7a6f5b51434b91b7059fa24654c8
+msgid "Widget Types (*field_type*)"
+msgstr ""
+
+#: ../../vars.rst:429 207aca8b91dc4e0b8db757c7b7db725c
+msgid "Text Widget Subtypes (*text_format*)"
+msgstr ""
+
+#: ../../vars.rst:440 e0d3f52344ea47e1a8d3f46c739b22b6
+msgid "Widget flags (*field_flags*)"
+msgstr ""
+
+#: ../../vars.rst:441 9b9e0a9526524e95b264aa036222af95
+msgid "**Common to all field types**::"
+msgstr ""
+
+#: ../../vars.rst:447 2a61b982cabe4f5f92915cdf0f190f1d
+msgid "**Text widgets**::"
+msgstr ""
+
+#: ../../vars.rst:457 2dc908353bd146a797402fd52faaa9af
+msgid "**Button widgets**::"
+msgstr ""
+
+#: ../../vars.rst:464 0c62578bcf304b99a273926e7d8d4b15
+msgid "**Choice widgets**::"
+msgstr ""
+
+#: ../../vars.rst:477 4e2c9e01f16e465d817fcb2d8dc88cc8
+msgid "PDF Standard Blend Modes"
+msgstr ""
+
+#: ../../vars.rst:479 fcc603aa265d4256a0e7b7a0ba09028a
+msgid "For an explanation see :ref:`AdobeManual`, page 324::"
+msgstr ""
+
+#: ../../vars.rst:502 f0ef9080d0f9462e9d315ad4566a4785
+msgid "Stamp Annotation Icons"
+msgstr ""
+
+#: ../../vars.rst:503 fa47d0c4e56d4c699ce6efebcfd5702e
+msgid "MuPDF has defined the following icons for **rubber stamp** annotations::"
+msgstr ""
+
+#: ../../footer.rst:-1 4960f77af59544b980fee580637a1423
+msgid "Discord logo"
+msgstr ""
+

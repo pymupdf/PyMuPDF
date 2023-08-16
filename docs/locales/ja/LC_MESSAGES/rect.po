@@ -1,0 +1,769 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../rect.rst:7 a6bfc3a7d769457490fcc64cc87d742f
+msgid "Rect"
+msgstr ""
+
+#: ../../rect.rst:9 2bf54a3eaddb48c48fde0129a4560faa
+msgid ""
+"*Rect* represents a rectangle defined by four floating point numbers x0, "
+"y0, x1, y1. They are treated as being coordinates of two diagonally "
+"opposite points. The first two numbers are regarded as the \"top left\" "
+"corner P\\ :sub:`(x0,y0)` and P\\ :sub:`(x1,y1)` as the \"bottom right\" "
+"one. However, these two properties need not coincide with their intuitive"
+" meanings -- read on."
+msgstr ""
+
+#: ../../rect.rst:11 08b5de166b25450b83a4ddd2988c75d3
+msgid "The following remarks are also valid for :ref:`IRect` objects:"
+msgstr ""
+
+#: ../../rect.rst:13 cd70b9379c744653b0df2693ccb0fee9
+msgid ""
+"A rectangle in the sense of (Py-) MuPDF **(and PDF)** always has "
+"**borders parallel to the x- resp. y-axis**. A general orthogonal "
+"tetragon **is not a rectangle** -- in contrast to the mathematical "
+"definition."
+msgstr ""
+
+#: ../../rect.rst:14 8fdced3de2434f2bb16e3f595c0c76c5
+msgid ""
+"The constructing points can be (almost! -- see below) anywhere in the "
+"plane -- they need not even be different, and e.g. \"top left\" need not "
+"be the geometrical \"north-western\" point."
+msgstr ""
+
+#: ../../rect.rst:15 40bc58e57a214b3d940e6e90926b63be
+msgid "Units are in points, where 72 points is 1 inch."
+msgstr ""
+
+#: ../../rect.rst:20 b8f105c299714ca9b564f51f982de7db
+msgid ""
+"For any given quadruple of numbers, the geometrically \"same\" rectangle "
+"can be defined in four different ways:"
+msgstr ""
+
+#: ../../rect.rst:17 c8b434bf95b248f39d10b9877015cc6e
+msgid "Rect(P\\ :sub:`(x0,y0)`, P\\ :sub:`(x1,y1)`\\ )"
+msgstr ""
+
+#: ../../rect.rst:18 0d02a7dd8fbc4f998f673456e975d3b8
+msgid "Rect(P\\ :sub:`(x1,y1)`, P\\ :sub:`(x0,y0)`\\ )"
+msgstr ""
+
+#: ../../rect.rst:19 6fa1b6597e174cfb8fb291ce55fa0717
+msgid "Rect(P\\ :sub:`(x0,y1)`, P\\ :sub:`(x1,y0)`\\ )"
+msgstr ""
+
+#: ../../rect.rst:20 6f445ff7b4d74c7cac0dd617f6f32888
+msgid "Rect(P\\ :sub:`(x1,y0)`, P\\ :sub:`(x0,y1)`\\ )"
+msgstr ""
+
+#: ../../rect.rst:22 1c1eb036cc89469e8d2a1eebe14fd4ab
+msgid "**(Changed in v1.19.0)** Hence some classification:"
+msgstr ""
+
+#: ../../rect.rst:24 2c05baa6d2c2407cbc43b1fb06a50a33
+msgid ""
+"A rectangle is called **valid** if `x0 <= x1` and `y0 <= y1` (i.e. the "
+"bottom right point is \"south-eastern\" to the top left one), otherwise "
+"**invalid**. Of the four alternatives above, **only the first** is valid."
+" Please take into account, that in MuPDF's coordinate system, the y-axis "
+"is oriented from **top to bottom**. Invalid rectangles have been called "
+"infinite in earlier versions."
+msgstr ""
+
+#: ../../rect.rst:26 f85897a8bfec45e995ed721a8dce867d
+msgid ""
+"A rectangle is called **empty** if `x0 >= x1` or `y0 >= y1`. This "
+"implies, that **invalid rectangles are also always empty.** And `width` "
+"(resp. `height`) is **set to zero** if `x0 > x1` (resp. `y0 > y1`). In "
+"previous versions, a rectangle was empty only if one of width or height "
+"was zero."
+msgstr ""
+
+#: ../../rect.rst:28 9fffb102deb84b4d93da3ab6b4ec8a63
+msgid ""
+"Rectangle coordinates **cannot be outside** the number range from "
+"`FZ_MIN_INF_RECT = -2147483648` to `FZ_MAX_INF_RECT = 2147483520`. Both "
+"values have been chosen, because they are the smallest / largest 32bit "
+"integers that survive C float conversion roundtrips. In previous versions"
+" there was no limit for coordinate values."
+msgstr ""
+
+#: ../../rect.rst:30 01da167f72da4a71ba41b86f927fa35b
+msgid ""
+"There is **exactly one \"infinite\" rectangle**, defined by `x0 = y0 = "
+"FZ_MIN_INF_RECT` and `x1 = y1 = FZ_MAX_INF_RECT`. It contains every other"
+" rectangle. It is mainly used for technical purposes -- e.g. when a "
+"function call should ignore a formally required rectangle argument. This "
+"rectangle is not empty."
+msgstr ""
+
+#: ../../rect.rst:32 b7e59893f3e743038fb387f91db59882
+msgid ""
+"**Rectangles are (semi-) open:** The right and the bottom edges "
+"(including the resp. corners) are not considered part of the rectangle. "
+"This implies, that only the top-left corner `(x0, y0)` can ever belong to"
+" the rectangle - the other three corners never do. An empty rectangle "
+"contains no corners at all."
+msgstr ""
+
+#: ../../rect.rst:38 84fb3d40f3b44591bb2c70654a3efe68
+msgid "Here is an overview of the changes."
+msgstr ""
+
+#: ../../rect.rst:41 d7a02c85e287459bb08565b1f2245334
+msgid "Notion"
+msgstr ""
+
+#: ../../rect.rst:41 2b5a9d4dad0f404e8891e060c203ae8d
+msgid "Versions < 1.19.0"
+msgstr ""
+
+#: ../../rect.rst:41 ef2e344cf9944e26816ba1da781aade1
+msgid "Versions 1.19.*"
+msgstr ""
+
+#: ../../rect.rst:43 e4f0b001864f46e69b560e2751ba49f2
+msgid "empty"
+msgstr ""
+
+#: ../../rect.rst:43 70ebc657cae245a0ae745c79cd655ed9
+msgid "x0 = x1 or y0 = y1"
+msgstr ""
+
+#: ../../rect.rst:43 94aa8aa78f474c449a29e87c0e43af0a
+msgid "x0 >= x1 or y0 >= y1 -- includes invalid rects"
+msgstr ""
+
+#: ../../rect.rst:44 91cab8254f2b4ad19a6f402771cee026
+msgid "valid"
+msgstr ""
+
+#: ../../rect.rst:44 ff0cbe478e8b498dabc8c5dad979fde4
+msgid "n/a"
+msgstr ""
+
+#: ../../rect.rst:44 2a637bc6bf7a4beb89c07401da5abd39
+msgid "x0 <= x1 and y0 <= y1"
+msgstr ""
+
+#: ../../rect.rst:45 9f2d52ec216543e1aa4e604dcaa2f458
+msgid "infinite"
+msgstr ""
+
+#: ../../rect.rst:45 61705ea9e68c4a3da721cb8a175f206f
+msgid "all rects where x0 > x1 or y1 > y0"
+msgstr ""
+
+#: ../../rect.rst:45 48804664e73a426ab14bbe895e6720af
+msgid "**exactly one infinite rect / irect!**"
+msgstr ""
+
+#: ../../rect.rst:46 5cb8309f04dd4135aef45febdca322a9
+msgid "coordinate values"
+msgstr ""
+
+#: ../../rect.rst:46 d9c43480e29f4ed3b05900c16bf00fb2
+msgid "all numbers"
+msgstr ""
+
+#: ../../rect.rst:46 35033e0d730a4dbfb43e439df99d5682
+msgid "`FZ_MIN_INF_RECT <= number <= FZ_MAX_INF_RECT`"
+msgstr ""
+
+#: ../../rect.rst:47 0fe04c8e972740288efa756d5bb7a284
+msgid "borders, corners"
+msgstr ""
+
+#: ../../rect.rst:47 134cefd850994f95a02d4338accda2e2
+msgid "are parts of the rectangle"
+msgstr ""
+
+#: ../../rect.rst:47 2b9a74e9072d44c79e5915ae1a9d2e14
+msgid "right and bottom corners and edges **are outside**"
+msgstr ""
+
+#: ../../rect.rst:50 198f46dfc65f4a9a9d54b9cbfd1834a5
+msgid ""
+"There are new top level functions defining infinite and standard empty "
+"rectangles and quads, see :meth:`INFINITE_RECT` and friends."
+msgstr ""
+
+#: ../../rect.rst:54 fba1488472f34d16922f0b9d02ca7adc
+msgid "**Methods / Attributes**"
+msgstr ""
+
+#: ../../rect.rst:54 fc214a75cf834f79a0c84b154c90e83a
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../rect.rst:56 4e4795444c6d4f8da6219eade8eb9f26
+msgid ":meth:`Rect.contains`"
+msgstr ""
+
+#: ../../rect.rst:56 9310df9e972f4411bd2a28f2dbbc0f52
+msgid "checks containment of point_likes and rect_likes"
+msgstr ""
+
+#: ../../rect.rst:57 4264e1ec8c024e07a9309c800d9938f2
+msgid ":meth:`Rect.get_area`"
+msgstr ""
+
+#: ../../rect.rst:57 c99e1f4a802745ffaa443429849680f7
+msgid "calculate rectangle area"
+msgstr ""
+
+#: ../../rect.rst:58 bac88765720f42a98c407d4a45f7bb0b
+msgid ":meth:`Rect.include_point`"
+msgstr ""
+
+#: ../../rect.rst:58 59f7d53f4a38489b88179a4931979bde
+msgid "enlarge rectangle to also contain a point"
+msgstr ""
+
+#: ../../rect.rst:59 2e86f25e849b467d93b6f012e41766ca
+msgid ":meth:`Rect.include_rect`"
+msgstr ""
+
+#: ../../rect.rst:59 e684d817f262437e96cf079e40fc066a
+msgid "enlarge rectangle to also contain another one"
+msgstr ""
+
+#: ../../rect.rst:60 772f0e583ba14dfdac051bf42c7b6edd
+msgid ":meth:`Rect.intersect`"
+msgstr ""
+
+#: ../../rect.rst:60 b53875a2fbc9482c88a8271dfab29c26
+msgid "common part with another rectangle"
+msgstr ""
+
+#: ../../rect.rst:61 4b92aa07395f4e429920c4bfe6970a08
+msgid ":meth:`Rect.intersects`"
+msgstr ""
+
+#: ../../rect.rst:61 e395d962cca44f36a7cedcd7130e2581
+msgid "checks for non-empty intersections"
+msgstr ""
+
+#: ../../rect.rst:62 f61ed4b5858b4536b5429abc360dbaaa
+msgid ":meth:`Rect.morph`"
+msgstr ""
+
+#: ../../rect.rst:62 e258e88ddde04cdc9647fbc13fa61c9a
+msgid "transform with a point and a matrix"
+msgstr ""
+
+#: ../../rect.rst:63 a18e8e69222246a180646c827f6282a7
+msgid ":meth:`Rect.torect`"
+msgstr ""
+
+#: ../../rect.rst:63 862ef1efc2d746f1b8a86b9b52e9fd80
+msgid "the matrix that transforms to another rectangle"
+msgstr ""
+
+#: ../../rect.rst:64 3d5cb0fa80d04905a558aa9177552481
+msgid ":meth:`Rect.norm`"
+msgstr ""
+
+#: ../../rect.rst:64 4aa5ef4653944472a68baf2a9e1c1bc6
+msgid "the Euclidean norm"
+msgstr ""
+
+#: ../../rect.rst:65 8f23d88142b74442b8be8b8b6f5463ca
+msgid ":meth:`Rect.normalize`"
+msgstr ""
+
+#: ../../rect.rst:65 8f0567d4de8d4e76aa353b0a27b10b89
+msgid "makes a rectangle valid"
+msgstr ""
+
+#: ../../rect.rst:66 ff81e82e91804ed2af113682d14fb6bc
+msgid ":meth:`Rect.round`"
+msgstr ""
+
+#: ../../rect.rst:66 bfb70e0266ba4229b3f038dadc3a8281
+msgid "create smallest :ref:`Irect` containing rectangle"
+msgstr ""
+
+#: ../../rect.rst:67 596b4d682a6849189e86a5e7b94dbc25
+msgid ":meth:`Rect.transform`"
+msgstr ""
+
+#: ../../rect.rst:67 31ddc27eee674943890ca6ab3eb10ce8
+msgid "transform rectangle with a matrix"
+msgstr ""
+
+#: ../../rect.rst:68 e3de2f26ffe4453ea81f879bc4214dc7
+msgid ":attr:`Rect.bottom_left`"
+msgstr ""
+
+#: ../../rect.rst:68 1f4b7d9633e9404cb5f7c5656f1e65a6
+msgid "bottom left point, synonym *bl*"
+msgstr ""
+
+#: ../../rect.rst:69 9639552ea21b42349ae55142265b9e46
+msgid ":attr:`Rect.bottom_right`"
+msgstr ""
+
+#: ../../rect.rst:69 f1e36ec13e474626803dabfdf248126b
+msgid "bottom right point, synonym *br*"
+msgstr ""
+
+#: ../../rect.rst:70 8c5b07da82004d80893807e98a1e78af
+msgid ":attr:`Rect.height`"
+msgstr ""
+
+#: ../../rect.rst:70 8da4a65f25f64c5588bd1c8667c52495
+msgid "rectangle height"
+msgstr ""
+
+#: ../../rect.rst:71 e2d0db3a3c4f47d5b293ee8f347dca30
+msgid ":attr:`Rect.irect`"
+msgstr ""
+
+#: ../../rect.rst:71 9e2ad7b281af4c6081667f25149dbdea
+msgid "equals result of method *round()*"
+msgstr ""
+
+#: ../../rect.rst:72 e389a13325be43e587a9c83a0fa76a6d
+msgid ":attr:`Rect.is_empty`"
+msgstr ""
+
+#: ../../rect.rst:72 a546059efdcb456b9a336f451b47f20b
+msgid "whether rectangle is empty"
+msgstr ""
+
+#: ../../rect.rst:73 d9c5f4849a71494592ba2090948cd485
+msgid ":attr:`Rect.is_valid`"
+msgstr ""
+
+#: ../../rect.rst:73 627c40388b944ca3bd15c0ebc93c4dea
+msgid "whether rectangle is valid"
+msgstr ""
+
+#: ../../rect.rst:74 b59be4a81b1e441eae2566a2fb759a15
+msgid ":attr:`Rect.is_infinite`"
+msgstr ""
+
+#: ../../rect.rst:74 3de9073d33494914a346443be2662c3f
+msgid "whether rectangle is infinite"
+msgstr ""
+
+#: ../../rect.rst:75 d08f7391f9794de289896f99ff383fd1
+msgid ":attr:`Rect.top_left`"
+msgstr ""
+
+#: ../../rect.rst:75 d162f808277447138a5cd00d91e78e19
+msgid "top left point, synonym *tl*"
+msgstr ""
+
+#: ../../rect.rst:76 ce65ad0de34b482da10bb737cbe29bdf
+msgid ":attr:`Rect.top_right`"
+msgstr ""
+
+#: ../../rect.rst:76 8740936879124a37b5031461cb23ff78
+msgid "top_right point, synonym *tr*"
+msgstr ""
+
+#: ../../rect.rst:77 2c2fd855340a404ab5c36797cdb691b1
+msgid ":attr:`Rect.quad`"
+msgstr ""
+
+#: ../../rect.rst:77 ba0d6080d88644c7a65faf1f837e5b10
+msgid ":ref:`Quad` made from rectangle corners"
+msgstr ""
+
+#: ../../rect.rst:78 23079b32d70d4fd88b55df7e15018b38
+msgid ":attr:`Rect.width`"
+msgstr ""
+
+#: ../../rect.rst:78 461fc65f55984b36939ab4c5a86a98ee
+msgid "rectangle width"
+msgstr ""
+
+#: ../../rect.rst:79 bd649630ff624d6ea9650773d08d1848
+msgid ":attr:`Rect.x0`"
+msgstr ""
+
+#: ../../rect.rst:79 1a4f98006ad240a28380b1a39abe0478
+msgid "left corners' x coordinate"
+msgstr ""
+
+#: ../../rect.rst:80 c86b2065abce45a3961021378286b474
+msgid ":attr:`Rect.x1`"
+msgstr ""
+
+#: ../../rect.rst:80 132dc2306b4e4c74bedc93f05fa04209
+msgid "right corners' x -coordinate"
+msgstr ""
+
+#: ../../rect.rst:81 6316f8989a0b40d395b902362d0b2029
+msgid ":attr:`Rect.y0`"
+msgstr ""
+
+#: ../../rect.rst:81 e77f16812c5141e8a01f67debe14cad8
+msgid "top corners' y coordinate"
+msgstr ""
+
+#: ../../rect.rst:82 5cc16cdbde2449c0a0524e77d686ba28
+msgid ":attr:`Rect.y1`"
+msgstr ""
+
+#: ../../rect.rst:82 46f47f56c3e24e89888827055a5dcb1e
+msgid "bottom corners' y coordinate"
+msgstr ""
+
+#: ../../rect.rst:85 f447b20159da4cce8cde4b26dfc41e24
+msgid "**Class API**"
+msgstr ""
+
+#: ../../rect.rst:103 0208035eec614289aff92d0e44ed400b
+msgid ""
+"Overloaded constructors: *top_left*, *bottom_right* stand for "
+":data:`point_like` objects, \"sequence\" is a Python sequence type of 4 "
+"numbers (see :ref:`SequenceTypes`), \"rect\" means another "
+":data:`rect_like`, while the other parameters mean coordinates."
+msgstr ""
+
+#: ../../rect.rst:105 2a5d4c6744ba4230a73a642f6e125d09
+msgid "If \"rect\" is specified, the constructor creates a **new copy** of it."
+msgstr ""
+
+#: ../../rect.rst:107 f7e848d2a88d42449d4d8b85a877c946
+msgid ""
+"Without parameters, the empty rectangle *Rect(0.0, 0.0, 0.0, 0.0)* is "
+"created."
+msgstr ""
+
+#: ../../rect.rst:111 5a16d61e49a44d788fc119925173877c
+msgid ""
+"Creates the smallest containing :ref:`IRect`. This is **not** the same as"
+" simply rounding the rectangle's edges: The top left corner is rounded "
+"upwards and to the left while the bottom right corner is rounded "
+"downwards and to the right."
+msgstr ""
+
+#: ../../rect.rst:116 87062d1d63e94b5cb5fe0970d257a1dd
+msgid "If the rectangle is **empty**, the result is also empty."
+msgstr ""
+
+#: ../../rect.rst:117 85b397496fd844a38e5d78988c8f04bb
+msgid ""
+"**Possible paradox:** The result may be empty, **even if** the rectangle "
+"is **not** empty! In such cases, the result obviously does **not** "
+"contain the rectangle. This is because MuPDF's algorithm allows for a "
+"small tolerance (1e-3). Example:"
+msgstr ""
+
+#: ../../rect.rst 04ba20fd7bd84456b048e5bc6dbd8c88
+#: 38ca672d557948eab31a0558062afe5a 5c534a5e197342d8988eda952e0a87b3
+#: 67960b2de4a441f1b05b1f4e1d899b92 6cb2074ff7ab49f7ad4eec4d7eb5bca6
+#: 7ae4c8a082694778962e298488e7a61a d8d3fb31943b402ca8b052ace1bc96fc
+#: f61c29593601478ab4220c39ae16369c
+msgid "Return type"
+msgstr ""
+
+#: ../../rect.rst:127 2bc9ac627c8e499e8f2562a73ad399a6
+msgid ":ref:`IRect`"
+msgstr ""
+
+#: ../../rect.rst:131 9cc449ac87134736a6617341e5eceb3b
+msgid ""
+"Transforms the rectangle with a matrix and **replaces the original**. If "
+"the rectangle is empty or infinite, this is a no-operation."
+msgstr ""
+
+#: ../../rect.rst 22f08a1255c74745b612cc9f244abe7d
+#: 5afa711ce5154321b8a81ea00411a09f 844e0b083f3146f2b01e0f44e6ce63cf
+#: aa7b3db959f24c08a83a6ee32a6cf6f9 bc3289a46f924a51881ec2ce37ee15a3
+#: caa4f76c56b449ce8e345e02a719a6e7 e1a3d685b86047b483096bc7b2d31037
+#: e7e3a66bf07940708708df358cc5599d fad35629cb404637b3acd85237b87275
+msgid "Parameters"
+msgstr ""
+
+#: ../../rect.rst:133 30ba2fbbff7541d385299ab11ec82851
+msgid "The matrix for the transformation."
+msgstr ""
+
+#: ../../rect.rst:136 45298adb2a1947c2b2a869cc12151e6b
+msgid "*Rect*"
+msgstr ""
+
+#: ../../rect.rst 331feb35605a44baa98dcc2481ad7796
+#: 3d348de5d63947d182080961e5c25808 491cb3c77e7d466e9a7a7ff08ca8ea3b
+msgid "Returns"
+msgstr ""
+
+#: ../../rect.rst:137 7c9abda61a9746e385b85a16305077ba
+msgid "the smallest rectangle that contains the transformed original."
+msgstr ""
+
+#: ../../rect.rst:141 9971ef22d2784e7990117c342438c003
+msgid ""
+"The intersection (common rectangular area, largest rectangle contained in"
+" both) of the current rectangle and *r* is calculated and **replaces the "
+"current** rectangle. If either rectangle is empty, the result is also "
+"empty. If *r* is infinite, this is a no-operation. If the rectangles are "
+"(mathematically) disjoint sets, then the result is invalid. If the result"
+" is valid but empty, then the rectangles touch each other in a corner or "
+"(part of) a side."
+msgstr ""
+
+#: ../../rect.rst:143 ../../rect.rst:150 6721df1793cd45e2a1f59ff54750303a
+#: e6f1752521da48ea8bba39dc1a06897a
+msgid "Second rectangle"
+msgstr ""
+
+#: ../../rect.rst:148 28c0cc29b21145088878d3fabac7527d
+msgid ""
+"The smallest rectangle containing the current one and *r* is calculated "
+"and **replaces the current** one. If either rectangle is infinite, the "
+"result is also infinite. If one is empty, the other one will be taken as "
+"the result."
+msgstr ""
+
+#: ../../rect.rst:155 ce0c9aac25174647a991e9964a2b1a06
+msgid ""
+"The smallest rectangle containing the current one and point *p* is "
+"calculated and **replaces the current** one. **The infinite rectangle "
+"remains unchanged.** To create a rectangle containing a series of points,"
+" start with (the empty) *fitz.Rect(p1, p1)* and successively include the "
+"remaining points."
+msgstr ""
+
+#: ../../rect.rst:157 6c8e7f23e2274b79ba95107fcf9fbd6b
+msgid "Point to include."
+msgstr ""
+
+#: ../../rect.rst:163 82abe45ba4d94212a66b71227396d56a
+msgid ""
+"Calculate the area of the rectangle and, with no parameter, equals "
+"*abs(rect)*. Like an empty rectangle, the area of an infinite rectangle "
+"is also zero. So, at least one of *fitz.Rect(p1, p2)* and *fitz.Rect(p2, "
+"p1)* has a zero area."
+msgstr ""
+
+#: ../../rect.rst:165 4badb6f651f54a2482d3ccafa65ad6fc
+msgid ""
+"Specify required unit: respective squares of *px* (pixels, default), *in*"
+" (inches), *cm* (centimeters), or *mm* (millimeters)."
+msgstr ""
+
+#: ../../rect.rst:170 49846b7cb9fa42939e5e268ced119d80
+msgid ""
+"Checks whether *x* is contained in the rectangle. It may be an *IRect*, "
+"*Rect*, *Point* or number. If *x* is an empty rectangle, this is always "
+"true. If the rectangle is empty this is always *False* for all non-empty "
+"rectangles and for all points. `x in rect` and `rect.contains(x)` are "
+"equivalent."
+msgstr ""
+
+#: ../../rect.rst:172 09c2e7293c5249d484d222972cb07611
+msgid "the object to check."
+msgstr ""
+
+#: ../../rect.rst:179 b38594bd05f04400b095e5112a5fa8b0
+msgid ""
+"Checks whether the rectangle and a :data:`rect_like` \"r\" contain a "
+"common non-empty :ref:`Rect`. This will always be *False* if either is "
+"infinite or empty."
+msgstr ""
+
+#: ../../rect.rst:181 3548014a290140e79dda25ebb4a08b20
+msgid "the rectangle to check."
+msgstr ""
+
+#: ../../rect.rst:187 13a699c4049a48fb99438447b4e0a6e0
+msgid "New in version 1.19.3"
+msgstr ""
+
+#: ../../rect.rst:189 9279805914734b3db81c5500fe785151
+msgid "Compute the matrix which transforms this rectangle to a given one."
+msgstr ""
+
+#: ../../rect.rst:191 2aca556ebdf74db08e07d19e79c4cdf1
+msgid "the target rectangle. Must not be empty or infinite."
+msgstr ""
+
+#: ../../rect.rst:192 c08055e10fc74a9aba960a251f648e60
+msgid ":ref:`Matrix`"
+msgstr ""
+
+#: ../../rect.rst:193 635a2bafc5cd425dbd818b80ddb7b78a
+msgid ""
+"a matrix `mat` such that `self * mat = rect`. Can for example be used to "
+"transform between the page and the pixmap coordinates. See an example use"
+" here :ref:`RecipesImages_P`."
+msgstr ""
+
+#: ../../rect.rst:197 667d223fb02544ccb8105e97bbae363f
+msgid "New in version 1.17.0"
+msgstr ""
+
+#: ../../rect.rst:199 46118e9afea24be3a991a76da5043c66
+msgid ""
+"Return a new quad after applying a matrix to the rectangle using the "
+"fixed point `fixpoint`."
+msgstr ""
+
+#: ../../rect.rst:201 31789d0aba0445ae80d823d762b70ae4
+msgid "the fixed point."
+msgstr ""
+
+#: ../../rect.rst:202 050514a86ea44267b22e328fc9dc6a5b
+msgid "the matrix."
+msgstr ""
+
+#: ../../rect.rst:203 580db7617e684fac9766de14dd54ad5d
+msgid ""
+"a new :ref:`Quad`. This a wrapper for the same-named quad method. If "
+"infinite, the infinite quad is returned."
+msgstr ""
+
+#: ../../rect.rst:207 f9d6629fa0044445a775a85c52c4d000
+msgid "New in version 1.16.0"
+msgstr ""
+
+#: ../../rect.rst:209 c4ef7cdb87de469d920aaabbb40d9ade
+msgid ""
+"Return the Euclidean norm of the rectangle treated as a vector of four "
+"numbers."
+msgstr ""
+
+#: ../../rect.rst:213 9f4045a34e52402ea9a3b02bad8f037c
+msgid ""
+"**Replace** the rectangle with its valid version. This is done by "
+"shuffling the rectangle corners. After completion of this method, the "
+"bottom right corner will indeed be south-eastern to the top left one (but"
+" may still be empty)."
+msgstr ""
+
+#: ../../rect.rst:217 98cae8611d7c4ae2b4f75f7fe86538b0
+msgid "Equals result of method *round()*."
+msgstr ""
+
+#: ../../rect.rst:223 485f87fd57784f6b8f8705d009c7347f
+msgid "Equals *Point(x0, y0)*."
+msgstr ""
+
+#: ../../rect.rst 0acc6fafb1884ca8a45a81e08e0bd9bc
+#: 1681a6d16bc54a1da622f8bea48bfbc6 258364137eee4c20ae70d472fa865f59
+#: 36665c32e3fd41b5be17eef2b9f9ef49 54367d138e1a449d91bfc175867fa551
+#: 5467055f78f744889474c9f72b6c16dd a00d3f5611c144efbfc34996565b9123
+#: a1db20ec81a54a60b1a06ab814ffb71a d17d8529bd404fcf9b6d1a54470a1fed
+#: d4573da85f984e09883a00fc6a9189fc d473ff59b3aa47898f1321b3fff40d60
+#: e6714ed240964fb3bbee06f222a8b4e5
+msgid "type"
+msgstr ""
+
+#: ../../rect.rst:225 ../../rect.rst:233 ../../rect.rst:241 ../../rect.rst:249
+#: 4ace9368bcd643079c6aa403c8c4b44b 552bd679f2354f4a8a0fa023d3864f07
+#: b2ba03f9e73e48708b72dd76b03ea7a4 e77e0ad121dd410dbf01799ed2a79e8a
+msgid ":ref:`Point`"
+msgstr ""
+
+#: ../../rect.rst:231 ecb74eebad8d40b19f9202b7cae07e75
+msgid "Equals `Point(x1, y0)`."
+msgstr ""
+
+#: ../../rect.rst:239 5df0f9d1c6ce45c8aa73940fb350367c
+msgid "Equals `Point(x0, y1)`."
+msgstr ""
+
+#: ../../rect.rst:247 bb66227bf5c04e9c90e8ea673d93bbef
+msgid "Equals `Point(x1, y1)`."
+msgstr ""
+
+#: ../../rect.rst:253 40b4025dac314e6b8886550dd3dcfa09
+msgid "The quadrilateral `Quad(rect.tl, rect.tr, rect.bl, rect.br)`."
+msgstr ""
+
+#: ../../rect.rst:255 5d52fd74746c42ea9d18b9a576403d9e
+msgid ":ref:`Quad`"
+msgstr ""
+
+#: ../../rect.rst:259 b1ab0d96b1ec497b8dac59fe3dbea7b8
+msgid "Width of the rectangle. Equals `max(x1 - x0, 0)`."
+msgstr ""
+
+#: ../../rect.rst:265 0bed86dec83d4fafb151956599df9bcd
+msgid "Height of the rectangle. Equals `max(y1 - y0, 0)`."
+msgstr ""
+
+#: ../../rect.rst:271 cd909cbe39394eba8b7fadfeff94c9bf
+msgid "X-coordinate of the left corners."
+msgstr ""
+
+#: ../../rect.rst:273 ../../rect.rst:279 ../../rect.rst:285 ../../rect.rst:291
+#: 32866a060aa84014859971026c23137d 8170a7bd525b4515a2b99e6d692e5380
+#: a2410b728db84dea8d62ee09fff477cd cdeae62d8f584af7960f0ea22ab99a59
+msgid "float"
+msgstr ""
+
+#: ../../rect.rst:277 8c41ef4bb3954af697a5188b82c54625
+msgid "Y-coordinate of the top corners."
+msgstr ""
+
+#: ../../rect.rst:283 0844d78e011a44fb9bad81f4211e9886
+msgid "X-coordinate of the right corners."
+msgstr ""
+
+#: ../../rect.rst:289 86f477476904432c949313f1acbe6f7f
+msgid "Y-coordinate of the bottom corners."
+msgstr ""
+
+#: ../../rect.rst:295 366c33753f304906b7a328d76102191f
+msgid "`True` if this is the infinite rectangle."
+msgstr ""
+
+#: ../../rect.rst:297 ../../rect.rst:303 ../../rect.rst:309
+#: 030b6959c49c469e98e3d0c554253b45 1ff66158bf134cc1bb07fff8df3c6f8f
+#: e6fce7ec463c4d2e9992ebed76f5ed1e
+msgid "bool"
+msgstr ""
+
+#: ../../rect.rst:301 4f3c10464ec64684883dff31f974ccd8
+msgid "`True` if rectangle is empty."
+msgstr ""
+
+#: ../../rect.rst:307 a98a763c003941519d09e2d015a2e614
+msgid "`True` if rectangle is valid."
+msgstr ""
+
+#: ../../rect.rst:313 d54324445e3749e1a25aa77d529daed5
+msgid ""
+"This class adheres to the Python sequence protocol, so components can be "
+"accessed via their index, too. Also refer to :ref:`SequenceTypes`."
+msgstr ""
+
+#: ../../rect.rst:314 57130e28ae034ad9998dc64ecbd910e2
+msgid ""
+"Rectangles can be used with arithmetic operators -- see chapter "
+":ref:`Algebra`."
+msgstr ""
+
+#: ../../footer.rst:-1 64a8e55292e440d59f7ce66518d89731
+msgid "Discord logo"
+msgstr ""
+

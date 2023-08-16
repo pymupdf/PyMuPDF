@@ -1,0 +1,1093 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2023, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../app4.rst:14 4a1e81ac1f0f495f98e107cebef3b1a6
+msgid "Appendix 4: Performance Comparison Methodology"
+msgstr ""
+
+#: ../../app4.rst:16 4c3e578b97d544bc9a3df491df95c184
+msgid ""
+"This article documents the approach to measure :title:`PyMuPDF's` "
+"performance and the tools and example files used to do comparisons."
+msgstr ""
+
+#: ../../app4.rst:18 65992b6edec440d5b8cd2ad855311676
+msgid "The following three sections deal with different performance aspects:"
+msgstr ""
+
+#: ../../app4.rst:20 ef912ae97dab4a8bba8dfca25fbe77b0
+msgid ""
+":ref:`Document Copying<app4_copying>` - This includes opening and parsing"
+" :title:`PDFs`, then writing them to an output file. Because the same "
+"basic activities are also used for joining (merging) :title:`PDFs`, the "
+"results also apply to these use cases."
+msgstr ""
+
+#: ../../app4.rst:21 0c99ef7b1c4545dca0cc386a1dda49d3
+msgid ""
+":ref:`Text Extraction<app4_text_extraction>` - This extracts plain text "
+"from :title:`PDFs` and writes it to an output text file."
+msgstr ""
+
+#: ../../app4.rst:22 8ce581173edf481d98f8ebeafbe64393
+msgid ""
+":ref:`Page Rendering<app4_page_rendering>` - This converts :title:`PDF` "
+"pages to image files looking identical to the pages. This ability is the "
+"basic prerequisite for using a tool in :title:`Python GUI` scripts to "
+"scroll through documents. We have chosen a medium-quality (resolution 150"
+" DPI) version."
+msgstr ""
+
+#: ../../app4.rst:24 fe5f9971743d4548bfe4b9f18c30474d
+msgid ""
+"Please note that in all cases the actual speed in dealing with "
+":title:`PDF` structures is not directly measured: instead, the timings "
+"also include the durations of writing files to the operating system's "
+"file system. This cannot be avoided because tools other than "
+":title:`PyMuPDF` do not offer the option to e.g., separate the image "
+"**creation** step from the following step, which **writes** the image "
+"into a file."
+msgstr ""
+
+#: ../../app4.rst:26 2d2d73cda2684e7785201a05ce329c91
+msgid ""
+"So all timings documented include a common, OS-oriented base effort. "
+"Therefore, performance **differences per tool are actually larger** than "
+"the numbers suggest."
+msgstr ""
+
+#: ../../app4.rst:33 78490caee14746d8928902a963581d48
+msgid "Files used"
+msgstr ""
+
+#: ../../app4.rst:35 3605ae7c9069488b832c184f2494c069
+msgid ""
+"A set of eight files is used for the performance testing. With each file "
+"we have the following information:"
+msgstr ""
+
+#: ../../app4.rst:37 878bbefe08e94b999b48099a6879d6b5
+msgid "**Name** of the file and download **link**."
+msgstr ""
+
+#: ../../app4.rst:38 6934547cd869488684f8653db1d78925
+msgid "**Size** in bytes."
+msgstr ""
+
+#: ../../app4.rst:39 78a4f55d3c904546b355c8fc8f344adb
+msgid "Total number of **pages** in file."
+msgstr ""
+
+#: ../../app4.rst:40 996daa756f934560aee685307545e6e9
+msgid "Total number of bookmarks (**Table of Contents** entries)."
+msgstr ""
+
+#: ../../app4.rst:41 413a06231788471492472013a7e3652a
+msgid "Total number of **links**."
+msgstr ""
+
+#: ../../app4.rst:42 ee37272a928b4f10a54b2774269e691b
+msgid "**KB size** per page."
+msgstr ""
+
+#: ../../app4.rst:43 9b6478c67338486f9b73c929bd10a10e
+msgid ""
+"**Textsize per page** is the amount text in the whole file in KB, divided"
+" by the number of pages."
+msgstr ""
+
+#: ../../app4.rst:44 e4511814c0224720b9ee4c5c0eb258fd
+msgid "Any **notes** to generally describe the type of file."
+msgstr ""
+
+#: ../../app4.rst:50 ../../app4.rst:217 ../../app4.rst:295 ../../app4.rst:407
+#: 3fd177d471d1440c811cc46a24394604 6fb60f10210f4c988357c3933b16e79d
+#: 8366b5dba4da441c8cae1b3809a00593 97727bd687da4ad68a5fda6349a7bc01
+msgid "**Name**"
+msgstr ""
+
+#: ../../app4.rst:51 8e5d6865a9294ade9d75af43a8eb66a1
+msgid "**Size (bytes)**"
+msgstr ""
+
+#: ../../app4.rst:52 0899ed96a7554261a08141240a7a8b87
+msgid "**Pages**"
+msgstr ""
+
+#: ../../app4.rst:53 a674051ef8d448adb4640a80c86a50d0
+msgid "**TOC size**"
+msgstr ""
+
+#: ../../app4.rst:54 71c6e0a4d9214004b0d243aa3f29eef7
+msgid "**Links**"
+msgstr ""
+
+#: ../../app4.rst:55 356dca82b8f045d38d33944210fbacd3
+msgid "**KB/page**"
+msgstr ""
+
+#: ../../app4.rst:56 88f15dd129fc4b7486f2668046b8b365
+msgid "**Textsize/page**"
+msgstr ""
+
+#: ../../app4.rst:57 b84db499dead43aa8143bde0ea854211
+msgid "**Notes**"
+msgstr ""
+
+#: ../../app4.rst:58 53fab5550d494ff5bd74d2675825f613
+msgid "`adobe.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:59 27cade71b19146208e1d4e60ddd5bd62
+msgid "32,472,771"
+msgstr ""
+
+#: ../../app4.rst:60 5ada3deeca61430198ba8bef9edec039
+msgid "1,310"
+msgstr ""
+
+#: ../../app4.rst:61 931f8b738e654a3b9d7ac2b2a81ae52d
+msgid "794"
+msgstr ""
+
+#: ../../app4.rst:62 d5714630d3fa4154bc956aec8dc57cda
+msgid "32,096"
+msgstr ""
+
+#: ../../app4.rst:63 d753a6265534476db1644bded9a748ef
+msgid "24"
+msgstr ""
+
+#: ../../app4.rst:64 cee0ffcbc0f9417b9a6ce27464503bdc
+msgid "1,942"
+msgstr ""
+
+#: ../../app4.rst:65 2c988f08938a407b8c7f153907a8e68f
+msgid "linearized, many links / bookmarks"
+msgstr ""
+
+#: ../../app4.rst:66 74d258d5966b413e8d47ea418ed006a7
+msgid "`artifex-website.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:67 eb52192a006349979a0c0cf305014aad
+msgid "31,570,732"
+msgstr ""
+
+#: ../../app4.rst:68 70b9d82a608440df97fef5e76ff4cde9
+msgid "47"
+msgstr ""
+
+#: ../../app4.rst:69 3b799d8ad01b43b28bcf5fa3de43454b
+msgid "46"
+msgstr ""
+
+#: ../../app4.rst:70 5b1ea78eeceb4c2894f44714f186fb50
+msgid "2,035"
+msgstr ""
+
+#: ../../app4.rst:71 bcbc3cf284db4a0db903a8b44ee54ffd
+msgid "656"
+msgstr ""
+
+#: ../../app4.rst:72 9af791bee5354025aef236894c4e50f7
+msgid "3,538"
+msgstr ""
+
+#: ../../app4.rst:73 bf96d5f791f14511852943f5efcdde71
+msgid "graphics oriented"
+msgstr ""
+
+#: ../../app4.rst:74 cddb476076f841199f799b8ce0ff9b11
+msgid "`db-systems.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:75 54f777a32133432daa3220e984ecbcf3
+msgid "29,326,355"
+msgstr ""
+
+#: ../../app4.rst:76 7b009814e2a2434eabf951aee00c2782
+msgid "1,241"
+msgstr ""
+
+#: ../../app4.rst:77 ../../app4.rst:78 ../../app4.rst:117 ../../app4.rst:118
+#: 28ec7b98ea16482cb5b123728880c449 33562aa03a1642eea3a2f4609800e688
+#: 53d0721533e24e8f81c2af4fa24443fa 6525009fb1844c5cb978dbf266e2ae12
+msgid "0"
+msgstr ""
+
+#: ../../app4.rst:79 33d01d1cbbe0478db5891d182b0211c5
+msgid "23"
+msgstr ""
+
+#: ../../app4.rst:80 b85bcdbbcf00425fba727575859ca95e
+msgid "2,142"
+msgstr ""
+
+#: ../../app4.rst:82 7a4799de47e94c9aa2753b9a70d191e6
+msgid "`fontforge.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:83 55986ba58bf74533942f85b95f47f849
+msgid "8,222,384"
+msgstr ""
+
+#: ../../app4.rst:84 42de0e524f7d44c9aaa81b4856c80187
+msgid "214"
+msgstr ""
+
+#: ../../app4.rst:85 000bbebf1850443c919611ef203b469a
+msgid "31"
+msgstr ""
+
+#: ../../app4.rst:86 6d050ec9c50b41198b653793bcd4228d
+msgid "242"
+msgstr ""
+
+#: ../../app4.rst:87 060a7623deac49dcb16145826da3c54c
+msgid "38"
+msgstr ""
+
+#: ../../app4.rst:88 eede32dd63d845afa8e09d5fdb634858
+msgid "1,058"
+msgstr ""
+
+#: ../../app4.rst:89 1d26d20edef0444c82aab4449b86c6c1
+msgid "mix of text & graphics"
+msgstr ""
+
+#: ../../app4.rst:90 10537b8385d748358485a334c0c5efd6
+msgid "`pandas.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:91 a410b18da6dc4bb89d1882539183e76c
+msgid "10,585,962"
+msgstr ""
+
+#: ../../app4.rst:92 5e004e5e9ca647d782b14f120346d868
+msgid "3,071"
+msgstr ""
+
+#: ../../app4.rst:93 0d68b3a3aade4cc9b9386b46e12c3789
+msgid "536"
+msgstr ""
+
+#: ../../app4.rst:94 49089510ac0b4de289e40334258fd8ff
+msgid "16,554"
+msgstr ""
+
+#: ../../app4.rst:95 9941b4144f4f47ba9bb5b86f45f194da
+msgid "3"
+msgstr ""
+
+#: ../../app4.rst:96 056553fbaea742c396355296e3bb15b0
+msgid "1,539"
+msgstr ""
+
+#: ../../app4.rst:97 4e71b5363b5b42ddb83b1e603eec2f39
+msgid "many pages"
+msgstr ""
+
+#: ../../app4.rst:98 f24b4fcf8d954a4db2518c292961f957
+msgid "`pymupdf.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:99 beaae740bfff431d8498aad89fadb451
+msgid "6,805,176"
+msgstr ""
+
+#: ../../app4.rst:100 743e18c7a26f471a9151c0f102af2b1b
+msgid "478"
+msgstr ""
+
+#: ../../app4.rst:101 5e4599410b964cb59df4a5b28acaee98
+msgid "276"
+msgstr ""
+
+#: ../../app4.rst:102 69b3ac4638a9438287f172f34b66c67e
+msgid "5,277"
+msgstr ""
+
+#: ../../app4.rst:103 e9a527f549354d5f9af028d758849a0e
+msgid "14"
+msgstr ""
+
+#: ../../app4.rst:104 f623e630ba7e4502b2618393efb3b7b5
+msgid "1,937"
+msgstr ""
+
+#: ../../app4.rst:105 5c107aa662324e46a00443b2fce06f0b
+msgid "text oriented"
+msgstr ""
+
+#: ../../app4.rst:106 5c902d91a7db4d87961462de8e4c38de
+msgid "`pythonbook.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:107 958896ec1f1c4b85b806553bb3024ee3
+msgid "9,983,856"
+msgstr ""
+
+#: ../../app4.rst:108 2128771e851a46099be090e1b3d42ca0
+msgid "669"
+msgstr ""
+
+#: ../../app4.rst:109 7da607a6e5c344f7b1a5ab886644cc2a
+msgid "198"
+msgstr ""
+
+#: ../../app4.rst:110 77a633b9bca645a8ae5d35b5f0537d2c
+msgid "1,953"
+msgstr ""
+
+#: ../../app4.rst:111 ce76e6eb7ccd4aac8aac6ebdcb1ac675
+msgid "15"
+msgstr ""
+
+#: ../../app4.rst:112 65b69b191afe4c27ac269dc72d9a2511
+msgid "1,929"
+msgstr ""
+
+#: ../../app4.rst:114 0688d30672094117bed09291696e1e17
+msgid "`sample-50-MB-pdf-file.pdf`_"
+msgstr ""
+
+#: ../../app4.rst:115 b87e7f92596842ee883267519e32794f
+msgid "52,521,850"
+msgstr ""
+
+#: ../../app4.rst:116 6a461fb70c9d4271b4ecc13dea547fb0
+msgid "1"
+msgstr ""
+
+#: ../../app4.rst:119 37201416e86a4a85a3a75f9dd0fa3e0d
+msgid "51,291"
+msgstr ""
+
+#: ../../app4.rst:120 b7f6aa320b014148a49e5bdf72de31d8
+msgid "23,860"
+msgstr ""
+
+#: ../../app4.rst:121 397f7cfb7a0c4ae18ea0c8545c46e7c6
+msgid "single page, graphics oriented, large file size"
+msgstr ""
+
+#: ../../app4.rst:127 b6e84732c7864afca79cf1147ffa35cc
+msgid ""
+"**adobe.pdf** and **pymupdf.pdf** are clearly text oriented, **artifex-"
+"website.pdf** and **sample-50-MB-pdf-file.pdf** are graphics oriented. "
+"Other files are a mix of both."
+msgstr ""
+
+#: ../../app4.rst:131 e1d1a5c228f34d3ebc41c678b7b0a5f1
+msgid "Tools used"
+msgstr ""
+
+#: ../../app4.rst:133 fabc818269d443cdb4fe1afe068c98de
+msgid ""
+"In each section, the same fixed set of :title:`PDF` files is being "
+"processed by a set of tools. The set of tools used per performance aspect"
+" however varies, depending on the supported tool features."
+msgstr ""
+
+#: ../../app4.rst:135 48b4241e8160435592bdf6b44f224b38
+msgid ""
+"All tools are either platform independent, or at least can run on both, "
+":title:`Windows` and :title:`Unix` / :title:`Linux`."
+msgstr ""
+
+#: ../../app4.rst:141 87a8843195a545a9b42907a52f4b1652
+msgid "**Tool**"
+msgstr ""
+
+#: ../../app4.rst:142 8f0d2f4471244e7ead8e45fa1a2ef8a0
+msgid "**Description**"
+msgstr ""
+
+#: ../../app4.rst:143 ../../app4.rst:172 ../../app4.rst:368
+#: 526195586b60487f8c2305974a30881a abf2669c3dd6411bb16a02a5cdfc8dd3
+#: b241360add424730adfe165c7158a290
+msgid ":title:`PyMuPDF`"
+msgstr ""
+
+#: ../../app4.rst:144 312258c6e5234543816a927beca41aa8
+msgid "The tool of this manual."
+msgstr ""
+
+#: ../../app4.rst:145 e73677c6b0be4fa7b1f916d56f4184cc
+msgid "PDFrw_"
+msgstr ""
+
+#: ../../app4.rst:146 10ff13ac3aff4698b46ffa602c888fb1
+msgid ""
+"A pure :title:`Python` tool, being used by :title:`rst2pdf`, has "
+"interface to :title:`ReportLab`."
+msgstr ""
+
+#: ../../app4.rst:147 f4f7927f3db6432394269d7c671dc7fd
+msgid "PyPDF2_"
+msgstr ""
+
+#: ../../app4.rst:148 b9cc1dc2b5364458af4b03cde80bd4bc
+msgid "A pure :title:`Python` tool with a large function set."
+msgstr ""
+
+#: ../../app4.rst:149 6e2028fb78cd4ed4a1d2d53f860dffc9
+msgid "PDFMiner_"
+msgstr ""
+
+#: ../../app4.rst:150 f0f020f3b3c042feaebd09369c574800
+msgid "A pure :title:`Python` to extract text and other data from :title:`PDF`."
+msgstr ""
+
+#: ../../app4.rst:151 2e52a4b0f839437fa503008a66e10e6d
+msgid "XPDF_"
+msgstr ""
+
+#: ../../app4.rst:152 fcb4e7ba8c81450d8b35ff9b3f7abff9
+msgid "A command line utility with multiple functions."
+msgstr ""
+
+#: ../../app4.rst:153 da20b7a657ac4f3e943c2ea2d7f5b2ce
+msgid "PikePDF_"
+msgstr ""
+
+#: ../../app4.rst:154 930f5993e9b14457a73827762d9a5c21
+msgid ""
+"A :title:`Python` package similar to :title:`PDFrw`, but based on "
+":title:`C++` library :title:`QPDF`."
+msgstr ""
+
+#: ../../app4.rst:155 fde87f1a17e74dabb58fbc20079446cd
+msgid "PDF2JPG_"
+msgstr ""
+
+#: ../../app4.rst:156 1cb993521b4641d29df6e74868d16849
+msgid ""
+"A :title:`Python` package specialized on rendering :title:`PDF` pages to "
+":title:`JPG` images."
+msgstr ""
+
+#: ../../app4.rst:164 bdd439e571684818b0a479d6d904b205
+msgid "Copying / Joining / Merging"
+msgstr ""
+
+#: ../../app4.rst:166 e5bf729d9fee46b2b7284fa3ed6c9099
+msgid ""
+"How fast is a :title:`PDF` file read and its content parsed for further "
+"processing? The sheer parsing performance cannot directly be compared, "
+"because batch utilities always execute a requested task completely, in "
+"one go, front to end. :title:`PDFrw` too, has a *lazy* strategy for "
+"parsing, meaning it only parses those parts of a document that are "
+"required in any moment."
+msgstr ""
+
+#: ../../app4.rst:168 7bdb36f76ef448318f5fc00751deb7c1
+msgid ""
+"To find an answer to the question, we therefore measure the time to copy "
+"a :title:`PDF` file to an output file with each tool, and do nothing "
+"else."
+msgstr ""
+
+#: ../../app4.rst:170 ../../app4.rst:365 5ab34b74cd604749be3379e5229732d1
+#: 915b5d39fb6b4735a7ceec825a4f73ee
+msgid "These are the :title:`Python` commands for how each tool is used:"
+msgstr ""
+
+#: ../../app4.rst:180 e28220c005484d3288f9a579523d6065
+msgid ":title:`PDFrw`"
+msgstr ""
+
+#: ../../app4.rst:190 56fb9e24ed274b6d8acbf0edbf1719c6
+msgid ":title:`PikePDF`"
+msgstr ""
+
+#: ../../app4.rst:198 95be39f3e4e04c1f99f62dc3832386de
+msgid ":title:`PyPDF2`"
+msgstr ""
+
+#: ../../app4.rst:210 ../../app4.rst:288 ../../app4.rst:399
+#: 15166afa26b442c782b604f3107b0ad3 6207ea1347c04ea68afac2437dfa705b
+#: 7ee61cbfb0ef46f7a30182469d1a5213
+msgid "**Observations**"
+msgstr ""
+
+#: ../../app4.rst:212 ../../app4.rst:290 ../../app4.rst:401
+#: 974b59b72d354f74a8528e756775031a cc3f56dedbde45e69a0033a48fdba23e
+#: f4d6a2855f0b435aac425eb0b5bae4ce
+msgid ""
+"These are our run time findings in **seconds** along with a base rate "
+"summary compared to :title:`PyMuPDF`:"
+msgstr ""
+
+#: ../../app4.rst:218 ../../app4.rst:296 ../../app4.rst:408
+#: 9df03a667e904b9e8792fb6d7a13512d aeceaf75f8d24722a0603ac5f3e41bf6
+#: dbd7d8ba012d45ce8a6716d4f19336de
+msgid "**PyMuPDF**"
+msgstr ""
+
+#: ../../app4.rst:219 d8d2aa36870e4ef0947eb2e7ca0e251d
+msgid "**PDFrw**"
+msgstr ""
+
+#: ../../app4.rst:220 b302281b6d6d4271be163094d34cd2f7
+msgid "**PikePDF**"
+msgstr ""
+
+#: ../../app4.rst:221 ../../app4.rst:298 168de44e6f544f34820f9b4901463055
+#: cf3bc89e3d1b4f6b8836f046b1652e99
+msgid "**PyPDF2**"
+msgstr ""
+
+#: ../../app4.rst:222 ../../app4.rst:300 ../../app4.rst:411
+#: 692b3b08f5834e54a9dcdb47a55706fe 73f084f8a5af4dfeb581d985acc8567b
+#: cdf4a04f4b4a463d9541640a9c49f069
+msgid "adobe.pdf"
+msgstr ""
+
+#: ../../app4.rst:223 ea613374b423460286ed33cbb413f31f
+msgid "1.75"
+msgstr ""
+
+#: ../../app4.rst:224 dcc9350bfdf343f38b383de903302849
+msgid "5.15"
+msgstr ""
+
+#: ../../app4.rst:225 611db1502bb14ba89923d8be627fc87c
+msgid "22.37"
+msgstr ""
+
+#: ../../app4.rst:226 d0c52d5cce30462785c438994eb74b21
+msgid "374.05"
+msgstr ""
+
+#: ../../app4.rst:227 ../../app4.rst:305 ../../app4.rst:415
+#: 3b4d0332272e43478db075b50fa00489 deee43e76b6c48e799974db35b8e11ac
+#: e555a527b2fe4bd891aeadaf49cca198
+msgid "artifex-website.pdf"
+msgstr ""
+
+#: ../../app4.rst:228 4c432ec2898e4252bee5ff77b5e3ca0b
+msgid "0.26"
+msgstr ""
+
+#: ../../app4.rst:229 ../../app4.rst:243 3031e2b02b214b9383f737a6ab08135d
+#: 7f6593cf3c6845cb956e8ac3e8648b21
+msgid "0.38"
+msgstr ""
+
+#: ../../app4.rst:230 97df865d382c4611ac42f74be40dc6cb
+msgid "1.41"
+msgstr ""
+
+#: ../../app4.rst:231 d8a4e5b3c39c4d3689d7613ce39fe690
+msgid "2.81"
+msgstr ""
+
+#: ../../app4.rst:232 ../../app4.rst:310 ../../app4.rst:419
+#: a72bb9acb4734dc9af3094a42b60fddf af40770987af45579bb14d82a2165278
+#: fb8e2ae89de74d8e9ffc2072ab7ea2be
+msgid "db-systems.pdf"
+msgstr ""
+
+#: ../../app4.rst:233 cc499b9dcf274943b6ff6efd717b848b
+msgid "0.15"
+msgstr ""
+
+#: ../../app4.rst:234 5ac4b91364b24700a48507f7605b3792
+msgid "0.8"
+msgstr ""
+
+#: ../../app4.rst:235 bed4c28888c946018416c00d16d75550
+msgid "1.68"
+msgstr ""
+
+#: ../../app4.rst:236 332a419a20e742afbd1b1efdd7f719f8
+msgid "2.46"
+msgstr ""
+
+#: ../../app4.rst:237 ../../app4.rst:315 ../../app4.rst:423
+#: 3678431052d049749225b2fe3ce6367a 43a99212e93249a78f525662b144cbb2
+#: 874f3f96d563442ebc057cb332d43784
+msgid "fontforge.pdf"
+msgstr ""
+
+#: ../../app4.rst:238 f5a333915193415fa0c21a1e8a6f6b92
+msgid "0.09"
+msgstr ""
+
+#: ../../app4.rst:239 c8f56a41c0a54bf79c9e9f1265b95b1a
+msgid "0.14"
+msgstr ""
+
+#: ../../app4.rst:240 644883982d6848d78024d481500ea360
+msgid "0.28"
+msgstr ""
+
+#: ../../app4.rst:241 ../../app4.rst:308 4c5ba38976d1497b81d722c2087d2fd4
+#: 799d2851fbcd4f78b0a5320606255ac8
+msgid "1.1"
+msgstr ""
+
+#: ../../app4.rst:242 ../../app4.rst:320 ../../app4.rst:427
+#: 661832415f114e919a931cba55614aed 6ab010e326a0461382002498ad51f190
+#: d3bd270fbcd945648f67919019e840f8
+msgid "pandas.pdf"
+msgstr ""
+
+#: ../../app4.rst:244 93a4d469c88645d68c3d1fbd4e472129
+msgid "2.21"
+msgstr ""
+
+#: ../../app4.rst:245 00bdf777a816455e9c3ad38c8ac3f0da
+msgid "2.73"
+msgstr ""
+
+#: ../../app4.rst:246 528874b37e9b4d328d61d15b6e9ac29b
+msgid "70.3"
+msgstr ""
+
+#: ../../app4.rst:247 ../../app4.rst:325 ../../app4.rst:431
+#: 9efd9fccb79a4cb2b48707996b9c8ec2 bbe7f9df346a470fbf9c17124eabb00d
+#: e8d1663e67e849b5901c3dab91f2b52f
+msgid "pymupdf.pdf"
+msgstr ""
+
+#: ../../app4.rst:248 c7c0bdcc2bff429393624e04ce61a730
+msgid "0.11"
+msgstr ""
+
+#: ../../app4.rst:249 4d971c369b6843dfbacb57e495f5b419
+msgid "0.56"
+msgstr ""
+
+#: ../../app4.rst:250 8b8a26ee24a04be9adfcfae2dc517e25
+msgid "0.83"
+msgstr ""
+
+#: ../../app4.rst:251 b10bbef58e2a4622b54cc6dd4be533d0
+msgid "6.05"
+msgstr ""
+
+#: ../../app4.rst:252 ../../app4.rst:330 ../../app4.rst:435
+#: 323f47fc2f1d44a085d2d1e84abee8a5 6a700503996e45d7ad1a278f7b4d6e2d
+#: eb4106100a6d48fdb398f129c4d1888d
+msgid "pythonbook.pdf"
+msgstr ""
+
+#: ../../app4.rst:253 96c45c5694e549feb5a57422c70ab2ff
+msgid "0.19"
+msgstr ""
+
+#: ../../app4.rst:254 9bc397fda5ab41db966afef26f4ca840
+msgid "1.2"
+msgstr ""
+
+#: ../../app4.rst:255 186949f116144c9f92c62af5606eb9a0
+msgid "1.34"
+msgstr ""
+
+#: ../../app4.rst:256 c480e636a915485998bdd4ff05ed1e8c
+msgid "37.19"
+msgstr ""
+
+#: ../../app4.rst:257 ../../app4.rst:335 ../../app4.rst:439
+#: 3767e3547c404558b9ea54e1636aa38a 9fd75b69ad914726b4e0fc2eb87bd930
+#: b0c5ee27a1564fcc9bacde3f84f01604
+msgid "sample-50-MB-pdf-file.pdf"
+msgstr ""
+
+#: ../../app4.rst:258 3ac80bfe06a6466b807178b9cd940b3f
+msgid "0.12"
+msgstr ""
+
+#: ../../app4.rst:259 74cff96c735042dc979655e89b6cd7c1
+msgid "0.1"
+msgstr ""
+
+#: ../../app4.rst:260 e2dd5a96337e427b84de42cd93c3e35e
+msgid "2.93"
+msgstr ""
+
+#: ../../app4.rst:261 a65a648402224ebdb56f72cd09e95dc9
+msgid "0.08"
+msgstr ""
+
+#: ../../app4.rst:262 ../../app4.rst:340 ../../app4.rst:443
+#: 16934e5745fa4e70b36f6778ff2140c1 7896cf3923894dbbbc6ca6563f7debdf
+#: b1a0bddf2ff34ec7ab1e7940e6cde15d
+msgid "**Total**"
+msgstr ""
+
+#: ../../app4.rst:263 28cf40a46da2482a93c201906fb039c3
+msgid "**3.05**"
+msgstr ""
+
+#: ../../app4.rst:264 dddd21ea2e5e4182b875dd9ed6da6efb
+msgid "**10.54**"
+msgstr ""
+
+#: ../../app4.rst:265 0fc439df2934427480ae9d2e2274e23e
+msgid "**33.57**"
+msgstr ""
+
+#: ../../app4.rst:266 4d6a1667feba4cbc817636c39fbcb3d5
+msgid "**494.04**"
+msgstr ""
+
+#: ../../app4.rst:272 ../../app4.rst:350 ../../app4.rst:451
+#: 90a4a88a385e434486d1b04c50fc64f4 c548d757925b4695a51eeb95cc2e1673
+#: f24afb98730547468876cfecb11bc709
+msgid "**Rate compared to PyMuPDF**"
+msgstr ""
+
+#: ../../app4.rst:273 ../../app4.rst:351 ../../app4.rst:452
+#: 849d746c5eab4b5db97d520f6b9939a0 e0f0342c5dd84540af2dd45dae62947a
+#: e4ba085886b84b85811ce6804521d9f4
+msgid ":green-color:`1.0`"
+msgstr ""
+
+#: ../../app4.rst:274 ff773716620146f5911ae04e744067ad
+msgid ":orange-color:`3.5`"
+msgstr ""
+
+#: ../../app4.rst:275 0f695b1aa4ec4cc3a128156a3c78d442
+msgid ":orange-color:`11.0`"
+msgstr ""
+
+#: ../../app4.rst:276 cb9ff2dca34246e1b87259c056eb2bb0
+msgid ":red-color:`162`"
+msgstr ""
+
+#: ../../app4.rst:283 63c01914b71541de9227dfb9637ea9ff
+msgid "Text Extraction"
+msgstr ""
+
+#: ../../app4.rst:285 c166066c1aa64e3384a5c283822ea6c5
+msgid ""
+"The following table shows plain text extraction durations. All tools have"
+" been used with their most basic functionality - i.e. no layout re-"
+"arrangements, etc."
+msgstr ""
+
+#: ../../app4.rst:297 ../../app4.rst:409 11f0b736fae14807968b6fddc1ad057a
+#: 52c20be5534141fba2a1fcc6dfb2b2a3
+msgid "**XPDF**"
+msgstr ""
+
+#: ../../app4.rst:299 42cc16177ba945138f4eae24116cb76d
+msgid "**PDFMiner**"
+msgstr ""
+
+#: ../../app4.rst:301 1606cdf993e64701a5c088ac9df98678
+msgid "2.01"
+msgstr ""
+
+#: ../../app4.rst:302 9be766d4f713462eb315d58215d13fe7
+msgid "6.19"
+msgstr ""
+
+#: ../../app4.rst:303 2318b8677831455a8aaa4b7763a9cb00
+msgid "22.2"
+msgstr ""
+
+#: ../../app4.rst:304 83c635dce0bf423c9a93893c0e699050
+msgid "49.15"
+msgstr ""
+
+#: ../../app4.rst:306 fe89c1c8e64441cd80ad39d23458a153
+msgid "0.18"
+msgstr ""
+
+#: ../../app4.rst:307 c566039691a34402970bb2074c8373c7
+msgid "0.3"
+msgstr ""
+
+#: ../../app4.rst:309 e84428585ed64f22b8f85a556ba101a6
+msgid "4.06"
+msgstr ""
+
+#: ../../app4.rst:311 48004419cab4408590f6fd4a9ca0247c
+msgid "1.57"
+msgstr ""
+
+#: ../../app4.rst:312 74898de52754482290536758bb36c479
+msgid "4.26"
+msgstr ""
+
+#: ../../app4.rst:313 4c7d6bdedf704b28aa69a16407cc800e
+msgid "25.75"
+msgstr ""
+
+#: ../../app4.rst:314 df46269ec4ef462891051e2b59670591
+msgid "42.19"
+msgstr ""
+
+#: ../../app4.rst:316 86c83c5dbffb462b9219a11c6d352d25
+msgid "0.24"
+msgstr ""
+
+#: ../../app4.rst:317 6b893558ff31413aa0de5ffe115b4c0e
+msgid "0.47"
+msgstr ""
+
+#: ../../app4.rst:318 08994c6a52d04825b9a40df993915bb1
+msgid "2.69"
+msgstr ""
+
+#: ../../app4.rst:319 6373d0f539e14347b5e72be1341dab77
+msgid "4.2"
+msgstr ""
+
+#: ../../app4.rst:321 50908e4aa7194c25a5c1b85b65ac378a
+msgid "2.41"
+msgstr ""
+
+#: ../../app4.rst:322 b189d97eb14541a6962f551a4879504c
+msgid "10.54"
+msgstr ""
+
+#: ../../app4.rst:323 a4ea2ed658ee412d93b27d5bb7060d9c
+msgid "25.38"
+msgstr ""
+
+#: ../../app4.rst:324 444ea285e3874242bb0c99487b2d6440
+msgid "76.56"
+msgstr ""
+
+#: ../../app4.rst:326 5a9516664ccc437492552c523b59c4c6
+msgid "0.49"
+msgstr ""
+
+#: ../../app4.rst:327 e46a2dc6aca84f5eab982041c8a8c915
+msgid "2.34"
+msgstr ""
+
+#: ../../app4.rst:328 cab65185ff6e4f71b9d28b45b1650d72
+msgid "6.44"
+msgstr ""
+
+#: ../../app4.rst:329 71d3cfc4bfbd4d8a97f4f90d7834631f
+msgid "13.55"
+msgstr ""
+
+#: ../../app4.rst:331 fc5ab74f778847aab4bad2c7a786ba92
+msgid "0.84"
+msgstr ""
+
+#: ../../app4.rst:332 f8e78c84788149dea103259fe2b2c011
+msgid "2.88"
+msgstr ""
+
+#: ../../app4.rst:333 5864281c5bda4fad98f52466c3d4bdbf
+msgid "9.28"
+msgstr ""
+
+#: ../../app4.rst:334 2901dc7bdb8640aeb04c87f8053c4da3
+msgid "24.27"
+msgstr ""
+
+#: ../../app4.rst:336 ca65d65c11944eb1aaf5a2fb73d7acd1
+msgid "0.27"
+msgstr ""
+
+#: ../../app4.rst:337 ac10c8c961b64bddb9021a453d566717
+msgid "0.44"
+msgstr ""
+
+#: ../../app4.rst:338 e9d7c3e1d6764cc8bf84b214408ef52e
+msgid "8.8"
+msgstr ""
+
+#: ../../app4.rst:339 219ef87b5acf4189afc90cce4114e525
+msgid "13.29"
+msgstr ""
+
+#: ../../app4.rst:341 3f88fd39b07d4f7c804b1529f8926698
+msgid "**8.01**"
+msgstr ""
+
+#: ../../app4.rst:342 18441994bd4940d18fa0db52babf6906
+msgid "**27.42**"
+msgstr ""
+
+#: ../../app4.rst:343 76a55e750b884a46890197d95541c97b
+msgid "**101.64**"
+msgstr ""
+
+#: ../../app4.rst:344 03ae808f9f744353ae775352ad57b10f
+msgid "**227.27**"
+msgstr ""
+
+#: ../../app4.rst:352 b388a44f67c24a52be7cf1dd9b90b3ed
+msgid ":orange-color:`3.42`"
+msgstr ""
+
+#: ../../app4.rst:353 3ab55e7e21034e97b94e0c096bc52aa1
+msgid ":orange-color:`12.69`"
+msgstr ""
+
+#: ../../app4.rst:354 7c344dce997b4c7f990bfc9a421b32aa
+msgid ":red-color:`28.37`"
+msgstr ""
+
+#: ../../app4.rst:360 f772e8b1da3e42308e26ed1ae4d58fc1
+msgid "Page Rendering"
+msgstr ""
+
+#: ../../app4.rst:362 ead0738e1b934defaf09c5be6916daa3
+msgid ""
+"We have tested rendering speed of :title:`PyMuPDF` against "
+":title:`pdf2jpg` and :title:`XPDF` at a resolution of 150 DPI,"
+msgstr ""
+
+#: ../../app4.rst:382 1fab69d0e2af48f0a9f0f3fa30f0c6f6
+msgid ":title:`XPDF`"
+msgstr ""
+
+#: ../../app4.rst:389 d6ba27839bf64c488bf74bb2e1e57873
+msgid ":title:`PDF2JPG`"
+msgstr ""
+
+#: ../../app4.rst:410 63ce81487bb34ec89ba0c1f0a348d4a9
+msgid "**PDF2JPG**"
+msgstr ""
+
+#: ../../app4.rst:412 88b8f3078fa44a61b579e057515acd1c
+msgid "51.33"
+msgstr ""
+
+#: ../../app4.rst:413 bbe8931f115d42aca182e9407578a02f
+msgid "98.16"
+msgstr ""
+
+#: ../../app4.rst:414 7262738febdb4753ba11f2fb25322f17
+msgid "75.71"
+msgstr ""
+
+#: ../../app4.rst:416 8c5d5fc5843b4b33a05f70c828c56dfe
+msgid "26.35"
+msgstr ""
+
+#: ../../app4.rst:417 cf469bfdd66a41f6a0440423d5ee75fa
+msgid "51.28"
+msgstr ""
+
+#: ../../app4.rst:418 5d8ea9fabdc145a58a979ac291201164
+msgid "54.11"
+msgstr ""
+
+#: ../../app4.rst:420 1fbc73aa1ca2426e876e7672aa365686
+msgid "84.59"
+msgstr ""
+
+#: ../../app4.rst:421 ea251e62a044421ca983016f8950dd87
+msgid "143.16"
+msgstr ""
+
+#: ../../app4.rst:422 35609e6523b44c7c974e4745cea5d667
+msgid "405.22"
+msgstr ""
+
+#: ../../app4.rst:424 a05f863e08c547c880f00be43a3542c0
+msgid "12.23"
+msgstr ""
+
+#: ../../app4.rst:425 42daac4998bc44e4aac09a86b5a3c55a
+msgid "22.18"
+msgstr ""
+
+#: ../../app4.rst:426 8681927f26864fd39ea7c201346e6afb
+msgid "20.14"
+msgstr ""
+
+#: ../../app4.rst:428 e04b91bd2126421fa54a16dea942dee3
+msgid "138.74"
+msgstr ""
+
+#: ../../app4.rst:429 b31a50d7fa58484b9f35a172bdf0dff7
+msgid "241.67"
+msgstr ""
+
+#: ../../app4.rst:430 b0efc770265c45d49849dbf092d2e20a
+msgid "202.06"
+msgstr ""
+
+#: ../../app4.rst:432 7d620df0ada4436fb937c240246d0927
+msgid "22.35"
+msgstr ""
+
+#: ../../app4.rst:433 d9c922c17ab2463093d8f600ca013caa
+msgid "39.11"
+msgstr ""
+
+#: ../../app4.rst:434 7377dbefa11042f8b91ef5490aa53cc1
+msgid "33.38"
+msgstr ""
+
+#: ../../app4.rst:436 83037ee81f1f4c02b0c84c8eb231f694
+msgid "30.44"
+msgstr ""
+
+#: ../../app4.rst:437 aa5a6bb5fa834cee9c1bcb4c671eab3f
+msgid "49.12"
+msgstr ""
+
+#: ../../app4.rst:438 720afcbe1cb64ca48233a3f55bd0d808
+msgid "55.68"
+msgstr ""
+
+#: ../../app4.rst:440 b47cd78a58e84745a0f1d70724a5f560
+msgid "1.01"
+msgstr ""
+
+#: ../../app4.rst:441 5fea368f2827433f8fa6b64c6c41c9af
+msgid "1.32"
+msgstr ""
+
+#: ../../app4.rst:442 535d22b214e945de8fbdf630bbda80f8
+msgid "5.22"
+msgstr ""
+
+#: ../../app4.rst:444 6bac36a76eec4adba37fc9e450398b34
+msgid "**367.04**"
+msgstr ""
+
+#: ../../app4.rst:445 4bfa1c6c075f49d4a24da40d054b20f8
+msgid "**646**"
+msgstr ""
+
+#: ../../app4.rst:446 dee1cae954064c8a8603955888904edb
+msgid "**851.52**"
+msgstr ""
+
+#: ../../app4.rst:453 be65ac3fb8b54e1caf7b12890f593d42
+msgid ":orange-color:`1.76`"
+msgstr ""
+
+#: ../../app4.rst:454 a9c4728bc957426cbbc4827152aec2ff
+msgid ":red-color:`2.32`"
+msgstr ""
+
+#: ../../footer.rst:-1 29a3d891d6c64114acc2690074ccd35f
+msgid "Discord logo"
+msgstr ""
+
