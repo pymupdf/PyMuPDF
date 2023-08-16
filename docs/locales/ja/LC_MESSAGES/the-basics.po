@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# FIRST AUTHOR <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -442,7 +442,7 @@ msgstr "このスニペットは、それぞれのサブドキュメントを作
 msgid ""
 "For more information also have a look at this Wiki `article "
 "<https://github.com/pymupdf/PyMuPDF/wiki/Rearranging-Pages-of-a-PDF>`_."
-msgstr ""
+msgstr "⚠️---> TODO!!! For more information also have a look at this Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Rearranging-Pages-of-a-PDF>`_."
 
 #: ../../the-basics.rst:768 04e364a32ac04069b185eb329a7bd53d
 msgid ""
