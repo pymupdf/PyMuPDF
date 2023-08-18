@@ -19,7 +19,7 @@ Args:
     build-devel
         Build using cibuild with `--platform` set.
     pip_install <prefix>
-        Run `pip install <prefix>-*-<platform_tag>.whl`,
+        Run `pip install <prefix>-*<platform_tag>.whl`,
         where `platform_tag` will be things like 'win32', 'win_amd64',
         'x86_64`, depending on the python we are running on.
     venv
@@ -90,7 +90,7 @@ def main():
             log( f'{d=}')
             for leaf in os.listdir(d):
                 log( f'    {d}/{leaf}')
-            pattern = f'{prefix}-*-{platform_tag()}.whl'
+            pattern = f'{prefix}-*{platform_tag()}.whl'
             paths = glob.glob( pattern)
             log( f'{pattern=} {paths=}')
             paths = ' '.join( paths)
@@ -210,10 +210,6 @@ def build( platform_=None):
             log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
             return
     
-    # On Windows:
-    #   cp310 gets dll load error at runtime.
-    #   cp38 cp39 311 ok.
-    #
     set_if_unset( 'CIBW_BUILD', 'cp38* cp39* cp310* cp311*')
     
     def env_set(name, value, pass_=False):
