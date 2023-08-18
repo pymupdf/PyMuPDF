@@ -53,8 +53,19 @@ License and Copyright
 
 .. raw:: html
 
-   <button class="cta orange" onclick="window.location='https://artifex.com/licensing?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">Find out more about Licensing</button>
+   <button id="licenseButton" class="cta orange" onclick="window.location='https://artifex.com/licensing?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">Find out more about Licensing</button>
    <p></p>
+
+   <script>
+      let langC = document.getElementsByTagName('html')[0].getAttribute('lang');
+
+      if (langC=="ja") {
+         document.getElementById("licenseButton").innerHTML = "さらに詳しく";
+      }
+
+   </script>
+
+
 
 :title:`Artifex` is the exclusive commercial licensing agent for :title:`MuPDF`.
 

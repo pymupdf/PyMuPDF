@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# FIRST AUTHOR <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -12,7 +12,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipii.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,21 +21,21 @@ msgstr ""
 
 #: ../../about.rst:10 888b5bf60bc6435e90715e12dc2bdb28
 msgid "Features Comparison"
-msgstr ""
+msgstr "特徴の比較"
 
 #: ../../about.rst:16 f075f60743ac4eacb93bbfffad517ecc
 msgid "Feature matrix"
-msgstr ""
+msgstr "特徴行列"
 
 #: ../../about.rst:18 ff238380567645238b1fbe2e64e623b0
 msgid ""
 "The following table illustrates how :title:`PyMuPDF` compares with other "
 "typical solutions."
-msgstr ""
+msgstr "以下の表は、:title:`PyMuPDF` が他の典型的な解決策と比較した場合の違いを示しています。"
 
 #: ../../about.rst:27 f2abbb9014ca4c8f82af6cd85a11704f
 msgid "Performance"
-msgstr ""
+msgstr "パフォーマンス"
 
 #: ../../about.rst:31 157fa531655e41478d9852f7c5e61f06
 msgid ""
@@ -43,21 +43,21 @@ msgid ""
 " suite with a fixed set of :ref:`8 PDFs with a total of 7,031 "
 "pages<Appendix4_Files_Used>` containing text & images is used to obtain "
 "performance timings."
-msgstr ""
+msgstr ":ref:`8つのPDFファイル（合計7,031ページ）<Appendix4_Files_Used>` にテキストと画像が含まれている固定されたセットのテストスイートを使用して、:title:`PyMuPDF`  のパフォーマンスをさまざまなタスクに対してベンチマークします。"
 
 #: ../../about.rst:34 6a96665d1db74c969980db1fd2ea12a4
 msgid "Here are current results, grouped by task:"
-msgstr ""
+msgstr "以下は、タスクごとにグループ化された現在の結果です："
 
 #: ../../about.rst:43 785c3e70fdca4aab9372cdd5273dc82e
 msgid ""
 "For more detail regarding the methodology for these performance timings "
 "see: :ref:`Performance Comparison Methodology<Appendix4>`."
-msgstr ""
+msgstr "これらのパフォーマンスのタイミングに関する方法論の詳細については、:ref:`パフォーマンス比較方法論<Appendix4>` を参照してください。"
 
 #: ../../about.rst:48 986945aa34944c01bc1ea61c44f2fc6c
 msgid "License and Copyright"
-msgstr ""
+msgstr "ライセンスと著作権"
 
 #: ../../about.rst:52 70fb5ce138354820aca1754304e0ce36
 msgid ""
@@ -71,20 +71,20 @@ msgid ""
 "`Artifex <https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-"
 "pymupdf&utm_medium=rtd&utm_content=inline-link>`_ for more information "
 "regarding a commercial license."
-msgstr ""
+msgstr "PyMuPDFとMuPDFは現在、オープンソースのAGPLと商用ライセンス契約の両方で提供されています。ライセンスのガイドラインに従うことを確認するため、配布資料（COPYINGファイル）と `ここ <https://www.gnu.org/licenses/agpl-3.0.html>`_ にあるAGPLライセンス契約の全文をお読みください。AGPLの要件を満たせないと判断された場合は、商用ライセンスに関する詳細情報については、 `Artifex <https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-pymupdf-jp&utm_medium=rtd&utm_content=inline-link>`_ にお問い合わせください。"
 
 #: ../../about.rst:59 f3b337656b7043aaaf9dca11699f7c2d
 msgid ""
 ":title:`Artifex` is the exclusive commercial licensing agent for "
 ":title:`MuPDF`."
-msgstr ""
+msgstr ":title:`Artifex` Artifexは、:title:`MuPDF` の独占的な商業ライセンスエージェントです。"
 
 #: ../../about.rst:61 1303d3e636b94a99b70c1087641984d5
 msgid ""
 ":title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the "
 ":title:`MuPDF` logo are registered trademarks of :title:`Artifex Software"
 " Inc.`"
-msgstr ""
+msgstr ":title:`Artifex` 、:title:`Artifex` のロゴ、:title:`MuPDF` 、およびMuPDFのロゴは、:title:`Artifex Software Inc.` の登録商標です。"
 
 #: ../../version.rst:3 ff0d4a3e0de94752b26e51a8a37bf914
 msgid ""

@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# FIRST AUTHOR <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -12,7 +12,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipii.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,22 +21,22 @@ msgstr ""
 
 #: ../../vars.rst:5 13a9c435b4fb4808aaf87a646666089e
 msgid "Constants and Enumerations"
-msgstr ""
+msgstr "定数と列挙型"
 
 #: ../../vars.rst:6 edfeee758184420e9e6d2f43ac99291d
 msgid ""
 "Constants and enumerations of :title:`MuPDF` as implemented by "
 ":title:`PyMuPDF`. Each of the following variables is accessible as "
 "*fitz.variable*."
-msgstr ""
+msgstr "PyMuPDFによって実装されたMuPDFの定数と列挙型。以下の各変数は、*fitz.variable*としてアクセスできます。"
 
 #: ../../vars.rst:10 39215ef37bcb4748b0047f693ba0b935
 msgid "Constants"
-msgstr ""
+msgstr "定数"
 
 #: ../../vars.rst:14 3c878d3a511e4ce4a30c25085a6b74f8
 msgid "Predefined Python list of valid :ref:`Base-14-Fonts`."
-msgstr ""
+msgstr "PDFベース14フォントの事前定義されたPythonリスト。"
 
 #: ../../vars.rst 02785071f0514a18b26e637e01c37fe0
 #: 086fc206b05d4b89a811ffefe209a9be 2a52ba2004da4fa29bb9cd77150cd9bb
@@ -52,49 +52,49 @@ msgstr ""
 #: ef7e23e42a34454799bca6354e66b428 fbccef7c9e0345dbae7f15f3153fcccd
 #: fd85b70e25d246a48a28f19a54d050df
 msgid "Return type"
-msgstr ""
+msgstr "戻り値の型"
 
 #: ../../vars.rst:20 866f952708574548a503bb60807a9b78
 msgid "Predefined RGB colorspace *fitz.Colorspace(fitz.CS_RGB)*."
-msgstr ""
+msgstr "事前定義されたRGBカラースペース *fitz.Colorspace(fitz.CS_RGB)*。"
 
 #: ../../vars.rst:22 ../../vars.rst:28 ../../vars.rst:34
 #: 21c7240d7c46450690c9f7e46e265349 4102bd863cbb49709adb9803af8540d0
 #: 692cec7bfe4142a59f1c4c58e24fdfad
 msgid ":ref:`Colorspace`"
-msgstr ""
+msgstr ":ref:`Colorspace`"
 
 #: ../../vars.rst:26 f11344348fa943e29e6b47ff0b604c53
 msgid "Predefined GRAY colorspace *fitz.Colorspace(fitz.CS_GRAY)*."
-msgstr ""
+msgstr "事前定義されたGRAYカラースペース *fitz.Colorspace(fitz.CS_GRAY)*。"
 
 #: ../../vars.rst:32 469db11ec52d4ccfbd98c3937e516dca
 msgid "Predefined CMYK colorspace *fitz.Colorspace(fitz.CS_CMYK)*."
-msgstr ""
+msgstr "事前定義されたCMYKカラースペース *fitz.Colorspace(fitz.CS_CMYK)*。"
 
 #: ../../vars.rst:38 4ae06e6b327a4062984e8ee93d856033
 msgid "1 -- Type of :ref:`Colorspace` is RGBA"
-msgstr ""
+msgstr "1 – :ref:`Colorspace` のタイプはRGBA"
 
 #: ../../vars.rst:44 d47533dbda5149d18091eaef5f08b493
 msgid "2 -- Type of :ref:`Colorspace` is GRAY"
-msgstr ""
+msgstr "2 – :ref:`Colorspace` のタイプはGRAY"
 
 #: ../../vars.rst:50 16077722016d43a5a6c9655616265e09
 msgid "3 -- Type of :ref:`Colorspace` is CMYK"
-msgstr ""
+msgstr "3 – :ref:`Colorspace` のタイプはCMYK"
 
 #: ../../vars.rst:56 3ca86393b866420d818d357a66c5b0e2
 msgid "'x.xx.x' -- version of PyMuPDF (these bindings)"
-msgstr ""
+msgstr "‘x.xx.x’ – PyMuPDF（これらのバインディング）のバージョン"
 
 #: ../../vars.rst:62 2f6a83ac0ce34bc9a67b45452a80a443
 msgid "'x.xxx' -- version of MuPDF"
-msgstr ""
+msgstr "‘x.xxx’ – MuPDFのバージョン"
 
 #: ../../vars.rst:68 e9b57851d2874c17a4059839b3a31cf3
 msgid "ISO timestamp *YYYY-MM-DD HH:MM:SS* when these bindings were built."
-msgstr ""
+msgstr "これらのバインディングがビルドされたISOタイムスタンプ YYYY-MM-DD HH:MM:SS。"
 
 #: ../../vars.rst:72 58164b903cdc44b2a3368b5f4c15c947
 msgid ""
@@ -102,28 +102,29 @@ msgid ""
 "retrieved like so: *print(fitz.__doc__)*, and should look like: *PyMuPDF "
 "1.10.0: Python bindings for the MuPDF 1.10 library, built on 2016-11-30 "
 "13:09:13*."
-msgstr ""
+msgstr "fitzのドキュストリングには、上記の情報が含まれており、次のようにして取得できます：print(fitz.doc)。以下のように表示されるべきです：PyMuPDF 1.10.0：MuPDF 1.10ライブラリ用のPythonバインディング、ビルド日時2016-11-30 13:09:13。"
 
 #: ../../vars.rst:76 0938755cf23549bc873f6be89deed69c
 msgid ""
 "(VersionBind, VersionFitz, timestamp) -- combined version information "
 "where *timestamp* is the generation point in time formatted as "
 "\"YYYYMMDDhhmmss\"."
-msgstr ""
+msgstr "(VersionBind、VersionFitz、タイムスタンプ) – タイムスタンプは「YYYYMMDDhhmmss」という形式で表される、生成時点の時間情報を結合したバージョン情報。"
+
 
 #: ../../vars.rst:84 bd0ac665e4d744babee78fb231e33b66
 msgid "Document Permissions"
-msgstr ""
+msgstr "ドキュメントの許可"
 
 #: ../../vars.rst:87 ../../vars.rst:105 ../../vars.rst:118
 #: 1aae7a71de4f4b359786fdc03a0bffff 5fb860c5e04b4d8d857d76b83f472aa6
 #: e84bc17b25d94b7aa2cfb2d1875629ad
 msgid "Code"
-msgstr ""
+msgstr "コード"
 
 #: ../../vars.rst:87 bf4ec133957340a4be9dfa6de1a1299a
 msgid "Permitted Action"
-msgstr ""
+msgstr "許可されたアクション"
 
 #: ../../vars.rst:89 099145ae5ce34e5a8f36ce0437f4563e
 msgid "PDF_PERM_PRINT"
@@ -131,7 +132,7 @@ msgstr ""
 
 #: ../../vars.rst:89 2212f5d1a8424a6ba47813cf864612be
 msgid "Print the document"
-msgstr ""
+msgstr "文書を印刷する"
 
 #: ../../vars.rst:90 4b90a071ff6f4416b65d7ec2660a708c
 msgid "PDF_PERM_MODIFY"
@@ -139,7 +140,7 @@ msgstr ""
 
 #: ../../vars.rst:90 22f7457c358c427e9dd9187183d2e064
 msgid "Modify the document's contents"
-msgstr ""
+msgstr "文書の内容を変更する"
 
 #: ../../vars.rst:91 e2dc814b9db54722879e6e1a199178a4
 msgid "PDF_PERM_COPY"
@@ -147,7 +148,7 @@ msgstr ""
 
 #: ../../vars.rst:91 59384384562e4f1a9cda506eceabae3c
 msgid "Copy or otherwise extract text and graphics"
-msgstr ""
+msgstr "テキストやグラフィックスをコピーしたりその他の抽出を行う"
 
 #: ../../vars.rst:92 4fdea2034e30472ba1c19c66db07833f
 msgid "PDF_PERM_ANNOTATE"
@@ -155,7 +156,7 @@ msgstr ""
 
 #: ../../vars.rst:92 af33feed6ae0464aa1c67d30c5528714
 msgid "Add or modify text annotations and interactive form fields"
-msgstr ""
+msgstr "テキスト注釈やインタラクティブなフォームフィールドを追加または変更する"
 
 #: ../../vars.rst:93 dc4e74b2175948a7ba34dca88976a2a2
 msgid "PDF_PERM_FORM"
@@ -163,7 +164,7 @@ msgstr ""
 
 #: ../../vars.rst:93 324494cc65b14c61b4913becdfea457c
 msgid "Fill in forms and sign the document"
-msgstr ""
+msgstr "フォームに記入し、文書に署名する"
 
 #: ../../vars.rst:94 e7f29cad5faf476a999972e61c429f9f
 msgid "PDF_PERM_ACCESSIBILITY"
@@ -171,7 +172,7 @@ msgstr ""
 
 #: ../../vars.rst:94 c57866df8ec6452b8d252dd38dca587a
 msgid "Obsolete, always permitted"
-msgstr ""
+msgstr "廃止されましたが、常に許可されています"
 
 #: ../../vars.rst:95 c57de1b7e5304f5a94620f134118b981
 msgid "PDF_PERM_ASSEMBLE"
@@ -179,7 +180,7 @@ msgstr ""
 
 #: ../../vars.rst:95 7da892659a8844bfa572872e5450af9b
 msgid "Insert, rotate, or delete pages, bookmarks, thumbnail images"
-msgstr ""
+msgstr "ページの挿入、回転、削除、ブックマーク、サムネイル画像の操作"
 
 #: ../../vars.rst:96 4e77da93685c4a94938c4ae21078ad35
 msgid "PDF_PERM_PRINT_HQ"
@@ -187,16 +188,16 @@ msgstr ""
 
 #: ../../vars.rst:96 d46478fc97114ca5938f5b6f72dbae29
 msgid "High quality printing"
-msgstr ""
+msgstr "高品質印刷"
 
 #: ../../vars.rst:102 ac9198e86e0544b2aea29e4e10b93077
 msgid "PDF Optional Content Codes"
-msgstr ""
+msgstr "PDFオプショナルコンテンツコード"
 
 #: ../../vars.rst:105 ../../vars.rst:118 87b7b0f1457e41c1a09bc43752d947aa
 #: ee446124f83f4b5b8a64f0368aa2d79b
 msgid "Meaning"
-msgstr ""
+msgstr "意味"
 
 #: ../../vars.rst:107 da8e9a62e38742d19aa3f2e19d4826b7
 msgid "PDF_OC_ON"
@@ -204,7 +205,7 @@ msgstr ""
 
 #: ../../vars.rst:107 a1dea393b93b45df8d45a87e7f040f6f
 msgid "Set an OCG to ON temporarily"
-msgstr ""
+msgstr "一時的にOCGをONに設定します"
 
 #: ../../vars.rst:108 01b3242228324b41ad16708c75f20493
 msgid "PDF_OC_TOGGLE"
@@ -212,7 +213,7 @@ msgstr ""
 
 #: ../../vars.rst:108 92e15dd9ff154f7a9097126ea89e6f96
 msgid "Toggle OCG status temporarily"
-msgstr ""
+msgstr "OCGステータスを一時的に切り替えます"
 
 #: ../../vars.rst:109 413140cd949c49be97454baff52d0111
 msgid "PDF_OC_OFF"
@@ -220,11 +221,11 @@ msgstr ""
 
 #: ../../vars.rst:109 949797aefee042f0a71ed3a9aa0f67f3
 msgid "Set an OCG to OFF temporarily"
-msgstr ""
+msgstr "一時的にOCGをOFFに設定します"
 
 #: ../../vars.rst:115 56fc76e8d4ee42ae9892c2f8ea125bf7
 msgid "PDF encryption method codes"
-msgstr ""
+msgstr "PDF暗号化方式コード"
 
 #: ../../vars.rst:120 6af50af80e144941b69ce081fdace986
 msgid "PDF_ENCRYPT_KEEP"
@@ -232,7 +233,7 @@ msgstr ""
 
 #: ../../vars.rst:120 8ad438060f424ddcaa8d91bca11edca6
 msgid "do not change"
-msgstr ""
+msgstr "変更しない"
 
 #: ../../vars.rst:121 161fab2c28424bbfbb4a40c21c48559a
 msgid "PDF_ENCRYPT_NONE"
@@ -240,7 +241,7 @@ msgstr ""
 
 #: ../../vars.rst:121 13509cf83ec94384b66b067d66272d13
 msgid "remove any encryption"
-msgstr ""
+msgstr "暗号化を解除する"
 
 #: ../../vars.rst:122 c4f163b0ea7146a6b3174522733ef550
 msgid "PDF_ENCRYPT_RC4_40"
@@ -248,7 +249,7 @@ msgstr ""
 
 #: ../../vars.rst:122 000350cfd5cd433cb9b98cec5e60e636
 msgid "RC4 40 bit"
-msgstr ""
+msgstr "RC4 40ビット"
 
 #: ../../vars.rst:123 4f021eda019442d98c6422ccfa6f1eae
 msgid "PDF_ENCRYPT_RC4_128"
@@ -256,7 +257,7 @@ msgstr ""
 
 #: ../../vars.rst:123 c277864d96674a7a81a20e458c5348e4
 msgid "RC4 128 bit"
-msgstr ""
+msgstr "RC4 128ビット"
 
 #: ../../vars.rst:124 528bc5ac01594e6ca9aeaf047e3e6414
 msgid "PDF_ENCRYPT_AES_128"
@@ -264,7 +265,7 @@ msgstr ""
 
 #: ../../vars.rst:124 9910f0008cfe423d964e0e30f24a56e1
 msgid "*Advanced Encryption Standard* 128 bit"
-msgstr ""
+msgstr "*Advanced Encryption Standard* 128ビット"
 
 #: ../../vars.rst:125 8cd814b0d890468f92f0f1ce9a05356a
 msgid "PDF_ENCRYPT_AES_256"
@@ -272,7 +273,7 @@ msgstr ""
 
 #: ../../vars.rst:125 2cd94a657d2a4d5eac5849a4fbd5bf3d
 msgid "*Advanced Encryption Standard* 256 bit"
-msgstr ""
+msgstr "*Advanced Encryption Standard* 256ビット"
 
 #: ../../vars.rst:126 082b0b44a7d047bb8457ff3090e4ec17
 msgid "PDF_ENCRYPT_UNKNOWN"
@@ -280,11 +281,11 @@ msgstr ""
 
 #: ../../vars.rst:126 54b9971bf2ed4441a93fe5dea1bafac8
 msgid "unknown"
-msgstr ""
+msgstr "不明"
 
 #: ../../vars.rst:132 90dd48f5850c4c3c84331c8af3d6cc03
 msgid "Font File Extensions"
-msgstr ""
+msgstr "フォントファイルの拡張子"
 
 #: ../../vars.rst:133 a1141d4f88474c3399698b6084db3149
 msgid ""
@@ -292,15 +293,15 @@ msgid ""
 "buffers extracted from a PDF. This string is returned by "
 ":meth:`Document.get_page_fonts`, :meth:`Page.get_fonts` and "
 ":meth:`Document.extract_font`."
-msgstr ""
+msgstr "このテーブルは、PDFから抽出されたフォントファイルバッファを保存する際に使用すべきファイル拡張子を示しています。この文字列は、:meth:`Document.get_page_fonts`、:meth:`Page.get_fonts`、および :meth:`Document.extract_font` によって返されます。"
 
 #: ../../vars.rst:136 78e3151d05a94c6bbba1f96d6b077125
 msgid "Ext"
-msgstr ""
+msgstr "拡張子"
 
 #: ../../vars.rst:136 bc73c6ccc1d842c6ab1cc91e56a2028b
 msgid "Description"
-msgstr ""
+msgstr "説明"
 
 #: ../../vars.rst:138 d9f9793ee7354031acdbd4ccc476d8ad
 msgid "ttf"
@@ -308,7 +309,7 @@ msgstr ""
 
 #: ../../vars.rst:138 298047d991234dc596db9f0c4fed230d
 msgid "TrueType font"
-msgstr ""
+msgstr "TrueTypeフォント"
 
 #: ../../vars.rst:139 bb416467cae74c0a87f249b6ba8d8913
 msgid "pfa"
@@ -316,7 +317,7 @@ msgstr ""
 
 #: ../../vars.rst:139 ecf4a549aa9b4abb9b969a95a95dea81
 msgid "Postscript for ASCII font (various subtypes)"
-msgstr ""
+msgstr "ASCII用のPostscriptフォント（さまざまなサブタイプ）"
 
 #: ../../vars.rst:140 e401332a02d84361931d913c4c785000
 msgid "cff"
@@ -324,7 +325,7 @@ msgstr ""
 
 #: ../../vars.rst:140 89490baeebb5476eae4e159d026c8edc
 msgid "Type1C font (compressed font equivalent to Type1)"
-msgstr ""
+msgstr "Type1Cフォント（Type1と同等の圧縮フォント）"
 
 #: ../../vars.rst:141 043c8723543f424eb48f05cd154d99d6
 msgid "cid"
@@ -332,7 +333,7 @@ msgstr ""
 
 #: ../../vars.rst:141 60b32f7914ae4296b3f22ee0472d8aea
 msgid "character identifier font (postscript format)"
-msgstr ""
+msgstr "文字識別子フォント（Postscript形式）"
 
 #: ../../vars.rst:142 f8d149fbd4c44534a9b9d68fdfa6ddfb
 msgid "otf"
@@ -340,7 +341,7 @@ msgstr ""
 
 #: ../../vars.rst:142 9e899a1fe36a4c5c9aab4ada34c471cd
 msgid "OpenType font"
-msgstr ""
+msgstr "OpenTypeフォント"
 
 #: ../../vars.rst:143 095c63aea31b48278c9c31e7ca0f368b
 msgid "n/a"
@@ -348,37 +349,37 @@ msgstr ""
 
 #: ../../vars.rst:143 08968524b26e42fd99d51f9a3087b8e0
 msgid "not extractable, e.g. :ref:`Base-14-Fonts`, Type 3 fonts and others"
-msgstr ""
+msgstr "抽出できない、 :ref:`PDFベース14フォント <Base-14-Fonts>`  、Type 3フォント、その他"
 
 #: ../../vars.rst:149 5516680222e64dfc87106457945d4d2e
 msgid "Text Alignment"
-msgstr ""
+msgstr "テキストの配置"
 
 #: ../../vars.rst:152 2da44d464e374bbea8c8ec936d3bfdd8
 msgid "0 -- align left."
-msgstr ""
+msgstr "0 – 左揃え。"
 
 #: ../../vars.rst:156 dc8af1af12b746608f1b9bc266fcaed7
 msgid "1 -- align center."
-msgstr ""
+msgstr "1 – 中央揃え。"
 
 #: ../../vars.rst:160 1ca48589bbc445fc8e34c32d312bca62
 msgid "2 -- align right."
-msgstr ""
+msgstr "2 – 右揃え。"
 
 #: ../../vars.rst:164 20547ed92d274dd3ab2e1efb42aac73b
 msgid "3 -- align justify."
-msgstr ""
+msgstr "3 – 両端揃え。"
 
 #: ../../vars.rst:169 f7402c2578234fe78eaa355597064b36
 msgid "Text Extraction Flags"
-msgstr ""
+msgstr "テキスト抽出フラグ"
 
 #: ../../vars.rst:170 cd42307d3a934664ad84d9fcd7a9c1b1
 msgid ""
 "Option bits controlling the amount of data, that are parsed into a "
 ":ref:`TextPage` -- this class is mainly used only internally in PyMuPDF."
-msgstr ""
+msgstr ":ref:`TextPage` に解析されるデータの量を制御するオプションビット - このクラスは、主にPyMuPDF内部でのみ使用されます。"
 
 #: ../../vars.rst:172 1786bc533e2c4020b5661329a84ccc01
 msgid ""
@@ -389,7 +390,7 @@ msgid ""
 "combinations of the values are used. Please use a value that meets your "
 "situation. Especially make sure to switch off image extraction unless you"
 " really need them. The impact on performance and memory is significant!"
-msgstr ""
+msgstr "PyMuPDFプログラマーにとって、これらの値のいくつかの組み合わせ（Pythonの`|`演算子を使用するか、単純に`+`を使用する）が、すべてのテキスト検索およびテキスト抽出メソッドのパラメータである `flags` 整数に集約されます。個々のメソッドによっては、異なる値のデフォルトの組み合わせが使用されます。ご自身の状況に合った値を使用してください。特に、必要がない限り画像抽出をオフにしてください。パフォーマンスとメモリに対する影響が大きいです！"
 
 #: ../../vars.rst:176 cf4fb784cd5649d89648e7adac92e2b7
 msgid ""
@@ -399,14 +400,14 @@ msgid ""
 "characters f, f and i. Default is \"on\" in PyMuPDF. MuPDF supports the "
 "following 7 ligatures: \"ff\", \"fi\", \"fl\", \"ffi\", \"ffl\", , "
 "\"ft\", \"st\"."
-msgstr ""
+msgstr "1 – 設定されている場合、リガチャは元の形式のままアプリケーションに渡されます。それ以外の場合、リガチャは構成要素に展開されます。例：リガチャ「ffi」は、3つの個別の文字 f、f、および i に展開されます。デフォルトはPyMuPDFで「オン」です。MuPDFは以下の7つのリガチャに対応しています："ff"、"fi"、"fl"、"ffi"、"ffl"、"ft"、"st"。"
 
 #: ../../vars.rst:180 0a95532c0a4a4277a3f89788739eda8f
 msgid ""
 "2 -- If set, whitespace is passed through. Otherwise any type of "
 "horizontal whitespace (including horizontal tabs) will be replaced with "
 "space characters of variable width. Default is \"on\" in PyMuPDF."
-msgstr ""
+msgstr "2 – 設定されている場合、空白はそのまま渡されます。それ以外の場合、水平空白（水平タブを含む）のいずれかのタイプは可変幅のスペース文字に置き換えられます。デフォルトはPyMuPDFで「オン」です。"
 
 #: ../../vars.rst:184 378bac256c884154a80c9db4e7aa8e33
 msgid ""
@@ -416,7 +417,7 @@ msgid ""
 "\"rawdict\", \"rawjson\", \"html\", and \"xhtml\" and is the default "
 "there. If used with \"blocks\" however, only image metadata will be "
 "returned, not the image itself."
-msgstr ""
+msgstr "4 – 設定されている場合、画像は :ref:`TextPage` に保存されます。これにより、テキスト抽出の出力に（通常は大きな）バイナリ画像コンテンツが含まれることになります。ただし、これはタイプ「blocks」、「dict」、「json」、「rawdict」、「rawjson」、「html」、および「xhtml」のテキスト抽出にのみ適用され、デフォルトです。ただし、「blocks」とともに使用される場合、画像メタデータのみが返され、画像自体は返されません。"
 
 #: ../../vars.rst:188 2bffab76a52b41e7a6f1ccc2ba6aeaa9
 msgid ""
@@ -425,7 +426,7 @@ msgid ""
 "not insert spaces to point to the next character's position, but will "
 "provide the direct location address. The default in PyMuPDF is \"off\" --"
 " so spaces **will be generated**."
-msgstr ""
+msgstr "8 – 設定されている場合、Mupdfは文字間の大きな間隔に欠落したスペース文字を追加しようとしません。PDFでは、作成者はしばしば次の文字の位置を指し示すためにスペースを挿入しませんが、直接の場所のアドレスを提供します。PyMuPDFのデフォルトは「オフ」です - したがって、スペースが生成されます。"
 
 #: ../../vars.rst:192 5c23c43d9f024f189479547d35badc0a
 msgid ""
@@ -437,26 +438,26 @@ msgid ""
 "on different lines will be joined to one span **\"first method leads to "
 "wrong results\"** and correspondingly updated bboxes: the characters of "
 "the resulting span will no longer have identical y-coordinates."
-msgstr ""
+msgstr "16 – 行末のハイフンを無視し、次の行に結合します。テキスト検索関数と内部で使用されます。ただし、一般的に使用できます。ONの場合、テキスト抽出は結合されたテキスト行（またはスパン）を返します。最初の行のハイフンが除去されます。異なる行にある「first meth-」と「od leads to wrong results」の2つの個別のスパンが「first method leads to wrong results」として結合され、それに応じて更新されたバウンディングボックス（bbox）：結果のスパンの文字はもはや同じy座標を持ちません。"
 
 #: ../../vars.rst:196 91cad6c3750f44c2b99c71753850a114
 msgid ""
 "32 -- Generate a new line for every span. Not used (\"off\") in PyMuPDF, "
 "but available for your use. Every line in \"dict\", \"json\", "
 "\"rawdict\", \"rawjson\" will contain exactly one span."
-msgstr ""
+msgstr "32 – 各スパンに対して新しい行を生成します。PyMuPDFでは使用されませんが（オフです）、使用可能です。"dict"、"json"、"rawdict"、"rawjson"の各行には正確に1つのスパンが含まれます。"
 
 #: ../../vars.rst:200 9e74742865d54ef7873a4113b96905f4
 msgid ""
 "64 -- If set, characters entirely outside a page's **mediabox** will be "
 "ignored. This is default in PyMuPDF."
-msgstr ""
+msgstr "64 – ページのメディアボックス外にある文字は無視されます。これはPyMuPDFのデフォルトです。"
 
 #: ../../vars.rst:202 b6d4bf73d4b94bbeb66dc3fd83c8b1ad
 msgid ""
 "The following constants represent the default combinations of the above "
 "for text extraction and searching:"
-msgstr ""
+msgstr "以下の定数は、テキスト抽出と検索のための上記のデフォルトの組み合わせを表します："
 
 #: ../../vars.rst:206 ../../vars.rst:210 ../../vars.rst:214 ../../vars.rst:234
 #: 1a570c887e554980b8981e72d3780732 3ccee9fa94dd4df29cc2fd68329dc585
@@ -480,87 +481,88 @@ msgstr ""
 
 #: ../../vars.rst:244 676eda0d737d4b87b21d3e4c78463a01
 msgid "Link Destination Kinds"
-msgstr ""
+msgstr "リンクの目的の種類"
 
 #: ../../vars.rst:245 e8660ef597264e7aa2de401fc2c4c0c3
 msgid "Possible values of :attr:`linkDest.kind` (link destination kind)."
-msgstr ""
+msgstr ":attr:`linkDest.kind` （リンクの目的の種類）の可能な値。"
 
 #: ../../vars.rst:249 aca5863efce649efa7b87ea66dea745f
 msgid "0 -- No destination. Indicates a dummy link."
-msgstr ""
+msgstr "0 – 目的地なし。ダミーリンクを示します。"
 
 #: ../../vars.rst:255 d3080c1371494d698a109bd7eced0591
 msgid "1 -- Points to a place in this document."
-msgstr ""
+msgstr "1 – このドキュメント内の場所を指します。"
 
 #: ../../vars.rst:261 54715366035943d4901d2694dacbf047
 msgid ""
 "2 -- Points to a URI -- typically a resource specified with internet "
 "syntax."
-msgstr ""
+msgstr "2 – URIを指します。通常はインターネット構文で指定されたリソースです。"
 
 #: ../../vars.rst:267 96a9bbbd9f2c478fbda0c58c23cad0f3
 msgid "3 -- Launch (open) another file (of any \"executable\" type)."
-msgstr ""
+msgstr "3 – 別のファイル（任意の「実行可能」タイプ）を開きます。"
 
 #: ../../vars.rst:273 3898a2289ff04e48833630d93e968520
 msgid "4 -- points to a named location."
-msgstr ""
+msgstr "4 – 名前付きの場所を指します。"
 
 #: ../../vars.rst:279 c4fb3bc54e434845b7f2bbb91c1d534d
 msgid "5 -- Points to a place in another PDF document."
-msgstr ""
+msgstr "5 – 別のPDFドキュメント内の場所を指します。"
 
 #: ../../vars.rst:286 a811cc5d04a84f6fac14298055f4d297
 msgid "Link Destination Flags"
-msgstr ""
+msgstr "リンクの目的地フラグ"
 
 #: ../../vars.rst:288 5e153b36b3e04e0793ec6bc1d43847bb
 msgid ""
 "The rightmost byte of this integer is a bit field, so test the truth of "
 "these bits with the *&* operator."
-msgstr ""
+msgstr "この整数の最も右側のバイトはビットフィールドです。したがって、これらのビットの真偽を *＆* 演算子でテストします。"
 
 #: ../../vars.rst:292 2c33ff7730024e5e8912d37b894451dd
 msgid "1  (bit 0) Top left x value is valid"
-msgstr ""
+msgstr "1 (ビット 0) 左上の x 値が有効です"
 
 #: ../../vars.rst:298 266604d01d2147f68d5dbd9898cb4edd
 msgid "2  (bit 1) Top left y value is valid"
-msgstr ""
+msgstr "2 (ビット 1) 左上の y 値が有効です"
 
 #: ../../vars.rst:304 58bf062ea62247be92b1161a0d0d99ee
 msgid "4  (bit 2) Bottom right x value is valid"
-msgstr ""
+msgstr "4 (ビット 2) 右下の x 値が有効です"
 
 #: ../../vars.rst:310 7b87c859405f4f00a83584717887c8f8
 msgid "8  (bit 3) Bottom right y value is valid"
-msgstr ""
+msgstr "8 (ビット 3) 右下の y 値が有効です"
 
 #: ../../vars.rst:316 0497f78944824f0081d895ec73319f89
 msgid "16 (bit 4) Horizontal fit"
-msgstr ""
+msgstr "16 (ビット 4) 水平フィット"
 
 #: ../../vars.rst:322 cfcbf55e8a9848b9a0ba22fde0472c91
 msgid "32 (bit 5) Vertical fit"
-msgstr ""
+msgstr "32 (ビット 5) 垂直フィット"
 
 #: ../../vars.rst:328 4c67e16673a549a0bf3415f534986d08
 msgid "64 (bit 6) Bottom right x is a zoom figure"
-msgstr ""
+msgstr "64 (ビット 6) 右下の x はズーム値です"
+
 
 #: ../../vars.rst:334 2aff1a7067e24ffa9b2f4ab3b82a6afb
 msgid "Annotation Related Constants"
-msgstr ""
+msgstr "注釈関連の定数"
 
 #: ../../vars.rst:335 5b36a530969a46f7ad217c74718ed704
 msgid "See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for details."
-msgstr ""
+msgstr "詳細については、:ref:`Adobe PDFリファレンス <AdobeManual>` の第8.4.5章、615ページをご覧ください。"
 
 #: ../../vars.rst:340 ebf4dcbadb944860ae29390c58973ec5
 msgid "Annotation Types"
-msgstr ""
+msgstr "注釈の種類"
 
 #: ../../vars.rst:341 d988884be2cd47b68d2bb5ce4c0dda7b
 msgid ""
@@ -568,63 +570,63 @@ msgid ""
 "specification technically handles them all in the same way, whereas "
 "**MuPDF** (and PyMuPDF) treats them as three basically different types of"
 " objects."
-msgstr ""
+msgstr "これらの識別子は **リンク** と **ウィジェット** も含みます。PDF仕様では、技術的にはこれらをすべて同じ方法で処理しますが、**MuPDF** （およびPyMuPDF）では、基本的には異なる3つのオブジェクトタイプとして扱われます。"
 
 #: ../../vars.rst:378 02b6f26bc2c240579ea13a7db8a7eea6
 msgid "Annotation Flag Bits"
-msgstr ""
+msgstr "注釈フラグビット"
 
 #: ../../vars.rst:395 b58b3f61c2ee4e0f9f18b64a483e3676
 msgid "Annotation Line Ending Styles"
-msgstr ""
+msgstr "注釈の線の終端スタイル"
 
 #: ../../vars.rst:411 783da63409904d89a50a91ca73c2c0c9
 msgid "Widget Constants"
-msgstr ""
+msgstr "ウィジェットの定数"
 
 #: ../../vars.rst:416 851f7a6f5b51434b91b7059fa24654c8
 msgid "Widget Types (*field_type*)"
-msgstr ""
+msgstr "ウィジェットのタイプ（*field_type*）"
 
 #: ../../vars.rst:429 207aca8b91dc4e0b8db757c7b7db725c
 msgid "Text Widget Subtypes (*text_format*)"
-msgstr ""
+msgstr "テキストウィジェットのサブタイプ（*text_format*）"
 
 #: ../../vars.rst:440 e0d3f52344ea47e1a8d3f46c739b22b6
 msgid "Widget flags (*field_flags*)"
-msgstr ""
+msgstr "ウィジェットフラグ（*field_flags*）"
 
 #: ../../vars.rst:441 9b9e0a9526524e95b264aa036222af95
 msgid "**Common to all field types**::"
-msgstr ""
+msgstr "**すべてのフィールドタイプに共通**："
 
 #: ../../vars.rst:447 2a61b982cabe4f5f92915cdf0f190f1d
 msgid "**Text widgets**::"
-msgstr ""
+msgstr "**テキストウィジェット**："
 
 #: ../../vars.rst:457 2dc908353bd146a797402fd52faaa9af
 msgid "**Button widgets**::"
-msgstr ""
+msgstr "**ボタンウィジェット**："
 
 #: ../../vars.rst:464 0c62578bcf304b99a273926e7d8d4b15
 msgid "**Choice widgets**::"
-msgstr ""
+msgstr "**チョイスウィジェット**："
 
 #: ../../vars.rst:477 4e2c9e01f16e465d817fcb2d8dc88cc8
 msgid "PDF Standard Blend Modes"
-msgstr ""
+msgstr "PDF標準ブレンドモード"
 
 #: ../../vars.rst:479 fcc603aa265d4256a0e7b7a0ba09028a
 msgid "For an explanation see :ref:`AdobeManual`, page 324::"
-msgstr ""
+msgstr "詳細については、Adobe PDFリファレンスのページ324をご覧ください："
 
 #: ../../vars.rst:502 f0ef9080d0f9462e9d315ad4566a4785
 msgid "Stamp Annotation Icons"
-msgstr ""
+msgstr "スタンプ注釈アイコン"
 
 #: ../../vars.rst:503 fa47d0c4e56d4c699ce6efebcfd5702e
 msgid "MuPDF has defined the following icons for **rubber stamp** annotations::"
-msgstr ""
+msgstr "MuPDFは、ラバースタンプ注釈に次のアイコンを定義しています："
 
 #: ../../footer.rst:-1 4960f77af59544b980fee580637a1423
 msgid "Discord logo"
