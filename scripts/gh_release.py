@@ -85,6 +85,11 @@ def main():
             build(platform_=p)
         elif arg == 'pip_install':
             prefix = next(args)
+            d = os.path.dirname(prefix)
+            log( f'{prefix=}')
+            log( f'{d=}')
+            for leaf in os.listdir(d):
+                log( f'    {d}/{leaf}')
             pattern = f'{prefix}-*-{platform_tag()}.whl'
             paths = glob.glob( pattern)
             log( f'{pattern=} {paths=}')
