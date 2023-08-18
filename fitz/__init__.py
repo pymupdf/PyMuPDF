@@ -509,3 +509,4 @@ pdfcolor = dict(
         for k, (r, g, b) in fitz.utils.getColorInfoDict().items()
     ]
 )
+__version__ = fitz.VersionBind
