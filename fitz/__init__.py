@@ -85,6 +85,7 @@ if mupdf_version_tuple[:2] not in (
 
 # copy functions in 'utils' to their respective fitz classes
 import fitz.utils
+from fitz.table import find_tables
 
 # ------------------------------------------------------------------------------
 # General
@@ -164,6 +165,7 @@ fitz.Page.get_image_rects = fitz.utils.get_image_rects
 fitz.Page.get_textpage_ocr = fitz.utils.get_textpage_ocr
 fitz.Page.delete_image = fitz.utils.delete_image
 fitz.Page.replace_image = fitz.utils.replace_image
+fitz.Page.find_tables = fitz.table.find_tables
 
 # ------------------------------------------------------------------------
 # Annot
