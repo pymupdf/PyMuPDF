@@ -235,10 +235,11 @@ def build( platform_=None):
             env_set('CIBW_TEST_REQUIRES', 'fontTools pytest')
             env_set('CIBW_TEST_COMMAND', 'python {project}/tests/run_compound.py pytest -s {project}/tests')
         
-        # Don't attempt to run tests on cross-built wheels. (This
-        # assumes that arm builds are done using cross-builds.)
+        # Don't attempt to run tests on cross-built ARM wheels.
         #
-        env_set('CIBW_TEST_SKIP', '*-*linux_aarch64 *-macosx_arm64')
+        # https://cibuildwheel.readthedocs.io/en/stable/options/#test-skip
+        #
+        env_set('CIBW_TEST_SKIP', 'manylinux*_aarch64 macos*_arm64')
     
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')
     if pymupdf_dir != os.path.abspath( os.getcwd()):
@@ -283,8 +284,8 @@ def build( platform_=None):
             # available.
             #
             env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py windows_pip_install wheelhouse/PyMuPDFb')
-        else:
-            env_set('CIBW_BEFORE_TEST', 'pip install wheelhouse/PyMuPDFb-*.whl')
+        elif platform.system() == 'Linux':
+            env_set('CIBW_BEFORE_TEST', 'pip install wheelhouse/PyMuPDFb-*_.whl')
         set_cibuild_test()
         
         env_set( 'PYMUPDF_SETUP_FLAVOUR', 'p', pass_=1)
