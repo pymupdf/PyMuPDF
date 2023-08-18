@@ -18,10 +18,10 @@ Args:
         Build using cibuild.
     build-devel
         Build using cibuild with `--platform` set.
-    windows_pip_install <prefix>
-        Windows only: run `pip install <prefix>-*-<platform_tag>.whl`,
-        where `platform_tag` will be 'win32' or 'win_amd64' depending on
-        the python we are running on.
+    pip_install <prefix>
+        Run `pip install <prefix>-*-<platform_tag>.whl`,
+        where `platform_tag` will be things like 'win32', 'win_amd64',
+        'x86_64`, depending on the python we are running on.
     venv
         Run remaining args inside venv.
     test
@@ -83,10 +83,9 @@ def main():
             else:
                 assert 0, f'Unrecognised {platform.system()=}'
             build(platform_=p)
-        elif arg == 'windows_pip_install':
-            assert platform.system() == 'Windows'
+        elif arg == 'pip_install':
             prefix = next(args)
-            pattern = f'{prefix}-*-{windows_platform_tag()}.whl'
+            pattern = f'{prefix}-*-{platform_tag()}.whl'
             paths = glob.glob( pattern)
             log( f'{pattern=} {paths=}')
             paths = ' '.join( paths)
@@ -272,20 +271,17 @@ def build( platform_=None):
         env_set('CIBW_REPAIR_WHEEL_COMMAND_LINUX', '')
         env_set('CIBW_REPAIR_WHEEL_COMMAND_MACOS', '')
         
-        # We tell cibuildwheel to test these wheels, but also tell it to
-        # install the PyMuPDFb wheel first - otherwise installation of
-        # PyMuPDF would fail because it lists the PyMuPDFb wheel as a
-        # prerequisite.
+        # We tell cibuildwheel to test these wheels, but also set
+        # CIBW_BEFORE_TEST to make it first run ourselves with the
+        # `pip_install` arg to install the PyMuPDFb wheel. Otherwise
+        # installation of PyMuPDF would fail because it lists the
+        # PyMuPDFb wheel as a prerequisite. We need to use `pip_install`
+        # because wildcards do not work on Windows, and we want to be
+        # careful to avoid incompatible wheels, e.g. 32 vs 64-bit wheels
+        # coexist during Windows builds.
         #
-        if platform.system() == 'Windows':
-            # We need to make cibuild use our special
-            # `windows_pip_install` arg, which selects an appropriate
-            # platform tag so we cope with 32 and 64-bit wheels being
-            # available.
-            #
-            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py windows_pip_install wheelhouse/PyMuPDFb')
-        elif platform.system() == 'Linux':
-            env_set('CIBW_BEFORE_TEST', 'pip install wheelhouse/PyMuPDFb-*_.whl')
+        env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py pip_install wheelhouse/PyMuPDFb')
+        
         set_cibuild_test()
         
         env_set( 'PYMUPDF_SETUP_FLAVOUR', 'p', pass_=1)
@@ -350,10 +346,7 @@ def test( project, package):
     run( f'ls -l {project}/wheelhouse', check=0)
     run( f'ls -l {package}/wheelhouse', check=0)
     
-    platform_tag = ''
-    if platform.system() == 'Windows':
-        platform_tag = windows_platform_tag()
-    wheel_b = glob.glob( f'{project}/wheelhouse/PyMuPDFb-*{platform_tag}.whl')
+    wheel_b = glob.glob( f'{project}/wheelhouse/PyMuPDFb-*{platform_tag()}.whl')
     assert len(wheel_b) == 1, f'{wheel_b=}'
     wheel_b = wheel_b[0]
 
@@ -395,12 +388,15 @@ def add_env(env_extra):
     return env
 
 
-def windows_platform_tag():
-    assert platform.system() == 'Windows'
-    if sys.maxsize == 2**31 - 1:
-        return 'win32'
+def platform_tag():
+    bits = 32 if sys.maxsize == 2**31 - 1 else 64
+    if platform.system() == 'Windows':
+        return 'win32' if bits==32 else 'win_amd64'
+    elif platform.system() in ('Linux', 'Darwin'):
+        assert bits == 64
+        return 'x86_64'
     else:
-        return 'win_amd64'
+        assert 0, f'Unrecognised: {platform.system()=}'
 
 
 if __name__ == '__main__':
