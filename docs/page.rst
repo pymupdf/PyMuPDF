@@ -374,7 +374,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
             * **bbox:** the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
             * **cells:** bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
-            * **extract:** a method returning the text content of each table cell (a list of list of strings).
+            * **extract:** a method returning the text content of each table cell (a list of lists of strings).
             * **header:** a `TableHeader` object containing header information of the table.
             * **col_count:** an integer containing the number of table columns.
             * **row_count:** an integer containing the number of table rows. 
