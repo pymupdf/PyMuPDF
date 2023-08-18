@@ -2,6 +2,10 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.0 (2023-08-xx)**
+
+* Add method `find_tables()` to the `Page` object. It allows locating tables on any supported document page, and extracting table content by cell.
+
 **Changes in version 1.23.0rc1 (2023-08-10)**
 
 * Contains a new "rebased" implementation of PyMuPDF.
