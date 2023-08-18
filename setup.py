@@ -451,10 +451,13 @@ def get_mupdf():
     '''
     
     # 2023-07-11: For now we default to mupdf master.
-    path = os.environ.get(
-            'PYMUPDF_SETUP_MUPDF_BUILD',
-            #'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git',
-            )
+    path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
+    if path is None:
+        # 2023-08-18: default to specific sha for now.
+        path = 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
+        sha = 'a6aaf0b1162a'    # Makerules scripts/wrap/__main__.py: fix cross-building to arm64 on MacOS.
+    else:
+        sha = None
     log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
     if path is None:
         # Default.
@@ -496,12 +499,8 @@ def get_mupdf():
             command = (''
                     + f'git clone'
                     + f' --recursive'
-                    #+ f' --single-branch'
-                    #+ f' --recurse-submodules'
                     + f' --depth 1'
                     + f' --shallow-submodules'
-                    #+ f' --branch {branch}'
-                    #+ f' git://git.ghostscript.com/mupdf.git'
                     + f' {command_suffix}'
                     + f' {path}'
                     )
@@ -512,6 +511,11 @@ def get_mupdf():
             command = f'cd {path} && git show --pretty=oneline|head -n 1'
             log( f'Running: {command}')
             subprocess.run( command, shell=True, check=False)
+            
+            if sha:
+                command = f'cd mupdf && git checkout {sha}'
+                log( f'Running: {command}')
+                subprocess.run( command, shell=True)
 
         # Use custom mupdf directory.
         log( f'Using custom mupdf directory from $PYMUPDF_SETUP_MUPDF_BUILD: {path}')
@@ -541,13 +545,13 @@ def build():
     '''
     pipcl.py `build_fn()` callback.
     '''
-    skelepton = os.environ.get( 'PYMUPDF_SETUP_SKELETON')
-    log( f'{skelepton=}')
-    if skelepton == '1':
+    skeleton = os.environ.get( 'PYMUPDF_SETUP_SKELETON')
+    log( f'{skeleton=}')
+    if skeleton == '1':
         ret = list()
         log( f'{g_flavour=}')
         run( f'ls -l wheelhouse', check=0)
-        if g_flavour == 'b':
+        if 'b' in g_flavour:
             with open( 'foo.c', 'w') as f:
                 f.write( textwrap.dedent( '''
                         int foo(int x)
@@ -558,7 +562,7 @@ def build():
                 run(f'cc -fPIC -shared -o {g_root}/libfoo.so foo.c')
             ret.append( f'{g_root}/libfoo.so')
             ret.append( (f'{g_root}/READMErb.md', '$dist-info/README.md'))
-        elif g_flavour == 'p':
+        if 'p' in g_flavour:
             with open( 'bar.c', 'w') as f:
                 f.write( textwrap.dedent( '''
                         int bar(int x)
@@ -575,8 +579,78 @@ def build():
             ret.append( f'{g_root}/bar.py')
             ret.append( f'{g_root}/_bar.so')
             ret.append( (f'{g_root}/README.md', '$dist-info/README.md'))
-        else:
-            assert 0, f'{g_flavour=}'
+        return ret
+    
+    elif skeleton == '2':
+        os.makedirs( 'src-skeleton2', exist_ok=True)
+        ret = list()
+        #cc, pythonflags = pipcl.base_compiler()
+        #ld, pythonflags = pipcl.base_linker()
+        if 1:
+            # Build minimal libmupdf.so.
+            cc, _ = pipcl.base_compiler()
+            with open( 'src-skeleton2/mupdf.c', 'w') as f:
+                f.write( textwrap.dedent('''
+                        int foo(int x)
+                        {
+                            return x + 1;
+                        }
+                        '''))
+            # Use of rpath here is Linux/OpenBSD-specific.
+            run(f'{cc} -o src-skeleton2/libmupdf.so src-skeleton2/mupdf.c -fPIC -shared -Wl,-rpath,\'$ORIGIN\',-z,origin')
+            ret.append( ('src-skeleton2/libmupdf.so', ''))
+        if 'p' in g_flavour:
+            # Build extension module `fitz`.
+            with open( 'src-skeleton2/fitz.i', 'w') as f:
+                f.write( textwrap.dedent('''
+                        %module fitz
+                        
+                        %{
+                        int foo(int x);
+                        int bar(int x)
+                        {
+                            return foo(x) * 2;
+                        }
+                        %}
+                        
+                        int bar(int x);
+                        '''))
+            path_so_leaf_a = pipcl.build_extension(
+                    name = 'fitz',
+                    path_i = 'src-skeleton2/fitz.i',
+                    outdir = 'src-skeleton2',
+                    cpp = False,
+                    libpaths = ['src-skeleton2'],
+                    libs = ['mupdf'],
+                    )
+    
+            with open( 'src-skeleton2/fitz.i', 'w') as f:
+                f.write( textwrap.dedent('''
+                        %module fitz_new
+                        
+                        %{
+                        int foo(int x);
+                        int bar(int x)
+                        {
+                            return foo(x) * 2;
+                        }
+                        %}
+                        
+                        int bar(int x);
+                        '''))
+            path_so_leaf_b = pipcl.build_extension(
+                    name = 'fitz_new',
+                    path_i = 'src-skeleton2/fitz.i',
+                    outdir = 'src-skeleton2',
+                    cpp = False,
+                    libpaths = ['src-skeleton2'],
+                    libs = ['mupdf'],
+                    )
+            ret.append( (f'src-skeleton2/{path_so_leaf_a}', ''))
+            ret.append( (f'src-skeleton2/fitz.py', ''))
+            ret.append( (f'src-skeleton2/{path_so_leaf_b}', ''))
+            ret.append( (f'src-skeleton2/fitz_new.py', ''))
+            ret.append( (f'{g_root}/README.md', '$dist-info/README.md'))
         return ret
     
     
