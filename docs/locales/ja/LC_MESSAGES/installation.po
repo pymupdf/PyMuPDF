@@ -244,17 +244,15 @@ msgstr "そうでない場合、Pythonは混乱する可能性があります。
 
 #: ../../installation.rst:115 3ee6e98075ec46c58133fb1a24b139c1
 msgid "Building for different Python versions in same PyMuPDF tree:"
-msgstr "⚠️---> TODO!!! Building for different Python versions in same PyMuPDF tree:"
+msgstr "同じPyMuPDFツリー内で異なるPythonバージョン用にビルドする方法："
+
 
 #: ../../installation.rst:118 08dc0c1c83ff4577a7565a02e619611f
 msgid ""
 "PyMuPDF will build for the version of Python that runs `setup.py`. So for"
 " example on Windows one can build different versions by using `py -3.9` "
 "or `py -3.10-32`."
-msgstr ""
-"⚠️---> TODO!!! PyMuPDF will build for the version of Python that runs `setup.py`. So for"
-" example on Windows one can build different versions by using `py -3.9` "
-"or `py -3.10-32`."
+msgstr "PyMuPDFは、`setup.py` を実行するPythonのバージョンにビルドされます。したがって、例えばWindowsで異なるバージョンをビルドする場合、`py -3.9` や `py -3.10-32` を使用することができます。"
 
 #: ../../installation.rst:124 628a2505858a4428a47a374722a4edc4
 msgid "Running tests"
