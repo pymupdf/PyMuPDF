@@ -451,10 +451,13 @@ def get_mupdf():
     '''
     
     # 2023-07-11: For now we default to mupdf master.
-    path = os.environ.get(
-            'PYMUPDF_SETUP_MUPDF_BUILD',
-            #'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git',
-            )
+    path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
+    if path is None:
+        # 2023-08-18: default to specific sha for now.
+        path = 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
+        sha = 'a6aaf0b1162a'    # Makerules scripts/wrap/__main__.py: fix cross-building to arm64 on MacOS.
+    else:
+        sha = None
     log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
     if path is None:
         # Default.
@@ -496,12 +499,8 @@ def get_mupdf():
             command = (''
                     + f'git clone'
                     + f' --recursive'
-                    #+ f' --single-branch'
-                    #+ f' --recurse-submodules'
                     + f' --depth 1'
                     + f' --shallow-submodules'
-                    #+ f' --branch {branch}'
-                    #+ f' git://git.ghostscript.com/mupdf.git'
                     + f' {command_suffix}'
                     + f' {path}'
                     )
@@ -512,6 +511,11 @@ def get_mupdf():
             command = f'cd {path} && git show --pretty=oneline|head -n 1'
             log( f'Running: {command}')
             subprocess.run( command, shell=True, check=False)
+            
+            if sha:
+                command = f'cd mupdf && git checkout {sha}'
+                log( f'Running: {command}')
+                subprocess.run( command, shell=True)
 
         # Use custom mupdf directory.
         log( f'Using custom mupdf directory from $PYMUPDF_SETUP_MUPDF_BUILD: {path}')
