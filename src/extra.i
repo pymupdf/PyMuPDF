@@ -5,6 +5,67 @@
 #define SWIG_PYTHON_INTERPRETER_NO_DEBUG
 %}
 
+%init
+%{
+    /* Initialise some globals that require Python functions.
+    
+    [Prior to 2023-08-18 we initialised these global variables inline,
+    but this causes a SEGV on Windows with Python-3.10 for `dictkey_c`
+    (actually any string of length 1 failed).] */
+    
+    dictkey_align = PyUnicode_InternFromString("align");
+    dictkey_ascender = PyUnicode_InternFromString("ascender");
+    dictkey_bbox = PyUnicode_InternFromString("bbox");
+    dictkey_blocks = PyUnicode_InternFromString("blocks");
+    dictkey_bpc = PyUnicode_InternFromString("bpc");
+    dictkey_c = PyUnicode_InternFromString("c");
+    dictkey_chars = PyUnicode_InternFromString("chars");
+    dictkey_color = PyUnicode_InternFromString("color");
+    dictkey_colorspace = PyUnicode_InternFromString("colorspace");
+    dictkey_content = PyUnicode_InternFromString("content");
+    dictkey_creationDate = PyUnicode_InternFromString("creationDate");
+    dictkey_cs_name = PyUnicode_InternFromString("cs-name");
+    dictkey_da = PyUnicode_InternFromString("da");
+    dictkey_dashes = PyUnicode_InternFromString("dashes");
+    dictkey_desc = PyUnicode_InternFromString("descender");
+    dictkey_descender = PyUnicode_InternFromString("descender");
+    dictkey_dir = PyUnicode_InternFromString("dir");
+    dictkey_effect = PyUnicode_InternFromString("effect");
+    dictkey_ext = PyUnicode_InternFromString("ext");
+    dictkey_filename = PyUnicode_InternFromString("filename");
+    dictkey_fill = PyUnicode_InternFromString("fill");
+    dictkey_flags = PyUnicode_InternFromString("flags");
+    dictkey_font = PyUnicode_InternFromString("font");
+    dictkey_glyph = PyUnicode_InternFromString("glyph");
+    dictkey_height = PyUnicode_InternFromString("height");
+    dictkey_id = PyUnicode_InternFromString("id");
+    dictkey_image = PyUnicode_InternFromString("image");
+    dictkey_items = PyUnicode_InternFromString("items");
+    dictkey_length = PyUnicode_InternFromString("length");
+    dictkey_lines = PyUnicode_InternFromString("lines");
+    dictkey_matrix = PyUnicode_InternFromString("transform");
+    dictkey_modDate = PyUnicode_InternFromString("modDate");
+    dictkey_name = PyUnicode_InternFromString("name");
+    dictkey_number = PyUnicode_InternFromString("number");
+    dictkey_origin = PyUnicode_InternFromString("origin");
+    dictkey_rect = PyUnicode_InternFromString("rect");
+    dictkey_size = PyUnicode_InternFromString("size");
+    dictkey_smask = PyUnicode_InternFromString("smask");
+    dictkey_spans = PyUnicode_InternFromString("spans");
+    dictkey_stroke = PyUnicode_InternFromString("stroke");
+    dictkey_style = PyUnicode_InternFromString("style");
+    dictkey_subject = PyUnicode_InternFromString("subject");
+    dictkey_text = PyUnicode_InternFromString("text");
+    dictkey_title = PyUnicode_InternFromString("title");
+    dictkey_type = PyUnicode_InternFromString("type");
+    dictkey_ufilename = PyUnicode_InternFromString("ufilename");
+    dictkey_width = PyUnicode_InternFromString("width");
+    dictkey_wmode = PyUnicode_InternFromString("wmode");
+    dictkey_xref = PyUnicode_InternFromString("xref");
+    dictkey_xres = PyUnicode_InternFromString("xres");
+    dictkey_yres = PyUnicode_InternFromString("yres");
+%}
+
 %include std_string.i
 
 %include exception.i
@@ -701,58 +762,58 @@ static PyObject* JM_outline_xrefs(mupdf::PdfObj obj, PyObject* xrefs)
     return xrefs;
 }
 
-PyObject* dictkey_align = PyUnicode_InternFromString("align");
-PyObject* dictkey_ascender = PyUnicode_InternFromString("ascender");
-PyObject* dictkey_bbox = PyUnicode_InternFromString("bbox");
-PyObject* dictkey_blocks = PyUnicode_InternFromString("blocks");
-PyObject* dictkey_bpc = PyUnicode_InternFromString("bpc");
-PyObject* dictkey_c = PyUnicode_InternFromString("c");
-PyObject* dictkey_chars = PyUnicode_InternFromString("chars");
-PyObject* dictkey_color = PyUnicode_InternFromString("color");
-PyObject* dictkey_colorspace = PyUnicode_InternFromString("colorspace");
-PyObject* dictkey_content = PyUnicode_InternFromString("content");
-PyObject* dictkey_creationDate = PyUnicode_InternFromString("creationDate");
-PyObject* dictkey_cs_name = PyUnicode_InternFromString("cs-name");
-PyObject* dictkey_da = PyUnicode_InternFromString("da");
-PyObject* dictkey_dashes = PyUnicode_InternFromString("dashes");
-//PyObject* dictkey_desc = PyUnicode_InternFromString("desc");
-PyObject* dictkey_desc = PyUnicode_InternFromString("descender");
-PyObject* dictkey_descender = PyUnicode_InternFromString("descender");
-PyObject* dictkey_dir = PyUnicode_InternFromString("dir");
-PyObject* dictkey_effect = PyUnicode_InternFromString("effect");
-PyObject* dictkey_ext = PyUnicode_InternFromString("ext");
-PyObject* dictkey_filename = PyUnicode_InternFromString("filename");
-PyObject* dictkey_fill = PyUnicode_InternFromString("fill");
-PyObject* dictkey_flags = PyUnicode_InternFromString("flags");
-PyObject* dictkey_font = PyUnicode_InternFromString("font");
-PyObject* dictkey_glyph = PyUnicode_InternFromString("glyph");
-PyObject* dictkey_height = PyUnicode_InternFromString("height");
-PyObject* dictkey_id = PyUnicode_InternFromString("id");
-PyObject* dictkey_image = PyUnicode_InternFromString("image");
-PyObject* dictkey_items = PyUnicode_InternFromString("items");
-PyObject* dictkey_length = PyUnicode_InternFromString("length");
-PyObject* dictkey_lines = PyUnicode_InternFromString("lines");
-PyObject* dictkey_matrix = PyUnicode_InternFromString("transform");
-PyObject* dictkey_modDate = PyUnicode_InternFromString("modDate");
-PyObject* dictkey_name = PyUnicode_InternFromString("name");
-PyObject* dictkey_number = PyUnicode_InternFromString("number");
-PyObject* dictkey_origin = PyUnicode_InternFromString("origin");
-PyObject* dictkey_rect = PyUnicode_InternFromString("rect");
-PyObject* dictkey_size = PyUnicode_InternFromString("size");
-PyObject* dictkey_smask = PyUnicode_InternFromString("smask");
-PyObject* dictkey_spans = PyUnicode_InternFromString("spans");
-PyObject* dictkey_stroke = PyUnicode_InternFromString("stroke");
-PyObject* dictkey_style = PyUnicode_InternFromString("style");
-PyObject* dictkey_subject = PyUnicode_InternFromString("subject");
-PyObject* dictkey_text = PyUnicode_InternFromString("text");
-PyObject* dictkey_title = PyUnicode_InternFromString("title");
-PyObject* dictkey_type = PyUnicode_InternFromString("type");
-PyObject* dictkey_ufilename = PyUnicode_InternFromString("ufilename");
-PyObject* dictkey_width = PyUnicode_InternFromString("width");
-PyObject* dictkey_wmode = PyUnicode_InternFromString("wmode");
-PyObject* dictkey_xref = PyUnicode_InternFromString("xref");
-PyObject* dictkey_xres = PyUnicode_InternFromString("xres");
-PyObject* dictkey_yres = PyUnicode_InternFromString("yres");
+
+PyObject* dictkey_align = NULL;
+PyObject* dictkey_ascender = NULL;
+PyObject* dictkey_bbox = NULL;
+PyObject* dictkey_blocks = NULL;
+PyObject* dictkey_bpc = NULL;
+PyObject* dictkey_c = NULL;
+PyObject* dictkey_chars = NULL;
+PyObject* dictkey_color = NULL;
+PyObject* dictkey_colorspace = NULL;
+PyObject* dictkey_content = NULL;
+PyObject* dictkey_creationDate = NULL;
+PyObject* dictkey_cs_name = NULL;
+PyObject* dictkey_da = NULL;
+PyObject* dictkey_dashes = NULL;
+PyObject* dictkey_desc = NULL;
+PyObject* dictkey_descender = NULL;
+PyObject* dictkey_dir = NULL;
+PyObject* dictkey_effect = NULL;
+PyObject* dictkey_ext = NULL;
+PyObject* dictkey_filename = NULL;
+PyObject* dictkey_fill = NULL;
+PyObject* dictkey_flags = NULL;
+PyObject* dictkey_font = NULL;
+PyObject* dictkey_glyph = NULL;
+PyObject* dictkey_height = NULL;
+PyObject* dictkey_id = NULL;
+PyObject* dictkey_image = NULL;
+PyObject* dictkey_items = NULL;
+PyObject* dictkey_length = NULL;
+PyObject* dictkey_lines = NULL;
+PyObject* dictkey_matrix = NULL;
+PyObject* dictkey_modDate = NULL;
+PyObject* dictkey_name = NULL;
+PyObject* dictkey_number = NULL;
+PyObject* dictkey_origin = NULL;
+PyObject* dictkey_rect = NULL;
+PyObject* dictkey_size = NULL;
+PyObject* dictkey_smask = NULL;
+PyObject* dictkey_spans = NULL;
+PyObject* dictkey_stroke = NULL;
+PyObject* dictkey_style = NULL;
+PyObject* dictkey_subject = NULL;
+PyObject* dictkey_text = NULL;
+PyObject* dictkey_title = NULL;
+PyObject* dictkey_type = NULL;
+PyObject* dictkey_ufilename = NULL;
+PyObject* dictkey_width = NULL;
+PyObject* dictkey_wmode = NULL;
+PyObject* dictkey_xref = NULL;
+PyObject* dictkey_xres = NULL;
+PyObject* dictkey_yres = NULL;
 
 static int dict_setitem_drop(PyObject* dict, PyObject* key, PyObject* value)
 {
