@@ -166,9 +166,9 @@
 
     <br/>
     <dl class="simple">
-    <dt><strong>Copying</strong></dt><dd><p>This refers to opening a document and then saving it to a new file. This test measures the speed of reading a <cite>PDF</cite> and re-writing as a new <cite>PDF</cite>. This process is also at the core of functions like merging / joining multiple documents. The numbers below therefore apply to <cite>PDF</cite> joining and merging.</p>
+    <dt><strong id="transP1">Copying</strong></dt><dd><p id="transP2">This refers to opening a document and then saving it to a new file. This test measures the speed of reading a <cite>PDF</cite> and re-writing as a new <cite>PDF</cite>. This process is also at the core of functions like merging / joining multiple documents. The numbers below therefore apply to <cite>PDF</cite> joining and merging.</p>
 
-    <p>The results for all 7,031 pages are:</p>
+    <p id="transP3">The results for all 7,031 pages are:</p>
     </dd>
     </dl>
 
@@ -183,7 +183,7 @@
                 <div class="segment">400</div>
                 <div class="segment">300</div>
                 <div class="segment">200</div>
-                <div class="segment">100<p>&#9201;</p><div style="font-size:10px;margin-top:-20px;">seconds</div></div>
+                <div class="segment">100<p>&#9201;</p><div style="font-size:10px;margin-top:-20px;" id="transP4">seconds</div></div>
             </div>
 
             <div class="about-graph-y-axis">
@@ -210,19 +210,19 @@
         </div>
 
         <div class="about-graph-x-axis speed">
-            <div class="segment"><i>fastest</i></div>
+            <div class="segment"><i id="transP5">fastest</i></div>
             <div class="segment">&#8592;</div>
             <div class="segment">&#8592;</div>
-            <div class="segment"><i>slowest</i></div>
+            <div class="segment"><i id="transP6">slowest</i></div>
         </div>
 
     </div>
 
     <br/>
     <dl class="simple">
-    <dt><strong>Text Extraction</strong></dt><dd><p>This refers to extracting simple, plain text from every page of the document and storing it in a text file.</p>
+    <dt><strong id="transP7">Text Extraction</strong></dt><dd><p id="transP8">This refers to extracting simple, plain text from every page of the document and storing it in a text file.</p>
 
-    <p>The results for all 7,031 pages are:</p>
+    <p id="transP9">The results for all 7,031 pages are:</p>
     </dd>
     </dl>
 
@@ -235,7 +235,7 @@
                 <div class="segment">400</div>
                 <div class="segment">300</div>
                 <div class="segment">200</div>
-                <div class="segment">100<p>&#9201;</p><div style="font-size:10px;margin-top:-20px;">seconds</div></div>
+                <div class="segment">100<p>&#9201;</p><div style="font-size:10px;margin-top:-20px;" id="transP10">seconds</div></div>
             </div>
 
             <div class="about-graph-y-axis">
@@ -261,10 +261,10 @@
         </div>
 
         <div class="about-graph-x-axis speed">
-            <div class="segment"><i>fastest</i></div>
+            <div class="segment"><i id="transP11">fastest</i></div>
             <div class="segment">&#8592;</div>
             <div class="segment">&#8592;</div>
-            <div class="segment"><i>slowest</i></div>
+            <div class="segment"><i id="transP12">slowest</i></div>
         </div>
 
     </div>
@@ -273,9 +273,9 @@
     <br/>
 
     <dl class="simple">
-    <dt><strong>Rendering</strong></dt><dd><p>This refers to making an image (like PNG) from every page of a document at a given DPI resolution. This feature is the basis for displaying a document in a GUI window.</p>
+    <dt><strong id="transP13">Rendering</strong></dt><dd><p id="transP14">This refers to making an image (like PNG) from every page of a document at a given DPI resolution. This feature is the basis for displaying a document in a GUI window.</p>
 
-    <p>The results for all 7,031 pages are:</p>
+    <p id="transP15">The results for all 7,031 pages are:</p>
 
     </dd>
     </dl>
@@ -290,7 +290,7 @@
                 <div class="segment">800</div>
                 <div class="segment">600</div>
                 <div class="segment">400</div>
-                <div class="segment">200<p>&#9201;</p><div style="font-size:10px;margin-top:-20px;">seconds</div></div>
+                <div class="segment">200<p>&#9201;</p><div style="font-size:10px;margin-top:-20px;" id="transP16">seconds</div></div>
             </div>
 
             <div class="about-graph-y-axis">
@@ -314,15 +314,77 @@
         </div>
 
         <div class="about-graph-x-axis speed">
-            <div class="segment"><i>fastest</i></div>
+            <div class="segment"><i id="transP17">fastest</i></div>
             <div class="segment">&#8592;</div>
-            <div class="segment"><i>slowest</i></div>
+            <div class="segment"><i id="transP18"slowest</i></div>
         </div>
 
     </div>
 
 
     <br/>
+
+    <script>
+
+        let langB = document.getElementsByTagName('html')[0].getAttribute('lang');
+
+        function getTranslationB(str) {
+            if (langB == "ja") {
+                if (str=="Copying") {
+                    return "コピー";
+                } else if (str == "This refers to opening a document and then saving it to a new file. This test measures the speed of reading a <cite>PDF</cite> and re-writing as a new <cite>PDF</cite>. This process is also at the core of functions like merging / joining multiple documents. The numbers below therefore apply to <cite>PDF</cite> joining and merging.") {
+                    return "以下は、ドキュメントを開いてから新しいファイルとして保存することを指します。このテストは、PDFを読み込み、新しいPDFとして再書き込む速度を測定します。このプロセスは、複数のドキュメントを結合するなどの機能の中核でもあります。したがって、以下の数字はPDFの結合と結合にも適用されます。";
+                } else if (str == "The results for all 7,031 pages are:") {
+                    return "全7,031ページの結果は次のとおりです：";
+                } else if (str == "seconds") {
+                    return "秒";
+                } else if (str == "fastest") {
+                    return "最速";
+                } else if (str == "slowest") {
+                    return "最遅";
+                } else if (str == "Text Extraction") {
+                    return "テキスト抽出";
+                } else if (str == "This refers to extracting simple, plain text from every page of the document and storing it in a text file.") {
+                    return "以下は、ドキュメントの各ページから簡単なプレーンテキストを抽出し、テキストファイルに保存することを指します。";
+                } else if (str == "Rendering") {
+                    return "レンダリング";
+                } else if (str == "This refers to making an image (like PNG) from every page of a document at a given DPI resolution. This feature is the basis for displaying a document in a GUI window.") {
+                    return "この場合、\"レンダリング\" は、指定されたDPI解像度でドキュメントの各ページから画像（PNGなど）を作成することを指します。この機能は、GUIウィンドウでドキュメントを表示するための基本となります。";
+                }
+
+
+
+            }
+
+            return str;
+
+        }
+
+        document.getElementById("transP1").innerHTML = getTranslationB("Copying");
+        document.getElementById("transP2").innerHTML = getTranslationB("This refers to opening a document and then saving it to a new file. This test measures the speed of reading a <cite>PDF</cite> and re-writing as a new <cite>PDF</cite>. This process is also at the core of functions like merging / joining multiple documents. The numbers below therefore apply to <cite>PDF</cite> joining and merging.");
+
+        document.getElementById("transP3").innerHTML = getTranslationB("The results for all 7,031 pages are:");
+        document.getElementById("transP4").innerHTML = getTranslationB("seconds");
+        document.getElementById("transP5").innerHTML = getTranslationB("fastest");
+        document.getElementById("transP6").innerHTML = getTranslationB("slowest");
+        document.getElementById("transP7").innerHTML = getTranslationB("Text Extraction");
+        document.getElementById("transP8").innerHTML = getTranslationB("This refers to extracting simple, plain text from every page of the document and storing it in a text file.");
+        document.getElementById("transP9").innerHTML = getTranslationB("The results for all 7,031 pages are:");
+        document.getElementById("transP10").innerHTML = getTranslationB("seconds");
+        document.getElementById("transP11").innerHTML = getTranslationB("fastest");
+        document.getElementById("transP12").innerHTML = getTranslationB("slowest");
+        document.getElementById("transP13").innerHTML = getTranslationB("Rendering");
+        document.getElementById("transP14").innerHTML = getTranslationB("This refers to making an image (like PNG) from every page of a document at a given DPI resolution. This feature is the basis for displaying a document in a GUI window.");
+        document.getElementById("transP15").innerHTML = getTranslationB("The results for all 7,031 pages are:");
+        document.getElementById("transP16").innerHTML = getTranslationB("seconds");
+        document.getElementById("transP17").innerHTML = getTranslationB("fastest");
+        document.getElementById("transP18").innerHTML = getTranslationB("slowest");
+
+
+
+    </script>
+
+
 
 
 
