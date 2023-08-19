@@ -266,7 +266,7 @@ def build( platform_=None):
         #
         # https://cibuildwheel.readthedocs.io/en/stable/options/#test-skip
         #
-        env_set('CIBW_TEST_SKIP', 'manylinux*_aarch64 macos*_arm64')
+        #env_set('CIBW_TEST_SKIP', 'manylinux*_aarch64 macos*_arm64')
     
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')
     if pymupdf_dir != os.path.abspath( os.getcwd()):
