@@ -61,6 +61,17 @@ import subprocess
 def main():
 
     log( '### main():')
+    log(f'{platform.platform()=}')
+    log(f'{platform.python_version()=}')
+    log(f'{sys.executable=}')
+    log(f'{sys.maxsize=}')
+    log(f'sys.argv ({len(sys.argv)}):')
+    for i, arg in enumerate(sys.argv):
+        log(f'    {i}: {arg!r}')
+    log(f'os.environ ({len(os.environ)}):')
+    for k in sorted( os.environ.keys()):
+        v = os.environ[ k]
+        log( f'    {k}: {v!r}')
     
     if len( sys.argv) == 1:
         args = iter( ['build'])
@@ -110,13 +121,6 @@ def main():
 
 def build( platform_=None): 
     log( '### build():')   
-    log(f'### sys.argv ({len(sys.argv)}):')
-    for i, arg in enumerate(sys.argv):
-        log(f'###     {i}: {arg!r}')
-    log(f'### os.environ ({len(os.environ)}):')
-    for k in sorted( os.environ.keys()):
-        v = os.environ[ k]
-        log( f'###     {k}: {v!r}')
     
     platform_arg = f' --platform {platform_}' if platform_ else ''
     
@@ -142,6 +146,10 @@ def build( platform_=None):
     inputs_wheels_macos_arm64 = get_bool('inputs_wheels_macos_arm64')
     inputs_wheels_macos_auto = get_bool('inputs_wheels_macos_auto', 1)
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', 1)
+    inputs_wheels_cp38 = get_bool('inputs_wheels_cp38', 1)
+    inputs_wheels_cp39 = get_bool('inputs_wheels_cp39', 1)
+    inputs_wheels_cp310 = get_bool('inputs_wheels_cp310', 1)
+    inputs_wheels_cp311 = get_bool('inputs_wheels_cp311', 1)
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
@@ -152,6 +160,10 @@ def build( platform_=None):
     log( f'{inputs_wheels_macos_arm64=}')
     log( f'{inputs_wheels_macos_auto=}')
     log( f'{inputs_wheels_windows_auto=}')
+    log( f'{inputs_wheels_cp38=}')
+    log( f'{inputs_wheels_cp39=}')
+    log( f'{inputs_wheels_cp310=}')
+    log( f'{inputs_wheels_cp311=}')
 
     run('pip install cibuildwheel')
     
@@ -210,7 +222,15 @@ def build( platform_=None):
             log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
             return
     
-    set_if_unset( 'CIBW_BUILD', 'cp38* cp39* cp310* cp311*')
+    cps = ([]
+            + inputs_wheels_cp38 * ['cp38*']
+            + inputs_wheels_cp39 * ['cp39*']
+            + inputs_wheels_cp310 * ['cp310*']
+            + inputs_wheels_cp311 * ['cp311*']
+            )
+    cps = ' '.join(cps)
+    log(f'{cps=}')
+    set_if_unset( 'CIBW_BUILD', cps)
     
     def env_set(name, value, pass_=False):
         assert isinstance( value, str)
