@@ -367,8 +367,11 @@ def test( project, package):
     log(f'### test(): {project=}')
     log(f'### test(): {package=}')
     
-    import bar
-    log( f'{bar.bar(23)=}')
+    import fitz
+    import fitz_new
+    print(f'{fitz.bar(3)=}')
+    print(f'{fitz_new.bar(3)=}')
+    
     return
     
     run('ls -l')
@@ -391,11 +394,6 @@ def test( project, package):
     
     #run( f'pip install {wheel_b}')
     #run( f'pip install {wheel_p}')
-    
-    import fitz
-    import fitz_new
-    print(f'{fitz.bar(3)=}')
-    print(f'{fitz_new.bar(3)=}')
     
 
 
