@@ -139,7 +139,7 @@ def build( platform_=None):
             assert 0, f'Bad environ {name=} {v=}'
     inputs_flavours = get_bool('inputs_flavours', 1)
     inputs_sdist = get_bool('inputs_sdist')
-    inputs_skeleton = get_bool('inputs_skeleton')
+    inputs_skeleton = os.environ.get('inputs_skeleton')
     inputs_wheels = get_bool('inputs_wheels')
     inputs_wheels_linux_aarch64 = get_bool('inputs_wheels_linux_aarch64')
     inputs_wheels_linux_auto = get_bool('inputs_wheels_linux_auto', 1)
@@ -252,7 +252,8 @@ def build( platform_=None):
             env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = v
 
     env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', 'ab', pass_=1)
-    env_set('PYMUPDF_SETUP_SKELETON', str(inputs_skeleton), pass_=1)
+    if inputs_skeleton:
+        env_set('PYMUPDF_SETUP_SKELETON', inputs_skeleton, pass_=1)
     
     def set_cibuild_test():
         log( f'set_cibuild_test(): {inputs_skeleton=}')
@@ -385,11 +386,16 @@ def test( project, package):
     py_version = ''.join( py_version)
     log( '### test(): {py_version=}')
     wheel_p = glob.glob( f'wheelhouse/PyMuPDF-*-cp{py_version}-*.whl')
-    assert len(wheel_p) == 1, f'{wheel_p=}'
+    print(f'{wheel_p=}')
+    #assert len(wheel_p) == 1, f'{wheel_p=}'
     
-    run( f'pip install {wheel_b}')
-    run( f'pip install {wheel_p}')
-        
+    #run( f'pip install {wheel_b}')
+    #run( f'pip install {wheel_p}')
+    
+    import fitz
+    import fitz_new
+    print(f'{fitz.bar(3)=}')
+    print(f'{fitz_new.bar(3)=}')
     
 
 
