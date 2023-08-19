@@ -1173,7 +1173,8 @@ class Package:
             p = os.path.join(self.root, path)
         p = os.path.realpath(os.path.abspath(p))
         if assert_within_root:
-            assert p.startswith(self.root+os.sep), f'Path not within root={self.root+os.sep!r}: {path}'
+            assert p.startswith(self.root+os.sep) or p == self.root, \
+                    f'Path not within root={self.root+os.sep!r}: {path=} {p=}'
         p_rel = os.path.relpath(p, self.root)
         return p, p_rel
 
@@ -1181,10 +1182,10 @@ class Package:
         '''
         Returns `((from_abs, from_rel), (to_abs, to_rel))`.
 
-        If `p` is a string we convert to `(p, p)`. Otherwise we assert that
-        `p` is a tuple of two string, `(from_, to_)`. Non-absolute paths are
-        assumed to be relative to `self.root`. If `to_` ends with `/` we append
-        the leaf of `from_`.
+        If `p` is a string we convert to `(p, p)`. Otherwise we assert
+        that `p` is a tuple of two string, `(from_, to_)`. Non-absolute
+        paths are assumed to be relative to `self.root`. If `to_` is
+        empty or ends with `/`, we append the leaf of `from_`.
 
         If `to_` starts with `$dist-info/`, we replace this with
         `self._dist_info_dir()`.
@@ -1207,7 +1208,7 @@ class Package:
                 ret = from_, to_
         assert ret, 'p should be str or (str, str), but is: {p}'
         from_, to_ = ret
-        if to_.endswith('/'):
+        if to_.endswith('/') or to_=='':
             to_ += os.path.basename(from_)
         prefix = '$dist-info/'
         if to_.startswith( prefix):
