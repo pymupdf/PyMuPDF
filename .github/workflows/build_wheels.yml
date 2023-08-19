@@ -9,7 +9,7 @@ on:
         default: true
       
       skeleton:
-        description: 'If set, should be 1 or 2.'
+        description: 'skeleton: if set, should be 1 or 2.'
         type: string
       
       sdist:
@@ -41,7 +41,7 @@ on:
         default: true
       
       wheels_cps:
-        description: 'Sets $CIBW_BUILD, E.g. "cp310* cp311*".'
+        description: 'wheels_cps: sets $CIBW_BUILD, E.g. "cp310* cp311*".'
         type: string
       
       # We can't currently have more than 10 inputs
