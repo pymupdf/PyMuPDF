@@ -9,8 +9,8 @@ on:
         default: true
       
       skeleton:
-        type: boolean
-        default: false
+        description: 'If set, should be 1 or 2.'
+        type: string
       
       sdist:
         type: boolean
