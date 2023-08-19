@@ -435,7 +435,8 @@ def platform_tag():
         return 'win32' if bits==32 else 'win_amd64'
     elif platform.system() in ('Linux', 'Darwin'):
         assert bits == 64
-        return 'x86_64'
+        return platform.machine()
+        #return 'x86_64'
     else:
         assert 0, f'Unrecognised: {platform.system()=}'
 
