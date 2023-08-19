@@ -146,10 +146,12 @@ def build( platform_=None):
     inputs_wheels_macos_arm64 = get_bool('inputs_wheels_macos_arm64')
     inputs_wheels_macos_auto = get_bool('inputs_wheels_macos_auto', 1)
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', 1)
-    inputs_wheels_cp38 = get_bool('inputs_wheels_cp38', 1)
-    inputs_wheels_cp39 = get_bool('inputs_wheels_cp39', 1)
-    inputs_wheels_cp310 = get_bool('inputs_wheels_cp310', 1)
-    inputs_wheels_cp311 = get_bool('inputs_wheels_cp311', 1)
+    inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
+    
+    #inputs_wheels_cp38 = get_bool('inputs_wheels_cp38', 1)
+    #inputs_wheels_cp39 = get_bool('inputs_wheels_cp39', 1)
+    #inputs_wheels_cp310 = get_bool('inputs_wheels_cp310', 1)
+    #inputs_wheels_cp311 = get_bool('inputs_wheels_cp311', 1)
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
@@ -160,13 +162,13 @@ def build( platform_=None):
     log( f'{inputs_wheels_macos_arm64=}')
     log( f'{inputs_wheels_macos_auto=}')
     log( f'{inputs_wheels_windows_auto=}')
-    log( f'{inputs_wheels_cp38=}')
-    log( f'{inputs_wheels_cp39=}')
-    log( f'{inputs_wheels_cp310=}')
-    log( f'{inputs_wheels_cp311=}')
-
-    run('pip install cibuildwheel')
+    log( f'{inputs_wheels_cps=}')
     
+    #log( f'{inputs_wheels_cp38=}')
+    #log( f'{inputs_wheels_cp39=}')
+    #log( f'{inputs_wheels_cp310=}')
+    #log( f'{inputs_wheels_cp311=}')
+
     # Build 
     
     env_extra = dict()
@@ -174,6 +176,7 @@ def build( platform_=None):
     def set_if_unset(name, value):
         v = os.environ.get(name)
         if v is None:
+            log( f'Setting environment {name=} to {value=}')
             env_extra[ name] = value
         else:
             log( f'Not changing {name}={v!r} to {value!r}')
@@ -186,6 +189,20 @@ def build( platform_=None):
             if item:
                 ret.append(item)
         return ' '.join(ret)
+    
+    cps = inputs_wheels_cps if inputs_wheels_cps else 'cp38* cp39* cp310* cp311*'
+    set_if_unset( 'CIBW_BUILD', cps)
+    
+    if 0:
+        cps = ([]
+                + inputs_wheels_cp38 * ['cp38*']
+                + inputs_wheels_cp39 * ['cp39*']
+                + inputs_wheels_cp310 * ['cp310*']
+                + inputs_wheels_cp311 * ['cp311*']
+                )
+        cps = ' '.join(cps)
+        log(f'{cps=}')
+        set_if_unset( 'CIBW_BUILD', cps)
     
     if platform.system() == 'Linux':
         set_if_unset(
@@ -222,16 +239,6 @@ def build( platform_=None):
             log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
             return
     
-    cps = ([]
-            + inputs_wheels_cp38 * ['cp38*']
-            + inputs_wheels_cp39 * ['cp39*']
-            + inputs_wheels_cp310 * ['cp310*']
-            + inputs_wheels_cp311 * ['cp311*']
-            )
-    cps = ' '.join(cps)
-    log(f'{cps=}')
-    set_if_unset( 'CIBW_BUILD', cps)
-    
     def env_set(name, value, pass_=False):
         assert isinstance( value, str)
         if not name.startswith('CIBW'):
@@ -265,6 +272,8 @@ def build( platform_=None):
     if pymupdf_dir != os.path.abspath( os.getcwd()):
         log( f'Changing dir to {pymupdf_dir=}')
         os.chdir( pymupdf_dir)
+    
+    run('pip install cibuildwheel')
     
     if inputs_flavours:
         # Build and test PyMuPDF and PyMuPDFb wheels.
