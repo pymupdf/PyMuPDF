@@ -586,7 +586,7 @@ def build():
         ret = list()
         #cc, pythonflags = pipcl.base_compiler()
         #ld, pythonflags = pipcl.base_linker()
-        if 'b' in g_flavour:
+        if 1:
             # Build minimal libmupdf.so.
             cc, _ = pipcl.base_compiler()
             with open( 'src-skeleton2/mupdf.c', 'w') as f:
