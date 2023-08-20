@@ -1304,6 +1304,42 @@ class Table(object):
 
         return table_arr
 
+    def to_pandas(self, **kwargs):
+        """Return a pandas DataFrame version of the table."""
+        try:
+            import pandas as pd
+        except ModuleNotFoundError:
+            print("Package 'pandas' is not installed")
+            raise
+
+        pd_dict = {}
+        extract = self.extract()
+        hdr = self.header
+        names = self.header.names
+        hdr_len = len(names)
+        # ensure uniqueness of column names
+        for i in range(hdr_len):
+            name = names[i]
+            if not name:
+                names[i] = f"Col{i}"
+        if hdr_len != len(set(names)):
+            for i in range(hdr_len):
+                name = names[i]
+                if name != f"Col{i}":
+                    names[i] = f"{i}-{name}"
+
+        if not hdr.external:  # header is part of 'extract'
+            extract = extract[1:]
+
+        for i in range(hdr_len):
+            key = names[i]
+            value = []
+            for j in range(len(extract)):
+                value.append(extract[j][i])
+            pd_dict[key] = value
+
+        return pd.DataFrame(pd_dict)
+
     def _get_header(self, y_tolerance=3):
         """Identify the table header.
 
@@ -1469,7 +1505,7 @@ class Table(object):
         select = select[:5]  # only accept up to 5 lines in any header
 
         # take top row as header if text above table is too far apart
-        if bbox.y0 - select[0] >= bbox.height:
+        if bbox.y0 - select[0] >= line_heights[0]:
             return header_first_row
 
         # if top table row is bold, but line above is not:
@@ -1837,25 +1873,52 @@ def make_edges(page, clip=None, tset=None):
     page_number = page.number + 1
     x_tolerance = tset.snap_x_tolerance
     y_tolerance = tset.snap_y_tolerance
+    if clip != None:
+        clip = fitz.Rect(clip)
+    else:
+        clip = page.rect
+    clip = page.rect
 
-    def make_line(p1, p2):
+    def make_line(p, p1, p2, clip):
         x0 = min(p1.x, p2.x)
         x1 = max(p1.x, p2.x)
         y0 = min(p1.y, p2.y)
         y1 = max(p1.y, p2.y)
+
+        if x0 > clip.x1:
+            return {}
+        if x0 < clip.x0:
+            x0 = clip.x0
+        if x1 < clip.x0:
+            return {}
+        if x1 > clip.x1:
+            x1 = clip.x1
+        if y0 > clip.y1:
+            return {}
+        if y0 < clip.y0:
+            y0 = clip.y0
+        if y1 < clip.y0:
+            return {}
+        if y1 > clip.y1:
+            y1 = clip.y1
+
+        width = x1 - x0
+        height = y1 - y0
+        if width == height == 0:
+            return {}
         return {
             "x0": x0,
             "y0": page_height - y0,
             "x1": x1,
             "y1": page_height - y1,
-            "width": x1 - x0,
-            "height": y1 - y0,
-            "pts": [tuple(p1), tuple(p2)],
+            "width": width,
+            "height": height,
+            "pts": [(x0, y0), (x1, y1)],
             "linewidth": p["width"],
             "stroke": True,
             "fill": False,
             "evenodd": False,
-            "stroking_color": p["color"] if p["color"] != None else p["fill"],
+            "stroking_color": p["color"] if p["color"] else p["fill"],
             "non_stroking_color": None,
             "object_type": "line",
             "page_number": page_number,
@@ -1872,30 +1935,36 @@ def make_edges(page, clip=None, tset=None):
                 continue
             if i[0] == "l":
                 p1, p2 = i[1:]
-                if clip != None and (p1 not in clip or p2 not in clip):
-                    continue
                 if p1.x != p2.x and p1.y != p2.y:
                     # ignore lines not parallel to either axis
                     continue
-                line_dict = make_line(p1, p2)
-                EDGES.append(line_to_edge(line_dict))
+                line_dict = make_line(p, p1, p2, clip)
+                if line_dict != {}:
+                    EDGES.append(line_to_edge(line_dict))
             elif i[0] == "re":
                 rect = i[1]
+                # ignore minute rectangles
                 if rect.height <= y_tolerance and rect.width <= x_tolerance:
                     continue
                 if rect.width <= x_tolerance:
                     x = abs(rect.x1 + rect.x0) / 2
                     p1 = fitz.Point(x, rect.y0)
                     p2 = fitz.Point(x, rect.y1)
-                    EDGES.append(line_to_edge(make_line(p1, p2)))
+                    line_dict = make_line(p, p1, p2, clip)
+                    if line_dict != {}:
+                        EDGES.append(line_to_edge(line_dict))
                     continue
                 elif rect.height <= y_tolerance:
                     y = abs(rect.y1 + rect.y0) / 2
                     p1 = fitz.Point(rect.x0, y)
                     p2 = fitz.Point(rect.x1, y)
-                    EDGES.append(line_to_edge(make_line(p1, p2)))
+                    line_dict = make_line(p, p1, p2, clip)
+                    if line_dict != {}:
+                        EDGES.append(line_to_edge(line_dict))
                     continue
 
+                if clip != None:
+                    rect &= clip
                 rdict = {
                     "x0": rect.x0,
                     "y0": page_height - rect.y1,
@@ -1925,7 +1994,8 @@ def make_edges(page, clip=None, tset=None):
                     "bottom": rect.y1,
                     "doctop": doctop_basis + rect.y0,
                 }
-                EDGES.extend(curve_to_edges(rdict))
+                if not rect.is_empty:
+                    EDGES.extend(curve_to_edges(rdict))
             else:
                 quad = i[1]
                 rect = quad.rect
