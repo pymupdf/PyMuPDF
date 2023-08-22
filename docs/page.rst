@@ -1151,7 +1151,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Create a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
 
-      :arg in flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
+      :arg int flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
       :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
       :arg int dpi: the desired resolution in dots per inch. Influences recognition quality (and execution time).
       :arg bool full: whether to OCR the full page, or just the displayed images.
