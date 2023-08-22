@@ -33,11 +33,13 @@ For a description of what this class is all about, see Appendix 2.
 
 .. class:: TextPage
 
-   .. method:: extractText
+   .. method:: extractText(sort=False)
 
-   .. method:: extractTEXT
+   .. method:: extractTEXT(sort=False)
 
       Return a string of the page's complete text. The text is UTF-8 unicode and in the same sequence as specified at the time of document creation.
+
+      :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
       :rtype: str
 
@@ -72,15 +74,19 @@ For a description of what this class is all about, see Appendix 2.
 
       :rtype: str
 
-   .. method:: extractDICT
+   .. method:: extractDICT(sort=False)
 
       Textpage content as a Python dictionary. Provides same information detail as HTML. See below for the structure.
 
+      :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
+
       :rtype: dict
 
-   .. method:: extractJSON
+   .. method:: extractJSON(sort=False)
 
       Textpage content as a JSON string. Created by `json.dumps(TextPage.extractDICT())`. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
+
+      :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
       :rtype: str
 
@@ -96,15 +102,19 @@ For a description of what this class is all about, see Appendix 2.
 
       :rtype: str
 
-   .. method:: extractRAWDICT
+   .. method:: extractRAWDICT(sort=False)
 
       Textpage content as a Python dictionary -- technically similar to :meth:`extractDICT`, and it contains that information as a subset (including any images). It provides additional detail down to each character, which makes using XML obsolete in many cases. See below for the structure.
 
+      :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
+
       :rtype: dict
 
-   .. method:: extractRAWJSON
+   .. method:: extractRAWJSON(sort=False)
 
       Textpage content as a JSON string. Created by `json.dumps(TextPage.extractRAWDICT())`. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
+
+      :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
       :rtype: str
 
