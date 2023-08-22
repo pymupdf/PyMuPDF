@@ -3,33 +3,63 @@ name: Build wheels
 on:
   workflow_dispatch:
     inputs:
+      
       flavours:
         type: boolean
         default: true
+      
       skeleton:
-        type: boolean
-        default: false
+        description: 'skeleton: if set, should be 1 or 2.'
+        type: string
+      
       sdist:
         type: boolean
         default: true
+    
       wheels:
         type: boolean
         default: true
+      
       wheels_linux_auto:
         type: boolean
         default: true
+      
       wheels_linux_aarch64:
         type: boolean
         default: true
+      
       wheels_windows_auto:
         type: boolean
         default: true
+        
       wheels_macos_auto:
         type: boolean
         default: true
+      
       wheels_macos_arm64:
         type: boolean
         default: true
+      
+      wheels_cps:
+        description: 'wheels_cps: sets $CIBW_BUILD, E.g. "cp310* cp311*".'
+        type: string
+      
+      # We can't currently have more than 10 inputs
+      #wheels_cp38:
+      #  type: boolean
+      #  default: true
+      #
+      #wheels_cp39:
+      #  type: boolean
+      #  default: true
+      #
+      #wheels_cp310:
+      #  type: boolean
+      #  default: true
+      #
+      #wheels_cp311:
+      #  type: boolean
+      #  default: true
 
 jobs:
 
@@ -98,6 +128,12 @@ jobs:
             inputs_wheels_linux_auto: ${{inputs.wheels_linux_auto}}
             inputs_wheels_windows_auto: ${{inputs.wheels_windows_auto}}
             inputs_wheels_macos_auto: ${{inputs.wheels_macos_auto}}
+            inputs_wheels_cps: ${{inputs.wheels_cps}}
+            
+            #inputs_wheels_cp38: ${{inputs.wheels_cp38}}
+            #inputs_wheels_cp39: ${{inputs.wheels_cp39}}
+            #inputs_wheels_cp310: ${{inputs.wheels_cp310}}
+            #inputs_wheels_cp311: ${{inputs.wheels_cp311}}
         run:
           python scripts/gh_release.py
       

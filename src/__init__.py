@@ -21220,6 +21220,9 @@ Page.search_for             = utils.search_for
 Page.show_pdf_page          = utils.show_pdf_page
 Page.update_link            = utils.update_link
 Page.write_text             = utils.write_text
+from .table import find_tables
+
+Page.find_tables = find_tables
 
 Rect.get_area               = utils.get_area
 
@@ -21520,3 +21523,5 @@ def restore_aliases():
 
 if 0:
     restore_aliases()
+
+__version__ = VersionBind

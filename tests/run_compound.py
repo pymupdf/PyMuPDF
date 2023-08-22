@@ -74,12 +74,6 @@ def main():
     
     log( f'{e1=} {e2=} {e3=}')
     
-    if platform.system() == 'Windows' and platform.python_version().startswith('3.10.'):
-        if e2 or e3:
-            log( 'Ignoring expected error.')
-            e2 = e3 = 0
-        else:
-            log( f'Unexpected success on Windows with Python 3.10.')
     if e1 or e2 or e3:
         raise Exception( f'Failure: {e1=} {e2=} {e3=}')
 

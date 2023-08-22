@@ -145,7 +145,7 @@
             <th style="width:20%;">pdfrw</th>
         </tr>
 
-        <tr>
+        <tr id="PyMuPDFFileSupport">
             <td><cite>Supports Multiple Document Formats</cite></td>
             <td>
                 <span class="icon pdf"><cite>PDF</cite></span>
