@@ -390,7 +390,7 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.23.0-rc1-source.tar.gz',
+            'https://mupdf.com/downloads/archive/mupdf-1.23.0-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
@@ -452,8 +452,8 @@ def get_mupdf():
     
     # 2023-07-11: For now we default to mupdf master.
     path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
-    if path is None:
-        # 2023-08-18: default to specific sha for now.
+    if 0:
+        # 2023-08-18: default to specific sha.
         path = 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
         sha = 'a6aaf0b1162a'    # Makerules scripts/wrap/__main__.py: fix cross-building to arm64 on MacOS.
     else:
@@ -1151,7 +1151,7 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.0rc2'
+version = '1.23.0'
 
 tag_python = None
 requires_dist = None,

@@ -2,9 +2,14 @@ Change Log
 ==========
 
 
-**Changes in version 1.23.0rc2 (2023-08-18)**
+**Changes in version 1.23.0 (2023-08-22)**
 
-* Contains a new "rebased" implementation of PyMuPDF.
+* Add method `find_tables()` to the `Page` object.
+
+  This allows locating tables on any supported document page, and
+  extracting table content by cell.
+
+* New "rebased" implementation of PyMuPDF.
 
   The rebased implementation is available as Python module
   `fitz_new`. It can be used as a drop-in replacement with `import
@@ -24,13 +29,6 @@ Change Log
   * **Fixed** `#2537 <https://github.com/pymupdf/PyMuPDF/issues/2537>`_: Validation when setting a grouped RadioButton throws a RuntimeError: path to 'V' has indirects
 
 * Other changes:
-
-  * Changes since 1.23.0rc1:
-  
-    * Fixed single-wheel builds.
-    * Fixed Linux and MacOS ARM builds.
-    * Fixed SEGV on Windows with Python-3.10.
-    * Temporarily default to specific MuPDF git sha.
 
   * Dropped support for Python-3.7.
 
