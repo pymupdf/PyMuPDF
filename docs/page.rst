@@ -1130,7 +1130,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Create a :ref:`TextPage` for the page.
 
-      :arg in flags: indicator bits controlling the content available for subsequent text extractions and searches -- see the parameter of :meth:`Page.get_text`.
+      :arg int flags: indicator bits controlling the content available for subsequent text extractions and searches -- see the parameter of :meth:`Page.get_text`.
 
       :arg rect-like clip: *(new in v1.17.7)* restrict extracted text to this area.
 
