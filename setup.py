@@ -745,7 +745,7 @@ def build():
         add( ret_p, f'{g_root}/src/__init__.py', to_dir)
         add( ret_p, f'{g_root}/src/__main__.py', to_dir)
         add( ret_p, f'{g_root}/src/fitz.py', to_dir)
-        add( ret_p, f'{g_root}/src/table.py', to_dir)
+        add( ret_p, f'{g_root}/fitz/table.py', to_dir)
         add( ret_p, f'{g_root}/src/utils.py', to_dir)
         add( ret_p, f'{g_root}/src/extra.py', to_dir)
         add( ret_p, f'{g_root}/src/{path_so_leaf_b}', to_dir)
