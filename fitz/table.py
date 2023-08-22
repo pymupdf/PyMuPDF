@@ -81,7 +81,15 @@ from operator import itemgetter
 # -------------------------------------------------------------------
 # Start of PyMuPDF interface code
 # -------------------------------------------------------------------
-import fitz
+from . import (
+    Rect,
+    Matrix,
+    TEXTFLAGS_TEXT,
+    TOOLS,
+    EMPTY_RECT,
+    sRGB_to_pdf,
+    Point,
+)
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
@@ -1345,16 +1353,19 @@ class Table(object):
 
         *** PyMuPDF extension. ***
 
-        Check if text above the table qualifies as column headers.
+        Starting from the first line above the table upwards, check if it
+        qualifies to be part of the table header.
+
         Criteria include:
-        * Column borders must not intersect any word. If this happens, the
-          respective line and all lines above of it are ignored.
-        * No excess inter-line distance. If a previous line has a distance
+        * A one-line table never has an extra header.
+        * Column borders must not intersect any word. If this happens, all
+          text of this line and above of it is ignored.
+        * No excess inter-line distance: If a line further up has a distance
           of more than 1.5 times of its font size, it will be ignored and
           all lines above of it.
-        * Must have same text properties (color, font etc.).
-        * If the top-left cell of the table body is bold, then the first line
-          above must ba bold too.
+        * Must have same text properties.
+        * Starting with the top table line, a bold text property cannot change
+          back to non-bold.
 
         If not all criteria are met (or there is no text above the table),
         the first table row is assumed to be the header.
@@ -1372,9 +1383,7 @@ class Table(object):
 
             Returns True or False
             """
-            for b in page.get_text("dict", flags=fitz.TEXTFLAGS_TEXT, clip=bbox)[
-                "blocks"
-            ]:
+            for b in page.get_text("dict", flags=TEXTFLAGS_TEXT, clip=bbox)["blocks"]:
                 for l in b["lines"]:
                     for s in l["spans"]:
                         if s["flags"] & 16:
@@ -1387,8 +1396,8 @@ class Table(object):
             We need all column x-coordinates even when the top table row
             contains None cells.
             """
-            bbox = fitz.Rect(table.rows[0].bbox)  # top row bbox
-            tbbox = fitz.Rect(table.bbox)  # table bbox
+            bbox = Rect(table.rows[0].bbox)  # top row bbox
+            tbbox = Rect(table.bbox)  # table bbox
             y0, y1 = bbox.y0, bbox.y1  # top row upper / lower coordinates
 
             # make sure row0 bbox has the full table width
@@ -1399,7 +1408,7 @@ class Table(object):
             for cell in table.cells:
                 if cell == None:  # skip non-existing cells
                     continue
-                cellbb = fitz.Rect(cell)
+                cellbb = Rect(cell)
 
                 # only accept cells wider than a character
                 if 10 < cellbb.width < tbbox.width:
@@ -1417,24 +1426,28 @@ class Table(object):
             return cells, bbox
 
         # we depend on small glyph heights!
-        old_small = fitz.TOOLS.set_small_glyph_heights()
-        fitz.TOOLS.set_small_glyph_heights(True)
+        old_small = TOOLS.set_small_glyph_heights()
+        TOOLS.set_small_glyph_heights(True)
         try:
             row = self.rows[0]
             cells = row.cells
-            bbox = fitz.Rect(row.bbox)
+            bbox = Rect(row.bbox)
         except IndexError:  # this table has no rows
             return None
 
         if None in cells:  # if row 0 has empty cells, repair it
             cells, bbox = recover_top_row_cells(self)
 
-        # return the following if we think that TableRow 0 is the header
-        header_first_row = TableHeader(bbox, cells, self.extract()[0], False)
+        # return this if we determine that the top row is the header
+        header_top_row = TableHeader(bbox, cells, self.extract()[0], False)
+
+        # one-line tables have no extra header
+        if len(self.rows) < 2:
+            return header_top_row
 
         # x-ccordinates of columns between x0 and x1 of the table
         if len(cells) < 2:
-            return header_first_row
+            return header_top_row
 
         col_x = [c[2] for c in cells[:-1]]  # column (x) coordinates
 
@@ -1450,7 +1463,7 @@ class Table(object):
         clip.y1 = bbox.y0  # end at top of table
 
         spans = []  # the text spans inside clip
-        for b in page.get_text("dict", clip=clip, flags=fitz.TEXTFLAGS_TEXT)["blocks"]:
+        for b in page.get_text("dict", clip=clip, flags=TEXTFLAGS_TEXT)["blocks"]:
             for l in b["lines"]:
                 for s in l["spans"]:
                     if (
@@ -1500,23 +1513,23 @@ class Table(object):
             line_bolds.append(bold)
 
         if select == []:  # nothing above the table?
-            return header_first_row
+            return header_top_row
 
         select = select[:5]  # only accept up to 5 lines in any header
 
         # take top row as header if text above table is too far apart
         if bbox.y0 - select[0] >= line_heights[0]:
-            return header_first_row
+            return header_top_row
 
         # if top table row is bold, but line above is not:
         if top_row_bold and not line_bolds[0]:
-            return header_first_row
+            return header_top_row
 
         if spans == []:  # nothing left above the table, return top row
-            return header_first_row
+            return header_top_row
 
         # re-compute clip above table
-        nclip = fitz.EMPTY_RECT()
+        nclip = EMPTY_RECT()
         for s in [s for s in spans if s["bbox"][3] >= select[-1]]:
             nclip |= s["bbox"]
         if not nclip.is_empty:
@@ -1525,7 +1538,7 @@ class Table(object):
         clip.y1 = bbox.y0  # make sure we still include every word above
 
         # Confirm that no word in clip is intersecting a column separator
-        word_rects = [fitz.Rect(w[:4]) for w in page.get_text("words", clip=clip)]
+        word_rects = [Rect(w[:4]) for w in page.get_text("words", clip=clip)]
         word_tops = sorted(list(set([r[1] for r in word_rects])), reverse=True)
 
         select = []
@@ -1544,7 +1557,7 @@ class Table(object):
                 break
 
         if select == []:  # nothing left over: return first row
-            return header_first_row
+            return header_top_row
 
         hdr_bbox = +clip  # compute the header cells
         hdr_bbox.y0 = select[-1]  # hdr_bbox top is smallest top coord of words
@@ -1559,7 +1572,7 @@ class Table(object):
             page.get_textbox(c).replace("\n", " ").replace("  ", " ").strip()
             for c in hdr_cells
         ]
-        fitz.TOOLS.set_small_glyph_heights(old_small)
+        TOOLS.set_small_glyph_heights(old_small)
         return TableHeader(tuple(hdr_bbox), hdr_cells, hdr_names, True)
 
 
@@ -1807,17 +1820,17 @@ page information themselves.
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
     global CHARS
-    old_small = fitz.TOOLS.set_small_glyph_heights()
-    fitz.TOOLS.set_small_glyph_heights(True)
+    old_small = TOOLS.set_small_glyph_heights()
+    TOOLS.set_small_glyph_heights(True)
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    blocks = page.get_text("rawdict", clip=clip, flags=fitz.TEXTFLAGS_TEXT)["blocks"]
+    blocks = page.get_text("rawdict", clip=clip, flags=TEXTFLAGS_TEXT)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
         for line in block["lines"]:
             ldir = line["dir"]  # = (cosine, sine) of angle
-            matrix = fitz.Matrix(ldir[0], -ldir[1], ldir[1], ldir[0], 0, 0)
+            matrix = Matrix(ldir[0], -ldir[1], ldir[1], ldir[0], 0, 0)
             if ldir[1] == 0:
                 upright = True
             else:
@@ -1825,11 +1838,11 @@ def make_chars(page, clip=None):
             for span in sorted(line["spans"], key=lambda s: s["bbox"][0]):
                 fontname = span["font"]
                 fontsize = span["size"]
-                color = fitz.sRGB_to_pdf(span["color"])
+                color = sRGB_to_pdf(span["color"])
                 for char in sorted(span["chars"], key=lambda c: c["bbox"][0]):
-                    bbox = fitz.Rect(char["bbox"])
+                    bbox = Rect(char["bbox"])
                     bbox_ctm = bbox * ctm
-                    origin = fitz.Point(char["origin"]) * ctm
+                    origin = Point(char["origin"]) * ctm
                     matrix.e = origin.x
                     matrix.f = origin.y
                     text = char["c"]
@@ -1859,7 +1872,7 @@ def make_chars(page, clip=None):
                     }
                     CHARS.append(char_dict)
 
-    fitz.TOOLS.set_small_glyph_heights(old_small)
+    TOOLS.set_small_glyph_heights(old_small)
 
 
 # -----------------------------------------------------------------------------
@@ -1874,7 +1887,7 @@ def make_edges(page, clip=None, tset=None):
     x_tolerance = tset.snap_x_tolerance
     y_tolerance = tset.snap_y_tolerance
     if clip != None:
-        clip = fitz.Rect(clip)
+        clip = Rect(clip)
     else:
         clip = page.rect
     clip = page.rect
@@ -1948,16 +1961,16 @@ def make_edges(page, clip=None, tset=None):
                     continue
                 if rect.width <= x_tolerance:
                     x = abs(rect.x1 + rect.x0) / 2
-                    p1 = fitz.Point(x, rect.y0)
-                    p2 = fitz.Point(x, rect.y1)
+                    p1 = Point(x, rect.y0)
+                    p2 = Point(x, rect.y1)
                     line_dict = make_line(p, p1, p2, clip)
                     if line_dict != {}:
                         EDGES.append(line_to_edge(line_dict))
                     continue
                 elif rect.height <= y_tolerance:
                     y = abs(rect.y1 + rect.y0) / 2
-                    p1 = fitz.Point(rect.x0, y)
-                    p2 = fitz.Point(rect.x1, y)
+                    p1 = Point(rect.x0, y)
+                    p2 = Point(rect.x1, y)
                     line_dict = make_line(p, p1, p2, clip)
                     if line_dict != {}:
                         EDGES.append(line_to_edge(line_dict))
