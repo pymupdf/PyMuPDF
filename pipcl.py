@@ -1367,6 +1367,15 @@ def build_extension(
         if debug:
             debug2 = '/Zi'  # Generate .pdb.
             # debug2 = '/Z7'    # Embded debug info in .obj files.
+        
+        # As of 2023-08-23, it looks like VS tools create slightly
+        # .dll's each time, even with identical inputs.
+        #
+        # Some info about this is at:
+        # https://nikhilism.com/post/2020/windows-deterministic-builds/.
+        # E.g. an undocumented linker flag `/Brepro`.
+        #
+        
         command, pythonflags = base_compiler(cpp=cpp)
         command = f'''
                 {command}
