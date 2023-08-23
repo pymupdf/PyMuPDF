@@ -1151,7 +1151,8 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.0'
+version = '1.23.1'
+version_b = '1.23.0'    # Use older PyMuPDFb wheels.
 
 tag_python = None
 requires_dist = None,
@@ -1164,12 +1165,13 @@ if g_flavour == 'pb':
 elif g_flavour == 'p':
     name = 'PyMuPDF'
     readme = readme_
-    requires_dist = f'PyMuPDFb =={version}'
+    requires_dist = f'PyMuPDFb =={version_b}'
 elif g_flavour == 'b':
     name = 'PyMuPDFb'
     summary = 'MuPDF shared libraries for PyMuPDF.'
     readme = readme_rb
     tag_python = 'py3'  # Works with any Python version.
+    version = version_b
 else:
     assert 0, f'Unrecognised flavour: {g_flavour}'
 
