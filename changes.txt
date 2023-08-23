@@ -2,6 +2,11 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.1 (2023-08-23)**
+
+* Updated README and package summary description.
+
+
 **Changes in version 1.23.0 (2023-08-22)**
 
 * Add method `find_tables()` to the `Page` object.
