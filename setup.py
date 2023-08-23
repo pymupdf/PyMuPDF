@@ -1156,18 +1156,18 @@ version = '1.23.0'
 tag_python = None
 requires_dist = None,
 
+summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.'
+
 if g_flavour == 'pb':
     name = 'PyMuPDF'
-    summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF'
     readme = readme_
 elif g_flavour == 'p':
     name = 'PyMuPDF'
-    summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF - without shared libraries'
     readme = readme_
     requires_dist = f'PyMuPDFb =={version}'
 elif g_flavour == 'b':
     name = 'PyMuPDFb'
-    summary = 'Rebased Python bindings for the PDF toolkit and renderer MuPDF - shared libraries only'
+    summary = 'MuPDF shared libraries for PyMuPDF.'
     readme = readme_rb
     tag_python = 'py3'  # Works with any Python version.
 else:
