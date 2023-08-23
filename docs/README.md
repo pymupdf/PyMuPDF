@@ -32,6 +32,13 @@ This then creates the HTML documentation within `build/html`.
 
 > Use: `sphinx-build -a -b html . build/html` to build all, including the assets in `_static` (important if you have updated CSS).
 
+### Building the Japanese documentation
+
+- From the "docs" location run:
+
+`sphinx-build -a -b html -D language=ja . _build/html/ja`
+
+
 
 ## Building PDF documentation
 
