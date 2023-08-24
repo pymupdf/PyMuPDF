@@ -2,9 +2,22 @@ Change Log
 ==========
 
 
-**Changes in version 1.23.1 (2023-08-23)**
+**Changes in version 1.23.1 (2023-08-24)**
 
 * Updated README and package summary description.
+
+*
+  Fixed a problem on some Linux installations with Python-3.10
+  (and possibly earlier versions) where `import fitz` failed with
+  `ImportError: libcrypt.so.2: cannot open shared object file: No such
+  file or directory`.
+
+*
+  Fixed `incompatible architecture` error on MacOS arm64.
+
+*
+  Fixed installation warning from Poetry about missing entry in wheels'
+  RECORD files.
 
 
 **Changes in version 1.23.0 (2023-08-22)**
