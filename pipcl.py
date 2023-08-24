@@ -619,7 +619,7 @@ class Package:
             
             # Update <name>-<version>.dist-info/RECORD. This must be last.
             #
-            z.writestr(f'{dist_info_dir}/RECORD', record.get())
+            z.writestr(f'{dist_info_dir}/RECORD', record.get(f'{dist_info_dir}/RECORD'))
 
         st = os.stat(path)
         _log( f'Have created wheel size={st.st_size}: {path}')
@@ -1596,6 +1596,7 @@ def base_compiler(vs=None, pythonflags=None, cpp=False, use_env=True):
         cc = 'em++' if cpp else 'emcc'
     else:
         cc = 'c++' if cpp else 'cc'
+    cc = macos_add_cross_flags( cc)
     return cc, pythonflags
 
 
@@ -1636,6 +1637,7 @@ def base_linker(vs=None, pythonflags=None, cpp=False, use_env=True):
         linker = 'em++' if cpp else 'emcc'
     else:
         linker = 'c++' if cpp else 'cc'
+    linker = macos_add_cross_flags( linker)
     return linker, pythonflags
     
 
@@ -1730,6 +1732,9 @@ def wasm():
 def pyodide():
     return os.environ.get( 'PYODIDE') == '1'
 
+def linux():
+    return platform.system() == 'Linux'
+
 class PythonFlags:
     '''
     Compile/link flags for the current python, for example the include path
@@ -1775,9 +1780,36 @@ class PythonFlags:
             #if darwin():
             #    self.ldflags = 
             self.ldflags = run( f'{python_config} --ldflags', capture=1).strip()
+            if linux():
+                # It seems that with python-3.10 on Linux, we can get an
+                # incorrect -lcrypt flag that on some systems (e.g. WSL)
+                # causes:
+                #
+                #   ImportError: libcrypt.so.2: cannot open shared object file: No such file or directory
+                #
+                ldflags2 = self.ldflags.replace(' -lcrypt ', ' ')
+                if ldflags2 != self.ldflags:
+                    _log(f'### Have removed `-lcrypt` from ldflags: {self.ldflags!r} -> {ldflags2!r}')
+                    self.ldflags = ldflags2
         
         _log(f'self.includes={self.includes!r}')
         _log(f'self.ldflags={self.ldflags!r}')
+
+
+def macos_add_cross_flags(command):
+    '''
+    If running on MacOS and environment variables ARCHFLAGS is set
+    (indicating we are cross-building, e.g. for arm64), returns
+    `command` with extra flags appended. Otherwise returns unchanged
+    `command`.
+    '''
+    if darwin():
+        archflags = os.environ.get( 'ARCHFLAGS')
+        if archflags:
+            command = f'{command} {archflags}'
+            _log(f'Appending ARCHFLAGS to command: {command}')
+            return command
+    return command
 
 
 def macos_patch( library, *sublibraries):
@@ -1998,5 +2030,14 @@ class _Record:
         if verbose:
             _log(f'Adding file: {os.path.relpath(from_)} => {to_}')
 
-    def get(self):
-        return self.text
+    def get(self, record_path=None):
+        '''
+        Returns contents of the RECORD file. If `record_path` is
+        specified we append a final line `<record_path>,,`; this can be
+        used to include the RECORD file itself in the contents, with
+        empty hash and size fields.
+        '''
+        ret = self.text
+        if record_path:
+            ret += f'{record_path},,\n'
+        return ret
