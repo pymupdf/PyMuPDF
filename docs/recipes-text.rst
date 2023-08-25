@@ -113,12 +113,16 @@ You can also use the above mentioned `script <https://github.com/pymupdf/PyMuPDF
 .. _RecipesText_D:
 
 How to :index:`Extract Table Content <pair: extract; table>` from Documents
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you see a table in a document, you are not normally looking at something like an embedded Excel or other identifiable object. It usually is just text, formatted to appear as appropriate.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you see a table in a document, you are normally not looking at something like an embedded Excel or other identifiable object. It usually is just normal, standard text, formatted to appear as tabular data.
 
-Extracting a tabular data from such a page area therefore means that you must find a way to **(1)** graphically indicate table and column borders, and **(2)** then extract text based on this information.
+Extracting tabular data from such a page area therefore means that you must find a way to **identify** the table area (i.e. its boundary box), then **(1)** graphically indicate table and column borders, and **(2)** then extract text based on this information.
 
-The wxPython GUI script `extract.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-table/extract.py>`_ strives to exactly do that. You may want to have a look at it and adjust it to your liking.
+This can be a very complex task, depending on details like the presence or absence of lines, rectangles or other supporting vector graphics.
+
+Method :meth:`Page.find_tables` does all that for you, with a high table detection precision. Its great advantage is that there are no external library dependencies, nor the need to employ artificial intelligence or machine learning technologies. It also provides an integrated interface to the well-known Python package for data analysis `pandas <https://pypi.org/project/pandas/>`_.
+
+Please have a look at example `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
 
 ----------
 

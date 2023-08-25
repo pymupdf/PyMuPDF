@@ -76,6 +76,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.draw_sector`           PDF only: draw a circular sector
 :meth:`Page.draw_squiggle`         PDF only: draw a squiggly line
 :meth:`Page.draw_zigzag`           PDF only: draw a zig-zagged line
+:meth:`Page.find_tables`           locate tables on the page
 :meth:`Page.get_drawings`          get vector graphics on page
 :meth:`Page.get_fonts`             PDF only: get list of referenced fonts
 :meth:`Page.get_image_bbox`        PDF only: get bbox and matrix of embedded image
@@ -346,6 +347,49 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. image:: images/img-markers.*
          :scale: 100
+
+   .. method:: find_tables(clip=None, vertical_strategy="lines", horizontal_strategy="lines", vertical_lines=None, horizontal_lines=None, snap_tolerance=3, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=3, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=3, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=3, text_x_tolerance=3, text_y_tolerance=3)
+
+      * New in version 1.23.0
+
+      Find tables on the page and return an object with related information. Typically, only very few of the many arguments ever need to be specified -- they mainly are tools to react to corner case situations.
+
+      :arg rect_like clip: specify a region to consider within the page rectangle. Default is the full page.
+      :arg list horizontal_lines: floats containing the y-coordinates of rows. If provided, there will be no attempt to identify additional table rows.
+      :arg list vertical_lines: floats containing the x-coordinates of columns. If provided, there will be no attempt to identify additional table columns.
+      :arg str vertical_strategy: request a search algorithm. The "lines" default looks for vector drawings. If "text" is specified, text positions are used to generate "virtual" column boundaries. Use `min_words_vertical` to request the number of words for considering their x-coordinate.
+      :arg str horizontal_strategy: request a search algorithm. The "lines" default looks for vector drawings. If "text" is specified, text positions are used to generate "virtual" row boundaries. The "text" choices are recommended when dealing with pages without any vector graphics -- like when this is an OCRed page.
+      :arg int min_words_vertical: relevant for vertical strategy option "text": at least this many words must coincide to establish a virtual column boundary.
+      :arg int min_words_horizontal: relevant for horizontal strategy option "text": at least this many words must coincide to establish a virtual row boundary.
+
+      The remaining parameters are limits for merging different objects. For instance: Two horizontal lines with the same x-coordinates and a vertical distance less than 3 will be merged ("snapped") to one line.
+
+      :returns: a `TableFinder` object that has the following significant attributes:
+
+         * **cells:** a list of **all bboxes** on the page, that have been identified as table cells (across all tables). Each cell is a tuple `(x0, y0, x1, y1)` of coordinates or `None`.
+         * **tables:** a list of `Table` objects. This is `[]` if the page has no tables. Please note that while single tables can be found as items of this list, the `TableFinder` object itself is also a sequence of it tables. This means that if `tabs` is a `TableFinder` object, then table number "n" is delivered by `tabs.tables[n]` as well as by the shorter `tabs[n]`.
+
+
+         * The `Table` object has the following attributes:
+
+            * **bbox:** the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
+            * **cells:** bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
+            * **extract():** this method returns the text content of each table cell as a list of list of strings.
+            * **to_pandas():** this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_.
+            * **header:** a `TableHeader` object containing header information of the table.
+            * **col_count:** an integer containing the number of table columns.
+            * **row_count:** an integer containing the number of table rows. 
+            * **rows:** a list of `TableRow` objects containing two attributes: *bbox* is the boundary box of the row, and *cells* is a list of table cells contained in this row.
+
+         * The `TableHeader` object has the following attributes:
+
+            * **bbox:** the bounding box of the header.
+            * **cells:** a list of bounding boxes containing the name of the respective column.
+            * **names:** a list of strings containing the text of each of the cell bboxes. They represent the column names -- which can be used when exporting the table to pandas DataFrames or CSV, etc.
+            * **external:** a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if *external* is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first table row is the header.
+
+         Please have a look at these `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
+
 
    .. method:: add_stamp_annot(rect, stamp=0)
 
