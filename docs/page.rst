@@ -388,7 +388,7 @@ In a nutshell, this is what you can do with PyMuPDF:
             * **names:** a list of strings containing the text of each of the cell bboxes. They represent the column names -- which can be used when exporting the table to pandas DataFrames or CSV, etc.
             * **external:** a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if *external* is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first table row is the header.
 
-         Please have a look at example `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
+         Please have a look at these `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
 
 
    .. method:: add_stamp_annot(rect, stamp=0)
