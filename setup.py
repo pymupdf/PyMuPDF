@@ -942,7 +942,7 @@ def _fs_update(text, path):
 
 def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
     '''
-    Builds Python extension module `extra` and `_fitz`.
+    Builds Python extension module `_fitz` and `_extra`.
 
     Returns (path_so_leaf_a, path_so_leaf_b), the leafnames of the generated
     shared libraries within mupdf_build_dir.
