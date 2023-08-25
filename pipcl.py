@@ -1348,15 +1348,10 @@ def build_extension(
     else:
         _log(f'Not running swig because up to date: {path_cpp}')
     
+    path_so_leaf = f'_{name}{_so_suffix()}'
+    path_so = f'{outdir}/{path_so_leaf}'
+    
     if windows():
-        wp = wdev.WindowsPython()
-        python_version = ''.join(platform.python_version_tuple()[:2])
-        if wp.cpu.bits == 32:
-            base = f'_{name}.cp{python_version}-win32'
-        else:
-            base = f'_{name}.cp{python_version}-win_amd64'
-        path_so_leaf    = f'{base}.pyd'
-        path_so         = f'{outdir}/{path_so_leaf}'
         path_obj        = f'{path_so}.obj'
         
         permissive = '/permissive-'
@@ -1415,6 +1410,7 @@ def build_extension(
 
         command, pythonflags = base_linker(cpp=cpp)
         debug2 = '/DEBUG' if debug else ''
+        base, _ = os.path.splitext(path_so_leaf)
         command = f'''
                 {command}
                     /DLL                    # Builds a DLL.
@@ -1452,9 +1448,6 @@ def build_extension(
             general_flags += ' -O2 -DNDEBUG'
         
         if darwin():
-            # It looks like using `.dylib` breaks things.
-            path_so_leaf = f'_{name}.so'
-            
             # MacOS's linker does not like `-z origin`.
             rpath_flag = "-Wl,-rpath,@loader_path/"
             
@@ -1465,10 +1458,12 @@ def build_extension(
             #   emcc: warning: ignoring unsupported linker flag: `-rpath` [-Wlinkflags]
             #   wasm-ld: error: unknown -z value: origin
             #
+            _log(f'## pyodide(): PEP-3149 suffix untested, so omitting. {_so_suffix()=}.')
             path_so_leaf = f'_{name}.so'
+            path_so = f'{outdir}/{path_so_leaf}'
+            
             rpath_flag = ''
         else:
-            path_so_leaf = f'_{name}.so'
             rpath_flag = "-Wl,-rpath,'$ORIGIN',-z,origin"
         path_so = f'{outdir}/{path_so_leaf}'
         # Fun fact - on Linux, if the -L and -l options are before '{path_cpp}'
@@ -1551,6 +1546,8 @@ def build_extension(
                 else:
                     _log(f'Warning: can not find path of lib={lib!r} in libpaths={libpaths}')
             macos_patch( path_so, *sublibraries)
+
+        run(f'file {path_so}, check=0')
     
     return path_so_leaf
 
@@ -1996,6 +1993,26 @@ def _log(text=''):
         print(f'pipcl.py: {caller}(): {line}')
     sys.stdout.flush()
 
+
+def _so_suffix():
+    '''
+    Filename suffix for shared libraries is defined in pep-3149.  The
+    pep claims to only address posix systems, but the recommended
+    sysconfig.get_config_var('EXT_SUFFIX') also seems to give the
+    right string on Windows.
+    '''
+    # Example values:
+    #   linux:      .cpython-311-x86_64-linux-gnu.so
+    #   macos:      .cpython-311-darwin.so
+    #   openbsd:    .cpython-310.so
+    #   windows     .cp311-win_amd64.pyd
+    #
+    # Only Linux and Windows seem to identify the cpu. For example shared
+    # libraries in numpy-1.25.2-cp311-cp311-macosx_11_0_arm64.whl are called
+    # things like `numpy/core/_simd.cpython-311-darwin.so`.
+    #
+    return sysconfig.get_config_var('EXT_SUFFIX')
+        
 
 class _Record:
     '''
