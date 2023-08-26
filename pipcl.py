@@ -1332,22 +1332,25 @@ def build_extension(
     # Run SWIG.
     deps_path = f'{path_cpp}.d'
     prerequisites_swig2 = _get_prerequisites( deps_path)
-    if _doit( path_cpp, path_i, prerequisites_swig, prerequisites_swig2):
-        run( f'''
-                {swig}
-                    -Wall
-                    {"-c++" if cpp else ""}
-                    -python
-                    -module {name}
-                    -outdir {outdir}
-                    -o {path_cpp}
-                    -MD -MF {deps_path}
-                    {includes_text}
-                    {path_i}
-                '''
-                )
-    else:
-        _log(f'Not running swig because up to date: {path_cpp}')
+    run_if(
+            f'''
+            {swig}
+                -Wall
+                {"-c++" if cpp else ""}
+                -python
+                -module {name}
+                -outdir {outdir}
+                -o {path_cpp}
+                -MD -MF {deps_path}
+                {includes_text}
+                {path_i}
+            '''
+            ,
+            path_cpp,
+            path_i,
+            prerequisites_swig,
+            prerequisites_swig2,
+            )
     
     path_so_leaf = f'_{name}{_so_suffix()}'
     path_so = f'{outdir}/{path_so_leaf}'
@@ -1404,10 +1407,7 @@ def build_extension(
                     {defines_text}
                     {compiler_extra}
                 '''
-        if _doit( path_obj, path_cpp, prerequisites_compile):
-            run(command)
-        else:
-            _log(f'Not compiling because up to date: {path_obj}')
+        run_if( command, path_obj, path_cpp, prerequisites_compile)
 
         command, pythonflags = base_linker(cpp=cpp)
         debug2 = '/DEBUG' if debug else ''
@@ -1426,10 +1426,7 @@ def build_extension(
                     {path_obj}
                     {linker_extra}
                 '''
-        if _doit( path_so, path_obj, prerequisites_link):
-            run(command)
-        else:
-            _log(f'Not linking because up to date: {path_so}')
+        run_if( command, path_so, path_obj, prerequisites_link)
     
     else:
     
@@ -1525,10 +1522,14 @@ def build_extension(
                         {linker_extra}
                         {pythonflags.ldflags}
                     '''
-        if _doit( path_so, path_cpp, prerequisites_compile, prerequisites_link, prerequisites):
-            run(command)
-        else:
-            _log(f'Not compiling+linking because up to date: {path_so}')
+        run_if(
+                command,
+                path_so,
+                path_cpp,
+                prerequisites_compile,
+                prerequisites_link,
+                prerequisites,
+                )
     
         if darwin():
             # We need to patch up references to shared libraries in `libs`.
@@ -1548,7 +1549,8 @@ def build_extension(
                     _log(f'Warning: can not find path of lib={lib!r} in libpaths={libpaths}')
             macos_patch( path_so, *sublibraries)
 
-        run(f'file {path_so}, check=0')
+        run(f'ls -l {path_so}', check=0)
+        run(f'file {path_so}', check=0)
     
     return path_so_leaf
 
@@ -1879,52 +1881,127 @@ def _cpu_name():
     return f'x{32 if sys.maxsize == 2**31 - 1 else 64}'
 
 
-def _doit( out, in_, *prerequisites):
+def run_if( command, out, *prerequisites, verbose=True):
     '''
-    Returns true/false for whether to run a command.
+    Runs a command only if the output file is not up to date.
     
-    out:
-        Output path.
-    prerequisites:
-        List of input paths or true/false/None. If an item is None it is
-        ignored, otherwise if an item is not a string we immediately return it
-        cast to a bool.
-    '''
-    _log( f'out={out!r}')
-    _log( f'in={in_!r}')
-    def _make_prerequisites(p):
-        if isinstance( p, (list, tuple)):
-            return list(p)
-        else:
-            return [p]
-    prerequisites_all = list()
-    prerequisites_all.append( in_)
-    for p in prerequisites:
-        prerequisites_all += _make_prerequisites( p)
-    if 0:
-        _log( 'prerequisites_all:')
-        for i in  prerequisites_all:
-            _log( f'    {i!r}')
-    pre_mtime = 0
-    pre_path = None
-    for prerequisite in prerequisites_all:
-        if isinstance( prerequisite, str):
-            mtime = _fs_mtime_newest( prerequisite)
-            if mtime >= pre_mtime:
-                pre_mtime = mtime
-                pre_path = prerequisite
-        elif prerequisite is None:
+    Args:
+        command:
+            The command to run. We write this into a file <out>.cmd so that we
+            know to run a command if the command itself has changed.
+        out:
+            Path of the output file.
+        
+        prerequisites:
+            List of prerequisite paths or true/false/None items. If an item
+            is None it is ignored, otherwise if an item is not a string we
+            immediately return it cast to a bool.
+    
+    Returns:
+        True if we ran the command, otherwise None.
+    
+
+    If the output file does not exist, the command is run:
+    
+        >>> out = 'run_if_test_out'
+        >>> if os.path.exists( out):
+        ...     os.remove( out)
+        >>> run_if( f'touch {out}', out, verbose=0)
+        True
+    
+    If we repeat, the output file will be up to date so the command is not run:
+    
+        >>> run_if( f'touch {out}', out, verbose=0)
+    
+    If we change the command, the command is run:
+    
+        >>> run_if( f'touch  {out}', out, verbose=0)
+        True
+    
+    If we add a prerequisite that is newer than the output, the command is run:
+    
+        >>> prerequisite = 'run_if_test_prerequisite'
+        >>> run( f'touch {prerequisite}', verbose=0)
+        >>> run_if( f'touch {out}', out, prerequisite, verbose=0)
+        True
+    
+    If we repeat, the output will be newer than the prerequisite, so the
+    command is not run:
+    
+        >>> run_if( f'touch {out}', out, prerequisite, verbose=1)
+        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
+    '''    
+    doit = False
+    
+    if not doit:
+        out_mtime = _fs_mtime( out)
+        if out_mtime == 0:
+            doit = 'File does not exist: {out!e}'
+    
+    cmd_path = f'{out}.cmd'
+    if os.path.isfile( cmd_path):
+        with open( cmd_path) as f:
+            cmd = f.read()
+    else:
+        cmd = None
+    if command != cmd:
+        doit = 'Command has changed'
+    
+    if not doit:
+        def _make_prerequisites(p):
+            if isinstance( p, (list, tuple)):
+                return list(p)
+            else:
+                return [p]
+        prerequisites_all = list()
+        for p in prerequisites:
+            prerequisites_all += _make_prerequisites( p)
+        if 0:
+            _log( 'prerequisites_all:')
+            for i in  prerequisites_all:
+                _log( f'    {i!r}')
+        pre_mtime = 0
+        pre_path = None
+        for prerequisite in prerequisites_all:
+            if isinstance( prerequisite, str):
+                mtime = _fs_mtime_newest( prerequisite)
+                if mtime >= pre_mtime:
+                    pre_mtime = mtime
+                    pre_path = prerequisite
+            elif prerequisite is None:
+                pass
+            elif prerequisite:
+                doit = str(prerequisite)
+                break
+        if not doit:
+            if pre_mtime > out_mtime:
+                doit = f'Prerequisite is new: {pre_path!r}'
+    
+    if doit:
+        # Remove `cmd_path` before we run the command, so any failure
+        # will force rerun next time.
+        #
+        try:
+            os.remove( cmd_path)
+        except Exception:
             pass
-        else:
-            _log( f'Returning prerequisite={prerequisite!r}')
-            return bool(prerequisite)
-    out_mtime =  _fs_mtime( out)
-    ret = pre_mtime >= out_mtime
+        if verbose:
+            _log( f'Running command because: {doit}')
+        
+        run( command, verbose=verbose)
+        
+        # Write the command we ran, into `cmd_path`.
+        with open( cmd_path, 'w') as f:
+            f.write( command)
+        return True
+    else:
+        if verbose:
+            _log( f'Not running command because up to date: {out!r}')
+        
     if 0:
         _log( f'out_mtime={time.ctime(out_mtime)} pre_mtime={time.ctime(pre_mtime)}.'
                 f' pre_path={pre_path!r}: returning {ret!r}.'
                 )
-    return ret
 
 
 def _get_prerequisites(path):
