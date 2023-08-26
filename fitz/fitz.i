@@ -8136,7 +8136,7 @@ Args:
     alphavalues: (bytes) with length (width * height) or 'None'.
     premultiply: (bool, True) premultiply colors with alpha values.
     opaque: (tuple, length colorspace.n) this color receives opacity 0.
-    matte: (tuple, length colorspace.n)) preblending background color.
+    matte: (tuple, length colorspace.n) preblending background color.
 """)
         PyObject *set_alpha(PyObject *alphavalues=NULL, int premultiply=1, PyObject *opaque=NULL, PyObject *matte=NULL)
         {
@@ -8447,17 +8447,20 @@ def save(self, filename, output=None, jpg_quality=95):
         self.set_dpi(self.xres, self.yres)
     return self._writeIMG(filename, idx, jpg_quality)
 
-def pil_save(self, *args, **kwargs):
+def pil_save(self, *args, unmultiply=False, **kwargs):
     """Write to image file using Pillow.
 
     Args are passed to Pillow's Image.save method, see their documentation.
     Use instead of save when other output formats are desired.
+
+    :arg bool unmultiply: generates Pillow mode "RGBa" instead of "RGBA".
+        Relevant for colorspace RGB with alpha only.
     """
     EnsureOwnership(self)
     try:
         from PIL import Image
     except ImportError:
-        print("PIL/Pillow not installed")
+        print("Pillow not installed")
         raise
 
     cspace = self.colorspace
@@ -8467,6 +8470,8 @@ def pil_save(self, *args, **kwargs):
         mode = "L" if self.alpha == 0 else "LA"
     elif cspace.n == 3:
         mode = "RGB" if self.alpha == 0 else "RGBA"
+        if mode == "RGBA" and unmultiply:
+            mode = "RGBa"
     else:
         mode = "CMYK"
 
@@ -8477,7 +8482,7 @@ def pil_save(self, *args, **kwargs):
 
     img.save(*args, **kwargs)
 
-def pil_tobytes(self, *args, **kwargs):
+def pil_tobytes(self, *args, unmultiply=False, **kwargs):
     """Convert to binary image stream using pillow.
 
     Args are passed to Pillow's Image.save method, see their documentation.
@@ -8486,7 +8491,7 @@ def pil_tobytes(self, *args, **kwargs):
     EnsureOwnership(self)
     from io import BytesIO
     bytes_out = BytesIO()
-    self.pil_save(bytes_out, *args, **kwargs)
+    self.pil_save(bytes_out, *args, unmultiply=unmultiply, **kwargs)
     return bytes_out.getvalue()
 
         %}
