@@ -388,7 +388,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
                doc.save("ocr-images.pdf")
 
 
-   ..  method:: pil_save(*args, **kwargs)
+   ..  method:: pil_save(*args, unmultiply=False, **kwargs)
 
       * New in v1.17.3
 
@@ -398,19 +398,24 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       * Storing EXIF information.
       * If you do not provide dpi information, the values *xres*, *yres* stored with the pixmap are automatically used.
 
-      A simple example: `pix.pil_save("some.webp", optimize=True, dpi=(150, 150))`. For details on other parameters see the Pillow documentation.
+      A simple example: `pix.pil_save("some.webp", optimize=True, dpi=(150, 150))`.
+      
+      :arg bool unmultiply: If the pixmap's colorspace is RGB with transparency, the alpha values may or may not already be multiplied into the color components ref/green/blue (called "premultiplied"). To enforce undoing premultiplication, set this parameter to `True`. To learn about some background, e.g. look for "Premultiplied alpha" `here <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
 
-      Since v1.22.0, PyMuPDF supports JPEG output directly. For both, performance reasons and for reducing external dependencies, the use of this method is no longer recommended when outputting JPEG images.
+
+      For details on other parameters see the Pillow documentation.
+
+      Since v1.22.0, PyMuPDF supports JPEG output directly. We recommended to no longer use this method for JPEG output -- for performance reasons and for avoiding unnecessary external dependencies.
 
       :raises ImportError: if Pillow is not installed.
 
-   ..  method:: pil_tobytes(*args, **kwargs)
+   ..  method:: pil_tobytes(*args, unmultiply=False, **kwargs)
 
       * New in v1.17.3
 
-      Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="WEBP", optimize=True)`. Also see above. For details on other parameters see the Pillow documentation.
+      Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="WEBP", optimize=True, dpi=(150, 150))`. Also see above. For details on other parameters see the Pillow documentation.
       
-      .raises ImportError: if Pillow is not installed.
+      :raises ImportError: if Pillow is not installed.
 
       :rtype: bytes
 

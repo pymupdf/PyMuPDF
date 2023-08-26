@@ -1479,7 +1479,10 @@ In a nutshell, this is what you can do with PyMuPDF:
      :returns: Pixmap of the page. For fine-controlling the generated image, the by far most important parameter is **matrix**. E.g. you can increase or decrease the image resolution by using **Matrix(xzoom, yzoom)**. If zoom > 1, you will get a higher resolution: zoom=2 will double the number of pixels in that direction and thus generate a 2 times larger image. Non-positive values will flip horizontally, resp. vertically. Similarly, matrices also let you rotate or shear, and you can combine effects via e.g. matrix multiplication. See the :ref:`Matrix` section to learn more.
 
      .. note::
-         The method will respect any page rotation and will not exceed the intersection of `clip` and :attr:`Page.cropbox`. If you need the page's mediabox (and if this is a different rectangle), you can use a snippet like the following to achieve this::
+
+         * The pixmap will have *"premultiplied"* pixels if `alpha=True`. To learn about some background, e.g. look for "Premultiplied alpha" `here <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
+
+         * The method will respect any page rotation and will not exceed the intersection of `clip` and :attr:`Page.cropbox`. If you need the page's mediabox (and if this is a different rectangle), you can use a snippet like the following to achieve this::
 
             In [1]: import fitz
             In [2]: doc=fitz.open("demo1.pdf")
