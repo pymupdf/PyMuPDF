@@ -83,7 +83,11 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: :ref:`Pixmap`
 
-      .. note:: If the annotation has just been created or modified, you should reload the page first via *page = doc.reload_page(page)*.
+      .. note::
+         
+         * If the annotation has just been created or modified, you should :meth:`Document.reload_page` the page first via `page = doc.reload_page(page)`.
+
+         * The pixmap will have *"premultiplied"* pixels if `alpha=True`. To learn about some background, e.g. look for "Premultiplied alpha" `here <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
 
 
    .. index::
