@@ -76,8 +76,8 @@ class Package:
         ...                         )
         ...                 return [
         ...                         ('build/foo.py', 'foo/__init__.py'),
-        ...                         (f'build/{so_leaf}', f'foo/{so_leaf}'),
-        ...                         ('README', '$dist-info/README'),
+        ...                         (f'build/{so_leaf}', f'foo/'),
+        ...                         ('README', '$dist-info/'),
         ...                         ]
         ...
         ...             def sdist():
@@ -213,6 +213,7 @@ class Package:
         True
     
     Check that touching foo.i.cpp forces rebuild.
+    
         >>> os.utime('pipcl_test/build/foo.i.cpp')
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} setup.py --verbose bdist_wheel',
