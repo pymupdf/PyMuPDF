@@ -2,6 +2,11 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.2rc1 (2023-08-27)**
+
+* **Fixed** `#2613 https://github.com/pymupdf/PyMuPDF/issues/2613`_: release 1.23.0 not MacOS-arm64 compatible
+
+
 **Changes in version 1.23.1 (2023-08-24)**
 
 * Updated README and package summary description.
