@@ -4030,7 +4030,7 @@ if rbgroups:
         if not type(x) in (list, tuple):
             raise ValueError("bad RBGroup '%s'" % x)
         s = set(x).difference(ocgs)
-        if f != set():
+        if s != set():
             raise ValueError("bad OCGs in RBGroup: %s" % s)
 
 if basestate:
