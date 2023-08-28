@@ -36,12 +36,20 @@ We look at these items in the environment, should be unset (treated as '0'),
     inputs_skeleton
         Build minimal wheel; for testing only.
     inputs_sdist
-    inputs_wheels
+    inputs_wheels_default
     inputs_wheels_linux_aarch64
     inputs_wheels_linux_auto
+    inputs_wheels_linux_pyodide
     inputs_wheels_macos_arm64
     inputs_wheels_macos_auto
     inputs_wheels_windows_auto
+
+Buiding for Pyodide
+
+    If `inputs_wheels_linux_pyodide` is true and we are on Linux, we clone
+    `emsdk.git`, set it up, and run `pyodide build`. This runs our setup.py
+    with CC etc set up to create Pyodide binaries in a wheel called, for
+    example, `PyMuPDF-1.23.2-cp311-none-emscripten_3_1_32_wasm32.whl`.
 
 Example usage:
 
@@ -56,6 +64,7 @@ import platform
 import shlex
 import sys
 import subprocess
+import textwrap
 
 
 def main():
@@ -147,37 +156,34 @@ def build( platform_=None):
     inputs_flavours = get_bool('inputs_flavours', 1)
     inputs_sdist = get_bool('inputs_sdist')
     inputs_skeleton = os.environ.get('inputs_skeleton')
-    inputs_wheels = get_bool('inputs_wheels')
-    inputs_wheels_linux_aarch64 = get_bool('inputs_wheels_linux_aarch64')
-    inputs_wheels_linux_auto = get_bool('inputs_wheels_linux_auto', 1)
-    inputs_wheels_macos_arm64 = get_bool('inputs_wheels_macos_arm64')
-    inputs_wheels_macos_auto = get_bool('inputs_wheels_macos_auto', 1)
-    inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', 1)
+    inputs_wheels_default = get_bool('inputs_wheels_default', 1)
+    inputs_wheels_linux_aarch64 = get_bool('inputs_wheels_linux_aarch64', inputs_wheels_default)
+    inputs_wheels_linux_auto = get_bool('inputs_wheels_linux_auto', inputs_wheels_default)
+    inputs_wheels_linux_pyodide = get_bool('inputs_wheels_linux_pyodide', 0)
+    inputs_wheels_macos_arm64 = get_bool('inputs_wheels_macos_arm64', inputs_wheels_default)
+    inputs_wheels_macos_auto = get_bool('inputs_wheels_macos_auto', inputs_wheels_default)
+    inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
-    
-    #inputs_wheels_cp38 = get_bool('inputs_wheels_cp38', 1)
-    #inputs_wheels_cp39 = get_bool('inputs_wheels_cp39', 1)
-    #inputs_wheels_cp310 = get_bool('inputs_wheels_cp310', 1)
-    #inputs_wheels_cp311 = get_bool('inputs_wheels_cp311', 1)
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
     log( f'{inputs_skeleton=}')
-    log( f'{inputs_wheels=}')
+    log( f'{inputs_wheels_default=}')
     log( f'{inputs_wheels_linux_aarch64=}')
     log( f'{inputs_wheels_linux_auto=}')
+    log( f'{inputs_wheels_linux_pyodide=}')
     log( f'{inputs_wheels_macos_arm64=}')
     log( f'{inputs_wheels_macos_auto=}')
     log( f'{inputs_wheels_windows_auto=}')
     log( f'{inputs_wheels_cps=}')
     
-    #log( f'{inputs_wheels_cp38=}')
-    #log( f'{inputs_wheels_cp39=}')
-    #log( f'{inputs_wheels_cp310=}')
-    #log( f'{inputs_wheels_cp311=}')
-
-    # Build 
+    # Build Pyodide wheel if specified.
+    #
+    if platform.system() == 'Linux' and inputs_wheels_linux_pyodide:
+        build_pyodide_wheel()
     
+    # Build 
+    #
     env_extra = dict()
     
     def set_if_unset(name, value):
@@ -269,12 +275,6 @@ def build( platform_=None):
         else:
             env_set('CIBW_TEST_REQUIRES', 'fontTools pytest')
             env_set('CIBW_TEST_COMMAND', 'python {project}/tests/run_compound.py pytest -s {project}/tests')
-        
-        # Don't attempt to run tests on cross-built ARM wheels.
-        #
-        # https://cibuildwheel.readthedocs.io/en/stable/options/#test-skip
-        #
-        #env_set('CIBW_TEST_SKIP', 'manylinux*_aarch64 macos*_arm64')
     
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')
     if pymupdf_dir != os.path.abspath( os.getcwd()):
@@ -331,7 +331,45 @@ def build( platform_=None):
         env_set( 'PYMUPDF_SETUP_FLAVOUR', 'pb', pass_=1)
     
     run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
+    
     run( 'ls -lt wheelhouse')
+
+
+def build_pyodide_wheel():
+    '''
+    Build Pyodide wheel.
+
+    This does not use cibuildwheel but instead runs `pyodide build` inside
+    the PyMuPDF directory, which in turn runs setup.py in a Pyodide build
+    environment.
+    '''
+    log(f'## Building Pyodide wheel.')
+
+    # Our setup.py does not know anything about Pyodide; we set a few
+    # required environmental variables here.
+    #
+    env_extra = dict()
+
+    # Disable libcrypto because not available in Pyodide.
+    env_extra['HAVE_LIBCRYPTO'] = 'no'
+
+    # Set OS=wasm-mt for MuPDF build.
+    env_extra['OS'] = 'wasm-mt'
+
+    # Build PyMuPDF as a single wheel without a separate PyMuPDFb
+    # wheel.
+    env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = 'a'
+
+    command = pyodide_setup()
+    command += ' && pyodide build --exports pyinit'
+    run(command, env_extra=env_extra)
+    
+    # Copy wheel into `wheelhouse/` so it is picked up as a workflow
+    # artifact.
+    #
+    run('ls -l dist/')
+    run('mkdir -p wheelhouse && cp -p dist/* wheelhouse/')
+    run('ls -l wheelhouse/')
 
 
 def venv( command=None, packages=None):
@@ -402,6 +440,123 @@ def test( project, package):
     #run( f'pip install {wheel_b}')
     #run( f'pip install {wheel_p}')
     
+
+def pyodide_setup(clean=False):
+    '''
+    Returns a command that will set things up for a pyodide build.
+    
+    Args:
+        clean:
+            If true we create an entirely new environment. Otherwise
+            we reuse any existing emsdk repository and venv.
+    
+    * Clone emsdk repository to `pipcl_emsdk` if not already present.
+    * Create and activate a venv `pipcl_venv_pyodide` if not already present.
+    * Install/upgrade package `pyodide-build`.
+    * Run emsdk install scripts and enter emsdk environment.
+    * Replace emsdk/upstream/bin/wasm-opt
+      (https://github.com/pyodide/pyodide/issues/4048).
+    
+    Example usage in a build function:
+    
+        command = pipcl_wasm.pyodide_setup()
+        command += ' && pyodide build --exports pyinit'
+        subprocess.run(command, shell=1, check=1)
+    '''
+    command = 'true'
+    
+    # Clone emsdk.
+    #
+    dir_emsdk = 'emsdk'
+    if clean and os.path.exists(dir_emsdk):
+        shutil.rmtree( dir_emsdk, ignore_errors=1)
+    if not os.path.exists(dir_emsdk):
+        command += f' && echo "### cloning emsdk.git"'
+        command += f' && git clone https://github.com/emscripten-core/emsdk.git {dir_emsdk}'
+    
+    # Create and enter Python venv.
+    #
+    venv_pyodide = 'venv_pyodide'
+    if not os.path.exists( venv_pyodide):
+        command += f' && echo "### creating venv {venv_pyodide}"'
+        command += f' && {sys.executable} -m venv {venv_pyodide}'
+    command += f' && . {venv_pyodide}/bin/activate'
+    command += f' && echo "### running pip install ..."'
+    command += f' && python -m pip install --upgrade pip wheel pyodide-build'
+    
+    # Run emsdk install scripts and enter emsdk environment.
+    #
+    command += f' && cd {dir_emsdk}'
+    command += ' && PYODIDE_EMSCRIPTEN_VERSION=$(pyodide config get emscripten_version)'
+    command += ' && echo "### running ./emsdk install"'
+    command += ' && ./emsdk install ${PYODIDE_EMSCRIPTEN_VERSION}'
+    command += ' && echo "### running ./emsdk activate"'
+    command += ' && ./emsdk activate ${PYODIDE_EMSCRIPTEN_VERSION}'
+    command += ' && echo "### running ./emsdk_env.sh"'
+    command += ' && . ./emsdk_env.sh'   # Need leading `./` otherwise weird 'Not found' error.
+    
+    if 1:
+        # Make our returned command replace emsdk/upstream/bin/wasm-opt
+        # with a script that does nothing, otherwise the linker
+        # command fails after it has created the output file. See:
+        # https://github.com/pyodide/pyodide/issues/4048
+        #
+        
+        def write( text, path):
+            with open( path, 'w') as f:
+                f.write( text)
+            os.chmod( path, 0o755)
+        
+        # Create a script that our command runs, that overwrites
+        # `emsdk/upstream/bin/wasm-opt`, hopefully in a way that is
+        # idempotent.
+        #
+        # The script moves the original wasm-opt to wasm-opt-0.
+        #
+        write(
+                textwrap.dedent('''
+                    #! /usr/bin/env python3
+                    import os
+                    p = 'upstream/bin/wasm-opt'
+                    p0 = 'upstream/bin/wasm-opt-0'
+                    p1 = '../wasm-opt-1'
+                    if os.path.exists( p0):
+                        print(f'### {__file__}: {p0!r} already exists so not overwriting from {p!r}.')
+                    else:
+                        s = os.stat( p)
+                        assert s.st_size > 15000000, f'File smaller ({s.st_size}) than expected: {p!r}'
+                        print(f'### {__file__}: Moving {p!r} -> {p0!r}.')
+                        os.rename( p, p0)
+                    print(f'### {__file__}: Moving {p1!r} -> {p!r}.')
+                    os.rename( p1, p)
+                    '''
+                    ).strip(),
+                'wasm-opt-replace.py',
+                )
+        
+        # Create a wasm-opt script that basically does nothing, except
+        # defers to the original script when run with `--version`.
+        #
+        write(
+                textwrap.dedent('''
+                    #!/usr/bin/env python3
+                    import os
+                    import sys
+                    import subprocess
+                    if sys.argv[1:] == ['--version']:
+                        root = os.path.dirname(__file__)
+                        subprocess.run(f'{root}/wasm-opt-0 --version', shell=1, check=1)
+                    else:
+                        print(f'{__file__}: Doing nothing. {sys.argv=}')
+                    '''
+                    ).strip(),
+                'wasm-opt-1',
+                )
+        command += ' && ../wasm-opt-replace.py'
+    
+    command += ' && cd ..'
+    
+    return command
 
 
 def log(text):
