@@ -1151,7 +1151,7 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.2rc1'
+version = '1.23.2'
 version_b = '1.23.0'    # Use older PyMuPDFb wheels.
 
 tag_python = None

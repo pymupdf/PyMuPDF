@@ -21234,8 +21234,8 @@ class FitzDeprecation(DeprecationWarning):
 
 
 VersionFitz = "1.23.0" # MuPDF version.
-VersionBind = "1.23.2rc1" # PyMuPDF version.
-VersionDate = "2023-08-27 00:00:01"
+VersionBind = "1.23.2" # PyMuPDF version.
+VersionDate = "2023-08-28 00:00:01"
 VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
 version = (VersionBind, VersionFitz, VersionDate2)
 
