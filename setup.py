@@ -950,7 +950,10 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
     compiler_extra = ''
     if build_type == 'memento':
         compiler_extra += ' -DMEMENTO'
-    mupdf_build_dir_flags = os.path.basename( mupdf_build_dir).split( '-')
+    if mupdf_build_dir:
+        mupdf_build_dir_flags = os.path.basename( mupdf_build_dir).split( '-')
+    else:
+        mupdf_build_dir_flags = ''
     optimise = 'release' in mupdf_build_dir_flags
     debug = 'debug' in mupdf_build_dir_flags
     if windows:
