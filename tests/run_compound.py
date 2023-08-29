@@ -65,12 +65,9 @@ def main():
     
     # Run with `fitz_new` again, this time with PYMUPDF_USE_EXTRA=0.
     #
-    if 0:   # Disabled because test_2533 is known to fail.
-        env[ 'PYMUPDF_USE_EXTRA'] = '0'
-        log(f'Running using fitz_new without optimisations, PYTHONPATH={pp}: {shlex.join(args)}')
-        e3 = subprocess.run( args, shell=0, check=0, env=env).returncode
-    else:
-        e3 = 0
+    env[ 'PYMUPDF_USE_EXTRA'] = '0'
+    log(f'Running using fitz_new without optimisations, PYTHONPATH={pp}: {shlex.join(args)}')
+    e3 = subprocess.run( args, shell=0, check=0, env=env).returncode
     
     log( f'{e1=} {e2=} {e3=}')
     
