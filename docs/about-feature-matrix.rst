@@ -148,9 +148,6 @@
 
 
         <tr id="PyMuPDFFileSupport">
-            <td><cite>Supports Multiple Document Formats</cite></td>
-
-        <tr>
             <td><cite id="transFM2">Supports Multiple Document Formats</cite></td>
 
             <td>
