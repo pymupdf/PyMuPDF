@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -10,9 +10,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../znames.rst:7 3b8e03075de74bc29357d3db6ab39e2f
 msgid "Deprecated Names"
-msgstr ""
+msgstr "非推奨の名前"
 
 #: ../../znames.rst:9 62a32e927a01467aab597164c40ce8e3
 msgid ""
@@ -31,14 +31,14 @@ msgid ""
 "increase in classes, methods and properties. In too many cases, this has "
 "led to non-intuitive, illogical and ugly names, difficult to memorize or "
 "guess."
-msgstr ""
+msgstr "メソッドやプロパティの元々の命名規則は「camelCase」でした。その創造以来、PyMuPDFでの機能の著しい増加がありました。それに伴い、クラス、メソッド、プロパティも対応するように増加しました。多くの場合、これにより直感に反した、論理的でなく見栄えのしない名前が生まれ、覚えたり推測したりが難しくなりました。"
 
 #: ../../znames.rst:11 fa9d3f3d0806482eae8f9af6429d15d2
 msgid ""
 "A few versions ago, I therefore decided to shift gears and switch to a "
 "\"snake_cased\" naming standard. This was a major effort, which needed a "
 "step-wise approach. I think am done with it now (version 1.18.14)."
-msgstr ""
+msgstr "数バージョン前、私はゆえに、段階的なアプローチが必要な大規模な取り組みであったにもかかわらず、「snake_cased」の命名規則に切り替えることを決定しました。これは大きな努力が必要でした。今はそれが完了したと思っています（バージョン1.18.14）。"
 
 #: ../../znames.rst:14 fb628e5d1cbc4cf69a354946006c9efb
 msgid ""
@@ -46,20 +46,20 @@ msgid ""
 "example, property `pageCount` became `page_count` in the :ref:`Document` "
 "class. There also are less obvious name changes, e.g. method `getPNGdata`"
 " was renamed to `tobytes` in the :ref:`Pixmap` class."
-msgstr ""
+msgstr "以下のリストは、非推奨の名前とそれらの新しいバージョンを対応付けたものです。例えば、プロパティである `pageCount` は、 :ref:`Document` クラス内では `page_count` となりました。また、より明らかでない名前の変更もあります。例えば、メソッドである `getPNGdata` は :ref:`Pixmap` クラス内で `tobytes` という名前に変更されました。"
 
 #: ../../znames.rst:16 946a90871d6f48229e4c2ba5c32f8eb1
 msgid ""
 "Names of classes (camel case) and package-wide constants (the majority is"
 " upper case) remain untouched."
-msgstr ""
+msgstr "クラスの名前（キャメルケース）やパッケージ全体の定数（大部分は大文字）については、触れずに残ります。"
 
 #: ../../znames.rst:18 d7268acc0e784d7ba363e25e317a166c
 msgid ""
 "Old names will remain available as deprecated aliases through MuPDF "
 "version 1.19.0 and **be removed** in the version that follows it - "
 "probably version 1.20.0, but this depends on upstream decisions (MuPDF)."
-msgstr ""
+msgstr "古い名前は、MuPDFバージョン1.19.0まで非推奨のエイリアスとして利用可能であり、その後のバージョン（おそらくバージョン1.20.0ですが、これは上流の決定（MuPDF）に依存します）で **削除されます** 。"
 
 #: ../../znames.rst:20 5dcd7a58709d4e72b78a6f33ce986446
 msgid ""
@@ -67,14 +67,14 @@ msgid ""
 "`sys.stderr` like `Deprecation: 'newPage' removed from class 'Document' "
 "after v1.19.0 - use 'new_page'.` when aliased methods are being used. "
 "Using a deprecated property will not cause this type of warning."
-msgstr ""
+msgstr "バージョン1.19.0以降、エイリアス化されたメソッドが使用されている場合、 `sys.stderr` に非推奨の警告が表示されます。例 `Deprecation: 'newPage'はクラス 'Document'からv1.19.0以降で削除されました - 'new_page'` を使用してください。非推奨のプロパティを使用した場合、このタイプの警告は発生しません。"
 
 #: ../../znames.rst:22 42008974adc641b596eabce0be0349a6
 msgid ""
 "Starting immediately, all deprecated objects (methods and properties) "
 "will show a copy of the original's docstring, **prefixed** with the "
 "deprecation message, for example::"
-msgstr ""
+msgstr "直ちに、すべての非推奨のオブジェクト（メソッドとプロパティ）は、元のドキュメント文字列のコピーが表示され、その前に非推奨のメッセージが **付加されます** 。例："
 
 #: ../../znames.rst:39 06da040c5ab6428f85f46e09a378819d
 msgid ""
@@ -84,19 +84,20 @@ msgid ""
 "folder as argument. If a folder is supplied, all its Python files and "
 "those of its subfolders are changed. Optionally, backups of the scripts "
 "can be taken."
-msgstr ""
+msgstr "スクリプト `alias-changer.py <https://github.com/pymupdf"
+"/PyMuPDF-Utilities/tree/master/alias-changer.py>` があり、スクリプト内で大量の名前変更を行うために使用できます。単一のファイルまたはフォルダを引数として受け入れます。フォルダが指定された場合、そのフォルダ内のすべてのPythonファイルおよびそのサブフォルダのファイルが変更されます。必要に応じて、スクリプトのバックアップを取ることもできます。"
 
 #: ../../znames.rst:41 ff31e4c3bd904201a0cb6860aa0bb409
 msgid ""
 "Deprecated names are not separately documented. The following list will "
 "help you find the documentation of the original."
-msgstr ""
+msgstr "非推奨の名前は別途文書化されていません。以下のリストは、元のドキュメントの検索に役立ちます。"
 
 #: ../../znames.rst:43 46e111e6912f4acfbb3ad463b03beaca
 msgid ""
 "This is automatically generated. One or two items refer to yet "
 "undocumented methods - please simply ignore them."
-msgstr ""
+msgstr "これは自動的に生成されたものです。1または2のアイテムはまだ文書化されていないメソッドを参照していますが、無視してください。"
 
 #: ../../deprecated.rst:3 b11e52513d464ff2a753f460c9df2a70
 msgid ":index:`_isWrapped` -- :attr:`Page.is_wrapped`"
