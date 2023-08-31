@@ -67,6 +67,9 @@ Environmental variables:
             Otherwise:
                 Location of mupdf directory.
     
+    PYMUPDF_SETUP_MUPDF_TESSERACT
+        If '0' we build MuPDF without Tesseract.
+    
     PYMUPDF_SETUP_MUPDF_BUILD_TYPE
         Unix only. Controls build type of MuPDF. Supported values are:
             debug
@@ -808,7 +811,8 @@ def build_mupdf_windows( mupdf_local, env, build_type):
     assert mupdf_local
 
     wp = pipcl.wdev.WindowsPython()
-    windows_build_tail = f'build\\shared-{build_type}-x{wp.cpu.bits}-py{wp.version}'
+    tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
+    windows_build_tail = f'build\\shared-{tesseract}{build_type}-x{wp.cpu.bits}-py{wp.version}'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
     devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
@@ -867,8 +871,6 @@ def build_mupdf_unix( mupdf_local, env, build_type):
         log( f'Using system mupdf.')
         return None
 
-    flags = 'HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no HAVE_LEPTONICA=yes HAVE_TESSERACT=yes'
-    flags += ' verbose=yes'
     env = env.copy()
     if openbsd or freebsd:
         env_add(env, 'CXX', 'clang++', ' ')
@@ -902,8 +904,9 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     if build_prefix_extra:
         build_prefix += f'{build_prefix_extra}-'
     build_prefix += 'shared-'
+    if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') != '0':
+        build_prefix += 'tesseract-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
-
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
     #
