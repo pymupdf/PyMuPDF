@@ -393,7 +393,7 @@ def get_mupdf_tgz():
     '''
     mupdf_url_or_local = os.environ.get(
             'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.23.0-source.tar.gz',
+            'https://mupdf.com/downloads/archive/mupdf-1.23.2-source.tar.gz',
             )
     log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
     if mupdf_url_or_local == '':
@@ -456,9 +456,9 @@ def get_mupdf():
     # 2023-07-11: For now we default to mupdf master.
     path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
     if 0:
-        # 2023-08-18: default to specific sha.
-        path = 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
-        sha = 'a6aaf0b1162a'    # Makerules scripts/wrap/__main__.py: fix cross-building to arm64 on MacOS.
+        # 2023-08-31: default to specific sha.
+        path = 'git:--recursive --depth 1 --shallow-submodules --branch master git://git.ghostscript.com/mupdf.git'
+        sha = '8e729ae6913e4'   # scripts/wrap/: added support for building with tesseract.
     else:
         sha = None
     log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
@@ -1157,8 +1157,8 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.2'
-version_b = '1.23.0'    # Use older PyMuPDFb wheels.
+version = '1.23.3'
+version_b = '1.23.3'
 
 tag_python = None
 requires_dist = None,
