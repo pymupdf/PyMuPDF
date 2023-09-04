@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -10,9 +10,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,69 +21,69 @@ msgstr ""
 
 #: ../../recipes-annotations.rst:7 fca9c4e6a4f74af9bc327c4187c17074
 msgid "Annotations"
-msgstr ""
+msgstr "注釈"
 
 #: ../../recipes-annotations.rst:12 7dd9e0f16f9a4eac8f33e49f313f412b
 msgid "How to Add and Modify Annotations"
-msgstr ""
+msgstr "注釈の追加と変更方法"
 
 #: ../../recipes-annotations.rst:14 422c8ba5314c4ea29d32a6c08b31a428
 msgid ""
 "In PyMuPDF, new annotations can be added via :ref:`Page` methods. Once an"
 " annotation exists, it can be modified to a large extent using methods of"
 " the :ref:`Annot` class."
-msgstr ""
+msgstr "PyMuPDFでは、新しい注釈を :ref:`Page` メソッドを介して追加することができます。一度注釈が存在すると、 :ref:`Annot` クラスのメソッドを使用して大幅に変更できます。"
 
 #: ../../recipes-annotations.rst:16 5b98e8008c944301ac9375e5b40b2bc5
 msgid ""
 "In contrast to many other tools, initial insert of annotations happens "
 "with a minimum number of properties. We leave it to the programmer to "
 "e.g. set attributes like author, creation date or subject."
-msgstr ""
+msgstr "他の多くのツールとは異なり、注釈の初期挿入は最小限のプロパティで行われます。例えば、著者、作成日、サブジェクトなどの属性をプログラマーが設定することができます。"
 
 #: ../../recipes-annotations.rst:18 b80efe25ff1d417d808d4360665a2d0d
 msgid ""
 "As an overview for these capabilities, look at the following script that "
 "fills a PDF page with most of the available annotations. Look in the next"
 " sections for more special situations:"
-msgstr ""
+msgstr "これらの機能の概要については、次のスクリプトを参照してください。このスクリプトはPDFページに利用可能な注釈のほとんどを埋めるものです。より特殊な状況については、次のセクションをご覧ください。"
 
 #: ../../recipes-annotations.rst:24 b1ea65f64cd145cdbdcee83edcf8ef47
 msgid "This script should lead to the following output:"
-msgstr ""
+msgstr "このスクリプトは次のような出力を生成します："
 
 #: ../../recipes-annotations.rst:34 6d29fab88b624c38b18932e064259d09
 msgid "How to Use FreeText"
-msgstr ""
+msgstr "FreeTextの使用方法"
 
 #: ../../recipes-annotations.rst:35 b082187fc3974bcbac0328898b9f144c
 msgid "This script shows a couple of ways to deal with 'FreeText' annotations::"
-msgstr ""
+msgstr "このスクリプトは、'FreeText'注釈を扱ういくつかの方法を示しています::"
 
 #: ../../recipes-annotations.rst:68 e61801b0888b426fb4076c53381b3c82
 msgid "The result looks like this:"
-msgstr ""
+msgstr "結果は次のようになります。"
 
 #: ../../recipes-annotations.rst:79 a48dd471be5c46f5ad426e8b92c89049
 msgid "Using Buttons and JavaScript"
-msgstr ""
+msgstr "ボタンとJavaScriptの使用"
 
 #: ../../recipes-annotations.rst:80 2ac36aa3635b42fabc2f108aea3e539d
 msgid ""
 "Since MuPDF v1.16, 'FreeText' annotations no longer support bold or "
 "italic versions of the Times-Roman, Helvetica or Courier fonts."
-msgstr ""
+msgstr "MuPDF v1.16以降、'FreeText'注釈はもはやTimes-Roman、Helvetica、Courierフォントの太字や斜体バージョンをサポートしていません。"
 
 #: ../../recipes-annotations.rst:82 774300ad8c5a442fae28358fd27a7451
 msgid ""
 "A big **thank you** to our user `@kurokawaikki "
 "<https://github.com/kurokawaikki>`_, who contributed the following script"
 " to **circumvent this restriction**."
-msgstr ""
+msgstr "この制限を回避するために、次のスクリプトを提供してくれたユーザー `@kurokawaikki <https://github.com/kurokawaikki>`_ さんに心から感謝します。"
 
 #: ../../recipes-annotations.rst:93 ddd0e3e4c05949c0a6d2f621ec5b5dfd
 msgid "How to Use Ink Annotations"
-msgstr ""
+msgstr "インク注釈の使用方法"
 
 #: ../../recipes-annotations.rst:94 24be590b851c4c1fb2256c0c274964db
 msgid ""
@@ -93,17 +93,17 @@ msgid ""
 "lists of points**. Each point list is regarded as a continuous line "
 "connecting the points. Different point lists represent independent line "
 "segments of the annotation."
-msgstr ""
+msgstr "インク注釈は、自由な手書きの落書きを含むために使用されます。典型的な例として、名前と姓からなる署名の画像が挙げられます。技術的には、インク注釈は点のリストのリストとして実装されます。各点のリストは、点を結んだ連続的な線と見なされます。異なる点のリストは、注釈の独立した線セグメントを表します。"
 
 #: ../../recipes-annotations.rst:96 a55c500826a04a3bb9ceeb0dfe572617
 msgid ""
 "The following script creates an ink annotation with two mathematical "
 "curves (sine and cosine function graphs) as line segments::"
-msgstr ""
+msgstr "以下のスクリプトは、二つの数学的な曲線（正弦関数と余弦関数のグラフ）を線セグメントとして持つインク注釈を作成します::"
 
 #: ../../recipes-annotations.rst:141 b2edda413cd54962b844b16dee60b2db
 msgid "This is the result:"
-msgstr ""
+msgstr "これが結果です："
 
 #: ../../footer.rst:-1 decad967a0724912a6afd25ceca5ca19
 msgid "Discord logo"
