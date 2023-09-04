@@ -2,6 +2,7 @@
 
 .. _RecipesStories:
 
+.. role:: htmlTag(emphasis)
 
 .. |toggleStart| raw:: html
 
