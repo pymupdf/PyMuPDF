@@ -353,8 +353,8 @@ def build_pyodide_wheel():
     # Disable libcrypto because not available in Pyodide.
     env_extra['HAVE_LIBCRYPTO'] = 'no'
 
-    # Set OS=wasm-mt for MuPDF build.
-    env_extra['OS'] = 'wasm-mt'
+    # Tell MuPDF to build for Pyodide.
+    env_extra['OS'] = 'pyodide'
 
     # Build PyMuPDF as a single wheel without a separate PyMuPDFb
     # wheel.
