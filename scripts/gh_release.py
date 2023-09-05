@@ -304,7 +304,7 @@ def build( platform_=None):
         # wheel.
         #
         # Also, `auditwheel addtag` says `No tags to be added` and terminates
-        # with non-zero.
+        # with non-zero. See: https://github.com/pypa/auditwheel/issues/439.
         #
         env_set('CIBW_REPAIR_WHEEL_COMMAND_LINUX', '')
         env_set('CIBW_REPAIR_WHEEL_COMMAND_MACOS', '')
@@ -359,7 +359,17 @@ def build_pyodide_wheel():
     # Build PyMuPDF as a single wheel without a separate PyMuPDFb
     # wheel.
     env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = 'a'
-
+    
+    # 2023-08-30: We set PYMUPDF_SETUP_MUPDF_BUILD_TESSERACT=0 because
+    # otherwise mupdf thirdparty/tesseract/src/ccstruct/dppoint.cpp fails to
+    # build because `#include "errcode.h"` finds a header inside emsdk. This is
+    # pyodide bug https://github.com/pyodide/pyodide/issues/3839. It's fixed in
+    # https://github.com/pyodide/pyodide/pull/3866 but the fix has not reached
+    # pypi.org's pyodide-build package. E.g. currently in tag 0.23.4, but
+    # current devuan pyodide-build is pyodide_build-0.23.4.
+    #
+    env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
+    
     command = pyodide_setup()
     command += ' && pyodide build --exports pyinit'
     run(command, env_extra=env_extra)
