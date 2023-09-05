@@ -626,7 +626,7 @@ class Package:
         _log( f'Have created wheel size={st.st_size}: {path}')
         with zipfile.ZipFile(path, compression=self.wheel_compression) as z:
             _log(f'Contents are:')
-            for zi in z.infolist():
+            for zi in sorted(z.infolist(), key=lambda z: z.filename):
                 _log(f'    {zi.file_size: 10d} {zi.filename}')
         
         return os.path.basename(path)
@@ -767,28 +767,10 @@ class Package:
         items = list()
         if self.fn_build:
             items = self._call_fn_build( dict())
-
-        if root:
-            if windows():
-                # If we are in a venv, `sysconfig.get_path('platlib')`
-                # can be absolute, e.g.
-                # `C:\\...\\venv-pypackage-3.11.1-64\\Lib\\site-packages`, so
-                # it's not clear how to append it to `root`. So we just use
-                # `root`.
-                root2 = root
-            else:
-                # E.g. if `root` is `install' and `sysconfig.get_path('platlib')`
-                # is `/usr/local/lib/python3.9/site-packages`, we set `root2` to
-                # `install/usr/local/lib/python3.9/site-packages`.
-                #
-                r = sysconfig.get_path('platlib')
-                if verbose:
-                    _log( f'{r=}')
-                r = r.lstrip( os.sep)
-                root2 = os.path.join( root, r)
-        else:
-            root2 = r
-        # todo: for pure-python we should use sysconfig.get_path('purelib') ?
+        
+        root2 = install_dir(root)
+        if verbose:
+            _log( f'{root2=}')
         
         _log( f'Installing into: {root2!r}')
         dist_info_dir = self._dist_info_dir()
@@ -2090,7 +2072,33 @@ def _so_suffix():
     # things like `numpy/core/_simd.cpython-311-darwin.so`.
     #
     return sysconfig.get_config_var('EXT_SUFFIX')
-        
+
+
+def install_dir(root=None):
+    '''
+    Returns install directory used by `install()`.
+
+    This will be `sysconfig.get_path('platlib')`, modified by `root` if not
+    None.
+    '''
+    # todo: for pure-python we should use sysconfig.get_path('purelib') ?
+    root2 = sysconfig.get_path('platlib')
+    if root:
+        if windows():
+            # If we are in a venv, `sysconfig.get_path('platlib')`
+            # can be absolute, e.g.
+            # `C:\\...\\venv-pypackage-3.11.1-64\\Lib\\site-packages`, so it's
+            # not clear how to append it to `root`. So we just use `root`.
+            return root
+        else:
+            # E.g. if `root` is `install' and `sysconfig.get_path('platlib')`
+            # is `/usr/local/lib/python3.9/site-packages`, we set `root2` to
+            # `install/usr/local/lib/python3.9/site-packages`.
+            #
+            return os.path.join( root, root2.lstrip( os.sep))
+    else:
+        return root2
+
 
 class _Record:
     '''
