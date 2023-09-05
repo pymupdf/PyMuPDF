@@ -113,8 +113,8 @@ EnsureOwnership(self)%}
 #define JM_BinFromChar(x) PyBytes_FromString(x)
 #define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
 
-#include <fitz.h>
-#include <pdf.h>
+#include <mupdf/fitz.h>
+#include <mupdf/pdf.h>
 #include <time.h>
 // freetype includes >> --------------------------------------------------
 #include <ft2build.h>
