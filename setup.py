@@ -33,12 +33,6 @@ Environmental variables:
         PYMUPDF_INCLUDES
             Colon-separated extra include paths.
         
-        PYMUPDF_MUPDF_INCLUDE
-            System include directory that contains `mupdf/`. This directory is expected
-            to have layout from:
-        
-                cd mupdf && make install-shared-c|c++|python
-        
         PYMUPDF_MUPDF_LIB
             Directory containing MuPDF libraries, (libmupdf.so,
             libmupdfcpp.so).
@@ -557,7 +551,7 @@ openbsd = sys.platform.startswith( 'openbsd')
 freebsd = sys.platform.startswith( 'freebsd')
 darwin = sys.platform.startswith( 'darwin')
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
-wasm = os.environ.get('OS') in ('wasm', 'wasm-mt')
+pyodide = os.environ.get('OS') == 'pyodide'
 
 
 def _implementations():
@@ -758,7 +752,7 @@ def build():
                 add( ret_b, f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir)
             elif darwin:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
-            elif wasm:
+            elif pyodide:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
             else:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
@@ -917,8 +911,8 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     # to coexist, e.g. on github.
     #
     build_prefix = f'PyMuPDF-'
-    if wasm:
-        build_prefix += 'wasm-'
+    if pyodide:
+        build_prefix += 'pyodide-'
     else:
         build_prefix += f'{platform.machine()}-'
     build_prefix_extra = os.environ.get( '_PYTHON_HOST_PLATFORM')
@@ -1176,10 +1170,7 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
             includes += pi.split(':')
         pmi = os.environ.get('PYMUPDF_MUPDF_INCLUDE')
         if pmi:
-            includes += [
-                    f'{pmi}',
-                    f'{pmi}/mupdf/thirdparty/freetype',
-                    ]
+            includes.append(pmi)
         ldflags = os.environ.get('LDFLAGS')
         if ldflags:
             linker_extra += f' {ldflags}'
@@ -1286,7 +1277,7 @@ p = pipcl.Package(
         # 30MB: 9 ZIP_DEFLATED
         # 28MB: 9 ZIP_BZIP2
         # 23MB: 9 ZIP_LZMA
-        #wheel_compression = zipfile.ZIP_DEFLATED if (darwin or wasm) else zipfile.ZIP_LZMA,
+        #wheel_compression = zipfile.ZIP_DEFLATED if (darwin or pyodide) else zipfile.ZIP_LZMA,
         wheel_compresslevel = 9,
         )
 
