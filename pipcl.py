@@ -1222,6 +1222,7 @@ def build_extension(
         prerequisites_swig=None,
         prerequisites_compile=None,
         prerequisites_link=None,
+        infer_swig_includes=True,
         ):
     '''
     Builds a Python extension module using SWIG. Works on Windows, Linux, MacOS
@@ -1297,7 +1298,13 @@ def build_extension(
             
                 On non-Windows we use cc's -MF and -MF args to generate dynamic
                 dependencies so this is not usually required.
-
+        infer_swig_includes:
+            If true, we extract `-I<path>` and `-I <path>` args from
+            `compile_extra` (also `/I` on windows) and use them with swig so
+            that it can see the same header files as C/C++. This is useful
+            when using enviromment variables such as `CC` and `CXX` to set
+            `compile_extra.
+    
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
     '''
@@ -1312,6 +1319,22 @@ def build_extension(
     os.makedirs( outdir, exist_ok=True)
     
     # Run SWIG.
+    
+    if infer_swig_includes:
+        # Extract include flags from `compiler_extra`.
+        swig_includes_extra = ''
+        compiler_extra_items = compiler_extra.split()
+        i = 0
+        while i < len(compiler_extra_items):
+            item = compiler_extra_items[i]
+            # Swig doesn't seem to like a space after `I`.
+            if item == '-I' or (windows() and item == '/I'):
+                swig_includes_extra += f' -I{compiler_extra_items[i+1]}'
+                i += 1
+            elif item.startswith('-I') or (windows() and item.startswith('/I')):
+                swig_includes_extra += f' -I{compiler_extra_items[i][2:]}'
+            i += 1
+        swig_includes_extra = swig_includes_extra.strip()
     deps_path = f'{path_cpp}.d'
     prerequisites_swig2 = _get_prerequisites( deps_path)
     run_if(
@@ -1325,6 +1348,7 @@ def build_extension(
                 -o {path_cpp}
                 -MD -MF {deps_path}
                 {includes_text}
+                {swig_includes_extra}
                 {path_i}
             '''
             ,
@@ -1499,10 +1523,10 @@ def build_extension(
                         -o {path_so}
                         {compiler_extra}
                         {libpaths_text}
-                        {libs_text}
-                        {rpath_flag}
                         {linker_extra}
                         {pythonflags.ldflags}
+                        {libs_text}
+                        {rpath_flag}
                     '''
         run_if(
                 command,
@@ -1914,7 +1938,6 @@ def run_if( command, out, *prerequisites, verbose=True):
         pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
     '''    
     doit = False
-    
     if not doit:
         out_mtime = _fs_mtime( out)
         if out_mtime == 0:
@@ -1927,9 +1950,15 @@ def run_if( command, out, *prerequisites, verbose=True):
     else:
         cmd = None
     if command != cmd:
-        doit = 'Command has changed'
+        if cmd is None:
+            doit = 'No previous command stored'
+        else:
+            doit = f'Command has changed'
+            if 0:
+                doit += f': {cmd!r} => {command!r}'
     
     if not doit:
+        # See whether any prerequisites are newer than target.
         def _make_prerequisites(p):
             if isinstance( p, (list, tuple)):
                 return list(p)
