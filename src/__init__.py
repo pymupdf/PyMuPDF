@@ -115,7 +115,7 @@ if mupdf_cppyy is not None:
     mupdf = mupdf_cppyy.cppyy.gbl.mupdf
 else:
     # Use MuPDF Python SWIG bindings.
-    from . import mupdf
+    import mupdf
     mupdf.reinit_singlethreaded()
 
 mupdf_version_tuple = (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH)
