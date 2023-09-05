@@ -3,7 +3,7 @@
 '''
 Overview:
 
-    Build script for PyMuPDF.
+    Build script for PyMuPDF, supporting PEP-517 and simple command-line usage.
 
     We hard-code the URL of the MuPDF .tar.gz file that we require. This
     generally points to a particular source release on mupdf.com.
@@ -16,12 +16,33 @@ Overview:
         Building PyMuPDF:
             If we are not in an sdist we first download the mupdf .tar.gz file.
 
-            Then we extract and build MuPDF locally, before setuptools builds
-            PyMuPDF. So PyMuPDF will always be built with the exact MuPDF
+            Then we extract and build MuPDF locally, before building PyMuPDF
+            itself. So PyMuPDF will always be built with the exact MuPDF
             release that we require.
+
 
 Environmental variables:
 
+    If building with system MuPDF (PYMUPDF_SETUP_MUPDF_BUILD is empty string):
+    
+        CFLAGS
+        CXXFLAGS
+        LDFLAGS
+            Added to c, c++, and link commands.
+        
+        PYMUPDF_INCLUDES
+            Colon-separated extra include paths.
+        
+        PYMUPDF_MUPDF_INCLUDE
+            System include directory that contains `mupdf/`. This directory is expected
+            to have layout from:
+        
+                cd mupdf && make install-shared-c|c++|python
+        
+        PYMUPDF_MUPDF_LIB
+            Directory containing MuPDF libraries, (libmupdf.so,
+            libmupdfcpp.so).
+    
     PYMUPDF_SETUP_IMPLEMENTATIONS
         Must be one of 'a', 'b', 'ab'. If unset we use 'ab'.
         If contains 'a' we build original implementation.
@@ -945,12 +966,158 @@ def _fs_update(text, path):
 
 def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
     '''
-    Builds Python extension module `_fitz` and `_extra`.
+    Builds Python extension modules `_fitz` and `_extra`.
 
     Returns (path_so_leaf_a, path_so_leaf_b), the leafnames of the generated
     shared libraries within mupdf_build_dir.
     '''
+    path_so_leaf_a = None
+    path_so_leaf_b = None
+    
+    if 'a' in _implementations():
+        path_so_leaf_a = _build_extension_classic( mupdf_local, mupdf_build_dir, build_type)
+    
+    if 'b' in _implementations():
+        path_so_leaf_b = _build_extension_rebased( mupdf_local, mupdf_build_dir, build_type)
+    
+    return path_so_leaf_a, path_so_leaf_b
+    
+
+def _build_extension_classic( mupdf_local, mupdf_build_dir, build_type):
+    '''
+    Builds Python extension module `_fitz` for classic implementation.
+
+    Returns leafname of the generated shared libraries within mupdf_build_dir.
+    '''
+    (compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries) \
+        = _extension_flags( mupdf_local, mupdf_build_dir, build_type)
+    
+    # Update helper-git-versions.i.
+    f = io.StringIO()
+    f.write('%pythoncode %{\n')
+    def repr_escape(text):
+        text = repr(text)
+        text = text.replace('{', '{{')
+        text = text.replace('}', '}}')
+        text = text.replace('%', '{chr(37)})')  # Avoid confusing swig.
+        return 'f' + text
+    def write_git(name, directory):
+        sha, comment, diff, branch = get_git_id(directory)
+        f.write(f'{name}_git_sha = \'{sha}\'\n')
+        f.write(f'{name}_git_comment = {repr_escape(comment)}\n')
+        f.write(f'{name}_git_diff = {repr_escape(diff)}\n')
+        f.write(f'{name}_git_branch = {repr_escape(branch)}\n')
+        f.write('\n')
+    write_git('pymupdf', '.')
+    if mupdf_local:
+        write_git('mupdf', mupdf_local)
+    f.write('%}\n')
+    _fs_update( f.getvalue(), 'fitz/helper-git-versions.i')
+
+    if windows:
+        compiler_extra_c = ''
+    else:
+        compiler_extra_c = (
+                ' -Wno-incompatible-pointer-types'
+                ' -Wno-pointer-sign'
+                ' -Wno-sign-compare'
+                )
+    prerequisites_swig = glob.glob( f'{g_root}/fitz/*.i')
+    if os.environ.get( 'PYMUPDF_SETUP_REBUILD_GIT_DETAILS') == '0':
+        # Remove helper-git-versions.i from prerequisites_swig so
+        # it doesn't force rebuild on its own. [Cannot easily use
+        # prerequisites_swig.remove() because / vs \ on Windows.]
+        #
+        for i, p in enumerate( prerequisites_swig):
+            if p.endswith( 'helper-git-versions.i'):
+                del prerequisites_swig[i]
+                break
+        else:
+            assert 0, f'Cannot find *helper-git-versions.i in prerequisites_swig: {prerequisites_swig}'
+
+    path_so_leaf_a = pipcl.build_extension(
+            name = 'fitz',
+            path_i = f'{g_root}/fitz/fitz.i',
+            outdir = f'{g_root}/fitz',
+            includes = includes,
+            defines = defines,
+            libpaths = libpaths,
+            libs = libs,
+            compiler_extra = compiler_extra + compiler_extra_c,
+            linker_extra = linker_extra,
+            optimise = optimise,
+            debug = debug,
+            cpp = False,
+            prerequisites_swig = prerequisites_swig,
+            prerequisites_compile = f'{mupdf_local}/include',
+            prerequisites_link = libraries,
+            )
+
+    return path_so_leaf_a
+    
+
+def _build_extension_rebased( mupdf_local, mupdf_build_dir, build_type):
+    '''
+    Builds Python extension module `_extra` for rebased implementation.
+
+    Returns leafname of the generated shared libraries within mupdf_build_dir.
+    '''
+    (compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries) \
+        = _extension_flags( mupdf_local, mupdf_build_dir, build_type)
+
+    if mupdf_local:
+        includes = (
+                f'{mupdf_local}/platform/c++/include',
+                f'{mupdf_local}/include',
+                )
+    
+    # Build rebased extension module.
+    log('Building PyMuPDF rebased.')
+    compile_extra_cpp = ''
+    if darwin:
+        # Avoids `error: cannot pass object of non-POD type
+        # 'std::nullptr_t' through variadic function; call will abort at
+        # runtime` when compiling `mupdf::pdf_dict_getl(..., nullptr)`.
+        compile_extra_cpp += ' -Wno-non-pod-varargs'
+        # Avoid errors caused by mupdf's C++ bindings' exception classes
+        # not having `nothrow` to match the base exception class.
+        compile_extra_cpp += ' -std=c++14'
+    if windows:
+        wp = pipcl.wdev.WindowsPython()
+        libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
+    else:
+        libs = ('mupdf', 'mupdfcpp')
+        libraries = [
+                f'{mupdf_build_dir}/libmupdf.so'
+                f'{mupdf_build_dir}/libmupdfcpp.so'
+                ]
+    
+    path_so_leaf_b = pipcl.build_extension(
+            name = 'extra',
+            path_i = f'{g_root}/src/extra.i',
+            outdir = f'{g_root}/src',
+            includes = includes,
+            defines = defines,
+            libpaths = libpaths,
+            libs = libs,
+            compiler_extra = compiler_extra + compile_extra_cpp,
+            linker_extra = linker_extra,
+            optimise = optimise,
+            debug = debug,
+            prerequisites_swig = None,
+            prerequisites_compile = f'{mupdf_local}/include',
+            prerequisites_link = libraries,
+            )
+    
+    return path_so_leaf_b
+
+
+def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
+    '''
+    Returns various flags to pass to pipcl.build_extension().
+    '''
     compiler_extra = ''
+    linker_extra = ''
     if build_type == 'memento':
         compiler_extra += ' -DMEMENTO'
     if mupdf_build_dir:
@@ -959,6 +1126,7 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
         mupdf_build_dir_flags = ''
     optimise = 'release' in mupdf_build_dir_flags
     debug = 'debug' in mupdf_build_dir_flags
+    r_extra = ''
     if windows:
         defines = ('FZ_DLL_CLIENT',)
         wp = pipcl.wdev.WindowsPython()
@@ -975,144 +1143,55 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
         libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
         libraries = f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}\\{libs}'
         compiler_extra = ''
-        linker_extra = ''
     else:
-        defines = None
-        libpaths = (mupdf_build_dir,)
         libs = ['mupdf']
-        libraries = f'{mupdf_build_dir}/{libs[0]}'
+        defines = None
         compiler_extra += (
                 ' -Wall'
                 ' -Wno-deprecated-declarations'
                 ' -Wno-unused-const-variable'
                 )
-        if openbsd:
-            compiler_extra += ' -Wno-deprecated-declarations'
-        linker_extra = ''
-    
-    path_so_leaf_a = None
-    path_so_leaf_b = None
-    
-    if 'a' in _implementations():
-        # Build PyMuPDF original implementation.
-        log('Building PyMuPDF classic.')
         if mupdf_local:
-            includes = (
-                    f'{mupdf_local}/include',
-                    f'{mupdf_local}/include/mupdf',
-                    f'{mupdf_local}/thirdparty/freetype/include',
-                    )
+            libpaths = (mupdf_build_dir,)
+            libraries = f'{mupdf_build_dir}/{libs[0]}'
+            if openbsd:
+                compiler_extra += ' -Wno-deprecated-declarations'
         else:
-            includes = None
-        
-        # Update helper-git-versions.i.
-        f = io.StringIO()
-        f.write('%pythoncode %{\n')
-        def repr_escape(text):
-            text = repr(text)
-            text = text.replace('{', '{{')
-            text = text.replace('}', '}}')
-            text = text.replace('%', '{chr(37)})')  # Avoid confusing swig.
-            return 'f' + text
-        def write_git(name, directory):
-            sha, comment, diff, branch = get_git_id(directory)
-            f.write(f'{name}_git_sha = \'{sha}\'\n')
-            f.write(f'{name}_git_comment = {repr_escape(comment)}\n')
-            f.write(f'{name}_git_diff = {repr_escape(diff)}\n')
-            f.write(f'{name}_git_branch = {repr_escape(branch)}\n')
-            f.write('\n')
-        write_git('pymupdf', '.')
-        if mupdf_local:
-            write_git('mupdf', mupdf_local)
-        f.write('%}\n')
-        _fs_update( f.getvalue(), 'fitz/helper-git-versions.i')
-
-        if windows:
-            compiler_extra_c = ''
-        else:
-            compiler_extra_c = (
-                    ' -Wno-incompatible-pointer-types'
-                    ' -Wno-pointer-sign'
-                    ' -Wno-sign-compare'
-                    )
-        prerequisites_swig = glob.glob( f'{g_root}/fitz/*.i')
-        if os.environ.get( 'PYMUPDF_SETUP_REBUILD_GIT_DETAILS') == '0':
-            # Remove helper-git-versions.i from prerequisites_swig so
-            # it doesn't force rebuild on its own. [Cannot easily use
-            # prerequisites_swig.remove() because / vs \ on Windows.]
-            #
-            for i, p in enumerate( prerequisites_swig):
-                if p.endswith( 'helper-git-versions.i'):
-                    del prerequisites_swig[i]
-                    break
-            else:
-                assert 0, f'Cannot find *helper-git-versions.i in prerequisites_swig: {prerequisites_swig}'
-        
-        path_so_leaf_a = pipcl.build_extension(
-                name = 'fitz',
-                path_i = f'{g_root}/fitz/fitz.i',
-                outdir = f'{g_root}/fitz',
-                includes = includes,
-                defines = defines,
-                libpaths = libpaths,
-                libs = libs,
-                compiler_extra = compiler_extra + compiler_extra_c,
-                linker_extra = linker_extra,
-                optimise = optimise,
-                debug = debug,
-                cpp = False,
-                prerequisites_swig = prerequisites_swig,
-                prerequisites_compile = f'{mupdf_local}/include',
-                prerequisites_link = libraries,
-                )
-
+            libpaths = os.environ.get('PYMUPDF_MUPDF_LIB')
+            libraries = None
+            if libpaths:
+                libpaths = libpaths.split(':')
+    
     if mupdf_local:
         includes = (
-                f'{mupdf_local}/platform/c++/include',
                 f'{mupdf_local}/include',
+                f'{mupdf_local}/include/mupdf',
+                f'{mupdf_local}/thirdparty/freetype/include',
                 )
     else:
-        includes = None
-    if 'b' in _implementations():
-        # Build rebased extension module.
-        log('Building PyMuPDF rebased.')
-        compile_extra_cpp = ''
-        if darwin:
-            # Avoids `error: cannot pass object of non-POD type
-            # 'std::nullptr_t' through variadic function; call will abort at
-            # runtime` when compiling `mupdf::pdf_dict_getl(..., nullptr)`.
-            compile_extra_cpp += ' -Wno-non-pod-varargs'
-            # Avoid errors caused by mupdf's C++ bindings' exception classes
-            # not having `nothrow` to match the base exception class.
-            compile_extra_cpp += ' -std=c++14'
-        if windows:
-            wp = pipcl.wdev.WindowsPython()
-            libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
-        else:
-            libs = ('mupdf', 'mupdfcpp')
-            libraries = [
-                    f'{mupdf_build_dir}/libmupdf.so'
-                    f'{mupdf_build_dir}/libmupdfcpp.so'
+        # Use system MuPDF.
+        includes = list()
+        pi = os.environ.get('PYMUPDF_INCLUDES')
+        if pi:
+            includes += pi.split(':')
+        pmi = os.environ.get('PYMUPDF_MUPDF_INCLUDE')
+        if pmi:
+            includes += [
+                    f'{pmi}',
+                    f'{pmi}/mupdf/thirdparty/freetype',
                     ]
-        path_so_leaf_b = pipcl.build_extension(
-                name = 'extra',
-                path_i = f'{g_root}/src/extra.i',
-                outdir = f'{g_root}/src',
-                includes = includes,
-                defines = defines,
-                libpaths = libpaths,
-                libs = libs,
-                compiler_extra = compiler_extra + compile_extra_cpp,
-                linker_extra = linker_extra,
-                optimise = optimise,
-                debug = debug,
-                prerequisites_swig = None,
-                prerequisites_compile = f'{mupdf_local}/include',
-                prerequisites_link = libraries,
-                )
-    
-    return path_so_leaf_a, path_so_leaf_b
-    
+        ldflags = os.environ.get('LDFLAGS')
+        if ldflags:
+            linker_extra += f' {ldflags}'
+        cflags = os.environ.get('CFLAGS')
+        if cflags:
+            compiler_extra += f' {cflags}'
+        cxxflags = os.environ.get('CXXFLAGS')
+        if cxxflags:
+            compiler_extra += f' {cxxflags}'
+
+    return compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries, 
+
 
 def sdist():
     ret = list()
