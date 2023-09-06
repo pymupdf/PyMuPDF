@@ -114,8 +114,14 @@ if mupdf_cppyy is not None:
                 ).load_module()
     mupdf = mupdf_cppyy.cppyy.gbl.mupdf
 else:
-    # Use MuPDF Python SWIG bindings.
-    import mupdf
+    # Use MuPDF Python SWIG bindings. We allow import from either our own
+    # directory for conventional wheel installs, or from separate place in case
+    # we are using a separately-installed system installation of mupdf.
+    #
+    try:
+        from . import mupdf
+    except Exception as e:
+        import mupdf
     mupdf.reinit_singlethreaded()
 
 mupdf_version_tuple = (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH)

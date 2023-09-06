@@ -12,7 +12,10 @@ import os
 import typing
 
 from . import fitz
-import mupdf
+try:
+    from . import mupdf
+except Exception as e:
+    import mupdf
 
 g_exceptions_verbose = fitz.g_exceptions_verbose
 g_exceptions_verbose = False
