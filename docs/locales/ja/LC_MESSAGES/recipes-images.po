@@ -56,7 +56,7 @@ msgstr "スクリプトのディレクトリには、これから *page-0.png* �
 
 #: ../../recipes-images.rst:37 2ead27ba30784960b6825fb86a751494
 msgid "How to Increase :index:`Image Resolution <pair: image; resolution>`"
-msgstr "⚠️画像の解像度を上げる方法"
+msgstr "画像の解像度を上げる方法"
 
 #: ../../recipes-images.rst:39 0d4f6d4d81634b57984e01cb039c51e4
 msgid ""
@@ -82,7 +82,7 @@ msgid ""
 "In the following, we apply a :index:`zoom factor <pair: resolution;zoom>`"
 " of 2 to each dimension, which will generate an image with a four times "
 "better resolution for us (and also about 4 times the size)::"
-msgstr "⚠️以下では、各次元に2倍のズームを適用し、結果として解像度が4倍向上した画像を生成します（そしてサイズも約4倍になります）。::"
+msgstr "以下では、各次元に2倍のズームを適用し、結果として解像度が4倍向上した画像を生成します（そしてサイズも約4倍になります）。::"
 
 #: ../../recipes-images.rst:53 7347a60fc39645a5aaf2ec71d1cd16bc
 msgid ""
@@ -97,7 +97,7 @@ msgstr "バージョン1.19.2以降では、解像度を設定するより直接
 
 #: ../../recipes-images.rst:61 d3934eb54f8d4e20b2656aa663c94552
 msgid "How to Create :index:`Partial Pixmaps` (Clips)"
-msgstr "⚠️部分的なPixmap（クリップ）の作成方法"
+msgstr "部分的なPixmap（クリップ）の作成方法"
 
 #: ../../recipes-images.rst:62 be6c4b8ea90d4b18ae93ab850beb75cf
 msgid ""
@@ -119,14 +119,14 @@ msgid ""
 "in the GUI and call it \"clip\". One way of constructing rectangles in "
 "PyMuPDF is by providing two diagonally opposite corners, which is what we"
 " are doing here."
-msgstr "⚠️これを実現するために、GUIに表示したい領域に等しい矩形を定義し、「クリップ」と呼びます。PyMuPDFでは、矩形を構築する方法の1つは、対角線上にある2つの角を指定することです。これがここで行っていることです。"
+msgstr "これを実現するために、GUIに表示したい領域に等しい矩形を定義し、「クリップ」と呼びます。PyMuPDFでは、矩形を構築する方法の1つは、対角線上にある2つの角を指定することです。これがここで行っていることです。"
 
 #: ../../recipes-images.rst:79 d333f7437ff34af984f917249ae2c719
 msgid ""
 "In the above we construct *clip* by specifying two diagonally opposite "
 "points: the middle point *mp* of the page rectangle, and its bottom "
 "right, *rect.br*."
-msgstr "⚠️上記では、クリップを構築するために、2つの対角線上の点を指定しています：ページ矩形の中心点であるmpと、その右下の点である `rect.br` です。"
+msgstr "上記では、 `clip` を構築するために、2つの対角線上の点を指定しています：ページ矩形の中心点である `mp` と、その右下の点である `rect.br` です。"
 
 #: ../../recipes-images.rst:87 0cd6de3302cc4bae8367342f8bf15089
 msgid "How to Zoom a Clip to a GUI Window"
@@ -398,7 +398,7 @@ msgid ""
 "Utilities/blob/master/examples/insert-images/insert.py>`_ for a more "
 "complete source code: it offers a directory selection dialog and skips "
 "unsupported files and non-file entries."
-msgstr "⚠️より完全なソースコードはこちらをご覧ください：ディレクトリ選択ダイアログを提供し、サポートされていないファイルやファイルでないエントリをスキップします。"
+msgstr "より完全なソースコードは `こちら <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/insert-images/insert.py>`_ をご覧ください：ディレクトリ選択ダイアログを提供し、サポートされていないファイルやファイルでないエントリをスキップします。"
 
 #: ../../recipes-images.rst:287 e902e231be14403da5c702874c628980
 msgid ""
@@ -431,7 +431,7 @@ msgid ""
 "<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embed-"
 "images/embed.py>`_ for a more complete source code: it offers a directory"
 " selection dialog and skips non-file entries."
-msgstr "⚠️これは断然最も高速な方法であり、可能な限り最小の出力ファイルサイズを生成します。上記の画像は私のマシンで20秒かかり、PDFのサイズは510 MBになりました。より完全なソースコードはこちらをご覧ください：ディレクトリ選択ダイアログを提供し、ファイルでないエントリをスキップします。"
+msgstr "これは断然最も高速な方法であり、可能な限り最小の出力ファイルサイズを生成します。上記の画像は私のマシンで20秒かかり、PDFのサイズは510 MBになりました。より完全なソースコードは `こちら <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embed-images/embed.py>`_  をご覧ください：ディレクトリ選択ダイアログを提供し、ファイルでないエントリをスキップします。"
 
 #: ../../recipes-images.rst:318 ab967f2002c0457db078a20e61d1e983
 msgid "**Method 3: Attaching Files**"
@@ -443,7 +443,7 @@ msgid ""
 "annotations see `here <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/examples/attach-images/attach.py>`_ for the "
 "complete source code."
-msgstr "⚠️このタスクを達成する第3の方法は、ページの注釈を介してファイルを添付する方法です。完全なソースコードについてはこちらをご覧ください。"
+msgstr "このタスクを達成する第3の方法は、ページの注釈を介してファイルを添付する方法です。完全なソースコードについては `こちら <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/attach-images/attach.py>`_ をご覧ください。"
 
 #: ../../recipes-images.rst:322 4645b87dfb3e4d77a840fbde66c33f9d
 msgid ""
@@ -654,13 +654,13 @@ msgstr "一般的なスキームは以下の2行です::"
 
 #: ../../recipes-images.rst:392 7329026d17f7456d9691e5f612cb615d
 msgid "**Remarks**"
-msgstr "⚠️**Remarks**"
+msgstr "**コメント**"
 
 #: ../../recipes-images.rst:394 6b4f390ac5df48e9847450dbe2d82683
 msgid ""
 "The **input** argument of *fitz.Pixmap(arg)* can be a file or a bytes / "
 "io.BytesIO object containing an image."
-msgstr "fitz.Pixmap(arg)の入力引数は、画像を含むファイルまたはbytes/io.BytesIOオブジェクトを指定できます。"
+msgstr "`fitz.Pixmap(arg)` の入力引数は、画像を含むファイルまたはbytes/io.BytesIOオブジェクトを指定できます。"
 
 #: ../../recipes-images.rst:395 27a62bb79622400a910242247823f488
 msgid ""
