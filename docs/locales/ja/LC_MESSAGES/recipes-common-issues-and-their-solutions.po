@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -10,9 +10,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -22,12 +22,12 @@ msgstr ""
 #: ../../recipes-common-issues-and-their-solutions.rst:7
 #: fa2f57e0b01e4bd2bd610b36b0d51451
 msgid "Common Issues and their Solutions"
-msgstr ""
+msgstr "一般的な問題とその解決方法"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:10
 #: ec61ccdb6e7f47beaaa2004b4030b24b
 msgid "How To Dynamically Clean Up Corrupt :title:`PDFs`"
-msgstr ""
+msgstr "壊れた :title:`PDF` を動的にクリーンアップする方法"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:12
 #: 8d83786622004100aa23691ec76b2cd9
@@ -35,14 +35,14 @@ msgid ""
 "This shows a potential use of :title:`PyMuPDF` with another Python PDF "
 "library (the excellent pure Python package `pdfrw "
 "<https://pypi.python.org/pypi/pdfrw>`_ is used here as an example)."
-msgstr ""
+msgstr "これは、別のPython PDFライブラリ（素晴らしい純粋なPythonパッケージである `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ を例として使用しています）と組み合わせてPyMuPDFを潜在的に使用する方法を示しています。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:14
 #: 24a4958fb00d450182436bdc4995b2d9
 msgid ""
 "If a clean, non-corrupt / decompressed PDF is needed, one could "
 "dynamically invoke PyMuPDF to recover from many problems like so::"
-msgstr ""
+msgstr "クリーンで壊れていない / 解凍されていないPDFが必要な場合、次のようにしてPyMuPDFを動的に呼び出して多くの問題から回復することができます::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:50
 #: c4226346c1e742aaa8538ad7268ade47
@@ -54,12 +54,12 @@ msgid ""
 "<http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. "
 "However, you must invoke it as a separate process via *subprocess.Popen*,"
 " using stdin and stdout as communication vehicles."
-msgstr ""
+msgstr "コマンドラインユーティリティ `pdftk <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ （Windowsのみで利用可能ですが、 `Wine <https://www.winehq.org/>`_ 下でも動作すると報告されています）を使用すると、類似の結果を得ることができます。詳細は `こちら <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_ をご覧ください。ただし、stdinとstdoutを通信手段として使用して別のプロセスとしてsubprocess.Popenを介して呼び出す必要があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:55
 #: 5675d1d6a81348fc81536da9c24584d9
 msgid "How to Convert Any Document to :title:`PDF`"
-msgstr ""
+msgstr "どの文書も :title:`PDF` に変換する方法"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:57
 #: 0399986aaae4409e839b8ec74f9b2fc5
@@ -67,19 +67,19 @@ msgid ""
 "Here is a script that converts any :title:`PyMuPDF` :ref:`supported "
 "document<Supported_File_Types>` to a :title:`PDF`. These include XPS, "
 "EPUB, FB2, CBZ and image formats, including multi-page TIFF images."
-msgstr ""
+msgstr "以下は、任意のPyMuPDFが :ref:`サポートされている <Supported_File_Types>` 文書をPDFに変換するスクリプトです。これにはXPS、EPUB、FB2、CBZ、および複数ページのTIFFイメージを含む画像フォーマットが含まれます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:59
 #: b1c2e0f757a44b4dbd7b8654e63c1c6b
 msgid ""
 "It features maintaining any metadata, table of contents and links "
 "contained in the source document::"
-msgstr ""
+msgstr "これにはソース文書に含まれるメタデータ、目次、リンクを保持する機能が備わっています::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:131
 #: 77608936a65c467dbe14e13c7deea8b0
 msgid "How to Deal with Messages Issued by :title:`MuPDF`"
-msgstr ""
+msgstr ":title:`MuPDF` から発行されるメッセージの処理方法"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:133
 #: a4d2cbb5656a48aa89ea973a7177925f
@@ -88,14 +88,14 @@ msgid ""
 "underlying :title:`MuPDF` library are being redirected to the Python "
 "standard device *sys.stderr*. So you can handle them like any other "
 "output going to this devices."
-msgstr ""
+msgstr "PyMuPDF v1.16.0以降、基盤となるMuPDFライブラリから発行されるエラーメッセージは、Python標準デバイス *sys.stderr* にリダイレクトされます。したがって、これらのメッセージはこのデバイスに出力される他の出力と同様に扱うことができます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:135
 #: 69525f9f9beb4c1d9b93567d2f9092f7
 msgid ""
 "In addition, these messages go to the internal buffer together with any "
 ":title:`MuPDF` warnings -- see below."
-msgstr ""
+msgstr "さらに、これらのメッセージはMuPDFの警告とともに内部バッファに送られます - 以下を参照してください。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:137
 #: d54b35c038b94c09868ac9212f889da7
@@ -103,14 +103,14 @@ msgid ""
 "We always prefix these messages with an identifying string *\"mupdf:\"*. "
 "If you prefer to not see recoverable MuPDF errors at all, issue the "
 "command `fitz.TOOLS.mupdf_display_errors(False)`."
-msgstr ""
+msgstr "これらのメッセージは常に識別用の文字列 `"mupdf:"` で始まります。復旧可能なMuPDFエラーを全く表示したくない場合は、コマンド  `fitz.TOOLS.mupdf_display_errors(False)` を発行してください。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:140
 #: 09c057f557724c7290f5c2d912a9d475
 msgid ""
 "MuPDF warnings continue to be stored in an internal buffer and can be "
 "viewed using :meth:`Tools.mupdf_warnings`."
-msgstr ""
+msgstr "MuPDFの警告は引き続き内部バッファに保存され、 :meth:`Tools.mupdf_warnings` を使用して表示できます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:142
 #: 2e59d0ec4544438dbd9dcdeae85410c2
@@ -118,7 +118,7 @@ msgid ""
 "Please note that MuPDF errors may or may not lead to Python exceptions. "
 "In other words, you may see error messages from which MuPDF can recover "
 "and continue processing."
-msgstr ""
+msgstr "MuPDFのエラーがPython例外につながる場合とつながらない場合があることに注意してください。言い換えれば、MuPDFが回復して処理を続けることができるエラーメッセージが表示される可能性があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:144
 #: ae2cc84b5f874158a39c9cd0d86ed926
@@ -129,42 +129,42 @@ msgid ""
 "later be saved incrementally. Checking the :attr:`Document.is_dirty` "
 "attribute at this point also indicates that during `fitz.open` the "
 "document had to be repaired:"
-msgstr ""
+msgstr "回復可能なエラーの例出力です。損傷したPDFを開いていますが、MuPDFはそれを修復し、何が起こったかに関する少しの情報を提供しています。その後、ドキュメントが後で増分保存できるかどうかを調べる方法も示しています。この時点で :attr:`Document.is_dirty` 属性をチェックすることも、 `fitz.open` の際にドキュメントを修復する必要があったことを示しています::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:165
 #: 2ee25728a8b2458f8376a3eff068b6c9
 msgid "Example output for an **unrecoverable error**:"
-msgstr ""
+msgstr "**復旧できないエラー**の例出力:"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:181
 #: 80f2fbfa5d7a49e5a40e57abcc3727ee
 msgid "Changing Annotations: Unexpected Behaviour"
-msgstr ""
+msgstr "注釈の変更：予期しない動作"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:184
 #: ../../recipes-common-issues-and-their-solutions.rst:226
 #: 515f3096a12b4b78a641512e8f7d471b b725441fb61943a1aed6647defa00a68
 msgid "Problem"
-msgstr ""
+msgstr "問題"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:185
 #: c4f7241bade6442e9fe03cd89070126b
 msgid "There are two scenarios:"
-msgstr ""
+msgstr "2つのシナリオがあります："
 
 #: ../../recipes-common-issues-and-their-solutions.rst:187
 #: cfdd21913fb74c0586ee2ffbf0b8ff2e
 msgid ""
 "**Updating** an annotation with PyMuPDF which was created by some other "
 "software."
-msgstr ""
+msgstr "他のソフトウェアで作成された注釈をPyMuPDFで**更新**する。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:188
 #: a407f9a3a1114dfe89db8ac329504ec8
 msgid ""
 "**Creating** an annotation with PyMuPDF and later changing it with some "
 "other software."
-msgstr ""
+msgstr "PyMuPDFで注釈を**作成**し、後で他のソフトウェアで変更する。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:190
 #: 1747eccafc174b6ead2f6d485c245257
@@ -173,7 +173,7 @@ msgid ""
 "annotation icon or text font, the fill color or line dashing have "
 "disappeared, line end symbols have changed their size or even have "
 "disappeared too, etc."
-msgstr ""
+msgstr "どちらの場合でも、異なる注釈アイコンやテキストフォント、塗りつぶしの色や線の破線が消えたり、線の端のシンボルのサイズが変わったり、さらには消えたりするなど、意図しない変更が発生する可能性があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:193
 #: ../../recipes-common-issues-and-their-solutions.rst:231
@@ -182,7 +182,7 @@ msgstr ""
 #: 08c416188d1b4b91b73cde0ef6accde1 66771ce99d9b400c8051457950d641e6
 #: a144736dab7b4fdcb2d59370f4790a23 a1a027bb5cf848219170299541afb0cc
 msgid "Cause"
-msgstr ""
+msgstr "原因"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:194
 #: 11e4d8b1d16c4de89e393a67f1621845
@@ -191,7 +191,7 @@ msgid ""
 "application. Some annotation types may not be supported, or not be "
 "supported fully or some details may be handled in a different way than in"
 " another application. **There is no standard.**"
-msgstr ""
+msgstr "注釈の保守は、各PDF保守アプリケーションごとに異なる方法で処理されます。一部の注釈タイプはサポートされないか、完全にはサポートされていない場合もあり、また、他のアプリケーションとは異なる方法で詳細が処理される場合もあります。標準規格は存在しません。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:196
 #: c58452e6b0e94e9883f4daf7ee440817
@@ -199,7 +199,7 @@ msgid ""
 "Almost always a PDF application also comes with its own icons (file "
 "attachments, sticky notes and stamps) and its own set of supported text "
 "fonts. For example:"
-msgstr ""
+msgstr "ほとんどの場合、PDFアプリケーションには独自のアイコン（ファイル添付、付箋、スタンプなど）とサポートされるテキストフォントのセットが付属しています。例えば："
 
 #: ../../recipes-common-issues-and-their-solutions.rst:198
 #: 66c8e970f38d40b8b3843ef6e0cad890
@@ -209,44 +209,44 @@ msgid ""
 " no bold variations. When changing a 'FreeText' annotation created by "
 "some other app, its font will probably not be recognized nor accepted and"
 " be replaced by Helvetica."
-msgstr ""
+msgstr "(Py-) MuPDFは、'FreeText'注釈に対してこれらの5つの基本フォントのみをサポートしています：Helvetica、Times-Roman、Courier、ZapfDingbats、Symbol - 斜体や太字のバリエーションはありません。他のアプリで作成された 'FreeText' 注釈を変更する際、そのフォントはおそらく認識されず、Helveticaに置き換えられる可能性があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:200
 #: 52bb936a5e274dcba3f3d28f8ae3e76a
 msgid ""
 "PyMuPDF supports all PDF text markers (highlight, underline, strikeout, "
 "squiggly), but these types cannot be updated with Adobe Acrobat Reader."
-msgstr ""
+msgstr "PyMuPDFはすべてのPDFテキストマーカー（ハイライト、下線、取り消し線、波線）をサポートしていますが、これらのタイプはAdobe Acrobat Readerで更新することはできません。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:202
 #: 005d3593fa2045e8a0c4aa5539be5148
 msgid ""
 "In most cases there also exists limited support for line dashing which "
 "causes existing dashes to be replaced by straight lines. For example:"
-msgstr ""
+msgstr "ほとんどの場合、破線には限定的なサポートが存在し、既存の破線が直線に置き換えられることがあります。例えば："
 
 #: ../../recipes-common-issues-and-their-solutions.rst:204
 #: 06521f085471483ca6b68632f830e513
 msgid ""
 "PyMuPDF fully supports all line dashing forms, while other viewers only "
 "accept a limited subset."
-msgstr ""
+msgstr "PyMuPDFはすべての線の破線形式を完全にサポートしていますが、他のビューアは一部の形式しか受け入れません。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:208
 #: ../../recipes-common-issues-and-their-solutions.rst:267
 #: 5f20baadc2e84e518d57ef73c015d785 a1fd829f9d184c36acf3ff227a8a33a0
 msgid "Solutions"
-msgstr ""
+msgstr "解決策"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:209
 #: 8115559b363f43cb8007689ede1a5c9d
 msgid "Unfortunately there is not much you can do in most of these cases."
-msgstr ""
+msgstr "残念ながら、これらの多くの場合、あまり対処できることはありません。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:211
 #: 4398a3b74cb54c93aa92e7b886b2f91c
 msgid "Stay with the same software for **creating and changing** an annotation."
-msgstr ""
+msgstr "注釈の作成と変更に同じソフトウェアを使用してください。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:212
 #: cbf85698214b4043bca7b5fcce2345bf
@@ -254,34 +254,34 @@ msgid ""
 "When using PyMuPDF to change an \"alien\" annotation, try to **avoid** "
 ":meth:`Annot.update`. The following methods **can be used without it,** "
 "so that the original appearance should be maintained:"
-msgstr ""
+msgstr ""異なる"注釈を変更する際にPyMuPDFを使用する場合、:meth:`Annot.update` を避けるようにしてください。次のメソッドは、元の外観を維持するために、:meth:`Annot.update` を使用せずに使用できます："
 
 #: ../../recipes-common-issues-and-their-solutions.rst:214
 #: 06df75d0a4d44e61883293f84788da21
 msgid ":meth:`Annot.set_rect` (location changes)"
-msgstr ""
+msgstr ":meth:`Annot.set_rect` (位置の変更)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:215
 #: 76064550befd48d3b5396fd63806747c
 msgid ":meth:`Annot.set_flags` (annotation behaviour)"
-msgstr ""
+msgstr ":meth:`Annot.set_flags` (注釈の動作)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:216
 #: f4223abd7dbb4bb1898cdf66ed49b53f
 msgid ":meth:`Annot.set_info` (meta information, except changes to *content*)"
-msgstr ""
+msgstr ":meth:`Annot.set_info` (メタ情報、*コンテンツ* の変更以外)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:217
 #: d2517fe8342d4955a077ec828f55c003
 msgid ":meth:`Annot.set_popup` (create popup or change its rect)"
-msgstr ""
+msgstr ":meth:`Annot.set_popup` (ポップアップの作成または位置の変更)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:218
 #: 968a51602c3c4987ad5b4466d419ebce
 msgid ""
 ":meth:`Annot.set_optional_content` (add / remove reference to optional "
 "content information)"
-msgstr ""
+msgstr ":meth:`Annot.set_optional_content` (オプションコンテンツ情報への参照の追加/削除)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:219
 #: f173494b91df42f392a48b9543553809
@@ -291,12 +291,12 @@ msgstr ""
 #: ../../recipes-common-issues-and-their-solutions.rst:220
 #: f8d9a1af44e14abb93bfd993d0a159df
 msgid ":meth:`Annot.update_file` (file attachment changes)"
-msgstr ""
+msgstr ":meth:`Annot.update_file` (ファイル添付の変更)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:223
 #: 7a98e28b5179491595e547f1c97e7710
 msgid "Misplaced Item Insertions on PDF Pages"
-msgstr ""
+msgstr "PDFページ上の誤ったアイテムの挿入"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:228
 #: 5e47ddbf5c1c4ed28e1cb97bb2b7915e
@@ -305,7 +305,7 @@ msgid ""
 "existing PDF page, but later you find it being placed at a different "
 "location than intended. For example an image should be inserted at the "
 "top, but it unexpectedly appears near the bottom of the page."
-msgstr ""
+msgstr "既存のPDFページにアイテム（画像、注釈、テキストなど）を挿入しましたが、後で意図した場所とは異なる位置に配置されていることがあります。たとえば、画像はページの上部に挿入する予定でしたが、予想外にページの下部近くに表示されています。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:233
 #: 15530cb28def4c2f943f7e6fe5557b32
@@ -315,7 +315,7 @@ msgid ""
 "standard point (0,0) at *bottom-left* has been changed to the *top-left* "
 "point. So top and bottom are reversed -- causing your insertion to be "
 "misplaced."
-msgstr ""
+msgstr "PDFの作成者が標準ではないページジオメトリを設定しており、それを「ローカル」に保持していないためです（正しい方法で保持すべきです）。最も一般的には、PDF標準の座標（0,0）が左下にある点から、左上の点に変更されています。したがって、上下が逆転し、挿入が誤って配置されてしまいます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:235
 #: f99d9be8fb484cf0a92461986d1094d8
@@ -324,7 +324,7 @@ msgid ""
 "special mini-language. For an overview of this language consult "
 "\"Operator Summary\" on pp. 643 of the :ref:`AdobeManual`. These commands"
 " are stored in :data:`contents` objects as strings (*bytes* in PyMuPDF)."
-msgstr ""
+msgstr "PDFページの可視イメージは、特別なミニ言語でコード化されたコマンドによって制御されています。この言語の概要については、 :ref:`AdobeManual` のpp. 643にある「オペレーターサマリー」を参照してください。これらのコマンドは、 :data:`contents` オブジェクトに文字列（PyMuPDFではバイト）として格納されます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:237
 #: 34ec54790d334564b5cbe68c8a94fd47
@@ -334,71 +334,71 @@ msgid ""
 "of such commands to \"local\", they must be wrapped by the command pair "
 "*q* (\"save graphics state\", or \"stack\") and *Q* (\"restore graphics "
 "state\", or \"unstack\")."
-msgstr ""
+msgstr "この言語には、次に続くすべてのコマンドの座標系を変更するコマンドがあります。このようなコマンドのスコープを「ローカル」に制限するためには、コマンドペアq（「グラフィックスステートの保存」または「スタック」）およびQ（「グラフィックスステートの復元」または「アンスタック」）で囲む必要があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:241
 #: 08e57cbd2265452d85ee7fa875e35932
 msgid "So the PDF creator did this::"
-msgstr ""
+msgstr "したがって、PDFの作成者は次のように行いました::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:249
 #: cb2f8721c8c64ee6bb95271353b44c0f
 msgid "where they should have done this::"
-msgstr ""
+msgstr "正しくは、次のように行うべきでした::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:260
 #: 7c49613e6c4c4448bf97bf2b874557b1
 msgid ""
 "In the mini-language's syntax, spaces and line breaks are equally "
 "accepted token delimiters."
-msgstr ""
+msgstr "ミニ言語の構文では、スペースと改行は同様にトークンの区切りとして受け入れられます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:261
 #: 5d38d66927e444c08022b6549b1df157
 msgid "Multiple consecutive delimiters are treated as one."
-msgstr ""
+msgstr "複数の連続した区切りは、1つとして扱われます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:262
 #: 9e3101a477bc4b14bc5c7a03e9aebedf
 msgid ""
 "Keywords \"stream\" and \"endstream\" are inserted automatically -- not "
 "by the programmer."
-msgstr ""
+msgstr "キーワード「stream」と「endstream」は自動的に挿入されます - プログラマーによって挿入されるものではありません。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:269
 #: 5762387a2295416bb2076303149b60c3
 msgid ""
 "Since v1.16.0, there is the property :attr:`Page.is_wrapped`, which lets "
 "you check whether a page's contents are wrapped in that string pair."
-msgstr ""
+msgstr "v1.16.0以降、プロパティPage.is_wrappedがあり、ページの内容がその文字列ペアでラップされているかどうかを確認できます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:271
 #: ff556712b3b340688943465c16ee859f
 msgid ""
 "If it is *False* or if you want to be on the safe side, pick one of the "
 "following:"
-msgstr ""
+msgstr "それが `False` であるか、安全側に立ちたい場合、次のいずれかを選択してください："
 
 #: ../../recipes-common-issues-and-their-solutions.rst:273
 #: ef5fa95c952141c8b772b2f4ff87abb5
 msgid ""
 "The easiest way: in your script, do a :meth:`Page.clean_contents` before "
 "you do your first item insertion."
-msgstr ""
+msgstr "最も簡単な方法：スクリプトで最初のアイテム挿入を行う前に :meth:`Page.clean_contents` を実行します。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:274
 #: d3970df080c241c88a07650020bedd87
 msgid ""
 "Pre-process your PDF with the MuPDF command line utility *mutool clean -c"
 " ...* and work with its output file instead."
-msgstr ""
+msgstr "PDFをMuPDFコマンドラインユーティリティ `mutool clean -c …` で前処理し、その出力ファイルで作業します。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:275
 #: 4a3857e5939847c98355c84888136735
 msgid ""
 "Directly wrap the page's :data:`contents` with the stacking commands "
 "before you do your first item insertion."
-msgstr ""
+msgstr "最初のアイテム挿入を行う前に、直接ページの内容をスタッキングコマンドでラップします。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:277
 #: 5e1455b47ecc4e20ab033d003caa9a31
@@ -407,7 +407,7 @@ msgid ""
 "more** than what is required in this context: they also clean up other "
 "inconsistencies or redundancies that may exist, multiple */Contents* "
 "objects will be concatenated into one, and much more."
-msgstr ""
+msgstr "**解決策1と2** は同じ技術的基盤を使用しており、この文脈で必要なもの以上のことを行います：他の不整合や冗長性もクリーンアップされ、複数の */Contents* オブジェクトが1つに結合されるなど、さまざまな操作が行われます。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:279
 #: 8cb5922772e74867bc4bb0922b2d60af
@@ -417,7 +417,7 @@ msgid ""
 "addition, stores the **cleaned contents uncompressed**. So, if you use "
 ":meth:`Page.clean_contents` you should consider **saving to a new file** "
 "with (at least) *garbage=3* and *deflate=True*."
-msgstr ""
+msgstr "増分保存の場合、解決策1には不快な影響があります：多くの変更を行い、さらにクリーンされた内容を非圧縮で保存するため、更新デルタが膨れる可能性があります。したがって、 :meth:`Page.clean_contents` を使用する場合は、（少なくとも） `garbage=3` および `deflate=True` を指定して新しいファイルに保存することを検討する必要があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:281
 #: b7478c7cd10548599181db60ff509ed2
@@ -426,7 +426,7 @@ msgid ""
 "minimum corrective action. There is a handy utility method "
 ":meth:`Page.wrap_contents` which -- as twe name suggests -- **wraps** the"
 " page's :data:`contents` object(s) by the PDF commands `q` and `Q`."
-msgstr ""
+msgstr "**解決策3** は完全にあなたの制御下にあり、最小限の修正しか行いません。便利なユーティリティメソッド :meth:`Page.wrap_contents` があり、名前が示すように、ページの内容 (:data:`contents`) オブジェクトをPDFコマンド `q` と `Q` でラップします。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:283
 #: 7f832720e4c54e3b979afa37f6dcb90f
@@ -435,17 +435,17 @@ msgid ""
 "This is useful in situations where incrementally saving the file is "
 "desirable -- or even a must when the PDF has been digitally signed and "
 "you cannot change this status."
-msgstr ""
+msgstr "この解決策は非常に高速で、PDFへの変更は最小限です。これは、ファイルを増分保存することが望ましい場合、またはPDFがデジタル署名されており、このステータスを変更できない場合に便利です。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:285
 #: 2c040a0cf1804b6982ebd5f88b476db9
 msgid "We recommend the following snippet to get the situation under control:"
-msgstr ""
+msgstr "次のスニペットを使用して状況をコントロールすることをお勧めします："
 
 #: ../../recipes-common-issues-and-their-solutions.rst:293
 #: 9c659a84ac5c426b8f0a1f6bd64b90e4
 msgid "Missing or Unreadable Extracted Text"
-msgstr ""
+msgstr "欠落または読み取り不可能な抽出テキスト"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:294
 #: 349031568f244add9b1ee51222247acf
@@ -454,26 +454,26 @@ msgid ""
 "text may be missing, or may not appear in the reading sequence visible on"
 " your screen, or contain garbled characters (like a ? or a \"TOFU\" "
 "symbol), etc. This can be caused by a number of different problems."
-msgstr ""
+msgstr "非常にしばしば、テキスト抽出が期待通りに機能しないことがあります。テキストが欠落しているか、画面上で表示される読み取り順序に表示されないか、文字が文字化けしている（「？」や「TOFU」シンボルなど）ことがあります。これはさまざまな問題が原因で起こる可能性があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:297
 #: 2773e5d298e04e91871caae3718732ed
 msgid "Problem: no text is extracted"
-msgstr ""
+msgstr "問題：テキストが抽出されない"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:298
 #: db5eea7716d94201a8cc74d0cc90eba3
 msgid ""
 "Your PDF viewer does display text, but you cannot select it with your "
 "cursor, and text extraction delivers nothing."
-msgstr ""
+msgstr "PDFビューアはテキストを表示しているが、カーソルで選択できず、テキストの抽出結果が何も表示されない。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:302
 #: 6701a64fb6b3427b994b3eb9785ab23b
 msgid ""
 "You may be looking at an image embedded in the PDF page (e.g. a scanned "
 "PDF)."
-msgstr ""
+msgstr "PDFページに埋め込まれた画像を表示している可能性がある（例：スキャンされたPDF）。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:303
 #: 211a0de02fdf4701a7ad88d00869ab8c
@@ -482,13 +482,13 @@ msgid ""
 "using little lines and curves. E.g. a capital \"D\" could be painted by a"
 " line \"|\" and a left-open semi-circle, an \"o\" by an ellipse, and so "
 "on."
-msgstr ""
+msgstr "PDFの作成者がフォントを使用せず、テキストをペイントして小さな線と曲線を使用して模倣している場合がある。たとえば、大文字の「D」は縦棒「|」と左開きの半円で描かれ、「o」は楕円で描かれるなど。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:306
 #: ../../recipes-common-issues-and-their-solutions.rst:319
 #: 8595726e84a04e6c97bba8ab071ae4aa 996ccfa52b5d4ffdb932aab19594a763
 msgid "Solution"
-msgstr ""
+msgstr "解決策"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:307
 #: bfa52f92098642f59706455d42974d55
@@ -496,19 +496,19 @@ msgid ""
 "Use an OCR software like `OCRmyPDF <https://pypi.org/project/ocrmypdf/>`_"
 " to insert a hidden text layer underneath the visible page. The resulting"
 " PDF should behave as expected."
-msgstr ""
+msgstr "`OCRmyPDF <https://pypi.org/project/ocrmypdf/>`_ のようなOCRソフトウェアを使用して、表示ページの下に非表示のテキストレイヤーを挿入します。その結果のPDFは期待どおりに動作するはずです。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:310
 #: 84ac082b61f54a6682189954d5bbc601
 msgid "Problem: unreadable text"
-msgstr ""
+msgstr "問題：読み取れないテキスト"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:311
 #: 99ce0e2b97274fa48c1a28e132ea5655
 msgid ""
 "Text extraction does not deliver the text in readable order, duplicates "
 "some text, or is otherwise garbled."
-msgstr ""
+msgstr "テキストの抽出が読みやすい順序で行われず、一部のテキストが重複しているか、その他の理由で文字化けしている。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:315
 #: 9734341f85d545b8ba8e9e84e770858a
@@ -517,7 +517,7 @@ msgid ""
 "sequence in which the text is **coded in the file** deviates from the "
 "reading order. The motivation behind may be technical or protection of "
 "data against unwanted copies."
-msgstr ""
+msgstr "個々の文字はそのまま読み取れるが（「<?>」シンボルがない）、テキストがファイル内でコード化された順序が読み取り順序と異なる場合がある。その背後には技術的な問題やデータの不正なコピーからの保護がある可能性がある。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:316
 #: 1eef3f19b55041aeb68b6952ec16430c
@@ -526,19 +526,19 @@ msgid ""
 "characters. The font may indeed be unsupported by MuPDF, or the PDF "
 "creator may haved used a font that displays readable text, but on purpose"
 " obfuscates the originating corresponding unicode character."
-msgstr ""
+msgstr "多くの「<?>」シンボルが表示され、MuPDFがこれらの文字を解釈できないことを示している場合。フォントがMuPDFでサポートされていない可能性があるか、PDFの作成者が読み取り可能なテキストを表示するフォントを使用しているが、意図的に元の対応するUnicode文字を曖昧にしている場合があります。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:320
 #: cd8ebe20912d4683a30d482eed357d14
 msgid "Use layout preserving text extraction: `python -m fitz gettext file.pdf`."
-msgstr ""
+msgstr "レイアウトを保持するテキスト抽出を使用します： `python -m fitz gettext file.pdf`。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:321
 #: 30b9c0641ff3480db4535887483556bf
 msgid ""
 "If other text extraction tools also don't work, then the only solution "
 "again is OCRing the page."
-msgstr ""
+msgstr "他のテキスト抽出ツールも機能しない場合は、再びOCRでページを処理するのが唯一の解決策です。"
 
 #: ../../footer.rst:-1 8bd2aa51e72a469797c95d3e65e4b8da
 msgid "Discord logo"

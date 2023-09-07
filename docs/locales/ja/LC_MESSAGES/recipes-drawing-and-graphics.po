@@ -36,7 +36,7 @@ msgid ""
 "The syntax for such operations is defined in \"A Operator Summary\" on "
 "page 643 of the :ref:`AdobeManual`. Specifying these operators for a PDF "
 "page happens in its :data:`contents` objects."
-msgstr "⚠️このような操作の構文は、Adobe PDFリファレンスの「A Operator Summary」のページ643で定義されています。PDFページのためのこれらのオペレータは、その内容オブジェクト内で指定されます。"
+msgstr "このような操作の構文は、:ref:`AdobeManual` の「A Operator Summary」のページ643で定義されています。PDFページのためのこれらのオペレータは、その内容 (:data:`contents`)オブジェクト内で指定されます。"
 
 #: ../../recipes-drawing-and-graphics.rst:14 5fc7cd1b79b24528bb23e0d603e43b82
 msgid ""
@@ -60,7 +60,7 @@ msgid ""
 "operation ended (\"last point\"). Every such elementary drawing requires "
 "a subsequent :meth:`Shape.finish` to \"close\" it, but there may be "
 "multiple drawings which have one common *finish()* method."
-msgstr "⚠️返されるlast_pointは常に描画操作が終了するポイント（「最後のポイント」）です。このような基本的な描画ごとに、それを「閉じる」ために :meth:`Shape.finish` が必要ですが、1つの共通のfinish()メソッドを持つ複数の描画があるかもしれません。"
+msgstr "返されるlast_pointは常に描画操作が終了する :ref:`Point` （「最後のポイント」）です。このような基本的な描画ごとに、それを「閉じる」ために :meth:`Shape.finish` が必要ですが、1つの共通のfinish()メソッドを持つ複数の描画があるかもしれません。"
 
 #: ../../recipes-drawing-and-graphics.rst:20 e838b2dd4bd24844bf2c66494908568e
 msgid ""

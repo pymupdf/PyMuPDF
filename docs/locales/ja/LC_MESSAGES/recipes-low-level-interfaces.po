@@ -37,7 +37,7 @@ msgid ""
 "later on assessed as being part of the normal interface. This has "
 "happened in v1.14.0 for the class :ref:`Tools` - you now find it as an "
 "item in the Classes chapter."
-msgstr "また、以前は低レベルと考えられていた機能が後に通常のインターフェースの一部として評価されることもあります。例えば、バージョン1.14.0ではクラス「Tools」についてそのようなことが起きており、現在では「Classes」のセクションで見つけることができます。"
+msgstr "また、以前は低レベルと考えられていた機能が後に通常のインターフェースの一部として評価されることもあります。例えば、バージョン1.14.0ではクラス :ref:`Tools` についてそのようなことが起きており、現在では「Classes」のセクションで見つけることができます。"
 
 #: ../../recipes-low-level-interfaces.rst:14 977f74050ca649d29c6d828f7a9ad25b
 msgid ""

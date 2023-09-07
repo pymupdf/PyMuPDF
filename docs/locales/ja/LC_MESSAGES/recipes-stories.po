@@ -28,7 +28,7 @@ msgstr "ストーリーズ"
 msgid ""
 "This document showcases some typical use cases for "
 ":ref:`Stories<WorkingWithStories>`."
-msgstr "⚠️このドキュメントは、ストーリーズの典型的な使用例を示しています。"
+msgstr "このドキュメントは、 :ref:`ストーリーズ<WorkingWithStories>` の典型的な使用例を示しています。"
 
 #: ../../recipes-stories.rst:21 f1f2a79aa9d945918c12b900f382e404
 msgid ""
@@ -36,7 +36,7 @@ msgid ""
 "created using up to three input sources: HTML, CSS and Archives -- all of"
 " which are optional and which, respectively, can be provided "
 "programmatically."
-msgstr "⚠️チュートリアルで説明されているように、ストーリーズは最大3つの入力ソース（HTML、CSS、アーカイブ）を使用して作成できます。これらのソースはすべてオプションであり、それぞれプログラムで提供することができます。"
+msgstr ":ref:`チュートリアル<WorkingWithStories>` で説明されているように、ストーリーズは最大3つの入力ソース（HTML、CSS、アーカイブ）を使用して作成できます。これらのソースはすべてオプションであり、それぞれプログラムで提供することができます。"
 
 #: ../../recipes-stories.rst:23 fa4322d46ab44e92b8a4a4d1fad103f3
 msgid "The following examples will showcase combinations for using these inputs."
@@ -94,7 +94,7 @@ msgid ""
 " a desired image can also be stored via the Python API. In any case, this"
 " requires using an :ref:`Archive`, which refers to the place where the "
 "image can be found."
-msgstr "⚠️画像は提供されたHTMLソース内で参照することができます。また、Python APIを介して必要な画像への参照も保存することができます。どちらの場合も、画像が見つかる場所を指すアーカイブを使用する必要があります。"
+msgstr "画像は提供されたHTMLソース内で参照することができます。また、Python APIを介して必要な画像への参照も保存することができます。どちらの場合も、画像が見つかる場所を指す :ref:`Archive` を使用する必要があります。"
 
 #: ../../recipes-stories.rst:125 21e3c6e018304a63bd04ab3da74b044b
 msgid ""
@@ -602,7 +602,7 @@ msgstr ":ref:`DocumentWriter` の `writer` 引数は必要ありません。"
 
 #: ../../recipes-stories.rst:523 0d78c07681f84661966c60c7c781466c
 msgid "It returns a PDF :ref:`Document` instance."
-msgstr "⚠️PDF ドキュメントのインスタンスを返します。"
+msgstr "PDF :ref:`Document` のインスタンスを返します。"
 
 #: ../../recipes-stories.rst:525 0b1f40ee3efd474eb41e36260feb2131
 msgid ""
