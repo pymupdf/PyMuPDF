@@ -10,6 +10,7 @@ import io
 import math
 import os
 import typing
+import weakref
 
 from . import fitz
 try:

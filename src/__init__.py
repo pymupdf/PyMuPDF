@@ -9587,14 +9587,14 @@ class Pixmap:
         '''
         if not TESSDATA_PREFIX and not tessdata:
             raise RuntimeError('No OCR support: TESSDATA_PREFIX not set')
-        opts = mupdf.PdfocrOptions()
+        opts = mupdf.FzPdfocrOptions()
         opts.compress = compress;
         if language:
             opts.language_set2( language)
         if tessdata:
             opts.datadir_set2( tessdata)
         pix = self.this
-        if filename:
+        if isinstance(filename, str):
             mupdf.fz_save_pixmap_as_pdfocr( pix, filename, 0, opts)
         else:
             out = JM_new_output_fileptr( filename)
