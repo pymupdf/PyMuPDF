@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -10,9 +10,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,17 +21,17 @@ msgstr ""
 
 #: ../../app4.rst:14 4a1e81ac1f0f495f98e107cebef3b1a6
 msgid "Appendix 4: Performance Comparison Methodology"
-msgstr ""
+msgstr "付録4：性能比較方法"
 
 #: ../../app4.rst:16 4c3e578b97d544bc9a3df491df95c184
 msgid ""
 "This article documents the approach to measure :title:`PyMuPDF's` "
 "performance and the tools and example files used to do comparisons."
-msgstr ""
+msgstr "この記事では、:title:`PyMuPDF` の性能を測定するアプローチと、比較を行うために使用されるツールとサンプルファイルについて説明します。"
 
 #: ../../app4.rst:18 65992b6edec440d5b8cd2ad855311676
 msgid "The following three sections deal with different performance aspects:"
-msgstr ""
+msgstr "以下の3つのセクションでは、異なる性能の側面に取り組んでいます："
 
 #: ../../app4.rst:20 ef912ae97dab4a8bba8dfca25fbe77b0
 msgid ""
@@ -39,13 +39,13 @@ msgid ""
 " :title:`PDFs`, then writing them to an output file. Because the same "
 "basic activities are also used for joining (merging) :title:`PDFs`, the "
 "results also apply to these use cases."
-msgstr ""
+msgstr ":ref:`ドキュメントのコピー<app4_copying>` - これには :title:`PDF` ファイルの開閉と解析、そしてそれらを出力ファイルに書き込む作業が含まれます。同じ基本的なアクティビティは、:title:`PDF` ファイルの結合（マージ）にも使用されるため、結果はこれらのユースケースにも適用されます。"
 
 #: ../../app4.rst:21 0c99ef7b1c4545dca0cc386a1dda49d3
 msgid ""
 ":ref:`Text Extraction<app4_text_extraction>` - This extracts plain text "
 "from :title:`PDFs` and writes it to an output text file."
-msgstr ""
+msgstr ":ref:`テキスト抽出<app4_text_extraction>` - これにより :title:`PDF` ファイルから平文テキストが抽出され、テキストファイルに書き込まれます。"
 
 #: ../../app4.rst:22 8ce581173edf481d98f8ebeafbe64393
 msgid ""
@@ -54,7 +54,7 @@ msgid ""
 "basic prerequisite for using a tool in :title:`Python GUI` scripts to "
 "scroll through documents. We have chosen a medium-quality (resolution 150"
 " DPI) version."
-msgstr ""
+msgstr ":ref:`ページレンダリング<app4_page_rendering>` - これによりPDFページがページと同じような見た目の画像ファイルに変換されます。この機能は、:title:`Python GUI` スクリプトでドキュメントをスクロールするための基本的な前提条件です。中画質版（解像度150 DPI）を選択しました。"
 
 #: ../../app4.rst:24 fe5f9971743d4548bfe4b9f18c30474d
 msgid ""
@@ -65,92 +65,92 @@ msgid ""
 ":title:`PyMuPDF` do not offer the option to e.g., separate the image "
 "**creation** step from the following step, which **writes** the image "
 "into a file."
-msgstr ""
+msgstr ":title:`PDF` 構造の処理速度そのものを直接測定するのではなく、すべての場合において、タイミングにはファイルをオペレーティングシステムのファイルシステムに書き込む時間も含まれることに注意してください。これは回避できない要因です。なぜなら、:title:`PyMuPDF` 以外のツールでは、例えばイメージの **作成** ステップと、イメージをファイルに **書き込む** 後続のステップを分離するオプションが提供されていないためです。"
 
 #: ../../app4.rst:26 2d2d73cda2684e7785201a05ce329c91
 msgid ""
 "So all timings documented include a common, OS-oriented base effort. "
 "Therefore, performance **differences per tool are actually larger** than "
 "the numbers suggest."
-msgstr ""
+msgstr "したがって、すべての記録されたタイミングには共通のOS指向の基本的な努力が含まれています。したがって、**ツールごとの性能の違いは、数字が示す以上に実際には大きいです** 。"
 
 #: ../../app4.rst:33 78490caee14746d8928902a963581d48
 msgid "Files used"
-msgstr ""
+msgstr "使用されるファイル"
 
 #: ../../app4.rst:35 3605ae7c9069488b832c184f2494c069
 msgid ""
 "A set of eight files is used for the performance testing. With each file "
 "we have the following information:"
-msgstr ""
+msgstr "性能テストには、8つのファイルセットが使用されます。各ファイルには、次の情報があります："
 
 #: ../../app4.rst:37 878bbefe08e94b999b48099a6879d6b5
 msgid "**Name** of the file and download **link**."
-msgstr ""
+msgstr "ファイル **名** とダウンロード **リンク**。"
 
 #: ../../app4.rst:38 6934547cd869488684f8653db1d78925
 msgid "**Size** in bytes."
-msgstr ""
+msgstr "バイト単位の **サイズ**。"
 
 #: ../../app4.rst:39 78a4f55d3c904546b355c8fc8f344adb
 msgid "Total number of **pages** in file."
-msgstr ""
+msgstr "ファイル内の総 **ページ** 数。"
 
 #: ../../app4.rst:40 996daa756f934560aee685307545e6e9
 msgid "Total number of bookmarks (**Table of Contents** entries)."
-msgstr ""
+msgstr "ブックマーク（ **目次** エントリー）の総数。"
 
 #: ../../app4.rst:41 413a06231788471492472013a7e3652a
 msgid "Total number of **links**."
-msgstr ""
+msgstr "**リンク** の総数。"
 
 #: ../../app4.rst:42 ee37272a928b4f10a54b2774269e691b
 msgid "**KB size** per page."
-msgstr ""
+msgstr "ページごとの **KBサイズ** 。"
 
 #: ../../app4.rst:43 9b6478c67338486f9b73c929bd10a10e
 msgid ""
 "**Textsize per page** is the amount text in the whole file in KB, divided"
 " by the number of pages."
-msgstr ""
+msgstr "**ページごとのテキストサイズ** は、ファイル全体のテキスト量をKBで割ったものです。"
 
 #: ../../app4.rst:44 e4511814c0224720b9ee4c5c0eb258fd
 msgid "Any **notes** to generally describe the type of file."
-msgstr ""
+msgstr "ファイルのタイプを一般的に説明するための **メモ** 。"
 
 #: ../../app4.rst:50 ../../app4.rst:217 ../../app4.rst:295 ../../app4.rst:407
 #: 3fd177d471d1440c811cc46a24394604 6fb60f10210f4c988357c3933b16e79d
 #: 8366b5dba4da441c8cae1b3809a00593 97727bd687da4ad68a5fda6349a7bc01
 msgid "**Name**"
-msgstr ""
+msgstr "**ファイル名** "
 
 #: ../../app4.rst:51 8e5d6865a9294ade9d75af43a8eb66a1
 msgid "**Size (bytes)**"
-msgstr ""
+msgstr "**サイズ（バイト）** "
 
 #: ../../app4.rst:52 0899ed96a7554261a08141240a7a8b87
 msgid "**Pages**"
-msgstr ""
+msgstr "**ページ数** "
 
 #: ../../app4.rst:53 a674051ef8d448adb4640a80c86a50d0
 msgid "**TOC size**"
-msgstr ""
+msgstr "**目次サイズ** "
 
 #: ../../app4.rst:54 71c6e0a4d9214004b0d243aa3f29eef7
 msgid "**Links**"
-msgstr ""
+msgstr "**リンク数** "
 
 #: ../../app4.rst:55 356dca82b8f045d38d33944210fbacd3
 msgid "**KB/page**"
-msgstr ""
+msgstr "**KB/ページ** "
 
 #: ../../app4.rst:56 88f15dd129fc4b7486f2668046b8b365
 msgid "**Textsize/page**"
-msgstr ""
+msgstr "**テキストサイズ/ページ** "
 
 #: ../../app4.rst:57 b84db499dead43aa8143bde0ea854211
 msgid "**Notes**"
-msgstr ""
+msgstr "**メモ** "
 
 #: ../../app4.rst:58 53fab5550d494ff5bd74d2675825f613
 msgid "`adobe.pdf`_"
@@ -182,7 +182,7 @@ msgstr ""
 
 #: ../../app4.rst:65 2c988f08938a407b8c7f153907a8e68f
 msgid "linearized, many links / bookmarks"
-msgstr ""
+msgstr "線形化、多くのリンク/ブックマーク"
 
 #: ../../app4.rst:66 74d258d5966b413e8d47ea418ed006a7
 msgid "`artifex-website.pdf`_"
@@ -214,7 +214,7 @@ msgstr ""
 
 #: ../../app4.rst:73 bf96d5f791f14511852943f5efcdde71
 msgid "graphics oriented"
-msgstr ""
+msgstr "グラフィックス志向"
 
 #: ../../app4.rst:74 cddb476076f841199f799b8ce0ff9b11
 msgid "`db-systems.pdf`_"
@@ -272,7 +272,7 @@ msgstr ""
 
 #: ../../app4.rst:89 1d26d20edef0444c82aab4449b86c6c1
 msgid "mix of text & graphics"
-msgstr ""
+msgstr "テキストとグラフィックスのミックス"
 
 #: ../../app4.rst:90 10537b8385d748358485a334c0c5efd6
 msgid "`pandas.pdf`_"
@@ -304,7 +304,7 @@ msgstr ""
 
 #: ../../app4.rst:97 4e71b5363b5b42ddb83b1e603eec2f39
 msgid "many pages"
-msgstr ""
+msgstr "多くのページ"
 
 #: ../../app4.rst:98 f24b4fcf8d954a4db2518c292961f957
 msgid "`pymupdf.pdf`_"
@@ -336,7 +336,7 @@ msgstr ""
 
 #: ../../app4.rst:105 5c107aa662324e46a00443b2fce06f0b
 msgid "text oriented"
-msgstr ""
+msgstr "テキスト志向"
 
 #: ../../app4.rst:106 5c902d91a7db4d87961462de8e4c38de
 msgid "`pythonbook.pdf`_"
@@ -388,39 +388,39 @@ msgstr ""
 
 #: ../../app4.rst:121 397f7cfb7a0c4ae18ea0c8545c46e7c6
 msgid "single page, graphics oriented, large file size"
-msgstr ""
+msgstr "単一ページ、グラフィックス志向、大きなファイルサイズ"
 
 #: ../../app4.rst:127 b6e84732c7864afca79cf1147ffa35cc
 msgid ""
 "**adobe.pdf** and **pymupdf.pdf** are clearly text oriented, **artifex-"
 "website.pdf** and **sample-50-MB-pdf-file.pdf** are graphics oriented. "
 "Other files are a mix of both."
-msgstr ""
+msgstr "**adobe.pdf** と **pymupdf.pdf** は明らかにテキスト志向です。artifex-website.pdf と **sample-50-MB-pdf-file.pdf** はグラフィックス志向です。その他のファイルは両方のミックスです。"
 
 #: ../../app4.rst:131 e1d1a5c228f34d3ebc41c678b7b0a5f1
 msgid "Tools used"
-msgstr ""
+msgstr "使用されるツール"
 
 #: ../../app4.rst:133 fabc818269d443cdb4fe1afe068c98de
 msgid ""
 "In each section, the same fixed set of :title:`PDF` files is being "
 "processed by a set of tools. The set of tools used per performance aspect"
 " however varies, depending on the supported tool features."
-msgstr ""
+msgstr "各セクションでは、同じ固定されたセットの :title:`PDF` ファイルが一連のツールによって処理されます。ただし、性能の側面ごとに使用されるツールのセットは、サポートされるツールの機能に応じて異なります。"
 
 #: ../../app4.rst:135 48b4241e8160435592bdf6b44f224b38
 msgid ""
 "All tools are either platform independent, or at least can run on both, "
 ":title:`Windows` and :title:`Unix` / :title:`Linux`."
-msgstr ""
+msgstr "すべてのツールは、プラットフォームに依存しないか、少なくとも :title:`Windows` と :title:`Unix` / :title:`Linux` の両方で実行できます。"
 
 #: ../../app4.rst:141 87a8843195a545a9b42907a52f4b1652
 msgid "**Tool**"
-msgstr ""
+msgstr "ツール"
 
 #: ../../app4.rst:142 8f0d2f4471244e7ead8e45fa1a2ef8a0
 msgid "**Description**"
-msgstr ""
+msgstr "説明"
 
 #: ../../app4.rst:143 ../../app4.rst:172 ../../app4.rst:368
 #: 526195586b60487f8c2305974a30881a abf2669c3dd6411bb16a02a5cdfc8dd3
@@ -430,7 +430,7 @@ msgstr ""
 
 #: ../../app4.rst:144 312258c6e5234543816a927beca41aa8
 msgid "The tool of this manual."
-msgstr ""
+msgstr "このマニュアルのツールです。"
 
 #: ../../app4.rst:145 e73677c6b0be4fa7b1f916d56f4184cc
 msgid "PDFrw_"
@@ -440,7 +440,7 @@ msgstr ""
 msgid ""
 "A pure :title:`Python` tool, being used by :title:`rst2pdf`, has "
 "interface to :title:`ReportLab`."
-msgstr ""
+msgstr ":title:`rst2pdf` で使用される純粋な :title:`Python` ツールで、ReportLabとのインターフェースを持っています。"
 
 #: ../../app4.rst:147 f4f7927f3db6432394269d7c671dc7fd
 msgid "PyPDF2_"
@@ -448,7 +448,7 @@ msgstr ""
 
 #: ../../app4.rst:148 b9cc1dc2b5364458af4b03cde80bd4bc
 msgid "A pure :title:`Python` tool with a large function set."
-msgstr ""
+msgstr "多くの機能を備えた純粋な :title:`Python` ツールです。"
 
 #: ../../app4.rst:149 6e2028fb78cd4ed4a1d2d53f860dffc9
 msgid "PDFMiner_"
@@ -456,7 +456,7 @@ msgstr ""
 
 #: ../../app4.rst:150 f0f020f3b3c042feaebd09369c574800
 msgid "A pure :title:`Python` to extract text and other data from :title:`PDF`."
-msgstr ""
+msgstr ":title:`PDF` からテキストやその他のデータを抽出するための純粋な :title:`Python` ツールです。"
 
 #: ../../app4.rst:151 2e52a4b0f839437fa503008a66e10e6d
 msgid "XPDF_"
@@ -464,7 +464,7 @@ msgstr ""
 
 #: ../../app4.rst:152 fcb4e7ba8c81450d8b35ff9b3f7abff9
 msgid "A command line utility with multiple functions."
-msgstr ""
+msgstr "複数の機能を備えたコマンドラインユーティリティです。"
 
 #: ../../app4.rst:153 da20b7a657ac4f3e943c2ea2d7f5b2ce
 msgid "PikePDF_"
@@ -474,7 +474,7 @@ msgstr ""
 msgid ""
 "A :title:`Python` package similar to :title:`PDFrw`, but based on "
 ":title:`C++` library :title:`QPDF`."
-msgstr ""
+msgstr ":title:`C++` ライブラリ :title:`QPDF` に基づいた :title:`Python` パッケージで、 :title:`PDFrw` に類似しています。"
 
 #: ../../app4.rst:155 fde87f1a17e74dabb58fbc20079446cd
 msgid "PDF2JPG_"
@@ -484,11 +484,11 @@ msgstr ""
 msgid ""
 "A :title:`Python` package specialized on rendering :title:`PDF` pages to "
 ":title:`JPG` images."
-msgstr ""
+msgstr ":title:`PDF` ページを :title:`JPG` 画像にレンダリングすることに特化した :title:`Python` パッケージです。"
 
 #: ../../app4.rst:164 bdd439e571684818b0a479d6d904b205
 msgid "Copying / Joining / Merging"
-msgstr ""
+msgstr "コピー / 結合 / マージ"
 
 #: ../../app4.rst:166 e5bf729d9fee46b2b7284fa3ed6c9099
 msgid ""
@@ -498,19 +498,19 @@ msgid ""
 "one go, front to end. :title:`PDFrw` too, has a *lazy* strategy for "
 "parsing, meaning it only parses those parts of a document that are "
 "required in any moment."
-msgstr ""
+msgstr ":title:`PDF` ファイルの読み取りおよびそのコンテンツの解析は、どれだけ高速に行われるのでしょうか？純粋な解析の性能を直接比較することはできません。なぜなら、バッチユーティリティは常に要求されたタスクを一度に完全に実行するからです。 :title:`PDFrw` も解析の際には *レイジー* な戦略を採用しており、必要な瞬間に必要な部分のみを解析します。"
 
 #: ../../app4.rst:168 7bdb36f76ef448318f5fc00751deb7c1
 msgid ""
 "To find an answer to the question, we therefore measure the time to copy "
 "a :title:`PDF` file to an output file with each tool, and do nothing "
 "else."
-msgstr ""
+msgstr "したがって、この質問に答えるために、各ツールで :title:`PDF` ファイルを出力ファイルにコピーする時間を計測し、それ以外の操作は行いません。"
 
 #: ../../app4.rst:170 ../../app4.rst:365 5ab34b74cd604749be3379e5229732d1
 #: 915b5d39fb6b4735a7ceec825a4f73ee
 msgid "These are the :title:`Python` commands for how each tool is used:"
-msgstr ""
+msgstr "各ツールの使用方法に関する :title:`Python` コマンドは以下の通りです："
 
 #: ../../app4.rst:180 e28220c005484d3288f9a579523d6065
 msgid ":title:`PDFrw`"
@@ -528,7 +528,7 @@ msgstr ""
 #: 15166afa26b442c782b604f3107b0ad3 6207ea1347c04ea68afac2437dfa705b
 #: 7ee61cbfb0ef46f7a30182469d1a5213
 msgid "**Observations**"
-msgstr ""
+msgstr "**観察結果**"
 
 #: ../../app4.rst:212 ../../app4.rst:290 ../../app4.rst:401
 #: 974b59b72d354f74a8528e756775031a cc3f56dedbde45e69a0033a48fdba23e
@@ -536,7 +536,7 @@ msgstr ""
 msgid ""
 "These are our run time findings in **seconds** along with a base rate "
 "summary compared to :title:`PyMuPDF`:"
-msgstr ""
+msgstr "以下は、実行時間の結果（ **秒単位**）と、 :title:`PyMuPDF` との比較における基本レートの要約です："
 
 #: ../../app4.rst:218 ../../app4.rst:296 ../../app4.rst:408
 #: 9df03a667e904b9e8792fb6d7a13512d aeceaf75f8d24722a0603ac5f3e41bf6
@@ -735,7 +735,7 @@ msgstr ""
 #: 16934e5745fa4e70b36f6778ff2140c1 7896cf3923894dbbbc6ca6563f7debdf
 #: b1a0bddf2ff34ec7ab1e7940e6cde15d
 msgid "**Total**"
-msgstr ""
+msgstr "**合計** "
 
 #: ../../app4.rst:263 28cf40a46da2482a93c201906fb039c3
 msgid "**3.05**"
@@ -757,7 +757,7 @@ msgstr ""
 #: 90a4a88a385e434486d1b04c50fc64f4 c548d757925b4695a51eeb95cc2e1673
 #: f24afb98730547468876cfecb11bc709
 msgid "**Rate compared to PyMuPDF**"
-msgstr ""
+msgstr "**PyMuPDFに対する比率** "
 
 #: ../../app4.rst:273 ../../app4.rst:351 ../../app4.rst:452
 #: 849d746c5eab4b5db97d520f6b9939a0 e0f0342c5dd84540af2dd45dae62947a
@@ -779,14 +779,14 @@ msgstr ""
 
 #: ../../app4.rst:283 63c01914b71541de9227dfb9637ea9ff
 msgid "Text Extraction"
-msgstr ""
+msgstr "テキスト抽出"
 
 #: ../../app4.rst:285 c166066c1aa64e3384a5c283822ea6c5
 msgid ""
 "The following table shows plain text extraction durations. All tools have"
 " been used with their most basic functionality - i.e. no layout re-"
 "arrangements, etc."
-msgstr ""
+msgstr "以下の表は、プレーンテキストの抽出にかかる時間を示しています。すべてのツールは、基本的な機能のみを使用しています - レイアウトの再配置などはありません。"
 
 #: ../../app4.rst:297 ../../app4.rst:409 11f0b736fae14807968b6fddc1ad057a
 #: 52c20be5534141fba2a1fcc6dfb2b2a3
@@ -951,13 +951,13 @@ msgstr ""
 
 #: ../../app4.rst:360 f772e8b1da3e42308e26ed1ae4d58fc1
 msgid "Page Rendering"
-msgstr ""
+msgstr "ページのレンダリング"
 
 #: ../../app4.rst:362 ead0738e1b934defaf09c5be6916daa3
 msgid ""
 "We have tested rendering speed of :title:`PyMuPDF` against "
 ":title:`pdf2jpg` and :title:`XPDF` at a resolution of 150 DPI,"
-msgstr ""
+msgstr "私たちは、解像度150 DPIで :title:`PyMuPDF` のレンダリング速度を :title:`pdf2jpg` と :title:`XPDF` と比較しました。"
 
 #: ../../app4.rst:382 1fab69d0e2af48f0a9f0f3fa30f0c6f6
 msgid ":title:`XPDF`"
