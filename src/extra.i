@@ -2648,7 +2648,7 @@ void ll_JM_print_stext_page_as_text(fz_buffer *res, fz_stext_page *page)
                     }
                 }
                 if (last_char != 10 && last_char > 0) {
-                    mupdf::ll_fz_write_string(out, "\n");
+                    mupdf::fz_append_string( res, "\n");
                 }
             }
         }
