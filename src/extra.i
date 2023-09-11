@@ -138,6 +138,33 @@ const char MSG_PIXEL_OUTSIDE[] = "pixel(s) outside image";
 
 #define JM_BOOL(x) PyBool_FromLong((long) (x))
 
+//---------------------------------------------------------------------------
+// APPEND non-ascii runes in unicode escape format to fz_buffer
+//---------------------------------------------------------------------------
+void JM_append_rune(fz_buffer *buff, int ch)
+{
+    char text[32];
+    if ((ch >= 32 && ch <= 255) || ch == 10)
+    {
+        mupdf::ll_fz_append_byte(buff, ch);
+    }
+    else if (ch >= 0xd800 && ch <= 0xdfff) {
+        mupdf::ll_fz_append_string(buff, "\\ufffd");
+    }
+    else if (ch <= 0xffff)
+    {
+        // 4 hex digits
+        snprintf(text, sizeof(text), "\\u%04x", ch);
+        mupdf::ll_fz_append_string(buff, text);
+    }
+    else
+    {
+        // 8 hex digits: attn: capital U!
+        snprintf(text, sizeof(text), "\\U%08x", ch);
+        mupdf::ll_fz_append_string(buff, text);
+    }
+}
+
 
 PyObject* JM_EscapeStrFromStr(const char* c)
 {
@@ -3343,34 +3370,6 @@ static int JM_char_font_flags(fz_font *font, fz_stext_line *line, fz_stext_char 
     flags += mupdf::ll_fz_font_is_bold(font) * TEXT_FONT_BOLD;
     return flags;
 }
-
-//---------------------------------------------------------------------------
-// APPEND non-ascii runes in unicode escape format to fz_buffer
-//---------------------------------------------------------------------------
-void JM_append_rune(fz_buffer *buff, int ch)
-{
-    char text[32];
-    if ((ch >= 32 && ch <= 255) || ch == 10)
-    {
-        mupdf::ll_fz_append_byte(buff, ch);
-    }
-    else if (ch >= 0xd800 && ch <= 0xdfff) {
-        mupdf::ll_fz_append_string(buff, "\\ufffd");
-    }
-    else if (ch <= 0xffff)
-    {
-        // 4 hex digits
-        snprintf(text, sizeof(text), "\\u%04x", ch);
-        mupdf::ll_fz_append_string(buff, text);
-    }
-    else
-    {
-        // 8 hex digits: attn: capital U!
-        snprintf(text, sizeof(text), "\\U%08x", ch);
-        mupdf::ll_fz_append_string(buff, text);
-    }
-}
-
 
 mupdf::FzRect JM_make_spanlist(
         PyObject *line_dict,
