@@ -17,6 +17,8 @@ This class is a collection of utility methods and attributes, mainly around memo
 :meth:`Tools.reset_mupdf_warnings`     empty MuPDF messages on STDOUT
 :meth:`Tools.set_aa_level`             set the anti-aliasing values
 :meth:`Tools.set_annot_stem`           set the prefix of new annotation / link ids
+:meth:`Tools.get_word_delimiters`      inquire additional word delimiters
+:meth:`Tools.set_word_delimiters`      set / unset additional word delimiters
 :meth:`Tools.set_small_glyph_heights`  search and extract using small bbox heights
 :meth:`Tools.set_subset_fontnames`     control suppression of subset fontname tags
 :meth:`Tools.show_aa_level`            return the anti-aliasing values
@@ -53,6 +55,36 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       :rtype: str
       :returns: the current value.
+
+
+   .. method:: set_word_delimiters(delims=None)
+
+      * New in v1.23.4
+
+      Set or unset additional word delimiters. These are characters to be used with :meth:`Page.get_text` variant "words". Every character specified in `delims` causes a word break -- in addition to the standard behavior, which only breaks words at (white) spaces.
+
+      For example `delims=".@"` will return the 4 words "some", "name", "emailservice", "com" for the string "some.name@emailservice.com", instead of just one.
+
+      The method sets a global variable, which remains in effect until changed. To fall back to the standard, execute the method without parameters.
+
+      :arg str,list delims: a string of characters or a list of single (!) characters. For instance `delims=".@"` **or** `delims=[".", "@"]`. To skip all punctuation characters, you could use `delims=string.punctuation`.
+
+   .. method:: get_word_delimiters()
+
+      * New in v1.23.4
+
+      Inquire additional word delimiting characters. Example session::
+
+         In [1]: import fitz
+         In [2]: fitz.TOOLS.set_word_delimiters(".@")
+         Out[2]: True
+         In [3]: fitz.TOOLS.get_word_delimiters()
+         Out[3]: ['.', '@']
+         In [4]: fitz.TOOLS.set_word_delimiters()
+         Out[4]: False
+         In [5]: fitz.TOOLS.get_word_delimiters()
+         Out[5]: []
+
 
 
    .. method:: set_small_glyph_heights(on=None)
