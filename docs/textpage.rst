@@ -58,11 +58,25 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: extractWORDS
 
-      Textpage content as a list of single words with bbox information. An item of this list looks like this::
+      * Changed in v1.23.4:  Support arbitrary word delimiting characters.
+
+      Return the Textpage content as a list of single *words* with their bbox information. An item of this list looks like this::
 
          (x0, y0, x1, y1, "word", block_no, line_no, word_no)
 
-      Everything delimited by spaces is treated as a *"word"*. This is a high-speed method which e.g. allows extracting text from within given areas or recovering the text reading sequence.
+      This is a high-speed method, which extracts strings (called "words") **that do not contain** word delimiting characters. Standard word delimiters are all white space characters *(characters with a unicode value <= 32 and the non-breaking space 0xA0 = 160)*. This means, that the string "some.name@emailservice.com" will be returned as one "word" -- because it contains no spaces.
+
+      If you want to know details about the components of this e-mail address set some **additional delimiters** "." and "@" and execute the extraction again::
+
+          fitz.TOOLS.set_word_delimiters(".@")  # sets a global value
+          words = page.get_text("words")
+          # additional delimiters remain active until changed again
+
+      The returned list will now contain the 4 separate words: "some", "name", "emailservice", "com" -- each with its boundary box. To revert to standard behavior, execute :meth:`Tools.set_word_delimiters` without parameter.
+      
+      To see active delimiters execute :meth:`Tools.get_word_delimiters`.
+
+      .. note:: Please note that in the above `TOOLS == Tools()` are used interchangeably.
 
       :rtype: list
 

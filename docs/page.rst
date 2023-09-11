@@ -1030,7 +1030,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * New in v1.21.0
 
-      Delete the image at xref. This is slightly misleading: actually the image is being replaced with a small transparent :ref:`Pixmap` using above :meth:`Page.replace_image`. The visible effect however is equivalent.
+      Delete the image at xref. This is slightly misleading: actually the image is being replaced with a small transparent :ref:`Pixmap` using above :meth:`Page.replace_image`. The visible effect however is equivalent to deleting the image.
 
       :arg int xref: the :data:`xref` of the image.
 
@@ -1058,24 +1058,25 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: textpage; Page.get_text
       pair: sort; Page.get_text
 
-   .. method:: get_text(opt,*, clip=None, flags=None, textpage=None, sort=False)
+   .. method:: get_text(opt,*, clip=None, flags=None, textpage=None, sort=False, delimiters=None)
 
       * Changed in v1.19.0: added `textpage` parameter
       * Changed in v1.19.1: added `sort` parameter
       * Changed in v1.19.6: added new constants for defining default flags per method.
+      * Changed in v1.23.4: added new parameter to set delimiters for "words" extractions.
 
-      Retrieves the content of a page in a variety of formats. This is a wrapper for :ref:`TextPage` methods by choosing the output option as follows:
+      Retrieves the content of a page in a variety of formats. This is a wrapper for :ref:`TextPage` methods by choosing the output option "opt" as follows:
 
-      * "text" -- :meth:`TextPage.extractTEXT`, default
-      * "blocks" -- :meth:`TextPage.extractBLOCKS`
-      * "words" -- :meth:`TextPage.extractWORDS`
-      * "html" -- :meth:`TextPage.extractHTML`
-      * "xhtml" -- :meth:`TextPage.extractXHTML`
-      * "xml" -- :meth:`TextPage.extractXML`
-      * "dict" -- :meth:`TextPage.extractDICT`
-      * "json" -- :meth:`TextPage.extractJSON`
-      * "rawdict" -- :meth:`TextPage.extractRAWDICT`
-      * "rawjson" -- :meth:`TextPage.extractRAWJSON`
+      * `opt="text"` -- :meth:`TextPage.extractTEXT`, default
+      * `opt="blocks"` -- :meth:`TextPage.extractBLOCKS`
+      * `opt="words"` -- :meth:`TextPage.extractWORDS`
+      * `opt="html"` -- :meth:`TextPage.extractHTML`
+      * `opt="xhtml"` -- :meth:`TextPage.extractXHTML`
+      * `opt="xml"` -- :meth:`TextPage.extractXML`
+      * `opt="dict"` -- :meth:`TextPage.extractDICT`
+      * `opt="json"` -- :meth:`TextPage.extractJSON`
+      * `opt="rawdict"` -- :meth:`TextPage.extractRAWDICT`
+      * `opt="rawjson"` -- :meth:`TextPage.extractRAWJSON`
 
       :arg str opt: A string indicating the requested format, one of the above. A mixture of upper and lower case is supported.
 
@@ -1089,12 +1090,14 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order. Has no effect on (X)HTML and XML. Output option **"words"** sorts by `(y1, x0)` of the words' bboxes. Similar is true for "blocks", "dict", "json", "rawdict", "rawjson": they all are sorted by `(y1, x0)` of the resp. block bbox. If specified for "text", then internally "blocks" is used.
 
+      :arg str,list delimiters: temporarily set characters to function as word delimiters. For instance, `delimiters=",.@"` causes word breaks at these characters (in addition to white spaces), and returned word strings will never contain them. Valid for `opt="words"` only and only for this execution. To permanently set additional delimiters, use :meth:`Tools.set_word_delimiters`.
+
       :rtype: *str, list, dict*
       :returns: The page's content as a string, a list or a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
 
       .. note::
 
-        1. You can use this method as a **document conversion tool** from :ref:`any supported document type<Supported_File_Types>` to one of TEXT, HTML, XHTML or XML documents.
+        1. You can use this method as a **document conversion tool** from :ref:`any supported document type<Supported_File_Types>` to TEXT, JSON, HTML, XHTML or XML documents.
         2. The inclusion of text via the *clip* parameter is decided on a by-character level: **(changed in v1.18.2)** a character becomes part of the output, if its bbox is contained in *clip*. This **deviates** from the algorithm used in redaction annotations: a character will be **removed if its bbox intersects** any redaction annotation.
 
    .. index::
