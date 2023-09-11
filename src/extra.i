@@ -1958,6 +1958,7 @@ PyObject *get_word_delimiters()
 
 PyObject *set_word_delimiters(PyObject *delims)
 {
+    fz_context* ctx = mupdf::internal_context_get();
     int i, len = (int) PyTuple_Size(delims);
     if (!len) {
         g_word_delimiters[0] = 0; // set list to empty
