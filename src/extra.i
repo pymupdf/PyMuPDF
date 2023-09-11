@@ -1964,16 +1964,16 @@ PyObject *set_word_delimiters(PyObject *delims)
         return Py_False;
     }
 
-    fz_try(gctx) {
+    fz_try(ctx) {
         for (i = 0; i < len; i++) {
             g_word_delimiters[i] = (int) PyLong_AsLong(PyTuple_GET_ITEM(delims, (Py_ssize_t) i));
             g_word_delimiters[i+1] = 0;
         }
     }
-    fz_always(gctx) {
+    fz_always(ctx) {
         PyErr_Clear();
     }
-    fz_catch(gctx) {
+    fz_catch(ctx) {
         return NULL;
     }
     return Py_True;
