@@ -76,8 +76,8 @@ JM_rect_from_py(PyObject *r)
 
     for (i = 0; i < 4; i++) {
         if (JM_FLOAT_ITEM(r, i, &f[i]) == 1) return fz_infinite_rect;
-        if (f[i] < FZ_MIN_INF_RECT) f[i] = FZ_MIN_INF_RECT;
-        if (f[i] > FZ_MAX_INF_RECT) f[i] = FZ_MAX_INF_RECT;
+        if (f[i] <= FZ_MIN_INF_RECT) f[i] = FZ_MIN_INF_RECT;
+        if (f[i] >= FZ_MAX_INF_RECT) f[i] = FZ_MAX_INF_RECT;
     }
 
     return fz_make_rect((float) f[0], (float) f[1], (float) f[2], (float) f[3]);
@@ -93,6 +93,32 @@ JM_py_from_rect(fz_rect r)
 }
 
 //-----------------------------------------------------------------------------
+// Ignore this rect (generalizes infinite, empty etc.)
+//-----------------------------------------------------------------------------
+int JM_ignore_rect(fz_rect r)
+{
+    if (fz_is_infinite_rect(r) || fz_is_empty_rect(r)) return 1;
+    if (r.x0 >= FZ_MAX_INF_RECT || r.x0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y0 >= FZ_MAX_INF_RECT || r.y0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.x1 >= FZ_MAX_INF_RECT || r.x1 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y1 >= FZ_MAX_INF_RECT || r.y1 <= FZ_MIN_INF_RECT) return 1;
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+// Ignore this rect (generalizes infinite, empty etc.)
+//-----------------------------------------------------------------------------
+int JM_ignore_irect(fz_irect r)
+{
+    if (fz_is_infinite_irect(r) || fz_is_empty_irect(r)) return 1;
+    if (r.x0 >= FZ_MAX_INF_RECT || r.x0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y0 >= FZ_MAX_INF_RECT || r.y0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.x1 >= FZ_MAX_INF_RECT || r.x1 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y1 >= FZ_MAX_INF_RECT || r.y1 <= FZ_MIN_INF_RECT) return 1;
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
 // PySequence to fz_irect. Default: infinite irect
 //-----------------------------------------------------------------------------
 static fz_irect
@@ -105,8 +131,8 @@ JM_irect_from_py(PyObject *r)
 
     for (i = 0; i < 4; i++) {
         if (JM_INT_ITEM(r, i, &x[i]) == 1) return fz_infinite_irect;
-        if (x[i] < FZ_MIN_INF_RECT) x[i] = FZ_MIN_INF_RECT;
-        if (x[i] > FZ_MAX_INF_RECT) x[i] = FZ_MAX_INF_RECT;
+        if (x[i] <= FZ_MIN_INF_RECT) x[i] = FZ_MIN_INF_RECT;
+        if (x[i] >= FZ_MAX_INF_RECT) x[i] = FZ_MAX_INF_RECT;
     }
 
     return fz_make_irect(x[0], x[1], x[2], x[3]);

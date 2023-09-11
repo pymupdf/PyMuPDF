@@ -971,6 +971,32 @@ static PyObject* JM_py_from_rect(mupdf::FzRect r)
 }
 
 //-----------------------------------------------------------------------------
+// Ignore this rect (generalizes infinite, empty etc.)
+//-----------------------------------------------------------------------------
+int JM_ignore_rect(fz_rect r)
+{
+    if (fz_is_infinite_rect(r) || fz_is_empty_rect(r)) return 1;
+    if (r.x0 >= FZ_MAX_INF_RECT || r.x0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y0 >= FZ_MAX_INF_RECT || r.y0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.x1 >= FZ_MAX_INF_RECT || r.x1 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y1 >= FZ_MAX_INF_RECT || r.y1 <= FZ_MIN_INF_RECT) return 1;
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+// Ignore this rect (generalizes infinite, empty etc.)
+//-----------------------------------------------------------------------------
+int JM_ignore_irect(fz_irect r)
+{
+    if (fz_is_infinite_irect(r) || fz_is_empty_irect(r)) return 1;
+    if (r.x0 >= FZ_MAX_INF_RECT || r.x0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y0 >= FZ_MAX_INF_RECT || r.y0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.x1 >= FZ_MAX_INF_RECT || r.x1 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y1 >= FZ_MAX_INF_RECT || r.y1 <= FZ_MIN_INF_RECT) return 1;
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
 // PySequence from fz_point
 //-----------------------------------------------------------------------------
 static PyObject* JM_py_from_point(fz_point p)
@@ -1908,11 +1934,51 @@ enum
 int g_skip_quad_corrections = 0;
 int g_subset_fontnames = 0;
 int g_small_glyph_heights = 0;
+int g_word_delimiters[65] = {0};
 
 void set_small_glyph_heights(int on)
 {
     g_small_glyph_heights = on;
 }
+
+PyObject *get_word_delimiters()
+{
+    int delim, i = 0;
+    PyObject *rc = PyList_New(0);
+    while (1) {
+        delim = g_word_delimiters[i];
+        if (!delim) {
+            break;
+        }
+        PyList_Append(rc, Py_BuildValue("C", delim));
+        i++;
+    }
+    return rc;
+}
+
+PyObject *set_word_delimiters(PyObject *delims)
+{
+    int i, len = (int) PyTuple_Size(delims);
+    if (!len) {
+        g_word_delimiters[0] = 0; // set list to empty
+        return Py_False;
+    }
+
+    fz_try(gctx) {
+        for (i = 0; i < len; i++) {
+            g_word_delimiters[i] = (int) PyLong_AsLong(PyTuple_GET_ITEM(delims, (Py_ssize_t) i));
+            g_word_delimiters[i+1] = 0;
+        }
+    }
+    fz_always(gctx) {
+        PyErr_Clear();
+    }
+    fz_catch(gctx) {
+        return NULL;
+    }
+    return Py_True;
+}
+
 
 struct jm_lineart_device
 {
@@ -1979,6 +2045,25 @@ static const char* JM_font_name(fz_font* font)
         return name;
     }
     return s + 1;
+}
+
+//----------------------------------------------------------------
+// Return true if character is considered to be a word delimiter
+//----------------------------------------------------------------
+static int 
+JM_is_word_delimiter(int c)
+{
+    if (c <= 32 || c == 160) return 1;
+    int i;
+    for (i = 0; i < (int) nelem(g_word_delimiters); i++) {
+        if (g_word_delimiters[i] == 0) {  // end of this list
+            break;
+        }
+        if (c == g_word_delimiters[i]) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 static void jm_trace_text_span(
@@ -2513,7 +2598,7 @@ static int JM_rects_overlap(const fz_rect a, const fz_rect b)
 }
 
 //
-void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
+void ll_JM_print_stext_page_as_text(fz_buffer *res, fz_stext_page *page)
 {
     fz_stext_block *block;
     fz_stext_line *line;
@@ -2521,8 +2606,6 @@ void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
     fz_rect rect = page->mediabox;
     fz_rect chbbox;
     int last_char = 0;
-    char utf[10];
-    int i, n;
 
     for (block = page->first_block; block; block = block->next) {
         if (block->type == FZ_STEXT_BLOCK_TEXT) {
@@ -2533,10 +2616,7 @@ void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
                     if (mupdf::ll_fz_is_infinite_rect(rect) ||
                         JM_rects_overlap(rect, chbbox)) {
                         last_char = ch->c;
-                        n = mupdf::ll_fz_runetochar(utf, ch->c);
-                        for (i = 0; i < n; i++) {
-                            mupdf::ll_fz_write_byte(out, utf[i]);
-                        }
+                        JM_append_rune(res, ch->c);
                     }
                 }
                 if (last_char != 10 && last_char > 0) {
@@ -2551,11 +2631,11 @@ void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
 // but lines within a block are concatenated by space instead a new-line
 // character (which else leads to 2 new-lines).
 //-----------------------------------------------------------------------------
-void JM_print_stext_page_as_text(mupdf::FzOutput& out, mupdf::FzStextPage& page)
+void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
 {
     if (0)
     {
-        return ll_JM_print_stext_page_as_text(out.m_internal, page.m_internal);
+        return ll_JM_print_stext_page_as_text(res.m_internal, page.m_internal);
     }
     
     fz_rect rect = page.m_internal->mediabox;
@@ -2575,14 +2655,12 @@ void JM_print_stext_page_as_text(mupdf::FzOutput& out, mupdf::FzStextPage& page)
                             )
                     {
                         last_char = ch.m_internal->c;
-                        char utf[10];
-                        int n = mupdf::ll_fz_runetochar(utf, ch.m_internal->c);
-                        mupdf::ll_fz_write_data( out.m_internal, utf, n);
+                        JM_append_rune(res.m_internal, ch.m_internal->c);
                     }
                 }
                 if (last_char != 10 && last_char > 0)
                 {
-                    mupdf::fz_write_string( out, "\n");
+                    mupdf::fz_append_string( res.m_internal, "\n");
                 }
             }
         }
@@ -2850,7 +2928,7 @@ jm_lineart_path(jm_lineart_device *dev, const fz_path *path)
     DICT_SETITEM_DROP(dev->pathdict, dictkey_items, PyList_New(0));
     mupdf::ll_fz_walk_path(path, &trace_path_walker, dev);
     // Check if any items were added ...
-    if (!PyList_Size(PyDict_GetItem(dev->pathdict, dictkey_items)))
+    if (!PyDict_GetItem(dev->pathdict, dictkey_items) || !PyList_Size(PyDict_GetItem(dev->pathdict, dictkey_items)))
     {
         Py_CLEAR(dev->pathdict);
     }
@@ -3018,6 +3096,9 @@ jm_lineart_clip_path(fz_context *ctx, fz_device *dev_, const fz_path *path, int 
     dev->ctm = ctm; //fz_concat(ctm, trace_device_ptm);
     dev->path_type = CLIP_PATH;
     jm_lineart_path(dev, path);
+	if (!dev->pathdict) {
+		return;
+	}
     DICT_SETITEM_DROP(dev->pathdict, dictkey_type, PyUnicode_FromString("clip"));
     DICT_SETITEMSTR_DROP(dev->pathdict, "even_odd", JM_BOOL(even_odd));
     if (!PyDict_GetItemString(dev->pathdict, "closePath")) {
@@ -3038,6 +3119,9 @@ jm_lineart_clip_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *pat
     dev->ctm = ctm; //fz_concat(ctm, trace_device_ptm);
     dev->path_type = CLIP_STROKE_PATH;
     jm_lineart_path(dev, path);
+	if (!dev->pathdict) {
+		return;
+	}
     DICT_SETITEM_DROP(dev->pathdict, dictkey_type, PyUnicode_FromString("clip"));
     DICT_SETITEMSTR_DROP(dev->pathdict, "even_odd", Py_BuildValue("s", NULL));
     if (!PyDict_GetItemString(dev->pathdict, "closePath")) {
@@ -3269,6 +3353,9 @@ void JM_append_rune(fz_buffer *buff, int ch)
     {
         mupdf::ll_fz_append_byte(buff, ch);
     }
+    else if (ch >= 0xd800 && ch <= 0xdfff) {
+        mupdf::ll_fz_append_string(buff, "\\ufffd");
+    }
     else if (ch <= 0xffff)
     {
         // 4 hex digits
@@ -3277,8 +3364,8 @@ void JM_append_rune(fz_buffer *buff, int ch)
     }
     else
     {
-        // 8 hex digits
-        snprintf(text, sizeof(text), "\\u%08x", ch);
+        // 8 hex digits: attn: capital U!
+        snprintf(text, sizeof(text), "\\U%08x", ch);
         mupdf::ll_fz_append_string(buff, text);
     }
 }
@@ -3473,7 +3560,7 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage)
     int block_n = -1;
     fz_rect wbbox = fz_empty_rect;  // word bbox
     fz_rect tp_rect = this_tpage.m_internal->mediabox;
-
+    int word_delimiter = 0;
     PyObject *lines = NULL;
     mupdf::FzBuffer buff = mupdf::fz_new_buffer(64);
     lines = PyList_New(0);
@@ -3498,11 +3585,12 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage)
                 {
                     continue;
                 }
-                if (ch.m_internal->c == 32 && buflen == 0)
+                word_delimiter = JM_is_word_delimiter(ch.m_internal->c);
+                if (word_delimiter && buflen == 0)
                 {
                     continue;  // skip spaces at line start
                 }
-                if (ch.m_internal->c == 32)
+                if (word_delimiter)
                 {
                     if (!fz_is_empty_rect(wbbox))
                     {
@@ -3820,17 +3908,21 @@ void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw)
     fz_stext_block *block;
     fz_buffer *text_buffer = fz_new_buffer(ctx, 128);
     PyObject *block_dict, *block_list = PyList_New(0);
-    fz_rect tp_rect = tp->mediabox;
+    fz_rect tp_rect = tp->mediabox, bbox;
     int block_n = -1;
     for (block = tp->first_block; block; block = block->next) {
+        bbox = block->bbox;
+        if (JM_ignore_rect(bbox)) {
+            continue; // guard against nonsense block bbox
+        }
         block_n++;
-        if (!fz_contains_rect(tp_rect, block->bbox) &&
+        if (!fz_contains_rect(tp_rect, bbox) &&
             !fz_is_infinite_rect(tp_rect) &&
             block->type == FZ_STEXT_BLOCK_IMAGE) {
             continue;
         }
         if (!fz_is_infinite_rect(tp_rect) &&
-            fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
+            fz_is_empty_rect(fz_intersect_rect(tp_rect, bbox))) {
             continue;
         }
 
@@ -3838,7 +3930,7 @@ void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw)
         DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
         DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
         if (block->type == FZ_STEXT_BLOCK_IMAGE) {
-            DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
+            DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(bbox));
             JM_make_image_block(block, block_dict);
         } else {
             JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect);
@@ -4306,7 +4398,7 @@ mupdf::FzDevice JM_new_texttrace_device(PyObject* out);
 fz_rect JM_char_bbox(const mupdf::FzStextLine& line, const mupdf::FzStextChar& ch);
 
 static fz_quad JM_char_quad( fz_stext_line *line, fz_stext_char *ch);
-void JM_print_stext_page_as_text(mupdf::FzOutput& out, mupdf::FzStextPage& page);
+void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page);
 
 void set_small_glyph_heights(int on);
 mupdf::FzRect JM_cropbox(mupdf::PdfObj& page_obj);

@@ -4030,7 +4030,7 @@ if rbgroups:
         if not type(x) in (list, tuple):
             raise ValueError("bad RBGroup '%s'" % x)
         s = set(x).difference(ocgs)
-        if f != set():
+        if s != set():
             raise ValueError("bad OCGs in RBGroup: %s" % s)
 
 if basestate:
@@ -5542,8 +5542,6 @@ struct Page {
                 r = pdf_annot_rect(gctx, annot);
                 r = fz_make_rect(p.x, p.y, p.x + r.x1 - r.x0, p.y + r.y1 - r.y0);
                 pdf_set_annot_rect(gctx, annot, r);
-                int flags = PDF_ANNOT_IS_PRINT;
-                pdf_set_annot_flags(gctx, annot, flags);
 
                 if (icon)
                     pdf_set_annot_icon_name(gctx, annot, icon);
@@ -5554,7 +5552,6 @@ struct Page {
                 pdf_dict_put_text_string(gctx, annot_obj, PDF_NAME(Contents), filename);
                 pdf_update_annot(gctx, annot);
                 pdf_set_annot_rect(gctx, annot, r);
-                pdf_set_annot_flags(gctx, annot, flags);
                 JM_add_annot_id(gctx, annot, "A");
             }
             fz_always(gctx) {
@@ -7616,10 +7613,9 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
                 annot_xrefs = [a[0] for a in self.annot_xrefs() if a[1] not in skip_types]
             else:
                 annot_xrefs = [a[0] for a in self.annot_xrefs() if a[1] in types and a[1] not in skip_types]
+
             for xref in annot_xrefs:
-                annot = self.load_annot(xref)
-                annot._yielded=True
-                yield annot
+                yield self.load_annot(xref)
 
 
         def widgets(self, types=None):
@@ -11533,13 +11529,18 @@ struct TextPage {
         extractIMGINFO(int hashes=0)
         {
             fz_stext_block *block;
-            int block_n = -1;
+            int block_n = -1, leave = 0;
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             PyObject *rc = NULL, *block_dict = NULL;
             fz_pixmap *pix = NULL;
+            fz_rect bbox;
             fz_try(gctx) {
                 rc = PyList_New(0);
                 for (block = this_tpage->first_block; block; block = block->next) {
+                    bbox = block->bbox;
+                    if (JM_ignore_rect(bbox)) {
+                        continue; // guard against nonsense block bbox
+                    }
                     block_n++;
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         continue;
@@ -11556,7 +11557,7 @@ struct TextPage {
                     block_dict = PyDict_New();
                     DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
                     DICT_SETITEM_DROP(block_dict, dictkey_bbox,
-                                    JM_py_from_rect(block->bbox));
+                                    JM_py_from_rect(bbox));
                     DICT_SETITEM_DROP(block_dict, dictkey_matrix,
                                     JM_py_from_matrix(block->u.i.transform));
                     DICT_SETITEM_DROP(block_dict, dictkey_width,
@@ -11695,7 +11696,7 @@ struct TextPage {
             fz_rect wbbox = fz_empty_rect;  // word bbox
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_rect tp_rect = this_tpage->mediabox;
-
+            int word_delimiter = 0;
             PyObject *lines = NULL;
             fz_try(gctx) {
                 buff = fz_new_buffer(gctx, 64);
@@ -11717,10 +11718,11 @@ struct TextPage {
                                 !fz_is_infinite_rect(tp_rect)) {
                                 continue;
                             }
-                            if (ch->c == 32 && buflen == 0)
+                            word_delimiter = JM_is_word_delimiter(ch->c);
+                            if (word_delimiter && buflen == 0)
                                 continue;  // skip spaces at line start
-                            if (ch->c == 32) {
-                                if (!fz_is_empty_rect(wbbox)) {
+                            if (word_delimiter) {  // encountered end of word
+                                if (!fz_is_empty_rect(wbbox)) {  // output word
                                     word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                         block_n, line_n, word_n);
                                 }
@@ -11806,10 +11808,10 @@ struct TextPage {
                         fz_print_stext_page_as_xhtml(gctx, out, this_tpage, 0);
                         break;
                     default:
-                        JM_print_stext_page_as_text(gctx, out, this_tpage);
+                        JM_print_stext_page_as_text(gctx, res, this_tpage);
                         break;
                 }
-                text = JM_UnicodeFromBuffer(gctx, res);
+                text = JM_EscapeStrFromBuffer(gctx, res);
 
             }
             fz_always(gctx) {
@@ -12168,6 +12170,7 @@ struct TextWriter
             morph: tuple(Point, Matrix), apply a matrix with a fixpoint.
             matrix: Matrix to be used instead of 'morph' argument.
             render_mode: (int) PDF render mode operator 'Tr'.
+            border_width: (float) stroke line Width. Relevant for render mode > 0.
         """
 
         CheckParent(page)
@@ -12185,6 +12188,8 @@ struct TextWriter
             opacity = self.opacity
         if color is None:
             color = self.color
+        if render_mode < 0:
+            render_mode = 0
         %}
 
         %pythonappend write_text%{
@@ -12234,7 +12239,7 @@ struct TextWriter
                 temp = line.split()
                 fsize = float(temp[1])
                 if render_mode != 0:
-                    w = fsize * 0.05
+                    w = fsize * border_width
                 else:
                     w = 1
                 new_cont_lines.append("%g w" % w)
@@ -12257,7 +12262,7 @@ struct TextWriter
             repair_mono_font(page, font)
         %}
         PyObject *write_text(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1,
-                    PyObject *morph=NULL, PyObject *matrix=NULL, int render_mode=0, int oc=0)
+                    PyObject *morph=NULL, PyObject *matrix=NULL, int render_mode=0, int oc=0, float border_width=0.05)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
             pdf_obj *resources = NULL;
@@ -14409,6 +14414,63 @@ struct Tools
             JM_UNIQUE_ID += 1;
             if (JM_UNIQUE_ID < 0) JM_UNIQUE_ID = 1;
             return Py_BuildValue("i", JM_UNIQUE_ID);
+        }
+
+
+        FITZEXCEPTION(set_word_delimiters, !result)
+        %pythonprepend set_word_delimiters %{
+        """Set characters to be word delimiters."""
+        if delims == None:
+            delims = []
+        if not hasattr(delims, "__getitem__") or len(delims) > 64:
+            raise ValueError("bad delimiter value(s)")
+
+        try:
+            delims = set([ord(c) for c in delims])
+        except:
+            print("bad delimiter value(s)")
+            raise
+        delims = tuple(delims)
+        %}
+        PyObject *set_word_delimiters(PyObject *delims=NULL)
+        {
+            int i, len = (int) PyTuple_Size(delims);
+            if (!len) {
+                word_delimiters[0] = 0; // set list to empty
+                return Py_False;
+            }
+
+            fz_try(gctx) {
+                for (i = 0; i < len; i++) {
+                    word_delimiters[i] = (int) PyLong_AsLong(PyTuple_GET_ITEM(delims, (Py_ssize_t) i));
+                    word_delimiters[i+1] = 0;
+                }
+            }
+            fz_always(gctx) {
+                PyErr_Clear();
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return Py_True;
+        }
+
+
+        FITZEXCEPTION(get_word_delimiters, !result)
+        %pythonprepend get_word_delimiters %{"""Get the word delimiting characters."""%}
+        PyObject *get_word_delimiters()
+        {
+            int delim, i = 0;
+            PyObject *rc = PyList_New(0);
+            while (1) {
+                delim = word_delimiters[i];
+                if (!delim) {
+                    break;
+                }
+                PyList_Append(rc, Py_BuildValue("C", delim));
+                i++;
+            }
+            return rc;
         }
 
 
