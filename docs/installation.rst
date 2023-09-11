@@ -6,21 +6,33 @@ Installation
 =============
 
 Requirements
----------------
+---------------------------------------------------------
 
 All the examples below assume that you are running inside a Python virtual
 environment. See: https://docs.python.org/3/library/venv.html for details.
+We also assume that `pip` is up to date.
 
-For example::
+For example:
+
+* Windows::
+
+    py -m venv pymupdf-venv
+    .\pymupdf-venv\Scripts\activate
+    python -m pip install --upgrade pip
+
+* Linux, MacOS::
 
     python -m venv pymupdf-venv
     . pymupdf-venv/bin/activate
+    python -m pip install --upgrade pip
 
+
+Installation
+---------------------------------------------------------
 
 PyMuPDF should be installed using pip with::
 
-  python -m pip install --upgrade pip
-  python -m pip install --upgrade pymupdf
+  pip install --upgrade pymupdf
 
 This will install from a Python wheel if one is available for your platform.
 
@@ -31,31 +43,19 @@ Installation when a suitable wheel is not available
 If a suitable Python wheel is not available, pip will automatically build from
 source using a Python sdist.
 
-**This requires C/C++ development tools and SWIG to be installed**:
-
-* On Unix-style systems such as Linux, OpenBSD and FreeBSD,
-  use the system package manager to install SWIG.
-
-  * For example on Debian Linux, do: `sudo apt install swig`
+**This requires C/C++ development tools to be installed**:
 
 * On Windows:
 
-  * Install Visual Studio 2019. If not installed in a standard location, set
+  *
+    Install Visual Studio 2019. If not installed in a standard location, set
     environmental variable `PYMUPDF_SETUP_DEVENV` to the location of the
     `devenv.com` binary.
-    
-    * Having other installed versions of Visual Studio, for example Visual
-      Studio 2022, can cause problems because one can end up with MuPDF and
-      PyMuPDF code being compiled with different compiler versions.
 
-  * Install SWIG by following the instructions at:
-    https://swig.org/Doc4.0/Windows.html#Windows_installation
-
-* On MacOS, install MacPorts using the instructions at:
-  https://www.macports.org/install.php
-
-  * Then install SWIG with: `sudo port install swig`
-  * You may also need: `sudo port install swig-python`
+  *
+    Having other installed versions of Visual Studio, for example Visual Studio
+    2022, can cause problems because one can end up with MuPDF and PyMuPDF code
+    being compiled with different compiler versions.
 
 As of `PyMuPDF-1.20.0`, the required MuPDF source code is already in the
 sdist and is automatically built into PyMuPDF.
@@ -84,40 +84,65 @@ There are no **mandatory** external dependencies. However, some optional feature
 .. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
 
 
-Installation from source without using an sdist
----------------------------------------------------------
+Build and install from local PyMuPDF checkout and optional local MuPDF checkout
+-------------------------------------------------------------------------------
 
-* First get a PyMuPDF source tree:
+* Install C/C++ development tools as described above.
 
-  * Clone the git repository at https://github.com/pymupdf/PyMuPDF,
-    for example::
+* Enter a Python venv and update pip, as described above.
+
+* Get a PyMuPDF source tree:
+
+  * Clone the PyMuPDF git repository::
 
       git clone https://github.com/pymupdf/PyMuPDF.git
 
   * Or download and extract a `.zip` or `.tar.gz` source release from
     https://github.com/pymupdf/PyMuPDF/releases.
 
-* Install C/C++ development tools and SWIG as described above.
 
 * Build and install PyMuPDF::
 
-    cd PyMuPDF && python setup.py install
+    cd PyMuPDF && pip install .
 
   This will automatically download a specific hard-coded MuPDF source release,
   and build it into PyMuPDF.
-  
+
+
+Build and install PyMuPDF using a local MuPDF source tree:
+
+* Clone the MuPDF git repository::
+
+    git clone --recursive https://ghostscript.com:/home/git/mupdf.git
+
+*
+  Build PyMuPDF, specifying the location of the local MuPDF tree with the
+  environmental variables `PYMUPDF_SETUP_MUPDF_BUILD`::
+
+    cd PyMuPDF && PYMUPDF_SETUP_MUPDF_BUILD=../mupdf pip install .
+
+
+Building for different Python versions in same PyMuPDF tree:
+
+*
+  PyMuPDF will build for the version of Python that is being used to run
+  `pip`. To run `pip` with a specific Python version, use `python -m pip`
+  instead of `pip`.
+
+  So for example on Windows one can build different versions with::
+
+    cd PyMuPDF && py -3.9 -m pip install .
+
+  or::
+
+    cd PyMuPDF && py -3.10-32 -m pip install .
+
+
 .. note:: When running Python scripts that use PyMuPDF, make sure that the
   current directory is not the `PyMuPDF/` directory.
 
   Otherwise, confusingly, Python will attempt to import `fitz` from the local
   `fitz/` directory, which will fail because it only contains source files.
-
-* Building for different Python versions in same PyMuPDF tree:
-
-  *
-    PyMuPDF will build for the version of Python that runs `setup.py`. So for
-    example on Windows one can build different versions by using `py -3.9 ` or
-    `py -3.10-32`.
 
 
 Running tests
@@ -126,38 +151,13 @@ Running tests
 Having a PyMuPDF tree available allows one to run PyMuPDF's `pytest` test
 suite::
 
-    pip install pytest fontTools
-    pytest PyMuPDF/tests
+  pip install pytest fontTools
+  pytest PyMuPDF/tests
 
 
-Building and testing with git checkouts of PyMuPDF and MuPDF
-------------------------------------------------------------------------------------------------------------------
 
-Things to do:
-
-* Install C/C++ development tools and SWIG as described above.
-* Get PyMuPDF.
-* Get MuPDF.
-* Create a Python virtual environment.
-* Build PyMuPDF with environmental variable `PYMUPDF_SETUP_MUPDF_BUILD` set
-  to the path of the local MuPDF checkout.
-* Run PyMuPDF tests.
-
-For example::
-
-    git clone https://github.com/pymupdf/PyMuPDF.git
-    git clone -b 1.23.x --recursive https://ghostscript.com:/home/git/mupdf.git
-    python -m venv pymupdf-venv
-    . pymupdf-venv/bin/activate
-    cd PyMuPDF
-    PYMUPDF_SETUP_MUPDF_BUILD=../mupdf python setup.py install
-    cd ..
-    pip install pytest fontTools
-    pytest PyMuPDF
-
-
-Using a non-default MuPDF
----------------------------------------------------------
+Notes about using a non-default MuPDF
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Using a non-default build of MuPDF by setting environmental variable
 `PYMUPDF_SETUP_MUPDF_BUILD` can cause various things to go wrong and so is
