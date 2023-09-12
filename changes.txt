@@ -52,7 +52,7 @@ Change Log
 
 * Bug fixes:
 
-  * **Fixed** `#2542 <https://github.com/pymupdf/PyMuPDF/issues/2542>`_: fritz.utils.scrub AttributeError Annot object has no attribute fileUpd inside
+  * **Fixed** `#2542 <https://github.com/pymupdf/PyMuPDF/issues/2542>`_: fitz.utils.scrub AttributeError Annot object has no attribute fileUpd inside
   * **Fixed** `#2533 <https://github.com/pymupdf/PyMuPDF/issues/2533>`_: get_texttrace returned a incorrect character bbox
   * **Fixed** `#2537 <https://github.com/pymupdf/PyMuPDF/issues/2537>`_: Validation when setting a grouped RadioButton throws a RuntimeError: path to 'V' has indirects
 
