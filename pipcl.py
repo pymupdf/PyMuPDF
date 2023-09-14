@@ -1847,7 +1847,13 @@ def macos_patch( library, *sublibraries):
         name = name.split('\n')
         assert len(name) == 2 and name[0] == f'{sublibrary}:', f'{name=}'
         name = name[1]
-        command += f' -change {name} @rpath/{os.path.basename(name)}'
+        # strip trailing so_name.
+        leaf = os.path.basename(name)
+        m = re.match('^(.+[.]((so)|(dylib)))[0-9.]*$', leaf)
+        assert m
+        _log(f'Changing {leaf=} to {m.group(1)}')
+        leaf = m.group(1)
+        command += f' -change {name} @rpath/{leaf}'
     command += f' {library}'
     _log( f'Running: {command}')
     subprocess.run( command, shell=1, check=1)
