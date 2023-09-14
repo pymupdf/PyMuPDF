@@ -154,7 +154,7 @@ def _as_fz_document(document):
     elif isinstance(document, mupdf.FzDocument):
         return document
     elif isinstance(document, mupdf.PdfDocument):
-        return self.this.super()
+        return document.super()
     else:
         assert 0, f'Unrecognised {type(document)=}'
 
