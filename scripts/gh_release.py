@@ -492,7 +492,7 @@ def pyodide_setup(clean=False):
         command += f' && {sys.executable} -m venv {venv_pyodide}'
     command += f' && . {venv_pyodide}/bin/activate'
     command += f' && echo "### running pip install ..."'
-    command += f' && python -m pip install --upgrade pip wheel pyodide-build'
+    command += f' && python -m pip install --upgrade pip wheel pyodide-build==0.23.4'
     
     # Run emsdk install scripts and enter emsdk environment.
     #
