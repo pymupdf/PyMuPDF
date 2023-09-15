@@ -64,6 +64,7 @@ jobs:
             log(f'{os.getcwd()=}')
 
             log('Installing valgrind.')
+            run(f'sudo apt update')
             run(f'sudo apt install valgrind')
             run(f'valgrind --version')
 
