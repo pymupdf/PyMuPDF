@@ -16297,14 +16297,9 @@ def JM_print_stext_page_as_text(out, page):
                             ):
                         #raw += chr(ch.m_internal.c)
                         last_char = ch.m_internal.c
-                        utf = mupdf.fz_runetochar2(last_char)
-                        #log( '{=last_char!r utf!r}')
-                        for c in utf:
-                            assert isinstance(c, int), f'{type(c)=} {c=}'
-                            assert 0 <= c < 256, f'{utf=} {c=}'
-                            mupdf.fz_write_byte(out, c)
+                        extra.JM_append_rune(res, last_char)
                 if last_char != 10 and last_char > 0:
-                    mupdf.fz_write_string(out, "\n")
+                    mupdf.fz_append_string(res, "\n")
 
 
 def JM_put_script(annot_obj, key1, key2, value):
