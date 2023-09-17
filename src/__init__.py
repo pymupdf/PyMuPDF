@@ -16297,7 +16297,7 @@ def JM_print_stext_page_as_text(res, page):
                             ):
                         #raw += chr(ch.m_internal.c)
                         last_char = ch.m_internal.c
-                        extra.JM_append_rune(res, last_char)
+                        JM_append_rune(res, last_char)
                 if last_char != 10 and last_char > 0:
                     mupdf.fz_append_string(res, "\n")
 
