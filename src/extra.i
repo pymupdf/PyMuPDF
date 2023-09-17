@@ -4429,3 +4429,5 @@ PyObject *pixmap_pixel(fz_pixmap* pm, int x, int y);
 int pixmap_n(mupdf::FzPixmap& pixmap);
 
 PyObject* JM_search_stext_page(fz_stext_page *page, const char *needle);
+PyObject *get_word_delimiters();
+PyObject *set_word_delimiters(PyObject *delims)?
