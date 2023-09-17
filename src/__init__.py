@@ -11869,7 +11869,7 @@ class TextPage:
         elif format_ == 4:
             mupdf.fz_print_stext_page_as_xhtml(out, this_tpage, 0)
         else:
-            JM_print_stext_page_as_text(out, this_tpage)
+            JM_print_stext_page_as_text(res, this_tpage)
         text = JM_UnicodeFromBuffer(res)
         return text
 
@@ -16260,16 +16260,16 @@ def JM_point_from_py(p):
     return mupdf.FzPoint(x, y)
 
 
-def JM_print_stext_page_as_text(out, page):
+def JM_print_stext_page_as_text(res, page):
     '''
     Plain text output. An identical copy of fz_print_stext_page_as_text,
     but lines within a block are concatenated by space instead a new-line
     character (which else leads to 2 new-lines).
     '''
     if 1 and g_use_extra:
-        return extra.JM_print_stext_page_as_text( out, page)
+        return extra.JM_print_stext_page_as_text( res, page)
 
-    assert isinstance(out, mupdf.FzOutput)
+    assert isinstance(res, mupdf.FzBuffer)
     assert isinstance(page, mupdf.FzStextPage)
     rect = mupdf.FzRect(page.m_internal.mediabox)
     last_char = 0
