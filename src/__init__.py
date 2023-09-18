@@ -96,6 +96,8 @@ g_subset_fontnames = 0
 # Unset ascender / descender corrections
 g_skip_quad_corrections = 0
 
+# additional word delmiters
+g_word_delimiters = [0] * 65
 
 # Optionally use MuPDF via cppyy bindings; experimental and not tested recently
 # as of 2023-01-20 11:51:40
@@ -20983,22 +20985,27 @@ class TOOLS:
     @staticmethod
     def get_word_delimiters():
         """Return extra word delimiting characters."""
-        return extra.get_word_delimiters()
+        global g_word_delimiters
+        delims = [chr(c) for c in g_word_delimiters if c != 0]
+        return delims
+
 
     @staticmethod
     def set_word_delimiters(delims=None):
         """Set extra word delimiting characters."""
+        global g_word_delimiters
         if delims is None:
             delims = []
         if not hasattr(delims, "__getitem__") or len(delims) > 64:
             raise ValueError("bad delimiter value(s)")
-
         try:
             delims = set([ord(c) for c in delims])
         except:
             print("bad delimiter value(s)")
             raise
         delims = tuple(delims)
+        if not delims:
+            g_word_delimiters = [0] * 65
         return extra.set_word_delimiters(delims)
 
 
