@@ -6,7 +6,8 @@ import os
 
 import fitz
 
-scriptdir = os.path.abspath(os.path.dirname(__file__))
+pymupdfdir = os.path.abspath(f'{__file__}/../..')
+scriptdir = f'{pymupdfdir}/tests'
 filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
 
 
@@ -70,4 +71,31 @@ def _test_extract3():
     t = time.time() - t0
     print(f't={t}')
     sys.stdout.flush()
-
+    
+def test_extract4():
+    '''
+    Rebased-specific.
+    '''
+    if not hasattr(fitz, 'mupdf'):
+        return
+    path = f'{pymupdfdir}/tests/resources/2.pdf'
+    document = fitz.open(path)
+    page = document[4]
+    
+    out = 'test_stext.html'
+    text = page.get_text('html')
+    with open(out, 'w') as f:
+        f.write(text)
+    print(f'Have written to: {out}')
+    
+    out = 'test_extract.html'
+    writer = fitz.mupdf.FzDocumentWriter(
+            out,
+            'html',
+            fitz.mupdf.FzDocumentWriter.PathType_DOCX,
+            )
+    device = fitz.mupdf.fz_begin_page(writer, fitz.mupdf.fz_bound_page(page))
+    fitz.mupdf.fz_run_page(page, device, fitz.mupdf.FzMatrix(), fitz.mupdf.FzCookie())
+    fitz.mupdf.fz_end_page(writer)
+    fitz.mupdf.fz_close_document_writer(writer)
+    print(f'Have written to: {out}')
