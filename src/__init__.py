@@ -18315,6 +18315,8 @@ def jm_lineart_clip_path(dev, ctx, path, even_odd, ctm, scissor):
    dev.ctm = mupdf.FzMatrix(ctm)    # fz_concat(ctm, trace_device_ptm);
    dev.path_type = trace_device_CLIP_PATH
    jm_lineart_path(dev, ctx, path)
+   if dev.pathdict is None:
+       return
    dev.pathdict[ dictkey_type] = 'clip'
    dev.pathdict[ 'even_odd'] = bool(even_odd)
    if 'closePath' not in dev.pathdict:
@@ -18335,6 +18337,8 @@ def jm_lineart_clip_stroke_path(dev, ctx, path, stroke, ctm, scissor):
    dev.ctm = mupdf.FzMatrix(ctm)    # fz_concat(ctm, trace_device_ptm);
    dev.path_type = trace_device_CLIP_STROKE_PATH
    jm_lineart_path(dev, ctx, path)
+   if dev.pathdict is None:
+       return
    dev.pathdict['dictkey_type'] = 'clip'
    dev.pathdict['even_odd'] = None
    if 'closePath' not in dev.pathdict:
