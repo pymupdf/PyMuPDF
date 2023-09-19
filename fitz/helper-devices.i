@@ -307,7 +307,7 @@ jm_lineart_path(fz_context *ctx, jm_lineart_device *dev, const fz_path *path)
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_items, PyList_New(0));
 	fz_walk_path(ctx, path, &trace_path_walker, dev);
 	// Check if any items were added ...
-	if (!PyList_Size(PyDict_GetItem(dev_pathdict, dictkey_items))) {
+	if (!PyDict_GetItem(dev_pathdict, dictkey_items) || !PyList_Size(PyDict_GetItem(dev_pathdict, dictkey_items))) {
 		Py_CLEAR(dev_pathdict);
 	}
 }
@@ -468,6 +468,9 @@ jm_lineart_clip_path(fz_context *ctx, fz_device *dev_, const fz_path *path, int 
 	trace_device_ctm = ctm; //fz_concat(ctm, trace_device_ptm);
 	path_type = CLIP_PATH;
 	jm_lineart_path(ctx, dev, path);
+	if (!dev_pathdict) {
+		return;
+	}
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_type, PyUnicode_FromString("clip"));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "even_odd", JM_BOOL(even_odd));
 	if (!PyDict_GetItemString(dev_pathdict, "closePath")) {
@@ -489,6 +492,9 @@ jm_lineart_clip_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *pat
 	trace_device_ctm = ctm; //fz_concat(ctm, trace_device_ptm);
 	path_type = CLIP_STROKE_PATH;
 	jm_lineart_path(ctx, dev, path);
+	if (!dev_pathdict) {
+		return;
+	}
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_type, PyUnicode_FromString("clip"));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "even_odd", Py_BuildValue("s", NULL));
 	if (!PyDict_GetItemString(dev_pathdict, "closePath")) {
