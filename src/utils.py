@@ -538,25 +538,36 @@ def get_text_words(
     flags: OptInt = None,
     textpage: fitz.TextPage = None,
     sort: bool = False,
+    delimiters=None,
 ) -> list:
     """Return the text words as a list with the bbox for each word.
 
     Args:
         flags: (int) control the amount of data parsed into the textpage.
+        delimiters: (str,list) characters to use as word delimiters
+
+    Returns:
+        Word tuples (x0, y0, x1, y1, "word", bno, lno, wno).
     """
     fitz.CheckParent(page)
     if flags is None:
         flags = fitz.TEXT_PRESERVE_WHITESPACE | fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_MEDIABOX_CLIP
+    if delimiters is not None:
+        old_delimiters = TOOLS.get_word_delimiters()
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
     elif getattr(tp, "parent") != page:
         raise ValueError("not a textpage of this page")
+    if delimiters is not None:
+        TOOLS.set_word_delimiters(delimiters)
     words = tp.extractWORDS()
     if textpage is None:
         del tp
     if sort is True:
         words.sort(key=lambda w: (w[3], w[0]))
+    if delimiters is not None:
+        TOOLS.set_word_delimiters(old_delimiters)
     return words
 
 
@@ -759,6 +770,7 @@ def get_text(
         flags: OptInt = None,
         textpage: fitz.TextPage = None,
         sort: bool = False,
+        delimiters=None,
         ):
     """Extract text from a page or an annotation.
 
@@ -799,7 +811,12 @@ def get_text(
 
     if option == "words":
         return get_text_words(
-            page, clip=clip, flags=flags, textpage=textpage, sort=sort
+            page,
+            clip=clip,
+            flags=flags,
+            textpage=textpage,
+            sort=sort,
+            delimiters=delimiters
         )
     if option == "blocks":
         return get_text_blocks(
@@ -1752,7 +1769,7 @@ def insert_textbox(
     align: int = 0,
     rotate: int = 0,
     render_mode: int = 0,
-    border_width: float = 1,
+    border_width: float = 0.05,
     morph: OptSeq = None,
     overlay: bool = True,
     stroke_opacity: float = 1,
@@ -1818,7 +1835,7 @@ def insert_text(
     encoding: int = 0,
     color: OptSeq = None,
     fill: OptSeq = None,
-    border_width: float = 1,
+    border_width: float = 0.05,
     render_mode: int = 0,
     rotate: int = 0,
     morph: OptSeq = None,
@@ -2086,7 +2103,7 @@ def draw_quad(
 def draw_polyline(
     page: fitz.Page,
     points: list,
-    color: OptSeq = None,
+    color: OptSeq = (0,),
     fill: OptSeq = None,
     dashes: OptStr = None,
     width: float = 1,
@@ -2158,7 +2175,7 @@ def draw_circle(
 def draw_oval(
     page: fitz.Page,
     rect: typing.Union[rect_like, quad_like],
-    color: OptSeq = None,
+    color: OptSeq = (0,),
     fill: OptSeq = None,
     dashes: OptStr = None,
     morph: OptSeq = None,
@@ -3464,7 +3481,7 @@ class Shape:
         color: OptSeq = None,
         fill: OptSeq = None,
         render_mode: int = 0,
-        border_width: float = 1,
+        border_width: float = 0.05,
         rotate: int = 0,
         morph: OptSeq = None,
         stroke_opacity: float = 1,
@@ -3597,10 +3614,11 @@ class Shape:
         else:
             alpha = "/%s gs\n" % alpha
         nres = templ1 % (bdc, alpha, cm, left, top, fname, fontsize)
+
         if render_mode > 0:
             nres += "%i Tr " % render_mode
-        if border_width != 1:
-            nres += "%g w " % border_width
+            nres += "%g w " % border_width * fontsize
+
         if color is not None:
             nres += color_str
         if fill is not None:
@@ -3649,7 +3667,7 @@ class Shape:
         color: OptSeq = None,
         fill: OptSeq = None,
         expandtabs: int = 1,
-        border_width: float = 1,
+        border_width: float = 0.05,
         align: int = 0,
         render_mode: int = 0,
         rotate: int = 0,
@@ -3670,7 +3688,7 @@ class Shape:
             color -- RGB stroke color triple
             fill -- RGB fill color triple
             render_mode -- text rendering control
-            border_width -- thickness of glyph borders
+            border_width -- thickness of glyph borders as percentage of fontsize
             expandtabs -- handles tabulators with string function
             align -- left, center, right, justified
             rotate -- 0, 90, 180, or 270 degrees
@@ -3773,7 +3791,7 @@ class Shape:
             else:
                 return len(x) * fontsize
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         if ordering < 0:
             blen = glyphs[32][1] * fontsize  # pixel size of space character
@@ -3791,99 +3809,107 @@ class Shape:
         else:
             cm = ""
 
-        # ---------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # adjust for text orientation / rotation
-        # ---------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         progr = 1  # direction of line progress
         c_pnt = fitz.Point(0, fontsize * ascender)  # used for line progress
         if rot == 0:  # normal orientation
             point = rect.tl + c_pnt  # line 1 is 'lheight' below top
-            pos = point.y + self.y  # y of first line
             maxwidth = rect.width  # pixels available in one line
-            maxpos = rect.y1 + self.y  # lines must not be below this
+            maxheight = rect.height  # available text height
 
         elif rot == 90:  # rotate counter clockwise
             c_pnt = fitz.Point(fontsize * ascender, 0)  # progress in x-direction
             point = rect.bl + c_pnt  # line 1 'lheight' away from left
-            pos = point.x + self.x  # position of first line
             maxwidth = rect.height  # pixels available in one line
-            maxpos = rect.x1 + self.x  # lines must not be right of this
+            maxheight = rect.width  # available text height 
             cm += cmp90
 
         elif rot == 180:  # text upside down
             # progress upwards in y direction
             c_pnt = -fitz.Point(0, fontsize * ascender)
             point = rect.br + c_pnt  # line 1 'lheight' above bottom
-            pos = point.y + self.y  # position of first line
             maxwidth = rect.width  # pixels available in one line
             progr = -1  # subtract lheight for next line
-            maxpos = rect.y0 + self.y  # lines must not be above this
+            maxheight =rect.height  # available text height
             cm += cm180
 
         else:  # rotate clockwise (270 or -90)
             # progress from right to left
             c_pnt = -fitz.Point(fontsize * ascender, 0)
             point = rect.tr + c_pnt  # line 1 'lheight' left of right
-            pos = point.x + self.x  # position of first line
             maxwidth = rect.height  # pixels available in one line
             progr = -1  # subtract lheight for next line
-            maxpos = rect.x0 + self.x  # lines must not left of this
+            maxheight = rect.width  # available text height 
             cm += cmm90
 
-        # =======================================================================
+        # =====================================================================
         # line loop
-        # =======================================================================
+        # =====================================================================
         just_tab = []  # 'justify' indicators per line
 
         for i, line in enumerate(t0):
             line_t = line.expandtabs(expandtabs).split(" ")  # split into words
+            num_words = len(line_t)
             lbuff = ""  # init line buffer
             rest = maxwidth  # available line pixels
-            # ===================================================================
+            # =================================================================
             # word loop
-            # ===================================================================
-            for word in line_t:
+            # =================================================================
+            for j in range(num_words):
+                word = line_t[j]
                 pl_w = pixlen(word)  # pixel len of word
-                if rest >= pl_w:  # will it fit on the line?
-                    lbuff += word + " "  # yes, and append word
+                if rest >= pl_w:  # does it fit on the line?
+                    lbuff += word + " "  # yes, append word
                     rest -= pl_w + blen  # update available line space
-                    continue
-                # word won't fit - output line (if not empty)
-                if len(lbuff) > 0:
+                    continue  # next word
+
+                # word doesn't fit - output line (if not empty)
+                if lbuff:
                     lbuff = lbuff.rstrip() + "\n"  # line full, append line break
                     text += lbuff  # append to total text
-                    pos += lheight * progr  # increase line position
-                    just_tab.append(True)  # line is justify candidate
-                    lbuff = ""  # re-init line buffer
+                    just_tab.append(True)  # can align-justify
+
+                lbuff = ""  # re-init line buffer
                 rest = maxwidth  # re-init avail. space
+
                 if pl_w <= maxwidth:  # word shorter than 1 line?
                     lbuff = word + " "  # start the line with it
                     rest = maxwidth - pl_w - blen  # update free space
                     continue
+
                 # long word: split across multiple lines - char by char ...
                 if len(just_tab) > 0:
-                    just_tab[-1] = False  # reset justify indicator
+                    just_tab[-1] = False  # cannot align-justify
                 for c in word:
                     if pixlen(lbuff) <= maxwidth - pixlen(c):
                         lbuff += c
                     else:  # line full
                         lbuff += "\n"  # close line
                         text += lbuff  # append to text
-                        pos += lheight * progr  # increase line position
-                        just_tab.append(False)  # do not justify line
+                        just_tab.append(False)  # cannot align-justify
                         lbuff = c  # start new line with this char
+
                 lbuff += " "  # finish long word
                 rest = maxwidth - pixlen(lbuff)  # long word stored
 
-            if lbuff != "":  # unprocessed line content?
+            if lbuff:  # unprocessed line content?
                 text += lbuff.rstrip()  # append to text
-                just_tab.append(False)  # do not justify line
+                just_tab.append(False)  # cannot align-justify
+
             if i < len(t0) - 1:  # not the last line?
                 text += "\n"  # insert line break
-                pos += lheight * progr  # increase line position
 
-        more = (pos - maxpos) * progr  # difference to rect size limit
+        # compute used part of the textbox
+        if text.endswith("\n"):
+            text=text[:-1]
+        lb_count = text.count("\n") + 1 # number of lines written
 
+        # text height = line count * line height plus one descender value
+        text_height = lheight * lb_count - descender * fontsize
+
+        more = text_height - maxheight  # difference to height limit
         if more > fitz.EPSILON:  # landed too much outside rect
             return (-1) * more  # return deficit, don't output
 
@@ -3927,8 +3953,11 @@ class Shape:
                 top = -height + pnt.y + self.y
 
             nres += templ % (left, top, fname, fontsize)
+
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
+                nres += "%g w " % border_width * fontsize
+
             if align == 3:
                 nres += "%g Tw " % spacing
 
@@ -3936,8 +3965,6 @@ class Shape:
                 nres += color_str
             if fill is not None:
                 nres += fill_str
-            if border_width != 1:
-                nres += "%g w " % border_width
             nres += "%sTJ\n" % fitz.getTJstr(t, tj_glyphs, simple, ordering)
 
         nres += "ET\n%sQ\n" % emc
