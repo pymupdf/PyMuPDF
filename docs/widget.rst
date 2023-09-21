@@ -133,7 +133,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: text_fontsize
 
-       A float defining the text fontsize. Default value is zero, which causes PDF viewer software to dynamically choose a size suitable for the annotation's rectangle and text amount.
+       A float defining the text :data:`fontsize`. Default value is zero, which causes PDF viewer software to dynamically choose a size suitable for the annotation's rectangle and text amount.
 
     .. attribute:: text_maxlen
 
@@ -234,7 +234,7 @@ TiRo          Times-Roman
 ZaDb          ZapfDingbats
 ============= =======================
 
-You are generally free to use any font for every widget. However, we recommend using *ZaDb* ("ZapfDingbats") and fontsize 0 for check boxes: typical viewers will put a correctly sized tickmark in the field's rectangle, when it is clicked.
+You are generally free to use any font for every widget. However, we recommend using *ZaDb* ("ZapfDingbats") and :data:`fontsize` 0 for check boxes: typical viewers will put a correctly sized tickmark in the field's rectangle, when it is clicked.
 
 Supported Widget Types
 -----------------------

@@ -213,7 +213,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: glyph_bbox(chr, language=None, script=0)
 
-      The glyph rectangle relative to fontsize 1.
+      The glyph rectangle relative to :data:`fontsize` 1.
 
       :arg int chr: *ord()* of the character.
 
@@ -241,7 +241,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :arg str text: a text string, UTF-8 encoded.
 
-      :arg float fontsize: the fontsize.
+      :arg float fontsize: the :data:`fontsize`.
 
       :rtype: float
 
@@ -265,7 +265,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :arg str text: a text string, UTF-8 encoded.
 
-      :arg float fontsize: the fontsize.
+      :arg float fontsize: the :data:`fontsize`.
 
       :rtype: tuple
 

@@ -15,7 +15,7 @@ During **preparation**, a text writer stores any number of text pieces ("spans")
 A text writer is an elegant alternative to methods :meth:`Page.insert_text` and friends:
 
 * **Improved text positioning:** Choose any point where insertion of text should start. Storing text returns the "cursor position" after the *last character* of the span.
-* **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch when composing a larger text.
+* **Free font choice:** Each text span has its own font and :data:`fontsize`. This lets you easily switch when composing a larger text.
 * **Automatic fallback fonts:** If a character is not supported by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs" -- looking like a small rectangle). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (including Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
 * **Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated support of Cyrillic and Greek characters **without specifying encoding.** Your text may be a mixture of Latin, Greek and Cyrillic.
 * **Transparency support:** Parameter *opacity* is supported. This offers a handy way to create watermark-style text.
@@ -71,7 +71,7 @@ Using this object entails three steps:
       :arg point_like pos: start position of the text, the bottom left point of the first character.
       :arg str text: a string of arbitrary length. It will be written starting at position "pos".
       :arg font: a :ref:`Font`. If omitted, `fitz.Font("helv")` will be used.
-      :arg float fontsize: the fontsize, a positive number, default 11.
+      :arg float fontsize: the :data:`fontsize`, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts within the text will automatically converted. There are no other consequences, i.e. :attr:`TextWriter.last_point` will still be the rightmost character, and there neither is any alignment taking place. Hence you may want to use :meth:`TextWriter.fill_textbox` instead.
       :arg bool small_caps: *(New in v1.18.15)* look for the character's Small Capital version in the font. If present, take that value instead. Otherwise the original character (this font or the fallback font) will be taken. The fallback font will never return small caps. For example, this snippet::
@@ -102,7 +102,7 @@ Using this object entails three steps:
       :arg point_like pos: start position of the text, the bottom left point of the first character.
       :arg str text: a string. It will be written starting at position "pos".
       :arg font: a :ref:`Font`. If omitted, `fitz.Font("helv")` will be used.
-      :arg float fontsize: the fontsize, a positive float, default 11.
+      :arg float fontsize: the :data:`fontsize`, a positive float, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
       :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.
 
@@ -120,7 +120,7 @@ Using this object entails three steps:
       :arg str,sequ text: the text. Can be specified as a (UTF-8) string or a list / tuple of strings. A string will first be converted to a list using *splitlines()*. Every list item will begin on a new line (forced line breaks).
       :arg point_like pos: *(new in v1.17.3)* start storing at this point. Default is a point near rectangle top-left.
       :arg font: the :ref:`Font`, default `fitz.Font("helv")`.
-      :arg float fontsize: the fontsize.
+      :arg float fontsize: the :data:`fontsize`.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
       :arg bool warn: on text overflow do nothing, warn, or raise an exception. Overflow text will never be written. **Changed in v1.18.9:**
@@ -187,7 +187,7 @@ Using this object entails three steps:
   1. Opacity and color apply to **all the text** in this object.
   2. If you need different colors / transparency, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
-  4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`last_point` of the previously added item.
+  4. Font and :data:`fontsize` can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`last_point` of the previously added item.
   5. You can use the *pos* argument of :meth:`TextWriter.fill_textbox` to set the position of the first text character. This allows filling the same textbox with contents from different :ref:`TextWriter` objects, thus allowing for multiple colors, opacities, etc.
   6. MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. Starting with v1.18.0 this can be checked via the font attribute :attr:`Font.is_writable`. This attribute is also checked when using :ref:`TextWriter` methods.
 

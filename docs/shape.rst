@@ -544,7 +544,7 @@ Common Parameters
 
 **fontsize** (*float*)
 
-  Font size of text.
+  Font size of text, see: :data:`fontsize`.
 
 ----
 

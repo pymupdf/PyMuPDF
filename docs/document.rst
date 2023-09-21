@@ -188,7 +188,7 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg float height: may used together with *width* as an alternative to *rect* to specify layout information.
 
-      :arg float fontsize: the default fontsize for reflowable document types. This parameter is ignored if none of the parameters *rect* or *width* and *height* are specified. Will be used to calculate the page layout.
+      :arg float fontsize: the default :data:`fontsize` for reflowable document types. This parameter is ignored if none of the parameters *rect* or *width* and *height* are specified. Will be used to calculate the page layout.
 
       :raises TypeError: if the *type* of any parameter does not conform.
       :raises FileNotFoundError: if the file / path cannot be found. Re-implemented as subclass of `RuntimeError`.

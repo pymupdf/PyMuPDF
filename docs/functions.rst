@@ -34,7 +34,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`EMPTY_RECT`                   return the (standard) empty / invalid rectangle
 :meth:`get_pdf_now`                  return the current timestamp in PDF format
 :meth:`get_pdf_str`                  return PDF-compatible string
-:meth:`get_text_length`              return string length for a given font & fontsize
+:meth:`get_text_length`              return string length for a given font & :data:`fontsize`
 :meth:`glyph_name_to_unicode`        return unicode from a glyph name
 :meth:`image_profile`                return a dictionary of basic image properties
 :meth:`INFINITE_IRECT`               return the (only existing) infinite rectangle
@@ -361,11 +361,11 @@ Yet others are handy, general-purpose utilities.
 
       * New in version 1.14.7
 
-      Calculate the length of text on output with a given **builtin** font, fontsize and encoding.
+      Calculate the length of text on output with a given **builtin** font, :data:`fontsize` and encoding.
 
       :arg str text: the text string.
       :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth:`Page.insert_font`).
-      :arg float fontsize: the fontsize.
+      :arg float fontsize: the :data:`fontsize`.
       :arg int encoding: the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic (Russian) are available. Relevant for Base-14 fonts "Helvetica", "Courier" and "Times" and their variants only. Make sure to use the same value as in the corresponding text insertion.
       :rtype: float
       :returns: the length in points the string will have (e.g. when used in :meth:`Page.insert_text`).
@@ -568,7 +568,7 @@ Yet others are handy, general-purpose utilities.
          - 1: Stroked text -- equivalent to `1 Tr`, only the character borders are shown.
          - 3: Ignored text -- equivalent to `3 Tr` (hidden text).
 
-      3. Line width in this context is important only for processing `span["type"] != 0`: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the fontsize (`span["size"] * 0,05`) is generated. Often, an "artificial" bold text in PDF is created by `2 Tr`. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
+      3. Line width in this context is important only for processing `span["type"] != 0`: it determines the thickness of the character's border line. This value may not be provided at all with the text data. In this case, a value of 5% of the :data:`fontsize` (`span["size"] * 0,05`) is generated. Often, an "artificial" bold text in PDF is created by `2 Tr`. There is no equivalent span type for this case. Instead, respective text is represented by two consecutive spans -- which are identical in every aspect, except for their types, which are 0, resp 1. It is your responsibility to handle this type of situation - in :meth:`Page.get_text`, MuPDF is doing this for you.
       4. For data compactness, the character's unicode is provided here. Use built-in function `chr()` for the character itself.
       5. The alpha / opacity value of the span's text, `0 <= opacity <= 1`, 0 is invisible text, 1 (100%) is intransparent. Depending on `span["type"]`, interpret this value as *fill* opacity or, resp. *stroke* opacity.
       6. *(Changed in v1.19.0)* This value is equal or close to `char["bbox"]` of "rawdict". In particular, the bbox **height** value is always computed as if **"small glyph heights"** had been requested.
@@ -703,7 +703,7 @@ Yet others are handy, general-purpose utilities.
       :arg int limit: limits the number of returned entries. The default of 256 is enforced for all fonts that only support 1-byte characters, so-called "simple fonts" (checked by this method). All :ref:`Base-14-Fonts` are simple fonts.
 
       :rtype: list
-      :returns: a list of *limit* tuples. Each character *c* has an entry  *(g, w)* in this list with an index of *ord(c)*. Entry *g* (integer) of the tuple is the glyph id of the character, and float *w* is its normalized width. The actual width for some fontsize can be calculated as *w * fontsize*. For simple fonts, the *g* entry can always be safely ignored. In all other cases *g* is the basis for graphically representing *c*.
+      :returns: a list of *limit* tuples. Each character *c* has an entry  *(g, w)* in this list with an index of *ord(c)*. Entry *g* (integer) of the tuple is the glyph id of the character, and float *w* is its normalized width. The actual width for some :data:`fontsize` can be calculated as *w * fontsize*. For simple fonts, the *g* entry can always be safely ignored. In all other cases *g* is the basis for graphically representing *c*.
 
       This function calculates the pixel width of a string called *text*::
 
