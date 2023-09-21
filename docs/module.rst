@@ -429,7 +429,7 @@ Extract text from arbitrary :ref:`supported documents<Supported_File_Types>` to 
 
 After each page of the output file, a formfeed character, `hex(12)` is written -- even if the input page has no text at all. This behavior can be controlled via options.
 
-.. note:: For "layout" mode, **only horizontal, left-to-right, top-to bottom** text is supported, other text is ignored. In this mode, text is also ignored, if its fontsize is too small.
+.. note:: For "layout" mode, **only horizontal, left-to-right, top-to bottom** text is supported, other text is ignored. In this mode, text is also ignored, if its :data:`fontsize` is too small.
 
    "Simple" and "blocks" mode in contrast output **all text** for any text size or orientation.
 
@@ -459,7 +459,7 @@ Command::
     -skip-empty           suppress pages with no text (default False)
     -output OUTPUT        store text in this file (default inputfilename.txt)
     -grid GRID            merge lines if closer than this (default 2)
-    -fontsize FONTSIZE    only include text with a larger fontsize (default 3)
+    -fontsize FONTSIZE    only include text with a larger :data:`fontsize` (default 3)
 
 .. note:: Command options may be abbreviated as long as no ambiguities are introduced. So the following do the same:
 
@@ -475,7 +475,7 @@ Command::
 * **noformfeed:**  (bool) instead of `hex(12)` (formfeed), write linebreaks `\n` at end of output pages.
 * **skip-empty:**  (bool) skip pages with no text.
 * **grid:** lines with a vertical coordinate difference of no more than this value (in points) will be merged into the same output line. Only relevant for "layout" mode. **Use with care:** 3 or the default 2 should be adequate in most cases. If **too large**, lines that are *intended* to be different in the original may be merged and will result in garbled and / or incomplete output. If **too low**, artifact separate output lines may be generated for some spans in the input line, just because they are coded in a different font with slightly deviating properties.
-* **fontsize:** include text with fontsize larger than this value only (default 3). Only relevant for "layout" option.
+* **fontsize:** include text with :data:`fontsize` larger than this value only (default 3). Only relevant for "layout" option.
 
 
 .. highlight:: python
