@@ -1753,6 +1753,7 @@ class PythonFlags:
             String containing linker flags for library paths.
     '''
     def __init__(self):
+        
         if windows():
             wp = wdev.WindowsPython()
             self.includes = f'/I{wp.root}\\include'
@@ -1779,7 +1780,27 @@ class PythonFlags:
             #
             python_exe = os.path.realpath( sys.executable)
             if darwin():
-                python_config = f'python3-config'
+                # Basic install of dev tools with `xcode-select --install` doesn't
+                # seem to provide a `python3-config` or similar, but there is a
+                # `python-config.py` accessible via sysconfig.
+                python_config = None
+                for pc in (
+                        f'{python_exe}-config',
+                        f'{sys.executable} {sysconfig.get_config_var("srcdir")}/python-config.py',
+                        f'python3-config',
+                        ):
+                    #_log(f'Trying: {pc=}')
+                    e = subprocess.run(
+                            f'{pc} --includes',
+                            shell=1,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                            check=0,
+                            ).returncode
+                    #_log(f'{e=}')
+                    if e == 0:
+                        python_config = pc
+                assert python_config, f'Cannot find python-config'
             else:
                 python_config = f'{python_exe}-config'
             self.includes = run( f'{python_config} --includes', capture=1).strip()
@@ -1798,8 +1819,8 @@ class PythonFlags:
                     _log(f'### Have removed `-lcrypt` from ldflags: {self.ldflags!r} -> {ldflags2!r}')
                     self.ldflags = ldflags2
         
-        _log(f'self.includes={self.includes!r}')
-        _log(f'self.ldflags={self.ldflags!r}')
+        _log(f'{self.includes=}')
+        _log(f'{self.ldflags=}')
 
 
 def macos_add_cross_flags(command):
