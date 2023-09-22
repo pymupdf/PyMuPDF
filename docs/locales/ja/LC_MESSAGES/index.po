@@ -50,14 +50,16 @@ msgid ""
 "=inline-link>`_ --  a lightweight :title:`PDF`, :title:`XPS`, and "
 ":title:`E-book` viewer, renderer, and toolkit, which is maintained and "
 "developed by :title:`Artifex Software, Inc`."
-msgstr ""
+msgstr ":title:`PyMuPDF` は、:title:`PDF` （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な :title:`Python` ライブラリです。"
+
+
 
 #: ../../index.rst:17 71c9f3b1745d48b5a073714c1da40c90
 msgid ""
 ":title:`PyMuPDF` is hosted on `GitHub "
 "<https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI "
 "<https://pypi.org/project/PyMuPDF/>`_."
-msgstr ""
+msgstr ":title:`PyMuPDF` は  `GitHub <https://github.com/pymupdf/PyMuPDF>`_  でホストされ、`PyPI <https://pypi.org/project/PyMuPDF/>`_ に登録されています。"
 
 #: ../../index.rst:74 3b1b0718e6e64d3eb02cae79ec00a83c
 msgid "Find out about PyMuPDF Utilities"
