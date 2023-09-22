@@ -837,7 +837,7 @@ def build_mupdf_windows( mupdf_local, env, build_type):
     if not devenv:
         devenv = 'devenv.com'
         log( f'Cannot find devenv.com in default locations, using: {devenv!r}')
-    command = f'cd {mupdf_local} && {sys.executable} ./scripts/mupdfwrap.py'
+    command = f'cd "{mupdf_local}" && "{sys.executable}" ./scripts/mupdfwrap.py'
     if os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE') == '1':
         command += ' --vs-upgrade 1'
         

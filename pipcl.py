@@ -1756,7 +1756,7 @@ class PythonFlags:
         
         if windows():
             wp = wdev.WindowsPython()
-            self.includes = f'/I{wp.root}\\include'
+            self.includes = f'/I"{wp.root}\\include"'
             self.ldflags = f'/LIBPATH:"{wp.root}\\libs"'
         
         elif pyodide():

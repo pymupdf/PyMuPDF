@@ -2,6 +2,11 @@ Change Log
 ==========
 
 
+**Changes in next release
+
+* **Fixed** `2683 <https://github.com/pymupdf/PyMuPDF/issues/2683>`_: Windows sdist build failure - non-quoting of path and using UNIX which command
+
+
 **Changes in version 1.23.3 (2023-08-31)**
 
 * Fixed use of Tesseract for OCR.
