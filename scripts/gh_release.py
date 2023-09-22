@@ -356,9 +356,11 @@ def build_pyodide_wheel():
     # Tell MuPDF to build for Pyodide.
     env_extra['OS'] = 'pyodide'
 
-    # Build PyMuPDF as a single wheel without a separate PyMuPDFb
-    # wheel.
+    # Build only classic PyMuPDF.
     env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = 'a'
+    
+    # Build a single wheel without a separate PyMuPDFb wheel.
+    env_extra['PYMUPDF_SETUP_FLAVOUR'] = 'pb'
     
     # 2023-08-30: We set PYMUPDF_SETUP_MUPDF_BUILD_TESSERACT=0 because
     # otherwise mupdf thirdparty/tesseract/src/ccstruct/dppoint.cpp fails to
