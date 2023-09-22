@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -10,9 +10,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,40 +21,40 @@ msgstr ""
 
 #: ../../colorspace.rst:7 a086efe19d644d6a9a81f87d808e4adb
 msgid "Colorspace"
-msgstr ""
+msgstr "Colorspace (カラースペース)"
 
 #: ../../colorspace.rst:9 d9a7d696c581492b90c82c9abc6b885f
 msgid "Represents the color space of a :ref:`Pixmap`."
-msgstr ""
+msgstr ":ref:`Pixmap` のカラースペースを表します。"
 
 #: ../../colorspace.rst:12 1f2c331405804319b0b3d6ca8ce00221
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラス API** "
 
 #: ../../colorspace.rst:18 711f6a6009294915af6aa216becba436
 msgid "Constructor"
-msgstr ""
+msgstr "コンストラクタ"
 
 #: ../../colorspace.rst 7db7c78c0dc74cde9f70f28b78c44182
 msgid "Parameters"
-msgstr ""
+msgstr "パラメータ:"
 
 #: ../../colorspace.rst:20 3bcc93b28913457b901886504a9c7d61
 msgid ""
 "A number identifying the colorspace. Possible values are :data:`CS_RGB`, "
 ":data:`CS_GRAY` and :data:`CS_CMYK`."
-msgstr ""
+msgstr "カラースペースを識別する番号。可能な値は :data:`CS_RGB` 、:data:`CS_GRAY` 、および :data:`CS_CMYK` です。"
 
 #: ../../colorspace.rst:24 dd5148c548834c1fb5cdda367cca92a0
 msgid ""
 "The name identifying the colorspace. Example: *fitz.csCMYK.name = "
 "'DeviceCMYK'*."
-msgstr ""
+msgstr "カラースペースを識別する名前です。例:  *fitz.csCMYK.name = 'DeviceCMYK'* 。"
 
 #: ../../colorspace.rst 889aa9982a5b45efb8a7470956499445
 #: 8bc0f0b07eae469faae2f36e3abbf02d
 msgid "type"
-msgstr ""
+msgstr "型:"
 
 #: ../../colorspace.rst:26 5151039dbfce44188e155c42919b292f
 msgid "str"
@@ -64,7 +64,7 @@ msgstr ""
 msgid ""
 "The number of bytes required to define the color of one pixel. Example: "
 "*fitz.csCMYK.n == 4*."
-msgstr ""
+msgstr "1ピクセルの色を定義するのに必要なバイト数です。例: *fitz.csCMYK.n == 4* 。"
 
 #: ../../colorspace.rst:32 afad5de574fd4094944915c6cf25dd21
 msgid "int"
@@ -72,13 +72,13 @@ msgstr ""
 
 #: ../../colorspace.rst:35 aa85b4ae9c2c4f6c97f9fa99dd11e371
 msgid "**Predefined Colorspaces**"
-msgstr ""
+msgstr "**事前定義済みのカラースペース** "
 
 #: ../../colorspace.rst:37 67ac2bb221074744ae5bee2866d6bf19
 msgid ""
 "For saving some typing effort, there exist predefined colorspace objects "
 "for the three available cases."
-msgstr ""
+msgstr "入力を簡略化するために、三つの利用可能なケースのための事前定義されたカラースペースオブジェクトが存在します。"
 
 #: ../../colorspace.rst:39 adbdf7e983d242cc9776a96cb86dbe93
 msgid ":data:`csRGB`  = *fitz.Colorspace(fitz.CS_RGB)*"

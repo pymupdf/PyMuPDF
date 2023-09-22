@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../annot.rst:7 3b44369b87274b07865b9796c069f286
 msgid "Annot"
-msgstr ""
+msgstr "Annot (注釈)"
 
 #: ../../annot.rst:8 bc683ca9b67d4517ad2d367ac83ea67f
 msgid "**This class is supported for PDF documents only.**"
@@ -74,7 +74,7 @@ msgstr ""
 
 #: ../../annot.rst:19 57519e02c3cf4205aeefc5bcc5bbc7d6
 msgid "get :data:`xref` of an :data:`OCG` / :data:`OCMD`"
-msgstr "⚠️:data:`OCG` / :data:`OCMD` のクロスリファレンスを取得します"
+msgstr ":data:`xref` を :data:`OCG` または :data:`OCMD` に取得します。"
 
 #: ../../annot.rst:20 27a8686eeaa04874bbe702c190c222eb
 msgid ":meth:`Annot.get_pixmap`"
@@ -161,7 +161,8 @@ msgstr ""
 
 #: ../../annot.rst:30 fdb24926db0e4b4f8ae48e3f0b1e2c07
 msgid "set :data:`xref` to an :data:`OCG` / :data:`OCMD`"
-msgstr "⚠️:data:`OCG` / :data:`OCMD` へのクロスリファレンスを設定します"
+msgstr ":data:`xref` を :data:`OCG` または :data:`OCMD` に設定します。"
+
 
 #: ../../annot.rst:31 f6df0ea961a44439ae124ff19c6a84aa
 msgid ":meth:`Annot.set_opacity`"
