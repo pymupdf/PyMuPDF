@@ -142,7 +142,7 @@ class Package:
     module into root `pipcl_test/install`.
 
         >>> _ = subprocess.run(
-        ...         f'cd pipcl_test && {sys.executable} setup.py --verbose --root install install',
+        ...         f'cd pipcl_test && {sys.executable} setup.py --root install install',
         ...         shell=1, check=1)
 
     The actual install directory depends on `sysconfig.get_path('platlib')`:
@@ -185,42 +185,43 @@ class Package:
     check that the sdist and wheel actually work.
 
         >>> _ = subprocess.run(
-        ...         f'cd pipcl_test && {sys.executable} setup.py --verbose sdist',
+        ...         f'cd pipcl_test && {sys.executable} setup.py sdist',
         ...         shell=1, check=1)
 
         >>> _ = subprocess.run(
-        ...         f'cd pipcl_test && {sys.executable} setup.py --verbose bdist_wheel',
+        ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
     
     Check that rebuild does nothing.
     
         >>> t0 = os.path.getmtime('pipcl_test/build/foo.py')
         >>> _ = subprocess.run(
-        ...         f'cd pipcl_test && {sys.executable} setup.py --verbose bdist_wheel',
+        ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
         >>> t = os.path.getmtime('pipcl_test/build/foo.py')
-        >>> t == t0
-        True
+        >>> assert t == t0
         
     Check that touching bar.i forces rebuild.
     
         >>> os.utime('pipcl_test/bar.i')
         >>> _ = subprocess.run(
-        ...         f'cd pipcl_test && {sys.executable} setup.py --verbose bdist_wheel',
+        ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
         >>> t = os.path.getmtime('pipcl_test/build/foo.py')
-        >>> t > t0
-        True
+        >>> assert t > t0
     
-    Check that touching foo.i.cpp forces rebuild.
+    Check that touching foo.i.cpp does not run swig, but does recompile/link.
     
+        >>> t0 = time.time()
         >>> os.utime('pipcl_test/build/foo.i.cpp')
         >>> _ = subprocess.run(
-        ...         f'cd pipcl_test && {sys.executable} setup.py --verbose bdist_wheel',
+        ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
-        >>> t = os.path.getmtime('pipcl_test/build/foo.py')
-        >>> t > t0
-        True
+        >>> assert os.path.getmtime('pipcl_test/build/foo.py') <= t0
+        >>> so = glob.glob('pipcl_test/build/*.so')
+        >>> assert len(so) == 1
+        >>> so = so[0]
+        >>> assert os.path.getmtime(so) > t0
     
     Wheels and sdists
     
@@ -509,16 +510,15 @@ class Package:
             wheel_directory,
             config_settings=None,
             metadata_directory=None,
-            verbose=False,
             ):
         '''
-        A PEP-517 `build_wheel()` function, with extra optional `verbose` arg.
+        A PEP-517 `build_wheel()` function.
 
         Also called by `handle_argv()` to handle the `bdist_wheel` command.
 
         Returns leafname of generated wheel within `wheel_directory`.
         '''
-        _log(
+        log2(
                 f' wheel_directory={wheel_directory!r}'
                 f' config_settings={config_settings!r}'
                 f' metadata_directory={metadata_directory!r}'
@@ -563,7 +563,7 @@ class Package:
             m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', tag_platform)
             if m:
                 tag_platform2 = f'{m.group(1)}_0{m.group(2)}'
-                _log( f'Changing from {tag_platform!r} to {tag_platform2!r}')
+                log2( f'Changing from {tag_platform!r} to {tag_platform2!r}')
                 tag_platform = tag_platform2
 
         # Final tag is, for example, 'cp39-none-win32', 'cp39-none-win_amd64'
@@ -579,18 +579,18 @@ class Package:
         if self.fn_build:
             items = self._call_fn_build(config_settings)
 
-        _log(f'Creating wheel: {path}')
+        log2(f'Creating wheel: {path}')
         os.makedirs(wheel_directory, exist_ok=True)
         record = _Record()
         with zipfile.ZipFile(path, 'w', self.wheel_compression, self.wheel_compresslevel) as z:
 
             def add_file(from_, to_):
                 z.write(from_, to_)
-                record.add_file(from_, to_, verbose=verbose)
+                record.add_file(from_, to_)
 
             def add_str(content, to_):
                 z.writestr(to_, content)
-                record.add_content(content, to_, verbose=verbose)
+                record.add_content(content, to_)
 
             dist_info_dir = self._dist_info_dir()
             
@@ -623,11 +623,12 @@ class Package:
             z.writestr(f'{dist_info_dir}/RECORD', record.get(f'{dist_info_dir}/RECORD'))
 
         st = os.stat(path)
-        _log( f'Have created wheel size={st.st_size}: {path}')
-        with zipfile.ZipFile(path, compression=self.wheel_compression) as z:
-            _log(f'Contents are:')
-            for zi in sorted(z.infolist(), key=lambda z: z.filename):
-                _log(f'    {zi.file_size: 10d} {zi.filename}')
+        log1( f'Have created wheel size={st.st_size}: {path}')
+        if g_verbose >= 2:
+            with zipfile.ZipFile(path, compression=self.wheel_compression) as z:
+                _log2(f'Contents are:')
+                for zi in sorted(z.infolist(), key=lambda z: z.filename):
+                    _log2(f'    {zi.file_size: 10d} {zi.filename}')
         
         return os.path.basename(path)
 
@@ -636,16 +637,15 @@ class Package:
             sdist_directory,
             formats,
             config_settings=None,
-            verbose=False,
             ):
         '''
-        A PEP-517 `build_sdist()` function, with extra optional `verbose` arg.
+        A PEP-517 `build_sdist()` function.
 
         Also called by `handle_argv()` to handle the `sdist` command.
 
         Returns leafname of generated archive within `sdist_directory`.
         '''
-        _log(
+        log2(
                 f' sdist_directory={sdist_directory!r}'
                 f' formats={formats!r}'
                 f' config_settings={config_settings!r}'
@@ -672,8 +672,7 @@ class Package:
             Adds item called `name` to `tarfile.TarInfo` `tar`, containing
             `contents`. If contents is a string, it is encoded using utf8.
             '''
-            if verbose:
-                _log( f'Adding: {name}')
+            log2( f'Adding: {name}')
             if isinstance(contents, str):
                 contents = contents.encode('utf8')
             check_name(name)
@@ -683,15 +682,13 @@ class Package:
             tar.addfile(ti, io.BytesIO(contents))
         
         def add_file(tar, path_abs, name):
-            if verbose:
-                _log( f'Adding file: {os.path.relpath(path_abs)} => {name}')
+            log2( f'Adding file: {os.path.relpath(path_abs)} => {name}')
             check_name(name)
             tar.add( path_abs, f'{prefix}/{name}', recursive=False)
 
         os.makedirs(sdist_directory, exist_ok=True)
         tarpath = f'{sdist_directory}/{prefix}.tar.gz'
-        if verbose:
-            _log(f'Creating sdist: {tarpath}')
+        log2(f'Creating sdist: {tarpath}')
         with tarfile.open(tarpath, 'w:gz') as tar:
             found_pyproject_toml = False
             for path in paths:
@@ -708,24 +705,24 @@ class Package:
                 add_file( tar, path_abs, path_rel)
                 manifest.append(path_rel)
             if not found_pyproject_toml:
-                _log(f'Warning: no pyproject.toml specified.')
+                log0(f'Warning: no pyproject.toml specified.')
             
             # Always add a PKG-INFO file.
             add_content(tar, f'PKG-INFO', self._metainfo())
 
             if self.license:
                 if 'COPYING' in names_in_tar:
-                    _log(f'Not writing .license because file already in sdist: COPYING')
+                    log2(f'Not writing .license because file already in sdist: COPYING')
                 else:
                     add_content(tar, f'COPYING', self.license)
             
-        _log( f'Have created sdist: {tarpath}')
+        log1( f'Have created sdist: {tarpath}')
         return os.path.basename(tarpath)
 
 
     def _call_fn_build( self, config_settings=None):
         assert self.fn_build
-        _log(f'calling self.fn_build={self.fn_build}')
+        log2(f'calling self.fn_build={self.fn_build}')
         if inspect.signature(self.fn_build).parameters:
             ret = self.fn_build(config_settings)
         else:
@@ -751,16 +748,15 @@ class Package:
                 path = os.path.abspath(path)
                 assert path.startswith(self.root+os.sep), \
                         f'path={path!r} does not start with root={self.root+os.sep!r}'
-                _log(f'Removing: {path}')
+                log2(f'Removing: {path}')
                 shutil.rmtree(path, ignore_errors=True)
 
 
-    def install(self, record_path=None, root=None, verbose=False):
+    def install(self, record_path=None, root=None):
         '''
         Called by `handle_argv()` to handle `install` command..
         '''
-        if verbose:
-            _log( f'{record_path=} {root=}')
+        log2( f'{record_path=} {root=}')
         
         # Do a build and get list of files to install.
         #
@@ -769,10 +765,9 @@ class Package:
             items = self._call_fn_build( dict())
         
         root2 = install_dir(root)
-        if verbose:
-            _log( f'{root2=}')
+        log2( f'{root2=}')
         
-        _log( f'Installing into: {root2!r}')
+        log1( f'Installing into: {root2!r}')
         dist_info_dir = self._dist_info_dir()
         
         if not record_path:
@@ -780,15 +775,13 @@ class Package:
         record = _Record()
         
         def add_file(from_abs, from_rel, to_abs, to_rel):
-            if verbose:
-                _log(f'Copying from {from_rel} to {to_abs}')
+            log2(f'Copying from {from_rel} to {to_abs}')
             os.makedirs( os.path.dirname( to_abs), exist_ok=True)
             shutil.copy2( from_abs, to_abs)
             record.add_file(from_rel, to_rel)
 
         def add_str(content, to_abs, to_rel):
-            if verbose:
-                _log( f'Writing to: {to_abs}')
+            log2( f'Writing to: {to_abs}')
             os.makedirs( os.path.dirname( to_abs), exist_ok=True)
             with open( to_abs, 'w') as f:
                 f.write( content)
@@ -801,13 +794,11 @@ class Package:
         
         add_str( self._metainfo(), f'{root2}/{dist_info_dir}/METADATA', f'{dist_info_dir}/METADATA')
 
-        if verbose:
-            _log( f'Writing to: {record_path}')
+        log2( f'Writing to: {record_path}')
         with open(record_path, 'w') as f:
             f.write(record.get())
 
-        if verbose:
-            _log(f'Finished.')
+        log2(f'Finished.')
 
 
     def _argv_dist_info(self, root):
@@ -840,7 +831,7 @@ class Package:
         '''
         if dirpath is None:
             dirpath = self.root
-        _log(f'Creating files in directory {dirpath}')
+        log2(f'Creating files in directory {dirpath}')
         os.makedirs(dirpath, exist_ok=True)
         with open(os.path.join(dirpath, 'PKG-INFO'), 'w') as f:
             f.write(self._metainfo())
@@ -865,7 +856,8 @@ class Package:
 
         This is partial support at best.
         '''
-        #_log(f'argv: {argv}')
+        global g_verbose
+        #log2(f'argv: {argv}')
 
         class ArgsRaise:
             pass
@@ -896,7 +888,6 @@ class Package:
         opt_install_headers = None
         opt_record = None
         opt_root = None
-        opt_verbose = False
         
         args = Args(argv[1:])
 
@@ -906,7 +897,7 @@ class Package:
                 break
 
             elif arg in ('-h', '--help', '--help-commands'):
-                _log(textwrap.dedent('''
+                log0(textwrap.dedent('''
                         Usage:
                             [<options>...] <command> [<options>...]
                         Commands:
@@ -975,7 +966,7 @@ class Package:
             elif arg == '--record':                             opt_record = args.next()
             elif arg == '--root':                               opt_root = args.next()
             elif arg == '--single-version-externally-managed':  pass
-            elif arg == '--verbose' or arg == '-v':             opt_verbose = True
+            elif arg == '--verbose' or arg == '-v':             g_verbose += 1
             
             elif arg == 'windows-vs':
                 command = arg
@@ -988,17 +979,16 @@ class Package:
 
         assert command, 'No command specified'
 
-        _log(f'Handling command={command}')
+        log1(f'Handling command={command}')
         if 0:   pass
-        elif command == 'bdist_wheel':  self.build_wheel(opt_dist_dir, verbose=opt_verbose)
+        elif command == 'bdist_wheel':  self.build_wheel(opt_dist_dir)
         elif command == 'clean':        self._argv_clean(opt_all)
         elif command == 'dist_info':    self._argv_dist_info(opt_egg_base)
         elif command == 'egg_info':     self._argv_egg_info(opt_egg_base)
-        elif command == 'install':      self.install(opt_record, opt_root, opt_verbose)
-        elif command == 'sdist':        self.build_sdist(opt_dist_dir, opt_formats, verbose=opt_verbose)
+        elif command == 'install':      self.install(opt_record, opt_root)
+        elif command == 'sdist':        self.build_sdist(opt_dist_dir, opt_formats)
         
         elif command == 'windows-python':
-            verbose = False
             version = None
             while 1:
                 arg = args.next(None)
@@ -1007,15 +997,14 @@ class Package:
                 elif arg == '-v':
                     version = args.next()
                 elif arg == '--verbose':
-                    verbose = True
+                    g_verbose += 1
                 else:
                     assert 0, f'Unrecognised {arg=}'
-            python = wdev.WindowsPython(version=version, verbose=verbose)
+            python = wdev.WindowsPython(version=version)
             print(f'Python is:\n{python.description_ml("    ")}')
             
         elif command == 'windows-vs':
             grade = None
-            verbose = False
             version = None
             year = None
             while 1:
@@ -1029,16 +1018,16 @@ class Package:
                 elif arg == '-y':
                     year = args.next()
                 elif arg == '--verbose':
-                    verbose = True
+                    g_verbose += 1
                 else:
                     assert 0, f'Unrecognised {arg=}'
-            vs = wdev.WindowsVS(year=year, grade=grade, version=version, verbose=verbose)
+            vs = wdev.WindowsVS(year=year, grade=grade, version=version)
             print(f'Visual Studio is:\n{vs.description_ml("    ")}')
         
         else:
             assert 0, f'Unrecognised command: {command}'
 
-        _log(f'Finished handling command: {command}')
+        log2(f'Finished handling command: {command}')
 
 
     def __str__(self):
@@ -1462,7 +1451,7 @@ def build_extension(
             #   emcc: warning: ignoring unsupported linker flag: `-rpath` [-Wlinkflags]
             #   wasm-ld: error: unknown -z value: origin
             #
-            _log(f'## pyodide(): PEP-3149 suffix untested, so omitting. {_so_suffix()=}.')
+            log0(f'## pyodide(): PEP-3149 suffix untested, so omitting. {_so_suffix()=}.')
             path_so_leaf = f'_{name}.so'
             path_so = f'{outdir}/{path_so_leaf}'
             
@@ -1552,11 +1541,11 @@ def build_extension(
                         sublibraries.append( found[0])
                         break
                 else:
-                    _log(f'Warning: can not find path of lib={lib!r} in libpaths={libpaths}')
+                    log2(f'Warning: can not find path of lib={lib!r} in libpaths={libpaths}')
             macos_patch( path_so, *sublibraries)
 
-        run(f'ls -l {path_so}', check=0)
-        run(f'file {path_so}', check=0)
+        #run(f'ls -l {path_so}', check=0)
+        #run(f'file {path_so}', check=0)
     
     return path_so_leaf
 
@@ -1677,15 +1666,15 @@ def git_items( directory, submodules=False):
         # within submodules.
         #
         if not os.path.exists(path2):
-            _log(f'*** Ignoring git ls-files item that does not exist: {path2}')
+            log2(f'Ignoring git ls-files item that does not exist: {path2}')
         elif os.path.isdir(path2):
-            _log(f'*** Ignoring git ls-files item that is actually a directory: {path2}')
+            log2(f'Ignoring git ls-files item that is actually a directory: {path2}')
         else:
             ret.append(path)
     return ret
 
 
-def run( command, verbose=1, capture=False, check=1):
+def run( command, capture=False, check=1):
     '''
     Runs a command using `subprocess.run()`.
     
@@ -1700,18 +1689,14 @@ def run( command, verbose=1, capture=False, check=1):
 
             When running the command, on Windows newlines are replaced by
             spaces; otherwise each line is terminated by a backslash character.
-        verbose:
-            If true, outputs diagnostic describing the command before running
-            it.
         capture:
             If true, we return output from command.
     Returns:
         None on success, otherwise raises an exception.
     '''
     lines = _command_lines( command)
-    if verbose:
-        nl = '\n'
-        _log( f'Running: {nl.join(lines)}')
+    nl = '\n'
+    log2( f'Running: {nl.join(lines)}')
     sep = ' ' if windows() else '\\\n'
     command2 = sep.join( lines)
     if capture:
@@ -1760,13 +1745,13 @@ class PythonFlags:
             self.ldflags = f'/LIBPATH:"{wp.root}\\libs"'
         
         elif pyodide():
-            _log(f'PythonFlags: Pyodide.')
             _include_dir = os.environ[ 'PYO3_CROSS_INCLUDE_DIR']
             _lib_dir = os.environ[ 'PYO3_CROSS_LIB_DIR']
-            _log( f'    {_include_dir=}')
-            _log( f'    {_lib_dir=}')
             self.includes = f'-I {_include_dir}'
             self.ldflags = f'-L {_lib_dir}'
+            log2(f'PythonFlags: Pyodide.')
+            log2( f'    {_include_dir=}')
+            log2( f'    {_lib_dir=}')
         
         else:
             # We use python-config which appears to work better than pkg-config
@@ -1789,7 +1774,7 @@ class PythonFlags:
                         f'{sys.executable} {sysconfig.get_config_var("srcdir")}/python-config.py',
                         f'python3-config',
                         ):
-                    #_log(f'Trying: {pc=}')
+                    log2(f'Trying: {pc=}')
                     e = subprocess.run(
                             f'{pc} --includes',
                             shell=1,
@@ -1797,7 +1782,7 @@ class PythonFlags:
                             stderr=subprocess.DEVNULL,
                             check=0,
                             ).returncode
-                    #_log(f'{e=}')
+                    log2(f'{e=}')
                     if e == 0:
                         python_config = pc
                 assert python_config, f'Cannot find python-config'
@@ -1816,11 +1801,11 @@ class PythonFlags:
                 #
                 ldflags2 = self.ldflags.replace(' -lcrypt ', ' ')
                 if ldflags2 != self.ldflags:
-                    _log(f'### Have removed `-lcrypt` from ldflags: {self.ldflags!r} -> {ldflags2!r}')
+                    log2(f'### Have removed `-lcrypt` from ldflags: {self.ldflags!r} -> {ldflags2!r}')
                     self.ldflags = ldflags2
         
-        _log(f'{self.includes=}')
-        _log(f'{self.ldflags=}')
+        log2(f'{self.includes=}')
+        log2(f'{self.ldflags=}')
 
 
 def macos_add_cross_flags(command):
@@ -1834,7 +1819,7 @@ def macos_add_cross_flags(command):
         archflags = os.environ.get( 'ARCHFLAGS')
         if archflags:
             command = f'{command} {archflags}'
-            _log(f'Appending ARCHFLAGS to command: {command}')
+            log2(f'Appending ARCHFLAGS to command: {command}')
             return command
     return command
 
@@ -1851,7 +1836,7 @@ def macos_patch( library, *sublibraries):
         List of paths of shared libraries; these have typically been
         specified with `-l` when `library` was created.
     '''
-    _log( f'macos_patch(): library={library}  sublibraries={sublibraries}')
+    log2( f'macos_patch(): library={library}  sublibraries={sublibraries}')
     if not darwin():
         return
     subprocess.run( f'otool -L {library}', shell=1, check=1)
@@ -1872,11 +1857,11 @@ def macos_patch( library, *sublibraries):
         leaf = os.path.basename(name)
         m = re.match('^(.+[.]((so)|(dylib)))[0-9.]*$', leaf)
         assert m
-        _log(f'Changing {leaf=} to {m.group(1)}')
+        log2(f'Changing {leaf=} to {m.group(1)}')
         leaf = m.group(1)
         command += f' -change {name} @rpath/{leaf}'
     command += f' {library}'
-    _log( f'Running: {command}')
+    log2( f'Running: {command}')
     subprocess.run( command, shell=1, check=1)
     subprocess.run( f'otool -L {library}', shell=1, check=1)
 
@@ -1914,7 +1899,7 @@ def _cpu_name():
     return f'x{32 if sys.maxsize == 2**31 - 1 else 64}'
 
 
-def run_if( command, out, *prerequisites, verbose=True):
+def run_if( command, out, *prerequisites):
     '''
     Runs a command only if the output file is not up to date.
     
@@ -1939,29 +1924,30 @@ def run_if( command, out, *prerequisites, verbose=True):
         >>> out = 'run_if_test_out'
         >>> if os.path.exists( out):
         ...     os.remove( out)
-        >>> run_if( f'touch {out}', out, verbose=0)
+        >>> run_if( f'touch {out}', out)
         True
     
     If we repeat, the output file will be up to date so the command is not run:
     
-        >>> run_if( f'touch {out}', out, verbose=0)
+        >>> run_if( f'touch {out}', out)
     
     If we change the command, the command is run:
     
-        >>> run_if( f'touch  {out}', out, verbose=0)
+        >>> run_if( f'touch  {out}', out)
         True
     
     If we add a prerequisite that is newer than the output, the command is run:
     
         >>> prerequisite = 'run_if_test_prerequisite'
-        >>> run( f'touch {prerequisite}', verbose=0)
-        >>> run_if( f'touch {out}', out, prerequisite, verbose=0)
+        >>> run( f'touch {prerequisite}')
+        >>> run_if( f'touch {out}', out, prerequisite)
         True
     
     If we repeat, the output will be newer than the prerequisite, so the
     command is not run:
     
-        >>> run_if( f'touch {out}', out, prerequisite, verbose=1)
+        >>> verbose_set(2)
+        >>> run_if( f'touch {out}', out, prerequisite)
         pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
     '''    
     doit = False
@@ -1995,9 +1981,9 @@ def run_if( command, out, *prerequisites, verbose=True):
         for p in prerequisites:
             prerequisites_all += _make_prerequisites( p)
         if 0:
-            _log( 'prerequisites_all:')
+            log2( 'prerequisites_all:')
             for i in  prerequisites_all:
-                _log( f'    {i!r}')
+                log2( f'    {i!r}')
         pre_mtime = 0
         pre_path = None
         for prerequisite in prerequisites_all:
@@ -2023,21 +2009,19 @@ def run_if( command, out, *prerequisites, verbose=True):
             os.remove( cmd_path)
         except Exception:
             pass
-        if verbose:
-            _log( f'Running command because: {doit}')
+        log2( f'Running command because: {doit}')
         
-        run( command, verbose=verbose)
+        run( command)
         
         # Write the command we ran, into `cmd_path`.
         with open( cmd_path, 'w') as f:
             f.write( command)
         return True
     else:
-        if verbose:
-            _log( f'Not running command because up to date: {out!r}')
+        log2( f'Not running command because up to date: {out!r}')
         
     if 0:
-        _log( f'out_mtime={time.ctime(out_mtime)} pre_mtime={time.ctime(pre_mtime)}.'
+        log2( f'out_mtime={time.ctime(out_mtime)} pre_mtime={time.ctime(pre_mtime)}.'
                 f' pre_path={pre_path!r}: returning {ret!r}.'
                 )
 
@@ -2100,14 +2084,36 @@ def _fs_mtime( filename, default=0):
     except OSError:
         return default
 
-def _log(text=''):
+g_verbose = 1
+
+def verbose(level=None):
+    '''
+    Sets verbose level if `level` is not None.
+    Returns verbose level.
+    '''
+    global g_verbose
+    if level is not None:
+        g_verbose = level
+    return g_verbose
+
+def log0(text=''):
+        _log(text, 1)
+
+def log1(text=''):
+        _log(text, 1)
+
+def log2(text=''):
+        _log(text, 2)
+
+def _log(text, level):
     '''
     Logs lines with prefix.
     '''
-    caller = inspect.stack()[1].function
-    for line in text.split('\n'):
-        print(f'pipcl.py: {caller}(): {line}')
-    sys.stdout.flush()
+    if g_verbose >= level:
+        caller = inspect.stack()[2].function
+        for line in text.split('\n'):
+            print(f'pipcl.py: {caller}(): {line}')
+        sys.stdout.flush()
 
 
 def _so_suffix():
@@ -2164,7 +2170,7 @@ class _Record:
     def __init__(self):
         self.text = ''
 
-    def add_content(self, content, to_, verbose=False):
+    def add_content(self, content, to_):
         if isinstance(content, str):
             content = content.encode('utf8')
         
@@ -2179,15 +2185,13 @@ class _Record:
         digest = digest.decode('utf8')
         
         self.text += f'{to_},sha256={digest},{len(content)}\n'
-        if verbose:
-            _log(f'Adding {to_}')
+        log2(f'Adding {to_}')
 
-    def add_file(self, from_, to_, verbose=False):
+    def add_file(self, from_, to_):
         with open(from_, 'rb') as f:
             content = f.read()
-        self.add_content(content, to_, verbose=False)
-        if verbose:
-            _log(f'Adding file: {os.path.relpath(from_)} => {to_}')
+        self.add_content(content, to_)
+        log2(f'Adding file: {os.path.relpath(from_)} => {to_}')
 
     def get(self, record_path=None):
         '''
