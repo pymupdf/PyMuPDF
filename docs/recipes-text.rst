@@ -423,7 +423,15 @@ Several default values were used above: font "Helvetica", font size 11 and text 
 
 How to Use Non-Standard Encoding
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Since v1.14, MuPDF allows Greek and Russian encoding variants for the :data:`Base14_Fonts`. In PyMuPDF this is supported via an additional *encoding* argument. Effectively, this is relevant for Helvetica, Times-Roman and Courier (and their bold / italic forms) and characters outside the ASCII code range only. Elsewhere, the argument is ignored. Here is how to request Russian encoding with the standard font Helvetica::
+Since v1.14, MuPDF allows Greek and Russian encoding variants for the :data:`Base14_Fonts`. In PyMuPDF this is supported via an additional *encoding* argument. Effectively, this is relevant for Helvetica, Times-Roman and Courier (and their bold / italic forms) and **characters outside the ASCII code range only**. ASCII characters remain Latin!
+
+.. note:: Please keep in mind that the Base-14 fonts only support characters with `ord(c) < 256`. The `encoding` parameter does not change that. So only characters with `ord(c) > 128` are under the influence of `encoding`.
+    
+    To avoid these restrictions, we strongly recommend to use the file-based font variants, which are available via the :ref:`Font` class. These fonts do not require (and ignore) the encoding parameter. Your text can also be any mixture of standard Latin, Cyrillic, Greek and other characters. `fitz.Font("helv")` for example support 654 glyphs - not just 256. The only consideration is that your PDF file size will grow because now a font file will be embedded.
+    
+    Choosing any font from `pymupf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ will provide you with the best of all worlds: nice and rich fonts that are also subsettable via :meth:`Document.subset_fonts()`. This limits your file sizes significantly. `fitz.Font("figo")` for example supports 4577 glyphs. But still, after using :meth:`Document.subset_fonts()`, the file size increase will probably be something like 10 or 12 KB -- and not 43 KB as with `fitz.Font("helv")`.
+
+Here is how to request Russian encoding with the standard font Helvetica::
 
     page.insert_text(point, russian_text, encoding=fitz.TEXT_ENCODING_CYRILLIC)
 
