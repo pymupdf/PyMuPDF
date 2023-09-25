@@ -25,7 +25,38 @@
       });
    </script>
 
-   <p style="color:#999">This software is provided AS-IS with no warranty, either express or implied. This software is distributed under license and may not be copied, modified or distributed except as expressly authorized under the terms of that license. Refer to licensing information at <a href="https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link">artifex.com</a> or contact Artifex Software Inc., 39 Mesa Street, Suite 108A, San Francisco CA 94129, United States for further information.</p>
+   <p style="color:#999" id="footerDisclaimer">This software is provided AS-IS with no warranty, either express or implied. This software is distributed under license and may not be copied, modified or distributed except as expressly authorized under the terms of that license. Refer to licensing information at <a href="https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link">artifex.com</a> or contact Artifex Software Inc., 39 Mesa Street, Suite 108A, San Francisco CA 94129, United States for further information.</p>
+
+
+
+   <script>
+
+      let docLanguage = document.getElementsByTagName('html')[0].getAttribute('lang');
+
+      function getHeaderAndFooterTranslation(str) {
+          if (docLanguage == "ja") {
+              if (str == "Do you have any feedback on this page?") {
+                  return "このページに関するご意見はありますか？";
+              } else if (str == "Find <b>#pymupdf</b> on <b>Discord</b>") {
+                  return "<b>Discord</b>の <b>#pymupdf</b> を見つける";
+              } else if (str == "This software is provided AS-IS with no warranty, either express or implied. This software is distributed under license and may not be copied, modified or distributed except as expressly authorized under the terms of that license. Refer to licensing information at <a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a> or contact Artifex Software Inc., 39 Mesa Street, Suite 108A, San Francisco CA 94129, United States for further information.") {
+
+                  return "このソフトウェアは無保証で提供されており、明示または黙示を問わず、いかなる保証もありません。このソフトウェアはライセンスの下で配布され、ライセンスの条件に明示的に許可されている場合を除き、コピー、変更、または配布してはなりません。ライセンシング情報については、<a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a>でライセンス情報を参照するか、アメリカ合衆国カリフォルニア州サンフランシスコのアーティファクス・ソフトウェア株式会社（Artifex Software Inc.）までお問い合わせください。"
+              }
+          }
+
+          return str;
+      }
+
+      document.getElementById("findOnDiscord").innerHTML = getHeaderAndFooterTranslation("Find <b>#pymupdf</b> on <b>Discord</b>");
+      document.getElementById("feedbackLinkTop").innerHTML = getHeaderAndFooterTranslation("Do you have any feedback on this page?");
+      document.getElementById("feedbackLinkBottom").innerHTML = getHeaderAndFooterTranslation("Do you have any feedback on this page?");
+      document.getElementById("footerDisclaimer").innerHTML = getHeaderAndFooterTranslation("This software is provided AS-IS with no warranty, either express or implied. This software is distributed under license and may not be copied, modified or distributed except as expressly authorized under the terms of that license. Refer to licensing information at <a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a> or contact Artifex Software Inc., 39 Mesa Street, Suite 108A, San Francisco CA 94129, United States for further information.");
+
+   </script>
+
+
+
 
 .. note - this ensures that the Sphinx build system will pull in the image (as it is referenced in an RST file) to _images,
    we don't want to display it via rst markup due to limitations (hence width:0), however we do want it available for our raw HTML
