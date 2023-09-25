@@ -25,23 +25,23 @@ msgstr ""
 
 #: ../../index.rst:30 b1c7f927e24d45609a41b0b24312981f
 msgid "User Guide"
-msgstr ""
+msgstr "ユーザーガイド"
 
 #: ../../index.rst:40 2887066519114f2f9d103b3f03de1be4
 msgid "How to Guide"
-msgstr ""
+msgstr "使用方法ガイド"
 
 #: ../../index.rst:47 a7668c448dba484dbe9013f76b7c0acf
 msgid "API Reference"
-msgstr ""
+msgstr "APIリファレンス"
 
 #: ../../index.rst:60 9509c4a35566480ea9a9fa0aa9f4ea3c
 msgid "Other"
-msgstr ""
+msgstr "その他"
 
 #: ../../index.rst:7 2fe7865cbe87410786d583a32023ac87
 msgid "Welcome to :title:`PyMuPDF`"
-msgstr ""
+msgstr "PyMuPDFへようこそ"
 
 #: ../../index.rst:15 9dfe217cbcdc47e8b6a493b02c2041fe
 msgid ""
@@ -63,14 +63,14 @@ msgstr ":title:`PyMuPDF` は  `GitHub <https://github.com/pymupdf/PyMuPDF>`_  �
 
 #: ../../index.rst:74 3b1b0718e6e64d3eb02cae79ec00a83c
 msgid "Find out about PyMuPDF Utilities"
-msgstr ""
+msgstr "PyMuPDF Utilitiesについて詳しく知る"
 
 #: ../../index.rst:76 99f3b5bce5444e8da240499d724504cc
 msgid ""
 "The :title:`GitHub` repository `PyMuPDF-Utilities "
 "<https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of"
 " examples, demonstrations and use cases."
-msgstr ""
+msgstr "GitHubリポジトリ `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ には、さまざまな例、デモンストレーション、およびユースケースが含まれています。"
 
 #: ../../footer.rst:-1 0ece491e3ee6409d817e918f5d680de2
 msgid "Discord logo"

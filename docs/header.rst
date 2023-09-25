@@ -1,3 +1,11 @@
+.. meta::
+   :author: Artifex
+   :description lang=en: PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.
+   :description lang=ja: PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。
+   :keywords lang=en: PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript
+   :keywords lang=ja: PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript
+
+
 .. raw:: html
 
     <link rel="stylesheet" type="text/css" href="_static/prism/prism.css">
@@ -35,7 +43,7 @@
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;">
         <div class="discordLink" style="display:flex;align-items:center;margin-top: -5px;">
-            <a href="https://discord.gg/TSpYGBW4eq" target=_blank>Find <b>#pymupdf</b> on <b>Discord</b></a>
+            <a href="https://discord.gg/TSpYGBW4eq" id="findOnDiscord" target=_blank>Find <b>#pymupdf</b> on <b>Discord</b></a>
             <a href="https://discord.gg/TSpYGBW4eq" target=_blank><img src="_images/discord-mark-blue.svg" alt="Discord logo" /></a>
         </div>
 
