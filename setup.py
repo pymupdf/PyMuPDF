@@ -166,10 +166,12 @@ import zipfile
 
 import pipcl
 
+
 _log_prefix = None
 def log( text):
     global _log_prefix
     if not _log_prefix:
+        # This typically sets _log_prefix to `PyMuPDF/setup.py`.
         p = os.path.abspath( __file__)
         p, p1 = os.path.split( p)
         p, p0 = os.path.split( p)
@@ -329,41 +331,6 @@ def tar_extract(path, mode='r:gz', prefix=None, exists='raise'):
     return prefix_actual
 
 
-def get_gitfiles( directory, submodules=False):
-    '''
-    Returns list of all files known to git in <directory>; <directory> must be
-    somewhere within a git checkout.
-
-    Returned names are all relative to <directory>.
-
-    If <directory>.git exists we use git-ls-files and write list of files to
-    <directory>/jtest-git-files.
-
-    Otherwise we require that <directory>/jtest-git-files already exists.
-    '''
-    def is_within_git_checkout( d):
-        while 1:
-            #log( 'd={d!r}')
-            if not d:
-                break
-            if os.path.isdir( f'{d}/.git'):
-                return True
-            d = os.path.dirname( d)
-
-    if is_within_git_checkout( directory):
-        command = 'cd ' + directory + ' && git ls-files'
-        if submodules:
-            command += ' --recurse-submodules'
-        command += ' > jtest-git-files'
-        log( f'Running: {command}')
-        subprocess.run( command, shell=True, check=True)
-
-    with open( '%s/jtest-git-files' % directory, 'r') as f:
-        text = f.read()
-    ret = text.strip().split( '\n')
-    return ret
-
-
 def get_git_id( directory):
     '''
     Returns `(sha, comment, diff, branch)`, all items are str or None if not
@@ -453,7 +420,7 @@ def get_mupdf_tgz():
         log( f'Creating .tgz from git files in: {mupdf_local}')
         _fs_remove( mupdf_tgz)
         with tarfile.open( mupdf_tgz, 'w:gz') as f:
-            for name in get_gitfiles( mupdf_local, submodules=True):
+            for name in pipcl.git_items( mupdf_local, submodules=True):
                 path = os.path.join( mupdf_local, name)
                 if os.path.isfile( path):
                     f.add( path, f'mupdf/{name}', recursive=False)
