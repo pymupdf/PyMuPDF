@@ -515,7 +515,7 @@ def test_2430():
 def test_2692():
     document = fitz.Document(f'{scriptdir}/resources/2.pdf')
     for page in document:
-        pix = pix = page.get_pixmap(clip=fitz.Rect(0,0,10,10))
+        pix = page.get_pixmap(clip=fitz.Rect(0,0,10,10))
         dl = page.get_displaylist(annots=True)
         pix = dl.get_pixmap(
                 matrix=fitz.Identity,
@@ -523,3 +523,4 @@ def test_2692():
                 alpha=False,
                 clip=fitz.Rect(0,0,10,10),
                 )
+    
