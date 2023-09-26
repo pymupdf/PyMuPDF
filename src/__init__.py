@@ -14,8 +14,13 @@ import tarfile
 import zipfile
 
 
-def log( text):
-    print( f'mupdfpy: {text}', file=sys.stdout)
+def log( text, caller=1):
+    import inspect
+    frame_record = inspect.stack( context=0)[ caller]
+    filename    = frame_record.filename
+    line        = frame_record.lineno
+    function    = frame_record.function
+    print( f'{filename}:{line}:{function}: {text}', file=sys.stdout)
     sys.stdout.flush()
 
 # Try to detect if we are being used with current directory set to a mupdfpy/
@@ -7524,8 +7529,8 @@ class Page:
             #log( 'do_process_pixmap')
             # process pixmap ---------------------------------
             arg_pix = pixmap.this
-            w = arg_pix.w
-            h = arg_pix.h
+            w = arg_pix.w()
+            h = arg_pix.h()
             digest = mupdf.fz_md5_pixmap2(arg_pix)
             md5_py = digest
             temp = digests.get(md5_py, None)
@@ -7538,7 +7543,7 @@ class Page:
                 do_have_image = 0
             else:
                 if arg_pix.alpha() == 0:
-                    image = mupdf.fz_new_image_from_pixmap(arg_pix, mupdf.FzImage(0))
+                    image = mupdf.fz_new_image_from_pixmap(arg_pix, mupdf.FzImage())
                 else:
                     pm = mupdf.fz_convert_pixmap(
                             arg_pix,
