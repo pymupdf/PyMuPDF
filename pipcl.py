@@ -314,7 +314,9 @@ class Package:
             maintainer_email:
                 Maintainer email.
             license:
-                A string containing the license text.
+                A string containing the license text. Written into metadata
+                file `COPYING`. Is also written into metadata itself if not
+                multi-line.
             classifier:
                 A string or list of strings. Also see:
 
@@ -626,9 +628,9 @@ class Package:
         log1( f'Have created wheel size={st.st_size}: {path}')
         if g_verbose >= 2:
             with zipfile.ZipFile(path, compression=self.wheel_compression) as z:
-                _log2(f'Contents are:')
+                log2(f'Contents are:')
                 for zi in sorted(z.infolist(), key=lambda z: z.filename):
-                    _log2(f'    {zi.file_size: 10d} {zi.filename}')
+                    log2(f'    {zi.file_size: 10d} {zi.filename}')
         
         return os.path.basename(path)
 
@@ -1078,15 +1080,22 @@ class Package:
         #
         ret = ['']
         def add(key, value):
-            if value is not None:
-                if isinstance( value, (tuple, list)):
-                    for v in value:
-                        add( key, v)
-                else:
-                    assert '\n' not in value, f'key={key} value contains newline: {value!r}'
-                    if key == 'Project-URL':
-                        assert value.count(',') == 1, f'For {key=}, should have one comma in {value!r}.'
-                    ret[0] += f'{key}: {value}\n'
+            if value is None:
+                return
+            if isinstance( value, (tuple, list)):
+                for v in value:
+                    add( key, v)
+                return
+            if key == 'License' and '\n' in value:
+                # This is ok because we write `self.license` into
+                # *.dist-info/COPYING.
+                #
+                log1( f'Omitting license because contains newline(s).')
+                return
+            assert '\n' not in value, f'key={key} value contains newline: {value!r}'
+            if key == 'Project-URL':
+                assert value.count(',') == 1, f'For {key=}, should have one comma in {value!r}.'
+            ret[0] += f'{key}: {value}\n'
         #add('Description', self.description)
         add('Metadata-Version', '2.1')
         
@@ -2084,7 +2093,7 @@ def _fs_mtime( filename, default=0):
     except OSError:
         return default
 
-g_verbose = 1
+g_verbose = int(os.environ.get('PIPCL_VERBOSE', '2'))
 
 def verbose(level=None):
     '''
