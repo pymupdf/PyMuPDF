@@ -25,3 +25,23 @@ def test_insert():
     bbox2 = fitz.Rect(info_list[1]["bbox"])
     assert bbox1 in r1
     assert bbox2 in r2
+
+def test_compress():
+    document = fitz.open(f'{scriptdir}/resources/2.pdf')
+    document_new = fitz.open()
+    for page in document:
+        pixmap = page.get_pixmap(
+                colorspace=fitz.csRGB,
+                dpi=72,
+                annots=False,
+                )
+        page_new = document_new.new_page(-1)
+        page_new.insert_image(rect=page_new.bound(), pixmap=pixmap)
+    document_new.save(
+            f'{scriptdir}/resources/2.pdf.compress.pdf',
+            garbage=3,
+            deflate=True,
+            deflate_images=True,
+            deflate_fonts=True,
+            pretty=True,
+            )
