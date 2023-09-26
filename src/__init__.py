@@ -13723,9 +13723,9 @@ def JM_pixmap_from_page(doc, page, ctm, cs, alpha, annots, clip):
 
     dev = mupdf.fz_new_draw_device(matrix, pix)
     if annots:
-        mupdf.fz_run_page(page, dev, fz_identity, NULL);
+        mupdf.fz_run_page(page, dev, mupdf.FzMatrix(), NULL);
     else:
-        fz_run_page_contents(ctx, page, dev, fz_identity, mupdf.FzCookie())
+        fz_run_page_contents(ctx, page, dev, mupdf.FzMatrix(), mupdf.FzCookie())
     mupdf.fz_close_device(dev)
     return pix
 
@@ -16236,7 +16236,7 @@ def JM_pixmap_from_display_list(
 
     if not mupdf.fz_is_infinite_rect(rclip):
         dev = mupdf.fz_new_draw_device_with_bbox(matrix, pix, irect)
-        mupdf.fz_run_display_list(list_, dev, fz_identity, rclip, None)
+        mupdf.fz_run_display_list(list_, dev, mupdf.FzMatrix(), rclip, mupdf.FzCookie())
     else:
         dev = mupdf.fz_new_draw_device(matrix, pix)
         mupdf.fz_run_display_list(list_, dev, mupdf.FzMatrix(), mupdf.FzRect(mupdf.FzRect.Fixed_INFINITE), mupdf.FzCookie())
@@ -20518,7 +20518,7 @@ class TOOLS:
         if isinstance(page, mupdf.PdfPage):
             return JM_py_from_matrix(JM_derotate_page_matrix(page))
         else:
-            return JM_py_from_matrix(fz_identity)
+            return JM_py_from_matrix(mupdf.FzMatrix())
 
     @staticmethod
     def _fill_widget(annot, widget):
