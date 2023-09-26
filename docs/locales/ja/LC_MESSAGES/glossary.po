@@ -50,7 +50,7 @@ msgid ""
 "example be specified only once or in some node(s) of the :data:`pagetree`"
 " and will then be taken as value for all *kids*, that do not specify "
 "their own value."
-msgstr "⚠️PDF内のいくつかの値は、親子関係で下位のオブジェクトに継承されることがあります。例えば、ページのmediabox（物理的なサイズ）は一度だけ指定されるか、ページツリーのいくつかのノードで指定され、それ以外の値を指定しない子供たちにとってその値が取得されます。"
+msgstr "PDF内のいくつかの値は、親子関係で下位のオブジェクトに継承されることがあります。例えば、ページのmediabox（物理的なサイズ）は一度だけ指定されるか、:data:`pagetree` のいくつかのノードで指定され、それ以外の値を指定しない子供たちにとってその値が取得されます。"
 
 #: ../../glossary.rst:37 c886e4417d5246afa984847fafd04b47
 msgid ""
@@ -101,7 +101,7 @@ msgid ""
 "containing document-wide parameters and pointers to many other "
 "information. Its :data:`xref` is returned by "
 ":meth:`Document.pdf_catalog`."
-msgstr "⚠️中央のPDF辞書 - または「ルート」とも呼ばれる - で、文書全体のパラメータと多くの他の情報へのポインタを含んでいます。その :data:`xref` は :meth:`Document.pdf_catalog` で返されます。"
+msgstr "中央のPDF :data:`dictionary` - または「ルート」とも呼ばれる - で、文書全体のパラメータと多くの他の情報へのポインタを含んでいます。その :data:`xref` は :meth:`Document.pdf_catalog` で返されます。"
 
 #: ../../glossary.rst:54 b769fdd49acc4f3096bd05b6105ef88d
 msgid ""
@@ -110,7 +110,7 @@ msgid ""
 "this dictionary, you will find things like the xrefs of the catalog and "
 "the metadata, the number of :data:`xref` numbers, etc. Here is the "
 "definition of the PDF spec:"
-msgstr "⚠️より正確には、PDFトレーラーには辞書形式の情報が含まれています。通常、ファイルの末尾に配置されています。この辞書には、カタログやメタデータの :data:`xref` 、:data:`xref` の数などが含まれています。PDF仕様の定義は次のとおりです："
+msgstr "より正確には、PDFトレーラーには :data:`dictionary` 形式の情報が含まれています。通常、ファイルの末尾に配置されています。この辞書には、カタログやメタデータの :data:`xref` 、:data:`xref` の数などが含まれています。PDF仕様の定義は次のとおりです："
 
 #: ../../glossary.rst:56 bff2e60a5bf746bcaa06dab4f283730c
 msgid ""
@@ -141,7 +141,7 @@ msgid ""
 " concatenated string). It should be noted that there are more stream "
 "object types which use the same syntax: e.g. appearance dictionaries "
 "associated with annotations and Form XObjects."
-msgstr "⚠️コンテンツストリームは、PDFオブジェクトに添付されたストリームを持ち、そのデータはページに描画されるグラフィカル要素を記述する命令のシーケンスから成り立っています。 :ref:`AdobeManual` の「Stream Objects」（p.19）を参照してください。これらのストリームで使用されるミニ言語の概要については、 :ref:`AdobeManual` の「Operator Summary」章（p.643）をご覧ください。PDFページには0から多くのコンテンツオブジェクトを持つことができます。コンテンツオブジェクトが存在しない場合、ページは空になります（ただし注釈は表示される可能性があります）。複数のコンテンツオブジェクトがある場合、それらは1つのオブジェクトに存在するかのように順番に解釈されます（つまり、連結された文字列のように）。なお、同じ構文を使用する他のストリームオブジェクトタイプもあることに注意してください。たとえば、注釈に関連する外観辞書やフォームXObjectなどです。"
+msgstr "コンテンツストリームは、PDF :data:`object` に添付された :data:`stream` を持ち、そのデータはページに描画されるグラフィカル要素を記述する命令のシーケンスから成り立っています。 :ref:`AdobeManual` の「Stream Objects」（p.19）を参照してください。これらのストリームで使用されるミニ言語の概要については、 :ref:`AdobeManual` の「Operator Summary」章（p.643）をご覧ください。PDFページには0から多くのコンテンツオブジェクトを持つことができます。コンテンツオブジェクトが存在しない場合、ページは空になります（ただし注釈は表示される可能性があります）。複数のコンテンツオブジェクトがある場合、それらは1つのオブジェクトに存在するかのように順番に解釈されます（つまり、連結された文字列のように）。なお、同じ構文を使用する他のストリームオブジェクトタイプもあることに注意してください。たとえば、注釈に関連する外観辞書やフォームXObjectなどです。"
 
 #: ../../glossary.rst:64 5307e714162f441086b60a415ea0263c
 msgid "PyMuPDF provides a number of methods to deal with contents of PDF pages:"
@@ -160,7 +160,7 @@ msgid ""
 " one `/Contents` object will exist. In addition, page :data:`resources` "
 "will have been synchronized with it such that it will contain exactly "
 "those images, fonts and other objects that the page actually references."
-msgstr "⚠️ :meth:`Page.clean_contents()` – MuPDFの関数をラップして、ページのすべてのコンテンツを読み込んで連結し、構文をクリーンアップします。これにより、1つの  `/Contents` オブジェクトのみが存在します。さらに、ページのリソースはそれと同期され、ページが実際に参照する画像、フォント、その他のオブジェクトのみが含まれるようになります。"
+msgstr ":meth:`Page.clean_contents()` – MuPDFの関数をラップして、ページのすべてのコンテンツを読み込んで連結し、構文をクリーンアップします。これにより、1つの  `/Contents` オブジェクトのみが存在します。さらに、ページの :data:`resources` はそれと同期され、ページが実際に参照する画像、フォント、その他のオブジェクトのみが含まれるようになります。"
 
 #: ../../glossary.rst:68 05cacbd9772e4a05af59a23c8ec92bb9
 msgid ""
@@ -168,7 +168,7 @@ msgid ""
 " page's :data:`contents` objects. May be empty. Use "
 ":meth:`Document.xref_stream()` with one of these xrefs to read the resp. "
 "contents section."
-msgstr "⚠️ :meth:`Page.get_contents()` – ページのコンテンツオブジェクトの :data:`xref` 番号のリストを返します。空かもしれません。:meth:`Document.xref_stream()` をこれらのxrefの1つとともに使用して、対応するコンテンツセクションを読み込むことができます。"
+msgstr ":meth:`Page.get_contents()` – ページの :data:`contents` オブジェクトの :data:`xref` 番号のリストを返します。空かもしれません。:meth:`Document.xref_stream()` をこれらのxrefの1つとともに使用して、対応するコンテンツセクションを読み込むことができます。"
 
 #: ../../glossary.rst:69 45dc7c92a6044cceb4c848b18f005358
 msgid ""

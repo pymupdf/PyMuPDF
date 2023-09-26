@@ -195,7 +195,7 @@ msgid ""
 " :data:`ligatures` are **passed through**, white spaces are **passed "
 "through** (not translated to spaces), and images are **not included**. "
 "See :ref:`TextPreserve`."
-msgstr "⚠️テキストページに解析される情報を制御します。PyMuPDFのデフォルト値は `3 = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE` です。つまり、:data:`ligatures` はそのまま **通過** し、空白はそのまま **通過** します（スペースに変換されません）、画像は **含まれません** 。テキスト抽出フラグを参照してください。"
+msgstr "テキストページに解析される情報を制御します。PyMuPDFのデフォルト値は `3 = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE` です。つまり、:data:`ligatures` はそのまま **通過** し、空白はそのまま **通過** します（スペースに変換されません）、画像は **含まれません** 。:ref:`TextPreserve` を参照してください。"
 
 #: ../../displaylist.rst:86 4c236de5436243ca9ac45bcfd79dddd3
 msgid ":ref:`TextPage`"

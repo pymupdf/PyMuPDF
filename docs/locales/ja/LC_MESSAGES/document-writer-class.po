@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -10,9 +10,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,37 +21,37 @@ msgstr ""
 
 #: ../../document-writer-class.rst:7 cbf38e4bb22e4566b593acf5796202c2
 msgid "DocumentWriter"
-msgstr ""
+msgstr "DocumentWriter(ドキュメントライター)"
 
 #: ../../document-writer-class.rst:9 39bca25367294b64a505506a068076f6
 msgid "New in v1.21.0"
-msgstr ""
+msgstr "バージョン1.21.0で導入"
 
 #: ../../document-writer-class.rst:11 2008672db6ed4552944ed39c44d7f54a
 msgid ""
 "This class represents a utility which can output various :ref:`document "
 "types supported by MuPDF<Supported_File_Types>`."
-msgstr ""
+msgstr "このクラスは、MuPDFで :ref:`サポートされている <Supported_File_Types>` さまざまなドキュメントタイプを出力できるユーティリティを表します。"
 
 #: ../../document-writer-class.rst:13 67174f48f7eb483085b9a7f7b6de32e2
 msgid ""
 "In PyMuPDF only used for outputting PDF documents whose pages are "
 "populated by :ref:`Story` DOMs."
-msgstr ""
+msgstr "PyMuPDFでは、:ref:`Story` DOM（ドキュメントオブジェクトモデル）でページが埋められたPDFドキュメントを出力するためにのみ使用されます。"
 
 #: ../../document-writer-class.rst:15 84a2e5e7e6e040b586a51598f95bb0f4
 msgid ""
 "Using DocumentWriter_ also for other document types might happen in the "
 "future."
-msgstr ""
+msgstr "将来的には、DocumentWriter_ を他のドキュメントタイプにも使用することがあるかもしれません。"
 
 #: ../../document-writer-class.rst:18 6ef202c95694441dbf1f1a2259306008
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**メソッド/属性** "
 
 #: ../../document-writer-class.rst:18 0dca591225a64d768db303534ce240eb
 msgid "**Short Description**"
-msgstr ""
+msgstr "**簡単な説明** "
 
 #: ../../document-writer-class.rst:20 c93f6e572b294d5686db82c67a81f7fa
 msgid ":meth:`DocumentWriter.begin_page`"
@@ -59,7 +59,7 @@ msgstr ""
 
 #: ../../document-writer-class.rst:20 37bbbc9a490043468ead7922aa81fd67
 msgid "start a new output page"
-msgstr ""
+msgstr "新しい出力ページを開始します。"
 
 #: ../../document-writer-class.rst:21 718fcacf2d0f41ebaa54dfc75773a8eb
 msgid ":meth:`DocumentWriter.end_page`"
@@ -67,7 +67,7 @@ msgstr ""
 
 #: ../../document-writer-class.rst:21 c9d52e40c1e34ab29f77500841232892
 msgid "finish the current output page"
-msgstr ""
+msgstr "現在の出力ページを終了します。"
 
 #: ../../document-writer-class.rst:22 17fcbfd9d44e444f80141fec3ca3446b
 msgid ":meth:`DocumentWriter.close`"
@@ -75,21 +75,21 @@ msgstr ""
 
 #: ../../document-writer-class.rst:22 651360fd253640418c8373b91b1f9230
 msgid "flush pending output and close the file"
-msgstr ""
+msgstr "保留中の出力をフラッシュし、ファイルを閉じます。"
 
 #: ../../document-writer-class.rst:25 4b2f0b79a5984ebfb5b366c14662f19c
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI** "
 
 #: ../../document-writer-class.rst:31 c39b184fb809475cb2912761f98aa8dc
 msgid ""
 "Create a document writer object, passing a Python file pointer or a file "
 "path. Options to use when saving the file may also be passed."
-msgstr ""
+msgstr "Pythonファイルポインタまたはファイルパスを渡してドキュメントライターオブジェクトを作成します。ファイルを保存する際に使用するオプションも渡すことができます。"
 
 #: ../../document-writer-class.rst:33 bb82fb07fb664ed6a573a81477a4aec1
 msgid "This class can also be used as a Python context manager."
-msgstr ""
+msgstr "このクラスはPythonのコンテキストマネージャとしても使用できます。"
 
 #: ../../document-writer-class.rst 402d3d379d334aef8e548db20ea6993e
 #: 42209aa310cc42abbb06a0c3a04838f9
@@ -109,7 +109,7 @@ msgstr ""
 msgid ""
 "the output file. This may be a string file name, or any Python file "
 "pointer."
-msgstr ""
+msgstr "出力ファイル。これは文字列のファイル名またはPythonファイルポインタのいずれかです。"
 
 #: ../../document-writer-class.rst:37 eca55e1ec4354447bd021dc9739d233b
 msgid ""
@@ -117,40 +117,40 @@ msgid ""
 "create a PDF in memory. Subsequently, this PDF can be re-opened for input"
 " and be further manipulated. This technique is used by several example "
 "scripts in :ref:`Stories recipes<RecipesStories>`."
-msgstr ""
+msgstr "`io.BytesIO()` オブジェクトをファイルポインタとして使用することで、ドキュメントライターはメモリ内にPDFを作成できます。その後、このPDFは入力用に再オープンしてさらに操作できます。これは、:ref:`Storiesレシピ<RecipesStories>` のいくつかのサンプルスクリプトで使用されています。"
 
 #: ../../document-writer-class.rst:39 26daf331223e463b9743477b32b5b88a
 msgid ""
 "specify saving options for the output PDF. Typical are \"compress\" or "
 "\"clean\". More possible values may be taken from help output of the "
 "`mutool convert` CLI utility."
-msgstr ""
+msgstr "出力PDFの保存オプションを指定します。一般的なものは「compress」や「clean」です。その他の可能な値は、`mutool convert` CLI ユーティリティのヘルプ出力から取得できます。"
 
 #: ../../document-writer-class.rst:43 cfdb8f539f104bbf9c775f41d947e346
 msgid "Start a new output page of a given dimension."
-msgstr ""
+msgstr "指定された寸法の新しい出力ページを開始します。"
 
 #: ../../document-writer-class.rst:45 eaef6c9c016c4a77a1e77b565ce5861d
 msgid ""
 "a rectangle specifying the page size. After this method, output "
 "operations may write content to the page."
-msgstr ""
+msgstr "ページサイズを指定する矩形。このメソッドの後、出力操作はページにコンテンツを書き込むことができます。"
 
 #: ../../document-writer-class.rst:49 e7c3aec1923f4769b37faf5dfe343847
 msgid ""
 "Finish a page. This flushes any pending data and appends the page to the "
 "output document."
-msgstr ""
+msgstr "ページを終了します。保留中のデータをフラッシュし、ページを出力ドキュメントに追加します。"
 
 #: ../../document-writer-class.rst:53 32544dee12684647a01c393b9d868c92
 msgid ""
 "Close the output file. This method is required for writing any pending "
 "data."
-msgstr ""
+msgstr "出力ファイルを閉じます。保留中のデータを書き込むためにこのメソッドが必要です。"
 
 #: ../../document-writer-class.rst:55 b8ddc247f3a74143a49eea5486dc1ea3
 msgid "For usage examples consult the section of :ref:`Story`."
-msgstr ""
+msgstr "使用例については、:ref:`Story` のセクションを参照してください。"
 
 #: ../../footer.rst:-1 41c36252bd0e4fc6914fb5e4edac4d19
 msgid "Discord logo"

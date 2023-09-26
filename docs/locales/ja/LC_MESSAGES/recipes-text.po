@@ -51,7 +51,7 @@ msgid ""
 "The output will be plain text as it is coded in the document. No effort "
 "is made to prettify in any way. Specifically for PDF, this may mean "
 "output not in usual reading order, unexpected line breaks and so forth."
-msgstr "出力はドキュメント内でコード化された通りのプレーンテキストになります。見栄えを整えるための特別な努力は行われません。特にPDFの場合、通常の読み順にならない出力や予期せぬ改行などが発生するかもしれません。"
+msgstr "出力はドキュメント内でコード化された通りのプレーンテキストになるため、見栄えの調整は行いません。特にPDFの場合、通常の読み順にならない出力や予期せぬ改行などが発生するかもしれません。"
 
 #: ../../recipes-text.rst:30 78525740a5c748a4b7d2607041ac7c46
 msgid ""
