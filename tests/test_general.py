@@ -511,3 +511,15 @@ def test_2430():
     font = fitz.Font("helv")
     for i in range(1000):
         _ = font.flags
+
+def test_2692():
+    document = fitz.Document(f'{scriptdir}/resources/2.pdf')
+    for page in document:
+        pix = pix = page.get_pixmap(clip=fitz.Rect(0,0,10,10))
+        dl = page.get_displaylist(annots=True)
+        pix = dl.get_pixmap(
+                matrix=fitz.Identity,
+                colorspace=fitz.csRGB,
+                alpha=False,
+                clip=fitz.Rect(0,0,10,10),
+                )
