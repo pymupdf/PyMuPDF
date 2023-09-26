@@ -195,7 +195,9 @@ msgid ""
 "for non-invertible matrices). If \"a\" is a **point** or a **rectangle**,"
 " then *\"a.transform(m)\"* is executed. If \"a\" is a matrix, then matrix"
 " concatenation takes place."
-msgstr "⚠️は点、長方形、または行列であっても構いませんが、\"m\" は行列のような形式である必要があります。 \"a/m\" は \"a~m\" として扱われます（非可逆行列の場合は以下の注を参照）。もし \"a\" が点または長方形である場合、\"a.transform(m)\" が実行されます。もし \"a\" が行列である場合、行列の連結が行われます。"
+msgstr "\"a\" はポイント、矩形、または行列になりますが、\"m\" は :data:`matrix_like` でなければなりません。\"a/m\" は \"a*〜m\" として処理されます（非逆行列の場合は以下の注記を参照）。\"a\" がポイントまたは矩形の場合、\"a.transform(m)\" が実行されます。\"a\" が行列の場合、行列の連結が行われます。"
+
+
 
 #: ../../algebra.rst:64 d4655a899c0242859c8156400cca311f
 msgid "a&b"
@@ -206,7 +208,7 @@ msgid ""
 "**intersection rectangle:** \"a\" must be a rectangle and \"b\" "
 ":data:`rect_like`. Delivers the **largest rectangle** contained in both "
 "operands."
-msgstr "⚠️共通の長方形: \"a\" は長方形であり、\"b\" は長方形のような形式である必要があります。両方のオペランドに含まれる最大の長方形を返します。"
+msgstr "共通の長方形: \"a\" は長方形であり、\"b\" は :data:`rect_like` 形式である必要があります。両方のオペランドに含まれる最大の長方形を返します。"
 
 #: ../../algebra.rst:67 49ad439978e7430f9ee87346e8f2b690
 msgid "a|b"
@@ -217,7 +219,7 @@ msgid ""
 "**union rectangle:** \"a\" must be a rectangle, and \"b\" may be "
 ":data:`point_like` or :data:`rect_like`. Delivers the **smallest "
 "rectangle** containing both operands."
-msgstr "⚠️合併した長方形: \"a\" は長方形であり、\"b\" は点のような形式または長方形のような形式である必要があります。両方のオペランドを含む最小の長方形を返します。"
+msgstr "合併した長方形: \"a\" は長方形であり、\"b\" は 点のような :data:`point_like` :data:`rect_like` 形式である必要があります。両方のオペランドを含む最小の長方形を返します。"
 
 #: ../../algebra.rst:70 3a45cae998a14a458026775418b6d400
 msgid "b in a"
@@ -228,7 +230,7 @@ msgid ""
 "if \"b\" is a number, then `b in tuple(a)` is returned. If \"b\" is "
 ":data:`point_like`, :data:`rect_like` or :data:`quad_like`, then \"a\" "
 "must be a rectangle, and `a.contains(b)` is returned."
-msgstr "⚠️もし \"b\" が数値である場合、 `b in tuple(a)` が返されます。もし \"b\" が点のような形式、長方形のような形式、または四角形のような形式である場合、\"a\" は長方形である必要があり、`a.contains(b)` が返されます。"
+msgstr "もし \"b\" が数値である場合、 `b in tuple(a)` が返されます。もし \"b\" が :data:`point_like` 形式、 :data:`rect_like` 形式、または :data:`quad_like` 形式である場合、\"a\" は長方形である必要があり、`a.contains(b)` が返されます。"
 
 #: ../../algebra.rst:73 b82a4b8b83f047ce998f43f5d1e4340a
 msgid "a == b"

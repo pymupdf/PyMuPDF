@@ -154,7 +154,7 @@ msgid ""
 "equivalent** to and obsoletes `this script <https://github.com/pymupdf"
 "/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-"
 "pages.py>`_."
-msgstr "⚠️出力ディレクトリの作成を除いて、この機能はこのスクリプトと機能的に同等であり、これを使うことで廃止できます。"
+msgstr "出力ディレクトリの作成を除いて、この機能は `このスクリプト <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_ と機能的に同等であり、これを使うことで廃止できます。"
 
 #: ../../module.rst:126 2f389ddfa6914e59a2c20a3ab2b63353
 msgid "Joining PDF Documents"
@@ -331,7 +331,7 @@ msgid ""
 "documents<Supported_File_Types>` to a textfile. Currently, there are "
 "three output formatting modes available: simple, block sorting and "
 "reproduction of physical layout."
-msgstr "⚠️任意のサポートされたドキュメントからテキストをテキストファイルに抽出します。現在、3つの出力フォーマットモードが利用可能です：シンプル、ブロックソート、物理的なレイアウトの再現。"
+msgstr "任意の :ref:`サポートされたドキュメント <Supported_File_Types>` からテキストをテキストファイルに抽出します。現在、3つの出力フォーマットモードが利用可能です：シンプル、ブロックソート、物理的なレイアウトの再現。"
 
 #: ../../module.rst:419 ca10b6cf012e47edb516db0e79095ac9
 msgid ""

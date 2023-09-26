@@ -21,11 +21,11 @@ msgstr ""
 
 #: ../../about.rst:10 888b5bf60bc6435e90715e12dc2bdb28
 msgid "Features Comparison"
-msgstr "特徴の比較"
+msgstr "機能の比較"
 
 #: ../../about.rst:16 f075f60743ac4eacb93bbfffad517ecc
 msgid "Feature matrix"
-msgstr "特徴行列"
+msgstr "機能比較表"
 
 #: ../../about.rst:18 ff238380567645238b1fbe2e64e623b0
 msgid ""

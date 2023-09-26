@@ -562,7 +562,7 @@ msgstr "詳細については、:ref:`Adobe PDFリファレンス <AdobeManual>`
 
 #: ../../vars.rst:340 ebf4dcbadb944860ae29390c58973ec5
 msgid "Annotation Types"
-msgstr "注釈の種類"
+msgstr "アノテーションタイプ"
 
 #: ../../vars.rst:341 d988884be2cd47b68d2bb5ce4c0dda7b
 msgid ""

@@ -457,7 +457,7 @@ msgid ""
 "like the same method for :ref:`Page`.. This currently only delivers "
 "relevant data for annotation types 'FreeText' and 'Stamp'. Other types "
 "return an empty string (or equivalent objects)."
-msgstr "さまざまなフォーマットで注釈の内容を取得します - これは :ref:`Page` の同じメソッドのように動作します。現在、これは注釈の種類「FreeText」と「Stamp」に関連するデータのみを提供します。他の種類は空の文字列（または同等のオブジェクト）を返します。"
+msgstr "さまざまなフォーマットで注釈の内容を取得します - これは :ref:`Page` の同じメソッドのように動作します。現在、これはアノテーションタイプ「FreeText」と「Stamp」に関連するデータのみを提供します。他の種類は空の文字列（または同等のオブジェクト）を返します。"
 
 #: ../../annot.rst:108 2215ad6d0ec940fc8737322a7ea217e1
 msgid ""
@@ -749,7 +749,7 @@ msgid ""
 "'Text' annotations, this is the icon name, for 'Stamp' annotations the "
 "text in the stamp. The visual result (if any) depends on your PDF viewer."
 " See also :ref:`mupdficons`."
-msgstr "⚠️すべての注釈タイプの名前フィールドを変更します。「FileAttachment」と「Text」注釈の場合、これはアイコンの名前であり、「Stamp」注釈の場合はスタンプのテキストです。視覚的な結果（ある場合）は、PDFビューアに依存します。MuPDFのAnnotation Iconsも参照してください。"
+msgstr "すべての注釈タイプの名前フィールドを変更します。「FileAttachment」と「Text」注釈の場合、これはアイコンの名前であり、「Stamp」注釈の場合はスタンプのテキストです。視覚的な結果（ある場合）は、PDFビューアに依存します。:ref:`mupdficons` も参照してください。"
 
 #: ../../annot.rst:237 12248bec971a410d80f9d4819e6bd81c
 msgid "the new name."
@@ -819,7 +819,7 @@ msgid ""
 "Otherwise, only the following :ref:`AnnotationTypes` can be rotated: "
 "'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', "
 "'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op."
-msgstr "⚠️それ以外の場合、次の注釈タイプのみが回転できます：'Square'、'Circle'、'Caret'、'Text'、'FileAttachment'、'Ink'、'Line'、'Polyline'、'Polygon'、および'Stamp'。それ以外のすべての場合、このメソッドは無効です。"
+msgstr "それ以外の場合、次の :ref:`AnnotationTypes` のみが回転できます：'Square'、'Circle'、'Caret'、'Text'、'FileAttachment'、'Ink'、'Line'、'Polyline'、'Polygon'、および'Stamp'。それ以外のすべての場合、このメソッドは無効です。"
 
 #: ../../annot.rst:264 daacc4e16f4b4ccba041e702ee5b2632
 msgid ""
@@ -1197,7 +1197,7 @@ msgid ""
 "**[2, 'FreeText', 'FreeTextCallout']**. The second string entry is "
 "optional and may be empty. See the appendix :ref:`AnnotationTypes` for a "
 "list of possible values and their meanings."
-msgstr "⚠️アノテーションタイプを説明する数値と1つまたは2つの文字列、例: **[2, 'FreeText', 'FreeTextCallout']** 。第2の文字列エントリはオプションで、空であるかもしれません。可能な値とその意味については、付録のアノテーションタイプのリストを参照してください。"
+msgstr "アノテーションタイプ を説明する数値と1つまたは2つの文字列、例: **[2, 'FreeText', 'FreeTextCallout']** 。第2の文字列エントリはオプションで、空であるかもしれません。可能な値とその意味については、付録の :ref:`AnnotationTypes` のリストを参照してください。"
 
 #: ../../annot.rst:438 b38c0e85dfca4421a29effc836066e27
 msgid ""
