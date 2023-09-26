@@ -184,7 +184,7 @@ msgid ""
 " dictionary appears as a sub-dictionary in the object definition under "
 "the key */Resources*. Being an inheritable object type, there may exist "
 "\"parent\" resources for all pages or certain subsets of pages."
-msgstr "⚠️PDFページに必要なリソース（画像やフォントなど）への参照を含む辞書（必須、継承可能、 :ref:`AdobeManual`  p. 81）および一部の他のオブジェクト（フォームXObject）が必要です。この辞書は、オブジェクト定義内のキー/リソースの下にサブ辞書として表示されます。継承可能なオブジェクトタイプであるため、すべてのページまたは一部のページの「親」リソースが存在する可能性があります。"
+msgstr "PDFページに必要なリソース（画像やフォントなど）への参照を含む :data:`dictionary`（必須、継承可能、 :ref:`AdobeManual`  p. 81）および一部の他のオブジェクト（フォームXObject）が必要です。この :data:`dictionary` は、オブジェクト定義内のキー/リソースの下にサブ辞書として表示されます。継承可能なオブジェクトタイプであるため、すべてのページまたは一部のページの「親」リソースが存在する可能性があります。"
 
 #: ../../glossary.rst:77 81f00399bf23449db9d9bd4a02bded95
 msgid ""
@@ -195,13 +195,13 @@ msgid ""
 "be a name (...). The value can be any kind of object, including another "
 "dictionary. A dictionary entry whose value is null (...) is equivalent to"
 " an absent entry.\" (:ref:`AdobeManual` p. 18)."
-msgstr "⚠️PDFオブジェクトのタイプで、同じ名前のPythonの概念に多少似ています。「辞書オブジェクトは、辞書のエントリとして知られるオブジェクトのペアを含む連想テーブルです。各エントリの最初の要素はキーであり、2番目の要素は値です。キーは名前である必要があります（...）。値は他の辞書を含む他の種類のオブジェクトであることができます。値がnull (...) の辞書エントリは、不在のエントリと同等です。」（:ref:`AdobeManual` p. 18）。"
+msgstr "PDF :data:`object` のタイプで、同じ名前のPythonの概念に多少似ています。「辞書オブジェクトは、辞書のエントリとして知られるオブジェクトのペアを含む連想テーブルです。各エントリの最初の要素はキーであり、2番目の要素は値です。キーは名前である必要があります（...）。値は他の辞書を含む他の種類のオブジェクトであることができます。値がnull (...) の辞書エントリは、不在のエントリと同等です。」（:ref:`AdobeManual` p. 18）。"
 
 #: ../../glossary.rst:79 32b02b2c6e6142a0a235926821c0ac1d
 msgid ""
 "Dictionaries are the most important :data:`object` type in PDF. Here is "
 "an example (describing a :data:`page`)::"
-msgstr "⚠️辞書は、PDF内で最も重要なオブジェクトのタイプです。以下は、ページを記述する例です::"
+msgstr "辞書は、PDF内で最も重要なオブジェクトのタイプです。以下は、:data:`page` を記述する例です::"
 
 #: ../../glossary.rst:98 5934c25880aa441aabc7f68ba90e5ad1
 msgid ""
@@ -222,7 +222,7 @@ msgstr "この例は、ネストされた辞書の値の構文も示していま
 msgid ""
 "A PDF page is a :data:`dictionary` object which defines one page in a "
 "PDF, see :ref:`AdobeManual` p. 71."
-msgstr "⚠️PDFページは、PDF内の1つのページを定義する辞書オブジェクトであり、 :ref:`AdobeManual` p. 71を参照してください。"
+msgstr "PDFページは、PDF内の1つのページを定義する :data:`dictionary` オブジェクトであり、 :ref:`AdobeManual` p. 71を参照してください。"
 
 #: ../../glossary.rst:108 83b04c5507e34a5ca8168c2c9d0baa48
 msgid ""
@@ -277,7 +277,7 @@ msgid ""
 "descriptions, are represented as streams.\" \"A stream consists of a "
 ":data:`dictionary` followed by zero or more bytes bracketed between the "
 "keywords *stream* and *endstream*\"::"
-msgstr "⚠️PDFの辞書オブジェクトタイプで、Pythonのbytesに似たバイト列が続きます。ただし、「PDFアプリケーションはストリームを段階的に読むことができますが、文字列は完全に読む必要があります。さらに、ストリームの長さは無制限ですが、文字列は実装の制限に従います。そのため、画像やページの説明などの大量のデータを含むオブジェクトは、ストリームとして表現されます。」「ストリームは、キーワード「stream」と「endstream」で囲まれた0バイト以上のバイトで構成される辞書の後に続きます」::"
+msgstr "PDFの :data:`dictionary` :data:`object` タイプで、Pythonのbytesに似たバイト列が続きます。ただし、「PDFアプリケーションはストリームを段階的に読むことができますが、文字列は完全に読む必要があります。さらに、ストリームの長さは無制限ですが、文字列は実装の制限に従います。そのため、画像やページの説明などの大量のデータを含むオブジェクトは、ストリームとして表現されます。」「ストリームは、キーワード「stream」と「endstream」で囲まれた0バイト以上のバイトで構成される :data:`dictionary` の後に続きます」::"
 
 #: ../../glossary.rst:131 7db7c44a77f5445da5a37eac3cc06c13
 msgid ""
@@ -327,7 +327,7 @@ msgid ""
 "required, an array listing all optional content groups, (2) `/D`, "
 "required, the default optional content configuration dictionary (OCCD), "
 "(3) `/Configs`, optional, an array of alternative OCCDs."
-msgstr "⚠️オプショナルコンテンツプロパティ辞書（OCPD） - PDFカタログのサブ辞書。オプショナルコンテンツ情報を保存する中心的な場所で、キー `/OCProperties` で識別されます。この辞書には2つの必須エントリと1つのオプションエントリがあります：（1） `/OCGs` 、必須、すべてのオプショナルコンテンツグループをリストする配列、（2） `/D` 、必須、デフォルトのオプショナルコンテンツ構成辞書（OCCD）、（3） `/Configs` 、オプション、代替のOCCDの配列。"
+msgstr "オプショナルコンテンツプロパティ辞書（OCPD） - PDF :data:`catalog` のサブ :data:`dictionary`。オプショナルコンテンツ情報を保存する中心的な場所で、キー `/OCProperties` で識別されます。この辞書には2つの必須エントリと1つのオプションエントリがあります：（1） `/OCGs` 、必須、すべてのオプショナルコンテンツグループをリストする配列、（2） `/D` 、必須、デフォルトのオプショナルコンテンツ構成辞書（OCCD）、（3） `/Configs` 、オプション、代替のOCCDの配列。"
 
 #: ../../glossary.rst:152 7f4f160f17b14e5fafc83959ebf74d03
 msgid ""
@@ -339,7 +339,7 @@ msgid ""
 "is always activated. Viewer should offer a way to switch between the "
 "`/D`, or one of the optional configurations contained in array "
 "`/Configs`."
-msgstr "⚠️オプショナルコンテンツ構成辞書（OCCD） - PDF :data:`OCPD` 内のPDF辞書。これはOCGのON / OFF状態とPDFビューアプログラムにどのように表示されるかの設定を保存します。構成を選択することは、一時的な質量表示状態の変更を素早く行う方法です。PDFを開いた後、:data:`OCPD` の `/D` 構成は常にアクティブになります。ビューアは `/D` 、または配列 `/Configs` に含まれるオプショナル構成のいずれかに切り替える方法を提供する必要があります。"
+msgstr "オプショナルコンテンツ構成辞書（OCCD） - PDF :data:`OCPD` 内のPDF :data:`dictionary`。これはOCGのON / OFF状態とPDFビューアプログラムにどのように表示されるかの設定を保存します。構成を選択することは、一時的な質量表示状態の変更を素早く行う方法です。PDFを開いた後、:data:`OCPD` の `/D` 構成は常にアクティブになります。ビューアは `/D` 、または配列 `/Configs` に含まれるオプショナル構成のいずれかに切り替える方法を提供する必要があります。"
 
 #: ../../glossary.rst:157 a14b68c194f54194bd364b22e1ee2f0d
 msgid ""
@@ -349,7 +349,7 @@ msgid ""
 "can simultaneously be shown or hidden by setting their OCG to ON or OFF. "
 "This can be achieved via the user interface provided by many PDF viewers "
 "(Adobe Acrobat), or programmatically."
-msgstr "⚠️オプショナルコンテンツグループ（OCG） - 画像や注釈などの他のPDFオブジェクトの表示を制御するために使用される辞書オブジェクト。どのページで定義されているかに関係なく、同じOCGを持つオブジェクトは、OCGをONまたはOFFに設定することで同時に表示または非表示にできます。これは多くのPDFビューア（Adobe Acrobat）が提供するユーザーインターフェース、またはプログラムを使用して達成できます。"
+msgstr "オプショナルコンテンツグループ（OCG） - 画像や注釈などの他のPDFオブジェクトの表示を制御するために使用される :data:`dictionary` オブジェクト。どのページで定義されているかに関係なく、同じOCGを持つオブジェクトは、OCGをONまたはOFFに設定することで同時に表示または非表示にできます。これは多くのPDFビューア（Adobe Acrobat）が提供するユーザーインターフェース、またはプログラムを使用して達成できます。"
 
 #: ../../glossary.rst:161 c08a6898a74240be9ccdaa3386f0ea57
 msgid ""
