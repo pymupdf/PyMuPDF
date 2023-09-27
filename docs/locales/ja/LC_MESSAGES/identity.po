@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-27 14:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,30 +19,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../identity.rst:7 731350c4f90143b1ab99d9ed8e733fef
+#: ../../header.rst:-1 7784e4651a7f4d58b07b84e2a1e98cee
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 6e823693935a4e80bc6ff86758b4c96e
+msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+msgstr ""
+
+#: ../../header.rst:-1 474bd90ee4044d2fbedbd7a5db2826a3
+msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+msgstr ""
+
+#: ../../identity.rst:7 7f15967384b841358acd19b96129e37f
 msgid "Identity"
 msgstr ""
 
-#: ../../identity.rst:9 377835523213419e91cacbc487b265ba
+#: ../../identity.rst:9 66ea9713de5149f7a776c3e6e22fd2c8
 msgid ""
 "Identity is a :ref:`Matrix` that performs no action -- to be used "
 "whenever the syntax requires a matrix, but no actual transformation "
 "should take place. It has the form *fitz.Matrix(1, 0, 0, 1, 0, 0)*."
 msgstr ""
 
-#: ../../identity.rst:11 84a53943990a473188714f3e97e30c9b
+#: ../../identity.rst:11 e453437ea8464a29a0b9c6e28193a24e
 msgid ""
 "Identity is a constant, an \"immutable\" object. So, all of its matrix "
 "properties are read-only and its methods are disabled."
 msgstr ""
 
-#: ../../identity.rst:13 d57e330a9e19498f93aaf87d32a3d11c
+#: ../../identity.rst:13 a7444ad9170f49449f696dfe04d98047
 msgid ""
 "If you need a **mutable** identity matrix as a starting point, use one of"
 " the following statements::"
 msgstr ""
 
-#: ../../footer.rst:-1 bcfcfa3a1a7c4be0a2c41349e995917b
+#: ../../footer.rst:-1 9ffd62bfdb8e41f3b2adfe69bcf09129
 msgid "Discord logo"
 msgstr ""
 

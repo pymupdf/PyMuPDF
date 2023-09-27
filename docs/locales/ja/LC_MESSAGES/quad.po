@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-27 14:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,11 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../quad.rst:7 a92e4967c80442ffb8a5751e8c321892
+#: ../../header.rst:-1 d6a4ca9d6371457eb32e53b4c6b00041
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 dfe866427a87499c87a7178e6ec07d82
+msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+msgstr ""
+
+#: ../../header.rst:-1 c6cd0e00039a4fcaa5966a5167994991
+msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+msgstr ""
+
+#: ../../quad.rst:7 694a0ec3f0ce445db0747ce178858a5f
 msgid "Quad"
 msgstr ""
 
-#: ../../quad.rst:9 7d461ee0397c4dcf8df7c27f3f318ef6
+#: ../../quad.rst:9 f2ad3529ac424731ab9bcb1e3a841b16
 msgid ""
 "Represents a four-sided mathematical shape (also called \"quadrilateral\""
 " or \"tetragon\") in the plane, defined as a sequence of four "
@@ -31,7 +43,7 @@ msgid ""
 "upper right, lower left, lower right)."
 msgstr ""
 
-#: ../../quad.rst:11 30896ef3614d4dd2aa6726d3059fda36
+#: ../../quad.rst:11 19d5e41913ce4193bfb602fca8ea3181
 msgid ""
 "Quads can **be obtained** as results of text search methods "
 "(:meth:`Page.search_for`), and they **are used** to define text marker "
@@ -41,7 +53,7 @@ msgid ""
 ":meth:`Shape.draw_quad`)."
 msgstr ""
 
-#: ../../quad.rst:15 857546a0097d43c0a1d47132c9730e7e
+#: ../../quad.rst:15 12a48dfb6f5b4849bfde37a891638534
 msgid ""
 "If the corners of a rectangle are transformed with a **rotation**, "
 "**scale** or **translation** :ref:`Matrix`, then the resulting quad is "
@@ -51,237 +63,237 @@ msgid ""
 "operation."
 msgstr ""
 
-#: ../../quad.rst:17 0f22de955ac04b30af935f0a00256655
+#: ../../quad.rst:17 62db16b099b7466bab92df42bae2651e
 msgid ""
 "This is not true for all matrices: e.g. shear matrices produce "
 "parallelograms, and non-invertible matrices deliver \"degenerate\" "
 "tetragons like triangles or lines."
 msgstr ""
 
-#: ../../quad.rst:19 7ffa428d08e348a9979e7c6b34834010
+#: ../../quad.rst:19 e732a1555df64baaa63fdc985fd9ad92
 msgid ""
 "Attribute :attr:`Quad.rect` obtains the enveloping rectangle. Vice versa,"
 " rectangles now have attributes :attr:`Rect.quad`, resp. "
 ":attr:`IRect.quad` to obtain their respective tetragon versions."
 msgstr ""
 
-#: ../../quad.rst:23 a3acdc0e345b4a7cb8b0854a2c4b36d9
+#: ../../quad.rst:23 cd19d088359e409eae7c1acde95e5bbb
 msgid "**Methods / Attributes**"
 msgstr ""
 
-#: ../../quad.rst:23 570fb4a7065341beb6a50417a0e8a47e
+#: ../../quad.rst:23 42000065088940bcb717c7cb4b3fc3c1
 msgid "**Short Description**"
 msgstr ""
 
-#: ../../quad.rst:25 d3ec3fa30238497e9ce8b023df98b913
+#: ../../quad.rst:25 a96d5a709d5945a497511281f3080c95
 msgid ":meth:`Quad.transform`"
 msgstr ""
 
-#: ../../quad.rst:25 09670f33e8ee401c98fa7cc445aa2300
+#: ../../quad.rst:25 fbc89ff39f404a54a436863ba32fc261
 msgid "transform with a matrix"
 msgstr ""
 
-#: ../../quad.rst:26 171c30e882a2445aade6512016c0c236
+#: ../../quad.rst:26 134d857a7624408694591c943f78bc3a
 msgid ":meth:`Quad.morph`"
 msgstr ""
 
-#: ../../quad.rst:26 e254faa3875e4193a97fc36f3c5feab7
+#: ../../quad.rst:26 d0a4ec8b0fe34aecaf0b1f75d892edcc
 msgid "transform with a point and matrix"
 msgstr ""
 
-#: ../../quad.rst:27 ed0d06c9c518491bba8b26bd5663ecc2
+#: ../../quad.rst:27 f9aaa71e048e4f39befb826a6608e52f
 msgid ":attr:`Quad.ul`"
 msgstr ""
 
-#: ../../quad.rst:27 caea6f5e9b5345099e08dc5e3bf056f3
+#: ../../quad.rst:27 45518a11147f4a84a7a7db5720dcec63
 msgid "upper left point"
 msgstr ""
 
-#: ../../quad.rst:28 06c8b5c8588e475da69671b91079e2f2
+#: ../../quad.rst:28 cab016c949464d0c956d60323d0fbc65
 msgid ":attr:`Quad.ur`"
 msgstr ""
 
-#: ../../quad.rst:28 5dd1f8be2707446588a0a02bfb5a99af
+#: ../../quad.rst:28 943ccd79f4a840cda76aa3fe2efd42cf
 msgid "upper right point"
 msgstr ""
 
-#: ../../quad.rst:29 4ebe20162fab435e963c6fd096004cf4
+#: ../../quad.rst:29 6eb9f584b10e4148bbf1ba2da7ce83ae
 msgid ":attr:`Quad.ll`"
 msgstr ""
 
-#: ../../quad.rst:29 948df607a961486ab4cc74a43837923f
+#: ../../quad.rst:29 0a1da986e4d347d1aa16741806a7b0b7
 msgid "lower left point"
 msgstr ""
 
-#: ../../quad.rst:30 7a8da60fef2a40fdad792e35d37b687b
+#: ../../quad.rst:30 4b272eac6c524e95958cdffbcfd040ec
 msgid ":attr:`Quad.lr`"
 msgstr ""
 
-#: ../../quad.rst:30 cd28646c3d3a4269bbf63ad8782db4ff
+#: ../../quad.rst:30 839be4758b6f4806aad1a0b3e26f030b
 msgid "lower right point"
 msgstr ""
 
-#: ../../quad.rst:31 48a376ce50c7491fb46a11ae454db304
+#: ../../quad.rst:31 3387e09788d7458793aa8ea030049c1e
 msgid ":attr:`Quad.is_convex`"
 msgstr ""
 
-#: ../../quad.rst:31 347356615bcc4f59a2084c5f68e6977a
+#: ../../quad.rst:31 ceb2dad47bf74d09b1bcf2bdeaa6f79b
 msgid "true if quad is a convex set"
 msgstr ""
 
-#: ../../quad.rst:32 3ce2d324f2974a6c99228b9be2bc1bbe
+#: ../../quad.rst:32 799d11263b964962adcf3f794ba3e890
 msgid ":attr:`Quad.is_empty`"
 msgstr ""
 
-#: ../../quad.rst:32 95bf2c743244493a90efcaed0c3ff500
+#: ../../quad.rst:32 d8fa535fe4c44f0bbb3402707540eafd
 msgid "true if quad is an empty set"
 msgstr ""
 
-#: ../../quad.rst:33 0ce8856311c04e9997cbe4f001d83f12
+#: ../../quad.rst:33 60f479a123c545a28d6011f5abf966ab
 msgid ":attr:`Quad.is_rectangular`"
 msgstr ""
 
-#: ../../quad.rst:33 aa774361f8874f34bf7fdb3dcb210cf2
+#: ../../quad.rst:33 c3a9c1871c6c45ac8e521c6fbd863bff
 msgid "true if quad is congruent to a rectangle"
 msgstr ""
 
-#: ../../quad.rst:34 954473ed350944d8b3b34fb7da18a17e
+#: ../../quad.rst:34 9ba6e4ab6ee742669ac2381d8e008d88
 msgid ":attr:`Quad.rect`"
 msgstr ""
 
-#: ../../quad.rst:34 3529660938a140a6a58a0fd28ee760f7
+#: ../../quad.rst:34 92bcdab218174829af3c3f071d8dada2
 msgid "smallest containing :ref:`Rect`"
 msgstr ""
 
-#: ../../quad.rst:35 4553cc6bb5994b7da54a347367d3ec2a
+#: ../../quad.rst:35 b6d295216bdd4404a029ea8f2b465b90
 msgid ":attr:`Quad.width`"
 msgstr ""
 
-#: ../../quad.rst:35 b13447127de24539be61afae37b5f932
+#: ../../quad.rst:35 59db9329cbbb4a1e8f7e46e47e6a3f3d
 msgid "the longest width value"
 msgstr ""
 
-#: ../../quad.rst:36 3fb6857ad6ee42789a22a2ea7a82fa20
+#: ../../quad.rst:36 69f9177efbe540ff9d8a5c73ba0d9a64
 msgid ":attr:`Quad.height`"
 msgstr ""
 
-#: ../../quad.rst:36 67544e9663da42358814939ee4547348
+#: ../../quad.rst:36 456a8260f433492eb9adf03476d7f031
 msgid "the longest height value"
 msgstr ""
 
-#: ../../quad.rst:39 655ac91254064d6b9adbcbb62cdcb4d3
+#: ../../quad.rst:39 5f51d98506ae4856ab3739271e1233c2
 msgid "**Class API**"
 msgstr ""
 
-#: ../../quad.rst:51 5b5b374ead2b4e6ebab003bf4070ce5c
+#: ../../quad.rst:51 ab3bda39c8d744688a59a25cc718bc5d
 msgid ""
 "Overloaded constructors: \"ul\", \"ur\", \"ll\", \"lr\" stand for "
 ":data:`point_like` objects (the four corners), \"sequence\" is a Python "
 "sequence with four :data:`point_like` objects."
 msgstr ""
 
-#: ../../quad.rst:53 d19fd4a9c7c64234b4154c0b24bac2f7
+#: ../../quad.rst:53 adc6bea718204f1c959573639d29f5dc
 msgid "If \"quad\" is specified, the constructor creates a **new copy** of it."
 msgstr ""
 
-#: ../../quad.rst:55 cadc14296ace4c60b2a21ecdf0b6f447
+#: ../../quad.rst:55 75875c9a03e34bd3abdee2c609f97080
 msgid ""
 "Without parameters, a quad consisting of 4 copies of *Point(0, 0)* is "
 "created."
 msgstr ""
 
-#: ../../quad.rst:60 bce5ae88ad694aecba02bcd7dd5b2655
+#: ../../quad.rst:60 7415d9e1520240948afff724994d5346
 msgid ""
 "Modify the quadrilateral by transforming each of its corners with a "
 "matrix."
 msgstr ""
 
-#: ../../quad.rst 3111ceb4f04d424e81d373aaef308f2e
-#: a92a4921877844d291b40107258ebe02
+#: ../../quad.rst 7265f0a3941540fdbd93cfc16f04df48
+#: b822fba2854d4283938883509b629f09
 msgid "Parameters"
 msgstr ""
 
-#: ../../quad.rst:62 ../../quad.rst:69 b149b03526704e46836d747c27bd7249
-#: f1486420136d47fc854405b80ac4a153
+#: ../../quad.rst:62 ../../quad.rst:69 09d80a8e344a44618e3f1a0800fc6d42
+#: 449c81bf34f249b983029cbe820fb832
 msgid "the matrix."
 msgstr ""
 
-#: ../../quad.rst:66 8fd48178fb81454a99361a1389f0ff1b
+#: ../../quad.rst:66 fefeac30228c413cb863b136bfc2e00a
 msgid ""
 "*(New in version 1.17.0)* \"Morph\" the quad with a matrix-like using a "
 "point-like as fixed point."
 msgstr ""
 
-#: ../../quad.rst:68 06f8a1f207204bd9b73fa1051127bcd1
+#: ../../quad.rst:68 4ba23f7127474d94940ca22432b5c93b
 msgid "the point."
 msgstr ""
 
-#: ../../quad.rst 832a240715834279ba1078970bd3f05f
+#: ../../quad.rst e04415b5a7c744cd8b16ad4438de7717
 msgid "Returns"
 msgstr ""
 
-#: ../../quad.rst:70 df35abb07c7f4c9da1abe50da7a76732
+#: ../../quad.rst:70 63a7ad8b2ec84d46b5942a5b18f4ee19
 msgid "a new quad (no operation if this is the infinite quad)."
 msgstr ""
 
-#: ../../quad.rst:75 e024af8ffee549e6bcc5226aa8258723
+#: ../../quad.rst:75 3c4de44f48cb4917bffe6f940cf2b4f5
 msgid ""
 "The smallest rectangle containing the quad, represented by the blue area "
 "in the following picture."
 msgstr ""
 
-#: ../../quad.rst 01d2e96377154ac0a4767d24085560a4
-#: 0795858f6a66414f9a048c13f68a474a 27fb0aadacaf417eaf08234085f7da11
-#: 351f779cf6a54e90a76d071ea3241701 441896790bf843ac84fe761564c0b2e7
-#: 45c61edac4204a278ece5c80b2181493 5c8aab0d86de48a0a04e1d4538737200
-#: 751056f433f3456495ad6e0a9754c346 e995a13e5d2f431aab7d128c8c619018
-#: f5d949e544fe4234bca6b072fd14a553
+#: ../../quad.rst 002b38560877424c89c0cc854e3878b0
+#: 2df16b3ebfe64444a5372e8905bc0253 785b228f1f2f45e491d403d3559f8fb4
+#: a7a8e66dfe5949a4a9069ebadbcf9e05 c2bdc60eddc0453dafe927517a0e7f80
+#: d2f37bf7dd074bf8a6598505dfb04ecb d3a1bc47ce2c415d8c0d26645d50da45
+#: d5370cec53b64a7b823a208da484dd33 d7492e0b47fd414081732517f1b0a22b
+#: e158d5b9c1214308b183e17277d29cf9
 msgid "type"
 msgstr ""
 
-#: ../../quad.rst:79 a267b4703988411b8908511735467111
+#: ../../quad.rst:79 51bde8f6e8954ee9842f99c79e0594e3
 msgid ":ref:`Rect`"
 msgstr ""
 
-#: ../../quad.rst:83 3fc476292c8e45bdb479a96058085cbf
+#: ../../quad.rst:83 994c37ed602044ec961e79e5112b9526
 msgid "Upper left point."
 msgstr ""
 
 #: ../../quad.rst:85 ../../quad.rst:91 ../../quad.rst:97 ../../quad.rst:103
-#: 10421b881d3744d6bedb1f8c6dfa6a72 289bb2be9627497498242e2265ce4870
-#: 605a00e16ef34c97a0802b6c86714b6c ff695cab04354fcca3292ed389a1832d
+#: 0711cb713a7141dda9688648a8729478 1a1ff35c8e7c410b9969c2f2c6e93b40
+#: 4331fe657a814a80b249aaccf1a27909 a306e033331f426b9271c08936a4d357
 msgid ":ref:`Point`"
 msgstr ""
 
-#: ../../quad.rst:89 2994a326d1c844b4b8686bbecac34814
+#: ../../quad.rst:89 5e54abc7b3b0489b8901eb0d46019083
 msgid "Upper right point."
 msgstr ""
 
-#: ../../quad.rst:95 f567b3d5f4fc49ce98aa08919f50ff9f
+#: ../../quad.rst:95 0383cf1c931e43629c314a0c418fddbe
 msgid "Lower left point."
 msgstr ""
 
-#: ../../quad.rst:101 a865e158445640cc874757d744ca19bf
+#: ../../quad.rst:101 75b2efddac8c4f6ba5e7f6e3f0ab0bf2
 msgid "Lower right point."
 msgstr ""
 
-#: ../../quad.rst:107 d03a5c74b08247368ff41ab6ddface98
+#: ../../quad.rst:107 8755a9c11180474a841f68b735b60699
 msgid "New in version 1.16.1"
 msgstr ""
 
-#: ../../quad.rst:109 c9198c3c88ce47cf9ffd53372777f147
+#: ../../quad.rst:109 de13bb2047d14541b34211162e1a2a2e
 msgid ""
 "Checks if for any two points of the quad, all points on their connecting "
 "line also belong to the quad."
 msgstr ""
 
 #: ../../quad.rst:114 ../../quad.rst:120 ../../quad.rst:126
-#: 0a745de4d6a14fc0837ff996e727c9dc c89cad895f1f4bc081582c19fa10952c
-#: cae7fd6baaca4bf5aa2eb3529c68a847
+#: 0234beb17fe840c49d981e0345eca2e9 0362aaeaeca3436781b1410a2203a43d
+#: 7b2e3e955fc84af7aa8a87e3b5f8b0d1
 msgid "bool"
 msgstr ""
 
-#: ../../quad.rst:118 3de34ba334fa450a825d711a8a011d29
+#: ../../quad.rst:118 302fa11473194f0c9f60c1163816bc99
 msgid ""
 "True if enclosed area is zero, which means that at least three of the "
 "four corners are on the same line. If this is false, the quad may still "
@@ -289,40 +301,40 @@ msgid ""
 "parallelograms, trapezoids, ...)."
 msgstr ""
 
-#: ../../quad.rst:124 4869564b46574eecbf070c322ac84f22
+#: ../../quad.rst:124 4d244c23cdd44b16adda50e946cea80d
 msgid ""
 "True if all corner angles are 90 degrees. This implies that the quad is "
 "**convex and not empty**."
 msgstr ""
 
-#: ../../quad.rst:130 4aea35830a30475b8ac9ff9fb52a5810
+#: ../../quad.rst:130 b86709b1430b4cbf850474c18f576059
 msgid "The maximum length of the top and the bottom side."
 msgstr ""
 
-#: ../../quad.rst:132 ../../quad.rst:138 946a3b32cc364cd4ac6b58750cbe73f2
-#: f3f7c71139bb4e3bb2fe0c86a10971df
+#: ../../quad.rst:132 ../../quad.rst:138 5c2b04982b5c4ad7834daab75430aae6
+#: dcb6d1272bfe439eb40912245a39cc6f
 msgid "float"
 msgstr ""
 
-#: ../../quad.rst:136 36d814ff17c1418e9d3448df59b58e03
+#: ../../quad.rst:136 0a54dab71e1a4ee98684fdf89e0a90f4
 msgid "The maximum length of the left and the right side."
 msgstr ""
 
-#: ../../quad.rst:141 7d5190b5456c4ff0a0af1c6016e4c798
+#: ../../quad.rst:141 19732b717fb64c5db00323e7c6d86aa5
 msgid "Remark"
 msgstr ""
 
-#: ../../quad.rst:142 f4ba1c436783496d8d477f39e1034311
+#: ../../quad.rst:142 690f6bb3d89b4515a1f93cce7b73cb02
 msgid ""
 "This class adheres to the sequence protocol, so components can be dealt "
 "with via their indices, too. Also refer to :ref:`SequenceTypes`."
 msgstr ""
 
-#: ../../quad.rst:145 d2a57a03a00a43a2a4a8275440ed6f89
+#: ../../quad.rst:145 885b3f167d664719967d8a136abb5970
 msgid "Algebra and Containment Checks"
 msgstr ""
 
-#: ../../quad.rst:146 4ba7ca7e8b4644968c321282fe318b5f
+#: ../../quad.rst:146 039acf0c985b49f69b29f382095d282d
 msgid ""
 "Starting with v1.19.6, quads can be used in algebraic expressions like "
 "the other geometry object -- the respective restrictions have been "
@@ -330,15 +342,15 @@ msgid ""
 "checking are now possible:"
 msgstr ""
 
-#: ../../quad.rst:148 bffb5df3b5a5437291618d6e720d69a7
+#: ../../quad.rst:148 43a253984445444f9b94767f50ae155d
 msgid "`{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}`"
 msgstr ""
 
-#: ../../quad.rst:150 7163e4ce212343049f257ac6f6d3d978
+#: ../../quad.rst:150 10752ec9cf6e40b79bc0c360978f54f2
 msgid "Please note the following interesting detail:"
 msgstr ""
 
-#: ../../quad.rst:152 9a381a63cc714b41a360dbe5b3b8b4ea
+#: ../../quad.rst:152 d5c556a71e6b409ca769abdb56510b29
 msgid ""
 "For a rectangle, only its top-left point belongs to it. Since v1.19.0, "
 "rectangles are defined to be \"open\", such that its bottom and its right"
@@ -347,7 +359,7 @@ msgid ""
 "following somewhat surprising implication:"
 msgstr ""
 
-#: ../../footer.rst:-1 56a70a21860546d4b708ca68c00bc5d0
+#: ../../footer.rst:-1 b55fb326978242688c73d2a2857d3173
 msgid "Discord logo"
 msgstr ""
 

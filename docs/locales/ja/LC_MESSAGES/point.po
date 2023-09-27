@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-27 14:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,137 +19,149 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../point.rst:7 e0bcd881e305493bbe145a656518bbd5
+#: ../../header.rst:-1 2b4d4b3d6f284f7994d092a6db08ea8b
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 4533db4e46904951b32c3dc3aaf323b5
+msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+msgstr ""
+
+#: ../../header.rst:-1 84519080bba743fd8c72944ceb4507f6
+msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+msgstr ""
+
+#: ../../point.rst:7 7f1d5de4329f4e66bacf4f83922576b7
 msgid "Point"
 msgstr ""
 
-#: ../../point.rst:9 787f97b9babb43f8aeeabbc0b1903b44
+#: ../../point.rst:9 9ca895a2d07e4afa9c6bb84ae3e4b6f1
 msgid ""
 "*Point* represents a point in the plane, defined by its x and y "
 "coordinates."
 msgstr ""
 
-#: ../../point.rst:12 f017d58332304a43b94ca31aec1c1c25
+#: ../../point.rst:12 d09403a4d59f40628a1268e52e266e98
 msgid "**Attribute / Method**"
 msgstr ""
 
-#: ../../point.rst:12 d6efac4674304c46a4dd431ef8a45cad
+#: ../../point.rst:12 79f040cfa650448eb6db7dd9480b474c
 msgid "**Description**"
 msgstr ""
 
-#: ../../point.rst:14 2e3afc29e7a249ebb6423fc8fd0a1e28
+#: ../../point.rst:14 78f1e7f6252f4ff18746b56a5846aebb
 msgid ":meth:`Point.distance_to`"
 msgstr ""
 
-#: ../../point.rst:14 339925f57d6f4c428b9d87d3dcea04f5
+#: ../../point.rst:14 953bceb41b894ba9a95832b4600f51b9
 msgid "calculate distance to point or rect"
 msgstr ""
 
-#: ../../point.rst:15 cb2fbbb7d676439e8a232e6a0d3f7345
+#: ../../point.rst:15 c71a99bd08f442c1a9fb7145b12478ef
 msgid ":meth:`Point.norm`"
 msgstr ""
 
-#: ../../point.rst:15 1814dd78fb3a4baabfeda0a101006957
+#: ../../point.rst:15 bf3ec625212f48adbad97bd2779256c6
 msgid "the Euclidean norm"
 msgstr ""
 
-#: ../../point.rst:16 c78ce3df47d449068b189e0750ac0d20
+#: ../../point.rst:16 57df3ca0bb634446a9203d20a21a012c
 msgid ":meth:`Point.transform`"
 msgstr ""
 
-#: ../../point.rst:16 ed12d350acbc4b8e99c60233acca2d66
+#: ../../point.rst:16 591feccf194b40f5a054b35952ec69c8
 msgid "transform point with a matrix"
 msgstr ""
 
-#: ../../point.rst:17 713e14c493cd464e9cede1f953e21c3c
+#: ../../point.rst:17 d31302a95fa14b9aa18b7482236d2592
 msgid ":attr:`Point.abs_unit`"
 msgstr ""
 
-#: ../../point.rst:17 4d970716a04b42909802ba4c6cfeae0a
+#: ../../point.rst:17 2670d3a735004877802bad4c7de4b003
 msgid "same as unit, but positive coordinates"
 msgstr ""
 
-#: ../../point.rst:18 deb488abffb345569fef0bf4460ac49c
+#: ../../point.rst:18 0977c0d8d31e4f61a6bfb086d8a3102d
 msgid ":attr:`Point.unit`"
 msgstr ""
 
-#: ../../point.rst:18 40da846d343b4c6592ff8e340b021e08
+#: ../../point.rst:18 e8a8c775b4864a9b8ed084ebcfe1170f
 msgid "point coordinates divided by *abs(point)*"
 msgstr ""
 
-#: ../../point.rst:19 ddeee3aae059436fb829a8f6958614de
+#: ../../point.rst:19 0b36887356c14b108029ad1e399aabab
 msgid ":attr:`Point.x`"
 msgstr ""
 
-#: ../../point.rst:19 206c2a3ebbad43c2a0f81570c4ba5990
+#: ../../point.rst:19 38f133b72629487baf89b4ac499c03f9
 msgid "the X-coordinate"
 msgstr ""
 
-#: ../../point.rst:20 6af6b5cd51894aa480f018d7ff012945
+#: ../../point.rst:20 6e98449c416d4344832ef7a28b213079
 msgid ":attr:`Point.y`"
 msgstr ""
 
-#: ../../point.rst:20 7854cade699b42c192c9b25faa6cc877
+#: ../../point.rst:20 728a09098e564ac3a373a3b72c81156f
 msgid "the Y-coordinate"
 msgstr ""
 
-#: ../../point.rst:23 93d7f1e35bfb4169ac916cf54095b61f
+#: ../../point.rst:23 397cacf37c6f4d9d8245261550ffde23
 msgid "**Class API**"
 msgstr ""
 
-#: ../../point.rst:35 13036f6f1956428cb87150c852556f3d
+#: ../../point.rst:35 611e9809ff674f9c8ae154c7b32566a9
 msgid "Overloaded constructors."
 msgstr ""
 
-#: ../../point.rst:37 1c303c3b5c1a4f2488481101f2fd907e
+#: ../../point.rst:37 cac0020c108640faaa2c8eb705227528
 msgid "Without parameters, *Point(0, 0)* will be created."
 msgstr ""
 
-#: ../../point.rst:39 6b5e4769c72446b0958f93e9229a9ad4
+#: ../../point.rst:39 bc38035e325143aa9ff64215faf7012f
 msgid ""
 "With another point specified, a **new copy** will be created, "
 "\"sequence\" is a Python sequence of 2 numbers (see "
 ":ref:`SequenceTypes`)."
 msgstr ""
 
-#: ../../point.rst 138e867f2d634bdcbe20f4d2f30d91d4
-#: 4f72c20cbf844e558c86a428f0af9eec e2f83f73f43a42b58ebda2bd5e3af83a
+#: ../../point.rst 07af173e0ddf4a51a2e8516773453a40
+#: a05eb87823f64b8aa6f826255da222ea b1595ede29d14e98b821cf0c0828828f
 msgid "Parameters"
 msgstr ""
 
-#: ../../point.rst:41 534cd91aed904a93a530a244a89a6bd9
+#: ../../point.rst:41 8a2c5fbd4536400aa641e1cdf17a5d0c
 msgid "x coordinate of the point"
 msgstr ""
 
-#: ../../point.rst:43 7a3350a0940647e6aae89279473b3a92
+#: ../../point.rst:43 2f54ce6bb4794864bc7207e5f9496b50
 msgid "y coordinate of the point"
 msgstr ""
 
-#: ../../point.rst:47 e3f56e260f5548acac5f398616a645cf
+#: ../../point.rst:47 de3e5c44daee462ab250905c72a0a379
 msgid ""
 "Calculate the distance to *x*, which may be :data:`point_like` or "
 ":data:`rect_like`. The distance is given in units of either pixels "
 "(default), inches, centimeters or millimeters."
 msgstr ""
 
-#: ../../point.rst:49 caa716fccbb04c278cb9114d49b6044d
+#: ../../point.rst:49 907bce9cdcc44a6a8d0d1675e42f7fc1
 msgid "to which to compute the distance."
 msgstr ""
 
-#: ../../point.rst:51 9f08bd1a75ce4b0bbae9f1092edd1e2e
+#: ../../point.rst:51 2ec2ae820faa4c4d80b97a5a2a87bec5
 msgid "the unit to be measured in. One of \"px\", \"in\", \"cm\", \"mm\"."
 msgstr ""
 
-#: ../../point.rst 1efc3a87fa104255a0b4da2e903d2b1a
-#: c8aa18f75c034b7db2732c55e0a5fc47
+#: ../../point.rst a3545f76c3ff423ea070b4f822357dad
+#: a821aa6822ec4fad9ec8ca1fc8bf7816
 msgid "Return type"
 msgstr ""
 
-#: ../../point.rst 3740dc05403d472c8b7ac68a6ca08fa2
+#: ../../point.rst 0b2ee044df004070953e4758e0353117
 msgid "Returns"
 msgstr ""
 
-#: ../../point.rst:54 8748b4529ebe4d3eb56cea689c432fd5
+#: ../../point.rst:54 0a39d949e6f3455ebc52183505bb1060
 msgid ""
 "the distance to *x*. If this is :data:`rect_like`, then the distance  * "
 "is the length of the shortest line connecting to one of the rectangle "
@@ -157,49 +169,49 @@ msgid ""
 "**contains** the point"
 msgstr ""
 
-#: ../../point.rst:54 1d883f5f4c7e4d828de6e445c1504854
+#: ../../point.rst:54 4e36d895d1f84a7fa40f0626de8ed4e5
 msgid "the distance to *x*. If this is :data:`rect_like`, then the distance"
 msgstr ""
 
-#: ../../point.rst:56 190c4d8576504ba2a3ffccbe6f5e225e
+#: ../../point.rst:56 d6013f4da59540ceb255855eb06e22ef
 msgid ""
 "is the length of the shortest line connecting to one of the rectangle "
 "sides"
 msgstr ""
 
-#: ../../point.rst:57 a25ec015190f49f690af2a00ca34111a
+#: ../../point.rst:57 0b09c0d6f4e347b3a4c16514bfa09ba8
 msgid "is calculated to the **finite version** of it"
 msgstr ""
 
-#: ../../point.rst:58 26c264e5dccb4e6abe7b34f16a2a6267
+#: ../../point.rst:58 40facbddd3b64d6495136659154b66ca
 msgid "is zero if it **contains** the point"
 msgstr ""
 
-#: ../../point.rst:62 d1fce3f977334a679c752331662c775a
+#: ../../point.rst:62 377acac354914b579fcb94d57492d2a3
 msgid "New in version 1.16.0"
 msgstr ""
 
-#: ../../point.rst:64 65bd1cb70b9d4ad0b32797912cb42402
+#: ../../point.rst:64 fca9c859cc504264b7670e469e59a180
 msgid ""
 "Return the Euclidean norm (the length) of the point as a vector. Equals "
 "result of function *abs()*."
 msgstr ""
 
-#: ../../point.rst:68 a325fe60009249cb876b73aafc6828a4
+#: ../../point.rst:68 0e85d3eaafdd46ddad98ee1644a80bf3
 msgid "Apply a matrix to the point and replace it with the result."
 msgstr ""
 
-#: ../../point.rst:70 2fb3781079684f16b6e3cc6c8a98cb87
+#: ../../point.rst:70 80d02ef252d54b67a2a7ba802f03b482
 msgid "The matrix to be applied."
 msgstr ""
 
 #: ../../point.rst:72 ../../point.rst:80 ../../point.rst:86
-#: 52a620715c25480dbe8441571046e7a4 ba9672aec77448eebab6fa124c6d1dcd
-#: e8ec389c074a4b868d48592af5432191
+#: 0889524c379444d89d9607c57edf19e4 5ed1dc1b031043758c0c597a7609568d
+#: 83c71fc6071949b1a5cfa93646e14e6a
 msgid ":ref:`Point`"
 msgstr ""
 
-#: ../../point.rst:76 be068d0bb9564bd6b115a53a572f777a
+#: ../../point.rst:76 e081b7785aa944c48015714387aff049
 msgid ""
 "Result of dividing each coordinate by *norm(point)*, the distance of the "
 "point to (0,0). This is a vector of length 1 pointing in the same "
@@ -208,44 +220,44 @@ msgid ""
 "with the x axis."
 msgstr ""
 
-#: ../../point.rst 0a9d21441ad44147ae3d7e8643120c08
-#: 26411ca7ecbf4648b7358884688e0d02 8d9b6b03f74f41049de620ae8bea7dc1
-#: ff140813dcb141d59fe32ee9767a84c3
+#: ../../point.rst 0480275642b74b93a1d871335729e63f
+#: a32f0270ddd340868c88cecfda3d0e1f bb4707afe5044834b88eba5f10c68c66
+#: dca034da18c2405fa7e4f633c957e7fd
 msgid "type"
 msgstr ""
 
-#: ../../point.rst:84 4da50404324e4ddea763162ba7346871
+#: ../../point.rst:84 030aa7c81edb42fc8247d7b83d997e22
 msgid ""
 "Same as :attr:`unit` above, replacing the coordinates with their absolute"
 " values."
 msgstr ""
 
-#: ../../point.rst:90 e402a09b7bb74ebbbff7c5e07ad2f4a5
+#: ../../point.rst:90 d7c1286b92864ef2a139fef817e7a5fa
 msgid "The x coordinate"
 msgstr ""
 
-#: ../../point.rst:92 ../../point.rst:98 0e84c1e96468471288308c93cca448dd
-#: c1855e8ecbbc42fd9632df4d760eb937
+#: ../../point.rst:92 ../../point.rst:98 ab0165f69fb343e789bb262e337f01b2
+#: c56dc9943b7c478e86af15a6503475cf
 msgid "float"
 msgstr ""
 
-#: ../../point.rst:96 324ff8c9d3e84097a7fd381b3a7cf50e
+#: ../../point.rst:96 875c0b68389c42bfb7142c13e6e7e9d3
 msgid "The y coordinate"
 msgstr ""
 
-#: ../../point.rst:102 b79e714a357749f9bb75d0fe96a9150e
+#: ../../point.rst:102 e49f2cfa4b4548a0b0991f347b2018ca
 msgid ""
 "This class adheres to the Python sequence protocol, so components can be "
 "accessed via their index, too. Also refer to :ref:`SequenceTypes`."
 msgstr ""
 
-#: ../../point.rst:103 2b21007dde0f46b689915a4f3dd4452c
+#: ../../point.rst:103 3b02f5a9ef3341548f78ec4565980f30
 msgid ""
 "Rectangles can be used with arithmetic operators -- see chapter "
 ":ref:`Algebra`."
 msgstr ""
 
-#: ../../footer.rst:-1 a9df7f8109ee4edfbf63647b0500f2a0
+#: ../../footer.rst:-1 42aabe85ad1b450188148244e7559baf
 msgid "Discord logo"
 msgstr ""
 

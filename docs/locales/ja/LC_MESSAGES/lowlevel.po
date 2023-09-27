@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-27 14:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,17 +19,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../lowlevel.rst:5 df4b3077185e4c30b05f4dd582d92a75
+#: ../../header.rst:-1 5840f4a67a434197af9e7f9f3bcaec8d
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 a68911e344c8436eb19c75f387442e21
+msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+msgstr ""
+
+#: ../../header.rst:-1 b6f717e0c6b541a68e5cd75ea771894d
+msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+msgstr ""
+
+#: ../../lowlevel.rst:5 fc56166183d143399609392797d2a68d
 msgid "Low Level Functions and Classes"
 msgstr ""
 
-#: ../../lowlevel.rst:6 c253321ecafc450ab93165d0fd9bfd3d
+#: ../../lowlevel.rst:6 4675323a4bae4f91b426b13a83d74578
 msgid ""
 "Contains a number of functions and classes for the experienced user. To "
 "be used for special needs or performance requirements."
 msgstr ""
 
-#: ../../footer.rst:-1 1f8bddb84ffb4f26ad21077e71e1f193
+#: ../../footer.rst:-1 4f1d56f369a94d59accb9d590e099e3e
 msgid "Discord logo"
 msgstr ""
 

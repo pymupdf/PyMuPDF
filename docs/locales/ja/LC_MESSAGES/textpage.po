@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-27 14:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,17 +19,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../textpage.rst:7 5bf5601a30b047d49ea2ea5c79283d42
+#: ../../header.rst:-1 4439af8c69fe469caa5e77ad4e4c0d7f
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 ff829b01a7004054ab00e3b9d51f71c1
+msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+msgstr ""
+
+#: ../../header.rst:-1 34ab36f131c84fd29d111574ff2e6f1a
+msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+msgstr ""
+
+#: ../../textpage.rst:7 c5fc41c6548d483fa3b75b9e24ad0d0c
 msgid "TextPage"
 msgstr ""
 
-#: ../../textpage.rst:9 719818e47edf4cebb283f196b6e4fd73
+#: ../../textpage.rst:9 0cc68e105c034bd3978bcac87bdac688
 msgid ""
 "This class represents text and images shown on a document page. All "
 ":ref:`MuPDF document types<Supported_File_Types>` are supported."
 msgstr ""
 
-#: ../../textpage.rst:11 10f119404f5c429ea2e07d87bea0afe8
+#: ../../textpage.rst:11 ec6edae60d5543d3aa94b6f9af41ea41
 msgid ""
 "The usual ways to create a textpage are :meth:`DisplayList.get_textpage` "
 "and :meth:`Page.get_textpage`. Because there is a limited set of methods "
@@ -38,215 +50,215 @@ msgid ""
 "methods."
 msgstr ""
 
-#: ../../textpage.rst:13 cea5d85a5d2d436ea86e276de5da0e34
+#: ../../textpage.rst:13 d2dd1757acca47b6a104adb0d414058e
 msgid "For a description of what this class is all about, see Appendix 2."
 msgstr ""
 
-#: ../../textpage.rst:16 eee324dc059345a48b27f1046f55759b
+#: ../../textpage.rst:16 191a3283133c4cfebedbfce23f3837d6
 msgid "**Method**"
 msgstr ""
 
-#: ../../textpage.rst:16 46775121c4ae4b86ac3ac37463a47248
+#: ../../textpage.rst:16 d6dd2269342747e79b57b21e578d688e
 msgid "**Description**"
 msgstr ""
 
-#: ../../textpage.rst:16 89234e95703c4b6493da858a74ae4c91
+#: ../../textpage.rst:16 9e8cd68b827e4e3e85446d3d7827fd8a
 msgid "page get_text or search method"
 msgstr ""
 
-#: ../../textpage.rst:18 c6ca58dceac04a1bae642c79ace1f42c
+#: ../../textpage.rst:18 e0172b51e79b44e5be5e516b1fd7c043
 msgid ":meth:`~.extractText`"
 msgstr ""
 
-#: ../../textpage.rst:18 b4d49b4b652946aeae7d0d6ed845a305
+#: ../../textpage.rst:18 917d90e84ac84c12ae63ce8e030d721f
 msgid "extract plain text"
 msgstr ""
 
-#: ../../textpage.rst:18 ../../textpage.rst:19 aa6b915d06f64ce2ab84d50b83b8beb3
-#: c8837221c5fd4f51abdc87e051751bff
+#: ../../textpage.rst:18 ../../textpage.rst:19 2d11ff15adaa4707932268fd53c785e0
+#: 72891abb1a8e4efa8121cde615f160cd
 msgid "\"text\""
 msgstr ""
 
-#: ../../textpage.rst:19 19f6a4ec341e4072beb491ba7353311b
+#: ../../textpage.rst:19 1765a1202532425f956d74f7cca57afa
 msgid ":meth:`~.extractTEXT`"
 msgstr ""
 
-#: ../../textpage.rst:19 b6abb0b79f5c49a9ad3ee9f51c0874f5
+#: ../../textpage.rst:19 95c664a947324c2c9ebe3115967215c9
 msgid "synonym of previous"
 msgstr ""
 
-#: ../../textpage.rst:20 abc27b22dbb34e97a16192ee6b14262b
+#: ../../textpage.rst:20 38962ab9ea28493183f21ab0052559f0
 msgid ":meth:`~.extractBLOCKS`"
 msgstr ""
 
-#: ../../textpage.rst:20 52ad26541893472f8915c12c18170c81
+#: ../../textpage.rst:20 8c1b9ad8f4914f8689cd5b945d457cae
 msgid "plain text grouped in blocks"
 msgstr ""
 
-#: ../../textpage.rst:20 d386a0ea80c24fcab90ee4140431edee
+#: ../../textpage.rst:20 fc2aa93c9cad479cb79383c776107018
 msgid "\"blocks\""
 msgstr ""
 
-#: ../../textpage.rst:21 79655a5c2b9e42db9eef65a55fb3d30d
+#: ../../textpage.rst:21 7eedf05080bf440fb8776ac07366b02c
 msgid ":meth:`~.extractWORDS`"
 msgstr ""
 
-#: ../../textpage.rst:21 14d5cb6e66934cda8047f00bc2e91c4d
+#: ../../textpage.rst:21 2b18db30ff3d4af987018bc87f5aa6b6
 msgid "all words with their bbox"
 msgstr ""
 
-#: ../../textpage.rst:21 08c1dd361a624bc48d60b9e54e058512
+#: ../../textpage.rst:21 e01755716f5b404c9409ea4bddd0d7b2
 msgid "\"words\""
 msgstr ""
 
-#: ../../textpage.rst:22 bde091b05bef4c82a3305c1e82eb447d
+#: ../../textpage.rst:22 206fbd7800bf424a8a3afa8c09bfc902
 msgid ":meth:`~.extractHTML`"
 msgstr ""
 
-#: ../../textpage.rst:22 d0e7d19293fd416eb00f714861a27b79
+#: ../../textpage.rst:22 4ede697812434022ac978e90e349a00f
 msgid "page content in HTML format"
 msgstr ""
 
-#: ../../textpage.rst:22 fef2cb7823664f76baf9039b2296c976
+#: ../../textpage.rst:22 8b93176a6cd04bccbdffd5b021011981
 msgid "\"html\""
 msgstr ""
 
-#: ../../textpage.rst:23 c9c9dd9092a74a33bab393588c61e3c1
+#: ../../textpage.rst:23 320461d4e93c4bfa85676e1637a9c67f
 msgid ":meth:`~.extractXHTML`"
 msgstr ""
 
-#: ../../textpage.rst:23 36b30ad0986040b598fa68e0f90a0c24
+#: ../../textpage.rst:23 b6d05764b0f3441592f369c7552d8f47
 msgid "page content in XHTML format"
 msgstr ""
 
-#: ../../textpage.rst:23 4368116cb12a4f209f6c4dcd986b3453
+#: ../../textpage.rst:23 bce34765926f4e33a1a8389e5a2e6490
 msgid "\"xhtml\""
 msgstr ""
 
-#: ../../textpage.rst:24 90a0bd5c62254d889881c78f5f5830e7
+#: ../../textpage.rst:24 f72bea723b7e408594168e943f396510
 msgid ":meth:`~.extractXML`"
 msgstr ""
 
-#: ../../textpage.rst:24 8bca02c287c74e83aecfd8fe5bf2f809
+#: ../../textpage.rst:24 4abbff28dbc646968b27090cb95e3b57
 msgid "page text in XML format"
 msgstr ""
 
-#: ../../textpage.rst:24 1cfaff21ba2842b5a9910caad44a7a22
+#: ../../textpage.rst:24 19e6c05bcdb9454494a236c70a28dfe7
 msgid "\"xml\""
 msgstr ""
 
-#: ../../textpage.rst:25 e60af6cd9b304b9f90c859a2d6c31f00
+#: ../../textpage.rst:25 a7d67c6187404091b3930892172dc1b2
 msgid ":meth:`~.extractDICT`"
 msgstr ""
 
-#: ../../textpage.rst:25 ../../textpage.rst:27 02f728d28ed140a385a7321136d87928
-#: 485bfae2d363476f9383a5e6a5663325
+#: ../../textpage.rst:25 ../../textpage.rst:27 86264025d49b497c9ae6e37a29fcab12
+#: f47f908d2d3e423097a846b1f48f8127
 msgid "page content in *dict* format"
 msgstr ""
 
-#: ../../textpage.rst:25 c1fe2cdab6c847f3a990b26efa7c1577
+#: ../../textpage.rst:25 35242a226e1d4fc2b4f4073a70415991
 msgid "\"dict\""
 msgstr ""
 
-#: ../../textpage.rst:26 b16141309fd74f0899e0d2486c738545
+#: ../../textpage.rst:26 dd2303fcbe4f4aae88f0644a29d82850
 msgid ":meth:`~.extractJSON`"
 msgstr ""
 
-#: ../../textpage.rst:26 ../../textpage.rst:28 5b4021fb472e4308a17871852878d2d9
-#: d89cb8a3999c4664a92923639a953ab5
+#: ../../textpage.rst:26 ../../textpage.rst:28 286d617d1b384937b60c92a889a69a17
+#: b1fe1cae6e234c91a61cda2cd28e4536
 msgid "page content in JSON format"
 msgstr ""
 
-#: ../../textpage.rst:26 b5f2648e60954761ac1c1dd0f3bb80f7
+#: ../../textpage.rst:26 a1973898d22a41f78cab502bfc27e331
 msgid "\"json\""
 msgstr ""
 
-#: ../../textpage.rst:27 09fd10d6dc544ba8b66da5e44858ba48
+#: ../../textpage.rst:27 74e125c289b84553b60670fcb7cf11c9
 msgid ":meth:`~.extractRAWDICT`"
 msgstr ""
 
-#: ../../textpage.rst:27 9168afc821da49be9a9c3bba71b83e00
+#: ../../textpage.rst:27 3194909b4ee7479b944e53f1b18ba32a
 msgid "\"rawdict\""
 msgstr ""
 
-#: ../../textpage.rst:28 c4e63b6bbfa74d5aa024030d7269cf1d
+#: ../../textpage.rst:28 15a6c8abd8394b8a946e9796e599c2e8
 msgid ":meth:`~.extractRAWJSON`"
 msgstr ""
 
-#: ../../textpage.rst:28 85c2c34a802f4d418e9b1a688e79b548
+#: ../../textpage.rst:28 19bb468b043a455686492f2b582d5667
 msgid "\"rawjson\""
 msgstr ""
 
-#: ../../textpage.rst:29 581a3c6db2a3406aa14c05ff3ef0d0d1
+#: ../../textpage.rst:29 8e1e267cfef9458e99cc8a98107051d2
 msgid ":meth:`~.search`"
 msgstr ""
 
-#: ../../textpage.rst:29 7b94bf692bb44ed69ed69ae900ffc23f
+#: ../../textpage.rst:29 4a73422456d4477d81071cd9aab6fdaa
 msgid "Search for a string in the page"
 msgstr ""
 
-#: ../../textpage.rst:29 2c10f54b5db94222ac1e37327c82b1ca
+#: ../../textpage.rst:29 54bc7ed58efe4f9c84cf6358fccd0fb7
 msgid ":meth:`Page.search_for`"
 msgstr ""
 
-#: ../../textpage.rst:32 a3e421784e5f4963bcfeafa14885bc6b
+#: ../../textpage.rst:32 245ba42bf7384c5eb7264a187d8a1056
 msgid "**Class API**"
 msgstr ""
 
-#: ../../textpage.rst:40 bb1d53e2bfdd4ad088acb413709e229e
+#: ../../textpage.rst:40 e281ff69f492403e8efc2581fa5def8c
 msgid ""
 "Return a string of the page's complete text. The text is UTF-8 unicode "
 "and in the same sequence as specified at the time of document creation."
 msgstr ""
 
-#: ../../textpage.rst 1e10f180ec0a4501bd23affb30965fdd
-#: 32a8f2bbe8fa42a1af1300692666563f 469507b304ea49e5a49145cf00e152ac
-#: 8877710ac7ac47e6b161719987479b12 92252bdb347b492d8efbb35d4db1b62e
-#: 93748724b82d49709f169b0fffe7aaf3 a831efe64ae44d18a2d5cb6dab518404
-#: c260522c43f8427b8bb81058e42609d4 cc9b43697df544a786e0d1ec83f95dd4
-#: ed42deed17e7444f8b944163ae06d997 fd6a914a9e0c49a6bfecfa357b655305
+#: ../../textpage.rst 3ca588b5cf134860a2d6d68f15a7db04
+#: 4164079ffddd446487148d0311782e78 42fd8b2595fd4cbb800bbd434c70d0e0
+#: 561d1c9ab6134199867ac1dcebfc3f87 75e178522ca14da58599c02a0d0b83d8
+#: 99a67da82b554945bdbf5303b5ae62f9 9c722b7193de457e82a97e35cce15c0a
+#: a663d650ee874280bf8a7f533b174bf2 ac0aae27cf1b4fab86d9c36b7070b95b
+#: bb89112c0d8f4e95a3ad68193c9ee8da dc53c8d756624a138ca68077a7c41898
 msgid "Return type"
 msgstr ""
 
-#: ../../textpage.rst:47 2acffac417c44dd09c63af12a20dec2d
+#: ../../textpage.rst:47 71e87c39b4024c86b542c791ddb30dc8
 msgid ""
 "Textpage content as a list of text lines grouped by block. Each list "
 "items looks like this::"
 msgstr ""
 
-#: ../../textpage.rst:51 f6a3bd87caaf4e6286607b60453e882d
+#: ../../textpage.rst:51 68af443d7c32411c9a59ddc07cd1fb21
 msgid ""
 "The first four entries are the block's bbox coordinates, *block_type* is "
 "1 for an image block, 0 for text. *block_no* is the block sequence "
 "number. Multiple text lines are joined via line breaks."
 msgstr ""
 
-#: ../../textpage.rst:53 8e34871914ea407f9f73f87181a71fb1
+#: ../../textpage.rst:53 e8e30f30356a4d94bab0b5235aceb664
 msgid ""
 "For an image block, its bbox and a text line with some image meta "
 "information is included -- **not the image content**."
 msgstr ""
 
-#: ../../textpage.rst:55 0541d1e608444007935633799d9b97e1
+#: ../../textpage.rst:55 4762e25242ab4d6cab03dd36189fe895
 msgid ""
 "This is a high-speed method with just enough information to output plain "
 "text in desired reading sequence."
 msgstr ""
 
-#: ../../textpage.rst:61 269f4c4d7f734e9a8633c5516064f6d6
+#: ../../textpage.rst:61 9255913eca3b423287934199ea9db966
 msgid ""
 "Textpage content as a list of single words with bbox information. An item"
 " of this list looks like this::"
 msgstr ""
 
-#: ../../textpage.rst:65 ad4516ddd5e84d8f8455260109755688
+#: ../../textpage.rst:65 9838fb5434e3419e8b40cd20806f78a5
 msgid ""
 "Everything delimited by spaces is treated as a *\"word\"*. This is a "
 "high-speed method which e.g. allows extracting text from within given "
 "areas or recovering the text reading sequence."
 msgstr ""
 
-#: ../../textpage.rst:71 1913c6754e1544d8b8fa1e28edb897e3
+#: ../../textpage.rst:71 a8a8e5a79d574a1eb22383fdc6fc0374
 msgid ""
 "Textpage content as a string in HTML format. This version contains "
 "complete formatting and positioning information. Images are included "
@@ -255,13 +267,13 @@ msgid ""
 "display this information, but see :ref:`HTMLQuality`."
 msgstr ""
 
-#: ../../textpage.rst:77 fbba5772842b46789f6fe9163378dceb
+#: ../../textpage.rst:77 42b0da9c51274e6aa52e25ab98a8bb20
 msgid ""
 "Textpage content as a Python dictionary. Provides same information detail"
 " as HTML. See below for the structure."
 msgstr ""
 
-#: ../../textpage.rst:83 6eb2b85c53b548ba88a8098ef0c0fd21
+#: ../../textpage.rst:83 0f08f2c4510543399994f8e359373ebd
 msgid ""
 "Textpage content as a JSON string. Created by "
 "`json.dumps(TextPage.extractDICT())`. It is included for backlevel "
@@ -270,7 +282,7 @@ msgid ""
 "converts them to base64 encoded strings."
 msgstr ""
 
-#: ../../textpage.rst:89 5f13ce47ef0a4ceabe3146dfdaa9b771
+#: ../../textpage.rst:89 b3d39afca00d45debe1e6973f4751b50
 msgid ""
 "Textpage content as a string in XHTML format. Text information detail is "
 "comparable with :meth:`extractTEXT`, but also contains images (base64 "
@@ -278,7 +290,7 @@ msgid ""
 "appearance."
 msgstr ""
 
-#: ../../textpage.rst:95 d5d4d9ae15e4427f8a274c7f6b73ec22
+#: ../../textpage.rst:95 7489433bacff43958b3e9b2027dea78b
 msgid ""
 "Textpage content as a string in XML format. This contains complete "
 "formatting information about every single character on the page: font, "
@@ -286,7 +298,7 @@ msgid ""
 " an XML package to interpret the output in Python."
 msgstr ""
 
-#: ../../textpage.rst:101 21b00f8fe9294f3f873adbe178d112d6
+#: ../../textpage.rst:101 64daac3f3f95493494fa8e73a329b003
 msgid ""
 "Textpage content as a Python dictionary -- technically similar to "
 ":meth:`extractDICT`, and it contains that information as a subset "
@@ -295,7 +307,7 @@ msgid ""
 "the structure."
 msgstr ""
 
-#: ../../textpage.rst:107 74e55dd8ca564090aea064e5f6e4f652
+#: ../../textpage.rst:107 48b42654708d4273abacdba3f580da99
 msgid ""
 "Textpage content as a JSON string. Created by "
 "`json.dumps(TextPage.extractRAWDICT())`. You will probably use this "
@@ -303,34 +315,34 @@ msgid ""
 "detects binary image data and converts them to base64 encoded strings."
 msgstr ""
 
-#: ../../textpage.rst:113 0aee6b7682c94302a4b5cb51ada1a469
+#: ../../textpage.rst:113 c4bd17f2b21946839530e5ca70e4c96a
 msgid "Changed in v1.18.2"
 msgstr ""
 
-#: ../../textpage.rst:115 73030db0179c4d6293d174f677424328
+#: ../../textpage.rst:115 8d997c5f93ed4978ac0f02d0bfcaa0f9
 msgid "Search for *string* and return a list of found locations."
 msgstr ""
 
-#: ../../textpage.rst da970713212545b6ad05ee60eb7d97d5
+#: ../../textpage.rst 82da46d9e16446db8f8b474abebaef4a
 msgid "Parameters"
 msgstr ""
 
-#: ../../textpage.rst:117 fce57edf869049f4b1ed6d50551f8387
+#: ../../textpage.rst:117 a3f69cfa16334b778eb6555d8916bfb3
 msgid ""
 "the string to search for. Upper and lower cases will all match if needle "
 "consists of ASCII letters only -- it does not yet work for \"Ä\" versus "
 "\"ä\", etc."
 msgstr ""
 
-#: ../../textpage.rst:118 edc30740acde492da2d8ef4bbbaedf84
+#: ../../textpage.rst:118 421f132437384fd4bb3e7af2f47165ba
 msgid "return quadrilaterals instead of rectangles."
 msgstr ""
 
-#: ../../textpage.rst 1967b88923224b0e8fa0caa6057b192d
+#: ../../textpage.rst 0b4c079a6fd24c589543f1d4b647ae5e
 msgid "Returns"
 msgstr ""
 
-#: ../../textpage.rst:120 629ea6f35a08407880e8fbefa8ec6787
+#: ../../textpage.rst:120 32c614e0f940475e9b65d7da8931c2c1
 msgid ""
 "a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found "
 "*needle* occurrence. As the search string may contain spaces, its parts "
@@ -341,15 +353,15 @@ msgid ""
 " two returned rectangles will contain \"meth\" (no hyphen) and \"od\"."
 msgstr ""
 
-#: ../../textpage.rst:122 5518848cd10548d88b955f11eb32aba2
+#: ../../textpage.rst:122 97378dff98a141e59fe48fc8ad66598d
 msgid "**Overview of changes in v1.18.2:**"
 msgstr ""
 
-#: ../../textpage.rst:124 abc58964de014fd3af676f59c054e81e
+#: ../../textpage.rst:124 4de1f5ccc3584ca290256a18144d41a4
 msgid "The `hit_max` parameter has been removed: all hits are always returned."
 msgstr ""
 
-#: ../../textpage.rst:125 dfc2140539e44caf96ac3b291c9aa2e5
+#: ../../textpage.rst:125 391bdac07249498eb2d31d0d4e5b7a17
 msgid ""
 "The `rect` parameter of the :ref:`TextPage` is now respected: only text "
 "inside this area is examined. Only characters with fully contained bboxes"
@@ -357,43 +369,43 @@ msgid ""
 "correspondingly supports a *clip* parameter."
 msgstr ""
 
-#: ../../textpage.rst:126 cc101c1725f1479f91526291607f0909
+#: ../../textpage.rst:126 111f4d8abbcc4a4fb6a1c2848bcd4db9
 msgid "**Hyphenated words** are now found."
 msgstr ""
 
-#: ../../textpage.rst:127 766bd209343b48afb43c66c33b581e86
+#: ../../textpage.rst:127 22a979c7ce2e4d94abed22e45cdee12b
 msgid ""
 "**Overlapping rectangles** in the same line are now automatically joined."
 " We assume that such separations are an artifact created by multiple "
 "marked content groups, containing parts of the same search needle."
 msgstr ""
 
-#: ../../textpage.rst:129 84e5a50ed7fe472cbf9572868ef33faf
+#: ../../textpage.rst:129 341b7a0ca57f49d1bbc2b198311c9ba5
 msgid ""
 "Example Quad versus Rect: when searching for needle \"pymupdf\", then the"
 " corresponding entry will either be the blue rectangle, or, if *quads* "
 "was specified, the quad *Quad(ul, ur, ll, lr)*."
 msgstr ""
 
-#: ../../textpage.rst:135 38af85c8db6f4cfe8f0e68b8c44d81fd
+#: ../../textpage.rst:135 110da2039b1343bba2373ecadc778b29
 msgid ""
 "The rectangle associated with the text page. This either equals the "
 "rectangle of the creating page or the `clip` parameter of "
 ":meth:`Page.get_textpage` and text extraction / searching methods."
 msgstr ""
 
-#: ../../textpage.rst:137 81caa30a4375452cb1c78b7cd789bb7b
+#: ../../textpage.rst:137 6baf2b2a414b479dab477046fe49765a
 msgid ""
 "The output of text searching and most text extractions **is restricted to"
 " this rectangle**. (X)HTML and XML output will however always extract the"
 " full page."
 msgstr ""
 
-#: ../../textpage.rst:142 5168339c903c412fbdcaa331803d6421
+#: ../../textpage.rst:142 1b628939684b4081836766eb716e4669
 msgid "Structure of Dictionary Outputs"
 msgstr ""
 
-#: ../../textpage.rst:143 afd8f3a886314e18916dd2285387fcab
+#: ../../textpage.rst:143 ac7ff300178745d18ec8532837cdb9e9
 msgid ""
 "Methods :meth:`TextPage.extractDICT`, :meth:`TextPage.extractJSON`, "
 ":meth:`TextPage.extractRAWDICT`, and :meth:`TextPage.extractRAWJSON` "
@@ -404,31 +416,31 @@ msgid ""
 " own sub-dictionary:"
 msgstr ""
 
-#: ../../textpage.rst:145 75ef3d202ff3488eb9d34dca41d018c2
+#: ../../textpage.rst:145 cf3c14a0224246d69d32aa7b99cf6a15
 msgid "A **page** consists of a list of **block dictionaries**."
 msgstr ""
 
-#: ../../textpage.rst:146 d03c0f3f755345efb1fddd058c6c0e12
+#: ../../textpage.rst:146 df77e0a324a643e591cca38e03b07609
 msgid "A (text) **block** consists of a list of **line dictionaries**."
 msgstr ""
 
-#: ../../textpage.rst:147 85e37bc16300438db04684ab83eb44dc
+#: ../../textpage.rst:147 45330aab8daf4f638c873b864e73a103
 msgid "A **line** consists of a list of **span dictionaries**."
 msgstr ""
 
-#: ../../textpage.rst:148 32e1ddaf63a34a0ca72adea68967deb0
+#: ../../textpage.rst:148 78ee42bf58804391814ce806c86b0f77
 msgid ""
 "A **span** either consists of the text itself or, for the RAW variants, a"
 " list of **character dictionaries**."
 msgstr ""
 
-#: ../../textpage.rst:149 dc1c75123c69427aa83c91c925924d57
+#: ../../textpage.rst:149 8ee5744d7c514ef39c418d0920fea8c9
 msgid ""
 "RAW variants: a **character** is a dictionary of its origin, bbox and "
 "unicode."
 msgstr ""
 
-#: ../../textpage.rst:151 d6a2980abbbc4732be0274fa73a382b3
+#: ../../textpage.rst:151 d29fb01a97074d3daae2054f12cb2105
 msgid ""
 "All PyMuPDF geometry objects herein (points, rectangles, matrices) are "
 "represented by there **\"like\"** formats: a :data:`rect_like` *tuple* is"
@@ -436,7 +448,7 @@ msgid ""
 " and memory considerations:"
 msgstr ""
 
-#: ../../textpage.rst:153 5162a1992cea4d038e9742b11ee6d916
+#: ../../textpage.rst:153 87e31e13e39149c28aa0aeb1a0424927
 msgid ""
 "This code is written in C, where Python tuples can easily be generated. "
 "The geometry objects on the other hand are defined in Python source only."
@@ -444,7 +456,7 @@ msgid ""
 " would add significant -- and largely unnecessary -- execution time."
 msgstr ""
 
-#: ../../textpage.rst:154 67f055ba32e643bdb77fcd6f51b680c0
+#: ../../textpage.rst:154 895401f6dcdc4e919076757747e4466b
 msgid ""
 "A 4-tuple needs about 168 bytes, the corresponding :ref:`Rect` 472 bytes "
 "- almost three times the size. A \"dict\" dictionary for a text-heavy "
@@ -454,7 +466,7 @@ msgid ""
 "this case we talk about 750 KB versus 2 MB."
 msgstr ""
 
-#: ../../textpage.rst:156 b3f334c98a884a908b88db779843a98f
+#: ../../textpage.rst:156 c944f11d399a499d8aa5110406159000
 msgid ""
 "Please also note, that only **bboxes** (= :data:`rect_like` 4-tuples) are"
 " returned, whereas a :ref:`TextPage` actually has the **full position "
@@ -465,36 +477,36 @@ msgid ""
 "significant impact."
 msgstr ""
 
-#: ../../textpage.rst:158 0bc632d661734c7c948d3c5bc7421bf2
+#: ../../textpage.rst:158 50b43865a81148938bb52d81215bc138
 msgid ""
 "In the vast majority of cases, we are dealing with **horizontal text "
 "only**, where bboxes provide entirely sufficient information."
 msgstr ""
 
-#: ../../textpage.rst:160 d07257af48044726a7ab2e55282331d1
+#: ../../textpage.rst:160 d686b191ed7f401aa62214b05f70ec62
 msgid ""
 "In addition, **the full quad information is not lost**: it can be "
 "recovered as needed for lines, spans, and characters by using the "
 "appropriate function from the following list:"
 msgstr ""
 
-#: ../../textpage.rst:162 b87e0bb99c734e35816f2807ec837cba
+#: ../../textpage.rst:162 ef7c8e99af7b42d6a17ae60bfa3ed9c8
 msgid ":meth:`recover_quad` -- the quad of a complete span"
 msgstr ""
 
-#: ../../textpage.rst:163 48675ce819e244b0a2810dec6773a799
+#: ../../textpage.rst:163 edc802e881864a5586e6b7df5b8f1fab
 msgid ":meth:`recover_span_quad` -- the quad of a character subset of a span"
 msgstr ""
 
-#: ../../textpage.rst:164 fc4a9c54930145038c57b7cf02a47310
+#: ../../textpage.rst:164 12217340856a44f2beb07dc18f23cecf
 msgid ":meth:`recover_line_quad` -- the quad of a line"
 msgstr ""
 
-#: ../../textpage.rst:165 5a58340ddd224292b869aa3390ac8735
+#: ../../textpage.rst:165 ba707c8813ba40fb9b6ba3c21056fc71
 msgid ":meth:`recover_char_quad` -- the quad of a character"
 msgstr ""
 
-#: ../../textpage.rst:167 12ae4c5958794dacb8693993f0c6ffd6
+#: ../../textpage.rst:167 3d38d55b6815426197267c8ab53fcddb
 msgid ""
 "As mentioned, using these functions is ever only needed, if the text is "
 "**not written horizontally** -- `line[\"dir\"] != (1, 0)` -- and you need"
@@ -502,200 +514,200 @@ msgid ""
 "and friends)."
 msgstr ""
 
-#: ../../textpage.rst:175 7d5c0c35f78349c59beeb0247b92a99f
+#: ../../textpage.rst:175 124b1dfd78d944ec840e4319a8a41f8e
 msgid "Page Dictionary"
 msgstr ""
 
 #: ../../textpage.rst:178 ../../textpage.rst:196 ../../textpage.rst:232
 #: ../../textpage.rst:244 ../../textpage.rst:266 ../../textpage.rst:326
-#: 044d62a93ba84f75ab5d608c39ce9257 1acd2a3a55df4267b4ebea42b810ed24
-#: 479c5ee4d77c405c9496cbcc0ba9cd20 8c024f82440b4afb99a834421d2ab790
-#: b07d56ce1c074641ae8a2612fc61bd13 f03956a866a04be28749a5fe49dc997a
+#: 63faeebbf5154ce3b1e7f40cc8efb8c4 c0e1343fc27c41d3b9d5de6c267dec97
+#: d76bf8eb500445d0a868366eeac46d95 df02a4e7e70f438b8be4c41534753f68
+#: edba2a73d7434fa49692fcc00eb95189 eff52f5326cd41468c00beb9965dd3ae
 msgid "**Key**"
 msgstr ""
 
 #: ../../textpage.rst:178 ../../textpage.rst:196 ../../textpage.rst:232
 #: ../../textpage.rst:244 ../../textpage.rst:266 ../../textpage.rst:326
-#: 265ad37d14ba436fa759fa91e2824890 31af37d512ca4a6fae11a085db10dcec
-#: 610034aebeb94aeaaacd83be3dea6660 aeccfa3904244c6384a3b195e8852df6
-#: be00d0ae4ff54e3985b303ffe68407e7 e62789f9377e457cb3947989cf8dc266
+#: 0a468c0ab4764013801b319c422596c8 267087fe1d2f49dea214ae599d1d4c26
+#: 3c45bef2862c4d26abf0bd38964eeac6 44971b376bac4d9d89c0d6ed50cb30a6
+#: ab7d2ee738724aa9842ea5bb0545f92a d9c8099bd918415c95993e6ab1b29c0f
 msgid "**Value**"
 msgstr ""
 
 #: ../../textpage.rst:180 ../../textpage.rst:202
-#: c13263111a904361b0f15d4952f7b380 edac4e0dcca34f3faea6f91ab27d60bb
+#: 174467fc9843422ea174233e164eee5e 5b90a2baf5e84d949bc73157ede18551
 msgid "width"
 msgstr ""
 
-#: ../../textpage.rst:180 b5db42f1aed84717a632fde1e6fee6fb
+#: ../../textpage.rst:180 c7c7786cf42e4f00a90f774f04f52376
 msgid "width of the `clip` rectangle *(float)*"
 msgstr ""
 
 #: ../../textpage.rst:181 ../../textpage.rst:203
-#: 34fbff6c3f0b4ba6b7bd2ee84c5fc3da f6d075ce38f94170a5f6a2f8aa85f92c
+#: 6581b90d035449f5bc4ae036a6018ea5 82bf277ec8cc44be991600dfe2bcc5ec
 msgid "height"
 msgstr ""
 
-#: ../../textpage.rst:181 359e146ef95c43fa9eaceb2f9ef6b979
+#: ../../textpage.rst:181 90df3569ec47443badb1095812c9d74b
 msgid "height of the `clip` rectangle *(float)*"
 msgstr ""
 
-#: ../../textpage.rst:182 8c7dedfd55874bbba7b15ff2a8a0af87
+#: ../../textpage.rst:182 3d5c302f3e2d4f5cab096642181d2460
 msgid "blocks"
 msgstr ""
 
-#: ../../textpage.rst:182 66149c13a0c24cc7ac99df5444909e69
+#: ../../textpage.rst:182 a472c95d5394425995e2c00a4f8ebf3d
 msgid "*list* of block dictionaries"
 msgstr ""
 
-#: ../../textpage.rst:186 094efb7a81a4444883507a62c2f8ec3c
+#: ../../textpage.rst:186 c36587e9af75427cad4b2f6a92ebd279
 msgid "Block Dictionaries"
 msgstr ""
 
-#: ../../textpage.rst:187 7cb28ccb98d84946afcb7d0c8162e609
+#: ../../textpage.rst:187 2c158a1e9b35414c993d1b3709166b24
 msgid ""
 "Block dictionaries come in two different formats for **image blocks** and"
 " for **text blocks**."
 msgstr ""
 
-#: ../../textpage.rst:189 fa8e165deec543aca662aa2b55f0dd2f
+#: ../../textpage.rst:189 bb92b789946e47f9842b4c919f048e98
 msgid "*(Changed in v1.18.0)* -- new dict key *number*, the block number."
 msgstr ""
 
-#: ../../textpage.rst:190 9e942607324442f1bc44ac2a87694841
+#: ../../textpage.rst:190 81d97dcd7d98493d906b9c3deb10d04f
 msgid ""
 "*(Changed in v1.18.11)* -- new dict key *transform*, the image "
 "transformation matrix for image blocks."
 msgstr ""
 
-#: ../../textpage.rst:191 6286c129989d465c85483146e2797e39
+#: ../../textpage.rst:191 07573ea151e54954bdbdaa76ba470990
 msgid ""
 "*(Changed in v1.18.11)* -- new dict key *size*, the size of the image in "
 "bytes for image blocks."
 msgstr ""
 
-#: ../../textpage.rst:193 6fd4df1a90544aa6b179d20580e7ecfd
+#: ../../textpage.rst:193 6047bfbd4fa34fd5a4dab86b51cd605f
 msgid "**Image block:**"
 msgstr ""
 
 #: ../../textpage.rst:198 ../../textpage.rst:234
-#: 2ca74b1fec19472190e4d61214e6a6a0 96105d8b60b14d7a8005a8dbc7ecea90
+#: 41f94cc75ab9404482f00589f2fe8947 e9d0dcc21c18458fa10b941c0f4b6ba4
 msgid "type"
 msgstr ""
 
-#: ../../textpage.rst:198 434304e865434f2ab7cc5b8ab885d8a2
+#: ../../textpage.rst:198 147050b4573246018192ae4b74a54fce
 msgid "1 = image *(int)*"
 msgstr ""
 
 #: ../../textpage.rst:199 ../../textpage.rst:235 ../../textpage.rst:246
 #: ../../textpage.rst:268 ../../textpage.rst:329
-#: 05b4e2358fcd42d8b7b56942c1031ab8 3c6da69c85eb491caae9cc016fd616fe
-#: c4719053febc4fcfbe9a388edc2fb44a e27c4623639b426aa65824a9dcb1dc0a
-#: fedf041988b046c58f4648ba264b5411
+#: 6937e5154673451f9a0856c35f93fd4a 86126ea9c79e49dba4917208c25c3acb
+#: a413f9dd4bc243a29a464043f52ae40f a41f3fe53b3c4ddca5e1faace35e752d
+#: aaa23868b6d44006977b94a7d1057bde
 msgid "bbox"
 msgstr ""
 
-#: ../../textpage.rst:199 feb64917a6ee46d587d29d34e51be283
+#: ../../textpage.rst:199 0161c6173c774048b383bfbd027843a0
 msgid "image bbox on page (:data:`rect_like`)"
 msgstr ""
 
 #: ../../textpage.rst:200 ../../textpage.rst:236
-#: 5204508f08014019ad28c9b9543d3481 94214e72ba3441fea0028d65e64b0a8b
+#: 63d32868ee6b4f80b92f9216af01be49 6bd247e8bd524a2ea53e43f755626b34
 msgid "number"
 msgstr ""
 
 #: ../../textpage.rst:200 ../../textpage.rst:236
-#: 74e2d3b09ed142a0956081932250c0b1 cd0379aa521d46d49e7669d118f8e4f1
+#: 505a431e98de4437b4f581e9965e417c aefcb1eff9b04ba395d3a046383d6445
 msgid "block count *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:201 a7911109e3b04ab89f957e6b163d0247
+#: ../../textpage.rst:201 79530584e59941a6819457fd48f5649b
 msgid "ext"
 msgstr ""
 
-#: ../../textpage.rst:201 a99575411f9b4a6eb24d2bf92c450e64
+#: ../../textpage.rst:201 a17ecadeb59c44a2bd7d03d1721ec5bb
 msgid "image type *(str)*, as file extension, see below"
 msgstr ""
 
-#: ../../textpage.rst:202 a934340194ca4114a451a715a13d7a78
+#: ../../textpage.rst:202 f8e2c7bdb01344dc870caa5eb287e54e
 msgid "original image width *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:203 0350a55990e649538bbf272a005882a2
+#: ../../textpage.rst:203 7b321f0e757448c1b1d43a0310e25319
 msgid "original image height *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:204 a35e3d4239604988ae3a29b77aa21f1e
+#: ../../textpage.rst:204 7d60ee9671634d9cabe32501d268fde2
 msgid "colorspace"
 msgstr ""
 
-#: ../../textpage.rst:204 c7efea177095441c8fefb27f2231729c
+#: ../../textpage.rst:204 c949ee095c0b4909b93d89268bfeb04f
 msgid "colorspace component count *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:205 dd6c8e8c09d545c1a695dc0238d03611
+#: ../../textpage.rst:205 207db967713e453687b8f6c57c2d79f3
 msgid "xres"
 msgstr ""
 
-#: ../../textpage.rst:205 4f6b129d6df8408f8cead9f9704d765a
+#: ../../textpage.rst:205 7c79c0de07ba49929a92cdcc9061e35f
 msgid "resolution in x-direction *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:206 a502c041866c41ceb639d0c1fce7b3a7
+#: ../../textpage.rst:206 188fc67a79c9435888c5649b1061c45f
 msgid "yres"
 msgstr ""
 
-#: ../../textpage.rst:206 2384122811f14540b68b92adef8f9984
+#: ../../textpage.rst:206 6abdadd031264777828cdccf35e16523
 msgid "resolution in y-direction *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:207 6ac5e8d6832048c8a866ec424fcbcb60
+#: ../../textpage.rst:207 45642658ad36448eb6f1927aa2e8d557
 msgid "bpc"
 msgstr ""
 
-#: ../../textpage.rst:207 df65cac0fa10414bb3fd84a408aef7a0
+#: ../../textpage.rst:207 71dbb2810a8541a3aa4558290a6f5fba
 msgid "bits per component *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:208 49c62b61f3cc434092c6c6bfb94f1285
+#: ../../textpage.rst:208 c2af54c6611b4418acd32f59f82cb22b
 msgid "transform"
 msgstr ""
 
-#: ../../textpage.rst:208 2ff9fd38c18e4bb9a0b1290accfbc513
+#: ../../textpage.rst:208 2435d04233a5498086af6a36b7e5268a
 msgid "matrix transforming image rect to bbox (:data:`matrix_like`)"
 msgstr ""
 
 #: ../../textpage.rst:209 ../../textpage.rst:273
-#: 9c0585ee6108448fb838eea25610828b fa9c5933f14d4a269dfd22e2050621ec
+#: 5ea4b1c27f6a4a6d80fa91cc5865f7dd a808ba9a402a4ac599a449583c93fab2
 msgid "size"
 msgstr ""
 
-#: ../../textpage.rst:209 af8a4f21590241e2a847007406a32bc2
+#: ../../textpage.rst:209 be4adb78f48c482d85410ea62f290e76
 msgid "size of the image in bytes *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:210 e22c8e1d059d48e8851fb00e8c448039
+#: ../../textpage.rst:210 48bdd5d3f5374288bb4b77e036f1fe37
 msgid "image"
 msgstr ""
 
-#: ../../textpage.rst:210 9f340af2cf9f4de58218c0ac98067eb2
+#: ../../textpage.rst:210 8f4a820f8fc0491bbaab93c97d1e2f31
 msgid "image content *(bytes)*"
 msgstr ""
 
-#: ../../textpage.rst:213 542ee6d989954811bd3f5c1aad953106
+#: ../../textpage.rst:213 baab670357ee4c9ebd76f82a81990f02
 msgid ""
 "Possible values of the \"ext\" key are \"bmp\", \"gif\", \"jpeg\", "
 "\"jpx\" (JPEG 2000), \"jxr\" (JPEG XR), \"png\", \"pnm\", and \"tiff\"."
 msgstr ""
 
-#: ../../textpage.rst:217 9ae1bca271b644f09e758b8e74b2d214
+#: ../../textpage.rst:217 bc7be4ca14704f5bad813a7845b55f0c
 msgid ""
 "An image block is generated for **all and every image occurrence** on the"
 " page. Hence there may be duplicates, if an image is shown at different "
 "locations."
 msgstr ""
 
-#: ../../textpage.rst:219 5499ec26a96442859772bd9be5ed70d5
+#: ../../textpage.rst:219 233236aafd6a41bebc0fccdd528a3d84
 msgid ""
 ":ref:`TextPage` and corresponding method :meth:`Page.get_text` are "
 "**available for all document types**. Only for PDF documents, methods "
@@ -705,20 +717,20 @@ msgid ""
 " probably caused by one of the following:"
 msgstr ""
 
-#: ../../textpage.rst:221 ad1326fef8ae4333902ce420b11c8da0
+#: ../../textpage.rst:221 ee9735ee73234d818c1a9983c1a4fae8
 msgid ""
 "\"Inline\" images (see page 214 of the :ref:`AdobeManual`) of a PDF page "
 "are contained in a textpage, but **do not appear** in "
 ":meth:`Page.get_images`."
 msgstr ""
 
-#: ../../textpage.rst:222 dc375fb940554ad3a0496dc368de521e
+#: ../../textpage.rst:222 2918ee5d7a7c42ff9b5e02fe2f411280
 msgid ""
 "Annotations may also contain images -- these will **not appear** in "
 ":meth:`Page.get_images`."
 msgstr ""
 
-#: ../../textpage.rst:223 5f21daa03544424492bc2e16ba887f1a
+#: ../../textpage.rst:223 1a01508eb087490dbf69a69911aa41bf
 msgid ""
 "Image blocks in a textpage are generated for **every** image location -- "
 "whether or not there are any duplicates. This is in contrast to "
@@ -726,7 +738,7 @@ msgid ""
 "reference name)."
 msgstr ""
 
-#: ../../textpage.rst:224 0606a5c2c3b141b593c603bcc1640d14
+#: ../../textpage.rst:224 a6f34a0cb878425690f9ecd174f80775
 msgid ""
 "Images mentioned in the page's :data:`object` definition will **always** "
 "appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there "
@@ -734,66 +746,66 @@ msgid ""
 "on purpose). In this case the image will **not appear** in the textpage."
 msgstr ""
 
-#: ../../textpage.rst:226 aab5c2b4c0734760bfa7fe3e31074b7b
+#: ../../textpage.rst:226 12d1e078ac484f60bb4a1902aba1d2a1
 msgid ""
 "The image's \"transformation matrix\" is defined as the matrix, for which"
 " the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, "
 "lookup details here: :ref:`ImageTransformation`."
 msgstr ""
 
-#: ../../textpage.rst:229 92cbd1632c9b418a89cb79875584c7cc
+#: ../../textpage.rst:229 a504355cb7e2483596643206bcebdea9
 msgid "**Text block:**"
 msgstr ""
 
-#: ../../textpage.rst:234 4dc156b14a4d4aecba52357ac5b4a448
+#: ../../textpage.rst:234 c2ba6f88bea7493cb94db9c937aa4df7
 msgid "0 = text *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:235 45349c5d7dbc4a2c80e7487427d46714
+#: ../../textpage.rst:235 16ef548a43b54fec9d21b85975d81e9a
 msgid "block rectangle, :data:`rect_like`"
 msgstr ""
 
-#: ../../textpage.rst:237 e81e2229001c41e99319594c6b47e839
+#: ../../textpage.rst:237 d7d0050912b647ca9bd2398cf2a52b85
 msgid "lines"
 msgstr ""
 
-#: ../../textpage.rst:237 8d10160d27f44cefb80fb61c5cadd549
+#: ../../textpage.rst:237 fad844a276b9453dbea1c63a2cb7d2c8
 msgid "*list* of text line dictionaries"
 msgstr ""
 
-#: ../../textpage.rst:241 515990a3fbf54c9a898c2ddf2de89d2e
+#: ../../textpage.rst:241 965ced1ab0904ce48f61853e6e2726c6
 msgid "Line Dictionary"
 msgstr ""
 
-#: ../../textpage.rst:246 ac5bf80e9d2e4e8088e91cedf53d0045
+#: ../../textpage.rst:246 d83dc9ff55ed439b81b9898d4ba09b4a
 msgid "line rectangle, :data:`rect_like`"
 msgstr ""
 
-#: ../../textpage.rst:247 0493a824ec4741ca83d965f79d4553fd
+#: ../../textpage.rst:247 f6ede62a005e404fba2f01e97523d403
 msgid "wmode"
 msgstr ""
 
-#: ../../textpage.rst:247 3e79e82d837e46e28dc2054f9fef98ee
+#: ../../textpage.rst:247 f5d4e1df91794bee9572db72e3b2fa21
 msgid "writing mode *(int)*: 0 = horizontal, 1 = vertical"
 msgstr ""
 
-#: ../../textpage.rst:248 546201db94074ad2bd60e8bce1b8a0fe
+#: ../../textpage.rst:248 0eea749c144a4f2088c06cb7e3726980
 msgid "dir"
 msgstr ""
 
-#: ../../textpage.rst:248 95bc66533a42408abbda4fcee7b14c64
+#: ../../textpage.rst:248 a412389fd0d5487a84f699b015dce13b
 msgid "writing direction, :data:`point_like`"
 msgstr ""
 
-#: ../../textpage.rst:249 be5dea74188d4020944e86da717f48e5
+#: ../../textpage.rst:249 c9801a7fb5d44c16a4187960f23605cf
 msgid "spans"
 msgstr ""
 
-#: ../../textpage.rst:249 3561f935bcdf4958a77ca1e40c173706
+#: ../../textpage.rst:249 69605bbd8db4415089d4bf9cbfa27d07
 msgid "*list* of span dictionaries"
 msgstr ""
 
-#: ../../textpage.rst:252 f93ae354b5a64be2a4da42abe3ba4c53
+#: ../../textpage.rst:252 51f6f50faa264910aa768b5ab6a5c063
 msgid ""
 "The value of key *\"dir\"* is the **unit vector** `dir = (cosine, sine)` "
 "of the angle, which the text has relative to the x-axis. See the "
@@ -802,98 +814,98 @@ msgid ""
 "respectively."
 msgstr ""
 
-#: ../../textpage.rst:258 66ec4bdb174d40bd8d56e84e549a161a
+#: ../../textpage.rst:258 5c0884d479ad486a9ba8d9791f7a2094
 msgid "Span Dictionary"
 msgstr ""
 
-#: ../../textpage.rst:260 e79bd795dee84b1eb1091a1edf467f7c
+#: ../../textpage.rst:260 eb01b9d8dd0b499ca7de192d1fd3f2bc
 msgid ""
 "Spans contain the actual text. A line contains **more than one span "
 "only**, if it contains text with different font properties."
 msgstr ""
 
-#: ../../textpage.rst:262 12e0f0b27f7e46388526d20456c4ffcd
+#: ../../textpage.rst:262 23389d3810b7473fbf8e8d24f954991b
 msgid "Changed in version 1.14.17 Spans now also have a *bbox* key (again)."
 msgstr ""
 
-#: ../../textpage.rst:263 9e0067cc7d8d423e834a77be75997b2b
+#: ../../textpage.rst:263 2462474e47c345a3ac68b31fa52a3918
 msgid "Changed in version 1.17.6 Spans now also have an *origin* key."
 msgstr ""
 
-#: ../../textpage.rst:268 af749b14fcfd4ec88047aa0808800221
+#: ../../textpage.rst:268 856ab4ad76714830813cc6f2e33ea3b2
 msgid "span rectangle, :data:`rect_like`"
 msgstr ""
 
 #: ../../textpage.rst:269 ../../textpage.rst:328
-#: 37af8233475b4e85a64a37581e583557 b67cb6f42b8a4fa58cff86c6a0fa8650
+#: 77da43b991764626b97dc0ad17058824 b8a1dab382604da88fc0842916d30043
 msgid "origin"
 msgstr ""
 
-#: ../../textpage.rst:269 e7b499b9bfb64c4b8e40dfdd210d2779
+#: ../../textpage.rst:269 9c826fc41048498a9140c1d35710e31a
 msgid "the first character's origin, :data:`point_like`"
 msgstr ""
 
-#: ../../textpage.rst:270 96e50a0ca6104097ba4ab67df1bf09ac
+#: ../../textpage.rst:270 630613c274b64228b0ddfb16c43539dd
 msgid "font"
 msgstr ""
 
-#: ../../textpage.rst:270 49f7b6c508d3426b9bd0e5f6385a745b
+#: ../../textpage.rst:270 485380975d644e39b184dc83efae1d0a
 msgid "font name *(str)*"
 msgstr ""
 
-#: ../../textpage.rst:271 af7873bf215241e9aaca1666c1620360
+#: ../../textpage.rst:271 5fc10c68cf6c4b31b0c925b9f91bd6a0
 msgid "ascender"
 msgstr ""
 
-#: ../../textpage.rst:271 8957332f489f479e8c43a2f6aeac7896
+#: ../../textpage.rst:271 bb8bdc88752c42ccb1ccc8964d3306ce
 msgid "ascender of the font *(float)*"
 msgstr ""
 
-#: ../../textpage.rst:272 fec0f4c8990241b096205798bf79298b
+#: ../../textpage.rst:272 e4c8d56433bd49dbbb782389381e6b35
 msgid "descender"
 msgstr ""
 
-#: ../../textpage.rst:272 bb0dd4b49df1467882d476fdc552b5b8
+#: ../../textpage.rst:272 2c7d8a6e6b4149949f1eba3529bc1d45
 msgid "descender of the font *(float)*"
 msgstr ""
 
-#: ../../textpage.rst:273 bb1cb5d3143b4e428295dbdd53ebda6b
+#: ../../textpage.rst:273 7e35c5fb3d4949adac425ee5cae810e4
 msgid "font size *(float)*"
 msgstr ""
 
-#: ../../textpage.rst:274 ff73ec71e2124b3091aa8ef22a308daf
+#: ../../textpage.rst:274 f173645f1c254402963c82cbec11451d
 msgid "flags"
 msgstr ""
 
-#: ../../textpage.rst:274 2f0c933ade1242a595f806de4794336f
+#: ../../textpage.rst:274 067f8b6c70974fe7874fa705d59ee169
 msgid "font characteristics *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:275 d2a012c664f74cf5b4f2241148174762
+#: ../../textpage.rst:275 70d6497a462640c7a51b2efa3290456e
 msgid "color"
 msgstr ""
 
-#: ../../textpage.rst:275 322723893c3f409386ed8b2cf2c85c3a
+#: ../../textpage.rst:275 f5260f7c0dfe45fea452fb66bac1c939
 msgid "text color in sRGB format *(int)*"
 msgstr ""
 
-#: ../../textpage.rst:276 96b473df85254cb0b1e1e9ac7145f7da
+#: ../../textpage.rst:276 1154e1fa6be74105866f49595ced0538
 msgid "text"
 msgstr ""
 
-#: ../../textpage.rst:276 a2678b7d2a6742948b95eb00e170eade
+#: ../../textpage.rst:276 6bb6084f49ff473c92cb9c646b37292a
 msgid "(only for :meth:`extractDICT`) text *(str)*"
 msgstr ""
 
-#: ../../textpage.rst:277 3451c413b2414f21a7e96d258d035276
+#: ../../textpage.rst:277 3e1f3b92ae29495986218d02a3ca2395
 msgid "chars"
 msgstr ""
 
-#: ../../textpage.rst:277 8adce37442ed44db890a9dff48406a2b
+#: ../../textpage.rst:277 7436822f8ade406da9a31a148bf65cb6
 msgid "(only for :meth:`extractRAWDICT`) *list* of character dictionaries"
 msgstr ""
 
-#: ../../textpage.rst:280 b3f5654418a24ca09da45d262f4c1327
+#: ../../textpage.rst:280 3fa2537f6f424aeea2597b71844caeb0
 msgid ""
 "*(New in version 1.16.0):* *\"color\"* is the text color encoded in sRGB "
 "(int) format, e.g. 0xFF0000 for red. There are functions for converting "
@@ -902,15 +914,15 @@ msgid ""
 "values from 0 to 255)."
 msgstr ""
 
-#: ../../textpage.rst:282 c720ac685e8946cf98547194cdf51189
+#: ../../textpage.rst:282 2686bbd7d06b4ace9e01e47f0e79a734
 msgid ""
 "*(New in v1.18.5):* *\"ascender\"* and *\"descender\"* are font "
-"properties, provided relative to fontsize 1. Note that descender is a "
-"negative value. The following picture shows the relationship to other "
-"values and properties."
+"properties, provided relative to :data:`fontsize` 1. Note that descender "
+"is a negative value. The following picture shows the relationship to "
+"other values and properties."
 msgstr ""
 
-#: ../../textpage.rst:287 6512a1017fd4470cbc0f13732b3bd0a9
+#: ../../textpage.rst:287 cca27317e60244beb6c644d872ed879e
 msgid ""
 "These numbers may be used to compute the minimum height of a character "
 "(or span) -- as opposed to the standard height provided in the \"bbox\" "
@@ -919,16 +931,17 @@ msgid ""
 "fitting the text inside:"
 msgstr ""
 
-#: ../../textpage.rst:297 e31fa5b348dd47859c43350b6d8102ae
+#: ../../textpage.rst:297 2f199003d9b54f45a0f0373fd3223339
 msgid ""
 "The above calculation may deliver a **larger** height! This may e.g. "
 "happen for OCRed documents, where the risk of all sorts of text artifacts"
 " is high. MuPDF tries to come up with a reasonable bbox height, "
-"independently from the fontsize found in the PDF. So please ensure that "
-"the height of `span[\"bbox\"]` is **larger** than `span[\"size\"]`."
+"independently from the :data:`fontsize` found in the PDF. So please "
+"ensure that the height of `span[\"bbox\"]` is **larger** than "
+"`span[\"size\"]`."
 msgstr ""
 
-#: ../../textpage.rst:299 e48f9a412d994cac978f7b3fc0146b4b
+#: ../../textpage.rst:299 675652462f3a4b6482f31df358cab3e3
 msgid ""
 "You may request PyMuPDF to do all of the above automatically by executing"
 " `fitz.TOOLS.set_small_glyph_heights(True)`. This sets a global parameter"
@@ -936,87 +949,87 @@ msgid ""
 "reduced glyph heights, where meaningful."
 msgstr ""
 
-#: ../../textpage.rst:301 7d475773c4ee4ddba5fc6de9ffe0ee2c
+#: ../../textpage.rst:301 5bb1ea63630046d8b2a143cff0412d73
 msgid ""
 "The following shows the original span rectangle in red and the rectangle "
 "with re-computed height in blue."
 msgstr ""
 
-#: ../../textpage.rst:307 c226b549e2c449d1b14c5154d65ca7df
+#: ../../textpage.rst:307 903cea2c0fbb4cc8974dad53a472a02f
 msgid ""
 "*\"flags\"* is an integer, which represents font properties except for "
 "the first bit 0. They are to be interpreted like this:"
 msgstr ""
 
-#: ../../textpage.rst:309 302ce755b94544b48911749229583272
+#: ../../textpage.rst:309 1eb61f4d6da14b72bf9fd337a34de8e6
 msgid ""
 "bit 0: superscripted (2\\ :sup:`0`) -- not a font property, detected by "
 "MuPDF code."
 msgstr ""
 
-#: ../../textpage.rst:310 a86ce289e04a4b63ae40890adda01792
+#: ../../textpage.rst:310 536bdc9ebb77427e97488a0aa254cb24
 msgid "bit 1: italic (2\\ :sup:`1`)"
 msgstr ""
 
-#: ../../textpage.rst:311 fa3dda347b034cd599c86b7f17faedfd
+#: ../../textpage.rst:311 76a2d8f2ea784c938be9f4248f7c8204
 msgid "bit 2: serifed (2\\ :sup:`2`)"
 msgstr ""
 
-#: ../../textpage.rst:312 57201f24923743998670ee0b88c6503f
+#: ../../textpage.rst:312 6b2c0ecf349f470bb2b86cd21e7468aa
 msgid "bit 3: monospaced (2\\ :sup:`3`)"
 msgstr ""
 
-#: ../../textpage.rst:313 59ea7d0657a442ab8be2152a8b365028
+#: ../../textpage.rst:313 1448a351db174c44a91c3a258091cd7e
 msgid "bit 4: bold (2\\ :sup:`4`)"
 msgstr ""
 
-#: ../../textpage.rst:315 80c34cda4a1449d7b2069d6afec0351f
+#: ../../textpage.rst:315 c2eaa3b42afe46e293aeff5810de3d60
 msgid "Test these characteristics like so:"
 msgstr ""
 
-#: ../../textpage.rst:320 1c92155d3dd24feba4826bd5861fc70b
+#: ../../textpage.rst:320 5fbc41435abb467f9895baee9bf57a24
 msgid ""
 "Bits 1 thru 4 are font properties, i.e. encoded in the font program. "
 "Please note, that this information is not necessarily correct or "
 "complete: fonts quite often contain wrong data here."
 msgstr ""
 
-#: ../../textpage.rst:323 639fb9c2423848ca8e12ec0aa94f78da
+#: ../../textpage.rst:323 108c8b91d7774308b63ccfbfebb65761
 msgid "Character Dictionary for :meth:`extractRAWDICT`"
 msgstr ""
 
-#: ../../textpage.rst:328 f991a6fa12a94e8e89c4089247a5a8a6
+#: ../../textpage.rst:328 02bb478ee2754820832d000cefc984ee
 msgid "character's left baseline point, :data:`point_like`"
 msgstr ""
 
-#: ../../textpage.rst:329 ffd8bcf5dec54c879d59b32f4956fa65
+#: ../../textpage.rst:329 b9dc96d20f154d51877fa205f1ad7b0a
 msgid "character rectangle, :data:`rect_like`"
 msgstr ""
 
-#: ../../textpage.rst:330 16068a05064d4a57b580321b46117f0e
+#: ../../textpage.rst:330 8a8ee95b37c144a0bb511eee2069a274
 msgid "c"
 msgstr ""
 
-#: ../../textpage.rst:330 4038dfcad7c94db49388f1b5dbc9bfe4
+#: ../../textpage.rst:330 910620967325425582dd1bc09dec9586
 msgid "the character (unicode)"
 msgstr ""
 
-#: ../../textpage.rst:333 ee455bcf30674ec995674d29ee6b9662
+#: ../../textpage.rst:333 bbe6125a9b0e4798b37e118807e22646
 msgid ""
 "This image shows the relationship between a character's bbox and its "
 "quad: |textpagechar|"
 msgstr ""
 
-#: ../../textpage.rst:335 05ee0679bf9d4d9bb9d5cd5f8f7e94b5
-#: 9090510a547b49f3b9b5be56b3d8e336
+#: ../../textpage.rst:335 739556cfb4264d3badd74ebf91d5932c
+#: 8842619dd36844cf94d85a48ea7cc973
 msgid "textpagechar"
 msgstr ""
 
-#: ../../textpage.rst:341 2ff6983629a24628938a7bcbeb1912e1
+#: ../../textpage.rst:341 d08abe4c28c449438565415cc5680062
 msgid "Footnotes"
 msgstr ""
 
-#: ../../textpage.rst:342 3e3a207f1477445289a72da20d3557b3
+#: ../../textpage.rst:342 91a3494fe46349ab8c5fe52043f96af1
 msgid ""
 "Image specifications for a PDF page are done in a page's (sub-) "
 ":data:`dictionary`, called *\"/Resources\"*. Resource dictionaries can be"
@@ -1027,7 +1040,29 @@ msgid ""
 "return the same lists for all pages."
 msgstr ""
 
-#: ../../footer.rst:-1 e0941cb71ad447518b69c4f43f58a32a
+#: ../../footer.rst:-1 e92d4f202c3a40d7ac474a8c7b9492a1
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid ""
+#~ "*(New in v1.18.5):* *\"ascender\"* and "
+#~ "*\"descender\"* are font properties, provided"
+#~ " relative to fontsize 1. Note that"
+#~ " descender is a negative value. The"
+#~ " following picture shows the relationship"
+#~ " to other values and properties."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The above calculation may deliver a "
+#~ "**larger** height! This may e.g. happen"
+#~ " for OCRed documents, where the risk"
+#~ " of all sorts of text artifacts "
+#~ "is high. MuPDF tries to come up"
+#~ " with a reasonable bbox height, "
+#~ "independently from the fontsize found in"
+#~ " the PDF. So please ensure that "
+#~ "the height of `span[\"bbox\"]` is "
+#~ "**larger** than `span[\"size\"]`."
+#~ msgstr ""
 
