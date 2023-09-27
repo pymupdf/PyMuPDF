@@ -1084,7 +1084,7 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     if mupdf_build_dir:
         mupdf_build_dir_flags = os.path.basename( mupdf_build_dir).split( '-')
     else:
-        mupdf_build_dir_flags = ''
+        mupdf_build_dir_flags = [build_type]
     optimise = 'release' in mupdf_build_dir_flags
     debug = 'debug' in mupdf_build_dir_flags
     r_extra = ''
