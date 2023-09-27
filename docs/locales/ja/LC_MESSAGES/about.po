@@ -68,7 +68,7 @@ msgstr "以下は、タスクごとにグループ化された現在の結果で
 msgid ""
 "For more detail regarding the methodology for these performance timings "
 "see: :ref:`Performance Comparison Methodology<Appendix4>`."
-msgstr "これらのパフォーマンスのタイミングに関する方法論の詳細については、:ref:`パフォーマンス比較方法論<Appendix4>` を参照してください。"
+msgstr "これらのパフォーマンスのタイミングに関する方法の詳細については、:ref:`パフォーマンス比較方法<Appendix4>` を参照してください。"
 
 #: ../../about.rst:48 07b28365a77042328469bc244c3e7582
 msgid "License and Copyright"
