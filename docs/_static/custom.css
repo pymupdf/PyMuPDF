@@ -201,3 +201,10 @@ span:target~h4:first-of-type, span:target~h5:first-of-type, span:target~h6:first
 
 
 }
+
+/* small screens */
+@media all and (max-width : 550px)  {
+    .discordLink img {
+        display: none;
+    }
+}
