@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-27 14:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,11 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../outline.rst:7 1e58ff19e11743b4b49f05a37fa5e4e3
+#: ../../header.rst:-1 3ac3c5a903bc4a6291cd06a345ce9b6d
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 7967f88e2d3a4852ac94a4db40809c4d
+msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+msgstr ""
+
+#: ../../header.rst:-1 b54afaec46ae490cb344b5368a03cf5a
+msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+msgstr ""
+
+#: ../../outline.rst:7 1cd4685cbff941e38c2d1391433504ed
 msgid "Outline"
 msgstr ""
 
-#: ../../outline.rst:9 735c5d13f6e5456a873a099b79f4dc08
+#: ../../outline.rst:9 5dc1712bfae241f9b0a9b6e97a58e1ac
 msgid ""
 "*outline* (or \"bookmark\"), is a property of *Document*. If not *None*, "
 "it stands for the first outline item of the document. Its properties in "
@@ -33,146 +45,146 @@ msgid ""
 "recovered by following these \"pointers\"."
 msgstr ""
 
-#: ../../outline.rst:12 fd4fdf034bc246d08eb7d1c7dcf04ee9
+#: ../../outline.rst:12 afc90d1b62394bcea80d49a104ebdd38
 msgid "**Method / Attribute**"
 msgstr ""
 
-#: ../../outline.rst:12 02be3d2e52554d9d875ec535e9630e82
+#: ../../outline.rst:12 8cc63f5459a9414f84ac638ea1e9a94a
 msgid "**Short Description**"
 msgstr ""
 
-#: ../../outline.rst:14 257a86b7e68c41bcb99a8b34475692f1
+#: ../../outline.rst:14 20f4fc6f748541ceb95c2ad9a5a686e6
 msgid ":attr:`Outline.down`"
 msgstr ""
 
-#: ../../outline.rst:14 ff8f0c46f35a4ffeaae45056163e147d
+#: ../../outline.rst:14 af649b18c6c84e8cb0a4f20171086bc0
 msgid "next item downwards"
 msgstr ""
 
-#: ../../outline.rst:15 2005d164e83549cc869edc7cafb5c8fa
+#: ../../outline.rst:15 5be83be301db4c05b70c245433c5038a
 msgid ":attr:`Outline.next`"
 msgstr ""
 
-#: ../../outline.rst:15 92de6b3527474a3baa8dfe3d1e4ae448
+#: ../../outline.rst:15 eca3244bb7b24582b6fef59d5b6c4c2e
 msgid "next item same level"
 msgstr ""
 
-#: ../../outline.rst:16 d97b8dfa3c324be79bf031ff0138bd5f
+#: ../../outline.rst:16 a937f67b8cdc458a862983d85e5b1749
 msgid ":attr:`Outline.page`"
 msgstr ""
 
-#: ../../outline.rst:16 d7220c5ee3b14e6b9186e42952b53819
+#: ../../outline.rst:16 5b6a4f8a11e944bf9473eda9150539ba
 msgid "page number (0-based)"
 msgstr ""
 
-#: ../../outline.rst:17 a6b6535b5e28403b9ad6ca51e203d11a
+#: ../../outline.rst:17 cecac140db3e458c9635e5c1aa8495ef
 msgid ":attr:`Outline.title`"
 msgstr ""
 
-#: ../../outline.rst:17 2a21e84cd6fd498f8fb30819396cca34
+#: ../../outline.rst:17 3fc0995fe3534b06869757cac33a2640
 msgid "title"
 msgstr ""
 
-#: ../../outline.rst:18 22924a94716d4813bb2a0980ec3d291a
+#: ../../outline.rst:18 c031bceb8a064b35bdeaf4e3b035bb84
 msgid ":attr:`Outline.uri`"
 msgstr ""
 
-#: ../../outline.rst:18 e48fc77c73ba4d248f60a4939ab16f2b
+#: ../../outline.rst:18 2aa3f7d0500a4d7fac15e7f130ff73de
 msgid "string further specifying outline target"
 msgstr ""
 
-#: ../../outline.rst:19 208d4ef31a9c406d96627ece9bfe553d
+#: ../../outline.rst:19 40c9132251e74422ae2f803a8c9ccecc
 msgid ":attr:`Outline.is_external`"
 msgstr ""
 
-#: ../../outline.rst:19 7513aae057f24d02b0697892e9ac6681
+#: ../../outline.rst:19 6afab2dea89944a6942675d64d3b0614
 msgid "target outside document"
 msgstr ""
 
-#: ../../outline.rst:20 7c42624edf414c9c8bcaa441ae8d1cf5
+#: ../../outline.rst:20 277290f0431a4b0c931f8fa71deea350
 msgid ":attr:`Outline.is_open`"
 msgstr ""
 
-#: ../../outline.rst:20 a5c68c9a13dd497bbe7f688e4c639cf4
+#: ../../outline.rst:20 460a5ff2890b491db513c915c6e36afc
 msgid "whether sub-outlines are open or collapsed"
 msgstr ""
 
-#: ../../outline.rst:21 825f971fef0e488995250d3eddba1839
+#: ../../outline.rst:21 e1ca7dd0dbf24f34978955da6c21d08a
 msgid ":attr:`Outline.dest`"
 msgstr ""
 
-#: ../../outline.rst:21 5ca85bedd75b4810b7e611d4dd05b453
+#: ../../outline.rst:21 87c3c3d9cebe4a27b990c35dc98f1bcc
 msgid "points to destination details object"
 msgstr ""
 
-#: ../../outline.rst:24 21228ba556e64733ac8daf7eced818ec
+#: ../../outline.rst:24 ad9fb85503a44b7e8d8666426a002404
 msgid "**Class API**"
 msgstr ""
 
-#: ../../outline.rst:30 2b1bcf7008644ce1846858f5f8874b1a
+#: ../../outline.rst:30 334961f3160e4d5cb7ff1672065293e2
 msgid ""
 "The next outline item on the next level down. Is *None* if the item has "
 "no kids."
 msgstr ""
 
-#: ../../outline.rst 265d93ba1ade46bc96a61664ead628db
-#: 445a145f8f0d429a9ddb0d6154d0e6be 45f796a54fba4df8a4e8d97b75125d6e
-#: 6041f339d0364a52bf71d2338f03b59b 8630525ac8d147b0884a3c4bd85673f5
-#: a988864c89374d7ba6133dca31442be8 acb48cbe26c74a48a24f0c217e7f4d8f
-#: d92f3d6f0bd4494cbed1218a97aa0c1e
+#: ../../outline.rst 32b644d9b37542ac9117d64be9b210c1
+#: 377bcd36b44e479fb0260f224cedc750 82387bbf0d6c493ca96f5d54354e4c96
+#: 823b170f000a4efe9dc3699a480673f7 8324854c081d46c68ff9f27df4c157c0
+#: 9aea10d04ac7417486ebf5e108d397a5 a7611c0ccee5416f8bc26f47103f752f
+#: e330a716ddc6428a92bb3ee0994402cc
 msgid "type"
 msgstr ""
 
-#: ../../outline.rst:32 8f3edd0cb4c644caab5d3a6770cd716a
+#: ../../outline.rst:32 dfdb1a485d5f481ca05a9bfc0d1ef708
 msgid ":ref:`Outline`"
 msgstr ""
 
-#: ../../outline.rst:36 8b147830e3714a8da5443557e29285dd
+#: ../../outline.rst:36 fe8c64124d8d422d896d425b13607d8c
 msgid ""
 "The next outline item at the same level as this item. Is *None* if this "
 "is the last one in its level."
 msgstr ""
 
-#: ../../outline.rst:38 dddef11e55394bef96a39375a4e0a6fd
+#: ../../outline.rst:38 b5f81527539a4f1ca8861a8fd7bb1112
 msgid "`Outline`"
 msgstr ""
 
-#: ../../outline.rst:42 b7aff344071f4b5685e51ba959b46910
+#: ../../outline.rst:42 82fedb3f1515404fafcc0ff7627a2749
 msgid "The page number (0-based) this bookmark points to."
 msgstr ""
 
-#: ../../outline.rst:44 46b7e5afd6f644f5b766a6bbccc75e6a
+#: ../../outline.rst:44 a4b0bae7f32c46be8aae63d07ce51b17
 msgid "int"
 msgstr ""
 
-#: ../../outline.rst:48 d5ef411d81db4b248fbc122c8ee7c0b8
+#: ../../outline.rst:48 cc7894ea9655405abe3e15fd01a2b63d
 msgid "The item's title as a string or *None*."
 msgstr ""
 
-#: ../../outline.rst:50 ../../outline.rst:68 c63a6d00a69448c9af74976fbf18b4f1
-#: faff6ee44b22433abb075df6c68d25a1
+#: ../../outline.rst:50 ../../outline.rst:68 2213dca3d1cc44f9bf415bb0a25c3bba
+#: fd5fd0d541004b618f32db5bf8dfea3c
 msgid "str"
 msgstr ""
 
-#: ../../outline.rst:54 73917ac42dfe453bb5f3ec820979a2c0
+#: ../../outline.rst:54 9412edc011d44f27977242abbce55823
 msgid ""
 "Indicator showing whether any sub-outlines should be expanded (*True*) or"
 " be collapsed (*False*). This information is interpreted by PDF reader "
 "software."
 msgstr ""
 
-#: ../../outline.rst:56 ../../outline.rst:62 139f7170776e4538ba46b4bfd43a3fea
-#: 91b2f2f17b094edebf143cdae26a05fa
+#: ../../outline.rst:56 ../../outline.rst:62 6fa6bbeceffd4bcab0ee1582647cbdee
+#: d8edab987df5430aa6a63fd824326ed6
 msgid "bool"
 msgstr ""
 
-#: ../../outline.rst:60 f7d96da15c3c40939205e54e5787e196
+#: ../../outline.rst:60 4faf3b19bbd34cfc9d04563374c683ac
 msgid ""
 "A bool specifying whether the target is outside (*True*) of the current "
 "document."
 msgstr ""
 
-#: ../../outline.rst:66 dea3eeb0f3b6436b92398c33be4378cc
+#: ../../outline.rst:66 a7a9e11e57414a93a88e07214e2915b1
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with *isExternal*. The value may be *None*, "
@@ -186,15 +198,15 @@ msgid ""
 "document."
 msgstr ""
 
-#: ../../outline.rst:72 7f0c9f2b66b344c894f6655f89104a40
+#: ../../outline.rst:72 0820e0d4a84c44cfaac606e4a9b41c58
 msgid "The link destination details object."
 msgstr ""
 
-#: ../../outline.rst:74 e475b45603554099a59fca9e289946a5
+#: ../../outline.rst:74 33aacd0d49fb4c2e81e4e61527d876d7
 msgid ":ref:`linkDest`"
 msgstr ""
 
-#: ../../footer.rst:-1 3eceab87b9da4869b2bce38214a4acfb
+#: ../../footer.rst:-1 13d902d780624da89e6deab19f92c611
 msgid "Discord logo"
 msgstr ""
 
