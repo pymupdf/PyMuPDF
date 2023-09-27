@@ -663,6 +663,15 @@ msgstr "暗号化方法を変更する場合は、上記のすべてのオプシ
 msgid ":meth:`Document.save`"
 msgstr ""
 
+
+#: ../../the-basics.rst:1148
+msgid "Extracting Tables from a :title:`Page`"
+msgstr "ページからのテーブルの抽出"
+
+#: ../../the-basics.rst:1151
+msgid "Tables can be found and extracted from any document :ref:`Page`."
+msgstr "表はどのドキュメントの :ref:`Page` からも見つけて抽出できます。
+
 #: ../../footer.rst:-1 62ae625b28da426b9322011120d520e7
 msgid "Discord logo"
 msgstr ""
