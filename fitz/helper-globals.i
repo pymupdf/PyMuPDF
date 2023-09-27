@@ -22,6 +22,9 @@ static int subset_fontnames = 0;
 // Unset ascender / descender corrections
 static int skip_quad_corrections = 0;
 
+// Additional word delimiting characters
+static int word_delimiters[65] = {0};
+
 // constants: error messages
 static const char MSG_BAD_ANNOT_TYPE[] = "bad annot type";
 static const char MSG_BAD_APN[] = "bad or missing annot AP/N";

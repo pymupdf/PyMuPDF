@@ -28,6 +28,25 @@ JM_font_descender(fz_context *ctx, fz_font *font)
     return fz_font_descender(ctx, font);
 }
 
+//----------------------------------------------------------------
+// Return true if character is considered to be a word delimiter
+//----------------------------------------------------------------
+static const int 
+JM_is_word_delimiter(int c)
+{
+    if (c <= 32 || c == 160) {
+        return 1;
+    }
+    for (i = 0; i < (int) nelem(word_delimiters); i++) {
+        if (word_delimiters[i] == 0) {  // end of this list
+            return 0;
+        }
+        if (c == word_delimiters[i]) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 /*  inactive
 //-----------------------------------------------------------------------------
@@ -73,11 +92,14 @@ JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, in
 
 //---------------------------------------------------------------------------
 // APPEND non-ascii runes in unicode escape format to fz_buffer
+// NOTE: As a consequence, fz_chartorune is NOT USED.
 //---------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
     if ((ch >= 32 && ch <= 255) || ch == 10) {
         fz_append_byte(ctx, buff, ch);
+    } else if (ch >= 0xd800 && ch <= 0xdfff) {
+        fz_append_string(ctx, buff, "\\ufffd");
     } else if (ch <= 0xffff) {  // 4 hex digits
         fz_append_printf(ctx, buff, "\\u%04x", ch);
     } else {  // 8 hex digits
@@ -416,9 +438,10 @@ no_more_matches:;
 // Plain text output. An identical copy of fz_print_stext_page_as_text,
 // but lines within a block are concatenated by space instead a new-line
 // character (which else leads to 2 new-lines).
+// Use unicode escape format for non-ASCII chars: no use of fz_chartorune
 //-----------------------------------------------------------------------------
 void
-JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page)
+JM_print_stext_page_as_text(fz_context *ctx, fz_buffer *res, fz_stext_page *page)
 {
     fz_stext_block *block;
     fz_stext_line *line;
@@ -426,8 +449,6 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_rect rect = page->mediabox;
     fz_rect chbbox;
     int last_char = 0;
-    char utf[10];
-    int i, n;
 
     for (block = page->first_block; block; block = block->next) {
         if (block->type == FZ_STEXT_BLOCK_TEXT) {
@@ -438,14 +459,11 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                     if (fz_is_infinite_rect(rect) ||
                         JM_rects_overlap(rect, chbbox)) {
                         last_char = ch->c;
-                        n = fz_runetochar(utf, ch->c);
-                        for (i = 0; i < n; i++) {
-                            fz_write_byte(ctx, out, utf[i]);
-                        }
+                        JM_append_rune(ctx, res, ch->c);
                     }
                 }
                 if (last_char != 10 && last_char > 0) {
-                    fz_write_string(ctx, out, "\n");
+                    fz_append_string(ctx, res, "\n");
                 }
             }
         }
@@ -719,17 +737,21 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
     fz_stext_block *block;
     fz_buffer *text_buffer = fz_new_buffer(ctx, 128);
     PyObject *block_dict, *block_list = PyList_New(0);
-    fz_rect tp_rect = tp->mediabox;
+    fz_rect tp_rect = tp->mediabox, bbox;
     int block_n = -1;
     for (block = tp->first_block; block; block = block->next) {
+        bbox = block->bbox;
+        if (JM_ignore_rect(bbox)) {
+            continue; // guard against nonsense block bbox
+        }
         block_n++;
-        if (!fz_contains_rect(tp_rect, block->bbox) &&
+        if (!fz_contains_rect(tp_rect, bbox) &&
             !fz_is_infinite_rect(tp_rect) &&
             block->type == FZ_STEXT_BLOCK_IMAGE) {
             continue;
         }
         if (!fz_is_infinite_rect(tp_rect) &&
-            fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
+            fz_is_empty_rect(fz_intersect_rect(tp_rect, bbox))) {
             continue;
         }
 
@@ -737,7 +759,7 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
         DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
         DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
         if (block->type == FZ_STEXT_BLOCK_IMAGE) {
-            DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
+            DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(bbox));
             JM_make_image_block(ctx, block, block_dict);
         } else {
             JM_make_text_block(ctx, block, block_dict, raw, text_buffer, tp_rect);

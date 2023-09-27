@@ -971,6 +971,32 @@ static PyObject* JM_py_from_rect(mupdf::FzRect r)
 }
 
 //-----------------------------------------------------------------------------
+// Ignore this rect (generalizes infinite, empty etc.)
+//-----------------------------------------------------------------------------
+int JM_ignore_rect(fz_rect r)
+{
+    if (fz_is_infinite_rect(r) || fz_is_empty_rect(r)) return 1;
+    if (r.x0 >= FZ_MAX_INF_RECT || r.x0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y0 >= FZ_MAX_INF_RECT || r.y0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.x1 >= FZ_MAX_INF_RECT || r.x1 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y1 >= FZ_MAX_INF_RECT || r.y1 <= FZ_MIN_INF_RECT) return 1;
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+// Ignore this rect (generalizes infinite, empty etc.)
+//-----------------------------------------------------------------------------
+int JM_ignore_irect(fz_irect r)
+{
+    if (fz_is_infinite_irect(r) || fz_is_empty_irect(r)) return 1;
+    if (r.x0 >= FZ_MAX_INF_RECT || r.x0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y0 >= FZ_MAX_INF_RECT || r.y0 <= FZ_MIN_INF_RECT) return 1;
+    if (r.x1 >= FZ_MAX_INF_RECT || r.x1 <= FZ_MIN_INF_RECT) return 1;
+    if (r.y1 >= FZ_MAX_INF_RECT || r.y1 <= FZ_MIN_INF_RECT) return 1;
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
 // PySequence from fz_point
 //-----------------------------------------------------------------------------
 static PyObject* JM_py_from_point(fz_point p)
@@ -2513,7 +2539,7 @@ static int JM_rects_overlap(const fz_rect a, const fz_rect b)
 }
 
 //
-void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
+void ll_JM_print_stext_page_as_text(fz_buffer *res, fz_stext_page *page)
 {
     fz_stext_block *block;
     fz_stext_line *line;
@@ -2521,8 +2547,6 @@ void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
     fz_rect rect = page->mediabox;
     fz_rect chbbox;
     int last_char = 0;
-    char utf[10];
-    int i, n;
 
     for (block = page->first_block; block; block = block->next) {
         if (block->type == FZ_STEXT_BLOCK_TEXT) {
@@ -2533,14 +2557,11 @@ void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
                     if (mupdf::ll_fz_is_infinite_rect(rect) ||
                         JM_rects_overlap(rect, chbbox)) {
                         last_char = ch->c;
-                        n = mupdf::ll_fz_runetochar(utf, ch->c);
-                        for (i = 0; i < n; i++) {
-                            mupdf::ll_fz_write_byte(out, utf[i]);
-                        }
+						JM_append_rune(res, last_char);
                     }
                 }
                 if (last_char != 10 && last_char > 0) {
-                    mupdf::ll_fz_write_string(out, "\n");
+                    mupdf::ll_fz_append_string(res, "\n");
                 }
             }
         }
@@ -2551,11 +2572,11 @@ void ll_JM_print_stext_page_as_text(fz_output *out, fz_stext_page *page)
 // but lines within a block are concatenated by space instead a new-line
 // character (which else leads to 2 new-lines).
 //-----------------------------------------------------------------------------
-void JM_print_stext_page_as_text(mupdf::FzOutput& out, mupdf::FzStextPage& page)
+void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
 {
     if (0)
     {
-        return ll_JM_print_stext_page_as_text(out.m_internal, page.m_internal);
+        return ll_JM_print_stext_page_as_text(res.m_internal, page.m_internal);
     }
     
     fz_rect rect = page.m_internal->mediabox;
@@ -2575,14 +2596,12 @@ void JM_print_stext_page_as_text(mupdf::FzOutput& out, mupdf::FzStextPage& page)
                             )
                     {
                         last_char = ch.m_internal->c;
-                        char utf[10];
-                        int n = mupdf::ll_fz_runetochar(utf, ch.m_internal->c);
-                        mupdf::ll_fz_write_data( out.m_internal, utf, n);
+						JM_append_rune(res, last_char);
                     }
                 }
                 if (last_char != 10 && last_char > 0)
                 {
-                    mupdf::fz_write_string( out, "\n");
+                    mupdf::fz_append_string( res, "\n");
                 }
             }
         }

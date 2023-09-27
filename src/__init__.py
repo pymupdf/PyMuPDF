@@ -96,6 +96,8 @@ g_subset_fontnames = 0
 # Unset ascender / descender corrections
 g_skip_quad_corrections = 0
 
+# additional word delmiters
+g_word_delimiters = [0] * 65
 
 # Optionally use MuPDF via cppyy bindings; experimental and not tested recently
 # as of 2023-01-20 11:51:40
@@ -5037,6 +5039,7 @@ class Document:
             old_annots[k] = v
         page._erase()  # remove the page
         page = None
+        TOOLS.store_shrink(100)
         page = self.load_page(pno)  # reload the page
 
         # copy annot refs over to the new dictionary
@@ -5266,7 +5269,7 @@ class Document:
                 if not type(x) in (list, tuple):
                     raise ValueError("bad RBGroup '%s'" % x)
                 s = set(x).difference(ocgs)
-                if f != set():
+                if s != set():
                     raise ValueError("bad OCGs in RBGroup: %s" % s)
 
         if basestate:
@@ -11875,7 +11878,7 @@ class TextPage:
         elif format_ == 4:
             mupdf.fz_print_stext_page_as_xhtml(out, this_tpage, 0)
         else:
-            JM_print_stext_page_as_text(out, this_tpage)
+            JM_print_stext_page_as_text(res, this_tpage)
         text = JM_UnicodeFromBuffer(res)
         return text
 
@@ -11965,6 +11968,9 @@ class TextPage:
         this_tpage = self.this
         rc = []
         for block in this_tpage:
+            bbox = block.m_internal.bbox
+            if JM_ignore_rect(bbox):  # guard against nonsense blocks
+                continue
             block_n += 1
             if block.m_internal.type == mupdf.FZ_STEXT_BLOCK_TEXT:
                 continue
@@ -11979,7 +11985,7 @@ class TextPage:
             cs = mupdf.FzColorspace(mupdf.ll_fz_keep_colorspace(img.m_internal.colorspace))
             block_dict = dict()
             block_dict[ dictkey_number] = block_n
-            block_dict[ dictkey_bbox] = JM_py_from_rect(block.m_internal.bbox)
+            block_dict[ dictkey_bbox] = JM_py_from_rect(bbox)
             block_dict[ dictkey_matrix] = JM_py_from_matrix(block.i_transform())
             block_dict[ dictkey_width] = img.w()
             block_dict[ dictkey_height] = img.h()
@@ -12103,9 +12109,11 @@ class TextPage:
                             and not mupdf.fz_is_infinite_rect(tp_rect)
                             ):
                         continue
-                    if ch.m_internal.c == 32 and buflen == 0:
-                        continue    # skip spaces at line start
-                    if ch.m_internal.c == 32:
+                    word_delimiter = JM_is_word_delimiter(ch.m_internal.c)
+
+                    if word_delimiter:
+                        if buflen == 0:
+                            continue  # skip spaces at line start
                         if not mupdf.fz_is_empty_rect(wbbox):
                             word_n, wbbox = JM_append_word(lines, buff, wbbox, block_n, line_n, word_n)
                         mupdf.fz_clear_buffer(buff)
@@ -12707,7 +12715,7 @@ EPSILON = 1e-5
 FLT_EPSILON = 1e-5
 
 # largest 32bit integers surviving C float conversion roundtrips
-# used by MuPDF to define infinite rectangles
+# used by MuPDF to define infinite and empty rectangles
 FZ_MIN_INF_RECT = -0x80000000
 FZ_MAX_INF_RECT = 0x7fffff80
 
@@ -13906,10 +13914,26 @@ def JM_append_rune(buff, ch):
     '''
     if (ch >= 32 and ch <= 255) or ch == 10:
         mupdf.fz_append_byte(buff, ch)
+    elif ch >= 0xd800 and ch <= 0xdfff:
+        mupdf.fz_append_string(buff, "\\ufffd")
     elif ch <= 0xffff:  # 4 hex digits
         mupdf.fz_append_string( buff, f'\\u{ch:04x}')
     else:   # 8 hex digits
         mupdf.fz_append_string( buff, f'\\U{ch:08x}')
+
+
+def JM_is_word_delimiter(c):
+    """Check if character is a word delimiter."""
+    if c <= 32 or c == 160:  # white space or non-breaking space
+        return True;
+
+    for d in g_word_delimiters:
+        if d == 0:
+            # end of this list
+            return False
+        if c == d:
+            return True
+    return False
 
 
 def JM_append_word(lines, buff, wbbox, block_n, line_n, word_n):
@@ -15891,8 +15915,11 @@ def JM_make_textpage_dict(tp, page_dict, raw):
     block_n = -1
     #log( 'JM_make_textpage_dict {=tp}')
     for block in tp:
+        bbox = block.m_internal.bbox
+        if JM_ignore_rect(bbox):
+            continue  # guard against nonsense blocks
         block_n += 1
-        if (not mupdf.fz_contains_rect(tp_rect, mupdf.FzRect(block.m_internal.bbox))
+        if (not mupdf.fz_contains_rect(tp_rect, mupdf.FzRect(bbox))
                 and not mupdf.fz_is_infinite_rect(tp_rect)
                 and block.m_internal.type == mupdf.FZ_STEXT_BLOCK_IMAGE
                 ):
@@ -15906,7 +15933,7 @@ def JM_make_textpage_dict(tp, page_dict, raw):
         block_dict[dictkey_number] = block_n
         block_dict[dictkey_type] = block.m_internal.type
         if block.m_internal.type == mupdf.FZ_STEXT_BLOCK_IMAGE:
-            block_dict[dictkey_bbox] = JM_py_from_rect(block.m_internal.bbox)
+            block_dict[dictkey_bbox] = JM_py_from_rect(bbox)
             JM_make_image_block(block, block_dict)
         else:
             JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect)
@@ -16264,16 +16291,16 @@ def JM_point_from_py(p):
     return mupdf.FzPoint(x, y)
 
 
-def JM_print_stext_page_as_text(out, page):
+def JM_print_stext_page_as_text(res, page):
     '''
     Plain text output. An identical copy of fz_print_stext_page_as_text,
     but lines within a block are concatenated by space instead a new-line
     character (which else leads to 2 new-lines).
     '''
     if 1 and g_use_extra:
-        return extra.JM_print_stext_page_as_text( out, page)
+        return extra.JM_print_stext_page_as_text(res, page)
     
-    assert isinstance(out, mupdf.FzOutput)
+    assert isinstance(res, mupdf.FzBuffer)
     assert isinstance(page, mupdf.FzStextPage)
     rect = mupdf.FzRect(page.m_internal.mediabox)
     last_char = 0
@@ -16301,14 +16328,9 @@ def JM_print_stext_page_as_text(out, page):
                             ):
                         #raw += chr(ch.m_internal.c)
                         last_char = ch.m_internal.c
-                        utf = mupdf.fz_runetochar2(last_char)
-                        #log( '{=last_char!r utf!r}')
-                        for c in utf:
-                            assert isinstance(c, int), f'{type(c)=} {c=}'
-                            assert 0 <= c < 256, f'{utf=} {c=}'
-                            mupdf.fz_write_byte(out, c)
+                        JM_append_rune(res, last_char)
                 if last_char != 10 and last_char > 0:
-                    mupdf.fz_write_string(out, "\n")
+                    mupdf.fz_append_string(res, "\n")
 
 
 def JM_put_script(annot_obj, key1, key2, value):
@@ -16354,6 +16376,32 @@ def JM_py_from_matrix(m):
 
 def JM_py_from_point(p):
     return p.x, p.y
+
+
+# Ignore this rectangle (generalizes empty and infinite):
+# If any edge is shared with the infinite rect
+def JM_ignore_rect(r):
+    r = Rect(r)
+    if r.is_empty:
+        return True
+    if (r.x0 >= FZ_MAX_INF_RECT or r.x0 <= FZ_MIN_INF_RECT or
+        r.y0 >= FZ_MAX_INF_RECT or r.y0 <= FZ_MIN_INF_RECT or
+        r.x1 >= FZ_MAX_INF_RECT or r.x1 <= FZ_MIN_INF_RECT or
+        r.y1 >= FZ_MAX_INF_RECT or r.y1 <= FZ_MIN_INF_RECT):
+        return True
+    return False
+
+
+def JM_ignore_irect(r):
+    r = IRect(r)
+    if r.is_empty:
+        return True
+    if (r.x0 >= FZ_MAX_INF_RECT or r.x0 <= FZ_MIN_INF_RECT or
+        r.y0 >= FZ_MAX_INF_RECT or r.y0 <= FZ_MIN_INF_RECT or
+        r.x1 >= FZ_MAX_INF_RECT or r.x1 <= FZ_MIN_INF_RECT or
+        r.y1 >= FZ_MAX_INF_RECT or r.y1 <= FZ_MIN_INF_RECT):
+        return True
+    return False
 
 
 def JM_py_from_quad(q):
@@ -20991,6 +21039,36 @@ class TOOLS:
         Set the graphics minimum line width.
         '''
         mupdf.fz_set_graphics_min_line_width(min_line_width)
+
+
+    @staticmethod
+    def get_word_delimiters():
+        """Return extra word delimiting characters."""
+        global g_word_delimiters
+        delims = [chr(c) for c in g_word_delimiters if c != 0]
+        return delims
+
+
+    @staticmethod
+    def set_word_delimiters(delims=None):
+        """Set extra word delimiting characters."""
+        global g_word_delimiters
+        if delims is None:
+            delims = []
+        if not hasattr(delims, "__getitem__") or len(delims) > 64:
+            raise ValueError("bad delimiter value(s)")
+        try:
+            delims = set([ord(c) for c in delims if ord(c) > 32])
+        except:
+            print("bad delimiter value(s)")
+            raise
+        delims = tuple(delims)
+        if not delims:
+            g_word_delimiters = [0] * 65
+        else:
+            g_word_delimiters = delims
+        return # extra.set_word_delimiters(delims)
+
 
     @staticmethod
     def set_icc( on=0):
