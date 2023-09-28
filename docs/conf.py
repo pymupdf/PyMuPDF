@@ -215,8 +215,6 @@ htmlhelp_basename = "PyMuPDF"
 
 
 # -- Options for LaTeX output ---------------------------------------------
-latex_engine = "platex"
-latex_use_xindy = False
 latex_elements = {
     # "fontpkg": r"\usepackage[sfdefault]{ClearSans} \usepackage[T1]{fontenc}"
 }
