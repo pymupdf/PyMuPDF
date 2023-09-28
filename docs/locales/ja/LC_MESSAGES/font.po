@@ -46,7 +46,7 @@ msgid ""
 ":meth:`Page.write_text`. Currently, it has no connection to how fonts are"
 " used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`,"
 " respectively."
-msgstr "このクラスは、MuPDFで定義されたフォント（fz_font_s構造体）を表します。これは、新しいクラス :ref:`TextWriter` と新しい :meth:`Page.write_text` に必要であり、現在、:meth:`Page.insert_text` または:meth:`Page.insert_textbox` メソッドでフォントがどのように使用されているかとは関係ありません。"
+msgstr "このクラスは、MuPDFで定義されたフォント（fz_font_s構造体）を表します。これは、新しいクラス :ref:`TextWriter` と新しい :meth:`Page.write_text` に必要であり、現在、:meth:`Page.insert_text` または :meth:`Page.insert_textbox` メソッドでフォントがどのように使用されているかとは関係ありません。"
 
 #: ../../font.rst:13 b8731678ee164e05949f9282d1b0cba0
 msgid ""
@@ -242,17 +242,17 @@ msgstr "`pymupdf-fonts <https://pypi.org/project/pymupdf-"
 
 #: ../../font.rst:65 72b64bbea53c4266aac868abd5b5382a
 msgid "the filename of a fontfile somewhere on your system [#f1]_."
-msgstr "システムのどこかにあるフォントファイルのファイル名[1]。"
+msgstr "システムのどこかにあるフォントファイルのファイル名 [#f1]_。"
 
 #: ../../font.rst:66 6abfb7b9849d45f995ce7eb671e7b8a4
 msgid "a fontfile loaded in memory [#f1]_."
-msgstr "メモリ内にロードされたフォントファイル[1]。"
+msgstr "メモリ内にロードされたフォントファイル [#f1]_。"
 
 #: ../../font.rst:67 4190de2ace024fbfb287fc7dd0618d84
 msgid ""
 "the number of a UCDN script. Currently supported in PyMuPDF are numbers "
 "24, and 32 through 35."
-msgstr "⚠️"
+msgstr "UCDN（Unicode Character Database Number）のスクリプト番号です。現在、PyMuPDFでサポートされている番号は、24、および32から35です。"
 
 #: ../../font.rst:68 0b1ba2bbc9e84ea89664d79f7b64af79
 msgid ""
@@ -696,7 +696,7 @@ msgid ""
 "an *array.array* [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. "
 "*chr()* of every item in this array has a glyph in the font without using"
 " fallbacks. This is an example display of the supported glyphs:"
-msgstr ":attr:`Font.glyph_count` 以上の長さを持つ array.array [2]。つまり、この配列内の各アイテムの *chr()* は、フォールバックを使用せずにフォント内にグリフを持っていることを示します。以下はサポートされるグリフの例示です："
+msgstr ":attr:`Font.glyph_count` 以上の長さを持つ array.array [#f2]_。つまり、この配列内の各アイテムの *chr()* は、フォールバックを使用せずにフォント内にグリフを持っていることを示します。以下はサポートされるグリフの例示です："
 
 #: ../../font.rst:180 268a72e3f5ee4bebab20c0bedf532d85
 msgid ""
