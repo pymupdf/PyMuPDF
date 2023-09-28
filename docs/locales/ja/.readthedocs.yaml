@@ -1,6 +1,6 @@
 # .readthedocs.yaml
-# Read the Docs configuration file
-# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+# Note: We use this dedicated yaml inside the locales/ja folder as RTD was having problems building a PDF
+# This yaml is the same as the main one - it just removes the PDF build option
 
 # Required
 version: 2
