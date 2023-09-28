@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-27 14:05+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 cfa3f0d4b717419fbba6539d0ff2d1bb
+#: ../../header.rst:-1
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 b0c4e7a627ca45c6bddf2a0543d5838b
-msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
-msgstr ""
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 3eb32a9efd034c49bc674bfbd7e9d565
-msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
-msgstr ""
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
 #: ../../installation.rst:6 ../../installation.rst:31
 #: 0b0c138b72bd48818cd588dad166c39a b9daa35f37044f9d9547ae6531e6e3ad
@@ -45,9 +45,9 @@ msgid ""
 "All the examples below assume that you are running inside a Python "
 "virtual environment. See: https://docs.python.org/3/library/venv.html for"
 " details. We also assume that `pip` is up to date."
-msgstr "以下のすべての例は、Pythonの仮想環境内で実行していると仮定しています。詳細については、https://docs.python.org/3/library/venv.html を参照してください。また、pipが最新であると仮定しています。"
-
-
+msgstr ""
+"以下のすべての例は、Pythonの仮想環境内で実行していると仮定しています。詳細については、https://docs.python.org/3/library/venv.html"
+" を参照してください。また、pipが最新であると仮定しています。"
 
 #: ../../installation.rst:15 6e06c553c81d429d911a025e2e84ef99
 msgid "For example:"
@@ -254,7 +254,9 @@ msgstr "MuPDFのGitリポジトリをクローンします："
 msgid ""
 "Build PyMuPDF, specifying the location of the local MuPDF tree with the "
 "environmental variables `PYMUPDF_SETUP_MUPDF_BUILD`::"
-msgstr "環境変数 `PYMUPDF_SETUP_MUPDF_BUILD` を使用して、ローカルな MuPDF ツリーの場所を指定して PyMuPDF をビルドします::"
+msgstr ""
+"環境変数 `PYMUPDF_SETUP_MUPDF_BUILD` を使用して、ローカルな MuPDF ツリーの場所を指定して PyMuPDF "
+"をビルドします::"
 
 #: ../../installation.rst:125 1d9e9faec4dd4774baf235c86707fb20
 msgid "Building for different Python versions in same PyMuPDF tree:"
@@ -265,7 +267,9 @@ msgid ""
 "PyMuPDF will build for the version of Python that is being used to run "
 "`pip`. To run `pip` with a specific Python version, use `python -m pip` "
 "instead of `pip`."
-msgstr "PyMuPDF は、`pip` を実行する Python のバージョンに対応してビルドされます。特定の Python バージョンで pip を実行するには、`pip` の代わりに `python -m pip` を使用してください。"
+msgstr ""
+"PyMuPDF は、`pip` を実行する Python のバージョンに対応してビルドされます。特定の Python バージョンで pip "
+"を実行するには、`pip` の代わりに `python -m pip` を使用してください。"
 
 #: ../../installation.rst:132 31cca9f6c0194c9e9ffe9c82170cf499
 msgid "So for example on Windows one can build different versions with::"
@@ -274,8 +278,6 @@ msgstr "したがって、Windows 上で異なるバージョンをビルドす�
 #: ../../installation.rst:136 c269317df939439bbcb7d2901abc310b
 msgid "or::"
 msgstr "または::"
-
-
 
 #: ../../installation.rst:141 eb1294c2b7a249d8bcd54f3ec63a3de7
 msgid ""
@@ -494,4 +496,10 @@ msgstr ""
 
 #~ msgid "Run PyMuPDF tests."
 #~ msgstr "PyMuPDFのテストを実行する。"
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

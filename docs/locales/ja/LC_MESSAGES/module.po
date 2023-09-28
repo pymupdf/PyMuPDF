@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-27 14:05+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 afbd93ae3d6e422db430b4f33ddac525
+#: ../../header.rst:-1
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 ebf024c18bf043078b9e856f7c663d39
-msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
-msgstr ""
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 e867241782d64a0c99a2485139bf7858
-msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
-msgstr ""
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
 #: ../../module.rst:7 1ebb689a28524d3c8f3ca0db3283d95e
 msgid "Module *fitz*"
@@ -425,7 +425,9 @@ msgid ""
 "For \"layout\" mode, **only horizontal, left-to-right, top-to bottom** "
 "text is supported, other text is ignored. In this mode, text is also "
 "ignored, if its :data:`fontsize` is too small."
-msgstr "「レイアウト」モードでは、水平方向、左から右、上から下のテキストのみがサポートされ、他のテキストは無視されます。また、このモードでは、:data:`fontsize` が小さすぎる場合もテキストが無視されます。"
+msgstr ""
+"「レイアウト」モードでは、水平方向、左から右、上から下のテキストのみがサポートされ、他のテキストは無視されます。また、このモードでは、:data:`fontsize`"
+" が小さすぎる場合もテキストが無視されます。"
 
 #: ../../module.rst:434 159d216e601c42a18aa1530cdc86d135
 msgid ""
@@ -535,4 +537,10 @@ msgstr ""
 #: ../../footer.rst:-1 9cfd6783219142daba1b94fb3158fe43
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

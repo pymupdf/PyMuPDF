@@ -41,7 +41,7 @@ This then creates the HTML documentation within `build/html`.
 
 - Updating, after changes on the `main` branch and a sync with the main `en` .rst files do:
 
-`sphinx-build -b gettext . _build/gettext  `
+`sphinx-build -b gettext . _build/gettext`
 
 then:
 
