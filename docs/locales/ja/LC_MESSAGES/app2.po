@@ -108,7 +108,7 @@ msgstr "私たちは、埋め込みファイルに関する古いAPIを、わず
 #: ../../app2.rst:35 719e71e784014d6faa3b8d27d8593490
 msgid ""
 "There even also is a new function, which delivers a list of all names "
-"under which embedded data are resgistered in a PDF, "
+"under which embedded data are registered in a PDF, "
 ":meth:`Document.embfile_names`."
 msgstr "また、PDF内の埋め込みデータが登録されているすべての名前のリストを返す新しい関数も存在します。:meth:`Document.embfile_names` です。"
 
