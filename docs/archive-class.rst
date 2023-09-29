@@ -56,7 +56,7 @@ In PyMuPDF, archives are currently only used by :ref:`Story` objects to specify 
 
    .. method:: add(content [,path])
 
-      Append a sub-archive. The meaning of the parameters are exactly the same as explained above. Of course, parametrer `content` is not optional here.
+      Append a sub-archive. The meaning of the parameters are exactly the same as explained above. Of course, parameter `content` is not optional here.
 
    .. method:: has_entry(name)
 
