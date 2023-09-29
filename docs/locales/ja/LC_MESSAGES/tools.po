@@ -44,7 +44,7 @@ msgid ":meth:`Tools.gen_id`"
 msgstr ""
 
 #: ../../tools.rst:13 c8de562517474862ac67ecda8cba2235
-msgid "generate a unique identifyer"
+msgid "generate a unique identifier"
 msgstr ""
 
 #: ../../tools.rst:14 02be6dbc3d4546ae8763ae5aa5a44b63
