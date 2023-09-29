@@ -1362,7 +1362,7 @@ msgid ""
 "arguments are quads, this information is given by the sequence of the "
 "quad points. In contrast, a rectangle delivers much less information -- "
 "this is illustrated by the fact, that 4! = 24 different quads can be "
-"constructed with the four corners of a reactangle."
+"constructed with the four corners of a rectangle."
 msgstr ""
 
 #: ../../page.rst:335 0a7955a064494ea8b20ff0e239ffea63
