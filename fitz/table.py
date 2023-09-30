@@ -1890,7 +1890,6 @@ def make_edges(page, clip=None, tset=None):
         clip = Rect(clip)
     else:
         clip = page.rect
-    clip = page.rect
 
     def make_line(p, p1, p2, clip):
         x0 = min(p1.x, p2.x)
