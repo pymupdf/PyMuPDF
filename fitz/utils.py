@@ -392,7 +392,6 @@ def insert_image(page, rect, **kwargs):
         _imgname = n + str(i)  # try new name
 
     digests = doc.InsertedImages
-
     xref, digests = page._insert_image(
         filename=filename,
         pixmap=pixmap,
@@ -410,7 +409,6 @@ def insert_image(page, rect, **kwargs):
         _imgname=_imgname,
         digests=digests,
     )
-
     if digests != None:
         doc.InsertedImages = digests
 
@@ -536,15 +534,21 @@ def get_text_words(
     flags: OptInt = None,
     textpage: TextPage = None,
     sort: bool = False,
+    delimiters=None,
 ) -> list:
     """Return the text words as a list with the bbox for each word.
 
     Args:
         flags: (int) control the amount of data parsed into the textpage.
+        delimiters: (str,list) characters to use as word delimiters
+
+    Returns:
+        Word tuples (x0, y0, x1, y1, "word", bno, lno, wno).
     """
     CheckParent(page)
     if flags is None:
         flags = TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES | TEXT_MEDIABOX_CLIP
+
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
@@ -555,6 +559,7 @@ def get_text_words(
         del tp
     if sort is True:
         words.sort(key=lambda w: (w[3], w[0]))
+
     return words
 
 
@@ -751,6 +756,7 @@ def get_text(
     flags: OptInt = None,
     textpage: TextPage = None,
     sort: bool = False,
+    delimiters=None,
 ):
     """Extract text from a page or an annotation.
 
@@ -791,7 +797,12 @@ def get_text(
 
     if option == "words":
         return get_text_words(
-            page, clip=clip, flags=flags, textpage=textpage, sort=sort
+            page,
+            clip=clip,
+            flags=flags,
+            textpage=textpage,
+            sort=sort,
+            delimiters=delimiters,
         )
     if option == "blocks":
         return get_text_blocks(
@@ -806,6 +817,7 @@ def get_text(
         cb = None
     elif type(page) is Page:
         cb = page.cropbox
+
     # TextPage with or without images
     tp = textpage
     if tp is None:
@@ -1012,7 +1024,6 @@ def get_toc(
     Args:
         simple: a bool to control output. Returns a list, where each entry consists of outline level, title, page number and link destination (if simple = False). For details see PyMuPDF's documentation.
     """
-
     def recurse(olItem, liste, lvl):
         """Recursively follow the outline item chain and record item information in a list."""
         while olItem:
@@ -1049,7 +1060,6 @@ def get_toc(
         raise ValueError("document closed")
     doc.init_doc()
     olItem = doc.outline
-
     if not olItem:
         return []
     lvl = 1
@@ -1668,7 +1678,6 @@ def getLinkText(page: Page, lnk: dict) -> str:
             i += 1
     # add /NM key to object definition
     annot = annot.replace("/Link", "/Link/NM(%s)" % name)
-
     return annot
 
 
@@ -1725,7 +1734,7 @@ def insert_textbox(
     align: int = 0,
     rotate: int = 0,
     render_mode: int = 0,
-    border_width: float = 1,
+    border_width: float = 0.05,
     morph: OptSeq = None,
     overlay: bool = True,
     stroke_opacity: float = 1,
@@ -1791,7 +1800,7 @@ def insert_text(
     encoding: int = 0,
     color: OptSeq = None,
     fill: OptSeq = None,
-    border_width: float = 1,
+    border_width: float = 0.05,
     render_mode: int = 0,
     rotate: int = 0,
     morph: OptSeq = None,
@@ -1800,6 +1809,7 @@ def insert_text(
     fill_opacity: float = 1,
     oc: int = 0,
 ):
+
     img = page.new_shape()
     rc = img.insert_text(
         point,
@@ -3430,13 +3440,14 @@ class Shape(object):
         color: OptSeq = None,
         fill: OptSeq = None,
         render_mode: int = 0,
-        border_width: float = 1,
+        border_width: float = 0.05,
         rotate: int = 0,
         morph: OptSeq = None,
         stroke_opacity: float = 1,
         fill_opacity: float = 1,
         oc: int = 0,
     ) -> int:
+
         # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer):
             return 0
@@ -3561,10 +3572,11 @@ class Shape(object):
         else:
             alpha = "/%s gs\n" % alpha
         nres = templ1 % (bdc, alpha, cm, left, top, fname, fontsize)
+
         if render_mode > 0:
             nres += "%i Tr " % render_mode
-        if border_width != 1:
-            nres += "%g w " % border_width
+            nres += "%g w " % border_width * fontsize
+
         if color is not None:
             nres += color_str
         if fill is not None:
@@ -3590,16 +3602,16 @@ class Shape(object):
 
         nres += "\nET\n%sQ\n" % emc
 
-        # =========================================================================
+        # =====================================================================
         #   end of text insertion
-        # =========================================================================
+        # =====================================================================
         # update the /Contents object
         self.text_cont += nres
         return nlines
 
-    # ==============================================================================
+    # =========================================================================
     # Shape.insert_textbox
-    # ==============================================================================
+    # =========================================================================
     def insert_textbox(
         self,
         rect: rect_like,
@@ -3613,7 +3625,7 @@ class Shape(object):
         color: OptSeq = None,
         fill: OptSeq = None,
         expandtabs: int = 1,
-        border_width: float = 1,
+        border_width: float = 0.05,
         align: int = 0,
         render_mode: int = 0,
         rotate: int = 0,
@@ -3634,7 +3646,7 @@ class Shape(object):
             color -- RGB stroke color triple
             fill -- RGB fill color triple
             render_mode -- text rendering control
-            border_width -- thickness of glyph borders
+            border_width -- thickness of glyph borders as percentage of fontsize
             expandtabs -- handles tabulators with string function
             align -- left, center, right, justified
             rotate -- 0, 90, 180, or 270 degrees
@@ -3737,7 +3749,7 @@ class Shape(object):
             else:
                 return len(x) * fontsize
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         if ordering < 0:
             blen = glyphs[32][1] * fontsize  # pixel size of space character
@@ -3755,99 +3767,107 @@ class Shape(object):
         else:
             cm = ""
 
-        # ---------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # adjust for text orientation / rotation
-        # ---------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         progr = 1  # direction of line progress
         c_pnt = Point(0, fontsize * ascender)  # used for line progress
         if rot == 0:  # normal orientation
             point = rect.tl + c_pnt  # line 1 is 'lheight' below top
-            pos = point.y + self.y  # y of first line
             maxwidth = rect.width  # pixels available in one line
-            maxpos = rect.y1 + self.y  # lines must not be below this
+            maxheight = rect.height  # available text height
 
         elif rot == 90:  # rotate counter clockwise
             c_pnt = Point(fontsize * ascender, 0)  # progress in x-direction
             point = rect.bl + c_pnt  # line 1 'lheight' away from left
-            pos = point.x + self.x  # position of first line
             maxwidth = rect.height  # pixels available in one line
-            maxpos = rect.x1 + self.x  # lines must not be right of this
+            maxheight = rect.width  # available text height
             cm += cmp90
 
         elif rot == 180:  # text upside down
             # progress upwards in y direction
             c_pnt = -Point(0, fontsize * ascender)
             point = rect.br + c_pnt  # line 1 'lheight' above bottom
-            pos = point.y + self.y  # position of first line
             maxwidth = rect.width  # pixels available in one line
             progr = -1  # subtract lheight for next line
-            maxpos = rect.y0 + self.y  # lines must not be above this
+            maxheight = rect.height  # available text height
             cm += cm180
 
         else:  # rotate clockwise (270 or -90)
             # progress from right to left
             c_pnt = -Point(fontsize * ascender, 0)
             point = rect.tr + c_pnt  # line 1 'lheight' left of right
-            pos = point.x + self.x  # position of first line
             maxwidth = rect.height  # pixels available in one line
             progr = -1  # subtract lheight for next line
-            maxpos = rect.x0 + self.x  # lines must not left of this
+            maxheight = rect.width  # available text height
             cm += cmm90
 
-        # =======================================================================
+        # =====================================================================
         # line loop
-        # =======================================================================
+        # =====================================================================
         just_tab = []  # 'justify' indicators per line
 
         for i, line in enumerate(t0):
             line_t = line.expandtabs(expandtabs).split(" ")  # split into words
+            num_words = len(line_t)
             lbuff = ""  # init line buffer
             rest = maxwidth  # available line pixels
-            # ===================================================================
+            # =================================================================
             # word loop
-            # ===================================================================
-            for word in line_t:
+            # =================================================================
+            for j in range(num_words):
+                word = line_t[j]
                 pl_w = pixlen(word)  # pixel len of word
-                if rest >= pl_w:  # will it fit on the line?
-                    lbuff += word + " "  # yes, and append word
+                if rest >= pl_w:  # does it fit on the line?
+                    lbuff += word + " "  # yes, append word
                     rest -= pl_w + blen  # update available line space
-                    continue
-                # word won't fit - output line (if not empty)
-                if len(lbuff) > 0:
+                    continue  # next word
+
+                # word doesn't fit - output line (if not empty)
+                if lbuff:
                     lbuff = lbuff.rstrip() + "\n"  # line full, append line break
                     text += lbuff  # append to total text
-                    pos += lheight * progr  # increase line position
-                    just_tab.append(True)  # line is justify candidate
-                    lbuff = ""  # re-init line buffer
+                    just_tab.append(True)  # can align-justify
+
+                lbuff = ""  # re-init line buffer
                 rest = maxwidth  # re-init avail. space
+
                 if pl_w <= maxwidth:  # word shorter than 1 line?
                     lbuff = word + " "  # start the line with it
                     rest = maxwidth - pl_w - blen  # update free space
                     continue
+
                 # long word: split across multiple lines - char by char ...
                 if len(just_tab) > 0:
-                    just_tab[-1] = False  # reset justify indicator
+                    just_tab[-1] = False  # cannot align-justify
                 for c in word:
                     if pixlen(lbuff) <= maxwidth - pixlen(c):
                         lbuff += c
                     else:  # line full
                         lbuff += "\n"  # close line
                         text += lbuff  # append to text
-                        pos += lheight * progr  # increase line position
-                        just_tab.append(False)  # do not justify line
+                        just_tab.append(False)  # cannot align-justify
                         lbuff = c  # start new line with this char
+
                 lbuff += " "  # finish long word
                 rest = maxwidth - pixlen(lbuff)  # long word stored
 
-            if lbuff != "":  # unprocessed line content?
+            if lbuff:  # unprocessed line content?
                 text += lbuff.rstrip()  # append to text
-                just_tab.append(False)  # do not justify line
+                just_tab.append(False)  # cannot align-justify
+
             if i < len(t0) - 1:  # not the last line?
                 text += "\n"  # insert line break
-                pos += lheight * progr  # increase line position
 
-        more = (pos - maxpos) * progr  # difference to rect size limit
+        # compute used part of the textbox
+        if text.endswith("\n"):
+            text = text[:-1]
+        lb_count = text.count("\n") + 1  # number of lines written
 
+        # text height = line count * line height plus one descender value
+        text_height = lheight * lb_count - descender * fontsize
+
+        more = text_height - maxheight  # difference to height limit
         if more > EPSILON:  # landed too much outside rect
             return (-1) * more  # return deficit, don't output
 
@@ -3891,8 +3911,11 @@ class Shape(object):
                 top = -height + pnt.y + self.y
 
             nres += templ % (left, top, fname, fontsize)
+
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
+                nres += "%g w " % border_width * fontsize
+
             if align == 3:
                 nres += "%g Tw " % spacing
 
@@ -3900,8 +3923,6 @@ class Shape(object):
                 nres += color_str
             if fill is not None:
                 nres += fill_str
-            if border_width != 1:
-                nres += "%g w " % border_width
             nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
 
         nres += "ET\n%sQ\n" % emc
@@ -4020,21 +4041,6 @@ class Shape(object):
         self.text_cont = ""  # ...
         self.totalcont = ""  # re-use
         return
-
-    # define deprecated aliases ------------------------------------------
-    drawBezier = draw_bezier
-    drawCircle = draw_circle
-    drawCurve = draw_curve
-    drawLine = draw_line
-    drawOval = draw_oval
-    drawPolyline = draw_polyline
-    drawQuad = draw_quad
-    drawRect = draw_rect
-    drawSector = draw_sector
-    drawSquiggle = draw_squiggle
-    drawZigzag = draw_zigzag
-    insertText = insert_text
-    insertTextbox = insert_textbox
 
 
 def apply_redactions(page: Page, images: int = 2) -> bool:
@@ -5051,7 +5057,6 @@ def recover_line_quad(line: dict, spans: list = None) -> Quad:
     line_dir = line["dir"]  # text direction
     cos, sin = line_dir
     q0 = recover_quad(line_dir, spans[0])  # quad of first span
-
     if len(spans) > 1:  # get quad of last span
         q1 = recover_quad(line_dir, spans[-1])
     else:
