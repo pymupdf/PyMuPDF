@@ -552,22 +552,17 @@ def get_text_words(
     fitz.CheckParent(page)
     if flags is None:
         flags = fitz.TEXT_PRESERVE_WHITESPACE | fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_MEDIABOX_CLIP
-    if delimiters is not None:
-        old_delimiters = TOOLS.get_word_delimiters()
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
     elif getattr(tp, "parent") != page:
         raise ValueError("not a textpage of this page")
-    if delimiters is not None:
-        TOOLS.set_word_delimiters(delimiters)
     words = tp.extractWORDS()
     if textpage is None:
         del tp
     if sort is True:
         words.sort(key=lambda w: (w[3], w[0]))
-    if delimiters is not None:
-        TOOLS.set_word_delimiters(old_delimiters)
+
     return words
 
 
@@ -816,7 +811,7 @@ def get_text(
             flags=flags,
             textpage=textpage,
             sort=sort,
-            delimiters=delimiters
+            delimiters=delimiters,
         )
     if option == "blocks":
         return get_text_blocks(
@@ -3903,8 +3898,8 @@ class Shape:
 
         # compute used part of the textbox
         if text.endswith("\n"):
-            text=text[:-1]
-        lb_count = text.count("\n") + 1 # number of lines written
+            text = text[:-1]
+        lb_count = text.count("\n") + 1  # number of lines written
 
         # text height = line count * line height plus one descender value
         text_height = lheight * lb_count - descender * fontsize
@@ -5215,7 +5210,7 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> fitz.Quad:
         bbox = Rect(char[3])
     else:
         raise ValueError("bad span argument")
-    
+
     return recover_bbox_quad(line_dir, span, bbox)
 
 

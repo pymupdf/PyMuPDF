@@ -121,3 +121,26 @@ def test_textbox5():
     blocks = page.get_text("blocks")
     bbox = fitz.Rect(blocks[0][:4])
     assert bbox in r
+
+
+def test_2637():
+    """Ensure correct calculation of fitting text."""
+    doc = fitz.open()
+    page = doc.new_page()
+    text = (
+        "The morning sun painted the sky with hues of orange and pink. "
+        "Birds chirped harmoniously, greeting the new day. "
+        "Nature awakened, filling the air with life and promise."
+    )
+    rect = fitz.Rect(50, 50, 500, 280)
+    fontsize = 50
+    rc = -1
+    while rc < 0:  # look for largest font size that makes the text fit
+        rc = page.insert_textbox(rect, text, fontname="hebo", fontsize=fontsize)
+        fontsize -= 1
+
+    # confirm text won't lap outside rect
+    blocks = page.get_text("blocks")
+    bbox = fitz.Rect(blocks[0][:4])
+    assert bbox in rect
+
