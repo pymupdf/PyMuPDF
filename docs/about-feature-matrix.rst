@@ -379,7 +379,7 @@
                 } else if (str=="Encrypted PDFs") {
                     return "暗号化されたPDFファイル";
                 } else if (str=="Limited") {
-                    return "限られた";
+                    return "一部対応";
                 } else if (str=="Linerarized PDFs") {
                     return "リニアライズされたPDFファイル";
                 } else if (str=="Incremental Updates") {
@@ -407,7 +407,7 @@
                 } else if (str=="Create, read, update") {
                     return "作成、読み取り、更新";
                 } else if (str=="Limited, no creation") {
-                    return "限定、作成不可";
+                    return "一部対応、作成不可";
                 } else if (str=="PDF Page Labels") {
                     return "PDFページラベル";
                 } else if (str=="Support Font Sub-Setting") {
