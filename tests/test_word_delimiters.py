@@ -15,6 +15,7 @@ def test_delimiters():
 
     # extract words again
     words1 = [w[4] for w in page.get_text("words", delimiters=string.punctuation)]
+    assert words0 != words1
     assert " ".join(words1) == "word1 word2 word3 word4 word5"
 
     # confirm we will be getting old extraction
