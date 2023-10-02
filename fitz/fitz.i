@@ -11688,7 +11688,7 @@ struct TextPage {
         %pythonprepend extractWORDS
         %{"""Return a list with text word information."""%}
         PyObject *
-        extractWORDS()
+        extractWORDS(PyObject *delimiters=NULL)
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -11700,7 +11700,7 @@ struct TextPage {
             fz_rect wbbox = fz_empty_rect;  // word bbox
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_rect tp_rect = this_tpage->mediabox;
-
+            int word_delimiter = 0;
             PyObject *lines = NULL;
             fz_try(gctx) {
                 buff = fz_new_buffer(gctx, 64);
@@ -11722,10 +11722,10 @@ struct TextPage {
                                 !fz_is_infinite_rect(tp_rect)) {
                                 continue;
                             }
-                            if (ch->c == 32 && buflen == 0)
-                                continue;  // skip spaces at line start
-                            if (ch->c == 32) {
-                                if (!fz_is_empty_rect(wbbox)) {
+                            word_delimiter = JM_is_word_delimiter(ch->c, delimiters);
+                            if (word_delimiter)
+                                if (buflen == 0) continue;  // skip spaces at line start
+                                if (!fz_is_empty_rect(wbbox)) {  // output word
                                     word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                         block_n, line_n, word_n);
                                 }

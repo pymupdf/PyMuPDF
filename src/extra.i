@@ -1970,6 +1970,47 @@ static float JM_font_descender(fz_font* font)
     }
     return mupdf::ll_fz_font_descender(font);
 }
+
+
+//----------------------------------------------------------------
+// Return true if character is considered to be a word delimiter
+//----------------------------------------------------------------
+static int 
+JM_is_word_delimiter(int c, PyObject *delimiters)
+{
+    if (c <= 32 || c == 160) return 1;  // a standard delimiter
+
+    // extra delimiters must be a non-empty sequence
+    if (!delimiters || PyObject_Not(delimiters) || !PySequence_Check(delimiters)) {  
+        return 0;
+    }
+
+    // convert to tuple for easier looping
+    PyObject *delims = PySequence_Tuple(delimiters);
+    if (!delims) {
+        PyErr_Clear();
+        return 0;
+    }
+
+    // Make 1-char PyObject from character given as integer
+    PyObject *cchar = Py_BuildValue("C", c);  // single character PyObject
+    Py_ssize_t i, len = PyTuple_Size(delims);
+    for (i = 0; i < len; i++) {
+        int rc = PyUnicode_Compare(cchar, PyTuple_GET_ITEM(delims, i));
+        if (rc == 0) {  // equal to a delimiter character
+            Py_DECREF(cchar);
+            Py_DECREF(delims);
+            PyErr_Clear();
+            return 1;
+        }
+    }
+
+    Py_DECREF(delims);
+    PyErr_Clear();
+    return 0;
+}
+
+
 static const char* JM_font_name(fz_font* font)
 {
     const char* name = mupdf::ll_fz_font_name(font);
@@ -3474,7 +3515,7 @@ int JM_append_word(
     return word_n + 1;  // word counter
 }
 
-PyObject* extractWORDS(mupdf::FzStextPage& this_tpage)
+PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
 {
     int block_n = -1;
     fz_rect wbbox = fz_empty_rect;  // word bbox
@@ -3504,12 +3545,14 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage)
                 {
                     continue;
                 }
-                if (ch.m_internal->c == 32 && buflen == 0)
+
+                word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
+                if (word_delimiter)
                 {
-                    continue;  // skip spaces at line start
-                }
-                if (ch.m_internal->c == 32)
-                {
+                    if (buflen == 0)
+                    {
+                        continue;  // skip delimiters at line start
+                    }
                     if (!fz_is_empty_rect(wbbox))
                     {
                         word_n = JM_append_word(
