@@ -557,7 +557,8 @@ def get_text_words(
         tp = page.get_textpage(clip=clip, flags=flags)
     elif getattr(tp, "parent") != page:
         raise ValueError("not a textpage of this page")
-    words = tp.extractWORDS()
+
+    words = tp.extractWORDS(delimiters)
     if textpage is None:
         del tp
     if sort is True:

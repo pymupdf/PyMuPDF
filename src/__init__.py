@@ -12079,10 +12079,10 @@ class TextPage:
             rc = ''
         return rc
 
-    def extractWORDS(self):
+    def extractWORDS(self, delimiters=None):
         """Return a list with text word information."""
         if g_use_extra:
-            return extra.extractWORDS(self.this)
+            return extra.extractWORDS(self.this, delimiters)
         buflen = 0
         block_n = -1
         wbbox = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)  # word bbox
@@ -12108,9 +12108,10 @@ class TextPage:
                             and not mupdf.fz_is_infinite_rect(tp_rect)
                             ):
                         continue
-                    if ch.m_internal.c == 32 and buflen == 0:
-                        continue    # skip spaces at line start
-                    if ch.m_internal.c == 32:
+                    word_delimiter = JM_is_word_delimiter(ch.m_internal.c, delimiters)
+                    if word_delimiter:
+                        if buflen == 0:
+                            continue    # skip delimiters at line start
                         if not mupdf.fz_is_empty_rect(wbbox):
                             word_n, wbbox = JM_append_word(lines, buff, wbbox, block_n, line_n, word_n)
                         mupdf.fz_clear_buffer(buff)
@@ -14617,6 +14618,20 @@ def JM_font_descender(font):
         return -0.2
     ret = mupdf.fz_font_descender(font)
     return ret
+
+
+def JM_is_word_delimiter(ch, delimiters):
+    """Check if ch is an extra word delimiting character.
+    """
+    if ch <= 32 or ch == 160:  # any whitespace?
+        return True
+    if not delimiters:  # no extra delimiters provided
+        return False
+    char = chr(ch)
+    for d in delimiters:
+        if d == char:
+            return True
+    return False
 
 
 def JM_font_name(font):
