@@ -1997,9 +1997,9 @@ static void jm_trace_text_span(
     //double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d));
     fz_matrix mat = mupdf::ll_fz_concat(span->trm, ctm); // text transformation matrix
     fz_point dir = mupdf::ll_fz_transform_vector(mupdf::ll_fz_make_point(1, 0), mat); // writing direction
-    dir = mupdf::ll_fz_normalize_vector(dir);
+    double fsize = sqrt(dir.x * dir.x + dir.y * dir.y); // font size
 
-    double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d)); // font size
+    dir = mupdf::ll_fz_normalize_vector(dir);
 
     // compute effective ascender / descender
     double asc = (double) JM_font_ascender(span->font);
