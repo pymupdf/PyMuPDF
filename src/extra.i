@@ -3546,7 +3546,7 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
                     continue;
                 }
 
-                word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
+                int word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
                 if (word_delimiter)
                 {
                     if (buflen == 0)
@@ -4369,7 +4369,7 @@ mupdf::FzRect JM_make_spanlist(
         mupdf::FzRect& tp_rect
         );
 
-PyObject* extractWORDS(mupdf::FzStextPage& this_tpage);
+PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters);
 PyObject* extractBLOCKS(mupdf::FzStextPage& self);
 
 PyObject* link_uri(mupdf::FzLink& link);
