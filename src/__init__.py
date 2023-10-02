@@ -17895,9 +17895,9 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     
     mat = mupdf.fz_concat(span.trm(), ctm)  # text transformation matrix
     dir = mupdf.fz_transform_vector(mupdf.fz_make_point(1, 0), mat) # writing direction
-    dir = mupdf.fz_normalize_vector(dir)
+    fsize = math.sqrt(dir.x * dir.x + dir.y * dir.y) # font size
 
-    fsize = math.sqrt(abs(span.trm().a * span.trm().d)) # font size
+    dir = mupdf.fz_normalize_vector(dir)
 
     space_adv = 0;
     asc = JM_font_ascender( span.font())

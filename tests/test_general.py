@@ -277,6 +277,21 @@ def test_2533():
     assert page.search_for(NEEDLE)[0] == bbox
 
 
+def test_2645():
+    """Assert same font size calculation in corner cases.
+    """
+    folder = os.path.join(scriptdir, "resources")
+    files = ("test_2645_1.pdf", "test_2645_2.pdf", "test_2645_3.pdf")
+    for f in files:
+        doc = fitz.open(os.path.join(folder, f))
+        page = doc[0]
+        fontsize0 = page.get_texttrace()[0]["size"]
+        fontsize1 = page.get_text("dict", flags=fitz.TEXTFLAGS_TEXT)["blocks"][0]["lines"][
+            0
+        ]["spans"][0]["size"]
+        assert abs(fontsize0 - fontsize1) < 1e-5
+
+
 def test_2506():
     """Ensure expected font size across text writing angles."""
     doc = fitz.open()

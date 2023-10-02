@@ -610,9 +610,9 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	PyObject *chars = PyTuple_New(span->len);
 	fz_matrix mat = fz_concat(span->trm, ctm); // text transformation matrix
 	fz_point dir = fz_transform_vector(fz_make_point(1, 0), mat); // writing direction
-	dir = fz_normalize_vector(dir);
+	double fsize = sqrt(dir.x * dir.x + dir.y * dir.y);
 
-	double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d)); // font size
+	dir = fz_normalize_vector(dir);
 	double linewidth, adv, asc, dsc;
 	double space_adv = 0;
 	float x0, y0, x1, y1;
