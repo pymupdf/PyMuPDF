@@ -11723,7 +11723,7 @@ struct TextPage {
                                 continue;
                             }
                             word_delimiter = JM_is_word_delimiter(ch->c, delimiters);
-                            if (word_delimiter)
+                            if (word_delimiter) {
                                 if (buflen == 0) continue;  // skip spaces at line start
                                 if (!fz_is_empty_rect(wbbox)) {  // output word
                                     word_n = JM_append_word(gctx, lines, buff, &wbbox,
