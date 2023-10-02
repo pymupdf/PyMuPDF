@@ -12,6 +12,7 @@ def test_delimiters():
     # Standard words extraction:
     # only spaces and line breaks start a new word
     words0 = [w[4] for w in page.get_text("words")]
+    assert words0 == ["word1,word2", "-", "word3.", "word4?word5."]
 
     # extract words again
     words1 = [w[4] for w in page.get_text("words", delimiters=string.punctuation)]
