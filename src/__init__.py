@@ -17,7 +17,7 @@ import zipfile
 def log( text, caller=1):
     import inspect
     frame_record = inspect.stack( context=0)[ caller]
-    filename    = frame_record.filename
+    filename    = os.path.relpath(frame_record.filename)
     line        = frame_record.lineno
     function    = frame_record.function
     print( f'{filename}:{line}:{function}: {text}', file=sys.stdout)
