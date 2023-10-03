@@ -542,7 +542,7 @@ def test_2692():
 
 def test_2596():
     """Cconfirm correctly abandoning cache when reloading a page."""
-    doc = fitz.Document("resources/test_2596.pdf")
+    doc = fitz.Document(f"{scriptdir}/resources/test_2596.pdf")
     page = doc[0]
     pix0 = page.get_pixmap()  # render the page
     _ = doc.tobytes(garbage=3)  # save with garbage collection
