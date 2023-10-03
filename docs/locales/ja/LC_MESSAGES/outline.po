@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
@@ -10,14 +10,15 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
+
 
 #: ../../header.rst:-1
 msgid "Artifex"
@@ -31,11 +32,11 @@ msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデー
 msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../outline.rst:7 1cd4685cbff941e38c2d1391433504ed
+#: ../../outline.rst:7 1e58ff19e11743b4b49f05a37fa5e4e3
 msgid "Outline"
-msgstr ""
+msgstr "Ouline (アウトライン)"
 
-#: ../../outline.rst:9 5dc1712bfae241f9b0a9b6e97a58e1ac
+#: ../../outline.rst:9 735c5d13f6e5456a873a099b79f4dc08
 msgid ""
 "*outline* (or \"bookmark\"), is a property of *Document*. If not *None*, "
 "it stands for the first outline item of the document. Its properties in "
@@ -43,148 +44,148 @@ msgid ""
 "outline items in \"horizontal\" or downward direction. The full tree of "
 "all outline items for e.g. a conventional table of contents (TOC) can be "
 "recovered by following these \"pointers\"."
-msgstr ""
+msgstr "*アウトライン*（または「ブックマーク」）は、*Document* のプロパティです。それが *None* でない場合、それはドキュメントの最初のアウトライン項目を表します。そのプロパティは、この項目の特性を定義し、また「水平」または下向きの方向に他のアウトライン項目を指します。たとえば、通常の目次（TOC）のためのすべてのアウトライン項目の完全なツリーは、これらの「ポインター」をたどることで回復できます。"
 
-#: ../../outline.rst:12 afc90d1b62394bcea80d49a104ebdd38
+#: ../../outline.rst:12 fd4fdf034bc246d08eb7d1c7dcf04ee9
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**メソッド / 属性**"
 
-#: ../../outline.rst:12 8cc63f5459a9414f84ac638ea1e9a94a
+#: ../../outline.rst:12 02be3d2e52554d9d875ec535e9630e82
 msgid "**Short Description**"
-msgstr ""
+msgstr "**短い説明**"
 
-#: ../../outline.rst:14 20f4fc6f748541ceb95c2ad9a5a686e6
+#: ../../outline.rst:14 257a86b7e68c41bcb99a8b34475692f1
 msgid ":attr:`Outline.down`"
 msgstr ""
 
-#: ../../outline.rst:14 af649b18c6c84e8cb0a4f20171086bc0
+#: ../../outline.rst:14 ff8f0c46f35a4ffeaae45056163e147d
 msgid "next item downwards"
-msgstr ""
+msgstr "次の項目は下向き"
 
-#: ../../outline.rst:15 5be83be301db4c05b70c245433c5038a
+#: ../../outline.rst:15 2005d164e83549cc869edc7cafb5c8fa
 msgid ":attr:`Outline.next`"
 msgstr ""
 
-#: ../../outline.rst:15 eca3244bb7b24582b6fef59d5b6c4c2e
+#: ../../outline.rst:15 92de6b3527474a3baa8dfe3d1e4ae448
 msgid "next item same level"
-msgstr ""
+msgstr "同じレベルの次の項目"
 
-#: ../../outline.rst:16 a937f67b8cdc458a862983d85e5b1749
+#: ../../outline.rst:16 d97b8dfa3c324be79bf031ff0138bd5f
 msgid ":attr:`Outline.page`"
 msgstr ""
 
-#: ../../outline.rst:16 5b6a4f8a11e944bf9473eda9150539ba
+#: ../../outline.rst:16 d7220c5ee3b14e6b9186e42952b53819
 msgid "page number (0-based)"
-msgstr ""
+msgstr "ページ番号（0から始まる）"
 
-#: ../../outline.rst:17 cecac140db3e458c9635e5c1aa8495ef
+#: ../../outline.rst:17 a6b6535b5e28403b9ad6ca51e203d11a
 msgid ":attr:`Outline.title`"
 msgstr ""
 
-#: ../../outline.rst:17 3fc0995fe3534b06869757cac33a2640
+#: ../../outline.rst:17 2a21e84cd6fd498f8fb30819396cca34
 msgid "title"
-msgstr ""
+msgstr "タイトル"
 
-#: ../../outline.rst:18 c031bceb8a064b35bdeaf4e3b035bb84
+#: ../../outline.rst:18 22924a94716d4813bb2a0980ec3d291a
 msgid ":attr:`Outline.uri`"
 msgstr ""
 
-#: ../../outline.rst:18 2aa3f7d0500a4d7fac15e7f130ff73de
+#: ../../outline.rst:18 e48fc77c73ba4d248f60a4939ab16f2b
 msgid "string further specifying outline target"
-msgstr ""
+msgstr "アウトラインのターゲットをさらに指定する文字列"
 
-#: ../../outline.rst:19 40c9132251e74422ae2f803a8c9ccecc
+#: ../../outline.rst:19 208d4ef31a9c406d96627ece9bfe553d
 msgid ":attr:`Outline.is_external`"
 msgstr ""
 
-#: ../../outline.rst:19 6afab2dea89944a6942675d64d3b0614
+#: ../../outline.rst:19 7513aae057f24d02b0697892e9ac6681
 msgid "target outside document"
-msgstr ""
+msgstr "ドキュメントの外部のターゲットかどうか"
 
-#: ../../outline.rst:20 277290f0431a4b0c931f8fa71deea350
+#: ../../outline.rst:20 7c42624edf414c9c8bcaa441ae8d1cf5
 msgid ":attr:`Outline.is_open`"
 msgstr ""
 
-#: ../../outline.rst:20 460a5ff2890b491db513c915c6e36afc
+#: ../../outline.rst:20 a5c68c9a13dd497bbe7f688e4c639cf4
 msgid "whether sub-outlines are open or collapsed"
-msgstr ""
+msgstr "サブアウトラインが開いているか折りたたまれているか"
 
-#: ../../outline.rst:21 e1ca7dd0dbf24f34978955da6c21d08a
+#: ../../outline.rst:21 825f971fef0e488995250d3eddba1839
 msgid ":attr:`Outline.dest`"
 msgstr ""
 
-#: ../../outline.rst:21 87c3c3d9cebe4a27b990c35dc98f1bcc
+#: ../../outline.rst:21 5ca85bedd75b4810b7e611d4dd05b453
 msgid "points to destination details object"
-msgstr ""
+msgstr "宛先の詳細オブジェクトを指す"
 
-#: ../../outline.rst:24 ad9fb85503a44b7e8d8666426a002404
+#: ../../outline.rst:24 21228ba556e64733ac8daf7eced818ec
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI**"
 
-#: ../../outline.rst:30 334961f3160e4d5cb7ff1672065293e2
+#: ../../outline.rst:30 2b1bcf7008644ce1846858f5f8874b1a
 msgid ""
 "The next outline item on the next level down. Is *None* if the item has "
 "no kids."
-msgstr ""
+msgstr "次の階層のアウトライン項目です。アイテムに子要素がない場合は *None* です。"
 
-#: ../../outline.rst 32b644d9b37542ac9117d64be9b210c1
-#: 377bcd36b44e479fb0260f224cedc750 82387bbf0d6c493ca96f5d54354e4c96
-#: 823b170f000a4efe9dc3699a480673f7 8324854c081d46c68ff9f27df4c157c0
-#: 9aea10d04ac7417486ebf5e108d397a5 a7611c0ccee5416f8bc26f47103f752f
-#: e330a716ddc6428a92bb3ee0994402cc
+#: ../../outline.rst 265d93ba1ade46bc96a61664ead628db
+#: 445a145f8f0d429a9ddb0d6154d0e6be 45f796a54fba4df8a4e8d97b75125d6e
+#: 6041f339d0364a52bf71d2338f03b59b 8630525ac8d147b0884a3c4bd85673f5
+#: a988864c89374d7ba6133dca31442be8 acb48cbe26c74a48a24f0c217e7f4d8f
+#: d92f3d6f0bd4494cbed1218a97aa0c1e
 msgid "type"
 msgstr ""
 
-#: ../../outline.rst:32 dfdb1a485d5f481ca05a9bfc0d1ef708
+#: ../../outline.rst:32 8f3edd0cb4c644caab5d3a6770cd716a
 msgid ":ref:`Outline`"
 msgstr ""
 
-#: ../../outline.rst:36 fe8c64124d8d422d896d425b13607d8c
+#: ../../outline.rst:36 8b147830e3714a8da5443557e29285dd
 msgid ""
 "The next outline item at the same level as this item. Is *None* if this "
 "is the last one in its level."
-msgstr ""
+msgstr "このアイテムと同じレベルの次のアウトライン項目です。このアイテムがそのレベルで最後の場合、*None* です。"
 
-#: ../../outline.rst:38 b5f81527539a4f1ca8861a8fd7bb1112
+#: ../../outline.rst:38 dddef11e55394bef96a39375a4e0a6fd
 msgid "`Outline`"
 msgstr ""
 
-#: ../../outline.rst:42 82fedb3f1515404fafcc0ff7627a2749
+#: ../../outline.rst:42 b7aff344071f4b5685e51ba959b46910
 msgid "The page number (0-based) this bookmark points to."
-msgstr ""
+msgstr "このブックマークが指すページ番号（0から始まる）です。"
 
-#: ../../outline.rst:44 a4b0bae7f32c46be8aae63d07ce51b17
+#: ../../outline.rst:44 46b7e5afd6f644f5b766a6bbccc75e6a
 msgid "int"
 msgstr ""
 
-#: ../../outline.rst:48 cc7894ea9655405abe3e15fd01a2b63d
+#: ../../outline.rst:48 d5ef411d81db4b248fbc122c8ee7c0b8
 msgid "The item's title as a string or *None*."
-msgstr ""
+msgstr "アイテムのタイトル、または *None* の文字列です。"
 
-#: ../../outline.rst:50 ../../outline.rst:68 2213dca3d1cc44f9bf415bb0a25c3bba
-#: fd5fd0d541004b618f32db5bf8dfea3c
+#: ../../outline.rst:50 ../../outline.rst:68 c63a6d00a69448c9af74976fbf18b4f1
+#: faff6ee44b22433abb075df6c68d25a1
 msgid "str"
 msgstr ""
 
-#: ../../outline.rst:54 9412edc011d44f27977242abbce55823
+#: ../../outline.rst:54 73917ac42dfe453bb5f3ec820979a2c0
 msgid ""
 "Indicator showing whether any sub-outlines should be expanded (*True*) or"
 " be collapsed (*False*). This information is interpreted by PDF reader "
 "software."
-msgstr ""
+msgstr "サブアウトラインが展開されるべきか（*True*）折りたたまれるべきか（*False*）を示すインジケーターです。この情報はPDFリーダーソフトウェアによって解釈されます。"
 
-#: ../../outline.rst:56 ../../outline.rst:62 6fa6bbeceffd4bcab0ee1582647cbdee
-#: d8edab987df5430aa6a63fd824326ed6
+#: ../../outline.rst:56 ../../outline.rst:62 139f7170776e4538ba46b4bfd43a3fea
+#: 91b2f2f17b094edebf143cdae26a05fa
 msgid "bool"
 msgstr ""
 
-#: ../../outline.rst:60 4faf3b19bbd34cfc9d04563374c683ac
+#: ../../outline.rst:60 f7d96da15c3c40939205e54e5787e196
 msgid ""
 "A bool specifying whether the target is outside (*True*) of the current "
 "document."
-msgstr ""
+msgstr "対象が現在のドキュメントの外部（*True*）かどうかを示すブール値です。"
 
-#: ../../outline.rst:66 a7a9e11e57414a93a88e07214e2915b1
+#: ../../outline.rst:66 dea3eeb0f3b6436b92398c33be4378cc
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with *isExternal*. The value may be *None*, "
@@ -196,23 +197,17 @@ msgid ""
 "format varies for other document types, e.g. *uri = "
 "'../FixedDoc.fdoc#PG_21_LNK_84'* for page number 21 (1-based) in an XPS "
 "document."
-msgstr ""
+msgstr "リンクのターゲットを指定する文字列です。このプロパティの意味は *isExternal* と連動して評価されるべきです。値が *None* の場合、*isExternal == False* です。*uri* が *file://、mailto:* 、またはインターネットリソース名で始まる場合、*isExternal* は *True* です。それ以外の場合、*isExternal == False* で、*uri* は内部の場所を指します。PDFドキュメントの場合、これは1から始まるページ番号 *nnnn* を示すための *#nnnn* であるか、名前付きの場所である必要があります。他のドキュメントタイプの場合、例えばXPSドキュメントの場合、*uri = '../FixedDoc.fdoc#PG_21_LNK_84'* は、ページ番号21（1から始まる）を示します。"
 
-#: ../../outline.rst:72 0820e0d4a84c44cfaac606e4a9b41c58
+#: ../../outline.rst:72 7f0c9f2b66b344c894f6655f89104a40
 msgid "The link destination details object."
-msgstr ""
+msgstr "リンクの宛先詳細オブジェクトです。"
 
-#: ../../outline.rst:74 33aacd0d49fb4c2e81e4e61527d876d7
+#: ../../outline.rst:74 e475b45603554099a59fca9e289946a5
 msgid ":ref:`linkDest`"
 msgstr ""
 
-#: ../../footer.rst:-1 13d902d780624da89e6deab19f92c611
+#: ../../footer.rst:-1 3eceab87b9da4869b2bce38214a4acfb
 msgid "Discord logo"
 msgstr ""
-
-#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
-#~ msgstr ""
-
-#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
-#~ msgstr ""
 
