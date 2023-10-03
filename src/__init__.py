@@ -5042,6 +5042,7 @@ class Document:
             old_annots[k] = v
         page._erase()  # remove the page
         page = None
+        TOOLS.store_shrink(100)
         page = self.load_page(pno)  # reload the page
 
         # copy annot refs over to the new dictionary
