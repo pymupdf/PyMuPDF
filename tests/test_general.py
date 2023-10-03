@@ -539,3 +539,17 @@ def test_2692():
                 clip=fitz.Rect(0,0,10,10),
                 )
     
+
+def test_2596():
+    """Cconfirm correctly abandoning cache when reloading a page."""
+    doc = fitz.Document("resources/test_2596.pdf")
+    page = doc[0]
+    pix0 = page.get_pixmap()  # render the page
+    _ = doc.tobytes(garbage=3)  # save with garbage collection
+
+    # Note this will invalidate cache content for this page.
+    # Reloading the page now empties the cache, so rendering
+    # will deliver the same pixmap
+    page = doc.reload_page(page)
+    pix1 = page.get_pixmap()
+    assert pix1.samples == pix0.samples
