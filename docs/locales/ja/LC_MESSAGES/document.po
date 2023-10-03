@@ -33,7 +33,7 @@ msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブ
 
 #: ../../document.rst:7 1e2a5a64167f4a9898ee08390eca7534
 msgid "Document"
-msgstr "ドキュメント（Document）"
+msgstr "Document (ドキュメント)"
 
 #: ../../document.rst:11 58ba1757a362440f8264db2e9c55b51e
 msgid ""
@@ -1032,7 +1032,7 @@ msgstr "PDFバージョンの数"
 
 #: ../../document.rst:149 c8ba6c0c38af47a39f7464ff17d0d639
 msgid "**Class API**"
-msgstr "**クラス API** "
+msgstr "**クラスAPI**"
 
 #: ../../document.rst:170 6421dabd019641c6b59aa2094858d153
 msgid "Changed in v1.14.13: support `io.BytesIO` for memory documents."
@@ -5258,7 +5258,6 @@ msgid ""
 "<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples"
 "/convert-document/convert.py>`_."
 msgstr "ただし、:meth:`Document.get_toc` と :meth:`Page.get_links` （すべてのドキュメントタイプで利用可能）を使用して、この情報を出力PDFにコピーできます。デモ `convert.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/convert-document/convert.py>`_ を参照してください。"
-
 
 #: ../../document.rst:2097 c3f979674b604546ac1cc75bce1e229e
 msgid ""
