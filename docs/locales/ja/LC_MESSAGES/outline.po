@@ -34,7 +34,7 @@ msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブ
 
 #: ../../outline.rst:7 1e58ff19e11743b4b49f05a37fa5e4e3
 msgid "Outline"
-msgstr "Ouline (アウトライン)"
+msgstr "Outline (アウトライン)"
 
 #: ../../outline.rst:9 735c5d13f6e5456a873a099b79f4dc08
 msgid ""

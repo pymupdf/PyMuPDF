@@ -83,7 +83,7 @@ msgstr "他のピクセルマップのコピーとして"
 msgid ""
 "A number of image formats is supported as input for points 3. and 4. "
 "above. See section :ref:`ImageFiles`."
-msgstr "⚠️3.と4.のポイントに対する入力として多くの画像フォーマットがサポートされています。サポートされている入力画像フォーマットの詳細については、サポートされている入力画像フォーマットのセクションを参照してください。"
+msgstr "3.と4.のポイントに対する入力として多くの画像フォーマットがサポートされています。サポートされている入力画像フォーマットの詳細については、:ref:`ImageFiles` のセクションを参照してください。"
 
 #: ../../pixmap.rst:23 76a3687169cf434daaa448178f92d834
 msgid ""
@@ -651,7 +651,7 @@ msgid ""
 "and `extract-img2.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo"
 "/extract-img2.py>`_ to see how this can be used to recover all of a PDF's"
 " images."
-msgstr "⚠️ **PDFイメージから：**  **PDFドキュメント内の** イメージからピクスマップを作成します。ピクスマップのすべてのプロパティはイメージによって設定されます。これがどのように使用されるかを確認するには、`extract-img1.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img1.py>`_ と `extract-img2.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img2.py>`_ をご覧ください。これにより、PDFのすべてのイメージを復元できます。"
+msgstr "**PDFイメージから：**  PDFドキュメント内の :data:`xref` で識別されるイメージからピクスマップを作成します。ピクスマップのすべてのプロパティはイメージによって設定されます。これがどのように使用されるかを確認するには、`extract-img1.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img1.py>`_ と `extract-img2.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img2.py>`_ をご覧ください。これにより、PDFのすべてのイメージを復元できます。"
 
 #: ../../pixmap.rst:181 ca9978be74104008af0b46b15063a9e6
 msgid "an opened **PDF** document."
@@ -742,7 +742,7 @@ msgid ""
 "determines the new pixmap (samples) size. For example, a value of 2 "
 "divides width and height by 4 and thus results in a size of one 16\\ "
 ":sup:`th` of the original. Values less than 1 are ignored with a warning."
-msgstr "⚠️新しいPixmap（サンプル）のサイズを決定します。例えば、値が2の場合、幅と高さを4分の1に分割し、元のサイズの16分の1のサイズになります。1未満の値は警告として無視されます。"
+msgstr "新しいPixmap（サンプル）のサイズを決定します。例えば、値が2の場合、幅と高さを4分の1に分割し、元のサイズの16分の1のサイズになります。1未満の値は警告として無視されます。"
 
 #: ../../pixmap.rst:222 1224e29f6f8b45ae8727e48dd64a0471
 msgid ""
@@ -987,7 +987,7 @@ msgid ""
 "The desired image format. The default is the filename's extension. If "
 "both, this value and the file extension are unsupported, an exception is "
 "raised. For possible values see :ref:`PixmapOutput`."
-msgstr "⚠️望ましい画像フォーマット。デフォルトはファイル名の拡張子です。この値とファイル拡張子の両方がサポートされていない場合、例外が発生します。サポートされている出力画像フォーマットの値については、サポートされている出力画像フォーマットを参照してください。"
+msgstr "望ましい画像フォーマット。デフォルトはファイル名の拡張子です。この値とファイル拡張子の両方がサポートされていない場合、例外が発生します。:ref:`PixmapOutput` を参照してください。"
 
 #: ../../pixmap.rst:335 ../../pixmap.rst:345 cd36a6f571b64c9db336a49e0979293b
 #: fca2473cca5c4900bc182b9862c80b33
@@ -1023,13 +1023,13 @@ msgstr "v1.22.0で変更： **JPEG画像の直接サポート** が追加され�
 msgid ""
 "The desired image format. The default is \"png\". For possible values see"
 " :ref:`PixmapOutput`."
-msgstr "⚠️望ましい画像フォーマット。デフォルトは \"png\" です。可能な値については Supported Output Image Formats を参照してください。"
+msgstr "望ましい画像フォーマット。デフォルトは \"png\" です。:ref:`PixmapOutput` を参照してください。"
 
 #: ../../pixmap.rst:350 1f6c26463c1d4d4b8842dcdf4f5b7265
 msgid ""
 "The requested image format. The default is \"png\". For other possible "
 "values see :ref:`PixmapOutput`."
-msgstr "⚠️リクエストされた画像フォーマットです。デフォルトは \"png\" です。その他の可能な値については Supported Output Image Formats を参照してください。"
+msgstr "リクエストされた画像フォーマットです。デフォルトは \"png\" です。:ref:`PixmapOutput` を参照してください。"
 
 #: ../../pixmap.rst:354 ../../pixmap.rst:369 936b8a9f05744fabbc94bbce0c23d571
 #: 93bf4571b79f4021a2321d712668d732
@@ -1291,7 +1291,7 @@ msgid ""
 "value of the color. Use this to decide if the image is \"almost\" "
 "unicolor: a response `(0.95, b\"\\x00\\x00\\x00\")` means that 95% of all"
 " pixels are black. See an example here :ref:`RecipesImages_P`."
-msgstr "⚠️比率 `0 < ratio <= 1` および色のピクセル値を持つタプル。これを使用して画像が「ほぼ」単一の色であるかどうかを判断します。応答 `(0.95, b\"\\x00\\x00\\x00\")` は、すべてのピクセルの95%が黒であることを示します。こちらの例を参照してください：「Pixmapsの使用方法：テキストの可視性の確認」"
+msgstr "比率 `0 < ratio <= 1` および色のピクセル値を持つタプル。これを使用して画像が「ほぼ」単一の色であるかどうかを判断します。応答 `(0.95, b\"\\x00\\x00\\x00\")` は、すべてのピクセルの95%が黒であることを示します。こちらの例を参照してください：「Pixmapsの使用方法：テキストの可視性の確認」"
 
 #: ../../pixmap.rst:466 2ecfd01a95ea42939b628b7410738eb7
 msgid "Indicates whether the pixmap contains transparency information."

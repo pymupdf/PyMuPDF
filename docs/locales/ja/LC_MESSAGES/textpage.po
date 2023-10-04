@@ -991,7 +991,7 @@ msgid ""
 "Bits 1 thru 4 are font properties, i.e. encoded in the font program. "
 "Please note, that this information is not necessarily correct or "
 "complete: fonts quite often contain wrong data here."
-msgstr "⚠️"
+msgstr "ビット1からビット4までがフォントのプロパティであり、つまりフォントプログラムにエンコードされています。 ただし、この情報は必ずしも正確または完全ではないことに注意してください。フォントにはしばしば誤ったデータが含まれていることがあります。"
 
 #: ../../textpage.rst:323 639fb9c2423848ca8e12ec0aa94f78da
 msgid "Character Dictionary for :meth:`extractRAWDICT`"

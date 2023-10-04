@@ -818,7 +818,7 @@ msgid ""
 "are the other supported options, see :ref:`TextAlign`. Please note that "
 "the effect of parameter value *TEXT_ALIGN_JUSTIFY* is only achievable "
 "with \"simple\" (single-byte) fonts (including the :ref:`Base-14-Fonts`)."
-msgstr "⚠️各テキスト行を整列させます。デフォルトは0（左揃え）。センタリング、右揃え、ジャスティファイドがサポートされている他のオプションです。詳細は :ref:`TextAlign` を参照してください。なお、パラメータ値  *TEXT_ALIGN_JUSTIFY* の効果は、「シンプル」（単一バイト）フォント（PDFベース14フォントを含む）でのみ達成できます。"
+msgstr "各テキスト行を整列させます。デフォルトは0（左揃え）。センタリング、右揃え、ジャスティファイドがサポートされている他のオプションです。詳細は :ref:`TextAlign` を参照してください。なお、パラメータ値  *TEXT_ALIGN_JUSTIFY* の効果は、「シンプル」（単一バイト）フォント（:ref:`Base-14-Fonts` を含む）でのみ達成できます。"
 
 #: ../../shape.rst:341 3da95872e8554090a4b74c1c92bd266c
 msgid ""

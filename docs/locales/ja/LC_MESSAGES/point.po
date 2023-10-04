@@ -122,7 +122,7 @@ msgid ""
 "With another point specified, a **new copy** will be created, "
 "\"sequence\" is a Python sequence of 2 numbers (see "
 ":ref:`SequenceTypes`)."
-msgstr "⚠️他のポイントが指定された場合、**新しいコピー** が作成され、 \"sequence\"は2つの数値からなるPythonシーケンスです（PyMuPDFでの引数としてのPythonシーケンスの使用を参照）。"
+msgstr "他のポイントが指定された場合、**新しいコピー** が作成され、 \"sequence\"は2つの数値からなるPythonシーケンスです（:ref:`SequenceTypes`）。"
 
 #: ../../point.rst 138e867f2d634bdcbe20f4d2f30d91d4
 #: 4f72c20cbf844e558c86a428f0af9eec e2f83f73f43a42b58ebda2bd5e3af83a
