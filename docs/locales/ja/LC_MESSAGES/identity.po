@@ -40,7 +40,8 @@ msgid ""
 "Identity is a :ref:`Matrix` that performs no action -- to be used "
 "whenever the syntax requires a matrix, but no actual transformation "
 "should take place. It has the form *fitz.Matrix(1, 0, 0, 1, 0, 0)*."
-msgstr "⚠️アイデンティティは、何もアクションを実行しないマトリックスで、構文がマトリックスを必要とするが実際の変換が必要ない場合に使用されます。それは  *fitz.Matrix(1, 0, 0, 1, 0, 0)* の形をしています。"
+msgstr "アイデンティティは、何もアクションを実行しない :ref:`Matrix` で、構文がマトリックスを必要とするが実際の変換が必要ない場合に使用されます。それは  *fitz.Matrix(1, 0, 0, 1, 0, 0)* の形をしています。"
+
 
 #: ../../identity.rst:11 84a53943990a473188714f3e97e30c9b
 msgid ""

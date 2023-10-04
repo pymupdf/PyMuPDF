@@ -1111,7 +1111,7 @@ msgid ""
 "matching :ref:`a supported type<Supported_File_Types>`, a PDF document is"
 " assumed. For memory documents, this argument may be used instead of "
 "`filetype`, see below."
-msgstr "⚠️ファイルパスを含む UTF-8 文字列または *pathlib* オブジェクト。ドキュメントのタイプはファイル名の拡張子から推測されます。存在しないか、:ref:`サポートされてい<Supported_File_Types>` ないタイプに一致しない場合、PDF ドキュメントが仮定されます。メモリドキュメントの場合、`filetype` の代わりにこの引数を使用できます。詳細は以下を参照してください。"
+msgstr "ファイルパスを含む UTF-8 文字列または *pathlib* オブジェクト。ドキュメントのタイプはファイル名の拡張子から推測されます。存在しないか、:ref:`サポートされてい<Supported_File_Types>` ないタイプに一致しない場合、PDF ドキュメントが仮定されます。メモリドキュメントの場合、`filetype` の代わりにこの引数を使用できます。詳細は以下を参照してください。"
 
 #: ../../document.rst:181 0d4e90006b3a45e4ba90af2a95ee85e5
 msgid ""
@@ -1511,7 +1511,7 @@ msgstr "*ocgs* と *policy* の組み合わせを使用する: *policy* の値�
 
 #: ../../document.rst:332 ad796cb9127448989aa71139173ade2d
 msgid "AnyOn -- (default) true if at least one OCG is ON."
-msgstr "（デフォルト）少なくとも1つのOCGがONの場合、true。"
+msgstr "(デフォルト) 少なくとも1つのOCGがONの場合、true。"
 
 #: ../../document.rst:333 b719d2748ed54ccfae5ebff22845cc2b
 msgid "AnyOff -- true if at least one OCG is OFF."
@@ -1589,7 +1589,7 @@ msgid ""
 "For more details and examples see page 224 of :ref:`AdobeManual`. Also do"
 " have a look at example scripts `here <https://github.com/pymupdf"
 "/PyMuPDF-Utilities/tree/master/optional-content>`_."
-msgstr "⚠️詳細と例については、 :ref:`AdobeManual` の224ページを参照してください。また、こちらの例のスクリプトもご覧いただけます。"
+msgstr "詳細と例については、 :ref:`AdobeManual` の224ページを参照してください。また、`こちら <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_ の例のスクリプトもご覧いただけます。"
 
 #: ../../document.rst:354 5d20a823b0084bf4bd0c227b7074e7e8
 msgid ""
@@ -1973,7 +1973,7 @@ msgstr "目次の項目とは混同しないでください。"
 
 #: ../../document.rst:519 c899e28b42774f2384d2aa8834f085b8
 msgid "page location. Must be a valid *(chapter, pno)*."
-msgstr "⚠️ページの位置。有効なものである必要があります *（章、ページ番号）* 。"
+msgstr "ページの位置。有効なものである必要があります *（章、ページ番号）* 。"
 
 #: ../../document.rst:522 a46a7f656f9d47108fb8b10292d39c33
 msgid ""
@@ -3000,7 +3000,7 @@ msgid ""
 "become unavailable until the document is reopened. **Page numbers can "
 "occur multiple times and in any order:** the resulting document will "
 "reflect the sequence exactly as specified."
-msgstr "⚠️s（シーケンス）– ページ番号（0から始まる）のシーケンス（PyMuPDFで引数として使用する場合はPythonシーケンスを使用）を含めるためのもの。シーケンス内に含まれていないページは（メモリから）削除され、ドキュメントが再オープンされるまで利用できなくなります。**ページ番号は複数回発生し、任意の順序で発生できます：** 結果のドキュメントは指定された正確なシーケンスを反映します。"
+msgstr "(:ref:`SequenceTypes`) – ページ番号（0から始まる）のシーケンス（PyMuPDFで引数として使用する場合はPythonシーケンスを使用）を含めるためのもの。シーケンス内に含まれていないページは（メモリから）削除され、ドキュメントが再オープンされるまで利用できなくなります。**ページ番号は複数回発生し、任意の順序で発生できます：** 結果のドキュメントは指定された正確なシーケンスを反映します。"
 
 #: ../../document.rst:958 11def9a9343e4b96ab05c3fb0cd50ed7
 msgid ""
@@ -3107,8 +3107,8 @@ msgid ""
 "the usage of Tagged PDF conventions. For details please see the `PDF "
 "specifications <https://opensource.adobe.com/dc-acrobat-sdk-"
 "docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_."
-msgstr "⚠️次のような辞書：`{\"Marked\": False, \"UserProperties\": "
-"False, \"Suspects\": False}`。この辞書にはタグ付きPDF規則の使用に関する情報が含まれています。詳細についてはPDF仕様を参照してください。"
+msgstr "次のような辞書：`{\"Marked\": False, \"UserProperties\": "
+"False, \"Suspects\": False}`。この辞書にはタグ付きPDF規則の使用に関する情報が含まれています。詳細については `PDF仕様 <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_ を参照してください。"
 
 #: ../../document.rst:1016 adbc4ffac0f440fab3de5391b8f4e25b
 msgid ""
@@ -4467,7 +4467,7 @@ msgid ""
 "the page. But the page's :data:`resources` object would still show the "
 "image as being referenced by the page. This save option will clean up any"
 " such mismatches."
-msgstr "⚠️例: ある画像をページに表示させたくないと仮定しましょう。これは、そのコンテンツソース内の該当する参照を削除することによって実現できます - そして実際には、ページを再読み込みした後、画像は消えてしまいます。ただし、ページのリソースオブジェクトは、まだその画像がページによって参照されていると表示されます。この保存オプションは、そのような不一致をクリーンアップします。"
+msgstr "例: ある画像をページに表示させたくないと仮定しましょう。これは、そのコンテンツソース内の該当する参照を削除することによって実現できます - そして実際には、ページを再読み込みした後、画像は消えてしまいます。ただし、ページの :data:`resources` は、まだその画像がページによって参照されていると表示されます。この保存オプションは、そのような不一致をクリーンアップします。"
 
 #: ../../document.rst:1618 13500ba88e564a66bfc44eaa9ee45aee
 msgid "New in v1.19.5"
@@ -4477,7 +4477,7 @@ msgstr "v1.19.5 で新規"
 msgid ""
 "PDF Only: Make *target* xref an exact copy of *source*. If *source* is a "
 ":data:`stream`, then these data are also copied."
-msgstr "⚠️PDF のみ: *ターゲット* の xref をソースの正確なコピーにします。*ソース* がストリームの場合、これらのデータもコピーされます。"
+msgstr "PDF のみ: *ターゲット* の xref をソースの正確なコピーにします。*ソース* が :data:`stream` の場合、これらのデータもコピーされます。"
 
 #: ../../document.rst:1622 317b34a84ed344a58bd865b88f4be098
 msgid "the source :data:`xref`. It must be an existing **dictionary** object."
@@ -4488,7 +4488,7 @@ msgid ""
 "the target xref. Must be an existing **dictionary** object. If the xref "
 "has just been created, make sure to initialize it as a PDF dictionary "
 "with the minimum specification `<<>>`."
-msgstr "⚠️ターゲットの xref。既存の **辞書** オブジェクトである必要があります。xref が新たに作成されたばかりの場合、最小仕様を持つ PDF 辞書として初期化することを確認してください。"
+msgstr "ターゲットの xref。既存の **辞書** オブジェクトである必要があります。xref が新たに作成されたばかりの場合、最小仕様 ``<<>>`` を持つ PDF 辞書として初期化することを確認してください。"
 
 #: ../../document.rst:1624 935caeb4f7d6423ba1d460928c93f674
 msgid ""
@@ -4524,7 +4524,7 @@ msgid ""
 "using redaction annotations. Example scripts can be seen `here "
 "<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples"
 "/replace-image>`_."
-msgstr "⚠️典型的な使用例は、赤塗り注釈を使用せずに既存の画像を置き換えたり削除したりすることです。例のスクリプトはこちらで確認できます。"
+msgstr "典型的な使用例は、赤塗り注釈を使用せずに既存の画像を置き換えたり削除したりすることです。例のスクリプトは `こちら <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_ で確認できます。"
 
 #: ../../document.rst:1636 868e2b0a2df64a33aeae1bf96ef972ba
 msgid ""
@@ -4587,13 +4587,13 @@ msgstr "*cs-name* (*str*) 画像のカラースペースの名前"
 msgid ""
 "*xres* (*int*) resolution in x direction. Please also see "
 ":data:`resolution`."
-msgstr "⚠️*xres* (*int*) x 方向の解像度。解像度も参照してください。"
+msgstr "*xres* (*int*) x 方向の解像度。:data:`resolution` も参照してください。"
 
 #: ../../document.rst:1650 2a78e644b9ca47d68bbdd756e59f89b5
 msgid ""
 "*yres* (*int*) resolution in y direction. Please also see "
 ":data:`resolution`."
-msgstr "⚠️*yres* (*int*) y 方向の解像度。解像度も参照してください。"
+msgstr "*yres* (*int*) y 方向の解像度。:data:`resolution` も参照してください。"
 
 #: ../../document.rst:1651 e50644e40cdb4991b631502e0b2b5a44
 msgid "*image* (*bytes*) image data, usable as image file content"
@@ -4608,7 +4608,7 @@ msgid ""
 "disk storage for extracted images, **(4)** returns `None` in error cases "
 "(generates no exception). Look at the following example images within the"
 " same PDF."
-msgstr "*pix = fitz.Pixmap(doc, xref)* *に続いてpix.tobytes()* という機能的な重複があります。主な違いは、extract_imageは、**(1)**必ずしもPNG画像形式を提供しない、 **(2)** PNG以外の画像では非常に高速である、 **(3)** 抽出された画像のディスクストレージが通常ははるかに少ない、 **(4)** エラーケースでは `None` を返す（例外を生成しない）という点です。同じPDF内の以下の例の画像を見てみましょう。"
+msgstr "*pix = fitz.Pixmap(doc, xref)* *に続いてpix.tobytes()* という機能的な重複があります。主な違いは、extract_imageは、**(1)** 必ずしもPNG画像形式を提供しない、 **(2)** PNG以外の画像では非常に高速である、 **(3)** 抽出された画像のディスクストレージが通常ははるかに少ない、 **(4)** エラーケースでは `None` を返す（例外を生成しない）という点です。同じPDF内の以下の例の画像を見てみましょう。"
 
 #: ../../document.rst:1665 d17ec3782a864512a80c25396431bfbc
 msgid "xref 1268 is a PNG -- Comparable execution time and identical output::"
@@ -5174,7 +5174,7 @@ msgid ""
 "counts, tables of content and the like. Remember to keep such variables "
 "up to date or delete orphaned objects. Also refer to "
 ":ref:`ReferenialIntegrity`."
-msgstr "⚠️PDFの構造を変更するメソッド (:meth:`insert_pdf`、:meth:`select`、:meth:`copy_page`、:meth:`delete_page` など）を使用する場合、プログラム内のオブジェクトやプロパティが無効化されたり孤立したりする可能性があることに注意してください。これには :ref:`Page` オブジェクトとその子要素（リンク、注釈、ウィジェット）、古いページ数を保持する変数、目次などが含まれます。このような変数を最新の情報に保つか、孤立したオブジェクトを削除することを忘れないでください。重要なオブジェクトの整合性を確保するためのPyMuPDFのガイドも参照してください。"
+msgstr "PDFの構造を変更するメソッド (:meth:`insert_pdf`、:meth:`select`、:meth:`copy_page`、:meth:`delete_page` など）を使用する場合、プログラム内のオブジェクトやプロパティが無効化されたり孤立したりする可能性があることに注意してください。これには :ref:`Page` オブジェクトとその子要素（リンク、注釈、ウィジェット）、古いページ数を保持する変数、目次などが含まれます。このような変数を最新の情報に保つか、孤立したオブジェクトを削除することを忘れないでください。:ref:`ReferenialIntegrity` も参照してください。"
 
 #: ../../document.rst:2004 c65a795d813749749b1842e1c36f21e7
 msgid ":meth:`set_metadata` Example"

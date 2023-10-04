@@ -155,7 +155,7 @@ msgstr ""
 
 #: ../../linkdest.rst:29 4aa3d018208d4b919bf8b85a64ade50f
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI**"
 
 #: ../../linkdest.rst:35 63e2effbad754723920821ff5029b731
 msgid ""
@@ -193,7 +193,7 @@ msgid ""
 " such that e.g. :attr:`linkDest.lt` and :attr:`linkDest.rb` can be "
 "treated as defining a bounding box. But the flags indicate which of the "
 "values were actually specified, see :ref:`linkDest Flags`."
-msgstr "⚠️宛先のさまざまな側面の有効性と意味を説明するビットフィールド。できる限り、リンクの宛先は、:attr:`linkDest.lt` と :attr:`linkDest.rb` をバウンディングボックスを定義するものとして扱えるように構築されています。ただし、フラグは、値のうち実際に指定されたものを示します。リンクの宛先フラグを参照してください。"
+msgstr "宛先のさまざまな側面の有効性と意味を説明するビットフィールド。できる限り、リンクの宛先は、:attr:`linkDest.lt` と :attr:`linkDest.rb` をバウンディングボックスを定義するものとして扱えるように構築されています。ただし、フラグは、値のうち実際に指定されたものを示します。:ref:`linkDest Flags` を参照してください。"
 
 #: ../../linkdest.rst:49 ../../linkdest.rst:67 ../../linkdest.rst:91
 #: 3841d03f04c1439eb483fda7c940c2e6 91db57c71a6446e0a4bf8c449b49a549
@@ -266,4 +266,5 @@ msgstr "この宛先が指すURIの名前。"
 #: ../../footer.rst:-1 d44897efc00a4962be0927846f704668
 msgid "Discord logo"
 msgstr ""
+
 
