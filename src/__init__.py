@@ -5040,6 +5040,20 @@ class Document:
         pno = page.number  # save the page number
         for k, v in page._annot_refs.items():  # save the annot dictionary
             old_annots[k] = v
+        
+        # We need to set `page.this` to `None` here in order to force the
+        # `mupdf::FzPage` to be removed from the MuPDF document's internal
+        # list, so that when `self.load_page()` is called below, its call of
+        # `fz_load_page()` will create a new `mupdf::FzPage`.
+        #
+        # This only works if the MuPDF `fz_page`'s reference count is 1. User
+        # code will have to work fairly hard to break this, by somehow making
+        # a copy of the mupdf::FzPage itself; for example making a copy in
+        # Python will usually create a new Python object that refers to the
+        # same mupdf::FzPage and this not increment the MuPDF reference count.
+        #
+        assert page.this.m_internal.refs == 1
+        page.this = None
         page._erase()  # remove the page
         page = None
         TOOLS.store_shrink(100)
