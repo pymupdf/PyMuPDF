@@ -55,9 +55,12 @@ import typing
 import warnings
 import weakref
 import zipfile
+import string
 
 from . import extra
 
+# PDF names must not contain these characters:
+INVALID_NAME_CHARS = set(string.whitespace + "()<>[]{}/%" + chr(0))
 
 def get_env_bool( name, default):
     '''
@@ -8810,6 +8813,9 @@ class Page:
 
         if fontname.startswith("/"):
             fontname = fontname[1:]
+        inv_chars = INVALID_NAME_CHARS.intersection(fontname)
+        if inv_chars != set():
+            raise ValueError(f"bad fontname chars {inv_chars}")
 
         font = CheckFont(self, fontname)
         if font is not None:                    # font already in font list of page

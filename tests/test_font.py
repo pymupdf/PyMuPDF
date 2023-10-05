@@ -23,3 +23,17 @@ def test_font2():
     font = fitz.Font("helv")
     text = "PyMuPDF"
     assert font.text_length(text) == fitz.get_text_length(text)
+
+
+def test_fontname():
+    """Assert a valid PDF fontname."""
+    doc = fitz.open()
+    page = doc.new_page()
+    font = fitz.Font("helv")
+    assert page.insert_font(fontname="legal", fontbuffer=font.buffer)
+    detected = False  # preset indicator
+    try:
+        page.insert_font(fontname="illegal/char", fontbuffer=font.buffer)
+    except ValueError:
+        detected = True  # illegal fontname detected
+    assert detected
