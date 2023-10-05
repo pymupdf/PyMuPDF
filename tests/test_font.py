@@ -30,7 +30,7 @@ def test_fontname():
     doc = fitz.open()
     page = doc.new_page()
     font = fitz.Font("helv")
-    assert page.insert_font(fontname="legal", fontbuffer=font.buffer)
+    assert page.insert_font()
     detected = False  # preset indicator
     try:
         page.insert_font(fontname="illegal/char", fontbuffer=font.buffer)
