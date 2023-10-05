@@ -1659,7 +1659,7 @@ static pdf_obj *lll_JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, cons
     }
 
     fz_catch(ctx) {
-        fz_rethrow(ctx);
+        mupdf::internal_throw_exception(ctx);
     }
 
     return result;
@@ -3744,7 +3744,7 @@ fz_stext_page* page_get_textpage(
         fz_drop_device(ctx, dev);
     }
     fz_catch(ctx) {
-        return NULL;
+        mupdf::internal_throw_exception(ctx);
     }
     return tpage;
 }
@@ -3965,7 +3965,7 @@ JM_new_buffer_from_stext_page(fz_stext_page *page)
     }
     fz_catch(ctx) {
         fz_drop_buffer(ctx, buf);
-        fz_rethrow(ctx);
+        mupdf::internal_throw_exception(ctx);
     }
     return buf;
 }
@@ -4209,7 +4209,7 @@ no_more_matches:;
     fz_always(ctx)
         fz_drop_buffer(ctx, buffer);
     fz_catch(ctx)
-        fz_rethrow(ctx);
+        mupdf::internal_throw_exception(ctx);
 
     return quads;
 }
