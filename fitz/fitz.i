@@ -309,6 +309,10 @@ import re
 import tarfile
 import zipfile
 import pathlib
+import string
+
+# PDF names must not contain these characters:
+INVALID_NAME_CHARS = set(string.whitespace + "()<>[]{}/%" + chr(0))
 
 TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -7372,6 +7376,9 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
 
     if fontname.startswith("/"):
         fontname = fontname[1:]
+    inv_chars = INVALID_NAME_CHARS.intersection(fontname)
+    if inv_chars != set():
+        raise ValueError(f"bad fontname chars {inv_chars}")
 
     font = CheckFont(self, fontname)
     if font is not None:                    # font already in font list of page
