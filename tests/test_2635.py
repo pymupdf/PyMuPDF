@@ -1,3 +1,6 @@
+import fitz
+
+
 def test_2635():
     """Rendering a page before and after cleaning it should yield the same pixmap."""
     doc = fitz.open(f"{scriptdir}/resources/test_2635.pdf")
