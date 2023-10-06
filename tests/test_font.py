@@ -29,11 +29,11 @@ def test_fontname():
     """Assert a valid PDF fontname."""
     doc = fitz.open()
     page = doc.new_page()
-    font = fitz.Font("helv")
     assert page.insert_font()
     detected = False  # preset indicator
     try:
-        page.insert_font(fontname="illegal/char", fontbuffer=font.buffer)
-    except ValueError:
-        detected = True  # illegal fontname detected
+        page.insert_font(fontname="illegal/char", fontbuffer=b"unimportant")
+    except ValueError as e:
+        if str(e).startswith("bad fontname chars"):
+            detected = True  # illegal fontname detected
     assert detected
