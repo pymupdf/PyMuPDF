@@ -815,7 +815,7 @@ struct Document
 
 
         FITZEXCEPTION(xref_set_key, !result)
-        %pythonprepend %{
+        %pythonprepend xref_set_key %{
         """Set the value of a PDF dictionary key."""
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
