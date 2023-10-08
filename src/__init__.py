@@ -5670,12 +5670,14 @@ class Document:
         """Set the value of a PDF dictionary key."""
         if self.is_closed:
             raise ValueError("document closed")
+
+        if not key or not isinstance(key, str) or INVALID_NAME_CHARS.intersection(key) not in (set(), {"/"}):
+            raise ValueError("bad 'key'")
+        if not isinstance(value, str) or not value or value[0] == "/" and INVALID_NAME_CHARS.intersection(value[1:]) != set():
+            raise ValueError("bad 'value'")
+
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
-        if not key:
-            raise ValueError( "bad 'key'")
-        if not value:
-            raise ValueError( "bad 'value'")
         xreflen = mupdf.pdf_xref_len(pdf)
         #if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
         #    THROWMSG("bad xref")

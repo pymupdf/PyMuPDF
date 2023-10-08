@@ -815,7 +815,15 @@ struct Document
 
 
         FITZEXCEPTION(xref_set_key, !result)
-        CLOSECHECK0(xref_set_key, """Set the value of a PDF dictionary key.""")
+        %pythonprepend %{
+        """Set the value of a PDF dictionary key."""
+        if self.is_closed or self.is_encrypted:
+            raise ValueError("document closed or encrypted")
+        if not key or not isinstance(key, str) or INVALID_NAME_CHARS.intersection(key) not in (set(), {"/"}):
+            raise ValueError("bad 'key'")
+        if not isinstance(value, str) or not value or value[0] == "/" and INVALID_NAME_CHARS.intersection(value[1:]) != set():
+            raise ValueError("bad 'value'")
+        %}
         PyObject *
         xref_set_key(int xref, const char *key, char *value)
         {
