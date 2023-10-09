@@ -57,99 +57,102 @@ class WindowsVS:
                 if value is not None:
                     _log(f'Setting {name} from environment variable {name2}: {value!r}')
             return value
-        year = default(year, 'year')
-        grade = default(grade, 'grade')
-        version = default(version, 'version')
+        try:
+            year = default(year, 'year')
+            grade = default(grade, 'grade')
+            version = default(version, 'version')
 
-        if not cpu:
-            cpu = WindowsCpu()
+            if not cpu:
+                cpu = WindowsCpu()
 
-        # Find `directory`.
-        #
-        pattern = f'C:\\Program Files*\\Microsoft Visual Studio\\{year if year else "2*"}\\{grade if grade else "*"}'
-        directories = glob.glob( pattern)
-        if verbose:
-            _log( f'Matches for: {pattern=}')
-            _log( f'{directories=}')
-        assert directories, f'No match found for: {pattern}'
-        directories.sort()
-        directory = directories[-1]
+            # Find `directory`.
+            #
+            pattern = f'C:\\Program Files*\\Microsoft Visual Studio\\{year if year else "2*"}\\{grade if grade else "*"}'
+            directories = glob.glob( pattern)
+            if verbose:
+                _log( f'Matches for: {pattern=}')
+                _log( f'{directories=}')
+            assert directories, f'No match found for: {pattern}'
+            directories.sort()
+            directory = directories[-1]
 
-        # Find `devenv`.
-        #
-        devenv = f'{directory}\\Common7\\IDE\\devenv.com'
-        assert os.path.isfile( devenv), f'Does not exist: {devenv}'
+            # Find `devenv`.
+            #
+            devenv = f'{directory}\\Common7\\IDE\\devenv.com'
+            assert os.path.isfile( devenv), f'Does not exist: {devenv}'
 
-        # Extract `year` and `grade` from `directory`.
-        #
-        # We use r'...' for regex strings because an extra level of escaping is
-        # required for backslashes.
-        #
-        regex = rf'^C:\\Program Files.*\\Microsoft Visual Studio\\([^\\]+)\\([^\\]+)'
-        m = re.match( regex, directory)
-        assert m, f'No match: {regex=} {directory=}'
-        year2 = m.group(1)
-        grade2 = m.group(2)
-        if year:
-            assert year2 == year
-        else:
-            year = year2
-        if grade:
-            assert grade2 == grade
-        else:
-            grade = grade2
+            # Extract `year` and `grade` from `directory`.
+            #
+            # We use r'...' for regex strings because an extra level of escaping is
+            # required for backslashes.
+            #
+            regex = rf'^C:\\Program Files.*\\Microsoft Visual Studio\\([^\\]+)\\([^\\]+)'
+            m = re.match( regex, directory)
+            assert m, f'No match: {regex=} {directory=}'
+            year2 = m.group(1)
+            grade2 = m.group(2)
+            if year:
+                assert year2 == year
+            else:
+                year = year2
+            if grade:
+                assert grade2 == grade
+            else:
+                grade = grade2
 
-        # Find vcvars.bat.
-        #
-        vcvars = f'{directory}\\VC\Auxiliary\\Build\\vcvars{cpu.bits}.bat'
-        assert os.path.isfile( vcvars), f'No match for: {vcvars}'
+            # Find vcvars.bat.
+            #
+            vcvars = f'{directory}\\VC\\Auxiliary\\Build\\vcvars{cpu.bits}.bat'
+            assert os.path.isfile( vcvars), f'No match for: {vcvars}'
 
-        # Find cl.exe.
-        #
-        cl_pattern = f'{directory}\\VC\\Tools\\MSVC\\{version if version else "*"}\\bin\\Host{cpu.windows_name}\\{cpu.windows_name}\\cl.exe'
-        cl_s = glob.glob( cl_pattern)
-        assert cl_s, f'No match for: {cl_pattern}'
-        cl_s.sort()
-        cl = cl_s[ -1]
+            # Find cl.exe.
+            #
+            cl_pattern = f'{directory}\\VC\\Tools\\MSVC\\{version if version else "*"}\\bin\\Host{cpu.windows_name}\\{cpu.windows_name}\\cl.exe'
+            cl_s = glob.glob( cl_pattern)
+            assert cl_s, f'No match for: {cl_pattern}'
+            cl_s.sort()
+            cl = cl_s[ -1]
 
-        # Extract `version` from cl.exe's path.
-        #
-        m = re.search( rf'\\VC\\Tools\\MSVC\\([^\\]+)\\bin\\Host{cpu.windows_name}\\{cpu.windows_name}\\cl.exe$', cl)
-        assert m
-        version2 = m.group(1)
-        if version:
-            assert version2 == version
-        else:
-            version = version2
-        assert version
+            # Extract `version` from cl.exe's path.
+            #
+            m = re.search( rf'\\VC\\Tools\\MSVC\\([^\\]+)\\bin\\Host{cpu.windows_name}\\{cpu.windows_name}\\cl.exe$', cl)
+            assert m
+            version2 = m.group(1)
+            if version:
+                assert version2 == version
+            else:
+                version = version2
+            assert version
 
-        # Find link.exe.
-        #
-        link_pattern = f'{directory}\\VC\\Tools\\MSVC\\{version}\\bin\\Host{cpu.windows_name}\\{cpu.windows_name}\\link.exe'
-        link_s = glob.glob( link_pattern)
-        assert link_s, f'No match for: {link_pattern}'
-        link_s.sort()
-        link = link_s[ -1]
+            # Find link.exe.
+            #
+            link_pattern = f'{directory}\\VC\\Tools\\MSVC\\{version}\\bin\\Host{cpu.windows_name}\\{cpu.windows_name}\\link.exe'
+            link_s = glob.glob( link_pattern)
+            assert link_s, f'No match for: {link_pattern}'
+            link_s.sort()
+            link = link_s[ -1]
 
-        # Find csc.exe.
-        #
-        csc = None
-        for dirpath, dirnames, filenames in os.walk(directory):
-            for filename in filenames:
-                if filename == 'csc.exe':
-                    csc = os.path.join(dirpath, filename)
-                    #_log(f'{csc=}')
-                    #break
+            # Find csc.exe.
+            #
+            csc = None
+            for dirpath, dirnames, filenames in os.walk(directory):
+                for filename in filenames:
+                    if filename == 'csc.exe':
+                        csc = os.path.join(dirpath, filename)
+                        #_log(f'{csc=}')
+                        #break
 
-        self.cl = cl
-        self.devenv = devenv
-        self.directory = directory
-        self.grade = grade
-        self.link = link
-        self.csc = csc
-        self.vcvars = vcvars
-        self.version = version
-        self.year = year
+            self.cl = cl
+            self.devenv = devenv
+            self.directory = directory
+            self.grade = grade
+            self.link = link
+            self.csc = csc
+            self.vcvars = vcvars
+            self.version = version
+            self.year = year
+        except Exception as e:
+            raise Exception( f'Unable to find Visual Studio') from e
 
     def description_ml( self, indent=''):
         '''
@@ -234,7 +237,7 @@ class WindowsPython:
     installations.
     '''
 
-    def __init__( self, cpu=None, version=None, verbose=False):
+    def __init__( self, cpu=None, version=None, verbose=True):
         '''
         Args:
 
@@ -251,6 +254,7 @@ class WindowsPython:
             cpu = WindowsCpu(_cpu_name())
         if version is None:
             version = '.'.join(platform.python_version().split('.')[:2])
+        _log(f'Looking for Python {version=} {cpu.bits=}.')
         command = 'py -0p'
         if verbose:
             _log(f'Running: {command}')
@@ -266,7 +270,7 @@ class WindowsPython:
             bits = 32 if m.group(2) else 64
             current = m.group(3)
             if verbose:
-                _log( f'{version2=} {bits=}')
+                _log( f'{version2=} {bits=} from {line=}.')
             if bits != cpu.bits or version2 != version:
                 continue
             path = m.group(4).strip()
@@ -288,7 +292,9 @@ class WindowsPython:
             #_log( f'pipcl.py:WindowsPython():\n{self.description_ml("    ")}')
             return
 
-        raise Exception( f'Failed to find python matching cpu={cpu}. Run "py -0p" to see available pythons')
+        _log(f'Failed to find python matching cpu={cpu}.')
+        _log(f'Output from {command!r} was:\n{text}')
+        raise Exception( f'Failed to find python matching cpu={cpu}.')
 
     def description_ml(self, indent=''):
         ret = textwrap.dedent(f'''
