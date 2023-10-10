@@ -164,6 +164,7 @@ def build( platform_=None):
     inputs_wheels_macos_auto = get_bool('inputs_wheels_macos_auto', inputs_wheels_default)
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
+    inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
@@ -176,6 +177,7 @@ def build( platform_=None):
     log( f'{inputs_wheels_macos_auto=}')
     log( f'{inputs_wheels_windows_auto=}')
     log( f'{inputs_wheels_cps=}')
+    log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
     
     # Build Pyodide wheel if specified.
     #
@@ -267,6 +269,11 @@ def build( platform_=None):
     env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', 'ab', pass_=1)
     if inputs_skeleton:
         env_set('PYMUPDF_SETUP_SKELETON', inputs_skeleton, pass_=1)
+    
+    if inputs_PYMUPDF_SETUP_MUPDF_BUILD not in ('-', None):
+        log(f'Setting PYMUPDF_SETUP_MUPDF_BUILD to {inputs_PYMUPDF_SETUP_MUPDF_BUILD!r}.')
+        env_set('PYMUPDF_SETUP_MUPDF_BUILD', inputs_PYMUPDF_SETUP_MUPDF_BUILD, pass_=True)
+        env_set('PYMUPDF_SETUP_MUPDF_TGZ', '', pass_=True)   # Don't put mupdf in sdist.
     
     def set_cibuild_test():
         log( f'set_cibuild_test(): {inputs_skeleton=}')
