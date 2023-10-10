@@ -9,6 +9,9 @@ def test_2548():
 
     Old MuPDF version did not detect the loop.
     """
+    if fitz.mupdf_version_tuple < (1, 23, 4):
+        print(f'Not testing #2548 because infinite hang before mupdf-1.23.4.')
+        return
     doc = fitz.open(f'{root}/tests/resources/test_2548.pdf')
     e = False
     for page in doc:
