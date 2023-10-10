@@ -385,7 +385,9 @@ class Package:
             fn_sdist:
                 A function taking no args, or a single `config_settings` dict
                 arg (as described in PEP517), that returns a list of paths for
-                files that should be copied into the sdist.
+                files that should be copied into the sdist. Each item in the
+                list can also be a tuple `(from_, to_)`, where `from_` is the
+                path of a file and `to_` is its name within the sdist.
                 
                 Relative paths are interpreted as relative to `root`. It is an
                 error if a path does not exist or is not a file.
@@ -654,12 +656,12 @@ class Package:
                 )
         if formats and formats != 'gztar':
             raise Exception( f'Unsupported: formats={formats}')
-        paths = []
+        items = list()
         if self.fn_sdist:
             if inspect.signature(self.fn_sdist).parameters:
-                paths = self.fn_sdist(config_settings)
+                items = self.fn_sdist(config_settings)
             else:
-                paths = self.fn_sdist()
+                items = self.fn_sdist()
 
         manifest = []
         names_in_tar = []
@@ -693,19 +695,17 @@ class Package:
         log2(f'Creating sdist: {tarpath}')
         with tarfile.open(tarpath, 'w:gz') as tar:
             found_pyproject_toml = False
-            for path in paths:
-                path_abs, path_rel = self._path_relative_to_root( path)
-                if path_abs.startswith(f'{os.path.abspath(sdist_directory)}/'):
+            for item in items:
+                (from_abs, from_rel), (to_abs, to_rel) = self._fromto(item)
+                if from_abs.startswith(f'{os.path.abspath(sdist_directory)}/'):
                     # Source files should not be inside <sdist_directory>.
-                    assert 0, f'Path is inside sdist_directory={sdist_directory}: {path_abs!r}'
-                if not os.path.exists(path_abs):
-                    assert 0, f'Path does not exist: {path_abs!r}'
-                if not os.path.isfile(path_abs):
-                    assert 0, f'Path is not a file: {path_abs!r}'
-                if path_rel == 'pyproject.toml':
+                    assert 0, f'Path is inside sdist_directory={sdist_directory}: {from_abs!r}'
+                assert os.path.exists(from_abs), f'Path does not exist: {from_abs!r}'
+                assert os.path.isfile(from_abs), f'Path is not a file: {from_abs!r}'
+                if to_rel == 'pyproject.toml':
                     found_pyproject_toml = True
-                add_file( tar, path_abs, path_rel)
-                manifest.append(path_rel)
+                add_file( tar, from_abs, to_rel)
+                manifest.append(to_rel)
             if not found_pyproject_toml:
                 log0(f'Warning: no pyproject.toml specified.')
             
@@ -1667,6 +1667,7 @@ def git_items( directory, submodules=False):
     command = 'cd ' + directory + ' && git ls-files'
     if submodules:
         command += ' --recurse-submodules'
+    log1(f'Running {command=}')
     text = subprocess.check_output( command, shell=True)
     ret = []
     for path in text.decode('utf8').strip().split( '\n'):
@@ -2106,7 +2107,7 @@ def verbose(level=None):
     return g_verbose
 
 def log0(text=''):
-        _log(text, 1)
+        _log(text, 0)
 
 def log1(text=''):
         _log(text, 1)
