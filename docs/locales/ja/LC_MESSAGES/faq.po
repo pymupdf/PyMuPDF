@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,23 +19,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../faq.rst:7 a2c079c75e8e4a6bb6670f56cde86a8f
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../faq.rst:7 68f6c0d5735b422d8ec425f9cb3b9fbc
 msgid "FAQ"
 msgstr ""
 
-#: ../../faq.rst:9 a911f25e964b4911bbf883f91a639957
+#: ../../faq.rst:9 a7e10c9d55e643c9afbc404af8489618
 msgid "A collection of recipes in “How-To” format for using PyMuPDF."
 msgstr ""
 
-#: ../../faq.rst:12 77d8256a7d8048bb9a4744a5fd5fa257
+#: ../../faq.rst:12 f6835e82266045e1b1670778077bb548
 msgid "Please see:"
 msgstr ""
 
-#: ../../faq.rst:14 abc472cfb78943f3a2b4c25b00006484
+#: ../../faq.rst:14 57f0920fd50c4d4992f49eb1f21ffd4f
 msgid ":ref:`Recipes: Table of Contents<RecipesTOC>`"
 msgstr ""
 
-#: ../../footer.rst:-1 a7209ac7203b46ac8266860e7ec51e12
+#: ../../footer.rst:-1 7f39de2799ea44f69d956eea34449ce0
 msgid "Discord logo"
 msgstr ""
+
 

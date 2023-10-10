@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,28 +19,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../app3.rst:7 33ca195713624e268960b866532abe1b
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../app3.rst:7 ecdf799c07974ac7bff597d360673f13
 msgid "Appendix 3: Assorted Technical Information"
 msgstr "付録3：さまざまな技術情報"
 
-#: ../../app3.rst:8 5d7604936669477a8543dc05f394f711
+#: ../../app3.rst:8 5574cf259ccb4b518de8112ca20551bc
 msgid ""
 "This section deals with various technical topics, that are not "
 "necessarily related to each other."
 msgstr "このセクションでは、必ずしも関連しないさまざまな技術的なトピックについて取り扱います。"
 
-#: ../../app3.rst:15 698afd719d9248b68cc78d0c514331a3
+#: ../../app3.rst:15 b090e2b14a084d2499132cd71d8ec68b
 msgid "Image Transformation Matrix"
 msgstr "画像変換行列"
 
-#: ../../app3.rst:16 8f461cbb3aee4833a1c77838562def55
+#: ../../app3.rst:16 146f333309b44549a3b4c67cae91cbf1
 msgid ""
 "Starting with version 1.18.11, the image transformation matrix is "
 "returned by some methods for text and image extraction: "
 ":meth:`Page.get_text` and :meth:`Page.get_image_bbox`."
-msgstr "バージョン1.18.11から、テキストと画像の抽出に関する一部のメソッドで画像変換行列が返されます：:meth:`Page.get_text` および :meth:`Page.get_image_bbox` 。"
+msgstr ""
+"バージョン1.18.11から、テキストと画像の抽出に関する一部のメソッドで画像変換行列が返されます：:meth:`Page.get_text` "
+"および :meth:`Page.get_image_bbox` 。"
 
-#: ../../app3.rst:18 4656e953d5f9422bae9cb2df769dad1c
+#: ../../app3.rst:18 8bc552fda7214f2ba8b67d4f54a262ab
 msgid ""
 "The transformation matrix contains information about how an image was "
 "transformed to fit into the rectangle (its \"boundary box\" = \"bbox\") "
@@ -49,60 +63,65 @@ msgid ""
 "displayed scaled or rotated on a page."
 msgstr "変換行列には、画像が文書ページ上の矩形（「境界ボックス」=「bbox」）に適合するためにどのように変換されたかに関する情報が含まれています。ページ上の画像のbboxとこの行列を検査することにより、例えば画像がページ上で拡大縮小または回転して表示されるかどうか、そしてどのように表示されるかを判断することができます。"
 
-#: ../../app3.rst:20 aa05b1468af44158ad2cac26b679a64b
+#: ../../app3.rst:20 9d64c6d7e8094240badac4e38229ba87
 msgid ""
 "The relationship between image dimension and its bbox on a page is the "
 "following:"
 msgstr "画像の寸法とページ上のbboxとの関係は次のとおりです："
 
-#: ../../app3.rst:24 505829211c4241ed8436e7702ecb4e35
+#: ../../app3.rst:24 0a5a2a34387b4141afb8444b007967ca
 msgid "Using the original image's width and height,"
 msgstr "元の画像の幅と高さを使用して、"
 
-#: ../../app3.rst:23 afc6aa25316a4306beacbffe6a3a3b08
+#: ../../app3.rst:23 20caa0adb1ee4a84964257d8c439ed78
 msgid "define the image rectangle `imgrect = fitz.Rect(0, 0, width, height)`"
 msgstr "画像の矩形を `imgrect = fitz.Rect(0, 0, width, height)` と定義します。"
 
-#: ../../app3.rst:24 fe58a6e0cbec47918714a20520c60e34
+#: ../../app3.rst:24 4faaa7b1550b4e548a3473e71e0fa748
 msgid ""
 "define the \"shrink matrix\" `shrink = fitz.Matrix(1/width, 0, 0, "
 "1/height, 0, 0)`."
 msgstr "「縮小行列」を `shrink = fitz.Matrix(1/width, 0, 0,1/height, 0, 0)` と定義します。"
 
-#: ../../app3.rst:26 70023984ad2c492ab9233234842f8a72
+#: ../../app3.rst:26 f601575f7a484295af3654b08a83a036
 msgid ""
 "Transforming the image rectangle with its shrink matrix, will result in "
 "the unit rectangle: `imgrect * shrink = fitz.Rect(0, 0, 1, 1)`."
 msgstr "画像矩形を縮小行列で変換すると、単位矩形が得られます： `imgrect * shrink = fitz.Rect(0, 0, 1, 1)` 。"
 
-#: ../../app3.rst:28 fec6c51054574cf8940a81ebe75a306e
+#: ../../app3.rst:28 146bb372336e49ee8c1ad75532ba8fd3
 msgid ""
 "Using the image **transformation matrix** \"transform\", the following "
 "steps will compute the bbox::"
 msgstr "画像 **変換行列** 「transform」を使用して、次の手順でbboxを計算します："
 
-#: ../../app3.rst:34 3c5328ada81748fa84ad503f7204eef5
+#: ../../app3.rst:34 204dd64663994a9e8c8ae7113f9f58a7
 msgid ""
 "Inspecting the matrix product `shrink * transform` will reveal all "
 "information about what happened to the image rectangle to make it fit "
 "into the bbox on the page: rotation, scaling of its sides and translation"
 " of its origin. Let us look at an example:"
-msgstr "行列の積 `shrink * transform` を検査することで、画像矩形がページ上のbboxに適合させるために何が起こったかに関するすべての情報が明らかになります。回転、辺のスケーリング、および原点の移動です。例を見てみましょう："
+msgstr ""
+"行列の積 `shrink * transform` "
+"を検査することで、画像矩形がページ上のbboxに適合させるために何が起こったかに関するすべての情報が明らかになります。回転、辺のスケーリング、および原点の移動です。例を見てみましょう："
 
-#: ../../app3.rst:71 93862911aecc440b8d4589ed6e08db50
+#: ../../app3.rst:71 a81a449305f04ac69a3aae360e4a61bf
 msgid "PDF Base 14 Fonts"
 msgstr "PDFベース14フォント"
 
-#: ../../app3.rst:72 5744a4d4df564eec89a75c6014847444
+#: ../../app3.rst:72 0491a08fbda94d508af8de05fd613ac7
 msgid ""
 "The following 14 builtin font names **must be supported by every PDF "
 "viewer** application. They are available as a dictionary, which maps "
 "their full names amd their abbreviations in lower case to the full font "
 "basename. Wherever a **fontname** must be provided in PyMuPDF, any **key "
 "or value** from the dictionary may be used::"
-msgstr "以下の14の組み込みフォント名は、**すべてのPDFビューアアプリケーションでサポートされる必要があります** 。これらは辞書として利用可能で、それぞれのフルネームとその略称を小文字で完全な **フォントベース名** にマッピングします。PyMuPDFでフォント名を提供する必要がある場合、辞書からの任意の **キーまたは値** を使用できます："
+msgstr ""
+"以下の14の組み込みフォント名は、**すべてのPDFビューアアプリケーションでサポートされる必要があります** "
+"。これらは辞書として利用可能で、それぞれのフルネームとその略称を小文字で完全な **フォントベース名** "
+"にマッピングします。PyMuPDFでフォント名を提供する必要がある場合、辞書からの任意の **キーまたは値** を使用できます："
 
-#: ../../app3.rst:105 db63a3bf8973449aacedd81967a27fb4
+#: ../../app3.rst:105 e1fe9345468049d9bb9013a96232f3e6
 msgid ""
 "In contrast to their obligation, not all PDF viewers support these fonts "
 "correctly and completely -- this is especially true for Symbol and "
@@ -110,25 +129,30 @@ msgid ""
 "reader."
 msgstr "義務とは対照的に、すべてのPDFビューアがこれらのフォントを正確かつ完全にサポートしているわけではありません。特にSymbolとZapfDingbatsについては、これが特に当てはまります。また、グリフ（視覚的な）イメージは、それぞれの閲覧者に固有のものになります。"
 
-#: ../../app3.rst:107 40ff17b9c8784851aa9555bb17cd018f
+#: ../../app3.rst:107 4e3f1820c7074a1188db4090817326ef
 msgid ""
 "To see how these fonts can be used -- including the **CJK built-in** "
 "fonts -- look at the table in :meth:`Page.insert_font`."
-msgstr "これらのフォントがどのように使用されるか（ **CJK組み込みフォント** も含めて）、:meth:`Page.insert_font` のテーブルをご覧ください。"
+msgstr ""
+"これらのフォントがどのように使用されるか（ **CJK組み込みフォント** も含めて）、:meth:`Page.insert_font` "
+"のテーブルをご覧ください。"
 
-#: ../../app3.rst:114 96a83114ee56481ca444d925db24309b
+#: ../../app3.rst:114 15423143db6e4596a3e0edf50186a423
 msgid "Adobe PDF References"
 msgstr "Adobe PDFリファレンス"
 
-#: ../../app3.rst:116 c5fb37f607b2467ca7af74b66883ab82
+#: ../../app3.rst:116 b5dcb474bca6459da61e5fb6073ed03a
 msgid ""
 "This PDF Reference manual published by Adobe is frequently quoted "
 "throughout this documentation. It can be viewed and downloaded from `here"
 " <https://opensource.adobe.com/dc-acrobat-sdk-"
 "docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_."
-msgstr "Adobeによって公開されたこのPDFリファレンスマニュアルは、このドキュメンテーション全体で頻繁に引用されています。 `こちら <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_ から閲覧およびダウンロードが可能です。"
+msgstr ""
+"Adobeによって公開されたこのPDFリファレンスマニュアルは、このドキュメンテーション全体で頻繁に引用されています。 `こちら "
+"<https://opensource.adobe.com/dc-acrobat-sdk-"
+"docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_ から閲覧およびダウンロードが可能です。"
 
-#: ../../app3.rst:118 794622b3f36a4feca4fb8df3a088759a
+#: ../../app3.rst:118 c5a964c6c9dc4839a9379909c2a131a7
 msgid ""
 "For a long time, an older version was also available under `this "
 "<http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_"
@@ -136,95 +160,110 @@ msgid ""
 "(pre 1.19.*) versions of the PyMuPDF documentation used to refer to this "
 "document. We have undertaken an effort to replace referrals to the "
 "current specification above."
-msgstr "長い間、古いバージョンも `この <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_ リンクで利用可能でしたが、2021年10月にウェブサイトから取り下げられたようです。以前（1.19.*より前）のPyMuPDFドキュメンテーションはこの文書を参照していました。私たちは、上記の現行仕様への参照を置き換える取り組みを行っています。"
+msgstr ""
+"長い間、古いバージョンも `この "
+"<http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_"
+" "
+"リンクで利用可能でしたが、2021年10月にウェブサイトから取り下げられたようです。以前（1.19.*より前）のPyMuPDFドキュメンテーションはこの文書を参照していました。私たちは、上記の現行仕様への参照を置き換える取り組みを行っています。"
 
-#: ../../app3.rst:125 055579409da441d49688fb684c94a9df
+#: ../../app3.rst:125 c0bd19b0f9e3498891386351c0c97709
 msgid "Using Python Sequences as Arguments in PyMuPDF"
 msgstr "PythonシーケンスをPyMuPDFで引数として使用する場合"
 
-#: ../../app3.rst:126 33a686f0660f4a9d938fcdb81b0c2a12
+#: ../../app3.rst:126 857cd26fda4d47b8b4e40de8483fedde
 msgid ""
 "When PyMuPDF objects and methods require a Python **list** of numerical "
 "values, other Python **sequence types** are also allowed. Python classes "
 "are said to implement the **sequence protocol**, if they have a "
 "`__getitem__()` method."
-msgstr "PyMuPDFのオブジェクトとメソッドが数値の値のPython **リスト** を必要とする場合、他のPython **シーケンス型** も許可されています。Pythonのクラスは、`__getitem__()` メソッドを持つ場合、**シーケンスプロトコル** を実装していると言われています。"
+msgstr ""
+"PyMuPDFのオブジェクトとメソッドが数値の値のPython **リスト** を必要とする場合、他のPython **シーケンス型** "
+"も許可されています。Pythonのクラスは、`__getitem__()` メソッドを持つ場合、**シーケンスプロトコル** "
+"を実装していると言われています。"
 
-#: ../../app3.rst:128 cc28166fe51e43bd8dd4862353d2409d
+#: ../../app3.rst:128 e82e633879334749a585aa8383ef41a3
 msgid ""
 "This basically means, you can interchangeably use Python *list* or "
 "*tuple* or even *array.array*, *numpy.array* and *bytearray* types in "
 "these cases."
-msgstr "基本的には、これらの場合にPythonの *リスト* や *タプル* 、*array.array* 、*numpy.array* 、*bytearray* 型を互換性を持って使用できることを意味しています。"
+msgstr ""
+"基本的には、これらの場合にPythonの *リスト* や *タプル* 、*array.array* 、*numpy.array* "
+"、*bytearray* 型を互換性を持って使用できることを意味しています。"
 
-#: ../../app3.rst:130 16c32014c0364f25806837e9a7887b29
+#: ../../app3.rst:130 9c7aa5f0c11e4c888a3e86bbe4e2efed
 msgid "For example, specifying a sequence `\"s\"` in any of the following ways"
 msgstr "例えば、次のいずれかの方法でシーケンス `\"s\"` を指定すると"
 
-#: ../../app3.rst:132 92e35b08c8354a8589255be2c0632791
+#: ../../app3.rst:132 e1c380e6ebc74cc1b0e2e5b27af9611a
 msgid "`s = [1, 2]` -- a list"
 msgstr "`s = [1, 2]` – リスト"
 
-#: ../../app3.rst:133 fa714ca3b8a047d8b54ec3e9c30585be
+#: ../../app3.rst:133 874a727d4dab42b6b15dd87b815550c3
 msgid "`s = (1, 2)` -- a tuple"
 msgstr "`s = (1, 2)` – タプル"
 
-#: ../../app3.rst:134 3edaef312ee94cb6a28fdc690faccd6c
+#: ../../app3.rst:134 2c398217e57f4d569848cbde444abe18
 msgid "`s = array.array(\"i\", (1, 2))` -- an array.array"
 msgstr "`s = array.array(\"i\", (1, 2))`  – array.array"
 
-#: ../../app3.rst:135 0f216dc877794ec7ac6d87f489165244
+#: ../../app3.rst:135 54bc0b2b3c904d2e8ee80f13ff9b352b
 msgid "`s = numpy.array((1, 2))` -- a numpy array"
 msgstr "`s = numpy.array((1, 2))` – numpy配列"
 
-#: ../../app3.rst:136 217c10fe429b4a0db7aab1a6774bbfff
+#: ../../app3.rst:136 d8a903948344452f86f3fb8b181a6610
 msgid "`s = bytearray((1, 2))` -- a bytearray"
 msgstr "`s = bytearray((1, 2))` – bytearray"
 
-#: ../../app3.rst:138 0d35c5cad9a2496eb038df24e4f4dca2
+#: ../../app3.rst:138 45f20acd9066468c887d037475b81019
 msgid "will make it usable in the following example expressions:"
 msgstr "これによって、以下の例の式で使用可能になります："
 
-#: ../../app3.rst:140 8940895f973043ffbfb11116e4849eb8
+#: ../../app3.rst:140 b0f6d2f33b114fde9590fe3d30441bbd
 msgid "`fitz.Point(s)`"
 msgstr ""
 
-#: ../../app3.rst:141 5dfbd6c603374af386af13cbb05831d9
+#: ../../app3.rst:141 863dfc36ea3a40a7a19980e4a97c403a
 msgid "`fitz.Point(x, y) + s`"
 msgstr ""
 
-#: ../../app3.rst:142 248d1d9d4a8e491e8724e8952814d071
+#: ../../app3.rst:142 86ac8ddd5bc143c7ad57df6a870de276
 msgid "`doc.select(s)`"
 msgstr ""
 
-#: ../../app3.rst:144 08f875a418104cf8b5b443831a79374c
+#: ../../app3.rst:144 9933f01172084aee8e38aeca2141cf17
 msgid ""
 "Similarly with all geometry objects :ref:`Rect`, :ref:`IRect`, "
 ":ref:`Matrix` and :ref:`Point`."
-msgstr "同様に、すべてのジオメトリオブジェクト :ref:`Rect` 、:ref:`IRect` 、:ref:`Matrix` 、 :ref:`Point` も同様です。"
+msgstr ""
+"同様に、すべてのジオメトリオブジェクト :ref:`Rect` 、:ref:`IRect` 、:ref:`Matrix` 、 "
+":ref:`Point` も同様です。"
 
-#: ../../app3.rst:146 a7c65d60549f4a1c984f58c3a42fb2b7
+#: ../../app3.rst:146 fd134cdfb4b64ba094bba7628217f3bd
 msgid ""
 "Because all PyMuPDF geometry classes themselves are special cases of "
 "sequences, they (with the exception of :ref:`Quad` -- see below) can be "
 "freely used where numerical sequences can be used, e.g. as arguments for "
 "functions like *list()*, *tuple()*, *array.array()* or *numpy.array()*. "
 "Look at the following snippet to see this work."
-msgstr "なぜなら、すべてのPyMuPDFジオメトリクラス自体がシーケンスの特殊なケースであるため、（ :ref:`Quad`  を除く）数値のシーケンスが使用可能な場所で自由に使用できるからです。例えば、 *list()* 、 *tuple()* 、 *array.array()* 、
-*numpy.array()* の引数として。これが動作することを確認するために、次のスニペットを見てみてください。"
+msgstr ""
+"なぜなら、すべてのPyMuPDFジオメトリクラス自体がシーケンスの特殊なケースであるため、（ :ref:`Quad`  "
+"を除く）数値のシーケンスが使用可能な場所で自由に使用できるからです。例えば、 *list()* 、 *tuple()* 、 "
+"*array.array()* "
 
-#: ../../app3.rst:163 23165210c6244741a9ce6332eda74d2a
+#: ../../app3.rst:163 857ea63c540b4a28bb8ea535e6284114
 msgid ""
 ":ref:`Quad` is a Python sequence object as well and has a length of 4. "
 "Its items however are :data:`point_like` -- not numbers. Therefore, the "
 "above remarks do not apply."
-msgstr " :ref:`Quad` もPythonのシーケンスオブジェクトであり、長さが4です。ただし、そのアイテムは数値ではなく :data:`point_like` です。したがって、上記の注釈は適用されません。"
+msgstr ""
+" :ref:`Quad` もPythonのシーケンスオブジェクトであり、長さが4です。ただし、そのアイテムは数値ではなく "
+":data:`point_like` です。したがって、上記の注釈は適用されません。"
 
-#: ../../app3.rst:170 78acd4d431e341dd962f028050b264e5
+#: ../../app3.rst:170 c699952e8ac54b30867a54b99a04c8d1
 msgid "Ensuring Consistency of Important Objects in PyMuPDF"
 msgstr "重要なオブジェクトの整合性を確保するためのPyMuPDF"
 
-#: ../../app3.rst:171 9ec97038963641cf9c77ce883b4b7e17
+#: ../../app3.rst:171 ee923adde157449e9e259dfa3ba441fe
 msgid ""
 "PyMuPDF is a Python binding for the C library MuPDF. While a lot of "
 "effort has been invested by MuPDF's creators to approximate some sort of "
@@ -232,22 +271,26 @@ msgid ""
 "shortcomings of the C language in that respect."
 msgstr "PyMuPDFは、CライブラリMuPDFのPythonバインディングです。MuPDFの開発者たちは、ある種のオブジェクト指向の振る舞いを模倣するために多くの努力をしてきましたが、C言語の基本的な制約を克服することはできませんでした。"
 
-#: ../../app3.rst:173 358e188cabb04de490fe4f7f3f120c57
+#: ../../app3.rst:173 3a93167481b544e7b04bf6da01be25d5
 msgid ""
 "Python on the other hand implements the OO-model in a very clean way. The"
 " interface code between PyMuPDF and MuPDF consists of two basic files: "
 "*fitz.py* and *fitz_wrap.c*. They are created by the excellent SWIG tool "
 "for each new version."
-msgstr "一方で、Pythonは非常にクリーンな方法でOOモデルを実装しています。PyMuPDFとMuPDFの間のインターフェースコードは、基本的に2つのファイルから構成されています： *fitz.py* と *fitz_wrap.c* 。これらは、新バージョンごとに優れたSWIGツールによって作成されます。"
+msgstr ""
+"一方で、Pythonは非常にクリーンな方法でOOモデルを実装しています。PyMuPDFとMuPDFの間のインターフェースコードは、基本的に2つのファイルから構成されています："
+" *fitz.py* と *fitz_wrap.c* 。これらは、新バージョンごとに優れたSWIGツールによって作成されます。"
 
-#: ../../app3.rst:175 1d4bde5f5e414fa4b2aaca07bec71664
+#: ../../app3.rst:175 0bad4e2fa9ca40068a89619b69732d92
 msgid ""
 "When you use one of PyMuPDF's objects or methods, this will result in "
 "execution of some code in *fitz.py*, which in turn will call some C code "
 "compiled with *fitz_wrap.c*."
-msgstr "PyMuPDFのオブジェクトやメソッドのいずれかを使用すると、これにより *fitz.py* でいくつかのコードが実行され、それがさらに *fitz_wrap.c* でコンパイルされたCコードを呼び出します。"
+msgstr ""
+"PyMuPDFのオブジェクトやメソッドのいずれかを使用すると、これにより *fitz.py* でいくつかのコードが実行され、それがさらに "
+"*fitz_wrap.c* でコンパイルされたCコードを呼び出します。"
 
-#: ../../app3.rst:177 61133a4a341240ecbccbcaf3feae8dde
+#: ../../app3.rst:177 e1f4a96249094ff6a7e2be766be8264b
 msgid ""
 "Because SWIG goes a long way to keep the Python and the C level in sync, "
 "everything works fine, if a certain set of rules is being strictly "
@@ -256,42 +299,49 @@ msgid ""
 " less obvious: **never access** a page or any of its children (links or "
 "annotations) after you have executed one of the document methods "
 "*select()*, *delete_page()*, *insert_page()* ... and more."
-msgstr "SWIGはPythonとCレベルを同期させるために大いに役立っているため、一定のルールが厳密に守られる限り、すべてが正常に動作します。例えば、所有している :ref:`ドキュメント` を閉じたり（または削除したり、Noneに設定したり）した後に :ref:`Page` オブジェクトに **アクセスしないでください** 。また、より明確な例では、 *select()* 、*delete_page()* 、 *insert_page()* などのドキュメントメソッドを実行した後にページやその子要素（リンクや注釈など）に **アクセスしないでください** 。"
+msgstr ""
+"SWIGはPythonとCレベルを同期させるために大いに役立っているため、一定のルールが厳密に守られる限り、すべてが正常に動作します。例えば、所有している"
+" :ref:`ドキュメント` を閉じたり（または削除したり、Noneに設定したり）した後に :ref:`Page` オブジェクトに "
+"**アクセスしないでください** 。また、より明確な例では、 *select()* 、*delete_page()* 、 "
+"*insert_page()* などのドキュメントメソッドを実行した後にページやその子要素（リンクや注釈など）に **アクセスしないでください**"
+" 。"
 
-#: ../../app3.rst:179 84bfc9102b9f40f89c037cfb5d6cf601
+#: ../../app3.rst:179 974a8fc1d8034aa7803f098bcf12f3cd
 msgid ""
 "But just no longer accessing invalidated objects is actually not enough: "
 "They should rather be actively deleted entirely, to also free C-level "
 "resources (meaning allocated memory)."
 msgstr "ただし、無効なオブジェクトへのアクセスをやめるだけでは実際には十分ではありません。これらのオブジェクトは、Cレベルのリソース（割り当てられたメモリ）も解放するために、完全に削除されるべきです。"
 
-#: ../../app3.rst:181 270d6505474a4f9eb836eebf6ab9a782
+#: ../../app3.rst:181 76a850e2f37e45eb99ad34353665c3cb
 msgid ""
 "The reason for these rules lies in the fact that there is a hierarchical "
 "2-level one-to-many relationship between a document and its pages and "
 "also between a page and its links / annotations. To maintain a consistent"
 " situation, any of the above actions must lead to a complete reset -- in "
 "**Python and, synchronously, in C**."
-msgstr "これらのルールの理由は、ドキュメントとそのページ、およびページとそのリンク/注釈の間に階層的な2段階の1対多の関係があるためです。一貫した状況を維持するために、上記のアクションのいずれもが **PythonとCの両方で** 完全なリセットを引き起こさなければなりません。"
+msgstr ""
+"これらのルールの理由は、ドキュメントとそのページ、およびページとそのリンク/注釈の間に階層的な2段階の1対多の関係があるためです。一貫した状況を維持するために、上記のアクションのいずれもが"
+" **PythonとCの両方で** 完全なリセットを引き起こさなければなりません。"
 
-#: ../../app3.rst:183 b1acb6e58964468ead03014ea3dfb41c
+#: ../../app3.rst:183 3dc6f42e174944e8a1f70244a32b19be
 msgid "SWIG cannot know about this and consequently does not do it."
 msgstr "SWIGはこれを知ることはできないため、それを実行しません。"
 
-#: ../../app3.rst:185 bb5d3b7fbef54e4fab7af5ea0db556b9
+#: ../../app3.rst:185 4117de8fbe03433c99f609d46298dcea
 msgid ""
 "The required logic has therefore been built into PyMuPDF itself in the "
 "following way."
 msgstr "必要な論理はしたがって、PyMuPDF自体に以下のように組み込まれています。"
 
-#: ../../app3.rst:187 7003814b9cb14bdf9aba5b6239e784fb
+#: ../../app3.rst:187 15c9cf6acda346159e5140352cfe4a79
 msgid ""
 "If a page \"loses\" its owning document or is being deleted itself, all "
 "of its currently existing annotations and links will be made unusable in "
 "Python, and their C-level counterparts will be deleted and deallocated."
 msgstr "ページが所有するドキュメントを失ったり、それ自体が削除されると、現在存在するすべての注釈とリンクはPythonで使用できなくなり、それらのCレベルの対応部分が削除されて解放されます。"
 
-#: ../../app3.rst:189 096d5ae7233e4b3c919c467bf675491a
+#: ../../app3.rst:189 ee88c86ae9b94a7a9350c56470f6ab89
 msgid ""
 "If a document is closed (or deleted or set to *None*) or if its structure"
 " has changed, then similarly all currently existing pages and their "
@@ -299,121 +349,138 @@ msgid ""
 "take place. \"Structure changes\" include methods like *select()*, "
 "*delePage()*, *insert_page()*, *insert_pdf()* and so on: all of these "
 "will result in a cascade of object deletions."
-msgstr "ドキュメントが閉じられたり（または削除されたり、 *None* に設定されたり）したり、構造が変更されたりすると、同様に現在存在するすべてのページとその子要素は使用できなくなり、対応するCレベルの削除が行われます。「構造の変更」とは、 *select()* 、 *delete_page()* 、 *insert_page()* 、 *insert_pdf()* などのメソッドを含みます。これらのすべてはオブジェクトの削除の連鎖を引き起こします。"
+msgstr ""
+"ドキュメントが閉じられたり（または削除されたり、 *None* "
+"に設定されたり）したり、構造が変更されたりすると、同様に現在存在するすべてのページとその子要素は使用できなくなり、対応するCレベルの削除が行われます。「構造の変更」とは、"
+" *select()* 、 *delete_page()* 、 *insert_page()* 、 *insert_pdf()* "
+"などのメソッドを含みます。これらのすべてはオブジェクトの削除の連鎖を引き起こします。"
 
-#: ../../app3.rst:191 7b5d97b44da5443f9612ec0a963c4c46
+#: ../../app3.rst:191 6fd38e48606942d686e7ac358e65d61b
 msgid ""
 "The programmer will normally not realize any of this. If he, however, "
 "tries to access invalidated objects, exceptions will be raised."
 msgstr "プログラマーは通常、これらのいずれも気づかないでしょう。ただし、無効なオブジェクトにアクセスしようとすると、例外が発生します。"
 
-#: ../../app3.rst:193 dc0506dd89d64f98a17c93c9aa9d2c95
+#: ../../app3.rst:193 5c5cea33cd1e491e87db49956fdcf668
 msgid ""
 "Invalidated objects cannot be directly deleted as with Python statements "
 "like *del page* or *page = None*, etc. Instead, their *__del__* method "
 "must be invoked."
-msgstr "無効なオブジェクトは、 *del page* または *page = None* などのPythonステートメントで直接削除することはできません。代わりに、その *__del__* メソッドを呼び出す必要があります。"
+msgstr ""
+"無効なオブジェクトは、 *del page* または *page = None* "
+"などのPythonステートメントで直接削除することはできません。代わりに、その *__del__* メソッドを呼び出す必要があります。"
 
-#: ../../app3.rst:195 6620fbbe21184d1a8506a7e52d58bdf2
+#: ../../app3.rst:195 66393856d97b487abe58b93b5f08f194
 msgid ""
 "All pages, links and annotations have the property *parent*, which points"
 " to the owning object. This is the property that can be checked on the "
 "application level: if *obj.parent == None* then the object's parent is "
 "gone, and any reference to its properties or methods will raise an "
 "exception informing about this \"orphaned\" state."
-msgstr "すべてのページ、リンク、注釈には、所有するオブジェクトを指す *親* プロパティがあります。これはアプリケーションレベルでチェックできるプロパティです： *obj.parent == None* ならば、そのオブジェクトの親は存在せず、そのプロパティやメソッドへの参照は例外を発生させてこの「孤立」した状態について通知します。"
+msgstr ""
+"すべてのページ、リンク、注釈には、所有するオブジェクトを指す *親* "
+"プロパティがあります。これはアプリケーションレベルでチェックできるプロパティです： *obj.parent == None* "
+"ならば、そのオブジェクトの親は存在せず、そのプロパティやメソッドへの参照は例外を発生させてこの「孤立」した状態について通知します。"
 
-#: ../../app3.rst:197 e8df4fb66951412b937d7a63e0657541
+#: ../../app3.rst:197 be804b991a2748f588c1662021eb1831
 msgid "A sample session:"
 msgstr "サンプルセッション："
 
-#: ../../app3.rst:214 bea8af4d86c84f7096e87b9f4872b0a5
+#: ../../app3.rst:214 380cb63b152d4a0cba990e0ae204bac4
 msgid "This shows the cascading effect:"
 msgstr "これは連鎖効果を示しています。"
 
-#: ../../app3.rst:231 87b5d6c22a184db0907f64f3b23243b5
+#: ../../app3.rst:231 8627bcc2f6104c39956a1c6ac7815d23
 msgid ""
 "Objects outside the above relationship are not included in this "
 "mechanism. If you e.g. created a table of contents by *toc = "
 "doc.get_toc()*, and later close or change the document, then this cannot "
 "and does not change variable *toc* in any way. It is your responsibility "
 "to refresh such variables as required."
-msgstr "上記の関係外のオブジェクトは、このメカニズムに含まれていません。たとえば、 `toc = doc.get_toc()`  のように目次を作成し、後で文書を閉じたり変更したりする場合、これは変数 toc をどのようにも変更しません。必要に応じてそのような変数を更新する責任はあなたにあります。"
+msgstr ""
+"上記の関係外のオブジェクトは、このメカニズムに含まれていません。たとえば、 `toc = doc.get_toc()`  "
+"のように目次を作成し、後で文書を閉じたり変更したりする場合、これは変数 toc "
+"をどのようにも変更しません。必要に応じてそのような変数を更新する責任はあなたにあります。"
 
-#: ../../app3.rst:238 28be6e4896304aeaaf367d408afb2454
+#: ../../app3.rst:238 3f1b94bf27e943c791b63e9edd4801b5
 msgid "Design of Method :meth:`Page.show_pdf_page`"
 msgstr "メソッド  :meth:`Page.show_pdf_page`  の設計"
 
-#: ../../app3.rst:241 0573c0f0ce5742bb90a5075d494d5738
+#: ../../app3.rst:241 8905a708ee84457d9b0db2e741ba0b55
 msgid "Purpose and Capabilities"
 msgstr "目的と機能"
 
-#: ../../app3.rst:243 97f7c9654077441c9b96c107f87c7786
+#: ../../app3.rst:243 b00ee2641fd3407f8ccb0f539046daab
 msgid ""
 "The method displays an image of a (\"source\") page of another PDF "
 "document within a specified rectangle of the current (\"containing\", "
 "\"target\") page."
 msgstr "このメソッドは、現在の（「含まれる」、「ターゲット」）ページの指定された矩形内に別のPDF文書の（「ソース」）ページの画像を表示します。"
 
-#: ../../app3.rst:245 fa832dda8bca412e8d4884ab5c36c9ec
+#: ../../app3.rst:245 4573abb303c54caa93fd8dae599d8f53
 msgid ""
 "**In contrast** to :meth:`Page.insert_image`, this display is vector-"
 "based and hence remains accurate across zooming levels."
 msgstr ":meth:`Page.insert_image`  **とは異なり** 、この表示はベクターベースであり、ズームレベルを超えて正確に保たれます。"
 
-#: ../../app3.rst:246 1c5113ba7b334b39aacdf3c71c365c11
+#: ../../app3.rst:246 3792d827779c47e0a8ee428b1f57006c
 msgid ""
 "**Just like** :meth:`Page.insert_image`, the size of the display is "
 "adjusted to the given rectangle."
 msgstr ":meth:`Page.insert_image`  **と同様に** 、表示のサイズは指定された矩形に調整されます。"
 
-#: ../../app3.rst:248 2794d785ea6f4754964fb7421a0af2c4
+#: ../../app3.rst:248 77d83d40c27f40f6976a66ff22ca83ae
 msgid "The following variations of the display are currently supported:"
 msgstr "現在、次のバリエーションの表示がサポートされています："
 
-#: ../../app3.rst:250 6c6b636b457448ac915d21288df7638f
+#: ../../app3.rst:250 f4663933638d4ddeb0f1b9801b6f8064
 msgid ""
 "Bool parameter `\"keep_proportion\"` controls whether to maintain the "
 "aspect ratio (default) or not."
 msgstr "Bool パラメーター `\"keep_proportion\"` はアスペクト比を保持するかどうかを制御します（デフォルト）。"
 
-#: ../../app3.rst:251 ad729b1cf23f45f78ce599a7b0f5b505
+#: ../../app3.rst:251 6853aab88bb84cffa44e38663fc06687
 msgid ""
 "Rectangle parameter `\"clip\"` restricts the visible part of the source "
 "page rectangle. Default is the full page."
 msgstr "矩形パラメーター `\"clip\"` はソースページの矩形の可視部分を制限します。デフォルトはフルページです。"
 
-#: ../../app3.rst:252 bbe21508f39a4c8e9c47c8d42e06c788
+#: ../../app3.rst:252 a0a033a5b07a4735ba2f2130bbec834f
 msgid ""
 "float `\"rotation\"` rotates the display by an arbitrary angle (degrees)."
 " If the angle is not an integer multiple of 90, only 2 of the 4 corners "
 "may be positioned on the target border if also `\"keep_proportion\"` is "
 "true."
-msgstr "float `\"rotation\"` は表示を任意の角度（度）で回転させます。角度が90の倍数でない場合、`\"keep_proportion\"` も true の場合、ターゲットの境界に4つのうち2つのコーナーのみが配置される場合があります。"
+msgstr ""
+"float `\"rotation\"` "
+"は表示を任意の角度（度）で回転させます。角度が90の倍数でない場合、`\"keep_proportion\"` も true "
+"の場合、ターゲットの境界に4つのうち2つのコーナーのみが配置される場合があります。"
 
-#: ../../app3.rst:253 103b7790b22f43079d26ecaf727fc3a3
+#: ../../app3.rst:253 eaadf50420ef4532a1a939ffec296309
 msgid ""
 "Bool parameter `\"overlay\"` controls whether to put the image on top "
 "(foreground, default) of current page content or not (background)."
-msgstr "Bool パラメーター `\"overlay\"` は、画像を現在のページコンテンツの上（前景、デフォルト）に配置するか、そうでないか（背景）を制御します。"
+msgstr ""
+"Bool パラメーター `\"overlay\"` "
+"は、画像を現在のページコンテンツの上（前景、デフォルト）に配置するか、そうでないか（背景）を制御します。"
 
-#: ../../app3.rst:255 cda7dd8ce6ad41cda2ec56124d76adeb
+#: ../../app3.rst:255 a53cc57895244c70ac5dbea259a12c67
 msgid "Use cases include (but are not limited to) the following:"
 msgstr "使用例は以下のようなものがありますが、これに限定されません："
 
-#: ../../app3.rst:257 b8ce554fb75a445fb6e9c017a18a973a
+#: ../../app3.rst:257 eec4903f132d42a4b0d590064140cefd
 msgid ""
 "\"Stamp\" a series of pages of the current document with the same image, "
 "like a company logo or a watermark."
 msgstr "現在の文書の複数のページに同じ画像（企業のロゴや透かし）を「スタンプ」する。"
 
-#: ../../app3.rst:258 3c982e832912448ea84c5b93508b3638
+#: ../../app3.rst:258 4d50ea8f2eec4f44b13c88c24adf000f
 msgid ""
 "Combine arbitrary input pages into one output page to support “booklet” "
 "or double-sided printing (known as \"4-up\", \"n-up\")."
-msgstr "任意の入力ページを1つの出力ページに組み合わせ、"ブックレット"や両面印刷をサポートする（「4-up」、「n-up」としても知られています）。"
+msgstr "任意の入力ページを1つの出力ページに組み合わせ、\"ブックレット\"や両面印刷をサポートする（「4-up」、「n-up」としても知られています）。"
 
-#: ../../app3.rst:259 830b590a3c8e416d8d132f87020c90de
+#: ../../app3.rst:259 826d03c8f4cf41498ecc56b5518ca0f1
 msgid ""
 "Split up (large) input pages into several arbitrary pieces. This is also "
 "called “posterization”, because you e.g. can split an A4 page "
@@ -421,144 +488,163 @@ msgid ""
 "pages, and end up with an A2 version of your original page."
 msgstr "（大きな）入力ページをいくつかの任意のピースに分割する。これは「ポスタリゼーション」とも呼ばれ、たとえばA4ページを水平および垂直に分割し、4つのピースを別々のA4ページに拡大印刷して、元のページのA2バージョンを作成することができます。"
 
-#: ../../app3.rst:262 52a42578555a48ca8c94301e6a6cd7e0
+#: ../../app3.rst:262 e2ed983f43b24d668ba9ce3fc10643c1
 msgid "Technical Implementation"
 msgstr "テクニカル実装"
 
-#: ../../app3.rst:264 09e5f5e308a84f9d8511818b5ffcdc82
+#: ../../app3.rst:264 30ac339dd8534e98bcbd9e31ca8364ee
 msgid ""
 "This is done using PDF **\"Form XObjects\"**, see section 8.10 on page "
 "217 of :ref:`AdobeManual`. On execution of a :meth:`Page.show_pdf_page`, "
 "the following things happen:"
-msgstr "これはPDF **「フォームXObject」** を使用して行われます。 :ref:`AdobeManual` リファレンス の217ページ、セクション8.10を参照してください。 :meth:`Page.show_pdf_page`  が実行されると、次のことが起こります。"
+msgstr ""
+"これはPDF **「フォームXObject」** を使用して行われます。 :ref:`AdobeManual` リファレンス "
+"の217ページ、セクション8.10を参照してください。 :meth:`Page.show_pdf_page`  "
+"が実行されると、次のことが起こります。"
 
-#: ../../app3.rst:266 ce15260df9ed49d09a7e6e8b53d22f72
+#: ../../app3.rst:266 b151c2075f334b2492258bce54dacd5a
 msgid ""
 "The :data:`resources` and :data:`contents` objects of source page in "
 "source document are copied over to the target document, jointly creating "
 "a new **Form XObject** with the following properties. The PDF "
 ":data:`xref` number of this object is returned by the method."
-msgstr "ソースドキュメント内のソースページの :data:`resources`  と  :data:`contents` オブジェクトは、ターゲットドキュメントにコピーされ、共同で新しい **フォームXObject** が作成されます。このオブジェクトのPDF  :data:`xref`  番号がメソッドによって返されます。"
+msgstr ""
+"ソースドキュメント内のソースページの :data:`resources`  と  :data:`contents` "
+"オブジェクトは、ターゲットドキュメントにコピーされ、共同で新しい **フォームXObject** が作成されます。このオブジェクトのPDF  "
+":data:`xref`  番号がメソッドによって返されます。"
 
-#: ../../app3.rst:268 fed99b8ac0dc45bcb28939d98f8ff226
+#: ../../app3.rst:268 1417e5cacede48e19d58e59f31635790
 msgid "`/BBox` equals `/Mediabox` of the source page"
 msgstr "`/BBox` はソースページの `/Mediabox` に等しいです。"
 
-#: ../../app3.rst:269 f7b845677736445f97969f076e069052
+#: ../../app3.rst:269 b2ea4f2a2b28464abecaccb2f069654e
 msgid "`/Matrix` equals the identity matrix."
 msgstr "`/Matrix` は単位行列と等しいです。"
 
-#: ../../app3.rst:270 b6f825c436d34fbeb2bdc7630df6e278
+#: ../../app3.rst:270 8746f601616e48bfb77c005d98bbe8d9
 msgid ""
 "`/Resources` equals that of the source page. This involves a “deep-copy” "
 "of hierarchically nested other objects (including fonts, images, etc.). "
 "The complexity involved here is covered by MuPDF's grafting [#f1]_ "
 "technique functions."
-msgstr "`/Resources` はソースページのものに等しいです。これには、階層的にネストされた他のオブジェクト（フォント、画像など）の「ディープコピー」が含まれます。ここでの複雑さは、MuPDFのグラフティング[1]技術関数によってカバーされています。"
+msgstr ""
+"`/Resources` "
+"はソースページのものに等しいです。これには、階層的にネストされた他のオブジェクト（フォント、画像など）の「ディープコピー」が含まれます。ここでの複雑さは、MuPDFのグラフティング[1]技術関数によってカバーされています。"
 
-#: ../../app3.rst:271 93c85d00c89541699d33481f09cd3a0b
+#: ../../app3.rst:271 bbcfc7621ac941deb32470c35e617364
 msgid ""
 "This is a stream object type, and its stream is an exact copy of the "
 "combined data of the source page's :data:`contents` objects."
-msgstr "これはストリームオブジェクトタイプであり、そのストリームはソースページの :data:`contents` オブジェクトの結合データの正確なコピーです。"
+msgstr ""
+"これはストリームオブジェクトタイプであり、そのストリームはソースページの :data:`contents` "
+"オブジェクトの結合データの正確なコピーです。"
 
-#: ../../app3.rst:273 2834a7f762254412b36f8d0e45f2ddce
+#: ../../app3.rst:273 fad8eb1f12cd4880b4633b676089bbd1
 msgid ""
 "This Form XObject is only executed once per shown source page. Subsequent"
 " displays of the same source page will skip this step and only create "
 "\"pointer\" Form XObjects (done in next step) to this object."
 msgstr "このフォームXObjectは、表示されるソースページごとに1回だけ実行されます。同じソースページの後続の表示では、このステップはスキップされ、このオブジェクトへの「ポインター」フォームXObject（次のステップで行われる）のみが作成されます。"
 
-#: ../../app3.rst:275 ae970441657e4bcaacab19e58abc5b7d
+#: ../../app3.rst:275 4fb171fc41d0444fa64d2abc741043a8
 msgid ""
 "A second **Form XObject** is then created which the target page uses to "
 "invoke the display. This object has the following properties:"
-msgstr "次に、ターゲットページが表示を呼び出すために使用する2番目の **フォームXObject** が作成されます。このオブジェクトには次のような特性があります。"
+msgstr ""
+"次に、ターゲットページが表示を呼び出すために使用する2番目の **フォームXObject** "
+"が作成されます。このオブジェクトには次のような特性があります。"
 
-#: ../../app3.rst:277 c95fad4b7da44ac0b44534432a399324
+#: ../../app3.rst:277 464f6c5d6ece41e49faca34d948e3b6a
 msgid "`/BBox` equals the `/CropBox` of the source page (or `\"clip\"`)."
-msgstr "`/BBox` はソースページの `/CropBox`（または `"クリップ"` ）に等しいです。"
+msgstr "`/BBox` はソースページの `/CropBox`（または `\"クリップ\"` ）に等しいです。"
 
-#: ../../app3.rst:278 709e8a03ef0648b9b0237f2d13e7aaf3
+#: ../../app3.rst:278 f3ad6c81927944b397cff0666f024801
 msgid "`/Matrix` represents the mapping of `/BBox` to the target rectangle."
 msgstr "`/Matrix` は `/BBox` からターゲット矩形へのマッピングを表します。"
 
-#: ../../app3.rst:279 e5aad1bf1c4841fb9ec83b65e0195dbb
+#: ../../app3.rst:279 b9c2e02eb167403e9a5172a0b29c57ba
 msgid ""
 "`/XObject` references the previous Form XObject via the fixed name "
 "`fullpage`."
 msgstr "`/XObject` は、以前のフォームXObjectを固定された名前 `fullpage` を介して参照します。"
 
-#: ../../app3.rst:280 13c9ef1d1f864eaaa19a2a16492c9a4c
+#: ../../app3.rst:280 ee5bb64555894dae8b2bfe2f2edfa13d
 msgid ""
 "The stream of this object contains exactly one fixed statement: "
 "`/fullpage Do`."
 msgstr "このオブジェクトのストリームには、正確に1つの固定されたステートメントが含まれています： `/fullpage Do` 。"
 
-#: ../../app3.rst:281 15adfedf89e24757a94421572bc07587
+#: ../../app3.rst:281 46893a9a07d64f04913808d88546399b
 msgid ""
 "If the method's `\"oc\"` argument is given, its value is assigned to this"
 " Form XObject as `/OC`."
 msgstr "メソッドの `「oc」` 引数が指定された場合、その値はこのフォームXObjectに `/OC` として割り当てられます。"
 
-#: ../../app3.rst:283 ca4a3b3bdf6f41cf9f689efcee4224cc
+#: ../../app3.rst:283 62baf79cf95849638426003c984a690c
 msgid ""
 "The :data:`resources` and :data:`contents` objects of the target page are"
 " now modified as follows."
 msgstr "ターゲットページの :data:`リソース` と :data:`コンテンツ` オブジェクトは以下のように変更されます。"
 
-#: ../../app3.rst:285 efca8addf2f442a999367bdc630b53ac
+#: ../../app3.rst:285 a7d3f3c5377c48ee895d23c701f89d82
 msgid ""
 "Add an entry to the `/XObject` dictionary of `/Resources` with the name "
 "`fzFrm<n>` (with n chosen such that this entry is unique on the page)."
-msgstr "`/Resources` の `/XObject` 辞書に、 ` fzFrm ` という名前のエントリをページ内で一意であるように追加します（nはこのエントリがページで一意であるように選択されます）。"
+msgstr ""
+"`/Resources` の `/XObject` 辞書に、 ` fzFrm ` "
+"という名前のエントリをページ内で一意であるように追加します（nはこのエントリがページで一意であるように選択されます）。"
 
-#: ../../app3.rst:286 7274a922d234436aa772aba08cd1cba9
+#: ../../app3.rst:286 db0de1b4433247948b1cec8d8159c5cc
 msgid ""
 "Depending on `\"overlay\"`, prepend or append a new object to the page's "
 "`/Contents` array, containing the statement `q /fzFrm<n> Do Q`."
-msgstr "`\"overlay\"` に応じて、ページの `/ Contents` 配列に新しいオブジェクトを前または後に追加し、ステートメント `q / fzFrm<n> Do Q` を含めます。"
+msgstr ""
+"`\"overlay\"` に応じて、ページの `/ Contents` 配列に新しいオブジェクトを前または後に追加し、ステートメント `q / "
+"fzFrm<n> Do Q` を含めます。"
 
-#: ../../app3.rst:288 2fab5f6088074d2b9dd280aa6b267583
+#: ../../app3.rst:288 c3bd49ac50614fa3888d2f8e8efd1029
 msgid "This design approach ensures that:"
 msgstr "この設計アプローチは次を保証します："
 
-#: ../../app3.rst:290 353b1a2ba15949959a9e2da016c2ac06
+#: ../../app3.rst:290 8a823360c0944bf7bd5753b6cd83c29a
 msgid ""
 "The (potentially large) source page is only copied once to the target "
 "PDF. Only small \"pointer\" Form XObjects objects are created per each "
 "target page to show the source page."
 msgstr "（潜在的に大きな）ソースページは、ターゲットPDFに1度だけコピーされます。各ターゲットページごとに、ソースページを表示するための小さな「ポインター」フォームXObjectオブジェクトが作成されます。"
 
-#: ../../app3.rst:291 aa91782567f245af894a3573cb420677
+#: ../../app3.rst:291 1718e50a8bb54a099d95679ee77c0d93
 msgid ""
 "Each referring target page can have its own `\"oc\"` parameter to control"
 " the source page's visibility individually."
 msgstr "参照する各ターゲットページは、ソースページの表示を個別に制御するための独自の `「oc」` パラメータを持つことができます。"
 
-#: ../../app3.rst:298 b91e7321758546f1bf2be546e74d0721
+#: ../../app3.rst:298 a32b8aacaa87446b85f1e94c74ddd45e
 msgid "Redirecting Error and Warning Messages"
 msgstr "エラーと警告メッセージのリダイレクト"
 
-#: ../../app3.rst:299 ea9068813d034a9894e5bdfa987726d2
+#: ../../app3.rst:299 e35016696a3b4183a4123af41fe8f278
 msgid ""
 "Since MuPDF version 1.16 error and warning messages can be redirected via"
 " an official plugin."
 msgstr "MuPDFバージョン1.16以降、エラーと警告メッセージは公式プラグインを介してリダイレクトできます。"
 
-#: ../../app3.rst:301 b494f2abdcfc4bffb97f4483b8d07755
+#: ../../app3.rst:301 f310681e44cc49cc800f75791b3c4629
 msgid ""
 "PyMuPDF will put error messages to `sys.stderr` prefixed with the string "
 "\"mupdf:\". Warnings are internally stored and can be accessed via "
 "*fitz.TOOLS.mupdf_warnings()*. There also is a function to empty this "
 "store."
-msgstr "PyMuPDFはエラーメッセージを、先頭に文字列「mupdf:」を付けて `sys.stderr` に表示します。警告は内部で保存され、*fitz.TOOLS.mupdf_warnings()* を通じてアクセスできます。また、この保存領域を空にするための関数も存在します。"
+msgstr ""
+"PyMuPDFはエラーメッセージを、先頭に文字列「mupdf:」を付けて `sys.stderr` "
+"に表示します。警告は内部で保存され、*fitz.TOOLS.mupdf_warnings()* "
+"を通じてアクセスできます。また、この保存領域を空にするための関数も存在します。"
 
-#: ../../app3.rst:305 99b427f7ce9e4e528d930311d02cde0a
+#: ../../app3.rst:305 7a64d086bd354817acd094621a4ebc96
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../app3.rst:306 49ef9c0a37e24a3685cd3b28faff61ed
+#: ../../app3.rst:306 a9660b2cfcfa45c1853a4371d4fd5375
 msgid ""
 "MuPDF supports \"deep-copying\" objects between PDF documents. To avoid "
 "duplicate data in the target, it uses so-called \"graftmaps\", like a "
@@ -571,25 +657,37 @@ msgid ""
 "referenced data, like images and fonts. However, you may still want to "
 "consider using garbage collection (option 4) in any of the following "
 "cases:"
-msgstr "MuPDFはPDFドキュメント間でオブジェクトを「ディープコピー」することをサポートしています。対象の中で重複するデータを避けるために、「グラフトマップ」と呼ばれる仕組みを使用します。これはスクラッチパッドのようなもので、コピーされる各オブジェクトについて、その :data:`xref` 番号をグラフトマップで調べます。もし見つかれば、コピーはスキップされます。それ以外の場合は、新しい :data:`xref` が記録され、コピーが行われます。PyMuPDFは、:meth:`Document.insert_pdf` と :meth:`Page.show_pdf_page` の2つの場所でこの技術を使用しています。このプロセスは高速で非常に効率的です。なぜなら、通常大きなデータや頻繁に参照されるデータ（画像やフォントなど）の複数のコピーを防ぐためです。ただし、次のいずれかの場合にはガベージコレクション（オプション4）の使用を検討することをお勧めします："
+msgstr ""
+"MuPDFはPDFドキュメント間でオブジェクトを「ディープコピー」することをサポートしています。対象の中で重複するデータを避けるために、「グラフトマップ」と呼ばれる仕組みを使用します。これはスクラッチパッドのようなもので、コピーされる各オブジェクトについて、その"
+" :data:`xref` 番号をグラフトマップで調べます。もし見つかれば、コピーはスキップされます。それ以外の場合は、新しい "
+":data:`xref` が記録され、コピーが行われます。PyMuPDFは、:meth:`Document.insert_pdf` と "
+":meth:`Page.show_pdf_page` "
+"の2つの場所でこの技術を使用しています。このプロセスは高速で非常に効率的です。なぜなら、通常大きなデータや頻繁に参照されるデータ（画像やフォントなど）の複数のコピーを防ぐためです。ただし、次のいずれかの場合にはガベージコレクション（オプション4）の使用を検討することをお勧めします："
 
-#: ../../app3.rst:308 ae7161e9a4034459ad51b582d278f1e8
+#: ../../app3.rst:308 ea962fe6498f48f4a800ceb9e307cace
 msgid ""
 "The target PDF is not new / empty: grafting does not check for resources "
 "that already existed (e.g. images, fonts) in the target document before "
 "opening it."
 msgstr "対象のPDFが新しい/空でない場合：グラフティングは、対象ドキュメント内で既に存在しているリソース（例：画像、フォント）をチェックしません。"
 
-#: ../../app3.rst:309 42ac12d3ea0f4596b88ce4a2e737ad19
+#: ../../app3.rst:309 5b142e4cbb964ee5a16d34d313341936
 msgid ""
 "Using :meth:`Page.show_pdf_page` for more than one source document: each "
 "grafting occurs **within one source** PDF only, not across multiple. So "
 "if e.g. the same image exists in pages from different source PDFs, then "
 "this will not be detected until garbage collection."
-msgstr "複数のソースドキュメントで :meth:`Page.show_pdf_page` を使用する場合：グラフティングは **1つのソース** PDF内でのみ発生し、複数のソースPDF間では発生しません。したがって、同じ画像が異なるソースPDFのページに存在する場合、これはガベージコレクションまで検出されません。
-"
+msgstr ""
+"複数のソースドキュメントで :meth:`Page.show_pdf_page` を使用する場合：グラフティングは **1つのソース** "
+"PDF内でのみ発生し、複数のソースPDF間では発生しません。したがって、同じ画像が異なるソースPDFのページに存在する場合、これはガベージコレクションまで検出されません"
 
-#: ../../footer.rst:-1 9ff4531737dd4caababe488f5de96325
+#: ../../footer.rst:-1 86e0a6ce92f64b588f12f7d886719d3f
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

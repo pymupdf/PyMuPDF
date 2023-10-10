@@ -1,34 +1,46 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
 #: ../../shape.rst:6 a1cc80d383794c3cb435c4c6ee97bde4
 msgid "Shape"
-msgstr ""
+msgstr "Shape（シェイプ）"
 
 #: ../../shape.rst:8 37d213020d5a4d548df83e815ed0e286
 msgid ""
 "This class allows creating interconnected graphical elements on a PDF "
 "page. Its methods have the same meaning and name as the corresponding "
 ":ref:`Page` methods."
-msgstr ""
+msgstr "このクラスは、PDFページ上で相互に接続されたグラフィカル要素を作成できるようにします。このクラスのメソッドは、対応する :ref:`Page` クラスのメソッドと同じ意味と名前を持っています。"
 
 #: ../../shape.rst:10 92bfeba36df04589bf4b4464513bfe07
 msgid ""
@@ -37,7 +49,7 @@ msgid ""
 "the :meth:`Shape.commit` method. For page text insertion, only the "
 ":meth:`Shape.commit` method is invoked. If many draw and text operations "
 "are executed for a page, you should always consider using a Shape object."
-msgstr ""
+msgstr "実際には、各 :ref:`Page` クラスの描画メソッドは、（1）シェイプの描画メソッド、（2）:meth:`Shape.finish` メソッド、（3）:meth:`Shape.commit` メソッドの3つの要素の便利なラッパーです。ページテキストの挿入に関しては、:meth:`Shape.commit` メソッドのみが呼び出されます。ページで多くの描画およびテキスト操作を実行する場合、常にShapeオブジェクトの使用を検討することをお勧めします。"
 
 #: ../../shape.rst:12 2d33b356753246ef8d94540310a7769d
 msgid ""
@@ -45,7 +57,7 @@ msgid ""
 "contribute to one drawing. Once the drawing is complete, the "
 ":meth:`Shape.finish` method must be invoked to apply color, dashing, "
 "width, morphing and other attributes."
-msgstr ""
+msgstr "このクラスのいくつかの描画メソッドは、連続して実行でき、それぞれが1つの描画に貢献します。描画が完了したら、:meth:`Shape.finish` メソッドを呼び出して色、破線、幅、変形などの属性を適用する必要があります。"
 
 #: ../../shape.rst:14 b4d4a6ae66df4d96974ad0bc45606dd1
 msgid ""
@@ -53,7 +65,7 @@ msgid ""
 "logging the area they are covering in a rectangle (:attr:`Shape.rect`). "
 "This property can for instance be used to set "
 ":attr:`Page.cropbox_position`."
-msgstr ""
+msgstr "このクラスの **描画** メソッド（および:meth:`Shape.insert_textbox`）は、カバーしている領域を矩形 (:attr:`Shape.rect`)で記録します。このプロパティは、:attr:`Page.cropbox_position` を設定するために使用できます。"
 
 #: ../../shape.rst:16 8c6110dbab9d4387bcb0b2254e3e21b4
 msgid ""
@@ -62,15 +74,15 @@ msgid ""
 "therefore only require :meth:`Shape.commit` to become effective. As a "
 "consequence, both include parameters for controlling properties like "
 "colors, etc."
-msgstr ""
+msgstr "**テキストの挿入** 操作である :meth:`Shape.insert_text` および :meth:`Shape.insert_textbox` は、暗黙的に「finish」を実行し、効果を発揮するために :meth:`Shape.commit` のみが必要です。その結果、両方のメソッドには色などのプロパティを制御するためのパラメータが含まれています。"
 
 #: ../../shape.rst:19 1a5127dcec9b4702b48da85395deb941
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**メソッド / 属性**"
 
 #: ../../shape.rst:19 decb9df8d9964d4a8aa9915071714e54
 msgid "**Description**"
-msgstr ""
+msgstr "**説明**"
 
 #: ../../shape.rst:21 129235cb0e64469aac54868024a1d8fd
 msgid ":meth:`Shape.commit`"
@@ -78,7 +90,7 @@ msgstr ""
 
 #: ../../shape.rst:21 f14081f827594684be72283dd1605406
 msgid "update the page's contents"
-msgstr ""
+msgstr "ページの内容を更新します"
 
 #: ../../shape.rst:22 af7b6707c483406fa99ff401eb843eb9
 msgid ":meth:`Shape.draw_bezier`"
@@ -86,7 +98,7 @@ msgstr ""
 
 #: ../../shape.rst:22 ca8664e0e9b749e8820d03b13dc7bdb4
 msgid "draw a cubic Bezier curve"
-msgstr ""
+msgstr "キュービックベジエ曲線を描画します"
 
 #: ../../shape.rst:23 ad8e310b901742298223e9ad32fda939
 msgid ":meth:`Shape.draw_circle`"
@@ -94,7 +106,7 @@ msgstr ""
 
 #: ../../shape.rst:23 08ff2ae5086448b0b6467848c2d2baaf
 msgid "draw a circle around a point"
-msgstr ""
+msgstr "指定した点を中心に円を描画します"
 
 #: ../../shape.rst:24 c5fd0b1d47a848c9be4b808215c1fc47
 msgid ":meth:`Shape.draw_curve`"
@@ -102,7 +114,7 @@ msgstr ""
 
 #: ../../shape.rst:24 9ec32ae27f88443a98ddd1a4de4fbaf9
 msgid "draw a cubic Bezier using one helper point"
-msgstr ""
+msgstr "ヘルパーポイントを使用してキュービックベジエ曲線を描画します"
 
 #: ../../shape.rst:25 89b4e0e2837a422aad2a2c2d75e2e52e
 msgid ":meth:`Shape.draw_line`"
@@ -110,7 +122,7 @@ msgstr ""
 
 #: ../../shape.rst:25 7d33f669597f4c16ac59faeafa76ef03
 msgid "draw a line"
-msgstr ""
+msgstr "直線を描画します"
 
 #: ../../shape.rst:26 191325c0e98240339ae4e2feb2cc994d
 msgid ":meth:`Shape.draw_oval`"
@@ -118,7 +130,7 @@ msgstr ""
 
 #: ../../shape.rst:26 4eb2bdddb5ab452194b8032b04303d54
 msgid "draw an ellipse"
-msgstr ""
+msgstr "楕円を描画します"
 
 #: ../../shape.rst:27 79f0d19731594c1fab329c636af93715
 msgid ":meth:`Shape.draw_polyline`"
@@ -126,7 +138,7 @@ msgstr ""
 
 #: ../../shape.rst:27 1b21950a34904c64ba003b6657c6356c
 msgid "connect a sequence of points"
-msgstr ""
+msgstr "一連の点を接続します"
 
 #: ../../shape.rst:28 4bf0218daa1b4ffabff71e5e843b364a
 msgid ":meth:`Shape.draw_quad`"
@@ -134,7 +146,7 @@ msgstr ""
 
 #: ../../shape.rst:28 5e99946e42874afebd2bc1ff6c5854e4
 msgid "draw a quadrilateral"
-msgstr ""
+msgstr "四角形を描画します"
 
 #: ../../shape.rst:29 0ce048cb8afa4bb083fc1ab4830c407e
 msgid ":meth:`Shape.draw_rect`"
@@ -142,7 +154,7 @@ msgstr ""
 
 #: ../../shape.rst:29 a12eb407108b419a861470b0fc1f2292
 msgid "draw a rectangle"
-msgstr ""
+msgstr "長方形を描画します"
 
 #: ../../shape.rst:30 d612f08832064fbf93d3ce5feb27382e
 msgid ":meth:`Shape.draw_sector`"
@@ -150,7 +162,7 @@ msgstr ""
 
 #: ../../shape.rst:30 b7525ea884bb43dd99e9656fb67e92a0
 msgid "draw a circular sector or piece of pie"
-msgstr ""
+msgstr "円形セクターまたはパイの一部を描画します"
 
 #: ../../shape.rst:31 61f03f4687094beb8871199f5e4b8b60
 msgid ":meth:`Shape.draw_squiggle`"
@@ -158,7 +170,7 @@ msgstr ""
 
 #: ../../shape.rst:31 bf135e136cc545d3aab0432ec6d79691
 msgid "draw a squiggly line"
-msgstr ""
+msgstr "波線を描画します"
 
 #: ../../shape.rst:32 a3c9da7b58594baa9d6da5e14f317ec5
 msgid ":meth:`Shape.draw_zigzag`"
@@ -166,7 +178,7 @@ msgstr ""
 
 #: ../../shape.rst:32 9229b960ec5846a68af3ed58f788e3c0
 msgid "draw a zigzag line"
-msgstr ""
+msgstr "ジグザグ線を描画します"
 
 #: ../../shape.rst:33 e84a4aa4ac444aab8d59cefea3b2fbbf
 msgid ":meth:`Shape.finish`"
@@ -174,7 +186,7 @@ msgstr ""
 
 #: ../../shape.rst:33 8619e5b07326446f845a3d2444d438fc
 msgid "finish a set of draw commands"
-msgstr ""
+msgstr "描画コマンドのセットを完了します"
 
 #: ../../shape.rst:34 f08e07b5a2734f6b9b9d551b40880ed7
 msgid ":meth:`Shape.insert_text`"
@@ -182,7 +194,7 @@ msgstr ""
 
 #: ../../shape.rst:34 5fc91f3250734ebda1e5932c3754889a
 msgid "insert text lines"
-msgstr ""
+msgstr "テキスト行を挿入します"
 
 #: ../../shape.rst:35 29dd9c28de444051aac7e47ce4298461
 msgid ":meth:`Shape.insert_textbox`"
@@ -190,7 +202,7 @@ msgstr ""
 
 #: ../../shape.rst:35 18760471216849e297491bb1afc173ba
 msgid "fit text into a rectangle"
-msgstr ""
+msgstr "テキストを長方形に合わせて挿入します"
 
 #: ../../shape.rst:36 7f50bd3ed64b4feca3100c438be0d9eb
 msgid ":attr:`Shape.doc`"
@@ -198,7 +210,7 @@ msgstr ""
 
 #: ../../shape.rst:36 c2e83aa7314f421ba1aae10c61c9fc5e
 msgid "stores the page's document"
-msgstr ""
+msgstr "ページのドキュメントを格納します"
 
 #: ../../shape.rst:37 d25908c2d68741b08c3d9b50ce1256bc
 msgid ":attr:`Shape.draw_cont`"
@@ -206,7 +218,7 @@ msgstr ""
 
 #: ../../shape.rst:37 9e988d61d1ec4ce4957ef6fe90fead68
 msgid "draw commands since last :meth:`Shape.finish`"
-msgstr ""
+msgstr ":meth:`Shape.finish` 以降の描画コマンドを格納します"
 
 #: ../../shape.rst:38 ee90095462ed4482aa306f9b512d2528
 msgid ":attr:`Shape.height`"
@@ -214,7 +226,7 @@ msgstr ""
 
 #: ../../shape.rst:38 220f2cf966914b5591c939ddfdfa0f7e
 msgid "stores the page's height"
-msgstr ""
+msgstr "ページの高さを格納します"
 
 #: ../../shape.rst:39 dae3126861f44bb3bccee5d5ba1b48ea
 msgid ":attr:`Shape.lastPoint`"
@@ -222,7 +234,7 @@ msgstr ""
 
 #: ../../shape.rst:39 70a04ea2328a479ca01df0ed5075bdc0
 msgid "stores the current point"
-msgstr ""
+msgstr "現在のポイントを格納します"
 
 #: ../../shape.rst:40 86056e12b0884bdda17f78a8d78a0c23
 msgid ":attr:`Shape.page`"
@@ -230,7 +242,7 @@ msgstr ""
 
 #: ../../shape.rst:40 417c3e177e094e8bbea810e9e9939b1b
 msgid "stores the owning page"
-msgstr ""
+msgstr "所有するページを格納します"
 
 #: ../../shape.rst:41 df8c185ec1f346c2810d574b3422b50f
 msgid ":attr:`Shape.rect`"
@@ -238,7 +250,7 @@ msgstr ""
 
 #: ../../shape.rst:41 43910930e9e74e2ca1aed074fec6b6e7
 msgid "rectangle surrounding drawings"
-msgstr ""
+msgstr "描画を囲む長方形を格納します"
 
 #: ../../shape.rst:42 963c3e78cfa342b0bff5b773c9eb63b6
 msgid ":attr:`Shape.text_cont`"
@@ -246,7 +258,7 @@ msgstr ""
 
 #: ../../shape.rst:42 4e9cf2fd8716420da60ad8582bf880c0
 msgid "accumulated text insertions"
-msgstr ""
+msgstr "累積テキスト挿入を格納します"
 
 #: ../../shape.rst:43 8e2a63259883413eaa4850294c9062bd
 msgid ":attr:`Shape.totalcont`"
@@ -254,7 +266,7 @@ msgstr ""
 
 #: ../../shape.rst:43 c6640d1c31394eec9d9d7437e48654d8
 msgid "accumulated string to be stored in :data:`contents`"
-msgstr ""
+msgstr ":data:`contents` に格納する累積文字列を格納します"
 
 #: ../../shape.rst:44 0298b34450db40f8a7d984f5957e8eed
 msgid ":attr:`Shape.width`"
@@ -262,11 +274,11 @@ msgstr ""
 
 #: ../../shape.rst:44 8739c317748148e09f6eb8c6af51f4d8
 msgid "stores the page's width"
-msgstr ""
+msgstr "ページの幅を格納します"
 
 #: ../../shape.rst:47 db3135edd95e4412bec818f50e0bd840
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI**"
 
 #: ../../shape.rst:53 cef8185d996f4421a5572cff07816d5e
 msgid ""
@@ -274,7 +286,7 @@ msgid ""
 " being given the convenience method *new_shape()* to construct a *Shape* "
 "object. During instantiation, a check will be made whether we do have a "
 "PDF page. An exception is otherwise raised."
-msgstr ""
+msgstr "新しい描画を作成します。PyMuPDFをインポートする際、*fitz.Page* オブジェクトには *Shape* オブジェクトを構築するための便利なメソッド *new_shape()* が提供されます。インスタンス化中に、PDFページが存在するかどうかのチェックが行われます。それ以外の場合は例外が発生します。"
 
 #: ../../shape.rst 319b33f8e4434af38471f7820ae98a58
 #: 37ca76c2a4844a288c9c30ce8902b358 3945309be57f4910b7e4a06026e25179
@@ -285,27 +297,27 @@ msgstr ""
 #: d611ea2c1bab44aba29beee0092082fb d9a9db8ea9db4c90aa15beed6945baab
 #: e333a4fbbc9545099ba58cb8d7ed9e12
 msgid "Parameters"
-msgstr ""
+msgstr "パラメータ"
 
 #: ../../shape.rst:55 d3a085e5b3884025a8a6fb6bc1921661
 msgid "an existing page of a PDF document."
-msgstr ""
+msgstr "PDFドキュメントの既存のページ。"
 
 #: ../../shape.rst:60 a4b732faac8940ae92a0f13c25c4f4d4
 msgid "Draw a line from :data:`point_like` objects *p1* to *p2*."
-msgstr ""
+msgstr ":data:`point_like` オブジェクト *p1* から *p2* への直線を描画します。"
 
 #: ../../shape.rst:62 ../../shape.rst:76 ../../shape.rst:112
 #: 4243b381cca8446486d421cfaba71a91 b0e98ecc7b4044cfaff8d60c4d50ccc2
 #: cc51e74526a144e8b7c291f7c3258848
 msgid "starting point"
-msgstr ""
+msgstr "開始点"
 
 #: ../../shape.rst:64 ../../shape.rst:78 ../../shape.rst:114
 #: 8c198eb7078a44acb5ad00f8be8896c4 9b9514ab9238445ea1621b7bae5c56a7
 #: d3a92f66734e4bf7bcdb14d640af63a2
 msgid "end point"
-msgstr ""
+msgstr "終了点"
 
 #: ../../shape.rst 10374be6447a471bba3d8f35bccab800
 #: 158725872a214a1d9d0f1436b352fc5a 2682f174a40543e6a0dd188ba16c4fd6
@@ -315,7 +327,7 @@ msgstr ""
 #: 65cc659f9ee14a239429e61b682480be 8fc92c508cbf4201900072b8a895ed61
 #: b7d9821117054f94b84e663c84046c33 d6aa5c1ccc354423b73a99d701f0355c
 msgid "Return type"
-msgstr ""
+msgstr "戻り値の型"
 
 #: ../../shape.rst:66 ../../shape.rst:82 ../../shape.rst:118
 #: ../../shape.rst:127 ../../shape.rst:136 ../../shape.rst:155
@@ -338,13 +350,13 @@ msgstr ""
 #: 89f94d00cbb3498f8d95e232649f9923 991566e70e0e48a381a54d1396b24487
 #: b6494adddf844a2494c1f9ff2a8b157f e4a387db5a404029b758b299d8dc7d94
 msgid "Returns"
-msgstr ""
+msgstr "戻り値"
 
 #: ../../shape.rst:67 ../../shape.rst:83 ../../shape.rst:119
 #: 0b5841b2e7a3470abe1511cf3a1689ad 69a0438d27af4640a8be9c1251231db4
 #: 7cb887c76e43403dbfa74c6edd8ebb28
 msgid "the end point, *p2*."
-msgstr ""
+msgstr "終了点 *p2*。"
 
 #: ../../shape.rst:74 172f8505065e429d85dae1149a0d0724
 msgid ""
@@ -354,80 +366,80 @@ msgid ""
 " will be adjusted as necessary to meet this condition. The drawn line "
 "will always turn \"left\" when leaving *p1* and always join *p2* from the"
 " \"right\"."
-msgstr ""
+msgstr ":data:`point_like` オブジェクト *p1* から *p2* への波線（うねり、曲線）を描画します。常に整数回の完全な波の周期が描画され、1つの周期の長さは4 * breadthです。必要に応じて幅パラメータが調整され、この条件を満たします。描かれる線は常に *p1* を離れる際に「左」に曲がり、*p2* には常に「右」から接続します。"
 
 #: ../../shape.rst:80 e141c38a7db0400cbccd9c3e9d9ce751
 msgid ""
 "the amplitude of each wave. The condition *2 * breadth < abs(p2 - p1)* "
 "must be true to fit in at least one wave. See the following picture, "
 "which shows two points connected by one full period."
-msgstr ""
+msgstr "各波の振幅。条件 *2 * breadth < abs(p2 - p1)* が少なくとも1つの波に収まる必要があります。次の図は、1つの完全な周期で接続された2つの点を示しています。"
 
 #: ../../shape.rst:87 a017c333e4c44e2b9aefe89c3fa62621
 msgid ""
 "Here is an example of three connected lines, forming a closed, filled "
 "triangle. Little arrows indicate the stroking direction."
-msgstr ""
+msgstr "以下は、閉じた塗りつぶされた三角形を形成する三つの連結した線の例です。小さな矢印はストロークの方向を示しています。"
 
 #: ../../shape.rst:103 5b66ba66ccc94a6ab39401655e25fe76
 msgid ""
 "Waves drawn are **not** trigonometric (sine / cosine). If you need that, "
 "have a look at `draw.py <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/examples/draw-sines/draw.py>`_."
-msgstr ""
+msgstr "描かれる波は三角関数（正弦/余弦）**ではありません**。それが必要な場合は `draw.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/draw-sines/draw.py>`_ を参照してください。"
 
 #: ../../shape.rst:110 96522815f2344feaa9efe52fa9f44dfa
 msgid ""
 "Draw a zigzag line from :data:`point_like` objects *p1* to *p2*. "
 "Otherwise works exactly like :meth:`Shape.draw_squiggle`."
-msgstr ""
+msgstr ":data:`point_like` オブジェクト *p1* から *p2* へジグザグのラインを描画します。それ以外は :meth:`Shape.draw_squiggle` とまったく同じです。"
 
 #: ../../shape.rst:116 03dcf5b6397c4c998e4a9e625f5cfe1e
 msgid ""
 "the amplitude of the movement. The condition *2 * breadth < abs(p2 - p1)*"
 " must be true to fit in at least one period."
-msgstr ""
+msgstr "動きの振幅。1つの周期に収まるように振幅を調整します。条件は *2 * breadth < abs(p2 - p1)* である必要があります。"
 
 #: ../../shape.rst:123 19e14bda4b754db399f0c0d419e886d1
 msgid ""
 "Draw several connected lines between points contained in the sequence "
 "*points*. This can be used for creating arbitrary polygons by setting the"
 " last item equal to the first one."
-msgstr ""
+msgstr "シーケンス *points* に含まれるポイント間にいくつかの接続されたラインを描画します。これを使用して、最後のアイテムを最初のアイテムと等しく設定することで、任意の多角形を作成できます。"
 
 #: ../../shape.rst:125 18076cc17fbb492ba50ad39405d82a3f
 msgid ""
 "a sequence of :data:`point_like` objects. Its length must at least be 2 "
 "(in which case it is equivalent to *draw_line()*)."
-msgstr ""
+msgstr ":data:`point_like` オブジェクトのシーケンス。その長さは少なくとも2である必要があります（この場合、*draw_line()* と同等です）。"
 
 #: ../../shape.rst:128 25a27705e3b64679bb70c4746dd8b59a
 msgid "*points[-1]* -- the last point in the argument sequence."
-msgstr ""
+msgstr "引数シーケンスの最後のポイント、*points[-1]*。"
 
 #: ../../shape.rst:132 8dc98885eb324ee39b96d5fe1237d24f
 msgid ""
 "Draw a standard cubic Bézier curve from *p1* to *p4*, using *p2* and *p3*"
 " as control points."
-msgstr ""
+msgstr "*p1* から *p4* への標準的な立方ベジエ曲線を *p2*と *p3* を制御ポイントとして描画します。"
 
 #: ../../shape.rst:134 bc9d0e8a74094290900c1d56e6b44e7e
 msgid "All arguments are :data:`point_like` \\s."
-msgstr ""
+msgstr "すべての引数は :data:`point_like` です。"
 
 #: ../../shape.rst:137 880098bc1b534f04b7440c6ff2c3089d
 msgid "the end point, *p4*."
-msgstr ""
+msgstr "終了点 *p4*。"
 
 #: ../../shape.rst:139 49237b1d580d4fac930b28e37cc5efdd
 msgid ""
 "The points do not need to be different -- experiment a bit with some of "
 "them being equal!"
-msgstr ""
+msgstr "ポイントは異なる必要はありません。一部のポイントが等しい場合も試してみてください！"
 
 #: ../../shape.rst:141 16a7538e3ec04fe6a02d3cbad2a2488f
 msgid "Example:"
-msgstr ""
+msgstr "例："
 
 #: ../../shape.rst:147 ce02388a05644d10a440fad4add2f4ee
 msgid ""
@@ -435,13 +447,13 @@ msgid ""
 " square, a regular circle is drawn, a general rectangle will result in an"
 " ellipse. If a quadrilateral is used instead, a plethora of shapes can be"
 " the result."
-msgstr ""
+msgstr "指定された四角形（四辺形）内に「楕円」を描画します。正方形の場合、正円が描かれ、一般的な長方形は楕円になります。四角形が使用される場合、さまざまな形状が結果として得られる可能性があります。"
 
 #: ../../shape.rst:149 265e347d7c4a4f8abc21c5ae339dfaa4
 msgid ""
 "The drawing starts and ends at the middle point of the line `bottom-left "
 "-> top-left` corners in an anti-clockwise movement."
-msgstr ""
+msgstr "描画は、反時計回りの動きで、左下隅 -> 左上隅の中間点で開始し、終了します。"
 
 #: ../../shape.rst:151 aa250094df2c462dbb2a845b51eae49c
 msgid ""
@@ -451,41 +463,41 @@ msgstr ""
 
 #: ../../shape.rst:151 29d9c781ce054151818499c605f0a1d9
 msgid ":data:`rect_like` or :data:`quad_like`."
-msgstr ""
+msgstr ":data:`rect_like` または :data:`quad_like`。"
 
 #: ../../shape.rst:153 6db98e67c8d04630a4eaf0241e97b26f
 msgid "*Changed in version 1.14.5:*  Quads are now also supported."
-msgstr ""
+msgstr "*バージョン1.14.5で変更：* 四角形もサポートされるようになりました。"
 
 #: ../../shape.rst:156 ddeaacbcd7ca41d2928f7861cb3447c1
 msgid ""
 "the middle point of line `rect.bl -> rect.tl`, or resp. `quad.ll -> "
 "quad.ul`. Look at just a few examples here, or at the *quad-show?.py* "
 "scripts in the PyMuPDF-Utilities repository."
-msgstr ""
+msgstr "`rect.bl -> rect.tl` 、または `quad.ll -> quad.ul` の線の中間点。いくつかの例はこちら、またはPyMuPDF-Utilitiesリポジトリの *quad-show?.py* スクリプトをご覧ください。"
 
 #: ../../shape.rst:163 8223d096003c42008647060b9d3bd1e9
 msgid ""
 "Draw a circle given its center and radius. The drawing starts and ends at"
 " point `center - (radius, 0)` in an **anti-clockwise** movement. This "
 "point is the middle of the enclosing square's left side."
-msgstr ""
+msgstr "指定された中心と半径で円を描きます。描画は、**反時計回り** の動きで、ポイント `center - (radius, 0)` で始まり、終了します。このポイントは、包括的な正方形の左側の中央です。"
 
 #: ../../shape.rst:165 23b06b7b2e3843cfa742c6e8b57d94ae
 msgid ""
 "This is a shortcut for `draw_sector(center, start, 360, "
 "fullSector=False)`. To draw the same circle in a **clockwise** movement, "
 "use `-360` as degrees."
-msgstr ""
+msgstr "これは  `draw_sector(center, start, 360, fullSector=False)` のショートカットです。**時計回り** に同じ円を描画するには、度数として -360 を使用してください。"
 
 #: ../../shape.rst:167 ../../shape.rst:197 54c5514c59d047669dc538937ee6c85f
 #: e821358de04d4d2a99c4ce0886930fc4
 msgid "the center of the circle."
-msgstr ""
+msgstr "円の中心。"
 
 #: ../../shape.rst:169 5904c9ea544f40e1a9a09c2e501c7c60
 msgid "the radius of the circle. Must be positive."
-msgstr ""
+msgstr "円の半径。正である必要があります。"
 
 #: ../../shape.rst:172 7629fb1cf35245e8ab58131cb430dc3f
 msgid ""
@@ -506,11 +518,11 @@ msgid ""
 "does not change its sign. If the lines to p2 intersect with an angle of "
 "90 degrees, then the resulting curve is a quarter ellipse (resp. quarter "
 "circle, if of same length)."
-msgstr ""
+msgstr "*draw_bezier()* の特殊なケース: *p1* から *p3* までの三次ベジエ曲線を描きます。各ライン `p1 -> p2` および `p3 -> p2` に制御点が生成されます。したがって、両方の制御点はライン `p1 -> p3` の同じ側にあります。これにより、曲線の曲率が符号を変更しないことが保証されます。p2 へのラインが90度で交差する場合、結果の曲線は四分の楕円（同じ長さの場合は四半期の円）です。"
 
 #: ../../shape.rst:181 d669f3794e1f4df5a55ec5257b6ff393
 msgid "All arguments are :data:`point_like`."
-msgstr ""
+msgstr "すべての引数は :data:`point_like` です。"
 
 #: ../../shape.rst:184 6f5379cf58e4497bbc2d1dc9e37acae3
 msgid ""
@@ -523,33 +535,33 @@ msgstr ""
 msgid ""
 "the end point, *p3*. The following is a filled quarter ellipse segment. "
 "The yellow area is oriented **clockwise:**"
-msgstr ""
+msgstr "終点、p3。以下は塗りつぶされた四分の楕円セグメントです。黄色の領域は **時計回り** に向いています："
 
 #: ../../shape.rst:195 c593e3cc57c048108cb57acd9d1c07ba
 msgid ""
 "Draw a circular sector, optionally connecting the arc to the circle's "
 "center (like a piece of pie)."
-msgstr ""
+msgstr "円のセクタを描き、必要に応じて円の中心に弧を接続します（パイの一片のように）。"
 
 #: ../../shape.rst:199 fee8f7b24d40416d9540eb38deda1a6c
 msgid ""
 "one of the two end points of the pie's arc segment. The other one is "
 "calculated from the *angle*."
-msgstr ""
+msgstr "パイの弧セグメントの2つの端点のうちの1つ。*角度* から他の端点が計算されます。"
 
 #: ../../shape.rst:201 98569ab33db64e18ace237679634222f
 msgid ""
 "the angle of the sector in degrees. Used to calculate the other end point"
 " of the arc. Depending on its sign, the arc is drawn anti-clockwise "
 "(positive) or clockwise."
-msgstr ""
+msgstr "その符号に応じて、弧は反時計回り（正の値）または時計回りに描かれます。"
 
 #: ../../shape.rst:203 1ebd31482c7a412e8c65332d5a17de01
 msgid ""
 "whether to draw connecting lines from the ends of the arc to the circle "
 "center. If a fill color is specified, the full \"pie\" is colored, "
 "otherwise just the sector."
-msgstr ""
+msgstr "弧の端点から円の中心に接続線を描くかどうか。塗りつぶし色が指定されている場合、完全な「パイ」が色付けされ、それ以外の場合はセクタのみが色付けされます。"
 
 #: ../../shape.rst:206 381d3f12b3ee4f82a2b516b4caae3dcd
 msgid ""
@@ -563,21 +575,21 @@ msgstr ""
 msgid ""
 "the other end point of the arc. Can be used as starting point for a "
 "following invocation to create logically connected pies charts. Examples:"
-msgstr ""
+msgstr "弧のもう一方の端点。論理的に接続されたパイチャートを作成するための次の呼び出しの開始点として使用できます。以下は例です："
 
 #: ../../shape.rst:215 c05e6f8265264e88a41c4d4de7160a00
 msgid "Changed in v1.22.0: Added parameter *radius*."
-msgstr ""
+msgstr "変更された v1.22.0 で：パラメーター *radius* が追加されました。"
 
 #: ../../shape.rst:217 1b68e6fcb66d48b9b5bf5a11b8ea6136
 msgid ""
 "Draw a rectangle. The drawing starts and ends at the top-left corner in "
 "an anti-clockwise movement."
-msgstr ""
+msgstr "長方形を描画します。描画は、上部左隅から反時計回りの動きで始まり、終了します。"
 
 #: ../../shape.rst:219 a7b371cb5930488aaab0ae443feca4e6
 msgid "where to put the rectangle on the page."
-msgstr ""
+msgstr "ページ上の長方形の配置先。"
 
 #: ../../shape.rst:220 0d48c16582b94744905dab20e6fd19fd
 #, python-format
@@ -590,22 +602,22 @@ msgid ""
 " as a quarter circle. If a tuple `(rx, ry)` is given, then the curvature "
 "is asymmetric with respect to the horizontal and vertical directions. A "
 "value of `radius=(0.5, 0.5)` draws an ellipse."
-msgstr ""
+msgstr "角の丸みを付けた長方形を描画します。`None` でない場合、曲線の半径を長方形の辺の長さのパーセンテージとして指定します。これは 1 つまたは 2 つの浮動小数点数、`0 < radius <= 0.5` でなければなりません。0.5 は、対応する辺の 50% に相当します。浮動小数点数の場合、曲線の半径は `radius * min(width, height)` として計算され、角の周囲を 1/4 円で描画します。タプル `(rx, ry)` が指定された場合、曲線は水平および垂直方向に対して非対称です。`radius=(0.5, 0.5)` は楕円を描画します。"
 
 #: ../../shape.rst:223 4d7d48d4b2db4467a6823f34dc7e2bc6
 msgid "top-left corner of the rectangle."
-msgstr ""
+msgstr "長方形の上部左隅。"
 
 #: ../../shape.rst:227 fbac3cdbfe624a2d86667e34f16cb2d8
 msgid ""
 "Draw a quadrilateral. The drawing starts and ends at the top-left corner "
 "(:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of "
 ":meth:`Shape.draw_polyline` with the argument `(ul, ll, lr, ur, ul)`."
-msgstr ""
+msgstr "四角形を描画します。描画は、上部左隅 (:attr:`Quad.ul`) から反時計回りの動きで始まり、終了します。これは :meth:`Shape.draw_polyline` の引数 `(ul, ll, lr, ur, ul)` を使用したショートカットです。"
 
 #: ../../shape.rst:229 637052605e3947aa8cb623ac867a50fc
 msgid "where to put the tetragon on the page."
-msgstr ""
+msgstr "ページ上の四角形の配置先。"
 
 #: ../../shape.rst:232 86e5369ba30347e786240019ce0c4b17
 msgid ":attr:`Quad.ul`."
@@ -615,19 +627,19 @@ msgstr ""
 msgid ""
 "Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all "
 "of them."
-msgstr ""
+msgstr "次の *draw*()* メソッドの一連の描画を、:ref:`CommonParms` をそれらすべてに適用して終了します。"
 
 #: ../../shape.rst:268 98efcc3f32c2462583d345de5163ad12
 msgid ""
 "It has **no effect on** :meth:`Shape.insert_text` and "
 ":meth:`Shape.insert_textbox`."
-msgstr ""
+msgstr ":meth:`Shape.insert_text` および:meth:`Shape.insert_textbox` には **影響を与えません**。"
 
 #: ../../shape.rst:270 3af93ab0d2d94cb5845e38ef589c59d6
 msgid ""
 "The method also supports **morphing the compound drawing** using "
 ":ref:`Point` *fixpoint* and :ref:`matrix` *matrix*."
-msgstr ""
+msgstr "このメソッドは、:ref:`Point` *fixpoint* と :ref:`matrix` *matrix* を使用して、テキストまたは **複合描画を変形させること** もサポートしています。"
 
 #: ../../shape.rst:272 e8f616c901f44aa1901d378279c54711
 msgid ""
@@ -638,19 +650,19 @@ msgid ""
 "values in its first 4 components, *matrix.e == matrix.f == 0* must be "
 "true, however. This means that any combination of scaling, shearing, "
 "rotating, flipping, etc. is possible, but translations are not."
-msgstr ""
+msgstr "テキストまたは複合描画を、任意の :ref:`Point` *fixpoint* に :ref:`Matrix` *matrix* を適用して変形します。これにより、*fixpoint* はこの操作の **固定ポイント** であることを意味します。その位置は変わりません。デフォルトは変形なし（*None*）です。ただし、matrixの最初の4つの成分には任意の値を含めることができ、*matrix.e == matrix.f == 0* である必要があります。これは、スケーリング、シアリング、回転、反転など、移動以外の組み合わせが可能であることを意味しますが、移動はできません。"
 
 #: ../../shape.rst:274 410137597b874abaae4f4fcd23084cdf
 msgid ""
 "*(new in v1.18.1)* set transparency for stroke colors. Value < 0 or > 1 "
 "will be ignored. Default is 1 (intransparent)."
-msgstr ""
+msgstr "*（v1.18.1で新規追加）* ストロークの透明度を設定します。値が0未満または1を超える場合は無視されます。デフォルトは1（不透明）です。"
 
 #: ../../shape.rst:275 611ae8f8364c4be2aa51a9f058b40f30
 msgid ""
 "*(new in v1.18.1)* set transparency for fill colors. Default is 1 "
 "(intransparent)."
-msgstr ""
+msgstr "*（v1.18.1で新規追加）* 塗りつぶしの色の透明度を設定します。デフォルトは1（不透明）です。"
 
 #: ../../shape.rst:277 b3e7545ee4f643b39e67702874f30aeb
 msgid ""
@@ -661,24 +673,24 @@ msgid ""
 "expected with these rules. For an in-depth explanation, see "
 ":ref:`AdobeManual`, pp. 137 ff. Here is an example to demonstrate the "
 "difference."
-msgstr ""
+msgstr "塗りつぶし操作に対して **「even-oddルール」** を要求します。デフォルトは *False* で、したがって **「非ゼロのワインディング数ルール」** が使用されます。これらのルールは、領域が重なる場所で塗りつぶし色を適用するための代替メソッドです。複雑な形状では、これらのルールに異なる振る舞いが期待されることはほとんどありません。詳細な説明については、:ref:`AdobeManual` の137ページ以降を参照してください。以下はその違いを示す例です。"
 
 #: ../../shape.rst:279 ce838028355f4931959b8c38ef280a7e
 msgid ""
 "*(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or "
 ":data:`OCMD` to make this drawing conditionally displayable."
-msgstr ""
+msgstr "*（v1.18.4で新規追加）* この描画を条件付きで表示可能にする :data:`OCG` または :data:`OCMD` の :data:`xref` 番号。"
 
 #: ../../shape.rst:283 2851131b5e12463a84014d3b11458b90
 msgid "For each pixel in a shape, the following will happen:"
-msgstr ""
+msgstr "各ピクセルの場合、以下のことが起こります："
 
 #: ../../shape.rst:285 d42238789a874ad4b65ae380ed3f487c
 msgid ""
 "Rule **\"even-odd\"** counts, how many areas contain the pixel. If this "
 "count is **odd,** the pixel is regarded **inside** the shape, if it is "
 "**even**, the pixel is **outside**."
-msgstr ""
+msgstr "ルール **「even-odd」** は、ピクセルを含むエリアの数をカウントします。このカウントが **奇数** の場合、ピクセルは形状の **内部** と見なされ、偶数の場合は **外部** と見なされます。"
 
 #: ../../shape.rst:287 2d63650033804048acb50674ed836c15
 msgid ""
@@ -687,7 +699,7 @@ msgid ""
 "area is drawn anti-clockwise and it **subtracts 1** for clockwise areas. "
 "If the result is zero, the pixel is regarded **outside,** pixels with a "
 "non-zero count are **inside** the shape."
-msgstr ""
+msgstr "デフォルトのルール **「nonzero winding」** では、ピクセルを含む各エリアの *「方向」* も考慮されます。エリアが反時計回りに描かれている場合は **1を追加し** 、時計回りのエリアは **1を引きます** 。結果がゼロの場合、ピクセルは **外部** と見なされ、非ゼロのカウントを持つピクセルは形状の **内部** と見なされます。"
 
 #: ../../shape.rst:289 5ecbc6280e3149c9bc9519c74673e3c5
 msgid ""
@@ -696,11 +708,11 @@ msgid ""
 "two shapes contain one (the top-left) circle drawn clockwise. As can be "
 "seen, area orientation is irrelevant for the right column (even-odd "
 "rule)."
-msgstr ""
+msgstr "上記の画像の4つの形状のうち、上の2つはそれぞれ標準的な方法で描かれた3つの円を示しています（反時計回り、矢印を参照）。下の2つの形状には時計回りに描かれた1つ（左上）の円が含まれています。右の列では、エリアの方向は無視されることがわかります（even-oddルール）。"
 
 #: ../../shape.rst:294 4799567c3bae4c0f85017bbb03a34b51
 msgid "Insert text lines start at *point*."
-msgstr ""
+msgstr "テキスト行を *point* で開始します。"
 
 #: ../../shape.rst:296 1f67ae8eb7934c36831a41ceff931bf2
 msgid ""
@@ -718,7 +730,7 @@ msgid ""
 "*rotate* parameter. Please have a look at the following picture. The "
 "small red dots indicate the positions of *point* in each of the four "
 "possible cases."
-msgstr ""
+msgstr "テキストの最初の文字の下部左位置（ピクセル単位）。*rotate* パラメータとの連携方法を理解することが重要です。以下の画像をご覧ください。小さな赤い点は、各ケースでの *point* の位置を示しています。"
 
 #: ../../shape.rst:301 54fd86f871514215aeea1712ff9151d6
 msgid ""
@@ -729,20 +741,20 @@ msgid ""
 "space on the page (in the sense of reading direction as established by "
 "the *rotate* parameter). Any rest of *text* is discarded -- the return "
 "code however contains the number of inserted lines."
-msgstr ""
+msgstr "挿入するテキスト。文字列型または文字列のシーケンス型として指定できます。シーケンスの場合、または改行文字 *\\n* を含む文字列の場合、複数の行が挿入されます。ただし、行があまりにも幅が広い場合、挿入される行数はページ上の「垂直」スペース（*回転* パラメータによって確立される読み取り方向の意味で）によって制限されます。*テキスト* の残り部分は破棄されますが、戻りコードには挿入された行数が含まれます。"
 
 #: ../../shape.rst:303 0b890535129641839f9c71dd321b3be5
 msgid ""
 "a factor to override the line height calculated from font properties. If "
 "not *None*, a line height of `fontsize * lineheight` will be used."
-msgstr ""
+msgstr "フォントのプロパティから計算された行の高さをオーバーライドするためのファクター。*None* でない場合、`fontsize * lineheight` の行の高さが使用されます。"
 
 #: ../../shape.rst:304 ../../shape.rst:343 54e8788cc27b4457ab963fba8ab03528
 #: fca8c8ed895241a68586a381ea48abdf
 msgid ""
 "*(new in v1.18.1)* set transparency for stroke colors. Negative values "
 "and values > 1 will be ignored. Default is 1 (intransparent)."
-msgstr ""
+msgstr "*（v1.18.1で新たに追加）* ストロークカラーの透明度を設定します。負の値や1より大きい値は無視されます。デフォルトは1（不透明）です。"
 
 #: ../../shape.rst:305 ../../shape.rst:344 8d80bfcea1b0491381ff9869c2c9a5f1
 #: ba77178543c24996ac6f1b1606a49b17
@@ -750,7 +762,7 @@ msgid ""
 "*(new in v1.18.1)* set transparency for fill colors. Default is 1 "
 "(intransparent). Use this value to control transparency of the text "
 "color. Stroke opacity **only** affects the border line of characters."
-msgstr ""
+msgstr "*（v1.18.1で新たに追加）* 塗りつぶしカラーの透明度を設定します。デフォルトは1（不透明）です。テキストカラーの透明度を制御するためにこの値を使用します。ストロークの透明度は文字の境界線に **のみ** 影響します。"
 
 #: ../../shape.rst:307 d8a634e4348f44d19098a93f5bffd140
 msgid ""
@@ -763,23 +775,23 @@ msgid ""
 " of the first character's rectangle. Multiple lines, if present, always "
 "follow the reading direction established by this parameter. So line 2 is "
 "located **above** line 1 in case of *rotate = 180*, etc."
-msgstr ""
+msgstr "テキストを回転させるかどうかを決定します。許容される値は90度の倍数です。デフォルトは0（回転なし）で、左から右への水平テキストが表示されます。180は、**右から左** への上下逆さテキストを意味し、90は反時計回りの回転で、テキストが **上向き** に表示されます。270（または-90）は時計回りの回転で、テキストが **下向き** に表示されます。いずれの場合も、pointは最初の文字の矩形の左下の座標を指定します。存在する場合、複数行は常にこのパラメータによって確立された読み取り方向に従います。したがって、 *rotate = 180* の場合、行2は行1の **上に** 配置されます。"
 
 #: ../../shape.rst:309 ../../shape.rst:348 0464be6212cd4561b9d260ebe7570166
 #: ce3a72a262bc4bbb821794be74c4cb24
 msgid ""
 "*(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or "
 ":data:`OCMD` to make this text conditionally displayable."
-msgstr ""
+msgstr "*(v1.18.4 新機能)* :data:`OCG` または :data:`OCMD` の :data:`xref` 番号、テキストを条件付きで表示可能にするためのものです。"
 
 #: ../../shape.rst:312 0352f8b3b28247cca8297d0b6cd2eb85
 msgid "number of lines inserted."
-msgstr ""
+msgstr "挿入された行数。"
 
 #: ../../shape.rst:314 ../../shape.rst:360 27aa9bd0124d4200b34a57190728b826
 #: 2dcef62820ef43f6b11e989a0b9c68ab
 msgid "For a description of the other parameters see :ref:`CommonParms`."
-msgstr ""
+msgstr "他のパラメータの説明については  :ref:`CommonParms` を参照してください。"
 
 #: ../../shape.rst:333 888b13a03eda441d85d661492e07af77
 msgid ""
@@ -787,18 +799,18 @@ msgid ""
 "split into lines and words and then filled into the available space, "
 "starting from one of the four rectangle corners, which depends on "
 "*rotate*. Line feeds and multiple space will be respected."
-msgstr ""
+msgstr "PDFのみ：指定された矩形にテキストを挿入します。テキストは行と単語に分割され、*回転* に応じて異なる矩形の角から始まり、利用可能なスペースに挿入されます。行送りと複数のスペースは尊重されます。"
 
 #: ../../shape.rst:335 1119c65106db4532811326cd4cbe29fe
 msgid "the area to use. It must be finite and not empty."
-msgstr ""
+msgstr "使用する領域。有限でかつ空でなければなりません。"
 
 #: ../../shape.rst:337 4a6d08f1fe0f4facb6739a274c025d60
 msgid ""
 "the text to be inserted. Must be specified as a string or a sequence of "
 "strings. Line breaks are respected also when occurring in a sequence "
 "entry."
-msgstr ""
+msgstr "挿入するテキスト。文字列または文字列のシーケンスとして指定する必要があります。シーケンスエントリ内の行送りも尊重されます。"
 
 #: ../../shape.rst:339 6f93b5cdedce4a2aa33d068da5f641c9
 msgid ""
@@ -806,13 +818,13 @@ msgid ""
 "are the other supported options, see :ref:`TextAlign`. Please note that "
 "the effect of parameter value *TEXT_ALIGN_JUSTIFY* is only achievable "
 "with \"simple\" (single-byte) fonts (including the :ref:`Base-14-Fonts`)."
-msgstr ""
+msgstr "各テキスト行を整列させます。デフォルトは0（左揃え）。センタリング、右揃え、ジャスティファイドがサポートされている他のオプションです。詳細は :ref:`TextAlign` を参照してください。なお、パラメータ値  *TEXT_ALIGN_JUSTIFY* の効果は、「シンプル」（単一バイト）フォント（:ref:`Base-14-Fonts` を含む）でのみ達成できます。"
 
 #: ../../shape.rst:341 3da95872e8554090a4b74c1c92bd266c
 msgid ""
 "controls handling of tab characters *\\t* using the *string.expandtabs()*"
 " method **per each line**."
-msgstr ""
+msgstr "タブ文字 *\\t* の処理を **行ごとに** *string.expandtabs()* メソッドを使用して制御します。"
 
 #: ../../shape.rst:346 155aae0b713a42cb90a83c319917ea07
 msgid ""
@@ -825,7 +837,7 @@ msgid ""
 "See the second example, which shows text first rotated left by 90 degrees"
 " and then the whole rectangle rotated clockwise around is lower left "
 "corner."
-msgstr ""
+msgstr "テキストを矩形内で回転させるように要求します。受け入れ可能な値は90度の倍数です。デフォルトは0（回転なし）、つまり左から右への水平なテキスト行です。180は、右から左に逆さまに表示されることを意味します。90は反時計回りの回転で、テキストは上に向かって表示されます。270（または-90）は時計回りの回転で、テキストは下に向かって表示されます。いずれの場合も、pointは最初の文字の矩形の左下の座標を指定します。複数行がある場合は、常にこのパラメータで確立された読み取り方向に従います。したがって、rotate = 180の場合、行2は行1の上に配置されますなど。"
 
 #: ../../shape.rst:351 c688c21efc24469d9ba8dc59f9a7fc08
 msgid ""
@@ -842,53 +854,53 @@ msgid ""
 "**If positive or zero**: successful execution. The value returned is the "
 "unused rectangle line space in pixels. This may safely be ignored -- or "
 "be used to optimize the rectangle, position subsequent items, etc."
-msgstr ""
+msgstr "**正またはゼロの場合** ：正常な実行。返される値は使用されていない矩形行のスペース（ピクセル単位）です。これを安全に無視するか、矩形を最適化したり、後続のアイテムの位置を調整したりするために使用できます。"
 
 #: ../../shape.rst:354 f39caa3724e84078b2559d5843789c96
 msgid ""
 "**If negative**: no execution. The value returned is the space deficit to"
 " store text lines. Enlarge rectangle, decrease *fontsize*, decrease text "
 "amount, etc."
-msgstr ""
+msgstr "**負の場合**： 実行なし。返される値はテキスト行を格納するためのスペース不足です。矩形を拡大したり、フォントサイズを減少させたり、テキストの量を減少させたりする必要があります。"
 
 #: ../../shape.rst:368 97d5bbf584f14b00a3e7377e7cfdbf45
 msgid ""
 "Update the page's :data:`contents` with the accumulated drawings, "
 "followed by any text insertions. If text overlaps drawings, it will be "
 "written on top of the drawings."
-msgstr ""
+msgstr "ページの :data:`contents` を蓄積された描画に更新し、その後テキスト挿入が続きます。テキストが描画と重なる場合、テキストは描画の上に書き込まれます。"
 
 #: ../../shape.rst:370 2476e3777d574db2be4e8cae7dc3cf8c
 msgid "**Do not forget to execute this method:**"
-msgstr ""
+msgstr "**このメソッドを実行しないことは忘れないでください：**"
 
 #: ../../shape.rst:372 d54739856ad14e88b32e7edef5b81a17
 msgid ""
 "If a shape is **not committed, it will be ignored and the page will not "
 "be changed!**"
-msgstr ""
+msgstr "シェイプが **確定されていない** 場合、無視され、ページは変更されません！"
 
 #: ../../shape.rst:374 56e2139393734d319d07e5741f17c60a
 msgid ""
 "The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, "
 ":attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, "
 "the shape object can be reused for the **same page**."
-msgstr ""
+msgstr "このメソッドは、属性 :attr:`Shape.rect`、:attr:`lastPoint` 、:attr:`draw_cont` 、:attr:`text_cont` 、および :attr:`totalcont` をリセットします。その後、シェイプオブジェクトは **同じページ** で再利用できます。"
 
 #: ../../shape.rst:376 418e9d960a634182aa10e3ece60809f6
 msgid ""
 "determine whether to put content in foreground (default) or background. "
 "Relevant only, if the page already has a non-empty :data:`contents` "
 "object."
-msgstr ""
+msgstr "コンテンツを前面（デフォルト）または背面に配置するかどうかを決定します。ページに既存の非空の :data:`contents` オブジェクトがある場合のみ関連します。"
 
 #: ../../shape.rst:378 80e78f1079994267ac1a7ee81c41a318
 msgid "**---------- Attributes ----------**"
-msgstr ""
+msgstr "**属性**"
 
 #: ../../shape.rst:382 b7005e49e2d44d98bb381eb6d532a471
 msgid "For reference only: the page's document."
-msgstr ""
+msgstr "参照専用：ページの文書。"
 
 #: ../../shape.rst 34840cef97b340e591a66fd33018160b
 #: 37032b28708242efaa3f0ee394c28125 3cfea3d577214117a3f1807614524c48
@@ -904,7 +916,7 @@ msgstr ""
 
 #: ../../shape.rst:388 01ca33dc606f41aa9f50bd5e1c50867f
 msgid "For reference only: the owning page."
-msgstr ""
+msgstr "参照専用：所属するページ。"
 
 #: ../../shape.rst:390 eabb2203a4444c8a9cf61526ac87c5ad
 msgid ":ref:`Page`"
@@ -912,7 +924,7 @@ msgstr ""
 
 #: ../../shape.rst:394 4555c20926e34e479242db63da385fbf
 msgid "Copy of the page's height"
-msgstr ""
+msgstr "ページの高さのコピー"
 
 #: ../../shape.rst:396 ../../shape.rst:402 1b0391085a3d43d99686b536e5b62489
 #: 1fafb1127d8141c09ef6e55f4c18b514
@@ -921,13 +933,13 @@ msgstr ""
 
 #: ../../shape.rst:400 f75719b1825147fda6becec4397f3931
 msgid "Copy of the page's width."
-msgstr ""
+msgstr "ページの幅のコピー。"
 
 #: ../../shape.rst:406 0efea0aef93c49e19e01ca2df7bec40d
 msgid ""
 "Accumulated command buffer for **draw methods** since last finish. Every "
 "finish method will append its commands to :attr:`Shape.totalcont`."
-msgstr ""
+msgstr "最後のfinish以降の **描画メソッド** の蓄積コマンドバッファ。各finishメソッドはそのコマンドを :attr:`Shape.totalcont` に追加します。"
 
 #: ../../shape.rst:408 ../../shape.rst:414 ../../shape.rst:435
 #: 4205301f942744c68019c12a5e78946c 473d8d579487439cbcccf8634737189f
@@ -940,7 +952,7 @@ msgid ""
 "Accumulated text buffer. All **text insertions** go here. This buffer "
 "will be appended to :attr:`totalcont` :meth:`Shape.commit`, so that text "
 "will never be covered by drawings in the same Shape."
-msgstr ""
+msgstr "蓄積されたテキストバッファ。すべての **テキスト挿入** はここに行われます。このバッファは :attr:`totalcont` :meth:`Shape.commit` に追加されるため、テキストは同じShape内の描画に覆われることはありません。"
 
 #: ../../shape.rst:418 b9bba524c74743d7a786a579595f8104
 msgid ""
@@ -950,7 +962,7 @@ msgid ""
 ":meth:`Shape.insert_textbox` update this property (i.e. **enlarge** the "
 "rectangle as needed). **Morphing** operations, however "
 "(:meth:`Shape.finish`, :meth:`Shape.insert_textbox`) are ignored."
-msgstr ""
+msgstr "描画を囲む矩形。この属性はあなたの自由に使用でき、いつでも変更できます。シェイプが作成または確定されたとき、その値は *None* に設定されます。すべての *draw** メソッド、および :meth:`Shape.insert_textbox` はこのプロパティを更新します（必要に応じて矩形を **拡大します** ）。ただし、**変形** 操作（:meth:`Shape.finish` 、:meth:`Shape.insert_textbox` ）は無視されます。"
 
 #: ../../shape.rst:420 b0922fa0d17846e9bc031de6e01e11b5
 msgid ""
@@ -959,13 +971,13 @@ msgid ""
 " for later or external use. If you have not manipulated the attribute "
 "yourself, it should reflect a rectangle that contains all drawings so "
 "far."
-msgstr ""
+msgstr "この属性の典型的な使用法は、後でまたは外部で使用するためにシェイプを作成する場合、:attr:`Page.cropbox_position` をこの値に設定することです。自分で属性を操作していない場合、これはこれまでのすべての描画を含む矩形を反映するはずです。"
 
 #: ../../shape.rst:422 0d9570087fb14065a1d1da21ca10539e
 msgid ""
 "If you have used morphing and need a rectangle containing the morphed "
 "objects, use the following code::"
-msgstr ""
+msgstr "変形を使用し、変形されたオブジェクトを含む矩形が必要な場合、次のコードを使用します::"
 
 #: ../../shape.rst:429 25b3a45662db446a96dd3b39ec1d8ee1
 msgid ":ref:`Rect`"
@@ -975,17 +987,17 @@ msgstr ""
 msgid ""
 "Total accumulated command buffer for draws and text insertions. This will"
 " be used by :meth:`Shape.commit`."
-msgstr ""
+msgstr "描画およびテキスト挿入のための累積コマンドバッファです。これは :meth:`Shape.commit` で使用されます。"
 
 #: ../../shape.rst:439 2182c227bf634d04a9a25a31c92da72e
 msgid ""
 "For reference only: the current point of the drawing path. It is *None* "
 "at *Shape* creation and after each *finish()* and *commit()*."
-msgstr ""
+msgstr "参照用: 描画パスの現在のポイントです。*Shape* の作成時、および各 *finish()* および *commit()* の後には *None* です。"
 
 #: ../../shape.rst:444 5f375748921d415ea078cf5c974c8bd9
 msgid "Usage"
-msgstr ""
+msgstr "使用法"
 
 #: ../../shape.rst:445 09178bfc96174f7a99f62a64a0df9562
 msgid ""
@@ -993,7 +1005,7 @@ msgid ""
 "this, as many draw, finish and text insertions methods as required may "
 "follow. Each sequence of draws must be finished before the drawing is "
 "committed. The overall coding pattern looks like this::"
-msgstr ""
+msgstr "drawingオブジェクトは `shape = page.new_shape()` によって構築されます。その後、必要なだけ多くのdraw、finish、およびテキスト挿入メソッドが続きます。描画をコミットする前に、各描画シーケンスを終了する必要があります。全体のコーディングパターンは次のようになります::"
 
 #: ../../shape.rst:464 b02ace9efbdf4df0bcd705b7ff453ccd
 msgid ""
@@ -1001,7 +1013,7 @@ msgid ""
 "giving it common colors, line width, morphing, etc. If *closePath* is "
 "specified, it will also connect the end point of the last draw with the "
 "starting point of the first one."
-msgstr ""
+msgstr "各 *finish()* メソッドは、前の描画を1つの論理的なシェイプに結合し、共通の色、線の幅、変形などを設定します。*closePath* が指定されている場合、最後の描画のエンドポイントを最初の描画のスタートポイントと接続します。"
 
 #: ../../shape.rst:466 492d139946104c8996e91ed6430126bf
 msgid ""
@@ -1011,7 +1023,7 @@ msgid ""
 "its starting point. Failing to do so, would automatically start a new "
 "path and *finish()* may not work as expected (but it won't complain "
 "either)."
-msgstr ""
+msgstr "複合グラフィックを正常に作成するには、各 draw メソッドが前の描画のエンドポイントを次の描画のスタートポイントとして使用してください。上記の疑似コードでは、*draw2* は *draw1* の戻り値である :ref:`Point` を次の描画のスタートポイントとして使用すべきです。そうしないと、自動的に新しいパスが開始され、*finish()* が期待どおりに動作しないかもしれません（ただし、エラーは発生しません）。"
 
 #: ../../shape.rst:468 24bf5748d7784c64a13c5a5732c5fe14
 msgid ""
@@ -1019,47 +1031,47 @@ msgid ""
 ":attr:`Shape.draw_cont` nor :attr:`Shape.lastPoint`). They are appended "
 "to *Shape.totalcont* directly, whereas draws will be appended by "
 "*Shape.finish*."
-msgstr ""
+msgstr "テキストの挿入は、コミット（commit）の前にどこでも発生できます :attr:`Shape.draw_cont` または :attr:`Shape.lastPoint` に触れません）。テキストは直接 *Shape.totalcont* に追加されますが、描画は *Shape.finish* によって追加されます。"
 
 #: ../../shape.rst:470 ab0252c0c1e84a7c848bd1732b658ffb
 msgid ""
 "Each *commit* takes all text insertions and shapes and places them in "
 "foreground or background on the page -- thus providing a way to control "
 "graphical layers."
-msgstr ""
+msgstr "各 *コミット* は、すべてのテキスト挿入とシェイプをページの前面または背面に配置し、グラフィックのレイヤーを制御する方法を提供します。"
 
 #: ../../shape.rst:472 b470e20d8f7f4d4e9f23a792c338e7b2
 msgid ""
 "**Only** *commit* **will update** the page's contents, the other methods "
 "are basically string manipulations."
-msgstr ""
+msgstr "*コミット* **のみ** がページのコンテンツを **更新します**。他のメソッドは基本的に文字列の操作です。"
 
 #: ../../shape.rst:475 a39c843075924ec781f79936e3b11141
 msgid "Examples"
-msgstr ""
+msgstr "例"
 
 #: ../../shape.rst:476 a7f3292be0f34b49a6f1979dab1420dc
 msgid "Create a full circle of pieces of pie in different colors::"
-msgstr ""
+msgstr "異なる色のピースを使用して円形のパイを作成します::"
 
 #: ../../shape.rst:491 9c00274a9b644b048de46f55ba7a07e4
 msgid "Here is an example for 5 colors:"
-msgstr ""
+msgstr "以下は5つの色の例です。"
 
 #: ../../shape.rst:495 093dffa9574c4351be38c5af6af4a73b
 msgid ""
 "Create a regular n-edged polygon (fill yellow, red border). We use "
 "*draw_sector()* only to calculate the points on the circumference, and "
 "empty the draw command buffer again before drawing the polygon::"
-msgstr ""
+msgstr "正則なn角形を作成します（塗りつぶしは黄色、赤い境界線）。周囲の点を計算するために *draw_sector（）* を使用し、多角形を描く前に描画コマンドバッファを空にします::"
 
 #: ../../shape.rst:510 7c9a951d4e434a3a9fb9041a45196cbd
 msgid "Here is the polygon for n = 7:"
-msgstr ""
+msgstr "n = 7の場合の多角形は次のとおりです："
 
 #: ../../shape.rst:517 543cfcdeb9144138a50e784f752a2614
 msgid "Common Parameters"
-msgstr ""
+msgstr "共通パラメータ"
 
 #: ../../shape.rst:519 e556d5f2643e4327a16f23ef2293891c
 msgid "**fontname** (*str*)"
@@ -1067,39 +1079,39 @@ msgstr ""
 
 #: ../../shape.rst:521 ef08ee043cc1455a8cba97db1fe5657c
 msgid "In general, there are three options:"
-msgstr ""
+msgstr "一般的に、3つのオプションがあります："
 
 #: ../../shape.rst:523 a7e81cc0b917466eb600b3668cf209bb
 msgid ""
 "Use one of the standard :ref:`Base-14-Fonts`. In this case, *fontfile* "
 "**must not** be specified and *\"Helvetica\"* is used if this parameter "
 "is omitted, too."
-msgstr ""
+msgstr "標準の :ref:`Base-14-Fonts` のいずれかを使用します。この場合、*fontfile* を指定 **してはいけず**、このパラメータを省略した場合は *「Helvetica」* が使用されます。"
 
 #: ../../shape.rst:524 404bc3d8ae714ba1ba2cc00916ece9b5
 msgid ""
 "Choose a font already in use by the page. Then specify its **reference** "
 "name prefixed with a slash \"/\", see example below."
-msgstr ""
+msgstr "既にページで使用されているフォントを選択します。その場合、スラッシュ「/」で前置された **参照** 名を指定します。以下の例を参照してください。"
 
 #: ../../shape.rst:525 e8a5c5f7d7ab4de1a65082afc1466719
 msgid ""
 "Specify a font file present on your system. In this case choose an "
 "arbitrary, but new name for this parameter (without \"/\" prefix)."
-msgstr ""
+msgstr "システムに存在するフォントファイルを指定します。この場合、任意の新しい名前をこのパラメータに選択します（「/」接頭辞なし）。"
 
 #: ../../shape.rst:527 e5aabde17961479bb0f7c006411440b3
 msgid ""
 "If inserted text should re-use one of the page's fonts, use its reference"
 " name appearing in :meth:`Page.get_fonts` like so:"
-msgstr ""
+msgstr "挿入されるテキストがページのフォントの1つを再利用する場合は、:meth:`Page.get_fonts` に表示される参照名を次のように使用します："
 
 #: ../../shape.rst:529 4fa1031117b148baae319c17a93af33d
 msgid ""
 "Suppose the font list has the item *[1024, 0, 'Type1', 'NimbusMonL-Bold',"
 " 'R366']*, then specify *fontname = \"/R366\", fontfile = None* to use "
 "font *NimbusMonL-Bold*."
-msgstr ""
+msgstr "フォントリストに項目 *[1024, 0, 'Type1', 'NimbusMonL-Bold', 'R366']* がある場合、フォント *NimbusMonL-Bold*  を使用するには、*fontname = \"/R366\"、fontfile = None* と指定します。"
 
 #: ../../shape.rst:533 7d4d9b740e46452bbc4423365dd2a9cf
 msgid "**fontfile** (*str*)"
@@ -1112,7 +1124,7 @@ msgid ""
 " new font will be embedded in the PDF upon *doc.save()*. Similar to new "
 "images, a font file will be embedded only once. A table of MD5 codes for "
 "the binary font contents is used to ensure this."
-msgstr ""
+msgstr "コンピューターに存在するフォントのファイルパス。*fontfile* を指定する場合、上記のリストに **存在しない** *フォント名* を使用してください。この新しいフォントは、*doc.save()* 時にPDFに埋め込まれます。画像と同様に、フォントファイルは1度だけ埋め込まれます。バイナリフォントコンテンツのMD5コードのテーブルが使用され、これを確実にします。"
 
 #: ../../shape.rst:539 2272946bc76e471e9bd308d77f7e8bd2
 msgid "**set_simple** (*bool*)"
@@ -1123,15 +1135,15 @@ msgid ""
 "Fonts installed from files are installed as **Type0** fonts by default. "
 "If you want to use 1-byte characters only, set this to true. This setting"
 " cannot be reverted. Subsequent changes are ignored."
-msgstr ""
+msgstr "ファイルからインストールされたフォントは、デフォルトで **Type0** フォントとしてインストールされます。1バイト文字のみを使用する場合は、これをtrueに設定します。この設定は元に戻すことはできません。後続の変更は無視されます。"
 
 #: ../../shape.rst:545 d77e1adbc3ac43f39ac38e1de4fb3b38
 msgid "**fontsize** (*float*)"
 msgstr ""
 
 #: ../../shape.rst:547 7e642cb208424f889fbd06c0a4e81404
-msgid "Font size of text."
-msgstr ""
+msgid "Font size of text, see: :data:`fontsize`."
+msgstr "テキストのフォントサイズ、参照： :data:`fontsize`。"
 
 #: ../../shape.rst:551 dfaeb2d08f6843c9bcedc008b088347a
 msgid "**dashes** (*str*)"
@@ -1144,33 +1156,33 @@ msgid ""
 "(optional) is the subsequent gap length, and `p` (the \"phase\" - "
 "**required**, even if 0!) specifies how many pixels should be skipped "
 "before the dashing starts. If `m` is omitted, it defaults to `n`."
-msgstr ""
+msgstr "線を破線で描画するようにします。一般的なフォーマットは、ピクセル長を示す（最大）3つの浮動小数点数の `\"[n m] p\"` です。``n`` は破線の長さ、``m`` （オプション）はその後のギャップの長さ、 ``p`` （「位相」 - 0であっても **必須**！）は、破線が開始される前にスキップするべきピクセルの数を指定します。``m`` が省略された場合、``n`` にデフォルト値が設定されます。"
 
 #: ../../shape.rst:555 5b762706fd724f088544aa0f0aa545cf
 msgid ""
 "A continuous line (no dashes) is drawn with `\"[] 0\"` or *None* or "
 "`\"\"`. Examples:"
-msgstr ""
+msgstr "連続線（破線なし）は `\"[] 0\"` または *None* または `\"\"` で描画されます。例："
 
 #: ../../shape.rst:557 efd183b0e8984a699f44f3ded19a8278
 msgid ""
 "Specifying `\"[3 4] 0\"` means dashes of 3 and gaps of 4 pixels following"
 " each other."
-msgstr ""
+msgstr "`\"[3 4] 0\"` を指定すると、3ピクセルの破線と4ピクセルのギャップが交互に続きます。"
 
 #: ../../shape.rst:558 c61a7c9ae5f64bd39f1a232fdd4af5ca
 msgid "`\"[3 3] 0\"` and `\"[3] 0\"` do the same thing."
-msgstr ""
+msgstr "`\"[3 3] 0\"` と `\"[3] 0\"` は同じことをします。"
 
 #: ../../shape.rst:560 5597b2ff0e604a76a65e98f7dcfa86bc
 msgid ""
 "For (the rather complex) details on how to achieve sophisticated dashing "
 "effects, see :ref:`AdobeManual`, page 217."
-msgstr ""
+msgstr "洗練された破線効果を実現する詳細な詳細については、:ref:`AdobeManual` の217ページを参照してください。"
 
 #: ../../shape.rst:564 de94145dc5c943149c4df1064af80f6a
 msgid "**color / fill** (*list, tuple*)"
-msgstr ""
+msgstr "**色/塗りつぶし** （*リスト、タプル*）"
 
 #: ../../shape.rst:566 c810d22d9fc949efbbdf5ceba1234b7b
 msgid ""
@@ -1179,7 +1191,7 @@ msgid ""
 " (CMYK). For GRAY colorspace, a single float instead of the unwieldy "
 "*(float,)* or *[float]* is also accepted. Accept (default) or use `None` "
 "to not use the parameter."
-msgstr ""
+msgstr "線の色と塗りつぶしの色は、0から1までの浮動小数点数からなるリストまたはタプルとして指定できます。これらのシーケンスの長さは、1（GRAY）、3（RGB）、または4（CMYK）でなければなりません。GRAYカラースペースの場合、*[float]* や*(float,)* の代わりに単一の浮動小数点数を使用することもできます。このパラメータを受け入れるには、（デフォルト）を受け入れるか、または使用しないようにするには `None` を使用します。"
 
 #: ../../shape.rst:568 d97ce49c9cbc432e974d54e5b41babcd
 msgid ""
@@ -1187,13 +1199,13 @@ msgid ""
 "be used to get predefined RGB color triples by name. It accepts a string "
 "as the name of the color and returns the corresponding triple. The method"
 " knows over 540 color names -- see section :ref:`ColorDatabase`."
-msgstr ""
+msgstr "色の指定を簡略化するために、*fitz.utils* の *getColor()* メソッドを使用して、名前に対応するRGBカラートリプルを取得することができます。これは色の名前を指定する文字列を受け入れ、対応するトリプルを返します。このメソッドは540以上のカラー名を認識します。:ref:`ColorDatabase` のセクションを参照してください。"
 
 #: ../../shape.rst:570 bee4ada9f000499da0974ac4a01d3faa
 msgid ""
 "Please note that the term *color* usually means \"stroke\" color when "
 "used in conjunction with fill color."
-msgstr ""
+msgstr "ご注意ください。*色* という用語は、通常、塗りつぶし色と組み合わせて使用される場合に「線の」色を意味します"
 
 #: ../../shape.rst:572 4d5683c7dadc41e78d1d4aa43555d37f
 msgid ""
@@ -1202,11 +1214,11 @@ msgid ""
 "`None`, then the drawing will contain no color specification. But it will"
 " still be \"stroked\", which causes PDF's default color \"black\" be used"
 " by Adobe Acrobat and all other viewers."
-msgstr ""
+msgstr "色パラメータのデフォルト値を `None` にする場合、対応する色の選択コマンドは生成されません。*fill* と *color* がどちらも `None` の場合、描画には色の指定が含まれません。ただし、まだ「ストローク」されているため、Adobe Acrobatや他のビューアではPDFのデフォルトカラー「ブラック」が使用されます。"
 
 #: ../../shape.rst:576 1c297afde91945728fa423945b9984d2
 msgid "**stroke_opacity / fill_opacity** (*floats*)"
-msgstr ""
+msgstr "**stroke_opacity / fill_opacity** （*浮動小数点数*）"
 
 #: ../../shape.rst:578 57662544bd4a46b28bb2e035b4865c05
 msgid ""
@@ -1215,7 +1227,7 @@ msgid ""
 " 0.5 corresponds to 50% transparency, 0 means invisible and 1 means "
 "intransparent. For e.g. a rectangle the stroke opacity applies to its "
 "border and fill opacity to its interior."
-msgstr ""
+msgstr "両方の値は[0、1]の範囲の浮動小数点数です。負の値または1を超える値は（ほとんどの場合）無視されます。両方の値は、透明度を設定し、たとえば値0.5は50％の透明度を示し、0は不可視を意味し、1は不透明を意味します。たとえば四角形の場合、stroke_opacityはその境界に、fill_opacityはその内部に適用されます。"
 
 #: ../../shape.rst:580 65790f4ac1f94915967856475a04c4fa
 msgid ""
@@ -1224,21 +1236,21 @@ msgid ""
 "sight this seems surprising, but it becomes obvious when you look further"
 " down to *render_mode*: *fill_opacity* applies to the yellow and "
 "*stroke_opacity* applies to the blue color."
-msgstr ""
+msgstr "テキストの挿入（:meth:`Shape.insert_text` および :meth:`Shape.insert_textbox` ）の場合、テキストには *fill_opacity* を使用してください。最初は驚くかもしれませんが、*render_mode* の詳細を見ると明らかになります。*fill_opacity* は黄色に適用され、*stroke_opacity* は青色に適用されます。"
 
 #: ../../shape.rst:584 0b6116d23008483bb80424e5c31149ff
 msgid "**border_width** (*float*)"
-msgstr ""
+msgstr "**border_width** （*浮動小数点数*）"
 
 #: ../../shape.rst:586 25d7e0d956de4db8b6d241fa279ad0cc
 msgid ""
 "Set the border width for text insertions. New in v1.14.9. Relevant only "
 "if the render mode argument is used with a value greater zero."
-msgstr ""
+msgstr "テキスト挿入の境界線の幅を設定します。v1.14.9で新しく追加されました。render_mode引数がゼロより大きい値で使用されている場合にのみ関連します。"
 
 #: ../../shape.rst:590 6f2e08819bdf4dacb4ba31f837ab41ff
 msgid "**render_mode** (*int*)"
-msgstr ""
+msgstr "**render_mode** (*整数*)"
 
 #: ../../shape.rst:592 49538045f524441b846069f70d4c04f9
 msgid ""
@@ -1246,13 +1258,13 @@ msgid ""
 "appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). "
 "See page 246 in :ref:`AdobeManual`. New in v1.14.9. These methods now "
 "also differentiate between fill and stroke colors."
-msgstr ""
+msgstr "*バージョン1.14.9で新たに導入された* `range(8)` 内の整数。これはテキストの外観（:meth:`Shape.insert_text` および :meth:`Shape.insert_textbox` ）を制御します。:ref:`AdobeManual` のページ246を参照してください。バージョン1.14.9での新機能です。これらのメソッドは、塗りつぶしの色とストロークの色を区別するようになりました。"
 
 #: ../../shape.rst:594 75b260fe81b549a19ce1138e1f539947
 msgid ""
 "For default 0, only the text fill color is used to paint the text. For "
 "backward compatibility, using the *color* parameter instead also works."
-msgstr ""
+msgstr "デフォルト値0では、テキストの塗りつぶし色のみがテキストを塗りつぶすために使用されます。*color* パラメーターを代わりに使用することも、後方互換性のために機能します。"
 
 #: ../../shape.rst:595 42c2d89a9c7b4e039aefa988934dd33a
 msgid ""
@@ -1260,7 +1272,7 @@ msgid ""
 " drawn with a thickness as set in argument *border_width*. The color "
 "chosen in the *color* argument is taken for this, the *fill* parameter is"
 " ignored."
-msgstr ""
+msgstr "render_mode 1では、各グリフ（つまりテキスト文字）の境界線のみが指定された *border_width* で描画されます。この際、*color* 引数で選択した色が使用され、*fill* パラメーターは無視されます。"
 
 #: ../../shape.rst:596 7f43b793f74c4d2a8a3f510a06bb429f
 msgid ""
@@ -1268,31 +1280,31 @@ msgid ""
 "parameters and the specified border width. You can use this value to "
 "simulate **bold text** without using another font: choose the same value "
 "for *fill* and *color* and an appropriate value for *border_width*."
-msgstr ""
+msgstr "render_mode 2では、グリフは塗りつぶされ、ストロークされ、両方の色パラメーターと指定された境界幅が使用されます。別のフォントを使用せずに **太字のテキスト** をシミュレートするためにこの値を使用できます。*fill* と *color* に同じ値を選択し、*border_width* に適切な値を選択します。"
 
 #: ../../shape.rst:597 66a6dba8d58441c1a39ff017e2560f07
 msgid ""
 "For render mode 3, the glyphs are neither stroked nor filled: the text "
 "becomes invisible."
-msgstr ""
+msgstr "render_mode 3では、グリフはストロークも塗りつぶしもされません。テキストは見えなくなります。"
 
 #: ../../shape.rst:599 7b4e2fe971fe4cfb8a0589a24c82b5ce
 msgid ""
 "The following examples use border_width=0.3, together with a fontsize of "
 "15. Stroke color is blue and fill color is some yellow."
-msgstr ""
+msgstr "以下の例では、border_width=0.3を使用し、フォントサイズは15です。ストロークの色は青で、塗りつぶしの色は黄色です。"
 
 #: ../../shape.rst:605 e4a301a336284368b200b1662b0351d9
 msgid "**overlay** (*bool*)"
-msgstr ""
+msgstr "**オーバーレイ** （*bool*）"
 
 #: ../../shape.rst:607 1f846378ec93433ba8d4570c042ba5d0
 msgid "Causes the item to appear in foreground (default) or background."
-msgstr ""
+msgstr "アイテムを前景（ デフォルト）または背景に表示させます。"
 
 #: ../../shape.rst:611 395103d4f1444ddc9eed54ca5b390f81
 msgid "**morph** (*sequence*)"
-msgstr ""
+msgstr "**morph** （*シーケンス*）"
 
 #: ../../shape.rst:613 2baa921ce9df4838b85a3b1038420187
 msgid ""
@@ -1306,7 +1318,7 @@ msgid ""
 "*fixpoint* is its center. Similarly, if *matrix* is a left-right or up-"
 "down flip, then the mirroring axis will be the vertical, respectively "
 "horizontal line going through *fixpoint*, etc."
-msgstr ""
+msgstr "*draw*()* メソッドによって作成されたシェイプまたはページメソッド *insert_textbox（）*/ *insert_text（）* によって挿入されたテキストのいずれかの「変形」を引き起こします。 *None* でない場合、*（fixpoint、matrix）* のペアでなければなりません。ここで、*fixpoint* は :ref:`Point` であり、*matrix* は :ref:`Matrix` です。行列は、*matrix.e == matrix.f == 0* でない限り、移動以外の任意のものにすることができます。ポイントは、行列操作の固定ポイントとして使用されます。たとえば、*行列* が回転またはスケーリングである場合、*fixpoint* はその中心です。同様に、*行列* が左右または上下の反転である場合、鏡像化される軸は *fixpoint* を介して通る垂直、または水平の線です。"
 
 #: ../../shape.rst:615 e3b34005e3764c85b157fcfd47475162
 msgid ""
@@ -1315,11 +1327,11 @@ msgid ""
 ":meth:`Shape.draw_rect`). For the result of a morphing operation there is"
 " however no such guaranty: this is entirely the programmer's "
 "responsibility."
-msgstr ""
+msgstr "いくつかのメソッドには、ページに挿入されるアイテムが実際に適合するかどうかをチェックする検証が含まれています（:meth:`Shape.insert_text` 、または :meth:`Shape.draw_rect` など）。変形操作の結果にはそのような保証はありません。これは完全にプログラマーの責任です。"
 
 #: ../../shape.rst:619 cd88986d961c419f9d39604fb8f971bb
 msgid "**lineCap (deprecated: \"roundCap\")** (*int*)"
-msgstr ""
+msgstr "**lineCap（非推奨：「roundCap」**）（*int*）"
 
 #: ../../shape.rst:621 5f70f8053f604eb6be49a566743a0d4e
 msgid ""
@@ -1328,7 +1340,7 @@ msgid ""
 "circle to the ends, whose center is the end point and whose diameter is "
 "the line width. Value 2 adds a semi-square with an edge length of line "
 "width and a center of the line end."
-msgstr ""
+msgstr "線の末端の外観を制御します。デフォルト値0は、各線の末端が鋭いエッジで正確な座標で終了することを許可します。値1は、末端に直径が線の幅で中心が末端ポイントである半円を追加します。値2は、線の幅と線の末端を中心とする辺の長さがある半正方形を追加します。"
 
 #: ../../shape.rst:623 ded4adcc3eda4336ae50a2b86eef6dc4
 msgid "*Changed in version 1.14.15*"
@@ -1343,7 +1355,7 @@ msgid ""
 "*New in version 1.14.15:* Controls the way how line connections look "
 "like. This may be either as a sharp edge (0), a rounded join (1), or a "
 "cut-off edge (2, \"butt\")."
-msgstr ""
+msgstr "*バージョン1.14.15で新規追加：* ラインの接続方法を制御します。これは、鋭いエッジ（0）、丸い接続（1）、または切り取られたエッジ（2、「butt」）のいずれかです。"
 
 #: ../../shape.rst:633 4cdf51edeb1e40968a8648c5f47b0b0d
 msgid "**closePath** (*bool*)"
@@ -1353,7 +1365,7 @@ msgstr ""
 msgid ""
 "Causes the end point of a drawing to be automatically connected with the "
 "starting point (by a straight line)."
-msgstr ""
+msgstr "描画の終点を自動的に始点に直線で接続させる原因となります。"
 
 #: ../../footer.rst:-1 93d6594e758841d3b491123602d15c61
 msgid "Discord logo"

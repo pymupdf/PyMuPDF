@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,36 +19,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../app2.rst:7 c5a1a1cefa674a0c9a1df55cda6a1bf4
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../app2.rst:7 d096348acaa54b8fb715745579a0829a
 msgid "Appendix 2: Considerations on Embedded Files"
 msgstr "付録2：埋め込みファイルに関する考慮事項"
 
-#: ../../app2.rst:8 3e3defa44d7b4b62b360469ff84c5c04
+#: ../../app2.rst:8 0ae7573ddf46450e8613779ccebbcb5e
 msgid ""
 "This chapter provides some background on embedded files support in "
 "PyMuPDF."
 msgstr "この章では、PyMuPDFにおける埋め込みファイルのサポートに関する背景情報を提供します。"
 
-#: ../../app2.rst:11 ee565406549243898cf52727c58154db
+#: ../../app2.rst:11 7b48f8a7264548e7ad41e548d63b0072
 msgid "General"
 msgstr "一般"
 
-#: ../../app2.rst:12 c86d39e023424d2d9804e9303a5e537c
+#: ../../app2.rst:12 c66bfd6d8b6041c5870ff5971d294d69
 msgid ""
 "Starting with version 1.4, PDF supports embedding arbitrary files as part"
 " (\"Embedded File Streams\") of a PDF document file (see chapter \"7.11.4"
 " Embedded File Streams\", pp. 103 of the :ref:`AdobeManual`)."
-msgstr "バージョン1.4から、PDFはPDFドキュメントファイルの一部として任意のファイルを埋め込むことができるようになりました（「7.11.4 埋め込みファイルストリーム」章を参照、 :ref:`AdobeManual` リファレンスの103ページ）。"
+msgstr ""
+"バージョン1.4から、PDFはPDFドキュメントファイルの一部として任意のファイルを埋め込むことができるようになりました（「7.11.4 "
+"埋め込みファイルストリーム」章を参照、 :ref:`AdobeManual` リファレンスの103ページ）。"
 
-#: ../../app2.rst:15 ef43351e76cb44349fb1ebe24196f90a
+#: ../../app2.rst:15 753e3738c8594f74a5c004d42cc31571
 msgid ""
 "In many aspects, this is comparable to concepts also found in ZIP files "
 "or the OLE technique in MS Windows. PDF embedded files do, however, *not*"
 " support directory structures as does the ZIP format. An embedded file "
 "can in turn contain embedded files itself."
-msgstr "多くの側面で、これはZIPファイルやMS WindowsのOLE技術でも見られる概念に類似しています。ただし、PDFの埋め込みファイルはZIP形式とは異なり、ディレクトリ構造をサポート *しません* 。埋め込みファイル自体もさらに埋め込みファイルを含むことができます。"
+msgstr ""
+"多くの側面で、これはZIPファイルやMS "
+"WindowsのOLE技術でも見られる概念に類似しています。ただし、PDFの埋め込みファイルはZIP形式とは異なり、ディレクトリ構造をサポート "
+"*しません* 。埋め込みファイル自体もさらに埋め込みファイルを含むことができます。"
 
-#: ../../app2.rst:17 8346e4f23fd94f85a8d538dbb0f6aba4
+#: ../../app2.rst:17 9594be586bdc466f81ee10d9990c9963
 msgid ""
 "Advantages of this concept are that embedded files are under the PDF "
 "umbrella, benefitting from its permissions / password protection and "
@@ -57,62 +74,76 @@ msgid ""
 "unit of information."
 msgstr "このコンセプトの利点は、埋め込みファイルがPDFの枠組みに含まれ、その権限/パスワード保護および整合性の側面を活用できることです。PDFが参照するデータや依存する可能性があるデータはすべて、PDFにまとめて1つの一貫した情報ユニットを形成することができます。"
 
-#: ../../app2.rst:19 6c5fa0f74dcd41f187241d6e11b6cc60
+#: ../../app2.rst:19 86c3f09fddb74b60885b80f062045038
 msgid ""
 "In addition to embedded files, PDF 1.7 adds *collections* to its support "
 "range. This is an advanced way of storing and presenting meta information"
 " (i.e. arbitrary and extensible properties) of embedded files."
-msgstr "埋め込みファイルに加えて、PDF 1.7は *コレクション* をサポート範囲に追加しました。これは、埋め込みファイルのメタ情報（任意で拡張可能なプロパティ）を格納し、表示する高度な方法です。
-"
+msgstr ""
+"埋め込みファイルに加えて、PDF 1.7は *コレクション* "
+"をサポート範囲に追加しました。これは、埋め込みファイルのメタ情報（任意で拡張可能なプロパティ）を格納し、表示する高度な方法です"
 
-#: ../../app2.rst:22 1c550f33d907464bbe56f0d0f0f0cf5d
+#: ../../app2.rst:22 999dac777a5842e58a1ad187c6c9505f
 msgid "MuPDF Support"
 msgstr "MuPDFのサポート"
 
-#: ../../app2.rst:23 bcdf947b13534811a7e9d1143a345792
+#: ../../app2.rst:23 2ae05414b7804a369d4eead33f14eedc
 msgid ""
 "After adding initial support for collections (portfolios) and "
 "*/EmbeddedFiles* in MuPDF version 1.11, this support was dropped again in"
 " version 1.15."
-msgstr "MuPDFバージョン1.11でコレクション（ポートフォリオ）と */EmbeddedFiles* への初期サポートを追加した後、このサポートはバージョン1.15で再び削除されました。"
+msgstr ""
+"MuPDFバージョン1.11でコレクション（ポートフォリオ）と */EmbeddedFiles* "
+"への初期サポートを追加した後、このサポートはバージョン1.15で再び削除されました。"
 
-#: ../../app2.rst:25 cc2dbce08b9948418c19367038d05f77
+#: ../../app2.rst:25 46697f2b501b4ed8ba1b80c2e3775dd9
 msgid ""
 "As a consequence, the cli utility *mutool* no longer offers access to "
 "embedded files."
 msgstr "その結果、cliユーティリティ *mutool* ではもはや埋め込みファイルにアクセスできなくなりました。"
 
-#: ../../app2.rst:27 cbb6b49f27614cf4a9f0c1ed3022263d
+#: ../../app2.rst:27 6cd732d98d1b4c52986510a99911ab60
 msgid ""
 "PyMuPDF -- having implemented an */EmbeddedFiles* API in response in its "
 "version 1.11.0 -- was therefore forced to change gears starting with its "
 "version 1.16.0 (we never published a MuPDF v1.15.x compatible PyMuPDF)."
-msgstr "PyMuPDFは、バージョン1.11.0で */EmbeddedFiles*  APIを実装したため、バージョン1.16.0からギアを変更せざるを得なくなりました（MuPDF v1.15.x互換のPyMuPDFは公開されませんでした）。"
+msgstr ""
+"PyMuPDFは、バージョン1.11.0で */EmbeddedFiles*  "
+"APIを実装したため、バージョン1.16.0からギアを変更せざるを得なくなりました（MuPDF "
+"v1.15.x互換のPyMuPDFは公開されませんでした）。"
 
-#: ../../app2.rst:29 7c71ad039ebe4b20b7ac9015c103bc71
+#: ../../app2.rst:29 cfedf8d9390b4e6ba3c805800f80b138
 msgid ""
 "We are now maintaining our own code basis supporting embedded files. This"
 " code makes use of basic MuPDF dictionary and array functions only."
 msgstr "私たちは現在、埋め込みファイルをサポートする独自のコードベースを維持しています。このコードは、基本的なMuPDFの辞書と配列の機能のみを使用しています。"
 
-#: ../../app2.rst:32 8bd2cedc02944b80b24b2a6e169d505e
+#: ../../app2.rst:32 83bbc5dff9bc42a7b334667f0f8109fe
 msgid "PyMuPDF Support"
 msgstr "PyMuPDFのサポート"
 
-#: ../../app2.rst:33 daa9a9d8d9194b38844f5c668c0c73b2
+#: ../../app2.rst:33 a7f559e2eed84013891161f87e1e9a00
 msgid ""
 "We continue to support the full old API with respect to embedded files --"
 " with only minor, cosmetic changes."
 msgstr "私たちは、埋め込みファイルに関する古いAPIを、わずかな見た目の変更のみを行いながら引き続きサポートしています。"
 
-#: ../../app2.rst:35 719e71e784014d6faa3b8d27d8593490
+#: ../../app2.rst:35 fc2503bdd23f4420b0f57a70386b42d3
 msgid ""
 "There even also is a new function, which delivers a list of all names "
 "under which embedded data are resgistered in a PDF, "
 ":meth:`Document.embfile_names`."
-msgstr "また、PDF内の埋め込みデータが登録されているすべての名前のリストを返す新しい関数も存在します。:meth:`Document.embfile_names` です。"
+msgstr ""
+"また、PDF内の埋め込みデータが登録されているすべての名前のリストを返す新しい関数も存在します。:meth:`Document.embfile_names`"
+" です。"
 
-#: ../../footer.rst:-1 81453fff5bdd46448c17b05989460289
+#: ../../footer.rst:-1 1594a09c2a9f4921b6ac9146b69e40ba
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 
