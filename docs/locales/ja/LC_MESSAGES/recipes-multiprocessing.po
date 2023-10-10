@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,35 +19,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../recipes-multiprocessing.rst:17 a41b9b820ea541f0b9f6106a792c880a
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../recipes-multiprocessing.rst:17 1507bf883df84d46af6566e299e82cbc
 msgid "Multiprocessing"
 msgstr "マルチプロセッシング"
 
-#: ../../recipes-multiprocessing.rst:19 abd4e5ff2d674c0ebb9c3dc6d0e91745
+#: ../../recipes-multiprocessing.rst:19 dcae6bb242524466a6ce629747b6f688
 msgid ""
 ":title:`MuPDF` has no integrated support for threading - calling itself "
 "\"thread-agnostic\". While there do exist tricky possibilities to still "
 "use threading with :title:`MuPDF`, the baseline consequence for "
 ":title:`PyMuPDF` is:"
-msgstr ":title:`MuPDF` はスレッディングに対する統合サポートを持っておらず、「スレッドに対して無関心（thread-agnostic）」と呼ばれています。MuPDFとスレッディングを組み合わせて使用するトリッキーな可能性は存在しますが、PyMuPDFの基本的な影響は次のとおりです："
+msgstr ""
+":title:`MuPDF` はスレッディングに対する統合サポートを持っておらず、「スレッドに対して無関心（thread-"
+"agnostic）」と呼ばれています。MuPDFとスレッディングを組み合わせて使用するトリッキーな可能性は存在しますが、PyMuPDFの基本的な影響は次のとおりです："
 
-#: ../../recipes-multiprocessing.rst:21 d03018a0dea548148df2c97b7a7c06c3
+#: ../../recipes-multiprocessing.rst:21 e365b9410fc34ac2a7801e812e20dafe
 msgid "**No Python threading support**."
 msgstr "**Pythonスレッディングのサポートはありません。**."
 
-#: ../../recipes-multiprocessing.rst:23 c09b5e9257d94c469ec5864b3ab8f026
+#: ../../recipes-multiprocessing.rst:23 c241a2939c5d493792f94c1519f54c2b
 msgid ""
 "Using :title:`PyMuPDF` in a :title:`Python` threading environment will "
 "lead to blocking effects for the main thread."
-msgstr ":title:`PyMuPDF` を :title:`Python` スレッディング環境で使用すると、メインスレッドでのブロッキング効果が発生します。"
+msgstr ""
+":title:`PyMuPDF` を :title:`Python` "
+"スレッディング環境で使用すると、メインスレッドでのブロッキング効果が発生します。"
 
-#: ../../recipes-multiprocessing.rst:25 be2d2d0701654a9fab53ddcd69d659f7
+#: ../../recipes-multiprocessing.rst:25 20cb2ec1b93d4534b35dccd858fa3a85
 msgid ""
 "However, there is the option to use :title:`Python's` *multiprocessing* "
 "module in a variety of ways."
 msgstr "ただし、Pythonのmultiprocessingモジュールをさまざまな方法で使用するオプションがあります。"
 
-#: ../../recipes-multiprocessing.rst:27 d69a8a48ef284a289d0f7c21a2faf8a3
+#: ../../recipes-multiprocessing.rst:27 d85f0a08b36949c49c9f3e3f4c672471
 msgid ""
 "If you are looking to speed up page-oriented processing for a large "
 "document, use this script as a starting point. It should be at least "
@@ -55,23 +71,29 @@ msgid ""
 msgstr "大きなドキュメントのページ指向処理を高速化することを検討している場合は、このスクリプトを出発点として使用してください。対応する順次処理よりも少なくとも2倍の速さで動作するはずです。"
 
 #: ../../recipes-multiprocessing.rst:30 ../../recipes-multiprocessing.rst:41
-#: 97aa34ddd91a43799f218b60cb6d5118 d8082d11f2f748f6ab8db930723daaa5
+#: 4e1c1f0ce2c0451b9e2610b68a5e6440 e24b197bccad45cc934088ac3de6722a
 msgid "|toggleStart|"
 msgstr ""
 
 #: ../../recipes-multiprocessing.rst:35 ../../recipes-multiprocessing.rst:46
-#: 656d732fe0444d069b6fc92f2ad2ea1a e106f2a005044043a9934ff547d3f97f
+#: 55fcb2daa4244eb8845325690eb545d3 b7dc2969fc9448e59ad0636a0065b7e7
 msgid "|toggleEnd|"
 msgstr ""
 
-#: ../../recipes-multiprocessing.rst:38 ec0ea998b3a84fe09f5769602ec421f1
+#: ../../recipes-multiprocessing.rst:38 ad0ac4f5b62e483594d3c5a45693cbef
 msgid ""
 "Here is a more complex example involving inter-process communication "
 "between a main process (showing a GUI) and a child process doing "
 ":title:`PyMuPDF` access to a document."
 msgstr "以下は、メインプロセス（GUIを表示）とドキュメントへのPyMuPDFアクセスを行う子プロセスとの間のプロセス間通信を含む、より複雑な例です。"
 
-#: ../../footer.rst:-1 109bfb6fe9f94ac99f3f31045bbf6a2f
+#: ../../footer.rst:-1 f23e275bc0ab459584edbf0130fd3ae0
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

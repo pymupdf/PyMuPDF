@@ -1,27 +1,39 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
 #: ../../rect.rst:7 a6bfc3a7d769457490fcc64cc87d742f
 msgid "Rect"
-msgstr ""
+msgstr "Rect (矩形)"
 
 #: ../../rect.rst:9 2bf54a3eaddb48c48fde0129a4560faa
 msgid ""
@@ -31,11 +43,11 @@ msgid ""
 "corner P\\ :sub:`(x0,y0)` and P\\ :sub:`(x1,y1)` as the \"bottom right\" "
 "one. However, these two properties need not coincide with their intuitive"
 " meanings -- read on."
-msgstr ""
+msgstr "*Rect* は、4つの浮動小数点数x0、y0、x1、y1によって定義される矩形を表します。これらは対角線上の2つの点の座標と見なされます。最初の2つの数は「左上」のコーナー P\\ :sub:`(x0,y0)` とし、 P\\ :sub:`(x1,y1)` は「右下」のコーナーとします。ただし、これら2つのプロパティは直感的な意味と一致する必要はありません。以下を読んでください。"
 
 #: ../../rect.rst:11 08b5de166b25450b83a4ddd2988c75d3
 msgid "The following remarks are also valid for :ref:`IRect` objects:"
-msgstr ""
+msgstr ":ref:`IRect` オブジェクトにも以下の注釈は有効です。"
 
 #: ../../rect.rst:13 cd70b9379c744653b0df2693ccb0fee9
 msgid ""
@@ -43,24 +55,24 @@ msgid ""
 "**borders parallel to the x- resp. y-axis**. A general orthogonal "
 "tetragon **is not a rectangle** -- in contrast to the mathematical "
 "definition."
-msgstr ""
+msgstr "(Py-)MuPDF **（およびPDF）** の意味での矩形は常に **x-またはy軸に平行な境界** を持ちます。一般的な直交四角形は **矩形ではなく** 、数学的な定義とは対照的です。"
 
 #: ../../rect.rst:14 8fdced3de2434f2bb16e3f595c0c76c5
 msgid ""
 "The constructing points can be (almost! -- see below) anywhere in the "
 "plane -- they need not even be different, and e.g. \"top left\" need not "
 "be the geometrical \"north-western\" point."
-msgstr ""
+msgstr "構築ポイントは平面上のどこにでも配置できます。異なる必要すらなく、たとえば「左上」が幾何学的に「北西」の点である必要はありません。"
 
 #: ../../rect.rst:15 40bc58e57a214b3d940e6e90926b63be
 msgid "Units are in points, where 72 points is 1 inch."
-msgstr ""
+msgstr "単位はポイントで、72ポイントが1インチです。"
 
 #: ../../rect.rst:20 b8f105c299714ca9b564f51f982de7db
 msgid ""
 "For any given quadruple of numbers, the geometrically \"same\" rectangle "
 "can be defined in four different ways:"
-msgstr ""
+msgstr "与えられた4つの数値に対して、幾何学的に「同じ」矩形は4つの異なる方法で定義できます。"
 
 #: ../../rect.rst:17 c8b434bf95b248f39d10b9877015cc6e
 msgid "Rect(P\\ :sub:`(x0,y0)`, P\\ :sub:`(x1,y1)`\\ )"
@@ -80,7 +92,7 @@ msgstr ""
 
 #: ../../rect.rst:22 1c1eb036cc89469e8d2a1eebe14fd4ab
 msgid "**(Changed in v1.19.0)** Hence some classification:"
-msgstr ""
+msgstr "**(v1.19.0で変更)** したがって、いくつかの分類があります。"
 
 #: ../../rect.rst:24 2c05baa6d2c2407cbc43b1fb06a50a33
 msgid ""
@@ -90,7 +102,7 @@ msgid ""
 " Please take into account, that in MuPDF's coordinate system, the y-axis "
 "is oriented from **top to bottom**. Invalid rectangles have been called "
 "infinite in earlier versions."
-msgstr ""
+msgstr "矩形は、 `x0 <= x1`  および  `y0 <= y1` （つまり、右下の点が左上の点の「南東」にある）の場合にのみ **有効** と呼ばれます。したがって、上記の4つの代替案のうち、**最初のものだけ** が有効です。MuPDFの座標系では、y軸は **上から下** に向かっていますので、注意してください。無効な矩形は以前のバージョンでは 無限と呼ばれていました。"
 
 #: ../../rect.rst:26 f85897a8bfec45e995ed721a8dce867d
 msgid ""
@@ -99,7 +111,7 @@ msgid ""
 "(resp. `height`) is **set to zero** if `x0 > x1` (resp. `y0 > y1`). In "
 "previous versions, a rectangle was empty only if one of width or height "
 "was zero."
-msgstr ""
+msgstr "矩形は、 `x0 >= x1`  または  `y0 >= y1`  の場合に **空** と呼ばれます。これは、**無効な矩形** も常に空であることを意味します。また、 `x0 > x1` （または `y0 > y1` ）の場合、幅（または高さ）は **ゼロに設定** されます。以前のバージョンでは、矩形が空であるのは幅または高さのいずれかがゼロの場合に限られていました。"
 
 #: ../../rect.rst:28 9fffb102deb84b4d93da3ab6b4ec8a63
 msgid ""
@@ -108,7 +120,7 @@ msgid ""
 "values have been chosen, because they are the smallest / largest 32bit "
 "integers that survive C float conversion roundtrips. In previous versions"
 " there was no limit for coordinate values."
-msgstr ""
+msgstr "矩形の座標は、`FZ_MIN_INF_RECT = -2147483648` から `FZ_MAX_INF_RECT = 2147483520`  までの数値範囲内にある必要があります。これらの値は、C浮動小数点変換のラウンドトリップを生き残る最小/最大の32ビット整数であるため選ばれました。以前のバージョンでは、座標値の制限はありませんでした。"
 
 #: ../../rect.rst:30 01da167f72da4a71ba41b86f927fa35b
 msgid ""
@@ -117,7 +129,7 @@ msgid ""
 " rectangle. It is mainly used for technical purposes -- e.g. when a "
 "function call should ignore a formally required rectangle argument. This "
 "rectangle is not empty."
-msgstr ""
+msgstr "**「無限」の矩形は** 、`x0 = y0 = FZ_MIN_INF_RECT` および `x1 = y1 = FZ_MAX_INF_RECT` で定義され、他のすべての矩形を含みます。これは主に技術的な目的で使用されます。たとえば、関数呼び出しで形式的に必要な矩形引数を無視する必要がある場合などです。この矩形は空ではありません。"
 
 #: ../../rect.rst:32 b7e59893f3e743038fb387f91db59882
 msgid ""
@@ -126,97 +138,97 @@ msgid ""
 "This implies, that only the top-left corner `(x0, y0)` can ever belong to"
 " the rectangle - the other three corners never do. An empty rectangle "
 "contains no corners at all."
-msgstr ""
+msgstr "**矩形は（半）開いています**。右側と下側のエッジ（およびそれに含まれるコーナー）は矩形の一部とは見なされません。したがって、矩形に属することができるのは左上のコーナー  `(x0, y0)` のみです。他の3つのコーナーは常に含まれません。空の矩形にはまったくコーナーが含まれていません。"
 
 #: ../../rect.rst:38 84fb3d40f3b44591bb2c70654a3efe68
 msgid "Here is an overview of the changes."
-msgstr ""
+msgstr "以下は変更の概要です。"
 
 #: ../../rect.rst:41 d7a02c85e287459bb08565b1f2245334
 msgid "Notion"
-msgstr ""
+msgstr "概要"
 
 #: ../../rect.rst:41 2b5a9d4dad0f404e8891e060c203ae8d
 msgid "Versions < 1.19.0"
-msgstr ""
+msgstr "バージョン < 1.19.0"
 
 #: ../../rect.rst:41 ef2e344cf9944e26816ba1da781aade1
 msgid "Versions 1.19.*"
-msgstr ""
+msgstr "バージョン 1.19.*"
 
 #: ../../rect.rst:43 e4f0b001864f46e69b560e2751ba49f2
 msgid "empty"
-msgstr ""
+msgstr "空"
 
 #: ../../rect.rst:43 70ebc657cae245a0ae745c79cd655ed9
 msgid "x0 = x1 or y0 = y1"
-msgstr ""
+msgstr "x0 = x1 または y0 = y1"
 
 #: ../../rect.rst:43 94aa8aa78f474c449a29e87c0e43af0a
 msgid "x0 >= x1 or y0 >= y1 -- includes invalid rects"
-msgstr ""
+msgstr "x0 >= x1 または y0 >= y1 – 無効な矩形も含む"
 
 #: ../../rect.rst:44 91cab8254f2b4ad19a6f402771cee026
 msgid "valid"
-msgstr ""
+msgstr "有効"
 
 #: ../../rect.rst:44 ff0cbe478e8b498dabc8c5dad979fde4
 msgid "n/a"
-msgstr ""
+msgstr "なし"
 
 #: ../../rect.rst:44 2a637bc6bf7a4beb89c07401da5abd39
 msgid "x0 <= x1 and y0 <= y1"
-msgstr ""
+msgstr "x0 <= x1 かつ y0 <= y1"
 
 #: ../../rect.rst:45 9f2d52ec216543e1aa4e604dcaa2f458
 msgid "infinite"
-msgstr ""
+msgstr "無限"
 
 #: ../../rect.rst:45 61705ea9e68c4a3da721cb8a175f206f
 msgid "all rects where x0 > x1 or y1 > y0"
-msgstr ""
+msgstr "x0 > x1 または y1 > y0 のすべての矩形"
 
 #: ../../rect.rst:45 48804664e73a426ab14bbe895e6720af
 msgid "**exactly one infinite rect / irect!**"
-msgstr ""
+msgstr "**無限の矩形 / irectは1つだけです！**"
 
 #: ../../rect.rst:46 5cb8309f04dd4135aef45febdca322a9
 msgid "coordinate values"
-msgstr ""
+msgstr "座標値"
 
 #: ../../rect.rst:46 d9c43480e29f4ed3b05900c16bf00fb2
 msgid "all numbers"
-msgstr ""
+msgstr "すべての数値"
 
 #: ../../rect.rst:46 35033e0d730a4dbfb43e439df99d5682
 msgid "`FZ_MIN_INF_RECT <= number <= FZ_MAX_INF_RECT`"
-msgstr ""
+msgstr "FZ_MIN_INF_RECT <= 数値 <= FZ_MAX_INF_RECT"
 
 #: ../../rect.rst:47 0fe04c8e972740288efa756d5bb7a284
 msgid "borders, corners"
-msgstr ""
+msgstr "境界、コーナー"
 
 #: ../../rect.rst:47 134cefd850994f95a02d4338accda2e2
 msgid "are parts of the rectangle"
-msgstr ""
+msgstr "矩形の一部です"
 
 #: ../../rect.rst:47 2b9a74e9072d44c79e5915ae1a9d2e14
 msgid "right and bottom corners and edges **are outside**"
-msgstr ""
+msgstr "右下の角とエッジは **外側にあります**"
 
 #: ../../rect.rst:50 198f46dfc65f4a9a9d54b9cbfd1834a5
 msgid ""
 "There are new top level functions defining infinite and standard empty "
 "rectangles and quads, see :meth:`INFINITE_RECT` and friends."
-msgstr ""
+msgstr "新しいトップレベルの関数が追加され、無限と標準の空の四角形および四角形を定義します。:meth:`INFINITE_RECT` などを参照してください。"
 
 #: ../../rect.rst:54 fba1488472f34d16922f0b9d02ca7adc
 msgid "**Methods / Attributes**"
-msgstr ""
+msgstr "**メソッド / 属性**"
 
 #: ../../rect.rst:54 fc214a75cf834f79a0c84b154c90e83a
 msgid "**Short Description**"
-msgstr ""
+msgstr "**短い説明**"
 
 #: ../../rect.rst:56 4e4795444c6d4f8da6219eade8eb9f26
 msgid ":meth:`Rect.contains`"
@@ -224,7 +236,7 @@ msgstr ""
 
 #: ../../rect.rst:56 9310df9e972f4411bd2a28f2dbbc0f52
 msgid "checks containment of point_likes and rect_likes"
-msgstr ""
+msgstr "point_likesおよびrect_likesの包含をチェックします。"
 
 #: ../../rect.rst:57 4264e1ec8c024e07a9309c800d9938f2
 msgid ":meth:`Rect.get_area`"
@@ -232,7 +244,7 @@ msgstr ""
 
 #: ../../rect.rst:57 c99e1f4a802745ffaa443429849680f7
 msgid "calculate rectangle area"
-msgstr ""
+msgstr "四角形の面積を計算します。"
 
 #: ../../rect.rst:58 bac88765720f42a98c407d4a45f7bb0b
 msgid ":meth:`Rect.include_point`"
@@ -240,7 +252,7 @@ msgstr ""
 
 #: ../../rect.rst:58 59f7d53f4a38489b88179a4931979bde
 msgid "enlarge rectangle to also contain a point"
-msgstr ""
+msgstr "点も含むように四角形を拡大します。"
 
 #: ../../rect.rst:59 2e86f25e849b467d93b6f012e41766ca
 msgid ":meth:`Rect.include_rect`"
@@ -248,7 +260,7 @@ msgstr ""
 
 #: ../../rect.rst:59 e684d817f262437e96cf079e40fc066a
 msgid "enlarge rectangle to also contain another one"
-msgstr ""
+msgstr "別の四角形も含むように四角形を拡大します。"
 
 #: ../../rect.rst:60 772f0e583ba14dfdac051bf42c7b6edd
 msgid ":meth:`Rect.intersect`"
@@ -256,7 +268,7 @@ msgstr ""
 
 #: ../../rect.rst:60 b53875a2fbc9482c88a8271dfab29c26
 msgid "common part with another rectangle"
-msgstr ""
+msgstr "別の四角形との共通部分です。"
 
 #: ../../rect.rst:61 4b92aa07395f4e429920c4bfe6970a08
 msgid ":meth:`Rect.intersects`"
@@ -264,7 +276,7 @@ msgstr ""
 
 #: ../../rect.rst:61 e395d962cca44f36a7cedcd7130e2581
 msgid "checks for non-empty intersections"
-msgstr ""
+msgstr "非空の交差をチェックします。"
 
 #: ../../rect.rst:62 f61ed4b5858b4536b5429abc360dbaaa
 msgid ":meth:`Rect.morph`"
@@ -272,7 +284,7 @@ msgstr ""
 
 #: ../../rect.rst:62 e258e88ddde04cdc9647fbc13fa61c9a
 msgid "transform with a point and a matrix"
-msgstr ""
+msgstr "点と行列を使用して四角形を変形します。"
 
 #: ../../rect.rst:63 a18e8e69222246a180646c827f6282a7
 msgid ":meth:`Rect.torect`"
@@ -280,7 +292,7 @@ msgstr ""
 
 #: ../../rect.rst:63 862ef1efc2d746f1b8a86b9b52e9fd80
 msgid "the matrix that transforms to another rectangle"
-msgstr ""
+msgstr "別の四角形に変換する行列です。"
 
 #: ../../rect.rst:64 3d5cb0fa80d04905a558aa9177552481
 msgid ":meth:`Rect.norm`"
@@ -288,7 +300,7 @@ msgstr ""
 
 #: ../../rect.rst:64 4aa5ef4653944472a68baf2a9e1c1bc6
 msgid "the Euclidean norm"
-msgstr ""
+msgstr "ユークリッドノルム"
 
 #: ../../rect.rst:65 8f23d88142b74442b8be8b8b6f5463ca
 msgid ":meth:`Rect.normalize`"
@@ -296,7 +308,8 @@ msgstr ""
 
 #: ../../rect.rst:65 8f0567d4de8d4e76aa353b0a27b10b89
 msgid "makes a rectangle valid"
-msgstr ""
+msgstr "四角形を有効にします。
+"
 
 #: ../../rect.rst:66 ff81e82e91804ed2af113682d14fb6bc
 msgid ":meth:`Rect.round`"
@@ -304,7 +317,7 @@ msgstr ""
 
 #: ../../rect.rst:66 bfb70e0266ba4229b3f038dadc3a8281
 msgid "create smallest :ref:`Irect` containing rectangle"
-msgstr ""
+msgstr "最小の :ref:`Irect` を含む四角形を作成します。"
 
 #: ../../rect.rst:67 596b4d682a6849189e86a5e7b94dbc25
 msgid ":meth:`Rect.transform`"
@@ -312,7 +325,7 @@ msgstr ""
 
 #: ../../rect.rst:67 31ddc27eee674943890ca6ab3eb10ce8
 msgid "transform rectangle with a matrix"
-msgstr ""
+msgstr "行列で四角形を変形します。"
 
 #: ../../rect.rst:68 e3de2f26ffe4453ea81f879bc4214dc7
 msgid ":attr:`Rect.bottom_left`"
@@ -320,7 +333,7 @@ msgstr ""
 
 #: ../../rect.rst:68 1f4b7d9633e9404cb5f7c5656f1e65a6
 msgid "bottom left point, synonym *bl*"
-msgstr ""
+msgstr "左下の点、シノニム *bl*"
 
 #: ../../rect.rst:69 9639552ea21b42349ae55142265b9e46
 msgid ":attr:`Rect.bottom_right`"
@@ -328,7 +341,7 @@ msgstr ""
 
 #: ../../rect.rst:69 f1e36ec13e474626803dabfdf248126b
 msgid "bottom right point, synonym *br*"
-msgstr ""
+msgstr "右下の点、シノニム *br*"
 
 #: ../../rect.rst:70 8c5b07da82004d80893807e98a1e78af
 msgid ":attr:`Rect.height`"
@@ -336,7 +349,7 @@ msgstr ""
 
 #: ../../rect.rst:70 8da4a65f25f64c5588bd1c8667c52495
 msgid "rectangle height"
-msgstr ""
+msgstr "四角形の高さ"
 
 #: ../../rect.rst:71 e2d0db3a3c4f47d5b293ee8f347dca30
 msgid ":attr:`Rect.irect`"
@@ -344,7 +357,7 @@ msgstr ""
 
 #: ../../rect.rst:71 9e2ad7b281af4c6081667f25149dbdea
 msgid "equals result of method *round()*"
-msgstr ""
+msgstr "*round()* メソッドの結果と等しい"
 
 #: ../../rect.rst:72 e389a13325be43e587a9c83a0fa76a6d
 msgid ":attr:`Rect.is_empty`"
@@ -352,7 +365,7 @@ msgstr ""
 
 #: ../../rect.rst:72 a546059efdcb456b9a336f451b47f20b
 msgid "whether rectangle is empty"
-msgstr ""
+msgstr "四角形が空かどうか"
 
 #: ../../rect.rst:73 d9c5f4849a71494592ba2090948cd485
 msgid ":attr:`Rect.is_valid`"
@@ -360,7 +373,7 @@ msgstr ""
 
 #: ../../rect.rst:73 627c40388b944ca3bd15c0ebc93c4dea
 msgid "whether rectangle is valid"
-msgstr ""
+msgstr "四角形が有効かどうか"
 
 #: ../../rect.rst:74 b59be4a81b1e441eae2566a2fb759a15
 msgid ":attr:`Rect.is_infinite`"
@@ -368,7 +381,7 @@ msgstr ""
 
 #: ../../rect.rst:74 3de9073d33494914a346443be2662c3f
 msgid "whether rectangle is infinite"
-msgstr ""
+msgstr "四角形が無限かどうか"
 
 #: ../../rect.rst:75 d08f7391f9794de289896f99ff383fd1
 msgid ":attr:`Rect.top_left`"
@@ -376,7 +389,7 @@ msgstr ""
 
 #: ../../rect.rst:75 d162f808277447138a5cd00d91e78e19
 msgid "top left point, synonym *tl*"
-msgstr ""
+msgstr "左上の点、シノニム *tl*"
 
 #: ../../rect.rst:76 ce65ad0de34b482da10bb737cbe29bdf
 msgid ":attr:`Rect.top_right`"
@@ -384,7 +397,7 @@ msgstr ""
 
 #: ../../rect.rst:76 8740936879124a37b5031461cb23ff78
 msgid "top_right point, synonym *tr*"
-msgstr ""
+msgstr "右上の点、シノニム *tr*"
 
 #: ../../rect.rst:77 2c2fd855340a404ab5c36797cdb691b1
 msgid ":attr:`Rect.quad`"
@@ -392,7 +405,7 @@ msgstr ""
 
 #: ../../rect.rst:77 ba0d6080d88644c7a65faf1f837e5b10
 msgid ":ref:`Quad` made from rectangle corners"
-msgstr ""
+msgstr "四角形の角から作成される :ref:`Quad`"
 
 #: ../../rect.rst:78 23079b32d70d4fd88b55df7e15018b38
 msgid ":attr:`Rect.width`"
@@ -400,7 +413,7 @@ msgstr ""
 
 #: ../../rect.rst:78 461fc65f55984b36939ab4c5a86a98ee
 msgid "rectangle width"
-msgstr ""
+msgstr "四角形の幅"
 
 #: ../../rect.rst:79 bd649630ff624d6ea9650773d08d1848
 msgid ":attr:`Rect.x0`"
@@ -408,7 +421,7 @@ msgstr ""
 
 #: ../../rect.rst:79 1a4f98006ad240a28380b1a39abe0478
 msgid "left corners' x coordinate"
-msgstr ""
+msgstr "左上のx座標"
 
 #: ../../rect.rst:80 c86b2065abce45a3961021378286b474
 msgid ":attr:`Rect.x1`"
@@ -416,7 +429,7 @@ msgstr ""
 
 #: ../../rect.rst:80 132dc2306b4e4c74bedc93f05fa04209
 msgid "right corners' x -coordinate"
-msgstr ""
+msgstr "右上のx座標"
 
 #: ../../rect.rst:81 6316f8989a0b40d395b902362d0b2029
 msgid ":attr:`Rect.y0`"
@@ -424,7 +437,7 @@ msgstr ""
 
 #: ../../rect.rst:81 e77f16812c5141e8a01f67debe14cad8
 msgid "top corners' y coordinate"
-msgstr ""
+msgstr "上部のy座標"
 
 #: ../../rect.rst:82 5cc16cdbde2449c0a0524e77d686ba28
 msgid ":attr:`Rect.y1`"
@@ -432,11 +445,11 @@ msgstr ""
 
 #: ../../rect.rst:82 46f47f56c3e24e89888827055a5dcb1e
 msgid "bottom corners' y coordinate"
-msgstr ""
+msgstr "下部のy座標"
 
 #: ../../rect.rst:85 f447b20159da4cce8cde4b26dfc41e24
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI**"
 
 #: ../../rect.rst:103 0208035eec614289aff92d0e44ed400b
 msgid ""
@@ -444,17 +457,17 @@ msgid ""
 ":data:`point_like` objects, \"sequence\" is a Python sequence type of 4 "
 "numbers (see :ref:`SequenceTypes`), \"rect\" means another "
 ":data:`rect_like`, while the other parameters mean coordinates."
-msgstr ""
+msgstr "オーバーロードされたコンストラクター：*top_left*、*bottom_right* は :data:`point_like` オブジェクトを表し、「sequence」は4つの数値からなるPythonシーケンス型です（:ref:`SequenceTypes` を参照）、rectは別の :data:`rect_like` を意味し、他のパラメーターは座標を意味します。"
 
 #: ../../rect.rst:105 2a5d4c6744ba4230a73a642f6e125d09
 msgid "If \"rect\" is specified, the constructor creates a **new copy** of it."
-msgstr ""
+msgstr "\"rect\" が指定されている場合、コンストラクターはそれの **新しいコピー** を作成します。"
 
 #: ../../rect.rst:107 f7e848d2a88d42449d4d8b85a877c946
 msgid ""
 "Without parameters, the empty rectangle *Rect(0.0, 0.0, 0.0, 0.0)* is "
 "created."
-msgstr ""
+msgstr "パラメーターなしで、空の長方形 *Rect(0.0, 0.0, 0.0, 0.0)* が作成されます。"
 
 #: ../../rect.rst:111 5a16d61e49a44d788fc119925173877c
 msgid ""
@@ -462,11 +475,11 @@ msgid ""
 " simply rounding the rectangle's edges: The top left corner is rounded "
 "upwards and to the left while the bottom right corner is rounded "
 "downwards and to the right."
-msgstr ""
+msgstr "最小の :ref:`IRect` を作成します。これは単に長方形のエッジを四捨五入することとは **異なります**。左上のコーナーは上方向および左方向に丸められ、右下のコーナーは下方向および右方向に丸められます。"
 
 #: ../../rect.rst:116 87062d1d63e94b5cb5fe0970d257a1dd
 msgid "If the rectangle is **empty**, the result is also empty."
-msgstr ""
+msgstr "もし矩形が空の場合、結果も **空** です。"
 
 #: ../../rect.rst:117 85b397496fd844a38e5d78988c8f04bb
 msgid ""
@@ -474,7 +487,7 @@ msgid ""
 "is **not** empty! In such cases, the result obviously does **not** "
 "contain the rectangle. This is because MuPDF's algorithm allows for a "
 "small tolerance (1e-3). Example:"
-msgstr ""
+msgstr "**可能性のある逆説:** 矩形が空で **ない** 場合 **でも** 、結果が空になることがあります！このような場合、結果は明らかに矩形を **含みません**。これは、MuPDFのアルゴリズムがわずかな許容差（1e-3）を許容しているためです。例："
 
 #: ../../rect.rst 04ba20fd7bd84456b048e5bc6dbd8c88
 #: 38ca672d557948eab31a0558062afe5a 5c534a5e197342d8988eda952e0a87b3
@@ -492,7 +505,7 @@ msgstr ""
 msgid ""
 "Transforms the rectangle with a matrix and **replaces the original**. If "
 "the rectangle is empty or infinite, this is a no-operation."
-msgstr ""
+msgstr "次の条件を満たす場合、行列を使用して長方形を変換し、**元の長方形を置き換えます** ：長方形が空であるか無限である場合、これは操作が行われません。"
 
 #: ../../rect.rst 22f08a1255c74745b612cc9f244abe7d
 #: 5afa711ce5154321b8a81ea00411a09f 844e0b083f3146f2b01e0f44e6ce63cf
@@ -504,7 +517,7 @@ msgstr ""
 
 #: ../../rect.rst:133 30ba2fbbff7541d385299ab11ec82851
 msgid "The matrix for the transformation."
-msgstr ""
+msgstr "m（行列）–変換用の行列。"
 
 #: ../../rect.rst:136 45298adb2a1947c2b2a869cc12151e6b
 msgid "*Rect*"
@@ -517,7 +530,7 @@ msgstr ""
 
 #: ../../rect.rst:137 7c9abda61a9746e385b85a16305077ba
 msgid "the smallest rectangle that contains the transformed original."
-msgstr ""
+msgstr "変換された元の長方形を含む最小の長方形。"
 
 #: ../../rect.rst:141 9971ef22d2784e7990117c342438c003
 msgid ""
@@ -528,12 +541,12 @@ msgid ""
 "(mathematically) disjoint sets, then the result is invalid. If the result"
 " is valid but empty, then the rectangles touch each other in a corner or "
 "(part of) a side."
-msgstr ""
+msgstr "現在の長方形とrの共通の長方形エリア（両方に含まれる最大の長方形）を計算し、**現在の長方形を置き換えます**。どちらかの長方形が空の場合、結果も空になります。*r* が無限である場合、これは操作が行われません。長方形が（数学的に）交差していない場合、結果は無効になります。結果が有効でも空の場合、長方形は互いに角または一部の側面に接触しています。"
 
 #: ../../rect.rst:143 ../../rect.rst:150 6721df1793cd45e2a1f59ff54750303a
 #: e6f1752521da48ea8bba39dc1a06897a
 msgid "Second rectangle"
-msgstr ""
+msgstr "第二の長方形"
 
 #: ../../rect.rst:148 28c0cc29b21145088878d3fabac7527d
 msgid ""
@@ -541,7 +554,7 @@ msgid ""
 "and **replaces the current** one. If either rectangle is infinite, the "
 "result is also infinite. If one is empty, the other one will be taken as "
 "the result."
-msgstr ""
+msgstr "現在の長方形と *r* を含む最小の長方形を計算し、**現在の長方形を置き換えます**。どちらかの長方形が無限の場合、結果も無限になります。1つが空である場合、もう1つが結果として取られます。"
 
 #: ../../rect.rst:155 ce0c9aac25174647a991e9964a2b1a06
 msgid ""
@@ -550,11 +563,11 @@ msgid ""
 "remains unchanged.** To create a rectangle containing a series of points,"
 " start with (the empty) *fitz.Rect(p1, p1)* and successively include the "
 "remaining points."
-msgstr ""
+msgstr "現在の長方形と点 *p* を含む最小の長方形を計算し、**現在の長方形を置き換えます**。無限の長方形は変更されません。一連の点を含む長方形を作成するには、（空の） *fitz.Rect(p1, p1)* から始め、残りの点を順次含めてください。"
 
 #: ../../rect.rst:157 6c8e7f23e2274b79ba95107fcf9fbd6b
 msgid "Point to include."
-msgstr ""
+msgstr "含めるポイント。"
 
 #: ../../rect.rst:163 82abe45ba4d94212a66b71227396d56a
 msgid ""
@@ -562,13 +575,13 @@ msgid ""
 "*abs(rect)*. Like an empty rectangle, the area of an infinite rectangle "
 "is also zero. So, at least one of *fitz.Rect(p1, p2)* and *fitz.Rect(p2, "
 "p1)* has a zero area."
-msgstr ""
+msgstr "長方形の面積を計算し、パラメーターなしで *abs（rect）* と同じです。空の長方形の面積はゼロであるため、少なくとも *fitz.Rect（p1、p2）* と *fitz.Rect（p2、p1）* のいずれかがゼロの面積を持っている必要があります。"
 
 #: ../../rect.rst:165 4badb6f651f54a2482d3ccafa65ad6fc
 msgid ""
 "Specify required unit: respective squares of *px* (pixels, default), *in*"
 " (inches), *cm* (centimeters), or *mm* (millimeters)."
-msgstr ""
+msgstr "必要な単位を指定します： *px* （ピクセル、デフォルト）の平方、*in* （インチ）、*cm* （センチメートル）、または *mm* （ミリメートル）の平方。"
 
 #: ../../rect.rst:170 49846b7cb9fa42939e5e268ced119d80
 msgid ""
@@ -577,34 +590,34 @@ msgid ""
 "true. If the rectangle is empty this is always *False* for all non-empty "
 "rectangles and for all points. `x in rect` and `rect.contains(x)` are "
 "equivalent."
-msgstr ""
+msgstr "*x* が四角形内に含まれているかどうかをチェックします。xは *IRect*、*Rect*、*Point*、または数値のいずれかです。もし *x* が空の四角形である場合、これは常にtrueです。四角形が空である場合、これはすべての空でない四角形とすべてのポイントに対して常にfalseです。`x in rect` および `rect.contains(x)` は同等です。"
 
 #: ../../rect.rst:172 09c2e7293c5249d484d222972cb07611
 msgid "the object to check."
-msgstr ""
+msgstr "チェックするオブジェクト。"
 
 #: ../../rect.rst:179 b38594bd05f04400b095e5112a5fa8b0
 msgid ""
 "Checks whether the rectangle and a :data:`rect_like` \"r\" contain a "
 "common non-empty :ref:`Rect`. This will always be *False* if either is "
 "infinite or empty."
-msgstr ""
+msgstr "長方形と :data:`rect_like` \"r\" が共通の非空のRectを含むかどうかをチェックします。どちらかが無限または空の場合、これは常に *False* になります。"
 
 #: ../../rect.rst:181 3548014a290140e79dda25ebb4a08b20
 msgid "the rectangle to check."
-msgstr ""
+msgstr "チェックする長方形。"
 
 #: ../../rect.rst:187 13a699c4049a48fb99438447b4e0a6e0
 msgid "New in version 1.19.3"
-msgstr ""
+msgstr "新機能（バージョン1.19.3）"
 
 #: ../../rect.rst:189 9279805914734b3db81c5500fe785151
 msgid "Compute the matrix which transforms this rectangle to a given one."
-msgstr ""
+msgstr "この長方形を指定した長方形に変換する行列を計算します。"
 
 #: ../../rect.rst:191 2aca556ebdf74db08e07d19e79c4cdf1
 msgid "the target rectangle. Must not be empty or infinite."
-msgstr ""
+msgstr "ターゲットの長方形。空または無限であってはいけません。"
 
 #: ../../rect.rst:192 c08055e10fc74a9aba960a251f648e60
 msgid ":ref:`Matrix`"
@@ -615,41 +628,41 @@ msgid ""
 "a matrix `mat` such that `self * mat = rect`. Can for example be used to "
 "transform between the page and the pixmap coordinates. See an example use"
 " here :ref:`RecipesImages_P`."
-msgstr ""
+msgstr "`self * mat = rect` となるような行列 `mat` です。たとえば、ページとピクスマップの座標間を変換するのに使用できます。 使用例はこちらを参照してください :ref:`RecipesImages_P` "
 
 #: ../../rect.rst:197 667d223fb02544ccb8105e97bbae363f
 msgid "New in version 1.17.0"
-msgstr ""
+msgstr "新機能バージョン1.17.0"
 
 #: ../../rect.rst:199 46118e9afea24be3a991a76da5043c66
 msgid ""
 "Return a new quad after applying a matrix to the rectangle using the "
 "fixed point `fixpoint`."
-msgstr ""
+msgstr "固定点 `fixpoint` を使用して、行列を長方形に適用した後の新しい四角形を返します。"
 
 #: ../../rect.rst:201 31789d0aba0445ae80d823d762b70ae4
 msgid "the fixed point."
-msgstr ""
+msgstr "固定ポイント。"
 
 #: ../../rect.rst:202 050514a86ea44267b22e328fc9dc6a5b
 msgid "the matrix."
-msgstr ""
+msgstr "行列。"
 
 #: ../../rect.rst:203 580db7617e684fac9766de14dd54ad5d
 msgid ""
 "a new :ref:`Quad`. This a wrapper for the same-named quad method. If "
 "infinite, the infinite quad is returned."
-msgstr ""
+msgstr "新しい :ref:`Quad` 。これは同じ名前の四角形メソッドのラッパーです。無限の場合、無限の四角形が返されます。"
 
 #: ../../rect.rst:207 f9d6629fa0044445a775a85c52c4d000
 msgid "New in version 1.16.0"
-msgstr ""
+msgstr "新機能バージョン1.16.0"
 
 #: ../../rect.rst:209 c4ef7cdb87de469d920aaabbb40d9ade
 msgid ""
 "Return the Euclidean norm of the rectangle treated as a vector of four "
 "numbers."
-msgstr ""
+msgstr "四角形を4つの数値のベクトルとして扱った場合のユークリッドノルムを返します。"
 
 #: ../../rect.rst:213 9f4045a34e52402ea9a3b02bad8f037c
 msgid ""
@@ -657,15 +670,15 @@ msgid ""
 "shuffling the rectangle corners. After completion of this method, the "
 "bottom right corner will indeed be south-eastern to the top left one (but"
 " may still be empty)."
-msgstr ""
+msgstr "長方形をその有効なバージョンで **置き換えます**。これは長方形のコーナーをシャッフルして行います。このメソッドの完了後、右下のコーナーは確かに左上のコーナーの南東になります（ただし、空である可能性があります）。"
 
 #: ../../rect.rst:217 98cae8611d7c4ae2b4f75f7fe86538b0
 msgid "Equals result of method *round()*."
-msgstr ""
+msgstr "*round()* メソッドの結果と同じです。"
 
 #: ../../rect.rst:223 485f87fd57784f6b8f8705d009c7347f
 msgid "Equals *Point(x0, y0)*."
-msgstr ""
+msgstr "*Point(x0, y0)* と等しい。"
 
 #: ../../rect.rst 0acc6fafb1884ca8a45a81e08e0bd9bc
 #: 1681a6d16bc54a1da622f8bea48bfbc6 258364137eee4c20ae70d472fa865f59
@@ -685,11 +698,11 @@ msgstr ""
 
 #: ../../rect.rst:231 ecb74eebad8d40b19f9202b7cae07e75
 msgid "Equals `Point(x1, y0)`."
-msgstr ""
+msgstr "`Point(x1, y0)` と等しい。"
 
 #: ../../rect.rst:239 5df0f9d1c6ce45c8aa73940fb350367c
 msgid "Equals `Point(x0, y1)`."
-msgstr ""
+msgstr "`Point(x0, y1)` と等しい。"
 
 #: ../../rect.rst:247 bb66227bf5c04e9c90e8ea673d93bbef
 msgid "Equals `Point(x1, y1)`."
@@ -697,7 +710,7 @@ msgstr ""
 
 #: ../../rect.rst:253 40b4025dac314e6b8886550dd3dcfa09
 msgid "The quadrilateral `Quad(rect.tl, rect.tr, rect.bl, rect.br)`."
-msgstr ""
+msgstr "四角形 `Quad(rect.tl, rect.tr, rect.bl, rect.br)`。"
 
 #: ../../rect.rst:255 5d52fd74746c42ea9d18b9a576403d9e
 msgid ":ref:`Quad`"
@@ -705,15 +718,15 @@ msgstr ""
 
 #: ../../rect.rst:259 b1ab0d96b1ec497b8dac59fe3dbea7b8
 msgid "Width of the rectangle. Equals `max(x1 - x0, 0)`."
-msgstr ""
+msgstr "長方形の幅。`max(x1 - x0, 0)` と等しい。"
 
 #: ../../rect.rst:265 0bed86dec83d4fafb151956599df9bcd
 msgid "Height of the rectangle. Equals `max(y1 - y0, 0)`."
-msgstr ""
+msgstr "長方形の高さ。`max(y1 - y0, 0)` と等しい。"
 
 #: ../../rect.rst:271 cd909cbe39394eba8b7fadfeff94c9bf
 msgid "X-coordinate of the left corners."
-msgstr ""
+msgstr "左上の x 座標。"
 
 #: ../../rect.rst:273 ../../rect.rst:279 ../../rect.rst:285 ../../rect.rst:291
 #: 32866a060aa84014859971026c23137d 8170a7bd525b4515a2b99e6d692e5380
@@ -723,19 +736,19 @@ msgstr ""
 
 #: ../../rect.rst:277 8c41ef4bb3954af697a5188b82c54625
 msgid "Y-coordinate of the top corners."
-msgstr ""
+msgstr "左上の y 座標。"
 
 #: ../../rect.rst:283 0844d78e011a44fb9bad81f4211e9886
 msgid "X-coordinate of the right corners."
-msgstr ""
+msgstr "右下の x 座標。"
 
 #: ../../rect.rst:289 86f477476904432c949313f1acbe6f7f
 msgid "Y-coordinate of the bottom corners."
-msgstr ""
+msgstr "右下の y 座標。"
 
 #: ../../rect.rst:295 366c33753f304906b7a328d76102191f
 msgid "`True` if this is the infinite rectangle."
-msgstr ""
+msgstr "これが無限の長方形の場合は `True`。"
 
 #: ../../rect.rst:297 ../../rect.rst:303 ../../rect.rst:309
 #: 030b6959c49c469e98e3d0c554253b45 1ff66158bf134cc1bb07fff8df3c6f8f
@@ -745,23 +758,24 @@ msgstr ""
 
 #: ../../rect.rst:301 4f3c10464ec64684883dff31f974ccd8
 msgid "`True` if rectangle is empty."
-msgstr ""
+msgstr "これが無限の長方形である場合は `True`。"
 
 #: ../../rect.rst:307 a98a763c003941519d09e2d015a2e614
 msgid "`True` if rectangle is valid."
-msgstr ""
+msgstr "長方形が空である場合は `True`。"
 
 #: ../../rect.rst:313 d54324445e3749e1a25aa77d529daed5
 msgid ""
 "This class adheres to the Python sequence protocol, so components can be "
 "accessed via their index, too. Also refer to :ref:`SequenceTypes`."
-msgstr ""
+msgstr "このクラスはPythonのシーケンスプロトコルに従っており、要素にはインデックスを使用できます。Using Python Sequences as Arguments in PyMuPDFも参照してください。
+長方形は算術演算子とともに使用できます - :ref:`SequenceTypes` の章を参照してください。"
 
 #: ../../rect.rst:314 57130e28ae034ad9998dc64ecbd910e2
 msgid ""
 "Rectangles can be used with arithmetic operators -- see chapter "
 ":ref:`Algebra`."
-msgstr ""
+msgstr "四角形は算術演算子と組み合わせて使用できます - :ref:`Algebra` の演算子代数の章を参照してください。"
 
 #: ../../footer.rst:-1 64a8e55292e440d59f7ce66518d89731
 msgid "Discord logo"

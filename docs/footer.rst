@@ -41,7 +41,8 @@
                   return "<b>Discord</b>の <b>#pymupdf</b> を見つける";
               } else if (str == "This software is provided AS-IS with no warranty, either express or implied. This software is distributed under license and may not be copied, modified or distributed except as expressly authorized under the terms of that license. Refer to licensing information at <a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a> or contact Artifex Software Inc., 39 Mesa Street, Suite 108A, San Francisco CA 94129, United States for further information.") {
 
-                  return "このソフトウェアは無保証で提供されており、明示または黙示を問わず、いかなる保証もありません。このソフトウェアはライセンスの下で配布され、ライセンスの条件に明示的に許可されている場合を除き、コピー、変更、または配布してはなりません。ライセンシング情報については、<a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a>でライセンス情報を参照するか、アメリカ合衆国カリフォルニア州サンフランシスコのアーティファクス・ソフトウェア株式会社（Artifex Software Inc.）までお問い合わせください。"
+                  return "このソフトウェアは無保証で提供されており、明示または黙示を問わず、いかなる保証もありません。このソフトウェアはライセンスの下で配布され、ライセンスの条件に明示的に許可されている場合を除き、コピー、変更、または配布してはなりません。ライセンシング情報については、<a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a>でライセンス情報を参照するか、アメリカ合衆国カリフォルニア州サンフランシスコのArtifex Software Inc. までお問い合わせください。"
+
               }
           }
 
@@ -52,6 +53,16 @@
       document.getElementById("feedbackLinkTop").innerHTML = getHeaderAndFooterTranslation("Do you have any feedback on this page?");
       document.getElementById("feedbackLinkBottom").innerHTML = getHeaderAndFooterTranslation("Do you have any feedback on this page?");
       document.getElementById("footerDisclaimer").innerHTML = getHeaderAndFooterTranslation("This software is provided AS-IS with no warranty, either express or implied. This software is distributed under license and may not be copied, modified or distributed except as expressly authorized under the terms of that license. Refer to licensing information at <a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a> or contact Artifex Software Inc., 39 Mesa Street, Suite 108A, San Francisco CA 94129, United States for further information.");
+
+
+      // more tranlsation for admonition-title as the in-built translation isn't great, needs: 注釈 -> 注
+      if (docLanguage == "ja") {
+          const collection = document.getElementsByClassName("admonition-title");
+          for (var i=0;i<collection.length;i++) {
+              collection[i].innerHTML = "注";
+          }
+      }
+
 
    </script>
 

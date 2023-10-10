@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,287 +19,315 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
 
-#: ../../recipes-stories.rst:17 28ada3de6a654f38882d1f2e190359b8
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../recipes-stories.rst:18 327f8d5828ec4f439abb9d28499633f5
 msgid "Stories"
 msgstr "ストーリーズ"
 
-#: ../../recipes-stories.rst:19 4a5e466ecf6e4ba29e5651c8011b02d7
+#: ../../recipes-stories.rst:20 0f09793f2a134e1e8c3f6bc0d3a0b58f
 msgid ""
 "This document showcases some typical use cases for "
 ":ref:`Stories<WorkingWithStories>`."
 msgstr "このドキュメントは、 :ref:`ストーリーズ<WorkingWithStories>` の典型的な使用例を示しています。"
 
-#: ../../recipes-stories.rst:21 f1f2a79aa9d945918c12b900f382e404
+#: ../../recipes-stories.rst:22 fec6ef0b906f4ed399e737e3ad28f21e
 msgid ""
 "As mentioned in the :ref:`tutorial<WorkingWithStories>`, stories may be "
 "created using up to three input sources: HTML, CSS and Archives -- all of"
 " which are optional and which, respectively, can be provided "
 "programmatically."
-msgstr ":ref:`チュートリアル<WorkingWithStories>` で説明されているように、ストーリーズは最大3つの入力ソース（HTML、CSS、アーカイブ）を使用して作成できます。これらのソースはすべてオプションであり、それぞれプログラムで提供することができます。"
+msgstr ""
+":ref:`チュートリアル<WorkingWithStories>` "
+"で説明されているように、ストーリーズは最大3つの入力ソース（HTML、CSS、アーカイブ）を使用して作成できます。これらのソースはすべてオプションであり、それぞれプログラムで提供することができます。"
 
-#: ../../recipes-stories.rst:23 fa4322d46ab44e92b8a4a4d1fad103f3
+#: ../../recipes-stories.rst:24 f3ffb3d9bc064d0286c5affe85d26574
 msgid "The following examples will showcase combinations for using these inputs."
 msgstr "以下の例では、これらの入力を使用した組み合わせを示します。"
 
-#: ../../recipes-stories.rst:27 dc0761ef286442a9ba201027745b300c
+#: ../../recipes-stories.rst:28 2ab420e85dfb4747a4bacfed210e82a8
 msgid ""
 "Many of these recipe's source code are included as examples in the `docs`"
 " folder."
 msgstr "これらのレシピのソースコードの多くは、ドキュメントフォルダ内の例として含まれています。"
 
-#: ../../recipes-stories.rst:33 6deb22cb00ec41ebb34ad2ef3f21f21b
+#: ../../recipes-stories.rst:34 003c2b5c27a24eda8cd9f560d7791fd4
 msgid "How to Add a Line of Text with Some Formatting"
 msgstr "テキストの行をいくつかの書式で追加する方法"
 
-#: ../../recipes-stories.rst:35 e2b68ab93436401f85921e27c3a86f1f
+#: ../../recipes-stories.rst:36 d3599e4688b941b8b26800c2a7a9f517
 msgid "Here is the inevitable \"Hello World\" example. We will show two variants:"
 msgstr "以下は、避けられない「Hello World」の例です。2つのバリアントを示します："
 
-#: ../../recipes-stories.rst:37 da2f0c49ec6241b08a9efad8b6afde8d
+#: ../../recipes-stories.rst:38 87f4a181fe904e9189cd921d20f3a3d1
 msgid "Create using existing HTML source [#f1]_, that may come from anywhere."
 msgstr "どこからでも取得できる既存のHTMLソース [#f1]_ を使用して作成します。"
 
-#: ../../recipes-stories.rst:38 124131944f7846ec812df189cdc95c45
+#: ../../recipes-stories.rst:39 90506ba7647943fe9648aec239bdc216
 msgid "Create using the Python API."
 msgstr "Python APIを使用して作成します。"
 
-#: ../../recipes-stories.rst:42 9286166972e24c34b3b7fafb31f5bcca
+#: ../../recipes-stories.rst:43 cda4f16117064447a122e727503007e7
 msgid ""
 "Variant using an existing HTML source [#f1]_ -- which in this case is "
 "defined as a constant in the script::"
 msgstr "既存のHTMLソース [#f1]_ を使用したバリアント – この場合、スクリプト内で定数として定義されています::"
 
-#: ../../recipes-stories.rst:68 9bbd51df483247e580e231390e560ffb
+#: ../../recipes-stories.rst:69 9acbe381b34c4df5adb572a8468d2f5c
 msgid ""
 "The above effect (sans-serif and blue text) could have been achieved by "
 "using a separate CSS source like so::"
 msgstr "上記の効果（サンセリフ体および青いテキスト）は、次のように別のCSSソースを使用することで達成できます::"
 
-#: ../../recipes-stories.rst:89 b60da131ba6b4280bb6f05e75d7bde34
+#: ../../recipes-stories.rst:90 5a63703c3bbb44188478d10c7eced95f
 msgid "The Python API variant -- everything is created programmatically::"
 msgstr "Python APIのバリアント - すべてがプログラムで作成されます::"
 
-#: ../../recipes-stories.rst:113 4b35d30c975b4abc9604b0490eb82d60
+#: ../../recipes-stories.rst:114 3884f83330ef4d0da88116092fd6a045
 msgid "Both variants will produce the same output PDF."
 msgstr "どちらのバリアントも同じ出力のPDFを生成します。"
 
-#: ../../recipes-stories.rst:121 16df57d23462442c809cad549f33f4c8
+#: ../../recipes-stories.rst:122 b78ffe802ac94a7c9f5fee6564b51705
 msgid "How to use Images"
 msgstr "画像の使用方法"
 
-#: ../../recipes-stories.rst:123 2fc054034c55475a9218b714910d9629
+#: ../../recipes-stories.rst:124 252a36d7a63542d7b47a22b97c9a53ea
 msgid ""
 "Images can be referenced in the provided HTML source, or the reference to"
 " a desired image can also be stored via the Python API. In any case, this"
 " requires using an :ref:`Archive`, which refers to the place where the "
 "image can be found."
-msgstr "画像は提供されたHTMLソース内で参照することができます。また、Python APIを介して必要な画像への参照も保存することができます。どちらの場合も、画像が見つかる場所を指す :ref:`Archive` を使用する必要があります。"
+msgstr ""
+"画像は提供されたHTMLソース内で参照することができます。また、Python "
+"APIを介して必要な画像への参照も保存することができます。どちらの場合も、画像が見つかる場所を指す :ref:`Archive` "
+"を使用する必要があります。"
 
-#: ../../recipes-stories.rst:125 21e3c6e018304a63bd04ab3da74b044b
+#: ../../recipes-stories.rst:126 85a8d62c3ad7423e959e2f36fbd2e162
 msgid ""
 "Images with the binary content embedded in the HTML source are **not "
 "supported** by stories."
 msgstr "HTMLソースにバイナリコンテンツが埋め込まれた画像は、ストーリーズではサポートされていません。"
 
-#: ../../recipes-stories.rst:127 da914d01e51543ae8d92d8cd9626feba
+#: ../../recipes-stories.rst:128 3d5f9c38165043cb9eb4bc8feaae4079
 msgid ""
 "We extend our \"Hello World\" example from above and display an image of "
 "our planet right after the text. Assuming the image has the name "
 "\"world.jpg\" and is present in the script's folder, then this is the "
 "modified version of the above Python API variant::"
-msgstr "前述の「Hello World」の例を拡張し、テキストの直後に地球の画像を表示します。画像の名前が「world.jpg」であり、スクリプトのフォルダに存在すると仮定すると、次に示すようにPython APIバリアントを修正したものとなります::"
+msgstr ""
+"前述の「Hello "
+"World」の例を拡張し、テキストの直後に地球の画像を表示します。画像の名前が「world.jpg」であり、スクリプトのフォルダに存在すると仮定すると、次に示すようにPython"
+" APIバリアントを修正したものとなります::"
 
-#: ../../recipes-stories.rst:167 f29eb9cbabda4491a8ce80d636d4fad1
+#: ../../recipes-stories.rst:168 73ecd1beb5cf4608b182147e3f150069
 msgid "How to Read External HTML and CSS for a Story"
 msgstr "外部のHTMLとCSSをストーリーに読み込む方法"
 
-#: ../../recipes-stories.rst:169 2835214b044c42228828a4bb4c80f906
+#: ../../recipes-stories.rst:170 44bcfe6a5bf24321b784c95b03a46b3a
 msgid "These cases are fairly straightforward."
 msgstr "これらのケースはかなり直接的です。"
 
-#: ../../recipes-stories.rst:171 1c41f85a3f824d268b74bbbe468fbe16
+#: ../../recipes-stories.rst:172 356bc1ec2f4e461698046c868c85797a
 msgid ""
 "As a general recommendation, HTML and CSS sources should be **read as "
 "binary files** and decoded before using them in a story. The Python "
 "`pathlib.Path` provides convenient ways to do this::"
-msgstr "一般的な推奨事項として、HTMLとCSSのソースはバイナリファイルとして読み込まれ、ストーリーで使用する前にデコードされるべきです。Pythonの `pathlib.Path` は、これを便利に行うための方法を提供しています。::"
+msgstr ""
+"一般的な推奨事項として、HTMLとCSSのソースはバイナリファイルとして読み込まれ、ストーリーで使用する前にデコードされるべきです。Pythonの"
+" `pathlib.Path` は、これを便利に行うための方法を提供しています。::"
 
-#: ../../recipes-stories.rst:192 89a987ee84be42a4810bd8eb41bcc451
+#: ../../recipes-stories.rst:193 46333e67b81240fa8d5d92bcea87ece8
 msgid "How to Output Database Content with Story Templates"
 msgstr "データベースの内容をストーリーテンプレートで出力する方法"
 
-#: ../../recipes-stories.rst:194 02a4ba3869cc4aca8c265abf6711d1bd
+#: ../../recipes-stories.rst:195 a807d883ca6d466c9e2ba07c489106bb
 msgid ""
 "This script demonstrates how to report SQL database content using an "
 "**HTML template**."
 msgstr "このスクリプトは**HTMLテンプレート**を使用してSQLデータベースの内容を報告する方法を示しています。"
 
-#: ../../recipes-stories.rst:198 a5f4f01135b5451abf97ea06dafdfe5d
+#: ../../recipes-stories.rst:199 47429bd4c6da4836bac1cdfae16c7866
 msgid "The example SQL database contains two tables:"
 msgstr "この例のSQLデータベースには2つのテーブルが含まれています："
 
-#: ../../recipes-stories.rst:200 14372fbf3f2b4a1889dba648c5a97e43
+#: ../../recipes-stories.rst:201 395ff86102cd469ca59d775fcf65044b
 msgid ""
 "Table \"films\" contains one row per film with the fields **\"title\"**, "
 "**\"director\"** and (release) **\"year\"**."
 msgstr "テーブル「films」には、フィールド「title」、「director」、および（公開）「year」を持つ1つの映画ごとの行が含まれています。"
 
-#: ../../recipes-stories.rst:201 f13ed99ec3214ecfa2ccdf8e53c561e7
+#: ../../recipes-stories.rst:202 aeb3cca3c90e4fcf92f1ab505aad2035
 msgid ""
 "Table \"actors\" contains one row per actor and film title (fields "
 "(actor) **\"name\"** and (film) **\"title\"**)."
 msgstr "テーブル「actors」には、1つの行に1人の俳優と映画のタイトルが含まれています（フィールド（actor）「name」と（film）「title」）。"
 
-#: ../../recipes-stories.rst:203 f1506542fd504354b86a5abc3a3ee592
+#: ../../recipes-stories.rst:204 69fdb099c5e74d9aa9db9b8e8b757300
 msgid ""
 "The story DOM consists of a template for one film, which reports film "
 "data together with a list of casted actors."
 msgstr "ストーリーDOMは、映画の1つのテンプレートから成り、映画のデータと出演俳優のリストを報告します。"
 
-#: ../../recipes-stories.rst:205 ../../recipes-stories.rst:230
-#: ../../recipes-stories.rst:256 ../../recipes-stories.rst:308
-#: ../../recipes-stories.rst:342 ../../recipes-stories.rst:376
-#: ../../recipes-stories.rst:397 ../../recipes-stories.rst:432
-#: ../../recipes-stories.rst:466 ../../recipes-stories.rst:496
-#: ../../recipes-stories.rst:530 6924a729eae149b886ddbdcfdf99611f
-#: 6d78c7f5d408434388ea652c9f3ee428 6ee90885bd9c4161ac928657395c3f51
-#: 6fe18168e66347da8736ea5bcddabdb0 71822ebb16aa4f48a20469bbcecc3d62
-#: 84c6eff38c35411ab11fa3f39196a20e 9bd53af181f34632be1b4badf9fb0ea8
-#: b2b8393edab34bb1a9139d93e31d561d c3b354c4bd6845ed96988fb86c2aba18
-#: d2620d4ed490427f8639c91c7ceaa8ae ea7c17028a53439b84d0422e13f04f23
+#: ../../recipes-stories.rst:206 ../../recipes-stories.rst:231
+#: ../../recipes-stories.rst:257 ../../recipes-stories.rst:309
+#: ../../recipes-stories.rst:343 ../../recipes-stories.rst:377
+#: ../../recipes-stories.rst:398 ../../recipes-stories.rst:433
+#: ../../recipes-stories.rst:467 ../../recipes-stories.rst:497
+#: ../../recipes-stories.rst:531 4d59f98e0e4d4c5291c88d96fb83bde7
+#: 5fcc52aa1d324c4e9dc6be90f79e6239 9731a6ea0b954b2887e23ebd2e1c8c5f
+#: 9c7242fd1db24469a5e08a051471cee6 9e01389254d94039b5b73ab21e448460
+#: b639f1e382914994a165f87a2fae8f1c c7aa137c91b747a1b110941e31f35429
+#: d55a3d6e6cf64b6794546361faad439a d79422163e164c018b942b7027ac25af
+#: fa0106f348984b059836f136650b86ea fe606c76a66048998f265de6d0e08781
 msgid "**Files:**"
 msgstr "**ファイル：**"
 
-#: ../../recipes-stories.rst:207 a53ab4e888384172b14f88c5f25789ad
+#: ../../recipes-stories.rst:208 de7f0c266db04eb894d6132048547c10
 msgid "`docs/samples/filmfestival-sql.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:208 867991edcf3443dc858b0c9bc5ce616d
+#: ../../recipes-stories.rst:209 43438ec72adb4694a4e1db4e9ec24531
 msgid "`docs/samples/filmfestival-sql.db`"
 msgstr ""
 
-#: ../../recipes-stories.rst:211 ../../recipes-stories.rst:234
-#: ../../recipes-stories.rst:262 ../../recipes-stories.rst:315
-#: ../../recipes-stories.rst:346 ../../recipes-stories.rst:359
-#: ../../recipes-stories.rst:380 ../../recipes-stories.rst:401
-#: ../../recipes-stories.rst:436 ../../recipes-stories.rst:470
-#: ../../recipes-stories.rst:500 ../../recipes-stories.rst:534
-#: 01558bc813da4f4fb0b2e52caf655892 02170238809f4b8db4b3f4d99e53fd04
-#: 1a3f1a7a3ba3468fa934867a3519ba86 2044e44f6af74eac9dee9935aa4f28cc
-#: 25f6473c8e3d4f4492de99be854bc14d 30ab0daafb8f4f2ba463e436aa4c8315
-#: 6d0f6aa8ac204a00a83f0a1cd895996d 6ef1877292b34194b210b8a1333f47ff
-#: 72cf5532eb4d46cc9df855e8a196c00c a19de32ecce54fa19812ab280b44f8f8
-#: bc3d2b005a974c4a82f174170f10fc87 d0aa0e205f414ff4a3b4410189bbd8cd
+#: ../../recipes-stories.rst:212 ../../recipes-stories.rst:235
+#: ../../recipes-stories.rst:263 ../../recipes-stories.rst:316
+#: ../../recipes-stories.rst:347 ../../recipes-stories.rst:360
+#: ../../recipes-stories.rst:381 ../../recipes-stories.rst:402
+#: ../../recipes-stories.rst:437 ../../recipes-stories.rst:471
+#: ../../recipes-stories.rst:501 ../../recipes-stories.rst:535
+#: 351b4e4fe24044c594bf8f81f5b61abf 4fd5675ab6c04adea5af3fb89a23c1e3
+#: 6ab238dac1e44ca4948c30ca08829abd 938acd85d5c245e183d00e4fad863ba9
+#: 99d480635b7a4392993c3a16716a6ba0 ac4ada13fe8143edacce8086eb875dcd
+#: b5d6df4af9534754a169cdd1904fda4d b67a547afa564e29a8dd743a17a09d2f
+#: bcd7ea36fdb64b7d8c5efe2eb9f49986 c5e0c6f6e27941e98538518584018a1a
+#: d27adc1d71ac42bab29eba06ce3c6393 d297e0c14d724e10b4732a11b58ed79d
 msgid "|toggleStart|"
 msgstr ""
 
-#: ../../recipes-stories.rst:215 ../../recipes-stories.rst:238
-#: ../../recipes-stories.rst:266 ../../recipes-stories.rst:319
-#: ../../recipes-stories.rst:350 ../../recipes-stories.rst:363
-#: ../../recipes-stories.rst:384 ../../recipes-stories.rst:405
-#: ../../recipes-stories.rst:440 ../../recipes-stories.rst:474
-#: ../../recipes-stories.rst:504 ../../recipes-stories.rst:538
-#: 10b5086634de444eb73486a4ab2e7492 33a2a0470093488d9f1587992d4f3f4b
-#: 8c9ca856400f49a4b0f544d734be7ff5 97368b6040a4435a881a70c272be7aee
-#: a40ae4e40d9646828430eb412e5e88ad ae3bae90994d4b9b960dbadd1cd4922f
-#: aef9e577b4c940149e1111d239115841 bca9bc770efc4ca081ca953c06e08525
-#: c388daa47235452d8cc3137559303c11 c9fb71f5e06c497b90678e1a747b0a08
-#: cadd1c06b50e494c9bfc03cf0ef8c311 fab6796dd92f48099f4571c5b7f05c54
+#: ../../recipes-stories.rst:216 ../../recipes-stories.rst:239
+#: ../../recipes-stories.rst:267 ../../recipes-stories.rst:320
+#: ../../recipes-stories.rst:351 ../../recipes-stories.rst:364
+#: ../../recipes-stories.rst:385 ../../recipes-stories.rst:406
+#: ../../recipes-stories.rst:441 ../../recipes-stories.rst:475
+#: ../../recipes-stories.rst:505 ../../recipes-stories.rst:539
+#: 0ad22fa1a94241fb88476bcb52d3c9bb 0ef1592189e2440d929ec29b36a394ad
+#: 1e611efa09004535a5de6e4448949a4c 3dd1c60a517145de8fa1bf93ed730007
+#: 669a792c2cb442189b00deb4c1502f97 73e7d89e19eb40cc980d62a9b1d3153a
+#: 78430715f5514e4791b8d3036b109089 8c49b58d279e48dab39aeb191ca343db
+#: a9ccb71c31374c8e9e38e50cc7115250 d30ca397927a48d281ebf72322e2b060
+#: db2bb04ee27e472490f58d10e696289e e8a894e8d770415694cf043cd729ae0f
 msgid "|toggleEnd|"
 msgstr ""
 
-#: ../../recipes-stories.rst:224 56f450b98412449bb9c89b82bb3ed20f
+#: ../../recipes-stories.rst:225 52c675905fb044b1b5506c9d44a2d864
 msgid "How to Integrate with Existing PDFs"
 msgstr "既存のPDFと統合する方法"
 
-#: ../../recipes-stories.rst:226 51c54f53e4564e739d548e0f6edf9525
+#: ../../recipes-stories.rst:227 6831bafd7e9542aabf12091e75db8860
 msgid ""
 "Because a :ref:`DocumentWriter` can only write to a new file, stories "
 "cannot be placed on existing pages. This script demonstrates a "
 "circumvention of this restriction."
-msgstr ":ref:`DocumentWriter` は新しいファイルにのみ書き込むことができるため、ストーリーは既存のページに配置することはできません。このスクリプトは、この制限を回避する方法を示しています。"
+msgstr ""
+":ref:`DocumentWriter` "
+"は新しいファイルにのみ書き込むことができるため、ストーリーは既存のページに配置することはできません。このスクリプトは、この制限を回避する方法を示しています。"
 
-#: ../../recipes-stories.rst:228 0ac1e1ae4d824d71a35006c0b2642145
+#: ../../recipes-stories.rst:229 cafc8eb07155489dabd5bf41f18c7197
 msgid ""
 "The basic idea is letting :ref:`DocumentWriter` output to a PDF in "
 "memory. Once the story has finished, we re-open this memory PDF and put "
 "its pages to desired locations on **existing** pages via method "
 ":meth:`Page.show_pdf_page`."
-msgstr "基本的な考え方は、 :ref:`DocumentWriter`  がメモリ内のPDFに出力することです。ストーリーが完了したら、このメモリPDFを再度開き、メソッド :meth:`Page.show_pdf_page` を使用してそのページを既存のページに必要な位置に配置します。"
+msgstr ""
+"基本的な考え方は、 :ref:`DocumentWriter`  "
+"がメモリ内のPDFに出力することです。ストーリーが完了したら、このメモリPDFを再度開き、メソッド "
+":meth:`Page.show_pdf_page` を使用してそのページを既存のページに必要な位置に配置します。"
 
-#: ../../recipes-stories.rst:232 d0cfcfcd6b424271ab1db9c82914e9a5
+#: ../../recipes-stories.rst:233 2aba69539c604f28aceb8d496c6a8c05
 msgid "`docs/samples/showpdf-page.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:247 76e6407e25aa48b8a39fc24e06eeb54a
+#: ../../recipes-stories.rst:248 1db2e9f24cc2478080d33cca0403f216
 msgid ""
 "How to Make Multi-Columned Layouts and Access Fonts from Package "
 "`pymupdf-fonts`_"
 msgstr "多段組のレイアウトを作成し、パッケージ `pymupdf-fonts`_ からフォントにアクセスする方法"
 
-#: ../../recipes-stories.rst:249 bcd5309dfd49461fae6d3683d651cef2
+#: ../../recipes-stories.rst:250 633167564de04d729df6bfb86f83d56b
 msgid ""
 "This script outputs an article (taken from Wikipedia) that contains text "
 "and multiple images and uses a 2-column page layout."
 msgstr "このスクリプトは、テキストと複数の画像を含む記事（Wikipediaから取得）を出力し、2列のページレイアウトを使用します。"
 
-#: ../../recipes-stories.rst:251 33d073eca57d4921bdef301dd6d0a7a7
+#: ../../recipes-stories.rst:252 7f46776333624f18b8a255e80bbfbf16
 msgid ""
 "In addition, two \"Ubuntu\" font families from package `pymupdf-fonts`_ "
 "are used instead of defaulting to Base-14 fonts."
-msgstr "さらに、デフォルトではBase-14フォントにデフォルトでなく、パッケージpymupdf-fontsから2つの「Ubuntu」フォントファミリが使用されています。"
+msgstr ""
+"さらに、デフォルトではBase-14フォントにデフォルトでなく、パッケージpymupdf-"
+"fontsから2つの「Ubuntu」フォントファミリが使用されています。"
 
-#: ../../recipes-stories.rst:253 9c0e0087e174497ab5a5043e373502e2
+#: ../../recipes-stories.rst:254 c67ea70fa6514c659629ec5e46e3d9a6
 msgid ""
 "Yet another feature used here is that all data -- the images and the "
 "article HTML -- are jointly stored in a ZIP file."
 msgstr "ここで使用される別の機能は、すべてのデータ – 画像と記事のHTML – が共にZIPファイルに格納されていることです。"
 
-#: ../../recipes-stories.rst:258 d3a76a88b04642b693346dcf29869962
+#: ../../recipes-stories.rst:259 5fd62f87ddcb4007a31a866cb7af3bc0
 msgid "`docs/samples/quickfox.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:259 ../../recipes-stories.rst:312
-#: 5bdd3ed940c74ce6a49858ee88d9adb5 fbd814f6496641babc7b500b4518326c
+#: ../../recipes-stories.rst:260 ../../recipes-stories.rst:313
+#: 481c895015bf4c20a440836bbd9864ff f6d136f2b3c1436595fae4969364f10c
 msgid "`docs/samples/quickfox.zip`"
 msgstr ""
 
-#: ../../recipes-stories.rst:275 5d45cc01a6a04968bf95a67b155e7c43
+#: ../../recipes-stories.rst:276 a8afd1a246ce4ad982484cb91afa7484
 msgid "How to Make a Layout which Wraps Around a Predefined \"no go area\" Layout"
 msgstr "あらかじめ定義された「禁止エリア」レイアウトに囲まれたレイアウトの作成方法"
 
-#: ../../recipes-stories.rst:278 69aaae27c4b247dd92db646de84444c1
+#: ../../recipes-stories.rst:279 a3d0f3c1e8c94d8ba1b5907646719caf
 msgid ""
 "This is a demo script using PyMuPDF's Story class to output text as a PDF"
 " with a two-column page layout."
 msgstr "これは、PyMuPDFのStoryクラスを使用してテキストを2列のページレイアウトでPDFとして出力するデモスクリプトです。"
 
-#: ../../recipes-stories.rst:281 02db826eb07d4300a0e0ca009568c75a
+#: ../../recipes-stories.rst:282 59bc4144b1924b8e88c744f80500c44f
 msgid "The script demonstrates the following features:"
 msgstr "このスクリプトは、以下の機能を示しています："
 
-#: ../../recipes-stories.rst:283 c5d78e3867844aa99ae07cbb50020d8e
+#: ../../recipes-stories.rst:284 02654d06f99445e6a6c0ee2cc0dce3e2
 msgid "Layout text around images of an existing (\"target\") PDF."
 msgstr "既存の（「ターゲット」）PDFの画像の周りにテキストをレイアウトします。"
 
-#: ../../recipes-stories.rst:284 0863f27c786f440ba8366f8ffd70f726
+#: ../../recipes-stories.rst:285 5f2d6620bded41b8b791c43ef63eca3a
 msgid ""
 "Based on a few global parameters, areas on each page are identified, that"
 " can be used to receive text layouted by a Story."
 msgstr "各ページの特定の領域が、Storyによってレイアウトされたテキストを受け入れるために使用できるように、いくつかのグローバルパラメータに基づいて識別されます。"
 
-#: ../../recipes-stories.rst:286 86d604149e244d36a8ca3e97c6d9269d
+#: ../../recipes-stories.rst:287 037eed64ca8a4fdc9b566b06710ca837
 msgid ""
 "These global parameters are not stored anywhere in the target PDF and "
 "must therefore be provided in some way:"
 msgstr "これらのグローバルパラメータは、ターゲットPDF内のどこにも保存されず、したがってどのような方法で提供される必要があります："
 
-#: ../../recipes-stories.rst:289 7cdf080e1e3740489646a6dcb4a8e387
+#: ../../recipes-stories.rst:290 9bb55ff6f89847b29d3adfea14ed85e0
 msgid "The width of the border(s) on each page."
 msgstr "各ページのボーダーの幅。"
 
-#: ../../recipes-stories.rst:290 a58fe0798d484ba598fda59607a6c732
+#: ../../recipes-stories.rst:291 21590781fda24d908f9d8d1dab9433d5
 msgid ""
 "The fontsize to use for text. This value determines whether the provided "
 "text will fit in the empty spaces of the (fixed) pages of target PDF. It "
@@ -309,11 +337,11 @@ msgid ""
 "be changed (a float value)."
 msgstr "テキストに使用するフォントサイズ。この値は、提供されたテキストがターゲットPDFの（固定された）ページの空白スペースに収まるかどうかを決定します。これはどのように予測することもできません。ターゲットPDFに十分なページがない場合、スクリプトは例外をスローし、すべてのページが少なくとも一部のテキストを受け取らない場合は警告メッセージが表示されます。どちらの場合も、FONTSIZEの値を変更できます（浮動小数点数）。"
 
-#: ../../recipes-stories.rst:296 677141ed2019410db05c3b9550bd0bac
+#: ../../recipes-stories.rst:297 6951c44747a94c7bb8550b4d10426341
 msgid "Use of a 2-column page layout for the text."
 msgstr "テキストのための2列のページレイアウトの使用。"
 
-#: ../../recipes-stories.rst:297 3607c5d85e75473a86b22a06e8ad7883
+#: ../../recipes-stories.rst:298 bf5ccfa32c704e45823329073ceef850
 msgid ""
 "The layout creates a temporary (memory) PDF. Its produced page content "
 "(the text) is used to overlay the corresponding target page. If text "
@@ -322,330 +350,371 @@ msgid ""
 "printed."
 msgstr "レイアウトは一時的な（メモリ）PDFを作成します。その生成されたページのコンテンツ（テキスト）は、対応するターゲットページに重ねて配置されます。テキストがターゲットPDFの利用可能なページよりも多くのページを必要とする場合、例外が発生します。すべてのターゲットページが少なくとも一部のテキストを受け取らない場合、警告が表示されます。"
 
-#: ../../recipes-stories.rst:301 959025d085a441b9a05f1c799f4bc8d5
+#: ../../recipes-stories.rst:302 3c482f58dca642e89a40222107302688
 msgid ""
 "The script reads \"image-no-go.pdf\" in its own folder. This is the "
 "\"target\" PDF. It contains 2 pages with each 2 images (from the original"
 " article), which are positioned at places that create a broad overall "
 "test coverage. Otherwise the pages are empty."
-msgstr "スクリプトは、自分自身のフォルダ内の「image-no-go.pdf」を読み込みます。これが「ターゲット」PDFです。オリジナルの記事から2つの画像（各2ページ）を含み、それらは広範なテストカバレッジを作成する場所に配置されています。それ以外の場合、ページは空です。"
+msgstr ""
+"スクリプトは、自分自身のフォルダ内の「image-no-"
+"go.pdf」を読み込みます。これが「ターゲット」PDFです。オリジナルの記事から2つの画像（各2ページ）を含み、それらは広範なテストカバレッジを作成する場所に配置されています。それ以外の場合、ページは空です。"
 
-#: ../../recipes-stories.rst:305 5b80bcc620a04d319b144fd9f91d6622
+#: ../../recipes-stories.rst:306 a01b6170918f4f11bfd7c0f5d9165938
 msgid ""
 "The script produces \"quickfox-image-no-go.pdf\" which contains the "
 "original pages and image positions, but with the original article text "
 "laid out around them."
-msgstr "スクリプトは「quickfox-image-no-go.pdf」を生成し、元のページと画像の位置を含みますが、元の記事のテキストがその周りにレイアウトされます。"
+msgstr ""
+"スクリプトは「quickfox-image-no-"
+"go.pdf」を生成し、元のページと画像の位置を含みますが、元の記事のテキストがその周りにレイアウトされます。"
 
-#: ../../recipes-stories.rst:310 685b48da357a4f5eb32b28f331525b38
+#: ../../recipes-stories.rst:311 14ad2887986746d8bb172a8252484202
 msgid "`docs/samples/quickfox-image-no-go.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:311 4dab03463c014d8b80d8ee98a266daaf
+#: ../../recipes-stories.rst:312 1b4a11699d37433180ff169dc71a3eb9
 msgid "`docs/samples/quickfox-image-no-go.pdf`"
 msgstr ""
 
-#: ../../recipes-stories.rst:328 d93c027640cb4d4fbb52bc2c4c0c90a5
+#: ../../recipes-stories.rst:329 5923438a1d7f46eb95e75d07f1971735
 msgid "How to Output an HTML Table"
 msgstr "HTMLテーブルの出力方法"
 
-#: ../../recipes-stories.rst:330 e36b556428fe43e5980952e86d31d8d2
+#: ../../recipes-stories.rst:331 c4a12b4b1ffb43f8b46703fe09d7b3a9
 msgid "Outputting HTML tables is supported as follows:"
 msgstr "HTMLテーブルの出力は次のようにサポートされています："
 
-#: ../../recipes-stories.rst:332 74aa77ec0a804627be39a86db6c10e59
+#: ../../recipes-stories.rst:333 0c38a11c5297462ea38560895039a946
 msgid ""
 "Flat table layouts are supported (\"rows x columns\"), no support of the "
 "\"colspan\" / \"rowspan\" attributes."
 msgstr "フラットなテーブルレイアウト（「行 × 列」）がサポートされており、「colspan」/「rowspan」属性はサポートされていません。"
 
-#: ../../recipes-stories.rst:333 5d82a416466f4aa48b16fd691f60a57b
+#: ../../recipes-stories.rst:334 974171d123ed454dbf5673705b79f39d
 msgid ""
 "Table header tag :htmlTag:`th` supports attribute \"scope\" with values "
 "\"row\" or \"col\". Applicable text will be bold by default."
-msgstr "テーブルヘッダータグ :htmlTag:`th` は、属性 “scope” をサポートし、値として “row” または “col” を持ちます。適用されるテキストはデフォルトで太字になります。"
+msgstr ""
+"テーブルヘッダータグ :htmlTag:`th` は、属性 “scope” をサポートし、値として “row” または “col” "
+"を持ちます。適用されるテキストはデフォルトで太字になります。"
 
-#: ../../recipes-stories.rst:334 b1d7f56d7f824c95bb8a151b18ca09bb
+#: ../../recipes-stories.rst:335 dfd685fd59ab424886851c5bef465b74
 msgid ""
 "Column widths are computed automatically based on column content. They "
 "cannot be directly set."
 msgstr "列の幅は、列のコンテンツに基づいて自動的に計算されます。直接設定することはできません。"
 
-#: ../../recipes-stories.rst:335 d83059ef35f94da190cf995936c13fa3
+#: ../../recipes-stories.rst:336 c631dd4a5ad44fe39c6a3818c39992c1
 msgid ""
 "Table **cells may contain images** which will be considered in the column"
 " width calculation magic."
 msgstr "テーブルのセルには画像を含めることができ、これは列幅計算の際に考慮されます。"
 
-#: ../../recipes-stories.rst:336 a53313c7ace04aaf888510ef6ae684f7
+#: ../../recipes-stories.rst:337 665859fa1fcc49d28a3340a01133640e
 msgid ""
 "Row heights are computed automatically based on row content - leading to "
 "multi-line rows where needed."
 msgstr "行の高さは、行のコンテンツに基づいて自動的に計算され、必要に応じて複数行の行が生成されます。"
 
-#: ../../recipes-stories.rst:337 4dab3da90acf4e08841f4ad93ed4da31
+#: ../../recipes-stories.rst:338 36119f6711274c4789491f22484ae65b
 msgid ""
 "The potentially multiple lines of a table row will always be kept "
 "together on one page (respectively \"where\" rectangle) and not be "
 "splitted."
 msgstr "テーブルの行の潜在的に複数行は、常に1つのページ（または “where” 矩形）にまとめて表示され、分割されることはありません。"
 
-#: ../../recipes-stories.rst:338 51c731f0c57143cd80b5f734e3239b66
+#: ../../recipes-stories.rst:339 d460d37b638241aab4560e1f9ec8babf
 msgid ""
 "Table header rows are only **shown on the first page / \"where\" "
 "rectangle.**"
 msgstr "テーブルのヘッダー行は、最初のページ / \"where\" 矩形のみに表示されます。"
 
-#: ../../recipes-stories.rst:339 e32cc714dfce441eb317ae6aca9bac62
+#: ../../recipes-stories.rst:340 66ff528e309d4623a593b81f990010c9
 msgid ""
 "The \"style\" attribute is ignored when given directly in HTML table "
 "elements. Styling for a table and its elements must happen separately, in"
 " CSS source or within the :htmlTag:`style` tag."
-msgstr "直接HTMLテーブル要素に  \"style\"   属性が与えられた場合、無視されます。テーブルとその要素のスタイリングは、CSSソース内または :htmlTag:`style`  タグ内で別途行う必要があります。"
+msgstr ""
+"直接HTMLテーブル要素に  \"style\"   属性が与えられた場合、無視されます。テーブルとその要素のスタイリングは、CSSソース内または"
+" :htmlTag:`style`  タグ内で別途行う必要があります。"
 
-#: ../../recipes-stories.rst:340 6dd2011aebd542e4a871f813d4b3c8d8
+#: ../../recipes-stories.rst:341 b971537a041a4334994ed1cee87637d8
 msgid ""
 "Styling for :htmlTag:`tr` elements is not supported and ignored. "
 "Therefore, a table-wide grid or alternating row background colors are not"
 " supported. One of the following example scripts however shows an easy "
 "way to deal with this limitation."
-msgstr ":htmlTag:`tr` 要素のスタイリングはサポートされておらず、無視されます。したがって、テーブル全体のグリッドや交互の行の背景色はサポートされていません。ただし、以下の例スクリプトのいずれかは、この制限に対処する簡単な方法を示しています。"
+msgstr ""
+":htmlTag:`tr` "
+"要素のスタイリングはサポートされておらず、無視されます。したがって、テーブル全体のグリッドや交互の行の背景色はサポートされていません。ただし、以下の例スクリプトのいずれかは、この制限に対処する簡単な方法を示しています。"
 
-#: ../../recipes-stories.rst:344 cf108b7f7bcb405f93e678820fa0bb05
+#: ../../recipes-stories.rst:345 8dedc757f48d4def908872697790cfa4
 msgid "`docs/samples/table01.py` This script reflects basic features."
 msgstr "`docs/samples/table01.py` このスクリプトは基本的な機能を反映しています。"
 
-#: ../../recipes-stories.rst:352 684ed0b5ee4e4c53a928e618d28ff430
+#: ../../recipes-stories.rst:353 34cdcf39f23045d587fca84850e4a67f
 msgid ""
 "`docs/samples/national-capitals.py` Advanced script extending table "
 "output options using simple additional code:"
-msgstr "`docs/samples/national-capitals.py` シンプルな追加コードを使用してテーブル出力オプションを拡張する高度なスクリプト:"
+msgstr ""
+"`docs/samples/national-capitals.py` "
+"シンプルな追加コードを使用してテーブル出力オプションを拡張する高度なスクリプト:"
 
-#: ../../recipes-stories.rst:354 20727b3c9a494daeb37fec69a2700e0c
+#: ../../recipes-stories.rst:355 c8ab7b1123c544b7ad55528eefa53059
 msgid "Multi-page output simulating **repeating header rows**"
 msgstr "繰り返しヘッダー行をシミュレートするマルチページ出力"
 
-#: ../../recipes-stories.rst:355 628eed1f62ae40ab8fa2ee5ed012485e
+#: ../../recipes-stories.rst:356 9b68a3495cfe491da03d071df991377b
 msgid "Alternating table row background colors"
 msgstr "交互のテーブル行の背景色"
 
-#: ../../recipes-stories.rst:356 dd09175092344e4cbdf8a3639466b9ca
+#: ../../recipes-stories.rst:357 c86a69165420486b8d0e9606c8e2bde4
 msgid "Table rows and columns delimited by gridlines"
 msgstr "グリッドラインで区切られたテーブル行と列"
 
-#: ../../recipes-stories.rst:357 a306f67d8ae24d918fd368a0f928fb8b
+#: ../../recipes-stories.rst:358 8a25322a1d5c414492717df80e3ce73b
 msgid "Table rows dynamically generated / filled with data from an SQL database"
 msgstr "SQLデータベースからデータを動的に生成/埋めるテーブル行"
 
-#: ../../recipes-stories.rst:372 a7af05e9dc4144548768175f83ed1553
+#: ../../recipes-stories.rst:373 13bac07b609f46da9186c2e566a78fe6
 msgid "How to Create a Simple Grid Layout"
 msgstr "シンプルなグリッドレイアウトの作成方法"
 
-#: ../../recipes-stories.rst:374 f91a89ba8df349d1847bdc47d01951ec
+#: ../../recipes-stories.rst:375 c15136a32d6f4daca384684f36c15773
 msgid ""
 "By creating a sequence of :ref:`Story` objects within a grid created via "
 "the :ref:`make_table<Functions_make_table>` function a developer can "
 "create grid layouts as required."
-msgstr ":ref:`make_table<Functions_make_table>` 関数を使用して作成されたグリッド内で :ref:`Story` オブジェクトのシーケンスを作成することで、開発者は必要なグリッドレイアウトを作成できます。"
+msgstr ""
+":ref:`make_table<Functions_make_table>` 関数を使用して作成されたグリッド内で :ref:`Story` "
+"オブジェクトのシーケンスを作成することで、開発者は必要なグリッドレイアウトを作成できます。"
 
-#: ../../recipes-stories.rst:378 851130b963f64978801bd208fea6fb3a
+#: ../../recipes-stories.rst:379 ad98cf3c88fd491ebd00bb020b0a3674
 msgid "`docs/samples/simple-grid.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:393 9ba1df00e0b24c0b80dbaef830287245
+#: ../../recipes-stories.rst:394 b96016c2e60544ef877ab6b73669ee6a
 msgid "How to Generate a Table of Contents"
 msgstr "目次の生成方法"
 
-#: ../../recipes-stories.rst:395 eb6d9c50063242fcbbe4a0e85e60cfc1
+#: ../../recipes-stories.rst:396 3a21df6ff498482c951bdd11a9673531
 msgid ""
 "This script lists the source code of all Python scripts that live in the "
 "script's directory."
 msgstr "このスクリプトは、スクリプトのディレクトリに存在するすべてのPythonスクリプトのソースコードをリスト表示します。"
 
-#: ../../recipes-stories.rst:399 5328c3155d1945d6b22ada16141d851e
+#: ../../recipes-stories.rst:400 9ece4583c57d4aa08a3377cb999374e5
 msgid "`docs/samples/code-printer.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:408 88da096fdae14712acc5a9f105c3845e
+#: ../../recipes-stories.rst:409 1bff94f897fb4765b0a942c8cf5a9b1f
 msgid "It features the following capabilities:"
 msgstr "次の機能が備わっています："
 
-#: ../../recipes-stories.rst:410 c38f87acb23e45ab964c1db45e63308c
+#: ../../recipes-stories.rst:411 974967828cc145368a93b90292c624bf
 msgid ""
 "Automatic generation of a Table of Contents (TOC) on separately numbered "
 "pages at the start of the document - using a specialized :ref:`Story`."
 msgstr "専用の :ref:`Story` を使用して、文書の冒頭に独立したページごとに自動的に目次（TOC）を生成します。"
 
-#: ../../recipes-stories.rst:412 c3cb004d4878410c840a617760439c8a
+#: ../../recipes-stories.rst:413 c2258ce54e0e45c094fe9fc13742396d
 msgid ""
 "Use of 3 separate :ref:`Story` objects per page: header story, footer "
 "story and the story for printing the Python sources."
-msgstr "ページごとに3つの別個の :ref:`Story` オブジェクトを使用：ヘッダーストーリー、フッターストーリー、Pythonソースの印刷用ストーリー。"
+msgstr ""
+"ページごとに3つの別個の :ref:`Story` "
+"オブジェクトを使用：ヘッダーストーリー、フッターストーリー、Pythonソースの印刷用ストーリー。"
 
-#: ../../recipes-stories.rst:414 9c7e3c72f3ea40ec84e72e661ab9cba5
+#: ../../recipes-stories.rst:415 e6e574c005624883a903b9f3e0055c6e
 msgid ""
 "The page **footer is automatically changed** to show the name of the "
 "current Python file."
 msgstr "ページフッターは自動的に変更され、現在のPythonファイル名が表示されます。"
 
-#: ../../recipes-stories.rst:416 7909066f72c94941ba9c2a6aab90dfc9
+#: ../../recipes-stories.rst:417 4e32d1f9f66f4b42a752510976c65745
 msgid ""
 "Use of :meth:`Story.element_positions` to collect the data for the TOC "
 "and for the dynamic adjustment of page footers. This is an example of a "
 "**bidirectional communication** between the story output process and the "
 "script."
-msgstr ":meth:`Story.element_positions`  の使用により、TOCのデータの収集とページフッターの動的調整に使用されます。これは、ストーリー出力プロセスとスクリプト間の双方向コミュニケーションの例です。"
+msgstr ""
+":meth:`Story.element_positions`  "
+"の使用により、TOCのデータの収集とページフッターの動的調整に使用されます。これは、ストーリー出力プロセスとスクリプト間の双方向コミュニケーションの例です。"
 
-#: ../../recipes-stories.rst:418 b0f4ea235363418f955d21618bbcd43c
+#: ../../recipes-stories.rst:419 bcb9f381529e4ccf8ff5aea216ba6e4c
 msgid ""
 "The main PDF with the Python sources is being written to memory by its "
 ":ref:`DocumentWriter`. Another :ref:`Story` / :ref:`DocumentWriter` pair "
 "is then used to create a (memory) PDF for the TOC pages. Finally, both "
 "these PDFs are joined and the result stored to disk."
-msgstr "主なPythonソースをその :ref:`DocumentWriter` によってメモリに書き込みます。その後、もう一つの :ref:`Story` / :ref:`DocumentWriter` のペアを使用して（メモリ）PDFをTOCページのために作成します。最後に、これらのPDFは結合されて結果がディスクに保存されます。"
+msgstr ""
+"主なPythonソースをその :ref:`DocumentWriter` によってメモリに書き込みます。その後、もう一つの "
+":ref:`Story` / :ref:`DocumentWriter` "
+"のペアを使用して（メモリ）PDFをTOCページのために作成します。最後に、これらのPDFは結合されて結果がディスクに保存されます。"
 
-#: ../../recipes-stories.rst:427 23b665b036774c0d9472b5009ca27537
+#: ../../recipes-stories.rst:428 bd72b967e21f492d821068cf21ae090c
 msgid "How to Display a List from JSON Data"
 msgstr "JSONデータからリストを表示する方法"
 
-#: ../../recipes-stories.rst:429 93da94aeb4fd4b9293da658bf1adabe1
+#: ../../recipes-stories.rst:430 445708cee43a42d8a40fcfb34896334e
 msgid ""
 "This example takes some JSON data input which it uses to populate a "
 ":ref:`Story`. It also contains some visual text formatting and shows how "
 "to add links."
-msgstr "この例では、JSONデータ入力を使用して :ref:`Story` を生成し、いくつかの視覚的なテキスト書式設定を行い、リンクを追加する方法を示しています。"
+msgstr ""
+"この例では、JSONデータ入力を使用して :ref:`Story` "
+"を生成し、いくつかの視覚的なテキスト書式設定を行い、リンクを追加する方法を示しています。"
 
-#: ../../recipes-stories.rst:434 7bc6ba6d06174f2583b4044343702885
+#: ../../recipes-stories.rst:435 bbe65ee0c059463eb779f9bfea7bc1ba
 msgid "`docs/samples/json-example.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:450 61ca949a83064c5aac68c36d3ab3f1f0
+#: ../../recipes-stories.rst:451 373f1bcee1104d039abf00c85678b296
 msgid "Using the Alternative :meth:`Story.write*()` functions"
 msgstr ":meth:`Story.write*()` 関数の使用方法"
 
-#: ../../recipes-stories.rst:452 7f15bd89030244819f14311422c997b6
+#: ../../recipes-stories.rst:453 072c0033dbac4fd48a91580df660bd41
 msgid ""
 "The :meth:`Story.write*()` functions provide a different way to use the "
 ":ref:`Story` functionality, removing the need for calling code to "
 "implement a loop that calls :meth:`Story.place()` and "
 ":meth:`Story.draw()` etc, at the expense of having to provide at least a "
 "`rectfn()` callback."
-msgstr ":meth:`Story.write*()` 関数は、 :ref:`Story`  機能を異なる方法で使用するための方法を提供します。これにより、呼び出しコードが  :meth:`Story.place()`  や :meth:`Story.draw()`  などを呼び出すループを実装する必要がなくなりますが、少なくとも  `rectfn()`  コールバックを提供する必要があります。"
+msgstr ""
+":meth:`Story.write*()` 関数は、 :ref:`Story`  "
+"機能を異なる方法で使用するための方法を提供します。これにより、呼び出しコードが  :meth:`Story.place()`  や "
+":meth:`Story.draw()`  などを呼び出すループを実装する必要がなくなりますが、少なくとも  `rectfn()`  "
+"コールバックを提供する必要があります。"
 
-#: ../../recipes-stories.rst:461 7ef6f9e0e6044648b8c519713059c2d1
+#: ../../recipes-stories.rst:462 a6558e9f0eab4a08b4283bac26e0f23b
 msgid "How to do Basic Layout with :meth:`Story.write()`"
 msgstr ":meth:`Story.write()` を使用した基本的なレイアウトの方法"
 
-#: ../../recipes-stories.rst:463 5fbf641413fb4f87b22ad3fdf182d156
+#: ../../recipes-stories.rst:464 f6eabfde5690426799778e924d45d464
 msgid ""
 "This script lays out multiple copies of its own source code, into four "
 "rectangles per page."
 msgstr "このスクリプトは、自身のソースコードの複数のコピーを1ページあたり4つの四角形にレイアウトします。"
 
-#: ../../recipes-stories.rst:468 1c35f9b2175c47a18aca3868411ba209
+#: ../../recipes-stories.rst:469 572c6ad42917431eab68cc9ecdc0cccd
 msgid "`docs/samples/story-write.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:483 2d4629988ad647c49e83b0f07d176f1f
+#: ../../recipes-stories.rst:484 0732ab00904f459e9ea89c2a5af63b2e
 msgid ""
 "How to do Iterative Layout for a Table of Contents with "
 ":meth:`Story.write_stabilized()`"
 msgstr ":meth:`Story.write_stabilized()` を使用した目次付きの繰り返しレイアウトの方法"
 
-#: ../../recipes-stories.rst:485 5946282af74544c9bf1662d5f910b897
+#: ../../recipes-stories.rst:486 c4d4553cca3048aaa99cecbdf272cdf5
 msgid ""
 "This script creates html content dynamically, adding a contents section "
 "based on :ref:`ElementPosition` items that have non-zero `.heading` "
 "values."
-msgstr "このスクリプトは、要素の位置情報（:ref:`ElementPosition` アイテム）を基にコンテンツを動的に作成し、`.heading`  値がゼロでない要素に基づいて目次セクションを追加します。"
+msgstr ""
+"このスクリプトは、要素の位置情報（:ref:`ElementPosition` アイテム）を基にコンテンツを動的に作成し、`.heading`  "
+"値がゼロでない要素に基づいて目次セクションを追加します。"
 
-#: ../../recipes-stories.rst:488 ff3a95419d164d0dbea51a5adba61715
+#: ../../recipes-stories.rst:489 c0627845883842e3bb86b1e6143499a4
 msgid ""
 "The contents section is at the start of the document, so modifications to"
 " the contents can change page numbers in the rest of the document, which "
 "in turn can cause page numbers in the contents section to be incorrect."
 msgstr "目次セクションは文書の先頭に配置されているため、目次への変更によって文書の他の部分のページ番号が変更され、それに伴い目次セクションのページ番号が正しくなくなる可能性があります。"
 
-#: ../../recipes-stories.rst:492 4ef3dfdfc85b4f129ced1415701f5ff2
+#: ../../recipes-stories.rst:493 6fd89f81b96446c2b829d823add3ff9e
 msgid ""
 "So the script uses :meth:`Story.write_stabilized()` to repeatedly lay "
 "things out until things are stable."
 msgstr "したがって、スクリプトは  :meth:`Story.write_stabilized()` を使用して、安定するまで繰り返しレイアウトを行います。"
 
-#: ../../recipes-stories.rst:498 8dee04f968454f14bbbd0409fe8765bf
+#: ../../recipes-stories.rst:499 7d4e1435d54c4896b7fe68df6cc0c617
 msgid "`docs/samples/story-write-stabilized.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:513 c45a0d71d3544496badba7ce2d147dce
+#: ../../recipes-stories.rst:514 d19d6e74d1624520beeae0791509047f
 msgid ""
 "How to do Iterative Layout and Create PDF Links with "
 ":meth:`Story.write_stabilized_links()`"
 msgstr "繰り返しレイアウトと PDF リンクの作成方法：:meth:`Story.write_stabilized_links()` の使用"
 
-#: ../../recipes-stories.rst:515 86f298ccc39643f798304fc48f4e76e8
+#: ../../recipes-stories.rst:516 117c160f99fe480486999c6b885b56de
 msgid ""
 "This script is similar to the one described in \"How to use "
 ":meth:`Story.write_stabilized()`\" above, except that the generated PDF "
 "also contains links that correspond to the internal links in the original"
 " html."
-msgstr "このスクリプトは、「:meth:`Story.write_stabilized()` の使用方法」で説明されているものと類似していますが、生成される PDF には、元の HTML 内の内部リンクに対応するリンクも含まれています。"
+msgstr ""
+"このスクリプトは、「:meth:`Story.write_stabilized()` "
+"の使用方法」で説明されているものと類似していますが、生成される PDF には、元の HTML 内の内部リンクに対応するリンクも含まれています。"
 
-#: ../../recipes-stories.rst:519 dbc92943beae48c0a9494c053b436ad7
+#: ../../recipes-stories.rst:520 75377da2dbb2456b9e1e8344eb15827c
 msgid ""
 "This is done by using :meth:`Story.write_stabilized_links()`; this is "
 "slightly different from :meth:`Story.write_stabilized()`:"
-msgstr "これは、:meth:`Story.write_stabilized_links()` を使用して行われます。これは  :meth:`Story.write_stabilized()` とわずかに異なります："
+msgstr ""
+"これは、:meth:`Story.write_stabilized_links()` を使用して行われます。これは  "
+":meth:`Story.write_stabilized()` とわずかに異なります："
 
-#: ../../recipes-stories.rst:522 a4f37a4de73d4dfeb0ee6c6fdb3c2394
+#: ../../recipes-stories.rst:523 4b07d98934b54974935d2b0213a23b37
 msgid "It does not take a :ref:`DocumentWriter` `writer` arg."
 msgstr ":ref:`DocumentWriter` の `writer` 引数は必要ありません。"
 
-#: ../../recipes-stories.rst:523 0d78c07681f84661966c60c7c781466c
+#: ../../recipes-stories.rst:524 e2134065dbe0477c83998ec5fedc205f
 msgid "It returns a PDF :ref:`Document` instance."
 msgstr "PDF :ref:`Document` のインスタンスを返します。"
 
-#: ../../recipes-stories.rst:525 0b1f40ee3efd474eb41e36260feb2131
+#: ../../recipes-stories.rst:526 6b28a9af31af4d828b043a9e4e388f11
 msgid ""
 "[The reasons for this are a little involved; for example a "
 ":ref:`DocumentWriter` is not necessarily a PDF writer, so doesn't really "
 "work in a PDF-specific API.]"
-msgstr "[これに関する理由は少し複雑です。例えば、 :ref:`DocumentWriter` が必ずしも PDF ライターであるとは限らず、PDF 特有の API ではあまりうまく動作しないためです。]"
+msgstr ""
+"[これに関する理由は少し複雑です。例えば、 :ref:`DocumentWriter` が必ずしも PDF ライターであるとは限らず、PDF "
+"特有の API ではあまりうまく動作しないためです。]"
 
-#: ../../recipes-stories.rst:532 a0ccedea351747b3ad76611dc13a914d
+#: ../../recipes-stories.rst:533 dff5c866a8a44f68aeecb7a1167b14cb
 msgid "`docs/samples/story-write-stabilized-links.py`"
 msgstr ""
 
-#: ../../recipes-stories.rst:546 6ce3554cebac4c0c9c85dc3bad497682
+#: ../../recipes-stories.rst:547 8531ad08d17c4726a193eb89e7772f0a
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../recipes-stories.rst:547 f89deb8c8df0426496500f84df71e045
+#: ../../recipes-stories.rst:548 6a11660275f3461daf345a232f5643b4
 msgid "HTML & CSS support"
 msgstr ""
 
-#: ../../recipes-stories.rst:551 7ae2e6fefca54e27ab4a8716d76b99d5
+#: ../../recipes-stories.rst:552 bbed41156af849289e16ae860c569365
 msgid ""
 "At the time of writing the HTML engine for Stories is fairly basic and "
 "supports a subset of CSS2 attributes."
 msgstr "執筆時点では、ストーリーのHTMLエンジンはかなり基本的であり、一部のCSS2属性をサポートしています。"
 
-#: ../../recipes-stories.rst:553 8a9ace71accc43a7a623f78219493f83
+#: ../../recipes-stories.rst:554 4e172db1f57f498ea354ce0e2fcff12c
 msgid "Some important CSS support to consider:"
 msgstr "考慮すべき重要なCSSサポート:"
 
-#: ../../recipes-stories.rst:555 cccde5c5c6284f41aef95610bd0d5008
+#: ../../recipes-stories.rst:556 d0eca99a7e1e410c9223e30fd3ffaed6
 msgid "The only available layout is relative layout."
 msgstr "唯一利用可能なレイアウトは相対レイアウトです。"
 
-#: ../../recipes-stories.rst:556 19e1a5f41aee4638b74988fca3d7f215
+#: ../../recipes-stories.rst:557 cf5f43ca49ee4e7bbf63ff90e876b665
 msgid "`background` is unavailable, use `background-color` instead."
 msgstr "`background` は利用できませんが、代わりに `background-color` を使用してください。"
 
-#: ../../recipes-stories.rst:557 227925182b5e49e9a96101103c4ab860
+#: ../../recipes-stories.rst:558 52e38f32c27742de9d8936d934d3f935
 msgid "`float` is unavailable."
 msgstr "`float` は利用できません。"
 
-#: ../../footer.rst:-1 0e0709180bf64166ae3c61858af7e314
+#: ../../footer.rst:-1 e35b0a295d754cdabbef1dc5509fecb9
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

@@ -1,46 +1,59 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
 #: ../../identity.rst:7 731350c4f90143b1ab99d9ed8e733fef
 msgid "Identity"
-msgstr ""
+msgstr "Identity (アイデンティティ)"
 
 #: ../../identity.rst:9 377835523213419e91cacbc487b265ba
 msgid ""
 "Identity is a :ref:`Matrix` that performs no action -- to be used "
 "whenever the syntax requires a matrix, but no actual transformation "
 "should take place. It has the form *fitz.Matrix(1, 0, 0, 1, 0, 0)*."
-msgstr ""
+msgstr "アイデンティティは、何もアクションを実行しない :ref:`Matrix` で、構文がマトリックスを必要とするが実際の変換が必要ない場合に使用されます。それは  *fitz.Matrix(1, 0, 0, 1, 0, 0)* の形をしています。"
+
 
 #: ../../identity.rst:11 84a53943990a473188714f3e97e30c9b
 msgid ""
 "Identity is a constant, an \"immutable\" object. So, all of its matrix "
 "properties are read-only and its methods are disabled."
-msgstr ""
+msgstr "アイデンティティは、定数であり、変更できない「不変」のオブジェクトです。そのため、すべてのマトリックスのプロパティは読み取り専用であり、そのメソッドは無効になっています。"
 
 #: ../../identity.rst:13 d57e330a9e19498f93aaf87d32a3d11c
 msgid ""
 "If you need a **mutable** identity matrix as a starting point, use one of"
 " the following statements::"
-msgstr ""
+msgstr "**変更可能な** アイデンティティマトリックスが必要な場合、次の文のいずれかを使用してください::"
 
 #: ../../footer.rst:-1 bcfcfa3a1a7c4be0a2c41349e995917b
 msgid "Discord logo"
