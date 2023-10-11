@@ -13933,8 +13933,12 @@ def JM_append_rune(buff, ch):
     '''
     APPEND non-ascii runes in unicode escape format to fz_buffer
     '''
-    if (ch >= 32 and ch <= 255) or ch == 10:
+    if ch == 92:  # prevent accidental "\u", "\U"
+        mupdf.fz_append_string( buff, f"\\u005c")
+    elif (ch >= 32 and ch <= 255) or ch == 10:
         mupdf.fz_append_byte(buff, ch)
+    elif ch >= 0xd800 and ch <= 0xdfff:  # surrogate unicode not permitted
+        mupdf.fz_append_string( buff, f'\\ufffd')
     elif ch <= 0xffff:  # 4 hex digits
         mupdf.fz_append_string( buff, f'\\u{ch:04x}')
     else:   # 8 hex digits

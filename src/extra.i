@@ -3312,9 +3312,17 @@ static int JM_char_font_flags(fz_font *font, fz_stext_line *line, fz_stext_char 
 void JM_append_rune(fz_buffer *buff, int ch)
 {
     char text[32];
-    if ((ch >= 32 && ch <= 255) || ch == 10)
+    if (ch == 92)  // prevent accidental "\u", "\U"
+    {
+        mupdf::ll_fz_append_string(buff, "\\u005c");
+    }
+    else if ((ch >= 32 && ch <= 255) || ch == 10)
     {
         mupdf::ll_fz_append_byte(buff, ch);
+    }
+    else if (ch >= 0xd800 && ch <= 0xdfff)  // surrogate Unicodes prohibited
+    {
+        mupdf::ll_fz_append_string(buff, "\\ufffd");
     }
     else if (ch <= 0xffff)
     {
