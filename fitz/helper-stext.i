@@ -114,8 +114,12 @@ JM_new_stext_page_ocr_from_page(fz_context *ctx, fz_page *page, fz_rect rect, in
 //---------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
-    if ((ch >= 32 && ch <= 255) || ch == 10) {
+    if (ch == 92) {  // prevent accidental "\u" etc.
+        fz_append_string(ctx, buff, "\\u005c");
+    } else if ((ch >= 32 && ch <= 255) || ch == 10) {
         fz_append_byte(ctx, buff, ch);
+    } else if (ch >= 0xd800 && ch <= 0xdfff) {  // surrogate Unicode range
+        fz_append_string(ctx, buff, "\\ufffd");
     } else if (ch <= 0xffff) {  // 4 hex digits
         fz_append_printf(ctx, buff, "\\u%04x", ch);
     } else {  // 8 hex digits
