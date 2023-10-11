@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,232 +19,263 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../algebra.rst:6 813ba009ec774833bbcd496340eda09b
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../algebra.rst:6 47ae92eec1d844c29e349edb334e7518
 msgid "Operator Algebra for Geometry Objects"
 msgstr "幾何学オブジェクトのためのオペレーター代数"
 
-#: ../../algebra.rst:10 0d2af547035941d8853df5738249e928
+#: ../../algebra.rst:10 6be7bc736f9a4c2c854b28662398c026
 msgid ""
 "Instances of classes :ref:`Point`, :ref:`IRect`, :ref:`Rect`, :ref:`Quad`"
 " and :ref:`Matrix` are collectively also called \"geometry\" objects."
-msgstr "クラス :ref:`Point` 、 :ref:`IRect` 、 :ref:`Rect` 、 :ref:`Quad` 、および :ref:`Matrix` のインスタンスは、集合的に「幾何学オブジェクト」とも呼ばれます。"
+msgstr ""
+"クラス :ref:`Point` 、 :ref:`IRect` 、 :ref:`Rect` 、 :ref:`Quad` 、および "
+":ref:`Matrix` のインスタンスは、集合的に「幾何学オブジェクト」とも呼ばれます。"
 
-#: ../../algebra.rst:12 39906200c9684896adf7213485a13e02
+#: ../../algebra.rst:12 a4fb1d90c9e84e1e9b4d062e84886d11
 msgid ""
 "They all are special cases of Python sequences, see :ref:`SequenceTypes` "
 "for more background."
 msgstr "これらはすべてPythonシーケンスの特殊なケースであり、詳細については、PyMuPDFでのPythonシーケンスを引数として使用するを参照してください。"
 
-#: ../../algebra.rst:14 9b9740cb8b8f49188bdb74a669d32575
+#: ../../algebra.rst:14 c275ef76b7bf4e63a19c796362b6cfe3
 msgid ""
 "We have defined operators for these classes that allow dealing with them "
 "(almost) like ordinary numbers in terms of addition, subtraction, "
 "multiplication, division, and some others."
 msgstr "これらのクラスには、加算、減算、乗算、除算など、通常の数値とほぼ同じように取り扱うための演算子が定義されています。"
 
-#: ../../algebra.rst:16 ba82659191d14ec48fba8014a0fa2e29
+#: ../../algebra.rst:16 49614540fc5d408a94257653236eca3b
 msgid "This chapter is a synopsis of what is possible."
 msgstr "この章では、可能な操作の要約を説明します。"
 
-#: ../../algebra.rst:19 62f3145601b541b984b384091a6ba5b2
+#: ../../algebra.rst:19 857640e79ce945d5967d0e447806dcaf
 msgid "General Remarks"
 msgstr "一般的な注意事項"
 
-#: ../../algebra.rst:20 c566c8f6fe0c462aaab3ee536eba9e83
+#: ../../algebra.rst:20 7623b3867ef94705a64b10bcc050a2ed
 msgid ""
 "Operators can be either **binary** (i.e. involving two objects) or "
 "**unary**."
 msgstr "演算子は2つのオブジェクトを含むバイナリ演算子または単項演算子になります。"
 
-#: ../../algebra.rst:22 3e82a4487c63474a91f4b42106cbfb31
+#: ../../algebra.rst:22 b018f8574fbd446cb87c5ec3b4b916c2
 msgid ""
 "The resulting type of **binary** operations is either a **new object of "
 "the left operand's class** or a bool."
 msgstr "バイナリ演算の結果の型は、左オペランドのクラスの新しいオブジェクトまたはbool型です。"
 
-#: ../../algebra.rst:24 69f0f86c148241f5a4168f42234e032d
+#: ../../algebra.rst:24 e039a95985874e129bf43646f0efd3c0
 msgid ""
 "The result of **unary** operations is either a **new object** of the same"
 " class, a bool or a float."
 msgstr "単項演算の結果は、同じクラスの新しいオブジェクト、bool型、またはfloat型のいずれかです。"
 
-#: ../../algebra.rst:26 f961d84c146f40f588ec3d543489ec61
+#: ../../algebra.rst:26 a12eb9223cc74e03901058388935f35a
 msgid ""
 "The binary operators *+, -, *, /* are defined for all classes. They "
 "*roughly* do what you would expect -- **except, that the second operand "
 "...**"
-msgstr "バイナリ演算子 ``+`` 、``-`` 、``*`` 、 ``/`` はすべてのクラスで定義されています。これらはおおよその期待通りの動作をしますが、2番目のオペランドは...（省略されました）。"
+msgstr ""
+"バイナリ演算子 ``+`` 、``-`` 、``*`` 、 ``/`` "
+"はすべてのクラスで定義されています。これらはおおよその期待通りの動作をしますが、2番目のオペランドは...（省略されました）。"
 
-#: ../../algebra.rst:28 821873dd1c924adcbea7641b0cc34487
+#: ../../algebra.rst:28 f1271dc8268f4fb8a81838236f12e3bf
 msgid ""
 "may always be a number which then performs the operation on every "
 "component of the first one,"
 msgstr "第2のオペランドは常に数値であり、それにより最初のオペランドのすべての要素に対して操作を行います。"
 
-#: ../../algebra.rst:29 372851491015464eab536977f0dc0f4e
+#: ../../algebra.rst:29 55bde29ba0d141cda8d4a6bda81e625a
 msgid ""
 "may always be a numeric sequence of the same length (2, 4 or 6) -- we "
 "call such sequences :data:`point_like`, :data:`rect_like`, "
 ":data:`quad_like` or :data:`matrix_like`, respectively."
-msgstr "第2のオペランドは常に同じ長さの数値のシーケンスであることができます（2つ、4つ、または6つ） - それぞれ :data:`point_like` 、 :data:`rect_like` 、 :data:`quad_like` 、または :data:`matrix_like` と呼びます。"
+msgstr ""
+"第2のオペランドは常に同じ長さの数値のシーケンスであることができます（2つ、4つ、または6つ） - それぞれ :data:`point_like`"
+" 、 :data:`rect_like` 、 :data:`quad_like` 、または :data:`matrix_like` と呼びます。"
 
-#: ../../algebra.rst:31 9e4f0de5a2d54c2eaf1607c8de696d2a
+#: ../../algebra.rst:31 94dea79e7172419db266df7f0051571f
 msgid ""
 "Rectangles support additional binary operations: **intersection** "
 "(operator *\"&\"*), **union** (operator *\"|\"*) and **containment** "
 "checking."
 msgstr "矩形は追加のバイナリ演算をサポートしています：交差（演算子“&”）、結合（演算子“|”）、および包含チェック。"
 
-#: ../../algebra.rst:33 8768d96321144c42932ebe70ea897367
+#: ../../algebra.rst:33 d95d40d54ce449f08969ccbf83f59a82
 msgid ""
 "Binary operators fully support in-place operations, so expressions like "
 "`a /= b` are valid if b is numeric or \"a_like\"."
-msgstr "バイナリ演算子は、すべての場所で完全にサポートされているため、``b`` が数値または「a_like」の場合、 ``a /= b`` のような式が有効です"
+msgstr ""
+"バイナリ演算子は、すべての場所で完全にサポートされているため、``b`` が数値または「a_like」の場合、 ``a /= b`` "
+"のような式が有効です"
 
-#: ../../algebra.rst:37 bb3416126e3d4e64aa063dd75ac8bbb5
+#: ../../algebra.rst:37 0f64d3836d224b55add58e750314bb14
 msgid "Unary Operations"
 msgstr "単項演算"
 
-#: ../../algebra.rst:40 ../../algebra.rst:56 3fddc081d23642a89962017517d471c5
-#: f03cb99c327c4b4e90df5f100cde8236
+#: ../../algebra.rst:40 ../../algebra.rst:56 218442c27a6b45e497140854928f675b
+#: 5395620289dd466299377dc3d9833f46
 msgid "Oper."
 msgstr "演算"
 
-#: ../../algebra.rst:40 ../../algebra.rst:56 1cd6dbc24bee4292af783f00b10193f8
-#: 67b2c86ac824433a8a4f67606f5d1d3a
+#: ../../algebra.rst:40 ../../algebra.rst:56 c4b4428f137c46cc82f0db7b0ed2525a
+#: e47873a29c7c4817808bd23546944098
 msgid "Result"
 msgstr "結果"
 
-#: ../../algebra.rst:42 d7ecc6c8753e478aaeb18e9d80d9f124
+#: ../../algebra.rst:42 b6ae7a6454604988867467a0e0236b69
 msgid "bool(OBJ)"
 msgstr ""
 
-#: ../../algebra.rst:42 82ed95910dae4ab2880a31277670d201
+#: ../../algebra.rst:42 27f7b334edd245398efde08a7e0057b9
 msgid "is false exactly if all components of OBJ are zero"
 msgstr "OBJのすべての成分がゼロの場合にのみfalse"
 
-#: ../../algebra.rst:43 5d04d3f792a541258921c969e4fd4013
+#: ../../algebra.rst:43 31a0d14b66c14878b1bc55e6506a4515
 msgid "abs(OBJ)"
 msgstr ""
 
-#: ../../algebra.rst:43 be27190f35bd43ac9953266759678142
+#: ../../algebra.rst:43 8c204f5861f84e2399eb3128c94a17b2
 msgid "the rectangle area -- equal to norm(OBJ) for the other types"
 msgstr "他のタイプに対してnorm(OBJ)と等しい長方形の面積"
 
-#: ../../algebra.rst:44 79a7403d69504c62a9d2fe563ab0d3b5
+#: ../../algebra.rst:44 c2695ed2d92842c1bc983882a8853582
 msgid "norm(OBJ)"
 msgstr ""
 
-#: ../../algebra.rst:44 b5ec5a9e82b34ed2a234969e12b1c3ec
+#: ../../algebra.rst:44 7b9c7c7cc1db41a295ba1371cbf29bf8
 msgid "square root of the component squares (Euclidean norm)"
 msgstr "成分の二乗の平方根（ユークリッドノルム）"
 
-#: ../../algebra.rst:45 68fe924f3e6a4129b4e876ab688a87b1
+#: ../../algebra.rst:45 b44d4006b9b34e4194e6161a1154f746
 msgid "+OBJ"
 msgstr ""
 
-#: ../../algebra.rst:45 1cbbf43935cd4406bf5969060d147a74
+#: ../../algebra.rst:45 586dc47cd8cb44a2870f70897482699d
 msgid "new copy of OBJ"
 msgstr "OBJの新しいコピー"
 
-#: ../../algebra.rst:46 5eee675e01914d72b3a8aae745147df9
+#: ../../algebra.rst:46 808f09b5154146c2ad136673a2172cfb
 msgid "-OBJ"
 msgstr ""
 
-#: ../../algebra.rst:46 534d7082639e4877b47e4292b350ef4c
+#: ../../algebra.rst:46 ce71eb5c72bb4a9cbdf9227761812275
 msgid "new copy of OBJ with negated components"
 msgstr "成分が反転されたOBJの新しいコピー"
 
-#: ../../algebra.rst:47 bd2693aa6aa84f5c834bdcea7776366a
+#: ../../algebra.rst:47 d0dcc96590854b18992c6d71be81b228
 msgid "~m"
 msgstr ""
 
-#: ../../algebra.rst:47 ba7102093c0b47cdab7c219996e314bc
+#: ../../algebra.rst:47 54d71657db224477b0713cdbbe1e66ef
 msgid "inverse of matrix \"m\", or the null matrix if not invertible"
 msgstr "行列 \"m\" の逆行列、または逆行列が存在しない場合は零行列"
 
-#: ../../algebra.rst:52 ccdc8e3d558144c2b9f54fb7b33debc5
+#: ../../algebra.rst:52 19617f3f87e941658f3ab74ab7ee5cf7
 msgid "Binary Operations"
 msgstr "二項演算"
 
-#: ../../algebra.rst:53 385c2d08bdf14335ae2a50528cf29f8d
+#: ../../algebra.rst:53 0c79af5ca23f41969d5fb1bd3f14d945
 msgid ""
 "For every geometry object \"a\" and every number \"b\", the operations "
 "\"a ° b\" and \"a °= b\" are always defined for the operators *+, -, *, "
 "/*. The respective operation is simply executed for each component of "
 "\"a\". If the **second operand is not a number**, then the following is "
 "defined:"
-msgstr "あらゆるジオメトリオブジェクト"a"とあらゆる数値 \"b\" に対して、演算子 ``+``, ``-`` , ``*`` , ``/`` については常に  \"a ° b\" と \"a °= b\" の操作が定義されています。それぞれの操作は、\"a\" の各成分に対して単純に実行されます。もし第二オペランドが数値でない場合、次のように定義されます："
+msgstr ""
+"あらゆるジオメトリオブジェクト\"a\"とあらゆる数値 \"b\" に対して、演算子 ``+``, ``-`` , ``*`` , ``/`` "
+"については常に  \"a ° b\" と \"a °= b\" の操作が定義されています。それぞれの操作は、\"a\" "
+"の各成分に対して単純に実行されます。もし第二オペランドが数値でない場合、次のように定義されます："
 
-#: ../../algebra.rst:58 fc7ab3b4445b44f2a24094468b75f591
+#: ../../algebra.rst:58 bee4ac4c071746f6ab5968ac43f7f3a5
 msgid "a+b, a-b"
 msgstr ""
 
-#: ../../algebra.rst:58 1dfd49bc780d4b05b1fd934bc35c52d1
+#: ../../algebra.rst:58 78a643654ab44e839ed6bbc51b2c1365
 msgid "component-wise execution, \"b\" must be \"a-like\"."
 msgstr "成分ごとの実行。\"b\" は \"a\" と同様の要素数である必要があります。"
 
-#: ../../algebra.rst:59 20bf755d8f7a4a52b4e963e3723d629b
+#: ../../algebra.rst:59 e1e551d1c2b24159b631ea394bb4f433
 msgid "a*m, a/m"
 msgstr ""
 
-#: ../../algebra.rst:59 874894abe1404d07bef2a934733f59e0
+#: ../../algebra.rst:59 fc505d6b8a814567a1709b65135a9c7a
 msgid ""
 "\"a\" can be a point, rectangle or matrix, but \"m\" must be "
 ":data:`matrix_like`. *\"a/m\"* is treated as *\"a*~m\"* (see note below "
 "for non-invertible matrices). If \"a\" is a **point** or a **rectangle**,"
 " then *\"a.transform(m)\"* is executed. If \"a\" is a matrix, then matrix"
 " concatenation takes place."
-msgstr "\"a\" はポイント、矩形、または行列になりますが、\"m\" は :data:`matrix_like` でなければなりません。\"a/m\" は \"a*〜m\" として処理されます（非逆行列の場合は以下の注記を参照）。\"a\" がポイントまたは矩形の場合、\"a.transform(m)\" が実行されます。\"a\" が行列の場合、行列の連結が行われます。"
+msgstr ""
+"\"a\" はポイント、矩形、または行列になりますが、\"m\" は :data:`matrix_like` でなければなりません。\"a/m\""
+" は \"a*〜m\" として処理されます（非逆行列の場合は以下の注記を参照）。\"a\" "
+"がポイントまたは矩形の場合、\"a.transform(m)\" が実行されます。\"a\" が行列の場合、行列の連結が行われます。"
 
-
-
-#: ../../algebra.rst:64 d4655a899c0242859c8156400cca311f
+#: ../../algebra.rst:64 9715a55f36ea47e3903dbe06053b6407
 msgid "a&b"
 msgstr ""
 
-#: ../../algebra.rst:64 de275cd2e53a4ed1955340ef4c5fd538
+#: ../../algebra.rst:64 106033270fee461c9fc02c17d3845518
 msgid ""
 "**intersection rectangle:** \"a\" must be a rectangle and \"b\" "
 ":data:`rect_like`. Delivers the **largest rectangle** contained in both "
 "operands."
-msgstr "共通の長方形: \"a\" は長方形であり、\"b\" は :data:`rect_like` 形式である必要があります。両方のオペランドに含まれる最大の長方形を返します。"
+msgstr ""
+"共通の長方形: \"a\" は長方形であり、\"b\" は :data:`rect_like` "
+"形式である必要があります。両方のオペランドに含まれる最大の長方形を返します。"
 
-#: ../../algebra.rst:67 49ad439978e7430f9ee87346e8f2b690
+#: ../../algebra.rst:67 f573327c803145abb8c2792806c94de9
 msgid "a|b"
 msgstr ""
 
-#: ../../algebra.rst:67 96c91fe2ea9741f4a3160762032fa53a
+#: ../../algebra.rst:67 fca57f99bd2e46cfb53724465b79bc1e
 msgid ""
 "**union rectangle:** \"a\" must be a rectangle, and \"b\" may be "
 ":data:`point_like` or :data:`rect_like`. Delivers the **smallest "
 "rectangle** containing both operands."
-msgstr "合併した長方形: \"a\" は長方形であり、\"b\" は 点のような :data:`point_like` :data:`rect_like` 形式である必要があります。両方のオペランドを含む最小の長方形を返します。"
+msgstr ""
+"合併した長方形: \"a\" は長方形であり、\"b\" は 点のような :data:`point_like` :data:`rect_like`"
+" 形式である必要があります。両方のオペランドを含む最小の長方形を返します。"
 
-#: ../../algebra.rst:70 3a45cae998a14a458026775418b6d400
+#: ../../algebra.rst:70 13dae42d6f454f0a898ab0e9ca9dd530
 msgid "b in a"
 msgstr ""
 
-#: ../../algebra.rst:70 61b17d468f9b41ab90bd551e59e1f5cb
+#: ../../algebra.rst:70 54c14333925846faa334d1b2eeb021e1
 msgid ""
 "if \"b\" is a number, then `b in tuple(a)` is returned. If \"b\" is "
 ":data:`point_like`, :data:`rect_like` or :data:`quad_like`, then \"a\" "
 "must be a rectangle, and `a.contains(b)` is returned."
-msgstr "もし \"b\" が数値である場合、 `b in tuple(a)` が返されます。もし \"b\" が :data:`point_like` 形式、 :data:`rect_like` 形式、または :data:`quad_like` 形式である場合、\"a\" は長方形である必要があり、`a.contains(b)` が返されます。"
+msgstr ""
+"もし \"b\" が数値である場合、 `b in tuple(a)` が返されます。もし \"b\" が :data:`point_like` "
+"形式、 :data:`rect_like` 形式、または :data:`quad_like` 形式である場合、\"a\" "
+"は長方形である必要があり、`a.contains(b)` が返されます。"
 
-#: ../../algebra.rst:73 b82a4b8b83f047ce998f43f5d1e4340a
+#: ../../algebra.rst:73 53b8adcd8b0143a485d6b5af4d9e5cea
 msgid "a == b"
 msgstr ""
 
-#: ../../algebra.rst:73 be5f151fd91b4cd28dc1f9b9d9ab1752
+#: ../../algebra.rst:73 2a8bebb2d934407686b039b01abc90d5
 msgid "*True* if *bool(a-b)* is *False* (\"b\" may be \"a-like\")."
 msgstr "bool(a-b) が `False` であれば `True` を返します（\"b\"は\"a-like\"である可能性があります）。"
 
-#: ../../algebra.rst:77 b6fc6540669146ed97ed098e5bb15b80
+#: ../../algebra.rst:77 29b94c9ad3e94ff68b7121e1f9dd6e68
 msgid "Please note an important difference to usual arithmetic:"
 msgstr "以下は通常の算術との重要な違いに注意してください："
 
-#: ../../algebra.rst:79 41f57bc8d08c4ec390c19dcd19704b1c
+#: ../../algebra.rst:79 7b1a0c1b2c934bee9f150e3e1eea553b
 msgid ""
 "Matrix multiplication is **not commutative**, i.e. in general we have "
 "`m*n != n*m` for two matrices. Also, there are non-zero matrices which "
@@ -253,89 +284,101 @@ msgid ""
 "exception using operator *\"/\"*, e.g. for the expression `fitz.Identity "
 "/ m`. But if you formulate `fitz.Identity * ~m`, the result will be "
 "`fitz.Matrix()` (the null matrix)."
-msgstr "行列の乗算は可換ではありません。つまり、一般に2つの行列に対して `m*n != n*m` が成り立ちます。また、逆行列を持たないゼロでない行列も存在します。例えば、`m = Matrix(1, 0, 1, 0, 1, 0)` のような行列があります。これらの行列で除算しようとすると、演算子 *\"/\"* を使用して `fitz.Identity / m` のような式で `ZeroDivisionError` 例外が発生します。しかし、`fitz.Identity * ~m` のように記述すると、結果は `fitz.Matrix()` （零行列）となります。"
+msgstr ""
+"行列の乗算は可換ではありません。つまり、一般に2つの行列に対して `m*n != n*m` "
+"が成り立ちます。また、逆行列を持たないゼロでない行列も存在します。例えば、`m = Matrix(1, 0, 1, 0, 1, 0)` "
+"のような行列があります。これらの行列で除算しようとすると、演算子 *\"/\"* を使用して `fitz.Identity / m` のような式で"
+" `ZeroDivisionError` 例外が発生します。しかし、`fitz.Identity * ~m` のように記述すると、結果は "
+"`fitz.Matrix()` （零行列）となります。"
 
-#: ../../algebra.rst:81 ea4197f624cd47238dd31180607bc2f5
+#: ../../algebra.rst:81 faebb14556dc46f3bdce5ec188090ed6
 msgid ""
 "Admittedly, this represents an inconsistency, and we are considering to "
 "remove it. For the time being, you can choose to avoid an exception and "
 "check whether ~m is the null matrix, or accept a potential "
 "*ZeroDivisionError* by using `fitz.Identity / m`."
-msgstr "認めるところがあるかもしれませんが、これは矛盾を示しており、私たちはこれを取り除くことを検討しています。当面の間は、例外を回避し、`~m` が零行列であるかどうかをチェックするか、`fitz.Identity / m` を使用して `ZeroDivisionError` の可能性を受け入れることができます。"
+msgstr ""
+"認めるところがあるかもしれませんが、これは矛盾を示しており、私たちはこれを取り除くことを検討しています。当面の間は、例外を回避し、`~m` "
+"が零行列であるかどうかをチェックするか、`fitz.Identity / m` を使用して `ZeroDivisionError` "
+"の可能性を受け入れることができます。"
 
-#: ../../algebra.rst:85 c88496037d3a40d6a79ea60482edbb24
+#: ../../algebra.rst:85 717ada2da9904111882e5c65ef0190d0
 msgid ""
 "With these conventions, all the usual algebra rules apply. For example, "
 "arbitrarily using brackets **(among objects of the same class!)** is "
 "possible: if r1, r2 are rectangles and m1, m2 are matrices, you can do "
 "this `(r1 + r2) * m1 * m2`."
-msgstr "これらの規則に従うと、すべての通常の代数のルールが適用されます。例えば、任意の括弧を使うことができます（同じクラスのオブジェクトの間で！）：もし `r1`, `r2` が長方形であり、`m1`, `m2` が行列であれば、次のようにできます： `(r1 + r2) * m1 * m2` 。"
+msgstr ""
+"これらの規則に従うと、すべての通常の代数のルールが適用されます。例えば、任意の括弧を使うことができます（同じクラスのオブジェクトの間で！）：もし "
+"`r1`, `r2` が長方形であり、`m1`, `m2` が行列であれば、次のようにできます： `(r1 + r2) * m1 * m2` 。"
 
-#: ../../algebra.rst:86 ce43454509e2470189a1952ff6200561
+#: ../../algebra.rst:86 988f37e5548c4390b6bd1dbed923dfec
 msgid ""
 "For all objects of the same class, `a + b + c == (a + b) + c == a + (b + "
 "c)` is true."
 msgstr "同じクラスのオブジェクトに対して、 `a + b + c == (a + b) + c == a + (b + c)` が成り立ちます。"
 
-#: ../../algebra.rst:87 d6b539bd50e54b6ab1b4e5728ca9a095
+#: ../../algebra.rst:87 47e1b849425a4d03b9a435487aa29ddd
 msgid ""
 "For matrices in addition the following is true: `(m1 + m2) * m3 == m1 * "
 "m3 + m2 * m3` (distributivity property)."
 msgstr "行列の加法については、次のような性質が成り立ちます： `(m1 + m2) * m3 == m1 * m3 + m2 * m3` （分配律）。"
 
-#: ../../algebra.rst:88 d08fc8a61bec442bafcbb7494c5cdfda
+#: ../../algebra.rst:88 78d6195d9aeb4796bf96309c78797e92
 msgid ""
 "**But the sequence of applying matrices is important:** If r is a "
 "rectangle and m1, m2 are matrices, then -- **caution!:**"
 msgstr "ただし、行列の適用順序が重要です：もし `r` が長方形であり、 `m1` ,  `m2` が行列である場合、注意してください！次のような場合："
 
-#: ../../algebra.rst:89 81239c6054704fecaa4465d63bcb887a
+#: ../../algebra.rst:89 bf1801499ecc414faafdadd30c30c49d
 msgid "`r * m1 * m2 == (r * m1) * m2 != r * (m1 * m2)`"
 msgstr ""
 
-#: ../../algebra.rst:92 42c22a869f504aa3b7fb942af819765e
+#: ../../algebra.rst:92 56573810ac7843f398afe6dec0504e30
 msgid "Some Examples"
 msgstr "いくつかの例"
 
-#: ../../algebra.rst:95 f48155d1acc74b988ab9ebbe51bb9851
+#: ../../algebra.rst:95 8f6c3bb946b34f9589352008daea5871
 msgid "Manipulation with numbers"
 msgstr "数値の操作"
 
-#: ../../algebra.rst:96 2b21b674b941431485d39fbfc14deb0e
+#: ../../algebra.rst:96 5d5ba068feba4e759a210b76fdc7bc4d
 msgid ""
 "For the usual arithmetic operations, numbers are always allowed as second"
 " operand. In addition, you can formulate `\"x in OBJ\"`, where x is a "
 "number. It is implemented as `\"x in tuple(OBJ)\"`::"
-msgstr "通常の算術演算では、数値は常に第二オペランドとして使用できます。さらに、`"x in OBJ"` のように式を記述することもできます。ここで、xは数値です。これは `"x in tuple(OBJ)"` として実装されています::"
+msgstr ""
+"通常の算術演算では、数値は常に第二オペランドとして使用できます。さらに、`\"x in OBJ\"` "
+"のように式を記述することもできます。ここで、xは数値です。これは `\"x in tuple(OBJ)\"` として実装されています::"
 
-#: ../../algebra.rst:104 1608ca09d98a487588bceef5cf093b4a
+#: ../../algebra.rst:104 13758ef4ac9f4416901256b36fae057d
 msgid ""
 "The following will create the upper left quarter of a document page "
 "rectangle::"
 msgstr "以下は、ドキュメントページの四角形の左上の四分の一を作成します::"
 
-#: ../../algebra.rst:112 82cb73867831475a87df289bcc6ee0fe
+#: ../../algebra.rst:112 0282712655c24e48b88aec8f68edea3a
 msgid ""
 "The following will deliver the **middle point of a line** that connects "
 "two points **p1** and **p2**::"
 msgstr "以下は、点 `p1` と点 `p2` を結ぶ直線の中点を求めます::"
 
-#: ../../algebra.rst:122 877be437fc494609a539d6d5d2a17dc6
+#: ../../algebra.rst:122 a021fcbd1ea04f8db85e389542915e23
 msgid "Manipulation with \"like\" Objects"
 msgstr "「Like」オブジェクトを用いた操作"
 
-#: ../../algebra.rst:124 5ceaf82fce7844cf8536efb47544998f
+#: ../../algebra.rst:124 35c1a7f20212479a86ca1b5454228da8
 msgid ""
 "The second operand of a binary operation can always be \"like\" the left "
 "operand. \"Like\" in this context means \"a sequence of numbers of the "
 "same length\". With the above examples::"
 msgstr "2項演算の第2オペランドは常に左オペランドと「like」することができます。「Like」とは、この文脈では「同じ長さの数列」という意味です。上記の例を用いて説明します。"
 
-#: ../../algebra.rst:135 53459cb98aca452e89039358d19c28fd
+#: ../../algebra.rst:135 065a7e0950ae4497a1d67f8fd719b8e3
 msgid "To shift a rectangle for 5 pixels to the right, do this::"
 msgstr "長方形を右に5ピクセルシフトさせるには、次のようにします::"
 
-#: ../../algebra.rst:141 b3bfe998139b49b8a484310679ca7c74
+#: ../../algebra.rst:141 7e1117ff6b0549a1b377ca295c1b401e
 msgid ""
 "Points, rectangles and matrices can be *transformed* with matrices. In "
 "PyMuPDF, we treat this like a **\"multiplication\"** (or resp. "
@@ -344,31 +387,37 @@ msgid ""
 "matrix\"::"
 msgstr "点、長方形、および行列は行列で変換できます。PyMuPDFでは、これを「乗算」（または「除算」とも）として扱います。ここで、第2オペランドは行列と「like」することができます。「除算」とは、この文脈では「逆行列との乗算」を意味します。"
 
-#: ../../algebra.rst:181 a273f40f058d44a0a2f6401d9afa64f5
+#: ../../algebra.rst:181 8d823395cf784afbbb8a5b43448e508f
 msgid "As a specialty, rectangles support additional binary operations:"
 msgstr "特に、長方形は追加の2項演算をサポートしています："
 
-#: ../../algebra.rst:183 ae804030722e4ec7974304bc85ac2947
+#: ../../algebra.rst:183 dbdf277a3207479da00df77837376a38
 msgid "**intersection** -- the common area of rectangle-likes, operator *\"&\"*"
 msgstr "**交差** -- 長方形や類似の長方形の共通領域を示す演算子 *\"&\"*"
 
-#: ../../algebra.rst:184 3391d52a100140259a984fa3683fecb0
+#: ../../algebra.rst:184 dc822771927b435f92da8c9fbd9a65a0
 msgid ""
 "**inclusion** -- enlarge to include a point-like or rect-like, operator "
 "*\"|\"*"
 msgstr "**含有** -- 点状または長方形状を含むように拡大する演算子 *\"|\"*"
 
-#: ../../algebra.rst:185 455ab97641f54c089ef32ef57d12ebbd
+#: ../../algebra.rst:185 720b1d897111483dab4fc27301bf2ade
 msgid "**containment** check -- whether a point-like or rect-like is inside"
 msgstr "**含有確認** 点状または長方形状が内部にあるかどうかを確認します"
 
-#: ../../algebra.rst:187 06c181c1fc0848aeb8c4ad5a38900596
+#: ../../algebra.rst:187 d815a2ce27984696aba96614187ea3e1
 msgid ""
 "Here is an example for creating the smallest rectangle enclosing given "
 "points::"
 msgstr "以下は、与えられた点を囲む最小の長方形を作成する例です::"
 
-#: ../../footer.rst:-1 9ee55d59589e4caf9cf2c1a9039b8467
+#: ../../footer.rst:-1 997e46657dbb43e2b0181c34a8357a3c
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

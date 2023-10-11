@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,109 +19,126 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../displaylist.rst:7 623c65a123ee40f0a1e3b57b1dafd62a
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../displaylist.rst:7 5f856845d9f5476993ed3e692fc42676
 msgid "DisplayList"
 msgstr "DisplayList（ディスプレイリスト）"
 
-#: ../../displaylist.rst:9 bad034b8c1b34ee58688f1a11697c96e
+#: ../../displaylist.rst:9 f6f2d8fc2364409695102fc37d1a6c2a
 msgid ""
 "DisplayList is a list containing drawing commands (text, images, etc.). "
 "The intent is two-fold:"
 msgstr "DisplayListは、描画コマンド（テキスト、画像など）を含むリストです。その目的は二つあります："
 
-#: ../../displaylist.rst:11 9cd615bddca344a6850a931f22f25664
+#: ../../displaylist.rst:11 f05a8fb5c5d54f8b9fd18bf3f49332c3
 msgid "as a caching-mechanism to reduce parsing of a page"
 msgstr "ページのパースを削減するためのキャッシュメカニズムとして"
 
-#: ../../displaylist.rst:12 5f9c01297b9b407abdb87b9fbe45a9cd
+#: ../../displaylist.rst:12 1489199fd5a540399c6ee78d30cf8304
 msgid ""
 "as a data structure in multi-threading setups, where one thread parses "
 "the page and another one renders pages. This aspect is currently not "
 "supported by PyMuPDF."
 msgstr "ページをパースするスレッドとページをレンダリングする別のスレッドでのデータ構造として。この側面は現在、PyMuPDFではサポートされていません。"
 
-#: ../../displaylist.rst:14 32e39db48f2f4d5ea7153f678ccd96ac
+#: ../../displaylist.rst:14 ec43b8b8337b4714a21f2347311fd16a
 msgid ""
 "A display list is populated with objects from a page, usually by "
 "executing :meth:`Page.get_displaylist`. There also exists an independent "
 "constructor."
-msgstr "ディスプレイリストは通常、:meth:`Page.get_displaylist` を実行することによってページからオブジェクトで満たされます。また、独立したコンストラクタも存在します。"
+msgstr ""
+"ディスプレイリストは通常、:meth:`Page.get_displaylist` "
+"を実行することによってページからオブジェクトで満たされます。また、独立したコンストラクタも存在します。"
 
-#: ../../displaylist.rst:16 b01c83397c434d7bbb82da14ea9f4e2f
+#: ../../displaylist.rst:16 4cbb463cc50e497ba2a555c78301390b
 msgid ""
 "\"Replay\" the list (once or many times) by invoking one of its methods "
 ":meth:`~DisplayList.run`, :meth:`~DisplayList.get_pixmap` or "
 ":meth:`~DisplayList.get_textpage`."
-msgstr "このリストを（一度または複数回）再生するには、そのメソッドのうちのいずれかを呼び出します。:meth:`~DisplayList.run` 、:meth:`~DisplayList.get_pixmap` 、または :meth:`~DisplayList.get_textpage` です。"
+msgstr ""
+"このリストを（一度または複数回）再生するには、そのメソッドのうちのいずれかを呼び出します。:meth:`~DisplayList.run` "
+"、:meth:`~DisplayList.get_pixmap` 、または :meth:`~DisplayList.get_textpage` "
+"です。"
 
-#: ../../displaylist.rst:20 3e1c755a8a3b4292aece32d86892889b
+#: ../../displaylist.rst:20 225a3f0dac1c49a7ba22c3712679d78f
 msgid "**Method**"
 msgstr "**メソッド** "
 
-#: ../../displaylist.rst:20 95785a3ae32140e7bec573bbb6265185
+#: ../../displaylist.rst:20 5521ecf2cfea4d29bcc17ec5fc023a5d
 msgid "**Short Description**"
 msgstr "**短い説明** "
 
-#: ../../displaylist.rst:22 965d04ae8ddc422aa3d7ff10fda659c0
+#: ../../displaylist.rst:22 fb845a1515cd4605b9edd196d1488f62
 msgid ":meth:`~DisplayList.run`"
 msgstr ""
 
-#: ../../displaylist.rst:22 b92e178bcea749bc976c9243af30afc5
+#: ../../displaylist.rst:22 c53a44d645d64742a25f9e678d97b928
 msgid "Run a display list through a device."
 msgstr "ディスプレイリストをデバイスを介して実行します。"
 
-#: ../../displaylist.rst:23 cdf9a66ecf9942b1b942962149302a8d
+#: ../../displaylist.rst:23 0c16fcbac35341a0afcc21a5dcd3da75
 msgid ":meth:`~DisplayList.get_pixmap`"
 msgstr ""
 
-#: ../../displaylist.rst:23 609ccf81faf44c1ba84317d6475b5efa
+#: ../../displaylist.rst:23 b0bc9318c0844019923e8421974ce824
 msgid "generate a pixmap"
 msgstr "ピクスマップを生成します。"
 
-#: ../../displaylist.rst:24 b000e536998343078b98f69d46c1a2ca
+#: ../../displaylist.rst:24 026f09283d08407aaa8051552948f06c
 msgid ":meth:`~DisplayList.get_textpage`"
 msgstr ""
 
-#: ../../displaylist.rst:24 f66b623a62f94732acca5013b03f566d
+#: ../../displaylist.rst:24 7de7777853364731b6392c5e48d38ce5
 msgid "generate a text page"
 msgstr "テキストページを生成します。"
 
-#: ../../displaylist.rst:25 663c46922e2d4b1c918753be6a3fa7e2
+#: ../../displaylist.rst:25 db6372c81efe4aa8a59cd9e5d4c7d3ca
 msgid ":attr:`~DisplayList.rect`"
 msgstr ""
 
-#: ../../displaylist.rst:25 c738a56b9063424f9cf428a84f9ec9eb
+#: ../../displaylist.rst:25 4973a30671f44f5eb654eb1d06c46508
 msgid "mediabox of the display list"
 msgstr "ディスプレイリストのメディアボックス（表示領域）です。"
 
-#: ../../displaylist.rst:29 5e8cec3a90b2427aa8c3a445e74ea188
+#: ../../displaylist.rst:29 73d09f06ca444ec8b7a6c3b40f33d828
 msgid "**Class API**"
 msgstr "**Class API（クラスAPI）** "
 
-#: ../../displaylist.rst:35 878b4917eda24bb3a0e9774b1cd56c3f
+#: ../../displaylist.rst:35 c389dc0cdd9a451c94e6316edbdae1ea
 msgid "Create a new display list."
 msgstr "新しいディスプレイリストを作成します。"
 
-#: ../../displaylist.rst 9e84c187e8a74c4e8039b67cdb0a2680
-#: cb20e8166c2c42cb956b32e80d7360a7 e03c1906fc924f04841da7373389b4a0
-#: e3bd31cece6b42799596b23be8592560
+#: ../../displaylist.rst 21759a60f2034ade906d274a28608795
+#: 24f7416ec9d5401182067d79b12f21fa 4b486b1bb5be439882643aa8d916f312
+#: 4bc09b9330e64b5b971ebaab6cd7cad2
 msgid "Parameters"
 msgstr "パラメーター"
 
-#: ../../displaylist.rst:37 b464f7eb246d45b288677ebf5fbad26e
+#: ../../displaylist.rst:37 11c248a57e344951972b3092b811abc9
 msgid "The page's rectangle."
 msgstr "ページの矩形。"
 
-#: ../../displaylist.rst 5d0cb2bc95eb4894a86a39934d046eb0
-#: 64d50553147e479199f397fd51b777ef d1d093b2f86e449ea014ea4463835444
+#: ../../displaylist.rst a57b22f8fbbe4c5f94645a0d4a80a313
+#: aa45033be13e4e87a8601b8d636bcf58 ed0b15e433274083a5b5aebcf4955e9d
 msgid "Return type"
 msgstr "戻り値の型"
 
-#: ../../displaylist.rst:40 b36cbcd99a8e4f56bc3cb3efe6503e73
+#: ../../displaylist.rst:40 e2daadeec2d943cf83857bc0b20b5984
 msgid "*DisplayList*"
 msgstr ""
 
-#: ../../displaylist.rst:44 42641b4b67614fae95fdc5b8f8179715
+#: ../../displaylist.rst:44 1b5e77c8453f421dbfdd40e43cd1e42a
 msgid ""
 "Run the display list through a device. The device will populate the "
 "display list with its \"commands\" (i.e. text extraction or image "
@@ -129,97 +146,110 @@ msgid ""
 "times without having to re-interpret it from the document file."
 msgstr "デバイスを介してディスプレイリストを実行します。デバイスはディスプレイリストをその「コマンド」（つまりテキストの抽出または画像の作成）で満たします。ディスプレイリストは後で文書ファイルから再解釈することなく、ページを多くの回数「読む」ために使用できます。"
 
-#: ../../displaylist.rst:46 1fbd70fbec55442bb143342629bb2838
+#: ../../displaylist.rst:46 4a7e8a772be549d691b5063a45b304ec
 msgid ""
 "You will most probably instead use one of the specialized run methods "
 "below -- :meth:`get_pixmap` or :meth:`get_textpage`."
-msgstr "おそらく、以下の専門の実行メソッドの1つを代わりに使用するでしょう - :meth:`get_pixmap` または :meth:`get_textpage` 。"
+msgstr ""
+"おそらく、以下の専門の実行メソッドの1つを代わりに使用するでしょう - :meth:`get_pixmap` または "
+":meth:`get_textpage` 。"
 
-#: ../../displaylist.rst:48 b1dde3b7712d4865b46f3419f4ed2415
+#: ../../displaylist.rst:48 f7d85082f40e4f82959e84dae8e35710
 msgid "Device"
 msgstr "デバイス"
 
-#: ../../displaylist.rst:51 058e32e79ec0408386d7189abeb5ca7a
+#: ../../displaylist.rst:51 c860890daca94f678963d92ff21ffa75
 msgid "Transformation matrix to apply to the display list contents."
 msgstr "ディスプレイリストのコンテンツに適用する変換行列。"
 
-#: ../../displaylist.rst:54 d5738d9ab9ec423097a15ac27e348d27
+#: ../../displaylist.rst:54 34fe854eec7747db8e3eba03e280cfac
 msgid ""
 "Only the part visible within this area will be considered when the list "
 "is run through the device."
 msgstr "デバイスを介してリストを実行する際にこの領域内で可視部分のみが考慮されます。"
 
-#: ../../displaylist.rst:65 7342aca2485e47f881261132ea551dab
+#: ../../displaylist.rst:65 c3a22d83a5f242f3b4cc1b8c249baaba
 msgid "Run the display list through a draw device and return a pixmap."
 msgstr "ディスプレイリストを描画デバイスを介して実行し、ピクスマップを返します。"
 
-#: ../../displaylist.rst:67 04d8cf142c56472589713dd84b479463
+#: ../../displaylist.rst:67 136ee272f14b40a28a21d275f44c4011
 msgid "matrix to use. Default is the identity matrix."
 msgstr "使用する行列。デフォルトは単位行列です。"
 
-#: ../../displaylist.rst:70 9a7ef18f047f40e09c9bea3878030ce5
+#: ../../displaylist.rst:70 47c61184eb6d43fbbbc8c9d239191082
 msgid "the desired colorspace. Default is RGB."
 msgstr "望ましいカラースペース。デフォルトはRGBです。"
 
-#: ../../displaylist.rst:73 d9ad71b94c6e46e099972714e668d2d8
+#: ../../displaylist.rst:73 8aaadbd4d0024f4c93a4462c8ce681e1
 msgid "determine whether or not (0, default) to include a transparency channel."
 msgstr "透明チャネルを含めるかどうかを決定します（0、デフォルトは含めない）。"
 
-#: ../../displaylist.rst:75 b615d03d86154218a98727b058819b01
+#: ../../displaylist.rst:75 55683887088f436a9e621e7664c819d9
 msgid ""
 "restrict rendering to the intersection of this area with "
 ":attr:`DisplayList.rect`."
 msgstr ":attr:`DisplayList.rect` との交差部分にレンダリングを制限します。"
 
-#: ../../displaylist.rst:77 a08a179f9c6343688007a3546a275bda
+#: ../../displaylist.rst:77 9ee16f8d0b674034a97058a75ced4ee2
 msgid ":ref:`Pixmap`"
 msgstr ""
 
-#: ../../displaylist.rst 03838ba4dcb54647b6a03afd1984cd1a
-#: 7323e19363f6456ba2dbbb7133120e36
+#: ../../displaylist.rst 4e01a69fc6c840f282eb88394cb17132
+#: 5bfee405c59c45e1ab50ab95c51bbad7
 msgid "Returns"
 msgstr "戻り値"
 
-#: ../../displaylist.rst:78 3272f5af6c40494491148ece4bdf912c
+#: ../../displaylist.rst:78 f7a91a5e35384c23b913987e34953c98
 msgid "pixmap of the display list."
 msgstr "ディスプレイリストのピクスマップ。"
 
-#: ../../displaylist.rst:82 25f66ceae140495e815602406f9738b4
+#: ../../displaylist.rst:82 891bf6a1b0db408bab9cabfbf4f48663
 msgid "Run the display list through a text device and return a text page."
 msgstr "ディスプレイリストをテキストデバイスを介して実行し、テキストページを返します。"
 
-#: ../../displaylist.rst:84 c199c76e0dfa41a280383ce1e166ecba
+#: ../../displaylist.rst:84 4a14d6eecedf4789a3a2bf028ca60ba4
 msgid ""
 "control which information is parsed into a text page. Default value in "
 "PyMuPDF is `3 = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE`, i.e."
 " :data:`ligatures` are **passed through**, white spaces are **passed "
 "through** (not translated to spaces), and images are **not included**. "
 "See :ref:`TextPreserve`."
-msgstr "テキストページに解析される情報を制御します。PyMuPDFのデフォルト値は `3 = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE` です。つまり、:data:`ligatures` はそのまま **通過** し、空白はそのまま **通過** します（スペースに変換されません）、画像は **含まれません** 。:ref:`TextPreserve` を参照してください。"
+msgstr ""
+"テキストページに解析される情報を制御します。PyMuPDFのデフォルト値は `3 = TEXT_PRESERVE_LIGATURES | "
+"TEXT_PRESERVE_WHITESPACE` です。つまり、:data:`ligatures` はそのまま **通過** し、空白はそのまま"
+" **通過** します（スペースに変換されません）、画像は **含まれません** 。:ref:`TextPreserve` を参照してください。"
 
-#: ../../displaylist.rst:86 4c236de5436243ca9ac45bcfd79dddd3
+#: ../../displaylist.rst:86 85ccbf2767fc41c5b59cd67fc89505f1
 msgid ":ref:`TextPage`"
 msgstr ""
 
-#: ../../displaylist.rst:87 717febbb734c4d7db4acd25302e696ed
+#: ../../displaylist.rst:87 185237b79407410bacdbd34f9d512135
 msgid "text page of the display list."
 msgstr "ディスプレイリストのテキストページ。"
 
-#: ../../displaylist.rst:91 203631a14dab4b89a4dcf052fb1276a1
+#: ../../displaylist.rst:91 0e73fc7d4b8d471a9c821ee173ca26ad
 msgid ""
 "Contains the display list's mediabox. This will equal the page's "
 "rectangle if it was created via :meth:`Page.get_displaylist`."
-msgstr "ディスプレイリストのmediaboxを含みます。これは、:meth:`Page.get_displaylist` を介して作成された場合、ページの矩形と等しいです。"
+msgstr ""
+"ディスプレイリストのmediaboxを含みます。これは、:meth:`Page.get_displaylist` "
+"を介して作成された場合、ページの矩形と等しいです。"
 
-#: ../../displaylist.rst 1bd53668f85347a8abce1224b19c85d6
+#: ../../displaylist.rst c4e1e794c6a2401dbcc7449ce4db85d1
 msgid "type"
 msgstr ""
 
-#: ../../displaylist.rst:93 5edff22aa4f04a168a4aaf54e13b5575
+#: ../../displaylist.rst:93 a5f17ace7a7641ab99d64ee3589bf18e
 msgid ":ref:`Rect`"
 msgstr ""
 
-#: ../../footer.rst:-1 cd0ba7210f4a44fbae8c8bafb17f468f
+#: ../../footer.rst:-1 fbe8e2ef249f46aba98f4da810b74496
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

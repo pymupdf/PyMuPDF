@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,204 +19,216 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../tools.rst:6 aafee9471e6d4461b7f679a35656b3e0
-msgid "Tools"
+#: ../../header.rst:-1
+msgid "Artifex"
 msgstr ""
 
-#: ../../tools.rst:8 80bbb368dac64371862412d0afdbdefd
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../tools.rst:6 9c921162f26a46c498ce98761656c4a1
+msgid "Tools"
+msgstr "Tools (ツール)"
+
+#: ../../tools.rst:8 b108240536a9478ebd19a96243ce4cbd
 msgid ""
 "This class is a collection of utility methods and attributes, mainly "
 "around memory management. To simplify and speed up its use, it is "
 "automatically instantiated under the name *TOOLS* when PyMuPDF is "
 "imported."
-msgstr ""
+msgstr "このクラスは、メモリ管理を中心としたユーティリティメソッドと属性のコレクションです。使用を簡素化し、高速化するために、PyMuPDFがインポートされると、自動的に *TOOLS* という名前でインスタンス化されます。"
 
-#: ../../tools.rst:11 5913f097c9f947c7a18febc3df6e747e
+#: ../../tools.rst:11 9e4c4f29ccb340db8987e3db3642a257
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**メソッド/属性**"
 
-#: ../../tools.rst:11 448ef356f2d148d2a220f8d7a676b519
+#: ../../tools.rst:11 e0b379e075764402a7c2af8190802fa9
 msgid "**Description**"
-msgstr ""
+msgstr "**説明**"
 
-#: ../../tools.rst:13 c7f4714d272c4e6799487a39fed60eb7
+#: ../../tools.rst:13 90bdd40a023e4138a4937ca96f2934d3
 msgid ":meth:`Tools.gen_id`"
 msgstr ""
 
-#: ../../tools.rst:13 c8de562517474862ac67ecda8cba2235
+#: ../../tools.rst:13 d57ecc95570a4a7b991055b68052be68
 msgid "generate a unique identifyer"
-msgstr ""
+msgstr "一意の識別子を生成します。"
 
-#: ../../tools.rst:14 02be6dbc3d4546ae8763ae5aa5a44b63
+#: ../../tools.rst:14 f7213d46748247998dee8d4581ddc10d
 msgid ":meth:`Tools.store_shrink`"
 msgstr ""
 
-#: ../../tools.rst:14 bb4eeeabcee048619daa2d4d4384c2d1
+#: ../../tools.rst:14 aeb77784eae5400dbab0c3f5a82a18d1
 msgid "shrink the storables cache [#f1]_"
-msgstr ""
+msgstr "格納可能キャッシュを縮小します [#f1]_。"
 
-#: ../../tools.rst:15 38273610bfd1474fbb62119778f5411d
+#: ../../tools.rst:15 ef960747d3484766b4e48473bbc5a738
 msgid ":meth:`Tools.mupdf_warnings`"
 msgstr ""
 
-#: ../../tools.rst:15 ../../tools.rst:16 814c23068b4546c99c8be46d21a2137d
-#: 8c64d0da59024b6bbcaba5047b5f61be
+#: ../../tools.rst:15 ../../tools.rst:16 1981c3224bcd44a58d8e46c1e8e9b41a
+#: 64449e866839416c8df0110a3160a226
 msgid "return the accumulated MuPDF warnings"
-msgstr ""
+msgstr "蓄積されたMuPDFの警告を返します。"
 
-#: ../../tools.rst:16 9c04e67764aa4c008b845ac3b1468d74
+#: ../../tools.rst:16 7f57773a1edb449e99b58cd21119985b
 msgid ":meth:`Tools.mupdf_display_errors`"
 msgstr ""
 
-#: ../../tools.rst:17 a1bcdae69e0b447db10e662f547c58d8
+#: ../../tools.rst:17 5ee81fcf296447b2966d31e712645bd0
 msgid ":meth:`Tools.reset_mupdf_warnings`"
 msgstr ""
 
-#: ../../tools.rst:17 367e301d5f03418aaba29a21836f03df
+#: ../../tools.rst:17 5ae8e59de8f5422fb65f11e18d9dbcbf
 msgid "empty MuPDF messages on STDOUT"
-msgstr ""
+msgstr "STDOUTのMuPDFメッセージを空にします。"
 
-#: ../../tools.rst:18 e1b47a85b08d4649bc151ac24e361909
+#: ../../tools.rst:18 33dcd6d4283f4039876c381a7cd68770
 msgid ":meth:`Tools.set_aa_level`"
 msgstr ""
 
-#: ../../tools.rst:18 b63b08ca10ac4621a776cf2e0f6ffa1f
+#: ../../tools.rst:18 6a5449506d9d457285bffbdaab917c5f
 msgid "set the anti-aliasing values"
-msgstr ""
+msgstr "アンチエイリアシングの値を設定します。"
 
-#: ../../tools.rst:19 7bd57f2f5d0b437a95727e03e953a68e
+#: ../../tools.rst:19 2d02914428564b17850bedba1fce948a
 msgid ":meth:`Tools.set_annot_stem`"
 msgstr ""
 
-#: ../../tools.rst:19 e718c48e9b144176baf439ad851440d6
+#: ../../tools.rst:19 385a02a7b7d74463a5c5cc58c45535e7
 msgid "set the prefix of new annotation / link ids"
-msgstr ""
+msgstr "新しい注釈/リンクIDのプレフィックスを設定します。"
 
-#: ../../tools.rst:20 599b8ec00d394550b8bef7a4fe7d5336
+#: ../../tools.rst:20 34e5d2d0ffa54b7587ad42d9cf452233
 msgid ":meth:`Tools.set_small_glyph_heights`"
 msgstr ""
 
-#: ../../tools.rst:20 329637148adf4ec3835ccc596edd2105
+#: ../../tools.rst:20 cff15caa51654871ba2fbdf71230bd9e
 msgid "search and extract using small bbox heights"
-msgstr ""
+msgstr "小さなbbox高さを使用して検索および抽出します。"
 
-#: ../../tools.rst:21 518e53f65b954d649c2978301ed8ac7a
+#: ../../tools.rst:21 221cd0b791b948fc97dcd15d6f6a0a01
 msgid ":meth:`Tools.set_subset_fontnames`"
 msgstr ""
 
-#: ../../tools.rst:21 77211a51910c41f1846ed97ddebdd0b0
+#: ../../tools.rst:21 f6cee15a0423400cbe2148ee8d0f2a2e
 msgid "control suppression of subset fontname tags"
-msgstr ""
+msgstr "サブセットフォント名タグの抑制を制御します。"
 
-#: ../../tools.rst:22 8fda197af31c45efbf0fddba6add74ab
+#: ../../tools.rst:22 95ba1e2925d1465ab3c1f312097ff840
 msgid ":meth:`Tools.show_aa_level`"
 msgstr ""
 
-#: ../../tools.rst:22 f701230f2b4a49d38010ff6abbfdc7c9
+#: ../../tools.rst:22 15a65b88d91a41c8acc9af06d2c7c103
 msgid "return the anti-aliasing values"
-msgstr ""
+msgstr "アンチエイリアシングの値を返します。"
 
-#: ../../tools.rst:23 2c7b574fc7124020a7dda7586f90389f
+#: ../../tools.rst:23 0bfb9bd682a144b08793cf5309f1c8cd
 msgid ":meth:`Tools.unset_quad_corrections`"
 msgstr ""
 
-#: ../../tools.rst:23 67a688a0d1ad4a39a667ee44b6d02764
+#: ../../tools.rst:23 2749edf3769540acbd36ac5b68ee202e
 msgid "disable PyMuPDF-specific code"
-msgstr ""
+msgstr "PyMuPDF固有のコードを無効にします。"
 
-#: ../../tools.rst:24 6e21bf9fd7b54d8d818370272d1d4efa
+#: ../../tools.rst:24 2a8721605bb94a1b81e17261d8394038
 msgid ":attr:`Tools.fitz_config`"
 msgstr ""
 
-#: ../../tools.rst:24 375ea3a03e74454ebcf6369dd98074d9
+#: ../../tools.rst:24 936c19ab500b4b98bd245183de84f0ac
 msgid "configuration settings of PyMuPDF"
-msgstr ""
+msgstr "PyMuPDFの設定設定"
 
-#: ../../tools.rst:25 9e5e356edaac4bcb93acc72e3e6e3af5
+#: ../../tools.rst:25 f0cd283cdef64687a87a046555f50809
 msgid ":attr:`Tools.store_maxsize`"
 msgstr ""
 
-#: ../../tools.rst:25 44024f5f46e54220b22b6077a770eefd
+#: ../../tools.rst:25 216586915b3b4c469efc1807c38e0c0a
 msgid "maximum storables cache size"
-msgstr ""
+msgstr "最大格納可能キャッシュサイズ"
 
-#: ../../tools.rst:26 d56855b9c7f849dcb184e3724174ea2b
+#: ../../tools.rst:26 cc768519f57c4c7db76df566c2b53614
 msgid ":attr:`Tools.store_size`"
 msgstr ""
 
-#: ../../tools.rst:26 bd09fa95315547938760f30d650b2102
+#: ../../tools.rst:26 fb5d69c2dd9d41d1816dce52f4035c55
 msgid "current storables cache size"
-msgstr ""
+msgstr "現在の格納可能キャッシュサイズ"
 
-#: ../../tools.rst:29 a7dd73caec8b489997cb27d73cf6fed9
+#: ../../tools.rst:29 d20f0a3d43f645658e7d34a85596da94
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI**"
 
-#: ../../tools.rst:35 8898e16993e84dbb817f5954e5282da9
+#: ../../tools.rst:35 98d1840f17d74f389032c07cc2588670
 msgid ""
 "A convenience method returning a unique positive integer which will "
 "increase by 1 on every invocation. Example usages include creating unique"
 " keys in databases - its creation should be faster than using timestamps "
 "by an order of magnitude."
-msgstr ""
+msgstr "1回の呼び出しごとに1ずつ増加する一意の正の整数を返す便利なメソッドです。使用例には、データベース内で一意のキーを作成することが含まれます。タイムスタンプを使用するよりも作成が10倍高速であるべきです。"
 
-#: ../../tools.rst:37 d8d574c40699414f8619727a62a71842
+#: ../../tools.rst:37 fed025da4f134b90b35a30fbe5143922
 msgid ""
 "MuPDF has dropped support for this in v1.14.0, so we have re-implemented "
 "a similar function with the following differences:"
-msgstr ""
+msgstr "MuPDFはv1.14.0でこれをサポートを中止したため、次の違いを持つ類似の関数を再実装しました。"
 
-#: ../../tools.rst:39 fe5c810d95544dc4b9dc1ee23706f36f
+#: ../../tools.rst:39 41d58bddc99c4ad9a474b7fdad9c7618
 msgid ""
 "It is not part of MuPDF's global context and not threadsafe (not an issue"
 " because we do not support threads in PyMuPDF anyway)."
-msgstr ""
+msgstr "これはMuPDFのグローバルコンテキストの一部ではなく、スレッドセーフではありません（とにかくPyMuPDFではスレッドをサポートしていないため、これは問題ではありません）。"
 
-#: ../../tools.rst:40 2ffe5c34966742939428171ad6f3b866
+#: ../../tools.rst:40 abde7662fb3b48d8b68d230f63283820
 msgid ""
 "It is implemented as *int*. This means that the maximum number is "
 "*sys.maxsize*. Should this number ever be exceeded, the counter starts "
 "over again at 1."
-msgstr ""
+msgstr "これはintとして実装されています。つまり、最大値は *sys.maxsize* です。この数値がいつか超過される場合、カウンターは1から再開します。"
 
-#: ../../tools.rst 058340d2ce6f4102a361be19152b11f9
-#: 2b10632f00f9423eabed68b6c6269846 312fffe12a0040248d38d0919b789d6c
-#: 977d0fb432714f2b86faf713e98d30d1 a643682b53c6471fa95cca94c4aea13a
-#: a83e6f34025d4121adc09f2ff944be70 aadd2e6079ff40b1876277dcebcc7d2e
-#: b63e621f38044dc5a9f61f898a14d17d d5805075d75a4af28126408491ba5ce6
-#: fffedf25e75c404cb732838242083e14
+#: ../../tools.rst 2632250c26e3465d8aa58f0bb7239860
+#: 3c04b1606d844bfd9f4ab4508413e38e 495a1cb5139749a3ae58a2529482bc8c
+#: 4df153555a714cc9818c7cfb68e935a7 80f9baf3271f4883ac27367686e06d29
+#: b79b9616bb48452290b8d002cb893936 b7ad7b34b21a4fb4bd2858d1550b4a73
+#: d20f879f4c534f42a9fa17613847eec6 e69044a71ea748b8a56687a5324d5a5b
+#: f33bcb331e1344458c7f74aed29ccc41
 msgid "Return type"
-msgstr ""
+msgstr "戻り値:"
 
-#: ../../tools.rst 15e24c44574d482b87a8ea01a4120104
-#: 218c633cbb374b2aad3b4b3bea5ef091 3cca765a88a841dba127485850eb8208
-#: 4a203ce0e6d54b79854db421fc778f48 56fecaf6c3a44467904d5e9e9935d75e
-#: 5e598e7d3db04b6ba4cc79916f9a6250 9246bb61b3f448c0b06f1457043deb94
-#: cea469ae7c164dfdbfe9ca51c301dcc6
+#: ../../tools.rst 1825b376f04940e4a6fb9e3da96b6270
+#: 528d9ab8856c405281df2f13df1c08c2 548490cc862046abbd843bedfb115887
+#: 5c8eda53b77740bd81d8c3312a5118ac 7b11675ccc944976a7354f16d3df4673
+#: caefecc40e2841028e43dd43b5fd1ec5 d10835b62b1e4b5e9d3b3c3724a3cf17
+#: e4c6c26766da4133baf071044c321d9a
 msgid "Returns"
-msgstr ""
+msgstr "返り値:"
 
-#: ../../tools.rst:43 2533660ef2754773bf9c6cd2c02e2a26
+#: ../../tools.rst:43 bf6df32e87c5499daa09e787e02d9080
 msgid "a unique positive integer."
-msgstr ""
+msgstr "一意の正の整数。"
 
-#: ../../tools.rst:48 2bfd870988db44629734e021da829c34
+#: ../../tools.rst:48 c1368a70b94941238df9a8b388bd1074
 msgid "New in v1.18.6"
-msgstr ""
+msgstr "v1.18.6で新登場"
 
-#: ../../tools.rst:50 838eec22085d4c929b6fb21937addd99
+#: ../../tools.rst:50 2ba676cd05fb4153bc7023a2226c4f89
 msgid "Set or inquire the prefix for the id of new annotations, fields or links."
-msgstr ""
+msgstr "新しい注釈、フィールド、またはリンクのIDのプレフィックスを設定または問い合わせます。"
 
-#: ../../tools.rst 07351788adc748758c701dfca32c1132
-#: 3c37433234494747b65a100ede24a9de 468f3692d44b4551a237861aa09326fa
-#: 4ab27d241ddf4e769b6cb6560e566d3d 8a533be356d84316bf454dee1414acf3
-#: b0996f6a5a0b4d68974b928b78df7d19 bf8068834bc04aafa3d97c6ae8fb3f6a
-#: bfc2ff2b473b4ebe9f62cd218eae42fe
+#: ../../tools.rst 0a5dc5eabfac453581dee49b7e505ad8
+#: 323e4c8d855c4a8c8b0324f92f09d917 39848c3e6186495fb40e8e3164890823
+#: 3e54bba290f843928c1904a185c56021 78b3bdbbd1cd413bb56d9d0fbf29d9d4
+#: b40df80be96f4bf6879022c31815ed89 d48d245032294e0f8496720d93083a8f
+#: ea2899ce332a45939d84fbeedf0a9c1a
 msgid "Parameters"
-msgstr ""
+msgstr "パラメータ"
 
-#: ../../tools.rst:52 689b84f6df024ea697313ab2ee4b05c4
+#: ../../tools.rst:52 faab7af3c2f64a1fbe8a7c14b3dbd074
 msgid ""
 "if omitted, the current value is returned, default is \"fitz\". "
 "Annotations, fields / widgets and links technically are subtypes of the "
@@ -225,23 +237,23 @@ msgid ""
 "subtypes, PyMuPDF generates identifiers \"stem-Annn\", \"stem-Wnnn\" or "
 "\"stem-Lnnn\" respectively. The number \"nnn\" is used to enforce the "
 "required uniqueness."
-msgstr ""
+msgstr "省略された場合、現在の値が返され、デフォルトは  \"fitz\" です。注釈、フィールド/ウィジェット、およびリンクは技術的にはPDF文書内の同じ種類のオブジェクト（`/Annot`）のサブタイプです。`/Annot` オブジェクトは、ページ内で一意の識別子を持つことができます。適用可能なサブタイプごとに、PyMuPDFはそれぞれ \"stem-Annn\"、\"stem-Wnnn\"、または \"stem-Lnnn\" の識別子を生成します。番号 \"nnn\" は必要な一意性を強制するために使用されます。"
 
-#: ../../tools.rst:55 81897eabf4ce40f1bd35089e68beed55
+#: ../../tools.rst:55 dae151ed2096456c92271e83e701b462
 msgid "the current value."
-msgstr ""
+msgstr "現在の値。"
 
-#: ../../tools.rst:60 fcdf96f9bb434f83a7f72cecb727b848
+#: ../../tools.rst:60 7a57fd80f0554e2fab5ba19f008d9599
 msgid "New in v1.18.5"
-msgstr ""
+msgstr "v1.18.5で新登場"
 
-#: ../../tools.rst:62 52f115056ed44e48b7935c0aec6d094b
+#: ../../tools.rst:62 ec1b9eb4b8d9458e99d37ad888f40bfb
 msgid ""
 "Set or inquire reduced bbox heights in text extract and text search "
 "methods."
-msgstr ""
+msgstr "テキスト抽出およびテキスト検索メソッドでのbboxの高さを縮小するかどうかを設定または問い合わせます。"
 
-#: ../../tools.rst:64 5ef9ca425f414cbeaabfb3ffc8cdaadc
+#: ../../tools.rst:64 e9efcb70b30347498aaaacc63f599f13
 msgid ""
 "if omitted or `None`, the current setting is returned. For other values "
 "the *bool()* function is applied to set a global variable. If `True`, "
@@ -249,51 +261,51 @@ msgid ""
 "character, span, line or block bboxes that have a height of *font size*. "
 "If `False` (standard setting when PyMuPDF is imported), bbox height will "
 "be based on font properties and normally equal *line height*."
-msgstr ""
+msgstr "省略された場合または `None` の場合、現在の設定が返されます。他の値の場合、*bool()* 関数が適用され、グローバル変数を設定します。`True` の場合、:meth:`Page.search_for` および :meth:`Page.get_text` メソッドは *フォントサイズ* の高さを持つ文字、スパン、行、またはブロックのbboxを返します。`False` の場合（PyMuPDFがインポートされたときの標準設定）、bboxの高さはフォントのプロパティに基づき、通常は *行の高さ* と同じです。"
 
 #: ../../tools.rst:67 ../../tools.rst:80 ../../tools.rst:94
-#: 504287800454452da74cf2bd63453ebc bbe792269a26480dbb87ec8fdc2ccabb
-#: f0c58b3bc6dd49538ea802e0d8267a9a
+#: 115831eb4fd2489ba52bbaa3736269c3 8c127519b9094b4e93539196865960f9
+#: acebfa6a226b449a81b131e229f56579
 msgid "*True* or *False*."
-msgstr ""
+msgstr "*True* または *False*。"
 
-#: ../../tools.rst:69 edfbff1d0e624c00a533f8aef492b697
+#: ../../tools.rst:69 aa05035c264741c497741c148ae6510c
 msgid ""
 "Text extraction options \"xml\", \"xhtml\" and \"html\", which directly "
 "wrap MuPDF code, are not influenced by this."
-msgstr ""
+msgstr "直接MuPDFコードをラップするテキスト抽出オプション「xml」、「xhtml」、「html」は、これに影響を受けません。"
 
-#: ../../tools.rst:73 86045a55f5844c7bbad090d3fa6e0aa9
+#: ../../tools.rst:73 6efad63adefd465eb95e0dff97eb3783
 msgid "New in v1.18.9"
-msgstr ""
+msgstr "バージョン1.18.9で追加されました"
 
-#: ../../tools.rst:75 eab6558826434351b5127f0d3ac36cdc
+#: ../../tools.rst:75 45a6442bb1aa44a083fafad0ff21a433
 msgid "Control suppression of subset fontname tags in text extractions."
-msgstr ""
+msgstr "テキスト抽出におけるサブセットフォント名のタグを抑制する制御を行います。"
 
-#: ../../tools.rst:77 1e920d3eb6014bfc9b124aa21b622da8
+#: ../../tools.rst:77 eab65e99118b44809ecef9bc030677a0
 msgid ""
 "if omitted / `None`, the current setting is returned. Arguments "
 "evaluating to `True` or `False` set a global variable. If `True`, options"
 " \"dict\", \"json\", \"rawdict\" and \"rawjson\" will return e.g. "
 "`\"NOHSJV+Calibri-Light\"`, otherwise only `\"Calibri-Light\"` (the "
 "default). The setting remains in effect until changed again."
-msgstr ""
+msgstr "省略された場合 `None`、現在の設定が返されます。`True` または `False` の値を評価して、グローバル変数を設定します。`True` の場合、オプション \"dict\"、\"json\"、\"rawdict\"、"rawjson" は例えば `\"NOHSJV+Calibri-Light\"` のように返され、それ以外の場合はデフォルトの `\"Calibri-Light\"` のみが返されます。設定は再度変更されるまで有効です。"
 
-#: ../../tools.rst:82 0b277d992b90492b82dcd95d7ad96199
+#: ../../tools.rst:82 edebc47a9f4a46dbad62412aebcab954
 msgid ""
 "Except mentioned above, no other text extraction variants are influenced "
 "by this. This is especially true for the options \"xml\", \"xhtml\" and "
 "\"html\", which are based on MuPDF code. They extract the font name "
 "`\"Calibri-Light\"`, or even just the **family** name -- `Calibri` in "
 "this example."
-msgstr ""
+msgstr "上記に記載されている以外のテキスト抽出バリアントには影響しません。特に、MuPDFコードに基づくオプション \"xml\"、\"xhtml\"、\"html\" には影響しません。これらはフォント名 `\"Calibri-Light\"`、またはこの例の場合はファミリー名 `Calibri` のみを抽出します。"
 
-#: ../../tools.rst:87 7e1c81fa5fd4429892917828c0dd9ef6
+#: ../../tools.rst:87 e7844fd20a1941079f66f06890942e34
 msgid "New in v1.18.10"
-msgstr ""
+msgstr "バージョン1.18.10で追加されました"
 
-#: ../../tools.rst:89 f97cd71622ab4843a44791edfad88b3e
+#: ../../tools.rst:89 b8b9e5e2e8474ce0b211e4c47afd0b28
 msgid ""
 "Enable / disable PyMuPDF-specific code, that tries to rebuild valid "
 "character quads when encountering nonsense in :meth:`Page.get_text` text "
@@ -301,346 +313,346 @@ msgid ""
 "descender), which do not exist in rare situations and cause segmentation "
 "faults when trying to access them. This method sets a global parameter in"
 " PyMuPDF, which suppresses execution of this code."
-msgstr ""
+msgstr ":meth:`Page.get_text` テキスト抽出で無意味なものを検出した際に、有効な文字の四角形を再構築しようとするPyMuPDF固有のコードの有効化/無効化を行います。このコードは、存在しない場合があるフォントの特性（ascenderおよびdescender）に依存しており、これらの特性にアクセスしようとするとセグメンテーション違反が発生します。このメソッドはPyMuPDF内のグローバルパラメータを設定し、このコードの実行を抑制します。"
 
-#: ../../tools.rst:91 c41d6554df0b409f94d3d96a7bfafe23
+#: ../../tools.rst:91 a61859dbf3a84663a49248dea21b44df
 msgid ""
 "if omitted or `None`, the current setting is returned. For other values "
 "the *bool()* function is applied to set a global variable. If `True`, "
 "PyMuPDF will not try to access the resp. font properties and use values "
 "`ascender=0.8` and `descender=-0.2` instead."
-msgstr ""
+msgstr "省略された場合、または `None` 、現在の設定が返されます。他の値の場合、*bool()* 関数が適用され、グローバル変数を設定します。`True` の場合、PyMuPDFは該当するフォントの特性にアクセスしようとせず、代わりに `ascender=0.8` および `descender=-0.2` の値を使用します。"
 
-#: ../../tools.rst:99 30603186d6514a859a8451394797ca44
+#: ../../tools.rst:99 654423989b174cf6ae5330cbe3bb8ff1
 msgid "Reduce the storables cache by a percentage of its current size."
-msgstr ""
+msgstr "現在のサイズを基準に、ストレージキャッシュのサイズを指定した割合で減少させます。"
 
-#: ../../tools.rst:101 79371feb6fba451e9354df6fdaeb27cc
+#: ../../tools.rst:101 d2e41a5bb75543098e0b73c2641ac25d
 msgid ""
 "the percentage of current size to free. If 100+ the store will be "
 "emptied, if zero, nothing will happen. MuPDF's caching strategy is "
 "\"least recently used\", so low-usage elements get deleted first."
-msgstr ""
+msgstr "現在のサイズの何パーセントを解放するかを指定します。100以上の場合、ストアは空になります。むしろ、何も変更されません。MuPDFのキャッシング戦略は「最後に使用されたもの」なので、使用頻度の低い要素が最初に削除されます。"
 
-#: ../../tools.rst:104 4a39101b4d4147f7973d2e14c702886d
+#: ../../tools.rst:104 0f58b45478254a8c9af6dcf90b7f3365
 msgid ""
 "the new current store size. Depending on the situation, the size "
 "reduction may be larger than the requested percentage."
-msgstr ""
+msgstr "新しい現在のストアサイズ。状況に応じて、要求された割合よりもサイズが大幅に削減される場合があります。"
 
-#: ../../tools.rst:108 ../../tools.rst:118 0c45beb9e8ad485cba52b98ec4f16870
-#: 1a1ba4d5facf4462a91f76096e8a34c5
+#: ../../tools.rst:108 ../../tools.rst:118 6816ce6bdb804c7aaac228927f11f39f
+#: ff6320bcee014ef5b920c9e66c295068
 msgid "New in version 1.16.14"
-msgstr ""
+msgstr "バージョン1.16.14で新たに追加"
 
-#: ../../tools.rst:110 01471463b00a4528b6b0262e71b00358
+#: ../../tools.rst:110 7666a224cbcd4d56b4110ca7f5700134
 msgid ""
 "Return the current anti-aliasing values. These values control the "
 "rendering quality of graphics and text elements."
-msgstr ""
+msgstr "現在のアンチエイリアシング値を返します。これらの値は、グラフィックスとテキスト要素のレンダリング品質を制御します。"
 
-#: ../../tools.rst:113 397794f38edb4752af0752618f3e956b
+#: ../../tools.rst:113 0c363e6ae7cb45a3a55a65d25224cc72
 msgid ""
 "A dictionary with the following initial content: `{'graphics': 8, 'text':"
 " 8, 'graphics_min_line_width': 0.0}`."
-msgstr ""
+msgstr "以下の初期内容を持つ辞書： `{'graphics': 8, 'text': 8, 'graphics_min_line_width': 0.0}`。"
 
-#: ../../tools.rst:120 6178ad7652d14b309c27df0d4b874b17
+#: ../../tools.rst:120 4f892fd5a6784b53a8220fc24236447f
 msgid ""
 "Set the new number of bits to use for anti-aliasing. The same value is "
 "taken currently for graphics and text rendering. This might change in a "
 "future MuPDF release."
-msgstr ""
+msgstr "アンチエイリアシングに使用するビット数を設定します。現在はグラフィックスとテキストのレンダリングに同じ値が使用されます。将来のMuPDFリリースで変更されるかもしれません。"
 
-#: ../../tools.rst:122 d084ae710ced42a8b8bb50c642dc6354
+#: ../../tools.rst:122 d9404621712e4dbda14cd04ada04956e
 msgid ""
 "an integer ranging between 0 and 8. Value outside this range will be "
 "silently changed to valid values. The value will remain in effect "
 "throughout the current session or until changed again."
-msgstr ""
+msgstr "0から8までの範囲の整数。この範囲外の値は静かに有効な値に変更されます。この値は、現在のセッション全体または再度変更されるまで有効です。"
 
-#: ../../tools.rst:127 ../../tools.rst:145 1e9b5b90ac7943179d3a829a16a75f6f
-#: 9471b0980a664a81aeb248ff54bd8353
+#: ../../tools.rst:127 ../../tools.rst:145 124fab73b8814d2fbbde73008bd746d3
+#: cf18155f67ad48ef9f4ea80788a9b84b
 msgid "New in version 1.16.0"
-msgstr ""
+msgstr "バージョン1.16.0で新たに追加"
 
-#: ../../tools.rst:129 0d5732d1b00940e8ade05e2cc35089ea
+#: ../../tools.rst:129 45c794ebe112473b98211b6051ccfd7e
 msgid "Empty MuPDF warnings message buffer."
-msgstr ""
+msgstr "MuPDFの警告メッセージバッファを空にします。"
 
-#: ../../tools.rst:134 b35a5554f4524a5b93e1a2f8795e8848
+#: ../../tools.rst:134 15ab7b3f21a14911baa8bde29f44cdad
 msgid "New in version 1.16.8"
-msgstr ""
+msgstr "バージョン1.16.8で新たに追加"
 
-#: ../../tools.rst:136 021eede865cc4986bd37f9d0adb67be3
+#: ../../tools.rst:136 3922ea52c08848ce9af336fe777acc9e
 msgid "Show or set whether MuPDF errors should be displayed."
-msgstr ""
+msgstr "MuPDFのエラーを表示するかどうかを表示または設定します。"
 
-#: ../../tools.rst:138 b61f47f56e264d3b932330c8a7e3e76c
+#: ../../tools.rst:138 ee09805976154a2ba4b6b8b121f6c287
 msgid ""
 "if not a bool, the current setting is returned. If true, MuPDF errors "
 "will be shown on *sys.stderr*, otherwise suppressed. In any case, "
 "messages continue to be stored in the warnings store. Upon import of "
 "PyMuPDF this value is *True*."
-msgstr ""
+msgstr "boolでない場合、現在の設定が返されます。Trueの場合、MuPDFのエラーは *sys.stderr* に表示され、それ以外の場合は抑制されます。いずれの場合も、メッセージは警告ストアに引き続き保存されます。PyMuPDFのインポート時にこの値は *True* です。"
 
-#: ../../tools.rst:140 3e3c0073d4b5469a99236af6d26f3889
+#: ../../tools.rst:140 46b7676ea8d949f39059395fb6c21cc1
 msgid "*True* or *False*"
-msgstr ""
+msgstr "*True* または *False*"
 
-#: ../../tools.rst:147 505ac255b97f4611be72e5ab73af75fd
+#: ../../tools.rst:147 4b834a9603ba47d98b884211a72e5951
 msgid ""
 "Return all stored MuPDF messages as a string with interspersed line-"
 "breaks."
-msgstr ""
+msgstr "すべての保存されたMuPDFメッセージを、改行が挿入された文字列として返します。"
 
-#: ../../tools.rst:149 bd788686e8164df285950ae814076ff3
+#: ../../tools.rst:149 e6bdfd8e20d045b9a62697e2b0ff1c2c
 msgid "*(new in version 1.16.7)* whether to automatically empty the store."
-msgstr ""
+msgstr "*（バージョン1.16.7で新たに追加）* ストアを自動的に空にするかどうか。"
 
-#: ../../tools.rst:154 ed289a2fed464e529d485fc8d5da80a6
+#: ../../tools.rst:154 5ea843ef7bd14ea48d72a7a9058bf8ff
 msgid ""
 "A dictionary containing the actual values used for configuring PyMuPDF "
 "and MuPDF. Also refer to the installation chapter. This is an overview of"
 " the keys, each of which describes the status of a support aspect."
-msgstr ""
+msgstr "PyMuPDFとMuPDFを設定するために使用される実際の値を含む辞書です。インストールの章も参照してください。これは各キーを概説したもので、それぞれがサポートの側面のステータスを記述しています。"
 
-#: ../../tools.rst:157 2f10702bf5724fc78baa9e618fed9f1e
+#: ../../tools.rst:157 1aea85f1b80a47138287253974baae54
 msgid "**Key**"
-msgstr ""
+msgstr "**キー**"
 
-#: ../../tools.rst:157 3893e2a62ee441ccb245e484f046ae6d
+#: ../../tools.rst:157 a767f9c7df3544aea61bd0338913a1ab
 msgid "**Support included for ...**"
-msgstr ""
+msgstr "**サポートが含まれているのは...**"
 
-#: ../../tools.rst:159 b89b19248d504b06afd72fc84e45cbb9
+#: ../../tools.rst:159 b566a23953dd45f3aab7ae6f9cb56836
 msgid "plotter-g"
 msgstr ""
 
-#: ../../tools.rst:159 c8ffd8b690874a5ab6f656de44e74f44
+#: ../../tools.rst:159 933e88f0431b471e92fa2ef06b2a3647
 msgid "Gray colorspace rendering"
-msgstr ""
+msgstr "グレーカラースペースのレンダリング"
 
-#: ../../tools.rst:160 5fb63af2d2d046a78d6afdc621389ec2
+#: ../../tools.rst:160 dd682dbfb7224e218a7ed0bccaab2e39
 msgid "plotter-rgb"
 msgstr ""
 
-#: ../../tools.rst:160 bced5c07d7b34720a72a8af996de4193
+#: ../../tools.rst:160 298785027886453f9ea727eca59fdf63
 msgid "RGB colorspace rendering"
-msgstr ""
+msgstr "RGBカラースペースのレンダリング"
 
-#: ../../tools.rst:161 0da7ca3cc6534f84ae3b5296c0f6f748
+#: ../../tools.rst:161 8867eb1c4a104eacb88407968cba907d
 msgid "plotter-cmyk"
 msgstr ""
 
-#: ../../tools.rst:161 db10acf4acdf443bbedc80d392a409d1
+#: ../../tools.rst:161 26b1005ccecc49f3a15739ff66139940
 msgid "CMYK colorspcae rendering"
-msgstr ""
+msgstr "CMYKカラースペースのレンダリング"
 
-#: ../../tools.rst:162 e5955aafbadf471fb301d8290c095b5b
+#: ../../tools.rst:162 47077db7ed344b579d2e66f53191f349
 msgid "plotter-n"
 msgstr ""
 
-#: ../../tools.rst:162 9e7aaafa7ec8456bbe9f858ba7879dc4
+#: ../../tools.rst:162 7e4e7225b5504b7aa1b401bf1e21e452
 msgid "overprint rendering"
-msgstr ""
+msgstr "オーバープリントのレンダリング"
 
-#: ../../tools.rst:163 2fde036029b449a49cb5f6d53c4f03ed
+#: ../../tools.rst:163 7f50bbc8b1b54000abef21f0b3edc25f
 msgid "pdf"
 msgstr ""
 
-#: ../../tools.rst:163 4a73e336b2894aea9be61aa8a66b3fb0
+#: ../../tools.rst:163 089482a0f9114395aebd46dc7aefbeff
 msgid "PDF documents"
-msgstr ""
+msgstr "PDFドキュメント"
 
-#: ../../tools.rst:164 83f64d3d5fe34d8aa4fd81a6c703e97c
+#: ../../tools.rst:164 40616f6234f442239caba793ce3bea8e
 msgid "xps"
 msgstr ""
 
-#: ../../tools.rst:164 30feb1a6179845d499b48b256d58a983
+#: ../../tools.rst:164 9666f0f1d0af48d3825a69fea7ae9a77
 msgid "XPS documents"
-msgstr ""
+msgstr "XPSドキュメント"
 
-#: ../../tools.rst:165 a4ededb4a8794e87b4e0d9c4deeed86e
+#: ../../tools.rst:165 9544bca5c5634ba0aaacf97a1710c304
 msgid "svg"
 msgstr ""
 
-#: ../../tools.rst:165 20cd76dceef04405a40f6ad9de9e6fe6
+#: ../../tools.rst:165 565bc0fc69244b06955a17eb2150e7ec
 msgid "SVG documents"
-msgstr ""
+msgstr "SVGドキュメント"
 
-#: ../../tools.rst:166 772b6101e13d4b42804a66fcb565ae05
+#: ../../tools.rst:166 869fcfae1b884c0c973dcf2efeadd3b0
 msgid "cbz"
 msgstr ""
 
-#: ../../tools.rst:166 c293a4c1b59a49feac7b9ac11c46fcae
+#: ../../tools.rst:166 d9c1301713bf4f1da16bcb73d5167e5d
 msgid "CBZ documents"
-msgstr ""
+msgstr "CBZドキュメント"
 
-#: ../../tools.rst:167 232f888112a84a5f9138c1bbb83fb63d
+#: ../../tools.rst:167 3fbc4806fa66475195241f99cab8809f
 msgid "img"
 msgstr ""
 
-#: ../../tools.rst:167 da01dceb61254020ac57920b005d36ce
+#: ../../tools.rst:167 34b09b3e345d442caca93d283652ebd0
 msgid "IMG documents"
-msgstr ""
+msgstr "IMGドキュメント"
 
-#: ../../tools.rst:168 7decc145188349a8a875677a3405b5c6
+#: ../../tools.rst:168 776b710a143d4dfd9a31d8466d4ff734
 msgid "html"
 msgstr ""
 
-#: ../../tools.rst:168 604e91614b224157b4c6b1a38d498ad0
+#: ../../tools.rst:168 44d6a60a3c08470384bf2780307faaf8
 msgid "HTML documents"
-msgstr ""
+msgstr "HTMLドキュメント"
 
-#: ../../tools.rst:169 3107a2c8029445f1abb6645d6d2c6f7a
+#: ../../tools.rst:169 564039a390e9422d90d77755ecf740c8
 msgid "epub"
 msgstr ""
 
-#: ../../tools.rst:169 9e63f81c69244e559935d420153af835
+#: ../../tools.rst:169 488c8f14cd8f4df498c5bae3a1e39ab5
 msgid "EPUB documents"
-msgstr ""
+msgstr "EPUBドキュメント"
 
-#: ../../tools.rst:170 aaca8eb930184742a7e30fd43ba4418d
+#: ../../tools.rst:170 eee8142fe9764c89bccdd75e0cd35f16
 msgid "jpx"
 msgstr ""
 
-#: ../../tools.rst:170 1ac2442ca94a4c75a98a3c82bbdc25ed
+#: ../../tools.rst:170 9b85fc38733547ee842d32a57b1f5419
 msgid "JPEG2000 images"
-msgstr ""
+msgstr "JPEG2000画像"
 
-#: ../../tools.rst:171 20dbac43895e4a77b4fd963b8a4a189c
+#: ../../tools.rst:171 da69fd409bc94d93b29438f6b83ad417
 msgid "js"
 msgstr ""
 
-#: ../../tools.rst:171 3e45cf1efc6e41768f561f541be9a786
+#: ../../tools.rst:171 3069ab9b9dfd401b972f5a40ec7deba3
 msgid "JavaScript"
 msgstr ""
 
-#: ../../tools.rst:172 ec84590b0c6640ceb16d92ceff57ee72
+#: ../../tools.rst:172 b345a4aa77684ea8bcfca958745cd176
 msgid "tofu"
 msgstr ""
 
-#: ../../tools.rst:172 fae993b7b5ab4adfb011ff27e5645bfc
+#: ../../tools.rst:172 35f24e093e5547cba92382a226f24f42
 msgid "all TOFU fonts"
-msgstr ""
+msgstr "すべてのTOFUフォント"
 
-#: ../../tools.rst:173 279d1b716e4448af8ac5a402921a4a5e
+#: ../../tools.rst:173 e497401901884500ab85482dacd40eff
 msgid "tofu-cjk"
 msgstr ""
 
-#: ../../tools.rst:173 bc3efebed4e94349a2232b7076106b75
+#: ../../tools.rst:173 4390430ca7014116be25a68aa1086726
 msgid "CJK font subset (China, Japan, Korea)"
-msgstr ""
+msgstr "CJKフォントのサブセット（中国、日本、韓国）"
 
-#: ../../tools.rst:174 ff737f1c781e47c6876c5235201d9fcd
+#: ../../tools.rst:174 414c1b3c2e6b4ddfa2ad2cc971ef9b95
 msgid "tofu-cjk-ext"
 msgstr ""
 
-#: ../../tools.rst:174 244785b7dc0d448fbb93083589041fd6
+#: ../../tools.rst:174 61e11293c75743c099ae43c990f9145e
 msgid "CJK font extensions"
-msgstr ""
+msgstr "CJKフォント拡張"
 
-#: ../../tools.rst:175 22c8b60b49e947ac93192826fd91695e
+#: ../../tools.rst:175 1bfea0f6d6b64846af7b3702d28fc923
 msgid "tofu-cjk-lang"
 msgstr ""
 
-#: ../../tools.rst:175 2be363d6849b4014808fbbb5b90ee693
+#: ../../tools.rst:175 e1e996346f6547128eab56e9fcf7dc48
 msgid "CJK font language extensions"
-msgstr ""
+msgstr "CJKフォントの言語拡張"
 
-#: ../../tools.rst:176 b8a9251f55fe416eaae59acc32ed00c3
+#: ../../tools.rst:176 c2f94fad865b41dcac1657decb124730
 msgid "tofu-emoji"
 msgstr ""
 
-#: ../../tools.rst:176 5ad3c11c070e4ea7a7a5e5fccc361a8e
+#: ../../tools.rst:176 8e12588370cc4f81a02ea4d35ee0e46c
 msgid "TOFU emoji fonts"
-msgstr ""
+msgstr "TOFU絵文字フォント"
 
-#: ../../tools.rst:177 487c16845a6744ef87de8cd8c22c802f
+#: ../../tools.rst:177 c4e84cabc7274a45a8f96cb796fd8056
 msgid "tofu-historic"
 msgstr ""
 
-#: ../../tools.rst:177 3b4d6f73324446ab904bbdba65ae5ec1
+#: ../../tools.rst:177 1d2d00a24684468d887b0f12dc7c117f
 msgid "TOFU historic fonts"
-msgstr ""
+msgstr "TOFU歴史的フォント"
 
-#: ../../tools.rst:178 5be85ed73b9c48babffb9a86693ece38
+#: ../../tools.rst:178 5a0a0f71545d4d1db61be02a8973d832
 msgid "tofu-symbol"
 msgstr ""
 
-#: ../../tools.rst:178 6d31597a67c44ff88543bceca8359328
+#: ../../tools.rst:178 0366d169de16461b96563c6ffdc39d41
 msgid "TOFU symbol fonts"
-msgstr ""
+msgstr "TOFUシンボルフォント"
 
-#: ../../tools.rst:179 7bc18236c47d43499135b00656a04a29
+#: ../../tools.rst:179 8074034e70334127ae1928e01f5d5925
 msgid "tofu-sil"
 msgstr ""
 
-#: ../../tools.rst:179 27036893e7744cfab75bb7b896d67315
+#: ../../tools.rst:179 2a991e28301541c2aab2489fe15bca1a
 msgid "TOFU SIL fonts"
-msgstr ""
+msgstr "TOFU SILフォント"
 
-#: ../../tools.rst:180 88c373bdc0a84cddb0d7702614582672
+#: ../../tools.rst:180 5ecf6c6afccd444e8ec3c0fac166a1a5
 msgid "icc"
 msgstr ""
 
-#: ../../tools.rst:180 214b972767cc441d9d64ec4464cbe66c
+#: ../../tools.rst:180 7b2ad2089db649a09042df4585639639
 msgid "ICC profiles"
-msgstr ""
+msgstr "ICCプロファイル"
 
-#: ../../tools.rst:181 2afa51a107a24bc29d6646b7c4f815bb
+#: ../../tools.rst:181 0aab560e42e74f1a8a9af991bbaa6695
 msgid "py-memory"
 msgstr ""
 
-#: ../../tools.rst:181 e6e08f2f496d47109535600966bf95d6
+#: ../../tools.rst:181 2c3483292c434cceaaceb31c66678c7a
 msgid "using Python memory management [#f2]_"
-msgstr ""
+msgstr "Pythonメモリ管理を使用 [#f2]_"
 
-#: ../../tools.rst:182 009469dac7794f07aceb53a8b756c0e7
+#: ../../tools.rst:182 6fa2f3d1283346b3b07c69a88db3615f
 msgid "base14"
 msgstr ""
 
-#: ../../tools.rst:182 b45357d4908442378422d6c13deaa919
+#: ../../tools.rst:182 19669936928848bda75c723300b471bd
 msgid "Base-14 fonts (should always be true)"
-msgstr ""
+msgstr "Base-14フォント（常にtrueである必要があります）"
 
-#: ../../tools.rst:185 7d5938c3481248b196be94727e8b24c5
+#: ../../tools.rst:185 dba4419f69c4495789b010e600ca6504
 msgid ""
 "For an explanation of the term \"TOFU\" see `this Wikipedia article "
 "<https://en.wikipedia.org/wiki/Noto_fonts>`_.::"
-msgstr ""
+msgstr "「TOFU」の用語の説明については、 `このウィキペディアの記事 <https://en.wikipedia.org/wiki/Noto_fonts>`_ を参照してください。::"
 
-#: ../../tools.rst:219 9ba33be9f44f4bee85088b110f68e380
+#: ../../tools.rst:219 4cd1eb3e88c042e999ecb5e9e2d6b1ac
 msgid ""
 "Maximum storables cache size in bytes. PyMuPDF is generated with a value "
 "of 268'435'456 (256 MB, the default value), which you should therefore "
 "always see here. If this value is zero, then an \"unlimited\" growth is "
 "permitted."
-msgstr ""
+msgstr "ストアブルキャッシュの最大サイズ（バイト単位）。 PyMuPDFは、デフォルト値である268'435'456（256 MB）で生成されており、したがって常にここで見るはずです。この値がゼロの場合、増加の「制限なし」が許可されています。"
 
-#: ../../tools.rst:225 ba9a1ea3cea247e499ef11192aa90417
+#: ../../tools.rst:225 732b725c11c944e2960a2055e97d97b7
 msgid ""
 "Current storables cache size in bytes. This value may change (and will "
 "usually increase) with every use of a PyMuPDF function. It will "
 "(automatically) decrease only when :attr:`Tools.store_maxize` is going to"
 " be exceeded: in this case, MuPDF will evict low-usage objects until the "
 "value is again in range."
-msgstr ""
+msgstr "現在のストアブルキャッシュのサイズ（バイト単位）。この値は、PyMuPDFの関数を使用するたびに変更される可能性があります（通常は増加します）。この値は、:attr:`Tools.store_maxsize` が超過される場合にのみ（自動的に）減少し、その場合、MuPDFは使用率の低いオブジェクトを削除して、値が再び範囲内に収まるようにします。"
 
-#: ../../tools.rst:230 654b9d6346d540feaa91538ed41f99f4
+#: ../../tools.rst:230 46c4cfc4121f4b99907a0e8989527f07
 msgid "Example Session"
-msgstr ""
+msgstr "セッションの例"
 
-#: ../../tools.rst:264 f975d7f2290e46918840924330e1164b
+#: ../../tools.rst:264 6c8c552582fb479e8049f558d2d1c170
 msgid "::"
 msgstr ""
 
-#: ../../tools.rst:267 c81d367191364aa9b726d85bff96a20b
+#: ../../tools.rst:267 9d0b9dd30b4240f9bd97563ac8957d7d
 msgid "Footnotes"
-msgstr ""
+msgstr "脚注"
 
-#: ../../tools.rst:268 e993b91c17d8414fb7952ab83a06751d
+#: ../../tools.rst:268 555f064009e24db78bfe417fcabfe80b
 msgid ""
 "This memory area is internally used by MuPDF, and it serves as a cache "
 "for objects that have already been read and interpreted, thus improving "
@@ -652,17 +664,18 @@ msgid ""
 "even after a document has been closed and all related objects have been "
 "deleted, the store usage may still not drop down to zero. So you might "
 "want to enforce that before opening another document."
-msgstr ""
+msgstr "このメモリ領域はMuPDF内部で使用され、既に読み取られ解釈されたオブジェクトのキャッシュとして機能し、パフォーマンスを向上させます。最も重いオブジェクトのタイプは画像およびフォントです。アプリケーションがMuPDFライブラリを起動するとき（私たちの場合、これは *import fitz* の一部として発生します）、この領域の最大サイズを指定する必要があります。 PyMuPDFはメモリ消費を制限するためにデフォルト値（256 MB）を使用します。ここで提供されているメソッドを使用してストアの使用状況を制御または調査できます。たとえば、文書が閉じられ、関連するすべてのオブジェクトが削除された後でも、ストアの使用状況がゼロにならないことがあります。したがって、別の文書を開く前にこれを強制したいかもしれません。"
 
-#: ../../tools.rst:270 408db856dc084e94b8756f96d0f58416
+#: ../../tools.rst:270 fba7596a57b74b2488855d27aab5ad65
 msgid ""
 "By default PyMuPDF and MuPDF use `malloc()`/`free()` for dynamic memory "
 "management. One can instead force them to use the Python allocation "
 "functions `PyMem_New()`/`PyMem_Del()`, by modifying *fitz/fitz.i* to do "
 "`#define JM_MEMORY 1` and rebuilding PyMuPDF."
-msgstr ""
+msgstr "デフォルトでは、PyMuPDFおよびMuPDFは動的メモリ管理に `malloc()`/`free()` を使用します。代わりに、*fitz/fitz.i* を変更して `#define JM_MEMORY 1` を行い、PyMuPDFを再構築することで、Pythonの割り当て関数 `PyMem_New()`/`PyMem_Del()` を使用するように強制することができます。"
 
-#: ../../footer.rst:-1 0ef7a17f5b8b490eb636449dfcabbc87
+#: ../../footer.rst:-1 2c0ac511e4144f34a6f2a50bc0d5cb09
 msgid "Discord logo"
 msgstr ""
+
 

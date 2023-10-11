@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,18 +19,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
 
-#: ../../recipes-journalling.rst:7 162f8e5be02b435996e936e75d7414f0
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../recipes-journalling.rst:7 1fd2c23bc5ba45b6a9fbf2c6320c4acc
 msgid "Journalling"
 msgstr "ジャーナリング"
 
-#: ../../recipes-journalling.rst:10 1eee3705bd8d462eb4173af15799a264
+#: ../../recipes-journalling.rst:10 41d1d6d20e6149a8afe8a032581416a9
 msgid ""
 "Starting with version 1.19.0, journalling is possible when updating PDF "
 "documents."
 msgstr "バージョン1.19.0から、PDFドキュメントの更新時にジャーナリングが可能になりました。"
 
-#: ../../recipes-journalling.rst:12 01d8c23d1a6b4fee91ace3858617141e
+#: ../../recipes-journalling.rst:12 53cc69852fc84e6b8f74f9d249c5c563
 msgid ""
 "Journalling is a logging mechanism which permits either **reverting** or "
 "**re-applying** changes to a PDF. Similar to LUWs \"Logical Units of "
@@ -39,7 +50,7 @@ msgid ""
 "LUW."
 msgstr "ジャーナリングは、PDFへの変更を元に戻したり再適用したりするためのログ記録メカニズムです。近代的なデータベースシステムにおける「論理ユニット・オブ・ワーク（LUW）」のように、一連の更新を「操作」としてグループ化することができます。MuPDFジャーナリングでは、操作がLUWの役割を果たします。"
 
-#: ../../recipes-journalling.rst:14 2828c556ba9b4cc18c6e08404a25e1b3
+#: ../../recipes-journalling.rst:14 68d0bf36330c4fbfbfb896346a679888
 msgid ""
 "In contrast to LUW implementations found in database systems, MuPDF "
 "journalling happens on a **per document level**. There is no support for "
@@ -47,14 +58,14 @@ msgid ""
 "one's own logic here."
 msgstr "データベースシステムで見られるLUWの実装とは異なり、MuPDFジャーナリングはドキュメント単位で行われます。複数のPDFで同時に更新するためのサポートはありません。それぞれのPDFに対して独自のロジックを確立する必要があります。"
 
-#: ../../recipes-journalling.rst:16 6c7f8177f0e2439486758abb62c8fdaa
+#: ../../recipes-journalling.rst:16 65dd678215264312871f2a9be9676498
 msgid ""
 "Journalling must be *enabled* via a document method. Journalling is "
 "possible for existing or new documents. Journalling **can be disabled "
 "only** by closing the file."
 msgstr "ジャーナリングは、ドキュメントメソッドを介して有効にする必要があります。既存のドキュメントまたは新規ドキュメントのジャーナリングが可能です。ファイルを閉じることでのみジャーナリングを無効にすることができます。"
 
-#: ../../recipes-journalling.rst:17 d108fce39ad54c9fb5a35926e9555a53
+#: ../../recipes-journalling.rst:17 94a1fbefc4cc4b1ea972cd58c93a7d58
 msgid ""
 "Once enabled, every change must happen inside an *operation* -- otherwise"
 " an exception is raised. An operation is started and stopped via document"
@@ -63,26 +74,26 @@ msgid ""
 "\"undone\" resp. \"redone\"."
 msgstr "有効になると、すべての変更は操作の内部で行われる必要があります。そうでない場合、例外が発生します。操作はドキュメントメソッドを介して開始および停止されます。これらの呼び出し間で行われる更新はLUWを形成し、集合的に元に戻すか再適用するために使用できます。MuPDFの用語で言えば、「元に戻す」または「やり直す」ことができます。"
 
-#: ../../recipes-journalling.rst:18 731b0b3054ab40ee81ec87f68680131b
+#: ../../recipes-journalling.rst:18 e3198a9f7cf1428d8b40ec27b5855797
 msgid ""
 "At any point, the journalling status can be queried: whether journalling "
 "is active, how many operations have been recorded, whether \"undo\" or "
 "\"redo\" is possible, the current position inside the journal, etc."
 msgstr "いつでも、ジャーナリングの状態をクエリできます。ジャーナリングがアクティブかどうか、いくつの操作が記録されたか、元に戻すかやり直すかが可能か、ジャーナル内の現在位置などがわかります。"
 
-#: ../../recipes-journalling.rst:19 51c4983ea7bc43f58992c0bae8d5cef7
+#: ../../recipes-journalling.rst:19 880e91c0141b4e2d882bfa2a7f023c6b
 msgid ""
 "The journal can be **saved to** or **loaded from** a file. These are "
 "document methods."
 msgstr "ジャーナルはファイルに保存またはロードできます。これらはドキュメントメソッドです。"
 
-#: ../../recipes-journalling.rst:20 833e4734322d40c4a9635a58649d8ae5
+#: ../../recipes-journalling.rst:20 a9bd9bb6ee154bc0926d762afa9ae086
 msgid ""
 "When loading a journal file, compatibility with the document is checked "
 "and journalling is automatically enabled upon success."
 msgstr "ジャーナルファイルをロードする際には、ドキュメントとの互換性がチェックされ、成功した場合に自動的にジャーナリングが有効になります。"
 
-#: ../../recipes-journalling.rst:21 89257becd39e46e7b05a0f70ff3a6064
+#: ../../recipes-journalling.rst:21 bd353769fd2840558ce14e36db284933
 msgid ""
 "For an **existing** PDF being journalled, a special new save method is "
 "available: :meth:`Document.save_snapshot`. This performs a special "
@@ -91,9 +102,12 @@ msgid ""
 "snapshot), then document and journal are in sync and can later on be used"
 " together to undo or redo operations or to continue journalled updates --"
 " just as if there had been no interruption."
-msgstr "ジャーナリングされている既存のPDFに対しては、特別な新しい保存メソッドが利用可能です。:meth:`Document.save_snapshot` これにより、これまでにジャーナリングされたすべての更新を含む特別なインクリメンタル保存が行われます。そのジャーナルも同時に保存される場合（ドキュメントスナップショットの直後に保存）、ドキュメントとジャーナルは同期され、後で操作を元に戻したりやり直したりするために一緒に使用できるようになります。まるで中断がなかったかのように。"
+msgstr ""
+"ジャーナリングされている既存のPDFに対しては、特別な新しい保存メソッドが利用可能です。:meth:`Document.save_snapshot`"
+" "
+"これにより、これまでにジャーナリングされたすべての更新を含む特別なインクリメンタル保存が行われます。そのジャーナルも同時に保存される場合（ドキュメントスナップショットの直後に保存）、ドキュメントとジャーナルは同期され、後で操作を元に戻したりやり直したりするために一緒に使用できるようになります。まるで中断がなかったかのように。"
 
-#: ../../recipes-journalling.rst:22 2088a85a131f43da971a72360ceeb170
+#: ../../recipes-journalling.rst:22 1785f71b31434150855ac541519a3c28
 msgid ""
 "The snapshot PDF is a valid PDF in every aspect and fully usable. If the "
 "document is however changed in any way without using its journal file, "
@@ -101,7 +115,7 @@ msgid ""
 "unusable."
 msgstr "スナップショットPDFは、あらゆる側面で有効なPDFであり、完全に使用可能です。ただし、ジャーナルファイルを使用せずにドキュメントが変更された場合、同期が取れなくなり、ジャーナルは利用できなくなります。"
 
-#: ../../recipes-journalling.rst:23 f7f79e84914f4335a7d655d4d9ec4c7e
+#: ../../recipes-journalling.rst:23 96bd88fde0b84f789f27343892d07dde
 msgid ""
 "Snapshot files are structured like incremental updates. Nevertheless, the"
 " internal journalling logic requires, that saving **must happen to a new "
@@ -109,48 +123,58 @@ msgid ""
 "recognizable relationships between an original PDF, like `original.pdf` "
 "and its snapshot sets, like `original-snap1.pdf` / `original-snap1.log`, "
 "`original-snap2.pdf` / `original-snap2.log`, etc."
-msgstr "スナップショットファイルはインクリメンタルな更新のように構造化されています。ただし、内部のジャーナリングロジックでは、新しいファイルに保存する必要があります。したがって、ユーザーはオリジナルのPDF（例： `original.pdf` ）とそのスナップショットセット（例： `original-snap1.pdf` / `original-snap1.log` 、 `original-snap2.pdf` / `original-snap2.log` など）の間に認識可能な関係をサポートするためのファイル命名規則を開発する必要があります。"
+msgstr ""
+"スナップショットファイルはインクリメンタルな更新のように構造化されています。ただし、内部のジャーナリングロジックでは、新しいファイルに保存する必要があります。したがって、ユーザーはオリジナルのPDF（例："
+" `original.pdf` ）とそのスナップショットセット（例： `original-snap1.pdf` / `original-"
+"snap1.log` 、 `original-snap2.pdf` / `original-snap2.log` "
+"など）の間に認識可能な関係をサポートするためのファイル命名規則を開発する必要があります。"
 
-#: ../../recipes-journalling.rst:26 d2cb3c5e9b8a4f78b23dc94a089fa6b2
+#: ../../recipes-journalling.rst:26 fadea8fcdd064302873f226f1fe20ac7
 msgid "Example Session 1"
 msgstr "例セッション1"
 
 #: ../../recipes-journalling.rst:27 ../../recipes-journalling.rst:98
-#: 51bd7b4b589b463da58a23ada5e17624 56e11e17d2a849a2b774c93e4cebca91
+#: 0879ff4dadb14ceaab35b41333aa7cd7 ba1ee3f8286a42119adbc8ab95752902
 msgid "Description:"
 msgstr "説明："
 
-#: ../../recipes-journalling.rst:29 1b605ba20b944709bbb793fb850e1a0c
+#: ../../recipes-journalling.rst:29 1fe4dd0796354da6b682c7494d4fa51f
 msgid ""
 "Make a new PDF and enable journalling. Then add a page and some text "
 "lines -- each as a separate operation."
 msgstr "新しいPDFを作成し、ジャーナリングを有効にします。次に、ページを追加し、いくつかのテキスト行を別々の操作として追加します。"
 
-#: ../../recipes-journalling.rst:30 bde7498b67ac4f4aa3e84b091d6eb461
+#: ../../recipes-journalling.rst:30 44d814009f374057816a7e4f0dc76c33
 msgid ""
 "Navigate within the journal, undoing and redoing these updates and "
 "displaying status and file results::"
 msgstr "ジャーナル内を移動し、これらの更新を元に戻したりやり直したりし、状態やファイルの結果を表示します::"
 
-#: ../../recipes-journalling.rst:97 8b40e80c5f0d4027b8aaf4ba8e4285e3
+#: ../../recipes-journalling.rst:97 a03f18d855424d95a12783ead175be02
 msgid "Example Session 2"
 msgstr "例セッション2"
 
-#: ../../recipes-journalling.rst:100 43ff667b4170420aaacce401a500d0d3
+#: ../../recipes-journalling.rst:100 11300942684745a3a6af1d4f707b731b
 msgid ""
 "Similar to previous, but after undoing some operations, we now add a "
 "different update. This will cause:"
 msgstr "前回と同様ですが、いくつかの操作を元に戻した後、異なる更新を追加します。これにより、次のことが起こります："
 
-#: ../../recipes-journalling.rst:102 2c6008fe73da4e918fcf48f47c04f253
+#: ../../recipes-journalling.rst:102 29178f73111a40ed9d9a072d2d467e8c
 msgid "permanent removal of the undone journal entries"
 msgstr "元に戻されたジャーナルエントリが永久に削除されます。"
 
-#: ../../recipes-journalling.rst:103 942072c04f294bf49dd11bb76b282a2c
+#: ../../recipes-journalling.rst:103 be08fa3063ca40afa17c2a2c7b1ba8d3
 msgid "the new update operation will become the new last entry."
 msgstr "新しい更新操作は新しい最後のエントリになります。"
 
-#: ../../footer.rst:-1 f6d68aef909b42f597860e55087ba121
+#: ../../footer.rst:-1 ff39a9431b7240048049ab3069e67e35
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

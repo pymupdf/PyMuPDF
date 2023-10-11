@@ -277,6 +277,21 @@ def test_2533():
     assert page.search_for(NEEDLE)[0] == bbox
 
 
+def test_2645():
+    """Assert same font size calculation in corner cases.
+    """
+    folder = os.path.join(scriptdir, "resources")
+    files = ("test_2645_1.pdf", "test_2645_2.pdf", "test_2645_3.pdf")
+    for f in files:
+        doc = fitz.open(os.path.join(folder, f))
+        page = doc[0]
+        fontsize0 = page.get_texttrace()[0]["size"]
+        fontsize1 = page.get_text("dict", flags=fitz.TEXTFLAGS_TEXT)["blocks"][0]["lines"][
+            0
+        ]["spans"][0]["size"]
+        assert abs(fontsize0 - fontsize1) < 1e-5
+
+
 def test_2506():
     """Ensure expected font size across text writing angles."""
     doc = fitz.open()
@@ -524,3 +539,28 @@ def test_2692():
                 clip=fitz.Rect(0,0,10,10),
                 )
     
+
+def test_2596():
+    """Cconfirm correctly abandoning cache when reloading a page."""
+    doc = fitz.Document(f"{scriptdir}/resources/test_2596.pdf")
+    page = doc[0]
+    pix0 = page.get_pixmap()  # render the page
+    _ = doc.tobytes(garbage=3)  # save with garbage collection
+
+    # Note this will invalidate cache content for this page.
+    # Reloading the page now empties the cache, so rendering
+    # will deliver the same pixmap
+    page = doc.reload_page(page)
+    pix1 = page.get_pixmap()
+    assert pix1.samples == pix0.samples
+
+
+def test_2635():
+    """Rendering a page before and after cleaning it should yield the same pixmap."""
+    doc = fitz.open(f"{scriptdir}/resources/test_2635.pdf")
+    page = doc[0]
+    pix1 = page.get_pixmap()  # pixmap before cleaning
+
+    page.clean_contents()  # clean page
+    pix2 = page.get_pixmap()  # pixmap after cleaning
+    assert pix1.samples == pix2.samples  # assert equality

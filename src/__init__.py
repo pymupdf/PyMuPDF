@@ -17,7 +17,7 @@ import zipfile
 def log( text, caller=1):
     import inspect
     frame_record = inspect.stack( context=0)[ caller]
-    filename    = frame_record.filename
+    filename    = os.path.relpath(frame_record.filename)
     line        = frame_record.lineno
     function    = frame_record.function
     print( f'{filename}:{line}:{function}: {text}', file=sys.stdout)
@@ -55,9 +55,12 @@ import typing
 import warnings
 import weakref
 import zipfile
+import string
 
 from . import extra
 
+# PDF names must not contain these characters:
+INVALID_NAME_CHARS = set(string.whitespace + "()<>[]{}/%" + chr(0))
 
 def get_env_bool( name, default):
     '''
@@ -5040,8 +5043,23 @@ class Document:
         pno = page.number  # save the page number
         for k, v in page._annot_refs.items():  # save the annot dictionary
             old_annots[k] = v
+        
+        # We need to set `page.this` to `None` here in order to force the
+        # `mupdf::FzPage` to be removed from the MuPDF document's internal
+        # list, so that when `self.load_page()` is called below, its call of
+        # `fz_load_page()` will create a new `mupdf::FzPage`.
+        #
+        # This only works if the MuPDF `fz_page`'s reference count is 1. User
+        # code will have to work fairly hard to break this, by somehow making
+        # a copy of the mupdf::FzPage itself; for example making a copy in
+        # Python will usually create a new Python object that refers to the
+        # same mupdf::FzPage and this not increment the MuPDF reference count.
+        #
+        assert page.this.m_internal.refs == 1
+        page.this = None
         page._erase()  # remove the page
         page = None
+        TOOLS.store_shrink(100)
         page = self.load_page(pno)  # reload the page
 
         # copy annot refs over to the new dictionary
@@ -5271,7 +5289,7 @@ class Document:
                 if not type(x) in (list, tuple):
                     raise ValueError("bad RBGroup '%s'" % x)
                 s = set(x).difference(ocgs)
-                if f != set():
+                if s != set():
                     raise ValueError("bad OCGs in RBGroup: %s" % s)
 
         if basestate:
@@ -5652,12 +5670,14 @@ class Document:
         """Set the value of a PDF dictionary key."""
         if self.is_closed:
             raise ValueError("document closed")
+
+        if not key or not isinstance(key, str) or INVALID_NAME_CHARS.intersection(key) not in (set(), {"/"}):
+            raise ValueError("bad 'key'")
+        if not isinstance(value, str) or not value or value[0] == "/" and INVALID_NAME_CHARS.intersection(value[1:]) != set():
+            raise ValueError("bad 'value'")
+
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
-        if not key:
-            raise ValueError( "bad 'key'")
-        if not value:
-            raise ValueError( "bad 'value'")
         xreflen = mupdf.pdf_xref_len(pdf)
         #if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
         #    THROWMSG("bad xref")
@@ -6566,7 +6586,7 @@ class linkDest:
             if self.uri.startswith("#"):
                 self.named = ""
                 self.kind = LINK_GOTO
-                m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),([0-9.]+),([0-9.]+)$', self.uri)
+                m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),(-?[0-9.]+),(-?[0-9.]+)$', self.uri)
                 if m:
                     self.page = int(m.group(1)) - 1
                     self.lt = Point(float((m.group(3))), float(m.group(4)))
@@ -8795,6 +8815,9 @@ class Page:
 
         if fontname.startswith("/"):
             fontname = fontname[1:]
+        inv_chars = INVALID_NAME_CHARS.intersection(fontname)
+        if inv_chars != set():
+            raise ValueError(f"bad fontname chars {inv_chars}")
 
         font = CheckFont(self, fontname)
         if font is not None:                    # font already in font list of page
@@ -12079,10 +12102,10 @@ class TextPage:
             rc = ''
         return rc
 
-    def extractWORDS(self):
+    def extractWORDS(self, delimiters=None):
         """Return a list with text word information."""
         if g_use_extra:
-            return extra.extractWORDS(self.this)
+            return extra.extractWORDS(self.this, delimiters)
         buflen = 0
         block_n = -1
         wbbox = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)  # word bbox
@@ -12108,9 +12131,10 @@ class TextPage:
                             and not mupdf.fz_is_infinite_rect(tp_rect)
                             ):
                         continue
-                    if ch.m_internal.c == 32 and buflen == 0:
-                        continue    # skip spaces at line start
-                    if ch.m_internal.c == 32:
+                    word_delimiter = JM_is_word_delimiter(ch.m_internal.c, delimiters)
+                    if word_delimiter:
+                        if buflen == 0:
+                            continue    # skip delimiters at line start
                         if not mupdf.fz_is_empty_rect(wbbox):
                             word_n, wbbox = JM_append_word(lines, buff, wbbox, block_n, line_n, word_n)
                         mupdf.fz_clear_buffer(buff)
@@ -14617,6 +14641,20 @@ def JM_font_descender(font):
         return -0.2
     ret = mupdf.fz_font_descender(font)
     return ret
+
+
+def JM_is_word_delimiter(ch, delimiters):
+    """Check if ch is an extra word delimiting character.
+    """
+    if ch <= 32 or ch == 160:  # any whitespace?
+        return True
+    if not delimiters:  # no extra delimiters provided
+        return False
+    char = chr(ch)
+    for d in delimiters:
+        if d == char:
+            return True
+    return False
 
 
 def JM_font_name(font):
@@ -17895,9 +17933,9 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     
     mat = mupdf.fz_concat(span.trm(), ctm)  # text transformation matrix
     dir = mupdf.fz_transform_vector(mupdf.fz_make_point(1, 0), mat) # writing direction
-    dir = mupdf.fz_normalize_vector(dir)
+    fsize = math.sqrt(dir.x * dir.x + dir.y * dir.y) # font size
 
-    fsize = math.sqrt(abs(span.trm().a * span.trm().d)) # font size
+    dir = mupdf.fz_normalize_vector(dir)
 
     space_adv = 0;
     asc = JM_font_ascender( span.font())

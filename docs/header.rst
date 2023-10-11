@@ -28,17 +28,64 @@
                border: 0px !important;
             }
 
+            #languageToggle {
+                width:25%;
+                margin:8px 10px 0;
+            }
+
+            #button-select-en {
+                padding: 5px 10px;
+                background-color: #fff;
+                border: 1px solid #000;
+                border-radius: 10px 0 0 10px;
+                font-size: 14px;
+            }
+
+            #button-select-ja {
+                padding: 5px 10px;
+                background-color: #fff;
+                border: 1px solid #000;
+                border-radius: 0px 10px 10px 0;
+                border-left: 0;
+                font-size: 14px;
+            }
+
+            #button-select-en , #button-select-ja, #button-select-en:hover , #button-select-ja:hover  {
+                color: #fff;
+                text-decoration: none;
+            }
+
+            /* small screens */
+            @media all and (max-width : 768px)  {
+                #languageToggle {
+                    width:50%;
+                }
+            }
+
+            @media all and (max-width : 400px)  {
+                #languageToggle {
+                    width:70%;
+                }
+            }
+
+            @media all and (max-width : 375px)  {
+                #button-select-en , #button-select-ja {
+                    font-size: 11px;
+                }
+            }
+
+
         </style>
 
    <script type="text/javascript" src="_static/prism/prism.js"></script>
 
-    <div style="display:flex;justify-content:flex-start;align-items: flex-end;">
+    <div style="display:flex;justify-content:space-between;align-items: center;">
         <form class="sidebar-search-container top" method="get" action="search.html" role="search" style="width:75%">
           <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
           <input type="hidden" name="check_keywords" value="yes">
           <input type="hidden" name="area" value="default">
         </form>
-        <div style="width:25%;margin:0px 10px;"><span style="font-size:11px;">Language: </span><span><a id="printableLang" href="javascript:changeLanguage()"></a></span></div>
+        <div id="languageToggle"><span><a id="button-select-en" href="javaScript:changeLanguage('en')">English</a></span><span><a id="button-select-ja" href="javaScript:changeLanguage('ja')">日本語</a></span></div>
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;">
@@ -51,21 +98,25 @@
     </div>
 
     <script>
+        // highlightSelectedLanguage
 
         if (document.getElementsByTagName('html')[0].getAttribute('lang')=="ja") {
-            document.getElementById("printableLang").innerHTML = "日本語";
+            document.getElementById("button-select-ja").style.backgroundColor = "#ff6600";
+            document.getElementById("button-select-en").style.color = "#000";
         } else {
-            document.getElementById("printableLang").innerHTML = "English";
+            document.getElementById("button-select-en").style.backgroundColor = "#ff6600";
+            document.getElementById("button-select-ja").style.color = "#000";
         }
+
 
         var url_string = window.location.href;
         var a = document.getElementById('feedbackLinkTop');
         a.setAttribute("href", "https://artifex.com/contributor/feedback.php?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=header-link&url="+url_string);
 
-        function changeLanguage() {
+        function changeLanguage(lang) {
             var new_url;
 
-            if (document.getElementsByTagName('html')[0].getAttribute('lang')=="ja") {
+            if (lang == "en") {
                 new_url = url_string.replace("/ja/", "/en/");
             } else {
                 new_url = url_string.replace("/en/", "/ja/");

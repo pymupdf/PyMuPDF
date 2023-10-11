@@ -309,6 +309,10 @@ import re
 import tarfile
 import zipfile
 import pathlib
+import string
+
+# PDF names must not contain these characters:
+INVALID_NAME_CHARS = set(string.whitespace + "()<>[]{}/%" + chr(0))
 
 TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -811,7 +815,15 @@ struct Document
 
 
         FITZEXCEPTION(xref_set_key, !result)
-        CLOSECHECK0(xref_set_key, """Set the value of a PDF dictionary key.""")
+        %pythonprepend xref_set_key %{
+        """Set the value of a PDF dictionary key."""
+        if self.is_closed or self.is_encrypted:
+            raise ValueError("document closed or encrypted")
+        if not key or not isinstance(key, str) or INVALID_NAME_CHARS.intersection(key) not in (set(), {"/"}):
+            raise ValueError("bad 'key'")
+        if not isinstance(value, str) or not value or value[0] == "/" and INVALID_NAME_CHARS.intersection(value[1:]) != set():
+            raise ValueError("bad 'value'")
+        %}
         PyObject *
         xref_set_key(int xref, const char *key, char *value)
         {
@@ -4030,7 +4042,7 @@ if rbgroups:
         if not type(x) in (list, tuple):
             raise ValueError("bad RBGroup '%s'" % x)
         s = set(x).difference(ocgs)
-        if f != set():
+        if s != set():
             raise ValueError("bad OCGs in RBGroup: %s" % s)
 
 if basestate:
@@ -4625,6 +4637,7 @@ if basestate:
                     old_annots[k] = v
                 page._erase()  # remove the page
                 page = None
+                TOOLS.store_shrink(100)
                 page = self.load_page(pno)  # reload the page
 
                 # copy annot refs over to the new dictionary
@@ -7371,6 +7384,9 @@ def insert_font(self, fontname="helv", fontfile=None, fontbuffer=None,
 
     if fontname.startswith("/"):
         fontname = fontname[1:]
+    inv_chars = INVALID_NAME_CHARS.intersection(fontname)
+    if inv_chars != set():
+        raise ValueError(f"bad fontname chars {inv_chars}")
 
     font = CheckFont(self, fontname)
     if font is not None:                    # font already in font list of page
@@ -8136,7 +8152,7 @@ Args:
     alphavalues: (bytes) with length (width * height) or 'None'.
     premultiply: (bool, True) premultiply colors with alpha values.
     opaque: (tuple, length colorspace.n) this color receives opacity 0.
-    matte: (tuple, length colorspace.n)) preblending background color.
+    matte: (tuple, length colorspace.n) preblending background color.
 """)
         PyObject *set_alpha(PyObject *alphavalues=NULL, int premultiply=1, PyObject *opaque=NULL, PyObject *matte=NULL)
         {
@@ -8447,17 +8463,20 @@ def save(self, filename, output=None, jpg_quality=95):
         self.set_dpi(self.xres, self.yres)
     return self._writeIMG(filename, idx, jpg_quality)
 
-def pil_save(self, *args, **kwargs):
+def pil_save(self, *args, unmultiply=False, **kwargs):
     """Write to image file using Pillow.
 
     Args are passed to Pillow's Image.save method, see their documentation.
     Use instead of save when other output formats are desired.
+
+    :arg bool unmultiply: generates Pillow mode "RGBa" instead of "RGBA".
+        Relevant for colorspace RGB with alpha only.
     """
     EnsureOwnership(self)
     try:
         from PIL import Image
     except ImportError:
-        print("PIL/Pillow not installed")
+        print("Pillow not installed")
         raise
 
     cspace = self.colorspace
@@ -8467,6 +8486,8 @@ def pil_save(self, *args, **kwargs):
         mode = "L" if self.alpha == 0 else "LA"
     elif cspace.n == 3:
         mode = "RGB" if self.alpha == 0 else "RGBA"
+        if mode == "RGBA" and unmultiply:
+            mode = "RGBa"
     else:
         mode = "CMYK"
 
@@ -8477,7 +8498,7 @@ def pil_save(self, *args, **kwargs):
 
     img.save(*args, **kwargs)
 
-def pil_tobytes(self, *args, **kwargs):
+def pil_tobytes(self, *args, unmultiply=False, **kwargs):
     """Convert to binary image stream using pillow.
 
     Args are passed to Pillow's Image.save method, see their documentation.
@@ -8486,7 +8507,7 @@ def pil_tobytes(self, *args, **kwargs):
     EnsureOwnership(self)
     from io import BytesIO
     bytes_out = BytesIO()
-    self.pil_save(bytes_out, *args, **kwargs)
+    self.pil_save(bytes_out, *args, unmultiply=unmultiply, **kwargs)
     return bytes_out.getvalue()
 
         %}
@@ -11683,7 +11704,7 @@ struct TextPage {
         %pythonprepend extractWORDS
         %{"""Return a list with text word information."""%}
         PyObject *
-        extractWORDS()
+        extractWORDS(PyObject *delimiters=NULL)
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -11695,7 +11716,7 @@ struct TextPage {
             fz_rect wbbox = fz_empty_rect;  // word bbox
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_rect tp_rect = this_tpage->mediabox;
-
+            int word_delimiter = 0;
             PyObject *lines = NULL;
             fz_try(gctx) {
                 buff = fz_new_buffer(gctx, 64);
@@ -11717,10 +11738,10 @@ struct TextPage {
                                 !fz_is_infinite_rect(tp_rect)) {
                                 continue;
                             }
-                            if (ch->c == 32 && buflen == 0)
-                                continue;  // skip spaces at line start
-                            if (ch->c == 32) {
-                                if (!fz_is_empty_rect(wbbox)) {
+                            word_delimiter = JM_is_word_delimiter(ch->c, delimiters);
+                            if (word_delimiter) {
+                                if (buflen == 0) continue;  // skip spaces at line start
+                                if (!fz_is_empty_rect(wbbox)) {  // output word
                                     word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                         block_n, line_n, word_n);
                                 }
