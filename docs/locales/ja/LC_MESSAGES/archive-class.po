@@ -180,7 +180,7 @@ msgstr "アーカイブ内に重複するエントリ名が存在する場合、
 #: ../../archive-class.rst:59 000ca11e97d64cce9b76672f1089f0d4
 msgid ""
 "Append a sub-archive. The meaning of the parameters are exactly the same "
-"as explained above. Of course, parameter `content` is not optional here."
+"as explained above. Of course, parametrer `content` is not optional here."
 msgstr "サブアーカイブを追加します。パラメータの意味は上記とまったく同じです。もちろん、ここではパラメータ `content` はオプションではありません。"
 
 #: ../../archive-class.rst:63 0dd9037712ed4421bbf87015619ec9b2

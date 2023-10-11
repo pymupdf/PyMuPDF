@@ -224,7 +224,7 @@ msgid ""
 "In the example above a new image is created from each file reference, but"
 " to be more performant (by saving memory and file size) this image data "
 "should be referenced only once - see the code example and explanation on "
-":meth:`Page.insert_image` for the implementation."
+":meth:`Page.insert_image` for the implemetation."
 msgstr "前述の例では、各ファイル参照から新しい画像が作成されていますが、メモリとファイルサイズを節約するために、この画像データは1回だけ参照されるようにすると、パフォーマンスが向上します - Page.insert_image()のコード例と説明を参照してください。"
 
 #: ../../the-basics.rst:389 de7dfefe24eb4f2d9ad8c989ca91d245
