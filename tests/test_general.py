@@ -555,6 +555,15 @@ def test_2596():
     assert pix1.samples == pix0.samples
 
 
+def test_2730():
+    """Ensure identical output across text extractions."""
+    doc = fitz.open(f"{scriptdir}/resources/test_2730.pdf")
+    page = doc[0]
+    s1 = set(page.get_text())  # plain text extraction
+    s2 = set(page.get_text(sort=True))  # uses "blocks" extraction
+    assert s1 == s2
+
+
 def test_2635():
     """Rendering a page before and after cleaning it should yield the same pixmap."""
     doc = fitz.open(f"{scriptdir}/resources/test_2635.pdf")
