@@ -2,6 +2,31 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.5 (2023-10-11)**
+
+* Bug fixes:
+
+  * **Fixed** `2341 <https://github.com/pymupdf/PyMuPDF/issues/2341>`_: Handling negative values in the zoom section for LINK_GOTO in linkDest
+  * **Fixed** `2522 <https://github.com/pymupdf/PyMuPDF/issues/2522>`_: Typo in set_layer() - NameError: name 'f' is not defined
+  * **Fixed** `2548 <https://github.com/pymupdf/PyMuPDF/issues/2548>`_: Fitz freezes on some PDFs when calling the fitz.Page.get_text_blocks method.
+  * **Fixed** `2596 <https://github.com/pymupdf/PyMuPDF/issues/2596>`_: save(garbage=3) breaks get_pixmap() with side effect
+  * **Fixed** `2635 <https://github.com/pymupdf/PyMuPDF/issues/2635>`_: "clean=True" makes objects invisible in the pdf
+  * **Fixed** `2637 <https://github.com/pymupdf/PyMuPDF/issues/2637>`_: Page.insert_textbox incorrectly handles the last word if it starts a new line
+  * **Fixed** `2699 <https://github.com/pymupdf/PyMuPDF/issues/2699>`_: extract paragraph with below table
+  * **Fixed** `2703 <https://github.com/pymupdf/PyMuPDF/issues/2703>`_: Wrong fontsize calculation in corner cases ("page.get_texttrace()")
+  * **Fixed** `2710 <https://github.com/pymupdf/PyMuPDF/issues/2710>`_: page.rect and text location wrong / differing from older version
+  * **Fixed** `2723 <https://github.com/pymupdf/PyMuPDF/issues/2723>`_: When will a Python 3.12 wheel be available?
+  * **Fixed** `2730 <https://github.com/pymupdf/PyMuPDF/issues/2730>`_: persistent get_text() formatting
+
+* Other:
+  * Use MuPDF-1.23.4.
+  * Fix optimisation flags with system installs.
+  * Fixed the problem that the clip parameter does not take effect during table recognition
+  * Support Pillow mode "RGBa"
+  * Support extra word delimiters
+  * Support checking valid PDF name objects
+
+
 **Changes in version 1.23.4 (2023-09-26)**
 
 * Improved build instructions.
@@ -153,6 +178,8 @@ Change Log
   * **Fixed** `#2450 <https://github.com/pymupdf/PyMuPDF/issues/2450>`_: Empty fill color and fill opacity for paths with fill and stroke operations with 1.22.*
   * **Fixed** `#2462 <https://github.com/pymupdf/PyMuPDF/issues/2462>`_: Error at "get_drawing(extended=True )"
   * **Fixed** `#2468 <https://github.com/pymupdf/PyMuPDF/issues/2468>`_: Decode error when trying to get drawings  
+  * **Fixed** `#2710 <https://github.com/pymupdf/PyMuPDF/issues/2710>`_: page.rect and text location wrong / differing from older version
+  * **Fixed** `#2723 <https://github.com/pymupdf/PyMuPDF/issues/2723>`_: When will a Python 3.12 wheel be available?
 
 * New features:
 
