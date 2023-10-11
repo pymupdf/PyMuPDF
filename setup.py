@@ -240,7 +240,7 @@ def _fs_remove(path):
 
 def run(command, check=1):
     log(f'Running: {command}')
-    subprocess.run( command, shell=1, check=check)
+    return subprocess.run( command, shell=1, check=check)
 
 
 def _git_get_branch( directory):
@@ -286,7 +286,7 @@ def tar_check(path, mode='r:gz', prefix=None, remove=False):
         else:
             prefix_actual = item[:s+1]
         if prefix:
-            assert prefix == prefix_actual, f'prefix={prefix} prefix_actual={prefix_actual}'
+            assert prefix == prefix_actual, f'{path=} {prefix=} {prefix_actual=}'
         for item in items[1:]:
             assert item.startswith( prefix_actual), f'prefix_actual={prefix_actual!r} != item={item!r}'
     return prefix_actual
@@ -294,7 +294,7 @@ def tar_check(path, mode='r:gz', prefix=None, remove=False):
 
 def tar_extract(path, mode='r:gz', prefix=None, exists='raise'):
     '''
-    Extracts tar file.
+    Extracts tar file into single local directory.
     
     We fail if items in tar file have different <top-directory>.
 
@@ -363,154 +363,137 @@ def get_git_id( directory):
 
 mupdf_tgz = os.path.abspath( f'{__file__}/../mupdf.tgz')
 
+def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
+    '''
+    Gets MuPDF as either a .tgz or a local directory.
+    
+    Args:
+        out:
+            Either 'dir' (we return name of local directory containing mupdf) or 'tgz' (we return
+            name of local .tgz file containing mupdf).
+        location:
+            First, if None we set to hard-coded default URL or git location.
+            If starts with 'git:', should be remote git location.
+            Otherwise if containg '://' should be URL for .tgz.
+            Otherwise shuld path of local mupdf checkout.
+        sha:
+            If not None and we use git clone, we checkout this sha.
+        local_tgz:
+            If not None, must be local .tgz file.
+    Returns:
+        Absolute path of local directory or .tgz containing MuPDF, or None if
+        we are to use system MuPDF.
+    '''
+    log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
+    assert out in ('dir', 'tgz')
+    if location is None:
+        #location = 'https://mupdf.com/downloads/archive/mupdf-1.23.4-source.tar.gz'
+        location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
+    
+    if location == '':
+        # Use system mupdf.
+        return
+    
+    local_dir = None
+    if local_tgz:
+        assert os.path.isfile(local_tgz)
+    elif location.startswith( 'git:'):
+        location_git = location[4:]
+        local_dir = 'mupdf-git'
+        
+        # Try to update existing checkout.
+        e = run(f'cd {local_dir} && git pull && git submodule update --init', check=False).returncode
+        if e:
+            # No existing git checkout, so do a fresh clone.
+            _fs_remove(local_dir)
+            run(f'git clone --recursive --depth 1 --shallow-submodules {location[4:]} {local_dir}')
+
+        # Show sha of checkout.
+        run( f'cd {local_dir} && git show --pretty=oneline|head -n 1', check=False)
+        if sha:
+            command = f'cd mupdf && git checkout {sha}'
+            log( f'Running: {command}')
+            run( f'cd mupdf && git checkout {sha}')
+    elif '://' in location:
+        # Download .tgz.
+        local_tgz = os.path.basename( location)
+        suffix = '.tar.gz'
+        assert location.endswith(suffix), f'Unrecognised suffix in remote URL {location=}.'
+        name = local_tgz[:-len(suffix)]
+        log( f'Download {location=} {local_tgz=} {name=}')
+        if os.path.exists(local_tgz):
+            try:
+                tar_check(local_tgz, 'r:gz', prefix=f'{name}/')
+            except Exception as e:
+                log(f'Not using existing file {local_tgz} because invalid tar data: {e}')
+                _fs_remove( local_tgz)
+        if os.path.exists(local_tgz):
+            log(f'Not downloading from {location} because already present: {local_tgz!r}')
+        else:
+            log(f'Downloading from {location=} to {local_tgz=}.')
+            urllib.request.urlretrieve( location, local_tgz)
+            assert os.path.exists( local_tgz)
+            tar_check( local_tgz, 'r:gz', prefix=f'{name}/')
+    else:
+        assert os.path.isdir(location), f'Local MuPDF does not exist: {location=}'
+        local_dir = location
+    
+    assert bool(local_dir) != bool(local_tgz)
+    if out == 'dir':
+        if not local_dir:
+            assert local_tgz
+            local_dir = tar_extract( local_tgz, exists='return')
+        return os.path.abspath( local_dir)
+    elif out == 'tgz':
+        if not local_tgz:
+            # Create .tgz containing git files in `local_dir`.
+            assert local_dir
+            if local_dir.endswith( '/'):
+                local_dir = local_dir[:-1]
+            top = os.path.basename(local_dir)
+            local_tgz = f'{local_dir}.tgz'
+            log( f'Creating .tgz from git files. {top=} {local_dir=} {local_tgz=}')
+            _fs_remove( local_tgz)
+            with tarfile.open( local_tgz, 'w:gz') as f:
+                for name in pipcl.git_items( local_dir, submodules=True):
+                    path = os.path.join( local_dir, name)
+                    if os.path.isfile( path):
+                        path2 = f'{top}/{name}'
+                        log(f'Adding {path=} {path2=}.')
+                        f.add( path, path2, recursive=False)
+        return os.path.abspath( local_tgz)
+    else:
+        assert 0, f'Unrecognised {out=}'
+            
+        
+
 def get_mupdf_tgz():
     '''
-    Creates file called <mupdf_tgz> containing MuPDF source, for inclusion in
-    an sdist.
+    Creates .tgz file called containing MuPDF source, for inclusion in an
+    sdist.
     
     What we do depends on environmental variable PYMUPDF_SETUP_MUPDF_TGZ; see
     docs at start of this file for details.
 
     Returns name of top-level directory within the .tgz file.
     '''
-    mupdf_url_or_local = os.environ.get(
-            'PYMUPDF_SETUP_MUPDF_TGZ',
-            'https://mupdf.com/downloads/archive/mupdf-1.23.2-source.tar.gz',
-            )
-    log( f'mupdf_url_or_local={mupdf_url_or_local!r}')
-    if mupdf_url_or_local == '':
-        # No mupdf in sdist.
-        log( 'mupdf_url_or_local is empty string so removing any mupdf_tgz={mupdf_tgz}')
-        _fs_remove( mupdf_tgz)
-        return
-    
-    if '://' in mupdf_url_or_local:
-        # Download from URL into <mupdf_tgz>.
-        mupdf_url = mupdf_url_or_local
-        mupdf_url_leaf = os.path.basename( mupdf_url)
-        leaf = '.tar.gz'
-        assert mupdf_url_leaf.endswith(leaf), f'Unrecognised suffix in mupdf_url={mupdf_url!r}'
-        mupdf_local = mupdf_url_leaf[ : -len(leaf)]
-        assert mupdf_local.startswith( 'mupdf-')
-        if os.path.exists(mupdf_url_leaf):
-            try:
-                tar_check(mupdf_url_leaf, 'r:gz', prefix=f'{mupdf_local}/')
-            except Exception as e:
-                log(f'Not using existing file {mupdf_url_leaf} because invalid tar data: {e}')
-                _fs_remove( mupdf_url_leaf)
-        if os.path.exists(mupdf_url_leaf):
-            log(f'Not downloading from {mupdf_url} because already present.')
-        else:
-            log(f'Downloading from {mupdf_url} to {mupdf_url_leaf}')
-            urllib.request.urlretrieve( mupdf_url, mupdf_url_leaf)
-            assert os.path.exists( mupdf_url_leaf)
-            tar_check( mupdf_url_leaf, 'r:gz', prefix=f'{mupdf_local}/')
-        if mupdf_url_leaf != mupdf_tgz:
-            _fs_remove( mupdf_tgz)
-            shutil.copy2( mupdf_url_leaf, mupdf_tgz)
-        return mupdf_local
-    
-    else:
-        # Create archive <mupdf_tgz> contining local mupdf directory's git
-        # files.
-        mupdf_local = mupdf_url_or_local
-        if mupdf_local.endswith( '/'):
-            mupdf_local = mupdf_local[:-1]
-        assert os.path.isdir( mupdf_local), f'Not a directory: {mupdf_local!r}'
-        log( f'Creating .tgz from git files in: {mupdf_local}')
-        _fs_remove( mupdf_tgz)
-        with tarfile.open( mupdf_tgz, 'w:gz') as f:
-            for name in pipcl.git_items( mupdf_local, submodules=True):
-                path = os.path.join( mupdf_local, name)
-                if os.path.isfile( path):
-                    f.add( path, f'mupdf/{name}', recursive=False)
-        return mupdf_local
+    name = get_mupdf_internal( 'tgz', os.environ.get('PYMUPDF_SETUP_MUPDF_TGZ'))
+    return name
 
 
-def get_mupdf():
+def get_mupdf(path=None, sha=None):
     '''
     Downloads and/or extracts mupdf and returns location of mupdf directory.
 
     Exact behaviour depends on environmental variable
     PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
     '''
-    
-    # 2023-07-11: For now we default to mupdf master.
-    path = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD')
-    if 0:
-        # 2023-08-31: default to specific sha.
-        path = 'git:--recursive --depth 1 --shallow-submodules --branch master git://git.ghostscript.com/mupdf.git'
-        sha = '8e729ae6913e4'   # scripts/wrap/: added support for building with tesseract.
-    else:
-        sha = None
-    log( f'PYMUPDF_SETUP_MUPDF_BUILD={path!r}')
-    if path is None:
-        # Default.
-        if os.path.exists( mupdf_tgz):
-            log( f'mupdf_tgz already exists: {mupdf_tgz}')
-        else:
-            get_mupdf_tgz()
-        path = tar_extract( mupdf_tgz, exists='return')
-    
-    elif path == '':
-        # Use system mupdf.
-        log( f'PYMUPDF_SETUP_MUPDF_BUILD="", using system mupdf')
-        path = None
-    
-    else:
-        git_prefix = 'git:'
-        if path.startswith( git_prefix):
-            # Get git clone of mupdf.
-            #
-            # `mupdf_url_or_local` is taken to be portion of a `git clone` command,
-            # for example:
-            #
-            #   PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master git://git.ghostscript.com/mupdf.git"
-            #   PYMUPDF_SETUP_MUPDF_BUILD="git:--branch 1.20.x https://github.com/ArtifexSoftware/mupdf.git"
-            #   PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
-            #
-            # One would usually also set PYMUPDF_SETUP_MUPDF_TGZ= (empty string) to
-            # avoid the need to download a .tgz into an sdist.
-            #
-            command_suffix = path[ len(git_prefix):]
-            path = 'mupdf'
-            
-            # Remove any existing directory to avoid the clone failing. (We
-            # could assume any existing directory is a git checkout, and do
-            # `git pull` or similar, but that's complicated and fragile.)
-            #
-            _fs_remove(path)
-            
-            command = (''
-                    + f'git clone'
-                    + f' --recursive'
-                    + f' --depth 1'
-                    + f' --shallow-submodules'
-                    + f' {command_suffix}'
-                    + f' {path}'
-                    )
-            log( f'Running: {command}')
-            subprocess.run( command, shell=True, check=True)
-
-            # Show sha of checkout.
-            command = f'cd {path} && git show --pretty=oneline|head -n 1'
-            log( f'Running: {command}')
-            subprocess.run( command, shell=True, check=False)
-            
-            if sha:
-                command = f'cd mupdf && git checkout {sha}'
-                log( f'Running: {command}')
-                subprocess.run( command, shell=True)
-
-        # Use custom mupdf directory.
-        log( f'Using custom mupdf directory from $PYMUPDF_SETUP_MUPDF_BUILD: {path}')
-        assert os.path.isdir( path), f'$PYMUPDF_SETUP_MUPDF_BUILD is not a directory: {path}'
-    
-    if path:
-        path = os.path.abspath( path)
-        if path.endswith( '/'):
-            path = path[:-1]
-    return path
+    m = os.environ.get('PYMUPDF_SETUP_MUPDF_BUILD')
+    if m is None and os.path.isfile(mupdf_tgz):
+        # This makes us use tgz inside sdist.
+        log(f'Using local tgz: {mupdf_tgz=}')
+        return get_mupdf_internal('dir', local_tgz=mupdf_tgz)
+    return get_mupdf_internal('dir', m)
 
 
 linux = sys.platform.startswith( 'linux') or 'gnu' in sys.platform
@@ -1164,8 +1147,9 @@ def sdist():
             pass
         else:
             ret.append(p)
-    if get_mupdf_tgz():
-        ret.append(mupdf_tgz)
+    tgz = get_mupdf_tgz()
+    if tgz:
+        ret.append((tgz, mupdf_tgz))
     return ret
 
 
