@@ -1659,7 +1659,7 @@ static pdf_obj *lll_JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, cons
     }
 
     fz_catch(ctx) {
-        fz_rethrow(ctx);
+        mupdf::internal_throw_exception(ctx);
     }
 
     return result;
@@ -1970,6 +1970,47 @@ static float JM_font_descender(fz_font* font)
     }
     return mupdf::ll_fz_font_descender(font);
 }
+
+
+//----------------------------------------------------------------
+// Return true if character is considered to be a word delimiter
+//----------------------------------------------------------------
+static int 
+JM_is_word_delimiter(int c, PyObject *delimiters)
+{
+    if (c <= 32 || c == 160) return 1;  // a standard delimiter
+
+    // extra delimiters must be a non-empty sequence
+    if (!delimiters || PyObject_Not(delimiters) || !PySequence_Check(delimiters)) {  
+        return 0;
+    }
+
+    // convert to tuple for easier looping
+    PyObject *delims = PySequence_Tuple(delimiters);
+    if (!delims) {
+        PyErr_Clear();
+        return 0;
+    }
+
+    // Make 1-char PyObject from character given as integer
+    PyObject *cchar = Py_BuildValue("C", c);  // single character PyObject
+    Py_ssize_t i, len = PyTuple_Size(delims);
+    for (i = 0; i < len; i++) {
+        int rc = PyUnicode_Compare(cchar, PyTuple_GET_ITEM(delims, i));
+        if (rc == 0) {  // equal to a delimiter character
+            Py_DECREF(cchar);
+            Py_DECREF(delims);
+            PyErr_Clear();
+            return 1;
+        }
+    }
+
+    Py_DECREF(delims);
+    PyErr_Clear();
+    return 0;
+}
+
+
 static const char* JM_font_name(fz_font* font)
 {
     const char* name = mupdf::ll_fz_font_name(font);
@@ -1997,9 +2038,9 @@ static void jm_trace_text_span(
     //double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d));
     fz_matrix mat = mupdf::ll_fz_concat(span->trm, ctm); // text transformation matrix
     fz_point dir = mupdf::ll_fz_transform_vector(mupdf::ll_fz_make_point(1, 0), mat); // writing direction
-    dir = mupdf::ll_fz_normalize_vector(dir);
+    double fsize = sqrt(dir.x * dir.x + dir.y * dir.y); // font size
 
-    double fsize = sqrt(fabs((double) span->trm.a * (double) span->trm.d)); // font size
+    dir = mupdf::ll_fz_normalize_vector(dir);
 
     // compute effective ascender / descender
     double asc = (double) JM_font_ascender(span->font);
@@ -3474,7 +3515,7 @@ int JM_append_word(
     return word_n + 1;  // word counter
 }
 
-PyObject* extractWORDS(mupdf::FzStextPage& this_tpage)
+PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
 {
     int block_n = -1;
     fz_rect wbbox = fz_empty_rect;  // word bbox
@@ -3504,12 +3545,14 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage)
                 {
                     continue;
                 }
-                if (ch.m_internal->c == 32 && buflen == 0)
+
+                int word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
+                if (word_delimiter)
                 {
-                    continue;  // skip spaces at line start
-                }
-                if (ch.m_internal->c == 32)
-                {
+                    if (buflen == 0)
+                    {
+                        continue;  // skip delimiters at line start
+                    }
                     if (!fz_is_empty_rect(wbbox))
                     {
                         word_n = JM_append_word(
@@ -3701,7 +3744,7 @@ fz_stext_page* page_get_textpage(
         fz_drop_device(ctx, dev);
     }
     fz_catch(ctx) {
-        return NULL;
+        mupdf::internal_throw_exception(ctx);
     }
     return tpage;
 }
@@ -3922,7 +3965,7 @@ JM_new_buffer_from_stext_page(fz_stext_page *page)
     }
     fz_catch(ctx) {
         fz_drop_buffer(ctx, buf);
-        fz_rethrow(ctx);
+        mupdf::internal_throw_exception(ctx);
     }
     return buf;
 }
@@ -4166,7 +4209,7 @@ no_more_matches:;
     fz_always(ctx)
         fz_drop_buffer(ctx, buffer);
     fz_catch(ctx)
-        fz_rethrow(ctx);
+        mupdf::internal_throw_exception(ctx);
 
     return quads;
 }
@@ -4326,7 +4369,7 @@ mupdf::FzRect JM_make_spanlist(
         mupdf::FzRect& tp_rect
         );
 
-PyObject* extractWORDS(mupdf::FzStextPage& this_tpage);
+PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters);
 PyObject* extractBLOCKS(mupdf::FzStextPage& self);
 
 PyObject* link_uri(mupdf::FzLink& link);

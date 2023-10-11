@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,50 +19,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../colors.rst:7 6bb56bfa8ebd4893b801993260bcc867
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../colors.rst:7 94f5ffd4039a44fbaac938abb8a203a2
 msgid "Color Database"
 msgstr "カラーデータベース"
 
-#: ../../colors.rst:8 fc257a50ba8f42738dcf5e18111869c6
+#: ../../colors.rst:8 8d9ad358b7d248d295ad3a2d30562e9e
 msgid ""
 "Since the introduction of methods involving colors (like "
 ":meth:`Page.draw_circle`), a requirement may be to have access to "
 "predefined colors."
-msgstr ":meth:`Page.draw_circle`) のような色を含むメソッドが導入されて以来、事前定義された色にアクセスする必要があるかもしれません。）"
+msgstr ""
+":meth:`Page.draw_circle`) "
+"のような色を含むメソッドが導入されて以来、事前定義された色にアクセスする必要があるかもしれません。）"
 
-#: ../../colors.rst:10 144d83f062d24e848a4c9a51f3f481c9
+#: ../../colors.rst:10 a19a4ab71e9549ed93e62e47f9187a4d
 msgid ""
 "The fabulous GUI package `wxPython <https://wxpython.org/>`_ has a "
 "database of over 540 predefined RGB colors, which are given more or less "
 "memorizable names. Among them are not only standard names like \"green\" "
 "or \"blue\", but also \"turquoise\", \"skyblue\", and 100 (not only 50 "
 "...) shades of \"gray\", etc."
-msgstr "素晴らしいGUIパッケージ `wxPython <https://wxpython.org/>`_ には、記憶しやすい名前が与えられた540以上の事前定義されたRGBカラーのデータベースがあります。その中には「green」や「blue」のような標準的な名前だけでなく、「turquoise」や「skyblue」、「gray」の100のシェードなどが含まれています（50だけでなく…）。"
+msgstr ""
+"素晴らしいGUIパッケージ `wxPython <https://wxpython.org/>`_ "
+"には、記憶しやすい名前が与えられた540以上の事前定義されたRGBカラーのデータベースがあります。その中には「green」や「blue」のような標準的な名前だけでなく、「turquoise」や「skyblue」、「gray」の100のシェードなどが含まれています（50だけでなく…）。"
 
-#: ../../colors.rst:12 96584832e75449eeb10e852094d063ba
+#: ../../colors.rst:12 dbd167247a654c18893c4d1409e36be6
 msgid ""
 "We have taken the liberty to copy this database (a list of tuples) "
 "modified into PyMuPDF and make its colors available as PDF compatible "
 "float triples: for wxPython's *(\"WHITE\", 255, 255, 255)* we return *(1,"
 " 1, 1)*, which can be directly used in *color* and *fill* parameters. We "
 "also accept any mixed case of \"wHiTe\" to find a color."
-msgstr "私たちは、このデータベース（タプルのリスト）をPyMuPDFにコピーし、その色をPDF互換の浮動小数点トリプルとして利用可能にしました。例えば、wxPythonの("WHITE", 255, 255, 255)は(1, 1, 1)として返され、これは *直接色* や *塗りつぶし* のパラメータとして使用できます。また、「wHiTe」といった大小文字の組み合わせも受け入れます。"
+msgstr ""
+"私たちは、このデータベース（タプルのリスト）をPyMuPDFにコピーし、その色をPDF互換の浮動小数点トリプルとして利用可能にしました。例えば、wxPythonの(\"WHITE\","
+" 255, 255, 255)は(1, 1, 1)として返され、これは *直接色* や *塗りつぶし* "
+"のパラメータとして使用できます。また、「wHiTe」といった大小文字の組み合わせも受け入れます。"
 
-#: ../../colors.rst:15 46c2ab089d75469c935cd1e793b209f8
+#: ../../colors.rst:15 e3977c821e9649d8a5fcc609aef64115
 msgid "Function *getColor()*"
 msgstr "関数 *getColor()* "
 
-#: ../../colors.rst:16 7fb73e536a9c4442998afe9816b98bff
+#: ../../colors.rst:16 8ec8036e93c54b17a1f87ac003714a8b
 msgid ""
 "As the color database may not be needed very often, one additional import"
 " statement seems acceptable to get access to it::"
 msgstr "カラーデータベースはあまり頻繁に必要ないかもしれないため、アクセスするために1つの追加のインポート文は受け入れられると思われます。"
 
-#: ../../colors.rst:41 525b66a507f44c5b88cc456cbff8d856
+#: ../../colors.rst:41 2fe835b5fe8b4d86969f1519bf0e33ad
 msgid "Printing the Color Database"
 msgstr "カラーデータベースの印刷"
 
-#: ../../colors.rst:42 ea6921b8174345b9a98b57b98a25edfd
+#: ../../colors.rst:42 d7eb46c07f9d4204a4b8f93b5ff1f02c
 msgid ""
 "If you want to actually see how the many available colors look like, use "
 "scripts `print by RGB <https://github.com/pymupdf/PyMuPDF-"
@@ -73,9 +92,22 @@ msgid ""
 "difference is sorting order: one takes the RGB values, the other one the "
 "Hue-Saturation-Values as sort criteria. This is a screen print of what "
 "these files look like."
-msgstr "実際に利用可能な多くの色がどのように見えるかを確認したい場合は、examplesディレクトリにある `RGB印刷 <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/print-rgb/print.py>`_ または `HSV印刷 <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/print-hsv/print.py>`_ のスクリプトを使用してください。これらのスクリプトは、これらすべての色を含むPDFを作成します（すでに同じディレクトリに存在します）。これらのファイルはRGB値を使用するものと、ソート基準としてHue-Saturation-Valueを使用するものの2つの違いだけです。以下は、これらのファイルがどのように見えるかのスクリーンプリントです。"
+msgstr ""
+"実際に利用可能な多くの色がどのように見えるかを確認したい場合は、examplesディレクトリにある `RGB印刷 "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/print-"
+"rgb/print.py>`_ または `HSV印刷 <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/print-hsv/print.py>`_ "
+"のスクリプトを使用してください。これらのスクリプトは、これらすべての色を含むPDFを作成します（すでに同じディレクトリに存在します）。これらのファイルはRGB値を使用するものと"
+"、ソート基準としてHue-Saturation-"
+"Valueを使用するものの2つの違いだけです。以下は、これらのファイルがどのように見えるかのスクリーンプリントです。"
 
-#: ../../footer.rst:-1 e109b2492b1d401cbeebb743c9c41ede
+#: ../../footer.rst:-1 88c97d1d269241828033894775a9c2ef
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

@@ -29,6 +29,44 @@ JM_font_descender(fz_context *ctx, fz_font *font)
 }
 
 
+//----------------------------------------------------------------
+// Return true if character is considered to be a word delimiter
+//----------------------------------------------------------------
+static const int 
+JM_is_word_delimiter(int c, PyObject *delimiters)
+{
+    if (c <= 32 || c == 160) return 1;  // a standard delimiter
+
+    // extra delimiters must be a non-empty sequence
+    if (!delimiters || PyObject_Not(delimiters) || !PySequence_Check(delimiters)) {  
+        return 0;
+    }
+
+    // convert to tuple for easier looping
+    PyObject *delims = PySequence_Tuple(delimiters);
+    if (!delims) {
+        PyErr_Clear();
+        return 0;
+    }
+
+    // Make 1-char PyObject from character given as integer
+    PyObject *cchar = Py_BuildValue("C", c);  // single character PyObject
+    Py_ssize_t i, len = PyTuple_Size(delims);
+    for (i = 0; i < len; i++) {
+        int rc = PyUnicode_Compare(cchar, PyTuple_GET_ITEM(delims, i));
+        if (rc == 0) {  // equal to a delimiter character
+            Py_DECREF(cchar);
+            Py_DECREF(delims);
+            PyErr_Clear();
+            return 1;
+        }
+    }
+
+    Py_DECREF(delims);
+    PyErr_Clear();
+    return 0;
+}
+
 /*  inactive
 //-----------------------------------------------------------------------------
 // Make OCR text page directly from an fz_page

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,50 +19,73 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
 
-#: ../../recipes-drawing-and-graphics.rst:7 3dca2193540743c48ca696994d1b2bf4
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../recipes-drawing-and-graphics.rst:7 6de49446f389480092ecc2b82072048b
 msgid "Drawing and Graphics"
 msgstr "描画とグラフィックス"
 
-#: ../../recipes-drawing-and-graphics.rst:10 d48c48541a60449bbe91bc53e6cb9711
+#: ../../recipes-drawing-and-graphics.rst:10 43c7c0dd58854771b67f14bcd9bb5a57
 msgid ""
 "PDF files support elementary drawing operations as part of their syntax. "
 "This includes basic geometrical objects like lines, curves, circles, "
 "rectangles including specifying colors."
 msgstr "PDFファイルは、その構文の一部として基本的な描画操作をサポートしています。これには、線、曲線、円、四角形などの基本的な幾何学的オブジェクトや色の指定が含まれます。"
 
-#: ../../recipes-drawing-and-graphics.rst:12 7abc2e1d35be4d4d9a0bed5f5d4795c1
+#: ../../recipes-drawing-and-graphics.rst:12 d368dae604bb4a4793124503da5bb633
 msgid ""
 "The syntax for such operations is defined in \"A Operator Summary\" on "
 "page 643 of the :ref:`AdobeManual`. Specifying these operators for a PDF "
 "page happens in its :data:`contents` objects."
-msgstr "このような操作の構文は、:ref:`AdobeManual` の「A Operator Summary」のページ643で定義されています。PDFページのためのこれらのオペレータは、その内容 (:data:`contents`)オブジェクト内で指定されます。"
+msgstr ""
+"このような操作の構文は、:ref:`AdobeManual` の「A Operator "
+"Summary」のページ643で定義されています。PDFページのためのこれらのオペレータは、その内容 "
+"(:data:`contents`)オブジェクト内で指定されます。"
 
-#: ../../recipes-drawing-and-graphics.rst:14 5fc7cd1b79b24528bb23e0d603e43b82
+#: ../../recipes-drawing-and-graphics.rst:14 5a36a474df3544628fa89ae9d9badb29
 msgid ""
 "PyMuPDF implements a large part of the available features via its "
 ":ref:`Shape` class, which is comparable to notions like \"canvas\" in "
 "other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_)."
-msgstr "PyMuPDFは、 :ref:`Shape` クラスを介して利用可能な多くの機能を実装しており、これは他のパッケージ（例： `reportlab <https://pypi.org/project/reportlab/>`_ など）の「キャンバス」のような概念と類似しています。"
+msgstr ""
+"PyMuPDFは、 :ref:`Shape` クラスを介して利用可能な多くの機能を実装しており、これは他のパッケージ（例： `reportlab "
+"<https://pypi.org/project/reportlab/>`_ など）の「キャンバス」のような概念と類似しています。"
 
-#: ../../recipes-drawing-and-graphics.rst:16 bf872da04ef64b38a0d0e8aa534ae27a
+#: ../../recipes-drawing-and-graphics.rst:16 c013b49fabdb47bca02144ce5c864ab7
 msgid ""
 "A shape is always created as a **child of a page**, usually with an "
 "instruction like *shape = page.new_shape()*. The class defines numerous "
 "methods that perform drawing operations on the page's area. For example, "
 "*last_point = shape.draw_rect(rect)* draws a rectangle along the borders "
 "of a suitably defined *rect = fitz.Rect(...)*."
-msgstr "シェイプは常にページの子として作成され、通常は `shape = page.new_shape()` のような命令で行います。このクラスは、ページの領域に描画操作を実行するための多数のメソッドを定義しています。たとえば、 `last_point = shape.draw_rect(rect)` は、適切に定義された `rect = fitz.Rect(…)` の境界に沿って四角形を描画します。"
+msgstr ""
+"シェイプは常にページの子として作成され、通常は `shape = page.new_shape()` "
+"のような命令で行います。このクラスは、ページの領域に描画操作を実行するための多数のメソッドを定義しています。たとえば、 `last_point ="
+" shape.draw_rect(rect)` は、適切に定義された `rect = fitz.Rect(…)` "
+"の境界に沿って四角形を描画します。"
 
-#: ../../recipes-drawing-and-graphics.rst:18 a36013055d34439180d813ef0bfc702b
+#: ../../recipes-drawing-and-graphics.rst:18 48a66e6cf2404352ada8674480050850
 msgid ""
 "The returned *last_point* **always** is the :ref:`Point` where drawing "
 "operation ended (\"last point\"). Every such elementary drawing requires "
 "a subsequent :meth:`Shape.finish` to \"close\" it, but there may be "
 "multiple drawings which have one common *finish()* method."
-msgstr "返されるlast_pointは常に描画操作が終了する :ref:`Point` （「最後のポイント」）です。このような基本的な描画ごとに、それを「閉じる」ために :meth:`Shape.finish` が必要ですが、1つの共通のfinish()メソッドを持つ複数の描画があるかもしれません。"
+msgstr ""
+"返されるlast_pointは常に描画操作が終了する :ref:`Point` "
+"（「最後のポイント」）です。このような基本的な描画ごとに、それを「閉じる」ために :meth:`Shape.finish` "
+"が必要ですが、1つの共通のfinish()メソッドを持つ複数の描画があるかもしれません。"
 
-#: ../../recipes-drawing-and-graphics.rst:20 e838b2dd4bd24844bf2c66494908568e
+#: ../../recipes-drawing-and-graphics.rst:20 2dee7eda6f03447098a5dcddf669bb4a
 msgid ""
 "In fact, :meth:`Shape.finish` *defines* a group of preceding draw "
 "operations to form one -- potentially rather complex -- graphics object. "
@@ -70,101 +93,124 @@ msgid ""
 "<https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/shapes/shapes_and_symbols.py>`_ which demonstrate "
 "how this works."
-msgstr "実際には、 :meth:`Shape.finish` は、1つの（潜在的に非常に複雑な）グラフィックオブジェクトを形成するための前の描画操作のグループを定義します。PyMuPDFは、これがどのように機能するかを示す `shapes_and_symbols.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/shapes/shapes_and_symbols.py>`_ 内のいくつかの事前定義されたグラフィックスを提供しています。"
+msgstr ""
+"実際には、 :meth:`Shape.finish` "
+"は、1つの（潜在的に非常に複雑な）グラフィックオブジェクトを形成するための前の描画操作のグループを定義します。PyMuPDFは、これがどのように機能するかを示す"
+" `shapes_and_symbols.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/shapes/shapes_and_symbols.py>`_ "
+"内のいくつかの事前定義されたグラフィックスを提供しています。"
 
-#: ../../recipes-drawing-and-graphics.rst:22 0421e6623b1b42d784e5683623971e7d
+#: ../../recipes-drawing-and-graphics.rst:22 06e354152bb449439a3b60f763e69493
 msgid ""
 "If you import this script, you can also directly use its graphics as in "
 "the following example::"
 msgstr "このスクリプトをインポートすると、次の例のようにそのグラフィックスを直接使用することもできます::"
 
-#: ../../recipes-drawing-and-graphics.rst:80 d8e75588ded14a99822089924b350f78
+#: ../../recipes-drawing-and-graphics.rst:80 532569be5cfd472f8e40abd41f401168
 msgid "This is the script's outcome:"
 msgstr "これがスクリプトの結果です:"
 
-#: ../../recipes-drawing-and-graphics.rst:88 f85f9129c62d495d804e8f8dd43b3d35
+#: ../../recipes-drawing-and-graphics.rst:88 bff962a612ba4ccf93f632060276ff33
 msgid "How to Extract Drawings"
 msgstr "描画の抽出方法"
 
-#: ../../recipes-drawing-and-graphics.rst:90 8f2c184a70774378b11fdf95b4296585
+#: ../../recipes-drawing-and-graphics.rst:90 548074ba644b4208a8084c17a57fe64a
 msgid "New in v1.18.0"
 msgstr "v1.18.0で新登場"
 
-#: ../../recipes-drawing-and-graphics.rst:92 eccd01c0e40641349c31320abd8516a0
+#: ../../recipes-drawing-and-graphics.rst:92 d3b76a2b751b467fbf58d9158b9eb576
 msgid ""
 "The drawing commands issued by a page can be extracted. Interestingly, "
 "this is possible for :ref:`all supported document "
 "types<Supported_File_Types>` -- not just PDF: so you can use it for XPS, "
 "EPUB and others as well."
-msgstr "ページから発行された描画コマンドを抽出できます。興味深いことに、これはすべての :ref:`サポートされている <Supported_File_Types>` ドキュメントタイプに対して可能です – PDFだけでなく、XPS、EPUBなどにも使用できます。"
+msgstr ""
+"ページから発行された描画コマンドを抽出できます。興味深いことに、これはすべての :ref:`サポートされている "
+"<Supported_File_Types>` ドキュメントタイプに対して可能です – PDFだけでなく、XPS、EPUBなどにも使用できます。"
 
-
-
-#: ../../recipes-drawing-and-graphics.rst:94 e04b52d755d34ea6ab35054820f3d960
+#: ../../recipes-drawing-and-graphics.rst:94 13090c6467bc405a83dc6d14bf785192
 msgid ""
 "Page method, :meth:`Page.get_drawings()` accesses draw commands and "
 "converts them into a list of Python dictionaries. Each dictionary -- "
 "called a \"path\" -- represents a separate drawing -- it may be simple "
 "like a single line, or a complex combination of lines and curves "
 "representing one of the shapes of the previous section."
-msgstr ":ref:`Page` メソッド、:meth:`Page.get_drawings()` は描画コマンドにアクセスし、それらをPythonの辞書のリストに変換します。各辞書 – 「パス」と呼ばれる – は個別の描画を表します – それは単純な単一の線であるか、前のセクションの形状の1つを表す線と曲線の複雑な組み合わせであるかもしれません。"
+msgstr ""
+":ref:`Page` メソッド、:meth:`Page.get_drawings()` "
+"は描画コマンドにアクセスし、それらをPythonの辞書のリストに変換します。各辞書 – 「パス」と呼ばれる – は個別の描画を表します – "
+"それは単純な単一の線であるか、前のセクションの形状の1つを表す線と曲線の複雑な組み合わせであるかもしれません。"
 
-#: ../../recipes-drawing-and-graphics.rst:96 7ceabc5059be4cc092b2d27d6c458d7b
+#: ../../recipes-drawing-and-graphics.rst:96 b304a339e02a4946889740a9cd1eb988
 msgid ""
 "The *path* dictionary has been designed such that it can easily be used "
 "by the :ref:`Shape` class and its methods. Here is an example for a page "
 "with one path, that draws a red-bordered yellow circle inside rectangle "
 "`Rect(100, 100, 200, 200)`::"
-msgstr "パスの辞書は、 :ref:`Shape` クラスとそのメソッドで簡単に使用できるように設計されています。以下は、1つのパスを持つページの例で、そのパスは `Rect(100, 100, 200, 200)` の内側に赤い境界線の黄色い円を描画します::"
+msgstr ""
+"パスの辞書は、 :ref:`Shape` "
+"クラスとそのメソッドで簡単に使用できるように設計されています。以下は、1つのパスを持つページの例で、そのパスは `Rect(100, 100, "
+"200, 200)` の内側に赤い境界線の黄色い円を描画します::"
 
-#: ../../recipes-drawing-and-graphics.rst:131 544d6efc517b426aa6299e72c69f5069
+#: ../../recipes-drawing-and-graphics.rst:131 34994d11dca340629d727df9d5fa4c7f
 msgid ""
 "You need (at least) 4 Bézier curves (of 3rd order) to draw a circle with "
 "acceptable precision. See this `Wikipedia article "
 "<https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ for some background."
-msgstr "適切な精度で円を描画するには、（少なくとも）4つの3次ベジエ曲線が必要です。背景については、この `Wikipediaの記事 <https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ を参照してください。"
+msgstr ""
+"適切な精度で円を描画するには、（少なくとも）4つの3次ベジエ曲線が必要です。背景については、この `Wikipediaの記事 "
+"<https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ を参照してください。"
 
-#: ../../recipes-drawing-and-graphics.rst:134 ea8f8b95360f46e181dcd8ef691fd8fc
+#: ../../recipes-drawing-and-graphics.rst:134 b7d905a9a9054ac5b15a81632625e0b5
 msgid ""
 "The following is a code snippet which extracts the drawings of a page and"
 " re-draws them on a new page::"
 msgstr "以下は、ページの描画を抽出し、それらを新しいページに再描画するコードの断片です::"
 
-#: ../../recipes-drawing-and-graphics.rst:185 0f1b2b08b2f741c5a4ea409dcfeeeebf
+#: ../../recipes-drawing-and-graphics.rst:185 bdf869e392ce4b80b58e491ee5758125
 msgid ""
 "As can be seen, there is a high congruence level with the :ref:`Shape` "
 "class. With one exception: For technical reasons `lineCap` is a tuple of "
 "3 numbers here, whereas it is an integer in :ref:`Shape` (and in PDF). So"
 " we simply take the maximum value of that tuple."
-msgstr "ご覧の通り、 :ref:`Shape` クラスとの高い一致度があります。ただし1つ例外があります。技術的な理由から、ここでは `lineCap` は3つの数字のタプルですが、 :ref:`Shape` クラス（およびPDF内）では整数です。そのため、そのタプルの最大値を単純に取得します。"
+msgstr ""
+"ご覧の通り、 :ref:`Shape` クラスとの高い一致度があります。ただし1つ例外があります。技術的な理由から、ここでは `lineCap` "
+"は3つの数字のタプルですが、 :ref:`Shape` クラス（およびPDF内）では整数です。そのため、そのタプルの最大値を単純に取得します。"
 
-#: ../../recipes-drawing-and-graphics.rst:187 fb7ea95431d14f39b69a28adca742271
+#: ../../recipes-drawing-and-graphics.rst:187 fd0be6cc60a045fc84c0353938d8b00a
 msgid ""
 "Here is a comparison between input and output of an example page, created"
 " by the previous script:"
 msgstr "以下は、前のスクリプトで作成された例のページの入力と出力の比較です。"
 
-#: ../../recipes-drawing-and-graphics.rst:192 124458f35bd44ac5867a6d96d00bea1b
+#: ../../recipes-drawing-and-graphics.rst:192 a074619ad9b641f7b12a5f6fcd29d971
 msgid ""
 "The reconstruction of graphics, like shown here, is not perfect. The "
 "following aspects will not be reproduced as of this version:"
 msgstr "ここに示されているようなグラフィックスの再構築は完璧ではありません。次の点は、このバージョンでは再現されません："
 
-#: ../../recipes-drawing-and-graphics.rst:194 1b4d4170da6b464da25516224cfdea6d
+#: ../../recipes-drawing-and-graphics.rst:194 353f2f66e3ca46749e74076ecb8a0262
 msgid ""
 "Page definitions can be complex and include instructions for not showing "
 "/ hiding certain areas to keep them invisible. Things like this are "
 "ignored by :meth:`Page.get_drawings` - it will always return all paths."
-msgstr "ページの定義は複雑になる可能性があり、特定の領域を表示しない/非表示にするための指示を含むことがあります。こうしたことは、 :meth:`Page.get_drawings` によって無視されます – このメソッドは常にすべてのパスを返します。"
+msgstr ""
+"ページの定義は複雑になる可能性があり、特定の領域を表示しない/非表示にするための指示を含むことがあります。こうしたことは、 "
+":meth:`Page.get_drawings` によって無視されます – このメソッドは常にすべてのパスを返します。"
 
-#: ../../recipes-drawing-and-graphics.rst:196 a2488d1c37bf40a49356239245f7776b
+#: ../../recipes-drawing-and-graphics.rst:196 051b08cb6b2e44a7b26ab3d3a7f22ec1
 msgid ""
 "You can use the path list to make your own lists of e.g. all lines or all"
 " rectangles on the page and subselect them by criteria, like color or "
 "position on the page etc."
 msgstr "パスのリストを使用して、ページ上のすべての線またはすべての四角形などのリストを作成し、色やページ上の位置などの基準でサブセレクトすることができます。"
 
-#: ../../footer.rst:-1 4bdf6ec769944d908d6f31f3594ce128
+#: ../../footer.rst:-1 5e8ad6c5b1c947e28e2997c3ae01d8c9
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+#~ msgstr ""
+
+#~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
 

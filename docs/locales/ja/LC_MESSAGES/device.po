@@ -1,77 +1,92 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../device.rst:7 c189461a93df47a0853fc092ed3cd89e
-msgid "Device"
+#: ../../header.rst:-1
+msgid "Artifex"
 msgstr ""
 
-#: ../../device.rst:9 53e79f7d22de463d80f37e5713836ce7
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
+#: ../../device.rst:7 e80804c0692b4c75aa94b7052d1957c0
+msgid "Device"
+msgstr "Device (デバイス)"
+
+#: ../../device.rst:9 183512aaf36e4fa19d6f5ddd8c9d1810
 msgid ""
 "The different format handlers (pdf, xps, etc.) interpret pages to a "
 "\"device\". Devices are the basis for everything that can be done with a "
 "page: rendering, text extraction and searching. The device type is "
 "determined by the selected construction method."
-msgstr ""
+msgstr "異なるフォーマットハンドラ（pdf、xps など）はページを「デバイス」に解釈します。デバイスはページで行うすべてのことの基盤であり、レンダリング、テキスト抽出、検索などが行えます。デバイスのタイプは選択した構築方法によって決まります。"
 
-#: ../../device.rst:11 811b18f2fa0c4b49882f644216bc62a0
+#: ../../device.rst:11 62b56176b9d54183871831210975926a
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI**"
 
-#: ../../device.rst:17 aba3421c101a4e7895df4c38794f66c2
+#: ../../device.rst:17 d306746b4de34cb69a4c3ef9cf0aeeb9
 msgid "Constructor for either a pixel map or a display list device."
-msgstr ""
+msgstr "ピクセルマップまたは表示リストデバイスのコンストラクタ。"
 
-#: ../../device.rst a3415dca6bff4161a1ae6b19e61041df
-#: fd2950cf92e14a1f8bdab281119845c5
+#: ../../device.rst 5267bd5a806640d0be1ae66c885b69a2
+#: cd04f145cc3c4154a84b19db11dca49b
 msgid "Parameters"
 msgstr ""
 
-#: ../../device.rst:19 685d643540694929b5fb2e38f8216233
+#: ../../device.rst:19 388c911cea69460c95dcb4aa20368bd7
 msgid "either a *Pixmap* or  a *DisplayList*."
-msgstr ""
+msgstr "*Pixmap* または *DisplayList* のいずれか。"
 
-#: ../../device.rst:22 f7d008f7366d4c958e5fd59065ba6da0
+#: ../../device.rst:22 b2d2672b8e9a4c3ab5b3790bf7c07b36
 msgid ""
 "An optional `IRect` for *Pixmap* devices to restrict rendering to a "
 "certain area of the page. If the complete page is required, specify "
 "*None*. For display list devices, this parameter must be omitted."
-msgstr ""
+msgstr "*Pixmap* デバイス用の任意の `IRect` で、ページの特定の領域にレンダリングを制限するためのものです。完全なページが必要な場合は、*None* を指定してください。表示リストデバイスの場合、このパラメータは省略する必要があります。"
 
-#: ../../device.rst:27 165f2279bc934243b9d014af4b778acd
+#: ../../device.rst:27 bc9372a549ee40be885da074aa376f27
 msgid "Constructor for a text page device."
-msgstr ""
+msgstr "テキストページデバイスのコンストラクタ。"
 
-#: ../../device.rst:29 df0ddba5473142e5bd34faa70b4b4c18
+#: ../../device.rst:29 b10a27841e1e4b0caf2a9420558c0dd6
 msgid "*TextPage* object"
-msgstr ""
+msgstr "TextPageオブジェクト"
 
-#: ../../device.rst:32 d327607bc40a41249519ce7095fad412
+#: ../../device.rst:32 99aaeaca5f5747609bce3b8ed2ee5d86
 msgid ""
 "control the way how text is parsed into the text page. Currently 3 "
 "options can be coded into this parameter, see :ref:`TextPreserve`. To set"
 " these options use something like *flags=0 | TEXT_PRESERVE_LIGATURES | "
 "...*."
-msgstr ""
+msgstr "テキストがテキストページに解析される方法を制御するフラグです。
+現在、このパラメータには3つのオプションがコード化できます。:ref:`TextPreserve` を参照してください。これらのオプションを設定するには、*flags=0 | TEXT_PRESERVE_LIGATURES | ...*. のように使用します"
 
-#: ../../footer.rst:-1 c555ef9f3233499382e52037ad11f668
+#: ../../footer.rst:-1 396222c97696432298ebceee7df682d8
 msgid "Discord logo"
 msgstr ""
+
+
 

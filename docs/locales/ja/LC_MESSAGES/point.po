@@ -1,41 +1,53 @@
-# SOME DESCRIPTIVE TITLE.
+# PyMuPDF Japanese documentation
 # Copyright (C) 2015-2023, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2023.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-16 14:20+0100\n"
+"POT-Creation-Date: 2023-09-28 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: ../../header.rst:-1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1
+msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1
+msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+
 #: ../../point.rst:7 e0bcd881e305493bbe145a656518bbd5
 msgid "Point"
-msgstr ""
+msgstr "Point (ポイント)"
 
 #: ../../point.rst:9 787f97b9babb43f8aeeabbc0b1903b44
 msgid ""
 "*Point* represents a point in the plane, defined by its x and y "
 "coordinates."
-msgstr ""
+msgstr "*Point* は、そのx座標とy座標で定義される平面上のポイントを表します。"
 
 #: ../../point.rst:12 f017d58332304a43b94ca31aec1c1c25
 msgid "**Attribute / Method**"
-msgstr ""
+msgstr "**属性/メソッド**"
 
 #: ../../point.rst:12 d6efac4674304c46a4dd431ef8a45cad
 msgid "**Description**"
-msgstr ""
+msgstr "**説明**"
 
 #: ../../point.rst:14 2e3afc29e7a249ebb6423fc8fd0a1e28
 msgid ":meth:`Point.distance_to`"
@@ -43,7 +55,7 @@ msgstr ""
 
 #: ../../point.rst:14 339925f57d6f4c428b9d87d3dcea04f5
 msgid "calculate distance to point or rect"
-msgstr ""
+msgstr "ポイントまたは長方形までの距離を計算します"
 
 #: ../../point.rst:15 cb2fbbb7d676439e8a232e6a0d3f7345
 msgid ":meth:`Point.norm`"
@@ -51,7 +63,7 @@ msgstr ""
 
 #: ../../point.rst:15 1814dd78fb3a4baabfeda0a101006957
 msgid "the Euclidean norm"
-msgstr ""
+msgstr "ユークリッドノルム"
 
 #: ../../point.rst:16 c78ce3df47d449068b189e0750ac0d20
 msgid ":meth:`Point.transform`"
@@ -59,7 +71,7 @@ msgstr ""
 
 #: ../../point.rst:16 ed12d350acbc4b8e99c60233acca2d66
 msgid "transform point with a matrix"
-msgstr ""
+msgstr "行列でポイントを変換します"
 
 #: ../../point.rst:17 713e14c493cd464e9cede1f953e21c3c
 msgid ":attr:`Point.abs_unit`"
@@ -67,7 +79,7 @@ msgstr ""
 
 #: ../../point.rst:17 4d970716a04b42909802ba4c6cfeae0a
 msgid "same as unit, but positive coordinates"
-msgstr ""
+msgstr "ユニットと同じですが、座標が正です"
 
 #: ../../point.rst:18 deb488abffb345569fef0bf4460ac49c
 msgid ":attr:`Point.unit`"
@@ -75,7 +87,7 @@ msgstr ""
 
 #: ../../point.rst:18 40da846d343b4c6592ff8e340b021e08
 msgid "point coordinates divided by *abs(point)*"
-msgstr ""
+msgstr "座標を *abs(point)* で割ったもの"
 
 #: ../../point.rst:19 ddeee3aae059436fb829a8f6958614de
 msgid ":attr:`Point.x`"
@@ -83,7 +95,7 @@ msgstr ""
 
 #: ../../point.rst:19 206c2a3ebbad43c2a0f81570c4ba5990
 msgid "the X-coordinate"
-msgstr ""
+msgstr "X座標"
 
 #: ../../point.rst:20 6af6b5cd51894aa480f018d7ff012945
 msgid ":attr:`Point.y`"
@@ -91,26 +103,26 @@ msgstr ""
 
 #: ../../point.rst:20 7854cade699b42c192c9b25faa6cc877
 msgid "the Y-coordinate"
-msgstr ""
+msgstr "Y座標"
 
 #: ../../point.rst:23 93d7f1e35bfb4169ac916cf54095b61f
 msgid "**Class API**"
-msgstr ""
+msgstr "**クラスAPI**"
 
 #: ../../point.rst:35 13036f6f1956428cb87150c852556f3d
 msgid "Overloaded constructors."
-msgstr ""
+msgstr "オーバーロードされたコンストラクタ。"
 
 #: ../../point.rst:37 1c303c3b5c1a4f2488481101f2fd907e
 msgid "Without parameters, *Point(0, 0)* will be created."
-msgstr ""
+msgstr "パラメーターなしで、*Point(0, 0)* が作成されます。"
 
 #: ../../point.rst:39 6b5e4769c72446b0958f93e9229a9ad4
 msgid ""
 "With another point specified, a **new copy** will be created, "
 "\"sequence\" is a Python sequence of 2 numbers (see "
 ":ref:`SequenceTypes`)."
-msgstr ""
+msgstr "他のポイントが指定された場合、**新しいコピー** が作成され、 \"sequence\"は2つの数値からなるPythonシーケンスです（:ref:`SequenceTypes`）。"
 
 #: ../../point.rst 138e867f2d634bdcbe20f4d2f30d91d4
 #: 4f72c20cbf844e558c86a428f0af9eec e2f83f73f43a42b58ebda2bd5e3af83a
@@ -119,26 +131,26 @@ msgstr ""
 
 #: ../../point.rst:41 534cd91aed904a93a530a244a89a6bd9
 msgid "x coordinate of the point"
-msgstr ""
+msgstr "ポイントのx座標"
 
 #: ../../point.rst:43 7a3350a0940647e6aae89279473b3a92
 msgid "y coordinate of the point"
-msgstr ""
+msgstr "ポイントのy座標"
 
 #: ../../point.rst:47 e3f56e260f5548acac5f398616a645cf
 msgid ""
 "Calculate the distance to *x*, which may be :data:`point_like` or "
 ":data:`rect_like`. The distance is given in units of either pixels "
 "(default), inches, centimeters or millimeters."
-msgstr ""
+msgstr "*x* までの距離を計算します。 *x* は :data:`point_like` または :data:`rect_like` である可能性があります。距離は、ピクセル（デフォルト）、インチ、センチメートル、ミリメートルのいずれかの単位で指定されます。"
 
 #: ../../point.rst:49 caa716fccbb04c278cb9114d49b6044d
 msgid "to which to compute the distance."
-msgstr ""
+msgstr "距離を計算する対象"
 
 #: ../../point.rst:51 9f08bd1a75ce4b0bbae9f1092edd1e2e
 msgid "the unit to be measured in. One of \"px\", \"in\", \"cm\", \"mm\"."
-msgstr ""
+msgstr "測定単位。 \"px\"、 \"in\"、 \"cm\"、 \"mm\"のいずれか"
 
 #: ../../point.rst 1efc3a87fa104255a0b4da2e903d2b1a
 #: c8aa18f75c034b7db2732c55e0a5fc47
@@ -159,39 +171,39 @@ msgstr ""
 
 #: ../../point.rst:54 1d883f5f4c7e4d828de6e445c1504854
 msgid "the distance to *x*. If this is :data:`rect_like`, then the distance"
-msgstr ""
+msgstr "*x* までの距離。これが :data:`rect_like` の場合、距離"
 
 #: ../../point.rst:56 190c4d8576504ba2a3ffccbe6f5e225e
 msgid ""
 "is the length of the shortest line connecting to one of the rectangle "
 "sides"
-msgstr ""
+msgstr "長方形の任意の辺に接続する最短線の長さ"
 
 #: ../../point.rst:57 a25ec015190f49f690af2a00ca34111a
 msgid "is calculated to the **finite version** of it"
-msgstr ""
+msgstr "その **有限バージョン** が計算されます"
 
 #: ../../point.rst:58 26c264e5dccb4e6abe7b34f16a2a6267
 msgid "is zero if it **contains** the point"
-msgstr ""
+msgstr "ポイントを **含む** 場合はゼロ"
 
 #: ../../point.rst:62 d1fce3f977334a679c752331662c775a
 msgid "New in version 1.16.0"
-msgstr ""
+msgstr "バージョン1.16.0で新規追加"
 
 #: ../../point.rst:64 65bd1cb70b9d4ad0b32797912cb42402
 msgid ""
 "Return the Euclidean norm (the length) of the point as a vector. Equals "
 "result of function *abs()*."
-msgstr ""
+msgstr "ベクトルとしてのポイントのユークリッドノルム（長さ）を返します。 *abs()* 関数の結果と等しいです。"
 
 #: ../../point.rst:68 a325fe60009249cb876b73aafc6828a4
 msgid "Apply a matrix to the point and replace it with the result."
-msgstr ""
+msgstr "ポイントに行列を適用して、その結果で置き換えます。"
 
 #: ../../point.rst:70 2fb3781079684f16b6e3cc6c8a98cb87
 msgid "The matrix to be applied."
-msgstr ""
+msgstr "適用する行列。"
 
 #: ../../point.rst:72 ../../point.rst:80 ../../point.rst:86
 #: 52a620715c25480dbe8441571046e7a4 ba9672aec77448eebab6fa124c6d1dcd
@@ -206,7 +218,7 @@ msgid ""
 "direction as the point does. Its x, resp. y values are equal to the "
 "cosine, resp. sine of the angle this vector (and the point itself) has "
 "with the x axis."
-msgstr ""
+msgstr "各座標を *norm(point)* 、ポイントが（0、0）からの距離で割った結果です。これは、ポイント自体がx軸との角度を持つベクトルと同じ方向を指す長さ1のベクトルです。そのx、resp。 yの値は、このベクトル（およびポイント自体）がx軸とどのような角度を持っているかに等しいです。"
 
 #: ../../point.rst 0a9d21441ad44147ae3d7e8643120c08
 #: 26411ca7ecbf4648b7358884688e0d02 8d9b6b03f74f41049de620ae8bea7dc1
@@ -218,11 +230,11 @@ msgstr ""
 msgid ""
 "Same as :attr:`unit` above, replacing the coordinates with their absolute"
 " values."
-msgstr ""
+msgstr "同じく、上記の :attr:`unit` と同様のもので、座標をそれぞれの絶対値に置き換えたものです。"
 
 #: ../../point.rst:90 e402a09b7bb74ebbbff7c5e07ad2f4a5
 msgid "The x coordinate"
-msgstr ""
+msgstr "x座標"
 
 #: ../../point.rst:92 ../../point.rst:98 0e84c1e96468471288308c93cca448dd
 #: c1855e8ecbbc42fd9632df4d760eb937
@@ -231,19 +243,19 @@ msgstr ""
 
 #: ../../point.rst:96 324ff8c9d3e84097a7fd381b3a7cf50e
 msgid "The y coordinate"
-msgstr ""
+msgstr "y座標"
 
 #: ../../point.rst:102 b79e714a357749f9bb75d0fe96a9150e
 msgid ""
 "This class adheres to the Python sequence protocol, so components can be "
 "accessed via their index, too. Also refer to :ref:`SequenceTypes`."
-msgstr ""
+msgstr "このクラスはPythonのシーケンスプロトコルに従っており、コンポーネントはインデックスを使用してアクセスできます。また、PyMuPDFでの引数としてPythonのシーケンスを使用する方法については、:ref:`SequenceTypes` を参照してください。"
 
 #: ../../point.rst:103 2b21007dde0f46b689915a4f3dd4452c
 msgid ""
 "Rectangles can be used with arithmetic operators -- see chapter "
 ":ref:`Algebra`."
-msgstr ""
+msgstr "長方形は算術演算子と共に使用できます - 幾 :ref:`Algebra` を参照してください。"
 
 #: ../../footer.rst:-1 a9df7f8109ee4edfbf63647b0500f2a0
 msgid "Discord logo"

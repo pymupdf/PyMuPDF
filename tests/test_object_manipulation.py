@@ -36,3 +36,39 @@ def test_trailer():
     trailer_keys = doc.xref_get_keys(-1)
     assert "ID" in trailer_keys
     assert "Root" in trailer_keys
+
+
+def test_valid_name():
+    """Verify correct PDF names in method xref_set_key."""
+    doc = fitz.open()
+    page = doc.new_page()
+
+    # testing name in "key": confirm correct spec is accepted
+    doc.xref_set_key(page.xref, "Rotate", "90")
+    assert page.rotation == 90
+
+    # check wrong spec is detected
+    error_generated = False
+    try:
+        # illegal char in name (white space)
+        doc.xref_set_key(page.xref, "my rotate", "90")
+    except ValueError as e:
+        assert str(e) == "bad 'key'"
+        error_generated = True
+    assert error_generated
+
+    # test name in "value": confirm correct spec is accepted
+    doc.xref_set_key(page.xref, "my_rotate/something", "90")
+    assert doc.xref_get_key(page.xref, "my_rotate/something") == ("int", "90")
+    doc.xref_set_key(page.xref, "my_rotate", "/90")
+    assert doc.xref_get_key(page.xref, "my_rotate") == ("name", "/90")
+
+    # check wrong spec is detected
+    error_generated = False
+    try:
+        # no slash inside name allowed
+        doc.xref_set_key(page.xref, "my_rotate", "/9/0")
+    except ValueError as e:
+        assert str(e) == "bad 'value'"
+        error_generated = True
+    assert error_generated

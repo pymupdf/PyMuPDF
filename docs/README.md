@@ -39,6 +39,16 @@ This then creates the HTML documentation within `build/html`.
 `sphinx-build -a -b html -D language=ja . _build/html/ja`
 
 
+- Updating, after changes on the `main` branch and a sync with the main `en` .rst files do:
+
+`sphinx-build -b gettext . _build/gettext`
+
+then:
+
+`sphinx-intl update -p _build/gettext -l ja`
+
+This will update the corresponding `po` files for further edits. Then check these files for "#, fuzzy" entries as the new stuff might exist there and requires editing.
+
 
 ## Building PDF documentation
 

@@ -855,7 +855,7 @@ class linkDest(object):
             if self.uri.startswith("#"):
                 self.named = ""
                 self.kind = LINK_GOTO
-                m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),([0-9.]+),([0-9.]+)$', self.uri)
+                m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),(-?[0-9.]+),(-?[0-9.]+)$', self.uri)
                 if m:
                     self.page = int(m.group(1)) - 1
                     self.lt = Point(float((m.group(3))), float(m.group(4)))
