@@ -415,7 +415,7 @@ To add a watermark to a :title:`PDF` file, do the following:
 
     Adding watermarks is essentially as simple as adding an image at the base of each :title:`PDF` page. You should ensure that the image has the required opacity and aspect ratio to make it look the way you need it to.
 
-    In the example above a new image is created from each file reference, but to be more performant (by saving memory and file size) this image data should be referenced only once - see the code example and explanation on :meth:`Page.insert_image` for the implemetation.
+    In the example above a new image is created from each file reference, but to be more performant (by saving memory and file size) this image data should be referenced only once - see the code example and explanation on :meth:`Page.insert_image` for the implementation.
 
     **API reference**
 
