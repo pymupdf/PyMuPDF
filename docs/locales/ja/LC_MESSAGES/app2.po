@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2023-10-12 13:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,33 +19,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 8471e388a0e24e398094d4eb77b33032
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 ec43608e6407416d991650b3747bf0c8
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 3a4f325fca22441a8acc9cd2cf0d7b20
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../app2.rst:7 d096348acaa54b8fb715745579a0829a
+#: ../../app2.rst:7 15e7bba388a643b6a9038a2b4d58b616
 msgid "Appendix 2: Considerations on Embedded Files"
 msgstr "付録2：埋め込みファイルに関する考慮事項"
 
-#: ../../app2.rst:8 0ae7573ddf46450e8613779ccebbcb5e
+#: ../../app2.rst:8 6ff010db3531421187df1cd80d08e85d
 msgid ""
 "This chapter provides some background on embedded files support in "
 "PyMuPDF."
 msgstr "この章では、PyMuPDFにおける埋め込みファイルのサポートに関する背景情報を提供します。"
 
-#: ../../app2.rst:11 7b48f8a7264548e7ad41e548d63b0072
+#: ../../app2.rst:11 9266098a7fd7475db7fe2599ce28b6ec
 msgid "General"
 msgstr "一般"
 
-#: ../../app2.rst:12 c66bfd6d8b6041c5870ff5971d294d69
+#: ../../app2.rst:12 8d8ac326a5a046e4a97b3ce46fcdb5db
 msgid ""
 "Starting with version 1.4, PDF supports embedding arbitrary files as part"
 " (\"Embedded File Streams\") of a PDF document file (see chapter \"7.11.4"
@@ -54,7 +58,7 @@ msgstr ""
 "バージョン1.4から、PDFはPDFドキュメントファイルの一部として任意のファイルを埋め込むことができるようになりました（「7.11.4 "
 "埋め込みファイルストリーム」章を参照、 :ref:`AdobeManual` リファレンスの103ページ）。"
 
-#: ../../app2.rst:15 753e3738c8594f74a5c004d42cc31571
+#: ../../app2.rst:15 25dffb25422a4cb79c7574690ae581cf
 msgid ""
 "In many aspects, this is comparable to concepts also found in ZIP files "
 "or the OLE technique in MS Windows. PDF embedded files do, however, *not*"
@@ -65,7 +69,7 @@ msgstr ""
 "WindowsのOLE技術でも見られる概念に類似しています。ただし、PDFの埋め込みファイルはZIP形式とは異なり、ディレクトリ構造をサポート "
 "*しません* 。埋め込みファイル自体もさらに埋め込みファイルを含むことができます。"
 
-#: ../../app2.rst:17 9594be586bdc466f81ee10d9990c9963
+#: ../../app2.rst:17 a6c870d6c1f04331877731293b47370f
 msgid ""
 "Advantages of this concept are that embedded files are under the PDF "
 "umbrella, benefitting from its permissions / password protection and "
@@ -74,7 +78,7 @@ msgid ""
 "unit of information."
 msgstr "このコンセプトの利点は、埋め込みファイルがPDFの枠組みに含まれ、その権限/パスワード保護および整合性の側面を活用できることです。PDFが参照するデータや依存する可能性があるデータはすべて、PDFにまとめて1つの一貫した情報ユニットを形成することができます。"
 
-#: ../../app2.rst:19 86c3f09fddb74b60885b80f062045038
+#: ../../app2.rst:19 0418ee7f9be3412185afe853cfc82b82
 msgid ""
 "In addition to embedded files, PDF 1.7 adds *collections* to its support "
 "range. This is an advanced way of storing and presenting meta information"
@@ -83,11 +87,11 @@ msgstr ""
 "埋め込みファイルに加えて、PDF 1.7は *コレクション* "
 "をサポート範囲に追加しました。これは、埋め込みファイルのメタ情報（任意で拡張可能なプロパティ）を格納し、表示する高度な方法です"
 
-#: ../../app2.rst:22 999dac777a5842e58a1ad187c6c9505f
+#: ../../app2.rst:22 60c094b80fb149b9b1adb7499ed81b8a
 msgid "MuPDF Support"
 msgstr "MuPDFのサポート"
 
-#: ../../app2.rst:23 2ae05414b7804a369d4eead33f14eedc
+#: ../../app2.rst:23 9416a634f1e641d799a3c92eb6f41622
 msgid ""
 "After adding initial support for collections (portfolios) and "
 "*/EmbeddedFiles* in MuPDF version 1.11, this support was dropped again in"
@@ -96,13 +100,13 @@ msgstr ""
 "MuPDFバージョン1.11でコレクション（ポートフォリオ）と */EmbeddedFiles* "
 "への初期サポートを追加した後、このサポートはバージョン1.15で再び削除されました。"
 
-#: ../../app2.rst:25 46697f2b501b4ed8ba1b80c2e3775dd9
+#: ../../app2.rst:25 9397f4b21a4543fca67ea2eec7ca6ddd
 msgid ""
 "As a consequence, the cli utility *mutool* no longer offers access to "
 "embedded files."
 msgstr "その結果、cliユーティリティ *mutool* ではもはや埋め込みファイルにアクセスできなくなりました。"
 
-#: ../../app2.rst:27 6cd732d98d1b4c52986510a99911ab60
+#: ../../app2.rst:27 c85e5ab0295f4c398a30082bac9c75a6
 msgid ""
 "PyMuPDF -- having implemented an */EmbeddedFiles* API in response in its "
 "version 1.11.0 -- was therefore forced to change gears starting with its "
@@ -112,32 +116,32 @@ msgstr ""
 "APIを実装したため、バージョン1.16.0からギアを変更せざるを得なくなりました（MuPDF "
 "v1.15.x互換のPyMuPDFは公開されませんでした）。"
 
-#: ../../app2.rst:29 cfedf8d9390b4e6ba3c805800f80b138
+#: ../../app2.rst:29 68c9e8641aea421984bb036c0c59754d
 msgid ""
 "We are now maintaining our own code basis supporting embedded files. This"
 " code makes use of basic MuPDF dictionary and array functions only."
 msgstr "私たちは現在、埋め込みファイルをサポートする独自のコードベースを維持しています。このコードは、基本的なMuPDFの辞書と配列の機能のみを使用しています。"
 
-#: ../../app2.rst:32 83bbc5dff9bc42a7b334667f0f8109fe
+#: ../../app2.rst:32 8ab89971a262431cacf366b0966c36d9
 msgid "PyMuPDF Support"
 msgstr "PyMuPDFのサポート"
 
-#: ../../app2.rst:33 a7f559e2eed84013891161f87e1e9a00
+#: ../../app2.rst:33 a10e75ee7eed4c259753536feb047973
 msgid ""
 "We continue to support the full old API with respect to embedded files --"
 " with only minor, cosmetic changes."
 msgstr "私たちは、埋め込みファイルに関する古いAPIを、わずかな見た目の変更のみを行いながら引き続きサポートしています。"
 
-#: ../../app2.rst:35 fc2503bdd23f4420b0f57a70386b42d3
+#: ../../app2.rst:35 c879d8840abe4ccfac8f15ab015292a6
 msgid ""
 "There even also is a new function, which delivers a list of all names "
-"under which embedded data are resgistered in a PDF, "
+"under which embedded data are registered in a PDF, "
 ":meth:`Document.embfile_names`."
 msgstr ""
 "また、PDF内の埋め込みデータが登録されているすべての名前のリストを返す新しい関数も存在します。:meth:`Document.embfile_names`"
 " です。"
 
-#: ../../footer.rst:-1 1594a09c2a9f4921b6ac9146b69e40ba
+#: ../../footer.rst:-1 2079ce4541e94656ae22252636192c76
 msgid "Discord logo"
 msgstr ""
 
