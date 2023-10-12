@@ -333,7 +333,7 @@
                 if (str=="Copying") {
                     return "コピー";
                 } else if (str == "This refers to opening a document and then saving it to a new file. This test measures the speed of reading a <cite>PDF</cite> and re-writing as a new <cite>PDF</cite>. This process is also at the core of functions like merging / joining multiple documents. The numbers below therefore apply to <cite>PDF</cite> joining and merging.") {
-                    return "以下は、ドキュメントを開いてから新しいファイルとして保存することを指します。このテストは、PDFを読み込み、新しいPDFとして再書き込む速度を測定します。このプロセスは、複数のドキュメントを結合するなどの機能の中核でもあります。したがって、以下の数字はPDFの結合と結合にも適用されます。";
+                    return "以下は、ドキュメントを開いてから新しいファイルとして保存することを指します。このテストは、PDFを読み込み、新しいPDFとして再書き込む速度を測定します。このプロセスは、複数のドキュメントを結合するなどの機能の中核でもあります。したがって、以下の数字はPDFの結合とマージにも適用されます。";
                 } else if (str == "The results for all 7,031 pages are:") {
                     return "全7,031ページの結果は次のとおりです：";
                 } else if (str == "seconds") {
