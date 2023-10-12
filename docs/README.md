@@ -39,7 +39,7 @@ This then creates the HTML documentation within `build/html`.
 `sphinx-build -a -b html -D language=ja . _build/html/ja`
 
 
-- Updating, after changes on the `main` branch and a sync with the main `en` .rst files do:
+- Updating, after changes on the `main` branch and a sync with the main `en` .rst files, from the "docs" location, do:
 
 `sphinx-build -b gettext . _build/gettext`
 
