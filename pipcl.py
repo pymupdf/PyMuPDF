@@ -1778,13 +1778,16 @@ class PythonFlags:
                 # Basic install of dev tools with `xcode-select --install` doesn't
                 # seem to provide a `python3-config` or similar, but there is a
                 # `python-config.py` accessible via sysconfig.
+                #
+                # We try different possibilities and use the last one that
+                # works.
+                #
                 python_config = None
                 for pc in (
-                        f'{python_exe}-config',
-                        f'{sys.executable} {sysconfig.get_config_var("srcdir")}/python-config.py',
                         f'python3-config',
+                        f'{sys.executable} {sysconfig.get_config_var("srcdir")}/python-config.py',
+                        f'{python_exe}-config',
                         ):
-                    log2(f'Trying: {pc=}')
                     e = subprocess.run(
                             f'{pc} --includes',
                             shell=1,
@@ -1792,12 +1795,13 @@ class PythonFlags:
                             stderr=subprocess.DEVNULL,
                             check=0,
                             ).returncode
-                    log2(f'{e=}')
+                    log1(f'{e=} from {pc!r}.')
                     if e == 0:
                         python_config = pc
                 assert python_config, f'Cannot find python-config'
             else:
                 python_config = f'{python_exe}-config'
+            log1(f'Using {python_config=}.')
             self.includes = run( f'{python_config} --includes', capture=1).strip()
             #if darwin():
             #    self.ldflags = 
