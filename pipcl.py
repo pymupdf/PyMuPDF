@@ -99,7 +99,7 @@ class Package:
         ...
         ...             build_wheel = p.build_wheel
         ...             build_sdist = p.build_sdist
-        ... 
+        ...
         ...             # Handle old-style setup.py command-line usage:
         ...             if __name__ == '__main__':
         ...                 p.handle_argv(sys.argv)
@@ -125,7 +125,7 @@ class Package:
         ...             %}
         ...             int bar(const char* text);
         ...             """))
-        
+
         >>> with open('pipcl_test/bar.i', 'w') as f:
         ...     _ = f.write( '\\n')
 
@@ -146,7 +146,7 @@ class Package:
         ...         shell=1, check=1)
 
     The actual install directory depends on `sysconfig.get_path('platlib')`:
-    
+
         >>> if windows():
         ...     install_dir = 'pipcl_test/install'
         ... else:
@@ -191,27 +191,27 @@ class Package:
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
-    
+
     Check that rebuild does nothing.
-    
+
         >>> t0 = os.path.getmtime('pipcl_test/build/foo.py')
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
         >>> t = os.path.getmtime('pipcl_test/build/foo.py')
         >>> assert t == t0
-        
+
     Check that touching bar.i forces rebuild.
-    
+
         >>> os.utime('pipcl_test/bar.i')
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
         >>> t = os.path.getmtime('pipcl_test/build/foo.py')
         >>> assert t > t0
-    
+
     Check that touching foo.i.cpp does not run swig, but does recompile/link.
-    
+
         >>> t0 = time.time()
         >>> os.utime('pipcl_test/build/foo.i.cpp')
         >>> _ = subprocess.run(
@@ -222,18 +222,18 @@ class Package:
         >>> assert len(so) == 1
         >>> so = so[0]
         >>> assert os.path.getmtime(so) > t0
-    
+
     Wheels and sdists
-    
+
         Wheels:
             We generate wheels according to:
             https://packaging.python.org/specifications/binary-distribution-format/
-            
+
             * `{name}-{version}.dist-info/RECORD` uses sha256 hashes.
             * We do not generate other `RECORD*` files such as
               `RECORD.jws` or `RECORD.p7s`.
             * `{name}-{version}.dist-info/WHEEL` has:
-            
+
               * `Wheel-Version: 1.0`
               * `Root-Is-Purelib: false`
             * No support for signed wheels.
@@ -264,7 +264,7 @@ class Package:
             requires_external = None,
             project_url = None,
             provides_extra = None,
-            
+
             root = None,
             fn_build = None,
             fn_clean = None,
@@ -272,7 +272,7 @@ class Package:
             tag_python = None,
             tag_abi = None,
             tag_platform = None,
-            
+
             wheel_compression = zipfile.ZIP_DEFLATED,
             wheel_compresslevel = None,
             ):
@@ -280,9 +280,9 @@ class Package:
         The initial args before `root` define the package
         metadata and closely follow the definitions in:
         https://packaging.python.org/specifications/core-metadata/
-        
+
         Args:
-        
+
             name:
                 A string, the name of the Python package.
             version:
@@ -336,7 +336,7 @@ class Package:
 
             root:
                 Root of package, defaults to current directory.
-            
+
             fn_build:
                 A function taking no args, or a single `config_settings` dict
                 arg (as described in PEP-517), that builds the package.
@@ -372,7 +372,7 @@ class Package:
                 `sitepackages` is the installation directory, the
                 default being `sysconfig.get_path('platlib')` e.g.
                 `myvenv/lib/python3.9/site-packages/`.
-            
+
             fn_clean:
                 A function taking a single arg `all_` that cleans generated
                 files. `all_` is true iff `--all` is in argv.
@@ -381,30 +381,30 @@ class Package:
                 files/directory paths to be deleted. Relative paths are
                 interpreted as relative to `root`. All paths are asserted to be
                 within `root`.
-            
+
             fn_sdist:
                 A function taking no args, or a single `config_settings` dict
                 arg (as described in PEP517), that returns a list of paths for
                 files that should be copied into the sdist. Each item in the
                 list can also be a tuple `(from_, to_)`, where `from_` is the
                 path of a file and `to_` is its name within the sdist.
-                
+
                 Relative paths are interpreted as relative to `root`. It is an
                 error if a path does not exist or is not a file.
 
                 It can be convenient to use `pipcl.git_items()`.
-                
+
                 The specification for sdists requires that the list contains
                 `pyproject.toml`; we enforce this with a diagnostic rather than
                 raising an exception, to allow legacy command-line usage.
-            
+
             tag_python:
                 First element of wheel tag defined in PEP-425. If None we use
                 `cp{version}`.
-                
+
                 For example if code works with any Python version, one can use
                 'py3'.
-                
+
             tag_abi:
                 Second element of wheel tag defined in PEP-425. If None we use
                 `none`.
@@ -417,7 +417,7 @@ class Package:
                 `openbsd_7_0_amd64`.
 
                 For pure python packages use: `tag_platform=any`
-            
+
             wheel_compression:
                 Used as `zipfile.ZipFile()`'s `compression` parameter when
                 creating wheels.
@@ -425,18 +425,18 @@ class Package:
             wheel_compresslevel:
                 Used as `zipfile.ZipFile()`'s `compresslevel` parameter when
                 creating wheels.
-            
-        '''        
+
+        '''
         assert name
         assert version
-        
+
         def assert_str( v):
             if v is not None:
                 assert isinstance( v, str), f'Not a string: {v!r}'
         def assert_str_or_multi( v):
             if v is not None:
                 assert isinstance( v, (str, tuple, list)), f'Not a string, tuple or list: {v!r}'
-        
+
         assert_str( name)
         assert_str( version)
         assert_str_or_multi( platform)
@@ -458,16 +458,16 @@ class Package:
         assert_str_or_multi( requires_external)
         assert_str_or_multi( project_url)
         assert_str_or_multi( provides_extra)
-        
+
         # https://packaging.python.org/en/latest/specifications/core-metadata/.
         assert re.match('([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])$', name, re.IGNORECASE)
-        
+
         # PEP-440.
         assert re.match(
                 r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$',
                 version,
                 )
-        
+
         # https://packaging.python.org/en/latest/specifications/binary-distribution-format/
         if tag_python:
             assert '-' not in tag_python
@@ -475,7 +475,7 @@ class Package:
             assert '-' not in tag_abi
         if tag_platform:
             assert '-' not in tag_platform
-        
+
         self.name = name
         self.version = version
         self.platform = platform
@@ -497,7 +497,7 @@ class Package:
         self.requires_external = requires_external
         self.project_url = project_url
         self.provides_extra = provides_extra
-        
+
         self.root = os.path.abspath(root if root else os.getcwd())
         self.fn_build = fn_build
         self.fn_clean = fn_clean
@@ -505,7 +505,7 @@ class Package:
         self.tag_python = tag_python
         self.tag_abi = tag_abi
         self.tag_platform = tag_platform
-        
+
         self.wheel_compression = wheel_compression
         self.wheel_compresslevel = wheel_compresslevel
 
@@ -540,7 +540,7 @@ class Package:
             tag_abi = self.tag_abi
         else:
             tag_abi = 'none'
-        
+
         # Find platform tag used in wheel filename.
         #
         tag_platform = None
@@ -557,7 +557,7 @@ class Package:
             # pypi.org.
             #
             tag_platform = setuptools.distutils.util.get_platform().replace('-', '_').replace('.', '_')
-            
+
             # We need to patch things on MacOS.
             #
             # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
@@ -597,7 +597,7 @@ class Package:
                 record.add_content(content, to_)
 
             dist_info_dir = self._dist_info_dir()
-            
+
             # Add the files returned by fn_build().
             #
             for item in items:
@@ -617,11 +617,11 @@ class Package:
             # Add <name>-<version>.dist-info/METADATA.
             #
             add_str(self._metainfo(), f'{dist_info_dir}/METADATA')
-            
+
             # Add <name>-<version>.dist-info/COPYING.
             if self.license:
                 add_str(self.license, f'{dist_info_dir}/COPYING')
-            
+
             # Update <name>-<version>.dist-info/RECORD. This must be last.
             #
             z.writestr(f'{dist_info_dir}/RECORD', record.get(f'{dist_info_dir}/RECORD'))
@@ -633,7 +633,7 @@ class Package:
                 log2(f'Contents are:')
                 for zi in sorted(z.infolist(), key=lambda z: z.filename):
                     log2(f'    {zi.file_size: 10d} {zi.filename}')
-        
+
         return os.path.basename(path)
 
 
@@ -669,7 +669,7 @@ class Package:
             if name in names_in_tar:
                 raise Exception(f'Name specified twice: {name}')
             names_in_tar.append(name)
-        
+
         prefix = f'{self.name}-{self.version}'
         def add_content(tar, name, contents):
             '''
@@ -684,7 +684,7 @@ class Package:
             ti.size = len(contents)
             ti.mtime = time.time()
             tar.addfile(ti, io.BytesIO(contents))
-        
+
         def add_file(tar, path_abs, name):
             log2( f'Adding file: {os.path.relpath(path_abs)} => {name}')
             check_name(name)
@@ -708,7 +708,7 @@ class Package:
                 manifest.append(to_rel)
             if not found_pyproject_toml:
                 log0(f'Warning: no pyproject.toml specified.')
-            
+
             # Always add a PKG-INFO file.
             add_content(tar, f'PKG-INFO', self._metainfo())
 
@@ -717,7 +717,7 @@ class Package:
                     log2(f'Not writing .license because file already in sdist: COPYING')
                 else:
                     add_content(tar, f'COPYING', self.license)
-            
+
         log1( f'Have created sdist: {tarpath}')
         return os.path.basename(tarpath)
 
@@ -732,7 +732,7 @@ class Package:
         assert isinstance( ret, (list, tuple)), \
                 f'Expected list/tuple from {self.fn_build} but got: {ret!r}'
         return ret
-        
+
 
     def _argv_clean(self, all_):
         '''
@@ -759,23 +759,23 @@ class Package:
         Called by `handle_argv()` to handle `install` command..
         '''
         log2( f'{record_path=} {root=}')
-        
+
         # Do a build and get list of files to install.
         #
         items = list()
         if self.fn_build:
             items = self._call_fn_build( dict())
-        
+
         root2 = install_dir(root)
         log2( f'{root2=}')
-        
+
         log1( f'Installing into: {root2!r}')
         dist_info_dir = self._dist_info_dir()
-        
+
         if not record_path:
             record_path = f'{root2}/{dist_info_dir}/RECORD'
         record = _Record()
-        
+
         def add_file(from_abs, from_rel, to_abs, to_rel):
             log2(f'Copying from {from_rel} to {to_abs}')
             os.makedirs( os.path.dirname( to_abs), exist_ok=True)
@@ -788,12 +788,12 @@ class Package:
             with open( to_abs, 'w') as f:
                 f.write( content)
             record.add_content(content, to_rel)
-        
+
         for item in items:
             (from_abs, from_rel), (to_abs, to_rel) = self._fromto(item)
             to_abs2 = f'{root2}/{to_rel}'
             add_file( from_abs, from_rel, to_abs2, to_rel)
-        
+
         add_str( self._metainfo(), f'{root2}/{dist_info_dir}/METADATA', f'{dist_info_dir}/METADATA')
 
         log2( f'Writing to: {record_path}')
@@ -890,7 +890,7 @@ class Package:
         opt_install_headers = None
         opt_record = None
         opt_root = None
-        
+
         args = Args(argv[1:])
 
         while 1:
@@ -969,7 +969,7 @@ class Package:
             elif arg == '--root':                               opt_root = args.next()
             elif arg == '--single-version-externally-managed':  pass
             elif arg == '--verbose' or arg == '-v':             g_verbose += 1
-            
+
             elif arg == 'windows-vs':
                 command = arg
                 break
@@ -989,7 +989,7 @@ class Package:
         elif command == 'egg_info':     self._argv_egg_info(opt_egg_base)
         elif command == 'install':      self.install(opt_record, opt_root)
         elif command == 'sdist':        self.build_sdist(opt_dist_dir, opt_formats)
-        
+
         elif command == 'windows-python':
             version = None
             while 1:
@@ -1004,7 +1004,7 @@ class Package:
                     assert 0, f'Unrecognised {arg=}'
             python = wdev.WindowsPython(version=version)
             print(f'Python is:\n{python.description_ml("    ")}')
-            
+
         elif command == 'windows-vs':
             grade = None
             version = None
@@ -1025,7 +1025,7 @@ class Package:
                     assert 0, f'Unrecognised {arg=}'
             vs = wdev.WindowsVS(year=year, grade=grade, version=version)
             print(f'Visual Studio is:\n{vs.description_ml("    ")}')
-        
+
         else:
             assert 0, f'Unrecognised command: {command}'
 
@@ -1055,7 +1055,7 @@ class Package:
             f' requires_external={self.requires_external!r}'
             f' project_url={self.project_url!r}'
             f' provides_extra={self.provides_extra!r}'
-            
+
             f' root={self.root!r}'
             f' fn_build={self.fn_build!r}'
             f' fn_sdist={self.fn_sdist!r}'
@@ -1098,7 +1098,7 @@ class Package:
             ret[0] += f'{key}: {value}\n'
         #add('Description', self.description)
         add('Metadata-Version', '2.1')
-        
+
         # These names are from:
         # https://packaging.python.org/specifications/core-metadata/
         #
@@ -1126,7 +1126,7 @@ class Package:
                 ):
             identifier = name.lower().replace( '-', '_')
             add( name, getattr( self, identifier))
-        
+
         ret = ret[0]
 
         # Append description as the body
@@ -1227,7 +1227,7 @@ def build_extension(
     and OpenBSD.
 
     On Unix, sets rpath when linking shared libraries.
-    
+
     Args:
         name:
             Name of generated extension module.
@@ -1236,7 +1236,7 @@ def build_extension(
             corresponding `.c` or `.cpp` file.
         outdir:
             Output directory for generated files:
-            
+
                 * `{outdir}/{name}.py`
                 * `{outdir}/_{name}.so`     # Unix
                 * `{outdir}/_{name}.*.pyd`  # Windows
@@ -1270,30 +1270,30 @@ def build_extension(
         prerequisites_swig:
         prerequisites_compile:
         prerequisites_link:
-        
+
             [These are mainly for use on Windows. On other systems we
             automatically generate dynamic dependencies using swig/compile/link
             commands' `-MD` and `-MF` args.]
-            
+
             Sequences of extra input files/directories that should force
             running of swig, compile or link commands if they are newer than
             any existing generated SWIG `.i` file, compiled object file or
             shared library file.
-            
+
             If present, the first occurrence of `True` or `False` forces re-run
             or no re-run. Any occurrence of None is ignored. If an item is a
             directory path we look for newest file within the directory tree.
-    
+
             If not a sequence, we convert into a single-item list.
-            
+
             prerequisites_swig
-            
+
                 We use swig's -MD and -MF args to generate dynamic dependencies
                 automatically, so this is not usually required.
-            
+
             prerequisites_compile
             prerequisites_link
-            
+
                 On non-Windows we use cc's -MF and -MF args to generate dynamic
                 dependencies so this is not usually required.
         infer_swig_includes:
@@ -1302,7 +1302,7 @@ def build_extension(
             that it can see the same header files as C/C++. This is useful
             when using enviromment variables such as `CC` and `CXX` to set
             `compile_extra.
-    
+
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
     '''
@@ -1315,9 +1315,9 @@ def build_extension(
     path_cpp = f'{builddir}/{os.path.basename(path_i)}'
     path_cpp += '.cpp' if cpp else '.c'
     os.makedirs( outdir, exist_ok=True)
-    
+
     # Run SWIG.
-    
+
     if infer_swig_includes:
         # Extract include flags from `compiler_extra`.
         swig_includes_extra = ''
@@ -1355,13 +1355,13 @@ def build_extension(
             prerequisites_swig,
             prerequisites_swig2,
             )
-    
+
     path_so_leaf = f'_{name}{_so_suffix()}'
     path_so = f'{outdir}/{path_so_leaf}'
-    
+
     if windows():
         path_obj        = f'{path_so}.obj'
-        
+
         permissive = '/permissive-'
         EHsc = '/EHsc'
         T = '/Tp' if cpp else '/Tc'
@@ -1370,7 +1370,7 @@ def build_extension(
         if debug:
             debug2 = '/Zi'  # Generate .pdb.
             # debug2 = '/Z7'    # Embded debug info in .obj files.
-        
+
         # As of 2023-08-23, it looks like VS tools create slightly
         # .dll's each time, even with identical inputs.
         #
@@ -1378,14 +1378,14 @@ def build_extension(
         # https://nikhilism.com/post/2020/windows-deterministic-builds/.
         # E.g. an undocumented linker flag `/Brepro`.
         #
-        
+
         command, pythonflags = base_compiler(cpp=cpp)
         command = f'''
                 {command}
                     # General:
                     /c                          # Compiles without linking.
                     {EHsc}                      # Enable "Standard C++ exception handling".
-                    
+
                     #/MD                         # Creates a multithreaded DLL using MSVCRT.lib.
                     {'/MDd' if debug else '/MD'}
 
@@ -1431,28 +1431,28 @@ def build_extension(
                     {linker_extra}
                 '''
         run_if( command, path_so, path_obj, prerequisites_link)
-    
+
     else:
-    
+
         # Not Windows.
         #
         command, pythonflags = base_compiler(cpp=cpp)
-        
+
         # setuptools on Linux seems to use slightly different compile flags:
         #
         # -fwrapv -O3 -Wall -O2 -g0 -DPY_CALL_TRAMPOLINE
         #
-        
+
         general_flags = ''
         if debug:
             general_flags += ' -g'
         if optimise:
             general_flags += ' -O2 -DNDEBUG'
-        
+
         if darwin():
             # MacOS's linker does not like `-z origin`.
             rpath_flag = "-Wl,-rpath,@loader_path/"
-            
+
             # Avoid `Undefined symbols for ... "_PyArg_UnpackTuple" ...'.
             general_flags += ' -undefined dynamic_lookup'
         elif pyodide():
@@ -1463,7 +1463,7 @@ def build_extension(
             log0(f'## pyodide(): PEP-3149 suffix untested, so omitting. {_so_suffix()=}.')
             path_so_leaf = f'_{name}.so'
             path_so = f'{outdir}/{path_so_leaf}'
-            
+
             rpath_flag = ''
         else:
             rpath_flag = "-Wl,-rpath,'$ORIGIN',-z,origin"
@@ -1472,7 +1472,7 @@ def build_extension(
         # they seem to be ignored...
         #
         prerequisites = list()
-        
+
         if pyodide():
             # Looks like pyodide's `cc` can't compile and link in one invocation.
             prerequisites_compile_path = f'{path_cpp}.o.d'
@@ -1507,7 +1507,7 @@ def build_extension(
             # We use compiler to compile and link in one command.
             prerequisites_path = f'{path_so}.d'
             prerequisites = _get_prerequisites(prerequisites_path)
-            
+
             command = f'''
                     {command}
                         -fPIC
@@ -1534,7 +1534,7 @@ def build_extension(
                 prerequisites_link,
                 prerequisites,
                 )
-    
+
         if darwin():
             # We need to patch up references to shared libraries in `libs`.
             sublibraries = list()
@@ -1555,7 +1555,7 @@ def build_extension(
 
         #run(f'ls -l {path_so}', check=0)
         #run(f'file {path_so}', check=0)
-    
+
     return path_so_leaf
 
 
@@ -1566,7 +1566,7 @@ def build_extension(
 def base_compiler(vs=None, pythonflags=None, cpp=False, use_env=True):
     '''
     Returns basic compiler command and PythonFlags.
-    
+
     Args:
         vs:
             Windows only. A `wdev.WindowsVS` instance or None to use default
@@ -1579,7 +1579,7 @@ def base_compiler(vs=None, pythonflags=None, cpp=False, use_env=True):
             this has no effect - we always return `cl.exe`.
         use_env:
             If true we use `os.environ['CC']` or `os.environ['CXX']` if set.
-    
+
     Returns `(cc, pythonflags)`:
         cc:
             C or C++ command. On Windows this is of the form
@@ -1607,7 +1607,7 @@ def base_compiler(vs=None, pythonflags=None, cpp=False, use_env=True):
 def base_linker(vs=None, pythonflags=None, cpp=False, use_env=True):
     '''
     Returns basic linker command.
-    
+
     Args:
         vs:
             Windows only. A `wdev.WindowsVS` instance or None to use default
@@ -1620,7 +1620,7 @@ def base_linker(vs=None, pythonflags=None, cpp=False, use_env=True):
             has no effect - we always return `link.exe`.
         use_env:
             If true we use `os.environ['LD']` if set.
-    
+
     Returns `(linker, pythonflags)`:
         linker:
             Linker command. On Windows this is of the form
@@ -1643,7 +1643,7 @@ def base_linker(vs=None, pythonflags=None, cpp=False, use_env=True):
         linker = 'c++' if cpp else 'cc'
     linker = macos_add_cross_flags( linker)
     return linker, pythonflags
-    
+
 
 def git_items( directory, submodules=False):
     '''
@@ -1654,7 +1654,7 @@ def git_items( directory, submodules=False):
             Must be somewhere within a git checkout.
         submodules:
             If true we also include git submodules.
-    
+
     Returns:
         A list of paths for all files known to git within `directory`. Each
         path is relative to `directory`. `directory` must be somewhere within a
@@ -1687,13 +1687,13 @@ def git_items( directory, submodules=False):
 def run( command, capture=False, check=1):
     '''
     Runs a command using `subprocess.run()`.
-    
+
     Args:
         command:
             A string, the command to run.
 
             Multiple lines in `command` are are treated as a single command.
-            
+
             * If a line starts with `#` it is discarded.
             * If a line contains ` #`, the trailing text is discarded.
 
@@ -1740,7 +1740,7 @@ class PythonFlags:
     '''
     Compile/link flags for the current python, for example the include path
     needed to get `Python.h`.
-    
+
     Members:
         .includes:
             String containing compiler flags for include paths.
@@ -1748,12 +1748,12 @@ class PythonFlags:
             String containing linker flags for library paths.
     '''
     def __init__(self):
-        
+
         if windows():
             wp = wdev.WindowsPython()
             self.includes = f'/I"{wp.root}\\include"'
             self.ldflags = f'/LIBPATH:"{wp.root}\\libs"'
-        
+
         elif pyodide():
             _include_dir = os.environ[ 'PYO3_CROSS_INCLUDE_DIR']
             _lib_dir = os.environ[ 'PYO3_CROSS_LIB_DIR']
@@ -1762,7 +1762,7 @@ class PythonFlags:
             log2(f'PythonFlags: Pyodide.')
             log2( f'    {_include_dir=}')
             log2( f'    {_lib_dir=}')
-        
+
         else:
             # We use python-config which appears to work better than pkg-config
             # because it copes with multiple installed python's, e.g.
@@ -1804,7 +1804,7 @@ class PythonFlags:
             log1(f'Using {python_config=}.')
             self.includes = run( f'{python_config} --includes', capture=1).strip()
             #if darwin():
-            #    self.ldflags = 
+            #    self.ldflags =
             self.ldflags = run( f'{python_config} --ldflags', capture=1).strip()
             if linux():
                 # It seems that with python-3.10 on Linux, we can get an
@@ -1817,7 +1817,7 @@ class PythonFlags:
                 if ldflags2 != self.ldflags:
                     log2(f'### Have removed `-lcrypt` from ldflags: {self.ldflags!r} -> {ldflags2!r}')
                     self.ldflags = ldflags2
-        
+
         log2(f'{self.includes=}')
         log2(f'{self.ldflags=}')
 
@@ -1843,7 +1843,7 @@ def macos_patch( library, *sublibraries):
     If running on MacOS, patches `library` so that all references to items in
     `sublibraries` are changed to `@rpath/{leafname}`. Does nothing on other
     platforms.
-    
+
     library:
         Path of shared library.
     sublibraries:
@@ -1916,60 +1916,60 @@ def _cpu_name():
 def run_if( command, out, *prerequisites):
     '''
     Runs a command only if the output file is not up to date.
-    
+
     Args:
         command:
             The command to run. We write this into a file <out>.cmd so that we
             know to run a command if the command itself has changed.
         out:
             Path of the output file.
-        
+
         prerequisites:
             List of prerequisite paths or true/false/None items. If an item
             is None it is ignored, otherwise if an item is not a string we
             immediately return it cast to a bool.
-    
+
     Returns:
         True if we ran the command, otherwise None.
-    
+
 
     If the output file does not exist, the command is run:
-    
+
         >>> out = 'run_if_test_out'
         >>> if os.path.exists( out):
         ...     os.remove( out)
         >>> run_if( f'touch {out}', out)
         True
-    
+
     If we repeat, the output file will be up to date so the command is not run:
-    
+
         >>> run_if( f'touch {out}', out)
-    
+
     If we change the command, the command is run:
-    
+
         >>> run_if( f'touch  {out}', out)
         True
-    
+
     If we add a prerequisite that is newer than the output, the command is run:
-    
+
         >>> prerequisite = 'run_if_test_prerequisite'
         >>> run( f'touch {prerequisite}')
         >>> run_if( f'touch {out}', out, prerequisite)
         True
-    
+
     If we repeat, the output will be newer than the prerequisite, so the
     command is not run:
-    
+
         >>> verbose_set(2)
         >>> run_if( f'touch {out}', out, prerequisite)
         pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
-    '''    
+    '''
     doit = False
     if not doit:
         out_mtime = _fs_mtime( out)
         if out_mtime == 0:
             doit = 'File does not exist: {out!e}'
-    
+
     cmd_path = f'{out}.cmd'
     if os.path.isfile( cmd_path):
         with open( cmd_path) as f:
@@ -1983,7 +1983,7 @@ def run_if( command, out, *prerequisites):
             doit = f'Command has changed'
             if 0:
                 doit += f': {cmd!r} => {command!r}'
-    
+
     if not doit:
         # See whether any prerequisites are newer than target.
         def _make_prerequisites(p):
@@ -2014,7 +2014,7 @@ def run_if( command, out, *prerequisites):
         if not doit:
             if pre_mtime > out_mtime:
                 doit = f'Prerequisite is new: {pre_path!r}'
-    
+
     if doit:
         # Remove `cmd_path` before we run the command, so any failure
         # will force rerun next time.
@@ -2024,16 +2024,16 @@ def run_if( command, out, *prerequisites):
         except Exception:
             pass
         log2( f'Running command because: {doit}')
-        
+
         run( command)
-        
+
         # Write the command we ran, into `cmd_path`.
         with open( cmd_path, 'w') as f:
             f.write( command)
         return True
     else:
         log2( f'Not running command because up to date: {out!r}')
-        
+
     if 0:
         log2( f'out_mtime={time.ctime(out_mtime)} pre_mtime={time.ctime(pre_mtime)}.'
                 f' pre_path={pre_path!r}: returning {ret!r}.'
@@ -2187,7 +2187,7 @@ class _Record:
     def add_content(self, content, to_):
         if isinstance(content, str):
             content = content.encode('utf8')
-        
+
         # Specification for the line we write is supposed to be in
         # https://packaging.python.org/en/latest/specifications/binary-distribution-format
         # but it's not very clear.
@@ -2197,7 +2197,7 @@ class _Record:
         digest = base64.urlsafe_b64encode(digest)
         digest = digest.rstrip(b'=')
         digest = digest.decode('utf8')
-        
+
         self.text += f'{to_},sha256={digest},{len(content)}\n'
         log2(f'Adding {to_}')
 
