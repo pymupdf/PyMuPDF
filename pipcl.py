@@ -460,13 +460,16 @@ class Package:
         assert_str_or_multi( provides_extra)
 
         # https://packaging.python.org/en/latest/specifications/core-metadata/.
-        assert re.match('([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])$', name, re.IGNORECASE)
+        assert re.match('([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])$', name, re.IGNORECASE), \
+                f'Bad name: {name!r}'
+
 
         # PEP-440.
         assert re.match(
-                r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$',
-                version,
-                )
+                    r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$',
+                    version,
+                ), \
+                f'Bad version: {version!r}.'
 
         # https://packaging.python.org/en/latest/specifications/binary-distribution-format/
         if tag_python:
@@ -1935,6 +1938,8 @@ def run_if( command, out, *prerequisites):
 
     If the output file does not exist, the command is run:
 
+        >>> verbose(1)
+        1
         >>> out = 'run_if_test_out'
         >>> if os.path.exists( out):
         ...     os.remove( out)
@@ -1960,9 +1965,7 @@ def run_if( command, out, *prerequisites):
     If we repeat, the output will be newer than the prerequisite, so the
     command is not run:
 
-        >>> verbose_set(2)
         >>> run_if( f'touch {out}', out, prerequisite)
-        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
     '''
     doit = False
     if not doit:
@@ -2111,13 +2114,13 @@ def verbose(level=None):
     return g_verbose
 
 def log0(text=''):
-        _log(text, 0)
+    _log(text, 0)
 
 def log1(text=''):
-        _log(text, 1)
+    _log(text, 1)
 
 def log2(text=''):
-        _log(text, 2)
+    _log(text, 2)
 
 def _log(text, level):
     '''
