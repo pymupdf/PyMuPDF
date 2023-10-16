@@ -633,7 +633,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.get_text_words(flags=None)
+   .. method:: Page.get_text_words(flags=None, delimiters=None)
 
       Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use :meth:`Page.get_text` with the "words" option instead.
 

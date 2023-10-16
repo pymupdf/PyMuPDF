@@ -58,13 +58,17 @@ For a description of what this class is all about, see Appendix 2.
 
       :rtype: list
 
-   .. method:: extractWORDS
+   .. method:: extractWORDS(delimiters=None)
+
+      * Changed in v1.23.5: added `delimiters` parameter
 
       Textpage content as a list of single words with bbox information. An item of this list looks like this::
 
          (x0, y0, x1, y1, "word", block_no, line_no, word_no)
 
-      Everything delimited by spaces is treated as a *"word"*. This is a high-speed method which e.g. allows extracting text from within given areas or recovering the text reading sequence.
+      :arg str delimiters: (new in v1.23.5) use these characters as *additional* word separators. By default, all white spaces (including the non-breaking space `0xA0`) indicate start and end of a word. Now you can specify more characters causing this. For instance, the default will return `"john.doe@outlook.com"` as **one** word. If you specify `delimiters="@."` then the **four** words `"john"`, `"doe"`, `"outlook"`, `"com"` will be returned. Other possible uses include ignoring punctuation characters `delimiters=string.punctuation`. The "word" strings will not contain any delimiting character.
+
+      This is a high-speed method which e.g. allows extracting text from within given areas or recovering the text reading sequence.
 
       :rtype: list
 

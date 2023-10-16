@@ -148,7 +148,7 @@ But you also have other options::
      """Underline each word that contains 'text'.
      """
      found = 0
-     wlist = page.get_text("words")  # make the word list
+     wlist = page.get_text("words", delimiters=None)  # make the word list
      for w in wlist:  # scan through all words on page
          if text in w[4]:  # w[4] is the word's string
              found += 1  # count
@@ -173,10 +173,10 @@ But you also have other options::
  if new_doc:
      doc.save("marked-" + doc.name)
 
-This script uses `Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using spaces and line breaks as delimiters. Further remarks:
+This script uses `Page.get_text("words")` to look for a string, handed in via cli parameter. This method separates a page's text into "words" using white spaces as delimiters. Further remarks:
 
 * If found, the **complete word containing the string** is marked (underlined) -- not only the search string.
-* The search string may **not contain spaces** or other white space.
+* The search string may **not contain word delimiters**. By default, word delimiters are white spaces and the non-breaking space `chr(0xA0)`. If you use extra delimiting characters like `page.get_text("words", delimiters="./,")` then none of these characters should be included in your search string either.
 * As shown here, upper / lower cases are **respected**. But this can be changed by using the string method *lower()* (or even regular expressions) in function *mark_word*.
 * There is **no upper limit**: all occurrences will be detected.
 * You can use **anything** to mark the word: 'Underline', 'Highlight', 'StrikeThrough' or 'Square' annotations, etc.
@@ -201,14 +201,14 @@ This script searches for text and marks it::
     doc = fitz.open("tilted-text.pdf")
 
     # the text to be marked
-    t = "¡La práctica hace el campeón!"
+    needle = "¡La práctica hace el campeón!"
 
     # work with first page only
     page = doc[0]
 
     # get list of text locations
     # we use "quads", not rectangles because text may be tilted!
-    rl = page.search_for(t, quads = True)
+    rl = page.search_for(needle, quads=True)
 
     # mark all found quads with one annotation
     page.add_squiggly_annot(rl)
