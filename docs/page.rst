@@ -1057,14 +1057,16 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: xml; Page.get_text
       pair: textpage; Page.get_text
       pair: sort; Page.get_text
+      pair: delimiters; Page.get_text
 
-   .. method:: get_text(opt,*, clip=None, flags=None, textpage=None, sort=False)
+   .. method:: get_text(opt,*, clip=None, flags=None, textpage=None, sort=False, delimiters=None)
 
       * Changed in v1.19.0: added `textpage` parameter
       * Changed in v1.19.1: added `sort` parameter
       * Changed in v1.19.6: added new constants for defining default flags per method.
+      * Changed in v1.23.5: added `delimiters` parameter
 
-      Retrieves the content of a page in a variety of formats. This is a wrapper for :ref:`TextPage` methods by choosing the output option as follows:
+      Retrieves the content of a page in a variety of formats. This is a wrapper for multiple :ref:`TextPage` methods by choosing the output option `opt` as follows:
 
       * "text" -- :meth:`TextPage.extractTEXT`, default
       * "blocks" -- :meth:`TextPage.extractBLOCKS`
@@ -1088,6 +1090,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg textpage: (new in v1.19.0) use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored, because they are textpage-only properties. If omitted, a new, temporary textpage will be created.
 
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order. Has no effect on (X)HTML and XML. Output option **"words"** sorts by `(y1, x0)` of the words' bboxes. Similar is true for "blocks", "dict", "json", "rawdict", "rawjson": they all are sorted by `(y1, x0)` of the resp. block bbox. If specified for "text", then internally "blocks" is used.
+
+      :arg str delimiters: (new in v1.23.5) use these characters as *additional* word separators with the "words" output option (ignored otherwise). By default, all white spaces (including non-breaking space `0xA0`) indicate start and end of a word. Now you can specify more characters causing this. For instance, the default will return `"john.doe@outlook.com"` as **one** word. If you specify `delimiters="@."` then the **four** words `"john"`, `"doe"`, `"outlook"`, `"com"` will be returned. Other possible uses include ignoring punctuation characters `delimiters=string.punctuation`. The "word" strings will not contain any delimiting character.
 
       :rtype: *str, list, dict*
       :returns: The page's content as a string, a list or a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
