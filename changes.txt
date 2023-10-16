@@ -21,15 +21,10 @@ Change Log
 * Other:
 
   * Use MuPDF-1.23.4.
-
   * Fix optimisation flags with system installs.
-
   * Fixed the problem that the clip parameter does not take effect during table recognition
-
   * Support Pillow mode "RGBa"
-
   * Support extra word delimiters
-
   * Support checking valid PDF name objects
 
 
