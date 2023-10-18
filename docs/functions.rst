@@ -60,7 +60,6 @@ Yet others are handy, general-purpose utilities.
 :meth:`recover_char_quad`            compute the quad of a char ("rawdict")
 :meth:`recover_line_quad`            compute the quad of a subset of line spans
 :meth:`recover_quad`                 compute the quad of a span ("dict", "rawdict")
-:meth:`recover_quad`                 return the quad for a text span ("dict" / "rawdict")
 :meth:`recover_span_quad`            compute the quad of a subset of span characters
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
@@ -226,26 +225,13 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: recover_quad(line_dir, span)
-
-      *New in v1.18.9*
-
-      Convenience function returning the quadrilateral enveloping the text of a text span, as returned by :meth:`Page.get_text` using the "dict" or "rawdict" options.
-
-      :arg tuple line_dict: the value `line["dir"]` of the span's line.
-      :arg dict span: the span sub-dictionary.
-
-      :returns: the quadrilateral of the span's text.
-
------
-
 .. _Functions_make_table:
 
    .. method:: make_table(rect, cols=1, rows=1)
 
       *New in v1.17.4*
 
-      Convenience function to split a rectangle into sub-rectangles. Returns a list of *rows* lists, each containing *cols* :ref:`Rect` items. Each sub-rectangle can then be addressed by its row and column index.
+      Convenience function to split a rectangle into sub-rectangles of equal size. Returns a list of `rows` lists, each containing `cols` :ref:`Rect` items. Each sub-rectangle can then be addressed by its row and column index.
 
       :arg rect_like rect: the rectangle to split.
       :arg int cols: the desired number of columns.
@@ -603,7 +589,7 @@ Yet others are handy, general-purpose utilities.
 
             So you may want to replace the two example tuples above by the following single one: `(0xFB01, glyph, (x, y), (x0, y0, x1, y1))` (there is usually no need to lookup the correct glyph id for 0xFB01 in the resp. font, but you may execute `font.has_glyph(0xFB01)` and use its return value).
 
-      * **Changed in v1.19.3:** Similar to other text extraction methods, the character and span bboxes envelop the character quads. To recover the quads, follow the same methods :meth:`recover_quad`, :meth:`recover_char_quad` or :meth:´recover_span_quad` as explained in :ref:`textpagedict`. Use either `None` or `span["dir"]` for the writing direction.
+      * **Changed in v1.19.3:** Similar to other text extraction methods, the character and span bboxes envelop the character quads. To recover the quads, follow the same methods :meth:`recover_quad`, :meth:`recover_char_quad` or :meth:`recover_span_quad` as explained in :ref:`textpagedict`. Use either `None` or `span["dir"]` for the writing direction.
 
       * **Changed in v1.21.1:** If applicable, the name of the OCG is shown in `"layer"`.
 
