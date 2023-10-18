@@ -3333,7 +3333,7 @@ void JM_append_rune(fz_buffer *buff, int ch)
     else
     {
         // 8 hex digits
-        snprintf(text, sizeof(text), "\\u%08x", ch);
+        snprintf(text, sizeof(text), "\\U%08x", ch);
         mupdf::ll_fz_append_string(buff, text);
     }
 }
