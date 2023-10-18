@@ -2,7 +2,7 @@
 Tests for the Font class.
 """
 import fitz
-
+import os
 
 def test_font1():
     text = "PyMuPDF"
@@ -37,3 +37,18 @@ def test_fontname():
         if str(e).startswith("bad fontname chars"):
             detected = True  # illegal fontname detected
     assert detected
+
+def test_2608():
+    if fitz.mupdf_version_tuple <= (1, 23, 4):
+        print( f'Not running test_2608 because mupdf too old: {fitz.mupdf_version_tuple=}')
+        return
+    flags = (fitz.TEXT_DEHYPHENATE | fitz.TEXT_MEDIABOX_CLIP)
+    with fitz.open(os.path.abspath(f'{__file__}/../resources/2201.00069.pdf')) as doc:
+        page = doc[4]
+        blocks = page.get_text_blocks(flags=flags)
+        text = blocks[10][4]
+        with open(os.path.abspath(f'{__file__}/../test_2608_out'), 'wb') as f:
+            f.write(text.encode('utf8'))
+        with open(os.path.abspath(f'{__file__}/../resources/test_2608_expected'), 'rb') as f:
+            expected = f.read().decode('utf8')
+        assert text == expected
