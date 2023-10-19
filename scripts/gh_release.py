@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 
 '''
-Build+test script for PyMuPDF, mostly for use with github builds.
+Build+test script for PyMuPDF, mostly for use with github builds but can also
+be used to build Pyodide wheels.
 
 We run cibuild manually, in order to build and test the two wheel
 flavours that make up PyMuPDF:
@@ -11,7 +12,7 @@ flavours that make up PyMuPDF:
         libraries for the MuPDF C and C++ bindings.
     PyMuPDF
         Specific to particular versions of Python. Contains the rest of
-        the(classic and rebased) PyMuPDF implementation.
+        the (classic and rebased) PyMuPDF implementation.
 
 Args:
     build
@@ -19,23 +20,24 @@ Args:
     build-devel
         Build using cibuild with `--platform` set.
     pip_install <prefix>
-        Run `pip install <prefix>-*<platform_tag>.whl`,
+        For internal use. Runs `pip install <prefix>-*<platform_tag>.whl`,
         where `platform_tag` will be things like 'win32', 'win_amd64',
         'x86_64`, depending on the python we are running on.
     venv
-        Run remaining args inside venv.
+        Run with remaining args inside a venv.
     test
         Internal.
 
-We look at these items in the environment, should be unset (treated as '0'),
-'0' or '1'.
+We also look at specific items in the environment, should be unset (treated as
+'0'), '0' or '1'. We use environment variables here to allow use with Github
+action inputs, which can't be easily translated into command-line arguments.
 
     inputs_flavours
         If unset or '1', build separate PyMuPDF and PyMuPDFb wheels.
         If '0', build complete PyMuPDF wheels.
+    inputs_sdist
     inputs_skeleton
         Build minimal wheel; for testing only.
-    inputs_sdist
     inputs_wheels_default
     inputs_wheels_linux_aarch64
     inputs_wheels_linux_auto
@@ -43,6 +45,11 @@ We look at these items in the environment, should be unset (treated as '0'),
     inputs_wheels_macos_arm64
     inputs_wheels_macos_auto
     inputs_wheels_windows_auto
+    inputs_wheels_cps
+    inputs_PYMUPDF_SETUP_MUPDF_BUILD
+        Used to directly set PYMUPDF_SETUP_MUPDF_BUILD.
+    inputs_wheels_implementations
+        Used to directly set PYMUPDF_SETUP_IMPLEMENTATIONS.
 
 Buiding for Pyodide
 
@@ -53,7 +60,7 @@ Buiding for Pyodide
 
 Example usage:
 
-     PYMUPDF_SETUP_MUPDF_BUILD=../mupdf-master py -3.9-32 PyMuPDF/scripts/gh_release.py venv build-devel
+     PYMUPDF_SETUP_MUPDF_BUILD=../mupdf py -3.9-32 PyMuPDF/scripts/gh_release.py venv build-devel
    
 '''
 
@@ -165,6 +172,7 @@ def build( platform_=None):
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
+    inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations')
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
@@ -182,7 +190,7 @@ def build( platform_=None):
     # Build Pyodide wheel if specified.
     #
     if platform.system() == 'Linux' and inputs_wheels_linux_pyodide:
-        build_pyodide_wheel()
+        build_pyodide_wheel(inputs_wheels_implementations)
     
     # Build 
     #
@@ -266,7 +274,7 @@ def build( platform_=None):
             v += name
             env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = v
 
-    env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', 'ab', pass_=1)
+    env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', inputs_wheels_implementations, pass_=1)
     if inputs_skeleton:
         env_set('PYMUPDF_SETUP_SKELETON', inputs_skeleton, pass_=1)
     
@@ -342,7 +350,7 @@ def build( platform_=None):
     run( 'ls -lt wheelhouse')
 
 
-def build_pyodide_wheel():
+def build_pyodide_wheel( implementations):
     '''
     Build Pyodide wheel.
 
@@ -364,7 +372,7 @@ def build_pyodide_wheel():
     env_extra['OS'] = 'pyodide'
 
     # Build only classic PyMuPDF.
-    env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = 'a'
+    env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = implementations
     
     # Build a single wheel without a separate PyMuPDFb wheel.
     env_extra['PYMUPDF_SETUP_FLAVOUR'] = 'pb'
@@ -579,7 +587,7 @@ def pyodide_setup(clean=False):
 
 
 def log(text):
-    print(f'{__file__}: {text}')
+    print(f'{os.path.relpath(__file__)}: {text}')
     sys.stdout.flush()
 
 
