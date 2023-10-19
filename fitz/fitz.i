@@ -11827,10 +11827,10 @@ struct TextPage {
                         fz_print_stext_page_as_xhtml(gctx, out, this_tpage, 0);
                         break;
                     default:
-                        JM_print_stext_page_as_text(gctx, out, this_tpage);
+                        JM_print_stext_page_as_text(gctx, res, this_tpage);
                         break;
                 }
-                text = JM_UnicodeFromBuffer(gctx, res);
+                text = JM_EscapeStrFromBuffer(gctx, res);
 
             }
             fz_always(gctx) {
@@ -11845,28 +11845,20 @@ struct TextPage {
 
 
         //----------------------------------------------------------------
-        // method extractRect()
+        // method extractTextbox()
         //----------------------------------------------------------------
+        FITZEXCEPTION(extractTextbox, !result)
         PyObject *extractTextbox(PyObject *rect)
         {
             fz_stext_page *this_tpage = (fz_stext_page *) $self;
             fz_rect area = JM_rect_from_py(rect);
             PyObject *rc = NULL;
-            char *found = NULL;
             fz_try(gctx) {
-                char *found = JM_copy_rectangle(gctx, this_tpage, area);
-                if (found) {
-                    rc = JM_UnicodeFromStr(found);
-                    JM_Free(found);
-                } else {
-                    rc = EMPTY_STRING;
-                }
+                rc = JM_copy_rectangle(gctx, this_tpage, area);
             }
             fz_catch(gctx) {
-                if (found) JM_Free(found);
-                return EMPTY_STRING;
+                return NULL;
             }
-
             return rc;
         }
 

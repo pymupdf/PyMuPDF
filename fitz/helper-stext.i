@@ -460,7 +460,7 @@ no_more_matches:;
 // character (which else leads to 2 new-lines).
 //-----------------------------------------------------------------------------
 void
-JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page)
+JM_print_stext_page_as_text(fz_context *ctx, fz_buffer *buff, fz_stext_page *page)
 {
     fz_stext_block *block;
     fz_stext_line *line;
@@ -480,14 +480,11 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
                     if (fz_is_infinite_rect(rect) ||
                         JM_rects_overlap(rect, chbbox)) {
                         last_char = ch->c;
-                        n = fz_runetochar(utf, ch->c);
-                        for (i = 0; i < n; i++) {
-                            fz_write_byte(ctx, out, utf[i]);
-                        }
+                        JM_append_rune(ctx, buff, ch->c);
                     }
                 }
                 if (last_char != 10 && last_char > 0) {
-                    fz_write_string(ctx, out, "\n");
+                    fz_append_string(ctx, buff, "\n");
                 }
             }
         }
@@ -794,18 +791,17 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
 
 
 //---------------------------------------------------------------------
-char *
+PyObject *
 JM_copy_rectangle(fz_context *ctx, fz_stext_page *page, fz_rect area)
 {
 	fz_stext_block *block;
 	fz_stext_line *line;
 	fz_stext_char *ch;
 	fz_buffer *buffer;
-	unsigned char *s;
 	int need_new_line = 0;
-
-	buffer = fz_new_buffer(ctx, 1024);
+	PyObject *rc = NULL;
 	fz_try(ctx) {
+        buffer = fz_new_buffer(ctx, 1024);
 		for (block = page->first_block; block; block = block->next) {
 			if (block->type != FZ_STEXT_BLOCK_TEXT)
 				continue;
@@ -819,7 +815,7 @@ JM_copy_rectangle(fz_context *ctx, fz_stext_page *page, fz_rect area)
 							fz_append_string(ctx, buffer, "\n");
 							need_new_line = 0;
 						}
-						fz_append_rune(ctx, buffer, ch->c < 32 ? FZ_REPLACEMENT_CHARACTER : ch->c);
+						JM_append_rune(ctx, buffer, ch->c);
 					}
 				}
 				if (line_had_text)
@@ -827,16 +823,19 @@ JM_copy_rectangle(fz_context *ctx, fz_stext_page *page, fz_rect area)
 			}
 		}
 		fz_terminate_buffer(ctx, buffer);
+        rc = JM_EscapeStrFromBuffer(ctx, buffer);
+        if (!rc) {
+            rc = EMPTY_STRING;
+            PyErr_Clear();
+        }
 	}
+    fz_always(ctx) {
+        fz_drop_buffer(ctx, buffer);
+        }
 	fz_catch(ctx) {
-		fz_drop_buffer(ctx, buffer);
 		fz_rethrow(ctx);
 	}
-
-
-	fz_buffer_extract(ctx, buffer, &s); /* take over the data */
-	fz_drop_buffer(ctx, buffer);
-	return (char*)s;
+	return rc;
 }
 //---------------------------------------------------------------------
 

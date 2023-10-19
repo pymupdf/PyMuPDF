@@ -11903,8 +11903,8 @@ class TextPage:
         elif format_ == 4:
             mupdf.fz_print_stext_page_as_xhtml(out, this_tpage, 0)
         else:
-            JM_print_stext_page_as_text(out, this_tpage)
-        text = JM_UnicodeFromBuffer(res)
+            JM_print_stext_page_as_text(res, this_tpage)
+        text = JM_EscapeStrFromBuffer(res)
         return text
 
     def _getNewBlockList(self, page_dict, raw):
@@ -12096,10 +12096,7 @@ class TextPage:
         assert isinstance(this_tpage, mupdf.FzStextPage)
         area = JM_rect_from_py(rect)
         found = JM_copy_rectangle(this_tpage, area);
-        if (found):
-            rc = JM_UnicodeFromStr(found)
-        else:
-            rc = ''
+        rc = PyUnicode_DecodeRawUnicodeEscape(found)
         return rc
 
     def extractWORDS(self, delimiters=None):
@@ -13929,12 +13926,24 @@ def JM_annot_set_border( border, doc, annot_obj):
         mupdf.pdf_dict_put_int( obj, PDF_NAME('I'), nclouds)
 
 
+def make_escape(ch):
+    if ch == 92:
+        return "\\u005c"
+    elif 32 <= ch <= 127 or ch == 10:
+        return chr(ch)
+    elif 0xd800 <= ch <= 0xdfff:  # orphaned surrogate
+        return chr(0xfffd)
+    elif ch <= 0xffff:
+        return "\\u%04x" % ch
+    else:
+        return "\\U%08x" % ch
+
+
 def JM_append_rune(buff, ch):
     """
     APPEND non-ascii runes in unicode escape format to fz_buffer.
-    No need for special processing in pure Python.
     """
-    mupdf.fz_append_string(buff, chr(ch))
+    mupdf.fz_append_string(buff, make_escape(ch))
 
 
 def JM_append_word(lines, buff, wbbox, block_n, line_n, word_n):
@@ -14244,9 +14253,10 @@ def JM_compress_buffer(inbuffer):
     return buf;
 
 
+
 def JM_copy_rectangle(page, area):
     need_new_line = 0
-    buffer_ = mupdf.fz_new_buffer(1024)
+    buffer = io.StringIO()
     for block in page:
         if block.m_internal.type != mupdf.FZ_STEXT_BLOCK_TEXT:
             continue
@@ -14257,17 +14267,13 @@ def JM_copy_rectangle(page, area):
                 if JM_rects_overlap(area, r):
                     line_had_text = 1
                     if need_new_line:
-                        mupdf.fz_append_string(buffer_, "\n")
+                        buffer.write("\n")
                         need_new_line = 0
-                    mupdf.fz_append_rune(
-                            buffer_,
-                            FZ_REPLACEMENT_CHARACTER if ch.m_internal.c < 32 else ch.m_internal.c,
-                            )
+                    buffer.write(make_escape(ch.m_internal.c))
             if line_had_text:
                 need_new_line = 1
-    mupdf.fz_terminate_buffer(buffer_)
 
-    s = mupdf.fz_buffer_extract(buffer_)   # take over the data
+    s = buffer.getvalue()   # take over the data
     return s
 
 
@@ -16303,16 +16309,16 @@ def JM_point_from_py(p):
     return mupdf.FzPoint(x, y)
 
 
-def JM_print_stext_page_as_text(out, page):
+def JM_print_stext_page_as_text(res, page):
     '''
     Plain text output. An identical copy of fz_print_stext_page_as_text,
     but lines within a block are concatenated by space instead a new-line
     character (which else leads to 2 new-lines).
     '''
     if 1 and g_use_extra:
-        return extra.JM_print_stext_page_as_text( out, page)
+        return extra.JM_print_stext_page_as_text(res, page)
     
-    assert isinstance(out, mupdf.FzOutput)
+    assert isinstance(res, mupdf.FzBuffer)
     assert isinstance(page, mupdf.FzStextPage)
     rect = mupdf.FzRect(page.m_internal.mediabox)
     last_char = 0
@@ -16340,14 +16346,10 @@ def JM_print_stext_page_as_text(out, page):
                             ):
                         #raw += chr(ch.m_internal.c)
                         last_char = ch.m_internal.c
-                        utf = mupdf.fz_runetochar2(last_char)
                         #log( '{=last_char!r utf!r}')
-                        for c in utf:
-                            assert isinstance(c, int), f'{type(c)=} {c=}'
-                            assert 0 <= c < 256, f'{utf=} {c=}'
-                            mupdf.fz_write_byte(out, c)
+                        JM_append_rune(res, last_char)
                 if last_char != 10 and last_char > 0:
-                    mupdf.fz_write_string(out, "\n")
+                    mupdf.fz_append_string(res, "\n")
 
 
 def JM_put_script(annot_obj, key1, key2, value):
@@ -17153,8 +17155,14 @@ def ENSURE_OPERATION( pdf):
 
 
 def PyUnicode_DecodeRawUnicodeEscape(s, errors='strict'):
-    # fixme: handle escape sequencies
-    ret = s.decode('utf8', errors=errors)
+    # FIXED: handle raw unicode escape sequences
+    if not s:
+        return ""
+    if isinstance(s, str):
+        rc = s.encode("utf8", errors=errors)
+    elif isinstance(s, bytes):
+        rc = s[:]
+    ret = rc.decode('raw_unicode_escape', errors=errors)
     z = ret.find(chr(0))
     if z >= 0:
         ret = ret[:z]
