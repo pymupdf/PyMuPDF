@@ -561,7 +561,31 @@ def test_2730():
     page = doc[0]
     s1 = set(page.get_text())  # plain text extraction
     s2 = set(page.get_text(sort=True))  # uses "blocks" extraction
+    s3 = set(page.get_textbox(page.rect))
     assert s1 == s2
+    assert s1 == s3
+
+
+def test_2553():
+    """Ensure identical output across text extractions."""
+    doc = fitz.open(f"{scriptdir}/resources/test_2553.pdf")
+    page = doc[0]
+
+    # extract plain text, build set of all characters
+    set1 = set(page.get_text())
+
+    # extract text blocks, build set of all characters
+    set2 = set(page.get_text(sort=True))  # internally uses "blocks"
+
+    # extract textbox content, build set of all characters
+    set3 = set(page.get_textbox(page.rect))
+
+    # all sets must be equal
+    assert set1 == set2
+    assert set1 == set3
+
+    # this special page contains no invalid Unicodes!
+    assert chr(0xFFFD) not in set1
 
 
 def test_2635():
