@@ -670,9 +670,7 @@ def build():
             f'{g_root}/fitz',
             f'{g_root}/src',
             ):
-        command = f'ls -l {d}'
-        log(f'Running: {command}')
-        os.system(command)
+        run(f'ls -l {os.path.relpath(d)}')
     
     # Generate lists of (from, to) items to return to pipcl. We put MuPDF
     # shared libraries in a separate list so that we can build specific wheels
@@ -709,7 +707,7 @@ def build():
 
     if path_so_leaf_b:
         # Add rebased implementation files.
-        to_dir = 'fitz_new/'
+        to_dir = 'fitz_new/' if path_so_leaf_a else 'fitz/'
         add( ret_p, f'{g_root}/src/__init__.py', to_dir)
         add( ret_p, f'{g_root}/src/__main__.py', to_dir)
         add( ret_p, f'{g_root}/src/fitz.py', to_dir)
@@ -729,6 +727,10 @@ def build():
                 add( ret_p, f'{mupdf_build_dir}/_mupdf.so', to_dir)
                 add( ret_b, f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
+            elif pyodide:
+                add( ret_p, f'{mupdf_build_dir}/_mupdf.so', to_dir)
+                add( ret_b, f'{mupdf_build_dir}/libmupdfcpp.so', 'PyMuPDF.libs/')
+                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
             else:
                 add( ret_p, f'{mupdf_build_dir}/_mupdf.so', to_dir)
                 add( ret_b, f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
