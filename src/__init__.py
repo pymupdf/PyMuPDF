@@ -5194,11 +5194,11 @@ class Document:
         if no_new_id == 0:
             JM_ensure_identity(pdf)
         if isinstance(filename, str):
-            log( 'calling mupdf.pdf_save_document()')
+            #log( 'calling mupdf.pdf_save_document()')
             mupdf.pdf_save_document(pdf, filename, opts)
         else:
             out = JM_new_output_fileptr(filename)
-            log( f'{type(out)=} {type(out.this)=}')
+            #log( f'{type(out)=} {type(out.this)=}')
             mupdf.pdf_write_document(pdf, out, opts)
 
     def save_snapshot(self, filename):
