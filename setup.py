@@ -670,7 +670,8 @@ def build():
             f'{g_root}/fitz',
             f'{g_root}/src',
             ):
-        run(f'ls -l {os.path.relpath(d)}')
+        if d:
+            run(f'ls -l {os.path.relpath(d)}')
     
     # Generate lists of (from, to) items to return to pipcl. We put MuPDF
     # shared libraries in a separate list so that we can build specific wheels
