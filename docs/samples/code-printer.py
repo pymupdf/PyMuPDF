@@ -227,7 +227,7 @@ if __name__ == "__main__" or os.environ.get('PYTEST_CURRENT_TEST'):
     pages = [doc[i] for i in new_range]  # these are the TOC pages within main PDF
     for item in TOC:  # search for TOC item text to get its rectangle
         for page in pages:
-            rl = page.search_for(item[1], flags=~fitz.TEXT_PRESERVE_LIGATURES)
+            rl = page.search_for(item[1], flags=~(fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_SPANS))
             if rl != []:  # this text must be on next page
                 break
         rect = rl[0]  # rectangle of TOC item text
