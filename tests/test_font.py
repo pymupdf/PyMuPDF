@@ -51,4 +51,9 @@ def test_2608():
             f.write(text.encode('utf8'))
         with open(os.path.abspath(f'{__file__}/../resources/test_2608_expected'), 'rb') as f:
             expected = f.read().decode('utf8')
+        # Github windows x32 seems to insert \r characters; maybe something to
+        # do with the Python installation's line endings settings.
+        expected = expected.replace('\r', '')
+        print(f'test_2608(): {text.encode("utf8")=}')
+        print(f'test_2608(): {expected.encode("utf8")=}')
         assert text == expected
