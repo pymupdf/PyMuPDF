@@ -172,7 +172,7 @@ def build( platform_=None):
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
-    inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations')
+    inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations', 'ab')
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
