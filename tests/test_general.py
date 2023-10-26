@@ -572,20 +572,43 @@ def test_2553():
     page = doc[0]
 
     # extract plain text, build set of all characters
-    set1 = set(page.get_text())
+    list1 = page.get_text()
+    set1 = set(list1)
 
     # extract text blocks, build set of all characters
-    set2 = set(page.get_text(sort=True))  # internally uses "blocks"
-
+    list2 = page.get_text(sort=True)  # internally uses "blocks"
+    set2 = set(list2)
+    
     # extract textbox content, build set of all characters
-    set3 = set(page.get_textbox(page.rect))
-
+    list3 = page.get_textbox(page.rect)
+    set3 = set(list3)
+    
+    def show(l):
+        ret = f'len={len(l)}\n'
+        for c in l:
+            cc = ord(c)
+            if (cc >= 32 and cc < 127) or c == '\n':
+                ret += c
+            else:
+                ret += f' [0x{hex(cc)}]'
+        return ret
+    print(f'list1:\n{show(list1)}')
+    print(f'list2:\n{show(list2)}')
+    print(f'list3:\n{show(list3)}')
+    
     # all sets must be equal
     assert set1 == set2
     assert set1 == set3
 
-    # this special page contains no invalid Unicodes!
-    assert chr(0xFFFD) not in set1
+    # With mupdf later than 1.23.4, this special page contains no invalid
+    # Unicodes.
+    #
+    if fitz.mupdf_version_tuple > (1, 23, 4):
+        print(f'Checking no occurrence of 0xFFFD, {fitz.mupdf_version_tuple=}.')
+        assert chr(0xFFFD) not in set1
+    else:
+        print(f'Checking occurrence of 0xFFFD, {fitz.mupdf_version_tuple=}.')
+        assert chr(0xFFFD) in set1
 
 
 def test_2635():
