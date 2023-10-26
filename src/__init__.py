@@ -13932,7 +13932,7 @@ def make_escape(ch):
     elif 32 <= ch <= 127 or ch == 10:
         return chr(ch)
     elif 0xd800 <= ch <= 0xdfff:  # orphaned surrogate
-        return chr(0xfffd)
+        return "\\ufffd"
     elif ch <= 0xffff:
         return "\\u%04x" % ch
     else:
