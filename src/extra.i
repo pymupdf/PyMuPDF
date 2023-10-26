@@ -3317,7 +3317,7 @@ void JM_append_rune(fz_buffer *buff, int ch)
     {
         mupdf::ll_fz_append_string(buff, "\\u005c");
     }
-    else if ((ch >= 32 && ch <= 255) || ch == 10)
+    else if ((ch >= 32 && ch <= 127) || ch == 10)
     {
         mupdf::ll_fz_append_byte(buff, ch);
     }
