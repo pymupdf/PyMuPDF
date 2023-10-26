@@ -213,19 +213,8 @@ def build( platform_=None):
                 ret.append(item)
         return ' '.join(ret)
     
-    cps = inputs_wheels_cps if inputs_wheels_cps else 'cp38* cp39* cp310* cp311*'
+    cps = inputs_wheels_cps if inputs_wheels_cps else 'cp38* cp39* cp310* cp311* cp312*'
     set_if_unset( 'CIBW_BUILD', cps)
-    
-    if 0:
-        cps = ([]
-                + inputs_wheels_cp38 * ['cp38*']
-                + inputs_wheels_cp39 * ['cp39*']
-                + inputs_wheels_cp310 * ['cp310*']
-                + inputs_wheels_cp311 * ['cp311*']
-                )
-        cps = ' '.join(cps)
-        log(f'{cps=}')
-        set_if_unset( 'CIBW_BUILD', cps)
     
     if platform.system() == 'Linux':
         set_if_unset(
