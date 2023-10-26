@@ -5,6 +5,7 @@ on:
     inputs:
       
       flavours:
+        description: 'If set, we build separate PyMuPDF and PyMuPDFb wheels.'
         type: boolean
         default: true
       
@@ -41,7 +42,7 @@ on:
         type: string
     
       PYMUPDF_SETUP_MUPDF_BUILD:
-        description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD'
+        description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD, e.g.: git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
         type: string
         default: '-'
       
