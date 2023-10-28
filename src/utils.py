@@ -3613,7 +3613,7 @@ class Shape:
 
         if render_mode > 0:
             nres += "%i Tr " % render_mode
-            nres += "%g w " % border_width * fontsize
+            nres += "%g w " % (border_width * fontsize)
 
         if color is not None:
             nres += color_str
@@ -3952,7 +3952,7 @@ class Shape:
 
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
-                nres += "%g w " % border_width * fontsize
+                nres += "%g w " % (border_width * fontsize)
 
             if align == 3:
                 nres += "%g Tw " % spacing

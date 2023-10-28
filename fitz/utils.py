@@ -1025,6 +1025,7 @@ def get_toc(
     Args:
         simple: a bool to control output. Returns a list, where each entry consists of outline level, title, page number and link destination (if simple = False). For details see PyMuPDF's documentation.
     """
+
     def recurse(olItem, liste, lvl):
         """Recursively follow the outline item chain and record item information in a list."""
         while olItem:
@@ -1810,7 +1811,6 @@ def insert_text(
     fill_opacity: float = 1,
     oc: int = 0,
 ):
-
     img = page.new_shape()
     rc = img.insert_text(
         point,
@@ -3448,7 +3448,6 @@ class Shape(object):
         fill_opacity: float = 1,
         oc: int = 0,
     ) -> int:
-
         # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer):
             return 0
@@ -3576,7 +3575,7 @@ class Shape(object):
 
         if render_mode > 0:
             nres += "%i Tr " % render_mode
-            nres += "%g w " % border_width * fontsize
+            nres += "%g w " % (border_width * fontsize)
 
         if color is not None:
             nres += color_str
@@ -3915,7 +3914,7 @@ class Shape(object):
 
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
-                nres += "%g w " % border_width * fontsize
+                nres += "%g w " % (border_width * fontsize)
 
             if align == 3:
                 nres += "%g Tw " % spacing
