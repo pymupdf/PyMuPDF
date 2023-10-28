@@ -8,6 +8,7 @@ import io
 import os
 
 import fitz
+import pickle
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
@@ -620,3 +621,16 @@ def test_2635():
     page.clean_contents()  # clean page
     pix2 = page.get_pixmap()  # pixmap after cleaning
     assert pix1.samples == pix2.samples  # assert equality
+
+
+def test_resolve_names():
+    """Test PDF name resolution."""
+    # guard against wrong PyMuPDF architecture version
+    if not hasattr(fitz.Document, "resolve_names"):
+        print("PyMuPDF version does not support resolving PDF names")
+        return
+    pickle_in = open(f"{scriptdir}/resources/cython.pickle", "rb")
+    old_names = pickle.load(pickle_in)
+    doc = fitz.open(f"{scriptdir}/resources/cython.pdf")
+    new_names = doc.resolve_names()
+    assert new_names == old_names
