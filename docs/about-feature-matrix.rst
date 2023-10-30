@@ -46,9 +46,10 @@
 
         #feature-matrix th {
             border: 1px #999 solid;
-            padding: 10px;
+            padding: 10px 2px;
             background-color: #007aff;
             color: white;
+            text-align: center;
         }
 
         #feature-matrix tr {
@@ -57,7 +58,8 @@
 
         #feature-matrix td {
             border: 1px #999 solid;
-            padding: 10px;
+            padding: 10px 2px;
+            text-align: center;
         }
 
         #feature-matrix tr td.yes {
@@ -139,11 +141,12 @@
 
     <table id="feature-matrix" border="0" cellpadding="0" cellspacing="0">
         <tr>
-            <th style="width:20%;" id="transFM1">Feature</th>
-            <th style="width:20%;">PyMuPDF</th>
-            <th style="width:20%;">pikepdf</th>
-            <th style="width:20%;">PyPDF2</th>
-            <th style="width:20%;">pdfrw</th>
+            <th id="transFM1">Feature</th>
+            <th>PyMuPDF</th>
+            <th>pikepdf</th>
+            <th>PyPDF2</th>
+            <th>pdfrw</th>
+            <th>pdfplumber / pdfminer</th>
         </tr>
 
 
@@ -169,12 +172,16 @@
             <td>
                 <span class="icon pdf"><cite>PDF</cite></span>
             </td>
+            <td>
+                <span class="icon pdf"><cite>PDF</cite></span>
+            </td>
         </tr>
 
         <tr>
             <td><cite id="transFM4">Implementation</cite></td>
             <td><cite>C</cite> <span id="transFM5">and</span> <cite>Python</cite></td>
             <td><cite>C++</cite> <span id="transFM6">and</span> <cite>Python</cite></td>
+            <td><cite>Python</cite></td>
             <td><cite>Python</cite></td>
             <td><cite>Python</cite></td>
         </tr>
@@ -185,6 +192,7 @@
             <td class="no" id="transFM9">No rendering</td>
             <td class="no" id="transFM10">No rendering</td>
             <td class="no" id="transFM11">No rendering</td>
+            <td class="no" id="transFM11x">No rendering</td>
         </tr>
 
         <tr>
@@ -193,6 +201,16 @@
             <td class="no"></td>
             <td class="yes"><cite>PDF</cite> <span id="transFM14">only</span></td>
             <td class="no"></td>
+            <td class="yes"><cite>PDF</cite> <span id="transFM14x">only</span></td>
+        </tr>
+
+        <tr>
+            <td style="padding:20px 0;"><cite id="transFMExtractTables">Extract Tables</cite></td>
+            <td class="yes"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="yes"></td>
         </tr>
 
         <tr>
@@ -201,11 +219,13 @@
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
+            <td class="limited" id="transFM16x">Limited</td>
         </tr>
 
         <tr>
             <td><cite id="transFM17">Draw Vector Graphics (PDF)</cite></td>
             <td class="yes"></td>
+            <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
@@ -217,12 +237,14 @@
             <td class="yes"><cite>QPDF</cite></td>
             <td class="no"></td>
             <td class="no"></td>
+            <td class="no"></td>
         </tr>
 
         <tr>
             <td><cite id="transFM19">Automatic Repair of Damaged PDFs</cite></td>
             <td class="yes"></td>
             <td class="yes"></td>
+            <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
         </tr>
@@ -233,6 +255,7 @@
             <td class="yes"></td>
             <td class="limited" id="transFM21">Limited</td>
             <td class="no"></td>
+            <td class="limited" id="transFM21x">Limited</td>
         </tr>
 
         <tr>
@@ -241,11 +264,13 @@
             <td class="yes"></td>
             <td class="no"></td>
             <td class="no"></td>
+            <td class="no"></td>
         </tr>
 
         <tr>
             <td><cite id="transFM23">Incremental Updates</cite></td>
             <td class="yes"></td>
+            <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
@@ -257,6 +282,7 @@
             <td class="yes"></td>
             <td class="no"></td>
             <td class="no"></td>
+            <td class="yes"></td>
         </tr>
 
         <tr>
@@ -265,11 +291,13 @@
             <td class="yes"><cite>PDF</cite> <span id="transFM27">only</span> </td>
             <td class="yes"><cite>PDF</cite> <span id="transFM28">only</span> </td>
             <td class="yes"><cite>PDF</cite> <span id="transFM29">only</span> </td>
+            <td class="yes"><cite>PDF</cite> <span id="transFM29x">only</span> </td>
         </tr>
 
         <tr>
             <td><cite id="transFM30">OCR API for Seamless Integration with Tesseract</cite></td>
             <td class="yes" id="transFM31">All document types</td>
+            <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
@@ -281,11 +309,13 @@
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
+            <td class="no"></td>
         </tr>
 
         <tr>
             <td><cite id="transFM33">PDF Optional Content</cite></td>
             <td class="yes"></td>
+            <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
@@ -297,11 +327,13 @@
             <td class="yes"></td>
             <td class="limited" id="transFM35">Limited</td>
             <td class="no"></td>
+            <td class="limited" id="transFM35x">Limited</td>
         </tr>
 
         <tr>
             <td><cite id="transFM36">PDF Redactions</cite></td>
             <td class="yes"></td>
+            <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
@@ -313,6 +345,7 @@
             <td class="no"></td>
             <td class="limited" id="transFM39">Limited</td>
             <td class="no"></td>
+            <td class="no"></td>
         </tr>
 
         <tr>
@@ -320,6 +353,7 @@
             <td class="yes" id="transFM41">Create, read, update</td>
             <td class="no"></td>
             <td class="limited" id="transFM42">Limited, no creation</td>
+            <td class="no"></td>
             <td class="no"></td>
         </tr>
 
@@ -329,11 +363,13 @@
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
+            <td class="no"></td>
         </tr>
 
         <tr>
             <td><cite id="transFM44">Support Font Sub-Setting</cite></td>
             <td class="yes"></td>
+            <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
@@ -412,6 +448,8 @@
                     return "PDFページラベル";
                 } else if (str=="Support Font Sub-Setting") {
                     return "フォントのサブセット化をサポートする";
+                } else if (str=="Extract Tables") {
+                    return "抽出テーブル";
                 }
 
 
@@ -431,16 +469,20 @@
         document.getElementById("transFM9").innerHTML = getTranslation("No rendering");
         document.getElementById("transFM10").innerHTML = getTranslation("No rendering");
         document.getElementById("transFM11").innerHTML = getTranslation("No rendering");
+        document.getElementById("transFM11x").innerHTML = getTranslation("No rendering");
         document.getElementById("transFM12").innerHTML = getTranslation("Extract Text");
         document.getElementById("transFM13").innerHTML = getTranslation("All document types");
         document.getElementById("transFM14").innerHTML = getTranslation("only");
+        document.getElementById("transFM14x").innerHTML = getTranslation("only");
         document.getElementById("transFM15").innerHTML = getTranslation("Extract Vector Graphics");
         document.getElementById("transFM16").innerHTML = getTranslation("All document types");
+        document.getElementById("transFM16x").innerHTML = getTranslation("Limited");
         document.getElementById("transFM17").innerHTML = getTranslation("Draw Vector Graphics (PDF)");
         document.getElementById("transFM18").innerHTML = getTranslation("Based on Existing, Mature Library");
         document.getElementById("transFM19").innerHTML = getTranslation("Automatic Repair of Damaged PDFs");
         document.getElementById("transFM20").innerHTML = getTranslation("Encrypted PDFs");
         document.getElementById("transFM21").innerHTML = getTranslation("Limited");
+        document.getElementById("transFM21x").innerHTML = getTranslation("Limited");
         document.getElementById("transFM22").innerHTML = getTranslation("Linerarized PDFs");
         document.getElementById("transFM23").innerHTML = getTranslation("Incremental Updates");
         document.getElementById("transFM24").innerHTML = getTranslation("Integrates with Jupyter and IPython Notebooks");
@@ -449,21 +491,26 @@
         document.getElementById("transFM27").innerHTML = getTranslation("only");
         document.getElementById("transFM28").innerHTML = getTranslation("only");
         document.getElementById("transFM29").innerHTML = getTranslation("only");
+        document.getElementById("transFM29x").innerHTML = getTranslation("only");
         document.getElementById("transFM30").innerHTML = getTranslation("OCR API for Seamless Integration with Tesseract");
         document.getElementById("transFM31").innerHTML = getTranslation("All document types");
         document.getElementById("transFM32").innerHTML = getTranslation("Integrated Checkpoint / Restart Feature (PDF)");
         document.getElementById("transFM33").innerHTML = getTranslation("PDF Optional Content");
         document.getElementById("transFM34").innerHTML = getTranslation("PDF Embedded Files");
         document.getElementById("transFM35").innerHTML = getTranslation("Limited");
+        document.getElementById("transFM35x").innerHTML = getTranslation("Limited");
         document.getElementById("transFM36").innerHTML = getTranslation("PDF Redactions");
         document.getElementById("transFM37").innerHTML = getTranslation("PDF Annotations");
         document.getElementById("transFM38").innerHTML = getTranslation("Full");
         document.getElementById("transFM39").innerHTML = getTranslation("Limited");
+        document.getElementById("transFM39x").innerHTML = getTranslation("Limited");
         document.getElementById("transFM40").innerHTML = getTranslation("PDF Form Fields");
         document.getElementById("transFM41").innerHTML = getTranslation("Create, read, update");
         document.getElementById("transFM42").innerHTML = getTranslation("Limited, no creation");
+        document.getElementById("transFM42x").innerHTML = getTranslation("Limited, no creation");
         document.getElementById("transFM43").innerHTML = getTranslation("PDF Page Labels");
         document.getElementById("transFM44").innerHTML = getTranslation("Support Font Sub-Setting");
+        document.getElementById("transFMExtractTables").innerHTML = getTranslation("Extract Tables");
 
 
     </script>
