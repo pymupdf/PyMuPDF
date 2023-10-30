@@ -1175,4 +1175,35 @@ Tables can be found and extracted from any document :ref:`Page`.
 
 
 
+.. _The_Basics_Get_Page_Links:
+
+Getting Page Links
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Links can be extracted from a :ref:`Page` to return :ref:`Link` objects.
+
+
+.. raw:: html
+
+    <pre>
+        <code class="language-python" data-prismjs-copy="Copy">
+            import fitz
+
+            for page in doc: # iterate the document pages
+                link = page.first_link  # a `Link` object or `None`
+
+                while link: # iterate over the links on page
+                    # do something with the link, then:
+                    link = link.next # get next link, last one has `None` in its `next`
+        </code>
+    </pre>
+
+
+.. note::
+
+    **API reference**
+
+    - :meth:`Page.first_link`
+
+
 .. include:: footer.rst
