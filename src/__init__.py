@@ -5130,13 +5130,10 @@ class Document:
 
         def obj_string(obj):
             """Return string version of a PDF object definition."""
-            buffer = fitz.mupdf.fz_new_buffer(512)
-            output = fitz.mupdf.ll_fz_new_output_with_buffer(buffer.m_internal)
-            fitz.mupdf.ll_pdf_print_obj(output, obj.m_internal, 1, 0)
-            printed = fitz.JM_UnicodeFromBuffer(buffer)
-            fitz.mupdf.ll_fz_drop_output(output)
-            fitz.mupdf.ll_fz_drop_buffer(buffer.m_internal)
-            return printed
+            buffer = mupdf.fz_new_buffer(512)
+            output = mupdf.FzOutput(buffer)
+            mupdf.pdf_print_obj(output, obj, 1, 0)
+            return fitz.JM_UnicodeFromBuffer(buffer)
 
         def get_array(val):
             """Generate value of one item of the names dictionary."""
