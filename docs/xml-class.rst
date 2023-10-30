@@ -359,7 +359,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: find_next( tag, att, match)
 
-       Continue a previous :meth:`Xml.find` (or ::meth:`find_next`) with the same values.
+       Continue a previous :meth:`Xml.find` (or :meth:`find_next`) with the same values.
 
        :rtype: :ref:`Xml`.
        :returns: `None` if none more found, otherwise the next matching node.

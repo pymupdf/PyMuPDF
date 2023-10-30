@@ -27,7 +27,7 @@ Outline
 
    .. attribute:: down
 
-      The next outline item on the next level down. Is *None* if the item has no kids.
+      The next outline item on the next level down. Is *None* if the item has no children.
 
       :type: :ref:`Outline`
 

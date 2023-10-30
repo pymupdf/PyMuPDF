@@ -1604,7 +1604,7 @@ For details on **embedded files** refer to Appendix 3.
       :arg bool new: *deprecated* and ignored. Will be removed some time after v1.20.0.
       :arg bool compress: whether to compress the inserted stream. If `True` (default), the stream will be inserted using `/FlateDecode` compression (if beneficial), otherwise the stream will inserted as is.
 
-      :raises ValueError: if *xref* does not represent a PDF :data:`dict`. An empty dictionary `<<>>` is accepted. So if you just created the xref and want to give it a stream, first execute `doc.update_object(xref, "<<>>")`, and then insert the stream data with this method.
+      :raises ValueError: if *xref* does not represent a PDF :data:`dict`. An empty dictionary ``<<>>`` is accepted. So if you just created the xref and want to give it a stream, first execute `doc.update_object(xref, "<<>>")`, and then insert the stream data with this method.
 
       The method is primarily (but not exclusively) intended to manipulate streams containing PDF operator syntax (see pp. 643 of the :ref:`AdobeManual`) as it is the case for e.g. page content streams.
 
@@ -1620,7 +1620,7 @@ For details on **embedded files** refer to Appendix 3.
       PDF Only: Make *target* xref an exact copy of *source*. If *source* is a :data:`stream`, then these data are also copied.
 
       :arg int source: the source :data:`xref`. It must be an existing **dictionary** object.
-      :arg int target: the target xref. Must be an existing **dictionary** object. If the xref has just been created, make sure to initialize it as a PDF dictionary with the minimum specification `<<>>`.
+      :arg int target: the target xref. Must be an existing **dictionary** object. If the xref has just been created, make sure to initialize it as a PDF dictionary with the minimum specification ``<<>>``.
       :arg list keep: an optional list of top-level keys in *target*, that should not be removed in preparation of the copy process.
 
       .. note::

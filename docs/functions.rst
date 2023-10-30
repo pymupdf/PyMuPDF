@@ -772,7 +772,7 @@ Yet others are handy, general-purpose utilities.
 
       :arg tuple line_dir: `line["dir"]` of the owning line. Use `None` for a span from :meth:`Page.get_texttrace`.
       :arg dict span: the span.
-      :arg list chars: the characters to consider. If omitted, identical to :meth:`recoer_span`. If given, the selected extraction option must be "rawdict".
+      :arg list chars: the characters to consider. If given, the selected extraction option must be "rawdict".
       :returns: the :ref:`Quad` of the selected characters, usable for text marker annotations ('Highlight', etc.).
 
 -----
