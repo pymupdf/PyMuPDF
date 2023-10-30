@@ -182,7 +182,7 @@ This class is a collection of utility methods and attributes, mainly around memo
       base14            Base-14 fonts (should always be true)
       ================= ===================================================
 
-      For an explanation of the term "TOFU" see `this Wikipedia article <https://en.wikipedia.org/wiki/Noto_fonts>`_.::
+      For an explanation of the term "TOFU" see `this Wikipedia article <https://en.wikipedia.org/wiki/Noto_fonts>`_::
 
        In [1]: import fitz
        In [2]: TOOLS.fitz_config
@@ -216,22 +216,21 @@ This class is a collection of utility methods and attributes, mainly around memo
 
    .. attribute:: store_maxsize
 
-      Maximum storables cache size in bytes. PyMuPDF is generated with a value of 268'435'456 (256 MB, the default value), which you should therefore always see here. If this value is zero, then an "unlimited" growth is permitted.
+      Maximum storables cache size in bytes. **PyMuPDF** is generated with a value of 268'435'456 (256 MB, the default value), which you should therefore always see here. If this value is zero, then an "unlimited" growth is permitted.
 
       :rtype: int
 
    .. attribute:: store_size
 
-      Current storables cache size in bytes. This value may change (and will usually increase) with every use of a PyMuPDF function. It will (automatically) decrease only when :attr:`Tools.store_maxize` is going to be exceeded: in this case, MuPDF will evict low-usage objects until the value is again in range.
+      Current storables cache size in bytes. This value may change (and will usually increase) with every use of a **PyMuPDF** function. It will (automatically) decrease only when :attr:`Tools.store_maxsize` is going to be exceeded: in this case, **MuPDF** will evict low-usage objects until the value is again in range.
 
       :rtype: int
 
 Example Session
 ----------------
 
-.. highlight:: python
+.. code-block:: python
 
-::
    >>> import fitz
    # print the maximum and current cache sizes
    >>> fitz.TOOLS.store_maxsize

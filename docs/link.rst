@@ -18,10 +18,10 @@ There is a parent-child relationship between a link and its page. If the page ob
 :attr:`Link.border`       border characteristics
 :attr:`Link.colors`       border line color
 :attr:`Link.dest`         points to destination details
-:attr:`Link.is_external`  external destination?
+:attr:`Link.is_external`  checks if the link is an external destination
 :attr:`Link.flags`        link annotation flags
 :attr:`Link.next`         points to next link
-:attr:`Link.rect`         clickable area in untransformed coordinates.
+:attr:`Link.rect`         clickable area in untransformed coordinates
 :attr:`Link.uri`          link destination
 :attr:`Link.xref`         :data:`xref` number of the entry
 ========================= ============================================
@@ -91,7 +91,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
       :type: :ref:`Rect`
 
-   .. attribute:: isExternal
+   .. attribute:: is_external
 
       A bool specifying whether the link target is outside of the current document.
 

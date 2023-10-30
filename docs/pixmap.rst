@@ -215,7 +215,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: shrink(n)
 
-      Shrink the pixmap by dividing both, its width and height by 2\ :sup:`n`.
+      Shrink the pixmap by dividing both, its width and height by 2\ :sup:``n``.
 
       :arg int n: determines the new pixmap (samples) size. For example, a value of 2 divides width and height by 4 and thus results in a size of one 16\ :sup:`th` of the original. Values less than 1 are ignored with a warning.
 
@@ -360,7 +360,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg str,fp filename: identifies the file to save to. May be either a string or a pointer to a file opened with "wb" (includes `io.BytesIO()` objects).
       :arg bool compress: whether to compress the resulting PDF, default is `True`.
       :arg str language: the languages occurring in the image. This must be specified in Tesseract format. Default is "eng" for English. Use "+"-separated Tesseract language codes for multiple languages, like "eng+spa" for English and Spanish.
-      : arg str tessdata: folder name of Tesseract's language support. If omitted, this information must be present as environment variable `TESSDATA_PREFIX`.
+      :arg str tessdata: folder name of Tesseract's language support. If omitted, this information must be present as environment variable `TESSDATA_PREFIX`.
 
       .. note:: **Will fail** if Tesseract is not installed or if the environment variable "TESSDATA_PREFIX" is not set to the `tessdata` folder name and not provided as parameter.
 
@@ -598,7 +598,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: n
 
-      Number of components per pixel. This number depends on colorspace and alpha. If colorspace is not *None* (stencil masks), then *Pixmap.n - Pixmap.aslpha == pixmap.colorspace.n* is true. If colorspace is *None*, then *n == alpha == 1*.
+      Number of components per pixel. This number depends on colorspace and alpha. If colorspace is not *None* (stencil masks), then *Pixmap.n - Pixmap.alpha == pixmap.colorspace.n* is true. If colorspace is *None*, then *n == alpha == 1*.
 
       :type: int
 
