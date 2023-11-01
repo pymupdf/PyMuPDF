@@ -92,7 +92,7 @@ def test_extract4():
     writer = fitz.mupdf.FzDocumentWriter(
             out,
             'html',
-            fitz.mupdf.FzDocumentWriter.PathType_DOCX,
+            fitz.mupdf.FzDocumentWriter.OutputType_DOCX,
             )
     device = fitz.mupdf.fz_begin_page(writer, fitz.mupdf.fz_bound_page(page))
     fitz.mupdf.fz_run_page(page, device, fitz.mupdf.FzMatrix(), fitz.mupdf.FzCookie())
