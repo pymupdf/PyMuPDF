@@ -9129,7 +9129,7 @@ class Page:
             rect = mupdf.fz_bound_page( self.this)
         else:
             rect = JM_mediabox( page.obj())
-        return rect
+        return Rect(rect)
 
     @property
     def mediabox_size(self):

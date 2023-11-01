@@ -634,3 +634,8 @@ def test_resolve_names():
     doc = fitz.open(f"{scriptdir}/resources/cython.pdf")
     new_names = doc.resolve_names()
     assert new_names == old_names
+
+def test_2777():
+    document = fitz.Document()
+    page = document.new_page()
+    print(page.mediabox.width)
