@@ -639,3 +639,35 @@ def test_2777():
     document = fitz.Document()
     page = document.new_page()
     print(page.mediabox.width)
+
+def test_2710():
+    doc = fitz.open(f'{scriptdir}/resources/test_2710.pdf')
+    page = doc.load_page(0)
+    
+    print(f'{page.cropbox=}')
+    print(f'{page.mediabox=}')
+    print(f'{page.rect=}')
+    
+    def numbers_approx_eq(a, b):
+        return abs(a-b) < 0.001
+    def points_approx_eq(a, b):
+        return numbers_approx_eq(a.x, b.x) and numbers_approx_eq(a.y, b.y)
+    def rects_approx_eq(a, b):
+        return points_approx_eq(a.bottom_left, b.bottom_left) and points_approx_eq(a.top_right, b.top_right)
+    def assert_rects_approx_eq(a, b):
+        assert rects_approx_eq(a, b), f'Not nearly identical: {a=} {b=}'
+                
+    assert_rects_approx_eq(page.cropbox, fitz.Rect(30.0, 30.0, 565.3200073242188, 811.9199829101562))
+    assert_rects_approx_eq(page.mediabox, fitz.Rect(0.0, 0.0, 595.3200073242188, 841.9199829101562))
+    assert_rects_approx_eq(page.rect, fitz.Rect(0.0, 0.0, 535.3200073242188, 781.9199829101562))
+    
+    blocks = page.get_text('blocks')
+    print(f'{blocks=}')
+    assert len(blocks) == 2
+    block = blocks[1]
+    rect = fitz.Rect(block[:4])
+    text = block[4]
+    print(f'{rect=}')
+    print(f'{text=}')
+    assert text == 'Text at left page border\n'
+    assert_rects_approx_eq(rect, fitz.Rect(0.7872352600097656, 64.7560043334961, 124.85531616210938, 78.1622543334961))
