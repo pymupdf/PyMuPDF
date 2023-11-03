@@ -99,3 +99,31 @@ def test_extract4():
     fitz.mupdf.fz_end_page(writer)
     fitz.mupdf.fz_close_document_writer(writer)
     print(f'Have written to: {out}')
+    
+    if fitz.mupdf_version_tuple >= (1, 23, 4):
+        def get_text(page, space_guess):
+            buffer_ = fitz.mupdf.FzBuffer( 10)
+            out = fitz.mupdf.FzOutput( buffer_)
+            writer = fitz.mupdf.FzDocumentWriter(
+                    out,
+                    'text,space-guess={space_guess}',
+                    fitz.mupdf.FzDocumentWriter.OutputType_DOCX,
+                    )
+            device = fitz.mupdf.fz_begin_page(writer, fitz.mupdf.fz_bound_page(page))
+            fitz.mupdf.fz_run_page(page, device, fitz.mupdf.FzMatrix(), fitz.mupdf.FzCookie())
+            fitz.mupdf.fz_end_page(writer)
+            fitz.mupdf.fz_close_document_writer(writer)
+            text = buffer_.fz_buffer_extract()
+            text = text.decode('utf8')
+            n = text.count(' ')
+            print(f'{space_guess=}: {n=}')
+            return text, n
+        page = document[4]
+        text0, n0 = get_text(page, 0)
+        text1, n1 = get_text(page, 0.5)
+        text2, n2 = get_text(page, 0.001)
+        text2, n2 = get_text(page, 0.1)
+        text2, n2 = get_text(page, 0.3)
+        text2, n2 = get_text(page, 0.9)
+        text2, n2 = get_text(page, 5.9)
+        assert text1 == text0
