@@ -2,6 +2,23 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.6 ()**
+
+* Bug fixes:
+
+  * **Fixed** `2553 <https://github.com/pymupdf/PyMuPDF/issues/2553>`_: Invalid characters in versions >= 1.22
+  * **Fixed** `2608 <https://github.com/pymupdf/PyMuPDF/issues/2608>`_: Incorrect utf32 text extraction (high & low surrogates are split)
+  * **Fixed** `2710 <https://github.com/pymupdf/PyMuPDF/issues/2710>`_: page.rect and text location wrong / differing from older version
+  * **Fixed** `2774 <https://github.com/pymupdf/PyMuPDF/issues/2774>`_: wrong encoding for "\?" character when sort=True
+  * **Fixed** `2775 <https://github.com/pymupdf/PyMuPDF/issues/2775>`_: fitz_new does not work with python3.10 or earlier
+  * **Fixed** `2777 <https://github.com/pymupdf/PyMuPDF/issues/2777>`_: With fitz_new, wrong type for Page.mediabox
+
+* Other:
+
+  * Use MuPDF-1.23.5.
+  * Added Document.resolve_names() (rebased implementation only).
+
+
 **Changes in version 1.23.5 (2023-10-11)**
 
 * Bug fixes:
