@@ -96,6 +96,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.pdf_trailer`            PDF only: trailer source
 :meth:`Document.prev_location`          return (chapter, pno) of preceding page
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
+:meth:`Document.resolve_names`          PDF only: Convert destination names into a Python dict
 :meth:`Document.save`                   PDF only: save the document
 :meth:`Document.saveIncr`               PDF only: save the document incrementally
 :meth:`Document.scrub`                  PDF only: remove sensitive data
@@ -606,6 +607,43 @@ For details on **embedded files** refer to Appendix 3.
       :returns: a new copy of the same page. All pending updates (e.g. to annotations or widgets) will be finalized and a fresh copy of the page will be loaded.
 
         .. note:: In a typical use case, a page :ref:`Pixmap` should be taken after annotations / widgets have been added or changed. To force all those changes being reflected in the page structure, this method re-instates a fresh copy while keeping the object hierarchy "document -> page -> annotations/widgets" intact.
+
+
+    .. method:: resolve_names()
+
+      PDF only: Convert destination names into a Python dict.
+      
+      Only available in PyMuPDF's "rebased" implementation.
+
+      :returns:
+          A dictionary with the following layout:
+      
+          * *key*: (str) the name.
+          * *value*: (dict) with the following layout:
+              * "page":  target page number (0-based). If no page number found -1.
+              * "to": (x, y) target point on page. Currently in PDF coordinates,
+                i.e. point (0,0) is the bottom-left of the page.
+              * "zoom": (float) the zoom factor.
+              * "dest": (str) only present if the target location on the page has
+                not been provided as "/XYZ" or if no page number was found.
+          Examples::
+          
+              {
+                  '__bookmark_1': {'page': 0, 'to': (0.0, 541.0), 'zoom': 0.0},
+                  '__bookmark_2': {'page': 0, 'to': (0.0, 481.45), 'zoom': 0.0},
+              }
+
+          or::
+
+              {
+                  '21154a7c20684ceb91f9c9adc3b677c40': {'page': -1, 'dest': '/XYZ 15.75 1486 0'},
+                  ...
+              }
+
+      All names found in the catalog under keys "/Dests" and "/Names/Dests" are
+      included.
+
+      * New in v1.23.6
 
 
     .. method:: page_cropbox(pno)
