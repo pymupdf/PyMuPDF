@@ -1529,7 +1529,7 @@ def build_extension(
                         {libs_text}
                         {rpath_flag}
                     '''
-        run_if(
+        command_was_run = run_if(
                 command,
                 path_so,
                 path_cpp,
@@ -1538,7 +1538,7 @@ def build_extension(
                 prerequisites,
                 )
 
-        if darwin():
+        if command_was_run and darwin():
             # We need to patch up references to shared libraries in `libs`.
             sublibraries = list()
             for lib in libs:
