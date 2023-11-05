@@ -960,6 +960,9 @@ def _build_extension_classic( mupdf_local, mupdf_build_dir, build_type):
         write_git('mupdf', mupdf_local)
     f.write('%}\n')
     _fs_update( f.getvalue(), 'fitz/helper-git-versions.i')
+    if os.environ.get( 'PYMUPDF_SETUP_REBUILD_GIT_DETAILS') == '0':
+        log( f'Marking fitz/helper-git-versions.i as old because PYMUPDF_SETUP_REBUILD_GIT_DETAILS=0')
+        os.utime( 'fitz/helper-git-versions.i', (1, 1))
 
     if windows:
         compiler_extra_c = ''
