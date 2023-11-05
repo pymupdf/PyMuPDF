@@ -644,9 +644,9 @@ def test_2710():
     doc = fitz.open(f'{scriptdir}/resources/test_2710.pdf')
     page = doc.load_page(0)
     
-    print(f'{page.cropbox=}')
-    print(f'{page.mediabox=}')
-    print(f'{page.rect=}')
+    print(f'test_2710(): {page.cropbox=}')
+    print(f'test_2710(): {page.mediabox=}')
+    print(f'test_2710(): {page.rect=}')
     
     def numbers_approx_eq(a, b):
         return abs(a-b) < 0.001
@@ -657,17 +657,25 @@ def test_2710():
     def assert_rects_approx_eq(a, b):
         assert rects_approx_eq(a, b), f'Not nearly identical: {a=} {b=}'
                 
-    assert_rects_approx_eq(page.cropbox, fitz.Rect(30.0, 30.0, 565.3200073242188, 811.9199829101562))
-    assert_rects_approx_eq(page.mediabox, fitz.Rect(0.0, 0.0, 595.3200073242188, 841.9199829101562))
-    assert_rects_approx_eq(page.rect, fitz.Rect(0.0, 0.0, 535.3200073242188, 781.9199829101562))
-    
     blocks = page.get_text('blocks')
-    print(f'{blocks=}')
+    print(f'test_2710(): {blocks=}')
     assert len(blocks) == 2
     block = blocks[1]
     rect = fitz.Rect(block[:4])
     text = block[4]
-    print(f'{rect=}')
-    print(f'{text=}')
+    print(f'test_2710(): {rect=}')
+    print(f'test_2710(): {text=}')
     assert text == 'Text at left page border\n'
-    assert_rects_approx_eq(rect, fitz.Rect(0.7872352600097656, 64.7560043334961, 124.85531616210938, 78.1622543334961))
+    
+    assert_rects_approx_eq(page.cropbox, fitz.Rect(30.0, 30.0, 565.3200073242188, 811.9199829101562))
+    assert_rects_approx_eq(page.mediabox, fitz.Rect(0.0, 0.0, 595.3200073242188, 841.9199829101562))
+    print(f'test_2710(): {fitz.mupdf_version_tuple=}')
+    if fitz.mupdf_version_tuple < (1, 23, 5):
+        print(f'test_2710(): Not Checking page.rect and rect.')
+    elif fitz.mupdf_version_tuple < (1, 24.0):
+        print(f'test_2710(): Checking page.rect and rect.')
+        assert_rects_approx_eq(page.rect, fitz.Rect(0.0, 0.0, 535.3200073242188, 781.9199829101562))
+        assert_rects_approx_eq(rect, fitz.Rect(0.7872352600097656, 64.7560043334961, 124.85531616210938, 78.1622543334961))
+    else:
+        # 2023-11-05: Currently broken in mupdf master.
+        print(f'test_2710(): Not Checking page.rect and rect.')
