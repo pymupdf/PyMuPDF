@@ -31,7 +31,7 @@ def test_2548():
             e = True
     wt = fitz.TOOLS.mupdf_warnings()
     print(f'test_2548(): {wt=}')
-    if fitz.mupdf_version_tuple == (1, 23, 5):
+    if fitz.mupdf_version_tuple < (1, 24, 0):
         assert e
         assert not wt
     else:
