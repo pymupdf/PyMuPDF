@@ -746,19 +746,20 @@ For details on **embedded files** refer to Appendix 3.
 
         * *lvl* -- hierarchy level (positive *int*). The first entry is always 1. Entries in a row are either **equal**, **increase** by 1, or **decrease** by any number.
         * *title* -- title (*str*)
-        * *page* -- 1-based page number (*int*). If `-1` either no destination or outside document.
+        * *page* -- 1-based source page number (*int*). `-1` if no destination or outside document.
         * *dest* -- (*dict*) included only if *simple=False*. Contains details of the TOC item as follows:
 
           - kind: destination kind, see :ref:`linkDest Kinds`.
           - file: filename if kind is :data:`LINK_GOTOR` or :data:`LINK_LAUNCH`.
           - page: target page, 0-based, :data:`LINK_GOTOR` or :data:`LINK_GOTO` only.
-          - to: position on target page (:ref:`Point`).
+          - to: `(x, y)` position on target page.
           - zoom: (float) zoom factor on target page.
           - xref: :data:`xref` of the item (0 if no PDF).
           - color: item color in PDF RGB format `(red, green, blue)`, or omitted (always omitted if no PDF).
           - bold: true if bold item text or omitted. PDF only.
           - italic: true if italic item text, or omitted. PDF only.
           - collapse: true if sub-items are folded, or omitted. PDF only.
+          - nameddest: target name if kind=4. PDF only. (New in 1.23.7.)
 
 
     .. method:: xref_get_keys(xref)

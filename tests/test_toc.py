@@ -91,3 +91,25 @@ def test_2355():
     with fitz.open(path) as new_doc:
         for i in range(10):
             new_doc.get_toc()
+
+def test_2788():
+    '''
+    Check handling of Document.get_toc() when toc item has kind=4.
+    '''
+    if not hasattr(fitz, 'mupdf'):
+        # Classic implementation does not have fix for this test.
+        print(f'Not running test_2788 on classic implementation.')
+        return
+    path = os.path.relpath(f'{__file__}/../../tests/resources/test_2788.pdf')        
+    document = fitz.open(path)
+    toc0 = [[1, 'page2', 2, {'kind': 4, 'xref': 14, 'page': 1, 'to': (100.0, 760.0), 'zoom': 0.0, 'nameddest': 'page.2'}]]
+    toc1 = document.get_toc(simple=False)
+    print(f'{toc0=}')
+    print(f'{toc1=}')
+    assert toc1 == toc0
+    
+    doc.set_toc(toc0)
+    toc2 = document.get_toc(simple=False)
+    print(f'{toc0=}')
+    print(f'{toc2=}')
+    assert toc2 == toc0
