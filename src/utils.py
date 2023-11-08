@@ -952,9 +952,9 @@ def get_page_pixmap(
             )
 
 
-def getLinkDict(ln) -> dict:
-    #fitz.log( '{=type(ln) ln}')
-    nl = {"kind": ln.dest.kind, "xref": 0}
+def getLinkDict(ln, document=None) -> dict:
+    dest = ln.destination(document)
+    nl = {"kind": dest.kind, "xref": 0}
     try:
         nl["from"] = ln.rect
     except Exception as e:
@@ -962,43 +962,44 @@ def getLinkDict(ln) -> dict:
         if g_exceptions_verbose:    fitz.exception_info()
         pass
     pnt = fitz.Point(0, 0)
-    if ln.dest.flags & fitz.LINK_FLAG_L_VALID:
-        pnt.x = ln.dest.lt.x
-    if ln.dest.flags & fitz.LINK_FLAG_T_VALID:
-        pnt.y = ln.dest.lt.y
+    if dest.flags & fitz.LINK_FLAG_L_VALID:
+        pnt.x = dest.lt.x
+    if dest.flags & fitz.LINK_FLAG_T_VALID:
+        pnt.y = dest.lt.y
 
-    if ln.dest.kind == fitz.LINK_URI:
-        nl["uri"] = ln.dest.uri
+    if dest.kind == fitz.LINK_URI:
+        nl["uri"] = dest.uri
 
-    elif ln.dest.kind == fitz.LINK_GOTO:
-        nl["page"] = ln.dest.page
+    elif dest.kind == fitz.LINK_GOTO:
+        nl["page"] = dest.page
         nl["to"] = pnt
-        if ln.dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
-            nl["zoom"] = ln.dest.rb.x
+        if dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
+            nl["zoom"] = dest.rb.x
         else:
             nl["zoom"] = 0.0
 
-    elif ln.dest.kind == fitz.LINK_GOTOR:
-        nl["file"] = ln.dest.fileSpec.replace("\\", "/")
-        nl["page"] = ln.dest.page
-        if ln.dest.page < 0:
-            nl["to"] = ln.dest.dest
+    elif dest.kind == fitz.LINK_GOTOR:
+        nl["file"] = dest.fileSpec.replace("\\", "/")
+        nl["page"] = dest.page
+        if dest.page < 0:
+            nl["to"] = dest.dest
         else:
             nl["to"] = pnt
-            if ln.dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
-                nl["zoom"] = ln.dest.rb.x
+            if dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
+                nl["zoom"] = dest.rb.x
             else:
                 nl["zoom"] = 0.0
 
-    elif ln.dest.kind == fitz.LINK_LAUNCH:
-        nl["file"] = ln.dest.fileSpec.replace("\\", "/")
+    elif dest.kind == fitz.LINK_LAUNCH:
+        nl["file"] = dest.fileSpec.replace("\\", "/")
 
-    elif ln.dest.kind == fitz.LINK_NAMED:
-        nl["name"] = ln.dest.named
+    elif dest.kind == fitz.LINK_NAMED:
+        # The dicts should not have same key(s).
+        assert not (dest.named.keys() & nl.keys())
+        nl.update(dest.named)
 
     else:
-        nl["page"] = ln.dest.page
-
+        nl["page"] = dest.page
     return nl
 
 
@@ -1013,7 +1014,7 @@ def get_links(page: fitz.Page) -> list:
     ln = page.first_link
     links = []
     while ln:
-        nl = getLinkDict(ln)
+        nl = getLinkDict(ln, page.parent)
         links.append(nl)
         ln = ln.next
     if links != [] and page.parent.is_pdf:
@@ -1060,7 +1061,7 @@ def get_toc(
                 page = -1
 
             if not simple:
-                link = getLinkDict(olItem)
+                link = getLinkDict(olItem, doc)
                 liste.append([lvl, title, page, link])
             else:
                 liste.append([lvl, title, page])
@@ -1402,13 +1403,14 @@ def set_toc(
             if type(o[3]) in (int, float):  # convert a number to a point
                 dest_dict["to"] = fitz.Point(72, page_height - o[3])
             else:  # if something else, make sure we have a dict
-                dest_dict = o[3] if type(o[3]) is dict else dest_dict
+                # We make a copy of o[3] to avoid modifying our caller's data.
+                dest_dict = o[3].copy() if type(o[3]) is dict else dest_dict
                 if "to" not in dest_dict:  # target point not in dict?
                     dest_dict["to"] = top  # put default in
                 else:  # transform target to PDF coordinates
-                    point = +dest_dict["to"]
+                    point = fitz.Point(dest_dict["to"])
                     point.y = page_height - point.y
-                    dest_dict["to"] = point
+                    dest_dict["to"] = (point.x, point.y)
         d = {}
         d["first"] = -1
         d["count"] = 0

@@ -23,15 +23,15 @@ def log( text, caller=1):
     print( f'{filename}:{line}:{function}: {text}', file=sys.stdout)
     sys.stdout.flush()
 
-# Try to detect if we are being used with current directory set to a mupdfpy/
-# checkout.
+# Try to detect if we are being used with current directory set to a PyMuPDF/
+# checkout - this can cause problems because of the `fitz/` directory.
 #
 if os.path.exists( 'fitz/__init__.py'):
     if not glob.glob( 'fitz/_extra*') or not glob.glob( 'fitz/_mupdf*'):
         log( '#' * 40)
         log( '# Warning: current directory appears to contain an incomplete')
         log( '# fitz/ installation directory so "import fitz" may fail.')
-        log( '# This can happen if current directory is a mupdfpy source tree.')
+        log( '# This can happen if current directory is a PyMuPDF source tree.')
         log( '# Suggest changing to a different current directory.')
         log( '#' * 40)
 
@@ -84,7 +84,7 @@ def get_env_bool( name, default):
 # true.
 g_exceptions_verbose = get_env_bool( 'PYMUPDF_EXCEPTIONS_VERBOSE', True)
 
-# $MUPDFPY_USE_EXTRA overrides whether to use optimised C fns in `extra`.
+# $PYMUPDF_USE_EXTRA overrides whether to use optimised C fns in `extra`.
 #
 g_use_extra = get_env_bool( 'PYMUPDF_USE_EXTRA', True)
 
@@ -2576,6 +2576,10 @@ class Document:
             self.this = pdf_document
             self.this_is_pdf = True
             return
+        
+        # Classic implementation temporarily sets JM_mupdf_show_errors=0 then
+        # restores the previous value in `fz_always() {...}` before returning.
+        #
         
         if not filename or type(filename) is str:
             pass
@@ -5085,7 +5089,7 @@ class Document:
                 return (-1, -1), 0, 0
             return -1, 0, 0
         try:
-            loc, xp, yp = mupdf.fz_resolve_link(this_doc, uri);
+            loc, xp, yp = mupdf.fz_resolve_link(self.this, uri);
         except Exception as e:
             if g_exceptions_verbose:    exception_info()
             if chapters:
@@ -5093,7 +5097,7 @@ class Document:
             return -1, 0, 0
         if chapters:
             return (loc.chapter, loc.page), xp, yp
-        pno = mupdf.fz_page_number_from_location(this_doc, loc)
+        pno = mupdf.fz_page_number_from_location(self.this, loc)
         return pno, xp, yp
 
 
@@ -6311,7 +6315,7 @@ class Link:
         else:
             uri = doc.resolve_link(self.uri)
 
-        return linkDest(self, uri)
+        return linkDest(self, uri, doc)
 
     @property
     def flags(self)->int:
@@ -6682,7 +6686,7 @@ Identity = IdentityMatrix()
 class linkDest:
     """link or outline destination details"""
 
-    def __init__(self, obj, rlink):
+    def __init__(self, obj, rlink, document=None):
         isExt = obj.is_external
         isInt = not isExt
         self.dest = ""
@@ -6721,7 +6725,18 @@ class linkDest:
                         self.page = int(m.group(1)) - 1
                     else:
                         self.kind = LINK_NAMED
-                        self.named = self.uri[1:]
+                        m = re.match('^#nameddest=(.*)', self.uri)
+                        assert document
+                        if document and m:
+                            named = m.group(1)
+                            self.named = document.resolve_names().get(named)
+                            if self.named is None:
+                                # document.resolve_names() does not contain an
+                                # entry for `named` so use an empty dict.
+                                self.named = dict()
+                            self.named['nameddest'] = named
+                        else:
+                            self.named = self.uri[1:]
             else:
                 self.kind = LINK_NAMED
                 self.named = self.uri
@@ -7039,8 +7054,11 @@ class Outline:
     @property
     def dest(self):
         '''outline destination details'''
-        return linkDest(self, None)
+        return linkDest(self, None, None)
 
+    def destination(self, document):
+        return linkDest(self, None, document)
+        
     @property
     def down(self):
         ol = self.this
@@ -9419,8 +9437,8 @@ class Pixmap:
 
             # copy samples data ------------------------------------------
             if 1:
-                # We use specially-provided mupdfpy_pixmap_copy() to get best
-                # performance.
+                # We use specially-provided (by MuPDF Python bindings)
+                # ll_fz_pixmap_copy() to get best performance.
                 # test_pixmap.py:test_setalpha(): 3.9s t=0.0062
                 mupdf.ll_fz_pixmap_copy( pm.m_internal, src_pix.m_internal, n)
             elif 1:
@@ -16255,13 +16273,13 @@ def JM_mupdf_warning( message):
     sys.stderr.flush()
     JM_mupdf_warnings_store.append(message)
     if JM_mupdf_show_warnings:
-        sys.stderr.write(f'mupdfpy warning: {message}\n')
+        sys.stderr.write(f'MuPDF warning: {message}\n')
 
 
 def JM_mupdf_error( message):
     JM_mupdf_warnings_store.append(message)
     if JM_mupdf_show_errors:
-        sys.stderr.write(f'mupdfpy error: {message}\n')
+        sys.stderr.write(f'MuPDF error: {message}\n')
 
 
 def JM_new_bbox_device(rc, inc_layers):
@@ -21320,7 +21338,7 @@ if not mupdf_cppyy:
 # no pending warnings and will not attempt to call JM_mupdf_warning().
 #
 def _atexit():
-    #log( 'mupdfpy/fitz/__init__.py:_atexit() called')
+    #log( 'PyMuPDF/src/__init__.py:_atexit() called')
     mupdf.fz_flush_warnings()
     mupdf.fz_set_warning_callback(None)
     mupdf.fz_set_error_callback(None)
