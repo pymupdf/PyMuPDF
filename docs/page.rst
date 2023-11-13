@@ -1059,7 +1059,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: sort; Page.get_text
       pair: delimiters; Page.get_text
 
-   .. method:: get_text(opt,*, clip=None, flags=None, textpage=None, sort=False, delimiters=None)
+   .. method:: get_text(option,*, clip=None, flags=None, textpage=None, sort=False, delimiters=None)
 
       * Changed in v1.19.0: added `textpage` parameter
       * Changed in v1.19.1: added `sort` parameter
