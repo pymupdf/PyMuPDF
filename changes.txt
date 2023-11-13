@@ -2,6 +2,13 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.7 ()**
+
+* Bug fixes:
+
+  * **Fixed** `2788 <https://github.com/pymupdf/PyMuPDF/issues/2788>`_: Problem with get_toc in pymupdf 1.23.6
+
+
 **Changes in version 1.23.6 (2023-11-06)**
 
 * Bug fixes:
