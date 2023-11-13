@@ -1,5 +1,6 @@
 import fitz
 import os
+import textwrap
 
 
 def test_story():
@@ -30,3 +31,42 @@ def test_story():
         writer.end_page()
 
     writer.close()
+
+
+def test_2753():
+    
+    def rectfn(rect_num, filled):
+        return fitz.Rect(0, 0, 200, 200), fitz.Rect(50, 50, 100, 100), None
+    
+    def make_pdf(html, path_out):
+        story = fitz.Story(html=html)
+        document = story.write_with_links(rectfn)
+        print(f'Writing to: {path_out=}.')
+        document.save(path_out)
+        return document
+    
+    doc_before = make_pdf(
+            textwrap.dedent('''
+                <p>Before</p>
+                <p style="page-break-before: always;"></p>
+                <p>After</p>
+                '''),
+            os.path.relpath(f'{__file__}/../../tests/test_2753-out-before.pdf'),
+            )
+        
+    doc_after = make_pdf(
+            textwrap.dedent('''
+                <p>Before</p>
+                <p style="page-break-after: always;"></p>
+                <p>After</p>
+                '''),
+            os.path.relpath(f'{__file__}/../../tests/test_2753-out-after.pdf'),
+            )
+    
+    assert len(doc_before) == 2
+    
+    if fitz.mupdf_version_tuple > (1, 23, 5) and fitz.mupdf_version_tuple < (1, 24, 0):
+        assert len(doc_after) == 2
+    else:
+        # page-break-after not handled correctly.
+        assert len(doc_after) == 1
