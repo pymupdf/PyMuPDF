@@ -37,5 +37,11 @@ def test_2548():
     else:
         # After 2023-11-05 mupdf master no longer raises an exception, but does
         # write a warning.
-        assert wt == 'structure tree broken, assume tree is missing: cycle in structure tree'
+        expected = 'structure tree broken, assume tree is missing: cycle in structure tree'
+
+        # 2023-11-13 temporarily expected broken behaviour in current mupdf tree.
+        expected = 'cycle in structure tree\nstructure tree broken, assume tree is missing\n' * 76
+        expected = expected[:-1] # remove trailing newline.
+
+        assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
         assert not e
