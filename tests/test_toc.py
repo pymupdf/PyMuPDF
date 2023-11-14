@@ -100,7 +100,7 @@ def test_2788():
         # Classic implementation does not have fix for this test.
         print(f'Not running test_2788 on classic implementation.')
         return
-    path = os.path.relpath(f'{__file__}/../../tests/resources/test_2788.pdf')        
+    path = os.path.abspath(f'{__file__}/../../tests/resources/test_2788.pdf')        
     document = fitz.open(path)
     toc0 = [[1, 'page2', 2, {'kind': 4, 'xref': 14, 'page': 1, 'to': (100.0, 760.0), 'zoom': 0.0, 'nameddest': 'page.2'}]]
     toc1 = document.get_toc(simple=False)
