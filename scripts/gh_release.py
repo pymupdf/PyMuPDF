@@ -277,7 +277,7 @@ def build( platform_=None):
         if inputs_skeleton:
             env_set('CIBW_TEST_COMMAND', 'python {project}/scripts/gh_release.py test {project} {package}')
         else:
-            env_set('CIBW_TEST_REQUIRES', 'fontTools pytest')
+            env_set('CIBW_TEST_REQUIRES', 'fontTools pytest psutil')
             env_set('CIBW_TEST_COMMAND', 'python {project}/tests/run_compound.py pytest -s {project}/tests')
     
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')

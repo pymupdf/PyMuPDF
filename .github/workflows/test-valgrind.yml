@@ -96,6 +96,7 @@ jobs:
                     f'./pylocal/bin/python {leaf}/tests/run_compound.py valgrind --suppressions={leaf}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after= ./pylocal/bin/python -m pytest -s -vv {leaf}',
                     env_extra=dict(
                         PYTHONMALLOC='malloc',
+                        PYMUPDF_RUNNING_ON_VALGRIND='1',
                         ),
                     )
         
