@@ -1426,9 +1426,10 @@ static void JM_bytesio_seek(fz_context* ctx, void* opaque, int64_t off, int when
     PyObject* bio = (PyObject*) opaque;
     PyObject* name = PyUnicode_FromString("seek");
     PyObject* pos = PyLong_FromUnsignedLongLong((unsigned long long) off);
-    PyObject_CallMethodObjArgs(bio, name, pos, whence, nullptr);
+    PyObject* rc = PyObject_CallMethodObjArgs(bio, name, pos, whence, nullptr);
+    Py_XDECREF(rc);
     std::string e;
-    PyObject* rc = PyErr_Occurred();
+    rc = PyErr_Occurred();
     if (rc)
     {
         e = "Could not write to Py file obj: " + repr(bio);
@@ -1453,9 +1454,10 @@ static void JM_bytesio_write(fz_context* ctx, void* opaque, const void* data, si
     PyObject* bio = (PyObject*) opaque;
     PyObject* b = PyBytes_FromStringAndSize((const char*) data, (Py_ssize_t) len);
     PyObject* name = PyUnicode_FromString("write");
-    PyObject_CallMethodObjArgs(bio, name, b, nullptr);
+    PyObject* rc = PyObject_CallMethodObjArgs(bio, name, b, nullptr);
+    Py_XDECREF(rc);
     std::string e;
-    PyObject* rc = PyErr_Occurred();
+    rc = PyErr_Occurred();
     if (rc)
     {
         e = "Could not write to Py file obj: " + repr(bio);
