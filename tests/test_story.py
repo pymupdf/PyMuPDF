@@ -51,7 +51,7 @@ def test_2753():
                 <p style="page-break-before: always;"></p>
                 <p>After</p>
                 '''),
-            os.path.relpath(f'{__file__}/../../tests/test_2753-out-before.pdf'),
+            os.path.abspath(f'{__file__}/../../tests/test_2753-out-before.pdf'),
             )
         
     doc_after = make_pdf(
@@ -60,7 +60,7 @@ def test_2753():
                 <p style="page-break-after: always;"></p>
                 <p>After</p>
                 '''),
-            os.path.relpath(f'{__file__}/../../tests/test_2753-out-after.pdf'),
+            os.path.abspath(f'{__file__}/../../tests/test_2753-out-after.pdf'),
             )
     
     assert len(doc_before) == 2
