@@ -752,7 +752,7 @@ For details on **embedded files** refer to Appendix 3.
           - kind: destination kind, see :ref:`linkDest Kinds`.
           - file: filename if kind is :data:`LINK_GOTOR` or :data:`LINK_LAUNCH`.
           - page: target page, 0-based, :data:`LINK_GOTOR` or :data:`LINK_GOTO` only.
-          - to: `(x, y)` position on target page.
+          - to: position on target page (:ref:`Point`).
           - zoom: (float) zoom factor on target page.
           - xref: :data:`xref` of the item (0 if no PDF).
           - color: item color in PDF RGB format `(red, green, blue)`, or omitted (always omitted if no PDF).
