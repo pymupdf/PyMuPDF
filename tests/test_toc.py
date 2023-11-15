@@ -102,7 +102,7 @@ def test_2788():
         return
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_2788.pdf')        
     document = fitz.open(path)
-    toc0 = [[1, 'page2', 2, {'kind': 4, 'xref': 14, 'page': 1, 'to': (100.0, 760.0), 'zoom': 0.0, 'nameddest': 'page.2'}]]
+    toc0 = [[1, 'page2', 2, {'kind': 4, 'xref': 14, 'page': 1, 'to': fitz.Point(100.0, 760.0), 'zoom': 0.0, 'nameddest': 'page.2'}]]
     toc1 = document.get_toc(simple=False)
     print(f'{toc0=}')
     print(f'{toc1=}')
