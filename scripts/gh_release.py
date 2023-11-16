@@ -400,7 +400,12 @@ def venv( command=None, packages=None):
     '''
     venv_name = f'venv-pymupdf-{platform.python_version()}'
     command2 = ''
-    command2 += f'{sys.executable} -m venv {venv_name}'
+    ssp = ''
+    if platform.system() == 'OpenBSD':
+        # libclang not available from pypi.org, but system py3-llvm package
+        # works.
+        ssp = ' --system-site-packages'
+    command2 += f'{sys.executable} -m venv{ssp} {venv_name}'
     if platform.system() == 'Windows':
         command2 += f' && {venv_name}\\Scripts\\activate'
     else:
