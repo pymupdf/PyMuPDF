@@ -40,6 +40,7 @@ ourselves inside it.
 import gh_release
 
 import os
+import platform
 import sys
 
 
@@ -82,12 +83,26 @@ def main(argv):
 
 
 def build():
-    gh_release.run(f'pip install -vv {pymupdf_dir}')
+    nbi = ''
+    if platform.system() == 'OpenBSD':
+        # libclang not available on pypi.org, so we need to force use of system
+        # package py3-llvm with --no-build-isolation, manually installing other
+        # required packages.
+        gh_release.run(f'pip install swig setuptools psutil')
+        gh_release.run(f'pip install --no-build-isolation -vv {pymupdf_dir}')
+    else:
+        gh_release.run(f'pip install{nbi} -vv {pymupdf_dir}')
 
 
 def test():
     gh_release.run(f'pip install pytest fontTools psutil')
-    gh_release.run(f'{sys.executable} {pymupdf_dir}/tests/run_compound.py pytest -s {pymupdf_dir}')
+    if platform.system() == 'OpenBSD':
+        # On OpenBSD `pip install pytest` doesn't seem to install the pytest
+        # command, so we use `python -m pytest ...`. (This doesn't work on
+        # Windows for some reason so we don't use it all the time.)
+        gh_release.run(f'{sys.executable} {pymupdf_dir}/tests/run_compound.py python -m pytest -s {pymupdf_dir}')
+    else:
+        gh_release.run(f'{sys.executable} {pymupdf_dir}/tests/run_compound.py pytest -s {pymupdf_dir}')
 
 
 if __name__ == '__main__':

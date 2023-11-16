@@ -403,15 +403,20 @@ def venv( command=None, packages=None):
     ssp = ''
     if platform.system() == 'OpenBSD':
         # libclang not available from pypi.org, but system py3-llvm package
-        # works.
+        # works. `pip install` should be run with --no-build-isolation and
+        # explicit `pip install swig setuptools psutil`.
         ssp = ' --system-site-packages'
+        log(f'OpenBSD: libclang not available from pypi.org.')
+        log(f'OpenBSD: system package `py3-llvm` must be installed.')
+        log(f'OpenBSD: creating venv with --system-site-packages.')
+        log(f'OpenBSD: `pip install .../PyMuPDF` must be preceded by install of swig etc.')
     command2 += f'{sys.executable} -m venv{ssp} {venv_name}'
     if platform.system() == 'Windows':
         command2 += f' && {venv_name}\\Scripts\\activate'
     else:
         command2 += f' && . {venv_name}/bin/activate'
+    command2 += ' && python -m pip install --upgrade pip'
     if packages:
-        command2 += ' && python -m pip install --upgrade pip'
         if isinstance(packages, str):
             packages = packages.split(',')
         command2 += ' && pip install ' + ' '.join(packages)
