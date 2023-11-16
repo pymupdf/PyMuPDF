@@ -421,7 +421,6 @@ def venv( command=None, packages=None):
 
 
 def test( project, package):
-
     
     log('### test():')
     log(f'### test(): {sys.executable=}')
@@ -434,27 +433,6 @@ def test( project, package):
     print(f'{fitz_new.bar(3)=}')
     
     return
-    
-    run('ls -l')
-    run( f'ls -l {project}')
-    run( f'ls -l {package}')
-    run( f'ls -l {project}/wheelhouse', check=0)
-    run( f'ls -l {package}/wheelhouse', check=0)
-    
-    wheel_b = glob.glob( f'{project}/wheelhouse/PyMuPDFb-*{platform_tag()}.whl')
-    assert len(wheel_b) == 1, f'{wheel_b=}'
-    wheel_b = wheel_b[0]
-
-    py_version = platform.python_version_tuple()
-    py_version = py_version[:2]
-    py_version = ''.join( py_version)
-    log( '### test(): {py_version=}')
-    wheel_p = glob.glob( f'wheelhouse/PyMuPDF-*-cp{py_version}-*.whl')
-    print(f'{wheel_p=}')
-    #assert len(wheel_p) == 1, f'{wheel_p=}'
-    
-    #run( f'pip install {wheel_b}')
-    #run( f'pip install {wheel_p}')
     
 
 def pyodide_setup(clean=False):
