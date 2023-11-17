@@ -65,7 +65,8 @@ def test_2753():
     
     assert len(doc_before) == 2
     
-    if fitz.mupdf_version_tuple >= (1, 24):
+    if fitz.mupdf_version_tuple >= (1, 23, 6) or fitz.pymupdf_version_tuple >= (1, 23, 7):
+        # Bug is fixed.
         assert len(doc_after) == 2
     else:
         # page-break-after not handled correctly.
