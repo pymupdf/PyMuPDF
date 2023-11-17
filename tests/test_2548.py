@@ -31,20 +31,16 @@ def test_2548():
             e = True
     wt = fitz.TOOLS.mupdf_warnings()
     print(f'test_2548(): {wt=}')
-    if fitz.mupdf_version_tuple < (1, 24, 0):
-        assert e
-        assert not wt
-    else:
-        # After 2023-11-05 mupdf master no longer raises an exception, but does
-        # write a warning.
-        expected = 'structure tree broken, assume tree is missing: cycle in structure tree'
 
-        # 2023-11-13 temporarily expected broken behaviour in current mupdf tree.
-        expected = 'cycle in structure tree\nstructure tree broken, assume tree is missing\n' * 76
-        expected = expected[:-1] # remove trailing newline.
-
-        # 2023-11-14
+    # This checks that PyMuPDF 1.23.7 fixes this bug, and also that earlier
+    # versions with updated MuPDF also fix the bug.
+    if (0
+            or fitz.pymupdf_version_tuple >= (1, 23, 7)
+            or fitz.mupdf_version_tuple >= (1, 23, 6)
+            ):
         expected = 'cycle in structure tree\nstructure tree broken, assume tree is missing'
-
         assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
         assert not e
+    else:
+        assert e
+        assert not wt
