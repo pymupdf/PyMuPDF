@@ -74,22 +74,13 @@ This is implemented as new class TableHeader with the properties:
 import inspect
 import itertools
 import string
-from collections.abc import Sequence
 from dataclasses import dataclass
 from operator import itemgetter
 
 # -------------------------------------------------------------------
 # Start of PyMuPDF interface code
 # -------------------------------------------------------------------
-from . import (
-    Rect,
-    Matrix,
-    TEXTFLAGS_TEXT,
-    TOOLS,
-    EMPTY_RECT,
-    sRGB_to_pdf,
-    Point,
-)
+from . import EMPTY_RECT, TEXTFLAGS_TEXT, TOOLS, Matrix, Point, Rect, sRGB_to_pdf
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
@@ -140,18 +131,6 @@ LIGATURES = {
     "ﬆ": "st",
     "ﬅ": "st",
 }
-
-
-def to_list(collection) -> list:
-    if isinstance(collection, list):
-        return collection
-    elif isinstance(collection, Sequence):
-        return list(collection)
-    elif hasattr(collection, "to_dict"):
-        res = collection.to_dict("records")  # pragma: nocover
-        return res
-    else:
-        return list(collection)
 
 
 class TextMap:
@@ -561,74 +540,6 @@ def extract_words(chars: list, **kwargs) -> list:
 
 TEXTMAP_KWARGS = inspect.signature(WordMap.to_textmap).parameters.keys()
 WORD_EXTRACTOR_KWARGS = inspect.signature(WordExtractor).parameters.keys()
-
-
-def chars_to_textmap(chars: list, **kwargs) -> TextMap:
-    kwargs.update({"presorted": True})
-
-    extractor = WordExtractor(
-        **{k: kwargs[k] for k in WORD_EXTRACTOR_KWARGS if k in kwargs}
-    )
-    wordmap = extractor.extract_wordmap(chars)
-    textmap = wordmap.to_textmap(
-        **{k: kwargs[k] for k in TEXTMAP_KWARGS if k in kwargs}
-    )
-
-    return textmap
-
-
-def extract_text(chars: list, **kwargs) -> str:
-    chars = to_list(chars)
-    if len(chars) == 0:
-        return ""
-
-    if kwargs.get("layout"):
-        return chars_to_textmap(chars, **kwargs).as_string
-    else:
-        y_tolerance = kwargs.get("y_tolerance", DEFAULT_Y_TOLERANCE)
-        extractor = WordExtractor(
-            **{k: kwargs[k] for k in WORD_EXTRACTOR_KWARGS if k in kwargs}
-        )
-        words = extractor.extract_words(chars)
-        lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
-        return "\n".join(" ".join(word["text"] for word in line) for line in lines)
-
-
-def collate_line(
-    line_chars: list,
-    tolerance=DEFAULT_X_TOLERANCE,
-) -> str:
-    coll = ""
-    last_x1 = None
-    for char in sorted(line_chars, key=itemgetter("x0")):
-        if (last_x1 is not None) and (char["x0"] > (last_x1 + tolerance)):
-            coll += " "
-        last_x1 = char["x1"]
-        coll += char["text"]
-    return coll
-
-
-def dedupe_chars(chars: list, tolerance=1) -> list:
-    """
-    Removes duplicate chars — those sharing the same text, fontname, size,
-    and positioning (within `tolerance`) as other characters in the set.
-    """
-    key = itemgetter("fontname", "size", "upright", "text")
-    pos_key = itemgetter("doctop", "x0")
-
-    def yield_unique_chars(chars: list):
-        sorted_chars = sorted(chars, key=key)
-        for grp, grp_chars in itertools.groupby(sorted_chars, key=key):
-            for y_cluster in cluster_objects(
-                list(grp_chars), itemgetter("doctop"), tolerance
-            ):
-                for x_cluster in cluster_objects(
-                    y_cluster, itemgetter("x0"), tolerance
-                ):
-                    yield sorted(x_cluster, key=pos_key)[0]
-
-    deduped = yield_unique_chars(chars)
-    return sorted(deduped, key=chars.index)
 
 
 def line_to_edge(line):
@@ -1247,22 +1158,33 @@ class Table(object):
 
     @property
     def bbox(self):
-        c = self.cells
-        return (
-            min(map(itemgetter(0), c)),
-            min(map(itemgetter(1), c)),
-            max(map(itemgetter(2), c)),
-            max(map(itemgetter(3), c)),
-        )
+        r = EMPTY_RECT()
+        for c in self.cells:
+            r |= c
+        return tuple(r)
 
     @property
     def rows(self) -> list:
-        _sorted = sorted(self.cells, key=itemgetter(1, 0))
-        xs = list(sorted(set(map(itemgetter(0), self.cells))))
+        """Assign table cells to row cells observing page rotation"""
+        if self.page.rotation == 0:
+            # sort by y, then by x
+            i1, i2, f1, f2 = 1, 0, 1, 1
+        elif self.page.rotation == 90:
+            # sort by x, then by y (desc)
+            i1, i2, f1, f2 = 0, 1, -1, 1
+        elif self.page.rotation == 270:
+            # sort by x (desc), then by y (asc)
+            i1, i2, f1, f2 = 0, 1, 1, -1
+        elif self.page.rotation == 180:
+            # sort by y (desc), then by x (desc)
+            i1, i2, f1, f2 = 1, 0, -1, -1
+
+        xs = sorted(list(set([c[i1] for c in self.cells])), key=lambda x: f2 * x)
         rows = []
-        for y, row_cells in itertools.groupby(_sorted, itemgetter(1)):
-            xdict = {cell[0]: cell for cell in row_cells}
-            row = TableRow([xdict.get(x) for x in xs])
+        for x in xs:
+            row = TableRow(
+                sorted([c for c in self.cells if c[i1] == x], key=lambda c: f1 * c[i2])
+            )
             rows.append(row)
         return rows
 
@@ -1274,46 +1196,27 @@ class Table(object):
     def col_count(self) -> int:  # PyMuPDF extension
         return max([len(r.cells) for r in self.rows])
 
-    def extract(self, **kwargs) -> list:
-        chars = CHARS
+    def extract(self) -> list:
+        """Replaced by PyMuPDF code."""
         table_arr = []
-
-        def char_in_bbox(char, bbox) -> bool:
-            v_mid = (char["top"] + char["bottom"]) / 2
-            h_mid = (char["x0"] + char["x1"]) / 2
-            x0, top, x1, bottom = bbox
-            return bool(
-                (h_mid >= x0) and (h_mid < x1) and (v_mid >= top) and (v_mid < bottom)
-            )
 
         for row in self.rows:
             arr = []
-            row_chars = [char for char in chars if char_in_bbox(char, row.bbox)]
-
             for cell in row.cells:
                 if cell is None:
                     cell_text = None
                 else:
-                    cell_chars = [
-                        char for char in row_chars if char_in_bbox(char, cell)
-                    ]
-
-                    if len(cell_chars):
-                        kwargs["x_shift"] = cell[0]
-                        kwargs["y_shift"] = cell[1]
-                        if "layout" in kwargs:
-                            kwargs["layout_width"] = cell[2] - cell[0]
-                            kwargs["layout_height"] = cell[3] - cell[1]
-                        cell_text = extract_text(cell_chars, **kwargs)
-                    else:
-                        cell_text = ""
+                    cell_text = self.page.get_textbox(cell)
                 arr.append(cell_text)
             table_arr.append(arr)
 
         return table_arr
 
-    def to_pandas(self, **kwargs):
-        """Return a pandas DataFrame version of the table."""
+    def to_pandas(self):
+        """Return a pandas DataFrame version of the table.
+
+        This is original PyMuPDF code.
+        """
         try:
             import pandas as pd
         except ModuleNotFoundError:
@@ -1886,39 +1789,53 @@ def make_edges(page, clip=None, tset=None):
     page_number = page.number + 1
     x_tolerance = tset.snap_x_tolerance
     y_tolerance = tset.snap_y_tolerance
+    prect = page.rect
+    if page.rotation in (90, 270):
+        w, h = prect.br
+        prect = Rect(0, 0, h, w)
     if clip != None:
         clip = Rect(clip)
     else:
-        clip = page.rect
+        clip = prect
+
+    def is_parallel(p1, p2):
+        """Check if line is axis-parallel."""
+        if abs(p1.x - p2.x) <= x_tolerance or abs(p1.y - p2.y) <= y_tolerance:
+            return True
+        return False
 
     def make_line(p, p1, p2, clip):
+        """Given 2 points, make a line dictionary for table detection."""
+        if not is_parallel(p1, p2):  # only accepting axis-parallel lines
+            return {}
+        # compute the extremal values
         x0 = min(p1.x, p2.x)
         x1 = max(p1.x, p2.x)
         y0 = min(p1.y, p2.y)
         y1 = max(p1.y, p2.y)
 
-        if x0 > clip.x1:
+        if x0 > clip.x1:  # outside clip
             return {}
         if x0 < clip.x0:
-            x0 = clip.x0
-        if x1 < clip.x0:
+            x0 = clip.x0  # adjust to clip boundary
+        if x1 < clip.x0:  # outside clip
             return {}
         if x1 > clip.x1:
-            x1 = clip.x1
-        if y0 > clip.y1:
+            x1 = clip.x1  # adjust to clip boundary
+        if y0 > clip.y1:  # outside clip
             return {}
         if y0 < clip.y0:
-            y0 = clip.y0
-        if y1 < clip.y0:
+            y0 = clip.y0  # adjust to clip boundary
+        if y1 < clip.y0:  # outside clip
             return {}
         if y1 > clip.y1:
-            y1 = clip.y1
+            y1 = clip.y1  # adjust to clip boundary
 
-        width = x1 - x0
-        height = y1 - y0
+        width = x1 - x0  # from adjusted values
+        height = y1 - y0  # from adjusted values
         if width == height == 0:
-            return {}
-        return {
+            return {}  # nothing left to deal with
+        line_dict = {
             "x0": x0,
             "y0": page_height - y0,
             "x1": x1,
@@ -1940,110 +1857,82 @@ def make_edges(page, clip=None, tset=None):
             "bottom": y1,
             "doctop": y0 + doctop_basis,
         }
+        return line_dict
 
     for p in paths:
-        for i in p["items"]:
+        items = p["items"]  # items in tis path
+
+        # if 'closePath', add a line from last to first point
+        if p["closePath"] and i[0][0] == "l" and i[-1][0] == "l":
+            items.append(("l", items[-1][2], items[0][1]))
+
+        for i in items:
             if i[0] not in ("l", "re", "qu"):
-                continue
-            if i[0] == "l":
+                continue  # ignore anything else
+
+            if i[0] == "l":  # a line
                 p1, p2 = i[1:]
-                if p1.x != p2.x and p1.y != p2.y:
-                    # ignore lines not parallel to either axis
-                    continue
                 line_dict = make_line(p, p1, p2, clip)
-                if line_dict != {}:
+                if line_dict:
                     EDGES.append(line_to_edge(line_dict))
-            elif i[0] == "re":
+
+            elif i[0] == "re":  # a rectangle: decompose in 4 lines
                 rect = i[1]
                 # ignore minute rectangles
                 if rect.height <= y_tolerance and rect.width <= x_tolerance:
                     continue
-                if rect.width <= x_tolerance:
-                    x = abs(rect.x1 + rect.x0) / 2
+                if rect.width <= x_tolerance:  # simulates a vertical line
+                    x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
                     p1 = Point(x, rect.y0)
                     p2 = Point(x, rect.y1)
                     line_dict = make_line(p, p1, p2, clip)
-                    if line_dict != {}:
+                    if line_dict:
                         EDGES.append(line_to_edge(line_dict))
                     continue
-                elif rect.height <= y_tolerance:
-                    y = abs(rect.y1 + rect.y0) / 2
+                elif rect.height <= y_tolerance:  # simulates a horizontal line
+                    y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
                     p1 = Point(rect.x0, y)
                     p2 = Point(rect.x1, y)
                     line_dict = make_line(p, p1, p2, clip)
-                    if line_dict != {}:
+                    if line_dict:
                         EDGES.append(line_to_edge(line_dict))
                     continue
 
-                if clip != None:
-                    rect &= clip
-                rdict = {
-                    "x0": rect.x0,
-                    "y0": page_height - rect.y1,
-                    "x1": rect.x1,
-                    "y1": page_height - rect.y0,
-                    "width": rect.width,
-                    "height": rect.height,
-                    "pts": [
-                        tuple(rect.bl),
-                        tuple(rect.br),
-                        tuple(rect.tr),
-                        tuple(rect.tl),
-                        tuple(rect.bl),
-                        tuple(rect.bl),
-                    ],
-                    "linewidth": p["width"],
-                    "stroke": True if "s" in p["type"] else False,
-                    "fill": True if "f" in p["type"] else False,
-                    "evenodd": False,
-                    "stroking_color": p["color"],
-                    "non_stroking_color": p["fill"],
-                    "object_type": "curve",
-                    "page_number": page_number,
-                    "stroking_pattern": None,
-                    "non_stroking_pattern": None,
-                    "top": rect.y0,
-                    "bottom": rect.y1,
-                    "doctop": doctop_basis + rect.y0,
-                }
-                if not rect.is_empty:
-                    EDGES.extend(curve_to_edges(rdict))
-            else:
-                quad = i[1]
-                rect = quad.rect
-                if clip != None and rect not in clip:
-                    continue
+                line_dict = make_line(p, rect.tl, rect.bl, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
+
+                line_dict = make_line(p, rect.bl, rect.br, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
+
+                line_dict = make_line(p, rect.br, rect.tr, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
+
+                line_dict = make_line(p, rect.tr, rect.tl, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
+
+            else:  # must be a quad
+                # we convert it into (up to) 4 lines
                 ul, ur, ll, lr = i[1]
-                qdict = {
-                    "bottom": rect.y1,
-                    "doctop": rect.y0 + doctop_basis,
-                    "evenodd": p["even_odd"],
-                    "fill": True if "f" in p["type"] else False,
-                    "height": rect.height,
-                    "linewidth": p["width"],
-                    "non_stroking_color": p["fill"],
-                    "non_stroking_pattern": None,
-                    "object_type": "curve",
-                    "page_number": page_number,
-                    "pts": [
-                        tuple(ul),
-                        tuple(ll),
-                        tuple(lr),
-                        tuple(ur),
-                        tuple(ul),
-                        tuple(ul),
-                    ],
-                    "stroke": True if "s" in p["type"] else False,
-                    "stroking_color": p["color"],
-                    "stroking_pattern": None,
-                    "top": rect.y0,
-                    "width": rect.width,
-                    "x0": rect.x0,
-                    "x1": rect.x1,
-                    "y0": page_height - rect.y1,
-                    "y1": page_height - rect.y0,
-                }
-                EDGES.extend(curve_to_edges(qdict))
+
+                line_dict = make_line(p, ul, ll, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
+
+                line_dict = make_line(p, ll, lr, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
+
+                line_dict = make_line(p, lr, ur, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
+
+                line_dict = make_line(p, ur, ul, clip)
+                if line_dict:
+                    EDGES.append(line_to_edge(line_dict))
 
 
 def find_tables(
