@@ -80,10 +80,19 @@ from operator import itemgetter
 # -------------------------------------------------------------------
 # Start of PyMuPDF interface code
 # -------------------------------------------------------------------
-from . import EMPTY_RECT, TEXTFLAGS_TEXT, TOOLS, Matrix, Point, Rect, sRGB_to_pdf
+from . import (
+    Rect,
+    Matrix,
+    TEXTFLAGS_TEXT,
+    TOOLS,
+    EMPTY_RECT,
+    sRGB_to_pdf,
+    Point,
+)
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
+TEXTPAGE = None  # TextPage of the page for optimized extraction
 # -------------------------------------------------------------------
 # End of PyMuPDF interface code
 # -------------------------------------------------------------------
@@ -536,10 +545,6 @@ class WordExtractor:
 
 def extract_words(chars: list, **kwargs) -> list:
     return WordExtractor(**kwargs).extract_words(chars)
-
-
-TEXTMAP_KWARGS = inspect.signature(WordMap.to_textmap).parameters.keys()
-WORD_EXTRACTOR_KWARGS = inspect.signature(WordExtractor).parameters.keys()
 
 
 def line_to_edge(line):
@@ -1158,24 +1163,26 @@ class Table(object):
 
     @property
     def bbox(self):
-        r = EMPTY_RECT()
-        for c in self.cells:
+        """Original replaced by PyMuPDF"""
+        rect = EMPTY_RECT()
+        for c in cells:
             r |= c
-        return tuple(r)
+        return tuple(rect)
 
     @property
     def rows(self) -> list:
         """Assign table cells to row cells observing page rotation"""
-        if self.page.rotation == 0:
+        rot = self.page.rotation
+        if rot == 0:
             # sort by y, then by x
             i1, i2, f1, f2 = 1, 0, 1, 1
-        elif self.page.rotation == 90:
+        elif rot == 90:
             # sort by x, then by y (desc)
             i1, i2, f1, f2 = 0, 1, -1, 1
-        elif self.page.rotation == 270:
+        elif rot == 270:
             # sort by x (desc), then by y (asc)
             i1, i2, f1, f2 = 0, 1, 1, -1
-        elif self.page.rotation == 180:
+        elif rot == 180:
             # sort by y (desc), then by x (desc)
             i1, i2, f1, f2 = 1, 0, -1, -1
 
@@ -1197,16 +1204,40 @@ class Table(object):
         return max([len(r.cells) for r in self.rows])
 
     def extract(self) -> list:
-        """Replaced by PyMuPDF code."""
-        table_arr = []
+        """Extract the cell text for the comple table.
+
+        Complete replacement by PyMuPDF text extraction.
+        """
+        global TEXTPAGE
+
+        def get_text(cell):
+            """Accept char bbox areas with a cell overlap of at least 50%."""
+            cell = Rect(cell)  # we need a Rect object
+            text = ""  # result text
+            for block in TEXTPAGE.extractRAWDICT()["blocks"]:
+                for line in block["lines"]:
+                    for span in line["spans"]:
+                        chars = span["chars"]
+                        if text and chars:
+                            text += "\n"  # new span appended after linebreak
+                        for char in chars:
+                            bbox = Rect(char["bbox"])
+                            if abs(bbox & cell) < 0.5 * abs(bbox):
+                                continue
+                            text += char["c"]
+
+            # no final line break, no wrapping spaces
+            return text.rstrip("\n").strip()
+
+        table_arr = []  # final result
 
         for row in self.rows:
-            arr = []
+            arr = []  # text in this row
             for cell in row.cells:
                 if cell is None:
                     cell_text = None
                 else:
-                    cell_text = self.page.get_textbox(cell)
+                    cell_text = get_text(cell)
                 arr.append(cell_text)
             table_arr.append(arr)
 
@@ -1722,13 +1753,14 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
-    global CHARS
+    global CHARS, TEXTPAGE
     old_small = TOOLS.set_small_glyph_heights()
     TOOLS.set_small_glyph_heights(True)
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    blocks = page.get_text("rawdict", clip=clip, flags=TEXTFLAGS_TEXT)["blocks"]
+    TEXTPAGE = page.get_textpage(clip, flags=TEXTFLAGS_TEXT)
+    blocks = TEXTPAGE.extractRAWDICT()["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
         for line in block["lines"]:
@@ -1779,7 +1811,9 @@ def make_chars(page, clip=None):
 
 
 # -----------------------------------------------------------------------------
-# Extract all page vector graphics to fill the EDGES list
+# Extract all page vector graphics to fill the EDGES list.
+# We are ignoring Bézier curves completely and are converting everything
+# else to lines.
 # -----------------------------------------------------------------------------
 def make_edges(page, clip=None, tset=None):
     global EDGES
@@ -1799,7 +1833,7 @@ def make_edges(page, clip=None, tset=None):
         clip = prect
 
     def is_parallel(p1, p2):
-        """Check if line is axis-parallel."""
+        """Check if line is roughly axis-parallel."""
         if abs(p1.x - p2.x) <= x_tolerance or abs(p1.y - p2.y) <= y_tolerance:
             return True
         return False
@@ -1814,20 +1848,19 @@ def make_edges(page, clip=None, tset=None):
         y0 = min(p1.y, p2.y)
         y1 = max(p1.y, p2.y)
 
-        if x0 > clip.x1:  # outside clip
+        # check for outside clip
+        if x0 > clip.x1 or x1 < clip.x0 or y0 > clip.y1 or y1 < clip.y0:
             return {}
+
         if x0 < clip.x0:
             x0 = clip.x0  # adjust to clip boundary
-        if x1 < clip.x0:  # outside clip
-            return {}
+
         if x1 > clip.x1:
             x1 = clip.x1  # adjust to clip boundary
-        if y0 > clip.y1:  # outside clip
-            return {}
+
         if y0 < clip.y0:
             y0 = clip.y0  # adjust to clip boundary
-        if y1 < clip.y0:  # outside clip
-            return {}
+
         if y1 > clip.y1:
             y1 = clip.y1  # adjust to clip boundary
 
@@ -1860,7 +1893,7 @@ def make_edges(page, clip=None, tset=None):
         return line_dict
 
     for p in paths:
-        items = p["items"]  # items in tis path
+        items = p["items"]  # items in this path
 
         # if 'closePath', add a line from last to first point
         if p["closePath"] and i[0][0] == "l" and i[-1][0] == "l":
@@ -1876,11 +1909,12 @@ def make_edges(page, clip=None, tset=None):
                 if line_dict:
                     EDGES.append(line_to_edge(line_dict))
 
-            elif i[0] == "re":  # a rectangle: decompose in 4 lines
-                rect = i[1]
+            elif i[0] == "re":  # a rectangle: decompose into 4 lines
+                rect = i[1]  # rectangle itself
                 # ignore minute rectangles
                 if rect.height <= y_tolerance and rect.width <= x_tolerance:
                     continue
+
                 if rect.width <= x_tolerance:  # simulates a vertical line
                     x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
                     p1 = Point(x, rect.y0)
@@ -1889,7 +1923,8 @@ def make_edges(page, clip=None, tset=None):
                     if line_dict:
                         EDGES.append(line_to_edge(line_dict))
                     continue
-                elif rect.height <= y_tolerance:  # simulates a horizontal line
+
+                if rect.height <= y_tolerance:  # simulates a horizontal line
                     y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
                     p1 = Point(rect.x0, y)
                     p2 = Point(rect.x1, y)
