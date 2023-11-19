@@ -679,3 +679,36 @@ def test_2710():
     else:
         # 2023-11-05: Currently broken in mupdf master.
         print(f'test_2710(): Not Checking page.rect and rect.')
+
+
+def test_2736():
+    """Check handling of CropBox changes vis-a-vis a MediaBox with
+       negative coordinates."""
+    doc = fitz.open()
+    page = doc.new_page()
+
+    # fake a MediaBox for demo purposes
+    doc.xref_set_key(page.xref, "MediaBox", "[-30 -20 595 842]")
+
+    assert page.cropbox == fitz.Rect(-30, 0, 595, 862)
+    assert page.rect == fitz.Rect(0, 0, 625, 862)
+
+    # change the CropBox: shift by (10, 10) in both dimensions. Please note:
+    # To achieve this, 10 must be subtracted from 862! yo must never be negative!
+    page.set_cropbox(fitz.Rect(-20, 0, 595, 852))
+
+    # get CropBox from the page definition
+    assert doc.xref_get_key(page.xref, "CropBox")[1] == "[-20 -10 595 842]"
+    assert page.rect == fitz.Rect(0, 0, 615, 852)
+
+    error = False
+    text = ""
+    try:  # check error detection
+        page.set_cropbox((-35, -10, 595, 842))
+    except Exception as e:
+        text = str(e)
+        error = True
+    assert error == True
+    assert text == "CropBox not in MediaBox"
+
+

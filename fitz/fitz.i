@@ -6929,19 +6929,23 @@ def get_oc_items(self) -> list:
             doc = self.parent
             if doc == None:
                 raise ValueError("orphaned object: parent is None")
+
             if not doc.is_pdf:
                 raise ValueError("is no PDF")
+
             valid_boxes = ("CropBox", "BleedBox", "TrimBox", "ArtBox")
+
             if boxtype not in valid_boxes:
                 raise ValueError("bad boxtype")
+
+            rect = Rect(rect)
             mb = self.mediabox
             rect = Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
-            rect = Rect(JM_TUPLE3(rect))
-            if rect.is_infinite or rect.is_empty:
-                raise ValueError("rect is infinite or empty")
-            if rect not in mb:
-                raise ValueError("rect not in mediabox")
+            if not (mb.x0 <= rect.x0 < rect.x1 <= mb.x1 and mb.y0 <= rect.y0 < rect.y1 <= mb.y1):
+                raise ValueError(f"{boxtype} not in MediaBox")
+
             doc.xref_set_key(self.xref, boxtype, "[%g %g %g %g]" % tuple(rect))
+
 
         def set_cropbox(self, rect):
             """Set the CropBox. Will also change Page.rect."""
