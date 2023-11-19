@@ -8,6 +8,9 @@ import fitz
 
 def test_rect():
     assert tuple(fitz.Rect()) == (0, 0, 0, 0)
+    if hasattr(fitz, 'mupdf'):
+        assert tuple(fitz.Rect(y0=12)) == (0, 12, 0, 0)
+        assert tuple(fitz.Rect(10, 20, 100, 200, x1=12)) == (10, 20, 12, 200)
     p1 = fitz.Point(10, 20)
     p2 = fitz.Point(100, 200)
     p3 = fitz.Point(150, 250)
@@ -129,6 +132,10 @@ def test_inversion():
 
 def test_matrix():
     assert tuple(fitz.Matrix()) == (0, 0, 0, 0, 0, 0)
+    assert tuple(fitz.Matrix(90)) == (0, 1, -1, 0, 0, 0)
+    if hasattr(fitz, 'mupdf'):
+        assert tuple(fitz.Matrix(c=1)) == (0, 0, 1, 0, 0, 0)
+        assert tuple(fitz.Matrix(90, e=5)) == (0, 1, -1, 0, 5, 0)
     m45p = fitz.Matrix(45)
     m45m = fitz.Matrix(-45)
     m90 = fitz.Matrix(90)

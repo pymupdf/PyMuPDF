@@ -6456,7 +6456,7 @@ class Matrix:
     def __getitem__(self, i):
         return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
 
-    def __init__(self, *args):
+    def __init__(self, *args, a=None, b=None, c=None, d=None, e=None, f=None):
         """
         Matrix() - all zeros
         Matrix(a, b, c, d, e, f)
@@ -6465,37 +6465,42 @@ class Matrix:
         Matrix(degree) - rotate
         Matrix(Matrix) - new copy
         Matrix(sequence) - from 'sequence'
+        
+        Explicit keyword args a, b, c, d, e, f override any earlier settings if
+        not None.
         """
         if not args:
             self.a = self.b = self.c = self.d = self.e = self.f = 0.0
-            return None
-        if len(args) > 6:
+        elif len(args) > 6:
             raise ValueError("Matrix: bad seq len")
-        if len(args) == 6:  # 6 numbers
+        elif len(args) == 6:  # 6 numbers
             self.a, self.b, self.c, self.d, self.e, self.f = map(float, args)
-            return None
-        if len(args) == 1:  # either an angle or a sequ
+        elif len(args) == 1:  # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = math.radians(args[0])
-                c = round(math.cos(theta), 8)
-                s = round(math.sin(theta), 8)
-                self.a = self.d = c
-                self.b = s
-                self.c = -s
+                c_ = round(math.cos(theta), 8)
+                s_ = round(math.sin(theta), 8)
+                self.a = self.d = c_
+                self.b = s_
+                self.c = -s_
                 self.e = self.f = 0.0
-                return None
             else:
                 self.a, self.b, self.c, self.d, self.e, self.f = map(float, args[0])
-                return None
-        if len(args) == 2 or len(args) == 3 and args[2] == 0:
+        elif len(args) == 2 or len(args) == 3 and args[2] == 0:
             self.a, self.b, self.c, self.d, self.e, self.f = float(args[0]), \
                 0.0, 0.0, float(args[1]), 0.0, 0.0
-            return None
-        if len(args) == 3 and args[2] == 1:
+        elif len(args) == 3 and args[2] == 1:
             self.a, self.b, self.c, self.d, self.e, self.f = 1.0, \
                 float(args[1]), float(args[0]), 1.0, 0.0, 0.0
-            return None
-        raise ValueError("Matrix: bad args")
+        else:
+            raise ValueError("Matrix: bad args")
+        #return
+        if a is not None:   self.a = a
+        if b is not None:   self.b = b
+        if c is not None:   self.c = c
+        if d is not None:   self.d = d
+        if e is not None:   self.e = e
+        if f is not None:   self.f = f
 
     def __invert__(self):
         """Calculate inverted matrix."""
@@ -10149,12 +10154,6 @@ class Pixmap:
 
 
 class Point:
-    """
-    Point() - all zeros
-    Point(x, y)
-    Point(Point) - new copy
-    Point(sequence) - from 'sequence'
-    """
 
     def __abs__(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
@@ -10180,18 +10179,24 @@ class Point:
     def __hash__(self):
         return hash(tuple(self))
 
-    def __init__(self, *args):
+    def __init__(self, *args, x=None, y=None):
+        '''
+        Point() - all zeros
+        Point(x, y)
+        Point(Point) - new copy
+        Point(sequence) - from 'sequence'
+
+        Explicit keyword args x, y override earlier settings if not None.
+        '''
         if not args:
             self.x = 0.0
             self.y = 0.0
-            return None
-        if len(args) > 2:
+        elif len(args) > 2:
             raise ValueError("Point: bad seq len")
-        if len(args) == 2:
+        elif len(args) == 2:
             self.x = float(args[0])
             self.y = float(args[1])
-            return None
-        if len(args) == 1:
+        elif len(args) == 1:
             l = args[0]
             if isinstance(l, (mupdf.FzPoint, mupdf.fz_point)):
                 self.x = l.x
@@ -10203,8 +10208,10 @@ class Point:
                     raise ValueError("Point: bad seq len")
                 self.x = float(l[0])
                 self.y = float(l[1])
-            return
-        raise ValueError("Point: bad seq len")
+        else:
+            raise ValueError("Point: bad seq len")
+        if x is not None:   self.x = x
+        if y is not None:   self.y = y
 
     def __len__(self):
         return 2
@@ -10331,12 +10338,6 @@ class Point:
 
 
 class Quad:
-    '''
-    Quad() - all zero points
-    Quad(ul, ur, ll, lr)
-    Quad(quad) - new copy
-    Quad(sequence) - from 'sequence'
-    '''
 
     def __abs__(self):
         if self.is_empty:
@@ -10389,29 +10390,40 @@ class Quad:
     def __hash__(self):
         return hash(tuple(self))
 
-    def __init__(self, *args):
+    def __init__(self, *args, ul=None, ur=None, ll=None, lr=None):
+        '''
+        Quad() - all zero points
+        Quad(ul, ur, ll, lr)
+        Quad(quad) - new copy
+        Quad(sequence) - from 'sequence'
+
+        Explicit keyword args ul, ur, ll, lr override earlier settings if not
+        None.
+    
+        '''
         if not args:
             self.ul = self.ur = self.ll = self.lr = Point()
-            return None
-
-        if len(args) > 4:
+        elif len(args) > 4:
             raise ValueError("Quad: bad seq len")
-        if len(args) == 4:
+        elif len(args) == 4:
             self.ul, self.ur, self.ll, self.lr = map(Point, args)
-            return None
-        if len(args) == 1:
+        elif len(args) == 1:
             l = args[0]
             if isinstance(l, mupdf.FzQuad):
                 self.this = l
                 self.ul, self.ur, self.ll, self.lr = Point(l.ul), Point(l.ur), Point(l.ll), Point(l.lr)
-                return
-            if hasattr(l, "__getitem__") is False:
+            elif hasattr(l, "__getitem__") is False:
                 raise ValueError("Quad: bad args")
-            if len(l) != 4:
+            elif len(l) != 4:
                 raise ValueError("Quad: bad seq len")
-            self.ul, self.ur, self.ll, self.lr = map(Point, l)
-            return None
-        raise ValueError("Quad: bad args")
+            else:
+                self.ul, self.ur, self.ll, self.lr = map(Point, l)
+        else:
+            raise ValueError("Quad: bad args")
+        if ul is not None:  self.ul = Point(ul)
+        if ur is not None:  self.ur = Point(ur)
+        if ll is not None:  self.ll = Point(ll)
+        if lr is not None:  self.lr = Point(lr)
 
     def __len__(self):
         return 4
@@ -10558,15 +10570,6 @@ class Quad:
 
 
 class Rect:
-    """
-    Rect() - all zeros
-    Rect(x0, y0, x1, y1)
-    Rect(top-left, x1, y1)
-    Rect(x0, y0, bottom-right)
-    Rect(top-left, bottom-right)
-    Rect(Rect or IRect) - new copy
-    Rect(sequence) - from 'sequence'
-    """
     
     def __abs__(self):
         if self.is_empty or self.is_infinite:
@@ -10618,8 +10621,20 @@ class Rect:
     def __hash__(self):
         return hash(tuple(self))
 
-    def __init__(self, *args):
-        x0, y0, x1, y1 = util_make_rect( *args)
+    def __init__(self, *args, p0=None, p1=None, x0=None, y0=None, x1=None, y1=None):
+        """
+        Rect() - all zeros
+        Rect(x0, y0, x1, y1)
+        Rect(top-left, x1, y1)
+        Rect(x0, y0, bottom-right)
+        Rect(top-left, bottom-right)
+        Rect(Rect or IRect) - new copy
+        Rect(sequence) - from 'sequence'
+    
+        Explicit keyword args p0, p1, x0, y0, x1, y1 override earlier settings
+        if not None.
+        """
+        x0, y0, x1, y1 = util_make_rect( *args, p0=p0, p1=p1, x0=x0, y0=y0, x1=x1, y1=y1)
         self.x0 = float( x0)
         self.y0 = float( y0)
         self.x1 = float( x1)
@@ -12634,12 +12649,8 @@ class IRect:
     def __getitem__(self, i):
         return (self.x0, self.y0, self.x1, self.y1)[i]
 
-    def __init__(self, *args):
-        x0, y0, x1, y1 = util_make_irect( *args)
-        self.x0 = int( x0)
-        self.y0 = int( y0)
-        self.x1 = int( x1)
-        self.y1 = int( y1)
+    def __init__(self, *args, p0=None, p1=None, x0=None, y0=None, x1=None, y1=None):
+        self.x0, self.y0, self.x1, self.y1 = util_make_irect( *args, p0=p0, p1=p1, x0=x0, y0=y0, x1=x1, y1=y1)
 
     def __len__(self):
         return 4
@@ -19828,14 +19839,15 @@ def util_ensure_widget_calc(annot):
         mupdf.pdf_array_push(CO, mupdf.pdf_new_indirect(pdf, xref, 0))
 
 
-def util_make_rect( *args):
+def util_make_rect( *args, p0=None, p1=None, x0=None, y0=None, x1=None, y1=None):
     '''
     Helper for initialising rectangle classes.
     
     2022-09-02: This is quite different from PyMuPDF's util_make_rect(), which
     uses `goto` in ways that don't easily translate to Python.
 
-    Returns (x0, y0, x1, y1) derived from <args>.
+    Returns (x0, y0, x1, y1) derived from <args>, then override with p0, p1,
+    x0, y0, x1, y1 if they are not None.
 
     Accepts following forms for <args>:
         () returns all zeros.
@@ -19847,6 +19859,8 @@ def util_make_rect( *args):
 
     Where top-left and bottom-right are (x, y) or something with .x, .y
     members; rect is something with .x0, .y0, .x1, and .y1 members.
+
+    2023-11-18: we now override with p0, p1, x0, y0, x1, y1 if not None.
     '''
     def get_xy( arg):
         if isinstance( arg, (list, tuple)) and len( arg) == 2:
@@ -19864,42 +19878,47 @@ def util_make_rect( *args):
         if not isinstance( a, (list, tuple)):
             a = a,
         return a
-    if len(args) == 0:
-        return 0, 0, 0, 0
-    elif len(args) == 1:
-        arg = args[0]
-        if isinstance( arg, (list, tuple)) and len( arg) == 2:
-            p1, p2 = arg
-            return *p1, *p2
-        if isinstance( arg, (list, tuple)) and len( arg) == 3:
-            a, b, c = arg
-            a = make_tuple(a)
-            b = make_tuple(b)
-            c = make_tuple(c)
-            ret = *a, *b, *c
-            return ret
-        arg = make_tuple( arg)
-        return arg
-        if isinstance( arg, (list, tuple)) and len( arg) == 4:
-            return arg[0], arg[1], arg[2], arg[3]
-        else:
-            return arg.x0, arg.y0, arg.x1, arg.y1
-    elif len(args) == 2:
-        return get_xy( args[0]) + get_xy( args[1])
-    elif len(args) == 3:
-        x0, y0 = get_xy( args[0])
-        if (x0, y0) != (None, None):
-            return x0, y0, args[1], args[2]
-        x1, y1 = get_xy( args[2])
-        if (x1, y1) != (None, None):
-            return args[0], args[1], x1, y1
-    elif len(args) == 4:
-        return args[0], args[1], args[2], args[3]
-    raise Exception( f'Unrecognised args: {args}')
+    def handle_args():
+        if len(args) == 0:
+            return 0, 0, 0, 0
+        elif len(args) == 1:
+            arg = args[0]
+            if isinstance( arg, (list, tuple)) and len( arg) == 2:
+                p1, p2 = arg
+                return *p1, *p2
+            if isinstance( arg, (list, tuple)) and len( arg) == 3:
+                a, b, c = arg
+                a = make_tuple(a)
+                b = make_tuple(b)
+                c = make_tuple(c)
+                ret = *a, *b, *c
+                return ret
+            arg = make_tuple( arg)
+            return arg
+        elif len(args) == 2:
+            return get_xy( args[0]) + get_xy( args[1])
+        elif len(args) == 3:
+            x0, y0 = get_xy( args[0])
+            if (x0, y0) != (None, None):
+                return x0, y0, args[1], args[2]
+            x1, y1 = get_xy( args[2])
+            if (x1, y1) != (None, None):
+                return args[0], args[1], x1, y1
+        elif len(args) == 4:
+            return args[0], args[1], args[2], args[3]
+        raise Exception( f'Unrecognised args: {args}')
+    ret_x0, ret_y0, ret_x1, ret_y1 = handle_args()
+    if p0 is not None:  ret_x0, ret_y0 = get_xy(p0)
+    if p1 is not None:  ret_x1, ret_y1 = get_xy(p1)
+    if x0 is not None:  ret_x0 = x0
+    if y0 is not None:  ret_y0 = y0
+    if x1 is not None:  ret_x1 = x1
+    if y1 is not None:  ret_y1 = y1
+    return ret_x0, ret_y0, ret_x1, ret_y1
 
 
-def util_make_irect( *args):
-    a, b, c, d = util_make_rect( *args)
+def util_make_irect( *args, p0=None, p1=None, x0=None, y0=None, x1=None, y1=None):
+    a, b, c, d = util_make_rect( *args, p0=p0, p1=p1, x0=x0, y0=y0, x1=x1, y1=y1)
     def convert(x):
         ret = int(x)
         assert ret == x
