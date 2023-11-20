@@ -1165,7 +1165,7 @@ class Table(object):
     def bbox(self):
         """Original replaced by PyMuPDF"""
         rect = EMPTY_RECT()
-        for c in cells:
+        for c in self.cells:
             r |= c
         return tuple(rect)
 
