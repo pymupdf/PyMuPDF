@@ -1166,7 +1166,7 @@ class Table(object):
         """Original replaced by PyMuPDF"""
         rect = EMPTY_RECT()
         for c in self.cells:
-            r |= c
+            rect |= c
         return tuple(rect)
 
     @property
