@@ -2555,167 +2555,176 @@ class Document:
             rect, width, height, fontsize: layout reflowable document
             on open (e.g. EPUB). Ignored if n/a.
         """
-        self.is_closed    = False
-        self.is_encrypted = False
-        self.isEncrypted = False
-        self.metadata    = None
-        self.FontInfos   = []
-        self.Graftmaps   = {}
-        self.ShownPages  = {}
-        self.InsertedImages  = {}
-        self._page_refs  = weakref.WeakValueDictionary()
-        if isinstance(filename, mupdf.PdfDocument):
-            pdf_document = filename
-            self.this = pdf_document
-            self.this_is_pdf = True
-            return
-        
-        # Classic implementation temporarily sets JM_mupdf_show_errors=0 then
-        # restores the previous value in `fz_always() {...}` before returning.
+        # We temporarily set JM_mupdf_show_errors=0 while we are constructing,
+        # then restore its orginal value in a `finally:` block.
         #
+        global JM_mupdf_show_errors
+        JM_mupdf_show_errors_old = JM_mupdf_show_errors
+        JM_mupdf_show_errors = 0
+        try:
+            self.is_closed    = False
+            self.is_encrypted = False
+            self.isEncrypted = False
+            self.metadata    = None
+            self.FontInfos   = []
+            self.Graftmaps   = {}
+            self.ShownPages  = {}
+            self.InsertedImages  = {}
+            self._page_refs  = weakref.WeakValueDictionary()
+            if isinstance(filename, mupdf.PdfDocument):
+                pdf_document = filename
+                self.this = pdf_document
+                self.this_is_pdf = True
+                return
         
-        if not filename or type(filename) is str:
-            pass
-        elif hasattr(filename, "absolute"):
-            filename = str(filename)
-        elif hasattr(filename, "name"):
-            filename = filename.name
-        else:
-            raise TypeError("bad filename")
+            # Classic implementation temporarily sets JM_mupdf_show_errors=0 then
+            # restores the previous value in `fz_always() {...}` before returning.
+            #
         
-        if stream is not None:
-            if type(stream) is bytes:
-                self.stream = stream
-            elif type(stream) is bytearray:
-                self.stream = bytes(stream)
-            elif type(stream) is io.BytesIO:
-                self.stream = stream.getvalue()
+            if not filename or type(filename) is str:
+                pass
+            elif hasattr(filename, "absolute"):
+                filename = str(filename)
+            elif hasattr(filename, "name"):
+                filename = filename.name
             else:
-                raise TypeError("bad type: 'stream'")
-            stream = self.stream
-            if not (filename or filetype):
-                filename = 'pdf'
-        else:
-            self.stream = None
-
-        if filename and self.stream is None:
-            from_file = True
-            self.name = filename
-        else:
-            from_file = False
-            self.name = ""
-
-        if from_file:
-            if not os.path.exists(filename):
-                msg = f"no such file: '{filename}'"
-                raise FileNotFoundError(msg)
-            elif not os.path.isfile(filename):
-                msg = f"'{filename}' is no file"
-                raise FileDataError(msg)
-        if from_file and os.path.getsize(filename) == 0 or type(self.stream) is bytes and len(self.stream) == 0:
-            msg = "cannot open empty document"
-            raise EmptyFileError(msg)
-        if g_use_extra:
-            # Not sure this is any quicker.
-            try:
-                self.this = extra.Document_init( filename, stream, filetype, rect, width, height, fontsize)
-            except Exception as e:
-                e_str = str(e)
-                if str(e) == MSG_BAD_FILETYPE:
-                    raise ValueError( e_str) from e
+                raise TypeError("bad filename")
+        
+            if stream is not None:
+                if type(stream) is bytes:
+                    self.stream = stream
+                elif type(stream) is bytearray:
+                    self.stream = bytes(stream)
+                elif type(stream) is io.BytesIO:
+                    self.stream = stream.getvalue()
                 else:
-                    raise FileDataError( MSG_BAD_DOCUMENT) from e
-        else:
-            w = width
-            h = height
-            r = JM_rect_from_py(rect)
-            if not mupdf.fz_is_infinite_rect(r):
-                w = r.x1 - r.x0
-                h = r.y1 - r.y0
-
-            if stream:  # stream given, **MUST** be bytes!
-                assert isinstance(stream, bytes)
-                c = stream
-                #len = (size_t) PyBytes_Size(stream);
-
-                if mupdf_cppyy:
-                    buffer_ = mupdf.fz_new_buffer_from_copied_data( c)
-                    data = mupdf.fz_open_buffer( buffer_)
-                else:
-                    # Pass raw bytes data to mupdf.fz_open_memory(). This assumes
-                    # that the bytes string will not be modified; i think the
-                    # original PyMuPDF code makes the same assumption. Presumably
-                    # setting self.stream above ensures that the bytes will not be
-                    # garbage collected?
-                    data = mupdf.fz_open_memory(mupdf.python_buffer_data(c), len(c))
-                magic = filename
-                if not magic:
-                    magic = filetype
-                # fixme: pymupdf does:
-                #   handler = fz_recognize_document(gctx, filetype);
-                #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
-                # but prefer to leave fz_open_document_with_stream() to raise.
-                doc = mupdf.fz_open_document_with_stream(magic, data)
+                    raise TypeError("bad type: 'stream'")
+                stream = self.stream
+                if not (filename or filetype):
+                    filename = 'pdf'
             else:
-                if filename:
-                    if not filetype:
-                        try:
-                            doc = mupdf.fz_open_document(filename)
-                        except Exception as e:
-                            raise EmptyFileError( 'cannot open empty document') from e
-                    else:
-                        handler = mupdf.ll_fz_recognize_document(filetype)
-                        if handler:
-                            if handler.open:
-                                #log( f'{handler.open=}')
-                                #log( f'{dir(handler.open)=}')
-                                try:
-                                    doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
-                                except Exception as e:
-                                    raise FileDataError( MSG_BAD_DOCUMENT) from e
-                                doc = mupdf.FzDocument( doc)
-                            elif handler.open_with_stream:
-                                data = mupdf.fz_open_file( filename)
-                                doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
-                        else:
-                            raise ValueError( MSG_BAD_FILETYPE)
-                else:
-                    pdf = mupdf.PdfDocument()
-                    doc = mupdf.FzDocument(pdf)
-            if w > 0 and h > 0:
-                mupdf.fz_layout_document(doc, w, h, fontsize)
-            elif mupdf.fz_is_document_reflowable(doc):
-                mupdf.fz_layout_document(doc, 400, 600, 11)
-            this = doc
+                self.stream = None
 
-            self.this = this
+            if filename and self.stream is None:
+                from_file = True
+                self.name = filename
+            else:
+                from_file = False
+                self.name = ""
 
-        # fixme: not sure where self.thisown gets initialised in PyMuPDF.
-        #
-        self.thisown = True
-
-        if self.thisown:
-            self._graft_id = TOOLS.gen_id()
-            if self.needs_pass:
-                self.isEncrypted = True
-                self.is_encrypted = True
-            else: # we won't init until doc is decrypted
-                self.init_doc()
-            # the following hack detects invalid/empty SVG files, which else may lead
-            # to interpreter crashes
-            if filename and filename.lower().endswith("svg") or filetype and "svg" in filetype.lower():
+            if from_file:
+                if not os.path.exists(filename):
+                    msg = f"no such file: '{filename}'"
+                    raise FileNotFoundError(msg)
+                elif not os.path.isfile(filename):
+                    msg = f"'{filename}' is no file"
+                    raise FileDataError(msg)
+            if from_file and os.path.getsize(filename) == 0 or type(self.stream) is bytes and len(self.stream) == 0:
+                msg = "cannot open empty document"
+                raise EmptyFileError(msg)
+            if g_use_extra:
+                # Not sure this is any quicker.
                 try:
-                    _ = self.convert_to_pdf()  # this seems to always work
+                    self.this = extra.Document_init( filename, stream, filetype, rect, width, height, fontsize)
                 except Exception as e:
-                    raise FileDataError("cannot open broken document") from e
-
-        if g_use_extra:
-            self.this_is_pdf = isinstance( self.this, mupdf.PdfDocument)
-            if self.this_is_pdf:
-                self.page_count2 = extra.page_count_pdf
+                    e_str = str(e)
+                    if str(e) == MSG_BAD_FILETYPE:
+                        raise ValueError( e_str) from e
+                    else:
+                        raise FileDataError( MSG_BAD_DOCUMENT) from e
             else:
-                self.page_count2 = extra.page_count_fz
+                w = width
+                h = height
+                r = JM_rect_from_py(rect)
+                if not mupdf.fz_is_infinite_rect(r):
+                    w = r.x1 - r.x0
+                    h = r.y1 - r.y0
 
+                if stream:  # stream given, **MUST** be bytes!
+                    assert isinstance(stream, bytes)
+                    c = stream
+                    #len = (size_t) PyBytes_Size(stream);
+
+                    if mupdf_cppyy:
+                        buffer_ = mupdf.fz_new_buffer_from_copied_data( c)
+                        data = mupdf.fz_open_buffer( buffer_)
+                    else:
+                        # Pass raw bytes data to mupdf.fz_open_memory(). This assumes
+                        # that the bytes string will not be modified; i think the
+                        # original PyMuPDF code makes the same assumption. Presumably
+                        # setting self.stream above ensures that the bytes will not be
+                        # garbage collected?
+                        data = mupdf.fz_open_memory(mupdf.python_buffer_data(c), len(c))
+                    magic = filename
+                    if not magic:
+                        magic = filetype
+                    # fixme: pymupdf does:
+                    #   handler = fz_recognize_document(gctx, filetype);
+                    #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
+                    # but prefer to leave fz_open_document_with_stream() to raise.
+                    doc = mupdf.fz_open_document_with_stream(magic, data)
+                else:
+                    if filename:
+                        if not filetype:
+                            try:
+                                doc = mupdf.fz_open_document(filename)
+                            except Exception as e:
+                                raise EmptyFileError( 'cannot open empty document') from e
+                        else:
+                            handler = mupdf.ll_fz_recognize_document(filetype)
+                            if handler:
+                                if handler.open:
+                                    #log( f'{handler.open=}')
+                                    #log( f'{dir(handler.open)=}')
+                                    try:
+                                        doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
+                                    except Exception as e:
+                                        raise FileDataError( MSG_BAD_DOCUMENT) from e
+                                    doc = mupdf.FzDocument( doc)
+                                elif handler.open_with_stream:
+                                    data = mupdf.fz_open_file( filename)
+                                    doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
+                            else:
+                                raise ValueError( MSG_BAD_FILETYPE)
+                    else:
+                        pdf = mupdf.PdfDocument()
+                        doc = mupdf.FzDocument(pdf)
+                if w > 0 and h > 0:
+                    mupdf.fz_layout_document(doc, w, h, fontsize)
+                elif mupdf.fz_is_document_reflowable(doc):
+                    mupdf.fz_layout_document(doc, 400, 600, 11)
+                this = doc
+
+                self.this = this
+
+            # fixme: not sure where self.thisown gets initialised in PyMuPDF.
+            #
+            self.thisown = True
+
+            if self.thisown:
+                self._graft_id = TOOLS.gen_id()
+                if self.needs_pass:
+                    self.isEncrypted = True
+                    self.is_encrypted = True
+                else: # we won't init until doc is decrypted
+                    self.init_doc()
+                # the following hack detects invalid/empty SVG files, which else may lead
+                # to interpreter crashes
+                if filename and filename.lower().endswith("svg") or filetype and "svg" in filetype.lower():
+                    try:
+                        _ = self.convert_to_pdf()  # this seems to always work
+                    except Exception as e:
+                        raise FileDataError("cannot open broken document") from e
+
+            if g_use_extra:
+                self.this_is_pdf = isinstance( self.this, mupdf.PdfDocument)
+                if self.this_is_pdf:
+                    self.page_count2 = extra.page_count_pdf
+                else:
+                    self.page_count2 = extra.page_count_fz
+        finally:
+            JM_mupdf_show_errors = JM_mupdf_show_errors_old
+    
     def __len__(self) -> int:
         return self.page_count
 
