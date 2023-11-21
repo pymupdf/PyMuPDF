@@ -15,7 +15,7 @@ import weakref
 from . import fitz
 try:
     from . import mupdf
-except Exception as e:
+except Exception:
     import mupdf
 
 g_exceptions_verbose = fitz.g_exceptions_verbose
@@ -130,7 +130,7 @@ def show_pdf_page(*args, **kwargs) -> int:
         page, rect, src = args
     else:
         page, rect, src, pno = args
-    if pno == None:
+    if pno is None:
         pno = int(kwargs.get("pno", 0))
     overlay = bool(kwargs.get("overlay", True))
     keep_proportion = bool(kwargs.get("keep_proportion", True))
@@ -412,7 +412,7 @@ def insert_image(page, rect, **kwargs):
         _imgname=_imgname,
         digests=digests,
     )
-    if digests != None:
+    if digests is not None:
         doc.InsertedImages = digests
 
     return xref
@@ -436,7 +436,7 @@ def search_for(*args, **kwargs) -> list:
     quads = kwargs.get("quads", 0)
     clip = kwargs.get("clip")
     textpage = kwargs.get("textpage")
-    if clip != None:
+    if clip is not None:
         clip = fitz.Rect(clip)
     flags = kwargs.get(
             "flags",
@@ -660,7 +660,7 @@ def get_textpage_ocr(
         try:
             pix = fitz.Pixmap(block["image"])  # get image pixmap
             if pix.n - pix.alpha != 3:  # we need to convert this to RGB!
-                pix = fitz.Pixmap(csRGB, pix)
+                pix = fitz.Pixmap(fitz.csRGB, pix)
             if pix.alpha:  # must remove alpha channel
                 pix = fitz.Pixmap(pix, 0)
             imgdoc = fitz.Document(
@@ -822,7 +822,7 @@ def get_text(
     cb = None
     if option in ("html", "xml", "xhtml"):  # no clipping for MuPDF functions
         clip = page.cropbox
-    if clip != None:
+    if clip is not None:
         clip = fitz.Rect(clip)
         cb = None
     elif type(page) is fitz.Page:
@@ -904,11 +904,11 @@ def get_pixmap(
 
     if type(colorspace) is str:
         if colorspace.upper() == "GRAY":
-            colorspace = csGRAY
+            colorspace = fitz.csGRAY
         elif colorspace.upper() == "CMYK":
-            colorspace = csCMYK
+            colorspace = fitz.csCMYK
         else:
-            colorspace = csRGB
+            colorspace = fitz.csRGB
     if colorspace.n not in (1, 3, 4):
         raise ValueError("unsupported colorspace")
 
@@ -957,7 +957,7 @@ def getLinkDict(ln, document=None) -> dict:
     nl = {"kind": dest.kind, "xref": 0}
     try:
         nl["from"] = ln.rect
-    except Exception as e:
+    except Exception:
         # This seems to happen quite often in PyMuPDF/tests.
         if g_exceptions_verbose:    fitz.exception_info()
         pass
@@ -1253,7 +1253,7 @@ def set_metadata(doc: fitz.Document, m: dict) -> None:
         doc.xref_set_key(-1, "Info", "null")
         return
 
-    for key, val in [(k, v) for k, v in m.items() if keymap[k] != None]:
+    for key, val in [(k, v) for k, v in m.items() if keymap[k] is not None]:
         pdf_key = keymap[key]
         if not bool(val) or val in ("none", "null"):
             val = "null"
@@ -1454,46 +1454,46 @@ def set_toc(
             txt += "/Count %i" % ol["count"]
         try:
             txt += ol["dest"]
-        except Exception as e:
+        except Exception:
             # Verbose in PyMuPDF/tests.
             if g_exceptions_verbose:    fitz.exception_info()
             pass
         try:
             if ol["first"] > -1:
                 txt += "/First %i 0 R" % xref[ol["first"]]
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    fitz.exception_info()
             pass
         try:
             if ol["last"] > -1:
                 txt += "/Last %i 0 R" % xref[ol["last"]]
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    fitz.exception_info()
             pass
         try:
             if ol["next"] > -1:
                 txt += "/Next %i 0 R" % xref[ol["next"]]
-        except Exception as e:
+        except Exception:
             # Verbose in PyMuPDF/tests.
             if g_exceptions_verbose:    fitz.exception_info()
             pass
         try:
             if ol["parent"] > -1:
                 txt += "/Parent %i 0 R" % xref[ol["parent"]]
-        except Exception as e:
+        except Exception:
             # Verbose in PyMuPDF/tests.
             if g_exceptions_verbose:    fitz.exception_info()
             pass
         try:
             if ol["prev"] > -1:
                 txt += "/Prev %i 0 R" % xref[ol["prev"]]
-        except Exception as e:
+        except Exception:
             # Verbose in PyMuPDF/tests.
             if g_exceptions_verbose:    fitz.exception_info()
             pass
         try:
             txt += "/Title" + ol["title"]
-        except Exception as e:
+        except Exception:
             # Verbose in PyMuPDF/tests.
             if g_exceptions_verbose:    fitz.exception_info()
             pass
@@ -2926,7 +2926,7 @@ def getColor(name: str) -> tuple:
     try:
         c = getColorInfoList()[getColorList().index(name.upper())]
         return (c[1] / 255.0, c[2] / 255.0, c[3] / 255.0)
-    except:
+    except Exception:
         fitz.exception_info()
         return (1, 1, 1)
 
@@ -2939,7 +2939,7 @@ def getColorHSV(name: str) -> tuple:
     """
     try:
         x = getColorInfoList()[getColorList().index(name.upper())]
-    except Exception as e:
+    except Exception:
         if g_exceptions_verbose:    fitz.exception_info()
         return (-1, -1, -1)
 
@@ -2979,7 +2979,7 @@ def _get_font_properties(doc: fitz.Document, xref: int) -> tuple:
 
     if buffer:
         try:
-            font = Font(fontbuffer=buffer)
+            font = fitz.Font(fontbuffer=buffer)
             asc = font.ascender
             dsc = font.descender
             bbox = font.bbox
@@ -2987,17 +2987,17 @@ def _get_font_properties(doc: fitz.Document, xref: int) -> tuple:
                 if bbox.y0 < dsc:
                     dsc = bbox.y0
                 asc = 1 - dsc
-        except:
+        except Exception:
             fitz.exception_info()
             asc *= 1.2
             dsc *= 1.2
         return fontname, ext, stype, asc, dsc
     if ext != "n/a":
         try:
-            font = Font(fontname)
+            font = fitz.Font(fontname)
             asc = font.ascender
             dsc = font.descender
-        except:
+        except Exception:
             fitz.exception_info()
             asc *= 1.2
             dsc *= 1.2
@@ -3065,9 +3065,9 @@ def get_char_widths(
         fontdict["simple"] = simple
 
         if name == "ZapfDingbats":
-            glyphs = zapf_glyphs
+            glyphs = fitz.zapf_glyphs
         elif name == "Symbol":
-            glyphs = symbol_glyphs
+            glyphs = fitz.symbol_glyphs
         else:
             glyphs = None
 
@@ -3354,7 +3354,7 @@ class Shape:
                 shorter side. A value of (0.5, 0.5) will draw an ellipse.
         """
         r = fitz.Rect(rect)
-        if radius == None:  # standard rectangle
+        if radius is None:  # standard rectangle
             self.draw_cont += "%g %g %g %g re\n" % fitz.JM_TUPLE(
                 list(r.bl * self.ipctm) + [r.width, r.height]
             )
@@ -3503,7 +3503,7 @@ class Shape:
         point = fitz.Point(point)
         try:
             maxcode = max([ord(c) for c in " ".join(text)])
-        except:
+        except Exception:
             fitz.exception_info()
             return 0
 
@@ -3578,37 +3578,37 @@ class Shape:
         top = height - point.y - self.y  # start of 1st char
         left = point.x + self.x  # start of 1. char
         space = top  # space available
-        headroom = point.y + self.y  # distance to page border
+        #headroom = point.y + self.y  # distance to page border
         if rot == 90:
             left = height - point.y - self.y
             top = -point.x - self.x
             cm += cmp90
             space = width - abs(top)
-            headroom = point.x + self.x
+            #headroom = point.x + self.x
 
         elif rot == 270:
             left = -height + point.y + self.y
             top = point.x + self.x
             cm += cmm90
             space = abs(top)
-            headroom = width - point.x - self.x
+            #headroom = width - point.x - self.x
 
         elif rot == 180:
             left = -point.x - self.x
             top = -height + point.y + self.y
             cm += cm180
             space = abs(point.y + self.y)
-            headroom = height - point.y - self.y
+            #headroom = height - point.y - self.y
 
         optcont = self.page._get_optional_content(oc)
-        if optcont != None:
+        if optcont is not None:
             bdc = "/OC /%s BDC\n" % optcont
             emc = "EMC\n"
         else:
             bdc = emc = ""
 
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
-        if alpha == None:
+        if alpha is None:
             alpha = ""
         else:
             alpha = "/%s gs\n" % alpha
@@ -3706,7 +3706,7 @@ class Shape:
             fill_str = fitz.ColorCode(color, "f")
 
         optcont = self.page._get_optional_content(oc)
-        if optcont != None:
+        if optcont is not None:
             bdc = "/OC /%s BDC\n" % optcont
             emc = "EMC\n"
         else:
@@ -3714,7 +3714,7 @@ class Shape:
 
         # determine opacity / transparency
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
-        if alpha == None:
+        if alpha is None:
             alpha = ""
         else:
             alpha = "/%s gs\n" % alpha
@@ -3822,7 +3822,7 @@ class Shape:
             c_pnt = fitz.Point(fontsize * ascender, 0)  # progress in x-direction
             point = rect.bl + c_pnt  # line 1 'lheight' away from left
             maxwidth = rect.height  # pixels available in one line
-            maxheight = rect.width  # available text height 
+            maxheight = rect.width  # available text height
             cm += cmp90
 
         elif rot == 180:  # text upside down
@@ -3840,7 +3840,7 @@ class Shape:
             point = rect.tr + c_pnt  # line 1 'lheight' left of right
             maxwidth = rect.height  # pixels available in one line
             progr = -1  # subtract lheight for next line
-            maxheight = rect.width  # available text height 
+            maxheight = rect.width  # available text height
             cm += cmm90
 
         # =====================================================================
@@ -3999,7 +3999,7 @@ class Shape:
 
         if width == 0:  # border color makes no sense then
             color = None
-        elif color == None:  # vice versa
+        elif color is None:  # vice versa
             width = 0
         # if color == None and fill == None:
         #     raise ValueError("at least one of 'color' or 'fill' must be given")
@@ -4014,7 +4014,7 @@ class Shape:
             emc = ""
 
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
-        if alpha != None:
+        if alpha is not None:
             self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
 
         if width != 1 and width != 0:
@@ -4271,7 +4271,7 @@ def scrub(
 
         found_redacts = False
         for annot in page.annots():
-            if annot.type[0] == PDF_ANNOT_FILE_ATTACHMENT and attached_files:
+            if annot.type[0] == mupdf.PDF_ANNOT_FILE_ATTACHMENT and attached_files:
                 annot.update_file(buffer=b" ")  # set file content to empty
             if reset_responses:
                 annot.delete_responses()
@@ -4466,7 +4466,7 @@ def fill_textbox(
         pos = fitz.Point(pos)
     else:  # default is just below rect top-left
         pos = rect.tl + (tolerance, fontsize * asc)
-    if not pos in rect:
+    if pos not in rect:
         raise ValueError("Text must start in rectangle.")
 
     # calculate displacement factor for alignment
@@ -4538,9 +4538,9 @@ def fill_textbox(
     nlines = len(new_lines)
     if nlines > max_lines:
         msg = "Only fitting %i of %i lines." % (max_lines, nlines)
-        if warn == True:
+        if warn is True:
             print("Warning: " + msg)
-        elif warn == False:
+        elif warn is False:
             raise ValueError(msg)
 
     start = fitz.Point()
@@ -4572,7 +4572,6 @@ def fill_textbox(
         start.x = std_start
         start.y += LINEHEIGHT
 
-    t = _show_fz_text(writer.this)
     return new_lines  # return non-written lines
 
 
@@ -4755,7 +4754,7 @@ def get_ocmd(doc: fitz.Document, xref: int) -> dict:
         import json
         try:
             ve = json.loads(ve)
-        except:
+        except Exception:
             fitz.exception_info()
             print("bad /VE key: ", ve)
             raise
@@ -4900,6 +4899,7 @@ def integerToLetter(i) -> str:
     """Returns letter sequence string for integer i."""
     # William Chapman, Jorj McKie, 2021-01-06
     import string
+    ls = string.ascii_uppercase
     n, a = 1, i
     while pow(26, n) <= a:
         a -= int(math.pow(26, n))
@@ -5046,7 +5046,7 @@ def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> fitz.Quad:
     Returns:
         The quad which is wrapped by the bbox.
     """
-    if line_dir == None:
+    if line_dir is None:
         line_dir = span["dir"]
     cos, sin = line_dir
     bbox = fitz.Rect(bbox)  # make it a rect
@@ -5113,7 +5113,7 @@ def recover_line_quad(line: dict, spans: list = None) -> fitz.Quad:
     Returns:
         fitz.Quad covering selected spans.
     """
-    if spans == None:  # no sub-selection
+    if spans is None:  # no sub-selection
         spans = line["spans"]  # all spans
     if len(spans) == 0:
         raise ValueError("bad span list")
@@ -5162,11 +5162,11 @@ def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> fitz.Q
     Returns:
         fitz.Quad covering selected characters.
     """
-    if line_dir == None:  # must be a span from get_texttrace()
+    if line_dir is None:  # must be a span from get_texttrace()
         line_dir = span["dir"]
-    if chars == None:  # no sub-selection
+    if chars is None:  # no sub-selection
         return recover_quad(line_dir, span)
-    if not "chars" in span.keys():
+    if "chars" not in span.keys():
         raise ValueError("need 'rawdict' option to sub-select chars")
 
     q0 = recover_char_quad(line_dir, span, chars[0])  # quad of first char
@@ -5202,16 +5202,16 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> fitz.Quad:
     Returns:
         The quadrilateral enveloping the character.
     """
-    if line_dir == None:
+    if line_dir is None:
         line_dir = span["dir"]
     if type(line_dir) is not tuple or len(line_dir) != 2:
         raise ValueError("bad line dir argument")
     if type(span) is not dict:
         raise ValueError("bad span argument")
     if type(char) is dict:
-        bbox = Rect(char["bbox"])
+        bbox = fitz.Rect(char["bbox"])
     elif type(char) is tuple:
-        bbox = Rect(char[3])
+        bbox = fitz.Rect(char[3])
     else:
         raise ValueError("bad span argument")
 
@@ -5355,7 +5355,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
         fontfile.close()
         try:
             os.remove(newfont_path)  # remove old file
-        except:
+        except Exception:
             pass
         try:  # invoke fontTools subsetter
             fts.main(args)
@@ -5363,22 +5363,22 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
             new_buffer = font.buffer
             if len(font.valid_codepoints()) == 0:
                 new_buffer = None
-        except:
+        except Exception:
             fitz.exception_info()
             new_buffer = None
         try:
             os.remove(uncfile_path)
-        except:
+        except Exception:
             fitz.exception_info()
             pass
         try:
             os.remove(oldfont_path)
-        except:
+        except Exception:
             fitz.exception_info()
             pass
         try:
             os.remove(newfont_path)
-        except:
+        except Exception:
             fitz.exception_info()
             pass
         return new_buffer
@@ -5504,7 +5504,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
         name_set, xref_set, subsets = font_buffers[old_buffer]
         new_buffer = build_subset(old_buffer, subsets[0], subsets[1])
         fontname = list(name_set)[0]
-        if new_buffer == None or len(new_buffer) >= len(old_buffer):
+        if new_buffer is None or len(new_buffer) >= len(old_buffer):
             # subset was not created or did not get smaller
             if verbose:
                 print(f'Cannot subset {fontname!r}.')
