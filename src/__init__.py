@@ -6,16 +6,29 @@ License:
     SPDX-License-Identifier: GPL-3.0-only
 '''
 
+# To reduce startup times, we don't import everything we require here.
+#
+import atexit
+import binascii
 import glob
+import inspect
+import io
+import math
 import os
 import pathlib
+import re
+import string
 import sys
 import tarfile
+import typing
+import warnings
+import weakref
 import zipfile
+
+from . import extra
 
 
 def log( text, caller=1):
-    import inspect
     frame_record = inspect.stack( context=0)[ caller]
     filename    = os.path.relpath(frame_record.filename)
     line        = frame_record.lineno
@@ -41,23 +54,6 @@ def exception_info():
     log(f'exception_info:')
     traceback.print_exc(file=sys.stdout)
 
-
-# To reduce startup times, we don't import everything we require here.
-#
-import atexit
-import binascii
-import io
-import math
-import os
-import re
-import sys
-import typing
-import warnings
-import weakref
-import zipfile
-import string
-
-from . import extra
 
 # PDF names must not contain these characters:
 INVALID_NAME_CHARS = set(string.whitespace + "()<>[]{}/%" + chr(0))
@@ -128,7 +124,7 @@ else:
     #
     try:
         from . import mupdf
-    except Exception as e:
+    except Exception:
         import mupdf
     mupdf.reinit_singlethreaded()
 
@@ -192,8 +188,8 @@ def _as_fz_page(page):
     assert 0, f'Unrecognised {type(page)=}'
 
 
-# Fixme: we don't implement JM_MEMORY.
-
+# Fixme: we don't support JM_MEMORY=1.
+JM_MEMORY = 0
 
 # Classes
 #
@@ -234,11 +230,11 @@ class Annot:
             else:
                 values[dictkey_text] = ''
             obj = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Q'))
-            align = 0;
+            align = 0
             if obj.m_internal:
                 align = mupdf.pdf_to_int(obj)
             values[dictkey_align] = align
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             return
         val = values
@@ -283,14 +279,14 @@ class Annot:
                 raise RuntimeError( MSG_BAD_APN)
             if not mupdf.pdf_is_stream( apobj):
                 raise RuntimeError( MSG_BAD_APN)
-            res = JM_BufferFromBytes( buffer_);
+            res = JM_BufferFromBytes( buffer_)
             if not res.m_internal:
                 raise ValueError( MSG_BAD_BUFFER)
             JM_update_stream( page.doc(), apobj, res, 1)
             if rect:
                 bbox = mupdf.pdf_dict_get_rect( annot_obj, PDF_NAME('Rect'))
                 mupdf.pdf_dict_put_rect( apobj, PDF_NAME('BBox'), bbox)
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
 
     def _update_appearance(self, opacity=-1, blend_mode=None, fill_color=None, rotate=-1):
@@ -419,7 +415,7 @@ class Annot:
                     mupdf.pdf_annot_obj(annot),
                     mupdf.PDF_ENUM_NAME_AP,
                     mupdf.PDF_ENUM_NAME_N
-                    );
+                    )
             if not ap.m_internal:
                 return JM_py_from_matrix(mupdf.FzMatrix())
             mat = mupdf.pdf_dict_get_matrix(ap, mupdf.PDF_ENUM_NAME_Matrix)
@@ -470,13 +466,13 @@ class Annot:
         CheckParent(self)
         atype = self.type[0]
         if atype not in (
-                PDF_ANNOT_CIRCLE,
-                PDF_ANNOT_FREE_TEXT,
-                PDF_ANNOT_INK,
-                PDF_ANNOT_LINE,
-                PDF_ANNOT_POLY_LINE,
-                PDF_ANNOT_POLYGON,
-                PDF_ANNOT_SQUARE,
+                mupdf.PDF_ANNOT_CIRCLE,
+                mupdf.PDF_ANNOT_FREE_TEXT,
+                mupdf.PDF_ANNOT_INK,
+                mupdf.PDF_ANNOT_LINE,
+                mupdf.PDF_ANNOT_POLY_LINE,
+                mupdf.PDF_ANNOT_POLYGON,
+                mupdf.PDF_ANNOT_SQUARE,
                 ):
             return dict()
         ao = mupdf.pdf_annot_obj(self.this)
@@ -499,7 +495,7 @@ class Annot:
             annot = self.this
             assert isinstance(annot, mupdf.PdfAnnot)
             return JM_annot_colors(mupdf.pdf_annot_obj(annot))
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
 
@@ -514,7 +510,7 @@ class Annot:
             if not irt_annot.m_internal:
                 break
             mupdf.pdf_delete_annot(page, irt_annot)
-        mupdf.pdf_dict_del(annot_obj, PDF_NAME('Popup'));
+        mupdf.pdf_dict_del(annot_obj, PDF_NAME('Popup'))
 
         annots = mupdf.pdf_dict_get(page.obj(), PDF_NAME('Annots'))
         n = mupdf.pdf_array_len(annots)
@@ -593,10 +589,10 @@ class Annot:
         annot_obj = mupdf.pdf_annot_obj(annot)
         type = mupdf.pdf_annot_type(annot)
         if type != mupdf.PDF_ANNOT_FILE_ATTACHMENT:
-            raise TypeError( MSG_BAD_ANNOT_TYPE);
+            raise TypeError( MSG_BAD_ANNOT_TYPE)
         stream = mupdf.pdf_dict_getl(annot_obj, PDF_NAME('FS'), PDF_NAME('EF'), PDF_NAME('F'))
         if not stream.m_internal:
-            RAISEPY( "bad PDF: file entry not found", JM_Exc_FileDataError);
+            RAISEPY( "bad PDF: file entry not found", JM_Exc_FileDataError)
         buf = mupdf.pdf_load_stream(stream)
         res = JM_BinFromBuffer(buf)
         return res
@@ -656,9 +652,9 @@ class Annot:
         type = mupdf.pdf_annot_type(annot)
         sound = mupdf.pdf_dict_get(annot_obj, PDF_NAME('Sound'))
         if type != mupdf.PDF_ANNOT_SOUND or not sound.m_internal:
-            raise TypeError( MSG_BAD_ANNOT_TYPE);
-        if pdf_dict_get(sound, PDF_NAME(F)).m_internal:
-            RAISEPY( "unsupported sound stream", JM_Exc_FileDataError);
+            raise TypeError( MSG_BAD_ANNOT_TYPE)
+        if mupdf.pdf_dict_get(sound, PDF_NAME('F')).m_internal:
+            RAISEPY( "unsupported sound stream", JM_Exc_FileDataError)
         res = dict()
         obj = mupdf.pdf_dict_get(sound, PDF_NAME('R'))
         if obj.m_internal:
@@ -672,7 +668,7 @@ class Annot:
         obj = mupdf.pdf_dict_get(sound, PDF_NAME('E'))
         if obj.m_internal:
             res['encoding'] = mupdf.pdf_to_name(obj)
-        obj = mupdf.pdf_dict_gets(sound, "CO");
+        obj = mupdf.pdf_dict_gets(sound, "CO")
         if obj.m_internal:
             res['compression'] = mupdf.pdf_to_name(obj)
         buf = mupdf.pdf_load_stream(sound)
@@ -751,13 +747,12 @@ class Annot:
     @property
     def language(self):
         """annotation language"""
-        assert 0, 'Not implemented yet'
         this_annot = self.this
         lang = mupdf.pdf_annot_language(this_annot)
-        if not lang:
+        if lang == mupdf.FZ_LANG_UNSET:
             return
-        assert 0, 'fz_string_from_text_language() not wrapped properly yet.'
-        return mupdf.fz_string_from_text_language(buf, lang)
+        assert hasattr(mupdf, 'fz_string_from_text_language2')
+        return mupdf.fz_string_from_text_language2(lang)
 
     @property
     def line_ends(self):
@@ -777,7 +772,7 @@ class Annot:
         CheckParent(self)
         this_annot = self.this
         assert isinstance(this_annot, mupdf.PdfAnnot)
-        assert(this_annot.m_internal)
+        assert this_annot.m_internal
         type_ = mupdf.pdf_annot_type(this_annot)
         if type_ != mupdf.PDF_ANNOT_WIDGET:
             annot = mupdf.pdf_next_annot(this_annot)
@@ -893,7 +888,7 @@ class Annot:
         rot = page.rotationMatrix
         mat = page.transformation_matrix
         bbox *= rot * ~mat
-        pannot = self.this
+        annot = self.this
         annot_obj = mupdf.pdf_annot_obj(annot)
         ap = mupdf.pdf_dict_getl(annot_obj, PDF_NAME('AP'), PDF_NAME('N'))
         if not ap.m_internal:
@@ -926,21 +921,21 @@ class Annot:
         CheckParent(self)
         atype, atname = self.type[:2]  # annotation type
         if atype not in (
-                PDF_ANNOT_CIRCLE,
-                PDF_ANNOT_FREE_TEXT,
-                PDF_ANNOT_INK,
-                PDF_ANNOT_LINE,
-                PDF_ANNOT_POLY_LINE,
-                PDF_ANNOT_POLYGON,
-                PDF_ANNOT_SQUARE,
+                mupdf.PDF_ANNOT_CIRCLE,
+                mupdf.PDF_ANNOT_FREE_TEXT,
+                mupdf.PDF_ANNOT_INK,
+                mupdf.PDF_ANNOT_LINE,
+                mupdf.PDF_ANNOT_POLY_LINE,
+                mupdf.PDF_ANNOT_POLYGON,
+                mupdf.PDF_ANNOT_SQUARE,
                 ):
             print(f"Cannot set border for '{atname}'.")
             return None
-        if not atype in (
-                PDF_ANNOT_CIRCLE,
-                PDF_ANNOT_FREE_TEXT,
-                PDF_ANNOT_POLYGON,
-                PDF_ANNOT_SQUARE,
+        if atype not in (
+                mupdf.PDF_ANNOT_CIRCLE,
+                mupdf.PDF_ANNOT_FREE_TEXT,
+                mupdf.PDF_ANNOT_POLYGON,
+                mupdf.PDF_ANNOT_SQUARE,
                 ):
             if clouds > 0:
                 print(f"Cannot set cloudy border for '{atname}'.")
@@ -951,9 +946,9 @@ class Annot:
         border.setdefault("style", None)
         border.setdefault("dashes", None)
         border.setdefault("clouds", -1)
-        if border["width"] == None:
+        if border["width"] is None:
             border["width"] = -1
-        if border["clouds"] == None:
+        if border["clouds"] is None:
             border["clouds"] = -1
         if hasattr(border["dashes"], "__getitem__"):  # ensure sequence items are integers
             border["dashes"] = tuple(border["dashes"])
@@ -977,8 +972,8 @@ class Annot:
             colors = {"fill": fill, "stroke": stroke}
         fill = colors.get("fill")
         stroke = colors.get("stroke")
-        fill_annots = (PDF_ANNOT_CIRCLE, PDF_ANNOT_SQUARE, PDF_ANNOT_LINE, PDF_ANNOT_POLY_LINE, PDF_ANNOT_POLYGON,
-                       PDF_ANNOT_REDACT,)
+        fill_annots = (mupdf.PDF_ANNOT_CIRCLE, mupdf.PDF_ANNOT_SQUARE, mupdf.PDF_ANNOT_LINE, mupdf.PDF_ANNOT_POLY_LINE, mupdf.PDF_ANNOT_POLYGON,
+                       mupdf.PDF_ANNOT_REDACT,)
         if stroke in ([], ()):
             doc.xref_set_key(self.xref, "C", "[]")
         elif stroke is not None:
@@ -1067,9 +1062,9 @@ class Annot:
         CheckParent(self)
         this_annot = self.this
         if not language:
-            lang = mupdf.FZ_LANG_UNSET;
+            lang = mupdf.FZ_LANG_UNSET
         else:
-            lang = mupdf.fz_text_language_from_string(language);
+            lang = mupdf.fz_text_language_from_string(language)
         mupdf.pdf_set_annot_language(this_annot, lang)
 
     def set_line_ends(self, start, end):
@@ -1104,7 +1099,7 @@ class Annot:
         annot = self.this
         if not _INRANGE(opacity, 0.0, 1.0):
             mupdf.pdf_set_annot_opacity(annot, 1)
-            return;
+            return
         mupdf.pdf_set_annot_opacity(annot, opacity)
         if opacity < 1.0:
             page = mupdf.pdf_annot_page(annot)
@@ -1229,7 +1224,7 @@ class Annot:
         dt = self.border.get("dashes", None)  # get the dashes spec
         bwidth = self.border.get("width", -1)  # get border line width
         stroke = self.colors["stroke"]  # get the stroke color
-        if fill_color != None:
+        if fill_color is not None:
             fill = fill_color
         else:
             fill = self.colors["fill"]
@@ -1256,7 +1251,7 @@ class Annot:
         else:
             opa_code = ""
 
-        if annot_type == PDF_ANNOT_FREE_TEXT:
+        if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
             CheckColor(border_color)
             CheckColor(text_color)
             CheckColor(fill_color)
@@ -1297,7 +1292,7 @@ class Annot:
             fill_color=fill,
             rotate=rotate,
         )
-        if val == False:
+        if val is False:
             raise RuntimeError("Error updating annotation.")
 
         bfill = color_string(fill, "f")
@@ -1368,10 +1363,10 @@ class Annot:
                 bwidth = stroke_string = b""
             if fill_string and stroke_string:
                 ope = b"B"
-            if ope != None:
+            if ope is not None:
                 ap = bwidth + fill_string + stroke_string + re + b"\n" + ope + b"\n" + ap
 
-            if dashes != None:  # handle dashes
+            if dashes is not None:  # handle dashes
                 ap = dashes + b"\n" + ap
                 dashes = None
 
@@ -1439,17 +1434,17 @@ class Annot:
         # handle annotation rotations
         #-------------------------------
         if annot_type not in (  # only these types are supported
-            mupdf.PDF_ANNOT_CARET,
-            mupdf.PDF_ANNOT_CIRCLE,
-            mupdf.PDF_ANNOT_FILE_ATTACHMENT,
-            mupdf.PDF_ANNOT_INK,
-            mupdf.PDF_ANNOT_LINE,
-            mupdf.PDF_ANNOT_POLY_LINE,
-            mupdf.PDF_ANNOT_POLYGON,
-            mupdf.PDF_ANNOT_SQUARE,
-            mupdf.PDF_ANNOT_STAMP,
-            mupdf.PDF_ANNOT_TEXT,
-            ):
+                mupdf.PDF_ANNOT_CARET,
+                mupdf.PDF_ANNOT_CIRCLE,
+                mupdf.PDF_ANNOT_FILE_ATTACHMENT,
+                mupdf.PDF_ANNOT_INK,
+                mupdf.PDF_ANNOT_LINE,
+                mupdf.PDF_ANNOT_POLY_LINE,
+                mupdf.PDF_ANNOT_POLYGON,
+                mupdf.PDF_ANNOT_SQUARE,
+                mupdf.PDF_ANNOT_STAMP,
+                mupdf.PDF_ANNOT_TEXT,
+                ):
             return
 
         rot = self.rotation  # get value from annot object
@@ -1479,22 +1474,22 @@ class Annot:
         pdf = mupdf.pdf_get_bound_document(annot_obj)  # the owning PDF
         type = mupdf.pdf_annot_type(annot)
         if type != mupdf.PDF_ANNOT_FILE_ATTACHMENT:
-            raise TypeError( MSG_BAD_ANNOT_TYPE);
+            raise TypeError( MSG_BAD_ANNOT_TYPE)
         stream = mupdf.pdf_dict_getl(annot_obj, PDF_NAME('FS'), PDF_NAME('EF'), PDF_NAME('F'))
         # the object for file content
         if not stream.m_internal:
-            RAISEPY( "bad PDF: no /EF object", JM_Exc_FileDataError);
+            RAISEPY( "bad PDF: no /EF object", JM_Exc_FileDataError)
 
         fs = mupdf.pdf_dict_get(annot_obj, PDF_NAME('FS'))
 
         # file content given
         res = JM_BufferFromBytes(buffer_)
         if buffer_ and not res.m_internal:
-            raise ValueError( MSG_BAD_BUFFER);
+            raise ValueError( MSG_BAD_BUFFER)
         if res:
             JM_update_stream(pdf, stream, res, 1)
             # adjust /DL and /Size parameters
-            len, _ = mupdf.fz_buffer_storage(res, NULL)
+            len, _ = mupdf.fz_buffer_storage(res)
             l = mupdf.pdf_new_int(len)
             mupdf.pdf_dict_put(stream, PDF_NAME('DL'), l)
             mupdf.pdf_dict_putl(stream, l, PDF_NAME('Params'), PDF_NAME('Size'))
@@ -1530,7 +1525,7 @@ class Annot:
         #fz_point point;  # point object to work with
         page_ctm = mupdf.FzMatrix()   # page transformation matrix
         dummy = mupdf.FzRect(0)   # Will have .m_internal=NULL.
-        mupdf.pdf_page_transform(mupdf.pdf_annot_page(annot), dummy, page_ctm);
+        mupdf.pdf_page_transform(mupdf.pdf_annot_page(annot), dummy, page_ctm)
         derot = JM_derotate_page_matrix(mupdf.pdf_annot_page(annot))
         page_ctm = mupdf.fz_concat(page_ctm, derot)
 
@@ -1547,7 +1542,7 @@ class Annot:
 
         if o.m_internal:
             # handle lists with 1-level depth --------------------------------
-            #weiter:;
+            #weiter:
             res = []
             for i in range(0, mupdf.pdf_array_len(o), 2):
                 x = mupdf.pdf_to_real(mupdf.pdf_array_get(o, i))
@@ -1559,7 +1554,7 @@ class Annot:
 
         else:
             # InkList has 2-level lists --------------------------------------
-            #inklist:;
+            #inklist:
             res = []
             for i in range(mupdf.pdf_array_len(o)):
                 res1 = []
@@ -1571,7 +1566,7 @@ class Annot:
                     point = mupdf.fz_transform_point(point, page_ctm)
                     res1.append( (point.x, point.y))
                 res.append(res1)
-            return res;
+            return res
 
     @property
     def xref(self):
@@ -1598,24 +1593,23 @@ class Archive:
     def __repr__( self):
         return f'Archive, sub-archives: {len(self._subarchives)}'
 
-
     def _add_arch( subarch, path=None):
-        mupdf.fz_mount_multi_archive( self.this, sub, path)
+        mupdf.fz_mount_multi_archive( self.this, subarch, path)
     
     def _add_dir( self, folder, path=None):
         sub = mupdf.fz_open_directory( folder)
         mupdf.fz_mount_multi_archive( self.this, sub, path)
     
     def _add_treeitem( self, memory, name, path=None):
-            drop_sub = False
-            buff = JM_BufferFromBytes( memory)
-            sub = JM_last_tree( self.this, path)
-            if not sub:
-                sub = mupdf.fz_new_tree_archive( None)
-                drop_sub = True
-            mupdf.fz_tree_archive_add_buffer( sub, name, buff)
-            if drop_sub:
-                mupdf.fz_mount_multi_archive( self.this, sub, path)
+        drop_sub = False
+        buff = JM_BufferFromBytes( memory)
+        sub = JM_last_tree( self.this, path)
+        if not sub:
+            sub = mupdf.fz_new_tree_archive( None)
+            drop_sub = True
+        mupdf.fz_tree_archive_add_buffer( sub, name, buff)
+        if drop_sub:
+            mupdf.fz_mount_multi_archive( self.this, sub, path)
     
     def _add_ziptarfile( self, filepath, type_, path=None):
         if type_ == 1:
@@ -1645,7 +1639,8 @@ class Archive:
                 of content can be retrieved. Use it to e.g. cope with
                 duplicate element names.
         '''
-        bin_ok = lambda x: isinstance(x, (bytes, bytearray, io.BytesIO))
+        def bin_ok(x):
+            return isinstance(x, (bytes, bytearray, io.BytesIO))
 
         entries = []
         mount = None
@@ -1751,7 +1746,7 @@ class Archive:
                     _ = open(str(data), "rb")
                     ff = _.read()
                     _.close()
-                    seld._add_treeitem(ff, name, path=mount)
+                    self._add_treeitem(ff, name, path=mount)
                 entries = [name]
                 return make_subarch()
 
@@ -1770,7 +1765,7 @@ class Archive:
         return mupdf.fz_has_archive_entry( self.this, name)
     
     def read_entry( self, name):
-        buff = mupdf.fz_read_archive_entry( arch, name)
+        buff = mupdf.fz_read_archive_entry( self.this, name)
         return JM_BinFromBuffer( buff)
 
 
@@ -1793,7 +1788,7 @@ class Xml:
     
     def _get_node_tree( self):
         def show_node(node, items, shift):
-            while node != None:
+            while node is not None:
                 if node.is_text:
                     items.append((shift, f'"{node.text}"'))
                     node = node.next
@@ -1822,10 +1817,10 @@ class Xml:
     def add_class(self, text):
         """Set some class via CSS. Replaces complete class spec."""
         cls = self.get_attribute_value("class")
-        if cls != None and text in cls:
+        if cls is not None and text in cls:
             return self
         self.remove_attribute("class")
-        if cls == None:
+        if cls is None:
             cls = text
         else:
             cls += " " + text
@@ -1836,9 +1831,9 @@ class Xml:
         """Add a "code" tag"""
         child = self.create_element("code")
         if type(text) is str:
-           child.append_child(self.create_text_node(text)) 
+            child.append_child(self.create_text_node(text))
         prev = self.span_bottom()
-        if prev == None:
+        if prev is None:
             prev = self
         prev.append_child(child)
         return self
@@ -1868,7 +1863,6 @@ class Xml:
         this_tag = self.tagname
         new_tag = f"h{level}"
         child = self.create_element(new_tag)
-        prev = self
         if this_tag not in ("h1", "h2", "h3", "h4", "h5", "h6", "p"):
             self.append_child(child)
             return child
@@ -1884,13 +1878,13 @@ class Xml:
     def add_image(self, name, width=None, height=None, imgfloat=None, align=None):
         """Add image node (tag "img")."""
         child = self.create_element("img")
-        if width != None:
+        if width is not None:
             child.set_attribute("width", f"{width}")
-        if height != None:
+        if height is not None:
             child.set_attribute("height", f"{height}")
-        if imgfloat != None:
+        if imgfloat is not None:
             child.set_attribute("style", f"float: {imgfloat}")
-        if align != None:
+        if align is not None:
             child.set_attribute("align", f"{align}")
         child.set_attribute("src", f"{name}")
         self.append_child(child)
@@ -1902,9 +1896,9 @@ class Xml:
         if not isinstance(text, str):
             text = href
         child.set_attribute("href", href)
-        child.append_child(self.create_text_node(text)) 
+        child.append_child(self.create_text_node(text))
         prev = self.span_bottom()
-        if prev == None:
+        if prev is None:
             prev = self
         prev.append_child(child)
         return self
@@ -1922,7 +1916,7 @@ class Xml:
         child = self.create_element("ol")
         if start > 1:
             child.set_attribute("start", str(start))
-        if numtype != None:
+        if numtype is not None:
             child.set_attribute("type", numtype)
         self.append_child(child)
         return child
@@ -1944,10 +1938,10 @@ class Xml:
     def add_style(self, text):
         """Set some style via CSS style. Replaces complete style spec."""
         style = self.get_attribute_value("style")
-        if style != None and text in style:
+        if style is not None and text in style:
             return self
         self.remove_attribute("style")
-        if style == None:
+        if style is None:
             style = text
         else:
             style += ";" + text
@@ -1958,9 +1952,9 @@ class Xml:
         """Add a subscript ("sub" tag)"""
         child = self.create_element("sub")
         if type(text) is str:
-           child.append_child(self.create_text_node(text)) 
+            child.append_child(self.create_text_node(text))
         prev = self.span_bottom()
-        if prev == None:
+        if prev is None:
             prev = self
         prev.append_child(child)
         return self
@@ -1969,9 +1963,9 @@ class Xml:
         """Add a superscript ("sup" tag)"""
         child = self.create_element("sup")
         if type(text) is str:
-           child.append_child(self.create_text_node(text)) 
+            child.append_child(self.create_text_node(text))
         prev = self.span_bottom()
-        if prev == None:
+        if prev is None:
             prev = self
         prev.append_child(child)
         return self
@@ -1981,7 +1975,7 @@ class Xml:
         lines = text.splitlines()
         line_count = len(lines)
         prev = self.span_bottom()
-        if prev == None:
+        if prev is None:
             prev = self
 
         for i, line in enumerate(lines):
@@ -1997,7 +1991,7 @@ class Xml:
         span = self.create_element("span")
         span.add_style(style)
         prev = self.span_bottom()
-        if prev == None:
+        if prev is None:
             prev = self
         prev.append_child(span)
         return prev
@@ -2058,14 +2052,13 @@ class Xml:
         if mupdf.fz_xml_text( self.this):
             # text node, has no attributes.
             return
-        
         result = dict()
         i = 0
         while 1:
             val, key = mupdf.fz_dom_get_attribute( self.this, i)
             if not val or not key:
                 break
-            ret[ key] = val
+            result[ key] = val
             i += 1
         return result
     
@@ -2087,13 +2080,13 @@ class Xml:
     @property
     def is_text(self):
         """Check if this is a text node."""
-        return self.text != None
+        return self.text is not None
 
     @property
     def last_child(self):
         """Return last child node."""
         child = self.first_child
-        if child==None:
+        if child is None:
             return None
         while True:
             next = child.next
@@ -2200,7 +2193,6 @@ class Xml:
     def set_id(self, unique):
         """Set a unique id."""
         # check uniqueness
-        tagname = self.tagname
         root = self.root
         if root.find(None, "id", unique):
             raise ValueError(f"id '{unique}' already exists")
@@ -2260,26 +2252,26 @@ class Xml:
         return self
 
     def set_properties(
-        self,
-        align=None,
-        bgcolor=None,
-        bold=None,
-        color=None,
-        columns=None,
-        font=None,
-        fontsize=None,
-        indent=None,
-        italic=None,
-        leading=None,
-        letter_spacing=None,
-        lineheight=None,
-        margins=None,
-        pagebreak_after=None,
-        pagebreak_before=None,
-        word_spacing=None,
-        unqid=None,
-        cls=None,
-        ):
+            self,
+            align=None,
+            bgcolor=None,
+            bold=None,
+            color=None,
+            columns=None,
+            font=None,
+            fontsize=None,
+            indent=None,
+            italic=None,
+            leading=None,
+            letter_spacing=None,
+            lineheight=None,
+            margins=None,
+            pagebreak_after=None,
+            pagebreak_before=None,
+            word_spacing=None,
+            unqid=None,
+            cls=None,
+            ):
         """Set any or all properties of a node.
 
         To be used for existing nodes preferrably.
@@ -2357,17 +2349,17 @@ class Xml:
         sys.stdout = sys.stderr
         parent = self
         child = self.last_child
-        if child == None:
+        if child is None:
             return None
         while child.is_text:
             child = child.previous
-            if child == None:
+            if child is None:
                 break
-        if child == None or child.tagname != "span":
+        if child is None or child.tagname != "span":
             return None
 
         while True:
-            if child == None:
+            if child is None:
                 return parent
             if child.tagname in ("a", "sub","sup","body") or child.is_text:
                 child = child.next
@@ -2427,7 +2419,7 @@ class DeviceWrapper:
         if args_match( args, mupdf.FzDevice):
             device, = args
             self.this = device
-        elif args_match( args, fitz.Pixmap, None):
+        elif args_match( args, Pixmap, None):
             pm, clip = args
             bbox = JM_irect_from_py( clip)
             if mupdf.fz_is_infinite_irect( bbox):
@@ -2461,14 +2453,14 @@ class DisplayList:
     def get_pixmap(self, matrix=None, colorspace=None, alpha=0, clip=None):
         if not colorspace:
             colorspace = mupdf.FzColorspace(mupdf.FzColorspace.Fixed_RGB)
-        val = JM_pixmap_from_display_list(self.this, matrix, colorspace, alpha, clip, None);
+        val = JM_pixmap_from_display_list(self.this, matrix, colorspace, alpha, clip, None)
         val.thisown = True
         return val
 
     def get_textpage(self, flags=3):
         stext_options = mupdf.FzStextOptions()
         stext_options.flags = flags
-        val = mupdf.fz_new_stext_page_from_display_list( this, stext_options)
+        val = mupdf.fz_new_stext_page_from_display_list( self.this, stext_options)
         val.thisown = True
         return val
 
@@ -2494,7 +2486,6 @@ if g_use_extra:
 class Document:
 
     def __contains__(self, loc) -> bool:
-        page_count = mupdf.fz_count_pages(self.this)
         if type(loc) is int:
             if loc < self.page_count:
                 return True
@@ -2502,15 +2493,17 @@ class Document:
         if type(loc) not in (tuple, list) or len(loc) != 2:
             return False
         chapter, pno = loc
-        if (type(chapter) != int or
-            chapter < 0 or
-            chapter >= self.chapter_count
-            ):
+        if (0
+                or not isinstance(chapter, int)
+                or chapter < 0
+                or chapter >= self.chapter_count
+                ):
             return False
-        if (type(pno) != int or
-            pno < 0 or
-            pno >= self.chapter_page_count(chapter)
-            ):
+        if (0
+                or not isinstance(pno, int)
+                or pno < 0
+                or pno >= self.chapter_page_count(chapter)
+                ):
             return False
         return True
 
@@ -2584,9 +2577,9 @@ class Document:
         if not filename or type(filename) is str:
             pass
         elif hasattr(filename, "absolute"):
-             filename = str(filename)
+            filename = str(filename)
         elif hasattr(filename, "name"):
-             filename = filename.name
+            filename = filename.name
         else:
             raise TypeError("bad filename")
         
@@ -2671,7 +2664,7 @@ class Document:
                         except Exception as e:
                             raise EmptyFileError( 'cannot open empty document') from e
                     else:
-                        handler = mupdf.ll_fz_recognize_document(filetype);
+                        handler = mupdf.ll_fz_recognize_document(filetype)
                         if handler:
                             if handler.open:
                                 #log( f'{handler.open=}')
@@ -2683,7 +2676,7 @@ class Document:
                                 doc = mupdf.FzDocument( doc)
                             elif handler.open_with_stream:
                                 data = mupdf.fz_open_file( filename)
-                                doc = fz_document_open_with_stream_fn_call( handler.open_with_stream, data);
+                                doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
                         else:
                             raise ValueError( MSG_BAD_FILETYPE)
                 else:
@@ -2692,7 +2685,7 @@ class Document:
             if w > 0 and h > 0:
                 mupdf.fz_layout_document(doc, w, h, fontsize)
             elif mupdf.fz_is_document_reflowable(doc):
-               mupdf.fz_layout_document(doc, 400, 600, 11)
+                mupdf.fz_layout_document(doc, 400, 600, 11)
             this = doc
 
             self.this = this
@@ -2719,9 +2712,9 @@ class Document:
         if g_use_extra:
             self.this_is_pdf = isinstance( self.this, mupdf.PdfDocument)
             if self.this_is_pdf:
-                self.page_count2 = fitz.extra.page_count_pdf
+                self.page_count2 = extra.page_count_pdf
             else:
-                self.page_count2 = fitz.extra.page_count_fz
+                self.page_count2 = extra.page_count_fz
 
     def __len__(self) -> int:
         return self.page_count
@@ -2744,10 +2737,10 @@ class Document:
         fonts = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer( pdf),
                 PDF_NAME('Root'),
-                 PDF_NAME('AcroForm'),
-                 PDF_NAME('DR'),
-                 PDF_NAME('Font'),
-                 )
+                PDF_NAME('AcroForm'),
+                PDF_NAME('DR'),
+                PDF_NAME('Font'),
+                )
         if not fonts.m_internal or not mupdf.pdf_is_dict( fonts):
             raise RuntimeError( "PDF has no form fonts yet")
         k = mupdf.pdf_new_name( name)
@@ -2829,9 +2822,8 @@ class Document:
         return idx
 
     def _embfile_add(self, name, buffer_, filename=None, ufilename=None, desc=None):
-        doc = self.this
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         data = JM_BufferFromBytes(buffer_)
         if not data.m_internal:
             raise TypeError( MSG_BAD_BUFFER)
@@ -2878,7 +2870,7 @@ class Document:
         xref = 0
         ci_xref=0
 
-        trailer = mupdf.pdf_trailer(pdf);
+        trailer = mupdf.pdf_trailer(pdf)
 
         names = mupdf.pdf_dict_getl(
                 trailer,
@@ -2924,9 +2916,8 @@ class Document:
         """Get list of embedded file names."""
         if self.is_closed:
             raise ValueError("document closed")
-        doc = self.this
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         names = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer(pdf),
                 PDF_NAME('Root'),
@@ -3008,7 +2999,7 @@ class Document:
         if not n:
             return
         if n != m:
-            raise IndexError( "internal error finding outline xrefs");
+            raise IndexError( "internal error finding outline xrefs")
 
         # update all TOC item dictionaries
         for i in range(n):
@@ -3016,7 +3007,7 @@ class Document:
             item = items[i]
             itemdict = item[3]
             if not isinstance(itemdict, dict):
-                raise ValueError( "need non-simple TOC format");
+                raise ValueError( "need non-simple TOC format")
             itemdict[dictkey_xref] = xrefs[i]
             bm = mupdf.pdf_load_object(pdf, xref)
             flags = mupdf.pdf_to_int( mupdf.pdf_dict_get(bm, PDF_NAME('F')))
@@ -3050,7 +3041,7 @@ class Document:
             item[3] = itemdict
             items[i] = item
 
-    def _forget_page(self, page: "struct Page *"):
+    def _forget_page(self, page: Page):
         """Remove a page from document page dict."""
         pid = id(page)
         if pid in self._page_refs:
@@ -3059,13 +3050,13 @@ class Document:
 
     def _get_char_widths(self, xref: int, bfname: str, ext: str, ordering: int, limit: int, idx: int = 0):
         pdf = _as_pdf_document(self)
-        mylimit = limit;
+        mylimit = limit
         if mylimit < 256:
             mylimit = 256
         ASSERT_PDF(pdf), f'{pdf=}'
         if ordering >= 0:
-            data, size, index = mupdf.fz_lookup_cjk_font(ordering);
-            font = mupdf.fz_new_font_from_memory(None, data, size, index, 0);
+            data, size, index = mupdf.fz_lookup_cjk_font(ordering)
+            font = mupdf.fz_new_font_from_memory(None, data, size, index, 0)
         else:
             data, size = mupdf.fz_lookup_base14_font(bfname)
             if data:
@@ -3075,7 +3066,7 @@ class Document:
                 if not buf.m_internal:
                     raise Exception("font at xref %d is not supported" % xref)
 
-                font = mupdf.fz_new_font_from_buffer(NULL, buf, idx, 0)
+                font = mupdf.fz_new_font_from_buffer(None, buf, idx, 0)
         wlist = []
         for i in range(mylimit):
             glyph = mupdf.fz_encode_character(font, i)
@@ -3091,7 +3082,7 @@ class Document:
     def _get_page_labels(self):
         pdf = _as_pdf_document(self)
 
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         rc = []
         pagelabels = mupdf.pdf_new_name("PageLabels")
         obj = mupdf.pdf_dict_getl( mupdf.pdf_trailer(pdf), PDF_NAME('Root'), pagelabels)
@@ -3149,11 +3140,11 @@ class Document:
         """Get PDF file id."""
         if self.is_closed:
             raise ValueError("document closed")
-        pdf = _as_pdf_document(this)
+        pdf = _as_pdf_document(self)
         if not pdf:
             return
         idlist = []
-        identity = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdf), PDF_NAME('ID'));
+        identity = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdf), PDF_NAME('ID'))
         if identity.m_internal:
             n = mupdf.pdf_array_len(identity)
             for i in range(n):
@@ -3170,7 +3161,7 @@ class Document:
         doc = self.this
         pdf = _as_pdf_document(self)
         pageCount = mupdf.pdf_count_pages(doc) if isinstance(doc, mupdf.PdfDocument) else mupdf.fz_count_pages(doc)
-        n = pno;  # pno < 0 is allowed
+        n = pno  # pno < 0 is allowed
         while n < 0:
             n += pageCount  # make it non-negative
         if n >= pageCount:
@@ -3189,7 +3180,7 @@ class Document:
         '''
         pdf = _as_pdf_document(self)
 
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         if not fontfile and not fontbuffer:
             raise ValueError( MSG_FILE_OR_BUFFER)
         value = JM_insert_font(pdf, None, fontfile, fontbuffer, 0, 0, 0, 0, 0, -1)
@@ -3201,7 +3192,7 @@ class Document:
         assert isinstance( doc, mupdf.FzDocument)
         try:
             ol = mupdf.fz_load_outline( doc)
-        except Exception as e:
+        except Exception:
             if 0 and g_exceptions_verbose:    exception_info()
             return
         return Outline( ol)
@@ -3218,7 +3209,7 @@ class Document:
             raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         same = 0
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         # get the two page objects -----------------------------------
         # locate the /Kids arrays and indices in each
 
@@ -3256,7 +3247,7 @@ class Document:
                     parent = mupdf.pdf_dict_get( parent, PDF_NAME('Parent'))
         else:   # same /Kids array
             if copy:    # source page is copied
-                parent = parent2;
+                parent = parent2
                 while parent.m_internal:    # increase /Count object in parents
                     count = mupdf.pdf_dict_get_int( parent, PDF_NAME('Count'))
                     mupdf.pdf_dict_put_int( parent, PDF_NAME('Count'), count + 1)
@@ -3376,7 +3367,7 @@ class Document:
         if collapse is not None:
             if mupdf.pdf_dict_get( item, PDF_NAME('Count')).m_internal:
                 i = mupdf.pdf_dict_get_int( item, PDF_NAME('Count'))
-                if (i < 0 and collapse == False) or (i > 0 and collapse == True):
+                if (i < 0 and collapse is False) or (i > 0 and collapse is True):
                     i = i * (-1)
                     mupdf.pdf_dict_put_int( item, PDF_NAME('Count'), i)
 
@@ -3402,14 +3393,13 @@ class Document:
                 f = mupdf.pdf_dict_get_key(fonts, i)
                 liste.append(JM_UnicodeFromStr(mupdf.pdf_to_name(f)))
         return liste
-        
 
     def add_layer(self, name, creator=None, on=None):
         """Add a new OC layer."""
         if self.is_closed:
             raise ValueError("document closed")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         JM_add_layer_config( pdf, name, creator, on)
         mupdf.ll_pdf_read_ocg( pdf.m_internal)
 
@@ -3418,8 +3408,8 @@ class Document:
         if self.is_closed:
             raise ValueError("document closed")
         xref = 0
-        pdf = _as_pdf_document(self);
-        ASSERT_PDF(pdf);
+        pdf = _as_pdf_document(self)
+        ASSERT_PDF(pdf)
 
         # make the OCG
         ocg = mupdf.pdf_add_new_dict(pdf, 3)
@@ -3566,7 +3556,7 @@ class Document:
         doc = JM_convert_to_pdf(fz_doc, fp, tp, rotate)
         len1 = len(JM_mupdf_warnings_store)
         for i in range(len0, len1):
-            sys.stderr.write(f'{JM_mupdf_warnings_storep[i]}\n')
+            PySys_WriteStderr(f'{JM_mupdf_warnings_store[i]}\n')
         return doc
 
     def copy_page(self, pno: int, to: int =-1):
@@ -3582,9 +3572,9 @@ class Document:
 
         page_count = len(self)
         if (
-            pno not in range(page_count) or
-            to not in range(-1, page_count)
-           ):
+                pno not in range(page_count)
+                or to not in range(-1, page_count)
+                ):
             raise ValueError("bad page number(s)")
         before = 1
         copy = 1
@@ -3719,7 +3709,10 @@ class Document:
         if filename is None:
             filename = name
         if ufilename is None:
-            ufilename = unicode(filename, "utf8") if str is bytes else filename
+            # fixme: Not sure what classic implementation does here.
+            ufilename = filename
+            if isinstance(ufilename, bytes):
+                ufilename = ufilename.decode('utf8')
         if desc is None:
             desc = name
         xref = self._embfile_add(
@@ -3813,22 +3806,24 @@ class Document:
             desc: (str) the new description.
         """
         idx = self._embeddedFileIndex(item)
-        xref = self._embfile_upd(idx, buffer_=buffer_,
-                                     filename=filename,
-                                     ufilename=ufilename,
-                                     desc=desc)
+        xref = self._embfile_upd(
+                idx,
+                buffer_=buffer_,
+                filename=filename,
+                ufilename=ufilename,
+                desc=desc,
+                )
         date = get_pdf_now()
         self.xref_set_key(xref, "Params/ModDate", get_pdf_str(date))
         return xref
 
-    def extract_font(self, xref=0, info_only=0):
+    def extract_font(self, xref=0, info_only=0, named=None):
         '''
-        Get a font by xref.
+        Get a font by xref. Returns a tuple or dictionary.
         '''
         #log( '{=xref info_only}')
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
-        len_ = 0;
         obj = mupdf.pdf_load_object(pdf, xref)
         type_ = mupdf.pdf_dict_get(obj, PDF_NAME('Type'))
         subtype = mupdf.pdf_dict_get(obj, PDF_NAME('Subtype'))
@@ -3841,20 +3836,36 @@ class Document:
             else:
                 bname = basefont
             ext = JM_get_fontextension(pdf, xref)
-            if ext != "n/a" and not info_only:
+            if ext != 'n/a' and not info_only:
                 buffer_ = JM_get_fontbuffer(pdf, xref)
                 bytes_ = JM_BinFromBuffer(buffer_)
             else:
-                bytes_ = "y", ""
-            tuple_ = (
-                    JM_EscapeStrFromStr(mupdf.pdf_to_name(bname)),
-                    JM_UnicodeFromStr(ext),
-                    JM_UnicodeFromStr(mupdf.pdf_to_name(subtype)),
-                    bytes_,
-                    )
+                bytes_ = b''
+            if not named:
+                rc = (
+                        JM_EscapeStrFromStr(mupdf.pdf_to_name(bname)),
+                        JM_UnicodeFromStr(ext),
+                        JM_UnicodeFromStr(mupdf.pdf_to_name(subtype)),
+                        bytes_,
+                        )
+            else:
+                rc = {
+                        dictkey_name: JM_EscapeStrFromStr(mupdf.pdf_to_name(bname)),
+                        dictkey_ext: JM_UnicodeFromStr(ext),
+                        dictkey_type: JM_UnicodeFromStr(mupdf.pdf_to_name(subtype)),
+                        dictkey_content: bytes_,
+                        }
         else:
-            tuple_ = "", "", "", ""
-        return tuple_
+            if not named:
+                rc = '', '', '', b''
+            else:
+                rc = {
+                        dictkey_name: '',
+                        dictkey_ext: '',
+                        dictkey_type: '',
+                        dictkey_content: b'',
+                        }
+        return rc
 
     def extract_image(self, xref):
         """Get image by xref. Returns a dictionary."""
@@ -3864,7 +3875,7 @@ class Document:
         pdf = _as_pdf_document(self)
         img_type = 0
         smask = 0
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         if not _INRANGE(xref, 1, mupdf.pdf_xref_len(pdf)-1):
             raise ValueError( MSG_BAD_XREF)
 
@@ -3935,7 +3946,7 @@ class Document:
         rc[ dictkey_xres] = xres
         rc[ dictkey_yres] = yres
         rc[ dictkey_cs_name] = cs_name
-        rc[ dictkey_image] =JM_BinFromBuffer(res)
+        rc[ dictkey_image] = JM_BinFromBuffer(res)
         return rc
 
     def ez_save(
@@ -3993,7 +4004,7 @@ class Document:
         pdf = _as_pdf_document(self)
         page_count = mupdf.pdf_count_pages( pdf)
         try:
-            ASSERT_PDF(pdf);
+            ASSERT_PDF(pdf)
             if (not _INRANGE(pno, 0, page_count - 1)
                     or not _INRANGE(to, -1, page_count - 1)
                     ):
@@ -4041,7 +4052,7 @@ class Document:
             page2 = mupdf.pdf_new_indirect( pdf, xref, 0)  # reread object
             mupdf.pdf_insert_page( pdf, to, page2) # and store the page
         finally:
-            mupdf.ll_pdf_drop_page_tree( pdf.m_internal);
+            mupdf.ll_pdf_drop_page_tree( pdf.m_internal)
 
         self._reset_page_refs()
 
@@ -4050,7 +4061,7 @@ class Document:
         if self.is_closed:
             raise ValueError("document closed")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         ocp = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer( pdf),
                 PDF_NAME('Root'),
@@ -4061,10 +4072,10 @@ class Document:
         if config == -1:
             obj = mupdf.pdf_dict_get( ocp, PDF_NAME('D'))
         else:
-            obj =mupdf.pdf_array_get(
+            obj = mupdf.pdf_array_get(
                     mupdf.pdf_dict_get( ocp, PDF_NAME('Configs')),
                     config,
-                    );
+                    )
         if not obj.m_internal:
             raise ValueError( MSG_BAD_OC_CONFIG)
         rc = JM_get_ocg_arrays( obj)
@@ -4089,7 +4100,7 @@ class Document:
         rc = []
         info = mupdf.PdfLayerConfig()
         for i in range(n):
-            mupdf.pdf_layer_config_info( pdf, i, info);
+            mupdf.pdf_layer_config_info( pdf, i, info)
             item = {
                     "number": i,
                     "name": info.name,
@@ -4104,8 +4115,8 @@ class Document:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         xref = 0
-        ASSERT_PDF(pdf);
-        ENSURE_OPERATION(pdf);
+        ASSERT_PDF(pdf)
+        ENSURE_OPERATION(pdf)
         xref = mupdf.pdf_create_object(pdf)
         return xref
 
@@ -4124,7 +4135,7 @@ class Document:
         rc = dict()
         if not mupdf.pdf_is_array( ocgs):
             return rc
-        n = mupdf.pdf_array_len( ocgs);
+        n = mupdf.pdf_array_len( ocgs)
         for i in range(n):
             ocg = mupdf.pdf_array_get( ocgs, i)
             xref = mupdf.pdf_to_num( ocg)
@@ -4185,7 +4196,7 @@ class Document:
         if type(pno) is not int:
             try:
                 pno = pno.number
-            except:
+            except Exception:
                 exception_info()
                 raise ValueError("need a Page or page number")
         val = self._getPageInfo(pno, 1)
@@ -4258,18 +4269,18 @@ class Document:
         self._outline = self._loadOutline()
         self.metadata = dict(
                     [
-                    (k,self._getMetadata(v)) for k,v in {
-                        'format':'format',
-                        'title':'info:Title',
-                        'author':'info:Author',
-                        'subject':'info:Subject',
-                        'keywords':'info:Keywords',
-                        'creator':'info:Creator',
-                        'producer':'info:Producer',
-                        'creationDate':'info:CreationDate',
-                        'modDate':'info:ModDate',
-                        'trapped':'info:Trapped'
-                        }.items()
+                        (k,self._getMetadata(v)) for k,v in {
+                            'format':'format',
+                            'title':'info:Title',
+                            'author':'info:Author',
+                            'subject':'info:Subject',
+                            'keywords':'info:Keywords',
+                            'creator':'info:Creator',
+                            'producer':'info:Producer',
+                            'creationDate':'info:CreationDate',
+                            'modDate':'info:ModDate',
+                            'trapped':'info:Trapped'
+                            }.items()
                     ]
                 )
         self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
@@ -4389,7 +4400,7 @@ class Document:
                     show_progress,
                     final,
                     _gmap,
-                    );
+                    )
             #log( 'insert_pdf(): extra_FzDocument_insert_pdf() returned.')
         else:
             pdfout = _as_pdf_document(self)
@@ -4452,7 +4463,7 @@ class Document:
         pdf = _as_pdf_document(self)
         if not pdf:
             return False
-        count = -1;
+        count = -1
         try:
             fields = mupdf.pdf_dict_getl(
                     mupdf.pdf_trailer(pdf),
@@ -4535,7 +4546,7 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         if isinstance(filename, str):
             mupdf.pdf_load_journal(pdf, filename)
         else:
@@ -4561,7 +4572,7 @@ class Document:
         steps=0
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
-        rc, steps = mupdf.pdf_undoredo_state(pdf);
+        rc, steps = mupdf.pdf_undoredo_state(pdf)
         return rc, steps
 
     def journal_redo(self):
@@ -4603,7 +4614,7 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         mupdf.pdf_end_operation(pdf)
 
     def journal_undo(self):
@@ -4611,7 +4622,7 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         mupdf.pdf_undo(pdf)
         return True
 
@@ -4755,14 +4766,14 @@ class Document:
             val = rc[1]
         else:
             val = None
-        if val == None or not (val[:2] == "<<" and val[-2:] == ">>"):
+        if val is None or not (val[:2] == "<<" and val[-2:] == ">>"):
             return {}
         valid = {"Marked": False, "UserProperties": False, "Suspects": False}
         val = val[2:-2].split("/")
         for v in val[1:]:
             try:
                 key, value = v.split()
-            except:
+            except Exception:
                 return valid
             if value == "true":
                 valid[key] = True
@@ -4778,10 +4789,7 @@ class Document:
         if self.is_closed:
             raise ValueError("document closed")
         page_count = len(self)
-        if (
-            pno not in range(page_count) or
-            to not in range(-1, page_count)
-           ):
+        if (pno not in range(page_count) or to not in range(-1, page_count)):
             raise ValueError("bad page number(s)")
         before = 1
         copy = 0
@@ -4810,9 +4818,9 @@ class Document:
         if mupdf.pdf_is_bool(app):
             oldval = mupdf.pdf_to_bool(app)
         if value:
-            mupdf.pdf_dict_puts(form, appkey, PDF_TRUE)
+            mupdf.pdf_dict_puts(form, appkey, mupdf.PDF_TRUE)
         else:
-            mupdf.pdf_dict_puts(form, appkey, PDF_FALSE)
+            mupdf.pdf_dict_puts(form, appkey, mupdf.PDF_FALSE)
         if value is None:
             return oldval >= 0
         return value
@@ -4834,13 +4842,12 @@ class Document:
             page_id = (0, page_id)
         if page_id not in self:
             raise ValueError("page id not in document")
-        if tuple(page_id)  == self.last_location:
+        if tuple(page_id) == self.last_location:
             return ()
         this_doc = _as_fz_document(self)
-        page_n = -1;
         val = page_id[ 0]
         if not isinstance(val, int):
-            THROWMSG( "bad page id");
+            RAISEPY(MSG_BAD_PAGEID, PyExc_ValueError)
         chapter = val
         val = page_id[ 1]
         pno = val
@@ -4918,7 +4925,7 @@ class Document:
         if self.is_closed:
             raise ValueError("document closed")
         page_count = mupdf.fz_count_pages(self.this)
-        n = pno;
+        n = pno
         while n < 0:
             n += page_count
         pdf = _as_pdf_document(self)
@@ -4957,7 +4964,7 @@ class Document:
             return rc[1][1:]
         return "UseNone"
 
-    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> "struct Page *":
+    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> Page:
         """Return a generator iterator over a page range.
 
         Arguments have the same meaning as for the range() built-in.
@@ -5018,11 +5025,11 @@ class Document:
         if not mupdf.fz_has_permission(doc, mupdf.FZ_PERMISSION_PRINT):
             perm = perm ^ mupdf.PDF_PERM_PRINT
         if not mupdf.fz_has_permission(doc, mupdf.FZ_PERMISSION_EDIT):
-            perm = perm ^ mupdf.PDF_PERM_MODIFY;
+            perm = perm ^ mupdf.PDF_PERM_MODIFY
         if not mupdf.fz_has_permission(doc, mupdf.FZ_PERMISSION_COPY):
             perm = perm ^ mupdf.PDF_PERM_COPY
         if not mupdf.fz_has_permission(doc, mupdf.FZ_PERMISSION_ANNOTATE):
-            perm = perm ^ mupdf.PDF_PERM_ANNOTATE;
+            perm = perm ^ mupdf.PDF_PERM_ANNOTATE
         return perm
 
     def prev_location(self, page_id):
@@ -5041,7 +5048,7 @@ class Document:
         prev_loc = mupdf.fz_previous_page(self.this, loc)
         return prev_loc.chapter, prev_loc.page
 
-    def reload_page(self, page: "struct Page *") -> "struct Page *":
+    def reload_page(self, page: Page) -> Page:
         """Make a fresh copy of a page."""
         old_annots = {}  # copy annot references to here
         pno = page.number  # save the page number
@@ -5067,7 +5074,7 @@ class Document:
         page = self.load_page(pno)  # reload the page
 
         # copy annot refs over to the new dictionary
-        page_proxy = weakref.proxy(page)
+        #page_proxy = weakref.proxy(page)
         for k, v in old_annots.items():
             annot = old_annots[k]
             #annot.parent = page_proxy  # refresh parent to new page
@@ -5089,8 +5096,8 @@ class Document:
                 return (-1, -1), 0, 0
             return -1, 0, 0
         try:
-            loc, xp, yp = mupdf.fz_resolve_link(self.this, uri);
-        except Exception as e:
+            loc, xp, yp = mupdf.fz_resolve_link(self.this, uri)
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             if chapters:
                 return (-1, -1), 0, 0
@@ -5099,7 +5106,6 @@ class Document:
             return (loc.chapter, loc.page), xp, yp
         pno = mupdf.fz_page_number_from_location(self.this, loc)
         return pno, xp, yp
-
 
     def resolve_names(self):
         """Convert the PDF's destination names into a Python dict.
@@ -5137,17 +5143,17 @@ class Document:
             buffer = mupdf.fz_new_buffer(512)
             output = mupdf.FzOutput(buffer)
             mupdf.pdf_print_obj(output, obj, 1, 0)
-            return fitz.JM_UnicodeFromBuffer(buffer)
+            return JM_UnicodeFromBuffer(buffer)
 
         def get_array(val):
             """Generate value of one item of the names dictionary."""
             templ_dict = {"page": -1, "dest": ""}  # value template
             if val.pdf_is_indirect():
-                val = fitz.mupdf.pdf_resolve_indirect(val)
+                val = mupdf.pdf_resolve_indirect(val)
             if val.pdf_is_array():
                 array = obj_string(val)
             elif val.pdf_is_dict():
-                array = obj_string(fitz.mupdf.pdf_dict_gets(val, "D"))
+                array = obj_string(mupdf.pdf_dict_gets(val, "D"))
             else:  # if all fails return the empty template
                 return templ_dict
 
@@ -5185,12 +5191,12 @@ class Document:
             This may be either "/Names/Dests" or just "/Dests"
             """
             # length of the PDF dictionary
-            name_count = fitz.mupdf.pdf_dict_len(pdf_dict)
+            name_count = mupdf.pdf_dict_len(pdf_dict)
 
             # extract key-val of each dict item
             for i in range(name_count):
-                key = fitz.mupdf.pdf_dict_get_key(pdf_dict, i)
-                val = fitz.mupdf.pdf_dict_get_val(pdf_dict, i)
+                key = mupdf.pdf_dict_get_key(pdf_dict, i)
+                val = mupdf.pdf_dict_get_val(pdf_dict, i)
                 if key.pdf_is_name():  # this should always be true!
                     dict_key = key.pdf_to_name()
                 else:
@@ -5201,28 +5207,27 @@ class Document:
                     dest_dict[dict_key] = get_array(val)  # store key/value in dict
 
         # access underlying PDF document of fz Document
-        pdf = fitz.mupdf.pdf_document_from_fz_document(self)
+        pdf = mupdf.pdf_document_from_fz_document(self)
 
         # access PDF catalog
-        catalog = fitz.mupdf.pdf_dict_gets(fitz.mupdf.pdf_trailer(pdf), "Root")
+        catalog = mupdf.pdf_dict_gets(mupdf.pdf_trailer(pdf), "Root")
 
         dest_dict = {}
 
         # make PDF_NAME(Dests)
-        dests = fitz.mupdf.pdf_new_name("Dests")
+        dests = mupdf.pdf_new_name("Dests")
 
         # extract destinations old style (PDF 1.1)
-        old_dests = fitz.mupdf.pdf_dict_get(catalog, dests)
+        old_dests = mupdf.pdf_dict_get(catalog, dests)
         if old_dests.pdf_is_dict():
             fill_dict(dest_dict, old_dests)
 
         # extract destinations new style (PDF 1.2+)
-        tree = fitz.mupdf.pdf_load_name_tree(pdf, dests)
+        tree = mupdf.pdf_load_name_tree(pdf, dests)
         if tree.pdf_is_dict():
             fill_dict(dest_dict, tree)
 
         return dest_dict
-
 
     def save(
             self,
@@ -5249,7 +5254,7 @@ class Document:
         """Save PDF to file, pathlib.Path or file pointer."""
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
-        if type(filename) == str:
+        if type(filename) is str:
             pass
         elif hasattr(filename, "open"):  # assume: pathlib.Path
             filename = str(filename)
@@ -5333,7 +5338,7 @@ class Document:
         """Save a file snapshot suitable for journalling."""
         if self.is_closed:
             raise ValueError("doc is closed")
-        if type(filename) == str:
+        if type(filename) is str:
             pass
         elif hasattr(filename, "open"):  # assume: pathlib.Path
             filename = str(filename)
@@ -5349,7 +5354,7 @@ class Document:
 
     def saveIncr(self):
         """ Save PDF incrementally"""
-        return self.save(self.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)
+        return self.save(self.name, incremental=True, encryption=mupdf.PDF_ENCRYPT_KEEP)
 
     def select(self, pyliste):
         """Build sub-pdf with page numbers in the list."""
@@ -5366,7 +5371,7 @@ class Document:
         # (2) transform Python list into integer array
         pdf = _as_pdf_document(self)
         # call retainpages (code copy of fz_clean_file.c)
-        retainpages(pdf, pyliste);
+        retainpages(pdf, pyliste)
         if pdf.m_internal.rev_page_map:
             mupdf.ll_pdf_drop_page_tree(pdf.m_internal)
         self._reset_page_refs()
@@ -5449,7 +5454,7 @@ class Document:
 
     def set_layer_ui_config(self, number, action=0):
         """Set / unset OC intent configuration."""
-        # The user might have given the name instead of sequence number, 
+        # The user might have given the name instead of sequence number,
         # so select by that name and continue with corresp. number
         if isinstance(number, str):
             select = [ui["number"] for ui in self.layer_ui_configs() if ui["text"] == number]
@@ -5481,7 +5486,7 @@ class Document:
         valid.update(markinfo)
         for key, value in valid.items():
             value=str(value).lower()
-            if not value in ("true", "false"):
+            if value not in ("true", "false"):
                 raise ValueError(f"bad key value '{key}': '{value}'")
             pdfdict += f"/{key} {value}"
         pdfdict += ">>"
@@ -5544,7 +5549,7 @@ class Document:
         if self.is_closed:
             raise ValueError("document closed")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         cfgs = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer( pdf),
                 PDF_NAME('Root'),
@@ -5570,7 +5575,7 @@ class Document:
         ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
         if not _INRANGE(xref, 1, xreflen-1):
-            THROWMSG("bad xref")
+            RAISEPY("bad xref", MSG_BAD_XREF, PyExc_ValueError)
         ENSURE_OPERATION(pdf)
         # create new object with passed-in string
         new_obj = JM_pdf_obj_from_str(pdf, text)
@@ -5660,7 +5665,7 @@ class Document:
             raise ValueError("document closed")
 
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -5702,7 +5707,7 @@ class Document:
             type = "string"
             text = JM_UnicodeFromStr(mupdf.pdf_to_text_string(subobj))
         else:
-            type = "unknown";
+            type = "unknown"
         if text is None:
             res = JM_object_to_buffer(subobj, 1, 0)
             text = JM_UnicodeFromBuffer(res)
@@ -5713,7 +5718,7 @@ class Document:
         if self.is_closed:
             raise ValueError("document closed")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len( pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -5773,7 +5778,6 @@ class Document:
             xreflen = mupdf.pdf_xref_len(pdf)
         return xreflen
 
-
     def xref_object(self, xref, compressed=0, ascii=0):
         """Get xref object source as a string."""
         if self.is_closed:
@@ -5782,7 +5786,7 @@ class Document:
             ret = extra.xref_object( self.this, xref, compressed, ascii)
             return ret
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -5841,7 +5845,7 @@ class Document:
         ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len( pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
-            raise ValueError( MSG_BAD_XREF);
+            raise ValueError( MSG_BAD_XREF)
         if xref >= 0:
             obj = mupdf.pdf_new_indirect( pdf, xref, 0)
         else:
@@ -5857,10 +5861,10 @@ class Document:
         if self.is_closed or self.isEncrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf);
+        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len( pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
-            raise ValueError( MSG_BAD_XREF);
+            raise ValueError( MSG_BAD_XREF)
         if xref >= 0:
             obj = mupdf.pdf_new_indirect( pdf, xref, 0)
         else:
@@ -6027,10 +6031,10 @@ class Font:
     def _valid_unicodes(self, arr):
         # fixme
         assert 0, 'Not implemented because implementation requires FT_Get_First_Char() etc.'
-        font = self.this
-        temp = arr[0]
-        ptr = temp
-        JM_valid_chars(font, ptr)
+        #font = self.this
+        #temp = arr[0]
+        #ptr = temp
+        #JM_valid_chars(font, ptr)
 
     @property
     def ascender(self):
@@ -6049,7 +6053,7 @@ class Font:
         for ch in text:
             c = ord(ch)
             if small_caps:
-                gid = mupdf.fz_encode_character_sc(thisfont, c)
+                gid = mupdf.fz_encode_character_sc(self.this, c)
                 if gid >= 0:
                     font = self.this
             else:
@@ -6110,19 +6114,18 @@ class Font:
         """Return the glyph width of a unicode (font size 1)."""
         lang = mupdf.fz_text_language_from_string(language)
         if small_caps:
-            gid = mupdf.fz_encode_character_sc(thisfont, chr_)
+            gid = mupdf.fz_encode_character_sc(self.this, chr_)
             if gid >= 0:
                 font = self.this
         else:
             gid, font = mupdf.fz_encode_character_with_fallback(self.this, chr_, script, lang)
         return mupdf.fz_advance_glyph(font, gid, wmode)
 
-
     def glyph_bbox(self, char, language=None, script=0, small_caps=0):
         """Return the glyph bbox of a unicode (font size 1)."""
         lang = mupdf.fz_text_language_from_string(language)
         if small_caps:
-            gid = mupdf.fz_encode_character_sc( thisfont, char)
+            gid = mupdf.fz_encode_character_sc( self.this, char)
             if gid >= 0:
                 font = self.this
         else:
@@ -6137,16 +6140,16 @@ class Font:
         """Return the unicode for a glyph name."""
         return glyph_name_to_unicode(name)
 
-    def has_glyph(self, chr, language=None, script=0, fallback=0):
+    def has_glyph(self, chr, language=None, script=0, fallback=0, small_caps=0):
         """Check whether font has a glyph for this unicode."""
         if fallback:
             lang = mupdf.fz_text_language_from_string(language)
             gid, font = mupdf.fz_encode_character_with_fallback(self.this, chr, script, lang)
         else:
             if small_caps:
-                gid = mupdf.fz_encode_character_sc(thisfont, chr)
+                gid = mupdf.fz_encode_character_sc(self.this, chr)
             else:
-                gid = mupdf.fz_encode_character(thisfont, chr)
+                gid = mupdf.fz_encode_character(self.this, chr)
         return gid
 
     @property
@@ -6197,7 +6200,6 @@ class Font:
         rc = 0
         if not isinstance(text, str):
             raise TypeError( MSG_BAD_TEXT)
-        len_ = len(text)
         for ch in text:
             c = ord(ch)
             if small_caps:
@@ -6225,7 +6227,7 @@ class Font:
         cp = array("l", (0,) * gc)
         arr = cp.buffer_info()
         self._valid_unicodes(arr)
-        return array("l", sorted(set(cp))[1:]) 
+        return array("l", sorted(set(cp))[1:])
 
 
 class Graftmap:
@@ -6272,7 +6274,7 @@ class Link:
     def _colors(self, doc, xref):
         pdf = _as_pdf_document(doc)
         if not pdf:
-           return
+            return
         link_obj = mupdf.pdf_new_indirect( pdf, xref, 0)
         if not link_obj.m_internal:
             raise ValueError( MSG_BAD_XREF)
@@ -6291,7 +6293,7 @@ class Link:
         if not link_obj.m_internal:
             return
         b = JM_annot_set_border(border, pdf, link_obj)
-        return b;
+        return b
         
     @property
     def border(self):
@@ -6419,6 +6421,7 @@ class Link:
             raise ValueError("bad 'flags' value")
         doc.xref_set_key(self.xref, "F", str(flags))
         return None
+
     @property
     def uri(self):
         """Uri string."""
@@ -6507,6 +6510,7 @@ class Matrix:
         m1 = Matrix()
         m1.invert(self)
         return m1
+
     def __len__(self):
         return 6
 
@@ -6559,6 +6563,7 @@ class Matrix:
             raise ZeroDivisionError("matrix not invertible")
         m2 = Matrix(1,1)
         return m2.concat(self, m1)
+
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
         if not len(one) == len(two) == 6:
@@ -6837,7 +6842,7 @@ class Widget:
 
         # if setting a radio button to ON, first set Off all buttons
         # in the group - this is not done by MuPDF:
-        if self.field_type == PDF_WIDGET_TYPE_RADIOBUTTON and self.field_value not in (False, "Off") and hasattr(self, "parent"):
+        if self.field_type == mupdf.PDF_WIDGET_TYPE_RADIOBUTTON and self.field_value not in (False, "Off") and hasattr(self, "parent"):
             # so we are about setting this button to ON/True
             # check other buttons in same group and set them to 'Off'
             doc = self.parent.parent
@@ -6910,10 +6915,10 @@ class Widget:
 
         # standardize content of JavaScript entries
         btn_type = self.field_type in (
-            PDF_WIDGET_TYPE_BUTTON,
-            PDF_WIDGET_TYPE_CHECKBOX,
-            PDF_WIDGET_TYPE_RADIOBUTTON
-        )
+                mupdf.PDF_WIDGET_TYPE_BUTTON,
+                mupdf.PDF_WIDGET_TYPE_CHECKBOX,
+                mupdf.PDF_WIDGET_TYPE_RADIOBUTTON,
+                )
         if not self.script:
             self.script = None
         elif type(self.script) is not str:
@@ -7003,7 +7008,7 @@ class Widget:
         if self.field_type == 2:
             return "Yes"
         bstate = self.button_states()
-        if bstate==None:
+        if bstate is None:
             bstate = dict()
         for k in bstate.keys():
             for v in bstate[k]:
@@ -7020,7 +7025,6 @@ class Widget:
     def update(self):
         """Reflect Python object in the PDF.
         """
-        doc = self.parent.this.doc()
         self._validate()
 
         self._adjust_font()  # ensure valid text_font name
@@ -7070,7 +7074,7 @@ class Outline:
         down_ol = ol.down()
         if not down_ol.m_internal:
             return
-        return Outline (down_ol)
+        return Outline(down_ol)
 
     @property
     def is_external(self):
@@ -7096,7 +7100,7 @@ class Outline:
     @property
     def next(self):
         ol = self.this
-        next_ol = ol.next();
+        next_ol = ol.next()
         if not next_ol.m_internal:
             return
         return Outline(next_ol)
@@ -7105,7 +7109,7 @@ class Outline:
     def page(self):
         if 1:
             return self.this.m_internal.page.page
-        return self.this.page().page;
+        return self.this.page().page
 
     @property
     def title(self):
@@ -7247,9 +7251,9 @@ class Page:
             # PyMuPDF/tests/test_annots.py:test_caret() from t=0.328 to
             # t=0.197. PyMuPDF is 0.0712.  Native PyMuPDF is 0.0712.
             if isinstance( self.this, mupdf.PdfPage):
-                page = self.this;
+                page = self.this
             else:
-                page = mupdf.pdf_page_from_fz_page( self.this);
+                page = mupdf.pdf_page_from_fz_page( self.this)
             #log( '{=type(point) point}')
             annot = extra._add_caret_annot( page, JM_point_from_py(point))
         else:
@@ -7262,14 +7266,14 @@ class Page:
                 mupdf.pdf_set_annot_rect(annot, r)
             mupdf.pdf_update_annot(annot)
             JM_add_annot_id(annot, "A")
-        return annot;
+        return annot
 
     def _add_file_annot(self, point, buffer_, filename, ufilename=None, desc=None, icon=None):
         page = self._pdf_page()
         uf = ufilename if ufilename else filename
         d = desc if desc else filename
         p = JM_point_from_py(point)
-        ASSERT_PDF(page);
+        ASSERT_PDF(page)
         filebuf = JM_BufferFromBytes(buffer_)
         if not filebuf.m_internal:
             raise TypeError( MSG_BAD_BUFFER)
@@ -7277,7 +7281,7 @@ class Page:
         r = mupdf.pdf_annot_rect(annot)
         r = mupdf.fz_make_rect(p.x, p.y, p.x + r.x1 - r.x0, p.y + r.y1 - r.y0)
         mupdf.pdf_set_annot_rect(annot, r)
-        flags = mupdf.PDF_ANNOT_IS_PRINT;
+        flags = mupdf.PDF_ANNOT_IS_PRINT
         mupdf.pdf_set_annot_flags(annot, flags)
 
         if icon:
@@ -7313,8 +7317,8 @@ class Page:
         annot_obj = mupdf.pdf_annot_obj( annot)
         mupdf.pdf_set_annot_contents( annot, text)
         mupdf.pdf_set_annot_rect( annot, r)
-        mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Rotate'), rotate);
-        mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Q'), align);
+        mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Rotate'), rotate)
+        mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Q'), align)
 
         if nfcol > 0:
             mupdf.pdf_set_annot_color( annot, fcol[:nfcol])
@@ -7325,7 +7329,7 @@ class Page:
         JM_add_annot_id(annot, "A")
         val = Annot(annot)
 
-        #%pythonappend _add_freetext_annot   
+        #%pythonappend _add_freetext_annot
         ap = val._getAP()
         BT = ap.find(b"BT")
         ET = ap.find(b"ET") + 2
@@ -7349,14 +7353,14 @@ class Page:
             ope = b"S"
         if fill_string and stroke_string:
             ope = b"B"
-        if ope != None:
+        if ope is not None:
             ap = bwidth + fill_string + stroke_string + re + b"\n" + ope + b"\n" + ap
         val._setAP(ap)
         return val
 
     def _add_ink_annot(self, list):
         page = mupdf.pdf_page_from_fz_page(self.this)
-        ASSERT_PDF(page);
+        ASSERT_PDF(page)
         if not PySequence_Check(list):
             raise ValueError( MSG_BAD_ARG_INK_ANNOT)
         ctm = mupdf.FzMatrix()
@@ -7389,7 +7393,7 @@ class Page:
 
     def _add_line_annot(self, p1, p2):
         page = self._pdf_page()
-        ASSERT_PDF(page);
+        ASSERT_PDF(page)
         annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_LINE)
         a = JM_point_from_py(p1)
         b = JM_point_from_py(p2)
@@ -7486,7 +7490,7 @@ class Page:
         try:
             n = PDF_NAME('Name')
             mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME('Name'), name)
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
         mupdf.pdf_set_annot_contents(
@@ -7551,13 +7555,13 @@ class Page:
             txtpy = linklist[i]
             text = JM_StrAsChar(txtpy)
             if not text:
-                PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                PySys_WriteStderr("skipping bad link / annot item %i.\n", i)
                 continue
             try:
                 annot = mupdf.pdf_add_object( page.doc(), JM_pdf_obj_from_str( page.doc(), text))
                 ind_obj = mupdf.pdf_new_indirect( page.doc(), mupdf.pdf_to_num( annot), 0)
                 mupdf.pdf_array_push( annots, ind_obj)
-            except Exception as e:
+            except Exception:
                 if g_exceptions_verbose:    exception_info()
                 print("skipping bad link / annot item %i.\n" % i, file=sys.stderr)
 
@@ -7583,7 +7587,7 @@ class Page:
         self._reset_annot_refs()
         try:
             self.parent._forget_page(self)
-        except:
+        except Exception:
             exception_info()
             pass
         self.parent = None
@@ -7591,7 +7595,7 @@ class Page:
         self.number = None
 
     def _get_optional_content(self, oc: OptInt) -> OptStr:
-        if oc == None or oc == 0:
+        if oc is None or oc == 0:
             return None
         doc = self.parent
         check = doc.xref_object(oc, compressed=True)
@@ -7618,7 +7622,7 @@ class Page:
         page list Resource/Properties
         '''
         page = self._pdf_page()
-        ASSERT_PDF(page);
+        ASSERT_PDF(page)
         rc = JM_get_resource_properties(page.obj())
         return rc
 
@@ -7675,7 +7679,7 @@ class Page:
             w = mupdf.pdf_to_int( mupdf.pdf_dict_geta( ref, PDF_NAME('Width'), PDF_NAME('W')))
             h = mupdf.pdf_to_int( mupdf.pdf_dict_geta( ref, PDF_NAME('Height'), PDF_NAME('H')))
             if w + h == 0:
-                raise ValueError( MSG_IS_NO_IMAGE);
+                raise ValueError( MSG_IS_NO_IMAGE)
             #goto have_xref()
             do_process_pixmap = 0
             do_process_stream = 0
@@ -7720,8 +7724,8 @@ class Page:
                             mupdf.FzColorParams(),
                             1,
                             )
-                    pm.alpha = 0;
-                    pm.colorspace = NULL;
+                    pm.alpha = 0
+                    pm.colorspace = None
                     mask = mupdf.fz_new_image_from_pixmap(pm, mupdf.FzImage(0))
                     image = mupdf.fz_new_image_from_pixmap(arg_pix, mask)
                 #goto have_image()
@@ -7741,7 +7745,7 @@ class Page:
                 if mupdf_cppyy:
                     mupdf.fz_md5_update_buffer( state, maskbuf)
                 else:
-                    fz_md5_update(state, maskbuf.m_internal.data, maskbuf.m_internal.len)
+                    mupdf.fz_md5_update(state, maskbuf.m_internal.data, maskbuf.m_internal.len)
             digest = mupdf.fz_md5_final2(state)
             md5_py = bytes(digest)
             temp = digests.get(md5_py, None)
@@ -7777,16 +7781,15 @@ class Page:
             mask = mupdf.fz_new_image_from_buffer(maskbuf)
             zimg = mupdf.fz_new_image_from_compressed_buffer(
                     w, h,
-                    bpc, colorspace, xres, yres, 1, 0, NULL,
-                    NULL, cbuf1, mask
+                    bpc, colorspace, xres, yres, 1, 0, None,
+                    None, cbuf1, mask
                     )
-            freethis = image
             image = zimg
             #goto have_image()
 
         if do_have_image:
             #log( 'do_have_image')
-            ref =  mupdf.pdf_add_image(pdf, image)
+            ref = mupdf.pdf_add_image(pdf, image)
             if oc:
                 JM_add_oc_object(pdf, ref, oc)
             img_xref = mupdf.pdf_to_num(ref)
@@ -7802,7 +7805,7 @@ class Page:
             if not xobject.m_internal:
                 xobject = mupdf.pdf_dict_put_dict(resources, PDF_NAME('XObject'), 2)
             mat = calc_image_matrix(w, h, clip, rotate, keep_proportion)
-            mupdf.pdf_dict_puts(xobject, _imgname, ref);
+            mupdf.pdf_dict_puts(xobject, _imgname, ref)
             nres = mupdf.fz_new_buffer(50)
             #mupdf.fz_append_printf(nres, template, mat.a, mat.b, mat.c, mat.d, mat.e, mat.f, _imgname)
             # fixme: this does not use fz_append_printf()'s special handling of %g etc.
@@ -7818,7 +7821,7 @@ class Page:
 
     def _insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering):
         page = self._pdf_page()
-        ASSERT_PDF(page);
+        ASSERT_PDF(page)
         pdf = page.doc()
 
         value = JM_insert_font(pdf, bfname, fontfile,fontbuffer, set_simple, idx, wmode, serif, encoding, ordering)
@@ -7875,7 +7878,7 @@ class Page:
 
     def _set_opacity(self, gstate=None, CA=1, ca=1, blendmode=None):
 
-        if CA >= 1 and ca >= 1 and blendmode == None:
+        if CA >= 1 and ca >= 1 and blendmode is None:
             return
         tCA = int(round(max(CA , 0) * 100))
         if tCA >= 100:
@@ -7896,7 +7899,7 @@ class Page:
         if not extg.m_internal:
             extg = mupdf.pdf_dict_put_dict(resources, PDF_NAME('ExtGState'), 2)
         n = mupdf.pdf_dict_len(extg)
-        for i in range(m):
+        for i in range(n):
             o1 = mupdf.pdf_dict_get_key(extg, i)
             name = mupdf.pdf_to_name(o1)
             if name == gstate:
@@ -7909,7 +7912,7 @@ class Page:
 
     def _set_pagebox(self, boxtype, rect):
         doc = self.parent
-        if doc == None:
+        if doc is None:
             raise ValueError("orphaned object: parent is None")
 
         if not doc.is_pdf:
@@ -7930,7 +7933,7 @@ class Page:
 
     def _set_resource_property(self, name, xref):
         page = self._pdf_page()
-        ASSERT_PDF(page);
+        ASSERT_PDF(page)
         JM_set_resource_property(page.obj(), name, xref)
 
     def _show_pdf_page(self, fz_srcpage, overlay=1, matrix=None, xref=0, oc=0, clip=None, graftmap=None, _imgname=None):
@@ -7988,7 +7991,7 @@ class Page:
         JM_insert_contents(pdfout, tpageref, nres, overlay)
         return rc_xref
 
-    def add_caret_annot(self, point: point_like) -> "struct Annot *":
+    def add_caret_annot(self, point: point_like) -> Annot:
         """Add a 'Caret' annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8001,7 +8004,7 @@ class Page:
         assert hasattr( annot, 'parent')
         return annot
 
-    def add_circle_annot(self, rect: rect_like) -> "struct Annot *":
+    def add_circle_annot(self, rect: rect_like) -> Annot:
         """Add a 'Circle' (ellipse, oval) annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8020,7 +8023,7 @@ class Page:
             ufilename: OptStr =None,
             desc: OptStr =None,
             icon: OptStr =None
-            ) -> "struct Annot *":
+            ) -> Annot:
         """Add a 'FileAttachment' annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8048,7 +8051,7 @@ class Page:
             fill_color: OptSeq =None,
             align: int =0,
             rotate: int =0
-            ) -> "struct Annot *":
+            ) -> Annot:
         """Add a 'FreeText' annotation."""
 
         old_rotation = annot_preprocess(self)
@@ -8071,7 +8074,7 @@ class Page:
         return annot
 
     def add_highlight_annot(self, quads=None, start=None,
-                          stop=None, clip=None) -> "struct Annot *":
+                          stop=None, clip=None) -> Annot:
         """Add a 'Highlight' annotation."""
         if quads is None:
             q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -8080,7 +8083,7 @@ class Page:
         ret = self._add_text_marker(q, mupdf.PDF_ANNOT_HIGHLIGHT)
         return ret
 
-    def add_ink_annot(self, handwriting: list) -> "struct Annot *":
+    def add_ink_annot(self, handwriting: list) -> Annot:
         """Add a 'Ink' ('handwriting') annotation.
 
         The argument must be a list of lists of point_likes.
@@ -8094,7 +8097,7 @@ class Page:
         annot_postprocess(self, annot)
         return annot
 
-    def add_line_annot(self, p1: point_like, p2: point_like) -> "struct Annot *":
+    def add_line_annot(self, p1: point_like, p2: point_like) -> Annot:
         """Add a 'Line' annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8105,7 +8108,7 @@ class Page:
         annot_postprocess(self, annot)
         return annot
 
-    def add_polygon_annot(self, points: list) -> "struct Annot *":
+    def add_polygon_annot(self, points: list) -> Annot:
         """Add a 'Polygon' annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8116,7 +8119,7 @@ class Page:
         annot_postprocess(self, annot)
         return annot
 
-    def add_polyline_annot(self, points: list) -> "struct Annot *":
+    def add_polyline_annot(self, points: list) -> Annot:
         """Add a 'PolyLine' annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8127,7 +8130,7 @@ class Page:
         annot_postprocess(self, annot)
         return annot
 
-    def add_rect_annot(self, rect: rect_like) -> "struct Annot *":
+    def add_rect_annot(self, rect: rect_like) -> Annot:
         """Add a 'Square' (rectangle) annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8148,7 +8151,7 @@ class Page:
             fill: OptSeq =None,
             text_color: OptSeq =None,
             cross_out: bool =True,
-            ) -> "struct Annot *":
+            ) -> Annot:
         """Add a 'Redact' annotation."""
         da_str = None
         if text:
@@ -8204,7 +8207,7 @@ class Page:
             start=None,
             stop=None,
             clip=None,
-            ) -> "struct Annot *":
+            ) -> Annot:
         """Add a 'Squiggly' annotation."""
         if quads is None:
             q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -8212,7 +8215,7 @@ class Page:
             q = CheckMarkerArg(quads)
         return self._add_text_marker(q, mupdf.PDF_ANNOT_SQUIGGLY)
 
-    def add_stamp_annot(self, rect: rect_like, stamp: int =0) -> "struct Annot *":
+    def add_stamp_annot(self, rect: rect_like, stamp: int =0) -> Annot:
         """Add a ('rubber') 'Stamp' annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8223,7 +8226,7 @@ class Page:
         annot_postprocess(self, annot)
         return annot
 
-    def add_strikeout_annot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
+    def add_strikeout_annot(self, quads=None, start=None, stop=None, clip=None) -> Annot:
         """Add a 'StrikeOut' annotation."""
         if quads is None:
             q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -8231,7 +8234,7 @@ class Page:
             q = CheckMarkerArg(quads)
         return self._add_text_marker(q, mupdf.PDF_ANNOT_STRIKE_OUT)
 
-    def add_text_annot(self, point: point_like, text: str, icon: str ="Note") -> "struct Annot *":
+    def add_text_annot(self, point: point_like, text: str, icon: str ="Note") -> Annot:
         """Add a 'Text' (sticky note) annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8242,7 +8245,7 @@ class Page:
         annot_postprocess(self, annot)
         return annot
 
-    def add_underline_annot(self, quads=None, start=None, stop=None, clip=None) -> "struct Annot *":
+    def add_underline_annot(self, quads=None, start=None, stop=None, clip=None) -> Annot:
         """Add a 'Underline' annotation."""
         if quads is None:
             q = get_highlight_selection(self, start=start, stop=stop, clip=clip)
@@ -8250,7 +8253,7 @@ class Page:
             q = CheckMarkerArg(quads)
         return self._add_text_marker(q, mupdf.PDF_ANNOT_UNDERLINE)
 
-    def add_widget(self, widget: Widget) -> "struct Annot *":
+    def add_widget(self, widget: Widget) -> Annot:
         """Add a 'Widget' (form field)."""
         CheckParent(self)
         doc = self.parent
@@ -8312,7 +8315,7 @@ class Page:
                    all annotations are returned. E.g. types=[PDF_ANNOT_LINE]
                    will only yield line annotations.
         """
-        skip_types = (PDF_ANNOT_LINK, PDF_ANNOT_POPUP, PDF_ANNOT_WIDGET)
+        skip_types = (mupdf.PDF_ANNOT_LINK, mupdf.PDF_ANNOT_POPUP, mupdf.PDF_ANNOT_WIDGET)
         if not hasattr(types, "__getitem__"):
             annot_xrefs = [a[0] for a in self.annot_xrefs() if a[1] not in skip_types]
         else:
@@ -8326,7 +8329,7 @@ class Page:
     def artbox(self):
         """The ArtBox"""
         rect = self._other_box("ArtBox")
-        if rect == None:
+        if rect is None:
             return self.cropbox
         mb = self.mediabox
         return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
@@ -8335,7 +8338,7 @@ class Page:
     def bleedbox(self):
         """The BleedBox"""
         rect = self._other_box("BleedBox")
-        if rect == None:
+        if rect is None:
             return self.cropbox
         mb = self.mediabox
         return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
@@ -8395,10 +8398,9 @@ class Page:
             irt_annot = JM_find_annot_irt(annot.this)
             if not irt_annot:    # no more there
                 break
-            JM_delete_annot(page, irt_annot)
+            mupdf.pdf_delete_annot(page, irt_annot.this)
         nextannot = mupdf.pdf_next_annot(annot.this)   # store next
-        JM_delete_annot(page, annot.this)
-        #fixme: page->doc->dirty = 1;
+        mupdf.pdf_delete_annot(page, annot.this)
         val = Annot(nextannot)
 
         if val:
@@ -8420,10 +8422,9 @@ class Page:
                 linkid = linkdict["id"]
                 linkobj = self._annot_refs[linkid]
                 linkobj._erase()
-            except:
+            except Exception:
                 exception_info()
                 pass
-            return val
 
         page = mupdf.pdf_page_from_fz_page( self.this)
         if not page.m_internal:
@@ -8468,7 +8469,7 @@ class Page:
         assert isinstance( tp, mupdf.FzStextPage)
         options = mupdf.FzStextOptions()
         options.flags = flags
-        ctm = JM_matrix_from_py(matrix);
+        ctm = JM_matrix_from_py(matrix)
         dev = mupdf.FzDevice(tp, options)
         mupdf.fz_run_page( page, dev, ctm, mupdf.FzCookie())
         mupdf.fz_close_device( dev)
@@ -8820,10 +8821,10 @@ class Page:
             else:
                 raise ValueError("found multiple images named '%s'." % name)
         xref = item[-1]
-        if xref != 0 or transform == True:
+        if xref != 0 or transform is True:
             try:
                 return self.get_image_rects(item, transform=transform)[0]
-            except:
+            except Exception:
                 exception_info()
                 return inf_rect
         pdf_page = self._pdf_page()
@@ -8943,6 +8944,7 @@ class Page:
         else:
             dev = JM_new_texttrace_device(rc)
         prect = mupdf.fz_bound_page(page)
+        dev.ptm = mupdf.FzMatrix(1, 0, 0, -1, 0, prect.y1)
         mupdf.fz_run_page(page, dev, mupdf.FzMatrix(), mupdf.FzCookie())
         mupdf.fz_close_device(dev)
 
@@ -9011,7 +9013,7 @@ class Page:
             del pymupdf_fonts
 
         # install the font for the page
-        if fontfile != None:
+        if fontfile is not None:
             if type(fontfile) is str:
                 fontfile_str = fontfile
             elif hasattr(fontfile, "absolute"):
@@ -9076,7 +9078,7 @@ class Page:
             if kinds is None or link["kind"] in kinds:
                 yield (link)
 
-    def load_annot(self, ident: typing.Union[str, int]) -> "struct Annot *":
+    def load_annot(self, ident: typing.Union[str, int]) -> Annot:
         """Load an annot by name (/NM key) or xref.
 
         Args:
@@ -9131,7 +9133,7 @@ class Page:
         CheckParent(self)
 
         page = mupdf.pdf_page_from_fz_page( self.this)
-        ASSERT_PDF(page);
+        ASSERT_PDF(page)
         annot = JM_get_widget_by_xref( page, xref)
         #log( '{=type(annot)}')
         val = annot
@@ -9186,7 +9188,7 @@ class Page:
         page = self.this if isinstance(self.this, mupdf.PdfPage) else mupdf.pdf_page_from_fz_page(self.this)
         if not page:
             return 0
-        return JM_page_rotation(page);
+        return JM_page_rotation(page)
 
     @property
     def rotation_matrix(self) -> Matrix:
@@ -9198,7 +9200,7 @@ class Page:
         dw: DeviceWrapper
         """
         CheckParent(self)
-        mupdf.fz_run_page(self.this, dw.device, JM_matrix_from_py(m), mupdf.FzCookie());
+        mupdf.fz_run_page(self.this, dw.device, JM_matrix_from_py(m), mupdf.FzCookie())
 
     def set_artbox(self, rect):
         """Set the ArtBox."""
@@ -9216,12 +9218,11 @@ class Page:
             raise ValueError("document closed")
         if not doc.is_pdf:
             raise ValueError("is no PDF")
-        if not xref in range(1, doc.xref_length()):
+        if xref not in range(1, doc.xref_length()):
             raise ValueError("bad xref")
         if not doc.xref_is_stream(xref):
             raise ValueError("xref is no stream")
         doc.xref_set_key(self.xref, "Contents", "%i 0 R" % xref)
-
 
     def set_cropbox(self, rect):
         """Set the CropBox. Will also change Page.rect."""
@@ -9233,13 +9234,14 @@ class Page:
         pdfpage = mupdf.pdf_page_from_fz_page(self.this)
         ASSERT_PDF(pdfpage)
         if not language:
-            pdf_dict_del(pdfpage.obj(), PDF_NAME('Lang'))
+            mupdf.pdf_dict_del(pdfpage.obj(), PDF_NAME('Lang'))
         else:
             lang = mupdf.fz_text_language_from_string(language)
+            assert hasattr(mupdf, 'fz_string_from_text_language2')
             mupdf.pdf_dict_put_text_string(
                     pdfpage.obj,
-                    PDF_NAME(Lang),
-                    mupdf.fz_string_from_text_language(buf, lang)  # fixme: needs wrapper to handle char buf[8].
+                    PDF_NAME('Lang'),
+                    mupdf.fz_string_from_text_language2(lang)
                     )
 
     def set_mediabox(self, rect):
@@ -9293,7 +9295,7 @@ class Page:
     def trimbox(self):
         """The TrimBox"""
         rect = self._other_box("TrimBox")
-        if rect == None:
+        if rect is None:
             return self.cropbox
         mb = self.mediabox
         return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
@@ -9308,11 +9310,11 @@ class Page:
         """
         #for a in self.annot_xrefs():
         #    log( '{a=}')
-        widget_xrefs = [a[0] for a in self.annot_xrefs() if a[1] == PDF_ANNOT_WIDGET]
+        widget_xrefs = [a[0] for a in self.annot_xrefs() if a[1] == mupdf.PDF_ANNOT_WIDGET]
         #log(f'widgets(): {widget_xrefs=}')
         for xref in widget_xrefs:
             widget = self.load_widget(xref)
-            if types == None or widget.field_type in types:
+            if types is None or widget.field_type in types:
                 yield (widget)
 
     def wrap_contents(self):
@@ -9352,7 +9354,7 @@ class Pixmap:
             pass
 
         elif args_match(args,
-                (fitz.Colorspace, mupdf.FzColorspace),
+                (Colorspace, mupdf.FzColorspace),
                 (mupdf.FzRect, mupdf.FzIrect, IRect, Rect, tuple)
                 ):
             # create empty pixmap with colorspace and IRect
@@ -9362,7 +9364,7 @@ class Pixmap:
             self.this = pm
 
         elif args_match(args,
-                (fitz.Colorspace, mupdf.FzColorspace),
+                (Colorspace, mupdf.FzColorspace),
                 (mupdf.FzRect, mupdf.FzIrect, IRect, Rect, tuple),
                 (int, bool)
                 ):
@@ -9378,9 +9380,9 @@ class Pixmap:
                 raise ValueError( "source colorspace must not be None")
             
             if cs.m_internal:
-                self.this = fz_convert_pixmap(
+                self.this = mupdf.fz_convert_pixmap(
                         spix,
-                        cspac,
+                        cs,
                         mupdf.FzColorspace(0),
                         mupdf.FzDefaultColorspaces(0),
                         mupdf.FzColorParams(),
@@ -9413,7 +9415,7 @@ class Pixmap:
             if not mupdf.fz_is_infinite_irect(bbox):
                 pm = mupdf.fz_scale_pixmap_cached(src_pix, src_pix.x, src_pix.y, w, h, bbox)
             else:
-                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x, src_pix.y, w, h, NULL);
+                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x, src_pix.y, w, h, None)
             self.this = pm
 
         elif args_match(args, str, mupdf.FzPixmap) and args[0] == 'raw':
@@ -9431,7 +9433,7 @@ class Pixmap:
                 raise ValueError( "bad alpha value")
             cs = mupdf.fz_pixmap_colorspace(src_pix)
             if not cs.m_internal and not alpha:
-                raise ValueError( "cannot drop alpha for 'NULL' colorspace");
+                raise ValueError( "cannot drop alpha for 'NULL' colorspace")
             seps = mupdf.FzSeparations()
             n = mupdf.fz_pixmap_colorants(src_pix)
             w = mupdf.fz_pixmap_width(src_pix)
@@ -9501,10 +9503,10 @@ class Pixmap:
                         sptr += n + src_pix_alpha
             self.this = pm
 
-        elif args_match(args, (mupdf.FzColorspace, fitz.Colorspace), int, int, None, (int, bool)):
+        elif args_match(args, (mupdf.FzColorspace, Colorspace), int, int, None, (int, bool)):
             # create pixmap from samples data
             cs, w, h, samples, alpha = args
-            if isinstance(cs, fitz.Colorspace):
+            if isinstance(cs, Colorspace):
                 cs = cs.this
                 assert isinstance(cs, mupdf.FzColorspace)
             n = mupdf.fz_colorspace_n(cs)
@@ -9517,7 +9519,7 @@ class Pixmap:
                 samples2 = mupdf.python_buffer_data(samples)
                 size = len(samples)
             else:
-                res = JM_BufferFromBytes(samples);
+                res = JM_BufferFromBytes(samples)
                 if not res.m_internal:
                     raise ValueError( "bad samples data")
                 size, c = mupdf.fz_buffer_storage(res)
@@ -9574,7 +9576,7 @@ class Pixmap:
                     and not mupdf.pdf_name_eq(type_, PDF_NAME('Alpha'))
                     and not mupdf.pdf_name_eq(type_, PDF_NAME('Luminosity'))
                     ):
-                raise ValueError( MSG_IS_NO_IMAGE);
+                raise ValueError( MSG_IS_NO_IMAGE)
             img = mupdf.pdf_load_image(pdf, ref)
             # Original code passed null for subarea and ctm, but that's not
             # possible with MuPDF's python bindings. The equivalent is an
@@ -9607,7 +9609,7 @@ class Pixmap:
         Pixmap._tobytes
         '''
         pm = self.this
-        size = mupdf.fz_pixmap_stride(pm) * pm.h();
+        size = mupdf.fz_pixmap_stride(pm) * pm.h()
         res = mupdf.fz_new_buffer(size)
         out = mupdf.FzOutput(res)
         if   format_ == 1:  mupdf.fz_write_pixmap_as_png(out, pm)
@@ -9663,7 +9665,7 @@ class Pixmap:
         # is commented-out in PyMuPDF/fitz/fitz.i,
         allpixels = 0
         cnt = 0
-        if clip != None and self.irect in Rect(clip):
+        if clip is not None and self.irect in Rect(clip):
             clip = self.irect
         for pixel, count in self.color_count(colors=True,clip=clip).items():
             allpixels += count
@@ -9699,7 +9701,7 @@ class Pixmap:
         """Apply correction with some float.
         gamma=1 is a no-op."""
         if not mupdf.fz_pixmap_colorspace( self.this):
-            JM_Warning("colorspace invalid for function");
+            JM_Warning("colorspace invalid for function")
             return
         mupdf.fz_gamma_pixmap( self.this, gamma)
 
@@ -9738,6 +9740,11 @@ class Pixmap:
         pm = self.this
         n = pm.n()
         count = pm.w() * pm.h() * n
+        def _pixmap_read_samples(pm, offset, n):
+            ret = list()
+            for i in range(n):
+                ret.append(mupdf.fz_samples_get(pm, offset+i))
+            return ret
         sample0 = _pixmap_read_samples( pm, 0, n)
         for offset in range( n, count, n):
             sample = _pixmap_read_samples( pm, offset, n)
@@ -9765,7 +9772,7 @@ class Pixmap:
         if not TESSDATA_PREFIX and not tessdata:
             raise RuntimeError('No OCR support: TESSDATA_PREFIX not set')
         opts = mupdf.FzPdfocrOptions()
-        opts.compress = compress;
+        opts.compress = compress
         if language:
             opts.language_set2( language)
         if tessdata:
@@ -9903,7 +9910,7 @@ class Pixmap:
             output = ext[1:]
 
         idx = valid_formats.get(output.lower(), None)
-        if idx == None:
+        if idx is None:
             raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
         if self.alpha and idx in (2, 6, 7):
             raise ValueError("'%s' cannot have alpha" % output)
@@ -9945,7 +9952,7 @@ class Pixmap:
                 bgcolor[i] = matte[i]
             bground = 1
         data = bytes()
-        data_len = 0;
+        data_len = 0
         if alphavalues:
             #res = JM_BufferFromBytes(alphavalues)
             #data_len, data = mupdf.fz_buffer_storage(res)
@@ -9959,9 +9966,8 @@ class Pixmap:
             else:
                 assert 0, f'unexpected type for alphavalues: {type(alphavalues)}'
             if data_len < w * h:
-                raise ValueError( "bad alpha values");
+                raise ValueError( "bad alpha values")
         if 1:
-            #import mupdf2
             # Use C implementation for speed.
             mupdf.Pixmap_set_alpha_helper(
                     balen,
@@ -9998,7 +10004,6 @@ class Pixmap:
                     else:
                         mupdf.fz_samples_set(pix, i+n, alpha)
                     if premultiply and not bground:
-                        denom = int(data[k])
                         for j in range(i, i+n):
                             mupdf.fz_samples_set(pix, j, fz_mul255( mupdf.fz_samples_get(pix, j), alpha))
                     elif bground:
@@ -10006,10 +10011,9 @@ class Pixmap:
                             m = bgcolor[j - i]
                             mupdf.fz_samples_set(pix, j, fz_mul255( mupdf.fz_samples_get(pix, j) - m, alpha))
                 else:
-                    pixsamples_set(i+n, data_fix)
+                    mupdf.fz_samples_set(pix, i+n, data_fix)
                 i += n+1
                 k += 1
-
 
     def tobytes(self, output="png", jpg_quality=95):
         '''
@@ -10030,7 +10034,7 @@ class Pixmap:
                 'jpeg': 7,
                 }
         idx = valid_formats.get(output.lower(), None)
-        if idx==None:
+        if idx is None:
             raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
         if self.alpha and idx in (2, 6, 7):
             raise ValueError("'{output}' cannot have alpha")
@@ -10122,7 +10126,6 @@ class Pixmap:
     
     def warp(self, quad, width, height):
         """Return pixmap from a warped quad."""
-        EnsureOwnership(self)
         if not quad.is_convex: raise ValueError("quad must be convex")
         q = JM_quad_from_py(quad)
         points = [ q.ul, q.ur, q.lr, q.ll]
@@ -10153,6 +10156,7 @@ class Pixmap:
     height = h
 
 
+del Point
 class Point:
 
     def __abs__(self):
@@ -10347,7 +10351,7 @@ class Quad:
     def __add__(self, q):
         if hasattr(q, "__float__"):
             return Quad(self.ul + q, self.ur + q, self.ll + q, self.lr + q)
-        if len(p) != 4:
+        if len(q) != 4:
             raise ValueError("Quad: bad seq len")
         return Quad(self.ul + q[0], self.ur + q[1], self.ll + q[2], self.lr + q[3])
 
@@ -10357,7 +10361,7 @@ class Quad:
     def __contains__(self, x):
         try:
             l = x.__len__()
-        except:
+        except Exception:
             return False
         if l == 2:
             return util_point_in_quad(x, self)
@@ -10433,7 +10437,6 @@ class Quad:
         q = q.transform(m)
         return q
 
-
     def __neg__(self):
         return Quad(-self.ul, -self.ur, -self.ll, -self.lr)
 
@@ -10458,7 +10461,7 @@ class Quad:
     def __sub__(self, q):
         if hasattr(q, "__float__"):
             return Quad(self.ul - q, self.ur - q, self.ll - q, self.lr - q)
-        if len(p) != 4:
+        if len(q) != 4:
             raise ValueError("Quad: bad seq len")
         return Quad(self.ul - q[0], self.ur - q[1], self.ll - q[2], self.lr - q[3])
 
@@ -10604,7 +10607,7 @@ class Rect:
             r = INFINITE_RECT()
             try:
                 r = Rect(x)
-            except:
+            except Exception:
                 r = Quad(x).rect
             return (self.x0 <= r.x0 <= r.x1 <= self.x1 and
                     self.y0 <= r.y0 <= r.y1 <= self.y1)
@@ -10688,7 +10691,6 @@ class Rect:
         if len(p) != 4:
             raise ValueError("Rect: bad seq len")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
-
 
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
@@ -11173,7 +11175,7 @@ class Shape:
 
         if width == 0:  # border color makes no sense then
             color = None
-        elif color == None:  # vice versa
+        elif color is None:  # vice versa
             width = 0
         # if color == None and fill == None:
         #     raise ValueError("at least one of 'color' or 'fill' must be given")
@@ -11188,7 +11190,7 @@ class Shape:
             emc = ""
 
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
-        if alpha != None:
+        if alpha is not None:
             self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
 
         if width != 1 and width != 0:
@@ -11292,7 +11294,7 @@ class Shape:
         point = Point(point)
         try:
             maxcode = max([ord(c) for c in " ".join(text)])
-        except:
+        except Exception:
             exception_info()
             return 0
 
@@ -11370,37 +11372,33 @@ class Shape:
         top = height - point.y - self.y  # start of 1st char
         left = point.x + self.x  # start of 1. char
         space = top  # space available
-        headroom = point.y + self.y  # distance to page border
         if rot == 90:
             left = height - point.y - self.y
             top = -point.x - self.x
             cm += cmp90
             space = width - abs(top)
-            headroom = point.x + self.x
 
         elif rot == 270:
             left = -height + point.y + self.y
             top = point.x + self.x
             cm += cmm90
             space = abs(top)
-            headroom = width - point.x - self.x
 
         elif rot == 180:
             left = -point.x - self.x
             top = -height + point.y + self.y
             cm += cm180
             space = abs(point.y + self.y)
-            headroom = height - point.y - self.y
 
         optcont = self.page._get_optional_content(oc)
-        if optcont != None:
+        if optcont is not None:
             bdc = "/OC /%s BDC\n" % optcont
             emc = "EMC\n"
         else:
             bdc = emc = ""
 
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
-        if alpha == None:
+        if alpha is None:
             alpha = ""
         else:
             alpha = "/%s gs\n" % alpha
@@ -11497,7 +11495,7 @@ class Shape:
             fill_str = ColorCode(color, "f")
 
         optcont = self.page._get_optional_content(oc)
-        if optcont != None:
+        if optcont is not None:
             bdc = "/OC /%s BDC\n" % optcont
             emc = "EMC\n"
         else:
@@ -11505,7 +11503,7 @@ class Shape:
 
         # determine opacity / transparency
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
-        if alpha == None:
+        if alpha is None:
             alpha = ""
         else:
             alpha = "/%s gs\n" % alpha
@@ -11955,7 +11953,7 @@ class Story:
                     # new page.
                     if dev:
                         if pagefn:
-                            pagefn(page_num, medibox, dev, 1)
+                            pagefn(page_num, mediabox, dev, 1)
                         writer.end_page()
                     dev = writer.begin_page( mediabox)
                     if pagefn:
@@ -12081,7 +12079,7 @@ class TextPage:
         block_n = -1
         this_tpage = self.this
         tp_rect = mupdf.FzRect(this_tpage.m_internal.mediabox)
-        res = mupdf.fz_new_buffer(1024);
+        res = mupdf.fz_new_buffer(1024)
         lines = []
         for block in this_tpage:
             block_n += 1
@@ -12089,7 +12087,6 @@ class TextPage:
             if block.m_internal.type == mupdf.FZ_STEXT_BLOCK_TEXT:
                 mupdf.fz_clear_buffer(res) # set text buffer to empty
                 line_n = -1
-                last_y0 = 0.0
                 last_char = 0
                 for line in block:
                     line_n += 1
@@ -12183,7 +12180,8 @@ class TextPage:
 
     def extractJSON(self, cb=None, sort=False) -> str:
         """Return 'extractDICT' converted to JSON format."""
-        import base64, json
+        import base64
+        import json
         val = self._textpage_dict(raw=False)
 
         class b64encode(json.JSONEncoder):
@@ -12204,7 +12202,7 @@ class TextPage:
 
     def extractRAWDICT(self, cb=None, sort=False) -> dict:
         """Return page content as a Python dict of images and text characters."""
-        val =  self._textpage_dict(raw=True)
+        val = self._textpage_dict(raw=True)
         if cb is not None:
             val["width"] = cb.width
             val["height"] = cb.height
@@ -12216,7 +12214,8 @@ class TextPage:
 
     def extractRAWJSON(self, cb=None, sort=False) -> str:
         """Return 'extractRAWDICT' converted to JSON format."""
-        import base64, json
+        import base64
+        import json
         val = self._textpage_dict(raw=True)
 
         class b64encode(json.JSONEncoder):
@@ -12238,9 +12237,7 @@ class TextPage:
         a = JM_point_from_py(pointa)
         b = JM_point_from_py(pointb)
         found = mupdf.fz_copy_selection(self.this, a, b, 0)
-        if found:
-            return PyUnicode_FromString(found)
-        return ''        
+        return found
 
     def extractText(self, sort=False) -> str:
         """Return simple, bare text on the page."""
@@ -12254,7 +12251,7 @@ class TextPage:
         this_tpage = self.this
         assert isinstance(this_tpage, mupdf.FzStextPage)
         area = JM_rect_from_py(rect)
-        found = JM_copy_rectangle(this_tpage, area);
+        found = JM_copy_rectangle(this_tpage, area)
         rc = PyUnicode_DecodeRawUnicodeEscape(found)
         return rc
 
@@ -12335,7 +12332,6 @@ class TextPage:
     def search(self, needle, hit_max=0, quads=1):
         """Locate 'needle' returning rects or quads."""
         val = JM_search_stext_page(self.this, needle)
-        nl = '\n'
         if not val:
             return val
         items = len(val)
@@ -12406,7 +12402,7 @@ class TextWriter:
                 log( 'Unsupported font {font.name=}')
                 if mupdf_cppyy:
                     import cppyy
-                    log( 'Unsupported font {cppyy.gbl.mupdf_font_name(font.this.m_internal)!r=}')
+                    log( f'Unsupported font {cppyy.gbl.mupdf_font_name(font.this.m_internal)=}')
             raise ValueError("Unsupported font '%s'." % font.name)
         if right_to_left:
             text = self.clean_rtl(text)
@@ -12431,8 +12427,7 @@ class TextWriter:
             self.used_fonts.add(font)
         return val
 
-    def appendv(self, pos, text, font=None, fontsize=11,
-        language=None):
+    def appendv(self, pos, text, font=None, fontsize=11, language=None):
         lheight = fontsize * 1.2
         for c in text:
             self.append(pos, c, font=font, fontsize=fontsize,
@@ -12501,13 +12496,13 @@ class TextWriter:
         CheckParent(page)
         if abs(self.rect - page.rect) > 1e-3:
             raise ValueError("incompatible page rect")
-        if morph != None:
+        if morph is not None:
             if (type(morph) not in (tuple, list)
-                or type(morph[0]) is not Point
-                or type(morph[1]) is not Matrix
-                ):
+                    or type(morph[0]) is not Point
+                    or type(morph[1]) is not Matrix
+                    ):
                 raise ValueError("morph must be (Point, Matrix) or None")
-        if matrix != None and morph != None:
+        if matrix is not None and morph is not None:
             raise ValueError("only one of matrix, morph is allowed")
         if getattr(opacity, "__float__", None) is None or opacity == -1:
             opacity = self.opacity
@@ -12558,7 +12553,7 @@ class TextWriter:
         old_cont_lines = content.splitlines()
 
         optcont = page._get_optional_content(oc)
-        if optcont != None:
+        if optcont is not None:
             bdc = "/OC /%s BDC" % optcont
             emc = "EMC"
         else:
@@ -12828,20 +12823,23 @@ if 1:
     # This is a macro so not preserved in mupdf C++/Python bindings.
     #
     PDF_SIGNATURE_DEFAULT_APPEARANCE = (0
-            | PDF_SIGNATURE_SHOW_LABELS
-            | PDF_SIGNATURE_SHOW_DN
-            | PDF_SIGNATURE_SHOW_DATE
-            | PDF_SIGNATURE_SHOW_TEXT_NAME
-            | PDF_SIGNATURE_SHOW_GRAPHIC_NAME
-            | PDF_SIGNATURE_SHOW_LOGO
+            | mupdf.PDF_SIGNATURE_SHOW_LABELS
+            | mupdf.PDF_SIGNATURE_SHOW_DN
+            | mupdf.PDF_SIGNATURE_SHOW_DATE
+            | mupdf.PDF_SIGNATURE_SHOW_TEXT_NAME
+            | mupdf.PDF_SIGNATURE_SHOW_GRAPHIC_NAME
+            | mupdf.PDF_SIGNATURE_SHOW_LOGO
             )
 
-        #UCDN_SCRIPT_ADLAM = mupdf.UCDN_SCRIPT_ADLAM
-        #setattr(self, 'UCDN_SCRIPT_ADLAM', mupdf.UCDN_SCRIPT_ADLAM)
+    #UCDN_SCRIPT_ADLAM = mupdf.UCDN_SCRIPT_ADLAM
+    #setattr(self, 'UCDN_SCRIPT_ADLAM', mupdf.UCDN_SCRIPT_ADLAM)
     
     assert mupdf.UCDN_EAST_ASIAN_H == 1
-    assert PDF_TX_FIELD_IS_MULTILINE == mupdf.PDF_TX_FIELD_IS_MULTILINE
-    assert UCDN_SCRIPT_ADLAM == mupdf.UCDN_SCRIPT_ADLAM
+    
+    # Flake8 incorrectly fails next two lines because we've dynamically added
+    # items to self.
+    assert PDF_TX_FIELD_IS_MULTILINE == mupdf.PDF_TX_FIELD_IS_MULTILINE # noqa: F821
+    assert UCDN_SCRIPT_ADLAM == mupdf.UCDN_SCRIPT_ADLAM # noqa: F821
     del self
 
 _adobe_glyphs = {}
@@ -12921,6 +12919,9 @@ LINK_FLAG_B_VALID = 8
 LINK_FLAG_FIT_H = 16
 LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
+
+SigFlag_SignaturesExist = 1
+SigFlag_AppendOnly = 2
 
 STAMP_Approved = 0
 STAMP_AsIs = 1
@@ -13024,7 +13025,7 @@ TEXT_ENCODING_CYRILLIC = 2
 TOOLS_JM_UNIQUE_ID = 0
 
 # colorspace identifiers
-CS_RGB =  1
+CS_RGB = 1
 CS_GRAY = 2
 CS_CMYK = 3
 
@@ -13723,11 +13724,7 @@ def _remove_dest_range(pdf, numbers):
 def ASSERT_PDF(cond):
     assert isinstance(cond, (mupdf.PdfPage, mupdf.PdfDocument)), f'{type(cond)=} {cond=}'
     if not cond.m_internal:
-        raise Exception('not a PDF')
-
-
-def DUMMY(*args, **kw):
-    return
+        raise Exception(MSG_IS_NO_PDF)
 
 
 def EMPTY_IRECT():
@@ -13743,7 +13740,7 @@ def EMPTY_RECT():
 
 
 def ENSURE_OPERATION(pdf):
-     if not JM_have_operation(pdf):
+    if not JM_have_operation(pdf):
         raise Exception("No journalling operation started")
 
 
@@ -13816,14 +13813,6 @@ def JM_BufferFromBytes(stream):
 
 
 def JM_FLOAT_ITEM(obj, idx):
-    if idx < 0 or idx >= len(obj):
-        return None
-    ret = obj[idx]
-    assert isinstance(ret, float)
-    return ret
-
-
-def JM_FLOAT_ITEM(obj, idx):
     if not PySequence_Check(obj):
         return None
     return float(obj[idx])
@@ -13875,10 +13864,10 @@ def JM_pixmap_from_page(doc, page, ctm, cs, alpha, annots, clip):
             n = mupdf.fz_count_separations(seps)
             if spots == SPOTS_FULL:
                 for i in range(n):
-                    mupdf.fz_set_separation_behavior(seps, i, FZ_SEPARATION_SPOT)
+                    mupdf.fz_set_separation_behavior(seps, i, mupdf.FZ_SEPARATION_SPOT)
             else:
                 for i in range(n):
-                    mupdf.fz_set_separation_behavior(seps, i, FZ_SEPARATION_COMPOSITE)
+                    mupdf.fz_set_separation_behavior(seps, i, mupdf.FZ_SEPARATION_COMPOSITE)
         elif mupdf.fz_page_uses_overprint(page):
             # This page uses overprint, so we need an empty
             # sep object to force the overprint simulation on.
@@ -13887,7 +13876,7 @@ def JM_pixmap_from_page(doc, page, ctm, cs, alpha, annots, clip):
             # We have an output intent, and it's incompatible
             # with the colorspace our device needs. Force the
             # overprint simulation on, because this ensures that
-            # we 'simulate' the output intent too. 
+            # we 'simulate' the output intent too.
             seps = mupdf.fz_new_separations(0)
 
     pix = mupdf.fz_new_pixmap_with_bbox(colorspace, bbox, seps, alpha)
@@ -13899,9 +13888,9 @@ def JM_pixmap_from_page(doc, page, ctm, cs, alpha, annots, clip):
 
     dev = mupdf.fz_new_draw_device(matrix, pix)
     if annots:
-        mupdf.fz_run_page(page, dev, mupdf.FzMatrix(), NULL);
+        mupdf.fz_run_page(page, dev, mupdf.FzMatrix(), mupdf.FzCookie())
     else:
-        fz_run_page_contents(ctx, page, dev, mupdf.FzMatrix(), mupdf.FzCookie())
+        mupdf.fz_run_page_contents(page, dev, mupdf.FzMatrix(), mupdf.FzCookie())
     mupdf.fz_close_device(dev)
     return pix
 
@@ -13930,6 +13919,10 @@ def JM_UnicodeFromStr(s):
 
 
 def JM_add_annot_id(annot, stem):
+    '''
+    Add a unique /NM key to an annotation or widget.
+    Append a number to 'stem' such that the result is a unique name.
+    '''
     assert isinstance(annot, mupdf.PdfAnnot)
     page = mupdf.pdf_annot_page( annot)
     annot_obj = mupdf.pdf_annot_obj( annot)
@@ -13940,10 +13933,9 @@ def JM_add_annot_id(annot, stem):
         if stem_id not in names:
             break
         i += 1
-
-    response = stem_id
-    name = mupdf.PdfObj(response)
-    mupdf.pdf_dict_puts( annot_obj, "NM", name)
+    response = JM_StrAsChar(stem_id)
+    name = mupdf.pdf_new_string( response, len(response))
+    mupdf.pdf_dict_puts(annot_obj, "NM", name)
     page.doc().m_internal.resynth_required = 0
 
 
@@ -13953,14 +13945,14 @@ def JM_add_oc_object(pdf, ref, xref):
     '''
     indobj = mupdf.pdf_new_indirect(pdf, xref, 0)
     if not mupdf.pdf_is_dict(indobj):
-        RAISEPY(ctx, MSG_BAD_OC_REF, PyExc_ValueError);
+        RAISEPY(MSG_BAD_OC_REF, PyExc_ValueError)
     type_ = mupdf.pdf_dict_get(indobj, PDF_NAME('Type'))
     if (mupdf.pdf_objcmp(type_, PDF_NAME('OCG')) == 0
             or mupdf.pdf_objcmp(type_, PDF_NAME('OCMD')) == 0
             ):
         mupdf.pdf_dict_put(ref, PDF_NAME('OC'), indobj)
     else:
-        RAISEPY(ctx, MSG_BAD_OC_REF, PyExc_ValueError);
+        RAISEPY(MSG_BAD_OC_REF, PyExc_ValueError)
 
 
 def JM_annot_border(annot_obj):
@@ -14023,13 +14015,12 @@ def JM_annot_colors(annot_obj):
             fc.append(col)
 
     res[dictkey_fill] = fc
-    return res;
+    return res
 
 
 def JM_annot_set_border( border, doc, annot_obj):
     assert isinstance(border, dict)
     obj = None
-    i = 0
     dashlen = 0
     nwidth = border.get( dictkey_width)     # new width
     ndashes = border.get( dictkey_dashes)   # new dashes
@@ -14120,26 +14111,6 @@ def JM_append_word(lines, buff, wbbox, block_n, line_n, word_n):
     return word_n + 1, mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)   # word counter
 
 
-def JM_add_annot_id(annot, stem):
-    '''
-    Add a unique /NM key to an annotation or widget.
-    Append a number to 'stem' such that the result is a unique name.
-    '''
-    page = mupdf.pdf_annot_page(annot)
-    annot_obj = mupdf.pdf_annot_obj( annot)
-    names = JM_get_annot_id_list(page)
-    i = 0
-    while 1:
-        stem_id = "%s-%s%d" % (JM_annot_id_stem, stem, i)
-        if stem_id not in names:
-            break
-        i += 1
-    response = JM_StrAsChar(stem_id);
-    name = mupdf.pdf_new_string( response, len(response))
-    mupdf.pdf_dict_puts(annot_obj, "NM", name)
-
-
-
 def JM_add_layer_config( pdf, name, creator, ON):
     '''
     Add OC configuration to the PDF catalog
@@ -14163,7 +14134,7 @@ def JM_add_layer_config( pdf, name, creator, ON):
             xref = 0
             e, xref = JM_INT_ITEM(ON, i)
             if e == 1:
-                 continue;
+                continue
             ind = mupdf.pdf_new_indirect( pdf, xref, 0)
             if mupdf.pdf_array_contains( ocgs, ind):
                 mupdf.pdf_array_push( onarray, ind)
@@ -14210,7 +14181,7 @@ def JM_char_quad(line, ch):
     font = mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font))
     asc = JM_font_ascender(font)
     dsc = JM_font_descender(font)
-    fsize = ch.m_internal.size;
+    fsize = ch.m_internal.size
     asc_dsc = asc - dsc + FLT_EPSILON
     if asc_dsc >= 1 and g_small_glyph_heights == 0:   # no problem
         return mupdf.FzQuad(ch.m_internal.quad)
@@ -14241,8 +14212,8 @@ def JM_char_quad(line, ch):
     trm1 = mupdf.fz_make_matrix(c, -s, s, c, 0, 0) # derotate
     trm2 = mupdf.fz_make_matrix(c, s, -s, c, 0, 0) # rotate
     if (c == -1):   # left-right flip
-        trm1.d = 1;
-        trm2.d = 1;
+        trm1.d = 1
+        trm2.d = 1
     xlate1 = mupdf.fz_make_matrix(1, 0, 0, 1, -ch.m_internal.origin.x, -ch.m_internal.origin.y)
     xlate2 = mupdf.fz_make_matrix(1, 0, 0, 1, ch.m_internal.origin.x, ch.m_internal.origin.y)
 
@@ -14286,7 +14257,6 @@ def JM_choice_options(annot):
     return list of choices for list or combo boxes
     '''
     annot_obj = mupdf.pdf_annot_obj( annot.this)
-    pdf = mupdf.pdf_get_bound_document( annot_obj)
     
     # pdf_choice_widget_options() is not usable from python, so we implement it
     # ourselves here.
@@ -14311,7 +14281,7 @@ def JM_choice_options(annot):
                         )
                 opts.append(val)
             else:
-                val = JM_UnicodeFromStr(mupdf.pdf_to_text_string(mupdf.pdf_array_get(optarr, i)));
+                val = JM_UnicodeFromStr(mupdf.pdf_to_text_string(mupdf.pdf_array_get(optarr, i)))
                 opts.append(val)
         return opts
 
@@ -14335,6 +14305,61 @@ def JM_choice_options(annot):
             val = mupdf.pdf_to_text_string( mupdf.pdf_array_get( optarr, i))
             liste.append( val)
     return liste
+
+
+def JM_clear_pixmap_rect_with_value(dest, value, b):
+    '''
+    Clear a pixmap rectangle - my version also supports non-alpha pixmaps
+    '''
+    b = mupdf.fz_intersect_irect(b, mupdf.fz_pixmap_bbox(dest))
+    w = b.x1 - b.x0
+    y = b.y1 - b.y0
+    if w <= 0 or y <= 0:
+        return 0
+
+    destspan = dest.stride()
+    destp = destspan * (b.y0 - dest.y()) + dest.n() * (b.x0 - dest.x())
+
+    # CMYK needs special handling (and potentially any other subtractive colorspaces)
+    if mupdf.fz_colorspace_n(dest.colorspace()) == 4:
+        value = 255 - value
+        while 1:
+            s = destp
+            for x in range(0, w):
+                mupdf.fz_samples_set(dest, s, 0)
+                s += 1
+                mupdf.fz_samples_set(dest, s, 0)
+                s += 1
+                mupdf.fz_samples_set(dest, s, 0)
+                s += 1
+                mupdf.fz_samples_set(dest, s, value)
+                s += 1
+                if dest.alpha():
+                    mupdf.fz_samples_set(dest, s, 255)
+                    s += 1
+            destp += destspan
+            if y == 0:
+                break
+            y -= 1
+        return 1
+
+    while 1:
+        s = destp
+        for x in range(w):
+            for k in range(dest.n()-1):
+                mupdf.fz_samples_set(dest, s, value)
+                s += 1
+            if dest.alpha():
+                mupdf.fz_samples_set(dest, s, 255)
+                s += 1
+            else:
+                mupdf.fz_samples_set(dest, s, value)
+                s += 1
+        destp += destspan
+        if y == 0:
+            break
+        y -= 1
+    return 1
 
 
 def JM_color_FromSequence(color):
@@ -14367,7 +14392,7 @@ def JM_color_count( pm, clip):
     substride = width * n
     s = stride * (irect.y0 - pm.y()) + (irect.x0 - pm.x()) * n
     oldpix = _read_samples( pm, s, n)
-    cnt = 0;
+    cnt = 0
     if mupdf.fz_is_empty_irect(irect):
         return rc
     for i in range( height):
@@ -14405,8 +14430,7 @@ def JM_compress_buffer(inbuffer):
         return None
     buf = mupdf.FzBuffer(mupdf.fz_new_buffer_from_data(data, compressed_length))
     mupdf.fz_resize_buffer(buf, compressed_length)
-    return buf;
-
+    return buf
 
 
 def JM_copy_rectangle(page, area):
@@ -14452,13 +14476,13 @@ def JM_convert_to_pdf(doc, fp, tp, rotate):
             break
         page = mupdf.fz_load_page(doc, i)
         mediabox = mupdf.fz_bound_page(page)
-        dev, resources, contents = mupdf.pdf_page_write(pdfout, mediabox);
-        mupdf.fz_run_page(page, dev, mupdf.FzMatrix(), mupdf.FzCookie());
+        dev, resources, contents = mupdf.pdf_page_write(pdfout, mediabox)
+        mupdf.fz_run_page(page, dev, mupdf.FzMatrix(), mupdf.FzCookie())
         mupdf.fz_close_device(dev)
         dev = None
         page_obj = mupdf.pdf_add_page(pdfout, mediabox, rot, resources, contents)
         mupdf.pdf_insert_page(pdfout, -1, page_obj)
-        i += 1
+        i += incr
     # PDF created - now write it to Python bytearray
     # prepare write options structure
     opts = mupdf.PdfWriteOptions()
@@ -14497,7 +14521,7 @@ def JM_create_widget(doc, page, type, fieldname):
         mupdf.pdf_dict_put_text_string(annot_obj, PDF_NAME('T'), fieldname)
 
         if type == mupdf.PDF_WIDGET_TYPE_SIGNATURE:
-            sigflags = old_sigflags | (SigFlag_SignaturesExist|SigFlag_AppendOnly)
+            sigflags = old_sigflags | (SigFlag_SignaturesExist | SigFlag_AppendOnly)
             mupdf.pdf_dict_putl(
                     mupdf.pdf_trailer(doc),
                     mupdf.pdf_new_nt(sigflags),
@@ -14518,7 +14542,7 @@ def JM_create_widget(doc, page, type, fieldname):
                     PDF_NAME('Fields'),
                     )
         mupdf.pdf_array_push(form, annot_obj)  # Cleanup relies on this statement being last
-    except Exception as e:
+    except Exception:
         if g_exceptions_verbose:    exception_info()
         mupdf.pdf_delete_annot(page, annot)
 
@@ -14531,7 +14555,7 @@ def JM_create_widget(doc, page, type, fieldname):
                     PDF_NAME('SigFlags'),
                     )
         raise
-    return annot;
+    return annot
 
 
 def JM_cropbox(page_obj):
@@ -14554,43 +14578,20 @@ def JM_cropbox(page_obj):
     return cropbox
 
 
+def JM_cropbox_size(page_obj):
+    rect = JM_cropbox(page_obj)
+    w = abs(rect.x1 - rect.x0)
+    h = abs(rect.y1 - rect.y0)
+    size = mupdf.fz_make_point(w, h)
+    return size
+
+
 def JM_derotate_page_matrix(page):
     '''
     just the inverse of rotation
     '''
     mp = JM_rotate_page_matrix(page)
     return mupdf.fz_invert_matrix(mp)
-
-
-def JM_delete_annot(page, annot):
-    '''
-    delete an annotation using mupdf functions, but first delete the /AP
-    dict key in annot->obj.
-    '''
-    if not annot or not annot.m_internal:
-        return
-    # first get any existing popup for the annotation
-    popup = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Popup'))
-
-    # next delete the /Popup and /AP entries from annot dictionary
-    mupdf.pdf_dict_del(mupdf.pdf_annot_obj(annot), PDF_NAME('AP'))
-
-    annots = mupdf.pdf_dict_get(page.obj(), PDF_NAME('Annots'))
-    assert annots.m_internal
-    n = mupdf.pdf_array_len(annots)
-    for i in range(n - 1, -1, -1):
-        o = mupdf.pdf_array_get(annots, i)
-        p = mupdf.pdf_dict_get(o, PDF_NAME('Parent'))
-        if not p.m_internal:
-            continue;
-        if not mupdf.pdf_objcmp(p, mupdf.pdf_annot_obj(annot)):
-            mupdf.pdf_array_delete(annots, i)
-    assert annot.m_internal
-    type_ = mupdf.pdf_annot_type(annot)
-    if type_ != mupdf.PDF_ANNOT_WIDGET:
-        mupdf.pdf_delete_annot(page, annot)
-    else:
-        JM_delete_widget(page, annot)
 
 
 def JM_embed_file(
@@ -14604,7 +14605,7 @@ def JM_embed_file(
     '''
     embed a new file in a PDF (not only /EmbeddedFiles entries)
     '''
-    len_ = 0;
+    len_ = 0
     val = mupdf.pdf_new_dict(pdf, 6)
     mupdf.pdf_dict_put_dict(val, PDF_NAME('CI'), 4)
     ef = mupdf.pdf_dict_put_dict(val, PDF_NAME('EF'), 4)
@@ -14659,7 +14660,7 @@ def JM_EscapeStrFromBuffer(buff):
         return ''
     s = mupdf.fz_buffer_extract_copy(buff)
     val = PyUnicode_DecodeRawUnicodeEscape(s, errors='replace')
-    return val;
+    return val
 
 
 def JM_ensure_identity(pdf):
@@ -14716,19 +14717,19 @@ def JM_field_type_text(wtype):
     '''
     String from widget type
     '''
-    if wtype == PDF_WIDGET_TYPE_BUTTON:
+    if wtype == mupdf.PDF_WIDGET_TYPE_BUTTON:
         return "Button"
-    if wtype == PDF_WIDGET_TYPE_CHECKBOX:
+    if wtype == mupdf.PDF_WIDGET_TYPE_CHECKBOX:
         return "CheckBox"
-    if wtype == PDF_WIDGET_TYPE_RADIOBUTTON:
+    if wtype == mupdf.PDF_WIDGET_TYPE_RADIOBUTTON:
         return "RadioButton"
-    if wtype == PDF_WIDGET_TYPE_TEXT:
+    if wtype == mupdf.PDF_WIDGET_TYPE_TEXT:
         return "Text"
-    if wtype == PDF_WIDGET_TYPE_LISTBOX:
+    if wtype == mupdf.PDF_WIDGET_TYPE_LISTBOX:
         return "ListBox"
-    if wtype == PDF_WIDGET_TYPE_COMBOBOX:
+    if wtype == mupdf.PDF_WIDGET_TYPE_COMBOBOX:
         return "ComboBox"
-    if wtype == PDF_WIDGET_TYPE_SIGNATURE:
+    if wtype == mupdf.PDF_WIDGET_TYPE_SIGNATURE:
         return "Signature"
     return "unknown"
 
@@ -14744,7 +14745,7 @@ def JM_fill_pixmap_rect_with_color(dest, col, b):
     destspan = dest.stride()
     destp = destspan * (b.y0 - dest.y()) + dest.n() * (b.x0 - dest.x())
     while 1:
-        s = destp;
+        s = destp
         for x in range(w):
             for i in range( dest.n()):
                 mupdf.fz_samples_set(dest, s, col[i])
@@ -14762,21 +14763,25 @@ def JM_find_annot_irt(annot):
     annot. Used to remove the response chain of a given annotation.
     '''
     assert isinstance(annot, mupdf.PdfAnnot)
-    found = 0;
+    irt_annot = None    # returning this
+    annot_obj = mupdf.pdf_annot_obj(annot)
+    found = 0
     # loop thru MuPDF's internal annots array
     page = mupdf.pdf_annot_page(annot)
-    annotptr = mupdf.pdf_first_annot(page)
+    irt_annot = mupdf.pdf_first_annot(page)
     while 1:
-        assert isinstance(annotptr, mupdf.PdfAnnot)
-        if not annotptr.m_internal:
+        assert isinstance(irt_annot, mupdf.PdfAnnot)
+        if not irt_annot.m_internal:
             break
-        o = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annotptr), 'IRT')
-        if o:
-            if not mupdf.pdf_objcmp(o, mupdf.pdf_annot_obj(annot)):
+        irt_annot_obj = mupdf.pdf_annot_obj(irt_annot)
+        o = mupdf.pdf_dict_gets(irt_annot_obj, 'IRT')
+        if o.m_internal:
+            if not mupdf.pdf_objcmp(o, annot_obj):
                 found = 1
                 break
-        annotptr = mupdf.pdf_next_annot(annotptr)
-    return irt_annot if found else None
+        irt_annot = mupdf.pdf_next_annot(irt_annot)
+    if found:
+        return irt_annot
 
 
 def JM_font_ascender(font):
@@ -14866,7 +14871,7 @@ def JM_gather_forms(doc, dict_: mupdf.PdfObj, imagelist, stream_xref: int):
     '''
     assert isinstance(doc, mupdf.PdfDocument)
     rc = 1
-    n = mupdf.pdf_dict_len(dict_);
+    n = mupdf.pdf_dict_len(dict_)
     for i in range(n):
         refname = mupdf.pdf_dict_get_key( dict_, i)
         imagedict = mupdf.pdf_dict_get_val(dict_, i)
@@ -14904,7 +14909,7 @@ def JM_gather_images(doc: mupdf.PdfDocument, dict_: mupdf.PdfObj, imagelist, str
     '''
     Store info of an image in Python list
     '''
-    rc = 1;
+    rc = 1
     n = mupdf.pdf_dict_len( dict_)
     for i in range(n):
         refname = mupdf.pdf_dict_get_key(dict_, i)
@@ -15169,7 +15174,7 @@ def JM_get_fontbuffer(doc, xref):
 
     if not stream:
         print('warning: unhandled font type')
-        return 
+        return
 
     return mupdf.pdf_load_stream(stream)
 
@@ -15238,7 +15243,7 @@ def JM_get_widget_properties(annot, Widget):
     field_type = mupdf.pdf_widget_type(tw.this)
     #log( '=== - mupdf.pdf_widget_type(tw)')
     Widget.field_type = field_type
-    if field_type == PDF_WIDGET_TYPE_SIGNATURE:
+    if field_type == mupdf.PDF_WIDGET_TYPE_SIGNATURE:
         if mupdf.pdf_signature_is_signed(pdf, annot_obj):
             SETATTR("is_signed", True)
         else:
@@ -15257,7 +15262,7 @@ def JM_get_widget_properties(annot, Widget):
         SETATTR_DROP(Widget, "field_label", label)
 
     fvalue = None
-    if field_type == PDF_WIDGET_TYPE_RADIOBUTTON:
+    if field_type == mupdf.PDF_WIDGET_TYPE_RADIOBUTTON:
         obj = mupdf.pdf_dict_get( annot_obj, PDF_NAME('Parent'))    # owning RB group
         if obj.m_internal:
             SETATTR_DROP(Widget, "rb_parent", mupdf.pdf_to_num( obj))
@@ -15267,7 +15272,6 @@ def JM_get_widget_properties(annot, Widget):
     if not fvalue:
         fvalue = mupdf.pdf_field_value(annot_obj)
     SETATTR_DROP(Widget, "field_value", JM_UnicodeFromStr(fvalue))
-    
 
     SETATTR_DROP(Widget, "field_display", mupdf.pdf_field_display(annot_obj))
 
@@ -15316,7 +15320,7 @@ def JM_get_widget_properties(annot, Widget):
     SETATTR_DROP(Widget, "field_flags", mupdf.pdf_field_flags(annot_obj))
 
     # call Py method to reconstruct text color, font name, size
-    call = Widget._parse_da()
+    Widget._parse_da()
 
     # extract JavaScript action texts
     s = mupdf.pdf_dict_get(annot_obj, PDF_NAME('A'))
@@ -15403,7 +15407,7 @@ def JM_get_ocg_arrays_imp(arr):
         for i in range(n):
             obj = mupdf.pdf_array_get( arr, i)
             item = mupdf.pdf_to_num( obj)
-            if not item in list_:
+            if item not in list_:
                 list_.append(item)
     return list_
 
@@ -15491,7 +15495,7 @@ def JM_have_operation(pdf):
     '''
     if pdf.m_internal.journal and not mupdf.pdf_undoredo_step(pdf, 0):
         return 0
-    return 1;
+    return 1
 
 
 def JM_image_extension(type_):
@@ -15548,19 +15552,20 @@ def JM_image_profile( imagedata, keep_image):
     #    PySys_WriteStderr("bad image data\n");
     #    Py_RETURN_NONE;
     #}
-    len = len( imagedata)
-    if len < 8:
+    len_ = len( imagedata)
+    if len_ < 8:
         sys.stderr.write( "bad image data\n")
         return None
+    c = imagedata
     #log( 'calling mfz_recognize_image_format with {c!r=}')
-    type = mupdf.fz_recognize_image_format( c)
-    if type == mupdf.FZ_IMAGE_UNKNOWN:
+    type_ = mupdf.fz_recognize_image_format( c)
+    if type_ == mupdf.FZ_IMAGE_UNKNOWN:
         return None
 
     if keep_image:
-        res = mupdf.fz_new_buffer_from_copied_data( c, len)
+        res = mupdf.fz_new_buffer_from_copied_data( c, len_)
     else:
-        res = mupdf.fz_new_buffer_from_shared_data( c, len)
+        res = mupdf.fz_new_buffer_from_shared_data( c, len_)
     image = mupdf.fz_new_image_from_buffer( res)
     ctm = mupdf.fz_image_orientation_matrix( image)
     xres, yres = mupdf.fz_image_resolution(image)
@@ -15575,7 +15580,7 @@ def JM_image_profile( imagedata, keep_image):
     result[ dictkey_yres] = yres
     result[ dictkey_colorspace] = image.n()
     result[ dictkey_bpc] = image.bpc()
-    result[ dictkey_ext] = JM_image_extension(type)
+    result[ dictkey_ext] = JM_image_extension(type_)
     result[ dictkey_cs_name] = cs_name
 
     if keep_image:
@@ -15639,11 +15644,10 @@ else:
             mupdf.pdf_process_contents( proc_filter, doc, in_res, in_stm, mupdf.FzCookie())
             mupdf.pdf_close_processor( proc_filter)
         else:
-            out_res = in_res    #mupdf.pdf_keep_obj( in_res)
+            out_res = in_res    # mupdf.pdf_keep_obj( in_res)
             mupdf.pdf_process_contents( proc_buffer, doc, in_res, in_stm, mupdf.FzCookie())
         mupdf.pdf_close_processor( proc_buffer)
         return out_buf, out_res
-
 
     def JM_image_reporter(page):
         doc = page.doc()
@@ -15670,6 +15674,45 @@ else:
         buffer_, new_res = JM_filter_content_stream( doc, contents, old_res, ctm, filter_, struct_parents)
         rc = tuple( g_img_info)
         return rc
+
+
+def JM_fitz_config():
+    have_TOFU           = not hasattr(mupdf, 'TOFU')
+    have_TOFU_BASE14    = not hasattr(mupdf, 'TOFU_BASE14')
+    have_TOFU_CJK       = not hasattr(mupdf, 'TOFU_CJK')
+    have_TOFU_CJK_EXT   = not hasattr(mupdf, 'TOFU_CJK_EXT')
+    have_TOFU_CJK_LANG  = not hasattr(mupdf, 'TOFU_CJK_LANG')
+    have_TOFU_EMOJI     = not hasattr(mupdf, 'TOFU_EMOJI')
+    have_TOFU_HISTORIC  = not hasattr(mupdf, 'TOFU_HISTORIC')
+    have_TOFU_SIL       = not hasattr(mupdf, 'TOFU_SIL')
+    have_TOFU_SYMBOL    = not hasattr(mupdf, 'TOFU_SYMBOL')
+    
+    ret = dict()
+    ret["base14"]           = have_TOFU_BASE14
+    ret["cbz"]              = bool(mupdf.FZ_ENABLE_CBZ)
+    ret["epub"]             = bool(mupdf.FZ_ENABLE_EPUB)
+    ret["html"]             = bool(mupdf.FZ_ENABLE_HTML)
+    ret["icc"]              = bool(mupdf.FZ_ENABLE_ICC)
+    ret["img"]              = bool(mupdf.FZ_ENABLE_IMG)
+    ret["jpx"]              = bool(mupdf.FZ_ENABLE_JPX)
+    ret["js"]               = bool(mupdf.FZ_ENABLE_JS)
+    ret["pdf"]              = bool(mupdf.FZ_ENABLE_PDF)
+    ret["plotter-cmyk"]     = bool(mupdf.FZ_PLOTTERS_CMYK)
+    ret["plotter-g"]        = bool(mupdf.FZ_PLOTTERS_G)
+    ret["plotter-n"]        = bool(mupdf.FZ_PLOTTERS_N)
+    ret["plotter-rgb"]      = bool(mupdf.FZ_PLOTTERS_RGB)
+    ret["py-memory"]        = bool(JM_MEMORY)
+    ret["svg"]              = bool(mupdf.FZ_ENABLE_SVG)
+    ret["tofu"]             = have_TOFU
+    ret["tofu-cjk"]         = have_TOFU_CJK
+    ret["tofu-cjk-ext"]     = have_TOFU_CJK_EXT
+    ret["tofu-cjk-lang"]    = have_TOFU_CJK_LANG
+    ret["tofu-emoji"]       = have_TOFU_EMOJI
+    ret["tofu-historic"]    = have_TOFU_HISTORIC
+    ret["tofu-sil"]         = have_TOFU_SIL
+    ret["tofu-symbol"]      = have_TOFU_SYMBOL
+    ret["xps"]              = bool(mupdf.FZ_ENABLE_XPS)
+    return ret
 
 
 def JM_insert_contents(pdf, pageref, newcont, overlay):
@@ -15717,7 +15760,7 @@ def JM_insert_font(pdf, bfname, fontfile, fontbuffer, set_simple, idx, wmode, se
     subt=None
     exto = None
 
-    ENSURE_OPERATION(pdf);
+    ENSURE_OPERATION(pdf)
     # check for CJK font
     if ordering > -1:
         data, size, index = mupdf.fz_lookup_cjk_font(ordering)
@@ -15725,7 +15768,7 @@ def JM_insert_font(pdf, bfname, fontfile, fontbuffer, set_simple, idx, wmode, se
         font = mupdf.fz_new_font_from_memory(None, data, size, index, 0)
         font_obj = mupdf.pdf_add_cjk_font(pdf, font, ordering, wmode, serif)
         exto = "n/a"
-        simple = 0;
+        simple = 0
         #goto weiter;
     else:
 
@@ -15745,7 +15788,7 @@ def JM_insert_font(pdf, bfname, fontfile, fontbuffer, set_simple, idx, wmode, se
             else:
                 res = JM_BufferFromBytes(fontbuffer)
                 if not res.m_internal:
-                    RAISEPY(ctx, MSG_FILE_OR_BUFFER, PyExc_ValueError)
+                    RAISEPY(MSG_FILE_OR_BUFFER, PyExc_ValueError)
                 font = mupdf.fz_new_font_from_buffer(None, res, idx, 0)
 
             if not set_simple:
@@ -15821,7 +15864,7 @@ def JM_irect_from_py(r):
     '''
     if isinstance(r, mupdf.FzIrect):
         return r
-    if isinstance(r, fitz.IRect):
+    if isinstance(r, IRect):
         r = mupdf.FzIrect( r.x0, r.y0, r.x1, r.y1)
         return r
     if isinstance(r, Rect):
@@ -15852,6 +15895,12 @@ def JM_is_jbig2_image(dict_):
     #    if (pdf_name_eq(ctx, pdf_array_get(ctx, filter_, i), PDF_NAME(JBIG2Decode)))
     #        return 1;
     #return 0;
+
+def JM_last_tree(arch, mount):
+    '''
+    Return last archive if it is a tree and mount points match
+    '''
+    assert 0, 'Not implemented'
 
 
 def JM_listbox_value( annot):
@@ -15925,9 +15974,11 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 self.desc = 0
         def __str__(self):
             return f'{self.size} {self.flags} {self.font} {self.color} {self.asc} {self.desc}'
-    old_style = char_style()
 
+    old_style = char_style()
     style = char_style()
+    span = None
+    span_origin = None
 
     for ch in line:
         # start-trace
@@ -15972,7 +16023,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             asc = style.asc
             desc = style.desc
             if style.asc < 1e-3:
-                asc = 0.9;
+                asc = 0.9
                 desc = -0.1
 
             span[dictkey_size] = style.size
@@ -16045,8 +16096,6 @@ def JM_make_image_block(block, block_dict):
         buf = mupdf.fz_new_buffer_from_image_as_png(image, mupdf.FzColorParams())
         ext = "png"
     bytes_ = JM_BinFromBuffer(buf)
-    if not bytes_:
-        bytes_ = JM_BinFromChar("")
     block_dict[ dictkey_width] = w
     block_dict[ dictkey_height] = h
     block_dict[ dictkey_ext] = ext
@@ -16061,7 +16110,7 @@ def JM_make_image_block(block, block_dict):
 
 def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
     if g_use_extra:
-        return extra.JM_make_text_block(tp.m_internal, page_dict, raw)
+        return extra.JM_make_text_block(block.m_internal, block_dict, raw, buff.m_internal, tp_rect.m_internal)
     line_list = []
     block_rect = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)
     #log(f'{block=}')
@@ -16137,7 +16186,7 @@ def JM_mediabox(page_obj):
     page_mediabox = mupdf.FzRect(mupdf.FzRect.Fixed_UNIT)
     mediabox = mupdf.pdf_to_rect(
             mupdf.pdf_dict_get_inheritable(page_obj, PDF_NAME('MediaBox'))
-            );
+            )
     if mupdf.fz_is_empty_rect(mediabox) or mupdf.fz_is_infinite_rect(mediabox):
         mediabox.x0 = 0
         mediabox.y0 = 0
@@ -16189,8 +16238,8 @@ def JM_merge_range(
                 show_progress,
                 graft_map,
                 )
-    afterpage = apage;
-    counter = 0;  # copied pages counter
+    afterpage = apage
+    counter = 0  # copied pages counter
     total = mupdf.fz_absi(epage - spage) + 1   # total pages to copy
 
     if spage < epage:
@@ -16230,7 +16279,6 @@ def JM_merge_resources( page, temp_res):
     temp_extg = mupdf.pdf_dict_get(temp_res, PDF_NAME('ExtGState'))
     temp_fonts = mupdf.pdf_dict_get(temp_res, PDF_NAME('Font'))
 
-
     max_alp = -1
     max_fonts = -1
 
@@ -16256,7 +16304,6 @@ def JM_merge_resources( page, temp_res):
             text = f'Alp{j}'
             val = mupdf.pdf_dict_get_val( temp_extg, i)
             mupdf.pdf_dict_puts(main_extg, text, val)
-
 
     if mupdf.pdf_is_dict(main_fonts):  # has page any fonts yet?
         for i in range(mupdf.pdf_dict_len(main_fonts)):    # get max font number
@@ -16319,6 +16366,28 @@ def JM_new_buffer_from_stext_page(page):
                 mupdf.fz_append_byte(buf, ord('\n'))
             mupdf.fz_append_byte(buf, ord('\n'))
     return buf
+
+
+def JM_new_javascript(pdf, value):
+    '''
+    make new PDF action object from JavaScript source
+    Parameters are a PDF document and a Python string.
+    Returns a PDF action object.
+    '''
+    if value is None:
+        # no argument given
+        return
+    data = JM_StrAsChar(value)
+    if data is None:
+        # not convertible to char*
+        return
+
+    res = mupdf.fz_new_buffer_from_copied_data(data)
+    source = mupdf.pdf_add_stream(pdf, res, mupdf.PdfObj(), 0)
+    newaction = mupdf.pdf_add_new_dict(pdf, 4)
+    mupdf.pdf_dict_put(newaction, PDF_NAME('S'), mupdf.pdf_new_name('JavaScript'))
+    mupdf.pdf_dict_put(newaction, PDF_NAME('JS'), source)
+    return newaction
 
 
 def JM_new_output_fileptr(bio):
@@ -16599,10 +16668,10 @@ def JM_quad_from_py(r):
         p[i].y = JM_FLOAT_ITEM(obj, 1)
         if p[i].x is None or p[i].y is None:
             return q
-        x = max( x, FZ_MIN_INF_RECT)
-        y = max( y, FZ_MIN_INF_RECT)
-        x = min( x, FZ_MAX_INF_RECT)
-        y = min( y, FZ_MAX_INF_RECT)
+        p[i].x = max( p[i].x, FZ_MIN_INF_RECT)
+        p[i].y = max( p[i].y, FZ_MIN_INF_RECT)
+        p[i].x = min( p[i].x, FZ_MAX_INF_RECT)
+        p[i].y = min( p[i].y, FZ_MAX_INF_RECT)
     q.ul = p[0]
     q.ur = p[1]
     q.ll = p[2]
@@ -16771,22 +16840,6 @@ def JM_search_stext_page(page, needle):
     return quads
 
 
-    # fixme: this assumes that fz_search_stext_page is equivalent to pymupdf's
-    # JM_search_stext_page().
-    #
-    # Need to change fz_search_stext_page() to be able to return arbitrary
-    # number of quads?
-    #
-    #return mupdf.fz_search_stext_page(page, needle)
-
-    # fixme: figure out a way to avoid having to pass in max_quads.
-    ret = page.search_stext_page(needle, 10)
-    assert isinstance(ret, tuple)
-    ret = list(ret)
-    nl = '\n'
-    return ret
-
-
 def JM_scan_resources(pdf, rsrc, liste, what, stream_xref, tracer):
     '''
     Step through /Resources, looking up image, xobject or font information
@@ -16822,7 +16875,7 @@ def JM_scan_resources(pdf, rsrc, liste, what, stream_xref, tracer):
                     tracer.append(sxref_t)
                     JM_scan_resources( pdf, subrsrc, liste, what, sxref, tracer)
                 else:
-                    mupdf.fz_warn('Circular dependencies! Consider page cleaning.');
+                    mupdf.fz_warn('Circular dependencies! Consider page cleaning.')
                     return
     finally:
         mupdf.pdf_unmark_obj(rsrc)
@@ -16860,27 +16913,27 @@ def JM_set_field_type(doc, obj, type):
     '''
     Set the field type
     '''
-    setbits = 0;
-    clearbits = 0;
+    setbits = 0
+    clearbits = 0
     typename = None
     if type == mupdf.PDF_WIDGET_TYPE_BUTTON:
         typename = PDF_NAME('Btn')
-        setbits = PDF_BTN_FIELD_IS_PUSHBUTTON
+        setbits = mupdf.PDF_BTN_FIELD_IS_PUSHBUTTON
     elif type == mupdf.PDF_WIDGET_TYPE_RADIOBUTTON:
         typename = PDF_NAME('Btn')
-        clearbits = PDF_BTN_FIELD_IS_PUSHBUTTON
-        setbits = PDF_BTN_FIELD_IS_RADIO
+        clearbits = mupdf.PDF_BTN_FIELD_IS_PUSHBUTTON
+        setbits = mupdf.PDF_BTN_FIELD_IS_RADIO
     elif type == mupdf.PDF_WIDGET_TYPE_CHECKBOX:
         typename = PDF_NAME('Btn')
-        clearbits = (PDF_BTN_FIELD_IS_PUSHBUTTON|PDF_BTN_FIELD_IS_RADIO)
+        clearbits = (mupdf.PDF_BTN_FIELD_IS_PUSHBUTTON | mupdf.PDF_BTN_FIELD_IS_RADIO)
     elif type == mupdf.PDF_WIDGET_TYPE_TEXT:
         typename = PDF_NAME('Tx')
     elif type == mupdf.PDF_WIDGET_TYPE_LISTBOX:
         typename = PDF_NAME('Ch')
-        clearbits = PDF_CH_FIELD_IS_COMBO
+        clearbits = mupdf.PDF_CH_FIELD_IS_COMBO
     elif type == mupdf.PDF_WIDGET_TYPE_COMBOBOX:
         typename = PDF_NAME('Ch')
-        setbits = PDF_CH_FIELD_IS_COMBO
+        setbits = mupdf.PDF_CH_FIELD_IS_COMBO
     elif type == mupdf.PDF_WIDGET_TYPE_SIGNATURE:
         typename = PDF_NAME('Sig')
 
@@ -16902,12 +16955,12 @@ def JM_set_object_value(obj, key, value):
     pdf = mupdf.pdf_get_bound_document(obj)
     # split PDF key at path seps and take last key part
     list_ = key.split('/')
-    len_ = len(list_);
-    i = len_ - 1;
+    len_ = len(list_)
+    i = len_ - 1
     skey = list_[i]
 
     del list_[i]    # del the last sub-key
-    len_ =  len(list_)   # remaining length
+    len_ = len(list_)   # remaining length
     testkey = mupdf.pdf_dict_getp(obj, key)    # check if key already exists
     if not testkey.m_internal:
         #No, it will be created here. But we cannot allow this happening if
@@ -16939,7 +16992,7 @@ def JM_set_object_value(obj, key, value):
 
     # make PDF object from resulting string
     new_obj = JM_pdf_obj_from_str(pdf, newstr)
-    return new_obj;
+    return new_obj
 
 
 def JM_set_ocg_arrays(conf, basestate, on, off, rbgroups, locked):
@@ -16972,6 +17025,21 @@ def JM_set_ocg_arrays(conf, basestate, on, off, rbgroups, locked):
                 JM_set_ocg_arrays_imp( obj, item0)
 
 
+def JM_set_ocg_arrays_imp(arr, list_):
+    '''
+    Set OCG arrays from dict of Python lists
+    Works with dict like {"basestate":name, "on":list, "off":list, "rbg":list}
+    '''
+    pdf = mupdf.pdf_get_bound_document(arr)
+    for i, item in enumerate(list_):
+        xref = 0
+        if JM_INT_ITEM(list_, i)[0] == 1:
+            # Not found.
+            continue
+        obj = mupdf.pdf_new_indirect(pdf, xref, 0)
+        mupdf.pdf_array_push_drop(arr, obj)
+
+
 def JM_set_resource_property(ref, name, xref):
     '''
     Insert an item into Resources/Properties (used for Marked Content)
@@ -16983,7 +17051,7 @@ def JM_set_resource_property(ref, name, xref):
     pdf = mupdf.pdf_get_bound_document(ref)
     ind = mupdf.pdf_new_indirect(pdf, xref, 0)
     if not ind.m_internal:
-        RAISEPY(ctx, MSG_BAD_XREF, PyExc_ValueError)
+        RAISEPY(MSG_BAD_XREF, PyExc_ValueError)
     resources = mupdf.pdf_dict_get(ref, PDF_NAME('Resources'))
     if not resources.m_internal:
         resources = mupdf.pdf_dict_put_dict(ref, PDF_NAME('Resources'), 1)
@@ -17011,18 +17079,18 @@ def JM_set_widget_properties(annot, Widget):
     field_type = value
 
     # rectangle --------------------------------------------------------------
-    value = GETATTR("rect");
-    rect = JM_rect_from_py(value);
+    value = GETATTR("rect")
+    rect = JM_rect_from_py(value)
     rot_mat = JM_rotate_page_matrix(page)
     rect = mupdf.fz_transform_rect(rect, rot_mat)
     mupdf.pdf_set_annot_rect(annot, rect)
 
     # fill color -------------------------------------------------------------
-    value = GETATTR("fill_color");
+    value = GETATTR("fill_color")
     if value and PySequence_Check(value):
         n = len(value)
-        fill_col = mupdf.pdf_new_array(pdf, n);
-        col = 0;
+        fill_col = mupdf.pdf_new_array(pdf, n)
+        col = 0
         for i in range(n):
             col = value[i]
             mupdf.pdf_array_push_real(fill_col, col)
@@ -17038,11 +17106,11 @@ def JM_set_widget_properties(annot, Widget):
         mupdf.pdf_dict_putl(annot_obj, dashes, PDF_NAME('BS'), PDF_NAME('D'))
 
     # border color -----------------------------------------------------------
-    value = GETATTR("border_color");
+    value = GETATTR("border_color")
     if value and PySequence_Check(value):
         n = len(value)
         border_col = mupdf.pdf_new_array(pdf, n)
-        col = 0;
+        col = 0
         for i in range(n):
             col = value[i]
             mupdf.pdf_array_push_real(border_col, col)
@@ -17054,13 +17122,13 @@ def JM_set_widget_properties(annot, Widget):
     #
 
     # field label -----------------------------------------------------------
-    value = GETATTR("field_label");
+    value = GETATTR("field_label")
     if value is not None:
         label = JM_StrAsChar(value)
         mupdf.pdf_dict_put_text_string(annot_obj, PDF_NAME('TU'), label)
 
     # field name -------------------------------------------------------------
-    value = GETATTR("field_name");
+    value = GETATTR("field_name")
     if value is not None:
         name = JM_StrAsChar(value)
         old_name = mupdf.pdf_load_field_name(annot_obj)
@@ -17068,7 +17136,7 @@ def JM_set_widget_properties(annot, Widget):
             mupdf.pdf_dict_put_text_string(annot_obj, PDF_NAME('T'), name)
 
     # max text len -----------------------------------------------------------
-    if field_type == PDF_WIDGET_TYPE_TEXT:
+    if field_type == mupdf.PDF_WIDGET_TYPE_TEXT:
         value = GETATTR("text_maxlen")
         text_maxlen = value
         if text_maxlen:
@@ -17078,17 +17146,17 @@ def JM_set_widget_properties(annot, Widget):
     mupdf.pdf_field_set_display(annot_obj, d)
 
     # choice values ----------------------------------------------------------
-    if field_type in (PDF_WIDGET_TYPE_LISTBOX, PDF_WIDGET_TYPE_COMBOBOX):
+    if field_type in (mupdf.PDF_WIDGET_TYPE_LISTBOX, mupdf.PDF_WIDGET_TYPE_COMBOBOX):
         value = GETATTR("choice_values")
         JM_set_choice_options(annot, value)
 
     # border style -----------------------------------------------------------
-    value = GETATTR("border_style");
+    value = GETATTR("border_style")
     val = JM_get_border_style(value)
     mupdf.pdf_dict_putl(annot_obj, val, PDF_NAME('BS'), PDF_NAME('S'))
 
     # border width -----------------------------------------------------------
-    value = GETATTR("border_width");
+    value = GETATTR("border_width")
     border_width = value
     mupdf.pdf_dict_putl(
             annot_obj,
@@ -17098,21 +17166,21 @@ def JM_set_widget_properties(annot, Widget):
             )
 
     # /DA string -------------------------------------------------------------
-    value = GETATTR("_text_da");
+    value = GETATTR("_text_da")
     da = JM_StrAsChar(value)
     mupdf.pdf_dict_put_text_string(annot_obj, PDF_NAME('DA'), da)
     mupdf.pdf_dict_del(annot_obj, PDF_NAME('DS'))  # not supported by MuPDF
     mupdf.pdf_dict_del(annot_obj, PDF_NAME('RC'))  # not supported by MuPDF
 
     # field flags ------------------------------------------------------------
-    field_flags = GETATTR("field_flags");
+    field_flags = GETATTR("field_flags")
     if field_flags is not None:
-        if field_type == PDF_WIDGET_TYPE_COMBOBOX:
-            field_flags |= PDF_CH_FIELD_IS_COMBO
-        elif field_type == PDF_WIDGET_TYPE_RADIOBUTTON:
-            field_flags |= PDF_BTN_FIELD_IS_RADIO
-        elif field_type == PDF_WIDGET_TYPE_BUTTON:
-            field_flags |= PDF_BTN_FIELD_IS_PUSHBUTTON
+        if field_type == mupdf.PDF_WIDGET_TYPE_COMBOBOX:
+            field_flags |= mupdf.PDF_CH_FIELD_IS_COMBO
+        elif field_type == mupdf.PDF_WIDGET_TYPE_RADIOBUTTON:
+            field_flags |= mupdf.PDF_BTN_FIELD_IS_RADIO
+        elif field_type == mupdf.PDF_WIDGET_TYPE_BUTTON:
+            field_flags |= mupdf.PDF_BTN_FIELD_IS_PUSHBUTTON
         mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Ff'), field_flags)
 
     # button caption ---------------------------------------------------------
@@ -17152,7 +17220,7 @@ def JM_set_widget_properties(annot, Widget):
     # field value ------------------------------------------------------------
     value = GETATTR("field_value")  # field value
     text = JM_StrAsChar(value)  # convert to text (may fail!)
-    if field_type == PDF_WIDGET_TYPE_RADIOBUTTON:
+    if field_type == mupdf.PDF_WIDGET_TYPE_RADIOBUTTON:
         if not value:
             mupdf.pdf_set_field_value(pdf, annot_obj, "Off", 1)
             mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), "Off")
@@ -17165,25 +17233,53 @@ def JM_set_widget_properties(annot, Widget):
                 mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), on)
             elif text:
                 mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), text)
-    elif field_type == PDF_WIDGET_TYPE_CHECKBOX:    # will always be "Yes" or "Off"
-         if value == True or text == 'Yes':
+    elif field_type == mupdf.PDF_WIDGET_TYPE_CHECKBOX:    # will always be "Yes" or "Off"
+        if value is True or text == 'Yes':
             onstate = mupdf.pdf_button_field_on_state(annot_obj)
             on = mupdf.pdf_to_name(onstate)
             mupdf.pdf_set_field_value(pdf, annot_obj, on, 1)
             mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), 'Yes')
             mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('V'), 'Yes')
-         else:
+        else:
             mupdf.pdf_dict_put_name( annot_obj, PDF_NAME('AS'), 'Off')
             mupdf.pdf_dict_put_name( annot_obj, PDF_NAME('V'), 'Off')
     else:
         if text:
-            result = mupdf.pdf_set_field_value(pdf, annot_obj, text, 1)
-            if field_type in (PDF_WIDGET_TYPE_COMBOBOX, PDF_WIDGET_TYPE_LISTBOX):
+            mupdf.pdf_set_field_value(pdf, annot_obj, text, 1)
+            if field_type in (mupdf.PDF_WIDGET_TYPE_COMBOBOX, mupdf.PDF_WIDGET_TYPE_LISTBOX):
                 mupdf.pdf_dict_del(annot_obj, PDF_NAME('I'))
     mupdf.pdf_dirty_annot(annot)
     mupdf.pdf_set_annot_hot(annot, 1)
     mupdf.pdf_set_annot_active(annot, 1)
     mupdf.pdf_update_annot(annot)
+
+
+def JM_show_string_cs(
+        text,
+        user_font,
+        trm,
+        s,
+        wmode,
+        bidi_level,
+        markup_dir,
+        language,
+        ):
+    i = 0
+    while i < len(s):
+        l, ucs = mupdf.fz_chartorune(s[i:])
+        i += l
+        gid = mupdf.fz_encode_character_sc(user_font, ucs)
+        if gid == 0:
+            gid, font = mupdf.fz_encode_character_with_fallback(user_font, ucs, 0, language)
+        else:
+            font = user_font
+        mupdf.fz_show_glyph(text, font, trm, gid, ucs, wmode, bidi_level, markup_dir, language)
+        adv = mupdf.fz_advance_glyph(font, gid, wmode)
+        if wmode == 0:
+            trm = mupdf.fz_pre_translate(trm, adv, 0)
+        else:
+            trm = mupdf.fz_pre_translate(trm, 0, -adv)
+    return trm
 
 
 def JM_UnicodeFromBuffer(buff):
@@ -17193,6 +17289,13 @@ def JM_UnicodeFromBuffer(buff):
     if z >= 0:
         val = val[:z]
     return val
+
+
+def JM_Warning(id):
+    '''
+    put a warning on Python-stdout
+    '''
+    sys.stdout.write(f'warning: {id}\n')
 
 
 def JM_update_stream(doc, obj, buffer_, compress):
@@ -17216,7 +17319,7 @@ def JM_update_stream(doc, obj, buffer_, compress):
                 )
         mupdf.pdf_update_stream(doc, obj, nres, 1)
     else:
-        mupdf.pdf_update_stream(doc, obj, buffer_, 0);
+        mupdf.pdf_update_stream(doc, obj, buffer_, 0)
 
 
 def JM_xobject_from_page(pdfout, fsrcpage, xref, gmap):
@@ -17293,20 +17396,13 @@ MSG_PIX_NOALPHA = "source pixmap has no alpha"
 MSG_PIXEL_OUTSIDE = "pixel(s) outside image"
 
 
+JM_Exc_FileDataError = 'FileDataError'
+PyExc_ValueError = 'ValueError'
+
 def RAISEPY( msg, exc):
     #JM_Exc_CurrentException=exc
     #fz_throw(context, FZ_ERROR_GENERIC, msg)
     raise Exception( msg)
-
-
-def ASSERT_PDF( cond):
-    if not cond:
-        raise RuntimeError( MSG_IS_NO_PDF)
-
-
-def ENSURE_OPERATION( pdf):
-    if not JM_have_operation( pdf):
-        raise RuntimeError( "No journalling operation started")
 
 
 def PyUnicode_DecodeRawUnicodeEscape(s, errors='strict'):
@@ -17335,7 +17431,7 @@ def CheckColor(c: OptSeq):
             raise ValueError("need 1, 3 or 4 color components in range 0 to 1")
 
 
-def CheckFont(page: "struct Page *", fontname: str) -> tuple:
+def CheckFont(page: Page, fontname: str) -> tuple:
     """Return an entry in the page's font list if reference name matches.
     """
     for f in page.get_fonts():
@@ -17343,7 +17439,7 @@ def CheckFont(page: "struct Page *", fontname: str) -> tuple:
             return f
 
 
-def CheckFontInfo(doc: "struct Document *", xref: int) -> list:
+def CheckFontInfo(doc: Document, xref: int) -> list:
     """Return a font info if present in the document.
     """
     for f in doc.FontInfos:
@@ -17388,7 +17484,7 @@ def CheckQuad(q: typing.Any) -> bool:
     """
     try:
         q0 = Quad(q)
-    except:
+    except Exception:
         #exception_info()
         return False
     return q0.is_convex
@@ -17401,7 +17497,7 @@ def CheckRect(r: typing.Any) -> bool:
     """
     try:
         r = Rect(r)
-    except:
+    except Exception:
         if 0:
             exception_info()
         return False
@@ -17436,14 +17532,13 @@ def Page__add_text_marker(self, quads, annot_type):
         if rotation != 0:
             mupdf.pdf_dict_put_int(pdfpage.obj(), PDF_NAME('Rotate'), 0)
         annot = mupdf.pdf_create_annot(pdfpage, annot_type)
-        len_ = len(quads)
         for item in quads:
-            q = JM_quad_from_py(item);
+            q = JM_quad_from_py(item)
             mupdf.pdf_add_annot_quad_point(annot, q)
         mupdf.pdf_update_annot(annot)
         JM_add_annot_id(annot, "A")
         final()
-    except Exception as e:
+    except Exception:
         if g_exceptions_verbose:    exception_info()
         final()
         return
@@ -17455,7 +17550,7 @@ def PDF_NAME(x):
     return getattr(mupdf, f'PDF_ENUM_NAME_{x}')
 
 
-def UpdateFontInfo(doc: "struct Document *", info: typing.Sequence):
+def UpdateFontInfo(doc: Document, info: typing.Sequence):
     xref = info[0]
     found = False
     for i, fi in enumerate(doc.FontInfos):
@@ -17496,7 +17591,7 @@ def calc_image_matrix(width, height, tr, rotate, keep):
     '''
     # compute image insertion matrix
     '''
-    trect = JM_rect_from_py(tr);
+    trect = JM_rect_from_py(tr)
     rot = mupdf.fz_rotate(rotate)
     trw = trect.x1 - trect.x0
     trh = trect.y1 - trect.y0
@@ -17656,7 +17751,7 @@ def get_tessdata() -> str:
         Folder name of tessdata if Tesseract-OCR is available, otherwise False.
     """
     TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
-    if TESSDATA_PREFIX != None:
+    if TESSDATA_PREFIX is not None:
         return TESSDATA_PREFIX
 
     if sys.platform == "win32":
@@ -17670,6 +17765,7 @@ def get_tessdata() -> str:
     """
     Try to locate the tesseract-ocr installation.
     """
+    import subprocess
     # Windows systems:
     if sys.platform == "win32":
         cp = subprocess.run('where tesseract', shell=1, capture_output=1, check=0)
@@ -17686,7 +17782,7 @@ def get_tessdata() -> str:
             return False
 
     # Unix-like systems:
-    cp = subprocess('whereis tesseract-ocr', shell=1, capture_output=1, check=0)
+    cp = subprocess.run('whereis tesseract-ocr', shell=1, capture_output=1, check=0)
     response = cp.stdout.strip().split()
     if cp.returncode or len(response) != 2:  # if not 2 tokens: no tesseract-ocr
         print("Tesseract-OCR is not installed")
@@ -17699,7 +17795,7 @@ def get_tessdata() -> str:
             if str(sub_sub).endswith("tessdata"):
                 tessdata = sub_sub
                 break
-    if tessdata != None:
+    if tessdata is not None:
         return tessdata
     else:
         print(
@@ -17755,7 +17851,7 @@ def css_for_pymupdf_font(
 
     if not type(archive) is Archive:
         raise ValueError("'archive' must be an Archive")
-    if CSS == None:
+    if CSS is None:
         CSS = ""
 
     # select font codes starting with the pass-in string
@@ -17764,7 +17860,7 @@ def css_for_pymupdf_font(
         raise ValueError(f"No font code '{fontcode}' found in pymupdf-fonts.")
     if len(font_keys) > 4:
         raise ValueError("fontcode too short")
-    if name == None:  # use this name for font-family
+    if name is None:  # use this name for font-family
         name = fontcode
 
     for fkey in font_keys:
@@ -17858,10 +17954,10 @@ def jm_append_merge(dev):
     
     if callable(dev.method) or dev.method:  # function or method
         # callback.
-        if dev.method == None:
+        if dev.method is None:
             # fixme, this surely cannot happen?
             assert 0
-            resp = PyObject_CallFunctionObjArgs(out, dev.pathdict, NULL)
+            #resp = PyObject_CallFunctionObjArgs(out, dev.pathdict, NULL)
         else:
             #log(f'calling {dev.out=} {dev.method=} {dev.pathdict=}')
             resp = getattr(dev.out, dev.method)(dev.pathdict)
@@ -17902,7 +17998,7 @@ def jm_append_merge(dev):
             if k not in prev:
                 prev[k] = v
         rc = 0
-    except Exception as e:
+    except Exception:
         if g_exceptions_verbose:    exception_info()
         #raise
         rc = -1
@@ -17929,7 +18025,7 @@ def jm_bbox_fill_image( dev, ctx, image, ctm, alpha, color_params):
 
 def jm_bbox_fill_image_mask( dev, ctx, image, ctm, colorspace, color, alpha, color_params):
     try:
-        jm_bbox_add_rect( dev, ctx, mupdf.ll_fz_transform_rect(fz_unit_rect, ctm), "fill-imgmask")
+        jm_bbox_add_rect( dev, ctx, mupdf.ll_fz_transform_rect(mupdf.fz_unit_rect, ctm), "fill-imgmask")
     except Exception:
         if g_exceptions_verbose:    exception_info()
         raise
@@ -17947,14 +18043,14 @@ def jm_bbox_fill_path( dev, ctx, path, even_odd, ctm, colorspace, color, alpha, 
 def jm_bbox_fill_shade( dev, ctx, shade, ctm, alpha, color_params):
     try:
         jm_bbox_add_rect( dev, ctx, mupdf.ll_fz_bound_shade( shade, ctm), "fill-shade")
-    except Exception as e:
+    except Exception:
         if g_exceptions_verbose:    exception_info()
         raise
 
 
 def jm_bbox_stroke_text( dev, ctx, text, stroke, ctm, *args):
     try:
-        m_bbox_add_rect( dev, ctx, mupdf.ll_fz_bound_text( text, stroke, ctm), "stroke-text")
+        jm_bbox_add_rect( dev, ctx, mupdf.ll_fz_bound_text( text, stroke, ctm), "stroke-text")
     except Exception:
         if g_exceptions_verbose:    exception_info()
         raise
@@ -18052,7 +18148,7 @@ def jm_checkrect(dev):
             or ur.y != ul.y
             or ur.x != lr.x
             ):
-       return 0 # not a rectangle
+        return 0 # not a rectangle
     
     # we have a rect, replace last 3 "l" items by one "re" item.
     if ul.y < lr.y:
@@ -18096,7 +18192,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
 
     dir = mupdf.fz_normalize_vector(dir)
 
-    space_adv = 0;
+    space_adv = 0
     asc = JM_font_ascender( span.font())
     dsc = JM_font_descender( span.font())
     if asc < 1e-3:  # probably Tesseract font
@@ -18116,6 +18212,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     last_adv = 0
 
     # walk through characters of span
+    span_bbox = mupdf.FzRect()
     rot = mupdf.fz_make_matrix(dir.x, dir.y, -dir.y, dir.x, 0, 0)
     if dir.x == -1: # left-right flip
         rot.d = 1
@@ -18133,7 +18230,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
         if span.items(i).ucs == 32:
             space_adv = adv
         char_orig = mupdf.fz_make_point(span.items(i).x, span.items(i).y)
-        char_orig = mupdf.fz_transform_point(char_orig, ctm);
+        char_orig = mupdf.fz_transform_point(char_orig, ctm)
         m1 = mupdf.fz_make_matrix(1, 0, 0, 1, -char_orig.x, -char_orig.y)
         m1 = mupdf.fz_concat(m1, rot)
         m1 = mupdf.fz_concat(m1, mupdf.FzMatrix(1, 0, 0, 1, char_orig.x, char_orig.y))
@@ -18252,7 +18349,7 @@ def jm_lineart_color(colorspace, color):
                     None,
                     cp.internal(),
                     )
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
         return rgb[:3]
@@ -18271,7 +18368,6 @@ def jm_lineart_fill_path( dev, ctx, path, even_odd, ctm, colorspace, color, alph
     even_odd = True if even_odd else False
     try:
         assert isinstance( ctm, mupdf.fz_matrix)
-        out = dev.out
         dev.ctm = mupdf.FzMatrix( ctm)  # fz_concat(ctm, dev_ptm);
         dev.path_type = trace_device_FILL_PATH
         jm_lineart_path( dev, ctx, path)
@@ -18295,7 +18391,7 @@ def jm_lineart_fill_path( dev, ctx, path, even_odd, ctm, colorspace, color, alph
         jm_append_merge(dev)
         dev.seqno += 1
         #log(f'jm_lineart_fill_path() end: {getattr(dev, "pathdict", None)=}')
-    except Exception as e:
+    except Exception:
         if g_exceptions_verbose:    exception_info()
         raise
 
@@ -18315,7 +18411,6 @@ def jm_lineart_fill_text( dev, ctx, text, ctm, colorspace, color, alpha, color_p
         log(f'{type(color)=} {color=}')
         log(f'{type(alpha)=} {alpha=}')
         log(f'{type(color_params)=} {color_params=}')
-    out = dev.out
     jm_trace_text(dev, text, 0, ctm, colorspace, color, alpha, dev.seqno)
     dev.seqno += 1
 
@@ -18347,7 +18442,7 @@ class Walker(mupdf.FzPathWalker2):
             self.dev.pathdict[ "closePath"] = True
             self.dev.linecount = 0   # reset # of consec. lines
             #log(f'end2: {self.dev.pathdict=}')
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
 
@@ -18374,7 +18469,7 @@ class Walker(mupdf.FzPathWalker2):
                     )
             self.dev.lastpoint = p3
             self.dev.pathdict[ dictkey_items].append( list_)
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
 
@@ -18395,7 +18490,7 @@ class Walker(mupdf.FzPathWalker2):
             if self.dev.linecount == 4 and self.dev.path_type != trace_device_FILL_PATH:
                 # shrink to "re" or "qu" item
                 jm_checkquad(self.dev)
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
 
@@ -18419,7 +18514,7 @@ class Walker(mupdf.FzPathWalker2):
                         self.dev.lastpoint.y,
                         )
             self.dev.linecount = 0  # reset # of consec. lines
-        except Exception as e:
+        except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
 
@@ -18459,12 +18554,11 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
     #log(f'{dev.pathdict=} {dev.clips=}')
     try:
         assert isinstance( ctm, mupdf.fz_matrix)
-        out = dev.out
         dev.pathfactor = 1
         if abs(ctm.a) == abs(ctm.d):
             dev.pathfactor = abs(ctm.a)
         dev.ctm = mupdf.FzMatrix( ctm)  # fz_concat(ctm, dev_ptm);
-        dev.path_type = trace_device_STROKE_PATH;
+        dev.path_type = trace_device_STROKE_PATH
 
         jm_lineart_path( dev, ctx, path)
         if dev.pathdict is None:
@@ -18511,67 +18605,65 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
 
 
 def jm_lineart_clip_path(dev, ctx, path, even_odd, ctm, scissor):
-   if not dev.clips:
-       return
-   out = dev.out
-   dev.ctm = mupdf.FzMatrix(ctm)    # fz_concat(ctm, trace_device_ptm);
-   dev.path_type = trace_device_CLIP_PATH
-   jm_lineart_path(dev, ctx, path)
-   if dev.pathdict is None:
-       return
-   dev.pathdict[ dictkey_type] = 'clip'
-   dev.pathdict[ 'even_odd'] = bool(even_odd)
-   if 'closePath' not in dev.pathdict:
-       #log(f'setting dev.pathdict["closePath"] to False')
-       dev.pathdict['closePath'] = False
+    if not dev.clips:
+        return
+    dev.ctm = mupdf.FzMatrix(ctm)    # fz_concat(ctm, trace_device_ptm);
+    dev.path_type = trace_device_CLIP_PATH
+    jm_lineart_path(dev, ctx, path)
+    if dev.pathdict is None:
+        return
+    dev.pathdict[ dictkey_type] = 'clip'
+    dev.pathdict[ 'even_odd'] = bool(even_odd)
+    if 'closePath' not in dev.pathdict:
+        #log(f'setting dev.pathdict["closePath"] to False')
+        dev.pathdict['closePath'] = False
    
-   dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
-   dev.pathdict['level'] = dev.depth
-   dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
-   jm_append_merge(dev)
-   dev.depth += 1
+    dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
+    dev.pathdict['level'] = dev.depth
+    dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
+    jm_append_merge(dev)
+    dev.depth += 1
 
 
 def jm_lineart_clip_stroke_path(dev, ctx, path, stroke, ctm, scissor):
-   if not dev.clips:
-       return
-   out = dev.out
-   dev.ctm = mupdf.FzMatrix(ctm)    # fz_concat(ctm, trace_device_ptm);
-   dev.path_type = trace_device_CLIP_STROKE_PATH
-   jm_lineart_path(dev, ctx, path)
-   if dev.pathdict is None:
-       return
-   dev.pathdict['dictkey_type'] = 'clip'
-   dev.pathdict['even_odd'] = None
-   if 'closePath' not in dev.pathdict:
-       #log(f'setting dev.pathdict["closePath"] to False')
-       dev.pathdict['closePath'] = False
-   dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
-   dev.pathdict['level'] = dev.depth
-   dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
-   jm_append_merge(dev)
-   dev.depth += 1
+    if not dev.clips:
+        return
+    dev.ctm = mupdf.FzMatrix(ctm)    # fz_concat(ctm, trace_device_ptm);
+    dev.path_type = trace_device_CLIP_STROKE_PATH
+    jm_lineart_path(dev, ctx, path)
+    if dev.pathdict is None:
+        return
+    dev.pathdict['dictkey_type'] = 'clip'
+    dev.pathdict['even_odd'] = None
+    if 'closePath' not in dev.pathdict:
+        #log(f'setting dev.pathdict["closePath"] to False')
+        dev.pathdict['closePath'] = False
+    dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
+    dev.pathdict['level'] = dev.depth
+    dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
+    jm_append_merge(dev)
+    dev.depth += 1
 
 
 def jm_lineart_clip_stroke_text(dev, ctx, text, stroke, ctm, scissor):
-   if not dev.clips:
-       return
-   compute_scissor(dev)
-   dev.depth += 1
+    if not dev.clips:
+        return
+    compute_scissor(dev)
+    dev.depth += 1
 
 
 def jm_lineart_clip_text(dev, ctx, text, ctm, scissor):
-   if not dev.clips:
-       return
-   compute_scissor(dev);
-   dev.depth += 1
+    if not dev.clips:
+        return
+    compute_scissor(dev)
+    dev.depth += 1
 
 
 def jm_lineart_clip_image_mask( dev, ctx, image, ctm, scissor):
-   if not dev.clips:
-       return
-   compute_scissor(dev);
-   dev.depth += 1
+    if not dev.clips:
+        return
+    compute_scissor(dev)
+    dev.depth += 1
  
 
 def jm_lineart_pop_clip(dev, ctx):
@@ -18585,19 +18677,18 @@ def jm_lineart_pop_clip(dev, ctx):
 
 
 def jm_lineart_begin_layer(dev, ctx, name):
-   dev.layer_name = name
+    dev.layer_name = name
 
 
 def jm_lineart_end_layer(dev, ctx):
-   dev.layer_name = None
+    dev.layer_name = None
 
 
 def jm_lineart_begin_group(dev, ctx, bbox, cs, isolated, knockout, blendmode, alpha):
     #log(f'{dev.pathdict=} {dev.clips=}')
     if not dev.clips:
-        return;
-    out = dev.out
-    dev.pathdict = { #Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:N}",
+        return
+    dev.pathdict = { # Py_BuildValue("{s:s,s:N,s:N,s:N,s:s,s:f,s:i,s:N}",
             "type": "group",
             "rect": JM_py_from_rect(bbox),
             "isolated": bool(isolated),
@@ -18860,7 +18951,7 @@ class JM_new_texttrace_device(mupdf.FzDevice2):
         self.path_type = 0
         self.layer_name = None
     
-    fill_path = jm_increase_seqno;
+    fill_path = jm_increase_seqno
     stroke_path = jm_dev_linewidth
     fill_text = jm_lineart_fill_text
     stroke_text = jm_lineart_stroke_text
@@ -18880,516 +18971,470 @@ def _get_glyph_text() -> bytes:
     import base64
     import gzip
     return gzip.decompress(base64.b64decode(
-    b'H4sIABmRaF8C/7W9SZfjRpI1useviPP15utzqroJgBjYWhEkKGWVlKnOoapVO0YQEYSCJE'
-    b'IcMhT569+9Ppibg8xevHdeSpmEXfPBfDZ3N3f/t7u//r//k/zb3WJ4eTv2T9vzXTaZZH/N'
-    b'Junsbr4Z7ru7/7s9n1/+6z//8/X19T/WRP7jYdj/57//R/Jv8Pax2/Sn87G/v5z74XC3Pm'
-    b'zuLqfurj/cnYbL8aEzyH1/WB/f7h6H4/70l7vX/ry9G47wzK/hcr7bD5v+sX9YM4i/3K2P'
-    b'3d1Ld9z353O3uXs5Dl/7DT7O2/UZ/3Tw9zjsdsNrf3i6exgOm57eTsbbvjv/1w2xTnfDo5'
-    b'fnYdjA3eV0vjt25zXkRJB36/vhKwN+kEw4DOf+ofsLuP3pboewGISO7bAxPkUU+EaUD7t1'
-    b'v++O/3FTCESmcsILgQRuLhDs/w857lz6NsPDZd8dzmtfSP85HO8GcI53+/W5O/br3QkeJa'
-    b'9NERmPKgE2Ue+73vgj97Ded5TH1pPDEFCT4/35RFFtAMORMezXb3dwiioCsYe77rABjjCO'
-    b'jHs/nLs7mx3wuYFYX+HsEQyTfHg/DY/nVxa0rzmnl+6BVQfeegTyemSlOdjqczqJ0J9/ev'
-    b'fp7tOH1ed/zj+2d/j+9eOHf7xbtsu75jcw27vFh19/+/jux58+3/304edl+/HT3fz9kq3i'
-    b'w/vPH981Xz5/APR/5p/g9/+Qhb+/3bX/8+vH9tOnuw8f79798uvP7xAcwv84f//5XfvpL/'
-    b'D97v3i5y/Ld+9//Msdgrh7/+Hz3c/vfnn3GQ4/f/iLifja492HFbz+0n5c/ARg3rz7+d3n'
-    b'30ycq3ef3zO+FSKc3/06//j53eLLz/OPd79++fjrh0/tHRIHr8t3nxY/z9/90i7/AxIg1r'
-    b'v2H+37z3effpr//PPN1CIF47Q2LUSdNz+3NjakdvnuY7v4/BcEGb4WyEPI+DMT++nXdvEO'
-    b'n8iWFomaf/ztL8wZhPqp/e8vcAbm3XL+y/xHpPH/xlnDejXKHJTQ4svH9hdK/mF19+lL8+'
-    b'nzu89fPrd3P374sDSZ/qn9+I93i/bTD/D+8wcWxOruy6f2L4jl89xEjkCQaZ9+4Hfz5dM7'
-    b'k33v3n9uP3788uvndx/e/zu8/vThn8ggSDqH56XJ6Q/vTZKRVx8+/sZgmRemIP5y98+fWu'
-    b'Ao8vc+z+bMjE/Iu8Vn7RBxIis/q7TevW9//Pndj+37RWuz/AND+ue7T+2/o+zefaKTdzbq'
-    b'f84R7xeTdJYYJLOf7z4xq11N/osp2bt3q7v58h/vKLxzjtrw6Z2rOSbzFj+5rEd7+P84UL'
-    b'xH8/6vO/lj2/6Pu7eX7d3P6C3Y2tb3u+7ua3dkA/yvu+w/JqyV6GeUt0/dy7nb36MjySZ/'
-    b'MUMO3Hz5+LNycsdx54SB5wmN/XJvRh0z/vz1/PaCf4Zhd/rP9dPur/j7eDDtfIV+dX3+r7'
-    b'vz63B36vb9w7AbDn/ddLseown7kr7bbU4YIhD6/03//e7JiM0O669/vbyg1/hPdKLd8WGN'
-    b'PmnXoSs52h5200OGk/WW/fvdl0NvhpHTw3q3Pt59Xe8uCOARA8ydCcX433Z/rjfonfbrnf'
-    b'hP5j9MJtM0mbf4XZT4XT9czt0Pk3S1ALFfPxyHA6g2A3WCz90Pq6qFO+dsskjdtzAB3B+7'
-    b'rwwDeWi/reu0nbcOeMBostv1Dz9MpsuJwzbD+b5DcuGuKR32dFx/pcfGO9oOw7MZlAj64M'
-    b'/9bmOAaTJ/WFuJF0t898eHXfdDNmV4JC77x133J8XONCDiTTWq5JkvNMMLNY9C1ZLNa82R'
-    b'rIki9ULP50AZ/6pczOyn92DSE3IqRSZs7nc2+gmqKMi+O3an/sQkTQOpszcLsBTnsg2gSE'
-    b'f/KskTQ4YaANrFPFn4b/ELIEo/Iu2jQkbg/QEtEJXe1Y6MtWP3sl3/MMlnqf08D4cBaclr'
-    b'5KzEzHTuyXhZPyCXVhkcD0/DoXsmEwEfoWVQqsJ+Sg2eW9qniOGQFqHh3n+XCNMWCMLJ3b'
-    b'c4BPB2vz5CYenXkKjI06Rhu8mSJlSxKmmQX+uHB6g1jC0ztEQ+TRqdISmC6A46TLiH/sfM'
-    b'wBczE0mo4WrXHzoJpUyaKCvglLnpJC1XiEWSBN55eIHcDChLFpQ4TxZrHWkL2mUXwl6Yto'
-    b'N6OLefEmyRLHy7mizwDT1yt1szryqhfCOa1AJJBtKVZFRtCd8WU3pATvFrbr5cHlo6Dome'
-    b'tzoF0xmAbn3/vF2fgKgcbhbkKCCrCKBYETp0uZt+2siJ5pSGc92+kOVgbLVIOREE/rw+jc'
-    b'JfNGSxGWBysYMmOzxrCU3qelSBOUV1VQCf456kXEGaqB4gykGJUKTJQupBnixZ9NNk+S+2'
-    b'ihS/0kkCjOoD6ccjhCO3niVLKfYW367Y0xY90TIU6MwSVkRfVdMM6HFYsxzpPGobc0NLrV'
-    b'4ky6htQIoOA9rLmWTeIupuh6aRZaij5vPp2LH15zO49PmEMH1niBrcCCWd60KgH00/Bmgp'
-    b'kM8t9NzL/mm930scS/j7XYuHlr2MGiXkiwoDQvnESoFVyfKEarx1uSGFA7ehkULobywiRP'
-    b'BNiqgAcbOCo9MFRwtGp1GVn6wSDuzTImllwJ65b2mcAPyAjZxvfcTpHN+2xC0bZboApKt6'
-    b'joBDPZhbIgyyEeD7B7Sx9kZ1qTWqKgeUkvZ66MUI1N4eejGytzeG3kgUP/QumFyVWyD1+E'
-    b'pSja9NICVYYqbrSkvzJV2Xo0WhQfIedV+EsGU0rd23hAogyuUKtNZ7kBjOxTEPBT9LS/Cv'
-    b'BlfE32OqDgVzo+JFfWt3uqkhATv4OEhYCFtGXrRhR/jCY7Is4kuCVWavQ0QdiVoDqoiute'
-    b'kS9K0eFjpDy3E8nc75EdVjKGbtgVmg+1KkWtQAVp/hpaPQM1SNl1O/YwryWeEJUS3gUkeb'
-    b'wTnzDLP+DdtgG0jtClLrXh86SHu6mQoIb1r5HM1KWjmksEN7xQ9VsjVpEQ1ezvA7gUqMD+'
-    b'97RcpruAv3Le0G8V2Oww/ZBDpq+40xQxPBh2/G6D1BqRSiKq7YJ5TJKjTdJlnpDjptk1U0'
-    b'phVwrbvkabJy/S5Ut1UPnyELqgwIovM1Cm6jCoGgMDERdp6sJJ/K5EeKViU/Nqc/Lutj90'
-    b'OeYwD8UVS6Kb7RNzMrc/sZhqsZmYenfh3EnCc/StfWJj9KniAe0WFSKFE/hpxYWEK0k5TA'
-    b'wIh806Z72+hRd37UjZ50NJBBxu16o3UD+N1iHrjZ7LpRfab42+5KJ5gZH5eX8+WomxFq+Y'
-    b'++BBALJnWqVgGIRywArlFjJgefUXkgf/142NpPKQ84le/KfdtYs1kD2gjLDJ0mP7Hg6uSn'
-    b'tEb8P2TFYmW+p/xGo+B3kfK7SX7CQF4ZPE1++lUKGh3sT+tbAx3G5J/WN5WyDIzj5tQ/ae'
-    b'cZYrMDKqraT6b8fWshK2gxGcINBb+0hBQ8uuifpPuHY4SlmwhqwU+qg6frKFcRttbIphPQ'
-    b'R9WCwJesxfcF85bjZb9bX84siFWEiBYBh98kv1AF3jHTZ8k7PUvMVsm7v0F+TCjefdF4m7'
-    b'wTJWDpvmXIAeBbSrZI3on2gcBCFrWWCAN8BEhYRFXlK5N3elStQapRdRVIP8hQ0huaNirZ'
-    b'u6sBmN5NW8wn5kvaoqNFjZgn77qrpQeIFrXXInn3eFw/o62hZ8IU7Z2M0Qv3LREDiNQOJK'
-    b'vXQZEej8mQoT9th+NZO0TxyYCL+ukInW4UZFS14AO1SrX3Jnk36ByH4DIyMjMHO/jMzJfq'
-    b'MEsDhNLI0VCJyIAEUiopfEt7xzj2zk2XU9T0d9GQxPrzbdufT9GgMPWgrwuaWSZ/Y02eJ3'
-    b'+L5nZp8rdQ+VaWkPaJucrfok6uTv42mog1yd+ijEP4kpx58ndG2SR/V0NNkfz976E/WiZ/'
-    b'X99DZ3/uoxF+AtjV1Nx8q8JEqDd7qhkZYwUmB/byYoqG7OuuvwX63cnibJH8XQa0Gt8yoO'
-    b'UlKJ9v0JT/Ho9fZKuWgX7i7/FYPwUQLU2skr9vdTKh0/19q9UBhOgHI0gSjz0QU8+WUGx/'
-    b'jwoFJTAgF5SXemIhmYEhH066cZUEfEE2yc8syEXyM3s9aIU//4yuEtXlZ6815DN87+83Jq'
-    b'fh3OdavsR3yDVyJNdSS8STlByRjPISnlz/szJfgWNp8VoGUoZiqH8/969RViOG35kMcOJs'
-    b'RBqibJwnP0fZCI9+gol2Y79l3IBnya9F8gvza5n8oip+mfxihVqVUD7tt0yJVwRchW+TX0'
-    b'ImZckvekjEGPeLSjJ0nV+iejSdJr9EMkMGEQvfVHGMioqq/cuFhbVI3lPWNnlvynaevPdl'
-    b'Os2T974coS++D+WIye77IGJuibgc0dG8j8uRnqKkTA0tHsrkPSv4rnuk69kyeY+yEBW2Tt'
-    b'6bQmvwGxUa4tGFBv3ofZQBSNjwqnMI8UiOgOmXJJep+5Y5AQCTQ8vkA3NolXzARD8tMvxK'
-    b'qc+TD37AX+buWwIAACXpGM1y0I048Nbwi+C8ioAS+eBzH7J9YK7Bw8aPCTPIE8pgaglRG5'
-    b'YR4KsW6t2HmysAy1oz/LxzmWlUD8Vx8JLgCPXzKWgAH3T/jXRhfPKVrJgYUlSXBcigutDv'
-    b'rXxSsEROTCkjCMiMz1JUDQCnajBhkaqxAhD1zwXoPeodVNIPkQ7Skj6yUDBImU/J3LmllR'
-    b'BtZiHJ0IWlo6x0IfrsahmsVlVtHvWMEcFdKTzwLroNeugP8WICa2u8mMDA9t3T2iWOn7rb'
-    b'd1w/LmCKbejjcDnoalzNLX7uzzutF1ULh3v1BrV031vx8pkQwqZz3VrhQjV6CCNKFtuGJc'
-    b'J+CXy7FQn0rh9c3zxhZTbfMqVtHSDFTRe+D0CUduDXzrX6WJH2vUThvn0GM8sNoOYxU+9B'
-    b'4iuSX+EZWf+rFMw0+TU0X/B111iUya+R0rwCHaldcwA3p7hzeLXr2/ywCsMccRkI8fevR1'
-    b'3P8+RXnf9Qtn49Gac1P3QmkOOSg+//ZnLS5L9DEsrkv6OQwBT3afKR7rPkY6R7LkD7bmCa'
-    b'fPS9XVHjW8Ya5MXHEEsFIhpVyFb9RzoBqXOyNrRvkMU8kKIiFJAj1s4QiJqjgL0dmCdIRt'
-    b'jbKlcLknFrTJFEPRoVbfIxyhXwJVf8tw8E/ut0hJ0uLx2tXMBryuQTczFPPq24YzeZYHqP'
-    b'/hJU5qh0Sir31ITU1FM1qcJRufFXOiozVOV5JpTa+zO8mXdJnoncxM4YUpElI+VdlimozL'
-    b'ssycu8SxQaKC81OltQXuqS6cu81IUJxUtdVKS81MWSlJe6oJyZl7poQOXisiUlLlekxOWc'
-    b'lJe6YPqmIvWMlJe6pNRTL3XJtE+91IWhvNQlZZl6qUtKPfWylCyHqZelNPF5WUrmxFRkYe'
-    b'yFl6Wgv0JykPlZSA4yzwrJQaa9EFmQPmll/ls3EYqw3r/0vsvHAPTJN8XSf0ceSgdKS0BB'
-    b'qAaLzH7YvvITvb/51OsBtYVubaNDutDSa0vIXJTlGzX9jDU6kmtiaN/2WOU8GTmDt7gzhf'
-    b'jR+jzSF2+AVgT05AxBbB9iCIUVzdcQ+zZy0SB5236vlk6Rov7JrLTOUYD9nyIAqkHUa4A7'
-    b'PJ7Ha3DwLn0JXJwZlszn5slndhbT5POaSiyGgM92wQ6p+yzFCzQUHDLsc8j/mSVirR49/+'
-    b'e4/6WnKHfnhpZCWCSfow1iOL+5+Tunw1AEiL07n6KNW8i6dbv3NT7d0LbgJ/WxCRQp8ymD'
-    b'Lmlkh4SJqNWgXJIfzwyh4n/WvTemB5+jcoAIesERk97PUEgee6OwNwtDnXrW1npqiPPrQC'
-    b'Gr5POxg47h1WhiCDtKH5Sxz6d4Z7EB4gsY4b12O7XkD+brIFSafGFxF8kXmY7M3bfkBwA/'
-    b'uUCxfJHJRY5vKfa5JcJEotGA1INSoxID3aoUIWCl6aPufNEj9RSk0vQXgfQ+llXAJOYsYJ'
-    b'KCmcKU2cAkwC7WlMm5NtUpAihpoTxKk4e0MnuYuW9xC0Cr9JiefPGThJX99Gofpn9fRpME'
-    b'iqknCVB0v4wnCegqvkSThBZ0PElg9mpIZwTy7EpTgYxab6wgmGQIGvGX6zXS1oNK1a3oUj'
-    b'cRZKWo7Cwr2SacF55I2T8Jy+QM03p6298PO+nAcnEgi6lN6jG9ntqMwRuBTb2bwIuEkPkI'
-    b'0mhNnVI0/i/jheQJMd8ikR7MG9bcJdb9WBvga+MTlJGfv2MY+hLNJCoPSFWfJv9goy6Tf4'
-    b'T22ST/UHUHU5N/RBOFDHS02gEHrsdpwIuKCuFG2yd18g9JHHi+rmFK90+KUSX/9KLWWfLP'
-    b'INLCEjJSQ+5/qipSk1QjBKZq/1RJqOvkn77q15Pkn5GIiFNEqpL/oRh18j8h6mXyPzqmBU'
-    b'gd0zz5n2ikz+Ges5tZm/xPFA8ClXjq5DfGM0t+k6506b6lwRPQpY6x5bcgVWuJkCFl8luo'
-    b'sSljuOpuVsC06K2hpY+YJr9hHqA714bI5Va3h+B9hqLl/+aLP7efvktZQSi9wzEtQOu6Xo'
-    b'GOhkfonL9FuYYsklzDt68wFOByuu+fdAbNHXbLYGJB3q4/n3e6LkNREfiWrzr5F8tpnvwr'
-    b'Mq8qQfsRZ5aIGVa1dN8y/K8ASJE5whVZ2s4myb/sonPVmC9ReBztS2aWJf+KWmAF+ub2RE'
-    b'3GDa23BW7VGoi+7XRa5gTGO2qLlKiO0vi7Gafl3Ih0kfxLazqzafKvqGgRsxQtv/2uVFMk'
-    b'tEmEvrFe33cYbXZoTzM06bVvLC1Zm+4rnM0mxJ8uv6+P6zPczWtLH/eXZ65RzA1/v0Z3qc'
-    b'C8BXi8yML5JAf9dYD2QwU4RNq0Gncx5hGooqbre2Zlb87D7NfHZ121VxFXBYhhVScUyb8f'
-    b'Xob98Dj8kNN+ay2G2Ln7FkvnlQN0vqcO03ZLlcPEENs7igySfPBipgJRZAsZiZO6vJxYQl'
-    b'Q4TEXWNwyxC41qq+SlZoghdqXRyBB5pjlict0kvkZAczefJoKH/T2qelpZyFKT1FFDRLoS'
-    b'KJx3LtkMXCRBYzUABm0XwJQ+Qi7nyAG9pgzuZrN+VnWsIuTqKPJB6aFQ9G7OTfMAB70Rgu'
-    b'iMSw0ZlidBmxaBWh4WF5G73fNw7FDvcq7srrvgAZE89v2EO/g/QOzCkvVsmtL4aGrIdII+'
-    b'yFqqe7K2xs6enFlFwJHZxFrJeDK11p+ezOyevCdzu7ftyantXjxZ2A7Ok6XdhPdkZbfaPV'
-    b'nbzVpPzqwpnCPzibVj82RqzdY8mdmNAk/mdg3Uk1NrU+bJwhqLebK000xPVnYm4snaWgZ6'
-    b'cma3Wh05ndiJmCdTa9LsycxO/T2Z22m/J6fWLsaThR2kPVnaGbsnK2vw5snaGo94cmZtTB'
-    b'xZTKwxkidTayDrycxaH3kyt1aWnpxao1VPFtZaxJOlHeg9Wdk9fk/WdlPUkzO73ebIcmKn'
-    b'qJ5M7Ua0JzOrLnsyp8WNSFVOSYpUZeEarSMpVS4FWlKqXNJbUqpc0ltSqlxCrihVLiFXlK'
-    b'qQoCpKlUvyK+ZVLsmvmFe5JL8yUknyKyOVJL8yUknyKyOVJL8yUkn51kYqyY2aUuVSvjWl'
-    b'mkrya0o1FZlrSjWV5NeUairJrynVVJJfU6qpJL+mVFNJb02pppLeGaWaSnpnlGoq6Z0ZqS'
-    b'S9MyOVpHdmpJL0zoxUkt6ZkUrSOzNSSXpnlGomCZxRqsInEADJXEhTglMhKVVRCEmpilJI'
-    b'SlVUQlKqohaSUhUzISlVMReSUhWNkEYqn8A0NVL5FKWmdU9WQpZ2DuDJyppoerK2xjmORM'
-    b'ai8ovMJmMLCcpkbCnJNxlbBZIRVT75NbpNBFUJaUL26a2NVEub3gy5nE1cg8y5MDxx4mO4'
-    b'JWHLrqhyVs6ynAsJ4UvXrkGyVpTlRMicZCrklGQmZEEyF7IkORWyIlkIyYjKUsgZycqRU9'
-    b'aKsqyFNELOhKQYbnAhyZDdeEGSQWVeyCmLsswyIRlUlgvJBGZTIRlyVgjJBGalkExgJkKm'
-    b'TGAmQnKYLjMRksN0mc2FNFKJzJmRaiGkkWoppJGqFdJIJQnkMF3mEyEpVS7p5TBd5pJeDt'
-    b'NlLunlMF3mkl4O02Uu6eUwXeaSXg7TZS7p5TBd5pJeDtNlLunNjVSSXo6t5VSE5NhaTkVI'
-    b'jq3lVITk2FpORUiOreVUhGTrK6ciJOt5ORUh2dzKqUjFwbScilSFEUOkKowYUgqFEUNKoT'
-    b'BiSCkURgwphcKIIaXAwbQsJIEcTMtCEsjBtCwkgZURw+dkwZ6qnE+FZFBVKySDqkshGdSs'
-    b'FpIJnHsxClOfq5mQTFEtjk19nqVCMkXNXEgGtfRCFqYElz6fUQ+ohXrHJUuhaLyQJRNYLH'
-    b'yRoZ2DXE6EpONlKmRJMhOyIhn8MqjlVMgZSRGDWVcsSyFTkpWQGclayJzkTEgjlSShMlI1'
-    b'QhqpFkIaqZZCGqkkvZWRymd7ySG+aCW97EWLVtLLIb5oJb0c4otW0sshvmglvRzii1bSyy'
-    b'G+aCW9HOKLVtLL/rloJb0c4otW0jszUkl60T+vmiyQBUmf/Ap97KqZBpJc6UUrdm7FaiIk'
-    b'xVilQlKMlU9ghQ5q1Ug3UnGYKJqpkExvE7imIpVCMqJGxOAwUTS1kIyoqYRkehsvVc1hom'
-    b'gyIVkKTSokS6HJhaRUi+CYUi2CYyPGTEgjhq8bdW7i9XWjnpqIVkIyooWXasZONXN+yzRD'
-    b'B5WlTicHiSLLUjdBK9McXVCWujlXmRY04p9kCyGnJJdCFiRbR7LRYSh3jvO0NCOsczydcS'
-    b'qUUWa/kcHqqldniiRanAG57Y/rp/Vh/UPOk7jraNoPifuwMsL5Sa+XRiBU76bYnKrGR5UR'
-    b'dK9iNp5V1MbDeF2IXTpvUlnfMwwz0PSHRyA7h61ogQ4M/517jTZE990mAhcER7ZUTNKNlS'
-    b'aqVP14pWkagSoxdP28PuOvybd5Fsjtevf42m/O2x9WKy5ByDoAR5Fd9+i6THxJMqldgN6s'
-    b'n7rT1iwGvrJpWVdx6uvWgNv1/tvalFIIJB9xRh6ngW0WM4LHYsQZeawt24olwu/WyGyR1a'
-    b'VtzzWYkVjZiDMK3bOfT5fjWnxxLA9w7GU10bxxRVjlmjuqECubCS8oqpDPmc3SP7hIeQqo'
-    b'SdHLFg2Vfdxu1/1xWe9+yDJqDu64PXsdfdx+DlY4bg+mXm6lHrR/6Y6n9WHzAxdWAqmdTR'
-    b'TuV2eN22BPjyw7qFbIHD48aWBK4Hm7PjxvL+ftGhWWRlHAuHaYcVWFn/fH9cNzdza2uJgt'
-    b'1FeoN5lHxnEiq7jmCiN6ml3DytfUxWSiyPLMuba+QRuZuOxsrDDRgg/DGY575m2NNnG4bN'
-    b'bns1/Eo2J1uJy+sjTDYm0A/VpfQHS/BzRcdoACfVmj2ML684TIsTv8kPFAwPploFgv0Uo9'
-    b's1Bwu0rJ/v7lBbm6qlcrfh6H9cO2OyGXqSSS/lPqTa2B4Yi+74nFwWQZnJ1ht3sT9xDyuO'
-    b'7UQiLbPpEAoJ8/PiAnuRJocpWdj9nbTNvZnJi50YF6RnSjQ2NpOXmNqnk8Dq/3w5n1fTa1'
-    b'5GZ92m6GV9oeUI/xkC1NXmQhkCtRXm8i2OWFgAt5c79zgS+ngriwl7kgLujlRBAf8jITyA'
-    b'S89AHbMGZ5IF0gs1mAfChUqD32uu2RGRDRuUNZb4i79ecioAzQoVlATZgOzgN8eXGYS+cW'
-    b'Jf2t+xM1hPocES/fJJBIlUq2Q9x+TMYrWARHB3r0qeH6gsclNQ6TFGeKjgJdKQYE//r2Q1'
-    b'bNWgUyKierT4zBJSqXmWfeCmSrxFQQqREuH02hzVJPbEyhFYG8PzHIeS0ISuJ+PQJ9zpUa'
-    b'GB5dHVhIcJL4yiMis0OMTmAKBWGdHvrebm5wr7HVQLRf5jjeTLjStHZogzj2LzRg4+zQEv'
-    b'5Yhmnx9gio0rxSh2mtYoxp1YLLJife8HZ65mgyF2q9456JjKRUDT3nBoY+B60yS0No0WAU'
-    b'gnVjUcuFIAuh0zYKo5ivrkq2pdPb/uU8mCFAdWZoIWcesEAV9/nHPuUcGYaTKfGgjwo5Bs'
-    b'5F6aFTkmrAI9vroeRptdPSQe0kvUNQ5y33B0OgnF5ervRRdPCXW9pihHttMQK1tgjGV2rk'
-    b'Wz9Icdk4ugqH2frWH9wM8o0KD4sxqCMTg4oWBlf33KPFjxoNoYDcYyT2RvKFIqOaTNxJkv'
-    b'FbyTq3tOSA4auKWk1In51aAb3gXivCS3KPbBz0doxaBRBVZhiD78N2ZprcRxeb5IaW8Qlu'
-    b'O+pyp/7PcwcnWyoKGGXLEoF2D+sLO4ospzO9RYhQaRriNdGaZKxLohMGNtYhZ8ajSvOM9E'
-    b'iXRM9qwG4/8r6YrYRzGnYY1DfCmhgZDsMQT2oWaJH3nc5HxqjtMljQ3dmur9xbU4LGQOuR'
-    b'FRQTdLYzCc4h0kCGiYUBg0JvSGjZobahJt9vdb1akvY1xhC6yjgg1BkC9nh7gZLsdVaS1g'
-    b'klvUMurHcPKDVzIh551B82eq4Ine6+V+YCTMEONdtXIJ6SNwBKCHVuQ6R0CAaHl6E/nKHv'
-    b'QEF1SjBn+YbNEcSzzW93pOfpNVd5xqzfscF5uKAYY106/d/4WqtuvuPO69dp+r850CH55P'
-    b'CWO8aipEU/G3jGo2ZmlnnsHs4em7vAjNvrzGnmN9g6a13Om57cFZm5u8Ch/Q7uH9kpZKXP'
-    b'geDMZd3pjG4kK9nySZrb98bpmireVbqCRyehEUeLOR270EyTLYdn9E0Zs09fU1SBHlBTsw'
-    b'JT4/toigdfwz1XNXrXP6ZI9aCrP7J20NUftMw70Gr+CLM8RIuy7oyWgnmrIey5yUnVBPL+'
-    b'TH4egH2/IZIpRPfCyqsfajV2fqHnNAC6klUWtrUTYiwVbeVoFeIE0Y4iSTRDRFko0MqiES'
-    b'1MnehGh8Gu0YAVZ6Ihq++tNBQNipF/E3fbJlGDRCTLCLGxNBFmC2weYVE8cRA2keju3frU'
-    b'sk7CVRvW8iVrLeQMaUpLycKWcriKWc4OJ43RzXCBwm55JXn95imKbu6wGzHk5GECcbCj/B'
-    b'yyiNlYjdzWuiCchiu5UEEvuh3A40W3A9KY/p251Jm5bxM/R3au9VtoQPCYtx+pss4Mdure'
-    b'TJfcJg/Uh/LkQVsKloDVOIY58YPc01fh2yuNxLXSaOmgNJLehWPeNcjDhoP3YaP00jrVuM'
-    b'v9icb8GkXkUC9TkPFysv0Lj0M+IMbh0a4lO0uwbFHZT11mCwu5KmIo9GZP3bGjEg3/Dfzr'
-    b'pVskQe6kW+JbriLEFOlhfBXhDJDoapklwr2D5F6OO472iMRdQdiYr3AFIenQucGdRNjUnn'
-    b'BpgQDGE5dV+dU/cXGHeZBb+vDoK9lyZRDdvtqJgYbd5nR+49JM5YLRdRNuotM/0PAetMIz'
-    b'a0j72mEIXT0cEOoHAZ27U9C3b1NckvPwzLkHJtxpbsjAn1YE/vfLFVeRE82xnm+YCxdkaC'
-    b'vpykR8+3LFBVnfv1yRWUUDa1bDbd9deEbKVA6/LpVVgWMGN2Gkwhj5KGeeEZbL5x6Kw2B1'
-    b'2w4ImlM4M8hO5h7xQG2BPjhxnobOA0yku/EQrhnPVSpKh4/S4OBxClwoQX4HjKR36GUUKM'
-    b'QRXbZx3/vL7ty/7N7Q2c0qh6FxgZo56mV34VrjrPD0AL1pZ+pWjs7dobxTnWMalw+MysMe'
-    b'daKYsnQo3DTRTTxblMnofJBrqkuFu74HjW3XUXkzDZk6/Xr3tcM8iOPAIrPQhnfW7whMLM'
-    b'Bp0tEiqUXkMBUx1Nbd5Z4TPvt1uvRnJ6yG3DIPbUoe9g/omUOXM0eTjHQ1+HJr6soRpNHH'
-    b'JdgdD+ZoywQjn/nc88TX+vjGbfJUIAk2dc64AqCciH5TWNqqmlTome12xXCZjnkOp1Dmsj'
-    b'buEdqTedxIceNLriBTkA4vEn2Ib1UuvEM/H574wNQS99JCqodtUwtFy0LOp78NT4szjVlu'
-    b'ndyFK9ngkqS75MxCds1HhxgxXHgNsRd0XZxDUJrD0/HCdJp1c75NMFyOnLA8Hc36E1Qo82'
-    b'DBAILG5o6YL3h5ETQqRzct78ChZuBoHsZmk7XkYs5rVNJA88Q7R09LLhcp2WmgM9JZoHPS'
-    b'eaCnpKdCm9irldA/89JRKhCWbnnhDNQeT77nAf1JIfQHngadSHDtJ15VzKHJ0Z952XJaBZ'
-    b'pnbUJmrHidoSlaSzLtqZA/GlLS+pOJS2T52fide/L9nPmaimgfjWcpg0+8b20i6fzEq1cm'
-    b'gWvTIdn2ycop2frpi0mHRPbpN1MqUohfTGQS+j9MaMwF9/QGFYtZIE/rw4m6voZQKR+pXR'
-    b'BDrRtN700ejeBoaTa75utdsTRmy2ba8gYehZvfcKADNvG+DEd7vsF3aqZCBdWL5Q9Pz08B'
-    b'QtbJJBTFcLx863p7FyZChALQnalWcGkGnqHpvXELM6ONvqGMOk4F/HJEIA9vzGDUwrejuV'
-    b'Ob+ZiSWrEvX9H0CMS9ZxmHj45VJNwaLafJJlLiSavFqBLkJtgIGNItTZnveImvaYmNl/ig'
-    b'RAEd2wtMErdyZsxAomUzjzxxDWSSTdy32bmZZClJtSJWGjosiJFW05+S3tX0x0S8CyuVFG'
-    b'5nl/ty+xlW9CIgrOk5eItA7f628XxnLGVGnLDyd8U/dU88Nek46Zgz8un5AXVAf+z/EFdT'
-    b'BY4C8CxoB3sBZwocuXesOH2VAkfuHctu7Qtaa3Tkw/Mu9xflo9HoyIfjxTlXKnDk3rO2ps'
-    b'o6cKLAkXvHYqfUCVgocOTesOImMJ8D00P/dGUBbQbisfP6MNpCmi4CJ8IOvApuZprn8SnI'
-    b'Pa8sYPrFCMRM4+XQcZdFjvKYQX5aQ+r7nb8/lfWIy2/XRgrzWwy9KrQcO5DetbnJ0X5b4+'
-    b'LIecP10or1rvZv0XN5RG1Sc1vb54tJ05NPUymUU5RXBLSOsiCAGLnayKNBlaLd8ovJGLMx'
-    b'GzATzsux33ujBJNJPmFcf8k4OiqMnpWGNWHC1c4MWtl9GBzQImShAFGpy+vR/MOqQG6J0W'
-    b'3kRP3l9XAedeOG9h23IXQP6oDQhRog9JGYtW3GFb2pIfpmIxP3Ajm6ifYxskSxM0vpWD0S'
-    b'oiWid6YaQ8tiMOqbfQrm1L2szdJU2GVtrni06zFjmmOqvSrUpo6bOFwQQZPvtn1oOktDh9'
-    b'EDFUPfQoJS0XtHC7LROYjZTeNosbspCdg9pKn9lCsDa8Z1GPbIVsiLn8sJXcHhsrfrbiEr'
-    b'V8j/jvdkZxjr40yuEpXHhtBZ7ICQwwTcZhE+MR6/nblD5E/rFyPMnQacJrLXwxMFjogmgS'
-    b'i6cOZvXifx1RNoklUS3TzhWvpUUNc8gk9pzAGK5NSFxNh1qZA+nwc3OYfaven5JhtEW1Xu'
-    b'm3P5zDL4wpLdxs0y6NGb6D7EAmE9n7ZmUayYwUO0P4HqEJYqobFtwj30aEPRHBhJPchmBg'
-    b'guomzWfokE3cKAmuW3MsjXCURb01sZC9I7M82fMA/Nt55I5g6LZpLeoVquE89iCuBD1tNF'
-    b'Ojo8UUdF9R7U3iBrd1h4zJazQLryrBLfgl2J5wEYFKISt2IkGGxOvDgtzVNP/c4rUluh7G'
-    b'KZq80mQ8/OwGJRkOCavCzzoHMyK/Fvw8YqNMYSO8ZEvzOc1wMS8qyP2LaCurUCRCOqPLzo'
-    b'HEMSzuveLNMii8LSPOTQS/MctvTSPCU3r2kgT75ZzYCNnpQcTS5J2CXgOZ3ffmcjJUdXYz'
-    b'qNVj+LVcIGARE6OWo+w/eReciTJJ1abIdbveS6SDq5ox7+7fq6X29fekCvtQt4ZchRXHG0'
-    b'NYfhuhbV4Hv0uAeD1UutTM3D9i2+Z6GuAMrgObVEOM0914C8+LHSqIyxM43q2zErzZAXP1'
-    b'KNRtde5pojb3tQelVCEFUfuwbX5zGk02eskTPuSY8q6aInPSwtR+Mhf6f3+hFOd2WHAz/6'
-    b'3Q/0XJ1YuNf4VsUK/1H2w2u0No/y0YZX8B2dwYfckY07gnOrBnltP8MI74BQKdvWIlK0jD'
-    b'0AbkeLSw52jSGrZql14HKxdAF0mEj7MKpUMN+2MdoIxAa+YXufWUzlhRdH5aSPYIs+4yoh'
-    b'XFT/th0uyJfMQzS1sdY3HFMbi2KwGpD/L9verRzkWeZSKl1+NqldGNECqcNUh+/z1Seucp'
-    b'FIyuqVAE59Wjkv/m6sykUu/V02qZwTbwBNcnwWgL5u3DqCzNVmeHUgI+N+1MHn4YBc1JcO'
-    b'GNCf/AehX4nJkbBdt7frlFArOvNkTKgrc4dIRrQekDLOHCIJp59d/8JGl9Go3FMyscky1o'
-    b'KgA+SekLdoKo/IWzTIAP0WTY6+db8xygiXK+23njmhgkZ6Bf2/cAA4je/gaMg5v506kwVw'
-    b'F1myQzY9YmA21x18vLn71vFmxG5dNEfH5g2chh86CkY5ehSH0PhOeRTOwSbHPGHZhRdy0M'
-    b'qGUMKIyN5OmzFp/HzYDSe7WDa3QHgzBoN+DInboo0ZXiFGBvjKMJ/g21+0hVl+F99qhUmC'
-    b'NbZEP+U+o2bnMNGpSkerBrMg1H/FvP3AdGclivWo8w5+dC5PIZFOXB1I7Qox671IjuK3n/'
-    b'xBBnLpLatzfjh9oi5JDEffQUIrtfTVoG0cegF2w/DCq9nmBKkbnpWk7D2vDHArh+mWP8ai'
-    b'1VgGfTZG+xseX6BcSttCZtoZVsUPNRzVpKXU4Ms8VbRCXsqtL0v3LUM8cuaM2M/rxwH9jE'
-    b'wMOXYoPFpvCbwb0LVLP/9bIu6LVG/WAHkVqbtlB1sp2BeExrTeBPzPB7PSxwVT+637hoXD'
-    b'7JpqLiTNuyfcSgu03KnvwWhS4UE5P0MAUzXaDpgeEbMvO3dlf6reeFoZyla8mXGjH3yaEb'
-    b'AqdNrMk0dqqmXyKKsNLb7VUGBoBHDYdj1XhyYz0OetWoVrLRCtwjksWmtrkke9PlMnj0F1'
-    b'LJLH6MWpVfKobF7R2B4jbQjN6XFsBLvMiI1XyJc50dEKOTTVR730gNgxdlASHvt+fMRMZc'
-    b'Lfnh8I4HHHD3gyAITpHyPVBtqIg0SzyQSRQQ8y0xq080MBnex2GMeHP63JoCVpw2jNF036'
-    b'nteP9iCwp8Ia+hgLy+iBE5ZVAxYWkud2sThmKC8xWxZ753ZFN8JHvhx33+3tyWRPBWcOO1'
-    b'wO9nSyp4ILh7109giyI4LxuIP4ikxvzyEHOrgiejydzRVMqB7diToTpvmPPeS2Vlck4kfL'
-    b'GLRRy/PCfAUd09JKV24MEOrCVNE3NOW6NXyvKFvfVkeF7pMWSwNo7bdxSFB+LRLrvoXDgu'
-    b'prkVs6rhVRq7jWbTTUWkgruBYRta62pKi3C0977da6Fx3PxqqHauvAq7agTDtDu+DBMvMm'
-    b'Eb4jlQxtKBwhxFThcXgUexl2GsOjX/eBqvAIXXAv7CnZR3alvM474XPYLN+p+Qr5aGlVvn'
-    b'MDhPLNFX2rfJeG78vX+tbF6ZFQnBaJi3PqsFCcFrlVnFYiXZzWbVScFrq1BFoZji5o61YK'
-    b'2joIBd142he0dS8FbeXRBW0dxH3mUjDpNNMASa9ZWMzVERfQdtSaIZEomAjkuH7g3jFP9k'
-    b'xJHR449ucJTxFiKvukTeRI+gOFBb69tRzxcLZ5viIZL9NjaH3iod5owGlmU6LxgNPMGLI2'
-    b'vasMHSzvSGs1bgFaq3Ck7UuHTW4/dwjJKRCYMDlQ3cHfTgDF7x82iZ5DTJYg/VITkifqA2'
-    b'RRzyEi5DBMl5YIzyEijNFziHDvnkNMzVfggI72CuBSL2EUGWiV5ob0sOcOV3QIq2A4x45v'
-    b'ZjDkoAAuHC7IKnfI/vLHRu3CzpbEUVl5kpCXpq5II8A33nkeB9oGVggXRQzt162BY0r3FB'
-    b'ld1qT1M49VZhBXsQxb1wUHhMpgAH1/wNwCoxsEWote3SGwsvhY50F9+N5bkwVZ10+KMWE3'
-    b'3ppE/m/D5tTcUFphJGInfiXjVE8UIkC9uQAt8UlvLsxJa12a1brfdzt7A4v5DNpPBATVx8'
-    b'FBiwAQbzsg0N1wxvRBXq6QK0NbzzqdOfHK2JgDoF6/gDKnGO6s7ERjaqLG/L1mOE/pLZ5u'
-    b'x5EIXtRsnl7DKso5Uh3e+ITbaBRFC9d7IOhVn/QeSANautOM38G0EI3syOsl7eJPlfjlSx'
-    b'Y1P/WyfpnojWLnwN+c6UhfjXJLhpszWwtEcjs/6jZNIh2NLjmUt57wXQWUIo0MR25vAF82'
-    b'Ho+GSPE/HGUJgcms8sBwIVSVQF9VfILKAgUkkEO0mIc+hUdSwdEbFgWScuEEYD/4syDzJk'
-    b'De5qux2Kk/PLlz5pN8FiC3OUo7zye9/dEw9ON6HzaY2Mu8hf3xWcL5O6b129uPrs7IiA0q'
-    b'UHV1v9fQyU177jwJJ0bpSN91a+lwoy5pddhxSXJkBpIRG/d689ygYf9nRXrUB86nAPuz2m'
-    b'WbJ9vIgmmlaL1MUtPhDrqkXs2ncLymRKRNLRBbqWTpnTFLCSw9K7bcheXGE2vLahXr2mNj'
-    b'udFFKKlgz+vTcRQeqlnEvQ7Spep0eb6MWAVznja9ZqJ65MoKM/Tqyd0pM+v4MgzmEoP79f'
-    b'HenJtvFh62p448vqBIoSbSs7L+ajJFm5udIiTLr5DHMRJs3zR6cJcd3OJRGLTi20zUie6K'
-    b'I3NqU9sFSO+voKy+gvLpFRQiiOCx0BHzSuqIG4vtWN7eq0kVbS7MipBsOkbyyRgJYWt0LL'
-    b'DmXcmrmbG44LhHnKtEb4NN0K7iN53RItSbzuhOgvZaWSK86VwkW/2mM/jRm865oSVkuO7s'
-    b'bW+8UOXMfaTCfkZ2/AoTGw6I3wXNZSpUUFuIbW90sHoVrCIpeo3xYbtG7W3VzCvNOb8O0v'
-    b'9h7rkdL5tZ7Dv3LTXzIuaOj4I3cyOG741HgtSaJxE2Bg2H6Iwr11OPApgplvhHNwI5OhRc'
-    b'6DUqBqpP4tWKjjryJRmXc3Rve14CPIjWyvw7XtQwwVHJ2rGSpSxFQXpPpf3Ur6Ch+Prucn'
-    b'2uqHH46PCMg8cncpYWDidyWguMTuTQmc5V9EvRCXVNRxnCaK2hK/Q+85lOFZGlmtgoIrRO'
-    b'B4zbuoOvmrnD4xYOMLrmH/kZ6X4oUH2mpcKgAR32xS0MsNlHJ5RJ6+RrOko+ctPZ7VIX4W'
-    b'c6U0RWKiLPFBFEd8A4+Q6+Sr7D4+QTPAzP24s3VMoomNvQ9zrzzEAPmnjhQgAUsG+xnWdq'
-    b'mHL4SLMysoJd/ZS0fop+ZuhvA482ObPLgpA7lclqOpxPL7x5ydxdwYIxN1fw0NRW5g3oPH'
-    b'VbQHHJPSjsIqNjtKT7Xl1klcN3dLC2UHRUfOgMoseFsuUyQlxmQeivXE9EOG8vW+508mpC'
-    b'+62tuzw/2ojxDkWpzz2gdspKh/EdrYzHXXrq07OkFxOgJb+VlrRK1KWEdZVoe42MpFucga'
-    b'C9vB+FcMOAVid9bHDTJvpdlKJMem3lAmH86qExRnIB5Vm9CpzH/tgFRpOoBUea3GJW0PmF'
-    b'x3yluWQLZx5xkCsqUIwpmsnNY5oSlhFqjorlPC8zRs2sZ7WC6hlxuO1/vuzMoRERo4rdHL'
-    b'm3EuTINdfkiCypRikzzxmjwp9CypcR/8+Hbse5ogQ9i/iP3GHFbNL7xqxVczHgHh54c4j4'
-    b'Lm/yJfIR+yhiZVFxbddfg8BZxIH+HbIhysieBxj9syMsgKiwduiOjkHO+oon8cUsFFmILy'
-    b'oU9kvCiRLGYf+B9uHCnsXsc8gSdJaaNYQqkEU18bDehyyJ0u0WnHOaSWiYx+9CgqNoMPI+'
-    b'SI2Z5jHrBVolaoRENovZJ24hBFHicJXpFVId5eSpe+A5JhFoFjN3jyJPlIzT8NB35zeJLx'
-    b'LW9nN8kjNGu6jSRfXgdB4enoWVxqzLJkQUVcjTJbTMOC72o191+1po9itXVKRAY9YwbIQT'
-    b'Nbpv3XFgolRtM1Um9G0q01ljAkNVGVaYkNuqxiAtAVeJMbKGoJSwFDUwjKzWFIQSKovDVS'
-    b'C9bVOmMG2KyjJRlpLI7KsnmKCiRvfZshw7jo9jpdTjI6XUwWOltLJwUEodMFJKgYp9I7JC'
-    b'2zeSpcwlQeqVYeR0ZNSJeq4HS7QJPdCxt5Hs5LeOyNIhJtJXhpkowSuzOmRnP35Wj+345r'
-    b'27E417E5II1DYkYPxOC2y0Q73+PU1uqujQ5ftgzAI/5ua5bIkc3V3ewgEL0GIgx6Hg+l3E'
-    b'PDH3dQ7Hm3d1FoY9euIKVS/Sw5EBB/RB3vwPXfbB7IHxfH+KJnXQL7WVkEIdDQrU/cBDBD'
-    b'zFkQbsHNP2CppCaC7Jw8EkAIo+ome0e35ZRhHPfbgVlUF89Rez8BYWkGLAvqTrr7zPqQu3'
-    b'OfX6ofgCIonhHJviYE2iZuZLve+4mEeIt45i9wDYbNhR+7X+xHYKAYrSjApw1JWVJX9l4p'
-    b'U7TNecMRaZeCHBp9N2rfd8IalsJRi+0mTRNXklQEU7U7A+UkDYvRPJjI8svtgjRzccwsFF'
-    b'q8CoL7eeS1slV20p15heQAb+bdufT5H5RuFBOaymmFXyO1XzefJ7dHdKClrt4i1A+i07fu'
-    b'sdO0uHDTvQ2tZ6kvzu9fUVv0Vfn1lCFqDQGf+OJno6df5MA3L5d3cMQ8qnWCXxBlYNutuH'
-    b'tdmFoUdXArYGvLoTcGXg8bo4pFQLTTNGsB2dSWuS36NdziVpn0GG0DnkgJBFBOKrWxAgWk'
-    b'3Oo/6/Rz0MCkYaBDJIzyKzhNeEolfByLA+bZ/7yPIyJRwkLEC6ATQnS3fjc9A3nyFsDMOm'
-    b'igE82mcXnpUtABpgZIbVJDcssAw4MlBjpMogyzi5slcz6HjvdkEwvttwCUjneGHokOGkda'
-    b'/BcMfmwVNguhdpFB0NQCUYLy+m15vbz/i+RlRzoG/dcDnsoQfsZbSqUmG8cNXqJaxj1dPA'
-    b'Iif4qYVxOq2hU8TcGbjH4dirDp55cdr2mzUm/EMop4mGUcF69kz2CunYzag3XTHvwjVZlF'
-    b'PvoxST5GrrxBTH9Q76KmGwLAYMtztjjnR8jnKWYX33kiI0o2e92N0mz9EFXjPSzmqD32K1'
-    b'gYnvc+h2UGSxkQbZSnGEGvIcm1dOCai9SZRiZJqh6Sg5kCK+8BM5cGWQvEJ1Ys057NaHDR'
-    b'OaQoF7jnqXkrQeKQoCvmEarq78Dgi13wBqH7E19Ggj0Tq62kmsDDzuIimhthmlq2AFMTOU'
-    b'toIggor7fL38WwtnpGsLY6xtzz0j6NuNh0YaN50Oz1u5uhHTWQMMcqtUYYHL2p8pmeQWeQ'
-    b'2epkT2Fzl1wtjsNVMzpgv647O+uYoZqcw8UDsiZR61OFJzNR3VHuRpfxzGG9WFQfddd9YH'
-    b'JFnEgAMNmXt0Gs/j/C5bzxhllcfH7icOl8zm6GGQUQDe4akfTsExcjMertF565VtDPrP6m'
-    b'QrCn18xxNSFg2IyP3rO55QrpENR05aPa8A4ZBkKdHUkKEF54qOygAVaECXE/IV2TSgw1cp'
-    b'qhkYk3s685KA48Y9U466vSJnOPhDxxwqZSwv+R0SgIhOehLHruIc5CflF4yhzDzrBeMpmH'
-    b'p5eK7pKDXI3a8SZgPqNVBtwmMm5SLZaSuGDKSzB4SWsBPDBeJa77R0mCeRfjat4m09eJPT'
-    b'IuHhgKvnT1YLj3/vnZNVfe1ivPfWrqrI0Y1XT1bzaxfXwcy8o2tW41nfe/kEffmVi+tgbD'
-    b'7IYDkleb8x+kTjvsUwZmYQljsfuDKfQdeKgKBtOTjoVh7wV7Is7L0rAZQbchzrztyMM+ar'
-    b'AG+6GvPJGil9LbHrYWaxMEVzpf6tiN7Q3BcLE/jzrZBMhhlptuOsX65YL8f6fjuxYHdDsG'
-    b'Vde+ZVRAvPuTW1WK7uEPL0zkwnnLtb46tyx5iOT2I7X7RIvd3mnyF3UFuN1RRi1UoQSK/0'
-    b'5MhcpfSQI0pPY4n4lHG+BBqrQvBk7VWhCu60vaqjxWsVSLGsy1Eo3aO9clpf9jY38PiYO5'
-    b'JL67EJDwXxS8zGpoEcjt6gLcuWc4NHNmrW59hALXNo8AuV3UDaOs1CsovFWM3xIYyQvDTR'
-    b'XaCAGKK9QzpAtqH3tS877+Ij4CwermWxfsbjHgC+Xo+RaBe60ZyE7kcJ6NER5aacI7rd1w'
-    b'FKb/+gTPLTgHo7ewXdWFFo8xts7xU8axbr1jEyzC+jU4dTJDGMrEukZ3jYcqvJ7dSCPTxR'
-    b'gbcXimWVpw+DMeNbKFpsNDPeqetwc/VYhuox7MJlnxk6zYF7rJMUw6q/QMfsRZmrdVbttE'
-    b'3ie3UyT/OIEeKAE5Tc8A35YM65oD7JaAwh3QML6RT+/NXlPFm706tBiOMsl3Qgl/1TTBlq'
-    b'01XJsPLEBTMJyK1yyZLvFgtYf4ZMzxMeuENF3Os7WtrEL3hSB7Df+p7n1GFuF3jqyGBlun'
-    b'RIdPVuTtAtHDBUfwkMY9N3wFg6XAFDmkq9Ots4nwoW3yNlcLUFTr/cskOn8UrjPNN/MKdX'
-    b'Nab2Me8oB8LBnGqm1zsaDYZb550Xpq/vnuNYUHQe1eHXjYV9yLUlx2HWc+LQfrh+oPGpwv'
-    b'1rGyyV/rzuMQnRTmcB9rFVBsJQG4u6CnAka+tw733m6Ctpl4aBrirO6CzAUR6nDvfhzh19'
-    b'lbMTMt7W+0HyqwSiDRlaRUeGDEyTPYFIKQ6nN22jwXz4Q60dNQzmePKu0fO7WU+oYAwvrB'
-    b'SgyPUYivDC3VhLlFEYN1ENRtMRVD9tFjdNDe07bKj4e70aCZ13f7UaiXZ+Q6FoW+t3rJ1M'
-    b'HXqtgSzTwBo/SsKqOZojovfb63WMmt77b7HlGLJSr220qaJ1CbF22NOM9LEPOqkig0ZqwK'
-    b'AektSjZsU0cikoFFjhkOfuEWNLwMsIj3sRz4tRhOSs0iokRs/MkQQz0qlrgaKdgsLwzajV'
-    b'oI5wKe9q+SJz+GjxwsHjyfQ0iRcEWXsIvKCK62lzNfF4NMV23uMlQOgrBo0CwPRxHxnAkd'
-    b'YtT9NRuTLmg7mB2iQCn9pcynF9A6FxhgHcTUWVpdwV1hg8SdLoE17xfezvI0tDdh0AA40u'
-    b'iqP8rnuS2S6zQi0QIL5xi0QskX6Can61QDBDevUCQZ2RVgsEKAi9IsAmenNFgMPFEORZQp'
-    b'5hL7oPQ6FGE4SrIkRJjfYp2of5DiwMMiEEqIR7rYEgIcF0DMSFtRM19ZL6D9XRIRWXh23Q'
-    b'g6HLEXDHNkpk/+UxuEZnd/Fr2I0hAg+ZqtccapSKXnNoNR3lF7LkosqPArob0CcT1peLOs'
-    b'FK6Q7KQp1FSyBu0ARPToE09sRzDZiLBkqTUGCP6BXttd18IM1A3Pt78RgzUOU180utkKBw'
-    b'L2qJBFnydd89hfzFFHevnCM1rzEfwSv/y4SqGdrrQWttNUlM2cwBooNfbZlO8e1VLTrRqp'
-    b'alg6pFWp/2mCeH6ByHpqNhtgBDnr9krDMAodDTRN/kMmlA2lYGBXOSHPzEE2PNIUw8MciH'
-    b'c63LpSXiiSc0skM88aSnaFgtDC0ekDPRbYkINroeUdNRCiFa9wr1/w+rTtuH0A+q0kOU6A'
-    b'TsjLRfWjeEXlp3QFhaJ4Aey+toLEK9TZwn5hYae4SJo8VhPJus4ITGIlcLtSuHj8YAB8fv'
-    b'EuSFR+MwUgvHJtN5adEATC0wHoXK2uORBC7Q2GllwXP/3F3OAWZUutyQ29EFipqOyo0ezX'
-    b'qJ1p+Z/Q71GiUKntO/Cc998SucGbe0ml2tDBCOXNeKvnWJV2b4fgJmfeuj6x4JR9ctEh9d'
-    b'nzksHF23yK2j61YifXTduo3WPCykD6hbRA6oLywpZ8YnnvYH1K17OaBuY9UH1K2D+L6yTD'
-    b'A5oF4GSCKbW8ztlCAgsxoCkeLVEDjTW2B5IKPBA6ULXcDMPqgXcCkMvadeIWGPFY3+4KsR'
-    b'BfFEnW1O2nerhtD9qgNCx0oguEdU0WWZiCq6LFPTUWWmxwOGr/UzzcRVD8prWP0NDTlJ34'
-    b'+wlIdB7aiWydUDg21rwaftBUKK02au0NEZ/ZVh3TqGUt2ZsyRkX/MMfGsZdpkF1tUMpDG8'
-    b'8XSmduiNwIrAugqsNbzrRxahmGDU57MA6/5ApWbCRJzVlWwzRfPVJY/4dUAWw1mpSCtFHw'
-    b'ZZL8TkIcL90VcTWL8xj/nZAJknZ69itZ7QQZkoeX3wbtcZU7DSAEdeO2kujK2Ni9Pl3t6p'
-    b'Vk8tidERKiSB1AJs1NYF8+5VT6kQpOiXkFEpOfCrGzvS619vXYF1ofKHTI2uD0WeRteHaj'
-    b'qq6RUZZ72DtLCIX8J0pF7zFChsHxHa37PHejKHE3JFR4cRNEMeIlkl9mIPax3lFFrMMRVq'
-    b'3k0UVmFZAxf8kG/mDh5otPiQee1UkcHsxIDhch2QSh1EqEr5Q2t403pGS9rrGYbQeoYDgp'
-    b'7RJgN1x1Uy+BMU6DSHsOucLZPhfn082jlT4Qlt7jjz4C3j2QbMIByC1iZcZLrjF1NIEF3D'
-    b'mqYe0PILeGUFOrviaFNQw3WHOzJ8ix7ZWkIOd6ymGvALlMtUo0qBXM40w9+JuMw1qk1s0R'
-    b'cN1/emYr6iTSFzCMXr4p3KXqSGlAMmKBGfR4hHGTWvykDqMkDo2oAZ/k2w8Kyun5wn3vqS'
-    b'B/ftt5uc18ng7YtXyDxdHggjMmlB8vQOMgKNDIxXpI8shXlqPyWHG0srQdvcQpKrS0tH+e'
-    b'lC9DnZMtjoqJLJPl7EjFF4uLI+hne9wz1Pbm/XI1khp5CdegkQgos9MNTGIb4wk7kcX5hJ'
-    b'efbeomWCb8zsaNY6s58pH+Yt7bfet08tZOxb5SrIqrLocUAfoq0vG4ufoebqmlUtHe7MYq'
-    b'FaDHtVnkvK09vEcJbpCHG+AKKVIriwSnKaRO+IG1KpyBXpoCFPAnnrbqc52V4/Nl5RKzpo'
-    b'bOgbzIMqU2L2Ni9e5tWQfOx5YzbvW1+Q1Ap1ZYGgTxsgVqdTC+14UR+GqSFWrQ33lmZtUq'
-    b'IVa+My0qsNcutGKJMKrW8bl6JuG3a4Dqp2pFe2jWN36pEym1SL7m3kCjadk2ZGwKvPqSX6'
-    b'Iy+jZA0Vw2v215aQOt0uCakhg+6vTPvpz91tCsFFQ0BRAhWrcGiWNO2iAXmeoVEdN49GXz'
-    b'OViI6Pm/369HDZWaQhct5SIKPgpKhv+n7PNHP01WgAj/5h81XtvuUCKoYyNveeOUz3BmMs'
-    b'WsRFgq0xRRRsWFBboQj0mQboQ4PoQ4X79r0E+w0DqIPybFyRWTdKzT3mwXXPVqh4t3KexE'
-    b'9+TAoBwn7lLGD3u9f11zeCCwE90hjk9DAcO7v3N9w6lNEo2Oe/xvQ43CQvfLZskrys1/uX'
-    b'oDzWBuFZrmATlcGxnmPNQfpetcC3nz4Rf+rMzZ9ZigGBlLnyAoP7SzQPMy7VNIy0XsxOQf'
-    b'dva0wH/CZUxuD0+jaduLPAxkh/9DTNlOzhYRvZQS+YuNFCPMNFxOxOWNHLRKvtTN2xO7gL'
-    b'ajD+Chkf3V/mbWCZ94XRWAWwbxgvAqD7KeUuUnxVXKL3zhSmFHwVhH0BuQmAvnjZpcbfrZ'
-    b'PNFD1Oz0rx7IPJtULsWZVKITpJrcKjNOkIJVFzDapU6VDse8ulQnS6DM6Z5qZ/NPO/DMCp'
-    b'Cyf2Tbmfolt1KUpYkCfl7l+p7GeaamKjiGytiLBF6YDxqXgHX52Kd3h8Kp7gN+UKutmLXp'
-    b'9FQoPCjBLSC6rQhuzNoaj50Qk4uAuXcUynQoVJDrHuW9ilyVF/rN3b2GUORjAzZhHFhxzm'
-    b'ib6wlOGOzlUYKceLE01RGzS0fxPO6FJB1v7ozgs6unnB25yRxMcHKOnRPVDMVm2JoHXMPR'
-    b'TVV3EoRkTGHRUBBNO6b612zxxmhwKqhtxZtFg0aqUO1KfxvcNIBh+LtJfMA2rPqDbYCTUF'
-    b'kphZrzNINY4x8G/6B75NisYxN4milcDJ2O9gYAJw4r3XGe/OflFL50ht9EZQQ9r39obQnb'
-    b'oDQq9OwLw5XPLD6NNF4s5FXO2zzoUz2mkVxnjte5GMz1hg9HbQaEXbOPUn0qqa1OEsdhe5'
-    b'iSI+4mEktTbgc/P5El4qxlzdABeZnKeMYDiteX++N8eASvpiUs9fyHSV4tzho/Q6OF7/r0'
-    b'qPxnlQWHhkwV1lSbyFPHXAKFucbzMgjkKYKpaEosDRPkDlgjoz+8+hRDAvsvjIOROpGzxD'
-    b'1m2b9KhAmAOvR93YEAj3odEUG/OljQ9XBgnb2IWh7c73hCc6DGk3tUtHqFZnA5Rmn1lSjU'
-    b'6oMtoD5o8vymYONSy6ngX1cuAhzcNTD83sT6pI/rIkSqp5HLSFt4h5ZuQTZhszLy/CYXQ6'
-    b'N0m/iAFfisTpJ6ehvAf60R6OZ+WVuQPch5VLphyasbnkz8wfUgqiHrKbWSpY/vFS6ZfjsL'
-    b'k8mOXaFYnfeXz1q7lFxTC5+N9t/G7BgtBLtzOWgjQkNeQxLJdmgoQF0txgmIPYY7F5pWg7'
-    b'aUE2nEyLrPmhpwQpgV3/nWcOUT/U6ipyJrrNBfFEd7eAVmuEqMhqjXCe/EGtO03+kKM0Nb'
-    b'/3ygCGgDp9l5EcGVmXxK4MjSui46N0DM1f1ea/00lErSPqQVNZFVEzTeW5pjidClRQaTwy'
-    b'1os8/gfPlX0H/l/9XGlUETfWq4T1PT/Xzo+Hjtc6KI1xlfyhl0xRhqKLtZPkD2eCNMdn1D'
-    b'HA3cBTlRjd8REUMUUGNcWA0X2AbWVfe43woGKNuP5+O4unMT7yZbkBM6S7Gsu6mAo08moZ'
-    b'7rCBhWYCjdwaRpyaSqCRW8OQ+mqxOmAj15bj33y1WBOwkWvDifOnFGjk1jLc9f8Wmgg0cm'
-    b'sY/p1XCxUCjdyCIZ3qInG10Ru5IKN8Wiis+U5rTWWFpvJUU6H2emTcejx+1Qg8I24ERHmR'
-    b'j7E2xiTCU9IzpRoL74G0gronQJpVhPjnPRQs2zTBb7RwF1x6z0YeZwuE4T8T6n59Mq+wto'
-    b'K4W2PThSDRQB+8mlGLw2EbQzKQ5XxJ3bP8zbMe8tHUgVQjYNpY+BbkA5op+mBNdQxgLrr1'
-    b'6ZorjEtBWaWBKGVVwvVGqILH6Nz/ArTavZuA9NsbRSKbPjnxjdvwRKyOsCsZxt3IDK4dYc'
-    b'oQbkVWIJcJp2asYqtETdIcrfcNJ0l8NwdpbaI2A61N1DQdWRkgK9ZmQxBjo1nCVIu/KXjO'
-    b'SvSayRj3J7tTQuNOcx8ElYsy0W8spSD9rhamqcdgK4X5bnhLoUVcsVUU2WpHCYPKMZrTzw'
-    b'zt92GKJpByJqdAfnaYQ/L5J6PQQd9qCKGwgsJUChIUJsTdPfGBHTtPZRE6mpsALOg6IGZL'
-    b'YFVi0n1UKwB5asmgk08IjA4eM2BdbgvSb52x49UH5fL0btWucvxTt3fm3NwxMlVeKDoqXw'
-    b'plTrcZiU/b8bBq0Xhcre3IGTNCfz1my8hR27EzZoz8OXYALe0H19qOoYKNfDuOH15rO4oK'
-    b'NnJtOXGyqoCNXFtOGGJrO5AGcOTesWSQre1QGsCRe8uKM6sM2Mi14/iBtrbjqWAj15YjQ2'
-    b'1tR1TBRq7JsZ2tXezPeIsdoF6pdJUFaBS7VuVlcXWoyRxeOvIFHW9o3gZSXUNfoQfTCyaY'
-    b'eB3DoXkSA6cfKT9sOEv7GYyhGw3ou0AKMkbXUJiAzv0Dfbi5LATDfHt3tdiQOny02ODg8b'
-    b'JCbuHRTawTi46Pi881HBsNzhxL3DogNpJnf0X0yjxx4fFo1cIJN178gU5g8WjlI18oNA7d'
-    b'xRofZ19acLyOkbt8HZs/urQj5cd+ZIVZMiiurJuh2uyZ2bXs0THJmYOPvXfJgVCvjtSMRX'
-    b'eEmo46QjTXnlZ0PEvJL23ZXxjE7UVZNv06y1UTZ0C0RjeLOFr0RcQJa57ZMheO223ImjaG'
-    b'9Lm1WczSAWVkxbYCKQM/RydfMMs6aqPBAqlx5wzYqBZChYaGHIjmaYgoOj+A0ovOC2g6yn'
-    b'NUI4giJwQgnOj48KOVreWCtNewUhL6Cg1y9bVEqaFH9xIxyOsTopOA+u16BekteAXf2kKc'
-    b'3mD7rcRbPL2lCL7edoX4Z3/KdoZoQ9bPPKH7N/iOzh8gW6PzB5qO8h+hIRij+yjNLbNonL'
-    b'xVTrTnq90l+2Y53InIrw93NskoTycB0TfuBfRWjubJdzP0BkvnZ55wqbLCj1bY6+QkCnvj'
-    b'vrXOWBYAN0GnMqSrcvS7iZWzZk5svJbUMOTNaC2pWQDU+nlt6KCfk9Z3dDBqfQmHpiOrHs'
-    b'YGfRn/b4cLYnzbdq9rA+3DyX4Kuu+ejZaTuu+wnBIjQfXzeNAOiGBK5Btsnlna22RMHb/f'
-    b'8/+dXCmC6h/wS3hmLbfw3gfnaE9ODCmBW7Lv9enM0mHeS2Fp7cRB3oUVRc592hRcuk57qT'
-    b'3oPVUO0I485t1YUWRfxIUh9Cw56VkPSD/rKVP3HVVFBK+mQitQ29c1LVNm9lNf3OmgG2Zz'
-    b'y8ay/PO6qAhhSpVZQu6Yg5Z1iuZYGcWMpEoN7YcK6DpCRs7grUP13u30SIUm0D0Mdt8sd9'
-    b'+jx9nmib+bccL9tFPXqaetckOPmmBmwKs2aN2OGyHK3j9iUdrPNNfEoyKyB0WEebYDxgtE'
-    b'Dr5aH3K43j3PkhuPVtBdtBu8JKD6A5RjdK2WpqP+oAVj3z8MO7v41AQyrD4pMFosUrhsmU'
-    b'4N9nXoURs5TjgBZosbeDS2oMp2+m7NLEtGpjEspK/mgnU2MH6GTWUHqHF6aZFggFdq4NYZ'
-    b'lYl14Ed1F4B6QLO1iB7jlx4KhnYOik3tKg8G+zoH3bKwc6JqQw/nOsp/h2lzOgeJQd3c0W'
-    b'JS1wrgjeqcFzGjc5HrHTjnJD7EMgmgnGKZKkyOsdQOdIZ4COzxLHflQ3E7baNVs4qAGoVL'
-    b'0vrCtpoAbwSSa/NSh+jnkVaLMoLDnXqrBUvScPSzSPAw0bC+hK9wTyJZtr60D74yDUfRrB'
-    b'K538I64ikMo6TlltzZFUlef2Fo9kCXvXJvlQmTBVodcEDQBwyww1R+px4RMbHoUQRj2/Yh'
-    b'zkx0vduo25xaYNRvlha96jgri497ThaRvtKOgvDYoD0yaL+dmB4x6xLNxH5CVE1pIss00S'
-    b'kidI8OGPe6Dr7qdR0ed7EEo6xiH7rlzceSKlbd3pxvmJmvoCJpOihIGjVfwxlwtriGxU/M'
-    b'FC/LKzT4cLwh1INFaqCgl1lBlAhzDYSgHCzOGkUHV0StvlCj1vZP5jFRqtT8pCnKwsGmTi'
-    b'l6dzmsz91ooYU8PZKhhukJeaPpaCRDTvW7i3o7ZmmB6MCzAfe9tc+hijHKKcY+nK6WdKYW'
-    b'Hq3oWHRkPdI6MF7lKZNblh/zJDb6KAwdHyilxt6zz48WZmx4o/tLl8ktcxEmkqc82Ef0f4'
-    b'YhyZBqwDTuwnBZBPKWvfqKbD9UGq96WHRAGBQNEA+JpYXCgGiAW8OhEUUPhsZlNBQaRA+E'
-    b'BpBhcGYoGQSXjvRDoHEsA6CJTg9/hh0/MbwS6HLkfsDbBuPwHvU7NnefeWcyQuaCyPhYGc'
-    b'iNjojL2XBnK/sZ7TQRs4c3K/epFekZ6oq+bhz1K1p4QeTcDT6pVrIwWDwec0d19O4eyi+6'
-    b'E5KudKvUdNQqIeWw6zcXI6uxtV6/OQW/9ixjzh7zkCdcdBKTZGQk2l+4GIt+T35WNmlIhX'
-    b'UhJNudC80m9lPXPAduzE6w+4yeWVOYPLM2TU6y1IQWbnRSPVlpHPbwwAswpp7a89zs0lF+'
-    b'08vcyw394mHL1w4x2M9nzkV4HslzfEjPTzQSXHnKhNsK9bB+6eGJUXtwd6BxVOqpgf6XmS'
-    b'P3JjTvFDWGzMKTJvCFp5zs3E70oYXzCddJKZ2bcIHRYLYDzWqjd1RpR3ZJ1rqiB++odo68'
-    b'+bHHvZymbF5RQ8zcw5Ueb7Q4HYN1GMolWtKpSHu1yhBarTIAn6TQPTqHbaLxkjPXCYjGj1'
-    b'XUE4uO1+0zC8c9e+mCGNkP5haNR4bSgqO+nU1IrwMiGnsqgs+RMyccFd1BhlI0ZziuG2Tp'
-    b'ODfaI0RVFmH2Wx38recOCwdz2UmHQ7YcxS4PW6rVNEwjpbsTZHH0pqymo+5kmcSvhxYUht'
-    b'q9tURLkbgLLyPh0B4ZrHlKC90IqsRGHQg2ZUsE8zZcXtfRvU6LhLbNUAr04dw5yYdneyQj'
-    b'c5Q1VeB7UHJqNyNH2/JaOpjyklbbvhXJ0fvcGbGr17nz5BytCa5IjzTzBUPvmaYoRcvkHC'
-    b'0frhQdnUmegHF+7bqdvuf8vOZBZxP0V6qXc34Y5ZRab6C2IzJoxgYM+ilIe1kn5s1nbZUP'
-    b'hiyDFfjG6Mu3DdBXnMPqV4mMeNDPW6IqGiBe30eVNOjYQp7F+3D1OGTDPLLw1Wl7eDEXjy'
-    b'bnsFiWWyK+q6VKgUZWCZRVnX+CLnCOVsYaQ8sCGmTQBw6mqAjdrccG5nSoLimfkxw941AS'
-    b'u3Hp6zzzjPHFAZMFOVcPP1QGDQfcTcC3bjjAAOI5V0E3ZO35cO9ZvSs8U+hI/KlhxbV7Vl'
-    b'vwRtRT4VxF3ZJ1fRtChaKJ7sUpFR01CjrcdS9bngvNeGZNSK9TmDh2PSft3WbQd7BNPOOP'
-    b'jksHgcGkK4XTkLeUY8MQRXdpKFEtKUpY2aFTqpZ8KO1sXx1lhp3DhXOKDBfOGTBcOGfIk6'
-    b'6GDZpi97UPM+pZY4Fo6kUwOuJQkPa9oiF0t+iA0C8aIPQ7+cTQI/uXBUEuNT1jpBndwViP'
-    b'eNFFjJVm+tX+KLSrKxlRH3QvkzWGHlXTuQGv2ox1O66+jA99Qfdnfzqb+zdyCzzyMGLGd+'
-    b'VA2ieCavtpTnqk9ntkxE/U7KxfzWZnwhlNaIUxnr42yXiX3uSNgUYzU+P0GM+WFoLJPGgS'
-    b'IKmtTB60SqOvhLs2UybEHQ9Z8vPFnCYRdkaMVmOTVZtYb+r8SOUgASYWGMKBktoi6ogJS9'
-    b'Ye2tF302eCnsx7cpzrhens4gY3TDENGyXDeXhuP4NXB6i5+MwiIQczDdyaj7vw/YzcBaAW'
-    b'r50DPUufeSjM0x0Uz9RzD4a5uoNudUhOVD1fd66jGbvDbh0SLy1LT+eda+nnnJMwpZ8L4C'
-    b'f1zotb7TNHUdoY4t2aJ7NB7RjSU7o06MPkLjg/Tyeprr9E1Y3u5kKdje7m0nQ0dhgGmtFV'
-    b'I514xqiNenzcRLNkPDmoHDJqoHQoz7yFR7Wcoj+xkLNdyR01RORmuNzvnJPSeeARERajXV'
-    b'azUDSDmFrQz+Yciozv9506PEShedIxDBulQ+LBxKAv0YtmlERd/eBOlFDm6FrxCsqtNmAp'
-    b'QUerJJBUvwfNNhFdVYX+IrqqStNR2TIgxIPs//NMc9qnrbUca4uIIXdGs0FaXLktPRac1R'
-    b'7a9xsHVQZ67M29Ms3SUGbZjxNVEnw8GB2o8WrutbDShd01hkAzRn+/8ATZwmlgj45m22GC'
-    b'fUSf0Jkb5GiePf0uV7YCl991ok8Uz266sqZMOR+I/i5bImq/70bHhC4CqrWMGwjZHWv3o0'
-    b'uTnGWRB6mn/ZA1803ZqXnSW+zOFeRNdhGC3Efo18SR5cd+/bRBsHziwRC7R16aPrXEkTtA'
-    b'zdwSPMRPa1jagPLZWr4013NO5D7DRCoCwlTKwWEyRSCaNBjAGHZSceNnmmlCc7J7RYRVdA'
-    b'eMN1gcfLXB4vB4g4XgNrrIDrmnVzPQcvUEe7Yi7W/BMIS+lccB4coOAvoE9czQ8RyQ88vr'
-    b'KU3DJn41u2jYEcQa7MQAXoW1lNZhPRKUWCLeOKtG5NHNYKgP0c1gmo46FlSPy/g2D47Sl/'
-    b'F1HosrMDoZjSx67XZflZ7ROEQGWu8kaGm5Q2SwNH4O57ewNZw7RDSGIp9OHSYaYOUBCZkB'
-    b'8WauPONH0D8MqbSjmnSQOQ3kLc3IhOr1IuN1dLNO4bDvIboPmZCjdajaAkGDMkCsP2UWCt'
-    b'qTAW7pTiYpWnMyLiO9ySC3tCYjtNaZjEspSMMO+tLMkV5bMo6lSI0c8m5OY7JQK0PGtVeF'
-    b'HNEfN0bRnCa8RhnxXeR2tXlyMes5GaK9KLM/UuqylxqkuxqtXCYXubwMIYaFFUeEy8saDc'
-    b'hKS5VEz4HmyWWzDt1HkYIOt41VlpSzIZDd2yFCRH3b2CKQ3jMmxIJJ9HnAJBlzhQXRVmmA'
-    b'nQDpUkUjdxItS4DqpjAIKTeUQUptJmnI8C4xSH3tD8LR14lBd7i4C8qaif30V860M0uraC'
-    b'muvqCsbSwdhbi0mFxQtgIdX1DGHNeQzhDk3ZUdMmTUtxSVye3lYXjVt1Ogz7+EO8yQqZKZ'
-    b'6Ogu148YrzyoluQq43J08xOkj1RGlAVX4PytQcVK0eYS7QlTIJD2m2u3uqvJFe4vJ6Jb9x'
-    b'TxnJ/s7cyy9QQlJxdaMRt8u2eRvsgLPCTQiqMtbzQonsg2158tCk/ox4ebMeh1SBO44fgL'
-    b'HzAPc4jcn4bK8DI2xPeYO0kBEaL8ZQKsdT0v37+Mn8qGwnc1/E2L5Gr0m4+xaPBD3UAPtz'
-    b'ZW8GrldBXgq1czG5S7f5KY/qP7rCoPSCeA6HVvh6yRboXfusVaOjRZ0le1LgN4y+45wr3F'
-    b'cwRqW2cwbgWSJtdhaEwHkSZf2cWXyVfZSyvwrbfSLB0MlEjrW4or0NwsWJIRtgdyRZbFCA'
-    b'hLkgYMS5KWNKe4oAE3QgWt2GDaz2pC5G0IL7uhZ/sahhkEqXo9qEHRS88YW78q3XI+JTlS'
-    b'LRtiV5rlguhYsVwC1JkzA23ejeDuiu8TzAg6qRYCcBKrngabLCOOPo8yizjhjaI4LAfWAK'
-    b'Pbb9vkq5/LIE16WWMFt2iC+uEkNHcL+TrkaV1/iJ3WR31XPObpDvNNRADdTgBGHS+qoJ6r'
-    b'VxDImJjefGe8HTN1UjxTG602yf9isEoPOoB58lU6XVQlP/hVSGxQ+ZHjeiyeoeLogW01TV'
-    b'5ZyFXy6rsVJPl1re4snYHUhzdWoPXhDU1H8i7IkGBqUOM+tG49qAMkeFZ2uAWF+2ou1uME'
-    b'ncF+fbs9hCE169ewU8g4R89ImtBfw0uUYTV9GjNib3WZvKpnhpbJa2i5pSXETB3d8Ksaz2'
-    b'uSaosN85BX1dKhO73q3axZChq+OSbwFuo0RSqixkoHIV+Rnk7dmwrJvKZUwyFNFvTFkAaQ'
-    b'Rwox0CrAzWWAL2cOh07VHeOFmEn7HZ4qB2i/1278Cstk9T2mDmFqHaHb2huT/GJRRYi7NJ'
-    b'zn4LjlZSqRclw7x8PrwV+kY5yEk3g8kn7lRrOXls2kfS+IRX7tRrNTz+b94ryja7SmVX6H'
-    b'L4tRLs2G/m46Zjccab4LxPjzb+PxRl2H9jTYCAZcFhVnLgmnMw0Yy4mTWG0/lr48/7fFu/'
-    b'r7TiStLhnQF7+X0GLsQjNRFHpBfDYBrVuNoaWZQOaoW0ce6SXXWQZa+9Z0pNQhQwbzMMmM'
-    b'H5HdC1noSf1GUIY4pL9GeEbfTLmF/KrPysFV6L1RB98OZqK0Sjj3xHDzpxqB82Xypza3zp'
-    b'JgT4lZ1p+6F4LTqBdqkj+jEx3QCf7kBUpNm0SWjui4xawRmfynkrXNEz4EBD30bb3ehA57'
-    b'2ib6tnRouG8yM18mcnF6Rlz1ZFkSXaNuvOmlLNJ68JiC1uOGpqOByDAkmhTUfs3h1e+6Ut'
-    b'yroSn3oI7iCozqwgJcrdqXcB7Ko7ZEGCaq5E3P9JG8qIAsLdPgInlTCuB0TtLcCB+GsGUW'
-    b'wFg3ZF6Od4pXxvWtkbCMGaORcB5zxzvNqFgRf7TlDIXk7Xp7GlPwt6vdaegmb7eNKzD+vn'
-    b'3HuALV9e2WccXMBGa3LIezXTcJGYc6oSoi029MU5nncZsmokZbQ16dDq8ZwHG9RRN4Q9sM'
-    b'JhbzCI8fxjI8fXHZlBl5vLmCgwYHKDYETAUbH7VnVXasGGcFOPdhijKDDF55YIm4bYpmaj'
-    b'/9agumUm+91oGRC1rwgvxgdIhY+sMb+mmMFWzD8eYYhYi6G6RtMA9mm48wT1NkmJYZMEzL'
-    b'DBlNsTKH6PsyVk0KMaID4ag0QxC5Zji62deKjnqWkgypDSiwqzuvoe29XV163V6BUT+C/s'
-    b'g8VmLPJ6AgBt1PGmFVh2ZieJNttIxJfgtv72KWJkvgLMmX4alDIe9ZAryXaR5D+oJRlCtt'
-    b'4uZIpR+skDN6sIIoftrBShkGLiQhOvGNIC4qg9EJRAfAS0VHGVyQIVVpAup03z/pPrZxWD'
-    b'+c+8c+ejQDQxp4u/4MPUTDVYBv+ZqRPS7GwoNa7CswKkbGrroVdowX3XuwJ9Xj5HJF2i8Y'
-    b'r5JvHFvnyTd9WA36xjdZRCbPO2/wrS8cIK2MOmuSI6NOBnVt1FkZNBh1Gldjo04G16szXJ'
-    b'mhR0e4JgC1jSdD+qN7xIRbHVhFCRs0visQvfW39fEPtSnPGN/M2adlaT9D1xABoXNwcOge'
-    b'AGhtCSn1S+VVi28ZqWeWcCM1an0KwBp+8tO+sV4tzJcYVjraj9ezPPkWLeAgtpuWk2hS37'
-    b'pbJ6NRAaITtgg/OmFL+mh2rybmK2z/WFrtX5UG8FtSltJ7Sh4Jm0oWiXeVbLB6s8gi0W6R'
-    b'hfSukEXUzo8F9HkXi/jtHUuZZvT7wLfOqAusAngYDg7PJpNFwK0MwFD3ndEakhGdR0ShbD'
-    b'vdnOYEzKK/vko+I6oLj+HcLr3KcG4U3zL5Fh0rQwWOjpWRPgzqPnBUQW0lwoYRDYwQNToR'
-    b'A/fRiRjQ0s/D79gsABOib2GDDQmK7OEReGQPP0/+7a59v0z+H+SUGTTsMAEA'
-    )).decode().splitlines()
-
-
-def CheckMarkerArg(quads: typing.Any) -> tuple:
-    if CheckRect(quads):
-        r = Rect(quads)
-        return (r.quad,)
-    if CheckQuad(quads):
-        return (quads,)
-    for q in quads:
-        if not (CheckRect(q) or CheckQuad(q)):
-            raise ValueError("bad quads entry")
-    return quads
-
-
-def CheckMorph(o: typing.Any) -> bool:
-    if not bool(o):
-        return False
-    if not (type(o) in (list, tuple) and len(o) == 2):
-        raise ValueError("morph must be a sequence of length 2")
-    if not (len(o[0]) == 2 and len(o[1]) == 6):
-        raise ValueError("invalid morph parm 0")
-    if not o[1][4] == o[1][5] == 0:
-        raise ValueError("invalid morph parm 1")
-    return True
-
-
-def CheckFont(page: "struct Page *", fontname: str) -> tuple:
-    """Return an entry in the page's font list if reference name matches.
-    """
-    for f in page.get_fonts():
-        if f[4] == fontname:
-            return f
-        if f[3].lower() == fontname.lower():
-            return f
-
-
-def CheckFontInfo(doc: "struct Document *", xref: int) -> list:
-    """Return a font info if present in the document.
-    """
-    for f in doc.FontInfos:
-        if xref == f[0]:
-            return f
-
-
-def DUMMY(*args, **kw):
-    return
+            b'H4sIABmRaF8C/7W9SZfjRpI1useviPP15utzqroJgBjYWhEkKGWVlKnOoapVO0YQEYSCJE'
+            b'IcMhT569+9Ppibg8xevHdeSpmEXfPBfDZ3N3f/t7u//r//k/zb3WJ4eTv2T9vzXTaZZH/N'
+            b'Junsbr4Z7ru7/7s9n1/+6z//8/X19T/WRP7jYdj/57//R/Jv8Pax2/Sn87G/v5z74XC3Pm'
+            b'zuLqfurj/cnYbL8aEzyH1/WB/f7h6H4/70l7vX/ry9G47wzK/hcr7bD5v+sX9YM4i/3K2P'
+            b'3d1Ld9z353O3uXs5Dl/7DT7O2/UZ/3Tw9zjsdsNrf3i6exgOm57eTsbbvjv/1w2xTnfDo5'
+            b'fnYdjA3eV0vjt25zXkRJB36/vhKwN+kEw4DOf+ofsLuP3pboewGISO7bAxPkUU+EaUD7t1'
+            b'v++O/3FTCESmcsILgQRuLhDs/w857lz6NsPDZd8dzmtfSP85HO8GcI53+/W5O/br3QkeJa'
+            b'9NERmPKgE2Ue+73vgj97Ded5TH1pPDEFCT4/35RFFtAMORMezXb3dwiioCsYe77rABjjCO'
+            b'jHs/nLs7mx3wuYFYX+HsEQyTfHg/DY/nVxa0rzmnl+6BVQfeegTyemSlOdjqczqJ0J9/ev'
+            b'fp7tOH1ed/zj+2d/j+9eOHf7xbtsu75jcw27vFh19/+/jux58+3/304edl+/HT3fz9kq3i'
+            b'w/vPH981Xz5/APR/5p/g9/+Qhb+/3bX/8+vH9tOnuw8f79798uvP7xAcwv84f//5XfvpL/'
+            b'D97v3i5y/Ld+9//Msdgrh7/+Hz3c/vfnn3GQ4/f/iLifja492HFbz+0n5c/ARg3rz7+d3n'
+            b'30ycq3ef3zO+FSKc3/06//j53eLLz/OPd79++fjrh0/tHRIHr8t3nxY/z9/90i7/AxIg1r'
+            b'v2H+37z3effpr//PPN1CIF47Q2LUSdNz+3NjakdvnuY7v4/BcEGb4WyEPI+DMT++nXdvEO'
+            b'n8iWFomaf/ztL8wZhPqp/e8vcAbm3XL+y/xHpPH/xlnDejXKHJTQ4svH9hdK/mF19+lL8+'
+            b'nzu89fPrd3P374sDSZ/qn9+I93i/bTD/D+8wcWxOruy6f2L4jl89xEjkCQaZ9+4Hfz5dM7'
+            b'k33v3n9uP3788uvndx/e/zu8/vThn8ggSDqH56XJ6Q/vTZKRVx8+/sZgmRemIP5y98+fWu'
+            b'Ao8vc+z+bMjE/Iu8Vn7RBxIis/q7TevW9//Pndj+37RWuz/AND+ue7T+2/o+zefaKTdzbq'
+            b'f84R7xeTdJYYJLOf7z4xq11N/osp2bt3q7v58h/vKLxzjtrw6Z2rOSbzFj+5rEd7+P84UL'
+            b'xH8/6vO/lj2/6Pu7eX7d3P6C3Y2tb3u+7ua3dkA/yvu+w/JqyV6GeUt0/dy7nb36MjySZ/'
+            b'MUMO3Hz5+LNycsdx54SB5wmN/XJvRh0z/vz1/PaCf4Zhd/rP9dPur/j7eDDtfIV+dX3+r7'
+            b'vz63B36vb9w7AbDn/ddLseown7kr7bbU4YIhD6/03//e7JiM0O669/vbyg1/hPdKLd8WGN'
+            b'PmnXoSs52h5200OGk/WW/fvdl0NvhpHTw3q3Pt59Xe8uCOARA8ydCcX433Z/rjfonfbrnf'
+            b'hP5j9MJtM0mbf4XZT4XT9czt0Pk3S1ALFfPxyHA6g2A3WCz90Pq6qFO+dsskjdtzAB3B+7'
+            b'rwwDeWi/reu0nbcOeMBostv1Dz9MpsuJwzbD+b5DcuGuKR32dFx/pcfGO9oOw7MZlAj64M'
+            b'/9bmOAaTJ/WFuJF0t898eHXfdDNmV4JC77x133J8XONCDiTTWq5JkvNMMLNY9C1ZLNa82R'
+            b'rIki9ULP50AZ/6pczOyn92DSE3IqRSZs7nc2+gmqKMi+O3an/sQkTQOpszcLsBTnsg2gSE'
+            b'f/KskTQ4YaANrFPFn4b/ELIEo/Iu2jQkbg/QEtEJXe1Y6MtWP3sl3/MMlnqf08D4cBaclr'
+            b'5KzEzHTuyXhZPyCXVhkcD0/DoXsmEwEfoWVQqsJ+Sg2eW9qniOGQFqHh3n+XCNMWCMLJ3b'
+            b'c4BPB2vz5CYenXkKjI06Rhu8mSJlSxKmmQX+uHB6g1jC0ztEQ+TRqdISmC6A46TLiH/sfM'
+            b'wBczE0mo4WrXHzoJpUyaKCvglLnpJC1XiEWSBN55eIHcDChLFpQ4TxZrHWkL2mUXwl6Yto'
+            b'N6OLefEmyRLHy7mizwDT1yt1szryqhfCOa1AJJBtKVZFRtCd8WU3pATvFrbr5cHlo6Dome'
+            b'tzoF0xmAbn3/vF2fgKgcbhbkKCCrCKBYETp0uZt+2siJ5pSGc92+kOVgbLVIOREE/rw+jc'
+            b'JfNGSxGWBysYMmOzxrCU3qelSBOUV1VQCf456kXEGaqB4gykGJUKTJQupBnixZ9NNk+S+2'
+            b'ihS/0kkCjOoD6ccjhCO3niVLKfYW367Y0xY90TIU6MwSVkRfVdMM6HFYsxzpPGobc0NLrV'
+            b'4ky6htQIoOA9rLmWTeIupuh6aRZaij5vPp2LH15zO49PmEMH1niBrcCCWd60KgH00/Bmgp'
+            b'kM8t9NzL/mm930scS/j7XYuHlr2MGiXkiwoDQvnESoFVyfKEarx1uSGFA7ehkULobywiRP'
+            b'BNiqgAcbOCo9MFRwtGp1GVn6wSDuzTImllwJ65b2mcAPyAjZxvfcTpHN+2xC0bZboApKt6'
+            b'joBDPZhbIgyyEeD7B7Sx9kZ1qTWqKgeUkvZ66MUI1N4eejGytzeG3kgUP/QumFyVWyD1+E'
+            b'pSja9NICVYYqbrSkvzJV2Xo0WhQfIedV+EsGU0rd23hAogyuUKtNZ7kBjOxTEPBT9LS/Cv'
+            b'BlfE32OqDgVzo+JFfWt3uqkhATv4OEhYCFtGXrRhR/jCY7Is4kuCVWavQ0QdiVoDqoiute'
+            b'kS9K0eFjpDy3E8nc75EdVjKGbtgVmg+1KkWtQAVp/hpaPQM1SNl1O/YwryWeEJUS3gUkeb'
+            b'wTnzDLP+DdtgG0jtClLrXh86SHu6mQoIb1r5HM1KWjmksEN7xQ9VsjVpEQ1ezvA7gUqMD+'
+            b'97RcpruAv3Le0G8V2Oww/ZBDpq+40xQxPBh2/G6D1BqRSiKq7YJ5TJKjTdJlnpDjptk1U0'
+            b'phVwrbvkabJy/S5Ut1UPnyELqgwIovM1Cm6jCoGgMDERdp6sJJ/K5EeKViU/Nqc/Lutj90'
+            b'OeYwD8UVS6Kb7RNzMrc/sZhqsZmYenfh3EnCc/StfWJj9KniAe0WFSKFE/hpxYWEK0k5TA'
+            b'wIh806Z72+hRd37UjZ50NJBBxu16o3UD+N1iHrjZ7LpRfab42+5KJ5gZH5eX8+WomxFq+Y'
+            b'++BBALJnWqVgGIRywArlFjJgefUXkgf/142NpPKQ84le/KfdtYs1kD2gjLDJ0mP7Hg6uSn'
+            b'tEb8P2TFYmW+p/xGo+B3kfK7SX7CQF4ZPE1++lUKGh3sT+tbAx3G5J/WN5WyDIzj5tQ/ae'
+            b'cZYrMDKqraT6b8fWshK2gxGcINBb+0hBQ8uuifpPuHY4SlmwhqwU+qg6frKFcRttbIphPQ'
+            b'R9WCwJesxfcF85bjZb9bX84siFWEiBYBh98kv1AF3jHTZ8k7PUvMVsm7v0F+TCjefdF4m7'
+            b'wTJWDpvmXIAeBbSrZI3on2gcBCFrWWCAN8BEhYRFXlK5N3elStQapRdRVIP8hQ0huaNirZ'
+            b'u6sBmN5NW8wn5kvaoqNFjZgn77qrpQeIFrXXInn3eFw/o62hZ8IU7Z2M0Qv3LREDiNQOJK'
+            b'vXQZEej8mQoT9th+NZO0TxyYCL+ukInW4UZFS14AO1SrX3Jnk36ByH4DIyMjMHO/jMzJfq'
+            b'MEsDhNLI0VCJyIAEUiopfEt7xzj2zk2XU9T0d9GQxPrzbdufT9GgMPWgrwuaWSZ/Y02eJ3'
+            b'+L5nZp8rdQ+VaWkPaJucrfok6uTv42mog1yd+ijEP4kpx58ndG2SR/V0NNkfz976E/WiZ/'
+            b'X99DZ3/uoxF+AtjV1Nx8q8JEqDd7qhkZYwUmB/byYoqG7OuuvwX63cnibJH8XQa0Gt8yoO'
+            b'UlKJ9v0JT/Ho9fZKuWgX7i7/FYPwUQLU2skr9vdTKh0/19q9UBhOgHI0gSjz0QU8+WUGx/'
+            b'jwoFJTAgF5SXemIhmYEhH066cZUEfEE2yc8syEXyM3s9aIU//4yuEtXlZ6815DN87+83Jq'
+            b'fh3OdavsR3yDVyJNdSS8STlByRjPISnlz/szJfgWNp8VoGUoZiqH8/969RViOG35kMcOJs'
+            b'RBqibJwnP0fZCI9+gol2Y79l3IBnya9F8gvza5n8oip+mfxihVqVUD7tt0yJVwRchW+TX0'
+            b'ImZckvekjEGPeLSjJ0nV+iejSdJr9EMkMGEQvfVHGMioqq/cuFhbVI3lPWNnlvynaevPdl'
+            b'Os2T974coS++D+WIye77IGJuibgc0dG8j8uRnqKkTA0tHsrkPSv4rnuk69kyeY+yEBW2Tt'
+            b'6bQmvwGxUa4tGFBv3ofZQBSNjwqnMI8UiOgOmXJJep+5Y5AQCTQ8vkA3NolXzARD8tMvxK'
+            b'qc+TD37AX+buWwIAACXpGM1y0I048Nbwi+C8ioAS+eBzH7J9YK7Bw8aPCTPIE8pgaglRG5'
+            b'YR4KsW6t2HmysAy1oz/LxzmWlUD8Vx8JLgCPXzKWgAH3T/jXRhfPKVrJgYUlSXBcigutDv'
+            b'rXxSsEROTCkjCMiMz1JUDQCnajBhkaqxAhD1zwXoPeodVNIPkQ7Skj6yUDBImU/J3LmllR'
+            b'BtZiHJ0IWlo6x0IfrsahmsVlVtHvWMEcFdKTzwLroNeugP8WICa2u8mMDA9t3T2iWOn7rb'
+            b'd1w/LmCKbejjcDnoalzNLX7uzzutF1ULh3v1BrV031vx8pkQwqZz3VrhQjV6CCNKFtuGJc'
+            b'J+CXy7FQn0rh9c3zxhZTbfMqVtHSDFTRe+D0CUduDXzrX6WJH2vUThvn0GM8sNoOYxU+9B'
+            b'4iuSX+EZWf+rFMw0+TU0X/B111iUya+R0rwCHaldcwA3p7hzeLXr2/ywCsMccRkI8fevR1'
+            b'3P8+RXnf9Qtn49Gac1P3QmkOOSg+//ZnLS5L9DEsrkv6OQwBT3afKR7rPkY6R7LkD7bmCa'
+            b'fPS9XVHjW8Ya5MXHEEsFIhpVyFb9RzoBqXOyNrRvkMU8kKIiFJAj1s4QiJqjgL0dmCdIRt'
+            b'jbKlcLknFrTJFEPRoVbfIxyhXwJVf8tw8E/ut0hJ0uLx2tXMBryuQTczFPPq24YzeZYHqP'
+            b'/hJU5qh0Sir31ITU1FM1qcJRufFXOiozVOV5JpTa+zO8mXdJnoncxM4YUpElI+VdlimozL'
+            b'ssycu8SxQaKC81OltQXuqS6cu81IUJxUtdVKS81MWSlJe6oJyZl7poQOXisiUlLlekxOWc'
+            b'lJe6YPqmIvWMlJe6pNRTL3XJtE+91IWhvNQlZZl6qUtKPfWylCyHqZelNPF5WUrmxFRkYe'
+            b'yFl6Wgv0JykPlZSA4yzwrJQaa9EFmQPmll/ls3EYqw3r/0vsvHAPTJN8XSf0ceSgdKS0BB'
+            b'qAaLzH7YvvITvb/51OsBtYVubaNDutDSa0vIXJTlGzX9jDU6kmtiaN/2WOU8GTmDt7gzhf'
+            b'jR+jzSF2+AVgT05AxBbB9iCIUVzdcQ+zZy0SB5236vlk6Rov7JrLTOUYD9nyIAqkHUa4A7'
+            b'PJ7Ha3DwLn0JXJwZlszn5slndhbT5POaSiyGgM92wQ6p+yzFCzQUHDLsc8j/mSVirR49/+'
+            b'e4/6WnKHfnhpZCWCSfow1iOL+5+Tunw1AEiL07n6KNW8i6dbv3NT7d0LbgJ/WxCRQp8ymD'
+            b'Lmlkh4SJqNWgXJIfzwyh4n/WvTemB5+jcoAIesERk97PUEgee6OwNwtDnXrW1npqiPPrQC'
+            b'Gr5POxg47h1WhiCDtKH5Sxz6d4Z7EB4gsY4b12O7XkD+brIFSafGFxF8kXmY7M3bfkBwA/'
+            b'uUCxfJHJRY5vKfa5JcJEotGA1INSoxID3aoUIWCl6aPufNEj9RSk0vQXgfQ+llXAJOYsYJ'
+            b'KCmcKU2cAkwC7WlMm5NtUpAihpoTxKk4e0MnuYuW9xC0Cr9JiefPGThJX99Gofpn9fRpME'
+            b'iqknCVB0v4wnCegqvkSThBZ0PElg9mpIZwTy7EpTgYxab6wgmGQIGvGX6zXS1oNK1a3oUj'
+            b'cRZKWo7Cwr2SacF55I2T8Jy+QM03p6298PO+nAcnEgi6lN6jG9ntqMwRuBTb2bwIuEkPkI'
+            b'0mhNnVI0/i/jheQJMd8ikR7MG9bcJdb9WBvga+MTlJGfv2MY+hLNJCoPSFWfJv9goy6Tf4'
+            b'T22ST/UHUHU5N/RBOFDHS02gEHrsdpwIuKCuFG2yd18g9JHHi+rmFK90+KUSX/9KLWWfLP'
+            b'INLCEjJSQ+5/qipSk1QjBKZq/1RJqOvkn77q15Pkn5GIiFNEqpL/oRh18j8h6mXyPzqmBU'
+            b'gd0zz5n2ikz+Ges5tZm/xPFA8ClXjq5DfGM0t+k6506b6lwRPQpY6x5bcgVWuJkCFl8luo'
+            b'sSljuOpuVsC06K2hpY+YJr9hHqA714bI5Va3h+B9hqLl/+aLP7efvktZQSi9wzEtQOu6Xo'
+            b'GOhkfonL9FuYYsklzDt68wFOByuu+fdAbNHXbLYGJB3q4/n3e6LkNREfiWrzr5F8tpnvwr'
+            b'Mq8qQfsRZ5aIGVa1dN8y/K8ASJE5whVZ2s4myb/sonPVmC9ReBztS2aWJf+KWmAF+ub2RE'
+            b'3GDa23BW7VGoi+7XRa5gTGO2qLlKiO0vi7Gafl3Ih0kfxLazqzafKvqGgRsxQtv/2uVFMk'
+            b'tEmEvrFe33cYbXZoTzM06bVvLC1Zm+4rnM0mxJ8uv6+P6zPczWtLH/eXZ65RzA1/v0Z3qc'
+            b'C8BXi8yML5JAf9dYD2QwU4RNq0Gncx5hGooqbre2Zlb87D7NfHZ121VxFXBYhhVScUyb8f'
+            b'Xob98Dj8kNN+ay2G2Ln7FkvnlQN0vqcO03ZLlcPEENs7igySfPBipgJRZAsZiZO6vJxYQl'
+            b'Q4TEXWNwyxC41qq+SlZoghdqXRyBB5pjlict0kvkZAczefJoKH/T2qelpZyFKT1FFDRLoS'
+            b'KJx3LtkMXCRBYzUABm0XwJQ+Qi7nyAG9pgzuZrN+VnWsIuTqKPJB6aFQ9G7OTfMAB70Rgu'
+            b'iMSw0ZlidBmxaBWh4WF5G73fNw7FDvcq7srrvgAZE89v2EO/g/QOzCkvVsmtL4aGrIdII+'
+            b'yFqqe7K2xs6enFlFwJHZxFrJeDK11p+ezOyevCdzu7ftyantXjxZ2A7Ok6XdhPdkZbfaPV'
+            b'nbzVpPzqwpnCPzibVj82RqzdY8mdmNAk/mdg3Uk1NrU+bJwhqLebK000xPVnYm4snaWgZ6'
+            b'cma3Wh05ndiJmCdTa9LsycxO/T2Z22m/J6fWLsaThR2kPVnaGbsnK2vw5snaGo94cmZtTB'
+            b'xZTKwxkidTayDrycxaH3kyt1aWnpxao1VPFtZaxJOlHeg9Wdk9fk/WdlPUkzO73ebIcmKn'
+            b'qJ5M7Ua0JzOrLnsyp8WNSFVOSYpUZeEarSMpVS4FWlKqXNJbUqpc0ltSqlxCrihVLiFXlK'
+            b'qQoCpKlUvyK+ZVLsmvmFe5JL8yUknyKyOVJL8yUknyKyOVJL8yUkn51kYqyY2aUuVSvjWl'
+            b'mkrya0o1FZlrSjWV5NeUairJrynVVJJfU6qpJL+mVFNJb02pppLeGaWaSnpnlGoq6Z0ZqS'
+            b'S9MyOVpHdmpJL0zoxUkt6ZkUrSOzNSSXpnlGomCZxRqsInEADJXEhTglMhKVVRCEmpilJI'
+            b'SlVUQlKqohaSUhUzISlVMReSUhWNkEYqn8A0NVL5FKWmdU9WQpZ2DuDJyppoerK2xjmORM'
+            b'ai8ovMJmMLCcpkbCnJNxlbBZIRVT75NbpNBFUJaUL26a2NVEub3gy5nE1cg8y5MDxx4mO4'
+            b'JWHLrqhyVs6ynAsJ4UvXrkGyVpTlRMicZCrklGQmZEEyF7IkORWyIlkIyYjKUsgZycqRU9'
+            b'aKsqyFNELOhKQYbnAhyZDdeEGSQWVeyCmLsswyIRlUlgvJBGZTIRlyVgjJBGalkExgJkKm'
+            b'TGAmQnKYLjMRksN0mc2FNFKJzJmRaiGkkWoppJGqFdJIJQnkMF3mEyEpVS7p5TBd5pJeDt'
+            b'NlLunlMF3mkl4O02Uu6eUwXeaSXg7TZS7p5TBd5pJeDtNlLunNjVSSXo6t5VSE5NhaTkVI'
+            b'jq3lVITk2FpORUiOreVUhGTrK6ciJOt5ORUh2dzKqUjFwbScilSFEUOkKowYUgqFEUNKoT'
+            b'BiSCkURgwphcKIIaXAwbQsJIEcTMtCEsjBtCwkgZURw+dkwZ6qnE+FZFBVKySDqkshGdSs'
+            b'FpIJnHsxClOfq5mQTFEtjk19nqVCMkXNXEgGtfRCFqYElz6fUQ+ohXrHJUuhaLyQJRNYLH'
+            b'yRoZ2DXE6EpONlKmRJMhOyIhn8MqjlVMgZSRGDWVcsSyFTkpWQGclayJzkTEgjlSShMlI1'
+            b'QhqpFkIaqZZCGqkkvZWRymd7ySG+aCW97EWLVtLLIb5oJb0c4otW0sshvmglvRzii1bSyy'
+            b'G+aCW9HOKLVtLL/rloJb0c4otW0jszUkl60T+vmiyQBUmf/Ap97KqZBpJc6UUrdm7FaiIk'
+            b'xVilQlKMlU9ghQ5q1Ug3UnGYKJqpkExvE7imIpVCMqJGxOAwUTS1kIyoqYRkehsvVc1hom'
+            b'gyIVkKTSokS6HJhaRUi+CYUi2CYyPGTEgjhq8bdW7i9XWjnpqIVkIyooWXasZONXN+yzRD'
+            b'B5WlTicHiSLLUjdBK9McXVCWujlXmRY04p9kCyGnJJdCFiRbR7LRYSh3jvO0NCOsczydcS'
+            b'qUUWa/kcHqqldniiRanAG57Y/rp/Vh/UPOk7jraNoPifuwMsL5Sa+XRiBU76bYnKrGR5UR'
+            b'dK9iNp5V1MbDeF2IXTpvUlnfMwwz0PSHRyA7h61ogQ4M/517jTZE990mAhcER7ZUTNKNlS'
+            b'aqVP14pWkagSoxdP28PuOvybd5Fsjtevf42m/O2x9WKy5ByDoAR5Fd9+i6THxJMqldgN6s'
+            b'n7rT1iwGvrJpWVdx6uvWgNv1/tvalFIIJB9xRh6ngW0WM4LHYsQZeawt24olwu/WyGyR1a'
+            b'VtzzWYkVjZiDMK3bOfT5fjWnxxLA9w7GU10bxxRVjlmjuqECubCS8oqpDPmc3SP7hIeQqo'
+            b'SdHLFg2Vfdxu1/1xWe9+yDJqDu64PXsdfdx+DlY4bg+mXm6lHrR/6Y6n9WHzAxdWAqmdTR'
+            b'TuV2eN22BPjyw7qFbIHD48aWBK4Hm7PjxvL+ftGhWWRlHAuHaYcVWFn/fH9cNzdza2uJgt'
+            b'1FeoN5lHxnEiq7jmCiN6ml3DytfUxWSiyPLMuba+QRuZuOxsrDDRgg/DGY575m2NNnG4bN'
+            b'bns1/Eo2J1uJy+sjTDYm0A/VpfQHS/BzRcdoACfVmj2ML684TIsTv8kPFAwPploFgv0Uo9'
+            b's1Bwu0rJ/v7lBbm6qlcrfh6H9cO2OyGXqSSS/lPqTa2B4Yi+74nFwWQZnJ1ht3sT9xDyuO'
+            b'7UQiLbPpEAoJ8/PiAnuRJocpWdj9nbTNvZnJi50YF6RnSjQ2NpOXmNqnk8Dq/3w5n1fTa1'
+            b'5GZ92m6GV9oeUI/xkC1NXmQhkCtRXm8i2OWFgAt5c79zgS+ngriwl7kgLujlRBAf8jITyA'
+            b'S89AHbMGZ5IF0gs1mAfChUqD32uu2RGRDRuUNZb4i79ecioAzQoVlATZgOzgN8eXGYS+cW'
+            b'Jf2t+xM1hPocES/fJJBIlUq2Q9x+TMYrWARHB3r0qeH6gsclNQ6TFGeKjgJdKQYE//r2Q1'
+            b'bNWgUyKierT4zBJSqXmWfeCmSrxFQQqREuH02hzVJPbEyhFYG8PzHIeS0ISuJ+PQJ9zpUa'
+            b'GB5dHVhIcJL4yiMis0OMTmAKBWGdHvrebm5wr7HVQLRf5jjeTLjStHZogzj2LzRg4+zQEv'
+            b'5Yhmnx9gio0rxSh2mtYoxp1YLLJife8HZ65mgyF2q9456JjKRUDT3nBoY+B60yS0No0WAU'
+            b'gnVjUcuFIAuh0zYKo5ivrkq2pdPb/uU8mCFAdWZoIWcesEAV9/nHPuUcGYaTKfGgjwo5Bs'
+            b'5F6aFTkmrAI9vroeRptdPSQe0kvUNQ5y33B0OgnF5ervRRdPCXW9pihHttMQK1tgjGV2rk'
+            b'Wz9Icdk4ugqH2frWH9wM8o0KD4sxqCMTg4oWBlf33KPFjxoNoYDcYyT2RvKFIqOaTNxJkv'
+            b'FbyTq3tOSA4auKWk1In51aAb3gXivCS3KPbBz0doxaBRBVZhiD78N2ZprcRxeb5IaW8Qlu'
+            b'O+pyp/7PcwcnWyoKGGXLEoF2D+sLO4ospzO9RYhQaRriNdGaZKxLohMGNtYhZ8ajSvOM9E'
+            b'iXRM9qwG4/8r6YrYRzGnYY1DfCmhgZDsMQT2oWaJH3nc5HxqjtMljQ3dmur9xbU4LGQOuR'
+            b'FRQTdLYzCc4h0kCGiYUBg0JvSGjZobahJt9vdb1akvY1xhC6yjgg1BkC9nh7gZLsdVaS1g'
+            b'klvUMurHcPKDVzIh551B82eq4Ine6+V+YCTMEONdtXIJ6SNwBKCHVuQ6R0CAaHl6E/nKHv'
+            b'QEF1SjBn+YbNEcSzzW93pOfpNVd5xqzfscF5uKAYY106/d/4WqtuvuPO69dp+r850CH55P'
+            b'CWO8aipEU/G3jGo2ZmlnnsHs4em7vAjNvrzGnmN9g6a13Om57cFZm5u8Ch/Q7uH9kpZKXP'
+            b'geDMZd3pjG4kK9nySZrb98bpmireVbqCRyehEUeLOR270EyTLYdn9E0Zs09fU1SBHlBTsw'
+            b'JT4/toigdfwz1XNXrXP6ZI9aCrP7J20NUftMw70Gr+CLM8RIuy7oyWgnmrIey5yUnVBPL+'
+            b'TH4egH2/IZIpRPfCyqsfajV2fqHnNAC6klUWtrUTYiwVbeVoFeIE0Y4iSTRDRFko0MqiES'
+            b'1MnehGh8Gu0YAVZ6Ihq++tNBQNipF/E3fbJlGDRCTLCLGxNBFmC2weYVE8cRA2keju3frU'
+            b'sk7CVRvW8iVrLeQMaUpLycKWcriKWc4OJ43RzXCBwm55JXn95imKbu6wGzHk5GECcbCj/B'
+            b'yyiNlYjdzWuiCchiu5UEEvuh3A40W3A9KY/p251Jm5bxM/R3au9VtoQPCYtx+pss4Mdure'
+            b'TJfcJg/Uh/LkQVsKloDVOIY58YPc01fh2yuNxLXSaOmgNJLehWPeNcjDhoP3YaP00jrVuM'
+            b'v9icb8GkXkUC9TkPFysv0Lj0M+IMbh0a4lO0uwbFHZT11mCwu5KmIo9GZP3bGjEg3/Dfzr'
+            b'pVskQe6kW+JbriLEFOlhfBXhDJDoapklwr2D5F6OO472iMRdQdiYr3AFIenQucGdRNjUnn'
+            b'BpgQDGE5dV+dU/cXGHeZBb+vDoK9lyZRDdvtqJgYbd5nR+49JM5YLRdRNuotM/0PAetMIz'
+            b'a0j72mEIXT0cEOoHAZ27U9C3b1NckvPwzLkHJtxpbsjAn1YE/vfLFVeRE82xnm+YCxdkaC'
+            b'vpykR8+3LFBVnfv1yRWUUDa1bDbd9deEbKVA6/LpVVgWMGN2Gkwhj5KGeeEZbL5x6Kw2B1'
+            b'2w4ImlM4M8hO5h7xQG2BPjhxnobOA0yku/EQrhnPVSpKh4/S4OBxClwoQX4HjKR36GUUKM'
+            b'QRXbZx3/vL7ty/7N7Q2c0qh6FxgZo56mV34VrjrPD0AL1pZ+pWjs7dobxTnWMalw+MysMe'
+            b'daKYsnQo3DTRTTxblMnofJBrqkuFu74HjW3XUXkzDZk6/Xr3tcM8iOPAIrPQhnfW7whMLM'
+            b'Bp0tEiqUXkMBUx1Nbd5Z4TPvt1uvRnJ6yG3DIPbUoe9g/omUOXM0eTjHQ1+HJr6soRpNHH'
+            b'JdgdD+ZoywQjn/nc88TX+vjGbfJUIAk2dc64AqCciH5TWNqqmlTome12xXCZjnkOp1Dmsj'
+            b'buEdqTedxIceNLriBTkA4vEn2Ib1UuvEM/H574wNQS99JCqodtUwtFy0LOp78NT4szjVlu'
+            b'ndyFK9ngkqS75MxCds1HhxgxXHgNsRd0XZxDUJrD0/HCdJp1c75NMFyOnLA8Hc36E1Qo82'
+            b'DBAILG5o6YL3h5ETQqRzct78ChZuBoHsZmk7XkYs5rVNJA88Q7R09LLhcp2WmgM9JZoHPS'
+            b'eaCnpKdCm9irldA/89JRKhCWbnnhDNQeT77nAf1JIfQHngadSHDtJ15VzKHJ0Z952XJaBZ'
+            b'pnbUJmrHidoSlaSzLtqZA/GlLS+pOJS2T52fide/L9nPmaimgfjWcpg0+8b20i6fzEq1cm'
+            b'gWvTIdn2ycop2frpi0mHRPbpN1MqUohfTGQS+j9MaMwF9/QGFYtZIE/rw4m6voZQKR+pXR'
+            b'BDrRtN700ejeBoaTa75utdsTRmy2ba8gYehZvfcKADNvG+DEd7vsF3aqZCBdWL5Q9Pz08B'
+            b'QtbJJBTFcLx863p7FyZChALQnalWcGkGnqHpvXELM6ONvqGMOk4F/HJEIA9vzGDUwrejuV'
+            b'Ob+ZiSWrEvX9H0CMS9ZxmHj45VJNwaLafJJlLiSavFqBLkJtgIGNItTZnveImvaYmNl/ig'
+            b'RAEd2wtMErdyZsxAomUzjzxxDWSSTdy32bmZZClJtSJWGjosiJFW05+S3tX0x0S8CyuVFG'
+            b'5nl/ty+xlW9CIgrOk5eItA7f628XxnLGVGnLDyd8U/dU88Nek46Zgz8un5AXVAf+z/EFdT'
+            b'BY4C8CxoB3sBZwocuXesOH2VAkfuHctu7Qtaa3Tkw/Mu9xflo9HoyIfjxTlXKnDk3rO2ps'
+            b'o6cKLAkXvHYqfUCVgocOTesOImMJ8D00P/dGUBbQbisfP6MNpCmi4CJ8IOvApuZprn8SnI'
+            b'Pa8sYPrFCMRM4+XQcZdFjvKYQX5aQ+r7nb8/lfWIy2/XRgrzWwy9KrQcO5DetbnJ0X5b4+'
+            b'LIecP10or1rvZv0XN5RG1Sc1vb54tJ05NPUymUU5RXBLSOsiCAGLnayKNBlaLd8ovJGLMx'
+            b'GzATzsux33ujBJNJPmFcf8k4OiqMnpWGNWHC1c4MWtl9GBzQImShAFGpy+vR/MOqQG6J0W'
+            b'3kRP3l9XAedeOG9h23IXQP6oDQhRog9JGYtW3GFb2pIfpmIxP3Ajm6ifYxskSxM0vpWD0S'
+            b'oiWid6YaQ8tiMOqbfQrm1L2szdJU2GVtrni06zFjmmOqvSrUpo6bOFwQQZPvtn1oOktDh9'
+            b'EDFUPfQoJS0XtHC7LROYjZTeNosbspCdg9pKn9lCsDa8Z1GPbIVsiLn8sJXcHhsrfrbiEr'
+            b'V8j/jvdkZxjr40yuEpXHhtBZ7ICQwwTcZhE+MR6/nblD5E/rFyPMnQacJrLXwxMFjogmgS'
+            b'i6cOZvXifx1RNoklUS3TzhWvpUUNc8gk9pzAGK5NSFxNh1qZA+nwc3OYfaven5JhtEW1Xu'
+            b'm3P5zDL4wpLdxs0y6NGb6D7EAmE9n7ZmUayYwUO0P4HqEJYqobFtwj30aEPRHBhJPchmBg'
+            b'guomzWfokE3cKAmuW3MsjXCURb01sZC9I7M82fMA/Nt55I5g6LZpLeoVquE89iCuBD1tNF'
+            b'Ojo8UUdF9R7U3iBrd1h4zJazQLryrBLfgl2J5wEYFKISt2IkGGxOvDgtzVNP/c4rUluh7G'
+            b'KZq80mQ8/OwGJRkOCavCzzoHMyK/Fvw8YqNMYSO8ZEvzOc1wMS8qyP2LaCurUCRCOqPLzo'
+            b'HEMSzuveLNMii8LSPOTQS/MctvTSPCU3r2kgT75ZzYCNnpQcTS5J2CXgOZ3ffmcjJUdXYz'
+            b'qNVj+LVcIGARE6OWo+w/eReciTJJ1abIdbveS6SDq5ox7+7fq6X29fekCvtQt4ZchRXHG0'
+            b'NYfhuhbV4Hv0uAeD1UutTM3D9i2+Z6GuAMrgObVEOM0914C8+LHSqIyxM43q2zErzZAXP1'
+            b'KNRtde5pojb3tQelVCEFUfuwbX5zGk02eskTPuSY8q6aInPSwtR+Mhf6f3+hFOd2WHAz/6'
+            b'3Q/0XJ1YuNf4VsUK/1H2w2u0No/y0YZX8B2dwYfckY07gnOrBnltP8MI74BQKdvWIlK0jD'
+            b'0AbkeLSw52jSGrZql14HKxdAF0mEj7MKpUMN+2MdoIxAa+YXufWUzlhRdH5aSPYIs+4yoh'
+            b'XFT/th0uyJfMQzS1sdY3HFMbi2KwGpD/L9verRzkWeZSKl1+NqldGNECqcNUh+/z1Seucp'
+            b'FIyuqVAE59Wjkv/m6sykUu/V02qZwTbwBNcnwWgL5u3DqCzNVmeHUgI+N+1MHn4YBc1JcO'
+            b'GNCf/AehX4nJkbBdt7frlFArOvNkTKgrc4dIRrQekDLOHCIJp59d/8JGl9Go3FMyscky1o'
+            b'KgA+SekLdoKo/IWzTIAP0WTY6+db8xygiXK+23njmhgkZ6Bf2/cAA4je/gaMg5v506kwVw'
+            b'F1myQzY9YmA21x18vLn71vFmxG5dNEfH5g2chh86CkY5ehSH0PhOeRTOwSbHPGHZhRdy0M'
+            b'qGUMKIyN5OmzFp/HzYDSe7WDa3QHgzBoN+DInboo0ZXiFGBvjKMJ/g21+0hVl+F99qhUmC'
+            b'NbZEP+U+o2bnMNGpSkerBrMg1H/FvP3AdGclivWo8w5+dC5PIZFOXB1I7Qox671IjuK3n/'
+            b'xBBnLpLatzfjh9oi5JDEffQUIrtfTVoG0cegF2w/DCq9nmBKkbnpWk7D2vDHArh+mWP8ai'
+            b'1VgGfTZG+xseX6BcSttCZtoZVsUPNRzVpKXU4Ms8VbRCXsqtL0v3LUM8cuaM2M/rxwH9jE'
+            b'wMOXYoPFpvCbwb0LVLP/9bIu6LVG/WAHkVqbtlB1sp2BeExrTeBPzPB7PSxwVT+637hoXD'
+            b'7JpqLiTNuyfcSgu03KnvwWhS4UE5P0MAUzXaDpgeEbMvO3dlf6reeFoZyla8mXGjH3yaEb'
+            b'AqdNrMk0dqqmXyKKsNLb7VUGBoBHDYdj1XhyYz0OetWoVrLRCtwjksWmtrkke9PlMnj0F1'
+            b'LJLH6MWpVfKobF7R2B4jbQjN6XFsBLvMiI1XyJc50dEKOTTVR730gNgxdlASHvt+fMRMZc'
+            b'Lfnh8I4HHHD3gyAITpHyPVBtqIg0SzyQSRQQ8y0xq080MBnex2GMeHP63JoCVpw2jNF036'
+            b'nteP9iCwp8Ia+hgLy+iBE5ZVAxYWkud2sThmKC8xWxZ753ZFN8JHvhx33+3tyWRPBWcOO1'
+            b'wO9nSyp4ILh7109giyI4LxuIP4ikxvzyEHOrgiejydzRVMqB7diToTpvmPPeS2Vlck4kfL'
+            b'GLRRy/PCfAUd09JKV24MEOrCVNE3NOW6NXyvKFvfVkeF7pMWSwNo7bdxSFB+LRLrvoXDgu'
+            b'prkVs6rhVRq7jWbTTUWkgruBYRta62pKi3C0977da6Fx3PxqqHauvAq7agTDtDu+DBMvMm'
+            b'Eb4jlQxtKBwhxFThcXgUexl2GsOjX/eBqvAIXXAv7CnZR3alvM474XPYLN+p+Qr5aGlVvn'
+            b'MDhPLNFX2rfJeG78vX+tbF6ZFQnBaJi3PqsFCcFrlVnFYiXZzWbVScFrq1BFoZji5o61YK'
+            b'2joIBd142he0dS8FbeXRBW0dxH3mUjDpNNMASa9ZWMzVERfQdtSaIZEomAjkuH7g3jFP9k'
+            b'xJHR449ucJTxFiKvukTeRI+gOFBb69tRzxcLZ5viIZL9NjaH3iod5owGlmU6LxgNPMGLI2'
+            b'vasMHSzvSGs1bgFaq3Ck7UuHTW4/dwjJKRCYMDlQ3cHfTgDF7x82iZ5DTJYg/VITkifqA2'
+            b'RRzyEi5DBMl5YIzyEijNFziHDvnkNMzVfggI72CuBSL2EUGWiV5ob0sOcOV3QIq2A4x45v'
+            b'ZjDkoAAuHC7IKnfI/vLHRu3CzpbEUVl5kpCXpq5II8A33nkeB9oGVggXRQzt162BY0r3FB'
+            b'ld1qT1M49VZhBXsQxb1wUHhMpgAH1/wNwCoxsEWote3SGwsvhY50F9+N5bkwVZ10+KMWE3'
+            b'3ppE/m/D5tTcUFphJGInfiXjVE8UIkC9uQAt8UlvLsxJa12a1brfdzt7A4v5DNpPBATVx8'
+            b'FBiwAQbzsg0N1wxvRBXq6QK0NbzzqdOfHK2JgDoF6/gDKnGO6s7ERjaqLG/L1mOE/pLZ5u'
+            b'x5EIXtRsnl7DKso5Uh3e+ITbaBRFC9d7IOhVn/QeSANautOM38G0EI3syOsl7eJPlfjlSx'
+            b'Y1P/WyfpnojWLnwN+c6UhfjXJLhpszWwtEcjs/6jZNIh2NLjmUt57wXQWUIo0MR25vAF82'
+            b'Ho+GSPE/HGUJgcms8sBwIVSVQF9VfILKAgUkkEO0mIc+hUdSwdEbFgWScuEEYD/4syDzJk'
+            b'De5qux2Kk/PLlz5pN8FiC3OUo7zye9/dEw9ON6HzaY2Mu8hf3xWcL5O6b129uPrs7IiA0q'
+            b'UHV1v9fQyU177jwJJ0bpSN91a+lwoy5pddhxSXJkBpIRG/d689ygYf9nRXrUB86nAPuz2m'
+            b'WbJ9vIgmmlaL1MUtPhDrqkXs2ncLymRKRNLRBbqWTpnTFLCSw9K7bcheXGE2vLahXr2mNj'
+            b'udFFKKlgz+vTcRQeqlnEvQ7Spep0eb6MWAVznja9ZqJ65MoKM/Tqyd0pM+v4MgzmEoP79f'
+            b'HenJtvFh62p448vqBIoSbSs7L+ajJFm5udIiTLr5DHMRJs3zR6cJcd3OJRGLTi20zUie6K'
+            b'I3NqU9sFSO+voKy+gvLpFRQiiOCx0BHzSuqIG4vtWN7eq0kVbS7MipBsOkbyyRgJYWt0LL'
+            b'DmXcmrmbG44LhHnKtEb4NN0K7iN53RItSbzuhOgvZaWSK86VwkW/2mM/jRm865oSVkuO7s'
+            b'bW+8UOXMfaTCfkZ2/AoTGw6I3wXNZSpUUFuIbW90sHoVrCIpeo3xYbtG7W3VzCvNOb8O0v'
+            b'9h7rkdL5tZ7Dv3LTXzIuaOj4I3cyOG741HgtSaJxE2Bg2H6Iwr11OPApgplvhHNwI5OhRc'
+            b'6DUqBqpP4tWKjjryJRmXc3Rve14CPIjWyvw7XtQwwVHJ2rGSpSxFQXpPpf3Ur6Ch+Prucn'
+            b'2uqHH46PCMg8cncpYWDidyWguMTuTQmc5V9EvRCXVNRxnCaK2hK/Q+85lOFZGlmtgoIrRO'
+            b'B4zbuoOvmrnD4xYOMLrmH/kZ6X4oUH2mpcKgAR32xS0MsNlHJ5RJ6+RrOko+ctPZ7VIX4W'
+            b'c6U0RWKiLPFBFEd8A4+Q6+Sr7D4+QTPAzP24s3VMoomNvQ9zrzzEAPmnjhQgAUsG+xnWdq'
+            b'mHL4SLMysoJd/ZS0fop+ZuhvA482ObPLgpA7lclqOpxPL7x5ydxdwYIxN1fw0NRW5g3oPH'
+            b'VbQHHJPSjsIqNjtKT7Xl1klcN3dLC2UHRUfOgMoseFsuUyQlxmQeivXE9EOG8vW+508mpC'
+            b'+62tuzw/2ojxDkWpzz2gdspKh/EdrYzHXXrq07OkFxOgJb+VlrRK1KWEdZVoe42MpFucga'
+            b'C9vB+FcMOAVid9bHDTJvpdlKJMem3lAmH86qExRnIB5Vm9CpzH/tgFRpOoBUea3GJW0PmF'
+            b'x3yluWQLZx5xkCsqUIwpmsnNY5oSlhFqjorlPC8zRs2sZ7WC6hlxuO1/vuzMoRERo4rdHL'
+            b'm3EuTINdfkiCypRikzzxmjwp9CypcR/8+Hbse5ogQ9i/iP3GHFbNL7xqxVczHgHh54c4j4'
+            b'Lm/yJfIR+yhiZVFxbddfg8BZxIH+HbIhysieBxj9syMsgKiwduiOjkHO+oon8cUsFFmILy'
+            b'oU9kvCiRLGYf+B9uHCnsXsc8gSdJaaNYQqkEU18bDehyyJ0u0WnHOaSWiYx+9CgqNoMPI+'
+            b'SI2Z5jHrBVolaoRENovZJ24hBFHicJXpFVId5eSpe+A5JhFoFjN3jyJPlIzT8NB35zeJLx'
+            b'LW9nN8kjNGu6jSRfXgdB4enoWVxqzLJkQUVcjTJbTMOC72o191+1po9itXVKRAY9YwbIQT'
+            b'Nbpv3XFgolRtM1Um9G0q01ljAkNVGVaYkNuqxiAtAVeJMbKGoJSwFDUwjKzWFIQSKovDVS'
+            b'C9bVOmMG2KyjJRlpLI7KsnmKCiRvfZshw7jo9jpdTjI6XUwWOltLJwUEodMFJKgYp9I7JC'
+            b'2zeSpcwlQeqVYeR0ZNSJeq4HS7QJPdCxt5Hs5LeOyNIhJtJXhpkowSuzOmRnP35Wj+345r'
+            b'27E417E5II1DYkYPxOC2y0Q73+PU1uqujQ5ftgzAI/5ua5bIkc3V3ewgEL0GIgx6Hg+l3E'
+            b'PDH3dQ7Hm3d1FoY9euIKVS/Sw5EBB/RB3vwPXfbB7IHxfH+KJnXQL7WVkEIdDQrU/cBDBD'
+            b'zFkQbsHNP2CppCaC7Jw8EkAIo+ome0e35ZRhHPfbgVlUF89Rez8BYWkGLAvqTrr7zPqQu3'
+            b'OfX6ofgCIonhHJviYE2iZuZLve+4mEeIt45i9wDYbNhR+7X+xHYKAYrSjApw1JWVJX9l4p'
+            b'U7TNecMRaZeCHBp9N2rfd8IalsJRi+0mTRNXklQEU7U7A+UkDYvRPJjI8svtgjRzccwsFF'
+            b'q8CoL7eeS1slV20p15heQAb+bdufT5H5RuFBOaymmFXyO1XzefJ7dHdKClrt4i1A+i07fu'
+            b'sdO0uHDTvQ2tZ6kvzu9fUVv0Vfn1lCFqDQGf+OJno6df5MA3L5d3cMQ8qnWCXxBlYNutuH'
+            b'tdmFoUdXArYGvLoTcGXg8bo4pFQLTTNGsB2dSWuS36NdziVpn0GG0DnkgJBFBOKrWxAgWk'
+            b'3Oo/6/Rz0MCkYaBDJIzyKzhNeEolfByLA+bZ/7yPIyJRwkLEC6ATQnS3fjc9A3nyFsDMOm'
+            b'igE82mcXnpUtABpgZIbVJDcssAw4MlBjpMogyzi5slcz6HjvdkEwvttwCUjneGHokOGkda'
+            b'/BcMfmwVNguhdpFB0NQCUYLy+m15vbz/i+RlRzoG/dcDnsoQfsZbSqUmG8cNXqJaxj1dPA'
+            b'Iif4qYVxOq2hU8TcGbjH4dirDp55cdr2mzUm/EMop4mGUcF69kz2CunYzag3XTHvwjVZlF'
+            b'PvoxST5GrrxBTH9Q76KmGwLAYMtztjjnR8jnKWYX33kiI0o2e92N0mz9EFXjPSzmqD32K1'
+            b'gYnvc+h2UGSxkQbZSnGEGvIcm1dOCai9SZRiZJqh6Sg5kCK+8BM5cGWQvEJ1Ys057NaHDR'
+            b'OaQoF7jnqXkrQeKQoCvmEarq78Dgi13wBqH7E19Ggj0Tq62kmsDDzuIimhthmlq2AFMTOU'
+            b'toIggor7fL38WwtnpGsLY6xtzz0j6NuNh0YaN50Oz1u5uhHTWQMMcqtUYYHL2p8pmeQWeQ'
+            b'2epkT2Fzl1wtjsNVMzpgv647O+uYoZqcw8UDsiZR61OFJzNR3VHuRpfxzGG9WFQfddd9YH'
+            b'JFnEgAMNmXt0Gs/j/C5bzxhllcfH7icOl8zm6GGQUQDe4akfTsExcjMertF565VtDPrP6m'
+            b'QrCn18xxNSFg2IyP3rO55QrpENR05aPa8A4ZBkKdHUkKEF54qOygAVaECXE/IV2TSgw1cp'
+            b'qhkYk3s685KA48Y9U466vSJnOPhDxxwqZSwv+R0SgIhOehLHruIc5CflF4yhzDzrBeMpmH'
+            b'p5eK7pKDXI3a8SZgPqNVBtwmMm5SLZaSuGDKSzB4SWsBPDBeJa77R0mCeRfjat4m09eJPT'
+            b'IuHhgKvnT1YLj3/vnZNVfe1ivPfWrqrI0Y1XT1bzaxfXwcy8o2tW41nfe/kEffmVi+tgbD'
+            b'7IYDkleb8x+kTjvsUwZmYQljsfuDKfQdeKgKBtOTjoVh7wV7Is7L0rAZQbchzrztyMM+ar'
+            b'AG+6GvPJGil9LbHrYWaxMEVzpf6tiN7Q3BcLE/jzrZBMhhlptuOsX65YL8f6fjuxYHdDsG'
+            b'Vde+ZVRAvPuTW1WK7uEPL0zkwnnLtb46tyx5iOT2I7X7RIvd3mnyF3UFuN1RRi1UoQSK/0'
+            b'5MhcpfSQI0pPY4n4lHG+BBqrQvBk7VWhCu60vaqjxWsVSLGsy1Eo3aO9clpf9jY38PiYO5'
+            b'JL67EJDwXxS8zGpoEcjt6gLcuWc4NHNmrW59hALXNo8AuV3UDaOs1CsovFWM3xIYyQvDTR'
+            b'XaCAGKK9QzpAtqH3tS877+Ij4CwermWxfsbjHgC+Xo+RaBe60ZyE7kcJ6NER5aacI7rd1w'
+            b'FKb/+gTPLTgHo7ewXdWFFo8xts7xU8axbr1jEyzC+jU4dTJDGMrEukZ3jYcqvJ7dSCPTxR'
+            b'gbcXimWVpw+DMeNbKFpsNDPeqetwc/VYhuox7MJlnxk6zYF7rJMUw6q/QMfsRZmrdVbttE'
+            b'3ie3UyT/OIEeKAE5Tc8A35YM65oD7JaAwh3QML6RT+/NXlPFm706tBiOMsl3Qgl/1TTBlq'
+            b'01XJsPLEBTMJyK1yyZLvFgtYf4ZMzxMeuENF3Os7WtrEL3hSB7Df+p7n1GFuF3jqyGBlun'
+            b'RIdPVuTtAtHDBUfwkMY9N3wFg6XAFDmkq9Ots4nwoW3yNlcLUFTr/cskOn8UrjPNN/MKdX'
+            b'Nab2Me8oB8LBnGqm1zsaDYZb550Xpq/vnuNYUHQe1eHXjYV9yLUlx2HWc+LQfrh+oPGpwv'
+            b'1rGyyV/rzuMQnRTmcB9rFVBsJQG4u6CnAka+tw733m6Ctpl4aBrirO6CzAUR6nDvfhzh19'
+            b'lbMTMt7W+0HyqwSiDRlaRUeGDEyTPYFIKQ6nN22jwXz4Q60dNQzmePKu0fO7WU+oYAwvrB'
+            b'SgyPUYivDC3VhLlFEYN1ENRtMRVD9tFjdNDe07bKj4e70aCZ13f7UaiXZ+Q6FoW+t3rJ1M'
+            b'HXqtgSzTwBo/SsKqOZojovfb63WMmt77b7HlGLJSr220qaJ1CbF22NOM9LEPOqkig0ZqwK'
+            b'AektSjZsU0cikoFFjhkOfuEWNLwMsIj3sRz4tRhOSs0iokRs/MkQQz0qlrgaKdgsLwzajV'
+            b'oI5wKe9q+SJz+GjxwsHjyfQ0iRcEWXsIvKCK62lzNfF4NMV23uMlQOgrBo0CwPRxHxnAkd'
+            b'YtT9NRuTLmg7mB2iQCn9pcynF9A6FxhgHcTUWVpdwV1hg8SdLoE17xfezvI0tDdh0AA40u'
+            b'iqP8rnuS2S6zQi0QIL5xi0QskX6Can61QDBDevUCQZ2RVgsEKAi9IsAmenNFgMPFEORZQp'
+            b'5hL7oPQ6FGE4SrIkRJjfYp2of5DiwMMiEEqIR7rYEgIcF0DMSFtRM19ZL6D9XRIRWXh23Q'
+            b'g6HLEXDHNkpk/+UxuEZnd/Fr2I0hAg+ZqtccapSKXnNoNR3lF7LkosqPArob0CcT1peLOs'
+            b'FK6Q7KQp1FSyBu0ARPToE09sRzDZiLBkqTUGCP6BXttd18IM1A3Pt78RgzUOU180utkKBw'
+            b'L2qJBFnydd89hfzFFHevnCM1rzEfwSv/y4SqGdrrQWttNUlM2cwBooNfbZlO8e1VLTrRqp'
+            b'alg6pFWp/2mCeH6ByHpqNhtgBDnr9krDMAodDTRN/kMmlA2lYGBXOSHPzEE2PNIUw8MciH'
+            b'c63LpSXiiSc0skM88aSnaFgtDC0ekDPRbYkINroeUdNRCiFa9wr1/w+rTtuH0A+q0kOU6A'
+            b'TsjLRfWjeEXlp3QFhaJ4Aey+toLEK9TZwn5hYae4SJo8VhPJus4ITGIlcLtSuHj8YAB8fv'
+            b'EuSFR+MwUgvHJtN5adEATC0wHoXK2uORBC7Q2GllwXP/3F3OAWZUutyQ29EFipqOyo0ezX'
+            b'qJ1p+Z/Q71GiUKntO/Cc998SucGbe0ml2tDBCOXNeKvnWJV2b4fgJmfeuj6x4JR9ctEh9d'
+            b'nzksHF23yK2j61YifXTduo3WPCykD6hbRA6oLywpZ8YnnvYH1K17OaBuY9UH1K2D+L6yTD'
+            b'A5oF4GSCKbW8ztlCAgsxoCkeLVEDjTW2B5IKPBA6ULXcDMPqgXcCkMvadeIWGPFY3+4KsR'
+            b'BfFEnW1O2nerhtD9qgNCx0oguEdU0WWZiCq6LFPTUWWmxwOGr/UzzcRVD8prWP0NDTlJ34'
+            b'+wlIdB7aiWydUDg21rwaftBUKK02au0NEZ/ZVh3TqGUt2ZsyRkX/MMfGsZdpkF1tUMpDG8'
+            b'8XSmduiNwIrAugqsNbzrRxahmGDU57MA6/5ApWbCRJzVlWwzRfPVJY/4dUAWw1mpSCtFHw'
+            b'ZZL8TkIcL90VcTWL8xj/nZAJknZ69itZ7QQZkoeX3wbtcZU7DSAEdeO2kujK2Ni9Pl3t6p'
+            b'Vk8tidERKiSB1AJs1NYF8+5VT6kQpOiXkFEpOfCrGzvS619vXYF1ofKHTI2uD0WeRteHaj'
+            b'qq6RUZZ72DtLCIX8J0pF7zFChsHxHa37PHejKHE3JFR4cRNEMeIlkl9mIPax3lFFrMMRVq'
+            b'3k0UVmFZAxf8kG/mDh5otPiQee1UkcHsxIDhch2QSh1EqEr5Q2t403pGS9rrGYbQeoYDgp'
+            b'7RJgN1x1Uy+BMU6DSHsOucLZPhfn082jlT4Qlt7jjz4C3j2QbMIByC1iZcZLrjF1NIEF3D'
+            b'mqYe0PILeGUFOrviaFNQw3WHOzJ8ix7ZWkIOd6ymGvALlMtUo0qBXM40w9+JuMw1qk1s0R'
+            b'cN1/emYr6iTSFzCMXr4p3KXqSGlAMmKBGfR4hHGTWvykDqMkDo2oAZ/k2w8Kyun5wn3vqS'
+            b'B/ftt5uc18ng7YtXyDxdHggjMmlB8vQOMgKNDIxXpI8shXlqPyWHG0srQdvcQpKrS0tH+e'
+            b'lC9DnZMtjoqJLJPl7EjFF4uLI+hne9wz1Pbm/XI1khp5CdegkQgos9MNTGIb4wk7kcX5hJ'
+            b'efbeomWCb8zsaNY6s58pH+Yt7bfet08tZOxb5SrIqrLocUAfoq0vG4ufoebqmlUtHe7MYq'
+            b'FaDHtVnkvK09vEcJbpCHG+AKKVIriwSnKaRO+IG1KpyBXpoCFPAnnrbqc52V4/Nl5RKzpo'
+            b'bOgbzIMqU2L2Ni9e5tWQfOx5YzbvW1+Q1Ap1ZYGgTxsgVqdTC+14UR+GqSFWrQ33lmZtUq'
+            b'IVa+My0qsNcutGKJMKrW8bl6JuG3a4Dqp2pFe2jWN36pEym1SL7m3kCjadk2ZGwKvPqSX6'
+            b'Iy+jZA0Vw2v215aQOt0uCakhg+6vTPvpz91tCsFFQ0BRAhWrcGiWNO2iAXmeoVEdN49GXz'
+            b'OViI6Pm/369HDZWaQhct5SIKPgpKhv+n7PNHP01WgAj/5h81XtvuUCKoYyNveeOUz3BmMs'
+            b'WsRFgq0xRRRsWFBboQj0mQboQ4PoQ4X79r0E+w0DqIPybFyRWTdKzT3mwXXPVqh4t3KexE'
+            b'9+TAoBwn7lLGD3u9f11zeCCwE90hjk9DAcO7v3N9w6lNEo2Oe/xvQ43CQvfLZskrys1/uX'
+            b'oDzWBuFZrmATlcGxnmPNQfpetcC3nz4Rf+rMzZ9ZigGBlLnyAoP7SzQPMy7VNIy0XsxOQf'
+            b'dva0wH/CZUxuD0+jaduLPAxkh/9DTNlOzhYRvZQS+YuNFCPMNFxOxOWNHLRKvtTN2xO7gL'
+            b'ajD+Chkf3V/mbWCZ94XRWAWwbxgvAqD7KeUuUnxVXKL3zhSmFHwVhH0BuQmAvnjZpcbfrZ'
+            b'PNFD1Oz0rx7IPJtULsWZVKITpJrcKjNOkIJVFzDapU6VDse8ulQnS6DM6Z5qZ/NPO/DMCp'
+            b'Cyf2Tbmfolt1KUpYkCfl7l+p7GeaamKjiGytiLBF6YDxqXgHX52Kd3h8Kp7gN+UKutmLXp'
+            b'9FQoPCjBLSC6rQhuzNoaj50Qk4uAuXcUynQoVJDrHuW9ilyVF/rN3b2GUORjAzZhHFhxzm'
+            b'ib6wlOGOzlUYKceLE01RGzS0fxPO6FJB1v7ozgs6unnB25yRxMcHKOnRPVDMVm2JoHXMPR'
+            b'TVV3EoRkTGHRUBBNO6b612zxxmhwKqhtxZtFg0aqUO1KfxvcNIBh+LtJfMA2rPqDbYCTUF'
+            b'kphZrzNINY4x8G/6B75NisYxN4milcDJ2O9gYAJw4r3XGe/OflFL50ht9EZQQ9r39obQnb'
+            b'oDQq9OwLw5XPLD6NNF4s5FXO2zzoUz2mkVxnjte5GMz1hg9HbQaEXbOPUn0qqa1OEsdhe5'
+            b'iSI+4mEktTbgc/P5El4qxlzdABeZnKeMYDiteX++N8eASvpiUs9fyHSV4tzho/Q6OF7/r0'
+            b'qPxnlQWHhkwV1lSbyFPHXAKFucbzMgjkKYKpaEosDRPkDlgjoz+8+hRDAvsvjIOROpGzxD'
+            b'1m2b9KhAmAOvR93YEAj3odEUG/OljQ9XBgnb2IWh7c73hCc6DGk3tUtHqFZnA5Rmn1lSjU'
+            b'6oMtoD5o8vymYONSy6ngX1cuAhzcNTD83sT6pI/rIkSqp5HLSFt4h5ZuQTZhszLy/CYXQ6'
+            b'N0m/iAFfisTpJ6ehvAf60R6OZ+WVuQPch5VLphyasbnkz8wfUgqiHrKbWSpY/vFS6ZfjsL'
+            b'k8mOXaFYnfeXz1q7lFxTC5+N9t/G7BgtBLtzOWgjQkNeQxLJdmgoQF0txgmIPYY7F5pWg7'
+            b'aUE2nEyLrPmhpwQpgV3/nWcOUT/U6ipyJrrNBfFEd7eAVmuEqMhqjXCe/EGtO03+kKM0Nb'
+            b'/3ygCGgDp9l5EcGVmXxK4MjSui46N0DM1f1ea/00lErSPqQVNZFVEzTeW5pjidClRQaTwy'
+            b'1os8/gfPlX0H/l/9XGlUETfWq4T1PT/Xzo+Hjtc6KI1xlfyhl0xRhqKLtZPkD2eCNMdn1D'
+            b'HA3cBTlRjd8REUMUUGNcWA0X2AbWVfe43woGKNuP5+O4unMT7yZbkBM6S7Gsu6mAo08moZ'
+            b'7rCBhWYCjdwaRpyaSqCRW8OQ+mqxOmAj15bj33y1WBOwkWvDifOnFGjk1jLc9f8Wmgg0cm'
+            b'sY/p1XCxUCjdyCIZ3qInG10Ru5IKN8Wiis+U5rTWWFpvJUU6H2emTcejx+1Qg8I24ERHmR'
+            b'j7E2xiTCU9IzpRoL74G0gronQJpVhPjnPRQs2zTBb7RwF1x6z0YeZwuE4T8T6n59Mq+wto'
+            b'K4W2PThSDRQB+8mlGLw2EbQzKQ5XxJ3bP8zbMe8tHUgVQjYNpY+BbkA5op+mBNdQxgLrr1'
+            b'6ZorjEtBWaWBKGVVwvVGqILH6Nz/ArTavZuA9NsbRSKbPjnxjdvwRKyOsCsZxt3IDK4dYc'
+            b'oQbkVWIJcJp2asYqtETdIcrfcNJ0l8NwdpbaI2A61N1DQdWRkgK9ZmQxBjo1nCVIu/KXjO'
+            b'SvSayRj3J7tTQuNOcx8ElYsy0W8spSD9rhamqcdgK4X5bnhLoUVcsVUU2WpHCYPKMZrTzw'
+            b'zt92GKJpByJqdAfnaYQ/L5J6PQQd9qCKGwgsJUChIUJsTdPfGBHTtPZRE6mpsALOg6IGZL'
+            b'YFVi0n1UKwB5asmgk08IjA4eM2BdbgvSb52x49UH5fL0btWucvxTt3fm3NwxMlVeKDoqXw'
+            b'plTrcZiU/b8bBq0Xhcre3IGTNCfz1my8hR27EzZoz8OXYALe0H19qOoYKNfDuOH15rO4oK'
+            b'NnJtOXGyqoCNXFtOGGJrO5AGcOTesWSQre1QGsCRe8uKM6sM2Mi14/iBtrbjqWAj15YjQ2'
+            b'1tR1TBRq7JsZ2tXezPeIsdoF6pdJUFaBS7VuVlcXWoyRxeOvIFHW9o3gZSXUNfoQfTCyaY'
+            b'eB3DoXkSA6cfKT9sOEv7GYyhGw3ou0AKMkbXUJiAzv0Dfbi5LATDfHt3tdiQOny02ODg8b'
+            b'JCbuHRTawTi46Pi881HBsNzhxL3DogNpJnf0X0yjxx4fFo1cIJN178gU5g8WjlI18oNA7d'
+            b'xRofZ19acLyOkbt8HZs/urQj5cd+ZIVZMiiurJuh2uyZ2bXs0THJmYOPvXfJgVCvjtSMRX'
+            b'eEmo46QjTXnlZ0PEvJL23ZXxjE7UVZNv06y1UTZ0C0RjeLOFr0RcQJa57ZMheO223ImjaG'
+            b'9Lm1WczSAWVkxbYCKQM/RydfMMs6aqPBAqlx5wzYqBZChYaGHIjmaYgoOj+A0ovOC2g6yn'
+            b'NUI4giJwQgnOj48KOVreWCtNewUhL6Cg1y9bVEqaFH9xIxyOsTopOA+u16BekteAXf2kKc'
+            b'3mD7rcRbPL2lCL7edoX4Z3/KdoZoQ9bPPKH7N/iOzh8gW6PzB5qO8h+hIRij+yjNLbNonL'
+            b'xVTrTnq90l+2Y53InIrw93NskoTycB0TfuBfRWjubJdzP0BkvnZ55wqbLCj1bY6+QkCnvj'
+            b'vrXOWBYAN0GnMqSrcvS7iZWzZk5svJbUMOTNaC2pWQDU+nlt6KCfk9Z3dDBqfQmHpiOrHs'
+            b'YGfRn/b4cLYnzbdq9rA+3DyX4Kuu+ejZaTuu+wnBIjQfXzeNAOiGBK5Btsnlna22RMHb/f'
+            b'8/+dXCmC6h/wS3hmLbfw3gfnaE9ODCmBW7Lv9enM0mHeS2Fp7cRB3oUVRc592hRcuk57qT'
+            b'3oPVUO0I485t1YUWRfxIUh9Cw56VkPSD/rKVP3HVVFBK+mQitQ29c1LVNm9lNf3OmgG2Zz'
+            b'y8ay/PO6qAhhSpVZQu6Yg5Z1iuZYGcWMpEoN7YcK6DpCRs7grUP13u30SIUm0D0Mdt8sd9'
+            b'+jx9nmib+bccL9tFPXqaetckOPmmBmwKs2aN2OGyHK3j9iUdrPNNfEoyKyB0WEebYDxgtE'
+            b'Dr5aH3K43j3PkhuPVtBdtBu8JKD6A5RjdK2WpqP+oAVj3z8MO7v41AQyrD4pMFosUrhsmU'
+            b'4N9nXoURs5TjgBZosbeDS2oMp2+m7NLEtGpjEspK/mgnU2MH6GTWUHqHF6aZFggFdq4NYZ'
+            b'lYl14Ed1F4B6QLO1iB7jlx4KhnYOik3tKg8G+zoH3bKwc6JqQw/nOsp/h2lzOgeJQd3c0W'
+            b'JS1wrgjeqcFzGjc5HrHTjnJD7EMgmgnGKZKkyOsdQOdIZ4COzxLHflQ3E7baNVs4qAGoVL'
+            b'0vrCtpoAbwSSa/NSh+jnkVaLMoLDnXqrBUvScPSzSPAw0bC+hK9wTyJZtr60D74yDUfRrB'
+            b'K538I64ikMo6TlltzZFUlef2Fo9kCXvXJvlQmTBVodcEDQBwyww1R+px4RMbHoUQRj2/Yh'
+            b'zkx0vduo25xaYNRvlha96jgri497ThaRvtKOgvDYoD0yaL+dmB4x6xLNxH5CVE1pIss00S'
+            b'kidI8OGPe6Dr7qdR0ed7EEo6xiH7rlzceSKlbd3pxvmJmvoCJpOihIGjVfwxlwtriGxU/M'
+            b'FC/LKzT4cLwh1INFaqCgl1lBlAhzDYSgHCzOGkUHV0StvlCj1vZP5jFRqtT8pCnKwsGmTi'
+            b'l6dzmsz91ooYU8PZKhhukJeaPpaCRDTvW7i3o7ZmmB6MCzAfe9tc+hijHKKcY+nK6WdKYW'
+            b'Hq3oWHRkPdI6MF7lKZNblh/zJDb6KAwdHyilxt6zz48WZmx4o/tLl8ktcxEmkqc82Ef0f4'
+            b'YhyZBqwDTuwnBZBPKWvfqKbD9UGq96WHRAGBQNEA+JpYXCgGiAW8OhEUUPhsZlNBQaRA+E'
+            b'BpBhcGYoGQSXjvRDoHEsA6CJTg9/hh0/MbwS6HLkfsDbBuPwHvU7NnefeWcyQuaCyPhYGc'
+            b'iNjojL2XBnK/sZ7TQRs4c3K/epFekZ6oq+bhz1K1p4QeTcDT6pVrIwWDwec0d19O4eyi+6'
+            b'E5KudKvUdNQqIeWw6zcXI6uxtV6/OQW/9ixjzh7zkCdcdBKTZGQk2l+4GIt+T35WNmlIhX'
+            b'UhJNudC80m9lPXPAduzE6w+4yeWVOYPLM2TU6y1IQWbnRSPVlpHPbwwAswpp7a89zs0lF+'
+            b'08vcyw394mHL1w4x2M9nzkV4HslzfEjPTzQSXHnKhNsK9bB+6eGJUXtwd6BxVOqpgf6XmS'
+            b'P3JjTvFDWGzMKTJvCFp5zs3E70oYXzCddJKZ2bcIHRYLYDzWqjd1RpR3ZJ1rqiB++odo68'
+            b'+bHHvZymbF5RQ8zcw5Ueb7Q4HYN1GMolWtKpSHu1yhBarTIAn6TQPTqHbaLxkjPXCYjGj1'
+            b'XUE4uO1+0zC8c9e+mCGNkP5haNR4bSgqO+nU1IrwMiGnsqgs+RMyccFd1BhlI0ZziuG2Tp'
+            b'ODfaI0RVFmH2Wx38recOCwdz2UmHQ7YcxS4PW6rVNEwjpbsTZHH0pqymo+5kmcSvhxYUht'
+            b'q9tURLkbgLLyPh0B4ZrHlKC90IqsRGHQg2ZUsE8zZcXtfRvU6LhLbNUAr04dw5yYdneyQj'
+            b'c5Q1VeB7UHJqNyNH2/JaOpjyklbbvhXJ0fvcGbGr17nz5BytCa5IjzTzBUPvmaYoRcvkHC'
+            b'0frhQdnUmegHF+7bqdvuf8vOZBZxP0V6qXc34Y5ZRab6C2IzJoxgYM+ilIe1kn5s1nbZUP'
+            b'hiyDFfjG6Mu3DdBXnMPqV4mMeNDPW6IqGiBe30eVNOjYQp7F+3D1OGTDPLLw1Wl7eDEXjy'
+            b'bnsFiWWyK+q6VKgUZWCZRVnX+CLnCOVsYaQ8sCGmTQBw6mqAjdrccG5nSoLimfkxw941AS'
+            b'u3Hp6zzzjPHFAZMFOVcPP1QGDQfcTcC3bjjAAOI5V0E3ZO35cO9ZvSs8U+hI/KlhxbV7Vl'
+            b'vwRtRT4VxF3ZJ1fRtChaKJ7sUpFR01CjrcdS9bngvNeGZNSK9TmDh2PSft3WbQd7BNPOOP'
+            b'jksHgcGkK4XTkLeUY8MQRXdpKFEtKUpY2aFTqpZ8KO1sXx1lhp3DhXOKDBfOGTBcOGfIk6'
+            b'6GDZpi97UPM+pZY4Fo6kUwOuJQkPa9oiF0t+iA0C8aIPQ7+cTQI/uXBUEuNT1jpBndwViP'
+            b'eNFFjJVm+tX+KLSrKxlRH3QvkzWGHlXTuQGv2ox1O66+jA99Qfdnfzqb+zdyCzzyMGLGd+'
+            b'VA2ieCavtpTnqk9ntkxE/U7KxfzWZnwhlNaIUxnr42yXiX3uSNgUYzU+P0GM+WFoLJPGgS'
+            b'IKmtTB60SqOvhLs2UybEHQ9Z8vPFnCYRdkaMVmOTVZtYb+r8SOUgASYWGMKBktoi6ogJS9'
+            b'Ye2tF302eCnsx7cpzrhens4gY3TDENGyXDeXhuP4NXB6i5+MwiIQczDdyaj7vw/YzcBaAW'
+            b'r50DPUufeSjM0x0Uz9RzD4a5uoNudUhOVD1fd66jGbvDbh0SLy1LT+eda+nnnJMwpZ8L4C'
+            b'f1zotb7TNHUdoY4t2aJ7NB7RjSU7o06MPkLjg/Tyeprr9E1Y3u5kKdje7m0nQ0dhgGmtFV'
+            b'I514xqiNenzcRLNkPDmoHDJqoHQoz7yFR7Wcoj+xkLNdyR01RORmuNzvnJPSeeARERajXV'
+            b'azUDSDmFrQz+Yciozv9506PEShedIxDBulQ+LBxKAv0YtmlERd/eBOlFDm6FrxCsqtNmAp'
+            b'QUerJJBUvwfNNhFdVYX+IrqqStNR2TIgxIPs//NMc9qnrbUca4uIIXdGs0FaXLktPRac1R'
+            b'7a9xsHVQZ67M29Ms3SUGbZjxNVEnw8GB2o8WrutbDShd01hkAzRn+/8ATZwmlgj45m22GC'
+            b'fUSf0Jkb5GiePf0uV7YCl991ok8Uz266sqZMOR+I/i5bImq/70bHhC4CqrWMGwjZHWv3o0'
+            b'uTnGWRB6mn/ZA1803ZqXnSW+zOFeRNdhGC3Efo18SR5cd+/bRBsHziwRC7R16aPrXEkTtA'
+            b'zdwSPMRPa1jagPLZWr4013NO5D7DRCoCwlTKwWEyRSCaNBjAGHZSceNnmmlCc7J7RYRVdA'
+            b'eMN1gcfLXB4vB4g4XgNrrIDrmnVzPQcvUEe7Yi7W/BMIS+lccB4coOAvoE9czQ8RyQ88vr'
+            b'KU3DJn41u2jYEcQa7MQAXoW1lNZhPRKUWCLeOKtG5NHNYKgP0c1gmo46FlSPy/g2D47Sl/'
+            b'F1HosrMDoZjSx67XZflZ7ROEQGWu8kaGm5Q2SwNH4O57ewNZw7RDSGIp9OHSYaYOUBCZkB'
+            b'8WauPONH0D8MqbSjmnSQOQ3kLc3IhOr1IuN1dLNO4bDvIboPmZCjdajaAkGDMkCsP2UWCt'
+            b'qTAW7pTiYpWnMyLiO9ySC3tCYjtNaZjEspSMMO+tLMkV5bMo6lSI0c8m5OY7JQK0PGtVeF'
+            b'HNEfN0bRnCa8RhnxXeR2tXlyMes5GaK9KLM/UuqylxqkuxqtXCYXubwMIYaFFUeEy8saDc'
+            b'hKS5VEz4HmyWWzDt1HkYIOt41VlpSzIZDd2yFCRH3b2CKQ3jMmxIJJ9HnAJBlzhQXRVmmA'
+            b'nQDpUkUjdxItS4DqpjAIKTeUQUptJmnI8C4xSH3tD8LR14lBd7i4C8qaif30V860M0uraC'
+            b'muvqCsbSwdhbi0mFxQtgIdX1DGHNeQzhDk3ZUdMmTUtxSVye3lYXjVt1Ogz7+EO8yQqZKZ'
+            b'6Ogu148YrzyoluQq43J08xOkj1RGlAVX4PytQcVK0eYS7QlTIJD2m2u3uqvJFe4vJ6Jb9x'
+            b'TxnJ/s7cyy9QQlJxdaMRt8u2eRvsgLPCTQiqMtbzQonsg2158tCk/ox4ebMeh1SBO44fgL'
+            b'HzAPc4jcn4bK8DI2xPeYO0kBEaL8ZQKsdT0v37+Mn8qGwnc1/E2L5Gr0m4+xaPBD3UAPtz'
+            b'ZW8GrldBXgq1czG5S7f5KY/qP7rCoPSCeA6HVvh6yRboXfusVaOjRZ0le1LgN4y+45wr3F'
+            b'cwRqW2cwbgWSJtdhaEwHkSZf2cWXyVfZSyvwrbfSLB0MlEjrW4or0NwsWJIRtgdyRZbFCA'
+            b'hLkgYMS5KWNKe4oAE3QgWt2GDaz2pC5G0IL7uhZ/sahhkEqXo9qEHRS88YW78q3XI+JTlS'
+            b'LRtiV5rlguhYsVwC1JkzA23ejeDuiu8TzAg6qRYCcBKrngabLCOOPo8yizjhjaI4LAfWAK'
+            b'Pbb9vkq5/LIE16WWMFt2iC+uEkNHcL+TrkaV1/iJ3WR31XPObpDvNNRADdTgBGHS+qoJ6r'
+            b'VxDImJjefGe8HTN1UjxTG602yf9isEoPOoB58lU6XVQlP/hVSGxQ+ZHjeiyeoeLogW01TV'
+            b'5ZyFXy6rsVJPl1re4snYHUhzdWoPXhDU1H8i7IkGBqUOM+tG49qAMkeFZ2uAWF+2ou1uME'
+            b'ncF+fbs9hCE169ewU8g4R89ImtBfw0uUYTV9GjNib3WZvKpnhpbJa2i5pSXETB3d8Ksaz2'
+            b'uSaosN85BX1dKhO73q3axZChq+OSbwFuo0RSqixkoHIV+Rnk7dmwrJvKZUwyFNFvTFkAaQ'
+            b'Rwox0CrAzWWAL2cOh07VHeOFmEn7HZ4qB2i/1278Cstk9T2mDmFqHaHb2huT/GJRRYi7NJ'
+            b'zn4LjlZSqRclw7x8PrwV+kY5yEk3g8kn7lRrOXls2kfS+IRX7tRrNTz+b94ryja7SmVX6H'
+            b'L4tRLs2G/m46Zjccab4LxPjzb+PxRl2H9jTYCAZcFhVnLgmnMw0Yy4mTWG0/lr48/7fFu/'
+            b'r7TiStLhnQF7+X0GLsQjNRFHpBfDYBrVuNoaWZQOaoW0ce6SXXWQZa+9Z0pNQhQwbzMMmM'
+            b'H5HdC1noSf1GUIY4pL9GeEbfTLmF/KrPysFV6L1RB98OZqK0Sjj3xHDzpxqB82Xypza3zp'
+            b'JgT4lZ1p+6F4LTqBdqkj+jEx3QCf7kBUpNm0SWjui4xawRmfynkrXNEz4EBD30bb3ehA57'
+            b'2ib6tnRouG8yM18mcnF6Rlz1ZFkSXaNuvOmlLNJ68JiC1uOGpqOByDAkmhTUfs3h1e+6Ut'
+            b'yroSn3oI7iCozqwgJcrdqXcB7Ko7ZEGCaq5E3P9JG8qIAsLdPgInlTCuB0TtLcCB+GsGUW'
+            b'wFg3ZF6Od4pXxvWtkbCMGaORcB5zxzvNqFgRf7TlDIXk7Xp7GlPwt6vdaegmb7eNKzD+vn'
+            b'3HuALV9e2WccXMBGa3LIezXTcJGYc6oSoi029MU5nncZsmokZbQ16dDq8ZwHG9RRN4Q9sM'
+            b'JhbzCI8fxjI8fXHZlBl5vLmCgwYHKDYETAUbH7VnVXasGGcFOPdhijKDDF55YIm4bYpmaj'
+            b'/9agumUm+91oGRC1rwgvxgdIhY+sMb+mmMFWzD8eYYhYi6G6RtMA9mm48wT1NkmJYZMEzL'
+            b'DBlNsTKH6PsyVk0KMaID4ag0QxC5Zji62deKjnqWkgypDSiwqzuvoe29XV163V6BUT+C/s'
+            b'g8VmLPJ6AgBt1PGmFVh2ZieJNttIxJfgtv72KWJkvgLMmX4alDIe9ZAryXaR5D+oJRlCtt'
+            b'4uZIpR+skDN6sIIoftrBShkGLiQhOvGNIC4qg9EJRAfAS0VHGVyQIVVpAup03z/pPrZxWD'
+            b'+c+8c+ejQDQxp4u/4MPUTDVYBv+ZqRPS7GwoNa7CswKkbGrroVdowX3XuwJ9Xj5HJF2i8Y'
+            b'r5JvHFvnyTd9WA36xjdZRCbPO2/wrS8cIK2MOmuSI6NOBnVt1FkZNBh1Gldjo04G16szXJ'
+            b'mhR0e4JgC1jSdD+qN7xIRbHVhFCRs0visQvfW39fEPtSnPGN/M2adlaT9D1xABoXNwcOge'
+            b'AGhtCSn1S+VVi28ZqWeWcCM1an0KwBp+8tO+sV4tzJcYVjraj9ezPPkWLeAgtpuWk2hS37'
+            b'pbJ6NRAaITtgg/OmFL+mh2rybmK2z/WFrtX5UG8FtSltJ7Sh4Jm0oWiXeVbLB6s8gi0W6R'
+            b'hfSukEXUzo8F9HkXi/jtHUuZZvT7wLfOqAusAngYDg7PJpNFwK0MwFD3ndEakhGdR0ShbD'
+            b'vdnOYEzKK/vko+I6oLj+HcLr3KcG4U3zL5Fh0rQwWOjpWRPgzqPnBUQW0lwoYRDYwQNToR'
+            b'A/fRiRjQ0s/D79gsABOib2GDDQmK7OEReGQPP0/+7a59v0z+H+SUGTTsMAEA'
+            )).decode().splitlines()
 
 
 def ConversionHeader(i: str, filename: OptStr ="unknown"):
@@ -19539,8 +19584,8 @@ def canon(c):
 def chartocanon(s):
     assert isinstance(s, str)
     n, c = mupdf.fz_chartorune(s)
-    c = canon(c);
-    return n, c;
+    c = canon(c)
+    return n, c
 
 
 def dest_is_valid(o, page_count, page_object_nums, names_list):
@@ -19585,7 +19630,7 @@ def dest_is_valid_page(obj, page_object_nums, pagecount):
 def find_string(s, needle):
     assert isinstance(s, str)
     for i in range(len(s)):
-        end = match_string(s[i:], needle);
+        end = match_string(s[i:], needle)
         if end is not None:
             end += i
             return i, end
@@ -19609,59 +19654,6 @@ def get_pdf_now() -> str:
     else:
         pass
     return tstamp
-
-
-def get_pdf_str(s: str) -> str:
-    """ Return a PDF string depending on its coding.
-
-    Notes:
-        Returns a string bracketed with either "()" or "<>" for hex values.
-        If only ascii then "(original)" is returned, else if only 8 bit chars
-        then "(original)" with interspersed octal strings \nnn is returned,
-        else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
-        UTF-16BE encoding of the original.
-    """
-    if not bool(s):
-        return "()"
-
-    def make_utf16be(s):
-        r = bytearray([254, 255]) + bytearray(s, "UTF-16BE")
-        return "<" + r.hex() + ">"  # brackets indicate hex
-
-    # The following either returns the original string with mixed-in
-    # octal numbers \nnn for chars outside the ASCII range, or returns
-    # the UTF-16BE BOM version of the string.
-    r = ""
-    for c in s:
-        oc = ord(c)
-        if oc > 255:  # shortcut if beyond 8-bit code range
-            return make_utf16be(s)
-
-        if oc > 31 and oc < 127:  # in ASCII range
-            if c in ("(", ")", "\\"):  # these need to be escaped
-                r += "\\"
-            r += c
-            continue
-
-        if oc > 127:  # beyond ASCII
-            r += "\\%03o" % oc
-            continue
-
-        # now the white spaces
-        if oc == 8:  # backspace
-            r += "\\b"
-        elif oc == 9:  # tab
-            r += "\\t"
-        elif oc == 10:  # line feed
-            r += "\\n"
-        elif oc == 12:  # form feed
-            r += "\\f"
-        elif oc == 13:  # carriage return
-            r += "\\r"
-        else:
-            r += "\\267"  # unsupported: replace by 0xB7
-
-    return "(" + r + ")"
 
 
 class ElementPosition(object):
@@ -19763,8 +19755,8 @@ def glyph_name_to_unicode(name: str) -> int:
 
 
 def hdist(dir, a, b):
-    dx = b.x - a.x;
-    dy = b.y - a.y;
+    dx = b.x - a.x
+    dy = b.y - a.y
     return mupdf.fz_abs(dx * dir.x + dy * dir.y)
 
 
@@ -20038,7 +20030,7 @@ def util_invert_matrix(matrix):
 
 def util_measure_string( text, fontname, fontsize, encoding):
     font = mupdf.fz_new_base14_font(fontname)
-    w = 0;
+    w = 0
     pos = 0
     while pos < len(text):
         t, c = mupdf.fz_chartorune(text[pos:])
@@ -20201,7 +20193,7 @@ def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots,
                     mupdf.fz_warn( "skipping widget annotation")
                     continue
                 if mupdf.pdf_name_eq(subtype, PDF_NAME('Widget')):
-                    continue;
+                    continue
                 mupdf.pdf_dict_del( o, PDF_NAME('Popup'))
                 mupdf.pdf_dict_del( o, PDF_NAME('P'))
                 copy_o = mupdf.pdf_graft_mapped_object( graft_map.this, o)
@@ -20328,7 +20320,7 @@ def pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp):
                 kid = mupdf.pdf_array_get( kids, i)
                 type_ = mupdf.pdf_dict_get( kid, PDF_NAME('Type'))
                 if type_.m_internal:
-                    a =  mupdf.pdf_name_eq( type_, PDF_NAME('Pages'))
+                    a = mupdf.pdf_name_eq( type_, PDF_NAME('Pages'))
                 else:
                     a = (
                             mupdf.pdf_dict_get( kid, PDF_NAME('Kids')).m_internal
@@ -20517,7 +20509,7 @@ def retainpages(doc, liste):
     for page in range(argc):
         i = liste[page]
         if i < 0 or i >= pagecount:
-            RAISEPY(ctx, MSG_BAD_PAGENO, PyExc_ValueError);
+            RAISEPY(MSG_BAD_PAGENO, PyExc_ValueError)
         retainpage(doc, pages, kids, i)
 
     # Update page count and kids array
@@ -20628,6 +20620,7 @@ def strip_outline(doc, outlines, page_count, page_object_nums, names_list):
     first = None
     count = 0
     current = outlines
+    prev = None
     while current.m_internal:
         # Strip any children to start with. This takes care of
         # First / Last / Count for us.
@@ -20650,8 +20643,8 @@ def strip_outline(doc, outlines, page_count, page_object_nums, names_list):
                 current = next
             else:
                 # Outline with invalid dest, but children. Just drop the dest.
-                mupdf.pdf_dict_del(current, PDF_NAME('Dest'));
-                mupdf.pdf_dict_del(current, PDF_NAME('A'));
+                mupdf.pdf_dict_del(current, PDF_NAME('Dest'))
+                mupdf.pdf_dict_del(current, PDF_NAME('A'))
                 current = mupdf.pdf_dict_get(current, PDF_NAME('Next'))
         else:
             # Keep this one
@@ -20680,8 +20673,8 @@ def strip_outlines(doc, outlines, page_count, page_object_nums, names_list):
         mupdf.pdf_dict_del(outlines, PDF_NAME('Count'))
     else:
         old_count = mupdf.pdf_to_int(mupdf.pdf_dict_get(outlines, PDF_NAME('Count')))
-        mupdf.pdf_dict_put(outlines, PDF_NAME('First'), first);
-        mupdf.pdf_dict_put(outlines, PDF_NAME('Last'), last);
+        mupdf.pdf_dict_put(outlines, PDF_NAME('First'), first)
+        mupdf.pdf_dict_put(outlines, PDF_NAME('Last'), last)
         mupdf.pdf_dict_put(outlines, PDF_NAME('Count'), mupdf.pdf_new_int(nc if old_count > 0 else -nc))
     return nc
 
@@ -20706,6 +20699,14 @@ def unicode_to_glyph_name(ch: int) -> str:
                 c = int(unc[:4], base=16)
                 _adobe_glyphs[c] = name
     return _adobe_glyphs.get(ch, ".notdef")
+
+
+def PySys_WriteStdout(text):
+    sys.stdout.write(text)
+
+
+def PySys_WriteStderr(text):
+    sys.stderr.write(text)
 
 
 def vdist(dir, a, b):
@@ -21024,7 +21025,7 @@ class TOOLS:
                                 PDF_NAME('DA'),
                                 )
                     da_str = mupdf.pdf_to_text_string(da)
-                except Exception as e:
+                except Exception:
                     if g_exceptions_verbose:    exception_info()
                     return
                 return da_str
@@ -21068,13 +21069,13 @@ class TOOLS:
     @staticmethod
     def _rotate_matrix(page):
         pdfpage = page._pdf_page()
-        if not pdf_page.m_internal:
+        if not pdfpage.m_internal:
             return JM_py_from_matrix(mupdf.FzMatrix())
         return JM_py_from_matrix(JM_rotate_page_matrix(pdfpage))
 
     @staticmethod
     def _save_widget(annot, widget):
-        JM_set_widget_properties(annot, widget);
+        JM_set_widget_properties(annot, widget)
 
     def _update_da(annot, da_str):
         if g_use_extra:
@@ -21086,17 +21087,10 @@ class TOOLS:
                 mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(this_annot), PDF_NAME('DA'), da_str)
                 mupdf.pdf_dict_del(mupdf.pdf_annot_obj(this_annot), PDF_NAME('DS'))    # /* not supported */
                 mupdf.pdf_dict_del(mupdf.pdf_annot_obj(this_annot), PDF_NAME('RC'))    # /* not supported */
-            except Exception as e:
+            except Exception:
                 if g_exceptions_verbose:    exception_info()
                 return
             return
-
-    @staticmethod
-    def fitz_config_():
-        '''
-        Was previously hidden by Tools.fitz_config list?
-        '''
-        return JM_fitz_config()
     
     @staticmethod
     def gen_id():
@@ -21158,7 +21152,6 @@ class TOOLS:
         global JM_mupdf_warnings_store
         JM_mupdf_warnings_store = list()
         
-
     @staticmethod
     def set_aa_level(level):
         '''
@@ -21206,12 +21199,12 @@ class TOOLS:
     def set_icc( on=0):
         """Set ICC color handling on or off."""
         if on:
-            if FZ_ENABLE_ICC:
+            if mupdf.FZ_ENABLE_ICC:
                 mupdf.fz_enable_icc()
             else:
-                RAISEPY( "MuPDF built w/o ICC support",PyExc_ValueError);
-        elif FZ_ENABLE_ICC:
-            fz_disable_icc()
+                RAISEPY( "MuPDF built w/o ICC support",PyExc_ValueError)
+        elif mupdf.FZ_ENABLE_ICC:
+            mupdf.fz_disable_icc()
  
     @staticmethod
     def set_low_memory( on=None):
@@ -21292,33 +21285,7 @@ class TOOLS:
     # fixme: also defined at top-level.
     JM_annot_id_stem = 'fitz'
 
-    fitz_config = {
-                "plotter-g": True,
-                "plotter-rgb": True,
-                "plotter-cmyk": True,
-                "plotter-n": True,
-                "pdf": True,
-                "xps": True,
-                "svg": True,
-                "cbz": True,
-                "img": True,
-                "html": True,
-                "epub": True,
-                "jpx": True,
-                "js": True,
-                "tofu": True,
-                "tofu-cjk": True,
-                "tofu-cjk-ext": True,
-                "tofu-cjk-lang": True,
-                "tofu-emoji": True,
-                "tofu-historic": True,
-                "tofu-symbol": True,
-                "tofu-sil": True,
-                "icc": True,
-                "base14": True,
-                "py-memory": True,
-                }
-    """PyMuPDF configuration parameters."""
+    fitz_config = JM_fitz_config()
 
 
 # We cannot import utils earlier because it imports this fitz.py file itself
