@@ -3709,10 +3709,7 @@ class Document:
         if filename is None:
             filename = name
         if ufilename is None:
-            # fixme: Not sure what classic implementation does here.
             ufilename = filename
-            if isinstance(ufilename, bytes):
-                ufilename = ufilename.decode('utf8')
         if desc is None:
             desc = name
         xref = self._embfile_add(
