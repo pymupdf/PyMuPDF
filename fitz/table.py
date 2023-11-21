@@ -1340,7 +1340,7 @@ class Table(object):
 
             l_r = set()  # (x0, x1) pairs for all table cells
             for cell in table.cells:
-                if cell == None:  # skip non-existing cells
+                if cell is None:  # skip non-existing cells
                     continue
                 cellbb = Rect(cell)
 
@@ -1827,7 +1827,7 @@ def make_edges(page, clip=None, tset=None):
     if page.rotation in (90, 270):
         w, h = prect.br
         prect = Rect(0, 0, h, w)
-    if clip != None:
+    if clip is not None:
         clip = Rect(clip)
     else:
         clip = prect
@@ -1996,17 +1996,17 @@ def find_tables(
     global CHARS, EDGES
     CHARS = []
     EDGES = []
-    if snap_x_tolerance == None:
+    if snap_x_tolerance is None:
         snap_x_tolerance = UNSET
-    if snap_y_tolerance == None:
+    if snap_y_tolerance is None:
         snap_y_tolerance = UNSET
-    if join_x_tolerance == None:
+    if join_x_tolerance is None:
         join_x_tolerance = UNSET
-    if join_y_tolerance == None:
+    if join_y_tolerance is None:
         join_y_tolerance = UNSET
-    if intersection_x_tolerance == None:
+    if intersection_x_tolerance is None:
         intersection_x_tolerance = UNSET
-    if intersection_y_tolerance == None:
+    if intersection_y_tolerance is None:
         intersection_y_tolerance = UNSET
     settings = {
         "vertical_strategy": vertical_strategy,
