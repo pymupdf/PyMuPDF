@@ -6,7 +6,19 @@ Change Log
 
 * Bug fixes:
 
+  * **Fixed** `2232 <https://github.com/pymupdf/PyMuPDF/issues/2232>`_: Geometry helper classes should support keyword arguments
+  * **Fixed** `2736 <https://github.com/pymupdf/PyMuPDF/issues/2736>`_: Failure when set cropbox with mediabox negative value
+  * **Fixed** `2749 <https://github.com/pymupdf/PyMuPDF/issues/2749>`_: RuntimeError: cycle in structure tree
+  * **Fixed** `2753 <https://github.com/pymupdf/PyMuPDF/issues/2753>`_: Story.write_with_links will ignore everything after the first "page break" in the HTML.
   * **Fixed** `2788 <https://github.com/pymupdf/PyMuPDF/issues/2788>`_: Problem with get_toc in pymupdf 1.23.6
+  * **Fixed** `2791 <https://github.com/pymupdf/PyMuPDF/issues/2791>`_: Experiencing small memory leak in save()
+  * **Fixed** `2812 <https://github.com/pymupdf/PyMuPDF/issues/2812>`_: find_tables on landscape page generates reversed text
+
+* Other:
+
+  * Added flake8 code checking of rebased implementation to test suite, and made various fixes.
+  * Added `scripts/test.py`, for simple build+test of PyMuPDF git checkout.
+  * Added `fitz.pymupdf_version_tuple`, e.g. (1, 23, 6).
 
 
 **Changes in version 1.23.6 (2023-11-06)**
