@@ -71,7 +71,6 @@ This is implemented as new class TableHeader with the properties:
 * external: A bool indicating whether the header is outside the table cells.
 
 """
-import inspect
 import itertools
 import string
 from dataclasses import dataclass
@@ -1896,7 +1895,7 @@ def make_edges(page, clip=None, tset=None):
         items = p["items"]  # items in this path
 
         # if 'closePath', add a line from last to first point
-        if p["closePath"] and i[0][0] == "l" and i[-1][0] == "l":
+        if p["closePath"] and items[0][0] == "l" and items[-1][0] == "l":
             items.append(("l", items[-1][2], items[0][1]))
 
         for i in items:
