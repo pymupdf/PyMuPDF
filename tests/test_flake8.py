@@ -54,5 +54,5 @@ def test_flake8():
         print(f'test_flake8(): Running: {command}')
         subprocess.run(command, shell=1, check=1)
     run(f'pip install flake8')
-    run(f'flake8 --ignore={ignores} --statistics {root}/src/__init__.py {root}/src/utils.py')
+    run(f'flake8 --ignore={ignores} --statistics {root}/src/__init__.py {root}/src/utils.py {root}/fitz/table.py')
     print(f'test_flake8(): flake8 succeeded.')
