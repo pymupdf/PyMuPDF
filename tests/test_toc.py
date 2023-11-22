@@ -113,3 +113,7 @@ def test_2788():
     print(f'{toc0=}')
     print(f'{toc2=}')
     assert toc2 == toc0
+    
+    # Also test Page.get_links() bugfix from #2817.
+    for page in document:
+        page.get_links()

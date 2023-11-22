@@ -953,7 +953,12 @@ def get_page_pixmap(
 
 
 def getLinkDict(ln, document=None) -> dict:
-    dest = ln.destination(document)
+    if isinstance(ln, fitz.Outline):
+        dest = ln.destination(document)
+    elif isinstance(ln, fitz.Link):
+        dest = ln.dest
+    else:
+        assert 0, f'Unexpected {type(ln)=}.'
     nl = {"kind": dest.kind, "xref": 0}
     try:
         nl["from"] = ln.rect
