@@ -7072,6 +7072,10 @@ class Outline:
         return linkDest(self, None, None)
 
     def destination(self, document):
+        '''
+        Like `dest` property but uses `document` to resolve destinations for
+        kind=LINK_NAMED.
+        '''
         return linkDest(self, None, document)
         
     @property
