@@ -611,6 +611,13 @@ def test_2553():
         print(f'Checking occurrence of 0xFFFD, {fitz.mupdf_version_tuple=}.')
         assert chr(0xFFFD) in set1
 
+def test_2553-2():
+    doc = fitz.open(f"{scriptdir}/resources/test_2553-2.pdf")
+    page = doc[0]
+
+    # extract plain text, ensure that there are no 0xFFFD characters
+    text = page.get_text()
+    assert chr(0xfffd) not in text
 
 def test_2635():
     """Rendering a page before and after cleaning it should yield the same pixmap."""
