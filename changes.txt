@@ -19,6 +19,9 @@ Change Log
   * Added flake8 code checking of rebased implementation to test suite, and made various fixes.
   * Added `scripts/test.py`, for simple build+test of PyMuPDF git checkout.
   * Added `fitz.pymupdf_version_tuple`, e.g. (1, 23, 6).
+  * Restored mistakenly-reverted fix for #2345 "Turn off print statements in utils.py".
+  * Rebased implementation: disables diagnostics during Document constructor to match classic.
+  
 
 
 **Changes in version 1.23.6 (2023-11-06)**
