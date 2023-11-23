@@ -617,7 +617,11 @@ def test_2553_2():
 
     # extract plain text, ensure that there are no 0xFFFD characters
     text = page.get_text()
-    assert chr(0xfffd) not in text
+    if fitz.mupdf_version_tuple >= (1, 23, 7):
+        assert chr(0xfffd) not in text
+    else:
+        # Bug not fixed in MuPDF.
+        assert chr(0xfffd) in text
 
 def test_2635():
     """Rendering a page before and after cleaning it should yield the same pixmap."""
