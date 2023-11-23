@@ -611,7 +611,7 @@ def test_2553():
         print(f'Checking occurrence of 0xFFFD, {fitz.mupdf_version_tuple=}.')
         assert chr(0xFFFD) in set1
 
-def test_2553-2():
+def test_2553_2():
     doc = fitz.open(f"{scriptdir}/resources/test_2553-2.pdf")
     page = doc[0]
 
