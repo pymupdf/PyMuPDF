@@ -17,6 +17,7 @@ Change Log
   * **Fixed** `2753 <https://github.com/pymupdf/PyMuPDF/issues/2753>`_: Story.write_with_links will ignore everything after the first "page break" in the HTML.
   * **Fixed** `2812 <https://github.com/pymupdf/PyMuPDF/issues/2812>`_: find_tables on landscape page generates reversed text
   * **Fixed** `2829 <https://github.com/pymupdf/PyMuPDF/issues/2829>`_: [cannot create /Annot for kind] is still printed despite #2345 is closed.
+  * **Fixed** `2841 <https://github.com/pymupdf/PyMuPDF/issues/2841>`_: Unexpected KeyError when using scrub with fitz_new
 
 * Use MuPDF-1.23.7.
 
@@ -28,10 +29,11 @@ Change Log
     * Disable diagnostics during Document constructor to match classic implementation.
   
   * Additional fix to `2553 <https://github.com/pymupdf/PyMuPDF/issues/2553>`_: Invalid characters in versions >= 1.22
-  * Fix `MuPDF Bug 707324 <https://bugs.ghostscript.com/show_bug.cgi?id=707324>`_: Story: HTML table row background color repeated incorrectly
+  * Fixed `MuPDF Bug 707324 <https://bugs.ghostscript.com/show_bug.cgi?id=707324>`_: Story: HTML table row background color repeated incorrectly
   * Added `scripts/test.py`, for simple build+test of PyMuPDF git checkout.
   * Added `fitz.pymupdf_version_tuple`, e.g. `(1, 23, 6)`.
   * Restored mistakenly-reverted fix for `2345 <https://github.com/pymupdf/PyMuPDF/issues/2345>`_: Turn off print statements in utils.py
+  * Include any trailing `... repeated <N> times...` text in warnings returned by `mupdf_warnings()` (rebased only).
   
 
 
