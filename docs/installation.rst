@@ -61,6 +61,23 @@ As of `PyMuPDF-1.20.0`, the required MuPDF source code is already in the
 sdist and is automatically built into PyMuPDF.
 
 
+Problems after installation
+---------------------------------------------------------
+
+* On Windows `ImportError: DLL load failed while importing _fitz`.
+
+  This has been occasionally seen if `MSVCP140.dll` is missing, and appears
+  to be caused by a bug in some versions (2015-2017) of `Microsoft Visual C++
+  Redistributables`.
+
+  It is recommended to search for `MSVCP140.dll` in https://msdn.com
+  to find instructions for how to reinstall it. For example
+  https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist has
+  permalinks to the latest supported versions.
+
+  See https://github.com/pymupdf/PyMuPDF/issues/2678 for more details.
+
+
 Notes
 ---------------------------------------------------------
 
