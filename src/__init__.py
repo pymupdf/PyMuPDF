@@ -8433,7 +8433,8 @@ class Page:
                 linkobj = self._annot_refs[linkid]
                 linkobj._erase()
             except Exception:
-                exception_info()
+                # Don't print this exception, to match classic. Issue #2841.
+                #exception_info()
                 pass
 
         page = mupdf.pdf_page_from_fz_page( self.this)
