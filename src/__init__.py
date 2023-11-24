@@ -21153,6 +21153,8 @@ class TOOLS:
         '''
         Get the MuPDF warnings/errors with optional reset (default).
         '''
+        # Get any trailing `... repeated <N> times...` message.
+        mupdf.fz_flush_warnings()
         ret = '\n'.join( JM_mupdf_warnings_store)
         if reset:
             TOOLS.reset_mupdf_warnings()
