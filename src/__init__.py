@@ -8941,7 +8941,7 @@ class Page:
         textpage = TextPage(textpage)
         return textpage
 
-    def get_texttrace(self):
+    def get_texttrace(self, names=None):
 
         CheckParent(self)
         old_rotation = self.rotation
@@ -8949,10 +8949,10 @@ class Page:
             self.set_rotation(0)
         page = self.this
         rc = []
-        if g_use_extra:
-            dev = extra.JM_new_texttrace_device(rc)
+        if g_use_extra or names is True:
+            dev = extra.JM_new_texttrace_device(rc, names=names)
         else:
-            dev = JM_new_texttrace_device(rc)
+            dev = JM_new_texttrace_device(rc, names=names)
         prect = mupdf.fz_bound_page(page)
         dev.ptm = mupdf.FzMatrix(1, 0, 0, -1, 0, prect.y1)
         mupdf.fz_run_page(page, dev, mupdf.FzMatrix(), mupdf.FzCookie())
@@ -18229,7 +18229,8 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
 
     # PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
     # PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
-    
+
+    gname = mupdf.fz_new_buffer(32)
     chars = []
     for i in range( span.m_internal.len):
         adv = 0
@@ -18258,7 +18259,8 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
             y1 = char_orig.y - dscsize
         char_bbox = mupdf.fz_make_rect(x0, y0, x1, y1)
         char_bbox = mupdf.fz_transform_rect(char_bbox, m1)
-        chars.append(
+        if not dev.names:
+            chars.append(
                 (
                     span.items(i).ucs,
                     span.items(i).gid,
@@ -18273,7 +18275,26 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
                         char_bbox.y1,
                     ),
                 )
+            )
+        else:
+            mupdf.fz_get_glyph_name(span.font(), span.items(i).gid, gname.fz_buffer_storage()[1], 32)
+            glyphname=gname.fz_buffer_extract().decode()
+            chars.append(
+                (
+                    chr(span.items(i).ucs),
+                    glyphname,
+                    (
+                        char_orig.x,
+                        char_orig.y,
+                    ),
+                    (
+                        char_bbox.x0,
+                        char_bbox.y0,
+                        char_bbox.x1,
+                        char_bbox.y1,
+                    ),
                 )
+            )
         if i > 0:
             span_bbox = mupdf.fz_union_rect(span_bbox, char_bbox)
         else:
@@ -18925,7 +18946,7 @@ class JM_new_texttrace_device(mupdf.FzDevice2):
     Trace TEXT device for Python method Page.get_texttrace()
     '''
 
-    def __init__(self, out):
+    def __init__(self, out, names=False):
         super().__init__()
         self.use_virtual_fill_path()
         self.use_virtual_stroke_path()
@@ -18945,6 +18966,7 @@ class JM_new_texttrace_device(mupdf.FzDevice2):
         self.depth = 0
         self.clips = 0
         self.method = None
+        self.names = names
         
         self.seqno = 0
 

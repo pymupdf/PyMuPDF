@@ -257,6 +257,27 @@ def test_texttrace():
             print( f'page {i} json:\n{json.dumps(tt, indent="    ")}', file=f)
 
 
+def test_glyphnames2():
+    """Test extraction of characters and glyph names."""
+    doc = fitz.open()
+    page = doc.new_page()
+    page.insert_text((100, 100), "World !")
+    compare = [
+        ("W", "W"),
+        ("o", "o"),
+        ("r", "r"),
+        ("l", "l"),
+        ("d", "d"),
+        (" ", "space"),
+        ("!", "exclam"),
+    ]
+    # this invocation returns chr() and glyph name,
+    # instead of corresponding integers.
+    spans = page.get_texttrace(names=True)
+    new = [(i[0], i[1]) for i in spans[0]["chars"]]
+    assert compare == new
+
+
 def test_2533():
     """Assert correct char bbox in page.get_texttrace().
 

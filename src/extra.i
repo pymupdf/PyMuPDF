@@ -1937,6 +1937,7 @@ struct jm_lineart_device
     long depth = {};
     size_t seqno = {};
     char* layer_name;
+    int names = 0;
 };
 
 
@@ -2116,7 +2117,9 @@ static void jm_trace_text_span(
         }
         fz_rect char_bbox = mupdf::ll_fz_make_rect(x0, y0, x1, y1);
         char_bbox = mupdf::ll_fz_transform_rect(char_bbox, m1);
-        PyTuple_SET_ITEM(
+        if (!dev->names)
+        {
+            PyTuple_SET_ITEM(
                 chars,
                 (Py_ssize_t) i,
                 Py_BuildValue(
@@ -2131,6 +2134,27 @@ static void jm_trace_text_span(
                     char_bbox.y1
                     )
                 );
+        }
+        else
+        {
+            char gname[32];
+            mupdf::ll_fz_get_glyph_name(span->font, span->items[i].gid, gname, sizeof gname);
+            PyTuple_SET_ITEM(
+                chars,
+                (Py_ssize_t) i,
+                Py_BuildValue(
+                    "Cs(ff)(ffff)",
+                    span->items[i].ucs,
+                    gname,
+                    char_orig.x,
+                    char_orig.y,
+                    char_bbox.x0,
+                    char_bbox.y0,
+                    char_bbox.x1,
+                    char_bbox.y1
+                    )
+                );
+        }
         if (i > 0)
         {
             span_bbox = mupdf::ll_fz_union_rect(span_bbox, char_bbox);
@@ -2386,7 +2410,7 @@ jm_lineart_end_layer(fz_context *ctx, fz_device *dev_)
 }
 
 
-mupdf::FzDevice JM_new_texttrace_device(PyObject* out)
+mupdf::FzDevice JM_new_texttrace_device(PyObject* out, PyObject* names)
 {
     mupdf::FzDevice device(sizeof(jm_tracedraw_device));
     jm_tracedraw_device* dev = (jm_tracedraw_device*) device.m_internal;
@@ -2434,6 +2458,7 @@ mupdf::FzDevice JM_new_texttrace_device(PyObject* out)
     Py_XINCREF(out);
     dev->out = out;
     dev->seqno = 0;
+    dev->names = PyObject_IsTrue(names);
     return device;
 }
 
@@ -4361,7 +4386,7 @@ mupdf::FzDocument Document_init(
 
 int ll_fz_absi(int i);
 
-mupdf::FzDevice JM_new_texttrace_device(PyObject* out);
+mupdf::FzDevice JM_new_texttrace_device(PyObject* out, PyObject* names);
 
 fz_rect JM_char_bbox(const mupdf::FzStextLine& line, const mupdf::FzStextChar& ch);
 

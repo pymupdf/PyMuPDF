@@ -6572,13 +6572,13 @@ def get_oc_items(self) -> list:
             self.set_rotation(old_rotation)
         %}
         PyObject *
-        get_texttrace()
+        get_texttrace(PyObject *names=NULL)
         {
             fz_page *page = (fz_page *) $self;
             fz_device *dev = NULL;
             PyObject *rc = PyList_New(0);
             fz_try(gctx) {
-                dev = JM_new_texttrace_device(gctx, rc);
+                dev = JM_new_texttrace_device(gctx, rc, PyObject_IsTrue(names));
                 fz_rect prect = fz_bound_page(gctx, page);
                 trace_device_rot = fz_identity;
                 trace_device_ptm = fz_make_matrix(1, 0, 0, -1, 0, prect.y1);

@@ -17,6 +17,7 @@ typedef struct
 	long depth;
 	int clips;
 	PyObject *method;
+	int names;
 } jm_lineart_device;
 
 static PyObject *dev_pathdict = NULL;
@@ -601,7 +602,7 @@ jm_dev_linewidth(fz_context *ctx, fz_device *dev_, const fz_path *path, const fz
 
 
 static void
-jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, size_t seqno)
+jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, size_t seqno, int names)
 {
 	fz_font *out_font = NULL;
 	int i;
@@ -678,9 +679,17 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 		}
 		fz_rect char_bbox = fz_make_rect(x0, y0, x1, y1);
 		char_bbox = fz_transform_rect(char_bbox, m1);
-		PyTuple_SET_ITEM(chars, (Py_ssize_t) i, Py_BuildValue("ii(ff)(ffff)",
-			span->items[i].ucs, span->items[i].gid,
-			char_orig.x, char_orig.y, char_bbox.x0, char_bbox.y0, char_bbox.x1, char_bbox.y1));
+		if (!names) {
+			PyTuple_SET_ITEM(chars, (Py_ssize_t) i, Py_BuildValue("ii(ff)(ffff)",
+				span->items[i].ucs, span->items[i].gid,
+				char_orig.x, char_orig.y, char_bbox.x0, char_bbox.y0, char_bbox.x1, char_bbox.y1));
+		} else {
+			char gname[32];
+			fz_get_glyph_name(ctx, span->font, span->items[i].gid, gname, sizeof gname);
+			PyTuple_SET_ITEM(chars, (Py_ssize_t) i, Py_BuildValue("Cs(ff)(ffff)",
+				span->items[i].ucs, gname,
+				char_orig.x, char_orig.y, char_bbox.x0, char_bbox.y0, char_bbox.x1, char_bbox.y1));
+		}
 		if (i > 0) {
 			span_bbox = fz_union_rect(span_bbox, char_bbox);
 		} else {
@@ -733,11 +742,11 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 }
 
 static void
-jm_trace_text(fz_context *ctx, PyObject *out, const fz_text *text, int type, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, size_t seqno)
+jm_trace_text(fz_context *ctx, PyObject *out, const fz_text *text, int type, fz_matrix ctm, fz_colorspace *colorspace, const float *color, float alpha, size_t seqno, int names)
 {
 	fz_text_span *span;
 	for (span = text->head; span; span = span->next)
-		jm_trace_text_span(ctx, out, span, type, ctm, colorspace, color, alpha, seqno);
+		jm_trace_text_span(ctx, out, span, type, ctm, colorspace, color, alpha, seqno, names);
 }
 
 /*---------------------------------------------------------
@@ -751,7 +760,7 @@ jm_lineart_fill_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz_m
 {
 	jm_lineart_device *dev = (jm_lineart_device *)dev_;
 	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 0, ctm, colorspace, color, alpha, dev->seqno);
+	jm_trace_text(ctx, out, text, 0, ctm, colorspace, color, alpha, dev->seqno, dev->names);
 	dev->seqno += 1;
 }
 
@@ -760,7 +769,7 @@ jm_lineart_stroke_text(fz_context *ctx, fz_device *dev_, const fz_text *text, co
 {
 	jm_lineart_device *dev = (jm_lineart_device *)dev_;
 	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 1, ctm, colorspace, color, alpha, dev->seqno);
+	jm_trace_text(ctx, out, text, 1, ctm, colorspace, color, alpha, dev->seqno, dev->names);
 	dev->seqno += 1;
 }
 
@@ -770,7 +779,7 @@ jm_lineart_ignore_text(fz_context *ctx, fz_device *dev_, const fz_text *text, fz
 {
 	jm_lineart_device *dev = (jm_lineart_device *)dev_;
 	PyObject *out = dev->out;
-	jm_trace_text(ctx, out, text, 3, ctm, NULL, NULL, 1, dev->seqno);
+	jm_trace_text(ctx, out, text, 3, ctm, NULL, NULL, 1, dev->seqno, dev->names);
 	dev->seqno += 1;
 }
 
@@ -847,7 +856,7 @@ fz_device *JM_new_lineart_device(fz_context *ctx, PyObject *out, int clips, PyOb
 //-------------------------------------------------------------------
 // Trace TEXT device for Python method Page.get_texttrace()
 //-------------------------------------------------------------------
-fz_device *JM_new_texttrace_device(fz_context *ctx, PyObject *out)
+fz_device *JM_new_texttrace_device(fz_context *ctx, PyObject *out, int names)
 {
 	jm_lineart_device *dev = fz_new_derived_device(ctx, jm_lineart_device);
 
@@ -899,6 +908,7 @@ fz_device *JM_new_texttrace_device(fz_context *ctx, PyObject *out)
 	dev->depth = 0;
 	dev->clips = 0;
 	dev->method = NULL;
+	dev->names = names;
 	trace_device_reset();
     
 	return (fz_device *)dev;
