@@ -6992,10 +6992,26 @@ class Widget:
             for x in apnt:
                 nstates.append(x.split()[0])
             states["normal"] = nstates
+        if APN[0] == "xref":
+            nstates = []
+            nxref = int(APN[1].split(" ")[0])
+            APN = doc.xref_object(nxref)
+            apnt = APN.split("/")[1:]
+            for x in apnt:
+                nstates.append(x.split()[0])
+            states["normal"] = nstates
         APD = doc.xref_get_key(xref, "AP/D")
         if APD[0] == "dict":
             dstates = []
             APD = APD[1][2:-2]
+            apdt = APD.split("/")[1:]
+            for x in apdt:
+                dstates.append(x.split()[0])
+            states["down"] = dstates
+        if APD[0] == "xref":
+            dstates = []
+            dxref = int(APD[1].split(" ")[0])
+            APD = doc.xref_object(dxref)
             apdt = APD.split("/")[1:]
             for x in apdt:
                 dstates.append(x.split()[0])
