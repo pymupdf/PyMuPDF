@@ -9569,8 +9569,8 @@ class Pixmap:
                     mupdf.FzMatrix( img.w(), 0, 0, img.h(), 0, 0),
                     )
             xres, yres = mupdf.fz_image_resolution(img)
-            pm.xres = xres
-            pm.yres = yres
+            pm.m_internal.xres = xres
+            pm.m_internal.yres = yres
             self.this = pm
 
         elif args_match(args, (Document, mupdf.FzDocument), int):
