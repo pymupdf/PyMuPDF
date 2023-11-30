@@ -96,6 +96,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.insert_image`          PDF only: insert an image
 :meth:`Page.insert_link`           PDF only: insert a link
 :meth:`Page.insert_text`           PDF only: insert text
+:meth:`Page.insert_htmlbox`        PDF only: insert html text in a rectangle
 :meth:`Page.insert_textbox`        PDF only: insert a text box
 :meth:`Page.links`                 return a generator of the links on the page
 :meth:`Page.load_annot`            PDF only: load a specific annotation
@@ -407,7 +408,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          * This can be used to create watermark images: on a temporary PDF page create a stamp annotation with a low opacity value, make a pixmap from it with *alpha=True* (and potentially also rotate it), discard the temporary PDF page and use the pixmap with :meth:`insert_image` for your target PDF.
 
 
-      .. image :: images/img-stampannot.*
+      .. image:: images/img-stampannot.*
          :scale: 80
 
    .. method:: add_widget(widget)
@@ -624,6 +625,66 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.18.4
 
       PDF only: Insert text into the specified :data:`rect_like` *rect*. See :meth:`Shape.insert_textbox`.
+
+   .. index::
+      pair: rect; insert_htmlbox
+      pair: text; insert_htmlbox
+      pair: css; insert_htmlbox
+      pair: adjust; insert_htmlbox
+      pair: archive; insert_htmlbox
+      pair: overlay; insert_htmlbox
+      pair: rotate; insert_htmlbox
+      pair: oc; insert_htmlbox
+      pair: morph; insert_htmlbox
+
+   .. method:: insert_htmlbox(rect, text, *, css=None, scale_low=0, archive=None, rotate=0, oc=0, overlay=True)
+
+      * New in v1.23.8
+
+      PDF only. Insert text into the specified rectangle. The method has similarities with methods :meth:`Page.insert_textbox` and :meth:`TextWriter.fill_textbox`, but is **much more powerful**. This is achieved by letting a :ref:`Story` object do all the required processing.
+
+      * Parameter `text` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
+
+      * Automatic line breaks are inserted at word boundaries. The "soft hyphen" character `"&#173;"` can be used to cause hyphenation and thus also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag `<br>` - `"\\n"` is ignored and will be treated like a space.
+
+      * With this method the following can be achieved:
+
+         - Styling effects like bold, italic, text color, text alignment, font size or font switching.
+         - The text may inlude arbitrary languages -- **including right-to-left** languages.
+         - Scripts like `Devanagari <https://en.wikipedia.org/wiki/Devanagari>`_ and several others in Asia have a highly complex system of ligatures, where two or more unicodes together yield one glyph. The Story uses the software package `HarfBuzz <https://harfbuzz.github.io/>`_ , to deal with these things and produce correct output.
+         - One can also **include images** via HTML tag `<img>` -- the Story will take care of the appropriate layout. This is an alternative option to insert images, compared to :meth:`Page.insert_image`.
+         - HTML tables (tag `<table>`) may be included in the text and will be handled appropriately.
+         - Links are automatically generated when present.
+
+      * If content does not fit in the rectangle, the developer has two choices:
+         
+         - **either** be just informed (and accept a no-op), 
+         - **or** (`scale=True` - the default) scale down the content until it fits.
+
+      :arg rect_like rect: rectangle on page to receive the text.
+      :arg str,Story text: the text to be written. Can contain plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
+      :arg str css: optional string containing additional CSS instructions. Ignored if `text` is a Story.
+      :arg float scale_low: if necessary scale down the content until it fits in the target rectangle. This sets the down scaling limit. Default is 0, no limit. A value of 1 means no down-scaling. A value of e.g. 0.2 means maximum down-scaling by 80%.
+      :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If `text` refers to images, this parameter is always reqired. Ignored if `text` is a Story.
+      :arg int rotate: one of the values 0, 90, 180, 270. Depending on this, text will be filled:
+      
+          - 0: top-left to bottom-right.
+          - 90: bottom-left to top-right.
+          - 180: bottom-right to top-left.
+          - 270: top-right to bottom-left.
+
+          .. image:: images/img-rotate.*
+
+      :arg int oc:  the xref of an :data:`OCG` / :data:`OCMD` or 0. Please refer to :meth:`Page.show_pdf_page` for details.
+      :arg bool overlay: put the text in front of other content. Please refer to :meth:`Page.show_pdf_page` for details.
+
+      :returns: A tuple of floats (spare_height, scale).
+
+         - `spare_height`: -1 if content did not fit, else >= 0. It is the height of the unused (still available) rectangle stripe. Positive only if scale = 1 (no down-scaling happened).
+         - `scale`: down-scaling factor, 0 < scale <= 1.
+
+         Please refer to examples in this section of the recipes: :ref:`RecipesText_I_c`.
+      
 
    .. index::
       pair: closePath; draw_line
