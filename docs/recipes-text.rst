@@ -425,13 +425,17 @@ Some default values were used above: font size 11 and text alignment "left". The
 
 How to Fill a Box with HTML Text
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to insert text in a rectangle. Instead of simple, plain text, this method accepts HTML source, which may not only contain HTML tags but also styling instructions to influence things like font, font weight (bold) and style (italic), color and much more. It is also possible to mix multiple fonts and languages, output HTML tables and insert images. Any URI links are also supported.
+Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to insert text in a rectangle.
+
+Instead of simple, plain text, this method accepts HTML source, which may not only contain HTML tags but also styling instructions to influence things like font, font weight (bold) and style (italic), color and much more.
+
+It is also possible to mix multiple fonts and languages, to output HTML tables and to insert images and URI links.
 
 For even more styling flexibility, an additional CSS source may also be given.
 
-The method is based on the :ref:`Story` class. Therefore, complex script systems like Devanagari, Nepali, Tamil and many are supported and written correctly thanks to using the HarfBuzz library - which provides this feature, called *"text shaping"*.
+The method is based on the :ref:`Story` class. Therefore, complex script systems like Devanagari, Nepali, Tamil and many are supported and written correctly thanks to using the HarfBuzz library - which provides this so-called **"text shaping"** feature.
 
-Any required fonts to output characters are automatically pulled in from the Google NOTO font library - as a fallback when the optionally supplied user font(s) do not contain some glyphs.
+Any required fonts to output characters are automatically pulled in from the Google NOTO font library - as a fallback (when the -- optionally supplied -- user font(s) do not contain some glyphs).
 
 As a small glimpse into the features offered here, we will output the following HTML-enriched text::
 
@@ -463,6 +467,9 @@ Please note how the "css" parameter is used to globally select the default "sans
 The result will look like this:
 
 .. image:: images/img-htmlbox1.*
+
+How to output HTML tables and images
+.......................................
 
 Here is another example that outputs a table with this method. This time, we are including all the styling in the HTML source itself. Please also note, how it works to include an image - even within a table cell::
 
@@ -530,7 +537,10 @@ The result will look like this:
 .. image:: images/img-htmlbox2.*
 
 
-Our third example will demonstrate the automatic multi-language support that also includes text shaping for complex scripting systems like Devanagari and right-to-left languages::
+How to Output Languages of the World
+.......................................
+
+Our third example will demonstrate the automatic multi-language support. It includes automatic **text shaping** for complex scripting systems like Devanagari and right-to-left languages::
 
     import fitz
 
@@ -552,6 +562,8 @@ Our third example will demonstrate the automatic multi-language support that als
     doc = fitz.open()
     page = doc.new_page()
     rect = (50, 50, 200, 500)
+
+    # join greetings into one text string
     text = " ... ".join([t for t in greetings])
 
     # the output of the above is simple:
@@ -561,5 +573,108 @@ Our third example will demonstrate the automatic multi-language support that als
 And this is the output:
 
 .. image:: images/img-htmlbox3.*
+
+How to Specify your Own Fonts
+.................................
+
+Define your font files in CSS syntax using the `@font-face` statement. You need a separate `@font-face` for every combination of font weight and font style (e.g. bold or italic) you want to be supported. The following example uses the famous MS Comic Sans font in its four variants regular, bold, italic and bold-italic.
+
+As these four font files are located in the system's folder `C:/Windows/Fonts` the method needs an :ref:`Archive` definition that points to that folder::
+
+    """
+    How to use your own fonts with method Page.insert_htmlbox().
+    """
+    import fitz_new as fitz
+
+    # Example text
+    text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed
+        eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad
+        minim veniam, quis nostrud exercitation <b>ullamco <i>laboris</i></b> 
+        nisi ut aliquid ex ea commodi consequat. Quis aute iure 
+        <span style="color: red;">reprehenderit</span> 
+        in <span style="color: green;font-weight:bold;">voluptate</span> velit 
+        esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat 
+        cupiditat non proident, sunt in culpa qui 
+        <a href="https://www.artifex.com">officia</a> deserunt mollit anim id 
+        est laborum."""
+
+    """
+    We need an Archive object to show where font files are located.
+    We intend to use the font family "MS Comic Sans".
+    """
+    arch = fitz.Archive("C:/Windows/Fonts")
+
+    # These statements define which font file to use for regular, bold,
+    # italic and bold-italic text.
+    # We assign an arbitary common font-family for all 4 font files.
+    # The Story algorithm will select the right file as required.
+    # We request to use "comic" throughout the text.
+    css = """
+    @font-face {font-family: comic; src: url(comic.ttf);}
+    @font-face {font-family: comic; src: url(comicbd.ttf);font-weight: bold;}
+    @font-face {font-family: comic; src: url(comicz.ttf);font-weight: bold;font-style: italic;}
+    @font-face {font-family: comic; src: url(comici.ttf);font-style: italic;}
+    * {font-family: comic;}
+    """
+
+    doc = fitz.Document()
+    page = doc.new_page(width=150, height=150)  # make small page
+
+    page.insert_htmlbox(page.rect, text, css=css, archive=arch)
+
+    doc.subset_fonts(verbose=True)  # build subset fonts to reduce file size
+    doc.ez_save(__file__.replace(".py", ".pdf"))
+
+.. image:: images/img-htmlbox4.*
+
+How to Request Text Alignment
+................................
+
+This example combines multiple requirements:
+
+* Rotate the text by 90 degrees anti-clockwise.
+* Use a font from package `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. You will see that the respective CSS definitions are a lot easier in this case.
+* Align the text with the "justify" option.
+
+::
+
+    """
+    How to use a pymupdf font with method Page.insert_htmlbox().
+    """
+    import fitz_new as fitz
+
+    # Example text
+    text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed
+        eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad
+        minim veniam, quis nostrud exercitation <b>ullamco <i>laboris</i></b> 
+        nisi ut aliquid ex ea commodi consequat. Quis aute iure 
+        <span style="color: red;">reprehenderit</span> 
+        in <span style="color: green;font-weight:bold;">voluptate</span> velit 
+        esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat 
+        cupiditat non proident, sunt in culpa qui 
+        <a href="https://www.artifex.com">officia</a> deserunt mollit anim id 
+        est laborum."""
+
+    """
+    This is similar to font file support. However, we can use a convenience
+    function for creating required CSS definitions.
+    We still need an Archive for finding the font binaries.
+    """
+    arch = fitz.Archive()
+
+    # We request to use "myfont" throughout the text.
+    css = fitz.css_for_pymupdf_font("ubuntu", archive=arch, name="myfont")
+    css += "* {font-family: myfont;text-align: justify;}"
+
+    doc = fitz.Document()
+
+    page = doc.new_page(width=150, height=150)
+
+    page.insert_htmlbox(page.rect, text, css=css, archive=arch, rotate=90)
+
+    doc.subset_fonts(verbose=True)
+    doc.ez_save(__file__.replace(".py", ".pdf"))
+
+.. image:: images/img-htmlbox5.*
 
 .. include:: footer.rst
