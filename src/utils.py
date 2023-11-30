@@ -657,6 +657,9 @@ def get_textpage_ocr(
         bbox = fitz.Rect(block["bbox"])
         if bbox.width <= 3 or bbox.height <= 3:  # ignore tiny stuff
             continue
+        exception_types = (RuntimeError, mupdf.FzErrorBase)
+        if fitz.mupdf_version_tuple < (1, 24):
+            exception_types = RuntimeError
         try:
             pix = fitz.Pixmap(block["image"])  # get image pixmap
             if pix.n - pix.alpha != 3:  # we need to convert this to RGB!
@@ -675,7 +678,7 @@ def get_textpage_ocr(
             mat = shrink * block["transform"]
             imgpage.extend_textpage(tpage, flags=0, matrix=mat)
             imgdoc.close()
-        except RuntimeError:
+        except exception_types:
             if g_exceptions_verbose:    fitz.exception_info()
             tpage = None
             print("Falling back to full page OCR")
@@ -4112,11 +4115,14 @@ def apply_redactions(page: fitz.Page, images: int = 2) -> bool:
         Returns:
             A rectangle to use instead of the annot rectangle.
         """
+        exception_types = (ValueError, mupdf.FzErrorBase)
+        if fitz.mupdf_version_tuple < (1, 24):
+            exception_types = ValueError
         if not text:
             return annot_rect
         try:
             text_width = fitz.get_text_length(text, font, fsize)
-        except ValueError:  # unsupported font
+        except exception_types:  # unsupported font
             if g_exceptions_verbose:    fitz.exception_info()
             return annot_rect
         line_height = fsize * 1.2
