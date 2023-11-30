@@ -3125,6 +3125,7 @@ class Document:
         try:
             return mupdf.fz_lookup_metadata2( self.this, key)
         except Exception:
+            if 0 and g_exceptions_verbose:    exception_info()
             return ''
 
     def _getOLRootNumber(self):
