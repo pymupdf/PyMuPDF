@@ -380,89 +380,186 @@ How to Fill a Text Box
 This script fills 4 different rectangles with text, each time choosing a different rotation value::
 
     import fitz
-    doc = fitz.open(...)  # new or existing PDF
+
+    doc = fitz.open()  # new or existing PDF
     page = doc.new_page()  # new page, or choose doc[n]
-    r1 = fitz.Rect(50,100,100,150)  # a 50x50 rectangle
-    disp = fitz.Rect(55, 0, 55, 0)  # add this to get more rects
-    r2 = r1 + disp  # 2nd rect
-    r3 = r1 + disp * 2  # 3rd rect
-    r4 = r1 + disp * 3  # 4th rect
-    t1 = "text with rotate = 0."  # the texts we will put in
+
+    # write in this overall area
+    rect = fitz.Rect(100, 100, 300, 150)
+
+    # partition the area in 4 equal sub-rectangles
+    CELLS = fitz.make_table(rect, cols=4, rows=1)
+
+    t1 = "text with rotate = 0."  # these texts we will written
     t2 = "text with rotate = 90."
-    t3 = "text with rotate = -90."
-    t4 = "text with rotate = 180."
-    red  = (1,0,0)  # some colors
-    gold = (1,1,0)
-    blue = (0,0,1)
-    """We use a Shape object (something like a canvas) to output the text and
+    t3 = "text with rotate = 180."
+    t4 = "text with rotate = 270."
+    text = [t1, t2, t3, t4]
+    red = fitz.pdfcolor["red"]  # some colors
+    gold = fitz.pdfcolor["gold"]
+    blue = fitz.pdfcolor["blue"]
+    """
+    We use a Shape object (something like a canvas) to output the text and
     the rectangles surrounding it for demonstration.
     """
     shape = page.new_shape()  # create Shape
-    shape.draw_rect(r1)  # draw rectangles
-    shape.draw_rect(r2)  # giving them
-    shape.draw_rect(r3)  # a yellow background
-    shape.draw_rect(r4)  # and a red border
-    shape.finish(width = 0.3, color = red, fill = gold)
-    # Now insert text in the rectangles. Font "Helvetica" will be used
-    # by default. A return code rc < 0 indicates insufficient space (not checked here).
-    rc = shape.insert_textbox(r1, t1, color = blue)
-    rc = shape.insert_textbox(r2, t2, color = blue, rotate = 90)
-    rc = shape.insert_textbox(r3, t3, color = blue, rotate = -90)
-    rc = shape.insert_textbox(r4, t4, color = blue, rotate = 180)
-    shape.commit()  # write all stuff to page /Contents
-    doc.save("...")
+    for i in range(len(CELLS[0])):
+        shape.draw_rect(CELLS[0][i])  # draw rectangle
+        shape.insert_textbox(
+            CELLS[0][i], text[i], fontname="hebo", color=blue, rotate=90 * i
+        )
 
-Several default values were used above: font "Helvetica", font size 11 and text alignment "left". The result will look like this:
+    shape.finish(width=0.3, color=red, fill=gold)
 
-.. image:: images/img-textbox.*
+    shape.commit()  # write all stuff to the page
+    doc.ez_save(__file__.replace(".py", ".pdf"))
+
+Some default values were used above: font size 11 and text alignment "left". The result will look like this:
+
+.. image:: images/img-rotate.*
    :scale: 50
 
 ------------------------------------------
 
 .. _RecipesText_I_c:
 
-How to Use Non-Standard Encoding
+How to Fill a Box with HTML Text
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Since v1.14, MuPDF allows Greek and Russian encoding variants for the :data:`Base14_Fonts`. In PyMuPDF this is supported via an additional *encoding* argument. Effectively, this is relevant for Helvetica, Times-Roman and Courier (and their bold / italic forms) and **characters outside the ASCII code range only**. ASCII characters remain Latin!
+Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to insert text in a rectangle. Instead of simple, plain text, this method accepts HTML source, which may not only contain HTML tags but also styling instructions to influence things like font, font weight (bold) and style (italic), color and much more. It is also possible to mix multiple fonts and languages, output HTML tables and insert images. Any URI links are also supported.
 
-.. note:: Please keep in mind that the Base-14 fonts only support characters with `ord(c) < 256`. The `encoding` parameter does not change that. So only characters with `ord(c) > 128` are under the influence of `encoding`.
-    
-    To avoid these restrictions, we strongly recommend to use the file-based font variants, which are available via the :ref:`Font` class. These fonts do not require (and ignore) the encoding parameter. Your text can also be any mixture of standard Latin, Cyrillic, Greek and other characters. `fitz.Font("helv")` for example support 654 glyphs - not just 256. The only consideration is that your PDF file size will grow because now a font file will be embedded.
-    
-    Choosing any font from `pymupf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ will provide you with the best of all worlds: nice and rich fonts that are also subsettable via :meth:`Document.subset_fonts()`. This limits your file sizes significantly. `fitz.Font("figo")` for example supports 4577 glyphs. But still, after using :meth:`Document.subset_fonts()`, the file size increase will probably be something like 10 or 12 KB -- and not 43 KB as with `fitz.Font("helv")`.
+For even more styling flexibility, an additional CSS source may also be given.
 
-Here is how to request Russian encoding with the standard font Helvetica::
+The method is based on the :ref:`Story` class. Therefore, complex script systems like Devanagari, Nepali, Tamil and many are supported and written correctly thanks to using the HarfBuzz library - which provides this feature, called *"text shaping"*.
 
-    page.insert_text(point, russian_text, encoding=fitz.TEXT_ENCODING_CYRILLIC)
+Any required fonts to output characters are automatically pulled in from the Google NOTO font library - as a fallback when the optionally supplied user font(s) do not contain some glyphs.
 
-The valid encoding values are TEXT_ENCODING_LATIN (0), TEXT_ENCODING_GREEK (1), and TEXT_ENCODING_CYRILLIC (2, Russian) with Latin being the default. Encoding can be specified by all relevant font and text insertion methods.
-
-By the above statement, the fontname *helv* is automatically connected to the Russian font variant of Helvetica. Any subsequent text insertion with **this fontname** will use the Russian Helvetica encoding.
-
-If you change the fontname just slightly, you can also achieve an **encoding "mixture"** for the **same base font** on the same page::
+As a small glimpse into the features offered here, we will output the following HTML-enriched text::
 
     import fitz
-    doc=fitz.open()
+
+
+    rect = fitz.Rect(100, 100, 400, 300)
+
+    text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed
+        eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad
+        minim veniam, quis nostrud exercitation <b>ullamco <i>laboris</i></b> 
+        nisi ut aliquid ex ea commodi consequat. Quis aute iure 
+        <span style="color: #f00;">reprehenderit</span> 
+        in <span style="color: #0f0;font-weight:bold;">voluptate</span> velit 
+        esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat 
+        cupiditat non proident, sunt in culpa qui 
+        <a href="https://www.artifex.com">officia</a> deserunt mollit anim id 
+        est laborum."""
+
+    doc = fitz.Document()
+
     page = doc.new_page()
-    shape = page.new_shape()
-    t="Sômé tèxt wìth nöñ-Lâtîn characterß."
-    shape.insert_text((50,70), t, fontname="helv", encoding=fitz.TEXT_ENCODING_LATIN)
-    shape.insert_text((50,90), t, fontname="HElv", encoding=fitz.TEXT_ENCODING_GREEK)
-    shape.insert_text((50,110), t, fontname="HELV", encoding=fitz.TEXT_ENCODING_CYRILLIC)
-    shape.commit()
-    doc.save("t.pdf")
+    page.insert_htmlbox(rect, text, css="* {font-family: sans-serif;font-size:14px;}")
 
-The result:
+    doc.ez_save(__file__.replace(".py", ".pdf"))
 
-.. image:: images/img-encoding.*
-   :scale: 50
+Please note how the "css" parameter is used to globally select the default "sans-serif" font and a font size of 14.
 
-The snippet above indeed leads to three different copies of the Helvetica font in the PDF. Each copy is uniquely identified (and referenceable) by using the correct upper-lower case spelling of the reserved word "helv"::
+The result will look like this:
 
-    for f in doc.get_page_fonts(0): print(f)
+.. image:: images/img-htmlbox1.*
 
-    [6, 'n/a', 'Type1', 'Helvetica', 'helv', 'WinAnsiEncoding']
-    [7, 'n/a', 'Type1', 'Helvetica', 'HElv', 'WinAnsiEncoding']
-    [8, 'n/a', 'Type1', 'Helvetica', 'HELV', 'WinAnsiEncoding']
+Here is another example that outputs a table with this method. This time, we are including all the styling in the HTML source itself. Please also note, how it works to include an image - even within a table cell::
+
+    import fitz_new as fitz
+    import os
+
+    filedir = os.path.dirname(__file__)
+
+
+    text = """
+    <style>
+    body {
+        font-family: sans-serif;
+    }
+
+    td,
+    th {
+        border: 1px solid blue;
+        border-right: none;
+        border-bottom: none;
+        padding: 5px;
+        text-align: center;
+    }
+
+    table {
+        border-right: 1px solid blue;
+        border-bottom: 1px solid blue;
+        border-spacing: 0;
+    }
+    </style>
+
+    <body>
+    <p><b>Some Colors</b></p>
+    <table>
+        <tr>
+        <th>Lime</th>
+        <th>Lemon</th>
+        <th>Image</th>
+        <th>Mauve</th>
+        </tr>
+        <tr>
+        <td>Green</td>
+        <td>Yellow</td>
+        <td><img src="img-cake.png" width=50></td>
+        <td>Between<br>Gray and Purple</td>
+        </tr>
+    </table>
+    </body>
+    """
+
+    doc = fitz.Document()
+
+    page = doc.new_page()
+    rect = page.rect + (36, 36, -36, -36)
+
+    # we must specify an Archive because of the image
+    page.insert_htmlbox(rect, text, archive=fitz.Archive("."))
+
+    doc.ez_save(__file__.replace(".py", ".pdf"))
+
+
+
+The result will look like this:
+
+.. image:: images/img-htmlbox2.*
+
+
+Our third example will demonstrate the automatic multi-language support that also includes text shaping for complex scripting systems like Devanagari and right-to-left languages::
+
+    import fitz
+
+    greetings = (
+        "Hello, World!",  # english
+        "Hallo, Welt!",  # german
+        "سلام دنیا!",  # persian
+        "வணக்கம், உலகம்!",  # tamil
+        "สวัสดีชาวโลก!",  # thai
+        "Привіт Світ!",  # ucranian
+        "שלום עולם!",  # hebrew
+        "ওহে বিশ্ব!",  # bengali
+        "你好世界！",  # chinese
+        "こんにちは世界！",  # japanese
+        "안녕하세요, 월드!",  # korean
+        "नमस्कार, विश्व !",  # sanskrit
+        "हैलो वर्ल्ड!",  # hindi
+    )
+    doc = fitz.open()
+    page = doc.new_page()
+    rect = (50, 50, 200, 500)
+    text = " ... ".join([t for t in greetings])
+
+    # the output of the above is simple:
+    page.insert_htmlbox(rect, text)
+    doc.save(__file__.replace(".py", ".pdf"))
+
+And this is the output:
+
+.. image:: images/img-htmlbox3.*
 
 .. include:: footer.rst
