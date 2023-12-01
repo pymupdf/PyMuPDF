@@ -144,3 +144,50 @@ def test_2637():
     bbox = fitz.Rect(blocks[0][:4])
     assert bbox in rect
 
+
+def test_htmlbox():
+    """Write HTML-styled text in a rect with different rotations.
+
+    The text is styled and contains a link.
+
+    Assert that text is written in 4 different angles,
+    assert that text properties are correct (bold, italic, color),
+    assert that the link has been correctly inserterd.
+    """
+    rect = fitz.Rect(100, 100, 400, 300)
+    text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation <b>ullamco</b> <i>laboris</i> nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in <span style="color: #0f0;font-weight:bold;">voluptate</span> velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui <a href="https://www.artifex.com">officia</a> deserunt mollit anim id est laborum."""
+
+    doc = fitz.Document()
+    for rot in (0, 90, 180, 270):
+        wdirs = ((1, 0), (0, -1), (-1, 0), (0, 1))
+        page = doc.new_page()
+        page.insert_htmlbox(rect, text, rotate=rot)
+        page = doc.reload_page(page)
+        link = page.get_links()[0]
+        assert link["uri"] == "https://www.artifex.com"
+        encounters = 0
+        for b in page.get_text("dict")["blocks"]:
+            for l in b["lines"]:
+                wdir = l["dir"]
+                for s in l["spans"]:
+                    stext = s["text"]
+                    color = fitz.sRGB_to_pdf(s["color"])
+                    bold = bool(s["flags"] & 16)
+                    italic = bool(s["flags"] & 2)
+                    if stext in ("ullamco", "laboris", "voluptate"):
+                        encounters += 1
+                        assert wdir == wdirs[page.number]
+                        if stext == "ullamco":
+                            assert bold is True
+                            assert italic is False
+                            assert color == fitz.pdfcolor["black"]
+                        elif stext == "laboris":
+                            assert bold is False
+                            assert italic is True
+                            assert color == fitz.pdfcolor["black"]
+                        elif stext == "voluptate":
+                            assert bold is True
+                            assert italic is False
+                            assert color == fitz.pdfcolor["green"]
+        assert encounters == 3
+
