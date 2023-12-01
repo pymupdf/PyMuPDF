@@ -4644,10 +4644,9 @@ class Document:
         lang = mupdf.pdf_document_language(pdf)
         if lang == mupdf.FZ_LANG_UNSET:
             return
-        # fixme
-        assert 0, 'not implemented yet'
-        #char buf[8];
-        #return PyUnicode_FromString(fz_string_from_text_language(buf, lang));
+        if mupdf_version_tuple < (1, 23, 7):
+            assert 0, 'not implemented yet'
+        return mupdf.fz_string_from_text_language2(lang)
 
     @property
     def last_location(self):
