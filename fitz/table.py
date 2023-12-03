@@ -1214,7 +1214,11 @@ class Table(object):
             cell = Rect(cell)  # we need a Rect object
             text = ""  # result text
             for block in TEXTPAGE.extractRAWDICT()["blocks"]:
+                if Rect(block["bbox"]).intersect(cell).is_empty:
+                    continue
                 for line in block["lines"]:
+                    if Rect(line["bbox"]).intersect(cell).is_empty:
+                        continue
                     for span in line["spans"]:
                         chars = span["chars"]
                         if text and chars:
