@@ -155,6 +155,7 @@ fitz.Page.insert_image = fitz.utils.insert_image
 fitz.Page.insert_link = fitz.utils.insert_link
 fitz.Page.insert_text = fitz.utils.insert_text
 fitz.Page.insert_textbox = fitz.utils.insert_textbox
+fitz.Page.insert_htmlbox = fitz.utils.insert_htmlbox
 fitz.Page.new_shape = lambda x: fitz.utils.Shape(x)
 fitz.Page.search_for = fitz.utils.search_for
 fitz.Page.show_pdf_page = fitz.utils.show_pdf_page
