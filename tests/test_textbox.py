@@ -153,8 +153,12 @@ def test_htmlbox():
     - assert that text was written in the 4 different angles,
     - assert that text properties are correct (bold, italic, color),
     - assert that the link has been correctly inserted.
+
+    We also try to insert into a rectangle that is too small, setting
+    adjust=False and confirming we have a negative return code.
     """
-    rect = fitz.Rect(100, 100, 400, 300)
+    rect = fitz.Rect(100, 100, 200, 200)  # this only works with adjust=True
+
     base_text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."""
 
     text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation <b>ullamco</b> <i>laboris</i> nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in <span style="color: #0f0;font-weight:bold;">voluptate</span> velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui <a href="https://www.artifex.com">officia</a> deserunt mollit anim id est laborum."""
@@ -164,8 +168,10 @@ def test_htmlbox():
     for rot in (0, 90, 180, 270):
         wdirs = ((1, 0), (0, -1), (-1, 0), (0, 1))  # all writing directions
         page = doc.new_page()
-        page.insert_htmlbox(rect, text, rotate=rot)
-
+        rc = page.insert_htmlbox(rect, text, rotate=rot, adjust=False)
+        assert rc < 0
+        rc = page.insert_htmlbox(rect, text, rotate=rot, adjust=True)
+        assert rc >= 0
         page = doc.reload_page(page)
         link = page.get_links()[0]  # extracts the links on the page
 
