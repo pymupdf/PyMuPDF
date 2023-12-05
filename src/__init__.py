@@ -6712,11 +6712,23 @@ class linkDest:
         self.isUri = False
         self.kind = LINK_NONE
         self.lt = Point(0, 0)
-        self.named = ""
+        self.named = dict()
         self.newWindow = ""
         self.page = obj.page
         self.rb = Point(0, 0)
         self.uri = obj.uri
+        
+        def uri_to_dict(uri):
+            items = self.uri[1:].split('&')
+            ret = dict()
+            for item in items:
+                eq = item.find('=')
+                if eq >= 0:
+                    ret[item[:eq]] = item[eq+1:]
+                else:
+                    ret[item] = None
+            return ret
+        
         if rlink and not self.uri.startswith("#"):
             self.uri = "#page=%i&zoom=0,%g,%g" % (rlink[0] + 1, rlink[1], rlink[2])
         if obj.is_external:
@@ -6728,7 +6740,6 @@ class linkDest:
         if isInt and self.uri:
             self.uri = self.uri.replace("&zoom=nan", "&zoom=0")
             if self.uri.startswith("#"):
-                self.named = ""
                 self.kind = LINK_GOTO
                 m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),(-?[0-9.]+),(-?[0-9.]+)$', self.uri)
                 if m:
@@ -6752,10 +6763,10 @@ class linkDest:
                                 self.named = dict()
                             self.named['nameddest'] = named
                         else:
-                            self.named = self.uri[1:]
+                            self.named = uri_to_dict(self.uri[1:])
             else:
                 self.kind = LINK_NAMED
-                self.named = self.uri
+                self.named = uri_to_dict(self.uri)
         if obj.is_external:
             if not self.uri:
                 pass
@@ -6776,7 +6787,7 @@ class linkDest:
             else:
                 self.isUri = True
                 self.kind = LINK_LAUNCH
-
+        assert isinstance(self.named, dict)
 
 class Widget:
     '''

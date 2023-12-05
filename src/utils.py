@@ -1005,7 +1005,8 @@ def getLinkDict(ln, document=None) -> dict:
         # The dicts should not have same key(s).
         assert not (dest.named.keys() & nl.keys())
         nl.update(dest.named)
-        nl['to'] = fitz.Point(nl['to'])
+        if 'to' in nl:
+            nl['to'] = fitz.Point(nl['to'])
 
     else:
         nl["page"] = dest.page
