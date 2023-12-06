@@ -2,6 +2,24 @@ Change Log
 ==========
 
 
+**Changes in next release **
+
+* Bug fixes (rebased implementation only):
+
+  **Fixed** `2861 <https://github.com/pymupdf/PyMuPDF/issues/2861>`_: AttributeError in getLinkDict during PDF Merge
+
+* Bug fixes (rebased and classic implementations):
+
+* Other:
+
+  * Rebased implementation:
+  
+    * Work with new MuPDF Python exception classes.
+    * `Document.language()`: fixed to use MuPDF's new `mupdf.fz_string_from_text_language2()`.
+
+  * Fixed pillow test to not ignore all errors.
+
+
 **Changes in version 1.23.7 (2023-11-30)**
 
 * Bug fixes in rebased implementation, not fixed in classic implementation:
