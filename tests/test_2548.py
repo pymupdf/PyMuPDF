@@ -36,7 +36,7 @@ def test_2548():
     # versions with updated MuPDF also fix the bug.
     
     if fitz.mupdf_version_tuple >= (1, 24):
-        expected = 'cycle in structure tree\nstructure tree broken, assume tree is missing'
+        expected = 'format error: cycle in structure tree\nstructure tree broken, assume tree is missing'
         assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
         assert not e
     elif (0
