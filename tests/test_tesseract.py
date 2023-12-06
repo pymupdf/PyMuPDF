@@ -15,10 +15,15 @@ def test_tesseract():
     path = os.path.abspath( f'{__file__}/../resources/2.pdf')
     doc = fitz.open( path)
     page = doc[5]
-    e_expected = (
-            'OCR initialisation failed',
-            'code=2: OCR initialisation failed',
-            )
+    if hasattr(fitz, 'mupdf'):
+        # rebased.
+        if fitz.mupdf_version_tuple >= (1, 24):
+            e_expected = 'code=3: OCR initialisation failed'
+        else:
+            e_expected = 'code=2: OCR initialisation failed'
+    else:
+        # classic.
+        e_expected = 'OCR initialisation failed'
     tessdata_prefix = os.environ.get('TESSDATA_PREFIX')
     if tessdata_prefix:
         tp = page.get_textpage_ocr(full=True)
@@ -29,6 +34,6 @@ def test_tesseract():
         except Exception as e:
             ee = str(e)
             print(f'Received expected exception: {e}')
-            assert ee in e_expected, f'Unexpected exception: {ee!r}'
+            assert ee == e_expected, f'Unexpected exception: {ee!r}'
         else:
             assert 0, f'Expected exception {e_expected!r}'
