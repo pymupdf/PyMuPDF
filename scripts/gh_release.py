@@ -38,20 +38,24 @@ action inputs, which can't be easily translated into command-line arguments.
     inputs_sdist
     inputs_skeleton
         Build minimal wheel; for testing only.
+    inputs_wheels_cps:
+        Python versions to build for. E.g. 'cp38* cp312*'.
     inputs_wheels_default
+        Default value for other inputs_wheels_*.
     inputs_wheels_linux_aarch64
     inputs_wheels_linux_auto
     inputs_wheels_linux_pyodide
     inputs_wheels_macos_arm64
     inputs_wheels_macos_auto
     inputs_wheels_windows_auto
-    inputs_wheels_cps
     inputs_PYMUPDF_SETUP_MUPDF_BUILD
         Used to directly set PYMUPDF_SETUP_MUPDF_BUILD.
+        E.g. 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
     inputs_wheels_implementations
         Used to directly set PYMUPDF_SETUP_IMPLEMENTATIONS.
+        'a', 'b', 'ab'.
 
-Buiding for Pyodide
+Building for Pyodide
 
     If `inputs_wheels_linux_pyodide` is true and we are on Linux, we clone
     `emsdk.git`, set it up, and run `pyodide build`. This runs our setup.py
@@ -61,9 +65,7 @@ Buiding for Pyodide
 Example usage:
 
      PYMUPDF_SETUP_MUPDF_BUILD=../mupdf py -3.9-32 PyMuPDF/scripts/gh_release.py venv build-devel
-   
 '''
-
 
 import glob
 import os
@@ -96,6 +98,7 @@ def main():
         v = os.environ[ k]
         log( f'    {k}: {v!r}')
     
+    valgrind = False
     if len( sys.argv) == 1:
         args = iter( ['build'])
     else:
@@ -106,7 +109,7 @@ def main():
         except StopIteration:
             break
         if arg == 'build':
-            build()
+            build(valgrind=valgrind)
         elif arg == 'build-devel':
             if platform.system() == 'Linux':
                 p = 'linux'
@@ -137,12 +140,14 @@ def main():
         elif arg == 'test':
             project = next(args)
             package = next(args)
-            test( project, package)
+            test( project, package, valgrind=valgrind)
+        elif arg == '--valgrind':
+            valgrind = int(next(args))
         else:
             assert 0, f'Unrecognised {arg=}'
 
 
-def build( platform_=None): 
+def build( platform_=None, valgrind=False): 
     log( '### build():')   
     
     platform_arg = f' --platform {platform_}' if platform_ else ''
@@ -220,7 +225,7 @@ def build( platform_=None):
         set_if_unset(
                 'CIBW_ARCHS_LINUX',
                 make_string(
-                    'auto' * inputs_wheels_linux_auto,
+                    'auto64' * inputs_wheels_linux_auto,
                     'aarch64' * inputs_wheels_linux_aarch64,
                     ),
                 )
@@ -274,11 +279,10 @@ def build( platform_=None):
     
     def set_cibuild_test():
         log( f'set_cibuild_test(): {inputs_skeleton=}')
-        if inputs_skeleton:
-            env_set('CIBW_TEST_COMMAND', 'python {project}/scripts/gh_release.py test {project} {package}')
-        else:
-            env_set('CIBW_TEST_REQUIRES', 'fontTools pytest psutil')
-            env_set('CIBW_TEST_COMMAND', 'python {project}/tests/run_compound.py pytest -s {project}/tests')
+        valgrind_text = ''
+        if valgrind:
+            valgrind_text = ' --valgrind 1'
+        env_set('CIBW_TEST_COMMAND', f'python {{project}}/scripts/gh_release.py{valgrind_text} test {{project}} {{package}}')
     
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')
     if pymupdf_dir != os.path.abspath( os.getcwd()):
@@ -299,8 +303,8 @@ def build( platform_=None):
         run( 'echo after flavour=b')
         run( 'ls -l wheelhouse')
 
-        # Now build PyMuPDF wheels. cibuildwheel will build one for each
-        # Python version.
+        # Now set environment to build PyMuPDF wheels. cibuildwheel will build
+        # one for each Python version.
         #
         
         # Tell cibuildwheel not to use `auditwheel`, because it cannot cope
@@ -398,7 +402,7 @@ def venv( command=None, packages=None):
     packages:
         List of packages (or comma-separated string) to install.
     '''
-    venv_name = f'venv-pymupdf-{platform.python_version()}'
+    venv_name = f'venv-pymupdf-{platform.python_version()}-{cpu_bits()}'
     command2 = ''
     ssp = ''
     if platform.system() == 'OpenBSD':
@@ -430,19 +434,29 @@ def venv( command=None, packages=None):
     run( command2)
 
 
-def test( project, package):
+def test( project, package, valgrind):
     
-    log('### test():')
-    log(f'### test(): {sys.executable=}')
-    log(f'### test(): {project=}')
-    log(f'### test(): {package=}')
-    
-    import fitz
-    import fitz_new
-    print(f'{fitz.bar(3)=}')
-    print(f'{fitz_new.bar(3)=}')
-    
-    return
+    run(f'pip install {test_packages}')
+    if valgrind:
+        log('Installing valgrind.')
+        run(f'sudo apt update')
+        run(f'sudo apt install valgrind')
+        run(f'valgrind --version')
+        
+        log('Running PyMuPDF tests under valgrind.')
+        # We ignore memory leaks.
+        run(
+                f'{sys.executable} {project}/tests/run_compound.py'
+                    f' valgrind --suppressions={project}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
+                    f' pytest -s -vv {project}/tests'
+                    ,
+                env_extra=dict(
+                    PYTHONMALLOC='malloc',
+                    PYMUPDF_RUNNING_ON_VALGRIND='1',
+                    ),
+                )
+    else:
+        run(f'{sys.executable} {project}/tests/run_compound.py pytest -s {project}/tests')
     
 
 def pyodide_setup(clean=False):
@@ -563,8 +577,20 @@ def pyodide_setup(clean=False):
     return command
 
 
+if platform.system() == 'Windows':
+    def relpath(path):
+        try:
+            return os.path.relpath(__file__)
+        except ValueError:
+            # os.path.relpath() fails if trying to change drives.
+            return os.path.abspath(__file__)
+else:
+    def relpath(path):
+        return os.path.relpath(__file__)
+
+
 def log(text):
-    print(f'{os.path.relpath(__file__)}: {text}')
+    print(f'{relpath(__file__)}: {text}')
     sys.stdout.flush()
 
 
@@ -589,7 +615,7 @@ def add_env(env_extra):
 
 
 def platform_tag():
-    bits = 32 if sys.maxsize == 2**31 - 1 else 64
+    bits = cpu_bits()
     if platform.system() == 'Windows':
         return 'win32' if bits==32 else 'win_amd64'
     elif platform.system() in ('Linux', 'Darwin'):
@@ -598,6 +624,21 @@ def platform_tag():
         #return 'x86_64'
     else:
         assert 0, f'Unrecognised: {platform.system()=}'
+
+
+def cpu_bits():
+    return 32 if sys.maxsize == 2**31 - 1 else 64
+
+
+# If this has changed, need to update
+# .github/workflows/*.yml.
+#
+test_packages = 'pytest fontTools psutil'
+if platform.system() == 'Windows' and cpu_bits() == 32:
+    # No pillow wheel available, and doesn't build easily.
+    pass
+else:
+    test_packages += ' pillow'
 
 
 if __name__ == '__main__':
