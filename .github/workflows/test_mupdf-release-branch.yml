@@ -25,30 +25,15 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
 
-      # Set up cibuildwheel.
-      #
-      - name: cibuildwheel
-        uses: pypa/cibuildwheel@v2.11.2
-
+      - name: test_mupdf-master-branch
         env:
-            # PYMUPDF_SETUP_MUPDF_TGZ="": don't embed mupdf in sdist - no need
-            # because the build stage gets MuPDF using `git clone ...`.
-            #
-            # PYMUPDF_SETUP_MUPDF_BUILD="git:...": build with mupdf from a `git
-            # clone` command, selecting the current release branch.
-            #
-            CIBW_ENVIRONMENT: PYMUPDF_SETUP_MUPDF_TGZ="" PYMUPDF_SETUP_MUPDF_BUILD="git:--recursive --depth 1 --shallow-submodules --branch 1.23.x https://github.com/ArtifexSoftware/mupdf.git"
-
-            # Build on single cpu.
-            CIBW_ARCHS_LINUX: x86_64
-
-            # Build for single python version.
-            CIBW_BUILD: "cp311*"
-
-            # Don't build for unsupported platforms.
-            CIBW_SKIP: "pp* *i686 *-musllinux_* cp36*"
-
-            # Get cibuildwheel to run pytest with each wheel.
-            CIBW_TEST_REQUIRES: "fontTools pytest psutil"
-            CIBW_TEST_COMMAND: "python {project}/tests/run_compound.py pytest -s {project}/tests"
-            CIBW_BUILD_VERBOSITY: 3
+            inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch 1.23.x https://github.com/ArtifexSoftware/mupdf.git"
+            inputs_flavours: "0"
+            inputs_sdist: "0"
+            inputs_wheels_cps: "cp312*"
+            inputs_wheels_default: "0"
+            inputs_wheels_linux_auto: "1"
+            inputs_wheels_macos_auto: "1"
+            inputs_wheels_windows_auto: "1"
+        run:
+          python scripts/gh_release.py
