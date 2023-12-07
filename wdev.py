@@ -12,7 +12,7 @@ import textwrap
 
 
 class WindowsVS:
-    '''
+    r'''
     Windows only. Finds locations of Visual Studio command-line tools. Assumes
     VS2019-style paths.
 
