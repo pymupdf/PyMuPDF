@@ -17,6 +17,7 @@ Examples:
         Build and test using internal checkout of mupdf 1.23.x branch from Github.
 
 Args:
+    --build-isolation 0|1
     -h
     --help
         Show help.
@@ -25,6 +26,8 @@ Args:
         subsequent build* args. Used to set PYMUPDF_SETUP_MUPDF_BUILD for
         PyMuPDF/setup.py. If not specifed PyMuPDF will download its default
         mupdf .tgz.
+    --valgrind 0|1
+        Use valgrind in subsequent `test` or `buildtest`.
     build
         Builds and installs using `pip install .../PyMuPDF`.
     buildtest
@@ -59,6 +62,8 @@ def main(argv):
         gh_release.venv( ['python'] + argv)
         return
 
+    build_isolation = None
+    valgrind = False
     args = iter( argv[1:])
     while 1:
         try:
@@ -71,32 +76,61 @@ def main(argv):
                 assert os.path.isdir(mupdf), f'Not a directory: {mupdf=}.'
                 mupdf = os.path.abspath(mupdf)
             os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = mupdf
+        elif arg == '--build-isolation':
+            build_isolation = int(next(args))
+        elif arg == '--valgrind':
+            valgrind = int(next(args))
         elif arg == 'build':
-            build()
+            build(build_isolation=build_isolation)
         elif arg == 'test':
-            test()
+            test(valgrind=valgrind)
         elif arg == 'buildtest':
-            build()
-            test()
+            build(build_isolation=build_isolation)
+            test(valgrind=valgrind)
         else:
             assert 0, f'Unrecognised arg: {arg=}.'
 
 
-def build():
-    nbi = ''
+def build(build_isolation=None):
+    print(f'{build_isolation=}')
     if platform.system() == 'OpenBSD':
         # libclang not available on pypi.org, so we need to force use of system
         # package py3-llvm with --no-build-isolation, manually installing other
         # required packages.
-        gh_release.run(f'pip install swig setuptools psutil')
-        gh_release.run(f'pip install --no-build-isolation -vv {pymupdf_dir}')
-    else:
-        gh_release.run(f'pip install{nbi} -vv {pymupdf_dir}')
+        if build_isolation is None:
+            build_isolation = False    
+    if not build_isolation:
+        if platform.system() == 'OpenBSD':
+            gh_release.run(f'pip install swig setuptools psutil')
+        else:
+            gh_release.run(f'pip install libclang swig setuptools psutil')
+    build_isolation_text = '' if build_isolation else ' --no-build-isolation'
+    gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}')
 
 
-def test():
-    gh_release.run(f'pip install pytest fontTools psutil')
-    if platform.system() == 'OpenBSD':
+def test(valgrind):
+    if os.getcwd() == pymupdf_dir:
+        gh_release.log('Changing into parent directory to avoid confusion from `fitz/` directory.')
+        os.chdir(os.path.dirname(pymupdf_dir))
+    gh_release.run(f'pip install {gh_release.test_packages}')
+    if valgrind:
+        gh_release.log('Installing valgrind.')
+        gh_release.run(f'sudo apt update')
+        gh_release.run(f'sudo apt install valgrind')
+        gh_release.run(f'valgrind --version')
+        
+        gh_release.log('Running PyMuPDF tests under valgrind.')
+        gh_release.run(
+                f'{sys.executable} {pymupdf_dir}/tests/run_compound.py'
+                    f' valgrind --suppressions={pymupdf_dir}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
+                    f' pytest -s -vv {pymupdf_dir}/tests'
+                    ,
+                env_extra=dict(
+                    PYTHONMALLOC='malloc',
+                    PYMUPDF_RUNNING_ON_VALGRIND='1',
+                    ),
+                )
+    elif platform.system() == 'OpenBSD':
         # On OpenBSD `pip install pytest` doesn't seem to install the pytest
         # command, so we use `python -m pytest ...`. (This doesn't work on
         # Windows for some reason so we don't use it all the time.)

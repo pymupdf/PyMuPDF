@@ -4,7 +4,10 @@ import textwrap
 
 
 def test_story():
-    otf = os.path.abspath(f"{__file__}/../resources/PragmaticaC.otf")
+
+    otf = os.path.abspath(f'{__file__}/../resources/PragmaticaC.otf')
+    # 2023-12-06: latest mupdf throws exception if path uses back-slashes.
+    otf = otf.replace('\\', '/')
     CSS = f"""
         @font-face {{font-family: test; src: url({otf});}}
     """
