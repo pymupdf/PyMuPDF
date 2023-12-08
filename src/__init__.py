@@ -11939,6 +11939,92 @@ class Story:
 
     def reset( self):
         mupdf.fz_reset_story( self.this)
+
+
+    def scale_to_fit(self, width: float =0, height: float =0, expand: bool =True, shrink: bool =False) -> (float, float):
+        """Fit story in a rectangle of specified width and height.
+
+        Args:
+            width: float > 0
+            height: float > 0
+            expand: bool, expand rect to fit contents
+            shrink: bool, shrink rect where possible
+
+        Pseudocode:
+        
+        if initial place is successful:
+            if shrink is False:
+                return 'unused space', 1
+            else:
+                shrink to smallest fitting rect
+                return 0, factor
+        else:
+            if expand is False:
+                return None, -1
+            else:
+                expand to smallest fitting rect 
+                return 0, factor
+        """
+        if width <= 0 or height <= 0:
+            raise ValueError("width and height must be positive.")
+
+        rect = Rect(0, 0, width, height)
+        
+        place = lambda f: self.place(rect * f)  # abbreviation for place
+
+        DELTA = 0.001  # stop iteration threshold
+        LIMIT_L = 0.7
+        LIMIT_0 = 1
+        LIMIT_H = 1.5
+
+        def scale_up_down(low, high):
+            """Scale up or down."""
+            if low == 1:  # expand=True case
+                # brute force find a (larger) fitting
+                more = True
+                while more:
+                    more, _ = place(high)
+                    if not more:
+                        break
+                    high *= high
+            else:  # shrink=True case
+                # brute force find a (smaller) non-fitting rect
+                more = False
+                while not more:
+                    more, _ = place(low)
+                    if more:  # small enough to no longer fit
+                        break
+                    low *= low
+                    if low < DELTA:
+                        raise ValueError("no data in Story")
+
+
+            # the following lets low / high converge ...
+            while True:
+                factor = (low + high) / 2  # middle value
+                more, _ = place(factor)  # try middle value
+                if more:  # did not fit: increase lower factor
+                    low = factor
+                else:
+                    high = factor  # had a fit: decrease upper factor
+                # low / high close enough and we had a fit: exit
+                if high - low < DELTA and not more:
+                    break
+            return 0, factor
+
+        (more, filled) = place(1)
+        if not more:  # we have a fit
+
+            if shrink is True:  # decrease rectangle
+                return scale_up_down(LIMIT_L, LIMIT_0)
+            
+            return rect.y1 - filled[3], 1  # rectangle large enough: done
+
+        elif not expand:  # no fit and no scaling
+            return None, -1
+
+        return scale_up_down(LIMIT_0,LIMIT_H)
+
     
     def write(self, writer, rectfn, positionfn=None, pagefn=None):
         dev = None

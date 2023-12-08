@@ -1840,7 +1840,7 @@ def insert_htmlbox(
     text,
     *,
     css=None,
-    adjust=True,
+    scale=True,
     archive=None,
     rotate=0,
     oc=0,
@@ -1853,7 +1853,7 @@ def insert_htmlbox(
         rect: (rect-like) rectangle into which the text should be placed.
         text: (str) text with optional HTML tags and stylings.
         css: (str) CSS styling commands.
-        adjust: (bool) force-fit the text by scaling down (default True).
+        scale: (bool) force-fit the text by scaling down (default True).
         archive: Archive object pointing to locations of used fonts or images
         rotate: (int) rotate the text with the box by a multiple of 90 degrees.
         oc: (int) the xref of an OCG / OCMD (Optional Content).
@@ -1861,112 +1861,105 @@ def insert_htmlbox(
         morph: (sequence) (point, matrix) transform result with a matrix
                using a fixed point.
     Returns:
-        A float indicating the unused part of the rectangle. If negative, the
-        rectangle was too small for the text.
+        A tuple of floats (unused, factor). "unused" is the unused part of the
+        rectangle. If 'scale' is False and the content does not fit, -1 is
+        returned, else a non-negative value. If scaling was requested and
+        required, "unused" is always zero, else it is the height of the not
+        used part of the rectangle.
+        "factor" is the value by which content was scaled to fit.
     """
 
-    def story_maker(clip, text, adjust=True, rotate=0, css=css, archive=archive):
-        links = []
+    def story_maker(clip, text, scale=True, rotate=0, css=css, archive=archive):
+        links = []  # to be filled with any links found in the story
 
         def collect(elpos):
+            """Collect any links present in the story."""
             if not elpos.open_close & 2 or elpos.href is None:
                 return
             links.append((elpos.href, elpos.rect))
             return
 
-        rect = Rect(clip)  # copy to rect
-        # shift to top-left = (0, 0)
-        rect += (-clip.x0, -clip.y0, -clip.x0, -clip.y0)
-        if rotate in (90, 270):  # swap width height
+        # make a congruent rect with top-left (0,0)
+        rect = Rect(0, 0, clip.width, clip.height)
+
+        if rotate in (90, 270):  # swap width, height
             rect.x1, rect.y1 = rect.y1, rect.x1
-        orig_height = rect.y1  # original relevant height
+
+        # prepare error return arguments
+        error_rc = (None, 0, 0, Identity, links)
+
+        # only allow a small border
         mycss = "body {margin:1px;}" + css  # append user CSS
+
+        # either make a story, or accept a given one
         if isinstance(text, str):  # if a string, convert to a Story
             story = Story(html=text, user_css=mycss, archive=archive)
+        elif isinstance(text, Story):
+            story = text
         else:
-            story = text  # assume we have a story
+            raise ValueError("'text' must be a string or a Story")
 
         # ---------------------------------------------------------------------
-        # Loop for fitting text into rectangle.
-        # We will expand the rectangle until we have a fit in any case. Only
-        # finally we will check "adjust" and report the overflow amount if
-        # no adjustment was intended.
+        # Find a scaling factor that lets our story fit in
         # ---------------------------------------------------------------------
-        more = True
-        while more:
-            story.reset()  # rewind story to the beginning
-            fp = io.BytesIO()  # use for file output
-            writer = DocumentWriter(fp)
-            dev = writer.begin_page(rect)  # make a temporary page
-            more, filled = story.place(rect)  # position text in the rect
-            if more:  # text did not fit in this clip, so enlarge and try again
-                rect *= 1.01  # enlarge by 1%
-                links = []
-                continue
-            # we stayed inside rect
-            # invoke position collector for identifying links
-            story.element_positions(collect, args={})
-            story.draw(dev)
-            writer.end_page()  # end the page
-            writer.close()  # close the writer
-            break  # leave the loop
+        filled, factor = story.scale_to_fit(
+            width=rect.width, height=rect.height, expand=scale, shrink=False
+        )
+        if factor == -1:  # happens if scale was false and there was no fit
+            return error_rc
 
-        try:
-            doc = Document("pdf", fp)  # try make a PDF from memory
-        except Exception as e:
-            # if Document creation failed, return unsuccessful insert
-            print(e)
-            return None, FZ_MAX_INF_RECT, Identity, []
-        if rect.y1 > orig_height and adjust is False:
-            # no fit and we were told to return a no-op
-            doc.close()
-            return None, rect.y1, Identity, []
+        # draw story on temp PDF page
+        fp = io.BytesIO()  # use for file output
+        writer = DocumentWriter(fp)
+        dev = writer.begin_page(rect * factor)  # make a temporary page
 
-        # coming here means we have fitted the content in the rectangle
-        # we are returning the temp PDF and associated information
+        # get link positions
+        story.element_positions(collect, args={})
+        story.draw(dev)
+        writer.end_page()  # end the page
+        writer.close()  # close the writer
+
+        doc = Document("pdf", fp)  # reopen memory PDF
         return (
             doc,
-            filled[3] - filled[1],
+            filled,
+            factor,
             (rect * Matrix(-rotate)).torect(clip),
             links,
         )
 
     # normalize rotation angle
+    if not rotate % 90 == 0:  # must be multiple of 90
+        raise ValueError("bad rotation angle")
     while rotate < 0:
         rotate += 360
     while rotate >= 360:
         rotate -= 360
-    if not rotate % 90 == 0:
-        raise ValueError("bad rotation angle")
+
     rect = Rect(rect)
     if css is None:
         css = ""
 
     # layout text in rectangle of a temp PDF
-    doc, height, matrix, links = story_maker(
-        rect, text, adjust=adjust, rotate=rotate, css=css, archive=archive
+    doc, rc, factor, matrix, links = story_maker(
+        rect, text, scale=scale, rotate=rotate, css=css, archive=archive
     )
+    if doc is None:  # story did not fit
+        return -1, 0
 
-    rc = rect.height - height if rotate in (0, 180) else rect.width - height
-    if doc is not None:
-        if rc < 0:  # layout was successful: negative values can be ignored
-            rc = 0
+    # put result in target page
+    page.show_pdf_page(rect, doc, 0, rotate=rotate, oc=oc, overlay=overlay, morph=morph)
 
-        # put result in target page
-        page.show_pdf_page(
-            rect, doc, 0, rotate=rotate, oc=oc, overlay=overlay, morph=morph
-        )
-
-        # finally insert any outstanding PDF links
-        # we only accept URI and NAMED links
-        for uri, rect in links:
-            rect = Rect(rect) * Matrix(-rotate) * matrix
-            if uri.startswith("name:"):
-                link = {"kind": LINK_NAMED, "name": uri[5:], "from": rect}
-            else:
-                link = {"kind": LINK_URI, "uri": uri, "from": rect}
-            page.insert_link(link)
-    return rc
+    # finally insert any outstanding PDF links
+    # we only accept URI and NAMED links
+    for uri, rect in links:
+        rect = Rect(rect) * Matrix(-rotate) * matrix
+        if uri.startswith("name:"):
+            link = {"kind": LINK_NAMED, "name": uri[5:], "from": rect}
+        else:
+            link = {"kind": LINK_URI, "uri": uri, "from": rect}
+        page.insert_link(link)
+    return rc, 1 / factor
 
 
 def new_page(

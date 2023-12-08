@@ -145,7 +145,7 @@ def test_2637():
     assert bbox in rect
 
 
-def test_htmlbox():
+def test_htmlbox1():
     """Write HTML-styled text into a rect with different rotations.
 
     The text is styled and contains a link.
@@ -154,10 +154,10 @@ def test_htmlbox():
     - assert that text properties are correct (bold, italic, color),
     - assert that the link has been correctly inserted.
 
-    We also try to insert into a rectangle that is too small, setting
-    adjust=False and confirming we have a negative return code.
+    We try to insert into a rectangle that is too small, setting
+    scale=False and confirming we have a negative return code.
     """
-    rect = fitz.Rect(100, 100, 200, 200)  # this only works with adjust=True
+    rect = fitz.Rect(100, 100, 200, 200)  # this only works with scale=True
 
     base_text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."""
 
@@ -168,10 +168,12 @@ def test_htmlbox():
     for rot in (0, 90, 180, 270):
         wdirs = ((1, 0), (0, -1), (-1, 0), (0, 1))  # all writing directions
         page = doc.new_page()
-        rc = page.insert_htmlbox(rect, text, rotate=rot, adjust=False)
+        rc, factor = page.insert_htmlbox(rect, text, rotate=rot, scale=False)
         assert rc < 0
-        rc = page.insert_htmlbox(rect, text, rotate=rot, adjust=True)
-        assert rc >= 0
+        assert factor == 0
+        rc, factor = page.insert_htmlbox(rect, text, rotate=rot, scale=True)
+        assert rc == 0
+        assert 0 < factor < 1
         page = doc.reload_page(page)
         link = page.get_links()[0]  # extracts the links on the page
 
@@ -210,3 +212,17 @@ def test_htmlbox():
                         assert italic is False
         # all 3 special special words were encountered
         assert encounters == 3
+
+
+def test_htmlbox2():
+    """Test insertion without scaling"""
+    doc = fitz.open()
+    rect = fitz.Rect(100, 100, 200, 200)  # large enough to hold text
+    page = doc.new_page()
+    bottoms = set()
+    for rot in (0, 90, 180, 270):
+        rc, factor = page.insert_htmlbox(rect, "Hello, World!", scale=False, rotate=rot)
+        assert factor == 1
+        assert 0 < rc < rect.height
+        bottoms.add(rc)
+    assert len(bottoms) == 1  # same result for all rotations
