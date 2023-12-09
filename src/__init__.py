@@ -12053,6 +12053,279 @@ class Story:
         stream.seek(0)
         return Story.add_pdf_links(stream, positions)
 
+    class FitResult:
+        '''
+        The result from a `Story.fit*()` method.
+        
+        Members:
+        
+        `big_enough`:
+            `True` if the fit succeeded.
+        `filled`:
+            From the last call to `Story.place()`.
+        `more`:
+            `False` if the fit succeeded.
+        `numcalls`:
+            Number of calls made to `self.place()`.
+        `parameter`:
+            The successful parameter value, or the largest failing value.
+        `rect`:
+            The rect created from `parameter`.
+        '''
+        def __init__(self, big_enough=None, filled=None, more=None, numcalls=None, parameter=None, rect=None):
+            self.big_enough = big_enough
+            self.filled = filled
+            self.more = more
+            self.numcalls = numcalls
+            self.parameter = parameter
+            self.rect = rect
+        
+        def __repr__(self):
+            return (
+                    f' big_enough={self.big_enough}'
+                    f' filled={self.filled}'
+                    f' more={self.more}'
+                    f' numcalls={self.numcalls}'
+                    f' parameter={self.parameter}'
+                    f' rect={self.rect}'
+                    )
+
+    def fit(self, fn, pmin=None, pmax=None, delta=0.001, verbose=False):
+        '''
+        Finds optimal rect that contains the story `self`.
+        
+        Returns a `Story.FitResult` instance.
+            
+        On success, the last call to `self.place()` will have been with the
+        returned rectangle, so `self.draw()` can be used directly.
+        
+        Args:
+        :arg fn:
+            A callable taking a floating point `parameter` and returning a
+            `fitz.Rect()`. If the rect is empty, we assume the story will
+            not fit and do not call `self.place()`.
+
+            Must guarantee that `self.place()` behaves monotonically when
+            given rect `fn(parameter`) as `parameter` increases. This
+            usually means that both width and height increase or stay
+            unchanged as `parameter` increases.
+        :arg pmin:
+            Minimum parameter to consider; `None` for -infinity.
+        :arg pmax:
+            Maximum parameter to consider; `None` for +infinity.
+        :arg delta:
+            Maximum error in returned `parameter`.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        def log(text):
+            assert verbose
+            print(f'fit(): {text}')
+            sys.stdout.flush()
+        
+        assert isinstance(pmin, (int, float)) or pmin is None
+        assert isinstance(pmax, (int, float)) or pmax is None
+        
+        class State:
+            def __init__(self):
+                self.pmin = pmin
+                self.pmax = pmax
+                self.pmin_result = None
+                self.pmax_result = None
+                self.result = None
+                self.numcalls = 0
+                if verbose:
+                    self.pmin0 = pmin
+                    self.pmax0 = pmax
+        state = State()
+        
+        if verbose:
+            log(f'starting. {state.pmin=} {state.pmax=}.')
+        
+        self.reset()
+
+        def ret():
+            if state.pmax is not None:
+                if state.last_p != state.pmax:
+                    if verbose:
+                        log(f'Calling update() with pmax, because was overwritten by later calls.')
+                    big_enough = update(state.pmax)
+                    assert big_enough
+                result = state.pmax_result
+            else:
+                result = state.pmin_result if state.pmin_result else Story.FitResult(numcalls=state.numcalls)
+            if verbose:
+                log(f'finished. {state.pmin0=} {state.pmax0=} {state.pmax=}: returning {result=}')
+            return result
+        
+        def update(parameter):
+            '''
+            Evaluates `more, _ = self.place(fn(parameter))`. If `more` is
+            false, then `rect` is big enought to contain `self` and we
+            set `state.pmax=parameter` and return True. Otherwise we set
+            `state.pmin=parameter` and return False.
+            '''
+            rect = fn(parameter)
+            assert isinstance(rect, Rect), f'{type(rect)=} {rect=}'
+            if rect.is_empty:
+                big_enough = False
+                result = Story.FitResult(parameter=parameter, numcalls=state.numcalls)
+                if verbose:
+                    log(f'update(): not calling self.place() because rect is empty.')
+            else:
+                more, filled = self.place(rect)
+                state.numcalls += 1
+                big_enough = not more
+                result = Story.FitResult(
+                        filled=filled,
+                        more=more,
+                        numcalls=state.numcalls,
+                        parameter=parameter,
+                        rect=rect,
+                        big_enough=big_enough,
+                        )
+                if verbose:
+                    log(f'update(): called self.place(): {state.numcalls:>2d}: {more=} {parameter=} {rect=}.')
+            if big_enough:
+                state.pmax = parameter
+                state.pmax_result = result
+            else:
+                state.pmin = parameter
+                state.pmin_result = result
+            state.last_p = parameter
+            return big_enough
+
+        def opposite(p, direction):
+            '''
+            Returns same sign as `direction`, larger or smaller than `p` if
+            direction is positive or negative respectively.
+            '''
+            if p is None or p==0:
+                return direction
+            if direction * p > 0:
+                return 2 * p
+            return -p
+            
+        if state.pmin is None:
+            # Find an initial finite pmin value.
+            if verbose: log(f'finding pmin.')
+            parameter = opposite(state.pmax, -1)
+            while 1:
+                if not update(parameter):
+                    break
+                parameter *= 2
+        else:
+            if update(state.pmin):
+                if verbose: log(f'{state.pmin=} is big enough.')
+                return ret()
+        
+        if state.pmax is None:
+            # Find an initial finite pmax value.
+            if verbose: log(f'finding pmax.')
+            parameter = opposite(state.pmin, +1)
+            while 1:
+                if update(parameter):
+                    break
+                parameter *= 2
+        else:
+            if not update(state.pmax):
+                # No solution possible.
+                state.pmax = None
+                if verbose: log(f'No solution possible {state.pmax=}.')
+                return ret()
+        
+        # Do binary search in pmin..pmax.
+        if verbose: log(f'doing binary search with {state.pmin=} {state.pmax=}.')
+        while 1:
+            if state.pmax - state.pmin < delta:
+                return ret()
+            parameter = (state.pmin + state.pmax) / 2
+            update(parameter)
+
+    def fit_scale(self, rect, scale_min=0, scale_max=None, delta=0.001, verbose=False):
+        '''
+        Finds smallest value `scale` in range `scale_min..scale_max` where
+        `scale * rect` is large enough to contain the story `self`.
+
+        Returns a `Story.FitResult` instance.
+
+        :arg width:
+            width of rect.
+        :arg height:
+            height of rect.
+        :arg scale_min:
+            Minimum scale to consider; must be >= 0.
+        :arg scale_max:
+            Maximum scale to consider, must be >= scale_min or `None` for
+            infinite.
+        :arg delta:
+            Maximum error in returned scale.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        x0, y0, x1, y1 = rect
+        width = x1 - x0
+        height = y1 - y0
+        def fn(scale):
+            return Rect(x0, y0, x0 + scale*width, y0 + scale*height)
+        return self.fit(fn, scale_min, scale_max, delta, verbose)
+
+    def fit_height(self, width, height_min=0, height_max=None, origin=(0, 0), delta=0.001, verbose=False):
+        '''
+        Finds smallest height in range `height_min..height_max` where a rect
+        with size `(width, height)` is large enough to contain the story
+        `self`.
+
+        Returns a `Story.FitResult` instance.
+
+        :arg width:
+            width of rect.
+        :arg height_min:
+            Minimum height to consider; must be >= 0.
+        :arg height_max:
+            Maximum height to consider, must be >= height_min or `None` for
+            infinite.
+        :arg origin:
+            `(x0, y0)` of rect.
+        :arg delta:
+            Maximum error in returned height.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        x0, y0 = origin
+        x1 = x0 + width
+        def fn(height):
+            return Rect(x0, y0, x1, y0+height)
+        return self.fit(fn, height_min, height_max, delta, verbose)
+
+    def fit_width(self, height, width_min=0, width_max=None, origin=(0, 0), delta=0.001, verbose=False):
+        '''
+        Finds smallest width in range `width_min..width_max` where a rect with size
+        `(width, height)` is large enough to contain the story `self`.
+
+        Returns a `Story.FitResult` instance.
+        Returns a `FitResult` instance.
+
+        :arg height:
+            height of rect.
+        :arg width_min:
+            Minimum width to consider; must be >= 0.
+        :arg width_max:
+            Maximum width to consider, must be >= width_min or `None` for
+            infinite.
+        :arg origin:
+            `(x0, y0)` of rect.
+        :arg delta:
+            Maximum error in returned width.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        x0, y0 = origin
+        y1 = x0 + height
+        def fn(width):
+            return Rect(x0, y0, x0+width, y1)
+        return self.fit(fn, width_min, width_max, delta, verbose)
+
 
 class TextPage:
 
