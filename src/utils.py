@@ -1418,8 +1418,10 @@ def set_toc(
                 if "to" not in dest_dict:  # target point not in dict?
                     dest_dict["to"] = top  # put default in
                 else:  # transform target to PDF coordinates
+                    page = doc[pno]
                     point = fitz.Point(dest_dict["to"])
-                    point.y = page_height - point.y
+                    point.y = page.cropbox.height - point.y
+                    point = point * page.rotation_matrix
                     dest_dict["to"] = (point.x, point.y)
         d = {}
         d["first"] = -1
