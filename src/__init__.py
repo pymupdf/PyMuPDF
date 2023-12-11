@@ -1601,15 +1601,10 @@ class Archive:
         mupdf.fz_mount_multi_archive( self.this, sub, path)
     
     def _add_treeitem( self, memory, name, path=None):
-        drop_sub = False
         buff = JM_BufferFromBytes( memory)
-        sub = JM_last_tree( self.this, path)
-        if not sub:
-            sub = mupdf.fz_new_tree_archive( None)
-            drop_sub = True
+        sub = mupdf.fz_new_tree_archive( mupdf.FzTree())
         mupdf.fz_tree_archive_add_buffer( sub, name, buff)
-        if drop_sub:
-            mupdf.fz_mount_multi_archive( self.this, sub, path)
+        mupdf.fz_mount_multi_archive( self.this, sub, path)
     
     def _add_ziptarfile( self, filepath, type_, path=None):
         if type_ == 1:
@@ -16202,13 +16197,6 @@ def JM_is_jbig2_image(dict_):
     #    if (pdf_name_eq(ctx, pdf_array_get(ctx, filter_, i), PDF_NAME(JBIG2Decode)))
     #        return 1;
     #return 0;
-
-def JM_last_tree(arch, mount):
-    '''
-    Return last archive if it is a tree and mount points match
-    '''
-    assert 0, 'Not implemented'
-
 
 def JM_listbox_value( annot):
     '''
