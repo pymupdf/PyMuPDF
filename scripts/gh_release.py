@@ -633,7 +633,7 @@ def cpu_bits():
 # If this has changed, need to update
 # .github/workflows/*.yml.
 #
-test_packages = 'pytest fontTools psutil'
+test_packages = 'pytest fontTools psutil pymupdf-fonts'
 if platform.system() == 'Windows' and cpu_bits() == 32:
     # No pillow wheel available, and doesn't build easily.
     pass

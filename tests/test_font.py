@@ -57,3 +57,22 @@ def test_2608():
         print(f'test_2608(): {text.encode("utf8")=}')
         print(f'test_2608(): {expected.encode("utf8")=}')
         assert text == expected
+
+def test_fontarchive():
+    import subprocess
+    subprocess.run('pip install pymupdf-fonts', shell=1, check=1)
+    arch = fitz.Archive()
+    css = fitz.css_for_pymupdf_font("notos", archive=arch, name="sans-serif")
+    print(css)
+    print(arch.entry_list)
+    assert arch.entry_list == \
+            [
+                {
+                    'fmt': 'tree',
+                    'entries':
+                    [
+                        'notosbo', 'notosbi', 'notosit', 'notos'
+                    ],
+                    'path': None
+                }
+            ]
