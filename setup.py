@@ -841,7 +841,7 @@ def build_mupdf_unix( mupdf_local, env, build_type):
 
     env = env.copy()
     if openbsd or freebsd:
-        env_add(env, 'CXX', 'clang++', ' ')
+        env_add(env, 'CXX', 'c++', ' ')
 
     # Add extra flags for MacOS cross-compilation, where ARCHFLAGS can be
     # '-arch arm64'.
