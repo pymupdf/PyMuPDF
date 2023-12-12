@@ -11854,7 +11854,7 @@ class Story:
         id_to_position = dict()
         #log(f"positions: {positions}")
         for position in positions:
-            #print(f"add_pdf_links(): position: {position}")
+            #log(f"add_pdf_links(): position: {position}")
             if (position.open_close & 1) and position.id:
                 #log(f"add_pdf_links(): position with id: {position}")
                 if position.id in id_to_position:
@@ -11863,37 +11863,49 @@ class Story:
                 else:
                     id_to_position[ position.id] = position
 
-        # Insert links for all positions that have an `href` starting
-        # with '#'.
+        # Insert links for all positions that have an `href`.
         #
         for position_from in positions:
-            if ((position_from.open_close & 1)
-                    and position_from.href
-                    and position_from.href.startswith("#")
-                    ):
-                # This is a `<a href="#...">...</a>` internal link.
+        
+            if (position_from.open_close & 1) and position_from.href:
+            
                 #log(f"add_pdf_links(): position with href: {position}")
-                target_id = position_from.href[1:]
-                try:
-                    position_to = id_to_position[ target_id]
-                except Exception as e:
-                    raise RuntimeError(f"No destination with id={target_id}, required by position_from: {position_from}") from e
-                # Make link from `position_from`'s rect to top-left of
-                # `position_to`'s rect.
-                if 0:
-                    log(f"add_pdf_links(): making link from:")
-                    log(f"add_pdf_links():    {position_from}")
-                    log(f"add_pdf_links(): to:")
-                    log(f"add_pdf_links():    {position_to}")
                 link = dict()
-                link["kind"] = LINK_GOTO
-                link["from"] = Rect(position_from.rect)
-                x0, y0, x1, y1 = position_to.rect
-                # This appears to work well with viewers which scroll
-                # to make destination point top-left of window.
-                link["to"] = Point(x0, y0)
-                link["page"] = position_to.page_num - 1
+                link['from'] = Rect(position_from.rect)
+                
+                if position_from.href.startswith("#"):
+                    #`<a href="#...">...</a>` internal link.
+                    target_id = position_from.href[1:]
+                    try:
+                        position_to = id_to_position[ target_id]
+                    except Exception as e:
+                        raise RuntimeError(f"No destination with id={target_id}, required by position_from: {position_from}") from e
+                    # Make link from `position_from`'s rect to top-left of
+                    # `position_to`'s rect.
+                    if 0:
+                        log(f"add_pdf_links(): making link from:")
+                        log(f"add_pdf_links():    {position_from}")
+                        log(f"add_pdf_links(): to:")
+                        log(f"add_pdf_links():    {position_to}")
+                    link["kind"] = LINK_GOTO
+                    x0, y0, x1, y1 = position_to.rect
+                    # This appears to work well with viewers which scroll
+                    # to make destination point top-left of window.
+                    link["to"] = Point(x0, y0)
+                    link["page"] = position_to.page_num - 1
+                    
+                else:
+                    # `<a href="...">...</a>` external link.
+                    if position_from.href.startswith('name:'):
+                        link['kind'] = LINK_NAMED
+                        link['name'] = position_from.href[5:]
+                    else:
+                        link['kind'] = LINK_URI
+                        link['uri'] = position_from.href
+                
+                #log(f'Adding link: {position_from.page_num=} {link=}.')
                 document[position_from.page_num - 1].insert_link(link)
+        
         return document
 
     @property

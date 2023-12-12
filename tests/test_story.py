@@ -152,3 +152,80 @@ def test_fit_springer():
     check('story.fit_scale(fitz.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=0)', 1)
     check('story.fit_scale(fitz.Rect(0, 0, 300, 421), scale_min=1, verbose=0)', 2.02752685546875)
 
+
+def test_write_stabilized_with_links():
+
+    def rectfn(rect_num, filled):
+        '''
+        We return one rect per page.
+        '''
+        rect = fitz.Rect(10, 20, 290, 380)
+        mediabox = fitz.Rect(0, 0, 300, 400)
+        #print(f'rectfn(): rect_num={rect_num} filled={filled}')
+        return mediabox, rect, None
+
+    def contentfn(positions):
+        ret = ''
+        ret += textwrap.dedent('''
+                <!DOCTYPE html>
+                <body>
+                <h2>Contents</h2>
+                <ul>
+                ''')
+        for position in positions:
+            if position.heading and (position.open_close & 1):
+                text = position.text if position.text else ''
+                if position.id:
+                    ret += f'    <li><a href="#{position.id}">{text}</a>'
+                else:
+                    ret += f'    <li>{text}'
+                ret += f' page={position.page_num}\n'
+        ret += '</ul>\n'
+        ret += textwrap.dedent(f'''
+                <h1>First section</h1>
+                <p>Contents of first section.
+                <ul>
+                <li>External <a href="https://artifex.com/">link to https://artifex.com/</a>.
+                <li><a href="#idtest">Link to IDTEST</a>.
+                <li><a href="#nametest">Link to NAMETEST</a>.
+                </ul>
+            
+                <h1>Second section</h1>
+                <p>Contents of second section.
+                <h2>Second section first subsection</h2>
+            
+                <p>Contents of second section first subsection.
+                <p id="idtest">IDTEST
+            
+                <h1>Third section</h1>
+                <p>Contents of third section.
+                <p><a name="nametest">NAMETEST</a>.
+            
+                </body>
+                ''')
+        return ret.strip()
+    
+    document = fitz.Story.write_stabilized_with_links(contentfn, rectfn)
+    
+    # Check links.
+    links = list()
+    for page in document:
+        links += page.get_links()
+    print(f'{len(links)=}.')
+    external_links = dict()
+    for i, link in enumerate(links):
+        print(f'    {i}: {link=}')
+        if link.get('kind') == fitz.LINK_URI:
+            uri = link['uri']
+            external_links.setdefault(uri, 0)
+            external_links[uri] += 1
+
+    # Check there is one external link.
+    print(f'{external_links=}')
+    if hasattr(fitz, 'mupdf'):
+        assert len(external_links) == 1
+        assert 'https://artifex.com/' in external_links
+    
+    out_path = __file__.replace('.py', '.pdf')
+    document.save(out_path)
+    
