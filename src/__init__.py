@@ -13364,7 +13364,7 @@ annot_skel = {
         "gotor2": "<</A<</S/GoToR/D%s/F(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
         "launch": "<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
         "uri": "<</A<</S/URI/URI(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "named": "<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+        "named": "<</A<</S/GoTo/D(%s)/Type/Action>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
         }
 
 class FileDataError(RuntimeError):
