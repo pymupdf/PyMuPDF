@@ -5,6 +5,10 @@ import os
 
 def test_2886():
     """Confirm correct insertion of a 'named' link."""
+    if not hasattr(fitz, "mupdf"):
+        print(f"test_2886(): not running on classic.")
+        return
+
     path = os.path.abspath(f"{__file__}/../../tests/resources/cython.pdf")
     doc = fitz.open(path)
     # name "Doc-Start" is a valid named destination in that file
