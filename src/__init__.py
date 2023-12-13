@@ -7551,7 +7551,7 @@ class Page:
         CheckParent(self)
         if g_use_extra:
             self.__class__._addAnnot_FromString = extra.Page_addAnnot_FromString
-            log('Page._addAnnot_FromString() deferring to extra.Page_addAnnot_FromString().')
+            #log('Page._addAnnot_FromString() deferring to extra.Page_addAnnot_FromString().')
             return extra.Page_addAnnot_FromString( self.this, linklist)
         page = mupdf.pdf_page_from_fz_page(self.this)
         lcount = len(linklist)  # link count
