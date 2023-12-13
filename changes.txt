@@ -6,6 +6,7 @@ Change Log
 
 * Bug fixes (rebased implementation only):
 
+  **Fixed** `2871 <https://github.com/pymupdf/PyMuPDF/issues/2871>`_: KeyError in getLinkDict during PDF merge
   **Fixed** `2861 <https://github.com/pymupdf/PyMuPDF/issues/2861>`_: AttributeError in getLinkDict during PDF Merge
   **Fixed** `2634 <https://github.com/pymupdf/PyMuPDF/issues/2634>`_: get_toc and set_toc do not behave consistently for rotated pages
 
