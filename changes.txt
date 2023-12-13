@@ -14,10 +14,16 @@ Change Log
 
   * Rebased implementation:
   
+    * `Story.fit*()`: new methods for fitting a Story into an expanded rect.
+    * `Story.write_with_links()`: add support for external links.
     * Work with new MuPDF Python exception classes.
     * `Document.language()`: fixed to use MuPDF's new `mupdf.fz_string_from_text_language2()`.
+    * Fixed internal `Archive._add_treeitem()` method.
 
   * Fixed pillow test to not ignore all errors.
+  * Added test for `fitz.css_for_pymupdf_font()` (uses package `pymupdf-fonts`).
+  * Simplified Github Actions test specifications.
+  * Updated `tests/README.md`.
 
 
 **Changes in version 1.23.7 (2023-11-30)**
