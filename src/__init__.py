@@ -22008,3 +22008,7 @@ if 0:
     restore_aliases()
 
 __version__ = VersionBind
+__doc__ = (
+        f'PyMuPDF {VersionBind}: Python bindings for the MuPDF {VersionFitz} library (rebased implementation).\n'
+        f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
+        )

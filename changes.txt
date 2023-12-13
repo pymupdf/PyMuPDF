@@ -21,6 +21,7 @@ Change Log
     * Work with new MuPDF Python exception classes.
     * `Document.language()`: fixed to use MuPDF's new `mupdf.fz_string_from_text_language2()`.
     * Fixed internal `Archive._add_treeitem()` method.
+    * Fixed fitz_new.__doc__ to contain PyMuPDF and Python version information, and OS name.
 
   * Fixed pillow test to not ignore all errors.
   * Added test for `fitz.css_for_pymupdf_font()` (uses package `pymupdf-fonts`).
