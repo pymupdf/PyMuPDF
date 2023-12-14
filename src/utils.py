@@ -39,7 +39,17 @@ This is a collection of functions to extend PyMupdf.
 """
 
 
-def write_text(page: fitz.Page, **kwargs) -> None:
+def write_text(
+        page: fitz.Page,
+        rect=None,
+        writers=None,
+        overlay=True,
+        color=None,
+        opacity=None,
+        keep_proportion=True,
+        rotate=0,
+        oc=0,
+        ) -> None:
     """Write the text of one or more fitz.TextWriter objects.
 
     Args:
@@ -50,35 +60,7 @@ def write_text(page: fitz.Page, **kwargs) -> None:
         rotate: arbitrary rotation angle.
         oc: the xref of an optional content object
     """
-    if type(page) is not fitz.Page:
-        raise ValueError("bad page parameter")
-    s = {
-        k
-        for k in kwargs.keys()
-        if k
-        not in {
-            "rect",
-            "writers",
-            "opacity",
-            "color",
-            "overlay",
-            "keep_proportion",
-            "rotate",
-            "oc",
-        }
-    }
-    if s != set():
-        raise ValueError("bad keywords: " + str(s))
-
-    rect = kwargs.get("rect")
-    writers = kwargs.get("writers")
-    opacity = kwargs.get("opacity")
-    color = kwargs.get("color")
-    overlay = bool(kwargs.get("overlay", True))
-    keep_proportion = bool(kwargs.get("keep_proportion", True))
-    rotate = int(kwargs.get("rotate", 0))
-    oc = int(kwargs.get("oc", 0))
-
+    assert isinstance(page, fitz.Page)
     if not writers:
         raise ValueError("need at least one fitz.TextWriter")
     if type(writers) is fitz.TextWriter:
@@ -109,35 +91,31 @@ def write_text(page: fitz.Page, **kwargs) -> None:
     tpage = None
 
 
-def show_pdf_page(*args, **kwargs) -> int:
+def show_pdf_page(
+        page,
+        rect,
+        src,
+        pno=0,
+        keep_proportion=True,
+        overlay=True,
+        oc=0,
+        rotate=0,
+        clip=None,
+        ) -> int:
     """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
 
     Args:
         rect: (rect-like) where to place the source image
         src: (document) source PDF
         pno: (int) source page number
-        overlay: (bool) put in foreground
         keep_proportion: (bool) do not change width-height-ratio
+        overlay: (bool) put in foreground
+        oc: (xref) make visibility dependent on this OCG / OCMD (which must be defined in the target PDF)
         rotate: (int) degrees (multiple of 90)
         clip: (rect-like) part of source page rectangle
     Returns:
         xref of inserted object (for reuse)
     """
-    if len(args) not in (3, 4):
-        raise ValueError("bad number of positional parameters")
-    pno = None
-    if len(args) == 3:
-        page, rect, src = args
-    else:
-        page, rect, src, pno = args
-    if pno is None:
-        pno = int(kwargs.get("pno", 0))
-    overlay = bool(kwargs.get("overlay", True))
-    keep_proportion = bool(kwargs.get("keep_proportion", True))
-    rotate = float(kwargs.get("rotate", 0))
-    oc = int(kwargs.get("oc", 0))
-    clip = kwargs.get("clip")
-
     def calc_matrix(sr, tr, keep=True, rotate=0):
         """Calculate transformation matrix from source to target rect.
 
@@ -283,13 +261,30 @@ def delete_image(page: fitz.Page, xref: int):
     page.replace_image(xref, pixmap=pix)
 
 
-def insert_image(page, rect, **kwargs):
+def insert_image(
+        page,
+        rect,
+        *,
+        alpha=-1,
+        filename=None,
+        height=0,
+        keep_proportion=True,
+        mask=None,
+        oc=0,
+        overlay=True,
+        pixmap=None,
+        rotate=0,
+        stream=None,
+        width=0,
+        xref=0,
+        ):
     """Insert an image for display in a rectangle.
 
     Args:
         rect: (rect_like) position of image on the page.
         alpha: (int, optional) set to 0 if image has no transparency.
         filename: (str, Path, file object) image filename.
+        height: (int)
         keep_proportion: (bool) keep width / height ratio (default).
         mask: (bytes, optional) image consisting of alpha values to use.
         oc: (int) xref of OCG or OCMD to declare as Optional Content.
@@ -297,6 +292,7 @@ def insert_image(page, rect, **kwargs):
         pixmap: (fitz.Pixmap) use this as image.
         rotate: (int) rotate by 0, 90, 180 or 270 degrees.
         stream: (bytes) use this as image.
+        width: (int)
         xref: (int) use this as image.
 
     'page' and 'rect' are positional, all other parameters are keywords.
@@ -317,36 +313,6 @@ def insert_image(page, rect, **kwargs):
     doc = page.parent
     if not doc.is_pdf:
         raise ValueError("is no PDF")
-
-    valid_keys = {
-        "alpha",
-        "filename",
-        "height",
-        "keep_proportion",
-        "mask",
-        "oc",
-        "overlay",
-        "pixmap",
-        "rotate",
-        "stream",
-        "width",
-        "xref",
-    }
-    s = set(kwargs.keys()).difference(valid_keys)
-    if s != set():
-        raise ValueError(f"bad key argument(s): {s}.")
-    filename = kwargs.get("filename")
-    pixmap = kwargs.get("pixmap")
-    stream = kwargs.get("stream")
-    mask = kwargs.get("mask")
-    rotate = int(kwargs.get("rotate", 0))
-    width = int(kwargs.get("width", 0))
-    height = int(kwargs.get("height", 0))
-    alpha = int(kwargs.get("alpha", -1))
-    oc = int(kwargs.get("oc", 0))
-    xref = int(kwargs.get("xref", 0))
-    keep_proportion = bool(kwargs.get("keep_proportion", True))
-    overlay = bool(kwargs.get("overlay", True))
 
     if xref == 0 and (bool(filename) + bool(stream) + bool(pixmap) != 1):
         raise ValueError("xref=0 needs exactly one of filename, pixmap, stream")
@@ -418,7 +384,19 @@ def insert_image(page, rect, **kwargs):
     return xref
 
 
-def search_for(*args, **kwargs) -> list:
+def search_for(
+        page,
+        text,
+        *,
+        clip=None,
+        quads=False,
+        flags=fitz.TEXT_DEHYPHENATE
+            | fitz.TEXT_PRESERVE_WHITESPACE
+            | fitz.TEXT_PRESERVE_LIGATURES
+            | fitz.TEXT_MEDIABOX_CLIP
+            ,
+        textpage=None,
+        ) -> list:
     """Search for a string on a page.
 
     Args:
@@ -430,21 +408,8 @@ def search_for(*args, **kwargs) -> list:
     Returns:
         a list of rectangles or quads, each containing one occurrence.
     """
-    if len(args) != 2:
-        raise ValueError("bad number of positional parameters")
-    page, text = args
-    quads = kwargs.get("quads", 0)
-    clip = kwargs.get("clip")
-    textpage = kwargs.get("textpage")
     if clip is not None:
         clip = fitz.Rect(clip)
-    flags = kwargs.get(
-            "flags",
-            fitz.TEXT_DEHYPHENATE
-                | fitz.TEXT_PRESERVE_WHITESPACE
-                | fitz.TEXT_PRESERVE_LIGATURES
-                | fitz.TEXT_MEDIABOX_CLIP,
-            )
 
     fitz.CheckParent(page)
     tp = textpage
