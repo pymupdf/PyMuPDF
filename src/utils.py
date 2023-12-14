@@ -1878,6 +1878,125 @@ def insert_text(
     return rc
 
 
+def insert_htmlbox(
+    page,
+    rect,
+    text,
+    *,
+    css=None,
+    scale_low=0,
+    archive=None,
+    rotate=0,
+    oc=0,
+    overlay=True,
+) -> float:
+    """Insert text with optional HTML tags and stylings into a rectangle.
+
+    Args:
+        rect: (rect-like) rectangle into which the text should be placed.
+        text: (str) text with optional HTML tags and stylings.
+        css: (str) CSS styling commands.
+        scale_low: (float) force-fit content by scaling it down. Must be in
+            range [0, 1]. If 1, no scaling will take place. If 0, arbitrary
+            down-scaling is acceptable. A value of 0.1 would mean that content
+            may be scaled down by at most 90%.
+        archive: Archive object pointing to locations of used fonts or images
+        rotate: (int) rotate the text in the box by a multiple of 90 degrees.
+        oc: (int) the xref of an OCG / OCMD (Optional Content).
+        overlay: (bool) put text on top of page content.
+    Returns:
+        A tuple of floats (spare_height, scale).
+        spare_height: -1 if content did not fit, else >= 0. It is the height of the
+               unused (still available) rectangle stripe. Positive only if
+               scale_min = 1 (no down scaling).
+        scale: downscaling factor, 0 < scale <= 1. Set to 0 if spare_height = -1.
+    """
+
+    # normalize rotation angle
+    if not rotate % 90 == 0:
+        raise ValueError("bad rotation angle")
+    while rotate < 0:
+        rotate += 360
+    while rotate >= 360:
+        rotate -= 360
+
+    if not 0 <= scale_low <= 1:
+        raise ValueError("'scale_low' must be in [0, 1]")
+
+    if css is None:
+        css = ""
+
+    rect = fitz.Rect(rect)
+    if rotate in (90, 270):
+        temp_rect = fitz.Rect(0, 0, rect.height, rect.width)
+    else:
+        temp_rect = fitz.Rect(0, 0, rect.width, rect.height)
+
+    # use a small border by default
+    mycss = "body {margin:1px;}" + css  # append user CSS
+
+    # either make a story, or accept a given one
+    if isinstance(text, str):  # if a string, convert to a Story
+        story = fitz.Story(html=text, user_css=mycss, archive=archive)
+    elif isinstance(text, fitz.Story):
+        story = text
+    else:
+        raise ValueError("'text' must be a string or a Story")
+
+    # ----------------------------------------------------------------
+    # Find a scaling factor that lets our story fit in
+    # ----------------------------------------------------------------
+    scale_max = None if scale_low == 0 else 1 / scale_low
+
+    fit = story.fit_scale(temp_rect, scale_min=1, scale_max=scale_max)
+
+    if fit.big_enough is False:  # there was no fit
+        return (-1, scale_low)
+
+    filled = fit.filled
+    scale = 1 / fit.parameter  # shrink factor
+
+    spare_height = fit.rect.y1 - filled[3]  # unused room at rectangle bottom
+    # Note: due to MuPDF's logic this may be negative even for successful fits.
+    if scale != 1 or spare_height < 0:  # if scaling occurred, set spare_height to 0
+        spare_height = 0
+
+    def rect_function(*args):
+        return fit.rect, fit.rect, fitz.Identity
+
+    # draw story on temp PDF page
+    doc = story.write_with_links(rect_function)
+
+    # put result in target page
+    page.show_pdf_page(rect, doc, 0, rotate=rotate, oc=oc, overlay=overlay)
+
+    # -------------------------------------------------------------------------
+    # re-insert links in target rect (show_pdf_page cannot copy annotations)
+    # -------------------------------------------------------------------------
+    # scaled center point of fit.rect
+    mp1 = (fit.rect.tl + fit.rect.br) / 2 * scale
+
+    # center point of target rect
+    mp2 = (rect.tl + rect.br) / 2
+
+    # compute link positioning matrix:
+    # - move center of scaled-down fit.rect to (0,0)
+    # - rotate
+    # - move (0,0) to center of target rect
+    mat = (
+        fitz.Matrix(scale, 0, 0, scale, -mp1.x, -mp1.y)
+        * fitz.Matrix(-rotate)
+        * fitz.Matrix(1, 0, 0, 1, mp2.x, mp2.y)
+    )
+
+    # copy over links
+    for link in doc[0].get_links():
+        link["from"] *= mat
+        page.insert_link(link)
+
+    return spare_height, scale
+
+
 def new_page(
     doc: fitz.Document,
     pno: int = -1,
