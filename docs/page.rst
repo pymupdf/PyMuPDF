@@ -649,17 +649,17 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * With this method the following can be achieved:
 
-         - Styling effects like bold, italic, text color, text alignment, font size or font switching.
-         - The text may inlude arbitrary languages -- **including right-to-left** languages.
-         - Scripts like `Devanagari <https://en.wikipedia.org/wiki/Devanagari>`_ and several others in Asia have a highly complex system of ligatures, where two or more unicodes together yield one glyph. The Story uses the software package `HarfBuzz <https://harfbuzz.github.io/>`_ , to deal with these things and produce correct output.
-         - One can also **include images** via HTML tag `<img>` -- the Story will take care of the appropriate layout. This is an alternative option to insert images, compared to :meth:`Page.insert_image`.
-         - HTML tables (tag `<table>`) may be included in the text and will be handled appropriately.
-         - Links are automatically generated when present.
+        - Styling effects like bold, italic, text color, text alignment, font size or font switching.
+        - The text may inlude arbitrary languages -- **including right-to-left** languages.
+        - Scripts like `Devanagari <https://en.wikipedia.org/wiki/Devanagari>`_ and several others in Asia have a highly complex system of ligatures, where two or more unicodes together yield one glyph. The Story uses the software package `HarfBuzz <https://harfbuzz.github.io/>`_ , to deal with these things and produce correct output.
+        - One can also **include images** via HTML tag `<img>` -- the Story will take care of the appropriate layout. This is an alternative option to insert images, compared to :meth:`Page.insert_image`.
+        - HTML tables (tag `<table>`) may be included in the text and will be handled appropriately.
+        - Links are automatically generated when present.
 
       * If content does not fit in the rectangle, the developer has two choices:
          
-         - **either** be just informed (and accept a no-op), 
-         - **or** (`scale=True` - the default) scale down the content until it fits.
+        - **either** be just informed (and accept a no-op), 
+        - **or** (`scale=True` - the default) scale down the content until it fits.
 
       :arg rect_like rect: rectangle on page to receive the text.
       :arg str,Story text: the text to be written. Can contain plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
@@ -678,7 +678,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int oc:  the xref of an :data:`OCG` / :data:`OCMD` or 0. Please refer to :meth:`Page.show_pdf_page` for details.
       :arg bool overlay: put the text in front of other content. Please refer to :meth:`Page.show_pdf_page` for details.
 
-      :returns: A tuple of floats (spare_height, scale).
+      :returns: A tuple of floats `(spare_height, scale)`.
 
          - `spare_height`: -1 if content did not fit, else >= 0. It is the height of the unused (still available) rectangle stripe. Positive only if scale = 1 (no down-scaling happened).
          - `scale`: down-scaling factor, 0 < scale <= 1.
