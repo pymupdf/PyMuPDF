@@ -21698,6 +21698,7 @@ Page.insert_image           = utils.insert_image
 Page.insert_link            = utils.insert_link
 Page.insert_text            = utils.insert_text
 Page.insert_textbox         = utils.insert_textbox
+Page.insert_htmlbox         = utils.insert_htmlbox
 Page.new_shape              = lambda x: utils.Shape(x)
 Page.replace_image          = utils.replace_image
 Page.search_for             = utils.search_for
