@@ -1633,7 +1633,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: clip; search_for
       pair: textpage; search_for
 
-   .. method:: search_for(needle, *, clip=clip, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES, textpage=None)
+   .. method:: search_for(needle, *, clip=None, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES | TEXT_MEDIABOX_CLIP, textpage=None)
 
       * Changed in v1.18.2: added `clip` parameter. Remove `hit_max` parameter. Add default "dehyphenate".
       * Changed in v1.19.0: added `textpage` parameter.
