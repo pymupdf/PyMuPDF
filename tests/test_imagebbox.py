@@ -22,6 +22,7 @@ def test_image_bbox():
     for item in imglist:
         bbox_list.append(page.get_image_bbox(item, transform=False))
     infos = page.get_image_info(xrefs=True)
+    match = False
     for im in infos:
         bbox1 = im["bbox"]
         match = False
