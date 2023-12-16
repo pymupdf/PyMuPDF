@@ -425,6 +425,7 @@ Some default values were used above: font size 11 and text alignment "left". The
 
 How to Fill a Box with HTML Text
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to insert text in a rectangle.
 
 Instead of simple, plain text, this method accepts HTML source, which may not only contain HTML tags but also styling instructions to influence things like font, font weight (bold) and style (italic), color and much more.

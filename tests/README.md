@@ -1,83 +1,65 @@
-# Testing your PyMuPDF Installation
-This folder contains a number of basic tests to confirm that PyMuPDF is correctly installed.
+# PyMuPDF tests
 
-The following areas are currently covered:
-* encryption and decryption
-* extraction of drawings
-* "geometry": correct working of points, rectangles, matrices and operator algebra
-* image bbox computation
-* handling of embedded files
-* image insertion
-* PDF document joining
-* computation of quadrilaterals for non-horizontal text
-* extraction of non-unicode fontnames
-* handling of PDF standard metadata
-* handling of non-PDF document types
-* programmatic editing of PDF object definition sources
-* mass deletion of PDF pages
-* handling of PDF page labels
-* pixmap handling
-* show PDF pages inside other PDF pages
-* text extraction
-* text searching
-* handling of PDF Tables of Contents
-* annotation handling
-* field / widget handling
-* image extraction
+To run these tests:
 
-This is **_not a coverage test_**, although a significant part of the relevant Python part **_does_** get executed (ca. 80%). Achieving a much higher code coverage remains an ongoing task.
+* Create and enter a venv.
+* Install PyMuPDF.
+* Install the Python packages listed in
+  `PyMuPDF/scripts/gh_release.py:test_packages`.
+* Run pytest on the PyMuPDF directory.
 
-To use these scripts, you must have installed `pytest`:
-
-`python -m pip install pytest`
-
-Then simply execute `python -m pytest` in a terminal of this folder. `pytest` will automatically locate all scripts and execute them. All tests should run successfully and you will see an output like this:
+For example, as of 2023-12-11:
 
 ```
-pytest --cov=fitz
-============================ test session starts =============================
-platform linux -- Python 3.8.5, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /mnt/d/harald/desktop/fitzPython119/pymupdf
-plugins: cov-2.12.0
-collected 79 items
+> python -m pip install pytest fontTools psutil pymupdf-fonts pillow
+> pytest PyMuPDF
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-7.4.3, pluggy-1.3.0
+rootdir: /home/jules/artifex-remote/PyMuPDF
+configfile: pytest.ini
+collected 171 items
 
-test_annots.py ...............                                          [ 18%]
-test_badfonts.py .                                                      [ 20%]
-test_crypting.py .                                                      [ 21%]
-test_drawings.py ..                                                     [ 24%]
-test_embeddedfiles.py .                                                 [ 25%]
-test_font.py ..                                                         [ 27%]
-test_general.py ............                                            [ 43%]
-test_geometry.py .......                                                [ 51%]
-test_imagebbox.py .                                                     [ 53%]
-test_insertimage.py .                                                   [ 54%]
-test_insertpdf.py .                                                     [ 55%]
-test_linequad.py .                                                      [ 56%]
-test_metadata.py ..                                                     [ 59%]
-test_nonpdf.py ...                                                      [ 63%]
-test_object_manipulation.py ...                                         [ 67%]
-test_optional_content.py ..                                             [ 69%]
-test_pagedelete.py .                                                    [ 70%]
-test_pagelabels.py .                                                    [ 72%]
-test_pixmap.py ......                                                   [ 79%]
-test_showpdfpage.py .                                                   [ 81%]
-test_textbox.py ....                                                    [ 86%]
-test_textextract.py .                                                   [ 87%]
-test_textsearch.py .                                                    [ 88%]
-test_toc.py ....                                                        [ 93%]
-test_widgets.py .....                                                   [100%]
+PyMuPDF/tests/test_2548.py .                                             [  0%]
+PyMuPDF/tests/test_2634.py .                                             [  1%]
+PyMuPDF/tests/test_2736.py .                                             [  1%]
+PyMuPDF/tests/test_2791.py .                                             [  2%]
+PyMuPDF/tests/test_2861.py .                                             [  2%]
+PyMuPDF/tests/test_annots.py ..................                          [ 13%]
+PyMuPDF/tests/test_badfonts.py .                                         [ 14%]
+PyMuPDF/tests/test_crypting.py .                                         [ 14%]
+PyMuPDF/tests/test_docs_samples.py .............                         [ 22%]
+PyMuPDF/tests/test_drawings.py ......                                    [ 25%]
+PyMuPDF/tests/test_embeddedfiles.py .                                    [ 26%]
+PyMuPDF/tests/test_extractimage.py ..                                    [ 27%]
+PyMuPDF/tests/test_flake8.py .                                           [ 28%]
+PyMuPDF/tests/test_font.py .....                                         [ 30%]
+PyMuPDF/tests/test_general.py .......................................... [ 55%]
+...                                                                      [ 57%]
+PyMuPDF/tests/test_geometry.py ........                                  [ 61%]
+PyMuPDF/tests/test_imagebbox.py ..                                       [ 63%]
+PyMuPDF/tests/test_insertimage.py ..                                     [ 64%]
+PyMuPDF/tests/test_insertpdf.py ..                                       [ 65%]
+PyMuPDF/tests/test_linequad.py .                                         [ 66%]
+PyMuPDF/tests/test_metadata.py ..                                        [ 67%]
+PyMuPDF/tests/test_nonpdf.py ...                                         [ 69%]
+PyMuPDF/tests/test_object_manipulation.py ....                           [ 71%]
+PyMuPDF/tests/test_optional_content.py ..                                [ 72%]
+PyMuPDF/tests/test_pagedelete.py .                                       [ 73%]
+PyMuPDF/tests/test_pagelabels.py .                                       [ 73%]
+PyMuPDF/tests/test_pixmap.py ..........                                  [ 79%]
+PyMuPDF/tests/test_showpdfpage.py .                                      [ 80%]
+PyMuPDF/tests/test_story.py ...                                          [ 81%]
+PyMuPDF/tests/test_tables.py ...                                         [ 83%]
+PyMuPDF/tests/test_tesseract.py .                                        [ 84%]
+PyMuPDF/tests/test_textbox.py ......                                     [ 87%]
+PyMuPDF/tests/test_textextract.py ..                                     [ 88%]
+PyMuPDF/tests/test_textsearch.py ..                                      [ 90%]
+PyMuPDF/tests/test_toc.py ........                                       [ 94%]
+PyMuPDF/tests/test_widgets.py ........                                   [ 99%]
+PyMuPDF/tests/test_word_delimiters.py .                                  [100%]
 
------------ coverage: platform linux, python 3.8.5-final-0 -----------
-Name                                                      Stmts   Miss  Cover
------------------------------------------------------------------------------
-/usr/local/lib/python3.8/dist-packages/fitz/__init__.py     335     13    96%
-/usr/local/lib/python3.8/dist-packages/fitz/fitz.py        4183    740    82%
-/usr/local/lib/python3.8/dist-packages/fitz/utils.py       2196    669    70%
------------------------------------------------------------------------------
-TOTAL                                                      6714   1422    79%
-
-
-============================ 79 passed in 5.76s ==============================
+======================== 171 passed in 78.65s (0:01:18) ========================
+> 
 ```
 
 ## Known test failure with non-default build of MuPDF

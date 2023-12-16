@@ -4,10 +4,13 @@ Pixmap tests
 * make pixmap from a PDF xref and compare with extracted image
 * pixmap from file and from binary image and compare
 """
-import os
-import tempfile
 
 import fitz
+
+import os
+import platform
+import sys
+import tempfile
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 epub = os.path.join(scriptdir, "resources", "Bezier.epub")
@@ -55,13 +58,13 @@ def test_filepixmap():
 def test_pilsave():
     # pixmaps from file then save to pillow image
     # make pixmap from this and confirm equality
-    pix1 = fitz.Pixmap(imgfile)
     try:
+        pix1 = fitz.Pixmap(imgfile)
         stream = pix1.pil_tobytes("JPEG")
         pix2 = fitz.Pixmap(stream)
         assert repr(pix1) == repr(pix2)
-    except:
-        pass
+    except ModuleNotFoundError:
+        assert platform.system() == 'Windows' and sys.maxsize == 2**31 - 1
 
 
 def test_save(tmpdir):

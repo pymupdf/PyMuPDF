@@ -61,6 +61,7 @@ def contentfn(positions):
             <h1>First section</h1>
             <p>Contents of first section.
             <ul>
+            <li>External <a href="https://artifex.com/">link to https://artifex.com/</a>.
             <li><a href="#idtest">Link to IDTEST</a>.
             <li><a href="#nametest">Link to NAMETEST</a>.
             </ul>

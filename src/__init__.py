@@ -1601,15 +1601,10 @@ class Archive:
         mupdf.fz_mount_multi_archive( self.this, sub, path)
     
     def _add_treeitem( self, memory, name, path=None):
-        drop_sub = False
         buff = JM_BufferFromBytes( memory)
-        sub = JM_last_tree( self.this, path)
-        if not sub:
-            sub = mupdf.fz_new_tree_archive( None)
-            drop_sub = True
+        sub = mupdf.fz_new_tree_archive( mupdf.FzTree())
         mupdf.fz_tree_archive_add_buffer( sub, name, buff)
-        if drop_sub:
-            mupdf.fz_mount_multi_archive( self.this, sub, path)
+        mupdf.fz_mount_multi_archive( self.this, sub, path)
     
     def _add_ziptarfile( self, filepath, type_, path=None):
         if type_ == 1:
@@ -3125,6 +3120,7 @@ class Document:
         try:
             return mupdf.fz_lookup_metadata2( self.this, key)
         except Exception:
+            if 0 and g_exceptions_verbose:    exception_info()
             return ''
 
     def _getOLRootNumber(self):
@@ -4643,10 +4639,9 @@ class Document:
         lang = mupdf.pdf_document_language(pdf)
         if lang == mupdf.FZ_LANG_UNSET:
             return
-        # fixme
-        assert 0, 'not implemented yet'
-        #char buf[8];
-        #return PyUnicode_FromString(fz_string_from_text_language(buf, lang));
+        if mupdf_version_tuple < (1, 23, 7):
+            assert 0, 'not implemented yet'
+        return mupdf.fz_string_from_text_language2(lang)
 
     @property
     def last_location(self):
@@ -6712,11 +6707,23 @@ class linkDest:
         self.isUri = False
         self.kind = LINK_NONE
         self.lt = Point(0, 0)
-        self.named = ""
+        self.named = dict()
         self.newWindow = ""
         self.page = obj.page
         self.rb = Point(0, 0)
         self.uri = obj.uri
+        
+        def uri_to_dict(uri):
+            items = self.uri[1:].split('&')
+            ret = dict()
+            for item in items:
+                eq = item.find('=')
+                if eq >= 0:
+                    ret[item[:eq]] = item[eq+1:]
+                else:
+                    ret[item] = None
+            return ret
+        
         if rlink and not self.uri.startswith("#"):
             self.uri = "#page=%i&zoom=0,%g,%g" % (rlink[0] + 1, rlink[1], rlink[2])
         if obj.is_external:
@@ -6728,7 +6735,6 @@ class linkDest:
         if isInt and self.uri:
             self.uri = self.uri.replace("&zoom=nan", "&zoom=0")
             if self.uri.startswith("#"):
-                self.named = ""
                 self.kind = LINK_GOTO
                 m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),(-?[0-9.]+),(-?[0-9.]+)$', self.uri)
                 if m:
@@ -6752,10 +6758,10 @@ class linkDest:
                                 self.named = dict()
                             self.named['nameddest'] = named
                         else:
-                            self.named = self.uri[1:]
+                            self.named = uri_to_dict(self.uri[1:])
             else:
                 self.kind = LINK_NAMED
-                self.named = self.uri
+                self.named = uri_to_dict(self.uri)
         if obj.is_external:
             if not self.uri:
                 pass
@@ -6776,7 +6782,7 @@ class linkDest:
             else:
                 self.isUri = True
                 self.kind = LINK_LAUNCH
-
+        assert isinstance(self.named, dict)
 
 class Widget:
     '''
@@ -6986,10 +6992,26 @@ class Widget:
             for x in apnt:
                 nstates.append(x.split()[0])
             states["normal"] = nstates
+        if APN[0] == "xref":
+            nstates = []
+            nxref = int(APN[1].split(" ")[0])
+            APN = doc.xref_object(nxref)
+            apnt = APN.split("/")[1:]
+            for x in apnt:
+                nstates.append(x.split()[0])
+            states["normal"] = nstates
         APD = doc.xref_get_key(xref, "AP/D")
         if APD[0] == "dict":
             dstates = []
             APD = APD[1][2:-2]
+            apdt = APD.split("/")[1:]
+            for x in apdt:
+                dstates.append(x.split()[0])
+            states["down"] = dstates
+        if APD[0] == "xref":
+            dstates = []
+            dxref = int(APD[1].split(" ")[0])
+            APD = doc.xref_object(dxref)
             apdt = APD.split("/")[1:]
             for x in apdt:
                 dstates.append(x.split()[0])
@@ -7545,7 +7567,7 @@ class Page:
         CheckParent(self)
         if g_use_extra:
             self.__class__._addAnnot_FromString = extra.Page_addAnnot_FromString
-            log('Page._addAnnot_FromString() deferring to extra.Page_addAnnot_FromString().')
+            #log('Page._addAnnot_FromString() deferring to extra.Page_addAnnot_FromString().')
             return extra.Page_addAnnot_FromString( self.this, linklist)
         page = mupdf.pdf_page_from_fz_page(self.this)
         lcount = len(linklist)  # link count
@@ -9569,8 +9591,8 @@ class Pixmap:
                     mupdf.FzMatrix( img.w(), 0, 0, img.h(), 0, 0),
                     )
             xres, yres = mupdf.fz_image_resolution(img)
-            pm.xres = xres
-            pm.yres = yres
+            pm.m_internal.xres = xres
+            pm.m_internal.yres = yres
             self.this = pm
 
         elif args_match(args, (Document, mupdf.FzDocument), int):
@@ -11843,7 +11865,7 @@ class Story:
         id_to_position = dict()
         #log(f"positions: {positions}")
         for position in positions:
-            #print(f"add_pdf_links(): position: {position}")
+            #log(f"add_pdf_links(): position: {position}")
             if (position.open_close & 1) and position.id:
                 #log(f"add_pdf_links(): position with id: {position}")
                 if position.id in id_to_position:
@@ -11852,37 +11874,49 @@ class Story:
                 else:
                     id_to_position[ position.id] = position
 
-        # Insert links for all positions that have an `href` starting
-        # with '#'.
+        # Insert links for all positions that have an `href`.
         #
         for position_from in positions:
-            if ((position_from.open_close & 1)
-                    and position_from.href
-                    and position_from.href.startswith("#")
-                    ):
-                # This is a `<a href="#...">...</a>` internal link.
+        
+            if (position_from.open_close & 1) and position_from.href:
+            
                 #log(f"add_pdf_links(): position with href: {position}")
-                target_id = position_from.href[1:]
-                try:
-                    position_to = id_to_position[ target_id]
-                except Exception as e:
-                    raise RuntimeError(f"No destination with id={target_id}, required by position_from: {position_from}") from e
-                # Make link from `position_from`'s rect to top-left of
-                # `position_to`'s rect.
-                if 0:
-                    log(f"add_pdf_links(): making link from:")
-                    log(f"add_pdf_links():    {position_from}")
-                    log(f"add_pdf_links(): to:")
-                    log(f"add_pdf_links():    {position_to}")
                 link = dict()
-                link["kind"] = LINK_GOTO
-                link["from"] = Rect(position_from.rect)
-                x0, y0, x1, y1 = position_to.rect
-                # This appears to work well with viewers which scroll
-                # to make destination point top-left of window.
-                link["to"] = Point(x0, y0)
-                link["page"] = position_to.page_num - 1
+                link['from'] = Rect(position_from.rect)
+                
+                if position_from.href.startswith("#"):
+                    #`<a href="#...">...</a>` internal link.
+                    target_id = position_from.href[1:]
+                    try:
+                        position_to = id_to_position[ target_id]
+                    except Exception as e:
+                        raise RuntimeError(f"No destination with id={target_id}, required by position_from: {position_from}") from e
+                    # Make link from `position_from`'s rect to top-left of
+                    # `position_to`'s rect.
+                    if 0:
+                        log(f"add_pdf_links(): making link from:")
+                        log(f"add_pdf_links():    {position_from}")
+                        log(f"add_pdf_links(): to:")
+                        log(f"add_pdf_links():    {position_to}")
+                    link["kind"] = LINK_GOTO
+                    x0, y0, x1, y1 = position_to.rect
+                    # This appears to work well with viewers which scroll
+                    # to make destination point top-left of window.
+                    link["to"] = Point(x0, y0)
+                    link["page"] = position_to.page_num - 1
+                    
+                else:
+                    # `<a href="...">...</a>` external link.
+                    if position_from.href.startswith('name:'):
+                        link['kind'] = LINK_NAMED
+                        link['name'] = position_from.href[5:]
+                    else:
+                        link['kind'] = LINK_URI
+                        link['uri'] = position_from.href
+                
+                #log(f'Adding link: {position_from.page_num=} {link=}.')
                 document[position_from.page_num - 1].insert_link(link)
+        
         return document
 
     @property
@@ -12041,6 +12075,279 @@ class Story:
         writer.close()
         stream.seek(0)
         return Story.add_pdf_links(stream, positions)
+
+    class FitResult:
+        '''
+        The result from a `Story.fit*()` method.
+        
+        Members:
+        
+        `big_enough`:
+            `True` if the fit succeeded.
+        `filled`:
+            From the last call to `Story.place()`.
+        `more`:
+            `False` if the fit succeeded.
+        `numcalls`:
+            Number of calls made to `self.place()`.
+        `parameter`:
+            The successful parameter value, or the largest failing value.
+        `rect`:
+            The rect created from `parameter`.
+        '''
+        def __init__(self, big_enough=None, filled=None, more=None, numcalls=None, parameter=None, rect=None):
+            self.big_enough = big_enough
+            self.filled = filled
+            self.more = more
+            self.numcalls = numcalls
+            self.parameter = parameter
+            self.rect = rect
+        
+        def __repr__(self):
+            return (
+                    f' big_enough={self.big_enough}'
+                    f' filled={self.filled}'
+                    f' more={self.more}'
+                    f' numcalls={self.numcalls}'
+                    f' parameter={self.parameter}'
+                    f' rect={self.rect}'
+                    )
+
+    def fit(self, fn, pmin=None, pmax=None, delta=0.001, verbose=False):
+        '''
+        Finds optimal rect that contains the story `self`.
+        
+        Returns a `Story.FitResult` instance.
+            
+        On success, the last call to `self.place()` will have been with the
+        returned rectangle, so `self.draw()` can be used directly.
+        
+        Args:
+        :arg fn:
+            A callable taking a floating point `parameter` and returning a
+            `fitz.Rect()`. If the rect is empty, we assume the story will
+            not fit and do not call `self.place()`.
+
+            Must guarantee that `self.place()` behaves monotonically when
+            given rect `fn(parameter`) as `parameter` increases. This
+            usually means that both width and height increase or stay
+            unchanged as `parameter` increases.
+        :arg pmin:
+            Minimum parameter to consider; `None` for -infinity.
+        :arg pmax:
+            Maximum parameter to consider; `None` for +infinity.
+        :arg delta:
+            Maximum error in returned `parameter`.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        def log(text):
+            assert verbose
+            print(f'fit(): {text}')
+            sys.stdout.flush()
+        
+        assert isinstance(pmin, (int, float)) or pmin is None
+        assert isinstance(pmax, (int, float)) or pmax is None
+        
+        class State:
+            def __init__(self):
+                self.pmin = pmin
+                self.pmax = pmax
+                self.pmin_result = None
+                self.pmax_result = None
+                self.result = None
+                self.numcalls = 0
+                if verbose:
+                    self.pmin0 = pmin
+                    self.pmax0 = pmax
+        state = State()
+        
+        if verbose:
+            log(f'starting. {state.pmin=} {state.pmax=}.')
+        
+        self.reset()
+
+        def ret():
+            if state.pmax is not None:
+                if state.last_p != state.pmax:
+                    if verbose:
+                        log(f'Calling update() with pmax, because was overwritten by later calls.')
+                    big_enough = update(state.pmax)
+                    assert big_enough
+                result = state.pmax_result
+            else:
+                result = state.pmin_result if state.pmin_result else Story.FitResult(numcalls=state.numcalls)
+            if verbose:
+                log(f'finished. {state.pmin0=} {state.pmax0=} {state.pmax=}: returning {result=}')
+            return result
+        
+        def update(parameter):
+            '''
+            Evaluates `more, _ = self.place(fn(parameter))`. If `more` is
+            false, then `rect` is big enought to contain `self` and we
+            set `state.pmax=parameter` and return True. Otherwise we set
+            `state.pmin=parameter` and return False.
+            '''
+            rect = fn(parameter)
+            assert isinstance(rect, Rect), f'{type(rect)=} {rect=}'
+            if rect.is_empty:
+                big_enough = False
+                result = Story.FitResult(parameter=parameter, numcalls=state.numcalls)
+                if verbose:
+                    log(f'update(): not calling self.place() because rect is empty.')
+            else:
+                more, filled = self.place(rect)
+                state.numcalls += 1
+                big_enough = not more
+                result = Story.FitResult(
+                        filled=filled,
+                        more=more,
+                        numcalls=state.numcalls,
+                        parameter=parameter,
+                        rect=rect,
+                        big_enough=big_enough,
+                        )
+                if verbose:
+                    log(f'update(): called self.place(): {state.numcalls:>2d}: {more=} {parameter=} {rect=}.')
+            if big_enough:
+                state.pmax = parameter
+                state.pmax_result = result
+            else:
+                state.pmin = parameter
+                state.pmin_result = result
+            state.last_p = parameter
+            return big_enough
+
+        def opposite(p, direction):
+            '''
+            Returns same sign as `direction`, larger or smaller than `p` if
+            direction is positive or negative respectively.
+            '''
+            if p is None or p==0:
+                return direction
+            if direction * p > 0:
+                return 2 * p
+            return -p
+            
+        if state.pmin is None:
+            # Find an initial finite pmin value.
+            if verbose: log(f'finding pmin.')
+            parameter = opposite(state.pmax, -1)
+            while 1:
+                if not update(parameter):
+                    break
+                parameter *= 2
+        else:
+            if update(state.pmin):
+                if verbose: log(f'{state.pmin=} is big enough.')
+                return ret()
+        
+        if state.pmax is None:
+            # Find an initial finite pmax value.
+            if verbose: log(f'finding pmax.')
+            parameter = opposite(state.pmin, +1)
+            while 1:
+                if update(parameter):
+                    break
+                parameter *= 2
+        else:
+            if not update(state.pmax):
+                # No solution possible.
+                state.pmax = None
+                if verbose: log(f'No solution possible {state.pmax=}.')
+                return ret()
+        
+        # Do binary search in pmin..pmax.
+        if verbose: log(f'doing binary search with {state.pmin=} {state.pmax=}.')
+        while 1:
+            if state.pmax - state.pmin < delta:
+                return ret()
+            parameter = (state.pmin + state.pmax) / 2
+            update(parameter)
+
+    def fit_scale(self, rect, scale_min=0, scale_max=None, delta=0.001, verbose=False):
+        '''
+        Finds smallest value `scale` in range `scale_min..scale_max` where
+        `scale * rect` is large enough to contain the story `self`.
+
+        Returns a `Story.FitResult` instance.
+
+        :arg width:
+            width of rect.
+        :arg height:
+            height of rect.
+        :arg scale_min:
+            Minimum scale to consider; must be >= 0.
+        :arg scale_max:
+            Maximum scale to consider, must be >= scale_min or `None` for
+            infinite.
+        :arg delta:
+            Maximum error in returned scale.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        x0, y0, x1, y1 = rect
+        width = x1 - x0
+        height = y1 - y0
+        def fn(scale):
+            return Rect(x0, y0, x0 + scale*width, y0 + scale*height)
+        return self.fit(fn, scale_min, scale_max, delta, verbose)
+
+    def fit_height(self, width, height_min=0, height_max=None, origin=(0, 0), delta=0.001, verbose=False):
+        '''
+        Finds smallest height in range `height_min..height_max` where a rect
+        with size `(width, height)` is large enough to contain the story
+        `self`.
+
+        Returns a `Story.FitResult` instance.
+
+        :arg width:
+            width of rect.
+        :arg height_min:
+            Minimum height to consider; must be >= 0.
+        :arg height_max:
+            Maximum height to consider, must be >= height_min or `None` for
+            infinite.
+        :arg origin:
+            `(x0, y0)` of rect.
+        :arg delta:
+            Maximum error in returned height.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        x0, y0 = origin
+        x1 = x0 + width
+        def fn(height):
+            return Rect(x0, y0, x1, y0+height)
+        return self.fit(fn, height_min, height_max, delta, verbose)
+
+    def fit_width(self, height, width_min=0, width_max=None, origin=(0, 0), delta=0.001, verbose=False):
+        '''
+        Finds smallest width in range `width_min..width_max` where a rect with size
+        `(width, height)` is large enough to contain the story `self`.
+
+        Returns a `Story.FitResult` instance.
+        Returns a `FitResult` instance.
+
+        :arg height:
+            height of rect.
+        :arg width_min:
+            Minimum width to consider; must be >= 0.
+        :arg width_max:
+            Maximum width to consider, must be >= width_min or `None` for
+            infinite.
+        :arg origin:
+            `(x0, y0)` of rect.
+        :arg delta:
+            Maximum error in returned width.
+        :arg verbose:
+            If true we output diagnostics.
+        '''
+        x0, y0 = origin
+        y1 = x0 + height
+        def fn(width):
+            return Rect(x0, y0, x0+width, y1)
+        return self.fit(fn, width_min, width_max, delta, verbose)
 
 
 class TextPage:
@@ -13073,7 +13380,7 @@ annot_skel = {
         "gotor2": "<</A<</S/GoToR/D%s/F(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
         "launch": "<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
         "uri": "<</A<</S/URI/URI(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "named": "<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+        "named": "<</A<</S/GoTo/D(%s)/Type/Action>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
         }
 
 class FileDataError(RuntimeError):
@@ -15906,13 +16213,6 @@ def JM_is_jbig2_image(dict_):
     #    if (pdf_name_eq(ctx, pdf_array_get(ctx, filter_, i), PDF_NAME(JBIG2Decode)))
     #        return 1;
     #return 0;
-
-def JM_last_tree(arch, mount):
-    '''
-    Return last archive if it is a tree and mount points match
-    '''
-    assert 0, 'Not implemented'
-
 
 def JM_listbox_value( annot):
     '''
@@ -18807,15 +19107,15 @@ class JM_new_output_fileptr_Output(mupdf.FzOutput2):
         self.use_virtual_tell()
         self.use_virtual_truncate()
     
-    def seek( self, ctx, *args, **kwargs):
-        return self.bio.seek( *args, **kwargs)
+    def seek( self, ctx, offset, whence):
+        return self.bio.seek( offset, whence)
     
-    def tell( self, ctx, *args, **kwargs):
-        ret = self.bio.tell( *args, **kwargs)
+    def tell( self, ctx):
+        ret = self.bio.tell()
         return ret
     
-    def truncate( self, ctx, *args, **kwargs):
-        return self.bio.truncate( *args, **kwargs)
+    def truncate( self, ctx):
+        return self.bio.truncate()
     
     def write(self, ctx, data_raw, data_length):
         data = mupdf.raw_to_python_bytes(data_raw, data_length)
@@ -21414,6 +21714,7 @@ Page.insert_image           = utils.insert_image
 Page.insert_link            = utils.insert_link
 Page.insert_text            = utils.insert_text
 Page.insert_textbox         = utils.insert_textbox
+Page.insert_htmlbox         = utils.insert_htmlbox
 Page.new_shape              = lambda x: utils.Shape(x)
 Page.replace_image          = utils.replace_image
 Page.search_for             = utils.search_for
@@ -21433,9 +21734,9 @@ class FitzDeprecation(DeprecationWarning):
     pass
 
 
-VersionFitz = "1.23.5" # MuPDF version.
-VersionBind = "1.23.6" # PyMuPDF version.
-VersionDate = "2023-11-06 00:00:01"
+VersionFitz = "1.23.7" # MuPDF version.
+VersionBind = "1.23.7" # PyMuPDF version.
+VersionDate = "2023-11-30 00:00:01"
 VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
 version = (VersionBind, VersionFitz, VersionDate2)
 pymupdf_version_tuple = tuple( [int(i) for i in VersionFitz.split('.')])
@@ -21724,3 +22025,7 @@ if 0:
     restore_aliases()
 
 __version__ = VersionBind
+__doc__ = (
+        f'PyMuPDF {VersionBind}: Python bindings for the MuPDF {VersionFitz} library (rebased implementation).\n'
+        f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
+        )

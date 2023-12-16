@@ -1076,6 +1076,12 @@ For details on **embedded files** refer to Appendix 3.
 
       :rtype: int
       :returns: the number of inserted, resp. deleted items.
+      
+      Changed in v1.23.8: Destination 'to' coordinates should now be in the
+      same coordinate system as those returned by `get_toc()` (internally they
+      are now transformed with `page.cropbox` and `page.rotation_matrix`). So
+      for example `set_toc(get_toc())` now gives unchanged destination 'to'
+      coordinates.
 
     .. method:: outline_xref(idx)
 

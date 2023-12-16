@@ -641,6 +641,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * New in v1.23.8
 
+
       **PDF only:** Insert text into the specified rectangle. The method has similarities with methods :meth:`Page.insert_textbox` and :meth:`TextWriter.fill_textbox`, but is **much more powerful**. This is achieved by letting a :ref:`Story` object do all the required processing.
 
       * Parameter `text` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
@@ -660,7 +661,6 @@ In a nutshell, this is what you can do with PyMuPDF:
          
          - **either** be just informed (and accept a no-op), 
          - **or** (`scale=True` - the default) scale down the content until it fits.
-
       :arg rect_like rect: rectangle on page to receive the text.
       :arg str,Story text: the text to be written. Can contain plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
       :arg str css: optional string containing additional CSS instructions. Ignored if `text` is a Story.
@@ -678,7 +678,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int oc:  the xref of an :data:`OCG` / :data:`OCMD` or 0. Please refer to :meth:`Page.show_pdf_page` for details.
       :arg bool overlay: put the text in front of other content. Please refer to :meth:`Page.show_pdf_page` for details.
 
-      :returns: A tuple of floats (spare_height, scale).
+      :returns: A tuple of floats `(spare_height, scale)`.
 
          - `spare_height`: -1 if content did not fit, else >= 0. It is the height of the unused (still available) rectangle stripe. Positive only if scale = 1 (no down-scaling happened).
          - `scale`: down-scaling factor, 0 < scale <= 1.
@@ -991,47 +991,52 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: oc; insert_image
       pair: xref; insert_image
 
-   .. method:: insert_image(rect, filename=None, pixmap=None, stream=None, mask=None, rotate=0, alpha=-1, oc=0, xref=0, keep_proportion=True, overlay=True)
+   .. method:: insert_image(rect, *, alpha=-1, filename=None, height=0, keep_proportion=True, mask=None, oc=0, overlay=True, pixmap=None, rotate=0, stream=None, width=0, xref=0)
 
-      PDF only: Put an image inside the given rectangle. The image may already exist in the PDF or be taken from a pixmap, a file, or a memory area.
-
-         * Changed in v1.14.1: By default, the image keeps its aspect ratio.
-         * Changed in v1.14.13: The image is now always placed **centered** in the rectangle, i.e. the centers of image and rectangle are equal.
-         * Changed in v1.17.6: Insertion rectangle no longer needs to have a non-empty intersection with the page's :attr:`Page.cropbox` [#f5]_.
-         * Changed in v1.18.13: Allow providing the image as the xref of an existing one.
+      PDF only: Put an image inside the given rectangle. The image may already
+      exist in the PDF or be taken from a pixmap, a file, or a memory area.
 
       :arg rect_like rect: where to put the image. Must be finite and not empty.
-      :arg str filename: name of an image file (all formats supported by MuPDF -- see :ref:`ImageFiles`).
-      :arg bytes,bytearray,io.BytesIO stream: image in memory (all formats supported by MuPDF -- see :ref:`ImageFiles`).
-
-         Changed in v1.14.13: *io.BytesIO* is now also supported.
-
+      :arg int alpha: deprecated and ignored.
+      :arg str filename:
+        name of an image file (all formats supported by MuPDF -- see
+        :ref:`ImageFiles`).
+      :arg int height:
+      :arg bool keep_proportion:
+        maintain the aspect ratio of the image.
+      :arg bytes,bytearray,io.BytesIO mask:
+        image in memory -- to be used as image mask (alpha values) for the base
+        image. When specified, the base image must be provided as a filename or
+        a stream -- and must not be an image that already has a mask.
+      :arg int oc:
+        (:data:`xref`) make image visibility dependent on this :data:`OCG`
+        or :data:`OCMD`. Ignored after the first of multiple insertions. The
+        property is stored with the generated PDF image object and therefore
+        controls the image's visibility throughout the PDF.
+      :arg overlay: see :ref:`CommonParms`.
       :arg pixmap: a pixmap containing the image.
-      :type pixmap: :ref:`Pixmap`
-
-      :arg bytes,bytearray,io.BytesIO mask: *(new in version v1.18.1)* image in memory -- to be used as image mask (alpha values) for the base image. When specified, the base image must be provided as a filename or a stream -- and must not be an image that already has a mask.
-
-      :arg int xref: *(New in v1.18.13)* the :data:`xref` of an image already present in the PDF. If given, parameters `filename`, `pixmap`, `stream`, `alpha` and `mask` are ignored. The page will simply receive a reference to the existing image.
-
-      :arg int alpha: *(Changed in v1.19.3)* deprecated. No longer needed -- ignored when given.
-
-      :arg int rotate: *(new in version v1.14.11)* rotate the image.
+      :arg int rotate: rotate the image.
         Must be an integer multiple of 90 degrees.
         Positive values rotate anti-clockwise.
         If you need a rotation by an arbitrary angle,
         consider converting the image to a PDF
         (:meth:`Document.convert_to_pdf`)
         first and then use :meth:`Page.show_pdf_page` instead.
+      :arg bytes,bytearray,io.BytesIO stream:
+        image in memory (all formats supported by MuPDF -- see :ref:`ImageFiles`).
+      :arg int width:
+      :arg int xref:
+        the :data:`xref` of an image already present in the PDF. If given,
+        parameters `filename`, `pixmap`, `stream`, `alpha` and `mask` are
+        ignored. The page will simply receive a reference to the existing
+        image.
 
-      :arg int oc: *(new in v1.18.3)* (:data:`xref`) make image visibility dependent on this :data:`OCG` or :data:`OCMD`. Ignored after the first of multiple insertions. The property is stored with the generated PDF image object and therefore controls the image's visibility throughout the PDF.
-      :arg bool keep_proportion: *(new in version v1.14.11)* maintain the aspect ratio of the image.
-
-      For a description of *overlay* see :ref:`CommonParms`.
-
-      *Changed in v1.18.13:* Return xref of stored image.
-
-      :rtype: int
-      :returns: The xref of the embedded image. This can be used as the `xref` argument for very significant performance boosts, if the image is inserted again.
+      :type pixmap: :ref:`Pixmap`
+      
+      :returns:
+        The `xref` of the embedded image. This can be used as the `xref`
+        argument for very significant performance boosts, if the image is
+        inserted again.
 
       This example puts the same image on every page of a document::
 
@@ -1047,17 +1052,63 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note::
 
-         1. The method detects multiple insertions of the same image (like in above example) and will store its data only on the first execution. This is even true (although less performant), if using the default `xref=0`.
-         
-         2. The method cannot detect if the same image had already been part of the file before opening it.
+         1.
+           The method detects multiple insertions of the same image (like
+           in the above example) and will store its data only on the first
+           execution.  This is even true (although less performant), if using
+           the default `xref=0`.
+         2.
+           The method cannot detect if the same image had already been part of
+           the file before opening it.
 
-         3. You can use this method to provide a background or foreground image for the page, like a copyright or a watermark. Please remember, that watermarks require a transparent image if put in foreground ...
+         3.
+           You can use this method to provide a background or foreground image
+           for the page, like a copyright or a watermark. Please remember, that
+           watermarks require a transparent image if put in foreground ...
 
-         4. The image may be inserted uncompressed, e.g. if a *Pixmap* is used or if the image has an alpha channel. Therefore, consider using *deflate=True* when saving the file. In addition, there exist effective ways to control the image size -- even if transparency comes into play. Have a look at `this <https://pymupdf.readthedocs.io/en/latest/faq.html#how-to-add-images-to-a-pdf-page>`_ section of the documentation.
+         4.
+           The image may be inserted uncompressed, e.g. if a `Pixmap` is used
+           or if the image has an alpha channel. Therefore, consider using
+           `deflate=True` when saving the file. In addition, there are ways to
+           control the image size -- even if transparency comes into play. Have
+           a look at :ref:`RecipesImages_O`.
 
-         5. The image is stored in the PDF in its original quality. This may be much better than what you ever need for your display. Consider **decreasing the image size** before insertion -- e.g. by using the pixmap option and then shrinking it or scaling it down (see :ref:`Pixmap` chapter). The PIL method *Image.thumbnail()* can also be used for that purpose. The file size savings can be very significant.
+         5.
+           The image is stored in the PDF at its original quality level. This
+           may be much better than what you need for your display. Consider
+           **decreasing the image size** before insertion -- e.g. by using
+           the pixmap option and then shrinking it or scaling it down (see
+           :ref:`Pixmap` chapter). The PIL method `Image.thumbnail()` can
+           also be used for that purpose. The file size savings can be very
+           significant.
 
-         6. Another efficient way to display the same image on multiple pages is another method: :meth:`show_pdf_page`. Consult :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
+         6.
+           Another efficient way to display the same image on multiple
+           pages is another method: :meth:`show_pdf_page`. Consult
+           :meth:`Document.convert_to_pdf` for how to obtain intermediary PDFs
+           usable for that method.
+
+      * Changed in v1.14.1: By default, the image keeps its aspect ratio.
+      * Changed in v1.14.11: Added args `keep_proportion`, `rotate`.
+      * Changed in v1.14.13:
+
+        *
+          The image is now always placed **centered** in the rectangle, i.e.
+          the centers of image and rectangle are equal.
+        * Added support for `stream` as `io.BytesIO`.
+      
+      * Changed in v1.17.6:
+        Insertion rectangle no longer needs to have a non-empty intersection
+        with the page's :attr:`Page.cropbox` [#f5]_.
+      * Changed in v1.18.1: Added `mask` arg.
+      * Changed in v1.18.3: Added `oc` arg.
+      * Changed in v1.18.13:
+        
+        * Allow providing the image as the xref of an existing one.
+        * Added `xref` arg.
+        * Return `xref` of stored image.
+      
+      * Changed in v1.19.3: deprecate and ignore `alpha` arg.
 
    
    .. index::
@@ -1694,7 +1745,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: clip; search_for
       pair: textpage; search_for
 
-   .. method:: search_for(needle, *, clip=clip, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES, textpage=None)
+   .. method:: search_for(needle, *, clip=None, quads=False, flags=TEXT_DEHYPHENATE | TEXT_PRESERVE_WHITESPACE | TEXT_PRESERVE_LIGATURES | TEXT_MEDIABOX_CLIP, textpage=None)
 
       * Changed in v1.18.2: added `clip` parameter. Remove `hit_max` parameter. Add default "dehyphenate".
       * Changed in v1.19.0: added `textpage` parameter.

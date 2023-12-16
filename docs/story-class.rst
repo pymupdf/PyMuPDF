@@ -22,6 +22,10 @@ Story
 :meth:`Story.write_stabilized`              iterative layout of html content to a DocumentWriter
 :meth:`Story.write_with_links`              like `write()` but also creates PDF links
 :meth:`Story.write_stabilized_with_links`   like `write_stabilized()` but also creates PDF links
+:meth:`Story.fit`                           Finds optimal rect that contains the story `self`.
+:meth:`Story.fit_scale`                     
+:meth:`Story.fit_height`
+:meth:`Story.fit_width`
 =========================================== =============================================================
 
 **Class API**
@@ -147,88 +151,198 @@ Story
 
    .. method:: write(writer, rectfn, positionfn=None, pagefn=None)
 
-       Places and draws Story to a `DocumentWriter`. Avoids the need for
-       calling code to implement a loop that calls `Story.place()` and
-       `Story.draw()` etc, at the expense of having to provide at least the
-       `rectfn()` callback.
+        Places and draws Story to a `DocumentWriter`. Avoids the need for
+        calling code to implement a loop that calls `Story.place()` and
+        `Story.draw()` etc, at the expense of having to provide at least the
+        `rectfn()` callback.
        
-       :arg writer: a `DocumentWriter` or None.
-       :arg rectfn: a callable taking `(rect_num: int, filled: Rect)` and
-           returning `(mediabox, rect, ctm)`:
-               mediabox:
-                   None or rect for new page.
-               rect:
-                   The next rect into which content should be placed.
-               ctm:
-                   None or a `Matrix`.
-       :arg positionfn: None, or a callable taking `(position: ElementPosition)`:
-               position:
-                   An `ElementPosition` with an extra `.page_num` member.
-               Typically called multiple times as we generate elements that
-               are headings or have an id.
-       :arg pagefn:
-           None, or a callable taking `(page_num, mediabox, dev, after)`;
-           called at start (`after=0`) and end (`after=1`) of each page.
+        :arg writer: a `DocumentWriter` or None.
+        :arg rectfn: a callable taking `(rect_num: int, filled: Rect)` and
+            returning `(mediabox, rect, ctm)`:
+                mediabox:
+                    None or rect for new page.
+                rect:
+                    The next rect into which content should be placed.
+                ctm:
+                    None or a `Matrix`.
+        :arg positionfn: None, or a callable taking `(position: ElementPosition)`:
+                position:
+                    An `ElementPosition` with an extra `.page_num` member.
+                Typically called multiple times as we generate elements that
+                are headings or have an id.
+        :arg pagefn:
+            None, or a callable taking `(page_num, mediabox, dev, after)`;
+            called at start (`after=0`) and end (`after=1`) of each page.
 
    .. staticmethod:: write_stabilized(writer, contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True)
    
-       Static method that does iterative layout of html content to a
-       `DocumentWriter`.
+        Static method that does iterative layout of html content to a
+        `DocumentWriter`.
 
-       For example this allows one to add a table of contents section
-       while ensuring that page numbers are patched up until stable.
+        For example this allows one to add a table of contents section
+        while ensuring that page numbers are patched up until stable.
 
-       Repeatedly creates a new `Story` from `(contentfn(),
-       user_css, em, archive)` and lays it out with internal call
-       to `Story.write()`; uses a None writer and extracts the list
-       of `ElementPosition`'s which is passed to the next call of
-       `contentfn()`.
+        Repeatedly creates a new `Story` from `(contentfn(),
+        user_css, em, archive)` and lays it out with internal call
+        to `Story.write()`; uses a None writer and extracts the list
+        of `ElementPosition`'s which is passed to the next call of
+        `contentfn()`.
 
-       When the html from `contentfn()` becomes unchanged, we do a
-       final iteration using `writer`.
+        When the html from `contentfn()` becomes unchanged, we do a
+        final iteration using `writer`.
 
-       :arg writer:
-           A `DocumentWriter`.
-       :arg contentfn:
-           A function taking a list of `ElementPositions` and
-           returning a string containing html. The returned html
-           can depend on the list of positions, for example with a
-           table of contents near the start.
-       :arg rectfn:
-           A callable taking `(rect_num: int, filled: Rect)` and
-           returning `(mediabox, rect, ctm)`:
-               mediabox:
-                   None or rect for new page.
-               rect:
-                   The next rect into which content should be
-                   placed.
-               ctm:
-                   A `Matrix`.
-       :arg pagefn:
-           None, or a callable taking `(page_num, medibox,
-           dev, after)`; called at start (`after=0`) and end
-           (`after=1`) of each page.
-       :arg archive:
-           .
-       :arg add_header_ids:
-           If true, we add unique ids to all header tags that
-           don't already have an id. This can help automatic
-           generation of tables of contents.
-       Returns:
-           None.
+        :arg writer:
+            A `DocumentWriter`.
+        :arg contentfn:
+            A function taking a list of `ElementPositions` and
+            returning a string containing html. The returned html
+            can depend on the list of positions, for example with a
+            table of contents near the start.
+        :arg rectfn:
+            A callable taking `(rect_num: int, filled: Rect)` and
+            returning `(mediabox, rect, ctm)`:
+                mediabox:
+                    None or rect for new page.
+                rect:
+                    The next rect into which content should be
+                    placed.
+                ctm:
+                    A `Matrix`.
+        :arg pagefn:
+            None, or a callable taking `(page_num, medibox,
+            dev, after)`; called at start (`after=0`) and end
+            (`after=1`) of each page.
+        :arg archive:
+            .
+        :arg add_header_ids:
+            If true, we add unique ids to all header tags that
+            don't already have an id. This can help automatic
+            generation of tables of contents.
+        Returns:
+            None.
        
    .. method:: write_with_links(rectfn, positionfn=None, pagefn=None)
 
-       Similar to `write()` except that we don't have a `writer` arg
-       and we return a PDF `Document` in which links have been created
-       for each internal html link.
+        Similar to `write()` except that we don't have a `writer` arg
+        and we return a PDF `Document` in which links have been created
+        for each internal html link.
 
    .. staticmethod:: write_stabilized_with_links(contentfn, rectfn, user_css=None, em=12, positionfn=None, pagefn=None, archive=None, add_header_ids=True)
 
-       Similar to `write_stabilized()` except that we don't have a `writer`
-       arg and instead return a PDF `Document` in which links have been
-       created for each internal html link.
+        Similar to `write_stabilized()` except that we don't have a `writer`
+        arg and instead return a PDF `Document` in which links have been
+        created for each internal html link.
     
+   .. class:: Story.FitResult
+    
+        The result from a `Story.fit*()` method.
+        
+        Members:
+        
+        `big_enough`:
+            `True` if the fit succeeded.
+        `filled`:
+            From the last call to `Story.place()`.
+        `more`:
+            `False` if the fit succeeded.
+        `numcalls`:
+            Number of calls made to `self.place()`.
+        `parameter`:
+            The successful parameter value, or the largest failing value.
+        `rect`:
+            The rect created from `parameter`.
+        
+   .. method:: fit(self, fn, pmin=None, pmax=None, delta=0.001, verbose=False)
+
+        Finds optimal rect that contains the story `self`.
+        
+        Returns a `Story.FitResult` instance.
+            
+        On success, the last call to `self.place()` will have been with the
+        returned rectangle, so `self.draw()` can be used directly.
+        
+        :arg fn:
+            A callable taking a floating point `parameter` and returning a
+            `fitz.Rect()`. If the rect is empty, we assume the story will
+            not fit and do not call `self.place()`.
+
+            Must guarantee that `self.place()` behaves monotonically when
+            given rect `fn(parameter`) as `parameter` increases. This
+            usually means that both width and height increase or stay
+            unchanged as `parameter` increases.
+        :arg pmin:
+            Minimum parameter to consider; `None` for -infinity.
+        :arg pmax:
+            Maximum parameter to consider; `None` for +infinity.
+        :arg delta:
+            Maximum error in returned `parameter`.
+        :arg verbose:
+            If true we output diagnostics.
+
+   .. method:: fit_scale(self, rect, scale_min=0, scale_max=None, delta=0.001, verbose=False)
+
+        Finds smallest value `scale` in range `scale_min..scale_max` where
+        `scale * rect` is large enough to contain the story `self`.
+
+        Returns a `Story.FitResult` instance.
+
+        :arg width:
+            width of rect.
+        :arg height:
+            height of rect.
+        :arg scale_min:
+            Minimum scale to consider; must be >= 0.
+        :arg scale_max:
+            Maximum scale to consider, must be >= scale_min or `None` for
+            infinite.
+        :arg delta:
+            Maximum error in returned scale.
+        :arg verbose:
+            If true we output diagnostics.
+
+   .. method:: fit_height(self, width, height_min=0, height_max=None, origin=(0, 0), delta=0.001, verbose=False)
+
+        Finds smallest height in range `height_min..height_max` where a rect
+        with size `(width, height)` is large enough to contain the story
+        `self`.
+
+        Returns a `Story.FitResult` instance.
+
+        :arg width:
+            width of rect.
+        :arg height_min:
+            Minimum height to consider; must be >= 0.
+        :arg height_max:
+            Maximum height to consider, must be >= height_min or `None` for
+            infinite.
+        :arg origin:
+            `(x0, y0)` of rect.
+        :arg delta:
+            Maximum error in returned height.
+        :arg verbose:
+            If true we output diagnostics.
+
+   .. method:: fit_width(self, height, width_min=0, width_max=None, origin=(0, 0), delta=0.001, verbose=False)
+
+        Finds smallest width in range `width_min..width_max` where a rect with size
+        `(width, height)` is large enough to contain the story `self`.
+
+        Returns a `Story.FitResult` instance.
+
+        :arg height:
+            height of rect.
+        :arg width_min:
+            Minimum width to consider; must be >= 0.
+        :arg width_max:
+            Maximum width to consider, must be >= width_min or `None` for
+            infinite.
+        :arg origin:
+            `(x0, y0)` of rect.
+        :arg delta:
+            Maximum error in returned width.
+        :arg verbose:
+            If true we output diagnostics.
+
 
 Element Positioning CallBack function
 --------------------------------------

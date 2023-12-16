@@ -335,10 +335,13 @@ def embedded_del(args):
     ):
         sys.exit("cannot save PDF incrementally")
 
+    exception_types = (ValueError, mupdf.FzErrorBase)
+    if mupdf_version_tuple < (1, 24):
+        exception_types = ValueError
     try:
         doc.embfile_del(args.name)
-    except ValueError:
-        sys.exit("no such embedded file '%s'" % args.name)
+    except exception_types as e:
+        sys.exit(f'no such embedded file {args.name!r}: {e}')
     if not args.output or args.output == args.input:
         doc.save_incr()
     else:
@@ -349,11 +352,14 @@ def embedded_del(args):
 def embedded_get(args):
     """Retrieve contents of an embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
+    exception_types = (ValueError, mupdf.FzErrorBase)
+    if mupdf_version_tuple < (1, 24):
+        exception_types = ValueError
     try:
         stream = doc.embfile_get(args.name)
         d = doc.embfile_info(args.name)
-    except ValueError:
-        sys.exit("no such embedded file '%s'" % args.name)
+    except exception_types as e:
+        sys.exit(f'no such embedded file {args.name!r}: {e}')
     filename = args.output if args.output else d["filename"]
     output = open(filename, "wb")
     output.write(stream)

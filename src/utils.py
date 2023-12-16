@@ -39,7 +39,17 @@ This is a collection of functions to extend PyMupdf.
 """
 
 
-def write_text(page: fitz.Page, **kwargs) -> None:
+def write_text(
+        page: fitz.Page,
+        rect=None,
+        writers=None,
+        overlay=True,
+        color=None,
+        opacity=None,
+        keep_proportion=True,
+        rotate=0,
+        oc=0,
+        ) -> None:
     """Write the text of one or more fitz.TextWriter objects.
 
     Args:
@@ -50,35 +60,7 @@ def write_text(page: fitz.Page, **kwargs) -> None:
         rotate: arbitrary rotation angle.
         oc: the xref of an optional content object
     """
-    if type(page) is not fitz.Page:
-        raise ValueError("bad page parameter")
-    s = {
-        k
-        for k in kwargs.keys()
-        if k
-        not in {
-            "rect",
-            "writers",
-            "opacity",
-            "color",
-            "overlay",
-            "keep_proportion",
-            "rotate",
-            "oc",
-        }
-    }
-    if s != set():
-        raise ValueError("bad keywords: " + str(s))
-
-    rect = kwargs.get("rect")
-    writers = kwargs.get("writers")
-    opacity = kwargs.get("opacity")
-    color = kwargs.get("color")
-    overlay = bool(kwargs.get("overlay", True))
-    keep_proportion = bool(kwargs.get("keep_proportion", True))
-    rotate = int(kwargs.get("rotate", 0))
-    oc = int(kwargs.get("oc", 0))
-
+    assert isinstance(page, fitz.Page)
     if not writers:
         raise ValueError("need at least one fitz.TextWriter")
     if type(writers) is fitz.TextWriter:
@@ -109,35 +91,31 @@ def write_text(page: fitz.Page, **kwargs) -> None:
     tpage = None
 
 
-def show_pdf_page(*args, **kwargs) -> int:
+def show_pdf_page(
+        page,
+        rect,
+        src,
+        pno=0,
+        keep_proportion=True,
+        overlay=True,
+        oc=0,
+        rotate=0,
+        clip=None,
+        ) -> int:
     """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
 
     Args:
         rect: (rect-like) where to place the source image
         src: (document) source PDF
         pno: (int) source page number
-        overlay: (bool) put in foreground
         keep_proportion: (bool) do not change width-height-ratio
+        overlay: (bool) put in foreground
+        oc: (xref) make visibility dependent on this OCG / OCMD (which must be defined in the target PDF)
         rotate: (int) degrees (multiple of 90)
         clip: (rect-like) part of source page rectangle
     Returns:
         xref of inserted object (for reuse)
     """
-    if len(args) not in (3, 4):
-        raise ValueError("bad number of positional parameters")
-    pno = None
-    if len(args) == 3:
-        page, rect, src = args
-    else:
-        page, rect, src, pno = args
-    if pno is None:
-        pno = int(kwargs.get("pno", 0))
-    overlay = bool(kwargs.get("overlay", True))
-    keep_proportion = bool(kwargs.get("keep_proportion", True))
-    rotate = float(kwargs.get("rotate", 0))
-    oc = int(kwargs.get("oc", 0))
-    clip = kwargs.get("clip")
-
     def calc_matrix(sr, tr, keep=True, rotate=0):
         """Calculate transformation matrix from source to target rect.
 
@@ -283,13 +261,30 @@ def delete_image(page: fitz.Page, xref: int):
     page.replace_image(xref, pixmap=pix)
 
 
-def insert_image(page, rect, **kwargs):
+def insert_image(
+        page,
+        rect,
+        *,
+        alpha=-1,
+        filename=None,
+        height=0,
+        keep_proportion=True,
+        mask=None,
+        oc=0,
+        overlay=True,
+        pixmap=None,
+        rotate=0,
+        stream=None,
+        width=0,
+        xref=0,
+        ):
     """Insert an image for display in a rectangle.
 
     Args:
         rect: (rect_like) position of image on the page.
         alpha: (int, optional) set to 0 if image has no transparency.
         filename: (str, Path, file object) image filename.
+        height: (int)
         keep_proportion: (bool) keep width / height ratio (default).
         mask: (bytes, optional) image consisting of alpha values to use.
         oc: (int) xref of OCG or OCMD to declare as Optional Content.
@@ -297,6 +292,7 @@ def insert_image(page, rect, **kwargs):
         pixmap: (fitz.Pixmap) use this as image.
         rotate: (int) rotate by 0, 90, 180 or 270 degrees.
         stream: (bytes) use this as image.
+        width: (int)
         xref: (int) use this as image.
 
     'page' and 'rect' are positional, all other parameters are keywords.
@@ -317,36 +313,6 @@ def insert_image(page, rect, **kwargs):
     doc = page.parent
     if not doc.is_pdf:
         raise ValueError("is no PDF")
-
-    valid_keys = {
-        "alpha",
-        "filename",
-        "height",
-        "keep_proportion",
-        "mask",
-        "oc",
-        "overlay",
-        "pixmap",
-        "rotate",
-        "stream",
-        "width",
-        "xref",
-    }
-    s = set(kwargs.keys()).difference(valid_keys)
-    if s != set():
-        raise ValueError(f"bad key argument(s): {s}.")
-    filename = kwargs.get("filename")
-    pixmap = kwargs.get("pixmap")
-    stream = kwargs.get("stream")
-    mask = kwargs.get("mask")
-    rotate = int(kwargs.get("rotate", 0))
-    width = int(kwargs.get("width", 0))
-    height = int(kwargs.get("height", 0))
-    alpha = int(kwargs.get("alpha", -1))
-    oc = int(kwargs.get("oc", 0))
-    xref = int(kwargs.get("xref", 0))
-    keep_proportion = bool(kwargs.get("keep_proportion", True))
-    overlay = bool(kwargs.get("overlay", True))
 
     if xref == 0 and (bool(filename) + bool(stream) + bool(pixmap) != 1):
         raise ValueError("xref=0 needs exactly one of filename, pixmap, stream")
@@ -418,7 +384,19 @@ def insert_image(page, rect, **kwargs):
     return xref
 
 
-def search_for(*args, **kwargs) -> list:
+def search_for(
+        page,
+        text,
+        *,
+        clip=None,
+        quads=False,
+        flags=fitz.TEXT_DEHYPHENATE
+            | fitz.TEXT_PRESERVE_WHITESPACE
+            | fitz.TEXT_PRESERVE_LIGATURES
+            | fitz.TEXT_MEDIABOX_CLIP
+            ,
+        textpage=None,
+        ) -> list:
     """Search for a string on a page.
 
     Args:
@@ -430,21 +408,8 @@ def search_for(*args, **kwargs) -> list:
     Returns:
         a list of rectangles or quads, each containing one occurrence.
     """
-    if len(args) != 2:
-        raise ValueError("bad number of positional parameters")
-    page, text = args
-    quads = kwargs.get("quads", 0)
-    clip = kwargs.get("clip")
-    textpage = kwargs.get("textpage")
     if clip is not None:
         clip = fitz.Rect(clip)
-    flags = kwargs.get(
-            "flags",
-            fitz.TEXT_DEHYPHENATE
-                | fitz.TEXT_PRESERVE_WHITESPACE
-                | fitz.TEXT_PRESERVE_LIGATURES
-                | fitz.TEXT_MEDIABOX_CLIP,
-            )
 
     fitz.CheckParent(page)
     tp = textpage
@@ -657,6 +622,9 @@ def get_textpage_ocr(
         bbox = fitz.Rect(block["bbox"])
         if bbox.width <= 3 or bbox.height <= 3:  # ignore tiny stuff
             continue
+        exception_types = (RuntimeError, mupdf.FzErrorBase)
+        if fitz.mupdf_version_tuple < (1, 24):
+            exception_types = RuntimeError
         try:
             pix = fitz.Pixmap(block["image"])  # get image pixmap
             if pix.n - pix.alpha != 3:  # we need to convert this to RGB!
@@ -675,7 +643,7 @@ def get_textpage_ocr(
             mat = shrink * block["transform"]
             imgpage.extend_textpage(tpage, flags=0, matrix=mat)
             imgdoc.close()
-        except RuntimeError:
+        except exception_types:
             if g_exceptions_verbose:    fitz.exception_info()
             tpage = None
             print("Falling back to full page OCR")
@@ -1002,7 +970,8 @@ def getLinkDict(ln, document=None) -> dict:
         # The dicts should not have same key(s).
         assert not (dest.named.keys() & nl.keys())
         nl.update(dest.named)
-        nl['to'] = fitz.Point(nl['to'])
+        if 'to' in nl:
+            nl['to'] = fitz.Point(nl['to'])
 
     else:
         nl["page"] = dest.page
@@ -1414,8 +1383,10 @@ def set_toc(
                 if "to" not in dest_dict:  # target point not in dict?
                     dest_dict["to"] = top  # put default in
                 else:  # transform target to PDF coordinates
+                    page = doc[pno]
                     point = fitz.Point(dest_dict["to"])
-                    point.y = page_height - point.y
+                    point.y = page.cropbox.height - point.y
+                    point = point * page.rotation_matrix
                     dest_dict["to"] = (point.x, point.y)
         d = {}
         d["first"] = -1
@@ -1870,6 +1841,125 @@ def insert_text(
     if rc >= 0:
         img.commit(overlay)
     return rc
+
+
+def insert_htmlbox(
+    page,
+    rect,
+    text,
+    *,
+    css=None,
+    scale_low=0,
+    archive=None,
+    rotate=0,
+    oc=0,
+    overlay=True,
+) -> float:
+    """Insert text with optional HTML tags and stylings into a rectangle.
+
+    Args:
+        rect: (rect-like) rectangle into which the text should be placed.
+        text: (str) text with optional HTML tags and stylings.
+        css: (str) CSS styling commands.
+        scale_low: (float) force-fit content by scaling it down. Must be in
+            range [0, 1]. If 1, no scaling will take place. If 0, arbitrary
+            down-scaling is acceptable. A value of 0.1 would mean that content
+            may be scaled down by at most 90%.
+        archive: Archive object pointing to locations of used fonts or images
+        rotate: (int) rotate the text in the box by a multiple of 90 degrees.
+        oc: (int) the xref of an OCG / OCMD (Optional Content).
+        overlay: (bool) put text on top of page content.
+    Returns:
+        A tuple of floats (spare_height, scale).
+        spare_height: -1 if content did not fit, else >= 0. It is the height of the
+               unused (still available) rectangle stripe. Positive only if
+               scale_min = 1 (no down scaling).
+        scale: downscaling factor, 0 < scale <= 1. Set to 0 if spare_height = -1.
+    """
+
+    # normalize rotation angle
+    if not rotate % 90 == 0:
+        raise ValueError("bad rotation angle")
+    while rotate < 0:
+        rotate += 360
+    while rotate >= 360:
+        rotate -= 360
+
+    if not 0 <= scale_low <= 1:
+        raise ValueError("'scale_low' must be in [0, 1]")
+
+    if css is None:
+        css = ""
+
+    rect = fitz.Rect(rect)
+    if rotate in (90, 270):
+        temp_rect = fitz.Rect(0, 0, rect.height, rect.width)
+    else:
+        temp_rect = fitz.Rect(0, 0, rect.width, rect.height)
+
+    # use a small border by default
+    mycss = "body {margin:1px;}" + css  # append user CSS
+
+    # either make a story, or accept a given one
+    if isinstance(text, str):  # if a string, convert to a Story
+        story = fitz.Story(html=text, user_css=mycss, archive=archive)
+    elif isinstance(text, fitz.Story):
+        story = text
+    else:
+        raise ValueError("'text' must be a string or a Story")
+
+    # ----------------------------------------------------------------
+    # Find a scaling factor that lets our story fit in
+    # ----------------------------------------------------------------
+    scale_max = None if scale_low == 0 else 1 / scale_low
+
+    fit = story.fit_scale(temp_rect, scale_min=1, scale_max=scale_max)
+
+    if fit.big_enough is False:  # there was no fit
+        return (-1, scale_low)
+
+    filled = fit.filled
+    scale = 1 / fit.parameter  # shrink factor
+
+    spare_height = fit.rect.y1 - filled[3]  # unused room at rectangle bottom
+    # Note: due to MuPDF's logic this may be negative even for successful fits.
+    if scale != 1 or spare_height < 0:  # if scaling occurred, set spare_height to 0
+        spare_height = 0
+
+    def rect_function(*args):
+        return fit.rect, fit.rect, fitz.Identity
+
+    # draw story on temp PDF page
+    doc = story.write_with_links(rect_function)
+
+    # put result in target page
+    page.show_pdf_page(rect, doc, 0, rotate=rotate, oc=oc, overlay=overlay)
+
+    # -------------------------------------------------------------------------
+    # re-insert links in target rect (show_pdf_page cannot copy annotations)
+    # -------------------------------------------------------------------------
+    # scaled center point of fit.rect
+    mp1 = (fit.rect.tl + fit.rect.br) / 2 * scale
+
+    # center point of target rect
+    mp2 = (rect.tl + rect.br) / 2
+
+    # compute link positioning matrix:
+    # - move center of scaled-down fit.rect to (0,0)
+    # - rotate
+    # - move (0,0) to center of target rect
+    mat = (
+        fitz.Matrix(scale, 0, 0, scale, -mp1.x, -mp1.y)
+        * fitz.Matrix(-rotate)
+        * fitz.Matrix(1, 0, 0, 1, mp2.x, mp2.y)
+    )
+
+    # copy over links
+    for link in doc[0].get_links():
+        link["from"] *= mat
+        page.insert_link(link)
+
+    return spare_height, scale
 
 
 def new_page(
@@ -4112,11 +4202,14 @@ def apply_redactions(page: fitz.Page, images: int = 2) -> bool:
         Returns:
             A rectangle to use instead of the annot rectangle.
         """
+        exception_types = (ValueError, mupdf.FzErrorBase)
+        if fitz.mupdf_version_tuple < (1, 24):
+            exception_types = ValueError
         if not text:
             return annot_rect
         try:
             text_width = fitz.get_text_length(text, font, fsize)
-        except ValueError:  # unsupported font
+        except exception_types:  # unsupported font
             if g_exceptions_verbose:    fitz.exception_info()
             return annot_rect
         line_height = fsize * 1.2

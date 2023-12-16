@@ -387,7 +387,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = 'https://mupdf.com/downloads/archive/mupdf-1.23.5-source.tar.gz'
+        location = 'https://mupdf.com/downloads/archive/mupdf-1.23.7-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -841,7 +841,7 @@ def build_mupdf_unix( mupdf_local, env, build_type):
 
     env = env.copy()
     if openbsd or freebsd:
-        env_add(env, 'CXX', 'clang++', ' ')
+        env_add(env, 'CXX', 'c++', ' ')
 
     # Add extra flags for MacOS cross-compilation, where ARCHFLAGS can be
     # '-arch arm64'.
@@ -1184,8 +1184,8 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.6'
-version_b = '1.23.6'
+version = '1.23.7'
+version_b = '1.23.7'
 
 tag_python = None
 requires_dist = None,
