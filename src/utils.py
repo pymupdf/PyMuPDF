@@ -5456,8 +5456,8 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
         try:  # invoke fontTools subsetter
             fts.main(args)
             font = fitz.Font(fontfile=newfont_path)
-            new_buffer = font.buffer
-            if len(font.valid_codepoints()) == 0:
+            new_buffer = font.buffer  # subset font binary
+            if font.glyph_count == 0:  # intercept empty font
                 new_buffer = None
         except Exception:
             fitz.exception_info()
@@ -5606,7 +5606,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
                 print(f'Cannot subset {fontname!r}.')
             continue
         if verbose:
-            print('Built subset of font {fontname!r}.')
+            print(f"Built subset of font {fontname!r}.")
         val = doc._insert_font(fontbuffer=new_buffer)  # store subset font in PDF
         new_xref = val[0]  # get its xref
         set_subset_fontname(new_xref)  # tag fontname as subset font

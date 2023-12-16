@@ -723,3 +723,23 @@ def test_2736():
     assert text == "CropBox not in MediaBox"
 
 
+def test_subset_fonts():
+    """Confirm subset_fonts is working."""
+    if not hasattr(fitz, "mupdf"):
+        print("Not testing 'test_subset_fonts' in classic.")
+        return
+    text = "Just some arbitrary text."
+    arch = fitz.Archive()
+    css = fitz.css_for_pymupdf_font("ubuntu", archive=arch)
+    css += "* {font-family: ubuntu;}"
+    doc = fitz.open()
+    page = doc.new_page()
+    page.insert_htmlbox(page.rect, text, css=css, archive=arch)
+    doc.subset_fonts(verbose=True)
+    found = False
+    for xref in range(1, doc.xref_length()):
+        if doc.xref_is_font(xref):
+            if "+Ubuntu#20Regular" in doc.xref_object(xref):
+                found = True
+                break
+    assert found is True
