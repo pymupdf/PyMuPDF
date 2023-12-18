@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
 '''
-Build+test script for PyMuPDF, mostly for use with github builds but can also
-be used to build Pyodide wheels.
+Build+test script for PyMuPDF using cibuildwheel. Mostly for use with github
+builds but can also be used to build Pyodide wheels.
 
 We run cibuild manually, in order to build and test the two wheel
 flavours that make up PyMuPDF:
