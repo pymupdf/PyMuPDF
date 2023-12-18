@@ -631,7 +631,7 @@ As these four font files are located in the system's folder `C:/Windows/Fonts` t
 How to Request Text Alignment
 ................................
 
-This examples combines multiple requirements:
+This example combines multiple requirements:
 
 * Rotate the text by 90 degrees anti-clockwise.
 * Use a font from package `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. You will see that the respective CSS definitions are a lot easier in this case.
