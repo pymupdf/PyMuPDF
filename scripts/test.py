@@ -2,6 +2,8 @@
 
 '''Simple build/test script for PyMuPDF.
 
+Unlike gh_release.py, we build directly, not with cibuildwheel.
+
 Examples:
 
     ./PyMuPDF/scripts/test.py --mupdf mupdf buildtest
