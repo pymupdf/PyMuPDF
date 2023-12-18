@@ -76,9 +76,23 @@ def get_env_bool( name, default):
         log(f'Using non-default setting from {name}: {v!r}')
     return ret
 
+def get_env_int( name, default):
+    '''
+    Returns `True`, `False` or `default` depending on whether $<name> is '1',
+    '0' or unset. Otherwise assert-fails.
+    '''
+    v = os.environ.get( name)
+    if v is None:
+        ret = default
+    else:
+        ret = int(v)
+    if ret != default:
+        log(f'Using non-default setting from {name}: {v}')
+    return ret
+
 # All our `except ...` blocks output diagnostics if `g_exceptions_verbose` is
 # true.
-g_exceptions_verbose = get_env_bool( 'PYMUPDF_EXCEPTIONS_VERBOSE', True)
+g_exceptions_verbose = get_env_int( 'PYMUPDF_EXCEPTIONS_VERBOSE', 1)
 
 # $PYMUPDF_USE_EXTRA overrides whether to use optimised C fns in `extra`.
 #
@@ -2622,6 +2636,7 @@ class Document:
                 try:
                     self.this = extra.Document_init( filename, stream, filetype, rect, width, height, fontsize)
                 except Exception as e:
+                    if g_exceptions_verbose > 1:    exception_info()
                     e_str = str(e)
                     if str(e) == MSG_BAD_FILETYPE:
                         raise ValueError( e_str) from e
@@ -2664,6 +2679,7 @@ class Document:
                             try:
                                 doc = mupdf.fz_open_document(filename)
                             except Exception as e:
+                                if g_exceptions_verbose > 1:    exception_info()
                                 raise EmptyFileError( 'cannot open empty document') from e
                         else:
                             handler = mupdf.ll_fz_recognize_document(filetype)
@@ -2674,6 +2690,7 @@ class Document:
                                     try:
                                         doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
                                     except Exception as e:
+                                        if g_exceptions_verbose > 1:    exception_info()
                                         raise FileDataError( MSG_BAD_DOCUMENT) from e
                                     doc = mupdf.FzDocument( doc)
                                 elif handler.open_with_stream:
@@ -2709,6 +2726,7 @@ class Document:
                     try:
                         _ = self.convert_to_pdf()  # this seems to always work
                     except Exception as e:
+                        if g_exceptions_verbose > 1:    exception_info()
                         raise FileDataError("cannot open broken document") from e
 
             if g_use_extra:
@@ -3120,7 +3138,7 @@ class Document:
         try:
             return mupdf.fz_lookup_metadata2( self.this, key)
         except Exception:
-            if 0 and g_exceptions_verbose:    exception_info()
+            if g_exceptions_verbose > 2:    exception_info()
             return ''
 
     def _getOLRootNumber(self):
@@ -3198,7 +3216,7 @@ class Document:
         try:
             ol = mupdf.fz_load_outline( doc)
         except Exception:
-            if 0 and g_exceptions_verbose:    exception_info()
+            if g_exceptions_verbose > 1:    exception_info()
             return
         return Outline( ol)
 
@@ -4775,6 +4793,7 @@ class Document:
             try:
                 key, value = v.split()
             except Exception:
+                if g_exceptions_verbose > 1:    exception_info()
                 return valid
             if value == "true":
                 valid[key] = True
@@ -8465,7 +8484,7 @@ class Page:
                 linkobj._erase()
             except Exception:
                 # Don't print this exception, to match classic. Issue #2841.
-                #exception_info()
+                if g_exceptions_verbose > 1:    exception_info()
                 pass
 
         page = mupdf.pdf_page_from_fz_page( self.this)
@@ -9037,7 +9056,7 @@ class Page:
             serif = 0
         except Exception:
             # Verbose in PyMuPDF/tests.
-            #exception_info()
+            if g_exceptions_verbose > 1:    exception_info()
             pass
 
         if CJK_number < 0:
@@ -9046,7 +9065,7 @@ class Page:
                 serif = 1
             except Exception:
                 # Verbose in PyMuPDF/tests.
-                #exception_info()
+                if g_exceptions_verbose > 1:    exception_info()
                 pass
 
         if fontname.lower() in fitz_fontdescriptors.keys():
@@ -10404,6 +10423,7 @@ class Quad:
         try:
             l = x.__len__()
         except Exception:
+            if g_exceptions_verbose > 1:    exception_info()
             return False
         if l == 2:
             return util_point_in_quad(x, self)
@@ -10650,6 +10670,7 @@ class Rect:
             try:
                 r = Rect(x)
             except Exception:
+                if g_exceptions_verbose > 1:    exception_info()
                 r = Quad(x).rect
             return (self.x0 <= r.x0 <= r.x1 <= self.x1 and
                     self.y0 <= r.y0 <= r.y1 <= self.y1)
@@ -11899,6 +11920,7 @@ class Story:
                     try:
                         position_to = id_to_position[ target_id]
                     except Exception as e:
+                        if g_exceptions_verbose > 1:    exception_info()
                         raise RuntimeError(f"No destination with id={target_id}, required by position_from: {position_from}") from e
                     # Make link from `position_from`'s rect to top-left of
                     # `position_to`'s rect.
@@ -17805,7 +17827,7 @@ def CheckQuad(q: typing.Any) -> bool:
     try:
         q0 = Quad(q)
     except Exception:
-        #exception_info()
+        if g_exceptions_verbose > 1:    exception_info()
         return False
     return q0.is_convex
 
@@ -17818,8 +17840,7 @@ def CheckRect(r: typing.Any) -> bool:
     try:
         r = Rect(r)
     except Exception:
-        if 0:
-            exception_info()
+        if g_exceptions_verbose > 1:    exception_info()
         return False
     return not (r.is_empty or r.is_infinite)
 
