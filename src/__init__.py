@@ -6469,6 +6469,7 @@ class Matrix:
         Matrix(degree) - rotate
         Matrix(Matrix) - new copy
         Matrix(sequence) - from 'sequence'
+        Matrix(mupdf.FzMatrix) - from MuPDF class wrapper for fz_matrix.
         
         Explicit keyword args a, b, c, d, e, f override any earlier settings if
         not None.
@@ -6480,7 +6481,14 @@ class Matrix:
         elif len(args) == 6:  # 6 numbers
             self.a, self.b, self.c, self.d, self.e, self.f = map(float, args)
         elif len(args) == 1:  # either an angle or a sequ
-            if hasattr(args[0], "__float__"):
+            if isinstance(args[0], mupdf.FzMatrix):
+                self.a = args[0].a
+                self.b = args[0].b
+                self.c = args[0].c
+                self.d = args[0].d
+                self.e = args[0].e
+                self.f = args[0].f
+            elif hasattr(args[0], "__float__"):
                 theta = math.radians(args[0])
                 c_ = round(math.cos(theta), 8)
                 s_ = round(math.sin(theta), 8)
@@ -6498,7 +6506,8 @@ class Matrix:
                 float(args[1]), float(args[0]), 1.0, 0.0, 0.0
         else:
             raise ValueError("Matrix: bad args")
-        #return
+        
+        # Override with explicit args if specified.
         if a is not None:   self.a = a
         if b is not None:   self.b = b
         if c is not None:   self.c = c
@@ -8490,11 +8499,11 @@ class Page:
     def derotation_matrix(self) -> Matrix:
         """Reflects page de-rotation."""
         if g_use_extra:
-            return extra.Page_derotate_matrix( self.this)
+            return Matrix(extra.Page_derotate_matrix( self.this))
         pdfpage = self._pdf_page()
         if not pdfpage.m_internal:
-            return JM_py_from_matrix(mupdf.FzRect(mupdf.FzRect.UNIT))
-        return JM_py_from_matrix(JM_derotate_page_matrix(pdfpage))
+            return Matrix(mupdf.FzRect(mupdf.FzRect.UNIT))
+        return Matrix(JM_derotate_page_matrix(pdfpage))
 
     def extend_textpage(self, tpage, flags=0, matrix=None):
         page = self.this

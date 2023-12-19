@@ -182,6 +182,9 @@ def test_1645():
     page = doc[0]
     page_bounds = page.bound()
     annot_loc = fitz.Rect(page_bounds.x0, page_bounds.y0, page_bounds.x0 + 75, page_bounds.y0 + 15)
+    # Check type of page.derotation_matrix - this is #2911.
+    assert isinstance(page.derotation_matrix, fitz.Matrix), \
+            f'Bad type for page.derotation_matrix: {type(page.derotation_matrix)=} {page.derotation_matrix=}.'
     page.add_freetext_annot(annot_loc * page.derotation_matrix, "TEST", fontsize=18,
     fill_color=fitz.utils.getColor("FIREBRICK1"), rotate=page.rotation)
     doc.save(path_out, garbage=1, deflate=True, no_new_id=True)

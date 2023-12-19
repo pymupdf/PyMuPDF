@@ -1209,16 +1209,16 @@ static PyObject* JM_py_from_matrix(mupdf::FzMatrix m)
     return Py_BuildValue("ffffff", m.a, m.b, m.c, m.d, m.e, m.f);
 }
 
-static PyObject* Page_derotate_matrix(mupdf::PdfPage& pdfpage)
+static mupdf::FzMatrix Page_derotate_matrix(mupdf::PdfPage& pdfpage)
 {
     if (!pdfpage.m_internal)
     {
-        return JM_py_from_matrix(*mupdf::FzMatrix().internal());
+        return mupdf::FzMatrix();
     }
-    return JM_py_from_matrix(JM_derotate_page_matrix(pdfpage));
+    return JM_derotate_page_matrix(pdfpage);
 }
 
-static PyObject* Page_derotate_matrix(mupdf::FzPage& page)
+static mupdf::FzMatrix Page_derotate_matrix(mupdf::FzPage& page)
 {
     mupdf::PdfPage pdf_page = mupdf::pdf_page_from_fz_page(page);
     return Page_derotate_matrix(pdf_page);
@@ -4282,8 +4282,8 @@ mupdf::FzPoint JM_point_from_py(PyObject* p);
 mupdf::FzRect Annot_rect(mupdf::PdfAnnot& annot);
 PyObject* util_transform_rect(PyObject* rect, PyObject* matrix);
 PyObject* Annot_rect3(mupdf::PdfAnnot& annot);
-PyObject* Page_derotate_matrix(mupdf::PdfPage& pdfpage);
-PyObject* Page_derotate_matrix(mupdf::FzPage& pdfpage);
+mupdf::FzMatrix Page_derotate_matrix(mupdf::PdfPage& pdfpage);
+mupdf::FzMatrix Page_derotate_matrix(mupdf::FzPage& pdfpage);
 PyObject* JM_get_annot_xref_list(const mupdf::PdfObj& page_obj);
 PyObject* JM_get_annot_xref_list2(mupdf::PdfPage& page);
 PyObject* JM_get_annot_xref_list2(mupdf::FzPage& page);
