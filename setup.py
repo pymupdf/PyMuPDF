@@ -522,7 +522,7 @@ def build():
     #
     env_extra = dict()
     if mupdf_local:
-        from_ = f'{g_root}/fitz/_config.h'
+        from_ = f'{g_root}/fitz_old/_config.h'
         to_ = f'{mupdf_local}/include/mupdf/fitz/config.h'
         if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '0':
             # Use MuPDF default config.
@@ -545,7 +545,7 @@ def build():
         mupdf_build_dir = build_mupdf_unix( mupdf_local, env_extra, build_type)
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
-    # Build rebased `extra` module and/or PyMuPDF `fitz` module.
+    # Build rebased `extra` module and/or PyMuPDF `fitz_old` module.
     #
     path_so_leaf_a, path_so_leaf_b = _build_extensions(
             mupdf_local,
@@ -555,7 +555,7 @@ def build():
     
     for d in (
             mupdf_build_dir,
-            f'{g_root}/fitz',
+            f'{g_root}/fitz_old',
             f'{g_root}/src',
             ):
         if d:
@@ -572,13 +572,13 @@ def build():
     
     if path_so_leaf_a:
         # Add classic implementation files.
-        to_dir = 'fitz/'
-        add( ret_p, f'{g_root}/fitz/__init__.py', to_dir)
-        add( ret_p, f'{g_root}/fitz/__main__.py', to_dir)
-        add( ret_p, f'{g_root}/fitz/fitz.py', to_dir)
-        add( ret_p, f'{g_root}/fitz/table.py', to_dir)
-        add( ret_p, f'{g_root}/fitz/utils.py', to_dir)
-        add( ret_p, f'{g_root}/fitz/{path_so_leaf_a}', to_dir)
+        to_dir = 'fitz_old/'
+        add( ret_p, f'{g_root}/fitz_old/__init__.py', to_dir)
+        add( ret_p, f'{g_root}/fitz_old/__main__.py', to_dir)
+        add( ret_p, f'{g_root}/fitz_old/fitz_old.py', to_dir)
+        add( ret_p, f'{g_root}/fitz_old/table.py', to_dir)
+        add( ret_p, f'{g_root}/fitz_old/utils.py', to_dir)
+        add( ret_p, f'{g_root}/fitz_old/{path_so_leaf_a}', to_dir)
 
         if mupdf_local:
             # Add mupdf shared library next to `path_so_leaf_a` so it will be
@@ -596,11 +596,11 @@ def build():
 
     if path_so_leaf_b:
         # Add rebased implementation files.
-        to_dir = 'fitz_new/' if path_so_leaf_a else 'fitz/'
+        to_dir = 'fitz/'
         add( ret_p, f'{g_root}/src/__init__.py', to_dir)
         add( ret_p, f'{g_root}/src/__main__.py', to_dir)
         add( ret_p, f'{g_root}/src/fitz.py', to_dir)
-        add( ret_p, f'{g_root}/fitz/table.py', to_dir)
+        add( ret_p, f'{g_root}/fitz_old/table.py', to_dir)
         add( ret_p, f'{g_root}/src/utils.py', to_dir)
         add( ret_p, f'{g_root}/src/extra.py', to_dir)
         add( ret_p, f'{g_root}/src/{path_so_leaf_b}', to_dir)
@@ -847,10 +847,10 @@ def _build_extension_classic( mupdf_local, mupdf_build_dir, build_type):
     if mupdf_local:
         write_git('mupdf', mupdf_local)
     f.write('%}\n')
-    _fs_update( f.getvalue(), 'fitz/helper-git-versions.i')
+    _fs_update( f.getvalue(), 'fitz_old/helper-git-versions.i')
     if os.environ.get( 'PYMUPDF_SETUP_REBUILD_GIT_DETAILS') == '0':
-        log( f'Marking fitz/helper-git-versions.i as old because PYMUPDF_SETUP_REBUILD_GIT_DETAILS=0')
-        os.utime( 'fitz/helper-git-versions.i', (1, 1))
+        log( f'Marking fitz_old/helper-git-versions.i as old because PYMUPDF_SETUP_REBUILD_GIT_DETAILS=0')
+        os.utime( 'fitz_old/helper-git-versions.i', (1, 1))
 
     if windows:
         compiler_extra_c = ''
@@ -860,7 +860,7 @@ def _build_extension_classic( mupdf_local, mupdf_build_dir, build_type):
                 ' -Wno-pointer-sign'
                 ' -Wno-sign-compare'
                 )
-    prerequisites_swig = glob.glob( f'{g_root}/fitz/*.i')
+    prerequisites_swig = glob.glob( f'{g_root}/fitz_old/*.i')
     if os.environ.get( 'PYMUPDF_SETUP_REBUILD_GIT_DETAILS') == '0':
         # Remove helper-git-versions.i from prerequisites_swig so
         # it doesn't force rebuild on its own. [Cannot easily use
@@ -874,9 +874,9 @@ def _build_extension_classic( mupdf_local, mupdf_build_dir, build_type):
             assert 0, f'Cannot find *helper-git-versions.i in prerequisites_swig: {prerequisites_swig}'
 
     path_so_leaf_a = pipcl.build_extension(
-            name = 'fitz',
-            path_i = f'{g_root}/fitz/fitz.i',
-            outdir = f'{g_root}/fitz',
+            name = 'fitz_old',
+            path_i = f'{g_root}/fitz_old/fitz_old.i',
+            outdir = f'{g_root}/fitz_old',
             includes = includes,
             defines = defines,
             libpaths = libpaths,
