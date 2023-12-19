@@ -128,9 +128,6 @@ Environmental variables:
         If '0' we do not rebuild if only fitz/helper-git-versions.i has
         changed.
 
-    PYMUPDF_SETUP_SKELETON
-        If '1' we build minimal wheel for testing.
-    
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
 
@@ -513,115 +510,6 @@ def build():
     '''
     pipcl.py `build_fn()` callback.
     '''
-    skeleton = os.environ.get( 'PYMUPDF_SETUP_SKELETON')
-    log( f'{skeleton=}')
-    if skeleton == '1':
-        ret = list()
-        log( f'{g_flavour=}')
-        run( f'ls -l wheelhouse', check=0)
-        if 'b' in g_flavour:
-            with open( 'foo.c', 'w') as f:
-                f.write( textwrap.dedent( '''
-                        int foo(int x)
-                        {
-                            return x+1;
-                        }
-                        '''))
-                run(f'cc -fPIC -shared -o {g_root}/libfoo.so foo.c')
-            ret.append( f'{g_root}/libfoo.so')
-            ret.append( (f'{g_root}/READMErb.md', '$dist-info/README.md'))
-        if 'p' in g_flavour:
-            with open( 'bar.c', 'w') as f:
-                f.write( textwrap.dedent( '''
-                        int bar(int x)
-                        {
-                            return x+1;
-                        }
-                        '''))
-                run(f'cc -fPIC -shared -o {g_root}/_bar.so bar.c')
-            with open( 'bar.py', 'w') as f:
-                f.write( textwrap.dedent( '''
-                        def bar(x):
-                            return x - 1
-                        '''))
-            ret.append( f'{g_root}/bar.py')
-            ret.append( f'{g_root}/_bar.so')
-            ret.append( (f'{g_root}/README.md', '$dist-info/README.md'))
-        return ret
-    
-    elif skeleton == '2':
-        os.makedirs( 'src-skeleton2', exist_ok=True)
-        ret = list()
-        #cc, pythonflags = pipcl.base_compiler()
-        #ld, pythonflags = pipcl.base_linker()
-        if 1:
-            # Build minimal libmupdf.so.
-            cc, _ = pipcl.base_compiler()
-            with open( 'src-skeleton2/mupdf.c', 'w') as f:
-                f.write( textwrap.dedent('''
-                        int foo(int x)
-                        {
-                            return x + 1;
-                        }
-                        '''))
-            # Use of rpath here is Linux/OpenBSD-specific.
-            run(f'{cc} -o src-skeleton2/libmupdf.so src-skeleton2/mupdf.c -fPIC -shared -Wl,-rpath,\'$ORIGIN\',-z,origin')
-            ret.append( ('src-skeleton2/libmupdf.so', ''))
-        if 'p' in g_flavour:
-            # Build extension module `fitz`.
-            with open( 'src-skeleton2/fitz.i', 'w') as f:
-                f.write( textwrap.dedent('''
-                        %module fitz
-                        
-                        %{
-                        int foo(int x);
-                        int bar(int x)
-                        {
-                            return foo(x) * 2;
-                        }
-                        %}
-                        
-                        int bar(int x);
-                        '''))
-            path_so_leaf_a = pipcl.build_extension(
-                    name = 'fitz',
-                    path_i = 'src-skeleton2/fitz.i',
-                    outdir = 'src-skeleton2',
-                    cpp = False,
-                    libpaths = ['src-skeleton2'],
-                    libs = ['mupdf'],
-                    )
-    
-            with open( 'src-skeleton2/fitz.i', 'w') as f:
-                f.write( textwrap.dedent('''
-                        %module fitz_new
-                        
-                        %{
-                        int foo(int x);
-                        int bar(int x)
-                        {
-                            return foo(x) * 2;
-                        }
-                        %}
-                        
-                        int bar(int x);
-                        '''))
-            path_so_leaf_b = pipcl.build_extension(
-                    name = 'fitz_new',
-                    path_i = 'src-skeleton2/fitz.i',
-                    outdir = 'src-skeleton2',
-                    cpp = False,
-                    libpaths = ['src-skeleton2'],
-                    libs = ['mupdf'],
-                    )
-            ret.append( (f'src-skeleton2/{path_so_leaf_a}', ''))
-            ret.append( (f'src-skeleton2/fitz.py', ''))
-            ret.append( (f'src-skeleton2/{path_so_leaf_b}', ''))
-            ret.append( (f'src-skeleton2/fitz_new.py', ''))
-            ret.append( (f'{g_root}/README.md', '$dist-info/README.md'))
-        return ret
-    
-    
     # Download MuPDF.
     #
     mupdf_local = get_mupdf()
