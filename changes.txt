@@ -2,28 +2,35 @@ Change Log
 ==========
 
 
-**Changes in next release **
+**Changes in version 1.23.8 (2023-12-19)**
 
 * Bug fixes (rebased implementation only):
 
-  **Fixed** `2871 <https://github.com/pymupdf/PyMuPDF/issues/2871>`_: KeyError in getLinkDict during PDF merge
-  **Fixed** `2861 <https://github.com/pymupdf/PyMuPDF/issues/2861>`_: AttributeError in getLinkDict during PDF Merge
-  **Fixed** `2634 <https://github.com/pymupdf/PyMuPDF/issues/2634>`_: get_toc and set_toc do not behave consistently for rotated pages
+  * **Fixed** `2634 <https://github.com/pymupdf/PyMuPDF/issues/2634>`_: get_toc and set_toc do not behave consistently for rotated pages
+  * **Fixed** `2861 <https://github.com/pymupdf/PyMuPDF/issues/2861>`_: AttributeError in getLinkDict during PDF Merge
+  * **Fixed** `2871 <https://github.com/pymupdf/PyMuPDF/issues/2871>`_: KeyError in getLinkDict during PDF merge
+  * **Fixed** `2886 <https://github.com/pymupdf/PyMuPDF/issues/2886>`_: Error in Skeleton for Named Link Destinations
 
 * Bug fixes (rebased and classic implementations):
+  
+  * **Fixed** `2885 <https://github.com/pymupdf/PyMuPDF/issues/2885>`_: pymupdf find tables too slow
 
 * Other:
 
   * Rebased implementation:
   
+    * `Page.insert_htmlbox()`: new, much more powerful alternative to `Page.insert_textbox()` or `TextWriter.fill_textbox()`, using `Story`.
     * `Story.fit*()`: new methods for fitting a Story into an expanded rect.
     * `Story.write_with_links()`: add support for external links.
-    * Work with new MuPDF Python exception classes.
     * `Document.language()`: fixed to use MuPDF's new `mupdf.fz_string_from_text_language2()`.
+    * `Document.subset_fonts()` - fixed.
     * Fixed internal `Archive._add_treeitem()` method.
     * Fixed `fitz_new.__doc__` to contain PyMuPDF and Python version information, and OS name.
+    * Removed use of `(*args, **kwargs)` in API, we now specify keyword args explicitly.
+    * Work with new MuPDF Python exception classes.
 
-  * Fixed pillow test to not ignore all errors.
+  * Fixed bug where `button_states()` returns None when `/AP` points to an indirect object.
+  * Fixed pillow test to not ignore all errors, and install pillow when testing.
   * Added test for `fitz.css_for_pymupdf_font()` (uses package `pymupdf-fonts`).
   * Simplified Github Actions test specifications.
   * Updated `tests/README.md`.
