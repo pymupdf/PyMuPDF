@@ -21769,7 +21769,7 @@ VersionBind = "1.23.8" # PyMuPDF version.
 VersionDate = "2023-12-19 00:00:01"
 VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
 version = (VersionBind, VersionFitz, VersionDate2)
-pymupdf_version_tuple = tuple( [int(i) for i in VersionFitz.split('.')])
+pymupdf_version_tuple = tuple( [int(i) for i in VersionBind.split('.')])
 
 def restore_aliases():
     warnings.filterwarnings( "once", category=FitzDeprecation)
