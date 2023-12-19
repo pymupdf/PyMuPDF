@@ -16,7 +16,7 @@ import tempfile
 import typing
 import warnings
 
-from fitz import *
+from fitz_old import *
 
 TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -275,7 +275,7 @@ def delete_image(page: Page, xref: int):
         xref: xref of the image to delete.
     """
     # make a small 100% transparent pixmap (of just any dimension)
-    pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)
+    pix = fitz_old.Pixmap(fitz_old.csGRAY, (0, 0, 1, 1), 1)
     pix.clear_with()  # clear all samples bytes to 0x00
     page.replace_image(xref, pixmap=pix)
 
