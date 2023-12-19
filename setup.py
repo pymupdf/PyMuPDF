@@ -1184,7 +1184,7 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.7'
+version = '1.23.8'
 version_b = '1.23.7'
 
 tag_python = None
