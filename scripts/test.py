@@ -46,6 +46,7 @@ import gh_release
 
 import os
 import platform
+import re
 import sys
 
 
@@ -60,7 +61,7 @@ def main(argv):
 
     # We always want to run inside a venv.
     if sys.prefix == sys.base_prefix:
-        # Not running in a venv.
+        # We are not running in a venv.
         gh_release.venv( ['python'] + argv)
         return
 
@@ -95,18 +96,34 @@ def main(argv):
 
 def build(build_isolation=None):
     print(f'{build_isolation=}')
+    
     if platform.system() == 'OpenBSD':
         # libclang not available on pypi.org, so we need to force use of system
         # package py3-llvm with --no-build-isolation, manually installing other
         # required packages.
         if build_isolation is None:
-            build_isolation = False    
-    if not build_isolation:
+            build_isolation = False
+    
+    if build_isolation:
+        build_isolation_text = ''
+    else:
+        # Manually install required packages from pyproject.toml.
+        ppt = os.path.abspath(f'{__file__}/../../pyproject.toml')
+        with open(ppt) as f:
+            for line in f:
+                m = re.match('^requires = \\[(.*)\\]$', line)
+                if m:
+                    names = m.group(1).replace(',', ' ').replace('"', '')
+                    break
+            else:
+                assert 0, f'Failed to find "requires" line in {ppt}'
         if platform.system() == 'OpenBSD':
-            gh_release.run(f'pip install swig setuptools psutil')
-        else:
-            gh_release.run(f'pip install libclang swig setuptools psutil')
-    build_isolation_text = '' if build_isolation else ' --no-build-isolation'
+            # libclang not available. We require system already has py3-llvm
+            # installed.
+            names = names.replace('libclang', '')
+        gh_release.run( f'python -m pip install --upgrade {names}')
+        build_isolation_text = ' --no-build-isolation'
+    
     gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}')
 
 
