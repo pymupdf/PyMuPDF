@@ -46,7 +46,7 @@ copyright = "2015-" + str(thisday.year) + ", Artifex"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-_path = os.path.abspath(f'{__file__}/../../fitz/version.i')
+_path = os.path.abspath(f'{__file__}/../../src/__init__.py')
 with open(_path) as f:
     for line in f:
         match = re.search('VersionBind = "([0-9][.][0-9]+[.][0-9]+(rc[0-9]+)?)"', line)
