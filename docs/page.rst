@@ -141,7 +141,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: bound()
 
-      Determine the rectangle of the page. Same as property :attr:`Page.rect` below. For PDF documents this **usually** also coincides with :data:`mediabox` and :data:`cropbox`, but not always. For example, if the page is rotated, then this is reflected by this method -- the :attr:`Page.cropbox` however will not change.
+      Determine the rectangle of the page. Same as property :attr:`Page.rect`. For PDF documents this **usually** also coincides with :data:`mediabox` and :data:`cropbox`, but not always. For example, if the page is rotated, then this is reflected by this method -- the :attr:`Page.cropbox` however will not change.
 
       :rtype: :ref:`Rect`
 
@@ -480,19 +480,19 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: delete_link(linkdict)
 
-      PDF only: Delete the specified link from the page. The parameter must be an **original item** of :meth:`get_links()` (see below). The reason for this is the dictionary's *"xref"* key, which identifies the PDF object to be deleted.
+      PDF only: Delete the specified link from the page. The parameter must be an **original item** of :meth:`get_links()`, see :ref:`link_dict_description`. The reason for this is the dictionary's *"xref"* key, which identifies the PDF object to be deleted.
 
       :arg dict linkdict: the link to be deleted.
 
    .. method:: insert_link(linkdict)
 
-      PDF only: Insert a new link on this page. The parameter must be a dictionary of format as provided by :meth:`get_links()` (see below).
+      PDF only: Insert a new link on this page. The parameter must be a dictionary of format as provided by :meth:`get_links()`, see :ref:`link_dict_description`.
 
       :arg dict linkdict: the link to be inserted.
 
    .. method:: update_link(linkdict)
 
-      PDF only: Modify the specified link. The parameter must be a (modified) **original item** of :meth:`get_links()` (see below). The reason for this is the dictionary's *"xref"* key, which identifies the PDF object to be changed.
+      PDF only: Modify the specified link. The parameter must be a (modified) **original item** of :meth:`get_links()`, see :ref:`link_dict_description`. The reason for this is the dictionary's *"xref"* key, which identifies the PDF object to be changed.
 
       :arg dict linkdict: the link to be modified.
 
@@ -516,7 +516,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       Retrieves **all** links of a page.
 
       :rtype: list
-      :returns: A list of dictionaries. For a description of the dictionary entries see below. Always use this or the :meth:`Page.links` method if you intend to make changes to the links of a page.
+      :returns: A list of dictionaries. For a description of the dictionary entries, see :ref:`link_dict_description`. Always use this or the :meth:`Page.links` method if you intend to make changes to the links of a page.
 
    .. method:: links(kinds=None)
 
@@ -1952,6 +1952,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
 -----
 
+.. _link_dict_description:
+
 Description of *get_links()* Entries
 ----------------------------------------
 Each entry of the :meth:`Page.get_links` list is a dictionary with the following keys:
@@ -1968,7 +1970,9 @@ Each entry of the :meth:`Page.get_links` list is a dictionary with the following
 
 * *uri*:  a string specifying the destination internet resource. Required for *LINK_URI*, else ignored. You should make sure to start this string with an unambiguous substring, that classifies the subtype of the URL, like `"http://"`, `"https://"`, `"file://"`, `"ftp://"`, `"mailto:"`, etc. Otherwise your browser will try to interpret the text and come to unwanted / unexpected conclusions about the intended URL type.
 
-* *xref*: an integer specifying the PDF :data:`xref` of the link object. Do not change this entry in any way. Required for link deletion and update, otherwise ignored. For non-PDF documents, this entry contains *-1*. It is also *-1* for **all** entries in the *get_links()* list, if **any** of the links is not supported by MuPDF - see the note below.
+* *xref*: an integer specifying the PDF :data:`xref` of the link object. Do not change this entry in any way. Required for link deletion and update, otherwise ignored. For non-PDF documents, this entry contains *-1*. It is also *-1* for **all** entries in the *get_links()* list, if **any** of the links is not supported by MuPDF - see :ref:`notes_on_supporting_links`.
+
+.. _notes_on_supporting_links:
 
 Notes on Supporting Links
 ---------------------------
