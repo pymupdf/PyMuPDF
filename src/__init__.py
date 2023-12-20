@@ -5181,7 +5181,7 @@ class Document:
 
             # extract page number
             if "0 R" in subval:  # page xref given?
-                templ_dict["page"] = page_xrefs[int(subval.split()[0])]
+                templ_dict["page"] = page_xrefs.get(int(subval.split()[0]),-1)
             else:  # naked page number given
                 templ_dict["page"] = int(subval)
             return templ_dict
