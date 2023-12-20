@@ -576,7 +576,7 @@ def build():
         add( ret_p, f'{g_root}/fitz_old/__init__.py', to_dir)
         add( ret_p, f'{g_root}/fitz_old/__main__.py', to_dir)
         add( ret_p, f'{g_root}/fitz_old/fitz_old.py', to_dir)
-        add( ret_p, f'{g_root}/fitz_old/table.py', to_dir)
+        add( ret_p, f'{g_root}/src/table.py', to_dir)
         add( ret_p, f'{g_root}/fitz_old/utils.py', to_dir)
         add( ret_p, f'{g_root}/fitz_old/{path_so_leaf_a}', to_dir)
 
@@ -600,7 +600,7 @@ def build():
         add( ret_p, f'{g_root}/src/__init__.py', to_dir)
         add( ret_p, f'{g_root}/src/__main__.py', to_dir)
         add( ret_p, f'{g_root}/src/fitz.py', to_dir)
-        add( ret_p, f'{g_root}/fitz_old/table.py', to_dir)
+        add( ret_p, f'{g_root}/src/table.py', to_dir)
         add( ret_p, f'{g_root}/src/utils.py', to_dir)
         add( ret_p, f'{g_root}/src/extra.py', to_dir)
         add( ret_p, f'{g_root}/src/{path_so_leaf_b}', to_dir)
