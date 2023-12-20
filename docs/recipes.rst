@@ -8,6 +8,14 @@
 
 .. toctree::
 
+   how-to-open-a-file.rst
+
+
+----
+
+
+.. toctree::
+
    recipes-text.rst
 
 
