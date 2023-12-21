@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-'''Simple build/test script for PyMuPDF.
+'''Developer build/test script for PyMuPDF.
 
 Unlike gh_release.py, we build directly, not with cibuildwheel.
 
@@ -18,28 +18,62 @@ Examples:
     ./PyMuPDF/scripts/test.py --mupdf 'git:--branch 1.23.x https://github.com/ArtifexSoftware/mupdf.git' buildtest
         Build and test using internal checkout of mupdf 1.23.x branch from Github.
 
-Args:
-    --build-isolation 0|1
-    -h
+Usage:
+    scripts/test.py <options> <commands>
+
+Commands are handled in order, so for example `build` should usually be before
+`test`.
+
+If we are not already running inside a Python venv, we automatically create a
+venv and re-run ourselves inside it.
+
+Options:
     --help
+    -h
         Show help.
-    --mupdf <location>
-        Location of local mupdf/ directory or 'git:...' to be used by
-        subsequent build* args. Used to set PYMUPDF_SETUP_MUPDF_BUILD for
-        PyMuPDF/setup.py. If not specifed PyMuPDF will download its default
-        mupdf .tgz.
+    --build-isolation 0|1
+        .
+    -b <build>
+        Set build type for `build` or `buildtest` commands. `<build>` should
+        be one of 'release', 'debug', 'memento'. [This makes `build` set
+        environment variable `PYMUPDF_SETUP_MUPDF_BUILD_TYPE`, which is used by
+        PyMuPDF's `setup.py`.]
+    -d
+        Equivalent to `--build-type debug`.
+    -i <implementations>
+        Set PyMuPDF implementations to test.
+        <implementations> must contain only these individual characters:
+             'c' - classic.
+             'r' - rebased.
+             'R' - rebased without optimisations.
+            Default is 'crR'.
+    -m <location> | --mupdf <location>
+        Location of local mupdf/ directory or 'git:...' to be used
+        when building PyMuPDF. [This sets environment variable
+        PYMUPDF_SETUP_MUPDF_BUILD, which is used by PyMuPDF/setup.py. If not
+        specifed PyMuPDF will download its default mupdf .tgz.]
+    -p <pytest-options>
+        Set pytest options; default is '-s'.
+    -t <name>
+        Pytest test name. Should be relative to PyMuPDF directory. For example:
+            -t tests/test_general.py
+            -t tests/test_general.py::test_subset_fonts
+    -v
+        Avoid delay if venv directory already exists. We assume the existing
+        directory was created by us earlier and is a valid venv containing all
+        necessary packages.
     --valgrind 0|1
-        Use valgrind in subsequent `test` or `buildtest`.
+        Use valgrind in `test` or `buildtest`.
+        This will run `sudo apt update` and `sudo apt install valgrind`.
+
+Commands:
     build
-        Builds and installs using `pip install .../PyMuPDF`.
+        Builds and installs PyMuPDF into venv, using `pip install .../PyMuPDF`.
     buildtest
         Same as 'build test'.
     test
-        Runs PyMuPDF's pytest tests, testing classic, rebased and unoptimised
-        rebased.
-
-If not running inside a Python venv, we automatically create a venv and rerun
-ourselves inside it.
+        Runs PyMuPDF's pytest tests in venv. Default is to test classic, rebased and
+        unoptimised rebased; use `-i` to change this.
 '''
 
 import gh_release
@@ -47,7 +81,9 @@ import gh_release
 import os
 import platform
 import re
+import subprocess
 import sys
+import textwrap
 
 
 pymupdf_dir = os.path.abspath( f'{__file__}/../..')
@@ -55,46 +91,133 @@ pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
 def main(argv):
 
-    if len(argv) >= 2 and argv[1] in ('-h', '--help'):
-        print(__doc__)
-        return
-
-    # We always want to run inside a venv.
-    if sys.prefix == sys.base_prefix:
-        # We are not running in a venv.
-        gh_release.venv( ['python'] + argv)
+    if len(argv) == 1:
+        show_help()
         return
 
     build_isolation = None
     valgrind = False
+    build_type = None
+    implementations = None
+    test_name = None
+    venv_quick = False
+    pytest_options = None
+    
     args = iter( argv[1:])
+    i = 0
     while 1:
         try:
             arg = next(args)
         except StopIteration:
+            arg = None
             break
-        if arg == '--mupdf':
+        if not arg.startswith('-'):
+            break
+        elif arg == '-b':
+            build_type = next(args)
+        elif arg == '--build-isolation':
+            build_isolation = int(next(args))
+        elif arg == '-d':
+            build_type = 'debug'
+        elif arg in ('-h', '--help'):
+            show_help()
+            return
+        elif arg == '-i':
+            implementations = next(args)
+        elif arg in ('--mupdf', '-m'):
             mupdf = next(args)
             if not mupdf.startswith('git:'):
                 assert os.path.isdir(mupdf), f'Not a directory: {mupdf=}.'
                 mupdf = os.path.abspath(mupdf)
             os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = mupdf
-        elif arg == '--build-isolation':
-            build_isolation = int(next(args))
+        elif arg == '-p':
+            pytest_options  = next(args)
+        elif arg == '-t':
+            test_name = next(args)
+        elif arg == '-v':
+            venv_quick = True
         elif arg == '--valgrind':
             valgrind = int(next(args))
-        elif arg == 'build':
-            build(build_isolation=build_isolation)
-        elif arg == 'test':
-            test(valgrind=valgrind)
-        elif arg == 'buildtest':
-            build(build_isolation=build_isolation)
-            test(valgrind=valgrind)
         else:
-            assert 0, f'Unrecognised arg: {arg=}.'
+            assert 0, f'Unrecognised option: {arg=}.'
+    
+    if arg is None:
+        log(f'No command specified.')
+        return
+    
+    # We always want to run inside a venv.
+    if sys.prefix == sys.base_prefix:
+        # We are not running in a venv.
+        log(f'Re-running in venv {gh_release.venv_name!r}.')
+        gh_release.venv( ['python'] + argv, quick=venv_quick)
+        return
+
+    def do_test():
+        test(
+                implementations=implementations,
+                valgrind=valgrind,
+                venv_quick=venv_quick,
+                test_name=test_name,
+                pytest_options=pytest_options,
+                )
+    
+    while 1:
+        if 0:
+            pass
+        elif arg == 'build':
+            build(build_type=build_type, build_isolation=build_isolation, venv_quick=venv_quick)
+        elif arg == 'test':
+            do_test()
+        elif arg == 'buildtest':
+            build(build_isolation=build_isolation, venv_quick=venv_quick)
+            do_test()
+        else:
+            assert 0, f'Unrecognised command: {arg=}.'
+        try:
+            arg = next(args)
+        except StopIteration:
+            break
 
 
-def build(build_isolation=None):
+def show_help():
+    print(__doc__)
+    print(venv_info())
+
+
+def venv_info(pytest_args=None):
+    '''
+    Returns string containing information about the venv we use and how to
+    run tests manually. If specified, `pytest_args` contains the pytest args,
+    otherwise we use an example.
+    '''
+    pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
+    ret = f'Name of venv: {gh_release.venv_name}\n'
+    if pytest_args is None:
+        pytest_args = f'{pymupdf_dir_rel}/tests/test_general.py::test_subset_fonts'
+    if platform.system() == 'Windows':
+        ret += textwrap.dedent(f'''
+                Rerun tests manually with rebased implementation:
+                    Enter venv:
+                        {gh_release.venv_name}\\Scripts\\activate
+                    Run specific test in venv:
+                        {gh_release.venv_name}\\Scripts\\python -m pytest {pytest_args}
+                ''')
+    else:
+        ret += textwrap.dedent(f'''
+                Rerun tests manually with rebased implementation:
+                    Enter venv and run specific test, also under gdb:
+                        . {gh_release.venv_name}/bin/activate
+                        python -m pytest {pytest_args}
+                        gdb --args python -m pytest {pytest_args}
+                    Run without explicitly entering venv, also under gdb:
+                        ./{gh_release.venv_name}/bin/python -m pytest {pytest_args}
+                        gdb --args ./{gh_release.venv_name}/bin/python -m pytest {pytest_args}
+                ''')
+    return ret
+
+
+def build(build_type=None, build_isolation=None, venv_quick=False):
+    print(f'{build_type=}')
     print(f'{build_isolation=}')
     
     if platform.system() == 'OpenBSD':
@@ -121,42 +244,77 @@ def build(build_isolation=None):
             # libclang not available. We require system already has py3-llvm
             # installed.
             names = names.replace('libclang', '')
-        gh_release.run( f'python -m pip install --upgrade {names}')
+        if venv_quick:
+            log(f'{venv_quick=}: Not installing packages with pip: {names}')
+        else:
+            gh_release.run( f'python -m pip install --upgrade {names}')
         build_isolation_text = ' --no-build-isolation'
     
-    gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}')
+    env_extra = None
+    if build_type:
+        env_extra = dict(PYMUPDF_SETUP_MUPDF_BUILD_TYPE=build_type)
+    gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}', env_extra=env_extra)
 
 
-def test(valgrind):
-    if os.getcwd() == pymupdf_dir:
-        gh_release.log('Changing into parent directory to avoid confusion from `fitz/` directory.')
-        os.chdir(os.path.dirname(pymupdf_dir))
-    gh_release.run(f'pip install {gh_release.test_packages}')
-    if valgrind:
-        gh_release.log('Installing valgrind.')
-        gh_release.run(f'sudo apt update')
-        gh_release.run(f'sudo apt install valgrind')
-        gh_release.run(f'valgrind --version')
+def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_options=None):
+    pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
+    if pytest_options is None:
+        if valgrind:
+            pytest_options = '-s -vv'
+        else:
+            pytest_options = '-s'
+    pytest_arg = pymupdf_dir_rel
+    if test_name:
+        pytest_arg += f'/{test_name}'
+    python = gh_release.relpath(sys.executable)
+    log('Running tests with tests/run_compound.py and pytest.')
+    try:
+        if venv_quick:
+            log(f'{venv_quick=}: Not installing test packages: {gh_release.test_packages}')
+        else:
+            gh_release.run(f'pip install {gh_release.test_packages}')
+        implementations_args = f' -i {implementations}' if implementations else ''
+        env_extra = None
+        if valgrind:
+            log('Installing valgrind.')
+            gh_release.run(f'sudo apt update')
+            gh_release.run(f'sudo apt install valgrind')
+            gh_release.run(f'valgrind --version')
         
-        gh_release.log('Running PyMuPDF tests under valgrind.')
-        gh_release.run(
-                f'{sys.executable} {pymupdf_dir}/tests/run_compound.py'
-                    f' valgrind --suppressions={pymupdf_dir}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
-                    f' pytest -s -vv {pymupdf_dir}/tests'
-                    ,
-                env_extra=dict(
+            log('Running PyMuPDF tests under valgrind.')
+            command = (
+                    f'{python} {pymupdf_dir_rel}/tests/run_compound.py{implementations_args}'
+                        f' valgrind --suppressions={pymupdf_dir_rel}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
+                        f' {python} -m pytest {pytest_options} {pytest_arg}'
+                        )
+            env_extra=dict(
                     PYTHONMALLOC='malloc',
                     PYMUPDF_RUNNING_ON_VALGRIND='1',
-                    ),
-                )
-    elif platform.system() == 'OpenBSD':
-        # On OpenBSD `pip install pytest` doesn't seem to install the pytest
-        # command, so we use `python -m pytest ...`. (This doesn't work on
-        # Windows for some reason so we don't use it all the time.)
-        gh_release.run(f'{sys.executable} {pymupdf_dir}/tests/run_compound.py python -m pytest -s {pymupdf_dir}')
-    else:
-        gh_release.run(f'{sys.executable} {pymupdf_dir}/tests/run_compound.py pytest -s {pymupdf_dir}')
+                    )
+        elif platform.system() == 'OpenBSD':
+            # On OpenBSD `pip install pytest` doesn't seem to install the pytest
+            # command, so we use `python -m pytest ...`. (This doesn't work on
+            # Windows for some reason so we don't use it all the time.)
+            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{implementations_args} {python} -m pytest {pytest_options} {pytest_arg}'
+        else:
+            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{implementations_args} {python} -m pytest {pytest_options} {pytest_arg}'
+        
+        log(f'Running tests with tests/run_compound.py and pytest.')
+        gh_release.run(command, env_extra=env_extra)
+            
+    finally:
+        log('\n' + venv_info(pytest_args=f'{pytest_options} {pytest_arg}'))
+
+
+def log(text):
+    gh_release.log(text, caller=1)
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    try:
+        sys.exit(main(sys.argv))
+    except subprocess.CalledProcessError as e:
+        # Terminate relatively quietly, failed commands will usually have
+        # generated diagnostics.
+        log(f'{e}')
+        sys.exit(1)
