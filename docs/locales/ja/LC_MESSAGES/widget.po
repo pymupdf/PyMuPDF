@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2023-12-21 13:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,24 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 e2ba8afb671549c7b57328556b5d6fee
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 b8edb98cf79641c1b410997ad2ffff75
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 a0fa2a180b8547a0abe9ffd795620c51
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../widget.rst:7 9ff9cceec85241058bb3b184f0098407
+#: ../../widget.rst:7 e3c9cf6270da4d78857e8a533a8342c4
 msgid "Widget"
 msgstr "Widget (ウィジェット)"
 
-
-#: ../../widget.rst:9 1d31089571e74df79f97d74ff89f0bd6
+#: ../../widget.rst:9 fd1acd926e2d4801ba75e5085bb20e39
 msgid ""
 "This class represents a PDF Form field, also called a \"widget\". "
 "Throughout this documentation, we are using these terms synonymously. "
@@ -45,14 +48,17 @@ msgid ""
 "primarily used for filling out forms."
 msgstr "このクラスは、PDFフォームフィールド、または「ウィジェット」とも呼ばれるものを表します。このドキュメンテーション全体で、これらの用語を同義語として使用しています。フィールドは技術的にはPDF注釈の特殊なケースであり、制限付きの権限を持つユーザーがPDFに情報を入力することを可能にします。これは主にフォームの記入に使用されます。"
 
-#: ../../widget.rst:11 50380fe204ab4125a8049dc1bb6a8f70
+#: ../../widget.rst:11 1add5f0bf2074e3ab4597015094a3785
 msgid ""
 "Like annotations, widgets live on PDF pages. Similar to annotations, the "
 "first widget on a page is accessible via :attr:`Page.first_widget` and "
 "subsequent widgets can be accessed via the :attr:`Widget.next` property."
-msgstr "アノテーションと同様に、ウィジェットもPDFページ上に存在します。注釈と同様に、ページ上の最初のウィジェットは :attr:`Page.first_widget` 経由でアクセスでき、その後のウィジェットは :attr:`Widget.next` プロパティ経由でアクセスできます。"
+msgstr ""
+"アノテーションと同様に、ウィジェットもPDFページ上に存在します。注釈と同様に、ページ上の最初のウィジェットは "
+":attr:`Page.first_widget` 経由でアクセスでき、その後のウィジェットは :attr:`Widget.next` "
+"プロパティ経由でアクセスできます。"
 
-#: ../../widget.rst:13 2711a115456147a68fb2da0f310412ab
+#: ../../widget.rst:13 e0dc74affe4143fa99b86bba10d5eecc
 msgid ""
 "*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset "
 "of general annotations. Consequently, :attr:`Page.first_annot` and "
@@ -62,280 +68,312 @@ msgid ""
 " This design decision is purely internal to MuPDF; technically, links, "
 "annotations and fields have a lot in common and also continue to share "
 "the better part of their code within (Py-) MuPDF."
-msgstr "*（バージョン1.16.0で変更）* MuPDFはウィジェットを一般的な注釈のサブセットとして扱わなくなりました。したがって、:attr:`Page.first_annot` および :meth:`Annot.next` は非ウィジェット注釈のみを返し、ページにフォームフィールドのみが存在する場合はNoneを返します。逆に、:attr:`Page.first_widget` および :meth:`Widget.next` はウィジェットのみを表示します。この設計の決定はMuPDF内部におけるものであり、技術的にはリンク、注釈、およびフィールドは多くの共通点を持ち、また（Py-）MuPDF内でコードの大部分を共有し続けています。"
+msgstr ""
+"*（バージョン1.16.0で変更）* "
+"MuPDFはウィジェットを一般的な注釈のサブセットとして扱わなくなりました。したがって、:attr:`Page.first_annot` および "
+":meth:`Annot.next` "
+"は非ウィジェット注釈のみを返し、ページにフォームフィールドのみが存在する場合はNoneを返します。逆に、:attr:`Page.first_widget`"
+" および :meth:`Widget.next` "
+"はウィジェットのみを表示します。この設計の決定はMuPDF内部におけるものであり、技術的にはリンク、注釈、およびフィールドは多くの共通点を持ち、また（Py-）MuPDF内でコードの大部分を共有し続けています。"
 
-#: ../../widget.rst:16 9b484f8097584377aa6faa8923d0e014
+#: ../../widget.rst:16 f26902fa1eb849beafaf85057c4c1a94
 msgid "**Class API**"
 msgstr "クラスAPI"
 
-#: ../../widget.rst:22 fa403d2bd6e843869d4509cd3159dffa
+#: ../../widget.rst:22 54043cf70d2c4cbd8570dc296fcfcdc0
 msgid "*New in version 1.18.15*"
 msgstr "*バージョン1.18.15で新しく追加*"
 
-#: ../../widget.rst:24 12f00da55244413abe79dec063b1f1fe
+#: ../../widget.rst:24 1c0b711da20840a4ac08ecb5b8fce39a
 msgid ""
 "Return the names of On / Off (i.e. selected / clicked or not) states a "
 "button field may have. While the 'Off' state usually is also named like "
 "so, the 'On' state is often given a name relating to the functional "
 "context, for example 'Yes', 'Female', etc."
-msgstr "ボタンフィールドが持つOn / Off（選択/クリックしたかどうか）状態の名前を返します。通常、 'Off'状態も同様に名前が付けられていますが、 'On'状態は機能的なコンテキストに関連する名前がよく付けられます。たとえば、「Yes」、「Female」などです。"
+msgstr ""
+"ボタンフィールドが持つOn / Off（選択/クリックしたかどうか）状態の名前を返します。通常、 'Off'状態も同様に名前が付けられていますが、"
+" 'On'状態は機能的なコンテキストに関連する名前がよく付けられます。たとえば、「Yes」、「Female」などです。"
 
-#: ../../widget.rst:26 8563fc16dc564fb8a05142ae1a9d58a3
+#: ../../widget.rst:26 64dfa73108794bbb856570683c5f7036
 msgid ""
 "This method helps finding out the possible values of :attr:`field_value` "
 "in these cases."
 msgstr "このメソッドは、これらのケースで :attr:`field_value` の可能な値を調べるのに役立ちます。"
 
-#: ../../widget.rst 7c19e5305c6d4b82ae5e0469352bec64
-#: af61b55c7317488c8c45f6d367f101a4
+#: ../../widget.rst 2e73fe67fc1b414395d3dea26ad20c98
+#: dc5a3158380c4132ad4797077e5d7678
 msgid "returns"
 msgstr "戻り値："
 
-#: ../../widget.rst:28 e87a6e57a6b14f27a0e8275a906e6b91
+#: ../../widget.rst:28 45fa03f0e657434a81239622089f23c2
 msgid ""
 "a dictionary with the names of 'On' and 'Off' for the *normal* and the "
 "*pressed-down* appearance of button widgets. The following example shows "
 "that the \"selected\" value is \"Male\":"
-msgstr "*normal* の 状態と *pressed-down* 状態のボタンウィジェットの 'On'と 'Off'の名前を持つ辞書。次の例では、「選択された」値は「Male」であることが示されています："
+msgstr ""
+"*normal* の 状態と *pressed-down* 状態のボタンウィジェットの 'On'と "
+"'Off'の名前を持つ辞書。次の例では、「選択された」値は「Male」であることが示されています："
 
-#: ../../widget.rst:36 79845ff1fd1540129129be8a83d5b239
+#: ../../widget.rst:36 9fe7bcffd0374cd1a50696bcf3fe5073
 msgid "New in version 1.22.2"
 msgstr "新機能（バージョン1.22.2で追加）"
 
-#: ../../widget.rst:38 af735e07bf98409ab45dcf27d5f2c919
+#: ../../widget.rst:38 da2588ef61fc4279aff2e818ce2a02b8
 msgid ""
 "Return the value of the \"ON\" state of check boxes and radio buttons. "
 "For check boxes this is always the value \"Yes\". For radio buttons, this"
 " is the value to select / activate the button."
 msgstr "チェックボックスとラジオボタンの「ON」状態の値を返します。チェックボックスの場合、これは常に「Yes」という値です。ラジオボタンの場合、これはボタンを選択/アクティブ化する値です。"
 
-#: ../../widget.rst:40 658f601fa6fe40449c6081314f378841
+#: ../../widget.rst:40 14912718df9d4a98b41f613959614451
 msgid ""
 "the value that sets the button to \"selected\". For non-checkbox, non-"
 "radiobutton fields, always `None` is returned. For check boxes the return"
 " is `True`. For radio buttons this is the value \"Male\" in the following"
 " example:"
-msgstr "ボタンを「選択」に設定する値が返されます。非チェックボックス、非ラジオボタンフィールドの場合、常に `None` が返されます。チェックボックスの場合、戻り値は `True` です。ラジオボタンの場合、次の例では値が「Male」です。"
+msgstr ""
+"ボタンを「選択」に設定する値が返されます。非チェックボックス、非ラジオボタンフィールドの場合、常に `None` "
+"が返されます。チェックボックスの場合、戻り値は `True` です。ラジオボタンの場合、次の例では値が「Male」です。"
 
-#: ../../widget.rst:47 6f15384fe5dd4578afb2bda34735c8fe
+#: ../../widget.rst:47 a3aff4eb0c994783b9eaeb131810ab28
 msgid ""
 "So for check boxes and radio buttons, the recommended method to set them "
 "to \"selected\", or to check the state is the following:"
 msgstr "したがって、チェックボックスとラジオボタンの場合、それらを「選択」または状態を確認するための推奨される方法は次のとおりです。"
 
-#: ../../widget.rst:56 23fc33f1109348bb83bb111a60530872
+#: ../../widget.rst:56 aa21cd2dafd34583809e7db2a3800bc6
 msgid ""
 "After any changes to a widget, this method **must be used** to store them"
 " in the PDF [#f1]_."
 msgstr "ウィジェットに変更が加えられた後、これらの変更をPDFに保存するためにこのメソッドを **使用する必要があります** [#f1]_。"
 
-#: ../../widget.rst:60 43b49d45c7974878b0a7901e050821f9
+#: ../../widget.rst:60 a5159bbdb1da4fadb93c7863178bb30e
 msgid ""
 "Reset the field's value to its default -- if defined -- or remove it. Do "
 "not forget to issue :meth:`update` afterwards."
-msgstr "フィールドの値をデフォルト値にリセットします。デフォルトが定義されている場合、それを削除します。その後、:meth:`update` を実行するのを忘れないでください。"
+msgstr ""
+"フィールドの値をデフォルト値にリセットします。デフォルトが定義されている場合、それを削除します。その後、:meth:`update` "
+"を実行するのを忘れないでください。"
 
-#: ../../widget.rst:64 c2770114c30546ebad3fd23601c4983b
+#: ../../widget.rst:64 1648a663e05d41c3929db829938b5dde
 msgid "Point to the next form field on the page. The last widget returns *None*."
 msgstr "ページ上の次のフォームフィールドを指します。最後のウィジェットは *None* を返します。"
 
-#: ../../widget.rst:68 3e993f2dcd07423486bdcd5cc876f957
+#: ../../widget.rst:68 2ec85357897047d19dea786107abf167
 msgid ""
 "A list of up to 4 floats defining the field's border color. Default value"
 " is *None* which causes border style and border width to be ignored."
-msgstr "フィールドの境界線の色を定義する最大4つの浮動小数点数のリストです。デフォルト値は *None* で、これにより境界線スタイルと境界線の幅が無視されます。"
+msgstr ""
+"フィールドの境界線の色を定義する最大4つの浮動小数点数のリストです。デフォルト値は *None* "
+"で、これにより境界線スタイルと境界線の幅が無視されます。"
 
-#: ../../widget.rst:72 0f25ed6cac14442dbcd5e09087925a12
+#: ../../widget.rst:72 bc3df217e7074e639dae625d2b10e18e
 msgid ""
 "A string defining the line style of the field's border. See "
 ":attr:`Annot.border`. Default is \"s\" (\"Solid\") -- a continuous line. "
 "Only the first character (upper or lower case) will be regarded when "
 "creating a widget."
-msgstr "フィールドの境界線の線スタイルを定義する文字列です。:attr:`Annot.border` を参照してください。デフォルトは \"s\" (\"Solid\") で、連続線です。ウィジェットを作成する際、最初の文字（大文字または小文字）のみが考慮されます。"
+msgstr ""
+"フィールドの境界線の線スタイルを定義する文字列です。:attr:`Annot.border` を参照してください。デフォルトは \"s\" "
+"(\"Solid\") で、連続線です。ウィジェットを作成する際、最初の文字（大文字または小文字）のみが考慮されます。"
 
-#: ../../widget.rst:76 507b245a82d04c64815fb48724ce606d
+#: ../../widget.rst:76 10f22b23b61346af95a00475e5cba728
 msgid "A float defining the width of the border line. Default is 1."
 msgstr "境界線の幅を定義する浮動小数点数です。デフォルトは1です。"
 
-#: ../../widget.rst:80 4e6e998c37ab472cba3b54cf12ee9e6e
+#: ../../widget.rst:80 400d575226e5442fb4fa6e65f00d9071
 msgid ""
 "A list/tuple of integers defining the dash properties of the border line."
 " This is only meaningful if *border_style == \"D\"* and "
 ":attr:`border_color` is provided."
-msgstr "*border_style == \"D\"* であり、:attr:`border_color` が指定されている場合にのみ意味があります。これは、境界線のダッシュプロパティを定義する整数のリスト/タプルです。"
+msgstr ""
+"*border_style == \"D\"* であり、:attr:`border_color` "
+"が指定されている場合にのみ意味があります。これは、境界線のダッシュプロパティを定義する整数のリスト/タプルです。"
 
-#: ../../widget.rst:84 a76e8e40da9344d1bf31c31c6a37ce37
+#: ../../widget.rst:84 af05dd1b8bbe43bfb5c9b75dda5b3dc6
 msgid ""
 "Python sequence of strings defining the valid choices of list boxes and "
 "combo boxes. For these widget types, this property is mandatory and must "
 "contain at least two items. Ignored for other types."
 msgstr "リストボックスとコンボボックスの有効な選択肢を定義するPythonシーケンスの文字列です。これらのウィジェットタイプでは、このプロパティが必須で、少なくとも2つのアイテムを含める必要があります。他のタイプでは無視されます。"
 
-#: ../../widget.rst:88 b1625a3723774a50b14f2aa9db3ab856
+#: ../../widget.rst:88 a00c76a010a742b88ab4084768530638
 msgid ""
 "A mandatory string defining the field's name. No checking for duplicates "
 "takes place."
 msgstr "フィールドの名前を定義する必須の文字列です。重複をチェックしません。"
 
-#: ../../widget.rst:92 3127195603264c87850e2af2a3ea98a1
+#: ../../widget.rst:92 d1ed80624c054759b030e6cdc0944f2d
 msgid ""
 "An optional string containing an \"alternate\" field name. Typically used"
 " for any notes, help on field usage, etc. Default is the field name."
 msgstr "「代替」フィールド名を含むオプションの文字列です。通常、フィールドの使用方法に関するメモ、ヘルプなどに使用されます。デフォルトはフィールド名です。"
 
-#: ../../widget.rst:96 601dcecda6614820a9e9bcf09d5b657f
+#: ../../widget.rst:96 449a69ca75954455a9cb0e32cc3c9364
 msgid "The value of the field."
 msgstr "フィールドの値です。"
 
-#: ../../widget.rst:100 c17930e8ee6c4c2e8cfd8ecbab0c5b8c
+#: ../../widget.rst:100 1bd53d5e8481407fab7435c52a1e3307
 msgid ""
 "An integer defining a large amount of properties of a field. Be careful "
 "when changing this attribute as this may change the field type."
 msgstr "フィールドの多くのプロパティを定義する整数です。この属性を変更する際は注意してください。これはフィールドのタイプを変更する可能性があります。"
 
-#: ../../widget.rst:104 706c010cb27f46b18144d25a6caf7461
+#: ../../widget.rst:104 adf99efa210242edab135bcc5ee2141b
 msgid ""
 "A mandatory integer defining the field type. This is a value in the range"
 " of 0 to 6. It cannot be changed when updating the widget."
 msgstr "フィールドタイプを定義する必須の整数です。これは0から6の範囲の値です。ウィジェットを更新する際に変更できません。"
 
-#: ../../widget.rst:108 372debd706b2406cb4e40bc7fb0edef9
+#: ../../widget.rst:108 7f422b6dc8334a069d233a3bb5f978a6
 msgid "A string describing (and derived from) the field type."
 msgstr "フィールドタイプを説明する文字列（フィールドタイプから派生）。"
 
-#: ../../widget.rst:112 8a3dd5c4f17444dcafd58bf15c31f4ec
+#: ../../widget.rst:112 0cd3f4cffebe42898d8b88cb0ccc16ab
 msgid "A list of up to 4 floats defining the field's background color."
 msgstr "フィールドの背景色を定義する、最大4つの浮動小数点数のリスト。"
 
-#: ../../widget.rst:116 43277c31e46b4cbfaf3719b189cb1511
+#: ../../widget.rst:116 35ce84a0737f40989e86e868621b1a21
 msgid "The caption string of a button-type field."
 msgstr "ボタンタイプのフィールドのキャプション文字列。"
 
-#: ../../widget.rst:120 98e7c64f348b48bda97963278c79431a
+#: ../../widget.rst:120 bc2a9f2095ad4f50b912bf0d22b7a5c6
 msgid "A bool indicating the signing status of a signature field, else *None*."
 msgstr "署名フィールドの署名ステータスを示すブール値。それ以外の場合は *None*。"
 
-#: ../../widget.rst:124 8147413d19ad43b181a2c10a186d764c
+#: ../../widget.rst:124 bee1c959d94e4d808e169597a553d98a
 msgid "The rectangle containing the field."
 msgstr "フィールドを含む矩形。"
 
-#: ../../widget.rst:128 01a72f1b56ef43589777dd567f2775d5
+#: ../../widget.rst:128 b8778e644ca245a4a0aa8647a4da21c5
 msgid ""
 "A list of **1, 3 or 4 floats** defining the text color. Default value is "
 "black (`[0, 0, 0]`)."
 msgstr "テキストの色を定義する、**1、3、または4つの浮動小数点数** のリスト。デフォルト値は黒 (`[0, 0, 0]`)です。"
 
-#: ../../widget.rst:132 6d1fe1d999c94c0b93588fdb31955e24
+#: ../../widget.rst:132 9b5aa97be65b471a86c8ae0654fdc45c
 msgid ""
 "A string defining the font to be used. Default and replacement for "
 "invalid values is *\"Helv\"*. For valid font reference names see the "
 "table below."
-msgstr "使用するフォントを定義する文字列。デフォルトおよび無効な値の置換は *「Helv」* です。有効なフォント参照名については以下の表を参照してください。"
+msgstr ""
+"使用するフォントを定義する文字列。デフォルトおよび無効な値の置換は *「Helv」* "
+"です。有効なフォント参照名については以下の表を参照してください。"
 
-#: ../../widget.rst:136 49863a293f14494080fb59f122ebce36
+#: ../../widget.rst:136 bd5235d4c7e74ab68121194591b40953
 msgid ""
 "A float defining the text :data:`fontsize`. Default value is zero, which "
 "causes PDF viewer software to dynamically choose a size suitable for the "
 "annotation's rectangle and text amount."
-msgstr "テキストの :data:`fontsize` を定義する浮動小数点数。デフォルト値はゼロで、PDFビューアソフトウェアが注釈の矩形とテキストの量に適したサイズを動的に選択します。"
+msgstr ""
+"テキストの :data:`fontsize` "
+"を定義する浮動小数点数。デフォルト値はゼロで、PDFビューアソフトウェアが注釈の矩形とテキストの量に適したサイズを動的に選択します。"
 
-#: ../../widget.rst:140 3e615fb9aa4649ef8df33b022c0bf81a
+#: ../../widget.rst:140 a524304be2e247f28bde99038763949e
 msgid ""
 "An integer defining the maximum number of text characters. PDF viewers "
 "will (should) not accept a longer text."
 msgstr "テキストの最大文字数を定義する整数。PDFビューアは（するはずです）より長いテキストを受け入れません。"
 
-#: ../../widget.rst:144 da49f8127fd34a7a8b73911cb3fff336
+#: ../../widget.rst:144 6a6668580e9d496189abc1a42b14cfad
 msgid ""
 "An integer defining acceptable text types (e.g. numeric, date, time, "
 "etc.). For reference only for the time being -- will be ignored when "
 "creating or updating widgets."
 msgstr "許容可能なテキストタイプを定義する整数（例：数値、日付、時刻など）。現時点では参考用のみで、ウィジェットを作成または更新する際には無視されます。"
 
-#: ../../widget.rst:148 f594570d410d44ab9af841386eb40a96
+#: ../../widget.rst:148 773efaf9982d42138ac16b687454f108
 msgid "The PDF :data:`xref` of the widget."
 msgstr "ウィジェットのPDF :data:`xref`。"
 
 #: ../../widget.rst:152 ../../widget.rst:158 ../../widget.rst:164
-#: ../../widget.rst:170 ../../widget.rst:176 09f88e47d01c46a8bd8c30f50518bccf
-#: 251fdb1aa73547ad83a05fb494b5065f 9c08fa58bc17436abbcd91e3d637d5ea
-#: cdf21c4141314b37a95ba596f879eddb db31d4841537491aaefa5a40cff6c5fb
+#: ../../widget.rst:170 ../../widget.rst:176 3e731c36d75f4f1183bfb792f2924596
+#: bf9e105cd6b442aba892b1a58364b902 d4d4da28574643668ef64daec8c1d5d9
+#: d5064c3219cf41f4823a220e4e1ba896 d7c795e615e24cfc91a4f9468bd8a891
 msgid "New in version 1.16.12"
 msgstr "バージョン1.16.12で新登場"
 
-#: ../../widget.rst:154 97e468fd3c9a42d3817ff98460f2a076
+#: ../../widget.rst:154 fb6f6949bc1d4625b59969aa3ce21ab4
 msgid ""
 "JavaScript text (unicode) for an action associated with the widget, or "
 "*None*. This is the only script action supported for **button type** "
 "widgets."
-msgstr "ウィジェットに関連付けられたアクション用のJavaScriptテキスト（Unicode）、または *None*。これは **ボタンタイプ** のウィジェットに対してサポートされる唯一のスクリプトアクションです。"
+msgstr ""
+"ウィジェットに関連付けられたアクション用のJavaScriptテキスト（Unicode）、または *None*。これは **ボタンタイプ** "
+"のウィジェットに対してサポートされる唯一のスクリプトアクションです。"
 
-#: ../../widget.rst:160 db85c38031b948ba84db4dce753020a0
+#: ../../widget.rst:160 05b7fe456a75403a891ed0e3be9f40eb
 msgid ""
 "JavaScript text (unicode) to be performed when the user types a key-"
 "stroke into a text field or combo box or modifies the selection in a "
 "scrollable list box. This action can check the keystroke for validity and"
 " reject or modify it. *None* if not present."
-msgstr "JavaScriptテキスト（Unicode）は、ユーザーがテキストフィールドまたはコンボボックスにキーストロークを入力するか、スクロール可能なリストボックスの選択を変更するときに実行されるアクションです。このアクションはキーストロークの妥当性をチェックし、拒否または変更することができます。存在しない場合は *None* です。"
+msgstr ""
+"JavaScriptテキスト（Unicode）は、ユーザーがテキストフィールドまたはコンボボックスにキーストロークを入力するか、スクロール可能なリストボックスの選択を変更するときに実行されるアクションです。このアクションはキーストロークの妥当性をチェックし、拒否または変更することができます。存在しない場合は"
+" *None* です。"
 
-#: ../../widget.rst:166 e7dcbfbdc61244b1b58dde29668ce065
+#: ../../widget.rst:166 90086c7d11fd4547a61c10e2fa56ffab
 msgid ""
 "JavaScript text (unicode) to be performed before the field is formatted "
 "to display its current value. This action can modify the field’s value "
 "before formatting. *None* if not present."
-msgstr "このアクションは、フィールドが現在の値を表示するためにフォーマットされる前に、フィールドの値を変更するために実行されるJavaScriptテキスト（Unicode）です。存在しない場合は *None* です。"
+msgstr ""
+"このアクションは、フィールドが現在の値を表示するためにフォーマットされる前に、フィールドの値を変更するために実行されるJavaScriptテキスト（Unicode）です。存在しない場合は"
+" *None* です。"
 
-#: ../../widget.rst:172 f76012ead7934b56ae18cb78ef0b43ad
+#: ../../widget.rst:172 e2ec6c0b481246f5bb4eb2a2f2845db4
 msgid ""
 "JavaScript text (unicode) to be performed when the field’s value is "
 "changed. This action can check the new value for validity. *None* if not "
 "present."
-msgstr "このアクションは、フィールドの値が変更されたときに実行されるJavaScriptテキスト（Unicode）です。このアクションは新しい値の妥当性をチェックすることができます。存在しない場合は *None* です。"
+msgstr ""
+"このアクションは、フィールドの値が変更されたときに実行されるJavaScriptテキスト（Unicode）です。このアクションは新しい値の妥当性をチェックすることができます。存在しない場合は"
+" *None* です。"
 
-#: ../../widget.rst:178 3e6ab496064c4886b072241f113d32cb
+#: ../../widget.rst:178 0280e5cf4d5c4c6d8e0ab0b0f681f13d
 msgid ""
 "JavaScript text (unicode) to be performed to recalculate the value of "
 "this field when that of another field changes. *None* if not present."
-msgstr "バージョン1.16.12で新規追加
-このアクションは、他のフィールドの値が変更されたときに、このフィールドの値を再計算するために実行されるJavaScriptテキスト（Unicode）です。存在しない場合は *None* です。"
+msgstr "バージョン1.16.12で新規追"
 
-#: ../../widget.rst:182 ../../widget.rst:188 c066d66f508c4c11be91da1a0b717035
-#: e685dacc1f42493caec2698b139e7d4d
+#: ../../widget.rst:182 ../../widget.rst:188 016e079815f54dbd8b0e032b44468e69
+#: cd9bedca4ec14ff7b05214d8fece4ba9
 msgid "New in version 1.22.6"
 msgstr "バージョン1.22.6で新規追加"
 
-#: ../../widget.rst:184 581b9fd0ee154cd79613e96afdf708f1
+#: ../../widget.rst:184 9943ab60bd6b4d8c926ac979252c6287
 msgid ""
 "JavaScript text (unicode) to be performed on losing the focus of this "
 "field. *None* if not present."
 msgstr "このフィールドからフォーカスを失ったときに実行されるJavaScriptテキスト（Unicode）です。存在しない場合は *None* です。"
 
-#: ../../widget.rst:190 81ea6020897b4403b9f0f4257668aa9c
+#: ../../widget.rst:190 6f11e5f9192447f98860e77f82f67098
 msgid ""
 "JavaScript text (unicode) to be performed on focusing this field. *None* "
 "if not present."
 msgstr "このフィールドにフォーカスが当たったときに実行されるJavaScriptテキスト（Unicode）です。存在しない場合は *None* です。"
 
-#: ../../widget.rst:194 c539952b8c2549bb92562c5ae312a761
+#: ../../widget.rst:194 907eb74ec26446f0a416ebf3721b5ac4
 msgid "For **adding** or **changing** one of the above scripts,"
 msgstr "上記のいずれかのスクリプトを **追加** または **変更** するには、"
 
-#: ../../widget.rst:195 19dae19015e94c28845bee508e07ef2f
+#: ../../widget.rst:195 944379b893ae49f899ce5bc366c95d6f
 msgid ""
 "just put the appropriate JavaScript source code in the widget attribute. "
 "To **remove** a script, set the respective attribute to *None*."
-msgstr "適切なJavaScriptソースコードをウィジェット属性に配置するだけです。スクリプトを **削除する** には、該当する属性を *None* に設定します。"
+msgstr ""
+"適切なJavaScriptソースコードをウィジェット属性に配置するだけです。スクリプトを **削除する** には、該当する属性を *None* "
+"に設定します。"
 
-#: ../../widget.rst:198 222c09dcaae24cefb5b551d2c4f8eb58
+#: ../../widget.rst:198 550c4cf63c82444599de4cdcbfbdf512
 msgid "Button fields only support :attr:`script`."
-msgstr "ボタンフィールドは :attr:`script` をサポートしています。
-"
+msgstr "ボタンフィールドは :attr:`script` をサポートしています"
 
-#: ../../widget.rst:199 11a7751c02f74c439d6085490a17668e
+#: ../../widget.rst:199 942e9b821bcc4651970067774feab103
 msgid "Other script entries will automatically be set to *None*."
 msgstr "他のスクリプトエントリは自動的に *None* に設定されます。"
 
-#: ../../widget.rst:201 8fc6712cd2984a6dac896b9d68274c88
+#: ../../widget.rst:201 cf587af4c22a4e98abbcdf054a24e3d4
 msgid ""
 "It is worthwhile to look at `this "
 "<https://experienceleague.adobe.com/docs/experience-manager-"
@@ -344,13 +382,17 @@ msgid ""
 "example, if you want to add a text field representing a date, you may "
 "want to store the following scripts. They will ensure pattern-compatible "
 "date formats and display date pickers in supporting viewers::"
-msgstr "Adobeの標準スクリプトに関する多くの情報が含まれている `この <https://experienceleague.adobe.com/docs/experience-manager-learn/assets/FormsAPIReference.pdf?lang=en>`_ マニュアルを確認する価値があります。たとえば、日付を表すテキストフィールドを追加する場合、次のスクリプトを保存することができます。これにより、パターン互換の日付形式が確保され、サポートされているビューアで日付ピッカーが表示されます。"
+msgstr ""
+"Adobeの標準スクリプトに関する多くの情報が含まれている `この "
+"<https://experienceleague.adobe.com/docs/experience-manager-"
+"learn/assets/FormsAPIReference.pdf?lang=en>`_ "
+"マニュアルを確認する価値があります。たとえば、日付を表すテキストフィールドを追加する場合、次のスクリプトを保存することができます。これにより、パターン互換の日付形式が確保され、サポートされているビューアで日付ピッカーが表示されます。"
 
-#: ../../widget.rst:213 69800ef6d2da459bab98e91136f6e472
+#: ../../widget.rst:213 1ab365a4980b45a7a0479e3cc26a90e4
 msgid "Standard Fonts for Widgets"
 msgstr "ウィジェット用の標準フォント"
 
-#: ../../widget.rst:214 726923a7886a4a128ecab5055d826d1b
+#: ../../widget.rst:214 559ed86a0b9d46bbbc09422b8e5efd2f
 msgid ""
 "Widgets use their own resources object */DR*. A widget resources object "
 "must at least contain a */Font* object. Widget fonts are independent from"
@@ -360,173 +402,179 @@ msgid ""
 " choose one in the first table column (upper and lower case supported), "
 "**or** one of the already existing form fonts. In the latter case, "
 "spelling must exactly match."
-msgstr "ウィジェットは独自のリソースオブジェクト */DR* を使用します。ウィジェットのリソースオブジェクトには、少なくとも */Font* オブジェクトを含める必要があります。ウィジェットフォントはページフォントとは独立しています。現在、以下の固定参照名を使用して、14のPDFベースフォントをサポートしています。また、既存のフィールドフォントの名前でもかまいません。新しいウィジェットまたは変更されたウィジェットのテキストフォントを指定する際には、最初の表の列（大文字と小文字がサポートされています）から1つを選択するか、既存のフォームフォントの1つを選択してください。後者の場合、スペルは厳密に一致する必要があります。"
+msgstr ""
+"ウィジェットは独自のリソースオブジェクト */DR* を使用します。ウィジェットのリソースオブジェクトには、少なくとも */Font* "
+"オブジェクトを含める必要があります。ウィジェットフォントはページフォントとは独立しています。現在、以下の固定参照名を使用して、14のPDFベースフォントをサポートしています。また、既存のフィールドフォントの名前でもかまいません。新しいウィジェットまたは変更されたウィジェットのテキストフォントを指定する際には、最初の表の列（大文字と小文字がサポートされています）から1つを選択するか、既存のフォームフォントの1つを選択してください。後者の場合、スペルは厳密に一致する必要があります。"
 
-#: ../../widget.rst:216 738b22a889604dfdb44837b21d824638
+#: ../../widget.rst:216 b4036245f49d44de8621703603697869
 msgid ""
 "To find out already existing field fonts, inspect the list "
 ":attr:`Document.FormFonts`."
 msgstr "既存のフィールドフォントを見つけるには、リスト :attr:`Document.FormFonts` を調べてください。"
 
-#: ../../widget.rst:219 fa90dd8e7aa84546b8893b4a66dc3809
+#: ../../widget.rst:219 b4bb97d90c77445b90ab6517713ce958
 msgid "**Reference**"
 msgstr "**参照**"
 
-#: ../../widget.rst:219 f70fa76c43884ee38ee895d430121050
+#: ../../widget.rst:219 bd710367495245b7821a19a0ff3b66ce
 msgid "**Base14 Fontname**"
 msgstr "**Base14フォント名**"
 
-#: ../../widget.rst:221 de47c983c0c54a5680de8daf36e9dd24
+#: ../../widget.rst:221 5aea67b8319044a587b17017fcbf0259
 msgid "CoBI"
 msgstr ""
 
-#: ../../widget.rst:221 8c323a2e853d453d94966fd19e124405
+#: ../../widget.rst:221 5583018582bb4c10b626e95982ef288c
 msgid "Courier-BoldOblique"
 msgstr ""
 
-#: ../../widget.rst:222 43ccefc4e3f4414c9ce29ff26ed99154
+#: ../../widget.rst:222 16a0e62948f543319559b47b6278311d
 msgid "CoBo"
 msgstr ""
 
-#: ../../widget.rst:222 7eb23b084036401891d5e0f787e9e700
+#: ../../widget.rst:222 10d9de4b1a9b4663bfefee98727827ef
 msgid "Courier-Bold"
 msgstr ""
 
-#: ../../widget.rst:223 76e3a560aa3c44e6ab1af6c56fbcee70
+#: ../../widget.rst:223 f479501e3e9a47c1802b34d8b9e6699c
 msgid "CoIt"
 msgstr ""
 
-#: ../../widget.rst:223 cd5da858db7e4f8ea4e73e747ea02ae8
+#: ../../widget.rst:223 29da4c947fe24d1faabf8de6752f425b
 msgid "Courier-Oblique"
 msgstr ""
 
-#: ../../widget.rst:224 5789b444a2a945ef95c54671f616d93a
+#: ../../widget.rst:224 30c45e60d39b43df9f4d3406eaa02e42
 msgid "Cour"
 msgstr ""
 
-#: ../../widget.rst:224 324ab8202dd1404892d07f0cf9896b0d
+#: ../../widget.rst:224 1b045afe87f949379f49c2ee1f3ed577
 msgid "Courier"
 msgstr ""
 
-#: ../../widget.rst:225 632c37fb67d7421789f95c6ae01207cc
+#: ../../widget.rst:225 ba3f2fafbb784c2d9327aadb6370321e
 msgid "HeBI"
 msgstr ""
 
-#: ../../widget.rst:225 e1b77a0403eb47be88e4b40a24bf6cf6
+#: ../../widget.rst:225 eb2c0a0dace54e62bc003b926138c296
 msgid "Helvetica-BoldOblique"
 msgstr ""
 
-#: ../../widget.rst:226 81772a4ee9964555b7541437a0ce8a8c
+#: ../../widget.rst:226 d0dc17a6d03e4896b5e2c6e556686c84
 msgid "HeBo"
 msgstr ""
 
-#: ../../widget.rst:226 c94e273d6d8947cf9d5faf5f4217ca52
+#: ../../widget.rst:226 47255e8a41944126925e8ef6aebd3b3e
 msgid "Helvetica-Bold"
 msgstr ""
 
-#: ../../widget.rst:227 ffde27b79447407c864f304667a3c810
+#: ../../widget.rst:227 0e7308fa8d6e47e185271f18396a5cc1
 msgid "HeIt"
 msgstr ""
 
-#: ../../widget.rst:227 8546215cf59e4cdea79ff9adcb5c6653
+#: ../../widget.rst:227 407651bbc03746bdac90f38420216bfb
 msgid "Helvetica-Oblique"
 msgstr ""
 
-#: ../../widget.rst:228 6458cc577ac74dbca9d6134635e38988
+#: ../../widget.rst:228 c256407a30c048c49bb37bf93f41172c
 msgid "Helv"
 msgstr ""
 
-#: ../../widget.rst:228 8ebe3e13d71a4c54abba9e1a9e9c695b
+#: ../../widget.rst:228 3a993c02c4584cb78536406efdb271d8
 msgid "Helvetica **(default)**"
 msgstr "Helvetica **(デフォルト)**"
 
-#: ../../widget.rst:229 31119ad779dc461c80b8dde7eb0ccaee
+#: ../../widget.rst:229 062bfc7a83f649278ddbe64f771b357f
 msgid "Symb"
 msgstr ""
 
-#: ../../widget.rst:229 9c4482b892594654b8441c5bd9c54691
+#: ../../widget.rst:229 8abfa882298947da84cd71b55a78f354
 msgid "Symbol"
 msgstr ""
 
-#: ../../widget.rst:230 ebf447cb8e5c4b45a2de9803767e0eac
+#: ../../widget.rst:230 dbee66d319314844833bda0fda364d22
 msgid "TiBI"
 msgstr ""
 
-#: ../../widget.rst:230 a9e8b58172fe4c08a9b7f8a06609bb83
+#: ../../widget.rst:230 6e10fc902cb14cc38dc7f000433e0a84
 msgid "Times-BoldItalic"
 msgstr ""
 
-#: ../../widget.rst:231 53f752852444421da5569759bbbf8602
+#: ../../widget.rst:231 9cfafd901a524ba6ae6fde52595482b2
 msgid "TiBo"
 msgstr ""
 
-#: ../../widget.rst:231 f03b6fc3064c4fcc8dea77199dd40cc8
+#: ../../widget.rst:231 d2e330f04e8d47d79ccc68301db89b6c
 msgid "Times-Bold"
 msgstr ""
 
-#: ../../widget.rst:232 77723ee334e74da1ac51d4cd8e9aba05
+#: ../../widget.rst:232 846ceb4e80a341dda1e87b8805a6a21b
 msgid "TiIt"
 msgstr ""
 
-#: ../../widget.rst:232 7a316e0649804e24a9ab00e72d0c19d3
+#: ../../widget.rst:232 8d821152ef884b76a9e07a9cda51c711
 msgid "Times-Italic"
 msgstr ""
 
-#: ../../widget.rst:233 e824a5d04e7c44229718202c1cd4c448
+#: ../../widget.rst:233 3cc46959482f4224970411fa59f6f7e6
 msgid "TiRo"
 msgstr ""
 
-#: ../../widget.rst:233 4bf11073f56b4595912342a9c5dcf725
+#: ../../widget.rst:233 b7902e93c03c4b59bbcb37dc63c4cadf
 msgid "Times-Roman"
 msgstr ""
 
-#: ../../widget.rst:234 2bf2ccc8727e495388a145087878030e
+#: ../../widget.rst:234 8e7ccc19d9c5471a823ba0a182f2a9e3
 msgid "ZaDb"
 msgstr ""
 
-#: ../../widget.rst:234 a5304bdf121647159e25a9864e7989ee
+#: ../../widget.rst:234 c79a79c07d4f40ef9ed60b84c529d12d
 msgid "ZapfDingbats"
 msgstr ""
 
-#: ../../widget.rst:237 40cbf502e32d4643bb0e523484963ad7
+#: ../../widget.rst:237 357d21d23bc34bd9b4c9328ac10c404a
 msgid ""
 "You are generally free to use any font for every widget. However, we "
 "recommend using *ZaDb* (\"ZapfDingbats\") and :data:`fontsize` 0 for "
 "check boxes: typical viewers will put a correctly sized tickmark in the "
 "field's rectangle, when it is clicked."
-msgstr "一般的に、すべてのウィジェットに任意のフォントを使用することができます。ただし、チェックボックスには *ZaDb* （「ZapfDingbats」）フォントと :data:`fontsize`  0を使用することをお勧めします。典型的なビューアは、フィールドの四角形をクリックすると正しくサイズ調整されたチェックマークを配置します。"
+msgstr ""
+"一般的に、すべてのウィジェットに任意のフォントを使用することができます。ただし、チェックボックスには *ZaDb* "
+"（「ZapfDingbats」）フォントと :data:`fontsize`  "
+"0を使用することをお勧めします。典型的なビューアは、フィールドの四角形をクリックすると正しくサイズ調整されたチェックマークを配置します。"
 
-#: ../../widget.rst:240 f0e4ad7f97fb4903b61d12931ebeb8da
+#: ../../widget.rst:240 68e8e28f85a74b22ad732644778eaa78
 msgid "Supported Widget Types"
 msgstr "対応ウィジェットの種類"
 
-#: ../../widget.rst:241 9329deda801843a688c1fee0072c7930
+#: ../../widget.rst:241 ad5de62e80ba4d49a81c6d23eafc768f
 msgid ""
 "PyMuPDF supports the creation and update of many, but not all widget "
 "types."
 msgstr "PyMuPDFは、多くのウィジェットタイプの作成および更新をサポートしていますが、すべてのウィジェットタイプには対応していません。"
 
-#: ../../widget.rst:243 aa0b983503e84cc4baa0946227347881
+#: ../../widget.rst:243 2f7449f1c01d4861b5588921e0907364
 msgid "text (`PDF_WIDGET_TYPE_TEXT`)"
 msgstr "テキスト（`PDF_WIDGET_TYPE_TEXT`）"
 
-#: ../../widget.rst:244 175d9782adc948caaa43e972c2acf7fc
+#: ../../widget.rst:244 355be1f849134c5cac90109f61532cdd
 msgid "push button (`PDF_WIDGET_TYPE_BUTTON`)"
 msgstr "プッシュボタン（`PDF_WIDGET_TYPE_BUTTON`）"
 
-#: ../../widget.rst:245 0d8867b1d924421883a40b2ade39bf1a
+#: ../../widget.rst:245 79dbec048e5647eba22c1bc1969ff169
 msgid "check box (`PDF_WIDGET_TYPE_CHECKBOX`)"
 msgstr "チェックボックス（`PDF_WIDGET_TYPE_CHECKBOX`）"
 
-#: ../../widget.rst:246 3a06d9eca3064b49b58ca342ed72738d
+#: ../../widget.rst:246 9418faee22534a43a06237bf8ea4fe8f
 msgid "combo box (`PDF_WIDGET_TYPE_COMBOBOX`)"
 msgstr "コンボボックス（`PDF_WIDGET_TYPE_COMBOBOX`）"
 
-#: ../../widget.rst:247 dfa573c8803f4f30bbd440bb0d157a8a
+#: ../../widget.rst:247 84500135a03f474890dd88fc83149444
 msgid "list box (`PDF_WIDGET_TYPE_LISTBOX`)"
 msgstr "リストボックス（`PDF_WIDGET_TYPE_LISTBOX`）"
 
-#: ../../widget.rst:248 0a405238fcb5486080bf74b2f9c1954b
+#: ../../widget.rst:248 ae3905520c584ce2bff7bb3ce69230c7
+#, fuzzy
 msgid ""
 "radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently "
 "support the **creation** of groups of (interconnected) radio buttons, "
@@ -535,29 +583,34 @@ msgid ""
 "However: consistently selecting (or unselecting) a radio button is "
 "supported. This includes correctly setting the value maintained in the "
 "owning button group. Selecting a radio button may be done by either "
-"assigning `True` or `field.on_sate()` to the field value. **De-"
+"assigning `True` or `field.on_state()` to the field value. **De-"
 "selecting** the button should be done assigning `False`."
-msgstr "ラジオボタン（`PDF_WIDGET_TYPE_RADIOBUTTON`）：PyMuPDFは現在、ラジオボタンのグループ（相互に接続された）の **作成** をサポートしていません。つまり、1つを設定すると、グループ内の他のボタンが自動的に設定解除されるような状態を作成することはできません。また、ウィジェットオブジェクトはボタングループの存在を反映しません。ただし、ラジオボタンを一貫して選択（または選択解除）することはサポートされています。これには、所属するボタングループで維持される値を正しく設定することも含まれます。ラジオボタンを選択するには、フィールドの値に `True`  または `field.on_state()` を割り当てることができます。ボタンの選択解除は、`False` を割り当てることによって行う必要があります。"
+msgstr ""
+"ラジオボタン（`PDF_WIDGET_TYPE_RADIOBUTTON`）：PyMuPDFは現在、ラジオボタンのグループ（相互に接続された）の "
+"**作成** "
+"をサポートしていません。つまり、1つを設定すると、グループ内の他のボタンが自動的に設定解除されるような状態を作成することはできません。また、ウィジェットオブジェクトはボタングループの存在を反映しません。ただし、ラジオボタンを一貫して選択（または選択解除）することはサポートされています。これには、所属するボタングループで維持される値を正しく設定することも含まれます。ラジオボタンを選択するには、フィールドの値に"
+" `True`  または `field.on_state()` を割り当てることができます。ボタンの選択解除は、`False` "
+"を割り当てることによって行う必要があります。"
 
-#: ../../widget.rst:249 ae9c29a48b014dcbbb0594cee0ec02f1
+#: ../../widget.rst:249 50b4f7967e234a11b361e63e5a397e81
 msgid "signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only**."
 msgstr "署名（`PDF_WIDGET_TYPE_SIGNATURE`）は **読み取り専用です** 。"
 
-#: ../../widget.rst:252 6244168896e04b3098f26475a1c6c65c
+#: ../../widget.rst:252 cd400a6c6e444d26941c716d168d044a
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../widget.rst:253 4d01f81401ef4370b15fc4bf59baf222
+#: ../../widget.rst:253 098ca524e2834e748aa7b250096ce3c4
 msgid ""
 "If you intend to re-access a new or updated field (e.g. for making a "
 "pixmap), make sure to reload the page first. Either close and re-open the"
 " document, or load another page first, or simply do `page = "
 "doc.reload_page(page)`."
-msgstr "新しいまたは更新されたフィールドに再アクセスする意図がある場合（たとえば、ピクセルマップを作成する場合）、まずページを再読み込むことを確認してください。文書を閉じて再度開くか、別のページを読み込むか、または単に `page = doc.reload_page(page)` を実行してください"
+msgstr ""
+"新しいまたは更新されたフィールドに再アクセスする意図がある場合（たとえば、ピクセルマップを作成する場合）、まずページを再読み込むことを確認してください。文書を閉じて再度開くか、別のページを読み込むか、または単に"
+" `page = doc.reload_page(page)` を実行してください"
 
-#: ../../footer.rst:-1 7417dfb2c90a46e7ae51a3ff49db069b
+#: ../../footer.rst:-1 87f292f150e54e3b9aa089577df6a978
 msgid "Discord logo"
 msgstr ""
-
-
 

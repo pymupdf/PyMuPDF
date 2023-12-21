@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2023-12-21 13:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,190 +19,230 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 cd92fc27174e4dd9a51445692def7eec
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 fe4f516b0fa34f22b1ab4f4c01df960e
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 1b44c575d0374b449e1562960af0f348
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../story-class.rst:7 648a58ffe2024ed2b2ebcdaca385babd
+#: ../../story-class.rst:7 1b8487ff5d3140ce9b008285e168c912
 msgid "Story"
 msgstr "Story (ストーリー)"
 
-#: ../../story-class.rst:11 46f749ddb38642ff9db86f8303c71828
+#: ../../story-class.rst:11 b283284ea4044b93979c985d4bcaaf33
 msgid "New in v1.21.0"
 msgstr "バージョン1.21.0で新規追加"
 
-#: ../../story-class.rst:14 1df20f45244b478da8fdcdf22c757093
+#: ../../story-class.rst:14 2bce12c0bbf94b1998083cbd662450bc
 msgid "**Method / Attribute**"
 msgstr "**メソッド / 属性**"
 
-#: ../../story-class.rst:14 8e53bf6907ff4dbcbe375efbfb7e0726
+#: ../../story-class.rst:14 dfe5cd0d574b40fd84fc8dd031ff5429
 msgid "**Short Description**"
 msgstr "**簡単な説明**"
 
-#: ../../story-class.rst:16 68a9cd16d50446e99f80fc86a9a4e03c
+#: ../../story-class.rst:16 56d2236412fe4c598ca417f4fde069c2
 msgid ":meth:`Story.reset`"
 msgstr ""
 
-#: ../../story-class.rst:16 7af66a02f8b944afaa2569b1e6b9349a
+#: ../../story-class.rst:16 9622fe1f37d949059e2a3c47aa749f32
 msgid "\"rewind\" story output to its beginning"
 msgstr "ストーリーの出力を先頭に巻き戻す"
 
-#: ../../story-class.rst:17 4e7c95983e7240b581efe277a99f702b
+#: ../../story-class.rst:17 232d3d9288e94506a7ffedd2ebffc760
 msgid ":meth:`Story.place`"
 msgstr ""
 
-#: ../../story-class.rst:17 21036e0eaf1a4f00ae1e3e7d4702a8cc
+#: ../../story-class.rst:17 75e78ccc601d4fe7877c0e6a5f5c259d
 msgid "compute story content to fit in provided rectangle"
 msgstr "指定された長方形に収まるストーリーのコンテンツを計算"
 
-#: ../../story-class.rst:18 f6f11f719fdc47cb9b2b6590a8574e13
+#: ../../story-class.rst:18 5a4faffee47c42a39067ffd232d97f41
 msgid ":meth:`Story.draw`"
 msgstr ""
 
-#: ../../story-class.rst:18 7603d322fdcd4f7ab8c32c3fbc34a283
+#: ../../story-class.rst:18 570f0376c08648ba954d55cfb8b6f65d
 msgid "write the computed content to current page"
 msgstr "計算されたコンテンツを現在のページに書き込む"
 
-#: ../../story-class.rst:19 b3f7fc6a4f0d4edbb55b1a921a3ae5b2
+#: ../../story-class.rst:19 ba6f1d894e5f46768df83dffabc1fd04
 msgid ":meth:`Story.element_positions`"
 msgstr ""
 
-#: ../../story-class.rst:19 f5847b86f9c04539b3da44b402a02b1b
+#: ../../story-class.rst:19 89156bfd89174f35a6f2b1195664c9d7
 msgid "callback function logging currently processed story content"
 msgstr "現在処理中のストーリーコンテンツを記録するコールバック関数"
 
-#: ../../story-class.rst:20 0ddda4e8df0b4b6f96e637239205491f
+#: ../../story-class.rst:20 f90f71641e554faeb04f4101b9eda918
 msgid ":attr:`Story.body`"
 msgstr ""
 
-#: ../../story-class.rst:20 20e4aeac684945a6a4566ff14c8f84a0
+#: ../../story-class.rst:20 a7ec7c00253e43fda529ee312be02b45
 msgid "the story's underlying :htmlTag:`body`"
 msgstr "ストーリーの基本となる :htmlTag:`body`"
 
-#: ../../story-class.rst:21 dfa8bf7c96f64efbb18a5226edebefd4
+#: ../../story-class.rst:21 3ef6dca451bf44f8bfdc09d28bbfbea3
 msgid ":meth:`Story.write`"
 msgstr ""
 
-#: ../../story-class.rst:21 c476f20892574edfafd085718d348e6e
+#: ../../story-class.rst:21 d946672c6de4485db3b84962a1bd72d1
 msgid "places and draws Story to a DocumentWriter"
 msgstr "ストーリーを :ref:`DocumentWriter` に配置して描画します"
 
-#: ../../story-class.rst:22 09f5f3deee484a6e9c480edc06b66ab6
+#: ../../story-class.rst:22 10542a0f668a44129d607b5eebf147f1
 msgid ":meth:`Story.write_stabilized`"
 msgstr ""
 
-#: ../../story-class.rst:22 07ed3f03256d474f8d637f001cfe930d
+#: ../../story-class.rst:22 fe2b3d62a2b44f84805dfb613950c444
 msgid "iterative layout of html content to a DocumentWriter"
 msgstr "HTMLコンテンツを :ref:`DocumentWriter` に反復的にレイアウトします"
 
-#: ../../story-class.rst:23 f01f18b9224848a6a1c8e409db15afe6
+#: ../../story-class.rst:23 3cbcf490ef6b4bbd9e7bfa06d9ae385c
 msgid ":meth:`Story.write_with_links`"
 msgstr ""
 
-#: ../../story-class.rst:23 443501f73dd34923b8990814f5fb83bf
+#: ../../story-class.rst:23 99e0413148fd4d169fd9422349efa717
 msgid "like `write()` but also creates PDF links"
 msgstr "`write()` と同様ですが、PDFリンクも作成します"
 
-#: ../../story-class.rst:24 28a5dcb69bb544aea386d3abd0e06544
+#: ../../story-class.rst:24 c756b44acac54d268cdba7e6368ce013
 msgid ":meth:`Story.write_stabilized_with_links`"
 msgstr ""
 
-#: ../../story-class.rst:24 29a610de38b546919007b8662508c637
+#: ../../story-class.rst:24 82c20435d1854805b4ff81d0346640bf
 msgid "like `write_stabilized()` but also creates PDF links"
 msgstr "`write_stabilized()` と同様ですが、PDFリンクも作成します"
 
-#: ../../story-class.rst:27 85b945cb00fd4900b994d5a2800fc80e
+#: ../../story-class.rst:25 068bc9b29c944da9958867c3845cf9b9
+msgid ":meth:`Story.fit`"
+msgstr ""
+
+#: ../../story-class.rst:25 ../../story-class.rst:257
+#: 3423149ba6014c768c86b10c78744122 6ac1708554d544a9ab75ac46b213ed2a
+msgid "Finds optimal rect that contains the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:26 b08f3588114843fd8dcf819c736b3144
+msgid ":meth:`Story.fit_scale`"
+msgstr ""
+
+#: ../../story-class.rst:27 1112b8618a314069a0ab321605b5db01
+msgid ":meth:`Story.fit_height`"
+msgstr ""
+
+#: ../../story-class.rst:28 48b1489fff0d4d119fd6a9b7361435cf
+msgid ":meth:`Story.fit_width`"
+msgstr ""
+
+#: ../../story-class.rst:31 8a1d0f8d96db4fec96598b4a8d60bf22
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../story-class.rst:33 1ba3c88cf787415c96d48aef52d36b00
+#: ../../story-class.rst:37 6772787b4e6440ab802b96f532f75f42
 msgid ""
 "Create a **story**, optionally providing HTML and CSS source. The HTML is"
 " parsed, and held within the Story as a DOM (Document Object Model)."
-msgstr "**ストーリー** を作成します。オプションでHTMLとCSSのソースを提供できます。HTMLは解析され、ストーリー内でDOM（ドキュメントオブジェクトモデル）として保持されます。"
+msgstr ""
+"**ストーリー** "
+"を作成します。オプションでHTMLとCSSのソースを提供できます。HTMLは解析され、ストーリー内でDOM（ドキュメントオブジェクトモデル）として保持されます。"
 
-#: ../../story-class.rst:36 d74a017e0a9443b4a9e3da04efdc29a4
+#: ../../story-class.rst:40 0350bb56993d4afcb88f6a00718f7c66
 msgid ""
 "This structure may be modified: content (text, images) may be added, "
 "copied, modified or removed by using methods of the :ref:`Xml` class."
 msgstr "この構造は変更できます。テキスト、画像などのコンテンツは、:ref:`Xml` クラスのメソッドを使用して追加、コピー、変更、または削除できます。"
 
-#: ../../story-class.rst:39 b598eb4336d847d7b563d7b3347490e1
+#: ../../story-class.rst:43 d356e6d65d4d4af7ab80a02c5fae6a0a
 msgid ""
 "When finished, the **story** can be written to any device; in typical "
 "usage the device may be provided by a :ref:`DocumentWriter` to make new "
 "pages."
-msgstr "完了したら、**ストーリー** を任意のデバイスに書き込むことができます。通常の使用法では、デバイスは新しいページを生成するために :ref:`DocumentWriter` によって提供されます。"
+msgstr ""
+"完了したら、**ストーリー** を任意のデバイスに書き込むことができます。通常の使用法では、デバイスは新しいページを生成するために "
+":ref:`DocumentWriter` によって提供されます。"
 
-#: ../../story-class.rst:42 1c26f0a7463e4f139bcc81ce116aae6f
+#: ../../story-class.rst:46 7267d7c9870f40eca61d9d5824ff16f6
 msgid "Here are some general remarks:"
 msgstr "以下は一般的な注意事項です："
 
-#: ../../story-class.rst:44 8904d4b4fa024699ba7713861c0bb20d
+#: ../../story-class.rst:48 c43f94f4f7714573a43b32a9564b845d
 msgid ""
 "The :ref:`Story` constructor parses and validates the provided HTML to "
 "create the DOM."
 msgstr ":ref:`Story` コンストラクタは提供されたHTMLを解析し、検証してDOMを作成します。"
 
-#: ../../story-class.rst:45 707417cf6d6c4df0b12854ab6d5b691d
+#: ../../story-class.rst:49 1a73444e1ccc47a4b69728315e109c4a
 msgid ""
 "PyMuPDF provides a number of ways to manipulate the HTML source by "
 "providing access to the *nodes* of the underlying DOM. Documents can be "
 "completely built from ground up programmatically, or the existing DOM can"
 " be modified pretty arbitrarily. For details of this interface, please "
 "see the :ref:`Xml` class."
-msgstr "PyMuPDFは、基本的なDOMのノードへのアクセスを提供することでHTMLソースを操作する方法をいくつか提供しています。文書は完全にプログラム的に構築することも、既存のDOMをかなり任意に変更することもできます。このインターフェースの詳細については、:ref:`Xml` クラスをご覧ください。"
+msgstr ""
+"PyMuPDFは、基本的なDOMのノードへのアクセスを提供することでHTMLソースを操作する方法をいくつか提供しています。文書は完全にプログラム的に構築することも、既存のDOMをかなり任意に変更することもできます。このインターフェースの詳細については、:ref:`Xml`"
+" クラスをご覧ください。"
 
-#: ../../story-class.rst:50 349526eb712d41e590804ce050c890fa
+#: ../../story-class.rst:54 fcdc1792ab834c7ba1e0268329dc10ca
 msgid ""
 "If no (or no more) changes to the DOM are required, the story is ready to"
 " be laid out and to be fed to a series of devices (typically devices "
 "provided by a :ref:`DocumentWriter` to produce new pages)."
-msgstr "DOMへの変更が必要ない（またはもう必要ない）場合、ストーリーはレイアウトが可能であり、新しいページを生成するために通常は :ref:`DocumentWriter` によって提供されるデバイスに供給する準備ができています。"
+msgstr ""
+"DOMへの変更が必要ない（またはもう必要ない）場合、ストーリーはレイアウトが可能であり、新しいページを生成するために通常は "
+":ref:`DocumentWriter` によって提供されるデバイスに供給する準備ができています。"
 
-#: ../../story-class.rst:53 f674deb512e64b2ab3b2fc21b02f83f6
+#: ../../story-class.rst:57 165f5cc4d229434eb8bfeda553573e35
 msgid ""
 "The next step is to place the story and write it out. This can either be "
 "done directly, by looping around calling `place()` and `draw()`, or "
 "alternatively, the looping can handled for you using the `write()` or "
 "`write_stabilised()` methods. Which method you choose is largely a matter"
 " of taste."
-msgstr "次のステップは、ストーリーを配置して書き出すことです。これは、直接行うこともできます（`place()` と `draw()` を呼び出すことでループ処理することで）、または代替として `write()` または `write_stabilised()` メソッドを使用しても、ループ処理を自動化できます。どの方法を選択するかは主に好みの問題です。"
+msgstr ""
+"次のステップは、ストーリーを配置して書き出すことです。これは、直接行うこともできます（`place()` と `draw()` "
+"を呼び出すことでループ処理することで）、または代替として `write()` または `write_stabilised()` "
+"メソッドを使用しても、ループ処理を自動化できます。どの方法を選択するかは主に好みの問題です。"
 
-#: ../../story-class.rst:59 7597776a5f304800b2e9c63752503d80
+#: ../../story-class.rst:63 7e372fa215f342be9b7f650ed9e746f6
 msgid "To work in the first of these styles, the following loop should be used:"
 msgstr "最初のスタイルで作業するには、次のループを使用する必要があります："
 
-#: ../../story-class.rst:61 fe103289c4fe482e90d6fc29647a96dd
+#: ../../story-class.rst:65 ef4494da4ae9460a8db8e90fdc2ee887
 msgid ""
 "Obtain a suitable device to write to; typically by requesting a new, "
 "empty page from a :ref:`DocumentWriter`."
 msgstr "適切なデバイスを取得します。通常、:ref:`DocumentWriter` から新しい空のページを要求することで取得します。"
 
-#: ../../story-class.rst:64 b2b35b7897db4faa8075c8f93e11b116
+#: ../../story-class.rst:68 c57b8e7c5ca0486d84806bb063c392af
 msgid ""
 "Determine one or more rectangles on the page, that should receive "
 "**story** data. Note that not every page needs to have the same set of "
 "rectangles."
-msgstr "ページ上に **ストーリー** データを受け取る必要がある1つまたは複数の長方形を決定します。すべてのページが同じ長方形セットを持つ必要はないことに注意してください。"
+msgstr ""
+"ページ上に **ストーリー** "
+"データを受け取る必要がある1つまたは複数の長方形を決定します。すべてのページが同じ長方形セットを持つ必要はないことに注意してください。"
 
-#: ../../story-class.rst:67 ac72b94a47224662a43bedd2eeec3482
+#: ../../story-class.rst:71 b83faca32bf24e678a495d96a50a2b4a
 msgid ""
 "Pass each rectangle to the **story** to place it, learning what part of "
 "that rectangle has been filled, and whether there is more story data that"
 " did not fit. This step can be repeated several times with adjusted "
 "rectangles until the caller is happy with the results."
-msgstr "各長方形を **ストーリー** に渡して配置し、その長方形のどの部分が埋まったか、また収まらなかったストーリーデータがあるかを学びます。このステップは、調整された長方形で何度も繰り返すことができ、呼び出し元が結果に満足するまで続けることができます。"
+msgstr ""
+"各長方形を **ストーリー** "
+"に渡して配置し、その長方形のどの部分が埋まったか、また収まらなかったストーリーデータがあるかを学びます。このステップは、調整された長方形で何度も繰り返すことができ、呼び出し元が結果に満足するまで続けることができます。"
 
-#: ../../story-class.rst:72 70a83b8307d24c198557152a2ffaeab8
+#: ../../story-class.rst:76 9fad92be6c2f46b79cb58e07e5317379
 msgid ""
 "Optionally, at this point, we can request details of where interesting "
 "items have been placed, by calling the `element_positions()` method. "
@@ -212,77 +252,90 @@ msgid ""
 ":htmlTag:`id`), or if their `href` attribute is not `None` (responding to"
 " HTML tag :htmlTag:`href`). This can conveniently be used for automatic "
 "generation of a Table of Contents, an index of images or the like."
-msgstr "任意で、この段階で `element_positions()` メソッドを呼び出して、興味深いアイテムが配置された場所の詳細をリクエストすることができます。アイテムは、整数の `heading` 属性がゼロでない場合（:htmlTag:`h1` - :htmlTag:`h6`）、id属性がNoneでない場合（:htmlTag:`id` に対応）、またはhref属性がNoneでない場合（:htmlTag:`href` に対応）に興味深いと見なされます。これは、目次、画像の索引などの自動生成に便利に使用できます。"
+msgstr ""
+"任意で、この段階で `element_positions()` "
+"メソッドを呼び出して、興味深いアイテムが配置された場所の詳細をリクエストすることができます。アイテムは、整数の `heading` "
+"属性がゼロでない場合（:htmlTag:`h1` - :htmlTag:`h6`）、id属性がNoneでない場合（:htmlTag:`id` "
+"に対応）、またはhref属性がNoneでない場合（:htmlTag:`href` "
+"に対応）に興味深いと見なされます。これは、目次、画像の索引などの自動生成に便利に使用できます。"
 
-#: ../../story-class.rst:81 b456748969fc427f93d908ed4ca54cc0
+#: ../../story-class.rst:85 388460f7fa5b411cb1a25ee26c993551
 msgid "Next, draw that rectangle out to the device with the `draw()` method."
 msgstr "次に、`draw()` メソッドを使用してその長方形をデバイスに描画します。"
 
-#: ../../story-class.rst:82 26094def981e4b5782c44ccee2cac1f1
+#: ../../story-class.rst:86 0333977b90ca4c4d8980c4015833ed79
 msgid ""
 "If the most recent call to `place()` indicated that all the story data "
 "had fitted, stop now."
 msgstr "最も最近の `place()` の呼び出しが、すべてのストーリーデータが収まったことを示した場合、ここで停止します。"
 
-#: ../../story-class.rst:84 14912a23dc594a2eb48f736f4044f979
+#: ../../story-class.rst:88 a0919f1f5da94997ab7f67ccbcd26a34
 msgid ""
 "Otherwise, we can loop back. If there are more rectangles to be placed on"
 " the current device (page), we jump back to step 3 - if not, we jump back"
 " to step 1 to get a new device."
 msgstr "それ以外の場合、ループを戻すことができます。現在のデバイス（ページ）に配置するためにさらに長方形がある場合は、ステップ3に戻ります。長方形がない場合は、新しいデバイスを取得するためにステップ1に戻ります。"
 
-#: ../../story-class.rst:87 aaaa635af83a49bc864221c59cd2d51e
+#: ../../story-class.rst:91 1764ca4c9e694bd286c0a7202031a08a
 msgid ""
 "Alternatively, in the case where you are using a :ref:`DocumentWriter`, "
 "the `write()` or `write_stabilized()` methods can be used. These handle "
 "all the looping for you, in exchange for being provided with callbacks "
 "that control the behaviour (notably a callback that enumerates the "
 "rectangles/pages to use)."
-msgstr "代わりに、:ref:`DocumentWriter` を使用している場合、`write()` または `write_stabilized()` メソッドを使用できます。これらは、動作を制御するコールバックが提供される代わりに、すべてのループ処理を処理します（特に使用する長方形/ページを列挙するコールバックが含まれます）。"
+msgstr ""
+"代わりに、:ref:`DocumentWriter` を使用している場合、`write()` または `write_stabilized()` "
+"メソッドを使用できます。これらは、動作を制御するコールバックが提供される代わりに、すべてのループ処理を処理します（特に使用する長方形/ページを列挙するコールバックが含まれます）。"
 
-#: ../../story-class.rst:92 0dba3a97210a46458e7fac6115e86c8b
+#: ../../story-class.rst:96 0826f0dd90fc40e6900f10225c02358c
 msgid ""
 "Which part of the **story** will land on which rectangle / which page, is"
 " fully under control of the :ref:`Story` object and cannot be predicted."
-msgstr "**ストーリー** オブジェクトがどの部分がどの長方形/ページに配置されるかは、完全に :ref:`Story` オブジェクトの制御下にあり、予測することはできません。"
+msgstr ""
+"**ストーリー** オブジェクトがどの部分がどの長方形/ページに配置されるかは、完全に :ref:`Story` "
+"オブジェクトの制御下にあり、予測することはできません。"
 
-#: ../../story-class.rst:94 6510df240b424d3da7b6dda04fd4a7fa
+#: ../../story-class.rst:98 2a67321090174b09b089c092aca986f0
 msgid ""
 "Images may be part of a **story**. They will be placed together with any "
 "surrounding text."
 msgstr "画像は **ストーリー** の一部となる可能性があります。画像は周囲のテキストと一緒に配置されます。"
 
-#: ../../story-class.rst:95 047b99d2943f4e1c85a12eae69f8666b
+#: ../../story-class.rst:99 3cd147e056ba432fb279a555491e8443
 msgid ""
 "Multiple stories may - independently from each other - write to the same "
 "page. For example, one may have separate stories for page header, page "
 "footer, regular text, comment boxes, etc."
 msgstr "複数のストーリーは、互いに独立して同じページに書き込むことができます。たとえば、ページヘッダー、ページフッター、通常のテキスト、コメントボックスなどの異なるストーリーを持つことができます。"
 
-#: ../../story-class.rst 0db58c1397fa4685a8a2dee5bed6dc6a
-#: 17bdfedc45ec42dc81564519ca3eda9c 1bfdc612aeec414ab644c2485b6f793d
-#: 6d99fffad29e4a30a72819b73efabd7e 8a27532ae4ae4fadab8c8c2e284753a4
-#: a3383233b0204a549a84085eb9cce416
+#: ../../story-class.rst 3d9d3dcc946443e68b72ac6109b4e8da
+#: 531c08d652ad4154b7f1d56ab9d8a55b 56df446d16d14b34b1872f8e5f52392c
+#: 5d71b30774df47af8a482948d55b0343 655ab91106d64696aec2f44d92ff4081
+#: 7c3230a90b6241d7a323f13105b9748a 831409d2cf1143ca938acd90f062887f
+#: de7a729fcb74458d81fbe1bc66e2a83f ea907cef931c417595efeb869f33c992
+#: f86a1e625b3449268f5251ec91901e85
 msgid "Parameters"
 msgstr "パラメーター:"
 
-#: ../../story-class.rst:99 1297f3ed34f24d29b45a2f8f9db9d031
+#: ../../story-class.rst:103 a94c045f336743b4a1811e54c42f1de4
 msgid ""
 "HTML source code. If omitted, a basic minimum is generated (see below). "
 "If provided, not a complete HTML document is needed. The in-built source "
 "parser will forgive (many / most) HTML syntax errors and also accepts "
 "HTML fragments like `\"<b>Hello, <i>World!</i></b>\"`."
-msgstr "HTMLソースコード。省略した場合、基本的な最小限のHTMLが生成されます（以下参照）。指定した場合、完全なHTML文書は必要ありません。組み込みのソースパーサは（多くの）HTML構文エラーを許容し、また `\"<b>Hello, <i>World!</i></b>\"` のようなHTMLフラグメントも受け入れます。"
+msgstr ""
+"HTMLソースコード。省略した場合、基本的な最小限のHTMLが生成されます（以下参照）。指定した場合、完全なHTML文書は必要ありません。組み込みのソースパーサは（多くの）HTML構文エラーを許容し、また"
+" `\"<b>Hello, <i>World!</i></b>\"` のようなHTMLフラグメントも受け入れます。"
 
-#: ../../story-class.rst:104 e2b684cd66284b398db5b8d5553318ac
+#: ../../story-class.rst:108 71925dc47f914004917d5e94096b0b0c
 msgid "CSS source code. If provided, must contain valid CSS specifications."
 msgstr "CSSソースコード。指定する場合、有効なCSS仕様を含む必要があります。"
 
-#: ../../story-class.rst:105 bd93a81c022a43b58f5bf521a4270871
+#: ../../story-class.rst:109 984259baa27a458297f430f9baabb1be
 msgid "the default text font size."
 msgstr "デフォルトのテキストフォントサイズ。"
 
-#: ../../story-class.rst:106 285d3268f0a843b28c134c6821813d50
+#: ../../story-class.rst:110 35884033ed4e400984986ee9d14c1554
 msgid ""
 "an :ref:`Archive` from which to load resources for rendering. Currently "
 "supported resource types are images and text fonts. If omitted, the story"
@@ -294,24 +347,29 @@ msgid ""
 "write `story = fitz.Story(archive=\"myfolder\")`."
 msgstr ""
 
-#: ../../story-class.rst:106 6ec581d6d9984e33b801e99395273f83
+#: ../../story-class.rst:110 4c63c5dcc1e14568a5765ff83dd21f4f
 msgid ""
 "an :ref:`Archive` from which to load resources for rendering. Currently "
 "supported resource types are images and text fonts. If omitted, the story"
 " will not try to look up any such data and may thus produce incomplete "
 "output."
-msgstr "レンダリングのためのリソースをロードするための :ref:`Archive` 。現在サポートされているリソースタイプは画像とテキストフォントです。省略した場合、ストーリーはそのようなデータを検索しようとはせず、不完全な出力を生成する可能性があります。"
+msgstr ""
+"レンダリングのためのリソースをロードするための :ref:`Archive` "
+"。現在サポートされているリソースタイプは画像とテキストフォントです。省略した場合、ストーリーはそのようなデータを検索しようとはせず、不完全な出力を生成する可能性があります。"
 
-#: ../../story-class.rst:108 db573c73158e4e6cba5700953a2a0e04
+#: ../../story-class.rst:112 2f2a3930c3e04f72bc1fcedf7c022b64
 msgid ""
 "Instead of an actual archive, valid arguments for **creating** an "
 ":ref:`Archive` can also be provided -- in which case an archive will "
 "temporarily be constructed. So, instead of `story = "
 "fitz.Story(archive=fitz.Archive(\"myfolder\"))`, one can also shorter "
 "write `story = fitz.Story(archive=\"myfolder\")`."
-msgstr "アーカイブの代わりに、:ref:`Archive` を一時的に **構築する** ための有効な引数も提供できます。したがって、`story = fitz.Story(archive=fitz.Archive(\"myfolder\"))` の代わりに、`story = fitz.Story(archive=\"myfolder\")` と短縮して記述することもできます。 "
+msgstr ""
+"アーカイブの代わりに、:ref:`Archive` を一時的に **構築する** ための有効な引数も提供できます。したがって、`story = "
+"fitz.Story(archive=fitz.Archive(\"myfolder\"))` の代わりに、`story = "
+"fitz.Story(archive=\"myfolder\")` と短縮して記述することもできます。 "
 
-#: ../../story-class.rst:112 93937c0f339d47868f3e442ba5f2a559
+#: ../../story-class.rst:116 0d19ff732cf94ca9b2274436123dc898
 msgid ""
 "Calculate that part of the story's content, that will fit in the provided"
 " rectangle. The method maintains a pointer which part of the story's "
@@ -319,98 +377,118 @@ msgid ""
 "from that pointer's position."
 msgstr "ストーリーのコンテンツのうち、指定された長方形に収まる部分を計算します。このメソッドは、ストーリーのコンテンツのどの部分が既に書き込まれたかを示すポインタを維持し、次回の呼び出し時にそのポインタの位置から再開します。"
 
-#: ../../story-class.rst:114 55a1ea6bfaca49b1ab00593f4750f2ad
+#: ../../story-class.rst:118 78255c30851c47b2ae8d25f1373ae30f
 msgid ""
 "layout the current part of the content to fit into this rectangle. This "
 "must be a sub-rectangle of the page's :ref:`MediaBox<Glossary_MediaBox>`."
-msgstr "現在のコンテンツをこの長方形に収めるためのレイアウト。これはページの :ref:`MediaBox<Glossary_MediaBox>` のサブ長方形でなければなりません。"
+msgstr ""
+"現在のコンテンツをこの長方形に収めるためのレイアウト。これはページの :ref:`MediaBox<Glossary_MediaBox>` "
+"のサブ長方形でなければなりません。"
 
-#: ../../story-class.rst 62f8f75412244130b2f8c2aa3b56d562
+#: ../../story-class.rst 50741f88165b4877980c35b44c11d581
 msgid "Return type"
 msgstr "戻り値の型:"
 
-#: ../../story-class.rst 55e82f3f940847a8aa60a74fca89196e
+#: ../../story-class.rst fc3ec69321474fedb6efd0f20fc2b3c7
 msgid "Returns"
 msgstr "戻り値:"
 
-#: ../../story-class.rst:117 a0d548773da5451eb57c1327faed4e27
+#: ../../story-class.rst:121 08fd62c4b55c417b9d3336de5efe7964
 msgid ""
 "a bool (int) `more` and a rectangle `filled`. If `more == 0`, all content"
 " of the story has been written, otherwise more is waiting to be written "
 "to subsequent rectangles / pages. Rectangle `filled` is the part of "
 "`where` that has actually been filled."
-msgstr "bool (int) `more` と、実際に `filled` 長方形を返します。`more == 0` の場合、ストーリーのすべてのコンテンツが書き込まれたことを意味し、それ以外の場合、`more` は次の長方形/ページに書き込むために待機しています。埋められた長方形は実際に埋められた `where` の一部です。"
+msgstr ""
+"bool (int) `more` と、実際に `filled` 長方形を返します。`more == 0` "
+"の場合、ストーリーのすべてのコンテンツが書き込まれたことを意味し、それ以外の場合、`more` "
+"は次の長方形/ページに書き込むために待機しています。埋められた長方形は実際に埋められた `where` の一部です。"
 
-#: ../../story-class.rst:121 913718a3459948bca31650fd1c57eb9f
+#: ../../story-class.rst:125 533a7d1c52cf4daf9a732c010fcfd6fd
 msgid "Write the content part prepared by :meth:`Story.place` to the page."
 msgstr ":meth:`Story.place` によって準備されたコンテンツの一部をページに書き込みます。"
 
-#: ../../story-class.rst:123 d6975974753744e09a929c1cf0113232
+#: ../../story-class.rst:127 d62ac603f6bc4f6ca2a23696affefad7
 msgid ""
 "the :ref:`Device` created by `dev = writer.begin_page(mediabox)`. The "
 "device knows how to call all MuPDF functions needed to write the content."
-msgstr "`dev = writer.begin_page(mediabox)` で作成された :ref:`Device`。このデバイスは、コンテンツを書き込むために必要なすべてのMuPDF関数を呼び出す方法を知っています。"
+msgstr ""
+"`dev = writer.begin_page(mediabox)` で作成された "
+":ref:`Device`。このデバイスは、コンテンツを書き込むために必要なすべてのMuPDF関数を呼び出す方法を知っています。"
 
-#: ../../story-class.rst:124 551e8fec4d204bec8d607efb97b67a12
+#: ../../story-class.rst:128 9ac004db845d4f958a9fc3e89c095700
 msgid ""
 "a matrix for transforming content when writing to the page. An example "
 "may be writing rotated text. The default means no transformation (i.e. "
 "the :ref:`Identity` matrix)."
-msgstr "ページに書き込む際にコンテンツを変形させるための行列。テキストを回転させるなどの例が考えられます。デフォルトでは変換は行われず（つまり :ref:`Identity` 行列）、コンテンツはそのまま書き込まれます。"
+msgstr ""
+"ページに書き込む際にコンテンツを変形させるための行列。テキストを回転させるなどの例が考えられます。デフォルトでは変換は行われず（つまり "
+":ref:`Identity` 行列）、コンテンツはそのまま書き込まれます。"
 
-#: ../../story-class.rst:128 2c0732fdde1b4845b5a88a4624343d63
+#: ../../story-class.rst:132 6c77d130c0ce40d29cad6740d3df7df4
 msgid ""
 "Let the Story provide positioning information about certain HTML elements"
 " once their place on the current page has been computed - i.e. invoke "
 "this method **directly after** :meth:`Story.place`."
-msgstr "ストーリーが現在のページ上で特定のHTML要素の配置情報を提供するようにします。つまり、:meth:`Story.place` の **直後に** このメソッドを呼び出します。"
+msgstr ""
+"ストーリーが現在のページ上で特定のHTML要素の配置情報を提供するようにします。つまり、:meth:`Story.place` の **直後に**"
+" このメソッドを呼び出します。"
 
-#: ../../story-class.rst:130 3ce6e2be342141a7a690c548585b30fe
+#: ../../story-class.rst:134 a670d77199eb4231bdde9611f00b87b8
 msgid ""
 "*Story* will pass position information to *function*. This information "
 "can for example be used to generate a Table of Contents."
 msgstr "*Story* は位置情報を *関数* に渡します。この情報は、目次の生成などに便利に使用できます。"
 
-#: ../../story-class.rst:132 db9d202a132343deab83b356a3677346
+#: ../../story-class.rst:136 1d18b107bb764392ab4762d3dc49613e
 msgid ""
 "a Python function accepting an :class:`ElementPosition` object. It will "
 "be invoked by the Story object to process positioning information. The "
 "function **must** be a callable accepting exactly one argument."
-msgstr ":class:`ElementPosition` オブジェクトを受け入れるPython関数。この関数は、位置情報を処理するためにStoryオブジェクトによって呼び出されます。**関数** は正確に1つの引数を受け入れるcallableである必要があります。"
+msgstr ""
+":class:`ElementPosition` "
+"オブジェクトを受け入れるPython関数。この関数は、位置情報を処理するためにStoryオブジェクトによって呼び出されます。**関数** "
+"は正確に1つの引数を受け入れるcallableである必要があります。"
 
-#: ../../story-class.rst:133 9ad9cd906457436d98e2ee51609c7f7a
+#: ../../story-class.rst:137 0a54cd9a772842cab4defa7434897ff4
 msgid ""
 "an optional dictionary with any **additional** information that should be"
 " added to the :class:`ElementPosition` instance passed to `function`. "
 "Like for example the current output page number. Every key in this "
 "dictionary must be a string that conforms to the rules for a valid Python"
 " identifier. The complete set of information is explained below."
-msgstr "`function` に渡される :class:`ElementPosition` インスタンスに **追加** 情報を追加するためのオプションの辞書。たとえば、現在の出力ページ番号などが含まれることがあります。この辞書のすべてのキーは、有効なPython識別子の規則に従う文字列である必要があります。情報の完全なセットは以下で説明されています。"
+msgstr ""
+"`function` に渡される :class:`ElementPosition` インスタンスに **追加** "
+"情報を追加するためのオプションの辞書。たとえば、現在の出力ページ番号などが含まれることがあります。この辞書のすべてのキーは、有効なPython識別子の規則に従う文字列である必要があります。情報の完全なセットは以下で説明されています。"
 
-#: ../../story-class.rst:142 3f710fe0fc434822a9ea2c4d5a0f5620
+#: ../../story-class.rst:146 dfa8fb020e4d4f62860cc1f03eff1f77
 msgid "Rewind the story's document to the beginning for starting over its output."
 msgstr "ストーリーのドキュメントを最初に戻して、出力を再開します。"
 
-#: ../../story-class.rst:146 08d98736204245eaaef43730333a41a6
+#: ../../story-class.rst:150 daa1abf69961422a86e4b172bbe33bbe
 msgid ""
 "The :htmlTag:`body` part of the story's DOM. This attribute contains the "
 ":ref:`Xml` node of :htmlTag:`body`. All relevant content for PDF "
 "production is contained between \"<body>\" and \"</body>\"."
-msgstr "ストーリーのDOMの :htmlTag:`body` 部分。この属性には :htmlTag:`body` の :ref:`Xml` ノードが含まれています。PDFの制作に関連するすべてのコンテンツは、「<body>」と「</body>」の間に含まれています。"
+msgstr ""
+"ストーリーのDOMの :htmlTag:`body` 部分。この属性には :htmlTag:`body` の :ref:`Xml` "
+"ノードが含まれています。PDFの制作に関連するすべてのコンテンツは、「<body>」と「</body>」の間に含まれています。"
 
-#: ../../story-class.rst:150 a88e08f3e1254469b440d5788a631625
+#: ../../story-class.rst:154 a7473d586b3142f9a7777f6b22fc9de1
 msgid ""
 "Places and draws Story to a `DocumentWriter`. Avoids the need for calling"
 " code to implement a loop that calls `Story.place()` and `Story.draw()` "
 "etc, at the expense of having to provide at least the `rectfn()` "
 "callback."
-msgstr "Storyを :ref:`DocumentWriter` に配置し、描画します。これにより、`Story.place()` および `Story.draw()` などを呼び出すループの実装が不要になりますが、`rectfn()` コールバックを少なくとも提供する必要があります。"
+msgstr ""
+"Storyを :ref:`DocumentWriter` に配置し、描画します。これにより、`Story.place()` および "
+"`Story.draw()` などを呼び出すループの実装が不要になりますが、`rectfn()` コールバックを少なくとも提供する必要があります。"
 
-#: ../../story-class.rst:155 620f2ae6029d4f8784b464969f4c1a3f
+#: ../../story-class.rst:159 3ef2ada718084077a2d729da06fe075f
 msgid "a `DocumentWriter` or None."
 msgstr ":ref:`DocumentWriter` または `None`。"
 
-#: ../../story-class.rst:156 faa2e8ed213346c88d195612be35573e
+#: ../../story-class.rst:160 199d8bf59ac741ed9fac77a9fb28a2d3
 msgid ""
 "a callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:     mediabox:         None or rect for new page."
@@ -418,247 +496,446 @@ msgid ""
 "     ctm:         None or a `Matrix`."
 msgstr ""
 
-#: ../../story-class.rst:156 303fbde69e774926a105a1f6245df23a
+#: ../../story-class.rst:160 b670f549a7d44f3b971a4f273a0cba3a
 msgid ""
 "a callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:"
 msgstr "`(rect_num: int, filled: Rect)` を取り、`(mediabox, rect, ctm)` を返すcallable："
 
-#: ../../story-class.rst:158 ../../story-class.rst:200
-#: 9d1d319a1a65492da98df313cba56e38 b391f94a53e9443094d41b11880ef31d
+#: ../../story-class.rst:162 ../../story-class.rst:204
+#: b382d8ff7c5748b08a27b38600757d43 dd6a021c18954dfdba1960300e5d2fe7
 msgid "mediabox:"
 msgstr ""
 
-#: ../../story-class.rst:159 ../../story-class.rst:201
-#: 0b03398532aa4bfebbe4dfbd0006852c 9f5a9c0a5c00449e89a021da8461acbc
+#: ../../story-class.rst:163 ../../story-class.rst:205
+#: 317335337b3d4a8994b5a4fddd19cb9c 54883e74602d44ffb59313dba7b18c4c
 msgid "None or rect for new page."
 msgstr "新しいページ用の `None` またはrect。"
 
-#: ../../story-class.rst:160 ../../story-class.rst:203
-#: 20e67c9cc4904863b0431cf4617f040a d8885e73b5ea4effad27ddc25c50552a
+#: ../../story-class.rst:164 ../../story-class.rst:207
+#: 641b0f1b161f478f969b602f9777c252 f249126bcf1c4b4ab1e14fc5fe6d9f87
 msgid "rect:"
 msgstr ""
 
-#: ../../story-class.rst:161 ../../story-class.rst:203
-#: 059b5b2d01fd4b8ab538743d1a0e4bde c00cd838a2dc493bb346fa2075e2e09a
+#: ../../story-class.rst:165 ../../story-class.rst:207
+#: 3f27fc54236c4b249a77357a229b3fac 857418b0bb204304a26b4b5b7d5cb1ca
 msgid "The next rect into which content should be placed."
 msgstr "コンテンツを配置する次の矩形。"
 
-#: ../../story-class.rst:162 ../../story-class.rst:205
-#: 2d6258e5c2cf454ca48e7e4e029bd96f f33fb3f2be65449dbf99cde47f63dd28
+#: ../../story-class.rst:166 ../../story-class.rst:209
+#: 5626fcae27bb4eaeb378bd8cb7a96704 836b5acd8a53491ab45b323acd4ca199
 msgid "ctm:"
 msgstr ""
 
-#: ../../story-class.rst:163 fbf561af4f5041d4aad2e320bd32656c
+#: ../../story-class.rst:167 c9d3c6668ffd407c9c652f25fb834b80
 msgid "None or a `Matrix`."
 msgstr "`None` または `Matrix`。"
 
-#: ../../story-class.rst:164 248870a78e474c7f9b80d0ab7ef66b3f
+#: ../../story-class.rst:168 31c3387d0e614c1a9e8c3e32e3280b46
 msgid ""
 "None, or a callable taking `(position: ElementPosition)`: position:     "
 "An `ElementPosition` with an extra `.page_num` member. Typically called "
 "multiple times as we generate elements that are headings or have an id."
 msgstr ""
 
-#: ../../story-class.rst:164 d02e0a0a928e4bdf874b30a72fd32bba
+#: ../../story-class.rst:168 e29d608237c2499cbf518428d0318ce4
 msgid "None, or a callable taking `(position: ElementPosition)`: position:"
-msgstr "`None` または(ElementPosition)を取り、`(position: ElementPosition)`: positionを返すcallable："
+msgstr ""
+"`None` または(ElementPosition)を取り、`(position: ElementPosition)`: "
+"positionを返すcallable："
 
-#: ../../story-class.rst:166 f4f74f315ae3421e94b578a53f748ede
+#: ../../story-class.rst:170 c3ab3ef513be465b91324bb0e5f08023
 msgid "An `ElementPosition` with an extra `.page_num` member."
 msgstr "`.page_num` メンバーを持つ `ElementPosition`。"
 
-#: ../../story-class.rst:167 c7dbb17d1d3b4f14a7a45dda6ddc906a
+#: ../../story-class.rst:171 152d9f973db146dbbc5a748bf883e049
 msgid ""
 "Typically called multiple times as we generate elements that are headings"
 " or have an id."
 msgstr "通常、見出しやIDを持つ要素を生成する際に複数回呼び出されます。"
 
-#: ../../story-class.rst:169 4a38aa31c9c54e228be1742142a13964
+#: ../../story-class.rst:173 f63d48e9f45f4df8830193389733f15c
 msgid ""
 "None, or a callable taking `(page_num, mediabox, dev, after)`; called at "
 "start (`after=0`) and end (`after=1`) of each page."
-msgstr "`None` または `(page_num, mediabox, dev, after)` を取り、各ページの開始(`after=0`)および終了（`after=1`）時に呼び出されます。"
+msgstr ""
+"`None` または `(page_num, mediabox, dev, after)` "
+"を取り、各ページの開始(`after=0`)および終了（`after=1`）時に呼び出されます。"
 
-#: ../../story-class.rst:175 d5ea4373ac544f46a6d58bc0ae15b8d5
+#: ../../story-class.rst:179 3ae163bc9a284db3af50a9adcb2ef8e1
 msgid ""
 "Static method that does iterative layout of html content to a "
 "`DocumentWriter`."
 msgstr "htmlコンテンツを :ref:`DocumentWriter` に対して反復的にレイアウトするための静的メソッド。"
 
-#: ../../story-class.rst:178 532a8550b36a40f58e74e85ae33655da
+#: ../../story-class.rst:182 9f3cba9ed74e46f1951c581bbe04c7fc
 msgid ""
 "For example this allows one to add a table of contents section while "
 "ensuring that page numbers are patched up until stable."
 msgstr "これにより、ページ番号が安定するまで目次セクションを追加したりすることができます。"
 
-#: ../../story-class.rst:181 a8525f4040854de6af25545e8a6bb958
+#: ../../story-class.rst:185 bcb0738912304b93bbfa40dc4990f4c0
 msgid ""
 "Repeatedly creates a new `Story` from `(contentfn(), user_css, em, "
 "archive)` and lays it out with internal call to `Story.write()`; uses a "
 "None writer and extracts the list of `ElementPosition`'s which is passed "
 "to the next call of `contentfn()`."
-msgstr "`(contentfn()、user_css、em、archive)` から新しい `Story` を繰り返し作成し、`Story.write()` への内部呼び出しでそれをレイアウトします。 `None` のライターを使用し、`ElementPosition` のリストを次回の `contentfn()` 呼び出しに渡します。"
+msgstr ""
+"`(contentfn()、user_css、em、archive)` から新しい `Story` "
+"を繰り返し作成し、`Story.write()` への内部呼び出しでそれをレイアウトします。 `None` "
+"のライターを使用し、`ElementPosition` のリストを次回の `contentfn()` 呼び出しに渡します。"
 
-#: ../../story-class.rst:187 bb0e755ec26e44c29a0d2526bd29e915
+#: ../../story-class.rst:191 cd2af2188b88476780cf88c6b201fa3f
 msgid ""
 "When the html from `contentfn()` becomes unchanged, we do a final "
 "iteration using `writer`."
 msgstr "`contentfn()` からのhtmlが変更されなくなると、`writer` を使用して最終的な反復処理を行います。"
 
-#: ../../story-class.rst:190 b6a12fb8d69a4952b856c1e575923cb0
+#: ../../story-class.rst:194 ae73882d046c42daab32a392ddf6ecca
 msgid "A `DocumentWriter`."
 msgstr ":ref:`DocumentWriter`。"
 
-#: ../../story-class.rst:192 921a2587fade40d9b21cdc3fa82022c8
+#: ../../story-class.rst:196 8ff34da0c5db4c0e9b569eedb2045ff6
 msgid ""
 "A function taking a list of `ElementPositions` and returning a string "
 "containing html. The returned html can depend on the list of positions, "
 "for example with a table of contents near the start."
-msgstr "`ElementPositions` のリストを取り、htmlを含む文字列を返す関数。返されるhtmlは、位置のリストに依存する場合があります。たとえば、最初の近くに目次がある場合です。"
+msgstr ""
+"`ElementPositions` "
+"のリストを取り、htmlを含む文字列を返す関数。返されるhtmlは、位置のリストに依存する場合があります。たとえば、最初の近くに目次がある場合です。"
 
-#: ../../story-class.rst:197 c8a863ceb74c48c7ba490291ac167584
+#: ../../story-class.rst:201 98edc1f5a04a4871a277fd65952c8dac
 msgid ""
 "A callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:     mediabox:         None or rect for new page."
 "     rect:         The next rect into which content should be         "
 "placed.     ctm:         A `Matrix`."
-msgstr "`(rect_num: int, filled: Rect)` を取り、`(mediabox, rect, ctm)` を返すcallable：mediabox：
-新しいページ用のNoneまたはrect。rect：
-コンテンツを配置する次の矩形。ctm：`Matrix`。
-"
+msgstr ""
+"`(rect_num: int, filled: Rect)` を取り、`(mediabox, rect, ctm)` "
+"を返すcallable：mediabox"
 
-#: ../../story-class.rst:198 1a1e3aae9d694004bc487c6c68e8a158
+#: ../../story-class.rst:202 a1245dbba755450699a9fc8ed706f01f
 msgid ""
 "A callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:"
 msgstr ""
 
-#: ../../story-class.rst:206 40548ee4636545d0afc67f464915139b
+#: ../../story-class.rst:210 f99a0795a4a047bb8b57edd07dd8b237
 msgid "A `Matrix`."
 msgstr ":ref:`Matrix`。"
 
-#: ../../story-class.rst:207 4cf210e5560f443bbff96b675b56521f
+#: ../../story-class.rst:211 33c48a7983cd440bab5b529581d058d7
 msgid ""
 "None, or a callable taking `(page_num, medibox, dev, after)`; called at "
 "start (`after=0`) and end (`after=1`) of each page."
-msgstr "`None` または `(page_num、medibox、dev、after)` を取り、各ページの開始（`after=0`）および終了（`after=1`）時に呼び出されます。"
+msgstr ""
+"`None` または `(page_num、medibox、dev、after)` "
+"を取り、各ページの開始（`after=0`）および終了（`after=1`）時に呼び出されます。"
 
-#: ../../story-class.rst:211 ../../story-class.rst:212
-#: 01db5e86d11f49fa90fdfbc3be5077ad 9bf011caf393487ba831f4c122363878
+#: ../../story-class.rst:215 ../../story-class.rst:216
+#: 4f7c47a3c7964f008acf473121b53084 d384c6d60f6245c9bfc53a703f729e10
 msgid "."
 msgstr ""
 
-#: ../../story-class.rst:213 9089c74997dc4b2a8220cdec7e7c3f66
+#: ../../story-class.rst:217 92dfbb9ed2634e2098cdff64df78e345
 msgid ""
 "If true, we add unique ids to all header tags that don't already have an "
 "id. This can help automatic generation of tables of contents."
-msgstr "Trueの場合、idを持たないすべての見出しタグに一意のidを追加します。これは目次の自動生成に役立ちます。
-戻り値:"
+msgstr "Trueの場合、idを持たないすべての見出しタグに一意のidを追加します。これは目次の自動生成に役立ちます"
 
-#: ../../story-class.rst:217 8cc34dd58e6d4f809c1ea8be04987364
+#: ../../story-class.rst:221 59861706e14c4212a6a470d9215ecd56
 msgid "Returns:"
 msgstr ""
 
-#: ../../story-class.rst:218 3eb712a6631a44f89dad915630b9eec0
+#: ../../story-class.rst:222 a5fab915376145578f7fe0ab876c15d7
 msgid "None."
 msgstr ""
 
-#: ../../story-class.rst:222 ee0263488af14ec0ac45fe78745cea84
+#: ../../story-class.rst:226 f7beb55d59ea4f91a7ad5576dd6e0eb2
 msgid ""
 "Similar to `write()` except that we don't have a `writer` arg and we "
 "return a PDF `Document` in which links have been created for each "
 "internal html link."
-msgstr "`write()` に類似していますが、`writer` 引数がなく、内部のHTMLリンクごとにリンクが作成されたPDF `Document` が返されます。"
+msgstr ""
+"`write()` に類似していますが、`writer` 引数がなく、内部のHTMLリンクごとにリンクが作成されたPDF `Document` "
+"が返されます。"
 
-#: ../../story-class.rst:228 2e0ab84ab13f4097b2c8b45ce4d1bf75
+#: ../../story-class.rst:232 10929f1185ad46f792fcd5d0d1ac7c1d
 msgid ""
 "Similar to `write_stabilized()` except that we don't have a `writer` arg "
 "and instead return a PDF `Document` in which links have been created for "
 "each internal html link."
-msgstr "`write_stabilized()` に類似していますが、`writer` 引数がなく、代わりに各内部のHTMLリンクにリンクが作成されたPDF `Document` が返されます。"
+msgstr ""
+"`write_stabilized()` に類似していますが、`writer` "
+"引数がなく、代わりに各内部のHTMLリンクにリンクが作成されたPDF `Document` が返されます。"
 
-#: ../../story-class.rst:234 08741e9ab85f4462b4c73e47b90c6607
+#: ../../story-class.rst:238 de6031372a184607a7b534a87088ff90
+msgid "The result from a `Story.fit*()` method."
+msgstr ""
+
+#: ../../story-class.rst:240 c89255e77eec4b7588deeec4a107825b
+msgid "Members:"
+msgstr ""
+
+#: ../../story-class.rst:242 25258a9ca9b542e9afd772b081e5827a
+msgid "`big_enough`:"
+msgstr ""
+
+#: ../../story-class.rst:243 c81aa5b4d8944c88b300e2b0d9bb382e
+msgid "`True` if the fit succeeded."
+msgstr ""
+
+#: ../../story-class.rst:244 57269867a3974b63805744a24692fe35
+msgid "`filled`:"
+msgstr ""
+
+#: ../../story-class.rst:245 deafc8a11c404ffd992ac9e16483ef17
+msgid "From the last call to `Story.place()`."
+msgstr ""
+
+#: ../../story-class.rst:246 0c79671be445417d9e555605133e6be4
+msgid "`more`:"
+msgstr ""
+
+#: ../../story-class.rst:247 fac1d2cedc8b4c5d966a3fcfc708be2a
+msgid "`False` if the fit succeeded."
+msgstr ""
+
+#: ../../story-class.rst:248 d7e88999ec2e4ffeb67e8de5b1b72b05
+msgid "`numcalls`:"
+msgstr ""
+
+#: ../../story-class.rst:249 21727ebab7e34c3c8b111735cc1dedb6
+msgid "Number of calls made to `self.place()`."
+msgstr ""
+
+#: ../../story-class.rst:250 39346e6ecb62453cb39fb6b1765bf9a1
+#, fuzzy
+msgid "`parameter`:"
+msgstr "パラメーター:"
+
+#: ../../story-class.rst:251 623fc6d3780549999f17a091bb9f9c65
+msgid "The successful parameter value, or the largest failing value."
+msgstr ""
+
+#: ../../story-class.rst:252 310f052f8d94440a93b6066ed9a3927c
+msgid "`rect`:"
+msgstr ""
+
+#: ../../story-class.rst:253 bfddbace11a34f5bae5596175a1ba349
+msgid "The rect created from `parameter`."
+msgstr ""
+
+#: ../../story-class.rst:259 ../../story-class.rst:287
+#: ../../story-class.rst:309 ../../story-class.rst:330
+#: 07f6092946df4eb4bb6a367154007cf7 2048f4a24dee44de8db62fd92fd48af5
+#: c0d09594ebbd4a6e898bbafac76e7ab1 ce99028d68574753b3092b16c4419d17
+msgid "Returns a `Story.FitResult` instance."
+msgstr ""
+
+#: ../../story-class.rst:261 50fa37735f714d49a8d264fb01f59bf8
+msgid ""
+"On success, the last call to `self.place()` will have been with the "
+"returned rectangle, so `self.draw()` can be used directly."
+msgstr ""
+
+#: ../../story-class.rst:264 46ff794c828c4f879e0c4093dd39ebdf
+msgid ""
+"A callable taking a floating point `parameter` and returning a "
+"`fitz.Rect()`. If the rect is empty, we assume the story will not fit and"
+" do not call `self.place()`.  Must guarantee that `self.place()` behaves "
+"monotonically when given rect `fn(parameter`) as `parameter` increases. "
+"This usually means that both width and height increase or stay unchanged "
+"as `parameter` increases."
+msgstr ""
+
+#: ../../story-class.rst:265 9c2b7a45a2954a01bdd497e787f653ca
+msgid ""
+"A callable taking a floating point `parameter` and returning a "
+"`fitz.Rect()`. If the rect is empty, we assume the story will not fit and"
+" do not call `self.place()`."
+msgstr ""
+
+#: ../../story-class.rst:269 d7bc052929414d1aa2133055d066db70
+msgid ""
+"Must guarantee that `self.place()` behaves monotonically when given rect "
+"`fn(parameter`) as `parameter` increases. This usually means that both "
+"width and height increase or stay unchanged as `parameter` increases."
+msgstr ""
+
+#: ../../story-class.rst:273 0180cf71503f490181291d87c9c28232
+msgid "Minimum parameter to consider; `None` for -infinity."
+msgstr ""
+
+#: ../../story-class.rst:275 21452be4ffe6419294bda51be0d9c26c
+msgid "Maximum parameter to consider; `None` for +infinity."
+msgstr ""
+
+#: ../../story-class.rst:277 16623b52b0734c58bc4f3ae22cdb2fea
+msgid "Maximum error in returned `parameter`."
+msgstr ""
+
+#: ../../story-class.rst:279 ../../story-class.rst:300
+#: ../../story-class.rst:322 ../../story-class.rst:343
+#: 0eeb9f5c189c44c498c10823d8c510eb a3e957ac3c1b430a9356a7e9fc76548b
+#: e600e88681bb4b32a805d8a6f29ddcc9 f9871976af0847838987960b3cb39647
+msgid "If true we output diagnostics."
+msgstr ""
+
+#: ../../story-class.rst:284 54b23e88d7b94b8b86653bb015ac41f1
+msgid ""
+"Finds smallest value `scale` in range `scale_min..scale_max` where `scale"
+" * rect` is large enough to contain the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:289 ../../story-class.rst:311
+#: 50704764acad4ec5baf4470732692b34 563cfe3f552141a798c8a42aae2349a4
+msgid "width of rect."
+msgstr ""
+
+#: ../../story-class.rst:291 ../../story-class.rst:332
+#: 98dcab438b4b4019bd89b9b12c0ff80f a1f1dc80fd144433a1d7a1dee07657e6
+msgid "height of rect."
+msgstr ""
+
+#: ../../story-class.rst:293 700b3d9eec16473db08be601069d67e2
+msgid "Minimum scale to consider; must be >= 0."
+msgstr ""
+
+#: ../../story-class.rst:295 9bef0e30cf5f4defa7433c54debce260
+msgid "Maximum scale to consider, must be >= scale_min or `None` for infinite."
+msgstr ""
+
+#: ../../story-class.rst:298 9b59487ea5de46c3abb5f5d4b96c0411
+msgid "Maximum error in returned scale."
+msgstr ""
+
+#: ../../story-class.rst:305 44abc038066743d89bb7fa3e5403a2ec
+msgid ""
+"Finds smallest height in range `height_min..height_max` where a rect with"
+" size `(width, height)` is large enough to contain the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:313 25fa28717e97446fb62c25e0a7ca524e
+msgid "Minimum height to consider; must be >= 0."
+msgstr ""
+
+#: ../../story-class.rst:315 7f4fd59c97024e7ba07ac27fbc6d8655
+msgid "Maximum height to consider, must be >= height_min or `None` for infinite."
+msgstr ""
+
+#: ../../story-class.rst:318 ../../story-class.rst:339
+#: 0d7d4cc841e944a1a2c962fca715c4f5 8d86d732d2984f56856eacc5e8f2940d
+msgid "`(x0, y0)` of rect."
+msgstr ""
+
+#: ../../story-class.rst:320 c7e6340ed1984723b0a95a82e62c96de
+msgid "Maximum error in returned height."
+msgstr ""
+
+#: ../../story-class.rst:327 df408e800a164e76ae93739447730fff
+msgid ""
+"Finds smallest width in range `width_min..width_max` where a rect with "
+"size `(width, height)` is large enough to contain the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:334 2cc2dd052fc044aabd0576044f8bbbaf
+msgid "Minimum width to consider; must be >= 0."
+msgstr ""
+
+#: ../../story-class.rst:336 6e14d0f702b24a578bcbf92086c46944
+msgid "Maximum width to consider, must be >= width_min or `None` for infinite."
+msgstr ""
+
+#: ../../story-class.rst:341 a3338d2a06f347938b0dd9a4ac14fc11
+msgid "Maximum error in returned width."
+msgstr ""
+
+#: ../../story-class.rst:348 3a9f8488d8aa41949c18f72d485ff538
 msgid "Element Positioning CallBack function"
 msgstr "要素位置コールバック関数"
 
-#: ../../story-class.rst:236 4ef4fdf4cb9f4d9895227525cd8c3eaf
+#: ../../story-class.rst:350 64fe14cfc3b247a09d4dcc536f8674c2
 msgid ""
 "The callback function can be used to log information about story output. "
 "The function's access to the information is read-only: it has no way to "
 "influence the story's output."
 msgstr "コールバック関数は、ストーリーの出力に関する情報を記録するために使用できます。この関数は情報への読み取り専用アクセスを持ち、ストーリーの出力に影響を与える方法はありません。"
 
-#: ../../story-class.rst:238 f0fc01703d5c4080925399792e8a576f
+#: ../../story-class.rst:352 1e165ced0bb24db29e2d57720d1e6195
 msgid ""
 "A typical loop for executing a story with using this method would look "
 "like this::"
 msgstr "このメソッドを使用してストーリーを実行する典型的なループは次のようになります:"
 
-#: ../../story-class.rst:270 e783aaf137e24e25a3f58552ba7ec5a1
+#: ../../story-class.rst:384 da411da5401a4657abb4552f1090ae9d
 msgid "Attributes of the ElementPosition class"
 msgstr "ElementPosition クラスの属性"
 
-#: ../../story-class.rst:271 9a9b324407df48da97d5f3fe72f4fb53
+#: ../../story-class.rst:385 193a268e75be4dd59dc8e76ea6c4fe25
 msgid ""
 "Exactly one parameter must be passed to the function provided by "
 ":meth:`Story.element_positions`. It is an object with the following "
 "attributes:"
 msgstr ":meth:`Story.element_positions` で提供される関数に渡すパラメータは、次の属性を持つオブジェクトである必要があります。"
 
-#: ../../story-class.rst:273 50da38f7350947f9967720535818fb4d
+#: ../../story-class.rst:387 e59675458ac544d6864b719efcbf39c7
 msgid ""
 "The parameter passed to the `recorder` function is an object with the "
 "following attributes:"
 msgstr "`recorder` 関数に渡されるパラメータは、次の属性を持つオブジェクトです。"
 
-#: ../../story-class.rst:275 6247f53b11364cc1b4adc27a3f5ee6b6
+#: ../../story-class.rst:389 e3316861258647089e99595414a92d85
 msgid "`elpos.depth` (int) -- depth of this element in the box structure."
 msgstr "`elpos.depth` （int）– ボックス構造内でのこの要素の深さ。"
 
-#: ../../story-class.rst:277 1d24dd18f8df4620b115e977775c92bc
+#: ../../story-class.rst:391 bde9d624a11843988d33116c7a15c50d
 msgid ""
 "`elpos.heading` (int) -- the header level, 0 if no header, 1-6 for "
 ":htmlTag:`h1` - :htmlTag:`h6`."
-msgstr "`elpos.heading` （int）– ヘッダーレベル、ヘッダーがない場合は0、 :htmlTag:`h1` - :htmlTag:`h6` に対して1-6。"
+msgstr ""
+"`elpos.heading` （int）– ヘッダーレベル、ヘッダーがない場合は0、 :htmlTag:`h1` - :htmlTag:`h6`"
+" に対して1-6。"
 
-#: ../../story-class.rst:279 e03471da97214d7dad320ecb1eaadeba
+#: ../../story-class.rst:393 1587f38b5d364b10a7e3433370046ccc
 msgid ""
 "`elpos.href` (str) -- value of the `href`attribute, or None if not "
 "defined."
 msgstr "`elpos.href` （str）– `href` 属性の値、または未定義の場合は `None`。"
 
-#: ../../story-class.rst:281 f1aa3832a1014d92be15faa9407b841a
+#: ../../story-class.rst:395 4e33d1dc77fb4150a71a4b3ac0b895f0
 msgid "`elpos.id` (str) -- value of the `id` attribute, or None if not defined."
 msgstr "`elpos.id` （str）– `id` 属性の値、または未定義の場合は `None`。"
 
-#: ../../story-class.rst:283 49c2aeddbba344a39f77dfdd07a39237
+#: ../../story-class.rst:397 1a6bf821c95d400a93ce716d9c8c755a
 msgid "`elpos.rect` (tuple) -- element position on page."
 msgstr "`elpos.rect` （tuple）– ページ上の要素の位置。"
 
-#: ../../story-class.rst:285 183e540174d0428c862939367667a3d1
+#: ../../story-class.rst:399 4eb529538dc6468f9b604c08b3658afa
 msgid "`elpos.text` (str) -- immediate text of the element."
 msgstr "`elpos.text` （str）– 要素の直接のテキスト。"
 
-#: ../../story-class.rst:287 1bcbb90342be49938b446ff927c11b1b
+#: ../../story-class.rst:401 789c34427f64455cbccc0cbd0a3b22fb
 msgid ""
 "`elpos.open_close` (int bit field) -- bit 0 set: opens element, bit 1 "
 "set: closes element. Relevant for elements that may contain other "
 "elements and thus may not immediately be closed after being created / "
 "opened."
-msgstr "`elpos.open_close` （int ビットフィールド）– ビット0がセットされている場合、要素を開く。ビット1がセットされている場合、要素を閉じる。他の要素を含む可能性がある要素に対して、即座に作成/開始された後にすぐに閉じられない要素に関連します。"
+msgstr ""
+"`elpos.open_close` （int ビットフィールド）– "
+"ビット0がセットされている場合、要素を開く。ビット1がセットされている場合、要素を閉じる。他の要素を含む可能性がある要素に対して、即座に作成/開始された後にすぐに閉じられない要素に関連します。"
 
-#: ../../story-class.rst:289 d150aef461fd44469a9c11f9b247047d
+#: ../../story-class.rst:403 04ac23959741457a81f25e0b25d60e54
 msgid "`elpos.rect_num` (int) -- count of rectangles filled by the story so far."
 msgstr "`elpos.rect_num` （int）– これまでにストーリーで埋められた長方形の数。"
 
-#: ../../story-class.rst:291 d028b62d46994f0dbbf080e28e85ce98
+#: ../../story-class.rst:405 601e913b38cc44feb779ce1431df8ffa
 msgid ""
 "`elpos.page_num` (int) -- page number; only present when using "
 "`fitz.Story.write*()` functions."
 msgstr "`elpos.page_num` （int）– ページ番号。`fitz.Story.write*()` 関数を使用する場合にのみ存在します。"
 
-#: ../../footer.rst:-1 2df0f02a4fd44dc590fcd35e2ba88c08
+#: ../../footer.rst:-1 13ffbf17973044a792aea1c988a191e5
 msgid "Discord logo"
 msgstr ""
 
