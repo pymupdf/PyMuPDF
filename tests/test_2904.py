@@ -25,19 +25,17 @@ def test_2904():
                 e = ee
             if page_id == 75:
                 print(f'{fitz.mupdf_version_tuple=}: {page_id=} {i=} {e=} {img=}:')
-            if fitz.mupdf_version_tuple >= (1, 24):
-                # 2023-12-20: current mupdf master has a bug here that causes
-                # one corrupt image to provoke errors for all images on the
-                # same page.
-                if page_id == 75:
-                    assert e
-            else:
-                if page_id == 75 and i==3:
-                    assert e
-                    if hasattr(fitz, 'mupdf') and fitz.mupdf_version_tuple >= (1, 23, 7):
-                        assert str(e) == 'code=4: Failed to read JPX header'
+            if page_id == 75 and i==3:
+                assert e
+                if hasattr(fitz, 'mupdf'):
+                    # rebased.
+                    if fitz.mupdf_version_tuple >= (1, 24):
+                        assert str(e) == 'code=8: Failed to read JPX header'
                     else:
-                        assert str(e) == 'Failed to read JPX header'
+                        assert str(e) == 'code=4: Failed to read JPX header'
                 else:
-                    assert not e
+                    # classic
+                    assert str(e) == 'Failed to read JPX header'
+            else:
+                assert not e
                 
