@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 13:37+0100\n"
+"POT-Creation-Date: 2023-12-21 13:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,41 +19,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 1efc2dfc2b3649488541d922ed7006a0
+#: ../../header.rst:-1 00e0ab7c84bf42548b3837d9e37724ab
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 60521835aa134827b32f8d3bc2060d0c
+#: ../../header.rst:-1 5b4f6a62c4514fcd874fd2d19d93805b
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 7f1cbf91c4804eac8e274ca0faac098e
+#: ../../header.rst:-1 b31795d8151f4858b53e8ce7da87d0b4
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../intro.rst:4 e66ab72d56434bd7b48ee15bf7195e9c
+#: ../../intro.rst:4 fc2351c8df7c4f6abb1aeaca671f9f08
 msgid "Introduction"
 msgstr ""
 
-#: ../../intro.rst:15 586b9f43c13f4ee682da0a5ec5da1c43
+#: ../../intro.rst:15 eaf3b83ac5214e24b609c8834b86d9c9
 msgid ""
 "**PyMuPDF** is a Python binding for `MuPDF <https://www.mupdf.com/>`_ --"
 "  a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which"
 " is maintained and developed by Artifex Software, Inc"
 msgstr ""
 
-#: ../../intro.rst:17 249ba36ba5e142e487bde5e2e7fc3a48
+#: ../../intro.rst:17 99c2adb8950e4c75b703c4d024803f42
 msgid ""
 "MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB, MOBI and FB2 "
 "(e-books) formats, and it is known for its top performance and high "
 "rendering quality."
 msgstr ""
 
-#: ../../intro.rst:19 bc1a98eab2d0489a932527d296dad935
+#: ../../intro.rst:19 c620c699bafb4abe94ec2b63a821e48c
 msgid ""
 "MuPDF stands out among all similar products for its top rendering "
 "capability and unsurpassed processing speed. At the same time, its "
@@ -61,7 +61,7 @@ msgid ""
 "resources are typically limited, like smartphones."
 msgstr ""
 
-#: ../../intro.rst:21 1eb2317ce5ee491a8cc6e276e72987fc
+#: ../../intro.rst:21 301bdb2c42724baba479f02afef454b8
 msgid ""
 "Check this out yourself and compare the various free PDF-viewers. In "
 "terms of speed and rendering quality `SumatraPDF "
@@ -70,61 +70,61 @@ msgid ""
 "to  MuPDF!"
 msgstr ""
 
-#: ../../intro.rst:23 e5cb4235b4e44e499b5ab0dffb915d62
+#: ../../intro.rst:23 e483d012ce9443bd9b63ea3029baf028
 msgid ""
 "With PyMuPDF you can access files with extensions like “.pdf”, “.xps”, "
 "“.oxps”, “.cbz”, “.fb2”, \".mobi\" or “.epub”. In addition, about 10 "
 "popular image formats can also be opened and handled like documents."
 msgstr ""
 
-#: ../../intro.rst:25 cbbb53cd704e47a2a5970c0f677e4c74
+#: ../../intro.rst:25 38d0dfd05bd14a5f87708b2dddc9c7be
 msgid ""
 "PyMuPDF provides access to many important functions of MuPDF from within "
 "a Python environment, and we are continuously seeking to expand this "
 "function set."
 msgstr ""
 
-#: ../../intro.rst:27 86196b199990485dae87f5edf1a6c562
+#: ../../intro.rst:27 e8d679dd46444eaab22f0cfdb830b104
 msgid ""
 "PyMuPDF runs and has been tested on Mac, Linux and Windows for Python "
 "versions 3.8 [#f1]_ and up. Other platforms should work too, as long as "
 "MuPDF and Python support them."
 msgstr ""
 
-#: ../../intro.rst:29 552b5bae38b849d98967b1da51344232
+#: ../../intro.rst:29 73d7c24b00c24982a9949a226a19ec91
 msgid ""
 "PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and "
 "registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_."
 msgstr ""
 
-#: ../../intro.rst:31 f2f26835d3934a098f27fe390b88b48c
+#: ../../intro.rst:31 dec08e9b627643c2be26f0dc187be60b
 msgid ""
 "For MS Windows, Mac OSX and Linux Python wheels are available -- please "
 "see the installation chapter."
 msgstr ""
 
-#: ../../intro.rst:33 ab67d2d1a422420892545ccee5d2896e
+#: ../../intro.rst:33 97a5af26a58a4f078758d2efd9d65c9d
 msgid ""
 "The GitHub repository `PyMuPDF-Utilities <https://github.com/pymupdf"
 "/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations "
 "and use cases."
 msgstr ""
 
-#: ../../intro.rst:36 f26cf37324bb437d9ea7b50f3b67f79a
+#: ../../intro.rst:36 5ee539d95e0546bcaf14be857a7e1497
 msgid "Note on the Name *fitz*"
 msgstr ""
 
-#: ../../intro.rst:37 0f5fa6effa274a15af350904868d5c70
+#: ../../intro.rst:37 d385c5291c7b4343a8412685fe892f0e
 msgid ""
 "The top level Python import name for this library is **\"fitz\"**. This "
 "has historical reasons:"
 msgstr ""
 
-#: ../../intro.rst:39 436b053a3a14439ebb5cd582405f617c
+#: ../../intro.rst:39 8862c4c3c7ba401fb4373dfaa93cc4c2
 msgid "The original rendering library for MuPDF was called *Libart*."
 msgstr ""
 
-#: ../../intro.rst:41 4f8b0c05b29f4eca8a33777421a11ae4
+#: ../../intro.rst:41 bbcbca8e80c347739a96483e26384000
 msgid ""
 "*\"After Artifex Software acquired the MuPDF project, the development "
 "focus shifted on writing a new modern graphics library called \"Fitz\". "
@@ -134,24 +134,24 @@ msgid ""
 "<https://en.wikipedia.org/wiki/MuPDF>`_)."
 msgstr ""
 
-#: ../../intro.rst:43 fb084cb66d334e8b86fcb05d9619bc3b
+#: ../../intro.rst:43 bde58e23142c4102824d27e1b9302b98
 msgid ""
 "So PyMuPDF **cannot coexist** with packages named \"fitz\" in the same "
 "Python environment."
 msgstr ""
 
-#: ../../intro.rst:46 62949aefba8644cea7b7fc064b3633af
+#: ../../intro.rst:46 61fa13d01b8143319309ac0c198495b3
 msgid "License and Copyright"
 msgstr ""
 
-#: ../../intro.rst:47 e3967052cc2b40c8806217beaabc0542
+#: ../../intro.rst:47 60a8e22a86804a459c0963a2503ec8f8
 msgid ""
 "In order to comply with MuPDF’s dual licensing model, PyMuPDF has entered"
 " into an agreement with Artifex who has the right to sublicense PyMuPDF "
 "to third parties."
 msgstr ""
 
-#: ../../intro.rst:49 e72514ac12e6443bbd6908df9515b650
+#: ../../intro.rst:49 d4bb8176694f471cbd0939f4b903f69f
 msgid ""
 "PyMuPDF and MuPDF are now available under both, open-source AGPL and "
 "commercial license agreements. Please read the full text of the AGPL "
@@ -163,35 +163,35 @@ msgid ""
 "a commercial license."
 msgstr ""
 
-#: ../../intro.rst:51 af5c65f4d4694150a9ef81f088c35eeb
+#: ../../intro.rst:51 ab21169fc0f84245ae330b9e27d5771d
 msgid "Artifex is the exclusive commercial licensing agent for MuPDF."
 msgstr ""
 
-#: ../../intro.rst:53 228973f089444b14b37be1cc3741e171
+#: ../../intro.rst:53 3b8dba93bef34776aa46cbf3dedb0a4e
 msgid ""
 "Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered "
 "trademarks of Artifex Software Inc. © 2022 Artifex Software, Inc. All "
 "rights reserved."
 msgstr ""
 
-#: ../../version.rst:3 a81ed06495604120a074201badb53b25
+#: ../../version.rst:3 97a6ecfa672c4283aa82515b370c2d6e
 msgid ""
-"This documentation covers **PyMuPDF v1.23.5** features as of **2023-10-11"
+"This documentation covers **PyMuPDF v1.23.8** features as of **2023-12-19"
 " 00:00:01**."
 msgstr ""
 
-#: ../../version.rst:5 c64e7f74c6714a4b9110eb0f5fedbab4
+#: ../../version.rst:5 af9f7508dfd3480bb887494713ee20d2
 msgid ""
 "The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
 " **MuPDF**."
 msgstr ""
 
-#: ../../intro.rst:61 03e01ca1e2504f4aa8c1720a1a143d40
+#: ../../intro.rst:61 3280f9b22dfb4f4cb6c981644ccbbd74
 msgid "Footnotes"
 msgstr ""
 
-#: ../../intro.rst:62 8ef61119915640da8cd8a62c47ff5045
+#: ../../intro.rst:62 2e69a19fafd4496a807b251c4b552970
 msgid ""
 "PyMuPDF generally only supports Python versions that are still maintained"
 " by the Python Software Foundation. Once a Python version is being "
@@ -201,7 +201,7 @@ msgid ""
 "version."
 msgstr ""
 
-#: ../../footer.rst:-1 9412be7adf4e4baabc139a1ddcd00f05
+#: ../../footer.rst:-1 0ab11f60c862437ca09302016f2a54e9
 msgid "Discord logo"
 msgstr ""
 
@@ -220,5 +220,10 @@ msgstr ""
 #~ msgid ""
 #~ "This documentation covers **PyMuPDF v1.23.4**"
 #~ " features as of **2023-09-26 00:00:01**."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This documentation covers **PyMuPDF v1.23.5**"
+#~ " features as of **2023-10-11 00:00:01**."
 #~ msgstr ""
 

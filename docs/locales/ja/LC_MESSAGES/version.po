@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 13:37+0100\n"
+"POT-Creation-Date: 2023-12-21 13:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,13 +19,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../version.rst:3 fbf2a6aeb1dc48acbad9119b22d60cd0
+#: ../../version.rst:3 30dbb59aa89f43f996724a33f64e7746
 msgid ""
-"This documentation covers **PyMuPDF v1.23.5** features as of **2023-10-11"
+"This documentation covers **PyMuPDF v1.23.8** features as of **2023-12-19"
 " 00:00:01**."
 msgstr ""
 
-#: ../../version.rst:5 bfc39fd440ff48e59cddb78cc73f80f1
+#: ../../version.rst:5 44efbe24e53a4013b440119bf903d853
 msgid ""
 "The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
@@ -41,5 +41,10 @@ msgstr ""
 #~ msgid ""
 #~ "This documentation covers **PyMuPDF v1.23.4**"
 #~ " features as of **2023-09-26 00:00:01**."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This documentation covers **PyMuPDF v1.23.5**"
+#~ " features as of **2023-10-11 00:00:01**."
 #~ msgstr ""
 
