@@ -1663,7 +1663,10 @@ def getLinkText(page: fitz.Page, lnk: dict) -> str:
 
     elif lnk["kind"] == fitz.LINK_NAMED:
         txt = fitz.annot_skel["named"]  # annot_named
-        annot = txt % (lnk["name"], rect)
+        lname = lnk.get("name")  # check presence of key
+        if lname is None:  # if missing, fall back to alternative
+            lname = lnk["nameddest"]
+        annot = txt % (lname, rect)
     if not annot:
         return annot
 
