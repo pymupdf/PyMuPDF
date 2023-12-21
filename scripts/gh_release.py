@@ -68,13 +68,16 @@ Example usage:
 '''
 
 import glob
+import inspect
 import os
 import platform
 import shlex
-import sys
 import subprocess
+import sys
 import textwrap
 
+
+pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
 def main():
 
@@ -284,7 +287,6 @@ def build( platform_=None, valgrind=False):
             valgrind_text = ' --valgrind 1'
         env_set('CIBW_TEST_COMMAND', f'python {{project}}/scripts/gh_release.py{valgrind_text} test {{project}} {{package}}')
     
-    pymupdf_dir = os.path.abspath( f'{__file__}/../..')
     if pymupdf_dir != os.path.abspath( os.getcwd()):
         log( f'Changing dir to {pymupdf_dir=}')
         os.chdir( pymupdf_dir)
@@ -392,7 +394,15 @@ def build_pyodide_wheel( implementations):
     run('ls -l wheelhouse/')
 
 
-def venv( command=None, packages=None):
+def cpu_bits():
+    return 32 if sys.maxsize == 2**31 - 1 else 64
+
+
+# Name of venv used by `venv()`.
+#
+venv_name = f'venv-pymupdf-{platform.python_version()}-{cpu_bits()}'
+
+def venv( command=None, packages=None, quick=False):
     '''
     Runs remaining args, or the specified command if present, in a venv.
     
@@ -401,8 +411,10 @@ def venv( command=None, packages=None):
         to run the venv's python.
     packages:
         List of packages (or comma-separated string) to install.
+    quick:
+        If true and venv directory already exists, we don't recreate venv or
+        install Python packages in it.
     '''
-    venv_name = f'venv-pymupdf-{platform.python_version()}-{cpu_bits()}'
     command2 = ''
     ssp = ''
     if platform.system() == 'OpenBSD':
@@ -414,16 +426,23 @@ def venv( command=None, packages=None):
         log(f'OpenBSD: system package `py3-llvm` must be installed.')
         log(f'OpenBSD: creating venv with --system-site-packages.')
         log(f'OpenBSD: `pip install .../PyMuPDF` must be preceded by install of swig etc.')
-    command2 += f'{sys.executable} -m venv{ssp} {venv_name}'
+    if quick and os.path.isdir(venv_name):
+        log(f'{quick=}: Not creating venv because directory already exists: {venv_name}')
+        command2 += 'true'
+    else:
+        command2 += f'{sys.executable} -m venv{ssp} {venv_name}'
     if platform.system() == 'Windows':
         command2 += f' && {venv_name}\\Scripts\\activate'
     else:
         command2 += f' && . {venv_name}/bin/activate'
-    command2 += ' && python -m pip install --upgrade pip'
-    if packages:
-        if isinstance(packages, str):
-            packages = packages.split(',')
-        command2 += ' && pip install ' + ' '.join(packages)
+    if quick:
+        log(f'{quick=}: Not upgrading pip or installing packages.')
+    else:
+        command2 += ' && python -m pip install --upgrade pip'
+        if packages:
+            if isinstance(packages, str):
+                packages = packages.split(',')
+            command2 += ' && pip install ' + ' '.join(packages)
     command2 += ' &&'
     if isinstance( command, str):
         command2 += ' ' + command
@@ -578,40 +597,49 @@ def pyodide_setup(clean=False):
 
 
 if platform.system() == 'Windows':
-    def relpath(path):
+    def relpath(path, start=None):
         try:
-            return os.path.relpath(__file__)
+            return os.path.relpath(path, start)
         except ValueError:
             # os.path.relpath() fails if trying to change drives.
-            return os.path.abspath(__file__)
+            return os.path.abspath(path)
 else:
-    def relpath(path):
-        return os.path.relpath(__file__)
+    def relpath(path, start=None):
+        return os.path.relpath(path, start)
 
 
-def log(text):
-    print(f'{relpath(__file__)}: {text}')
+def log(text, caller=0):
+    '''
+    Writes `text` to stdout with prefix showing caller path relative to
+    pymupdf_dir and fn name.
+    '''
+    frame_record = inspect.stack( context=0)[ caller+1]
+    filename    = frame_record.filename
+    line        = frame_record.lineno
+    function    = frame_record.function
+    prefix = f'{relpath(filename, pymupdf_dir)}:{function}(): '
+    print(textwrap.indent(text, prefix))
     sys.stdout.flush()
 
 
-def run(command, env_extra=None, env=None, check=1):
-    if env is None:
-        env = add_env(env_extra)
-    else:
-        assert env_extra is None
-    log(f'Running: {command}')
-    sys.stdout.flush()
-    subprocess.run(command, check=check, shell=1, env=env)
-
-
-def add_env(env_extra):
-    env = os.environ.copy()
+def run(command, env_extra=None, check=1):
+    '''
+    Runs a command using subprocess.run().
+    Args:
+        command:
+            The command to run.
+        env_extra:
+            None or dict containing extra environment variable settings to add
+            to os.environ.
+        check:
+            Whether to raise exception if command fails.
+    '''
+    env = None
     if env_extra:
+        env = os.environ.copy()
         env.update(env_extra)
-        log(f'Adding environment:')
-        for n, v in env_extra.items():
-            log(f'    {n}: {v!r}')
-    return env
+    log(f'Running: {command}')
+    return subprocess.run(command, check=check, shell=1, env=env)
 
 
 def platform_tag():
@@ -624,10 +652,6 @@ def platform_tag():
         #return 'x86_64'
     else:
         assert 0, f'Unrecognised: {platform.system()=}'
-
-
-def cpu_bits():
-    return 32 if sys.maxsize == 2**31 - 1 else 64
 
 
 # If this has changed, need to update
