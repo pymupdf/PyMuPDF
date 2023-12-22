@@ -57,17 +57,18 @@ msgstr "ファイルを開くには、次の手順を実行します。"
 
 #: ../../how-to-open-a-file.rst:36 90fff1bd1d434c4881c8dd82a359cb9f
 msgid "Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`"
-msgstr "間違ったファイル拡張子でファイルを開く"
+msgstr "拡張子の異なるファイルを開く"
 
 #: ../../how-to-open-a-file.rst:38 95e42a36cf6b43df9fa6b622cb89c215
 msgid ""
 "If you have a document with a wrong file extension for its type, you can "
 "still correctly open it."
-msgstr "もしドキュメントのファイル拡張子がその種類に対して間違っていても、正しく開くことができます。"
+msgstr "拡張子がファイルタイプと異なっていても、正しく開くことができます。"
 
 #: ../../how-to-open-a-file.rst:40 7b237598c33445bfa287be10b34f8025
 msgid "Assume that *\"some.file\"* is actually an **XPS**. Open it like so:"
-msgstr "*\"some.file\"* が実際にXPSファイルだと仮定して、以下のようにして開いてください："
+msgstr "例えば *\"some.file\"* が実際には **XPS** ファイルの場合は、以下のようにして開きます："
+
 
 #: ../../how-to-open-a-file.rst:50 5362ac22dd334364a6bb19eac0634525
 msgid ""
@@ -78,7 +79,7 @@ msgid ""
 ":title:`Python` packages like `filetype "
 "<https://pypi.org/project/filetype/>`_ that help you doing this. Also "
 "consult the :ref:`Document` chapter for a full description."
-msgstr "PyMuPDF自体は、ファイルの内容からファイルタイプを判断しようとはしません。ファイルの拡張子などを通じて暗黙的に、または明示的にファイルタイプ情報を提供する責任があります。`filetype <https://pypi.org/project/filetype/>`_ などの純粋なPythonパッケージがこのような操作をサポートしています。また、詳細な説明についてはドキュメントの章を参照してください。"
+msgstr ":title:`PyMuPDF` 自体は、ファイルの内容からファイルタイプを判断しようとはしません。このため、ユーザーがファイルの拡張子などを通じて暗黙的に、または `filetype <https://pypi.org/project/filetype/>`_ パラメーターを通じて明示的にファイルタイプの情報を提供する責任があります。また、詳細な説明については :ref:`Document` の章を参照してください。"
 
 #: ../../how-to-open-a-file.rst:52 a7b28ccde0b8427dae67dbd9d26839d2
 msgid ""
@@ -87,7 +88,7 @@ msgid ""
 "there is no need for additional precautions. Similarly, for memory "
 "documents, you can just specify `doc=fitz.open(stream=mem_area)` to open "
 "it as a :title:`PDF` document."
-msgstr ":title:`PyMuPDF` が不明な/欠落している拡張子のファイルに遭遇した場合、それをPDFとして開こうと試みます。したがって、これらの場合は追加の注意が必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=fitz.open(stream=mem_area)` と指定するだけでPDFドキュメントとして開くことができます"
+msgstr ":title:`PyMuPDF` は不明なファイルや拡張子のないファイルはPDFとして開きます。このため、これらの場合は追加の情報は必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=fitz.open(stream=mem_area)` と指定するだけでPDFドキュメントとして開くことができます。"
 
 #: ../../how-to-open-a-file.rst:54 a81e4d89de054bf4a97fab97a5b7cd04
 msgid ""
