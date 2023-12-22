@@ -21,4 +21,4 @@ jobs:
 
       - name: test_mupdf-master-branch
         run:
-          python scripts/test.py --valgrind 1 buildtest
+          python scripts/test.py -m 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git' --valgrind 1 buildtest
