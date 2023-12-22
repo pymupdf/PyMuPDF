@@ -1,0 +1,47 @@
+name: Build Pyodide wheel
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 5 * * *'
+
+jobs:
+
+  build_pyodide:
+    
+    name: Build pyodide wheel
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        # 2023-12-22: Python-3.12 is known to fail, due to setuptools trying to
+        # import distutils.
+        python-version: ["3.11"]
+
+      # Avoid cancelling of all runs after a single failure.
+      fail-fast: false
+    
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: build_pyodide_wheel
+        env:
+            inputs_sdist: 0
+            inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git"
+            inputs_wheels_default: 0
+            inputs_wheels_linux_pyodide: 1
+            inputs_wheels_implementations: b
+        run:
+          python scripts/gh_release.py build
+
+
+      # Upload generated wheels, to be accessible from github Actions page.
+      #
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./wheelhouse/*.whl
