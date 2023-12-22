@@ -198,7 +198,7 @@ def build( platform_=None, valgrind=False):
     # Build Pyodide wheel if specified.
     #
     if platform.system() == 'Linux' and inputs_wheels_linux_pyodide:
-        build_pyodide_wheel(inputs_wheels_implementations)
+        build_pyodide_wheel(inputs_wheels_implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD)
     
     # Build 
     #
@@ -345,7 +345,7 @@ def build( platform_=None, valgrind=False):
     run( 'ls -lt wheelhouse')
 
 
-def build_pyodide_wheel( implementations):
+def build_pyodide_wheel( implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD):
     '''
     Build Pyodide wheel.
 
@@ -362,6 +362,10 @@ def build_pyodide_wheel( implementations):
 
     # Disable libcrypto because not available in Pyodide.
     env_extra['HAVE_LIBCRYPTO'] = 'no'
+
+    # Set PYMUPDF_SETUP_MUPDF_BUILD.
+    if inputs_PYMUPDF_SETUP_MUPDF_BUILD:
+        env_extra['PYMUPDF_SETUP_MUPDF_BUILD'] = inputs_PYMUPDF_SETUP_MUPDF_BUILD
 
     # Tell MuPDF to build for Pyodide.
     env_extra['OS'] = 'pyodide'
