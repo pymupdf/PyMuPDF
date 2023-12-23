@@ -224,3 +224,21 @@ def test_2270():
                 assert textBox.get_textbox(textBox.rect) == 'abc123'
                 assert textBox.info['content'] == 'abc123'
 
+def test_2934_add_redact_annot():
+    '''
+    Test fix for bug mentioned in #2934.
+    '''
+    path = os.path.abspath(f'{__file__}/../../tests/resources/mupdf_explored.pdf')
+    with open(path, 'rb') as f:
+        data = f.read()
+    doc = fitz.Document(stream=data)
+    print(f'Is PDF: {doc.is_pdf}')
+    print(f'Number of pages: {doc.page_count}')
+
+    import json
+    page=doc[0]
+    page_json_str =doc[0].get_text("json")
+    page_json_data = json.loads(page_json_str)
+    span=page_json_data.get("blocks")[0].get("lines")[0].get("spans")[0]
+    page.add_redact_annot(span["bbox"], text="")
+    page.apply_redactions()

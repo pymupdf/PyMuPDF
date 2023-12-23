@@ -17002,8 +17002,10 @@ def JM_quad_from_py(r):
         return mupdf.fz_quad_from_rect(JM_rect_from_py(r))
 
     for i in range(4):
+        if i >= len(r):
+            return q    # invalid: cancel the rest
         obj = r[i]  # next point item
-        if not obj.m_internal or not PySequence_Check(obj) or PySequence_Size(obj) != 2:
+        if not PySequence_Check(obj) or PySequence_Size(obj) != 2:
             return q    # invalid: cancel the rest
 
         p[i].x = JM_FLOAT_ITEM(obj, 0)
