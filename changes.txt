@@ -2,6 +2,27 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.9? ()**
+
+* Default to new "rebased" implementation.
+  * The old "classic" implementation is available with `import fitz_old as fitz`.
+  * For more information about why we are changing to the rebased implementation,
+    see: https://github.com/pymupdf/PyMuPDF/discussions/2680
+
+* Bug fixes (rebased implementation only):
+
+  * **Fixed** `2911 <https://github.com/pymupdf/PyMuPDF/issues/2911>`_: Page.derotation_matrix returns a tuple instead of a Matrix with rebased implementation
+  * **Fixed** `2919 <https://github.com/pymupdf/PyMuPDF/issues/2919>`_: Rebased version: KeyError in resolve_names when merging pdfs
+  * **Fixed** `2922 <https://github.com/pymupdf/PyMuPDF/issues/2922>`_: New feature that allows inserting named-destination links doesn't work
+  * **Fixed** `2943 <https://github.com/pymupdf/PyMuPDF/issues/2943>`_: ZeroDivisionError: float division by zero when use apply_redactions()
+
+* Other:
+
+  * Fixed issue with add_redact_annot() mentioned in #2934.
+  * Fixed rebased `fitz.pymupdf_version_tuple` - was previously set to mupdf version.
+  * Improved `scripts/test.py` to help investigation of MuPDF issues.
+
+
 **Changes in version 1.23.8 (2023-12-19)**
 
 * Bug fixes (rebased implementation only):
