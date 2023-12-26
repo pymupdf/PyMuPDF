@@ -16982,8 +16982,9 @@ def JM_py_from_rect(r):
 def JM_quad_from_py(r):
     if isinstance(r, mupdf.FzQuad):
         return r
-    if isinstance( r, Rect):
-        r = mupdf.FzRect( r.x0, r.y0, r.x1, r.y1)
+    # cover all cases of 4-float-sequences
+    if hasattr(r, "__getitem__") and len(r) == 4 and hasattr(r[0], "__float__"):
+        r = mupdf.FzRect(*tuple(r))
     if isinstance( r, mupdf.FzRect):
         return mupdf.fz_quad_from_rect( r)
     if isinstance( r, Quad):
