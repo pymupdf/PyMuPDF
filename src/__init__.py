@@ -9247,7 +9247,7 @@ class Page:
         """Page rotation."""
         CheckParent(self)
         page = self.this if isinstance(self.this, mupdf.PdfPage) else mupdf.pdf_page_from_fz_page(self.this)
-        if not page:
+        if not page.m_internal:
             return 0
         return JM_page_rotation(page)
 
