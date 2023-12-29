@@ -18,7 +18,7 @@ You can also try without installing by visiting [PyMuPDF.io](https://pymupdf.io/
 
 Basic usage is as follows:
 
-```
+```python
 import fitz # imports the pymupdf library
 doc = fitz.open("example.pdf") # open a document
 for page in doc: # iterate the document pages
