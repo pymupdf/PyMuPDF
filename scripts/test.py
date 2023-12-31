@@ -2,8 +2,6 @@
 
 '''Developer build/test script for PyMuPDF.
 
-Unlike gh_release.py, we build directly, not with cibuildwheel.
-
 Examples:
 
     ./PyMuPDF/scripts/test.py --mupdf mupdf buildtest
@@ -21,18 +19,25 @@ Examples:
 Usage:
     scripts/test.py <options> <commands>
 
-Commands are handled in order, so for example `build` should usually be before
-`test`.
+* Commands are handled in order, so for example `build` should usually be
+  before `test`.
 
-If we are not already running inside a Python venv, we automatically create a
-venv and re-run ourselves inside it.
+* If we are not already running inside a Python venv, we automatically create a
+  venv and re-run ourselves inside it.
+
+* We build directly with pip (unlike gh_release.py, which builds with
+  cibuildwheel).
+
+* We run tests with pytest.
 
 Options:
     --help
     -h
         Show help.
     --build-isolation 0|1
-        .
+        If true (the default on non-OpenBSD systems), we let pip create and use
+        its own new venv to build PyMuPDF. Otherwise we force pip to use the
+        current venv.
     -b <build>
         Set build type for `build` or `buildtest` commands. `<build>` should
         be one of 'release', 'debug', 'memento'. [This makes `build` set
@@ -46,7 +51,7 @@ Options:
              'c' - classic.
              'r' - rebased.
              'R' - rebased without optimisations.
-            Default is 'crR'.
+            Default is 'crR'. Also see `PyMuPDF:tests/run_compound.py`.
     -m <location> | --mupdf <location>
         Location of local mupdf/ directory or 'git:...' to be used
         when building PyMuPDF. [This sets environment variable
@@ -217,6 +222,16 @@ def venv_info(pytest_args=None):
 
 
 def build(build_type=None, build_isolation=None, venv_quick=False):
+    '''
+    Args:
+        build_type:
+            See top-level option `-b`.
+        build_isolation:
+            See top-level option `--build-isolation`.
+        venv_quick:
+            See top-level option `-v`.
+            
+    '''
     print(f'{build_type=}')
     print(f'{build_isolation=}')
     
@@ -228,9 +243,12 @@ def build(build_type=None, build_isolation=None, venv_quick=False):
             build_isolation = False
     
     if build_isolation:
+        # This is the default on non-OpenBSD.
         build_isolation_text = ''
     else:
-        # Manually install required packages from pyproject.toml.
+        # Not using build isolation - i.e. pip will not be using its own clean
+        # venv, so we need to explicitly install required packages.  Manually
+        # install required packages from pyproject.toml.
         ppt = os.path.abspath(f'{__file__}/../../pyproject.toml')
         with open(ppt) as f:
             for line in f:
@@ -243,6 +261,7 @@ def build(build_type=None, build_isolation=None, venv_quick=False):
         if platform.system() == 'OpenBSD':
             # libclang not available. We require system already has py3-llvm
             # installed.
+            log(f'OpenBSD: libclang not available; assuming system package py3-llvm is installed.')
             names = names.replace('libclang', '')
         if venv_quick:
             log(f'{venv_quick=}: Not installing packages with pip: {names}')
@@ -257,6 +276,19 @@ def build(build_type=None, build_isolation=None, venv_quick=False):
 
 
 def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_options=None):
+    '''
+    Args:
+        implementations:
+            See top-level option `-i`.
+        valgrind:
+            See top-level option `--valgrind`.
+        venv_quick:
+            See top-level option `-v`.
+        test_name:
+            See top-level option `-t`.
+        pytest_options:
+            See top-level option `-p`.
+    '''
     pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
     if pytest_options is None:
         if valgrind:
@@ -318,3 +350,5 @@ if __name__ == '__main__':
         # generated diagnostics.
         log(f'{e}')
         sys.exit(1)
+    # Other exceptions should not happen, and will generate a full Python
+    # backtrace etc here.
