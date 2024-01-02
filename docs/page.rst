@@ -635,9 +635,10 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: overlay; insert_htmlbox
       pair: rotate; insert_htmlbox
       pair: oc; insert_htmlbox
+      pair: opacity; insert_htmlbox
       pair: morph; insert_htmlbox
 
-   .. method:: insert_htmlbox(rect, text, *, css=None, scale_low=0, archive=None, rotate=0, oc=0, overlay=True)
+   .. method:: insert_htmlbox(rect, text, *, css=None, scale_low=0, archive=None, rotate=0, oc=0, opacity=1, overlay=True)
 
       * New in v1.23.8
 
@@ -645,7 +646,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * Parameter `text` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
 
-      * Automatic line breaks are inserted at word boundaries. The "soft hyphen" character `"&#173;"` can be used to cause hyphenation and thus also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag `<br>` - `"\\n"` is ignored and will be treated like a space.
+      * Automatic line breaks are generated at word boundaries. The "soft hyphen" character `"&#173;"` (or `&shy;`) can be used to cause hyphenation and thus may also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag `<br>` - `"\\n"` is ignored and will be treated like a space.
 
       * With this method the following can be achieved:
 
@@ -676,6 +677,7 @@ In a nutshell, this is what you can do with PyMuPDF:
           .. image:: images/img-rotate.*
 
       :arg int oc:  the xref of an :data:`OCG` / :data:`OCMD` or 0. Please refer to :meth:`Page.show_pdf_page` for details.
+      :arg float opacity: set the fill and stroke opacity for the content in the rectangle. Only values `0 <= opacity < 1` are considered.
       :arg bool overlay: put the text in front of other content. Please refer to :meth:`Page.show_pdf_page` for details.
 
       :returns: A tuple of floats `(spare_height, scale)`.

@@ -1856,6 +1856,7 @@ def insert_htmlbox(
     archive=None,
     rotate=0,
     oc=0,
+    opacity=1,
     overlay=True,
 ) -> float:
     """Insert text with optional HTML tags and stylings into a rectangle.
@@ -1871,13 +1872,14 @@ def insert_htmlbox(
         archive: Archive object pointing to locations of used fonts or images
         rotate: (int) rotate the text in the box by a multiple of 90 degrees.
         oc: (int) the xref of an OCG / OCMD (Optional Content).
+        opacity: (float) set opacity of inserted content.
         overlay: (bool) put text on top of page content.
     Returns:
         A tuple of floats (spare_height, scale).
         spare_height: -1 if content did not fit, else >= 0. It is the height of the
                unused (still available) rectangle stripe. Positive only if
                scale_min = 1 (no down scaling).
-        scale: downscaling factor, 0 < scale <= 1. Set to 0 if spare_height = -1.
+        scale: downscaling factor, 0 < scale <= 1. Set to 0 if spare_height = -1 (no fit).
     """
 
     # normalize rotation angle
@@ -1910,7 +1912,6 @@ def insert_htmlbox(
         story = text
     else:
         raise ValueError("'text' must be a string or a Story")
-
     # ----------------------------------------------------------------
     # Find a scaling factor that lets our story fit in
     # ----------------------------------------------------------------
@@ -1934,6 +1935,15 @@ def insert_htmlbox(
 
     # draw story on temp PDF page
     doc = story.write_with_links(rect_function)
+
+    # Insert opacity if requested.
+    # For this, we prepend a command to the /Contents.
+    if 0 <= opacity < 1:
+        tpage = doc[0]  # load page
+        # generate /ExtGstate for the page
+        alp0 = tpage._set_opacity(CA=opacity, ca=opacity)
+        s = f"/{alp0} gs\n"  # generate graphic state command
+        fitz.TOOLS._insert_contents(tpage, s.encode(), 0)
 
     # put result in target page
     page.show_pdf_page(rect, doc, 0, rotate=rotate, oc=oc, overlay=overlay)
