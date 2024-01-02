@@ -236,3 +236,22 @@ def test_htmlbox2():
         assert 0 < spare_height < rect.height
         bottoms.add(spare_height)
     assert len(bottoms) == 1  # same result for all rotations
+
+
+def test_htmlbox3():
+    """Test insertion with opacity"""
+    if not hasattr(fitz, "mupdf"):
+        print("'test_htmlbox3' not executed in classic.")
+        return
+
+    rect = fitz.Rect(100, 250, 300, 350)
+    text = """<span style="color:red;font-size:20px;">Just some text.</span>"""
+    doc = fitz.open()
+    page = doc.new_page()
+
+    # insert some text with opacity
+    page.insert_htmlbox(rect, text, opacity=0.5)
+
+    # lowlevel-extract inserted text to access opacity
+    span = page.get_texttrace()[0]
+    assert span["opacity"] == 0.5
