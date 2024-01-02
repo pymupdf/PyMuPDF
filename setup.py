@@ -1073,7 +1073,7 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 #
 
 version = '1.23.9rc1'
-version_b = '1.23.7'
+version_b = '1.23.9rc1'
 
 tag_python = None
 requires_dist = None,
