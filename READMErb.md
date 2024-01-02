@@ -1,4 +1,4 @@
-# PyMuPDF 1.23.7
+# PyMuPDF 1.23.9rc1
 
 This wheel contains MuPDF shared libraries for use by PyMuPDF.
 
