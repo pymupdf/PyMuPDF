@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.23.9? ()**
+**Changes in version 1.23.9rc1 (2024-01-02)**
 
 * Default to new "rebased" implementation.
   * The old "classic" implementation is available with `import fitz_old as fitz`.
@@ -21,6 +21,8 @@ Change Log
   * Fixed issue with add_redact_annot() mentioned in #2934.
   * Fixed rebased `fitz.pymupdf_version_tuple` - was previously set to mupdf version.
   * Improved `scripts/test.py` to help investigation of MuPDF issues.
+  * Fixed `Page.rotation()` to return 0 for non-PDF documents instead of raising an exception.
+  * Fixed internal quad detection to cope with any Python sequence.
 
 
 **Changes in version 1.23.8 (2023-12-19)**
