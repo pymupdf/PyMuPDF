@@ -20840,6 +20840,7 @@ def retainpages(doc, liste):
     olddests = mupdf.pdf_load_name_tree(doc, PDF_NAME('Dests'))
     outlines = mupdf.pdf_dict_get(oldroot, PDF_NAME('Outlines'))
     ocproperties = mupdf.pdf_dict_get(oldroot, PDF_NAME('OCProperties'))
+    names_list = None
 
     root = mupdf.pdf_new_dict(doc, 3)
     mupdf.pdf_dict_put(root, PDF_NAME('Type'), mupdf.pdf_dict_get(oldroot, PDF_NAME('Type')))
@@ -20954,7 +20955,7 @@ def sRGB_to_rgb(srgb: int) -> tuple:
 
 
 def string_in_names_list(p, names_list):
-    n = mupdf.pdf_array_len( names_list)
+    n = mupdf.pdf_array_len( names_list) if names_list else 0
     str_ = mupdf.pdf_to_text_string( p)
     for i in range(0, n, 2):
         if mupdf.pdf_to_text_string( mupdf.pdf_array_get( names_list, i)) == str_:
