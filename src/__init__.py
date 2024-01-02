@@ -21766,13 +21766,21 @@ TextWriter.fill_textbox     = utils.fill_textbox
 class FitzDeprecation(DeprecationWarning):
     pass
 
+def int_rc(text):
+    '''
+    Converts string to int, ignoring trailing 'rc...'.
+    '''
+    rc = text.find('rc')
+    if rc >= 0:
+        text = text[:rc]
+    return int(text)
 
 VersionFitz = "1.23.7" # MuPDF version.
 VersionBind = "1.23.9rc1" # PyMuPDF version.
 VersionDate = "2024-01-02 00:00:01"
 VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
 version = (VersionBind, VersionFitz, VersionDate2)
-pymupdf_version_tuple = tuple( [int(i) for i in VersionBind.split('.')])
+pymupdf_version_tuple = tuple( [int_rc(i) for i in VersionBind.split('.')])
 
 def restore_aliases():
     warnings.filterwarnings( "once", category=FitzDeprecation)
