@@ -242,3 +242,13 @@ def test_2934_add_redact_annot():
     span=page_json_data.get("blocks")[0].get("lines")[0].get("spans")[0]
     page.add_redact_annot(span["bbox"], text="")
     page.apply_redactions()
+
+def test_2969():
+    '''
+    https://github.com/pymupdf/PyMuPDF/issues/2969
+    '''
+    path = os.path.abspath(f'{__file__}/../../tests/resources/test_2969.pdf')
+    doc = fitz.open(path)
+    page = doc[0]
+    first_annot = list(page.annots())[0]
+    first_annot.next
