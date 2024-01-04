@@ -414,8 +414,8 @@ class Annot:
             rect = mupdf.pdf_dict_get_rect(ap, PDF_NAME('BBox'))
             val = JM_py_from_rect(rect)
 
-        val = Rect(val) * self.parent.transformation_matrix
-        val *= self.parent.derotationMatrix
+        val = Rect(val) * self.get_parent().transformation_matrix
+        val *= self.get_parent().derotationMatrix
         return val
 
     @property
@@ -797,7 +797,7 @@ class Annot:
         if not val:
             return None
         val.thisown = True
-        assert val.parent.this.m_internal_value() == self.parent.this.m_internal_value()
+        assert val.get_parent().this.m_internal_value() == self.get_parent().this.m_internal_value()
         val.parent._annot_refs[id(val)] = val
 
         if val.type[0] == mupdf.PDF_ANNOT_WIDGET:
@@ -831,8 +831,8 @@ class Annot:
         val = JM_py_from_rect(rect)
         #log( '{val=}')
         
-        val = Rect(val) * self.parent.transformation_matrix
-        val *= self.parent.derotation_matrix
+        val = Rect(val) * self.get_parent().transformation_matrix
+        val *= self.get_parent().derotation_matrix
         
         return val
 
@@ -898,7 +898,7 @@ class Annot:
         Set annotation appearance bbox.
         """
         CheckParent(self)
-        page = self.parent
+        page = self.get_parent()
         rot = page.rotationMatrix
         mat = page.transformation_matrix
         bbox *= rot * ~mat
@@ -981,7 +981,7 @@ class Annot:
         Use either a dict or the direct arguments.
         """
         CheckParent(self)
-        doc = self.parent.parent
+        doc = self.get_parent().parent
         if type(colors) is not dict:
             colors = {"fill": fill, "stroke": stroke}
         fill = colors.get("fill")
