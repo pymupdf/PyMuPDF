@@ -661,7 +661,7 @@ def platform_tag():
 # If this has changed, need to update
 # .github/workflows/*.yml.
 #
-test_packages = 'pytest fontTools psutil pymupdf-fonts'
+test_packages = 'pytest fontTools psutil pymupdf-fonts flake8'
 if platform.system() == 'Windows' and cpu_bits() == 32:
     # No pillow wheel available, and doesn't build easily.
     pass

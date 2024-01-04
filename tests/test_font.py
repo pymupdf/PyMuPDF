@@ -60,7 +60,6 @@ def test_2608():
 
 def test_fontarchive():
     import subprocess
-    subprocess.run('pip install pymupdf-fonts', shell=1, check=1)
     arch = fitz.Archive()
     css = fitz.css_for_pymupdf_font("notos", archive=arch, name="sans-serif")
     print(css)
