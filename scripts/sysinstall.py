@@ -20,9 +20,6 @@ Args:
         exists we run `git pull` in it; otherwise we run `git
         clone` with `git_args`. For example:
             --mupdf-git "--branch master https://github.com/ArtifexSoftware/mupdf.git"
-    --mupdf-packages 0|1
-        If 1 (the default) we install system packages required by MuPDF, using
-        `sudo apt install`.
     --pymupdf-dir <pymupdf_dir>
         Path of PyMuPDF checkout; default is 'PyMuPDF'.
     --prefix:
@@ -59,6 +56,23 @@ import subprocess
 import sys
 
 
+# Requirements for a system build and install:
+#
+# system packages (Debian names):
+#
+g_sys_packages = [
+        'libfreetype-dev',
+        'libgumbo-dev',
+        'libharfbuzz-dev',
+        'libjbig2dec-dev',
+        'libjpeg-dev',
+        'libleptonica-dev',
+        'libopenjp2-7-dev',
+        ]
+# We also need libtesseract-dev version 5.
+#
+
+
 def main():
     
     if 1:
@@ -73,7 +87,6 @@ def main():
     mupdf = True
     mupdf_dir = 'mupdf'
     mupdf_git = None
-    mupdf_packages = True
     prefix = '/usr/local'
     pymupdf = True
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')
@@ -95,7 +108,6 @@ def main():
             return
         elif arg == '--mupdf-dir':      mupdf_dir = next(args)
         elif arg == '--mupdf-git':      mupdf_git = next(args)
-        elif arg == '--mupdf-packages': mupdf_packages = next(args)
         elif arg == '--prefix':         prefix = next(args)
         elif arg == '--pymupdf-dir':    pymupdf_dir = next(args)
         elif arg == '--root':           root = next(args)
@@ -111,34 +123,25 @@ def main():
     root = os.path.abspath(root)
     root_prefix = f'{root}{prefix}'.replace('//', '/')
     
+    def run(command):
+        return run_command(command, doit=mupdf)
     # Get MuPDF from git if specified.
     #
     if mupdf_git:
         # Update existing checkout or do `git clone`.
         if os.path.exists(mupdf_dir):
             print(f'## Update MuPDF checkout {mupdf_dir}.')
-            run_command(f'cd {mupdf_dir} && git pull && git submodule update --init')
+            run(f'cd {mupdf_dir} && git pull && git submodule update --init')
         else:
             # No existing git checkout, so do a fresh clone.
             print(f'## Clone MuPDF into {mupdf_dir}.')
-            run_command(f'git clone --recursive --depth 1 --shallow-submodules {mupdf_git} {mupdf_dir}')
+            run(f'git clone --recursive --depth 1 --shallow-submodules {mupdf_git} {mupdf_dir}')
     
     # Install required system packages. We assume a Debian package system.
     #
     print('## Install system packages required by MuPDF.')
-    def run(command):
-        return run_command(command, doit=mupdf_packages)
-    run_command(f'sudo apt update')
-    sys_packages = [
-            'libfreetype-dev',
-            'libgumbo-dev',
-            'libharfbuzz-dev',
-            'libjbig2dec-dev',
-            'libjpeg-dev',
-            'libleptonica-dev',
-            'libopenjp2-7-dev',
-            ]
-    run_command(f'sudo apt install {" ".join(sys_packages)}')
+    run(f'sudo apt update')
+    run(f'sudo apt install {" ".join(g_sys_packages)}')
     # Ubuntu-22.04 has freeglut3-dev, not libglut-dev.
     run(f'sudo apt install libglut-dev | sudo apt install freeglut3-dev')
     if tesseract5:
@@ -155,8 +158,6 @@ def main():
     # Build+install MuPDF. We use mupd:Makefile's install-shared-python target.
     #
     print('## Build and install MuPDF.')
-    def run(command):
-        return run_command(command, doit=mupdf)
     if 1:
         # Current MuPDF creates softlinks with `ln -s` which breaks if there
         # was a previous build; it should do `ln -sf`. We make things work by
@@ -199,7 +200,7 @@ def main():
     def run(command):
         return run_command(command, doit=test)
     import gh_release
-    # Create and venv and install
+    # Create venv.
     run(f'{sys.executable} -m venv {test_venv}')
     # Install required packages.
     command = f'. {test_venv}/bin/activate'
