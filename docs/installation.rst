@@ -195,6 +195,12 @@ not generally supported:
   command line.
 
 
+Packaging
+---------
+
+See :doc:`packaging`.
+
+
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
