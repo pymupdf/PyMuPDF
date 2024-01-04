@@ -249,15 +249,7 @@ def build(build_type=None, build_isolation=None, venv_quick=False):
         # Not using build isolation - i.e. pip will not be using its own clean
         # venv, so we need to explicitly install required packages.  Manually
         # install required packages from pyproject.toml.
-        ppt = os.path.abspath(f'{__file__}/../../pyproject.toml')
-        with open(ppt) as f:
-            for line in f:
-                m = re.match('^requires = \\[(.*)\\]$', line)
-                if m:
-                    names = m.group(1).replace(',', ' ').replace('"', '')
-                    break
-            else:
-                assert 0, f'Failed to find "requires" line in {ppt}'
+        names = get_pyproject_required()
         if platform.system() == 'OpenBSD':
             # libclang not available. We require system already has py3-llvm
             # installed.
@@ -336,6 +328,22 @@ def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_opt
             
     finally:
         log('\n' + venv_info(pytest_args=f'{pytest_options} {pytest_arg}'))
+
+
+def get_pyproject_required():
+    '''
+    Returns space-separated names of required packages in pyproject.toml.  We
+    do not do a proper parse and rely on the packages being in a single line.
+    '''
+    ppt = os.path.abspath(f'{__file__}/../../pyproject.toml')
+    with open(ppt) as f:
+        for line in f:
+            m = re.match('^requires = \\[(.*)\\]$', line)
+            if m:
+                names = m.group(1).replace(',', ' ').replace('"', '')
+                return names
+        else:
+            assert 0, f'Failed to find "requires" line in {ppt}'
 
 
 def log(text):
