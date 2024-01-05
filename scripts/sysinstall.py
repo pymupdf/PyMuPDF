@@ -59,6 +59,7 @@ import os
 import platform
 import subprocess
 import sys
+import sysconfig
 
 
 # Requirements for a system build and install:
@@ -86,6 +87,7 @@ def main():
         print(f'{platform.python_version()=}')
         print(f'{__file__=}')
         print(f'{sys.argv=}')
+        print(f'{sysconfig.get_path("platlib")=}')
     
     # Set default behaviour.
     #
@@ -215,8 +217,8 @@ def main():
         pv = '.'.join(platform.python_version_tuple()[:2])
         p = f'{root_prefix}/lib/python{pv}'
         # `python -m installer` fails to overwrite existing files.
-        run(f'{sudo}rm -r {p}/site-packages/fitz')
-        run(f'{sudo}rm -r {p}/site-packages/PyMuPDF-*.dist-info')
+        run(f'{sudo}rm -r {p}/site-packages/fitz || true')
+        run(f'{sudo}rm -r {p}/site-packages/PyMuPDF-*.dist-info || true')
         run(f'{sudo}{venv}/bin/python -m installer --destdir {root} --prefix {prefix} {wheel}')
         # It seems that MuPDF Python bindings are installed into
         # `.../dist-packages` (from mupdf:Mafile's call of `$(shell python3
@@ -226,13 +228,19 @@ def main():
         # This might be because `sysconfig.get_path('platlib')` returns
         # `.../site-packages` if run in a venv, otherwise `.../dist-packages`.
         #
-        # So we set pythonpath (used later) to import from both these paths.
+        # And on github ubuntu-latest, sysconfig.get_path("platlib") is
+        #   /opt/hostedtoolcache/Python/3.11.7/x64/lib/python3.11/site-packages
         #
-        pythonpath1 = glob.glob(f'{p}/site-packages')
-        pythonpath2 = glob.glob(f'{p}/dist-packages')
-        assert len(pythonpath1) == 1, f'{pythonpath1=}'
-        assert len(pythonpath2) == 1, f'{pythonpath2=}'
-        pythonpath = f'{pythonpath1[0]}:{pythonpath2[0]}'
+        # So we set pythonpath (used later) to import from all `site-packages/`
+        # and `dist-packages` directories within `root`:
+        #
+        pythonpath = list()
+        for dirpath, dirnames, filenames in os.walk(root):
+            for leaf in 'site-packages', 'dist-packages':
+                if leaf in dirnames:
+                    pythonpath.append(os.path.join(dirpath, leaf))
+        pythonpath = ':'.join(pythonpath)
+        print(f'{pythonpath=}')
     else:
         command = f'{env} pip install -vv --root {root} {os.path.abspath(pymupdf_dir)}'
         run( command)
@@ -240,6 +248,7 @@ def main():
         import pipcl
         del sys.path[0]
         pythonpath = pipcl.install_dir(root)
+    run(f'find {root}')
         
     # Run pytest tests.
     #
