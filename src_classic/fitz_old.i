@@ -153,14 +153,16 @@ static void show(const char* prefix, PyObject* obj);
 
 
 // additional headers ----------------------------------------------
+#if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR == 23 && FZ_VERSION_PATCH < 8
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
 fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, float w, float h, const fz_irect *clip);
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
+void fz_write_pixmap_as_jpeg(fz_context *ctx, fz_output *out, fz_pixmap *pix, int jpg_quality);
+#endif
 static const float JM_font_ascender(fz_context *ctx, fz_font *font);
 static const float JM_font_descender(fz_context *ctx, fz_font *font);
-void fz_write_pixmap_as_jpeg(fz_context *ctx, fz_output *out, fz_pixmap *pix, int jpg_quality);
 // end of additional headers --------------------------------------------
 
 static PyObject *JM_mupdf_warnings_store;
@@ -8280,7 +8282,11 @@ Args:
                         break;
                     #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                     case(7):           // JPEG format
+                        #if FZ_VERSION_MINOR == 23 && FZ_VERSION_PATCH < 8
                         fz_write_pixmap_as_jpeg(gctx, out, pm, jpg_quality);
+                        #else
+                        fz_write_pixmap_as_jpeg(gctx, out, pm, jpg_quality, 0 /*invert_cmyk*/);
+                        #endif
                         break;
                     #endif
                     default:
