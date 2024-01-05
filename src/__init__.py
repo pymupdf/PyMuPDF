@@ -9470,12 +9470,13 @@ class Pixmap:
 
         elif args_match(args, (Pixmap, mupdf.FzPixmap), (float, int), (float, int), None):
             # create pixmap as scaled copy of another one
-            assert 0, f'Cannot handle {args=} because fz_scale_pixmap() and fz_scale_pixmap_cached() are not declared in MuPDF headers'
+            if mupdf_version_tuple < (1, 23, 8):
+                assert 0, f'Cannot handle {args=} because fz_scale_pixmap() and fz_scale_pixmap_cached() are not declared in MuPDF headers'
             spix, w, h, clip = args
             src_pix = spix.this if isinstance(spix, Pixmap) else spix
             bbox = JM_irect_from_py(clip)
             if not mupdf.fz_is_infinite_irect(bbox):
-                pm = mupdf.fz_scale_pixmap_cached(src_pix, src_pix.x, src_pix.y, w, h, bbox)
+                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x, src_pix.y, w, h, bbox)
             else:
                 pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x, src_pix.y, w, h, None)
             self.this = pm
@@ -9679,7 +9680,7 @@ class Pixmap:
         elif format_ == 3:  mupdf.fz_write_pixmap_as_pam(out, pm)
         elif format_ == 5:  mupdf.fz_write_pixmap_as_psd(out, pm)
         elif format_ == 6:  mupdf.fz_write_pixmap_as_ps(out, pm)
-        elif format_ == 7:  mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality)
+        elif format_ == 7:  mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality, 0)
         else:               mupdf.fz_write_pixmap_as_png(out, pm)
 
         barray = JM_BinFromBuffer(res)
@@ -10162,10 +10163,10 @@ class Pixmap:
     @property
     def size(self):
         """Pixmap size."""
+        if mupdf_version_tuple >= (1, 23, 8):
+            return  mupdf.fz_pixmap_size( self.this)
         # fz_pixmap_size() is not publically visible, so we implement it
         # ourselves. fixme: we don't add on sizeof(fz_pixmap).
-        #
-        #return mupdf.fz_pixmap_size( self.this)
         pm = self.this
         return pm.n() * pm.w() * pm.h()
 
@@ -20638,94 +20639,97 @@ def paper_sizes():
         "tabloid-extra": (864, 1296),
         }
 
+if mupdf_version_tuple >= (1, 23, 8):
+    def pdf_lookup_page_loc(doc, needle):
+        return mupdf.pdf_lookup_page_loc(doc, needle)
 
-def pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp):
-    assert isinstance(node, mupdf.PdfObj)
-    assert isinstance(skip, list) and len(skip) == 1
-    assert isinstance(indexp, list) and len(indexp) == 1
-    assert isinstance(parentp, list) and len(parentp) == 1 and isinstance(parentp[0], mupdf.PdfObj)
-    # Copy of MuPDF's internal pdf_lookup_page_loc_imp().
-    hit = None
-    stack = []
-    try:
-        while 1:
-            kids = mupdf.pdf_dict_get(node, PDF_NAME('Kids'))
-            len_ = mupdf.pdf_array_len( kids)
+else:
+    def pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp):
+        assert isinstance(node, mupdf.PdfObj)
+        assert isinstance(skip, list) and len(skip) == 1
+        assert isinstance(indexp, list) and len(indexp) == 1
+        assert isinstance(parentp, list) and len(parentp) == 1 and isinstance(parentp[0], mupdf.PdfObj)
+        # Copy of MuPDF's internal pdf_lookup_page_loc_imp().
+        hit = None
+        stack = []
+        try:
+            while 1:
+                kids = mupdf.pdf_dict_get(node, PDF_NAME('Kids'))
+                len_ = mupdf.pdf_array_len( kids)
 
-            if len_ == 0:
-                raise Exception("malformed page tree")
+                if len_ == 0:
+                    raise Exception("malformed page tree")
 
-            # Every node we need to unmark goes into the stack
-            stack.append(node)
+                # Every node we need to unmark goes into the stack
+                stack.append(node)
 
-            if mupdf.pdf_mark_obj( node):
-                raise Exception( "cycle in page tree")
+                if mupdf.pdf_mark_obj( node):
+                    raise Exception( "cycle in page tree")
 
-            for i in range(len_):
-                kid = mupdf.pdf_array_get( kids, i)
-                type_ = mupdf.pdf_dict_get( kid, PDF_NAME('Type'))
-                if type_.m_internal:
-                    a = mupdf.pdf_name_eq( type_, PDF_NAME('Pages'))
-                else:
-                    a = (
-                            mupdf.pdf_dict_get( kid, PDF_NAME('Kids')).m_internal
-                            and not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
-                            )
-                if a:
-                    count = mupdf.pdf_dict_get_int( kid, PDF_NAME('Count'))
-                    if (skip[0] < count):
-                        node = kid
-                        break
-                    else:
-                        skip[0] -= count
-                else:
+                for i in range(len_):
+                    kid = mupdf.pdf_array_get( kids, i)
+                    type_ = mupdf.pdf_dict_get( kid, PDF_NAME('Type'))
                     if type_.m_internal:
-                        a = not mupdf.pdf_name_eq( type_, PDF_NAME('Page'))
+                        a = mupdf.pdf_name_eq( type_, PDF_NAME('Pages'))
                     else:
-                        a = not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
+                        a = (
+                                mupdf.pdf_dict_get( kid, PDF_NAME('Kids')).m_internal
+                                and not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
+                                )
                     if a:
-                        mupdf.fz_warn( f"non-page object in page tree ({mupdf.pdf_to_name( type_)})")
-                    if skip[0] == 0:
-                        parentp[0] = node
-                        indexp[0] = i
-                        hit = kid
-                        break
+                        count = mupdf.pdf_dict_get_int( kid, PDF_NAME('Count'))
+                        if (skip[0] < count):
+                            node = kid
+                            break
+                        else:
+                            skip[0] -= count
                     else:
-                        skip[0] -= 1
+                        if type_.m_internal:
+                            a = not mupdf.pdf_name_eq( type_, PDF_NAME('Page'))
+                        else:
+                            a = not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
+                        if a:
+                            mupdf.fz_warn( f"non-page object in page tree ({mupdf.pdf_to_name( type_)})")
+                        if skip[0] == 0:
+                            parentp[0] = node
+                            indexp[0] = i
+                            hit = kid
+                            break
+                        else:
+                            skip[0] -= 1
 
-            # If i < len && hit != NULL the desired page was found in the
-            # Kids array, done. If i < len && hit == NULL the found page tree
-            # node contains a Kids array that contains the desired page, loop
-            # back to top to extract it. When i == len the Kids array has been
-            # exhausted without finding the desired page, give up.
-            if not ((hit is None or hit.m_internal is None) and i < len_):
-                break
-    finally:
-        for i in range(len(stack), 0, -1): # (i = stack_len; i > 0; i--)
-            mupdf.pdf_unmark_obj( stack[i-1])
+                # If i < len && hit != NULL the desired page was found in the
+                # Kids array, done. If i < len && hit == NULL the found page tree
+                # node contains a Kids array that contains the desired page, loop
+                # back to top to extract it. When i == len the Kids array has been
+                # exhausted without finding the desired page, give up.
+                if not ((hit is None or hit.m_internal is None) and i < len_):
+                    break
+        finally:
+            for i in range(len(stack), 0, -1): # (i = stack_len; i > 0; i--)
+                mupdf.pdf_unmark_obj( stack[i-1])
 
-    return hit
+        return hit
 
+    def pdf_lookup_page_loc(doc, needle):
+        '''
+        Copy of MuPDF's internal pdf_lookup_page_loc().
+        '''
+        root = mupdf.pdf_dict_get( mupdf.pdf_trailer( doc), PDF_NAME('Root'))
+        node = mupdf.pdf_dict_get( root, PDF_NAME('Pages'))
+        skip = [needle]
 
-def pdf_lookup_page_loc(doc, needle):
-    '''
-    Copy of MuPDF's internal pdf_lookup_page_loc().
-    '''
-    root = mupdf.pdf_dict_get( mupdf.pdf_trailer( doc), PDF_NAME('Root'))
-    node = mupdf.pdf_dict_get( root, PDF_NAME('Pages'))
-    skip = [needle]
-
-    if not node.m_internal:
-        raise Exception("cannot find page tree")
-    parentp = [mupdf.PdfObj()]
-    indexp = [0]
-    hit = pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp)
-    skip = skip[0]
-    parentp = parentp[0]
-    indexp = indexp[0]
-    if not hit.m_internal:
-        raise Exception("cannot find page %d in page tree" % needle+1)
-    return hit, parentp, indexp  # We don't seem to return skip.
+        if not node.m_internal:
+            raise Exception("cannot find page tree")
+        parentp = [mupdf.PdfObj()]
+        indexp = [0]
+        hit = pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp)
+        skip = skip[0]
+        parentp = parentp[0]
+        indexp = indexp[0]
+        if not hit.m_internal:
+            raise Exception("cannot find page %d in page tree" % needle+1)
+        return hit, parentp, indexp  # We don't seem to return skip.
 
 
 def pdfobj_string(o, prefix=''):
