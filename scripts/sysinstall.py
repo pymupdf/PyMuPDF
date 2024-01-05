@@ -11,6 +11,12 @@ PyMuPDF itself is installed using `python -m install` with a wheel created with
 
 We run install commands with `sudo` if `--root /` is used.
 
+Note that we run some commands with sudo; it's important that these use the
+same python as non-sudo, otherwise things can be build and installed for
+different python versions. For example when we are run from a github action, it
+should not do `- uses: actions/setup-python@v2` but instead use whatever system
+python is already defined.
+
 Args:
 
     --mupdf-dir <mupdf_dir>
@@ -88,6 +94,12 @@ def main():
         print(f'{__file__=}')
         print(f'{sys.argv=}')
         print(f'{sysconfig.get_path("platlib")=}')
+        run_command(f'python -V', check=0)
+        run_command(f'python3 -V', check=0)
+        run_command(f'sudo python -V', check=0)
+        run_command(f'sudo python3 -V', check=0)
+        run_command(f'sudo PATH={os.environ["PATH"]} python -V', check=0)
+        run_command(f'sudo PATH={os.environ["PATH"]} python3 -V', check=0)
     
     # Set default behaviour.
     #
@@ -132,7 +144,9 @@ def main():
     root = os.path.abspath(root)
     root_prefix = f'{root}{prefix}'.replace('//', '/')
     
-    sudo = 'sudo ' if root == '/' else ''
+    sudo = ''
+    if root == '/':
+        sudo = f'sudo PATH={os.environ["PATH"]} '
     def run(command):
         return run_command(command, doit=mupdf)
     # Get MuPDF from git if specified.
@@ -231,14 +245,18 @@ def main():
         # And on github ubuntu-latest, sysconfig.get_path("platlib") is
         #   /opt/hostedtoolcache/Python/3.11.7/x64/lib/python3.11/site-packages
         #
-        # So we set pythonpath (used later) to import from all `site-packages/`
-        # and `dist-packages` directories within `root`:
+        # So we set pythonpath (used later) to import from all
+        # `pythonX.Y/site-packages/` and `pythonX.Y/dist-packages` directories
+        # within `root_prefix`:
         #
+        pv = platform.python_version().split('.')
+        pv = f'python{pv[0]}.{pv[1]}'
         pythonpath = list()
-        for dirpath, dirnames, filenames in os.walk(root):
-            for leaf in 'site-packages', 'dist-packages':
-                if leaf in dirnames:
-                    pythonpath.append(os.path.join(dirpath, leaf))
+        for dirpath, dirnames, filenames in os.walk(root_prefix):
+            if os.path.basename(dirpath) == pv:
+                for leaf in 'site-packages', 'dist-packages':
+                    if leaf in dirnames:
+                        pythonpath.append(os.path.join(dirpath, leaf))
         pythonpath = ':'.join(pythonpath)
         print(f'{pythonpath=}')
     else:
@@ -248,7 +266,10 @@ def main():
         import pipcl
         del sys.path[0]
         pythonpath = pipcl.install_dir(root)
-    run(f'find {root}')
+    
+    # Show contents of installation director. This is very slow on github,
+    # where /usr/local contains lots of things.
+    #run(f'find {root_prefix}|sort')
         
     # Run pytest tests.
     #
