@@ -17,12 +17,20 @@ jobs:
     steps:
 
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          # 3.12 doesn't have setuptools. As of 2024-01-03, MuPDF build requires setuptools before it
-          # sees `--venv` and defers to a venv, so we currently have to force use of python 3.11.
-          python-version: '3.11'
+      
+      # It seems to be important not to install a custom python here,
+      # because `sudo` (which we need to use when installing to /usr/local
+      # etc) always ends up running the default python, even if we set
+      # $PATH etc. So for example we can end up with mupdf files and
+      # pymupdf files being installed into .../python3.11/site-packages and
+      # .../python3.10/site-packages, and tests all fail to import fitz.
+      #
+      #- uses: actions/setup-python@v2
+        #with:
+        #  # 3.12 doesn't have setuptools. As of 2024-01-03, MuPDF build requires setuptools before it
+        #  # sees `--venv` and defers to a venv, so we currently have to force use of python 3.11.
+        #  python-version: '3.11'
 
       - name: sysinstall
         run:
-          python scripts/sysinstall.py --mupdf-git '--branch master https://github.com/ArtifexSoftware/mupdf.git'
+          python3 scripts/sysinstall.py --root / --mupdf-git '--branch master https://github.com/ArtifexSoftware/mupdf.git'
