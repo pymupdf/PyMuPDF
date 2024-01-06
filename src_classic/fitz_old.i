@@ -8282,7 +8282,7 @@ Args:
                         break;
                     #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                     case(7):           // JPEG format
-                        #if FZ_VERSION_MINOR == 23 && FZ_VERSION_PATCH < 8
+                        #if FZ_VERSION_MINOR < 24
                         fz_write_pixmap_as_jpeg(gctx, out, pm, jpg_quality);
                         #else
                         fz_write_pixmap_as_jpeg(gctx, out, pm, jpg_quality, 0 /*invert_cmyk*/);
