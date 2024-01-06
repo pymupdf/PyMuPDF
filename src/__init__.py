@@ -9680,8 +9680,13 @@ class Pixmap:
         elif format_ == 3:  mupdf.fz_write_pixmap_as_pam(out, pm)
         elif format_ == 5:  mupdf.fz_write_pixmap_as_psd(out, pm)
         elif format_ == 6:  mupdf.fz_write_pixmap_as_ps(out, pm)
-        elif format_ == 7:  mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality, 0)
-        else:               mupdf.fz_write_pixmap_as_png(out, pm)
+        elif format_ == 7:
+            if mupdf_version_tuple < (1, 24):
+                mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality)
+            else:
+                mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality, 0)
+        else:
+            mupdf.fz_write_pixmap_as_png(out, pm)
 
         barray = JM_BinFromBuffer(res)
         return barray
