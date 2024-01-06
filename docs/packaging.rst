@@ -63,24 +63,21 @@ General steps
 Use of scripts/sysinstall.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`scripts/sysinstall.py` provides a useful example of build commands
-that are known to to work, because it does a build, install and test
-using a local fake root director and is run regularly by Github action
-`.github/workflows/test_sysinstall.yml`.
+`scripts/sysinstall.py` provides a useful example of build, install and test
+commands that are known to to work, because it is run regularly by Github
+action `.github/workflows/test_sysinstall.yml`.
 
 * Run with `-h` or look at the doc-string to see detailed usage information.
 * It uses Debian-style `apt` commands to install system packages.
 * By default it assumes local git checkouts `mupdf/` and `PyMuPDF/`.
-*
-  It currently installs only into a fake root directory because `pip` cannot
-  do a system install; the commands will need to be modified to install into
-  `/usr` or `/usr/local`.
 
-To run a full build, install and test in a local fake root:
+To run a full build, install and test for both a local fake root and the system
+root:
 
 .. code-block:: shell
 
     ./PyMuPDF/scripts/sysinstall.py
+    ./PyMuPDF/scripts/sysinstall.py --root /
 
 To see what commands would be run without actually running them:
 
