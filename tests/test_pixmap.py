@@ -140,3 +140,9 @@ def test_page_idx_int():
     assert doc[0]
     assert doc[(0,0)]
 
+def test_fz_write_pixmap_as_jpeg():
+    width, height = 13, 37
+    image = fitz.Pixmap(fitz.csGRAY, width, height, b"\x00" * (width * height), False)
+
+    with fitz.Document(stream=image.tobytes(output="jpeg"), filetype="jpeg") as doc:
+        test_pdf_bytes = doc.convert_to_pdf()
