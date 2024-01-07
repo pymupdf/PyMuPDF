@@ -2,6 +2,25 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.9rc2 ()**
+
+* Use MuPDF-1.23.8.
+
+* Bug fixes (rebased implementation only):
+
+  * **Fixed** `2950 <https://github.com/pymupdf/PyMuPDF/issues/2950>`_: Shelling out to pip during tests is problematic
+  * **Fixed** `2961 <https://github.com/pymupdf/PyMuPDF/issues/2961>`_: Passing a string as a page number raises IndexError instead of TypeError.
+  * **Fixed** `2969 <https://github.com/pymupdf/PyMuPDF/issues/2969>`_: annot.next throws AttributeError
+  * **Fixed** `2978 <https://github.com/pymupdf/PyMuPDF/issues/2978>`_: 1.23.9rc1: module 'fitz.mupdf' has no attribute 'fz_copy_pixmap_rect'
+
+* Other:
+
+  * Improved support for Linux system installs, including adding reguslar test on Github.
+  * Add optional setting of opacity to `Page.insert_htmlbox()`.
+  * Add missing `flake8` to `scripts/gh_release.py:test_packages`.
+  * Use newly public functions in MuPDF-1.23.8.
+
+
 **Changes in version 1.23.9rc1 (2024-01-02)**
 
 * Default to new "rebased" implementation.
