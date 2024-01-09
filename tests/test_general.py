@@ -743,3 +743,30 @@ def test_subset_fonts():
                 found = True
                 break
     assert found is True
+
+
+def test_2957():
+    # test file with redactions
+    doc = fitz.open(os.path.join(scriptdir, "resources", "pre-redacted.pdf"))
+    page = doc[0]
+    # search for string that must not move by redactions
+    rects0 = page.search_for("6e9f73dfb4384a2b8af6ebba")
+    # sort rectangles vertically
+    rects0 = sorted(rects0, key=lambda r: r.y1)
+    assert len(rects0) == 2  # must be 2 redactions
+    page.apply_redactions()
+
+    # reload page to finalize updates
+    page = doc.reload_page(page)
+
+    # the two string must retain their positions (except rounding errors)
+    rects1 = page.search_for("6e9f73dfb4384a2b8af6ebba")
+    rects1 = sorted(rects1, key=lambda r: r.y1)
+
+    assert page.first_annot is None  # make sure annotations have disappeared
+    for i in range(2):
+        r0 = rects0[i].irect  # take rounded rects
+        r1 = rects1[i].irect
+        assert r0 == r1
+
+
