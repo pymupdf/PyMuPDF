@@ -1,0 +1,68 @@
+%PDF-1.7
+%µ¶
+
+1 0 obj
+<</Type/Catalog/Pages 2 0 R>>
+endobj
+
+2 0 obj
+<</Type/Pages/Count 1/Kids[3 0 R]>>
+endobj
+
+3 0 obj
+<</Type/Page/MediaBox[0 0 595 842]/Rotate 0/Resources<</Font<</helv 4 0 R>>>>/Parent 2 0 R/Contents 5 0 R/Annots[6 0 R]>>
+endobj
+
+4 0 obj
+<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>
+endobj
+
+5 0 obj
+<</Length 88>>
+stream
+q
+BT
+/helv 11 Tf
+1 0 0 1 100 742 Tm
+(This is some longer text for testing.) Tj
+ET
+Q
+q
+Q
+
+endstream
+endobj
+
+6 0 obj
+<</Type/Annot/Subtype/Redact/P 3 0 R/F 4/Rect[164.78998 738.711 195.35897 753.825]/AP<</N 7 0 R>>/NM(fitz-A0)>>
+endobj
+
+7 0 obj
+<</Type/XObject/Subtype/Form/BBox[164.78998 738.711 195.35897 753.825]/Matrix[1 0 0 1 0 0]/Length 91>>
+stream
+1 0 0 RG
+165.78998 739.711 m
+194.35897 739.711 l
+194.35897 752.825 l
+165.78998 752.825 l
+s
+
+endstream
+endobj
+
+xref
+0 8
+0000000000 65536 f 
+0000000016 00000 n 
+0000000062 00000 n 
+0000000114 00000 n 
+0000000252 00000 n 
+0000000341 00000 n 
+0000000478 00000 n 
+0000000606 00000 n 
+
+trailer
+<</Size 8/Root 1 0 R/ID[<5DBA46E63804DDDC1A5D73C1E31D4DC3><CB2950FD1AE131E58225E2BC2B519386>]>>
+startxref
+834
+%%EOF
