@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.23.9 ()**
+**Changes in version 1.23.9 (2024-01-11)**
 
 * Default to new "rebased" implementation.
 
