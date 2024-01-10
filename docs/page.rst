@@ -678,6 +678,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int oc:  the xref of an :data:`OCG` / :data:`OCMD` or 0. Please refer to :meth:`Page.show_pdf_page` for details.
       :arg float opacity: set the fill and stroke opacity for the content in the rectangle. Only values `0 <= opacity < 1` are considered.
+        New in v1.23.9.
       :arg bool overlay: put the text in front of other content. Please refer to :meth:`Page.show_pdf_page` for details.
 
       :returns: A tuple of floats `(spare_height, scale)`.
