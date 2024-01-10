@@ -2162,6 +2162,20 @@ def _so_suffix():
     return sysconfig.get_config_var('EXT_SUFFIX')
 
 
+def get_soname(path):
+    '''
+    If we are on Linux and `path` is softlink and points to a shared library
+    for which `objdump -p` contains 'SONAME', return the pointee. Otherwise
+    return `path`. Useful if Linux shared libraries have been created with
+    `-Wl,-soname,...`, where we need to embed the versioned library.
+    '''
+    if linux() and os.path.islink(path):
+        path2 = os.path.realpath(path)
+        if subprocess.run(f'objdump -p {path2}|grep SONAME', shell=1, check=0).returncode == 0:
+            return path2
+    return path
+
+
 def install_dir(root=None):
     '''
     Returns install directory used by `install()`.
