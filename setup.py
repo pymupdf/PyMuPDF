@@ -592,7 +592,7 @@ def build():
             elif pyodide:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
             else:
-                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
+                add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
 
     if path_so_leaf_b:
         # Add rebased implementation files.
@@ -622,8 +622,8 @@ def build():
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
             else:
                 add( ret_p, f'{mupdf_build_dir}/_mupdf.so', to_dir)
-                add( ret_b, f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
-                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
+                add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
+                add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
     
     if g_flavour == 'pb':
         ret = ret_p + ret_b
