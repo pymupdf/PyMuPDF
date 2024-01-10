@@ -1400,29 +1400,6 @@ In a nutshell, this is what you can do with PyMuPDF:
         type           "group"
         ============== ============================================================================
 
-
-
-        * *(Changed in v1.18.17)* Key `"opacity"` has been replaced by the new keys `"fill_opacity"` and `"stroke_opacity"`. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
-
-
-        Key `"type"` takes one of the following values:
-
-        * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, irrelevant ones have been added with default values for backward compatibility: `"color"`, `"lineCap"`, `"lineJoin"`, `"width"`, `"closePath"`, `"dashes"` and should be ignored.
-        * **"s"** -- this is a *stroke-only* path. Similar to previous, key `"fill"` is present with value `None`.
-        * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
-
-      Each item in `path["items"]` is one of the following:
-
-      * `("l", p1, p2)` - a line from p1 to p2 (:ref:`Point` objects).
-      * `("c", p1, p2, p3, p4)` - cubic Bézier curve **from p1 to p4** (p2 and p3 are the control points). All objects are of type :ref:`Point`.
-      * `("re", rect, orientation)` - a :ref:`Rect`. *Changed in v1.18.17:* Multiple rectangles within the same path are now detected. *Changed in v1.19.2:* added integer `orientation` which is 1 resp. -1 indicating whether the enclosed area is rotated left (1 = anti-clockwise), or resp. right [#f7]_.
-      * `("qu", quad)` - a :ref:`Quad`. *New in v1.18.17, changed in v1.19.2:* 3 or 4 consecutive lines are detected to actually represent a :ref:`Quad`.
-
-      .. note:: Starting with v1.19.2, quads and rectangles are more reliably recognized as such.
-
-      Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "How to Extract Drawings" of chapter :ref:`FAQ`.
-
-
       .. note:: The method is based on the output of :meth:`Page.get_cdrawings` -- which is much faster, but requires somewhat more attention processing its output.
 
 
