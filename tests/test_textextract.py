@@ -184,7 +184,9 @@ def test_2954():
         assert len(text) == 1
         text = text[0]
         n_fffd = text.count(chr(0xfffd))
-        print(f'{flags=} {n_fffd=} {text=}')
+        if 0:
+            # This print() fails on Windows with UnicodeEncodeError.
+            print(f'{flags=} {n_fffd=} {text=}')
         return text, n_fffd
     
     text_none, n_fffd_none = get()
