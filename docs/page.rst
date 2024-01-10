@@ -373,21 +373,21 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * The `Table` object has the following attributes:
 
-            * **bbox:** the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
-            * **cells:** bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
-            * **extract():** this method returns the text content of each table cell as a list of list of strings.
-            * **to_pandas():** this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_.
-            * **header:** a `TableHeader` object containing header information of the table.
-            * **col_count:** an integer containing the number of table columns.
-            * **row_count:** an integer containing the number of table rows. 
-            * **rows:** a list of `TableRow` objects containing two attributes: *bbox* is the boundary box of the row, and *cells* is a list of table cells contained in this row.
+           * **bbox:** the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
+           * **cells:** bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
+           * **extract():** this method returns the text content of each table cell as a list of list of strings.
+           * **to_pandas():** this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_.
+           * **header:** a `TableHeader` object containing header information of the table.
+           * **col_count:** an integer containing the number of table columns.
+           * **row_count:** an integer containing the number of table rows. 
+           * **rows:** a list of `TableRow` objects containing two attributes: *bbox* is the boundary box of the row, and *cells* is a list of table cells contained in this row.
 
          * The `TableHeader` object has the following attributes:
 
-            * **bbox:** the bounding box of the header.
-            * **cells:** a list of bounding boxes containing the name of the respective column.
-            * **names:** a list of strings containing the text of each of the cell bboxes. They represent the column names -- which can be used when exporting the table to pandas DataFrames or CSV, etc.
-            * **external:** a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if *external* is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first table row is the header.
+           * **bbox:** the bounding box of the header.
+           * **cells:** a list of bounding boxes containing the name of the respective column.
+           * **names:** a list of strings containing the text of each of the cell bboxes. They represent the column names -- which can be used when exporting the table to pandas DataFrames or CSV, etc.
+           * **external:** a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if *external* is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first table row is the header.
 
          Please have a look at these `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
 
@@ -474,9 +474,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * Redactions are a simple way to replace single words in a PDF, or to just physically remove them. Locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
 
-            - Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
+           - Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
 
-            - For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
+           - For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
 
    .. method:: delete_link(linkdict)
 
@@ -640,7 +640,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: insert_htmlbox(rect, text, *, css=None, scale_low=0, archive=None, rotate=0, oc=0, opacity=1, overlay=True)
 
-      * New in v1.23.8
+      * New in v1.23.8, rebased-only.
 
       **PDF only:** Insert text into the specified rectangle. The method has similarities with methods :meth:`Page.insert_textbox` and :meth:`TextWriter.fill_textbox`, but is **much more powerful**. This is achieved by letting a :ref:`Story` object do all the required processing.
 
@@ -930,9 +930,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg str fontname: The name by which this font shall be referenced when outputting text on this page. In general, you have a "free" choice here (but consult the :ref:`AdobeManual`, page 16, section 7.3.5 for a formal description of building legal PDF names). However, if it matches one of the :data:`Base14_Fonts` or one of the CJK fonts, *fontfile* and *fontbuffer* **are ignored**.
 
-      In other words, you cannot insert a font via *fontfile* / *fontbuffer* and also give it a reserved *fontname*.
+        In other words, you cannot insert a font via *fontfile* / *fontbuffer* and also give it a reserved *fontname*.
 
-      .. note:: A reserved fontname can be specified in any mixture of upper or lower case and still match the right built-in font definition: fontnames "helv", "Helv", "HELV", "Helvetica", etc. all lead to the same font definition "Helvetica". But from a :ref:`Page` perspective, these are **different references**. You can exploit this fact when using different *encoding* variants (Latin, Greek, Cyrillic) of the same font on a page.
+        .. note:: A reserved fontname can be specified in any mixture of upper or lower case and still match the right built-in font definition: fontnames "helv", "Helv", "HELV", "Helvetica", etc. all lead to the same font definition "Helvetica". But from a :ref:`Page` perspective, these are **different references**. You can exploit this fact when using different *encoding* variants (Latin, Greek, Cyrillic) of the same font on a page.
 
       :arg str fontfile: a path to a font file. If used, *fontname* must be **different from all reserved names**.
 
@@ -1307,26 +1307,26 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       The path dictionary for fill, stroke and fill-stroke paths has been designed to be compatible with class :ref:`Shape`. There are the following keys:
 
-            ============== ============================================================================
-            Key            Value
-            ============== ============================================================================
-            closePath      Same as the parameter in :ref:`Shape`.
-            color          Stroke color (see :ref:`Shape`).
-            dashes         Dashed line specification (see :ref:`Shape`).
-            even_odd       Fill colors of area overlaps -- same as the parameter in :ref:`Shape`.
-            fill           Fill color  (see :ref:`Shape`).
-            items          List of draw commands: lines, rectangles, quads or curves.
-            lineCap        Number 3-tuple, use its max value on output with :ref:`Shape`.
-            lineJoin       Same as the parameter in :ref:`Shape`.
-            fill_opacity   (new in v1.18.17) fill color transparency (see :ref:`Shape`).
-            stroke_opacity (new in v1.18.17) stroke color transparency  (see :ref:`Shape`).
-            rect           Page area covered by this path. Information only.
-            layer          (new in v1.22.0) name of applicable Optional Content Group
-            level          (new in v1.22.0) the hierarchy level if `extended=True`
-            seqno          (new in v1.19.0) command number when building page appearance
-            type           (new in v1.18.17) type of this path.
-            width          Stroke line width  (see :ref:`Shape`).
-            ============== ============================================================================
+      ============== ============================================================================
+      Key            Value
+      ============== ============================================================================
+      closePath      Same as the parameter in :ref:`Shape`.
+      color          Stroke color (see :ref:`Shape`).
+      dashes         Dashed line specification (see :ref:`Shape`).
+      even_odd       Fill colors of area overlaps -- same as the parameter in :ref:`Shape`.
+      fill           Fill color  (see :ref:`Shape`).
+      items          List of draw commands: lines, rectangles, quads or curves.
+      lineCap        Number 3-tuple, use its max value on output with :ref:`Shape`.
+      lineJoin       Same as the parameter in :ref:`Shape`.
+      fill_opacity   (new in v1.18.17) fill color transparency (see :ref:`Shape`).
+      stroke_opacity (new in v1.18.17) stroke color transparency  (see :ref:`Shape`).
+      rect           Page area covered by this path. Information only.
+      layer          (new in v1.22.0) name of applicable Optional Content Group
+      level          (new in v1.22.0) the hierarchy level if `extended=True`
+      seqno          (new in v1.19.0) command number when building page appearance
+      type           (new in v1.18.17) type of this path.
+      width          Stroke line width  (see :ref:`Shape`).
+      ============== ============================================================================
 
       * *(Changed in v1.18.17)* Key `"opacity"` has been replaced by the new keys `"fill_opacity"` and `"stroke_opacity"`. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
 
@@ -1372,55 +1372,55 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * **"clip"** dictionary. Its values (most importantly "scissor") remain valid / apply as long as following dictionaries have a **larger "level"** value.
 
-         ============== ============================================================================
-         Key            Value
-         ============== ============================================================================
-         closePath      Same as in "stroke" or "fill" dictionaries
-         even_odd       Same as in "stroke" or "fill" dictionaries
-         items          Same as in "stroke" or "fill" dictionaries
-         rect           Same as in "stroke" or "fill" dictionaries
-         layer          Same as in "stroke" or "fill" dictionaries
-         level          Same as in "stroke" or "fill" dictionaries
-         scissor        the clip rectangle
-         type           "clip"
-         ============== ============================================================================
+        ============== ============================================================================
+        Key            Value
+        ============== ============================================================================
+        closePath      Same as in "stroke" or "fill" dictionaries
+        even_odd       Same as in "stroke" or "fill" dictionaries
+        items          Same as in "stroke" or "fill" dictionaries
+        rect           Same as in "stroke" or "fill" dictionaries
+        layer          Same as in "stroke" or "fill" dictionaries
+        level          Same as in "stroke" or "fill" dictionaries
+        scissor        the clip rectangle
+        type           "clip"
+        ============== ============================================================================
 
-         * "group" dictionary. Its values remain valid (apply) as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level end this group.
+      * "group" dictionary. Its values remain valid (apply) as long as following dictionaries have a **larger "level"** value. Any dictionary with an equal or lower level end this group.
 
-         ============== ============================================================================
-         Key            Value
-         ============== ============================================================================
-         rect           Same as in "stroke" or "fill" dictionaries
-         layer          Same as in "stroke" or "fill" dictionaries
-         level          Same as in "stroke" or "fill" dictionaries
-         isolated       (bool) Whether this group is isolated
-         knockout       (bool) Whether this is a "Knockout Group"
-         blendmode      Name of the BlendMode, default is "Normal"
-         opacity        Float value in range [0, 1].
-         type           "group"
-         ============== ============================================================================
-
-
-
-            * *(Changed in v1.18.17)* Key `"opacity"` has been replaced by the new keys `"fill_opacity"` and `"stroke_opacity"`. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
+        ============== ============================================================================
+        Key            Value
+        ============== ============================================================================
+        rect           Same as in "stroke" or "fill" dictionaries
+        layer          Same as in "stroke" or "fill" dictionaries
+        level          Same as in "stroke" or "fill" dictionaries
+        isolated       (bool) Whether this group is isolated
+        knockout       (bool) Whether this is a "Knockout Group"
+        blendmode      Name of the BlendMode, default is "Normal"
+        opacity        Float value in range [0, 1].
+        type           "group"
+        ============== ============================================================================
 
 
-            Key `"type"` takes one of the following values:
 
-            * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, irrelevant ones have been added with default values for backward compatibility: `"color"`, `"lineCap"`, `"lineJoin"`, `"width"`, `"closePath"`, `"dashes"` and should be ignored.
-            * **"s"** -- this is a *stroke-only* path. Similar to previous, key `"fill"` is present with value `None`.
-            * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
+        * *(Changed in v1.18.17)* Key `"opacity"` has been replaced by the new keys `"fill_opacity"` and `"stroke_opacity"`. This is now compatible with the corresponding parameters of :meth:`Shape.finish`.
 
-            Each item in `path["items"]` is one of the following:
 
-            * `("l", p1, p2)` - a line from p1 to p2 (:ref:`Point` objects).
-            * `("c", p1, p2, p3, p4)` - cubic Bézier curve **from p1 to p4** (p2 and p3 are the control points). All objects are of type :ref:`Point`.
-            * `("re", rect, orientation)` - a :ref:`Rect`. *Changed in v1.18.17:* Multiple rectangles within the same path are now detected. *Changed in v1.19.2:* added integer `orientation` which is 1 resp. -1 indicating whether the enclosed area is rotated left (1 = anti-clockwise), or resp. right [#f7]_.
-            * `("qu", quad)` - a :ref:`Quad`. *New in v1.18.17, changed in v1.19.2:* 3 or 4 consecutive lines are detected to actually represent a :ref:`Quad`.
+        Key `"type"` takes one of the following values:
 
-            .. note:: Starting with v1.19.2, quads and rectangles are more reliably recognized as such.
+        * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, irrelevant ones have been added with default values for backward compatibility: `"color"`, `"lineCap"`, `"lineJoin"`, `"width"`, `"closePath"`, `"dashes"` and should be ignored.
+        * **"s"** -- this is a *stroke-only* path. Similar to previous, key `"fill"` is present with value `None`.
+        * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
 
-            Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "How to Extract Drawings" of chapter :ref:`FAQ`.
+      Each item in `path["items"]` is one of the following:
+
+      * `("l", p1, p2)` - a line from p1 to p2 (:ref:`Point` objects).
+      * `("c", p1, p2, p3, p4)` - cubic Bézier curve **from p1 to p4** (p2 and p3 are the control points). All objects are of type :ref:`Point`.
+      * `("re", rect, orientation)` - a :ref:`Rect`. *Changed in v1.18.17:* Multiple rectangles within the same path are now detected. *Changed in v1.19.2:* added integer `orientation` which is 1 resp. -1 indicating whether the enclosed area is rotated left (1 = anti-clockwise), or resp. right [#f7]_.
+      * `("qu", quad)` - a :ref:`Quad`. *New in v1.18.17, changed in v1.19.2:* 3 or 4 consecutive lines are detected to actually represent a :ref:`Quad`.
+
+      .. note:: Starting with v1.19.2, quads and rectangles are more reliably recognized as such.
+
+      Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "How to Extract Drawings" of chapter :ref:`FAQ`.
 
 
       .. note:: The method is based on the output of :meth:`Page.get_cdrawings` -- which is much faster, but requires somewhat more attention processing its output.
