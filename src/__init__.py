@@ -5911,31 +5911,6 @@ class Document:
             xref = mupdf.pdf_to_num( xml)
         return xref
     
-    if mupdf_version_tuple < (1, 22):
-        @property
-        def has_old_style_xrefs(self):
-            '''
-            Check if xref table is old style.
-            '''
-            if self.is_closed:
-                raise ValueError("document closed")
-            pdf = _as_pdf_document(self)
-            if pdf.m_internal and pdf.m_internal.has_old_style_xrefs:
-                return True
-            return False
-
-        @property
-        def has_xref_streams(self):
-            '''
-            Check if xref table is a stream.
-            '''
-            if self.is_closed:
-                raise ValueError("document closed")
-            pdf = _as_pdf_document(self)
-            if pdf.m_internal and pdf.m_internal.has_xref_streams:
-                return True
-            return False
-
     __slots__ = ('this', 'page_count2', 'this_is_pdf', '__dict__')
     
     outline = property(lambda self: self._outline)
@@ -7211,51 +7186,48 @@ def _make_PdfFilterOptions(
     filter_.instance_forms = instance_forms
     filter_.ascii = ascii
     
-    if mupdf_version_tuple >= (1, 22):
-        filter_.no_update = no_update
-        if sanitize:
-            # We want to use a PdfFilterFactory whose `.filter` fn pointer is
-            # set to MuPDF's `pdf_new_sanitize_filter()`. But not sure how to
-            # get access to this raw fn in Python; and on Windows raw MuPDF
-            # functions are not even available to C++.
-            #
-            # So we use SWIG Director to implement our own
-            # PdfFilterFactory whose `filter()` method calls
-            # `mupdf.ll_pdf_new_sanitize_filter()`.
-            if sopts:
-                assert isinstance(sopts, mupdf.PdfSanitizeFilterOptions)
-            else:
-                sopts = mupdf.PdfSanitizeFilterOptions()
-            class Factory(mupdf.PdfFilterFactory2):
-                def __init__(self):
-                    super().__init__()
-                    self.use_virtual_filter()
-                    self.sopts = sopts
-                def filter(self, ctx, doc, chain, struct_parents, transform, options):
-                    if 0:
-                        log(f'sanitize filter.filter():')
-                        log(f'    {self=}')
-                        log(f'    {ctx=}')
-                        log(f'    {doc=}')
-                        log(f'    {chain=}')
-                        log(f'    {struct_parents=}')
-                        log(f'    {transform=}')
-                        log(f'    {options=}')
-                        log(f'    {self.sopts.internal()=}')
-                    return mupdf.ll_pdf_new_sanitize_filter(
-                            doc,
-                            chain,
-                            struct_parents,
-                            transform,
-                            options,
-                            self.sopts.internal(),
-                            )
+    filter_.no_update = no_update
+    if sanitize:
+        # We want to use a PdfFilterFactory whose `.filter` fn pointer is
+        # set to MuPDF's `pdf_new_sanitize_filter()`. But not sure how to
+        # get access to this raw fn in Python; and on Windows raw MuPDF
+        # functions are not even available to C++.
+        #
+        # So we use SWIG Director to implement our own
+        # PdfFilterFactory whose `filter()` method calls
+        # `mupdf.ll_pdf_new_sanitize_filter()`.
+        if sopts:
+            assert isinstance(sopts, mupdf.PdfSanitizeFilterOptions)
+        else:
+            sopts = mupdf.PdfSanitizeFilterOptions()
+        class Factory(mupdf.PdfFilterFactory2):
+            def __init__(self):
+                super().__init__()
+                self.use_virtual_filter()
+                self.sopts = sopts
+            def filter(self, ctx, doc, chain, struct_parents, transform, options):
+                if 0:
+                    log(f'sanitize filter.filter():')
+                    log(f'    {self=}')
+                    log(f'    {ctx=}')
+                    log(f'    {doc=}')
+                    log(f'    {chain=}')
+                    log(f'    {struct_parents=}')
+                    log(f'    {transform=}')
+                    log(f'    {options=}')
+                    log(f'    {self.sopts.internal()=}')
+                return mupdf.ll_pdf_new_sanitize_filter(
+                        doc,
+                        chain,
+                        struct_parents,
+                        transform,
+                        options,
+                        self.sopts.internal(),
+                        )
 
-            factory = Factory()
-            filter_.add_factory(factory.internal())
-            filter_._factory = factory
-    else:
-        filter_.sanitize = sanitize
+        factory = Factory()
+        filter_.add_factory(factory.internal())
+        filter_._factory = factory
     return filter_
 
 
@@ -15893,8 +15865,7 @@ def JM_image_filter(opaque, ctm, name, image):
     assert isinstance(ctm, mupdf.FzMatrix)
     r = mupdf.FzRect(mupdf.FzRect.Fixed_UNIT)
     q = mupdf.fz_transform_quad( mupdf.fz_quad_from_rect(r), ctm)
-    if mupdf_version_tuple >= (1, 22):
-        q = mupdf.fz_transform_quad( q, g_img_info_matrix)
+    q = mupdf.fz_transform_quad( q, g_img_info_matrix)
     temp = name, JM_py_from_quad(q)
     g_img_info.append(temp)
 
@@ -15953,92 +15924,38 @@ def JM_image_profile( imagedata, keep_image):
     return result
 
 
-if mupdf_version_tuple >= (1, 22):
+def JM_image_reporter(page):
+    doc = page.doc()
+    global g_img_info_matrix
+    g_img_info_matrix = mupdf.FzMatrix()
+    mediabox = mupdf.FzRect()
+    mupdf.pdf_page_transform(page, mediabox, g_img_info_matrix)
 
-    def JM_image_reporter(page):
-        doc = page.doc()
-        global g_img_info_matrix
-        g_img_info_matrix = mupdf.FzMatrix()
-        mediabox = mupdf.FzRect()
-        mupdf.pdf_page_transform(page, mediabox, g_img_info_matrix)
-        
-        class SanitizeFilterOptions(mupdf.PdfSanitizeFilterOptions2):
-            def __init__(self):
-                super().__init__()
-                self.use_virtual_image_filter()
-            def image_filter(self, ctx, ctm, name, image):
-                JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
+    class SanitizeFilterOptions(mupdf.PdfSanitizeFilterOptions2):
+        def __init__(self):
+            super().__init__()
+            self.use_virtual_image_filter()
+        def image_filter(self, ctx, ctm, name, image):
+            JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
 
-        sanitize_filter_options = SanitizeFilterOptions()
-        
-        filter_options = _make_PdfFilterOptions(
-                instance_forms=1,
-                ascii=1,
-                no_update=1,
-                sanitize=1,
-                sopts=sanitize_filter_options,
-                )
+    sanitize_filter_options = SanitizeFilterOptions()
 
-        global g_img_info
-        g_img_info = []
+    filter_options = _make_PdfFilterOptions(
+            instance_forms=1,
+            ascii=1,
+            no_update=1,
+            sanitize=1,
+            sopts=sanitize_filter_options,
+            )
 
-        mupdf.pdf_filter_page_contents( doc, page, filter_options)
+    global g_img_info
+    g_img_info = []
 
-        rc = tuple(g_img_info)
-        g_img_info = []
-        return rc
+    mupdf.pdf_filter_page_contents( doc, page, filter_options)
 
-else:
-
-    def JM_filter_content_stream(
-            doc,
-            in_stm,
-            in_res,
-            transform,
-            filter_,
-            struct_parents,
-            ):
-        '''
-        Returns (out_buf, out_res).
-        '''
-        out_buf = mupdf.FzBuffer( 1024)
-        proc_buffer = mupdf.pdf_new_buffer_processor( out_buf, filter_.ascii)
-        if filter_.sanitize:
-            out_res = mupdf.pdf_new_dict( doc, 1)
-            proc_filter = mupdf.pdf_new_filter_processor( doc, proc_buffer, in_res, out_res, struct_parents, transform, filter_)
-            mupdf.pdf_process_contents( proc_filter, doc, in_res, in_stm, mupdf.FzCookie())
-            mupdf.pdf_close_processor( proc_filter)
-        else:
-            out_res = in_res    # mupdf.pdf_keep_obj( in_res)
-            mupdf.pdf_process_contents( proc_buffer, doc, in_res, in_stm, mupdf.FzCookie())
-        mupdf.pdf_close_processor( proc_buffer)
-        return out_buf, out_res
-
-    def JM_image_reporter(page):
-        doc = page.doc()
-
-        filter_ = JM_image_reporter_Filter()
-
-        filter_._page = page
-        filter_.recurse = 0
-        filter_.instance_forms = 1
-        filter_.sanitize = 1
-        filter_.ascii = 1
-
-        ctm = mupdf.FzMatrix()
-        mupdf.pdf_page_transform( page, mupdf.FzRect(0, 0, 0, 0), ctm)
-        struct_parents_obj = mupdf.pdf_dict_get( page.obj(), PDF_NAME('StructParents'))
-        struct_parents = -1
-        if mupdf.pdf_is_number( struct_parents_obj):
-            struct_parents = mupdf.pdf_to_int( struct_parents_obj)
-
-        contents = mupdf.pdf_page_contents( page)
-        old_res = mupdf.pdf_page_resources( page)
-        global g_img_info
-        g_img_info = []
-        buffer_, new_res = JM_filter_content_stream( doc, contents, old_res, ctm, filter_, struct_parents)
-        rc = tuple( g_img_info)
-        return rc
+    rc = tuple(g_img_info)
+    g_img_info = []
+    return rc
 
 
 def JM_fitz_config():
