@@ -7753,13 +7753,13 @@ class Page:
                             arg_pix,
                             mupdf.FzColorspace(0),
                             mupdf.FzColorspace(0),
-                            mupdf.FzDefaultColorspaces(0),
+                            mupdf.FzDefaultColorspaces(None),
                             mupdf.FzColorParams(),
                             1,
                             )
                     pm.alpha = 0
                     pm.colorspace = None
-                    mask = mupdf.fz_new_image_from_pixmap(pm, mupdf.FzImage(0))
+                    mask = mupdf.fz_new_image_from_pixmap(pm, mupdf.FzImage())
                     image = mupdf.fz_new_image_from_pixmap(arg_pix, mask)
                 #goto have_image()
                 do_process_stream = 0
@@ -9418,7 +9418,7 @@ class Pixmap:
                         spix,
                         cs,
                         mupdf.FzColorspace(0),
-                        mupdf.FzDefaultColorspaces(0),
+                        mupdf.FzDefaultColorspaces(None),
                         mupdf.FzColorParams(),
                         1
                         )
@@ -21652,6 +21652,7 @@ Document.set_toc            = utils.set_toc
 Document.set_toc_item       = utils.set_toc_item
 Document.subset_fonts       = utils.subset_fonts
 Document.tobytes            = Document.write
+Document.xref_copy          = utils.xref_copy
 
 IRect.get_area              = utils.get_area
 
