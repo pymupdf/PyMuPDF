@@ -25,6 +25,10 @@ Change Log
   * **Fixed** `2969 <https://github.com/pymupdf/PyMuPDF/issues/2969>`_: annot.next throws AttributeError
   * **Fixed** `2978 <https://github.com/pymupdf/PyMuPDF/issues/2978>`_: 1.23.9rc1: module 'fitz.mupdf' has no attribute 'fz_copy_pixmap_rect'
 
+  * **Fixed** `2907 <https://github.com/pymupdf/PyMuPDF/issues/2907>`_: segfault trying to call clean_contents on certain pdfs with python 3.12
+  * **Fixed** `2905 <https://github.com/pymupdf/PyMuPDF/issues/2905>`_: SystemError: <built-in function TextPage_extractIMGINFO> returned a result with an exception set
+  * **Fixed** `2742 <https://github.com/pymupdf/PyMuPDF/issues/2742>`_: Segmentation Fault when inserting three (but not two) copies of the same source page into one destination page
+
 * Other:
 
   * Add optional setting of opacity to `Page.insert_htmlbox()`.
