@@ -2689,14 +2689,24 @@ class Document:
                                     #log( f'{handler.open=}')
                                     #log( f'{dir(handler.open)=}')
                                     try:
-                                        doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
+                                        if mupdf_version_tuple >= (1, 24):
+                                            doc = mupdf.ll_fz_document_open_fn_call(
+                                                    handler.open,
+                                                    mupdf.FzStream(filename),
+                                                    mupdf.FzStream(),
+                                                    mupdf.FzArchive(),
+                                                    )
+                                        else:
+                                            doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
                                     except Exception as e:
                                         if g_exceptions_verbose > 1:    exception_info()
                                         raise FileDataError( MSG_BAD_DOCUMENT) from e
                                     doc = mupdf.FzDocument( doc)
-                                elif handler.open_with_stream:
-                                    data = mupdf.fz_open_file( filename)
-                                    doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
+                                else:
+                                    if mupdf_version_tuple < (1, 24):
+                                        if handler.open_with_stream:
+                                            data = mupdf.fz_open_file( filename)
+                                            doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
                             else:
                                 raise ValueError( MSG_BAD_FILETYPE)
                     else:

@@ -517,12 +517,31 @@ struct Document
                             if (!handler) {
                                 RAISEPY(gctx, MSG_BAD_FILETYPE, PyExc_ValueError);
                             }
+                            #if FZ_VERSION_MINOR >= 24
+                            if (handler->open)
+                            {
+                                fz_stream* filename_stream = fz_open_file(gctx, filename);
+                                fz_try(gctx)
+                                {
+                                    doc = handler->open(gctx, filename_stream, NULL, NULL);
+                                }
+                                fz_always(gctx)
+                                {
+                                    fz_drop_stream(gctx, filename_stream);
+                                }
+                                fz_catch(gctx)
+                                {
+                                    fz_rethrow(gctx);
+                                }
+                            }
+                            #else
                             if (handler->open) {
                                 doc = handler->open(gctx, filename);
                             } else if (handler->open_with_stream) {
                                 data = fz_open_file(gctx, filename);
                                 doc = handler->open_with_stream(gctx, data);
                             }
+                            #endif
                         }
                     } else {
                         pdf_document *pdf = pdf_create_document(gctx);
