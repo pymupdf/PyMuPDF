@@ -2,15 +2,15 @@ Change Log
 ==========
 
 
-**Changes in next release**
+**Changes in version 1.23.10 (2024-01-12)**
 
 * Bug fixes:
+
   * **Fixed** `3020 <https://github.com/pymupdf/PyMuPDF/issues/3020>`_: Can't resize a PixMap
 
 * Other:
 
   * Fixed Page.delete_image().
-  * Check use of mupdf.fz_install_load_system_font_funcs() with MuPDF-1.24.0 and later.
 
 
 **Changes in version 1.23.9 (2024-01-11)**
