@@ -8971,8 +8971,8 @@ class Page:
         finally:
             if old_rotation != 0:
                 self.set_rotation(old_rotation)
-        textpage.parent = weakref.proxy(self)
         textpage = TextPage(textpage)
+        textpage.parent = weakref.proxy(self)
         return textpage
 
     def get_texttrace(self):

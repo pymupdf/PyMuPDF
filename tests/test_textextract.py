@@ -208,3 +208,11 @@ def test_2954():
         
         assert not check_good(text_none)
         assert not check_good(text_0)
+
+
+def test_3027():
+    path = path = f'{pymupdfdir}/tests/resources/2.pdf'
+    doc = fitz.open(path)
+    page = doc[0]
+    textpage = page.get_textpage()
+    fitz.utils.get_text(page=page, option="dict", textpage=textpage)["blocks"]
