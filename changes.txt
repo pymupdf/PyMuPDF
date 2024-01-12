@@ -2,6 +2,11 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.12 (2024-01-12)**
+
+* * **Fixed** `3027 <https://github.com/pymupdf/PyMuPDF/issues/3027>`_: Page.get_text throws Attribute Error for 'parent'
+
+
 **Changes in version 1.23.11 (2024-01-12)**
 
 * Fixed some Pixmap construction bugs.
