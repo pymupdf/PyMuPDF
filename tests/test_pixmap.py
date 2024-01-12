@@ -146,3 +146,7 @@ def test_fz_write_pixmap_as_jpeg():
 
     with fitz.Document(stream=image.tobytes(output="jpeg"), filetype="jpeg") as doc:
         test_pdf_bytes = doc.convert_to_pdf()
+
+def test_3020():
+    pm = fitz.Pixmap(imgfile)
+    pm2 = fitz.Pixmap(pm, 20, 30, None)
