@@ -157,6 +157,13 @@ def main(argv):
         gh_release.venv( ['python'] + argv, quick=venv_quick)
         return
 
+    def do_build():
+        build(
+                implementations=implementations,
+                build_type=build_type,
+                build_isolation=build_isolation,
+                venv_quick=venv_quick,
+                )
     def do_test():
         test(
                 implementations=implementations,
@@ -165,16 +172,15 @@ def main(argv):
                 test_name=test_name,
                 pytest_options=pytest_options,
                 )
-    
     while 1:
         if 0:
             pass
         elif arg == 'build':
-            build(build_type=build_type, build_isolation=build_isolation, venv_quick=venv_quick)
+            do_build()
         elif arg == 'test':
             do_test()
         elif arg == 'buildtest':
-            build(build_isolation=build_isolation, venv_quick=venv_quick)
+            do_build()
             do_test()
         else:
             assert 0, f'Unrecognised command: {arg=}.'
@@ -221,7 +227,7 @@ def venv_info(pytest_args=None):
     return ret
 
 
-def build(build_type=None, build_isolation=None, venv_quick=False):
+def build(implementations=None, build_type=None, build_isolation=None, venv_quick=False):
     '''
     Args:
         build_type:
@@ -261,9 +267,16 @@ def build(build_type=None, build_isolation=None, venv_quick=False):
             gh_release.run( f'python -m pip install --upgrade {names}')
         build_isolation_text = ' --no-build-isolation'
     
-    env_extra = None
+    env_extra = dict()
+    if implementations:
+        v = ''
+        if 'c' in implementations:
+            v += 'a'
+        if 'r' in implementations or 'R' in implementations:
+            v += 'b'
+        env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = v
     if build_type:
-        env_extra = dict(PYMUPDF_SETUP_MUPDF_BUILD_TYPE=build_type)
+        env_extra['PYMUPDF_SETUP_MUPDF_BUILD_TYPE'] = build_type
     gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}', env_extra=env_extra)
 
 
