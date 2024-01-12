@@ -2,6 +2,12 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.11 (2024-01-12)**
+
+* Fixed some Pixmap construction bugs.
+* Fixed Pixmap.yres().
+
+
 **Changes in version 1.23.10 (2024-01-12)**
 
 * Bug fixes:
