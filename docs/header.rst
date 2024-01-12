@@ -3,6 +3,18 @@
    :description: PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.
    :keywords: PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript
 
+
+.. |history_begin| raw:: html
+
+    <details>
+    <summary><small style="cursor:pointer;">Show/hide history</small></summary><small>
+
+.. |history_end| raw:: html
+
+    </small></details>
+
+
+
 .. raw:: html
 
     <link rel="stylesheet" type="text/css" href="_static/prism/prism.css">
