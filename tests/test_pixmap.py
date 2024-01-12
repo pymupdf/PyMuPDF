@@ -150,3 +150,5 @@ def test_fz_write_pixmap_as_jpeg():
 def test_3020():
     pm = fitz.Pixmap(imgfile)
     pm2 = fitz.Pixmap(pm, 20, 30, None)
+    pm3 = fitz.Pixmap(fitz.csGRAY, pm)
+    pm4 = fitz.Pixmap(pm, pm3)

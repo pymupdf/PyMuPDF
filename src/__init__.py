@@ -9407,9 +9407,13 @@ class Pixmap:
             pm = mupdf.fz_new_pixmap_with_bbox(cs, JM_irect_from_py(rect), mupdf.FzSeparations(0), alpha)
             self.this = pm
 
-        elif args_match(args, mupdf.FzColorspace, mupdf.FzPixmap):
+        elif args_match(args, (Colorspace, mupdf.FzColorspace), (Pixmap, mupdf.FzPixmap)):
             # copy pixmap, converting colorspace
             cs, spix = args
+            if isinstance(cs, Colorspace):
+                cs = cs.this
+            if isinstance(spix, Pixmap):
+                spix = spix.this
             if not mupdf.fz_pixmap_colorspace(spix).m_internal:
                 raise ValueError( "source colorspace must not be None")
             
@@ -9427,9 +9431,13 @@ class Pixmap:
                 if not self.this.m_internal:
                     raise RuntimeError( MSG_PIX_NOALPHA)
 
-        elif args_match(args, mupdf.FzPixmap, mupdf.FzPixmap):
+        elif args_match(args, (Pixmap, mupdf.FzPixmap), (Pixmap, mupdf.FzPixmap)):
             # add mask to a pixmap w/o alpha channel
             spix, mpix = args
+            if isinstance(spix, Pixmap):
+                spix = spix.this
+            if isinstance(mpix, Pixmap):
+                mpix = mpix.this
             spm = spix
             mpm = mpix
             if not spix.m_internal: # intercept NULL for spix: make alpha only pix
@@ -9438,7 +9446,7 @@ class Pixmap:
                     raise RuntimeError( MSG_PIX_NOALPHA)
             else:
                 dst = mupdf.fz_new_pixmap_from_color_and_mask( spm, mpm)
-            return dst
+            self.this = dst
 
         elif args_match(args, (Pixmap, mupdf.FzPixmap), (float, int), (float, int), None):
             # create pixmap as scaled copy of another one
@@ -9453,9 +9461,11 @@ class Pixmap:
                 pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x(), src_pix.y(), w, h, mupdf.FzIrect(mupdf.fz_infinite_irect))
             self.this = pm
 
-        elif args_match(args, str, mupdf.FzPixmap) and args[0] == 'raw':
+        elif args_match(args, str, (Pixmap, mupdf.FzPixmap)) and args[0] == 'raw':
             # Special raw construction where we set .this directly.
             _, pm = args
+            if isinstance(pm, Pixmap):
+                pm = pm.this
             self.this = pm
 
         elif args_match(args, (Pixmap, mupdf.FzPixmap), (int, None)):
@@ -10190,7 +10200,7 @@ class Pixmap:
     @property
     def yres(self):
         """Resolution in y direction."""
-        return mupdf.fz_pixmap_width(self.this)
+        return self.this.yres()
 
     width  = w
     height = h
