@@ -414,8 +414,8 @@ class Annot:
             rect = mupdf.pdf_dict_get_rect(ap, PDF_NAME('BBox'))
             val = JM_py_from_rect(rect)
 
-        val = Rect(val) * self.parent.transformation_matrix
-        val *= self.parent.derotationMatrix
+        val = Rect(val) * self.get_parent().transformation_matrix
+        val *= self.get_parent().derotationMatrix
         return val
 
     @property
@@ -797,7 +797,7 @@ class Annot:
         if not val:
             return None
         val.thisown = True
-        assert val.parent.this.m_internal_value() == self.parent.this.m_internal_value()
+        assert val.get_parent().this.m_internal_value() == self.get_parent().this.m_internal_value()
         val.parent._annot_refs[id(val)] = val
 
         if val.type[0] == mupdf.PDF_ANNOT_WIDGET:
@@ -831,8 +831,8 @@ class Annot:
         val = JM_py_from_rect(rect)
         #log( '{val=}')
         
-        val = Rect(val) * self.parent.transformation_matrix
-        val *= self.parent.derotation_matrix
+        val = Rect(val) * self.get_parent().transformation_matrix
+        val *= self.get_parent().derotation_matrix
         
         return val
 
@@ -898,7 +898,7 @@ class Annot:
         Set annotation appearance bbox.
         """
         CheckParent(self)
-        page = self.parent
+        page = self.get_parent()
         rot = page.rotationMatrix
         mat = page.transformation_matrix
         bbox *= rot * ~mat
@@ -981,7 +981,7 @@ class Annot:
         Use either a dict or the direct arguments.
         """
         CheckParent(self)
-        doc = self.parent.parent
+        doc = self.get_parent().parent
         if type(colors) is not dict:
             colors = {"fill": fill, "stroke": stroke}
         fill = colors.get("fill")
@@ -2546,6 +2546,7 @@ class Document:
         self.close()
 
     def __getitem__(self, i: int =0):
+        assert isinstance(i, int) or (isinstance(i, tuple) and len(i) == 2 and all(isinstance(x, int) for x in i))
         if i not in self:
             raise IndexError(f"page {i} not in document")
         return self.load_page(i)
@@ -2688,14 +2689,24 @@ class Document:
                                     #log( f'{handler.open=}')
                                     #log( f'{dir(handler.open)=}')
                                     try:
-                                        doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
+                                        if mupdf_version_tuple >= (1, 24):
+                                            doc = mupdf.ll_fz_document_open_fn_call(
+                                                    handler.open,
+                                                    mupdf.FzStream(filename),
+                                                    mupdf.FzStream(),
+                                                    mupdf.FzArchive(),
+                                                    )
+                                        else:
+                                            doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
                                     except Exception as e:
                                         if g_exceptions_verbose > 1:    exception_info()
                                         raise FileDataError( MSG_BAD_DOCUMENT) from e
                                     doc = mupdf.FzDocument( doc)
-                                elif handler.open_with_stream:
-                                    data = mupdf.fz_open_file( filename)
-                                    doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
+                                else:
+                                    if mupdf_version_tuple < (1, 24):
+                                        if handler.open_with_stream:
+                                            data = mupdf.fz_open_file( filename)
+                                            doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
                             else:
                                 raise ValueError( MSG_BAD_FILETYPE)
                     else:
@@ -5910,31 +5921,6 @@ class Document:
             xref = mupdf.pdf_to_num( xml)
         return xref
     
-    if mupdf_version_tuple < (1, 22):
-        @property
-        def has_old_style_xrefs(self):
-            '''
-            Check if xref table is old style.
-            '''
-            if self.is_closed:
-                raise ValueError("document closed")
-            pdf = _as_pdf_document(self)
-            if pdf.m_internal and pdf.m_internal.has_old_style_xrefs:
-                return True
-            return False
-
-        @property
-        def has_xref_streams(self):
-            '''
-            Check if xref table is a stream.
-            '''
-            if self.is_closed:
-                raise ValueError("document closed")
-            pdf = _as_pdf_document(self)
-            if pdf.m_internal and pdf.m_internal.has_xref_streams:
-                return True
-            return False
-
     __slots__ = ('this', 'page_count2', 'this_is_pdf', '__dict__')
     
     outline = property(lambda self: self._outline)
@@ -7210,51 +7196,48 @@ def _make_PdfFilterOptions(
     filter_.instance_forms = instance_forms
     filter_.ascii = ascii
     
-    if mupdf_version_tuple >= (1, 22):
-        filter_.no_update = no_update
-        if sanitize:
-            # We want to use a PdfFilterFactory whose `.filter` fn pointer is
-            # set to MuPDF's `pdf_new_sanitize_filter()`. But not sure how to
-            # get access to this raw fn in Python; and on Windows raw MuPDF
-            # functions are not even available to C++.
-            #
-            # So we use SWIG Director to implement our own
-            # PdfFilterFactory whose `filter()` method calls
-            # `mupdf.ll_pdf_new_sanitize_filter()`.
-            if sopts:
-                assert isinstance(sopts, mupdf.PdfSanitizeFilterOptions)
-            else:
-                sopts = mupdf.PdfSanitizeFilterOptions()
-            class Factory(mupdf.PdfFilterFactory2):
-                def __init__(self):
-                    super().__init__()
-                    self.use_virtual_filter()
-                    self.sopts = sopts
-                def filter(self, ctx, doc, chain, struct_parents, transform, options):
-                    if 0:
-                        log(f'sanitize filter.filter():')
-                        log(f'    {self=}')
-                        log(f'    {ctx=}')
-                        log(f'    {doc=}')
-                        log(f'    {chain=}')
-                        log(f'    {struct_parents=}')
-                        log(f'    {transform=}')
-                        log(f'    {options=}')
-                        log(f'    {self.sopts.internal()=}')
-                    return mupdf.ll_pdf_new_sanitize_filter(
-                            doc,
-                            chain,
-                            struct_parents,
-                            transform,
-                            options,
-                            self.sopts.internal(),
-                            )
+    filter_.no_update = no_update
+    if sanitize:
+        # We want to use a PdfFilterFactory whose `.filter` fn pointer is
+        # set to MuPDF's `pdf_new_sanitize_filter()`. But not sure how to
+        # get access to this raw fn in Python; and on Windows raw MuPDF
+        # functions are not even available to C++.
+        #
+        # So we use SWIG Director to implement our own
+        # PdfFilterFactory whose `filter()` method calls
+        # `mupdf.ll_pdf_new_sanitize_filter()`.
+        if sopts:
+            assert isinstance(sopts, mupdf.PdfSanitizeFilterOptions)
+        else:
+            sopts = mupdf.PdfSanitizeFilterOptions()
+        class Factory(mupdf.PdfFilterFactory2):
+            def __init__(self):
+                super().__init__()
+                self.use_virtual_filter()
+                self.sopts = sopts
+            def filter(self, ctx, doc, chain, struct_parents, transform, options):
+                if 0:
+                    log(f'sanitize filter.filter():')
+                    log(f'    {self=}')
+                    log(f'    {ctx=}')
+                    log(f'    {doc=}')
+                    log(f'    {chain=}')
+                    log(f'    {struct_parents=}')
+                    log(f'    {transform=}')
+                    log(f'    {options=}')
+                    log(f'    {self.sopts.internal()=}')
+                return mupdf.ll_pdf_new_sanitize_filter(
+                        doc,
+                        chain,
+                        struct_parents,
+                        transform,
+                        options,
+                        self.sopts.internal(),
+                        )
 
-            factory = Factory()
-            filter_.add_factory(factory.internal())
-            filter_._factory = factory
-    else:
-        filter_.sanitize = sanitize
+        factory = Factory()
+        filter_.add_factory(factory.internal())
+        filter_._factory = factory
     return filter_
 
 
@@ -7780,13 +7763,13 @@ class Page:
                             arg_pix,
                             mupdf.FzColorspace(0),
                             mupdf.FzColorspace(0),
-                            mupdf.FzDefaultColorspaces(0),
+                            mupdf.FzDefaultColorspaces(None),
                             mupdf.FzColorParams(),
                             1,
                             )
                     pm.alpha = 0
                     pm.colorspace = None
-                    mask = mupdf.fz_new_image_from_pixmap(pm, mupdf.FzImage(0))
+                    mask = mupdf.fz_new_image_from_pixmap(pm, mupdf.FzImage())
                     image = mupdf.fz_new_image_from_pixmap(arg_pix, mask)
                 #goto have_image()
                 do_process_stream = 0
@@ -8988,8 +8971,8 @@ class Page:
         finally:
             if old_rotation != 0:
                 self.set_rotation(old_rotation)
-        textpage.parent = weakref.proxy(self)
         textpage = TextPage(textpage)
+        textpage.parent = weakref.proxy(self)
         return textpage
 
     def get_texttrace(self):
@@ -9434,9 +9417,13 @@ class Pixmap:
             pm = mupdf.fz_new_pixmap_with_bbox(cs, JM_irect_from_py(rect), mupdf.FzSeparations(0), alpha)
             self.this = pm
 
-        elif args_match(args, mupdf.FzColorspace, mupdf.FzPixmap):
+        elif args_match(args, (Colorspace, mupdf.FzColorspace), (Pixmap, mupdf.FzPixmap)):
             # copy pixmap, converting colorspace
             cs, spix = args
+            if isinstance(cs, Colorspace):
+                cs = cs.this
+            if isinstance(spix, Pixmap):
+                spix = spix.this
             if not mupdf.fz_pixmap_colorspace(spix).m_internal:
                 raise ValueError( "source colorspace must not be None")
             
@@ -9445,7 +9432,7 @@ class Pixmap:
                         spix,
                         cs,
                         mupdf.FzColorspace(0),
-                        mupdf.FzDefaultColorspaces(0),
+                        mupdf.FzDefaultColorspaces(None),
                         mupdf.FzColorParams(),
                         1
                         )
@@ -9454,9 +9441,13 @@ class Pixmap:
                 if not self.this.m_internal:
                     raise RuntimeError( MSG_PIX_NOALPHA)
 
-        elif args_match(args, mupdf.FzPixmap, mupdf.FzPixmap):
+        elif args_match(args, (Pixmap, mupdf.FzPixmap), (Pixmap, mupdf.FzPixmap)):
             # add mask to a pixmap w/o alpha channel
             spix, mpix = args
+            if isinstance(spix, Pixmap):
+                spix = spix.this
+            if isinstance(mpix, Pixmap):
+                mpix = mpix.this
             spm = spix
             mpm = mpix
             if not spix.m_internal: # intercept NULL for spix: make alpha only pix
@@ -9465,23 +9456,26 @@ class Pixmap:
                     raise RuntimeError( MSG_PIX_NOALPHA)
             else:
                 dst = mupdf.fz_new_pixmap_from_color_and_mask( spm, mpm)
-            return dst
+            self.this = dst
 
         elif args_match(args, (Pixmap, mupdf.FzPixmap), (float, int), (float, int), None):
             # create pixmap as scaled copy of another one
-            assert 0, f'Cannot handle {args=} because fz_scale_pixmap() and fz_scale_pixmap_cached() are not declared in MuPDF headers'
+            if mupdf_version_tuple < (1, 23, 8):
+                assert 0, f'Cannot handle {args=} because fz_scale_pixmap() and fz_scale_pixmap_cached() are not declared in MuPDF headers'
             spix, w, h, clip = args
             src_pix = spix.this if isinstance(spix, Pixmap) else spix
             bbox = JM_irect_from_py(clip)
             if not mupdf.fz_is_infinite_irect(bbox):
-                pm = mupdf.fz_scale_pixmap_cached(src_pix, src_pix.x, src_pix.y, w, h, bbox)
+                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x(), src_pix.y(), w, h, bbox)
             else:
-                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x, src_pix.y, w, h, None)
+                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x(), src_pix.y(), w, h, mupdf.FzIrect(mupdf.fz_infinite_irect))
             self.this = pm
 
-        elif args_match(args, str, mupdf.FzPixmap) and args[0] == 'raw':
+        elif args_match(args, str, (Pixmap, mupdf.FzPixmap)) and args[0] == 'raw':
             # Special raw construction where we set .this directly.
             _, pm = args
+            if isinstance(pm, Pixmap):
+                pm = pm.this
             self.this = pm
 
         elif args_match(args, (Pixmap, mupdf.FzPixmap), (int, None)):
@@ -9678,8 +9672,13 @@ class Pixmap:
         elif format_ == 3:  mupdf.fz_write_pixmap_as_pam(out, pm)
         elif format_ == 5:  mupdf.fz_write_pixmap_as_psd(out, pm)
         elif format_ == 6:  mupdf.fz_write_pixmap_as_ps(out, pm)
-        elif format_ == 7:  mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality)
-        else:               mupdf.fz_write_pixmap_as_png(out, pm)
+        elif format_ == 7:
+            if mupdf_version_tuple < (1, 24):
+                mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality)
+            else:
+                mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality, 0)
+        else:
+            mupdf.fz_write_pixmap_as_png(out, pm)
 
         barray = JM_BinFromBuffer(res)
         return barray
@@ -10161,10 +10160,10 @@ class Pixmap:
     @property
     def size(self):
         """Pixmap size."""
+        if mupdf_version_tuple >= (1, 23, 8):
+            return  mupdf.fz_pixmap_size( self.this)
         # fz_pixmap_size() is not publically visible, so we implement it
         # ourselves. fixme: we don't add on sizeof(fz_pixmap).
-        #
-        #return mupdf.fz_pixmap_size( self.this)
         pm = self.this
         return pm.n() * pm.w() * pm.h()
 
@@ -10211,7 +10210,7 @@ class Pixmap:
     @property
     def yres(self):
         """Resolution in y direction."""
-        return mupdf.fz_pixmap_width(self.this)
+        return self.this.yres()
 
     width  = w
     height = h
@@ -13311,17 +13310,20 @@ TEXT_INHIBIT_SPACES = 8
 TEXT_DEHYPHENATE = 16
 TEXT_PRESERVE_SPANS = 32
 TEXT_MEDIABOX_CLIP = 64
+TEXT_CID_FOR_UNKNOWN_UNICODE = 128
 
 TEXTFLAGS_WORDS = (0
         | TEXT_PRESERVE_LIGATURES
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 TEXTFLAGS_BLOCKS = (0
         | TEXT_PRESERVE_LIGATURES
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 TEXTFLAGS_DICT = (0
@@ -13329,6 +13331,7 @@ TEXTFLAGS_DICT = (0
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
         | TEXT_PRESERVE_IMAGES
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 TEXTFLAGS_RAWDICT = TEXTFLAGS_DICT
@@ -13338,6 +13341,7 @@ TEXTFLAGS_SEARCH = (0
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
         | TEXT_DEHYPHENATE
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 TEXTFLAGS_HTML = (0
@@ -13345,6 +13349,7 @@ TEXTFLAGS_HTML = (0
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
         | TEXT_PRESERVE_IMAGES
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 TEXTFLAGS_XHTML = (0
@@ -13352,18 +13357,21 @@ TEXTFLAGS_XHTML = (0
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
         | TEXT_PRESERVE_IMAGES
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 TEXTFLAGS_XML = (0
         | TEXT_PRESERVE_LIGATURES
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 TEXTFLAGS_TEXT = (0
         | TEXT_PRESERVE_LIGATURES
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
+        | TEXT_CID_FOR_UNKNOWN_UNICODE
         )
 
 # Simple text encoding options
@@ -15877,8 +15885,7 @@ def JM_image_filter(opaque, ctm, name, image):
     assert isinstance(ctm, mupdf.FzMatrix)
     r = mupdf.FzRect(mupdf.FzRect.Fixed_UNIT)
     q = mupdf.fz_transform_quad( mupdf.fz_quad_from_rect(r), ctm)
-    if mupdf_version_tuple >= (1, 22):
-        q = mupdf.fz_transform_quad( q, g_img_info_matrix)
+    q = mupdf.fz_transform_quad( q, g_img_info_matrix)
     temp = name, JM_py_from_quad(q)
     g_img_info.append(temp)
 
@@ -15937,92 +15944,38 @@ def JM_image_profile( imagedata, keep_image):
     return result
 
 
-if mupdf_version_tuple >= (1, 22):
+def JM_image_reporter(page):
+    doc = page.doc()
+    global g_img_info_matrix
+    g_img_info_matrix = mupdf.FzMatrix()
+    mediabox = mupdf.FzRect()
+    mupdf.pdf_page_transform(page, mediabox, g_img_info_matrix)
 
-    def JM_image_reporter(page):
-        doc = page.doc()
-        global g_img_info_matrix
-        g_img_info_matrix = mupdf.FzMatrix()
-        mediabox = mupdf.FzRect()
-        mupdf.pdf_page_transform(page, mediabox, g_img_info_matrix)
-        
-        class SanitizeFilterOptions(mupdf.PdfSanitizeFilterOptions2):
-            def __init__(self):
-                super().__init__()
-                self.use_virtual_image_filter()
-            def image_filter(self, ctx, ctm, name, image):
-                JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
+    class SanitizeFilterOptions(mupdf.PdfSanitizeFilterOptions2):
+        def __init__(self):
+            super().__init__()
+            self.use_virtual_image_filter()
+        def image_filter(self, ctx, ctm, name, image):
+            JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
 
-        sanitize_filter_options = SanitizeFilterOptions()
-        
-        filter_options = _make_PdfFilterOptions(
-                instance_forms=1,
-                ascii=1,
-                no_update=1,
-                sanitize=1,
-                sopts=sanitize_filter_options,
-                )
+    sanitize_filter_options = SanitizeFilterOptions()
 
-        global g_img_info
-        g_img_info = []
+    filter_options = _make_PdfFilterOptions(
+            instance_forms=1,
+            ascii=1,
+            no_update=1,
+            sanitize=1,
+            sopts=sanitize_filter_options,
+            )
 
-        mupdf.pdf_filter_page_contents( doc, page, filter_options)
+    global g_img_info
+    g_img_info = []
 
-        rc = tuple(g_img_info)
-        g_img_info = []
-        return rc
+    mupdf.pdf_filter_page_contents( doc, page, filter_options)
 
-else:
-
-    def JM_filter_content_stream(
-            doc,
-            in_stm,
-            in_res,
-            transform,
-            filter_,
-            struct_parents,
-            ):
-        '''
-        Returns (out_buf, out_res).
-        '''
-        out_buf = mupdf.FzBuffer( 1024)
-        proc_buffer = mupdf.pdf_new_buffer_processor( out_buf, filter_.ascii)
-        if filter_.sanitize:
-            out_res = mupdf.pdf_new_dict( doc, 1)
-            proc_filter = mupdf.pdf_new_filter_processor( doc, proc_buffer, in_res, out_res, struct_parents, transform, filter_)
-            mupdf.pdf_process_contents( proc_filter, doc, in_res, in_stm, mupdf.FzCookie())
-            mupdf.pdf_close_processor( proc_filter)
-        else:
-            out_res = in_res    # mupdf.pdf_keep_obj( in_res)
-            mupdf.pdf_process_contents( proc_buffer, doc, in_res, in_stm, mupdf.FzCookie())
-        mupdf.pdf_close_processor( proc_buffer)
-        return out_buf, out_res
-
-    def JM_image_reporter(page):
-        doc = page.doc()
-
-        filter_ = JM_image_reporter_Filter()
-
-        filter_._page = page
-        filter_.recurse = 0
-        filter_.instance_forms = 1
-        filter_.sanitize = 1
-        filter_.ascii = 1
-
-        ctm = mupdf.FzMatrix()
-        mupdf.pdf_page_transform( page, mupdf.FzRect(0, 0, 0, 0), ctm)
-        struct_parents_obj = mupdf.pdf_dict_get( page.obj(), PDF_NAME('StructParents'))
-        struct_parents = -1
-        if mupdf.pdf_is_number( struct_parents_obj):
-            struct_parents = mupdf.pdf_to_int( struct_parents_obj)
-
-        contents = mupdf.pdf_page_contents( page)
-        old_res = mupdf.pdf_page_resources( page)
-        global g_img_info
-        g_img_info = []
-        buffer_, new_res = JM_filter_content_stream( doc, contents, old_res, ctm, filter_, struct_parents)
-        rc = tuple( g_img_info)
-        return rc
+    rc = tuple(g_img_info)
+    g_img_info = []
+    return rc
 
 
 def JM_fitz_config():
@@ -20637,94 +20590,97 @@ def paper_sizes():
         "tabloid-extra": (864, 1296),
         }
 
+if mupdf_version_tuple >= (1, 23, 8):
+    def pdf_lookup_page_loc(doc, needle):
+        return mupdf.pdf_lookup_page_loc(doc, needle)
 
-def pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp):
-    assert isinstance(node, mupdf.PdfObj)
-    assert isinstance(skip, list) and len(skip) == 1
-    assert isinstance(indexp, list) and len(indexp) == 1
-    assert isinstance(parentp, list) and len(parentp) == 1 and isinstance(parentp[0], mupdf.PdfObj)
-    # Copy of MuPDF's internal pdf_lookup_page_loc_imp().
-    hit = None
-    stack = []
-    try:
-        while 1:
-            kids = mupdf.pdf_dict_get(node, PDF_NAME('Kids'))
-            len_ = mupdf.pdf_array_len( kids)
+else:
+    def pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp):
+        assert isinstance(node, mupdf.PdfObj)
+        assert isinstance(skip, list) and len(skip) == 1
+        assert isinstance(indexp, list) and len(indexp) == 1
+        assert isinstance(parentp, list) and len(parentp) == 1 and isinstance(parentp[0], mupdf.PdfObj)
+        # Copy of MuPDF's internal pdf_lookup_page_loc_imp().
+        hit = None
+        stack = []
+        try:
+            while 1:
+                kids = mupdf.pdf_dict_get(node, PDF_NAME('Kids'))
+                len_ = mupdf.pdf_array_len( kids)
 
-            if len_ == 0:
-                raise Exception("malformed page tree")
+                if len_ == 0:
+                    raise Exception("malformed page tree")
 
-            # Every node we need to unmark goes into the stack
-            stack.append(node)
+                # Every node we need to unmark goes into the stack
+                stack.append(node)
 
-            if mupdf.pdf_mark_obj( node):
-                raise Exception( "cycle in page tree")
+                if mupdf.pdf_mark_obj( node):
+                    raise Exception( "cycle in page tree")
 
-            for i in range(len_):
-                kid = mupdf.pdf_array_get( kids, i)
-                type_ = mupdf.pdf_dict_get( kid, PDF_NAME('Type'))
-                if type_.m_internal:
-                    a = mupdf.pdf_name_eq( type_, PDF_NAME('Pages'))
-                else:
-                    a = (
-                            mupdf.pdf_dict_get( kid, PDF_NAME('Kids')).m_internal
-                            and not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
-                            )
-                if a:
-                    count = mupdf.pdf_dict_get_int( kid, PDF_NAME('Count'))
-                    if (skip[0] < count):
-                        node = kid
-                        break
-                    else:
-                        skip[0] -= count
-                else:
+                for i in range(len_):
+                    kid = mupdf.pdf_array_get( kids, i)
+                    type_ = mupdf.pdf_dict_get( kid, PDF_NAME('Type'))
                     if type_.m_internal:
-                        a = not mupdf.pdf_name_eq( type_, PDF_NAME('Page'))
+                        a = mupdf.pdf_name_eq( type_, PDF_NAME('Pages'))
                     else:
-                        a = not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
+                        a = (
+                                mupdf.pdf_dict_get( kid, PDF_NAME('Kids')).m_internal
+                                and not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
+                                )
                     if a:
-                        mupdf.fz_warn( f"non-page object in page tree ({mupdf.pdf_to_name( type_)})")
-                    if skip[0] == 0:
-                        parentp[0] = node
-                        indexp[0] = i
-                        hit = kid
-                        break
+                        count = mupdf.pdf_dict_get_int( kid, PDF_NAME('Count'))
+                        if (skip[0] < count):
+                            node = kid
+                            break
+                        else:
+                            skip[0] -= count
                     else:
-                        skip[0] -= 1
+                        if type_.m_internal:
+                            a = not mupdf.pdf_name_eq( type_, PDF_NAME('Page'))
+                        else:
+                            a = not mupdf.pdf_dict_get( kid, PDF_NAME('MediaBox')).m_internal
+                        if a:
+                            mupdf.fz_warn( f"non-page object in page tree ({mupdf.pdf_to_name( type_)})")
+                        if skip[0] == 0:
+                            parentp[0] = node
+                            indexp[0] = i
+                            hit = kid
+                            break
+                        else:
+                            skip[0] -= 1
 
-            # If i < len && hit != NULL the desired page was found in the
-            # Kids array, done. If i < len && hit == NULL the found page tree
-            # node contains a Kids array that contains the desired page, loop
-            # back to top to extract it. When i == len the Kids array has been
-            # exhausted without finding the desired page, give up.
-            if not ((hit is None or hit.m_internal is None) and i < len_):
-                break
-    finally:
-        for i in range(len(stack), 0, -1): # (i = stack_len; i > 0; i--)
-            mupdf.pdf_unmark_obj( stack[i-1])
+                # If i < len && hit != NULL the desired page was found in the
+                # Kids array, done. If i < len && hit == NULL the found page tree
+                # node contains a Kids array that contains the desired page, loop
+                # back to top to extract it. When i == len the Kids array has been
+                # exhausted without finding the desired page, give up.
+                if not ((hit is None or hit.m_internal is None) and i < len_):
+                    break
+        finally:
+            for i in range(len(stack), 0, -1): # (i = stack_len; i > 0; i--)
+                mupdf.pdf_unmark_obj( stack[i-1])
 
-    return hit
+        return hit
 
+    def pdf_lookup_page_loc(doc, needle):
+        '''
+        Copy of MuPDF's internal pdf_lookup_page_loc().
+        '''
+        root = mupdf.pdf_dict_get( mupdf.pdf_trailer( doc), PDF_NAME('Root'))
+        node = mupdf.pdf_dict_get( root, PDF_NAME('Pages'))
+        skip = [needle]
 
-def pdf_lookup_page_loc(doc, needle):
-    '''
-    Copy of MuPDF's internal pdf_lookup_page_loc().
-    '''
-    root = mupdf.pdf_dict_get( mupdf.pdf_trailer( doc), PDF_NAME('Root'))
-    node = mupdf.pdf_dict_get( root, PDF_NAME('Pages'))
-    skip = [needle]
-
-    if not node.m_internal:
-        raise Exception("cannot find page tree")
-    parentp = [mupdf.PdfObj()]
-    indexp = [0]
-    hit = pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp)
-    skip = skip[0]
-    parentp = parentp[0]
-    indexp = indexp[0]
-    if not hit.m_internal:
-        raise Exception("cannot find page %d in page tree" % needle+1)
-    return hit, parentp, indexp  # We don't seem to return skip.
+        if not node.m_internal:
+            raise Exception("cannot find page tree")
+        parentp = [mupdf.PdfObj()]
+        indexp = [0]
+        hit = pdf_lookup_page_loc_imp(doc, node, skip, parentp, indexp)
+        skip = skip[0]
+        parentp = parentp[0]
+        indexp = indexp[0]
+        if not hit.m_internal:
+            raise Exception("cannot find page %d in page tree" % needle+1)
+        return hit, parentp, indexp  # We don't seem to return skip.
 
 
 def pdfobj_string(o, prefix=''):
@@ -20835,6 +20791,7 @@ def retainpages(doc, liste):
     olddests = mupdf.pdf_load_name_tree(doc, PDF_NAME('Dests'))
     outlines = mupdf.pdf_dict_get(oldroot, PDF_NAME('Outlines'))
     ocproperties = mupdf.pdf_dict_get(oldroot, PDF_NAME('OCProperties'))
+    names_list = None
 
     root = mupdf.pdf_new_dict(doc, 3)
     mupdf.pdf_dict_put(root, PDF_NAME('Type'), mupdf.pdf_dict_get(oldroot, PDF_NAME('Type')))
@@ -20949,7 +20906,7 @@ def sRGB_to_rgb(srgb: int) -> tuple:
 
 
 def string_in_names_list(p, names_list):
-    n = mupdf.pdf_array_len( names_list)
+    n = mupdf.pdf_array_len( names_list) if names_list else 0
     str_ = mupdf.pdf_to_text_string( p)
     for i in range(0, n, 2):
         if mupdf.pdf_to_text_string( mupdf.pdf_array_get( names_list, i)) == str_:
@@ -21715,6 +21672,7 @@ Document.set_toc            = utils.set_toc
 Document.set_toc_item       = utils.set_toc_item
 Document.subset_fonts       = utils.subset_fonts
 Document.tobytes            = Document.write
+Document.xref_copy          = utils.xref_copy
 
 IRect.get_area              = utils.get_area
 
@@ -21766,13 +21724,21 @@ TextWriter.fill_textbox     = utils.fill_textbox
 class FitzDeprecation(DeprecationWarning):
     pass
 
+def int_rc(text):
+    '''
+    Converts string to int, ignoring trailing 'rc...'.
+    '''
+    rc = text.find('rc')
+    if rc >= 0:
+        text = text[:rc]
+    return int(text)
 
-VersionFitz = "1.23.7" # MuPDF version.
-VersionBind = "1.23.8" # PyMuPDF version.
-VersionDate = "2023-12-19 00:00:01"
+VersionFitz = "1.23.9" # MuPDF version.
+VersionBind = "1.23.12" # PyMuPDF version.
+VersionDate = "2024-01-12 00:00:01"
 VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
 version = (VersionBind, VersionFitz, VersionDate2)
-pymupdf_version_tuple = tuple( [int(i) for i in VersionBind.split('.')])
+pymupdf_version_tuple = tuple( [int_rc(i) for i in VersionBind.split('.')])
 
 def restore_aliases():
     warnings.filterwarnings( "once", category=FitzDeprecation)

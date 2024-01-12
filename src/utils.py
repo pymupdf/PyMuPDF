@@ -754,24 +754,22 @@ def get_text(
         Default and misspelling choice is "text".
     """
     formats = {
-        "text": 0,
-        "html": 1,
-        "json": 1,
-        "rawjson": 1,
-        "xml": 0,
-        "xhtml": 1,
-        "dict": 1,
-        "rawdict": 1,
-        "words": 0,
-        "blocks": 1,
+        "text": fitz.TEXTFLAGS_TEXT,
+        "html": fitz.TEXTFLAGS_HTML,
+        "json": fitz.TEXTFLAGS_DICT,
+        "rawjson": fitz.TEXTFLAGS_RAWDICT,
+        "xml": fitz.TEXTFLAGS_XML,
+        "xhtml": fitz.TEXTFLAGS_XHTML,
+        "dict": fitz.TEXTFLAGS_DICT,
+        "rawdict": fitz.TEXTFLAGS_RAWDICT,
+        "words": fitz.TEXTFLAGS_WORDS,
+        "blocks": fitz.TEXTFLAGS_BLOCKS,
     }
     option = option.lower()
     if option not in formats:
         option = "text"
     if flags is None:
-        flags = fitz.TEXT_PRESERVE_WHITESPACE | fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_MEDIABOX_CLIP
-        if formats[option] == 1:
-            flags |= fitz.TEXT_PRESERVE_IMAGES
+        flags = formats[option]
 
     if option == "words":
         return get_text_words(

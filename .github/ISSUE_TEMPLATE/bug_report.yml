@@ -47,9 +47,14 @@ body:
       label: PyMuPDF version
       options:
         - 
+        - 1.23.12
+        - 1.23.11
+        - 1.23.10
+        - 1.23.9
+        - 1.23.9rc2
+        - 1.23.9rc1
         - 1.23.8
-        - 1.23.7
-        - 1.23.6 or earlier
+        - 1.23.7 or earlier
         - Built from source
       description: |
         * For example from `fitz.VersionBind`.

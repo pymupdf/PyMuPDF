@@ -2,6 +2,68 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.12 (2024-01-12)**
+
+* * **Fixed** `3027 <https://github.com/pymupdf/PyMuPDF/issues/3027>`_: Page.get_text throws Attribute Error for 'parent'
+
+
+**Changes in version 1.23.11 (2024-01-12)**
+
+* Fixed some Pixmap construction bugs.
+* Fixed Pixmap.yres().
+
+
+**Changes in version 1.23.10 (2024-01-12)**
+
+* Bug fixes:
+
+  * **Fixed** `3020 <https://github.com/pymupdf/PyMuPDF/issues/3020>`_: Can't resize a PixMap
+
+* Other:
+
+  * Fixed Page.delete_image().
+
+
+**Changes in version 1.23.9 (2024-01-11)**
+
+* Default to new "rebased" implementation.
+
+  * The old "classic" implementation is available with `import fitz_old as fitz`.
+  * For more information about why we are changing to the rebased implementation,
+    see: https://github.com/pymupdf/PyMuPDF/discussions/2680
+
+* Use MuPDF-1.23.9.
+
+* Bug fixes (rebased implementation only):
+
+  * **Fixed** `2911 <https://github.com/pymupdf/PyMuPDF/issues/2911>`_: Page.derotation_matrix returns a tuple instead of a Matrix with rebased implementation
+  * **Fixed** `2919 <https://github.com/pymupdf/PyMuPDF/issues/2919>`_: Rebased version: KeyError in resolve_names when merging pdfs
+  * **Fixed** `2922 <https://github.com/pymupdf/PyMuPDF/issues/2922>`_: New feature that allows inserting named-destination links doesn't work
+  * **Fixed** `2943 <https://github.com/pymupdf/PyMuPDF/issues/2943>`_: ZeroDivisionError: float division by zero when use apply_redactions()
+  * **Fixed** `2950 <https://github.com/pymupdf/PyMuPDF/issues/2950>`_: Shelling out to pip during tests is problematic
+  * **Fixed** `2954 <https://github.com/pymupdf/PyMuPDF/issues/2954>`_: Replacement unicode character in text extraction
+  * **Fixed** `2957 <https://github.com/pymupdf/PyMuPDF/issues/2957>`_: apply_redactions() moving text
+  * **Fixed** `2961 <https://github.com/pymupdf/PyMuPDF/issues/2961>`_: Passing a string as a page number raises IndexError instead of TypeError.
+  * **Fixed** `2969 <https://github.com/pymupdf/PyMuPDF/issues/2969>`_: annot.next throws AttributeError
+  * **Fixed** `2978 <https://github.com/pymupdf/PyMuPDF/issues/2978>`_: 1.23.9rc1: module 'fitz.mupdf' has no attribute 'fz_copy_pixmap_rect'
+
+  * **Fixed** `2907 <https://github.com/pymupdf/PyMuPDF/issues/2907>`_: segfault trying to call clean_contents on certain pdfs with python 3.12
+  * **Fixed** `2905 <https://github.com/pymupdf/PyMuPDF/issues/2905>`_: SystemError: <built-in function TextPage_extractIMGINFO> returned a result with an exception set
+  * **Fixed** `2742 <https://github.com/pymupdf/PyMuPDF/issues/2742>`_: Segmentation Fault when inserting three (but not two) copies of the same source page into one destination page
+
+* Other:
+
+  * Add optional setting of opacity to `Page.insert_htmlbox()`.
+  * Fixed issue with add_redact_annot() mentioned in #2934.
+  * Fixed `Page.rotation()` to return 0 for non-PDF documents instead of raising an exception.
+  * Fixed internal quad detection to cope with any Python sequence.
+  * Fixed rebased `fitz.pymupdf_version_tuple` - was previously set to mupdf version.
+  * Improved support for Linux system installs, including adding regular testing on Github.
+  * Add missing `flake8` to `scripts/gh_release.py:test_packages`.
+  * Use newly public functions in MuPDF-1.23.8.
+  * Improved `scripts/test.py` to help investigation of MuPDF issues.
+
+
 **Changes in version 1.23.8 (2023-12-19)**
 
 * Bug fixes (rebased implementation only):

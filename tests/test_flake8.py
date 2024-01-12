@@ -12,10 +12,6 @@ def test_flake8():
     if not hasattr(fitz, 'mupdf'):
         print(f'Not running flake8 with classic implementation.')
         return
-    if sys.prefix == sys.base_prefix:
-        # We install flake8, which we only want to do if we are in a venv.
-        print(f'Not running flake8 because we are not in a venv.')
-        return
     ignores = (
             'E123', # closing bracket does not match indentation of opening bracket's line
             'E124', # closing bracket does not match visual indentation
@@ -53,6 +49,5 @@ def test_flake8():
     def run(command):
         print(f'test_flake8(): Running: {command}')
         subprocess.run(command, shell=1, check=1)
-    run(f'pip install flake8')
     run(f'flake8 --ignore={ignores} --statistics {root}/src/__init__.py {root}/src/utils.py {root}/src/table.py')
     print(f'test_flake8(): flake8 succeeded.')

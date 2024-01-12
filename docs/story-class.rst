@@ -62,32 +62,32 @@ Story
         
         * To work in the first of these styles, the following loop should be used:
         
-            1. Obtain a suitable device to write to;
-               typically by requesting a new,
-               empty page from a :ref:`DocumentWriter`.
-            2. Determine one or more rectangles on the page,
-               that should receive **story** data.
-               Note that not every page needs to have the same set of rectangles.
-            3. Pass each rectangle to the **story** to place it,
-               learning what part of that rectangle has been filled,
-               and whether there is more story data that did not fit.
-               This step can be repeated several times with adjusted rectangles
-               until the caller is happy with the results. 
-            4. Optionally, at this point,
-               we can request details of where interesting items have been placed,
-               by calling the `element_positions()` method.
-               Items are deemed to be interesting if their integer `heading` attribute is a non-zero
-               (corresponding to HTML tags :htmlTag:`h1` - :htmlTag:`h6`),
-               if their `id` attribute is not `None` (corresponding to HTML tag :htmlTag:`id`),
-               or if their `href` attribute is not `None` (responding to HTML tag :htmlTag:`href`).
-               This can conveniently be used for automatic generation of a Table of Contents,
-               an index of images or the like.
-            5. Next, draw that rectangle out to the device with the `draw()` method.
-            6. If the most recent call to `place()` indicated that all the story data had fitted,
-               stop now.
-            7. Otherwise, we can loop back.
-               If there are more rectangles to be placed on the current device (page),
-               we jump back to step 3 - if not, we jump back to step 1 to get a new device.
+          1. Obtain a suitable device to write to;
+             typically by requesting a new,
+             empty page from a :ref:`DocumentWriter`.
+          2. Determine one or more rectangles on the page,
+             that should receive **story** data.
+             Note that not every page needs to have the same set of rectangles.
+          3. Pass each rectangle to the **story** to place it,
+             learning what part of that rectangle has been filled,
+             and whether there is more story data that did not fit.
+             This step can be repeated several times with adjusted rectangles
+             until the caller is happy with the results. 
+          4. Optionally, at this point,
+             we can request details of where interesting items have been placed,
+             by calling the `element_positions()` method.
+             Items are deemed to be interesting if their integer `heading` attribute is a non-zero
+             (corresponding to HTML tags :htmlTag:`h1` - :htmlTag:`h6`),
+             if their `id` attribute is not `None` (corresponding to HTML tag :htmlTag:`id`),
+             or if their `href` attribute is not `None` (responding to HTML tag :htmlTag:`href`).
+             This can conveniently be used for automatic generation of a Table of Contents,
+             an index of images or the like.
+          5. Next, draw that rectangle out to the device with the `draw()` method.
+          6. If the most recent call to `place()` indicated that all the story data had fitted,
+             stop now.
+          7. Otherwise, we can loop back.
+             If there are more rectangles to be placed on the current device (page),
+             we jump back to step 3 - if not, we jump back to step 1 to get a new device.
         * Alternatively, in the case where you are using a :ref:`DocumentWriter`,
           the `write()` or `write_stabilized()` methods can be used.
           These handle all the looping for you,
@@ -159,17 +159,16 @@ Story
         :arg writer: a `DocumentWriter` or None.
         :arg rectfn: a callable taking `(rect_num: int, filled: Rect)` and
             returning `(mediabox, rect, ctm)`:
-                mediabox:
-                    None or rect for new page.
-                rect:
-                    The next rect into which content should be placed.
-                ctm:
-                    None or a `Matrix`.
+            
+            * mediabox: None or rect for new page.
+            * rect: The next rect into which content should be placed.
+            * ctm: None or a `Matrix`.
         :arg positionfn: None, or a callable taking `(position: ElementPosition)`:
-                position:
-                    An `ElementPosition` with an extra `.page_num` member.
-                Typically called multiple times as we generate elements that
-                are headings or have an id.
+            
+            * position:
+                An `ElementPosition` with an extra `.page_num` member.
+            Typically called multiple times as we generate elements that
+            are headings or have an id.
         :arg pagefn:
             None, or a callable taking `(page_num, mediabox, dev, after)`;
             called at start (`after=0`) and end (`after=1`) of each page.
@@ -201,19 +200,15 @@ Story
         :arg rectfn:
             A callable taking `(rect_num: int, filled: Rect)` and
             returning `(mediabox, rect, ctm)`:
-                mediabox:
-                    None or rect for new page.
-                rect:
-                    The next rect into which content should be
-                    placed.
-                ctm:
-                    A `Matrix`.
+
+            * mediabox: None or rect for new page.
+            * rect: The next rect into which content should be placed.
+            * ctm: A `Matrix`.
         :arg pagefn:
             None, or a callable taking `(page_num, medibox,
             dev, after)`; called at start (`after=0`) and end
             (`after=1`) of each page.
         :arg archive:
-            .
         :arg add_header_ids:
             If true, we add unique ids to all header tags that
             don't already have an id. This can help automatic
@@ -390,7 +385,7 @@ The parameter passed to the `recorder` function is an object with the following 
 
 * `elpos.heading` (int) -- the header level, 0 if no header, 1-6 for :htmlTag:`h1` - :htmlTag:`h6`.
 
-* `elpos.href` (str) -- value of the `href`attribute, or None if not defined.
+* `elpos.href` (str) -- value of the `href` attribute, or None if not defined.
 
 * `elpos.id` (str) -- value of the `id` attribute, or None if not defined.
 

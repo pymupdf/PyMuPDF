@@ -48,3 +48,10 @@ def test_2348():
     print(f'jpeg_extension={jpeg_extension!r} png_extension={png_extension!r}')
     assert jpeg_extension == 'jpeg'
     assert png_extension == 'png'
+
+def test_delete_image():
+
+    doc = fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_delete_image.pdf'))
+    page = doc[0]
+    xref = page.get_images()[0][0]
+    page.delete_image(xref)

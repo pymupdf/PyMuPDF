@@ -11,6 +11,7 @@ import os
 import platform
 import sys
 import tempfile
+import pytest
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 epub = os.path.join(scriptdir, "resources", "Bezier.epub")
@@ -132,3 +133,22 @@ def test_2369():
         img_bytes = img["image"]
         fitz.Pixmap(img_bytes)
 
+def test_page_idx_int():
+    doc = fitz.open(pdf)
+    with pytest.raises(AssertionError):
+        doc["0"]
+    assert doc[0]
+    assert doc[(0,0)]
+
+def test_fz_write_pixmap_as_jpeg():
+    width, height = 13, 37
+    image = fitz.Pixmap(fitz.csGRAY, width, height, b"\x00" * (width * height), False)
+
+    with fitz.Document(stream=image.tobytes(output="jpeg"), filetype="jpeg") as doc:
+        test_pdf_bytes = doc.convert_to_pdf()
+
+def test_3020():
+    pm = fitz.Pixmap(imgfile)
+    pm2 = fitz.Pixmap(pm, 20, 30, None)
+    pm3 = fitz.Pixmap(fitz.csGRAY, pm)
+    pm4 = fitz.Pixmap(pm, pm3)

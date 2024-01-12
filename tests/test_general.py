@@ -743,3 +743,47 @@ def test_subset_fonts():
                 found = True
                 break
     assert found is True
+
+
+def test_2957_1():
+    """Text following a redaction must not change coordinates."""
+    # test file with redactions
+    doc = fitz.open(os.path.join(scriptdir, "resources", "test_2957_1.pdf"))
+    page = doc[0]
+    # search for string that must not move by redactions
+    rects0 = page.search_for("6e9f73dfb4384a2b8af6ebba")
+    # sort rectangles vertically
+    rects0 = sorted(rects0, key=lambda r: r.y1)
+    assert len(rects0) == 2  # must be 2 redactions
+    page.apply_redactions()
+
+    # reload page to finalize updates
+    page = doc.reload_page(page)
+
+    # the two string must retain their positions (except rounding errors)
+    rects1 = page.search_for("6e9f73dfb4384a2b8af6ebba")
+    rects1 = sorted(rects1, key=lambda r: r.y1)
+
+    assert page.first_annot is None  # make sure annotations have disappeared
+    for i in range(2):
+        r0 = rects0[i].irect  # take rounded rects
+        r1 = rects1[i].irect
+        assert r0 == r1
+
+
+def test_2957_2():
+    """Redacted text must not change positions of remaining text."""
+    doc = fitz.open(os.path.join(scriptdir, "resources", "test_2957_2.pdf"))
+    page = doc[0]
+    words0 = page.get_text("words")  # all words before redacting
+    page.apply_redactions()  # remove/redact the word "longer"
+    words1 = page.get_text("words")  # extract words again
+    assert len(words1) == len(words0) - 1  # must be one word less
+    assert words0[3][4] == "longer"  # just confirm test file is correc one
+    del words0[3]  # remove the redacted word from first list
+    for i in range(len(words1)):  # compare words
+        w1 = words1[i]  # word after redaction
+        bbox1 = fitz.Rect(w1[:4]).irect  # its IRect coordinates
+        w0 = words0[i]  # word before redaction
+        bbox0 = fitz.Rect(w0[:4]).irect  # its IRect coordinates
+        assert bbox0 == bbox1  # must be same coordinates

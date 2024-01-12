@@ -384,7 +384,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = 'https://mupdf.com/downloads/archive/mupdf-1.23.7-source.tar.gz'
+        location = 'https://mupdf.com/downloads/archive/mupdf-1.23.9-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -592,7 +592,7 @@ def build():
             elif pyodide:
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
             else:
-                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
+                add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
 
     if path_so_leaf_b:
         # Add rebased implementation files.
@@ -622,8 +622,8 @@ def build():
                 add( ret_b, f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
             else:
                 add( ret_p, f'{mupdf_build_dir}/_mupdf.so', to_dir)
-                add( ret_b, f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
-                add( ret_b, f'{mupdf_build_dir}/libmupdf.so', to_dir)
+                add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
+                add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
     
     if g_flavour == 'pb':
         ret = ret_p + ret_b
@@ -1072,8 +1072,8 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.8'
-version_b = '1.23.7'
+version = '1.23.12'
+version_b = '1.23.9'
 
 tag_python = None
 requires_dist = None,

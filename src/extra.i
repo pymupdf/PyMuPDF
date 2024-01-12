@@ -1858,6 +1858,17 @@ static mupdf::FzDocument Document_init(
                 {
                     throw std::runtime_error(MSG_BAD_FILETYPE);
                 }
+                #if FZ_VERSION_MINOR >= 24
+                if (handler->open)
+                {
+                    doc = mupdf::fz_document_open_fn_call(
+                            handler->open,
+                            mupdf::FzStream(filename),
+                            mupdf::FzStream(),
+                            mupdf::FzArchive()
+                            );
+                }
+                #else
                 if (handler->open)
                 {
                     doc = mupdf::FzDocument(mupdf::ll_fz_document_open_fn_call(handler->open, filename));
@@ -1872,6 +1883,7 @@ static mupdf::FzDocument Document_init(
                                 )
                             );
                 }
+                #endif
             }
         }
         else

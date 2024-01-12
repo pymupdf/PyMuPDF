@@ -153,14 +153,16 @@ static void show(const char* prefix, PyObject* obj);
 
 
 // additional headers ----------------------------------------------
+#if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR == 23 && FZ_VERSION_PATCH < 8
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
 fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, float w, float h, const fz_irect *clip);
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
+void fz_write_pixmap_as_jpeg(fz_context *ctx, fz_output *out, fz_pixmap *pix, int jpg_quality);
+#endif
 static const float JM_font_ascender(fz_context *ctx, fz_font *font);
 static const float JM_font_descender(fz_context *ctx, fz_font *font);
-void fz_write_pixmap_as_jpeg(fz_context *ctx, fz_output *out, fz_pixmap *pix, int jpg_quality);
 // end of additional headers --------------------------------------------
 
 static PyObject *JM_mupdf_warnings_store;
@@ -515,12 +517,31 @@ struct Document
                             if (!handler) {
                                 RAISEPY(gctx, MSG_BAD_FILETYPE, PyExc_ValueError);
                             }
+                            #if FZ_VERSION_MINOR >= 24
+                            if (handler->open)
+                            {
+                                fz_stream* filename_stream = fz_open_file(gctx, filename);
+                                fz_try(gctx)
+                                {
+                                    doc = handler->open(gctx, filename_stream, NULL, NULL);
+                                }
+                                fz_always(gctx)
+                                {
+                                    fz_drop_stream(gctx, filename_stream);
+                                }
+                                fz_catch(gctx)
+                                {
+                                    fz_rethrow(gctx);
+                                }
+                            }
+                            #else
                             if (handler->open) {
                                 doc = handler->open(gctx, filename);
                             } else if (handler->open_with_stream) {
                                 data = fz_open_file(gctx, filename);
                                 doc = handler->open_with_stream(gctx, data);
                             }
+                            #endif
                         }
                     } else {
                         pdf_document *pdf = pdf_create_document(gctx);
@@ -4800,6 +4821,7 @@ if basestate:
 
 
             def __getitem__(self, i: int =0)->"Page":
+                assert isinstance(i, int) or (isinstance(i, tuple) and len(i) == 2 and all(isinstance(x, int) for x in i))
                 if i not in self:
                     raise IndexError("page not in document")
                 return self.load_page(i)
@@ -8279,7 +8301,11 @@ Args:
                         break;
                     #if FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 22
                     case(7):           // JPEG format
+                        #if FZ_VERSION_MINOR < 24
                         fz_write_pixmap_as_jpeg(gctx, out, pm, jpg_quality);
+                        #else
+                        fz_write_pixmap_as_jpeg(gctx, out, pm, jpg_quality, 0 /*invert_cmyk*/);
+                        #endif
                         break;
                     #endif
                     default:
