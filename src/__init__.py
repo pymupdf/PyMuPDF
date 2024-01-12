@@ -9448,9 +9448,9 @@ class Pixmap:
             src_pix = spix.this if isinstance(spix, Pixmap) else spix
             bbox = JM_irect_from_py(clip)
             if not mupdf.fz_is_infinite_irect(bbox):
-                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x, src_pix.y, w, h, bbox)
+                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x(), src_pix.y(), w, h, bbox)
             else:
-                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x, src_pix.y, w, h, None)
+                pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x(), src_pix.y(), w, h, mupdf.FzIrect(mupdf.fz_infinite_irect))
             self.this = pm
 
         elif args_match(args, str, mupdf.FzPixmap) and args[0] == 'raw':
