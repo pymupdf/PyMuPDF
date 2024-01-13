@@ -71,8 +71,10 @@ This is implemented as new class TableHeader with the properties:
 * external: A bool indicating whether the header is outside the table cells.
 
 """
+import inspect
 import itertools
 import string
+from collections.abc import Sequence
 from dataclasses import dataclass
 from operator import itemgetter
 
@@ -91,7 +93,6 @@ from . import (
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
-TEXTPAGE = None  # TextPage of the page for optimized extraction
 # -------------------------------------------------------------------
 # End of PyMuPDF interface code
 # -------------------------------------------------------------------
@@ -139,6 +140,18 @@ LIGATURES = {
     "ﬆ": "st",
     "ﬅ": "st",
 }
+
+
+def to_list(collection) -> list:
+    if isinstance(collection, list):
+        return collection
+    elif isinstance(collection, Sequence):
+        return list(collection)
+    elif hasattr(collection, "to_dict"):
+        res = collection.to_dict("records")  # pragma: nocover
+        return res
+    else:
+        return list(collection)
 
 
 class TextMap:
@@ -544,6 +557,78 @@ class WordExtractor:
 
 def extract_words(chars: list, **kwargs) -> list:
     return WordExtractor(**kwargs).extract_words(chars)
+
+
+TEXTMAP_KWARGS = inspect.signature(WordMap.to_textmap).parameters.keys()
+WORD_EXTRACTOR_KWARGS = inspect.signature(WordExtractor).parameters.keys()
+
+
+def chars_to_textmap(chars: list, **kwargs) -> TextMap:
+    kwargs.update({"presorted": True})
+
+    extractor = WordExtractor(
+        **{k: kwargs[k] for k in WORD_EXTRACTOR_KWARGS if k in kwargs}
+    )
+    wordmap = extractor.extract_wordmap(chars)
+    textmap = wordmap.to_textmap(
+        **{k: kwargs[k] for k in TEXTMAP_KWARGS if k in kwargs}
+    )
+
+    return textmap
+
+
+def extract_text(chars: list, **kwargs) -> str:
+    chars = to_list(chars)
+    if len(chars) == 0:
+        return ""
+
+    if kwargs.get("layout"):
+        return chars_to_textmap(chars, **kwargs).as_string
+    else:
+        y_tolerance = kwargs.get("y_tolerance", DEFAULT_Y_TOLERANCE)
+        extractor = WordExtractor(
+            **{k: kwargs[k] for k in WORD_EXTRACTOR_KWARGS if k in kwargs}
+        )
+        words = extractor.extract_words(chars)
+        lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
+        return "\n".join(" ".join(word["text"] for word in line) for line in lines)
+
+
+def collate_line(
+    line_chars: list,
+    tolerance=DEFAULT_X_TOLERANCE,
+) -> str:
+    coll = ""
+    last_x1 = None
+    for char in sorted(line_chars, key=itemgetter("x0")):
+        if (last_x1 is not None) and (char["x0"] > (last_x1 + tolerance)):
+            coll += " "
+        last_x1 = char["x1"]
+        coll += char["text"]
+    return coll
+
+
+def dedupe_chars(chars: list, tolerance=1) -> list:
+    """
+    Removes duplicate chars — those sharing the same text, fontname, size,
+    and positioning (within `tolerance`) as other characters in the set.
+    """
+    key = itemgetter("fontname", "size", "upright", "text")
+    pos_key = itemgetter("doctop", "x0")
+
+    def yield_unique_chars(chars: list):
+        sorted_chars = sorted(chars, key=key)
+        for grp, grp_chars in itertools.groupby(sorted_chars, key=key):
+            for y_cluster in cluster_objects(
+                list(grp_chars), itemgetter("doctop"), tolerance
+            ):
+                for x_cluster in cluster_objects(
+                    y_cluster, itemgetter("x0"), tolerance
+                ):
+                    yield sorted(x_cluster, key=pos_key)[0]
+
+    deduped = yield_unique_chars(chars)
+    return sorted(deduped, key=chars.index)
 
 
 def line_to_edge(line):
@@ -1162,35 +1247,22 @@ class Table(object):
 
     @property
     def bbox(self):
-        """Original replaced by PyMuPDF"""
-        rect = EMPTY_RECT()
-        for c in self.cells:
-            rect |= c
-        return tuple(rect)
+        c = self.cells
+        return (
+            min(map(itemgetter(0), c)),
+            min(map(itemgetter(1), c)),
+            max(map(itemgetter(2), c)),
+            max(map(itemgetter(3), c)),
+        )
 
     @property
     def rows(self) -> list:
-        """Assign table cells to row cells observing page rotation"""
-        rot = self.page.rotation
-        if rot == 0:
-            # sort by y, then by x
-            i1, i2, f1, f2 = 1, 0, 1, 1
-        elif rot == 90:
-            # sort by x, then by y (desc)
-            i1, i2, f1, f2 = 0, 1, -1, 1
-        elif rot == 270:
-            # sort by x (desc), then by y (asc)
-            i1, i2, f1, f2 = 0, 1, 1, -1
-        elif rot == 180:
-            # sort by y (desc), then by x (desc)
-            i1, i2, f1, f2 = 1, 0, -1, -1
-
-        xs = sorted(list(set([c[i1] for c in self.cells])), key=lambda x: f2 * x)
+        _sorted = sorted(self.cells, key=itemgetter(1, 0))
+        xs = list(sorted(set(map(itemgetter(0), self.cells))))
         rows = []
-        for x in xs:
-            row = TableRow(
-                sorted([c for c in self.cells if c[i1] == x], key=lambda c: f1 * c[i2])
-            )
+        for y, row_cells in itertools.groupby(_sorted, itemgetter(1)):
+            xdict = {cell[0]: cell for cell in row_cells}
+            row = TableRow([xdict.get(x) for x in xs])
             rows.append(row)
         return rows
 
@@ -1202,55 +1274,46 @@ class Table(object):
     def col_count(self) -> int:  # PyMuPDF extension
         return max([len(r.cells) for r in self.rows])
 
-    def extract(self) -> list:
-        """Extract the cell text for the comple table.
+    def extract(self, **kwargs) -> list:
+        chars = CHARS
+        table_arr = []
 
-        Complete replacement by PyMuPDF text extraction.
-        """
-        global TEXTPAGE
-
-        def get_text(cell):
-            """Accept char bbox areas with a cell overlap of at least 50%."""
-            cell = Rect(cell)  # we need a Rect object
-            text = ""  # result text
-            for block in TEXTPAGE.extractRAWDICT()["blocks"]:
-                if Rect(block["bbox"]).intersect(cell).is_empty:
-                    continue
-                for line in block["lines"]:
-                    if Rect(line["bbox"]).intersect(cell).is_empty:
-                        continue
-                    for span in line["spans"]:
-                        chars = span["chars"]
-                        if text and chars:
-                            text += "\n"  # new span appended after linebreak
-                        for char in chars:
-                            bbox = Rect(char["bbox"])
-                            if abs(bbox & cell) < 0.5 * abs(bbox):
-                                continue
-                            text += char["c"]
-
-            # no final line break, no wrapping spaces
-            return text.rstrip("\n").strip()
-
-        table_arr = []  # final result
+        def char_in_bbox(char, bbox) -> bool:
+            v_mid = (char["top"] + char["bottom"]) / 2
+            h_mid = (char["x0"] + char["x1"]) / 2
+            x0, top, x1, bottom = bbox
+            return bool(
+                (h_mid >= x0) and (h_mid < x1) and (v_mid >= top) and (v_mid < bottom)
+            )
 
         for row in self.rows:
-            arr = []  # text in this row
+            arr = []
+            row_chars = [char for char in chars if char_in_bbox(char, row.bbox)]
+
             for cell in row.cells:
                 if cell is None:
                     cell_text = None
                 else:
-                    cell_text = get_text(cell)
+                    cell_chars = [
+                        char for char in row_chars if char_in_bbox(char, cell)
+                    ]
+
+                    if len(cell_chars):
+                        kwargs["x_shift"] = cell[0]
+                        kwargs["y_shift"] = cell[1]
+                        if "layout" in kwargs:
+                            kwargs["layout_width"] = cell[2] - cell[0]
+                            kwargs["layout_height"] = cell[3] - cell[1]
+                        cell_text = extract_text(cell_chars, **kwargs)
+                    else:
+                        cell_text = ""
                 arr.append(cell_text)
             table_arr.append(arr)
 
         return table_arr
 
-    def to_pandas(self):
-        """Return a pandas DataFrame version of the table.
-
-        This is original PyMuPDF code.
-        """
+    def to_pandas(self, **kwargs):
+        """Return a pandas DataFrame version of the table."""
         try:
             import pandas as pd
         except ModuleNotFoundError:
@@ -1362,9 +1425,6 @@ class Table(object):
                     cells.append((x0, y0, x1, y1))
             return cells, bbox
 
-        # we depend on small glyph heights!
-        old_small = TOOLS.set_small_glyph_heights()
-        TOOLS.set_small_glyph_heights(True)
         try:
             row = self.rows[0]
             cells = row.cells
@@ -1509,7 +1569,6 @@ class Table(object):
             page.get_textbox(c).replace("\n", " ").replace("  ", " ").strip()
             for c in hdr_cells
         ]
-        TOOLS.set_small_glyph_heights(old_small)
         return TableHeader(tuple(hdr_bbox), hdr_cells, hdr_names, True)
 
 
@@ -1756,14 +1815,11 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
-    global CHARS, TEXTPAGE
-    old_small = TOOLS.set_small_glyph_heights()
-    TOOLS.set_small_glyph_heights(True)
+    global CHARS
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    TEXTPAGE = page.get_textpage(clip, flags=TEXTFLAGS_TEXT)
-    blocks = TEXTPAGE.extractRAWDICT()["blocks"]
+    blocks = page.get_text("rawdict", clip=clip, flags=TEXTFLAGS_TEXT)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
         for line in block["lines"]:
@@ -1810,8 +1866,6 @@ def make_chars(page, clip=None):
                     }
                     CHARS.append(char_dict)
 
-    TOOLS.set_small_glyph_heights(old_small)
-
 
 # -----------------------------------------------------------------------------
 # Extract all page vector graphics to fill the EDGES list.
@@ -1819,8 +1873,56 @@ def make_chars(page, clip=None):
 # else to lines.
 # -----------------------------------------------------------------------------
 def make_edges(page, clip=None, tset=None):
+    def has_text(bbox):
+        text = page.get_text(clip=bbox).replace("\n", "").strip()
+        if text:
+            return True
+        return False
+
+    def clean_graphics():
+        """Detect and join rectangles of connected vector graphics."""
+        # we need to exclude meaningless graphics that e.g. paint a white
+        # rectangle on the full page.
+
+        parea = abs(page.rect) * 0.8  # area of the full page (80%)
+
+        # exclude graphics that are too large
+        paths = [p for p in page.get_drawings() if abs(p["rect"]) < parea]
+
+        # make a list of vector graphics rectangles (IRects are sufficient)
+        prects = sorted([p["rect"] for p in paths], key=lambda r: (r.y1, r.x0))
+
+        new_rects = []  # the final list of joined rectangles
+
+        # -------------------------------------------------------------------------
+        # Strategy: join rects that have at least one point in common.
+        # -------------------------------------------------------------------------
+        while prects:  # the algorithm will empty this list
+            r = prects[0]  # first rectangle
+            repeat = True
+            while repeat:
+                repeat = False
+                for i in range(len(prects) - 1, -1, -1):  # run backwards
+                    if i == 0:  # don't touch first rectangle
+                        continue
+                    if r.intersects(prects[i]):
+                        r |= prects[i]  # join in to first rect
+                        prects[0] = +r  # update first
+                        del prects[i]  # delete this rect
+                        repeat = True
+
+            # move first item over to result list
+            new_rects.append(prects.pop(0))
+            prects = sorted(list(set(prects)), key=lambda r: (r.y1, r.x0))
+
+        new_rects = sorted(list(set(new_rects)), key=lambda r: (r.y1, r.x0))
+        return [
+            r for r in new_rects if r.width > 5 and r.height > 5 and has_text(r)
+        ], paths
+
     global EDGES
-    paths = page.get_drawings()
+    bboxes, paths = clean_graphics()
+
     page_height = page.rect.height
     doctop_basis = page.number * page_height
     page_number = page.number + 1
@@ -1896,6 +1998,14 @@ def make_edges(page, clip=None, tset=None):
         return line_dict
 
     for p in paths:
+        if p["type"] == "f" and p["fill"] == (1, 1, 1):
+            continue
+        if p["type"] == "f" and p["rect"].width > 3 and p["rect"].height > 3:
+            if (
+                tset.vertical_strategy == "lines_strict"
+                or tset.horizontal_strategy == "lines_strict"
+            ):
+                continue
         items = p["items"]  # items in this path
 
         # if 'closePath', add a line from last to first point
@@ -1913,7 +2023,7 @@ def make_edges(page, clip=None, tset=None):
                     EDGES.append(line_to_edge(line_dict))
 
             elif i[0] == "re":  # a rectangle: decompose into 4 lines
-                rect = i[1]  # rectangle itself
+                rect = i[1].normalize()  # rectangle itself
                 # ignore minute rectangles
                 if rect.height <= y_tolerance and rect.width <= x_tolerance:
                     continue
@@ -1972,6 +2082,77 @@ def make_edges(page, clip=None, tset=None):
                 if line_dict:
                     EDGES.append(line_to_edge(line_dict))
 
+    path = {"color": (0, 0, 0), "fill": None, "width": 1}
+    for bbox in bboxes:
+        line_dict = make_line(path, bbox.tl, bbox.tr, clip)
+        EDGES.append(line_to_edge(line_dict))
+
+        line_dict = make_line(path, bbox.bl, bbox.br, clip)
+        EDGES.append(line_to_edge(line_dict))
+
+        line_dict = make_line(path, bbox.tl, bbox.bl, clip)
+        EDGES.append(line_to_edge(line_dict))
+
+        line_dict = make_line(path, bbox.tr, bbox.br, clip)
+        EDGES.append(line_to_edge(line_dict))
+
+
+def page_rotation_set0(page):
+    """Nullify page rotation.
+
+    To correctly detect tables, page rotation must be zero.
+    This function performs the necessary adjustments and returns information
+    for reverting this changes.
+    """
+    mediabox = page.mediabox
+    rot = page.rotation  # contains normalized rotation value
+    # need to derotate the page's content
+    mb = page.mediabox  # current mediabox
+
+    if rot == 90:
+        # before derotation, shift content horizontally
+        mat0 = Matrix(1, 0, 0, 1, mb.y1 - mb.x1 - mb.x0 - mb.y0, 0)
+    elif rot == 270:
+        # before derotation, shift content vertically
+        mat0 = Matrix(1, 0, 0, 1, 0, mb.x1 - mb.y1 - mb.y0 - mb.x0)
+    else:
+        mat0 = Matrix(1, 0, 0, 1, -2 * mb.x0, -2 * mb.y0)
+
+    # prefix with derotation matrix
+    mat = mat0 * page.derotation_matrix
+    cmd = b"%g %g %g %g %g %g cm " % tuple(mat)
+    xref = TOOLS._insert_contents(page, cmd, 0)
+
+    # swap x- and y-coordinates
+    if rot in (90, 270):
+        x0, y0, x1, y1 = mb
+        mb.x0 = y0
+        mb.y0 = x0
+        mb.x1 = y1
+        mb.y1 = x1
+        page.set_mediabox(mb)
+
+    page.set_rotation(0)
+
+    # refresh the page to apply these changes
+    doc = page.parent
+    pno = page.number
+    page = doc[pno]
+    return page, xref, rot, mediabox
+
+
+def page_rotation_reset(page, xref, rot, mediabox):
+    """Reset page rotation to original values.
+
+    To be used before we return tabes."""
+    doc = page.parent  # document of the page
+    doc.update_object(xref, "<<>>")  # remove modifying matrix
+    page.set_mediabox(mediabox)  # set mediabox to old value
+    page.set_rotation(rot)  # set rotation to old value
+    pno = page.number
+    page = doc[pno]  # update page info
+    return page
+
 
 def find_tables(
     page,
@@ -1995,10 +2176,18 @@ def find_tables(
     text_tolerance=3,
     text_x_tolerance=3,
     text_y_tolerance=3,
+    strategy=None,  # offer abbreviation
 ):
     global CHARS, EDGES
     CHARS = []
     EDGES = []
+    old_small = bool(TOOLS.set_small_glyph_heights())  # save old value
+    TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
+    if page.rotation != 0:
+        page, old_xref, old_rot, old_mediabox = page_rotation_set0(page)
+    else:
+        old_xref, old_rot, old_mediabox = None, None, None
+
     if snap_x_tolerance is None:
         snap_x_tolerance = UNSET
     if snap_y_tolerance is None:
@@ -2011,6 +2200,10 @@ def find_tables(
         intersection_x_tolerance = UNSET
     if intersection_y_tolerance is None:
         intersection_y_tolerance = UNSET
+    if strategy is not None:
+        vertical_strategy = strategy
+        horizontal_strategy = strategy
+
     settings = {
         "vertical_strategy": vertical_strategy,
         "horizontal_strategy": horizontal_strategy,
@@ -2034,7 +2227,12 @@ def find_tables(
     }
     tset = TableSettings.resolve(settings=settings)
     page.table_settings = tset
+
     make_chars(page, clip=clip)  # create character list of page
     make_edges(page, clip=clip, tset=tset)  # create lines and curves
     tables = TableFinder(page, settings=tset)
+
+    TOOLS.set_small_glyph_heights(old_small)
+    if old_xref is not None:
+        page = page_rotation_reset(page, old_xref, old_rot, old_mediabox)
     return tables
