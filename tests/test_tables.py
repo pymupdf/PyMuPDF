@@ -144,3 +144,24 @@ def test_2812():
     e0 = extracts[0]
     for e in extracts[1:]:
         assert e == e0
+
+
+def test_2979():
+    """This tests fix #2979 and #3001.
+
+    2979: identical cell count for each row
+    3001: no change of global glyph heights
+    """
+    filename = os.path.join(scriptdir, "resources", "test_2979.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    tab = page.find_tables()[0]  # extract the table
+    lengths = set()  # stores all row cell counts
+    for e in tab.extract():
+        lengths.add(len(e))  # store number of cells for row
+
+    # test 2979
+    assert len(lengths) == 1
+
+    # test 3001
+    assert fitz.TOOLS.set_small_glyph_heights() is False
