@@ -8671,7 +8671,7 @@ class Page:
                     cmd = item[0]
                     rest = item[1:]
                     if  cmd == "re":
-                        item = ("re", Rect(rest[0]), rest[1])
+                        item = ("re", Rect(rest[0]).normalize(), rest[1])
                     elif cmd == "qu":
                         item = ("qu", Quad(rest[0]))
                     else:
@@ -8805,7 +8805,7 @@ class Page:
                         cmd = item[0]
                         rest = item[1:]
                         if  cmd == "re":
-                            item = ("re", Rect(rest[0]), rest[1])
+                            item = ("re", Rect(rest[0]).normalize(), rest[1])
                         elif cmd == "qu":
                             item = ("qu", Quad(rest[0]))
                         else:
