@@ -10778,6 +10778,10 @@ class Rect:
         """Check if containing point-like or rect-like x."""
         return self.__contains__(x)
 
+    @property
+    def height(self):
+        return max(0, self.y1 - self.y0)
+
     def include_point(self, p):
         """Extend to include point-like p."""
         if len(p) != 2:
@@ -10899,15 +10903,17 @@ class Rect:
         self.x0, self.y0, self.x1, self.y1 = util_transform_rect(self, m)
         return self
 
+    @property
+    def width(self):
+        return max(0, self.x1 - self.x0)
+
     __div__ = __truediv__
 
     bl = bottom_left
     br = bottom_right
-    height = property(lambda self: abs(self.y1 - self.y0))
     irect = property(round)
     tl = top_left
     tr = top_right
-    width  = property(lambda self: abs(self.x1 - self.x0))
 
 
 class Shape:
