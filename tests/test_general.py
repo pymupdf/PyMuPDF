@@ -539,6 +539,12 @@ def test_2692():
                 alpha=False,
                 clip=fitz.Rect(0,0,10,10),
                 )
+        pix = dl.get_pixmap(
+                matrix=fitz.Identity,
+                #colorspace=fitz.csRGB,
+                alpha=False,
+                clip=fitz.Rect(0,0,10,10),
+                )
     
 
 def test_2596():

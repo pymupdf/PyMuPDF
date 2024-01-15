@@ -2460,7 +2460,9 @@ class DisplayList:
             assert 0, f'Unrecognised {args=}'
 
     def get_pixmap(self, matrix=None, colorspace=None, alpha=0, clip=None):
-        if not colorspace:
+        if isinstance(colorspace, Colorspace):
+            colorspace = colorspace.this
+        else:
             colorspace = mupdf.FzColorspace(mupdf.FzColorspace.Fixed_RGB)
         val = JM_pixmap_from_display_list(self.this, matrix, colorspace, alpha, clip, None)
         val.thisown = True
@@ -16792,8 +16794,9 @@ def JM_pixmap_from_display_list(
     rect = mupdf.fz_transform_rect(rect, matrix)
     irect = mupdf.fz_round_rect(rect)
 
-    assert isinstance( cs, Colorspace)
-    pix = mupdf.fz_new_pixmap_with_bbox(cs.this, irect, seps, alpha)
+    assert isinstance( cs, mupdf.FzColorspace)
+
+    pix = mupdf.fz_new_pixmap_with_bbox(cs, irect, seps, alpha)
     if alpha:
         mupdf.fz_clear_pixmap(pix)
     else:
