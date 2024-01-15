@@ -3,5 +3,5 @@ rst2pdf
 # define sphinx versioning
 sphinx==5.3.0
 furo
-readthedocs-sphinx-search==0.1.1
+readthedocs-sphinx-search==0.3.2
 sphinx_copybutton
