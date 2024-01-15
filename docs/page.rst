@@ -715,7 +715,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * With this method the following can be achieved:
 
         - Styling effects like bold, italic, text color, text alignment, font size or font switching.
-        - The text may inlude arbitrary languages -- **including right-to-left** languages.
+        - The text may include arbitrary languages -- **including right-to-left** languages.
         - Scripts like `Devanagari <https://en.wikipedia.org/wiki/Devanagari>`_ and several others in Asia have a highly complex system of ligatures, where two or more unicodes together yield one glyph. The Story uses the software package `HarfBuzz <https://harfbuzz.github.io/>`_ , to deal with these things and produce correct output.
         - One can also **include images** via HTML tag `<img>` -- the Story will take care of the appropriate layout. This is an alternative option to insert images, compared to :meth:`Page.insert_image`.
         - HTML tables (tag `<table>`) may be included in the text and will be handled appropriately.
