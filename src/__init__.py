@@ -12524,7 +12524,7 @@ class TextPage:
             block_dict[ dictkey_colorspace] = mupdf.fz_colorspace_n(cs)
             block_dict[ dictkey_cs_name] = mupdf.fz_colorspace_name(cs)
             block_dict[ dictkey_xres] = img.xres()
-            block_dict[ dictkey_yres] = img.xres()  # fixme: shouldn't this be img.yres()?
+            block_dict[ dictkey_yres] = img.yres()
             block_dict[ dictkey_bpc] = img.bpc()
             block_dict[ dictkey_size] = mupdf.fz_image_size(img)
             if hashes:
