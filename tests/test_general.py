@@ -153,6 +153,7 @@ def test_bug1971():
         page = next(doc.pages())
         page.get_drawings()
         doc.close()
+        assert doc.is_closed
 
 def test_default_font():
     f = fitz.Font()

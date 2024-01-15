@@ -3560,16 +3560,12 @@ class Document:
         #self._reset_page_refs()
         #self.metadata    = None
         #self.stream      = None
-        #self.is_closed    = True
+        self.is_closed    = True
         #self.FontInfos   = []
         #self.Graftmaps = {}
         #self.ShownPages = {}
         #self.InsertedImages  = {}
-        
         #self.this = None
-        self.close_internal()
-
-    def close_internal(self):
         self.this = None
 
     def convert_to_pdf(self, from_page=0, to_page=-1, rotate=0):
