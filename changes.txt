@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.13 (2024-01-15)**
+
+* Bug fixes:
+
+  * **Fixed** `2979 <https://github.com/pymupdf/PyMuPDF/issues/2979>`_: list index out of range in to_pandas()
+  * **Fixed** `3001 <https://github.com/pymupdf/PyMuPDF/issues/3001>`_: Calling find_tables() on one document alters the bounding boxes of a subsequent document
+
+* Other:
+
+  * Fixed `Rect.height` and `Rect.width` to never return negative values.
+  * Fixed `TextPage.extractIMGINFO()`'s returned `dictkey_yres` value.
+
+
 **Changes in version 1.23.12 (2024-01-12)**
 
 * * **Fixed** `3027 <https://github.com/pymupdf/PyMuPDF/issues/3027>`_: Page.get_text throws Attribute Error for 'parent'
