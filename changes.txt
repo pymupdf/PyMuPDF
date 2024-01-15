@@ -2,6 +2,18 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.14 (2024-01-15)**
+
+* Bug fixes:
+
+  * **Fixed** `3038 <https://github.com/pymupdf/PyMuPDF/issues/3038>`_: JM_pixmap_from_display_list > Assertion Error : Checking for wrong type
+  * **Fixed** `3039 <https://github.com/pymupdf/PyMuPDF/issues/3039>`_: Issue with doc.close() not closing the document in PyMuPDF
+
+* Other:
+
+  * Ensure valid "re" rectangles in `Page.get_drawings()` with derotated pages.
+
+
 **Changes in version 1.23.13 (2024-01-15)**
 
 * Bug fixes:
