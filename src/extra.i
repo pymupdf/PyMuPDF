@@ -3670,6 +3670,7 @@ PyObject* extractBLOCKS(mupdf::FzStextPage& self)
             mupdf::fz_clear_buffer(res);  // set text buffer to empty
             int line_n = -1;
             int last_char = 0;
+            (void) line_n;  /* Not actually used, but keeping in the code for now. */
             for (fz_stext_line* line = block->u.t.first_line; line; line = line->next)
             {
                 line_n++;
@@ -3954,6 +3955,62 @@ int pixmap_n(mupdf::FzPixmap& pixmap)
     return mupdf::fz_pixmap_components( pixmap);
 }
 
+static int
+JM_INT_ITEM(PyObject *obj, Py_ssize_t idx, int *result)
+{
+    PyObject *temp = PySequence_ITEM(obj, idx);
+    if (!temp) return 1;
+    if (PyLong_Check(temp)) {
+        *result = (int) PyLong_AsLong(temp);
+        Py_DECREF(temp);
+    } else if (PyFloat_Check(temp)) {
+        *result = (int) PyFloat_AsDouble(temp);
+        Py_DECREF(temp);
+    } else {
+        Py_DECREF(temp);
+        return 1;
+    }
+    if (PyErr_Occurred()) {
+        PyErr_Clear();
+        return 1;
+    }
+    return 0;
+}
+
+PyObject *set_pixel(fz_pixmap* pm, int x, int y, PyObject *color)
+{
+    fz_context* ctx = mupdf::internal_context_get();
+    if (0
+            || x < 0
+            || x >= pm->w
+            || y < 0
+            || y >= pm->h
+            )
+    {
+        throw std::range_error( MSG_PIXEL_OUTSIDE);
+    }
+    int n = pm->n;
+    if (!PySequence_Check(color) || PySequence_Size(color) != n) {
+        throw std::range_error(MSG_BAD_COLOR_SEQ);
+    }
+    int i, j;
+    unsigned char c[5];
+    for (j = 0; j < n; j++) {
+        if (JM_INT_ITEM(color, j, &i) == 1) {
+            throw std::range_error(MSG_BAD_COLOR_SEQ);
+        }
+        if (i < 0 or i >= 256) {
+            throw std::range_error(MSG_BAD_COLOR_SEQ);
+        }
+        c[j] = (unsigned char) i;
+    }
+    int stride = fz_pixmap_stride(ctx, pm);
+    i = stride * y + n * x;
+    for (j = 0; j < n; j++) {
+        pm->samples[i + j] = c[j];
+    }
+    Py_RETURN_NONE;
+}
 //-------------------------------------------
 // make a buffer from an stext_page's text
 //-------------------------------------------
@@ -4409,3 +4466,5 @@ PyObject *pixmap_pixel(fz_pixmap* pm, int x, int y);
 int pixmap_n(mupdf::FzPixmap& pixmap);
 
 PyObject* JM_search_stext_page(fz_stext_page *page, const char *needle);
+
+PyObject *set_pixel(fz_pixmap* pm, int x, int y, PyObject *color);

@@ -152,3 +152,30 @@ def test_3020():
     pm2 = fitz.Pixmap(pm, 20, 30, None)
     pm3 = fitz.Pixmap(fitz.csGRAY, pm)
     pm4 = fitz.Pixmap(pm, pm3)
+
+def test_3050():
+    pdf_file = fitz.open(pdf)
+    for page_no, page in enumerate(pdf_file):
+        zoom_x = 4.0
+        zoom_y = 4.0
+        matrix = fitz.Matrix(zoom_x, zoom_y)
+        pix = page.get_pixmap(matrix=matrix)
+        digest0 = pix.digest
+        print(f'{pix.width=} {pix.height=}')
+        def product(x, y):
+            for yy in y:
+                for xx in x:
+                    yield (xx, yy)
+        n = 0
+        # We use a small subset of the image because non-optimised rebase gets
+        # very slow.
+        for pos in product(range(100), range(100)):
+            if sum(pix.pixel(pos[0], pos[1])) >= 600:
+                n += 1
+                pix.set_pixel(pos[0], pos[1], (255, 255, 255))
+        digest1 = pix.digest
+        print(f'{page_no=} {n=} {digest0=} {digest1=}')
+        digest_expected = b'\xd7x\x94_\x98\xa1<-/\xf3\xf9\x04\xec#\xaa\xee'
+        pix.save(os.path.abspath(f'{__file__}/../../tests/test_3050_out.png'))
+        assert digest1 != digest0
+        assert digest1 == digest_expected
