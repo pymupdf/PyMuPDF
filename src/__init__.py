@@ -9647,6 +9647,11 @@ class Pixmap:
                 text += f'    {type(arg)}: {arg}\n'
             raise Exception( text)
 
+        # 2024-01-16: Experimental support for a memory-view of the underlying
+        # data.  Doesn't seem to make much difference to Pixmap.set_pixel() so
+        # not currently used.
+        self._memory_view = None
+
     def __len__(self):
         return self.size
 
@@ -10117,20 +10122,28 @@ class Pixmap:
 
     def set_pixel(self, x, y, color):
         """Set color of pixel (x, y)."""
+        if g_use_extra:
+            return extra.set_pixel(self.this.m_internal, x, y, color)
         pm = self.this
         if not _INRANGE(x, 0, pm.w() - 1) or not _INRANGE(y, 0, pm.h() - 1):
             raise ValueError( MSG_PIXEL_OUTSIDE)
         n = pm.n()
-        c = list()
         for j in range(n):
             i = color[j]
             if not _INRANGE(i, 0, 255):
                 raise ValueError( MSG_BAD_COLOR_SEQ)
-            c.append( ord(i))
         stride = mupdf.fz_pixmap_stride( pm)
         i = stride * y + n * x
-        for j in range(n):
-            pm.m_internal.samples[i + j] = c[j]
+        if 0:
+            # Using a cached self._memory_view doesn't actually make much
+            # difference to speed.
+            if not self._memory_view:
+                self._memory_view = self.samples_mv
+            for j in range(n):
+                self._memory_view[i + j] = color[j]
+        else:
+            for j in range(n):
+                pm.fz_samples_set(i + j, color[j])
 
     def set_rect(self, bbox, color):
         """Set color of all pixels in bbox."""
@@ -10154,6 +10167,8 @@ class Pixmap:
             JM_Warning("ignoring shrink factor < 1")
             return
         mupdf.fz_subsample_pixmap( self.this, factor)
+        # Pixmap has changed so clear our memory view.
+        self._memory_view = None
 
     @property
     def size(self):
