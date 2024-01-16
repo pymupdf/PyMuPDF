@@ -377,19 +377,33 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image:: images/img-markers.*
          :scale: 100
 
-   .. method:: find_tables(clip=None, vertical_strategy="lines", horizontal_strategy="lines", vertical_lines=None, horizontal_lines=None, snap_tolerance=3, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=3, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=3, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=3, text_x_tolerance=3, text_y_tolerance=3)
+   .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None)
 
-      Find tables on the page and return an object with related information. Typically, only very few of the many arguments ever need to be specified -- they mainly are tools to react to corner case situations.
+      Find tables on the page and return an object with related information. Typically, the default values of the many parameters will be sufficient. Adjustments should ever only be needed in corner case situations.
 
       :arg rect_like clip: specify a region to consider within the page rectangle. Default is the full page.
-      :arg list horizontal_lines: floats containing the y-coordinates of rows. If provided, there will be no attempt to identify additional table rows.
-      :arg list vertical_lines: floats containing the x-coordinates of columns. If provided, there will be no attempt to identify additional table columns.
-      :arg str vertical_strategy: request a search algorithm. The "lines" default looks for vector drawings. If "text" is specified, text positions are used to generate "virtual" column boundaries. Use `min_words_vertical` to request the number of words for considering their x-coordinate.
-      :arg str horizontal_strategy: request a search algorithm. The "lines" default looks for vector drawings. If "text" is specified, text positions are used to generate "virtual" row boundaries. The "text" choices are recommended when dealing with pages without any vector graphics -- like when this is an OCRed page.
-      :arg int min_words_vertical: relevant for vertical strategy option "text": at least this many words must coincide to establish a virtual column boundary.
-      :arg int min_words_horizontal: relevant for horizontal strategy option "text": at least this many words must coincide to establish a virtual row boundary.
 
-      The remaining parameters are limits for merging different objects. For instance: Two horizontal lines with the same x-coordinates and a vertical distance less than 3 will be merged ("snapped") to one line.
+      :arg str strategy: Request a **table detection** algorithm. Default is **"lines"** which uses vector graphics to detect grid lines. If **"text"** is specified, text positions are used to generate "virtual" column and / or row boundaries. Use `min_words_*` to request the number of words for considering their coordinates. Instead of this parameter, separate values for the dimensions can be used via `vertical_strategy` and `horizontal_strategy` for a fine-grained treatment of the presence / absence of horizontal / vertical grid lines.
+
+      :arg sequence[floats] horizontal_lines: y-coordinates of rows. If provided, there will be no attempt to identify additional table rows. This influences table detection.
+
+      :arg sequence[floats] vertical_lines: x-coordinates of columns. If provided, there will be no attempt to identify additional table columns. This influences table detection.
+
+      :arg int min_words_vertical: relevant for vertical strategy option "text": at least this many words must coincide to establish a **virtual column** boundary.
+
+      :arg int min_words_horizontal: relevant for horizontal strategy option "text": at least this many words must coincide to establish a **virtual row** boundary.
+
+      :arg float snap_tolerance: Any two horizontal lines whose y-values differ by no more than this value will be **snapped** into one. Accordingly for vertical lines. Default is 3. Separate values can be specified instead for the dimensions, using `snap_x_tolerance` and `snap_y_tolerance`.
+
+      :arg float join_tolerance: Any two lines will be **joined** to one if the end and the start points differ by no more than this value (in points). Default is 3. Instead of this value, separate values can be specified for the dimensions using `join_x_tolerance` and `join_y_tolerance`.
+
+      :arg float edge_min_length: Ignore a line if its length does not exceed this value (points). Default is 3.
+
+      :arg float intersection_tolerance: When combining lines into cell borders, orthogonal lines must be within this value (points) to be considered intersecting. Default is 3. Instead of this value, separate values can be specified for the dimensions using `intersection_x_tolerance` and `intersection_y_tolerance`.
+
+      :arg float text_tolerance: Characters will be combined into words only if their distance is no larger than this value (points). Default is 3. Instead of this value, separate values can be specified for the dimensions using `text_x_tolerance` and `text_y_tolerance`.
+
+      .. image:: images/img-findtables.*
 
       :returns: a `TableFinder` object that has the following significant attributes:
 
