@@ -2,6 +2,17 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.15 (2024-01-16)**
+
+* Bug fixes:
+
+  * **Fixed** `3051 <https://github.com/pymupdf/PyMuPDF/issues/3051>`_: Fix for Pixmap.set_pixel().
+
+* Other:
+
+  * Improved docs for Page.find_tables().
+
+
 **Changes in version 1.23.14 (2024-01-15)**
 
 * Bug fixes:
