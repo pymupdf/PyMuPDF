@@ -6,7 +6,7 @@ Change Log
 
 * Bug fixes:
 
-  * **Fixed** `3051 <https://github.com/pymupdf/PyMuPDF/issues/3051>`_: Fix for Pixmap.set_pixel().
+  * **Fixed** `3050 <https://github.com/pymupdf/PyMuPDF/issues/3050>`_: python3.9 pix.set_pixel has something wrong in c.append( ord(i))
 
 * Other:
 
