@@ -206,6 +206,22 @@
         </tr>
 
         <tr>
+            <td><cite id="transFM7x">Write Text to PDF Page</cite></td>
+            <td class="yes">
+                <br/>
+                <small>See:
+                    <a style="color:black;" href="page.html#Page.insert_htmlbox">Page.insert_htmlbox</a>
+                    <br/>or:<br/>
+                    <a style="color:black;" href="textwriter.html">TextWriter</a>
+                <small>
+            </td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+        </tr>
+
+        <tr>
             <td><cite id="transFM12">Extract Text</cite></td>
             <td class="yes" id="transFM13">All document types</td>
             <td class="no"></td>
@@ -412,6 +428,8 @@
                     return "レンダリングなし";
                 } else if (str=="Extract Text") {
                     return "テキストを抽出する";
+                } else if (str = "Write Text to PDF Page") {
+                    return "PDF ページにテキストを書き込む";
                 } else if (str=="only") {
                     return "のみ";
                 } else if (str=="Extract Vector Graphics") {
@@ -475,6 +493,7 @@
         document.getElementById("transFM5").innerHTML = getTranslation("and");
         document.getElementById("transFM6").innerHTML = getTranslation("and");
         document.getElementById("transFM7").innerHTML = getTranslation("Render Document Pages");
+        document.getElementById("transFM7x").innerHTML = getTranslation("Write Text to PDF Page");
         document.getElementById("transFM8").innerHTML = getTranslation("All document types");
         document.getElementById("transFM9").innerHTML = getTranslation("No rendering");
         document.getElementById("transFM10").innerHTML = getTranslation("No rendering");
