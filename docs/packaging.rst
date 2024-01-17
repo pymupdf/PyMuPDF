@@ -56,8 +56,10 @@ General steps
 
   * Ensure required Python packages are available.
   *
-    Run `pytest -k "not test_color_count" PyMuPDF` (test `test_color_count` is
-    known fail if MuPDF is not built with PyMuPDF's custom config.h).
+    Run `pytest -k "not test_color_count and not test_3050" PyMuPDF`
+    
+    * Test `test_color_count` is known fail if MuPDF is not built with PyMuPDF's custom config.h.
+    * Test `test_3050` is known to fail if MuPDF is built without its own third-party libraries.
 
 
 Use of scripts/sysinstall.py

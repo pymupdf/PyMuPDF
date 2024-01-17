@@ -94,6 +94,10 @@ def test_setalpha():
     assert t == alphas
 
 def test_color_count():
+    '''
+    This is known to fail if MuPDF is built without PyMuPDF's custom config.h,
+    e.g. in Linux system installs.
+    '''
     pm = fitz.Pixmap(imgfile)
     assert pm.color_count() == 40624
 
@@ -154,6 +158,10 @@ def test_3020():
     pm4 = fitz.Pixmap(pm, pm3)
 
 def test_3050():
+    '''
+    This is known to fail if MuPDF is built without it's default third-party
+    libraries, e.g. in Linux system installs.
+    '''
     pdf_file = fitz.open(pdf)
     for page_no, page in enumerate(pdf_file):
         zoom_x = 4.0

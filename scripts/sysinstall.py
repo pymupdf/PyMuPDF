@@ -291,7 +291,7 @@ def main():
     # PyMuPDF.
     command = f'. {test_venv}/bin/activate'
     command += f' && LD_LIBRARY_PATH={root_prefix}/lib PYTHONPATH={pythonpath}'
-    command += f' pytest -k "not test_color_count" {pymupdf_dir}'
+    command += f' pytest -k "not test_color_count and not test_3050" {pymupdf_dir}'
     run(command)
 
 
