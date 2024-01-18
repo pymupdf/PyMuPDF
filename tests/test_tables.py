@@ -165,3 +165,20 @@ def test_2979():
 
     # test 3001
     assert fitz.TOOLS.set_small_glyph_heights() is False
+
+
+def test_3062():
+    """Tests the fix for #3062.
+    After table extraction, a rotated page should behave and look
+    like as before."""
+    filename = os.path.join(scriptdir, "resources", "test_3062.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    tab0 = page.find_tables()[0]
+    cells0 = tab0.cells
+
+    page = None
+    page = doc[0]
+    tab1 = page.find_tables()[0]
+    cells1 = tab1.cells
+    assert cells1 == cells0
