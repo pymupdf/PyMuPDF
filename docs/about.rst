@@ -12,7 +12,7 @@ Features Comparison
 
 .. _About_Feature_Matrix:
 
-Feature matrix
+Feature Matrix
 ~~~~~~~~~~~~~~~~~~~
 
 The following table illustrates how :title:`PyMuPDF` compares with other typical solutions.
