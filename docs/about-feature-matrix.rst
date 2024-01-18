@@ -212,6 +212,8 @@
                 <small>See:
                     <a style="color:black;" href="page.html#Page.insert_htmlbox">Page.insert_htmlbox</a>
                     <br/>or:<br/>
+                    <a style="color:black;" href="page.html#Page.insert_textbox ">Page.insert_textbox</a>
+                    <br/>or:<br/>
                     <a style="color:black;" href="textwriter.html">TextWriter</a>
                 <small>
             </td>
