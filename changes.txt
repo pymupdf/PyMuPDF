@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.16 (2024-01-18)**
+
+* Bug fixes:
+
+  * **Fixed** `3058 <https://github.com/pymupdf/PyMuPDF/issues/3058>`_: Pixmap created from CMYK JPEG delivers RGB format
+
+* Other:
+
+  * In table detection strategy "lines_strict", exclude fill-only vector graphics.
+  * Fixed sysinstall test failure.
+  * In documentation, update feature matrix with item about text writing.
+
+
 **Changes in version 1.23.15 (2024-01-16)**
 
 * Bug fixes:
