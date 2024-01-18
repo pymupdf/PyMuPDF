@@ -1886,8 +1886,24 @@ def make_edges(page, clip=None, tset=None):
 
         parea = abs(page.rect) * 0.8  # area of the full page (80%)
 
-        # exclude graphics that are too large
-        paths = [p for p in page.get_drawings() if abs(p["rect"]) < parea]
+        # exclude irrelevant graphics
+        paths = []
+        for p in page.get_drawings():
+            if abs(p["rect"]) >= parea:
+                continue
+            if "s" in p["type"]:
+                paths.append(p)
+                continue
+            if (
+                p["rect"].width > 3
+                and p["rect"].height > 3
+                and (
+                    tset.vertical_strategy == "lines_strict"
+                    or tset.horizontal_strategy == "lines_strict"
+                )
+            ):
+                continue
+            paths.append(p)
 
         # make a list of vector graphics rectangles (IRects are sufficient)
         prects = sorted([p["rect"] for p in paths], key=lambda r: (r.y1, r.x0))
@@ -1998,14 +2014,6 @@ def make_edges(page, clip=None, tset=None):
         return line_dict
 
     for p in paths:
-        if p["type"] == "f" and p["fill"] == (1, 1, 1):
-            continue
-        if p["type"] == "f" and p["rect"].width > 3 and p["rect"].height > 3:
-            if (
-                tset.vertical_strategy == "lines_strict"
-                or tset.horizontal_strategy == "lines_strict"
-            ):
-                continue
         items = p["items"]  # items in this path
 
         # if 'closePath', add a line from last to first point
