@@ -2154,7 +2154,7 @@ def page_rotation_reset(page, xref, rot, mediabox):
 
     To be used before we return tabes."""
     doc = page.parent  # document of the page
-    doc.update_object(xref, "<<>>")  # remove modifying matrix
+    doc.update_stream(xref, b" ")  # remove de-rotation matrix
     page.set_mediabox(mediabox)  # set mediabox to old value
     page.set_rotation(rot)  # set rotation to old value
     pno = page.number
