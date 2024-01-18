@@ -187,3 +187,23 @@ def test_3050():
         pix.save(os.path.abspath(f'{__file__}/../../tests/test_3050_out.png'))
         assert digest1 != digest0
         assert digest1 == digest_expected
+
+def test_3058():
+    doc = fitz.Document(os.path.abspath(f'{__file__}/../../tests/resources/test_3058.pdf'))
+    images = doc[0].get_images(full=True)
+    pix = fitz.Pixmap(doc, 17)
+    
+    # First bug was that `pix.colorspace` was DeviceRGB.
+    assert str(pix.colorspace) == 'Colorspace(CS_CMYK) - DeviceCMYK'
+    
+    pix = fitz.Pixmap(fitz.csRGB, pix)
+    assert str(pix.colorspace) == 'Colorspace(CS_RGB) - DeviceRGB'
+    
+    # Second bug was that the image was converted to RGB via greyscale proofing
+    # color space, so image contained only shades of grey. This compressed
+    # easily to a .png file, so we crudely check the bug is fixed by looking at
+    # size of .png file.
+    path = os.path.abspath(f'{__file__}/../../tests/test_3058_out.png')
+    pix.save(path)
+    s = os.path.getsize(path)
+    assert 1800000 < s < 2600000, f'Unexpected size of {path}: {s}'

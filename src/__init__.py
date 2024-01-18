@@ -2396,7 +2396,9 @@ class Colorspace:
 
     def __init__(self, type_):
         """Supported are GRAY, RGB and CMYK."""
-        if type_ == CS_GRAY:
+        if isinstance( type_, mupdf.FzColorspace):
+            self.this = type_
+        elif type_ == CS_GRAY:
             self.this = mupdf.FzColorspace(mupdf.FzColorspace.Fixed_GRAY)
         elif type_ == CS_CMYK:
             self.this = mupdf.FzColorspace(mupdf.FzColorspace.Fixed_CMYK)
@@ -7759,8 +7761,8 @@ class Page:
                 else:
                     pm = mupdf.fz_convert_pixmap(
                             arg_pix,
-                            mupdf.FzColorspace(0),
-                            mupdf.FzColorspace(0),
+                            mupdf.FzColorspace(),
+                            mupdf.FzColorspace(),
                             mupdf.FzDefaultColorspaces(None),
                             mupdf.FzColorParams(),
                             1,
@@ -9429,7 +9431,7 @@ class Pixmap:
                 self.this = mupdf.fz_convert_pixmap(
                         spix,
                         cs,
-                        mupdf.FzColorspace(0),
+                        mupdf.FzColorspace(),
                         mupdf.FzDefaultColorspaces(None),
                         mupdf.FzColorParams(),
                         1
