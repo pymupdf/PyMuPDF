@@ -626,7 +626,7 @@ def log(text, caller=0):
     sys.stdout.flush()
 
 
-def run(command, env_extra=None, check=1):
+def run(command, env_extra=None, check=1, timeout=None):
     '''
     Runs a command using subprocess.run().
     Args:
@@ -637,13 +637,16 @@ def run(command, env_extra=None, check=1):
             to os.environ.
         check:
             Whether to raise exception if command fails.
+        timeout:
+            If not None, timeout in seconds; passed directory to
+            subprocess.run().
     '''
     env = None
     if env_extra:
         env = os.environ.copy()
         env.update(env_extra)
     log(f'Running: {command}')
-    return subprocess.run(command, check=check, shell=1, env=env)
+    return subprocess.run(command, check=check, shell=1, env=env, timeout=timeout)
 
 
 def platform_tag():
