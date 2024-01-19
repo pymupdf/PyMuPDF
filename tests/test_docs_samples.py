@@ -29,7 +29,7 @@ def _test_all():
     import sys
     e = 0
     for sample in samples:
-        print( f'Running: {sample}')
+        print( f'Running: {sample}', flush=1)
         try:
             if 0:
                 # Curiously this fails in an odd way when testing compound
