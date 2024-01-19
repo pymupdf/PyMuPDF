@@ -29,8 +29,7 @@ import platform
 import subprocess
 import sys
 import textwrap
-
-
+import time
 
 
 def log(text):
@@ -47,12 +46,16 @@ def log_star(text):
 def main():
 
     implementations = 'crR'
+    timeout = None
     i = 1
     while i < len(sys.argv):
         arg = sys.argv[i]
         if arg == '-i':
             i += 1
             implementations = sys.argv[i]
+        elif arg == '-t':
+            i += 1
+            timeout = float(sys.argv[i])
         elif arg.startswith('-'):
             raise Exception(f'Unrecognised {arg=}.')
         else:
@@ -63,6 +66,10 @@ def main():
     e_classic = None
     e_rebased = None
     e_rebased_unoptimised = None
+    
+    endtime = None
+    if timeout:
+        endtime = time.time() + timeout
     
     # Check `implementations`.
     implementations_seen = set()
@@ -80,6 +87,10 @@ def main():
         implementations_seen.add(i)
     
     for i in implementations:
+        log(f'run_compound.py: {i=}')
+        timeout = None
+        if endtime:
+            timeout = max(0, endtime - time.time())
         if i == 'c':
             # Run with `fitz_old` (classic). We create a file fitz.py that does `from fitz_old
             # import *` and prepend it to PYTHONPATH. So `import fitz` will actually
@@ -104,14 +115,14 @@ def main():
             pp = d if pp is None else f'{d}:{pp}'
             env[ 'PYTHONPATH'] = pp
             log_star(f'Running using fitz_old (classic), PYTHONPATH={pp}: {shlex.join(args)}')
-            e_classic = subprocess.run( args, shell=0, check=0, env=env).returncode
+            e_classic = subprocess.run( args, shell=0, check=0, env=env, timeout=timeout).returncode
         
         elif i == 'r':
     
             # Run with default `fitz` (rebased).
             #
             log_star( f'Running using fitz (rebased): {shlex.join(args)}')
-            e_rebased = subprocess.run( args, shell=0, check=0).returncode
+            e_rebased = subprocess.run( args, shell=0, check=0, timeout=timeout).returncode
     
         elif i == 'R':
     
@@ -120,7 +131,7 @@ def main():
             env = os.environ.copy()
             env[ 'PYMUPDF_USE_EXTRA'] = '0'
             log_star(f'Running using fitz (rebased) with PYMUPDF_USE_EXTRA=0: {shlex.join(args)}')
-            e_rebased_unoptimised = subprocess.run( args, shell=0, check=0, env=env).returncode
+            e_rebased_unoptimised = subprocess.run( args, shell=0, check=0, env=env, timeout=timeout).returncode
         
         else:
             raise Exception(f'Unrecognised implementation {i!r}.')

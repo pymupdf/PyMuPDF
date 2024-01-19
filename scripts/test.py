@@ -63,6 +63,8 @@ Options:
         Pytest test name. Should be relative to PyMuPDF directory. For example:
             -t tests/test_general.py
             -t tests/test_general.py::test_subset_fonts
+    --timeout <seconds>
+        Sets timeout when running tests.
     -v
         Avoid delay if venv directory already exists. We assume the existing
         directory was created by us earlier and is a valid venv containing all
@@ -107,6 +109,7 @@ def main(argv):
     test_name = None
     venv_quick = False
     pytest_options = None
+    timeout = None
     
     args = iter( argv[1:])
     i = 0
@@ -139,6 +142,8 @@ def main(argv):
             pytest_options  = next(args)
         elif arg == '-t':
             test_name = next(args)
+        elif arg == '--timeout':
+            timeout = float(next(args))
         elif arg == '-v':
             venv_quick = True
         elif arg == '--valgrind':
@@ -171,6 +176,7 @@ def main(argv):
                 venv_quick=venv_quick,
                 test_name=test_name,
                 pytest_options=pytest_options,
+                timeout=timeout,
                 )
     while 1:
         if 0:
@@ -280,7 +286,7 @@ def build(implementations=None, build_type=None, build_isolation=None, venv_quic
     gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}', env_extra=env_extra)
 
 
-def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_options=None):
+def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_options=None, timeout=None):
     '''
     Args:
         implementations:
@@ -310,7 +316,11 @@ def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_opt
             log(f'{venv_quick=}: Not installing test packages: {gh_release.test_packages}')
         else:
             gh_release.run(f'pip install {gh_release.test_packages}')
-        implementations_args = f' -i {implementations}' if implementations else ''
+        run_compound_args = ''
+        if implementations:
+            run_compound_args += f' -i {implementations}'
+        if timeout:
+            run_compound_args += f' -t {timeout}'
         env_extra = None
         if valgrind:
             log('Installing valgrind.')
@@ -320,7 +330,7 @@ def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_opt
         
             log('Running PyMuPDF tests under valgrind.')
             command = (
-                    f'{python} {pymupdf_dir_rel}/tests/run_compound.py{implementations_args}'
+                    f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args}'
                         f' valgrind --suppressions={pymupdf_dir_rel}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
                         f' {python} -m pytest {pytest_options} {pytest_arg}'
                         )
@@ -332,12 +342,12 @@ def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_opt
             # On OpenBSD `pip install pytest` doesn't seem to install the pytest
             # command, so we use `python -m pytest ...`. (This doesn't work on
             # Windows for some reason so we don't use it all the time.)
-            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{implementations_args} {python} -m pytest {pytest_options} {pytest_arg}'
+            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} {python} -m pytest {pytest_options} {pytest_arg}'
         else:
-            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{implementations_args} {python} -m pytest {pytest_options} {pytest_arg}'
+            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} {python} -m pytest {pytest_options} {pytest_arg}'
         
         log(f'Running tests with tests/run_compound.py and pytest.')
-        gh_release.run(command, env_extra=env_extra)
+        gh_release.run(command, env_extra=env_extra, timeout=timeout)
             
     finally:
         log('\n' + venv_info(pytest_args=f'{pytest_options} {pytest_arg}'))
