@@ -201,6 +201,19 @@ def _as_fz_page(page):
         return page
     assert 0, f'Unrecognised {type(page)=}'
 
+def _as_pdf_page(page):
+    '''
+    Returns page as a mupdf.PdfPage, downcasting as required. If we fail (i.e.
+    page is a mupdf.FzPage(), <ret>.m_internal will be None.
+    '''
+    if isinstance(page, Page):
+        page = page.this
+    if isinstance(page, mupdf.PdfPage):
+        return page
+    elif isinstance(page, mupdf.FzPage):
+        return mupdf.pdf_page_from_fz_page(page)
+    assert 0, f'Unrecognised {type(page)=}'
+
 
 # Fixme: we don't support JM_MEMORY=1.
 JM_MEMORY = 0
@@ -5638,7 +5651,7 @@ class Document:
         new_obj = JM_pdf_obj_from_str(pdf, text)
         mupdf.pdf_update_object(pdf, xref, new_obj)
         if page:
-            JM_refresh_links( mupdf.pdf_page_from_fz_page(page.super()))
+            JM_refresh_links( _as_pdf_page(page))
 
     def update_stream(self, xref=0, stream=None, new=1, compress=1):
         """Replace xref stream part."""
