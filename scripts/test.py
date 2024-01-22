@@ -30,6 +30,10 @@ Usage:
 
 * We run tests with pytest.
 
+* One can generate call traces by setting environment variables in debug
+  builds. For details see:
+  https://mupdf.readthedocs.io/en/latest/language-bindings.html#environmental-variables
+
 Options:
     --help
     -h
