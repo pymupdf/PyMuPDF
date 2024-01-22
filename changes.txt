@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.17 ()**
+
+* Bug fixes:
+
+  * **Fixed** `3062 <https://github.com/pymupdf/PyMuPDF/issues/3062>`_: page_rotation_reset does not return page to original rotation
+  * **Fixed** `3070 <https://github.com/pymupdf/PyMuPDF/issues/3070>`_: update_link(): AttributeError: 'Page' object has no attribute 'super'
+
+* Other:
+
+  * Fixed bug in `Page.get_bboxlog()` with layers.
+  * Add support for timeouts in scripts/ and tests/run_compound.py.
+
+
 **Changes in version 1.23.16 (2024-01-18)**
 
 * Bug fixes:

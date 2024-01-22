@@ -794,3 +794,16 @@ def test_2957_2():
         w0 = words0[i]  # word before redaction
         bbox0 = fitz.Rect(w0[:4]).irect  # its IRect coordinates
         assert bbox0 == bbox1  # must be same coordinates
+
+def test_3070():
+    with fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_3070.pdf')) as pdf:
+      links = pdf[0].get_links()
+      links[0]['uri'] = "https://www.ddg.gg"
+      pdf[0].update_link(links[0])
+      pdf.save(os.path.abspath(f'{__file__}/../../tests/test_3070_out.pdf'))
+
+def test_bboxlog_2885():
+    doc = fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_2885.pdf'))
+    page=doc[0]
+    bbl = page.get_bboxlog()
+    bbl = page.get_bboxlog(layers=True)

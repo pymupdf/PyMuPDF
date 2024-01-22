@@ -381,9 +381,17 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Find tables on the page and return an object with related information. Typically, the default values of the many parameters will be sufficient. Adjustments should ever only be needed in corner case situations.
 
-      :arg rect_like clip: specify a region to consider within the page rectangle. Default is the full page.
+      :arg rect_like clip: specify a region to consider within the page rectangle and ignore the rest. Default is the full page.
 
-      :arg str strategy: Request a **table detection** algorithm. Default is **"lines"** which uses vector graphics to detect grid lines. If **"text"** is specified, text positions are used to generate "virtual" column and / or row boundaries. Use `min_words_*` to request the number of words for considering their coordinates. Instead of this parameter, separate values for the dimensions can be used via `vertical_strategy` and `horizontal_strategy` for a fine-grained treatment of the presence / absence of horizontal / vertical grid lines.
+      :arg str strategy: Request a **table detection** strategy. Valid values are "lines", "lines_strict" and "text".
+      
+         Default is **"lines"** which uses all vector graphics on the page to detect grid lines.
+         
+         Strategy **"lines_strict"** ignores borderless rectangle vector graphics. Sometimes single text pieces have background colors which may lead to false columns or lines. This strategy ignores them and can thus increase detection precision.
+         
+         If **"text"** is specified, text positions are used to generate "virtual" column and / or row boundaries. Use `min_words_*` to request the number of words for considering their coordinates.
+         
+         Use parameters `vertical_strategy` and `horizontal_strategy` **instead** for a more fine-grained treatment of the dimensions.
 
       :arg sequence[floats] horizontal_lines: y-coordinates of rows. If provided, there will be no attempt to identify additional table rows. This influences table detection.
 
