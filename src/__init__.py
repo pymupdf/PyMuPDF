@@ -5086,18 +5086,33 @@ class Document:
         for k, v in page._annot_refs.items():  # save the annot dictionary
             old_annots[k] = v
         
-        # We need to set `page.this` to `None` here in order to force the
-        # `mupdf::FzPage` to be removed from the MuPDF document's internal
-        # list, so that when `self.load_page()` is called below, its call of
-        # `fz_load_page()` will create a new `mupdf::FzPage`.
+        # When we call `self.load_page()` below, it will end up in
+        # fz_load_chapter_page(), which will return any matching page in the
+        # document's list of non-ref-counted loaded pages, instead of actually
+        # reloading the page.
         #
-        # This only works if the MuPDF `fz_page`'s reference count is 1. User
-        # code will have to work fairly hard to break this, by somehow making
-        # a copy of the mupdf::FzPage itself; for example making a copy in
-        # Python will usually create a new Python object that refers to the
-        # same mupdf::FzPage and this not increment the MuPDF reference count.
+        # We want to assert that we have actually reloaded the fz_page, and not
+        # simply returned the same `fz_page*` pointer from the document's list
+        # of non-ref-counted loaded pages.
         #
-        assert page.this.m_internal.refs == 1
+        # So we first remove our reference to the `fz_page*`. This will
+        # decrement .refs, and if .refs was 1, this is guaranteed to free the
+        # `fz_page*` and remove it from the document's list if it was there. So
+        # we are guaranteed that our returned `fz_page*` is from a genuine
+        # reload, even if it happens to reuse the original block of memory.
+        #
+        # However if the original .refs is greater than one, there must be
+        # other references to the `fz_page` somewhere, and we require that
+        # these other references are not keeping the page in the document's
+        # list.  We check that we are returning a newly loaded page by
+        # asserting that our returned `fz_page*` is different from the original
+        # `fz_page*` - the original was not freed, so a new `fz_page` cannot
+        # reuse the same block of memory.
+        #
+        
+        refs_old = page.this.m_internal.refs
+        m_internal_old = page.this.m_internal_value()
+        
         page.this = None
         page._erase()  # remove the page
         page = None
@@ -5110,6 +5125,17 @@ class Document:
             annot = old_annots[k]
             #annot.parent = page_proxy  # refresh parent to new page
             page._annot_refs[k] = annot
+        if refs_old == 1:
+            # We know that `page.this = None` will have decremented the ref
+            # count to zero so we are guaranteed that the new `fz_page` is a
+            # new page even if it happens to have reused the same block of
+            # memory.
+            pass
+        else:
+            # Check that the new `fz_page*` is different from the original.
+            m_internal_new = page.this.m_internal_value()
+            assert m_internal_new != m_internal_old, \
+                    f'{refs_old=} {m_internal_old=:#x} {m_internal_new=:#x}'
         return page
 
     def resolve_link(self, uri=None, chapters=0):
