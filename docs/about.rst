@@ -66,7 +66,6 @@ License and Copyright
    </script>
 
 
-
 :title:`Artifex` is the exclusive commercial licensing agent for :title:`MuPDF`.
 
 :title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the :title:`MuPDF` logo are registered trademarks of :title:`Artifex Software Inc.`
