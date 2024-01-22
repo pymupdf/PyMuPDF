@@ -10,7 +10,7 @@ def test_2904():
     for page_id, page in enumerate(pdf_docs):
         page_imgs = page.get_images()
         for i, img in enumerate(page_imgs):
-            if page_id == 75:
+            if page_id == 5:
                 #print(f'{page_id=} {i=} {type(img)=} {img=}')
                 sys.stdout.flush()
             e = None
@@ -23,9 +23,9 @@ def test_2904():
                     fitz.exception_info()
                     sys.stdout.flush()
                 e = ee
-            if page_id == 75:
+            if page_id == 5:
                 print(f'{fitz.mupdf_version_tuple=}: {page_id=} {i=} {e=} {img=}:')
-            if page_id == 75 and i==3:
+            if page_id == 5 and i==3:
                 assert e
                 if hasattr(fitz, 'mupdf'):
                     # rebased.
