@@ -11,6 +11,7 @@ Change Log
 
 * Other:
 
+  * Fixed bug in `Page.links()` (PR #3075).
   * Fixed bug in `Page.get_bboxlog()` with layers.
   * Add support for timeouts in scripts/ and tests/run_compound.py.
 
