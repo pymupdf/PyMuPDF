@@ -9117,7 +9117,7 @@ class Page:
                    all links are returned. E.g. kinds=[LINK_URI]
                    will only yield URI links.
         """
-        all_links = self.getLinks()
+        all_links = self.get_links()
         for link in all_links:
             if kinds is None or link["kind"] in kinds:
                 yield (link)
