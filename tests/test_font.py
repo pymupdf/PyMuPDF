@@ -43,13 +43,13 @@ def test_2608():
         print( f'Not running test_2608 because mupdf too old: {fitz.mupdf_version_tuple=}')
         return
     flags = (fitz.TEXT_DEHYPHENATE | fitz.TEXT_MEDIABOX_CLIP)
-    with fitz.open(os.path.abspath(f'{__file__}/../resources/2201.00069.pdf')) as doc:
-        page = doc[4]
+    with fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/2201.00069.pdf')) as doc:
+        page = doc[0]
         blocks = page.get_text_blocks(flags=flags)
         text = blocks[10][4]
-        with open(os.path.abspath(f'{__file__}/../test_2608_out'), 'wb') as f:
+        with open(os.path.abspath(f'{__file__}/../../tests/test_2608_out'), 'wb') as f:
             f.write(text.encode('utf8'))
-        with open(os.path.abspath(f'{__file__}/../resources/test_2608_expected'), 'rb') as f:
+        with open(os.path.abspath(f'{__file__}/../../tests/resources/test_2608_expected'), 'rb') as f:
             expected = f.read().decode('utf8')
         # Github windows x32 seems to insert \r characters; maybe something to
         # do with the Python installation's line endings settings.
