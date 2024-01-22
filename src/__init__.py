@@ -19132,8 +19132,8 @@ class JM_new_bbox_device_Device(mupdf.FzDevice2):
         self.use_virtual_begin_layer()
         self.use_virtual_end_layer()
 
-        self.begin_layer = jm_lineart_begin_layer
-        self.end_layer = jm_lineart_end_layer
+    begin_layer = jm_lineart_begin_layer
+    end_layer = jm_lineart_end_layer
     
     fill_path = jm_bbox_fill_path
     stroke_path = jm_bbox_stroke_path

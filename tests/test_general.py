@@ -801,3 +801,9 @@ def test_3070():
       links[0]['uri'] = "https://www.ddg.gg"
       pdf[0].update_link(links[0])
       pdf.save(os.path.abspath(f'{__file__}/../../tests/test_3070_out.pdf'))
+
+def test_bboxlog_2885():
+    doc = fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_2885.pdf'))
+    page=doc[0]
+    bbl = page.get_bboxlog()
+    bbl = page.get_bboxlog(layers=True)
