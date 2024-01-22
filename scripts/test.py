@@ -159,6 +159,16 @@ def main(argv):
         log(f'No command specified.')
         return
     
+    commands = list()
+    while 1:
+        assert arg in ('build', 'buildtest', 'test'), \
+                f'Unrecognised command: {arg=}.'
+        commands.append(arg)
+        try:
+            arg = next(args)
+        except StopIteration:
+            break
+    
     # We always want to run inside a venv.
     if sys.prefix == sys.base_prefix:
         # We are not running in a venv.
@@ -182,22 +192,19 @@ def main(argv):
                 pytest_options=pytest_options,
                 timeout=timeout,
                 )
-    while 1:
+    
+    for command in commands:
         if 0:
             pass
-        elif arg == 'build':
+        elif command == 'build':
             do_build()
-        elif arg == 'test':
+        elif command == 'test':
             do_test()
-        elif arg == 'buildtest':
+        elif command == 'buildtest':
             do_build()
             do_test()
         else:
-            assert 0, f'Unrecognised command: {arg=}.'
-        try:
-            arg = next(args)
-        except StopIteration:
-            break
+            assert 0
 
 
 def show_help():
