@@ -2,6 +2,18 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.18 (2024-01-23)**
+
+* Bug fixes:
+
+  * **Fixed** `3081 <https://github.com/pymupdf/PyMuPDF/issues/3081>`_: doc.close() not closing the document
+
+* Other:
+
+  * Reduced size of sdist to fit on pypi.org (by reducing size of two test files).
+  * Fix `Annot.file_info()` if no `Desc` item.
+
+
 **Changes in version 1.23.17 (2024-01-22)**
 
 * Bug fixes:
