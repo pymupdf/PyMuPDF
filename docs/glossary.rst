@@ -6,6 +6,10 @@
 Glossary
 ==============
 
+.. data:: coordinate
+
+        This is an esential general mathematical / geometrical term for understanding this documentation. Please see this section for a more detailed discussion: :ref:`Coordinates`.
+
 .. data:: matrix_like
 
         A Python sequence of 6 numbers.

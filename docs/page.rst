@@ -12,6 +12,8 @@ There is a parent-child relationship between a document and its pages. If the do
 
 Several page methods have a :ref:`Document` counterpart for convenience. At the end of this chapter you will find a synopsis.
 
+.. note:: Many times in this chapter we are using the term **coordinate**. It is of high importance to have at least a basic understanding of what that is and that you feel comfortable with the section :ref:`Coordinates`.
+
 Modifying Pages
 ---------------
 Changing page properties and adding or changing page content is available for PDF documents only.
@@ -2053,7 +2055,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. attribute:: rotation
 
-      Contains the rotation of the page in degrees (always 0 for non-PDF types).
+      Contains the rotation of the page in degrees (always 0 for non-PDF types). This is a copy of the value in the PDF file. The PDF documentation says:
+      
+         *"The number of degrees by which the page should be rotated clockwise when displayed or printed. The value must be a multiple of 90. Default value: 0."*
+
+         In PyMuPDF, we make sure that this attribute is always one of 0, 90, 180 or 270.
 
       :type: int
 
