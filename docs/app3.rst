@@ -308,4 +308,37 @@ PyMuPDF will put error messages to `sys.stderr` prefixed with the string "mupdf:
     1. The target PDF is not new / empty: grafting does not check for resources that already existed (e.g. images, fonts) in the target document before opening it.
     2. Using :meth:`Page.show_pdf_page` for more than one source document: each grafting occurs **within one source** PDF only, not across multiple. So if e.g. the same image exists in pages from different source PDFs, then this will not be detected until garbage collection.
 
+
+.. _Coordinates:
+
+Some Background on "Coordinates"
+--------------------------------------------
+
+This is one of the most frequently used terms in this documentation. A **coordinate** generally means a pair of numbers `(x, y)` referring to some location, like a corner of a rectangle (:ref:`Rect`), a :ref:`Point` and so forth. The two values usually are floats, but there a objects like images which only allow them to be integers.
+
+To actually *find* a coordinate's location, we also need to know the *reference* point for x and y - in other words, we must know where location `(0, 0)` is positioned. Once `(0, 0)` (the "origin") is known, we speak of a "coordinate system".
+
+Several coordinate systems exist in document processing. For instance, the coordinate systems of a PDF page and the image created from it are **different**. We therefore need ways to *transform* coordinates from one system to another (and also back occasionally). This is the task of a :ref:`Matrix`. It is a mathematical function which works much like a factor that can be "multiplied" with a point or rectangle to give us the corresponding point / rectangle in another coordinate system. The inverse of a transformation matrix can be used to revert the transformation. Much like multiplying by some factor, say 3, can be reverted by dividing the result by 3 (or multiplying it with 1/3).
+
+* Images have a coordinate system with integer coordinates. Origin `(0, 0)` is the top-left point. x-values must be in `range(width)`, and y-values in `range(height)`. Therefore, y-values *increase* if we go *downwards*. For every image, there is only a **finite number** of coordinates, namely `width * height`. A location in an image is also called a "pixel".
+
+    - How **large** an image will be (in centimeters or inches) when e.g. printed, depends on additional information: the "resolution". This is measured in "DPI" (dots per inch, or pixels per inch). To find the printed size of some image, we therefore must divide its width and its height by the corresponding DPI values (there may separate ones for width and for height) and will get the respective number of inches.
+
+* In PDF, the origin `(0, 0)` of a page is located at its **bottom-left point**. Coordinates are float numbers and measured in **points**, where one point equals 1/72 inches. Typical document page sizes are ISO A4 and Letter. A Letter page has a size of 8.5 x 11 inches, corresponding to 612 * 792 points. In the PDF coordinate system, the top-left point of a Letter page hence has the coordinate `(0, 792)`. The y-axis points upwards.
+
+    - Theoretically, there are **infinitely many** coordinate positions on a PDF page. In practice however, at most the first 5 decimal places are sufficient for a reasonable precision.
+
+* In MuPDF, multiple document formats are supported - PDF just being one among **over a dozen others**. Images are also supported as documents in MuPDF (therefore having one page usually). This is one of the reasons why MuPDF uses a coordinate system with the origin `(0, 0)` being the **top-left** point of any document page. The y-axis points downwards like with images. Coordinates in MuPDF in any case are floats, like in PDF.
+
+    - A rectangle `Rect(0, 0, 100, 100)` for instance in MuPDF (and thus PyMuPDF) therefore is a square with edges of length 100 points (= 1.39 inches or 3.53 centimeters). Its top-left corner is the origin. To switch between the two coordinate systems PDF to MuPDF, every :ref:`Page` object has a :attr:`Page.transformation_matrix`. Its inverse can be used to compute a rectangle's PDF coordinates. In this way we can conveniently find that `Rect(0, 0, 100, 100)` in MuPDF is the same as `Rect(0, 692, 100, 792)` in PDF. See this code snippet::
+
+        >>> page = doc.new_page(width=612, height=792)  # make new Letter page
+        >>> ptm = page.transformation_matrix
+        >>> # the inverse matrix of ptm is ~ptm
+        >>> fitz.Rect(0, 0, 100, 100) * ~ptm
+        Rect(0.0, 692.0, 100.0, 792.0)
+
+
+
+
 .. include:: footer.rst

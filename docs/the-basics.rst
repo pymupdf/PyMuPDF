@@ -7,7 +7,7 @@
 The Basics
 ==============================
 
-
+There is one *mathematical term* that you should feel comfortable with when reading this document: **"coordinates"**. May we suggest you have a quick look at section :ref:`Coordinates` to make sure there are no doubts or questions.
 
 .. _The_Basics_Opening_Files:
 
