@@ -168,11 +168,13 @@ def _as_fz_document(document):
     Returns document as a mupdf.FzDocument, upcasting as required.
     '''
     if isinstance(document, Document):
-        return _as_fz_document(document.this)
-    elif isinstance(document, mupdf.FzDocument):
+        document = document.this
+    if isinstance(document, mupdf.FzDocument):
         return document
     elif isinstance(document, mupdf.PdfDocument):
         return document.super()
+    elif document is None:
+        assert 0, f'document is None'
     else:
         assert 0, f'Unrecognised {type(document)=}'
 
@@ -182,12 +184,15 @@ def _as_pdf_document(document):
     fail (i.e. document is a mupdf.FzDocument(), <ret>.m_internal will be None.
     '''
     if isinstance(document, Document):
-        return _as_pdf_document(document.this)
-    elif isinstance(document, mupdf.PdfDocument):
+        document = document.this
+    if isinstance(document, mupdf.PdfDocument):
         return document
-    if isinstance(document, mupdf.FzDocument):
+    elif isinstance(document, mupdf.FzDocument):
         return mupdf.PdfDocument(document)
-    assert 0, f'Unrecognised {type(document)=}'
+    elif document is None:
+        assert 0, f'document is None'
+    else:
+        assert 0, f'Unrecognised {type(document)=}'
 
 def _as_fz_page(page):
     '''
@@ -199,7 +204,10 @@ def _as_fz_page(page):
         return page.super()
     elif isinstance(page, mupdf.FzPage):
         return page
-    assert 0, f'Unrecognised {type(page)=}'
+    elif page is None:
+        assert 0, f'page is None'
+    else:
+        assert 0, f'Unrecognised {type(page)=}'
 
 def _as_pdf_page(page):
     '''
@@ -212,7 +220,10 @@ def _as_pdf_page(page):
         return page
     elif isinstance(page, mupdf.FzPage):
         return mupdf.pdf_page_from_fz_page(page)
-    assert 0, f'Unrecognised {type(page)=}'
+    elif page is None:
+        assert 0, f'page is None'
+    else:
+        assert 0, f'Unrecognised {type(page)=}'
 
 
 # Fixme: we don't support JM_MEMORY=1.
@@ -3357,6 +3368,11 @@ class Document:
         """Invalidate all pages in document dictionary."""
         if getattr(self, "is_closed", True):
             return
+        pages = [p for p in self._page_refs.values()]
+        for page in pages:
+            if page:
+                page._erase()
+                page = None
         self._page_refs.clear()
 
     def _set_page_labels(self, labels):
@@ -3572,7 +3588,7 @@ class Document:
         # self._cleanup()
         if hasattr(self, "_outline") and self._outline:
             self._outline = None
-        #self._reset_page_refs()
+        self._reset_page_refs()
         #self.metadata    = None
         #self.stream      = None
         self.is_closed    = True
@@ -7675,6 +7691,7 @@ class Page:
         self.parent = None
         self.thisown = False
         self.number = None
+        self.this = None
 
     def _get_optional_content(self, oc: OptInt) -> OptStr:
         if oc is None or oc == 0:

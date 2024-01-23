@@ -807,3 +807,73 @@ def test_bboxlog_2885():
     page=doc[0]
     bbl = page.get_bboxlog()
     bbl = page.get_bboxlog(layers=True)
+
+def test_3081():
+    '''
+    Check Document.close() closes file handles, even if a Page instance exists.
+    '''
+    path1 = os.path.abspath(f'{__file__}/../../tests/resources/1.pdf')
+    path2 = os.path.abspath(f'{__file__}/../../tests/test_3081-2.pdf')
+    path3 = os.path.abspath(f'{__file__}/../../tests/test_3081-3.pdf')
+    
+    rebased = hasattr(fitz, 'mupdf')
+    
+    import shutil
+    import sys
+    import traceback
+    shutil.copy2(path1, path2)
+    
+    def next_fd():
+        fd = os.open(path2, os.O_RDONLY)
+        os.close(fd)
+        return fd
+    
+    fd1 = next_fd()
+    document = fitz.open(path2)
+    page = document[0]
+    fd2 = next_fd()
+    document.close()
+    if rebased:
+        assert document.this is None
+        assert page.this is None
+    try:
+        document.page_count()
+    except Exception as e:
+        print(f'Received expected exception: {e}')
+        #traceback.print_exc(file=sys.stdout)
+        assert str(e) == 'document closed'
+    else:
+        assert 0, 'Did not receive expected exception.'
+    fd3 = next_fd()
+    try:
+        page.bound()
+    except Exception as e:
+        print(f'Received expected exception: {e}')
+        #traceback.print_exc(file=sys.stdout)
+        if rebased:
+            assert str(e) == 'page is None'
+        else:
+            assert str(e) == 'orphaned object: parent is None'
+    else:
+        assert 0, 'Did not receive expected exception.'
+    page = None
+    fd4 = next_fd()
+    print(f'{fd1=} {fd2=} {fd3=} {fd4=}')
+    print(f'{document=}')
+    assert fd2 == fd1 + 1
+    assert fd3 == fd1
+    assert fd4 == fd1
+    
+    # Check copying/renaming to file we have opened; this is mainly for Windows
+    # where renames fail if destination is open.
+    #
+    document = fitz.open(path2)
+    document.close()
+    shutil.copy2(path1, path2)
+    print(f'{document=}')
+    
+    document = fitz.open(path2)
+    document.close()
+    shutil.copy2(path1, path3)
+    os.rename(path3, path2)
+    print(f'{document=}')
