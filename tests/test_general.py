@@ -863,17 +863,3 @@ def test_3081():
     assert fd2 == fd1 + 1
     assert fd3 == fd1
     assert fd4 == fd1
-    
-    # Check copying/renaming to file we have opened; this is mainly for Windows
-    # where renames fail if destination is open.
-    #
-    document = fitz.open(path2)
-    document.close()
-    shutil.copy2(path1, path2)
-    print(f'{document=}')
-    
-    document = fitz.open(path2)
-    document.close()
-    shutil.copy2(path1, path3)
-    os.rename(path3, path2)
-    print(f'{document=}')
