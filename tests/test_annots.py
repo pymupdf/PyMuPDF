@@ -252,3 +252,23 @@ def test_2969():
     page = doc[0]
     first_annot = list(page.annots())[0]
     first_annot.next
+
+def test_file_info():
+    path = os.path.abspath(f'{__file__}/../../tests/resources/test_annot_file_info.pdf')
+    document = fitz.open(path)
+    results = list()
+    for i, page in enumerate(document):
+        print(f'{i=}')
+        annotations = page.annots()
+        for j, annotation in enumerate(annotations):
+            print(f'{j=} {annotation=}')
+            t = annotation.type
+            print(f'{t=}')
+            if t[0] == fitz.PDF_ANNOT_FILE_ATTACHMENT:
+                file_info = annotation.file_info
+                print(f'{file_info=}')
+                results.append(file_info)
+    assert results == [
+            {'filename': 'example.pdf', 'descender': '', 'length': 8416, 'size': 8992},
+            {'filename': 'photo1.jpeg', 'descender': '', 'length': 10154, 'size': 8012},
+            ]

@@ -571,6 +571,7 @@ class Annot:
         res = dict()
         length = -1
         size = -1
+        desc = None
         annot = self.this
         annot_obj = mupdf.pdf_annot_obj(annot)
         type_ = mupdf.pdf_annot_type(annot)
