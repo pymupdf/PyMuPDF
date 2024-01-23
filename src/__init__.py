@@ -4885,6 +4885,8 @@ class Document:
     @property
     def page_count(self):
         """Number of pages."""
+        if self.is_closed:
+            raise ValueError('document closed')
         if g_use_extra:
             return self.page_count2(self)
         if isinstance( self.this, mupdf.FzDocument):
