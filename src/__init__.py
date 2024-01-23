@@ -165,9 +165,12 @@ rect_like = 'rect_like'
 
 def _as_fz_document(document):
     '''
-    Returns document as a mupdf.FzDocument, upcasting as required.
+    Returns document as a mupdf.FzDocument, upcasting as required. Raises
+    'document closed' exception if closed.
     '''
     if isinstance(document, Document):
+        if document.is_closed:
+            raise ValueError('document closed')
         document = document.this
     if isinstance(document, mupdf.FzDocument):
         return document
@@ -181,9 +184,12 @@ def _as_fz_document(document):
 def _as_pdf_document(document):
     '''
     Returns document as a mupdf.PdfDocument, downcasting as required. If we
-    fail (i.e. document is a mupdf.FzDocument(), <ret>.m_internal will be None.
+    fail (i.e. document is a mupdf.FzDocument(), <ret>.m_internal will be
+    None. Raises 'document closed' exception if closed.
     '''
     if isinstance(document, Document):
+        if document.is_closed:
+            raise ValueError('document closed')
         document = document.this
     if isinstance(document, mupdf.PdfDocument):
         return document
@@ -2849,8 +2855,6 @@ class Document:
 
     def _deleteObject(self, xref):
         """Delete object."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         if not _INRANGE(xref, 1, mupdf.pdf_xref_len(pdf)-1):
@@ -2976,8 +2980,6 @@ class Document:
 
     def _embfile_names(self, namelist):
         """Get list of embedded file names."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         names = mupdf.pdf_dict_getl(
@@ -3201,8 +3203,6 @@ class Document:
 
     def _getPDFfileid(self):
         """Get PDF file id."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         if not pdf:
             return
@@ -3268,8 +3268,6 @@ class Document:
 
     def _move_copy_page(self, pno, nb, before, copy):
         """Move or copy a PDF page reference."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         same = 0
         ASSERT_PDF(pdf)
@@ -3389,28 +3387,6 @@ class Document:
         text = text.replace("/Nums[]", "/Nums[%s]" % labels)
         self.update_object(xref, text)
 
-    def _this_as_document(self):
-        '''
-        Returns self.this as a mupdf.FzDocument.
-        '''
-        if isinstance(self.this, mupdf.FzDocument):
-            return self.this
-        if isinstance(self.this, mupdf.PdfDocument):
-            return self.this.super()
-        assert 0, f'Unrecognised {type(self.this)=}'
-
-    def _this_as_pdf_document(self):
-        '''
-        Returns self.this as a mupdf.PdfDocument, downcasting as required. If
-        we fail (i.e. self.this is a mupdf.FzDocument(), <ret>.m_internal will be
-        None.
-        '''
-        if isinstance(self.this, mupdf.PdfDocument):
-            return self.this
-        if isinstance(self.this, mupdf.FzDocument):
-            return mupdf.PdfDocument(self.this)
-        assert 0, f'Unrecognised {type(self.this)=}'
-
     def _update_toc_item(self, xref, action=None, title=None, flags=0, collapse=None, color=None):
         '''
         "update" bookmark by letting it point to nowhere
@@ -3442,8 +3418,6 @@ class Document:
     @property
     def FormFonts(self):
         """Get list of field font resource names."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         if not pdf:
             return
@@ -3464,8 +3438,6 @@ class Document:
 
     def add_layer(self, name, creator=None, on=None):
         """Add a new OC layer."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         JM_add_layer_config( pdf, name, creator, on)
@@ -3473,8 +3445,6 @@ class Document:
 
     def add_ocg(self, name, config=-1, on=1, intent=None, usage=None):
         """Add new optional content group."""
-        if self.is_closed:
-            raise ValueError("document closed")
         xref = 0
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
@@ -3558,8 +3528,6 @@ class Document:
 
     def can_save_incrementally(self):
         """Check whether incremental saves are possible."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         if not pdf:
             return False
@@ -4060,8 +4028,6 @@ class Document:
 
     def fullcopy_page(self, pno, to=-1):
         """Make a full page duplicate."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         page_count = mupdf.pdf_count_pages( pdf)
         try:
@@ -4119,8 +4085,6 @@ class Document:
 
     def get_layer(self, config=-1):
         """Content of ON, OFF, RBGroups of an OC layer."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         ocp = mupdf.pdf_dict_getl(
@@ -4144,8 +4108,6 @@ class Document:
 
     def get_layers(self):
         """Show optional OC layers."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         n = mupdf.pdf_count_layer_configs( pdf)
@@ -4183,8 +4145,6 @@ class Document:
 
     def get_ocgs(self):
         """Show existing optional content groups."""
-        if self.is_closed:
-            raise ValueError("document closed")
         ci = mupdf.pdf_new_name( "CreatorInfo")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
@@ -4229,8 +4189,6 @@ class Document:
 
     def get_outline_xrefs(self):
         """Get list of outline xref numbers."""
-        if self.is_closed:
-            raise ValueError("document closed")
         xrefs = []
         pdf = _as_pdf_document(self)
         if not pdf:
@@ -4289,8 +4247,6 @@ class Document:
 
     def get_sigflags(self):
         """Get the /SigFlags value."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         if not pdf:
             return -1   # not a PDF
@@ -4307,8 +4263,6 @@ class Document:
 
     def get_xml_metadata(self):
         """Get document XML metadata."""
-        if self.is_closed:
-            raise ValueError("document closed")
         xml = None
         pdf = _as_pdf_document(self)
         if pdf.m_internal:
@@ -4690,8 +4644,6 @@ class Document:
     @property
     def language(self):
         """Document language."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         if not pdf:
             return
@@ -4712,8 +4664,6 @@ class Document:
 
     def layer_ui_configs(self):
         """Show OC visibility status modifiable by user."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         info = mupdf.PdfLayerConfigUi()
@@ -4862,8 +4812,6 @@ class Document:
 
     def need_appearances(self, value=None):
         """Get/set the NeedAppearances value."""
-        if self.is_closed:
-            raise ValueError("document closed")
         if not self.isFormPDF:
             return None
         
@@ -5054,8 +5002,6 @@ class Document:
 
     def pdf_catalog(self):
         """Get xref of PDF catalog."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         xref = 0
         if not pdf:
@@ -5633,8 +5579,6 @@ class Document:
 
     def switch_layer(self, config, as_default=0):
         """Activate an OC layer."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         cfgs = mupdf.pdf_dict_getl(
@@ -5748,9 +5692,6 @@ class Document:
 
     def xref_get_key(self, xref, key):
         """Get PDF dict key value of object at 'xref'."""
-        if self.is_closed:
-            raise ValueError("document closed")
-
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
@@ -5802,8 +5743,6 @@ class Document:
 
     def xref_get_keys(self, xref):
         """Get the keys of PDF dict object at 'xref'. Use -1 for the PDF trailer."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len( pdf)
@@ -5840,8 +5779,6 @@ class Document:
 
     def xref_is_stream(self, xref=0):
         """Check if xref is a stream object."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         if not pdf:
             return False    # not a PDF
@@ -5857,8 +5794,6 @@ class Document:
 
     def xref_length(self):
         """Get length of xref table."""
-        if self.is_closed:
-            raise ValueError("document closed")
         xreflen = 0
         pdf = _as_pdf_document(self)
         if pdf:
@@ -5964,8 +5899,6 @@ class Document:
 
     def xref_xml_metadata(self):
         """Get xref of document XML metadata."""
-        if self.is_closed:
-            raise ValueError("document closed")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
         root = mupdf.pdf_dict_get( mupdf.pdf_trailer( pdf), PDF_NAME('Root'))
@@ -6300,7 +6233,7 @@ class Graftmap:
         self.thisown = False
 
     def __init__(self, doc):
-        dst = doc._this_as_pdf_document()
+        dst = _as_pdf_document(doc)
         ASSERT_PDF(dst)
         map_ = mupdf.pdf_new_graft_map(dst)
         self.this = map_
