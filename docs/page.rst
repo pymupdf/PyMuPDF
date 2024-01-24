@@ -379,7 +379,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image:: images/img-markers.*
          :scale: 100
 
-   .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None)
+   .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None, add_lines=None)
 
       Find tables on the page and return an object with related information. Typically, the default values of the many parameters will be sufficient. Adjustments should ever only be needed in corner case situations.
 
@@ -413,12 +413,14 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg float text_tolerance: Characters will be combined into words only if their distance is no larger than this value (points). Default is 3. Instead of this value, separate values can be specified for the dimensions using `text_x_tolerance` and `text_y_tolerance`.
 
+      :arg tuple,list add_lines: Specify a list of "lines" (i.e. pairs of :data:`point_like` objects) as **additional**, "virtual" vector graphics. These lines may help with table and / or cell detection and will not otherwise influence the detection strategy. Especially, in contrast to parameters `horizontal_lines` and `vertical_lines`, they will not prevent detecting rows or columns in other ways. These lines will be treated exactly like "real" vector graphics in terms of joining, snapping, intersectiing, minimum length and containment in the `clip` rectangle. Similarly, lines not parallel to any of the coordinate axes will be ignored.
+
       .. image:: images/img-findtables.*
 
       :returns: a `TableFinder` object that has the following significant attributes:
 
          * **cells:** a list of **all bboxes** on the page, that have been identified as table cells (across all tables). Each cell is a tuple `(x0, y0, x1, y1)` of coordinates or `None`.
-         * **tables:** a list of `Table` objects. This is `[]` if the page has no tables. Please note that while single tables can be found as items of this list, the `TableFinder` object itself is also a sequence of it tables. This means that if `tabs` is a `TableFinder` object, then table number "n" is delivered by `tabs.tables[n]` as well as by the shorter `tabs[n]`.
+         * **tables:** a list of `Table` objects. This is `[]` if the page has no tables. Single tables can be found as items of this list. But the `TableFinder` object itself is also a sequence of its tables. This means that if `tabs` is a `TableFinder` object, then table "n" is delivered by `tabs.tables[n]` as well as by the shorter `tabs[n]`.
 
 
          * The `Table` object has the following attributes:
@@ -444,6 +446,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_begin|
 
       * New in version 1.23.0
+      * Changed in version 1.23.19: new argument `add_lines`.
 
       |history_end|
 
