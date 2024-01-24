@@ -182,3 +182,35 @@ def test_3062():
     tab1 = page.find_tables()[0]
     cells1 = tab1.cells
     assert cells1 == cells0
+
+
+def test_strict_lines():
+    """Confirm that ignoring borderless rectangles improves table detection."""
+    filename = os.path.join(scriptdir, "resources", "strict-yes-no.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+
+    tab1 = page.find_tables()[0]
+    tab2 = page.find_tables(strategy="lines_strict")[0]
+    assert tab2.row_count < tab1.row_count
+    assert tab2.col_count < tab1.col_count
+
+
+def test_add_lines():
+    """Test new parameter add_lines for table recognition."""
+    filename = os.path.join(scriptdir, "resources", "small-table.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    tab1 = page.find_tables()[0]
+    assert tab1.col_count == 1
+    assert tab1.row_count == 5
+    more_lines = [
+        ((238.9949951171875, 200.0), (238.9949951171875, 300.0)),
+        ((334.5559997558594, 200.0), (334.5559997558594, 300.0)),
+        ((433.1809997558594, 200.0), (433.1809997558594, 300.0)),
+    ]
+
+    # these 3 additional vertical lines should additional 3 columns
+    tab2 = page.find_tables(add_lines=more_lines)[0]
+    assert tab2.col_count == 4
+    assert tab2.row_count == 5

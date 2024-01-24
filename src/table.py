@@ -1872,42 +1872,26 @@ def make_chars(page, clip=None):
 # We are ignoring Bézier curves completely and are converting everything
 # else to lines.
 # -----------------------------------------------------------------------------
-def make_edges(page, clip=None, tset=None):
-    def has_text(bbox):
-        text = page.get_text(clip=bbox).replace("\n", "").strip()
-        if text:
-            return True
-        return False
-
+def make_edges(page, clip=None, tset=None, add_lines=None):
     def clean_graphics():
         """Detect and join rectangles of connected vector graphics."""
-        # we need to exclude meaningless graphics that e.g. paint a white
-        # rectangle on the full page.
-
-        parea = abs(page.rect) * 0.8  # area of the full page (80%)
-
+        lines_strict = (
+            tset.vertical_strategy == "lines_strict"
+            or tset.horizontal_strategy == "lines_strict"
+        )
         # exclude irrelevant graphics
         paths = []
         for p in page.get_drawings():
-            if abs(p["rect"]) >= parea:
-                continue
-            if "s" in p["type"]:
-                paths.append(p)
-                continue
             if (
-                p["rect"].width > 3
-                and p["rect"].height > 3
-                and (
-                    tset.vertical_strategy == "lines_strict"
-                    or tset.horizontal_strategy == "lines_strict"
-                )
-            ):
+                p["type"] == "f"
+                and lines_strict
+                and p["rect"].width > tset.snap_x_tolerance
+                and p["rect"].height > tset.snap_y_tolerance
+            ):  # ignore fill-only graphics if they are no lines
                 continue
             paths.append(p)
 
-        # make a list of vector graphics rectangles (IRects are sufficient)
         prects = sorted([p["rect"] for p in paths], key=lambda r: (r.y1, r.x0))
-
         new_rects = []  # the final list of joined rectangles
 
         # -------------------------------------------------------------------------
@@ -1921,9 +1905,15 @@ def make_edges(page, clip=None, tset=None):
                 for i in range(len(prects) - 1, -1, -1):  # run backwards
                     if i == 0:  # don't touch first rectangle
                         continue
-                    if r.intersects(prects[i]):
-                        r |= prects[i]  # join in to first rect
-                        prects[0] = +r  # update first
+                    ri = prects[i]
+                    if (
+                        r.x0 <= ri.x0 <= r.x1
+                        or r.x0 <= ri.x1 <= r.x1
+                        or r.y0 <= ri.y0 <= r.y1
+                        or r.y0 <= ri.y1 <= r.y1
+                    ):
+                        r |= ri  # join in to first rect
+                        prects[0] = r  # update first
                         del prects[i]  # delete this rect
                         repeat = True
 
@@ -1932,9 +1922,7 @@ def make_edges(page, clip=None, tset=None):
             prects = sorted(list(set(prects)), key=lambda r: (r.y1, r.x0))
 
         new_rects = sorted(list(set(new_rects)), key=lambda r: (r.y1, r.x0))
-        return [
-            r for r in new_rects if r.width > 5 and r.height > 5 and has_text(r)
-        ], paths
+        return [r for r in new_rects if r.width > 5 and r.height > 5], paths
 
     global EDGES
     bboxes, paths = clean_graphics()
@@ -2091,18 +2079,33 @@ def make_edges(page, clip=None, tset=None):
                     EDGES.append(line_to_edge(line_dict))
 
     path = {"color": (0, 0, 0), "fill": None, "width": 1}
-    for bbox in bboxes:
+    for bbox in bboxes:  # add the border lines for all enveloping bboxes
         line_dict = make_line(path, bbox.tl, bbox.tr, clip)
-        EDGES.append(line_to_edge(line_dict))
+        if line_dict:
+            EDGES.append(line_to_edge(line_dict))
 
         line_dict = make_line(path, bbox.bl, bbox.br, clip)
-        EDGES.append(line_to_edge(line_dict))
+        if line_dict:
+            EDGES.append(line_to_edge(line_dict))
 
         line_dict = make_line(path, bbox.tl, bbox.bl, clip)
-        EDGES.append(line_to_edge(line_dict))
+        if line_dict:
+            EDGES.append(line_to_edge(line_dict))
 
         line_dict = make_line(path, bbox.tr, bbox.br, clip)
-        EDGES.append(line_to_edge(line_dict))
+        if line_dict:
+            EDGES.append(line_to_edge(line_dict))
+
+    if add_lines is not None:  # add user-specified lines
+        assert isinstance(add_lines, (tuple, list))
+    else:
+        add_lines = []
+    for p1, p2 in add_lines:
+        p1 = Point(p1)
+        p2 = Point(p2)
+        line_dict = make_line(path, p1, p2, clip)
+        if line_dict:
+            EDGES.append(line_to_edge(line_dict))
 
 
 def page_rotation_set0(page):
@@ -2152,7 +2155,7 @@ def page_rotation_set0(page):
 def page_rotation_reset(page, xref, rot, mediabox):
     """Reset page rotation to original values.
 
-    To be used before we return tabes."""
+    To be used before we return tables."""
     doc = page.parent  # document of the page
     doc.update_stream(xref, b" ")  # remove de-rotation matrix
     page.set_mediabox(mediabox)  # set mediabox to old value
@@ -2185,6 +2188,7 @@ def find_tables(
     text_x_tolerance=3,
     text_y_tolerance=3,
     strategy=None,  # offer abbreviation
+    add_lines=None,  # optional user-specified lines
 ):
     global CHARS, EDGES
     CHARS = []
@@ -2237,7 +2241,9 @@ def find_tables(
     page.table_settings = tset
 
     make_chars(page, clip=clip)  # create character list of page
-    make_edges(page, clip=clip, tset=tset)  # create lines and curves
+    make_edges(
+        page, clip=clip, tset=tset, add_lines=add_lines
+    )  # create lines and curves
     tables = TableFinder(page, settings=tset)
 
     TOOLS.set_small_glyph_heights(old_small)
