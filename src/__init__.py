@@ -14629,34 +14629,35 @@ def JM_choice_options(annot):
     '''
     annot_obj = mupdf.pdf_annot_obj( annot.this)
     
-    # pdf_choice_widget_options() is not usable from python, so we implement it
-    # ourselves here.
-    #
-    # fixme: put this in mupdf python bindings.
-    #
-    def pdf_choice_widget_options( annot, exportval):
-        #log( '{=type(annot)}')
-        optarr = mupdf.pdf_dict_get_inheritable( mupdf.pdf_annot_obj(annot.this), PDF_NAME('Opt'))
-        #log( '{optarr=}')
-        n = mupdf.pdf_array_len(optarr)
-        opts = []
-        if not n:
+    if mupdf_version_tuple >= (1, 24):
+        opts = mupdf.pdf_choice_widget_options2( annot, 0)
+    else:
+        # pdf_choice_widget_options() is not usable from python, so we
+        # implement it ourselves here.
+        #
+        def pdf_choice_widget_options( annot, exportval):
+            #log( '{=type(annot)}')
+            optarr = mupdf.pdf_dict_get_inheritable( mupdf.pdf_annot_obj(annot.this), PDF_NAME('Opt'))
+            #log( '{optarr=}')
+            n = mupdf.pdf_array_len(optarr)
+            opts = []
+            if not n:
+                return opts
+            optarr = mupdf.pdf_dict_get(annot_obj, PDF_NAME('Opt'))
+            for i in range(n):
+                m = mupdf.pdf_array_len(mupdf.pdf_array_get(optarr, i))
+                if m == 2:
+                    val = (
+                            mupdf.pdf_to_text_string(mupdf.pdf_array_get(mupdf.pdf_array_get(optarr, i), 0)),
+                            mupdf.pdf_to_text_string(mupdf.pdf_array_get(mupdf.pdf_array_get(optarr, i), 1)),
+                            )
+                    opts.append(val)
+                else:
+                    val = JM_UnicodeFromStr(mupdf.pdf_to_text_string(mupdf.pdf_array_get(optarr, i)))
+                    opts.append(val)
             return opts
-        optarr = mupdf.pdf_dict_get(annot_obj, PDF_NAME('Opt'))
-        for i in range(n):
-            m = mupdf.pdf_array_len(mupdf.pdf_array_get(optarr, i))
-            if m == 2:
-                val = (
-                        mupdf.pdf_to_text_string(mupdf.pdf_array_get(mupdf.pdf_array_get(optarr, i), 0)),
-                        mupdf.pdf_to_text_string(mupdf.pdf_array_get(mupdf.pdf_array_get(optarr, i), 1)),
-                        )
-                opts.append(val)
-            else:
-                val = JM_UnicodeFromStr(mupdf.pdf_to_text_string(mupdf.pdf_array_get(optarr, i)))
-                opts.append(val)
-        return opts
 
-    opts = pdf_choice_widget_options( annot, 0)
+        opts = pdf_choice_widget_options( annot, 0)
     n = len( opts)
     if n == 0:
         return  # wrong widget type
