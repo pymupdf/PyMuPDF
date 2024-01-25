@@ -45,3 +45,22 @@ def test_compress():
             deflate_fonts=True,
             pretty=True,
             )
+
+def test_3087():
+    path = os.path.abspath(f'{__file__}/../../tests/resources/test_3087.pdf')
+    
+    doc = fitz.open(path)
+    page = doc[0]
+    print(page.get_images())
+    base = doc.extract_image(5)["image"]
+    mask = doc.extract_image(5)["image"]
+    page = doc.new_page()
+    page.insert_image(page.rect, stream=base, mask=mask)
+    
+    doc = fitz.open(path)
+    page = doc[0]
+    print(page.get_images())
+    base = doc.extract_image(5)["image"]
+    mask = doc.extract_image(6)["image"]
+    page = doc.new_page()
+    page.insert_image(page.rect, stream=base, mask=mask)
