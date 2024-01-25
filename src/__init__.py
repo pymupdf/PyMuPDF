@@ -6039,6 +6039,10 @@ class Font:
         return mupdf.fz_font_ascender(self.this)
 
     @property
+    def bbox(self):
+        return self.this.fz_font_bbox()
+    
+    @property
     def buffer(self):
         buffer_ = mupdf.FzBuffer( mupdf.ll_fz_keep_buffer( self.this.m_internal.buffer))
         return mupdf.fz_buffer_extract_copy( buffer_)

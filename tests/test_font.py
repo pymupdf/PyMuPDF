@@ -16,6 +16,13 @@ def test_font1():
         assert cl[i] == font.glyph_advance(ord(text[i])) * 20
     font2 = fitz.Font(fontbuffer=font.buffer)
     assert font2.valid_codepoints() == font.valid_codepoints()
+    
+    # Also check we can get font's bbox.
+    bbox1 = font.bbox
+    print(f'{bbox1=}')
+    if hasattr(fitz, 'mupdf'):
+        bbox2 = font.this.fz_font_bbox()
+        assert bbox2 == bbox1
 
 
 def test_font2():
