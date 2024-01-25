@@ -14083,7 +14083,8 @@ def _remove_dest_range(pdf, numbers):
                 target = mupdf.pdf_array_get( dest, 0)
                 pno = mupdf.pdf_lookup_page_number( pdf, target)
             elif mupdf.pdf_is_string( dest):
-                pno, _, _ = mupdf.fz_resolve_link( pdf.super(), mupdf.pdf_to_text_string( dest))
+                location, _, _ = mupdf.fz_resolve_link( pdf.super(), mupdf.pdf_to_text_string( dest))
+                pno = location.page
             if pno < 0: # page number lookup did not work
                 continue
             n1 = pno

@@ -13,6 +13,8 @@ Then delete some pages and verify:
 - the remaining TOC items still point to the correct page
 - the document has no more links at all
 """
+import os
+
 import fitz
 
 page_count = 100  # initial document length
@@ -67,3 +69,9 @@ def test_deletion():
     doc.copy_page(0)
     doc.move_page(0)
     doc.fullcopy_page(0)
+
+def test_3094():
+    path = os.path.abspath(f'{__file__}/../../tests/resources/test_2871.pdf')
+    document = fitz.open(path)
+    pnos = [i for i in range(0, document.page_count, 2)]
+    document.delete_pages(pnos)
