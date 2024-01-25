@@ -2,6 +2,24 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.19 (2024-01-25)**
+
+* Bug fixes:
+
+  * **Fixed** `3087 <https://github.com/pymupdf/PyMuPDF/issues/3087>`_: Exception in insert_image with mask specified
+  * **Fixed** `3094 <https://github.com/pymupdf/PyMuPDF/issues/3094>`_: TypeError: '<' not supported between instances of 'FzLocation' and 'int' in doc.delete_pages
+
+* Other:
+
+  * When finding tables:
+  
+    * Allow addition of user-defined "virtual" vector graphics when finding tables.
+    * Confirm that the enveloping bboxes of vector graphics are inside the clip rectangle.
+    * Avoid slow finding of rectangle intersections.
+
+  * Added `Font.bbox` property.
+
+
 **Changes in version 1.23.18 (2024-01-23)**
 
 * Bug fixes:
