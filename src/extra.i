@@ -4294,6 +4294,39 @@ no_more_matches:;
     return quads;
 }
 
+/* MuPDF-1.23.x has an incorrect and unusable
+fz_new_image_from_compressed_buffer() wrapper that thinks the `decode` and
+`colorkey` args are out-params. So we provide an alternative wrapper where
+we always set these to args to null, which is sufficient for PyMuPDF caller
+`Document._insert_image()`. */
+fz_image* fz_new_image_from_compressed_buffer(
+        int w,
+        int h,
+        int bpc,
+        fz_colorspace *colorspace,
+        int xres,
+        int yres,
+        int interpolate,
+        int imagemask,
+        fz_compressed_buffer *buffer,
+        fz_image *mask
+        )
+{
+    return mupdf::ll_fz_new_image_from_compressed_buffer(
+            w,
+            h,
+            bpc,
+            colorspace,
+            xres,
+            yres,
+            interpolate,
+            imagemask,
+            nullptr,
+            nullptr,
+            buffer,
+            mask
+            );
+}
 
 %}
 
@@ -4468,3 +4501,16 @@ int pixmap_n(mupdf::FzPixmap& pixmap);
 PyObject* JM_search_stext_page(fz_stext_page *page, const char *needle);
 
 PyObject *set_pixel(fz_pixmap* pm, int x, int y, PyObject *color);
+
+fz_image* fz_new_image_from_compressed_buffer(
+        int w,
+        int h,
+        int bpc,
+        fz_colorspace *colorspace,
+        int xres,
+        int yres,
+        int interpolate,
+        int imagemask,
+        fz_compressed_buffer *buffer,
+        fz_image *mask
+        );
