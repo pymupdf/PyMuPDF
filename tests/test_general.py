@@ -863,3 +863,8 @@ def test_3081():
     assert fd2 == fd1 + 1
     assert fd3 == fd1
     assert fd4 == fd1
+
+def test_xml():
+    path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
+    with fitz.open(path) as document:
+        document.get_xml_metadata()
