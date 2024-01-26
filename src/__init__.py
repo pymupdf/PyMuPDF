@@ -4271,7 +4271,7 @@ class Document:
                     PDF_NAME('Root'),
                     PDF_NAME('Metadata'),
                     )
-        if xml and xml.internal:
+        if xml and xml.m_internal:
             buff = mupdf.pdf_load_stream(xml)
             rc = JM_UnicodeFromBuffer(buff)
         else:
