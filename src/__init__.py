@@ -7808,26 +7808,25 @@ class Page:
                     do_have_imask = 0
 
         if do_have_imask:
-            #log( 'do_have_imask')
-            # mupdf.FzCompressedBuffer is not copyable, so
-            # mupdf.fz_compressed_image_buffer() does not work - it cannot
-            # return by value. And sharing a fz_compressed_buffer betwen two
-            # `fz_image`'s doesn't work, so we use a raw fz_compressed_buffer
-            # here, not a mupdf.FzCompressedBuffer.
-            #
-            cbuf1 = mupdf.ll_fz_compressed_image_buffer( image.m_internal)
-            if not cbuf1:
-                raise ValueError( "uncompressed image cannot have mask")
-            bpc = image.bpc()
-            colorspace = image.colorspace()
-            xres, yres = mupdf.fz_image_resolution(image)
-            mask = mupdf.fz_new_image_from_buffer(maskbuf)
             if mupdf_version_tuple >= (1, 24):
-                zimg = mupdf.ll_fz_new_image_from_compressed_buffer2(
+                # `fz_compressed_buffer` is reference counted and
+                # `mupdf.fz_new_image_from_compressed_buffer2()`
+                # is povided as a Swig-friendly wrapper for
+                # `fz_new_image_from_compressed_buffer()`, so we can do things
+                # straightfowardly.
+                #
+                cbuf1 = mupdf.fz_compressed_image_buffer( image)
+                if not cbuf1.m_internal:
+                    raise ValueError( "uncompressed image cannot have mask")
+                bpc = image.bpc()
+                colorspace = image.colorspace()
+                xres, yres = mupdf.fz_image_resolution(image)
+                mask = mupdf.fz_new_image_from_buffer(maskbuf)
+                image = mupdf.fz_new_image_from_compressed_buffer2(
                         w,
                         h,
                         bpc,
-                        colorspace.m_internal,
+                        colorspace,
                         xres,
                         yres,
                         1,  # interpolate
@@ -7835,9 +7834,24 @@ class Page:
                         None,   # decode
                         None,   # colorkey
                         cbuf1,
-                        mask.m_internal,
+                        mask,
                         )
             else:
+                #log( 'do_have_imask')
+                # mupdf.FzCompressedBuffer is not copyable, so
+                # mupdf.fz_compressed_image_buffer() does not work - it cannot
+                # return by value. And sharing a fz_compressed_buffer betwen two
+                # `fz_image`'s doesn't work, so we use a raw fz_compressed_buffer
+                # here, not a mupdf.FzCompressedBuffer.
+                #
+                cbuf1 = mupdf.ll_fz_compressed_image_buffer( image.m_internal)
+                if not cbuf1:
+                    raise ValueError( "uncompressed image cannot have mask")
+                bpc = image.bpc()
+                colorspace = image.colorspace()
+                xres, yres = mupdf.fz_image_resolution(image)
+                mask = mupdf.fz_new_image_from_buffer(maskbuf)
+                
                 # mupdf.ll_fz_new_image_from_compressed_buffer() is not usable.
                 zimg = extra.fz_new_image_from_compressed_buffer(
                         w,
@@ -7852,26 +7866,26 @@ class Page:
                         mask.m_internal,
                         )
 
-            zimg = mupdf.FzImage(zimg)
+                zimg = mupdf.FzImage(zimg)
 
-            # `image` and `zimage` both have pointers to the same
-            # `fz_compressed_buffer`, which is not reference counted, and they
-            # both think that they own it.
-            #
-            # So we do what the classic implementataion does, and simply ensure
-            # that `fz_drop_image(image)` is never called. This will leak
-            # some of `image`'s allocations (for example the main `fz_image`
-            # allocation), but it's not trivial to avoid this.
-            #
-            # Perhaps we could manually set `fz_image`'s
-            # `fz_compressed_buffer*` to null? Trouble is we'd have to
-            # cast the `fz_image*` to a `fz_compressed_image*` to see the
-            # `fz_compressed_buffer*`, which is probably not possible from
-            # Python?
-            #
-            image.m_internal = None
+                # `image` and `zimage` both have pointers to the same
+                # `fz_compressed_buffer`, which is not reference counted, and they
+                # both think that they own it.
+                #
+                # So we do what the classic implementataion does, and simply ensure
+                # that `fz_drop_image(image)` is never called. This will leak
+                # some of `image`'s allocations (for example the main `fz_image`
+                # allocation), but it's not trivial to avoid this.
+                #
+                # Perhaps we could manually set `fz_image`'s
+                # `fz_compressed_buffer*` to null? Trouble is we'd have to
+                # cast the `fz_image*` to a `fz_compressed_image*` to see the
+                # `fz_compressed_buffer*`, which is probably not possible from
+                # Python?
+                #
+                image.m_internal = None
             
-            image = zimg
+                image = zimg
             
         if do_have_image:
             #log( 'do_have_image')
