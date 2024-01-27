@@ -750,14 +750,14 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * If content does not fit in the rectangle, the developer has two choices:
          
-        - **either** be just informed (and accept a no-op), 
-        - **or** (`scale=True` - the default) scale down the content until it fits.
+        - **either** only be informed about this (and accept a no-op, just like with the other textbox insertion methods), 
+        - **or** (`scale_low=0` - the default) scale down the content until it fits.
 
       :arg rect_like rect: rectangle on page to receive the text.
-      :arg str,Story text: the text to be written. Can contain plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
-      :arg str css: optional string containing additional CSS instructions. Ignored if `text` is a Story.
-      :arg float scale_low: if necessary scale down the content until it fits in the target rectangle. This sets the down scaling limit. Default is 0, no limit. A value of 1 means no down-scaling. A value of e.g. 0.2 means maximum down-scaling by 80%.
-      :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If `text` refers to images, this parameter is always reqired. Ignored if `text` is a Story.
+      :arg str,Story text: the text to be written. Can contain a mixture of plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
+      :arg str css: optional string containing additional CSS instructions. This parameter is ignored if `text` is a Story.
+      :arg float scale_low: if necessary, scale down the content until it fits in the target rectangle. This sets the down scaling limit. Default is 0, no limit. A value of 1 means no down-scaling permitted. A value of e.g. 0.2 means maximum down-scaling by 80%.
+      :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If `text` refers to images or non-standard fonts, this parameter is required. This parameter is ignored if `text` is a Story.
       :arg int rotate: one of the values 0, 90, 180, 270. Depending on this, text will be filled:
       
           - 0: top-left to bottom-right.
@@ -768,7 +768,7 @@ In a nutshell, this is what you can do with PyMuPDF:
           .. image:: images/img-rotate.*
 
       :arg int oc:  the xref of an :data:`OCG` / :data:`OCMD` or 0. Please refer to :meth:`Page.show_pdf_page` for details.
-      :arg float opacity: set the fill and stroke opacity for the content in the rectangle. Only values `0 <= opacity < 1` are considered. (New in v1.23.9)
+      :arg float opacity: set the fill and stroke opacity of the content. Only values `0 <= opacity < 1` are considered.
       :arg bool overlay: put the text in front of other content. Please refer to :meth:`Page.show_pdf_page` for details.
 
       :returns: A tuple of floats `(spare_height, scale)`.
@@ -781,6 +781,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_begin|
 
       * New in v1.23.8; rebased-only.
+      * New in v1.23.9: `opacity` parameter.
 
       |history_end|
       
