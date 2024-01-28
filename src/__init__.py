@@ -5170,6 +5170,8 @@ class Document:
 
             '21154a7c20684ceb91f9c9adc3b677c40': {'page': -1, 'dest': '/XYZ 15.75 1486 0'}, ...
         """
+        if hasattr(self, "_resolved_names"):  # do not execute multiple times!
+            return self._resolved_names
         # this is a backward listing of page xref to page number
         page_xrefs = {self.page_xref(i): i for i in range(self.page_count)}
 
@@ -5262,6 +5264,7 @@ class Document:
         if tree.pdf_is_dict():
             fill_dict(dest_dict, tree)
 
+        self._resolved_names = dest_dict  # store result or reuse
         return dest_dict
 
     def save(
