@@ -117,6 +117,12 @@ button.cta a {
     color:#fff !important;
 }
 
+.footer-version {
+    font-weight: bold;
+    font-size: 12px;
+    color: #999;
+}
+
 
 /*** Furo theme overrides ***/
 /* This is to do with hiding the Furo link text and the "Made with" text */
