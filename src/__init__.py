@@ -5577,7 +5577,7 @@ class Document:
         if xml.m_internal:
             JM_update_stream( pdf, xml, res, 0)
         else:
-            xml = mupdf.pdf_add_stream( pdf, res, None, 0)
+            xml = mupdf.pdf_add_stream( pdf, res, mupdf.PdfObj(), 0)
             mupdf.pdf_dict_put( xml, PDF_NAME('Type'), PDF_NAME('Metadata'))
             mupdf.pdf_dict_put( xml, PDF_NAME('Subtype'), PDF_NAME('XML'))
             mupdf.pdf_dict_put( root, PDF_NAME('Metadata'), xml)
