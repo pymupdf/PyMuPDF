@@ -5,3 +5,4 @@ sphinx==5.3.0
 furo
 readthedocs-sphinx-search==0.3.2
 sphinx_copybutton
+notfound.extension
