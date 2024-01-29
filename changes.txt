@@ -2,6 +2,17 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.20 (2024-01-29)**
+
+* Bug fixes:
+
+  * **Fixed** `3100 <https://github.com/pymupdf/PyMuPDF/issues/3100>`_: Wrong internal property accessed in get_xml_metadata
+
+* Other:
+
+  * Significantly improved speed of `Document.get_toc()`.
+
+
 **Changes in version 1.23.19 (2024-01-25)**
 
 * Bug fixes:
