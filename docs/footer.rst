@@ -66,7 +66,9 @@
 
    </script>
 
+.. rst-class:: footer-version
 
+  This documentation covers all versions up to |version|.
 
 
 .. note - this ensures that the Sphinx build system will pull in the image (as it is referenced in an RST file) to _images,
