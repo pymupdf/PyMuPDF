@@ -728,7 +728,13 @@ class Annot:
         options.flags = flags
         annot = self.this
         stextpage = mupdf.FzStextPage(annot, options)
-        return TextPage(stextpage)
+        ret = TextPage(stextpage)
+        p = self.get_parent()
+        if isinstance(p, weakref.ProxyType):
+            ret.parent = p
+        else:
+            ret.parent = weakref.proxy(p)
+        return ret
 
     @property
     def has_popup(self):
@@ -12469,6 +12475,7 @@ class TextPage:
         else:
             raise Exception(f'Unrecognised args: {args}')
         self.thisown = True
+        self.parent = None
 
     def _extractText(self, format_):
         this_tpage = self.this
