@@ -2,6 +2,17 @@ Change Log
 ==========
 
 
+**Changes in version ? (?)**
+
+* Fixed issues:
+
+* Other:
+
+  * Fixed bug in set_xml_metadata(), PR `3112 https://github.com/pymupdf/PyMuPDF/pull/3112>`_: Fix pdf_add_stream metadata error
+  * Fixed lack of `.parent` member in `TextPage` from `Annot.get_textpage()`.
+  * Fixed bug in `Page.add_widget()`.
+
+
 **Changes in version 1.23.20 (2024-01-29)**
 
 * Bug fixes:
