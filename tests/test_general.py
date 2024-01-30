@@ -868,3 +868,7 @@ def test_xml():
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
     with fitz.open(path) as document:
         document.get_xml_metadata()
+
+def test_3112_set_xml_metadata():
+    document = fitz.Document()
+    document.set_xml_metadata('hello world')
