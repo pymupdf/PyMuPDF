@@ -209,7 +209,7 @@ def test_2270():
     '''
     https://github.com/pymupdf/PyMuPDF/issues/2270
     '''
-    path = os.path.abspath( f'{__file__}/../resources/test_2270.pdf')
+    path = os.path.abspath( f'{__file__}/../../tests/resources/test_2270.pdf')
     with fitz.open(path) as document:
         for page_number, page in enumerate(document):
             for textBox in page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT,fitz.PDF_ANNOT_TEXT)):
@@ -223,6 +223,17 @@ def test_2270():
                 assert textBox.get_text('text') == 'abc123\n'
                 assert textBox.get_textbox(textBox.rect) == 'abc123'
                 assert textBox.info['content'] == 'abc123'
+                
+                if hasattr(fitz, 'mupdf'):
+                    # Additional check that Annot.get_textpage() returns a
+                    # TextPage that works with page.get_text() - prior to
+                    # 2024-01-30 the TextPage had no `.parent` member.
+                    textpage = textBox.get_textpage()
+                    text = page.get_text()
+                    print(f'{text=}')
+                    text = page.get_text(textpage=textpage)
+                    print(f'{text=}')
+                    print(f'{getattr(textpage, "parent")=}')
 
 def test_2934_add_redact_annot():
     '''
