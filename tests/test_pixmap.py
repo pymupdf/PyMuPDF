@@ -207,3 +207,29 @@ def test_3058():
     pix.save(path)
     s = os.path.getsize(path)
     assert 1800000 < s < 2600000, f'Unexpected size of {path}: {s}'
+
+def test_3072():
+    if fitz.mupdf_version_tuple < (1, 23, 10):
+        print(f'test_3072(): Not running because known to hang on MuPDF < 1.23.10.')
+        return
+    
+    path = os.path.abspath(f'{__file__}/../../tests/resources/test_3072.pdf')
+    out = os.path.abspath(f'{__file__}/../../tests')
+    
+    doc = fitz.open(path)
+    page_48 = doc[0]
+    bbox = [147, 300, 447, 699]
+    rect = fitz.Rect(*bbox)
+    zoom = fitz.Matrix(3, 3)
+    pix = page_48.get_pixmap(clip=rect, matrix=zoom)
+    image_save_path = f'{out}/1.jpg'
+    pix.save(image_save_path, jpg_quality=95)
+    
+    doc = fitz.open(path)
+    page_49 = doc[1]
+    bbox = [147, 543, 447, 768]
+    rect = fitz.Rect(*bbox)
+    zoom = fitz.Matrix(3, 3)
+    pix = page_49.get_pixmap(clip=rect, matrix=zoom)
+    image_save_path = f'{out}/2.jpg'
+    pix.save(image_save_path, jpg_quality=95)
