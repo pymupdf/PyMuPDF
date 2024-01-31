@@ -16764,7 +16764,7 @@ def JM_new_javascript(pdf, value):
         # not convertible to char*
         return
 
-    res = mupdf.fz_new_buffer_from_copied_data(data)
+    res = mupdf.fz_new_buffer_from_copied_data(data.encode('utf8'))
     source = mupdf.pdf_add_stream(pdf, res, mupdf.PdfObj(), 0)
     newaction = mupdf.pdf_add_new_dict(pdf, 4)
     mupdf.pdf_dict_put(newaction, PDF_NAME('S'), mupdf.pdf_new_name('JavaScript'))
@@ -17577,7 +17577,7 @@ def JM_set_widget_properties(annot, Widget):
 
     # script (/A) -------------------------------------------------------
     value = GETATTR("script")
-    JM_put_script(annot_obj, PDF_NAME('A'), None, value)
+    JM_put_script(annot_obj, PDF_NAME('A'), mupdf.PdfObj(), value)
 
     # script (/AA/K) -------------------------------------------------------
     value = GETATTR("script_stroke")
