@@ -232,3 +232,16 @@ def test_2391():
 #     page = pdf[0]
 #     field = page.first_widget
 #     page.delete_widget(field)
+
+
+def test_add_widget():
+    doc = fitz.open()
+    page = doc.new_page()
+    w = fitz.Widget()
+    w.field_type = fitz.PDF_WIDGET_TYPE_BUTTON
+    w.rect = fitz.Rect(5, 5, 20, 20)
+    w.field_flags = fitz.PDF_BTN_FIELD_IS_PUSHBUTTON
+    w.field_name = "button"
+    w.fill_color = (0, 0, 1)
+    w.script = "app.alert('Hello, PDF!');"
+    page.add_widget(w)
