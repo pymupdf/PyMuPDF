@@ -21822,8 +21822,8 @@ def int_rc(text):
     return int(text)
 
 VersionFitz = "1.23.9" # MuPDF version.
-VersionBind = "1.23.20" # PyMuPDF version.
-VersionDate = "2024-01-29 00:00:01"
+VersionBind = "1.23.21" # PyMuPDF version.
+VersionDate = "2024-02-01 00:00:01"
 VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
 version = (VersionBind, VersionFitz, VersionDate2)
 pymupdf_version_tuple = tuple( [int_rc(i) for i in VersionBind.split('.')])
