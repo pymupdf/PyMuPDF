@@ -16042,8 +16042,12 @@ def JM_image_reporter(page):
         def __init__(self):
             super().__init__()
             self.use_virtual_image_filter()
-        def image_filter(self, ctx, ctm, name, image):
-            JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
+        if mupdf_version_tuple >= (1, 24):
+            def image_filter(self, ctx, ctm, name, image, scissor):
+                JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
+        else:
+            def image_filter(self, ctx, ctm, name, image):
+                JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
 
     sanitize_filter_options = SanitizeFilterOptions()
 
