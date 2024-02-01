@@ -1751,6 +1751,9 @@ def pyodide():
 def linux():
     return platform.system() == 'Linux'
 
+def openbsd():
+    return platform.system() == 'OpenBSD'
+
 class PythonFlags:
     '''
     Compile/link flags for the current python, for example the include path
@@ -2173,6 +2176,18 @@ def get_soname(path):
         path2 = os.path.realpath(path)
         if subprocess.run(f'objdump -p {path2}|grep SONAME', shell=1, check=0).returncode == 0:
             return path2
+    elif openbsd():
+        # Return newest .so with version suffix.
+        sos = glob.glob(f'{path}.*')
+        log1(f'{sos=}')
+        sos2 = list()
+        for so in sos:
+            suffix = so[len(path):]
+            if not suffix or re.match('^[.][0-9.]*[0-9]$', suffix):
+                sos2.append(so)
+        sos2.sort(key=lambda p: os.path.getmtime(p))
+        log1(f'{sos2=}')
+        return sos2[-1]
     return path
 
 
