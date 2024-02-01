@@ -151,8 +151,8 @@ def main():
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except subprocess.CalledProcessError as e:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
         # Terminate relatively quietly, failed commands will usually have
         # generated diagnostics.
-        log(e)
+        log(str(e))
         sys.exit(1)
