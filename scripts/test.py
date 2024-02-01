@@ -38,10 +38,6 @@ Options:
     --help
     -h
         Show help.
-    --build-isolation 0|1
-        If true (the default on non-OpenBSD systems), we let pip create and use
-        its own new venv to build PyMuPDF. Otherwise we force pip to use the
-        current venv.
     -b <build>
         Set build type for `build` or `buildtest` commands. `<build>` should
         be one of 'release', 'debug', 'memento'. [This makes `build` set
@@ -67,12 +63,18 @@ Options:
         Pytest test name. Should be relative to PyMuPDF directory. For example:
             -t tests/test_general.py
             -t tests/test_general.py::test_subset_fonts
-    --timeout <seconds>
-        Sets timeout when running tests.
     -v
         Avoid delay if venv directory already exists. We assume the existing
         directory was created by us earlier and is a valid venv containing all
         necessary packages.
+    --build-isolation 0|1
+        If true (the default on non-OpenBSD systems), we let pip create and use
+        its own new venv to build PyMuPDF. Otherwise we force pip to use the
+        current venv.
+    --gdb 0|1
+        Run tests under gdb.
+    --timeout <seconds>
+        Sets timeout when running tests.
     --valgrind 0|1
         Use valgrind in `test` or `buildtest`.
         This will run `sudo apt update` and `sudo apt install valgrind`.
@@ -109,6 +111,7 @@ def main(argv):
     build_isolation = None
     valgrind = False
     build_type = None
+    gdb = False
     implementations = None
     test_name = None
     venv_quick = False
@@ -150,6 +153,8 @@ def main(argv):
             timeout = float(next(args))
         elif arg == '-v':
             venv_quick = True
+        elif arg == '--gdb':
+            gdb = int(next(args))
         elif arg == '--valgrind':
             valgrind = int(next(args))
         else:
@@ -191,6 +196,7 @@ def main(argv):
                 test_name=test_name,
                 pytest_options=pytest_options,
                 timeout=timeout,
+                gdb=gdb,
                 )
     
     for command in commands:
@@ -297,7 +303,15 @@ def build(implementations=None, build_type=None, build_isolation=None, venv_quic
     gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}', env_extra=env_extra)
 
 
-def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_options=None, timeout=None):
+def test(
+        implementations,
+        valgrind,
+        venv_quick=False,
+        test_name=None,
+        pytest_options=None,
+        timeout=None,
+        gdb=False,
+        ):
     '''
     Args:
         implementations:
@@ -310,6 +324,8 @@ def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_opt
             See top-level option `-t`.
         pytest_options:
             See top-level option `-p`.
+        gdb:
+            See top-level option `--gdb`.
     '''
     pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
     if pytest_options is None:
@@ -349,17 +365,22 @@ def test(implementations, valgrind, venv_quick=False, test_name=None, pytest_opt
                     PYTHONMALLOC='malloc',
                     PYMUPDF_RUNNING_ON_VALGRIND='1',
                     )
-        elif platform.system() == 'OpenBSD':
-            # On OpenBSD `pip install pytest` doesn't seem to install the pytest
-            # command, so we use `python -m pytest ...`. (This doesn't work on
-            # Windows for some reason so we don't use it all the time.)
-            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} {python} -m pytest {pytest_options} {pytest_arg}'
+        elif gdb:
+            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} gdb --args {python} -m pytest {pytest_options} {pytest_arg}'
+        elif platform.system() == 'Windows':
+            # `python -m pytest` doesn' seem to work.
+           command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} pytest {pytest_options} {pytest_arg}'
         else:
+            # On OpenBSD `pip install pytest` doesn't seem to install the pytest
+            # command, so we use `python -m pytest ...`.
             command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} {python} -m pytest {pytest_options} {pytest_arg}'
         
         log(f'Running tests with tests/run_compound.py and pytest.')
         gh_release.run(command, env_extra=env_extra, timeout=timeout)
             
+    except subprocess.TimeoutExpired as e:
+         log(f'Timeout when running tests.')
+         raise
     finally:
         log('\n' + venv_info(pytest_args=f'{pytest_options} {pytest_arg}'))
 
@@ -387,7 +408,7 @@ def log(text):
 if __name__ == '__main__':
     try:
         sys.exit(main(sys.argv))
-    except subprocess.CalledProcessError as e:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
         # Terminate relatively quietly, failed commands will usually have
         # generated diagnostics.
         log(f'{e}')
