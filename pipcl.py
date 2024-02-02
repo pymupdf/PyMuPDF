@@ -1541,7 +1541,7 @@ def build_extension(
         if command_was_run and darwin():
             # We need to patch up references to shared libraries in `libs`.
             sublibraries = list()
-            for lib in libs:
+            for lib in () if libs is None else libs:
                 for libpath in libpaths:
                     found = list()
                     for suffix in '.so', '.dylib':
@@ -1867,6 +1867,8 @@ def macos_patch( library, *sublibraries):
     '''
     log2( f'macos_patch(): library={library}  sublibraries={sublibraries}')
     if not darwin():
+        return
+    if not sublibraries:
         return
     subprocess.run( f'otool -L {library}', shell=1, check=1)
     command = 'install_name_tool'
