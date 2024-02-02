@@ -29,3 +29,19 @@ def test_insert():
     # Multiple computations may have lead to rounding deviations, so we need
     # some generosity here: enlarge rect by 1 point in each direction.
     assert img["bbox"] in rect + (-1, -1, 1, 1)
+
+def test_2742():
+    dest = fitz.open()
+    destpage = dest.new_page(width=842, height=595)
+
+    a5 = fitz.Rect(0, 0, destpage.rect.width / 3, destpage.rect.height)
+    shiftright = fitz.Rect(destpage.rect.width/3, 0, destpage.rect.width/3, 0)
+
+    src = fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_2742.pdf'))
+
+    destpage.show_pdf_page(a5, src, 0)
+    destpage.show_pdf_page(a5 + shiftright, src, 0)
+    destpage.show_pdf_page(a5 + shiftright + shiftright, src, 0)
+
+    dest.save(os.path.abspath(f'{__file__}/../../tests/test_2742-out.pdf'))
+    print("The end!")
