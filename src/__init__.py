@@ -1678,22 +1678,24 @@ class Archive:
         Add a sub-archive.
 
         Args:
-            content: content to be added. May be one of Archive, folder
-                 name, file name, raw bytes (bytes, bytearray), zipfile,
-                 tarfile, or a sequence of any of these types.
+            content:
+                The content to be added. May be one of:
+                    `str` - must be path of directory or file.
+                    `bytes`, `bytearray`, `io.BytesIO` - raw data.
+                    `zipfile.Zipfile`.
+                    `tarfile.TarFile`.
+                    `fitz.Archive`.
+                    A two-item tuple `(data, name)`.
+                    List or tuple (but not tuple with length 2) of the above.
             path: (str) a "virtual" path name, under which the elements
                 of content can be retrieved. Use it to e.g. cope with
                 duplicate element names.
         '''
-        def bin_ok(x):
+        def is_binary_data(x):
             return isinstance(x, (bytes, bytearray, io.BytesIO))
 
-        entries = []
-        mount = None
-        fmt = None
-
-        def make_subarch():
-            subarch = {"fmt": fmt, "entries": entries, "path": mount}
+        def make_subarch(entries, mount, fmt):
+            subarch = dict(fmt=fmt, entries=entries, path=mount)
             if fmt != "tree" or self._subarchives == []:
                 self._subarchives.append(subarch)
             else:
@@ -1703,102 +1705,78 @@ class Archive:
                 else:
                     ltree["entries"].extend(subarch["entries"])
                     self._subarchives[-1] = ltree
-            return
 
-        if isinstance(content, zipfile.ZipFile):
-            fmt = "zip"
-            entries = content.namelist()
-            mount = path
-            filename = getattr(content, "filename", None)
-            fp = getattr(content, "fp", None)
-            if filename:
-                self._add_ziptarfile(filename, 1, path)
-            else:
-                self._add_ziptarmemory(fp.getvalue(), 1, path)
-            return make_subarch()
-
-        if isinstance(content, tarfile.TarFile):
-            fmt = "tar"
-            entries = content.getnames()
-            mount = path
-            filename = getattr(content.fileobj, "name", None)
-            fp = content.fileobj
-            if not isinstance(fp, io.BytesIO) and not filename:
-                fp = fp.fileobj
-            if filename:
-                self._add_ziptarfile(filename, 0, path)
-            else:
-                self._add_ziptarmemory(fp.getvalue(), 0, path)
-            return make_subarch()
-
-        if isinstance(content, Archive):
-            fmt = "multi"
-            mount = path
-            self._add_arch(content, path)
-            return make_subarch()
-
-        if bin_ok(content):
-            if not (path and type(path) is str):
-                raise ValueError("need name for binary content")
-            fmt = "tree"
-            mount = None
-            entries = [path]
-            self._add_treeitem(content, path)
-            return make_subarch()
-
-        if hasattr(content, "name"):
-            content = content.name
-        elif isinstance(content, pathlib.Path):
+        if isinstance(content, pathlib.Path):
             content = str(content)
+        
+        if isinstance(content, str):
+            if os.path.isdir(content):
+                self._add_dir(content, path)
+                return make_subarch(os.listdir(content), path, 'dir')
+            elif os.path.isfile(content):
+                assert isinstance(path, str) and path != '', \
+                        f'Need name for binary content, but {path=}.'
+                with open(content) as f:
+                    ff = f.read()
+                self._add_treeitem(ff, path)
+                return make_subarch([path], None, 'tree')
+            else:
+                raise ValueError(f'Not a file or directory: {content!r}')
 
-        if os.path.isdir(str(content)):
-            a0 = str(content)
-            fmt = "dir"
-            mount = path
-            entries = os.listdir(a0)
-            self._add_dir(a0, path)
-            return make_subarch()
+        elif is_binary_data(content):
+            assert isinstance(path, str) and path != '' \
+                    f'Need name for binary content, but {path=}.'
+            self._add_treeitem(content, path)
+            return make_subarch([path], None, 'tree')
 
-        if os.path.isfile(str(content)):
-            if not (path and type(path) is str):
-                raise ValueError("need name for binary content")
-            a0 = str(content)
-            _ = open(a0, "rb")
-            ff = _.read()
-            _.close()
-            fmt = "tree"
-            mount = None
-            entries = [path]
-            self._add_treeitem(ff, path)
-            return make_subarch()
+        elif isinstance(content, zipfile.ZipFile):
+            filename = getattr(content, "filename", None)
+            if filename is None:
+                fp = content.fp.getvalue()
+                self._add_ziptarmemory(fp, 1, path)
+            else:
+                self._add_ziptarfile(filename, 1, path)
+            return make_subarch(content.namelist(), path, 'zip')
 
-        if type(content) is str or not getattr(content, "__getitem__", None):
-            raise ValueError("bad archive content")
+        elif isinstance(content, tarfile.TarFile):
+            filename = getattr(content.fileobj, "name", None)
+            if filename is None:
+                fp = content.fileobj
+                if not isinstance(fp, io.BytesIO):
+                    fp = fp.fileobj
+                self._add_ziptarmemory(fp.getvalue(), 0, path)
+            else:
+                self._add_ziptarfile(filename, 0, path)
+            return make_subarch(content.getnames(), path, 'tar')
 
-        #----------------------------------------
-        # handling sequence types here
-        #----------------------------------------
-
-        if len(content) == 2: # covers the tree item plus path
+        elif isinstance(content, Archive):
+            self._add_arch(content, path)
+            return make_subarch([], path, 'multi')
+        
+        if isinstance(content, tuple) and len(content) == 2:
+            # covers the tree item plus path
             data, name = content
-            if bin_ok(data) or os.path.isfile(str(data)):
-                if not type(name) is str:
-                    raise ValueError(f"bad item name {name}")
-                mount = path
-                fmt = "tree"
-                if bin_ok(data):
-                    self._add_treeitem(data, name, path=mount)
-                else:
-                    _ = open(str(data), "rb")
-                    ff = _.read()
-                    _.close()
-                    self._add_treeitem(ff, name, path=mount)
-                entries = [name]
-                return make_subarch()
-
-        # deal with sequence of disparate items
-        for item in content:
-            self.add(item, path)
+            assert isinstance(name, str), f'Unexpected {type(name)=}'
+            if is_binary_data(data):
+                self._add_treeitem(data, name, path=path)
+            elif isinstance(data, str):
+                if os.path.isfile(data):
+                    with open(data, 'rb') as f:
+                        ff = f.read()
+                    self._add_treeitem(ff, name, path=path)
+            else:
+                assert 0, f'Unexpected {type(data)=}.'
+            return make_subarch([name], path, 'tree')
+        
+        elif hasattr(content, '__getitem__'):
+            # Deal with sequence of disparate items.
+            for item in content:
+                self.add(item, path)
+            return
+        
+        else:
+            raise TypeError(f'Unrecognised type {type(content)}.')
+        assert 0
 
     @property
     def entry_list( self):

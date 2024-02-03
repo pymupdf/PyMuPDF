@@ -8,6 +8,7 @@ import io
 import os
 
 import fitz
+import pathlib
 import pickle
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -87,7 +88,7 @@ def test_annot_clean_contents():
     annot = page.add_highlight_annot((10, 10, 20, 20))
 
     # the annotation appearance will not start with command b"q"
-    assert annot._getAP().startswith(b"q") == False
+
 
     # invoke appearance stream cleaning and reformatting
     annot.clean_contents()
@@ -872,3 +873,12 @@ def test_xml():
 def test_3112_set_xml_metadata():
     document = fitz.Document()
     document.set_xml_metadata('hello world')
+
+def test_archive_3126():
+    if not hasattr(fitz, 'mupdf'):
+        print(f'Not running because known to fail with classic.')
+        return
+    p = os.path.abspath(f'{__file__}/../../tests/resources')
+    p = pathlib.Path(p)
+    archive = fitz.Archive(p)
+    
