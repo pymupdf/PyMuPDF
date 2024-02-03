@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
 
-      - name: test_mupdf-master-branch
+      - name: test_mupdf-release-branch
         env:
             inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch 1.23.x https://github.com/ArtifexSoftware/mupdf.git"
             inputs_flavours: "0"
