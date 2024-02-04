@@ -2593,7 +2593,7 @@ class Document:
         try:
             self.is_closed    = False
             self.is_encrypted = False
-            self.isEncrypted = False
+            self.is_encrypted = False
             self.metadata    = None
             self.FontInfos   = []
             self.Graftmaps   = {}
@@ -2746,7 +2746,6 @@ class Document:
             if self.thisown:
                 self._graft_id = TOOLS.gen_id()
                 if self.needs_pass:
-                    self.isEncrypted = True
                     self.is_encrypted = True
                 else: # we won't init until doc is decrypted
                     self.init_doc()
@@ -2781,7 +2780,7 @@ class Document:
 
     def _addFormFont(self, name, font):
         """Add new form font."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         if not pdf:
@@ -2801,7 +2800,7 @@ class Document:
 
     def _delToC(self):
         """Delete the TOC."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         xrefs = []  # create Python list
         pdf = _as_pdf_document(self)
@@ -3169,7 +3168,7 @@ class Document:
 
     def _getOLRootNumber(self):
         """Get xref of Outline Root, create it if missing."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
@@ -3203,7 +3202,7 @@ class Document:
 
     def _getPageInfo(self, pno, what):
         """List fonts, images, XObjects used on a page."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         doc = self.this
         pdf = _as_pdf_document(self)
@@ -3505,7 +3504,7 @@ class Document:
         val = mupdf.fz_authenticate_password(self.this, password)
         if val:  # the doc is decrypted successfully and we init the outline
             self.is_encrypted = False
-            self.isEncrypted = False
+            self.is_encrypted = False
             self.init_doc()
             self.thisown = True
         return val
@@ -3554,7 +3553,7 @@ class Document:
 
     def convert_to_pdf(self, from_page=0, to_page=-1, rotate=0):
         """Convert document to a PDF, selecting page range and optional rotation. Output bytes object."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         fz_doc = self.this
         fp = from_page
@@ -3602,7 +3601,7 @@ class Document:
 
     def del_xml_metadata(self):
         """Delete XML metadata."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         root = mupdf.pdf_dict_get( mupdf.pdf_trailer( pdf), PDF_NAME('Root'))
@@ -4118,7 +4117,7 @@ class Document:
 
     def get_new_xref(self):
         """Make new xref."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         xref = 0
@@ -4210,7 +4209,7 @@ class Document:
     def get_page_images(self, pno: int, full: bool =False) -> list:
         """Retrieve a list of images used on a page.
         """
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if not self.is_pdf:
             return ()
@@ -4222,7 +4221,7 @@ class Document:
     def get_page_xobjects(self, pno: int) -> list:
         """Retrieve a list of XObjects used on a page.
         """
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if not self.is_pdf:
             return ()
@@ -4674,7 +4673,7 @@ class Document:
 
     def layout(self, rect=None, width=0, height=0, fontsize=11):
         """Re-layout a reflowable document."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         doc = self.this
         if not mupdf.fz_is_document_reflowable( doc):
@@ -4698,7 +4697,7 @@ class Document:
         'page_id' is either a 0-based page number or a tuple (chapter, pno),
         with chapter number and page number within that chapter.
         """
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if page_id is None:
             page_id = 0
@@ -4738,7 +4737,7 @@ class Document:
 
     def make_bookmark(self, loc):
         """Make a page pointer before layouting document."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         loc = mupdf.FzLocation(*loc)
         mark = mupdf.ll_fz_make_bookmark2( self.this.m_internal, loc.internal())
@@ -4796,7 +4795,7 @@ class Document:
 
     def need_appearances(self, value=None):
         """Get/set the NeedAppearances value."""
-        if not self.isFormPDF:
+        if not self.is_form_pdf:
             return None
         
         pdf = _as_pdf_document(self)
@@ -4829,7 +4828,7 @@ class Document:
 
     def next_location(self, page_id):
         """Get (chapter, page) of next page."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if type(page_id) is int:
             page_id = (0, page_id)
@@ -5003,7 +5002,7 @@ class Document:
     @property
     def permissions(self):
         """Document permissions."""
-        if self.isEncrypted:
+        if self.is_encrypted:
             return 0
         doc =self.this
         pdf = mupdf.pdf_document_from_fz_document(doc)
@@ -5380,7 +5379,7 @@ class Document:
 
     def select(self, pyliste):
         """Build sub-pdf with page numbers in the list."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         if not self.is_pdf:
             raise ValueError("is no PDF")
@@ -5549,7 +5548,7 @@ class Document:
 
     def set_xml_metadata(self, metadata):
         """Store XML document level metadata."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
@@ -5605,7 +5604,7 @@ class Document:
 
     def update_stream(self, xref=0, stream=None, new=1, compress=1):
         """Replace xref stream part."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         xreflen = mupdf.pdf_xref_len(pdf)
@@ -5850,7 +5849,7 @@ class Document:
 
     def xref_stream(self, xref):
         """Get decompressed xref stream."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
@@ -5869,7 +5868,7 @@ class Document:
 
     def xref_stream_raw(self, xref):
         """Get xref stream without decompression."""
-        if self.is_closed or self.isEncrypted:
+        if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         ASSERT_PDF(pdf)
@@ -6296,7 +6295,7 @@ class Link:
         """Create link destination details."""
         if hasattr(self, "parent") and self.parent is None:
             raise ValueError("orphaned object: parent is None")
-        if self.parent.parent.is_closed or self.parent.parent.isEncrypted:
+        if self.parent.parent.is_closed or self.parent.parent.is_encrypted:
             raise ValueError("document closed or encrypted")
         doc = self.parent.parent
 
@@ -6697,14 +6696,14 @@ class linkDest:
         isExt = obj.is_external
         isInt = not isExt
         self.dest = ""
-        self.fileSpec = ""
+        self.file_spec = ""
         self.flags = 0
-        self.isMap = False
-        self.isUri = False
+        self.is_map = False
+        self.is_uri = False
         self.kind = LINK_NONE
         self.lt = Point(0, 0)
         self.named = dict()
-        self.newWindow = ""
+        self.new_window = ""
         self.page = obj.page
         self.rb = Point(0, 0)
         self.uri = obj.uri
@@ -6762,21 +6761,21 @@ class linkDest:
             if not self.uri:
                 pass
             elif self.uri.startswith(("http://", "https://", "mailto:", "ftp://")):
-                self.isUri = True
+                self.is_uri = True
                 self.kind = LINK_URI
             elif self.uri.startswith("file://"):
-                self.fileSpec = self.uri[7:]
-                self.isUri = False
+                self.file_spec = self.uri[7:]
+                self.is_uri = False
                 self.uri = ""
                 self.kind = LINK_LAUNCH
-                ftab = self.fileSpec.split("#")
+                ftab = self.file_spec.split("#")
                 if len(ftab) == 2:
                     if ftab[1].startswith("page="):
                         self.kind = LINK_GOTOR
-                        self.fileSpec = ftab[0]
+                        self.file_spec = ftab[0]
                         self.page = int(ftab[1][5:]) - 1
             else:
-                self.isUri = True
+                self.is_uri = True
                 self.kind = LINK_LAUNCH
         assert isinstance(self.named, dict)
 
@@ -7229,7 +7228,7 @@ class Page:
         assert isinstance(page, (mupdf.FzPage, mupdf.PdfPage)), f'page is: {page}'
         self.this = page
         self.thisown = True
-        self.lastPoint = None
+        self.last_point = None
         self.draw_cont = ''
         self._annot_refs = dict()
         self.parent = document
@@ -8860,8 +8859,8 @@ class Page:
                 if npath.type == "f":
                     npath.stroke_opacity = None
                     npath.dashes = None
-                    npath.lineJoin = None
-                    npath.lineCap = None
+                    npath.line_join = None
+                    npath.line_cap = None
                     npath.color = None
                     npath.width = None
 
@@ -11002,7 +11001,7 @@ class Shape:
         self.draw_cont = ""
         self.text_cont = ""
         self.totalcont = ""
-        self.lastPoint = None
+        self.last_point = None
         self.rect = None
 
     def commit(self, overlay: bool = True) -> None:
@@ -11021,7 +11020,7 @@ class Shape:
             # update it with potential compression
             mupdf.pdf_update_stream(self.doc, xref, self.totalcont)
 
-        self.lastPoint = None  # clean up ...
+        self.last_point = None  # clean up ...
         self.rect = None  #
         self.draw_cont = ""  # for potential ...
         self.text_cont = ""  # ...
@@ -11040,7 +11039,7 @@ class Shape:
         p2 = Point(p2)
         p3 = Point(p3)
         p4 = Point(p4)
-        if not (self.lastPoint == p1):
+        if not (self.last_point == p1):
             self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
         self.draw_cont += "%g %g %g %g %g %g c\n" % JM_TUPLE(
             list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm)
@@ -11049,8 +11048,8 @@ class Shape:
         self.updateRect(p2)
         self.updateRect(p3)
         self.updateRect(p4)
-        self.lastPoint = p4
-        return self.lastPoint
+        self.last_point = p4
+        return self.last_point
 
     def draw_circle(self, center: point_like, radius: float):# -> Point:
         """Draw a circle given its center and radius."""
@@ -11079,15 +11078,15 @@ class Shape:
         """Draw a line between two points."""
         p1 = Point(p1)
         p2 = Point(p2)
-        if not (self.lastPoint == p1):
+        if not (self.last_point == p1):
             self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
-            self.lastPoint = p1
+            self.last_point = p1
             self.updateRect(p1)
 
         self.draw_cont += "%g %g l\n" % JM_TUPLE(p2 * self.ipctm)
         self.updateRect(p2)
-        self.lastPoint = p2
-        return self.lastPoint
+        self.last_point = p2
+        return self.last_point
 
     def draw_oval(self, tetra: typing.Union[quad_like, rect_like]):# -> Point:
         """Draw an ellipse inside a tetrapod."""
@@ -11102,30 +11101,30 @@ class Shape:
         mr = q.ur + (q.lr - q.ur) * 0.5
         mb = q.ll + (q.lr - q.ll) * 0.5
         ml = q.ul + (q.ll - q.ul) * 0.5
-        if not (self.lastPoint == ml):
+        if not (self.last_point == ml):
             self.draw_cont += "%g %g m\n" % JM_TUPLE(ml * self.ipctm)
-            self.lastPoint = ml
+            self.last_point = ml
         self.draw_curve(ml, q.ll, mb)
         self.draw_curve(mb, q.lr, mr)
         self.draw_curve(mr, q.ur, mt)
         self.draw_curve(mt, q.ul, ml)
         self.updateRect(q.rect)
-        self.lastPoint = ml
-        return self.lastPoint
+        self.last_point = ml
+        return self.last_point
 
     def draw_polyline(self, points: list):# -> Point:
         """Draw several connected line segments."""
         for i, p in enumerate(points):
             if i == 0:
-                if not (self.lastPoint == Point(p)):
+                if not (self.last_point == Point(p)):
                     self.draw_cont += "%g %g m\n" % JM_TUPLE(Point(p) * self.ipctm)
-                    self.lastPoint = Point(p)
+                    self.last_point = Point(p)
             else:
                 self.draw_cont += "%g %g l\n" % JM_TUPLE(Point(p) * self.ipctm)
             self.updateRect(p)
 
-        self.lastPoint = Point(points[-1])
-        return self.lastPoint
+        self.last_point = Point(points[-1])
+        return self.last_point
 
     def draw_quad(self, quad: quad_like):# -> Point:
         """Draw a Quad."""
@@ -11139,8 +11138,8 @@ class Shape:
             list(r.bl * self.ipctm) + [r.width, r.height]
         )
         self.updateRect(r)
-        self.lastPoint = r.tl
-        return self.lastPoint
+        self.last_point = r.tl
+        return self.last_point
 
     def draw_sector(
             self,
@@ -11161,9 +11160,9 @@ class Shape:
         w45 = w90 / 2
         while abs(betar) > 2 * math.pi:
             betar += w360  # bring angle below 360 degrees
-        if not (self.lastPoint == point):
+        if not (self.last_point == point):
             self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
-            self.lastPoint = point
+            self.last_point = point
         Q = Point(0, 0)  # just make sure it exists
         C = center
         P = point
@@ -11213,8 +11212,8 @@ class Shape:
             self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
             self.draw_cont += l5 % JM_TUPLE(center * self.ipctm)
             self.draw_cont += l5 % JM_TUPLE(Q * self.ipctm)
-        self.lastPoint = Q
-        return self.lastPoint
+        self.last_point = Q
+        return self.last_point
 
     def draw_squiggle(
             self,
@@ -11340,7 +11339,7 @@ class Shape:
 
         if closePath:
             self.draw_cont += "h\n"
-            self.lastPoint = None
+            self.last_point = None
 
         if color is not None:
             self.draw_cont += color_str
@@ -11370,7 +11369,7 @@ class Shape:
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
-        self.lastPoint = None
+        self.last_point = None
         return
 
     @staticmethod
@@ -17454,7 +17453,7 @@ def JM_set_resource_property(ref, name, xref):
 def JM_set_widget_properties(annot, Widget):
     '''
     Update the PDF form field with the properties from a Python Widget object.
-    Called by "Page.addWidget" and "Annot.updateWidget".
+    Called by "Page.add_widget" and "Annot.update_widget".
     '''
     if isinstance( annot, Annot):
         annot = annot.this
