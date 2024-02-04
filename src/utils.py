@@ -950,7 +950,7 @@ def getLinkDict(ln, document=None) -> dict:
             nl["zoom"] = 0.0
 
     elif dest.kind == fitz.LINK_GOTOR:
-        nl["file"] = dest.fileSpec.replace("\\", "/")
+        nl["file"] = dest.file_spec.replace("\\", "/")
         nl["page"] = dest.page
         if dest.page < 0:
             nl["to"] = dest.dest
@@ -962,7 +962,7 @@ def getLinkDict(ln, document=None) -> dict:
                 nl["zoom"] = 0.0
 
     elif dest.kind == fitz.LINK_LAUNCH:
-        nl["file"] = dest.fileSpec.replace("\\", "/")
+        nl["file"] = dest.file_spec.replace("\\", "/")
 
     elif dest.kind == fitz.LINK_NAMED:
         # The dicts should not have same key(s).
@@ -3249,7 +3249,7 @@ class Shape:
         self.draw_cont = ""
         self.text_cont = ""
         self.totalcont = ""
-        self.lastPoint = None
+        self.last_point = None
         self.rect = None
 
     def updateRect(self, x):
@@ -3277,29 +3277,29 @@ class Shape:
         """Draw a line between two points."""
         p1 = fitz.Point(p1)
         p2 = fitz.Point(p2)
-        if not (self.lastPoint == p1):
+        if not (self.last_point == p1):
             self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(p1 * self.ipctm)
-            self.lastPoint = p1
+            self.last_point = p1
             self.updateRect(p1)
 
         self.draw_cont += "%g %g l\n" % fitz.JM_TUPLE(p2 * self.ipctm)
         self.updateRect(p2)
-        self.lastPoint = p2
-        return self.lastPoint
+        self.last_point = p2
+        return self.last_point
 
     def draw_polyline(self, points: list) -> fitz.Point:
         """Draw several connected line segments."""
         for i, p in enumerate(points):
             if i == 0:
-                if not (self.lastPoint == fitz.Point(p)):
+                if not (self.last_point == fitz.Point(p)):
                     self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(fitz.Point(p) * self.ipctm)
-                    self.lastPoint = fitz.Point(p)
+                    self.last_point = fitz.Point(p)
             else:
                 self.draw_cont += "%g %g l\n" % fitz.JM_TUPLE(fitz.Point(p) * self.ipctm)
             self.updateRect(p)
 
-        self.lastPoint = fitz.Point(points[-1])
-        return self.lastPoint
+        self.last_point = fitz.Point(points[-1])
+        return self.last_point
 
     def draw_bezier(
         self,
@@ -3313,7 +3313,7 @@ class Shape:
         p2 = fitz.Point(p2)
         p3 = fitz.Point(p3)
         p4 = fitz.Point(p4)
-        if not (self.lastPoint == p1):
+        if not (self.last_point == p1):
             self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(p1 * self.ipctm)
         self.draw_cont += "%g %g %g %g %g %g c\n" % fitz.JM_TUPLE(
             list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm)
@@ -3322,8 +3322,8 @@ class Shape:
         self.updateRect(p2)
         self.updateRect(p3)
         self.updateRect(p4)
-        self.lastPoint = p4
-        return self.lastPoint
+        self.last_point = p4
+        return self.last_point
 
     def draw_oval(self, tetra: typing.Union[quad_like, rect_like]) -> fitz.Point:
         """Draw an ellipse inside a tetrapod."""
@@ -3338,16 +3338,16 @@ class Shape:
         mr = q.ur + (q.lr - q.ur) * 0.5
         mb = q.ll + (q.lr - q.ll) * 0.5
         ml = q.ul + (q.ll - q.ul) * 0.5
-        if not (self.lastPoint == ml):
+        if not (self.last_point == ml):
             self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(ml * self.ipctm)
-            self.lastPoint = ml
+            self.last_point = ml
         self.draw_curve(ml, q.ll, mb)
         self.draw_curve(mb, q.lr, mr)
         self.draw_curve(mr, q.ur, mt)
         self.draw_curve(mt, q.ul, ml)
         self.updateRect(q.rect)
-        self.lastPoint = ml
-        return self.lastPoint
+        self.last_point = ml
+        return self.last_point
 
     def draw_circle(self, center: point_like, radius: float) -> fitz.Point:
         """Draw a circle given its center and radius."""
@@ -3391,9 +3391,9 @@ class Shape:
         w45 = w90 / 2
         while abs(betar) > 2 * math.pi:
             betar += w360  # bring angle below 360 degrees
-        if not (self.lastPoint == point):
+        if not (self.last_point == point):
             self.draw_cont += l3 % fitz.JM_TUPLE(point * self.ipctm)
-            self.lastPoint = point
+            self.last_point = point
         Q = fitz.Point(0, 0)  # just make sure it exists
         C = center
         P = point
@@ -3443,8 +3443,8 @@ class Shape:
             self.draw_cont += l3 % fitz.JM_TUPLE(point * self.ipctm)
             self.draw_cont += l5 % fitz.JM_TUPLE(center * self.ipctm)
             self.draw_cont += l5 % fitz.JM_TUPLE(Q * self.ipctm)
-        self.lastPoint = Q
-        return self.lastPoint
+        self.last_point = Q
+        return self.last_point
 
     def draw_rect(self, rect: rect_like, *, radius=None) -> fitz.Point:
         """Draw a rectangle.
@@ -3463,8 +3463,8 @@ class Shape:
                 list(r.bl * self.ipctm) + [r.width, r.height]
             )
             self.updateRect(r)
-            self.lastPoint = r.tl
-            return self.lastPoint
+            self.last_point = r.tl
+            return self.last_point
         # rounded corners requested. This requires 1 or 2 values, each
         # with 0 < value <= 0.5
         if hasattr(radius, "__float__"):
@@ -3492,10 +3492,10 @@ class Shape:
         lp = self.draw_curve(lp, r.tr, r.tr - px)
 
         lp = self.draw_line(lp, r.tl + px)
-        self.lastPoint = self.draw_curve(lp, r.tl, r.tl + py)
+        self.last_point = self.draw_curve(lp, r.tl, r.tl + py)
 
         self.updateRect(r)
-        return self.lastPoint
+        return self.last_point
 
     def draw_quad(self, quad: quad_like) -> fitz.Point:
         """Draw a Quad."""
@@ -4134,7 +4134,7 @@ class Shape:
 
         if closePath:
             self.draw_cont += "h\n"
-            self.lastPoint = None
+            self.last_point = None
 
         if color is not None:
             self.draw_cont += color_str
@@ -4164,7 +4164,7 @@ class Shape:
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
-        self.lastPoint = None
+        self.last_point = None
         return
 
     def commit(self, overlay: bool = True) -> None:
@@ -4180,7 +4180,7 @@ class Shape:
             # update it with potential compression
             self.doc.update_stream(xref, self.totalcont)
 
-        self.lastPoint = None  # clean up ...
+        self.last_point = None  # clean up ...
         self.rect = None  #
         self.draw_cont = ""  # for potential ...
         self.text_cont = ""  # ...
