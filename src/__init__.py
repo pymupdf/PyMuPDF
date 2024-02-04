@@ -12860,11 +12860,11 @@ class TextWriter:
             self.used_fonts.add(font)
         return val
 
-    def appendv(self, pos, text, font=None, fontsize=11, language=None):
+    def appendv(self, pos, text, font=None, fontsize=11, language=None, small_caps=False):
         lheight = fontsize * 1.2
         for c in text:
             self.append(pos, c, font=font, fontsize=fontsize,
-                language=language)
+                language=language, small_caps=small_caps)
             pos.y += lheight
         return self.text_rect, self.last_point
 
