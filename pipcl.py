@@ -1769,6 +1769,9 @@ class PythonFlags:
     Compile/link flags for the current python, for example the include path
     needed to get `Python.h`.
 
+    The 'PIPCL_PYTHON_CONFIG' environment variable allows to override
+    the location of the python-config executable.
+
     Members:
         .includes:
             String containing compiler flags for include paths.
@@ -1789,43 +1792,45 @@ class PythonFlags:
             self.ldflags = f'-L {_lib_dir}'
 
         else:
-            # We use python-config which appears to work better than pkg-config
-            # because it copes with multiple installed python's, e.g.
-            # manylinux_2014's /opt/python/cp*-cp*/bin/python*.
-            #
-            # But... on non-macos it seems that we should not attempt to specify
-            # libpython on the link command. The manylinux docker containers
-            # don't actually contain libpython.so, and it seems that this
-            # deliberate. And the link command runs ok.
-            #
-            python_exe = os.path.realpath( sys.executable)
-            if darwin():
-                # Basic install of dev tools with `xcode-select --install` doesn't
-                # seem to provide a `python3-config` or similar, but there is a
-                # `python-config.py` accessible via sysconfig.
+            python_config = os.environ.get("PIPCL_PYTHON_CONFIG")
+            if not python_config:
+                # We use python-config which appears to work better than pkg-config
+                # because it copes with multiple installed python's, e.g.
+                # manylinux_2014's /opt/python/cp*-cp*/bin/python*.
                 #
-                # We try different possibilities and use the last one that
-                # works.
+                # But... on non-macos it seems that we should not attempt to specify
+                # libpython on the link command. The manylinux docker containers
+                # don't actually contain libpython.so, and it seems that this
+                # deliberate. And the link command runs ok.
                 #
-                python_config = None
-                for pc in (
-                        f'python3-config',
-                        f'{sys.executable} {sysconfig.get_config_var("srcdir")}/python-config.py',
-                        f'{python_exe}-config',
-                        ):
-                    e = subprocess.run(
-                            f'{pc} --includes',
-                            shell=1,
-                            stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL,
-                            check=0,
-                            ).returncode
-                    log1(f'{e=} from {pc!r}.')
-                    if e == 0:
-                        python_config = pc
-                assert python_config, f'Cannot find python-config'
-            else:
-                python_config = f'{python_exe}-config'
+                python_exe = os.path.realpath( sys.executable)
+                if darwin():
+                    # Basic install of dev tools with `xcode-select --install` doesn't
+                    # seem to provide a `python3-config` or similar, but there is a
+                    # `python-config.py` accessible via sysconfig.
+                    #
+                    # We try different possibilities and use the last one that
+                    # works.
+                    #
+                    python_config = None
+                    for pc in (
+                            f'python3-config',
+                            f'{sys.executable} {sysconfig.get_config_var("srcdir")}/python-config.py',
+                            f'{python_exe}-config',
+                            ):
+                        e = subprocess.run(
+                                f'{pc} --includes',
+                                shell=1,
+                                stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL,
+                                check=0,
+                                ).returncode
+                        log1(f'{e=} from {pc!r}.')
+                        if e == 0:
+                            python_config = pc
+                    assert python_config, f'Cannot find python-config'
+                else:
+                    python_config = f'{python_exe}-config'
             log1(f'Using {python_config=}.')
             try:
                 self.includes = run( f'{python_config} --includes', capture=1).strip()
