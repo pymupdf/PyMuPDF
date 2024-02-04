@@ -12866,7 +12866,7 @@ class TextWriter:
             self.append(pos, c, font=font, fontsize=fontsize,
                 language=language)
             pos.y += lheight
-        return self.textRect, self.lastPoint
+        return self.text_rect, self.last_point
 
     def clean_rtl(self, text):
         """Revert the sequence of Latin text parts.
