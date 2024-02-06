@@ -666,7 +666,7 @@ class Annot:
             ret = Page(page, document)
             #self.parent = weakref.proxy( ret)
             self.parent = ret
-            print(f'No attribute .parent: {type(self)=} {id(self)=}: have set {id(self.parent)=}.')
+            #print(f'No attribute .parent: {type(self)=} {id(self)=}: have set {id(self.parent)=}.')
             #print( f'Have set self.parent')
         return ret
 

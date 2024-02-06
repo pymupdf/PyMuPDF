@@ -283,3 +283,15 @@ def test_file_info():
             {'filename': 'example.pdf', 'descender': '', 'length': 8416, 'size': 8992},
             {'filename': 'photo1.jpeg', 'descender': '', 'length': 10154, 'size': 8012},
             ]
+
+def test_3131():
+    doc = fitz.open()
+    page = doc.new_page()
+
+    page.add_line_annot((0, 0), (1, 1))
+    page.add_line_annot((1, 0), (0, 1))
+
+    first_annot, _ = page.annots()
+    first_annot.next.type
+
+    
