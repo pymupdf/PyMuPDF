@@ -2373,7 +2373,6 @@ class Xml:
 
     def span_bottom(self):
         """Find deepest level in stacked spans."""
-        sys.stdout = sys.stderr
         parent = self
         child = self.last_child
         if child is None:
