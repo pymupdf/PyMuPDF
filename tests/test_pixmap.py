@@ -233,3 +233,15 @@ def test_3072():
     pix = page_49.get_pixmap(clip=rect, matrix=zoom)
     image_save_path = f'{out}/2.jpg'
     pix.save(image_save_path, jpg_quality=95)
+
+def test_3134():
+    doc = fitz.Document()
+    page = doc.new_page()
+    page.get_pixmap(clip=fitz.Rect(0, 0, 100, 100)).save("test_3134_rect.jpg")
+    page.get_pixmap(clip=fitz.IRect(0, 0, 100, 100)).save("test_3134_irect.jpg")
+    stat_rect = os.stat('test_3134_rect.jpg')
+    stat_irect = os.stat('test_3134_irect.jpg')
+    print(f' {stat_rect=}')
+    print(f'{stat_irect=}')
+    assert stat_rect.st_size == stat_irect.st_size
+    
