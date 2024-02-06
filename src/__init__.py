@@ -17088,7 +17088,11 @@ def JM_read_contents(pageref):
 def JM_rect_from_py(r):
     if isinstance(r, mupdf.FzRect):
         return r
+    if isinstance(r, mupdf.FzIrect):
+        return mupdf.FzRect(r)
     if isinstance(r, Rect):
+        return mupdf.fz_make_rect(r.x0, r.y0, r.x1, r.y1)
+    if isinstance(r, IRect):
         return mupdf.fz_make_rect(r.x0, r.y0, r.x1, r.y1)
     if not r or not PySequence_Check(r) or PySequence_Size(r) != 4:
         return mupdf.FzRect(mupdf.FzRect.Fixed_INFINITE)
