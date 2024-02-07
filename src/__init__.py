@@ -9514,17 +9514,26 @@ class Pixmap:
             spm = spix
             mpm = mpix
             if not spix.m_internal: # intercept NULL for spix: make alpha only pix
-                dst = mupdf.fz_new_pixmap_from_alpha_channel( mpm)
+                dst = mupdf.fz_new_pixmap_from_alpha_channel(mpm)
                 if not dst.m_internal:
                     raise RuntimeError( MSG_PIX_NOALPHA)
             else:
-                dst = mupdf.fz_new_pixmap_from_color_and_mask( spm, mpm)
+                dst = mupdf.fz_new_pixmap_from_color_and_mask(spm, mpm)
             self.this = dst
 
-        elif args_match(args, (Pixmap, mupdf.FzPixmap), (float, int), (float, int), None):
+        elif (args_match(args, (Pixmap, mupdf.FzPixmap), (float, int), (float, int), None) or
+             args_match(args, (Pixmap, mupdf.FzPixmap), (float, int), (float, int))):
             # create pixmap as scaled copy of another one
             if mupdf_version_tuple < (1, 23, 8):
                 assert 0, f'Cannot handle {args=} because fz_scale_pixmap() and fz_scale_pixmap_cached() are not declared in MuPDF headers'
+
+            if len(args) == 3:
+                spix, w, h = args
+                bbox = mupdf.FzIrect(mupdf.fz_infinite_irect)
+            else:
+                spix, w, h, clip = args
+                bbox = JM_irect_from_py(clip)
+        
             spix, w, h, clip = args
             src_pix = spix.this if isinstance(spix, Pixmap) else spix
             bbox = JM_irect_from_py(clip)
