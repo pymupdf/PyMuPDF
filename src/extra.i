@@ -138,6 +138,7 @@ const char MSG_PIXEL_OUTSIDE[] = "pixel(s) outside image";
 
 #define JM_BOOL(x) PyBool_FromLong((long) (x))
 
+static PyObject *JM_UnicodeFromStr(const char *c);
 
 PyObject* JM_EscapeStrFromStr(const char* c)
 {
@@ -2222,7 +2223,7 @@ static void jm_trace_text_span(
     dict_setitemstr_drop(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
     dict_setitem_drop(span_dict, dictkey_type, PyLong_FromLong((long) type));
     dict_setitem_drop(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
-    dict_setitemstr_drop(span_dict, "layer", JM_EscapeStrFromStr(dev->layer_name));
+    dict_setitemstr_drop(span_dict, "layer", JM_UnicodeFromStr(dev->layer_name));
     dict_setitemstr_drop(span_dict, "seqno", PyLong_FromSize_t(seqno));
     dict_setitem_drop(span_dict, dictkey_chars, chars);
     //std::cout << "span_dict=" << repr(span_dict) << "\n";
@@ -3004,7 +3005,7 @@ jm_lineart_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     DICT_SETITEMSTR_DROP(dev->pathdict, "fill", jm_lineart_color(colorspace, color));
     DICT_SETITEM_DROP(dev->pathdict, dictkey_rect, JM_py_from_rect(dev->pathrect));
     DICT_SETITEMSTR_DROP(dev->pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_UnicodeFromStr(dev->layer_name));
     if (dev->clips)    {
         DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
     }
@@ -3056,7 +3057,7 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     }
 
     DICT_SETITEM_DROP(dev->pathdict, dictkey_rect, JM_py_from_rect(dev->pathrect));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_UnicodeFromStr(dev->layer_name));
     DICT_SETITEMSTR_DROP(dev->pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
     if (dev->clips) {
         DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
@@ -3084,7 +3085,7 @@ jm_lineart_clip_path(fz_context *ctx, fz_device *dev_, const fz_path *path, int 
     }
     DICT_SETITEMSTR_DROP(dev->pathdict, "scissor", JM_py_from_rect(compute_scissor(dev)));
     DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_UnicodeFromStr(dev->layer_name));
     jm_append_merge(dev);
     dev->depth++;
 }
@@ -3107,7 +3108,7 @@ jm_lineart_clip_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *pat
     }
     DICT_SETITEMSTR_DROP(dev->pathdict, "scissor", JM_py_from_rect(compute_scissor(dev)));
     DICT_SETITEMSTR_DROP(dev->pathdict, "level", PyLong_FromLong(dev->depth));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_EscapeStrFromStr( dev->layer_name));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "layer", JM_UnicodeFromStr(dev->layer_name));
     jm_append_merge(dev);
     dev->depth++;
 }
@@ -3166,7 +3167,7 @@ jm_lineart_begin_group(fz_context *ctx, fz_device *dev_, fz_rect bbox, fz_colors
                         "blendmode", fz_blendmode_name(blendmode),
                         "opacity", alpha,
                         "level", dev->depth,
-                        "layer", JM_EscapeStrFromStr( dev->layer_name)
+                        "layer", JM_UnicodeFromStr(dev->layer_name)
                     );
     jm_append_merge(dev);
     dev->depth++;
@@ -3843,7 +3844,7 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
         DICT_SETITEM_DROP(block_dict, dictkey_matrix,
                         JM_py_from_matrix(block->u.i.transform));
         DICT_SETITEM_DROP(block_dict, dictkey_size,
-                        Py_BuildValue("n", (Py_ssize_t) fz_image_size(ctx, image)));
+                        Py_BuildValue("n", PyBytes_Size(bytes)));
         DICT_SETITEM_DROP(block_dict, dictkey_image, bytes);
 
         fz_drop_buffer(ctx, freebuf);

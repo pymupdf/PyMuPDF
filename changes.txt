@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.22 (2024-02-xx)**
+
+* Fixed issues:
+
+  * **Fixed** `3143 <https://github.com/pymupdf/PyMuPDF/issues/3143>`_: Difference in decoding of OCGs names between doc.get_ocgs() and page.get_drawings()
+
+  * **Fixed** `3139 <https://github.com/pymupdf/PyMuPDF/issues/3139>`_: Pixmap resizing needs positional arg "clip" - even if None.
+
+* Other:
+
+  * Removed the use of MuPDF function `fz_image_size()` from PyMuPDF.
+
+
 **Changes in version 1.23.21 (2024-02-01)**
 
 * Fixed issues:
