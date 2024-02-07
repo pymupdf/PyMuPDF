@@ -1245,6 +1245,7 @@ struct Document
             return Py_BuildValue("i", xref);
         }
 
+
         %pythoncode %{
         def embfile_names(self) -> list:
             """Get list of names of EmbeddedFiles."""
@@ -4153,7 +4154,7 @@ if basestate:
                     }
                     PyObject *item = Py_BuildValue("{s:i,s:N,s:i,s:s,s:N,s:N}",
                         "number", i,
-                        "text", JM_EscapeStrFromStr(info.text),
+                        "text", JM_UnicodeFromStr(info.text),
                         "depth", info.depth,
                         "type", type,
                         "on", JM_BOOL(info.selected),
@@ -11597,8 +11598,16 @@ struct TextPage {
                     }
                     unsigned char digest[16];
                     fz_image *img = block->u.i.image;
+                    Py_ssize_t img_size = 0;
+                    fz_compressed_buffer *cbuff = fz_compressed_image_buffer(gctx, img);
+                    if (cbuff) {
+                        img_size = (Py_ssize_t) cbuff->buffer->len;
+                    }
                     if (hashes) {
                         pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
+                        if (img_size == 0) {
+                            img_size = (Py_ssize_t) pix->w * pix->h * pix->n;
+                        }
                         fz_md5_pixmap(gctx, pix, digest);
                         fz_drop_pixmap(gctx, pix);
                         pix = NULL;
@@ -11627,7 +11636,7 @@ struct TextPage {
                     DICT_SETITEM_DROP(block_dict, dictkey_bpc,
                                     Py_BuildValue("i", (int) img->bpc));
                     DICT_SETITEM_DROP(block_dict, dictkey_size,
-                                    Py_BuildValue("n", (Py_ssize_t) fz_image_size(gctx, img)));
+                                    Py_BuildValue("n", img_size));
                     if (hashes) {
                         DICT_SETITEMSTR_DROP(block_dict, "digest",
                                     PyBytes_FromStringAndSize(digest, 16));

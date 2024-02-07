@@ -702,6 +702,7 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
     fz_always(ctx) {
         if (!bytes)
             bytes = JM_BinFromChar("");
+
         DICT_SETITEM_DROP(block_dict, dictkey_width,
                         Py_BuildValue("i", w));
         DICT_SETITEM_DROP(block_dict, dictkey_height,
@@ -719,7 +720,7 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
         DICT_SETITEM_DROP(block_dict, dictkey_matrix,
                         JM_py_from_matrix(block->u.i.transform));
         DICT_SETITEM_DROP(block_dict, dictkey_size,
-                        Py_BuildValue("n", (Py_ssize_t) fz_image_size(ctx, image)));
+                        Py_BuildValue("n", PyBytes_Size(bytes)));
         DICT_SETITEM_DROP(block_dict, dictkey_image, bytes);
 
         fz_drop_buffer(ctx, freebuf);

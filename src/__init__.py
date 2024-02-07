@@ -8746,6 +8746,7 @@ class Page:
             if npath['type'] in ('f', 's'):
                 for k in allkeys:
                     npath[k] = npath.get(k)
+
             val[i] = npath
         return val
 
@@ -12595,6 +12596,11 @@ class TextPage:
             if block.m_internal.type == mupdf.FZ_STEXT_BLOCK_TEXT:
                 continue
             img = block.i_image()
+            img_size = 0
+            compr_buff = mupdf.fz_compressed_image_buffer(img)
+            if compr_buff:
+                img_size = compr_buff.fz_compressed_buffer_size()
+                compr_buff = None
             if hashes:
                 r = mupdf.FzIrect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
                 assert mupdf.fz_is_infinite_irect(r)
@@ -12602,6 +12608,8 @@ class TextPage:
                 pix, w, h = mupdf.fz_get_pixmap_from_image(img, r, m)
                 digest = mupdf.fz_md5_pixmap2(pix)
                 digest = bytes(digest)
+                if img_size == 0:
+                    img_size = img.w() * img.h() * img.n()
             cs = mupdf.FzColorspace(mupdf.ll_fz_keep_colorspace(img.m_internal.colorspace))
             block_dict = dict()
             block_dict[ dictkey_number] = block_n
@@ -12614,7 +12622,7 @@ class TextPage:
             block_dict[ dictkey_xres] = img.xres()
             block_dict[ dictkey_yres] = img.yres()
             block_dict[ dictkey_bpc] = img.bpc()
-            block_dict[ dictkey_size] = mupdf.fz_image_size(img)
+            block_dict[ dictkey_size] = img_size
             if hashes:
                 block_dict[ "digest"] = digest
             rc.append(block_dict)
@@ -16499,7 +16507,7 @@ def JM_make_image_block(block, block_dict):
     block_dict[ dictkey_yres] = image.yres()
     block_dict[ dictkey_bpc] = image.bpc()
     block_dict[ dictkey_matrix] = JM_py_from_matrix(block.i_transform())
-    block_dict[ dictkey_size] = mupdf.fz_image_size( image)
+    block_dict[ dictkey_size] = len(bytes_)
     block_dict[ dictkey_image] = bytes_
 
 
@@ -18412,7 +18420,7 @@ def jm_bbox_add_rect( dev, ctx, rect, code):
     if not dev.layers:
         dev.result.append( (code, JM_py_from_rect(rect)))
     else:
-        dev.result.append( (code, JM_py_from_rect(rect), JM_EscapeStrFromStr( dev.layer_name)))
+        dev.result.append( (code, JM_py_from_rect(rect), dev.layer_name))
 
 
 def jm_bbox_fill_image( dev, ctx, image, ctm, alpha, color_params):
@@ -18719,7 +18727,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     span_dict[ "spacewidth"] = space_adv
     span_dict[ 'type'] = type_
     span_dict[ 'bbox'] = JM_py_from_rect(span_bbox)
-    span_dict[ 'layer'] = JM_EscapeStrFromStr( dev.layer_name)
+    span_dict[ 'layer'] = dev.layer_name
     span_dict[ "seqno"] = seqno
     span_dict[ 'chars'] = chars
     #print(f'{span_dict=}')
@@ -18783,7 +18791,7 @@ def jm_lineart_fill_path( dev, ctx, path, even_odd, ctm, colorspace, color, alph
         dev.pathdict[ dictkey_rect] = JM_py_from_rect(dev.pathrect)
         dev.pathdict[ "seqno"] = dev.seqno
         #jm_append_merge(dev)
-        dev.pathdict[ 'layer'] = JM_EscapeStrFromStr( dev.layer_name)
+        dev.pathdict[ 'layer'] = dev.layer_name
         if dev.clips:
             dev.pathdict[ 'level'] = dev.depth
         jm_append_merge(dev)
@@ -18990,7 +18998,7 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
         else:
             dev.pathdict[ 'dashes'] = '[] 0'
         dev.pathdict[ dictkey_rect] = JM_py_from_rect(dev.pathrect)
-        dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
+        dev.pathdict['layer'] = dev.layer_name
         dev.pathdict[ 'seqno'] = dev.seqno
         if dev.clips:
             dev.pathdict[ 'level'] = dev.depth
@@ -19018,7 +19026,7 @@ def jm_lineart_clip_path(dev, ctx, path, even_odd, ctm, scissor):
    
     dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
     dev.pathdict['level'] = dev.depth
-    dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
+    dev.pathdict['layer'] = dev.layer_name
     jm_append_merge(dev)
     dev.depth += 1
 
@@ -19038,7 +19046,7 @@ def jm_lineart_clip_stroke_path(dev, ctx, path, stroke, ctm, scissor):
         dev.pathdict['closePath'] = False
     dev.pathdict['scissor'] = JM_py_from_rect(compute_scissor(dev))
     dev.pathdict['level'] = dev.depth
-    dev.pathdict['layer'] = JM_EscapeStrFromStr( dev.layer_name)
+    dev.pathdict['layer'] = dev.layer_name
     jm_append_merge(dev)
     dev.depth += 1
 
@@ -19075,11 +19083,14 @@ def jm_lineart_pop_clip(dev, ctx):
 
 
 def jm_lineart_begin_layer(dev, ctx, name):
-    dev.layer_name = name
+    if name:
+        dev.layer_name = name
+    else:
+        dev.layer_name = ""
 
 
 def jm_lineart_end_layer(dev, ctx):
-    dev.layer_name = None
+    dev.layer_name = ""
 
 
 def jm_lineart_begin_group(dev, ctx, bbox, cs, isolated, knockout, blendmode, alpha):
@@ -19094,7 +19105,7 @@ def jm_lineart_begin_group(dev, ctx, bbox, cs, isolated, knockout, blendmode, al
             "blendmode": mupdf.fz_blendmode_name(blendmode),
             "opacity": alpha,
             "level": dev.depth,
-            "layer": JM_EscapeStrFromStr( dev.layer_name),
+            "layer": dev.layer_name
             }
     jm_append_merge(dev)
     dev.depth += 1
@@ -19268,7 +19279,7 @@ class JM_new_lineart_device_Device(mupdf.FzDevice2):
         self.method = method
         
         self.scissors = None
-        self.layer_name = None  # optional content name
+        self.layer_name = ""  # optional content name
         self.pathrect = None
         
         self.linewidth = 0
@@ -19347,7 +19358,7 @@ class JM_new_texttrace_device(mupdf.FzDevice2):
         self.pathfactor = 0
         self.linecount = 0
         self.path_type = 0
-        self.layer_name = None
+        self.layer_name = ""
     
     fill_path = jm_increase_seqno
     stroke_path = jm_dev_linewidth

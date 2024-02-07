@@ -1,6 +1,7 @@
 """
 Test of Optional Content code.
 """
+
 import os
 
 import fitz
@@ -61,3 +62,13 @@ def test_oc2():
     assert set((ocg0, ocg1, ocg2, ocg3)) == set(tuple(doc.get_ocgs().keys()))
     doc.get_ocmd(ocmd0)
     page.get_oc_items()
+
+
+def test_3143():
+    """Support for non-ascii layer names."""
+    doc = fitz.open(os.path.join(scriptdir, "resources", "test-3143.pdf"))
+    page = doc[0]
+    set0 = set([l["text"] for l in doc.layer_ui_configs()])
+    set1 = set([p["layer"] for p in page.get_drawings()])
+    set2 = set([b[2] for b in page.get_bboxlog(layers=True)])
+    assert set0 == set1 == set2

@@ -396,7 +396,7 @@ jm_lineart_fill_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	DICT_SETITEMSTR_DROP(dev_pathdict, "fill", jm_lineart_color(ctx, colorspace, color));
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_rect, JM_py_from_rect(dev_pathrect));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_UnicodeFromStr(layer_name));
 	if (dev->clips)	{
 		DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
 	}
@@ -449,7 +449,7 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
 	}
 
 	DICT_SETITEM_DROP(dev_pathdict, dictkey_rect, JM_py_from_rect(dev_pathrect));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_UnicodeFromStr(layer_name));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "seqno", PyLong_FromSize_t(dev->seqno));
 	if (dev->clips) {
 		DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
@@ -478,7 +478,7 @@ jm_lineart_clip_path(fz_context *ctx, fz_device *dev_, const fz_path *path, int 
 	}
 	DICT_SETITEMSTR_DROP(dev_pathdict, "scissor", JM_py_from_rect(compute_scissor()));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_UnicodeFromStr(layer_name));
 	jm_append_merge(out, dev->method);
 	dev->depth++;
 }
@@ -502,7 +502,7 @@ jm_lineart_clip_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *pat
 	}
 	DICT_SETITEMSTR_DROP(dev_pathdict, "scissor", JM_py_from_rect(compute_scissor()));
 	DICT_SETITEMSTR_DROP(dev_pathdict, "level", PyLong_FromLong(dev->depth));
-	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_EscapeStrFromStr(layer_name));
+	DICT_SETITEMSTR_DROP(dev_pathdict, "layer", JM_UnicodeFromStr(layer_name));
 	jm_append_merge(out, dev->method);
 	dev->depth++;
 }
@@ -577,7 +577,7 @@ jm_lineart_begin_group(fz_context *ctx, fz_device *dev_, fz_rect bbox, fz_colors
 						"blendmode", fz_blendmode_name(blendmode),
 						"opacity", alpha,
 						"level", dev->depth,
-						"layer", JM_EscapeStrFromStr(layer_name)
+						"layer", JM_UnicodeFromStr(layer_name)
 					);
 	jm_append_merge(out, dev->method);
 	dev->depth++;
@@ -726,7 +726,7 @@ jm_trace_text_span(fz_context *ctx, PyObject *out, fz_text_span *span, int type,
 	DICT_SETITEMSTR_DROP(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
 	DICT_SETITEM_DROP(span_dict, dictkey_type, PyLong_FromLong((long) type));
 	DICT_SETITEM_DROP(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
-	DICT_SETITEMSTR_DROP(span_dict, "layer", JM_EscapeStrFromStr(layer_name));
+	DICT_SETITEMSTR_DROP(span_dict, "layer", JM_UnicodeFromStr(layer_name));
 	DICT_SETITEMSTR_DROP(span_dict, "seqno", PyLong_FromSize_t(seqno));
 	DICT_SETITEM_DROP(span_dict, dictkey_chars, chars);
 	LIST_APPEND_DROP(out, span_dict);
@@ -921,7 +921,7 @@ jm_bbox_add_rect(fz_context *ctx, fz_device *dev, fz_rect rect, char *code)
 	if (!bdev->layers) {
 		LIST_APPEND_DROP(bdev->result, Py_BuildValue("sN", code, JM_py_from_rect(rect)));
 	} else {
-		LIST_APPEND_DROP(bdev->result, Py_BuildValue("sNN", code, JM_py_from_rect(rect), JM_EscapeStrFromStr(layer_name)));
+		LIST_APPEND_DROP(bdev->result, Py_BuildValue("sNN", code, JM_py_from_rect(rect), JM_UnicodeFromStr(layer_name)));
 	}
 }
 
