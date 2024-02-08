@@ -988,6 +988,10 @@ Tables can be found and extracted from any document :ref:`Page`.
     - :meth:`Page.find_tables`
 
 
+.. important::
+
+    There is also the `pdf2docx extract tables method`_ which is capable of table extraction if you prefer.
+
 
 .. _The_Basics_Get_Page_Links:
 
@@ -1018,6 +1022,42 @@ Links can be extracted from a :ref:`Page` to return :ref:`Link` objects.
     **API reference**
 
     - :meth:`Page.first_link`
+
+
+.. _The_Basics_Get_All_Annotations:
+
+Getting All Annotations from a Document
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Annotations (:ref:`Annot`) on pages can be retrieved with the `page.annots()` method.
+
+.. raw:: html
+
+    <pre>
+        <code class="language-python" data-prismjs-copy="Copy">
+            import fitz
+
+            for page in doc:
+                for annot in page.annots():
+                    print(f'Annotation on page: {page.number} with type: {annot.type} and rect: {annot.rect}')
+        </code>
+    </pre>
+
+.. note::
+
+    **API reference**
+
+    - :meth:`Page.annots`
+
+
+.. _The Basics_Coverting_PDF_Documents:
+
+Converting PDF Documents
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We recommend the pdf2docx_ library which uses **PyMuPDF** and the **python-docx** library to provide simple document conversion from **PDF** to **DOCX** format.
+
+
 
 
 .. include:: footer.rst
