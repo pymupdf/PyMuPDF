@@ -80,3 +80,10 @@
           :width: 0
           :height: 0
           :target: https://discord.gg/TSpYGBW4eq
+
+
+.. External Links:
+
+.. _pdf2docx: https://pdf2docx.readthedocs.io/en/latest/
+.. _pdf2docx extract tables method: https://pdf2docx.readthedocs.io/en/latest/quickstart.table.html
+

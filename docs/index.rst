@@ -64,17 +64,22 @@ This documentation covers all versions up to |version|.
    changes.rst
    znames.rst
 
+|
+----
 
 
-Find out about PyMuPDF Utilities
+Find out about **PyMuPDF Utilities**
 -------------------------------------------------
 
 The :title:`GitHub` repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
 
+|
+----
 
+Do you need **PDF** to **DOCX** conversion?
+--------------------------------------------------
 
-
-
+We recommend the pdf2docx_ library which uses **PyMuPDF** and the **python-docx** library to provide simple document conversion from **PDF** to **DOCX** format.
 
 
 .. include:: footer.rst

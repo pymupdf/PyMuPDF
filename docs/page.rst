@@ -450,6 +450,10 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       |history_end|
 
+      .. important::
+
+         There is also the `pdf2docx extract tables method`_ which is capable of table extraction if you prefer.
+
 
    .. method:: add_stamp_annot(rect, stamp=0)
 
