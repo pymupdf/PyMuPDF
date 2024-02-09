@@ -334,7 +334,7 @@ Coordinates are float numbers and measured in **points**, where:
 
 - **one point equals 1/72 inches**.
 
-Typical document page sizes are **ISO A4** and **Letter**. A **Letter** page has a size of **8.5 x 11 inches**, corresponding to **612 x 792 points**. In the **PDF** coordinate system, the top-left point of a **Letter** page hence has the coordinate `(0, 792)` as **the y-axis points upwards**. Now we know our document size the **MuPDF** coordinate system for the bottom right would be coordinate `(612, 792)` (and for **PDF** this coordinate would then be `(0,792)`).
+Typical document page sizes are **ISO A4** and **Letter**. A **Letter** page has a size of **8.5 x 11 inches**, corresponding to **612 x 792 points**. In the **PDF** coordinate system, the top-left point of a **Letter** page hence has the coordinate `(0, 792)` as **the y-axis points upwards**. Now we know our document size the **MuPDF** coordinate system for the bottom right would be coordinate `(612, 792)` (and for **PDF** this coordinate would then be `(612,0)`).
 
 - Theoretically, there are **infinitely many** coordinate positions on a **PDF** page. In practice however, at most the first 5 decimal places are sufficient for a reasonable precision.
 
