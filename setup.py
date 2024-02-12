@@ -384,7 +384,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = 'https://mupdf.com/downloads/archive/mupdf-1.23.9-source.tar.gz'
+        location = 'https://mupdf.com/downloads/archive/mupdf-1.23.10-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -1072,8 +1072,8 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.23.21'
-version_b = '1.23.9'
+version = '1.23.22'
+version_b = '1.23.22'
 
 tag_python = None
 requires_dist = None,
