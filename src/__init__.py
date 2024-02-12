@@ -12597,10 +12597,15 @@ class TextPage:
                 continue
             img = block.i_image()
             img_size = 0
-            compr_buff = mupdf.fz_compressed_image_buffer(img)
-            if compr_buff:
-                img_size = compr_buff.fz_compressed_buffer_size()
-                compr_buff = None
+            if mupdf_version_tuple >= (1, 24):
+                compr_buff = mupdf.fz_compressed_image_buffer(img)
+                if compr_buff:
+                    img_size = compr_buff.fz_compressed_buffer_size()
+                    compr_buff = None
+            else:
+                compr_buff = mupdf.ll_fz_compressed_image_buffer(img.m_internal)
+                if compr_buff:
+                    img_size = mupdf.ll_fz_compressed_buffer_size(compr_buff)
             if hashes:
                 r = mupdf.FzIrect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
                 assert mupdf.fz_is_infinite_irect(r)
