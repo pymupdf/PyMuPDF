@@ -1574,7 +1574,7 @@ For details on **embedded files** refer to Appendix 3.
 
       PDF only: Return the definition source of a PDF object.
 
-      :arg int xref: the object's :data`xref`. *Changed in v1.18.10:* A value of -1 returns the PDF trailer source.
+      :arg int xref: the object's :data:`xref`. *Changed in v1.18.10:* A value of `-1` returns the PDF trailer source.
       :arg bool compressed: whether to generate a compact output with no line breaks or spaces.
       :arg bool ascii: whether to ASCII-encode binary data.
 
