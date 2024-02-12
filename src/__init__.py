@@ -3545,7 +3545,7 @@ class Document:
         #self.stream      = None
         self.is_closed    = True
         #self.FontInfos   = []
-        #self.Graftmaps = {}
+        self.Graftmaps = {} # Fixes test_3140().
         #self.ShownPages = {}
         #self.InsertedImages  = {}
         #self.this = None

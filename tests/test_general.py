@@ -882,3 +882,37 @@ def test_archive_3126():
     p = pathlib.Path(p)
     archive = fitz.Archive(p)
     
+def test_3140():
+    if not hasattr(fitz, 'mupdf'):
+        print(f'Not running test_3140 on classic, because Page.insert_htmlbox() not available.')
+        return
+    css2 = ''
+    path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
+    oldfile = os.path.abspath(f'{__file__}/../../tests/test_3140_old.pdf')
+    newfile = os.path.abspath(f'{__file__}/../../tests/test_3140_new.pdf')
+    import shutil
+    shutil.copy2(path, oldfile)
+    def next_fd():
+        fd = os.open(path, os.O_RDONLY)
+        os.close(fd)
+        return fd
+    fd1 = next_fd()
+    with fitz.open(oldfile) as doc:  # open document
+        page = doc[0]
+        rect = fitz.Rect(130, 400, 430, 600)
+        CELLS = fitz.make_table(rect, cols=3, rows=5)
+        shape = page.new_shape()  # create Shape
+        for i in range(5):
+            for j in range(3):
+                qtext = "<b>" + "Ques #" + str(i*3+j+1) + ": " + "</b>"
+                atext = "<b>" + "Ans:" + "</b>"
+                qtext = qtext + '<br>' + atext
+                shape.draw_rect(CELLS[i][j])  # draw rectangle
+                page.insert_htmlbox(CELLS[i][j], qtext, css=css2, scale_low=0)
+        shape.finish(width=2.5, color=fitz.pdfcolor["blue"], )
+        shape.commit()  # write all stuff to the page
+        doc.subset_fonts()
+        doc.ez_save(newfile)
+    fd2 = next_fd()
+    assert fd2 == fd1, f'{fd1=} {fd2=}'
+    os.remove(oldfile)
