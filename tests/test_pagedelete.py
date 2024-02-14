@@ -13,10 +13,12 @@ Then delete some pages and verify:
 - the remaining TOC items still point to the correct page
 - the document has no more links at all
 """
+
 import os
 
 import fitz
 
+scriptdir = os.path.dirname(__file__)
 page_count = 100  # initial document length
 r = range(5, 35, 5)  # contains page numbers we will delete
 # insert this link on pages after first deleted one
@@ -70,8 +72,22 @@ def test_deletion():
     doc.move_page(0)
     doc.fullcopy_page(0)
 
+
 def test_3094():
-    path = os.path.abspath(f'{__file__}/../../tests/resources/test_2871.pdf')
+    path = os.path.abspath(f"{__file__}/../../tests/resources/test_2871.pdf")
     document = fitz.open(path)
     pnos = [i for i in range(0, document.page_count, 2)]
     document.delete_pages(pnos)
+
+
+def test_3150():
+    """Assert correct functioning for problem file.
+
+    Implicitely also check use of new MuPDF function
+    pdf_rearrange_pages() since version 1.23.9.
+    """
+    filename = os.path.join(scriptdir, "resources", "test-3150.pdf")
+    pages = [3, 3, 3, 2, 3, 1, 0, 0]
+    doc = fitz.open(filename)
+    doc.select(pages)
+    assert doc.page_count == len(pages)

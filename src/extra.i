@@ -166,6 +166,21 @@ PyObject* JM_EscapeStrFromBuffer(fz_buffer* buff)
     return val;
 }
 
+void rearrange_pages2(
+        mupdf::PdfDocument& doc,
+        PyObject *new_pages
+    )
+{
+    int len = (int) PyTuple_Size(new_pages);
+    int *pages = (int *) malloc((int) len * sizeof(int));
+    int i;
+    for (i = 0; i < len; i++) {
+        pages[i] = (int) PyLong_AsLong(PyTuple_GET_ITEM(new_pages, (Py_ssize_t) i));
+    }
+    mupdf::pdf_rearrange_pages(doc, len, pages);
+    free(pages);
+}
+
 
 //----------------------------------------------------------------------------
 // Deep-copies a source page to the target.
@@ -4515,3 +4530,5 @@ fz_image* fz_new_image_from_compressed_buffer(
         fz_compressed_buffer *buffer,
         fz_image *mask
         );
+
+void rearrange_pages2( mupdf::PdfDocument& doc, PyObject *new_pages);

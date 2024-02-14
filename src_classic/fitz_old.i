@@ -2297,7 +2297,8 @@ if not self.is_pdf:
 if not hasattr(pyliste, "__getitem__"):
     raise ValueError("sequence required")
 if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not in range(len(self)):
-    raise ValueError("bad page number(s)")%}
+    raise ValueError("bad page number(s)")
+pyliste = tuple(pyliste)%}
         %pythonappend select %{self._reset_page_refs()%}
         PyObject *select(PyObject *pyliste)
         {
@@ -2306,16 +2307,22 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             // (2) transform Python list into integer array
 
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            int *pages = NULL;
             fz_try(gctx) {
                 // call retainpages (code copy of fz_clean_file.c)
-                globals glo = {0};
-                glo.ctx = gctx;
-                glo.doc = pdf;
-                retainpages(gctx, &glo, pyliste);
+                int i, len = (int) PyTuple_Size(pyliste);
+                pages = fz_realloc_array(gctx, pages, len, int);
+                for (i = 0; i < len; i++) {
+                    pages[i] = (int) PyLong_AsLong(PyTuple_GET_ITEM(pyliste, (Py_ssize_t) i));
+                }
+                pdf_rearrange_pages(gctx, pdf, len, pages);
                 if (pdf->rev_page_map)
                 {
                     pdf_drop_page_tree(gctx, pdf);
                 }
+            }
+            fz_always(gctx) {
+                fz_free(gctx, pages);
             }
             fz_catch(gctx) {
                 return NULL;
