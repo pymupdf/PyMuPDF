@@ -5385,16 +5385,21 @@ class Document:
             raise ValueError("is no PDF")
         if not hasattr(pyliste, "__getitem__"):
             raise ValueError("sequence required")
-        if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not in range(len(self)):
+
+        valid_range = range(len(self))
+        if (len(pyliste) == 0
+            or min(pyliste) not in valid_range
+            or max(pyliste) not in valid_range
+           ):
             raise ValueError("bad page number(s)")
-        # preparatory stuff:
-        # (1) get underlying pdf document,
-        # (2) transform Python list into integer array
+
+        # get underlying pdf document,
         pdf = _as_pdf_document(self)
-        # call retainpages (code copy of fz_clean_file.c)
-        retainpages(pdf, pyliste)
-        if pdf.m_internal.rev_page_map:
-            mupdf.ll_pdf_drop_page_tree(pdf.m_internal)
+
+        # create page sub-pdf via extra.rearrange_pages2
+        extra.rearrange_pages2(pdf, tuple(pyliste))
+
+        # remove any existing pages with their kids
         self._reset_page_refs()
 
     def set_language(self, language=None):
@@ -20860,116 +20865,6 @@ def repair_mono_font(page: "Page", font: "Font") -> None:
     for xref in xrefs:
         if not TOOLS.set_font_width(doc, xref, width):
             log("Cannot set width for '%s' in xref %i" % (font.name, xref))
-
-
-def retainpage(doc, parent, kids, page):
-    '''
-    Recreate page tree to only retain specified pages.
-    '''
-    pageref = mupdf.pdf_lookup_page_obj(doc, page)
-    mupdf.pdf_flatten_inheritable_page_items(pageref)
-    mupdf.pdf_dict_put(pageref, PDF_NAME('Parent'), parent)
-    # Store page object in new kids array
-    mupdf.pdf_array_push(kids, pageref)
-
-
-def retainpages(doc, liste):
-    '''
-    This is called by PyMuPDF:
-    liste = page numbers to retain
-    '''
-    argc = len(liste)
-    pagecount = mupdf.pdf_count_pages(doc)
-
-    # Keep only pages/type and (reduced) dest entries to avoid
-    # references to dropped pages
-    oldroot = mupdf.pdf_dict_get(mupdf.pdf_trailer(doc), PDF_NAME('Root'))
-    pages = mupdf.pdf_dict_get(oldroot, PDF_NAME('Pages'))
-    olddests = mupdf.pdf_load_name_tree(doc, PDF_NAME('Dests'))
-    outlines = mupdf.pdf_dict_get(oldroot, PDF_NAME('Outlines'))
-    ocproperties = mupdf.pdf_dict_get(oldroot, PDF_NAME('OCProperties'))
-    names_list = None
-
-    root = mupdf.pdf_new_dict(doc, 3)
-    mupdf.pdf_dict_put(root, PDF_NAME('Type'), mupdf.pdf_dict_get(oldroot, PDF_NAME('Type')))
-    mupdf.pdf_dict_put(root, PDF_NAME('Pages'), mupdf.pdf_dict_get(oldroot, PDF_NAME('Pages')))
-    if outlines.m_internal:
-        mupdf.pdf_dict_put(root, PDF_NAME('Outlines'), outlines)
-    if ocproperties.m_internal:
-        mupdf.pdf_dict_put(root, PDF_NAME('OCProperties'), ocproperties)
-
-    mupdf.pdf_update_object(doc, mupdf.pdf_to_num(oldroot), root)
-
-    # Create a new kids array with only the pages we want to keep
-    kids = mupdf.pdf_new_array(doc, 1)
-
-    # Retain pages specified
-    for page in range(argc):
-        i = liste[page]
-        if i < 0 or i >= pagecount:
-            RAISEPY(MSG_BAD_PAGENO, PyExc_ValueError)
-        retainpage(doc, pages, kids, i)
-
-    # Update page count and kids array
-    countobj = mupdf.pdf_new_int(mupdf.pdf_array_len(kids))
-    mupdf.pdf_dict_put(pages, PDF_NAME('Count'), countobj)
-    mupdf.pdf_dict_put(pages, PDF_NAME('Kids'), kids)
-
-    pagecount = mupdf.pdf_count_pages(doc)
-    page_object_nums = []
-    for i in range(pagecount):
-        pageref = mupdf.pdf_lookup_page_obj(doc, i)
-        page_object_nums.append(mupdf.pdf_to_num(pageref))
-
-    # If we had an old Dests tree (now reformed as an olddests dictionary),
-    # keep any entries in there that point to valid pages.
-    # This may mean we keep more than we need, but it is safe at least.
-    if olddests:
-        names = mupdf.pdf_new_dict(doc, 1)
-        dests = mupdf.pdf_new_dict(doc, 1)
-        len_ = mupdf.pdf_dict_len(olddests)
-
-        names_list = mupdf.pdf_new_array(doc, 32)
-
-        for i in range(len_):
-            key = mupdf.pdf_dict_get_key(olddests, i)
-            val = mupdf.pdf_dict_get_val(olddests, i)
-            dest = mupdf.pdf_dict_get(val, PDF_NAME('D'))
-
-            dest = mupdf.pdf_array_get(dest if dest.m_internal else val, 0)
-            # fixme: need dest_is_valid_page.
-            if dest_is_valid_page(dest, page_object_nums, pagecount):
-                key_str = mupdf.pdf_new_string(mupdf.pdf_to_name(key), len(mupdf.pdf_to_name(key)))
-                mupdf.pdf_array_push(names_list, key_str)
-                mupdf.pdf_array_push(names_list, val)
-
-        mupdf.pdf_dict_put(dests, PDF_NAME('Names'), names_list)
-        mupdf.pdf_dict_put(names, PDF_NAME('Dests'), dests)
-        mupdf.pdf_dict_put(root, PDF_NAME('Names'), names)
-
-    # Edit each pages /Annot list to remove any links pointing to nowhere.
-    for i in range(pagecount):
-        pageref = mupdf.pdf_lookup_page_obj(doc, i)
-        annots = mupdf.pdf_dict_get(pageref, PDF_NAME('Annots'))
-        len_ = mupdf.pdf_array_len(annots)
-        j = 0
-        while 1:
-            if j >= len_:
-                break
-            o = mupdf.pdf_array_get(annots, j)
-
-            if not mupdf.pdf_name_eq(mupdf.pdf_dict_get(o, PDF_NAME('Subtype')), PDF_NAME('Link')):
-                continue
-
-            if not dest_is_valid(o, pagecount, page_object_nums, names_list):
-                # Remove this annotation
-                mupdf.pdf_array_delete(annots, j)
-                len_ -= 1
-                j -= 1
-            j += 1
-
-    if strip_outlines( doc, outlines, pagecount, page_object_nums, names_list) == 0:
-        mupdf.pdf_dict_del(root, PDF_NAME('Outlines'))
 
 
 def sRGB_to_pdf(srgb: int) -> tuple:

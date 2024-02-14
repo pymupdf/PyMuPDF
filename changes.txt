@@ -2,6 +2,18 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.23 (2024-02-14)**
+
+* Fixed issues:
+
+  * **Fixed** `3150 <https://github.com/pymupdf/PyMuPDF/issues/3150>`_: doc.select() hangs on this doc.
+
+
+* Other:
+
+  * Replaced major code portions previously supporting `Document.select()` MuPDF function `pdf_rearrange_pages()` which is faster and more thoroughly performing that task.
+
+
 **Changes in version 1.23.22 (2024-02-12)**
 
 * Fixed issues:
