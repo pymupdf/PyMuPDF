@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '13 6 * * *'
   workflow_dispatch:
+    inputs:
+      scripts_test_options:
+        description: 'Extra options for scripts/test.py.'
 
 jobs:
 
@@ -20,5 +23,7 @@ jobs:
       - uses: actions/setup-python@v2
 
       - name: test_mupdf-master-branch
+        env:
+            PYMUDF_SCRIPTS_TEST_options: ${{inputs.scripts_test_options}}
         run:
           python scripts/test.py -m 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git' --valgrind 1 buildtest
