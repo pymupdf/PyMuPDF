@@ -214,3 +214,40 @@ def test_add_lines():
     tab2 = page.find_tables(add_lines=more_lines)[0]
     assert tab2.col_count == 4
     assert tab2.row_count == 5
+
+
+def test_3148():
+    """Ensure correct extraction text of rotated text."""
+    doc = fitz.open()
+    page = doc.new_page()
+    rect = fitz.Rect(100, 100, 300, 300)
+    text = (
+        "rotation 0 degrees",
+        "rotation 90 degrees",
+        "rotation 180 degrees",
+        "rotation 270 degrees",
+    )
+    degrees = (0, 90, 180, 270)
+    delta = (2, 2, -2, -2)
+    cells = fitz.make_table(rect, cols=3, rows=4)
+    for i in range(3):
+        for j in range(4):
+            page.draw_rect(cells[j][i])
+            k = (i + j) % 4
+            page.insert_textbox(cells[j][i] + delta, text[k], rotate=degrees[k])
+    # doc.save("multi-degree.pdf")
+    tabs = page.find_tables()
+    tab = tabs[0]
+    for extract in tab.extract():
+        for item in extract:
+            item = item.replace("\n", " ")
+            assert item in text
+
+
+def test_3179():
+    """Test correct separation of multiple tables on page."""
+    filename = os.path.join(scriptdir, "resources", "test_3179.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    tabs = page.find_tables()
+    assert len(tabs.tables) == 3
