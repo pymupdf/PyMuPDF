@@ -71,6 +71,7 @@ This is implemented as new class TableHeader with the properties:
 * external: A bool indicating whether the header is outside the table cells.
 
 """
+
 import inspect
 import itertools
 import string
@@ -361,7 +362,7 @@ class WordExtractor:
         keep_blank_chars: bool = False,
         use_text_flow=False,
         horizontal_ltr=True,  # Should words be read left-to-right?
-        vertical_ttb=True,  # Should vertical words be read top-to-bottom?
+        vertical_ttb=False,  # Should vertical words be read top-to-bottom?
         extra_attrs=None,
         split_at_punctuation=False,
         expand_ligatures=True,
@@ -387,8 +388,19 @@ class WordExtractor:
         x0, top, x1, bottom = objects_to_bbox(ordered_chars)
         doctop_adj = ordered_chars[0]["doctop"] - ordered_chars[0]["top"]
         upright = ordered_chars[0]["upright"]
-
         direction = 1 if (self.horizontal_ltr if upright else self.vertical_ttb) else -1
+
+        matrix = ordered_chars[0]["matrix"]
+
+        rotation = 0
+        if not upright and matrix[1] < 0:
+            ordered_chars = reversed(ordered_chars)
+            rotation = 270
+
+        if matrix[0] < 0 and matrix[3] < 0:
+            rotation = 180
+        elif matrix[1] > 0:
+            rotation = 90
 
         word = {
             "text": "".join(
@@ -401,6 +413,7 @@ class WordExtractor:
             "bottom": bottom,
             "upright": upright,
             "direction": direction,
+            "rotation": rotation,
         }
 
         for key in self.extra_attrs:
@@ -552,7 +565,8 @@ class WordExtractor:
         return WordMap(list(self.iter_extract_tuples(chars)))
 
     def extract_words(self, chars: list) -> list:
-        return list(word for word, word_chars in self.iter_extract_tuples(chars))
+        words = list(word for word, word_chars in self.iter_extract_tuples(chars))
+        return words
 
 
 def extract_words(chars: list, **kwargs) -> list:
@@ -590,8 +604,21 @@ def extract_text(chars: list, **kwargs) -> str:
             **{k: kwargs[k] for k in WORD_EXTRACTOR_KWARGS if k in kwargs}
         )
         words = extractor.extract_words(chars)
-        lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
-        return "\n".join(" ".join(word["text"] for word in line) for line in lines)
+        rotation = words[0]["rotation"]  # rotation cannot change within a cell
+
+        if rotation == 90:
+            words.sort(key=lambda w: (w["x1"], -w["top"]))
+            lines = " ".join([w["text"] for w in words])
+        elif rotation == 270:
+            words.sort(key=lambda w: (-w["x1"], w["top"]))
+            lines = " ".join([w["text"] for w in words])
+        else:
+            lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
+            lines = "\n".join(" ".join(word["text"] for word in line) for line in lines)
+            if rotation == 180:  # needs extra treatment
+                lines = "".join([(c if c != "\n" else " ") for c in reversed(lines)])
+
+        return lines
 
 
 def collate_line(
@@ -1873,65 +1900,16 @@ def make_chars(page, clip=None):
 # else to lines.
 # -----------------------------------------------------------------------------
 def make_edges(page, clip=None, tset=None, add_lines=None):
-    def clean_graphics():
-        """Detect and join rectangles of connected vector graphics."""
-        lines_strict = (
-            tset.vertical_strategy == "lines_strict"
-            or tset.horizontal_strategy == "lines_strict"
-        )
-        # exclude irrelevant graphics
-        paths = []
-        for p in page.get_drawings():
-            if (
-                p["type"] == "f"
-                and lines_strict
-                and p["rect"].width > tset.snap_x_tolerance
-                and p["rect"].height > tset.snap_y_tolerance
-            ):  # ignore fill-only graphics if they are no lines
-                continue
-            paths.append(p)
-
-        prects = sorted([p["rect"] for p in paths], key=lambda r: (r.y1, r.x0))
-        new_rects = []  # the final list of joined rectangles
-
-        # -------------------------------------------------------------------------
-        # Strategy: join rects that have at least one point in common.
-        # -------------------------------------------------------------------------
-        while prects:  # the algorithm will empty this list
-            r = prects[0]  # first rectangle
-            repeat = True
-            while repeat:
-                repeat = False
-                for i in range(len(prects) - 1, -1, -1):  # run backwards
-                    if i == 0:  # don't touch first rectangle
-                        continue
-                    ri = prects[i]
-                    if (
-                        r.x0 <= ri.x0 <= r.x1
-                        or r.x0 <= ri.x1 <= r.x1
-                        or r.y0 <= ri.y0 <= r.y1
-                        or r.y0 <= ri.y1 <= r.y1
-                    ):
-                        r |= ri  # join in to first rect
-                        prects[0] = r  # update first
-                        del prects[i]  # delete this rect
-                        repeat = True
-
-            # move first item over to result list
-            new_rects.append(prects.pop(0))
-            prects = sorted(list(set(prects)), key=lambda r: (r.y1, r.x0))
-
-        new_rects = sorted(list(set(new_rects)), key=lambda r: (r.y1, r.x0))
-        return [r for r in new_rects if r.width > 5 and r.height > 5], paths
-
     global EDGES
-    bboxes, paths = clean_graphics()
-
+    snap_x = tset.snap_x_tolerance
+    snap_y = tset.snap_y_tolerance
+    lines_strict = (
+        tset.vertical_strategy == "lines_strict"
+        or tset.horizontal_strategy == "lines_strict"
+    )
     page_height = page.rect.height
     doctop_basis = page.number * page_height
     page_number = page.number + 1
-    x_tolerance = tset.snap_x_tolerance
-    y_tolerance = tset.snap_y_tolerance
     prect = page.rect
     if page.rotation in (90, 270):
         w, h = prect.br
@@ -1941,9 +1919,72 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
     else:
         clip = prect
 
+    def are_neighbors(r1, r2):
+        """Detect whether r1, r2 are neighbors.
+
+        Defined as:
+        The minimum distance between points of r1 and points of r2 is not
+        larger than some delta.
+
+        This check supports empty rect-likes and thus also lines.
+        """
+        if (
+            r2.x0 - snap_x <= r1.x0 <= r2.x1 + snap_x
+            or r2.x0 - snap_x <= r1.x1 <= r2.x1 + snap_x
+        ) and (
+            r2.y0 - snap_y <= r1.y0 <= r2.y1 + snap_y
+            or r2.y0 - snap_y <= r1.y1 <= r2.y1 + snap_y
+        ):
+            return True
+        return False
+
+    def clean_graphics():
+        """Detect and join rectangles of connected vector graphics."""
+        # exclude irrelevant graphics
+        paths = []
+        for p in page.get_drawings():
+            if (  # ignore fill-only graphics if they are no lines
+                p["type"] == "f"
+                and lines_strict
+                and p["rect"].width > snap_x
+                and p["rect"].height > snap_y
+            ):
+                continue
+            paths.append(p)
+
+        prects = sorted([p["rect"] for p in paths], key=lambda r: (r.y1, r.x0))
+        new_rects = []  # the final list of joined rectangles
+        # -------------------------------------------------------------------------
+        # Strategy: Join rectangles that "almost touch" each other,
+        # Extend first rectangle with any remaining in the list that touches it.
+        # Then move it to final list and continue with the rest.
+        # -------------------------------------------------------------------------
+        while prects:  # the algorithm will empty this list
+            r = prects[0]  # first rectangle
+            repeat = True
+            while repeat:  # this loop extends first rect in list
+                repeat = False  # will be set to true if any other rect touches
+                for i in range(len(prects) - 1, -1, -1):  # run backwards
+                    if i == 0:  # don't touch first rectangle
+                        continue
+                    if are_neighbors(r, prects[i]):  # touches rect 0!
+                        r |= prects[i]  # extend first rect
+                        prects[0] = +r  # update it in list
+                        del prects[i]  # delete this rect
+                        repeat = True  # check remaining
+
+            # move first item over to result list
+            new_rects.append(prects.pop(0))
+            prects = sorted(list(set(prects)), key=lambda r: (r.y1, r.x0))
+
+        new_rects = sorted(list(set(new_rects)), key=lambda r: (r.y1, r.x0))
+        return [r for r in new_rects if r.width > 5 and r.height > 5], paths
+
+    bboxes, paths = clean_graphics()
+
     def is_parallel(p1, p2):
         """Check if line is roughly axis-parallel."""
-        if abs(p1.x - p2.x) <= x_tolerance or abs(p1.y - p2.y) <= y_tolerance:
+        if abs(p1.x - p2.x) <= snap_x or abs(p1.y - p2.y) <= snap_y:
             return True
         return False
 
@@ -2021,10 +2062,10 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
             elif i[0] == "re":  # a rectangle: decompose into 4 lines
                 rect = i[1].normalize()  # rectangle itself
                 # ignore minute rectangles
-                if rect.height <= y_tolerance and rect.width <= x_tolerance:
+                if rect.height <= snap_y and rect.width <= snap_x:
                     continue
 
-                if rect.width <= x_tolerance:  # simulates a vertical line
+                if rect.width <= snap_x:  # simulates a vertical line
                     x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
                     p1 = Point(x, rect.y0)
                     p2 = Point(x, rect.y1)
@@ -2033,7 +2074,7 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
                         EDGES.append(line_to_edge(line_dict))
                     continue
 
-                if rect.height <= y_tolerance:  # simulates a horizontal line
+                if rect.height <= snap_y:  # simulates a horizontal line
                     y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
                     p1 = Point(rect.x0, y)
                     p2 = Point(rect.x1, y)
