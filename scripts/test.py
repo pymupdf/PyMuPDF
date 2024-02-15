@@ -87,6 +87,10 @@ Commands:
     test
         Runs PyMuPDF's pytest tests in venv. Default is to test classic, rebased and
         unoptimised rebased; use `-i` to change this.
+
+Environment:
+    PYMUDF_SCRIPTS_TEST_options
+        Is prepended to command line args.
 '''
 
 import gh_release
@@ -94,6 +98,7 @@ import gh_release
 import os
 import platform
 import re
+import shlex
 import subprocess
 import sys
 import textwrap
@@ -118,7 +123,10 @@ def main(argv):
     pytest_options = None
     timeout = None
     
-    args = iter( argv[1:])
+    options = os.environ.get('PYMUDF_SCRIPTS_TEST_options', '')
+    options = shlex.split(options)
+    
+    args = iter(options + argv[1:])
     i = 0
     while 1:
         try:
@@ -212,6 +220,17 @@ def main(argv):
         else:
             assert 0
 
+
+def get_env_bool(name, default=0):
+    v = os.environ.get(name)
+    if v in ('1', 'true'):
+        return 1
+    elif v in ('0', 'false'):
+        return 0
+    elif v is None:
+        return default
+    else:
+        assert 0, f'Bad environ {name=} {v=}'
 
 def show_help():
     print(__doc__)
