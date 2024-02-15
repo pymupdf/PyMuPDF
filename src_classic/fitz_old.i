@@ -6627,7 +6627,7 @@ def get_oc_items(self) -> list:
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             int success = 0;
-            pdf_redact_options opts;
+            pdf_redact_options opts = {0};
             opts.black_boxes = 0;  // no black boxes
             opts.image_method = images;  // how to treat images
             fz_try(gctx) {
