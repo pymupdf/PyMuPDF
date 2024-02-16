@@ -58,11 +58,14 @@ Options:
         PYMUPDF_SETUP_MUPDF_BUILD, which is used by PyMuPDF/setup.py. If not
         specifed PyMuPDF will download its default mupdf .tgz.]
     -p <pytest-options>
-        Set pytest options; default is '-s'.
-    -t <name>
-        Pytest test name. Should be relative to PyMuPDF directory. For example:
+        Set pytest options; default is ''.
+    -t <names>
+        Pytest test names, comma-separated. Should be relative to PyMuPDF
+        directory. For example:
             -t tests/test_general.py
-            -t tests/test_general.py::test_subset_fonts
+            -t tests/test_general.py::test_subset_fonts.
+        To specify multiple tests, use comma-separated list and/or multiple `-t
+        <names>` args.
     -v
         Avoid delay if venv directory already exists. We assume the existing
         directory was created by us earlier and is a valid venv containing all
@@ -118,7 +121,7 @@ def main(argv):
     build_type = None
     gdb = False
     implementations = None
-    test_name = None
+    test_names = list()
     venv_quick = False
     pytest_options = None
     timeout = None
@@ -156,7 +159,7 @@ def main(argv):
         elif arg == '-p':
             pytest_options  = next(args)
         elif arg == '-t':
-            test_name = next(args)
+            test_names += next(args).split(',')
         elif arg == '--timeout':
             timeout = float(next(args))
         elif arg == '-v':
@@ -201,7 +204,7 @@ def main(argv):
                 implementations=implementations,
                 valgrind=valgrind,
                 venv_quick=venv_quick,
-                test_name=test_name,
+                test_names=test_names,
                 pytest_options=pytest_options,
                 timeout=timeout,
                 gdb=gdb,
@@ -326,7 +329,7 @@ def test(
         implementations,
         valgrind,
         venv_quick=False,
-        test_name=None,
+        test_names=None,
         pytest_options=None,
         timeout=None,
         gdb=False,
@@ -339,7 +342,7 @@ def test(
             See top-level option `--valgrind`.
         venv_quick:
             See top-level option `-v`.
-        test_name:
+        test_names:
             See top-level option `-t`.
         pytest_options:
             See top-level option `-p`.
@@ -351,10 +354,13 @@ def test(
         if valgrind:
             pytest_options = '-s -vv'
         else:
-            pytest_options = '-s'
-    pytest_arg = pymupdf_dir_rel
-    if test_name:
-        pytest_arg += f'/{test_name}'
+            pytest_options = ''
+    pytest_arg = ''
+    if test_names:
+        for test_name in test_names:
+            pytest_arg += f' {pymupdf_dir_rel}/{test_name}'
+    else:
+        pytest_arg += f' {pymupdf_dir_rel}'
     python = gh_release.relpath(sys.executable)
     log('Running tests with tests/run_compound.py and pytest.')
     try:
@@ -378,7 +384,7 @@ def test(
             command = (
                     f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args}'
                         f' valgrind --suppressions={pymupdf_dir_rel}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
-                        f' {python} -m pytest {pytest_options} {pytest_arg}'
+                        f' {python} -m pytest {pytest_options}{pytest_arg}'
                         )
             env_extra=dict(
                     PYTHONMALLOC='malloc',
