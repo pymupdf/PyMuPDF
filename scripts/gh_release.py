@@ -434,6 +434,7 @@ def venv( command=None, packages=None, quick=False):
         log(f'{quick=}: Not creating venv because directory already exists: {venv_name}')
         command2 += 'true'
     else:
+        quick = False
         command2 += f'{sys.executable} -m venv{ssp} {venv_name}'
     if platform.system() == 'Windows':
         command2 += f' && {venv_name}\\Scripts\\activate'
@@ -471,7 +472,7 @@ def test( project, package, valgrind):
         run(
                 f'{sys.executable} {project}/tests/run_compound.py'
                     f' valgrind --suppressions={project}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
-                    f' pytest -s -vv {project}/tests'
+                    f' pytest {project}/tests'
                     ,
                 env_extra=dict(
                     PYTHONMALLOC='malloc',
@@ -479,7 +480,7 @@ def test( project, package, valgrind):
                     ),
                 )
     else:
-        run(f'{sys.executable} {project}/tests/run_compound.py pytest -s {project}/tests')
+        run(f'{sys.executable} {project}/tests/run_compound.py pytest {project}/tests')
     
 
 def pyodide_setup(clean=False):
