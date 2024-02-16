@@ -7819,8 +7819,8 @@ class Page:
                         yres,
                         1,  # interpolate
                         0,  # imagemask,
-                        None,   # decode
-                        None,   # colorkey
+                        list(), # decode
+                        list(), # colorkey
                         cbuf1,
                         mask,
                         )
