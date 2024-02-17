@@ -173,7 +173,10 @@ def test_1645():
     Test fix for #1645.
     '''
     path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
-    if fitz.mupdf_version_tuple[:2] >= (1, 22):
+    
+    if fitz.mupdf_version_tuple[:2] >= (1, 24):
+        path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.24.pdf')
+    elif fitz.mupdf_version_tuple[:2] >= (1, 22):
         path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.22.pdf')
     else:
         path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected.pdf')
