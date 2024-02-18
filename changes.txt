@@ -2,16 +2,30 @@ Change Log
 ==========
 
 
-**Changes in version 1.23.23 (2024-02-14)**
+**Changes in version 1.23.23 (2024-02-18)**
 
 * Fixed issues:
 
+  * **Fixed** `3126 <https://github.com/pymupdf/PyMuPDF/issues/3126>`_: Initialising Archive with a pathlib.Path fails.
+  * **Fixed** `3131 <https://github.com/pymupdf/PyMuPDF/issues/3131>`_: Calling the next attribute of an Annot raises a "No attribute .parent" warning
+  * **Fixed** `3134 <https://github.com/pymupdf/PyMuPDF/issues/3134>`_: Using an IRect as clip parameter in Page.get_pixmap no longer works since 1.23.9
+  * **Fixed** `3140 <https://github.com/pymupdf/PyMuPDF/issues/3140>`_: PDF document stays in use after closing
   * **Fixed** `3150 <https://github.com/pymupdf/PyMuPDF/issues/3150>`_: doc.select() hangs on this doc.
-
+  * **Fixed** `3163 <https://github.com/pymupdf/PyMuPDF/issues/3163>`_: AssertionError on using fitz.IRect
+  * **Fixed** `3177 <https://github.com/pymupdf/PyMuPDF/issues/3177>`_: fitz.Pixmap(None, pix) Unrecognised args for constructing Pixmap
 
 * Other:
 
-  * Replaced major code portions previously supporting `Document.select()` MuPDF function `pdf_rearrange_pages()` which is faster and more thoroughly performing that task.
+  *
+    Improved `Document.select() by using new MuPDF function
+    `pdf_rearrange_pages()`. This is a more complete (and faster)
+    implementation of what needs to be done here in that not only pages will
+    be rearranged, but also consequential changes will be made to the table
+    of contents, links to removed pages and affected entries in the Optional
+    Content definitions.
+  * `TextWriter.appendv()`: added `small_caps` arg.
+  * Fixed some valgrind errors with MuPDF master.
+  * Fixed `Document.insert_image()` when build with MuPDF master.
 
 
 **Changes in version 1.23.22 (2024-02-12)**
