@@ -9463,11 +9463,13 @@ class Pixmap:
             pm = mupdf.fz_new_pixmap_with_bbox(cs, JM_irect_from_py(rect), mupdf.FzSeparations(0), alpha)
             self.this = pm
 
-        elif args_match(args, (Colorspace, mupdf.FzColorspace), (Pixmap, mupdf.FzPixmap)):
+        elif args_match(args, (Colorspace, mupdf.FzColorspace, type(None)), (Pixmap, mupdf.FzPixmap)):
             # copy pixmap, converting colorspace
             cs, spix = args
             if isinstance(cs, Colorspace):
                 cs = cs.this
+            elif cs is None:
+                cs = mupdf.FzColorspace(None)
             if isinstance(spix, Pixmap):
                 spix = spix.this
             if not mupdf.fz_pixmap_colorspace(spix).m_internal:
@@ -17965,7 +17967,8 @@ def args_match(args, *types):
     Returns true if <args> matches <types>.
 
     Each item in <types> is a type or tuple of types. Any of these types will
-    match an item in <args>. None will match anything in <args>.
+    match an item in <args>. `None` will match anything in <args>. `type(None)`
+    will match an arg whose value is `None`.
     '''
     j = 0
     for i in range(len(types)):

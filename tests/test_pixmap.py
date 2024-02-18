@@ -245,3 +245,7 @@ def test_3134():
     print(f'{stat_irect=}')
     assert stat_rect.st_size == stat_irect.st_size
     
+def test_3177():
+    path = os.path.abspath(f'{__file__}/../../tests/resources/img-transparent.png')
+    pixmap = fitz.Pixmap(path)
+    pixmap2 = fitz.Pixmap(None, pixmap)
