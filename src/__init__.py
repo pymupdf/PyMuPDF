@@ -17437,7 +17437,7 @@ def JM_set_ocg_arrays_imp(arr, list_):
             # Not found.
             continue
         obj = mupdf.pdf_new_indirect(pdf, xref, 0)
-        mupdf.pdf_array_push_drop(arr, obj)
+        mupdf.pdf_array_push(arr, obj)
 
 
 def JM_set_resource_property(ref, name, xref):
