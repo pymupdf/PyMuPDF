@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.24 (2024-02-19)**
+
+* Fixed issues:
+
+  * **Fixed** `3148 <https://github.com/pymupdf/PyMuPDF/issues/3148>`_: Table extraction - vertical text not handled correctly
+  * **Fixed** `3179 <https://github.com/pymupdf/PyMuPDF/issues/3179>`_: Table Detection: Incorrect Separation of Vector Graphics Clusters
+  * **Fixed** `3180 <https://github.com/pymupdf/PyMuPDF/issues/3180>`_: Cannot show optional content group: AttributeError: module 'fitz.mupdf' has no attribute 'pdf_array_push_drop'
+
+* Other:
+
+  * Be able to test system install using `sudo pip install` instead of a venv.
+
+
 **Changes in version 1.23.23 (2024-02-18)**
 
 * Fixed issues:
