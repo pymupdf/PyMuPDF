@@ -410,12 +410,13 @@ def test(
         log('\n' + venv_info(pytest_args=f'{pytest_options} {pytest_arg}'))
 
 
-def get_pyproject_required():
+def get_pyproject_required(ppt=None):
     '''
     Returns space-separated names of required packages in pyproject.toml.  We
     do not do a proper parse and rely on the packages being in a single line.
     '''
-    ppt = os.path.abspath(f'{__file__}/../../pyproject.toml')
+    if ppt is None:
+        ppt = os.path.abspath(f'{__file__}/../../pyproject.toml')
     with open(ppt) as f:
         for line in f:
             m = re.match('^requires = \\[(.*)\\]$', line)
