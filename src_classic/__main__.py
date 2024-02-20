@@ -1083,7 +1083,7 @@ def main():
     ps_gettext.add_argument(
         "-convert-white",
         action="store_true",
-        help="convert whitespace characters to white (default False)",
+        help="convert whitespace characters to spaces (default False)",
         default=False,
     )
     ps_gettext.add_argument(
