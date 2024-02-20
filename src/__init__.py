@@ -17818,9 +17818,6 @@ def PyUnicode_DecodeRawUnicodeEscape(s, errors='strict'):
     elif isinstance(s, bytes):
         rc = s[:]
     ret = rc.decode('raw_unicode_escape', errors=errors)
-    z = ret.find(chr(0))
-    if z >= 0:
-        ret = ret[:z]
     return ret
 
 
