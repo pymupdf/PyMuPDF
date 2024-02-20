@@ -2,6 +2,20 @@ Change Log
 ==========
 
 
+**Changes in version 1.23.25 (2024-02-20)**
+
+* Fixed issues:
+
+  * **Fixed** `3182 <https://github.com/pymupdf/PyMuPDF/issues/3182>`_: Pixmap.invert_irect argument type error
+  * **Fixed** `3186 <https://github.com/pymupdf/PyMuPDF/issues/3186>`_: extractText() extracts broken text from pdf
+  * **Fixed** `3191 <https://github.com/pymupdf/PyMuPDF/issues/3191>`_: Error on .find_tables()
+
+* Other:
+
+  * When building, be able to specify python-config directly, with environment
+    variable `PIPCL_PYTHON_CONFIG`.
+
+
 **Changes in version 1.23.24 (2024-02-19)**
 
 * Fixed issues:
