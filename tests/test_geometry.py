@@ -3,6 +3,8 @@
 * Check matrix inversions in variations
 * Check algebra constructs
 """
+import os
+
 import fitz
 
 
@@ -339,3 +341,8 @@ def test_pageboxes():
 def test_3163():
     b = {'number': 0, 'type': 0, 'bbox': (403.3577880859375, 330.8871765136719, 541.2731323242188, 349.5766296386719), 'lines': [{'spans': [{'size': 14.0, 'flags': 4, 'font': 'SFHello-Medium', 'color': 1907995, 'ascender': 1.07373046875, 'descender': -0.26123046875, 'text': 'Inclusion and diversity', 'origin': (403.3577880859375, 345.9194030761719), 'bbox': (403.3577880859375, 330.8871765136719, 541.2731323242188, 349.5766296386719)}], 'wmode': 0, 'dir': (1.0, 0.0), 'bbox': (403.3577880859375, 330.8871765136719, 541.2731323242188, 349.5766296386719)}]}
     bbox = fitz.IRect(b["bbox"])
+
+def test_3182():
+    pix = fitz.Pixmap(os.path.abspath(f'{__file__}/../../tests/resources/img-transparent.png'))
+    rect = fitz.Rect(0, 0, 100, 100)
+    pix.invert_irect(rect)
