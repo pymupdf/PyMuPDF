@@ -604,7 +604,10 @@ def extract_text(chars: list, **kwargs) -> str:
             **{k: kwargs[k] for k in WORD_EXTRACTOR_KWARGS if k in kwargs}
         )
         words = extractor.extract_words(chars)
-        rotation = words[0]["rotation"]  # rotation cannot change within a cell
+        if words:
+            rotation = words[0]["rotation"]  # rotation cannot change within a cell
+        else:
+            rotation = 0
 
         if rotation == 90:
             words.sort(key=lambda w: (w["x1"], -w["top"]))
