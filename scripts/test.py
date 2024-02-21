@@ -74,6 +74,8 @@ Options:
         If true (the default on non-OpenBSD systems), we let pip create and use
         its own new venv to build PyMuPDF. Otherwise we force pip to use the
         current venv.
+    --build-mupdf 0|1
+        Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     --gdb 0|1
         Run tests under gdb.
     --timeout <seconds>
@@ -118,7 +120,9 @@ def main(argv):
 
     build_isolation = None
     valgrind = False
+    s = True
     build_type = None
+    build_mupdf = True
     gdb = False
     implementations = None
     test_names = list()
@@ -164,6 +168,8 @@ def main(argv):
             timeout = float(next(args))
         elif arg == '-v':
             venv_quick = True
+        elif arg == '--build-mupdf':
+            build_mupdf = int(next(args))
         elif arg == '--gdb':
             gdb = int(next(args))
         elif arg == '--valgrind':
@@ -198,6 +204,7 @@ def main(argv):
                 build_type=build_type,
                 build_isolation=build_isolation,
                 venv_quick=venv_quick,
+                build_mupdf=build_mupdf,
                 )
     def do_test():
         test(
@@ -272,7 +279,13 @@ def venv_info(pytest_args=None):
     return ret
 
 
-def build(implementations=None, build_type=None, build_isolation=None, venv_quick=False):
+def build(
+        implementations=None,
+        build_type=None,
+        build_isolation=None,
+        venv_quick=False,
+        build_mupdf=True,
+        ):
     '''
     Args:
         build_type:
@@ -281,7 +294,8 @@ def build(implementations=None, build_type=None, build_isolation=None, venv_quic
             See top-level option `--build-isolation`.
         venv_quick:
             See top-level option `-v`.
-            
+        build_mupdf:
+            See top-level option `build-mupdf`
     '''
     print(f'{build_type=}')
     print(f'{build_isolation=}')
@@ -320,6 +334,8 @@ def build(implementations=None, build_type=None, build_isolation=None, venv_quic
         if 'r' in implementations or 'R' in implementations:
             v += 'b'
         env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = v
+    if not build_mupdf:
+        env_extra['PYMUPDF_SETUP_MUPDF_REBUILD'] = '0'
     if build_type:
         env_extra['PYMUPDF_SETUP_MUPDF_BUILD_TYPE'] = build_type
     gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}', env_extra=env_extra)
