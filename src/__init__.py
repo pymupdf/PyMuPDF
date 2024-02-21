@@ -16048,7 +16048,7 @@ def JM_image_reporter(page):
         def __init__(self):
             super().__init__()
             self.use_virtual_image_filter()
-        if mupdf_version_tuple >= (1, 24):
+        if mupdf_version_tuple >= (1, 23, 11):
             def image_filter(self, ctx, ctm, name, image, scissor):
                 JM_image_filter(None, mupdf.FzMatrix(ctm), name, image)
         else:
