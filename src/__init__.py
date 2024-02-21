@@ -17435,11 +17435,7 @@ def JM_set_ocg_arrays_imp(arr, list_):
     Works with dict like {"basestate":name, "on":list, "off":list, "rbg":list}
     '''
     pdf = mupdf.pdf_get_bound_document(arr)
-    for i, item in enumerate(list_):
-        xref = 0
-        if JM_INT_ITEM(list_, i)[0] == 1:
-            # Not found.
-            continue
+    for xref in list_:
         obj = mupdf.pdf_new_indirect(pdf, xref, 0)
         mupdf.pdf_array_push(arr, obj)
 
