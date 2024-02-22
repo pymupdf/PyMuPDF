@@ -3,6 +3,7 @@ Exract page text in various formats.
 No checks performed - just contribute to code coverage.
 """
 import os
+import sys
 
 import fitz
 
@@ -239,3 +240,30 @@ def test_3186():
         t = page.get_text()
         texts.append(t)
     assert texts == texts_expected, f'Unexpected output: {texts=}'
+
+
+def test_3197():
+    '''
+    MuPDF's ActualText support fixes handling of test_3197.pdf.
+    '''
+    if fitz.mupdf_version_tuple < (1, 24):
+        print(f'Not running on {fitz.mupdf_version_tuple=}.')
+        return
+    path = os.path.abspath(f'{__file__}/../../tests/resources/test_3197.pdf')
+    
+    text_utf8_expected = [
+            b'NYSE - Nasdaq Real Time Price \xe2\x80\xa2 USD\nFord Motor Company (F)\n12.14 -0.11 (-0.90%)\nAt close: 4:00 PM EST\nAfter hours: 7:43 PM EST\nAll numbers in thousands\nAnnual\nQuarterly\nDownload\nSummary\nNews\nChart\nConversations\nStatistics\nHistorical Data\nProfile\nFinancials\nAnalysis\nOptions\nHolders\nSustainability\nInsights\nFollow\n12.15 +0.01 (+0.08%)\nIncome Statement\nBalance Sheet\nCash Flow\nSearch for news, symbols or companies\nNews\nFinance\nSports\nSign in\nMy Portfolio\nNews\nMarkets\nSectors\nScreeners\nPersonal Finance\nVideos\nFinance Plus\nBack to classic\nMore\n',
+            b'Related Tickers\nTTM\n12/31/2023\n12/31/2022\n12/31/2021\n12/31/2020\n14,918,000\n14,918,000\n6,853,000\n15,787,000\n24,269,000\n-17,628,000\n-17,628,000\n-4,347,000\n2,745,000\n-18,615,000\n2,584,000\n2,584,000\n2,511,000\n-23,498,000\n2,315,000\n25,110,000\n25,110,000\n25,340,000\n20,737,000\n25,935,000\n-8,236,000\n-8,236,000\n-6,866,000\n-6,227,000\n-5,742,000\n51,659,000\n51,659,000\n45,470,000\n27,901,000\n65,900,000\n-41,965,000\n-41,965,000\n-45,655,000\n-54,164,000\n-60,514,000\n-335,000\n-335,000\n-484,000\n--\n--\n6,682,000\n6,682,000\n-13,000\n9,560,000\n18,527,000\n \nYahoo Finance Plus Essential\naccess required.\nUnlock Access\nBreakdown\nOperating Cash\nFlow\nInvesting Cash\nFlow\nFinancing Cash\nFlow\nEnd Cash Position\nCapital Expenditure\nIssuance of Debt\nRepayment of Debt\nRepurchase of\nCapital Stock\nFree Cash Flow\n12/31/2020 - 6/1/1972\nGM\nGeneral Motors Compa\xe2\x80\xa6\n39.49 +1.23%\n\xc2\xa0\nRIVN\nRivian Automotive, Inc.\n15.39 -3.15%\n\xc2\xa0\nNIO\nNIO Inc.\n5.97 +0.17%\n\xc2\xa0\nSTLA\nStellantis N.V.\n25.63 +0.91%\n\xc2\xa0\nLCID\nLucid Group, Inc.\n3.7000 +0.54%\n\xc2\xa0\nTSLA\nTesla, Inc.\n194.77 +0.52%\n\xc2\xa0\nTM\nToyota Motor Corporati\xe2\x80\xa6\n227.09 +0.14%\n\xc2\xa0\nXPEV\nXPeng Inc.\n9.08 +0.89%\n\xc2\xa0\nFSR\nFisker Inc.\n0.5579 -11.46%\n\xc2\xa0\nCopyright \xc2\xa9 2024 Yahoo.\nAll rights reserved.\nPOPULAR QUOTES\nTesla\nDAX Index\nKOSPI\nDow Jones\nS&P BSE SENSEX\nSPDR S&P 500 ETF Trust\nEXPLORE MORE\nCredit Score Management\nHousing Market\nActive vs. Passive Investing\nShort Selling\nToday\xe2\x80\x99s Mortgage Rates\nHow Much Mortgage Can You Afford\nABOUT\nData Disclaimer\nHelp\nSuggestions\nSitemap\n',
+            ]
+    
+    with fitz.open(path) as document:
+        for i, page in enumerate(document):
+            text = page.get_text()
+            #print(f'{i=}:')
+            text_utf8 = text.encode('utf8')
+            #print(f'                {text_utf8=}')
+            #print(f'    {text_utf8_expected[i]=}')
+            if fitz.mupdf_version_tuple >= (1, 24):
+                assert text_utf8 == text_utf8_expected[i]
+            else:
+                assert text_utf8 != text_utf8_expected[i]
