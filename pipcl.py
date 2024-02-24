@@ -75,6 +75,7 @@ class Package:
         ...                         )
         ...                 return [
         ...                         ('build/foo.py', 'foo/__init__.py'),
+        ...                         ('cli.py', 'foo/__main__.py'),
         ...                         (f'build/{so_leaf}', f'foo/'),
         ...                         ('README', '$dist-info/'),
         ...                         ]
@@ -94,6 +95,11 @@ class Package:
         ...                     version = '1.2.3',
         ...                     fn_build = build,
         ...                     fn_sdist = sdist,
+        ...                     entry_points = (
+        ...                         { 'console_scripts': [
+        ...                             'foo_cli = foo.__main__:main',
+        ...                             ],
+        ...                         }),
         ...                     )
         ...
         ...             build_wheel = p.build_wheel
@@ -131,6 +137,14 @@ class Package:
         >>> with open('pipcl_test/README', 'w') as f:
         ...     _ = f.write(textwrap.dedent("""
         ...             This is Foo.
+        ...             """))
+
+        >>> with open('pipcl_test/cli.py', 'w') as f:
+        ...     _ = f.write(textwrap.dedent("""
+        ...             def main():
+        ...                 print('pipcl_test:main().')
+        ...             if __name__ == '__main__':
+        ...                 main()
         ...             """))
 
         >>> root = os.path.dirname(__file__)
@@ -221,6 +235,25 @@ class Package:
         >>> assert len(so) == 1
         >>> so = so[0]
         >>> assert os.path.getmtime(so) > t0
+    
+    Check `entry_points` causes creation of command `foo_cli` when we install
+    from our wheel using pip. [As of 2024-02-24 using pipcl's CLI interface
+    directly with `setup.py install` does not support entry points.]
+    
+        >>> print('Creating venv.', file=sys.stderr)
+        >>> _ = subprocess.run(
+        ...         f'cd pipcl_test && {sys.executable} -m venv pylocal',
+        ...         shell=1, check=1)
+        
+        >>> print('Installing from wheel into venv using pip.', file=sys.stderr)
+        >>> _ = subprocess.run(
+        ...         f'. pipcl_test/pylocal/bin/activate && pip install pipcl_test/dist/*.whl',
+        ...         shell=1, check=1)
+        
+        >>> print('Running foo_cli.', file=sys.stderr)
+        >>> _ = subprocess.run(
+        ...         f'. pipcl_test/pylocal/bin/activate && foo_cli',
+        ...         shell=1, check=1)
 
     Wheels and sdists
 
@@ -244,6 +277,7 @@ class Package:
     def __init__(self,
             name,
             version,
+            *,
             platform = None,
             supported_platform = None,
             summary = None,
@@ -263,6 +297,8 @@ class Package:
             requires_external = None,
             project_url = None,
             provides_extra = None,
+            
+            entry_points = None,
 
             root = None,
             fn_build = None,
@@ -333,6 +369,24 @@ class Package:
             provides_extra:
                 A string or list of strings.
 
+            entry_points:
+                String or dict specifying *.dist-info/entry_points.txt, for
+                example:
+                
+                    ```
+                    [console_scripts]
+                    foo_cli = foo.__main__:main
+                    ```
+                
+                or:
+                
+                    { 'console_scripts': [
+                        'foo_cli = foo.__main__:main',
+                        ],
+                    }
+                
+                See: https://packaging.python.org/en/latest/specifications/entry-points/
+            
             root:
                 Root of package, defaults to current directory.
 
@@ -499,6 +553,7 @@ class Package:
         self.requires_external = requires_external
         self.project_url = project_url
         self.provides_extra = provides_extra
+        self.entry_points = entry_points
 
         self.root = os.path.abspath(root if root else os.getcwd())
         self.fn_build = fn_build
@@ -624,6 +679,11 @@ class Package:
             # Add <name>-<version>.dist-info/COPYING.
             if self.license:
                 add_str(self.license, f'{dist_info_dir}/COPYING')
+            
+            # Add <name>-<version>.dist-info/entry_points.txt.
+            entry_points_text = self._entry_points_text()
+            if entry_points_text:
+                add_str(entry_points_text, f'{dist_info_dir}/entry_points.txt')
 
             # Update <name>-<version>.dist-info/RECORD. This must be last.
             #
@@ -724,6 +784,16 @@ class Package:
         log1( f'Have created sdist: {tarpath}')
         return os.path.basename(tarpath)
 
+    def _entry_points_text(self):
+        if self.entry_points:
+            if isinstance(self.entry_points, str):
+                return self.entry_points
+            ret = ''
+            for key, values in self.entry_points.items():
+                ret += f'[{key}]\n'
+                for value in values:
+                    ret += f'{value}\n'
+            return ret
 
     def _call_fn_build( self, config_settings=None):
         assert self.fn_build
@@ -798,6 +868,17 @@ class Package:
             add_file( from_abs, from_rel, to_abs2, to_rel)
 
         add_str( self._metainfo(), f'{root2}/{dist_info_dir}/METADATA', f'{dist_info_dir}/METADATA')
+        
+        if self.license:
+            add_str( self.license, f'{root2}/{dist_info_dir}/COPYING', f'{dist_info_dir}/COPYING')
+        
+        entry_points_text = self._entry_points_text()
+        if entry_points_text:
+            add_str(
+                    entry_points_text,
+                    f'{root2}/{dist_info_dir}/entry_points.txt',
+                    f'{dist_info_dir}/entry_points.txt',
+                    )
 
         log2( f'Writing to: {record_path}')
         with open(record_path, 'w') as f:
