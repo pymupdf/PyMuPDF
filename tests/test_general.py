@@ -916,3 +916,10 @@ def test_3140():
     fd2 = next_fd()
     assert fd2 == fd1, f'{fd1=} {fd2=}'
     os.remove(oldfile)
+
+def test_cli():
+    if not hasattr(fitz, 'mupdf'):
+        print('test_cli(): Not running on classic because of fitz_old.')
+        return
+    import subprocess
+    subprocess.run(f'pymupdf -h', shell=1, check=1)

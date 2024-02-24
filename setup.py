@@ -1114,6 +1114,13 @@ p = pipcl.Package(
             ('Tracker, https://github.com/pymupdf/PyMuPDF/issues'),
             ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
             ],
+        
+        # Create a `fitz` command.
+        entry_points = textwrap.dedent('''
+                [console_scripts]
+                pymupdf = fitz.__main__:main
+                '''),
+        
         fn_build=build,
         fn_sdist=sdist,
         
