@@ -110,3 +110,17 @@ def test_load_system_font():
             ], f'Incorrect {trace=}.'
     print(f'test_load_system_font(): {f.m_internal=}')
 
+
+def test_mupdf_subset_fonts2():
+    if not hasattr(fitz, 'mupdf'):
+        print('Not running on rebased.')
+        return
+    if fitz.mupdf_version_tuple < (1, 24):
+        print('Not running with mupdf < 1.24.')
+        return
+    path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
+    with fitz.open(path) as doc:
+        n = len(doc)
+        pages = [i*2 for i in range(n//2)]
+        print(f'{pages=}.')
+        fitz.mupdf.pdf_subset_fonts2(fitz._as_pdf_document(doc), pages)
