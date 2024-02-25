@@ -2,6 +2,15 @@ Change Log
 ==========
 
 
+**Changes in version 1.23. ()**
+
+* Fixed issues:
+
+* Other:
+
+  * Install command-line 'pymupdf' command that runs fitz/__main__.py.
+
+
 **Changes in version 1.23.25 (2024-02-20)**
 
 * Fixed issues:
