@@ -522,20 +522,35 @@ def build():
     #
     env_extra = dict()
     if mupdf_local:
-        from_ = f'{g_root}/src_classic/_config.h'
-        to_ = f'{mupdf_local}/include/mupdf/fitz/config.h'
+        if windows:
+            from_ = f'{g_root}/src_classic/_config.h'
+            to_ = f'{mupdf_local}/include/mupdf/fitz/config.h'
         if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '0':
             # Use MuPDF default config.
-            log( f'Not copying {from_} to {to_}.')
+            if windows:
+                log( f'Not copying {from_} to {to_}.')
+            else:
+                log( f'Not predefining TOFU_CJK_EXT.')
         else:
-            # Use our special config in MuPDF.
-            log( f'Copying {from_} to {to_}.')
-            shutil.copy2( from_, to_)
-            # Tell the MuPDF shared-library build to exclude large unused font
+            # Our config differs from MuPDF's default in that it defines TOFU_CJK_EXT
+            # This tells the MuPDF shared-library build to exclude large unused font
             # files such as resources/fonts/han/SourceHanSerif-Regular.ttc.
-            env_extra[ 'XCFLAGS'] = '-DTOFU_CJK_EXT'
-        s = os.stat( f'{to_}')
-        log( f'{to_}: {s} mtime={time.strftime("%F-%T", time.gmtime(s.st_mtime))}')
+            #
+            if windows:
+                # No equivalent to XCFLAGS. We could create an override.props
+                # file and run devenv.com with
+                # `-p:ForceImportBeforeCppTargets=$(SolutionDir)override.props`,
+                # but for now we just overwrite MuPDF's config.h.
+                log( f'Copying {from_} to {to_}.')
+                shutil.copy2( from_, to_)
+                s = os.stat( f'{to_}')
+                log( f'{to_}: {s} mtime={time.strftime("%F-%T", time.gmtime(s.st_mtime))}')
+            else:
+                # By predefining TOFU_CJK_EXT here, we don't need to modify
+                # MuPDF's include/mupdf/fitz/config.h.
+                log( f'Setting XCFLAGS and XCXXFLAGS to predefine TOFU_CJK_EXT.')
+                env_add(env_extra, 'XCFLAGS', '-DTOFU_CJK_EXT')
+                env_add(env_extra, 'XCXXFLAGS', '-DTOFU_CJK_EXT')
     
     # Build MuPDF shared libraries.
     #
@@ -644,17 +659,21 @@ def build():
     return ret
 
 
-def env_add(env, name, value, sep=' ', prefix=False, verbose=False):
+def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
     '''
     Appends/prepends `<value>` to `env[name]`.
+    
+    If `name` is not in `env`, we use os.environ[nane] if it exists.
     '''
     v = env.get(name)
     if verbose:
         log(f'Initally: {name}={v!r}')
     if v is None:
+        v = os.environ.get(name)
+    if v is None:
         env[ name] = value
     else:
-        if prefix:
+        if prepend:
             env[ name] =  f'{value}{sep}{v}'
         else:
             env[ name] =  f'{v}{sep}{value}'
