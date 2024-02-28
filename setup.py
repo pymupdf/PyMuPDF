@@ -1060,9 +1060,12 @@ def sdist():
             pass
         else:
             ret.append(p)
-    tgz = get_mupdf_tgz()
-    if tgz:
-        ret.append((tgz, mupdf_tgz))
+    if 0:
+        tgz = get_mupdf_tgz()
+        if tgz:
+            ret.append((tgz, mupdf_tgz))
+    else:
+        log(f'Not including MuPDF .tgz in sdist.')
     return ret
 
 
