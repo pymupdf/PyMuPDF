@@ -229,3 +229,6 @@ def test_write_stabilized_with_links():
     out_path = __file__.replace('.py', '.pdf')
     document.save(out_path)
     
+def test_archive_creation():
+    s = fitz.Story(archive=fitz.Archive('.'))
+    s = fitz.Story(archive='.')

@@ -11917,6 +11917,8 @@ class Story:
 
     def __init__( self, html='', user_css=None, em=12, archive=None):
         buffer_ = mupdf.fz_new_buffer_from_copied_data( html.encode('utf-8'))
+        if archive and not isinstance(archive, Archive):
+            archive = Archive(archive)
         arch = archive.this if archive else mupdf.FzArchive( None)
         if hasattr(mupdf, 'FzStoryS'):
             self.this = mupdf.FzStoryS( buffer_, user_css, em, arch)
