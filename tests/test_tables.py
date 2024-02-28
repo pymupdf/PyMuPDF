@@ -201,9 +201,8 @@ def test_add_lines():
     filename = os.path.join(scriptdir, "resources", "small-table.pdf")
     doc = fitz.open(filename)
     page = doc[0]
-    tab1 = page.find_tables()[0]
-    assert tab1.col_count == 1
-    assert tab1.row_count == 5
+    assert page.find_tables().tables == []
+
     more_lines = [
         ((238.9949951171875, 200.0), (238.9949951171875, 300.0)),
         ((334.5559997558594, 200.0), (334.5559997558594, 300.0)),
@@ -251,3 +250,16 @@ def test_3179():
     page = doc[0]
     tabs = page.find_tables()
     assert len(tabs.tables) == 3
+
+
+def test_battery_file():
+    """Tests correctly ignoring non-table suspects.
+
+    Earlier versions erroneously tried to identify table headers
+    where there existed no table at all.
+    """
+    filename = os.path.join(scriptdir, "resources", "battery-file-22.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    tabs = page.find_tables()
+    assert len(tabs.tables) == 0

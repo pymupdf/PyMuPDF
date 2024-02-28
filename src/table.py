@@ -94,6 +94,8 @@ from . import (
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
+TEXTPAGE = None
+white_spaces = set(string.whitespace)  # for checking white space only cells
 # -------------------------------------------------------------------
 # End of PyMuPDF interface code
 # -------------------------------------------------------------------
@@ -1183,7 +1185,7 @@ def intersections_to_cells(intersections):
     return list(filter(None, cell_gen))
 
 
-def cells_to_tables(cells) -> list:
+def cells_to_tables(page, cells) -> list:
     """
     Given a list of bounding boxes (`cells`), return a list of tables that
     hold those cells most simply (and contiguously).
@@ -1237,11 +1239,32 @@ def cells_to_tables(cells) -> list:
         # ... store it.
         tables.append(list(current_cells))
 
+    # PyMuPDF modification:
+    # Remove tables without text or having only 1 column
+    for i in range(len(tables) - 1, -1, -1):
+        r = EMPTY_RECT()
+        x1_vals = set()
+        x0_vals = set()
+        for c in tables[i]:
+            r |= c
+            x1_vals.add(c[2])
+            x0_vals.add(c[0])
+        if (
+            len(x1_vals) < 2
+            or len(x0_vals) < 2
+            or white_spaces.issuperset(
+                page.get_textbox(
+                    r,
+                    textpage=TEXTPAGE,
+                )
+            )
+        ):
+            del tables[i]
+
     # Sort the tables top-to-bottom-left-to-right based on the value of the
     # topmost-and-then-leftmost coordinate of a table.
     _sorted = sorted(tables, key=lambda t: min((c[1], c[0]) for c in t))
-    filtered = [t for t in _sorted if len(t) > 1]
-    return filtered
+    return _sorted
 
 
 class CellGroup(object):
@@ -1446,6 +1469,8 @@ class Table(object):
 
             # sort (x0, x1) pairs by x0-values
             l_r = sorted(list(l_r), key=lambda c: c[0])
+            if not l_r:
+                return [], (0, 0, 0, 0)
 
             # recovered row 0 cells
             cells = [(l_r[0][0], y0, l_r[0][1], y1)]
@@ -1717,7 +1742,8 @@ class TableFinder(object):
         )
         self.cells = intersections_to_cells(self.intersections)
         self.tables = [
-            Table(self.page, cell_group) for cell_group in cells_to_tables(self.cells)
+            Table(self.page, cell_group)
+            for cell_group in cells_to_tables(self.page, self.cells)
         ]
 
     def get_edges(self) -> list:
@@ -1845,11 +1871,12 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
-    global CHARS
+    global CHARS, TEXTPAGE
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    blocks = page.get_text("rawdict", clip=clip, flags=TEXTFLAGS_TEXT)["blocks"]
+    TEXTPAGE = page.get_textpage(clip=clip, flags=TEXTFLAGS_TEXT)
+    blocks = page.get_text("rawdict", textpage=TEXTPAGE)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
         for line in block["lines"]:
@@ -1897,11 +1924,11 @@ def make_chars(page, clip=None):
                     CHARS.append(char_dict)
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Extract all page vector graphics to fill the EDGES list.
 # We are ignoring Bézier curves completely and are converting everything
 # else to lines.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 def make_edges(page, clip=None, tset=None, add_lines=None):
     global EDGES
     snap_x = tset.snap_x_tolerance
@@ -1930,23 +1957,38 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
         larger than some delta.
 
         This check supports empty rect-likes and thus also lines.
+
+        Note:
+        This type of check is MUCH faster than native Rect containment checks.
         """
-        if (
+        if (  # check if x-coordinates of r1 are within those of r2
             r2.x0 - snap_x <= r1.x0 <= r2.x1 + snap_x
             or r2.x0 - snap_x <= r1.x1 <= r2.x1 + snap_x
-        ) and (
+        ) and (  # ... same for y-coordinates
             r2.y0 - snap_y <= r1.y0 <= r2.y1 + snap_y
             or r2.y0 - snap_y <= r1.y1 <= r2.y1 + snap_y
+        ):
+            return True
+
+        # same check with r1 / r2 exchanging their roles (this is necessary!)
+        if (
+            r1.x0 - snap_x <= r2.x0 <= r1.x1 + snap_x
+            or r1.x0 - snap_x <= r2.x1 <= r1.x1 + snap_x
+        ) and (
+            r1.y0 - snap_y <= r2.y0 <= r1.y1 + snap_y
+            or r1.y0 - snap_y <= r2.y1 <= r1.y1 + snap_y
         ):
             return True
         return False
 
     def clean_graphics():
-        """Detect and join rectangles of connected vector graphics."""
-        # exclude irrelevant graphics
-        paths = []
+        """Detect and join rectangles of "connected" vector graphics."""
+
+        paths = []  # paths relevant for table detection
         for p in page.get_drawings():
-            if (  # ignore fill-only graphics if they are no lines
+            # ignore fill-only graphics if they do not simulate lines,
+            # which means one of width or height are small.
+            if (
                 p["type"] == "f"
                 and lines_strict
                 and p["rect"].width > snap_x
@@ -1955,33 +1997,32 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
                 continue
             paths.append(p)
 
-        prects = sorted([p["rect"] for p in paths], key=lambda r: (r.y1, r.x0))
+        # start with all vector graphics rectangles
+        prects = sorted(set([p["rect"] for p in paths]), key=lambda r: (r.y1, r.x0))
         new_rects = []  # the final list of joined rectangles
-        # -------------------------------------------------------------------------
-        # Strategy: Join rectangles that "almost touch" each other,
-        # Extend first rectangle with any remaining in the list that touches it.
-        # Then move it to final list and continue with the rest.
-        # -------------------------------------------------------------------------
+        # ----------------------------------------------------------------
+        # Strategy: Join rectangles that "almost touch" each other.
+        # Extend first rectangle with any other that is a "neighbor".
+        # Then move it to the final list and continue with the rest.
+        # ----------------------------------------------------------------
         while prects:  # the algorithm will empty this list
-            r = prects[0]  # first rectangle
+            prect0 = prects[0]  # copy of first rectangle (performance reasons!)
             repeat = True
             while repeat:  # this loop extends first rect in list
-                repeat = False  # will be set to true if any other rect touches
-                for i in range(len(prects) - 1, -1, -1):  # run backwards
-                    if i == 0:  # don't touch first rectangle
-                        continue
-                    if are_neighbors(r, prects[i]):  # touches rect 0!
-                        r |= prects[i]  # extend first rect
-                        prects[0] = +r  # update it in list
+                repeat = False  # set to true again if some other rect touches
+                for i in range(len(prects) - 1, 0, -1):  # run backwards
+                    if are_neighbors(prect0, prects[i]):  # close enough to rect 0?
+                        prect0 |= prects[i]  # extend rect 0
                         del prects[i]  # delete this rect
-                        repeat = True  # check remaining
+                        repeat = True  # keep checking the rest
 
-            # move first item over to result list
-            new_rects.append(prects.pop(0))
-            prects = sorted(list(set(prects)), key=lambda r: (r.y1, r.x0))
+            # move rect 0 over to result list if there is some text in it
+            if not white_spaces.issuperset(page.get_textbox(prect0, textpage=TEXTPAGE)):
+                # contains text, so accept it as a table bbox candidate
+                new_rects.append(prect0)
+            del prects[0]  # remove from rect list
 
-        new_rects = sorted(list(set(new_rects)), key=lambda r: (r.y1, r.x0))
-        return [r for r in new_rects if r.width > 5 and r.height > 5], paths
+        return new_rects, paths
 
     bboxes, paths = clean_graphics()
 
