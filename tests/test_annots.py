@@ -297,4 +297,15 @@ def test_3131():
     first_annot, _ = page.annots()
     first_annot.next.type
 
-    
+def test_3209():
+    pdf = fitz.Document(filetype="pdf")
+    page = pdf.new_page()
+    page.add_ink_annot([[(300,300), (400, 380), (350, 350)]])
+    n = 0
+    for annot in page.annots():
+        n += 1
+        assert annot.vertices == [[(300.0, 300.0), (400.0, 380.0), (350.0, 350.0)]]
+    assert n == 1
+    path = os.path.abspath(f'{__file__}/../../tests/test_3209_out.pdf')
+    pdf.save(path)  # Check the output PDF that the annotation is correctly drawn
+
