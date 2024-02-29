@@ -1573,11 +1573,12 @@ class Annot:
         CheckParent(self)
         annot = self.this
         assert isinstance(annot, mupdf.PdfAnnot)
-        #fz_point point;  # point object to work with
+        annot_obj = mupdf.pdf_annot_obj(annot)
+        page = mupdf.pdf_annot_page(annot)
         page_ctm = mupdf.FzMatrix()   # page transformation matrix
-        dummy = mupdf.FzRect(0)   # Will have .m_internal=NULL.
-        mupdf.pdf_page_transform(mupdf.pdf_annot_page(annot), dummy, page_ctm)
-        derot = JM_derotate_page_matrix(mupdf.pdf_annot_page(annot))
+        dummy = mupdf.FzRect()  # Out-param for mupdf.pdf_page_transform().
+        mupdf.pdf_page_transform(page, dummy, page_ctm)
+        derot = JM_derotate_page_matrix(page)
         page_ctm = mupdf.fz_concat(page_ctm, derot)
 
         #----------------------------------------------------------------
@@ -1586,14 +1587,14 @@ class Annot:
         # Every pair of floats is one point, that needs to be separately
         # transformed with the page transformation matrix.
         #----------------------------------------------------------------
-        o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('Vertices'))
-        if not o.m_internal:    o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('L'))
-        if not o.m_internal:    o = mupdf.pdf_dict_get(mupdf.pdf_annot_obj(annot), PDF_NAME('QuadPoints'))
-        if not o.m_internal:    o = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), 'CL')
-
+        o = mupdf.pdf_dict_get(annot_obj, PDF_NAME('Vertices'))
+        if not o.m_internal:    o = mupdf.pdf_dict_get(annot_obj, PDF_NAME('L'))
+        if not o.m_internal:    o = mupdf.pdf_dict_get(annot_obj, PDF_NAME('QuadPoints'))
+        if not o.m_internal:    o = mupdf.pdf_dict_gets(annot_obj, 'CL')
+        
         if o.m_internal:
-            # handle lists with 1-level depth --------------------------------
-            #weiter:
+            # handle lists with 1-level depth
+            # weiter
             res = []
             for i in range(0, mupdf.pdf_array_len(o), 2):
                 x = mupdf.pdf_to_real(mupdf.pdf_array_get(o, i))
@@ -1602,9 +1603,10 @@ class Annot:
                 point = mupdf.fz_transform_point(point, page_ctm)
                 res.append( (point.x, point.y))
             return res
-
-        else:
-            # InkList has 2-level lists --------------------------------------
+            
+        o = mupdf.pdf_dict_gets(annot_obj, 'InkList')
+        if o.m_internal:
+            # InkList has 2-level lists
             #inklist:
             res = []
             for i in range(mupdf.pdf_array_len(o)):
