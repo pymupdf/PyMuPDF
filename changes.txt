@@ -2,13 +2,25 @@ Change Log
 ==========
 
 
-**Changes in version 1.23. ()**
+**Changes in version 1.23.26 (2024-02-29)**
 
 * Fixed issues:
 
+  * **Fixed** `3199 <https://github.com/pymupdf/PyMuPDF/issues/3199>`_: Add entry_points to setuptools configuration to provide command-line console scripts
+  * **Fixed** `3209 <https://github.com/pymupdf/PyMuPDF/issues/3209>`_: Empty vertices in ink annotation
+
 * Other:
 
+  * Improvements to table detection:
+  
+    * Improved check for empty tables, fixes bugs when determining table headers.
+    * Improved computation of enveloping vector graphic rectangles.
+    * Ignore more meaningless "pseudo" tables
+
   * Install command-line 'pymupdf' command that runs fitz/__main__.py.
+  * Don't overwrite MuPDF's config.h when building on non-Windows.
+  * Fix `Story` constructor's `archive` arg to match docs - now accepts a single `Archive` constructor arg.
+  * Do not include MuPDF source in sdist; will be downloaded automatically when building.
 
 
 **Changes in version 1.23.25 (2024-02-20)**
