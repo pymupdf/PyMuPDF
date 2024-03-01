@@ -227,11 +227,15 @@ def test_2391():
             field_field_value = field.on_state()
             field.update()
 
-# def test_deletewidget():
-#     pdf = fitz.open(filename)
-#     page = pdf[0]
-#     field = page.first_widget
-#     page.delete_widget(field)
+def test_3216():
+    document = fitz.open(filename)
+    for page in document:
+        while 1:
+            w = page.first_widget
+            print(f'{w=}')
+            if not w:
+                break
+            page.delete_widget(w)
 
 
 def test_add_widget():

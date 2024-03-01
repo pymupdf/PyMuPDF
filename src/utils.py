@@ -1698,7 +1698,6 @@ def delete_widget(page: fitz.Page, widget: fitz.Widget) -> fitz.Widget:
         raise ValueError("bad type: widget")
     nextwidget = widget.next
     page.delete_annot(annot)
-    widget._annot.__del__()
     widget._annot.parent = None
     keylist = list(widget.__dict__.keys())
     for key in keylist:
