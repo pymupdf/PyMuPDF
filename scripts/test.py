@@ -316,10 +316,11 @@ def build(
         # install required packages from pyproject.toml.
         names = get_pyproject_required()
         if platform.system() == 'OpenBSD':
-            # libclang not available. We require system already has py3-llvm
-            # installed.
-            log(f'OpenBSD: libclang not available; assuming system package py3-llvm is installed.')
+            # libclang not available and swig needs building from source, so we
+            # require system already has py3-llvm and swig installed.
+            log(f'OpenBSD: libclang not available; assuming system packages py3-llvm and swig are installed.')
             names = names.replace('libclang', '')
+            names = names.replace('swig', '')
         if venv_quick:
             log(f'{venv_quick=}: Not installing packages with pip: {names}')
         else:
