@@ -18839,10 +18839,23 @@ class Walker(mupdf.FzPathWalker2):
                 if jm_checkrect(self.dev):
                     #log(f'end1: {self.dev.pathdict=}')
                     return
-            #log('setting self.dev.pathdict[ "closePath"] to true')
-            self.dev.pathdict[ "closePath"] = True
             self.dev.linecount = 0   # reset # of consec. lines
-            #log(f'end2: {self.dev.pathdict=}')
+
+            if self.dev.havemove:
+                if self.dev.lastpoint != self.dev.firstpoint:
+                    item = ("l", JM_py_from_point(self.dev.lastpoint),
+                                 JM_py_from_point(self.dev.firstpoint))
+                    self.dev.pathdict[dictkey_items].append(item)
+                    self.dev.lastpoint = self.dev.firstpoint
+                self.dev.pathdict["closePath"] = False
+
+            else:
+                #log('setting self.dev.pathdict[ "closePath"] to true')
+                self.dev.pathdict[ "closePath"] = True
+                #log(f'end2: {self.dev.pathdict=}')
+
+            self.dev.havemove = 0
+
         except Exception:
             if g_exceptions_verbose:    exception_info()
             raise
@@ -18900,7 +18913,9 @@ class Walker(mupdf.FzPathWalker2):
             log(f'self.dev.pathdict:')
             for n, v in self.dev.pathdict.items():
                 log( '    {type(n)=} {len(n)=} {n!r} {n}: {v!r}: {v}')
+
         #log(f'Walker(): {type(self.dev.pathdict)=} {self.dev.pathdict=}')
+
         try:
             #log( '{=dev.ctm type(dev.ctm)}')
             self.dev.lastpoint = mupdf.fz_transform_point(
@@ -18914,6 +18929,8 @@ class Walker(mupdf.FzPathWalker2):
                         self.dev.lastpoint.x,
                         self.dev.lastpoint.y,
                         )
+            self.dev.firstpoint = self.dev.lastpoint
+            self.dev.havemove = 1
             self.dev.linecount = 0  # reset # of consec. lines
         except Exception:
             if g_exceptions_verbose:    exception_info()
@@ -19282,6 +19299,8 @@ class JM_new_lineart_device_Device(mupdf.FzDevice2):
         self.ctm = mupdf.FzMatrix()
         self.rot = mupdf.FzMatrix()
         self.lastpoint = mupdf.FzPoint()
+        self.firstpoint = mupdf.FzPoint()
+        self.havemove = 0
         self.pathrect = mupdf.FzRect()
         self.pathfactor = 0
         self.linecount = 0
