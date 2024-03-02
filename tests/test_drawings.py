@@ -1,6 +1,7 @@
 """
 Extract drawings of a PDF page and compare with stored expected result.
 """
+
 import io
 import os
 import sys
@@ -63,83 +64,66 @@ def test_drawings2():
 
 
 def _dict_difference(a, b):
-    '''
-    Returns `(keys_a, keys_b, key_values)`, information about differences
-    between dicts `a` and `b`.
-    
-    `keys_a` is the set of keys that are in `a` but not in `b`.
+    """
+    Verifies that dictionaries "a", "b"
+    * have the same keys and values, except for key "items":
+    * the items list of "a" must be one shorter but otherwise equal the "b" items
 
-    `keys_b` is the set of keys that are in `b` but not in `a`.
-
-    `key_values` is a dict with keys that are in both `a` and `b` but where the
-    values differ; the values in this dict are `(value_a, value_b)`.
-    '''
-    keys_a = set()
-    keys_b = set()
-    key_values = dict()
-    for key in a:
-        if key not in b:
-            keys_a.add( key)
-    for key in b:
-        if key not in a:
-            keys_b.add( key)
-    for key, va in a.items():
-        if key in b:
-            vb = b[key]
-            if va != vb:
-                key_values[key] = (va, vb)
-    return keys_a, keys_b, key_values
+    Returns last item of b["items"].
+    """
+    assert a.keys() == b.keys()
+    for k in a.keys():
+        v1 = a[k]
+        v2 = b[k]
+        if k != "items":
+            assert v1 == v2
+        else:
+            assert v1 == v2[:-1]
+            rc = v2[-1]
+    return rc
 
 
 def test_drawings3():
     doc = fitz.open()
-
     page1 = doc.new_page()
     shape1 = page1.new_shape()
     shape1.draw_line((10, 10), (10, 50))
     shape1.draw_line((10, 50), (100, 100))
-    shape1.finish(closePath=False, color=(0,0,0), width=5)
+    shape1.finish(closePath=False)
     shape1.commit()
-    drawings1 = list(page1.get_drawings())
+    drawings1 = page1.get_drawings()[0]
 
     page2 = doc.new_page()
     shape2 = page2.new_shape()
     shape2.draw_line((10, 10), (10, 50))
     shape2.draw_line((10, 50), (100, 100))
-    shape2.finish(closePath=True, color=(0,0,0), width=5)
+    shape2.finish(closePath=True)
     shape2.commit()
-    drawings2 = list(page2.get_drawings())
+    drawings2 = page2.get_drawings()[0]
+
+    assert _dict_difference(drawings1, drawings2) == ("l", (100, 100), (10, 10))
 
     page3 = doc.new_page()
     shape3 = page3.new_shape()
     shape3.draw_line((10, 10), (10, 50))
     shape3.draw_line((10, 50), (100, 100))
     shape3.draw_line((100, 100), (50, 70))
-    shape3.finish(closePath=False, color=(0,0,0), width=5)
+    shape3.finish(closePath=False)
     shape3.commit()
-    drawings3 = list(page3.get_drawings())
+    drawings3 = page3.get_drawings()[0]
 
     page4 = doc.new_page()
     shape4 = page4.new_shape()
     shape4.draw_line((10, 10), (10, 50))
     shape4.draw_line((10, 50), (100, 100))
     shape4.draw_line((100, 100), (50, 70))
-    shape4.finish(closePath=True, color=(0,0,0), width=5)
+    shape4.finish(closePath=True)
     shape4.commit()
-    drawings4 = list(page4.get_drawings())
+    drawings4 = page4.get_drawings()[0]
 
-    assert len(drawings1) == len(drawings2) == 1
-    drawings1 = drawings1[0]
-    drawings2 = drawings2[0]
-    diff = _dict_difference( drawings1, drawings2)
-    assert diff == (set(), set(), {'closePath': (False, True)})
-    
-    assert len(drawings3) == len(drawings4) == 1
-    drawings3 = drawings3[0]
-    drawings4 = drawings4[0]
-    diff = _dict_difference( drawings3, drawings4)
-    assert diff == (set(), set(), {'closePath': (False, True)})
-    
+    assert _dict_difference(drawings3, drawings4) == ("l", (50, 70), (10, 10))
+
+
 def test_2365():
     """Draw a filled rectangle on a new page.
 
@@ -162,6 +146,7 @@ def test_2365():
     assert path["width"] == 3
     assert path["rect"] == rect
 
+
 def test_2462():
     """
     Assertion happens, if this code does NOT bring down the interpreter.
@@ -176,6 +161,7 @@ def test_2462():
     page = doc[0]
     vg = page.get_drawings(extended=True)
 
+
 def test_2556():
     """Ensure that incomplete clip paths will be properly ignored."""
     doc = fitz.open()  # new empty PDF
@@ -188,3 +174,47 @@ def test_2556():
     page.set_contents(xref)  # give the page this xref as /Contents
     # following will bring down interpreter if fix not installed
     assert page.get_drawings(extended=True)
+
+
+def test_3207():
+    """Example graphics with multiple "close path" commands within same path.
+
+    The fix translates a close-path commands into an additional line
+    which connects the current point with a preceeding "move" target.
+    The example page has 2 paths which each contain 2 close-path
+    commands after 2 normal "line" commands, i.e. 2 command sequences
+    "move-to, line-to, line-to, close-path".
+    This is converted into 3 connected lines, where the last end point
+    is connect to the start point of the first line.
+    So, in the sequence of lines / points
+
+    (p0, p1), (p2, p3), (p4, p5), (p6, p7), (p8, p9), (p10, p11)
+
+    point p5 must equal p0, and p11 must equal p6 (for each of the
+    two paths in the example).
+    """
+    filename = os.path.join(scriptdir, "resources", "test-3207.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    paths = page.get_drawings()
+    assert len(paths) == 2
+
+    path0 = paths[0]
+    items = path0["items"]
+    assert len(items) == 6
+    p0 = items[0][1]
+    p5 = items[2][2]
+    p6 = items[3][1]
+    p11 = items[5][2]
+    assert p0 == p5
+    assert p6 == p11
+
+    path1 = paths[1]
+    items = path1["items"]
+    assert len(items) == 6
+    p0 = items[0][1]
+    p5 = items[2][2]
+    p6 = items[3][1]
+    p11 = items[5][2]
+    assert p0 == p5
+    assert p6 == p11

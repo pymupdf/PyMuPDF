@@ -511,16 +511,18 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       |history_end|
 
-   .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS)
+   .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS, graphics=PDF_REDACT_LINE_ART_IF_TOUCHED)
 
-      PDF only: Remove all **text content** contained in any redaction rectangle.
+      PDF only: Remove all **content** contained in any redaction rectangle on the page.
 
       **This method applies and then deletes all redactions from the page.**
 
-      :arg int images: How to redact overlapping images. The default (2) blanks out overlapping pixels. *PDF_REDACT_IMAGE_NONE* (0) ignores, and *PDF_REDACT_IMAGE_REMOVE* (1) completely removes all overlapping images.
+      :arg int images: How to redact overlapping images. The default (2) blanks out overlapping pixels. `PDF_REDACT_IMAGE_NONE` (0) ignores, and `PDF_REDACT_IMAGE_REMOVE` (1) completely removes images overlapping any redaction annotation. Option `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE` (3) only removes images that are actually visible.
+
+      :arg int graphics: How to redact overlapping vector graphics (also called "line art" or "drawings"). The default (2) removes any overlapping vector graphics. `PDF_REDACT_LINE_ART_NONE` (0) ignores, and `PDF_REDACT_LINE_ART_IF_COVERED` (1) removes graphics fully contained in a redaction annotation.
 
 
-      :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
+      :returns: `True` if at least one redaction annotation has been processed, `False` otherwise.
 
       .. note::
          * Text contained in a redaction rectangle will be **physically** removed from the page (assuming :meth:`Document.save` with a suitable garbage option) and will no longer appear in e.g. text extractions or anywhere else. All redaction annotations will also be removed. Other annotations are unaffected.
@@ -546,6 +548,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.16.11
       * Changed in v1.16.12: The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the individual *fill* color of each redaction annotation. If a *text* was given in the annotation, then :meth:`insert_textbox` is invoked to insert it, using parameters provided with the redaction.
       * Changed in v1.18.0: added option for handling images that overlap redaction areas.
+      * Changed in v1.23.27: added option for removing graphics as well.
 
       |history_end|
 

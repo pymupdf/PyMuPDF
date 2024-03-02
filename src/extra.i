@@ -1957,6 +1957,8 @@ struct jm_lineart_device
     fz_matrix ptm = {};
     fz_matrix rot = {};
     fz_point lastpoint = {};
+    fz_point firstpoint = {};
+    int havemove = 0;
     fz_rect pathrect = {};
     int clips = {};
     int linecount = {};
@@ -2830,6 +2832,8 @@ trace_moveto(fz_context *ctx, void *dev_, float x, float y)
                 dev->lastpoint.y
                 );
     }
+    dev->firstpoint = dev->lastpoint;
+    dev->havemove = 1;
     dev->linecount = 0;  // reset # of consec. lines
 }
 
@@ -2887,8 +2891,22 @@ trace_close(fz_context *ctx, void *dev_)
             return;
         }
     }
-    DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(1));
     dev->linecount = 0;  // reset # of consec. lines
+	if (dev->havemove) {
+		if (dev->firstpoint.x != dev->lastpoint.x || dev->firstpoint.y != dev->lastpoint.y) {
+			PyObject *list = PyTuple_New(3);
+			PyTuple_SET_ITEM(list, 0, PyUnicode_FromString("l"));
+			PyTuple_SET_ITEM(list, 1, JM_py_from_point(dev->lastpoint));
+			PyTuple_SET_ITEM(list, 2, JM_py_from_point(dev->firstpoint));
+			dev->lastpoint = dev->firstpoint;
+			PyObject *items = PyDict_GetItem(dev->pathdict, dictkey_items);
+			LIST_APPEND_DROP(items, list);
+		}
+		dev->havemove = 0;
+		DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(0));
+	} else {
+		DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(1));
+	}
 }
 
 static const fz_path_walker trace_path_walker =
@@ -2915,6 +2933,7 @@ jm_lineart_path(jm_lineart_device *dev, const fz_path *path)
     dev->pathrect = fz_infinite_rect;
     dev->linecount = 0;
     dev->lastpoint = fz_make_point(0, 0);
+    dev->firstpoint = fz_make_point(0, 0);
     if (dev->pathdict) {
         Py_CLEAR(dev->pathdict);
     }
