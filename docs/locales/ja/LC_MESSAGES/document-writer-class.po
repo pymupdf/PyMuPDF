@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 9b8664dc45914e11a15d8880b03f8f37
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 58ea652b8da14383b95d565968b43e9c
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 198701c1a3d34daca6b6b4b07b2f8bc0
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../document-writer-class.rst:7 6eb8525878d0404793ecb24ff6b9d1b6
+#: ../../document-writer-class.rst:7 3d42406828e740b38f2eda459e17830b
 msgid "DocumentWriter"
 msgstr "DocumentWriter(ドキュメントライター)"
 
-#: ../../document-writer-class.rst:9 3c27d360c50d4a7dbbca53b06c3c56f3
+#: ../../document-writer-class.rst:9 0c9a6f7f38ba42319cb0b34b878ef67d
 msgid "New in v1.21.0"
 msgstr "バージョン1.21.0で導入"
 
-#: ../../document-writer-class.rst:11 c4fbd8c12ff44b728e34cd068483b3a2
+#: ../../document-writer-class.rst:11 080f3b240df14f778d3ada6e1fc8d539
 msgid ""
 "This class represents a utility which can output various :ref:`document "
 "types supported by MuPDF<Supported_File_Types>`."
@@ -47,7 +51,7 @@ msgstr ""
 "このクラスは、MuPDFで :ref:`サポートされている <Supported_File_Types>` "
 "さまざまなドキュメントタイプを出力できるユーティリティを表します。"
 
-#: ../../document-writer-class.rst:13 42c8ebd649574d53a590ba0e8a245b19
+#: ../../document-writer-class.rst:13 4b8c1501568f4c2db58d84c078efe5df
 msgid ""
 "In PyMuPDF only used for outputting PDF documents whose pages are "
 "populated by :ref:`Story` DOMs."
@@ -55,64 +59,64 @@ msgstr ""
 "PyMuPDFでは、:ref:`Story` "
 "DOM（ドキュメントオブジェクトモデル）でページが埋められたPDFドキュメントを出力するためにのみ使用されます。"
 
-#: ../../document-writer-class.rst:15 83b5df08b1e9436cb8d72c916803811e
+#: ../../document-writer-class.rst:15 4df13dbf746e430c8c29a56fc87bd3f6
 msgid ""
 "Using DocumentWriter_ also for other document types might happen in the "
 "future."
 msgstr "将来的には、DocumentWriter_ を他のドキュメントタイプにも使用することがあるかもしれません。"
 
-#: ../../document-writer-class.rst:18 04a61883ee4c49b99c2d60d0398d6977
+#: ../../document-writer-class.rst:18 d3590700d096451190423e523acb4f77
 msgid "**Method / Attribute**"
 msgstr "**メソッド/属性** "
 
-#: ../../document-writer-class.rst:18 8d79d8dc285d48d380958ddaa65b9b55
+#: ../../document-writer-class.rst:18 12f352e23d884327ad6a0ea152429b50
 msgid "**Short Description**"
 msgstr "**簡単な説明** "
 
-#: ../../document-writer-class.rst:20 f5188b149754442d9cd15e81a9002367
+#: ../../document-writer-class.rst:20 c050c82d326f498e88117a8b7bfabc84
 msgid ":meth:`DocumentWriter.begin_page`"
 msgstr ""
 
-#: ../../document-writer-class.rst:20 964ae95f30dc4414adb25c030ad28efa
+#: ../../document-writer-class.rst:20 c8d624acca3c46c9bd9d4f8bd6e9fa2a
 msgid "start a new output page"
 msgstr "新しい出力ページを開始します。"
 
-#: ../../document-writer-class.rst:21 c2968b57c7cc4f5f8490d457b9f747f1
+#: ../../document-writer-class.rst:21 f765a4c978eb4bda86f452db1431b83b
 msgid ":meth:`DocumentWriter.end_page`"
 msgstr ""
 
-#: ../../document-writer-class.rst:21 23d2bc9ebb8c451eb8a9f5ec5a0f0c54
+#: ../../document-writer-class.rst:21 a3710435c9cb483389331d207266aa55
 msgid "finish the current output page"
 msgstr "現在の出力ページを終了します。"
 
-#: ../../document-writer-class.rst:22 265aede2b4c0457795cd90f04dc85417
+#: ../../document-writer-class.rst:22 a694d0e5108f44959f2bbefdc518a91e
 msgid ":meth:`DocumentWriter.close`"
 msgstr ""
 
-#: ../../document-writer-class.rst:22 0f370e91bb92477c8ea7b694fcc64fda
+#: ../../document-writer-class.rst:22 e82858b9a5b9493783d4b390866efebb
 msgid "flush pending output and close the file"
 msgstr "保留中の出力をフラッシュし、ファイルを閉じます。"
 
-#: ../../document-writer-class.rst:25 9778d1969b824d2db1f411f2950a43db
+#: ../../document-writer-class.rst:25 ada5bc348ece466f9f276386a91ec48d
 msgid "**Class API**"
 msgstr "**クラスAPI** "
 
-#: ../../document-writer-class.rst:31 1219caa853f34309b65516b933016baa
+#: ../../document-writer-class.rst:31 38c8ff1a946b48178580b831e8628fc2
 msgid ""
 "Create a document writer object, passing a Python file pointer or a file "
 "path. Options to use when saving the file may also be passed."
 msgstr "Pythonファイルポインタまたはファイルパスを渡してドキュメントライターオブジェクトを作成します。ファイルを保存する際に使用するオプションも渡すことができます。"
 
-#: ../../document-writer-class.rst:33 e83e1b15b3284013beccac1d8d607453
+#: ../../document-writer-class.rst:33 f8c16cc68b7f4d67ba23f0a45cf8c6ac
 msgid "This class can also be used as a Python context manager."
 msgstr "このクラスはPythonのコンテキストマネージャとしても使用できます。"
 
-#: ../../document-writer-class.rst d1eaf168ef67437d993e0b6f172378d2
-#: ecbdc42d1fa84f5db00d8ed0d56c25e3
+#: ../../document-writer-class.rst 87a6daeed81543c089ec8a1d8d13fe29
+#: c4dc9445b54f418c8932096f11e2fe88
 msgid "Parameters"
 msgstr ""
 
-#: ../../document-writer-class.rst:35 0cc78e630e0c4f33b757f73cfea2664b
+#: ../../document-writer-class.rst:35 b54ab42eeae944399705fcddc2a3066c
 msgid ""
 "the output file. This may be a string file name, or any Python file "
 "pointer.  .. note:: By using a `io.BytesIO()` object as file pointer, a "
@@ -121,13 +125,13 @@ msgid ""
 "by several example scripts in :ref:`Stories recipes<RecipesStories>`."
 msgstr ""
 
-#: ../../document-writer-class.rst:35 4f2af5abd397471e95e04622b6b0b232
+#: ../../document-writer-class.rst:35 a53682eedb654946b1eab240b1bbbd49
 msgid ""
 "the output file. This may be a string file name, or any Python file "
 "pointer."
 msgstr "出力ファイル。これは文字列のファイル名またはPythonファイルポインタのいずれかです。"
 
-#: ../../document-writer-class.rst:37 953f9df1591649a09daaeb63137e53d9
+#: ../../document-writer-class.rst:37 57604cd95ddb4388852f7f5e35d3d4ec
 msgid ""
 "By using a `io.BytesIO()` object as file pointer, a document writer can "
 "create a PDF in memory. Subsequently, this PDF can be re-opened for input"
@@ -138,7 +142,7 @@ msgstr ""
 "オブジェクトをファイルポインタとして使用することで、ドキュメントライターはメモリ内にPDFを作成できます。その後、このPDFは入力用に再オープンしてさらに操作できます。これは、:ref:`Storiesレシピ<RecipesStories>`"
 " のいくつかのサンプルスクリプトで使用されています。"
 
-#: ../../document-writer-class.rst:39 b29bdb6253a7462e959112d857b43af8
+#: ../../document-writer-class.rst:39 ddf6217cd70e48299b30dcd2c6e40450
 msgid ""
 "specify saving options for the output PDF. Typical are \"compress\" or "
 "\"clean\". More possible values may be taken from help output of the "
@@ -147,33 +151,37 @@ msgstr ""
 "出力PDFの保存オプションを指定します。一般的なものは「compress」や「clean」です。その他の可能な値は、`mutool "
 "convert` CLI ユーティリティのヘルプ出力から取得できます。"
 
-#: ../../document-writer-class.rst:43 a4827d3e309a40a38889091c00133408
+#: ../../document-writer-class.rst:43 906d3cd7e3be4295af0889e69980eb96
 msgid "Start a new output page of a given dimension."
 msgstr "指定された寸法の新しい出力ページを開始します。"
 
-#: ../../document-writer-class.rst:45 7bfd7533e40a4d32bf6a7ffd54341158
+#: ../../document-writer-class.rst:45 c8bcb2ba62dc47d29293d3dda7cdaa1c
 msgid ""
 "a rectangle specifying the page size. After this method, output "
 "operations may write content to the page."
 msgstr "ページサイズを指定する矩形。このメソッドの後、出力操作はページにコンテンツを書き込むことができます。"
 
-#: ../../document-writer-class.rst:49 7669ec7ba897498bb5ff7684738254b5
+#: ../../document-writer-class.rst:49 f3038685db5841788034c2f1ce7a75bd
 msgid ""
 "Finish a page. This flushes any pending data and appends the page to the "
 "output document."
 msgstr "ページを終了します。保留中のデータをフラッシュし、ページを出力ドキュメントに追加します。"
 
-#: ../../document-writer-class.rst:53 7a509f4864ad4e9ba2b5ee7661e2917e
+#: ../../document-writer-class.rst:53 7ac21812b78e412698560abeef5b9802
 msgid ""
 "Close the output file. This method is required for writing any pending "
 "data."
 msgstr "出力ファイルを閉じます。保留中のデータを書き込むためにこのメソッドが必要です。"
 
-#: ../../document-writer-class.rst:55 e3219b708b1d46d2acdf3cf1d2bd5bb7
+#: ../../document-writer-class.rst:55 5740a042b50f46b394f64aa4cd678d5c
 msgid "For usage examples consult the section of :ref:`Story`."
 msgstr "使用例については、:ref:`Story` のセクションを参照してください。"
 
-#: ../../footer.rst:-1 fabd1615484d4120afb3afa843c3ddc9
+#: ../../footer.rst:71 868af38d86f84ff28d8a4d8e0c168f95
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 c30ef19f398e4c33b6d1713c99e0b7b6
 msgid "Discord logo"
 msgstr ""
 

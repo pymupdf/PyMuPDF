@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,52 +19,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../index.rst:23 07e75c6b81f445559b328d1f4d9df40e
+#: ../../index.rst:19
 msgid "About"
 msgstr ""
 
-#: ../../index.rst:30 ef6a832bbf874125878f98b794aa63f0
+#: ../../index.rst:26
 msgid "User Guide"
 msgstr "ユーザーガイド"
 
-#: ../../index.rst:40 d4150a92b81946c79ea0f14297a5ea17
+#: ../../index.rst:36
 msgid "How to Guide"
 msgstr "使用方法ガイド"
 
-#: ../../index.rst:47 47b97da9840a421a93af39531d0702f5
+#: ../../index.rst:43
 msgid "API Reference"
 msgstr "APIリファレンス"
 
-#: ../../index.rst:60 433f3e0f5bd54a4cb51bbb9d01a1e323
+#: ../../index.rst:56
 msgid "Other"
 msgstr "その他"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 1839b91cffdb424284bbf052a9dd967e
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 2279693d3463422c8eb9e4e3c3fc623b
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 5a9f9c65fb2a478e80b3def3c7287e91
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../index.rst:7 b5fd3cd745a240b184ad7815539d1319
+#: ../../index.rst:7 f9040b7772c0447b9debc9abdd7847e8
 msgid "Welcome to :title:`PyMuPDF`"
 msgstr "PyMuPDFへようこそ"
 
-#: ../../index.rst:15 34ba3f084ae84452bfab0e3a5196cf5e
+#: ../../index.rst:9 0f762acb014144889cbd1b876a7e35d0
 msgid ""
-":title:`PyMuPDF` is a high-performance Python library for data "
-"extraction, analysis, conversion & manipulation of PDF (and other) "
+":title:`PyMuPDF` is a high-performance **Python** library for data "
+"extraction, analysis, conversion & manipulation of **PDF** (and other) "
 "documents."
 msgstr ""
 ":title:`PyMuPDF` は、:title:`PDF` （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な "
 ":title:`Python` ライブラリです。"
 
-#: ../../index.rst:17 5be631e7934641838b9686afc5d52aba
+#: ../../index.rst:11 2fb9858fab404f8cb63595ad0ec31fff
 msgid ""
 ":title:`PyMuPDF` is hosted on `GitHub "
 "<https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI "
@@ -73,11 +77,16 @@ msgstr ""
 ":title:`PyMuPDF` は  `GitHub <https://github.com/pymupdf/PyMuPDF>`_  "
 "でホストされ、`PyPI <https://pypi.org/project/PyMuPDF/>`_ に登録されています。"
 
-#: ../../index.rst:74 ab1ae7a8ea0d443aabc96118bc4983fc
-msgid "Find out about PyMuPDF Utilities"
+#: ../../footer.rst:71 ../../index.rst:15 423054fc947e4f6f94e78ef0acda51c4
+#: 4b05440daab24b4788e05a861b9b9d83
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../index.rst:72 cbef7c8ac82c44b4a3b7575a49abf8ee
+msgid "Find out about **PyMuPDF Utilities**"
 msgstr "PyMuPDF Utilitiesについて詳しく知る"
 
-#: ../../index.rst:76 667b5db05e8949f3b1e13c5ff51921e6
+#: ../../index.rst:74 637ec99e98c242b8b3d42e482cbdc19a
 msgid ""
 "The :title:`GitHub` repository `PyMuPDF-Utilities "
 "<https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of"
@@ -86,7 +95,18 @@ msgstr ""
 "GitHubリポジトリ `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-"
 "Utilities>`_ には、さまざまな例、デモンストレーション、およびユースケースが含まれています。"
 
-#: ../../footer.rst:-1 c610abdd3fa448a8b36c9ecc3340fddc
+#: ../../index.rst:80 54593b5e6d674c6eb7049fbf4ba9e210
+msgid "Do you need **PDF** to **DOCX** conversion?"
+msgstr "**PDF** から **DOCX** への変換が必要ですか?"
+
+#: ../../index.rst:82 50380b4920b14fe19b07407475cb6936
+msgid ""
+"We recommend the pdf2docx_ library which uses **PyMuPDF** and the "
+"**python-docx** library to provide simple document conversion from "
+"**PDF** to **DOCX** format."
+msgstr "**PyMuPDF** を使用する pdf2docx_ ライブラリと、**PDF** から **DOCX** 形式への簡単なドキュメント変換を提供する **python-docx** ライブラリをお勧めします。"
+
+#: ../../footer.rst:-1 26e8174d9bf74757a6978dcb3075ba14
 msgid "Discord logo"
 msgstr ""
 

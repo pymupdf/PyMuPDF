@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,37 +19,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 29949a59aa814bf4bde231fdc83041ca
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 e7709e7c0eb842188250eb9e2abb798c
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 6b6cf086d983411a8f1a2400bbf1ae57
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../coop_low.rst:7 c61f7887d4874a35916e8786b8a8a367
+#: ../../coop_low.rst:7 e6528ff2eb4d415d9d55fab93f7e50df
 msgid "Working together: DisplayList and TextPage"
 msgstr "共同作業：DisplayList と TextPage"
 
-#: ../../coop_low.rst:8 ecc0576efcf34b62bd7ca148c2308f25
+#: ../../coop_low.rst:8 6fa05740e1564b2abbed44732e674874
 msgid "Here are some instructions on how to use these classes together."
 msgstr "これらのクラスを一緒に使用する方法に関するいくつかの手順があります。"
 
-#: ../../coop_low.rst:10 b9aa2e53cb2942a39101b94dee4eab0a
+#: ../../coop_low.rst:10 2f6a38ce5a9841d3a186cb2bb76d9410
 msgid ""
 "In some situations, performance improvements may be achievable, when you "
 "fall back to the detail level explained here."
 msgstr "一部の状況では、ここで説明されている詳細レベルに戻ると、パフォーマンスの向上が可能かもしれません。"
 
-#: ../../coop_low.rst:13 09c4a3a6ab24443a97692c1885ff626a
+#: ../../coop_low.rst:13 9cf9b3f10cfc40249a77a7455ae1deb1
 msgid "Create a DisplayList"
 msgstr "DisplayList の作成"
 
-#: ../../coop_low.rst:14 78f96cb159e8438eb28b905f01db0023
+#: ../../coop_low.rst:14 d444f93244ac4501971da9e3e48e739c
 msgid ""
 "A :ref:`DisplayList` represents an interpreted document page. Methods for"
 " pixmap creation, text extraction and text search are  -- behind the "
@@ -62,14 +66,14 @@ msgstr ""
 ":ref:`DisplayList` "
 "は解釈された文書ページを表します。ピクセルマップの作成、テキスト抽出、およびテキスト検索のメソッドは、幕の内側で、それぞれのタスクを実行するためにページの表示リストを使用しています。ページを複数回描画する必要がある場合（ズームレベルが変更されたためなど）、またはテキストの検索とテキストの抽出の両方を実行する必要がある場合、表示リストは一度だけ作成し、その後のすべてのタスクに使用すると、オーバーヘッドを節約できます。"
 
-#: ../../coop_low.rst:18 477c2806b11d442c9a79178d74a0604e
+#: ../../coop_low.rst:18 929ee3ff88794302aacf23297730dfbb
 msgid ""
 "You can also create display lists for many pages \"on stack\" (in a "
 "list), may be during document open, during idling times, or you store it "
 "when a page is visited for the first time (e.g. in GUI scripts)."
 msgstr "ディスプレイリストを多くのページに対して「スタック上」（リスト内）で作成することもできます。これはドキュメントを開いている間、アイドリング時間中、またはページが初めて訪れられたとき（GUIスクリプトなど）に行うことができます。"
 
-#: ../../coop_low.rst:20 af9a3f86a41b4a9aa21f6b7c164c174c
+#: ../../coop_low.rst:20 9441e94d1f2b4c368e93c1b1c3b86140
 msgid ""
 "Note, that for everything what follows, only the display list is needed "
 "-- the corresponding :ref:`Page` object could have been deleted."
@@ -77,11 +81,11 @@ msgstr ""
 "注意：以下のすべてのことについて、ディスプレイリストのみが必要です - 対応する :ref:`Page` "
 "オブジェクトは削除されている可能性があります。"
 
-#: ../../coop_low.rst:23 f92b40450b9f4f738e84ada5cf25d888
+#: ../../coop_low.rst:23 d51ef39c5fbf4f268cae9266cec1a0e8
 msgid "Generate Pixmap"
 msgstr "ピクセルマップの生成"
 
-#: ../../coop_low.rst:24 ce9a9ed415a04966ae41e09e1f7c6404
+#: ../../coop_low.rst:24 0393259f8e124f208bb3998da7050f30
 msgid ""
 "The following creates a Pixmap from a :ref:`DisplayList`. Parameters are "
 "the same as for :meth:`Page.get_pixmap`."
@@ -89,36 +93,36 @@ msgstr ""
 "以下は、:ref:`DisplayList` からピクセルマップを生成するものです。パラメータは :meth:`Page.get_pixmap` "
 "と同じです。"
 
-#: ../../coop_low.rst:28 e63f6b006d27414488fe16a184b02508
+#: ../../coop_low.rst:28 349d8408ccb34c548ed0ada4c0d1ddcb
 #, python-format
 msgid ""
 "The execution time of this statement may be up to 50% shorter than that "
 "of :meth:`Page.get_pixmap`."
 msgstr "この文の実行時間は、:meth:`Page.get_pixmap` の実行時間よりも最大50％短くなる可能性があります。"
 
-#: ../../coop_low.rst:31 c81c053d95d64ebdb1580aee22e40d7c
+#: ../../coop_low.rst:31 cd3d2fc8b9da474da58be406777a28e2
 msgid "Perform Text Search"
 msgstr "テキスト検索を実行"
 
-#: ../../coop_low.rst:32 7ca2ab140d4a4ffa921d3ddbfb75915c
+#: ../../coop_low.rst:32 20af762b1df24cf6b6dfe6be11fcfc38
 msgid "With the display list from above, we can also search for text."
 msgstr "上記のディスプレイリストを使用して、テキストを検索することもできます。"
 
-#: ../../coop_low.rst:34 c7d9e9e185554bbcbbdbe3a7991ddfee
+#: ../../coop_low.rst:34 13f68e05989c4a4cbe1b9f4eb33de695
 msgid "For this we need to create a :ref:`TextPage`."
 msgstr "これには、:ref:`TextPage` を作成する必要があります。"
 
-#: ../../coop_low.rst:42 ab5d7149d43a4bba85896100d8550ba6
+#: ../../coop_low.rst:42 36a87432c55c4daf89428ed92203cd24
 msgid "Extract Text"
 msgstr "テキストの抽出"
 
-#: ../../coop_low.rst:43 40af118127d9494aa4d07745d1066121
+#: ../../coop_low.rst:43 d9e4d6677c624942a98b9eacd9f5bcdb
 msgid ""
 "With the same :ref:`TextPage` object from above, we can now immediately "
 "use any or all of the 5 text extraction methods."
 msgstr "前述の :ref:`TextPage` オブジェクトを使用することで、今すぐに5つのテキスト抽出メソッドのいずれかまたはすべてを使用できます。"
 
-#: ../../coop_low.rst:45 0e612578903c4bc2b0a01926e3c0f972
+#: ../../coop_low.rst:45 19fbac6556ef4b8bbf20a554365a477f
 msgid ""
 "Above, we have created our text page without argument. This leads to a "
 "default argument of 3 (:data:`ligatures` and white-space are preserved), "
@@ -127,19 +131,19 @@ msgstr ""
 "前述のように、テキストページを引数なしで作成しました。これにより、デフォルトの引数3（合字と空白が保持されます）が適用されます。つまり、画像は抽出"
 " **されません** - 以下を参照してください。"
 
-#: ../../coop_low.rst:54 a3a8cbd91679486897f6e95e5043bbf2
+#: ../../coop_low.rst:54 40f284b37b5c4921b9e543451b7f56f2
 msgid "Further Performance improvements"
 msgstr "さらなるパフォーマンスの向上"
 
-#: ../../coop_low.rst:56 0a9fa524451b466c905e44bb7e4aab21
+#: ../../coop_low.rst:56 21be928b3b2144fba95e1492d058b4a7
 msgid "Pixmap"
 msgstr ""
 
-#: ../../coop_low.rst:57 66109f1e6ef943e3a6402d260bb6b4c8
+#: ../../coop_low.rst:57 0a80a0e30c1e42d293a785bfc04495c9
 msgid "As explained in the :ref:`Page` chapter:"
 msgstr "ページの章で説明されているように："
 
-#: ../../coop_low.rst:59 3cfff86afb9f41a69c0a7023ffafd041
+#: ../../coop_low.rst:59 42215fe7b2cf4d548de369b17b1d15a8
 #, python-format
 msgid ""
 "If you do not need transparency set *alpha = 0* when creating pixmaps. "
@@ -149,17 +153,17 @@ msgstr ""
 "透明度が不要な場合は、ピクスマップを作成する際に alpha = 0 "
 "に設定します。これにより、メモリが25％節約されます（RGBの場合、最も一般的なケース）し、GUIソフトウェアに依存して実行時間が5％削減される可能性があります。"
 
-#: ../../coop_low.rst:62 ca1f7fcda2cb4e9bb88986b59294fec1
+#: ../../coop_low.rst:62 dfd4e09f6dc445e9a899cbc6c1c078d1
 msgid "TextPage"
 msgstr ""
 
-#: ../../coop_low.rst:63 4373886be1a34df6b8d579b9e4af3119
+#: ../../coop_low.rst:63 7c4cb1b416394362b7f92158fa313cb0
 msgid ""
 "If you do not need images extracted alongside the text of a page, you can"
 " set the following option:"
 msgstr "ページのテキストと一緒に画像を抽出する必要がない場合、以下のオプションを設定できます："
 
-#: ../../coop_low.rst:68 272e468dec344ff381a0f60fc94bc704
+#: ../../coop_low.rst:68 940d4e2e14e04a60a2aa2cf95d88c48e
 #, python-format
 msgid ""
 "This will save ca. 25% overall execution time for the HTML, XHTML and "
@@ -169,11 +173,15 @@ msgstr ""
 "これにより、HTML、XHTML、およびJSONのテキスト抽出全体の実行時間が約25％節約され、ドキュメントがグラフィックス志向である場合、ストレージ（メモリとディスクスペースの両方）の量が"
 " **大幅に** 削減されます。"
 
-#: ../../coop_low.rst:70 ff936f7b2f914c18b5361bd30d27202f
+#: ../../coop_low.rst:70 5abd0a1857f54e0f80fcbd85b8113e66
 msgid "If you however do need images, use a value of 7 for flags:"
 msgstr "ただし、画像が必要な場合は、フラグに7の値を使用してください："
 
-#: ../../footer.rst:-1 97e0fa0cb4f64dc68d5d5e87cf49834f
+#: ../../footer.rst:71 97ea483388bb4aadafdb8b1b8968722f
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 f9bba11a1afb430db51ac28c6c1d846a
 msgid "Discord logo"
 msgstr ""
 

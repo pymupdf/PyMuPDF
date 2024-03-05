@@ -1,0 +1,208 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.26\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 37e95aa103704e81b3aa5623ffa413f4
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 c76d308a78c84b15bcfb582c8bb4ff4e
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 e590ee26298f4cc0912fd0e495637441
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../packaging.rst:5 7583d87f0d5f4ccb9d2777c3f22a8829
+msgid "Packaging for Linux distributions"
+msgstr ""
+
+#: ../../packaging.rst:9 88775bb7e2b54f7fa0c56a710296c4e8
+msgid "Requirements"
+msgstr ""
+
+#: ../../packaging.rst:11 1e196a25387d4c4ab34777efb8f854a5
+msgid "Python"
+msgstr ""
+
+#: ../../packaging.rst:12 28e8669c263a47ecab08d4c9950eabe1
+msgid "MuPDF checkout (including submodules)."
+msgstr ""
+
+#: ../../packaging.rst:13 f92e7f2aa7994492b2974c11f0c23bb9
+msgid "PyMuPDF checkout."
+msgstr ""
+
+#: ../../packaging.rst:14 37a32b0bcf3c4950a001cf4816dc9721
+msgid "System packages listed in `scripts/sysinstall.py:g_sys_packages`."
+msgstr ""
+
+#: ../../packaging.rst:15 e06a6d1b463f479787ab5b941c4b4da2
+msgid "Python packages listed in `pyproject.toml`."
+msgstr ""
+
+#: ../../packaging.rst:17 17eb6cfef7e84b6a926942dbe1a32851
+msgid "Extra requirements for running tests:"
+msgstr ""
+
+#: ../../packaging.rst:19 98a6b5a1e9d44b5c9b05e40493d1dcfa
+msgid "Python packages listed in `scripts/gh_release.py:test_packages`."
+msgstr ""
+
+#: ../../packaging.rst:23 86c31129054c4149b00e4fc431d5858e
+msgid "General steps"
+msgstr ""
+
+#: ../../packaging.rst:25 be4de86a47a6481ca7a612f44e304144
+msgid "Build and install MuPDF:"
+msgstr ""
+
+#: ../../packaging.rst:27 83dd982bc45245d084c5916e765c9b78
+msgid "Install required system packages."
+msgstr ""
+
+#: ../../packaging.rst:28 ff9415e9723246c396d651314857be60
+msgid ""
+"Run `make install-shared-python` on MuPDF's `Makefile` with at least "
+"these make variables:"
+msgstr ""
+
+#: ../../packaging.rst:31 c933e15db04149a291ac35d7193deea0
+msgid "`DESTDIR` set to the install directory, e.g. `/`."
+msgstr ""
+
+#: ../../packaging.rst:33 101f0ab87dcc422cbd9cd609d8ce09af
+msgid ""
+"`prefix` set to location relative to DESTDIR, such as `/usr/local` or "
+"`/usr`. Must start with `/`."
+msgstr ""
+
+#: ../../packaging.rst:35 634364399c3f4171b167a962d53f65a0
+msgid "`USE_SYSTEM_LIBS=yes`."
+msgstr ""
+
+#: ../../packaging.rst:36 8ba1620485f1428c81f892791e2c25ff
+msgid "`HAVE_LEPTONICA=yes`."
+msgstr ""
+
+#: ../../packaging.rst:37 4ce60cc76ed64634ae044d1f7ee85430
+msgid "`HAVE_TESSERACT=yes`."
+msgstr ""
+
+#: ../../packaging.rst:39 3b99ba9a5c1c46d7b725f1b1d86448ec
+msgid "Build and install PyMuPDF:"
+msgstr ""
+
+#: ../../packaging.rst:42 cfd1d3595d7743b3b62f50c72466c6bd
+msgid ""
+"Run `pip install ./PyMuPDF` or `pip wheel ./PyMuPDF` with at least these "
+"environment variables:"
+msgstr ""
+
+#: ../../packaging.rst:46 86c783580e7d4148b28544bc620bd121
+msgid ""
+"`PYMUPDF_SETUP_MUPDF_BUILD=` (empty string) to prevent download and build"
+" of hard-coded MuPDF release."
+msgstr ""
+
+#: ../../packaging.rst:49 2d5395405a3949a69f42f79cdce740c5
+msgid ""
+"`CFLAGS`, `CXXFLAGS` and `LDFLAGS` set to allow visibility of the "
+"installed MuPDF headers and shared libraries."
+msgstr ""
+
+#: ../../packaging.rst:52 260e4427ece8433e95480971ebaf4bb9
+msgid ""
+"`PYMUPDF_SETUP_IMPLEMENTATIONS=b` to build only the rebased "
+"implementation. [This will become the default in a future release.]"
+msgstr ""
+
+#: ../../packaging.rst:55 22f55dbf98d94580b3d528e44dad746a
+msgid "Run PyMuPDF tests:"
+msgstr ""
+
+#: ../../packaging.rst:57 917bfc331e9949aaa309510353fc35c1
+msgid "Ensure required Python packages are available."
+msgstr ""
+
+#: ../../packaging.rst:59 87c2a07f94974c5d81df71309deb76ec
+msgid "Run `pytest -k \"not test_color_count and not test_3050\" PyMuPDF`"
+msgstr ""
+
+#: ../../packaging.rst:61 a3892b5413ff4407bbacc97c1f12baf3
+msgid ""
+"Test `test_color_count` is known fail if MuPDF is not built with "
+"PyMuPDF's custom config.h."
+msgstr ""
+
+#: ../../packaging.rst:62 b934b4f31d4a40b18167ff66bb535987
+msgid ""
+"Test `test_3050` is known to fail if MuPDF is built without its own "
+"third-party libraries."
+msgstr ""
+
+#: ../../packaging.rst:66 289cfbbcaab7493ab7cf22c18109070e
+msgid "Use of scripts/sysinstall.py"
+msgstr ""
+
+#: ../../packaging.rst:68 64b373c7225d4106929628cb6a22e618
+msgid ""
+"`scripts/sysinstall.py` provides a useful example of build, install and "
+"test commands that are known to to work, because it is run regularly by "
+"Github action `.github/workflows/test_sysinstall.yml`."
+msgstr ""
+
+#: ../../packaging.rst:72 c30849e9e6934c969b45dc6fbccf4dc9
+msgid "Run with `-h` or look at the doc-string to see detailed usage information."
+msgstr ""
+
+#: ../../packaging.rst:73 7aa889ce55a040bc92f74704232cc025
+msgid "It uses Debian-style `apt` commands to install system packages."
+msgstr ""
+
+#: ../../packaging.rst:74 65fa79f2bec64a9aa6fcbd9965c393b1
+msgid "By default it assumes local git checkouts `mupdf/` and `PyMuPDF/`."
+msgstr ""
+
+#: ../../packaging.rst:76 0c000e2f0b6943e8bfe25feb919cf12b
+msgid ""
+"To run a full build, install and test for both a local fake root and the "
+"system root:"
+msgstr ""
+
+#: ../../packaging.rst:84 f51650896d484a8f8e3bcfccb35489ae
+msgid "To see what commands would be run without actually running them:"
+msgstr ""
+
+#: ../../packaging.rst:92 27e47590f6ec4a55b3687c59b9975e25
+msgid "See also"
+msgstr ""
+
+#: ../../packaging.rst:95 6c144ff52f114c4398b24102c42e466a
+msgid ""
+"`setup.py`'s initial doc-comment has detailed information about the "
+"environment variables used when building PyMuPDF."
+msgstr ""
+

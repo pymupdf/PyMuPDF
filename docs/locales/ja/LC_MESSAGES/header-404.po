@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2015-2023, Artifex
+# Copyright (C) 2015-2024, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Project-Id-Version: PyMuPDF 1.23.26\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -19,27 +19,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 76caea474c7b4143970f1b1ab2515bc1
+#: ../../header-404.rst:-1 c2c49975f2854128bb488c59ce955f84
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 9aabd0408684421999890baa0c2f59c5
+#: ../../header-404.rst:-1 371ca3eaed8242b8bf4e8df0b45a6113
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 620d8625e9374ac695590ccee38ce7e4
+#: ../../header-404.rst:-1 a60c91d091c44274bed060f48efb71b1
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
-
-#: ../../footer.rst:71 53aa60c4120c4df68c355c3f55c29796
-msgid "This documentation covers all versions up to |version|."
-msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 ff06c32ab4194672a5d612ddb8c35e86
-msgid "Discord logo"
-msgstr ""
 
