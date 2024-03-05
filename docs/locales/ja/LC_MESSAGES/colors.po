@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,23 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 da174f1e5a4f45a1ba5721662af06e3d
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 ece443183ab64d7ca1518085ffb4677b
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 a3f73a734d71409e8ad66dec06e27981
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../colors.rst:7 94f5ffd4039a44fbaac938abb8a203a2
+#: ../../colors.rst:7 325d2185ec754fdaab22afe08eda9511
 msgid "Color Database"
 msgstr "カラーデータベース"
 
-#: ../../colors.rst:8 8d9ad358b7d248d295ad3a2d30562e9e
+#: ../../colors.rst:8 35fb2edf7c6743e2928bc9bcb89419da
 msgid ""
 "Since the introduction of methods involving colors (like "
 ":meth:`Page.draw_circle`), a requirement may be to have access to "
@@ -44,7 +48,7 @@ msgstr ""
 ":meth:`Page.draw_circle`) "
 "のような色を含むメソッドが導入されて以来、事前定義された色にアクセスする必要があるかもしれません。）"
 
-#: ../../colors.rst:10 a19a4ab71e9549ed93e62e47f9187a4d
+#: ../../colors.rst:10 73a9051271e54660bed3d1038dfeea3f
 msgid ""
 "The fabulous GUI package `wxPython <https://wxpython.org/>`_ has a "
 "database of over 540 predefined RGB colors, which are given more or less "
@@ -55,7 +59,7 @@ msgstr ""
 "素晴らしいGUIパッケージ `wxPython <https://wxpython.org/>`_ "
 "には、記憶しやすい名前が与えられた540以上の事前定義されたRGBカラーのデータベースがあります。その中には「green」や「blue」のような標準的な名前だけでなく、「turquoise」や「skyblue」、「gray」の100のシェードなどが含まれています（50だけでなく…）。"
 
-#: ../../colors.rst:12 dbd167247a654c18893c4d1409e36be6
+#: ../../colors.rst:12 474c1f05f3ee4027840d7137e563557a
 msgid ""
 "We have taken the liberty to copy this database (a list of tuples) "
 "modified into PyMuPDF and make its colors available as PDF compatible "
@@ -67,21 +71,21 @@ msgstr ""
 " 255, 255, 255)は(1, 1, 1)として返され、これは *直接色* や *塗りつぶし* "
 "のパラメータとして使用できます。また、「wHiTe」といった大小文字の組み合わせも受け入れます。"
 
-#: ../../colors.rst:15 e3977c821e9649d8a5fcc609aef64115
+#: ../../colors.rst:15 fa8615fbed014a96afc4b6445b5c63f6
 msgid "Function *getColor()*"
 msgstr "関数 *getColor()* "
 
-#: ../../colors.rst:16 8ec8036e93c54b17a1f87ac003714a8b
+#: ../../colors.rst:16 5586d63c620b479a9de9959057416f0e
 msgid ""
 "As the color database may not be needed very often, one additional import"
 " statement seems acceptable to get access to it::"
 msgstr "カラーデータベースはあまり頻繁に必要ないかもしれないため、アクセスするために1つの追加のインポート文は受け入れられると思われます。"
 
-#: ../../colors.rst:41 2fe835b5fe8b4d86969f1519bf0e33ad
+#: ../../colors.rst:41 428baa5642dc47319be1f85c5b9fe540
 msgid "Printing the Color Database"
 msgstr "カラーデータベースの印刷"
 
-#: ../../colors.rst:42 d7eb46c07f9d4204a4b8f93b5ff1f02c
+#: ../../colors.rst:42 0e36f21290204777979dc4d9c2ac8de6
 msgid ""
 "If you want to actually see how the many available colors look like, use "
 "scripts `print by RGB <https://github.com/pymupdf/PyMuPDF-"
@@ -101,7 +105,11 @@ msgstr ""
 "、ソート基準としてHue-Saturation-"
 "Valueを使用するものの2つの違いだけです。以下は、これらのファイルがどのように見えるかのスクリーンプリントです。"
 
-#: ../../footer.rst:-1 88c97d1d269241828033894775a9c2ef
+#: ../../footer.rst:71 88f79dd2f9d14259b59d07b1e462d52b
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 cfaae52605ae4a7680ee9c25e0b927f0
 msgid "Discord logo"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-21 13:53+0000\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 54692b33d3bb466ab6bce760d0a4296e
+#: ../../header.rst:-1 c88d56b8fda94093bd816a9dc049b237
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 82d289093ff346f0a3cd6a8582a15459
+#: ../../header.rst:-1 92f55755fbdb431eafa600b24733ca52
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 dd8877803970438e8ded86bf240c439d
+#: ../../header.rst:-1 aaa90a55459e4c1996c05d4d64635f27
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../pixmap.rst:7 87fe4949c95946cabd23221307f2c553
+#: ../../pixmap.rst:7 022ca64ccf2145e8ba4c7c88b86f3cc4
 msgid "Pixmap"
 msgstr ""
 
-#: ../../pixmap.rst:9 2bfe1160310f44df860627ae451eaac1
+#: ../../pixmap.rst:9 becab09cb361477ba6ca03e508dbfd53
 msgid ""
 "Pixmaps (\"pixel maps\") are objects at the heart of MuPDF's rendering "
 "capabilities. They represent plane rectangular sets of pixels. Each pixel"
@@ -47,42 +47,42 @@ msgid ""
 "plus an optional alpha byte defining its transparency."
 msgstr "Pixmap（「ピクセルマップ」）は、MuPDFの描画機能の中心にあるオブジェクトです。それらは平面的な長方形のピクセルセットを表します。各ピクセルは、その色を定義するバイト数（「コンポーネント」）と、透明度を定義するオプションのアルファバイトで説明されます"
 
-#: ../../pixmap.rst:11 446ee32e481d422a968a649914ec17c5
+#: ../../pixmap.rst:11 498b5643c837404ab2bfd917365af88f
 msgid ""
 "In PyMuPDF, there exist several ways to create a pixmap. Except the first"
 " one, all of them are available as overloaded constructors. A pixmap can "
 "be created ..."
 msgstr "PyMuPDFでは、ピクセルマップを作成するためのいくつかの方法が存在します。最初の方法を除いて、すべての方法はオーバーロードされたコンストラクタとして使用できます。ピクセルマップは、以下の方法で作成できます..."
 
-#: ../../pixmap.rst:13 dde947ad7fa14ea58abe59bce99444f2
+#: ../../pixmap.rst:13 7f3957f1bc684f8fb76f466c726db9c5
 msgid "from a document page (method :meth:`Page.get_pixmap`)"
 msgstr "ドキュメントページから（メソッド :meth:`Page.get_pixmap` を使用）"
 
-#: ../../pixmap.rst:14 aedbe22b11f0422f8d6beb735b4e0d20
+#: ../../pixmap.rst:14 42db51cd46454e4a9cbe04938e646c1c
 msgid "empty, based on :ref:`Colorspace` and :ref:`IRect` information"
 msgstr ":ref:`Colorspace` と :ref:`IRect` 情報に基づいて空のものを作成"
 
-#: ../../pixmap.rst:15 6f8b65243be84333b8884cdcef920eb7
+#: ../../pixmap.rst:15 cc9da9a4d2ad4ce2b4fca46685b27adc
 msgid "from a file"
 msgstr "ファイルから"
 
-#: ../../pixmap.rst:16 ad26d0efd3bb4efb8a379cf559eecba0
+#: ../../pixmap.rst:16 9f1bfd87bc49402086c5bc8cdbe97573
 msgid "from an in-memory image"
 msgstr "メモリ内のイメージから"
 
-#: ../../pixmap.rst:17 c1a718cb13b14be8af9248f23ed8dd62
+#: ../../pixmap.rst:17 6a598fc0fe894ba7bb39385f5fb132d2
 msgid "from a memory area of plain pixels"
 msgstr "平易なピクセルのメモリ領域から"
 
-#: ../../pixmap.rst:18 1e08743c67874448960630e75da26a66
+#: ../../pixmap.rst:18 6d99af4ec94d4414a1f1c3f679c6a155
 msgid "from an image inside a PDF document"
 msgstr "PDFドキュメント内のイメージから"
 
-#: ../../pixmap.rst:19 aa0c558c7b0a440c8fb8f626b4690004
+#: ../../pixmap.rst:19 ad75eec4e77e4ba99ddc7543abc8493a
 msgid "as a copy of another pixmap"
 msgstr "他のピクセルマップのコピーとして"
 
-#: ../../pixmap.rst:21 c114b4feb88044b893f0e1105e94dc26
+#: ../../pixmap.rst:21 60585ec8293d4dafa79c9828a4cab267
 msgid ""
 "A number of image formats is supported as input for points 3. and 4. "
 "above. See section :ref:`ImageFiles`."
@@ -90,342 +90,342 @@ msgstr ""
 "3.と4.のポイントに対する入力として多くの画像フォーマットがサポートされています。サポートされている入力画像フォーマットの詳細については、:ref:`ImageFiles`"
 " のセクションを参照してください。"
 
-#: ../../pixmap.rst:23 8e43bf3d8d754ec7a40423451eba3674
+#: ../../pixmap.rst:23 e1ed5390e50e414eaa7e0118291964a0
 msgid ""
 "Have a look at the :ref:`FAQ` section to see some pixmap usage \"at "
 "work\"."
 msgstr "ピクセルマップの使用例については、:ref:`FAQ` セクションをご覧ください。"
 
-#: ../../pixmap.rst:26 d0b3e18a341a4d4ba3fa62442dd4c9a4
+#: ../../pixmap.rst:26 89e29591f97e4cbfaac27c7d0665a7b2
 msgid "**Method / Attribute**"
 msgstr "**メソッド / 属性**"
 
-#: ../../pixmap.rst:26 af89e41c53884430b05520c239fc6276
+#: ../../pixmap.rst:26 0c4bc121cd374ab6b91adc1218e8fe3b
 msgid "**Short Description**"
 msgstr "**短い説明**"
 
-#: ../../pixmap.rst:28 b634fac3e1c84fd7aaa4934d857b5cd0
+#: ../../pixmap.rst:28 20faa317f9c341f7bfa3945379578e56
 msgid ":meth:`Pixmap.clear_with`"
 msgstr ""
 
-#: ../../pixmap.rst:28 4ff166094a484b55b26e46793ed54a7e
+#: ../../pixmap.rst:28 4f91d4d010614f8f8413c02aaf228565
 msgid "clear parts of the pixmap"
 msgstr "ピクセルマップの一部をクリアします。"
 
-#: ../../pixmap.rst:29 daf9cad528e34f6895dca8344e13e604
+#: ../../pixmap.rst:29 f8650255bfac40b784d24d43953b8496
 msgid ":meth:`Pixmap.color_count`"
 msgstr ""
 
-#: ../../pixmap.rst:29 84ac038d67a447158b992353454eee32
+#: ../../pixmap.rst:29 a5ead3603940415891c166d016ac5b5a
 msgid "determine used colors"
 msgstr "使用された色を決定します。"
 
-#: ../../pixmap.rst:30 5eafaa5552d24d08861e06e701af0715
+#: ../../pixmap.rst:30 ac9ee8f33abb43b78c6f68058dd34a72
 msgid ":meth:`Pixmap.color_topusage`"
 msgstr ""
 
-#: ../../pixmap.rst:30 0b55717b95df4216b73df3d0c0a92fdf
+#: ../../pixmap.rst:30 d8f3584698a74ff0bf4bc72d1e3f2fa3
 msgid "determine share of most used color"
 msgstr "最も使用される色のシェアを決定します。"
 
-#: ../../pixmap.rst:31 1eae69e1d80d4093aa3ea280673c55af
+#: ../../pixmap.rst:31 b957b20f8dff45d6b5f145ea0132085b
 msgid ":meth:`Pixmap.copy`"
 msgstr ""
 
-#: ../../pixmap.rst:31 45fab2d80cad4d5bb7ea6b23c1348209
+#: ../../pixmap.rst:31 0454a2fe45294572b8ccf6aeecb70dec
 msgid "copy parts of another pixmap"
 msgstr "別のピクセルマップの一部をコピーします。"
 
-#: ../../pixmap.rst:32 b7fc4229dda94b6ea816d744808eba6f
+#: ../../pixmap.rst:32 650ee635a4344173aa2a77cc384b5142
 msgid ":meth:`Pixmap.gamma_with`"
 msgstr ""
 
-#: ../../pixmap.rst:32 e53de634a98d4aeea532df2a7a8054f0
+#: ../../pixmap.rst:32 47d94c5b09a84836864111709246cf32
 msgid "apply a gamma factor to the pixmap"
 msgstr "ピクセルマップにガンマ係数を適用します。"
 
-#: ../../pixmap.rst:33 1f06f4fff34a43ed82d718ed6b73b9be
+#: ../../pixmap.rst:33 bfe48ab49a74498ba0adaf1406721bdc
 msgid ":meth:`Pixmap.invert_irect`"
 msgstr ""
 
-#: ../../pixmap.rst:33 701701327545494abbddfea9e8876bd0
+#: ../../pixmap.rst:33 1ede392454cc47f58284223f2362b251
 msgid "invert the pixels of a given area"
 msgstr "指定された領域のピクセルを反転させます。"
 
-#: ../../pixmap.rst:34 2105daf74dd7473da50c1311e5a39b88
+#: ../../pixmap.rst:34 df42100d1e804e16a1bd7869f55570bc
 msgid ":meth:`Pixmap.pdfocr_save`"
 msgstr ""
 
-#: ../../pixmap.rst:34 ../../pixmap.rst:35 476fbba36cce4a8fb02adf0ed616063b
-#: f58cc481bb7546608a62ecdcee75718e
+#: ../../pixmap.rst:34 ../../pixmap.rst:35 0e4e34d1f97c4f9597e14c2c17a9bab8
+#: 6944f767ac0c4ddcae2b98412431c0d3
 msgid "save the pixmap as an OCRed 1-page PDF"
 msgstr "OCR処理済みの1ページのPDFとしてピクセルマップを保存します。"
 
-#: ../../pixmap.rst:35 bd1ecff77a894e10803aa9a31d7c3096
+#: ../../pixmap.rst:35 504ed4638dff4cfd8807922bf88f6316
 msgid ":meth:`Pixmap.pdfocr_tobytes`"
 msgstr ""
 
-#: ../../pixmap.rst:36 2609c43760e349b3951d4872a7c35cb7
+#: ../../pixmap.rst:36 a56c230be18344aaa1be4b358e92ecc2
 msgid ":meth:`Pixmap.pil_save`"
 msgstr ""
 
-#: ../../pixmap.rst:36 4f4f9d823e8a49e89b6434724bcae7f7
+#: ../../pixmap.rst:36 d2060fbd55744021b21b7f433076dd63
 msgid "save as image using pillow"
 msgstr "Pillowを使用してイメージとして保存します。"
 
-#: ../../pixmap.rst:37 73328d444efe49708d10bf45bfbce370
+#: ../../pixmap.rst:37 0419ca2c4595427d99163ba21c95f6c5
 msgid ":meth:`Pixmap.pil_tobytes`"
 msgstr ""
 
-#: ../../pixmap.rst:37 008ee8096f8544868a2da140f913d993
+#: ../../pixmap.rst:37 3745ecc34d894b3b8e3282108fd14696
 msgid "write to `bytes` object using pillow"
 msgstr "Pillowを使用してバイトオブジェクトに書き込みます。"
 
-#: ../../pixmap.rst:38 cb5821b67b634c9791e42ad4355898bf
+#: ../../pixmap.rst:38 42963d9ff31846bfad4d49dac1934445
 msgid ":meth:`Pixmap.pixel`"
 msgstr ""
 
-#: ../../pixmap.rst:38 23ac5174492a4f8c836a391ebc623a56
+#: ../../pixmap.rst:38 bfb13086459b4e16914f4f7412e6ed0e
 msgid "return the value of a pixel"
 msgstr "ピクセルの値を返します。"
 
-#: ../../pixmap.rst:39 2ef24bfcb47b43a5927521dd1bae1f56
+#: ../../pixmap.rst:39 aa727520b4144dc2843e094bb84829e7
 msgid ":meth:`Pixmap.save`"
 msgstr ""
 
-#: ../../pixmap.rst:39 bbb6cab6be844ccdaf1ad4837171208b
+#: ../../pixmap.rst:39 c538b8459f3b41f79cb866eabf9280a5
 msgid "save the pixmap in a variety of formats"
 msgstr "さまざまな形式でピクセルマップを保存します。"
 
-#: ../../pixmap.rst:40 d01b7673f14745cead81576590e3b621
+#: ../../pixmap.rst:40 7987c96ad2024cb5a5251362c5c9e078
 msgid ":meth:`Pixmap.set_alpha`"
 msgstr ""
 
-#: ../../pixmap.rst:40 3307c0e063d540ec961076cd973349f0
+#: ../../pixmap.rst:40 d65d4f1cf1564514b2738fa44036b6e1
 msgid "set alpha values"
 msgstr "アルファ値を設定します。"
 
-#: ../../pixmap.rst:41 90334358ed1a4d9894b5d9e108cc9fb0
+#: ../../pixmap.rst:41 b7d9daa9d17447f2933d3aeb7c1a5a0c
 msgid ":meth:`Pixmap.set_dpi`"
 msgstr ""
 
-#: ../../pixmap.rst:41 656578d4c5e44c65a6977dcd96e4551e
+#: ../../pixmap.rst:41 963d5e6c326a4b8096a0f90dbe8bfc82
 msgid "set the image resolution"
 msgstr "イメージの解像度を設定します。"
 
-#: ../../pixmap.rst:42 7416d132a86a40aaba0703eed1524342
+#: ../../pixmap.rst:42 bdb840a286d042388ce593f5da668d4f
 msgid ":meth:`Pixmap.set_origin`"
 msgstr ""
 
-#: ../../pixmap.rst:42 6612567c4f5044239a5218922aafd0b5
+#: ../../pixmap.rst:42 8799ddcb316b4cab9a5084360da7167b
 msgid "set pixmap x,y values"
 msgstr "ピクセルマップのx、y値を設定します。"
 
-#: ../../pixmap.rst:43 c7795a6178bc45698de2b92212ee89d2
+#: ../../pixmap.rst:43 183c5bc97ac948a9b70fcacdc58078da
 msgid ":meth:`Pixmap.set_pixel`"
 msgstr ""
 
-#: ../../pixmap.rst:43 697c6a3825df40c99d0ff7a38c75af3b
+#: ../../pixmap.rst:43 9efadedc5f544f7690f3defbd8ec1ed0
 msgid "set color and alpha of a pixel"
 msgstr "ピクセルの色とアルファを設定します。"
 
-#: ../../pixmap.rst:44 238aa596823a498dab52835655dc3118
+#: ../../pixmap.rst:44 8ea87da8561f4e5595a1ba284a9af232
 msgid ":meth:`Pixmap.set_rect`"
 msgstr ""
 
-#: ../../pixmap.rst:44 f661cd5f530e405485ce045237d9b224
+#: ../../pixmap.rst:44 23071734de9a42ff9955900d73437cca
 msgid "set color and alpha of all pixels in a rectangle"
 msgstr "四角形内のすべてのピクセルの色とアルファを設定します。"
 
-#: ../../pixmap.rst:45 4769e56abe544fe8bf07427d0a3f68b0
+#: ../../pixmap.rst:45 d03a908a194c4a4093ec0d3029b5c166
 msgid ":meth:`Pixmap.shrink`"
 msgstr ""
 
-#: ../../pixmap.rst:45 e76b40c2adab44d8bbe9e1fe02f8f430
+#: ../../pixmap.rst:45 3c2d3e63694049a88991bfb6364cc8cb
 msgid "reduce size keeping proportions"
 msgstr "比率を保持しながらサイズを縮小します。"
 
-#: ../../pixmap.rst:46 2c63830dc598415d9fb11eb5430c7cad
+#: ../../pixmap.rst:46 8450eaee23484577bc647c7643dee72b
 msgid ":meth:`Pixmap.tint_with`"
 msgstr ""
 
-#: ../../pixmap.rst:46 de5d7231eede414da333ec3f32c8625f
+#: ../../pixmap.rst:46 0ada3dad959d4a1698ea4bf90b568a38
 msgid "tint the pixmap"
 msgstr "ピクセルマップに色調を付けます。"
 
-#: ../../pixmap.rst:47 9749365d140e4723b98c8ee1320fbed9
+#: ../../pixmap.rst:47 35bbecb7a7f743f8a57d776f8ecab80a
 msgid ":meth:`Pixmap.tobytes`"
 msgstr ""
 
-#: ../../pixmap.rst:47 bd6f4456a72245d5b5bba1a3ad8aeb56
+#: ../../pixmap.rst:47 13acf96feea44ba7b121b6bf667fc6ee
 msgid "return a memory area in a variety of formats"
 msgstr "さまざまな形式のメモリ領域を返します。"
 
-#: ../../pixmap.rst:48 331a121ccbb74d93901c22daeb4b2262
+#: ../../pixmap.rst:48 d7a59679fa064542b405f1aeb186f992
 msgid ":meth:`Pixmap.warp`"
 msgstr ""
 
-#: ../../pixmap.rst:48 0bb981c5bd4043fe921961b9f0d3caac
+#: ../../pixmap.rst:48 94ab6f2887404530b8ae746640f5aab4
 msgid "return a pixmap made from a quad inside"
 msgstr "内部の四角形から作成されたピクセルマップを返します。"
 
-#: ../../pixmap.rst:49 a255d3ac3aa34be9bb3f999aea872536
+#: ../../pixmap.rst:49 10fccc962d5346beb13feddf94bc05ad
 msgid ":attr:`Pixmap.alpha`"
 msgstr ""
 
-#: ../../pixmap.rst:49 ad52e6dda0aa48f78c969711fa32f6f9
+#: ../../pixmap.rst:49 74819afed8454d6c8077955fa866e252
 msgid "transparency indicator"
 msgstr "透明度指示子"
 
-#: ../../pixmap.rst:50 da0cd6dfad214b65841dbd8eda64581b
+#: ../../pixmap.rst:50 c12468603a314899bb9c2665160eda90
 msgid ":attr:`Pixmap.colorspace`"
 msgstr ""
 
-#: ../../pixmap.rst:50 8e62f8081f2949d8bae0ada60b385606
+#: ../../pixmap.rst:50 61663bc5059e40349bc12e84081222f3
 msgid "pixmap's :ref:`Colorspace`"
 msgstr "ピクセルマップの :ref:`Colorspace`"
 
-#: ../../pixmap.rst:51 7b7a8e3d05d24a81a21837074135c674
+#: ../../pixmap.rst:51 ee1735dd83cb4d9c8c1a48ffeb7d9ca2
 msgid ":attr:`Pixmap.digest`"
 msgstr ""
 
-#: ../../pixmap.rst:51 2834282491174a478eb8c26acf3e1426
+#: ../../pixmap.rst:51 13d23d52ffb34d89a3244bd04de0e87c
 msgid "MD5 hashcode of the pixmap"
 msgstr "ピクセルマップのMD5ハッシュコード"
 
-#: ../../pixmap.rst:52 9f74beaf0d6a4032855e1379b94a3256
+#: ../../pixmap.rst:52 ef7ec1c3af02402a983878267968e473
 msgid ":attr:`Pixmap.height`"
 msgstr ""
 
-#: ../../pixmap.rst:52 511f8b9126ce4030823d6a0815bba8bd
+#: ../../pixmap.rst:52 9eb538b8ebec46ae89bbf5ced5c6119c
 msgid "pixmap height"
 msgstr "ピクセルマップの高さ"
 
-#: ../../pixmap.rst:53 a78db43d43514e7781f22f3fce6e73f9
+#: ../../pixmap.rst:53 aa06d648c4bb40eb8419c19a16985596
 msgid ":attr:`Pixmap.interpolate`"
 msgstr ""
 
-#: ../../pixmap.rst:53 f9608f8272354c01a8dd4a859a1fdad4
+#: ../../pixmap.rst:53 6fae42e121464c8b8a420664fb0aa6f4
 msgid "interpolation method indicator"
 msgstr "補間メソッド指示子"
 
-#: ../../pixmap.rst:54 f8ca6f89d2924fae907ab0477190880f
+#: ../../pixmap.rst:54 0c54071996a341cca852ba51e7978085
 msgid ":attr:`Pixmap.is_monochrome`"
 msgstr ""
 
-#: ../../pixmap.rst:54 2f18563756b54625ade1014f670d0937
+#: ../../pixmap.rst:54 fbd5dd4bf2ad48edae7aa4b3317c04a8
 msgid "check if only black and white occur"
 msgstr "黒と白だけが存在するか確認します。"
 
-#: ../../pixmap.rst:55 5d90cbce29834eeb81ced6129d994fbd
+#: ../../pixmap.rst:55 5ec012b7848548ef8ad6f8fc2670ce11
 msgid ":attr:`Pixmap.is_unicolor`"
 msgstr ""
 
-#: ../../pixmap.rst:55 20d591962c1c42268ecdb17d7372591b
+#: ../../pixmap.rst:55 39b1bfe8ddd048cfb650f403a7bb04fb
 msgid "check if only one color occurs"
 msgstr "単一の色しか存在しないか確認します。"
 
-#: ../../pixmap.rst:56 73d5f4991df6475dbcfd9f781625b957
+#: ../../pixmap.rst:56 a68fe192718f4b3aa244e537c3ff7f21
 msgid ":attr:`Pixmap.irect`"
 msgstr ""
 
-#: ../../pixmap.rst:56 9e1403a975174b3180c6afac3dd1d73c
+#: ../../pixmap.rst:56 4ab56d0437d247d59ab5e77f070f8798
 msgid ":ref:`IRect` of the pixmap"
 msgstr "ピクセルマップの :ref:`IRect` "
 
-#: ../../pixmap.rst:57 bc012e3a97ee4d93a8e17febcbf69f85
+#: ../../pixmap.rst:57 c0685ce1f49c4f47bb9a18786ed564b6
 msgid ":attr:`Pixmap.n`"
 msgstr ""
 
-#: ../../pixmap.rst:57 4121683494474cccbc64d3b104e30772
+#: ../../pixmap.rst:57 fe50345b574f4d6bb19f01c69d279d4b
 msgid "bytes per pixel"
 msgstr "ピクセルごとのバイト数"
 
-#: ../../pixmap.rst:58 3632e2659c404e97bd0d0597f4271e45
+#: ../../pixmap.rst:58 a7b82b34cd054d61b9792c717fbf8d77
 msgid ":attr:`Pixmap.samples_mv`"
 msgstr ""
 
-#: ../../pixmap.rst:58 1fe5bbe19a3b4a8c843734ef306980de
+#: ../../pixmap.rst:58 01778e9aa1ce4483bdf3d9cbd8b8064a
 msgid "`memoryview` of pixel area"
 msgstr "ピクセル領域の `memoryview` "
 
-#: ../../pixmap.rst:59 274b69fef64446f0b27a5e3907fd76cb
+#: ../../pixmap.rst:59 ab0ee7ed8a734ac88571726c438c77b6
 msgid ":attr:`Pixmap.samples_ptr`"
 msgstr ""
 
-#: ../../pixmap.rst:59 3b9af8c0e3b44e03815b0afb07d1ec0b
+#: ../../pixmap.rst:59 82b8384c101b4c34b5fc3635595f968f
 msgid "Python pointer to pixel area"
 msgstr "ピクセル領域へのPythonポインタ"
 
-#: ../../pixmap.rst:60 14fec3e0cc8d4d8ea13395b53b4809b1
+#: ../../pixmap.rst:60 b2d9ef6aef394d5aadf9ede38ee8f15a
 msgid ":attr:`Pixmap.samples`"
 msgstr ""
 
-#: ../../pixmap.rst:60 2557dad81fb7467fa62986b3849763ca
+#: ../../pixmap.rst:60 72c2b3fe96fb4e3db873e4799f48b7a9
 msgid "`bytes` copy of pixel area"
 msgstr "ピクセル領域の `bytes` コピー"
 
-#: ../../pixmap.rst:61 8ebadb7d5b5449b2939ad60a67311979
+#: ../../pixmap.rst:61 50f5502492714fadbd4be9ea93e54f9b
 msgid ":attr:`Pixmap.size`"
 msgstr ""
 
-#: ../../pixmap.rst:61 6b5fc1bf816e4d239eba3fee3d31bec8
+#: ../../pixmap.rst:61 95aa6913b6c241d4b41be8efd875c810
 msgid "pixmap's total length"
 msgstr "ピクセルマップの合計長さ"
 
-#: ../../pixmap.rst:62 ed41217226aa46c8982269215821e78c
+#: ../../pixmap.rst:62 e1e4bcef3fb54127a8dff9dfd7b2e0d4
 msgid ":attr:`Pixmap.stride`"
 msgstr ""
 
-#: ../../pixmap.rst:62 0aaba9ab232741aab09c8126ac91b770
+#: ../../pixmap.rst:62 d0efa6af72b04ef0a1fc0f18c9e8e8ca
 msgid "size of one image row"
 msgstr "1つの画像行のサイズ"
 
-#: ../../pixmap.rst:63 f92032b23d2e4d38882c13850b08a0b9
+#: ../../pixmap.rst:63 03dbdd074de64eec878c8e085040443c
 msgid ":attr:`Pixmap.width`"
 msgstr ""
 
-#: ../../pixmap.rst:63 8684059ca2a349298d6fb42653b591aa
+#: ../../pixmap.rst:63 e18424019d6c4773813b166dd4c901d7
 msgid "pixmap width"
 msgstr "ピクセルマップの幅"
 
-#: ../../pixmap.rst:64 66d4c83beb0344f98415eb62ac62dfae
+#: ../../pixmap.rst:64 eb9e9689345a4295b0dced53c3923c27
 msgid ":attr:`Pixmap.x`"
 msgstr ""
 
-#: ../../pixmap.rst:64 2307a9e9b7ff456cb821777af4795e2e
+#: ../../pixmap.rst:64 652694ff719f4cd2b3a1590887de2883
 msgid "X-coordinate of top-left corner"
 msgstr "左上隅のX座標"
 
-#: ../../pixmap.rst:65 e3e3b9b642054191b21084a8296161c2
+#: ../../pixmap.rst:65 985549c795f64100a323861364967f4d
 msgid ":attr:`Pixmap.xres`"
 msgstr ""
 
-#: ../../pixmap.rst:65 48bd73d9ce0c4e93af1d8d7583ba5dcc
+#: ../../pixmap.rst:65 79c926d7b21f4613a3c362f25e4c4a8f
 msgid "resolution in X-direction"
 msgstr "X方向の解像度"
 
-#: ../../pixmap.rst:66 a3dec43335904bcc9930fec3acd5a664
+#: ../../pixmap.rst:66 0912e7e7d34a49328081300b49ba8710
 msgid ":attr:`Pixmap.y`"
 msgstr ""
 
-#: ../../pixmap.rst:66 d11dbe17e64145dd82048ed77c202463
+#: ../../pixmap.rst:66 84ff7260dee34edb9451a45a7492f070
 msgid "Y-coordinate of top-left corner"
 msgstr "左上隅のY座標"
 
-#: ../../pixmap.rst:67 ba7bcd91d3e04e5c8dd8580e9d649c8b
+#: ../../pixmap.rst:67 a386033ddb664d3e80260ac7c6df9741
 msgid ":attr:`Pixmap.yres`"
 msgstr ""
 
-#: ../../pixmap.rst:67 a21c292e6a5c47f6b91daaaeff6670da
+#: ../../pixmap.rst:67 e6b9b703d2f34e52a9c254a9b819403d
 msgid "resolution in Y-direction"
 msgstr "Y方向の解像度"
 
-#: ../../pixmap.rst:70 3533c2aac9cf47b7ba0cd2d93f0bb2b8
+#: ../../pixmap.rst:70 e9ef25daa8ab4f94a2ca39567c36af9d
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../pixmap.rst:76 60fc565d13cd455c89c3ad3c03f14f9a
+#: ../../pixmap.rst:76 bc83d7a5f02e48cf8086ed52ba36e9d1
 msgid ""
 "**New empty pixmap:** Create an empty pixmap of size and origin given by "
 "the rectangle. So, *irect.top_left* designates the top left corner of the"
@@ -438,39 +438,39 @@ msgstr ""
 "**初期化されず** 、データが格納されます。データを初期化するには、:meth:`clear_with` や :meth:`set_rect` "
 "などを使用してください。"
 
-#: ../../pixmap.rst 042c4e4999184d15b3f5e909b6109a4b
-#: 09713be589b1490c98499eefd1247ceb 0a0569a9413c459cae4eb6496581ffa5
-#: 1cf5d099623f446daa7a413dfe823ca6 1f76b7455a334ecc82ee40334a25ce33
-#: 27d09b23b22d43328b8672f23d895177 3149090974784c3ca2a33dcc5903ed86
-#: 3c2a5babca484babbe6807d2231b624a 598be242303c47eb919817db8ffd588e
-#: 59ba594f1261481d9d4cee3bc9bb9f1a 5a808e6d300947628b5a04fd2d209110
-#: 605bf80ee4fa4ad883e8544881a40fa9 6254c976ab4c42d282fd7b8a4d040548
-#: 706dec55236e44c093a2830d3dd04b83 7d5fef829e3149aa80e27f4d7b86cc78
-#: 8def2a0b9bf14497982454a1456b6046 9c5f9b34f47843628cdafec823eb1bbf
-#: 9c7fa1043ed64bc2b501452c3bf30bc5 a136050f76694e1a822c39369c207948
-#: a22cbf64961544bca212353a1899d035 babb034ae9ef40a7afff7f0086e8bea8
-#: c53c94a38b81440c9890f03761865929 ca19ce43378343c59e90b8262e7741e9
-#: de641179359340c6bb467ac54fbb5051 e62ade2c4bd1421ab592ca3d467da862
-#: ec43c84fd2304330a4be45ef8b4c80ed ee08b1ba14a84f22b68848baf8a650e5
-#: fb3562fa6337452ba7956d924045a7aa
+#: ../../pixmap.rst 231178ce8cc442159dfc334a6042953b
+#: 28ec7e65903f46b38929be7029ed10da 313e2303a953449993a3a254bb7f0d6e
+#: 4c7e2e8b5a6144ec81ed9c5e42eaa071 591d233a700c4bc2935e19c6796929bd
+#: 62443f836a0843448eae5559e1906420 63022277f25341aabb9d3029143af4e8
+#: 651133bac95041bbbde484f6ace01771 765c5aaf22484203ad4863f659d3df17
+#: 77f3c8b72a0e4ee7b0d1e1b1c0ad63fb 78562d21f2ad472cb6d3da9e8b2a3483
+#: 87af99022f9d4f67a00ba2e6cc32f1d5 8ec7fb5ba8414993b16dfbff41a9c4cf
+#: 909726df26ae4b4eb5d6ec3dd0ac948c 97d2ae49d9c64f6abaf05b381a7de973
+#: adc46bd37a0d422e83e44f3c95707f0c adef458707ee4058bdfa27b56bfb466c
+#: baf68248ccf5415795017eb09345b1eb c904da7089be4e169a7089c6638de9bf
+#: cca5d62b8302404fa49973b0cc49420c d6bc984f4cbb4c5a87ec167c5f886e19
+#: dba3efe082ac43d189a7b22b724f61e4 e143d142c8994aeead105de733aa309b
+#: e1ac658f17fb4fab9f0a9f8cb3e60084 e4008073c88d466e9df1a86f078d5856
+#: e87d206edd0c48f1b29972eb8fb71289 ebaf21187bb642a58082c0f4de5e1809
+#: f522a6868513427197cd02d7073ddc06
 msgid "Parameters"
 msgstr ""
 
-#: ../../pixmap.rst:78 67d25db24d0d4839b392e28989b4bdb3
+#: ../../pixmap.rst:78 fb3cbc93a91b4546adfe457604e35ca9
 msgid "colorspace."
 msgstr "カラースペース。"
 
-#: ../../pixmap.rst:81 7538d713e34b4a4bac909ce846b74e85
+#: ../../pixmap.rst:81 1994e85a3eab4b39994a5edbf47ef2fd
 msgid "The pixmap's position and dimension."
 msgstr "ピクマップの位置と寸法。"
 
-#: ../../pixmap.rst:83 4bf0fd7a4c5c49d0baa87228c292a7a4
+#: ../../pixmap.rst:83 e675e8b40c614575a6467d7adbab7466
 msgid ""
 "Specifies whether transparency bytes should be included. Default is "
 "*False*."
 msgstr "透明度バイトを含めるかどうかを指定します。デフォルトは *False* です。"
 
-#: ../../pixmap.rst:87 dbf33042740c4d0fa96736bad0996414
+#: ../../pixmap.rst:87 eed5de98cfda427bab6eb165b67cfd61
 msgid ""
 "**Copy and set colorspace:** Copy *source* pixmap converting colorspace. "
 "Any colorspace combination is possible, but source colorspace must not be"
@@ -479,7 +479,7 @@ msgstr ""
 "**コピーとカラースペースの設定:** カラースペースを変換しながら *ソース* "
 "ピクマップをコピーします。どのカラースペースの組み合わせでも可能ですが、ソースカラースペースは *None* であってはいけません。"
 
-#: ../../pixmap.rst:89 77b02d8842614980973ff6996b71b39f
+#: ../../pixmap.rst:89 81e9b0558fe549d89145823bbd70d282
 msgid ""
 "desired **target** colorspace. This **may also be** *None*. In this case,"
 " a \"masking\" pixmap is created: its :attr:`Pixmap.samples` will consist"
@@ -488,30 +488,30 @@ msgstr ""
 "**ターゲット** となるカラースペース。これは *None* **である場合もあります** 。この場合、 \"マスク\" "
 "ピクマップが作成されます。その :attr:`Pixmap.samples` は、ソースのアルファバイトだけで構成されます。"
 
-#: ../../pixmap.rst:92 ../../pixmap.rst:111 125c31dfdae54f97a7c8bbf8fea60ec3
-#: 688c54f17cd24286864709e2041353b7
+#: ../../pixmap.rst:92 ../../pixmap.rst:111 3d95b72c0e1c4c10921ced354248ebaf
+#: 917804f4ede54a8e898583a01154e8da
 msgid "the source pixmap."
 msgstr "ソースピクマップ。"
 
-#: ../../pixmap.rst:97 e801958d403d4b029da620fcf6d99053
+#: ../../pixmap.rst:97 93bd380b89324af9aaafe3454f81cab3
 msgid "New in v1.18.18"
 msgstr "バージョン 1.18.18 で新規追加"
 
-#: ../../pixmap.rst:99 4c40a9c61c924a839a2c479291d189d8
+#: ../../pixmap.rst:99 a6a987c7720c485a83519c0b97ef4e5f
 msgid ""
 "**Copy and add image mask:** Copy *source* pixmap, add an alpha channel "
 "with transparency data from a mask pixmap."
 msgstr "**コピーとイメージマスクの追加:** ソースピクマップをコピーし、マスクピクマップから透明度データを持つアルファチャネルを追加します。"
 
-#: ../../pixmap.rst:101 808f45cd213b4643bc541ca69236ceaa
+#: ../../pixmap.rst:101 1dc2507fcc584dd788cc1a02839f87ee
 msgid "pixmap without alpha channel."
 msgstr "アルファチャネルを持たないピクマップ。"
 
-#: ../../pixmap.rst:104 b167cab8a8f243ca89bea1c8a25253a2
+#: ../../pixmap.rst:104 8a83c9d5c28549bf8b3192321551a13a
 msgid "a mask pixmap. Must be a graysale pixmap."
 msgstr "マスクピクマップ。グレースケールのピクマップである必要があります。"
 
-#: ../../pixmap.rst:109 97ab23122306426caf7fd69c43bf18bd
+#: ../../pixmap.rst:109 4f6844c9f9954ff5aec77b67c6c1ea56
 msgid ""
 "**Copy and scale:** Copy *source* pixmap, scaling new width and height "
 "values -- the image will appear stretched or shrunk accordingly. Supports"
@@ -521,19 +521,19 @@ msgstr ""
 "ソースピクマップをコピーし、新しい幅と高さの値にスケーリングします。イメージはそれに応じてストレッチまたは縮小されます。部分的なコピーをサポートしています。ソースカラースペースは"
 " *None* であってもかまいません。"
 
-#: ../../pixmap.rst:114 0d1aafe292fa4a25ac42f07b1963c461
+#: ../../pixmap.rst:114 add02cdc16184f8b93aab2e6868113de
 msgid "desired target width."
 msgstr "ターゲットの幅。"
 
-#: ../../pixmap.rst:116 9dd8f99d90164c6f9024ec7c42688603
+#: ../../pixmap.rst:116 d2e7ba5cac0f489087c7c4be70476054
 msgid "desired target height."
 msgstr "ターゲットの高さ。"
 
-#: ../../pixmap.rst:118 2ce15fbc91b648f5a38552427a50acc5
+#: ../../pixmap.rst:118 13baf2086e0549ea81f370de6fe0b17a
 msgid "restrict the resulting pixmap to this region of the **scaled** pixmap."
 msgstr "**スケーリングされた** ピクマップのこの領域に制限します。"
 
-#: ../../pixmap.rst:120 3726a04af37c4aa2bb372f9615657e0f
+#: ../../pixmap.rst:120 d8ed70c5ab55420eb98c3ae3b0ad3a6d
 msgid ""
 "If width or height do not *represent* integers (i.e. `value.is_integer() "
 "!= True`), then the resulting pixmap **will have an alpha channel**."
@@ -541,7 +541,7 @@ msgstr ""
 "幅または高さが整数を *表していない* 場合（つまり、`value.is_integer() != True` の場合）、結果のピクマップには "
 "**アルファチャンネルが含まれます** 。"
 
-#: ../../pixmap.rst:124 e2a3b1d130d64808855c48474c9c4e89
+#: ../../pixmap.rst:124 6569d43ca31f49cba350c8dd2cbdee87
 msgid ""
 "**Copy and add or drop alpha:** Copy *source* and add or drop its alpha "
 "channel. Identical copy if *alpha* equals *source.alpha*. If an alpha "
@@ -550,18 +550,18 @@ msgstr ""
 "**コピーしてアルファの追加または削除：** *ソース* をコピーし、そのアルファチャンネルを追加または削除します。*alpha* が "
 "*source.alpha* と等しい場合、同一のコピーになります。アルファチャンネルが追加される場合、その値は255に設定されます。"
 
-#: ../../pixmap.rst:126 ../../pixmap.rst:304 67fda6353d7d4267ae4a892f5af2c1fa
-#: d1ce14e0054d453f967630f0804c4aeb
+#: ../../pixmap.rst:126 ../../pixmap.rst:304 3dcdb226c8cd4e09b81346a07726303f
+#: 8a82f87ae225453885f3a4bd8a611d5f
 msgid "source pixmap."
 msgstr "ソースのピクマップ。"
 
-#: ../../pixmap.rst:129 62d6e3710a06432889cab1472249977a
+#: ../../pixmap.rst:129 9d0d3020d95644419270f242bd10e721
 msgid ""
 "whether the target will have an alpha channel, default and mandatory if "
 "source colorspace is *None*."
 msgstr "対象にアルファチャンネルがあるかどうか、デフォルトで、ソースのcolorspaceが *None* の場合は必須です。"
 
-#: ../../pixmap.rst:131 b74694a99a0f4cd5842ccceed4507be8
+#: ../../pixmap.rst:131 ecb350af29e94c7c86bd9302cd3741ef
 msgid ""
 "A typical use includes separation of color and transparency bytes in "
 "separate pixmaps. Some applications require this like e.g. "
@@ -570,7 +570,7 @@ msgstr ""
 "典型的な使用例には、カラーと透明バイトを別々のピクマップに分離することが含まれます。一部のアプリケーションでは、*wxPython* の "
 "*wx.Bitmap.FromBufferAndAlpha()* など、これが必要です。"
 
-#: ../../pixmap.rst:141 23c4d0dbf15843008105e317369b348b
+#: ../../pixmap.rst:141 53b4b33c334b4f1a84eb65fe6cf135ff
 msgid ""
 "**From a file:** Create a pixmap from *filename*. All properties are "
 "inferred from the input. The origin of the resulting pixmap is *(0, 0)*."
@@ -578,11 +578,11 @@ msgstr ""
 "**ファイルから:** ファイル名から pixmap を作成します。すべてのプロパティは入力から推測されます。生成される pixmap の原点は "
 "*(0, 0)* です。"
 
-#: ../../pixmap.rst:143 54466aabb5ea4daabe65ddc633b056d4
+#: ../../pixmap.rst:143 eb769848fad741bdb3e212b036b1aeb4
 msgid "Path of the image file."
 msgstr "画像ファイルのパス。"
 
-#: ../../pixmap.rst:147 05202c30db8948e68fe9acfb1780fba2
+#: ../../pixmap.rst:147 275e859559634e45ac79a7662396f57c
 msgid ""
 "**From memory:** Create a pixmap from a memory area. All properties are "
 "inferred from the input. The origin of the resulting pixmap is *(0, 0)*."
@@ -590,7 +590,7 @@ msgstr ""
 "**メモリから:** メモリ領域から pixmap を作成します。すべてのプロパティは入力から推測されます。生成される pixmap の原点は "
 "*(0, 0)* です。"
 
-#: ../../pixmap.rst:149 8c1ddfddbeec49aba05ac7ea696c0bcf
+#: ../../pixmap.rst:149 841094aa8cd84895a9bac8810904510f
 msgid ""
 "Data containing a complete, valid image. Could have been created by e.g. "
 "*stream = bytearray(open('image.file', 'rb').read())*. Type *bytes* is "
@@ -599,7 +599,7 @@ msgid ""
 "1.14.13:* *io.BytesIO* is now also supported."
 msgstr ""
 
-#: ../../pixmap.rst:149 cf4f73fed35948d085b98a38119b402f
+#: ../../pixmap.rst:149 760749eaffe346ddb7c2890d13b47d6b
 msgid ""
 "Data containing a complete, valid image. Could have been created by e.g. "
 "*stream = bytearray(open('image.file', 'rb').read())*. Type *bytes* is "
@@ -611,11 +611,11 @@ msgstr ""
 "対応しています。なぜなら、Python 2 では *bytes == str* "
 "となり、このメソッドはストリームをファイル名と解釈する可能性があるからです。"
 
-#: ../../pixmap.rst:151 d065fb6ac1ec44f4a88623296a5a4ec8
+#: ../../pixmap.rst:151 e0bd35965cb14b148d9d44c5cdfcb263
 msgid "*Changed in version 1.14.13:* *io.BytesIO* is now also supported."
 msgstr "*バージョン 1.14.13 で変更:* *io.BytesIO* もサポートされるようになりました。"
 
-#: ../../pixmap.rst:156 7544d0206f3d4a86ad8a0d1254e5a25c
+#: ../../pixmap.rst:156 f85be260e8cf42cc8791be52b6dd708d
 msgid ""
 "**From plain pixels:** Create a pixmap from *samples*. Each pixel must be"
 " represented by a number of bytes as controlled by the *colorspace* and "
@@ -627,19 +627,19 @@ msgstr ""
 "パラメーターによって制御されるバイト数で表現される必要があります。生成される pixmap の原点は *(0, 0)* "
 "です。このメソッドは、他のプログラムによって生の画像データが提供される場合に有用です - :ref:`FAQ` を参照してください。"
 
-#: ../../pixmap.rst:158 d6ce24955cf840c5bb5e5cdf4546ea77
+#: ../../pixmap.rst:158 9ac5b5d9114f4185a9b8da577b1c8633
 msgid "Colorspace of image."
 msgstr "画像のカラースペース。"
 
-#: ../../pixmap.rst:161 fc9f60b18b3242659e1fb7e25c4990f0
+#: ../../pixmap.rst:161 5ac3ae91051243ba8c55bbcb695a2b30
 msgid "image width"
 msgstr "画像の幅"
 
-#: ../../pixmap.rst:163 730286e857e3428d8bf1d9e24659c198
+#: ../../pixmap.rst:163 33c556541cbf42169c9609a0f7ff2353
 msgid "image height"
 msgstr "画像の高さ"
 
-#: ../../pixmap.rst:165 a67623f2954a4ba8bc1a4c6d994bcaa0
+#: ../../pixmap.rst:165 8ee060766185415f96997c50902aaf80
 msgid ""
 "an area containing all pixels of the image. Must include alpha values if "
 "specified.  *Changed in version 1.14.13:* (1) *io.BytesIO* can now also "
@@ -647,13 +647,13 @@ msgid ""
 "deleted or become unavailable."
 msgstr ""
 
-#: ../../pixmap.rst:165 2d00f7ff83e14469adcdae70a742dbf0
+#: ../../pixmap.rst:165 61154601c77b4e3f9e40b99e1fd10454
 msgid ""
 "an area containing all pixels of the image. Must include alpha values if "
 "specified."
 msgstr "画像のすべてのピクセルを含む領域。指定されている場合はアルファ値を含める必要があります。"
 
-#: ../../pixmap.rst:167 cc98a3289ab94e418ea2590adeec9a3d
+#: ../../pixmap.rst:167 d0fc8000e58e45c3a7b9565f6f9f67b7
 msgid ""
 "*Changed in version 1.14.13:* (1) *io.BytesIO* can now also be used. (2) "
 "Data are now **copied** to the pixmap, so may safely be deleted or become"
@@ -662,11 +662,11 @@ msgstr ""
 "*バージョン 1.14.13 で変更:* (1) *io.BytesIO* も使用できるようになりました。 (2) データは pixmap に "
 "**コピーされる** ようになり、安全に削除または利用不可能になります。"
 
-#: ../../pixmap.rst:169 6ae86863f53d43d0a4d7e625a2eb7cbd
+#: ../../pixmap.rst:169 6301b16df6204022beb9ae9e1efa1e02
 msgid "whether a transparency channel is included."
 msgstr "透明チャネルを含めるかどうか。"
 
-#: ../../pixmap.rst:173 8f845029f5e84d9d806ce334a38c8b3f
+#: ../../pixmap.rst:173 0bb4e450d17b47659ec597df23b4a849
 msgid ""
 "The following equation **must be true**: *(colorspace.n + alpha) * width "
 "* height == len(samples)*."
@@ -674,13 +674,13 @@ msgstr ""
 "以下の式が **成り立つ必要があります** : *(colorspace.n + alpha) * width * height == "
 "len(samples)*。"
 
-#: ../../pixmap.rst:174 171b5768f1e64fcfae57cff37603249d
+#: ../../pixmap.rst:174 fcfa55b174684ec2b06f7cc1cab447af
 msgid ""
 "Starting with version 1.14.13, the samples data are **copied** to the "
 "pixmap."
 msgstr "バージョン 1.14.13 以降、サンプルデータは pixmap に **コピーされます** 。"
 
-#: ../../pixmap.rst:179 6464735a9d394824a35e1dce36846491
+#: ../../pixmap.rst:179 18459219d1ef4f878ed913a4398d5e78
 msgid ""
 "**From a PDF image:** Create a pixmap from an image **contained in PDF** "
 "*doc* identified by its :data:`xref`. All pimap properties are set by the"
@@ -697,11 +697,11 @@ msgstr ""
 "<https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img2.py>`_ "
 "をご覧ください。これにより、PDFのすべてのイメージを復元できます。"
 
-#: ../../pixmap.rst:181 aed10d0399e14332af5e506420339d86
+#: ../../pixmap.rst:181 6f929fa13fee4991a1d5b0be02119c89
 msgid "an opened **PDF** document."
 msgstr "開かれた **PDF** ドキュメント。"
 
-#: ../../pixmap.rst:184 0c656e1138434cadb9f1f711ee01ad59
+#: ../../pixmap.rst:184 e937d117978049858e1d2adb5355a9cf
 msgid ""
 "the :data:`xref` of an image object. For example, you can make a list of "
 "images used on a particular page with :meth:`Document.get_page_images`, "
@@ -710,11 +710,11 @@ msgstr ""
 "画像オブジェクトの :data:`xref`。たとえば、:meth:`Document.get_page_images` "
 "を使用して特定のページで使用されるすべてのイメージのリストを作成し、各イメージの :data:`xref` 番号も表示できます。"
 
-#: ../../pixmap.rst:188 f69b8b4a410f4ff9be570058cc6596ae
+#: ../../pixmap.rst:188 9456332df3d941f6bdbc6b344fa61cd1
 msgid "Initialize the samples area."
 msgstr "サンプル領域を初期化します。"
 
-#: ../../pixmap.rst:190 ba8ea807f22548c5b5d217404d1e0181
+#: ../../pixmap.rst:190 239c8ba02b6b43a7a430dbc3cf495082
 msgid ""
 "if specified, values from 0 to 255 are valid. Each color byte of each "
 "pixel will be set to this value, while alpha will be set to 255 (non-"
@@ -724,13 +724,13 @@ msgstr ""
 "指定された場合、0から255の値が有効です。各ピクセルの各カラーバイトはこの値に設定され、存在する場合はアルファが255（非透明）に設定されます。省略された場合、すべてのバイト（アルファを含む）が"
 " *0x00* にクリアされます。"
 
-#: ../../pixmap.rst:192 d3726d618308477684f7e8a9ca800371
+#: ../../pixmap.rst:192 44a66a6ce6cd4b079e68c301c2789748
 msgid ""
 "the area to be cleared. Omit to clear the whole pixmap. Can only be "
 "specified, if *value* is also specified."
 msgstr "クリアする領域。ピクスマップ全体をクリアするには省略します。*value* も指定されている場合のみ指定できます。"
 
-#: ../../pixmap.rst:196 d6dd23aa98fb478583982886c378ea4c
+#: ../../pixmap.rst:196 e2af079de17d42e1a3099cdfdc38b44c
 msgid ""
 "Colorize a pixmap by replacing black and / or white with colors given as "
 "**sRGB integer** values. Only colorspaces :data:`CS_GRAY` and "
@@ -739,101 +739,101 @@ msgstr ""
 "ピクスマップを色付けして、黒と/または白を **sRGB整数値** として指定された色で置き換えます。:data:`CS_GRAY` と "
 ":data:`CS_RGB` のカラースペースのみサポートされており、他のカラースペースは警告付きで無視されます。"
 
-#: ../../pixmap.rst:198 3829a7774a554cd786b86f485c320a1a
+#: ../../pixmap.rst:198 9b8f7a3d7d6f46dc9ac8934964dc6917
 msgid ""
 "If the colorspace is :data:`CS_GRAY`, the average *(red + green + "
 "blue)/3* will be taken. The pixmap will be changed in place."
 msgstr "カラースペースが :data:`CS_GRAY` の場合、平均（赤+緑+青）/3が取得されます。ピクスマップはその場で変更されます。"
 
-#: ../../pixmap.rst:200 c189577d7311424a9bf80455015a8d0a
+#: ../../pixmap.rst:200 3745075c603e465b9eb0619fcc6d1e51
 msgid "replace black with this value. Specifying 0x000000 makes no changes."
 msgstr "黒をこの値で置き換えます。0x000000を指定しても変更はありません。"
 
-#: ../../pixmap.rst:201 56b578137e9b4e7eae43c1f77d860556
+#: ../../pixmap.rst:201 be5dc93a7a2f4e2ab99653d3d5f227f2
 msgid "replace white with this value. Specifying 0xFFFFFF makes no changes."
 msgstr "白をこの値で置き換えます。0xFFFFFFを指定しても変更はありません。"
 
-#: ../../pixmap.rst:203 b70e7cad075b4908a88e35436b2ce0e8
+#: ../../pixmap.rst:203 6ca4382dcfd2482c8f60752e5cf9abe5
 msgid "Examples:"
 msgstr "例："
 
-#: ../../pixmap.rst:205 fa7c0d2e9fd448d7b1605d3716af2de2
+#: ../../pixmap.rst:205 7152941ab47348c199fa7a7b4e191c00
 msgid "`tint_with(0x000000, 0xFFFFFF)` is a no-op."
 msgstr "`tint_with(0x000000, 0xFFFFFF)` は操作なしです。"
 
-#: ../../pixmap.rst:206 c06983d5166849fa8f3ece7ac8cb5c3e
+#: ../../pixmap.rst:206 33195afc76c24e27b3512ea4d47a34b0
 msgid ""
 "`tint_with(0x00FF00, 0xFFFFFF)` changes black to green, leaves white "
 "intact."
 msgstr "`tint_with(0x00FF00, 0xFFFFFF)` は黒を緑に変更し、白はそのままです。"
 
-#: ../../pixmap.rst:207 2ec7be8e80ec4cb3bc4aa1ce5d98a23d
+#: ../../pixmap.rst:207 abe2da909ca340ac8e7160db602b4281
 msgid "`tint_with(0xFF0000, 0x0000FF)` changes black to red and white to blue."
 msgstr "`tint_with(0xFF0000, 0x0000FF)` は黒を赤に変更し、白を青に変更します。"
 
-#: ../../pixmap.rst:212 07a478202da744639cbfc43a59d6041b
+#: ../../pixmap.rst:212 1b72d750c0614bfa96598cf9b92e0a9f
 msgid ""
 "Apply a gamma factor to a pixmap, i.e. lighten or darken it. Pixmaps with"
 " colorspace *None* are ignored with a warning."
 msgstr "ピクセルマップにガンマ係数を適用し、つまり明るくしたり暗くしたりします。色空間が *None* のピクセルマップは警告とともに無視されます。"
 
-#: ../../pixmap.rst:214 57afcd96c37e43699f3b50d4eefa67da
+#: ../../pixmap.rst:214 f7f82e1500894678ab67e9463845319f
 msgid ""
 "*gamma = 1.0* does nothing, *gamma < 1.0* lightens, *gamma > 1.0* darkens"
 " the image."
 msgstr "*gamma = 1.0* は何も行いません。*gamma < 1.0* は明るくし、*gamma > 1.0* は暗くします。"
 
-#: ../../pixmap.rst:218 2146b5c28e244f3f85f286e7137e3ecb
+#: ../../pixmap.rst:218 76ec15b024ca4bd7b290786cc6e40738
 #, fuzzy
 msgid ""
 "Shrink the pixmap by dividing both, its width and height by 2\\ "
 ":sup:``n``."
 msgstr "Pixmapを2の :sup:`n` 乗で縮小します。"
 
-#: ../../pixmap.rst:220 4a88cd07b61545999c56c27de015cb49
+#: ../../pixmap.rst:220 0127172dbd894ae39201a4fead4b64f8
 msgid ""
 "determines the new pixmap (samples) size. For example, a value of 2 "
 "divides width and height by 4 and thus results in a size of one 16\\ "
 ":sup:`th` of the original. Values less than 1 are ignored with a warning."
 msgstr "新しいPixmap（サンプル）のサイズを決定します。例えば、値が2の場合、幅と高さを4分の1に分割し、元のサイズの16分の1のサイズになります。1未満の値は警告として無視されます。"
 
-#: ../../pixmap.rst:222 f20f472271d9445a812098c351a6dcb6
+#: ../../pixmap.rst:222 fe0dac8e6dea479fa6c4b13602681909
 msgid ""
 "Use this methods to reduce a pixmap's size retaining its proportion. The "
 "pixmap is changed \"in place\". If you want to keep original and also "
 "have more granular choices, use the resp. copy constructor above."
 msgstr "これを使用して比を保持したままPixmapのサイズを縮小します。Pixmapは「その場で」変更されます。元のピクセルを保持し、より詳細な選択肢を持つ場合は、上記のコピーコンストラクタを使用してください。"
 
-#: ../../pixmap.rst:226 f51f3ef3498f4ce5aa9d81bc22f20a05
+#: ../../pixmap.rst:226 8ad00ae6574d4a8ea6bfdb99184ef21d
 msgid ""
 "*New in version:: 1.14.5:* Return the value of the pixel at location (x, "
 "y) (column, line)."
 msgstr "*バージョン1.14.5* で新規追加：位置（x、y）（列、行）のピクセルの値を返します。"
 
-#: ../../pixmap.rst:228 ../../pixmap.rst:238 b84a4602d71f4da19cfd6ece0000942f
-#: eba6f089737b49678f7ba2dc710e0693
+#: ../../pixmap.rst:228 ../../pixmap.rst:238 1971446da433412bbd307550a6c603f4
+#: 86c4e766984c4247b89837a8908d7b2c
 msgid "the column number of the pixel. Must be in `range(pix.width)`."
 msgstr "ピクセルの列番号。範囲 `range(pix.width)` 内である必要があります。"
 
-#: ../../pixmap.rst:229 859f22eabb5a4d7c807390266a30b381
+#: ../../pixmap.rst:229 20d7d1c92b2145dc913797c28d746779
 msgid "the line number of the pixel, Must be in `range(pix.height)`."
 msgstr "ピクセルの行番号、範囲 `range(pix.height)` 内である必要があります。"
 
-#: ../../pixmap.rst 1fefc2a3e1334ab1beef4881c994ab1d
-#: 74ca8dd51b95495cb6539876e64f750e 7c7967b2dc8d4ab9bdba54c5edce894c
-#: 86126c91dd2c4edaa633090ee03e7cb3 90c55a721b0b4d9880f64e599be64648
-#: e8ec276a4bf04432b935cf2632e53ede eb6c16fc7c63489db8aed1b1cbcf7833
+#: ../../pixmap.rst 12961d6bfb384feaa2b0562637b4cd59
+#: 38191700d9dc48d88818ee62f64d3f8c 965f8b86a5b54b398a81bb47e8a59622
+#: a32bd1bf3ece4893a7c3f0433525a3d5 a580aa26ea4a4b739b6e2ec55820352d
+#: b2c4e1d97aa946b894e9ff3621a43b77 d7fcfe5519d947b2b024eb58356d29a5
 msgid "Return type"
 msgstr ""
 
-#: ../../pixmap.rst 191864be40b04c938d051da95b745598
-#: 812390f52c5a49cf971ec0ba6c86c5c4 9f3e9c3829514d2d95003b80245740a3
-#: aa76f436cbfd4579a38ac985ab3e9701 c6233f5876bd45b4a4b7ebc3daabd94e
-#: d92b5606bd48436f9a4a376245d0553a
+#: ../../pixmap.rst 3bdf6579c5114034a3b00dbb2f8cf0ea
+#: 54698519eed04068afe6042f10d4d526 6e5ce6b2f76843a788a84030ddfb6fb8
+#: 6f0842ab7f9046218095aa6cdc504191 79c15baa29bc466fab8ee6ff258ff0d2
+#: b0c0a8b382d047428f41a3ca1a5e6a1e
 msgid "Returns"
 msgstr ""
 
-#: ../../pixmap.rst:232 fa43b0b5e75144e38510f5c5ff35540b
+#: ../../pixmap.rst:232 257e952e9ee54ae8a940a91d128c4709
 msgid ""
 "a list of color values and, potentially the alpha value. Its length and "
 "content depend on the pixmap's colorspace and the presence of an alpha. "
@@ -844,17 +844,17 @@ msgstr ""
 "の色空間とアルファの存在に依存します。RGBAピクセルマップの場合、結果は例えば *[r、g、b、a]* となります。すべてのアイテムは "
 "`range(256)` の整数です。"
 
-#: ../../pixmap.rst:236 0227dd7dabe7409e9f1c8ce416b3223a
+#: ../../pixmap.rst:236 cf49dee16aa140ea900ae82da823e941
 msgid ""
 "*New in version 1.14.7:* Manipulate the pixel at location (x, y) (column,"
 " line)."
 msgstr "*バージョン1.14.7で新規追加：* 位置（x、y）（列、行）のピクセルを操作します。"
 
-#: ../../pixmap.rst:239 93031a8565f442f7a3cef870b26249a2
+#: ../../pixmap.rst:239 1ea8cdf4a6224d4287ca9057da800e8e
 msgid "the line number of the pixel. Must be in `range(pix.height)`."
 msgstr "ピクセルの行番号、`range(pix.height)` 内である必要があります。"
 
-#: ../../pixmap.rst:240 7cd004b08a8c4e5b9ad9ac991b37272c
+#: ../../pixmap.rst:240 ce79c7adf5ec40bcbaad7771737db7d6
 msgid ""
 "the desired pixel value given as a sequence of integers in `range(256)`. "
 "The length of the sequence must equal :attr:`Pixmap.n`, which includes "
@@ -863,11 +863,11 @@ msgstr ""
 "`range(256)` の整数で表されるシーケンスとして指定された所望のピクセル値。シーケンスの長さは :attr:`Pixmap.n` "
 "に等しくなければならず、これにはアルファバイトも含まれます。"
 
-#: ../../pixmap.rst:244 26867eec8b104e869d31c5e70bed0ec8
+#: ../../pixmap.rst:244 9b35c179c17a4eeca55e8fc401617149
 msgid "*New in version 1.14.8:* Set the pixels of a rectangle to a value."
 msgstr "*新しいバージョン1.14.8で導入されました：* 特定の値で長方形のピクセルを設定します。"
 
-#: ../../pixmap.rst:246 ec870e26ac674f7d8a9efb709aca3778
+#: ../../pixmap.rst:246 cbde01d98e65436a8a041fbccc51f5d0
 msgid ""
 "the rectangle to be filled with the value. The actual area is the "
 "intersection of this parameter and :attr:`Pixmap.irect`. For an empty "
@@ -876,7 +876,7 @@ msgstr ""
 "値で埋める長方形。実際のエリアはこのパラメータと :attr:`Pixmap.irect`  "
 "の交差です。空の交差（または無効なパラメータ）の場合、変更は行われません。"
 
-#: ../../pixmap.rst:247 01a27b22124149b4a5d623e3b91c5447
+#: ../../pixmap.rst:247 79bb17328264402593021947cb619810
 msgid ""
 "the desired value, given as a sequence of integers in `range(256)`. The "
 "length of the sequence must equal :attr:`Pixmap.n`, which includes any "
@@ -885,13 +885,13 @@ msgstr ""
 "`range(256)` 内の整数のシーケンスとして指定された所望の値。シーケンスの長さは :attr:`Pixmap.n` "
 "と等しくなければならず、これにはアルファバイトも含まれます。"
 
-#: ../../pixmap.rst:250 f3c89d4ea72849b190773c68de1d1412
+#: ../../pixmap.rst:250 cad89ee4645d4720b61f0a3a07a69556
 msgid ""
 "*False* if the rectangle was invalid or had an empty intersection with "
 ":attr:`Pixmap.irect`, else *True*."
 msgstr "irectが無効であるか、:attr:`Pixmap.irect` と交差しない場合は *False*、それ以外の場合は *True* 。"
 
-#: ../../pixmap.rst:254 e6634e7ae919453189c966d01fa9cff4
+#: ../../pixmap.rst:254 ca74972e297e469bb23db2acebeda0de
 msgid ""
 "This method is equivalent to :meth:`Pixmap.set_pixel` executed for each "
 "pixel in the rectangle, but is obviously **very much faster** if many "
@@ -900,7 +900,7 @@ msgstr ""
 "このメソッドは、多くのピクセルが関与する場合に **非常に高速** であるため、長方形内の各ピクセルに対して実行される "
 ":meth:`Pixmap.set_pixel` と同等です。"
 
-#: ../../pixmap.rst:255 64b85e9461494c40b38de6b99de62f1b
+#: ../../pixmap.rst:255 6e3fa36af26e4849ade88ad2847d67fe
 msgid ""
 "This method can be used similar to :meth:`Pixmap.clear_with` to "
 "initialize a pixmap with a certain color like this: "
@@ -911,53 +911,53 @@ msgstr ""
 "のように、次のようにして特定の色でピクセルマップを初期化するために使用できます。 *pix.set_rect(pix.irect, (255, "
 "255, 0))* （RGBの例、ピクセルマップ全体を黄色で色付けします）。"
 
-#: ../../pixmap.rst:259 91bedddb5d99478881e177285e16f357
+#: ../../pixmap.rst:259 88f155c27c974317ab923164d505a88a
 msgid "New in v1.17.7"
 msgstr "v1.17.7で新規導入"
 
-#: ../../pixmap.rst:261 552406d3c61e45499c5cfffb7bed0b8b
+#: ../../pixmap.rst:261 ef564fdd1b124f6a8a5300d055339885
 msgid "Set the x and y values of the pixmap's top-left point."
 msgstr "ピクセルマップの左上の点のxとyの値を設定します。"
 
-#: ../../pixmap.rst:263 8092f9628e724a0cbdb57f94e1cc1ea4
+#: ../../pixmap.rst:263 f46c33bf7e7d4f68a0226a60b78a1342
 msgid "x coordinate"
 msgstr "x座標"
 
-#: ../../pixmap.rst:264 5aed15b39c8846838710ab93d8bd1e33
+#: ../../pixmap.rst:264 950fbd84136c43d2ad55e8e2ade0a635
 msgid "y coordinate"
 msgstr "y座標"
 
-#: ../../pixmap.rst:269 b6f7e6594f4e470cafc1ca3a6f0272e8
+#: ../../pixmap.rst:269 7bf1def8457849df9c8d3047ac1919ca
 msgid "New in v1.16.17"
 msgstr "v1.16.17で新規導入."
 
-#: ../../pixmap.rst:271 6061cb240556476982993658ab595ea8
+#: ../../pixmap.rst:271 2f5dbb9777e7443fa4a217a9dea6baca
 msgid ""
 "Changed in v1.18.0: When saving as a PNG image, these values will be "
 "stored now."
 msgstr "v1.18.0で変更：PNGイメージとして保存する場合、これらの値が保存されるようになりました。"
 
-#: ../../pixmap.rst:273 efde993e38dd47d489ff9b01f6c5be5d
+#: ../../pixmap.rst:273 1ff0e86c9132426380cc7bdf87062a9b
 msgid "Set the resolution (dpi) in x and y direction."
 msgstr "xおよびy方向の解像度（dpi）を設定します。"
 
-#: ../../pixmap.rst:275 e63769d19f934cb9ba4852f959884e40
+#: ../../pixmap.rst:275 fd8f3431bcff4ea98427e8ffc73dfb6d
 msgid "resolution in x direction."
 msgstr "x方向の解像度。"
 
-#: ../../pixmap.rst:276 d4f2a6dd614940a8b5763cce403b9050
+#: ../../pixmap.rst:276 ea49f8ccf9b34aadb481e7b726d769dd
 msgid "resolution in y direction."
 msgstr "y方向の解像度。"
 
-#: ../../pixmap.rst:281 1720bbf4e9bf4df7808a4b583ace815f
+#: ../../pixmap.rst:281 6b73645dae514edcbba08727092fef73
 msgid "Changed in v 1.18.13"
 msgstr "変更内容：v1.18.13で変更"
 
-#: ../../pixmap.rst:283 9bd9591575664f3da5cb4ba9cf529d30
+#: ../../pixmap.rst:283 bae9f05fdc2a49d7800f13597f7260a9
 msgid "Change the alpha values. The pixmap must have an alpha channel."
 msgstr "アルファ値を変更します。ピクマップにはアルファチャンネルが必要です。"
 
-#: ../../pixmap.rst:285 a48891c5e15541d2a780d1bd26f3ce83
+#: ../../pixmap.rst:285 4f3720b3e79542c9adfa572d61d27bff
 msgid ""
 "the new alpha values. If provided, its length must be at least *width * "
 "height*. If omitted (`None`), all alpha values are set to 255 (no "
@@ -968,13 +968,13 @@ msgstr ""
 "さでなければなりません。省略した場合（`None`）、すべてのアルファ値が255（透明でない）に設定されます。*バージョン1.14.13で変更：*"
 " *io.BytesIO* も受け入れられるようになりました。"
 
-#: ../../pixmap.rst:286 ca973942af8246f09c32ec18bda739e4
+#: ../../pixmap.rst:286 fcdbd039a27943cd944d48a3c2a3a137
 msgid ""
 "*New in v1.18.13:* whether to premultiply color components with the alpha"
 " value."
 msgstr "*v1.18.13で新登場：* カラーコンポーネントをアルファ値と乗算するかどうか。"
 
-#: ../../pixmap.rst:287 5695bf8913ba424a8a4895957f979141
+#: ../../pixmap.rst:287 2fda89ee4eb84dfd858c404df3a35daa
 msgid ""
 "ignore the alpha value and set this color to fully transparent. A "
 "sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. "
@@ -985,17 +985,17 @@ msgstr ""
 "内の整数のシーケンスです。デフォルトは *None* です。たとえば、RGBの典型的な選択肢は `opaque=(255, 255, 255)` "
 "（白）です。"
 
-#: ../../pixmap.rst:292 fd5d659c0bdd4030946dabc2e654a529
+#: ../../pixmap.rst:292 446c70bfb33b412b9c5217ca057edebf
 msgid ""
 "Invert the color of all pixels in :ref:`IRect` *irect*. Will have no "
 "effect if colorspace is *None*."
 msgstr ":ref:`IRect` *irect* 内のすべてのピクセルの色を反転させます。colorspaceが *None* の場合は効果がありません。"
 
-#: ../../pixmap.rst:294 5a7e363cfb824774b21835b029477bf2
+#: ../../pixmap.rst:294 13be9b8c0ac44f05ab5a593374d05e0e
 msgid "The area to be inverted. Omit to invert everything."
 msgstr "反転する領域。すべて反転するには省略します。"
 
-#: ../../pixmap.rst:298 c6e04264ad2543c3b98be057f4ba2f32
+#: ../../pixmap.rst:298 3c3735c1e7504294a6ace5610a8dccbf
 msgid ""
 "Copy the *irect* part of the *source* pixmap into the corresponding area "
 "of this one. The two pixmaps may have different dimensions and can each "
@@ -1008,7 +1008,7 @@ msgstr ""
 "または :data:`CS_RGB` カラースペースを持つことができますが、現在は同じアルファプロパティ [#f2]_ "
 "を持っている必要があります。コピー機構は、次のようにソースとターゲットの間の不一致を自動的に調整します。"
 
-#: ../../pixmap.rst:300 12d25d96df934c1bbd13c4602f64faca
+#: ../../pixmap.rst:300 e8938909ef67420288a4361ccd64d8eb
 msgid ""
 "If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade "
 "value will be put into each of the three rgb component bytes. If the "
@@ -1019,7 +1019,7 @@ msgstr ""
 "にコピーする場合、ソースのグレーシェード値は、3つのRGBコンポーネントバイトの各々に配置されます。逆の場合、*（r + g + b）/ 3* "
 "がターゲットのグレーシェード値として取られます。"
 
-#: ../../pixmap.rst:302 b8cd78246cfb454a9d240b212eccfa0b
+#: ../../pixmap.rst:302 6f75061a4e494cc49b3c422aceef887a
 msgid ""
 "Between *irect* and the target pixmap's rectangle, an \"intersection\" is"
 " calculated at first. This takes into account the rectangle coordinates "
@@ -1034,11 +1034,11 @@ msgstr ""
 ":meth:`Pixmap.set_origin` "
 "を介して自由に変更できます）を考慮に入れます。その後、この交差のデータがコピーされます。交差が空の場合、何も起こりません。"
 
-#: ../../pixmap.rst:307 06c1a26dfe6b4b1b94a9a0c469facf98
+#: ../../pixmap.rst:307 7c62da663de24b58abbc142cd040bcf5
 msgid "The area to be copied."
 msgstr "コピーする領域。"
 
-#: ../../pixmap.rst:309 21448b4f2fd64cc587f9537f87221432
+#: ../../pixmap.rst:309 0197da702e2d4c88960e1ec56801397a
 msgid ""
 "Example: Suppose you have two pixmaps, `pix1` and `pix2` and you want to "
 "copy the lower right quarter of `pix2` to `pix1` such that it starts at "
@@ -1047,20 +1047,20 @@ msgstr ""
 "例： `pix1` と `pix2` という2つのピクマップがあるとし、`pix2` の右下の四半期を `pix1` にコピーし、それが "
 "`pix1` の左上の点から開始するようにしたい場合、次のスニペットを使用します::"
 
-#: ../../pixmap.rst:328 416ac01a096f41a198c7a5d27f3e0b8a
+#: ../../pixmap.rst:328 21851b3dc9b14eb6b0aa4b4100e61d0e
 msgid ""
 "Changed in v1.22.0: Added **direct support of JPEG** images. Image "
 "quality can be controlled via parameter \"jpg_quality\"."
 msgstr "v1.22.0で変更：**JPEG画像の直接サポート** が追加されました。画像の品質は「jpg_quality」パラメータを使用して制御できます。"
 
-#: ../../pixmap.rst:330 3f046b9686db43a3b47b7218c07a7c60
+#: ../../pixmap.rst:330 4629869515894b038a21462b2327124e
 msgid ""
 "Save pixmap as an image file. Depending on the output chosen, only some "
 "or all colorspaces are supported and different file extensions can be "
 "chosen. Please see the table below."
 msgstr "Pixmapを画像ファイルとして保存します。選択した出力に応じて、一部またはすべてのカラースペースがサポートされ、異なるファイル拡張子を選択できます。詳細については以下の表をご覧ください。"
 
-#: ../../pixmap.rst:332 8cc056afcd654dba912a5d520056f0b2
+#: ../../pixmap.rst:332 c3b31c9279ac4978a41f569e7f2c6227
 msgid ""
 "The file to save to. May be provided as a string, as a ``pathlib.Path`` "
 "or as a Python file object. In the latter two cases, the filename is "
@@ -1070,7 +1070,7 @@ msgstr ""
 "保存先のファイル。文字列、``pathlib.Path`` "
 "、またはPythonファイルオブジェクトとして提供できます。後の2つの場合、ファイル名は対応するオブジェクトから取得されます。ファイル名の拡張子は画像フォーマットを決定し、出力パラメータで上書きできます。"
 
-#: ../../pixmap.rst:334 285557d0b0e44f5cbf4e7dfd9302f4cb
+#: ../../pixmap.rst:334 e952c46806ec4732a23cf1735dbf3b80
 msgid ""
 "The desired image format. The default is the filename's extension. If "
 "both, this value and the file extension are unsupported, an exception is "
@@ -1079,26 +1079,26 @@ msgstr ""
 "望ましい画像フォーマット。デフォルトはファイル名の拡張子です。この値とファイル拡張子の両方がサポートされていない場合、例外が発生します。:ref:`PixmapOutput`"
 " を参照してください。"
 
-#: ../../pixmap.rst:335 ../../pixmap.rst:345 75cca03cb5b847a287019e0749bb5335
-#: 7db7cd2ebea049a497ebcb6c8efb194c
+#: ../../pixmap.rst:335 ../../pixmap.rst:345 289fadfd8ee448b7adb6c82212304c00
+#: 79b51bbd619e4fab89b7c4af903fd1ce
 msgid ""
 "The desired image quality, default 95. Only applies to JPEG images, else "
 "ignored. This parameter trades quality against file size. A value of 98 "
 "is close to lossless. Higher values should not lead to better quality."
 msgstr "望ましい画像品質、デフォルトは95です。JPEG画像にのみ適用され、それ以外の場合は無視されます。このパラメータは品質とファイルサイズをトレードオフにします。値が98の場合、ほぼロスレスです。より高い値は品質を向上させることはありません。"
 
-#: ../../pixmap.rst 32e635d0f2da4197ad916b835cb04292
-#: 5f6ff5fc79444485a2067809717eb676 8cc4d36419f54be7a5ba97e7b538dd28
-#: a4d557285cb74088887a16cdfa06a01f
+#: ../../pixmap.rst 3cc0dc775ed14be4a886e815c15594a8
+#: 4153fafc7a3a4ecb9efee6b0a04f23cd 7d1da7af434244a78603776bb9ae7442
+#: a8abf9364b1e4c7ebab825c8cd656153
 msgid "Raises"
 msgstr "例外"
 
-#: ../../pixmap.rst:337 ../../pixmap.rst:347 14030471e52141078d3bbf747d111119
-#: 609a97c6338a4189b1850ec19b18fbf4
+#: ../../pixmap.rst:337 ../../pixmap.rst:347 46e65aa810c04774b0e4cbbce31bb4b1
+#: 5e237975bb7142f791ed6720ccdf86f6
 msgid "For unsupported image formats."
 msgstr "サポートされていない画像フォーマットの場合。"
 
-#: ../../pixmap.rst:341 b17bf830c72541d287f2012251fe7995
+#: ../../pixmap.rst:341 e231769e0b5645bd9b2ffd648612bc0c
 msgid ""
 "New in version 1.14.5: Return the pixmap as a *bytes* memory object of "
 "the specified format -- similar to :meth:`save`."
@@ -1106,7 +1106,7 @@ msgstr ""
 "新機能（バージョン1.14.5）：指定されたフォーマットのピクマップをバイトメモリオブジェクトとして返します。これは :meth:`save` "
 "と似ています。"
 
-#: ../../pixmap.rst:342 e46d3c23007f41bd9c915bd0209c1cc1
+#: ../../pixmap.rst:342 0da140d09ca643e385ec54649150f659
 msgid ""
 "Changed in v1.22.0: Added **direct JPEG support**. Image quality can be "
 "influenced via new parameter \"jpg_quality\"."
@@ -1114,35 +1114,35 @@ msgstr ""
 "v1.22.0で変更： **JPEG画像の直接サポート** "
 "が追加されました。画像の品質は「jpg_quality」パラメータを使用して制御できます。"
 
-#: ../../pixmap.rst:344 11e90ffaaada4dceb7cf0e9cbb4e667e
+#: ../../pixmap.rst:344 0d85fa3f2a604ebc88dbadb52b3f72bc
 msgid ""
 "The desired image format. The default is \"png\". For possible values see"
 " :ref:`PixmapOutput`."
 msgstr "望ましい画像フォーマット。デフォルトは \"png\" です。:ref:`PixmapOutput` を参照してください。"
 
-#: ../../pixmap.rst:350 e8ba6ecae2ca45b68942d439831be25e
+#: ../../pixmap.rst:350 748bf47e005d4f6a8234e35fff27e0d8
 msgid ""
 "The requested image format. The default is \"png\". For other possible "
 "values see :ref:`PixmapOutput`."
 msgstr "リクエストされた画像フォーマットです。デフォルトは \"png\" です。:ref:`PixmapOutput` を参照してください。"
 
-#: ../../pixmap.rst:354 ../../pixmap.rst:369 d347144c83074397a08525534077384d
-#: f9f662fb49ff4d50a47ed997cb307bc7
+#: ../../pixmap.rst:354 ../../pixmap.rst:369 3234c1e7471f483c87903137f97fe870
+#: ff7ac5d976d24472b1d5b7bb8a0dff1b
 msgid "New in v1.19.0"
 msgstr "v1.19.0 で新規追加"
 
-#: ../../pixmap.rst:356 ../../pixmap.rst:371 681e373b8ce74ba4b38bddd0a2ae6491
-#: bbb074c51002404c95508abbd80a6f7e
+#: ../../pixmap.rst:356 ../../pixmap.rst:371 06fde4358eac45d49177b28d6e3263c9
+#: 0a55a9a4cb684c1daf97b0a7d82d1ae6
 msgid "Changed in v1.22.5: Support of new parameter for Tesseract's tessdata."
 msgstr "v1.22.5 で変更：Tesseract の tessdata に関する新しいパラメータのサポート。"
 
-#: ../../pixmap.rst:358 68b94c3ed57e4125b373edd684ffc6ce
+#: ../../pixmap.rst:358 a8fd10cb09b14e5ab98fbbebfe7c9124
 msgid ""
 "Perform text recognition using Tesseract and save the image as a 1-page "
 "PDF with an OCR text layer."
 msgstr "Tesseract を使用してテキスト認識を実行し、OCR テキスト レイヤーを持つ 1 ページの PDF として画像を保存します。"
 
-#: ../../pixmap.rst:360 6043c37a6e31497d9df7bfd435c88220
+#: ../../pixmap.rst:360 e6bd4066be2c4cbaa42bc00d53689eb0
 msgid ""
 "identifies the file to save to. May be either a string or a pointer to a "
 "file opened with \"wb\" (includes `io.BytesIO()` objects)."
@@ -1150,11 +1150,11 @@ msgstr ""
 "保存先のファイルを識別します。文字列または \"wb\" で開かれたファイルへのポインタ (`io.BytesIO()` "
 "オブジェクトを含む）のいずれかである必要があります。"
 
-#: ../../pixmap.rst:361 da5d0e74ca174a7187b97fb505952fbe
+#: ../../pixmap.rst:361 0347b7aca8414e5c9f121cb97fb52d88
 msgid "whether to compress the resulting PDF, default is `True`."
 msgstr "結果の PDF を圧縮するかどうか。デフォルトは `True` です。"
 
-#: ../../pixmap.rst:362 82fb0ba10c9f42d0bf3b85bade434053
+#: ../../pixmap.rst:362 03700e3e38b143269c427a675a773b30
 msgid ""
 "the languages occurring in the image. This must be specified in Tesseract"
 " format. Default is \"eng\" for English. Use \"+\"-separated Tesseract "
@@ -1165,7 +1165,7 @@ msgstr ""
 "\"eng\"（英語）です。複数の言語を使用する場合、\"eng+spa\" のように \"+\" で区切った Tesseract "
 "言語コードを使用します（英語とスペイン語の場合など）。"
 
-#: ../../pixmap.rst:363 635b025103da44f28c4f154f82f68a50
+#: ../../pixmap.rst:363 412441c9a92a440fb4df66a3a92195af
 #, fuzzy
 msgid ""
 "folder name of Tesseract's language support. If omitted, this information"
@@ -1174,7 +1174,7 @@ msgstr ""
 ":arg str tessdata: Tesseractの言語サポートフォルダーの名前です。省略した場合、この情報は環境変数 "
 "`TESSDATA_PREFIX` として存在している必要があります。"
 
-#: ../../pixmap.rst:365 3c4e466a693d4aa6ae296a5b3f5736bc
+#: ../../pixmap.rst:365 1ab1c32b9f9c4628b91284229f3442c7
 msgid ""
 "**Will fail** if Tesseract is not installed or if the environment "
 "variable \"TESSDATA_PREFIX\" is not set to the `tessdata` folder name and"
@@ -1183,7 +1183,7 @@ msgstr ""
 "Tesseract がインストールされていない場合や、環境変数 \"TESSDATA_PREFIX\" が `tessdata` "
 "フォルダ名に設定されておらず、またはパラメータとして提供されていない場合、この関数は **失敗します** 。"
 
-#: ../../pixmap.rst:373 d737e55d53cd4248ac6fce8ca2db04ad
+#: ../../pixmap.rst:373 59d566d9c82043d881ebaba9af6e83c2
 msgid ""
 "Perform text recognition using Tesseract and convert the image to a "
 "1-page PDF with an OCR text layer. Internally invokes "
@@ -1192,7 +1192,7 @@ msgstr ""
 "Tesseractを使用してテキスト認識を実行し、画像をOCRテキストレイヤーを持つ1ページのPDFに変換します。内部的には "
 ":meth:`Pixmap.pdfocr_save` を呼び出します"
 
-#: ../../pixmap.rst:375 68efc41b9de54603842866ae3952a973
+#: ../../pixmap.rst:375 77ba82a299fe4002813ed86bd11edfbc
 msgid ""
 "A 1-page PDF file in memory. Could be opened like `doc=fitz.open(\"pdf\","
 " pix.pdfocr_tobytes())`, and text extractions could be performed on its "
@@ -1205,7 +1205,7 @@ msgid ""
 "          imgpdf.close()       doc.save(\"ocr-images.pdf\")"
 msgstr ""
 
-#: ../../pixmap.rst:375 6ad0787596d64f1f8d3539a0d30e21e8
+#: ../../pixmap.rst:375 dde41f5dc562440d9e6a25da1b5e0400
 msgid ""
 "A 1-page PDF file in memory. Could be opened like `doc=fitz.open(\"pdf\","
 " pix.pdfocr_tobytes())`, and text extractions could be performed on its "
@@ -1214,7 +1214,7 @@ msgstr ""
 "メモリ内の1ページのPDFファイル。次のようにして開くことができます： `doc=fitz.open(\"pdf\", "
 "pix.pdfocr_tobytes())` 、そしてそのページ=doc[0]でテキストの抽出が行えます。"
 
-#: ../../pixmap.rst:379 27541ce91c654915b238700f5c98e6f6
+#: ../../pixmap.rst:379 7c22bd99c6bd4c7eaccee6de4d0b4026
 msgid ""
 "Another possible use is insertion into some pdf. The following snippet "
 "reads the images of a folder and stores them as pages in a new PDF that "
@@ -1223,12 +1223,12 @@ msgstr ""
 "別の可能性として、PDF に挿入することが考えられます。次のスニペットは、フォルダ内の画像を読み取り、OCR テキスト レイヤーを含む新しい "
 "PDF ページとして保存します::"
 
-#: ../../pixmap.rst:393 ../../pixmap.rst:414 a0b49ecf43164c02908a4a1984a36d66
-#: dadabc90aa1647c3a34498b6ff5f1019
+#: ../../pixmap.rst:393 ../../pixmap.rst:414 58412d61f17f42ec80d3d1118e23c6de
+#: 64f0054ff2764b758adfb6a2908ebd63
 msgid "New in v1.17.3"
 msgstr "v1.17.3 で新しく追加されました"
 
-#: ../../pixmap.rst:395 49ed1246b3414df5bf3a2d19edd22735
+#: ../../pixmap.rst:395 b90b2cadccaa4acc9dcaf813f3d7fb5d
 msgid ""
 "Write the pixmap as an image file using Pillow. Use this method for "
 "output unsupported by MuPDF. Examples are"
@@ -1236,21 +1236,21 @@ msgstr ""
 "Pillow を使用して pixmap を画像ファイルとして書き込みます。これは MuPDF "
 "でサポートされていない出力に使用します。例として、以下が挙げられます。"
 
-#: ../../pixmap.rst:397 5c09275c4e02430ab6f3c4ac2cf09605
+#: ../../pixmap.rst:397 06b9e95765034a3392481def96264bf1
 msgid "Formats JPX, J2K, WebP, etc."
 msgstr "JPX、J2K、WebP などの形式"
 
-#: ../../pixmap.rst:398 340c1f17742b48d5ae1317000dafec97
+#: ../../pixmap.rst:398 883c3a9823964ae7b5ff13165ac48584
 msgid "Storing EXIF information."
 msgstr "EXIF 情報の保存"
 
-#: ../../pixmap.rst:399 394d362c77174e9f80edd6067ca8d05e
+#: ../../pixmap.rst:399 5ffb31a9982f4fe6bc3236ae006e53d5
 msgid ""
 "If you do not provide dpi information, the values *xres*, *yres* stored "
 "with the pixmap are automatically used."
 msgstr "dpi 情報を提供しない場合、pixmap に格納されている *xres*、*yres* の値が自動的に使用されます。"
 
-#: ../../pixmap.rst:401 58d24d68ddb94b89b473c1bdd0215285
+#: ../../pixmap.rst:401 8ef395dcc71b4033ae0f4ca2212eef19
 #, fuzzy
 msgid ""
 "A simple example: `pix.pil_save(\"some.webp\", optimize=True, dpi=(150, "
@@ -1259,7 +1259,7 @@ msgstr ""
 "簡単な例: `pix.pil_save(\"some.webp\", optimize=True, dpi=(150, 150))` "
 "。他のパラメータの詳細については、Pillow のドキュメンテーションを参照してください。"
 
-#: ../../pixmap.rst:403 57b338f7ba2e41cf8e5f28d6203e462e
+#: ../../pixmap.rst:403 71a2f4d35f7b4e00abc6aea5c03e5f5b
 msgid ""
 "If the pixmap's colorspace is RGB with transparency, the alpha values may"
 " or may not already be multiplied into the color components "
@@ -1269,23 +1269,23 @@ msgid ""
 "<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
 msgstr ""
 
-#: ../../pixmap.rst:406 deeb4917b58d48308aab02f8bb9e9b9f
+#: ../../pixmap.rst:406 37ed3b73d3be48cbbc98ceb05c03758d
 msgid "For details on other parameters see the Pillow documentation."
 msgstr ""
 
-#: ../../pixmap.rst:408 b9a853e581534ee886ece742f499bd7d
+#: ../../pixmap.rst:408 aa249221eb95464bac3f88f5b2d62c05
 msgid ""
 "Since v1.22.0, PyMuPDF supports JPEG output directly. We recommended to "
 "no longer use this method for JPEG output -- for performance reasons and "
 "for avoiding unnecessary external dependencies."
 msgstr ""
 
-#: ../../pixmap.rst:410 ../../pixmap.rst:418 0965ab68dd964259bd8a25f18dd9f6a2
-#: aa4b605e5f0242a8b8521b1c817060f4
+#: ../../pixmap.rst:410 ../../pixmap.rst:418 97f4cb8757b549f49737ad289d861e35
+#: b94e97d6317742a6b8562c098d6ecab2
 msgid "if Pillow is not installed."
 msgstr "Pillow がインストールされていない場合"
 
-#: ../../pixmap.rst:416 c3674c4ce00b486aabfb86b174bf2752
+#: ../../pixmap.rst:416 ff400eb0514d4413a667609104d9e5e0
 #, fuzzy
 msgid ""
 "Return an image as a bytes object in the specified format using Pillow. "
@@ -1297,12 +1297,12 @@ msgstr ""
 "pix.pil_tobytes(format=\"WEBP\", optimize=True)` 。詳細なパラメータについては、Pillow "
 "のドキュメンテーションを参照してください。"
 
-#: ../../pixmap.rst:425 ../../pixmap.rst:460 24a0e56849e841f189095c52b665c388
-#: bf9ce78f1e2145269f7109982a8b29da
+#: ../../pixmap.rst:425 ../../pixmap.rst:460 381600f659d24bebaba452f7c27559f9
+#: 96a3b6c9f5d64b05aa31886e6bdffcd5
 msgid "New in v1.19.3"
 msgstr "v1.19.3 で新しく追加されました"
 
-#: ../../pixmap.rst:427 008ff059bbd64b17a917956270e054e9
+#: ../../pixmap.rst:427 6be8cb3a17b446d58c13dd7970b20c4e
 msgid ""
 "Return a new pixmap by \"warping\" the quad such that the quad corners "
 "become the new pixmap's corners. The target pixmap's `irect` will be `(0,"
@@ -1311,21 +1311,21 @@ msgstr ""
 "四角形を \"ワープ\" して、四角形の角が新しい pixmap の角になるようにします。対象 pixmap の `irect` は `(0, "
 "0, width, height)` になります。"
 
-#: ../../pixmap.rst:429 f09ebab45aa34b1cb1469edef94c36e9
+#: ../../pixmap.rst:429 bcee60fc2f45405fa40ee18f6e865390
 msgid ""
 "a convex quad with coordinates inside :attr:`Pixmap.irect` (including the"
 " border points)."
 msgstr ":attr:`Pixmap.irect` の内部にある座標を持つ凸四角形（境界点も含む）"
 
-#: ../../pixmap.rst:430 2ef87590fb9e433381cf1beb8ddca988
+#: ../../pixmap.rst:430 370d1ed60809427bb6bcee210b33ec10
 msgid "desired resulting width."
 msgstr "望ましい幅"
 
-#: ../../pixmap.rst:431 d470417715f042ba9f90c0662509f03f
+#: ../../pixmap.rst:431 18c5ff367d874e42af15bd7f52da4448
 msgid "desired resulting height."
 msgstr "望ましい高さ"
 
-#: ../../pixmap.rst:432 ddd55333e1c246108d14e13cec29b4c2
+#: ../../pixmap.rst:432 f93894bc188e4c78a08f5bff4cec226f
 msgid ""
 "A new pixmap where the quad corners are mapped to the pixmap corners in a"
 " clockwise fashion: `quad.ul -> irect.tl`, `quad.ur -> irect.tr`, etc."
@@ -1333,37 +1333,37 @@ msgstr ""
 "新しいピクスマップで、四角形の角が時計回りにピクスマップの角にマップされます: `quad.ul -> irect.tl`、`quad.ur ->"
 " irect.tr` など。"
 
-#: ../../pixmap.rst:433 3c0ebddba0dc415c8b6f8600039e76da
+#: ../../pixmap.rst:433 641dfbb04afb4911aef52bdc21fc5573
 msgid ""
 ":ref:`Pixmap`  .. image:: images/img-warp.*      :scale: 40      :align: "
 "center"
 msgstr ""
 
-#: ../../pixmap.rst:433 fbec7842585e4932977c64d22a0b967a
+#: ../../pixmap.rst:433 b3fc84452c5445bfb73c267bfa93d3e7
 msgid ":ref:`Pixmap`"
 msgstr ""
 
 #: ../../pixmap.rst:442 ../../pixmap.rst:499 ../../pixmap.rst:508
-#: 0adf9bf4afc346e6ba4237f94c22cfd0 65f3035646c44b19bd32b8d0821b1d7b
-#: 95cd9c2056a946f4b0cf5ba4c6c6bbfe
+#: 32fd1f1f82694a24874c50cafb0260b5 a50f971e16ff4bf78e5130cf2818ca5d
+#: db0468fc2a6a4f219bbe153ff81b452d
 msgid "New in v1.19.2"
 msgstr "v1.19.2で導入"
 
-#: ../../pixmap.rst:443 e7c1e96a5af04e408a16fd8510ec7a66
+#: ../../pixmap.rst:443 2a6c5002da8f4917af7bd96346dd1fd8
 msgid "Changed in v1.19.3"
 msgstr "v1.19.3で変更"
 
-#: ../../pixmap.rst:445 ff4d13cc474a4080a07e37fc48b61cba
+#: ../../pixmap.rst:445 82bec4730b3449f6b341cf003f7804d2
 msgid "Determine the pixmap's unique colors and their count."
 msgstr "Pixmapのユニークな色とそのカウントを特定します。"
 
-#: ../../pixmap.rst:447 0a07a62f22e8424aa6d13d6c56b4a249
+#: ../../pixmap.rst:447 4c0bd367e05e4bf1837609a864ea4733
 msgid ""
 "*(changed in v1.19.3)* If `True` return a dictionary of color pixels and "
 "their usage count, else just the number of unique colors."
 msgstr "*（v1.19.3で変更）* `True` の場合、色ピクセルとその使用回数の辞書を返し、それ以外の場合はユニークな色の数だけを返します。"
 
-#: ../../pixmap.rst:448 35beb6c70c4c482b971ed914b756acc1
+#: ../../pixmap.rst:448 28e840024476403c8e8157b4e0fe7a82
 msgid ""
 "a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels "
 "are considered. This allows inspecting sub-rectangles of a given pixmap "
@@ -1372,7 +1372,7 @@ msgstr ""
 ":attr:`Pixmap.irect` "
 "内の四角形。指定した場合、そのピクセルのみが考慮されます。これにより、指定されたPixmapのサブ四角形を直接調査できます。"
 
-#: ../../pixmap.rst:450 05333d443eca4637be4169272bb4a15f
+#: ../../pixmap.rst:450 45e14ac5b9d54e988aa695bc9ab49b96
 msgid ""
 "either the number of colors, or a dictionary with the items `pixel: "
 "count`. The pixel key is a `bytes` object of length :attr:`Pixmap.n`.  .."
@@ -1383,7 +1383,7 @@ msgid ""
 "values will be treated as different colors."
 msgstr ""
 
-#: ../../pixmap.rst:450 abc63210f2d643db8ee924d762765bbd
+#: ../../pixmap.rst:450 acd86c8b95234b4b9928f8cda05d1cd8
 msgid ""
 "either the number of colors, or a dictionary with the items `pixel: "
 "count`. The pixel key is a `bytes` object of length :attr:`Pixmap.n`."
@@ -1391,29 +1391,29 @@ msgstr ""
 "色の数、または `pixel: count` の項目を持つ辞書。pixelキーは :attr:`Pixmap.n` の長さの `bytes` "
 "オブジェクトです。"
 
-#: ../../pixmap.rst:452 9b29103bdd5f44bfbfe7b2eb4fd4ccf6
+#: ../../pixmap.rst:452 ead91f93207a4392a8f65a224019cafa
 msgid ""
 "To recover the **tuple** of a pixel, use `tuple(colors.keys()[i])` for "
 "the i-th item."
 msgstr "ピクセルのタプルを復元するには、i番目の項目に対して `tuple(colors.keys()[i])` を使用します。"
 
-#: ../../pixmap.rst:454 c7d45b8af00a47eba9078c6848a7fee9
+#: ../../pixmap.rst:454 cbd4c4523fa04766bc41a819f829269e
 msgid ""
 "The response time depends on the pixmap's samples size and may be more "
 "than a second for very large pixmaps."
 msgstr "応答時間はPixmapのsamplesサイズに依存し、非常に大きなPixmapの場合は1秒以上かかることがあります。"
 
-#: ../../pixmap.rst:455 b8db45d238bf481b8c788166ed3c4674
+#: ../../pixmap.rst:455 4918d92125c144f4b55202107daf829a
 msgid ""
 "Where applicable, pixels with different alpha values will be treated as "
 "different colors."
 msgstr "該当する場合、異なるアルファ値を持つピクセルは異なる色として扱われます。"
 
-#: ../../pixmap.rst:462 40c5087569f24bc18d17a564e8da299f
+#: ../../pixmap.rst:462 4e5a4679aacc485a9c6ed2f92ae57993
 msgid "Return the most frequently used color and its relative frequency."
 msgstr "最も頻繁に使用される色とその相対頻度を返します。"
 
-#: ../../pixmap.rst:464 f1ced7a2e2e7455a9386ef93ee2b14cd
+#: ../../pixmap.rst:464 e3163be823aa4fbd8310983ec9a04894
 msgid ""
 "A rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels "
 "are considered. This allows inspecting sub-rectangles of a given pixmap "
@@ -1422,7 +1422,7 @@ msgstr ""
 ":attr:`Pixmap.irect` "
 "内の四角形。指定した場合、そのピクセルのみが考慮されます。これにより、指定されたPixmapのサブ四角形を直接調査できます。"
 
-#: ../../pixmap.rst:466 91fd0ce636c543d1b6fefe29c6f22522
+#: ../../pixmap.rst:466 550fe759d81b43df9bb4a696e84940bf
 #, python-format
 msgid ""
 "A tuple `(ratio, pixel)` where `0 < ratio <= 1` and *pixel* is the pixel "
@@ -1434,42 +1434,42 @@ msgstr ""
 "`(0.95, b\"\\x00\\x00\\x00\")` "
 "は、すべてのピクセルの95%が黒であることを示します。こちらの例を参照してください：「Pixmapsの使用方法：テキストの可視性の確認」"
 
-#: ../../pixmap.rst:471 9389856d186c40aba46210864d9c7115
+#: ../../pixmap.rst:471 f909c5a1f207419d8cf5a4d343d9615c
 msgid "Indicates whether the pixmap contains transparency information."
 msgstr "Pixmapに透明情報が含まれているかどうかを示します。"
 
-#: ../../pixmap.rst 008ce91a6d1f4f1f8c255821ecfd7664
-#: 00a1bff2164841d1988353d1665b0262 1329ab801d5d4534973e255b2e4ba82b
-#: 1a1a40ca992344068d6d349ada7a1793 1aaf3c777e8149c088b73f5ff9714cfd
-#: 3061a068ebab4857b9f4743dec8df8ab 53e4f740a12544a8a28ba19d4ab4e8ae
-#: 6fb80674f9844493a6bb5c88eabc96b9 8243357ffc5640aab1313f32cf4d28c1
-#: 8c8e884b3e80413b82b8af5aef3a5826 90365f1101dd4a22a12299ae0b1360bf
-#: c249a976349246e5820fae0c4cc795b2 cf593fbc4a9c4cfaaf2d368caf6d2c29
-#: d2074790ce89404ebdc8068133f06178 e37c08382a5248d59a1655b4b955efd4
-#: e50a2234817c47cf9ddb29964b92552c e9f890a465864618abc57a224be40b7d
-#: ef4d23fa54174e56b1dc2fe294ef3a22 f08159279f0b43f8be36607d58e1ef1c
+#: ../../pixmap.rst 02fdb32c74194d0f938b973d811033de
+#: 14b3da8e41f749db8375cebe18f3efef 155c5bc9ff304806873464d216bf24a3
+#: 2a2ff624b4d3495b8677342ab17520cd 342ad08cd3254a7d8d5ea07196b16d57
+#: 4bc2ffdb069b4e74a3552498e7dfd984 4cd846cd775b4c909e316334e338ed98
+#: 5c82100d5b904ef4a73734e6c06f5512 6ac3d4d732a44c2f9f4b2d7e16c2effd
+#: 6c5977dfd18d4d81934e80c36bece58d 74aa8fc933a9466cbceba75c359a0e6d
+#: 75479bb7197142a8a4300b7f597edde0 95b8e6b675164e05801847da3b98e3ed
+#: 982cf7531b0c4f74806ae86c65379a42 9bc52e32f0694644bba5ce65e88c67f3
+#: c84671e7afbf4d728db8572e9c10d708 e2579b826f1e44dcb393659eea1a4b44
+#: e598c92088924a0e834902066c19238e f5ca81b7d9af4854bd71a2936e5322a2
 msgid "type"
 msgstr ""
 
 #: ../../pixmap.rst:473 ../../pixmap.rst:503 ../../pixmap.rst:512
-#: ../../pixmap.rst:621 04dc811f218748c48dd0aaef72f3fe30
-#: 11592bc2f2c449ba976bfa2aecba029a 437f1f57f4e541c5941a3e6b98a182d1
-#: ed4af88fda88424fb673a02ab60033f6
+#: ../../pixmap.rst:621 51be8a1dbb7a4cdb9e4b16f2b216e5db
+#: ca011dafe2a14319befff475ce50cb93 e0017c9744904a5b82103a5e7b38443a
+#: f7f80212a7b84bf79d2ccad2d1f45217
 msgid "bool"
 msgstr ""
 
-#: ../../pixmap.rst:477 944713bf17cb4c92b72f52cfaf6b8555
+#: ../../pixmap.rst:477 b29f4289a9a442aba45e51a3f8114b5e
 msgid ""
 "The MD5 hashcode (16 bytes) of the pixmap. This is a technical value used"
 " for unique identifications."
 msgstr "PixmapのMD5ハッシュコード（16バイト）。これは一意の識別に使用される技術的な値です。"
 
-#: ../../pixmap.rst:479 ../../pixmap.rst:531 7dc47dc109b74764a40833be042e2347
-#: c3a046b2229c4821a6d9ff1b925f01eb
+#: ../../pixmap.rst:479 ../../pixmap.rst:531 64a49ebcd31e4f63bfbc8f0d3b04cecd
+#: d0493a317f5a43ba937c1178be5a4f38
 msgid "bytes"
 msgstr ""
 
-#: ../../pixmap.rst:483 799e55dfa74a444496648f477533b43f
+#: ../../pixmap.rst:483 3d4e13c745cc4e8ba14296d6a8d93459
 msgid ""
 "The colorspace of the pixmap. This value may be *None* if the image is to"
 " be treated as a so-called *image mask* or *stencil mask* (currently "
@@ -1478,42 +1478,42 @@ msgstr ""
 "Pixmapのカラースペース。この値は、イメージが *イメージマスク* または *ステンシルマスク* として扱われる場合、*None* "
 "になることがあります（現在、抽出されたPDFドキュメントイメージのみが該当）。"
 
-#: ../../pixmap.rst:485 19ba860cfe734a63a4b519ebc06d734c
+#: ../../pixmap.rst:485 447b6aee475846cd87f965e0f410851c
 msgid ":ref:`Colorspace`"
 msgstr ""
 
-#: ../../pixmap.rst:489 cc0bb773f3084667b8fd754c8d982e37
+#: ../../pixmap.rst:489 846048de894d43cc9171ee5fa44acc57
 msgid ""
 "Contains the length of one row of image data in :attr:`Pixmap.samples`. "
 "This is primarily used for calculation purposes. The following "
 "expressions are true:"
 msgstr ":attr:`Pixmap.samples` 内の画像データの1行の長さを含みます。これは主に計算目的で使用されます。次の式が真です："
 
-#: ../../pixmap.rst:491 e7140b3fd3cd4846948401e60b9eb413
+#: ../../pixmap.rst:491 9dca603c697347f3937b5d3600633a40
 msgid "`len(samples) == height * stride`"
 msgstr ""
 
-#: ../../pixmap.rst:492 44af09f5b62c471b892693fcbbc8b6d1
+#: ../../pixmap.rst:492 cf50b14e87ba45ec81d4d76834dad38c
 msgid "`width * n == stride`"
 msgstr ""
 
 #: ../../pixmap.rst:494 ../../pixmap.rst:563 ../../pixmap.rst:569
 #: ../../pixmap.rst:577 ../../pixmap.rst:585 ../../pixmap.rst:591
 #: ../../pixmap.rst:597 ../../pixmap.rst:603 ../../pixmap.rst:609
-#: ../../pixmap.rst:615 0e10046d5d7140c19262175b035bc481
-#: 12bad407e1ef421f86a9eacc9df31063 31eba14ca60345b3bc965ece96813252
-#: 5ab4d7a6748d4e18bd358609a8446849 5ba92676bb5d486cad3d778f60858881
-#: 6243b531601f4cc299c28202926e9e44 6d8b14cc72574831b5e18dc82ff8d5b0
-#: 9608a4e629aa427bbe59bc7eebd47b86 c327eeda6b7a4385856d7ac936b69a91
-#: cf3524d260204ea8ba5efb641f6efffe
+#: ../../pixmap.rst:615 0f964de14ff145bd987e2facb2b87437
+#: 19330b87f76c4440b56c193dc8811626 63c07d7cffe6487db5cbf3c493010e70
+#: 74bc4c0827504e01bd5fb8ca93807eae ab2e7889f6fb451980ae6220301953a7
+#: b171ac64d26949a08c55c83024611868 b4b951483af749e590597562f0824fe5
+#: c1524ac529c547b3a702085e7fcdc53b cafccd0558b94f7b858a6b836e3ac274
+#: d4d5c517bbb14a17892df6ca37995e8d
 msgid "int"
 msgstr ""
 
-#: ../../pixmap.rst:501 6e2211669d0340e2b334e19d5f2467e1
+#: ../../pixmap.rst:501 4d9b04bfa85f47978999b716e1e26971
 msgid "Is `True` for a gray pixmap which only has the colors black and white."
 msgstr "灰色のピクマップで、黒と白の色しか持たない場合は `True` です。"
 
-#: ../../pixmap.rst:510 5688208eae734af0bfead7fc4596b5b7
+#: ../../pixmap.rst:510 43b204567eb741f896eacfa0353c6c09
 msgid ""
 "Is `True` if all pixels are identical (any colorspace). Where applicable,"
 " pixels with different alpha values will be treated as different colors."
@@ -1521,15 +1521,15 @@ msgstr ""
 "すべてのピクセルが同じ場合、`True` "
 "です（どのカラースペースでも適用）。該当する場合、異なるアルファ値を持つピクセルは異なる色として扱われます。"
 
-#: ../../pixmap.rst:517 444bbe1e09da43aa8b3bbe3961a1bce4
+#: ../../pixmap.rst:517 786ac4f72e1b4d189c69a728c8867798
 msgid "Contains the :ref:`IRect` of the pixmap."
 msgstr "ピクマップの :ref:`IRect` を含みます。"
 
-#: ../../pixmap.rst:519 6f12e76b275f4a739af68993d69e4511
+#: ../../pixmap.rst:519 15468a95f0794cfdb06c9a345d4813ce
 msgid ":ref:`IRect`"
 msgstr ""
 
-#: ../../pixmap.rst:523 3c17ceac392a4aef9a94ef5df4bfa7e0
+#: ../../pixmap.rst:523 04113f807715437fac3aea0b4967e180
 msgid ""
 "The color and (if :attr:`Pixmap.alpha` is true) transparency values for "
 "all pixels. It is an area of `width * height * n` bytes. Each n bytes "
@@ -1544,7 +1544,7 @@ msgstr ""
 "バイトの領域です。各nバイトは1つのピクセルを定義します。各続くnバイトは、スキャンラインの順序で別のピクセルを生成します。連続するスキャンラインはパディングなしで続きます。たとえばRGBAカラースペースの場合、*samples*"
 " は *…、R、G、B、A、…* のようなバイトのシーケンスで、4つのバイト値R、G、B、Aが1つのピクセルを定義します。"
 
-#: ../../pixmap.rst:525 f246b8e712104418a98c7d9f5ade7414
+#: ../../pixmap.rst:525 112c7511472145fdb26eb6dba877ba02
 msgid ""
 "This area can be passed to other graphics libraries like PIL (Python "
 "Imaging Library) to do additional processing like saving the pixmap in "
@@ -1553,7 +1553,7 @@ msgstr ""
 "この領域は、PIL（Python Imaging "
 "Library）などの他のグラフィックライブラリに渡すことができ、ピクマップを他の画像形式で保存するなどの追加の処理を行うのに使用できます。"
 
-#: ../../pixmap.rst:528 f623f5db8bca439daed861163d4c80db
+#: ../../pixmap.rst:528 7952164f353e46c0bd47ffadc528dbce
 msgid ""
 "The underlying data is typically a **large** memory area, from which a "
 "`bytes` copy is made for this attribute ... each time you access it: for "
@@ -1566,19 +1566,19 @@ msgstr ""
 "MBです。したがって、新しい変数に代入するか、`memoryview` バージョン :attr:`Pixmap.samples_mv` "
 "（v1.18.17で新機能）を使用するか、などの検討が必要です。"
 
-#: ../../pixmap.rst:529 290ba1ed94144d54aa622e149080a5b4
+#: ../../pixmap.rst:529 b52f27b6dba241a3997f55dd3e25d776
 msgid ""
 "Any changes to the underlying data are available only after accessing "
 "this attribute again. This is different from using the memoryview "
 "version."
 msgstr "基本データへの変更は、この属性に再度アクセスするまで利用できません。これは `memoryview` バージョンを使用する場合とは異なります。"
 
-#: ../../pixmap.rst:535 ../../pixmap.rst:554 421cf5d8010145dbbdd54cf81a066c0f
-#: bfa3202cb10d4a5d97cf58a75a0f7c0f
+#: ../../pixmap.rst:535 ../../pixmap.rst:554 2a5dc1044a43477fb45a4fe913855b47
+#: 2db67dc50ea84283a1a0f6c9dd3615b6
 msgid "New in v1.18.17"
 msgstr "新機能 v1.18.17"
 
-#: ../../pixmap.rst:537 09b9af0b55f445e0bffafe080cd03409
+#: ../../pixmap.rst:537 0b359dc42d8c4efba295d161010736c4
 msgid ""
 "Like :attr:`Pixmap.samples`, but in Python `memoryview` format. It is "
 "built pointing to the memory in the pixmap -- not from a copy of it. So "
@@ -1588,7 +1588,7 @@ msgstr ""
 ":attr:`Pixmap.samples` と同様ですが、Pythonの `memoryview` "
 "形式です。これはピクマップ内のメモリを指すように構築されており、コピーではありません。そのため、作成速度はピクマップのサイズに依存せず、ピクセルへの変更はすぐに利用可能です。"
 
-#: ../../pixmap.rst:539 9e19a77384b64aa2b3cf83adcdaaf4f9
+#: ../../pixmap.rst:539 fac93af5e1ea4ac5b3e174c0d9505845
 msgid ""
 "Copies like `bytearray(pix.samples_mv)`, or `bytes(pixmap.samples_mv)` "
 "are equivalent to and can be used in place of `pix.samples`."
@@ -1596,21 +1596,21 @@ msgstr ""
 "`bytearray(pix.samples_mv)` や `bytes(pixmap.samples_mv)` "
 "などのコピーは、`pix.samples` の代わりに使用でき、同等です。"
 
-#: ../../pixmap.rst:541 66d0034ed5244b23b910a73f065e74f2
+#: ../../pixmap.rst:541 a3ac5377faf741d49452ea39fe24d326
 msgid "We also have `len(pix.samples) == len(pix.samples_mv)`."
 msgstr "また、`len(pix.samples) == len(pix.samples_mv)` です。"
 
-#: ../../pixmap.rst:543 f123ab4f85d54d57aa4527fc309f66d8
+#: ../../pixmap.rst:543 361bdaba95584d5d922ff804548ddea7
 msgid ""
 "Look at this example from a 2 MB JPEG: the memoryview is **ten thousand "
 "times faster**::"
 msgstr "この2 MBのJPEGからのこの例をご覧ください： `memoryview` は **10000倍高速** です::"
 
-#: ../../pixmap.rst:550 cdfdadb78bbf4db793f20b0ec4763a8d
+#: ../../pixmap.rst:550 c3d573b3052c44eba5ca414457e3e6c4
 msgid "memoryview"
 msgstr ""
 
-#: ../../pixmap.rst:556 e4ba5d93428947d992d464dbbd697281
+#: ../../pixmap.rst:556 24dca760b69940fb974761cf04b0ab6c
 msgid ""
 "Python pointer to the pixel area. This is a special integer format, which"
 " can be used by supporting applications (such as PyQt) to directly "
@@ -1618,14 +1618,14 @@ msgid ""
 "example::"
 msgstr "ピクセル領域へのPythonポインターです。これは特別な整数形式で、サポートするアプリケーション（PyQtなど）がサンプル領域に直接アクセスし、非常に高速に画像を構築できるように使用できます。例えば::"
 
-#: ../../pixmap.rst:561 a5fcbb52d7b8441d9116110beac255f7
+#: ../../pixmap.rst:561 b9e54405f1ef40c2a21fa66f7c7fbcec
 msgid ""
 "Both of the above lead to the same Qt image, but (2) can be **many "
 "hundred times faster**, because it avoids an additional copy of the pixel"
 " area."
 msgstr "以下はQtイメージへの2つの方法ですが、(2)はピクセル領域の追加のコピーを回避するため、通常 **何百倍も高速** です。"
 
-#: ../../pixmap.rst:567 9969fd0394124253b2bec2c50ef8d44e
+#: ../../pixmap.rst:567 0ddf72fed62443c298cbd7f3ce3200ea
 msgid ""
 "Contains *len(pixmap)*. This will generally equal *len(pix.samples)* plus"
 " some platform-specific value for defining other attributes of the "
@@ -1634,27 +1634,27 @@ msgstr ""
 "これは *pixmap の長さ* を含んでいます。通常、これは *pix.samples の長さ* "
 "にプラットフォーム固有の他の属性を定義するためのいくつかの値を加えたものです。"
 
-#: ../../pixmap.rst:575 c466c45e1fab4a4ab7d65604598e8ffe
+#: ../../pixmap.rst:575 1641da87df7e43198391470acd7feb02
 msgid "Width of the region in pixels."
 msgstr "ピクセル単位の領域の幅。"
 
-#: ../../pixmap.rst:583 a6a014fbc28f44e7b2c5e9b91fd863a6
+#: ../../pixmap.rst:583 6e4221d5eece4785b0bbbc5a283d5ade
 msgid "Height of the region in pixels."
 msgstr "ピクセル単位の領域の高さ。"
 
-#: ../../pixmap.rst:589 89d44458782c41859a25a3f6a68b8749
+#: ../../pixmap.rst:589 ac74bf36245246eeb5bc77c0c3f9917c
 msgid ""
 "X-coordinate of top-left corner in pixels. Cannot directly be changed -- "
 "use :meth:`Pixmap.set_origin`."
 msgstr "ピクセル単位での左上隅のX座標。直接変更できません。:meth:`Pixmap.set_origin` を使用してください。"
 
-#: ../../pixmap.rst:595 0bb19e97d42f435cb088897e6de3aa58
+#: ../../pixmap.rst:595 95da10e4580748b5aa014fa3753d1f5b
 msgid ""
 "Y-coordinate of top-left corner in pixels. Cannot directly be changed -- "
 "use :meth:`Pixmap.set_origin`."
 msgstr "ピクセル単位での左上隅のY座標。直接変更できません。:meth:`Pixmap.set_origin` を使用してください。"
 
-#: ../../pixmap.rst:601 f478071eca9945ce95b5d469b99d9085
+#: ../../pixmap.rst:601 2fca958de2dc49f5a57fd4a2a3af7fb5
 #, fuzzy
 msgid ""
 "Number of components per pixel. This number depends on colorspace and "
@@ -1666,7 +1666,7 @@ msgstr ""
 " - Pixmap.alpha == pixmap.colorspace.n* がtrueです。色空間が *None* の場合、*n == "
 "alpha == 1* です。"
 
-#: ../../pixmap.rst:607 434ba331230347009eb5375801dbc65b
+#: ../../pixmap.rst:607 cc7c26c6084046dd95eccd6b73266f99
 msgid ""
 "Horizontal resolution in dpi (dots per inch). Please also see "
 ":data:`resolution`. Cannot directly be changed -- use "
@@ -1675,7 +1675,7 @@ msgstr ""
 "水平解像度（dpi単位）。:data:`resolution` "
 "も参照してください。直接変更できません。:meth:`Pixmap.set_dpi` を使用してください。"
 
-#: ../../pixmap.rst:613 4b3f0a67f69f4b19acf2d15b0cc20ff6
+#: ../../pixmap.rst:613 107a9439559c4789844262e4db9acdb8
 msgid ""
 "Vertical resolution in dpi (dots per inch). Please also see "
 ":data:`resolution`. Cannot directly be changed -- use "
@@ -1684,7 +1684,7 @@ msgstr ""
 "垂直解像度（dpi単位）。:data:`resolution` "
 "も参照してください。直接変更できません。:meth:`Pixmap.set_dpi` を使用してください。"
 
-#: ../../pixmap.rst:619 97c49c02641a4549853472cbf3393dc8
+#: ../../pixmap.rst:619 b9356239952842f9a41847e818bae505
 msgid ""
 "An information-only boolean flag set to *True* if the image will be drawn"
 " using \"linear interpolation\". If *False* \"nearest neighbour "
@@ -1693,11 +1693,11 @@ msgstr ""
 "情報のみのブールフラグで、イメージが「線形補間」を使用して描画される場合に *True* に設定されます。*False* "
 "の場合、「最近傍サンプリング」が使用されます。"
 
-#: ../../pixmap.rst:626 f4be265d69fc47a4ae942822ea16b8f4
+#: ../../pixmap.rst:626 c20f7877ee8e4aca8232d0e33111a52b
 msgid "Supported Input Image Formats"
 msgstr "サポートされている入力画像フォーマット"
 
-#: ../../pixmap.rst:627 2629136634c141829e10d1f75227b13e
+#: ../../pixmap.rst:627 0491f3d796d042c0adb3c7121a48faf3
 msgid ""
 "The following file types are supported as **input** to construct pixmaps:"
 " **BMP, JPEG, GIF, TIFF, JXR, JPX**, **PNG**, **PAM** and all of the "
@@ -1708,7 +1708,7 @@ msgstr ""
 "としてサポートされています：**BMP、JPEG、GIF、TIFF、JXR、JPX**、**PNG**、**PAM**、およびすべての "
 "**Portable Anymap** ファミリー（**PBM、PGM、PNM、PPM**）。このサポートは二重の方法で提供されています："
 
-#: ../../pixmap.rst:629 b820dd49b0c04c0ab7374a4ad7d65710
+#: ../../pixmap.rst:629 623699fa7e5c4f7ba08eff9d8c4d5289
 msgid ""
 "Directly create a pixmap with *Pixmap(filename)* or *Pixmap(byterray)*. "
 "The pixmap will then have properties as determined by the image."
@@ -1716,7 +1716,7 @@ msgstr ""
 "*Pixmap（ファイル名）* または *Pixmap（バイト配列）* "
 "を使用してピクスマップを直接作成します。その後、ピクスマップには画像によって決定されるプロパティが含まれます。"
 
-#: ../../pixmap.rst:631 378b749ad7ea468e8babec84565df333
+#: ../../pixmap.rst:631 c46375fc31bf4ffeaf1998e065b9192d
 msgid ""
 "Open such files with *fitz.open(...)*. The result will then appear as a "
 "document containing one single page. Creating a pixmap of this page "
@@ -1726,7 +1726,7 @@ msgstr ""
 "*fitz.open(...)* "
 "を使用してこのようなファイルを開きます。その結果、単一のページを含むドキュメントとして表示されます。このページのピクスマップを作成すると、このコンテキストで利用可能なすべてのオプションを使用できます：行列を適用、色空間とアルファを選択、ピクスマップをクリップエリアに制限などが含まれます。"
 
-#: ../../pixmap.rst:633 8bc9dd8f5aa5437a8192488d0972df78
+#: ../../pixmap.rst:633 48b0e0afee874aeeaee50f7046457bf4
 msgid ""
 "**SVG images** are only supported via method 2 above, not directly as "
 "pixmaps. But remember: the result of this is a **raster image** as is "
@@ -1735,11 +1735,11 @@ msgstr ""
 "**SVG画像** は、直接ピクスマップとしてではなく、上記の方法2でのみサポートされています。ただし、ピクスマップの場合と同様、その結果は "
 "**ラスターイメージ** です [#f1]_。"
 
-#: ../../pixmap.rst:638 fee049f09d114e449862907e31e434af
+#: ../../pixmap.rst:638 e5162d5cc53b4a4b8887e60670b0434f
 msgid "Supported Output Image Formats"
 msgstr "サポートされている出力画像フォーマット"
 
-#: ../../pixmap.rst:639 172d052845d94a8ea1826df66ffbd572
+#: ../../pixmap.rst:639 19a520db79874619a1f9f4c6bcbce162
 msgid ""
 "A number of image **output** formats are supported. You have the option "
 "to either write an image directly to a file (:meth:`Pixmap.save`), or to "
@@ -1753,163 +1753,163 @@ msgstr ""
 " **フォーマット** "
 "を識別する文字列を受け入れます（下のフォーマット列）。ただし、すべてのピクスマップの色空間、透明度サポート（アルファ）、および画像フォーマットの組み合わせが可能であるわけではないことに注意してください。"
 
-#: ../../pixmap.rst:642 3bc9b8c304b54cb29313152a691828e9
+#: ../../pixmap.rst:642 3383aee40bb246f18d50a1a8ec0ce0af
 msgid "**Format**"
 msgstr "**フォーマット**"
 
-#: ../../pixmap.rst:642 a27ab38e132b4b559b8a08fa37f679a5
+#: ../../pixmap.rst:642 196d64e56b55468f95181850d452cecd
 msgid "**Colorspaces**"
 msgstr "**カラースペース**"
 
-#: ../../pixmap.rst:642 eb71a77eece04bc6a1d1d057b7d52945
+#: ../../pixmap.rst:642 ba97f490b98845d28ae78f047864e4eb
 msgid "**alpha**"
 msgstr "**アルファ**"
 
-#: ../../pixmap.rst:642 5939728266db4ff1817996f04a07ca4d
+#: ../../pixmap.rst:642 ae7a1d9fea58487fb63d095f663d1b24
 msgid "**Extensions**"
 msgstr "**拡張子**"
 
-#: ../../pixmap.rst:642 fa07f602ec794f3486a3ab7f254d34c0
+#: ../../pixmap.rst:642 b949c3de314442a7869909df568e9a06
 msgid "**Description**"
 msgstr "**説明**"
 
-#: ../../pixmap.rst:644 5c2e4001c0af4b5a806d4c3a21f7fa06
+#: ../../pixmap.rst:644 5f6288e7944d4315bfc256d37bd5c5ea
 msgid "jpg, jpeg"
 msgstr ""
 
 #: ../../pixmap.rst:644 ../../pixmap.rst:645 ../../pixmap.rst:651
-#: ../../pixmap.rst:652 432dc32df89745479a2e43a7912b9055
-#: 75f3462007244cfab862187312b15a07 c0e24522b7f24cc99b6271e5b140700f
-#: c51f9d6b423048cdb85bcfff7ec40208
+#: ../../pixmap.rst:652 093c1d69b03641549c7a2181b3ba9d02
+#: 7d4926d5d9eb465a9af8f9d81f21d2a0 b2da44f7eec74378b606c112c439f563
+#: f704cbabd69d4a24b52f57520e9d4bd7
 msgid "gray, rgb, cmyk"
 msgstr ""
 
 #: ../../pixmap.rst:644 ../../pixmap.rst:646 ../../pixmap.rst:647
 #: ../../pixmap.rst:649 ../../pixmap.rst:650 ../../pixmap.rst:651
-#: 16790bfc446c44948483aff22aa0ab69 2a3cbc36abc84eeb9f6d555634a47863
-#: 67722e3dddb645cd9aa5f824b26f790f 856ba10b928e4759be9697c7d4a41c0a
-#: 9eb0f7576a6443d483cec6f0ac984174 a3fe60f6bd6e49bfa8eeaa8e25459472
+#: 045c2b0beca24cebba2535db610c9bcd 243fe2fb92a540c4839c78a2a6921f6b
+#: 2831b8ba977f4e2c96b670f25a2d117e 504d03a438b34f7cb447a316abfc24e8
+#: a75b1933124644be926f154f740378b6 f2f43436a07941ab9a08ba6668fae97f
 msgid "no"
 msgstr "なし"
 
-#: ../../pixmap.rst:644 889a8ef3b15d43928cbea883ecfb01eb
+#: ../../pixmap.rst:644 0724cfdfc25047f3b2b16f2e3cef2135
 msgid ".jpg, .jpeg"
 msgstr ""
 
-#: ../../pixmap.rst:644 78d0b1bebd094982851e181e7240b0c4
+#: ../../pixmap.rst:644 b7bcdb8c5a4b431389c460a11ba445c1
 msgid "Joint Photographic Experts Group"
 msgstr ""
 
-#: ../../pixmap.rst:645 1c492ac446c442cd82d7aadb78193ec8
+#: ../../pixmap.rst:645 8440e69d128242c79851f21cef3acaed
 msgid "pam"
 msgstr ""
 
 #: ../../pixmap.rst:645 ../../pixmap.rst:648 ../../pixmap.rst:652
-#: 4f6c2a8277794f55a8de41b5d2ce9281 d05a3283a36e42be8eeb604d7f70a80b
-#: e35481c5431247909fab318fdb0ab981
+#: 0680901701384fcebd5c3623ccb18e5b 9c6ce88ed40f4b2cb83c58a11886b564
+#: aa3bb322b5354cfaa11d9a1c6018e0ce
 msgid "yes"
 msgstr "あり"
 
-#: ../../pixmap.rst:645 37dd653347534e32b81aa30961b7c422
+#: ../../pixmap.rst:645 08d7d1721e294591bc1def47e8e7b8c7
 msgid ".pam"
 msgstr ""
 
-#: ../../pixmap.rst:645 0fcac9d96c154f629a88612d68ebf4ba
+#: ../../pixmap.rst:645 71bf16345e6c422eb8e098f8a2ff0f1b
 msgid "Portable Arbitrary Map"
 msgstr ""
 
-#: ../../pixmap.rst:646 3e254c15a0704bcea395a9b87973c944
+#: ../../pixmap.rst:646 136832cb3b1749009267952922ae9981
 msgid "pbm"
 msgstr ""
 
 #: ../../pixmap.rst:646 ../../pixmap.rst:647 ../../pixmap.rst:648
-#: ../../pixmap.rst:649 ../../pixmap.rst:650 4b68bf693bc0489f99c3d786d597056b
-#: baeed1f9b53c4e3893d04470f3e90bac c1d383c564234695a9c2cdd183dfde37
-#: c2e5db159e244563a0c47d0b7bf3fb14 faebc539e7d146d99a2317468220f5af
+#: ../../pixmap.rst:649 ../../pixmap.rst:650 09f4bd0a521d4dbfa9137cf82c5650bc
+#: 569661c4430a4592aeebbd48ecf12873 9162db170b8043e9bbb52faa3817e171
+#: 9f0449de868249fe989af6fe56f690c8 ca4d038b0d4644eba0cb93e38fa5c902
 msgid "gray, rgb"
 msgstr ""
 
-#: ../../pixmap.rst:646 da98a0f1f06e423794d47c73f4299798
+#: ../../pixmap.rst:646 054432b3094c4e3fbbd806fa8b6b9336
 msgid ".pbm"
 msgstr ""
 
-#: ../../pixmap.rst:646 7b74439605054a96a0d1d358af8c5af5
+#: ../../pixmap.rst:646 aa3a960d507346ae94a78480a899ff1c
 msgid "Portable Bitmap"
 msgstr ""
 
-#: ../../pixmap.rst:647 0a57b0f91fa142bcbfb0bfc1d47db830
+#: ../../pixmap.rst:647 cf273c3f0f4e416ebb71b90b2ac9096b
 msgid "pgm"
 msgstr ""
 
-#: ../../pixmap.rst:647 ef98d7f8f8d5438e85a1adefb36e923a
+#: ../../pixmap.rst:647 3910fed1c57a43c18dbb31b309ff8065
 msgid ".pgm"
 msgstr ""
 
-#: ../../pixmap.rst:647 91e8d21292e04e198196abf4f03d465f
+#: ../../pixmap.rst:647 b8bfda1517ab4e4c9bc37cd70dfed431
 msgid "Portable Graymap"
 msgstr ""
 
-#: ../../pixmap.rst:648 b62792005d4c4258b04648c16f4c8130
+#: ../../pixmap.rst:648 fe8853cbe05f42b0bd952417dabf78d4
 msgid "png"
 msgstr ""
 
-#: ../../pixmap.rst:648 b2c277e5a02848f2a1936d17be4bc2f2
+#: ../../pixmap.rst:648 da1b6a9612ff4d75b9eecf990fc31754
 msgid ".png"
 msgstr ""
 
-#: ../../pixmap.rst:648 0f0fce53b6964330b7a22ce07749533b
+#: ../../pixmap.rst:648 eef3e055a4384f66a0b114f1991139e5
 msgid "Portable Network Graphics"
 msgstr ""
 
-#: ../../pixmap.rst:649 f0fdc6688c314c85aa52d257a55a1dc8
+#: ../../pixmap.rst:649 efba2f0cada44ae6b697ba3a83bbfbfb
 msgid "pnm"
 msgstr ""
 
-#: ../../pixmap.rst:649 f341f1a511c5493da92ff0d04ebe539f
+#: ../../pixmap.rst:649 2fbcdd11b79a43cb8f102ca5f0e7a2b6
 msgid ".pnm"
 msgstr ""
 
-#: ../../pixmap.rst:649 508ed16e8e794bf8a5e7231fb5bcdb5b
+#: ../../pixmap.rst:649 372af7a0de4b4b769bff5c5e02c4a281
 msgid "Portable Anymap"
 msgstr ""
 
-#: ../../pixmap.rst:650 46f819098b804ceaa640f9952cecf5ba
+#: ../../pixmap.rst:650 1ee1f905785e47f7bec08fb198659c88
 msgid "ppm"
 msgstr ""
 
-#: ../../pixmap.rst:650 8bb6e00db2e94dd1ab1f8497e7bd57f8
+#: ../../pixmap.rst:650 825fe237e2a44c6884f6a91a70443e19
 msgid ".ppm"
 msgstr ""
 
-#: ../../pixmap.rst:650 eb321ece8cb14b808da324d5c5d8c06d
+#: ../../pixmap.rst:650 9a77c74f6fae4e19abbc4f2a03bf7fe2
 msgid "Portable Pixmap"
 msgstr ""
 
-#: ../../pixmap.rst:651 ef037535230049d1aa2f567b3e3423bd
+#: ../../pixmap.rst:651 e9ee55d3b0724ca6bbd5fc005c3d667b
 msgid "ps"
 msgstr ""
 
-#: ../../pixmap.rst:651 a1858cfb7e5f48b2a99360f83fb04fb4
+#: ../../pixmap.rst:651 37812473fadd469caa988388bdf5fcba
 msgid ".ps"
 msgstr ""
 
-#: ../../pixmap.rst:651 68667cdebcdb46a193f1f72f13ca3725
+#: ../../pixmap.rst:651 30202bea5f04446abb11ae6e1b598f7b
 msgid "Adobe PostScript Image"
 msgstr ""
 
-#: ../../pixmap.rst:652 ee6445c7881a405b928596659dddef04
+#: ../../pixmap.rst:652 cbc89803c85e4c95a3777c9a7021bd51
 msgid "psd"
 msgstr ""
 
-#: ../../pixmap.rst:652 bcc88b09df7641ed8855bf56f3788c8a
+#: ../../pixmap.rst:652 deb5c03817e741f0b89bb940b416df9c
 msgid ".psd"
 msgstr ""
 
-#: ../../pixmap.rst:652 c650309b3c4f416c8434238a25e9937b
+#: ../../pixmap.rst:652 e58b784d62234749bc63f284dc7d3abb
 msgid "Adobe Photoshop Document"
 msgstr ""
 
-#: ../../pixmap.rst:656 8385b4f47e0c42fc98920e8f46e8b508
+#: ../../pixmap.rst:656 8a648022947e4c04bd37958d17f623f5
 msgid ""
 "Not all image file types are supported (or at least common) on all OS "
 "platforms. E.g. PAM and the Portable Anymap formats are rare or even "
@@ -1918,7 +1918,7 @@ msgstr ""
 "すべての画像ファイル形式がすべてのOSプラットフォームでサポートされているわけではありません（または少なくとも一般的ではありません）。たとえば、PAMおよびPortable"
 " Anymap形式はWindowsでは珍しいか、またはまったく知られていません。"
 
-#: ../../pixmap.rst:657 6a7f955b843c489d8664b7311dfccb64
+#: ../../pixmap.rst:657 4d4fdeeaf65d484c80e248690b90dfb8
 msgid ""
 "Especially pertaining to CMYK colorspaces, you can always convert a CMYK "
 "pixmap to an RGB pixmap with *rgb_pix = fitz.Pixmap(fitz.csRGB, "
@@ -1927,14 +1927,14 @@ msgstr ""
 "特にCMYKカラースペースに関連することについて、常にCMYK pixmapを *rgb_pix = "
 "fitz.Pixmap(fitz.csRGB、cmyk_pix)* に変換し、その後、その形式で保存できます。"
 
-#: ../../pixmap.rst:658 bcd4dfb7e64940aeb26e886f3de1dd8b
+#: ../../pixmap.rst:658 7224739092ce429387b684341a7fb5c3
 msgid ""
 "As can be seen, MuPDF's image support range is different for input and "
 "output. Among those supported both ways, PNG and JPEG are probably the "
 "most popular."
 msgstr "ご覧のように、MuPDFの画像サポート範囲は入力と出力で異なります。両方の方法でサポートされているものの中で、PNGとJPEGはおそらく最も人気があります。"
 
-#: ../../pixmap.rst:659 68524baf3b044866a2feedb68f8b5235
+#: ../../pixmap.rst:659 b5f16f74391e40ecbe9bdbe02da6e40f
 msgid ""
 "We also recommend using \"ppm\" formats as input to tkinter's "
 "*PhotoImage* method like this: *tkimg = "
@@ -1945,11 +1945,11 @@ msgstr ""
 "tkinter.PhotoImage(data=pix.tobytes(\"ppm\"))* のように（チュートリアルも参照してください）。これは"
 " **非常に** 高速です（PNGよりも60倍速いです）。"
 
-#: ../../pixmap.rst:664 a870ad88497d4246a261556e1ab6d5af
+#: ../../pixmap.rst:664 3a69787b37c04aa19169ad20982f1db7
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../pixmap.rst:665 57e42fb595404ec7860b03cf31947d7c
+#: ../../pixmap.rst:665 5105a350f44e4840acb5ba1275945eba
 msgid ""
 "If you need a **vector image** from the SVG, you must first convert it to"
 " a PDF. Try :meth:`Document.convert_to_pdf`. If this is not good enough, "
@@ -1969,13 +1969,17 @@ msgstr ""
 " 、またはJavaソリューションである `Apache Batik <https://github.com/apache/batik>`_ "
 "などがあります。詳細な例についてはWikiをご覧ください。"
 
-#: ../../pixmap.rst:667 014d66030d164eaa9f060f5dae4a59a1
+#: ../../pixmap.rst:667 b3da70dd54894af995fdef08a3fa263c
 msgid ""
 "To also set the alpha property, add an additional step to this method by "
 "dropping or adding an alpha channel to the result."
 msgstr "アルファプロパティも設定する場合は、このメソッドに追加ステップを追加し、結果にアルファチャンネルを追加または削除してください。"
 
-#: ../../footer.rst:-1 14d6a2065a594079971ca87cc1837265
+#: ../../footer.rst:71 05289c9e696040edab2a8d5b394c5c59
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 b48328dccf5641fc9180767a3b68c31b
 msgid "Discord logo"
 msgstr ""
 

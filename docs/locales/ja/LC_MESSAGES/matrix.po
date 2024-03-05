@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-21 13:53+0000\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 d038bbb8e42c4375a04b7ade7920de39
+#: ../../header.rst:-1 df64945755244578a7ff84c633ab18ce
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 2ab58f97197144f9a6831aa17defd04e
+#: ../../header.rst:-1 67ebf307a6b349fd923735139429bf62
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 fa7f6c62e16a42e981e5da2f481353ec
+#: ../../header.rst:-1 807fe99c4fc947f8af565805677dc243
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../matrix.rst:7 786eaa0fa0aa4d0fa4e47f754ccd3586
+#: ../../matrix.rst:7 1f8e9374ce6b4a9fa2f121c3ef83b16e
 msgid "Matrix"
 msgstr "Matrix (マトリックス)"
 
-#: ../../matrix.rst:9 cb8926b4c95b479783ab9214e732b06d
+#: ../../matrix.rst:9 18ae30709aa24e3499e11c155e8f7206
 msgid ""
 "Matrix is a row-major 3x3 matrix used by image transformations in MuPDF "
 "(which complies with the respective concepts laid down in the "
@@ -51,7 +51,7 @@ msgstr ""
 "マトリックスは、MuPDFでの画像変換に使用される行優先の3x3マトリックスです（これは :ref:`AdobeManual` "
 "に規定されている対応するコンセプトに従っています）。マトリックスを使用することで、ページの描画画像をさまざまな方法で操作できます。ページの一部またはすべてを回転、拡大縮小、反転、せん断、シフトなどに設定することができます。これらの操作には、たった6つの浮動小数点数値のいくつかまたはすべてを設定します。"
 
-#: ../../matrix.rst:12 9943fec428b9434fac0cdf8a67e84a77
+#: ../../matrix.rst:12 cb24c92a68fa438397d1779915165e26
 msgid ""
 "Since all points or pixels live in a two-dimensional space, one column "
 "vector of that matrix is a constant unit vector, and only the remaining "
@@ -62,17 +62,17 @@ msgstr ""
 "すべてのポイントまたはピクセルは2次元の空間に存在するため、そのマトリックスの1つの列ベクトルは定数ユニットベクトルであり、操作に使用されるのは残りの6つの要素のみです。これらの6つの要素は通常、"
 " *[a、b、c、d、e、f]* で表されます。以下は、それらがマトリックス内でどのように配置されているかです。"
 
-#: ../../matrix.rst:17 b290932790ea4d30a3194864febc6983
+#: ../../matrix.rst:17 74dd0769567f4919801981033cf5d16c
 msgid "Please note:"
 msgstr "注意点："
 
-#: ../../matrix.rst:19 3481883b33f24fcfb368cdbb8c7579e4
+#: ../../matrix.rst:19 b2793011f00f4f0185dbd7a29bba3ef0
 msgid ""
 "the below methods are just convenience functions -- everything they do, "
 "can also be achieved by directly manipulating the six numerical values"
 msgstr "以下のメソッドは便宜的な機能であり、行うすべてのことは、6つの数値の値を直接操作しても実現できます。"
 
-#: ../../matrix.rst:20 bac077029e0243c1979f498b623f7b62
+#: ../../matrix.rst:20 c370d39a4a7c441e9967a670ba21bbf1
 msgid ""
 "all manipulations can be combined -- you can construct a matrix that "
 "rotates **and** shears **and** scales **and** shifts, etc. in one go. If "
@@ -82,157 +82,157 @@ msgstr ""
 "すべての操作を組み合わせることができます。1回の操作で回転、せん断、スケール、シフトなどを同時に実行するマトリックスを構築できます。ただし、これを行う場合は、後での"
 " **注釈** または :ref:`AdobeManual` を参照してください。"
 
-#: ../../matrix.rst:23 328c7509144d48f78884a14c68611989
+#: ../../matrix.rst:23 cebd8094cb774308a30c2a45f48e5df5
 msgid "**Method / Attribute**"
 msgstr "**メソッド／属性**"
 
-#: ../../matrix.rst:23 d63b0e87334840dbaeb656371a23e88d
+#: ../../matrix.rst:23 dd1e433f17be4838b7e7fc77cffbc777
 msgid "**Description**"
 msgstr "**説明**"
 
-#: ../../matrix.rst:25 dc74da828a4641c08ab1deb04716f739
+#: ../../matrix.rst:25 5e753cb7d4804ccf808c8d709d4ff005
 msgid ":meth:`Matrix.prerotate`"
 msgstr ""
 
-#: ../../matrix.rst:25 cf5ed2f953fc4b09b2ed9702dddc1969
+#: ../../matrix.rst:25 cadd3fe36f384e3bbb8775300fe521dd
 msgid "perform a rotation"
 msgstr "回転を実行"
 
-#: ../../matrix.rst:26 4e0fc087115c4c8d83fcc59993bf28af
+#: ../../matrix.rst:26 49176585fe494ce8a6bdfb020b4c8087
 msgid ":meth:`Matrix.prescale`"
 msgstr ""
 
-#: ../../matrix.rst:26 10edd26f20a94b019d77daa681ab67f2
+#: ../../matrix.rst:26 e553f1e35555444fb12b3d9c5219098d
 msgid "perform a scaling"
 msgstr "スケーリングを実行"
 
-#: ../../matrix.rst:27 3a939063f5da4941b0ab69592ff06303
+#: ../../matrix.rst:27 c7fc60752d6340c1996db11e355446ef
 msgid ":meth:`Matrix.preshear`"
 msgstr ""
 
-#: ../../matrix.rst:27 fc7a25d0b32449a5b3de023d0a5e93f5
+#: ../../matrix.rst:27 cdad0780bc964ed3b1b75907679c27b1
 msgid "perform a shearing (skewing)"
 msgstr "せん断（歪み）を実行"
 
-#: ../../matrix.rst:28 b3b588c018464f7cb0b244e46c14165d
+#: ../../matrix.rst:28 3cdba170b64345108224762a83173890
 msgid ":meth:`Matrix.pretranslate`"
 msgstr ""
 
-#: ../../matrix.rst:28 5ca53190e8cf43f9a0bc16356f368c21
+#: ../../matrix.rst:28 2b4a533fc8c946c59c21f7d8b1cc1531
 msgid "perform a translation (shifting)"
 msgstr "移動（シフト）を実行"
 
-#: ../../matrix.rst:29 78f40cfc9bb84c53af34b29493d8e02c
+#: ../../matrix.rst:29 0e0eeb5b01d0498d8a3cc5c81cefce43
 msgid ":meth:`Matrix.concat`"
 msgstr ""
 
-#: ../../matrix.rst:29 73b51fc305fe4eb88cefdc777ae02082
+#: ../../matrix.rst:29 c8cba5e233c84ec5938e7e83e08db8cb
 msgid "perform a matrix multiplication"
 msgstr "マトリックスの乗算を実行"
 
-#: ../../matrix.rst:30 dbe980c31d1042ec90252c105e73bbec
+#: ../../matrix.rst:30 2612aac598884404a081ceca9b5707ff
 msgid ":meth:`Matrix.invert`"
 msgstr ""
 
-#: ../../matrix.rst:30 3818c051bbba494fbac0b5be362c4d49
+#: ../../matrix.rst:30 8ca86bccd1f843fea44389a11ec672e2
 msgid "calculate the inverted matrix"
 msgstr "反転されたマトリックスを計算"
 
-#: ../../matrix.rst:31 5e2aef76dde74e00b0733c55416ac8be
+#: ../../matrix.rst:31 3c60a69da94241979e0ee30e8f532ade
 msgid ":meth:`Matrix.norm`"
 msgstr ""
 
-#: ../../matrix.rst:31 b7c3bc90e99949e0bad669e0653536e1
+#: ../../matrix.rst:31 9aaff54de5bb4e59b909c62d3830295b
 msgid "the Euclidean norm"
 msgstr "ユークリッドノルム"
 
-#: ../../matrix.rst:32 c2de0c1e155d4a45b6d6f0d62651abed
+#: ../../matrix.rst:32 7a5550204a8e41d58733e5a257c8c461
 msgid ":attr:`Matrix.a`"
 msgstr ""
 
-#: ../../matrix.rst:32 b2e0d23ca7c9429da4443a1ad0b73fe0
+#: ../../matrix.rst:32 a0e2b617736f43a39ec3cbfb95500898
 msgid "zoom factor X direction"
 msgstr "ズームファクターX方向"
 
-#: ../../matrix.rst:33 72c315d7ee624479adea9f550cca8158
+#: ../../matrix.rst:33 f0f2653d8c5d45119499f4174347f609
 msgid ":attr:`Matrix.b`"
 msgstr ""
 
-#: ../../matrix.rst:33 7bb37f1476e942668ba2e22bd1221430
+#: ../../matrix.rst:33 e3af7c34107248e9b11fefa492d61886
 msgid "shearing effect Y direction"
 msgstr "せん断効果Y方向"
 
-#: ../../matrix.rst:34 19200d58a28f4d699a221fc0e373ffee
+#: ../../matrix.rst:34 b354c6a80ad44b99baa0bc1d8dc1fcd1
 msgid ":attr:`Matrix.c`"
 msgstr ""
 
-#: ../../matrix.rst:34 7c09992c144643e9b09370f8bfcab4f5
+#: ../../matrix.rst:34 8e0d6d3768134bfa97c7245b1921479b
 msgid "shearing effect X direction"
 msgstr "せん断効果X方向"
 
-#: ../../matrix.rst:35 656057a8cd094fcf915254da14a2cc8b
+#: ../../matrix.rst:35 d717370fb6d844c7833667e281f77d85
 msgid ":attr:`Matrix.d`"
 msgstr ""
 
-#: ../../matrix.rst:35 4dba812c313c4d08b22f2c89b9759d19
+#: ../../matrix.rst:35 6577148108a8408faec08c81982efc84
 msgid "zoom factor Y direction"
 msgstr "ズームファクターY方向"
 
-#: ../../matrix.rst:36 e52403bfa7b64a5d82ce3fc775e3ff89
+#: ../../matrix.rst:36 607a77b892b241df8631506c9c204a48
 msgid ":attr:`Matrix.e`"
 msgstr ""
 
-#: ../../matrix.rst:36 abb36e74cd1244b3b962599324dd272c
+#: ../../matrix.rst:36 9d31af61617946e68dc2f399e2367850
 msgid "horizontal shift"
 msgstr "水平シフト"
 
-#: ../../matrix.rst:37 779ce49b7474450bbd6c6b9ddc3aff40
+#: ../../matrix.rst:37 d42d24692e4f46fbb44875c3937f8991
 msgid ":attr:`Matrix.f`"
 msgstr ""
 
-#: ../../matrix.rst:37 74a35cb19aa944349cd63de454a71b95
+#: ../../matrix.rst:37 22fd4e00519443009509da98a68b4f44
 msgid "vertical shift"
 msgstr "垂直シフト"
 
-#: ../../matrix.rst:38 f4d16e498f3d4e07b01e8d78b48b1af1
+#: ../../matrix.rst:38 e78f6197e90a4c4992ce2b04c21cdc86
 msgid ":attr:`Matrix.is_rectilinear`"
 msgstr ""
 
-#: ../../matrix.rst:38 9101c73564a34291839fd968604c956c
+#: ../../matrix.rst:38 6a70401ac0af48d7b6f5fd355ec572d6
 msgid "true if rect corners will remain rect corners"
 msgstr "角の位置が直線のままの場合はTrue"
 
-#: ../../matrix.rst:41 ddfb42b7eec34bbf9687aac71444ab61
+#: ../../matrix.rst:41 1e0a0148d8134faf85346b06e54956ac
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../matrix.rst:59 a59e43d3d1ee47db9e81a5f1ff7dfdad
+#: ../../matrix.rst:59 0061b75bba2945fcb3a72a36b21c784e
 msgid "Overloaded constructors."
 msgstr "オーバーロードされたコンストラクター。"
 
-#: ../../matrix.rst:61 e35cf534b46a4221913beefeb03d6a09
+#: ../../matrix.rst:61 54aed815e2304243954b5de86c3620d4
 msgid ""
 "Without parameters, the zero matrix *Matrix(0.0, 0.0, 0.0, 0.0, 0.0, "
 "0.0)* will be created."
 msgstr "パラメーターなしの場合、ゼロ行列 *Matrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)* が作成されます。"
 
-#: ../../matrix.rst:63 a30565e2dea040ccb94e51b4b865c079
+#: ../../matrix.rst:63 ff9fbefe1abd49a688793e92120cb05f
 msgid ""
 "*zoom-** and *shear-** specify zoom or shear values (float) and create a "
 "zoom or shear matrix, respectively."
 msgstr "*zoom-** および *shear-** はズームまたはシアーの値（float）を指定し、それぞれズームまたはシアーの行列を作成します。"
 
-#: ../../matrix.rst:65 32351b1e2b8043fc80e12681909f414c
+#: ../../matrix.rst:65 e51f5092c2c24517ba223448ceaefe5c
 msgid "For \"matrix\" a **new copy** of another matrix will be made."
 msgstr "\"matrix\" の場合、別の行列の **新しいコピー** が作成されます。"
 
-#: ../../matrix.rst:67 6566bdbf124642bd94dfc536be58dddb
+#: ../../matrix.rst:67 fa44eb6c65e84f74910f19d48be761a9
 msgid ""
 "Float value \"degree\" specifies the creation of a rotation matrix which "
 "rotates anti-clockwise."
 msgstr "浮動小数点値  \"degree\" は、反時計回りに回転する行列を作成することを指定します。"
 
-#: ../../matrix.rst:69 d5f0bfcef82349e2889129b6354937cb
+#: ../../matrix.rst:69 70ab75004bd94d3faa37b39e6a71fb56
 msgid ""
 "A \"sequence\" must be any Python sequence object with exactly 6 float "
 "entries (see :ref:`SequenceTypes`)."
@@ -240,7 +240,7 @@ msgstr ""
 "\"sequence\" は、正確に 6 つの浮動小数点エントリを持つ任意の Python "
 "シーケンスオブジェクトである必要があります（:ref:`SequenceTypes`）。"
 
-#: ../../matrix.rst:71 1509b2b7811b47d295976c2f423f31d1
+#: ../../matrix.rst:71 7eb10a0515a7448f8d6404d7005a00aa
 #, fuzzy
 msgid ""
 "*fitz.Matrix(1, 1)* and *fitz.Matrix(fitz.Identity)* create modifiable "
@@ -250,15 +250,15 @@ msgstr ""
 "*fitz.Matrix(1, 1)*、*fitz.Matrix(0.0)* および *fitz.Matrix(fitz.Identity)*) "
 "は、*[1, 0, 0, 1, 0, 0]* のような :ref:`Identity` マトリックスの修正可能なバージョンを作成します。"
 
-#: ../../matrix.rst:75 bb9ba5c009ee477fa092690ef70ec9d2
+#: ../../matrix.rst:75 a9b95d46c9774e1a84b223e1358c46da
 msgid "New in version 1.16.0"
 msgstr "バージョン 1.16.0 で新規追加"
 
-#: ../../matrix.rst:77 da22e909c77144c4a21a254d9ff9118d
+#: ../../matrix.rst:77 053a740b2f414b099c697c8039286410
 msgid "Return the Euclidean norm of the matrix as a vector."
 msgstr "ベクトルとしての行列のユークリッドノルムを返します。"
 
-#: ../../matrix.rst:81 a1c607e178ac4c68a737877667b82379
+#: ../../matrix.rst:81 c7f01d13db50496a98cc99b3302ba62a
 msgid ""
 "Modify the matrix to perform a counter-clockwise rotation for positive "
 "*deg* degrees, else clockwise. The matrix elements of an identity matrix "
@@ -267,24 +267,24 @@ msgstr ""
 "マトリックスを修正して、正の *deg* "
 "度の場合は反時計回りに、それ以外の場合は時計回りに回転します。アイデンティティマトリックスの行列要素は以下のように変更されます："
 
-#: ../../matrix.rst:83 435a7a7221e64c78bc80755404fc9f17
+#: ../../matrix.rst:83 cd58736f05d74e7796716f4edd03c3ae
 msgid "*[1, 0, 0, 1, 0, 0] -> [cos(deg), sin(deg), -sin(deg), cos(deg), 0, 0]*."
 msgstr "*[1, 0, 0, 1, 0, 0] -> [cos(deg), sin(deg), -sin(deg), cos(deg), 0, 0]*。"
 
-#: ../../matrix.rst 1c0f3dfb9703428b8af80c275751fddc
-#: 20dd8d7281a84eee97b163544b9c4dc6 3fc8ab4eb0eb492ea2b6436d408356e0
-#: 51b1d8802f7e49a29f0326ea8358b309 8294bdaa02154214b83530dc731917ca
-#: c02a7fe9d9414923911ede3e0230404a
+#: ../../matrix.rst 02fbc813d1fa4d479c5cea792d1c6af7
+#: 115d89ad80ff4b04a2d2bd95ec788b9a 2bf80908bd5d40deb1545194f29a1d92
+#: 9b85d94db8dc476fa21abc1119cddd14 a2254296541a46a99e39f6ffb450b1a8
+#: d15396938b504b9bb1db60db3510ca0e
 msgid "Parameters"
 msgstr ""
 
-#: ../../matrix.rst:85 18f986d587e741e28b3dda0e212736cb
+#: ../../matrix.rst:85 31aa27bde6b347bcb16007a53855e650
 msgid ""
 "The rotation angle in degrees (use conventional notation based on Pi = "
 "180 degrees)."
 msgstr "度単位での回転角度（180度ベースの従来の表記法を使用します）。"
 
-#: ../../matrix.rst:89 548d084dfe134356acb5f38fc0d4db7c
+#: ../../matrix.rst:89 d16f4f38b4964b9a87dc4b6e51e08500
 msgid ""
 "Modify the matrix to scale by the zoom factors sx and sy. Has effects on "
 "attributes *a* thru *d* only: *[a, b, c, d, e, f] -> [a*sx, b*sx, c*sy, "
@@ -293,19 +293,19 @@ msgstr ""
 "マトリックスを修正してズームファクター sx および sy でスケーリングします。属性 *a* から *d* にのみ影響を与えます： *[a, "
 "b, c, d, e, f] -> [a*sx, b*sx, c*sy, d*sy, e, f]*。"
 
-#: ../../matrix.rst:91 f182e3ba2b9f4a449b8ac4bd78df162e
+#: ../../matrix.rst:91 74cf6b260e7840b6b99d46ed62fbbe0b
 msgid ""
 "Zoom factor in X direction. For the effect see description of attribute "
 "*a*."
 msgstr "X方向のズームファクター。効果については属性 *a* の説明を参照してください。"
 
-#: ../../matrix.rst:93 478fd33a483442fd8fc5cf3e5ac7dcd8
+#: ../../matrix.rst:93 e9a0d7a92fc6456eb703a24d46278ccd
 msgid ""
 "Zoom factor in Y direction. For the effect see description of attribute "
 "*d*."
 msgstr "Y方向のズームファクター。効果については属性 *d* の説明を参照してください。"
 
-#: ../../matrix.rst:97 d7d455708f844f498f3de35cc23d04b0
+#: ../../matrix.rst:97 6ea6fb2979464410886f23497bac6cb9
 msgid ""
 "Modify the matrix to perform a shearing, i.e. transformation of "
 "rectangles into parallelograms (rhomboids). Has effects on attributes *a*"
@@ -314,15 +314,15 @@ msgstr ""
 "行列を修正して、シアリング、つまり長方形を平行四辺形（ひし形）に変換する操作を実行します。属性 *a* から *d* にのみ影響を与えます： "
 "*[a, b, c, d, e, f] -> [c*sy, d*sy, a*sx, b*sx, e, f]*。"
 
-#: ../../matrix.rst:99 08bcbf1c04614f15b3a17f35e739632e
+#: ../../matrix.rst:99 24a1f3f6560241feb1e3da3ab9eb4b01
 msgid "Shearing effect in X direction. See attribute *c*."
 msgstr "X 方向のシアリング効果。属性 *c* を参照してください。"
 
-#: ../../matrix.rst:101 7c4bc0a82c494e48bf2a40611eeec1bc
+#: ../../matrix.rst:101 79af03e03fe04b4a921e3d951bbc4a9e
 msgid "Shearing effect in Y direction. See attribute *b*."
 msgstr "Y 方向のシアリング効果。属性 *b* を参照してください。"
 
-#: ../../matrix.rst:105 bd1bb6b57bd24ba093547dd376cf7552
+#: ../../matrix.rst:105 977add1e7ce94c9091f63571109a3839
 msgid ""
 "Modify the matrix to perform a shifting / translation operation along the"
 " x and / or y axis. Has effects on attributes *e* and *f* only: *[a, b, "
@@ -331,15 +331,15 @@ msgstr ""
 "X 軸および / または Y 軸に沿ったシフト / 移動操作を実行するために行列を修正します。属性 *e* と *f* にのみ影響を与えます： "
 "*[a, b, c, d, e, f] -> [a, b, c, d, tx*a + ty*c, tx*b + ty*d]* 。"
 
-#: ../../matrix.rst:107 93cc510a950c452bbf305f60bf05a761
+#: ../../matrix.rst:107 a28149c154dc4b7bae1319cad858b058
 msgid "Translation effect in X direction. See attribute *e*."
 msgstr "X 方向の移動効果。属性 *e* を参照してください。"
 
-#: ../../matrix.rst:109 c57a815fa81f4842b473824d33e3fea9
+#: ../../matrix.rst:109 bcf8f5faeec44fae9baa79763e126907
 msgid "Translation effect in Y direction. See attribute *f*."
 msgstr "Y 方向の移動効果。属性 *f* を参照してください。"
 
-#: ../../matrix.rst:113 682b7f9601a94223b09aed5166cf06eb
+#: ../../matrix.rst:113 b2df8381df164c79a13d4e0c2cb6627b
 msgid ""
 "Calculate the matrix product *m1 * m2* and store the result in the "
 "current matrix. Any of *m1* or *m2* may be the current matrix. Be aware "
@@ -349,15 +349,15 @@ msgstr ""
 "行列の積 *m1* * *m2* を計算し、その結果を現在の行列に格納します。*m1* または *m2* "
 "のいずれかが現在の行列である場合があります。行列の乗算は可換ではないことに注意してください。したがって、*m1*、*m2* の順序が重要です。"
 
-#: ../../matrix.rst:115 8340d532b42143fd81ddc485329d7e2d
+#: ../../matrix.rst:115 abfc2fca1d6942d883c36fde63837440
 msgid "First (left) matrix."
 msgstr "最初の（左側）行列。"
 
-#: ../../matrix.rst:118 ba4aa98af19a4cff90a0f6d87ba8b8a6
+#: ../../matrix.rst:118 6c562a1b0aa44e91b6e05521bd2fd740
 msgid "Second (right) matrix."
 msgstr "2 番目の（右側）行列。"
 
-#: ../../matrix.rst:123 9708fd6f14444ff68a4922d2ae4305c1
+#: ../../matrix.rst:123 751bb253b6174e2b8054e4554b23f8ee
 msgid ""
 "Calculate the matrix inverse of *m* and store the result in the current "
 "matrix. Returns *1* if *m* is not invertible (\"degenerate\"). In this "
@@ -367,37 +367,37 @@ msgstr ""
 "行列 *m* の逆行列を計算し、その結果を現在の行列に格納します。*m* が逆行列を持たない場合（\"degenerate\"）は 1 "
 "を返します。この場合、現在の行列は *変更されません* 。m が逆行列を持つ場合は 0 を返し、現在の行列は m の逆行列で置き換えられます。"
 
-#: ../../matrix.rst:125 4859c2e4692948b19a2b1aefb8fb572d
+#: ../../matrix.rst:125 07d18213129241e7b0d5a4558565ac16
 msgid "Matrix to be inverted. If not provided, the current matrix will be used."
 msgstr "逆行列を計算する行列。提供されない場合、現在の行列が使用されます。"
 
-#: ../../matrix.rst 40ecc32feeb44380a43293409aefddb3
+#: ../../matrix.rst fb5afd61ee6d4e3fbfbe8c5ccd8fd9e0
 msgid "Return type"
 msgstr ""
 
-#: ../../matrix.rst:132 f263e5a5720c475bace807559baee006
+#: ../../matrix.rst:132 bc3472c568a049548f52e963a81de6c1
 msgid ""
 "Scaling in X-direction **(width)**. For example, a value of 0.5 performs "
 "a shrink of the **width** by a factor of 2. If a < 0, a left-right flip "
 "will (additionally) occur."
 msgstr "X方向 **（幅）** のスケーリング。たとえば、0.5の値は **幅** を2倍に縮小します。a < 0の場合、左右反転が追加で発生します。"
 
-#: ../../matrix.rst 038ea0aff28345f999a13a9a1f74c868
-#: 2ecfd1d9ee9845c7a135d3a049efbe18 9532eafc045e4e90b17f6295dee6bce5
-#: aabc81ffb39d40fdad8dfd31f6982054 b003c14df3a54bab8e637f1ed2dca822
-#: be7988beade44b32895cc4b82157475b dff3c8a8d077406680604433478cf220
+#: ../../matrix.rst 187cae4863ba4cb7b067785b88e39aa0
+#: 7452e8b583284f3fb2476b237992147c 802bc301f4554a49889a5d11381c854c
+#: 836d4f93bd4846e59b4c378ab2da9e11 9e050ed0fe124c8aa34b399f998139d1
+#: afa9bea8965f4f47bef49983d70ae088 b59febfb8302451ea7d0d7a0d03fe459
 msgid "type"
 msgstr ""
 
 #: ../../matrix.rst:134 ../../matrix.rst:140 ../../matrix.rst:146
 #: ../../matrix.rst:152 ../../matrix.rst:158 ../../matrix.rst:164
-#: 068e2a2e6abb4d59880d80925b773cb9 095762f685234d229f57c2d70c55ddb7
-#: 3e958205f35441ed8d3bcb7247c39c97 b31f9b2a2dee4789bd856c0a9e6cd1ab
-#: c0022fcaa5be4b24b05b3be5ca5e9b28 ff871b5072ca4fbcbc91d0ae3c96b70b
+#: 5b341ccbb149486eb237a27acfa5279b d5c15733544745d6b00e7246a19f1ae1
+#: dc7fd87ae32d452d8cc11f997a31f66d e2a15d2c264845be9a6e4b9e1f3cb36d
+#: ea9e6c75e608432799ed65b41bc91264 f4a379c40b2f497b8f9a733e827a0de0
 msgid "float"
 msgstr ""
 
-#: ../../matrix.rst:138 0bef1d3edfa54220af553b08880de6e2
+#: ../../matrix.rst:138 71c1df8704604c838b94cec258b83655
 msgid ""
 "Causes a shearing effect: each `Point(x, y)` will become `Point(x, y - "
 "b*x)`. Therefore, horizontal lines will be \"tilt\"."
@@ -405,7 +405,7 @@ msgstr ""
 "シアリング効果を引き起こします：各 `Point(x, y)` は `Point(x、y - b * x)` "
 "になります。したがって、水平線は「傾斜」します。"
 
-#: ../../matrix.rst:144 9377331fe94b4c07a0f00e6eb3c11f4f
+#: ../../matrix.rst:144 0b556a19ed744c55a7f184bf4630772c
 msgid ""
 "Causes a shearing effect: each `Point(x, y)` will become `Point(x - c*y, "
 "y)`. Therefore, vertical lines will be \"tilt\"."
@@ -413,14 +413,14 @@ msgstr ""
 "シアリング効果を引き起こします：各 `Point(x, y)` は `Point(x - c * y、y)` "
 "になります。したがって、垂直線は「傾斜」します。"
 
-#: ../../matrix.rst:150 83cad945194a438cb59b978b6fda95d8
+#: ../../matrix.rst:150 00699149a2714d32a03bfe09bf8dbdd2
 msgid ""
 "Scaling in Y-direction **(height)**. For example, a value of 1.5 performs"
 " a stretch of the **height** by 50%. If d < 0, an up-down flip will "
 "(additionally) occur."
 msgstr "Y方向 **（高さ）** でのスケーリング。たとえば、1.5の値は **高さ** を50％伸ばします。d < 0の場合、上下反転が追加で発生します。"
 
-#: ../../matrix.rst:156 6e00d8f61aff4def9b430df78dbc46d4
+#: ../../matrix.rst:156 fe6db962d7bc4df79f3fb6a50b739c58
 msgid ""
 "Causes a horizontal shift effect: Each *Point(x, y)* will become *Point(x"
 " + e, y)*. Positive (negative) values of *e* will shift right (left)."
@@ -428,7 +428,7 @@ msgstr ""
 "水平シフト効果を引き起こします：各 *Point(x, y)* は *Point(x + e、y)* "
 "になります。eの正の（負の）値は右に（左に）シフトします。"
 
-#: ../../matrix.rst:162 721bfa6fc0c1436b98842bf4df480a2e
+#: ../../matrix.rst:162 b69722a7f3e64090b260c4760b264412
 msgid ""
 "Causes a vertical shift effect: Each *Point(x, y)* will become *Point(x, "
 "y - f)*. Positive (negative) values of *f* will shift down (up)."
@@ -436,7 +436,7 @@ msgstr ""
 "垂直シフト効果を引き起こします：各 *Point(x, y)* は *Point(x、y - f)* になります。*f* "
 "の正の（負の）値は下に（上に）シフトします。"
 
-#: ../../matrix.rst:168 0d9b71092b64422a984f3cd3211086e6
+#: ../../matrix.rst:168 701fa50a8c3c4dfaac2beaa01a19a384
 msgid ""
 "Rectilinear means that no shearing is present and that any rotations are "
 "integer multiples of 90 degrees. Usually this is used to confirm that "
@@ -444,11 +444,11 @@ msgid ""
 "aligned rectangles afterwards."
 msgstr "矩形の意味は、シアリングが存在せず、回転が90度の整数倍であることを示します。通常、これは変換前の（軸に沿った）矩形が変換後も軸に沿った矩形であることを確認するために使用されます。"
 
-#: ../../matrix.rst:170 1335d4959a594ea1a003214391966a21
+#: ../../matrix.rst:170 e85fb5a54d4040b6a348465c99bdee7c
 msgid "bool"
 msgstr ""
 
-#: ../../matrix.rst:174 3273bfba01fb46e0b1d4954fc3795a6c
+#: ../../matrix.rst:174 204d896ac76a4364865aa4e49085863c
 msgid ""
 "This class adheres to the Python sequence protocol, so components can be "
 "accessed via their index, too. Also refer to :ref:`SequenceTypes`."
@@ -456,7 +456,7 @@ msgstr ""
 "このクラスはPythonのシーケンスプロトコルに従っているため、コンポーネントにはインデックスを使用できます。また、:ref:`SequenceTypes`"
 " を参照してください。"
 
-#: ../../matrix.rst:175 7fd705f2ea214cefa1ce56b40371a33a
+#: ../../matrix.rst:175 e006a10fb5f34dd3b1dac40193145063
 msgid ""
 "Matrices can be used with arithmetic operators almost like ordinary "
 "numbers: they can be added, subtracted, multiplied or divided -- see "
@@ -465,7 +465,7 @@ msgstr ""
 "行列は、通常の数値のようにほとんどの算術演算子を使用して操作できます。行列は加算、減算、乗算、または除算できます。ジオメトリオブジェクトの "
 ":ref:`Algebra`。"
 
-#: ../../matrix.rst:176 d2cf4322b7ba4494b7389b66388e4d77
+#: ../../matrix.rst:176 cd1e80628a0f4fe79fc414eaf0d70f22
 msgid ""
 "Matrix multiplication is **not commutative** -- changing the sequence of "
 "the multiplicands will change the result in general. So it can quickly "
@@ -474,28 +474,28 @@ msgstr ""
 "行列の乗算は "
 "**可換ではありません**。乗算要因のシーケンスを変更すると、一般に結果が変わります。そのため、変換がどの結果を生じるかがすぐに不明確になることがあります。"
 
-#: ../../matrix.rst:180 994c576354df4dbdba3ce7f4d630c957
+#: ../../matrix.rst:180 2305bc09afd84aa4844f3e0dc255d134
 msgid "Examples"
 msgstr "例"
 
-#: ../../matrix.rst:181 cbf68091a60b4668a29d135709afaf02
+#: ../../matrix.rst:181 3becb357318f4a4f9bc97dac204ce9ce
 msgid ""
 "Here are examples that illustrate some of the achievable effects. All "
 "pictures show some text, inserted under control of some matrix and "
 "relative to a fixed reference point (the red dot)."
 msgstr "以下は、いくつかの可能な効果を示す例です。すべての図は、固定された参照点（赤いドット）に対するある行列の制御下で挿入されたテキストを示しています。"
 
-#: ../../matrix.rst:183 2daab43a518f41e88c2ebefb3a62a5a4
+#: ../../matrix.rst:183 4fcdaa1c4cd54c548effc88ae4a57731
 msgid "The :ref:`Identity` matrix performs no operation."
 msgstr ":ref:`Identity` 行列は操作を行いません。"
 
-#: ../../matrix.rst:188 8ce64b123eb648d9aba39844ee0a5989
+#: ../../matrix.rst:188 d651af5d8d9d4462a9eda35d506ded0f
 msgid ""
 "The scaling matrix `Matrix(2, 0.5)` stretches by a factor of 2 in "
 "horizontal, and shrinks by factor 0.5 in vertical direction."
 msgstr "スケーリング行列 `Matrix(2, 0.5)` は、水平方向に2倍の拡大を行い、垂直方向には0.5倍の縮小を行います。"
 
-#: ../../matrix.rst:193 79a648e8444f46b2a01bb1bf31a3c0d8
+#: ../../matrix.rst:193 74c05fc413954f3987b593311044c848
 msgid ""
 "Attributes :attr:`Matrix.e` and :attr:`Matrix.f` shift horizontally and, "
 "respectively vertically. In the following 10 to the right and 20 down."
@@ -503,29 +503,33 @@ msgstr ""
 "属性 :attr:`Matrix.e` および :attr:`Matrix.f` "
 "は、それぞれ水平方向および垂直方向にシフトします。以下の場合、右に10、下に20シフトします。"
 
-#: ../../matrix.rst:198 15d54faa45e947a88aaa56f1bed5ad16
+#: ../../matrix.rst:198 61172fa74cf746d488cea850cffb28da
 msgid "A negative :attr:`Matrix.a` causes a left-right flip."
 msgstr "負の :attr:`Matrix.a` は左右反転を引き起こします。"
 
-#: ../../matrix.rst:203 4ecded46d11544ac998bdc6a9fd52ac2
+#: ../../matrix.rst:203 2a5b417323ed4e6a94e2f71467331dec
 msgid "A negative :attr:`Matrix.d` causes an up-down flip."
 msgstr "負の :attr:`Matrix.d` は上下反転を引き起こします。"
 
-#: ../../matrix.rst:208 f65426ee28c849fb8f2cd7d0e00d6bb2
+#: ../../matrix.rst:208 1174830aaf864cb89681357c7b1e456b
 msgid "Attribute :attr:`Matrix.b` tilts upwards / downwards along the x-axis."
 msgstr "属性 M :attr:`Matrix.b` はx軸に沿って上向き/下向きに傾きます。"
 
-#: ../../matrix.rst:213 b55b5dc766184ff58f684ab1a9b08ad0
+#: ../../matrix.rst:213 c84d458a78b8463c99dd7fdde7bfa3fe
 msgid "Attribute :attr:`Matrix.c` tilts left / right along the y-axis."
 msgstr "属性 :attr:`Matrix.c` はy軸に沿って左に傾く/右に傾きます。"
 
-#: ../../matrix.rst:218 b21419506c624ce4b918a692c6c61fdb
+#: ../../matrix.rst:218 b1246e513c06498b979f7cff48bc3c47
 msgid ""
 "Matrix `Matrix(beta)` performs counterclockwise rotations for positive "
 "angles `beta`."
 msgstr "Matrix `Matrix(beta)` は、正の角度 `beta` の反時計回りの回転を実行します。"
 
-#: ../../footer.rst:-1 fad9a4528301479c9243a2876db3d8c9
+#: ../../footer.rst:71 b73620e5ee6046d083d54fcec7bbfdd1
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 30ffb60f9ee8401086fe2906af5388a2
 msgid "Discord logo"
 msgstr ""
 
