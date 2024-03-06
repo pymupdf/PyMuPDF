@@ -1213,7 +1213,7 @@ def set_metadata(doc: fitz.Document, m: dict) -> None:
         info_xref = 0
     else:
         info_xref = int(temp.replace("0 R", ""))
-    
+
     if m == {} and info_xref == 0:  # nothing to do
         return
 
@@ -4187,13 +4187,20 @@ class Shape:
         return
 
 
-def apply_redactions(page: fitz.Page, images: int = 2) -> bool:
+def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> bool:
     """Apply the redaction annotations of the page.
 
     Args:
         page: the PDF page.
-        images: 0 - ignore images, 1 - remove complete overlapping image,
-                2 - blank out overlapping image parts.
+        images:
+              0 - ignore images
+              1 - remove all overlapping images
+              2 - blank out overlapping image parts
+              3 - remove image unless invisible
+        graphics:
+              0 - ignore graphics
+              1 - remove graphics if contained in rectangle
+              2 - remove all overlapping graphics
     """
 
     def center_rect(annot_rect, text, font, fsize):
@@ -4246,7 +4253,7 @@ def apply_redactions(page: fitz.Page, images: int = 2) -> bool:
     if redact_annots == []:  # any redactions on this page?
         return False  # no redactions
 
-    rc = page._apply_redactions(images)  # call MuPDF redaction process step
+    rc = page._apply_redactions(images, graphics)  # call MuPDF
     if not rc:  # should not happen really
         raise ValueError("Error applying redactions.")
 
@@ -4504,7 +4511,7 @@ def fill_textbox(
                 pos, text, font=font, fontsize=fontsize, small_caps=small_caps
                 )
         return ret
-        
+
     tolerance = fontsize * 0.2  # extra distance to left border
     space_len = textlen(" ")
     std_width = rect.width - tolerance

@@ -778,7 +778,8 @@ class Annot:
 
         return res
 
-    def irt_xref():
+    @property
+    def irt_xref(self):
         '''
         annotation IRT xref
         '''
@@ -7605,11 +7606,12 @@ class Page:
         JM_add_annot_id(annot, "W")
         return Annot(annot)
 
-    def _apply_redactions(self, images):
+    def _apply_redactions(self, images, graphics):
         page = self._pdf_page()
         opts = mupdf.PdfRedactOptions()
         opts.black_boxes = 0  # no black boxes
         opts.image_method = images  # how to treat images
+        opts.line_art = graphics  # how to treat vector graphics
         ASSERT_PDF(page)
         success = mupdf.pdf_redact_page(page.doc(), page, opts)
         return success
