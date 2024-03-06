@@ -149,7 +149,7 @@ def test_stamp():
     page = doc.reload_page(page)
 
 
-def test_redact():
+def test_redact1():
     doc = fitz.open()
     page = doc.new_page()
     annot = page.add_redact_annot(r, text="Hello")
@@ -167,6 +167,21 @@ def test_redact():
     s = annot.popup_rect
     assert s == r
     page.apply_redactions()
+
+
+def test_redact2():
+    """Test removal of graphics (line art)."""
+    if not hasattr(fitz, "mupdf"):
+        print("Not executing 'test_redact2' in classic")
+        return
+    doc = fitz.open()
+    page = doc.new_page()
+    rect = fitz.Rect(100, 100, 200, 200)
+    page.draw_rect(rect)
+    page.add_redact_annot(rect)
+    page.apply_redactions(graphics=2)
+    assert page.get_drawings() == []
+
 
 def test_1645():
     '''
