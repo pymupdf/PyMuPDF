@@ -9630,7 +9630,7 @@ class Pixmap:
             pm = mupdf.fz_new_pixmap(cs, w, h, seps, alpha)
 
             if isinstance( samples, (bytes, bytearray)):
-                log('using mupdf.python_buffer_data()')
+                #log('using mupdf.python_buffer_data()')
                 samples2 = mupdf.python_buffer_data(samples)
                 size = len(samples)
             else:
