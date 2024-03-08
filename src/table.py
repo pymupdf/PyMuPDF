@@ -75,6 +75,7 @@ This is implemented as new class TableHeader with the properties:
 import inspect
 import itertools
 import string
+import html
 from collections.abc import Sequence
 from dataclasses import dataclass
 from operator import itemgetter
@@ -1365,6 +1366,40 @@ class Table(object):
 
         return table_arr
 
+    def to_markdown(self, clean=True):
+        """Output table content as a string in Github-markdown format.
+
+        If clean is true, markdown syntax is removed from cell content."""
+        output = "|"
+
+        # generate header string and MD underline
+        for i, name in enumerate(self.header.names):
+            if name is None or name == "":  # generate a name if empty
+                name = f"Col{i+1}"
+            name = name.replace("\n", " ")  # remove any line breaks
+            if clean:  # remove sensitive syntax
+                name = html.escape(name.replace("-", "&#45;"))
+            output += name + "|"
+
+        output += "\n"
+        output += "|" + "|".join("---" for i in range(self.col_count)) + "|\n"
+
+        # skip first row in details if header is part of the table
+        j = 0 if self.header.external else 1
+
+        # iterate over detail rows
+        for row in self.extract()[j:]:
+            line = "|"
+            for i, cell in enumerate(row):
+                # output None cells with empty string
+                cell = "" if cell is None else cell.replace("\n", " ")
+                if clean:  # remove sensitive syntax
+                    cell = html.escape(cell.replace("-", "&#45;"))
+                line += cell + "|"
+            line += "\n"
+            output += line
+        return output + "\n"
+
     def to_pandas(self, **kwargs):
         """Return a pandas DataFrame version of the table."""
         try:
@@ -1443,52 +1478,12 @@ class Table(object):
                             return True
             return False
 
-        def recover_top_row_cells(table):
-            """Recreates top row cells if 'None' columns are present.
-
-            We need all column x-coordinates even when the top table row
-            contains None cells.
-            """
-            bbox = Rect(table.rows[0].bbox)  # top row bbox
-            tbbox = Rect(table.bbox)  # table bbox
-            y0, y1 = bbox.y0, bbox.y1  # top row upper / lower coordinates
-
-            # make sure row0 bbox has the full table width
-            bbox.x0 = tbbox.x0
-            bbox.x1 = tbbox.x1
-
-            l_r = set()  # (x0, x1) pairs for all table cells
-            for cell in table.cells:
-                if cell is None:  # skip non-existing cells
-                    continue
-                cellbb = Rect(cell)
-
-                # only accept cells wider than a character
-                if 10 < cellbb.width < tbbox.width:
-                    l_r.add((cell[0], cell[2]))
-
-            # sort (x0, x1) pairs by x0-values
-            l_r = sorted(list(l_r), key=lambda c: c[0])
-            if not l_r:
-                return [], (0, 0, 0, 0)
-
-            # recovered row 0 cells
-            cells = [(l_r[0][0], y0, l_r[0][1], y1)]
-
-            for x0, x1 in l_r[1:]:
-                if x0 >= cells[-1][2]:
-                    cells.append((x0, y0, x1, y1))
-            return cells, bbox
-
         try:
             row = self.rows[0]
             cells = row.cells
             bbox = Rect(row.bbox)
         except IndexError:  # this table has no rows
             return None
-
-        if None in cells:  # if row 0 has empty cells, repair it
-            cells, bbox = recover_top_row_cells(self)
 
         # return this if we determine that the top row is the header
         header_top_row = TableHeader(bbox, cells, self.extract()[0], False)
@@ -1501,7 +1496,9 @@ class Table(object):
         if len(cells) < 2:
             return header_top_row
 
-        col_x = [c[2] for c in cells[:-1]]  # column (x) coordinates
+        col_x = [
+            c[2] if c is not None else None for c in cells[:-1]
+        ]  # column (x) coordinates
 
         # Special check: is top row bold?
         # If first line above table is not bold, but top-left table cell is bold,
@@ -1600,6 +1597,7 @@ class Table(object):
             intersecting = [
                 (x, r)
                 for x in col_x
+                if x is not None
                 for r in word_rects
                 if r[1] == top and r[0] < x and r[2] > x
             ]
@@ -1613,15 +1611,22 @@ class Table(object):
 
         hdr_bbox = +clip  # compute the header cells
         hdr_bbox.y0 = select[-1]  # hdr_bbox top is smallest top coord of words
-        hdr_cells = [(c[0], hdr_bbox.y0, c[2], hdr_bbox.y1) for c in cells]
+        hdr_cells = [
+            (c[0], hdr_bbox.y0, c[2], hdr_bbox.y1) if c is not None else None
+            for c in cells
+        ]
 
         # adjust left/right of header bbox
-        hdr_bbox.x0 = hdr_cells[0][0]
-        hdr_bbox.x1 = hdr_cells[-1][2]
+        hdr_bbox.x0 = self.bbox[0]
+        hdr_bbox.x1 = self.bbox[2]
 
         # column names: no line breaks, no excess spaces
         hdr_names = [
-            page.get_textbox(c).replace("\n", " ").replace("  ", " ").strip()
+            (
+                page.get_textbox(c).replace("\n", " ").replace("  ", " ").strip()
+                if c is not None
+                else ""
+            )
             for c in hdr_cells
         ]
         return TableHeader(tuple(hdr_bbox), hdr_cells, hdr_names, True)
@@ -2012,7 +2017,8 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
                 repeat = False  # set to true again if some other rect touches
                 for i in range(len(prects) - 1, 0, -1):  # run backwards
                     if are_neighbors(prect0, prects[i]):  # close enough to rect 0?
-                        prect0 |= prects[i]  # extend rect 0
+                        prect0 |= prects[i].tl  # extend rect 0
+                        prect0 |= prects[i].br  # extend rect 0
                         del prects[i]  # delete this rect
                         repeat = True  # keep checking the rest
 
