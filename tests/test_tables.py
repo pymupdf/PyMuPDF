@@ -15,11 +15,23 @@ def test_table1():
     doc = fitz.open(filename)
     page = doc[0]
     tabs = page.find_tables()
-    cells = [tabs[0].cells, tabs[1].cells]
-    extracts = [tabs[0].extract(), tabs[1].extract()]
-    new_data = {"cells": cells, "extracts": extracts}
-    old_data = pickle.load(pickle_in)
-    assert old_data == new_data
+    cells = tabs[0].cells + tabs[1].cells  # all table cell tuples on page
+    extracts = [tabs[0].extract(), tabs[1].extract()]  # all table cell content
+    old_data = pickle.load(pickle_in)  # previously saved data
+
+    # Compare cell contents
+    assert old_data["extracts"] == extracts  # same cell contents
+
+    # Compare cell coordinates.
+    # Cell rectangles may get somewhat larger due to more cautious border
+    # computations, but any differences must be small.
+    old_cells = old_data["cells"][0] + old_data["cells"][1]
+    assert len(cells) == len(old_cells)
+    for i in range(len(cells)):
+        c1 = fitz.Rect(cells[i])  # new cell coordinates
+        c0 = fitz.Rect(old_cells[i])  # old cell coordinates
+        assert c0 in c1  # always: old contained in new
+        assert abs(c1 - c0) < 0.2  # difference must be small
 
 
 def test_table2():
@@ -263,3 +275,20 @@ def test_battery_file():
     page = doc[0]
     tabs = page.find_tables()
     assert len(tabs.tables) == 0
+
+
+def test_markdown():
+    """Confirm correct markdown output."""
+    filename = os.path.join(scriptdir, "resources", "strict-yes-no.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    tab = page.find_tables(strategy="lines_strict")[0]
+    text = (
+        "|Header1|Header2|Header3|\n"
+        "|---|---|---|\n"
+        "|Col11 Col12|Col21 Col22|Col31 Col32 Col33|\n"
+        "|Col13|Col23|Col34 Col35|\n"
+        "|Col14|Col24|Col36|\n"
+        "|Col15|Col25 Col26||\n\n"
+    )
+    assert tab.to_markdown() == text
