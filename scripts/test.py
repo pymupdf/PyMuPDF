@@ -300,12 +300,11 @@ def build(
     print(f'{build_type=}')
     print(f'{build_isolation=}')
     
-    if platform.system() == 'OpenBSD':
-        # libclang not available on pypi.org, so we need to force use of system
-        # package py3-llvm with --no-build-isolation, manually installing other
-        # required packages.
-        if build_isolation is None:
-            build_isolation = False
+    if build_isolation is None:
+        # On OpenBSD libclang is not available on pypi.org, so we need to force
+        # use of system package py3-llvm with --no-build-isolation, manually
+        # installing other required packages.
+        build_isolation = False if platform.system() == 'OpenBSD' else True
     
     if build_isolation:
         # This is the default on non-OpenBSD.
