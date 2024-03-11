@@ -780,7 +780,13 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     if build_prefix_extra:
         build_prefix += f'{build_prefix_extra}-'
     build_prefix += 'shared-'
-    if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') != '0':
+    if msys2:
+        # Error in mupdf/scripts/tesseract/endianness.h:
+        # #error "I don't know what architecture this is!"
+        log(f'msys2: building MuPDF without tesseract.')
+    elif os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0':
+        log(f'PYMUPDF_SETUP_MUPDF_TESSERACT=0 so building mupdf without tesseract.')
+    else:
         build_prefix += 'tesseract-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with

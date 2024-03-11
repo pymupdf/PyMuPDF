@@ -20,6 +20,9 @@ def test_2791():
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
         print(f'test_2791(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
         return
+    if platform.system().startswith('MSYS_NT-'):
+        print(f'test_2791(): not running on msys2 - psutil not available.')
+        return
     #stat_type = 'tracemalloc'
     stat_type = 'psutil'
     if stat_type == 'tracemalloc':
