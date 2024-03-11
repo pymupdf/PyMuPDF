@@ -640,7 +640,8 @@ def run(command, env_extra=None, check=1, timeout=None):
             Whether to raise exception if command fails.
         timeout:
             If not None, timeout in seconds; passed directory to
-            subprocess.run().
+            subprocess.run(). Note that on MacOS subprocess.run() seems to
+            leave processes running if timeout expires.
     '''
     env = None
     if env_extra:
@@ -662,15 +663,17 @@ def platform_tag():
         assert 0, f'Unrecognised: {platform.system()=}'
 
 
-# If this has changed, need to update
-# .github/workflows/*.yml.
-#
-test_packages = 'pytest fontTools psutil pymupdf-fonts flake8'
+test_packages = 'pytest fontTools pymupdf-fonts flake8'
 if platform.system() == 'Windows' and cpu_bits() == 32:
     # No pillow wheel available, and doesn't build easily.
     pass
 else:
     test_packages += ' pillow'
+if platform.system().startswith('MSYS_NT-'):
+    # psutil not available on msys2.
+    pass
+else:
+    test_packages += ' psutil'
 
 
 if __name__ == '__main__':
