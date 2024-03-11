@@ -498,6 +498,7 @@ openbsd = sys.platform.startswith( 'openbsd')
 freebsd = sys.platform.startswith( 'freebsd')
 darwin = sys.platform.startswith( 'darwin')
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
+msys2 = platform.system().startswith('MSYS_NT-')
 pyodide = os.environ.get('OS') == 'pyodide'
 
 
@@ -1158,7 +1159,23 @@ p = pipcl.Package(
 build_wheel = p.build_wheel
 build_sdist = p.build_sdist
 
+def get_requires_for_build_wheel(config_settings=None):
+    '''
+    Adds to pyproject.toml:[build-system]:requires, allowing programmatic
+    control over what packages we require.
+    '''
+    ret = list()
+    ret.append('setuptools')
+    if openbsd:
+        print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
+    else:
+        ret.append('libclang')
+    if msys2:
+        print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
+    else:
+        ret.append( 'swig')
+    return ret
 
-import sys
+
 if __name__ == '__main__':
     p.handle_argv(sys.argv)
