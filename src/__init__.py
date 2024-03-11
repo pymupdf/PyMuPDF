@@ -5295,30 +5295,6 @@ class Document:
         if user_pw and len(user_pw) > 40 or owner_pw and len(owner_pw) > 40:
             raise ValueError("password length must not exceed 40")
         
-        if g_use_extra:
-            # Not sure this is much faster.
-            #log( '{=pdf filename garbage clean deflate deflate_images deflate_fonts incremental ascii expand linear pretty encryption permissions owner_pw user_pw}')
-            return extra.Document_save(
-                    self.this,
-                    filename,
-                    garbage,
-                    clean,
-                    deflate,
-                    deflate_images,
-                    deflate_fonts,
-                    incremental,
-                    ascii,
-                    expand,
-                    linear,
-                    no_new_id,
-                    appearance,
-                    pretty,
-                    encryption,
-                    permissions,
-                    owner_pw,
-                    user_pw,
-                    )
-        
         pdf = _as_pdf_document(self)
         opts = mupdf.PdfWriteOptions()
         opts.do_incremental     = incremental
