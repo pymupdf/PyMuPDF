@@ -840,6 +840,10 @@ def gettext(args):
     textout.close()
 
 
+def _internal(args):
+    fitz.message('This is from fitz.message().')
+    fitz.log('This is from fitz.log().')
+
 def main():
     """Define command configurations."""
     parser = argparse.ArgumentParser(
@@ -1127,6 +1131,14 @@ def main():
         default=3,
     )
     ps_gettext.set_defaults(func=gettext)
+
+    # -------------------------------------------------------------------------
+    # '_internal' command
+    # -------------------------------------------------------------------------
+    ps_internal = subps.add_parser(
+        "internal", description=mycenter("internal testing")
+    )
+    ps_internal.set_defaults(func=_internal)
 
     # -------------------------------------------------------------------------
     # start program

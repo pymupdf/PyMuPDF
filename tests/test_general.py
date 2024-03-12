@@ -923,3 +923,93 @@ def test_cli():
         return
     import subprocess
     subprocess.run(f'pymupdf -h', shell=1, check=1)
+
+def test_cli_out():
+    '''
+    Check redirection of messages and log diagnostics with environment
+    variables PYMUPDF_LOG and PYMUPDF_MESSAGE.
+    '''
+    if not hasattr(fitz, 'mupdf'):
+        print('test_cli(): Not running on classic because of fitz_old.')
+        return
+    import platform
+    import re
+    import subprocess
+    log_prefix = None
+    if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
+        log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
+    
+    def check_lines(expected_regex, actual):
+        if isinstance(expected_regex, str):
+            expected_regex = expected_regex.split('\n')
+        if isinstance(actual, str):
+            actual = actual.split('\n')
+        if expected_regex[-1]:
+            expected_regex.append('') # Always expect a trailing newline.
+        # Remove `None` lines and make all regexes match entire lines.
+        expected_regex = [f'^{i}$' for i in expected_regex if i is not None]
+        for expected_regex_line, actual_line in zip(expected_regex, actual):
+            print(f'    {expected_regex_line=}')
+            print(f'            {actual_line=}')
+            assert re.match(expected_regex_line, actual_line)
+        assert len(expected_regex) == len(actual), \
+                f'expected/actual lines mismatch: {len(expected_regex)=} {len(actual)=}.'
+    
+    def check(expect_out, expect_err, message=None, log=None, ):
+        '''
+        Sets PYMUPDF_MESSAGE to `message` and PYMUPDF_LOG to `log`, runs
+        `pymupdf internal`, and checks lines stdout and stderr match regexes in
+        `expect_out` and `expect_err`. Note that we enclose regexes in `^...$`.
+        '''
+        env = os.environ.copy()
+        if log:
+            env['PYMUPDF_LOG'] = log
+        if message:
+            env['PYMUPDF_MESSAGE'] = message
+        cp = subprocess.run(f'pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
+        
+        check_lines(expect_out, cp.stdout)
+        check_lines(expect_err, cp.stderr)
+    
+    #
+    print(f'Checking default, all output to stdout.')
+    check(
+            [
+                log_prefix,
+                'This is from fitz.message[(][)][.]',
+                '.+This is from fitz.log[(][)].',
+            ],
+            '',
+            )
+    
+    #
+    if platform.system() != 'Windows':
+        print(f'Checking redirection of everything to /dev/null.')
+        check('', '', 'path:/dev/null', 'path:/dev/null')
+    
+    #
+    print(f'Checking redirection to files.')
+    path_out = os.path.abspath(f'{__file__}/../../tests/test_cli_out.out')
+    path_err = os.path.abspath(f'{__file__}/../../tests/test_cli_out.err')
+    check('', '', f'path:{path_out}', f'path:{path_err}')
+    def read(path):
+        with open(path) as f:
+            return f.read()
+    out = read(path_out)
+    err = read(path_err)
+    check_lines(['This is from fitz.message[(][)][.]'], out)
+    check_lines([log_prefix, '.+This is from fitz.log[(][)][.]'], err)
+    
+    #
+    print(f'Checking redirection to fds.')
+    check(
+            [
+                'This is from fitz.message[(][)][.]',
+            ],
+            [
+                log_prefix,
+                '.+This is from fitz.log[(][)].',
+            ],
+            'fd:1',
+            'fd:2',
+            )

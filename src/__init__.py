@@ -28,13 +28,59 @@ import zipfile
 from . import extra
 
 
-def log( text, caller=1):
+# Set up g_out_log and g_out_message from environment variables.
+#
+# PYMUPDF_MESSAGE controls the destination of user messages (the `message()`
+# function).
+#
+# PYMUPDF_LOG controls the destination of internal development logging (the
+# `log()` function).
+#
+# Each should be either `fd:<int>` to set to a file descriptor (e.g. `fd:1`
+# for stdout, `fd:2` for stderr), `path:<string>` to write to a file or
+# `path+:<string>` to append to a file. If not specified, the default is
+# stdout.
+#
+
+def _set_stream(name, default):
+    '''
+    Returns a stream to use based on environmental variable `name`.
+    '''
+    t = os.environ.get(name)
+    if t is None:
+        return default
+    elif t.startswith('fd:'):
+        return open(int(t[3:]), mode='w', closefd=False)
+    elif t.startswith('path:'):
+        return open(t[5:], 'w')
+    elif t.startswith('path+:'):
+        return open(t[6:], 'a')
+    else:
+        raise Exception(f'Unrecognised stream specification for {name!r} should match `fd:<int>`, `path:<string>` or `path+:<string>`: {t!r}')
+
+_g_out_log = _set_stream('PYMUPDF_LOG', sys.stdout)
+_g_out_message = _set_stream('PYMUPDF_MESSAGE', sys.stdout)
+
+
+def log( text='', caller=1):
+    '''
+    For development/debugging diagnostics.
+    '''
     frame_record = inspect.stack( context=0)[ caller]
     filename    = os.path.relpath(frame_record.filename)
     line        = frame_record.lineno
     function    = frame_record.function
-    print( f'{filename}:{line}:{function}: {text}', file=sys.stdout)
-    sys.stdout.flush()
+    print( f'{filename}:{line}:{function}: {text}', file=_g_out_log)
+    _g_out_log.flush()
+
+
+def message(text=''):
+    '''
+    For user messages.
+    '''
+    print(text, file=_g_out_message)
+    _g_out_message.flush()
+
 
 # Try to detect if we are being used with current directory set to a PyMuPDF/
 # checkout - this can cause problems because of the `fitz/` directory.
