@@ -993,6 +993,9 @@ Tables can be found and extracted from any document :ref:`Page`.
     There is also the `pdf2docx extract tables method`_ which is capable of table extraction if you prefer.
 
 
+--------------------------
+
+
 .. _The_Basics_Get_Page_Links:
 
 Getting Page Links
@@ -1024,6 +1027,9 @@ Links can be extracted from a :ref:`Page` to return :ref:`Link` objects.
     - :meth:`Page.first_link`
 
 
+-----------------------------
+
+
 .. _The_Basics_Get_All_Annotations:
 
 Getting All Annotations from a Document
@@ -1048,6 +1054,103 @@ Annotations (:ref:`Annot`) on pages can be retrieved with the `page.annots()` me
     **API reference**
 
     - :meth:`Page.annots`
+
+
+--------------------------
+
+
+
+.. _The_Basics_Redacting:
+
+Redacting content from a **PDF**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Redactions are special types of annotations which can be marked onto a document page to denote an area on the page which should be securely removed. After marking an area with a rectangle then this area will be marked for *redaction*, once the redaction is *applied* then the content is securly removed.
+
+For example if we wanted to redact all instances of the name "Jane Doe" from a document we could do the following:
+
+.. raw:: html
+
+    <pre>
+        <code class="language-python" data-prismjs-copy="Copy">
+            import fitz
+
+            # Open the PDF document
+            doc = fitz.open('test.pdf')
+
+            # Iterate over each page of the document
+            for page in doc:
+                # Find all instances of "Jane Doe" on the current page
+                instances = page.search_for("Jane Doe")
+
+                # Redact each instance of "Jane Doe" on the current page
+                for inst in instances:
+                    page.add_redact_annot(inst)
+
+                # Apply the redactions to the current page
+                page.apply_redactions()
+
+            # Save the modified document
+            doc.save('redacted_document.pdf')
+
+            # Close the document
+            doc.close()
+        </code>
+    </pre>
+
+Another example could be redacting an area of a page, but not to redact any line art (i.e. vector graphics) within the defined area, by setting a parameter flag as follows:
+
+
+.. raw:: html
+
+    <pre>
+        <code class="language-python" data-prismjs-copy="Copy">
+            import fitz
+
+            # Open the PDF document
+            doc = fitz.open('test.pdf')
+
+            # Get the first page
+            page = doc[0]
+
+            # Add an area to redact
+            rect = [0,0,200,200]
+
+            # Add a redacction annotation which will have a red fill color
+            page.add_redact_annot(rect, fill=(1,0,0))
+
+            # Apply the redactions to the current page, but ignore vector graphics
+            page.apply_redactions(graphics=0)
+
+            # Save the modified document
+            doc.save('redactied_document.pdf')
+
+            # Close the document
+            doc.close()
+        </code>
+    </pre>
+
+
+.. warning::
+
+    Once a redacted version of a document is saved then the redacted content in the **PDF** is *irretrievable*.
+
+
+.. note::
+
+    **Taking it further**
+
+    The are a few options for creating and applying redactions to a page, for the full API details to understand the parameters to control these options refer to the API reference.
+
+    **API reference**
+
+    - :meth:`Page.add_redact_annot`
+
+    - :meth:`Page.apply_redactions`
+
+
+--------------------------
+
 
 
 .. _The Basics_Coverting_PDF_Documents:
