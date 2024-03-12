@@ -90,6 +90,7 @@ from . import (
     EMPTY_RECT,
     sRGB_to_pdf,
     Point,
+    message,
 )
 
 EDGES = []  # vector graphics from PyMuPDF
@@ -1370,7 +1371,7 @@ class Table(object):
         try:
             import pandas as pd
         except ModuleNotFoundError:
-            print("Package 'pandas' is not installed")
+            message("Package 'pandas' is not installed")
             raise
 
         pd_dict = {}

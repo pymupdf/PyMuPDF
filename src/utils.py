@@ -646,7 +646,7 @@ def get_textpage_ocr(
         except exception_types:
             if g_exceptions_verbose:    fitz.exception_info()
             tpage = None
-            print("Falling back to full page OCR")
+            fitz.message("Falling back to full page OCR")
             return full_ocr(page, dpi, language, flags)
 
     return tpage
@@ -4652,7 +4652,7 @@ def fill_textbox(
     if nlines > max_lines:
         msg = "Only fitting %i of %i lines." % (max_lines, nlines)
         if warn is True:
-            print("Warning: " + msg)
+            fitz.message("Warning: " + msg)
         elif warn is False:
             raise ValueError(msg)
 
@@ -4869,7 +4869,7 @@ def get_ocmd(doc: fitz.Document, xref: int) -> dict:
             ve = json.loads(ve)
         except Exception:
             fitz.exception_info()
-            print("bad /VE key: ", ve)
+            fitz.message("bad /VE key: ", ve)
             raise
     return {"xref": xref, "ocgs": ocgs, "policy": policy, "ve": ve}
 
@@ -5428,7 +5428,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
             import fontTools.subset as fts
         except ImportError:
             if g_exceptions_verbose:    fitz.exception_info()
-            print("This method requires fontTools to be installed.")
+            fitz.message("This method requires fontTools to be installed.")
             raise
         import tempfile
         tmp_dir = tempfile.gettempdir()
@@ -5587,7 +5587,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
     repl_fontnames(doc)  # populate font information
     if not font_buffers:  # nothing found to do
         if verbose:
-            print(f'No fonts to subset.')
+            fitz.message(f'No fonts to subset.')
         return 0
 
     old_fontsize = 0
@@ -5620,10 +5620,10 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
         if new_buffer is None or len(new_buffer) >= len(old_buffer):
             # subset was not created or did not get smaller
             if verbose:
-                print(f'Cannot subset {fontname!r}.')
+                fitz.message(f'Cannot subset {fontname!r}.')
             continue
         if verbose:
-            print(f"Built subset of font {fontname!r}.")
+            fitz.message(f"Built subset of font {fontname!r}.")
         val = doc._insert_font(fontbuffer=new_buffer)  # store subset font in PDF
         new_xref = val[0]  # get its xref
         set_subset_fontname(new_xref)  # tag fontname as subset font
