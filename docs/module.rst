@@ -3,21 +3,28 @@
 .. _Module:
 
 ============================
-Module *fitz*
+Command line interface
 ============================
 
 * New in version 1.16.8
 
-PyMuPDF can also be used in the command line as a **module** to perform utility functions. This feature should obsolete writing some of the most basic scripts.
+PyMuPDF can also be used from the command line to perform utility functions. This feature should obsolete writing some of the most basic scripts.
 
 Admittedly, there is some functional overlap with the MuPDF CLI `mutool`. On the other hand, PDF embedded files are no longer supported by MuPDF, so PyMuPDF is offering something unique here.
 
 Invocation
 -----------
 
-Invoke the module like this::
+The command-line interface can be invoked in two ways.
+
+* Use the installed `pymupdf` command::
+
+    pymupdf <command and parameters>
+
+* Or use Python's `-m` switch with PyMuPDF's `fitz` module::
 
     python -m fitz <command and parameters>
+
 
 .. highlight:: python
 
@@ -55,7 +62,7 @@ Cleaning and Copying
 
 This command will optimize the PDF and store the result in a new file. You can use it also for encryption, decryption and creating sub documents. It is mostly similar to the MuPDF command line utility *"mutool clean"*::
 
-    python -m fitz clean -h
+    pymupdf clean -h
     usage: fitz clean [-h] [-password PASSWORD]
                     [-encryption {keep,none,rc4-40,rc4-128,aes-128,aes-256}]
                     [-owner OWNER] [-user USER] [-garbage {0,1,2,3,4}]
@@ -95,7 +102,7 @@ Extracting Fonts and Images
 ----------------------------
 Extract fonts or images from selected PDF pages to a desired directory::
 
-    python -m fitz extract -h
+    pymupdf extract -h
     usage: fitz extract [-h] [-images] [-fonts] [-output OUTPUT] [-password PASSWORD]
                         [-pages PAGES]
                         input
@@ -126,7 +133,7 @@ Joining PDF Documents
 -----------------------
 To join several PDF files specify::
 
-    python -m fitz join -h
+    pymupdf join -h
     usage: fitz join [-h] -output OUTPUT [input [input ...]]
 
     ---------------------------- join PDF documents ---------------------------
@@ -157,7 +164,7 @@ Example: To join the following files
 
 and store the result as **output.pdf** enter this command:
 
-*python -m fitz join -o output.pdf file1.pdf,,N-1 file2.pdf,secret,N,1 file3.pdf,,5-N*
+*pymupdf join -o output.pdf file1.pdf,,N-1 file2.pdf,secret,N,1 file3.pdf,,5-N*
 
 
 Low Level Information
@@ -165,7 +172,7 @@ Low Level Information
 
 Display PDF internal information. Again, there are similarities to *"mutool show"*::
 
-    python -m fitz show -h
+    pymupdf show -h
     usage: fitz show [-h] [-password PASSWORD] [-catalog] [-trailer] [-metadata]
                     [-xrefs XREFS] [-pages PAGES]
                     input
@@ -186,18 +193,18 @@ Display PDF internal information. Again, there are similarities to *"mutool show
 
 Examples::
 
-    python -m fitz show x.pdf
+    pymupdf show x.pdf
     PDF is password protected
 
-    python -m fitz show x.pdf -pass hugo
+    pymupdf show x.pdf -pass hugo
     authentication unsuccessful
 
-    python -m fitz show x.pdf -pass jorjmckie
+    pymupdf show x.pdf -pass jorjmckie
     authenticated as owner
     file 'x.pdf', pages: 1, objects: 19, 58 MB, PDF 1.4, encryption: Standard V5 R6 256-bit AES
     Document contains 15 embedded files.
 
-    python -m fitz show FDA-1572_508_R6_FINAL.pdf -tr -m
+    pymupdf show FDA-1572_508_R6_FINAL.pdf -tr -m
     'FDA-1572_508_R6_FINAL.pdf', pages: 2, objects: 1645, 1.4 MB, PDF 1.6, encryption: Standard V4 R4 128-bit AES
     document contains 740 root form fields and is signed
 
@@ -242,7 +249,7 @@ Information
 
 Show the embedded file names (long or short format)::
 
-    python -m fitz embed-info -h
+    pymupdf embed-info -h
     usage: fitz embed-info [-h] [-name NAME] [-detail] [-password PASSWORD] input
 
     --------------------------- list embedded files ---------------------------
@@ -258,7 +265,7 @@ Show the embedded file names (long or short format)::
 
 Example::
 
-    python -m fitz embed-info some.pdf
+    pymupdf embed-info some.pdf
     'some.pdf' contains the following 15 embedded files.
 
     20110813_180956_0002.jpg
@@ -291,7 +298,7 @@ Extraction
 
 Extract an embedded file like this::
 
-    python -m fitz embed-extract -h
+    pymupdf embed-extract -h
     usage: fitz embed-extract [-h] -name NAME [-password PASSWORD] [-output OUTPUT]
                             input
 
@@ -308,14 +315,14 @@ Extract an embedded file like this::
 
 For details consult :meth:`Document.embfile_get`. Example (refer to previous section)::
 
-    python -m fitz embed-extract some.pdf -name neue.datei
+    pymupdf embed-extract some.pdf -name neue.datei
     Saved entry 'neue.datei' as 'text-tester.pdf'
 
 Deletion
 ~~~~~~~~~~~~~~~~~~~~~~~~
 Delete an embedded file like this::
 
-    python -m fitz embed-del -h
+    pymupdf embed-del -h
     usage: fitz embed-del [-h] [-password PASSWORD] [-output OUTPUT] -name NAME input
 
     --------------------------- delete embedded file --------------------------
@@ -335,7 +342,7 @@ Insertion
 ~~~~~~~~~~~~~~~~~~~~~~~~
 Add a new embedded file using this command::
 
-    python -m fitz embed-add -h
+    pymupdf embed-add -h
     usage: fitz embed-add [-h] [-password PASSWORD] [-output OUTPUT] -name NAME -path
                         PATH [-desc DESC]
                         input
@@ -359,7 +366,7 @@ Updates
 ~~~~~~~~~~~~~~~~~~~~~~~
 Update an existing embedded file using this command::
 
-    python -m fitz embed-upd -h
+    pymupdf embed-upd -h
     usage: fitz embed-upd [-h] -name NAME [-password PASSWORD] [-output OUTPUT]
                         [-path PATH] [-filename FILENAME] [-ufilename UFILENAME]
                         [-desc DESC]
@@ -389,7 +396,7 @@ Copying
 ~~~~~~~~~~~~~~~~~~~~~~~
 Copy embedded files between PDFs::
 
-    python -m fitz embed-copy -h
+    pymupdf embed-copy -h
     usage: fitz embed-copy [-h] [-password PASSWORD] [-output OUTPUT] -source
                         SOURCE [-pwdsource PWDSOURCE]
                         [-name [NAME [NAME ...]]]
@@ -418,7 +425,7 @@ Extract text from arbitrary :ref:`supported documents<Supported_File_Types>` to 
 
 * **Simple** text extraction reproduces all text as it appears in the document pages -- no effort is made to rearrange in any particular reading order.
 * **Block sorting** sorts text blocks (as identified by MuPDF) by ascending vertical, then horizontal coordinates. This should be sufficient to establish a "natural" reading order for basic pages of text.
-* **Layout** strives to reproduce the original appearance of the input pages. You can expect results like this (produced by the command `python -m fitz gettext -pages 1 demo1.pdf`):
+* **Layout** strives to reproduce the original appearance of the input pages. You can expect results like this (produced by the command `pymupdf gettext -pages 1 demo1.pdf`):
 
 .. image:: images/img-layout-text.*
     :scale: 60
@@ -435,7 +442,7 @@ After each page of the output file, a formfeed character, `hex(12)` is written -
 
 Command::
 
-    python -m fitz gettext -h
+    pymupdf gettext -h
     usage: fitz gettext [-h] [-password PASSWORD] [-mode {simple,blocks,layout}] [-pages PAGES] [-noligatures]
                         [-convert-white] [-extra-spaces] [-noformfeed] [-skip-empty] [-output OUTPUT] [-grid GRID]
                         [-fontsize FONTSIZE]
