@@ -19,6 +19,9 @@ if os.path.exists( 'fitz/__init__.py'):
         print( '# Suggest changing to a different current directory.')
         print( '#' * 40)
 
+def message(text=''):
+    print(text)
+
 from fitz_old.fitz_old import *
 
 # Allow this to work:

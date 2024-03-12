@@ -435,7 +435,7 @@ class Annot:
                 mupdf.pdf_dict_put( annot_obj, PDF_NAME('IC'), col)
         except Exception as e:
             if g_exceptions_verbose:    exception_info()
-            print( f'cannot update annot: {e}', file=sys.stderr)
+            message( f'cannot update annot: {e}', file=sys.stderr)
             raise
         
         if (opacity < 0 or opacity >= 1) and not blend_mode:    # no opacity, no blend_mode
@@ -472,7 +472,7 @@ class Annot:
 
         except Exception as e:
             if g_exceptions_verbose:    exception_info()
-            print( f'cannot set opacity or blend mode\n: {e}', file=sys.stderr)
+            message( f'cannot set opacity or blend mode\n: {e}', file=sys.stderr)
             raise
 
         return True
@@ -712,8 +712,8 @@ class Annot:
             ret = Page(page, document)
             #self.parent = weakref.proxy( ret)
             self.parent = ret
-            #print(f'No attribute .parent: {type(self)=} {id(self)=}: have set {id(self.parent)=}.')
-            #print( f'Have set self.parent')
+            #log(f'No attribute .parent: {type(self)=} {id(self)=}: have set {id(self.parent)=}.')
+            #log( f'Have set self.parent')
         return ret
 
     def get_pixmap(self, matrix=None, dpi=None, colorspace=None, alpha=0):
@@ -1027,7 +1027,7 @@ class Annot:
                 mupdf.PDF_ANNOT_POLYGON,
                 mupdf.PDF_ANNOT_SQUARE,
                 ):
-            print(f"Cannot set border for '{atname}'.")
+            message(f"Cannot set border for '{atname}'.")
             return None
         if atype not in (
                 mupdf.PDF_ANNOT_CIRCLE,
@@ -1036,7 +1036,7 @@ class Annot:
                 mupdf.PDF_ANNOT_SQUARE,
                 ):
             if clouds > 0:
-                print(f"Cannot set cloudy border for '{atname}'.")
+                message(f"Cannot set cloudy border for '{atname}'.")
                 clouds = -1  # do not set border effect
         if type(border) is not dict:
             border = {"width": width, "style": style, "dashes": dashes, "clouds": clouds}
@@ -1087,7 +1087,7 @@ class Annot:
             doc.xref_set_key(self.xref, "C", s)
 
         if fill and self.type[0] not in fill_annots:
-            print("Warning: fill color ignored for annot type '%s'." % self.type[1])
+            message("Warning: fill color ignored for annot type '%s'." % self.type[1])
             return
         if fill in ([], ()):
             doc.xref_set_key(self.xref, "IC", "[]")
@@ -1233,7 +1233,7 @@ class Annot:
         try:
             mupdf.pdf_set_annot_rect(annot, r)
         except Exception as e:
-            print(f'cannot set rect: {e}')
+            message(f'cannot set rect: {e}')
             return False
 
     def set_rotation(self, rotate=0):
@@ -2096,7 +2096,7 @@ class Xml:
         """Print a list of the node tree below self."""
         items = self._get_node_tree()
         for item in items:
-            print("  " * item[0] + item[1].replace("\n", "\\n"))
+            message("  " * item[0] + item[1].replace("\n", "\\n"))
 
     def find( self, tag, att, match):
         ret = mupdf.fz_dom_find( self.this, tag, att, match)
@@ -3730,7 +3730,7 @@ class Document:
 
         numbers = list(map(int, set(numbers)))  # ensure unique integers
         if numbers == []:
-            print("nothing to delete")
+            message("nothing to delete")
             return
         numbers.sort()
         if numbers[0] < 0 or numbers[-1] >= page_count:
@@ -4421,7 +4421,7 @@ class Document:
             outname = os.path.basename(self.name)
             if not outname:
                 outname = "memory PDF"
-            print("Inserting '%s' at '%s'" % (inname, outname))
+            message("Inserting '%s' at '%s'" % (inname, outname))
 
         # retrieve / make a Graftmap to avoid duplicate objects
         #log( 'insert_pdf(): Graftmaps')
@@ -5268,7 +5268,7 @@ class Document:
                 if key.pdf_is_name():  # this should always be true!
                     dict_key = key.pdf_to_name()
                 else:
-                    print(f"key {i} is no /Name")
+                    message(f"key {i} is no /Name")
                     dict_key = None
 
                 if dict_key:
@@ -6011,7 +6011,7 @@ class Font:
         if isinstance(fontname, str):
             fname_lower = fontname.lower()
             if "/" in fname_lower or "\\" in fname_lower or "." in fname_lower:
-                print("Warning: did you mean a fontfile?")
+                message("Warning: did you mean a fontfile?")
 
             if fname_lower in ("cjk", "china-t", "china-ts"):
                 ordering = 0
@@ -6413,7 +6413,7 @@ class Link:
         fill = colors.get("fill")
         stroke = colors.get("stroke")
         if fill is not None:
-            print("warning: links have no fill color")
+            message("warning: links have no fill color")
         if stroke in ([], ()):
             doc.xref_set_key(self.xref, "C", "[]")
             return
@@ -7066,7 +7066,7 @@ class Widget:
             for v in bstate[k]:
                 if v != "Off":
                     return v
-        print("warning: radio button has no 'On' value.")
+        message("warning: radio button has no 'On' value.")
         return True
 
     def reset(self):
@@ -7616,7 +7616,7 @@ class Page:
                 mupdf.pdf_array_push( annots, ind_obj)
             except Exception:
                 if g_exceptions_verbose:    exception_info()
-                print("skipping bad link / annot item %i.\n" % i, file=sys.stderr)
+                message("skipping bad link / annot item %i.\n" % i, file=sys.stderr)
 
     def _addWidget(self, field_type, field_name):
         page = self._pdf_page()
@@ -8470,7 +8470,7 @@ class Page:
                 w, h = h, w
             val = Rect(0, 0, w, h)
             msg = TOOLS.mupdf_warnings(reset=False).splitlines()[-1]
-            print(msg, file=sys.stderr)
+            message(msg, file=sys.stderr)
         
         return val
 
@@ -9961,7 +9961,7 @@ class Pixmap:
         try:
             from PIL import Image
         except ImportError:
-            print("PIL/Pillow not installed")
+            message("PIL/Pillow not installed")
             raise
 
         cspace = self.colorspace
@@ -10272,7 +10272,7 @@ class Pixmap:
     def tint_with(self, black, white):
         """Tint colors with modifiers for black and white."""
         if not self.colorspace or self.colorspace.n > 3:
-            print("warning: colorspace invalid for function")
+            message("warning: colorspace invalid for function")
             return
         return mupdf.fz_tint_pixmap( self.this, black, white)
 
@@ -12278,7 +12278,7 @@ class Story:
         '''
         def log(text):
             assert verbose
-            print(f'fit(): {text}')
+            message(f'fit(): {text}')
             sys.stdout.flush()
         
         assert isinstance(pmin, (int, float)) or pmin is None
@@ -13270,9 +13270,9 @@ if 1:
                     pass
                 else:
                     #assert not inspect.isroutine(value)
-                    #print(f'fitz/__init__.py: importing {name}')
+                    #log(f'fitz/__init__.py: importing {name}')
                     setattr(self, name, value)
-                    #print(f'fitz/__init__.py: {getattr( self, name, None)=}')
+                    #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
     else:
         # This is slow due to importing inspect, e.g. 0.019 instead of 0.004.
         for name, value in inspect.getmembers(mupdf):
@@ -13282,9 +13282,9 @@ if 1:
                     pass
                 else:
                     #assert not inspect.isroutine(value)
-                    #print(f'fitz/__init__.py: importing {name}')
+                    #log(f'fitz/__init__.py: importing {name}')
                     setattr(self, name, value)
-                    #print(f'fitz/__init__.py: {getattr( self, name, None)=}')
+                    #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
     
     # This is a macro so not preserved in mupdf C++/Python bindings.
     #
@@ -15616,7 +15616,7 @@ def JM_get_fontbuffer(doc, xref):
         obj = mupdf.pdf_dict_get(o, PDF_NAME('FontDescriptor'))
 
     if not obj.m_internal:
-        print(f"invalid font - FontDescriptor missing")
+        message(f"invalid font - FontDescriptor missing")
         return
 
     o = obj
@@ -15637,7 +15637,7 @@ def JM_get_fontbuffer(doc, xref):
 
         obj = mupdf.pdf_dict_get(obj, PDF_NAME('Subtype'))
         if obj.m_internal and not mupdf.pdf_is_name(obj):
-            print("invalid font descriptor subtype")
+            message("invalid font descriptor subtype")
             return
 
         if mupdf.pdf_name_eq(obj, PDF_NAME('Type1C')):
@@ -15647,10 +15647,10 @@ def JM_get_fontbuffer(doc, xref):
         elif mupdf.pdf_name_eq(obj, PDF_NAME('OpenType')):
             pass    # Prev code did: ext = "otf", but this has no effect. */
         else:
-            print('warning: unhandled font type {pdf_to_name(ctx, obj)!r}')
+            message('warning: unhandled font type {pdf_to_name(ctx, obj)!r}')
 
     if not stream:
-        print('warning: unhandled font type')
+        message('warning: unhandled font type')
         return
 
     return mupdf.pdf_load_stream(stream)
@@ -18195,21 +18195,21 @@ def get_tessdata() -> str:
         cp = subprocess.run('where tesseract', shell=1, capture_output=1, check=0)
         response = cp.stdout.strip()
         if cp.returncode or not response:
-            print("Tesseract-OCR is not installed")
+            message("Tesseract-OCR is not installed")
             return False
         dirname = os.path.dirname(response)  # path of tesseract.exe
         tessdata = os.path.join(dirname, "tessdata")  # language support
         if os.path.exists(tessdata):  # all ok?
             return tessdata
         else:  # should not happen!
-            print("unexpected: Tesseract-OCR has no 'tessdata' folder", file=sys.stderr)
+            message("unexpected: Tesseract-OCR has no 'tessdata' folder", file=sys.stderr)
             return False
 
     # Unix-like systems:
     cp = subprocess.run('whereis tesseract-ocr', shell=1, capture_output=1, check=0)
     response = cp.stdout.strip().split()
     if cp.returncode or len(response) != 2:  # if not 2 tokens: no tesseract-ocr
-        print("Tesseract-OCR is not installed")
+        message("Tesseract-OCR is not installed")
         return False
 
     # determine tessdata via iteration over subfolders
@@ -18222,7 +18222,7 @@ def get_tessdata() -> str:
     if tessdata is not None:
         return tessdata
     else:
-        print(
+        message(
             "unexpected: tesseract-ocr has no 'tessdata' folder",
             file=sys.stderr,
         )
@@ -18386,7 +18386,7 @@ def jm_append_merge(dev):
             #log(f'calling {dev.out=} {dev.method=} {dev.pathdict=}')
             resp = getattr(dev.out, dev.method)(dev.pathdict)
         if not resp:
-            print("calling cdrawings callback function/method failed!", file=sys.stderr)
+            message("calling cdrawings callback function/method failed!", file=sys.stderr)
         dev.pathdict = None
         return
     
@@ -18430,7 +18430,7 @@ def jm_append_merge(dev):
         prev[ dictkey_type] = 'fs'
         dev.pathdict.clear()
     else:
-        print("could not merge stroke and fill path", file=sys.stderr)
+        message("could not merge stroke and fill path", file=sys.stderr)
         append()
 
 
@@ -18736,7 +18736,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
         linewidth = dev.linewidth
     else:
         linewidth = fsize * 0.05    # default: 5% of font size
-    #print(f'{dev.linewidth=:.4f} {fsize=:.4f} {linewidth=:.4f}')
+    #log(f'{dev.linewidth=:.4f} {fsize=:.4f} {linewidth=:.4f}')
     
     span_dict[ 'color'] = rgb
     span_dict[ 'size'] = fsize
@@ -18748,7 +18748,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     span_dict[ 'layer'] = dev.layer_name
     span_dict[ "seqno"] = seqno
     span_dict[ 'chars'] = chars
-    #print(f'{span_dict=}')
+    #log(f'{span_dict=}')
     dev.out.append( span_dict)
 
 
@@ -19277,7 +19277,7 @@ class JM_new_lineart_device_Device(mupdf.FzDevice2):
     '''
     LINEART device for Python method Page.get_cdrawings()
     '''
-    #print(f'JM_new_lineart_device_Device()')
+    #log(f'JM_new_lineart_device_Device()')
     def __init__(self, out, clips, method):
         #log(f'JM_new_lineart_device_Device.__init__()')
         super().__init__()

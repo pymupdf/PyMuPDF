@@ -45,8 +45,8 @@ def recoverpix(doc, item):
     - pix2 must consist of 1 byte per pixel
     """
     if not (pix1.irect == pix2.irect and pix1.alpha == pix2.alpha == 0 and pix2.n == 1):
-        print("Warning: unsupported /SMask %i for %i:" % (s, x))
-        print(pix2)
+        fitz.message("Warning: unsupported /SMask %i for %i:" % (s, x))
+        fitz.message(pix2)
         pix2 = None
         return getimage(pix1)  # return the pixmap as is
 
@@ -71,7 +71,7 @@ def open_file(filename, password, show=False, pdf=True):
         if not rc:
             sys.exit("authentication unsuccessful")
         if show is True:
-            print("authenticated as %s" % "owner" if rc > 2 else "user")
+            fitz.message("authenticated as %s" % "owner" if rc > 2 else "user")
     else:
         sys.exit("'%s' requires a password" % doc.name)
     return doc
@@ -82,7 +82,7 @@ def print_dict(item):
     l = max([len(k) for k in item.keys()]) + 1
     for k, v in item.items():
         msg = "%s: %s" % (k.rjust(l), v)
-        print(msg)
+        fitz.message(msg)
     return
 
 
@@ -92,9 +92,9 @@ def print_xref(doc, xref):
     Simulate the PDF source in "pretty" format.
     For a stream also print its size.
     """
-    print("%i 0 obj" % xref)
+    fitz.message("%i 0 obj" % xref)
     xref_str = doc.xref_object(xref)
-    print(xref_str)
+    fitz.message(xref_str)
     if doc.xref_is_stream(xref):
         temp = xref_str.split()
         try:
@@ -104,9 +104,9 @@ def print_xref(doc, xref):
                 size = "unknown"
         except:
             size = "unknown"
-        print("stream\n...%s bytes" % size)
-        print("endstream")
-    print("endobj")
+        fitz.message("stream\n...%s bytes" % size)
+        fitz.message("endstream")
+    fitz.message("endobj")
 
 
 def get_list(rlist, limit, what="page"):
@@ -165,7 +165,7 @@ def show(args):
         flag = "MB"
     size = round(size, 1)
     meta = doc.metadata
-    print(
+    fitz.message(
         "'%s', pages: %i, objects: %i, %g %s, %s, encryption: %s"
         % (
             args.input,
@@ -180,42 +180,42 @@ def show(args):
     n = doc.is_form_pdf
     if n > 0:
         s = doc.get_sigflags()
-        print(
+        fitz.message(
             "document contains %i root form fields and is %ssigned"
             % (n, "not " if s != 3 else "")
         )
     n = doc.embfile_count()
     if n > 0:
-        print("document contains %i embedded files" % n)
-    print()
+        fitz.message("document contains %i embedded files" % n)
+    fitz.message()
     if args.catalog:
-        print(mycenter("PDF catalog"))
+        fitz.message(mycenter("PDF catalog"))
         xref = doc.pdf_catalog()
         print_xref(doc, xref)
-        print()
+        fitz.message()
     if args.metadata:
-        print(mycenter("PDF metadata"))
+        fitz.message(mycenter("PDF metadata"))
         print_dict(doc.metadata)
-        print()
+        fitz.message()
     if args.xrefs:
-        print(mycenter("object information"))
+        fitz.message(mycenter("object information"))
         xrefl = get_list(args.xrefs, doc.xref_length(), what="xref")
         for xref in xrefl:
             print_xref(doc, xref)
-            print()
+            fitz.message()
     if args.pages:
-        print(mycenter("page information"))
+        fitz.message(mycenter("page information"))
         pagel = get_list(args.pages, doc.page_count + 1)
         for pno in pagel:
             n = pno - 1
             xref = doc.page_xref(n)
-            print("Page %i:" % pno)
+            fitz.message("Page %i:" % pno)
             print_xref(doc, xref)
-            print()
+            fitz.message()
     if args.trailer:
-        print(mycenter("PDF trailer"))
-        print(doc.pdf_trailer())
-        print()
+        fitz.message(mycenter("PDF trailer"))
+        fitz.message(doc.pdf_trailer())
+        fitz.message()
     doc.close()
 
 
@@ -318,7 +318,7 @@ def embedded_copy(args):
             ufilename=info["ufilename"],
             desc=info["desc"],
         )
-        print("copied entry '%s' from '%s'" % (item, src.name))
+        fitz.message("copied entry '%s' from '%s'" % (item, src.name))
     src.close()
     if args.output and args.output != args.input:
         doc.save(args.output, garbage=3)
@@ -364,7 +364,7 @@ def embedded_get(args):
     output = open(filename, "wb")
     output.write(stream)
     output.close()
-    print("saved entry '%s' as '%s'" % (args.name, filename))
+    fitz.message("saved entry '%s' as '%s'" % (args.name, filename))
     doc.close()
 
 
@@ -458,31 +458,31 @@ def embedded_list(args):
         if args.name not in names:
             sys.exit("no such embedded file '%s'" % args.name)
         else:
-            print()
-            print(
+            fitz.message()
+            fitz.message(
                 "printing 1 of %i embedded file%s:"
                 % (len(names), "s" if len(names) > 1 else "")
             )
-            print()
+            fitz.message()
             print_dict(doc.embfile_info(args.name))
-            print()
+            fitz.message()
             return
     if not names:
-        print("'%s' contains no embedded files" % doc.name)
+        fitz.message("'%s' contains no embedded files" % doc.name)
         return
     if len(names) > 1:
         msg = "'%s' contains the following %i embedded files" % (doc.name, len(names))
     else:
         msg = "'%s' contains the following embedded file" % doc.name
-    print(msg)
-    print()
+    fitz.message(msg)
+    fitz.message()
     for name in names:
         if not args.detail:
-            print(name)
+            fitz.message(name)
             continue
         _ = doc.embfile_info(name)
         print_dict(doc.embfile_info(name))
-        print()
+        fitz.message()
     doc.close()
 
 
@@ -548,9 +548,9 @@ def extract_objects(args):
                         pix2.save(outname)
 
     if args.fonts:
-        print("saved %i fonts to '%s'" % (len(font_xrefs), out_dir))
+        fitz.message("saved %i fonts to '%s'" % (len(font_xrefs), out_dir))
     if args.images:
-        print("saved %i images to '%s'" % (len(image_xrefs), out_dir))
+        fitz.message("saved %i images to '%s'" % (len(image_xrefs), out_dir))
     doc.close()
 
 
