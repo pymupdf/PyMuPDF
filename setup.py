@@ -202,12 +202,6 @@ assert g_flavour in ('p', 'b', 'pb'), \
 
 g_root = os.path.abspath( f'{__file__}/..')
 
-# setuptools seems to require current directory to be PyMuPDF.
-#
-assert os.path.abspath( os.getcwd()) == g_root, \
-        f'Current directory must be the PyMuPDF directory'
-
-
 def _fs_remove(path):
     '''
     Removes file or directory, without raising exception if it doesn't exist.
@@ -1178,6 +1172,8 @@ def get_requires_for_build_wheel(config_settings=None):
         ret.append('libclang')
     if msys2:
         print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
+    elif openbsd:
+        print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
     else:
         ret.append( 'swig')
     return ret
