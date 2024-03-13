@@ -2665,7 +2665,7 @@ class Document:
             elif hasattr(filename, "name"):
                 filename = filename.name
             else:
-                raise TypeError("bad filename")
+                raise TypeError(f"bad filename: {type(filename)=} {filename=}.")
         
             if stream is not None:
                 if type(stream) is bytes:
@@ -2675,7 +2675,7 @@ class Document:
                 elif type(stream) is io.BytesIO:
                     self.stream = stream.getvalue()
                 else:
-                    raise TypeError("bad type: 'stream'")
+                    raise TypeError(f"bad stream: {type(stream)=}.")
                 stream = self.stream
                 if not (filename or filetype):
                     filename = 'pdf'
@@ -2696,9 +2696,11 @@ class Document:
                 elif not os.path.isfile(filename):
                     msg = f"'{filename}' is no file"
                     raise FileDataError(msg)
-            if from_file and os.path.getsize(filename) == 0 or type(self.stream) is bytes and len(self.stream) == 0:
-                msg = "cannot open empty document"
-                raise EmptyFileError(msg)
+                    
+            if from_file and os.path.getsize(filename) == 0:
+                raise EmptyFileError(f'Cannot open empty file: {filename=}.')
+            if type(self.stream) is bytes and len(self.stream) == 0:
+                raise EmptyFileError(f'Cannot open empty stream.')
             w = width
             h = height
             r = JM_rect_from_py(rect)
@@ -2736,7 +2738,7 @@ class Document:
                             doc = mupdf.fz_open_document(filename)
                         except Exception as e:
                             if g_exceptions_verbose > 1:    exception_info()
-                            raise EmptyFileError( 'cannot open empty document') from e
+                            raise FileDataError(f'Failed to open file {filename!r}.') from e
                     else:
                         handler = mupdf.ll_fz_recognize_document(filetype)
                         if handler:
@@ -2745,23 +2747,28 @@ class Document:
                                 #log( f'{dir(handler.open)=}')
                                 try:
                                     if mupdf_version_tuple >= (1, 24):
+                                        stream = mupdf.FzStream(filename)
+                                        accel = mupdf.FzStream()
+                                        archive = mupdf.FzArchive(None)
                                         doc = mupdf.ll_fz_document_open_fn_call(
                                                 handler.open,
-                                                mupdf.FzStream(filename),
-                                                mupdf.FzStream(),
-                                                mupdf.FzArchive(),
+                                                stream.m_internal,
+                                                accel.m_internal,
+                                                archive.m_internal,
                                                 )
                                     else:
                                         doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
                                 except Exception as e:
                                     if g_exceptions_verbose > 1:    exception_info()
-                                    raise FileDataError( MSG_BAD_DOCUMENT) from e
+                                    raise FileDataError(f'Failed to open file {filename!r} as type {filetype!r}.') from e
                                 doc = mupdf.FzDocument( doc)
                             else:
                                 if mupdf_version_tuple < (1, 24):
                                     if handler.open_with_stream:
                                         data = mupdf.fz_open_file( filename)
                                         doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
+                                else:
+                                    assert 0
                         else:
                             raise ValueError( MSG_BAD_FILETYPE)
                 else:
