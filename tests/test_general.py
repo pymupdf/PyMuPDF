@@ -1013,3 +1013,104 @@ def test_cli_out():
             'fd:1',
             'fd:2',
             )
+
+
+def test_open():
+
+    if not hasattr(fitz, 'mupdf'):
+        print('test_open(): not running on classic.')
+        return
+    
+    if fitz.mupdf_version_tuple < (1, 24):
+        print('test_open(): not running on mupdf < 1.24.')
+        return
+    
+    import re
+    import textwrap
+    import traceback
+    
+    resources = os.path.relpath(os.path.abspath(f'{__file__}/../../tests/resources'))
+    
+    # We convert all strings to use `/` instead of os.sep, which avoids
+    # problems with regex's on windows.
+    resources = resources.replace(os.sep, '/')
+    
+    def check(filename=None, stream=None, filetype=None, exception=None):
+        '''
+        Checks we receive expected exception if specified.
+        '''
+        if isinstance(filename, str):
+            filename = filename.replace(os.sep, '/')
+        if exception:
+            etype, eregex = exception
+            if isinstance(eregex, (tuple, list)):
+                # Treat as sequence of regexes to look for.
+                eregex = '.*'.join(eregex)
+            try:
+                fitz.open(filename=filename, stream=stream, filetype=filetype)
+            except etype as e:
+                text = traceback.format_exc(limit=0)
+                text = text.replace(os.sep, '/')
+                text = textwrap.indent(text, '    ', lambda line: 1)
+                assert re.search(eregex, text, re.DOTALL), \
+                        f'Incorrect exception text, expected {eregex=}, received:\n{text}'
+                print(f'Received expected exception for {filename=} {stream=} {filetype=}:\n{text}')
+            except Exception as e:
+                assert 0, \
+                        f'Incorrect exception, expected {etype}, received {type(e)=}.'
+            else:
+                assert 0, f'Did not received exception, expected {etype=}.'
+        else:
+            document = fitz.open(filename=filename, stream=stream, filetype=filetype)
+            return document
+    
+    check(f'{resources}/1.pdf')
+    
+    check(f'{resources}/Bezier.epub')
+    
+    path = 1234
+    etype = TypeError
+    eregex = re.escape(f'bad filename: type(filename)=<class \'int\'> filename={path}.')
+    check(path, exception=(etype, eregex))
+    
+    path = 'test_open-this-file-will-not-exist'
+    etype = fitz.FileNotFoundError
+    eregex = f'no such file: \'{path}\''
+    check(path, exception=(etype, eregex))
+    
+    path = resources
+    etype = fitz.FileDataError
+    eregex = re.escape(f'\'{path}\' is no file')
+    check(path, exception=(etype, eregex))
+    
+    path = os.path.relpath(os.path.abspath(f'{resources}/../test_open_empty'))
+    path = path.replace(os.sep, '/')
+    with open(path, 'w') as f:
+        pass
+    etype = fitz.EmptyFileError
+    eregex = re.escape(f'Cannot open empty file: filename={path!r}.')
+    check(path, exception=(etype, eregex))
+    
+    path = f'{resources}/1.pdf'
+    filetype = 'xps'
+    etype = fitz.FileDataError
+    eregex = (
+            re.escape(f'fitz.mupdf.FzErrorFormat: code=7: cannot recognize zip archive'),
+            re.escape(f'fitz.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
+            )
+    check(path, filetype=filetype, exception=(etype, eregex))
+    
+    path = f'{resources}/chinese-tables.pickle'
+    etype = fitz.FileDataError
+    etext = (
+            re.escape(f'fitz.mupdf.FzErrorUnsupported: code=6: cannot find document handler for file: {path}'),
+            re.escape(f'fitz.FileDataError: Failed to open file {path!r}.'),
+            )
+    check(path, exception=(etype, etext))
+    
+    stream = 123
+    etype = TypeError
+    etext = re.escape('bad stream: type(stream)=<class \'int\'>.')
+    check(stream=stream, exception=(etype, etext))
+    
+    check(stream=b'', exception=(fitz.EmptyFileError, re.escape('Cannot open empty stream.')))
