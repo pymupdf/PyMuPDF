@@ -1560,101 +1560,6 @@ static bool Outline_is_external(mupdf::FzOutline* outline)
     return mupdf::ll_fz_is_external_link(outline->m_internal->uri);
 }
 
-static mupdf::FzDocument Document_init(
-        const char* filename,
-        PyObject* stream,
-        const char* filetype,
-        PyObject* rect,
-        float width,
-        float height,
-        float fontsize
-        )
-{
-    mupdf::FzDocument doc((fz_document*) nullptr);
-    
-    float   w = width;
-    float   h = height;
-    fz_rect r = JM_rect_from_py(rect);
-    if (!fz_is_infinite_rect(r))
-    {
-        w = r.x1 - r.x0;
-        h = r.y1 - r.y0;
-    }
-    if (stream != Py_None)
-    {
-        // stream given, **MUST** be bytes!
-        const char* c = PyBytes_AS_STRING(stream); // just a pointer, no new obj
-        size_t len = (size_t) PyBytes_Size(stream);
-        mupdf::FzStream data = mupdf::fz_open_memory((const unsigned char*) c, len);
-        const char* magic = filename ? filename : filetype;
-        const fz_document_handler* handler = mupdf::ll_fz_recognize_document(magic);
-        if (!handler)
-        {
-            throw std::runtime_error(MSG_BAD_FILETYPE);
-        }
-        doc = mupdf::fz_open_document_with_stream(magic, data);
-    }
-    else
-    {
-        if (filename && strlen(filename))
-        {
-            if (!filetype || strlen(filetype) == 0)
-            {
-                doc = mupdf::fz_open_document(filename);
-            }
-            else
-            {
-                const fz_document_handler* handler = mupdf::ll_fz_recognize_document(filetype);
-                if (!handler)
-                {
-                    throw std::runtime_error(MSG_BAD_FILETYPE);
-                }
-                #if FZ_VERSION_MINOR >= 24
-                if (handler->open)
-                {
-                    doc = mupdf::fz_document_open_fn_call(
-                            handler->open,
-                            mupdf::FzStream(filename),
-                            mupdf::FzStream(),
-                            mupdf::FzArchive()
-                            );
-                }
-                #else
-                if (handler->open)
-                {
-                    doc = mupdf::FzDocument(mupdf::ll_fz_document_open_fn_call(handler->open, filename));
-                }
-                else if (handler->open_with_stream)
-                {
-                    mupdf::FzStream data = mupdf::fz_open_file(filename);
-                    doc = mupdf::FzDocument(
-                            mupdf::ll_fz_document_open_with_stream_fn_call(
-                                handler->open_with_stream,
-                                data.m_internal
-                                )
-                            );
-                }
-                #endif
-            }
-        }
-        else
-        {
-            mupdf::PdfDocument pdf = mupdf::pdf_create_document();
-            doc = pdf.super();
-        }
-    }
-    if (w > 0 && h > 0)
-    {
-        mupdf::fz_layout_document(doc, w, h, fontsize);
-    }
-    else
-    if (mupdf::fz_is_document_reflowable(doc))
-    {
-        mupdf::fz_layout_document(doc, 400, 600, 11);
-    }
-    return doc;
-}
-
 int ll_fz_absi(int i)
 {
     return mupdf::ll_fz_absi(i);
@@ -4178,16 +4083,6 @@ PyObject* page_annot_xrefs(mupdf::FzDocument& document, int pno);
 bool Outline_is_external(mupdf::FzOutline* outline);
 void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items);
 void Document_extend_toc_items(mupdf::FzDocument& document, PyObject* items);
-
-mupdf::FzDocument Document_init(
-        const char* filename,
-        PyObject* stream,
-        const char* filetype,
-        PyObject* rect,
-        float width,
-        float height,
-        float fontsize
-        );
 
 int ll_fz_absi(int i);
 
