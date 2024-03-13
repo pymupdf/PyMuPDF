@@ -2699,93 +2699,81 @@ class Document:
             if from_file and os.path.getsize(filename) == 0 or type(self.stream) is bytes and len(self.stream) == 0:
                 msg = "cannot open empty document"
                 raise EmptyFileError(msg)
-            if g_use_extra:
-                # Not sure this is any quicker.
-                try:
-                    self.this = extra.Document_init( filename, stream, filetype, rect, width, height, fontsize)
-                except Exception as e:
-                    if g_exceptions_verbose > 1:    exception_info()
-                    e_str = str(e)
-                    if str(e) == MSG_BAD_FILETYPE:
-                        raise ValueError( e_str) from e
-                    else:
-                        raise FileDataError( MSG_BAD_DOCUMENT) from e
-            else:
-                w = width
-                h = height
-                r = JM_rect_from_py(rect)
-                if not mupdf.fz_is_infinite_rect(r):
-                    w = r.x1 - r.x0
-                    h = r.y1 - r.y0
+            w = width
+            h = height
+            r = JM_rect_from_py(rect)
+            if not mupdf.fz_is_infinite_rect(r):
+                w = r.x1 - r.x0
+                h = r.y1 - r.y0
 
-                if stream:  # stream given, **MUST** be bytes!
-                    assert isinstance(stream, bytes)
-                    c = stream
-                    #len = (size_t) PyBytes_Size(stream);
+            if stream:  # stream given, **MUST** be bytes!
+                assert isinstance(stream, bytes)
+                c = stream
+                #len = (size_t) PyBytes_Size(stream);
 
-                    if mupdf_cppyy:
-                        buffer_ = mupdf.fz_new_buffer_from_copied_data( c)
-                        data = mupdf.fz_open_buffer( buffer_)
-                    else:
-                        # Pass raw bytes data to mupdf.fz_open_memory(). This assumes
-                        # that the bytes string will not be modified; i think the
-                        # original PyMuPDF code makes the same assumption. Presumably
-                        # setting self.stream above ensures that the bytes will not be
-                        # garbage collected?
-                        data = mupdf.fz_open_memory(mupdf.python_buffer_data(c), len(c))
-                    magic = filename
-                    if not magic:
-                        magic = filetype
-                    # fixme: pymupdf does:
-                    #   handler = fz_recognize_document(gctx, filetype);
-                    #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
-                    # but prefer to leave fz_open_document_with_stream() to raise.
-                    doc = mupdf.fz_open_document_with_stream(magic, data)
+                if mupdf_cppyy:
+                    buffer_ = mupdf.fz_new_buffer_from_copied_data( c)
+                    data = mupdf.fz_open_buffer( buffer_)
                 else:
-                    if filename:
-                        if not filetype:
-                            try:
-                                doc = mupdf.fz_open_document(filename)
-                            except Exception as e:
-                                if g_exceptions_verbose > 1:    exception_info()
-                                raise EmptyFileError( 'cannot open empty document') from e
-                        else:
-                            handler = mupdf.ll_fz_recognize_document(filetype)
-                            if handler:
-                                if handler.open:
-                                    #log( f'{handler.open=}')
-                                    #log( f'{dir(handler.open)=}')
-                                    try:
-                                        if mupdf_version_tuple >= (1, 24):
-                                            doc = mupdf.ll_fz_document_open_fn_call(
-                                                    handler.open,
-                                                    mupdf.FzStream(filename),
-                                                    mupdf.FzStream(),
-                                                    mupdf.FzArchive(),
-                                                    )
-                                        else:
-                                            doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
-                                    except Exception as e:
-                                        if g_exceptions_verbose > 1:    exception_info()
-                                        raise FileDataError( MSG_BAD_DOCUMENT) from e
-                                    doc = mupdf.FzDocument( doc)
-                                else:
-                                    if mupdf_version_tuple < (1, 24):
-                                        if handler.open_with_stream:
-                                            data = mupdf.fz_open_file( filename)
-                                            doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
-                            else:
-                                raise ValueError( MSG_BAD_FILETYPE)
+                    # Pass raw bytes data to mupdf.fz_open_memory(). This assumes
+                    # that the bytes string will not be modified; i think the
+                    # original PyMuPDF code makes the same assumption. Presumably
+                    # setting self.stream above ensures that the bytes will not be
+                    # garbage collected?
+                    data = mupdf.fz_open_memory(mupdf.python_buffer_data(c), len(c))
+                magic = filename
+                if not magic:
+                    magic = filetype
+                # fixme: pymupdf does:
+                #   handler = fz_recognize_document(gctx, filetype);
+                #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
+                # but prefer to leave fz_open_document_with_stream() to raise.
+                doc = mupdf.fz_open_document_with_stream(magic, data)
+            else:
+                if filename:
+                    if not filetype:
+                        try:
+                            doc = mupdf.fz_open_document(filename)
+                        except Exception as e:
+                            if g_exceptions_verbose > 1:    exception_info()
+                            raise EmptyFileError( 'cannot open empty document') from e
                     else:
-                        pdf = mupdf.PdfDocument()
-                        doc = mupdf.FzDocument(pdf)
-                if w > 0 and h > 0:
-                    mupdf.fz_layout_document(doc, w, h, fontsize)
-                elif mupdf.fz_is_document_reflowable(doc):
-                    mupdf.fz_layout_document(doc, 400, 600, 11)
-                this = doc
+                        handler = mupdf.ll_fz_recognize_document(filetype)
+                        if handler:
+                            if handler.open:
+                                #log( f'{handler.open=}')
+                                #log( f'{dir(handler.open)=}')
+                                try:
+                                    if mupdf_version_tuple >= (1, 24):
+                                        doc = mupdf.ll_fz_document_open_fn_call(
+                                                handler.open,
+                                                mupdf.FzStream(filename),
+                                                mupdf.FzStream(),
+                                                mupdf.FzArchive(),
+                                                )
+                                    else:
+                                        doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
+                                except Exception as e:
+                                    if g_exceptions_verbose > 1:    exception_info()
+                                    raise FileDataError( MSG_BAD_DOCUMENT) from e
+                                doc = mupdf.FzDocument( doc)
+                            else:
+                                if mupdf_version_tuple < (1, 24):
+                                    if handler.open_with_stream:
+                                        data = mupdf.fz_open_file( filename)
+                                        doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
+                        else:
+                            raise ValueError( MSG_BAD_FILETYPE)
+                else:
+                    pdf = mupdf.PdfDocument()
+                    doc = mupdf.FzDocument(pdf)
+            if w > 0 and h > 0:
+                mupdf.fz_layout_document(doc, w, h, fontsize)
+            elif mupdf.fz_is_document_reflowable(doc):
+                mupdf.fz_layout_document(doc, 400, 600, 11)
+            this = doc
 
-                self.this = this
+            self.this = this
 
             # fixme: not sure where self.thisown gets initialised in PyMuPDF.
             #
