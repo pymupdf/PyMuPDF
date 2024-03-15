@@ -10,6 +10,7 @@ import os
 import fitz
 import pathlib
 import pickle
+import platform
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
@@ -1012,7 +1013,20 @@ def test_cli_out():
             ],
             'fd:1',
             'fd:2',
+    
             )
+
+def relpath(path, start=None):
+    '''
+    A 'safe' alternative to os.path.relpath(). Avoids an exception on Windows
+    if the drive needs to change - in this case we use os.path.abspath().
+    '''
+    try:
+        return os.path.relpath(path, start)
+    except ValueError:
+        # os.path.relpath() fails if trying to change drives.
+        assert platform.system() == 'Windows'
+        return os.path.abspath(path)
 
 
 def test_open():
@@ -1029,7 +1043,7 @@ def test_open():
     import textwrap
     import traceback
     
-    resources = os.path.relpath(os.path.abspath(f'{__file__}/../../tests/resources'))
+    resources = relpath(os.path.abspath(f'{__file__}/../../tests/resources'))
     
     # We convert all strings to use `/` instead of os.sep, which avoids
     # problems with regex's on windows.
@@ -1083,7 +1097,7 @@ def test_open():
     eregex = re.escape(f'\'{path}\' is no file')
     check(path, exception=(etype, eregex))
     
-    path = os.path.relpath(os.path.abspath(f'{resources}/../test_open_empty'))
+    path = relpath(os.path.abspath(f'{resources}/../test_open_empty'))
     path = path.replace(os.sep, '/')
     with open(path, 'w') as f:
         pass
@@ -1095,7 +1109,10 @@ def test_open():
     filetype = 'xps'
     etype = fitz.FileDataError
     eregex = (
-            re.escape(f'fitz.mupdf.FzErrorFormat: code=7: cannot recognize zip archive'),
+            # With a sysinstall with separate MuPDF install, we get
+            # `mupdf.FzErrorFormat` instead of `fitz.mupdf.FzErrorFormat`. So
+            # we just search for the former.
+            re.escape(f'mupdf.FzErrorFormat: code=7: cannot recognize zip archive'),
             re.escape(f'fitz.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
             )
     check(path, filetype=filetype, exception=(etype, eregex))
@@ -1103,7 +1120,7 @@ def test_open():
     path = f'{resources}/chinese-tables.pickle'
     etype = fitz.FileDataError
     etext = (
-            re.escape(f'fitz.mupdf.FzErrorUnsupported: code=6: cannot find document handler for file: {path}'),
+            re.escape(f'mupdf.FzErrorUnsupported: code=6: cannot find document handler for file: {path}'),
             re.escape(f'fitz.FileDataError: Failed to open file {path!r}.'),
             )
     check(path, exception=(etype, etext))
