@@ -1108,19 +1108,23 @@ def test_open():
     path = f'{resources}/1.pdf'
     filetype = 'xps'
     etype = fitz.FileDataError
+    # 2023-12-12: On OpenBSD, for some reason the SWIG catch code only catches
+    # the exception as FzErrorBase.
+    etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorFormat'
     eregex = (
             # With a sysinstall with separate MuPDF install, we get
             # `mupdf.FzErrorFormat` instead of `fitz.mupdf.FzErrorFormat`. So
             # we just search for the former.
-            re.escape(f'mupdf.FzErrorFormat: code=7: cannot recognize zip archive'),
+            re.escape(f'mupdf.{etype2}: code=7: cannot recognize zip archive'),
             re.escape(f'fitz.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
             )
     check(path, filetype=filetype, exception=(etype, eregex))
     
     path = f'{resources}/chinese-tables.pickle'
     etype = fitz.FileDataError
+    etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorUnsupported'
     etext = (
-            re.escape(f'mupdf.FzErrorUnsupported: code=6: cannot find document handler for file: {path}'),
+            re.escape(f'mupdf.{etype2}: code=6: cannot find document handler for file: {path}'),
             re.escape(f'fitz.FileDataError: Failed to open file {path!r}.'),
             )
     check(path, exception=(etype, etext))
