@@ -1168,6 +1168,9 @@ def get_requires_for_build_wheel(config_settings=None):
     ret.append('setuptools')
     if openbsd:
         print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
+    elif darwin and platform.machine() == 'arm64':
+        print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
+        ret.append('libclang==16.0.6')
     else:
         ret.append('libclang')
     if msys2:
