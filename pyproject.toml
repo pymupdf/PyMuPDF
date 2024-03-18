@@ -1,5 +1,5 @@
 [build-system]
-# We define required packages in seutp.py:get_requires_for_build_wheel().
+# We define required packages in setup.py:get_requires_for_build_wheel().
 requires = []
 
 # See pep-517.
