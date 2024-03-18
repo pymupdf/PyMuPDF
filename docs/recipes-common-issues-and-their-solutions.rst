@@ -93,7 +93,7 @@ It features maintaining any metadata, table of contents and links contained in t
     b = doc.convert_to_pdf()  # convert to pdf
     pdf = fitz.open("pdf", b)  # open as pdf
 
-    toc= doc.het_toc()  # table of contents of input
+    toc= doc.get_toc()  # table of contents of input
     pdf.set_toc(toc)  # simply set it for output
     meta = doc.metadata  # read and set metadata
     if not meta["producer"]:
