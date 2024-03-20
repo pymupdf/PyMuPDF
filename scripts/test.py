@@ -440,6 +440,27 @@ def get_pyproject_required(ppt=None):
         else:
             assert 0, f'Failed to find "requires" line in {ppt}'
 
+def wrap_get_requires_for_build_wheel(dir_):
+    '''
+    Returns space-separated list of required
+    packages. Looks at `dir_`/pyproject.toml and calls
+    `dir_`/setup.py:get_requires_for_build_wheel().
+    '''
+    dir_abs = os.path.abspath(dir_)
+    ret = list()
+    ppt = os.path.join(dir_abs, 'pyproject.toml')
+    if os.path.exists(ppt):
+        ret += get_pyproject_required(ppt)
+    if os.path.exists(os.path.join(dir_abs, 'setup.py')):
+        sys.path.insert(0, dir_abs)
+        try:
+            from setup import get_requires_for_build_wheel as foo
+            for i in foo():
+                ret.append(i)
+        finally:
+            del sys.path[0]
+    return ' '.join(ret)
+
 
 def log(text):
     gh_release.log(text, caller=1)
