@@ -259,18 +259,29 @@ def build( platform_=None, valgrind=False):
             log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
             return
     
-    def env_set(name, value, pass_=False):
-        assert isinstance( value, str)
-        if not name.startswith('CIBW'):
-            assert pass_, f'{name=} {value=}'
-        env_extra[ name] = value
-        if pass_ and platform.system() == 'Linux':
+    def env_pass(name):
+        '''
+        Adds `name` to CIBW_ENVIRONMENT_PASS_LINUX if required to be available
+        when building wheel with cibuildwheel.
+        '''
+        if platform.system() == 'Linux':
             v = env_extra.get('CIBW_ENVIRONMENT_PASS_LINUX', '')
             if v:
                 v += ' '
             v += name
             env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = v
+    
+    def env_set(name, value, pass_=False):
+        assert isinstance( value, str)
+        if not name.startswith('CIBW'):
+            assert pass_, f'{name=} {value=}'
+        env_extra[ name] = value
+        if pass_:
+            env_pass(name)
 
+    if os.environ.get('PYMUPDF_SETUP_LIBCLANG'):
+        env_pass('PYMUPDF_SETUP_LIBCLANG')
+    
     env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', inputs_wheels_implementations, pass_=1)
     if inputs_skeleton:
         env_set('PYMUPDF_SETUP_SKELETON', inputs_skeleton, pass_=1)

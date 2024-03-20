@@ -967,6 +967,7 @@ def test_cli_out():
             env['PYMUPDF_LOG'] = log
         if message:
             env['PYMUPDF_MESSAGE'] = message
+        print(f'Running `pymupdf internal`. {env.get("PATH")=}.')
         cp = subprocess.run(f'pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
         
         check_lines(expect_out, cp.stdout)
