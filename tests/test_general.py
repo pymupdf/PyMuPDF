@@ -1178,3 +1178,17 @@ def test_open():
     check(stream=stream, exception=(etype, etext))
     
     check(stream=b'', exception=(fitz.EmptyFileError, re.escape('Cannot open empty stream.')))
+
+def test_533():
+    if not hasattr(fitz, 'mupdf'):
+        print('test_533(): Not running on classic.')
+        return
+    path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
+    doc = fitz.open(path)
+    print()
+    for p in doc:
+        print(f'for p in doc: {p=}.')
+    for p in list(doc)[:]:
+        print(f'for p in list(doc)[:]: {p=}.')
+    for p in doc[:]:
+        print(f'for p in doc[:]: {p=}.')

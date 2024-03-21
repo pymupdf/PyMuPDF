@@ -2615,7 +2615,10 @@ class Document:
         self.close()
 
     def __getitem__(self, i: int =0):
-        assert isinstance(i, int) or (isinstance(i, tuple) and len(i) == 2 and all(isinstance(x, int) for x in i))
+        if isinstance(i, slice):
+            return [self[j] for j in range(*i.indices(len(self)))]
+        assert isinstance(i, int) or (isinstance(i, tuple) and len(i) == 2 and all(isinstance(x, int) for x in i)), \
+                f'Invalid item number: {i=}.'
         if i not in self:
             raise IndexError(f"page {i} not in document")
         return self.load_page(i)
