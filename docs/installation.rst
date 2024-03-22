@@ -206,7 +206,7 @@ Enabling Integrated OCR Support
 
 If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
 
-PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
+PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need [Tesseract’s language support data](https://github.com/tesseract-ocr/tessdata).
 
 The language support folder location must be communicated either via storing it in the environment variable `"TESSDATA_PREFIX"`, or as a parameter in the applicable functions.
 
