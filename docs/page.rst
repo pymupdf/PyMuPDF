@@ -818,7 +818,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_line
       pair: oc; draw_line
 
-   .. method:: draw_line(p1, p2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_line(p1, p2, color=(0,), width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.draw_line`.
 
@@ -843,7 +843,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_zigzag
       pair: oc; draw_zigzag
 
-   .. method:: draw_zigzag(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_zigzag(p1, p2, breadth=2, color=(0,), width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a zigzag line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.draw_zigzag`.
 
@@ -868,7 +868,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_squiggle
       pair: oc; draw_squiggle
 
-   .. method:: draw_squiggle(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_squiggle(p1, p2, breadth=2, color=(0,), width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a squiggly (wavy, undulated) line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.draw_squiggle`.
 
@@ -892,7 +892,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_circle
       pair: oc; draw_circle
 
-   .. method:: draw_circle(center, radius, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_circle(center, radius, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a circle around *center* (:data:`point_like`) with a radius of *radius*. See :meth:`Shape.draw_circle`.
 
@@ -916,7 +916,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_oval
       pair: oc; draw_oval
 
-   .. method:: draw_oval(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_oval(quad, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw an oval (ellipse) within the given :data:`rect_like` or :data:`quad_like`. See :meth:`Shape.draw_oval`.
 
@@ -941,7 +941,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_sector
       pair: oc; draw_sector
 
-   .. method:: draw_sector(center, point, angle, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_sector(center, point, angle, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a circular sector, optionally connecting the arc to the circle's center (like a piece of pie). See :meth:`Shape.draw_sector`.
 
@@ -965,7 +965,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_polyline
       pair: oc; draw_polyline
 
-   .. method:: draw_polyline(points, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_polyline(points, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw several connected lines defined by a sequence of :data:`point_like` \s. See :meth:`Shape.draw_polyline`.
 
@@ -990,7 +990,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_bezier
       pair: oc; draw_bezier
 
-   .. method:: draw_bezier(p1, p2, p3, p4, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_bezier(p1, p2, p3, p4, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a cubic Bézier curve from *p1* to *p4* with the control points *p2* and *p3* (all are :data:`point_like` \s). See :meth:`Shape.draw_bezier`.
 
@@ -1014,7 +1014,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_curve
       pair: oc; draw_curve
 
-   .. method:: draw_curve(p1, p2, p3, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_curve(p1, p2, p3, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: This is a special case of *draw_bezier()*. See :meth:`Shape.draw_curve`.
 
@@ -1039,7 +1039,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: radius; draw_rect
       pair: oc; draw_rect
 
-   .. method:: draw_rect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, radius=None, oc=0)
+   .. method:: draw_rect(rect, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, radius=None, oc=0)
 
       PDF only: Draw a rectangle. See :meth:`Shape.draw_rect`.
 
@@ -1064,7 +1064,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_quad
       pair: oc; draw_quad
 
-   .. method:: draw_quad(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_quad(quad, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a quadrilateral. See :meth:`Shape.draw_quad`.
 
