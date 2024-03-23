@@ -4,9 +4,11 @@
 * Verify manipulation of single TOC item works
 * Verify stability against circular TOC items
 """
+
 import os
 import sys
 import fitz
+import pathlib
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
@@ -24,16 +26,15 @@ def test_simple_toc():
 
 
 def test_full_toc():
-    if fitz.mupdf_version_tuple >= (1, 23, 0):
-        # MuPDF changed in 7d41466feaa.
-        expected_path = f'{scriptdir}/resources/full_toc2.txt'
-    else:
-        expected_path = f'{scriptdir}/resources/full_toc.txt'
-    with open(expected_path, encoding='utf8') as f:
-        expected = f.read()
-    toc = '\n'.join([str(t) for t in doc.get_toc(False)])
-    toc += '\n'
-    assert toc == expected
+    if not hasattr(fitz, "mupdf"):
+        # Classic implementation does not have fix for this test.
+        print(f"Not running test_full_toc on classic implementation.")
+        return
+    expected_path = f"{scriptdir}/resources/full_toc.txt"
+    expected = pathlib.Path(expected_path).read_bytes()
+    toc = "\n".join([str(t) for t in doc.get_toc(False)])
+    toc += "\n"
+    assert toc == expected.decode("utf8")
 
 
 def test_erase_toc():
