@@ -6784,11 +6784,10 @@ class linkDest:
         if obj.is_external:
             if not self.uri:
                 pass
-            elif self.uri.startswith(("http://", "https://", "mailto:", "ftp://")):
-                self.is_uri = True
-                self.kind = LINK_URI
-            elif self.uri.startswith("file://"):
-                self.file_spec = self.uri[7:]
+            elif self.uri.startswith("file:"):
+                self.file_spec = self.uri[5:]
+                if self.file_spec.startswith("//"):
+                    self.file_spec = self.file_spec[2:]
                 self.is_uri = False
                 self.uri = ""
                 self.kind = LINK_LAUNCH
@@ -6797,7 +6796,10 @@ class linkDest:
                     if ftab[1].startswith("page="):
                         self.kind = LINK_GOTOR
                         self.file_spec = ftab[0]
-                        self.page = int(ftab[1][5:]) - 1
+                        self.page = int(ftab[1].split("&")[0][5:]) - 1
+            elif ":" in self.uri:
+                self.is_uri = True
+                self.kind = LINK_URI
             else:
                 self.is_uri = True
                 self.kind = LINK_LAUNCH

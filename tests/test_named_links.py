@@ -57,3 +57,49 @@ def test_2922():
     assert link0["page"] == link1["page"]
     assert link0["to"] == link1["to"]
     assert link0["from"] == link1["from"]
+
+
+def test_3301():
+    """Test correct differentiation between URI and LAUNCH links.
+
+    Links encoded as /URI in PDF are converted to either LINK_URI or
+    LINK_LAUNCH in PyMuPDF.
+    This function ensures that the 'Link.uri' containing a ':' colon
+    is converted to a URI if not explicitly starting with "file://".
+    """
+    if not hasattr(fitz, "mupdf"):
+        print(f"test_3301(): not running on classic.")
+        return
+
+    # list of links and their expected link "kind" upon extraction
+    text = {
+        "https://www.google.de": fitz.LINK_URI,
+        "http://www.google.de": fitz.LINK_URI,
+        "mailto:jorj.x.mckie@outlook.de": fitz.LINK_URI,
+        "www.wikipedia.de": fitz.LINK_LAUNCH,
+        "awkward:resource": fitz.LINK_URI,
+        "ftp://www.google.de": fitz.LINK_URI,
+        "some.program": fitz.LINK_LAUNCH,
+        "file://some.program": fitz.LINK_LAUNCH,
+        "another.exe": fitz.LINK_LAUNCH,
+    }
+
+    # make enough "from" rectangles
+    r = fitz.Rect(0, 0, 50, 20)
+    rects = [r + (0, r.height * i, 0, r.height * i) for i in range(len(text.keys()))]
+
+    # make test page and insert above links as kind=LINK_URI
+    doc = fitz.open()
+    page = doc.new_page()
+    for i, k in enumerate(text.keys()):
+        link = {"kind": fitz.LINK_URI, "uri": k, "from": rects[i]}
+        page.insert_link(link)
+
+    # re-cycle the PDF preparing for link extraction
+    pdfdata = doc.write()
+    doc = fitz.open("pdf", pdfdata)
+    page = doc[0]
+    for link in page.get_links():
+        # Extract the link text. Must be 'file' or 'uri'.
+        t = link["uri"] if (_ := link.get("file")) is None else _
+        assert text[t] == link["kind"]
