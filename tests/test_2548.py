@@ -39,10 +39,7 @@ def test_2548():
         expected = 'Loop found in structure tree. Ignoring structure.'
         assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
         assert not e
-    elif (0
-            or fitz.pymupdf_version_tuple >= (1, 23, 7)
-            or fitz.mupdf_version_tuple >= (1, 23, 7)
-            ):
+    elif fitz.mupdf_version_tuple >= (1, 23, 7):
         expected = 'structure tree broken, assume tree is missing: cycle in structure tree'
         assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
         assert not e
