@@ -32,9 +32,13 @@ def test_full_toc():
         return
     expected_path = f"{scriptdir}/resources/full_toc.txt"
     expected = pathlib.Path(expected_path).read_bytes()
+    # Github windows x32 seems to insert \r characters; maybe something to
+    # do with the Python installation's line endings settings.
+    expected = expected.decode("utf8")
+    expected = expected.replace('\r', '')
     toc = "\n".join([str(t) for t in doc.get_toc(False)])
     toc += "\n"
-    assert toc == expected.decode("utf8")
+    assert toc == expected
 
 
 def test_erase_toc():
