@@ -1442,7 +1442,7 @@ class Annot:
 
         if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
             BT = ap.find(b"BT")
-            ET = ap.find(b"ET") + 2
+            ET = ap.rfind(b"ET") + 2
             ap = ap[BT:ET]
             w, h = self.rect.width, self.rect.height
             if rotate in (90, 270) or not (apnmat.b == apnmat.c == 0):
@@ -7382,7 +7382,7 @@ class Page:
         #%pythonappend _add_freetext_annot
         ap = val._getAP()
         BT = ap.find(b"BT")
-        ET = ap.find(b"ET") + 2
+        ET = ap.rfind(b"ET") + 2
         ap = ap[BT:ET]
         w = rect[2]-rect[0]
         h = rect[3]-rect[1]
