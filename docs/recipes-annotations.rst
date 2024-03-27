@@ -11,7 +11,9 @@ Annotations
 How to Add and Modify Annotations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In PyMuPDF, new annotations can be added via :ref:`Page` methods. Once an annotation exists, it can be modified to a large extent using methods of the :ref:`Annot` class.
+In :title:`PyMuPDF`, new annotations can be added via :ref:`Page` methods. Once an annotation exists, it can be modified to a large extent using methods of the :ref:`Annot` class.
+
+Annotations can **only** be inserted in :title:`PDF` pages - other document types do not support annotation insertion.
 
 In contrast to many other tools, initial insert of annotations happens with a minimum number of properties. We leave it to the programmer to e.g. set attributes like author, creation date or subject.
 

@@ -803,6 +803,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_end|
       
 
+   **Drawing Methods**
+
    .. index::
       pair: closePath; draw_line
       pair: color; draw_line
@@ -1447,7 +1449,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False, tessdata=None)
 
-      Create a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
+      **Optical Character Recognition** (**OCR**) technology can be used to extract text data for documents where text is in a raster image format throughout the page. Use this method to **OCR** a page for text extraction.
+
+      This method returns a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
 
       :arg int flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
       :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
