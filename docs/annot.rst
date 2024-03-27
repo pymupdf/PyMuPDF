@@ -5,7 +5,8 @@
 ================
 Annot
 ================
-**This class is supported for PDF documents only.**
+
+|pdf_only_class|
 
 Quote from the :ref:`AdobeManual`: "An annotation associates an object such as a note, sound, or movie with a location on a page of a PDF document, or provides a way to interact with the user by means of the mouse and keyboard."
 

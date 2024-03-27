@@ -14,8 +14,9 @@ Opening Files
 Supported File Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+:title:`PyMuPDF` can open files other that just :title:`PDF`.
 
-:title:`PyMuPDF` supports the following file types:
+The following file types are supported:
 
 .. include:: supported-files-table.rst
 
