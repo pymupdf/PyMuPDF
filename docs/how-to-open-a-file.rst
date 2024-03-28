@@ -14,7 +14,7 @@ Opening Files
 Supported File Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:title:`PyMuPDF` can open files other that just :title:`PDF`.
+|PyMuPDF| can open files other than just |PDF|.
 
 The following file types are supported:
 
@@ -48,11 +48,11 @@ Assume that *"some.file"* is actually an **XPS**. Open it like so:
 
 .. note::
 
-    :title:`PyMuPDF` itself does not try to determine the file type from the file contents. **You** are responsible for supplying the file type information in some way -- either implicitly, via the file extension, or explicitly as shown with the `filetype` parameter. There are pure :title:`Python` packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
+    |PyMuPDF| itself does not try to determine the file type from the file contents. **You** are responsible for supplying the file type information in some way -- either implicitly, via the file extension, or explicitly as shown with the `filetype` parameter. There are pure :title:`Python` packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
 
-    If :title:`PyMuPDF` encounters a file with an unknown / missing extension, it will try to open it as a :title:`PDF`. So in these cases there is no need for additional precautions. Similarly, for memory documents, you can just specify `doc=fitz.open(stream=mem_area)` to open it as a :title:`PDF` document.
+    If |PyMuPDF| encounters a file with an unknown / missing extension, it will try to open it as a |PDF|. So in these cases there is no need for additional precautions. Similarly, for memory documents, you can just specify `doc=fitz.open(stream=mem_area)` to open it as a |PDF| document.
 
-    If you attempt to open an unsupported file then :title:`PyMuPDF` will throw a file data error.
+    If you attempt to open an unsupported file then |PyMuPDF| will throw a file data error.
 
 
 ----------
@@ -62,14 +62,14 @@ Opening Files as Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-:title:`PyMuPDF` has the capability to open any plain text file as a document. In order to do this you should provide the `filetype` parameter for the `fitz.open` function as `"txt"`.
+|PyMuPDF| has the capability to open any plain text file as a document. In order to do this you should provide the `filetype` parameter for the `fitz.open` function as `"txt"`.
 
 .. code-block:: python
 
     doc = fitz.open("my_program.py", filetype="txt")
 
 
-In this way you are able to open a variety of file types and perform the typical **non-PDF** specific features like text searching, text extracting and page rendering. Obviously, once you have rendered your `txt` content, then saving as :title:`PDF` or merging with other :title:`PDF` files is no problem.
+In this way you are able to open a variety of file types and perform the typical **non-PDF** specific features like text searching, text extracting and page rendering. Obviously, once you have rendered your `txt` content, then saving as |PDF| or merging with other |PDF| files is no problem.
 
 
 Examples
@@ -103,7 +103,7 @@ Opening a `JSON` file
 
 And so on!
 
-As you can imagine many text based file formats can be *very simply opened* and *interpreted* by :title:`PyMuPDF`. This can make data analysis and extraction for a wide range of previously unavailable files suddenly possible.
+As you can imagine many text based file formats can be *very simply opened* and *interpreted* by |PyMuPDF|. This can make data analysis and extraction for a wide range of previously unavailable files suddenly possible.
 
 
 

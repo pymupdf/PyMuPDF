@@ -17,6 +17,13 @@
 
     <div style="width:100%; text-align:right"><b>This class is for PDF only.</b></div>
 
+.. |PyMuPDF| raw:: html
+
+    <cite>PyMuPDF</cite>
+
+.. |PDF| raw:: html
+
+    <cite>PDF</cite>
 
 .. raw:: html
 

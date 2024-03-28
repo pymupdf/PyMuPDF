@@ -43,7 +43,7 @@ msgstr "付録4：性能比較方法"
 msgid ""
 "This article documents the approach to measure :title:`PyMuPDF's` "
 "performance and the tools and example files used to do comparisons."
-msgstr "この記事では、:title:`PyMuPDF` の性能を測定するアプローチと、比較を行うために使用されるツールとサンプルファイルについて説明します。"
+msgstr "この記事では、|PyMuPDF| の性能を測定するアプローチと、比較を行うために使用されるツールとサンプルファイルについて説明します。"
 
 #: ../../app4.rst:18 42d1f1d047914ef38cc58862913f890e
 msgid "The following three sections deal with different performance aspects:"
@@ -56,8 +56,8 @@ msgid ""
 "basic activities are also used for joining (merging) :title:`PDFs`, the "
 "results also apply to these use cases."
 msgstr ""
-":ref:`ドキュメントのコピー<app4_copying>` - これには :title:`PDF` "
-"ファイルの開閉と解析、そしてそれらを出力ファイルに書き込む作業が含まれます。同じ基本的なアクティビティは、:title:`PDF` "
+":ref:`ドキュメントのコピー<app4_copying>` - これには |PDF| "
+"ファイルの開閉と解析、そしてそれらを出力ファイルに書き込む作業が含まれます。同じ基本的なアクティビティは、|PDF| "
 "ファイルの結合（マージ）にも使用されるため、結果はこれらのユースケースにも適用されます。"
 
 #: ../../app4.rst:21 1a7f5ad501254fd7a107af66c268bf1d
@@ -65,12 +65,12 @@ msgid ""
 ":ref:`Text Extraction<app4_text_extraction>` - This extracts plain text "
 "from :title:`PDFs` and writes it to an output text file."
 msgstr ""
-":ref:`テキスト抽出<app4_text_extraction>` - これにより :title:`PDF` "
+":ref:`テキスト抽出<app4_text_extraction>` - これにより |PDF| "
 "ファイルから平文テキストが抽出され、テキストファイルに書き込まれます。"
 
 #: ../../app4.rst:22 e98d3027103e4d78a44f61d827c3f7ad
 msgid ""
-":ref:`Page Rendering<app4_page_rendering>` - This converts :title:`PDF` "
+":ref:`Page Rendering<app4_page_rendering>` - This converts |PDF| "
 "pages to image files looking identical to the pages. This ability is the "
 "basic prerequisite for using a tool in :title:`Python GUI` scripts to "
 "scroll through documents. We have chosen a medium-quality (resolution 150"
@@ -83,15 +83,15 @@ msgstr ""
 #: ../../app4.rst:24 78870da8c87d47ac8169606f5a870a4e
 msgid ""
 "Please note that in all cases the actual speed in dealing with "
-":title:`PDF` structures is not directly measured: instead, the timings "
+"|PDF| structures is not directly measured: instead, the timings "
 "also include the durations of writing files to the operating system's "
 "file system. This cannot be avoided because tools other than "
-":title:`PyMuPDF` do not offer the option to e.g., separate the image "
+"|PyMuPDF| do not offer the option to e.g., separate the image "
 "**creation** step from the following step, which **writes** the image "
 "into a file."
 msgstr ""
-":title:`PDF` "
-"構造の処理速度そのものを直接測定するのではなく、すべての場合において、タイミングにはファイルをオペレーティングシステムのファイルシステムに書き込む時間も含まれることに注意してください。これは回避できない要因です。なぜなら、:title:`PyMuPDF`"
+"|PDF| "
+"構造の処理速度そのものを直接測定するのではなく、すべての場合において、タイミングにはファイルをオペレーティングシステムのファイルシステムに書き込む時間も含まれることに注意してください。これは回避できない要因です。なぜなら、|PyMuPDF|"
 " 以外のツールでは、例えばイメージの **作成** ステップと、イメージをファイルに **書き込む** "
 "後続のステップを分離するオプションが提供されていないためです。"
 
@@ -435,11 +435,11 @@ msgstr "使用されるツール"
 
 #: ../../app4.rst:133 219d589c98e946219baf738ac0403616
 msgid ""
-"In each section, the same fixed set of :title:`PDF` files is being "
+"In each section, the same fixed set of |PDF| files is being "
 "processed by a set of tools. The set of tools used per performance aspect"
 " however varies, depending on the supported tool features."
 msgstr ""
-"各セクションでは、同じ固定されたセットの :title:`PDF` "
+"各セクションでは、同じ固定されたセットの |PDF| "
 "ファイルが一連のツールによって処理されます。ただし、性能の側面ごとに使用されるツールのセットは、サポートされるツールの機能に応じて異なります。"
 
 #: ../../app4.rst:135 ad5b106d9d4d49fca12efdd52cfeb24d
@@ -461,7 +461,7 @@ msgstr "説明"
 #: ../../app4.rst:143 ../../app4.rst:172 ../../app4.rst:368
 #: 3428180373e8445eabe26f9ce8d67353 8f38222c05a145e6a1e887f8d37b78c6
 #: 90d20f28c9964670811ef58cff20808e
-msgid ":title:`PyMuPDF`"
+msgid "|PyMuPDF|"
 msgstr ""
 
 #: ../../app4.rst:144 fd8df1c7718447729103820cdbf3e85c
@@ -493,8 +493,8 @@ msgid "PDFMiner_"
 msgstr ""
 
 #: ../../app4.rst:150 aa445565c33446238c181df3eb7c3660
-msgid "A pure :title:`Python` to extract text and other data from :title:`PDF`."
-msgstr ":title:`PDF` からテキストやその他のデータを抽出するための純粋な :title:`Python` ツールです。"
+msgid "A pure :title:`Python` to extract text and other data from |PDF|."
+msgstr "|PDF| からテキストやその他のデータを抽出するための純粋な :title:`Python` ツールです。"
 
 #: ../../app4.rst:151 058b23f57d454765a50f6665dfee540e
 msgid "XPDF_"
@@ -522,9 +522,9 @@ msgstr ""
 
 #: ../../app4.rst:156 959d755f2de44163b578a87be30993c0
 msgid ""
-"A :title:`Python` package specialized on rendering :title:`PDF` pages to "
+"A :title:`Python` package specialized on rendering |PDF| pages to "
 ":title:`JPG` images."
-msgstr ":title:`PDF` ページを :title:`JPG` 画像にレンダリングすることに特化した :title:`Python` パッケージです。"
+msgstr "|PDF| ページを :title:`JPG` 画像にレンダリングすることに特化した :title:`Python` パッケージです。"
 
 #: ../../app4.rst:164 ff6e5dd3df614a07a7dfc154fcd9db95
 msgid "Copying / Joining / Merging"
@@ -532,24 +532,24 @@ msgstr "コピー / 結合 / マージ"
 
 #: ../../app4.rst:166 77ec351e142d49cf9fe7d1a219ece8c4
 msgid ""
-"How fast is a :title:`PDF` file read and its content parsed for further "
+"How fast is a |PDF| file read and its content parsed for further "
 "processing? The sheer parsing performance cannot directly be compared, "
 "because batch utilities always execute a requested task completely, in "
 "one go, front to end. :title:`PDFrw` too, has a *lazy* strategy for "
 "parsing, meaning it only parses those parts of a document that are "
 "required in any moment."
 msgstr ""
-":title:`PDF` "
+"|PDF| "
 "ファイルの読み取りおよびそのコンテンツの解析は、どれだけ高速に行われるのでしょうか？純粋な解析の性能を直接比較することはできません。なぜなら、バッチユーティリティは常に要求されたタスクを一度に完全に実行するからです。"
 " :title:`PDFrw` も解析の際には *レイジー* な戦略を採用しており、必要な瞬間に必要な部分のみを解析します。"
 
 #: ../../app4.rst:168 99d1875072034e0a8a239e326eccc4f2
 msgid ""
 "To find an answer to the question, we therefore measure the time to copy "
-"a :title:`PDF` file to an output file with each tool, and do nothing "
+"a |PDF| file to an output file with each tool, and do nothing "
 "else."
 msgstr ""
-"したがって、この質問に答えるために、各ツールで :title:`PDF` "
+"したがって、この質問に答えるために、各ツールで |PDF| "
 "ファイルを出力ファイルにコピーする時間を計測し、それ以外の操作は行いません。"
 
 #: ../../app4.rst:170 ../../app4.rst:365 0b5fce24efce4d4e861fac0a608e7267
@@ -580,8 +580,8 @@ msgstr "**観察結果**"
 #: e12eebe2e3cc47c086217676521e04e7
 msgid ""
 "These are our run time findings in **seconds** along with a base rate "
-"summary compared to :title:`PyMuPDF`:"
-msgstr "以下は、実行時間の結果（ **秒単位**）と、 :title:`PyMuPDF` との比較における基本レートの要約です："
+"summary compared to |PyMuPDF|:"
+msgstr "以下は、実行時間の結果（ **秒単位**）と、 |PyMuPDF| との比較における基本レートの要約です："
 
 #: ../../app4.rst:218 ../../app4.rst:296 ../../app4.rst:408
 #: 1076732c4650415d9ae9712245ce04d6 4bf8949048cd4b0f8b92915d0b57b775
@@ -1002,10 +1002,10 @@ msgstr "ページのレンダリング"
 
 #: ../../app4.rst:362 ea2f8df7d39645c4bb770f5cd16724e5
 msgid ""
-"We have tested rendering speed of :title:`PyMuPDF` against "
+"We have tested rendering speed of |PyMuPDF| against "
 ":title:`pdf2jpg` and :title:`XPDF` at a resolution of 150 DPI,"
 msgstr ""
-"私たちは、解像度150 DPIで :title:`PyMuPDF` のレンダリング速度を :title:`pdf2jpg` と "
+"私たちは、解像度150 DPIで |PyMuPDF| のレンダリング速度を :title:`pdf2jpg` と "
 ":title:`XPDF` と比較しました。"
 
 #: ../../app4.rst:382 c05749a2902448aa82540c72fe24e9ea
