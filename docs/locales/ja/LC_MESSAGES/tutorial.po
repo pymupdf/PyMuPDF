@@ -41,7 +41,7 @@ msgstr "チュートリアル"
 
 #: ../../tutorial.rst:11 1db8e9068f934af9a293843ffdb4bbe4
 msgid ""
-"This tutorial will show you the use of :title:`PyMuPDF`, :title:`MuPDF` "
+"This tutorial will show you the use of |PyMuPDF|, :title:`MuPDF` "
 "in :title:`Python`, step by step."
 msgstr "このチュートリアルでは、PythonでのPyMuPDF、MuPDFのステップバイステップの使用方法を紹介します。"
 
@@ -93,7 +93,7 @@ msgstr ""
 
 #: ../../tutorial.rst:37 94a769c214cb4082b8842e168cd476fe
 msgid ""
-"So :title:`PyMuPDF` **cannot coexist** with packages named \"fitz\" in "
+"So |PyMuPDF| **cannot coexist** with packages named \"fitz\" in "
 "the same Python environment."
 msgstr "したがって、PyMuPDFは同じPython環境で「fitz」という名前のパッケージと共存することはできません"
 

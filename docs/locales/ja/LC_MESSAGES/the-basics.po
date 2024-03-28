@@ -71,12 +71,12 @@ msgstr ""
 ":ref:`ファイルを開く方法ガイド<HowToOpenAFile>` のリストを参照してください。"
 
 #: ../../the-basics.rst:42 258611bb78d846559294973447eaacea
-msgid "Extract text from a :title:`PDF`"
-msgstr ":title:`PDF` からテキストを抽出する"
+msgid "Extract text from a |PDF|"
+msgstr "|PDF| からテキストを抽出する"
 
 #: ../../the-basics.rst:44 ff421cb1fd78478f989932a177590f12
-msgid "To extract all the text from a :title:`PDF` file, do the following:"
-msgstr ":title:`PDF` ファイルからすべてのテキストを抽出するには、以下の手順を実行してください："
+msgid "To extract all the text from a |PDF| file, do the following:"
+msgstr "|PDF| ファイルからすべてのテキストを抽出するには、以下の手順を実行してください："
 
 #: ../../the-basics.rst:66 ../../the-basics.rst:117
 #: b3d57d84a021459aa27f5bc4e4b2b3f5 dd8bfd24b7154014a8c674177de5eb95
@@ -112,12 +112,12 @@ msgid ":meth:`Page.get_text`"
 msgstr ":meth:`Page.get_text`"
 
 #: ../../the-basics.rst:78 634b246be4154aa19de3533c78b77265
-msgid "Extract images from a :title:`PDF`"
-msgstr ":title:`PDF` から画像を抽出する"
+msgid "Extract images from a |PDF|"
+msgstr "|PDF| から画像を抽出する"
 
 #: ../../the-basics.rst:80 d4268a3a86304f338781d63780e78c3f
-msgid "To extract all the images from a :title:`PDF` file, do the following:"
-msgstr ":title:`PDF` すべての画像を抽出するには、以下の手順を実行してください："
+msgid "To extract all the images from a |PDF| file, do the following:"
+msgstr "|PDF| すべての画像を抽出するには、以下の手順を実行してください："
 
 #: ../../the-basics.rst:121 fc6da4e40f6b420abd83a90907350206
 msgid ":meth:`Page.get_images`"
@@ -128,21 +128,21 @@ msgid ":ref:`Pixmap<Pixmap>`"
 msgstr ""
 
 #: ../../the-basics.rst:132 c789a706489741c9bb804932692ba777
-msgid "Merging :title:`PDF` files"
-msgstr ":title:`PDF` ファイルの結合"
+msgid "Merging |PDF| files"
+msgstr "|PDF| ファイルの結合"
 
 #: ../../the-basics.rst:134 db1e3b27e20843e5a7bea38dde5b6b95
-msgid "To merge :title:`PDF` files, do the following:"
-msgstr ":title:`PDF` ファイルを結合するには、以下の手順を実行してください："
+msgid "To merge |PDF| files, do the following:"
+msgstr "|PDF| ファイルを結合するには、以下の手順を実行してください："
 
 #: ../../the-basics.rst:152 b1dcef5e5a1141af8ae02f1d177d1787
-msgid "Merging :title:`PDF` files with other types of file"
-msgstr ":title:`PDF` ァイルと他の種類のファイルを結合する"
+msgid "Merging |PDF| files with other types of file"
+msgstr "|PDF| ァイルと他の種類のファイルを結合する"
 
 #: ../../the-basics.rst:154 745e5ce6d4c7470fb5a861ab95d1596d
 msgid ""
 "With :meth:`Document.insert_file` you can invoke the method to merge "
-":ref:`supported files<Supported_File_Types>` with :title:`PDF`. For "
+":ref:`supported files<Supported_File_Types>` with |PDF|. For "
 "example:"
 msgstr ""
 ":meth:`Document.insert_file` "
@@ -151,7 +151,7 @@ msgstr ""
 #: ../../the-basics.rst:176 b80ef684aba44ceab64cd0261fcb4ed5
 msgid ""
 "It is easy to join PDFs with :meth:`Document.insert_pdf` & "
-":meth:`Document.insert_file`. Given open :title:`PDF` documents, you can "
+":meth:`Document.insert_file`. Given open |PDF| documents, you can "
 "copy page ranges from one to the other. You can select the point where "
 "the copied pages should be placed, you can revert the page sequence and "
 "also change page rotation. This Wiki `article "
@@ -195,17 +195,17 @@ msgid ""
 msgstr ""
 
 #: ../../the-basics.rst:204 6d7efa6aa21b4d94a3062a6b9ac7950b
-msgid "Adding a watermark to a :title:`PDF`"
-msgstr ":title:`PDF` ファイルにウォータマークを追加する方法"
+msgid "Adding a watermark to a |PDF|"
+msgstr "|PDF| ファイルにウォータマークを追加する方法"
 
 #: ../../the-basics.rst:206 02ac08cff2a54e4ab9b99b7a1542ab31
-msgid "To add a watermark to a :title:`PDF` file, do the following:"
-msgstr ":title:`PDF` ファイルにウォータマークを追加するには、以下の手順を実行してください:"
+msgid "To add a watermark to a |PDF| file, do the following:"
+msgstr "|PDF| ファイルにウォータマークを追加するには、以下の手順を実行してください:"
 
 #: ../../the-basics.rst:230 45b06db8d1c64986ae82f16f17e771e0
 msgid ""
 "Adding watermarks is essentially as simple as adding an image at the base"
-" of each :title:`PDF` page. You should ensure that the image has the "
+" of each |PDF| page. You should ensure that the image has the "
 "required opacity and aspect ratio to make it look the way you need it to."
 msgstr "ウォータマークを追加することは、基本的には各PDFページの底辺に画像を追加するだけです。画像が必要な透明度とアスペクト比を持っていることを確認して、必要な見た目になるようにします。"
 
@@ -229,12 +229,12 @@ msgid ":meth:`Page.insert_image`"
 msgstr ""
 
 #: ../../the-basics.rst:246 0f1ff04214a646759e40209d1a69c71b
-msgid "Adding an image to a :title:`PDF`"
-msgstr ":title:`PDF` に画像を追加する"
+msgid "Adding an image to a |PDF|"
+msgstr "|PDF| に画像を追加する"
 
 #: ../../the-basics.rst:248 26f8b6bf4b7444039d3d82ba14fa2ac6
 msgid ""
-"To add an image to a :title:`PDF` file, for example a logo, do the "
+"To add an image to a |PDF| file, for example a logo, do the "
 "following:"
 msgstr "PDFファイルに画像を追加するためには、例えばロゴを追加する場合、以下の手順を実行してください："
 
@@ -252,8 +252,8 @@ msgid ":ref:`Rect<Rect>`"
 msgstr ""
 
 #: ../../the-basics.rst:286 0318ee4d3ab744cf96c2c2380e2bbea7
-msgid "Rotating a :title:`PDF`"
-msgstr ":title:`PDF` を回転させる"
+msgid "Rotating a |PDF|"
+msgstr "|PDF| を回転させる"
 
 #: ../../the-basics.rst:288 0dcf12d54f1b4b29823afa6e3ad42ce6
 msgid "To add a rotation to a page, do the following:"
@@ -264,8 +264,8 @@ msgid ":meth:`Page.set_rotation`"
 msgstr ""
 
 #: ../../the-basics.rst:316 fcbc73878a054f8887e545db214b3812
-msgid "Cropping a :title:`PDF`"
-msgstr ":title:`PDF` のトリミング"
+msgid "Cropping a |PDF|"
+msgstr "|PDF| のトリミング"
 
 #: ../../the-basics.rst:318 115c51b5a54849a093cb3693ea5a5f6e
 msgid "To crop a page to a defined :ref:`Rect<Rect>`, do the following:"
@@ -405,12 +405,12 @@ msgstr "ページを選択するには、以下の手順を実行してくださ
 
 #: ../../the-basics.rst:570 af4d93006de2455290ac661e13059bc4
 msgid ""
-"With :title:`PyMuPDF` you have all options to copy, move, delete or re-"
-"arrange the pages of a :title:`PDF`. Intuitive methods exist that allow "
+"With |PyMuPDF| you have all options to copy, move, delete or re-"
+"arrange the pages of a |PDF|. Intuitive methods exist that allow "
 "you to do this on a page-by-page level, like the "
 ":meth:`Document.copy_page` method."
 msgstr ""
-":title:`PyMuPDF` を使用すると、 :title:`PDF` "
+"|PyMuPDF| を使用すると、 |PDF| "
 "のページをコピー、移動、削除、または再配置するためのオプションがすべて揃っています。 :meth:`Document.copy_page` "
 "メソッドのように、ページ単位で直感的なメソッドを使用してこれらの操作を行うことができます。"
 
@@ -499,9 +499,9 @@ msgstr ""
 
 #: ../../the-basics.rst:688 62146317c0754859b8c82b6e8af2b773
 msgid ""
-"Here is a 3-liner that creates a :title:`PDF`: with one empty page. Its "
+"Here is a 3-liner that creates a |PDF|: with one empty page. Its "
 "file size is 460 bytes:"
-msgstr "以下は、1ページの空白の :title:`PDF`: を作成するための3行のコードです。ファイルサイズは460バイトです。"
+msgstr "以下は、1ページの空白の |PDF|: を作成するための3行のコードです。ファイルサイズは460バイトです。"
 
 #: ../../the-basics.rst:702 271d6578fd87486a92afeaf6a5ae5b98
 msgid ":meth:`Document.new_page`"
@@ -545,16 +545,16 @@ msgstr "単一のページを分割する"
 
 #: ../../the-basics.rst:757 c2ec32b3ed0f4beaadc678d58b031b95
 msgid ""
-"This deals with splitting up pages of a :title:`PDF` in arbitrary pieces."
-" For example, you may have a :title:`PDF` with *Letter* format pages "
+"This deals with splitting up pages of a |PDF| in arbitrary pieces."
+" For example, you may have a |PDF| with *Letter* format pages "
 "which you want to print with a magnification factor of four: each page is"
-" split up in 4 pieces which each going to a separate :title:`PDF` page in"
+" split up in 4 pieces which each going to a separate |PDF| page in"
 " *Letter* format again."
 msgstr ""
-"この方法は、 :title:`PDF` のページを任意の部分に分割することに関連しています。例えば、Letterフォーマットのページを含む "
-":title:`PDF` "
+"この方法は、 |PDF| のページを任意の部分に分割することに関連しています。例えば、Letterフォーマットのページを含む "
+"|PDF| "
 "を、4倍の拡大率で印刷したい場合を考えてみましょう。各ページは4つの部分に分割され、それぞれが再びLetterフォーマットの個別の "
-":title:`PDF` ページになります。"
+"|PDF| ページになります。"
 
 #: ../../the-basics.rst:804 ../../the-basics.rst:865
 #: 3face91ae7be401a8338c6416bce0bdb 5a64cc0e85564399b59366f94f9de467
@@ -577,21 +577,21 @@ msgstr "単一のページを結合する"
 
 #: ../../the-basics.rst:825 99df05f828104d299698c38facf17b84
 msgid ""
-"This deals with joining :title:`PDF` pages to form a new :title:`PDF` "
+"This deals with joining |PDF| pages to form a new |PDF| "
 "with pages each combining two or four original ones (also called "
 "\"2-up\", \"4-up\", etc.). This could be used to create booklets or "
 "thumbnail-like overviews."
 msgstr ""
-"これは、2つまたは4つの元のページを組み合わせた新しい :title:`PDF` "
+"これは、2つまたは4つの元のページを組み合わせた新しい |PDF| "
 "を作成することを意味します（または「2-up」、「4-up」などとも呼ばれます）。これは、ブックレットやサムネイルのような概要を作成するために使用できます。"
 
 #: ../../the-basics.rst:884 ebe10de0298e43a581f99535c768ad49
-msgid ":title:`PDF` Encryption & Decryption"
-msgstr ":title:`PDF` の暗号化と復号化"
+msgid "|PDF| Encryption & Decryption"
+msgstr "|PDF| の暗号化と復号化"
 
 #: ../../the-basics.rst:887 f244ce11d2f247cb83229d2ce86c3eb8
 msgid ""
-"Starting with version 1.16.0, :title:`PDF` decryption and encryption "
+"Starting with version 1.16.0, |PDF| decryption and encryption "
 "(using passwords) are fully supported. You can do the following:"
 msgstr "バージョン1.16.0から、PDFの暗号化と復号化（パスワードを使用）が完全にサポートされています。以下のことができます："
 
@@ -642,7 +642,7 @@ msgstr "オーナーパスワード：パスワードを変更したり、暗号
 #: ../../the-basics.rst:901 ecbc0559737c44709ba23cf8b5a39f51
 msgid ""
 "The **user password** provides access to document content according to "
-"the established permission details. If present, opening the :title:`PDF` "
+"the established permission details. If present, opening the |PDF| "
 "in a viewer will require providing it."
 msgstr "ユーザーパスワード：文書の内容にアクセスするための権限詳細に基づいてアクセスを提供します。存在する場合、ビューアでPDFを開く際にユーザーパスワードを入力する必要があります。"
 
@@ -654,12 +654,12 @@ msgstr "メソッド :meth:`Document.authenticate` は、使用されるパス�
 
 #: ../../the-basics.rst:905 e4e12b31b47f473e812beb5fd01e6a8b
 msgid ""
-"The following snippet creates a new :title:`PDF` and encrypts it with "
+"The following snippet creates a new |PDF| and encrypts it with "
 "separate user and owner passwords. Permissions are granted to print, copy"
 " and annotate, but no changes are allowed to someone authenticating with "
 "the user password."
 msgstr ""
-"以下のスニペットは新しい :title:`PDF` "
+"以下のスニペットは新しい |PDF| "
 "を作成し、別々のユーザーパスワードとオーナーパスワードで暗号化します。印刷、コピー、注釈付けの権限が与えられますが、ユーザーパスワードで認証するユーザーに対しては変更は許可されません"
 
 #: ../../the-basics.rst:942 059a60808dab42bcaaf32bf2ed5e5566
@@ -769,8 +769,8 @@ msgstr ""
 #~ msgid "Supported File Types"
 #~ msgstr "サポートされているファイルタイプ"
 
-#~ msgid ":title:`PyMuPDF` supports the following file types:"
-#~ msgstr ":title:`PyMuPDF` は以下のファイルタイプをサポートしています："
+#~ msgid "|PyMuPDF| supports the following file types:"
+#~ msgstr "|PyMuPDF| は以下のファイルタイプをサポートしています："
 
 #~ msgid ""
 #~ "Opening with :index:`a Wrong File "
@@ -788,17 +788,17 @@ msgstr ""
 
 #~ msgid ""
 #~ "There are many file types beyond "
-#~ ":title:`PDF` which can be opened by "
-#~ ":title:`PyMuPDF`, for more details see "
+#~ "|PDF| which can be opened by "
+#~ "|PyMuPDF|, for more details see "
 #~ "the list of :ref:`supported file "
 #~ "types<Supported_File_Types>`."
 #~ msgstr ""
-#~ "「PyMuPDF」で開くことができるのは、:title:`PDF` "
+#~ "「PyMuPDF」で開くことができるのは、|PDF| "
 #~ "に限らず、多くのファイルタイプがあります。詳細については、:ref:`サポートされているファイルタイプのリスト<Supported_File_Types>`"
 #~ " をご覧ください。"
 
 #~ msgid ""
-#~ ":title:`PyMuPDF` itself does not try to"
+#~ "|PyMuPDF| itself does not try to"
 #~ " determine the file type from the "
 #~ "file contents. **You** are responsible "
 #~ "for supplying the filetype info in "
@@ -816,23 +816,23 @@ msgstr ""
 #~ "などの純粋なPythonパッケージがこのような操作をサポートしています。また、詳細な説明についてはドキュメントの章を参照してください。"
 
 #~ msgid ""
-#~ "If :title:`PyMuPDF` encounters a file "
+#~ "If |PyMuPDF| encounters a file "
 #~ "with an unknown / missing extension, "
 #~ "it will try to open it as a"
-#~ " :title:`PDF`. So in these cases "
+#~ " |PDF|. So in these cases "
 #~ "there is no need for additional "
 #~ "precautions. Similarly, for memory documents,"
 #~ " you can just specify "
 #~ "`doc=fitz.open(stream=mem_area)` to open it as"
-#~ " a :title:`PDF` document."
+#~ " a |PDF| document."
 #~ msgstr ""
-#~ ":title:`PyMuPDF` "
+#~ "|PyMuPDF| "
 #~ "が不明な/欠落している拡張子のファイルに遭遇した場合、それをPDFとして開こうと試みます。したがって、これらの場合は追加の注意が必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=fitz.open(stream=mem_area)`"
 #~ " と指定するだけでPDFドキュメントとして開くことができます"
 
 #~ msgid ""
 #~ "If you attempt to open an "
-#~ "unsupported file then :title:`PyMuPDF` will"
+#~ "unsupported file then |PyMuPDF| will"
 #~ " throw a file data error."
 #~ msgstr "サポートされていないファイルを開こうとした場合、PyMuPDFはファイルデータエラーをスローします。"
 

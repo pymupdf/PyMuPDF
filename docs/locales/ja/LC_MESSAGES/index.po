@@ -56,25 +56,25 @@ msgid ""
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
 #: ../../index.rst:7 f9040b7772c0447b9debc9abdd7847e8
-msgid "Welcome to :title:`PyMuPDF`"
+msgid "Welcome to |PyMuPDF|"
 msgstr "PyMuPDFへようこそ"
 
 #: ../../index.rst:9 0f762acb014144889cbd1b876a7e35d0
 msgid ""
-":title:`PyMuPDF` is a high-performance **Python** library for data "
+"|PyMuPDF| is a high-performance **Python** library for data "
 "extraction, analysis, conversion & manipulation of **PDF** (and other) "
 "documents."
 msgstr ""
-":title:`PyMuPDF` は、:title:`PDF` （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な "
+"|PyMuPDF| は、|PDF| （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な "
 ":title:`Python` ライブラリです。"
 
 #: ../../index.rst:11 2fb9858fab404f8cb63595ad0ec31fff
 msgid ""
-":title:`PyMuPDF` is hosted on `GitHub "
+"|PyMuPDF| is hosted on `GitHub "
 "<https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI "
 "<https://pypi.org/project/PyMuPDF/>`_."
 msgstr ""
-":title:`PyMuPDF` は  `GitHub <https://github.com/pymupdf/PyMuPDF>`_  "
+"|PyMuPDF| は  `GitHub <https://github.com/pymupdf/PyMuPDF>`_  "
 "でホストされ、`PyPI <https://pypi.org/project/PyMuPDF/>`_ に登録されています。"
 
 #: ../../footer.rst:71 ../../index.rst:15 423054fc947e4f6f94e78ef0acda51c4

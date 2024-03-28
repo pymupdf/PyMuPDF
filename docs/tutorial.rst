@@ -8,7 +8,7 @@ Tutorial
 
 .. highlight:: python
 
-This tutorial will show you the use of :title:`PyMuPDF`, :title:`MuPDF` in :title:`Python`, step by step.
+This tutorial will show you the use of |PyMuPDF|, :title:`MuPDF` in :title:`Python`, step by step.
 
 Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitly.
 
@@ -34,7 +34,7 @@ The original rendering library for MuPDF was called *Libart*.
 
 .. note::
 
-    So :title:`PyMuPDF` **cannot coexist** with packages named "fitz" in the same Python environment.
+    So |PyMuPDF| **cannot coexist** with packages named "fitz" in the same Python environment.
 
 
 .. _Tutorial_Opening_a_Document:

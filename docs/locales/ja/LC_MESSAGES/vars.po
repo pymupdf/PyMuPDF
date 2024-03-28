@@ -42,7 +42,7 @@ msgstr "定数と列挙型"
 #: ../../vars.rst:6 81a9f6e3dfb14edca56f4f477eb8d13a
 msgid ""
 "Constants and enumerations of :title:`MuPDF` as implemented by "
-":title:`PyMuPDF`. Each of the following variables is accessible as "
+"|PyMuPDF|. Each of the following variables is accessible as "
 "*fitz.variable*."
 msgstr "PyMuPDFによって実装されたMuPDFの定数と列挙型。以下の各変数は、 *fitz.variable* としてアクセスできます。"
 

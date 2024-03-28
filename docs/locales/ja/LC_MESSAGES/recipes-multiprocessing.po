@@ -44,7 +44,7 @@ msgid ""
 ":title:`MuPDF` has no integrated support for threading - calling itself "
 "\"thread-agnostic\". While there do exist tricky possibilities to still "
 "use threading with :title:`MuPDF`, the baseline consequence for "
-":title:`PyMuPDF` is:"
+"|PyMuPDF| is:"
 msgstr ""
 ":title:`MuPDF` はスレッディングに対する統合サポートを持っておらず、「スレッドに対して無関心（thread-"
 "agnostic）」と呼ばれています。MuPDFとスレッディングを組み合わせて使用するトリッキーな可能性は存在しますが、PyMuPDFの基本的な影響は次のとおりです："
@@ -55,10 +55,10 @@ msgstr "**Pythonスレッディングのサポートはありません。**."
 
 #: ../../recipes-multiprocessing.rst:23 bfcf7a522b77491598dd837de8e9998f
 msgid ""
-"Using :title:`PyMuPDF` in a :title:`Python` threading environment will "
+"Using |PyMuPDF| in a :title:`Python` threading environment will "
 "lead to blocking effects for the main thread."
 msgstr ""
-":title:`PyMuPDF` を :title:`Python` "
+"|PyMuPDF| を :title:`Python` "
 "スレッディング環境で使用すると、メインスレッドでのブロッキング効果が発生します。"
 
 #: ../../recipes-multiprocessing.rst:25 3977cd7e556d4e9bbdbfd24fb3133256
@@ -88,7 +88,7 @@ msgstr ""
 msgid ""
 "Here is a more complex example involving inter-process communication "
 "between a main process (showing a GUI) and a child process doing "
-":title:`PyMuPDF` access to a document."
+"|PyMuPDF| access to a document."
 msgstr "以下は、メインプロセス（GUIを表示）とドキュメントへのPyMuPDFアクセスを行う子プロセスとの間のプロセス間通信を含む、より複雑な例です。"
 
 #: ../../footer.rst:71 4518fa7d2dde47b7b567d21707af2836

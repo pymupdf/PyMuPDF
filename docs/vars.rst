@@ -3,7 +3,7 @@
 ===============================
 Constants and Enumerations
 ===============================
-Constants and enumerations of :title:`MuPDF` as implemented by :title:`PyMuPDF`. Each of the following variables is accessible as *fitz.variable*.
+Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|. Each of the following variables is accessible as *fitz.variable*.
 
 
 Constants

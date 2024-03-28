@@ -677,4 +677,29 @@ This example combines multiple requirements:
 
 .. image:: images/img-htmlbox5.*
 
+
+|
+
+.. _RecipesText_J:
+
+
+How to Extract Text with Color
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Iterate through your text blocks and find the spans of text you need for this information.
+
+::
+
+    for page in doc:
+        text_blocks = page.get_text("dict", flags=fitz.TEXTFLAGS_TEXT)["blocks"]
+        for block in text_blocks:
+            for line in block["lines"]:
+                for span in line["spans"]:
+                    text = span["text"]
+                    color = fitz.sRGB_to_rgb(span["color"])
+                    print(f"Text: {text}, Color: {color}")
+
+
+
+
 .. include:: footer.rst

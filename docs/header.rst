@@ -13,83 +13,69 @@
 
     </small></details>
 
+.. |pdf_only_class| raw:: html
 
+    <div style="width:100%; text-align:right"><b>This class is for PDF only.</b></div>
+
+.. |PyMuPDF| raw:: html
+
+    <cite>PyMuPDF</cite>
+
+.. |PDF| raw:: html
+
+    <cite>PDF</cite>
 
 .. raw:: html
 
-    <link rel="stylesheet" type="text/css" href="_static/prism/prism.css">
+    <style>
 
-        <style>
+        #languageToggle {
+            width:25%;
+            margin:8px 10px 0;
+        }
 
-            /* Prism Updates */
+        #button-select-en {
+            padding: 5px 10px;
+            background-color: #fff;
+            border: 1px solid #000;
+            border-radius: 10px 0 0 10px;
+            font-size: 14px;
+        }
 
-            .code-toolbar .copy-to-clipboard-button {
-                background: #007aff !important;
-                color: white !important;
-                padding: 10px !important;
-                border-radius: 5px !important;
-                font-family: Arial !important;
-            }
+        #button-select-ja {
+            padding: 5px 10px;
+            background-color: #fff;
+            border: 1px solid #000;
+            border-radius: 0px 10px 10px 0;
+            border-left: 0;
+            font-size: 14px;
+        }
 
-            .code-toolbar pre {
-               background: #fff;
-               border: #999 1px dashed;
-            }
+        #button-select-en , #button-select-ja, #button-select-en:hover , #button-select-ja:hover  {
+            color: #fff;
+            text-decoration: none;
+        }
 
-            .code-toolbar code {
-               border: 0px !important;
-            }
-
+        /* small screens */
+        @media all and (max-width : 768px)  {
             #languageToggle {
-                width:25%;
-                margin:8px 10px 0;
+                width:50%;
             }
+        }
 
-            #button-select-en {
-                padding: 5px 10px;
-                background-color: #fff;
-                border: 1px solid #000;
-                border-radius: 10px 0 0 10px;
-                font-size: 14px;
+        @media all and (max-width : 400px)  {
+            #languageToggle {
+                width:70%;
             }
+        }
 
-            #button-select-ja {
-                padding: 5px 10px;
-                background-color: #fff;
-                border: 1px solid #000;
-                border-radius: 0px 10px 10px 0;
-                border-left: 0;
-                font-size: 14px;
+        @media all and (max-width : 375px)  {
+            #button-select-en , #button-select-ja {
+                font-size: 11px;
             }
+        }
 
-            #button-select-en , #button-select-ja, #button-select-en:hover , #button-select-ja:hover  {
-                color: #fff;
-                text-decoration: none;
-            }
-
-            /* small screens */
-            @media all and (max-width : 768px)  {
-                #languageToggle {
-                    width:50%;
-                }
-            }
-
-            @media all and (max-width : 400px)  {
-                #languageToggle {
-                    width:70%;
-                }
-            }
-
-            @media all and (max-width : 375px)  {
-                #button-select-en , #button-select-ja {
-                    font-size: 11px;
-                }
-            }
-
-
-        </style>
-
-   <script type="text/javascript" src="_static/prism/prism.js"></script>
+    </style>
 
     <div style="display:flex;justify-content:space-between;align-items: center;">
         <form class="sidebar-search-container top" method="get" action="search.html" role="search" style="width:75%">
