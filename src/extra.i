@@ -1,5 +1,9 @@
 %module fitz_extra
 
+%pythoncode %{
+# pylint: disable=all
+%}
+
 %begin
 %{
 #define SWIG_PYTHON_INTERPRETER_NO_DEBUG

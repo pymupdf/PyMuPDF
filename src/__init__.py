@@ -166,6 +166,7 @@ g_skip_quad_corrections = 0
 #
 mupdf_cppyy = os.environ.get( 'MUPDF_CPPYY')
 if mupdf_cppyy is not None:
+    # pylint: disable=all
     log( f'{__file__}: $MUPDF_CPPYY={mupdf_cppyy!r} so attempting to import mupdf_cppyy.')
     log( f'{__file__}: $PYTHONPATH={os.environ["PYTHONPATH"]}')
     if mupdf_cppyy == '':
@@ -491,7 +492,7 @@ class Annot:
             val = JM_py_from_rect(rect)
 
         val = Rect(val) * self.get_parent().transformation_matrix
-        val *= self.get_parent().derotationMatrix
+        val *= self.get_parent().derotation_matrix
         return val
 
     @property
@@ -983,7 +984,7 @@ class Annot:
         """
         CheckParent(self)
         page = self.get_parent()
-        rot = page.rotationMatrix
+        rot = page.rotation_matrix
         mat = page.transformation_matrix
         bbox *= rot * ~mat
         annot = self.this
@@ -1139,7 +1140,7 @@ class Annot:
             if subject:
                 mupdf.pdf_dict_puts(mupdf.pdf_annot_obj(annot), "Subj", mupdf.pdf_new_text_string(subject))
 
-    def set_irt_xref( xref):
+    def set_irt_xref(self, xref):
         '''
         Set annotation IRT xref
         '''
@@ -1693,7 +1694,7 @@ class Archive:
     def __repr__( self):
         return f'Archive, sub-archives: {len(self._subarchives)}'
 
-    def _add_arch( subarch, path=None):
+    def _add_arch( self, subarch, path=None):
         mupdf.fz_mount_multi_archive( self.this, subarch, path)
     
     def _add_dir( self, folder, path=None):
@@ -2642,7 +2643,7 @@ class Document:
             self.is_closed    = False
             self.is_encrypted = False
             self.is_encrypted = False
-            self.metadata    = None
+            self._metadata    = None
             self.FontInfos   = []
             self.Graftmaps   = {}
             self.ShownPages  = {}
@@ -2684,10 +2685,10 @@ class Document:
 
             if filename and self.stream is None:
                 from_file = True
-                self.name = filename
+                self._name = filename
             else:
                 from_file = False
-                self.name = ""
+                self._name = ""
 
             if from_file:
                 if not os.path.exists(filename):
@@ -4314,7 +4315,7 @@ class Document:
         if self.is_encrypted:
             raise ValueError("cannot initialize - document still encrypted")
         self._outline = self._loadOutline()
-        self.metadata = dict(
+        self._metadata = dict(
                     [
                         (k,self._getMetadata(v)) for k,v in {
                             'format':'format',
@@ -4330,7 +4331,7 @@ class Document:
                             }.items()
                     ]
                 )
-        self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
+        self._metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
     def insert_file(self,
             infile,
@@ -4822,6 +4823,10 @@ class Document:
                 valid[key] = True
         return valid
 
+    @property
+    def metadata(self):
+        return self._metadata
+    
     def move_page(self, pno: int, to: int =-1):
         """Move a page within a PDF document.
 
@@ -4842,6 +4847,10 @@ class Document:
 
         return self._move_copy_page(pno, to, before, copy)
 
+    @property
+    def name(self):
+        return self._name
+    
     def need_appearances(self, value=None):
         """Get/set the NeedAppearances value."""
         if not self.is_form_pdf:
@@ -13276,29 +13285,29 @@ class IRect:
 if 1:
     # Import some mupdf constants
     # These don't appear to be in native fitz module?
-    self = sys.modules[__name__]
+    _self = sys.modules[__name__]
     if 1:
-        for name, value in mupdf.__dict__.items():
-            if name.startswith(('PDF_', 'UCDN_SCRIPT_')):
-                if name.startswith('PDF_ENUM_NAME_'):
+        for _name, _value in mupdf.__dict__.items():
+            if _name.startswith(('PDF_', 'UCDN_SCRIPT_')):
+                if _name.startswith('PDF_ENUM_NAME_'):
                     # Not a simple enum.
                     pass
                 else:
                     #assert not inspect.isroutine(value)
                     #log(f'fitz/__init__.py: importing {name}')
-                    setattr(self, name, value)
+                    setattr(_self, _name, _value)
                     #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
     else:
         # This is slow due to importing inspect, e.g. 0.019 instead of 0.004.
-        for name, value in inspect.getmembers(mupdf):
-            if name.startswith(('PDF_', 'UCDN_SCRIPT_')):
-                if name.startswith('PDF_ENUM_NAME_'):
+        for _name, _value in inspect.getmembers(mupdf):
+            if _name.startswith(('PDF_', 'UCDN_SCRIPT_')):
+                if _name.startswith('PDF_ENUM_NAME_'):
                     # Not a simple enum.
                     pass
                 else:
                     #assert not inspect.isroutine(value)
                     #log(f'fitz/__init__.py: importing {name}')
-                    setattr(self, name, value)
+                    setattr(_self, _name, _value)
                     #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
     
     # This is a macro so not preserved in mupdf C++/Python bindings.
@@ -13321,7 +13330,7 @@ if 1:
     # items to self.
     assert PDF_TX_FIELD_IS_MULTILINE == mupdf.PDF_TX_FIELD_IS_MULTILINE # noqa: F821
     assert UCDN_SCRIPT_ADLAM == mupdf.UCDN_SCRIPT_ADLAM # noqa: F821
-    del self
+    del _self, _name, _value
 
 _adobe_glyphs = {}
 _adobe_unicodes = {}

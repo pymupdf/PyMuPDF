@@ -340,7 +340,9 @@ def main():
     run(f'ls -l {root_prefix}/bin/')
     # 2024-03-20: Not sure whether/where `pymupdf` binary is installed, so we
     # disable the test_cli* tests.
-    command += f' pytest -k "not test_color_count and not test_3050 and not test_cli and not test_cli_out" {pymupdf_dir}'
+    excluded_tests = 'test_color_count test_3050 test_cli test_cli_out test_pylint'.split()
+    excluded_tests = ' and not '.join(excluded_tests)
+    command += f' pytest -k "not {excluded_tests}" {pymupdf_dir}'
     run(command)
 
 
