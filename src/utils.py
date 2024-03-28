@@ -12,7 +12,10 @@ import os
 import typing
 import weakref
 
-from . import fitz
+try:
+    from . import fitz
+except Exception:
+    import fitz
 try:
     from . import mupdf
 except Exception:
@@ -995,7 +998,7 @@ def get_links(page: fitz.Page) -> list:
         linkxrefs = [x for x in
                 #page.annot_xrefs()
                 extra.JM_get_annot_xref_list2(page)
-                if x[1] == fitz.PDF_ANNOT_LINK
+                if x[1] == fitz.PDF_ANNOT_LINK  # pylint: disable=no-member
                 ]
         if len(linkxrefs) == len(links):
             for i in range(len(linkxrefs)):
@@ -1607,7 +1610,6 @@ def do_links(
         if link_tab != []:
             page_dst._addAnnot_FromString( tuple(link_tab))
     #fitz.log( 'utils.do_links() returning.')
-    return
 
 
 def getLinkText(page: fitz.Page, lnk: dict) -> str:
@@ -1670,7 +1672,7 @@ def getLinkText(page: fitz.Page, lnk: dict) -> str:
 
     # add a /NM PDF key to the object definition
     link_names = dict(  # existing ids and their xref
-        [(x[0], x[2]) for x in page.annot_xrefs() if x[1] == fitz.PDF_ANNOT_LINK]
+        [(x[0], x[2]) for x in page.annot_xrefs() if x[1] == fitz.PDF_ANNOT_LINK]   # pylint: disable=no-member
     )
 
     old_name = lnk.get("id", "")  # id value in the argument
@@ -1713,7 +1715,6 @@ def update_link(page: fitz.Page, lnk: dict) -> None:
         raise ValueError("link kind not supported")
 
     page.parent.update_object(lnk["xref"], annot, page=page)
-    return
 
 
 def insert_link(page: fitz.Page, lnk: dict, mark: bool = True) -> None:
@@ -1723,7 +1724,6 @@ def insert_link(page: fitz.Page, lnk: dict, mark: bool = True) -> None:
     if annot == "":
         raise ValueError("link kind not supported")
     page._addAnnot_FromString((annot,))
-    return
 
 
 def insert_textbox(
@@ -4184,7 +4184,6 @@ class Shape:
         self.draw_cont = ""  # for potential ...
         self.text_cont = ""  # ...
         self.totalcont = ""  # re-use
-        return
 
 
 def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> bool:
@@ -4247,7 +4246,8 @@ def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> boo
         raise ValueError("is no PDF")
 
     redact_annots = []  # storage of annot values
-    for annot in page.annots(types=(fitz.PDF_ANNOT_REDACT,)):  # loop redactions
+    for annot in page.annots(types=(fitz.PDF_ANNOT_REDACT,)):   # pylint: disable=no-member
+        # loop redactions
         redact_annots.append(annot._get_redact_values())  # save annot values
 
     if redact_annots == []:  # any redactions on this page?
@@ -4388,7 +4388,7 @@ def scrub(
                 annot.update_file(buffer=b" ")  # set file content to empty
             if reset_responses:
                 annot.delete_responses()
-            if annot.type[0] == fitz.PDF_ANNOT_REDACT:
+            if annot.type[0] == fitz.PDF_ANNOT_REDACT:  # pylint: disable=no-member
                 found_redacts = True
 
         if redactions and found_redacts:
@@ -4869,7 +4869,7 @@ def get_ocmd(doc: fitz.Document, xref: int) -> dict:
             ve = json.loads(ve)
         except Exception:
             fitz.exception_info()
-            fitz.message("bad /VE key: ", ve)
+            fitz.message(f"bad /VE key: {ve!r}")
             raise
     return {"xref": xref, "ocgs": ocgs, "policy": policy, "ve": ve}
 
@@ -4908,7 +4908,7 @@ def rule_dict(item):
     rule = rule[2:-2].split("/")[1:]  # strip "<<" and ">>"
     d = {"startpage": pno, "prefix": "", "firstpagenum": 1}
     skip = False
-    for i, item in enumerate(rule):
+    for i, item in enumerate(rule): # pylint: disable=redefined-argument-from-local
         if skip:  # this item has already been processed
             skip = False  # deactivate skipping again
             continue
@@ -5126,7 +5126,7 @@ def has_links(doc: fitz.Document) -> bool:
         raise ValueError("is no PDF")
     for i in range(doc.page_count):
         for item in doc.page_annot_xrefs(i):
-            if item[1] == fitz.PDF_ANNOT_LINK:
+            if item[1] == fitz.PDF_ANNOT_LINK:  # pylint: disable=no-member
                 return True
     return False
 
@@ -5139,6 +5139,7 @@ def has_annots(doc: fitz.Document) -> bool:
         raise ValueError("is no PDF")
     for i in range(doc.page_count):
         for item in doc.page_annot_xrefs(i):
+            # pylint: disable=no-member
             if not (item[1] == fitz.PDF_ANNOT_LINK or item[1] == fitz.PDF_ANNOT_WIDGET):
                 return True
     return False
@@ -5413,7 +5414,6 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
                 fd_str = fd_str.replace("/FontName/", "/FontName/" + prefix)
                 doc.update_object(fd_xref, fd_str)
         doc.update_object(new_xref, font_str)
-        return None
 
     def build_subset(buffer, unc_set, gid_set):
         """Build font subset using fontTools.
@@ -5446,26 +5446,24 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
             "--symbol-cmap",
         ]
 
-        unc_file = open(
-            f"{tmp_dir}/uncfile.txt", "w"
-        )  # store glyph ids or unicodes as file
-        if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
-            args.append(f"--gids-file={uncfile_path}")
-            gid_set.add(189)
-            unc_list = list(gid_set)
-            for unc in unc_list:
-                unc_file.write("%i\n" % unc)
-        else:
-            args.append(f"--unicodes-file={uncfile_path}")
-            unc_set.add(255)
-            unc_list = list(unc_set)
-            for unc in unc_list:
-                unc_file.write("%04x\n" % unc)
+        # store glyph ids or unicodes as file
+        with open(f"{tmp_dir}/uncfile.txt", "w", encoding='utf8') as unc_file:
+            if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
+                args.append(f"--gids-file={uncfile_path}")
+                gid_set.add(189)
+                unc_list = list(gid_set)
+                for unc in unc_list:
+                    unc_file.write("%i\n" % unc)
+            else:
+                args.append(f"--unicodes-file={uncfile_path}")
+                unc_set.add(255)
+                unc_list = list(unc_set)
+                for unc in unc_list:
+                    unc_file.write("%04x\n" % unc)
 
-        unc_file.close()
-        fontfile = open(oldfont_path, "wb")  # store fontbuffer as a file
-        fontfile.write(buffer)
-        fontfile.close()
+        # store fontbuffer as a file
+        with open(oldfont_path, "wb") as fontfile:
+            fontfile.write(buffer)
         try:
             os.remove(newfont_path)  # remove old file
         except Exception:
@@ -5572,11 +5570,9 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
                 name_set.add(font.name)
                 del font
                 font_buffers[fontbuffer] = (name_set, xref_set, subsets)
-        return None
 
     def find_buffer_by_name(name):
-        for buffer in font_buffers.keys():
-            name_set, _, _ = font_buffers[buffer]
+        for buffer, (name_set, _, _) in font_buffers.items():
             if name in name_set:
                 return buffer
         return None
@@ -5613,8 +5609,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
             font_buffers[buffer] = (name_set, xref_set, (set_ucs, set_gid))
 
     # build the font subsets
-    for old_buffer in font_buffers.keys():
-        name_set, xref_set, subsets = font_buffers[old_buffer]
+    for old_buffer, (name_set, xref_set, subsets) in font_buffers.items():
         new_buffer = build_subset(old_buffer, subsets[0], subsets[1])
         fontname = list(name_set)[0]
         if new_buffer is None or len(new_buffer) >= len(old_buffer):
@@ -5684,4 +5679,3 @@ def xref_copy(doc: fitz.Document, source: int, target: int, *, keep: list = None
     for key in doc.xref_get_keys(source):
         item = doc.xref_get_key(source, key)
         doc.xref_set_key(target, key, item[1])
-    return None
