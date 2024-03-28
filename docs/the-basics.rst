@@ -34,10 +34,10 @@ To open a file, do the following:
 
 .. _The_Basics_Extracting_Text:
 
-Extract text from a :title:`PDF`
+Extract text from a |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To extract all the text from a :title:`PDF` file, do the following:
+To extract all the text from a |PDF| file, do the following:
 
 .. code-block:: python
 
@@ -51,7 +51,7 @@ To extract all the text from a :title:`PDF` file, do the following:
         out.write(bytes((12,))) # write page delimiter (form feed 0x0C)
     out.close()
 
-Of course it is not just :title:`PDF` which can have text extracted - all the :ref:`supported document file formats <About_Feature_Matrix>` such as :title:`MOBI`, :title:`EPUB`, :title:`TXT` can have their text extracted.
+Of course it is not just |PDF| which can have text extracted - all the :ref:`supported document file formats <About_Feature_Matrix>` such as :title:`MOBI`, :title:`EPUB`, :title:`TXT` can have their text extracted.
 
 .. note::
 
@@ -79,10 +79,10 @@ Of course it is not just :title:`PDF` which can have text extracted - all the :r
 
 .. _The_Basics_Extracting_Images:
 
-Extract images from a :title:`PDF`
+Extract images from a |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To extract all the images from a :title:`PDF` file, do the following:
+To extract all the images from a |PDF| file, do the following:
 
 .. code-block:: python
 
@@ -160,10 +160,10 @@ This will return a dictionary of paths for any vector drawings found on the page
 .. _merge PDF:
 .. _join PDF:
 
-Merging :title:`PDF` files
+Merging |PDF| files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To merge :title:`PDF` files, do the following:
+To merge |PDF| files, do the following:
 
 .. code-block:: python
 
@@ -176,10 +176,10 @@ To merge :title:`PDF` files, do the following:
     doc_a.save("a+b.pdf") # save the merged document with a new filename
 
 
-Merging :title:`PDF` files with other types of file
+Merging |PDF| files with other types of file
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
-With :meth:`Document.insert_file` you can invoke the method to merge :ref:`supported files<Supported_File_Types>` with :title:`PDF`. For example:
+With :meth:`Document.insert_file` you can invoke the method to merge :ref:`supported files<Supported_File_Types>` with |PDF|. For example:
 
 .. code-block:: python
 
@@ -196,7 +196,7 @@ With :meth:`Document.insert_file` you can invoke the method to merge :ref:`suppo
 
     **Taking it further**
 
-    It is easy to join PDFs with :meth:`Document.insert_pdf` & :meth:`Document.insert_file`. Given open :title:`PDF` documents, you can copy page ranges from one to the other. You can select the point where the copied pages should be placed, you can revert the page sequence and also change page rotation. This Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ contains a full description.
+    It is easy to join PDFs with :meth:`Document.insert_pdf` & :meth:`Document.insert_file`. Given open |PDF| documents, you can copy page ranges from one to the other. You can select the point where the copied pages should be placed, you can revert the page sequence and also change page rotation. This Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ contains a full description.
 
     The GUI script `join.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
 
@@ -223,10 +223,10 @@ There is one *mathematical term* that you should feel comfortable with when usin
 
 .. _The_Basics_Watermarks:
 
-Adding a watermark to a :title:`PDF`
+Adding a watermark to a |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To add a watermark to a :title:`PDF` file, do the following:
+To add a watermark to a |PDF| file, do the following:
 
 .. code-block:: python
 
@@ -246,7 +246,7 @@ To add a watermark to a :title:`PDF` file, do the following:
 
     **Taking it further**
 
-    Adding watermarks is essentially as simple as adding an image at the base of each :title:`PDF` page. You should ensure that the image has the required opacity and aspect ratio to make it look the way you need it to.
+    Adding watermarks is essentially as simple as adding an image at the base of each |PDF| page. You should ensure that the image has the required opacity and aspect ratio to make it look the way you need it to.
 
     In the example above a new image is created from each file reference, but to be more performant (by saving memory and file size) this image data should be referenced only once - see the code example and explanation on :meth:`Page.insert_image` for the implementation.
 
@@ -261,10 +261,10 @@ To add a watermark to a :title:`PDF` file, do the following:
 
 .. _The_Basics_Images:
 
-Adding an image to a :title:`PDF`
+Adding an image to a |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To add an image to a :title:`PDF` file, for example a logo, do the following:
+To add an image to a |PDF| file, for example a logo, do the following:
 
 .. code-block:: python
 
@@ -297,7 +297,7 @@ To add an image to a :title:`PDF` file, for example a logo, do the following:
 
 .. _The_Basics_Rotating:
 
-Rotating a :title:`PDF`
+Rotating a |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To add a rotation to a page, do the following:
@@ -322,7 +322,7 @@ To add a rotation to a page, do the following:
 
 .. _The_Basics_Cropping:
 
-Cropping a :title:`PDF`
+Cropping a |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To crop a page to a defined :ref:`Rect<Rect>`, do the following:
@@ -550,7 +550,7 @@ To select pages, do the following:
 
     **Taking it further**
 
-    With :title:`PyMuPDF` you have all options to copy, move, delete or re-arrange the pages of a :title:`PDF`. Intuitive methods exist that allow you to do this on a page-by-page level, like the :meth:`Document.copy_page` method.
+    With |PyMuPDF| you have all options to copy, move, delete or re-arrange the pages of a |PDF|. Intuitive methods exist that allow you to do this on a page-by-page level, like the :meth:`Document.copy_page` method.
 
     Or you alternatively prepare a complete new page layout in form of a :title:`Python` sequence, that contains the page numbers you want, in the sequence you want, and as many times as you want each page. The following may illustrate what can be done with :meth:`Document.select`
 
@@ -645,7 +645,7 @@ To add a blank page, do the following:
 
     The convenience function :meth:`paper_size` knows over 40 industry standard paper formats to choose from. To see them, inspect dictionary :attr:`paperSizes`. Pass the desired dictionary key to :meth:`paper_size` to retrieve the paper dimensions. Upper and lower case is supported. If you append "-L" to the format name, the landscape version is returned.
 
-    Here is a 3-liner that creates a :title:`PDF`: with one empty page. Its file size is 460 bytes:
+    Here is a 3-liner that creates a |PDF|: with one empty page. Its file size is 460 bytes:
 
     .. code-block:: python
 
@@ -708,7 +708,7 @@ Using the :meth:`Document.insert_page` method also inserts a new page and accept
 Splitting Single Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This deals with splitting up pages of a :title:`PDF` in arbitrary pieces. For example, you may have a :title:`PDF` with *Letter* format pages which you want to print with a magnification factor of four: each page is split up in 4 pieces which each going to a separate :title:`PDF` page in *Letter* format again.
+This deals with splitting up pages of a |PDF| in arbitrary pieces. For example, you may have a |PDF| with *Letter* format pages which you want to print with a magnification factor of four: each page is split up in 4 pieces which each going to a separate |PDF| page in *Letter* format again.
 
 
 
@@ -772,7 +772,7 @@ Example:
 Combining Single Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This deals with joining :title:`PDF` pages to form a new :title:`PDF` with pages each combining two or four original ones (also called "2-up", "4-up", etc.). This could be used to create booklets or thumbnail-like overviews.
+This deals with joining |PDF| pages to form a new |PDF| with pages each combining two or four original ones (also called "2-up", "4-up", etc.). This could be used to create booklets or thumbnail-like overviews.
 
 
 .. code-block:: python
@@ -827,11 +827,11 @@ Example:
 .. _The_Basics_Encryption_and_Decryption:
 
 
-:title:`PDF` Encryption & Decryption
+|PDF| Encryption & Decryption
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Starting with version 1.16.0, :title:`PDF` decryption and encryption (using passwords) are fully supported. You can do the following:
+Starting with version 1.16.0, |PDF| decryption and encryption (using passwords) are fully supported. You can do the following:
 
 * Check whether a document is password protected / (still) encrypted (:attr:`Document.needs_pass`, :attr:`Document.is_encrypted`).
 * Gain access authorization to a document (:meth:`Document.authenticate`).
@@ -845,11 +845,11 @@ Starting with version 1.16.0, :title:`PDF` decryption and encryption (using pass
 .. note:: A PDF document may have two different passwords:
 
    * The **owner password** provides full access rights, including changing passwords, encryption method, or permission detail.
-   * The **user password** provides access to document content according to the established permission details. If present, opening the :title:`PDF` in a viewer will require providing it.
+   * The **user password** provides access to document content according to the established permission details. If present, opening the |PDF| in a viewer will require providing it.
 
    Method :meth:`Document.authenticate` will automatically establish access rights according to the password used.
 
-The following snippet creates a new :title:`PDF` and encrypts it with separate user and owner passwords. Permissions are granted to print, copy and annotate, but no changes are allowed to someone authenticating with the user password.
+The following snippet creates a new |PDF| and encrypts it with separate user and owner passwords. Permissions are granted to print, copy and annotate, but no changes are allowed to someone authenticating with the user password.
 
 
 .. code-block:: python

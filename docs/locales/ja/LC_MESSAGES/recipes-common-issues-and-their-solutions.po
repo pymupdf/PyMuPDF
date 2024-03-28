@@ -43,12 +43,12 @@ msgstr "一般的な問題とその解決方法"
 #: ../../recipes-common-issues-and-their-solutions.rst:10
 #: 0a55298125d24bffb7453801c93108cb
 msgid "How To Dynamically Clean Up Corrupt :title:`PDFs`"
-msgstr "壊れた :title:`PDF` を動的にクリーンアップする方法"
+msgstr "壊れた |PDF| を動的にクリーンアップする方法"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:12
 #: 030f0ff538d142cb9ef4adc9ff239dbb
 msgid ""
-"This shows a potential use of :title:`PyMuPDF` with another Python PDF "
+"This shows a potential use of |PyMuPDF| with another Python PDF "
 "library (the excellent pure Python package `pdfrw "
 "<https://pypi.python.org/pypi/pdfrw>`_ is used here as an example)."
 msgstr ""
@@ -84,14 +84,14 @@ msgstr ""
 
 #: ../../recipes-common-issues-and-their-solutions.rst:55
 #: e52b714c6c6b46c5bc62aa39464bf8e1
-msgid "How to Convert Any Document to :title:`PDF`"
-msgstr "どの文書も :title:`PDF` に変換する方法"
+msgid "How to Convert Any Document to |PDF|"
+msgstr "どの文書も |PDF| に変換する方法"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:57
 #: 18886b00544b4c53a37a440876f291ec
 msgid ""
-"Here is a script that converts any :title:`PyMuPDF` :ref:`supported "
-"document<Supported_File_Types>` to a :title:`PDF`. These include XPS, "
+"Here is a script that converts any |PyMuPDF| :ref:`supported "
+"document<Supported_File_Types>` to a |PDF|. These include XPS, "
 "EPUB, FB2, CBZ and image formats, including multi-page TIFF images."
 msgstr ""
 "以下は、任意のPyMuPDFが :ref:`サポートされている <Supported_File_Types>` "
@@ -112,7 +112,7 @@ msgstr ":title:`MuPDF` から発行されるメッセージの処理方法"
 #: ../../recipes-common-issues-and-their-solutions.rst:133
 #: 14fa73535a414beda886330315639d3a
 msgid ""
-"Since :title:`PyMuPDF` v1.16.0, **error messages** issued by the "
+"Since |PyMuPDF| v1.16.0, **error messages** issued by the "
 "underlying :title:`MuPDF` library are being redirected to the Python "
 "standard device *sys.stderr*. So you can handle them like any other "
 "output going to this devices."

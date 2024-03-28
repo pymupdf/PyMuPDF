@@ -46,14 +46,14 @@ msgstr "バージョン1.21.0で導入"
 #: ../../document-writer-class.rst:11 080f3b240df14f778d3ada6e1fc8d539
 msgid ""
 "This class represents a utility which can output various :ref:`document "
-"types supported by MuPDF<Supported_File_Types>`."
+"types supported by PyMuPDF<Supported_File_Types>`."
 msgstr ""
 "このクラスは、MuPDFで :ref:`サポートされている <Supported_File_Types>` "
 "さまざまなドキュメントタイプを出力できるユーティリティを表します。"
 
 #: ../../document-writer-class.rst:13 4b8c1501568f4c2db58d84c078efe5df
 msgid ""
-"In PyMuPDF only used for outputting PDF documents whose pages are "
+"In |PyMuPDF| only used for outputting PDF documents whose pages are "
 "populated by :ref:`Story` DOMs."
 msgstr ""
 "PyMuPDFでは、:ref:`Story` "
