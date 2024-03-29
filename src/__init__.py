@@ -4022,6 +4022,9 @@ class Document:
             owner_pw=None,
             user_pw=None,
             no_new_id=True,
+            preserve_metadata=1,
+            use_objstms=1,
+            compression_effort=0,
             ):
         '''
         Save PDF using some different defaults
@@ -4043,6 +4046,9 @@ class Document:
                 owner_pw=owner_pw,
                 user_pw=user_pw,
                 no_new_id=no_new_id,
+                preserve_metadata=preserve_metadata,
+                use_objstms=use_objstms,
+                compression_effort=compression_effort,
                 )
 
     def find_bookmark(self, bm):
@@ -5312,6 +5318,9 @@ class Document:
             permissions=4095,
             owner_pw=None,
             user_pw=None,
+            preserve_metadata=1,
+            use_objstms=0,
+            compression_effort=0,
             ):
         # From %pythonprepend save
         #
@@ -5338,27 +5347,30 @@ class Document:
         
         pdf = _as_pdf_document(self)
         opts = mupdf.PdfWriteOptions()
-        opts.do_incremental     = incremental
-        opts.do_ascii           = ascii
-        opts.do_compress        = deflate
+        opts.do_incremental = incremental
+        opts.do_ascii = ascii
+        opts.do_compress = deflate
         opts.do_compress_images = deflate_images
-        opts.do_compress_fonts  = deflate_fonts
-        opts.do_decompress      = expand
-        opts.do_garbage         = garbage
-        opts.do_pretty          = pretty
-        opts.do_linear          = linear
-        opts.do_clean           = clean
-        opts.do_sanitize        = clean
+        opts.do_compress_fonts = deflate_fonts
+        opts.do_decompress = expand
+        opts.do_garbage = garbage
+        opts.do_pretty = pretty
+        opts.do_linear = linear
+        opts.do_clean = clean
+        opts.do_sanitize = clean
         opts.dont_regenerate_id = no_new_id
-        opts.do_appearance      = appearance
-        opts.do_encrypt         = encryption
-        opts.permissions        = permissions
+        opts.do_appearance = appearance
+        opts.do_encrypt = encryption
+        opts.permissions = permissions
         if owner_pw is not None:
             opts.opwd_utf8_set_value(owner_pw)
         elif user_pw is not None:
             opts.opwd_utf8_set_value(user_pw)
         if user_pw is not None:
             opts.upwd_utf8_set_value(user_pw)
+        opts.do_preserve_metadata = preserve_metadata
+        opts.do_use_objstms = use_objstms
+        opts.compression_effort = compression_effort
 
         out = None
         ASSERT_PDF(pdf)
@@ -5409,7 +5421,7 @@ class Document:
         if (len(pyliste) == 0
             or min(pyliste) not in valid_range
             or max(pyliste) not in valid_range
-           ):
+        ):
             raise ValueError("bad page number(s)")
 
         # get underlying pdf document,
@@ -5671,8 +5683,11 @@ class Document:
             encryption=1,
             permissions=4095,
             owner_pw=None,
-            user_pw=None
-            ):
+            user_pw=None,
+            preserve_metadata=1,
+            use_objstms=0,
+            compression_effort=0,
+    ):
         from io import BytesIO
         bio = BytesIO()
         self.save(
@@ -5693,7 +5708,10 @@ class Document:
                 permissions=permissions,
                 owner_pw=owner_pw,
                 user_pw=user_pw,
-                )
+                preserve_metadata=preserve_metadata,
+                use_objstms=use_objstms,
+                compression_effort=compression_effort,
+        )
         return bio.getvalue()
 
     @property
