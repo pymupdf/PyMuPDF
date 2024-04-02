@@ -60,7 +60,7 @@ def test_707673():
     page.clean_contents(sanitize=True)
     words1 = page.get_text("words")
     ok = gentle_compare(words0, words1)
-    if fitz.mupdf_version_tuple >= (1, 25):
+    if fitz.mupdf_version_tuple >= (1, 24, 1):
         assert ok
     else:
         assert not ok
