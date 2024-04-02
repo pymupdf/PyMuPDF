@@ -1172,10 +1172,11 @@ For details on **embedded files** refer to Appendix 3.
     :arg bool xml_metadata: Remove XML metadata.
 
 
-  .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+  .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0)
 
     * Changed in v1.18.7
     * Changed in v1.19.0
+    * Changed in v1.24.1
 
     PDF only: Saves the document in its **current state**.
 
@@ -1220,22 +1221,24 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg str user_pw: *(new in v1.16.0)* set the document's user password. The string length must not exceed 40 characters.
 
+    :arg int use_objstms: *(new in v1.24.0)* compression option that converts eligible PDF object definitions to information that is stored in some other object's :data:`stream` data. Depending on the `deflate` parameter value, the converted object definitions will be compressed -- which can lead to very significant file size reductions.
+
     .. warning:: The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
 
     .. note::
 
       **File size reduction**
 
-      1. Use the adequate save options like `garbage=3` or `4`, `deflate=True`. Do not use "expand", "clean" or "incremental".
-      This is a "lossless" file size reduction.
+      1. Use the save options like `garbage=3|4, deflate=True, use_objstms=True|1`. Do not touch the default values `expand=False|0, clean=False|0, incremental=False|0`.
+      This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below. 
 
-      2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions.
+      2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
 
   .. method:: ez_save(*args, **kwargs)
 
     * New in v1.18.11
 
-    PDF only: The same as :meth:`Document.save` but with the changed defaults `deflate=True, garbage=3`.
+    PDF only: The same as :meth:`Document.save` but with changed defaults `deflate=True, garbage=3, use_objstms=1`.
 
   .. method:: saveIncr()
 
@@ -1246,10 +1249,11 @@ For details on **embedded files** refer to Appendix 3.
       Saving incrementally may be required if the document contains verified signatures which would be invalidated by saving to a new file.
 
 
-  .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
+  .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0)
 
     * Changed in v1.18.7
     * Changed in v1.19.0
+    * Changed in v1.24.1
 
     PDF only: Writes the **current content of the document** to a bytes object instead of to a file. Obviously, you should be wary about memory requirements. The meanings of the parameters exactly equal those in :meth:`save`. Chapter :ref:`FAQ` contains an example for using this method as a pre-processor to `pdfrw <https://pypi.python.org/pypi/pdfrw/0.3>`_.
 
