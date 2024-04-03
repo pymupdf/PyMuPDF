@@ -439,17 +439,16 @@ def test_2093():
     print(f'pixel_average_before={pixel_average_before!r}')
     print(f'pixel_average_after={pixel_average_after!r}')
 
-    # Before this bug was fixed:
+    # Before this bug was fixed (MuPDF-1.22):
     #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
     #   pixel_average_after=[138.68844553555772, 123.05687162237561, 100.74275056194105]
     # After fix:
     #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
     #   pixel_average_after=[130.8889209934799, 115.25722751837269, 92.94327384463327]
     #
-    if fitz.mupdf_version_tuple[:2] >= (1, 22):
-        for i in range(len(pixel_average_before)):
-            diff = pixel_average_before[i] - pixel_average_after[i]
-            assert abs(diff) < 0.1
+    for i in range(len(pixel_average_before)):
+        diff = pixel_average_before[i] - pixel_average_after[i]
+        assert abs(diff) < 0.1
 
     out = f'{scriptdir}/resources/test2093-out.pdf'
     doc.save(out)
