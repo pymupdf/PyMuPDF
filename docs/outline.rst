@@ -63,7 +63,22 @@ Outline
 
    .. attribute:: uri
 
-      A string specifying the link target. The meaning of this property should be evaluated in conjunction with *isExternal*. The value may be *None*, in which case *isExternal == False*. If *uri* starts with *file://*, *mailto:*, or an internet resource name, *isExternal* is *True*. In all other cases *isExternal == False* and *uri* points to an internal location. In case of PDF documents, this should either be *#nnnn* to indicate a 1-based (!) page number *nnnn*, or a named location. The format varies for other document types, e.g. *uri = '../FixedDoc.fdoc#PG_21_LNK_84'* for page number 21 (1-based) in an XPS document.
+      A string specifying the link target. The meaning of this property should
+      be evaluated in conjunction with property `is_external`:
+      
+      *
+        `is_external` is true: `uri` points to some target outside the current
+        PDF, which may be an internet resource (`uri` starts with "http://" or
+        similar), another file (`uri` starts with "file:" or "file://") or some
+        other service like an e-mail address (`uri` starts with "mailto:").
+
+      *
+        `is_external` is false: `uri` will be `None` or point to an
+        internal location. In case of PDF documents, this should either be
+        *#nnnn* to indicate a 1-based (!) page number *nnnn*, or a named
+        location. The format varies for other document types, for example
+        "../FixedDoc.fdoc#PG_2_LNK_1" for page number 2 (1-based) in an XPS
+        document.
 
       :type: str
 
