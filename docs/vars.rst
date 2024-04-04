@@ -264,12 +264,18 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
 .. py:data:: LINK_URI
 
     2 -- Points to a URI -- typically a resource specified with internet syntax.
+    
+    * PyMuPDF treats any external link that contains a colon and does not start
+      with `file:`, as `LINK_URI`.
 
     :rtype: int
 
 .. py:data:: LINK_LAUNCH
 
     3 -- Launch (open) another file (of any "executable" type).
+    
+    * |PyMuPDF| treats any external link that starts wth `file:` or doesn't
+      contain a colon, as `LINK_LAUNCH`.
 
     :rtype: int
 
