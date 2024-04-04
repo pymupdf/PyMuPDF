@@ -5440,8 +5440,13 @@ class Document:
         # get underlying pdf document,
         pdf = _as_pdf_document(self)
 
-        # create page sub-pdf via extra.rearrange_pages2
-        extra.rearrange_pages2(pdf, tuple(pyliste))
+        # create page sub-pdf via pdf_rearrange_pages2().
+        #
+        if mupdf_version_tuple >= (1, 24):
+            mupdf.pdf_rearrange_pages2(pdf, pyliste)
+        else:
+            # mupdf.pdf_rearrange_pages2() not available.
+            extra.rearrange_pages2(pdf, tuple(pyliste))
 
         # remove any existing pages with their kids
         self._reset_page_refs()
@@ -8428,27 +8433,8 @@ class Page:
         '''
         List of xref numbers of annotations, fields and links.
         '''
-        if g_use_extra:
-            return extra.JM_get_annot_xref_list2(self.this)
-        page = self._pdf_page()
-        if not page.m_internal:
-            return list()
-        return JM_get_annot_xref_list( page.obj())
+        return JM_get_annot_xref_list2(self)
     
-    def _unused_annot_xrefs(self):
-        """List of xref numbers of annotations, fields and links."""
-        assert 0
-        CheckParent(self)
-        if 1 and g_use_extra:
-            assert 0    # set globally.
-            ret = extra.JM_get_annot_xref_list2( self.this)
-            return ret
-        page = self._pdf_page()
-        if not page.m_internal:
-            return []
-        ret = JM_get_annot_xref_list(page.obj())
-        return ret
-
     def annots(self, types=None):
         """ Generator over the annotations of a page.
 
@@ -9572,8 +9558,6 @@ class Page:
 
     rect = property(bound, doc="page rectangle")
 
-if g_use_extra:
-    Page.annot_xrefs = extra.JM_get_annot_xref_list2
 
 class Pixmap:
 
@@ -15648,6 +15632,13 @@ def JM_get_annot_xref_list( page_obj):
     return names
 
 
+def JM_get_annot_xref_list2(page):
+    page = page._pdf_page()
+    if not page.m_internal:
+        return list()
+    return JM_get_annot_xref_list( page.obj())
+
+
 def JM_get_border_style(style):
     '''
     return pdf_obj "border style" from Python str
@@ -21686,7 +21677,8 @@ class TOOLS:
         global g_small_glyph_heights
         if on is not None:
             g_small_glyph_heights = bool(on)
-            extra.set_small_glyph_heights( g_small_glyph_heights)
+            if g_use_extra:
+                extra.set_small_glyph_heights(g_small_glyph_heights)
         return g_small_glyph_heights
     
     @staticmethod
