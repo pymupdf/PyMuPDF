@@ -10,6 +10,7 @@ License:
 #
 import atexit
 import binascii
+import collections
 import glob
 import inspect
 import io
@@ -5016,7 +5017,7 @@ class Document:
             return rc[1][1:]
         return "UseNone"
 
-    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> Page:
+    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> collections.abc.Iterable[Page]:
         """Return a generator iterator over a page range.
 
         Arguments have the same meaning as for the range() built-in.
