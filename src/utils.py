@@ -994,10 +994,9 @@ def get_links(page: fitz.Page) -> list:
         links.append(nl)
         ln = ln.next
     if links != [] and page.parent.is_pdf:
-        from . import extra
         linkxrefs = [x for x in
                 #page.annot_xrefs()
-                extra.JM_get_annot_xref_list2(page)
+                fitz.JM_get_annot_xref_list2(page)
                 if x[1] == fitz.PDF_ANNOT_LINK  # pylint: disable=no-member
                 ]
         if len(linkxrefs) == len(links):

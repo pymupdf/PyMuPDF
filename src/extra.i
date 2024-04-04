@@ -170,6 +170,7 @@ PyObject* JM_EscapeStrFromBuffer(fz_buffer* buff)
     return val;
 }
 
+// Only used for mupdf < 1.24. mupdf >= 1.24 has pdf_rearrange_pages2().
 void rearrange_pages2(
         mupdf::PdfDocument& doc,
         PyObject *new_pages
@@ -1285,43 +1286,6 @@ static PyObject* JM_get_annot_xref_list(const mupdf::PdfObj& page_obj)
         return names;
     }
     return lll_JM_get_annot_xref_list( page_obj.m_internal);
-    
-    mupdf::PdfObj annots = mupdf::pdf_dict_get(page_obj, PDF_NAME(Annots));
-    /*if (!annots.m_internal)
-    {
-        return names;
-    }*/
-    int n = mupdf::pdf_array_len(annots);
-    for (int i = 0; i < n; i++)
-    {
-        mupdf::PdfObj annot_obj = mupdf::pdf_array_get(annots, i);
-        int xref = mupdf::pdf_to_num(annot_obj);
-        mupdf::PdfObj subtype = mupdf::pdf_dict_get(annot_obj, PDF_NAME(Subtype));
-        if (!subtype.m_internal)
-        {
-            continue;  // subtype is required
-        }
-        int type = mupdf::pdf_annot_type_from_string(mupdf::pdf_to_name(subtype));
-        if (type == PDF_ANNOT_UNKNOWN)
-        {
-            continue;  // only accept valid annot types
-        }
-        mupdf::PdfObj   id = mupdf::pdf_dict_gets(annot_obj, "NM");
-        s_list_append_drop(names, Py_BuildValue("iis", xref, type, mupdf::pdf_to_text_string(id)));
-    }
-    return names;
-}
-
-static PyObject* JM_get_annot_xref_list2(mupdf::PdfPage& page)
-{
-    mupdf::PdfObj   page_obj = page.obj();
-    return JM_get_annot_xref_list(page_obj);
-}
-
-static PyObject* JM_get_annot_xref_list2(mupdf::FzPage& page)
-{
-    mupdf::PdfPage pdf_page = mupdf::pdf_page_from_fz_page(page);
-    return JM_get_annot_xref_list2(pdf_page);
 }
 
 static mupdf::FzBuffer JM_object_to_buffer(const mupdf::PdfObj& what, int compress, int ascii)
@@ -4066,8 +4030,6 @@ PyObject* Annot_rect3(mupdf::PdfAnnot& annot);
 mupdf::FzMatrix Page_derotate_matrix(mupdf::PdfPage& pdfpage);
 mupdf::FzMatrix Page_derotate_matrix(mupdf::FzPage& pdfpage);
 PyObject* JM_get_annot_xref_list(const mupdf::PdfObj& page_obj);
-PyObject* JM_get_annot_xref_list2(mupdf::PdfPage& page);
-PyObject* JM_get_annot_xref_list2(mupdf::FzPage& page);
 PyObject* xref_object(mupdf::PdfDocument& pdf, int xref, int compressed=0, int ascii=0);
 PyObject* xref_object(mupdf::FzDocument& document, int xref, int compressed=0, int ascii=0);
 
