@@ -3,7 +3,7 @@
 ===============================
 Constants and Enumerations
 ===============================
-Constants and enumerations of :title:`MuPDF` as implemented by :title:`PyMuPDF`. Each of the following variables is accessible as *fitz.variable*.
+Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|. Each of the following variables is accessible as *fitz.variable*.
 
 
 Constants
@@ -199,39 +199,44 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
     64 -- If set, characters entirely outside a page's **mediabox** will be ignored. This is default in PyMuPDF.
 
+.. py:data:: TEXT_CID_FOR_UNKNOWN_UNICODE
+
+    128 -- If set, use raw character codes instead of U+FFFD. This is the default for **text extraction** in PyMuPDF. If you **want to detect** when encoding information is missing or uncertain, toggle this flag and scan for the presence of U+FFFD (= `chr(0xfffd)`) code points in the resulting text.
+
+
 The following constants represent the default combinations of the above for text extraction and searching:
 
 .. py:data:: TEXTFLAGS_TEXT
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_WORDS
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_BLOCKS
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_DICT
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_RAWDICT
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_HTML
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_XHTML
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_PRESERVE_IMAGES | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_XML
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP`
+    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_CID_FOR_UNKNOWN_UNICODE`
 
 .. py:data:: TEXTFLAGS_SEARCH
 
@@ -259,12 +264,18 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
 .. py:data:: LINK_URI
 
     2 -- Points to a URI -- typically a resource specified with internet syntax.
+    
+    * PyMuPDF treats any external link that contains a colon and does not start
+      with `file:`, as `LINK_URI`.
 
     :rtype: int
 
 .. py:data:: LINK_LAUNCH
 
     3 -- Launch (open) another file (of any "executable" type).
+    
+    * |PyMuPDF| treats any external link that starts wth `file:` or doesn't
+      contain a colon, as `LINK_LAUNCH`.
 
     :rtype: int
 

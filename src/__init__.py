@@ -166,6 +166,7 @@ g_skip_quad_corrections = 0
 #
 mupdf_cppyy = os.environ.get( 'MUPDF_CPPYY')
 if mupdf_cppyy is not None:
+    # pylint: disable=all
     log( f'{__file__}: $MUPDF_CPPYY={mupdf_cppyy!r} so attempting to import mupdf_cppyy.')
     log( f'{__file__}: $PYTHONPATH={os.environ["PYTHONPATH"]}')
     if mupdf_cppyy == '':
@@ -491,7 +492,7 @@ class Annot:
             val = JM_py_from_rect(rect)
 
         val = Rect(val) * self.get_parent().transformation_matrix
-        val *= self.get_parent().derotationMatrix
+        val *= self.get_parent().derotation_matrix
         return val
 
     @property
@@ -983,7 +984,7 @@ class Annot:
         """
         CheckParent(self)
         page = self.get_parent()
-        rot = page.rotationMatrix
+        rot = page.rotation_matrix
         mat = page.transformation_matrix
         bbox *= rot * ~mat
         annot = self.this
@@ -1139,7 +1140,7 @@ class Annot:
             if subject:
                 mupdf.pdf_dict_puts(mupdf.pdf_annot_obj(annot), "Subj", mupdf.pdf_new_text_string(subject))
 
-    def set_irt_xref( xref):
+    def set_irt_xref(self, xref):
         '''
         Set annotation IRT xref
         '''
@@ -1442,7 +1443,7 @@ class Annot:
 
         if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
             BT = ap.find(b"BT")
-            ET = ap.find(b"ET") + 2
+            ET = ap.rfind(b"ET") + 2
             ap = ap[BT:ET]
             w, h = self.rect.width, self.rect.height
             if rotate in (90, 270) or not (apnmat.b == apnmat.c == 0):
@@ -1693,7 +1694,7 @@ class Archive:
     def __repr__( self):
         return f'Archive, sub-archives: {len(self._subarchives)}'
 
-    def _add_arch( subarch, path=None):
+    def _add_arch( self, subarch, path=None):
         mupdf.fz_mount_multi_archive( self.this, subarch, path)
     
     def _add_dir( self, folder, path=None):
@@ -2642,7 +2643,7 @@ class Document:
             self.is_closed    = False
             self.is_encrypted = False
             self.is_encrypted = False
-            self.metadata    = None
+            self._metadata    = None
             self.FontInfos   = []
             self.Graftmaps   = {}
             self.ShownPages  = {}
@@ -2684,10 +2685,10 @@ class Document:
 
             if filename and self.stream is None:
                 from_file = True
-                self.name = filename
+                self._name = filename
             else:
                 from_file = False
-                self.name = ""
+                self._name = ""
 
             if from_file:
                 if not os.path.exists(filename):
@@ -4022,6 +4023,9 @@ class Document:
             owner_pw=None,
             user_pw=None,
             no_new_id=True,
+            preserve_metadata=1,
+            use_objstms=1,
+            compression_effort=0,
             ):
         '''
         Save PDF using some different defaults
@@ -4043,6 +4047,9 @@ class Document:
                 owner_pw=owner_pw,
                 user_pw=user_pw,
                 no_new_id=no_new_id,
+                preserve_metadata=preserve_metadata,
+                use_objstms=use_objstms,
+                compression_effort=compression_effort,
                 )
 
     def find_bookmark(self, bm):
@@ -4308,7 +4315,7 @@ class Document:
         if self.is_encrypted:
             raise ValueError("cannot initialize - document still encrypted")
         self._outline = self._loadOutline()
-        self.metadata = dict(
+        self._metadata = dict(
                     [
                         (k,self._getMetadata(v)) for k,v in {
                             'format':'format',
@@ -4324,7 +4331,7 @@ class Document:
                             }.items()
                     ]
                 )
-        self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
+        self._metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
     def insert_file(self,
             infile,
@@ -4816,6 +4823,10 @@ class Document:
                 valid[key] = True
         return valid
 
+    @property
+    def metadata(self):
+        return self._metadata
+    
     def move_page(self, pno: int, to: int =-1):
         """Move a page within a PDF document.
 
@@ -4836,6 +4847,10 @@ class Document:
 
         return self._move_copy_page(pno, to, before, copy)
 
+    @property
+    def name(self):
+        return self._name
+    
     def need_appearances(self, value=None):
         """Get/set the NeedAppearances value."""
         if not self.is_form_pdf:
@@ -5312,6 +5327,9 @@ class Document:
             permissions=4095,
             owner_pw=None,
             user_pw=None,
+            preserve_metadata=1,
+            use_objstms=0,
+            compression_effort=0,
             ):
         # From %pythonprepend save
         #
@@ -5338,27 +5356,30 @@ class Document:
         
         pdf = _as_pdf_document(self)
         opts = mupdf.PdfWriteOptions()
-        opts.do_incremental     = incremental
-        opts.do_ascii           = ascii
-        opts.do_compress        = deflate
+        opts.do_incremental = incremental
+        opts.do_ascii = ascii
+        opts.do_compress = deflate
         opts.do_compress_images = deflate_images
-        opts.do_compress_fonts  = deflate_fonts
-        opts.do_decompress      = expand
-        opts.do_garbage         = garbage
-        opts.do_pretty          = pretty
-        opts.do_linear          = linear
-        opts.do_clean           = clean
-        opts.do_sanitize        = clean
+        opts.do_compress_fonts = deflate_fonts
+        opts.do_decompress = expand
+        opts.do_garbage = garbage
+        opts.do_pretty = pretty
+        opts.do_linear = linear
+        opts.do_clean = clean
+        opts.do_sanitize = clean
         opts.dont_regenerate_id = no_new_id
-        opts.do_appearance      = appearance
-        opts.do_encrypt         = encryption
-        opts.permissions        = permissions
+        opts.do_appearance = appearance
+        opts.do_encrypt = encryption
+        opts.permissions = permissions
         if owner_pw is not None:
             opts.opwd_utf8_set_value(owner_pw)
         elif user_pw is not None:
             opts.opwd_utf8_set_value(user_pw)
         if user_pw is not None:
             opts.upwd_utf8_set_value(user_pw)
+        opts.do_preserve_metadata = preserve_metadata
+        opts.do_use_objstms = use_objstms
+        opts.compression_effort = compression_effort
 
         out = None
         ASSERT_PDF(pdf)
@@ -5409,7 +5430,7 @@ class Document:
         if (len(pyliste) == 0
             or min(pyliste) not in valid_range
             or max(pyliste) not in valid_range
-           ):
+        ):
             raise ValueError("bad page number(s)")
 
         # get underlying pdf document,
@@ -5671,8 +5692,11 @@ class Document:
             encryption=1,
             permissions=4095,
             owner_pw=None,
-            user_pw=None
-            ):
+            user_pw=None,
+            preserve_metadata=1,
+            use_objstms=0,
+            compression_effort=0,
+    ):
         from io import BytesIO
         bio = BytesIO()
         self.save(
@@ -5693,7 +5717,10 @@ class Document:
                 permissions=permissions,
                 owner_pw=owner_pw,
                 user_pw=user_pw,
-                )
+                preserve_metadata=preserve_metadata,
+                use_objstms=use_objstms,
+                compression_effort=compression_effort,
+        )
         return bio.getvalue()
 
     @property
@@ -6784,11 +6811,10 @@ class linkDest:
         if obj.is_external:
             if not self.uri:
                 pass
-            elif self.uri.startswith(("http://", "https://", "mailto:", "ftp://")):
-                self.is_uri = True
-                self.kind = LINK_URI
-            elif self.uri.startswith("file://"):
-                self.file_spec = self.uri[7:]
+            elif self.uri.startswith("file:"):
+                self.file_spec = self.uri[5:]
+                if self.file_spec.startswith("//"):
+                    self.file_spec = self.file_spec[2:]
                 self.is_uri = False
                 self.uri = ""
                 self.kind = LINK_LAUNCH
@@ -6797,7 +6823,10 @@ class linkDest:
                     if ftab[1].startswith("page="):
                         self.kind = LINK_GOTOR
                         self.file_spec = ftab[0]
-                        self.page = int(ftab[1][5:]) - 1
+                        self.page = int(ftab[1].split("&")[0][5:]) - 1
+            elif ":" in self.uri:
+                self.is_uri = True
+                self.kind = LINK_URI
             else:
                 self.is_uri = True
                 self.kind = LINK_LAUNCH
@@ -7380,7 +7409,7 @@ class Page:
         #%pythonappend _add_freetext_annot
         ap = val._getAP()
         BT = ap.find(b"BT")
-        ET = ap.find(b"ET") + 2
+        ET = ap.rfind(b"ET") + 2
         ap = ap[BT:ET]
         w = rect[2]-rect[0]
         h = rect[3]-rect[1]
@@ -13256,29 +13285,29 @@ class IRect:
 if 1:
     # Import some mupdf constants
     # These don't appear to be in native fitz module?
-    self = sys.modules[__name__]
+    _self = sys.modules[__name__]
     if 1:
-        for name, value in mupdf.__dict__.items():
-            if name.startswith(('PDF_', 'UCDN_SCRIPT_')):
-                if name.startswith('PDF_ENUM_NAME_'):
+        for _name, _value in mupdf.__dict__.items():
+            if _name.startswith(('PDF_', 'UCDN_SCRIPT_')):
+                if _name.startswith('PDF_ENUM_NAME_'):
                     # Not a simple enum.
                     pass
                 else:
                     #assert not inspect.isroutine(value)
                     #log(f'fitz/__init__.py: importing {name}')
-                    setattr(self, name, value)
+                    setattr(_self, _name, _value)
                     #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
     else:
         # This is slow due to importing inspect, e.g. 0.019 instead of 0.004.
-        for name, value in inspect.getmembers(mupdf):
-            if name.startswith(('PDF_', 'UCDN_SCRIPT_')):
-                if name.startswith('PDF_ENUM_NAME_'):
+        for _name, _value in inspect.getmembers(mupdf):
+            if _name.startswith(('PDF_', 'UCDN_SCRIPT_')):
+                if _name.startswith('PDF_ENUM_NAME_'):
                     # Not a simple enum.
                     pass
                 else:
                     #assert not inspect.isroutine(value)
                     #log(f'fitz/__init__.py: importing {name}')
-                    setattr(self, name, value)
+                    setattr(_self, _name, _value)
                     #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
     
     # This is a macro so not preserved in mupdf C++/Python bindings.
@@ -13301,7 +13330,7 @@ if 1:
     # items to self.
     assert PDF_TX_FIELD_IS_MULTILINE == mupdf.PDF_TX_FIELD_IS_MULTILINE # noqa: F821
     assert UCDN_SCRIPT_ADLAM == mupdf.UCDN_SCRIPT_ADLAM # noqa: F821
-    del self
+    del _self, _name, _value
 
 _adobe_glyphs = {}
 _adobe_unicodes = {}
@@ -21766,9 +21795,9 @@ def int_rc(text):
         text = text[:rc]
     return int(text)
 
-VersionFitz = "1.24.0" # MuPDF version.
-VersionBind = "1.24.0" # PyMuPDF version.
-VersionDate = "2024-03-21 00:00:01"
+VersionFitz = "1.24.1" # MuPDF version.
+VersionBind = "1.24.1" # PyMuPDF version.
+VersionDate = "2024-04-02 00:00:01"
 VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
 version = (VersionBind, VersionFitz, VersionDate2)
 pymupdf_version_tuple = tuple( [int_rc(i) for i in VersionBind.split('.')])

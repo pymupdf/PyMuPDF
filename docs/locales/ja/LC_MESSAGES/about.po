@@ -45,9 +45,9 @@ msgstr "機能比較表"
 
 #: ../../about.rst:18 261ef72bf32c43819f3f88f5141acfdd
 msgid ""
-"The following table illustrates how :title:`PyMuPDF` compares with other "
+"The following table illustrates how |PyMuPDF| compares with other "
 "typical solutions."
-msgstr "以下の表は、:title:`PyMuPDF` が他の典型的な解決策と比較した場合の違いを示しています。"
+msgstr "以下の表は、|PyMuPDF| が他の典型的な解決策と比較した場合の違いを示しています。"
 
 #: ../../about.rst:27 78cf9c6560a94b9ba6c1f62a7ff5a8e7
 msgid "Performance"
@@ -55,13 +55,13 @@ msgstr "パフォーマンス"
 
 #: ../../about.rst:31 c9fff5c5b0094db4923780a94bdc1e6a
 msgid ""
-"To benchmark :title:`PyMuPDF` performance against a range of tasks a test"
+"To benchmark |PyMuPDF| performance against a range of tasks a test"
 " suite with a fixed set of :ref:`8 PDFs with a total of 7,031 "
 "pages<Appendix4_Files_Used>` containing text & images is used to obtain "
 "performance timings."
 msgstr ""
 ":ref:`8つのPDFファイル（合計7,031ページ）<Appendix4_Files_Used>` "
-"にテキストと画像が含まれている固定されたセットのテストスイートを使用して、:title:`PyMuPDF`  "
+"にテキストと画像が含まれている固定されたセットのテストスイートを使用して、|PyMuPDF|  "
 "のパフォーマンスをさまざまなタスクに対してベンチマークします。"
 
 #: ../../about.rst:34 c8b8933c46404fdb9f64f1ab30f0348b
@@ -80,7 +80,7 @@ msgstr "ライセンスと著作権"
 
 #: ../../about.rst:52 b3b1f9567d8e45b99c0a43821f16d943
 msgid ""
-":title:`PyMuPDF` and :title:`MuPDF` are now available under both, open-"
+"|PyMuPDF| and :title:`MuPDF` are now available under both, open-"
 "source :title:`AGPL` and commercial license agreements. Please read the "
 "full text of the :title:`AGPL` license agreement, available in the "
 "distribution material (file COPYING) and `here "

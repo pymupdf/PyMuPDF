@@ -9,7 +9,7 @@ Common Issues and their Solutions
 How To Dynamically Clean Up Corrupt :title:`PDFs`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This shows a potential use of :title:`PyMuPDF` with another Python PDF library (the excellent pure Python package `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ is used here as an example).
+This shows a potential use of |PyMuPDF| with another Python PDF library (the excellent pure Python package `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ is used here as an example).
 
 If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invoke PyMuPDF to recover from many problems like so::
 
@@ -51,10 +51,10 @@ With the command line utility *pdftk* (`available <https://www.pdflabs.com/tools
 
 
 
-How to Convert Any Document to :title:`PDF`
+How to Convert Any Document to |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is a script that converts any :title:`PyMuPDF` :ref:`supported document<Supported_File_Types>` to a :title:`PDF`. These include XPS, EPUB, FB2, CBZ and image formats, including multi-page TIFF images.
+Here is a script that converts any |PyMuPDF| :ref:`supported document<Supported_File_Types>` to a |PDF|. These include XPS, EPUB, FB2, CBZ and image formats, including multi-page TIFF images.
 
 It features maintaining any metadata, table of contents and links contained in the source document::
 
@@ -130,7 +130,7 @@ It features maintaining any metadata, table of contents and links contained in t
 How to Deal with Messages Issued by :title:`MuPDF`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Since :title:`PyMuPDF` v1.16.0, **error messages** issued by the underlying :title:`MuPDF` library are being redirected to the Python standard device *sys.stderr*. So you can handle them like any other output going to this devices.
+Since |PyMuPDF| v1.16.0, **error messages** issued by the underlying :title:`MuPDF` library are being redirected to the Python standard device *sys.stderr*. So you can handle them like any other output going to this devices.
 
 In addition, these messages go to the internal buffer together with any :title:`MuPDF` warnings -- see below.
 

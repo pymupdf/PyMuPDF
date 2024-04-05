@@ -2,6 +2,23 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.1 (2024-04-02)**
+
+* Fixed issues:
+
+  * **Fixed** `3278 <https://github.com/pymupdf/PyMuPDF/issues/3278>`_: apply_redactions moves some unredacted text
+  * **Fixed** `3301 <https://github.com/pymupdf/PyMuPDF/issues/3301>`_: Be more permissive when classifying links as kind LINK_URI
+  * **Fixed** `3306 <https://github.com/pymupdf/PyMuPDF/issues/3306>`_: Text containing capital 'ET' not appearing as annotation
+
+* Other:
+
+  * Use MuPDF-1.24.1.
+  * Support ObjStm Compression.
+    Methods `Document.save()`, `Document.ez_save()` and `Document.write()`
+    now support new parameters `use_objstm`, compression_effort` and
+    `preserve_metadata`.
+
+
 **Changes in version 1.24.0 (2024-03-21)**
 
 * Fixed issues:

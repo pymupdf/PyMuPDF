@@ -6,6 +6,8 @@
 TextWriter
 ================
 
+|pdf_only_class|
+
 * New in v1.16.18
 
 This class represents a MuPDF *text* object. The basic idea is to **decouple (1) text preparation, and (2) text output** to PDF pages.

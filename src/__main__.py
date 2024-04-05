@@ -10,16 +10,12 @@ import bisect
 import os
 import sys
 import statistics
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set
 
-import fitz
-from fitz.fitz import (
-    TEXT_INHIBIT_SPACES,
-    TEXT_PRESERVE_LIGATURES,
-    TEXT_PRESERVE_WHITESPACE,
-)
+from . import fitz
 
-mycenter = lambda x: (" %s " % x).center(75, "-")
+def mycenter(x):
+    return (" %s " % x).center(75, "-")
 
 
 def recoverpix(doc, item):
@@ -83,7 +79,6 @@ def print_dict(item):
     for k, v in item.items():
         msg = "%s: %s" % (k.rjust(l), v)
         fitz.message(msg)
-    return
 
 
 def print_xref(doc, xref):
@@ -102,7 +97,7 @@ def print_xref(doc, xref):
             size = temp[idx]
             if size.endswith("0 R"):
                 size = "unknown"
-        except:
+        except Exception:
             size = "unknown"
         fitz.message("stream\n...%s bytes" % size)
         fitz.message("endstream")
@@ -138,7 +133,7 @@ def get_list(rlist, limit, what="page"):
             i1, i2 = item.split("-")  # will fail if not 2 items produced
             i1 = int(i1)  # will fail on non-integers
             i2 = int(i2)
-        except:
+        except Exception:
             sys.exit("bad %s range specification at item %i" % (what, n))
 
         if not (1 <= i1 < limit and 1 <= i2 < limit):
@@ -335,15 +330,15 @@ def embedded_del(args):
     ):
         sys.exit("cannot save PDF incrementally")
 
-    exception_types = (ValueError, mupdf.FzErrorBase)
-    if mupdf_version_tuple < (1, 24):
+    exception_types = (ValueError, fitz.mupdf.FzErrorBase)
+    if fitz.mupdf_version_tuple < (1, 24):
         exception_types = ValueError
     try:
         doc.embfile_del(args.name)
-    except exception_types as e:
+    except exception_types as e:    # pylint: disable=catching-non-exception
         sys.exit(f'no such embedded file {args.name!r}: {e}')
     if not args.output or args.output == args.input:
-        doc.save_incr()
+        doc.saveIncr()
     else:
         doc.save(args.output, garbage=1)
     doc.close()
@@ -352,18 +347,17 @@ def embedded_del(args):
 def embedded_get(args):
     """Retrieve contents of an embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
-    exception_types = (ValueError, mupdf.FzErrorBase)
-    if mupdf_version_tuple < (1, 24):
+    exception_types = (ValueError, fitz.mupdf.FzErrorBase)
+    if fitz.mupdf_version_tuple < (1, 24):
         exception_types = ValueError
     try:
         stream = doc.embfile_get(args.name)
         d = doc.embfile_info(args.name)
-    except exception_types as e:
+    except exception_types as e:    # pylint: disable=catching-non-exception
         sys.exit(f'no such embedded file {args.name!r}: {e}')
     filename = args.output if args.output else d["filename"]
-    output = open(filename, "wb")
-    output.write(stream)
-    output.close()
+    with open(filename, "wb") as output:
+        output.write(stream)
     fitz.message("saved entry '%s' as '%s'" % (args.name, filename))
     doc.close()
 
@@ -379,12 +373,13 @@ def embedded_add(args):
     try:
         doc.embfile_del(args.name)
         sys.exit("entry '%s' already exists" % args.name)
-    except:
+    except Exception:
         pass
 
     if not os.path.exists(args.path) or not os.path.isfile(args.path):
         sys.exit("no such file '%s'" % args.path)
-    stream = open(args.path, "rb").read()
+    with open(args.path, "rb") as f:
+        stream = f.read()
     filename = args.path
     ufilename = filename
     if not args.desc:
@@ -411,7 +406,7 @@ def embedded_upd(args):
 
     try:
         doc.embfile_info(args.name)
-    except:
+    except Exception:
         sys.exit("no such embedded file '%s'" % args.name)
 
     if (
@@ -419,7 +414,8 @@ def embedded_upd(args):
         and os.path.exists(args.path)
         and os.path.isfile(args.path)
     ):
-        stream = open(args.path, "rb").read()
+        with open(args.path, "rb") as f:
+            stream = f.read()
     else:
         stream = None
 
@@ -520,9 +516,8 @@ def extract_objects(args):
                     outname = os.path.join(
                         out_dir, f"{fontname.replace(' ', '-')}-{xref}.{ext}"
                     )
-                    outfile = open(outname, "wb")
-                    outfile.write(buffer)
-                    outfile.close()
+                    with open(outname, "wb") as outfile:
+                        outfile.write(buffer)
                     buffer = None
         if args.images:
             itemlist = doc.get_page_images(pno - 1)
@@ -535,9 +530,8 @@ def extract_objects(args):
                         ext = pix["ext"]
                         imgdata = pix["image"]
                         outname = os.path.join(out_dir, "img-%i.%s" % (xref, ext))
-                        outfile = open(outname, "wb")
-                        outfile.write(imgdata)
-                        outfile.close()
+                        with open(outname, "wb") as outfile:
+                            outfile.write(imgdata)
                     else:
                         outname = os.path.join(out_dir, "img-%i.png" % xref)
                         pix2 = (
@@ -809,35 +803,33 @@ def gettext(args):
     doc = open_file(args.input, args.password, pdf=False)
     pagel = get_list(args.pages, doc.page_count + 1)
     output = args.output
-    if output == None:
+    if output is None:
         filename, _ = os.path.splitext(doc.name)
         output = filename + ".txt"
-    textout = open(output, "wb")
-    flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    if args.convert_white:
-        flags ^= TEXT_PRESERVE_WHITESPACE
-    if args.noligatures:
-        flags ^= TEXT_PRESERVE_LIGATURES
-    if args.extra_spaces:
-        flags ^= TEXT_INHIBIT_SPACES
-    func = {
-        "simple": page_simple,
-        "blocks": page_blocksort,
-        "layout": page_layout,
-    }
-    for pno in pagel:
-        page = doc[pno - 1]
-        func[args.mode](
-            page,
-            textout,
-            args.grid,
-            args.fontsize,
-            args.noformfeed,
-            args.skip_empty,
-            flags=flags,
-        )
-
-    textout.close()
+    with open(output, "wb") as textout:
+        flags = fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_WHITESPACE
+        if args.convert_white:
+            flags ^= fitz.TEXT_PRESERVE_WHITESPACE
+        if args.noligatures:
+            flags ^= fitz.TEXT_PRESERVE_LIGATURES
+        if args.extra_spaces:
+            flags ^= fitz.TEXT_INHIBIT_SPACES
+        func = {
+            "simple": page_simple,
+            "blocks": page_blocksort,
+            "layout": page_layout,
+        }
+        for pno in pagel:
+            page = doc[pno - 1]
+            func[args.mode](
+                page,
+                textout,
+                args.grid,
+                args.fontsize,
+                args.noformfeed,
+                args.skip_empty,
+                flags=flags,
+            )
 
 
 def _internal(args):

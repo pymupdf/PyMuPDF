@@ -439,17 +439,16 @@ def test_2093():
     print(f'pixel_average_before={pixel_average_before!r}')
     print(f'pixel_average_after={pixel_average_after!r}')
 
-    # Before this bug was fixed:
+    # Before this bug was fixed (MuPDF-1.22):
     #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
     #   pixel_average_after=[138.68844553555772, 123.05687162237561, 100.74275056194105]
     # After fix:
     #   pixel_average_before=[130.864323120088, 115.23577810900859, 92.9268559996174]
     #   pixel_average_after=[130.8889209934799, 115.25722751837269, 92.94327384463327]
     #
-    if fitz.mupdf_version_tuple[:2] >= (1, 22):
-        for i in range(len(pixel_average_before)):
-            diff = pixel_average_before[i] - pixel_average_after[i]
-            assert abs(diff) < 0.1
+    for i in range(len(pixel_average_before)):
+        diff = pixel_average_before[i] - pixel_average_after[i]
+        assert abs(diff) < 0.1
 
     out = f'{scriptdir}/resources/test2093-out.pdf'
     doc.save(out)
@@ -796,6 +795,49 @@ def test_2957_2():
         w0 = words0[i]  # word before redaction
         bbox0 = fitz.Rect(w0[:4]).irect  # its IRect coordinates
         assert bbox0 == bbox1  # must be same coordinates
+
+
+def test_707560():
+    """https://bugs.ghostscript.com/show_bug.cgi?id=707560
+    Ensure that redactions also remove characters with an empty width bbox.
+    """
+    # Make text that will contain characters with an empty bbox.
+
+    greetings = (
+        "Hello, World!",  # english
+        "Hallo, Welt!",  # german
+        "سلام دنیا!",  # persian
+        "வணக்கம், உலகம்!",  # tamil
+        "สวัสดีชาวโลก!",  # thai
+        "Привіт Світ!",  # ucranian
+        "שלום עולם!",  # hebrew
+        "ওহে বিশ্ব!",  # bengali
+        "你好世界！",  # chinese
+        "こんにちは世界！",  # japanese
+        "안녕하세요, 월드!",  # korean
+        "नमस्कार, विश्व !",  # sanskrit
+        "हैलो वर्ल्ड!",  # hindi
+    )
+    text = " ... ".join([g for g in greetings])
+    where = (50, 50, 400, 500)
+    story = fitz.Story(text)
+    bio = io.BytesIO()
+    writer = fitz.DocumentWriter(bio)
+    more = True
+    while more:
+        dev = writer.begin_page(fitz.paper_rect("a4"))
+        more, _ = story.place(where)
+        story.draw(dev)
+        writer.end_page()
+    writer.close()
+    doc = fitz.open("pdf", bio)
+    page = doc[0]
+    text = page.get_text()
+    assert text, "Unexpected: test page has no text."
+    page.add_redact_annot(page.rect)
+    page.apply_redactions()
+    assert not page.get_text(), "Unexpected: text not fully redacted."
+
 
 def test_3070():
     with fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_3070.pdf')) as pdf:

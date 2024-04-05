@@ -43,9 +43,13 @@ msgstr "ファイルを開く"
 msgid "Supported File Types"
 msgstr "サポートされているファイルタイプ"
 
+msgid "|PyMuPDF| can open files other than just |PDF|."
+msgstr "|PyMuPDF| は |PDF| 以外のファイルも開くことができます。"
+
+
 #: ../../how-to-open-a-file.rst:18 960f8812128e4242a5224e9dbbf7d2ee
-msgid ":title:`PyMuPDF` supports the following file types:"
-msgstr ":title:`PyMuPDF` は以下のファイルタイプをサポートしています："
+msgid "The following file types are supported:"
+msgstr "|PyMuPDF| は以下のファイルタイプをサポートしています："
 
 #: ../../how-to-open-a-file.rst:25 4042ae18a49a41039f3dd338c0e1d7e1
 msgid "How to Open a File"
@@ -71,7 +75,7 @@ msgstr "例えば *\"some.file\"* が実際には **XPS** ファイルの場合�
 
 #: ../../how-to-open-a-file.rst:50 d9c808a1a9d843268d70ab08f3c77446
 msgid ""
-":title:`PyMuPDF` itself does not try to determine the file type from the "
+"|PyMuPDF| itself does not try to determine the file type from the "
 "file contents. **You** are responsible for supplying the file type "
 "information in some way -- either implicitly, via the file extension, or "
 "explicitly as shown with the `filetype` parameter. There are pure "
@@ -79,7 +83,7 @@ msgid ""
 "<https://pypi.org/project/filetype/>`_ that help you doing this. Also "
 "consult the :ref:`Document` chapter for a full description."
 msgstr ""
-":title:`PyMuPDF` "
+"|PyMuPDF| "
 "自体は、ファイルの内容からファイルタイプを判断しようとはしません。このため、ユーザーがファイルの拡張子などを通じて暗黙的に、または "
 "`filetype <https://pypi.org/project/filetype/>`_ "
 "パラメーターを通じて明示的にファイルタイプの情報を提供する責任があります。また、詳細な説明については :ref:`Document` "
@@ -87,19 +91,19 @@ msgstr ""
 
 #: ../../how-to-open-a-file.rst:52 74eacc79c13f4814a08c67869dd2b6b2
 msgid ""
-"If :title:`PyMuPDF` encounters a file with an unknown / missing "
-"extension, it will try to open it as a :title:`PDF`. So in these cases "
+"If |PyMuPDF| encounters a file with an unknown / missing "
+"extension, it will try to open it as a |PDF|. So in these cases "
 "there is no need for additional precautions. Similarly, for memory "
 "documents, you can just specify `doc=fitz.open(stream=mem_area)` to open "
-"it as a :title:`PDF` document."
+"it as a |PDF| document."
 msgstr ""
-":title:`PyMuPDF` "
+"|PyMuPDF| "
 "は不明なファイルや拡張子のないファイルはPDFとして開きます。このため、これらの場合は追加の情報は必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=fitz.open(stream=mem_area)`"
 " と指定するだけでPDFドキュメントとして開くことができます。"
 
 #: ../../how-to-open-a-file.rst:54 ed99896a4b384a7fb065d400b4959d87
 msgid ""
-"If you attempt to open an unsupported file then :title:`PyMuPDF` will "
+"If you attempt to open an unsupported file then |PyMuPDF| will "
 "throw a file data error."
 msgstr "サポートされていないファイルを開こうとした場合、PyMuPDFはファイルデータエラーをスローします。"
 
@@ -109,11 +113,11 @@ msgstr "ファイルをテキストとして開く"
 
 #: ../../how-to-open-a-file.rst:64 a96ee67240d6467c908b8c4d5d2848e9
 msgid ""
-":title:`PyMuPDF` has the capability to open any plain text file as a "
+"|PyMuPDF| has the capability to open any plain text file as a "
 "document. In order to do this you should provide the `filetype` parameter"
 " for the `fitz.open` function as `\"txt\"`."
 msgstr ""
-":title:`PyMuPDF` には、プレーン テキスト ファイルをドキュメントとして開く機能があります。 "
+"|PyMuPDF| には、プレーン テキスト ファイルをドキュメントとして開く機能があります。 "
 "これを行うには、`fitz.open` 関数の `filetype` パラメータを「txt」として指定する必要があります。"
 
 #: ../../how-to-open-a-file.rst:71 8b3cacc79e98462190f1a8841c706752
@@ -121,12 +125,12 @@ msgid ""
 "In this way you are able to open a variety of file types and perform the "
 "typical **non-PDF** specific features like text searching, text "
 "extracting and page rendering. Obviously, once you have rendered your "
-"`txt` content, then saving as :title:`PDF` or merging with other "
-":title:`PDF` files is no problem."
+"`txt` content, then saving as |PDF| or merging with other "
+"|PDF| files is no problem."
 msgstr ""
-"このようにして、さまざまな種類のファイルを開いて、テキスト検索、テキスト抽出、ページ レンダリングなどの :title:`PDF` "
-"に固有ではない一般的な機能を実行できます。 明らかに、txt コンテンツをレンダリングしたら、 :title:`PDF` として保存したり、他の "
-":title:`PDF` ファイルと結合したりすることは問題ありません。"
+"このようにして、さまざまな種類のファイルを開いて、テキスト検索、テキスト抽出、ページ レンダリングなどの |PDF| "
+"に固有ではない一般的な機能を実行できます。 明らかに、txt コンテンツをレンダリングしたら、 |PDF| として保存したり、他の "
+"|PDF| ファイルと結合したりすることは問題ありません。"
 
 #: ../../how-to-open-a-file.rst:75 ad904a19565a4d76813a4a93b547a6f8
 msgid "Examples"
@@ -151,11 +155,11 @@ msgstr "等々！"
 #: ../../how-to-open-a-file.rst:105 abfb5032a0fe4185ab4510d22f93a87d
 msgid ""
 "As you can imagine many text based file formats can be *very simply "
-"opened* and *interpreted* by :title:`PyMuPDF`. This can make data "
+"opened* and *interpreted* by |PyMuPDF|. This can make data "
 "analysis and extraction for a wide range of previously unavailable files "
 "suddenly possible."
 msgstr ""
-"ご想像のとおり、多くのテキスト ベースのファイル形式は、:title:`PyMuPDF` によって非常に簡単に開いて解釈できます。 "
+"ご想像のとおり、多くのテキスト ベースのファイル形式は、|PyMuPDF| によって非常に簡単に開いて解釈できます。 "
 "これにより、これまで利用できなかった広範囲のファイルのデータ分析と抽出が突然可能になります。"
 
 #: ../../footer.rst:71 ffe59a87a06749ba91ebe842e97511d8

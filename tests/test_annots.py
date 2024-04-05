@@ -191,10 +191,8 @@ def test_1645():
     
     if fitz.mupdf_version_tuple[:2] >= (1, 24):
         path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.24.pdf')
-    elif fitz.mupdf_version_tuple[:2] >= (1, 22):
-        path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.22.pdf')
     else:
-        path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected.pdf')
+        path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.22.pdf')
     path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
     doc = fitz.open(path_in)
     page = doc[0]

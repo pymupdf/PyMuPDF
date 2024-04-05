@@ -1269,7 +1269,7 @@ def cells_to_tables(page, cells) -> list:
     return _sorted
 
 
-class CellGroup(object):
+class CellGroup():
     def __init__(self, cells):
         self.cells = cells
         self.bbox = (
@@ -1284,7 +1284,7 @@ class TableRow(CellGroup):
     pass
 
 
-class TableHeader(object):
+class TableHeader():
     """PyMuPDF extension containing the identified table header."""
 
     def __init__(self, bbox, cells, names, above):
@@ -1294,7 +1294,7 @@ class TableHeader(object):
         self.external = above
 
 
-class Table(object):
+class Table():
     def __init__(self, page, cells):
         self.page = page
         self.cells = cells
@@ -1726,7 +1726,7 @@ class TableSettings:
             raise ValueError(f"Cannot resolve settings: {settings}")
 
 
-class TableFinder(object):
+class TableFinder():
     """
     Given a PDF page, find plausible table structures.
 
