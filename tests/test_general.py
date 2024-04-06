@@ -1214,3 +1214,9 @@ def test_533():
         print(f'for p in list(doc)[:]: {p=}.')
     for p in doc[:]:
         print(f'for p in doc[:]: {p=}.')
+
+def test_3354():
+    document = fitz.open(filename)
+    v = dict(foo='bar')
+    document.metadata = v
+    assert document.metadata == v

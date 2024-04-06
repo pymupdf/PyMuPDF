@@ -159,7 +159,7 @@ def show(args):
         size /= 1024
         flag = "MB"
     size = round(size, 1)
-    meta = doc.metadata
+    meta = doc.metadata # pylint: disable=no-member
     fitz.message(
         "'%s', pages: %i, objects: %i, %g %s, %s, encryption: %s"
         % (
@@ -190,7 +190,7 @@ def show(args):
         fitz.message()
     if args.metadata:
         fitz.message(mycenter("PDF metadata"))
-        print_dict(doc.metadata)
+        print_dict(doc.metadata)    # pylint: disable=no-member
         fitz.message()
     if args.xrefs:
         fitz.message(mycenter("object information"))
