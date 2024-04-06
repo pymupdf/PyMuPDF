@@ -2647,7 +2647,7 @@ class Document:
             self.is_closed    = False
             self.is_encrypted = False
             self.is_encrypted = False
-            self._metadata    = None
+            self.metadata    = None
             self.FontInfos   = []
             self.Graftmaps   = {}
             self.ShownPages  = {}
@@ -4339,7 +4339,7 @@ class Document:
         if self.is_encrypted:
             raise ValueError("cannot initialize - document still encrypted")
         self._outline = self._loadOutline()
-        self._metadata = dict(
+        self.metadata = dict(
                     [
                         (k,self._getMetadata(v)) for k,v in {
                             'format':'format',
@@ -4355,7 +4355,7 @@ class Document:
                             }.items()
                     ]
                 )
-        self._metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
+        self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
     def insert_file(self,
             infile,
@@ -4848,10 +4848,6 @@ class Document:
                 valid[key] = True
         return valid
 
-    @property
-    def metadata(self):
-        return self._metadata
-    
     def move_page(self, pno: int, to: int =-1):
         """Move a page within a PDF document.
 
