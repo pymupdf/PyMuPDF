@@ -11,10 +11,11 @@ red = (1, 0, 0)
 blue = (0, 0, 1)
 gold = (1, 1, 0)
 green = (0, 1, 0)
+scriptdir = os.path.dirname(__file__)
 
 displ = fitz.Rect(0, 50, 0, 50)
 r = fitz.Rect(72, 72, 220, 100)
-t1 = u"têxt üsès Lätiñ charß,\nEUR: €, mu: µ, super scripts: ²³!"
+t1 = "têxt üsès Lätiñ charß,\nEUR: €, mu: µ, super scripts: ²³!"
 rect = fitz.Rect(100, 100, 200, 200)
 
 
@@ -144,8 +145,8 @@ def test_stamp():
     assert annot.type == (13, "Stamp")
     annot_id = annot.info["id"]
     annot_xref = annot.xref
-    a1 = page.load_annot(annot_id)
-    a2 = page.load_annot(annot_xref)
+    page.load_annot(annot_id)
+    page.load_annot(annot_xref)
     page = doc.reload_page(page)
 
 
@@ -158,8 +159,7 @@ def test_redact1():
         rotate=-1,
     )
     assert annot.type == (12, "Redact")
-    x = annot._get_redact_values()
-    pix = annot.get_pixmap()
+    annot.get_pixmap()
     info = annot.info
     annot.set_info(info)
     assert not annot.has_popup
@@ -170,17 +170,47 @@ def test_redact1():
 
 
 def test_redact2():
-    """Test removal of graphics (line art)."""
+    """Test for keeping text and removing graphics."""
     if not hasattr(fitz, "mupdf"):
         print("Not executing 'test_redact2' in classic")
         return
-    doc = fitz.open()
-    page = doc.new_page()
-    rect = fitz.Rect(100, 100, 200, 200)
-    page.draw_rect(rect)
-    page.add_redact_annot(rect)
-    page.apply_redactions(graphics=2)
-    assert page.get_drawings() == []
+    filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    all_text0 = page.get_text("words")
+    page.add_redact_annot(page.rect)
+    page.apply_redactions(text=1)
+    assert all_text0 == page.get_text("words")
+    assert not page.get_drawings()
+
+
+def test_redact3():
+    """Test for removing text and graphics."""
+    if not hasattr(fitz, "mupdf"):
+        print("Not executing 'test_redact3' in classic")
+        return
+    filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    page.add_redact_annot(page.rect)
+    page.apply_redactions()
+    assert not page.get_text("words")
+    assert not page.get_drawings()
+
+
+def test_redact4():
+    """Test for removing text and keeping graphics."""
+    if not hasattr(fitz, "mupdf"):
+        print("Not executing 'test_redact4' in classic")
+        return
+    filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
+    doc = fitz.open(filename)
+    page = doc[0]
+    line_art = page.get_drawings()
+    page.add_redact_annot(page.rect)
+    page.apply_redactions(graphics=0)
+    assert not page.get_text("words")
+    assert line_art == page.get_drawings()
 
 
 def test_1645():
@@ -188,7 +218,7 @@ def test_1645():
     Test fix for #1645.
     '''
     path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
-    
+
     if fitz.mupdf_version_tuple[:2] >= (1, 24):
         path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.24.pdf')
     else:
@@ -239,7 +269,7 @@ def test_2270():
                 assert textBox.get_text('text') == 'abc123\n'
                 assert textBox.get_textbox(textBox.rect) == 'abc123'
                 assert textBox.info['content'] == 'abc123'
-                
+
                 if hasattr(fitz, 'mupdf'):
                     # Additional check that Annot.get_textpage() returns a
                     # TextPage that works with page.get_text() - prior to
@@ -321,4 +351,3 @@ def test_3209():
     assert n == 1
     path = os.path.abspath(f'{__file__}/../../tests/test_3209_out.pdf')
     pdf.save(path)  # Check the output PDF that the annotation is correctly drawn
-
