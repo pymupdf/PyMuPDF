@@ -4186,7 +4186,9 @@ class Shape:
         self.totalcont = ""  # re-use
 
 
-def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> bool:
+def apply_redactions(
+    page: fitz.Page, images: int = 2, graphics: int = 1, text: int = 0
+) -> bool:
     """Apply the redaction annotations of the page.
 
     Args:
@@ -4200,9 +4202,12 @@ def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> boo
               0 - ignore graphics
               1 - remove graphics if contained in rectangle
               2 - remove all overlapping graphics
+        text:
+              0 - remove text
+              1 - ignore text
     """
 
-    def center_rect(annot_rect, text, font, fsize):
+    def center_rect(annot_rect, new_text, font, fsize):
         """Calculate minimal sub-rectangle for the overlay text.
 
         Notes:
@@ -4211,7 +4216,7 @@ def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> boo
             sub-rect with smaller height, which should still be sufficient.
         Args:
             annot_rect: the annotation rectangle
-            text: the text to insert.
+            new_text: the text to insert.
             font: the fontname. Must be one of the CJK or Base-14 set, else
                 the rectangle is returned unchanged.
             fsize: the fontsize
@@ -4221,12 +4226,13 @@ def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> boo
         exception_types = (ValueError, mupdf.FzErrorBase)
         if fitz.mupdf_version_tuple < (1, 24):
             exception_types = ValueError
-        if not text:
+        if not new_text:
             return annot_rect
         try:
-            text_width = fitz.get_text_length(text, font, fsize)
+            text_width = fitz.get_text_length(new_text, font, fsize)
         except exception_types:  # unsupported font
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:
+                fitz.exception_info()
             return annot_rect
         line_height = fsize * 1.2
         limit = annot_rect.width
@@ -4246,14 +4252,16 @@ def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> boo
         raise ValueError("is no PDF")
 
     redact_annots = []  # storage of annot values
-    for annot in page.annots(types=(fitz.PDF_ANNOT_REDACT,)):   # pylint: disable=no-member
+    for annot in page.annots(
+        types=(fitz.PDF_ANNOT_REDACT,)  # pylint: disable=no-member
+    ):
         # loop redactions
         redact_annots.append(annot._get_redact_values())  # save annot values
 
     if redact_annots == []:  # any redactions on this page?
         return False  # no redactions
 
-    rc = page._apply_redactions(images, graphics)  # call MuPDF
+    rc = page._apply_redactions(text, images, graphics)  # call MuPDF
     if not rc:  # should not happen really
         raise ValueError("Error applying redactions.")
 
@@ -4266,20 +4274,20 @@ def apply_redactions(page: fitz.Page, images: int = 2, graphics: int = 1) -> boo
             shape.draw_rect(annot_rect)  # colorize the rect background
             shape.finish(fill=fill, color=fill)
         if "text" in redact.keys():  # if we also have text
-            text = redact["text"]
+            new_text = redact["text"]
             align = redact.get("align", 0)
             fname = redact["fontname"]
             fsize = redact["fontsize"]
             color = redact["text_color"]
             # try finding vertical centered sub-rect
-            trect = center_rect(annot_rect, text, fname, fsize)
+            trect = center_rect(annot_rect, new_text, fname, fsize)
 
             rc = -1
             while rc < 0 and fsize >= 4:  # while not enough room
                 # (re-) try insertion
                 rc = shape.insert_textbox(
                     trect,
-                    text,
+                    new_text,
                     fontname=fname,
                     fontsize=fsize,
                     color=color,

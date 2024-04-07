@@ -63,6 +63,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.annots`                return a generator over the annots on the page
 :meth:`Page.apply_redactions`      PDF only: process the redactions of the page
 :meth:`Page.bound`                 rectangle of the page
+:meth:`Page.cluster_drawings`      PDF only: bounding boxes of vector graphics
 :meth:`Page.delete_annot`          PDF only: delete an annotation
 :meth:`Page.delete_image`          PDF only: delete an image
 :meth:`Page.delete_link`           PDF only: delete a link
@@ -322,16 +323,17 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_end|
 
 
-      .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS, graphics=PDF_REDACT_LINE_ART_IF_TOUCHED)
+      .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_IF_TOUCHED|2, text=PDF_REDACT_TEXT_REMOVE|0)
 
       **PDF only**: Remove all **content** contained in any redaction rectangle on the page.
 
       **This method applies and then deletes all redactions from the page.**
 
-      :arg int images: How to redact overlapping images. The default (2) blanks out overlapping pixels. `PDF_REDACT_IMAGE_NONE` (0) ignores, and `PDF_REDACT_IMAGE_REMOVE` (1) completely removes images overlapping any redaction annotation. Option `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE` (3) only removes images that are actually visible.
+      :arg int images: How to redact overlapping images. The default (2) blanks out overlapping pixels. `PDF_REDACT_IMAGE_NONE | 0` ignores, and `PDF_REDACT_IMAGE_REMOVE | 1` completely removes images overlapping any redaction annotation. Option `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE | 3` only removes images that are actually visible.
 
-      :arg int graphics: How to redact overlapping vector graphics (also called "line art" or "drawings"). The default (2) removes any overlapping vector graphics. `PDF_REDACT_LINE_ART_NONE` (0) ignores, and `PDF_REDACT_LINE_ART_IF_COVERED` (1) removes graphics fully contained in a redaction annotation.
+      :arg int graphics: How to redact overlapping vector graphics (also called "line-art" or "drawings"). The default (2) removes any overlapping vector graphics. `PDF_REDACT_LINE_ART_NONE | 0` ignores, and `PDF_REDACT_LINE_ART_IF_COVERED | 1` removes graphics fully contained in a redaction annotation. When removing line-art, please be aware that **stroked** vector graphics (i.e. type "s" or "sf") have a **larger wrapping rectangle** than one might expect: first of all, at least 50% of the path's line width have to be added in each direction to truly include all of the drawing. If a so-called "miter limit" is provided (see page 121 of the PDF specification), the enlarging value is `miter * width / 2`. So, when letting everything default (width = 1, miter = 10), the redaction rectangle should be at least 5 points larger in every direction.
 
+      :arg int text: Whether to redact overlapping text. The default `PDF_REDACT_TEXT_REMOVE | 0` removes all characters whose boundary box overlaps any redaction rectangle. This complies with the original legal / data protection intentions of redaction annotations. Other use cases however may require to **keep text** while redacting vector graphics or images. This can be achieved by setting `text=True|PDF_REDACT_TEXT_NONE | 1`. This does **not comply** with the data protection intentions of redaction annotations. **Do so at your own risk.**
 
       :returns: `True` if at least one redaction annotation has been processed, `False` otherwise.
 
@@ -360,6 +362,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.16.12: The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the individual *fill* color of each redaction annotation. If a *text* was given in the annotation, then :meth:`insert_textbox` is invoked to insert it, using parameters provided with the redaction.
       * Changed in v1.18.0: added option for handling images that overlap redaction areas.
       * Changed in v1.23.27: added option for removing graphics as well.
+      * Changed in v1.24.2: added option `keep_text` to leave text untouched.
 
       |history_end|
 
@@ -427,6 +430,16 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. image:: images/img-markers.*
          :scale: 100
+
+   .. method:: cluster_drawings(clip=None, drawings=None, x_tolerance=3, y_tolerance=3)
+
+      Cluster vector graphics (synonyms are line-art or drawings) based on their geometrical vicinity. The method walks through the output of :meth:`Page.get_drawings` and joins paths whose `path["rect"]` are closer to each other than some tolerance values (given in the arguments). The result is a list of rectangles that each wrap things like tables (with gridlines), pie charts, bar charts, etc.
+
+      :arg rect_like clip: only consider paths inside this area. The default is the full page.
+
+      :arg list drawings: (optional) provide a previously generated output of :meth:`Page.get_drawings`. If `None` the method will execute the method.
+
+      :arg float x_tolerance: 
 
    .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None, add_lines=None)
 
