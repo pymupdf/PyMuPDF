@@ -189,8 +189,8 @@
 
         <tr>
             <td><cite id="transFM4">Implementation</cite></td>
-            <td><cite>C</cite> <span id="transFM5">and</span> <cite>Python</cite></td>
-            <td><cite>C++</cite> <span id="transFM6">and</span> <cite>Python</cite></td>
+            <td><cite>Python</cite> <span id="transFM5">and</span> <cite>C</cite></td>
+            <td><cite>Python</cite> <span id="transFM6">and</span> <cite>C++</cite></td>
             <td><cite>Python</cite></td>
             <td><cite>Python</cite></td>
             <td><cite>Python</cite></td>
@@ -224,6 +224,15 @@
         </tr>
 
         <tr>
+            <td><cite id="transFMSupportsCJK">Supports CJK characters</cite></td>
+            <td class="yes"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+        </tr>
+
+        <tr>
             <td><cite id="transFM12">Extract Text</cite></td>
             <td class="yes" id="transFM13">All document types</td>
             <td class="no"></td>
@@ -233,12 +242,21 @@
         </tr>
 
         <tr>
+            <td><cite id="transFMSupportsMarkdown">Extract Text as Markdown (.md)</cite></td>
+            <td class="yes" id="transFM13x">All document types</td>
+            <td class="no"></td>
+            <td class="yes"><cite>PDF</cite> <span id="transFM14xx">only</span></td>
+            <td class="no"></td>
+            <td class="yes"><cite>PDF</cite> <span id="transFM14xxx">only</span></td>
+        </tr>
+
+        <tr>
             <td style="padding:20px 0;"><cite id="transFMExtractTables">Extract Tables</cite></td>
-            <td class="yes"></td>
+            <td class="yes" id="transFM13xx">All document types</td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
-            <td class="yes"></td>
+            <td class="yes"><cite>PDF</cite> <span id="transFM14xxxx">only</span></td>
         </tr>
 
         <tr>
@@ -430,7 +448,7 @@
                     return "レンダリングなし";
                 } else if (str=="Extract Text") {
                     return "テキストを抽出する";
-                } else if (str = "Write Text to PDF Page") {
+                } else if (str=="Write Text to PDF Page") {
                     return "PDF ページにテキストを書き込む";
                 } else if (str=="only") {
                     return "のみ";
@@ -503,8 +521,13 @@
         document.getElementById("transFM11x").innerHTML = getTranslation("No rendering");
         document.getElementById("transFM12").innerHTML = getTranslation("Extract Text");
         document.getElementById("transFM13").innerHTML = getTranslation("All document types");
+        document.getElementById("transFM13x").innerHTML = getTranslation("All document types");
+        document.getElementById("transFM13xx").innerHTML = getTranslation("All document types");
         document.getElementById("transFM14").innerHTML = getTranslation("only");
         document.getElementById("transFM14x").innerHTML = getTranslation("only");
+        document.getElementById("transFM14xx").innerHTML = getTranslation("only");
+        document.getElementById("transFM14xxx").innerHTML = getTranslation("only");
+        document.getElementById("transFM14xxxx").innerHTML = getTranslation("only");
         document.getElementById("transFM15").innerHTML = getTranslation("Extract Vector Graphics");
         document.getElementById("transFM16").innerHTML = getTranslation("All document types");
         document.getElementById("transFM16x").innerHTML = getTranslation("Limited");

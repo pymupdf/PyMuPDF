@@ -44,6 +44,7 @@ This documentation covers all versions up to |version|.
    installation.rst
    the-basics.rst
    tutorial.rst
+   rag.rst
    resources.rst
 
 

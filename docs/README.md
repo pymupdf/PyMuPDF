@@ -32,6 +32,15 @@ This then creates the HTML documentation within `build/html`.
 
 > Use: `sphinx-build -a -b html . build/html` to build all, including the assets in `_static` (important if you have updated CSS).
 
+
+### Using Sphinx Autobuild
+
+A better way of building the documentation if you are actively working on updates is to run:
+
+`sphinx-autobuild . _build/html`
+
+This will serve the docs on a localhost and auto-update the pages live as you make edits.
+
 ### Building the Japanese documentation
 
 - From the "docs" location run:
