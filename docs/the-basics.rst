@@ -66,6 +66,8 @@ Of course it is not just |PDF| which can have text extracted - all the :ref:`sup
 
     There are many more examples which explain how to extract text from specific areas or how to extract tables from documents. Please refer to the :ref:`How to Guide for Text<RecipesText>`.
 
+    You can now also :ref:`extract text in Markdown format<rag_outputting_as_md>`.
+
     **API reference**
 
     - :meth:`Page.get_text`

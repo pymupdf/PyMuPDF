@@ -40,11 +40,17 @@ See the following two sections for examples and further explanations.
    triple: lookup;text;key-value
 
 
+How to Extract Text as Markdown
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is especially useful for :title:`RAG/LLM` environments - please see :ref:`Outputting as Markdown <rag_outputting_as_md>`.
+
+
 .. _RecipesText_A1:
 
 How to Extract Key-Value Pairs from a Page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If the layout of a page is *"predictable"* in some sense, then there is a simple way to find the values for a given set of keywords fast and easily -- without using regular expressions. Please see `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-extraction/lookup-keywords.py>`_ example script.
+If the layout of a page is *"predictable"* in some sense, then there is a simple way to find the values for a given set of keywords fast and easily -- without using regular expressions. Please see `this example script <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-extraction/lookup-keywords.py>`_.
 
 "Predictable" in this context means:
 
