@@ -227,9 +227,9 @@
             <td><cite id="transFMSupportsCJK">Supports CJK characters</cite></td>
             <td class="yes"></td>
             <td class="no"></td>
+            <td class="yes"></td>
             <td class="no"></td>
-            <td class="no"></td>
-            <td class="no"></td>
+            <td class="yes"></td>
         </tr>
 
         <tr>
@@ -245,9 +245,9 @@
             <td><cite id="transFMSupportsMarkdown">Extract Text as Markdown (.md)</cite></td>
             <td class="yes" id="transFM13x">All document types</td>
             <td class="no"></td>
-            <td class="yes"><cite>PDF</cite> <span id="transFM14xx">only</span></td>
             <td class="no"></td>
-            <td class="yes"><cite>PDF</cite> <span id="transFM14xxx">only</span></td>
+            <td class="no"></td>
+            <td class="no"></td>
         </tr>
 
         <tr>
@@ -256,7 +256,7 @@
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
-            <td class="yes"><cite>PDF</cite> <span id="transFM14xxxx">only</span></td>
+            <td class="yes"><cite>PDF</cite> <span id="transFM14xx">only</span></td>
         </tr>
 
         <tr>
@@ -526,8 +526,6 @@
         document.getElementById("transFM14").innerHTML = getTranslation("only");
         document.getElementById("transFM14x").innerHTML = getTranslation("only");
         document.getElementById("transFM14xx").innerHTML = getTranslation("only");
-        document.getElementById("transFM14xxx").innerHTML = getTranslation("only");
-        document.getElementById("transFM14xxxx").innerHTML = getTranslation("only");
         document.getElementById("transFM15").innerHTML = getTranslation("Extract Vector Graphics");
         document.getElementById("transFM16").innerHTML = getTranslation("All document types");
         document.getElementById("transFM16x").innerHTML = getTranslation("Limited");
