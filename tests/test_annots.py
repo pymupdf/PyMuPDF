@@ -180,7 +180,11 @@ def test_redact2():
     all_text0 = page.get_text("words")
     page.add_redact_annot(page.rect)
     page.apply_redactions(text=1)
-    assert all_text0 == page.get_text("words")
+    t = page.get_text("words")
+    if fitz.mupdf_version_tuple < (1, 25):
+        assert t == []
+    else:
+        assert t == all_text0
     assert not page.get_drawings()
 
 
