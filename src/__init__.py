@@ -4647,6 +4647,7 @@ class Document:
         else:
             out = JM_new_output_fileptr(filename)
             mupdf.pdf_write_journal(pdf, out)
+            out.fz_close_output()
 
     def journal_start_op(self, name=None):
         """Begin a journalling operation."""
@@ -5225,6 +5226,7 @@ class Document:
             buffer = mupdf.fz_new_buffer(512)
             output = mupdf.FzOutput(buffer)
             mupdf.pdf_print_obj(output, obj, 1, 0)
+            output.fz_close_output()
             return JM_UnicodeFromBuffer(buffer)
 
         def get_array(val):
@@ -5398,6 +5400,7 @@ class Document:
             out = JM_new_output_fileptr(filename)
             #log( f'{type(out)=} {type(out.this)=}')
             mupdf.pdf_write_document(pdf, out, opts)
+            out.fz_close_output()
 
     def save_snapshot(self, filename):
         """Save a file snapshot suitable for journalling."""
@@ -9123,6 +9126,7 @@ class Page:
                 )
         mupdf.fz_run_page(self.this, dev, ctm, mupdf.FzCookie())
         mupdf.fz_close_device(dev)
+        out.fz_close_output()
         text = JM_EscapeStrFromBuffer(res)
         return text
 
@@ -9875,7 +9879,7 @@ class Pixmap:
                 mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality, 0)
         else:
             mupdf.fz_write_pixmap_as_png(out, pm)
-
+        out.fz_close_output()
         barray = JM_BinFromBuffer(res)
         return barray
 
@@ -10039,6 +10043,7 @@ class Pixmap:
         else:
             out = JM_new_output_fileptr( filename)
             mupdf.fz_write_pixmap_as_pdfocr( out, pix, opts)
+            out.fz_close_output()
 
     def pdfocr_tobytes(self, compress=True, language="eng", tessdata=None):
         """Save pixmap as an OCR-ed PDF page.
@@ -15088,6 +15093,7 @@ def JM_convert_to_pdf(doc, fp, tp, rotate):
     res = mupdf.fz_new_buffer(8192)
     out = mupdf.FzOutput(res)
     mupdf.pdf_write_document(pdfout, out, opts)
+    out.fz_close_output()
     c = mupdf.fz_buffer_extract_copy(res)
     assert isinstance(c, bytes)
     return c
@@ -16951,6 +16957,7 @@ def JM_object_to_buffer(what, compress, ascii):
     res = mupdf.fz_new_buffer(512)
     out = mupdf.FzOutput(res)
     mupdf.pdf_print_obj(out, what, compress, ascii)
+    out.fz_close_output()
     mupdf.fz_terminate_buffer(res)
     return res
 

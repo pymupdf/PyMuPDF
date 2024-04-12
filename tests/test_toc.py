@@ -75,6 +75,10 @@ def test_circular():
     """The test file contains circular bookmarks."""
     doc = fitz.open(circular)
     toc = doc.get_toc(False)  # this must not loop
+    rebased = hasattr(fitz, 'mupdf')
+    if rebased:
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt == 'Bad or missing prev pointer in outline tree, repairing'
 
 def test_2355():
     
@@ -122,3 +126,11 @@ def test_2788():
     # Also test Page.get_links() bugfix from #2817.
     for page in document:
         page.get_links()
+    rebased = hasattr(fitz, 'mupdf')
+    if rebased:
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt == (
+                "syntax error: expected 'obj' keyword (0 3 ?)\n"
+                "trying to repair broken xref\n"
+                "repairing PDF document"
+                )

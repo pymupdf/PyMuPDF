@@ -187,6 +187,10 @@ def test_3050():
         pix.save(os.path.abspath(f'{__file__}/../../tests/test_3050_out.png'))
         assert digest1 != digest0
         assert digest1 == digest_expected
+        rebased = hasattr(fitz, 'mupdf')
+        if rebased:
+            wt = fitz.TOOLS.mupdf_warnings()
+            assert wt == 'PDF stream Length incorrect'
 
 def test_3058():
     doc = fitz.Document(os.path.abspath(f'{__file__}/../../tests/resources/test_3058.pdf'))
@@ -233,6 +237,15 @@ def test_3072():
     pix = page_49.get_pixmap(clip=rect, matrix=zoom)
     image_save_path = f'{out}/2.jpg'
     pix.save(image_save_path, jpg_quality=95)
+    rebase = hasattr(fitz, 'mupdf')
+    if rebase:
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt == (
+                "syntax error: cannot find ExtGState resource 'BlendMode0'\n"
+                "encountered syntax errors; page may not be correct\n"
+                "syntax error: cannot find ExtGState resource 'BlendMode0'\n"
+                "encountered syntax errors; page may not be correct"
+                )
 
 def test_3134():
     doc = fitz.Document()

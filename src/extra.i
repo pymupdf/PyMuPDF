@@ -1293,6 +1293,7 @@ static mupdf::FzBuffer JM_object_to_buffer(const mupdf::PdfObj& what, int compre
     mupdf::FzBuffer res = mupdf::fz_new_buffer(512);
     mupdf::FzOutput out(res);
     mupdf::pdf_print_obj(out, what, compress, ascii);
+    out.fz_close_output();
     mupdf::fz_terminate_buffer(res);
     return res;
 }
