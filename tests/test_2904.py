@@ -38,4 +38,6 @@ def test_2904():
                     assert str(e) == 'Failed to read JPX header'
             else:
                 assert not e
-                
+    
+    # Clear warnings, as we will have generated many.
+    fitz.TOOLS.mupdf_warnings()     
