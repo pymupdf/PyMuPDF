@@ -12624,6 +12624,7 @@ class TextPage:
             mupdf.fz_print_stext_page_as_xhtml(out, this_tpage, 0)
         else:
             JM_print_stext_page_as_text(res, this_tpage)
+        out.fz_close_output()
         text = JM_EscapeStrFromBuffer(res)
         return text
 
