@@ -597,15 +597,18 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Page.wrap_contents()
 
-      Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
+      Ensures that the page's so-called graphics state is balanced and new content can be inserted correctly.
+      
+      In versions 1.24.1+ of PyMuPDF the method was improved and is being executed automatically as required, so you should no longer need to concern yourself with it.
 
-      Use this method as an alternative, minimalist version of :meth:`Page.clean_contents`. Its advantage is a small footprint in terms of processing time and impact on the data size of incremental saves. Multiple executions of this method are no problem and have no functional impact: `b"q q contents Q Q"` is treated like `b"q contents Q"`.
+      This method obsoletes the use of :meth:`Page.clean_contents` in most cases.      
+      The advantage this method is a small footprint in terms of processing time and a low impact on the data size of incremental saves.
 
 -----
 
    .. attribute:: Page.is_wrapped
 
-      Indicate whether :meth:`Page.wrap_contents` may be required for object insertions in standard PDF geometry. Note that this is a quick, basic check only: a value of *False* may still be a false alarm. But nevertheless executing :meth:`Page.wrap_contents` will have no negative side effects.
+      Indicate whether the page's so-called graphic state is balanced. If `False`, :meth:`Page.wrap_contents` should be executed if new content is inserted (only relevant in `overlay=True` mode). In newer versions (1.24.1+), this check and corresponding adjustments are automatically executed -- you therefore should not be concerned about this anymore.
 
       :rtype: bool
 

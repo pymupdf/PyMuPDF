@@ -30,6 +30,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.add_layer`              PDF only: make new optional content configuration
 :meth:`Document.add_ocg`                PDF only: add new optional content group
 :meth:`Document.authenticate`           gain access to an encrypted document
+:meth:`Document.bake`                   PDF only: make annotations / fields permanent content
 :meth:`Document.can_save_incrementally` check if incremental save is possible
 :meth:`Document.chapter_page_count`     number of pages in chapter
 :meth:`Document.close`                  close the document
@@ -1145,6 +1146,16 @@ For details on **embedded files** refer to Appendix 3.
 
     In the previous example, we have changed only 42 of the 1240 TOC items of the file.
 
+  .. method:: bake(*, annots=True, widgets=True)
+
+    PDF only: Convert annotations and / or widgets to become permanent parts of the pages. This will retain each page's appearance. When widgets (fields) are selected, the document will no longer be a "Form PDF".
+
+    Use this feature for instance in :meth:`Document.insert_pdf` (which supports no copying of widgets) or :meth:`Page.show_pdf_page` (which supports neither annotations nor widgets) when the same page appearance is desired.
+
+    :arg bool annots: convert annotations.
+    :arg bool widgets: convert fields / widgets. After execution, the document will no longer be a "Form PDF".
+
+
   .. method:: can_save_incrementally()
 
     * New in v1.16.0
@@ -1295,16 +1306,18 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg int rotate: All copied pages will be rotated by the provided value (degrees, integer multiple of 90).
 
-    :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is *True*. Internal links to outside the copied page range are **always excluded**.
-    :arg bool annots: *(new in v1.16.1)* choose whether annotations should be included in the copy. *(Fixed in v1.19.3)* Form fields can never be copied.
+    :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal links to outside the copied page range are **always excluded**. 
+    :arg bool annots: *(new in v1.16.1)* choose whether annotations should be included in the copy. Form **fields can never be copied** -- see below.
     :arg int show_progress: *(new in v1.17.7)* specify an interval size greater zero to see progress messages on `sys.stdout`. After each interval, a message like `Inserted 30 of 47 pages.` will be printed.
     :arg int final: *(new in v1.18.0)* controls whether the list of already copied objects should be **dropped** after this method, default *True*. Set it to 0 except for the last one of multiple insertions from the same source PDF. This saves target file size and speeds up execution considerably.
 
   .. note::
 
-     1. If *from_page > to_page*, pages will be **copied in reverse order**. If *0 <= from_page == to_page*, then one page will be copied.
+     1. This is a page-based method. Document-level information of source documents is therefore ignored. Examples include Optional Content, Embedded Files, `StructureElem`, `AcroForm`, table of contents, page labels, metadata, named destinations (and other named entries) and some more. As a consequence, specifically, **Form Fields (widgets) can never be copied** -- although they seem to appear on pages only. Look at :meth:`Document.bake` for converting a source document if you need to retain at least widget **appearances.**
 
-     2. *docsrc* TOC entries **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program `join.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+     2. If `from_page > to_page`, pages will be **copied in reverse order**. If `0 <= from_page == to_page`, then one page will be copied.
+
+     3. `docsrc` TOC entries **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program `join.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py>`_ in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
 
   .. index::

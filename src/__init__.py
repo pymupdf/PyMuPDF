@@ -3564,6 +3564,26 @@ class Document:
             return False
         return mupdf.pdf_can_be_saved_incrementally(pdf)
 
+    def bake(self, *, annots: bool = True, widgets: bool = True) -> None:
+        """Convert annotations or fields to permanent content.
+
+        Notes:
+            Converts annotations or widgets to permanent page content, like
+            text and vector graphics, as appropriate.
+            After execution, pages will still look the same, but no longer
+            have annotations, respectively no fields.
+            If widgets are selected the PDF will no longer be a Form PDF.
+
+        Args:
+            annots: convert annotations
+            widgets: convert form fields
+
+        """
+        pdf = _as_pdf_document(self)
+        if not pdf:
+            raise ValueError("not a PDF")
+        mupdf.pdf_bake_document(pdf, int(annots), int(widgets))
+
     @property
     def chapter_count(self):
         """Number of chapters."""
@@ -7683,6 +7703,30 @@ class Page:
         self.number = None
         self.this = None
 
+    def _count_q_balance(self):
+        """Count missing graphic state pushs and pops.
+
+        Returns:
+            A pair of integers (push, pop). Push is the number of missing
+            PDF "q" commands, pop is the number of "Q" commands.
+            A balanced graphics state for the page will be reached if its
+            /Contents is prepended with 'push' copies of string "q\n"
+            and appended with 'pop' copies of "\nQ".
+        """
+        page = _as_pdf_page(self)  # need the underlying PDF page
+        res = mupdf.pdf_dict_get(  # access /Resources
+            page.obj(),
+            mupdf.PDF_ENUM_NAME_Resources,
+        )
+        cont = mupdf.pdf_dict_get(  # access /Contents
+            page.obj(),
+            mupdf.PDF_ENUM_NAME_Contents,
+        )
+        pdf = _as_pdf_document(self.parent)  # need underlying PDF document
+
+        # return value of MuPDF function
+        return mupdf.pdf_count_q_balance_outparams_fn(pdf, res, cont)
+
     def _get_optional_content(self, oc: OptInt) -> OptStr:
         if oc is None or oc == 0:
             return None
@@ -9268,17 +9312,8 @@ class Page:
 
     @property
     def is_wrapped(self):
-        """Check if /Contents is wrapped with string pair "q" / "Q"."""
-        if getattr(self, "was_wrapped", False):  # costly checks only once
-            return True
-        cont = self.read_contents().split()
-        if cont == []:  # no contents treated as okay
-            self.was_wrapped = True
-            return True
-        if cont[0] != b"q" or cont[-1] != b"Q":
-            return False  # potential "geometry" issue
-        self.was_wrapped = True  # cheap check next time
-        return True
+        """Check if /Contents is in a balanced graphics state."""
+        return self._count_q_balance() == (0, 0)
 
     @property
     def language(self):
@@ -9544,11 +9579,14 @@ class Page:
                 yield (widget)
 
     def wrap_contents(self):
-        if self.is_wrapped:  # avoid unnecessary wrapping
-            return
-        TOOLS._insert_contents(self, b"q\n", False)
-        TOOLS._insert_contents(self, b"\nQ", True)
-        self.was_wrapped = True  # indicate not needed again
+        """Ensure page is in a balanced graphics state."""
+        push, pop = self._count_q_balance()  # count missing "q"/"Q" commands
+        if push > 0:  # prepend required push commands
+            prepend = b"q\n" * push
+            TOOLS._insert_contents(self, prepend, False)
+        if pop > 0:  # append required pop commands
+            append = b"\nQ" * pop + b"\n"
+            TOOLS._insert_contents(self, append, True)
 
     @property
     def xref(self):
@@ -17231,9 +17269,12 @@ def JM_read_contents(pageref):
     if mupdf.pdf_is_array(contents):
         res = mupdf.FzBuffer(1024)
         for i in range(mupdf.pdf_array_len(contents)):
+            if i > 0:
+                mupdf.fz_append_byte(res, 32)
             obj = mupdf.pdf_array_get(contents, i)
-            nres = mupdf.pdf_load_stream(obj)
-            mupdf.fz_append_buffer(res, nres)
+            if mupdf.pdf_is_stream(obj):
+                nres = mupdf.pdf_load_stream(obj)
+                mupdf.fz_append_buffer(res, nres)
     elif contents.m_internal:
         res = mupdf.pdf_load_stream(contents)
     return res

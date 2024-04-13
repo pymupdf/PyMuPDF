@@ -204,6 +204,8 @@ def show_pdf_page(
     pno_id = (isrc, pno)  # id of src[pno]
     xref = doc.ShownPages.get(pno_id, 0)
 
+    if overlay:
+        page.wrap_contents()  # ensure a balanced graphics state
     xref = page._show_pdf_page(
         src_page,
         overlay=overlay,
@@ -363,6 +365,8 @@ def insert_image(
         i += 1
         _imgname = n + str(i)  # try new name
 
+    if overlay:
+        page.wrap_contents()  # ensure a balanced graphics state
     digests = doc.InsertedImages
     xref, digests = page._insert_image(
         filename=filename,
@@ -4166,13 +4170,18 @@ class Shape:
         return
 
     def commit(self, overlay: bool = True) -> None:
-        """Update the page's /Contents object with Shape data. The argument controls whether data appear in foreground (default) or background."""
+        """Update the page's /Contents object with Shape data.
+        
+        The argument controls whether data appear in foreground (default)
+        or background.
+        """
         fitz.CheckParent(self.page)  # doc may have died meanwhile
         self.totalcont += self.text_cont
-
         self.totalcont = self.totalcont.encode()
 
-        if self.totalcont != b"":
+        if self.totalcont:
+            if overlay:
+                self.page.wrap_contents()  # ensure a balanced graphics state
             # make /Contents object with dummy stream
             xref = fitz.TOOLS._insert_contents(self.page, b" ", overlay)
             # update it with potential compression
