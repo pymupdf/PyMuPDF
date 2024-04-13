@@ -3560,6 +3560,26 @@ class Document:
             return False
         return mupdf.pdf_can_be_saved_incrementally(pdf)
 
+    def bake_annots_or_widgets(self, annots: int = 1, widgets: int = 1) -> None:
+        """Convert annotations or fields to permanent content.
+
+        Notes:
+            Converts annotations or widgets to normal, permanent page content,
+            for instance text and vector graphics as appropriate.
+            Afterwards, all pages will look the same, but no longer have
+            annotations, respectively fields.
+            The PDF will no longer be a Form PDF.
+
+        Args:
+            annots: convert annotations
+            widgets: convert form fields
+
+        """
+        pdf = _as_pdf_document(self)
+        if not pdf:
+            raise ValueError("not a PDF")
+        mupdf.pdf_bake_document(pdf, annots, widgets)
+
     @property
     def chapter_count(self):
         """Number of chapters."""
@@ -7673,6 +7693,30 @@ class Page:
         self.thisown = False
         self.number = None
         self.this = None
+
+    def _count_q_balance(self):
+        """Count missing graphic state pushs and pops.
+
+        Returns:
+            A pair of integers (push, pop).Push is the number of
+            PDF "q" commands and pop is the number of "Q" commands.
+            A balanced graphics state for the page will be reached if its
+            /Contents is prepended with 'pushs' copies of string "q\n"
+            and appended with 'pops' copies of "\nQ".
+        """
+        page = _as_pdf_page(self)  # need the underlying PDF page
+        res = mupdf.pdf_dict_get(  # access /Resources
+            page.obj(),
+            mupdf.PDF_ENUM_NAME_Resources,
+        )
+        cont = mupdf.pdf_dict_get(  # access /Contents
+            page.obj(),
+            mupdf.PDF_ENUM_NAME_Contents,
+        )
+        pdf = _as_pdf_document(self.parent)  # need underlying PDF document
+
+        # call MuPDF function
+        return mupdf.pdf_count_q_balance_outparams_fn(pdf, res, cont)
 
     def _get_optional_content(self, oc: OptInt) -> OptStr:
         if oc is None or oc == 0:
