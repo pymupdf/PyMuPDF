@@ -476,7 +476,7 @@ def get_text_blocks(
         flags: (int) control the amount of data parsed into the textpage.
     Returns:
         A list of the blocks. Each item contains the containing rectangle
-        coordinates, text lines, block type and running block number.
+        coordinates, text lines, running block number, and block type.
     """
     fitz.CheckParent(page)
     if flags is None:
