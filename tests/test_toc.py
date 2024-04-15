@@ -78,7 +78,8 @@ def test_circular():
     rebased = hasattr(fitz, 'mupdf')
     if rebased:
         wt = fitz.TOOLS.mupdf_warnings()
-        assert wt == 'Bad or missing prev pointer in outline tree, repairing'
+        assert wt == 'Bad or missing prev pointer in outline tree, repairing', \
+                f'{wt=}'
 
 def test_2355():
     
@@ -133,4 +134,4 @@ def test_2788():
                 "syntax error: expected 'obj' keyword (0 3 ?)\n"
                 "trying to repair broken xref\n"
                 "repairing PDF document"
-                )
+                ), f'{wt=}'
