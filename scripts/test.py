@@ -51,7 +51,7 @@ Options:
              'c' - classic.
              'r' - rebased.
              'R' - rebased without optimisations.
-            Default is 'crR'. Also see `PyMuPDF:tests/run_compound.py`.
+            Default is 'rR'. Also see `PyMuPDF:tests/run_compound.py`.
     -m <location> | --mupdf <location>
         Location of local mupdf/ directory or 'git:...' to be used
         when building PyMuPDF. [This sets environment variable

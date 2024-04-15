@@ -38,7 +38,7 @@ Environmental variables:
             libmupdfcpp.so).
     
     PYMUPDF_SETUP_IMPLEMENTATIONS
-        Must be one of 'a', 'b', 'ab'. If unset we use 'ab'.
+        Must be one of 'a', 'b', 'ab'. If unset we use 'b'.
         If contains 'a' we build original implementation.
         If contains 'b' we build rebased implementation.
     
@@ -500,7 +500,7 @@ pyodide = os.environ.get('OS') == 'pyodide'
 
 
 def _implementations():
-    v = os.environ.get( 'PYMUPDF_SETUP_IMPLEMENTATIONS', 'ab')
+    v = os.environ.get( 'PYMUPDF_SETUP_IMPLEMENTATIONS', 'b')
     assert v in ('a', 'b', 'ab')
     return v
 

@@ -45,7 +45,7 @@ def log_star(text):
 
 def main():
 
-    implementations = 'crR'
+    implementations = 'rR'
     timeout = None
     i = 1
     while i < len(sys.argv):
