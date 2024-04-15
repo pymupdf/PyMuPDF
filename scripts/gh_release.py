@@ -12,7 +12,7 @@ flavours that make up PyMuPDF:
         libraries for the MuPDF C and C++ bindings.
     PyMuPDF
         Specific to particular versions of Python. Contains the rest of
-        the (classic and rebased) PyMuPDF implementation.
+        the PyMuPDF implementation.
 
 Args:
     build
