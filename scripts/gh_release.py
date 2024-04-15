@@ -180,7 +180,7 @@ def build( platform_=None, valgrind=False):
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
-    inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations', 'ab')
+    inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations', 'b')
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
@@ -381,7 +381,6 @@ def build_pyodide_wheel( implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD):
     # Tell MuPDF to build for Pyodide.
     env_extra['OS'] = 'pyodide'
 
-    # Build only classic PyMuPDF.
     env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = implementations
     
     # Build a single wheel without a separate PyMuPDFb wheel.
