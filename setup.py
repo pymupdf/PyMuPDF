@@ -558,7 +558,7 @@ def build():
         mupdf_build_dir = build_mupdf_unix( mupdf_local, env_extra, build_type)
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
-    # Build rebased `extra` module and/or PyMuPDF `fitz_old` module.
+    # Build rebased `extra` module (and/or PyMuPDF classic if specified).
     #
     path_so_leaf_a, path_so_leaf_b = _build_extensions(
             mupdf_local,
@@ -843,7 +843,7 @@ def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
 
 def _build_extension_classic( mupdf_local, mupdf_build_dir, build_type):
     '''
-    Builds Python extension module `_fitz` for classic implementation.
+    Builds Python extension module `_fitz` for obsolete classic implementation.
 
     Returns leafname of the generated shared libraries within mupdf_build_dir.
     '''

@@ -5191,9 +5191,6 @@ class Document:
     def resolve_names(self):
         """Convert the PDF's destination names into a Python dict.
 
-        This function must be used with PyMuPDF's new, "rebased" architecture -
-        see the above import statement.
-
         The only parameter is the fitz.Document.
         All names found in the catalog under keys "/Dests" and "/Names/Dests" are
         being included.

@@ -613,8 +613,6 @@ For details on **embedded files** refer to Appendix 3.
 
     PDF only: Convert destination names into a Python dict.
 
-    Only available in PyMuPDF's "rebased" implementation.
-
     :returns:
         A dictionary with the following layout:
 

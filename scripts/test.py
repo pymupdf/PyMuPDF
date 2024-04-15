@@ -90,7 +90,7 @@ Commands:
     buildtest
         Same as 'build test'.
     test
-        Runs PyMuPDF's pytest tests in venv. Default is to test classic, rebased and
+        Runs PyMuPDF's pytest tests in venv. Default is to test rebased and
         unoptimised rebased; use `-i` to change this.
 
 Environment:
