@@ -52,4 +52,4 @@ def test_2742():
         assert wt == (
                 'Circular dependencies! Consider page cleaning.\n'
                 '... repeated 3 times...'
-                )
+                ), f'{wt=}'
