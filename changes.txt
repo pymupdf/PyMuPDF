@@ -2,6 +2,29 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.2 ()**
+
+* Removed obsolete classic implementation from releases
+  (previously available as module `fitz_old`).
+
+* Fixed issues:
+
+  * **Fixed** `3331 <https://github.com/pymupdf/PyMuPDF/issues/3331>`_: Document.pages() is incorrectly type-hinted
+  * **Fixed** `3354 <https://github.com/pymupdf/PyMuPDF/issues/3354>`_: PyMuPDF==1.24.1: AttributeError: property 'metadata' of 'Document' object has no setter
+
+* Other:
+
+  * The `Document` class now supports page numbers specified as slices.
+  * New/modified methods:
+  
+    * `Document.bake()`: new, make annotations / fields permanent content.
+    * `Page.cluster_drawings()`: new, identifies drawing items
+      (i.e. vector graphics or line-art)
+      that belong together based on their geometrical vicinity.
+    * `Page.apply_redactions()`: added new parameter `text`.
+  * Avoid causing MuPDF warnings.
+
+
 **Changes in version 1.24.1 (2024-04-02)**
 
 * Fixed issues:
