@@ -4171,7 +4171,7 @@ class Shape:
 
     def commit(self, overlay: bool = True) -> None:
         """Update the page's /Contents object with Shape data.
-        
+
         The argument controls whether data appear in foreground (default)
         or background.
         """
@@ -5351,18 +5351,28 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> fitz.Quad:
 # -------------------------------------------------------------------
 # Building font subsets using fontTools
 # -------------------------------------------------------------------
-def subset_fonts(doc: fitz.Document, verbose: bool = False) -> None:
+def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = False) -> None:
     """Build font subsets of a PDF. Requires package 'fontTools'.
 
     Eligible fonts are potentially replaced by smaller versions. Page text is
     NOT rewritten and thus should retain properties like being hidden or
     controlled by optional content.
+
+    This method by default uses MuPDF's own internal feature to create subset
+    fonts. As this is a new function, errors may still occur. In this case,
+    please fall back to using the previous version by using "fallback=True".
     """
     # Font binaries: -  "buffer" -> (names, xrefs, (unicodes, glyphs))
     # An embedded font is uniquely defined by its fontbuffer only. It may have
     # multiple names and xrefs.
     # Once the sets of used unicodes and glyphs are known, we compute a
     # smaller version of the buffer user package fontTools.
+
+    if fallback is False:  # by default use MuPDF function
+        pdf = mupdf.pdf_document_from_fz_document(doc)
+        mupdf.pdf_subset_fonts2(pdf, list(range(doc.page_count)))
+        return
+
     font_buffers = {}
 
     def get_old_widths(xref):
