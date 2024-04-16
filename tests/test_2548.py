@@ -34,15 +34,18 @@ def test_2548():
 
     # This checks that PyMuPDF 1.23.7 fixes this bug, and also that earlier
     # versions with updated MuPDF also fix the bug.
-    
+    rebased = hasattr(fitz, 'mupdf')
     if fitz.mupdf_version_tuple >= (1, 24):
         expected = 'Loop found in structure tree. Ignoring structure.'
-        assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
+        if rebased:
+            assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
         assert not e
     elif fitz.mupdf_version_tuple >= (1, 23, 7):
         expected = 'structure tree broken, assume tree is missing: cycle in structure tree'
-        assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
+        if rebased:
+            assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
         assert not e
     else:
         assert e
-        assert not wt
+        if rebased:
+            assert not wt

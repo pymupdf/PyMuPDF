@@ -241,7 +241,6 @@ def main():
     env += f'CXXFLAGS="{compile_flags}" '
     env += f'LDFLAGS="-L {root}/{prefix}/lib" '
     env += f'PYMUPDF_SETUP_MUPDF_BUILD= '       # Use system MuPDF.
-    env += f'PYMUPDF_SETUP_IMPLEMENTATIONS=b'   # Only build the rebased implementation.
     if use_installer:
         print(f'## Building wheel.')
         if pip == 'venv':

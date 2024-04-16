@@ -1,14 +1,15 @@
 #! /usr/bin/env python3
 
 '''
-Runs a command three times:
+Runs a command using different implementations of PyMuPDF:
 
-1.  Run using classic implementation of PyMuPDF, by setting PYTHONPATH. This
-    will use the `fitz_old` implementation of PyMuPDF.
+1.  Run with rebased implementation of PyMuPDF.
 
-2.  Run with rebased implementation of PyMuPDF.
+2.  As 1 but also set PYMUPDF_USE_EXTRA=0 to disable use of C++ optimisations.
 
-3.  As 2 but also set PYMUPDF_USE_EXTRA=0 to disable use of C++ optimisations.
+It is also possible to run using the obsolete classic implementation of
+PyMuPDF if it is available as the `fitz_old` module. This is done by setting
+PYTHONPATH.
 
 Example usage:
 
@@ -18,9 +19,9 @@ Use `-i <implementations>` to select which implementations to use. In
 `<implementations>`, `r` means rebased, `R` means rebased without
 optimisations, `c` means classic.
 
-For example use only the rebased and unoptimised rebased implementations with:
+For example use the rebased and unoptimised rebased implementations with:
 
-    ./PyMuPDF/tests/run_compound.py -i rR python -m pytest -s PyMuPDF
+    ./PyMuPDF/tests/run_compound.py python -m pytest -s PyMuPDF
 '''
 
 import shlex
@@ -45,7 +46,7 @@ def log_star(text):
 
 def main():
 
-    implementations = 'crR'
+    implementations = 'rR'
     timeout = None
     i = 1
     while i < len(sys.argv):

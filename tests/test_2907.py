@@ -16,3 +16,7 @@ def test_2907():
     pdf_pages = list(fitz_document.pages())
     (page,) = pdf_pages
     page.clean_contents()
+    if fitz.mupdf_version_tuple < (1, 25):
+        # We expect 'dropping unclosed PDF processor' warnings.
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt

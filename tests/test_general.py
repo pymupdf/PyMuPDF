@@ -63,6 +63,10 @@ def test_wrapcontents():
     page.set_contents(xref)
     assert len(page.get_contents()) == 1
     page.clean_contents()
+    rebased = hasattr(fitz, 'mupdf')
+    if rebased:
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt == 'PDF stream Length incorrect'
 
 
 def test_page_clean_contents():
@@ -373,7 +377,14 @@ def test_2108():
 def test_2238():
     filepath = f'{scriptdir}/resources/test2238.pdf'
     doc = fitz.open(filepath)
-
+    rebased = hasattr(fitz, 'mupdf')
+    if rebased:
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt == (
+                'format error: cannot recognize version marker\n'
+                'trying to repair broken xref\n'
+                'repairing PDF document'
+                ), f'{wt=}'
     first_page = doc.load_page(0).get_text('text', fitz.INFINITE_RECT())
     last_page = doc.load_page(-1).get_text('text', fitz.INFINITE_RECT())
 
@@ -550,7 +561,7 @@ def test_2692():
     
 
 def test_2596():
-    """Cconfirm correctly abandoning cache when reloading a page."""
+    """Confirm correctly abandoning cache when reloading a page."""
     doc = fitz.Document(f"{scriptdir}/resources/test_2596.pdf")
     page = doc[0]
     pix0 = page.get_pixmap()  # render the page
@@ -562,6 +573,10 @@ def test_2596():
     page = doc.reload_page(page)
     pix1 = page.get_pixmap()
     assert pix1.samples == pix0.samples
+    rebased = hasattr(fitz, 'mupdf')
+    if rebased:
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt == 'too many indirections (possible indirection cycle involving 24 0 R)'
 
 
 def test_2730():
@@ -698,6 +713,14 @@ def test_2710():
     else:
         # 2023-11-05: Currently broken in mupdf master.
         print(f'test_2710(): Not Checking page.rect and rect.')
+    rebased = hasattr(fitz, 'mupdf')
+    if rebased:
+        wt = fitz.TOOLS.mupdf_warnings()
+        assert wt == (
+                "syntax error: cannot find ExtGState resource 'GS7'\n"
+                "syntax error: cannot find ExtGState resource 'GS8'\n"
+                "encountered syntax errors; page may not be correct"
+                )
 
 
 def test_2736():

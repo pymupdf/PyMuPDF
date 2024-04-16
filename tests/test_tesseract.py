@@ -53,3 +53,15 @@ def test_tesseract():
                 assert type(e) == e_expected_type, f'{type(e)=} != {e_expected_type=}.'
         else:
             assert 0, f'Expected exception {e_expected!r}'
+        rebased = hasattr(fitz, 'mupdf')
+        if rebased:
+            wt = fitz.TOOLS.mupdf_warnings()
+            if fitz.mupdf_version_tuple < (1, 25):
+                assert wt
+            else:
+                assert wt == (
+                        'UNHANDLED EXCEPTION!\n'
+                        'library error: Tesseract initialisation failed\n'
+                        'dropping unclosed output'
+                        )
+        
