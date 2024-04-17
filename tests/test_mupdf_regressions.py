@@ -45,10 +45,11 @@ def test_707727():
     filename = os.path.join(scriptdir, "resources", "test_3362.pdf")
     doc = fitz.open(filename)
     page = doc[0]
-    words0 = page.get_text("words")
+    pix0 = page.get_pixmap()
     page.clean_contents(sanitize=True)
-    words1 = page.get_text("words")
-    ok = gentle_compare(words0, words1)
+    page = doc.reload_page(page)  # required to prevent re-use
+    pix1 = page.get_pixmap()
+    ok = pix0.samples == pix1.samples
     if fitz.mupdf_version_tuple >= (1, 24, 1):
         assert ok
     else:
