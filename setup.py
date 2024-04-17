@@ -721,7 +721,7 @@ def build_mupdf_windows( mupdf_local, env, build_type):
     if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
         log( f'PYMUPDF_SETUP_MUPDF_REBUILD is "0" so not building MuPDF; would have run with env={env!r}: {command}')
     else:
-        log( f'Building MuPDF by running with {env}={env!r}: {command}')
+        log( f'Building MuPDF by running with {env=}: {command}')
         subprocess.run( command, shell=True, check=True, env=env2)
         log( f'Finished building mupdf.')
     
@@ -1098,7 +1098,7 @@ with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.24.1'
+version = '1.24.2'
 version_b = '1.24.1'
 
 tag_python = None
