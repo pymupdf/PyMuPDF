@@ -261,19 +261,23 @@ class WindowsPython:
         text = subprocess.check_output( command, shell=True, text=True)
         for line in text.split('\n'):
             #_log( f'    {line}')
-            m = re.match( '^ *-(V:)?([0-9.]+)(-32)? ([*])? +(.+)$', line)
-            if not m:
+            if m := re.match( '^ *-V:([0-9.]+)(-32)? ([*])? +(.+)$', line):
+                version2 = m.group(1)
+                bits = 32 if m.group(2) else 64
+                current = m.group(3)
+                path = m.group(4).strip()
+            elif m := re.match( '^ *-([0-9.]+)-((32)|(64)) +(.+)$', line):
+                version2 = m.group(1)
+                bits = int(m.group(2))
+                path = m.group(5).strip()
+            else:
                 if verbose:
-                    _log( f'Does not match: {line=}')
+                    _log( f'No match for {line=}')
                 continue
-            version2 = m.group(2)
-            bits = 32 if m.group(3) else 64
-            current = m.group(4)
             if verbose:
-                _log( f'{version2=} {bits=} from {line=}.')
+                _log( f'{version2=} {bits=} {path=} from {line=}.')
             if bits != cpu.bits or version2 != version:
                 continue
-            path = m.group(5).strip()
             root = path[ :path.rfind('\\')]
             if not os.path.exists(path):
                 # Sometimes it seems that the specified .../python.exe does not exist,
