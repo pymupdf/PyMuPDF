@@ -5037,7 +5037,13 @@ class Document:
             return rc[1][1:]
         return "UseNone"
 
-    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> collections.abc.Iterable[Page]:
+    if sys.implementation.version < (3, 9):
+        # Appending `[Page]` causes `TypeError: 'ABCMeta' object is not subscriptable`.
+        _pages_ret = collections.abc.Iterable
+    else:
+        _pages_ret = collections.abc.Iterable[Page]
+
+    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> _pages_ret:
         """Return a generator iterator over a page range.
 
         Arguments have the same meaning as for the range() built-in.
