@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.24.2 ()**
+**Changes in version 1.24.2 (2024-04-17)**
 
 * Removed obsolete classic implementation from releases
   (previously available as module `fitz_old`).
@@ -14,7 +14,6 @@ Change Log
 
 * Other:
 
-  * The `Document` class now supports page numbers specified as slices.
   * New/modified methods:
   
     * `Document.bake()`: new, make annotations / fields permanent content.
@@ -22,6 +21,9 @@ Change Log
       (i.e. vector graphics or line-art)
       that belong together based on their geometrical vicinity.
     * `Page.apply_redactions()`: added new parameter `text`.
+    * `Document.subset_fonts()`: use MuPDF's `pdf_subset_fonts()` instead of PyMuPDF code.
+    
+  * The `Document` class now supports page numbers specified as slices.
   * Avoid causing MuPDF warnings.
 
 
