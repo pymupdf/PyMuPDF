@@ -77,6 +77,11 @@ def test_707727():
         assert ok
     else:
         assert not ok
+    if fitz.mupdf_version_tuple <= (1, 24, 1):
+        # We expect warnings.
+        wt = fitz.TOOLS.mupdf_warnings()
+        print(f'{wt=}')
+        assert wt
 
 
 def test_707721():
@@ -84,14 +89,14 @@ def test_707721():
     PyMuPDF issue https://github.com/pymupdf/PyMuPDF/issues/3357
     MuPDF issue: https://bugs.ghostscript.com/show_bug.cgi?id=707721
     """
+    if fitz.mupdf_version_tuple < (1, 24, 2):
+        print('test_707721(): not running because MuPDF-{fitz.mupdf_version} known to hang.')
+        return
     filename = os.path.join(scriptdir, "resources", "test_3357.pdf")
     doc = fitz.open(filename)
     page = doc[0]
     ok = page.get_text()
-    if fitz.mupdf_version_tuple >= (1, 24, 1):
-        assert ok
-    else:
-        assert not ok
+    assert ok
 
 
 def test_3376():
@@ -120,7 +125,7 @@ def test_3376():
     words1 = page.get_text("words", sort=True)
 
     ok = gentle_compare(words0_e, words1)
-    if fitz.mupdf_version_tuple >= (1, 24, 1):
+    if fitz.mupdf_version_tuple >= (1, 24, 2):
         assert ok
     else:
         assert not ok
