@@ -2324,7 +2324,7 @@ class _Record:
     def __init__(self):
         self.text = ''
 
-    def add_content(self, content, to_):
+    def add_content(self, content, to_, verbose=True):
         if isinstance(content, str):
             content = content.encode('utf8')
 
@@ -2339,13 +2339,14 @@ class _Record:
         digest = digest.decode('utf8')
 
         self.text += f'{to_},sha256={digest},{len(content)}\n'
-        log2(f'Adding {to_}')
+        if verbose:
+            log2(f'Adding {to_}')
 
     def add_file(self, from_, to_):
+        log2(f'Adding file: {os.path.relpath(from_)} => {to_}')
         with open(from_, 'rb') as f:
             content = f.read()
-        self.add_content(content, to_)
-        log2(f'Adding file: {os.path.relpath(from_)} => {to_}')
+        self.add_content(content, to_, verbose=False)
 
     def get(self, record_path=None):
         '''
