@@ -201,6 +201,12 @@ Packaging
 See :doc:`packaging`.
 
 
+Using with Pyodide
+------------------
+
+See :doc:`pyodide`.
+
+
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
