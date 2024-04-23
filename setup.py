@@ -568,7 +568,6 @@ def build():
     
     for d in (
             mupdf_build_dir,
-            f'{g_root}/src_classic',
             f'{g_root}/src',
             ):
         if d:

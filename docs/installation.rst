@@ -81,7 +81,7 @@ Problems after installation
 Notes
 ---------------------------------------------------------
 
-Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), Python versions 3.7 and up.
+Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), for Python versions marked as "Supported" on https://devguide.python.org/versions/.
 
 Wheels are not available for Python installed with `Chocolatey
 <https://chocolatey.org/>`_ on Windows. Instead install Python
@@ -199,6 +199,12 @@ Packaging
 ---------
 
 See :doc:`packaging`.
+
+
+Using with Pyodide
+------------------
+
+See :doc:`pyodide`.
 
 
 Enabling Integrated OCR Support

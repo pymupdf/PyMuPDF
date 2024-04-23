@@ -182,8 +182,10 @@ As mentioned, using these functions is ever only needed, if the text is **not wr
 
 
 .. image:: images/img-textpage.*
-   :scale: 66
 
+..
+  We used to do `:scale: 66` here, but current (2024-04-22) sphinx messes up
+  the aspect ratio.
 
 Page Dictionary
 ~~~~~~~~~~~~~~~~~
