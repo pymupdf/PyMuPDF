@@ -8960,6 +8960,54 @@ class Page:
             val = None
             return paths
 
+    def remove_rotation(self):
+        """Set page rotation to 0 while maintaining visual appearance."""
+        rot = self.rotation  # normalized rotation value
+        if rot == 0:
+            return  Identity # nothing to do
+
+        # need to derotate the page's content
+        mb = self.mediabox  # current mediabox
+
+        if rot == 90:
+            # before derotation, shift content horizontally
+            mat0 = Matrix(1, 0, 0, 1, mb.y1 - mb.x1 - mb.x0 - mb.y0, 0)
+        elif rot == 270:
+            # before derotation, shift content vertically
+            mat0 = Matrix(1, 0, 0, 1, 0, mb.x1 - mb.y1 - mb.y0 - mb.x0)
+        else:  # rot = 180
+            mat0 = Matrix(1, 0, 0, 1, -2 * mb.x0, -2 * mb.y0)
+
+        # prefix with derotation matrix
+        mat = mat0 * self.derotation_matrix
+        cmd = b"%g %g %g %g %g %g cm " % tuple(mat)
+        _ = TOOLS._insert_contents(self, cmd, False)  # prepend to page contents
+
+        # swap x- and y-coordinates
+        if rot in (90, 270):
+            x0, y0, x1, y1 = mb
+            mb.x0 = y0
+            mb.y0 = x0
+            mb.x1 = y1
+            mb.y1 = x1
+            self.set_mediabox(mb)
+
+        self.set_rotation(0)
+        rot = ~mat  # inverse of the derotation matrix
+        for annot in self.annots():  # modify rectangles of annotations
+            r = annot.rect * rot
+            annot.set_rect(r)
+        for link in self.get_links():  # modify 'from' rectangles of links
+            r = link["from"] * rot
+            self.delete_link(link)
+            link["from"] = r
+            self.insert_link(link)
+        for widget in self.widgets():  # modify field rectangles
+            r = widget.rect * rot
+            widget.rect = r
+            widget.update()
+        return rot  # the inverse of the generated derotation matrix
+
     def cluster_drawings(
         self, clip=None, drawings=None, x_tolerance: float = 3, y_tolerance: float = 3
     ) -> list:
@@ -20426,8 +20474,8 @@ def util_ensure_widget_calc(annot):
             PDF_NAME('AcroForm'),
             )
 
-    CO = mupdf.pdf_dict_get(acro, PDFNAME_CO)    # = AcroForm/CO
-    if not CO.this:
+    CO = mupdf.pdf_dict_get(acro, PDFNAME_CO)  # = AcroForm/CO
+    if not mupdf.pdf_is_array(CO):
         CO = mupdf.pdf_dict_put_array(acro, PDFNAME_CO, 2)
     n = mupdf.pdf_array_len(CO)
     found = 0

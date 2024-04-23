@@ -106,6 +106,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.remove_rotation`       PDF only: set page rotation to 0
 :meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
 :meth:`Page.set_artbox`            PDF only: modify `/ArtBox`
@@ -1907,6 +1908,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: Set the rotation of the page.
 
       :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
+
+   .. method:: remove_rotation()
+
+      PDF only: Set page rotation to 0 while maintaining appearance and page content.
+
+      :returns: The inverted matrix used to achieve this change. If the page was not rotated (rotation 0), :ref:`Identity` is returned. The method automatically recomputes the rectangles of any annotations, links and widgets present on the page.
+
+         This method may come in handy when e.g. used with :meth:`Page.show_pdf_page`.
 
    .. index::
       pair: clip; show_pdf_page

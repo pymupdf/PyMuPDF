@@ -1146,9 +1146,16 @@ For details on **embedded files** refer to Appendix 3.
 
   .. method:: bake(*, annots=True, widgets=True)
 
-    PDF only: Convert annotations and / or widgets to become permanent parts of the pages. This will retain each page's appearance. When widgets (fields) are selected, the document will no longer be a "Form PDF".
+    PDF only: Convert annotations and / or widgets to become permanent parts of the pages. The PDF **will be changed** by this method. If `widgets` is `True`, the document will also no longer be a "Form PDF".
+    
+    All pages will look the same, but will no longer have annotations, respectively fields. The visible parts will be converted to standard text, vector graphics or images as required.
 
-    Use this feature for instance in :meth:`Document.insert_pdf` (which supports no copying of widgets) or :meth:`Page.show_pdf_page` (which supports neither annotations nor widgets) when the same page appearance is desired.
+    The method may thus be a viable **alternative for PDF-to-PDF conversions** using :meth:`Document.convert_to_pdf`.
+
+    Please consider that annotations are complex objects and may consist of more data "underneath" their visual appearance. Examples are "Text" and "FileAttachment" annotations. When "baking in" annotations / widgets with this method, all this underlying information (attached files, comments, associated PopUp annotations, etc.) will be lost and be removed on next garbage collection.
+
+    Use this feature for instance for methods :meth:`Document.insert_pdf` (which supports no copying of widgets) or :meth:`Page.show_pdf_page` (which supports neither annotations nor widgets) when the source pages should look exactly the same in the target.
+
 
     :arg bool annots: convert annotations.
     :arg bool widgets: convert fields / widgets. After execution, the document will no longer be a "Form PDF".
@@ -1806,19 +1813,28 @@ For details on **embedded files** refer to Appendix 3.
     :returns: *True* / *False*. As opposed to fields, which are also stored in a central place of a PDF document, the existence of links / annotations can only be detected by parsing each page. These methods are tuned to do this efficiently and will immediately return, if the answer is *True* for a page. For PDFs with many thousand pages however, an answer may take some time [#f6]_ if no link, resp. no annotation is found.
 
 
-  .. method:: subset_fonts()
+  .. method:: subset_fonts(verbose=False, fallback=False)
 
-    * New in v1.18.7, changed in v1.18.9
+    PDF only: Investigate eligible fonts for their use by text in the document. If a font is supported and a size reduction is possible, that font is replaced by a version with a subset of its characters.
 
-    PDF only: Investigate eligible fonts for their use by text in the document. If a font is supported and a size reduction is possible, that font is replaced by a version with a character subset.
+    Use this method immediately before saving the document.
 
-    Use this method immediately before saving the document. The following features and restrictions apply for the time being:
+    :arg bool verbose: write various progress information to sysout. This currently only has an effect if `fallback` is `True`.
+    :arg bool fallback: if `True` use the deprecated algorithm that makes use of package `fontTools <https://pypi.org/project/fonttools/>`_ (which hence must be installed). If using the recommended value `False` (default), MuPDF's native function is used -- which is **very much faster** and can subset a broader range of font types. Package fontTools is not required then.
 
-    * Package `fontTools <https://pypi.org/project/fonttools/>`_ **must be installed**. It is required for creating the font subsets. If not installed, the method raises an `ImportError` exception.
-    * Supported font types only include embedded OTF, TTF and WOFF that are **not already subsets**.
-    * **Changed in v1.18.9:** A subset font directly replaces its original -- text remains untouched and **is not rewritten.** It thus should retain all its properties, like spacing, hiddenness, control by Optional Content, etc.
+    The greatest benefit can be achieved when creating new PDFs using large fonts like is typical for Asian scripts. When using the :ref:`Story` class or method :meth:`Page.insert_htmlbox`, multiple fonts may automatically be included -- without the programmer becoming aware of it.
+    
+    In all these cases, the set of actually used unicodes mostly is very small compared to the number of glyphs available in the used fonts. Using this method can easily reduce the embedded font binaries by two orders of magnitude -- from several megabytes down to a low two-digit kilobyte amount.
 
-    The greatest benefit can be achieved when creating new PDFs using large fonts like is typical for Asian scripts. In these cases, the set of actually used unicodes mostly is small compared to the number of glyphs in the font. Using this feature can easily reduce the embedded font binary by two orders of magnitude -- from several megabytes to a low two-digit kilobyte amount.
+    Creating font subsets leaves behind a large number of large, now unused PDF objects ("ghosts"). Therefore, make sure to compress and garbage-collect when saving the file. We recommend to use :meth:`Document.ez_save`.
+
+    |history_begin|
+
+    * New in v1.18.7
+    * Changed in v1.18.9
+    * Changed in v1.24.2 use native function of MuPDF.
+
+    |history_end|
 
 
   .. method:: journal_enable()

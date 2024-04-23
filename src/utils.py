@@ -480,16 +480,11 @@ def get_text_blocks(
         flags: (int) control the amount of data parsed into the textpage.
     Returns:
         A list of the blocks. Each item contains the containing rectangle
-        coordinates, text lines, block type and running block number.
+        coordinates, text lines, running block number and block type.
     """
     fitz.CheckParent(page)
     if flags is None:
-        flags = (
-                fitz.TEXT_PRESERVE_WHITESPACE
-                    | fitz.TEXT_PRESERVE_IMAGES
-                    | fitz.TEXT_PRESERVE_LIGATURES
-                    | fitz.TEXT_MEDIABOX_CLIP
-                )
+        flags = fitz.TEXTFLAGS_BLOCKS
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
