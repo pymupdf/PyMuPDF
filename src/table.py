@@ -1887,6 +1887,7 @@ def make_chars(page, clip=None):
     for block in blocks:
         for line in block["lines"]:
             ldir = line["dir"]  # = (cosine, sine) of angle
+            ldir = (round(ldir[0], 4), round(ldir[1], 4))
             matrix = Matrix(ldir[0], -ldir[1], ldir[1], ldir[0], 0, 0)
             if ldir[1] == 0:
                 upright = True

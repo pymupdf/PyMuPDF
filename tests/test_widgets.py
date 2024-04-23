@@ -64,9 +64,9 @@ def test_checkbox():
     #
     widget.field_flags |= fitz.PDF_FIELD_IS_READ_ONLY
     widget.update()
-    path = f'{scriptdir}/test_checkbox.pdf'
+    path = f"{scriptdir}/test_checkbox.pdf"
     doc.save(path)
-    
+
     doc = fitz.open(path)
     page = doc[0]
     widget = page.first_widget
@@ -111,8 +111,7 @@ def test_combobox():
     widget.field_label = "an editable combo box ..."
     widget.field_type = fitz.PDF_WIDGET_TYPE_COMBOBOX
     widget.field_flags = (
-        fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE
-        | fitz.PDF_CH_FIELD_IS_EDIT
+        fitz.PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE | fitz.PDF_CH_FIELD_IS_EDIT
     )
     widget.fill_color = gold
     widget.choice_values = (
@@ -179,11 +178,11 @@ def test_2333():
         w.field_value = True
         w.update()
         assert values() == set(("/Off", f"{i}", f"/{i}"))
-    w.field_value=False
+    w.field_value = False
     w.update()
     assert values() == set(("Off", "/Off"))
 
-    
+
 def test_2411():
     """Add combobox values in different formats."""
     doc = fitz.open()
@@ -207,10 +206,11 @@ def test_2411():
         "Portugal",  # single value
     ]
     page.add_widget(widget)
-    
+
+
 def test_2391():
     """Confirm that multiple times setting a checkbox to ON/True/Yes will work."""
-    doc = fitz.open(f'{scriptdir}/resources/widgettest.pdf')
+    doc = fitz.open(f"{scriptdir}/resources/widgettest.pdf")
     page = doc[0]
     # its work when we update first-time
     for field in page.widgets(types=[fitz.PDF_WIDGET_TYPE_CHECKBOX]):
@@ -227,12 +227,13 @@ def test_2391():
             field_field_value = field.on_state()
             field.update()
 
+
 def test_3216():
     document = fitz.open(filename)
     for page in document:
         while 1:
             w = page.first_widget
-            print(f'{w=}')
+            print(f"{w=}")
             if not w:
                 break
             page.delete_widget(w)
@@ -249,3 +250,70 @@ def test_add_widget():
     w.fill_color = (0, 0, 1)
     w.script = "app.alert('Hello, PDF!');"
     page.add_widget(w)
+
+
+def test_interfield_calculation():
+    """Confirm correct working of interfield calculations.
+
+    We are going to create three pages with a computed result field each.
+
+    Tests the fix for https://github.com/pymupdf/PyMuPDF/issues/3402.
+    """
+    # Field bboxes (same on each page)
+    r1 = fitz.Rect(100, 100, 300, 120)
+    r2 = fitz.Rect(100, 130, 300, 150)
+    r3 = fitz.Rect(100, 180, 300, 200)
+
+    doc = fitz.open()
+    pdf = fitz._as_pdf_document(doc)  # we need underlying PDF document
+
+    # Make PDF name object for "CO" because it is not defined in MuPDF.
+    CO_name = fitz.mupdf.pdf_new_name("CO")  # = PDF_NAME(CO)
+    for i in range(3):
+        page = doc.new_page()
+        w = fitz.Widget()
+        w.field_name = f"NUM1{page.number}"
+        w.rect = r1
+        w.field_type = fitz.PDF_WIDGET_TYPE_TEXT
+        w.field_value = f"{i*100+1}"
+        w.field_flags = 2
+        page.add_widget(w)
+
+        w = fitz.Widget()
+        w.field_name = f"NUM2{page.number}"
+        w.rect = r2
+        w.field_type = fitz.PDF_WIDGET_TYPE_TEXT
+        w.field_value = "200"
+        w.field_flags = 2
+        page.add_widget(w)
+
+        w = fitz.Widget()
+        w.field_name = f"RESULT{page.number}"
+        w.rect = r3
+        w.field_type = fitz.PDF_WIDGET_TYPE_TEXT
+        w.field_value = "Result?"
+        # Script that adds previous two fields.
+        w.script_calc = f"""AFSimple_Calculate("SUM",
+        new Array("NUM1{page.number}", "NUM2{page.number}"));"""
+        page.add_widget(w)
+
+        # Access the inter-field calculation array. It contains a reference to
+        # all fields which have a JavaScript stored in their "script_calc"
+        # property, i.e. an "AA/C" entry.
+        # Every iteration adds another such field, so this array's length must
+        # always equal the loop index.
+        if i == 0:  # only need to execute this on first time through
+            CO = fitz.mupdf.pdf_dict_getl(
+                fitz.mupdf.pdf_trailer(pdf),
+                fitz.PDF_NAME("Root"),
+                fitz.PDF_NAME("AcroForm"),
+                CO_name,
+            )
+        # we confirm CO is an array of foreseeable length
+        assert fitz.mupdf.pdf_array_len(CO) == i + 1
+
+        # the xref of the i-th item must equal that of the last widget
+        assert (
+            fitz.mupdf.pdf_to_num(fitz.mupdf.pdf_array_get(CO, i))
+            == list(page.widgets())[-1].xref
+        )
