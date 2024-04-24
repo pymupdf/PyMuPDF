@@ -38,10 +38,5 @@ Starting immediately, all deprecated objects (methods and properties) will show 
 
 There is a utility script `alias-changer.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/alias-changer.py>`_ which can be used to do mass-renames in your scripts. It accepts either a single file or a folder as argument. If a folder is supplied, all its Python files and those of its subfolders are changed. Optionally, backups of the scripts can be taken.
 
-Deprecated names are not separately documented. The following list will help you find the documentation of the original.
-
-.. note:: This is automatically generated. One or two items refer to yet undocumented methods - please simply ignore them.
-
-.. include:: deprecated.rst
 
 .. include:: footer.rst
