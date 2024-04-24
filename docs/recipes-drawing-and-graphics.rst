@@ -6,6 +6,12 @@
 Drawing and Graphics
 ==============================
 
+.. note::
+
+    When the terms "Drawings" or "Graphics" are mentioned here we are referring to "Vector Graphics" or "Line Art".
+
+    Therefore please consider these terms as being synonymous!
+
 
 PDF files support elementary drawing operations as part of their syntax. These are **vector graphics** and include basic geometrical objects like lines, curves, circles, rectangles including specifying colors.
 
@@ -13,9 +19,9 @@ The syntax for such operations is defined in "A Operator Summary" on page 643 of
 
 |PyMuPDF| implements a large part of the available features via its :ref:`Shape` class, which is comparable to notions like "canvas" in other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_).
 
-A shape is always created as a **child of a page**, usually with an instruction like *shape = page.new_shape()*. The class defines numerous methods that perform drawing operations on the page's area. For example, *last_point = shape.draw_rect(rect)* draws a rectangle along the borders of a suitably defined *rect = fitz.Rect(...)*.
+A shape is always created as a **child of a page**, usually with an instruction like `shape = page.new_shape()`. The class defines numerous methods that perform drawing operations on the page's area. For example, `last_point = shape.draw_rect(rect)` draws a rectangle along the borders of a suitably defined `rect = fitz.Rect(...)`.
 
-The returned *last_point* **always** is the :ref:`Point` where drawing operation ended ("last point"). Every such elementary drawing requires a subsequent :meth:`Shape.finish` to "close" it, but there may be multiple drawings which have one common *finish()* method.
+The returned *last_point* **always** is the :ref:`Point` where drawing operation ended ("last point"). Every such elementary drawing requires a subsequent :meth:`Shape.finish` to "close" it, but there may be multiple drawings which have one common ``finish()`` method.
 
 In fact, :meth:`Shape.finish` *defines* a group of preceding draw operations to form one -- potentially rather complex -- graphics object. |PyMuPDF| provides several predefined graphics in `shapes_and_symbols.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/shapes/shapes_and_symbols.py>`_ which demonstrate how this works.
 
@@ -198,6 +204,25 @@ Here is a comparison between input and output of an example page, created by the
 
 .. note:: You can use the path list to make your own lists of e.g. all lines or all rectangles on the page and subselect them by criteria, like color or position on the page etc.
 
+.. _RecipesDrawingAndGraphics_Delete_Drawings:
+
+How to Delete Drawings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To delete drawings/vector graphics we must use a :ref:`Redaction Annotation <The_Basics_Redacting>` with the bounding box of the drawing and then **add and apply** a redaction to it to delete it.
+
+
+The following code shows an example of deleting the first drawing found on the page::
+
+    paths = page.get_drawings()
+    rect = paths[0]["rect"]  # rectangle of the 1st drawing
+    page.add_redact_annot(rect)
+    page.apply_redactions(0,2,1)  # potentially set options for any of images, drawings, text
+
+
+.. note::
+
+    See :meth:`Page.apply_redactions` for the parameter options which can be sent - you are able to apply deletion options to image, drawing and text objects which are bound by the annotation area.
 
 
 How to Draw Graphics
