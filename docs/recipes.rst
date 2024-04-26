@@ -61,6 +61,12 @@
 
 .. toctree::
 
+   recipes-ocr.rst
+
+----
+
+.. toctree::
+
    recipes-optional-content.rst
 
 ----
