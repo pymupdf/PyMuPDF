@@ -732,10 +732,11 @@ class Annot:
         if not cs:
             cs = mupdf.fz_device_rgb()
 
-        pix = mupdf.pdf_new_pixmap_from_annot( self.this, ctm, cs, mupdf.FzSeparations(0), alpha)
+        pix = mupdf.pdf_new_pixmap_from_annot(self.this, ctm, cs, mupdf.FzSeparations(0), alpha)
+        ret = Pixmap(pix)
         if dpi:
-            pix.set_dpi(dpi, dpi)
-        return Pixmap( pix)
+            ret.set_dpi(dpi, dpi)
+        return ret
 
     def get_sound(self):
         """Retrieve sound stream."""
