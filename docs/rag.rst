@@ -54,21 +54,18 @@ Chunking (or splitting) data is essential to give context to your :title:`LLM` d
 Outputting as :title:`Markdown`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to export your document in :title:`Markdown` format you will need the separate helper for this available from `the PyMuPDF RAG repository <https://github.com/pymupdf/RAG/>`_. See the `helpers/pymupdf_rag.py` file and make this available to your project as follows:
+In order to export your document in :title:`Markdown` format you will need a separate helper. Package `pdf4llm <https://pypi.org/project/pdf4llm/>`_ is a high-level wrapper of |PyMuPDF| functions which for each page outputs standard and table text in an integrated Markdown-formatted string across all document pages:
 
 
 .. code-block:: python
 
-    from pymupdf_rag import to_markdown
+    import pdf4llm
 
-    doc = fitz.open("input.pdf")
+    md_text = pdf4llm.to_markdown("input.pdf")
 
-    md_text = to_markdown(doc)
-
-    # write markdown to some file
-    output = open("out-markdown.md", "w")
-    output.write(md_text)
-    output.close()
+    # Write the text to some file in UTF8-encoding
+    import pathlib
+    pathlib.Path("output.md").write_bytes(md_text.encode())
 
 
 How to use :title:`Markdown` output
@@ -78,14 +75,13 @@ Once you have your data in :title:`Markdown` format you are ready to chunk/split
 
 .. code-block:: python
 
-    from pymupdf_rag import to_markdown
+    import pdf4llm
     from langchain.text_splitter import MarkdownTextSplitter
 
     # Get the MD text
-    doc = fitz.open("input.pdf")
-    md_text = to_markdown(doc) # get markdown for all pages
+    md_text = pdf4llm.to_markdown("input.pdf")  # get markdown for all pages
 
-    splitter = MarkdownTextSplitter(chunk_size = 40, chunk_overlap=0)
+    splitter = MarkdownTextSplitter(chunk_size=40, chunk_overlap=0)
 
     splitter.create_documents([md_text])
 
