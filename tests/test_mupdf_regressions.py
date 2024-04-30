@@ -50,7 +50,7 @@ def test_707727():
     page = doc.reload_page(page)  # required to prevent re-use
     pix1 = page.get_pixmap()
     ok = pix0.samples == pix1.samples
-    if fitz.mupdf_version_tuple >= (1, 24, 1):
+    if fitz.mupdf_version_tuple > (1, 24, 1):
         assert ok
     else:
         assert not ok
