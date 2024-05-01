@@ -1,5 +1,5 @@
 import os
-import fitz
+import pymupdf
 from gentle_compare import gentle_compare
 
 scriptdir = os.path.dirname(__file__)
@@ -8,7 +8,7 @@ scriptdir = os.path.dirname(__file__)
 def test_remove_rotation():
     """Remove rotation verifying identical appearance and text."""
     filename = os.path.join(scriptdir, "resources", "test-2812.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
 
     # We always create fresh pages to avoid false positves from cache content.
     # Text on these pages consists of pairwise different strings, sorting by
@@ -18,7 +18,7 @@ def test_remove_rotation():
         pix0 = doc[i].get_pixmap()  # make image
         words0 = []
         for w in doc[i].get_text("words"):
-            words0.append(list(fitz.Rect(w[:4]) * doc[i].rotation_matrix) + [w[4]])
+            words0.append(list(pymupdf.Rect(w[:4]) * doc[i].rotation_matrix) + [w[4]])
         words0.sort(key=lambda w: w[4])  # sort by word strings
         # derotate page and confirm nothing else has changed
         doc[i].remove_rotation()
