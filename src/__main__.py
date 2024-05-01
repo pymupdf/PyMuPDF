@@ -12,7 +12,7 @@ import sys
 import statistics
 from typing import Dict, List, Set
 
-from . import fitz
+from . import pymupdf
 
 def mycenter(x):
     return (" %s " % x).center(75, "-")
@@ -28,12 +28,12 @@ def recoverpix(doc, item):
     def getimage(pix):
         if pix.colorspace.n != 4:
             return pix
-        tpix = fitz.Pixmap(fitz.csRGB, pix)
+        tpix = pymupdf.Pixmap(pymupdf.csRGB, pix)
         return tpix
 
     # we need to reconstruct the alpha channel with the smask
-    pix1 = fitz.Pixmap(doc, x)
-    pix2 = fitz.Pixmap(doc, s)  # create pixmap of the /SMask entry
+    pix1 = pymupdf.Pixmap(doc, x)
+    pix2 = pymupdf.Pixmap(doc, s)  # create pixmap of the /SMask entry
 
     """Sanity check:
     - both pixmaps must have the same rectangle
@@ -41,12 +41,12 @@ def recoverpix(doc, item):
     - pix2 must consist of 1 byte per pixel
     """
     if not (pix1.irect == pix2.irect and pix1.alpha == pix2.alpha == 0 and pix2.n == 1):
-        fitz.message("Warning: unsupported /SMask %i for %i:" % (s, x))
-        fitz.message(pix2)
+        pymupdf.message("Warning: unsupported /SMask %i for %i:" % (s, x))
+        pymupdf.message(pix2)
         pix2 = None
         return getimage(pix1)  # return the pixmap as is
 
-    pix = fitz.Pixmap(pix1)  # copy of pix1, with an alpha channel added
+    pix = pymupdf.Pixmap(pix1)  # copy of pix1, with an alpha channel added
     pix.set_alpha(pix2.samples)  # treat pix2.samples as the alpha values
     pix1 = pix2 = None  # free temp pixmaps
 
@@ -56,7 +56,7 @@ def recoverpix(doc, item):
 
 def open_file(filename, password, show=False, pdf=True):
     """Open and authenticate a document."""
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     if not doc.is_pdf and pdf is True:
         sys.exit("this command supports PDF files only")
     rc = -1
@@ -67,7 +67,7 @@ def open_file(filename, password, show=False, pdf=True):
         if not rc:
             sys.exit("authentication unsuccessful")
         if show is True:
-            fitz.message("authenticated as %s" % "owner" if rc > 2 else "user")
+            pymupdf.message("authenticated as %s" % "owner" if rc > 2 else "user")
     else:
         sys.exit("'%s' requires a password" % doc.name)
     return doc
@@ -78,7 +78,7 @@ def print_dict(item):
     l = max([len(k) for k in item.keys()]) + 1
     for k, v in item.items():
         msg = "%s: %s" % (k.rjust(l), v)
-        fitz.message(msg)
+        pymupdf.message(msg)
 
 
 def print_xref(doc, xref):
@@ -87,9 +87,9 @@ def print_xref(doc, xref):
     Simulate the PDF source in "pretty" format.
     For a stream also print its size.
     """
-    fitz.message("%i 0 obj" % xref)
+    pymupdf.message("%i 0 obj" % xref)
     xref_str = doc.xref_object(xref)
-    fitz.message(xref_str)
+    pymupdf.message(xref_str)
     if doc.xref_is_stream(xref):
         temp = xref_str.split()
         try:
@@ -99,9 +99,9 @@ def print_xref(doc, xref):
                 size = "unknown"
         except Exception:
             size = "unknown"
-        fitz.message("stream\n...%s bytes" % size)
-        fitz.message("endstream")
-    fitz.message("endobj")
+        pymupdf.message("stream\n...%s bytes" % size)
+        pymupdf.message("endstream")
+    pymupdf.message("endobj")
 
 
 def get_list(rlist, limit, what="page"):
@@ -160,7 +160,7 @@ def show(args):
         flag = "MB"
     size = round(size, 1)
     meta = doc.metadata # pylint: disable=no-member
-    fitz.message(
+    pymupdf.message(
         "'%s', pages: %i, objects: %i, %g %s, %s, encryption: %s"
         % (
             args.input,
@@ -175,42 +175,42 @@ def show(args):
     n = doc.is_form_pdf
     if n > 0:
         s = doc.get_sigflags()
-        fitz.message(
+        pymupdf.message(
             "document contains %i root form fields and is %ssigned"
             % (n, "not " if s != 3 else "")
         )
     n = doc.embfile_count()
     if n > 0:
-        fitz.message("document contains %i embedded files" % n)
-    fitz.message()
+        pymupdf.message("document contains %i embedded files" % n)
+    pymupdf.message()
     if args.catalog:
-        fitz.message(mycenter("PDF catalog"))
+        pymupdf.message(mycenter("PDF catalog"))
         xref = doc.pdf_catalog()
         print_xref(doc, xref)
-        fitz.message()
+        pymupdf.message()
     if args.metadata:
-        fitz.message(mycenter("PDF metadata"))
+        pymupdf.message(mycenter("PDF metadata"))
         print_dict(doc.metadata)    # pylint: disable=no-member
-        fitz.message()
+        pymupdf.message()
     if args.xrefs:
-        fitz.message(mycenter("object information"))
+        pymupdf.message(mycenter("object information"))
         xrefl = get_list(args.xrefs, doc.xref_length(), what="xref")
         for xref in xrefl:
             print_xref(doc, xref)
-            fitz.message()
+            pymupdf.message()
     if args.pages:
-        fitz.message(mycenter("page information"))
+        pymupdf.message(mycenter("page information"))
         pagel = get_list(args.pages, doc.page_count + 1)
         for pno in pagel:
             n = pno - 1
             xref = doc.page_xref(n)
-            fitz.message("Page %i:" % pno)
+            pymupdf.message("Page %i:" % pno)
             print_xref(doc, xref)
-            fitz.message()
+            pymupdf.message()
     if args.trailer:
-        fitz.message(mycenter("PDF trailer"))
-        fitz.message(doc.pdf_trailer())
-        fitz.message()
+        pymupdf.message(mycenter("PDF trailer"))
+        pymupdf.message(doc.pdf_trailer())
+        pymupdf.message()
     doc.close()
 
 
@@ -239,7 +239,7 @@ def clean(args):
 
     # create sub document from page numbers
     pages = get_list(args.pages, doc.page_count + 1)
-    outdoc = fitz.open()
+    outdoc = pymupdf.open()
     for pno in pages:
         n = pno - 1
         outdoc.insert_pdf(doc, from_page=n, to_page=n)
@@ -264,7 +264,7 @@ def clean(args):
 def doc_join(args):
     """Join pages from several PDF documents."""
     doc_list = args.input  # a list of input PDFs
-    doc = fitz.open()  # output PDF
+    doc = pymupdf.open()  # output PDF
     for src_item in doc_list:  # process one input PDF
         src_list = src_item.split(",")
         password = src_list[1] if len(src_list) > 1 else None
@@ -313,7 +313,7 @@ def embedded_copy(args):
             ufilename=info["ufilename"],
             desc=info["desc"],
         )
-        fitz.message("copied entry '%s' from '%s'" % (item, src.name))
+        pymupdf.message("copied entry '%s' from '%s'" % (item, src.name))
     src.close()
     if args.output and args.output != args.input:
         doc.save(args.output, garbage=3)
@@ -330,8 +330,8 @@ def embedded_del(args):
     ):
         sys.exit("cannot save PDF incrementally")
 
-    exception_types = (ValueError, fitz.mupdf.FzErrorBase)
-    if fitz.mupdf_version_tuple < (1, 24):
+    exception_types = (ValueError, pymupdf.mupdf.FzErrorBase)
+    if pymupdf.mupdf_version_tuple < (1, 24):
         exception_types = ValueError
     try:
         doc.embfile_del(args.name)
@@ -347,8 +347,8 @@ def embedded_del(args):
 def embedded_get(args):
     """Retrieve contents of an embedded file."""
     doc = open_file(args.input, args.password, pdf=True)
-    exception_types = (ValueError, fitz.mupdf.FzErrorBase)
-    if fitz.mupdf_version_tuple < (1, 24):
+    exception_types = (ValueError, pymupdf.mupdf.FzErrorBase)
+    if pymupdf.mupdf_version_tuple < (1, 24):
         exception_types = ValueError
     try:
         stream = doc.embfile_get(args.name)
@@ -358,7 +358,7 @@ def embedded_get(args):
     filename = args.output if args.output else d["filename"]
     with open(filename, "wb") as output:
         output.write(stream)
-    fitz.message("saved entry '%s' as '%s'" % (args.name, filename))
+    pymupdf.message("saved entry '%s' as '%s'" % (args.name, filename))
     doc.close()
 
 
@@ -454,31 +454,31 @@ def embedded_list(args):
         if args.name not in names:
             sys.exit("no such embedded file '%s'" % args.name)
         else:
-            fitz.message()
-            fitz.message(
+            pymupdf.message()
+            pymupdf.message(
                 "printing 1 of %i embedded file%s:"
                 % (len(names), "s" if len(names) > 1 else "")
             )
-            fitz.message()
+            pymupdf.message()
             print_dict(doc.embfile_info(args.name))
-            fitz.message()
+            pymupdf.message()
             return
     if not names:
-        fitz.message("'%s' contains no embedded files" % doc.name)
+        pymupdf.message("'%s' contains no embedded files" % doc.name)
         return
     if len(names) > 1:
         msg = "'%s' contains the following %i embedded files" % (doc.name, len(names))
     else:
         msg = "'%s' contains the following embedded file" % doc.name
-    fitz.message(msg)
-    fitz.message()
+    pymupdf.message(msg)
+    pymupdf.message()
     for name in names:
         if not args.detail:
-            fitz.message(name)
+            pymupdf.message(name)
             continue
         _ = doc.embfile_info(name)
         print_dict(doc.embfile_info(name))
-        fitz.message()
+        pymupdf.message()
     doc.close()
 
 
@@ -537,14 +537,14 @@ def extract_objects(args):
                         pix2 = (
                             pix
                             if pix.colorspace.n < 4
-                            else fitz.Pixmap(fitz.csRGB, pix)
+                            else pymupdf.Pixmap(pymupdf.csRGB, pix)
                         )
                         pix2.save(outname)
 
     if args.fonts:
-        fitz.message("saved %i fonts to '%s'" % (len(font_xrefs), out_dir))
+        pymupdf.message("saved %i fonts to '%s'" % (len(font_xrefs), out_dir))
     if args.images:
-        fitz.message("saved %i images to '%s'" % (len(image_xrefs), out_dir))
+        pymupdf.message("saved %i images to '%s'" % (len(image_xrefs), out_dir))
     doc.close()
 
 
@@ -602,7 +602,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
                 nrows.append(h)
         return nrows  # curated list of line bottom coordinates
 
-    def process_blocks(blocks: List[Dict], page: fitz.Page):
+    def process_blocks(blocks: List[Dict], page: pymupdf.Page):
         rows = set()
         page_width = page.rect.width
         page_height = page.rect.height
@@ -695,7 +695,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
         old_char = ""
         old_x1 = 0  # end coordinate of last char
         old_ox = 0  # x-origin of last char
-        if minslot <= fitz.EPSILON:
+        if minslot <= pymupdf.EPSILON:
             raise RuntimeError("program error: minslot too small = %g" % minslot)
 
         for c in lchars:  # loop over characters
@@ -807,13 +807,13 @@ def gettext(args):
         filename, _ = os.path.splitext(doc.name)
         output = filename + ".txt"
     with open(output, "wb") as textout:
-        flags = fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_WHITESPACE
+        flags = pymupdf.TEXT_PRESERVE_LIGATURES | pymupdf.TEXT_PRESERVE_WHITESPACE
         if args.convert_white:
-            flags ^= fitz.TEXT_PRESERVE_WHITESPACE
+            flags ^= pymupdf.TEXT_PRESERVE_WHITESPACE
         if args.noligatures:
-            flags ^= fitz.TEXT_PRESERVE_LIGATURES
+            flags ^= pymupdf.TEXT_PRESERVE_LIGATURES
         if args.extra_spaces:
-            flags ^= fitz.TEXT_INHIBIT_SPACES
+            flags ^= pymupdf.TEXT_INHIBIT_SPACES
         func = {
             "simple": page_simple,
             "blocks": page_blocksort,
@@ -833,13 +833,13 @@ def gettext(args):
 
 
 def _internal(args):
-    fitz.message('This is from PyMuPDF message().')
-    fitz.log('This is from PyMuPDF log().')
+    pymupdf.message('This is from PyMuPDF message().')
+    pymupdf.log('This is from PyMuPDF log().')
 
 def main():
     """Define command configurations."""
     parser = argparse.ArgumentParser(
-        prog="fitz",
+        prog="pymupdf",
         description=mycenter("Basic PyMuPDF Functions"),
     )
     subps = parser.add_subparsers(

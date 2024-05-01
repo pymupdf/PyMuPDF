@@ -111,7 +111,7 @@ static std::string repr(PyObject* x)
     return ret;
 }
 
-/* These are also in fitz/__init__.py. */
+/* These are also in pymupdf/__init__.py. */
 const char MSG_BAD_ANNOT_TYPE[] = "bad annot type";
 const char MSG_BAD_APN[] = "bad or missing annot AP/N";
 const char MSG_BAD_ARG_INK_ANNOT[] = "arg must be seq of seq of float pairs";
@@ -708,7 +708,7 @@ static int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value
 
 
 //-----------------------------------------------------------------------------
-// Functions converting betwenn PySequences and fitz geometry objects
+// Functions converting betwenn PySequences and pymupdf geometry objects
 //-----------------------------------------------------------------------------
 static int
 jm_init_item(PyObject* obj, Py_ssize_t idx, int* result)
@@ -3417,7 +3417,7 @@ fz_stext_page* page_get_textpage(
     return tpage;
 }
 
-// return extension for fitz image type
+// return extension for pymupdf image type
 const char *JM_image_extension(int type)
 {
     switch (type) {

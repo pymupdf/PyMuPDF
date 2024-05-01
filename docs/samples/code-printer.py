@@ -62,7 +62,7 @@ def header_story(text):
     header = fitz.Story()
     hdr_body = header.body
     hdr_body.add_paragraph().set_properties(
-        align=fitz.fitz.TEXT_ALIGN_CENTER,
+        align=fitz.TEXT_ALIGN_CENTER,
         bgcolor="#eee",
         font="sans-serif",
         bold=True,

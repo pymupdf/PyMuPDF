@@ -1181,7 +1181,7 @@ def test_open():
             # `mupdf.FzErrorFormat` instead of `fitz.mupdf.FzErrorFormat`. So
             # we just search for the former.
             re.escape(f'mupdf.{etype2}: code=7: cannot recognize zip archive'),
-            re.escape(f'fitz.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
+            re.escape(f'pymupdf.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
             )
     check(path, filetype=filetype, exception=(etype, eregex))
     
@@ -1190,7 +1190,7 @@ def test_open():
     etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorUnsupported'
     etext = (
             re.escape(f'mupdf.{etype2}: code=6: cannot find document handler for file: {path}'),
-            re.escape(f'fitz.FileDataError: Failed to open file {path!r}.'),
+            re.escape(f'pymupdf.FileDataError: Failed to open file {path!r}.'),
             )
     check(path, exception=(etype, etext))
     
