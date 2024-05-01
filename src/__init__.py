@@ -4515,7 +4515,7 @@ class Document:
     @property
     def is_dirty(self):
         pdf = _as_pdf_document(self)
-        if not pdf:
+        if not pdf.m_internal:
             return False
         r = mupdf.pdf_has_unsaved_changes(pdf)
         return True if r else False
@@ -4534,7 +4534,7 @@ class Document:
     def is_form_pdf(self):
         """Either False or PDF field count."""
         pdf = _as_pdf_document(self)
-        if not pdf:
+        if not pdf.m_internal:
             return False
         count = -1
         try:
@@ -4573,13 +4573,13 @@ class Document:
         """Check if document is layoutable."""
         if self.is_closed:
             raise ValueError("document closed")
-        return mupdf.fz_is_document_reflowable(self._document())
+        return bool(mupdf.fz_is_document_reflowable(self))
 
     @property
     def is_repaired(self):
         """Check whether PDF was repaired."""
         pdf = _as_pdf_document(self)
-        if not pdf:
+        if not pdf.m_internal:
             return False
         r = mupdf.pdf_was_repaired(pdf)
         if r:
