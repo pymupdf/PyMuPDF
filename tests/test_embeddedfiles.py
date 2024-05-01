@@ -1,11 +1,11 @@
 """
 Tests for PDF EmbeddedFiles functions.
 """
-import fitz
+import pymupdf
 
 
 def test_embedded1():
-    doc = fitz.open()
+    doc = pymupdf.open()
     buffer = b"123456678790qwexcvnmhofbnmfsdg4589754uiofjkb-"
     doc.embfile_add(
         "file1",

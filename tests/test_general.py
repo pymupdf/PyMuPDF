@@ -7,7 +7,7 @@
 import io
 import os
 
-import fitz
+import pymupdf
 import pathlib
 import pickle
 import platform
@@ -17,44 +17,44 @@ filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
 
 
 def test_haslinks():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     assert doc.has_links() == False
 
 
 def test_hasannots():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     assert doc.has_annots() == False
 
 
 def test_haswidgets():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     assert doc.is_form_pdf == False
 
 
 def test_isrepaired():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     assert doc.is_repaired == False
-    fitz.TOOLS.mupdf_warnings()
+    pymupdf.TOOLS.mupdf_warnings()
 
 
 def test_isdirty():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     assert doc.is_dirty == False
 
 
 def test_cansaveincrementally():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     assert doc.can_save_incrementally() == True
 
 
 def test_iswrapped():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     assert page.is_wrapped
 
 
 def test_wrapcontents():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     page.wrap_contents()
     xref = page.get_contents()[0]
@@ -63,15 +63,15 @@ def test_wrapcontents():
     page.set_contents(xref)
     assert len(page.get_contents()) == 1
     page.clean_contents()
-    rebased = hasattr(fitz, 'mupdf')
+    rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'PDF stream Length incorrect'
 
 
 def test_page_clean_contents():
     """Assert that page contents cleaning actually is invoked."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     # draw two rectangles - will lead to two /Contents objects
@@ -88,7 +88,7 @@ def test_page_clean_contents():
 
 def test_annot_clean_contents():
     """Assert that annot contents cleaning actually is invoked."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_highlight_annot((10, 10, 20, 20))
 
@@ -103,72 +103,72 @@ def test_annot_clean_contents():
 
 
 def test_config():
-    assert fitz.TOOLS.fitz_config["py-memory"] in (True, False)
+    assert pymupdf.TOOLS.fitz_config["py-memory"] in (True, False)
 
 
 def test_glyphnames():
     name = "infinity"
-    infinity = fitz.glyph_name_to_unicode(name)
-    assert fitz.unicode_to_glyph_name(infinity) == name
+    infinity = pymupdf.glyph_name_to_unicode(name)
+    assert pymupdf.unicode_to_glyph_name(infinity) == name
 
 
 def test_rgbcodes():
     sRGB = 0xFFFFFF
-    assert fitz.sRGB_to_pdf(sRGB) == (1, 1, 1)
-    assert fitz.sRGB_to_rgb(sRGB) == (255, 255, 255)
+    assert pymupdf.sRGB_to_pdf(sRGB) == (1, 1, 1)
+    assert pymupdf.sRGB_to_rgb(sRGB) == (255, 255, 255)
 
 
 def test_pdfstring():
-    fitz.get_pdf_now()
-    fitz.get_pdf_str("Beijing, chinesisch 北京")
-    fitz.get_text_length("Beijing, chinesisch 北京", fontname="china-s")
-    fitz.get_pdf_str("Latin characters êßöäü")
+    pymupdf.get_pdf_now()
+    pymupdf.get_pdf_str("Beijing, chinesisch 北京")
+    pymupdf.get_text_length("Beijing, chinesisch 北京", fontname="china-s")
+    pymupdf.get_pdf_str("Latin characters êßöäü")
 
 
 def test_open_exceptions():
     try:
-        doc = fitz.open(filename, filetype="xps")
+        doc = pymupdf.open(filename, filetype="xps")
     except RuntimeError as e:
         assert repr(e).startswith("FileDataError")
 
     try:
-        doc = fitz.open(filename, filetype="xxx")
+        doc = pymupdf.open(filename, filetype="xxx")
     except Exception as e:
         assert repr(e).startswith("ValueError")
 
     try:
-        doc = fitz.open("x.y")
+        doc = pymupdf.open("x.y")
     except Exception as e:
         assert repr(e).startswith("FileNotFoundError")
 
     try:
-        doc = fitz.open("pdf", b"")
+        doc = pymupdf.open("pdf", b"")
     except RuntimeError as e:
         assert repr(e).startswith("EmptyFileError")
 
 
 def test_bug1945():
-    pdf = fitz.open(f'{scriptdir}/resources/bug1945.pdf')
+    pdf = pymupdf.open(f'{scriptdir}/resources/bug1945.pdf')
     buffer_ = io.BytesIO()
     pdf.save(buffer_, clean=True)
 
 
 def test_bug1971():
     for _ in range(2):
-        doc = fitz.Document(f'{scriptdir}/resources/bug1971.pdf')
+        doc = pymupdf.Document(f'{scriptdir}/resources/bug1971.pdf')
         page = next(doc.pages())
         page.get_drawings()
         doc.close()
         assert doc.is_closed
 
 def test_default_font():
-    f = fitz.Font()
+    f = pymupdf.Font()
     assert str(f) == "Font('Noto Serif Regular')"
     assert repr(f) == "Font('Noto Serif Regular')"
 
 def test_add_ink_annot():
     import math
-    document = fitz.Document()
+    document = pymupdf.Document()
     page = document.new_page()
     line1 = []
     line2 = []
@@ -187,22 +187,22 @@ def test_add_ink_annot():
     print( f'Have saved to: path={path!r}')
 
 def test_techwriter_append():
-    print(fitz.__doc__)
-    doc = fitz.open()
+    print(pymupdf.__doc__)
+    doc = pymupdf.open()
     page = doc.new_page()
-    tw = fitz.TextWriter(page.rect)
+    tw = pymupdf.TextWriter(page.rect)
     text = "Red rectangle = TextWriter.text_rect, blue circle = .last_point"
     r = tw.append((100, 100), text)
     print(f'r={r!r}')
     tw.write_text(page)
-    page.draw_rect(tw.text_rect, color=fitz.pdfcolor["red"])
-    page.draw_circle(tw.last_point, 2, color=fitz.pdfcolor["blue"])
+    page.draw_rect(tw.text_rect, color=pymupdf.pdfcolor["red"])
+    page.draw_circle(tw.last_point, 2, color=pymupdf.pdfcolor["blue"])
     path = f"{scriptdir}/resources/test_techwriter_append.pdf"
     doc.ez_save(path)
     print( f'Have saved to: {path}')
 
 def test_opacity():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     annot1 = page.add_circle_annot((50, 50, 100, 100))
@@ -220,26 +220,26 @@ def test_opacity():
 
 def test_get_text_dict():
     import json
-    doc=fitz.open(f'{scriptdir}/resources/v110-changes.pdf')
+    doc=pymupdf.open(f'{scriptdir}/resources/v110-changes.pdf')
     page=doc[0]
     blocks=page.get_text("dict")["blocks"]
     # Check no opaque types in `blocks`.
     json.dumps( blocks, indent=4)
 
 def test_font():
-    font = fitz.Font()
+    font = pymupdf.Font()
     print(repr(font))
     bbox = font.glyph_bbox( 65)
     print( f'bbox={bbox!r}')
 
 def test_insert_font():
-    doc=fitz.open(f'{scriptdir}/resources/v110-changes.pdf')
+    doc=pymupdf.open(f'{scriptdir}/resources/v110-changes.pdf')
     page = doc[0]
     i = page.insert_font()
     print( f'page.insert_font() => {i}')
 
 def test_2173():
-    from fitz import IRect, Pixmap, CS_RGB, Colorspace
+    from pymupdf import IRect, Pixmap, CS_RGB, Colorspace
     for i in range( 100):
         #print( f'i={i!r}')
         image = Pixmap(Colorspace(CS_RGB), IRect(0, 0, 13, 37))
@@ -247,7 +247,7 @@ def test_2173():
 
 def test_texttrace():
     import time
-    document = fitz.Document( f'{scriptdir}/resources/joined.pdf')
+    document = pymupdf.Document( f'{scriptdir}/resources/joined.pdf')
     t = time.time()
     for page in document:
         tt = page.get_texttrace()
@@ -270,17 +270,17 @@ def test_2533():
     Search for a unique char on page and confirm that page.get_texttrace()
     returns the same bbox as the search method.
     """
-    if hasattr(fitz, 'mupdf') and not fitz.g_use_extra:
+    if hasattr(pymupdf, 'mupdf') and not pymupdf.g_use_extra:
         print('Not running test_2533() because rebased with use_extra=0 known to fail')
         return
-    doc = fitz.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
+    doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
     page = doc[0]
     NEEDLE = "民"
     ord_NEEDLE = ord(NEEDLE)
     for span in page.get_texttrace():
         for char in span["chars"]:
             if char[0] == ord_NEEDLE:
-                bbox = fitz.Rect(char[3])
+                bbox = pymupdf.Rect(char[3])
                 break
     assert page.search_for(NEEDLE)[0] == bbox
 
@@ -291,10 +291,10 @@ def test_2645():
     folder = os.path.join(scriptdir, "resources")
     files = ("test_2645_1.pdf", "test_2645_2.pdf", "test_2645_3.pdf")
     for f in files:
-        doc = fitz.open(os.path.join(folder, f))
+        doc = pymupdf.open(os.path.join(folder, f))
         page = doc[0]
         fontsize0 = page.get_texttrace()[0]["size"]
-        fontsize1 = page.get_text("dict", flags=fitz.TEXTFLAGS_TEXT)["blocks"][0]["lines"][
+        fontsize1 = page.get_text("dict", flags=pymupdf.TEXTFLAGS_TEXT)["blocks"][0]["lines"][
             0
         ]["spans"][0]["size"]
         assert abs(fontsize0 - fontsize1) < 1e-5
@@ -302,9 +302,9 @@ def test_2645():
 
 def test_2506():
     """Ensure expected font size across text writing angles."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
-    point = fitz.Point(100, 300)  # insertion point
+    point = pymupdf.Point(100, 300)  # insertion point
     fontsize = 11  # fontsize
     text = "Hello"  # text
     angles = (0, 30, 60, 90, 120)  # some angles
@@ -312,7 +312,7 @@ def test_2506():
     # write text with different angles
     for angle in angles:
         page.insert_text(
-            point, text, fontsize=fontsize, morph=(point, fitz.Matrix(angle))
+            point, text, fontsize=fontsize, morph=(point, pymupdf.Matrix(angle))
         )
 
     # ensure correct fontsize for get_texttrace() - forgiving rounding problems
@@ -330,7 +330,7 @@ def test_2506():
 
 
 def test_2108():
-    doc = fitz.open(f'{scriptdir}/resources/test_2108.pdf')
+    doc = pymupdf.open(f'{scriptdir}/resources/test_2108.pdf')
     page = doc[0]
     areas = page.search_for("{sig}")
     rect = areas[0]
@@ -365,8 +365,8 @@ def test_2108():
 
         print(f'')
 
-    print(f'fitz.mupdf_version_tuple={fitz.mupdf_version_tuple}')
-    if fitz.mupdf_version_tuple >= (1, 21, 2):
+    print(f'fitz.mupdf_version_tuple={pymupdf.mupdf_version_tuple}')
+    if pymupdf.mupdf_version_tuple >= (1, 21, 2):
         print('Asserting text==text_expected')
         assert text == text_expected
     else:
@@ -376,17 +376,17 @@ def test_2108():
 
 def test_2238():
     filepath = f'{scriptdir}/resources/test2238.pdf'
-    doc = fitz.open(filepath)
-    rebased = hasattr(fitz, 'mupdf')
+    doc = pymupdf.open(filepath)
+    rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == (
                 'format error: cannot recognize version marker\n'
                 'trying to repair broken xref\n'
                 'repairing PDF document'
                 ), f'{wt=}'
-    first_page = doc.load_page(0).get_text('text', fitz.INFINITE_RECT())
-    last_page = doc.load_page(-1).get_text('text', fitz.INFINITE_RECT())
+    first_page = doc.load_page(0).get_text('text', pymupdf.INFINITE_RECT())
+    last_page = doc.load_page(-1).get_text('text', pymupdf.INFINITE_RECT())
 
     print(f'first_page={first_page!r}')
     print(f'last_page={last_page!r}')
@@ -403,7 +403,7 @@ def test_2238():
 
 
 def test_2093():
-    doc = fitz.open(f'{scriptdir}/resources/test2093.pdf')
+    doc = pymupdf.open(f'{scriptdir}/resources/test2093.pdf')
 
     def average_color(page):
         pixmap = page.get_pixmap()
@@ -430,16 +430,16 @@ def test_2093():
     x1 = rx + rw
     y1 = ry + rh
 
-    rect = fitz.Rect(x0, y0, x1, y1)
+    rect = pymupdf.Rect(x0, y0, x1, y1)
 
-    font = fitz.Font("Helvetica")
+    font = pymupdf.Font("Helvetica")
     fill_color=(0,0,0)
     page.add_redact_annot(
         quad=rect,
         #text="null",
         fontname=font.name,
         fontsize=12,
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
         fill=fill_color,
         text_color=(1,1,1),
     )
@@ -468,7 +468,7 @@ def test_2093():
 
 def test_2182():
     print(f'test_2182() started')
-    doc = fitz.open(f'{scriptdir}/resources/test2182.pdf')
+    doc = pymupdf.open(f'{scriptdir}/resources/test2182.pdf')
     page = doc[0]
     for annot in page.annots():
         print(annot)
@@ -503,13 +503,13 @@ def test_2246():
         """
         # bboxes of spans on page: same text positions are represented by ONE bbox
         bboxes = set()
-        doc = fitz.open()
+        doc = pymupdf.open()
         # prepare a page with desired MediaBox / CropBox peculiarities
-        mediabox = fitz.paper_rect("letter")
+        mediabox = pymupdf.paper_rect("letter")
         page = doc.new_page(width=mediabox.width, height=mediabox.height)
         xref = page.xref
         newmbox = list(map(float, doc.xref_get_key(xref, "MediaBox")[1][1:-1].split()))
-        newmbox = fitz.Rect(newmbox)
+        newmbox = pymupdf.Rect(newmbox)
         mbox = newmbox + (10, 20, 10, 20)
         cbox = mbox + (10, 10, -10, -10)
         doc.xref_set_key(xref, "MediaBox", "[%g %g %g %g]" % tuple(mbox))
@@ -517,7 +517,7 @@ def test_2246():
         # set page to desired rotation
         page.set_rotation(rot)
         page.insert_text((50, 50), "Text inserted at (50,50)")
-        tw = fitz.TextWriter(page.rect)
+        tw = pymupdf.TextWriter(page.rect)
         tw.append((50, 50), "Text inserted at (50,50)")
         tw.write_text(page)
         blocks = page.get_text("dict")["blocks"]
@@ -525,7 +525,7 @@ def test_2246():
             for l in b["lines"]:
                 for s in l["spans"]:
                     # store bbox rounded to 3 decimal places
-                    bboxes.add(fitz.Rect(fitz.JM_TUPLE3(s["bbox"])))
+                    bboxes.add(pymupdf.Rect(pymupdf.JM_TUPLE3(s["bbox"])))
         return len(bboxes)  # should be 1!
 
     # the following tests must all pass
@@ -537,32 +537,32 @@ def test_2246():
 
 def test_2430():
     """Confirm that multiple font property checks will not destroy Py_None."""
-    font = fitz.Font("helv")
+    font = pymupdf.Font("helv")
     for i in range(1000):
         _ = font.flags
 
 def test_2692():
-    document = fitz.Document(f'{scriptdir}/resources/2.pdf')
+    document = pymupdf.Document(f'{scriptdir}/resources/2.pdf')
     for page in document:
-        pix = page.get_pixmap(clip=fitz.Rect(0,0,10,10))
+        pix = page.get_pixmap(clip=pymupdf.Rect(0,0,10,10))
         dl = page.get_displaylist(annots=True)
         pix = dl.get_pixmap(
-                matrix=fitz.Identity,
-                colorspace=fitz.csRGB,
+                matrix=pymupdf.Identity,
+                colorspace=pymupdf.csRGB,
                 alpha=False,
-                clip=fitz.Rect(0,0,10,10),
+                clip=pymupdf.Rect(0,0,10,10),
                 )
         pix = dl.get_pixmap(
-                matrix=fitz.Identity,
-                #colorspace=fitz.csRGB,
+                matrix=pymupdf.Identity,
+                #colorspace=pymupdf.csRGB,
                 alpha=False,
-                clip=fitz.Rect(0,0,10,10),
+                clip=pymupdf.Rect(0,0,10,10),
                 )
     
 
 def test_2596():
     """Confirm correctly abandoning cache when reloading a page."""
-    doc = fitz.Document(f"{scriptdir}/resources/test_2596.pdf")
+    doc = pymupdf.Document(f"{scriptdir}/resources/test_2596.pdf")
     page = doc[0]
     pix0 = page.get_pixmap()  # render the page
     _ = doc.tobytes(garbage=3)  # save with garbage collection
@@ -573,15 +573,15 @@ def test_2596():
     page = doc.reload_page(page)
     pix1 = page.get_pixmap()
     assert pix1.samples == pix0.samples
-    rebased = hasattr(fitz, 'mupdf')
+    rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'too many indirections (possible indirection cycle involving 24 0 R)'
 
 
 def test_2730():
     """Ensure identical output across text extractions."""
-    doc = fitz.open(f"{scriptdir}/resources/test_2730.pdf")
+    doc = pymupdf.open(f"{scriptdir}/resources/test_2730.pdf")
     page = doc[0]
     s1 = set(page.get_text())  # plain text extraction
     s2 = set(page.get_text(sort=True))  # uses "blocks" extraction
@@ -592,7 +592,7 @@ def test_2730():
 
 def test_2553():
     """Ensure identical output across text extractions."""
-    doc = fitz.open(f"{scriptdir}/resources/test_2553.pdf")
+    doc = pymupdf.open(f"{scriptdir}/resources/test_2553.pdf")
     page = doc[0]
 
     # extract plain text, build set of all characters
@@ -627,20 +627,20 @@ def test_2553():
     # With mupdf later than 1.23.4, this special page contains no invalid
     # Unicodes.
     #
-    if fitz.mupdf_version_tuple > (1, 23, 4):
-        print(f'Checking no occurrence of 0xFFFD, {fitz.mupdf_version_tuple=}.')
+    if pymupdf.mupdf_version_tuple > (1, 23, 4):
+        print(f'Checking no occurrence of 0xFFFD, {pymupdf.mupdf_version_tuple=}.')
         assert chr(0xFFFD) not in set1
     else:
-        print(f'Checking occurrence of 0xFFFD, {fitz.mupdf_version_tuple=}.')
+        print(f'Checking occurrence of 0xFFFD, {pymupdf.mupdf_version_tuple=}.')
         assert chr(0xFFFD) in set1
 
 def test_2553_2():
-    doc = fitz.open(f"{scriptdir}/resources/test_2553-2.pdf")
+    doc = pymupdf.open(f"{scriptdir}/resources/test_2553-2.pdf")
     page = doc[0]
 
     # extract plain text, ensure that there are no 0xFFFD characters
     text = page.get_text()
-    if fitz.mupdf_version_tuple >= (1, 23, 7):
+    if pymupdf.mupdf_version_tuple >= (1, 23, 7):
         assert chr(0xfffd) not in text
     else:
         # Bug not fixed in MuPDF.
@@ -648,7 +648,7 @@ def test_2553_2():
 
 def test_2635():
     """Rendering a page before and after cleaning it should yield the same pixmap."""
-    doc = fitz.open(f"{scriptdir}/resources/test_2635.pdf")
+    doc = pymupdf.open(f"{scriptdir}/resources/test_2635.pdf")
     page = doc[0]
     pix1 = page.get_pixmap()  # pixmap before cleaning
 
@@ -660,22 +660,22 @@ def test_2635():
 def test_resolve_names():
     """Test PDF name resolution."""
     # guard against wrong PyMuPDF architecture version
-    if not hasattr(fitz.Document, "resolve_names"):
+    if not hasattr(pymupdf.Document, "resolve_names"):
         print("PyMuPDF version does not support resolving PDF names")
         return
     pickle_in = open(f"{scriptdir}/resources/cython.pickle", "rb")
     old_names = pickle.load(pickle_in)
-    doc = fitz.open(f"{scriptdir}/resources/cython.pdf")
+    doc = pymupdf.open(f"{scriptdir}/resources/cython.pdf")
     new_names = doc.resolve_names()
     assert new_names == old_names
 
 def test_2777():
-    document = fitz.Document()
+    document = pymupdf.Document()
     page = document.new_page()
     print(page.mediabox.width)
 
 def test_2710():
-    doc = fitz.open(f'{scriptdir}/resources/test_2710.pdf')
+    doc = pymupdf.open(f'{scriptdir}/resources/test_2710.pdf')
     page = doc.load_page(0)
     
     print(f'test_2710(): {page.cropbox=}')
@@ -695,27 +695,27 @@ def test_2710():
     print(f'test_2710(): {blocks=}')
     assert len(blocks) == 2
     block = blocks[1]
-    rect = fitz.Rect(block[:4])
+    rect = pymupdf.Rect(block[:4])
     text = block[4]
     print(f'test_2710(): {rect=}')
     print(f'test_2710(): {text=}')
     assert text == 'Text at left page border\n'
     
-    assert_rects_approx_eq(page.cropbox, fitz.Rect(30.0, 30.0, 565.3200073242188, 811.9199829101562))
-    assert_rects_approx_eq(page.mediabox, fitz.Rect(0.0, 0.0, 595.3200073242188, 841.9199829101562))
-    print(f'test_2710(): {fitz.mupdf_version_tuple=}')
-    if fitz.mupdf_version_tuple < (1, 23, 5):
+    assert_rects_approx_eq(page.cropbox, pymupdf.Rect(30.0, 30.0, 565.3200073242188, 811.9199829101562))
+    assert_rects_approx_eq(page.mediabox, pymupdf.Rect(0.0, 0.0, 595.3200073242188, 841.9199829101562))
+    print(f'test_2710(): {pymupdf.mupdf_version_tuple=}')
+    if pymupdf.mupdf_version_tuple < (1, 23, 5):
         print(f'test_2710(): Not Checking page.rect and rect.')
-    elif fitz.mupdf_version_tuple < (1, 24.0):
+    elif pymupdf.mupdf_version_tuple < (1, 24.0):
         print(f'test_2710(): Checking page.rect and rect.')
-        assert_rects_approx_eq(page.rect, fitz.Rect(0.0, 0.0, 535.3200073242188, 781.9199829101562))
-        assert_rects_approx_eq(rect, fitz.Rect(0.7872352600097656, 64.7560043334961, 124.85531616210938, 78.1622543334961))
+        assert_rects_approx_eq(page.rect, pymupdf.Rect(0.0, 0.0, 535.3200073242188, 781.9199829101562))
+        assert_rects_approx_eq(rect, pymupdf.Rect(0.7872352600097656, 64.7560043334961, 124.85531616210938, 78.1622543334961))
     else:
         # 2023-11-05: Currently broken in mupdf master.
         print(f'test_2710(): Not Checking page.rect and rect.')
-    rebased = hasattr(fitz, 'mupdf')
+    rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == (
                 "syntax error: cannot find ExtGState resource 'GS7'\n"
                 "syntax error: cannot find ExtGState resource 'GS8'\n"
@@ -726,22 +726,22 @@ def test_2710():
 def test_2736():
     """Check handling of CropBox changes vis-a-vis a MediaBox with
        negative coordinates."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     # fake a MediaBox for demo purposes
     doc.xref_set_key(page.xref, "MediaBox", "[-30 -20 595 842]")
 
-    assert page.cropbox == fitz.Rect(-30, 0, 595, 862)
-    assert page.rect == fitz.Rect(0, 0, 625, 862)
+    assert page.cropbox == pymupdf.Rect(-30, 0, 595, 862)
+    assert page.rect == pymupdf.Rect(0, 0, 625, 862)
 
     # change the CropBox: shift by (10, 10) in both dimensions. Please note:
     # To achieve this, 10 must be subtracted from 862! yo must never be negative!
-    page.set_cropbox(fitz.Rect(-20, 0, 595, 852))
+    page.set_cropbox(pymupdf.Rect(-20, 0, 595, 852))
 
     # get CropBox from the page definition
     assert doc.xref_get_key(page.xref, "CropBox")[1] == "[-20 -10 595 842]"
-    assert page.rect == fitz.Rect(0, 0, 615, 852)
+    assert page.rect == pymupdf.Rect(0, 0, 615, 852)
 
     error = False
     text = ""
@@ -756,14 +756,14 @@ def test_2736():
 
 def test_subset_fonts():
     """Confirm subset_fonts is working."""
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         print("Not testing 'test_subset_fonts' in classic.")
         return
     text = "Just some arbitrary text."
-    arch = fitz.Archive()
-    css = fitz.css_for_pymupdf_font("ubuntu", archive=arch)
+    arch = pymupdf.Archive()
+    css = pymupdf.css_for_pymupdf_font("ubuntu", archive=arch)
     css += "* {font-family: ubuntu;}"
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     page.insert_htmlbox(page.rect, text, css=css, archive=arch)
     doc.subset_fonts(verbose=True)
@@ -778,7 +778,7 @@ def test_subset_fonts():
 def test_2957_1():
     """Text following a redaction must not change coordinates."""
     # test file with redactions
-    doc = fitz.open(os.path.join(scriptdir, "resources", "test_2957_1.pdf"))
+    doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2957_1.pdf"))
     page = doc[0]
     # search for string that must not move by redactions
     rects0 = page.search_for("6e9f73dfb4384a2b8af6ebba")
@@ -803,7 +803,7 @@ def test_2957_1():
 
 def test_2957_2():
     """Redacted text must not change positions of remaining text."""
-    doc = fitz.open(os.path.join(scriptdir, "resources", "test_2957_2.pdf"))
+    doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2957_2.pdf"))
     page = doc[0]
     words0 = page.get_text("words")  # all words before redacting
     page.apply_redactions()  # remove/redact the word "longer"
@@ -813,9 +813,9 @@ def test_2957_2():
     del words0[3]  # remove the redacted word from first list
     for i in range(len(words1)):  # compare words
         w1 = words1[i]  # word after redaction
-        bbox1 = fitz.Rect(w1[:4]).irect  # its IRect coordinates
+        bbox1 = pymupdf.Rect(w1[:4]).irect  # its IRect coordinates
         w0 = words0[i]  # word before redaction
-        bbox0 = fitz.Rect(w0[:4]).irect  # its IRect coordinates
+        bbox0 = pymupdf.Rect(w0[:4]).irect  # its IRect coordinates
         assert bbox0 == bbox1  # must be same coordinates
 
 
@@ -842,17 +842,17 @@ def test_707560():
     )
     text = " ... ".join([g for g in greetings])
     where = (50, 50, 400, 500)
-    story = fitz.Story(text)
+    story = pymupdf.Story(text)
     bio = io.BytesIO()
-    writer = fitz.DocumentWriter(bio)
+    writer = pymupdf.DocumentWriter(bio)
     more = True
     while more:
-        dev = writer.begin_page(fitz.paper_rect("a4"))
+        dev = writer.begin_page(pymupdf.paper_rect("a4"))
         more, _ = story.place(where)
         story.draw(dev)
         writer.end_page()
     writer.close()
-    doc = fitz.open("pdf", bio)
+    doc = pymupdf.open("pdf", bio)
     page = doc[0]
     text = page.get_text()
     assert text, "Unexpected: test page has no text."
@@ -862,14 +862,14 @@ def test_707560():
 
 
 def test_3070():
-    with fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_3070.pdf')) as pdf:
+    with pymupdf.open(os.path.abspath(f'{__file__}/../../tests/resources/test_3070.pdf')) as pdf:
       links = pdf[0].get_links()
       links[0]['uri'] = "https://www.ddg.gg"
       pdf[0].update_link(links[0])
       pdf.save(os.path.abspath(f'{__file__}/../../tests/test_3070_out.pdf'))
 
 def test_bboxlog_2885():
-    doc = fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_2885.pdf'))
+    doc = pymupdf.open(os.path.abspath(f'{__file__}/../../tests/resources/test_2885.pdf'))
     page=doc[0]
     bbl = page.get_bboxlog()
     bbl = page.get_bboxlog(layers=True)
@@ -882,7 +882,7 @@ def test_3081():
     path2 = os.path.abspath(f'{__file__}/../../tests/test_3081-2.pdf')
     path3 = os.path.abspath(f'{__file__}/../../tests/test_3081-3.pdf')
     
-    rebased = hasattr(fitz, 'mupdf')
+    rebased = hasattr(pymupdf, 'mupdf')
     
     import shutil
     import sys
@@ -895,7 +895,7 @@ def test_3081():
         return fd
     
     fd1 = next_fd()
-    document = fitz.open(path2)
+    document = pymupdf.open(path2)
     page = document[0]
     fd2 = next_fd()
     document.close()
@@ -932,23 +932,23 @@ def test_3081():
 
 def test_xml():
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
-    with fitz.open(path) as document:
+    with pymupdf.open(path) as document:
         document.get_xml_metadata()
 
 def test_3112_set_xml_metadata():
-    document = fitz.Document()
+    document = pymupdf.Document()
     document.set_xml_metadata('hello world')
 
 def test_archive_3126():
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print(f'Not running because known to fail with classic.')
         return
     p = os.path.abspath(f'{__file__}/../../tests/resources')
     p = pathlib.Path(p)
-    archive = fitz.Archive(p)
+    archive = pymupdf.Archive(p)
     
 def test_3140():
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print(f'Not running test_3140 on classic, because Page.insert_htmlbox() not available.')
         return
     css2 = ''
@@ -962,10 +962,10 @@ def test_3140():
         os.close(fd)
         return fd
     fd1 = next_fd()
-    with fitz.open(oldfile) as doc:  # open document
+    with pymupdf.open(oldfile) as doc:  # open document
         page = doc[0]
-        rect = fitz.Rect(130, 400, 430, 600)
-        CELLS = fitz.make_table(rect, cols=3, rows=5)
+        rect = pymupdf.Rect(130, 400, 430, 600)
+        CELLS = pymupdf.make_table(rect, cols=3, rows=5)
         shape = page.new_shape()  # create Shape
         for i in range(5):
             for j in range(3):
@@ -974,7 +974,7 @@ def test_3140():
                 qtext = qtext + '<br>' + atext
                 shape.draw_rect(CELLS[i][j])  # draw rectangle
                 page.insert_htmlbox(CELLS[i][j], qtext, css=css2, scale_low=0)
-        shape.finish(width=2.5, color=fitz.pdfcolor["blue"], )
+        shape.finish(width=2.5, color=pymupdf.pdfcolor["blue"], )
         shape.commit()  # write all stuff to the page
         doc.subset_fonts()
         doc.ez_save(newfile)
@@ -983,7 +983,7 @@ def test_3140():
     os.remove(oldfile)
 
 def test_cli():
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print('test_cli(): Not running on classic because of fitz_old.')
         return
     import subprocess
@@ -994,7 +994,7 @@ def test_cli_out():
     Check redirection of messages and log diagnostics with environment
     variables PYMUPDF_LOG and PYMUPDF_MESSAGE.
     '''
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print('test_cli(): Not running on classic because of fitz_old.')
         return
     import platform
@@ -1096,11 +1096,11 @@ def relpath(path, start=None):
 
 def test_open():
 
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print('test_open(): not running on classic.')
         return
     
-    if fitz.mupdf_version_tuple < (1, 24):
+    if pymupdf.mupdf_version_tuple < (1, 24):
         print('test_open(): not running on mupdf < 1.24.')
         return
     
@@ -1126,7 +1126,7 @@ def test_open():
                 # Treat as sequence of regexes to look for.
                 eregex = '.*'.join(eregex)
             try:
-                fitz.open(filename=filename, stream=stream, filetype=filetype)
+                pymupdf.open(filename=filename, stream=stream, filetype=filetype)
             except etype as e:
                 text = traceback.format_exc(limit=0)
                 text = text.replace(os.sep, '/')
@@ -1140,7 +1140,7 @@ def test_open():
             else:
                 assert 0, f'Did not received exception, expected {etype=}.'
         else:
-            document = fitz.open(filename=filename, stream=stream, filetype=filetype)
+            document = pymupdf.open(filename=filename, stream=stream, filetype=filetype)
             return document
     
     check(f'{resources}/1.pdf')
@@ -1153,12 +1153,12 @@ def test_open():
     check(path, exception=(etype, eregex))
     
     path = 'test_open-this-file-will-not-exist'
-    etype = fitz.FileNotFoundError
+    etype = pymupdf.FileNotFoundError
     eregex = f'no such file: \'{path}\''
     check(path, exception=(etype, eregex))
     
     path = resources
-    etype = fitz.FileDataError
+    etype = pymupdf.FileDataError
     eregex = re.escape(f'\'{path}\' is no file')
     check(path, exception=(etype, eregex))
     
@@ -1166,19 +1166,19 @@ def test_open():
     path = path.replace(os.sep, '/')
     with open(path, 'w') as f:
         pass
-    etype = fitz.EmptyFileError
+    etype = pymupdf.EmptyFileError
     eregex = re.escape(f'Cannot open empty file: filename={path!r}.')
     check(path, exception=(etype, eregex))
     
     path = f'{resources}/1.pdf'
     filetype = 'xps'
-    etype = fitz.FileDataError
+    etype = pymupdf.FileDataError
     # 2023-12-12: On OpenBSD, for some reason the SWIG catch code only catches
     # the exception as FzErrorBase.
     etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorFormat'
     eregex = (
             # With a sysinstall with separate MuPDF install, we get
-            # `mupdf.FzErrorFormat` instead of `fitz.mupdf.FzErrorFormat`. So
+            # `mupdf.FzErrorFormat` instead of `pymupdf.mupdf.FzErrorFormat`. So
             # we just search for the former.
             re.escape(f'mupdf.{etype2}: code=7: cannot recognize zip archive'),
             re.escape(f'pymupdf.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
@@ -1186,7 +1186,7 @@ def test_open():
     check(path, filetype=filetype, exception=(etype, eregex))
     
     path = f'{resources}/chinese-tables.pickle'
-    etype = fitz.FileDataError
+    etype = pymupdf.FileDataError
     etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorUnsupported'
     etext = (
             re.escape(f'mupdf.{etype2}: code=6: cannot find document handler for file: {path}'),
@@ -1199,14 +1199,14 @@ def test_open():
     etext = re.escape('bad stream: type(stream)=<class \'int\'>.')
     check(stream=stream, exception=(etype, etext))
     
-    check(stream=b'', exception=(fitz.EmptyFileError, re.escape('Cannot open empty stream.')))
+    check(stream=b'', exception=(pymupdf.EmptyFileError, re.escape('Cannot open empty stream.')))
 
 def test_533():
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print('test_533(): Not running on classic.')
         return
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     print()
     for p in doc:
         print(f'for p in doc: {p=}.')
@@ -1216,7 +1216,7 @@ def test_533():
         print(f'for p in doc[:]: {p=}.')
 
 def test_3354():
-    document = fitz.open(filename)
+    document = pymupdf.open(filename)
     v = dict(foo='bar')
     document.metadata = v
     assert document.metadata == v

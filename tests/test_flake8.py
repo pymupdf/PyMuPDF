@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 import os
 import subprocess
@@ -9,7 +9,7 @@ def test_flake8():
     '''
     Check rebased Python code with flake8.
     '''
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print(f'Not running flake8 with classic implementation.')
         return
     ignores = (

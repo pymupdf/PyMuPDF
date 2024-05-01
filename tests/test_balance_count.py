@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 
 def test_q_count():
@@ -10,11 +10,11 @@ def test_q_count():
     contents object(s) via "wrap_contents()" and confirm success.
     PDF commands "q" / "Q" stand for "push", respectively "pop".
     """
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     # the page has no /Contents objects at all yet. Create one causing
     # an initial imbalance (so prepended "q" is needed)
-    fitz.TOOLS._insert_contents(page, b"Q", True)  # append
+    pymupdf.TOOLS._insert_contents(page, b"Q", True)  # append
     assert page._count_q_balance() == (1, 0)
     assert page.is_wrapped is False
 
@@ -25,15 +25,15 @@ def test_q_count():
     assert page._count_q_balance() == (0, 0)
 
     # an appended "pop" must be balanced by a prepended "push"
-    fitz.TOOLS._insert_contents(page, b"Q", True)  # append
+    pymupdf.TOOLS._insert_contents(page, b"Q", True)  # append
     assert page._count_q_balance() == (1, 0)
 
     # a prepended "pop" yet needs another push
-    fitz.TOOLS._insert_contents(page, b"Q", False)  # prepend
+    pymupdf.TOOLS._insert_contents(page, b"Q", False)  # prepend
     assert page._count_q_balance() == (2, 0)
 
     # an appended "push" needs an additional "pop"
-    fitz.TOOLS._insert_contents(page, b"q", True)  # append
+    pymupdf.TOOLS._insert_contents(page, b"q", True)  # append
     assert page._count_q_balance() == (2, 1)
 
     # wrapping the contents should yield a balanced state again

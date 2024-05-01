@@ -5,11 +5,11 @@
 """
 import os
 
-import fitz
+import pymupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "Bezier.epub")
-doc = fitz.open(filename)
+doc = pymupdf.open(filename)
 
 
 def test_isnopdf():
@@ -31,5 +31,5 @@ def test_pageids():
 def test_layout():
     """Memorize a page location, re-layout with ISO-A4, assert pre-determined location."""
     loc = doc.make_bookmark((5, 11))
-    doc.layout(fitz.Rect(fitz.paper_rect("a4")))
+    doc.layout(pymupdf.Rect(pymupdf.paper_rect("a4")))
     assert doc.find_bookmark(loc) == (5, 6)

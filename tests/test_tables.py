@@ -1,7 +1,7 @@
 import os
 import io
 from pprint import pprint
-import fitz
+import pymupdf
 import pickle
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -12,7 +12,7 @@ pickle_file = os.path.join(scriptdir, "resources", "chinese-tables.pickle")
 def test_table1():
     """Compare pickled tables with those of the current run."""
     pickle_in = open(pickle_file, "rb")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     tabs = page.find_tables()
     cells = tabs[0].cells + tabs[1].cells  # all table cell tuples on page
@@ -28,15 +28,15 @@ def test_table1():
     old_cells = old_data["cells"][0] + old_data["cells"][1]
     assert len(cells) == len(old_cells)
     for i in range(len(cells)):
-        c1 = fitz.Rect(cells[i])  # new cell coordinates
-        c0 = fitz.Rect(old_cells[i])  # old cell coordinates
+        c1 = pymupdf.Rect(cells[i])  # new cell coordinates
+        c0 = pymupdf.Rect(old_cells[i])  # old cell coordinates
         assert c0 in c1  # always: old contained in new
         assert abs(c1 - c0) < 0.2  # difference must be small
 
 
 def test_table2():
     """Confirm header properties."""
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     tab1, tab2 = page.find_tables().tables
     # both tables contain their header data
@@ -53,14 +53,14 @@ def test_2812():
     Each page shows the same 8x5 table.
     We will check that each table is detected and delivers the same content.
     """
-    doc = fitz.open()
+    doc = pymupdf.open()
     # Page 0: rotation 0
     page = doc.new_page(width=842, height=595)
     rect = page.rect + (72, 72, -72, -72)
     cols = 5
     rows = 8
     # define the cells, draw the grid and insert unique text in each cell.
-    cells = fitz.make_table(rect, rows=rows, cols=cols)
+    cells = pymupdf.make_table(rect, rows=rows, cols=cols)
     for i in range(rows):
         for j in range(cols):
             page.draw_rect(cells[i][j])
@@ -69,7 +69,7 @@ def test_2812():
             page.insert_textbox(
                 cells[i][j],
                 f"cell[{i}][{j}]",
-                align=fitz.TEXT_ALIGN_CENTER,
+                align=pymupdf.TEXT_ALIGN_CENTER,
             )
     page.clean_contents()
 
@@ -78,7 +78,7 @@ def test_2812():
     rect = page.rect + (72, 72, -72, -72)
     cols = 8
     rows = 5
-    cells = fitz.make_table(rect, rows=rows, cols=cols)
+    cells = pymupdf.make_table(rect, rows=rows, cols=cols)
     for i in range(rows):
         for j in range(cols):
             page.draw_rect(cells[i][j])
@@ -88,7 +88,7 @@ def test_2812():
                 cells[i][j],
                 f"cell[{j}][{rows-i-1}]",
                 rotate=90,
-                align=fitz.TEXT_ALIGN_CENTER,
+                align=pymupdf.TEXT_ALIGN_CENTER,
             )
     page.set_rotation(90)
     page.clean_contents()
@@ -98,7 +98,7 @@ def test_2812():
     rect = page.rect + (72, 72, -72, -72)
     cols = 5
     rows = 8
-    cells = fitz.make_table(rect, rows=rows, cols=cols)
+    cells = pymupdf.make_table(rect, rows=rows, cols=cols)
     for i in range(rows):
         for j in range(cols):
             page.draw_rect(cells[i][j])
@@ -108,7 +108,7 @@ def test_2812():
                 cells[i][j],
                 f"cell[{rows-i-1}][{cols-j-1}]",
                 rotate=180,
-                align=fitz.TEXT_ALIGN_CENTER,
+                align=pymupdf.TEXT_ALIGN_CENTER,
             )
     page.set_rotation(180)
     page.clean_contents()
@@ -118,7 +118,7 @@ def test_2812():
     rect = page.rect + (72, 72, -72, -72)
     cols = 8
     rows = 5
-    cells = fitz.make_table(rect, rows=rows, cols=cols)
+    cells = pymupdf.make_table(rect, rows=rows, cols=cols)
     for i in range(rows):
         for j in range(cols):
             page.draw_rect(cells[i][j])
@@ -128,7 +128,7 @@ def test_2812():
                 cells[i][j],
                 f"cell[{cols-j-1}][{i}]",
                 rotate=270,
-                align=fitz.TEXT_ALIGN_CENTER,
+                align=pymupdf.TEXT_ALIGN_CENTER,
             )
     page.set_rotation(270)
     page.clean_contents()
@@ -141,7 +141,7 @@ def test_2812():
     # Test PDF prepared. Extract table on each page and
     # ensure identical extracted table data.
     # -------------------------------------------------------------------------
-    doc = fitz.open("pdf", pdfdata)
+    doc = pymupdf.open("pdf", pdfdata)
     extracts = []
     for page in doc:
         tabs = page.find_tables()
@@ -165,7 +165,7 @@ def test_2979():
     3001: no change of global glyph heights
     """
     filename = os.path.join(scriptdir, "resources", "test_2979.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     tab = page.find_tables()[0]  # extract the table
     lengths = set()  # stores all row cell counts
@@ -176,7 +176,7 @@ def test_2979():
     assert len(lengths) == 1
 
     # test 3001
-    assert fitz.TOOLS.set_small_glyph_heights() is False, f'{fitz.TOOLS.set_small_glyph_heights()=}'
+    assert pymupdf.TOOLS.set_small_glyph_heights() is False, f'{pymupdf.TOOLS.set_small_glyph_heights()=}'
 
 
 def test_3062():
@@ -184,7 +184,7 @@ def test_3062():
     After table extraction, a rotated page should behave and look
     like as before."""
     filename = os.path.join(scriptdir, "resources", "test_3062.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     tab0 = page.find_tables()[0]
     cells0 = tab0.cells
@@ -199,7 +199,7 @@ def test_3062():
 def test_strict_lines():
     """Confirm that ignoring borderless rectangles improves table detection."""
     filename = os.path.join(scriptdir, "resources", "strict-yes-no.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
 
     tab1 = page.find_tables()[0]
@@ -211,7 +211,7 @@ def test_strict_lines():
 def test_add_lines():
     """Test new parameter add_lines for table recognition."""
     filename = os.path.join(scriptdir, "resources", "small-table.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     assert page.find_tables().tables == []
 
@@ -229,9 +229,9 @@ def test_add_lines():
 
 def test_3148():
     """Ensure correct extraction text of rotated text."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
-    rect = fitz.Rect(100, 100, 300, 300)
+    rect = pymupdf.Rect(100, 100, 300, 300)
     text = (
         "rotation 0 degrees",
         "rotation 90 degrees",
@@ -240,7 +240,7 @@ def test_3148():
     )
     degrees = (0, 90, 180, 270)
     delta = (2, 2, -2, -2)
-    cells = fitz.make_table(rect, cols=3, rows=4)
+    cells = pymupdf.make_table(rect, cols=3, rows=4)
     for i in range(3):
         for j in range(4):
             page.draw_rect(cells[j][i])
@@ -258,7 +258,7 @@ def test_3148():
 def test_3179():
     """Test correct separation of multiple tables on page."""
     filename = os.path.join(scriptdir, "resources", "test_3179.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     tabs = page.find_tables()
     assert len(tabs.tables) == 3
@@ -271,7 +271,7 @@ def test_battery_file():
     where there existed no table at all.
     """
     filename = os.path.join(scriptdir, "resources", "battery-file-22.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     tabs = page.find_tables()
     assert len(tabs.tables) == 0
@@ -280,7 +280,7 @@ def test_battery_file():
 def test_markdown():
     """Confirm correct markdown output."""
     filename = os.path.join(scriptdir, "resources", "strict-yes-no.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     tab = page.find_tables(strategy="lines_strict")[0]
     text = (

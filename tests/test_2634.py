@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 import difflib
 import json
@@ -7,11 +7,11 @@ import pprint
 
 
 def test_2634():
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print('test_2634(): Not running on classic.')
         return
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_2634.pdf')
-    with fitz.open(path) as pdf, fitz.open() as new:
+    with pymupdf.open(path) as pdf, pymupdf.open() as new:
         new.insert_pdf(pdf)
         new.set_toc(pdf.get_toc(simple=False))
         toc_pdf = pdf.get_toc(simple=False)
@@ -57,8 +57,8 @@ def test_2634():
                 assert 'to' in b_dict
                 a_to = a_dict['to']
                 b_to = b_dict['to']
-                assert isinstance(a_to, fitz.Point)
-                assert isinstance(b_to, fitz.Point)
+                assert isinstance(a_to, pymupdf.Point)
+                assert isinstance(b_to, pymupdf.Point)
                 if a_to != b_to:
                     print(f'Points not identical: {a_to=} {b_to=}.')
                 assert abs(a_to.x - b_to.x) < 0.01

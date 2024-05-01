@@ -6,32 +6,32 @@
 import json
 import os
 
-import fitz
+import pymupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 imgfile = os.path.join(scriptdir, "resources", "nur-ruhig.jpg")
 
 
 def test_insert():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
-    r1 = fitz.Rect(50, 50, 100, 100)
-    r2 = fitz.Rect(50, 150, 200, 400)
+    r1 = pymupdf.Rect(50, 50, 100, 100)
+    r2 = pymupdf.Rect(50, 150, 200, 400)
     page.insert_image(r1, filename=imgfile)
     page.insert_image(r2, filename=imgfile, rotate=270)
     info_list = page.get_image_info()
     assert len(info_list) == 2
-    bbox1 = fitz.Rect(info_list[0]["bbox"])
-    bbox2 = fitz.Rect(info_list[1]["bbox"])
+    bbox1 = pymupdf.Rect(info_list[0]["bbox"])
+    bbox2 = pymupdf.Rect(info_list[1]["bbox"])
     assert bbox1 in r1
     assert bbox2 in r2
 
 def test_compress():
-    document = fitz.open(f'{scriptdir}/resources/2.pdf')
-    document_new = fitz.open()
+    document = pymupdf.open(f'{scriptdir}/resources/2.pdf')
+    document_new = pymupdf.open()
     for page in document:
         pixmap = page.get_pixmap(
-                colorspace=fitz.csRGB,
+                colorspace=pymupdf.csRGB,
                 dpi=72,
                 annots=False,
                 )
@@ -49,7 +49,7 @@ def test_compress():
 def test_3087():
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_3087.pdf')
     
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     page = doc[0]
     print(page.get_images())
     base = doc.extract_image(5)["image"]
@@ -57,7 +57,7 @@ def test_3087():
     page = doc.new_page()
     page.insert_image(page.rect, stream=base, mask=mask)
     
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     page = doc[0]
     print(page.get_images())
     base = doc.extract_image(5)["image"]

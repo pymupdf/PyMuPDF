@@ -6,12 +6,12 @@ import json
 import os
 import sys
 
-import fitz
+import pymupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
 metafile = os.path.join(scriptdir, "resources", "metadata.txt")
-doc = fitz.open(filename)
+doc = pymupdf.open(filename)
 
 
 def test_metadata():
@@ -29,7 +29,7 @@ def test_erase_meta():
 
 def test_3237():
     filename = os.path.abspath(f'{__file__}/../../tests/resources/001003ED.pdf')
-    with fitz.open(filename) as doc:
+    with pymupdf.open(filename) as doc:
         # We need to explicitly encode in utf8 on windows.
         metadata1 = doc.metadata
         metadata1 = repr(metadata1).encode('utf8')

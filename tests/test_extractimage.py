@@ -2,7 +2,7 @@
 Extract images from a PDF file, confirm number of images found.
 """
 import os
-import fitz
+import pymupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "joined.pdf")
@@ -10,7 +10,7 @@ known_image_count = 21
 
 
 def test_extract_image():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
 
     image_count = 1
     for xref in range(1, doc.xref_length() - 1):
@@ -25,16 +25,16 @@ def test_extract_image():
 def test_2348():
     
     pdf_path = f'{scriptdir}/test_2348.pdf'
-    document = fitz.open()
+    document = pymupdf.open()
     page = document.new_page(width=500, height=842)
-    rect = fitz.Rect(20, 20, 480, 820)
+    rect = pymupdf.Rect(20, 20, 480, 820)
     page.insert_image(rect, filename=f'{scriptdir}/resources/nur-ruhig.jpg')
     page = document.new_page(width=500, height=842)
     page.insert_image(rect, filename=f'{scriptdir}/resources/img-transparent.png')
     document.ez_save(pdf_path)
     document.close()
 
-    document = fitz.open(pdf_path)
+    document = pymupdf.open(pdf_path)
     page = document[0]
     imlist = page.get_images()
     image = document.extract_image(imlist[0][0])
@@ -51,7 +51,7 @@ def test_2348():
 
 def test_delete_image():
 
-    doc = fitz.open(os.path.abspath(f'{__file__}/../../tests/resources/test_delete_image.pdf'))
+    doc = pymupdf.open(os.path.abspath(f'{__file__}/../../tests/resources/test_delete_image.pdf'))
     page = doc[0]
     xref = page.get_images()[0][0]
     page.delete_image(xref)

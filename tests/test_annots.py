@@ -2,10 +2,10 @@
 """
 Test PDF annotation insertions.
 """
-import fitz
+import pymupdf
 import os
 
-fitz.TOOLS.set_annot_stem("jorj")
+pymupdf.TOOLS.set_annot_stem("jorj")
 
 red = (1, 0, 0)
 blue = (0, 0, 1)
@@ -13,14 +13,14 @@ gold = (1, 1, 0)
 green = (0, 1, 0)
 scriptdir = os.path.dirname(__file__)
 
-displ = fitz.Rect(0, 50, 0, 50)
-r = fitz.Rect(72, 72, 220, 100)
+displ = pymupdf.Rect(0, 50, 0, 50)
+r = pymupdf.Rect(72, 72, 220, 100)
 t1 = "têxt üsès Lätiñ charß,\nEUR: €, mu: µ, super scripts: ²³!"
-rect = fitz.Rect(100, 100, 200, 200)
+rect = pymupdf.Rect(100, 100, 200, 200)
 
 
 def test_caret():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_caret_annot(rect.tl)
     assert annot.type == (14, "Caret")
@@ -30,7 +30,7 @@ def test_caret():
 
 
 def test_freetext():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_freetext_annot(
         rect,
@@ -39,7 +39,7 @@ def test_freetext():
         rotate=90,
         text_color=blue,
         fill_color=gold,
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
     )
     annot.set_border(width=0.3, dashes=[2])
     annot.update(text_color=blue, fill_color=gold)
@@ -47,35 +47,35 @@ def test_freetext():
 
 
 def test_text():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_text_annot(r.tl, t1)
     assert annot.type == (0, "Text")
 
 
 def test_highlight():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_highlight_annot(rect)
     assert annot.type == (8, "Highlight")
 
 
 def test_underline():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_underline_annot(rect)
     assert annot.type == (9, "Underline")
 
 
 def test_squiggly():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_squiggly_annot(rect)
     assert annot.type == (10, "Squiggly")
 
 
 def test_strikeout():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_strikeout_annot(rect)
     assert annot.type == (11, "StrikeOut")
@@ -83,10 +83,10 @@ def test_strikeout():
 
 
 def test_polyline():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     rect = page.rect + (100, 36, -100, -36)
-    cell = fitz.make_table(rect, rows=10)
+    cell = pymupdf.make_table(rect, rows=10)
     for i in range(10):
         annot = page.add_polyline_annot((cell[i][0].bl, cell[i][0].br))
         annot.set_line_ends(i, i)
@@ -97,17 +97,17 @@ def test_polyline():
 
 
 def test_polygon():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_polygon_annot([rect.bl, rect.tr, rect.br, rect.tl])
     assert annot.type == (6, "Polygon")
 
 
 def test_line():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     rect = page.rect + (100, 36, -100, -36)
-    cell = fitz.make_table(rect, rows=10)
+    cell = pymupdf.make_table(rect, rows=10)
     for i in range(10):
         annot = page.add_line_annot(cell[i][0].bl, cell[i][0].br)
         annot.set_line_ends(i, i)
@@ -118,28 +118,28 @@ def test_line():
 
 
 def test_square():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_rect_annot(rect)
     assert annot.type == (4, "Square")
 
 
 def test_circle():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_circle_annot(rect)
     assert annot.type == (5, "Circle")
 
 
 def test_fileattachment():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_file_annot(rect.tl, b"just anything for testing", "testdata.txt")
     assert annot.type == (17, "FileAttachment")
 
 
 def test_stamp():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_stamp_annot(r, stamp=10)
     assert annot.type == (13, "Stamp")
@@ -151,7 +151,7 @@ def test_stamp():
 
 
 def test_redact1():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     annot = page.add_redact_annot(r, text="Hello")
     annot.update(
@@ -171,17 +171,17 @@ def test_redact1():
 
 def test_redact2():
     """Test for keeping text and removing graphics."""
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         print("Not executing 'test_redact2' in classic")
         return
     filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     all_text0 = page.get_text("words")
     page.add_redact_annot(page.rect)
     page.apply_redactions(text=1)
     t = page.get_text("words")
-    if fitz.mupdf_version_tuple < (1, 25):
+    if pymupdf.mupdf_version_tuple < (1, 25):
         assert t == []
     else:
         assert t == all_text0
@@ -190,11 +190,11 @@ def test_redact2():
 
 def test_redact3():
     """Test for removing text and graphics."""
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         print("Not executing 'test_redact3' in classic")
         return
     filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     page.add_redact_annot(page.rect)
     page.apply_redactions()
@@ -204,11 +204,11 @@ def test_redact3():
 
 def test_redact4():
     """Test for removing text and keeping graphics."""
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         print("Not executing 'test_redact4' in classic")
         return
     filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     line_art = page.get_drawings()
     page.add_redact_annot(page.rect)
@@ -223,20 +223,20 @@ def test_1645():
     '''
     path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
 
-    if fitz.mupdf_version_tuple[:2] >= (1, 24):
+    if pymupdf.mupdf_version_tuple[:2] >= (1, 24):
         path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.24.pdf')
     else:
         path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.22.pdf')
     path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
-    doc = fitz.open(path_in)
+    doc = pymupdf.open(path_in)
     page = doc[0]
     page_bounds = page.bound()
-    annot_loc = fitz.Rect(page_bounds.x0, page_bounds.y0, page_bounds.x0 + 75, page_bounds.y0 + 15)
+    annot_loc = pymupdf.Rect(page_bounds.x0, page_bounds.y0, page_bounds.x0 + 75, page_bounds.y0 + 15)
     # Check type of page.derotation_matrix - this is #2911.
-    assert isinstance(page.derotation_matrix, fitz.Matrix), \
+    assert isinstance(page.derotation_matrix, pymupdf.Matrix), \
             f'Bad type for page.derotation_matrix: {type(page.derotation_matrix)=} {page.derotation_matrix=}.'
     page.add_freetext_annot(annot_loc * page.derotation_matrix, "TEST", fontsize=18,
-    fill_color=fitz.utils.getColor("FIREBRICK1"), rotate=page.rotation)
+    fill_color=pymupdf.utils.getColor("FIREBRICK1"), rotate=page.rotation)
     doc.save(path_out, garbage=1, deflate=True, no_new_id=True)
     print(f'Have created {path_out}. comparing with {path_expected}.')
     with open( path_out, 'rb') as f:
@@ -251,7 +251,7 @@ def test_1824():
     transparent image.
     '''
     path = os.path.abspath( f'{__file__}/../resources/test_1824.pdf')
-    doc=fitz.open(path)
+    doc=pymupdf.open(path)
     page=doc[0]
     page.apply_redactions()
 
@@ -260,9 +260,9 @@ def test_2270():
     https://github.com/pymupdf/PyMuPDF/issues/2270
     '''
     path = os.path.abspath( f'{__file__}/../../tests/resources/test_2270.pdf')
-    with fitz.open(path) as document:
+    with pymupdf.open(path) as document:
         for page_number, page in enumerate(document):
-            for textBox in page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT,fitz.PDF_ANNOT_TEXT)):
+            for textBox in page.annots(types=(pymupdf.PDF_ANNOT_FREE_TEXT,pymupdf.PDF_ANNOT_TEXT)):
                 print("textBox.type :", textBox.type)
                 print("textBox.get_text('words') : ", textBox.get_text('words'))
                 print("textBox.get_text('text') : ", textBox.get_text('text'))
@@ -274,7 +274,7 @@ def test_2270():
                 assert textBox.get_textbox(textBox.rect) == 'abc123'
                 assert textBox.info['content'] == 'abc123'
 
-                if hasattr(fitz, 'mupdf'):
+                if hasattr(pymupdf, 'mupdf'):
                     # Additional check that Annot.get_textpage() returns a
                     # TextPage that works with page.get_text() - prior to
                     # 2024-01-30 the TextPage had no `.parent` member.
@@ -292,7 +292,7 @@ def test_2934_add_redact_annot():
     path = os.path.abspath(f'{__file__}/../../tests/resources/mupdf_explored.pdf')
     with open(path, 'rb') as f:
         data = f.read()
-    doc = fitz.Document(stream=data)
+    doc = pymupdf.Document(stream=data)
     print(f'Is PDF: {doc.is_pdf}')
     print(f'Number of pages: {doc.page_count}')
 
@@ -309,14 +309,14 @@ def test_2969():
     https://github.com/pymupdf/PyMuPDF/issues/2969
     '''
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_2969.pdf')
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     page = doc[0]
     first_annot = list(page.annots())[0]
     first_annot.next
 
 def test_file_info():
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_annot_file_info.pdf')
-    document = fitz.open(path)
+    document = pymupdf.open(path)
     results = list()
     for i, page in enumerate(document):
         print(f'{i=}')
@@ -325,7 +325,7 @@ def test_file_info():
             print(f'{j=} {annotation=}')
             t = annotation.type
             print(f'{t=}')
-            if t[0] == fitz.PDF_ANNOT_FILE_ATTACHMENT:
+            if t[0] == pymupdf.PDF_ANNOT_FILE_ATTACHMENT:
                 file_info = annotation.file_info
                 print(f'{file_info=}')
                 results.append(file_info)
@@ -335,7 +335,7 @@ def test_file_info():
             ]
 
 def test_3131():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     page.add_line_annot((0, 0), (1, 1))
@@ -345,7 +345,7 @@ def test_3131():
     first_annot.next.type
 
 def test_3209():
-    pdf = fitz.Document(filetype="pdf")
+    pdf = pymupdf.Document(filetype="pdf")
     page = pdf.new_page()
     page.add_ink_annot([[(300,300), (400, 380), (350, 350)]])
     n = 0

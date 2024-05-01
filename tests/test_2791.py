@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 import gc
 import os
@@ -7,8 +7,8 @@ import sys
 
 
 def merge_pdf(content: bytes, coverpage: bytes):
-   with fitz.Document(stream=coverpage, filetype='pdf') as coverpage_pdf:
-        with fitz.Document(stream=content, filetype='pdf') as content_pdf:
+   with pymupdf.Document(stream=coverpage, filetype='pdf') as coverpage_pdf:
+        with pymupdf.Document(stream=content, filetype='pdf') as content_pdf:
             coverpage_pdf.insert_pdf(content_pdf)
             doc = coverpage_pdf.write()
             return doc
@@ -69,7 +69,7 @@ def test_2791():
         # yet know whether this is because rss is measured differently or a
         # genuine leak is being exposed.
         print(f'test_2791(): not asserting ratio because not running on Linux.')
-    elif not hasattr(fitz, 'mupdf'):
+    elif not hasattr(pymupdf, 'mupdf'):
         # Classic implementation has unfixed leaks.
         print(f'test_2791(): not asserting ratio because using classic implementation.')
     elif [int(x) for x in platform.python_version_tuple()[:2]] < [3, 11]:
