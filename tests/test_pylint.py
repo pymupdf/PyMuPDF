@@ -110,6 +110,7 @@ def test_pylint():
             '__init__.py',
             '__main__.py',
             'fitz.py',
+            'pymupdf.py',
             'table.py',
             'utils.py',
             ]

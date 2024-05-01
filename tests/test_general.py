@@ -1042,8 +1042,8 @@ def test_cli_out():
     check(
             [
                 log_prefix,
-                'This is from fitz.message[(][)][.]',
-                '.+This is from fitz.log[(][)].',
+                'This is from PyMuPDF message[(][)][.]',
+                '.+This is from PyMuPDF log[(][)].',
             ],
             '',
             )
@@ -1063,18 +1063,18 @@ def test_cli_out():
             return f.read()
     out = read(path_out)
     err = read(path_err)
-    check_lines(['This is from fitz.message[(][)][.]'], out)
-    check_lines([log_prefix, '.+This is from fitz.log[(][)][.]'], err)
+    check_lines(['This is from PyMuPDF message[(][)][.]'], out)
+    check_lines([log_prefix, '.+This is from PyMuPDF log[(][)][.]'], err)
     
     #
     print(f'Checking redirection to fds.')
     check(
             [
-                'This is from fitz.message[(][)][.]',
+                'This is from PyMuPDF message[(][)][.]',
             ],
             [
                 log_prefix,
-                '.+This is from fitz.log[(][)].',
+                '.+This is from PyMuPDF log[(][)].',
             ],
             'fd:1',
             'fd:2',

@@ -45,6 +45,8 @@ Options:
         PyMuPDF's `setup.py`.]
     -d
         Equivalent to `--build-type debug`.
+    -f 0|1
+        If 1 (the default) we also test module `pymupdf` instead of `fitz`.
     -i <implementations>
         Set PyMuPDF implementations to test.
         <implementations> must contain only these individual characters:
@@ -66,10 +68,13 @@ Options:
             -t tests/test_general.py::test_subset_fonts.
         To specify multiple tests, use comma-separated list and/or multiple `-t
         <names>` args.
-    -v
-        Avoid delay if venv directory already exists. We assume the existing
-        directory was created by us earlier and is a valid venv containing all
-        necessary packages.
+    -v 0|1|2
+        0 - do not use a venv.
+        1 - Use venv. If it already exists, we assume the existing directory
+            was created by us earlier and is a valid venv containing all
+            necessary packages; this saves a little time.
+        2 - use venv.
+        The default is 2.
     --build-isolation 0|1
         If true (the default on non-OpenBSD systems), we let pip create and use
         its own new venv to build PyMuPDF. Otherwise we force pip to use the
@@ -100,6 +105,7 @@ Environment:
 
 import gh_release
 
+import glob
 import os
 import platform
 import re
@@ -124,9 +130,10 @@ def main(argv):
     build_type = None
     build_mupdf = True
     gdb = False
+    test_pymupdf = True
     implementations = None
     test_names = list()
-    venv_quick = False
+    venv = 2
     pytest_options = None
     timeout = None
     
@@ -149,6 +156,8 @@ def main(argv):
             build_isolation = int(next(args))
         elif arg == '-d':
             build_type = 'debug'
+        elif arg == '-f':
+            test_pymupdf = int(next(args))
         elif arg in ('-h', '--help'):
             show_help()
             return
@@ -167,7 +176,7 @@ def main(argv):
         elif arg == '--timeout':
             timeout = float(next(args))
         elif arg == '-v':
-            venv_quick = True
+            venv = int(next(args))
         elif arg == '--build-mupdf':
             build_mupdf = int(next(args))
         elif arg == '--gdb':
@@ -191,8 +200,10 @@ def main(argv):
         except StopIteration:
             break
     
-    # We always want to run inside a venv.
-    if sys.prefix == sys.base_prefix:
+    venv_quick = (venv==1)
+    
+    # Run inside a venv.
+    if venv and sys.prefix == sys.base_prefix:
         # We are not running in a venv.
         log(f'Re-running in venv {gh_release.venv_name!r}.')
         gh_release.venv( ['python'] + argv, quick=venv_quick)
@@ -215,6 +226,7 @@ def main(argv):
                 pytest_options=pytest_options,
                 timeout=timeout,
                 gdb=gdb,
+                test_pymupdf=test_pymupdf,
                 )
     
     for command in commands:
@@ -347,6 +359,7 @@ def test(
         pytest_options=None,
         timeout=None,
         gdb=False,
+        test_pymupdf=True,
         ):
     '''
     Args:
@@ -355,13 +368,15 @@ def test(
         valgrind:
             See top-level option `--valgrind`.
         venv_quick:
-            See top-level option `-v`.
+            .
         test_names:
             See top-level option `-t`.
         pytest_options:
             See top-level option `-p`.
         gdb:
             See top-level option `--gdb`.
+        test_pymupdf:
+            See top-level option `-f`.
     '''
     pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
     if pytest_options is None:
@@ -413,6 +428,27 @@ def test(
             # On OpenBSD `pip install pytest` doesn't seem to install the pytest
             # command, so we use `python -m pytest ...`.
             command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} {python} -m pytest {pytest_options} {pytest_arg}'
+        
+        # Always start by removing any test_*_fitz.py files.
+        for p in glob.glob(f'{pymupdf_dir_rel}/tests/test_*_fitz.py'):
+            print(f'Removing {p=}')
+            os.remove(p)
+        if test_pymupdf:
+            # Create copies of each test file, modified to use `pymupdf`
+            # instead of `fitz`.
+            print(f'{pymupdf_dir_rel=}')
+            for p in glob.glob(f'{pymupdf_dir_rel}/tests/test_*.py'):
+                branch, leaf = os.path.split(p)
+                p2 = f'{branch}/{leaf[:5]}fitz_{leaf[5:]}'
+                with open(p) as f:
+                    text = f.read()
+                text2 = re.sub("([^\'])\\bfitz\\b", '\\1pymupdf', text)
+                if p == f'{pymupdf_dir_rel}/tests/test_docs_samples.py':
+                    assert text2 == text
+                else:
+                    assert text2 != text, f'Unexpectedly unchanged when creating {p!r} => {p2!r}'
+                with open(p2, 'w') as f:
+                    f.write(text2)
         
         log(f'Running tests with tests/run_compound.py and pytest.')
         gh_release.run(command, env_extra=env_extra, timeout=timeout)

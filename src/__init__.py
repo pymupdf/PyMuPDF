@@ -149,17 +149,14 @@ g_use_extra = get_env_bool( 'PYMUPDF_USE_EXTRA', True)
 # Global switches
 #
 
-# Switch for device hints = no cache
-g_no_device_caching = 0
+class _Globals:
+    def __init__(self):
+        self.no_device_caching = 0
+        self.small_glyph_heights = 0
+        self.subset_fontnames = 0
+        self.skip_quad_corrections = 0
 
-# Switch for computing glyph of fontsize height
-g_small_glyph_heights = 0
-
-# Switch for returning fontnames including subset prefix
-g_subset_fontnames = 0
-
-# Unset ascender / descender corrections
-g_skip_quad_corrections = 0
+_globals = _Globals()
 
 
 # Optionally use MuPDF via cppyy bindings; experimental and not tested recently
@@ -7775,7 +7772,7 @@ class Page:
         ctm = JM_matrix_from_py(matrix)
         tpage = mupdf.FzStextPage(rect)
         dev = mupdf.fz_new_stext_device(tpage, options)
-        if g_no_device_caching:
+        if _globals.no_device_caching:
             mupdf.fz_enable_device_hints( dev, mupdf.FZ_NO_CACHE)
         if isinstance(page, mupdf.FzPage):
             pass
@@ -14851,7 +14848,7 @@ def JM_char_quad(line, ch):
         
     assert isinstance(line, mupdf.FzStextLine)
     assert isinstance(ch, mupdf.FzStextChar)
-    if g_skip_quad_corrections:   # no special handling
+    if _globals.skip_quad_corrections:   # no special handling
         return ch.quad
     if line.m_internal.wmode:  # never touch vertical write mode
         return ch.quad
@@ -14860,7 +14857,7 @@ def JM_char_quad(line, ch):
     dsc = JM_font_descender(font)
     fsize = ch.m_internal.size
     asc_dsc = asc - dsc + FLT_EPSILON
-    if asc_dsc >= 1 and g_small_glyph_heights == 0:   # no problem
+    if asc_dsc >= 1 and _globals.small_glyph_heights == 0:   # no problem
         return mupdf.FzQuad(ch.m_internal.quad)
 
     # Re-compute quad with adjusted ascender / descender values:
@@ -14874,7 +14871,7 @@ def JM_char_quad(line, ch):
         asc = 0.9
         asc_dsc = 1.0
     
-    if g_small_glyph_heights or asc_dsc < 1:
+    if _globals.small_glyph_heights or asc_dsc < 1:
         dsc = dsc / asc_dsc
         asc = asc / asc_dsc
     asc_dsc = asc - dsc
@@ -15468,7 +15465,7 @@ def JM_font_ascender(font):
     need own versions of ascender / descender
     '''
     assert isinstance(font, mupdf.FzFont)
-    if g_skip_quad_corrections:
+    if _globals.skip_quad_corrections:
         return 0.8
     return mupdf.fz_font_ascender(font)
 
@@ -15478,7 +15475,7 @@ def JM_font_descender(font):
     need own versions of ascender / descender
     '''
     assert isinstance(font, mupdf.FzFont)
-    if g_skip_quad_corrections:
+    if _globals.skip_quad_corrections:
         return -0.2
     ret = mupdf.fz_font_descender(font)
     return ret
@@ -15502,7 +15499,7 @@ def JM_font_name(font):
     assert isinstance(font, mupdf.FzFont)
     name = mupdf.fz_font_name(font)
     s = name.find('+')
-    if g_subset_fontnames or s == -1 or s != 6:
+    if _globals.subset_fontnames or s == -1 or s != 6:
         return name
     return name[s + 1:]
 
@@ -21763,30 +21760,28 @@ class TOOLS:
     @staticmethod
     def set_low_memory( on=None):
         """Set / unset MuPDF device caching."""
-        global g_no_device_caching
         if on is not None:
-            g_no_device_caching = bool(on)
-        return g_no_device_caching
+            _globals.no_device_caching = bool(on)
+        return _globals.no_device_caching
 
     @staticmethod
     def set_small_glyph_heights(on=None):
         """Set / unset small glyph heights."""
-        global g_small_glyph_heights
+        log(f'set_small_glyph_heights(): {_globals.small_glyph_heights=} {on=}')
         if on is not None:
-            g_small_glyph_heights = bool(on)
+            _globals.small_glyph_heights = bool(on)
             if g_use_extra:
-                extra.set_small_glyph_heights(g_small_glyph_heights)
-        return g_small_glyph_heights
+                extra.set_small_glyph_heights(_globals.small_glyph_heights)
+        return _globals.small_glyph_heights
     
     @staticmethod
     def set_subset_fontnames(on=None):
         '''
         Set / unset returning fontnames with their subset prefix.
         '''
-        global g_subset_fontnames
         if on is not None:
-            g_subset_fontnames = bool(on)
-        return g_subset_fontnames
+            _globals.subset_fontnames = bool(on)
+        return _globals.subset_fontnames
     
     @staticmethod
     def show_aa_level():
@@ -21832,10 +21827,9 @@ class TOOLS:
         '''
         Set ascender / descender corrections on or off.
         '''
-        global g_skip_quad_corrections
         if on is not None:
-            g_skip_quad_corrections = bool(on)
-        return g_skip_quad_corrections
+            _globals.skip_quad_corrections = bool(on)
+        return _globals.skip_quad_corrections
 
     # fixme: also defined at top-level.
     JM_annot_id_stem = 'fitz'
