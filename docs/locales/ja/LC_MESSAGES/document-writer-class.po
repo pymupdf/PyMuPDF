@@ -41,7 +41,7 @@ msgstr "DocumentWriter(ドキュメントライター)"
 
 #: ../../document-writer-class.rst:9 1b905e1faf1945c08252fa15ff219b68
 msgid "|pdf_only_class|"
-msgstr ""
+msgstr "PDFのみ。"
 
 #: ../../document-writer-class.rst:12 9841d5f1ad984b92b338bf5cd3fcc4ab
 msgid "New in v1.21.0"

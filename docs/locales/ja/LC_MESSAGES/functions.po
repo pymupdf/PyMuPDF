@@ -2070,13 +2070,11 @@ msgid ""
 msgstr ":meth:`Page.get_text` のオプション \"rawdict\" で抽出されたスパンの一部の文字の四辺形を計算します。"
 
 #: ../../functions.rst:764 d99a5255fabb46668efcafc5d32ef8f4
-#, fuzzy
 msgid ""
 "the characters to consider. If given, the selected extraction option must"
 " be \"rawdict\"."
-msgstr ""
-"考慮する文字。省略した場合、:meth:`recover_span` と同じです。指定する場合、選択した抽出オプションは \"rawdict\" "
-"である必要があります。"
+msgstr "考慮する文字。省略した場合、。指定する場合、選択した抽出オプションは \"rawdict\" である必要があります。"
+
 
 #: ../../functions.rst:765 96d847976a5d4e02a20c31511ac7491d
 msgid ""

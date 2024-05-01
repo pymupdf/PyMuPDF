@@ -344,7 +344,7 @@ msgstr ""
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with property `is_external`:"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../link.rst:106 1ae72418f5a149478c434b4bcc8b2981
 msgid ""
@@ -353,7 +353,7 @@ msgid ""
 "similar), another file (`uri` starts with \"file:\" or \"file://\") or "
 "some other service like an e-mail address (`uri` starts with "
 "\"mailto:\")."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../link.rst:112 934a89cc4d8d4d6980edcc2534955372
 msgid ""
@@ -363,7 +363,7 @@ msgid ""
 "format varies for other document types, for example "
 "\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
 "document."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../link.rst:119 0075329357674ce396c4fd233b3c538d
 msgid "str"

@@ -43,19 +43,18 @@ msgstr "描画とグラフィックス"
 msgid ""
 "When the terms \"Drawings\" or \"Graphics\" are mentioned here we are "
 "referring to \"Vector Graphics\" or \"Line Art\"."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:13 4f851f467f2d4b9a9fc7139ab87ea710
 msgid "Therefore please consider these terms as being synonymous!"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:16 d6999484bd4d4b79ac0422c98d0eecf0
-#, fuzzy
 msgid ""
 "PDF files support elementary drawing operations as part of their syntax. "
 "These are **vector graphics** and include basic geometrical objects like "
 "lines, curves, circles, rectangles including specifying colors."
-msgstr "PDFファイルは、その構文の一部として基本的な描画操作をサポートしています。これには、線、曲線、円、四角形などの基本的な幾何学的オブジェクトや色の指定が含まれます。"
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:18 6c00375b63f842218c599b6b49ddbaee
 msgid ""
@@ -68,7 +67,6 @@ msgstr ""
 "(:data:`contents`)オブジェクト内で指定されます。"
 
 #: ../../recipes-drawing-and-graphics.rst:20 f1e9321cbe7043758b4a594d5cd0b8b2
-#, fuzzy
 msgid ""
 "|PyMuPDF| implements a large part of the available features via its "
 ":ref:`Shape` class, which is comparable to notions like \"canvas\" in "
@@ -78,7 +76,6 @@ msgstr ""
 "<https://pypi.org/project/reportlab/>`_ など）の「キャンバス」のような概念と類似しています。"
 
 #: ../../recipes-drawing-and-graphics.rst:22 e2eaa8df53b147a0b2bf125e380c81ae
-#, fuzzy
 msgid ""
 "A shape is always created as a **child of a page**, usually with an "
 "instruction like `shape = page.new_shape()`. The class defines numerous "
@@ -92,7 +89,6 @@ msgstr ""
 "の境界に沿って四角形を描画します。"
 
 #: ../../recipes-drawing-and-graphics.rst:24 48d720a104d04d9c9b7cdf9467eefe0f
-#, fuzzy
 msgid ""
 "The returned *last_point* **always** is the :ref:`Point` where drawing "
 "operation ended (\"last point\"). Every such elementary drawing requires "
@@ -101,10 +97,9 @@ msgid ""
 msgstr ""
 "返されるlast_pointは常に描画操作が終了する :ref:`Point` "
 "（「最後のポイント」）です。このような基本的な描画ごとに、それを「閉じる」ために :meth:`Shape.finish` "
-"が必要ですが、1つの共通のfinish()メソッドを持つ複数の描画があるかもしれません。"
+"が必要ですが、1つの共通の``finish()``メソッドを持つ複数の描画があるかもしれません。"
 
 #: ../../recipes-drawing-and-graphics.rst:26 ac46898bacd949ebb3cd5385fb039506
-#, fuzzy
 msgid ""
 "In fact, :meth:`Shape.finish` *defines* a group of preceding draw "
 "operations to form one -- potentially rather complex -- graphics object. "
@@ -138,7 +133,6 @@ msgid "New in v1.18.0"
 msgstr "v1.18.0で新登場"
 
 #: ../../recipes-drawing-and-graphics.rst:101 c72e626e224345d281bc7ad6a03849ed
-#, fuzzy
 msgid ""
 "Drawing commands (**vector graphics**) issued by a page can be extracted "
 "as a list of dictionaries. Interestingly, this is possible for :ref:`all "
@@ -227,48 +221,48 @@ msgstr "パスのリストを使用して、ページ上のすべての線また
 #: ../../recipes-drawing-and-graphics.rst:210 3a9d4909dbae4d3e8b32ccedb7d287b1
 #, fuzzy
 msgid "How to Delete Drawings"
-msgstr "描画の抽出方法"
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:212 90002c6b09dc4a57a7059843116ba374
 msgid ""
 "To delete drawings/vector graphics we must use a :ref:`Redaction "
 "Annotation <The_Basics_Redacting>` with the bounding box of the drawing "
 "and then **add and apply** a redaction to it to delete it."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:215 52251d6b4da34f95a776f5c28b5b5d29
 msgid ""
 "The following code shows an example of deleting the first drawing found "
 "on the page::"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:225 b39a815341b6455f93ff6b156013613f
 msgid ""
 "See :meth:`Page.apply_redactions` for the parameter options which can be "
 "sent - you are able to apply deletion options to image, drawing and text "
 "objects which are bound by the annotation area."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:229 2900fd9fe1ff4f40bd472abac92ad86e
 msgid "How to Draw Graphics"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:231 91d3c9688fad42c4a11e68c9983519e3
 msgid ""
 "Drawing graphics is as simple as calling the type of :meth:`Drawing "
 "Method <Page.draw_line>` you may want. You can draw graphics directly on "
 "pages or within shape objects."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:234 8f34536c9ce24ffdbb717576a4b63b36
 msgid "For example, to draw a circle::"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../recipes-drawing-and-graphics.rst:245 541e33c7470748588b394739019e6c65
 msgid ""
 "The :ref:`Shape` object can be used to combine multiple drawings that "
 "should receive common properties as specified by :meth:`Shape.finish`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../footer.rst:60 6948efd7c60041dc97a51b07dbeb7351
 msgid "This documentation covers all versions up to |version|."

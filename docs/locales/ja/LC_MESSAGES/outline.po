@@ -128,7 +128,6 @@ msgid "**Class API**"
 msgstr "**クラスAPI**"
 
 #: ../../outline.rst:30 5cb88905eda344a3acb46c904fbed4cd
-#, fuzzy
 msgid ""
 "The next outline item on the next level down. Is *None* if the item has "
 "no children."
@@ -195,7 +194,7 @@ msgstr "対象が現在のドキュメントの外部（*True*）かどうかを
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with property `is_external`:"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../outline.rst:70 80555c24a5b844fd923605684a0ff47c
 msgid ""
@@ -204,7 +203,7 @@ msgid ""
 "similar), another file (`uri` starts with \"file:\" or \"file://\") or "
 "some other service like an e-mail address (`uri` starts with "
 "\"mailto:\")."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../outline.rst:76 b9a1ebc948614925962e16c047386bd1
 msgid ""
@@ -214,7 +213,7 @@ msgid ""
 "format varies for other document types, for example "
 "\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
 "document."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../outline.rst:87 f52eefedca7745c48e690d90be7c1829
 msgid "The link destination details object."

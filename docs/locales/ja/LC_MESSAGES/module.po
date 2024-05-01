@@ -37,21 +37,19 @@ msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブ
 
 #: ../../module.rst:7 8ef8d3ab2b7147818a470baf13dc4380
 msgid "Command line interface"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../module.rst:9 86a5d5168ec841ca8bbecc7a785ddec0
 msgid "New in version 1.16.8"
 msgstr "バージョン 1.16.8 で新たに追加されました"
 
 #: ../../module.rst:11 90d5b3b7b4d140bba702d89abe93150c
-#, fuzzy
 msgid ""
 "PyMuPDF can also be used from the command line to perform utility "
 "functions. This feature should obsolete writing some of the most basic "
 "scripts."
 msgstr ""
-"PyMuPDFは、ユーティリティ機能を実行するために**モジュール** "
-"としてコマンドラインで使用することもできます。この機能により、最も基本的なスクリプトの記述が廃止される可能性があります。"
+"PyMuPDFは、ユーティリティ機能を実行するためにモジュールとしてコマンドラインで使用することもできます。この機能により、最も基本的なスクリプトの記述が廃止される可能性があります。"
 
 #: ../../module.rst:13 259a673a172640ae8a26446fb3513ea9
 msgid ""
@@ -68,11 +66,11 @@ msgstr "呼び出し"
 
 #: ../../module.rst:18 693d76d2229944a2890934429e9f5495
 msgid "The command-line interface can be invoked in two ways."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../module.rst:20 e75950fe433b4ddbbd7fd59b311039fa
 msgid "Use the installed `pymupdf` command::"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../module.rst:24 58697137f2b74b278bbcb6b907e2af24
 msgid "Or use Python's `-m` switch with PyMuPDF's `fitz` module::"
@@ -405,13 +403,12 @@ msgstr ""
 "は、テキストブロック（MuPDFによって識別される）を垂直座標、水平座標の昇順に並べ替えます。これは、基本的なテキストページの「自然な」読み取り順序を確立するために十分です。"
 
 #: ../../module.rst:428 88f4f17d368a48638450b3b941b3f297
-#, fuzzy
 msgid ""
 "**Layout** strives to reproduce the original appearance of the input "
 "pages. You can expect results like this (produced by the command `pymupdf"
 " gettext -pages 1 demo1.pdf`):"
 msgstr ""
-"**レイアウト** は、入力ページの元の外観を再現しようとします。次のような結果が期待できます（コマンド  `python -m fitz "
+"**レイアウト** は、入力ページの元の外観を再現しようとします。次のような結果が期待できます（コマンド  `pymupdf "
 "gettext -pages 1 demo1.pdf`  によって生成されたもの）："
 
 #: ../../module.rst:433 1d0c650782b44e979bfddabce23dab2a
