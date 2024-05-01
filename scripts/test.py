@@ -46,7 +46,7 @@ Options:
     -d
         Equivalent to `--build-type debug`.
     -f 0|1
-        If 1 (the default) we also test module `pymupdf` instead of `fitz`.
+        If 1 (the default) we also test alias `fitz` as well as `pymupdf`.
     -i <implementations>
         Set PyMuPDF implementations to test.
         <implementations> must contain only these individual characters:
@@ -436,18 +436,18 @@ def test(
         if test_pymupdf:
             # Create copies of each test file, modified to use `pymupdf`
             # instead of `fitz`.
-            print(f'{pymupdf_dir_rel=}')
             for p in glob.glob(f'{pymupdf_dir_rel}/tests/test_*.py'):
                 branch, leaf = os.path.split(p)
                 p2 = f'{branch}/{leaf[:5]}fitz_{leaf[5:]}'
-                with open(p) as f:
+                print(f'Converting {p=} to {p2=}.')
+                with open(p, encoding='utf8') as f:
                     text = f.read()
-                text2 = re.sub("([^\'])\\bfitz\\b", '\\1pymupdf', text)
-                if p == f'{pymupdf_dir_rel}/tests/test_docs_samples.py':
+                text2 = re.sub("([^\'])\\bpymupdf\\b", '\\1fitz', text)
+                if p.replace(os.sep, '/') == f'{pymupdf_dir_rel}/tests/test_docs_samples.py'.replace(os.sep, '/'):
                     assert text2 == text
                 else:
                     assert text2 != text, f'Unexpectedly unchanged when creating {p!r} => {p2!r}'
-                with open(p2, 'w') as f:
+                with open(p2, 'w', encoding='utf8') as f:
                     f.write(text2)
         
         log(f'Running tests with tests/run_compound.py and pytest.')
