@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,44 +19,44 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 920a7486897f421eb0b539b550e0c4d1
+#: ../../header.rst:-1 350fd40d8d89403c8a589cbb27625305
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 fd93b519e89148ea9811a05d0dbf56a4
+#: ../../header.rst:-1 e95e412e839b438d920de6b5cc934ab0
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 84b4cb97fb18445ba029efabc11ea2e8
+#: ../../header.rst:-1 73826b46f26e442490032cc62d6c9ebc
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../about.rst:10 8ba204934f5f4a2998ea37240681eab8
+#: ../../about.rst:10 21bde08fa55f4a74b78d1cc145177cf6
 msgid "Features Comparison"
 msgstr "機能の比較"
 
-#: ../../about.rst:16 71dd0fed43f44dff9e2c8ef2166a3f93
+#: ../../about.rst:16 4f17e4d293134a579a26b140377dc3f0
 msgid "Feature Matrix"
 msgstr "機能比較表"
 
-#: ../../about.rst:18 261ef72bf32c43819f3f88f5141acfdd
+#: ../../about.rst:18 0fb3db12591a4f6793c795156e77aedc
 msgid ""
-"The following table illustrates how |PyMuPDF| compares with other "
-"typical solutions."
+"The following table illustrates how |PyMuPDF| compares with other typical"
+" solutions."
 msgstr "以下の表は、|PyMuPDF| が他の典型的な解決策と比較した場合の違いを示しています。"
 
-#: ../../about.rst:27 78cf9c6560a94b9ba6c1f62a7ff5a8e7
+#: ../../about.rst:27 d18ef057cc9e42e0b5f5022a12a5bd4c
 msgid "Performance"
 msgstr "パフォーマンス"
 
-#: ../../about.rst:31 c9fff5c5b0094db4923780a94bdc1e6a
+#: ../../about.rst:31 ebf2a34e0b874ea1b60e79630cfb32c4
 msgid ""
-"To benchmark |PyMuPDF| performance against a range of tasks a test"
-" suite with a fixed set of :ref:`8 PDFs with a total of 7,031 "
+"To benchmark |PyMuPDF| performance against a range of tasks a test suite "
+"with a fixed set of :ref:`8 PDFs with a total of 7,031 "
 "pages<Appendix4_Files_Used>` containing text & images is used to obtain "
 "performance timings."
 msgstr ""
@@ -64,25 +64,25 @@ msgstr ""
 "にテキストと画像が含まれている固定されたセットのテストスイートを使用して、|PyMuPDF|  "
 "のパフォーマンスをさまざまなタスクに対してベンチマークします。"
 
-#: ../../about.rst:34 c8b8933c46404fdb9f64f1ab30f0348b
+#: ../../about.rst:34 2bfeacbd4d0940e18603eee219075f92
 msgid "Here are current results, grouped by task:"
 msgstr "以下は、タスクごとにグループ化された現在の結果です："
 
-#: ../../about.rst:43 6263fa457c1a4f0abb28e70d87a861c6
+#: ../../about.rst:43 daf1f212196942eb98ed14609cdb4906
 msgid ""
 "For more detail regarding the methodology for these performance timings "
 "see: :ref:`Performance Comparison Methodology<Appendix4>`."
 msgstr "これらのパフォーマンスのタイミングに関する方法の詳細については、:ref:`パフォーマンス比較方法<Appendix4>` を参照してください。"
 
-#: ../../about.rst:48 b29e5fa010394b9da9ec6d25a9efeb98
+#: ../../about.rst:48 487e913457bf43c69efc41341e04dd06
 msgid "License and Copyright"
 msgstr "ライセンスと著作権"
 
-#: ../../about.rst:52 b3b1f9567d8e45b99c0a43821f16d943
+#: ../../about.rst:52 9ef2d96fc293452fbb0eca51c9761e5b
 msgid ""
-"|PyMuPDF| and :title:`MuPDF` are now available under both, open-"
-"source :title:`AGPL` and commercial license agreements. Please read the "
-"full text of the :title:`AGPL` license agreement, available in the "
+"|PyMuPDF| and :title:`MuPDF` are now available under both, open-source "
+":title:`AGPL` and commercial license agreements. Please read the full "
+"text of the :title:`AGPL` license agreement, available in the "
 "distribution material (file COPYING) and `here "
 "<https://www.gnu.org/licenses/agpl-3.0.html>`_, to ensure that your use "
 "case complies with the guidelines of the license. If you determine you "
@@ -97,13 +97,13 @@ msgstr ""
 "`Artifex <https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-"
 "pymupdf-jp&utm_medium=rtd&utm_content=inline-link>`_ にお問い合わせください。"
 
-#: ../../about.rst:70 0cf62365f6a0479498b37bfa316e49fe
+#: ../../about.rst:70 d50e9a6fd41446be8b2c6dc9d2259e5f
 msgid ""
 ":title:`Artifex` is the exclusive commercial licensing agent for "
 ":title:`MuPDF`."
 msgstr ":title:`Artifex` Artifexは、:title:`MuPDF` の独占的な商業ライセンスエージェントです。"
 
-#: ../../about.rst:72 9fe4c5b1b1434b059b718daf2f5df53b
+#: ../../about.rst:72 3f0dfe1d226c4af189c13623d1b674ee
 msgid ""
 ":title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the "
 ":title:`MuPDF` logo are registered trademarks of :title:`Artifex Software"
@@ -112,24 +112,24 @@ msgstr ""
 ":title:`Artifex` 、:title:`Artifex` のロゴ、:title:`MuPDF` "
 "、およびMuPDFのロゴは、:title:`Artifex Software Inc.` の登録商標です。"
 
-#: ../../version.rst:3 e0d39a7b36ab4a55b09903ffabfc2e42
+#: ../../version.rst:3 cf3e1cf96c3848aab4a8bd6629fa507d
 msgid ""
-"This documentation covers **PyMuPDF v1.23.26** features as of "
-"**2024-02-29 00:00:01**."
+"This documentation covers **PyMuPDF v1.24.2** features as of **2024-04-17"
+" 00:00:01**."
 msgstr ""
 
-#: ../../version.rst:5 97e4a1bdf8bf4765b2dd1b0eefb44125
+#: ../../version.rst:5 39c0936dfba241a49c5634a414187922
 msgid ""
 "The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
 " **MuPDF**."
 msgstr ""
 
-#: ../../footer.rst:71 b7fcef07f59e41a5be49d3325061f09f
+#: ../../footer.rst:60 12ff56abc86a47c48b8385bd6594215c
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 2d74a975380b45cb8f95e4a2db3fbbed
+#: ../../footer.rst:-1 e1fcb546e46944b0a7a2d4e991443faa
 msgid "Discord logo"
 msgstr ""
 
@@ -158,5 +158,10 @@ msgstr ""
 #~ msgid ""
 #~ "This documentation covers **PyMuPDF v1.23.8**"
 #~ " features as of **2023-12-19 00:00:01**."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This documentation covers **PyMuPDF v1.23.26**"
+#~ " features as of **2024-02-29 00:00:01**."
 #~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,74 +19,80 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 07f6e32e6c044c0d90b270a92ab008c2
+#: ../../header.rst:-1 9f2882adca6d45889305121fc0da40c1
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 d0261b58c9474829a6b70b3ec637a683
+#: ../../header.rst:-1 207e21e0632d479d940505e0f10b1907
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 321028952694486a9945cb41c6dc80b7
+#: ../../header.rst:-1 be6a0772f1224674ba40d0709b96fef6
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../recipes-annotations.rst:7 2a23a1e62fd841bfa9b546bc9cbaf97a
+#: ../../recipes-annotations.rst:7 607b2def6bad4614a1fbadde75b3ef1b
 msgid "Annotations"
 msgstr "注釈"
 
-#: ../../recipes-annotations.rst:12 a58f210b5abf425da7532c0fce932920
+#: ../../recipes-annotations.rst:12 9bc263570fa8493db061b735a12c1a09
 msgid "How to Add and Modify Annotations"
 msgstr "注釈の追加と変更方法"
 
-#: ../../recipes-annotations.rst:14 a282f4ae91014255ae10319cbf4eba34
+#: ../../recipes-annotations.rst:14 59a17d4a40ca48839bd610e92b70360a
 msgid ""
-"In PyMuPDF, new annotations can be added via :ref:`Page` methods. Once an"
-" annotation exists, it can be modified to a large extent using methods of"
-" the :ref:`Annot` class."
+"In |PyMuPDF|, new annotations can be added via :ref:`Page` methods. Once "
+"an annotation exists, it can be modified to a large extent using methods "
+"of the :ref:`Annot` class."
 msgstr ""
 "PyMuPDFでは、新しい注釈を :ref:`Page` メソッドを介して追加することができます。一度注釈が存在すると、 :ref:`Annot`"
 " クラスのメソッドを使用して大幅に変更できます。"
 
-#: ../../recipes-annotations.rst:16 79ac53a499664b29ab730f14a04e481d
+#: ../../recipes-annotations.rst:16 e16eb8cae547473a809d75c7930ee56c
+msgid ""
+"Annotations can **only** be inserted in |PDF| pages - other document "
+"types do not support annotation insertion."
+msgstr "⚠️"
+
+#: ../../recipes-annotations.rst:18 6c9c7e68c10e4448871ae486664acbf4
 msgid ""
 "In contrast to many other tools, initial insert of annotations happens "
 "with a minimum number of properties. We leave it to the programmer to "
 "e.g. set attributes like author, creation date or subject."
 msgstr "他の多くのツールとは異なり、注釈の初期挿入は最小限のプロパティで行われます。例えば、著者、作成日、サブジェクトなどの属性をプログラマーが設定することができます。"
 
-#: ../../recipes-annotations.rst:18 26ac97fa824241a69b29b215392ccbf4
+#: ../../recipes-annotations.rst:20 0e6193a777d84204a30738c910222105
 msgid ""
 "As an overview for these capabilities, look at the following script that "
 "fills a PDF page with most of the available annotations. Look in the next"
 " sections for more special situations:"
 msgstr "これらの機能の概要については、次のスクリプトを参照してください。このスクリプトはPDFページに利用可能な注釈のほとんどを埋めるものです。より特殊な状況については、次のセクションをご覧ください。"
 
-#: ../../recipes-annotations.rst:24 5ecfd4e945e54fedb3c4f48bbddc3db3
+#: ../../recipes-annotations.rst:26 007d18887acc4208b3e82bf6b8768000
 msgid "This script should lead to the following output:"
 msgstr "このスクリプトは次のような出力を生成します："
 
-#: ../../recipes-annotations.rst:34 5348b866e2e74a3eb6efd743e408fe16
+#: ../../recipes-annotations.rst:36 2bc3d0d5da154feca0636f21ae9e75fe
 msgid "How to Use FreeText"
 msgstr "FreeTextの使用方法"
 
-#: ../../recipes-annotations.rst:35 9094162cea504017844fc3744c2de9ca
+#: ../../recipes-annotations.rst:37 f9669ba0fd3245329fab1c2d1e509e6a
 msgid "This script shows a couple of ways to deal with 'FreeText' annotations::"
 msgstr "このスクリプトは、'FreeText'注釈を扱ういくつかの方法を示しています::"
 
-#: ../../recipes-annotations.rst:68 b7968edc5d2a431b85805311093a0d27
+#: ../../recipes-annotations.rst:70 a55eecec38ff47b0b8816d914b5d5c91
 msgid "The result looks like this:"
 msgstr "結果は次のようになります。"
 
-#: ../../recipes-annotations.rst:79 0cb066f2199441648692909fdc5808bb
+#: ../../recipes-annotations.rst:81 aacf86ef479f4f089d7e54e28a053c5c
 msgid "Using Buttons and JavaScript"
 msgstr "ボタンとJavaScriptの使用"
 
-#: ../../recipes-annotations.rst:80 3790e4bbc00946d1aa2c2c333929517b
+#: ../../recipes-annotations.rst:82 f12ebcf35b1440519394f4a33a4ae186
 msgid ""
 "Since MuPDF v1.16, 'FreeText' annotations no longer support bold or "
 "italic versions of the Times-Roman, Helvetica or Courier fonts."
@@ -94,7 +100,7 @@ msgstr ""
 "MuPDF v1.16以降、'FreeText'注釈はもはやTimes-"
 "Roman、Helvetica、Courierフォントの太字や斜体バージョンをサポートしていません。"
 
-#: ../../recipes-annotations.rst:82 3d9ca6b7be7f45d5bb058d7cfe868e7f
+#: ../../recipes-annotations.rst:84 0cebb428f685497682fec7f62fe00886
 msgid ""
 "A big **thank you** to our user `@kurokawaikki "
 "<https://github.com/kurokawaikki>`_, who contributed the following script"
@@ -103,11 +109,11 @@ msgstr ""
 "この制限を回避するために、次のスクリプトを提供してくれたユーザー `@kurokawaikki "
 "<https://github.com/kurokawaikki>`_ さんに心から感謝します。"
 
-#: ../../recipes-annotations.rst:93 6febd90babd741abb4ff88c876f16db1
+#: ../../recipes-annotations.rst:95 2a060be78ca244908211e567c287d8ec
 msgid "How to Use Ink Annotations"
 msgstr "インク注釈の使用方法"
 
-#: ../../recipes-annotations.rst:94 fcff55a889d4480496336830531de022
+#: ../../recipes-annotations.rst:96 e2f6d64abf6049209135262629a6c92e
 msgid ""
 "Ink annotations are used to contain freehand scribbling. A typical "
 "example may be an image of your signature consisting of first name and "
@@ -117,21 +123,21 @@ msgid ""
 "segments of the annotation."
 msgstr "インク注釈は、自由な手書きの落書きを含むために使用されます。典型的な例として、名前と姓からなる署名の画像が挙げられます。技術的には、インク注釈は点のリストのリストとして実装されます。各点のリストは、点を結んだ連続的な線と見なされます。異なる点のリストは、注釈の独立した線セグメントを表します。"
 
-#: ../../recipes-annotations.rst:96 d928e71c8193488c8e181f859a2bcb79
+#: ../../recipes-annotations.rst:98 5c38dc48b18c460a8bc85f7dba6d27cc
 msgid ""
 "The following script creates an ink annotation with two mathematical "
 "curves (sine and cosine function graphs) as line segments::"
 msgstr "以下のスクリプトは、二つの数学的な曲線（正弦関数と余弦関数のグラフ）を線セグメントとして持つインク注釈を作成します::"
 
-#: ../../recipes-annotations.rst:141 d954b366de2e474da4b4d7273cfb56e6
+#: ../../recipes-annotations.rst:143 a882b5152d3947ccbaf574755d5845c8
 msgid "This is the result:"
 msgstr "これが結果です："
 
-#: ../../footer.rst:71 c735465480de4e3f9920e70add8d306e
+#: ../../footer.rst:60 9fc3c8bc6d364fc2aa3f3498cf73f641
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 95338495490942a691d8c1efeec4b6c6
+#: ../../footer.rst:-1 a03acdd646a94ace934a0bd33f1a5d46
 msgid "Discord logo"
 msgstr ""
 
