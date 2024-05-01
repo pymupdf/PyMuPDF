@@ -829,7 +829,6 @@ msgstr ""
 
 #: ../../shape.rst:305 ../../shape.rst:344 2ab5913014e044a79c11078c00f3cc33
 #: 7f91e147f4184497842ac4473d9fbb04
-#, fuzzy
 msgid ""
 "a factor to override the line height calculated from font properties. If "
 "not `None`, a line height of `fontsize * lineheight` will be used."
@@ -838,7 +837,6 @@ msgstr ""
 "lineheight` の行の高さが使用されます。"
 
 #: ../../shape.rst:306 7af1fa28042b4c7eb7ed893811d57b53
-#, fuzzy
 msgid ""
 "*(new in v1.18.1)* set transparency for stroke colors (the **border "
 "line** of a character). Only  `0 <= value <= 1` will be considered. "
@@ -857,7 +855,6 @@ msgstr ""
 " **のみ** 影響します。"
 
 #: ../../shape.rst:309 b9dd4a26f86e429db702de9161c8a8d4
-#, fuzzy
 msgid ""
 "determines whether to rotate the text. Acceptable values are multiples of"
 " 90 degrees. Default is 0 (no rotation), meaning horizontal text lines "
@@ -894,7 +891,6 @@ msgid "For a description of the other parameters see :ref:`CommonParms`."
 msgstr "他のパラメータの説明については  :ref:`CommonParms` を参照してください。"
 
 #: ../../shape.rst:336 794903fab7c94fb49d67e41aadd587bc
-#, fuzzy
 msgid ""
 "PDF only: Insert text into the specified rectangle. The text will be "
 "split into lines and words and then filled into the available space, "
@@ -927,7 +923,6 @@ msgstr ""
 "の効果は、「シンプル」（単一バイト）フォント（:ref:`Base-14-Fonts` を含む）でのみ達成できます。"
 
 #: ../../shape.rst:344 69db2364802c4ea2b9419997e36cb2f8
-#, fuzzy
 msgid ""
 "a factor to override the line height calculated from font properties. If "
 "not `None`, a line height of `fontsize * lineheight` will be used.  :arg "
@@ -942,7 +937,6 @@ msgid "arg int expandtabs"
 msgstr ""
 
 #: ../../shape.rst:346 f45ff7eeeac04c00a579dc0e3d952100
-#, fuzzy
 msgid ""
 "controls handling of tab characters ``\\t`` using the "
 "`string.expandtabs()` method **per each line**."
@@ -955,7 +949,6 @@ msgid ""
 msgstr "*（v1.18.1で新たに追加）* ストロークカラーの透明度を設定します。負の値や1より大きい値は無視されます。デフォルトは1（不透明）です。"
 
 #: ../../shape.rst:351 e855aac0316b4c18b64668b9cfb4cf7d
-#, fuzzy
 msgid ""
 "requests text to be rotated in the rectangle. This value must be a "
 "multiple of 90 degrees. Default is 0 (no rotation). Effectively, the four"
@@ -1419,21 +1412,21 @@ msgid ""
 "The stroke (\"border\") width of the elements in a shape (if applicable)."
 " The default value is 1. The values width, color and fill have the "
 "following relationship / dependency:"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../shape.rst:585 7254c9a8a9ca4a08b673c5030f0c2eea
 msgid ""
 "If `fill=None` shape elements will always be drawn with a border - even "
 "if `color=None` (in which case black is taken) or `width=0` (in which "
 "case 1 is taken)."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../shape.rst:586 e5e06a2a4f4e46f99b4ff35935d0b5ef
 msgid ""
 "Shapes without border can only be achieved if a fill color is specified "
 "(which may be white of course). To achieve this, specify `width=0`. In "
 "this case, the `color` parameter is ignored."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../shape.rst:590 a09f147da27e45b7b9357f93a0e630d7
 msgid "**stroke_opacity / fill_opacity** (*floats*)"

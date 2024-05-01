@@ -41,7 +41,7 @@ msgstr "TextWriter (テキストライター)"
 
 #: ../../textwriter.rst:9 9285721e32f64c30ab01edf532634a8a
 msgid "|pdf_only_class|"
-msgstr ""
+msgstr "PDFのみ。"
 
 #: ../../textwriter.rst:11 b28882b66e9f450ea39dfd7a97413de2
 msgid "New in v1.16.18"

@@ -31,7 +31,7 @@ msgid ""
 "The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
 " **MuPDF**."
-msgstr ""
+msgstr "⚠️"
 
 #~ msgid ""
 #~ "This documentation covers **PyMuPDF "
