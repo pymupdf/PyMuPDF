@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 import os
 import re
 import subprocess
@@ -7,7 +7,7 @@ import textwrap
 
 def test_pylint():
     
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print(f'test_pylint(): Not running with classic implementation.')
         return
     

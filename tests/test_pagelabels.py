@@ -2,12 +2,12 @@
 Define some page labels in a PDF.
 Check success in various aspects.
 """
-import fitz
+import pymupdf
 
 
 def make_doc():
     """Makes a PDF with 10 pages."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     for i in range(10):
         page = doc.new_page()
     return doc

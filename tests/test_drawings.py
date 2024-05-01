@@ -7,7 +7,7 @@ import os
 import sys
 import pprint
 
-import fitz
+import pymupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
@@ -16,7 +16,7 @@ symbols = os.path.join(scriptdir, "resources", "symbols.txt")
 
 def test_drawings1():
     symbols_text = open(symbols).read()  # expected result
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     paths = page.get_cdrawings()
     out = io.StringIO()  # pprint output goes here
@@ -26,10 +26,10 @@ def test_drawings1():
 
 def test_drawings2():
     delta = (0, 20, 0, 20)
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
-    r = fitz.Rect(100, 100, 200, 200)
+    r = pymupdf.Rect(100, 100, 200, 200)
     page.draw_circle(r.br, 2, color=0)
     r += delta
 
@@ -60,7 +60,7 @@ def test_drawings2():
     rects = [p["rect"] for p in page.get_cdrawings()]
     bboxes = [b[1] for b in page.get_bboxlog()]
     for i, r in enumerate(rects):
-        assert fitz.Rect(r) in fitz.Rect(bboxes[i])
+        assert pymupdf.Rect(r) in pymupdf.Rect(bboxes[i])
 
 
 def _dict_difference(a, b):
@@ -84,7 +84,7 @@ def _dict_difference(a, b):
 
 
 def test_drawings3():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page1 = doc.new_page()
     shape1 = page1.new_shape()
     shape1.draw_line((10, 10), (10, 50))
@@ -129,19 +129,19 @@ def test_2365():
 
     Then extract the page's vector graphics and confirm that only one path
     was generated which has all the right properties."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
-    rect = fitz.Rect(100, 100, 200, 200)
+    rect = pymupdf.Rect(100, 100, 200, 200)
     page.draw_rect(
-        rect, color=fitz.pdfcolor["black"], fill=fitz.pdfcolor["yellow"], width=3
+        rect, color=pymupdf.pdfcolor["black"], fill=pymupdf.pdfcolor["yellow"], width=3
     )
     paths = page.get_drawings()
     assert len(paths) == 1
     path = paths[0]
     assert path["type"] == "fs"
-    assert path["fill"] == fitz.pdfcolor["yellow"]
+    assert path["fill"] == pymupdf.pdfcolor["yellow"]
     assert path["fill_opacity"] == 1
-    assert path["color"] == fitz.pdfcolor["black"]
+    assert path["color"] == pymupdf.pdfcolor["black"]
     assert path["stroke_opacity"] == 1
     assert path["width"] == 3
     assert path["rect"] == rect
@@ -157,14 +157,14 @@ def test_2462():
     In order to correctly compute the "scissor" rectangle, we now keep track
     of the clipped object type.
     """
-    doc = fitz.open(f"{scriptdir}/resources/test-2462.pdf")
+    doc = pymupdf.open(f"{scriptdir}/resources/test-2462.pdf")
     page = doc[0]
     vg = page.get_drawings(extended=True)
 
 
 def test_2556():
     """Ensure that incomplete clip paths will be properly ignored."""
-    doc = fitz.open()  # new empty PDF
+    doc = pymupdf.open()  # new empty PDF
     page = doc.new_page()  # new page
     # following contains an incomplete clip
     c = b"q 50 697.6 400 100.0 re W n q 0 0 m W n Q "
@@ -194,7 +194,7 @@ def test_3207():
     two paths in the example).
     """
     filename = os.path.join(scriptdir, "resources", "test-3207.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     paths = page.get_drawings()
     assert len(paths) == 2

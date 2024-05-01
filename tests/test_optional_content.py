@@ -4,7 +4,7 @@ Test of Optional Content code.
 
 import os
 
-import fitz
+import pymupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "joined.pdf")
@@ -12,7 +12,7 @@ filename = os.path.join(scriptdir, "resources", "joined.pdf")
 
 def test_oc1():
     """Arbitrary calls to OC code to get coverage."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     ocg1 = doc.add_ocg("ocg1")
     ocg2 = doc.add_ocg("ocg2")
     ocg3 = doc.add_ocg("ocg3")
@@ -28,10 +28,10 @@ def test_oc1():
 
 def test_oc2():
     # source file with at least 4 pages
-    src = fitz.open(filename)
+    src = pymupdf.open(filename)
 
     # new PDF with one page
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     # define the 4 rectangle quadrants to receive the source pages
@@ -66,7 +66,7 @@ def test_oc2():
 
 def test_3143():
     """Support for non-ascii layer names."""
-    doc = fitz.open(os.path.join(scriptdir, "resources", "test-3143.pdf"))
+    doc = pymupdf.open(os.path.join(scriptdir, "resources", "test-3143.pdf"))
     page = doc[0]
     set0 = set([l["text"] for l in doc.layer_ui_configs()])
     set1 = set([p["layer"] for p in page.get_drawings()])
@@ -75,19 +75,19 @@ def test_3143():
 
 
 def test_3180():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     # Define the items for the combo box
     combo_items = ['first', 'second', 'third']
 
     # Create a combo box field
-    combo_box = fitz.Widget()  # create a new widget
-    combo_box.field_type = fitz.PDF_WIDGET_TYPE_COMBOBOX
+    combo_box = pymupdf.Widget()  # create a new widget
+    combo_box.field_type = pymupdf.PDF_WIDGET_TYPE_COMBOBOX
     combo_box.field_name = "myComboBox"
     combo_box.field_value = combo_items[0]
     combo_box.choice_values = combo_items
-    combo_box.rect = fitz.Rect(50, 50, 200, 75)  # position of the combo box
+    combo_box.rect = pymupdf.Rect(50, 50, 200, 75)  # position of the combo box
     combo_box.script_change = """
     var value = event.value;
     app.alert('You selected: ' + value);
@@ -109,7 +109,7 @@ def test_3180():
     for i, item in enumerate(combo_items):
         optional_content_group_id = doc.add_ocg(item, on=False)
         optional_content_group_ids[item] = optional_content_group_id
-        rect = fitz.Rect(50, 100, 250, 300)
+        rect = pymupdf.Rect(50, 100, 250, 300)
         image_file_name = f'{item}.png'
         # xref = page.insert_image(
         #    rect,
@@ -131,7 +131,7 @@ def test_3180():
 
     # https://pymupdf.readthedocs.io/en/latest/document.html#Document.set_layer_ui_config
     # configs = doc.layer_ui_configs()
-    # doc.set_layer_ui_config(0, fitz.PDF_OC_ON)
+    # doc.set_layer_ui_config(0, pymupdf.PDF_OC_ON)
     # doc.set_layer_ui_config('third', action=2)
 
     # Save the PDF

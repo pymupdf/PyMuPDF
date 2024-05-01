@@ -7,7 +7,7 @@
 
 import os
 import sys
-import fitz
+import pymupdf
 import pathlib
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -16,7 +16,7 @@ filename2 = os.path.join(scriptdir, "resources", "2.pdf")
 circular = os.path.join(scriptdir, "resources", "circular-toc.pdf")
 full_toc = os.path.join(scriptdir, "resources", "full_toc.txt")
 simple_toc = os.path.join(scriptdir, "resources", "simple_toc.txt")
-doc = fitz.open(filename)
+doc = pymupdf.open(filename)
 
 
 def test_simple_toc():
@@ -26,7 +26,7 @@ def test_simple_toc():
 
 
 def test_full_toc():
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         # Classic implementation does not have fix for this test.
         print(f"Not running test_full_toc on classic implementation.")
         return
@@ -52,7 +52,7 @@ def test_replace_toc():
 
 
 def test_setcolors():
-    doc = fitz.open(filename2)
+    doc = pymupdf.open(filename2)
     toc = doc.get_toc(False)
     for i in range(len(toc)):
         d = toc[i][3]
@@ -73,18 +73,18 @@ def test_setcolors():
 
 def test_circular():
     """The test file contains circular bookmarks."""
-    doc = fitz.open(circular)
+    doc = pymupdf.open(circular)
     toc = doc.get_toc(False)  # this must not loop
-    rebased = hasattr(fitz, 'mupdf')
+    rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'Bad or missing prev pointer in outline tree, repairing', \
                 f'{wt=}'
 
 def test_2355():
     
     # Create a test PDF with toc.
-    doc = fitz.Document()
+    doc = pymupdf.Document()
     for _ in range(10):
         doc.new_page(doc.page_count)
     doc.set_toc([[1, 'test', 1], [1, 'test2', 5]])
@@ -94,11 +94,11 @@ def test_2355():
 
     # Open many times
     for i in range(10):
-        with fitz.open(path) as new_doc:
+        with pymupdf.open(path) as new_doc:
             new_doc.get_toc()
 
     # Open once and read many times
-    with fitz.open(path) as new_doc:
+    with pymupdf.open(path) as new_doc:
         for i in range(10):
             new_doc.get_toc()
 
@@ -106,13 +106,13 @@ def test_2788():
     '''
     Check handling of Document.get_toc() when toc item has kind=4.
     '''
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         # Classic implementation does not have fix for this test.
         print(f'Not running test_2788 on classic implementation.')
         return
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_2788.pdf')        
-    document = fitz.open(path)
-    toc0 = [[1, 'page2', 2, {'kind': 4, 'xref': 14, 'page': 1, 'to': fitz.Point(100.0, 760.0), 'zoom': 0.0, 'nameddest': 'page.2'}]]
+    document = pymupdf.open(path)
+    toc0 = [[1, 'page2', 2, {'kind': 4, 'xref': 14, 'page': 1, 'to': pymupdf.Point(100.0, 760.0), 'zoom': 0.0, 'nameddest': 'page.2'}]]
     toc1 = document.get_toc(simple=False)
     print(f'{toc0=}')
     print(f'{toc1=}')
@@ -127,9 +127,9 @@ def test_2788():
     # Also test Page.get_links() bugfix from #2817.
     for page in document:
         page.get_links()
-    rebased = hasattr(fitz, 'mupdf')
+    rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == (
                 "syntax error: expected 'obj' keyword (0 3 ?)\n"
                 "trying to repair broken xref\n"

@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 import os
 import textwrap
 
@@ -15,14 +15,14 @@ def test_story():
     <p style="font-family: test;color: blue">We shall meet again at a place where there is no darkness.</p>
     """
 
-    MEDIABOX = fitz.paper_rect("letter")
+    MEDIABOX = pymupdf.paper_rect("letter")
     WHERE = MEDIABOX + (36, 36, -36, -36)
     # the font files are located in /home/chinese
-    arch = fitz.Archive(".")
+    arch = pymupdf.Archive(".")
     # if not specfied user_css, the output pdf has content
-    story = fitz.Story(HTML, user_css=CSS, archive=arch)  
+    story = pymupdf.Story(HTML, user_css=CSS, archive=arch)  
 
-    writer = fitz.DocumentWriter("output.pdf")
+    writer = pymupdf.DocumentWriter("output.pdf")
 
     more = 1
 
@@ -38,10 +38,10 @@ def test_story():
 def test_2753():
     
     def rectfn(rect_num, filled):
-        return fitz.Rect(0, 0, 200, 200), fitz.Rect(50, 50, 100, 100), None
+        return pymupdf.Rect(0, 0, 200, 200), pymupdf.Rect(50, 50, 100, 100), None
     
     def make_pdf(html, path_out):
-        story = fitz.Story(html=html)
+        story = pymupdf.Story(html=html)
         document = story.write_with_links(rectfn)
         print(f'Writing to: {path_out=}.')
         document.save(path_out)
@@ -100,11 +100,11 @@ springer_html = '''
 '''
 def test_fit_springer():
     
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print(f'test_fit_springer(): not running on classic.')
         return
     
-    story = fitz.Story(springer_html)
+    story = pymupdf.Story(springer_html)
     
     def check(call, expected):
         '''
@@ -123,10 +123,10 @@ def test_fit_springer():
             print(f'Have saved document to {path}.')
             assert abs(fit_result.parameter-expected) < 0.001, f'{expected=} {fit_result.parameter=}'
     
-    check('story.fit_scale(fitz.Rect(0, 0, 200, 200), scale_min=1, verbose=1)', 3.685728073120117)
-    check('story.fit_scale(fitz.Rect(0, 0, 595, 842), scale_min=1, verbose=1)', 1.0174560546875)
-    check('story.fit_scale(fitz.Rect(0, 0, 300, 421), scale_min=1, verbose=1)', 2.02752685546875)
-    check('story.fit_scale(fitz.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=1)', 1)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 200, 200), scale_min=1, verbose=1)', 3.685728073120117)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 595, 842), scale_min=1, verbose=1)', 1.0174560546875)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 300, 421), scale_min=1, verbose=1)', 2.02752685546875)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=1)', 1)
     
     check('story.fit_height(20, verbose=1)', 10782.3291015625)
     check('story.fit_height(200, verbose=1)', 2437.4990234375)
@@ -143,8 +143,8 @@ def test_fit_springer():
     check('story.fit_width(200, width_max=200000, verbose=1)', None)
 
     # Run without verbose to check no calls to log() - checked by assert.
-    check('story.fit_scale(fitz.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=0)', 1)
-    check('story.fit_scale(fitz.Rect(0, 0, 300, 421), scale_min=1, verbose=0)', 2.02752685546875)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=0)', 1)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 300, 421), scale_min=1, verbose=0)', 2.02752685546875)
 
 
 def test_write_stabilized_with_links():
@@ -153,8 +153,8 @@ def test_write_stabilized_with_links():
         '''
         We return one rect per page.
         '''
-        rect = fitz.Rect(10, 20, 290, 380)
-        mediabox = fitz.Rect(0, 0, 300, 400)
+        rect = pymupdf.Rect(10, 20, 290, 380)
+        mediabox = pymupdf.Rect(0, 0, 300, 400)
         #print(f'rectfn(): rect_num={rect_num} filled={filled}')
         return mediabox, rect, None
 
@@ -199,7 +199,7 @@ def test_write_stabilized_with_links():
                 ''')
         return ret.strip()
     
-    document = fitz.Story.write_stabilized_with_links(contentfn, rectfn)
+    document = pymupdf.Story.write_stabilized_with_links(contentfn, rectfn)
     
     # Check links.
     links = list()
@@ -209,14 +209,14 @@ def test_write_stabilized_with_links():
     external_links = dict()
     for i, link in enumerate(links):
         print(f'    {i}: {link=}')
-        if link.get('kind') == fitz.LINK_URI:
+        if link.get('kind') == pymupdf.LINK_URI:
             uri = link['uri']
             external_links.setdefault(uri, 0)
             external_links[uri] += 1
 
     # Check there is one external link.
     print(f'{external_links=}')
-    if hasattr(fitz, 'mupdf'):
+    if hasattr(pymupdf, 'mupdf'):
         assert len(external_links) == 1
         assert 'https://artifex.com/' in external_links
     
@@ -224,5 +224,5 @@ def test_write_stabilized_with_links():
     document.save(out_path)
     
 def test_archive_creation():
-    s = fitz.Story(archive=fitz.Archive('.'))
-    s = fitz.Story(archive='.')
+    s = pymupdf.Story(archive=pymupdf.Archive('.'))
+    s = pymupdf.Story(archive='.')

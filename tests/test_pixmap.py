@@ -5,7 +5,7 @@ Pixmap tests
 * pixmap from file and from binary image and compare
 """
 
-import fitz
+import pymupdf
 
 import os
 import platform
@@ -21,7 +21,7 @@ imgfile = os.path.join(scriptdir, "resources", "nur-ruhig.jpg")
 
 def test_pagepixmap():
     # pixmap from an EPUB page
-    doc = fitz.open(epub)
+    doc = pymupdf.open(epub)
     page = doc[0]
     pix = page.get_pixmap()
     assert pix.irect == page.rect.irect
@@ -32,11 +32,11 @@ def test_pagepixmap():
 
 def test_pdfpixmap():
     # pixmap from xref in a PDF
-    doc = fitz.open(pdf)
+    doc = pymupdf.open(pdf)
     # take first image item of first page
     img = doc.get_page_images(0)[0]
     # make pixmap of it
-    pix = fitz.Pixmap(doc, img[0])
+    pix = pymupdf.Pixmap(doc, img[0])
     # assert pixmap properties
     assert pix.width == img[2]
     assert pix.height == img[3]
@@ -49,9 +49,9 @@ def test_pdfpixmap():
 def test_filepixmap():
     # pixmaps from file and from stream
     # should lead to same result
-    pix1 = fitz.Pixmap(imgfile)
+    pix1 = pymupdf.Pixmap(imgfile)
     stream = open(imgfile, "rb").read()
-    pix2 = fitz.Pixmap(stream)
+    pix2 = pymupdf.Pixmap(stream)
     assert repr(pix1) == repr(pix2)
     assert pix1.digest == pix2.digest
 
@@ -60,9 +60,9 @@ def test_pilsave():
     # pixmaps from file then save to pillow image
     # make pixmap from this and confirm equality
     try:
-        pix1 = fitz.Pixmap(imgfile)
+        pix1 = pymupdf.Pixmap(imgfile)
         stream = pix1.pil_tobytes("JPEG")
-        pix2 = fitz.Pixmap(stream)
+        pix2 = pymupdf.Pixmap(stream)
         assert repr(pix1) == repr(pix2)
     except ModuleNotFoundError:
         assert platform.system() == 'Windows' and sys.maxsize == 2**31 - 1
@@ -71,22 +71,22 @@ def test_pilsave():
 def test_save(tmpdir):
     # pixmaps from file then save to image
     # make pixmap from this and confirm equality
-    pix1 = fitz.Pixmap(imgfile)
+    pix1 = pymupdf.Pixmap(imgfile)
     outfile = os.path.join(tmpdir, "foo.png")
     pix1.save(outfile, output="png")
     # read it back
-    pix2 = fitz.Pixmap(outfile)
+    pix2 = pymupdf.Pixmap(outfile)
     assert repr(pix1) == repr(pix2)
 
 
 def test_setalpha():
     # pixmap from JPEG file, then add an alpha channel
     # with 30% transparency
-    pix1 = fitz.Pixmap(imgfile)
+    pix1 = pymupdf.Pixmap(imgfile)
     opa = int(255 * 0.3)  # corresponding to 30% transparency
     alphas = [opa] * (pix1.width * pix1.height)
     alphas = bytearray(alphas)
-    pix2 = fitz.Pixmap(pix1, 1)  # add alpha channel
+    pix2 = pymupdf.Pixmap(pix1, 1)  # add alpha channel
     pix2.set_alpha(alphas)  # make image 30% transparent
     samples = pix2.samples  # copy of samples
     # confirm correct the alpha bytes
@@ -98,11 +98,11 @@ def test_color_count():
     This is known to fail if MuPDF is built without PyMuPDF's custom config.h,
     e.g. in Linux system installs.
     '''
-    pm = fitz.Pixmap(imgfile)
+    pm = pymupdf.Pixmap(imgfile)
     assert pm.color_count() == 40624
 
 def test_memoryview():
-    pm = fitz.Pixmap(imgfile)
+    pm = pymupdf.Pixmap(imgfile)
     samples = pm.samples_mv
     assert isinstance( samples, memoryview)
     print( f'samples={samples} samples.itemsize={samples.itemsize} samples.nbytes={samples.nbytes} samples.ndim={samples.ndim} samples.shape={samples.shape} samples.strides={samples.strides}')
@@ -117,7 +117,7 @@ def test_memoryview():
     assert color == (83, 66, 40)
 
 def test_samples_ptr():
-    pm = fitz.Pixmap(imgfile)
+    pm = pymupdf.Pixmap(imgfile)
     samples = pm.samples_ptr
     print( f'samples={samples}')
     assert isinstance( samples, int)
@@ -125,20 +125,20 @@ def test_samples_ptr():
 def test_2369():
 
     width, height = 13, 37
-    image = fitz.Pixmap(fitz.csGRAY, width, height, b"\x00" * (width * height), False)
+    image = pymupdf.Pixmap(pymupdf.csGRAY, width, height, b"\x00" * (width * height), False)
 
-    with fitz.Document(stream=image.tobytes(output="pam"), filetype="pam") as doc:
+    with pymupdf.Document(stream=image.tobytes(output="pam"), filetype="pam") as doc:
         test_pdf_bytes = doc.convert_to_pdf()
     
-    with fitz.Document(stream=test_pdf_bytes) as doc:
+    with pymupdf.Document(stream=test_pdf_bytes) as doc:
         page = doc[0]
         img_xref = page.get_images()[0][0]
         img = doc.extract_image(img_xref)
         img_bytes = img["image"]
-        fitz.Pixmap(img_bytes)
+        pymupdf.Pixmap(img_bytes)
 
 def test_page_idx_int():
-    doc = fitz.open(pdf)
+    doc = pymupdf.open(pdf)
     with pytest.raises(AssertionError):
         doc["0"]
     assert doc[0]
@@ -146,27 +146,27 @@ def test_page_idx_int():
 
 def test_fz_write_pixmap_as_jpeg():
     width, height = 13, 37
-    image = fitz.Pixmap(fitz.csGRAY, width, height, b"\x00" * (width * height), False)
+    image = pymupdf.Pixmap(pymupdf.csGRAY, width, height, b"\x00" * (width * height), False)
 
-    with fitz.Document(stream=image.tobytes(output="jpeg"), filetype="jpeg") as doc:
+    with pymupdf.Document(stream=image.tobytes(output="jpeg"), filetype="jpeg") as doc:
         test_pdf_bytes = doc.convert_to_pdf()
 
 def test_3020():
-    pm = fitz.Pixmap(imgfile)
-    pm2 = fitz.Pixmap(pm, 20, 30, None)
-    pm3 = fitz.Pixmap(fitz.csGRAY, pm)
-    pm4 = fitz.Pixmap(pm, pm3)
+    pm = pymupdf.Pixmap(imgfile)
+    pm2 = pymupdf.Pixmap(pm, 20, 30, None)
+    pm3 = pymupdf.Pixmap(pymupdf.csGRAY, pm)
+    pm4 = pymupdf.Pixmap(pm, pm3)
 
 def test_3050():
     '''
     This is known to fail if MuPDF is built without it's default third-party
     libraries, e.g. in Linux system installs.
     '''
-    pdf_file = fitz.open(pdf)
+    pdf_file = pymupdf.open(pdf)
     for page_no, page in enumerate(pdf_file):
         zoom_x = 4.0
         zoom_y = 4.0
-        matrix = fitz.Matrix(zoom_x, zoom_y)
+        matrix = pymupdf.Matrix(zoom_x, zoom_y)
         pix = page.get_pixmap(matrix=matrix)
         digest0 = pix.digest
         print(f'{pix.width=} {pix.height=}')
@@ -187,20 +187,20 @@ def test_3050():
         pix.save(os.path.abspath(f'{__file__}/../../tests/test_3050_out.png'))
         assert digest1 != digest0
         assert digest1 == digest_expected
-        rebased = hasattr(fitz, 'mupdf')
+        rebased = hasattr(pymupdf, 'mupdf')
         if rebased:
-            wt = fitz.TOOLS.mupdf_warnings()
+            wt = pymupdf.TOOLS.mupdf_warnings()
             assert wt == 'PDF stream Length incorrect'
 
 def test_3058():
-    doc = fitz.Document(os.path.abspath(f'{__file__}/../../tests/resources/test_3058.pdf'))
+    doc = pymupdf.Document(os.path.abspath(f'{__file__}/../../tests/resources/test_3058.pdf'))
     images = doc[0].get_images(full=True)
-    pix = fitz.Pixmap(doc, 17)
+    pix = pymupdf.Pixmap(doc, 17)
     
     # First bug was that `pix.colorspace` was DeviceRGB.
     assert str(pix.colorspace) == 'Colorspace(CS_CMYK) - DeviceCMYK'
     
-    pix = fitz.Pixmap(fitz.csRGB, pix)
+    pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
     assert str(pix.colorspace) == 'Colorspace(CS_RGB) - DeviceRGB'
     
     # Second bug was that the image was converted to RGB via greyscale proofing
@@ -213,33 +213,33 @@ def test_3058():
     assert 1800000 < s < 2600000, f'Unexpected size of {path}: {s}'
 
 def test_3072():
-    if fitz.mupdf_version_tuple < (1, 23, 10):
+    if pymupdf.mupdf_version_tuple < (1, 23, 10):
         print(f'test_3072(): Not running because known to hang on MuPDF < 1.23.10.')
         return
     
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_3072.pdf')
     out = os.path.abspath(f'{__file__}/../../tests')
     
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     page_48 = doc[0]
     bbox = [147, 300, 447, 699]
-    rect = fitz.Rect(*bbox)
-    zoom = fitz.Matrix(3, 3)
+    rect = pymupdf.Rect(*bbox)
+    zoom = pymupdf.Matrix(3, 3)
     pix = page_48.get_pixmap(clip=rect, matrix=zoom)
     image_save_path = f'{out}/1.jpg'
     pix.save(image_save_path, jpg_quality=95)
     
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     page_49 = doc[1]
     bbox = [147, 543, 447, 768]
-    rect = fitz.Rect(*bbox)
-    zoom = fitz.Matrix(3, 3)
+    rect = pymupdf.Rect(*bbox)
+    zoom = pymupdf.Matrix(3, 3)
     pix = page_49.get_pixmap(clip=rect, matrix=zoom)
     image_save_path = f'{out}/2.jpg'
     pix.save(image_save_path, jpg_quality=95)
-    rebase = hasattr(fitz, 'mupdf')
+    rebase = hasattr(pymupdf, 'mupdf')
     if rebase:
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == (
                 "syntax error: cannot find ExtGState resource 'BlendMode0'\n"
                 "encountered syntax errors; page may not be correct\n"
@@ -248,10 +248,10 @@ def test_3072():
                 )
 
 def test_3134():
-    doc = fitz.Document()
+    doc = pymupdf.Document()
     page = doc.new_page()
-    page.get_pixmap(clip=fitz.Rect(0, 0, 100, 100)).save("test_3134_rect.jpg")
-    page.get_pixmap(clip=fitz.IRect(0, 0, 100, 100)).save("test_3134_irect.jpg")
+    page.get_pixmap(clip=pymupdf.Rect(0, 0, 100, 100)).save("test_3134_rect.jpg")
+    page.get_pixmap(clip=pymupdf.IRect(0, 0, 100, 100)).save("test_3134_irect.jpg")
     stat_rect = os.stat('test_3134_rect.jpg')
     stat_irect = os.stat('test_3134_irect.jpg')
     print(f' {stat_rect=}')
@@ -260,5 +260,5 @@ def test_3134():
     
 def test_3177():
     path = os.path.abspath(f'{__file__}/../../tests/resources/img-transparent.png')
-    pixmap = fitz.Pixmap(path)
-    pixmap2 = fitz.Pixmap(None, pixmap)
+    pixmap = pymupdf.Pixmap(path)
+    pixmap2 = pymupdf.Pixmap(None, pixmap)

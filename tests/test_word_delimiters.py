@@ -1,10 +1,10 @@
-import fitz
+import pymupdf
 import string
 
 
 def test_delimiters():
     """Test changing word delimiting characters."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     text = "word1,word2 - word3. word4?word5."
     page.insert_text((50, 50), text)

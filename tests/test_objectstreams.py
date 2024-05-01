@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 
 def test_objectstream1():
@@ -6,13 +6,13 @@ def test_objectstream1():
     This option compresses PDF object definitions into a special object type
     "ObjStm". We test its presence by searching for that /Type.
     """
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         # only implemented for rebased
         return
 
     # make some arbitrary page with content
     text = "Hello, World! Hallo, Welt!"
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     rect = (50, 50, 200, 500)
 
@@ -32,13 +32,13 @@ def test_objectstream2():
     This option compresses PDF object definitions into a special object type
     "ObjStm". We test its presence by searching for that /Type.
     """
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         # only implemented for rebased
         return
 
     # make some arbitrary page with content
     text = "Hello, World! Hallo, Welt!"
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     rect = (50, 50, 200, 500)
 
@@ -58,7 +58,7 @@ def test_objectstream3():
     """Test ez_save().
     Should automatically use object streams
     """
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         # only implemented for rebased
         return
     import io
@@ -67,7 +67,7 @@ def test_objectstream3():
 
     # make some arbitrary page with content
     text = "Hello, World! Hallo, Welt!"
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     rect = (50, 50, 200, 500)
 

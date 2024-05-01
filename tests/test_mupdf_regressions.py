@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 import os
 from gentle_compare import gentle_compare
 
@@ -8,7 +8,7 @@ scriptdir = os.path.abspath(os.path.dirname(__file__))
 def test_707448():
     """Confirm page content cleaning does not destroy page appearance."""
     filename = os.path.join(scriptdir, "resources", "test-707448.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     words0 = page.get_text("words")
     page.clean_contents(sanitize=True)
@@ -25,13 +25,13 @@ def test_707673():
     commit 779b8234529cb82aa1e92826854c7bb98b19e44b (golden/master)
     """
     filename = os.path.join(scriptdir, "resources", "test-707673.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     words0 = page.get_text("words")
     page.clean_contents(sanitize=True)
     words1 = page.get_text("words")
     ok = gentle_compare(words0, words1)
-    if fitz.mupdf_version_tuple >= (1, 24, 1):
+    if pymupdf.mupdf_version_tuple >= (1, 24, 1):
         assert ok
     else:
         assert not ok
@@ -43,20 +43,20 @@ def test_707727():
     MuPDF issue: https://bugs.ghostscript.com/show_bug.cgi?id=707727
     """
     filename = os.path.join(scriptdir, "resources", "test_3362.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     pix0 = page.get_pixmap()
     page.clean_contents(sanitize=True)
     page = doc.reload_page(page)  # required to prevent re-use
     pix1 = page.get_pixmap()
     ok = pix0.samples == pix1.samples
-    if fitz.mupdf_version_tuple > (1, 24, 1):
+    if pymupdf.mupdf_version_tuple > (1, 24, 1):
         assert ok
     else:
         assert not ok
-    if fitz.mupdf_version_tuple <= (1, 24, 1):
+    if pymupdf.mupdf_version_tuple <= (1, 24, 1):
         # We expect warnings.
-        wt = fitz.TOOLS.mupdf_warnings()
+        wt = pymupdf.TOOLS.mupdf_warnings()
         print(f"{wt=}")
         assert wt
 
@@ -66,13 +66,13 @@ def test_707721():
     PyMuPDF issue https://github.com/pymupdf/PyMuPDF/issues/3357
     MuPDF issue: https://bugs.ghostscript.com/show_bug.cgi?id=707721
     """
-    if fitz.mupdf_version_tuple < (1, 24, 2):
+    if pymupdf.mupdf_version_tuple < (1, 24, 2):
         print(
-            "test_707721(): not running because MuPDF-{fitz.mupdf_version} known to hang."
+            "test_707721(): not running because MuPDF-{pymupdf.mupdf_version} known to hang."
         )
         return
     filename = os.path.join(scriptdir, "resources", "test_3357.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     ok = page.get_text()
     assert ok
@@ -92,7 +92,7 @@ def test_3376():
     - confirm: we now have 3 words less and remaining words are equal.
     """
     filename = os.path.join(scriptdir, "resources", "test_3376.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     words0 = page.get_text("words", sort=True)
     words0_s = words0[:3]  # first 3 words
@@ -104,7 +104,7 @@ def test_3376():
     words1 = page.get_text("words", sort=True)
 
     ok = gentle_compare(words0_e, words1)
-    if fitz.mupdf_version_tuple >= (1, 24, 2):
+    if pymupdf.mupdf_version_tuple >= (1, 24, 2):
         assert ok
     else:
         assert not ok

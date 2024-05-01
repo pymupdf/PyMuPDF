@@ -5,7 +5,7 @@ No checks performed - just contribute to code coverage.
 import os
 import sys
 
-import fitz
+import pymupdf
 
 pymupdfdir = os.path.abspath(f'{__file__}/../..')
 scriptdir = f'{pymupdfdir}/tests'
@@ -13,7 +13,7 @@ filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
 
 
 def test_extract1():
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     text = page.get_text("text")
     blocks = page.get_text("blocks")
@@ -25,9 +25,9 @@ def test_extract1():
     text = page.get_text("html")
     text = page.get_text("xhtml")
     text = page.get_text("xml")
-    rects = fitz.get_highlight_selection(page, start=page.rect.tl, stop=page.rect.br)
-    text = fitz.ConversionHeader("xml")
-    text = fitz.ConversionTrailer("xml")
+    rects = pymupdf.get_highlight_selection(page, start=page.rect.tl, stop=page.rect.br)
+    text = pymupdf.ConversionHeader("xml")
+    text = pymupdf.ConversionTrailer("xml")
 
 def _test_extract2():
     import sys
@@ -36,7 +36,7 @@ def _test_extract2():
     if not os.path.exists(path):
         print(f'test_extract2(): not running becase does not exist: {path}')
         return
-    doc = fitz.open( path)
+    doc = pymupdf.open( path)
     for opt in (
             'dict',
             'dict2',
@@ -50,7 +50,7 @@ def _test_extract2():
             'rawdict',
             'rawjson',
             ):
-        for flags in None, fitz.TEXTFLAGS_TEXT:
+        for flags in None, pymupdf.TEXTFLAGS_TEXT:
             t0 = time.time()
             for page in doc:
                 page.get_text(opt, flags=flags)
@@ -65,7 +65,7 @@ def _test_extract3():
     if not os.path.exists(path):
         print(f'test_extract3(): not running becase does not exist: {path}')
         return
-    doc = fitz.open( path)
+    doc = pymupdf.open( path)
     t0 = time.time()
     for page in doc:
         page.get_text('json')
@@ -77,10 +77,10 @@ def test_extract4():
     '''
     Rebased-specific.
     '''
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         return
     path = f'{pymupdfdir}/tests/resources/2.pdf'
-    document = fitz.open(path)
+    document = pymupdf.open(path)
     page = document[4]
     
     out = 'test_stext.html'
@@ -90,30 +90,30 @@ def test_extract4():
     print(f'Have written to: {out}')
     
     out = 'test_extract.html'
-    writer = fitz.mupdf.FzDocumentWriter(
+    writer = pymupdf.mupdf.FzDocumentWriter(
             out,
             'html',
-            fitz.mupdf.FzDocumentWriter.OutputType_DOCX,
+            pymupdf.mupdf.FzDocumentWriter.OutputType_DOCX,
             )
-    device = fitz.mupdf.fz_begin_page(writer, fitz.mupdf.fz_bound_page(page))
-    fitz.mupdf.fz_run_page(page, device, fitz.mupdf.FzMatrix(), fitz.mupdf.FzCookie())
-    fitz.mupdf.fz_end_page(writer)
-    fitz.mupdf.fz_close_document_writer(writer)
+    device = pymupdf.mupdf.fz_begin_page(writer, pymupdf.mupdf.fz_bound_page(page))
+    pymupdf.mupdf.fz_run_page(page, device, pymupdf.mupdf.FzMatrix(), pymupdf.mupdf.FzCookie())
+    pymupdf.mupdf.fz_end_page(writer)
+    pymupdf.mupdf.fz_close_document_writer(writer)
     print(f'Have written to: {out}')
     
-    if fitz.mupdf_version_tuple >= (1, 23, 4):
+    if pymupdf.mupdf_version_tuple >= (1, 23, 4):
         def get_text(page, space_guess):
-            buffer_ = fitz.mupdf.FzBuffer( 10)
-            out = fitz.mupdf.FzOutput( buffer_)
-            writer = fitz.mupdf.FzDocumentWriter(
+            buffer_ = pymupdf.mupdf.FzBuffer( 10)
+            out = pymupdf.mupdf.FzOutput( buffer_)
+            writer = pymupdf.mupdf.FzDocumentWriter(
                     out,
                     'text,space-guess={space_guess}',
-                    fitz.mupdf.FzDocumentWriter.OutputType_DOCX,
+                    pymupdf.mupdf.FzDocumentWriter.OutputType_DOCX,
                     )
-            device = fitz.mupdf.fz_begin_page(writer, fitz.mupdf.fz_bound_page(page))
-            fitz.mupdf.fz_run_page(page, device, fitz.mupdf.FzMatrix(), fitz.mupdf.FzCookie())
-            fitz.mupdf.fz_end_page(writer)
-            fitz.mupdf.fz_close_document_writer(writer)
+            device = pymupdf.mupdf.fz_begin_page(writer, pymupdf.mupdf.fz_bound_page(page))
+            pymupdf.mupdf.fz_run_page(page, device, pymupdf.mupdf.FzMatrix(), pymupdf.mupdf.FzCookie())
+            pymupdf.mupdf.fz_end_page(writer)
+            pymupdf.mupdf.fz_close_document_writer(writer)
             text = buffer_.fz_buffer_extract()
             text = text.decode('utf8')
             n = text.count(' ')
@@ -136,12 +136,12 @@ def test_2954():
     '''
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_2954.pdf')
     flags0 = (0
-            | fitz.TEXT_PRESERVE_WHITESPACE
-            | fitz.TEXT_PRESERVE_LIGATURES
-            | fitz.TEXT_MEDIABOX_CLIP
+            | pymupdf.TEXT_PRESERVE_WHITESPACE
+            | pymupdf.TEXT_PRESERVE_LIGATURES
+            | pymupdf.TEXT_MEDIABOX_CLIP
             )
     
-    document = fitz.Document(path)
+    document = pymupdf.Document(path)
     
     expected_good = (
             "IT-204-IP (2021) Page 3 of 5\nNYPA2514    12/06/21\nPartner's share of \n"
@@ -193,8 +193,8 @@ def test_2954():
     text_none, n_fffd_none = get()
     text_0, n_fffd_0 = get(flags0)
     
-    if fitz.mupdf_version_tuple >= (1, 23, 9):
-        text_1, n_fffd_1 = get(flags0 | fitz.TEXT_CID_FOR_UNKNOWN_UNICODE)
+    if pymupdf.mupdf_version_tuple >= (1, 23, 9):
+        text_1, n_fffd_1 = get(flags0 | pymupdf.TEXT_CID_FOR_UNKNOWN_UNICODE)
         
         assert n_fffd_none == n_fffd_good
         assert n_fffd_0 == n_fffd_bad
@@ -213,10 +213,10 @@ def test_2954():
 
 def test_3027():
     path = path = f'{pymupdfdir}/tests/resources/2.pdf'
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     page = doc[0]
     textpage = page.get_textpage()
-    fitz.utils.get_text(page=page, option="dict", textpage=textpage)["blocks"]
+    pymupdf.utils.get_text(page=page, option="dict", textpage=textpage)["blocks"]
 
 
 def test_3186():
@@ -234,7 +234,7 @@ def test_3186():
             ]
 
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_3186.pdf')
-    fitz_doc = fitz.open(path)
+    fitz_doc = pymupdf.open(path)
     texts = list()
     for page in fitz_doc:
         t = page.get_text()
@@ -246,8 +246,8 @@ def test_3197():
     '''
     MuPDF's ActualText support fixes handling of test_3197.pdf.
     '''
-    if fitz.mupdf_version_tuple < (1, 24):
-        print(f'Not running on {fitz.mupdf_version_tuple=}.')
+    if pymupdf.mupdf_version_tuple < (1, 24):
+        print(f'Not running on {pymupdf.mupdf_version_tuple=}.')
         return
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_3197.pdf')
     
@@ -256,14 +256,14 @@ def test_3197():
             b'Related Tickers\nTTM\n12/31/2023\n12/31/2022\n12/31/2021\n12/31/2020\n14,918,000\n14,918,000\n6,853,000\n15,787,000\n24,269,000\n-17,628,000\n-17,628,000\n-4,347,000\n2,745,000\n-18,615,000\n2,584,000\n2,584,000\n2,511,000\n-23,498,000\n2,315,000\n25,110,000\n25,110,000\n25,340,000\n20,737,000\n25,935,000\n-8,236,000\n-8,236,000\n-6,866,000\n-6,227,000\n-5,742,000\n51,659,000\n51,659,000\n45,470,000\n27,901,000\n65,900,000\n-41,965,000\n-41,965,000\n-45,655,000\n-54,164,000\n-60,514,000\n-335,000\n-335,000\n-484,000\n--\n--\n6,682,000\n6,682,000\n-13,000\n9,560,000\n18,527,000\n \nYahoo Finance Plus Essential\naccess required.\nUnlock Access\nBreakdown\nOperating Cash\nFlow\nInvesting Cash\nFlow\nFinancing Cash\nFlow\nEnd Cash Position\nCapital Expenditure\nIssuance of Debt\nRepayment of Debt\nRepurchase of\nCapital Stock\nFree Cash Flow\n12/31/2020 - 6/1/1972\nGM\nGeneral Motors Compa\xe2\x80\xa6\n39.49 +1.23%\n\xc2\xa0\nRIVN\nRivian Automotive, Inc.\n15.39 -3.15%\n\xc2\xa0\nNIO\nNIO Inc.\n5.97 +0.17%\n\xc2\xa0\nSTLA\nStellantis N.V.\n25.63 +0.91%\n\xc2\xa0\nLCID\nLucid Group, Inc.\n3.7000 +0.54%\n\xc2\xa0\nTSLA\nTesla, Inc.\n194.77 +0.52%\n\xc2\xa0\nTM\nToyota Motor Corporati\xe2\x80\xa6\n227.09 +0.14%\n\xc2\xa0\nXPEV\nXPeng Inc.\n9.08 +0.89%\n\xc2\xa0\nFSR\nFisker Inc.\n0.5579 -11.46%\n\xc2\xa0\nCopyright \xc2\xa9 2024 Yahoo.\nAll rights reserved.\nPOPULAR QUOTES\nTesla\nDAX Index\nKOSPI\nDow Jones\nS&P BSE SENSEX\nSPDR S&P 500 ETF Trust\nEXPLORE MORE\nCredit Score Management\nHousing Market\nActive vs. Passive Investing\nShort Selling\nToday\xe2\x80\x99s Mortgage Rates\nHow Much Mortgage Can You Afford\nABOUT\nData Disclaimer\nHelp\nSuggestions\nSitemap\n',
             ]
     
-    with fitz.open(path) as document:
+    with pymupdf.open(path) as document:
         for i, page in enumerate(document):
             text = page.get_text()
             #print(f'{i=}:')
             text_utf8 = text.encode('utf8')
             #print(f'                {text_utf8=}')
             #print(f'    {text_utf8_expected[i]=}')
-            if fitz.mupdf_version_tuple >= (1, 24):
+            if pymupdf.mupdf_version_tuple >= (1, 24):
                 assert text_utf8 == text_utf8_expected[i]
             else:
                 assert text_utf8 != text_utf8_expected[i]

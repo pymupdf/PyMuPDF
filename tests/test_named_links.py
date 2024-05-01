@@ -1,20 +1,20 @@
-import fitz
+import pymupdf
 
 import os
 
 
 def test_2886():
     """Confirm correct insertion of a 'named' link."""
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         print(f"test_2886(): not running on classic.")
         return
 
     path = os.path.abspath(f"{__file__}/../../tests/resources/cython.pdf")
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     # name "Doc-Start" is a valid named destination in that file
     link = {
-        "kind": fitz.LINK_NAMED,
-        "from": fitz.Rect(0, 0, 50, 50),
+        "kind": pymupdf.LINK_NAMED,
+        "from": pymupdf.Rect(0, 0, 50, 50),
         "name": "Doc-Start",
     }
     # insert this link in an arbitrary page & rect
@@ -26,7 +26,7 @@ def test_2886():
     # our new link must be the last in the following list
     links = page.get_links()
     l_dict = links[-1]
-    assert l_dict["kind"] == fitz.LINK_NAMED
+    assert l_dict["kind"] == pymupdf.LINK_NAMED
     assert l_dict["nameddest"] == link["name"]
     assert l_dict["from"] == link["from"]
 
@@ -38,12 +38,12 @@ def test_2922():
     the required "name" key. We test the fallback here that uses key
     "nameddest" instead.
     """
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         print(f"test_2922(): not running on classic.")
         return
 
     path = os.path.abspath(f"{__file__}/../../tests/resources/cython.pdf")
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     page = doc[2]  # page has a few links, all are named
     links = page.get_links()  # list of all links
     link0 = links[0]  # take arbitrary link (1st one is ok)
@@ -67,37 +67,37 @@ def test_3301():
     This function ensures that the 'Link.uri' containing a ':' colon
     is converted to a URI if not explicitly starting with "file://".
     """
-    if not hasattr(fitz, "mupdf"):
+    if not hasattr(pymupdf, "mupdf"):
         print(f"test_3301(): not running on classic.")
         return
 
     # list of links and their expected link "kind" upon extraction
     text = {
-        "https://www.google.de": fitz.LINK_URI,
-        "http://www.google.de": fitz.LINK_URI,
-        "mailto:jorj.x.mckie@outlook.de": fitz.LINK_URI,
-        "www.wikipedia.de": fitz.LINK_LAUNCH,
-        "awkward:resource": fitz.LINK_URI,
-        "ftp://www.google.de": fitz.LINK_URI,
-        "some.program": fitz.LINK_LAUNCH,
-        "file://some.program": fitz.LINK_LAUNCH,
-        "another.exe": fitz.LINK_LAUNCH,
+        "https://www.google.de": pymupdf.LINK_URI,
+        "http://www.google.de": pymupdf.LINK_URI,
+        "mailto:jorj.x.mckie@outlook.de": pymupdf.LINK_URI,
+        "www.wikipedia.de": pymupdf.LINK_LAUNCH,
+        "awkward:resource": pymupdf.LINK_URI,
+        "ftp://www.google.de": pymupdf.LINK_URI,
+        "some.program": pymupdf.LINK_LAUNCH,
+        "file://some.program": pymupdf.LINK_LAUNCH,
+        "another.exe": pymupdf.LINK_LAUNCH,
     }
 
     # make enough "from" rectangles
-    r = fitz.Rect(0, 0, 50, 20)
+    r = pymupdf.Rect(0, 0, 50, 20)
     rects = [r + (0, r.height * i, 0, r.height * i) for i in range(len(text.keys()))]
 
     # make test page and insert above links as kind=LINK_URI
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     for i, k in enumerate(text.keys()):
-        link = {"kind": fitz.LINK_URI, "uri": k, "from": rects[i]}
+        link = {"kind": pymupdf.LINK_URI, "uri": k, "from": rects[i]}
         page.insert_link(link)
 
     # re-cycle the PDF preparing for link extraction
     pdfdata = doc.write()
-    doc = fitz.open("pdf", pdfdata)
+    doc = pymupdf.open("pdf", pdfdata)
     page = doc[0]
     for link in page.get_links():
         # Extract the link text. Must be 'file' or 'uri'.
