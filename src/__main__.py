@@ -833,8 +833,8 @@ def gettext(args):
 
 
 def _internal(args):
-    fitz.message('This is from fitz.message().')
-    fitz.log('This is from fitz.log().')
+    fitz.message('This is from PyMuPDF message().')
+    fitz.log('This is from PyMuPDF log().')
 
 def main():
     """Define command configurations."""

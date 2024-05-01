@@ -10,13 +10,16 @@ def wrap(*args, **kwargs):
     '''
     wt = fitz.TOOLS.mupdf_warnings()
     assert not wt, f'{wt=}'
+    assert not fitz.TOOLS.set_small_glyph_heights()
     
     # Run the test.
     rep = yield
     
-    # Test has run; check it did not create any MuPDF warnings.
+    # Test has run; check it did not create any MuPDF warnings etc.
     wt = fitz.TOOLS.mupdf_warnings()
     if not hasattr(fitz, 'mupdf'):
         print(f'Not checking mupdf_warnings on classic.')
     else:
         assert not wt, f'Warnings text not empty: {wt=}'
+    
+    assert not fitz.TOOLS.set_small_glyph_heights()

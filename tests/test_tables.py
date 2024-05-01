@@ -176,7 +176,7 @@ def test_2979():
     assert len(lengths) == 1
 
     # test 3001
-    assert fitz.TOOLS.set_small_glyph_heights() is False
+    assert fitz.TOOLS.set_small_glyph_heights() is False, f'{fitz.TOOLS.set_small_glyph_heights()=}'
 
 
 def test_3062():

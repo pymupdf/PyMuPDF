@@ -608,6 +608,7 @@ def build():
 
     if path_so_leaf_b:
         # Add rebased implementation files.
+        add( ret_p, f'{g_root}/src/pymupdf.py', 'pymupdf.py')
         to_dir = 'fitz/'
         add( ret_p, f'{g_root}/src/__init__.py', to_dir)
         add( ret_p, f'{g_root}/src/__main__.py', to_dir)
