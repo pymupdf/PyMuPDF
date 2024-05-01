@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.24.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 74e9387638bb4f3bb958d56416fe12bc
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 7ea92a47a42d48b9900ebe6c6199ed5f
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 feaaa0b3625b4d7885b9a42f5cc2b24c
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../resources.rst:6 10b1016aa3494448ab8a0b8abda202a8
+msgid "Resources"
+msgstr ""
+
+#: ../../resources.rst:10 3703597b51a34a3ea6f02020370dea20
+msgid "Find out about **PyMuPDF Utilities**"
+msgstr ""
+
+#: ../../resources.rst:12 f847b97264a343feafd856dbc8153ec1
+msgid ""
+"The :title:`GitHub` repository `PyMuPDF-Utilities "
+"<https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of"
+" examples, demonstrations and use cases."
+msgstr ""
+
+#: ../../resources.rst:21 bb8dd0254ed04704b188c992b16c4b33
+msgid "Do you need **PDF** to **DOCX** conversion?"
+msgstr ""
+
+#: ../../resources.rst:23 326c8c37b8f14221b9bd605257ed00de
+msgid ""
+"We recommend the pdf2docx_ library which uses **PyMuPDF** and the "
+"**python-docx** library to provide simple document conversion from "
+"**PDF** to **DOCX** format."
+msgstr ""
+
+#: ../../footer.rst:60 d911678a2c1b4337af9a8c60a270f3c9
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+
+#: ../../footer.rst:-1 f5d48975f6714da2b47d9eaf31f6d6e1
+msgid "Discord logo"
+msgstr ""
+

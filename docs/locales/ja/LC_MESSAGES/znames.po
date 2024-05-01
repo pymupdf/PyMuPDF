@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 5b4a6be3e7e34df5a8b056f648146b6b
+#: ../../header.rst:-1 56f684c8509f440f8763f76c64d62cab
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 a6982585e5a04e80a2fe9ee4242dbd12
+#: ../../header.rst:-1 41d31ae777ea47d5a7472ed30feb1dbb
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 37c8303b046847318dc41f0c59766cb6
+#: ../../header.rst:-1 c61d6c020b9c4db0b2335c5d57697d3d
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../znames.rst:7 503a97fbf8e245e6a3269bdb372404ce
+#: ../../znames.rst:7 7dde67597b46443d9a6fcac4edccd5b8
 msgid "Deprecated Names"
 msgstr "非推奨の名前"
 
-#: ../../znames.rst:9 dde680e2a90b49d08be3f723309c55ac
+#: ../../znames.rst:9 de85276ae1e941299782ebd8ef58d1ef
 msgid ""
 "The original naming convention for methods and properties has been "
 "\"camelCase\". Since its creation around 2013, a tremendous increase of "
@@ -49,14 +49,14 @@ msgid ""
 "guess."
 msgstr "メソッドやプロパティの元々の命名規則は「camelCase」でした。その創造以来、PyMuPDFでの機能の著しい増加がありました。それに伴い、クラス、メソッド、プロパティも対応するように増加しました。多くの場合、これにより直感に反した、論理的でなく見栄えのしない名前が生まれ、覚えたり推測したりが難しくなりました。"
 
-#: ../../znames.rst:11 94b0b576062a41af8308359cf1fa3b48
+#: ../../znames.rst:11 3144ee3b25884e81a555ce5fee11a487
 msgid ""
 "A few versions ago, I therefore decided to shift gears and switch to a "
 "\"snake_cased\" naming standard. This was a major effort, which needed a "
 "step-wise approach. I think am done with it now (version 1.18.14)."
 msgstr "数バージョン前、私はゆえに、段階的なアプローチが必要な大規模な取り組みであったにもかかわらず、「snake_cased」の命名規則に切り替えることを決定しました。これは大きな努力が必要でした。今はそれが完了したと思っています（バージョン1.18.14）。"
 
-#: ../../znames.rst:14 fde167b8048547e0abf0af8f8902c8a8
+#: ../../znames.rst:14 3f9d9f7355804bc2bde84498e0d40278
 msgid ""
 "The following list maps deprecated names to their new versions. For "
 "example, property `pageCount` became `page_count` in the :ref:`Document` "
@@ -68,13 +68,13 @@ msgstr ""
 "となりました。また、より明らかでない名前の変更もあります。例えば、メソッドである `getPNGdata` は :ref:`Pixmap` "
 "クラス内で `tobytes` という名前に変更されました。"
 
-#: ../../znames.rst:16 7639d739bb8842fdae416c30ec6321a8
+#: ../../znames.rst:16 1a72a22997b744bea7f12b233c6040db
 msgid ""
 "Names of classes (camel case) and package-wide constants (the majority is"
 " upper case) remain untouched."
 msgstr "クラスの名前（キャメルケース）やパッケージ全体の定数（大部分は大文字）については、触れずに残ります。"
 
-#: ../../znames.rst:18 afb014b24ad441a1aec726aefc8214ad
+#: ../../znames.rst:18 e2f2f25d0545459788e7b392dd506f4d
 msgid ""
 "Old names will remain available as deprecated aliases through MuPDF "
 "version 1.19.0 and **be removed** in the version that follows it - "
@@ -83,7 +83,7 @@ msgstr ""
 "古い名前は、MuPDFバージョン1.19.0まで非推奨のエイリアスとして利用可能であり、その後のバージョン（おそらくバージョン1.20.0ですが、これは上流の決定（MuPDF）に依存します）で"
 " **削除されます** 。"
 
-#: ../../znames.rst:20 6696b60815614f09aa85ed74fd3900ce
+#: ../../znames.rst:20 de6071f94dd04dc9a402935ff7859881
 msgid ""
 "Starting with version 1.19.0, we will issue deprecation warnings on "
 "`sys.stderr` like `Deprecation: 'newPage' removed from class 'Document' "
@@ -94,7 +94,7 @@ msgstr ""
 "`Deprecation: 'newPage'はクラス 'Document'からv1.19.0以降で削除されました - 'new_page'` "
 "を使用してください。非推奨のプロパティを使用した場合、このタイプの警告は発生しません。"
 
-#: ../../znames.rst:22 deeb479c53f24c969246f7631bcb0c42
+#: ../../znames.rst:22 b9cd42a979c245cd89124929acd4fd73
 msgid ""
 "Starting immediately, all deprecated objects (methods and properties) "
 "will show a copy of the original's docstring, **prefixed** with the "
@@ -103,7 +103,7 @@ msgstr ""
 "直ちに、すべての非推奨のオブジェクト（メソッドとプロパティ）は、元のドキュメント文字列のコピーが表示され、その前に非推奨のメッセージが "
 "**付加されます** 。例："
 
-#: ../../znames.rst:39 256dd1b4f2724b59967206b56329c404
+#: ../../znames.rst:39 c23dcd7e32934976ad64724b88fc73a1
 msgid ""
 "There is a utility script `alias-changer.py <https://github.com/pymupdf"
 "/PyMuPDF-Utilities/tree/master/alias-changer.py>`_ which can be used to "
@@ -116,883 +116,11 @@ msgstr ""
 "Utilities/tree/master/alias-changer.py>` "
 "があり、スクリプト内で大量の名前変更を行うために使用できます。単一のファイルまたはフォルダを引数として受け入れます。フォルダが指定された場合、そのフォルダ内のすべてのPythonファイルおよびそのサブフォルダのファイルが変更されます。必要に応じて、スクリプトのバックアップを取ることもできます。"
 
-#: ../../znames.rst:41 ea9779cc06464a2793e4ecbf12768fe4
-msgid ""
-"Deprecated names are not separately documented. The following list will "
-"help you find the documentation of the original."
-msgstr "非推奨の名前は別途文書化されていません。以下のリストは、元のドキュメントの検索に役立ちます。"
-
-#: ../../znames.rst:43 4e783b3cc96d4af88fa53e67158a5169
-msgid ""
-"This is automatically generated. One or two items refer to yet "
-"undocumented methods - please simply ignore them."
-msgstr "これは自動的に生成されたものです。1または2のアイテムはまだ文書化されていないメソッドを参照していますが、無視してください。"
-
-#: ../../deprecated.rst:3 31031bfe477649498f45922289e7d097
-msgid ":index:`_isWrapped` -- :attr:`Page.is_wrapped`"
-msgstr ""
-
-#: ../../deprecated.rst:4 53d3a497bb3a4706a8f59c09e520d33d
-msgid ":index:`addCaretAnnot` -- :meth:`Page.add_caret_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:5 80a0cb00882c49f480da2ddeee7f02a5
-msgid ":index:`addCircleAnnot` -- :meth:`Page.add_circle_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:6 81d17457d1e8491faf0fb31d2c29467e
-msgid ":index:`addFileAnnot` -- :meth:`Page.add_file_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:7 9a236965d9a1435293db7efca5520579
-msgid ":index:`addFreetextAnnot` -- :meth:`Page.add_freetext_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:8 ee7373554a164648b6553ad4e44094e1
-msgid ":index:`addHighlightAnnot` -- :meth:`Page.add_highlight_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:9 b0d53988848447d0a6a4c1c1b22c36e6
-msgid ":index:`addInkAnnot` -- :meth:`Page.add_ink_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:10 6a60eb75539c4dd080bf322cd49b94f1
-msgid ":index:`addLineAnnot` -- :meth:`Page.add_line_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:11 eea84ae7688f455b9bda35e95a45ce87
-msgid ":index:`addPolygonAnnot` -- :meth:`Page.add_polygon_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:12 cf469f9b0cb644e2b1619272f91cbfe6
-msgid ":index:`addPolylineAnnot` -- :meth:`Page.add_polyline_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:13 31b7673573844d6b8d536ce6edf4ba2d
-msgid ":index:`addRectAnnot` -- :meth:`Page.add_rect_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:14 e886b3d5e62246a0a28b082977aae927
-msgid ":index:`addRedactAnnot` -- :meth:`Page.add_redact_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:15 c78797959e7941308bd8b8b9a0835387
-msgid ":index:`addSquigglyAnnot` -- :meth:`Page.add_squiggly_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:16 76766bde13bc431abcb7ec3d0dfd5138
-msgid ":index:`addStampAnnot` -- :meth:`Page.add_stamp_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:17 66177878f9da4055a02311e70072f5ff
-msgid ":index:`addStrikeoutAnnot` -- :meth:`Page.add_strikeout_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:18 79c4a79412314eefb0151fa47b434e8c
-msgid ":index:`addTextAnnot` -- :meth:`Page.add_text_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:19 04e5cc72a775423e8762f4fc3e0f177d
-msgid ":index:`addUnderlineAnnot` -- :meth:`Page.add_underline_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:20 ebbb568a5b654b4f9192c323e1e2413c
-msgid ":index:`addWidget` -- :meth:`Page.add_widget`"
-msgstr ""
-
-#: ../../deprecated.rst:21 1785beddca654c5aac63540c185c6e1e
-msgid ":index:`chapterCount` -- :attr:`Document.chapter_count`"
-msgstr ""
-
-#: ../../deprecated.rst:22 a51e0c4c1bee47df867a7ef492d41eee
-msgid ":index:`chapterPageCount` -- :meth:`Document.chapter_page_count`"
-msgstr ""
-
-#: ../../deprecated.rst:23 a7a3c2f914f049cca0e5cb65a869413b
-msgid ":index:`cleanContents` -- :meth:`Page.clean_contents`"
-msgstr ""
-
-#: ../../deprecated.rst:24 96f9d26e8b604c3f8410c443fece4d3c
-msgid ":index:`clearWith` -- :meth:`Pixmap.clear_with`"
-msgstr ""
-
-#: ../../deprecated.rst:25 42a04c77e3f04f249066d5799636be07
-msgid ":index:`convertToPDF` -- :meth:`Document.convert_to_pdf`"
-msgstr ""
-
-#: ../../deprecated.rst:26 b07396befbbf4b32936de3a62bbe6d40
-msgid ":index:`copyPage` -- :meth:`Document.copy_page`"
-msgstr ""
-
-#: ../../deprecated.rst:27 b20ba73570d5481983964bb4d0f28743
-msgid ":index:`copyPixmap` -- :meth:`Pixmap.copy`"
-msgstr ""
-
-#: ../../deprecated.rst:28 685d60f484e44573807fb3f9f42f3eb3
-msgid ":index:`CropBox` -- :attr:`Page.cropbox`"
-msgstr ""
-
-#: ../../deprecated.rst:29 94fc772e01314e678d3552ff2253eb52
-msgid ":index:`CropBoxPosition` -- :attr:`Page.cropbox_position`"
-msgstr ""
-
-#: ../../deprecated.rst:30 814cbd10e2924448beb7a4901029a812
-msgid ":index:`deleteAnnot` -- :meth:`Page.delete_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:31 c8b2de345f324764b8d8b9d693a1c11c
-msgid ":index:`deleteLink` -- :meth:`Page.delete_link`"
-msgstr ""
-
-#: ../../deprecated.rst:32 000720c0055845a98a5770082ff2bea5
-msgid ":index:`deletePage` -- :meth:`Document.delete_page`"
-msgstr ""
-
-#: ../../deprecated.rst:33 e9c978a05f2445709f5cc2c2d67bdf38
-msgid ":index:`deletePageRange` -- :meth:`Document.delete_pages`"
-msgstr ""
-
-#: ../../deprecated.rst:34 b1c59f20adf04166a962bf02d915fad0
-msgid ":index:`deleteWidget` -- :meth:`Page.delete_widget`"
-msgstr ""
-
-#: ../../deprecated.rst:35 dea06b2d47164e3bb1c55ef035a3d15f
-msgid ":index:`derotationMatrix` -- :attr:`Page.derotation_matrix`"
-msgstr ""
-
-#: ../../deprecated.rst:36 f193dcaf036e4fe3aea447a98da9bbbc
-msgid ":index:`drawBezier` -- :meth:`Page.draw_bezier`"
-msgstr ""
-
-#: ../../deprecated.rst:37 f5cfa0125ee2441c8967118fd9cc9aed
-msgid ":index:`drawBezier` -- :meth:`Shape.draw_bezier`"
-msgstr ""
-
-#: ../../deprecated.rst:38 fa89585bc5d94ee3b5e24164a2cc2a57
-msgid ":index:`drawCircle` -- :meth:`Page.draw_circle`"
-msgstr ""
-
-#: ../../deprecated.rst:39 e45fe8da031c4ab0956c4af1a28879be
-msgid ":index:`drawCircle` -- :meth:`Shape.draw_circle`"
-msgstr ""
-
-#: ../../deprecated.rst:40 54e9000d1f9141dbb3199610c8346e37
-msgid ":index:`drawCurve` -- :meth:`Page.draw_curve`"
-msgstr ""
-
-#: ../../deprecated.rst:41 ddac72cf10d143399d9376bfe2c52742
-msgid ":index:`drawCurve` -- :meth:`Shape.draw_curve`"
-msgstr ""
-
-#: ../../deprecated.rst:42 ab23454c118644beb04a84becc009bb4
-msgid ":index:`drawLine` -- :meth:`Page.draw_line`"
-msgstr ""
-
-#: ../../deprecated.rst:43 d3fa2dd9894d4f6e85ca6a5f00fee594
-msgid ":index:`drawLine` -- :meth:`Shape.draw_line`"
-msgstr ""
-
-#: ../../deprecated.rst:44 ea42bdbd5bc3473793a56e985d773bac
-msgid ":index:`drawOval` -- :meth:`Page.draw_oval`"
-msgstr ""
-
-#: ../../deprecated.rst:45 aa40f1907eaa483796d407084d60f96b
-msgid ":index:`drawOval` -- :meth:`Shape.draw_oval`"
-msgstr ""
-
-#: ../../deprecated.rst:46 cb08478e6a1e403a8463b947f99565f0
-msgid ":index:`drawPolyline` -- :meth:`Page.draw_polyline`"
-msgstr ""
-
-#: ../../deprecated.rst:47 013255ea1f234de199c524897d46e822
-msgid ":index:`drawPolyline` -- :meth:`Shape.draw_polyline`"
-msgstr ""
-
-#: ../../deprecated.rst:48 8346c0c3a92c466fb4edc11a3c779167
-msgid ":index:`drawQuad` -- :meth:`Page.draw_quad`"
-msgstr ""
-
-#: ../../deprecated.rst:49 3c36517ecbbf478980c6d055bc4787f5
-msgid ":index:`drawQuad` -- :meth:`Shape.draw_quad`"
-msgstr ""
-
-#: ../../deprecated.rst:50 94becf7199464ad2abd98fd11ee0168f
-msgid ":index:`drawRect` -- :meth:`Page.draw_rect`"
-msgstr ""
-
-#: ../../deprecated.rst:51 ec713ab25cb64751be963592a6d7ba0a
-msgid ":index:`drawRect` -- :meth:`Shape.draw_rect`"
-msgstr ""
-
-#: ../../deprecated.rst:52 858a545fc2b649b4b026651f7aef0d64
-msgid ":index:`drawSector` -- :meth:`Page.draw_sector`"
-msgstr ""
-
-#: ../../deprecated.rst:53 2af74e9e3c2946f7978be05499e3f532
-msgid ":index:`drawSector` -- :meth:`Shape.draw_sector`"
-msgstr ""
-
-#: ../../deprecated.rst:54 75d83239bb724fc1881c749d519bc6ce
-msgid ":index:`drawSquiggle` -- :meth:`Page.draw_squiggle`"
-msgstr ""
-
-#: ../../deprecated.rst:55 7d2c5d6ce3ed4abb83ae933ffecc796c
-msgid ":index:`drawSquiggle` -- :meth:`Shape.draw_squiggle`"
-msgstr ""
-
-#: ../../deprecated.rst:56 b53ab09676b34e9da87f3551cd59e13c
-msgid ":index:`drawZigzag` -- :meth:`Page.draw_zigzag`"
-msgstr ""
-
-#: ../../deprecated.rst:57 3b2f873fc528409db862d2e4b5ad92a8
-msgid ":index:`drawZigzag` -- :meth:`Shape.draw_zigzag`"
-msgstr ""
-
-#: ../../deprecated.rst:58 66b3a4e0f0a24e978beb6e0e70e616b0
-msgid ":index:`embeddedFileAdd` -- :meth:`Document.embfile_add`"
-msgstr ""
-
-#: ../../deprecated.rst:59 45e4377c434a450593614238bee0eba7
-msgid ":index:`embeddedFileCount` -- :meth:`Document.embfile_count`"
-msgstr ""
-
-#: ../../deprecated.rst:60 5aef826d29e8456da0477bd0c743d400
-msgid ":index:`embeddedFileDel` -- :meth:`Document.embfile_del`"
-msgstr ""
-
-#: ../../deprecated.rst:61 2be7a20f8ff54dcfaba855d9effae8a6
-msgid ":index:`embeddedFileGet` -- :meth:`Document.embfile_get`"
-msgstr ""
-
-#: ../../deprecated.rst:62 639a2cebb7f145d09da862c3417d3aff
-msgid ":index:`embeddedFileInfo` -- :meth:`Document.embfile_info`"
-msgstr ""
-
-#: ../../deprecated.rst:63 5486cb75c1a44f95b4f8627fd6c7b62f
-msgid ":index:`embeddedFileNames` -- :meth:`Document.embfile_names`"
-msgstr ""
-
-#: ../../deprecated.rst:64 33d2db256c184d1cbb1d147e087bdf69
-msgid ":index:`embeddedFileUpd` -- :meth:`Document.embfile_upd`"
-msgstr ""
-
-#: ../../deprecated.rst:65 8f52594a8073400fb5fec821a92647b7
-msgid ":index:`extractFont` -- :meth:`Document.extract_font`"
-msgstr ""
-
-#: ../../deprecated.rst:66 c239cff27b334e06a77d753513fc8655
-msgid ":index:`extractImage` -- :meth:`Document.extract_image`"
-msgstr ""
-
-#: ../../deprecated.rst:67 fddd307fdbf14113a6957aa655708e62
-msgid ":index:`fileGet` -- :meth:`Annot.get_file`"
-msgstr ""
-
-#: ../../deprecated.rst:68 640df3e961a64e09a1c80abf2ef51740
-msgid ":index:`fileUpd` -- :meth:`Annot.update_file`"
-msgstr ""
-
-#: ../../deprecated.rst:69 d4c4bedf7e7244f9ae16cddee4ed8bce
-msgid ":index:`fillTextbox` -- :meth:`TextWriter.fill_textbox`"
-msgstr ""
-
-#: ../../deprecated.rst:70 b584f9c5a8b048baa69beefe4a809275
-msgid ":index:`findBookmark` -- :meth:`Document.find_bookmark`"
-msgstr ""
-
-#: ../../deprecated.rst:71 c75247c526d94b6bb0780ba32088bb2a
-msgid ":index:`firstAnnot` -- :attr:`Page.first_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:72 eb81de6ea2564609b295a17befe11a83
-msgid ":index:`firstLink` -- :attr:`Page.first_link`"
-msgstr ""
-
-#: ../../deprecated.rst:73 2adc7cb5ea4b4a64a23f997088e5f677
-msgid ":index:`firstWidget` -- :attr:`Page.first_widget`"
-msgstr ""
-
-#: ../../deprecated.rst:74 4d0fdef31b7e4a5dbe62eb0ee1f79ae7
-msgid ":index:`fullcopyPage` -- :meth:`Document.fullcopy_page`"
-msgstr ""
-
-#: ../../deprecated.rst:75 78121f6be19f412dbc9a441fa2aa41d9
-msgid ":index:`gammaWith` -- :meth:`Pixmap.gamma_with`"
-msgstr ""
-
-#: ../../deprecated.rst:76 792edf9455044dd8a547fc7beac77bc5
-msgid ":index:`getArea` -- :meth:`Rect.get_area`"
-msgstr ""
-
-#: ../../deprecated.rst:77 f500581bc9234c7694bc2a5986e1e8fd
-msgid ":index:`getArea` -- :meth:`IRect.get_area`"
-msgstr ""
-
-#: ../../deprecated.rst:78 fa0ec66fc31144fcb5e0686f45c17d75
-msgid ":index:`getCharWidths` -- :meth:`Document.get_char_widths`"
-msgstr ""
-
-#: ../../deprecated.rst:79 10884e35b14d452e9461a7fb5558ddc4
-msgid ":index:`getContents` -- :meth:`Page.get_contents`"
-msgstr ""
-
-#: ../../deprecated.rst:80 9769c323ac424de69547290c91fcfbc7
-msgid ":index:`getDisplayList` -- :meth:`Page.get_displaylist`"
-msgstr ""
-
-#: ../../deprecated.rst:81 5728732683374224b7b779dcbb336e05
-msgid ":index:`getDrawings` -- :meth:`Page.get_drawings`"
-msgstr ""
-
-#: ../../deprecated.rst:82 1a9cf450dfbf4225aa4624ce27f8936c
-msgid ":index:`getFontList` -- :meth:`Page.get_fonts`"
-msgstr ""
-
-#: ../../deprecated.rst:83 3e0ef17d90064ff9b4e13e1a0c08cdba
-msgid ":index:`getImageBbox` -- :meth:`Page.get_image_bbox`"
-msgstr ""
-
-#: ../../deprecated.rst:84 38e775de369c41dabea22e4517edb724
-msgid ":index:`getImageData` -- :meth:`Pixmap.tobytes`"
-msgstr ""
-
-#: ../../deprecated.rst:85 e26e61fefe804f3997c6aa2f71bc5dcd
-msgid ":index:`getImageList` -- :meth:`Page.get_images`"
-msgstr ""
-
-#: ../../deprecated.rst:86 455cdae2918648a98303d5d88f022573
-msgid ":index:`getLinks` -- :meth:`Page.get_links`"
-msgstr ""
-
-#: ../../deprecated.rst:87 06b1bcb1a8bc4ff49ee63036708b9fee
-msgid ":index:`getOCGs` -- :meth:`Document.get_ocgs`"
-msgstr ""
-
-#: ../../deprecated.rst:88 7fa2f6fc04a84ab7b6eed5a09c4b5737
-msgid ":index:`getPageFontList` -- :meth:`Document.get_page_fonts`"
-msgstr ""
-
-#: ../../deprecated.rst:89 d7eb16df7f7046aaa0d1e1295bbfec72
-msgid ":index:`getPageImageList` -- :meth:`Document.get_page_images`"
-msgstr ""
-
-#: ../../deprecated.rst:90 a4b4234908094ff385cec2b06eb62626
-msgid ":index:`getPagePixmap` -- :meth:`Document.get_page_pixmap`"
-msgstr ""
-
-#: ../../deprecated.rst:91 45cfe8fcc55d48c6812aa758ea7311aa
-msgid ":index:`getPageText` -- :meth:`Document.get_page_text`"
-msgstr ""
-
-#: ../../deprecated.rst:92 d61b95263b5a4dfdbb2376b5db094a0a
-msgid ":index:`getPageXObjectList` -- :meth:`Document.get_page_xobjects`"
-msgstr ""
-
-#: ../../deprecated.rst:93 b0a0ceac9c824ce58d82d176ea4fb89e
-msgid ":index:`getPDFnow` -- :meth:`get_pdf_now`"
-msgstr ""
-
-#: ../../deprecated.rst:94 2df4e5002261476eb7fda266e3ebb6c5
-msgid ":index:`getPDFstr` -- :meth:`get_pdf_str`"
-msgstr ""
-
-#: ../../deprecated.rst:95 0e88798626164053b47ca86102815aea
-msgid ":index:`getPixmap` -- :meth:`Page.get_pixmap`"
-msgstr ""
-
-#: ../../deprecated.rst:96 010b214bb80c450b873482c9351ac619
-msgid ":index:`getPixmap` -- :meth:`Annot.get_pixmap`"
-msgstr ""
-
-#: ../../deprecated.rst:97 dc45a967f5ab40a79f6f4df136003afe
-msgid ":index:`getPixmap` -- :meth:`DisplayList.get_pixmap`"
-msgstr ""
-
-#: ../../deprecated.rst:98 c9909509402d4e7a82825f6e9bd9279e
-msgid ":index:`getPNGData` -- :meth:`Pixmap.tobytes`"
-msgstr ""
-
-#: ../../deprecated.rst:99 fbd53eeb763f40538c795c19779afd90
-msgid ":index:`getPNGdata` -- :meth:`Pixmap.tobytes`"
-msgstr ""
-
-#: ../../deprecated.rst:100 81d09b5512fb4a18bc8432e27162dfe9
-msgid ":index:`getRectArea` -- :meth:`Rect.get_area`"
-msgstr ""
-
-#: ../../deprecated.rst:101 2db839c66dda440b859859e12c2c9578
-msgid ":index:`getRectArea` -- :meth:`IRect.get_area`"
-msgstr ""
-
-#: ../../deprecated.rst:102 894ece4d03ca4bb8a8a926f4cafd1994
-msgid ":index:`getSigFlags` -- :meth:`Document.get_sigflags`"
-msgstr ""
-
-#: ../../deprecated.rst:103 2d76f55cf01748be99a502b2cbc12f03
-msgid ":index:`getSVGimage` -- :meth:`Page.get_svg_image`"
-msgstr ""
-
-#: ../../deprecated.rst:104 dbe56979745a47de97ebc2f455fe5231
-msgid ":index:`getText` -- :meth:`Page.get_text`"
-msgstr ""
-
-#: ../../deprecated.rst:105 a18bbcc5f4c54038a7934797b152763c
-msgid ":index:`getText` -- :meth:`Annot.get_text`"
-msgstr ""
-
-#: ../../deprecated.rst:106 c1792c908ef04b4cbf74b0112e4d5f8b
-msgid ":index:`getTextBlocks` -- :meth:`Page.get_text_blocks`"
-msgstr ""
-
-#: ../../deprecated.rst:107 1b4971c099f74aeb809d8bda90e3eed3
-msgid ":index:`getTextbox` -- :meth:`Page.get_textbox`"
-msgstr ""
-
-#: ../../deprecated.rst:108 9c3d511eaee64a6095593d3c448bbfd2
-msgid ":index:`getTextbox` -- :meth:`Annot.get_textbox`"
-msgstr ""
-
-#: ../../deprecated.rst:109 32f238fd4bde4faeb28e5dcdc89f5bc5
-msgid ":index:`getTextLength` -- :meth:`get_text_length`"
-msgstr ""
-
-#: ../../deprecated.rst:110 07aba353f1c1484d9afddcd3d5c4816c
-msgid ":index:`getTextPage` -- :meth:`Page.get_textpage`"
-msgstr ""
-
-#: ../../deprecated.rst:111 0974694f90464c19a2be2e373c91ea88
-msgid ":index:`getTextPage` -- :meth:`Annot.get_textpage`"
-msgstr ""
-
-#: ../../deprecated.rst:112 f44765fb651b4b4fb70a37661ea9416f
-msgid ":index:`getTextPage` -- :meth:`DisplayList.get_textpage`"
-msgstr ""
-
-#: ../../deprecated.rst:113 b725798b5ef34afa893fa2445c626476
-msgid ":index:`getTextWords` -- :meth:`Page.get_text_words`"
-msgstr ""
-
-#: ../../deprecated.rst:114 39fb5da5cbd04036a64d690b35835735
-msgid ":index:`getToC` -- :meth:`Document.get_toc`"
-msgstr ""
-
-#: ../../deprecated.rst:115 2dfbc9f55d78492bbe0d64e9e7719926
-msgid ":index:`getXmlMetadata` -- :meth:`Document.get_xml_metadata`"
-msgstr ""
-
-#: ../../deprecated.rst:116 971f073e0b0941bca4d7dc9c3046f486
-msgid ":index:`ImageProperties` -- :meth:`image_properties`"
-msgstr ""
-
-#: ../../deprecated.rst:117 4fc18110f17542f19cd48e3942e12fdb
-msgid ":index:`includePoint` -- :meth:`Rect.include_point`"
-msgstr ""
-
-#: ../../deprecated.rst:118 405b48db85d7474e8dc7fe6c90d0cd72
-msgid ":index:`includePoint` -- :meth:`IRect.include_point`"
-msgstr ""
-
-#: ../../deprecated.rst:119 3bd923641ebd4f00b2a16ecbab9d50a2
-msgid ":index:`includeRect` -- :meth:`Rect.include_rect`"
-msgstr ""
-
-#: ../../deprecated.rst:120 a67e176a6267464da06e655d2f06a0b6
-msgid ":index:`includeRect` -- :meth:`IRect.include_rect`"
-msgstr ""
-
-#: ../../deprecated.rst:121 4edbbc0bb6b441eba3ec983862b61ae3
-msgid ":index:`insertFont` -- :meth:`Page.insert_font`"
-msgstr ""
-
-#: ../../deprecated.rst:122 8fceb28bc4524a5398e775ec1d89637e
-msgid ":index:`insertImage` -- :meth:`Page.insert_image`"
-msgstr ""
-
-#: ../../deprecated.rst:123 0b37c8a949f2453585750e49b9a58f99
-msgid ":index:`insertLink` -- :meth:`Page.insert_link`"
-msgstr ""
-
-#: ../../deprecated.rst:124 620d55eaf4a146bba8f23a171ee9a17a
-msgid ":index:`insertPage` -- :meth:`Document.insert_page`"
-msgstr ""
-
-#: ../../deprecated.rst:125 fd3836ce452f41998f20a3b67c4a5743
-msgid ":index:`insertPDF` -- :meth:`Document.insert_pdf`"
-msgstr ""
-
-#: ../../deprecated.rst:126 7cae2e6d405a484db0afbdf094f87f8f
-msgid ":index:`insertText` -- :meth:`Page.insert_text`"
-msgstr ""
-
-#: ../../deprecated.rst:127 c94062384c844e9eae6dc63f6597b35c
-msgid ":index:`insertText` -- :meth:`Shape.insert_text`"
-msgstr ""
-
-#: ../../deprecated.rst:128 3b7755979c39402d85f93b57f9844e9a
-msgid ":index:`insertTextbox` -- :meth:`Page.insert_textbox`"
-msgstr ""
-
-#: ../../deprecated.rst:129 94d3717958cf4fa1abe95fe4c269499d
-msgid ":index:`insertTextbox` -- :meth:`Shape.insert_textbox`"
-msgstr ""
-
-#: ../../deprecated.rst:130 4ca1e16117d24edd8f2c0ae446df901b
-msgid ":index:`invertIRect` -- :meth:`Pixmap.invert_irect`"
-msgstr ""
-
-#: ../../deprecated.rst:131 34906df876dc46c7a31dfacf08c3d3db
-msgid ":index:`isConvex` -- :attr:`Quad.is_convex`"
-msgstr ""
-
-#: ../../deprecated.rst:132 8adca16fe80d4ee194fa48c928b5e8ba
-msgid ":index:`isDirty` -- :attr:`Document.is_dirty`"
-msgstr ""
-
-#: ../../deprecated.rst:133 d0f1f4b527014046bc4cfea19bf83255
-msgid ":index:`isEmpty` -- :attr:`Rect.is_empty`"
-msgstr ""
-
-#: ../../deprecated.rst:134 33153906a87d49e6a1753a324a8fb59f
-msgid ":index:`isEmpty` -- :attr:`IRect.is_empty`"
-msgstr ""
-
-#: ../../deprecated.rst:135 cd7a57f0e5f649f39134da5936a83590
-msgid ":index:`isEmpty` -- :attr:`Quad.is_empty`"
-msgstr ""
-
-#: ../../deprecated.rst:136 f61edfc265284aea9adee10240a3f2ac
-msgid ":index:`isFormPDF` -- :attr:`Document.is_form_pdf`"
-msgstr ""
-
-#: ../../deprecated.rst:137 0f7a81abaeae44a89a1f4a5447a8077f
-msgid ":index:`isInfinite` -- :attr:`Rect.is_infinite`"
-msgstr ""
-
-#: ../../deprecated.rst:138 885221ec56224e31801b1d0e8577ff73
-msgid ":index:`isInfinite` -- :attr:`IRect.is_infinite`"
-msgstr ""
-
-#: ../../deprecated.rst:139 a1a33a8295c04fa9964f4918eff083f5
-msgid ":index:`isPDF` -- :attr:`Document.is_pdf`"
-msgstr ""
-
-#: ../../deprecated.rst:140 24df333ec11b4e1f90f6af93816345eb
-msgid ":index:`isRectangular` -- :attr:`Quad.is_rectangular`"
-msgstr ""
-
-#: ../../deprecated.rst:141 388ad26845664766a4d596cc97892fa7
-msgid ":index:`isRectilinear` -- :attr:`Matrix.is_rectilinear`"
-msgstr ""
-
-#: ../../deprecated.rst:142 4662ca9cd2134f3284030b1234779e64
-msgid ":index:`isReflowable` -- :attr:`Document.is_reflowable`"
-msgstr ""
-
-#: ../../deprecated.rst:143 4cbcd1900d5b494990986940de25787c
-msgid ":index:`isRepaired` -- :attr:`Document.is_repaired`"
-msgstr ""
-
-#: ../../deprecated.rst:144 8bcc21b7ed2b49ecaec0c2feb1c17c92
-msgid ":index:`isStream` -- :meth:`Document.is_stream`"
-msgstr ""
-
-#: ../../deprecated.rst:145 b1f628b0b7a148e190cfd652c4216bcc
-msgid ":index:`lastLocation` -- :attr:`Document.last_location`"
-msgstr ""
-
-#: ../../deprecated.rst:146 f94c9949a6464776905c9a665531e1b9
-msgid ":index:`lineEnds` -- :attr:`Annot.line_ends`"
-msgstr ""
-
-#: ../../deprecated.rst:147 e132f3c5d3cd442db61a7fcbe9637e0c
-msgid ":index:`loadAnnot` -- :meth:`Page.load_annot`"
-msgstr ""
-
-#: ../../deprecated.rst:148 f7be812f766948ff9983fd51f53894f9
-msgid ":index:`loadLinks` -- :meth:`Page.load_links`"
-msgstr ""
-
-#: ../../deprecated.rst:149 49a1010c6d9043a99ffe517dc4812513
-msgid ":index:`loadPage` -- :meth:`Document.load_page`"
-msgstr ""
-
-#: ../../deprecated.rst:150 db9765d529a74d5c9ab1d5fa6614a2c9
-msgid ":index:`makeBookmark` -- :meth:`Document.make_bookmark`"
-msgstr ""
-
-#: ../../deprecated.rst:151 deb0aebc5d564b8a8b6281866e999d5e
-msgid ":index:`MediaBox` -- :attr:`Page.mediabox`"
-msgstr ""
-
-#: ../../deprecated.rst:152 b68eb17efa26406a97d1206d1d27c10c
-msgid ":index:`MediaBoxSize` -- :attr:`Page.mediabox_size`"
-msgstr ""
-
-#: ../../deprecated.rst:153 ee03efd7722c43a395b24229f8b70ac6
-msgid ":index:`metadataXML` -- :meth:`Document.xref_xml_metadata`"
-msgstr ""
-
-#: ../../deprecated.rst:154 e21b7187105b440b9067587599719057
-msgid ":index:`movePage` -- :meth:`Document.move_page`"
-msgstr ""
-
-#: ../../deprecated.rst:155 dd0c9d846dfd4357adacd6eb66f4e93a
-msgid ":index:`needsPass` -- :attr:`Document.needs_pass`"
-msgstr ""
-
-#: ../../deprecated.rst:156 c9db477b14004064b4b862f9ecc946e4
-msgid ":index:`newPage` -- :meth:`Document.new_page`"
-msgstr ""
-
-#: ../../deprecated.rst:157 459a0b837fd6403a88baf1ce3e8ba7f2
-msgid ":index:`newShape` -- :meth:`Page.new_shape`"
-msgstr ""
-
-#: ../../deprecated.rst:158 af5009ffee9d4488973e28dc598671c6
-msgid ":index:`nextLocation` -- :meth:`Document.next_location`"
-msgstr ""
-
-#: ../../deprecated.rst:159 c2a2663f3abb4bab953b0f5112f46531
-msgid ":index:`pageCount` -- :attr:`Document.page_count`"
-msgstr ""
-
-#: ../../deprecated.rst:160 a2a7240262c1419bacc9da0081d11ad8
-msgid ":index:`pageCropBox` -- :meth:`Document.page_cropbox`"
-msgstr ""
-
-#: ../../deprecated.rst:161 4da230b3ca1c466ea186d71f8291e8ae
-msgid ":index:`pageXref` -- :meth:`Document.page_xref`"
-msgstr ""
-
-#: ../../deprecated.rst:162 59f39f55911a4f74b0b3bb7cbcf93351
-msgid ":index:`PaperRect` -- :meth:`paper_rect`"
-msgstr ""
-
-#: ../../deprecated.rst:163 1afb0417cd5f4f0cb902e0edb6c3f390
-msgid ":index:`PaperSize` -- :meth:`paper_size`"
-msgstr ""
-
-#: ../../deprecated.rst:164 24895ea3cbac46e7b854d01d81c9747f
-msgid ":index:`paperSizes` -- :attr:`paper_sizes`"
-msgstr ""
-
-#: ../../deprecated.rst:165 8005bd3cccd440ebbefc93514fcd50a1
-msgid ":index:`PDFCatalog` -- :meth:`Document.pdf_catalog`"
-msgstr ""
-
-#: ../../deprecated.rst:166 0f26c2eaa7564ea08b04e0e664e41bd0
-msgid ":index:`PDFTrailer` -- :meth:`Document.pdf_trailer`"
-msgstr ""
-
-#: ../../deprecated.rst:167 393882fc43cb4c18813d0130394130f9
-msgid ":index:`pillowData` -- :meth:`Pixmap.pil_tobytes`"
-msgstr ""
-
-#: ../../deprecated.rst:168 59c249da369543ddb56ea7bca146b155
-msgid ":index:`pillowWrite` -- :meth:`Pixmap.pil_save`"
-msgstr ""
-
-#: ../../deprecated.rst:169 5fce2023a4d74d5eb6a6a08a093c58e3
-msgid ":index:`planishLine` -- :meth:`planish_line`"
-msgstr ""
-
-#: ../../deprecated.rst:170 231dbcf382824a69953d1e75f340d9e4
-msgid ":index:`preRotate` -- :meth:`Matrix.prerotate`"
-msgstr ""
-
-#: ../../deprecated.rst:171 79f4d22620c84bfea291586c531c05a7
-msgid ":index:`preScale` -- :meth:`Matrix.prescale`"
-msgstr ""
-
-#: ../../deprecated.rst:172 57fb8fb5b16840b9b9f27ed0096de1e2
-msgid ":index:`preShear` -- :meth:`Matrix.preshear`"
-msgstr ""
-
-#: ../../deprecated.rst:173 338ec9168792459aaac1245b1b1a7291
-msgid ":index:`preTranslate` -- :meth:`Matrix.pretranslate`"
-msgstr ""
-
-#: ../../deprecated.rst:174 3a047bdf847e4cedad8de2b2930fa171
-msgid ":index:`previousLocation` -- :meth:`Document.prev_location`"
-msgstr ""
-
-#: ../../deprecated.rst:175 74a8cf34ea784eb1a24abd7c1fb3e424
-msgid ":index:`readContents` -- :meth:`Page.read_contents`"
-msgstr ""
-
-#: ../../deprecated.rst:176 f96fbb7bc5c64116ac8376acc05582b7
-msgid ":index:`resolveLink` -- :meth:`Document.resolve_link`"
-msgstr ""
-
-#: ../../deprecated.rst:177 a73e62a7f83c4e208c520963323b38df
-msgid ":index:`rotationMatrix` -- :attr:`Page.rotation_matrix`"
-msgstr ""
-
-#: ../../deprecated.rst:178 216a9ee591b7448c847efaf2831bceb9
-msgid ":index:`searchFor` -- :meth:`Page.search_for`"
-msgstr ""
-
-#: ../../deprecated.rst:179 9159c38fdcdb44feb713a400eda4f4e0
-msgid ":index:`searchPageFor` -- :meth:`Document.search_page_for`"
-msgstr ""
-
-#: ../../deprecated.rst:180 12d310f49f574857b3f4f8b6db5690be
-msgid ":index:`setAlpha` -- :meth:`Pixmap.set_alpha`"
-msgstr ""
-
-#: ../../deprecated.rst:181 63d4d06e86104ad5b0cf0c60683b3b89
-msgid ":index:`setBlendMode` -- :meth:`Annot.set_blendmode`"
-msgstr ""
-
-#: ../../deprecated.rst:182 9ceba530411c4547b8c13076a53a8fba
-msgid ":index:`setBorder` -- :meth:`Annot.set_border`"
-msgstr ""
-
-#: ../../deprecated.rst:183 fdec44aae0ed4d21bd440b4569c7eb70
-msgid ":index:`setColors` -- :meth:`Annot.set_colors`"
-msgstr ""
-
-#: ../../deprecated.rst:184 b6917b895295430198daf2836a4cb9f9
-msgid ":index:`setCropBox` -- :meth:`Page.set_cropbox`"
-msgstr ""
-
-#: ../../deprecated.rst:185 45b1c66130ac4df4bc580c586d22017a
-msgid ":index:`setFlags` -- :meth:`Annot.set_flags`"
-msgstr ""
-
-#: ../../deprecated.rst:186 e6d2dca3a7ac475dbcc1b58b2f954aa2
-msgid ":index:`setInfo` -- :meth:`Annot.set_info`"
-msgstr ""
-
-#: ../../deprecated.rst:187 3a0b6cb0fd1048ad9ddd475317f29c35
-msgid ":index:`setLanguage` -- :meth:`Document.set_language`"
-msgstr ""
-
-#: ../../deprecated.rst:188 b6dc2c4514764db5b68f8c25cf36ffe8
-msgid ":index:`setLineEnds` -- :meth:`Annot.set_line_ends`"
-msgstr ""
-
-#: ../../deprecated.rst:189 aea682d9df684216b39f765b3b74a253
-msgid ":index:`setMediaBox` -- :meth:`Page.set_mediabox`"
-msgstr ""
-
-#: ../../deprecated.rst:190 4b4be95ba13043e98ef48bf34b3f959a
-msgid ":index:`setMetadata` -- :meth:`Document.set_metadata`"
-msgstr ""
-
-#: ../../deprecated.rst:191 e36ad602844d463e9c6b6f676b8bba76
-msgid ":index:`setName` -- :meth:`Annot.set_name`"
-msgstr ""
-
-#: ../../deprecated.rst:192 8497e73d7e6242aa89723318491cf200
-msgid ":index:`setOC` -- :meth:`Annot.set_oc`"
-msgstr ""
-
-#: ../../deprecated.rst:193 a9565994d1e04cd99ad1948f8c1adbee
-msgid ":index:`setOpacity` -- :meth:`Annot.set_opacity`"
-msgstr ""
-
-#: ../../deprecated.rst:194 6e691540b4144dab912a8ef20aa0b83e
-msgid ":index:`setOrigin` -- :meth:`Pixmap.set_origin`"
-msgstr ""
-
-#: ../../deprecated.rst:195 7372935540ad40fd92c4b82c25d15010
-msgid ":index:`setPixel` -- :meth:`Pixmap.set_pixel`"
-msgstr ""
-
-#: ../../deprecated.rst:196 45342e80d24e4a6da55ef66c34080aa5
-msgid ":index:`setRect` -- :meth:`Annot.set_rect`"
-msgstr ""
-
-#: ../../deprecated.rst:197 927f9f66c8d142c3b011b35b0c93dfbf
-msgid ":index:`setRect` -- :meth:`Pixmap.set_rect`"
-msgstr ""
-
-#: ../../deprecated.rst:198 5f55bdf6d0cc4ccd901c4c154c43d33e
-msgid ":index:`setResolution` -- :meth:`Pixmap.set_dpi`"
-msgstr ""
-
-#: ../../deprecated.rst:199 39059495246e404fa00183a7c568d0c0
-msgid ":index:`setRotation` -- :meth:`Page.set_rotation`"
-msgstr ""
-
-#: ../../deprecated.rst:200 5987f4845c0a4790b20040dc3afece2e
-msgid ":index:`setToC` -- :meth:`Document.set_toc`"
-msgstr ""
-
-#: ../../deprecated.rst:201 8bc5ad260c5d497492cea1562ac69c20
-msgid ":index:`setXmlMetadata` -- :meth:`Document.set_xml_metadata`"
-msgstr ""
-
-#: ../../deprecated.rst:202 b2e61557d6804550aa61ac86a1c3f18f
-msgid ":index:`showPDFpage` -- :meth:`Page.show_pdf_page`"
-msgstr ""
-
-#: ../../deprecated.rst:203 be236206ffed4f248ef899386a6c00a2
-msgid ":index:`soundGet` -- :meth:`Annot.get_sound`"
-msgstr ""
-
-#: ../../deprecated.rst:204 d06ab9ab9aca4cdcaea88717304ceca3
-msgid ":index:`tintWith` -- :meth:`Pixmap.tint_with`"
-msgstr ""
-
-#: ../../deprecated.rst:205 cb6dd2a3464a4c4faab32209c59a543e
-msgid ":index:`transformationMatrix` -- :attr:`Page.transformation_matrix`"
-msgstr ""
-
-#: ../../deprecated.rst:206 563f75faeda841f1bf642f054d7ab475
-msgid ":index:`updateLink` -- :meth:`Page.update_link`"
-msgstr ""
-
-#: ../../deprecated.rst:207 36729aa3a24443bca410a1d787cd42d3
-msgid ":index:`updateObject` -- :meth:`Document.update_object`"
-msgstr ""
-
-#: ../../deprecated.rst:208 e73097f940894333bde5af10831178c3
-msgid ":index:`updateStream` -- :meth:`Document.update_stream`"
-msgstr ""
-
-#: ../../deprecated.rst:209 50ec6153fe60447797a2a73d85828d15
-msgid ":index:`wrapContents` -- :meth:`Page.wrap_contents`"
-msgstr ""
-
-#: ../../deprecated.rst:210 5fa817aa15ea47c6a5f7b2a35eb6cf25
-msgid ":index:`writeImage` -- :meth:`Pixmap.save`"
-msgstr ""
-
-#: ../../deprecated.rst:211 f24d269fc7274ba3a9e8a25b61ea0674
-msgid ":index:`writePNG` -- :meth:`Pixmap.save`"
-msgstr ""
-
-#: ../../deprecated.rst:212 45395f1d751c474cb6f22fbcfeb10199
-msgid ":index:`writeText` -- :meth:`Page.write_text`"
-msgstr ""
-
-#: ../../deprecated.rst:213 cf2e74df989d4146818c55333bdf19a1
-msgid ":index:`writeText` -- :meth:`TextWriter.write_text`"
-msgstr ""
-
-#: ../../deprecated.rst:214 7bc03f2723aa438286290fcaea92c5c7
-msgid ":index:`xrefLength` -- :meth:`Document.xref_length`"
-msgstr ""
-
-#: ../../deprecated.rst:215 06f599b441734432af022c035cdbc2f2
-msgid ":index:`xrefObject` -- :meth:`Document.xref_object`"
-msgstr ""
-
-#: ../../deprecated.rst:216 b0e0f23b491f4aa8bfbf1ce837892853
-msgid ":index:`xrefStream` -- :meth:`Document.xref_stream`"
-msgstr ""
-
-#: ../../deprecated.rst:217 0845490235d5471bb678acbbdcb7109c
-msgid ":index:`xrefStreamRaw` -- :meth:`Document.xref_stream_raw`"
-msgstr ""
-
-#: ../../footer.rst:71 227541cdc9ea4614b47e7f990db31b6d
+#: ../../footer.rst:60 905d62566092434d9b5e28b70c6d7d50
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 9a8e2c3e65bf473fba339628d9cdbf3f
+#: ../../footer.rst:-1 b6ba33a0686a4632b501b212526a69f5
 msgid "Discord logo"
 msgstr ""
 
@@ -1000,5 +128,663 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Deprecated names are not separately "
+#~ "documented. The following list will help"
+#~ " you find the documentation of the"
+#~ " original."
+#~ msgstr "非推奨の名前は別途文書化されていません。以下のリストは、元のドキュメントの検索に役立ちます。"
+
+#~ msgid ""
+#~ "This is automatically generated. One or"
+#~ " two items refer to yet undocumented"
+#~ " methods - please simply ignore them."
+#~ msgstr "これは自動的に生成されたものです。1または2のアイテムはまだ文書化されていないメソッドを参照していますが、無視してください。"
+
+#~ msgid ":index:`_isWrapped` -- :attr:`Page.is_wrapped`"
+#~ msgstr ""
+
+#~ msgid ":index:`addCaretAnnot` -- :meth:`Page.add_caret_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addCircleAnnot` -- :meth:`Page.add_circle_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addFileAnnot` -- :meth:`Page.add_file_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addFreetextAnnot` -- :meth:`Page.add_freetext_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addHighlightAnnot` -- :meth:`Page.add_highlight_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addInkAnnot` -- :meth:`Page.add_ink_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addLineAnnot` -- :meth:`Page.add_line_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addPolygonAnnot` -- :meth:`Page.add_polygon_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addPolylineAnnot` -- :meth:`Page.add_polyline_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addRectAnnot` -- :meth:`Page.add_rect_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addRedactAnnot` -- :meth:`Page.add_redact_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addSquigglyAnnot` -- :meth:`Page.add_squiggly_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addStampAnnot` -- :meth:`Page.add_stamp_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addStrikeoutAnnot` -- :meth:`Page.add_strikeout_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addTextAnnot` -- :meth:`Page.add_text_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addUnderlineAnnot` -- :meth:`Page.add_underline_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`addWidget` -- :meth:`Page.add_widget`"
+#~ msgstr ""
+
+#~ msgid ":index:`chapterCount` -- :attr:`Document.chapter_count`"
+#~ msgstr ""
+
+#~ msgid ":index:`chapterPageCount` -- :meth:`Document.chapter_page_count`"
+#~ msgstr ""
+
+#~ msgid ":index:`cleanContents` -- :meth:`Page.clean_contents`"
+#~ msgstr ""
+
+#~ msgid ":index:`clearWith` -- :meth:`Pixmap.clear_with`"
+#~ msgstr ""
+
+#~ msgid ":index:`convertToPDF` -- :meth:`Document.convert_to_pdf`"
+#~ msgstr ""
+
+#~ msgid ":index:`copyPage` -- :meth:`Document.copy_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`copyPixmap` -- :meth:`Pixmap.copy`"
+#~ msgstr ""
+
+#~ msgid ":index:`CropBox` -- :attr:`Page.cropbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`CropBoxPosition` -- :attr:`Page.cropbox_position`"
+#~ msgstr ""
+
+#~ msgid ":index:`deleteAnnot` -- :meth:`Page.delete_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`deleteLink` -- :meth:`Page.delete_link`"
+#~ msgstr ""
+
+#~ msgid ":index:`deletePage` -- :meth:`Document.delete_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`deletePageRange` -- :meth:`Document.delete_pages`"
+#~ msgstr ""
+
+#~ msgid ":index:`deleteWidget` -- :meth:`Page.delete_widget`"
+#~ msgstr ""
+
+#~ msgid ":index:`derotationMatrix` -- :attr:`Page.derotation_matrix`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawBezier` -- :meth:`Page.draw_bezier`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawBezier` -- :meth:`Shape.draw_bezier`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawCircle` -- :meth:`Page.draw_circle`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawCircle` -- :meth:`Shape.draw_circle`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawCurve` -- :meth:`Page.draw_curve`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawCurve` -- :meth:`Shape.draw_curve`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawLine` -- :meth:`Page.draw_line`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawLine` -- :meth:`Shape.draw_line`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawOval` -- :meth:`Page.draw_oval`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawOval` -- :meth:`Shape.draw_oval`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawPolyline` -- :meth:`Page.draw_polyline`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawPolyline` -- :meth:`Shape.draw_polyline`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawQuad` -- :meth:`Page.draw_quad`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawQuad` -- :meth:`Shape.draw_quad`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawRect` -- :meth:`Page.draw_rect`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawRect` -- :meth:`Shape.draw_rect`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawSector` -- :meth:`Page.draw_sector`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawSector` -- :meth:`Shape.draw_sector`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawSquiggle` -- :meth:`Page.draw_squiggle`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawSquiggle` -- :meth:`Shape.draw_squiggle`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawZigzag` -- :meth:`Page.draw_zigzag`"
+#~ msgstr ""
+
+#~ msgid ":index:`drawZigzag` -- :meth:`Shape.draw_zigzag`"
+#~ msgstr ""
+
+#~ msgid ":index:`embeddedFileAdd` -- :meth:`Document.embfile_add`"
+#~ msgstr ""
+
+#~ msgid ":index:`embeddedFileCount` -- :meth:`Document.embfile_count`"
+#~ msgstr ""
+
+#~ msgid ":index:`embeddedFileDel` -- :meth:`Document.embfile_del`"
+#~ msgstr ""
+
+#~ msgid ":index:`embeddedFileGet` -- :meth:`Document.embfile_get`"
+#~ msgstr ""
+
+#~ msgid ":index:`embeddedFileInfo` -- :meth:`Document.embfile_info`"
+#~ msgstr ""
+
+#~ msgid ":index:`embeddedFileNames` -- :meth:`Document.embfile_names`"
+#~ msgstr ""
+
+#~ msgid ":index:`embeddedFileUpd` -- :meth:`Document.embfile_upd`"
+#~ msgstr ""
+
+#~ msgid ":index:`extractFont` -- :meth:`Document.extract_font`"
+#~ msgstr ""
+
+#~ msgid ":index:`extractImage` -- :meth:`Document.extract_image`"
+#~ msgstr ""
+
+#~ msgid ":index:`fileGet` -- :meth:`Annot.get_file`"
+#~ msgstr ""
+
+#~ msgid ":index:`fileUpd` -- :meth:`Annot.update_file`"
+#~ msgstr ""
+
+#~ msgid ":index:`fillTextbox` -- :meth:`TextWriter.fill_textbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`findBookmark` -- :meth:`Document.find_bookmark`"
+#~ msgstr ""
+
+#~ msgid ":index:`firstAnnot` -- :attr:`Page.first_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`firstLink` -- :attr:`Page.first_link`"
+#~ msgstr ""
+
+#~ msgid ":index:`firstWidget` -- :attr:`Page.first_widget`"
+#~ msgstr ""
+
+#~ msgid ":index:`fullcopyPage` -- :meth:`Document.fullcopy_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`gammaWith` -- :meth:`Pixmap.gamma_with`"
+#~ msgstr ""
+
+#~ msgid ":index:`getArea` -- :meth:`Rect.get_area`"
+#~ msgstr ""
+
+#~ msgid ":index:`getArea` -- :meth:`IRect.get_area`"
+#~ msgstr ""
+
+#~ msgid ":index:`getCharWidths` -- :meth:`Document.get_char_widths`"
+#~ msgstr ""
+
+#~ msgid ":index:`getContents` -- :meth:`Page.get_contents`"
+#~ msgstr ""
+
+#~ msgid ":index:`getDisplayList` -- :meth:`Page.get_displaylist`"
+#~ msgstr ""
+
+#~ msgid ":index:`getDrawings` -- :meth:`Page.get_drawings`"
+#~ msgstr ""
+
+#~ msgid ":index:`getFontList` -- :meth:`Page.get_fonts`"
+#~ msgstr ""
+
+#~ msgid ":index:`getImageBbox` -- :meth:`Page.get_image_bbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`getImageData` -- :meth:`Pixmap.tobytes`"
+#~ msgstr ""
+
+#~ msgid ":index:`getImageList` -- :meth:`Page.get_images`"
+#~ msgstr ""
+
+#~ msgid ":index:`getLinks` -- :meth:`Page.get_links`"
+#~ msgstr ""
+
+#~ msgid ":index:`getOCGs` -- :meth:`Document.get_ocgs`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPageFontList` -- :meth:`Document.get_page_fonts`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPageImageList` -- :meth:`Document.get_page_images`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPagePixmap` -- :meth:`Document.get_page_pixmap`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPageText` -- :meth:`Document.get_page_text`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPageXObjectList` -- :meth:`Document.get_page_xobjects`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPDFnow` -- :meth:`get_pdf_now`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPDFstr` -- :meth:`get_pdf_str`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPixmap` -- :meth:`Page.get_pixmap`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPixmap` -- :meth:`Annot.get_pixmap`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPixmap` -- :meth:`DisplayList.get_pixmap`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPNGData` -- :meth:`Pixmap.tobytes`"
+#~ msgstr ""
+
+#~ msgid ":index:`getPNGdata` -- :meth:`Pixmap.tobytes`"
+#~ msgstr ""
+
+#~ msgid ":index:`getRectArea` -- :meth:`Rect.get_area`"
+#~ msgstr ""
+
+#~ msgid ":index:`getRectArea` -- :meth:`IRect.get_area`"
+#~ msgstr ""
+
+#~ msgid ":index:`getSigFlags` -- :meth:`Document.get_sigflags`"
+#~ msgstr ""
+
+#~ msgid ":index:`getSVGimage` -- :meth:`Page.get_svg_image`"
+#~ msgstr ""
+
+#~ msgid ":index:`getText` -- :meth:`Page.get_text`"
+#~ msgstr ""
+
+#~ msgid ":index:`getText` -- :meth:`Annot.get_text`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextBlocks` -- :meth:`Page.get_text_blocks`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextbox` -- :meth:`Page.get_textbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextbox` -- :meth:`Annot.get_textbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextLength` -- :meth:`get_text_length`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextPage` -- :meth:`Page.get_textpage`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextPage` -- :meth:`Annot.get_textpage`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextPage` -- :meth:`DisplayList.get_textpage`"
+#~ msgstr ""
+
+#~ msgid ":index:`getTextWords` -- :meth:`Page.get_text_words`"
+#~ msgstr ""
+
+#~ msgid ":index:`getToC` -- :meth:`Document.get_toc`"
+#~ msgstr ""
+
+#~ msgid ":index:`getXmlMetadata` -- :meth:`Document.get_xml_metadata`"
+#~ msgstr ""
+
+#~ msgid ":index:`ImageProperties` -- :meth:`image_properties`"
+#~ msgstr ""
+
+#~ msgid ":index:`includePoint` -- :meth:`Rect.include_point`"
+#~ msgstr ""
+
+#~ msgid ":index:`includePoint` -- :meth:`IRect.include_point`"
+#~ msgstr ""
+
+#~ msgid ":index:`includeRect` -- :meth:`Rect.include_rect`"
+#~ msgstr ""
+
+#~ msgid ":index:`includeRect` -- :meth:`IRect.include_rect`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertFont` -- :meth:`Page.insert_font`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertImage` -- :meth:`Page.insert_image`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertLink` -- :meth:`Page.insert_link`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertPage` -- :meth:`Document.insert_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertPDF` -- :meth:`Document.insert_pdf`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertText` -- :meth:`Page.insert_text`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertText` -- :meth:`Shape.insert_text`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertTextbox` -- :meth:`Page.insert_textbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`insertTextbox` -- :meth:`Shape.insert_textbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`invertIRect` -- :meth:`Pixmap.invert_irect`"
+#~ msgstr ""
+
+#~ msgid ":index:`isConvex` -- :attr:`Quad.is_convex`"
+#~ msgstr ""
+
+#~ msgid ":index:`isDirty` -- :attr:`Document.is_dirty`"
+#~ msgstr ""
+
+#~ msgid ":index:`isEmpty` -- :attr:`Rect.is_empty`"
+#~ msgstr ""
+
+#~ msgid ":index:`isEmpty` -- :attr:`IRect.is_empty`"
+#~ msgstr ""
+
+#~ msgid ":index:`isEmpty` -- :attr:`Quad.is_empty`"
+#~ msgstr ""
+
+#~ msgid ":index:`isFormPDF` -- :attr:`Document.is_form_pdf`"
+#~ msgstr ""
+
+#~ msgid ":index:`isInfinite` -- :attr:`Rect.is_infinite`"
+#~ msgstr ""
+
+#~ msgid ":index:`isInfinite` -- :attr:`IRect.is_infinite`"
+#~ msgstr ""
+
+#~ msgid ":index:`isPDF` -- :attr:`Document.is_pdf`"
+#~ msgstr ""
+
+#~ msgid ":index:`isRectangular` -- :attr:`Quad.is_rectangular`"
+#~ msgstr ""
+
+#~ msgid ":index:`isRectilinear` -- :attr:`Matrix.is_rectilinear`"
+#~ msgstr ""
+
+#~ msgid ":index:`isReflowable` -- :attr:`Document.is_reflowable`"
+#~ msgstr ""
+
+#~ msgid ":index:`isRepaired` -- :attr:`Document.is_repaired`"
+#~ msgstr ""
+
+#~ msgid ":index:`isStream` -- :meth:`Document.is_stream`"
+#~ msgstr ""
+
+#~ msgid ":index:`lastLocation` -- :attr:`Document.last_location`"
+#~ msgstr ""
+
+#~ msgid ":index:`lineEnds` -- :attr:`Annot.line_ends`"
+#~ msgstr ""
+
+#~ msgid ":index:`loadAnnot` -- :meth:`Page.load_annot`"
+#~ msgstr ""
+
+#~ msgid ":index:`loadLinks` -- :meth:`Page.load_links`"
+#~ msgstr ""
+
+#~ msgid ":index:`loadPage` -- :meth:`Document.load_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`makeBookmark` -- :meth:`Document.make_bookmark`"
+#~ msgstr ""
+
+#~ msgid ":index:`MediaBox` -- :attr:`Page.mediabox`"
+#~ msgstr ""
+
+#~ msgid ":index:`MediaBoxSize` -- :attr:`Page.mediabox_size`"
+#~ msgstr ""
+
+#~ msgid ":index:`metadataXML` -- :meth:`Document.xref_xml_metadata`"
+#~ msgstr ""
+
+#~ msgid ":index:`movePage` -- :meth:`Document.move_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`needsPass` -- :attr:`Document.needs_pass`"
+#~ msgstr ""
+
+#~ msgid ":index:`newPage` -- :meth:`Document.new_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`newShape` -- :meth:`Page.new_shape`"
+#~ msgstr ""
+
+#~ msgid ":index:`nextLocation` -- :meth:`Document.next_location`"
+#~ msgstr ""
+
+#~ msgid ":index:`pageCount` -- :attr:`Document.page_count`"
+#~ msgstr ""
+
+#~ msgid ":index:`pageCropBox` -- :meth:`Document.page_cropbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`pageXref` -- :meth:`Document.page_xref`"
+#~ msgstr ""
+
+#~ msgid ":index:`PaperRect` -- :meth:`paper_rect`"
+#~ msgstr ""
+
+#~ msgid ":index:`PaperSize` -- :meth:`paper_size`"
+#~ msgstr ""
+
+#~ msgid ":index:`paperSizes` -- :attr:`paper_sizes`"
+#~ msgstr ""
+
+#~ msgid ":index:`PDFCatalog` -- :meth:`Document.pdf_catalog`"
+#~ msgstr ""
+
+#~ msgid ":index:`PDFTrailer` -- :meth:`Document.pdf_trailer`"
+#~ msgstr ""
+
+#~ msgid ":index:`pillowData` -- :meth:`Pixmap.pil_tobytes`"
+#~ msgstr ""
+
+#~ msgid ":index:`pillowWrite` -- :meth:`Pixmap.pil_save`"
+#~ msgstr ""
+
+#~ msgid ":index:`planishLine` -- :meth:`planish_line`"
+#~ msgstr ""
+
+#~ msgid ":index:`preRotate` -- :meth:`Matrix.prerotate`"
+#~ msgstr ""
+
+#~ msgid ":index:`preScale` -- :meth:`Matrix.prescale`"
+#~ msgstr ""
+
+#~ msgid ":index:`preShear` -- :meth:`Matrix.preshear`"
+#~ msgstr ""
+
+#~ msgid ":index:`preTranslate` -- :meth:`Matrix.pretranslate`"
+#~ msgstr ""
+
+#~ msgid ":index:`previousLocation` -- :meth:`Document.prev_location`"
+#~ msgstr ""
+
+#~ msgid ":index:`readContents` -- :meth:`Page.read_contents`"
+#~ msgstr ""
+
+#~ msgid ":index:`resolveLink` -- :meth:`Document.resolve_link`"
+#~ msgstr ""
+
+#~ msgid ":index:`rotationMatrix` -- :attr:`Page.rotation_matrix`"
+#~ msgstr ""
+
+#~ msgid ":index:`searchFor` -- :meth:`Page.search_for`"
+#~ msgstr ""
+
+#~ msgid ":index:`searchPageFor` -- :meth:`Document.search_page_for`"
+#~ msgstr ""
+
+#~ msgid ":index:`setAlpha` -- :meth:`Pixmap.set_alpha`"
+#~ msgstr ""
+
+#~ msgid ":index:`setBlendMode` -- :meth:`Annot.set_blendmode`"
+#~ msgstr ""
+
+#~ msgid ":index:`setBorder` -- :meth:`Annot.set_border`"
+#~ msgstr ""
+
+#~ msgid ":index:`setColors` -- :meth:`Annot.set_colors`"
+#~ msgstr ""
+
+#~ msgid ":index:`setCropBox` -- :meth:`Page.set_cropbox`"
+#~ msgstr ""
+
+#~ msgid ":index:`setFlags` -- :meth:`Annot.set_flags`"
+#~ msgstr ""
+
+#~ msgid ":index:`setInfo` -- :meth:`Annot.set_info`"
+#~ msgstr ""
+
+#~ msgid ":index:`setLanguage` -- :meth:`Document.set_language`"
+#~ msgstr ""
+
+#~ msgid ":index:`setLineEnds` -- :meth:`Annot.set_line_ends`"
+#~ msgstr ""
+
+#~ msgid ":index:`setMediaBox` -- :meth:`Page.set_mediabox`"
+#~ msgstr ""
+
+#~ msgid ":index:`setMetadata` -- :meth:`Document.set_metadata`"
+#~ msgstr ""
+
+#~ msgid ":index:`setName` -- :meth:`Annot.set_name`"
+#~ msgstr ""
+
+#~ msgid ":index:`setOC` -- :meth:`Annot.set_oc`"
+#~ msgstr ""
+
+#~ msgid ":index:`setOpacity` -- :meth:`Annot.set_opacity`"
+#~ msgstr ""
+
+#~ msgid ":index:`setOrigin` -- :meth:`Pixmap.set_origin`"
+#~ msgstr ""
+
+#~ msgid ":index:`setPixel` -- :meth:`Pixmap.set_pixel`"
+#~ msgstr ""
+
+#~ msgid ":index:`setRect` -- :meth:`Annot.set_rect`"
+#~ msgstr ""
+
+#~ msgid ":index:`setRect` -- :meth:`Pixmap.set_rect`"
+#~ msgstr ""
+
+#~ msgid ":index:`setResolution` -- :meth:`Pixmap.set_dpi`"
+#~ msgstr ""
+
+#~ msgid ":index:`setRotation` -- :meth:`Page.set_rotation`"
+#~ msgstr ""
+
+#~ msgid ":index:`setToC` -- :meth:`Document.set_toc`"
+#~ msgstr ""
+
+#~ msgid ":index:`setXmlMetadata` -- :meth:`Document.set_xml_metadata`"
+#~ msgstr ""
+
+#~ msgid ":index:`showPDFpage` -- :meth:`Page.show_pdf_page`"
+#~ msgstr ""
+
+#~ msgid ":index:`soundGet` -- :meth:`Annot.get_sound`"
+#~ msgstr ""
+
+#~ msgid ":index:`tintWith` -- :meth:`Pixmap.tint_with`"
+#~ msgstr ""
+
+#~ msgid ":index:`transformationMatrix` -- :attr:`Page.transformation_matrix`"
+#~ msgstr ""
+
+#~ msgid ":index:`updateLink` -- :meth:`Page.update_link`"
+#~ msgstr ""
+
+#~ msgid ":index:`updateObject` -- :meth:`Document.update_object`"
+#~ msgstr ""
+
+#~ msgid ":index:`updateStream` -- :meth:`Document.update_stream`"
+#~ msgstr ""
+
+#~ msgid ":index:`wrapContents` -- :meth:`Page.wrap_contents`"
+#~ msgstr ""
+
+#~ msgid ":index:`writeImage` -- :meth:`Pixmap.save`"
+#~ msgstr ""
+
+#~ msgid ":index:`writePNG` -- :meth:`Pixmap.save`"
+#~ msgstr ""
+
+#~ msgid ":index:`writeText` -- :meth:`Page.write_text`"
+#~ msgstr ""
+
+#~ msgid ":index:`writeText` -- :meth:`TextWriter.write_text`"
+#~ msgstr ""
+
+#~ msgid ":index:`xrefLength` -- :meth:`Document.xref_length`"
+#~ msgstr ""
+
+#~ msgid ":index:`xrefObject` -- :meth:`Document.xref_object`"
+#~ msgstr ""
+
+#~ msgid ":index:`xrefStream` -- :meth:`Document.xref_stream`"
+#~ msgstr ""
+
+#~ msgid ":index:`xrefStreamRaw` -- :meth:`Document.xref_stream_raw`"
 #~ msgstr ""
 
