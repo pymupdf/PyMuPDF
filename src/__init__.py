@@ -9364,8 +9364,17 @@ class Page:
 
     @property
     def is_wrapped(self):
-        """Check if /Contents is in a balanced graphics state."""
-        return self._count_q_balance() == (0, 0)
+        """Check if /Contents is in a balanced graphics state,
+        """
+        if self._count_q_balance() != (0, 0):  # clearly unwrapped
+            return False
+        xrefs = self.get_contents()  # existing contents xrefs
+        if not xrefs:  # no contents yet: regard as wrapped
+            return True
+        doc = self.parent  # read 1st contents object
+        if not doc.xref_stream(xrefs[0]).lstrip().startswith((b"q\n", b"q ")):
+            return False  # no 'push' in front: unwrapped
+        return True  # wrapped!
 
     @property
     def language(self):
@@ -9633,6 +9642,9 @@ class Page:
     def wrap_contents(self):
         """Ensure page is in a balanced graphics state."""
         push, pop = self._count_q_balance()  # count missing "q"/"Q" commands
+        if (push, pop) == (0, 0) and not self.is_wrapped:
+            # cover potential MuPDF gap.
+            (push, pop) = (1, 1)
         if push > 0:  # prepend required push commands
             prepend = b"q\n" * push
             TOOLS._insert_contents(self, prepend, False)
