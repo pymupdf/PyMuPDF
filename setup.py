@@ -128,8 +128,8 @@ Environmental variables:
         If 0 we do not (re)build mupdf.
 
     PYMUPDF_SETUP_REBUILD_GIT_DETAILS
-        If '0' we do not rebuild if only fitz/helper-git-versions.i has
-        changed.
+        Classic implementation only. If '0' we do not rebuild if only
+        fitz/helper-git-versions.i has changed.
 
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
@@ -608,11 +608,11 @@ def build():
 
     if path_so_leaf_b:
         # Add rebased implementation files.
-        add( ret_p, f'{g_root}/src/pymupdf.py', 'pymupdf.py')
-        to_dir = 'fitz/'
+        add( ret_p, f'{g_root}/src/fitz.py', '')    # For `fitz` module alias.
+        to_dir = 'pymupdf/'
         add( ret_p, f'{g_root}/src/__init__.py', to_dir)
         add( ret_p, f'{g_root}/src/__main__.py', to_dir)
-        add( ret_p, f'{g_root}/src/fitz.py', to_dir)
+        add( ret_p, f'{g_root}/src/pymupdf.py', to_dir)
         add( ret_p, f'{g_root}/src/table.py', to_dir)
         add( ret_p, f'{g_root}/src/utils.py', to_dir)
         add( ret_p, f'{g_root}/src/extra.py', to_dir)
@@ -824,7 +824,7 @@ def _fs_update(text, path):
 
 def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
     '''
-    Builds Python extension modules `_fitz` and `_extra`.
+    Builds Python extension modules `_pymupdf` and `_extra`.
 
     Returns (path_so_leaf_a, path_so_leaf_b), the leafnames of the generated
     shared libraries within mupdf_build_dir.
@@ -1141,10 +1141,10 @@ p = pipcl.Package(
             ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
             ],
         
-        # Create a `fitz` command.
+        # Create a `pymupdf` command.
         entry_points = textwrap.dedent('''
                 [console_scripts]
-                pymupdf = fitz.__main__:main
+                pymupdf = pymupdf.__main__:main
                 '''),
         
         fn_build=build,

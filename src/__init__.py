@@ -11,7 +11,6 @@ License:
 import atexit
 import binascii
 import collections
-import glob
 import inspect
 import io
 import math
@@ -83,19 +82,6 @@ def message(text=''):
     _g_out_message.flush()
 
 
-# Try to detect if we are being used with current directory set to a PyMuPDF/
-# checkout - this can cause problems because of the `fitz/` directory.
-#
-if os.path.exists( 'fitz/__init__.py'):
-    if not glob.glob( 'fitz/_extra*') or not glob.glob( 'fitz/_mupdf*'):
-        log( '#' * 40)
-        log( '# Warning: current directory appears to contain an incomplete')
-        log( '# fitz/ installation directory so "import fitz" may fail.')
-        log( '# This can happen if current directory is a PyMuPDF source tree.')
-        log( '# Suggest changing to a different current directory.')
-        log( '#' * 40)
-
-    
 def exception_info():
     import traceback
     log(f'exception_info:')
@@ -1733,7 +1719,7 @@ class Archive:
                     `bytes`, `bytearray`, `io.BytesIO` - raw data.
                     `zipfile.Zipfile`.
                     `tarfile.TarFile`.
-                    `fitz.Archive`.
+                    `pymupdf.Archive`.
                     A two-item tuple `(data, name)`.
                     List or tuple (but not tuple with length 2) of the above.
             path: (str) a "virtual" path name, under which the elements
@@ -5211,7 +5197,7 @@ class Document:
     def resolve_names(self):
         """Convert the PDF's destination names into a Python dict.
 
-        The only parameter is the fitz.Document.
+        The only parameter is the pymupdf.Document.
         All names found in the catalog under keys "/Dests" and "/Names/Dests" are
         being included.
 
@@ -9659,8 +9645,6 @@ class Pixmap:
         Pixmap(colorspace, width, height, samples, alpha) - from samples data.
         Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         """
-        # From PyMuPDF/fitz/fitz.i:struct Pixmap {...}.
-        #
         if 0:
             pass
 
@@ -10004,8 +9988,6 @@ class Pixmap:
 
     def color_topusage(self, clip=None):
         """Return most frequent color and its usage ratio."""
-        # As of 2022-09-02, PyObject *color_topusage(PyObject *clip=NULL) {...}
-        # is commented-out in PyMuPDF/fitz/fitz.i,
         allpixels = 0
         cnt = 0
         if clip is not None and self.irect in Rect(clip):
@@ -12457,7 +12439,7 @@ class Story:
         Args:
         :arg fn:
             A callable taking a floating point `parameter` and returning a
-            `fitz.Rect()`. If the rect is empty, we assume the story will
+            `pymupdf.Rect()`. If the rect is empty, we assume the story will
             not fit and do not call `self.place()`.
 
             Must guarantee that `self.place()` behaves monotonically when
@@ -13457,8 +13439,6 @@ class IRect:
 #
 
 if 1:
-    # Import some mupdf constants
-    # These don't appear to be in native fitz module?
     _self = sys.modules[__name__]
     if 1:
         for _name, _value in mupdf.__dict__.items():
@@ -13468,9 +13448,9 @@ if 1:
                     pass
                 else:
                     #assert not inspect.isroutine(value)
-                    #log(f'fitz/__init__.py: importing {name}')
+                    #log(f'importing {name}')
                     setattr(_self, _name, _value)
-                    #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
+                    #log(f'{getattr( self, name, None)=}')
     else:
         # This is slow due to importing inspect, e.g. 0.019 instead of 0.004.
         for _name, _value in inspect.getmembers(mupdf):
@@ -13480,9 +13460,9 @@ if 1:
                     pass
                 else:
                     #assert not inspect.isroutine(value)
-                    #log(f'fitz/__init__.py: importing {name}')
+                    #log(f'importing {name}')
                     setattr(_self, _name, _value)
-                    #log(f'fitz/__init__.py: {getattr( self, name, None)=}')
+                    #log(f'{getattr( self, name, None)=}')
     
     # This is a macro so not preserved in mupdf C++/Python bindings.
     #
@@ -13757,7 +13737,7 @@ csRGB = Colorspace(CS_RGB)
 csGRAY = Colorspace(CS_GRAY)
 csCMYK = Colorspace(CS_CMYK)
 
-# These don't appear to be visible in native fitz module, but are used
+# These don't appear to be visible in classic, but are used
 # internally.
 #
 dictkey_align = "align"
@@ -16183,7 +16163,7 @@ def JM_have_operation(pdf):
 
 def JM_image_extension(type_):
     '''
-    return extension for fitz image type
+    return extension for MuPDF image type
     '''
     if type_ == mupdf.FZ_IMAGE_FAX:     return "fax"
     if type_ == mupdf.FZ_IMAGE_RAW:     return "raw"
@@ -18464,7 +18444,7 @@ def css_for_pymupdf_font(
 
     All fitting font buffers of the pymupdf-fonts package are placed / added
     to the archive provided as parameter.
-    To use the font in fitz.Story, execute 'set_font(fontcode)'. The correct
+    To use the font in pymupdf.Story, execute 'set_font(fontcode)'. The correct
     font weight (bold) or style (italic) will automatically be selected.
     Expects and returns the CSS source, with the new CSS definitions appended.
 
@@ -21102,8 +21082,8 @@ def repair_mono_font(page: "Page", font: "Font") -> None:
         This should enforce viewers to use 'w' as the character width.
 
     Args:
-        page: fitz.Page object.
-        font: fitz.Font object.
+        page: pymupdf.Page object.
+        font: pymupdf.Font object.
     """
     if not font.flags["mono"]:  # font not flagged as monospaced
         return None
@@ -21837,8 +21817,8 @@ class TOOLS:
     fitz_config = JM_fitz_config()
 
 
-# We cannot import utils earlier because it imports this fitz.py file itself
-# and uses some fitz.* types in function typing.
+# We cannot import utils earlier because it imports this .py file itself and
+# uses some pymupdf.* types in function typing.
 #
 from . import utils
 

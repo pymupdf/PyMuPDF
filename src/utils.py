@@ -13,15 +13,15 @@ import typing
 import weakref
 
 try:
-    from . import fitz
+    from . import pymupdf
 except Exception:
-    import fitz
+    import pymupdf
 try:
     from . import mupdf
 except Exception:
     import mupdf
 
-g_exceptions_verbose = fitz.g_exceptions_verbose
+g_exceptions_verbose = pymupdf.g_exceptions_verbose
 g_exceptions_verbose = False
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
@@ -43,7 +43,7 @@ This is a collection of functions to extend PyMupdf.
 
 
 def write_text(
-        page: fitz.Page,
+        page: pymupdf.Page,
         rect=None,
         writers=None,
         overlay=True,
@@ -53,27 +53,27 @@ def write_text(
         rotate=0,
         oc=0,
         ) -> None:
-    """Write the text of one or more fitz.TextWriter objects.
+    """Write the text of one or more pymupdf.TextWriter objects.
 
     Args:
         rect: target rectangle. If None, the union of the text writers is used.
-        writers: one or more fitz.TextWriter objects.
+        writers: one or more pymupdf.TextWriter objects.
         overlay: put in foreground or background.
         keep_proportion: maintain aspect ratio of rectangle sides.
         rotate: arbitrary rotation angle.
         oc: the xref of an optional content object
     """
-    assert isinstance(page, fitz.Page)
+    assert isinstance(page, pymupdf.Page)
     if not writers:
-        raise ValueError("need at least one fitz.TextWriter")
-    if type(writers) is fitz.TextWriter:
+        raise ValueError("need at least one pymupdf.TextWriter")
+    if type(writers) is pymupdf.TextWriter:
         if rotate == 0 and rect is None:
             writers.write_text(page, opacity=opacity, color=color, overlay=overlay)
             return None
         else:
             writers = (writers,)
     clip = writers[0].text_rect
-    textdoc = fitz.Document()
+    textdoc = pymupdf.Document()
     tpage = textdoc.new_page(width=page.rect.width, height=page.rect.height)
     for writer in writers:
         clip |= writer.text_rect
@@ -140,7 +140,7 @@ def show_pdf_page(
         tmp = (tr.tl + tr.br) / 2.0
 
         # m moves to (0, 0), then rotates
-        m = fitz.Matrix(1, 0, 0, 1, -smp.x, -smp.y) * fitz.Matrix(rotate)
+        m = pymupdf.Matrix(1, 0, 0, 1, -smp.x, -smp.y) * pymupdf.Matrix(rotate)
 
         sr1 = sr * m  # resulting source rect to calculate scale factors
 
@@ -149,11 +149,11 @@ def show_pdf_page(
         if keep:
             fw = fh = min(fw, fh)  # take min if keeping aspect ratio
 
-        m *= fitz.Matrix(fw, fh)  # concat scale matrix
-        m *= fitz.Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
-        return fitz.JM_TUPLE(m)
+        m *= pymupdf.Matrix(fw, fh)  # concat scale matrix
+        m *= pymupdf.Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
+        return pymupdf.JM_TUPLE(m)
 
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     doc = page.parent
 
     if not doc.is_pdf or not src.is_pdf:
@@ -194,10 +194,10 @@ def show_pdf_page(
     if doc._graft_id == isrc:
         raise ValueError("source document must not equal target")
 
-    # retrieve / make fitz.Graftmap for source PDF
+    # retrieve / make pymupdf.Graftmap for source PDF
     gmap = doc.Graftmaps.get(isrc, None)
     if gmap is None:
-        gmap = fitz.Graftmap(doc)
+        gmap = pymupdf.Graftmap(doc)
         doc.Graftmaps[isrc] = gmap
 
     # take note of generated xref for automatic reuse
@@ -221,7 +221,7 @@ def show_pdf_page(
     return xref
 
 
-def replace_image(page: fitz.Page, xref: int, *, filename=None, pixmap=None, stream=None):
+def replace_image(page: pymupdf.Page, xref: int, *, filename=None, pixmap=None, stream=None):
     """Replace the image referred to by xref.
 
     Replace the image by changing the object definition stored under xref. This
@@ -252,7 +252,7 @@ def replace_image(page: fitz.Page, xref: int, *, filename=None, pixmap=None, str
     doc.update_stream(last_contents_xref, b" ")
 
 
-def delete_image(page: fitz.Page, xref: int):
+def delete_image(page: pymupdf.Page, xref: int):
     """Delete the image referred to by xef.
 
     Actually replaces by a small transparent Pixmap using method Page.replace_image.
@@ -261,7 +261,7 @@ def delete_image(page: fitz.Page, xref: int):
         xref: xref of the image to delete.
     """
     # make a small 100% transparent pixmap (of just any dimension)
-    pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)
+    pix = pymupdf.Pixmap(pymupdf.csGRAY, (0, 0, 1, 1), 1)
     pix.clear_with()  # clear all samples bytes to 0x00
     page.replace_image(xref, pixmap=pix)
 
@@ -294,7 +294,7 @@ def insert_image(
         mask: (bytes, optional) image consisting of alpha values to use.
         oc: (int) xref of OCG or OCMD to declare as Optional Content.
         overlay: (bool) put in foreground (default) or background.
-        pixmap: (fitz.Pixmap) use this as image.
+        pixmap: (pymupdf.Pixmap) use this as image.
         rotate: (int) rotate by 0, 90, 180 or 270 degrees.
         stream: (bytes) use this as image.
         width: (int)
@@ -314,7 +314,7 @@ def insert_image(
     Returns:
         xref (int) of inserted image. Re-use as argument for multiple insertions.
     """
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     doc = page.parent
     if not doc.is_pdf:
         raise ValueError("is no PDF")
@@ -336,8 +336,8 @@ def insert_image(
         raise FileNotFoundError("No such file: '%s'" % filename)
     elif stream and type(stream) not in (bytes, bytearray, io.BytesIO):
         raise ValueError("stream must be bytes-like / BytesIO")
-    elif pixmap and type(pixmap) is not fitz.Pixmap:
-        raise ValueError("pixmap must be a fitz.Pixmap")
+    elif pixmap and type(pixmap) is not pymupdf.Pixmap:
+        raise ValueError("pixmap must be a pymupdf.Pixmap")
     if mask and not (stream or filename):
         raise ValueError("mask requires stream or filename")
     if mask and type(mask) not in (bytes, bytearray, io.BytesIO):
@@ -349,7 +349,7 @@ def insert_image(
     if rotate not in (0, 90, 180, 270):
         raise ValueError("bad rotate value")
 
-    r = fitz.Rect(rect)
+    r = pymupdf.Rect(rect)
     if r.is_empty or r.is_infinite:
         raise ValueError("rect must be finite and not empty")
     clip = r * ~page.transformation_matrix
@@ -358,7 +358,7 @@ def insert_image(
     ilst = [i[7] for i in doc.get_page_images(page.number)]
     ilst += [i[1] for i in doc.get_page_xobjects(page.number)]
     ilst += [i[4] for i in doc.get_page_fonts(page.number)]
-    n = "fzImg"  # 'fitz image'
+    n = "fzImg"  # 'pymupdf image'
     i = 0
     _imgname = n + "0"  # first name candidate
     while _imgname in ilst:
@@ -397,10 +397,10 @@ def search_for(
         *,
         clip=None,
         quads=False,
-        flags=fitz.TEXT_DEHYPHENATE
-            | fitz.TEXT_PRESERVE_WHITESPACE
-            | fitz.TEXT_PRESERVE_LIGATURES
-            | fitz.TEXT_MEDIABOX_CLIP
+        flags=pymupdf.TEXT_DEHYPHENATE
+            | pymupdf.TEXT_PRESERVE_WHITESPACE
+            | pymupdf.TEXT_PRESERVE_LIGATURES
+            | pymupdf.TEXT_MEDIABOX_CLIP
             ,
         textpage=None,
         ) -> list:
@@ -411,17 +411,17 @@ def search_for(
         clip: restrict search to this rectangle
         quads: (bool) return quads instead of rectangles
         flags: bit switches, default: join hyphened words
-        textpage: a pre-created fitz.TextPage
+        textpage: a pre-created pymupdf.TextPage
     Returns:
         a list of rectangles or quads, each containing one occurrence.
     """
     if clip is not None:
-        clip = fitz.Rect(clip)
+        clip = pymupdf.Rect(clip)
 
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     tp = textpage
     if tp is None:
-        tp = page.get_textpage(clip=clip, flags=flags)  # create fitz.TextPage
+        tp = page.get_textpage(clip=clip, flags=flags)  # create pymupdf.TextPage
     elif getattr(tp, "parent") != page:
         raise ValueError("not a textpage of this page")
     rlist = tp.search(text, quads=quads)
@@ -431,17 +431,17 @@ def search_for(
 
 
 def search_page_for(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     pno: int,
     text: str,
     quads: bool = False,
     clip: rect_like = None,
-    flags: int = fitz.TEXT_DEHYPHENATE
-            | fitz.TEXT_PRESERVE_LIGATURES
-            | fitz.TEXT_PRESERVE_WHITESPACE
-            | fitz.TEXT_MEDIABOX_CLIP
+    flags: int = pymupdf.TEXT_DEHYPHENATE
+            | pymupdf.TEXT_PRESERVE_LIGATURES
+            | pymupdf.TEXT_PRESERVE_WHITESPACE
+            | pymupdf.TEXT_MEDIABOX_CLIP
             ,
-    textpage: fitz.TextPage = None,
+    textpage: pymupdf.TextPage = None,
 ) -> list:
     """Search for a string on a page.
 
@@ -466,10 +466,10 @@ def search_page_for(
 
 
 def get_text_blocks(
-    page: fitz.Page,
+    page: pymupdf.Page,
     clip: rect_like = None,
     flags: OptInt = None,
-    textpage: fitz.TextPage = None,
+    textpage: pymupdf.TextPage = None,
     sort: bool = False,
 ) -> list:
     """Return the text blocks on a page.
@@ -482,9 +482,9 @@ def get_text_blocks(
         A list of the blocks. Each item contains the containing rectangle
         coordinates, text lines, running block number and block type.
     """
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     if flags is None:
-        flags = fitz.TEXTFLAGS_BLOCKS
+        flags = pymupdf.TEXTFLAGS_BLOCKS
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
@@ -500,10 +500,10 @@ def get_text_blocks(
 
 
 def get_text_words(
-    page: fitz.Page,
+    page: pymupdf.Page,
     clip: rect_like = None,
     flags: OptInt = None,
-    textpage: fitz.TextPage = None,
+    textpage: pymupdf.TextPage = None,
     sort: bool = False,
     delimiters=None,
 ) -> list:
@@ -516,9 +516,9 @@ def get_text_words(
     Returns:
         Word tuples (x0, y0, x1, y1, "word", bno, lno, wno).
     """
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     if flags is None:
-        flags = fitz.TEXT_PRESERVE_WHITESPACE | fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_MEDIABOX_CLIP
+        flags = pymupdf.TEXT_PRESERVE_WHITESPACE | pymupdf.TEXT_PRESERVE_LIGATURES | pymupdf.TEXT_MEDIABOX_CLIP
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
@@ -535,9 +535,9 @@ def get_text_words(
 
 
 def get_textbox(
-    page: fitz.Page,
+    page: pymupdf.Page,
     rect: rect_like,
-    textpage: fitz.TextPage = None,
+    textpage: pymupdf.TextPage = None,
 ) -> str:
     tp = textpage
     if tp is None:
@@ -551,16 +551,16 @@ def get_textbox(
 
 
 def get_text_selection(
-    page: fitz.Page,
+    page: pymupdf.Page,
     p1: point_like,
     p2: point_like,
     clip: rect_like = None,
-    textpage: fitz.TextPage = None,
+    textpage: pymupdf.TextPage = None,
 ):
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     tp = textpage
     if tp is None:
-        tp = page.get_textpage(clip=clip, flags=fitz.TEXT_DEHYPHENATE)
+        tp = page.get_textpage(clip=clip, flags=pymupdf.TEXT_DEHYPHENATE)
     elif getattr(tp, "parent") != page:
         raise ValueError("not a textpage of this page")
     rc = tp.extractSelection(p1, p2)
@@ -570,13 +570,13 @@ def get_text_selection(
 
 
 def get_textpage_ocr(
-    page: fitz.Page,
+    page: pymupdf.Page,
     flags: int = 0,
     language: str = "eng",
     dpi: int = 72,
     full: bool = False,
     tessdata: str = None,
-) -> fitz.TextPage:
+) -> pymupdf.TextPage:
     """Create a Textpage from combined results of normal and OCR text parsing.
 
     Args:
@@ -585,15 +585,15 @@ def get_textpage_ocr(
         dpi: (int) resolution in dpi, default 72.
         full: (bool) whether to OCR the full page image, or only its images (default)
     """
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     if not TESSDATA_PREFIX and not tessdata:
         raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
 
     def full_ocr(page, dpi, language, flags):
         zoom = dpi / 72
-        mat = fitz.Matrix(zoom, zoom)
+        mat = pymupdf.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
-        ocr_pdf = fitz.Document(
+        ocr_pdf = pymupdf.Document(
                 "pdf",
                 pix.pdfocr_tobytes(
                     compress=False,
@@ -603,7 +603,7 @@ def get_textpage_ocr(
                 )
         ocr_page = ocr_pdf.load_page(0)
         unzoom = page.rect.width / ocr_page.rect.width
-        ctm = fitz.Matrix(unzoom, unzoom) * page.derotation_matrix
+        ctm = pymupdf.Matrix(unzoom, unzoom) * page.derotation_matrix
         tpage = ocr_page.get_textpage(flags=flags, matrix=ctm)
         ocr_pdf.close()
         pix = None
@@ -618,22 +618,22 @@ def get_textpage_ocr(
     # is OCRed from each image.
     # Because of this, we need the images flag bit set ON.
     tpage = page.get_textpage(flags=flags)
-    for block in page.get_text("dict", flags=fitz.TEXT_PRESERVE_IMAGES)["blocks"]:
+    for block in page.get_text("dict", flags=pymupdf.TEXT_PRESERVE_IMAGES)["blocks"]:
         if block["type"] != 1:  # only look at images
             continue
-        bbox = fitz.Rect(block["bbox"])
+        bbox = pymupdf.Rect(block["bbox"])
         if bbox.width <= 3 or bbox.height <= 3:  # ignore tiny stuff
             continue
         exception_types = (RuntimeError, mupdf.FzErrorBase)
-        if fitz.mupdf_version_tuple < (1, 24):
+        if pymupdf.mupdf_version_tuple < (1, 24):
             exception_types = RuntimeError
         try:
-            pix = fitz.Pixmap(block["image"])  # get image pixmap
+            pix = pymupdf.Pixmap(block["image"])  # get image pixmap
             if pix.n - pix.alpha != 3:  # we need to convert this to RGB!
-                pix = fitz.Pixmap(fitz.csRGB, pix)
+                pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
             if pix.alpha:  # must remove alpha channel
-                pix = fitz.Pixmap(pix, 0)
-            imgdoc = fitz.Document(
+                pix = pymupdf.Pixmap(pix, 0)
+            imgdoc = pymupdf.Document(
                     "pdf",
                     pix.pdfocr_tobytes(language=language, tessdata=tessdata),
                     )  # pdf with OCRed page
@@ -641,21 +641,21 @@ def get_textpage_ocr(
             pix = None
             # compute matrix to transform coordinates back to that of 'page'
             imgrect = imgpage.rect  # page size of image PDF
-            shrink = fitz.Matrix(1 / imgrect.width, 1 / imgrect.height)
+            shrink = pymupdf.Matrix(1 / imgrect.width, 1 / imgrect.height)
             mat = shrink * block["transform"]
             imgpage.extend_textpage(tpage, flags=0, matrix=mat)
             imgdoc.close()
         except exception_types:
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             tpage = None
-            fitz.message("Falling back to full page OCR")
+            pymupdf.message("Falling back to full page OCR")
             return full_ocr(page, dpi, language, flags)
 
     return tpage
 
 
-def get_image_info(page: fitz.Page, hashes: bool = False, xrefs: bool = False) -> list:
-    """Extract image information only from a fitz.TextPage.
+def get_image_info(page: pymupdf.Page, hashes: bool = False, xrefs: bool = False) -> list:
+    """Extract image information only from a pymupdf.TextPage.
 
     Args:
         hashes: (bool) include MD5 hash for each image.
@@ -670,7 +670,7 @@ def get_image_info(page: fitz.Page, hashes: bool = False, xrefs: bool = False) -
     if imginfo and not xrefs:
         return imginfo
     if not imginfo:
-        tp = page.get_textpage(flags=fitz.TEXT_PRESERVE_IMAGES)
+        tp = page.get_textpage(flags=pymupdf.TEXT_PRESERVE_IMAGES)
         imginfo = tp.extractIMGINFO(hashes=hashes)
         del tp
         if hashes:
@@ -681,7 +681,7 @@ def get_image_info(page: fitz.Page, hashes: bool = False, xrefs: bool = False) -
     digests = {}
     for item in imglist:
         xref = item[0]
-        pix = fitz.Pixmap(doc, xref)
+        pix = pymupdf.Pixmap(doc, xref)
         digests[pix.digest] = xref
         del pix
     for i in range(len(imginfo)):
@@ -692,7 +692,7 @@ def get_image_info(page: fitz.Page, hashes: bool = False, xrefs: bool = False) -
     return imginfo
 
 
-def get_image_rects(page: fitz.Page, name, transform=False) -> list:
+def get_image_rects(page: pymupdf.Page, name, transform=False) -> list:
     """Return list of image positions on a page.
 
     Args:
@@ -700,8 +700,8 @@ def get_image_rects(page: fitz.Page, name, transform=False) -> list:
               item of the page's image list or an xref.
         transform: (bool) whether to also return the transformation matrix.
     Returns:
-        A list of fitz.Rect objects or tuples of (fitz.Rect, fitz.Matrix) for all image
-        locations on the page.
+        A list of pymupdf.Rect objects or tuples of (pymupdf.Rect, pymupdf.Matrix)
+        for all image locations on the page.
     """
     if type(name) in (list, tuple):
         xref = name[0]
@@ -714,15 +714,15 @@ def get_image_rects(page: fitz.Page, name, transform=False) -> list:
         elif len(imglist) != 1:
             raise ValueError("multiple image names found")
         xref = imglist[0][0]
-    pix = fitz.Pixmap(page.parent, xref)  # make pixmap of the image to compute MD5
+    pix = pymupdf.Pixmap(page.parent, xref)  # make pixmap of the image to compute MD5
     digest = pix.digest
     del pix
     infos = page.get_image_info(hashes=True)
     if not transform:
-        bboxes = [fitz.Rect(im["bbox"]) for im in infos if im["digest"] == digest]
+        bboxes = [pymupdf.Rect(im["bbox"]) for im in infos if im["digest"] == digest]
     else:
         bboxes = [
-            (fitz.Rect(im["bbox"]), fitz.Matrix(im["transform"]))
+            (pymupdf.Rect(im["bbox"]), pymupdf.Matrix(im["transform"]))
             for im in infos
             if im["digest"] == digest
         ]
@@ -730,42 +730,42 @@ def get_image_rects(page: fitz.Page, name, transform=False) -> list:
 
 
 def get_text(
-        page: fitz.Page,
+        page: pymupdf.Page,
         option: str = "text",
         clip: rect_like = None,
         flags: OptInt = None,
-        textpage: fitz.TextPage = None,
+        textpage: pymupdf.TextPage = None,
         sort: bool = False,
         delimiters=None,
         ):
     """Extract text from a page or an annotation.
 
-    This is a unifying wrapper for various methods of the fitz.TextPage class.
+    This is a unifying wrapper for various methods of the pymupdf.TextPage class.
 
     Args:
         option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
         clip: (rect-like) restrict output to this area.
         flags: bit switches to e.g. exclude images or decompose ligatures.
-        textpage: reuse this fitz.TextPage and make no new one. If specified,
+        textpage: reuse this pymupdf.TextPage and make no new one. If specified,
             'flags' and 'clip' are ignored.
 
     Returns:
-        the output of methods get_text_words / get_text_blocks or fitz.TextPage
+        the output of methods get_text_words / get_text_blocks or pymupdf.TextPage
         methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT,
         extractXHTML or etractXML respectively.
         Default and misspelling choice is "text".
     """
     formats = {
-        "text": fitz.TEXTFLAGS_TEXT,
-        "html": fitz.TEXTFLAGS_HTML,
-        "json": fitz.TEXTFLAGS_DICT,
-        "rawjson": fitz.TEXTFLAGS_RAWDICT,
-        "xml": fitz.TEXTFLAGS_XML,
-        "xhtml": fitz.TEXTFLAGS_XHTML,
-        "dict": fitz.TEXTFLAGS_DICT,
-        "rawdict": fitz.TEXTFLAGS_RAWDICT,
-        "words": fitz.TEXTFLAGS_WORDS,
-        "blocks": fitz.TEXTFLAGS_BLOCKS,
+        "text": pymupdf.TEXTFLAGS_TEXT,
+        "html": pymupdf.TEXTFLAGS_HTML,
+        "json": pymupdf.TEXTFLAGS_DICT,
+        "rawjson": pymupdf.TEXTFLAGS_RAWDICT,
+        "xml": pymupdf.TEXTFLAGS_XML,
+        "xhtml": pymupdf.TEXTFLAGS_XHTML,
+        "dict": pymupdf.TEXTFLAGS_DICT,
+        "rawdict": pymupdf.TEXTFLAGS_RAWDICT,
+        "words": pymupdf.TEXTFLAGS_WORDS,
+        "blocks": pymupdf.TEXTFLAGS_BLOCKS,
     }
     option = option.lower()
     if option not in formats:
@@ -786,23 +786,23 @@ def get_text(
         return get_text_blocks(
             page, clip=clip, flags=flags, textpage=textpage, sort=sort
         )
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     cb = None
     if option in ("html", "xml", "xhtml"):  # no clipping for MuPDF functions
         clip = page.cropbox
     if clip is not None:
-        clip = fitz.Rect(clip)
+        clip = pymupdf.Rect(clip)
         cb = None
-    elif type(page) is fitz.Page:
+    elif type(page) is pymupdf.Page:
         cb = page.cropbox
-    # fitz.TextPage with or without images
+    # pymupdf.TextPage with or without images
     tp = textpage
-    #fitz.exception_info()
+    #pymupdf.exception_info()
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
     elif getattr(tp, "parent") != page:
         raise ValueError("not a textpage of this page")
-    #fitz.log( '{option=}')
+    #pymupdf.log( '{option=}')
     if option == "json":
         t = tp.extractJSON(cb=cb, sort=sort)
     elif option == "rawjson":
@@ -826,12 +826,12 @@ def get_text(
 
 
 def get_page_text(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     pno: int,
     option: str = "text",
     clip: rect_like = None,
     flags: OptInt = None,
-    textpage: fitz.TextPage = None,
+    textpage: pymupdf.TextPage = None,
     sort: bool = False,
 ) -> typing.Any:
     """Extract a document page's text by page number.
@@ -847,15 +847,15 @@ def get_page_text(
     return doc[pno].get_text(option, clip=clip, flags=flags, sort=sort)
 
 def get_pixmap(
-        page: fitz.Page,
+        page: pymupdf.Page,
         *,
-        matrix: matrix_like=fitz.Identity,
+        matrix: matrix_like=pymupdf.Identity,
         dpi=None,
-        colorspace: fitz.Colorspace=fitz.csRGB,
+        colorspace: pymupdf.Colorspace=pymupdf.csRGB,
         clip: rect_like=None,
         alpha: bool=False,
         annots: bool=True,
-        ) -> fitz.Pixmap:
+        ) -> pymupdf.Pixmap:
     """Create pixmap of page.
 
     Keyword args:
@@ -868,15 +868,15 @@ def get_pixmap(
     """
     if dpi:
         zoom = dpi / 72
-        matrix = fitz.Matrix(zoom, zoom)
+        matrix = pymupdf.Matrix(zoom, zoom)
 
     if type(colorspace) is str:
         if colorspace.upper() == "GRAY":
-            colorspace = fitz.csGRAY
+            colorspace = pymupdf.csGRAY
         elif colorspace.upper() == "CMYK":
-            colorspace = fitz.csCMYK
+            colorspace = pymupdf.csCMYK
         else:
-            colorspace = fitz.csRGB
+            colorspace = pymupdf.csRGB
     if colorspace.n not in (1, 3, 4):
         raise ValueError("unsupported colorspace")
 
@@ -889,24 +889,24 @@ def get_pixmap(
 
 
 def get_page_pixmap(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     pno: int,
     *,
-    matrix: matrix_like = fitz.Identity,
+    matrix: matrix_like = pymupdf.Identity,
     dpi=None,
-    colorspace: fitz.Colorspace = fitz.csRGB,
+    colorspace: pymupdf.Colorspace = pymupdf.csRGB,
     clip: rect_like = None,
     alpha: bool = False,
     annots: bool = True,
-) -> fitz.Pixmap:
+) -> pymupdf.Pixmap:
     """Create pixmap of document page by page number.
 
     Notes:
         Convenience function calling page.get_pixmap.
     Args:
         pno: (int) page number
-        matrix: fitz.Matrix for transformation (default: fitz.Identity).
-        colorspace: (str,fitz.Colorspace) rgb, rgb, gray - case ignored, default csRGB.
+        matrix: pymupdf.Matrix for transformation (default: pymupdf.Identity).
+        colorspace: (str,pymupdf.Colorspace) rgb, rgb, gray - case ignored, default csRGB.
         clip: (irect-like) restrict rendering to this area.
         alpha: (bool) include alpha channel
         annots: (bool) also render annotations
@@ -921,9 +921,9 @@ def get_page_pixmap(
 
 
 def getLinkDict(ln, document=None) -> dict:
-    if isinstance(ln, fitz.Outline):
+    if isinstance(ln, pymupdf.Outline):
         dest = ln.destination(document)
-    elif isinstance(ln, fitz.Link):
+    elif isinstance(ln, pymupdf.Link):
         dest = ln.dest
     else:
         assert 0, f'Unexpected {type(ln)=}.'
@@ -932,60 +932,60 @@ def getLinkDict(ln, document=None) -> dict:
         nl["from"] = ln.rect
     except Exception:
         # This seems to happen quite often in PyMuPDF/tests.
-        if g_exceptions_verbose:    fitz.exception_info()
+        if g_exceptions_verbose:    pymupdf.exception_info()
         pass
-    pnt = fitz.Point(0, 0)
-    if dest.flags & fitz.LINK_FLAG_L_VALID:
+    pnt = pymupdf.Point(0, 0)
+    if dest.flags & pymupdf.LINK_FLAG_L_VALID:
         pnt.x = dest.lt.x
-    if dest.flags & fitz.LINK_FLAG_T_VALID:
+    if dest.flags & pymupdf.LINK_FLAG_T_VALID:
         pnt.y = dest.lt.y
 
-    if dest.kind == fitz.LINK_URI:
+    if dest.kind == pymupdf.LINK_URI:
         nl["uri"] = dest.uri
 
-    elif dest.kind == fitz.LINK_GOTO:
+    elif dest.kind == pymupdf.LINK_GOTO:
         nl["page"] = dest.page
         nl["to"] = pnt
-        if dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
+        if dest.flags & pymupdf.LINK_FLAG_R_IS_ZOOM:
             nl["zoom"] = dest.rb.x
         else:
             nl["zoom"] = 0.0
 
-    elif dest.kind == fitz.LINK_GOTOR:
+    elif dest.kind == pymupdf.LINK_GOTOR:
         nl["file"] = dest.file_spec.replace("\\", "/")
         nl["page"] = dest.page
         if dest.page < 0:
             nl["to"] = dest.dest
         else:
             nl["to"] = pnt
-            if dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
+            if dest.flags & pymupdf.LINK_FLAG_R_IS_ZOOM:
                 nl["zoom"] = dest.rb.x
             else:
                 nl["zoom"] = 0.0
 
-    elif dest.kind == fitz.LINK_LAUNCH:
+    elif dest.kind == pymupdf.LINK_LAUNCH:
         nl["file"] = dest.file_spec.replace("\\", "/")
 
-    elif dest.kind == fitz.LINK_NAMED:
+    elif dest.kind == pymupdf.LINK_NAMED:
         # The dicts should not have same key(s).
         assert not (dest.named.keys() & nl.keys())
         nl.update(dest.named)
         if 'to' in nl:
-            nl['to'] = fitz.Point(nl['to'])
+            nl['to'] = pymupdf.Point(nl['to'])
 
     else:
         nl["page"] = dest.page
     return nl
 
 
-def get_links(page: fitz.Page) -> list:
+def get_links(page: pymupdf.Page) -> list:
     """Create a list of all links contained in a PDF page.
 
     Notes:
         see PyMuPDF ducmentation for details.
     """
 
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     ln = page.first_link
     links = []
     while ln:
@@ -995,8 +995,8 @@ def get_links(page: fitz.Page) -> list:
     if links != [] and page.parent.is_pdf:
         linkxrefs = [x for x in
                 #page.annot_xrefs()
-                fitz.JM_get_annot_xref_list2(page)
-                if x[1] == fitz.PDF_ANNOT_LINK  # pylint: disable=no-member
+                pymupdf.JM_get_annot_xref_list2(page)
+                if x[1] == pymupdf.PDF_ANNOT_LINK  # pylint: disable=no-member
                 ]
         if len(linkxrefs) == len(links):
             for i in range(len(linkxrefs)):
@@ -1006,7 +1006,7 @@ def get_links(page: fitz.Page) -> list:
 
 
 def get_toc(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     simple: bool = True,
 ) -> list:
     """Create a table of contents.
@@ -1061,7 +1061,7 @@ def get_toc(
 
 
 def del_toc_item(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     idx: int,
 ) -> None:
     """Delete TOC / bookmark item by index."""
@@ -1070,7 +1070,7 @@ def del_toc_item(
 
 
 def set_toc_item(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     idx: int,
     dest_dict: OptDict = None,
     kind: OptInt = None,
@@ -1086,30 +1086,42 @@ def set_toc_item(
     It allows changing the item's title and link destination.
 
     Args:
-        idx: (int) desired index of the TOC list, as created by get_toc.
-        dest_dict: (dict) destination dictionary as created by get_toc(False).
+        idx:
+            (int) desired index of the TOC list, as created by get_toc.
+        dest_dict:
+            (dict) destination dictionary as created by get_toc(False).
             Outrules all other parameters. If None, the remaining parameters
             are used to make a dest dictionary.
-        kind: (int) kind of link (fitz.LINK_GOTO, etc.). If None, then only the
-            title will be updated. If fitz.LINK_NONE, the TOC item will be deleted.
-        pno: (int) page number (1-based like in get_toc). Required if fitz.LINK_GOTO.
-        uri: (str) the URL, required if fitz.LINK_URI.
-        title: (str) the new title. No change if None.
-        to: (point-like) destination on the target page. If omitted, (72, 36)
+        kind:
+            (int) kind of link (pymupdf.LINK_GOTO, etc.). If None, then only
+            the title will be updated. If pymupdf.LINK_NONE, the TOC item will
+            be deleted.
+        pno:
+            (int) page number (1-based like in get_toc). Required if
+            pymupdf.LINK_GOTO.
+        uri:
+            (str) the URL, required if pymupdf.LINK_URI.
+        title:
+            (str) the new title. No change if None.
+        to:
+            (point-like) destination on the target page. If omitted, (72, 36)
             will be used as taget coordinates.
-        filename: (str) destination filename, required for fitz.LINK_GOTOR and
-            fitz.LINK_LAUNCH.
-        name: (str) a destination name for fitz.LINK_NAMED.
-        zoom: (float) a zoom factor for the target location (fitz.LINK_GOTO).
+        filename:
+            (str) destination filename, required for pymupdf.LINK_GOTOR and
+            pymupdf.LINK_LAUNCH.
+        name:
+            (str) a destination name for pymupdf.LINK_NAMED.
+        zoom:
+            (float) a zoom factor for the target location (pymupdf.LINK_GOTO).
     """
     xref = doc.get_outline_xrefs()[idx]
     page_xref = 0
     if type(dest_dict) is dict:
-        if dest_dict["kind"] == fitz.LINK_GOTO:
+        if dest_dict["kind"] == pymupdf.LINK_GOTO:
             pno = dest_dict["page"]
             page_xref = doc.page_xref(pno)
             page_height = doc.page_cropbox(pno).height
-            to = dest_dict.get('to', fitz.Point(72, 36))
+            to = dest_dict.get('to', pymupdf.Point(72, 36))
             to.y = page_height - to.y
             dest_dict["to"] = to
         action = getDestStr(page_xref, dest_dict)
@@ -1133,22 +1145,22 @@ def set_toc_item(
             collapse=collapse,
         )
 
-    if kind == fitz.LINK_NONE:  # delete bookmark item
+    if kind == pymupdf.LINK_NONE:  # delete bookmark item
         return doc.del_toc_item(idx)
     if kind is None and title is None:  # treat as no-op
         return None
     if kind is None:  # only update title text
         return doc._update_toc_item(xref, action=None, title=title)
 
-    if kind == fitz.LINK_GOTO:
+    if kind == pymupdf.LINK_GOTO:
         if pno is None or pno not in range(1, doc.page_count + 1):
             raise ValueError("bad page number")
         page_xref = doc.page_xref(pno - 1)
         page_height = doc.page_cropbox(pno - 1).height
         if to is None:
-            to = fitz.Point(72, page_height - 36)
+            to = pymupdf.Point(72, page_height - 36)
         else:
-            to = fitz.Point(to)
+            to = pymupdf.Point(to)
             to.y = page_height - to.y
 
     ddict = {
@@ -1178,7 +1190,7 @@ def get_area(*args) -> float:
     return f * rect.width * rect.height
 
 
-def set_metadata(doc: fitz.Document, m: dict) -> None:
+def set_metadata(doc: pymupdf.Document, m: dict) -> None:
     """Update the PDF /Info object.
 
     Args:
@@ -1231,7 +1243,7 @@ def set_metadata(doc: fitz.Document, m: dict) -> None:
         if not bool(val) or val in ("none", "null"):
             val = "null"
         else:
-            val = fitz.get_pdf_str(val)
+            val = pymupdf.get_pdf_str(val)
         doc.xref_set_key(info_xref, pdf_key, val)
     doc.init_doc()
     return
@@ -1254,34 +1266,34 @@ def getDestStr(xref: int, ddict: dict) -> str:
     if type(ddict) in (int, float):
         dest = str_goto % (xref, 0, ddict, 0)
         return dest
-    d_kind = ddict.get("kind", fitz.LINK_NONE)
+    d_kind = ddict.get("kind", pymupdf.LINK_NONE)
 
-    if d_kind == fitz.LINK_NONE:
+    if d_kind == pymupdf.LINK_NONE:
         return ""
 
-    if ddict["kind"] == fitz.LINK_GOTO:
+    if ddict["kind"] == pymupdf.LINK_GOTO:
         d_zoom = ddict.get("zoom", 0)
-        to = ddict.get("to", fitz.Point(0, 0))
+        to = ddict.get("to", pymupdf.Point(0, 0))
         d_left, d_top = to
         dest = str_goto % (xref, d_left, d_top, d_zoom)
         return dest
 
-    if ddict["kind"] == fitz.LINK_URI:
-        dest = str_uri % (fitz.get_pdf_str(ddict["uri"]),)
+    if ddict["kind"] == pymupdf.LINK_URI:
+        dest = str_uri % (pymupdf.get_pdf_str(ddict["uri"]),)
         return dest
 
-    if ddict["kind"] == fitz.LINK_LAUNCH:
-        fspec = fitz.get_pdf_str(ddict["file"])
+    if ddict["kind"] == pymupdf.LINK_LAUNCH:
+        fspec = pymupdf.get_pdf_str(ddict["file"])
         dest = str_launch % (fspec, fspec)
         return dest
 
-    if ddict["kind"] == fitz.LINK_GOTOR and ddict["page"] < 0:
-        fspec = fitz.get_pdf_str(ddict["file"])
-        dest = str_gotor2 % (fitz.get_pdf_str(ddict["to"]), fspec, fspec)
+    if ddict["kind"] == pymupdf.LINK_GOTOR and ddict["page"] < 0:
+        fspec = pymupdf.get_pdf_str(ddict["file"])
+        dest = str_gotor2 % (pymupdf.get_pdf_str(ddict["to"]), fspec, fspec)
         return dest
 
-    if ddict["kind"] == fitz.LINK_GOTOR and ddict["page"] >= 0:
-        fspec = fitz.get_pdf_str(ddict["file"])
+    if ddict["kind"] == pymupdf.LINK_GOTOR and ddict["page"] >= 0:
+        fspec = pymupdf.get_pdf_str(ddict["file"])
         dest = str_gotor1 % (
             ddict["page"],
             ddict["to"].x,
@@ -1296,7 +1308,7 @@ def getDestStr(xref: int, ddict: dict) -> str:
 
 
 def set_toc(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     toc: list,
     collapse: int = 1,
 ) -> int:
@@ -1365,17 +1377,17 @@ def set_toc(
     for i in range(toclen):
         o = toc[i]
         lvl = o[0]  # level
-        title = fitz.get_pdf_str(o[1])  # title
+        title = pymupdf.get_pdf_str(o[1])  # title
         pno = min(doc.page_count - 1, max(0, o[2] - 1))  # page number
         page_xref = doc.page_xref(pno)
         page_height = doc.page_cropbox(pno).height
-        top = fitz.Point(72, page_height - 36)
-        dest_dict = {"to": top, "kind": fitz.LINK_GOTO}  # fall back target
+        top = pymupdf.Point(72, page_height - 36)
+        dest_dict = {"to": top, "kind": pymupdf.LINK_GOTO}  # fall back target
         if o[2] < 0:
-            dest_dict["kind"] = fitz.LINK_NONE
+            dest_dict["kind"] = pymupdf.LINK_NONE
         if len(o) > 3:  # some target is specified
             if type(o[3]) in (int, float):  # convert a number to a point
-                dest_dict["to"] = fitz.Point(72, page_height - o[3])
+                dest_dict["to"] = pymupdf.Point(72, page_height - o[3])
             else:  # if something else, make sure we have a dict
                 # We make a copy of o[3] to avoid modifying our caller's data.
                 dest_dict = o[3].copy() if type(o[3]) is dict else dest_dict
@@ -1383,7 +1395,7 @@ def set_toc(
                     dest_dict["to"] = top  # put default in
                 else:  # transform target to PDF coordinates
                     page = doc[pno]
-                    point = fitz.Point(dest_dict["to"])
+                    point = pymupdf.Point(dest_dict["to"])
                     point.y = page.cropbox.height - point.y
                     point = point * page.rotation_matrix
                     dest_dict["to"] = (point.x, point.y)
@@ -1431,46 +1443,46 @@ def set_toc(
             txt += ol["dest"]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             pass
         try:
             if ol["first"] > -1:
                 txt += "/First %i 0 R" % xref[ol["first"]]
         except Exception:
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             pass
         try:
             if ol["last"] > -1:
                 txt += "/Last %i 0 R" % xref[ol["last"]]
         except Exception:
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             pass
         try:
             if ol["next"] > -1:
                 txt += "/Next %i 0 R" % xref[ol["next"]]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             pass
         try:
             if ol["parent"] > -1:
                 txt += "/Parent %i 0 R" % xref[ol["parent"]]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             pass
         try:
             if ol["prev"] > -1:
                 txt += "/Prev %i 0 R" % xref[ol["prev"]]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             pass
         try:
             txt += "/Title" + ol["title"]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             pass
 
         if ol.get("color") and len(ol["color"]) == 3:
@@ -1488,8 +1500,8 @@ def set_toc(
 
 
 def do_links(
-    doc1: fitz.Document,
-    doc2: fitz.Document,
+    doc1: pymupdf.Document,
+    doc2: pymupdf.Document,
     from_page: int = -1,
     to_page: int = -1,
     start_at: int = -1,
@@ -1499,7 +1511,7 @@ def do_links(
     Parameter values **must** equal those of method insert_pdf(), which must
     have been previously executed.
     """
-    #fitz.log( 'utils.do_links()')
+    #pymupdf.log( 'utils.do_links()')
     # --------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string
     # --------------------------------------------------------------------------
@@ -1508,18 +1520,18 @@ def do_links(
 
         r = lnk["from"] * ctm  # rect in PDF coordinates
         rect = "%g %g %g %g" % tuple(r)
-        if lnk["kind"] == fitz.LINK_GOTO:
-            txt = fitz.annot_skel["goto1"]  # annot_goto
+        if lnk["kind"] == pymupdf.LINK_GOTO:
+            txt = pymupdf.annot_skel["goto1"]  # annot_goto
             idx = pno_src.index(lnk["page"])
             p = lnk["to"] * ctm  # target point in PDF coordinates
             annot = txt % (xref_dst[idx], p.x, p.y, lnk["zoom"], rect)
 
-        elif lnk["kind"] == fitz.LINK_GOTOR:
+        elif lnk["kind"] == pymupdf.LINK_GOTOR:
             if lnk["page"] >= 0:
-                txt = fitz.annot_skel["gotor1"]  # annot_gotor
-                pnt = lnk.get("to", fitz.Point(0, 0))  # destination point
-                if type(pnt) is not fitz.Point:
-                    pnt = fitz.Point(0, 0)
+                txt = pymupdf.annot_skel["gotor1"]  # annot_gotor
+                pnt = lnk.get("to", pymupdf.Point(0, 0))  # destination point
+                if type(pnt) is not pymupdf.Point:
+                    pnt = pymupdf.Point(0, 0)
                 annot = txt % (
                     lnk["page"],
                     pnt.x,
@@ -1530,18 +1542,18 @@ def do_links(
                     rect,
                 )
             else:
-                txt = fitz.annot_skel["gotor2"]  # annot_gotor_n
-                to = fitz.get_pdf_str(lnk["to"])
+                txt = pymupdf.annot_skel["gotor2"]  # annot_gotor_n
+                to = pymupdf.get_pdf_str(lnk["to"])
                 to = to[1:-1]
                 f = lnk["file"]
                 annot = txt % (to, f, rect)
 
-        elif lnk["kind"] == fitz.LINK_LAUNCH:
-            txt = fitz.annot_skel["launch"]  # annot_launch
+        elif lnk["kind"] == pymupdf.LINK_LAUNCH:
+            txt = pymupdf.annot_skel["launch"]  # annot_launch
             annot = txt % (lnk["file"], lnk["file"], rect)
 
-        elif lnk["kind"] == fitz.LINK_URI:
-            txt = fitz.annot_skel["uri"]  # annot_uri
+        elif lnk["kind"] == pymupdf.LINK_URI:
+            txt = pymupdf.annot_skel["uri"]  # annot_uri
             annot = txt % (lnk["uri"], rect)
 
         else:
@@ -1589,10 +1601,10 @@ def do_links(
     for i in range(len(xref_src)):
         page_src = doc2[pno_src[i]]  # load source page
         links = page_src.get_links()  # get all its links
-        #fitz.log( '{pno_src=}')
-        #fitz.log( '{type(page_src)=}')
-        #fitz.log( '{page_src=}')
-        #fitz.log( '{=i len(links)}')
+        #pymupdf.log( '{pno_src=}')
+        #pymupdf.log( '{type(page_src)=}')
+        #pymupdf.log( '{page_src=}')
+        #pymupdf.log( '{=i len(links)}')
         if len(links) == 0:  # no links there
             page_src = None
             continue
@@ -1600,17 +1612,17 @@ def do_links(
         page_dst = doc1[pno_dst[i]]  # load destination page
         link_tab = []  # store all link definitions here
         for l in links:
-            if l["kind"] == fitz.LINK_GOTO and (l["page"] not in pno_src):
+            if l["kind"] == pymupdf.LINK_GOTO and (l["page"] not in pno_src):
                 continue  # GOTO link target not in copied pages
             annot_text = cre_annot(l, xref_dst, pno_src, ctm)
             if annot_text:
                 link_tab.append(annot_text)
         if link_tab != []:
             page_dst._addAnnot_FromString( tuple(link_tab))
-    #fitz.log( 'utils.do_links() returning.')
+    #pymupdf.log( 'utils.do_links() returning.')
 
 
-def getLinkText(page: fitz.Page, lnk: dict) -> str:
+def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
     # --------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     # --------------------------------------------------------------------------
@@ -1620,24 +1632,24 @@ def getLinkText(page: fitz.Page, lnk: dict) -> str:
     rect = "%g %g %g %g" % tuple(r * ictm)
 
     annot = ""
-    if lnk["kind"] == fitz.LINK_GOTO:
+    if lnk["kind"] == pymupdf.LINK_GOTO:
         if lnk["page"] >= 0:
-            txt = fitz.annot_skel["goto1"]  # annot_goto
+            txt = pymupdf.annot_skel["goto1"]  # annot_goto
             pno = lnk["page"]
             xref = page.parent.page_xref(pno)
-            pnt = lnk.get("to", fitz.Point(0, 0))  # destination point
+            pnt = lnk.get("to", pymupdf.Point(0, 0))  # destination point
             ipnt = pnt * ictm
             annot = txt % (xref, ipnt.x, ipnt.y, lnk.get("zoom", 0), rect)
         else:
-            txt = fitz.annot_skel["goto2"]  # annot_goto_n
-            annot = txt % (fitz.get_pdf_str(lnk["to"]), rect)
+            txt = pymupdf.annot_skel["goto2"]  # annot_goto_n
+            annot = txt % (pymupdf.get_pdf_str(lnk["to"]), rect)
 
-    elif lnk["kind"] == fitz.LINK_GOTOR:
+    elif lnk["kind"] == pymupdf.LINK_GOTOR:
         if lnk["page"] >= 0:
-            txt = fitz.annot_skel["gotor1"]  # annot_gotor
-            pnt = lnk.get("to", fitz.Point(0, 0))  # destination point
-            if type(pnt) is not fitz.Point:
-                pnt = fitz.Point(0, 0)
+            txt = pymupdf.annot_skel["gotor1"]  # annot_gotor
+            pnt = lnk.get("to", pymupdf.Point(0, 0))  # destination point
+            if type(pnt) is not pymupdf.Point:
+                pnt = pymupdf.Point(0, 0)
             annot = txt % (
                 lnk["page"],
                 pnt.x,
@@ -1648,19 +1660,19 @@ def getLinkText(page: fitz.Page, lnk: dict) -> str:
                 rect,
             )
         else:
-            txt = fitz.annot_skel["gotor2"]  # annot_gotor_n
-            annot = txt % (fitz.get_pdf_str(lnk["to"]), lnk["file"], rect)
+            txt = pymupdf.annot_skel["gotor2"]  # annot_gotor_n
+            annot = txt % (pymupdf.get_pdf_str(lnk["to"]), lnk["file"], rect)
 
-    elif lnk["kind"] == fitz.LINK_LAUNCH:
-        txt = fitz.annot_skel["launch"]  # annot_launch
+    elif lnk["kind"] == pymupdf.LINK_LAUNCH:
+        txt = pymupdf.annot_skel["launch"]  # annot_launch
         annot = txt % (lnk["file"], lnk["file"], rect)
 
-    elif lnk["kind"] == fitz.LINK_URI:
-        txt = fitz.annot_skel["uri"]  # txt = annot_uri
+    elif lnk["kind"] == pymupdf.LINK_URI:
+        txt = pymupdf.annot_skel["uri"]  # txt = annot_uri
         annot = txt % (lnk["uri"], rect)
 
-    elif lnk["kind"] == fitz.LINK_NAMED:
-        txt = fitz.annot_skel["named"]  # annot_named
+    elif lnk["kind"] == pymupdf.LINK_NAMED:
+        txt = pymupdf.annot_skel["named"]  # annot_named
         lname = lnk.get("name")  # check presence of key
         if lname is None:  # if missing, fall back to alternative
             lname = lnk["nameddest"]
@@ -1670,7 +1682,7 @@ def getLinkText(page: fitz.Page, lnk: dict) -> str:
 
     # add a /NM PDF key to the object definition
     link_names = dict(  # existing ids and their xref
-        [(x[0], x[2]) for x in page.annot_xrefs() if x[1] == fitz.PDF_ANNOT_LINK]   # pylint: disable=no-member
+        [(x[0], x[2]) for x in page.annot_xrefs() if x[1] == pymupdf.PDF_ANNOT_LINK]   # pylint: disable=no-member
     )
 
     old_name = lnk.get("id", "")  # id value in the argument
@@ -1679,7 +1691,7 @@ def getLinkText(page: fitz.Page, lnk: dict) -> str:
         name = old_name  # no new name if this is an update only
     else:
         i = 0
-        stem = fitz.TOOLS.set_annot_stem() + "-L%i"
+        stem = pymupdf.TOOLS.set_annot_stem() + "-L%i"
         while True:
             name = stem % i
             if name not in link_names.values():
@@ -1690,9 +1702,9 @@ def getLinkText(page: fitz.Page, lnk: dict) -> str:
     return annot
 
 
-def delete_widget(page: fitz.Page, widget: fitz.Widget) -> fitz.Widget:
+def delete_widget(page: pymupdf.Page, widget: pymupdf.Widget) -> pymupdf.Widget:
     """Delete widget from page and return the next one."""
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     annot = getattr(widget, "_annot", None)
     if annot is None:
         raise ValueError("bad type: widget")
@@ -1705,9 +1717,9 @@ def delete_widget(page: fitz.Page, widget: fitz.Widget) -> fitz.Widget:
     return nextwidget
 
 
-def update_link(page: fitz.Page, lnk: dict) -> None:
+def update_link(page: pymupdf.Page, lnk: dict) -> None:
     """Update a link on the current page."""
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     annot = getLinkText(page, lnk)
     if annot == "":
         raise ValueError("link kind not supported")
@@ -1715,9 +1727,9 @@ def update_link(page: fitz.Page, lnk: dict) -> None:
     page.parent.update_object(lnk["xref"], annot, page=page)
 
 
-def insert_link(page: fitz.Page, lnk: dict, mark: bool = True) -> None:
+def insert_link(page: pymupdf.Page, lnk: dict, mark: bool = True) -> None:
     """Insert a new link for the current page."""
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     annot = getLinkText(page, lnk)
     if annot == "":
         raise ValueError("link kind not supported")
@@ -1725,7 +1737,7 @@ def insert_link(page: fitz.Page, lnk: dict, mark: bool = True) -> None:
 
 
 def insert_textbox(
-    page: fitz.Page,
+    page: pymupdf.Page,
     rect: rect_like,
     buffer: typing.Union[str, list],
     fontname: str = "helv",
@@ -1795,7 +1807,7 @@ def insert_textbox(
 
 
 def insert_text(
-    page: fitz.Page,
+    page: pymupdf.Page,
     point: point_like,
     text: typing.Union[str, list],
     fontsize: float = 11,
@@ -1891,19 +1903,19 @@ def insert_htmlbox(
     if css is None:
         css = ""
 
-    rect = fitz.Rect(rect)
+    rect = pymupdf.Rect(rect)
     if rotate in (90, 270):
-        temp_rect = fitz.Rect(0, 0, rect.height, rect.width)
+        temp_rect = pymupdf.Rect(0, 0, rect.height, rect.width)
     else:
-        temp_rect = fitz.Rect(0, 0, rect.width, rect.height)
+        temp_rect = pymupdf.Rect(0, 0, rect.width, rect.height)
 
     # use a small border by default
     mycss = "body {margin:1px;}" + css  # append user CSS
 
     # either make a story, or accept a given one
     if isinstance(text, str):  # if a string, convert to a Story
-        story = fitz.Story(html=text, user_css=mycss, archive=archive)
-    elif isinstance(text, fitz.Story):
+        story = pymupdf.Story(html=text, user_css=mycss, archive=archive)
+    elif isinstance(text, pymupdf.Story):
         story = text
     else:
         raise ValueError("'text' must be a string or a Story")
@@ -1926,7 +1938,7 @@ def insert_htmlbox(
         spare_height = 0
 
     def rect_function(*args):
-        return fit.rect, fit.rect, fitz.Identity
+        return fit.rect, fit.rect, pymupdf.Identity
 
     # draw story on temp PDF page
     doc = story.write_with_links(rect_function)
@@ -1938,7 +1950,7 @@ def insert_htmlbox(
         # generate /ExtGstate for the page
         alp0 = tpage._set_opacity(CA=opacity, ca=opacity)
         s = f"/{alp0} gs\n"  # generate graphic state command
-        fitz.TOOLS._insert_contents(tpage, s.encode(), 0)
+        pymupdf.TOOLS._insert_contents(tpage, s.encode(), 0)
 
     # put result in target page
     page.show_pdf_page(rect, doc, 0, rotate=rotate, oc=oc, overlay=overlay)
@@ -1957,9 +1969,9 @@ def insert_htmlbox(
     # - rotate
     # - move (0,0) to center of target rect
     mat = (
-        fitz.Matrix(scale, 0, 0, scale, -mp1.x, -mp1.y)
-        * fitz.Matrix(-rotate)
-        * fitz.Matrix(1, 0, 0, 1, mp2.x, mp2.y)
+        pymupdf.Matrix(scale, 0, 0, scale, -mp1.x, -mp1.y)
+        * pymupdf.Matrix(-rotate)
+        * pymupdf.Matrix(1, 0, 0, 1, mp2.x, mp2.y)
     )
 
     # copy over links
@@ -1971,11 +1983,11 @@ def insert_htmlbox(
 
 
 def new_page(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     pno: int = -1,
     width: float = 595,
     height: float = 842,
-) -> fitz.Page:
+) -> pymupdf.Page:
     """Create and return a new page object.
 
     Args:
@@ -1983,14 +1995,14 @@ def new_page(
         width: (float) page width in points. Default: 595 (ISO A4 width).
         height: (float) page height in points. Default 842 (ISO A4 height).
     Returns:
-        A fitz.Page object.
+        A pymupdf.Page object.
     """
     doc._newPage(pno, width=width, height=height)
     return doc[pno]
 
 
 def insert_page(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     pno: int,
     text: typing.Union[str, list, None] = None,
     fontsize: float = 11,
@@ -2003,7 +2015,7 @@ def insert_page(
     """Create a new PDF page and insert some text.
 
     Notes:
-        Function combining fitz.Document.new_page() and fitz.Page.insert_text().
+        Function combining pymupdf.Document.new_page() and pymupdf.Page.insert_text().
         For parameter details see these methods.
     """
     page = doc.new_page(pno=pno, width=width, height=height)
@@ -2021,7 +2033,7 @@ def insert_page(
 
 
 def draw_line(
-    page: fitz.Page,
+    page: pymupdf.Page,
     p1: point_like,
     p2: point_like,
     color: OptSeq = (0,),
@@ -2034,10 +2046,10 @@ def draw_line(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc=0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a line from point p1 to point p2."""
     img = page.new_shape()
-    p = img.draw_line(fitz.Point(p1), fitz.Point(p2))
+    p = img.draw_line(pymupdf.Point(p1), pymupdf.Point(p2))
     img.finish(
         color=color,
         dashes=dashes,
@@ -2056,7 +2068,7 @@ def draw_line(
 
 
 def draw_squiggle(
-    page: fitz.Page,
+    page: pymupdf.Page,
     p1: point_like,
     p2: point_like,
     breadth: float = 2,
@@ -2070,10 +2082,10 @@ def draw_squiggle(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a squiggly line from point p1 to point p2."""
     img = page.new_shape()
-    p = img.draw_squiggle(fitz.Point(p1), fitz.Point(p2), breadth=breadth)
+    p = img.draw_squiggle(pymupdf.Point(p1), pymupdf.Point(p2), breadth=breadth)
     img.finish(
         color=color,
         dashes=dashes,
@@ -2092,7 +2104,7 @@ def draw_squiggle(
 
 
 def draw_zigzag(
-    page: fitz.Page,
+    page: pymupdf.Page,
     p1: point_like,
     p2: point_like,
     breadth: float = 2,
@@ -2106,10 +2118,10 @@ def draw_zigzag(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a zigzag line from point p1 to point p2."""
     img = page.new_shape()
-    p = img.draw_zigzag(fitz.Point(p1), fitz.Point(p2), breadth=breadth)
+    p = img.draw_zigzag(pymupdf.Point(p1), pymupdf.Point(p2), breadth=breadth)
     img.finish(
         color=color,
         dashes=dashes,
@@ -2128,7 +2140,7 @@ def draw_zigzag(
 
 
 def draw_rect(
-        page: fitz.Page,
+        page: pymupdf.Page,
         rect: rect_like,
         color: OptSeq = (0,),
         fill: OptSeq = None,
@@ -2142,12 +2154,12 @@ def draw_rect(
         fill_opacity: float = 1,
         oc: int = 0,
         radius=None,
-        ) -> fitz.Point:
+        ) -> pymupdf.Point:
     '''
     Draw a rectangle. See Shape class method for details.
     '''
     img = page.new_shape()
-    Q = img.draw_rect(fitz.Rect(rect), radius=radius)
+    Q = img.draw_rect(pymupdf.Rect(rect), radius=radius)
     img.finish(
         color=color,
         fill=fill,
@@ -2166,7 +2178,7 @@ def draw_rect(
 
 
 def draw_quad(
-    page: fitz.Page,
+    page: pymupdf.Page,
     quad: quad_like,
     color: OptSeq = (0,),
     fill: OptSeq = None,
@@ -2179,10 +2191,10 @@ def draw_quad(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a quadrilateral."""
     img = page.new_shape()
-    Q = img.draw_quad(fitz.Quad(quad))
+    Q = img.draw_quad(pymupdf.Quad(quad))
     img.finish(
         color=color,
         fill=fill,
@@ -2201,7 +2213,7 @@ def draw_quad(
 
 
 def draw_polyline(
-    page: fitz.Page,
+    page: pymupdf.Page,
     points: list,
     color: OptSeq = (0,),
     fill: OptSeq = None,
@@ -2215,7 +2227,7 @@ def draw_polyline(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw multiple connected line segments."""
     img = page.new_shape()
     Q = img.draw_polyline(points)
@@ -2238,7 +2250,7 @@ def draw_polyline(
 
 
 def draw_circle(
-    page: fitz.Page,
+    page: pymupdf.Page,
     center: point_like,
     radius: float,
     color: OptSeq = (0,),
@@ -2252,10 +2264,10 @@ def draw_circle(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a circle given its center and radius."""
     img = page.new_shape()
-    Q = img.draw_circle(fitz.Point(center), radius)
+    Q = img.draw_circle(pymupdf.Point(center), radius)
     img.finish(
         color=color,
         fill=fill,
@@ -2273,7 +2285,7 @@ def draw_circle(
 
 
 def draw_oval(
-    page: fitz.Page,
+    page: pymupdf.Page,
     rect: typing.Union[rect_like, quad_like],
     color: OptSeq = (0,),
     fill: OptSeq = None,
@@ -2286,7 +2298,7 @@ def draw_oval(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw an oval given its containing rectangle or quad."""
     img = page.new_shape()
     Q = img.draw_oval(rect)
@@ -2308,7 +2320,7 @@ def draw_oval(
 
 
 def draw_curve(
-    page: fitz.Page,
+    page: pymupdf.Page,
     p1: point_like,
     p2: point_like,
     p3: point_like,
@@ -2324,10 +2336,10 @@ def draw_curve(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3."""
     img = page.new_shape()
-    Q = img.draw_curve(fitz.Point(p1), fitz.Point(p2), fitz.Point(p3))
+    Q = img.draw_curve(pymupdf.Point(p1), pymupdf.Point(p2), pymupdf.Point(p3))
     img.finish(
         color=color,
         fill=fill,
@@ -2347,7 +2359,7 @@ def draw_curve(
 
 
 def draw_bezier(
-    page: fitz.Page,
+    page: pymupdf.Page,
     p1: point_like,
     p2: point_like,
     p3: point_like,
@@ -2364,10 +2376,10 @@ def draw_bezier(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3."""
     img = page.new_shape()
-    Q = img.draw_bezier(fitz.Point(p1), fitz.Point(p2), fitz.Point(p3), fitz.Point(p4))
+    Q = img.draw_bezier(pymupdf.Point(p1), pymupdf.Point(p2), pymupdf.Point(p3), pymupdf.Point(p4))
     img.finish(
         color=color,
         fill=fill,
@@ -2387,7 +2399,7 @@ def draw_bezier(
 
 
 def draw_sector(
-    page: fitz.Page,
+    page: pymupdf.Page,
     center: point_like,
     point: point_like,
     beta: float,
@@ -2404,7 +2416,7 @@ def draw_sector(
     stroke_opacity: float = 1,
     fill_opacity: float = 1,
     oc: int = 0,
-) -> fitz.Point:
+) -> pymupdf.Point:
     """Draw a circle sector given circle center, one arc end point and the angle of the arc.
 
     Parameters:
@@ -2414,7 +2426,7 @@ def draw_sector(
         fullSector -- connect arc ends with center
     """
     img = page.new_shape()
-    Q = img.draw_sector(fitz.Point(center), fitz.Point(point), beta, fullSector=fullSector)
+    Q = img.draw_sector(pymupdf.Point(center), pymupdf.Point(point), beta, fullSector=fullSector)
     img.finish(
         color=color,
         fill=fill,
@@ -3028,7 +3040,7 @@ def getColor(name: str) -> tuple:
         c = getColorInfoList()[getColorList().index(name.upper())]
         return (c[1] / 255.0, c[2] / 255.0, c[3] / 255.0)
     except Exception:
-        fitz.exception_info()
+        pymupdf.exception_info()
         return (1, 1, 1)
 
 
@@ -3041,7 +3053,7 @@ def getColorHSV(name: str) -> tuple:
     try:
         x = getColorInfoList()[getColorList().index(name.upper())]
     except Exception:
-        if g_exceptions_verbose:    fitz.exception_info()
+        if g_exceptions_verbose:    pymupdf.exception_info()
         return (-1, -1, -1)
 
     r = x[1] / 255.0
@@ -3071,7 +3083,7 @@ def getColorHSV(name: str) -> tuple:
     return (H, S, V)
 
 
-def _get_font_properties(doc: fitz.Document, xref: int) -> tuple:
+def _get_font_properties(doc: pymupdf.Document, xref: int) -> tuple:
     fontname, ext, stype, buffer = doc.extract_font(xref)
     asc = 0.8
     dsc = -0.2
@@ -3080,7 +3092,7 @@ def _get_font_properties(doc: fitz.Document, xref: int) -> tuple:
 
     if buffer:
         try:
-            font = fitz.Font(fontbuffer=buffer)
+            font = pymupdf.Font(fontbuffer=buffer)
             asc = font.ascender
             dsc = font.descender
             bbox = font.bbox
@@ -3089,17 +3101,17 @@ def _get_font_properties(doc: fitz.Document, xref: int) -> tuple:
                     dsc = bbox.y0
                 asc = 1 - dsc
         except Exception:
-            fitz.exception_info()
+            pymupdf.exception_info()
             asc *= 1.2
             dsc *= 1.2
         return fontname, ext, stype, asc, dsc
     if ext != "n/a":
         try:
-            font = fitz.Font(fontname)
+            font = pymupdf.Font(fontname)
             asc = font.ascender
             dsc = font.descender
         except Exception:
-            fitz.exception_info()
+            pymupdf.exception_info()
             asc *= 1.2
             dsc *= 1.2
     else:
@@ -3109,7 +3121,7 @@ def _get_font_properties(doc: fitz.Document, xref: int) -> tuple:
 
 
 def get_char_widths(
-    doc: fitz.Document, xref: int, limit: int = 256, idx: int = 0, fontdict: OptDict = None
+    doc: pymupdf.Document, xref: int, limit: int = 256, idx: int = 0, fontdict: OptDict = None
 ) -> list:
     """Get list of glyph information of a font.
 
@@ -3124,7 +3136,7 @@ def get_char_widths(
         For 'simple' fonts, glyph == ord(char) will usually be true.
         Exceptions are 'Symbol' and 'ZapfDingbats'. We are providing data for these directly here.
     """
-    fontinfo = fitz.CheckFontInfo(doc, xref)
+    fontinfo = pymupdf.CheckFontInfo(doc, xref)
     if fontinfo is None:  # not recorded yet: create it
         if fontdict is None:
             name, ext, stype, asc, dsc = _get_font_properties(doc, xref)
@@ -3166,9 +3178,9 @@ def get_char_widths(
         fontdict["simple"] = simple
 
         if name == "ZapfDingbats":
-            glyphs = fitz.zapf_glyphs
+            glyphs = pymupdf.zapf_glyphs
         elif name == "Symbol":
-            glyphs = fitz.symbol_glyphs
+            glyphs = pymupdf.symbol_glyphs
         else:
             glyphs = None
 
@@ -3201,7 +3213,7 @@ def get_char_widths(
 
     fontdict["glyphs"] = glyphs
     fontinfo[1] = fontdict
-    fitz.UpdateFontInfo(doc, fontinfo)
+    pymupdf.UpdateFontInfo(doc, fontinfo)
 
     return glyphs
 
@@ -3215,7 +3227,7 @@ class Shape:
         This uses the arcus sine function and resolves its inherent ambiguity by
         looking up in which quadrant vector S = P - C is located.
         """
-        S = fitz.Point(P - C).unit  # unit vector 'C' -> 'P'
+        S = pymupdf.Point(P - C).unit  # unit vector 'C' -> 'P'
         alfa = math.asin(abs(S.y))  # absolute angle from horizontal
         if S.x < 0:  # make arcsin result unique
             if S.y <= 0:  # bottom-left
@@ -3229,8 +3241,8 @@ class Shape:
                 alfa = -alfa
         return alfa
 
-    def __init__(self, page: fitz.Page):
-        fitz.CheckParent(page)
+    def __init__(self, page: pymupdf.Page):
+        pymupdf.CheckParent(page)
         self.page = page
         self.doc = page.parent
         if not self.doc.is_pdf:
@@ -3252,50 +3264,50 @@ class Shape:
     def updateRect(self, x):
         if self.rect is None:
             if len(x) == 2:
-                self.rect = fitz.Rect(x, x)
+                self.rect = pymupdf.Rect(x, x)
             else:
-                self.rect = fitz.Rect(x)
+                self.rect = pymupdf.Rect(x)
 
         else:
             if len(x) == 2:
-                x = fitz.Point(x)
+                x = pymupdf.Point(x)
                 self.rect.x0 = min(self.rect.x0, x.x)
                 self.rect.y0 = min(self.rect.y0, x.y)
                 self.rect.x1 = max(self.rect.x1, x.x)
                 self.rect.y1 = max(self.rect.y1, x.y)
             else:
-                x = fitz.Rect(x)
+                x = pymupdf.Rect(x)
                 self.rect.x0 = min(self.rect.x0, x.x0)
                 self.rect.y0 = min(self.rect.y0, x.y0)
                 self.rect.x1 = max(self.rect.x1, x.x1)
                 self.rect.y1 = max(self.rect.y1, x.y1)
 
-    def draw_line(self, p1: point_like, p2: point_like) -> fitz.Point:
+    def draw_line(self, p1: point_like, p2: point_like) -> pymupdf.Point:
         """Draw a line between two points."""
-        p1 = fitz.Point(p1)
-        p2 = fitz.Point(p2)
+        p1 = pymupdf.Point(p1)
+        p2 = pymupdf.Point(p2)
         if not (self.last_point == p1):
-            self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(p1 * self.ipctm)
+            self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(p1 * self.ipctm)
             self.last_point = p1
             self.updateRect(p1)
 
-        self.draw_cont += "%g %g l\n" % fitz.JM_TUPLE(p2 * self.ipctm)
+        self.draw_cont += "%g %g l\n" % pymupdf.JM_TUPLE(p2 * self.ipctm)
         self.updateRect(p2)
         self.last_point = p2
         return self.last_point
 
-    def draw_polyline(self, points: list) -> fitz.Point:
+    def draw_polyline(self, points: list) -> pymupdf.Point:
         """Draw several connected line segments."""
         for i, p in enumerate(points):
             if i == 0:
-                if not (self.last_point == fitz.Point(p)):
-                    self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(fitz.Point(p) * self.ipctm)
-                    self.last_point = fitz.Point(p)
+                if not (self.last_point == pymupdf.Point(p)):
+                    self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(pymupdf.Point(p) * self.ipctm)
+                    self.last_point = pymupdf.Point(p)
             else:
-                self.draw_cont += "%g %g l\n" % fitz.JM_TUPLE(fitz.Point(p) * self.ipctm)
+                self.draw_cont += "%g %g l\n" % pymupdf.JM_TUPLE(pymupdf.Point(p) * self.ipctm)
             self.updateRect(p)
 
-        self.last_point = fitz.Point(points[-1])
+        self.last_point = pymupdf.Point(points[-1])
         return self.last_point
 
     def draw_bezier(
@@ -3304,15 +3316,15 @@ class Shape:
         p2: point_like,
         p3: point_like,
         p4: point_like,
-    ) -> fitz.Point:
+    ) -> pymupdf.Point:
         """Draw a standard cubic Bezier curve."""
-        p1 = fitz.Point(p1)
-        p2 = fitz.Point(p2)
-        p3 = fitz.Point(p3)
-        p4 = fitz.Point(p4)
+        p1 = pymupdf.Point(p1)
+        p2 = pymupdf.Point(p2)
+        p3 = pymupdf.Point(p3)
+        p4 = pymupdf.Point(p4)
         if not (self.last_point == p1):
-            self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(p1 * self.ipctm)
-        self.draw_cont += "%g %g %g %g %g %g c\n" % fitz.JM_TUPLE(
+            self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(p1 * self.ipctm)
+        self.draw_cont += "%g %g %g %g %g %g c\n" % pymupdf.JM_TUPLE(
             list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm)
         )
         self.updateRect(p1)
@@ -3322,21 +3334,21 @@ class Shape:
         self.last_point = p4
         return self.last_point
 
-    def draw_oval(self, tetra: typing.Union[quad_like, rect_like]) -> fitz.Point:
+    def draw_oval(self, tetra: typing.Union[quad_like, rect_like]) -> pymupdf.Point:
         """Draw an ellipse inside a tetrapod."""
         if len(tetra) != 4:
             raise ValueError("invalid arg length")
         if hasattr(tetra[0], "__float__"):
-            q = fitz.Rect(tetra).quad
+            q = pymupdf.Rect(tetra).quad
         else:
-            q = fitz.Quad(tetra)
+            q = pymupdf.Quad(tetra)
 
         mt = q.ul + (q.ur - q.ul) * 0.5
         mr = q.ur + (q.lr - q.ur) * 0.5
         mb = q.ll + (q.lr - q.ll) * 0.5
         ml = q.ul + (q.ll - q.ul) * 0.5
         if not (self.last_point == ml):
-            self.draw_cont += "%g %g m\n" % fitz.JM_TUPLE(ml * self.ipctm)
+            self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(ml * self.ipctm)
             self.last_point = ml
         self.draw_curve(ml, q.ll, mb)
         self.draw_curve(mb, q.lr, mr)
@@ -3346,11 +3358,11 @@ class Shape:
         self.last_point = ml
         return self.last_point
 
-    def draw_circle(self, center: point_like, radius: float) -> fitz.Point:
+    def draw_circle(self, center: point_like, radius: float) -> pymupdf.Point:
         """Draw a circle given its center and radius."""
-        if not radius > fitz.EPSILON:
+        if not radius > pymupdf.EPSILON:
             raise ValueError("radius must be positive")
-        center = fitz.Point(center)
+        center = pymupdf.Point(center)
         p1 = center - (radius, 0)
         return self.draw_sector(center, p1, 360, fullSector=False)
 
@@ -3359,12 +3371,12 @@ class Shape:
         p1: point_like,
         p2: point_like,
         p3: point_like,
-    ) -> fitz.Point:
+    ) -> pymupdf.Point:
         """Draw a curve between points using one control point."""
         kappa = 0.55228474983
-        p1 = fitz.Point(p1)
-        p2 = fitz.Point(p2)
-        p3 = fitz.Point(p3)
+        p1 = pymupdf.Point(p1)
+        p2 = pymupdf.Point(p2)
+        p3 = pymupdf.Point(p3)
         k1 = p1 + (p2 - p1) * kappa
         k2 = p3 + (p2 - p3) * kappa
         return self.draw_bezier(p1, k1, k2, p3)
@@ -3375,10 +3387,10 @@ class Shape:
         point: point_like,
         beta: float,
         fullSector: bool = True,
-    ) -> fitz.Point:
+    ) -> pymupdf.Point:
         """Draw a circle sector."""
-        center = fitz.Point(center)
-        point = fitz.Point(point)
+        center = pymupdf.Point(center)
+        point = pymupdf.Point(point)
         l3 = "%g %g m\n"
         l4 = "%g %g %g %g %g %g c\n"
         l5 = "%g %g l\n"
@@ -3389,30 +3401,30 @@ class Shape:
         while abs(betar) > 2 * math.pi:
             betar += w360  # bring angle below 360 degrees
         if not (self.last_point == point):
-            self.draw_cont += l3 % fitz.JM_TUPLE(point * self.ipctm)
+            self.draw_cont += l3 % pymupdf.JM_TUPLE(point * self.ipctm)
             self.last_point = point
-        Q = fitz.Point(0, 0)  # just make sure it exists
+        Q = pymupdf.Point(0, 0)  # just make sure it exists
         C = center
         P = point
         S = P - C  # vector 'center' -> 'point'
         rad = abs(S)  # circle radius
 
-        if not rad > fitz.EPSILON:
+        if not rad > pymupdf.EPSILON:
             raise ValueError("radius must be positive")
 
         alfa = self.horizontal_angle(center, point)
         while abs(betar) > abs(w90):  # draw 90 degree arcs
             q1 = C.x + math.cos(alfa + w90) * rad
             q2 = C.y + math.sin(alfa + w90) * rad
-            Q = fitz.Point(q1, q2)  # the arc's end point
+            Q = pymupdf.Point(q1, q2)  # the arc's end point
             r1 = C.x + math.cos(alfa + w45) * rad / math.cos(w45)
             r2 = C.y + math.sin(alfa + w45) * rad / math.cos(w45)
-            R = fitz.Point(r1, r2)  # crossing point of tangents
+            R = pymupdf.Point(r1, r2)  # crossing point of tangents
             kappah = (1 - math.cos(w45)) * 4 / 3 / abs(R - Q)
             kappa = kappah * abs(P - Q)
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
-            self.draw_cont += l4 % fitz.JM_TUPLE(
+            self.draw_cont += l4 % pymupdf.JM_TUPLE(
                 list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
             )
 
@@ -3424,26 +3436,26 @@ class Shape:
             beta2 = betar / 2
             q1 = C.x + math.cos(alfa + betar) * rad
             q2 = C.y + math.sin(alfa + betar) * rad
-            Q = fitz.Point(q1, q2)  # the arc's end point
+            Q = pymupdf.Point(q1, q2)  # the arc's end point
             r1 = C.x + math.cos(alfa + beta2) * rad / math.cos(beta2)
             r2 = C.y + math.sin(alfa + beta2) * rad / math.cos(beta2)
-            R = fitz.Point(r1, r2)  # crossing point of tangents
+            R = pymupdf.Point(r1, r2)  # crossing point of tangents
             # kappa height is 4/3 of segment height
             kappah = (1 - math.cos(beta2)) * 4 / 3 / abs(R - Q)  # kappa height
             kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
-            self.draw_cont += l4 % fitz.JM_TUPLE(
+            self.draw_cont += l4 % pymupdf.JM_TUPLE(
                 list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
             )
         if fullSector:
-            self.draw_cont += l3 % fitz.JM_TUPLE(point * self.ipctm)
-            self.draw_cont += l5 % fitz.JM_TUPLE(center * self.ipctm)
-            self.draw_cont += l5 % fitz.JM_TUPLE(Q * self.ipctm)
+            self.draw_cont += l3 % pymupdf.JM_TUPLE(point * self.ipctm)
+            self.draw_cont += l5 % pymupdf.JM_TUPLE(center * self.ipctm)
+            self.draw_cont += l5 % pymupdf.JM_TUPLE(Q * self.ipctm)
         self.last_point = Q
         return self.last_point
 
-    def draw_rect(self, rect: rect_like, *, radius=None) -> fitz.Point:
+    def draw_rect(self, rect: rect_like, *, radius=None) -> pymupdf.Point:
         """Draw a rectangle.
 
         Args:
@@ -3454,9 +3466,9 @@ class Shape:
                 radii. Otherwise, the percentage will be computed from the
                 shorter side. A value of (0.5, 0.5) will draw an ellipse.
         """
-        r = fitz.Rect(rect)
+        r = pymupdf.Rect(rect)
         if radius is None:  # standard rectangle
-            self.draw_cont += "%g %g %g %g re\n" % fitz.JM_TUPLE(
+            self.draw_cont += "%g %g %g %g re\n" % pymupdf.JM_TUPLE(
                 list(r.bl * self.ipctm) + [r.width, r.height]
             )
             self.updateRect(r)
@@ -3494,9 +3506,9 @@ class Shape:
         self.updateRect(r)
         return self.last_point
 
-    def draw_quad(self, quad: quad_like) -> fitz.Point:
+    def draw_quad(self, quad: quad_like) -> pymupdf.Point:
         """Draw a Quad."""
-        q = fitz.Quad(quad)
+        q = pymupdf.Quad(quad)
         return self.draw_polyline([q.ul, q.ll, q.lr, q.ur, q.ul])
 
     def draw_zigzag(
@@ -3504,24 +3516,24 @@ class Shape:
         p1: point_like,
         p2: point_like,
         breadth: float = 2,
-    ) -> fitz.Point:
+    ) -> pymupdf.Point:
         """Draw a zig-zagged line from p1 to p2."""
-        p1 = fitz.Point(p1)
-        p2 = fitz.Point(p2)
+        p1 = pymupdf.Point(p1)
+        p2 = pymupdf.Point(p2)
         S = p2 - p1  # vector start - end
         rad = abs(S)  # distance of points
         cnt = 4 * int(round(rad / (4 * breadth), 0))  # always take full phases
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt  # revised breadth
-        matrix = fitz.Matrix(fitz.util_hor_matrix(p1, p2))  # normalize line to x-axis
+        matrix = pymupdf.Matrix(pymupdf.util_hor_matrix(p1, p2))  # normalize line to x-axis
         i_mat = ~matrix  # get original position
         points = []  # stores edges
         for i in range(1, cnt):
             if i % 4 == 1:  # point "above" connection
-                p = fitz.Point(i, -1) * mb
+                p = pymupdf.Point(i, -1) * mb
             elif i % 4 == 3:  # point "below" connection
-                p = fitz.Point(i, 1) * mb
+                p = pymupdf.Point(i, 1) * mb
             else:  # ignore others
                 continue
             points.append(p * i_mat)
@@ -3533,28 +3545,28 @@ class Shape:
         p1: point_like,
         p2: point_like,
         breadth=2,
-    ) -> fitz.Point:
+    ) -> pymupdf.Point:
         """Draw a squiggly line from p1 to p2."""
-        p1 = fitz.Point(p1)
-        p2 = fitz.Point(p2)
+        p1 = pymupdf.Point(p1)
+        p2 = pymupdf.Point(p2)
         S = p2 - p1  # vector start - end
         rad = abs(S)  # distance of points
         cnt = 4 * int(round(rad / (4 * breadth), 0))  # always take full phases
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt  # revised breadth
-        matrix = fitz.Matrix(fitz.util_hor_matrix(p1, p2))  # normalize line to x-axis
+        matrix = pymupdf.Matrix(pymupdf.util_hor_matrix(p1, p2))  # normalize line to x-axis
         i_mat = ~matrix  # get original position
         k = 2.4142135623765633  # y of draw_curve helper point
 
         points = []  # stores edges
         for i in range(1, cnt):
             if i % 4 == 1:  # point "above" connection
-                p = fitz.Point(i, -k) * mb
+                p = pymupdf.Point(i, -k) * mb
             elif i % 4 == 3:  # point "below" connection
-                p = fitz.Point(i, k) * mb
+                p = pymupdf.Point(i, k) * mb
             else:  # else on connection line
-                p = fitz.Point(i, 0) * mb
+                p = pymupdf.Point(i, 0) * mb
             points.append(p * i_mat)
 
         points = [p1] + points + [p2]
@@ -3601,11 +3613,11 @@ class Shape:
         if not len(text) > 0:
             return 0
 
-        point = fitz.Point(point)
+        point = pymupdf.Point(point)
         try:
             maxcode = max([ord(c) for c in " ".join(text)])
         except Exception:
-            fitz.exception_info()
+            pymupdf.exception_info()
             return 0
 
         # ensure valid 'fontname'
@@ -3616,7 +3628,7 @@ class Shape:
         xref = self.page.insert_font(
             fontname=fname, fontfile=fontfile, encoding=encoding, set_simple=set_simple
         )
-        fontinfo = fitz.CheckFontInfo(self.doc, xref)
+        fontinfo = pymupdf.CheckFontInfo(self.doc, xref)
 
         fontdict = fontinfo[1]
         ordering = fontdict["ordering"]
@@ -3642,16 +3654,16 @@ class Shape:
                 g = None
             else:
                 g = glyphs
-            tab.append(fitz.getTJstr(t, g, simple, ordering))
+            tab.append(pymupdf.getTJstr(t, g, simple, ordering))
         text = tab
 
-        color_str = fitz.ColorCode(color, "c")
-        fill_str = fitz.ColorCode(fill, "f")
+        color_str = pymupdf.ColorCode(color, "c")
+        fill_str = pymupdf.ColorCode(fill, "f")
         if not fill and render_mode == 0:  # ensure fill color when 0 Tr
             fill = color
-            fill_str = fitz.ColorCode(color, "f")
+            fill_str = pymupdf.ColorCode(color, "f")
 
-        morphing = fitz.CheckMorph(morph)
+        morphing = pymupdf.CheckMorph(morph)
         rot = rotate
         if rot % 90 != 0:
             raise ValueError("bad rotate value")
@@ -3671,9 +3683,9 @@ class Shape:
         # setting up for standard rotation directions
         # case rotate = 0
         if morphing:
-            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x + self.x, height - morph[0].y - self.y)
+            m1 = pymupdf.Matrix(1, 0, 0, 1, morph[0].x + self.x, height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % fitz.JM_TUPLE(mat)
+            cm = "%g %g %g %g %g %g cm\n" % pymupdf.JM_TUPLE(mat)
         else:
             cm = ""
         top = height - point.y - self.y  # start of 1st char
@@ -3796,15 +3808,15 @@ class Shape:
         Returns:
             unused or deficit rectangle area (float)
         """
-        rect = fitz.Rect(rect)
+        rect = pymupdf.Rect(rect)
         if rect.is_empty or rect.is_infinite:
             raise ValueError("text box must be finite and not empty")
 
-        color_str = fitz.ColorCode(color, "c")
-        fill_str = fitz.ColorCode(fill, "f")
+        color_str = pymupdf.ColorCode(color, "c")
+        fill_str = pymupdf.ColorCode(fill, "f")
         if fill is None and render_mode == 0:  # ensure fill color for 0 Tr
             fill = color
-            fill_str = fitz.ColorCode(color, "f")
+            fill_str = pymupdf.ColorCode(color, "f")
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
@@ -3844,7 +3856,7 @@ class Shape:
         xref = self.page.insert_font(
             fontname=fname, fontfile=fontfile, encoding=encoding, set_simple=set_simple
         )
-        fontinfo = fitz.CheckFontInfo(self.doc, xref)
+        fontinfo = pymupdf.CheckFontInfo(self.doc, xref)
 
         fontdict = fontinfo[1]
         ordering = fontdict["ordering"]
@@ -3900,12 +3912,12 @@ class Shape:
 
         text = ""  # output buffer
 
-        if fitz.CheckMorph(morph):
-            m1 = fitz.Matrix(
+        if pymupdf.CheckMorph(morph):
+            m1 = pymupdf.Matrix(
                 1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % fitz.JM_TUPLE(mat)
+            cm = "%g %g %g %g %g %g cm\n" % pymupdf.JM_TUPLE(mat)
         else:
             cm = ""
 
@@ -3913,14 +3925,14 @@ class Shape:
         # adjust for text orientation / rotation
         # ---------------------------------------------------------------------
         progr = 1  # direction of line progress
-        c_pnt = fitz.Point(0, fontsize * ascender)  # used for line progress
+        c_pnt = pymupdf.Point(0, fontsize * ascender)  # used for line progress
         if rot == 0:  # normal orientation
             point = rect.tl + c_pnt  # line 1 is 'lheight' below top
             maxwidth = rect.width  # pixels available in one line
             maxheight = rect.height  # available text height
 
         elif rot == 90:  # rotate counter clockwise
-            c_pnt = fitz.Point(fontsize * ascender, 0)  # progress in x-direction
+            c_pnt = pymupdf.Point(fontsize * ascender, 0)  # progress in x-direction
             point = rect.bl + c_pnt  # line 1 'lheight' away from left
             maxwidth = rect.height  # pixels available in one line
             maxheight = rect.width  # available text height
@@ -3928,7 +3940,7 @@ class Shape:
 
         elif rot == 180:  # text upside down
             # progress upwards in y direction
-            c_pnt = -fitz.Point(0, fontsize * ascender)
+            c_pnt = -pymupdf.Point(0, fontsize * ascender)
             point = rect.br + c_pnt  # line 1 'lheight' above bottom
             maxwidth = rect.width  # pixels available in one line
             progr = -1  # subtract lheight for next line
@@ -3937,7 +3949,7 @@ class Shape:
 
         else:  # rotate clockwise (270 or -90)
             # progress from right to left
-            c_pnt = -fitz.Point(fontsize * ascender, 0)
+            c_pnt = -pymupdf.Point(fontsize * ascender, 0)
             point = rect.tr + c_pnt  # line 1 'lheight' left of right
             maxwidth = rect.height  # pixels available in one line
             progr = -1  # subtract lheight for next line
@@ -4010,11 +4022,11 @@ class Shape:
         text_height = lheight * lb_count - descender * fontsize
 
         more = text_height - maxheight  # difference to height limit
-        if more > fitz.EPSILON:  # landed too much outside rect
+        if more > pymupdf.EPSILON:  # landed too much outside rect
             return (-1) * more  # return deficit, don't output
 
         more = abs(more)
-        if more < fitz.EPSILON:
+        if more < pymupdf.EPSILON:
             more = 0  # don't bother with epsilons
         nres = "\nq\n%s%sBT\n" % (bdc, alpha) + cm  # initialize output buffer
         templ = "1 0 0 1 %g %g Tm /%s %g Tf "
@@ -4026,14 +4038,14 @@ class Shape:
             pnt = point + c_pnt * (i * lheight_factor)  # text start of line
             if align == 1:  # center: right shift by half width
                 if rot in (0, 180):
-                    pnt = pnt + fitz.Point(pl / 2, 0) * progr
+                    pnt = pnt + pymupdf.Point(pl / 2, 0) * progr
                 else:
-                    pnt = pnt - fitz.Point(0, pl / 2) * progr
+                    pnt = pnt - pymupdf.Point(0, pl / 2) * progr
             elif align == 2:  # right: right shift by full width
                 if rot in (0, 180):
-                    pnt = pnt + fitz.Point(pl, 0) * progr
+                    pnt = pnt + pymupdf.Point(pl, 0) * progr
                 else:
-                    pnt = pnt - fitz.Point(0, pl) * progr
+                    pnt = pnt - pymupdf.Point(0, pl) * progr
             elif align == 3:  # justify
                 spaces = t.count(" ")  # number of spaces in line
                 if spaces > 0 and just_tab[i]:  # if any, and we may justify
@@ -4065,7 +4077,7 @@ class Shape:
                 nres += color_str
             if fill is not None:
                 nres += fill_str
-            nres += "%sTJ\n" % fitz.getTJstr(t, tj_glyphs, simple, ordering)
+            nres += "%sTJ\n" % pymupdf.getTJstr(t, tj_glyphs, simple, ordering)
 
         nres += "ET\n%sQ\n" % emc
 
@@ -4104,8 +4116,8 @@ class Shape:
             width = 0
         # if color == None and fill == None:
         #     raise ValueError("at least one of 'color' or 'fill' must be given")
-        color_str = fitz.ColorCode(color, "c")  # ensure proper color string
-        fill_str = fitz.ColorCode(fill, "f")  # ensure proper fill string
+        color_str = pymupdf.ColorCode(color, "c")  # ensure proper color string
+        fill_str = pymupdf.ColorCode(fill, "f")  # ensure proper fill string
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
@@ -4152,12 +4164,12 @@ class Shape:
             self.draw_cont += "S\n"
 
         self.draw_cont += emc
-        if fitz.CheckMorph(morph):
-            m1 = fitz.Matrix(
+        if pymupdf.CheckMorph(morph):
+            m1 = pymupdf.Matrix(
                 1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
-            self.draw_cont = "%g %g %g %g %g %g cm\n" % fitz.JM_TUPLE(mat) + self.draw_cont
+            self.draw_cont = "%g %g %g %g %g %g cm\n" % pymupdf.JM_TUPLE(mat) + self.draw_cont
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
@@ -4170,7 +4182,7 @@ class Shape:
         The argument controls whether data appear in foreground (default)
         or background.
         """
-        fitz.CheckParent(self.page)  # doc may have died meanwhile
+        pymupdf.CheckParent(self.page)  # doc may have died meanwhile
         self.totalcont += self.text_cont
         self.totalcont = self.totalcont.encode()
 
@@ -4178,7 +4190,7 @@ class Shape:
             if overlay:
                 self.page.wrap_contents()  # ensure a balanced graphics state
             # make /Contents object with dummy stream
-            xref = fitz.TOOLS._insert_contents(self.page, b" ", overlay)
+            xref = pymupdf.TOOLS._insert_contents(self.page, b" ", overlay)
             # update it with potential compression
             self.doc.update_stream(xref, self.totalcont)
 
@@ -4190,7 +4202,7 @@ class Shape:
 
 
 def apply_redactions(
-    page: fitz.Page, images: int = 2, graphics: int = 1, text: int = 0
+    page: pymupdf.Page, images: int = 2, graphics: int = 1, text: int = 0
 ) -> bool:
     """Apply the redaction annotations of the page.
 
@@ -4227,15 +4239,15 @@ def apply_redactions(
             A rectangle to use instead of the annot rectangle.
         """
         exception_types = (ValueError, mupdf.FzErrorBase)
-        if fitz.mupdf_version_tuple < (1, 24):
+        if pymupdf.mupdf_version_tuple < (1, 24):
             exception_types = ValueError
         if not new_text:
             return annot_rect
         try:
-            text_width = fitz.get_text_length(new_text, font, fsize)
+            text_width = pymupdf.get_text_length(new_text, font, fsize)
         except exception_types:  # unsupported font
             if g_exceptions_verbose:
-                fitz.exception_info()
+                pymupdf.exception_info()
             return annot_rect
         line_height = fsize * 1.2
         limit = annot_rect.width
@@ -4247,7 +4259,7 @@ def apply_redactions(
         r.y0 = y
         return r
 
-    fitz.CheckParent(page)
+    pymupdf.CheckParent(page)
     doc = page.parent
     if doc.is_encrypted or doc.is_closed:
         raise ValueError("document closed or encrypted")
@@ -4256,7 +4268,7 @@ def apply_redactions(
 
     redact_annots = []  # storage of annot values
     for annot in page.annots(
-        types=(fitz.PDF_ANNOT_REDACT,)  # pylint: disable=no-member
+        types=(pymupdf.PDF_ANNOT_REDACT,)  # pylint: disable=no-member
     ):
         # loop redactions
         redact_annots.append(annot._get_redact_values())  # save annot values
@@ -4306,7 +4318,7 @@ def apply_redactions(
 # Acrobat 'sanitize' function
 # ------------------------------------------------------------------------------
 def scrub(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     attached_files: bool = True,
     clean_pages: bool = True,
     embedded_files: bool = True,
@@ -4399,7 +4411,7 @@ def scrub(
                 annot.update_file(buffer=b" ")  # set file content to empty
             if reset_responses:
                 annot.delete_responses()
-            if annot.type[0] == fitz.PDF_ANNOT_REDACT:  # pylint: disable=no-member
+            if annot.type[0] == pymupdf.PDF_ANNOT_REDACT:  # pylint: disable=no-member
                 found_redacts = True
 
         if redactions and found_redacts:
@@ -4475,11 +4487,11 @@ def _show_fz_text( text):
     return f'num_spans={num_spans} num_chars={num_chars}'
 
 def fill_textbox(
-    writer: fitz.TextWriter,
+    writer: pymupdf.TextWriter,
     rect: rect_like,
     text: typing.Union[str, list],
     pos: point_like = None,
-    font: typing.Optional[fitz.Font] = None,
+    font: typing.Optional[pymupdf.Font] = None,
     fontsize: float = 11,
     lineheight: OptFloat = None,
     align: int = 0,
@@ -4490,22 +4502,22 @@ def fill_textbox(
     """Fill a rectangle with text.
 
     Args:
-        writer: fitz.TextWriter object (= "self")
+        writer: pymupdf.TextWriter object (= "self")
         rect: rect-like to receive the text.
         text: string or list/tuple of strings.
         pos: point-like start position of first word.
-        font: fitz.Font object (default fitz.Font('helv')).
+        font: pymupdf.Font object (default pymupdf.Font('helv')).
         fontsize: the fontsize.
         lineheight: overwrite the font property
         align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
         warn: (bool) text overflow action: none, warn, or exception
         right_to_left: (bool) indicate right-to-left language.
     """
-    rect = fitz.Rect(rect)
+    rect = pymupdf.Rect(rect)
     if rect.is_empty:
         raise ValueError("fill rect must not empty.")
-    if type(font) is not fitz.Font:
-        font = fitz.Font("helv")
+    if type(font) is not pymupdf.Font:
+        font = pymupdf.Font("helv")
 
     def textlen(x):
         """Return length of a string."""
@@ -4587,16 +4599,16 @@ def fill_textbox(
 
     # starting point of text
     if pos is not None:
-        pos = fitz.Point(pos)
+        pos = pymupdf.Point(pos)
     else:  # default is just below rect top-left
         pos = rect.tl + (tolerance, fontsize * asc)
     if pos not in rect:
         raise ValueError("Text must start in rectangle.")
 
     # calculate displacement factor for alignment
-    if align == fitz.TEXT_ALIGN_CENTER:
+    if align == pymupdf.TEXT_ALIGN_CENTER:
         factor = 0.5
-    elif align == fitz.TEXT_ALIGN_RIGHT:
+    elif align == pymupdf.TEXT_ALIGN_RIGHT:
         factor = 1.0
     else:
         factor = 0
@@ -4663,18 +4675,18 @@ def fill_textbox(
     if nlines > max_lines:
         msg = "Only fitting %i of %i lines." % (max_lines, nlines)
         if warn is True:
-            fitz.message("Warning: " + msg)
+            pymupdf.message("Warning: " + msg)
         elif warn is False:
             raise ValueError(msg)
 
-    start = fitz.Point()
+    start = pymupdf.Point()
     no_justify += [len(new_lines) - 1]  # no justifying of last line
     for i in range(max_lines):
         try:
             line, tl = new_lines.pop(0)
         except IndexError:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    fitz.exception_info()
+            if g_exceptions_verbose:    pymupdf.exception_info()
             break
 
         if right_to_left:  # Arabic, Hebrew
@@ -4683,7 +4695,7 @@ def fill_textbox(
         if i == 0:  # may have different start for first line
             start = pos
 
-        if align == fitz.TEXT_ALIGN_JUSTIFY and i not in no_justify and tl < std_width:
+        if align == pymupdf.TEXT_ALIGN_JUSTIFY and i not in no_justify and tl < std_width:
             output_justify(start, line)
             start.x = std_start
             start.y += LINEHEIGHT
@@ -4702,7 +4714,7 @@ def fill_textbox(
 # ------------------------------------------------------------------------
 # Optional Content functions
 # ------------------------------------------------------------------------
-def get_oc(doc: fitz.Document, xref: int) -> int:
+def get_oc(doc: pymupdf.Document, xref: int) -> int:
     """Return optional content object xref for an image or form xobject.
 
     Args:
@@ -4720,7 +4732,7 @@ def get_oc(doc: fitz.Document, xref: int) -> int:
     return rc
 
 
-def set_oc(doc: fitz.Document, xref: int, oc: int) -> None:
+def set_oc(doc: pymupdf.Document, xref: int, oc: int) -> None:
     """Attach optional content object to image or form xobject.
 
     Args:
@@ -4744,7 +4756,7 @@ def set_oc(doc: fitz.Document, xref: int, oc: int) -> None:
 
 
 def set_ocmd(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     xref: int = 0,
     ocgs: typing.Union[list, None] = None,
     policy: OptStr = None,
@@ -4817,7 +4829,7 @@ def set_ocmd(
     return xref
 
 
-def get_ocmd(doc: fitz.Document, xref: int) -> dict:
+def get_ocmd(doc: pymupdf.Document, xref: int) -> dict:
     """Return the definition of an OCMD (optional content membership dictionary).
 
     Recognizes PDF dict keys /OCGs (PDF array of OCGs), /P (policy string) and
@@ -4879,8 +4891,8 @@ def get_ocmd(doc: fitz.Document, xref: int) -> dict:
         try:
             ve = json.loads(ve)
         except Exception:
-            fitz.exception_info()
-            fitz.message(f"bad /VE key: {ve!r}")
+            pymupdf.exception_info()
+            pymupdf.message(f"bad /VE key: {ve!r}")
             raise
     return {"xref": xref, "ocgs": ocgs, "policy": policy, "ve": ve}
 
@@ -5129,7 +5141,7 @@ def set_page_labels(doc, labels):
 # End of Page Label Code -------------------------------------------------
 
 
-def has_links(doc: fitz.Document) -> bool:
+def has_links(doc: pymupdf.Document) -> bool:
     """Check whether there are links on any page."""
     if doc.is_closed:
         raise ValueError("document closed")
@@ -5137,12 +5149,12 @@ def has_links(doc: fitz.Document) -> bool:
         raise ValueError("is no PDF")
     for i in range(doc.page_count):
         for item in doc.page_annot_xrefs(i):
-            if item[1] == fitz.PDF_ANNOT_LINK:  # pylint: disable=no-member
+            if item[1] == pymupdf.PDF_ANNOT_LINK:  # pylint: disable=no-member
                 return True
     return False
 
 
-def has_annots(doc: fitz.Document) -> bool:
+def has_annots(doc: pymupdf.Document) -> bool:
     """Check whether there are annotations on any page."""
     if doc.is_closed:
         raise ValueError("document closed")
@@ -5151,7 +5163,7 @@ def has_annots(doc: fitz.Document) -> bool:
     for i in range(doc.page_count):
         for item in doc.page_annot_xrefs(i):
             # pylint: disable=no-member
-            if not (item[1] == fitz.PDF_ANNOT_LINK or item[1] == fitz.PDF_ANNOT_WIDGET):
+            if not (item[1] == pymupdf.PDF_ANNOT_LINK or item[1] == pymupdf.PDF_ANNOT_WIDGET):
                 return True
     return False
 
@@ -5159,7 +5171,7 @@ def has_annots(doc: fitz.Document) -> bool:
 # -------------------------------------------------------------------
 # Functions to recover the quad contained in a text extraction bbox
 # -------------------------------------------------------------------
-def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> fitz.Quad:
+def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> pymupdf.Quad:
     """Compute the quad located inside the bbox.
 
     The bbox may be any of the resp. tuples occurring inside the given span.
@@ -5174,8 +5186,8 @@ def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> fitz.Quad:
     if line_dir is None:
         line_dir = span["dir"]
     cos, sin = line_dir
-    bbox = fitz.Rect(bbox)  # make it a rect
-    if fitz.TOOLS.set_small_glyph_heights():  # ==> just fontsize as height
+    bbox = pymupdf.Rect(bbox)  # make it a rect
+    if pymupdf.TOOLS.set_small_glyph_heights():  # ==> just fontsize as height
         d = 1
     else:
         d = span["ascender"] - span["descender"]
@@ -5206,10 +5218,10 @@ def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> fitz.Quad:
         ur = bbox.br - (0, hc)
         ll = bbox.tl + (0, hc)
         lr = bbox.br - (hs, 0)
-    return fitz.Quad(ul, ur, ll, lr)
+    return pymupdf.Quad(ul, ur, ll, lr)
 
 
-def recover_quad(line_dir: tuple, span: dict) -> fitz.Quad:
+def recover_quad(line_dir: tuple, span: dict) -> pymupdf.Quad:
     """Recover the quadrilateral of a text span.
 
     Args:
@@ -5225,7 +5237,7 @@ def recover_quad(line_dir: tuple, span: dict) -> fitz.Quad:
     return recover_bbox_quad(line_dir, span, span["bbox"])
 
 
-def recover_line_quad(line: dict, spans: list = None) -> fitz.Quad:
+def recover_line_quad(line: dict, spans: list = None) -> pymupdf.Quad:
     """Calculate the line quad for 'dict' / 'rawdict' text extractions.
 
     The lower quad points are those of the first, resp. last span quad.
@@ -5236,7 +5248,7 @@ def recover_line_quad(line: dict, spans: list = None) -> fitz.Quad:
     Args:
         spans: (list, optional) sub-list of spans to consider.
     Returns:
-        fitz.Quad covering selected spans.
+        pymupdf.Quad covering selected spans.
     """
     if spans is None:  # no sub-selection
         spans = line["spans"]  # all spans
@@ -5253,24 +5265,24 @@ def recover_line_quad(line: dict, spans: list = None) -> fitz.Quad:
     line_ll = q0.ll  # lower-left of line quad
     line_lr = q1.lr  # lower-right of line quad
 
-    mat0 = fitz.planish_line(line_ll, line_lr)
+    mat0 = pymupdf.planish_line(line_ll, line_lr)
 
     # map base line to x-axis such that line_ll goes to (0, 0)
     x_lr = line_lr * mat0
 
-    small = fitz.TOOLS.set_small_glyph_heights()  # small glyph heights?
+    small = pymupdf.TOOLS.set_small_glyph_heights()  # small glyph heights?
 
     h = max(
         [s["size"] * (1 if small else (s["ascender"] - s["descender"])) for s in spans]
     )
 
-    line_rect = fitz.Rect(0, -h, x_lr.x, 0)  # line rectangle
+    line_rect = pymupdf.Rect(0, -h, x_lr.x, 0)  # line rectangle
     line_quad = line_rect.quad  # make it a quad and:
     line_quad *= ~mat0
     return line_quad
 
 
-def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> fitz.Quad:
+def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> pymupdf.Quad:
     """Calculate the span quad for 'dict' / 'rawdict' text extractions.
 
     Notes:
@@ -5285,7 +5297,7 @@ def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> fitz.Q
         span: (dict) the span.
         chars: (list, optional) sub-list of characters to consider.
     Returns:
-        fitz.Quad covering selected characters.
+        pymupdf.Quad covering selected characters.
     """
     if line_dir is None:  # must be a span from get_texttrace()
         line_dir = span["dir"]
@@ -5302,20 +5314,20 @@ def recover_span_quad(line_dir: tuple, span: dict, chars: list = None) -> fitz.Q
 
     span_ll = q0.ll  # lower-left of span quad
     span_lr = q1.lr  # lower-right of span quad
-    mat0 = fitz.planish_line(span_ll, span_lr)
+    mat0 = pymupdf.planish_line(span_ll, span_lr)
     # map base line to x-axis such that span_ll goes to (0, 0)
     x_lr = span_lr * mat0
 
-    small = fitz.TOOLS.set_small_glyph_heights()  # small glyph heights?
+    small = pymupdf.TOOLS.set_small_glyph_heights()  # small glyph heights?
     h = span["size"] * (1 if small else (span["ascender"] - span["descender"]))
 
-    span_rect = fitz.Rect(0, -h, x_lr.x, 0)  # line rectangle
+    span_rect = pymupdf.Rect(0, -h, x_lr.x, 0)  # line rectangle
     span_quad = span_rect.quad  # make it a quad and:
     span_quad *= ~mat0  # rotate back and shift back
     return span_quad
 
 
-def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> fitz.Quad:
+def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> pymupdf.Quad:
     """Recover the quadrilateral of a text character.
 
     This requires the "rawdict" option of text extraction.
@@ -5334,9 +5346,9 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> fitz.Quad:
     if type(span) is not dict:
         raise ValueError("bad span argument")
     if type(char) is dict:
-        bbox = fitz.Rect(char["bbox"])
+        bbox = pymupdf.Rect(char["bbox"])
     elif type(char) is tuple:
-        bbox = fitz.Rect(char[3])
+        bbox = pymupdf.Rect(char[3])
     else:
         raise ValueError("bad span argument")
 
@@ -5346,7 +5358,7 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> fitz.Quad:
 # -------------------------------------------------------------------
 # Building font subsets using fontTools
 # -------------------------------------------------------------------
-def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = False) -> None:
+def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = False) -> None:
     """Build font subsets of a PDF. Requires package 'fontTools'.
 
     Eligible fonts are potentially replaced by smaller versions. Page text is
@@ -5448,8 +5460,8 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = Fal
         try:
             import fontTools.subset as fts
         except ImportError:
-            if g_exceptions_verbose:    fitz.exception_info()
-            fitz.message("This method requires fontTools to be installed.")
+            if g_exceptions_verbose:    pymupdf.exception_info()
+            pymupdf.message("This method requires fontTools to be installed.")
             raise
         import tempfile
         tmp_dir = tempfile.gettempdir()
@@ -5491,27 +5503,27 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = Fal
             pass
         try:  # invoke fontTools subsetter
             fts.main(args)
-            font = fitz.Font(fontfile=newfont_path)
+            font = pymupdf.Font(fontfile=newfont_path)
             new_buffer = font.buffer  # subset font binary
             if font.glyph_count == 0:  # intercept empty font
                 new_buffer = None
         except Exception:
-            fitz.exception_info()
+            pymupdf.exception_info()
             new_buffer = None
         try:
             os.remove(uncfile_path)
         except Exception:
-            fitz.exception_info()
+            pymupdf.exception_info()
             pass
         try:
             os.remove(oldfont_path)
         except Exception:
-            fitz.exception_info()
+            pymupdf.exception_info()
             pass
         try:
             os.remove(newfont_path)
         except Exception:
-            fitz.exception_info()
+            pymupdf.exception_info()
             pass
         return new_buffer
 
@@ -5587,7 +5599,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = Fal
                 xref_set.add(font_xref)
                 for name in names:
                     name_set.add(name)
-                font = fitz.Font(fontbuffer=fontbuffer)
+                font = pymupdf.Font(fontbuffer=fontbuffer)
                 name_set.add(font.name)
                 del font
                 font_buffers[fontbuffer] = (name_set, xref_set, subsets)
@@ -5604,7 +5616,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = Fal
     repl_fontnames(doc)  # populate font information
     if not font_buffers:  # nothing found to do
         if verbose:
-            fitz.message(f'No fonts to subset.')
+            pymupdf.message(f'No fonts to subset.')
         return 0
 
     old_fontsize = 0
@@ -5636,10 +5648,10 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = Fal
         if new_buffer is None or len(new_buffer) >= len(old_buffer):
             # subset was not created or did not get smaller
             if verbose:
-                fitz.message(f'Cannot subset {fontname!r}.')
+                pymupdf.message(f'Cannot subset {fontname!r}.')
             continue
         if verbose:
-            fitz.message(f"Built subset of font {fontname!r}.")
+            pymupdf.message(f"Built subset of font {fontname!r}.")
         val = doc._insert_font(fontbuffer=new_buffer)  # store subset font in PDF
         new_xref = val[0]  # get its xref
         set_subset_fontname(new_xref)  # tag fontname as subset font
@@ -5666,7 +5678,7 @@ def subset_fonts(doc: fitz.Document, verbose: bool = False, fallback: bool = Fal
 # -------------------------------------------------------------------
 # Copy XREF object to another XREF
 # -------------------------------------------------------------------
-def xref_copy(doc: fitz.Document, source: int, target: int, *, keep: list = None) -> None:
+def xref_copy(doc: pymupdf.Document, source: int, target: int, *, keep: list = None) -> None:
     """Copy a PDF dictionary object to another one given their xref numbers.
 
     Args:
