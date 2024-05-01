@@ -2,6 +2,9 @@
 
 **PyMuPDF** is a high performance **Python** library for data extraction, analysis, conversion & manipulation of [PDF (and other) documents](https://pymupdf.readthedocs.io/en/latest/the-basics.html#supported-file-types).
 
+# Community
+Join us on **Discord** here: [#pymupdf](https://discord.gg/TSpYGBW4eq)
+
 
 # Installation
 
@@ -54,5 +57,4 @@ Full documentation can be found on [pymupdf.readthedocs.io](https://pymupdf.read
 
 
 
-# Contact
-Join us on **Discord** here: [#pymupdf](https://discord.gg/TSpYGBW4eq)
+
