@@ -2,14 +2,18 @@ Change Log
 ==========
 
 
-**Changes in version 1.24.3 (2024-04-xx)**
+**Changes in version 1.24.3 ()**
 
+*
+  The Python module is now called `pymupdf`. `fitz` is still supported for
+  backwards compatibility.
 
 * Fixed issues:
 
   * **Fixed** `3402 <https://github.com/pymupdf/PyMuPDF/issues/3402>`_: Cannot add Widgets containing inter-field-calculation JavaScript
-
   * **Fixed** `3379 <https://github.com/pymupdf/PyMuPDF/issues/3379>`_: Documentation mismatch for get_text_blocks return value order.
+  * **Fixed** `3414 <https://github.com/pymupdf/PyMuPDF/issues/3414>`_: missing attribute set_dpi()
+  * **Fixed** `3381 <https://github.com/pymupdf/PyMuPDF/issues/3381>`_: Contents stream contains floats in scientific notation
 
 * Other:
 
@@ -17,6 +21,7 @@ Change Log
 
     * `Page.remove_rotation()`: new, set page rotation to zero while keeping appearance.
 
+  * Fixed some problems when checking for PDF properties.
 
 
 **Changes in version 1.24.2 (2024-04-17)**
