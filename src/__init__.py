@@ -173,7 +173,27 @@ else:
         import mupdf
     mupdf.reinit_singlethreaded()
 
+def _int_rc(text):
+    '''
+    Converts string to int, ignoring trailing 'rc...'.
+    '''
+    rc = text.find('rc')
+    if rc >= 0:
+        text = text[:rc]
+    return int(text)
+
+VersionFitz = mupdf.FZ_VERSION # MuPDF version.
+VersionBind = "1.24.2" # PyMuPDF version.
+VersionDate = "2024-04-17 00:00:01"
+VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
+version = (VersionBind, VersionFitz, VersionDate2)
+pymupdf_version_tuple = tuple( [_int_rc(i) for i in VersionBind.split('.')])
+
 mupdf_version_tuple = (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH)
+
+assert mupdf_version_tuple == tuple([_int_rc(i) for i in VersionFitz.split('.')]), \
+        f'Inconsistent MuPDF version numbers: {mupdf_version_tuple=} != {VersionFitz=}'
+
 
 # String formatting.
 
@@ -21647,22 +21667,6 @@ TextWriter.fill_textbox     = utils.fill_textbox
 
 class FitzDeprecation(DeprecationWarning):
     pass
-
-def int_rc(text):
-    '''
-    Converts string to int, ignoring trailing 'rc...'.
-    '''
-    rc = text.find('rc')
-    if rc >= 0:
-        text = text[:rc]
-    return int(text)
-
-VersionFitz = "1.24.1" # MuPDF version.
-VersionBind = "1.24.2" # PyMuPDF version.
-VersionDate = "2024-04-17 00:00:01"
-VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
-version = (VersionBind, VersionFitz, VersionDate2)
-pymupdf_version_tuple = tuple( [int_rc(i) for i in VersionBind.split('.')])
 
 def restore_aliases():
     warnings.filterwarnings( "once", category=FitzDeprecation)
