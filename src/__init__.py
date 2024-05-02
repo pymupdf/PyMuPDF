@@ -175,6 +175,30 @@ else:
 
 mupdf_version_tuple = (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH)
 
+# String formatting.
+
+def _format_g(value, *, fmt='%g'):
+    '''
+    Returns `value` formatted with mupdf.fz_format_double() if available,
+    otherwise with Python's `%`.
+
+    If `value` is a list or tuple, we return a space-separated string of
+    formatted values.
+    '''
+    if isinstance(value, (list, tuple)):
+        ret = ''
+        for v in value:
+            if ret:
+                ret += ' '
+            ret += _format_g(v, fmt=fmt)
+        return ret
+    else:
+        if mupdf_version_tuple >= (1, 24, 2):
+            return mupdf.fz_format_double(fmt, value)
+        else:
+            return fmt % value
+        
+format_g = _format_g
 
 # Names required by class method typing annotations.
 OptBytes = typing.Optional[typing.ByteString]
@@ -1064,12 +1088,8 @@ class Annot:
             if hasattr(stroke, "__float__"):
                 stroke = [float(stroke)]
             CheckColor(stroke)
-            if len(stroke) == 1:
-                s = "[%g]" % stroke[0]
-            elif len(stroke) == 3:
-                s = "[%g %g %g]" % tuple(stroke)
-            else:
-                s = "[%g %g %g %g]" % tuple(stroke)
+            assert len(stroke) in (1, 3, 4)
+            s = f"[{_format_g(stroke)}]"
             doc.xref_set_key(self.xref, "C", s)
 
         if fill and self.type[0] not in fill_annots:
@@ -1081,12 +1101,8 @@ class Annot:
             if hasattr(fill, "__float__"):
                 fill = [float(fill)]
             CheckColor(fill)
-            if len(fill) == 1:
-                s = "[%g]" % fill[0]
-            elif len(fill) == 3:
-                s = "[%g %g %g]" % tuple(fill)
-            else:
-                s = "[%g %g %g %g]" % tuple(fill)
+            assert len(fill) in (1, 3, 4)
+            s = f"[{_format_g(fill)}]"
             doc.xref_set_key(self.xref, "IC", s)
 
     def set_flags(self, flags):
@@ -1415,7 +1431,7 @@ class Annot:
 
             if bwidth > 0 or bstroke != b"":
                 ap_updated = True
-                ntab = [b"%g w" % bwidth] if bwidth > 0 else []
+                ntab = [_format_g(bwidth).encode() + b" w"] if bwidth > 0 else []
                 for line in ap_tab:
                     if line.endswith(b"w"):
                         continue
@@ -1433,7 +1449,7 @@ class Annot:
             w, h = self.rect.width, self.rect.height
             if rotate in (90, 270) or not (apnmat.b == apnmat.c == 0):
                 w, h = h, w
-            re = b"0 0 %g %g re" % (w, h)
+            re = b"0 0 " + _format_g((w, h)).encode() + b" re"
             ap = re + b"\nW\nn\n" + ap
             ope = None
             fill_string = color_string(fill, "f")
@@ -1442,7 +1458,7 @@ class Annot:
             stroke_string = color_string(border_color, "c")
             if stroke_string and bwidth > 0:
                 ope = b"S"
-                bwidth = b"%g w\n" % bwidth
+                bwidth = _format_g(bwidth).encode() + b" w\n"
             else:
                 bwidth = stroke_string = b""
             if fill_string and stroke_string:
@@ -6457,12 +6473,8 @@ class Link:
         if hasattr(stroke, "__float__"):
             stroke = [float(stroke)]
         CheckColor(stroke)
-        if len(stroke) == 1:
-            s = "[%g]" % stroke[0]
-        elif len(stroke) == 3:
-            s = "[%g %g %g]" % tuple(stroke)
-        else:
-            s = "[%g %g %g %g]" % tuple(stroke)
+        assert len(stroke) in (1, 3, 4)
+        s = f"[{_format_g(stroke)}]"
         doc.xref_set_key(self.xref, "C", s)
 
     def set_flags(self, flags):
@@ -6786,7 +6798,7 @@ class linkDest:
             return ret
         
         if rlink and not self.uri.startswith("#"):
-            self.uri = "#page=%i&zoom=0,%g,%g" % (rlink[0] + 1, rlink[1], rlink[2])
+            self.uri = f"#page={rlink[0] + 1}&zoom=0,{_format_g(rlink[1])},{_format_g(rlink[2])}"
         if obj.is_external:
             self.page = -1
             self.kind = LINK_URI
@@ -7430,7 +7442,7 @@ class Page:
         h = rect[3]-rect[1]
         if rotate in (90, -90, 270):
             w, h = h, w
-        re = b"0 0 %g %g re" % (w, h)
+        re = f"0 0 {_format_g((w, h))} re".encode()
         ap = re + b"\nW\nn\n" + ap
         ope = None
         bwidth = b""
@@ -7785,7 +7797,6 @@ class Page:
         h = height
         img_xref = xref
         rc_digest = 0
-        template = "\nq\n%g %g %g %g %g %g cm\n/%s Do\nQ\n"
 
         do_process_pixmap = 1
         do_process_stream = 1
@@ -7984,9 +7995,7 @@ class Page:
             mat = calc_image_matrix(w, h, clip, rotate, keep_proportion)
             mupdf.pdf_dict_puts(xobject, _imgname, ref)
             nres = mupdf.fz_new_buffer(50)
-            #mupdf.fz_append_printf(nres, template, mat.a, mat.b, mat.c, mat.d, mat.e, mat.f, _imgname)
-            # fixme: this does not use fz_append_printf()'s special handling of %g etc.
-            s = template % (mat.a, mat.b, mat.c, mat.d, mat.e, mat.f, _imgname)
+            s = f"\nq\n{_format_g((mat.a, mat.b, mat.c, mat.d, mat.e, mat.f))} cm\n/{_imgname} Do\nQ\n"
             #s = s.replace('\n', '\r\n')
             mupdf.fz_append_string(nres, s)
             JM_insert_contents(pdf, page.obj(), nres, overlay)
@@ -8106,7 +8115,7 @@ class Page:
         if not (mb.x0 <= rect.x0 < rect.x1 <= mb.x1 and mb.y0 <= rect.y0 < rect.y1 <= mb.y1):
             raise ValueError(f"{boxtype} not in MediaBox")
 
-        doc.xref_set_key(self.xref, boxtype, "[%g %g %g %g]" % tuple(rect))
+        doc.xref_set_key(self.xref, boxtype, f"[{_format_g(tuple(rect))}]")
 
     def _set_resource_property(self, name, xref):
         page = self._pdf_page()
@@ -11251,10 +11260,10 @@ class Shape:
         p3 = Point(p3)
         p4 = Point(p4)
         if not (self.last_point == p1):
-            self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
-        self.draw_cont += "%g %g %g %g %g %g c\n" % JM_TUPLE(
-            list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm)
-        )
+            args = JM_TUPLE(p1 * self.ipctm)
+            self.draw_cont += f"{_format_g(args)} m\n"
+        args = JM_TUPLE(list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm))
+        self.draw_cont += f"{_format_g(args)} c\n"
         self.updateRect(p1)
         self.updateRect(p2)
         self.updateRect(p3)
@@ -11290,11 +11299,11 @@ class Shape:
         p1 = Point(p1)
         p2 = Point(p2)
         if not (self.last_point == p1):
-            self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
+            self.draw_cont += _format_g(JM_TUPLE(p1 * self.ipctm)) + " m\n"
             self.last_point = p1
             self.updateRect(p1)
 
-        self.draw_cont += "%g %g l\n" % JM_TUPLE(p2 * self.ipctm)
+        self.draw_cont += _format_g(JM_TUPLE(p2 * self.ipctm)) + " l\n"
         self.updateRect(p2)
         self.last_point = p2
         return self.last_point
@@ -11313,7 +11322,7 @@ class Shape:
         mb = q.ll + (q.lr - q.ll) * 0.5
         ml = q.ul + (q.ll - q.ul) * 0.5
         if not (self.last_point == ml):
-            self.draw_cont += "%g %g m\n" % JM_TUPLE(ml * self.ipctm)
+            self.draw_cont += _format_g(JM_TUPLE(ml * self.ipctm)) + " m\n"
             self.last_point = ml
         self.draw_curve(ml, q.ll, mb)
         self.draw_curve(mb, q.lr, mr)
@@ -11328,10 +11337,10 @@ class Shape:
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.last_point == Point(p)):
-                    self.draw_cont += "%g %g m\n" % JM_TUPLE(Point(p) * self.ipctm)
+                    self.draw_cont += _format_g(JM_TUPLE(Point(p) * self.ipctm)) + " m\n"
                     self.last_point = Point(p)
             else:
-                self.draw_cont += "%g %g l\n" % JM_TUPLE(Point(p) * self.ipctm)
+                self.draw_cont += _format_g(JM_TUPLE(Point(p) * self.ipctm)) + " l\n"
             self.updateRect(p)
 
         self.last_point = Point(points[-1])
@@ -11345,9 +11354,9 @@ class Shape:
     def draw_rect(self, rect: rect_like):# -> Point:
         """Draw a rectangle."""
         r = Rect(rect)
-        self.draw_cont += "%g %g %g %g re\n" % JM_TUPLE(
-            list(r.bl * self.ipctm) + [r.width, r.height]
-        )
+        args = JM_TUPLE(list(r.bl * self.ipctm) + [r.width, r.height])
+        self.draw_cont += _format_g(args) + " re\n"
+            
         self.updateRect(r)
         self.last_point = r.tl
         return self.last_point
@@ -11362,9 +11371,12 @@ class Shape:
         """Draw a circle sector."""
         center = Point(center)
         point = Point(point)
-        l3 = "%g %g m\n"
-        l4 = "%g %g %g %g %g %g c\n"
-        l5 = "%g %g l\n"
+        def l3(a, b):
+            return _format_g((a, b)) + " m\n"
+        def l4(a, b, c, d, e, f):
+            return _format_g((a, b, c, d, e, f)) + " c\n"
+        def l5(a, b):
+            return _format_g((a, b)) + " l\n"
         betar = math.radians(-beta)
         w360 = math.radians(math.copysign(360, betar)) * (-1)
         w90 = math.radians(math.copysign(90, betar))
@@ -11372,7 +11384,7 @@ class Shape:
         while abs(betar) > 2 * math.pi:
             betar += w360  # bring angle below 360 degrees
         if not (self.last_point == point):
-            self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
+            self.draw_cont += l3(JM_TUPLE(point * self.ipctm))
             self.last_point = point
         Q = Point(0, 0)  # just make sure it exists
         C = center
@@ -11395,9 +11407,9 @@ class Shape:
             kappa = kappah * abs(P - Q)
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
-            self.draw_cont += l4 % JM_TUPLE(
+            self.draw_cont += l4(JM_TUPLE(
                 list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
-            )
+            ))
 
             betar -= w90  # reduce parm angle by 90 deg
             alfa += w90  # advance start angle by 90 deg
@@ -11416,13 +11428,13 @@ class Shape:
             kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
-            self.draw_cont += l4 % JM_TUPLE(
+            self.draw_cont += l4(JM_TUPLE(
                 list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
-            )
+            ))
         if fullSector:
-            self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
-            self.draw_cont += l5 % JM_TUPLE(center * self.ipctm)
-            self.draw_cont += l5 % JM_TUPLE(Q * self.ipctm)
+            self.draw_cont += l3(JM_TUPLE(point * self.ipctm))
+            self.draw_cont += l5(JM_TUPLE(center * self.ipctm))
+            self.draw_cont += l5(JM_TUPLE(Q * self.ipctm))
         self.last_point = Q
         return self.last_point
 
@@ -11538,7 +11550,7 @@ class Shape:
             self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
 
         if width != 1 and width != 0:
-            self.draw_cont += "%g w\n" % width
+            self.draw_cont += _format_g(width) + " w\n"
 
         if lineCap != 0:
             self.draw_cont = "%i J\n" % lineCap + self.draw_cont
@@ -11576,7 +11588,7 @@ class Shape:
                 1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
-            self.draw_cont = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat) + self.draw_cont
+            self.draw_cont = _format_g(JM_TUPLE(mat) + self.draw_cont) + " cm\n"
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
@@ -11697,8 +11709,8 @@ class Shape:
             rot += 360
         rot = rot % 360  # text rotate = 0, 90, 270, 180
 
-        templ1 = "\nq\n%s%sBT\n%s1 0 0 1 %g %g Tm\n/%s %g Tf "
-        templ2 = "TJ\n0 -%g TD\n"
+        templ1 = lambda a, b, c, d, e, f, g: f"\nq\n{a}{b}BT\n%{c}1 0 0 1 {_format_g((d, e))} Tm\n/{f} {g} Tf "
+        templ2 = lambda a: f"TJ\n0 -{_format_g(a)} TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"  # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"  # rotates 90 deg clockwise
         cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
@@ -11710,7 +11722,7 @@ class Shape:
         if morphing:
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x, height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
+            cm = _format_g(JM_TUPLE(mat)) + " cm\n"
         else:
             cm = ""
         top = height - point.y - self.y  # start of 1st char
@@ -11746,11 +11758,11 @@ class Shape:
             alpha = ""
         else:
             alpha = "/%s gs\n" % alpha
-        nres = templ1 % (bdc, alpha, cm, left, top, fname, fontsize)
+        nres = templ1(bdc, alpha, cm, left, top, fname, fontsize)
         if render_mode > 0:
             nres += "%i Tr " % render_mode
         if border_width != 1:
-            nres += "%g w " % border_width
+            nres += _format_g(border_width) + " w "
         if color is not None:
             nres += color_str
         if fill is not None:
@@ -11762,15 +11774,15 @@ class Shape:
         nres += text[0]
         nlines = 1  # set output line counter
         if len(text) > 1:
-            nres += templ2 % lheight  # line 1
+            nres += templ2(lheight)  # line 1
         else:
-            nres += templ2[:2]
+            nres += 'TJ'
         for i in range(1, len(text)):
             if space < lheight:
                 break  # no space left on page
             if i > 1:
                 nres += "\nT* "
-            nres += text[i] + templ2[:2]
+            nres += text[i] + 'TJ'
             space -= lheight
             nlines += 1
 
@@ -11782,319 +11794,6 @@ class Shape:
         # update the /Contents object
         self.text_cont += nres
         return nlines
-
-    # ==============================================================================
-    # Shape.insert_textbox
-    # ==============================================================================
-    def insert_textbox(
-            self,
-            rect: rect_like,
-            buffer_: typing.Union[str, list],
-            fontname: OptStr = "helv",
-            fontfile: OptStr = None,
-            fontsize: float = 11,
-            lineheight: OptFloat = None,
-            set_simple: bool = 0,
-            encoding: int = 0,
-            color: OptSeq = None,
-            fill: OptSeq = None,
-            expandtabs: int = 1,
-            border_width: float = 1,
-            align: int = 0,
-            render_mode: int = 0,
-            rotate: int = 0,
-            morph: OptSeq = None,
-            stroke_opacity: float = 1,
-            fill_opacity: float = 1,
-            oc: int = 0,
-            ) -> float:
-        """Insert text into a given rectangle.
-
-        Args:
-            rect -- the textbox to fill
-            buffer_ -- text to be inserted
-            fontname -- a Base-14 font, font name or '/name'
-            fontfile -- name of a font file
-            fontsize -- font size
-            lineheight -- overwrite the font property
-            color -- RGB stroke color triple
-            fill -- RGB fill color triple
-            render_mode -- text rendering control
-            border_width -- thickness of glyph borders
-            expandtabs -- handles tabulators with string function
-            align -- left, center, right, justified
-            rotate -- 0, 90, 180, or 270 degrees
-            morph -- morph box with a matrix and a fixpoint
-        Returns:
-            unused or deficit rectangle area (float)
-        """
-        rect = Rect(rect)
-        if rect.is_empty or rect.is_infinite:
-            raise ValueError("text box must be finite and not empty")
-
-        color_str = ColorCode(color, "c")
-        fill_str = ColorCode(fill, "f")
-        if fill is None and render_mode == 0:  # ensure fill color for 0 Tr
-            fill = color
-            fill_str = ColorCode(color, "f")
-
-        optcont = self.page._get_optional_content(oc)
-        if optcont is not None:
-            bdc = "/OC /%s BDC\n" % optcont
-            emc = "EMC\n"
-        else:
-            bdc = emc = ""
-
-        # determine opacity / transparency
-        alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
-        if alpha is None:
-            alpha = ""
-        else:
-            alpha = "/%s gs\n" % alpha
-
-        if rotate % 90 != 0:
-            raise ValueError("rotate must be multiple of 90")
-
-        rot = rotate
-        while rot < 0:
-            rot += 360
-        rot = rot % 360
-
-        # is buffer_ worth of dealing with?
-        if not bool(buffer_):
-            return rect.height if rot in (0, 180) else rect.width
-
-        cmp90 = "0 1 -1 0 0 0 cm\n"  # rotates counter-clockwise
-        cmm90 = "0 -1 1 0 0 0 cm\n"  # rotates clockwise
-        cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
-        height = self.height
-
-        fname = fontname
-        if fname.startswith("/"):
-            fname = fname[1:]
-
-        xref = self.page.insert_font(
-            fontname=fname, fontfile=fontfile, encoding=encoding, set_simple=set_simple
-        )
-        fontinfo = CheckFontInfo(self.doc, xref)
-
-        fontdict = fontinfo[1]
-        ordering = fontdict["ordering"]
-        simple = fontdict["simple"]
-        glyphs = fontdict["glyphs"]
-        bfname = fontdict["name"]
-        ascender = fontdict["ascender"]
-        descender = fontdict["descender"]
-
-        if lineheight:
-            lheight_factor = lineheight
-        elif ascender - descender <= 1:
-            lheight_factor = 1.2
-        else:
-            lheight_factor = ascender - descender
-        lheight = fontsize * lheight_factor
-
-        # create a list from buffer_, split into its lines
-        if type(buffer_) in (list, tuple):
-            t0 = "\n".join(buffer_)
-        else:
-            t0 = buffer_
-
-        maxcode = max([ord(c) for c in t0])
-        # replace invalid char codes for simple fonts
-        if simple and maxcode > 255:
-            t0 = "".join([c if ord(c) < 256 else "?" for c in t0])
-
-        t0 = t0.splitlines()
-
-        glyphs = self.doc.get_char_widths(xref, maxcode + 1)
-        if simple and bfname not in ("Symbol", "ZapfDingbats"):
-            tj_glyphs = None
-        else:
-            tj_glyphs = glyphs
-
-        # ----------------------------------------------------------------------
-        # calculate pixel length of a string
-        # ----------------------------------------------------------------------
-        def pixlen(x):
-            """Calculate pixel length of x."""
-            if ordering < 0:
-                return sum([glyphs[ord(c)][1] for c in x]) * fontsize
-            else:
-                return len(x) * fontsize
-
-        # ----------------------------------------------------------------------
-
-        if ordering < 0:
-            blen = glyphs[32][1] * fontsize  # pixel size of space character
-        else:
-            blen = fontsize
-
-        text = ""  # output buffer
-
-        if CheckMorph(morph):
-            m1 = Matrix(
-                1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
-            )
-            mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
-        else:
-            cm = ""
-
-        # ---------------------------------------------------------------------------
-        # adjust for text orientation / rotation
-        # ---------------------------------------------------------------------------
-        progr = 1  # direction of line progress
-        c_pnt = Point(0, fontsize * ascender)  # used for line progress
-        if rot == 0:  # normal orientation
-            point = rect.tl + c_pnt  # line 1 is 'lheight' below top
-            pos = point.y + self.y  # y of first line
-            maxwidth = rect.width  # pixels available in one line
-            maxpos = rect.y1 + self.y  # lines must not be below this
-
-        elif rot == 90:  # rotate counter clockwise
-            c_pnt = Point(fontsize * ascender, 0)  # progress in x-direction
-            point = rect.bl + c_pnt  # line 1 'lheight' away from left
-            pos = point.x + self.x  # position of first line
-            maxwidth = rect.height  # pixels available in one line
-            maxpos = rect.x1 + self.x  # lines must not be right of this
-            cm += cmp90
-
-        elif rot == 180:  # text upside down
-            # progress upwards in y direction
-            c_pnt = -Point(0, fontsize * ascender)
-            point = rect.br + c_pnt  # line 1 'lheight' above bottom
-            pos = point.y + self.y  # position of first line
-            maxwidth = rect.width  # pixels available in one line
-            progr = -1  # subtract lheight for next line
-            maxpos = rect.y0 + self.y  # lines must not be above this
-            cm += cm180
-
-        else:  # rotate clockwise (270 or -90)
-            # progress from right to left
-            c_pnt = -Point(fontsize * ascender, 0)
-            point = rect.tr + c_pnt  # line 1 'lheight' left of right
-            pos = point.x + self.x  # position of first line
-            maxwidth = rect.height  # pixels available in one line
-            progr = -1  # subtract lheight for next line
-            maxpos = rect.x0 + self.x  # lines must not left of this
-            cm += cmm90
-
-        # =======================================================================
-        # line loop
-        # =======================================================================
-        just_tab = []  # 'justify' indicators per line
-
-        for i, line in enumerate(t0):
-            line_t = line.expandtabs(expandtabs).split(" ")  # split into words
-            lbuff = ""  # init line buffer
-            rest = maxwidth  # available line pixels
-            # ===================================================================
-            # word loop
-            # ===================================================================
-            for word in line_t:
-                pl_w = pixlen(word)  # pixel len of word
-                if rest >= pl_w:  # will it fit on the line?
-                    lbuff += word + " "  # yes, and append word
-                    rest -= pl_w + blen  # update available line space
-                    continue
-                # word won't fit - output line (if not empty)
-                if len(lbuff) > 0:
-                    lbuff = lbuff.rstrip() + "\n"  # line full, append line break
-                    text += lbuff  # append to total text
-                    pos += lheight * progr  # increase line position
-                    just_tab.append(True)  # line is justify candidate
-                    lbuff = ""  # re-init line buffer
-                rest = maxwidth  # re-init avail. space
-                if pl_w <= maxwidth:  # word shorter than 1 line?
-                    lbuff = word + " "  # start the line with it
-                    rest = maxwidth - pl_w - blen  # update free space
-                    continue
-                # long word: split across multiple lines - char by char ...
-                if len(just_tab) > 0:
-                    just_tab[-1] = False  # reset justify indicator
-                for c in word:
-                    if pixlen(lbuff) <= maxwidth - pixlen(c):
-                        lbuff += c
-                    else:  # line full
-                        lbuff += "\n"  # close line
-                        text += lbuff  # append to text
-                        pos += lheight * progr  # increase line position
-                        just_tab.append(False)  # do not justify line
-                        lbuff = c  # start new line with this char
-                lbuff += " "  # finish long word
-                rest = maxwidth - pixlen(lbuff)  # long word stored
-
-            if lbuff != "":  # unprocessed line content?
-                text += lbuff.rstrip()  # append to text
-                just_tab.append(False)  # do not justify line
-            if i < len(t0) - 1:  # not the last line?
-                text += "\n"  # insert line break
-                pos += lheight * progr  # increase line position
-
-        more = (pos - maxpos) * progr  # difference to rect size limit
-
-        if more > EPSILON:  # landed too much outside rect
-            return (-1) * more  # return deficit, don't output
-
-        more = abs(more)
-        if more < EPSILON:
-            more = 0  # don't bother with epsilons
-        nres = "\nq\n%s%sBT\n" % (bdc, alpha) + cm  # initialize output buffer
-        templ = "1 0 0 1 %g %g Tm /%s %g Tf "
-        # center, right, justify: output each line with its own specifics
-        text_t = text.splitlines()  # split text in lines again
-        just_tab[-1] = False  # never justify last line
-        for i, t in enumerate(text_t):
-            pl = maxwidth - pixlen(t)  # length of empty line part
-            pnt = point + c_pnt * (i * lheight_factor)  # text start of line
-            if align == 1:  # center: right shift by half width
-                if rot in (0, 180):
-                    pnt = pnt + Point(pl / 2, 0) * progr
-                else:
-                    pnt = pnt - Point(0, pl / 2) * progr
-            elif align == 2:  # right: right shift by full width
-                if rot in (0, 180):
-                    pnt = pnt + Point(pl, 0) * progr
-                else:
-                    pnt = pnt - Point(0, pl) * progr
-            elif align == 3:  # justify
-                spaces = t.count(" ")  # number of spaces in line
-                if spaces > 0 and just_tab[i]:  # if any, and we may justify
-                    spacing = pl / spaces  # make every space this much larger
-                else:
-                    spacing = 0  # keep normal space length
-            top = height - pnt.y - self.y
-            left = pnt.x + self.x
-            if rot == 90:
-                left = height - pnt.y - self.y
-                top = -pnt.x - self.x
-            elif rot == 270:
-                left = -height + pnt.y + self.y
-                top = pnt.x + self.x
-            elif rot == 180:
-                left = -pnt.x - self.x
-                top = -height + pnt.y + self.y
-
-            nres += templ % (left, top, fname, fontsize)
-            if render_mode > 0:
-                nres += "%i Tr " % render_mode
-            if align == 3:
-                nres += "%g Tw " % spacing
-
-            if color is not None:
-                nres += color_str
-            if fill is not None:
-                nres += fill_str
-            if border_width != 1:
-                nres += "%g w " % border_width
-            nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
-
-        nres += "ET\n%sQ\n" % emc
-
-        self.text_cont += nres
-        self.updateRect(rect)
-        return more
 
     def update_rect(self, x):
         if self.rect is None:
@@ -13216,14 +12915,14 @@ class TextWriter:
             delta = 0
         mb = page.mediabox
         if bool(cb) or mb.y0 != 0 or delta != 0:
-            new_cont_lines.append("1 0 0 1 %g %g cm" % (cb.x, cb.y + mb.y0 - delta))
+            new_cont_lines.append(f"1 0 0 1 {_format_g((cb.x, cb.y + mb.y0 - delta))} cm")
 
         if morph:
             p = morph[0] * self.ictm
             delta = Matrix(1, 1).pretranslate(p.x, p.y)
             matrix = ~delta * morph[1] * delta
         if morph or matrix:
-            new_cont_lines.append("%g %g %g %g %g %g cm" % JM_TUPLE(matrix))
+            new_cont_lines.append(_format_g(JM_TUPLE(matrix)) + " cm")
 
         for line in old_cont_lines:
             if line.endswith(" cm"):
@@ -13242,7 +12941,7 @@ class TextWriter:
                     w = fsize * 0.05
                 else:
                     w = 1
-                new_cont_lines.append("%g w" % w)
+                new_cont_lines.append(_format_g(w) + " w")
                 font = int(temp[0][2:]) + max_font
                 line = " ".join(["/F%i" % font] + temp[1:])
             elif line.endswith(" rg"):
@@ -13709,13 +13408,13 @@ TEXT_FONT_BOLD = 16
 
 
 annot_skel = {
-        "goto1": "<</A<</S/GoTo/D[%i 0 R/XYZ %g %g %g]>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "goto2": "<</A<</S/GoTo/D%s>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "gotor1": "<</A<</S/GoToR/D[%i /XYZ %g %g %g]/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "gotor2": "<</A<</S/GoToR/D%s/F(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "launch": "<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "uri": "<</A<</S/URI/URI(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
-        "named": "<</A<</S/GoTo/D(%s)/Type/Action>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+        "goto1": lambda a, b, c, d, e: f"<</A<</S/GoTo/D[{a} 0 R/XYZ {_format_g((b, c, d))}]>>/Rect[{e}]/BS<</W 0>>/Subtype/Link>>",
+        "goto2": lambda a, b: f"<</A<</S/GoTo/D{a}>>/Rect[{b}]/BS<</W 0>>/Subtype/Link>>",
+        "gotor1": lambda a, b, c, d, e, f, g: f"<</A<</S/GoToR/D[{a} /XYZ {_format_g((b, c, d))}]/F<</F({e})/UF({f})/Type/Filespec>>>>/Rect[{g}]/BS<</W 0>>/Subtype/Link>>",
+        "gotor2": lambda a, b, c: f"<</A<</S/GoToR/D{a}/F({b})>>/Rect[{c}]/BS<</W 0>>/Subtype/Link>>",
+        "launch": lambda a, b, c: f"<</A<</S/Launch/F<</F({a})/UF({b})/Type/Filespec>>>>/Rect[{c}]/BS<</W 0>>/Subtype/Link>>",
+        "uri": lambda a, b: f"<</A<</S/URI/URI({a})>>/Rect[{b}]/BS<</W 0>>/Subtype/Link>>",
+        "named": lambda a, b: f"<</A<</S/GoTo/D({a})/Type/Action>>/Rect[{b}]/BS<</W 0>>/Subtype/Link>>",
         }
 
 class FileDataError(RuntimeError):
@@ -18124,14 +17823,14 @@ def ColorCode(c: typing.Union[list, tuple, float, None], f: str) -> str:
         c = (c,)
     CheckColor(c)
     if len(c) == 1:
-        s = "%g " % c[0]
+        s = _format_g(c[0]) + " "
         return s + "G " if f == "c" else s + "g "
 
     if len(c) == 3:
-        s = "%g %g %g " % tuple(c)
+        s = _format_g(tuple(c)) + " "
         return s + "RG " if f == "c" else s + "rg "
 
-    s = "%g %g %g %g " % tuple(c)
+    s = _format_g(tuple(c)) + " "
     return s + "K " if f == "c" else s + "k "
 
 
@@ -19212,13 +18911,12 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
         if stroke.dash_len:
             buff = mupdf.fz_new_buffer( 256)
             mupdf.fz_append_string( buff, "[ ") # left bracket
-            # fixme: this does not use fz_append_printf()'s special handling of %g etc.
             for i in range( stroke.dash_len):
                 # We use mupdf python's SWIG-generated floats_getitem() fn to
                 # access float *stroke.dash_list[].
                 value = mupdf.floats_getitem( stroke.dash_list, i)  # stroke.dash_list[i].
-                mupdf.fz_append_string( buff, f'{dev.pathfactor * value:g} ')
-            mupdf.fz_append_string( buff, f'] {dev.pathfactor * stroke.dash_phase:g}')
+                mupdf.fz_append_string( buff, f'{_format_g(dev.pathfactor * value)} ')
+            mupdf.fz_append_string( buff, f'] {_format_g(dev.pathfactor * stroke.dash_phase)}')
             dev.pathdict[ 'dashes'] = buff
         else:
             dev.pathdict[ 'dashes'] = '[] 0'
@@ -21346,7 +21044,7 @@ class TOOLS:
         bot = (M + (0, d/2.)) * im
         ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
         ap += "%f %f l\n" % (bot.x, bot.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + "s\nQ\n"
         return ap
 
@@ -21360,7 +21058,7 @@ class TOOLS:
         M = R - (d/2., 0) if lr else L + (d/2., 0)
         r = Rect(M, M) + (-d, -d, d, d)         # the square
         ap = "q\n" + opacity + TOOLS._oval_string(r.tl * im, r.tr * im, r.br * im, r.bl * im)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
 
@@ -21380,7 +21078,7 @@ class TOOLS:
         ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
         ap += "%f %f l\n" % (p2.x, p2.y)
         ap += "%f %f l\n" % (p3.x, p3.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
 
@@ -21402,7 +21100,7 @@ class TOOLS:
         ap += "%f %f l\n"   % (p.x, p.y)
         p = (r.br + (r.bl - r.br) * 0.5) * im
         ap += "%f %f l\n"   % (p.x, p.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
 
@@ -21422,7 +21120,7 @@ class TOOLS:
         ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
         ap += "%f %f l\n" % (p2.x, p2.y)
         ap += "%f %f l\n" % (p3.x, p3.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + "S\nQ\n"
         return ap
 
@@ -21442,7 +21140,7 @@ class TOOLS:
         ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
         ap += "%f %f l\n" % (p2.x, p2.y)
         ap += "%f %f l\n" % (p3.x, p3.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
 
@@ -21462,7 +21160,7 @@ class TOOLS:
         ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
         ap += "%f %f l\n" % (p2.x, p2.y)
         ap += "%f %f l\n" % (p3.x, p3.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + fcol + "S\nQ\n"
         return ap
 
@@ -21478,7 +21176,7 @@ class TOOLS:
         bot = r.br * im
         ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
         ap += "%f %f l\n" % (bot.x, bot.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + "s\nQ\n"
         return ap
 
@@ -21500,7 +21198,7 @@ class TOOLS:
         ap += "%f %f l\n"   % (p.x, p.y)
         p = r.bl * im
         ap += "%f %f l\n"   % (p.x, p.y)
-        ap += "%g w\n" % w
+        ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
 

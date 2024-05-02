@@ -43,6 +43,7 @@ def test_flake8():
             'W293', # blank line contains whitespace
             'W503', # line break before binary operator
             'W504', # line break after binary operator
+            'E731', # do not assign a lambda expression, use a def
             )
     ignores = ','.join(ignores)
     root = os.path.abspath(f'{__file__}/../..')
