@@ -21,8 +21,9 @@ try:
 except Exception:
     import mupdf
 
+_format_g = pymupdf.format_g
+
 g_exceptions_verbose = pymupdf.g_exceptions_verbose
-g_exceptions_verbose = False
 
 TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
@@ -1257,14 +1258,14 @@ def getDestStr(xref: int, ddict: dict) -> str:
     """
     if not ddict:
         return ""
-    str_goto = "/A<</S/GoTo/D[%i 0 R/XYZ %g %g %g]>>"
-    str_gotor1 = "/A<</S/GoToR/D[%s /XYZ %g %g %g]/F<</F%s/UF%s/Type/Filespec>>>>"
-    str_gotor2 = "/A<</S/GoToR/D%s/F<</F%s/UF%s/Type/Filespec>>>>"
-    str_launch = "/A<</S/Launch/F<</F%s/UF%s/Type/Filespec>>>>"
-    str_uri = "/A<</S/URI/URI%s>>"
+    str_goto = lambda a, b, c, d: f"/A<</S/GoTo/D[{a} 0 R/XYZ {_format_g((b, c, d))}]>>"
+    str_gotor1 = lambda a, b, c, d, e, f: f"/A<</S/GoToR/D[{a} /XYZ {_format_g((b, c, d))}]/F<</F{e}/UF{f}/Type/Filespec>>>>"
+    str_gotor2 = lambda a, b, c: f"/A<</S/GoToR/D{a}/F<</F{b}/UF{c}/Type/Filespec>>>>"
+    str_launch = lambda a, b: f"/A<</S/Launch/F<</F{a}/UF{b}/Type/Filespec>>>>"
+    str_uri = lambda a: f"/A<</S/URI/URI{a}>>"
 
     if type(ddict) in (int, float):
-        dest = str_goto % (xref, 0, ddict, 0)
+        dest = str_goto(xref, 0, ddict, 0)
         return dest
     d_kind = ddict.get("kind", pymupdf.LINK_NONE)
 
@@ -1275,26 +1276,26 @@ def getDestStr(xref: int, ddict: dict) -> str:
         d_zoom = ddict.get("zoom", 0)
         to = ddict.get("to", pymupdf.Point(0, 0))
         d_left, d_top = to
-        dest = str_goto % (xref, d_left, d_top, d_zoom)
+        dest = str_goto(xref, d_left, d_top, d_zoom)
         return dest
 
     if ddict["kind"] == pymupdf.LINK_URI:
-        dest = str_uri % (pymupdf.get_pdf_str(ddict["uri"]),)
+        dest = str_uri(pymupdf.get_pdf_str(ddict["uri"]),)
         return dest
 
     if ddict["kind"] == pymupdf.LINK_LAUNCH:
         fspec = pymupdf.get_pdf_str(ddict["file"])
-        dest = str_launch % (fspec, fspec)
+        dest = str_launch(fspec, fspec)
         return dest
 
     if ddict["kind"] == pymupdf.LINK_GOTOR and ddict["page"] < 0:
         fspec = pymupdf.get_pdf_str(ddict["file"])
-        dest = str_gotor2 % (pymupdf.get_pdf_str(ddict["to"]), fspec, fspec)
+        dest = str_gotor2(pymupdf.get_pdf_str(ddict["to"]), fspec, fspec)
         return dest
 
     if ddict["kind"] == pymupdf.LINK_GOTOR and ddict["page"] >= 0:
         fspec = pymupdf.get_pdf_str(ddict["file"])
-        dest = str_gotor1 % (
+        dest = str_gotor1(
             ddict["page"],
             ddict["to"].x,
             ddict["to"].y,
@@ -1486,7 +1487,7 @@ def set_toc(
             pass
 
         if ol.get("color") and len(ol["color"]) == 3:
-            txt += "/C[ %g %g %g]" % tuple(ol["color"])
+            txt += f"/C[ {_format_g(tuple(ol['color']))}]"
         if ol.get("flags", 0) > 0:
             txt += "/F %i" % ol["flags"]
 
@@ -1519,7 +1520,7 @@ def do_links(
         """Create annotation object string for a passed-in link."""
 
         r = lnk["from"] * ctm  # rect in PDF coordinates
-        rect = "%g %g %g %g" % tuple(r)
+        rect = _format_g(tuple(r))
         if lnk["kind"] == pymupdf.LINK_GOTO:
             txt = pymupdf.annot_skel["goto1"]  # annot_goto
             idx = pno_src.index(lnk["page"])
@@ -1554,7 +1555,7 @@ def do_links(
 
         elif lnk["kind"] == pymupdf.LINK_URI:
             txt = pymupdf.annot_skel["uri"]  # annot_uri
-            annot = txt % (lnk["uri"], rect)
+            annot = txt(lnk["uri"], rect)
 
         else:
             annot = ""
@@ -1629,7 +1630,7 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
     ctm = page.transformation_matrix
     ictm = ~ctm
     r = lnk["from"]
-    rect = "%g %g %g %g" % tuple(r * ictm)
+    rect = _format_g(tuple(r * ictm))
 
     annot = ""
     if lnk["kind"] == pymupdf.LINK_GOTO:
@@ -1639,10 +1640,10 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
             xref = page.parent.page_xref(pno)
             pnt = lnk.get("to", pymupdf.Point(0, 0))  # destination point
             ipnt = pnt * ictm
-            annot = txt % (xref, ipnt.x, ipnt.y, lnk.get("zoom", 0), rect)
+            annot = txt(xref, ipnt.x, ipnt.y, lnk.get("zoom", 0), rect)
         else:
             txt = pymupdf.annot_skel["goto2"]  # annot_goto_n
-            annot = txt % (pymupdf.get_pdf_str(lnk["to"]), rect)
+            annot = txt(pymupdf.get_pdf_str(lnk["to"]), rect)
 
     elif lnk["kind"] == pymupdf.LINK_GOTOR:
         if lnk["page"] >= 0:
@@ -1650,7 +1651,7 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
             pnt = lnk.get("to", pymupdf.Point(0, 0))  # destination point
             if type(pnt) is not pymupdf.Point:
                 pnt = pymupdf.Point(0, 0)
-            annot = txt % (
+            annot = txt(
                 lnk["page"],
                 pnt.x,
                 pnt.y,
@@ -1661,22 +1662,22 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
             )
         else:
             txt = pymupdf.annot_skel["gotor2"]  # annot_gotor_n
-            annot = txt % (pymupdf.get_pdf_str(lnk["to"]), lnk["file"], rect)
+            annot = txt(pymupdf.get_pdf_str(lnk["to"]), lnk["file"], rect)
 
     elif lnk["kind"] == pymupdf.LINK_LAUNCH:
         txt = pymupdf.annot_skel["launch"]  # annot_launch
-        annot = txt % (lnk["file"], lnk["file"], rect)
+        annot = txt(lnk["file"], lnk["file"], rect)
 
     elif lnk["kind"] == pymupdf.LINK_URI:
         txt = pymupdf.annot_skel["uri"]  # txt = annot_uri
-        annot = txt % (lnk["uri"], rect)
+        annot = txt(lnk["uri"], rect)
 
     elif lnk["kind"] == pymupdf.LINK_NAMED:
         txt = pymupdf.annot_skel["named"]  # annot_named
         lname = lnk.get("name")  # check presence of key
         if lname is None:  # if missing, fall back to alternative
             lname = lnk["nameddest"]
-        annot = txt % (lname, rect)
+        annot = txt(lname, rect)
     if not annot:
         return annot
 
@@ -3287,11 +3288,11 @@ class Shape:
         p1 = pymupdf.Point(p1)
         p2 = pymupdf.Point(p2)
         if not (self.last_point == p1):
-            self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(p1 * self.ipctm)
+            self.draw_cont += _format_g(pymupdf.JM_TUPLE(p1 * self.ipctm)) + " m\n"
             self.last_point = p1
             self.updateRect(p1)
 
-        self.draw_cont += "%g %g l\n" % pymupdf.JM_TUPLE(p2 * self.ipctm)
+        self.draw_cont += _format_g(pymupdf.JM_TUPLE(p2 * self.ipctm)) + " l\n"
         self.updateRect(p2)
         self.last_point = p2
         return self.last_point
@@ -3301,10 +3302,10 @@ class Shape:
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.last_point == pymupdf.Point(p)):
-                    self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(pymupdf.Point(p) * self.ipctm)
+                    self.draw_cont += _format_g(pymupdf.JM_TUPLE(pymupdf.Point(p) * self.ipctm)) + " m\n"
                     self.last_point = pymupdf.Point(p)
             else:
-                self.draw_cont += "%g %g l\n" % pymupdf.JM_TUPLE(pymupdf.Point(p) * self.ipctm)
+                self.draw_cont += _format_g(pymupdf.JM_TUPLE(pymupdf.Point(p) * self.ipctm)) + " l\n"
             self.updateRect(p)
 
         self.last_point = pymupdf.Point(points[-1])
@@ -3323,10 +3324,9 @@ class Shape:
         p3 = pymupdf.Point(p3)
         p4 = pymupdf.Point(p4)
         if not (self.last_point == p1):
-            self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(p1 * self.ipctm)
-        self.draw_cont += "%g %g %g %g %g %g c\n" % pymupdf.JM_TUPLE(
-            list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm)
-        )
+            self.draw_cont += _format_g(pymupdf.JM_TUPLE(p1 * self.ipctm)) + " m\n"
+        args = pymupdf.JM_TUPLE(list(p2 * self.ipctm) + list(p3 * self.ipctm) + list(p4 * self.ipctm))
+        self.draw_cont += _format_g(args) + " c\n"
         self.updateRect(p1)
         self.updateRect(p2)
         self.updateRect(p3)
@@ -3348,7 +3348,7 @@ class Shape:
         mb = q.ll + (q.lr - q.ll) * 0.5
         ml = q.ul + (q.ll - q.ul) * 0.5
         if not (self.last_point == ml):
-            self.draw_cont += "%g %g m\n" % pymupdf.JM_TUPLE(ml * self.ipctm)
+            self.draw_cont += _format_g(pymupdf.JM_TUPLE(ml * self.ipctm)) + " m\n"
             self.last_point = ml
         self.draw_curve(ml, q.ll, mb)
         self.draw_curve(mb, q.lr, mr)
@@ -3391,9 +3391,9 @@ class Shape:
         """Draw a circle sector."""
         center = pymupdf.Point(center)
         point = pymupdf.Point(point)
-        l3 = "%g %g m\n"
-        l4 = "%g %g %g %g %g %g c\n"
-        l5 = "%g %g l\n"
+        l3 = lambda a, b: _format_g((a, b)) + " m\n"
+        l4 = lambda a, b, c, d, e, f: _format_g((a, b, c, d, e, f)) + " c\n"
+        l5 = lambda a, b: _format_g((a, b)) + " l\n"
         betar = math.radians(-beta)
         w360 = math.radians(math.copysign(360, betar)) * (-1)
         w90 = math.radians(math.copysign(90, betar))
@@ -3401,7 +3401,7 @@ class Shape:
         while abs(betar) > 2 * math.pi:
             betar += w360  # bring angle below 360 degrees
         if not (self.last_point == point):
-            self.draw_cont += l3 % pymupdf.JM_TUPLE(point * self.ipctm)
+            self.draw_cont += l3(*pymupdf.JM_TUPLE(point * self.ipctm))
             self.last_point = point
         Q = pymupdf.Point(0, 0)  # just make sure it exists
         C = center
@@ -3424,9 +3424,9 @@ class Shape:
             kappa = kappah * abs(P - Q)
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
-            self.draw_cont += l4 % pymupdf.JM_TUPLE(
+            self.draw_cont += l4(*pymupdf.JM_TUPLE(
                 list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
-            )
+            ))
 
             betar -= w90  # reduce parm angle by 90 deg
             alfa += w90  # advance start angle by 90 deg
@@ -3445,13 +3445,13 @@ class Shape:
             kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
             cp1 = P + (R - P) * kappa  # control point 1
             cp2 = Q + (R - Q) * kappa  # control point 2
-            self.draw_cont += l4 % pymupdf.JM_TUPLE(
+            self.draw_cont += l4(*pymupdf.JM_TUPLE(
                 list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
-            )
+            ))
         if fullSector:
-            self.draw_cont += l3 % pymupdf.JM_TUPLE(point * self.ipctm)
-            self.draw_cont += l5 % pymupdf.JM_TUPLE(center * self.ipctm)
-            self.draw_cont += l5 % pymupdf.JM_TUPLE(Q * self.ipctm)
+            self.draw_cont += l3(*pymupdf.JM_TUPLE(point * self.ipctm))
+            self.draw_cont += l5(*pymupdf.JM_TUPLE(center * self.ipctm))
+            self.draw_cont += l5(*pymupdf.JM_TUPLE(Q * self.ipctm))
         self.last_point = Q
         return self.last_point
 
@@ -3468,9 +3468,9 @@ class Shape:
         """
         r = pymupdf.Rect(rect)
         if radius is None:  # standard rectangle
-            self.draw_cont += "%g %g %g %g re\n" % pymupdf.JM_TUPLE(
+            self.draw_cont += _format_g(pymupdf.JM_TUPLE(
                 list(r.bl * self.ipctm) + [r.width, r.height]
-            )
+            )) + " re\n"
             self.updateRect(r)
             self.last_point = r.tl
             return self.last_point
@@ -3672,8 +3672,8 @@ class Shape:
             rot += 360
         rot = rot % 360  # text rotate = 0, 90, 270, 180
 
-        templ1 = "\nq\n%s%sBT\n%s1 0 0 1 %g %g Tm\n/%s %g Tf "
-        templ2 = "TJ\n0 -%g TD\n"
+        templ1 = lambda a, b, c, d, e, f, g: f"\nq\n{a}{b}BT\n{c}1 0 0 1 {_format_g((d, e))} Tm\n/{f} {_format_g(g)} Tf "
+        templ2 = lambda a: f"TJ\n0 -{_format_g(a)} TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"  # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"  # rotates 90 deg clockwise
         cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
@@ -3685,7 +3685,7 @@ class Shape:
         if morphing:
             m1 = pymupdf.Matrix(1, 0, 0, 1, morph[0].x + self.x, height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % pymupdf.JM_TUPLE(mat)
+            cm = _format_g(pymupdf.JM_TUPLE(mat)) + " cm\n"
         else:
             cm = ""
         top = height - point.y - self.y  # start of 1st char
@@ -3725,11 +3725,11 @@ class Shape:
             alpha = ""
         else:
             alpha = "/%s gs\n" % alpha
-        nres = templ1 % (bdc, alpha, cm, left, top, fname, fontsize)
+        nres = templ1(bdc, alpha, cm, left, top, fname, fontsize)
 
         if render_mode > 0:
             nres += "%i Tr " % render_mode
-            nres += "%g w " % (border_width * fontsize)
+            nres += _format_g(border_width * fontsize) + " w "
 
         if color is not None:
             nres += color_str
@@ -3742,15 +3742,15 @@ class Shape:
         nres += text[0]
         nlines = 1  # set output line counter
         if len(text) > 1:
-            nres += templ2 % lheight  # line 1
+            nres += templ2(lheight)  # line 1
         else:
-            nres += templ2[:2]
+            nres += 'TJ'
         for i in range(1, len(text)):
             if space < lheight:
                 break  # no space left on page
             if i > 1:
                 nres += "\nT* "
-            nres += text[i] + templ2[:2]
+            nres += text[i] + 'TJ'
             space -= lheight
             nlines += 1
 
@@ -3917,7 +3917,7 @@ class Shape:
                 1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % pymupdf.JM_TUPLE(mat)
+            cm = _format_g(pymupdf.JM_TUPLE(mat)) + " cm\n"
         else:
             cm = ""
 
@@ -4029,7 +4029,7 @@ class Shape:
         if more < pymupdf.EPSILON:
             more = 0  # don't bother with epsilons
         nres = "\nq\n%s%sBT\n" % (bdc, alpha) + cm  # initialize output buffer
-        templ = "1 0 0 1 %g %g Tm /%s %g Tf "
+        templ = lambda a, b, c, d: f"1 0 0 1 {_format_g((a, b))} Tm /{c} {_format_g(d)} Tf "
         # center, right, justify: output each line with its own specifics
         text_t = text.splitlines()  # split text in lines again
         just_tab[-1] = False  # never justify last line
@@ -4064,14 +4064,14 @@ class Shape:
                 left = -pnt.x - self.x
                 top = -height + pnt.y + self.y
 
-            nres += templ % (left, top, fname, fontsize)
+            nres += templ(left, top, fname, fontsize)
 
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
-                nres += "%g w " % (border_width * fontsize)
+                nres += _format_g(border_width * fontsize) + " w "
 
             if align == 3:
-                nres += "%g Tw " % spacing
+                nres += _format_g(spacing) + " Tw "
 
             if color is not None:
                 nres += color_str
@@ -4131,7 +4131,7 @@ class Shape:
             self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
 
         if width != 1 and width != 0:
-            self.draw_cont += "%g w\n" % width
+            self.draw_cont += _format_g(width) + " w\n"
 
         if lineCap != 0:
             self.draw_cont = "%i J\n" % lineCap + self.draw_cont
@@ -4169,7 +4169,7 @@ class Shape:
                 1, 0, 0, 1, morph[0].x + self.x, self.height - morph[0].y - self.y
             )
             mat = ~m1 * morph[1] * m1
-            self.draw_cont = "%g %g %g %g %g %g cm\n" % pymupdf.JM_TUPLE(mat) + self.draw_cont
+            self.draw_cont = _format_g(pymupdf.JM_TUPLE(mat)) + " cm\n" + self.draw_cont
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""

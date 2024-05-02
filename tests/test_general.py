@@ -1220,3 +1220,15 @@ def test_3354():
     v = dict(foo='bar')
     document.metadata = v
     assert document.metadata == v
+
+def test_scientific_numbers():
+    doc = pymupdf.open()
+    page = doc.new_page(width=595, height=842)
+    point = pymupdf.Point(1e-11, -1e-10)
+    page.insert_text(point, "Test")
+    contents = page.read_contents()
+    print(f'{contents=}')
+    if pymupdf.mupdf_version_tuple >= (1, 24, 2):
+        assert b" 1e-" not in contents
+    else:
+        assert b" 1e-" in contents
