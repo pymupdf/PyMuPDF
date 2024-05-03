@@ -1417,7 +1417,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect-like rect: rect-like.
       :arg textpage: a :ref:`TextPage` to use. If omitted, a new, temporary textpage will be created.
 
-      :returns: a string with interspersed linebreaks where necessary. It is based on dedicated code (changed in v1.19.0). A tyical use is checking the result of :meth:`Page.search_for`:
+      :returns: a string with interspersed linebreaks where necessary. It is based on dedicated code (changed in v1.19.0). A typical use is checking the result of :meth:`Page.search_for`:
 
         >>> rl = page.search_for("currency:")
         >>> page.get_textbox(rl[0])

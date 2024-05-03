@@ -635,7 +635,6 @@ msgid ":meth:`Page.insert_htmlbox`"
 msgstr ""
 
 #: ../../page.rst:102 9113ddf0db5b435288b04d8b0f3c81b1
-#, fuzzy
 msgid "PDF only: insert html text in a rectangle"
 msgstr "PDFのみ: 指定された矩形にテキストを追加します。"
 
@@ -2548,7 +2547,7 @@ msgid ""
 "similarities with methods :meth:`Page.insert_textbox` and "
 ":meth:`TextWriter.fill_textbox`, but is **much more powerful**. This is "
 "achieved by letting a :ref:`Story` object do all the required processing."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:769 5a177e0f10274dabb0d7845d921dd45d
 msgid ""
@@ -2556,7 +2555,7 @@ msgid ""
 "**interpreted as HTML source** and may therefore also contain HTML "
 "language elements -- including styling. The `css` parameter may be used "
 "to pass in additional styling instructions."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:771 913c5838a4834bd48078561dd81a6aea
 msgid ""
@@ -2565,23 +2564,23 @@ msgid ""
 "hyphenation and thus may also cause line breaks. **Forced** line breaks "
 "however are only achievable via the HTML tag `<br>` - `\"\\\\n\"` is "
 "ignored and will be treated like a space."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:773 82e54f76e659415faf0173d2c8a00487
 msgid "With this method the following can be achieved:"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:775 b030bcc6345d478e868fa04c937639b5
 msgid ""
 "Styling effects like bold, italic, text color, text alignment, font size "
 "or font switching."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:776 1931bf8207b1474aa96dd794ee4d6ed1
 msgid ""
 "The text may include arbitrary languages -- **including right-to-left** "
 "languages."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:777 d1991b12f4bc4727ae87ca7f63b63e8c
 msgid ""
@@ -2590,38 +2589,38 @@ msgid ""
 "two or more unicodes together yield one glyph. The Story uses the "
 "software package `HarfBuzz <https://harfbuzz.github.io/>`_ , to deal with"
 " these things and produce correct output."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:778 6d21a0414fd14531aad6e2c0e02fd318
 msgid ""
 "One can also **include images** via HTML tag `<img>` -- the Story will "
 "take care of the appropriate layout. This is an alternative option to "
 "insert images, compared to :meth:`Page.insert_image`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:779 d624250ecf304f4f84409c7bf37202f1
 msgid ""
 "HTML tables (tag `<table>`) may be included in the text and will be "
 "handled appropriately."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:780 8bfd78ac63d24526a5396b5dc7101f5b
 msgid "Links are automatically generated when present."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:782 cb348e4f893b4504a1ad3af61732770c
 msgid "If content does not fit in the rectangle, the developer has two choices:"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:784 cef2cd64526344449e113684c16ef995
 msgid ""
 "**either** only be informed about this (and accept a no-op, just like "
 "with the other textbox insertion methods),"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:785 1efcb70e6ac54a2abf9b7b06efe85f39
 msgid "**or** (`scale_low=0` - the default) scale down the content until it fits."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:787 57ca730cb7764415b5024a65f3e0370f
 msgid "rectangle on page to receive the text."
@@ -2635,13 +2634,13 @@ msgid ""
 "specified (in which case the internal Story generation step will be "
 "omitted). A Story must have been generated with all required styling and "
 "Archive information."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:789 39c0efe72db0498ab4d73ce0b94ea080
 msgid ""
 "optional string containing additional CSS instructions. This parameter is"
 " ignored if `text` is a Story."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:790 7f02d71d01e344f0ad18cae3e0734867
 msgid ""
@@ -2649,14 +2648,14 @@ msgid ""
 "rectangle. This sets the down scaling limit. Default is 0, no limit. A "
 "value of 1 means no down-scaling permitted. A value of e.g. 0.2 means "
 "maximum down-scaling by 80%."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:791 4ab9fe2ecf0d4e86b4cb0d12eb9b41df
 msgid ""
 "an Archive object that points to locations where to find images or non-"
 "standard fonts. If `text` refers to images or non-standard fonts, this "
 "parameter is required. This parameter is ignored if `text` is a Story."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:792 50b902c0b66e409196d57506e9337b43
 msgid ""
@@ -2664,7 +2663,7 @@ msgid ""
 "filled:  - 0: top-left to bottom-right. - 90: bottom-left to top-right. -"
 " 180: bottom-right to top-left. - 270: top-right to bottom-left.  .. "
 "image:: images/img-rotate.*"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:792 c7f408bc09b14c8aae11d67ea9eea2f3
 msgid "one of the values 0, 90, 180, 270. Depending on this, text will be filled:"
@@ -2711,28 +2710,28 @@ msgid ""
 "available) rectangle stripe. Positive only if scale = 1 (no down-scaling "
 "happened). - `scale`: down-scaling factor, 0 < scale <= 1.  Please refer "
 "to examples in this section of the recipes: :ref:`RecipesText_I_c`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:805 2388939f268d42f7822900b65ba47d7d
 msgid "A tuple of floats `(spare_height, scale)`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:807 91e2ae8c284a44cfacc892a291375319
 msgid ""
 "`spare_height`: -1 if content did not fit, else >= 0. It is the height of"
 " the unused (still available) rectangle stripe. Positive only if scale = "
 "1 (no down-scaling happened)."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:808 67109feec5c247d19ff2f6eb71c53fe2
 msgid "`scale`: down-scaling factor, 0 < scale <= 1."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:810 50e746866d194c79ac6f7aae6bd2e30a
 msgid ""
 "Please refer to examples in this section of the recipes: "
 ":ref:`RecipesText_I_c`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:814 8fa761c739a5419295fcd83e810ffcb2
 #, fuzzy
@@ -2746,7 +2745,7 @@ msgstr "v1.19.1で変更：`sort` パラメータを追加"
 
 #: ../../page.rst:820 860727a4b3464e7ab689367c8fe81aed
 msgid "**Drawing Methods**"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:839 b8a55b1e51b6451c9da4a8fe2171fd7d
 msgid ""
@@ -3241,7 +3240,6 @@ msgid ""
 msgstr "画像ファイルの名前（MuPDFでサポートされているすべての形式 – :ref:`ImageFiles` を参照）。"
 
 #: ../../page.rst:1182 334948b47d194188a14c48f0afa6a090
-#, fuzzy
 msgid "maintain the aspect ratio of the image."
 msgstr "アスペクト比を保持するかどうか。"
 
@@ -3250,7 +3248,7 @@ msgid ""
 "image in memory -- to be used as image mask (alpha values) for the base "
 "image. When specified, the base image must be provided as a filename or a"
 " stream -- and must not be an image that already has a mask."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1188 04aa717b8e2a4303a1f9eb88ae85c739
 msgid ""
@@ -3258,18 +3256,17 @@ msgid ""
 ":data:`OCMD`. Ignored after the first of multiple insertions. The "
 "property is stored with the generated PDF image object and therefore "
 "controls the image's visibility throughout the PDF."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1193 e90a1cce56e34a7a850cd4e9473b3335
 msgid "see :ref:`CommonParms`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1194 0558b78a0402466cb7b15bd4ae5702f4
 msgid "a pixmap containing the image."
 msgstr "画像を含むピクスマップ。"
 
 #: ../../page.rst:1195 1cfc0a457fe84fe888571c17866f7ac0
-#, fuzzy
 msgid ""
 "rotate the image. Must be an integer multiple of 90 degrees. Positive "
 "values rotate anti-clockwise. If you need a rotation by an arbitrary "
@@ -3293,7 +3290,6 @@ msgid ""
 msgstr ""
 
 #: ../../page.rst:1213 24f9ac5d8e4848b0af811ccf08aab820
-#, fuzzy
 msgid ""
 "The `xref` of the embedded image. This can be used as the `xref` argument"
 " for very significant performance boosts, if the image is inserted again."
@@ -3304,7 +3300,6 @@ msgid "This example puts the same image on every page of a document::"
 msgstr "この例では、ドキュメントのすべてのページに同じ画像を配置します："
 
 #: ../../page.rst:1233 8f0e0646309c4871a77d1241ee2d4a52
-#, fuzzy
 msgid ""
 "The method detects multiple insertions of the same image (like in the "
 "above example) and will store its data only on the first execution.  This"
@@ -3327,7 +3322,6 @@ msgid ""
 msgstr "このメソッドを使用して、ページの背景または前景画像（著作権表示や透かしのようなもの）を提供できます。ただし、前景に透明な画像が必要な場合は、そのことを覚えておいてください..."
 
 #: ../../page.rst:1247 7b67dc92418e491cb2317d333beb3eed
-#, fuzzy
 msgid ""
 "The image may be inserted uncompressed, e.g. if a `Pixmap` is used or if "
 "the image has an alpha channel. Therefore, consider using `deflate=True` "
@@ -3337,12 +3331,9 @@ msgid ""
 msgstr ""
 "画像は非圧縮で挿入されることがあります。たとえば、*Pixmap* "
 "を使用するか、画像にアルファチャンネルがある場合です。したがって、ファイルを保存する際には *deflate=True* "
-"を使用することを検討してください。また、透明性が関与する場合でも、画像サイズを効果的に制御する方法が存在します。ドキュメンテーションの `この "
-"<https://pymupdf.readthedocs.io/en/latest/faq.html#how-to-add-images-to-a"
-"-pdf-page>`_ セクションをご覧ください。"
+"を使用することを検討してください。また、透明性が関与する場合でも、画像サイズを効果的に制御する方法が存在します。ドキュメンテーションの :ref:`RecipesImages_O` セクションをご覧ください。"
 
 #: ../../page.rst:1254 8ba0c10cb1e34d8981b626c7fee159de
-#, fuzzy
 msgid ""
 "The image is stored in the PDF at its original quality level. This may be"
 " much better than what you need for your display. Consider **decreasing "
@@ -3358,7 +3349,6 @@ msgstr ""
 "もそのために使用できます。ファイルサイズの節約は非常に大きい場合があります。"
 
 #: ../../page.rst:1263 93e14ee581654f4492188192077189fe
-#, fuzzy
 msgid ""
 "Another efficient way to display the same image on multiple pages is "
 "another method: :meth:`show_pdf_page`. Consult "
@@ -3366,8 +3356,6 @@ msgid ""
 "usable for that method."
 msgstr ""
 "同じ画像を複数のページで効率的に表示する別の方法は、別のメソッドです：:meth:`show_pdf_page`。そのメソッドで使用可能な中間のPDFを取得する方法については、:meth:`Document.convert_to_pdf`"
-" を参照してください。デモスクリプト `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-"
-"Utilities/tree/master/demo/fitz-logo.py>`_ は、かなり完全なアプローチを実装しています。\""
 
 #: ../../page.rst:1270 b6cee9daa7dc4297990ab1e2e0e877fa
 msgid "Changed in v1.14.1: By default, the image keeps its aspect ratio."
@@ -3379,7 +3367,6 @@ msgid "Changed in v1.14.11: Added args `keep_proportion`, `rotate`."
 msgstr "v1.19.1で変更：`sort` パラメータを追加"
 
 #: ../../page.rst:1272 8a3d9b05dd25471f86e8e4f833604b26
-#, fuzzy
 msgid "Changed in v1.14.13:"
 msgstr "v1.14.17で変更されました"
 
@@ -3511,14 +3498,12 @@ msgstr ""
 " 'DeviceGray', '', 'Im1', 'FlateDecode')` 、また同じ境界ボックスをページ上に「覆う」ように見えます。"
 
 #: ../../page.rst:1365 847fd11af21643bc9a79dc14e0586cb5
-#, fuzzy
 msgid ""
 "Retrieves the content of a page in a variety of formats. This is a "
 "wrapper for multiple :ref:`TextPage` methods by choosing the output "
 "option `opt` as follows:"
 msgstr ""
-"さまざまなフォーマットでページのコンテンツを取得します。これは、出力オプションを以下のように選択することで、:ref:`TextPage` "
-"メソッドのラッパーです："
+"⚠️"
 
 #: ../../page.rst:1367 4c2c9af9a5444406bcc996a3ee4163a3
 msgid "\"text\" -- :meth:`TextPage.extractTEXT`, default"
@@ -3575,12 +3560,10 @@ msgid ""
 msgstr "要求される形式を示す文字列、上記のいずれか。大文字と小文字の組み合わせがサポートされています"
 
 #: ../../page.rst:1380 4c0f44dc77a7440fa928d8805586ff93
-#, fuzzy
 msgid "Values \"words\" and \"blocks\" are also accepted (changed in v1.16.3)."
 msgstr "v1.16.3で変更された値 “words” と “blocks” も受け入れられるようになりました。"
 
 #: ../../page.rst:1382 7dd6332ca3dc4dbfaaa10ef9c315686e
-#, fuzzy
 msgid ""
 "restrict extracted text to this rectangle. If None, the full page is "
 "taken. Has **no effect** for options \"html\", \"xhtml\" and \"xml\". "
@@ -3595,10 +3578,9 @@ msgid ""
 " handled with respect to white spaces and :data:`ligatures`. See "
 ":ref:`TextPreserve` for available indicators and "
 ":ref:`text_extraction_flags` for default settings. (New in v1.16.2)"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1386 b1aead209cf8419cb0a80e40102d9b84
-#, fuzzy
 msgid ""
 "use a previously created :ref:`TextPage`. This reduces execution time "
 "**very significantly:** by more than 50% and up to 95%, depending on the "
@@ -3661,7 +3643,7 @@ msgid ""
 "contained in *clip* (changed in v1.18.2). This **deviates** from the "
 "algorithm used in redaction annotations: a character will be **removed if"
 " its bbox intersects** any redaction annotation."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1402 940634ecd82848ea8f8b8b2310f09ab2
 msgid "Changed in v1.19.0: added `textpage` parameter"
@@ -3696,26 +3678,12 @@ msgid ""
 "created."
 msgstr "使用する :ref:`TextPage`。省略した場合、新しい一時的なテキストページが作成されます。"
 
-#: ../../page.rst:1420 3194cc239e824edaa667ff4aca851786
-#, fuzzy
-msgid ""
-"a string with interspersed linebreaks where necessary. It is based on "
-"dedicated code (changed in v1.19.0). A tyical use is checking the result "
-"of :meth:`Page.search_for`:  >>> rl = page.search_for(\"currency:\") >>> "
-"page.get_textbox(rl[0]) 'Currency:' >>>"
-msgstr ""
-"必要に応じて改行が挿入された文字列。v1.19.0 で変更: "
-"それは専用のコードに基づいています。典型的な使用例は、:meth:`Page.search_for` の結果をチェックすることです"
-
 #: ../../page.rst:1420 f295f78715e94430aa70315c8e305c19
-#, fuzzy
 msgid ""
 "a string with interspersed linebreaks where necessary. It is based on "
-"dedicated code (changed in v1.19.0). A tyical use is checking the result "
+"dedicated code (changed in v1.19.0). A typical use is checking the result "
 "of :meth:`Page.search_for`:"
-msgstr ""
-"必要に応じて改行が挿入された文字列。v1.19.0 で変更: "
-"それは専用のコードに基づいています。典型的な使用例は、:meth:`Page.search_for` の結果をチェックすることです"
+msgstr "必要に応じて改行が挿入された文字列。v1.19.0 で変更: それは専用のコードに基づいています。典型的な使用例は、:meth:`Page.search_for` の結果をチェックすることです"
 
 #: ../../page.rst:1429 3874004c93f04fcf9f453c7845a87bbf
 msgid "New in v1.17.7"
@@ -3736,7 +3704,6 @@ msgid ""
 msgstr "後続のテキスト抽出と検索で使用可能なコンテンツを制御する指示ビット – :meth:`Page.get_text` のパラメータを参照してください。"
 
 #: ../../page.rst:1445 33102f02fa4c4c66b9804daf77417a62
-#, fuzzy
 msgid "restrict extracted text to this area. (New in v1.17.7)"
 msgstr "*(v1.17.7 で新機能)* 抽出されたテキストをこの領域に制限します。"
 
@@ -3758,10 +3725,9 @@ msgid ""
 "extract text data for documents where text is in a raster image format "
 "throughout the page. Use this method to **OCR** a page for text "
 "extraction."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1468 521dc7071dab4f3c8ffb48797c10b029
-#, fuzzy
 msgid ""
 "This method returns a :ref:`TextPage` for the page that includes OCRed "
 "text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise "
@@ -3970,7 +3936,6 @@ msgid "fill_opacity"
 msgstr ""
 
 #: ../../page.rst:1517 e7a87b5fc8e1488b885c9d6e18c34598
-#, fuzzy
 msgid "fill color transparency (see :ref:`Shape`). (New in v1.18.17)"
 msgstr "v1.18.17で新しく追加された塗りつぶしカラーの透明度（:ref:`Shape` を参照）。"
 
@@ -3979,7 +3944,6 @@ msgid "stroke_opacity"
 msgstr ""
 
 #: ../../page.rst:1518 4a4f6814d1034a73933c038528ce24ef
-#, fuzzy
 msgid "stroke color transparency  (see :ref:`Shape`). (New in v1.18.17)"
 msgstr "v1.18.17で新しく追加されたストロークカラーの透明度（:ref:`Shape` を参照）。"
 
@@ -4000,7 +3964,6 @@ msgid "layer"
 msgstr ""
 
 #: ../../page.rst:1520 35304729f12b46369774769ad5fc2193
-#, fuzzy
 msgid "name of applicable Optional Content Group. (New in v1.22.0)"
 msgstr "v1.22.0で新しく追加された適用可能なオプションコンテンツグループの名前"
 
@@ -4011,7 +3974,6 @@ msgid "level"
 msgstr ""
 
 #: ../../page.rst:1521 9e5daf1686e24fb7a96515fedbae884d
-#, fuzzy
 msgid "the hierarchy level if `extended=True`. (New in v1.22.0)"
 msgstr "v1.22.0で新しく追加された `extended=True` の場合の階層レベル"
 
@@ -4020,7 +3982,6 @@ msgid "seqno"
 msgstr ""
 
 #: ../../page.rst:1522 55d95aeef0c84fa1b0f4ea4882135057
-#, fuzzy
 msgid "command number when building page appearance. (New in v1.19.0)"
 msgstr "v1.19.0で新しく追加されたページ表示を構築する際のコマンド番号"
 
@@ -4039,7 +4000,7 @@ msgstr ""
 
 #: ../../page.rst:1523 e2f5aee4f55e4caaa486a224621de583
 msgid "type of this path. (New in v1.18.17)"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1524 ../../page.rst:1665 0169537a3a834207b4ead24c49c4d052
 #: a0a54be981a84be3b3ff55514eea6f06
@@ -4047,12 +4008,10 @@ msgid "width"
 msgstr ""
 
 #: ../../page.rst:1524 2a211500438a4c05a4b20e8e219a9e61
-#, fuzzy
 msgid "Stroke line width. (see :ref:`Shape`)."
 msgstr "ストロークラインの幅（:ref:`Shape` を参照）。"
 
 #: ../../page.rst:1527 e5c21cd28d7442a989e7d11ceba9b202
-#, fuzzy
 msgid ""
 "Key `\"opacity\"` has been replaced by the new keys `\"fill_opacity\"` "
 "and `\"stroke_opacity\"`. This is now compatible with the corresponding "
@@ -4117,10 +4076,9 @@ msgid ""
 "`orientation` is 1 resp. -1 indicating whether the enclosed area is "
 "rotated left (1 = anti-clockwise), or resp. right [#f7]_ (changed in "
 "v1.19.2)."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1541 4104731f9d1b4464b76bba1542506a41
-#, fuzzy
 msgid ""
 "`(\"qu\", quad)` - a :ref:`Quad`. 3 or 4 consecutive lines are detected "
 "to actually represent a :ref:`Quad` (changed in v1.19.2:). (New in "
@@ -4150,7 +4108,7 @@ msgid ""
 "encoded by the new integer key \"level\", the hierarchy level. Each group"
 " or clip establishes a new hierarchy, which applies to all subsequent "
 "paths having a *larger* level value. (New in v1.22.0)"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1549 ccaea771d67d4124863f8fae82b372c6
 msgid ""
@@ -4376,7 +4334,6 @@ msgstr ""
 ":meth:`Page.get_text` の辞書出力のサブセットであり、画像のバイナリコンテンツとページ上のテキストは無視されます。"
 
 #: ../../page.rst:1653 df70b9deb53242c09959ac6ba8039059
-#, fuzzy
 msgid ""
 "Compute the MD5 hashcode for each encountered image, which allows "
 "identifying image duplicates. This adds the key `\"digest\"` to the "
@@ -4393,7 +4350,7 @@ msgid ""
 "undetectable. Please note that this option has an extended response time,"
 " because the MD5 hashcode will be computed at least two times for each "
 "image with an xref. (New in v1.18.13)"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1658 6e51115ba6444ca694c71bcc5786f3cd
 msgid ""
@@ -4549,12 +4506,10 @@ msgid ""
 msgstr "同じ画像の複数の出現は常に報告されます。digestの値を比較して重複を検出できます。"
 
 #: ../../page.rst:1682 64a2ba85654948bf8ccb24fc7cc727e1
-#, fuzzy
 msgid "New in v1.18.11"
 msgstr "*新機能（v1.18.11)*"
 
 #: ../../page.rst:1683 bac3f2825f6e465490f6a460e4a711ea
-#, fuzzy
 msgid ""
 "Changed in v1.18.13: added image MD5 hashcode computation and "
 ":data:`xref` search."
@@ -4647,7 +4602,6 @@ msgstr ""
 "が指定されているもの、またはそのようなアイテムの参照名 **name**  エントリ、つまりitem[-3]（またはitem[7]）。"
 
 #: ../../page.rst:1725 09b24dcd750e46079ee4cf396c19729e
-#, fuzzy
 msgid ""
 "return the matrix used to transform the image rectangle to the bbox on "
 "the page (new in v1.18.11). Default is just the bbox. If true, then a "
@@ -4773,7 +4727,7 @@ msgid ""
 "browser will fall back to some default -- leading to unpleasant "
 "appearances. Choose *False* if you want to parse the text of the SVG. "
 "(New in v1.17.5)"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1761 c59a8b73447a41acb32c89b04c7eef38
 msgid ""
@@ -5047,7 +5001,7 @@ msgstr "度数で指定された必要な回転を表す整数。90の整数倍�
 msgid ""
 "PDF only: Set page rotation to 0 while maintaining appearance and page "
 "content."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1916 d32e5fda916f4377b987e8420f16ac61
 msgid ""
@@ -5056,7 +5010,7 @@ msgid ""
 "automatically recomputes the rectangles of any annotations, links and "
 "widgets present on the page.  This method may come in handy when e.g. "
 "used with :meth:`Page.show_pdf_page`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1916 5b1c2c7af7c7479f88557e9b935c97f2
 msgid ""
@@ -5064,13 +5018,13 @@ msgid ""
 "rotated (rotation 0), :ref:`Identity` is returned. The method "
 "automatically recomputes the rectangles of any annotations, links and "
 "widgets present on the page."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1918 4264add5e1c446009ac3bc23b9e94658
 msgid ""
 "This method may come in handy when e.g. used with "
 ":meth:`Page.show_pdf_page`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:1928 a8ad8a53381c4a888ff89d38493e3ef5
 msgid ""
@@ -5144,7 +5098,6 @@ msgid "put image in foreground (default) or background."
 msgstr "画像を前景（デフォルト）または背景に配置します。"
 
 #: ../../page.rst:1944 3e0e409084b248ed8f288142737e1bd3
-#, fuzzy
 msgid ""
 "(:data:`xref`) make visibility dependent on this :data:`OCG` / "
 ":data:`OCMD` (which must be defined in the target PDF) [#f9]_. (New in "
@@ -5154,7 +5107,6 @@ msgstr ""
 "（ターゲットPDFで定義されている必要があります）に依存する可視性を作成します [#f9]_。"
 
 #: ../../page.rst:1945 39e19cefa7294e20a376e557abae5c1e
-#, fuzzy
 msgid ""
 "show the source rectangle rotated by some angle. Any angle is supported "
 "(changed in v1.14.11). (New in v1.14.10)"
@@ -5244,7 +5196,7 @@ msgid ""
 "**significantly.** If specified, the 'flags' and 'clip' arguments are "
 "ignored. If omitted, a temporary textpage will be created. (New in "
 "v1.19.0)"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:2004 b4d4b9b9d6934e92ae340711202ab0e1
 msgid ""
@@ -5415,7 +5367,6 @@ msgid "New in v1.19.4"
 msgstr "v1.19.4で新規追加"
 
 #: ../../page.rst:2105 76e8bc4e2a5843cdbdbc59422b800ad8
-#, fuzzy
 msgid ""
 "Contains the rotation of the page in degrees (always 0 for non-PDF "
 "types). This is a copy of the value in the PDF file. The PDF "
@@ -5427,13 +5378,13 @@ msgid ""
 "*\"The number of degrees by which the page should be rotated clockwise "
 "when displayed or printed. The value must be a multiple of 90. Default "
 "value: 0.\"*"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:2109 62d26d56eaed4b1296478af2d38db4d2
 msgid ""
 "In PyMuPDF, we make sure that this attribute is always one of 0, 90, 180 "
 "or 270."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../page.rst:2115 423241a3d79e4c88b9333561893b1936
 msgid ""
@@ -5855,7 +5806,6 @@ msgstr ""
 "のどこにでも配置でき、cropbox（表示ページ部分を表す）が小さい場合、画像は見えないか部分的にしか見えない可能性があります。"
 
 #: ../../page.rst:2307 49806f5677554617ac9a40c4cbfe4569
-#, fuzzy
 msgid ""
 "If you need to also see annotations or fields in the target page, you can"
 " convert the source PDF using :meth:`Document.bake`. The underlying MuPDF"
@@ -5863,7 +5813,7 @@ msgid ""
 "content. Then use :meth:`Page.show_pdf_page` with the converted PDF page."
 msgstr ""
 "ターゲットページで注釈やフィールドも表示する必要がある場合、ソースPDFを別のPDFに変換して "
-":meth:`Document.convert_to_pdf` "
+":meth:`Document.bake` "
 "を使用してみることができます。そのメソッドの基本となるMuPDFの機能は、これらのオブジェクトを通常のページコンテンツに変換します。その後、変換されたPDFページを使用して"
 "　:meth:`Page.show_pdf_page` を使用します。"
 

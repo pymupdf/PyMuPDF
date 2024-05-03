@@ -674,8 +674,8 @@ msgid ":meth:`Document.resolve_names`"
 msgstr ""
 
 #: ../../document.rst:100 39ab4f91bc2242d99fc4ea803854a2bc
-msgid "PDF only: Convert destination names into a Python dict"
-msgstr ""
+msgid "PDF only: Convert destination names into a Python dict."
+msgstr "⚠️"
 
 #: ../../document.rst:101 b33afd51a77e47ff9a31c197bad4d08d
 msgid ":meth:`Document.save`"
@@ -2362,37 +2362,17 @@ msgstr ""
 "を取得する必要があります。これらの変更がページ構造に反映されるようにするために、このメソッドは \"document -> page -> "
 "annotations/widgets\" のオブジェクト階層を保持したまま、新しいコピーを再設定します。"
 
-#: ../../document.rst:615 ea9e79f5cf7a46368694c61b9d6fba24
-msgid "PDF only: Convert destination names into a Python dict."
-msgstr ""
 
-#: ../../document.rst:617 4185741ba5734aa18b4f00c442d5b1d2
-msgid ""
-"A dictionary with the following layout:  * *key*: (str) the name. * "
-"*value*: (dict) with the following layout:     * \"page\":  target page "
-"number (0-based). If no page number found -1.     * \"to\": (x, y) target"
-" point on page. Currently in PDF coordinates,       i.e. point (0,0) is "
-"the bottom-left of the page.     * \"zoom\": (float) the zoom factor."
-"     * \"dest\": (str) only present if the target location on the page "
-"has       not been provided as \"/XYZ\" or if no page number was found. "
-"Examples::      {         '__bookmark_1': {'page': 0, 'to': (0.0, 541.0),"
-" 'zoom': 0.0},         '__bookmark_2': {'page': 0, 'to': (0.0, 481.45), "
-"'zoom': 0.0},     }  or::      {         "
-"'21154a7c20684ceb91f9c9adc3b677c40': {'page': -1, 'dest': '/XYZ 15.75 "
-"1486 0'},         ...     }"
-msgstr ""
 
 #: ../../document.rst:618 083c75663fc24248bdd74413556422dd
-#, fuzzy
 msgid "A dictionary with the following layout:"
 msgstr "以下のキーを持つ辞書:"
 
 #: ../../document.rst:620 6bf8864ae2f44c89af9012a022fae10d
 msgid "*key*: (str) the name."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:626 1e329f2702f84e9586fe6c0b8701ef24
-#, fuzzy
 msgid "*value*: (dict) with the following layout:"
 msgstr "以下のキーを持つ辞書:"
 
@@ -2404,38 +2384,35 @@ msgstr ""
 msgid ""
 "\"to\": (x, y) target point on page. Currently in PDF coordinates, i.e. "
 "point (0,0) is the bottom-left of the page."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:625 0bb0627a039b4518a88fbc280d3bab60
-#, fuzzy
 msgid "\"zoom\": (float) the zoom factor."
-msgstr "zoom: ターゲットページ上のズームファクター（float）。"
+msgstr "\"zoom\": ターゲットページ上のズームファクター（float）。"
 
 #: ../../document.rst:626 9b5b2bb87fbd4f4e8b77268e944f2d36
 msgid ""
 "\"dest\": (str) only present if the target location on the page has not "
 "been provided as \"/XYZ\" or if no page number was found."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:628 a04a288b317f406c833ff9f4a8fb3054
-#, fuzzy
 msgid "Examples::"
 msgstr "例::"
 
 #: ../../document.rst:635 55d1b3e8436d4e748664b372fd36d258
 msgid "or::"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:642 4b219f15f656445a878d2e0f8345ef4c
 msgid ""
 "All names found in the catalog under keys \"/Dests\" and \"/Names/Dests\""
 " are included."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:645 8bf57ba3b0c4441bafd9527eae099841
-#, fuzzy
 msgid "New in v1.23.6"
-msgstr "v1.22.2で新登場"
+msgstr "v1.23.6で新登場"
 
 #: ../../document.rst:650 ../../document.rst:660 ../../document.rst:1087
 #: ../../document.rst:1097 ../../document.rst:1109
@@ -2710,7 +2687,6 @@ msgid "*title* -- title (*str*)"
 msgstr "*title* – タイトル（*str*）"
 
 #: ../../document.rst:748 1ed4778bd84747eeb2aeb080d33368cf
-#, fuzzy
 msgid ""
 "*page* -- 1-based source page number (*int*). `-1` if no destination or "
 "outside document."
@@ -3599,7 +3575,7 @@ msgid ""
 "are now transformed with `page.cropbox` and `page.rotation_matrix`). So "
 "for example `set_toc(get_toc())` now gives unchanged destination 'to' "
 "coordinates."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1089 d68ec85a216f4c8a98ca0856100e3558
 msgid ""
@@ -3738,20 +3714,20 @@ msgid ""
 "PDF only: Convert annotations and / or widgets to become permanent parts "
 "of the pages. The PDF **will be changed** by this method. If `widgets` is"
 " `True`, the document will also no longer be a \"Form PDF\"."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1151 cf99257989124baea424c848483e8a34
 msgid ""
 "All pages will look the same, but will no longer have annotations, "
 "respectively fields. The visible parts will be converted to standard "
 "text, vector graphics or images as required."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1153 2161bfd28cf1427b8df64a7ccead39ef
 msgid ""
 "The method may thus be a viable **alternative for PDF-to-PDF "
 "conversions** using :meth:`Document.convert_to_pdf`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1155 362d8ae27cc44a679d1bdc1cd45ba80d
 msgid ""
@@ -3761,7 +3737,7 @@ msgid ""
 "widgets with this method, all this underlying information (attached "
 "files, comments, associated PopUp annotations, etc.) will be lost and be "
 "removed on next garbage collection."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1157 00f2bafe760944b58f702b40b33e54b7
 msgid ""
@@ -3769,18 +3745,17 @@ msgid ""
 "(which supports no copying of widgets) or :meth:`Page.show_pdf_page` "
 "(which supports neither annotations nor widgets) when the source pages "
 "should look exactly the same in the target."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1160 9c492c0950254c308633f48834528c19
-#, fuzzy
 msgid "convert annotations."
-msgstr "レダクション注釈を適用します。"
+msgstr "⚠️"
 
 #: ../../document.rst:1161 62fe03408be143f78eb6bbeb824e5b13
 msgid ""
 "convert fields / widgets. After execution, the document will no longer be"
 " a \"Form PDF\"."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1166 7585ffac58384db5867bed3e40eef97e
 msgid "New in v1.16.0"
@@ -4060,7 +4035,7 @@ msgid ""
 ":data:`stream` data. Depending on the `deflate` parameter value, the "
 "converted object definitions will be compressed -- which can lead to very"
 " significant file size reductions."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1242 975dbfe06c634674ad2d43fce59396f9
 msgid ""
@@ -4071,7 +4046,7 @@ msgstr "このメソッドは、その名前のファイルがすでに存在す
 
 #: ../../document.rst:1246 ebed406a89c84884b0246a4816155c1b
 msgid "**File size reduction**"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1248 3f63c1be05ac4013a43d9dadc21e2532
 msgid ""
@@ -4080,7 +4055,7 @@ msgid ""
 "clean=False|0, incremental=False|0`. This is a \"lossless\" file size "
 "reduction. There is a convenience version of this method with these "
 "values set by default, :meth:`Document.ez_save` -- please see below."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1251 ef32e8e16a68431683443e032ea01c76
 msgid ""
@@ -4089,19 +4064,18 @@ msgid ""
 " grayscale versions (c) reduce image resolutions. Find examples in the "
 "`PyMuPDF Utilities \"replace-image\" folder <https://github.com/pymupdf"
 "/PyMuPDF-Utilities/tree/master/examples/replace-image>`_."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1255 6257507958724be99828890bfe7207bd
 msgid "New in v1.18.11"
 msgstr "v1.18.11で新規追加"
 
 #: ../../document.rst:1257 91b596fbadf342d6a7bf2790aa4959b5
-#, fuzzy
 msgid ""
 "PDF only: The same as :meth:`Document.save` but with changed defaults "
 "`deflate=True, garbage=3, use_objstms=1`."
 msgstr ""
-"PDFのみ：:meth:`Document.save` と同じですが、デフォルト値が `deflate=True, garbage=3` "
+"PDFのみ：:meth:`Document.save` と同じですが、デフォルト値が `deflate=True, garbage=3, use_objstms=1` "
 "に変更されています。"
 
 #: ../../document.rst:1261 681d25e6d0f4401fa1d5037a4fb7a2cc
@@ -4201,7 +4175,6 @@ msgid ""
 msgstr "コピーされるすべてのページは、指定された値（度数、90の整数倍）で回転します。"
 
 #: ../../document.rst:1314 a5702669024848bd90cde6f861c20dbf
-#, fuzzy
 msgid ""
 "Choose whether (internal and external) links should be included in the "
 "copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal "
@@ -4211,11 +4184,10 @@ msgstr ""
 "**常に除外されます** 。"
 
 #: ../../document.rst:1315 20d72aa5985749f18e90fcc12583416f
-#, fuzzy
 msgid ""
 "*(new in v1.16.1)* choose whether annotations should be included in the "
 "copy. Form **fields can never be copied** -- see below."
-msgstr "*(v1.16.1で新規追加)* 注釈をコピーに含めるかどうかを選択します。 *(v1.19.3で修正)* フォームフィールドはコピーできません。"
+msgstr "*(v1.16.1で新規追加)* 注釈をコピーに含めるかどうかを選択します。 フォームフィールドはコピーできません。"
 
 #: ../../document.rst:1316 0361ae883f5c48cda68402ca8355e45d
 msgid ""
@@ -4248,10 +4220,9 @@ msgid ""
 "be copied** -- although they seem to appear on pages only. Look at "
 ":meth:`Document.bake` for converting a source document if you need to "
 "retain at least widget **appearances.**"
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1323 ff446a9617ae40b2bb5da3f79a3d1caf
-#, fuzzy
 msgid ""
 "If `from_page > to_page`, pages will be **copied in reverse order**. If "
 "`0 <= from_page == to_page`, then one page will be copied."
@@ -4260,7 +4231,6 @@ msgstr ""
 "to_page* の場合、1ページがコピーされます。"
 
 #: ../../document.rst:1325 641efc27f17b44c98fbbf6366c1c594f
-#, fuzzy
 msgid ""
 "`docsrc` TOC entries **will not be copied**. It is easy however, to "
 "recover a table of contents for the resulting document. Look at the "
@@ -5075,7 +5045,6 @@ msgstr ""
 "圧縮を使用して挿入されます（有益な場合）、それ以外の場合はストリームはそのまま挿入されます。"
 
 #: ../../document.rst:1683 f20be144af0d468caec75e36a3520751
-#, fuzzy
 msgid ""
 "if *xref* does not represent a PDF :data:`dict`. An empty dictionary "
 "``<<>>`` is accepted. So if you just created the xref and want to give it"
@@ -5134,13 +5103,12 @@ msgid "the source :data:`xref`. It must be an existing **dictionary** object."
 msgstr "ソースの :data:`xref`。既存の **辞書** オブジェクトである必要があります。"
 
 #: ../../document.rst:1699 8d10b5ef332440fc92b77e80e3bbe747
-#, fuzzy
 msgid ""
 "the target xref. Must be an existing **dictionary** object. If the xref "
 "has just been created, make sure to initialize it as a PDF dictionary "
 "with the minimum specification ``<<>>``."
 msgstr ""
-"ターゲットの xref。既存の **辞書** オブジェクトである必要があります。xref が新たに作成されたばかりの場合、最小仕様 "
+"ターゲットの :data:`xref`。既存の **辞書** オブジェクトである必要があります。xref が新たに作成されたばかりの場合、最小仕様 "
 "``<<>>`` を持つ PDF 辞書として初期化することを確認してください。"
 
 #: ../../document.rst:1700 c97a905f140643f0b66e64d019f4d5d1
@@ -5425,7 +5393,6 @@ msgstr ""
 "の場合、リンクや注釈が見つからない場合、回答に時間がかかることがあります [#f6]_。"
 
 #: ../../document.rst:1818 7ebf04d3b16f4b358f86ed6b5504230c
-#, fuzzy
 msgid ""
 "PDF only: Investigate eligible fonts for their use by text in the "
 "document. If a font is supported and a size reduction is possible, that "
@@ -5435,15 +5402,14 @@ msgstr ""
 "ドキュメント内のテキストによる使用を検討するための適格なフォントを調査します。サポートされているフォントで、サイズの削減が可能な場合、そのフォントは文字のサブセットを含むバージョンで置換されます。"
 
 #: ../../document.rst:1820 c8ed0ade7b22444f8f455ff6342b0da7
-#, fuzzy
 msgid "Use this method immediately before saving the document."
-msgstr "このメソッドは、ドキュメントを保存する直前に使用します。現時点では、以下の機能と制限が適用されます:"
+msgstr "このメソッドは、ドキュメントを保存する直前に使用します"
 
 #: ../../document.rst:1822 b1786a67d7dd4714b7ad114dc67419bb
 msgid ""
 "write various progress information to sysout. This currently only has an "
 "effect if `fallback` is `True`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1823 0452ca8daa494334bf98787f5ca889ac
 msgid ""
@@ -5452,7 +5418,7 @@ msgid ""
 "installed). If using the recommended value `False` (default), MuPDF's "
 "native function is used -- which is **very much faster** and can subset a"
 " broader range of font types. Package fontTools is not required then."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1825 52ff234b74074b1db1cddd89f142b6b9
 msgid ""
@@ -5460,7 +5426,7 @@ msgid ""
 "fonts like is typical for Asian scripts. When using the :ref:`Story` "
 "class or method :meth:`Page.insert_htmlbox`, multiple fonts may "
 "automatically be included -- without the programmer becoming aware of it."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1827 0e40451dd90e402c8530e96f339ef2d4
 msgid ""
@@ -5469,7 +5435,7 @@ msgid ""
 " this method can easily reduce the embedded font binaries by two orders "
 "of magnitude -- from several megabytes down to a low two-digit kilobyte "
 "amount."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1829 ff6016ddee9c400999e7f94d087be100
 msgid ""
@@ -5477,20 +5443,19 @@ msgid ""
 "PDF objects (\"ghosts\"). Therefore, make sure to compress and garbage-"
 "collect when saving the file. We recommend to use "
 ":meth:`Document.ez_save`."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1831 b2bba7363f714ee697783d9721761433
 msgid "|history_begin|"
 msgstr ""
 
 #: ../../document.rst:1834 00f5fbe3231149c6ad24a68103575338
-#, fuzzy
 msgid "Changed in v1.18.9"
-msgstr "v1.18.7で変更"
+msgstr "v1.18.9で変更"
 
 #: ../../document.rst:1835 e85e2d9222e74a9db3a403dc6f18a7f8
 msgid "Changed in v1.24.2 use native function of MuPDF."
-msgstr ""
+msgstr "⚠️"
 
 #: ../../document.rst:1837 9946a8c84a944420ba31948a880779db
 msgid "|history_end|"
