@@ -110,7 +110,9 @@ def test_pylint():
     leafs = [
             '__init__.py',
             '__main__.py',
-            'fitz.py',
+            'fitz___init__.py',
+            'fitz_table.py',
+            'fitz_utils.py',
             'pymupdf.py',
             'table.py',
             'utils.py',
@@ -124,7 +126,7 @@ def test_pylint():
     else:
         leafs_git = [i for i in leafs_git if i.endswith('.py')]
         leafs_git.sort()
-        assert  leafs_git == leafs, f'{leafs=} {leafs_git=}'
+        assert  leafs_git == leafs, f'leafs:\n    {leafs!r}\nleafs_git:\n    {leafs_git!r}'
     for leaf in leafs:
         command += f' {directory}/{leaf}'
     print(f'Running: {command}')
