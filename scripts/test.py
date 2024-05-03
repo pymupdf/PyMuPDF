@@ -437,6 +437,10 @@ def test(
             # Create copies of each test file, modified to use `pymupdf`
             # instead of `fitz`.
             for p in glob.glob(f'{pymupdf_dir_rel}/tests/test_*.py'):
+                if os.path.basename(p).startswith('test_fitz_'):
+                    # Don't recursively generate test_fitz_fitz_foo.py,
+                    # test_fitz_fitz_fitz_foo.py, ... etc.
+                    continue
                 branch, leaf = os.path.split(p)
                 p2 = f'{branch}/{leaf[:5]}fitz_{leaf[5:]}'
                 print(f'Converting {p=} to {p2=}.')
