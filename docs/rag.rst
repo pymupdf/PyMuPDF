@@ -54,18 +54,21 @@ Chunking (or splitting) data is essential to give context to your :title:`LLM` d
 Outputting as :title:`Markdown`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to export your document in :title:`Markdown` format you will need a separate helper. Package `pdf4llm <https://pypi.org/project/pdf4llm/>`_ is a high-level wrapper of |PyMuPDF| functions which for each page outputs standard and table text in an integrated Markdown-formatted string across all document pages:
+In order to export your document in :title:`Markdown` format you will need a separate helper. Package `pymupdf4llm <https://pypi.org/project/pymupdf4llm/>`_ is a high-level wrapper of |PyMuPDF| functions which for each page outputs standard and table text in an integrated Markdown-formatted string across all document pages:
 
 
 .. code-block:: python
 
-    import pdf4llm
-
-    md_text = pdf4llm.to_markdown("input.pdf")
+    # convert the document to markdown
+    import pymupdf4llm
+    md_text = pymupdf4llm.to_markdown("input.pdf")
 
     # Write the text to some file in UTF8-encoding
     import pathlib
     pathlib.Path("output.md").write_bytes(md_text.encode())
+
+
+For further information please refer to: `pymupdf4llm documentation <https://pymupdf4llm.readthedocs.io>`_
 
 
 How to use :title:`Markdown` output
