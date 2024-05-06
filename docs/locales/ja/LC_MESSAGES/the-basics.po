@@ -85,13 +85,13 @@ msgid ""
 "Of course it is not just |PDF| which can have text extracted - all the "
 ":ref:`supported document file formats <About_Feature_Matrix>` such as "
 ":title:`MOBI`, :title:`EPUB`, :title:`TXT` can have their text extracted."
-msgstr "⚠️"
+msgstr "もちろん、PDFだけでなく、MOBI、EPUB、TXTなどの :ref:`サポートされているドキュメントファイル形式 <About_Feature_Matrix>` でもテキストを抽出できます。"
 
 #: ../../the-basics.rst:60 338b1aebec83417786ed6ef0a9260943
 msgid ""
 "If your document contains image based text content the use OCR on the "
 "page for subsequent text extraction:"
-msgstr "⚠️"
+msgstr "もし文書に画像ベースのテキストコンテンツが含まれている場合は、後続のテキスト抽出のためにそのページでOCRを使用してください。"
 
 #: ../../the-basics.rst:67 ../../the-basics.rst:121
 #: 10620627ef274facb2be7d1846e32b34 d359b9b6dbd640168f7ce043d0e20a52
@@ -105,7 +105,7 @@ msgstr "特定の領域からテキストを抽出する方法や、文書から
 msgid ""
 "You can now also :ref:`extract text in Markdown "
 "format<rag_outputting_as_md>`."
-msgstr "⚠️"
+msgstr ":ref:`Markdown形式でテキストを抽出 <rag_outputting_as_md>` することもできます。"
 
 #: ../../the-basics.rst:71 ../../the-basics.rst:123 ../../the-basics.rst:153
 #: ../../the-basics.rst:208 ../../the-basics.rst:255 ../../the-basics.rst:291
@@ -152,23 +152,23 @@ msgstr ""
 
 #: ../../the-basics.rst:133 7a68bec119f74234bc8ca4351ded77ac
 msgid "Extract vector graphics"
-msgstr "⚠️"
+msgstr "ベクトルグラフィックスを抽出"
 
 #: ../../the-basics.rst:135 6f5c233b7a464bb0a2d14278703065a4
 msgid "To extract all the vector graphics from a document page, do the following:"
-msgstr "⚠️"
+msgstr "ドキュメントのページからすべてのベクトルグラフィックスを抽出するには、以下の手順に従います："
 
 #: ../../the-basics.rst:145 f09b491dfb81424893a1d9ca6239c18c
 msgid ""
 "This will return a dictionary of paths for any vector drawings found on "
 "the page."
-msgstr "⚠️"
+msgstr "これにより、ページ上で見つかったすべてのベクター図形のパスの辞書が返されます。"
 
 #: ../../the-basics.rst:151 c2d59e5bd2ee43d896799d8bbfe1a6e1
 msgid ""
 "Please refer to: :ref:`How to Extract "
 "Drawings<RecipesDrawingAndGraphics_Extract_Drawings>`."
-msgstr "⚠️"
+msgstr "次のページを参照してください： :ref:`「描画の抽出方法」 <RecipesDrawingAndGraphics_Extract_Drawings>`。"
 
 
 #: ../../the-basics.rst:166 cf7bc47b51ac4654ab06832c8d1ca59c
@@ -227,7 +227,7 @@ msgstr ""
 
 #: ../../the-basics.rst:218 367e8a0f3fdc4a5f851a5418dfefde19
 msgid "Working with Coordinates"
-msgstr "⚠️"
+msgstr "座標を扱う"
 
 #: ../../the-basics.rst:220 2240c01eb3bd47ef913ba914afb3eff5
 msgid ""
@@ -235,7 +235,7 @@ msgid ""
 "when using **PyMuPDF** -  **\"coordinates\"**. Please have a quick look "
 "at the :ref:`Coordinates` section to understand the coordinate system to "
 "help you with positioning objects and understand your document space."
-msgstr "⚠️"
+msgstr "**PyMuPDF** を使用する際に快適に感じるべき*数学用語*が1つあります - **「座標」** です。オブジェクトの配置や文書空間の理解に役立つ座標系を理解するために、:ref:`Coordinates` セクションを簡単にご覧ください。"
 
 #: ../../the-basics.rst:229 37c12dbb65434e5a9347b2abd7748822
 msgid "Adding a watermark to a |PDF|"
@@ -392,19 +392,19 @@ msgstr "複数のページを文書から削除するには、以下の手順を
 
 #: ../../the-basics.rst:459 7181adeb9c8842c1b31ba7084b549fed
 msgid "What happens if I delete a page referred to by bookmarks or hyperlinks?"
-msgstr "⚠️"
+msgstr "ブックマークやハイパーリンクで参照されているページを削除した場合、どうなりますか？"
 
 #: ../../the-basics.rst:461 2dade9d31d8840ab89cba48da151157b
 msgid ""
 "A bookmark (entry in the Table of Contents) will become inactive and will"
 " no longer navigate to any page."
-msgstr "⚠️"
+msgstr "ブックマーク（目次のエントリー）は無効になり、もはやどのページにもナビゲートしません"
 
 #: ../../the-basics.rst:463 7e1ff2a8b66a420298577a2e7589ebcf
 msgid ""
 "A hyperlink will be removed from the page that contains it. The visible "
 "content on that page will not otherwise be changed in any way."
-msgstr "⚠️"
+msgstr "ハイパーリンクは、それを含むページから削除されます。そのページの可視コンテンツは、他の方法で変更されることはありません。"
 
 #: ../../the-basics.rst:469 7a4779006342481b94c78c63629bd57f
 msgid ""
@@ -764,7 +764,7 @@ msgstr ":meth:`Page.get_text`"
 msgid ""
 "There is also the `pdf2docx extract tables method`_ which is capable of "
 "table extraction if you prefer."
-msgstr "⚠️"
+msgstr "お好みの場合、テーブル抽出が `可能なpdf2docxのextract tablesメソッド`_ もあります。"
 
 #: ../../the-basics.rst:944 f21c8462556a4927b8bcd46a85a4aba1
 msgid "Getting Page Links"
@@ -796,7 +796,7 @@ msgstr ":meth:`Page.get_text`"
 
 #: ../../the-basics.rst:1002 51f2e00a458c49338ac4b60e1f43b89f
 msgid "Redacting content from a **PDF**"
-msgstr "⚠️"
+msgstr "**PDF** からコンテンツを塗りつぶす"
 
 #: ../../the-basics.rst:1004 c326339f75894133a104b0b4d8b3b714
 msgid ""
@@ -805,34 +805,34 @@ msgid ""
 "removed. After marking an area with a rectangle then this area will be "
 "marked for *redaction*, once the redaction is *applied* then the content "
 "is securly removed."
-msgstr "⚠️"
+msgstr "マーキングされた領域に矩形を使用して、ページ上の削除されるべき領域を示すために、赤字が付けられる特別なアノテーションです。領域に矩形をマークした後、その領域は赤字としてマークされ、赤字が適用されると、そのコンテンツは安全に削除されます。"
 
 #: ../../the-basics.rst:1006 a52332e215d34f1d9476e8384fea523b
 msgid ""
 "For example if we wanted to redact all instances of the name \"Jane Doe\""
 " from a document we could do the following:"
-msgstr "⚠️"
+msgstr "たとえば、ドキュメントから名前「ジェーン・ドー」のすべてのインスタンスを塗りつぶしたい場合は、次のようにします："
 
 #: ../../the-basics.rst:1034 65cc9d88d596416eb690b07fc7e412e8
 msgid ""
 "Another example could be redacting an area of a page, but not to redact "
 "any line art (i.e. vector graphics) within the defined area, by setting a"
 " parameter flag as follows:"
-msgstr "⚠️"
+msgstr "別の例として、ページの領域を塗りつぶすが、定義された領域内の線画（ベクトルグラフィックス）を塗りつぶさないように、パラメータフラグを設定することができます。"
 
 #: ../../the-basics.rst:1065 7a552f7dbc724005a79988da16dd6ae6
 msgid ""
 "Once a redacted version of a document is saved then the redacted content "
 "in the **PDF** is *irretrievable*. Thus, a redacted area in a document "
 "removes text and graphics completely from that area."
-msgstr "⚠️"
+msgstr "文書の塗りつぶし済みバージョンを保存すると、**PDF** 内の塗りつぶされたコンテンツは *取り戻すことができなくなります* 。したがって、文書内の塗りつぶされた領域は、その領域からテキストとグラフィックスを完全に削除します。"
 
 #: ../../the-basics.rst:1072 fd3b72d4172b4240b16e9d2d7c670c5f
 msgid ""
 "The are a few options for creating and applying redactions to a page, for"
 " the full API details to understand the parameters to control these "
 "options refer to the API reference."
-msgstr "⚠️"
+msgstr "ページに赤字を作成して適用するためのいくつかのオプションがあります。これらのオプションを制御するためのパラメータを理解するためには、完全なAPI詳細についてAPIリファレンスを参照してください。"
 
 #: ../../the-basics.rst:1088 8acc78741809421f868643d586b095e3
 msgid "Converting PDF Documents"
