@@ -45,8 +45,8 @@ msgid ""
 ":meth:`Document.load_page` or, equivalently, via indexing the document "
 "like `doc[n]` - it has no independent constructor."
 msgstr ""
-"ドキュメントページを表すクラス。ページオブジェクトは:meth:`Document.load_page` "
-"またはドキュメントをインデックスで参照することで作成されます（例：`doc[n]` ） - 独立したコンストラクタはありません。"
+"ドキュメントページを表すクラス。ページオブジェクトは :meth:`Document.load_page` "
+"またはドキュメントをインデックスで参照することで作成されます（例： `doc[n]` ） - 独立したコンストラクタはありません。"
 
 #: ../../page.rst:11 c38f5e9970494a8c88f842be7f4c47a5
 msgid ""
@@ -68,7 +68,7 @@ msgid ""
 "Many times in this chapter we are using the term **coordinate**. It is of"
 " high importance to have at least a basic understanding of what that is "
 "and that you feel comfortable with the section :ref:`Coordinates`."
-msgstr "⚠️"
+msgstr "この章では何度も **「座標」** という用語を使用しています。それが何を意味するかを少なくとも基本的な理解があること、そして :ref:`Coordinates` のセクションに慣れていることが非常に重要です。"
 
 #: ../../page.rst:18 38fdc82499b94ba5a78d0418f927a4ac
 msgid "Modifying Pages"
@@ -344,7 +344,7 @@ msgstr ""
 
 #: ../../page.rst:66 9156a0bbbb644249a2d740bdc6a425ac
 msgid "PDF only: bounding boxes of vector graphics"
-msgstr ""
+msgstr "PDFのみ：ベクトルグラフィックスの境界ボックス"
 
 #: ../../page.rst:67 e031c1795c9648a5a069b6a5c8e5830c
 msgid ":meth:`Page.delete_annot`"
@@ -1169,12 +1169,11 @@ msgid ""
 msgstr "コメントテキスト。これはダブルクリックまたはアイコンの上にカーソルを合わせることで表示されます。ラテン文字を含むことができます。"
 
 #: ../../page.rst:177 7362db5931254e6ebe667e8306a223fc
-#, fuzzy
 msgid ""
 "choose one of \"Note\" (default), \"Comment\", \"Help\", \"Insert\", "
 "\"Key\", \"NewParagraph\", \"Paragraph\" as the visual symbol for the "
 "embodied text [#f4]_. (New in v1.16.0)"
-msgstr "*（v1.16.0で新規追加）* テキストを表す視覚的なシンボルとして、「Note」（デフォルト）"
+msgstr "*（v1.16.0で新規追加）*  \"Note\"（デフォルト）、\"Comment\"、\"Help\"、\"Insert\"、\"Key\"、\"NewParagraph\"、\"Paragraph\" のいずれかを、具体的なテキストの視覚的なシンボルとして選択してください。 [#f4]_"
 
 #: ../../page.rst:180 9c1c4dd35a2147fea874731b58312fdb
 msgid ""
@@ -1194,7 +1193,6 @@ msgid ""
 msgstr "テキストを挿入する矩形。テキストはボックスの幅で自動的に改行されます。ボックスに収まらない行は見えません。"
 
 #: ../../page.rst:199 b3eb168a53eb45688be45a0e0df230db
-#, fuzzy
 msgid ""
 "the text. May contain any mixture of Latin, Greek, Cyrillic, Chinese, "
 "Japanese and Korean characters. The respective required font is "
@@ -1220,15 +1218,15 @@ msgid ""
 "Therefore, you should rarely ever need to care about this parameter and "
 "let it default (except you insist on a serifed font for your non-CJK text"
 " parts). (New in v1.17.0)"
-msgstr "⚠️"
+msgstr "フォント名。デフォルトは "Helv" です。受け入れられる代替は "Cour"、"TiRo"、"ZaDb"、"Symb" です。名前は "Cour" のように最初の2文字に省略されることがあります。小文字も受け入れられます。太字やイタリックのバリアントのフォントは受け入れられません（v1.16.0で変更）。ユーザー投稿のスクリプトがこの制限を回避する方法を提供しています - FAQの章の「ボタンとJavaScriptの使用」セクションを参照してください。使用する実際のフォントは、今では文字ごとに決定され、必要なすべてのフォント（またはサブフォント）が自動的に含まれます。したがって、このパラメーターについて心配する必要があることはほとんどありませんし、デフォルトのままにしておくことが推奨されます（非CJKテキスト部分にセリフのあるフォントが必要な場合を除く）。（v1.17.0で新規）"
 
 #: ../../page.rst:210 9ebb01e0b8e944cabb77491811b0401a
 msgid "the text color. Default is black. (New in v1.16.0)"
-msgstr "⚠️"
+msgstr "テキストの色。デフォルトは黒です。(v1.16.0で新規追加)"
 
 #: ../../page.rst:212 36719f2c9a4f44219c72986c47a25e5b
 msgid "the fill color. Default is white. (New in v1.16.0)"
-msgstr "⚠️"
+msgstr "塗りつぶしの色です。デフォルトは白です。(v1.16.0 で新規追加)"
 
 #: ../../page.rst:213 55e5aa0c9de44109b7cf33d5097ea28b
 msgid "the text color. Default is black."
@@ -1242,7 +1240,7 @@ msgstr "*（v1.19.6で新規追加）* 境界色。デフォルトは `None` で
 msgid ""
 "text alignment, one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, "
 "TEXT_ALIGN_RIGHT - justify is **not supported**. (New in v1.17.0)"
-msgstr "⚠️"
+msgstr "テキストの配置は、TEXT_ALIGN_LEFT、TEXT_ALIGN_CENTER、TEXT_ALIGN_RIGHTのいずれかを指定します。ジャスティファイは **サポートされていません** 。(v1.17.0で新規追加)"
 
 #: ../../page.rst:217 a6655666054d46549eb2a79fea208385
 msgid ""
@@ -1385,7 +1383,7 @@ msgid ""
 "identifies content to be removed from the document. Adding such an "
 "annotation is the first of two steps. It makes visible what will be "
 "removed in the subsequent step, :meth:`Page.apply_redactions`."
-msgstr "⚠️"
+msgstr "**PDFのみ** ：赤塗り注釈を追加します。赤塗り注釈は、文書から削除されるコンテンツを識別します。このような注釈を追加することは、2つの手順の最初です。次の手順、:meth:`Page.apply_redactions` で削除される内容を可視化します。"
 
 #: ../../page.rst:286 b1d8d2b3cc214c43a4aa535e02f568e7
 msgid ""
@@ -1453,7 +1451,7 @@ msgid ""
 "large to fit, several insertion attempts will be made, gradually reducing"
 " the :data:`fontsize` to no less than 4. If then the text will still not "
 "fit, no text insertion will take place at all. (New in v1.16.12)"
-msgstr "⚠️"
+msgstr "置換テキストに使用する :data:`fontsize` 。テキストが大きすぎて収まらない場合、:data:`fontsize` を4未満にならないように徐々に縮小して、複数の挿入試行が行われます。その後もテキストが収まらない場合、テキストの挿入は行われません。 (v1.16.12 で新規追加)"
 
 #: ../../page.rst:307 7811915a5efb49c5a1d65aa29101c842
 msgid ""
@@ -1461,7 +1459,7 @@ msgid ""
 ":meth:`insert_textbox` for available values. The vertical alignment is "
 "(approximately) centered if a PDF built-in font is used (CJK or "
 ":ref:`Base-14-Fonts`). (New in v1.16.12)"
-msgstr "⚠️"
+msgstr "置換テキストの水平配置です。使用可能な値については、:meth:`insert_textbox` を参照してください。PDFの組み込みフォント（CJKまたは :ref:`Base-14-Fonts` ）を使用する場合、垂直配置は（おおよそ）中央になります。 (v1.16.12で新規)"
 
 #: ../../page.rst:309 c16c07ac5f6d4151b109ad9b5eb4b8cc
 msgid ""
@@ -1469,17 +1467,15 @@ msgid ""
 "default is *white = (1, 1, 1)*, which is also taken if *None* is "
 "specified. To suppress a fill color altogether, specify *False*. In this "
 "cases the rectangle remains transparent. (New in v1.16.12)"
-msgstr "⚠️"
+msgstr "**適用後** の赤塗りの四角形の塗りつぶし色です。デフォルトは *white = (1, 1, 1)* で、*None* が指定された場合も同様です。塗りつぶし色を抑制するには、*False* を指定します。この場合、四角形は透明のままです。（v1.16.12で新規追加）"
 
 #: ../../page.rst:311 b7d4a5a921b740b991eb49678134adda
-#, fuzzy
 msgid ""
 "the color of the replacing text. Default is *black = (0, 0, 0)*. (New in "
 "v1.16.12)"
 msgstr "*(新機能 v1.16.12)* 置換テキストの色です。デフォルトは *black = (0, 0, 0)* です。"
 
 #: ../../page.rst:313 d0d7805696f14d638d74333d91bafeec
-#, fuzzy
 msgid "add two diagonal lines to the annotation rectangle. (New in v1.17.2)"
 msgstr "*(新機能 v1.17.2)* アノテーションの矩形に2つの対角線を追加します。"
 
@@ -1490,7 +1486,7 @@ msgid ""
 " line width, dashing, opacity and blend mode can now be set and applied "
 "via :meth:`Annot.update` like with other annotations. (Changed in "
 "v1.17.2)"
-msgstr "⚠️"
+msgstr "作成された注釈です。その標準的な外観は、赤い四角形（塗りつぶし色なし）であり、必要に応じて二つの対角線を表示します。色、線の太さ、破線、不透明度、およびブレンドモードは、他の注釈と同様に、:meth:`Annot.update` を介して設定および適用できます。（v1.17.2で変更）"
 
 #: ../../page.rst:322 ../../page.rst:362 4771f889e7cb46128406c12947718143
 #: 615b08c3a8f54f8bae7f5f5b7cd1bf7d
@@ -1515,7 +1511,7 @@ msgid ""
 " | 1` completely removes images overlapping any redaction annotation. "
 "Option `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE | 3` only removes images"
 " that are actually visible."
-msgstr ""
+msgstr "重なる画像をレダクトする方法。デフォルトの（2）は、重なるピクセルを空白にします。 `PDF_REDACT_IMAGE_NONE | 0`  は無視し、 `PDF_REDACT_IMAGE_REMOVE | 1`  は、いずれかのレダクション注釈と重なる画像を完全に削除します。オプション  `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE | 3`  は、実際に見える画像のみを削除します。"
 
 #: ../../page.rst:335 56f1eb4497a74601b6003928a34f50c5
 #, python-format
@@ -1533,7 +1529,8 @@ msgid ""
 "width / 2`. So, when letting everything default (width = 1, miter = 10), "
 "the redaction rectangle should be at least 5 points larger in every "
 "direction."
-msgstr "⚠️"
+msgstr "重なるベクトルグラフィックス（または「ラインアート」や「図面」とも呼ばれる）を塗りつぶす方法。デフォルト値（2）では、重なるベクトルグラフィックスがすべて削除されます。`PDF_REDACT_LINE_ART_NONE | 0` は無視し、`PDF_REDACT_LINE_ART_IF_COVERED | 1` は、赤塗り注釈に完全に含まれるグラフィックスを削除します。ラインアートを削除する際は、 **ストロークされた** ベクトルグラフィックス（つまりタイプ「s」または「sf」）が、期待される **よりも大きなラッピング長方形** を持つことに注意してください：まず第一に、パスの線幅の少なくとも50％を、各方向に追加する必要があります。描画のすべてを含めるため。所謂「マイターリミット」が提供されている場合（PDF仕様書の121ページを参照）、拡大値は `miter * "
+"width / 2`.です。すべてをデフォルト値（幅＝1、マイター＝10）にする場合、赤塗りの長方形は各方向に少なくとも5ポイント大きくする必要があります。"
 
 #: ../../page.rst:337 1f9ebdcb23da409fb1a7fb1c90dd2d74
 msgid ""
@@ -1545,7 +1542,8 @@ msgid ""
 "achieved by setting `text=True|PDF_REDACT_TEXT_NONE | 1`. This does **not"
 " comply** with the data protection intentions of redaction annotations. "
 "**Do so at your own risk.**"
-msgstr "⚠️"
+msgstr "重なるテキストを塗りつぶすかどうかを指定します。デフォルトでは、`PDF_REDACT_TEXT_REMOVE |"
+" 0` は、境界ボックスが赤塗り四角形と重なるすべての文字を削除します。これは、元の法的/データ保護の意図に適合しています。ただし、他のユースケースでは、ベクトルグラフィックスや画像を赤塗りする一方で**テキストを保持**する必要がある場合があります。これは、`text=True|PDF_REDACT_TEXT_NONE | 1` を設定することで実現できます。これは、赤塗り注釈のデータ保護の意図には適合していませんので、自己責任で行ってください。"
 
 #: ../../page.rst:339 6522246c7c124c3285bb81d2a0528613
 msgid ""
@@ -1576,7 +1574,7 @@ msgid ""
 "The overlapping parts of **images** will be blanked-out for default "
 "option `PDF_REDACT_IMAGE_PIXELS` (changed in v1.18.0). Option 0 does not "
 "touch any images and 1 will remove any image with an overlap."
-msgstr "⚠️"
+msgstr "**画像** の重なり部分は、デフォルトのオプションである `PDF_REDACT_IMAGE_PIXELS`  では塗りつぶされます（v1.18.0で変更されました）。オプション0は画像を一切変更せず、1は重なり合う画像をすべて削除します。"
 
 #: ../../page.rst:348 1d72907606344f28bd5185f98e0d79fc
 msgid ""
@@ -1727,7 +1725,7 @@ msgid ""
 "annotation types and will deliver **one common annotation** for all "
 "occurrences of the search string::"
 msgstr ""
-":meth:`search_for` は :ref:`Rect` または:ref:`Quad` "
+":meth:`search_for` は :ref:`Rect` または :ref:`Quad` "
 "オブジェクトのリストを返します。このようなリストは、これらのアノテーションタイプの引数として直接使用でき、検索文字列のすべての出現に対して "
 "**共通のアノテーション** を提供します::"
 
@@ -1827,24 +1825,24 @@ msgid ""
 "closer to each other than some tolerance values (given in the arguments)."
 " The result is a list of rectangles that each wrap things like tables "
 "(with gridlines), pie charts, bar charts, etc."
-msgstr "⚠️"
+msgstr "図形のクラスター（同義語は線画やドローイングです）を、幾何学的な近接性に基づいてグループ化します。このメソッドは、 :meth:`Page.get_drawings` の出力を処理し、その中で、`path[\"rect\"]` がある許容値（引数で指定された）よりも近いパスを結合します。結果は、各々が表（格子状の線がある）、円グラフ、棒グラフなどのものを包含する長方形のリストです。"
 
 #: ../../page.rst:439 43bf5d802c074f2d838ed8997aed5965
 msgid "only consider paths inside this area. The default is the full page."
-msgstr "⚠️"
+msgstr "only consider paths inside this area. The default is the full page."
 
 #: ../../page.rst:441 d95e903fb2f2425c94b83d6123d0716c
 msgid ""
 "(optional) provide a previously generated output of "
 ":meth:`Page.get_drawings`. If `None` the method will execute the method."
-msgstr "⚠️"
+msgstr "（任意）以前に生成された :meth:`Page.get_drawings` の出力を提供します。`None` の場合、メソッドが実行されます。"
 
 #: ../../page.rst:447 351a77324b464d09b6f7c2af2184d77e
 msgid ""
 "Find tables on the page and return an object with related information. "
 "Typically, the default values of the many parameters will be sufficient. "
 "Adjustments should ever only be needed in corner case situations."
-msgstr "⚠️"
+msgstr "ページ上のテーブルを見つけ、関連情報を含むオブジェクトを返します。通常、多くのパラメータのデフォルト値は十分です。調整が必要なのは、極めてまれなケースのみです。"
 
 #: ../../page.rst:449 4dd0e5ba604b4222831e836a528c9cad
 msgid ""
@@ -1866,19 +1864,27 @@ msgid ""
 "coordinates.  Use parameters `vertical_strategy` and "
 "`horizontal_strategy` **instead** for a more fine-grained treatment of "
 "the dimensions."
-msgstr "⚠️"
+msgstr "**テーブル検出**戦略をリクエストします。有効な値は、**「lines」**、**「lines_strict」** 、**「text」** です。
+
+デフォルトは **「lines」** で、ページ上のすべてのベクトルグラフィックスを使用してグリッド線を検出します。
+
+ストラテジー **「lines_strict」** は、境界のない四角形のベクトルグラフィックスを無視します。時には、個々のテキスト部分に背景色があることがあり、これが誤った列や行を生じる可能性があります。この戦略はそれらを無視し、したがって検出精度を向上させることができます。
+
+**「text」** が指定されている場合、テキストの位置が「仮想」の列および/または行の境界を生成するために使用されます。その座標を考慮するための単語の数を要求するには、`min_words_*` を使用します。
+
+サイズの微調整には、`vertical_strategy` と `horizontal_strategy` パラメータを使用してください。"
 
 #: ../../page.rst:451 6b6d09802a64450898053560193200b2
 msgid ""
 "Request a **table detection** strategy. Valid values are \"lines\", "
 "\"lines_strict\" and \"text\"."
-msgstr "⚠️"
+msgstr "**テーブル検出**戦略をリクエストします。有効な値は、**「lines」**、**「lines_strict」** 、**「text」** です。"
 
 #: ../../page.rst:453 7cd6a5e0275e4b0aa074a4c7ab384b8e
 msgid ""
 "Default is **\"lines\"** which uses all vector graphics on the page to "
 "detect grid lines."
-msgstr "⚠️"
+msgstr "デフォルトは **「lines」** で、ページ上のすべてのベクトルグラフィックスを使用してグリッド線を検出します。"
 
 #: ../../page.rst:455 1817f79da6f9480780f4cb6bdb57c400
 msgid ""
@@ -1886,7 +1892,7 @@ msgid ""
 "graphics. Sometimes single text pieces have background colors which may "
 "lead to false columns or lines. This strategy ignores them and can thus "
 "increase detection precision."
-msgstr "⚠️"
+msgstr "ストラテジー **「lines_strict」** は、境界のない四角形のベクトルグラフィックスを無視します。時には、個々のテキスト部分に背景色があることがあり、これが誤った列や行を生じる可能性があります。この戦略はそれらを無視し、したがって検出精度を向上させることができます。"
 
 #: ../../page.rst:457 7bc9fd98b82640bbaaa33c23652ccdde
 msgid ""
@@ -1899,7 +1905,7 @@ msgstr "検索アルゴリズムを指定します。デフォルトでは「lin
 msgid ""
 "Use parameters `vertical_strategy` and `horizontal_strategy` **instead** "
 "for a more fine-grained treatment of the dimensions."
-msgstr "⚠️"
+msgstr "サイズの微調整には、`vertical_strategy` と`horizontal_strategy` パラメータを使用してください。"
 
 #: ../../page.rst:461 a6aaa64881c34c66a99e3fea5fc3d7f2
 msgid ""
@@ -1931,7 +1937,7 @@ msgid ""
 " will be **snapped** into one. Accordingly for vertical lines. Default is"
 " 3. Separate values can be specified instead for the dimensions, using "
 "`snap_x_tolerance` and `snap_y_tolerance`."
-msgstr "⚠️"
+msgstr "各縦線は、y値の差がこの値以下であれば、一つに結合されます。同様に、各横線も結合されます。デフォルトは3です。この値の代わりに、次元ごとに異なる値を指定することもできます。`snap_x_tolerance` および `snap_y_tolerance` を使用してください。"
 
 #: ../../page.rst:471 d36ee25e803d40639e46dcd2bf790164
 msgid ""
@@ -1939,13 +1945,13 @@ msgid ""
 "differ by no more than this value (in points). Default is 3. Instead of "
 "this value, separate values can be specified for the dimensions using "
 "`join_x_tolerance` and `join_y_tolerance`."
-msgstr "⚠️"
+msgstr "2つのラインの終点と始点の間の差がこの値（ポイント単位）以下の場合、それらは1つのラインに **結合されます**    。デフォルトは3です。この値の代わりに、`join_x_tolerance` と `join_y_tolerance` を使用して寸法ごとに別々の値を指定できます。"
 
 #: ../../page.rst:473 a8307c86e08e48c8badad476805c2011
 msgid ""
 "Ignore a line if its length does not exceed this value (points). Default "
 "is 3."
-msgstr "⚠️"
+msgstr "この値（ポイント単位）を超えない場合、線を無視します。デフォルトは3です"
 
 #: ../../page.rst:475 1508c3b4461244b7bbd0ad697c916563
 msgid ""
@@ -1953,7 +1959,7 @@ msgid ""
 "this value (points) to be considered intersecting. Default is 3. Instead "
 "of this value, separate values can be specified for the dimensions using "
 "`intersection_x_tolerance` and `intersection_y_tolerance`."
-msgstr "⚠️"
+msgstr "直交するラインをセルの境界線に結合する際に、それらの直交するラインはこの値（ポイント単位）以内である必要があります。デフォルトは3です。この値の代わりに、次元ごとに個別の値を指定することもできます。`intersection_x_tolerance` と `intersection_y_tolerance` を使用します。"
 
 #: ../../page.rst:477 ba8cf9acd47c4a4b8885f3921819f8e6
 msgid ""
@@ -1961,7 +1967,7 @@ msgid ""
 "larger than this value (points). Default is 3. Instead of this value, "
 "separate values can be specified for the dimensions using "
 "`text_x_tolerance` and `text_y_tolerance`."
-msgstr "⚠️"
+msgstr "文字が単語に結合されるのは、その距離がこの値（ポイント）を超えない場合のみです。デフォルト値は3です。この値の代わりに、次元ごとに別々の値を指定することもできます。`text_x_tolerance` と `text_y_tolerance` を使用します。"
 
 #: ../../page.rst:479 7f5257a13c064d0b8042e9d120dbfaef
 msgid ""
@@ -1974,7 +1980,7 @@ msgid ""
 "\"real\" vector graphics in terms of joining, snapping, intersectiing, "
 "minimum length and containment in the `clip` rectangle. Similarly, lines "
 "not parallel to any of the coordinate axes will be ignored."
-msgstr "⚠️"
+msgstr "以下のような「lines」（つまり、 :data:`point_like` オブジェクトのペア）のリストを追加の「仮想」ベクトル グラフィックスとして指定します。これらの線は、テーブルと/またはセルの検出に役立ち、検出戦略には影響しません。特に、`horizontal_lines` と `vertical_lines` パラメータとは異なり、これらの線は他の方法で行または列を検出するのを妨げません。これらの線は、結合、スナップ、交差、最小長、およびクリップ矩形内への含有の点で、「実際の」ベクトル グラフィックスとまったく同様に処理されます。同様に、座標軸のいずれかに平行でない線は無視されます。"
 
 #: ../../page.rst:483 e559479487bf456e81147f2a10c7296a
 msgid ""
@@ -2086,7 +2092,7 @@ msgid ""
 " especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method "
 "`to_pandas()` below) offer an equivalent markdown table output which "
 "however is better readable for the human eye."
-msgstr "⚠️"
+msgstr "`to_markdown()` ：このメソッドは、テーブルをGitHubと互換性のある **Markdown形式の文字列** として返します。サポートされているビューアは、文字列をテーブルとしてレンダリングできます。この出力は、LLM/RAGフィードに特に有益な小さいトークンサイズに最適化されています。PandasのDataFrames（後述の `to_pandas()` メソッドを参照）は、同等のMarkdownテーブル出力を提供しますが、人間の目にはより読みやすいです。"
 
 #: ../../page.rst:495 6843e976494c45b3962a06e6292e9eec
 msgid ""
@@ -2100,7 +2106,9 @@ msgid ""
 "readability. This method however requires the package "
 "[tablutate](https://pypi.org/project/tabulate/) to installed in addition "
 "to pandas itself."
-msgstr "⚠️"
+msgstr "`to_pandas()` : このメソッドは、テーブルを `pandas "
+"<https://pypi.org/project/pandas/>`_ `DataFrame "
+"<https://pandas.pydata.org/docs/reference/frame.html>`_ として返します。DataFrame は非常に多目的なオブジェクトであり、さまざまなテーブル操作メソッドや、Excel ファイル、CSV、JSON、markdown 形式のテーブルなど、約 20 種類のよく知られたフォーマットへの出力が可能です。`DataFrame.to_markdown()` は、人間が読みやすいように最適化された Github 互換の markdown 形式を生成します。ただし、このメソッドには pandas だけでなく、 [tablutate](https://pypi.org/project/tabulate/)  パッケージの追加インストールが必要です。"
 
 #: ../../page.rst:496 f008a4e4affa455c9dec1163121fd163
 msgid ""
@@ -2178,13 +2186,13 @@ msgstr "新機能バージョン1.23.0"
 
 #: ../../page.rst:513 cc1d568481b84056b2c43c9ea1039e36
 msgid "Changed in version 1.23.19: new argument `add_lines`."
-msgstr "⚠️"
+msgstr "1.23.19で変更された点：新しい引数 `add_lines` 。"
 
 #: ../../page.rst:519 eeb93e5ea8f644b98b59cd414717d250
 msgid ""
 "There is also the `pdf2docx extract tables method`_ which is capable of "
 "table extraction if you prefer."
-msgstr "⚠️"
+msgstr "必要に応じて、テーブル抽出を行う `pdf2docx extract tables method`_ も利"
 
 #: ../../page.rst:524 f4c46c79f71b4f41920fd2cb73b32c4b
 msgid ""
@@ -2380,7 +2388,7 @@ msgstr ""
 msgid ""
 "Return a generator over the page's links. The results equal the entries "
 "of :meth:`Page.get_links`."
-msgstr "ページのリンクをイテレーターとして返します。結果は:meth:`Page.get_links` のエントリと同じです。"
+msgstr "ページのリンクをイテレーターとして返します。結果は :meth:`Page.get_links` のエントリと同じです。"
 
 #: ../../page.rst:625 5923c907c724435fa51bfd17ab4b2615
 msgid ""
@@ -2547,7 +2555,7 @@ msgid ""
 "similarities with methods :meth:`Page.insert_textbox` and "
 ":meth:`TextWriter.fill_textbox`, but is **much more powerful**. This is "
 "achieved by letting a :ref:`Story` object do all the required processing."
-msgstr "⚠️"
+msgstr "**PDFのみ:** 指定された矩形にテキストを挿入します。このメソッドは、:meth:`Page.insert_textbox` メソッドと :meth:`TextWriter.fill_textbox` メソッドと類似していますが、はるかに強力です。これは、:ref:`Story` (ストーリー) オブジェクトに必要なすべての処理を行わせることで実現されます。"
 
 #: ../../page.rst:769 5a177e0f10274dabb0d7845d921dd45d
 msgid ""
@@ -2555,7 +2563,7 @@ msgid ""
 "**interpreted as HTML source** and may therefore also contain HTML "
 "language elements -- including styling. The `css` parameter may be used "
 "to pass in additional styling instructions."
-msgstr "⚠️"
+msgstr "パラメータ `text` は、他のメソッドと同様に文字列である場合があります。ただし、これは **HTMLソース** として解釈され、そのためスタイリングを含むHTML言語要素も含まれる可能性があります。`css` パラメータを使用して追加のスタイリング指示を渡すことができます。"
 
 #: ../../page.rst:771 913c5838a4834bd48078561dd81a6aea
 msgid ""
@@ -2564,23 +2572,23 @@ msgid ""
 "hyphenation and thus may also cause line breaks. **Forced** line breaks "
 "however are only achievable via the HTML tag `<br>` - `\"\\\\n\"` is "
 "ignored and will be treated like a space."
-msgstr "⚠️"
+msgstr "自動的な改行は単語の境界で生成されます。 "soft hyphen" 文字 `\"&#173;\"`（または `&shy;` ）を使用するとハイフネーションが引き起こされ、その結果改行も生じる場合があります。ただし、強制的な改行はHTMLタグ `<br>` - `\"\\\\n\"` を使用してのみ実現可能であり、"\n"は無視され、空白と同じように扱われます。"
 
 #: ../../page.rst:773 82e54f76e659415faf0173d2c8a00487
 msgid "With this method the following can be achieved:"
-msgstr "⚠️"
+msgstr "このメソッドでは、次のことが可能です。"
 
 #: ../../page.rst:775 b030bcc6345d478e868fa04c937639b5
 msgid ""
 "Styling effects like bold, italic, text color, text alignment, font size "
 "or font switching."
-msgstr "⚠️"
+msgstr "太字、斜体、テキストの色、テキストの配置、フォントサイズ、またはフォントの切り替えなどのスタイル効果"
 
 #: ../../page.rst:776 1931bf8207b1474aa96dd794ee4d6ed1
 msgid ""
 "The text may include arbitrary languages -- **including right-to-left** "
 "languages."
-msgstr "⚠️"
+msgstr "テキストには、**右から左に書かれる言語を含む** 任意の言語を含めることができます。"
 
 #: ../../page.rst:777 d1991b12f4bc4727ae87ca7f63b63e8c
 msgid ""
@@ -2589,38 +2597,38 @@ msgid ""
 "two or more unicodes together yield one glyph. The Story uses the "
 "software package `HarfBuzz <https://harfbuzz.github.io/>`_ , to deal with"
 " these things and produce correct output."
-msgstr "⚠️"
+msgstr "`Devanagari <https://en.wikipedia.org/wiki/Devanagari>`_ やその他のアジアの文字など、2つ以上のUnicodeが一つのグリフに変換される複雑なリガチャーのあるスクリプトは、正しい出力を生成するためにソフトウェアパッケージ `HarfBuzz <https://harfbuzz.github.io/>`_ を使用しています。"
 
 #: ../../page.rst:778 6d21a0414fd14531aad6e2c0e02fd318
 msgid ""
 "One can also **include images** via HTML tag `<img>` -- the Story will "
 "take care of the appropriate layout. This is an alternative option to "
 "insert images, compared to :meth:`Page.insert_image`."
-msgstr "⚠️"
+msgstr "画像はHTMLタグ `<img>` を介して含めることができ、Storyが適切なレイアウトを担当します。これは、:meth:`Page.insert_image` と比較した画像の挿入の代替オプションです。"
 
 #: ../../page.rst:779 d624250ecf304f4f84409c7bf37202f1
 msgid ""
 "HTML tables (tag `<table>`) may be included in the text and will be "
 "handled appropriately."
-msgstr "⚠️"
+msgstr "HTMLテーブル（  `<table>` タグ）をテキストに含めることができ、適切に処理されます。"
 
 #: ../../page.rst:780 8bfd78ac63d24526a5396b5dc7101f5b
 msgid "Links are automatically generated when present."
-msgstr "⚠️"
+msgstr "リンクが存在する場合、自動的にリンクが生成されます。"
 
 #: ../../page.rst:782 cb348e4f893b4504a1ad3af61732770c
 msgid "If content does not fit in the rectangle, the developer has two choices:"
-msgstr "⚠️"
+msgstr "もしコンテンツが長方形に収まらない場合、開発者には2つの選択肢があります。:"
 
 #: ../../page.rst:784 cef2cd64526344449e113684c16ef995
 msgid ""
 "**either** only be informed about this (and accept a no-op, just like "
 "with the other textbox insertion methods),"
-msgstr "⚠️"
+msgstr "**それとも** 、このことについての情報のみを受け取り（他のテキストボックスの挿入メソッドと同様に、何も起こらないことを受け入れる）、"
 
 #: ../../page.rst:785 1efcb70e6ac54a2abf9b7b06efe85f39
 msgid "**or** (`scale_low=0` - the default) scale down the content until it fits."
-msgstr "⚠️"
+msgstr "**または** （ `scale_low=0` - デフォルト）コンテンツを収まるまで縮小します。"
 
 #: ../../page.rst:787 57ca730cb7764415b5024a65f3e0370f
 msgid "rectangle on page to receive the text."
@@ -2634,13 +2642,13 @@ msgid ""
 "specified (in which case the internal Story generation step will be "
 "omitted). A Story must have been generated with all required styling and "
 "Archive information."
-msgstr "⚠️"
+msgstr "書き込むテキスト。スタイル指示を含むプレーンテキストとHTMLタグの混合物であることができます。代替として、 :ref:`Story`（ストーリー）オブジェクトを指定することもできます（その場合、内部のストーリー生成ステップは省略されます）。必要なすべてのスタイリングとアーカイブ情報で生成されたストーリーを指定する必要があります。"
 
 #: ../../page.rst:789 39c0efe72db0498ab4d73ce0b94ea080
 msgid ""
 "optional string containing additional CSS instructions. This parameter is"
 " ignored if `text` is a Story."
-msgstr "⚠️"
+msgstr "（オプション）追加のCSS指示を含む文字列。`text` がストーリーの場合、このパラメータは無視されます。"
 
 #: ../../page.rst:790 7f02d71d01e344f0ad18cae3e0734867
 msgid ""
@@ -2648,90 +2656,76 @@ msgid ""
 "rectangle. This sets the down scaling limit. Default is 0, no limit. A "
 "value of 1 means no down-scaling permitted. A value of e.g. 0.2 means "
 "maximum down-scaling by 80%."
-msgstr "⚠️"
+msgstr "コンテンツがターゲットの長方形に収まるまで必要に応じてコンテンツのスケーリングを行います。これはダウンスケーリングの制限を設定します。デフォルトは0で、制限なしを意味します。値が1の場合、ダウンスケーリングは許可されません。たとえば、0.2の値は、最大で80％のダウンスケーリングを意味します。"
 
 #: ../../page.rst:791 4ab9fe2ecf0d4e86b4cb0d12eb9b41df
 msgid ""
 "an Archive object that points to locations where to find images or non-"
 "standard fonts. If `text` refers to images or non-standard fonts, this "
 "parameter is required. This parameter is ignored if `text` is a Story."
-msgstr "⚠️"
+msgstr "画像や非標準のフォントの場所を指すアーカイブオブジェクト。テキストが画像や非標準のフォントを参照する場合、このパラメータが必要です。テキストがストーリーの場合、このパラメータは無視されます"
 
-#: ../../page.rst:792 50b902c0b66e409196d57506e9337b43
-msgid ""
-"one of the values 0, 90, 180, 270. Depending on this, text will be "
-"filled:  - 0: top-left to bottom-right. - 90: bottom-left to top-right. -"
-" 180: bottom-right to top-left. - 270: top-right to bottom-left.  .. "
-"image:: images/img-rotate.*"
-msgstr "⚠️"
 
 #: ../../page.rst:792 c7f408bc09b14c8aae11d67ea9eea2f3
 msgid "one of the values 0, 90, 180, 270. Depending on this, text will be filled:"
-msgstr ""
+msgstr "0、90、180、270のいずれかの値。これに応じて、テキストが埋められます:"
 
 #: ../../page.rst:794 bb860973bd434245b85aa45263c1f5f4
 msgid "0: top-left to bottom-right."
-msgstr ""
+msgstr "0：左上から右下に。"
 
 #: ../../page.rst:795 d0939ad467b14db1b94bfb65ba23af2c
 msgid "90: bottom-left to top-right."
-msgstr ""
+msgstr "90：左下から右上に。"
 
 #: ../../page.rst:796 3b92dacc41334707ae3ca68fe569962c
 msgid "180: bottom-right to top-left."
-msgstr ""
+msgstr "180：右下から左上に。"
 
 #: ../../page.rst:797 d8c55259a1834d288cefbee9219d841c
 msgid "270: top-right to bottom-left."
-msgstr ""
+msgstr "270：右上から左下に。"
 
 #: ../../page.rst:801 2e1dde1322654975b0ccf45bf6c32b37
 msgid ""
 "the xref of an :data:`OCG` / :data:`OCMD` or 0. Please refer to "
 ":meth:`Page.show_pdf_page` for details."
-msgstr ""
+msgstr ":data:`OCG` （オプションコンテンツグループ）/ :data:`OCMD` （オプションコンテンツメタデータ）のxrefまたは0。詳細については、 :meth:`Page.show_pdf_page` を参照してください。"
 
 #: ../../page.rst:802 9d5c5ff88d304b08af6e4ad8e163fb24
 msgid ""
 "set the fill and stroke opacity of the content. Only values `0 <= opacity"
 " < 1` are considered."
-msgstr ""
+msgstr "コンテンツの塗りつぶしとストロークの不透明度を設定します。`0 <= opacity < 1` の値のみ考慮されます。"
 
 #: ../../page.rst:803 af685ee54ff14f88ae8660056139fddc
 msgid ""
 "put the text in front of other content. Please refer to "
 ":meth:`Page.show_pdf_page` for details."
-msgstr ""
+msgstr "テキストを他のコンテンツの前に配置します。詳細については、:meth:`Page.show_pdf_page` を参照してください。"
 
-#: ../../page.rst:805 4f73f0763a6140ce8f66de4d8c534f43
-msgid ""
-"A tuple of floats `(spare_height, scale)`.  - `spare_height`: -1 if "
-"content did not fit, else >= 0. It is the height of the unused (still "
-"available) rectangle stripe. Positive only if scale = 1 (no down-scaling "
-"happened). - `scale`: down-scaling factor, 0 < scale <= 1.  Please refer "
-"to examples in this section of the recipes: :ref:`RecipesText_I_c`."
-msgstr "⚠️"
+
 
 #: ../../page.rst:805 2388939f268d42f7822900b65ba47d7d
 msgid "A tuple of floats `(spare_height, scale)`."
-msgstr "⚠️"
+msgstr "浮動小数点数のタプル `(spare_height, scale)` です。"
 
 #: ../../page.rst:807 91e2ae8c284a44cfacc892a291375319
 msgid ""
 "`spare_height`: -1 if content did not fit, else >= 0. It is the height of"
 " the unused (still available) rectangle stripe. Positive only if scale = "
 "1 (no down-scaling happened)."
-msgstr "⚠️"
+msgstr "`spare_height`: コンテンツが収まらなかった場合は-1、そうでない場合は0以上の値です。未使用の（まだ利用可能な）長方形のストライプの高さです。スケール=1の場合にのみ正の値です（ダウンスケーリングが行われなかった場合）。"
 
 #: ../../page.rst:808 67109feec5c247d19ff2f6eb71c53fe2
 msgid "`scale`: down-scaling factor, 0 < scale <= 1."
-msgstr "⚠️"
+msgstr "`scale`: ダウンスケーリングファクター、0 < scale <= 1。"
 
 #: ../../page.rst:810 50e746866d194c79ac6f7aae6bd2e30a
 msgid ""
 "Please refer to examples in this section of the recipes: "
 ":ref:`RecipesText_I_c`."
-msgstr "⚠️"
+msgstr "このレシピの例を参照してください：:ref:`RecipesText_I_c`。"
 
 #: ../../page.rst:814 8fa761c739a5419295fcd83e810ffcb2
 #, fuzzy
@@ -2745,7 +2739,7 @@ msgstr "v1.19.1で変更：`sort` パラメータを追加"
 
 #: ../../page.rst:820 860727a4b3464e7ab689367c8fe81aed
 msgid "**Drawing Methods**"
-msgstr "⚠️"
+msgstr "**描画メソッド**"
 
 #: ../../page.rst:839 b8a55b1e51b6451c9da4a8fe2171fd7d
 msgid ""
@@ -2777,7 +2771,7 @@ msgid ""
 "radius of *radius*. See :meth:`Shape.draw_circle`."
 msgstr ""
 "PDF のみ：*center* を中心に、半径 *radius* "
-"の円を描画します:data:`point_like`。:meth:`Shape.draw_circle` を参照してください。"
+"の円を描画します :data:`point_like`。:meth:`Shape.draw_circle` を参照してください。"
 
 #: ../../page.rst:937 6d195299356e449fa3ce6700b4a23139
 msgid ""
@@ -2845,23 +2839,6 @@ msgstr ""
 "フォントがサポートされており、**「予約済み」** "
 "フォント名を介して使用できます。フォントはファイルパスまたはフォントファイルのイメージを含むメモリ領域として提供することもできます。"
 
-#: ../../page.rst:1105 3b59d563100240fa8a7b10d6b7cbcde6
-msgid ""
-"The name by which this font shall be referenced when outputting text on "
-"this page. In general, you have a \"free\" choice here (but consult the "
-":ref:`AdobeManual`, page 16, section 7.3.5 for a formal description of "
-"building legal PDF names). However, if it matches one of the "
-":data:`Base14_Fonts` or one of the CJK fonts, *fontfile* and *fontbuffer*"
-" **are ignored**.  In other words, you cannot insert a font via "
-"*fontfile* / *fontbuffer* and also give it a reserved *fontname*.  .. "
-"note:: A reserved fontname can be specified in any mixture of upper or "
-"lower case and still match the right built-in font definition: fontnames "
-"\"helv\", \"Helv\", \"HELV\", \"Helvetica\", etc. all lead to the same "
-"font definition \"Helvetica\". But from a :ref:`Page` perspective, these "
-"are **different references**. You can exploit this fact when using "
-"different *encoding* variants (Latin, Greek, Cyrillic) of the same font "
-"on a page."
-msgstr "⚠️"
 
 #: ../../page.rst:1105 198023940c0942849eaf7ae3e8e11f9d
 msgid ""
@@ -2871,8 +2848,7 @@ msgid ""
 "building legal PDF names). However, if it matches one of the "
 ":data:`Base14_Fonts` or one of the CJK fonts, *fontfile* and *fontbuffer*"
 " **are ignored**."
-msgstr ""
-"このフォントをこのページ上でテキスト出力する際に参照される名前。一般的に、ここで「自由な」選択ができます（ただし、:ref:`AdobeManual`、ページ16、セクション7.3.5を参照して正当なPDF名の形式的な説明を確認してください）。ただし、:data:`Base14_Fonts`"
+msgstr "このフォントをこのページ上でテキスト出力する際に参照される名前。 一般的に、ここで「自由な」選択ができます（ただし、:ref:`AdobeManual`、ページ16、セクション7.3.5を参照して正当なPDF名の形式的な説明を確認してください）。ただし、:data:`Base14_Fonts`"
 " またはCJKフォントのいずれかと一致する場合、*fontfile* および *fontbuffer* は **無視されます。**"
 
 #: ../../page.rst:1107 6ade34877d564f1391147cfee34d13d7
@@ -3231,7 +3207,7 @@ msgstr "画像を配置する場所。有限で空でない必要があります
 
 #: ../../page.rst:1177 92e1fd9aa77a415e82cc3deabca5fac9
 msgid "deprecated and ignored."
-msgstr ""
+msgstr "非推奨であり、無視されます。"
 
 #: ../../page.rst:1178 a70748b39b3d4d51ad15bfef1b54de25
 msgid ""
@@ -3248,7 +3224,7 @@ msgid ""
 "image in memory -- to be used as image mask (alpha values) for the base "
 "image. When specified, the base image must be provided as a filename or a"
 " stream -- and must not be an image that already has a mask."
-msgstr "⚠️"
+msgstr "メモリ内の画像 -- ベース画像のマスク（アルファ値）として使用されます。指定する場合、ベース画像はファイル名またはストリームとして提供する必要があります。また、既にマスクを持つ画像ではない必要があります。"
 
 #: ../../page.rst:1188 04aa717b8e2a4303a1f9eb88ae85c739
 msgid ""
@@ -3256,11 +3232,11 @@ msgid ""
 ":data:`OCMD`. Ignored after the first of multiple insertions. The "
 "property is stored with the generated PDF image object and therefore "
 "controls the image's visibility throughout the PDF."
-msgstr "⚠️"
+msgstr "(:data:`xref`) この画像の表示をこの :data:`OCG` または :data:`OCMD` に依存させます。複数回の挿入の最初の後には無視されます。このプロパティは生成された PDF 画像オブジェクトに格納されるため、PDF 全体で画像の表示を制御します。"
 
 #: ../../page.rst:1193 e90a1cce56e34a7a850cd4e9473b3335
 msgid "see :ref:`CommonParms`."
-msgstr "⚠️"
+msgstr ":ref:`CommonParms` を参照してください。"
 
 #: ../../page.rst:1194 0558b78a0402466cb7b15bd4ae5702f4
 msgid "a pixmap containing the image."
@@ -3287,7 +3263,7 @@ msgid ""
 "the :data:`xref` of an image already present in the PDF. If given, "
 "parameters `filename`, `pixmap`, `stream`, `alpha` and `mask` are "
 "ignored. The page will simply receive a reference to the existing image."
-msgstr ""
+msgstr "PDF内にすでに存在する画像の :data:`xref` 。指定された場合、 `filename` 、 `Pixmap` 、 `stream` 、 `alpha` 、および `mask` パラメータは無視されます。ページは単純に既存の画像への参照を受け取ります。"
 
 #: ../../page.rst:1213 24f9ac5d8e4848b0af811ccf08aab820
 msgid ""
@@ -3503,7 +3479,7 @@ msgid ""
 "wrapper for multiple :ref:`TextPage` methods by choosing the output "
 "option `opt` as follows:"
 msgstr ""
-"⚠️"
+"さまざまな形式でページのコンテンツを取得します。出力オプション `opt` を選択することで、複数の :ref:`TextPage` メソッドのラッパーとなります。"
 
 #: ../../page.rst:1367 4c2c9af9a5444406bcc996a3ee4163a3
 msgid "\"text\" -- :meth:`TextPage.extractTEXT`, default"
@@ -3578,7 +3554,7 @@ msgid ""
 " handled with respect to white spaces and :data:`ligatures`. See "
 ":ref:`TextPreserve` for available indicators and "
 ":ref:`text_extraction_flags` for default settings. (New in v1.16.2)"
-msgstr "⚠️"
+msgstr "画像を含めるか、テキストをどのように空白や :data:`ligatures` に対応させるかを制御するための指示ビット。 使用可能な指示ビットについては、 :ref:`TextPreserve`  を参照してください。 また、デフォルト設定については、 :ref:`text_extraction_flags`  を参照してください。 (v1.16.2で新規追加)"
 
 #: ../../page.rst:1386 b1aead209cf8419cb0a80e40102d9b84
 msgid ""
@@ -3601,7 +3577,7 @@ msgid ""
 "\"json\", \"rawdict\", \"rawjson\": they all are sorted by `(y1, x0)` of "
 "the resp. block bbox. If specified for \"text\", then internally "
 "\"blocks\" is used. (New in v1.19.1)"
-msgstr ""
+msgstr "出力を垂直座標、次に水平座標でソートします。多くの場合、これで「自然な」読み取り順序を生成するのに十分です。 (X)HTMLおよびXMLには影響しません。出力オプション「words」は、単語の境界ボックスの  `(y1, x0)`  でソートされます。\"blocks\"、\"dict\"、\"json\"、\"rawdict\"、\"rawjson\" についても同様であり、それぞれのブロックの境界ボックスの  `(y1, x0)`  でソートされます。 \"text\" に対して指定された場合、内部的には \"blocks\" が使用されます。 (v1.19.1で新たに追加)"
 
 #: ../../page.rst:1390 0bbcbdb4b4754a7aa86fef76fbdeddb8
 msgid ""
@@ -3615,7 +3591,7 @@ msgid ""
 " include ignoring punctuation characters `delimiters=string.punctuation`."
 " The \"word\" strings will not contain any delimiting character. (New in "
 "v1.23.5)"
-msgstr ""
+msgstr "これらの文字を、追加の単語の区切りとして、\"words\" 出力オプションで使用します（それ以外の場合は無視されます）。デフォルトでは、すべての空白（非改行スペース  `0xA0`  を含む）が単語の開始と終了を示します。これにより、さらにこれを引き起こす文字を指定できます。例えば、デフォルトでは \"john.doe@outlook.com\" は1つの単語として返されます。`delimiters=\"@.\"`  と指定すると、\"john\"、\"doe\"、\"outlook\"、\"com\" の4つの単語が返されます。その他の可能な用途には、句読点を無視するための `delimiters = string.punctuation` があります。\"word\" 文字列には、区切り文字は含まれません。 (v1.23.5で新たに追加)"
 
 #: ../../page.rst:1392 9201772c2ddc4c8293b6d8f157f27126
 msgid "*str, list, dict*"
@@ -3643,7 +3619,7 @@ msgid ""
 "contained in *clip* (changed in v1.18.2). This **deviates** from the "
 "algorithm used in redaction annotations: a character will be **removed if"
 " its bbox intersects** any redaction annotation."
-msgstr "⚠️"
+msgstr "*clip* パラメータを使用したテキストの含み方は、文字ごとのレベルで決定されます：文字のバウンディングボックスが *clip*  に含まれる場合、その文字は出力の一部となります（v1.18.2で変更）。 これは、レダクション注釈で使用されるアルゴリズムとは異なります：文字のバウンディングボックスがどのレダクション注釈とも交差する場合、文字は削除されます。"
 
 #: ../../page.rst:1402 940634ecd82848ea8f8b8b2310f09ab2
 msgid "Changed in v1.19.0: added `textpage` parameter"
@@ -3725,7 +3701,7 @@ msgid ""
 "extract text data for documents where text is in a raster image format "
 "throughout the page. Use this method to **OCR** a page for text "
 "extraction."
-msgstr "⚠️"
+msgstr "**光学式文字認識** （ **OCR**   ）技術は、ページ全体でテキストがラスター画像形式であるドキュメントからテキストデータを抽出するために使用できます。このメソッドを使用して、テキストの抽出のためにページを **OCR** します。"
 
 #: ../../page.rst:1468 521dc7071dab4f3c8ffb48797c10b029
 msgid ""
@@ -4000,7 +3976,7 @@ msgstr ""
 
 #: ../../page.rst:1523 e2f5aee4f55e4caaa486a224621de583
 msgid "type of this path. (New in v1.18.17)"
-msgstr "⚠️"
+msgstr "このパスのタイプ。 (v1.18.17で新規追加)"
 
 #: ../../page.rst:1524 ../../page.rst:1665 0169537a3a834207b4ead24c49c4d052
 #: a0a54be981a84be3b3ff55514eea6f06
@@ -4076,7 +4052,7 @@ msgid ""
 "`orientation` is 1 resp. -1 indicating whether the enclosed area is "
 "rotated left (1 = anti-clockwise), or resp. right [#f7]_ (changed in "
 "v1.19.2)."
-msgstr "⚠️"
+msgstr "`(\"re\", rect, orientation)` - a :ref:`Rect` 同じパス内の複数の矩形が検出されます (v1.18.17で変更)。整数のorientationは、含まれる領域が左に回転しているかどうかを示します (1 = 反時計回り)。または右に回転しているかどうかを示します [#f7]_ (v1.19.2で変更)"
 
 #: ../../page.rst:1541 4104731f9d1b4464b76bba1542506a41
 msgid ""
@@ -4108,7 +4084,7 @@ msgid ""
 "encoded by the new integer key \"level\", the hierarchy level. Each group"
 " or clip establishes a new hierarchy, which applies to all subsequent "
 "paths having a *larger* level value. (New in v1.22.0)"
-msgstr "⚠️"
+msgstr "extended=Trueを指定すると、出力が大幅に変更されます。最も重要なのは、新しい辞書タイプが存在することです: "clip" および "group"。すべてのパスは、新しい整数キー "level"、つまり階層レベルでエンコードされた階層構造に組織されます。各グループまたはクリップは、新しい階層を確立し、それ以降のすべてのパスに適用されます。 (v1.22.0で新規)"
 
 #: ../../page.rst:1549 ccaea771d67d4124863f8fae82b372c6
 msgid ""
@@ -4350,7 +4326,7 @@ msgid ""
 "undetectable. Please note that this option has an extended response time,"
 " because the MD5 hashcode will be computed at least two times for each "
 "image with an xref. (New in v1.18.13)"
-msgstr "⚠️"
+msgstr "**PDFのみ。** 各画像の :data:`xref` を見つけようとします。`hashes=True` を意味します。辞書に `\"xref\"` キーを追加します。見つからない場合、値は0で、画像が「インライン」であるか、または他の方法で検出できないことを意味します。このオプションは、少なくとも各画像に対してMD5ハッシュコードが2回計算されるため、応答時間が延びることに注意してください。(v1.18.13で新規追加)"
 
 #: ../../page.rst:1658 6e51115ba6444ca694c71bcc5786f3cd
 msgid ""
@@ -4727,7 +4703,7 @@ msgid ""
 "browser will fall back to some default -- leading to unpleasant "
 "appearances. Choose *False* if you want to parse the text of the SVG. "
 "(New in v1.17.5)"
-msgstr "⚠️"
+msgstr "テキストの表現方法を制御します。*True* は、各文字を一連の基本的な描画コマンドとして出力し、これによりブラウザでのテキスト表示がより正確になりますが、テキスト指向のページの場合、非常に大きな出力になります。*False* の場合、表示品質は現在のシステムに参照されるフォントの存在に依存します。欠落しているフォントの場合、インターネットブラウザはいくつかのデフォルトにフォールバックします -- これにより見栄えが悪くなります。SVGのテキストを解析したい場合は *False* を選択してください。(v1.17.5で新規追加)"
 
 #: ../../page.rst:1761 c59a8b73447a41acb32c89b04c7eef38
 msgid ""
@@ -5001,7 +4977,7 @@ msgstr "度数で指定された必要な回転を表す整数。90の整数倍�
 msgid ""
 "PDF only: Set page rotation to 0 while maintaining appearance and page "
 "content."
-msgstr "⚠️"
+msgstr "PDFのみ：外観とページ内容を維持しながらページの回転を0に設定します。"
 
 #: ../../page.rst:1916 d32e5fda916f4377b987e8420f16ac61
 msgid ""
@@ -5010,7 +4986,9 @@ msgid ""
 "automatically recomputes the rectangles of any annotations, links and "
 "widgets present on the page.  This method may come in handy when e.g. "
 "used with :meth:`Page.show_pdf_page`."
-msgstr "⚠️"
+msgstr "この変更を実現するために使用される反転した行列。ページが回転していない場合（回転0）、:ref:`Identity` が返されます。メソッドは、ページに存在するアノテーション、リンク、およびウィジェットの矩形を自動的に再計算します。
+
+このメソッドは、たとえば :meth:`Page.show_pdf_page` と一緒に使用する場合に便利です。"
 
 #: ../../page.rst:1916 5b1c2c7af7c7479f88557e9b935c97f2
 msgid ""
@@ -5018,13 +4996,13 @@ msgid ""
 "rotated (rotation 0), :ref:`Identity` is returned. The method "
 "automatically recomputes the rectangles of any annotations, links and "
 "widgets present on the page."
-msgstr "⚠️"
+msgstr "この変更を実現するために使用される反転した行列。ページが回転していない場合（回転0）、:ref:`Identity` が返されます。メソッドは、ページに存在するアノテーション、リンク、およびウィジェットの矩形を自動的に再計算します。"
 
 #: ../../page.rst:1918 4264add5e1c446009ac3bc23b9e94658
 msgid ""
 "This method may come in handy when e.g. used with "
 ":meth:`Page.show_pdf_page`."
-msgstr "⚠️"
+msgstr "このメソッドは、たとえば :meth:`Page.show_pdf_page` と一緒に使用する場合に便利です。"
 
 #: ../../page.rst:1928 a8ad8a53381c4a888ff89d38493e3ef5
 msgid ""
@@ -5196,7 +5174,7 @@ msgid ""
 "**significantly.** If specified, the 'flags' and 'clip' arguments are "
 "ignored. If omitted, a temporary textpage will be created. (New in "
 "v1.19.0)"
-msgstr "⚠️"
+msgstr "以前に作成された :ref:`TextPage` （テキストページ）を使用します。これにより、実行時間が大幅に短縮されます。指定された場合、 'flags'および 'clip'引数は無視されます。省略された場合、一時的なテキストページが作成されます。 (v1.19.0で新規)"
 
 #: ../../page.rst:2004 b4d4b9b9d6934e92ae340711202ab0e1
 msgid ""
@@ -5378,13 +5356,13 @@ msgid ""
 "*\"The number of degrees by which the page should be rotated clockwise "
 "when displayed or printed. The value must be a multiple of 90. Default "
 "value: 0.\"*"
-msgstr "⚠️"
+msgstr "*「ページを表示または印刷する際に、時計回りに回転させる度数。値は90の倍数でなければなりません。デフォルト値：0」* "
 
 #: ../../page.rst:2109 62d26d56eaed4b1296478af2d38db4d2
 msgid ""
 "In PyMuPDF, we make sure that this attribute is always one of 0, 90, 180 "
 "or 270."
-msgstr "⚠️"
+msgstr "PyMuPDFでは、この属性が常に0、90、180、または270のいずれかであることを確認しています。"
 
 #: ../../page.rst:2115 423241a3d79e4c88b9333561893b1936
 msgid ""
@@ -5693,8 +5671,8 @@ msgid ""
 "Create a dictionary `d = {\"kind\": fitz.LINK_GOTO, \"page\": pno, "
 "\"from\": bbox, \"to\": point}`."
 msgstr ""
-"辞書d = {\"kind\": fitz.LINK_GOTO, \"page\": pno, \"from\": bbox, \"to\": "
-"point}を作成します。"
+"辞書 `d = {\"kind\": fitz.LINK_GOTO, \"page\": pno, \"from\": bbox, \"to\": "
+"point}` を作成します。"
 
 #: ../../page.rst:2270 7fd89e0724354bf6af85457e8f69b7d4
 msgid "Execute `page.insert_link(d)`."

@@ -37,7 +37,7 @@ msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブ
 
 #: ../../module.rst:7 8ef8d3ab2b7147818a470baf13dc4380
 msgid "Command line interface"
-msgstr "⚠️"
+msgstr ""
 
 #: ../../module.rst:9 86a5d5168ec841ca8bbecc7a785ddec0
 msgid "New in version 1.16.8"
@@ -66,11 +66,11 @@ msgstr "呼び出し"
 
 #: ../../module.rst:18 693d76d2229944a2890934429e9f5495
 msgid "The command-line interface can be invoked in two ways."
-msgstr "⚠️"
+msgstr "コマンドラインインターフェースは2つの方法で呼び出すことができます。"
 
 #: ../../module.rst:20 e75950fe433b4ddbbd7fd59b311039fa
 msgid "Use the installed `pymupdf` command::"
-msgstr "⚠️"
+msgstr "インストールされた `pymupdf` のコマンドを使用します。"
 
 #: ../../module.rst:24 58697137f2b74b278bbcb6b907e2af24
 msgid "Or use Python's `-m` switch with PyMuPDF's `fitz` module::"
