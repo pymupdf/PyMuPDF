@@ -501,7 +501,7 @@ msgid ""
 "when encoding information is missing or uncertain, toggle this flag and "
 "scan for the presence of U+FFFD (= `chr(0xfffd)`) code points in the "
 "resulting text."
-msgstr "⚠️"
+msgstr "128 -- 設定されている場合、U+FFFDの代わりに生の文字コードを使用します。これは、PyMuPDFにおける **テキスト抽出** のデフォルトです。エンコーディング情報が不足しているか不確かな場合に**検出したい**場合は、このフラグを切り替えて、結果のテキストにU+FFFD (= `chr(0xfffd)`)コードポイントが存在するかどうかをスキャンします。"
 
 #: ../../vars.rst:207 144c8139aae5446ca876a51c92734b02
 msgid ""
@@ -557,7 +557,7 @@ msgstr "2 – URIを指します。通常はインターネット構文で指定
 msgid ""
 "PyMuPDF treats any external link that contains a colon and does not start"
 " with `file:`, as `LINK_URI`."
-msgstr "⚠️"
+msgstr "PyMuPDFは、コロンを含み、`file:` で始まらない任意の外部リンクを `LINK_URI` として扱います。"
 
 #: ../../vars.rst:275 50e9cd8a04654248b30a37312f3c2df1
 msgid "3 -- Launch (open) another file (of any \"executable\" type)."
@@ -567,7 +567,7 @@ msgstr "3 – 別のファイル（任意の「実行可能」タイプ）を開
 msgid ""
 "|PyMuPDF| treats any external link that starts wth `file:` or doesn't "
 "contain a colon, as `LINK_LAUNCH`."
-msgstr "⚠️"
+msgstr "PyMuPDFは、 `file:`  で始まるかコロンを含まない外部リンクを `LINK_LAUNCH` として扱います。"
 
 #: ../../vars.rst:284 611409ea3a47454abc864d48113ef7d3
 msgid "4 -- points to a named location."

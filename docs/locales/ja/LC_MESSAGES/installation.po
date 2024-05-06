@@ -159,7 +159,7 @@ msgid ""
 "(64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), for "
 "Python versions marked as \"Supported\" on "
 "https://devguide.python.org/versions/."
-msgstr "⚠️"
+msgstr "ホイールは、Windows向けには（32ビットIntel、64ビットIntel）、Linux向けには（64ビットIntel、64ビットARM）、およびMac OSX向けには（64ビットIntel、64ビットARM）提供されています。 Pythonのバージョンは、「https://devguide.python.org/versions/」で「サポートされている」とマークされています。"
 
 #: ../../installation.rst:86 f922172c686343b289e3dad1ee56f1e0
 msgid ""
@@ -380,19 +380,19 @@ msgstr ""
 
 #: ../../installation.rst:199 1b00b36d2ea74159a4ac15e18be3bdba
 msgid "Packaging"
-msgstr "⚠️"
+msgstr "パッケージング"
 
 #: ../../installation.rst:201 ede7ce2ee7f14d2a90ad3d2af2d1f7a3
 msgid "See :doc:`packaging`."
-msgstr "⚠️"
+msgstr ":doc:`packaging` を参照してください。"
 
 #: ../../installation.rst:205 3320ad4ba99e4f699d9e3ab19c38e7ad
 msgid "Using with Pyodide"
-msgstr "⚠️"
+msgstr "Pyodideとの使用"
 
 #: ../../installation.rst:207 7c837b1f04af48fb9ab6e73079d74f35
 msgid "See :doc:`pyodide`."
-msgstr "⚠️"
+msgstr ":doc:`pyodide` を参照してください。"
 
 #: ../../installation.rst:211 24f554ac96ae46ada0f1ab1155c1f9b3
 msgid "Enabling Integrated OCR Support"

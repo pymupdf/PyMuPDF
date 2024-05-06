@@ -102,13 +102,13 @@ msgstr "以下の2つのセクションを見て、例と詳細な説明をご�
 
 #: ../../recipes-text.rst:44 c891b0a71b204817969bc579cbfe6d0e
 msgid "How to Extract Text as Markdown"
-msgstr "⚠️"
+msgstr "テキストをMarkdown形式で抽出する方法"
 
 #: ../../recipes-text.rst:46 69e2c660e730441f9f9335c7282de5dc
 msgid ""
 "This is especially useful for :title:`RAG/LLM` environments - please see "
 ":ref:`Outputting as Markdown <rag_outputting_as_md>`."
-msgstr "⚠️"
+msgstr "これは、特に :title:`RAG/LLM`  環境にとって便利です -  :ref:`Outputting as Markdown <rag_outputting_as_md>` を参照してください。"
 
 #: ../../recipes-text.rst:52 910a8326bf184fb0bcf42b26c0a1c20f
 msgid "How to Extract Key-Value Pairs from a Page"
@@ -338,7 +338,6 @@ msgid "But you also have other options::"
 msgstr "ただし、他にも選択肢があります::"
 
 #: ../../recipes-text.rst:182 05aed2b5633b43bb88faee8c33650547
-#, fuzzy
 msgid ""
 "This script uses `Page.get_text(\"words\")` to look for a string, handed "
 "in via cli parameter. This method separates a page's text into \"words\" "
@@ -358,7 +357,7 @@ msgid ""
 "you use extra delimiting characters like `page.get_text(\"words\", "
 "delimiters=\"./,\")` then none of these characters should be included in "
 "your search string either."
-msgstr ""
+msgstr "検索文字列には単語の区切り文字を含めることはできません。デフォルトでは、単語の区切り文字は空白と非改行空白 `chr(0xA0)` です。もし、 `page.get_text("words", delimiters="./,")`  のような追加の区切り文字を使用する場合は、これらの文字を検索文字列に含めてはいけません。"
 
 #: ../../recipes-text.rst:186 1ae2bbf30aca4bf281c7177f8823a541
 msgid ""
@@ -619,7 +618,6 @@ msgid ""
 msgstr "このスクリプトは、異なる回転値を選択して、4つの異なる長方形にテキストを塗りつぶします。"
 
 #: ../../recipes-text.rst:423 0346737bdb1549398ecb1f75af6df616
-#, fuzzy
 msgid ""
 "Some default values were used above: font size 11 and text alignment "
 "\"left\". The result will look like this:"
@@ -627,13 +625,13 @@ msgstr "上記ではいくつかのデフォルト値が使用されました：
 
 #: ../../recipes-text.rst:433 9b56bb71bd214830a200d9ed7df0079d
 msgid "How to Fill a Box with HTML Text"
-msgstr "⚠️"
+msgstr "HTMLテキストでボックスを埋める方法"
 
 #: ../../recipes-text.rst:434 ad58a2804e494183ab408c0e7d4ca2ef
 msgid ""
 "Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to"
 " insert text in a rectangle."
-msgstr "⚠️"
+msgstr "メソッド :meth:`Page.insert_htmlbox` は、矩形にテキストを挿入するための **より強力な** 方法を提供します。"
 
 #: ../../recipes-text.rst:436 1527be5615d942179ba293953fc802b4
 msgid ""
@@ -641,19 +639,19 @@ msgid ""
 " not only contain HTML tags but also styling instructions to influence "
 "things like font, font weight (bold) and style (italic), color and much "
 "more."
-msgstr "⚠️"
+msgstr "このメソッドは、単純なプレーンテキストではなく、HTMLソースを受け入れます。HTMLタグのみならず、フォント、フォントの太さ（太字）、スタイル（イタリック）、色などを含むスタイル指示も含まれます。"
 
 #: ../../recipes-text.rst:438 0429d36a141e45faa77f55788bb80366
 msgid ""
 "It is also possible to mix multiple fonts and languages, to output HTML "
 "tables and to insert images and URI links."
-msgstr "⚠️"
+msgstr "複数のフォントや言語を混在させ、HTMLテーブルを出力し、画像やURIリンクを挿入することも可能です。"
 
 #: ../../recipes-text.rst:440 53621bbf58534d909a365dfc983263fe
 msgid ""
 "For even more styling flexibility, an additional CSS source may also be "
 "given."
-msgstr "⚠️"
+msgstr "さらなるスタイリングの柔軟性を求める場合、追加のCSSソースを指定することもできます。"
 
 #: ../../recipes-text.rst:442 18b8bf0ebc05447190d87e6225258ff3
 msgid ""
@@ -661,54 +659,53 @@ msgid ""
 "systems like Devanagari, Nepali, Tamil and many are supported and written"
 " correctly thanks to using the HarfBuzz library - which provides this so-"
 "called **\"text shaping\"** feature."
-msgstr "⚠️"
+msgstr "このメソッドは、 :ref:`Story` （ストーリー）クラスに基づいています。そのため、デーヴァナーガリ、ネパール語、タミル語などの複雑な文字体系がサポートされ、HarfBuzzライブラリを使用して正しく書き込まれています - これがいわゆる **「テキストの形成」** 機能を提供します。"
 
 #: ../../recipes-text.rst:444 33b526221cab45b7840951fb01dd16a7
 msgid ""
 "Any required fonts to output characters are automatically pulled in from "
 "the Google NOTO font library - as a fallback (when the -- optionally "
 "supplied -- user font(s) do not contain some glyphs)."
-msgstr "⚠️"
+msgstr "文字を出力するために必要なフォントは、--オプションで提供される--ユーザーフォントが一部のグリフを含んでいない場合のフォールバックとして、Google NOTOフォントライブラリから自動的に取得されます。"
 
 #: ../../recipes-text.rst:446 566b070f9969489aa0c43c26bd56f133
 msgid ""
 "As a small glimpse into the features offered here, we will output the "
 "following HTML-enriched text::"
-msgstr "⚠️"
+msgstr "ここで提供される機能の一端をご覧いただくために、以下のHTMLエンリッチされたテキストを出力します："
 
 #: ../../recipes-text.rst:471 3ff5f68fb3f04928aa357bfbd574313a
 msgid ""
 "Please note how the \"css\" parameter is used to globally select the "
 "default \"sans-serif\" font and a font size of 14."
-msgstr "⚠️"
+msgstr "「css」パラメータが、デフォルトの「sans-serif」フォントとフォントサイズ14をグローバルに選択する方法に注意してください。"
 
 #: ../../recipes-text.rst:473 ../../recipes-text.rst:541
 #: 071251ac4b01479e88cba12883d7e048 416a0c5773a24bd09fc66963368e7901
-#, fuzzy
 msgid "The result will look like this:"
 msgstr "結果は以下のようになります："
 
 #: ../../recipes-text.rst:478 7439311a0743475baa545a662d2dc8a7
 msgid "How to output HTML tables and images"
-msgstr "⚠️"
+msgstr "HTMLテーブルや画像を出力する方法"
 
 #: ../../recipes-text.rst:480 471081c208f647eb911cd9f2bf553dbe
 msgid ""
 "Here is another example that outputs a table with this method. This time,"
 " we are including all the styling in the HTML source itself. Please also "
 "note, how it works to include an image - even within a table cell::"
-msgstr "⚠️"
+msgstr "以下は、このメソッドを使用してテーブルを出力する別の例です。今回は、すべてのスタイリングをHTMLソース自体に含めています。また、テーブルセル内に画像を含める方法についても、ご注意ください::"
 
 #: ../../recipes-text.rst:547 0151db2ecbce4883b6cdf0fb5c109c5f
 msgid "How to Output Languages of the World"
-msgstr ""
+msgstr "世界の言語を出力する方法"
 
 #: ../../recipes-text.rst:549 3a23fb52a5cc45f3ab67f4e8753aada0
 msgid ""
 "Our third example will demonstrate the automatic multi-language support. "
 "It includes automatic **text shaping** for complex scripting systems like"
 " Devanagari and right-to-left languages::"
-msgstr "⚠️"
+msgstr "3つ目の例では、自動多言語サポートを示します。これには、デーヴァナーガリや右から左への言語などの複雑なスクリプトシステムに対する自動 **テキスト整形** も含まれます："
 
 #: ../../recipes-text.rst:579 a407420891614a48a0ca06bb345f359d
 msgid "And this is the output:"
@@ -716,7 +713,7 @@ msgstr "これが結果です。"
 
 #: ../../recipes-text.rst:584 83c3c93b2ac6458d9e4a528e37c5a905
 msgid "How to Specify your Own Fonts"
-msgstr "⚠️"
+msgstr "独自のフォントを指定する方法"
 
 #: ../../recipes-text.rst:586 7f6dd0e44fa944d2b1cdc006ded23ce8
 msgid ""
@@ -725,47 +722,48 @@ msgid ""
 " font style (e.g. bold or italic) you want to be supported. The following"
 " example uses the famous MS Comic Sans font in its four variants regular,"
 " bold, italic and bold-italic."
-msgstr "⚠️"
+msgstr "`@font-face` ステートメントを使用して、CSS構文でフォントファイルを定義します。サポートされるフォントのウェイトとスタイル（太字や斜体など）の組み合わせごとに、個別の `@font-face` が必要です。以下の例では、有名な MS Comic Sans フォントの 4 つのバリアント（通常、太字、斜体、太字斜体）を使用しています。"
 
 #: ../../recipes-text.rst:588 cf1499ac6ee448809be0be6622fbc283
 msgid ""
 "As these four font files are located in the system's folder "
 "`C:/Windows/Fonts` the method needs an :ref:`Archive` definition that "
 "points to that folder::"
-msgstr "⚠️"
+msgstr "これらの 4 つのフォントファイルがシステムのフォルダ `C:/Windows/Fonts` にあるため、このメソッドには、そのフォルダを指す :ref:`Archive`（アーカイブ）の定義が必要です。"
 
 #: ../../recipes-text.rst:637 d2c22ba3e4424db2a5c9b655f893f523
 msgid "How to Request Text Alignment"
-msgstr "⚠️"
+msgstr "テキストの配置をリクエストする方法"
 
 #: ../../recipes-text.rst:639 c30a4130774f483bb2b9ab262424c74a
 msgid "This example combines multiple requirements:"
-msgstr "⚠️"
+msgstr "この例では、複数の要件を組み合わせています"
 
 #: ../../recipes-text.rst:641 affb117cd9124c27ab1602d7a73aeffa
 msgid "Rotate the text by 90 degrees anti-clockwise."
-msgstr "⚠️"
+msgstr "テキストを90度反時計回りに回転させます。"
 
 #: ../../recipes-text.rst:642 75b570aa213c4a0c84d74c32e8a69e38
 msgid ""
 "Use a font from package `pymupdf-fonts <https://pypi.org/project/pymupdf-"
 "fonts/>`_. You will see that the respective CSS definitions are a lot "
 "easier in this case."
-msgstr "⚠️"
+msgstr "`pymupdf-fonts <https://pypi.org/project/pymupdf-"
+"fonts/>`_ パッケージからフォントを使用します。この場合、該当するCSS定義がはるかに簡単であることに気付くでしょう。"
 
 #: ../../recipes-text.rst:643 dee98174f8514995b1782ac75dc7395a
 msgid "Align the text with the \"justify\" option."
-msgstr "⚠️"
+msgstr "テキストを "justify" オプションで配置します。"
 
 #: ../../recipes-text.rst:693 38823179c24c4dc59fd34df1399c3be4
 msgid "How to Extract Text with Color"
-msgstr "⚠️"
+msgstr "色付きのテキストを抽出する方法"
 
 #: ../../recipes-text.rst:695 9c3d58e6f15b4356b9f6773b642f692e
 msgid ""
 "Iterate through your text blocks and find the spans of text you need for "
 "this information."
-msgstr "⚠️"
+msgstr "テキストブロックを繰り返し処理し、必要な情報のテキストスパンを見つけます。"
 
 #: ../../footer.rst:60 f99375d6f2b0405ea0056eb53aff72ce
 msgid "This documentation covers all versions up to |version|."

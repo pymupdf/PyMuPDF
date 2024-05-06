@@ -194,7 +194,7 @@ msgstr "対象が現在のドキュメントの外部（*True*）かどうかを
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with property `is_external`:"
-msgstr "⚠️"
+msgstr "リンクの対象を指定する文字列。このプロパティの意味は、プロパティ `is_external` と一緒に評価されるべきです。"
 
 #: ../../outline.rst:70 80555c24a5b844fd923605684a0ff47c
 msgid ""
@@ -203,7 +203,7 @@ msgid ""
 "similar), another file (`uri` starts with \"file:\" or \"file://\") or "
 "some other service like an e-mail address (`uri` starts with "
 "\"mailto:\")."
-msgstr "⚠️"
+msgstr "`is_external` がtrueの場合： `uri` は、現在のPDFの外部のターゲットを指します。これは、インターネットリソース（ `uri` が \"http://\" などで始まる）、別のファイル（`uri` が \"file:\" または \"file://\" で始まる）、または電子メールアドレスなどのその他のサービス（ `uri` が \"mailto:\" で始まる）である可能性があります。"
 
 #: ../../outline.rst:76 b9a1ebc948614925962e16c047386bd1
 msgid ""
@@ -213,7 +213,7 @@ msgid ""
 "format varies for other document types, for example "
 "\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
 "document."
-msgstr "⚠️"
+msgstr "`is_external` がfalseの場合：`uri` は `None` になるか、または内部の位置を指します。PDFドキュメントの場合、これは1から始まるページ番号 *nnnn* を示すために *#nnnn* であるか、名前付きの場所を示します。他のドキュメントタイプの場合、形式は異なります。たとえば、XPSドキュメントのページ番号2（1から始まる）の場合は \"../FixedDoc.fdoc#PG_2_LNK_1\" です。"
 
 #: ../../outline.rst:87 f52eefedca7745c48e690d90be7c1829
 msgid "The link destination details object."

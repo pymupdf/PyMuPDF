@@ -675,7 +675,7 @@ msgstr ""
 
 #: ../../document.rst:100 39ab4f91bc2242d99fc4ea803854a2bc
 msgid "PDF only: Convert destination names into a Python dict."
-msgstr "⚠️"
+msgstr "PDFのみ: ページの目的地名をPythonの辞書に変換します"
 
 #: ../../document.rst:101 b33afd51a77e47ff9a31c197bad4d08d
 msgid ":meth:`Document.save`"
@@ -2370,7 +2370,7 @@ msgstr "以下のキーを持つ辞書:"
 
 #: ../../document.rst:620 6bf8864ae2f44c89af9012a022fae10d
 msgid "*key*: (str) the name."
-msgstr "⚠️"
+msgstr "キー: (str) 名前"
 
 #: ../../document.rst:626 1e329f2702f84e9586fe6c0b8701ef24
 msgid "*value*: (dict) with the following layout:"
@@ -2378,13 +2378,13 @@ msgstr "以下のキーを持つ辞書:"
 
 #: ../../document.rst:622 fd932001e8cf4d0eb142ec864e127694
 msgid "\"page\":  target page number (0-based). If no page number found -1."
-msgstr ""
+msgstr "\"page\": 対象のページ番号（0から始まる）。ページ番号が見つからない場合は-1。"
 
 #: ../../document.rst:623 557457a370ab4080ae5b405d82a25bd2
 msgid ""
 "\"to\": (x, y) target point on page. Currently in PDF coordinates, i.e. "
 "point (0,0) is the bottom-left of the page."
-msgstr "⚠️"
+msgstr "\"to\": (x, y) ページ上のターゲットポイント。現在はPDF座標であり、つまり点(0,0)がページの左下になります。"
 
 #: ../../document.rst:625 0bb0627a039b4518a88fbc280d3bab60
 msgid "\"zoom\": (float) the zoom factor."
@@ -2394,7 +2394,7 @@ msgstr "\"zoom\": ターゲットページ上のズームファクター（float
 msgid ""
 "\"dest\": (str) only present if the target location on the page has not "
 "been provided as \"/XYZ\" or if no page number was found."
-msgstr "⚠️"
+msgstr "\"dest\": (str) \"/XYZ\" としてターゲット位置が指定されていない場合や、ページ番号が見つからない場合にのみ存在します。"
 
 #: ../../document.rst:628 a04a288b317f406c833ff9f4a8fb3054
 msgid "Examples::"
@@ -2402,13 +2402,13 @@ msgstr "例::"
 
 #: ../../document.rst:635 55d1b3e8436d4e748664b372fd36d258
 msgid "or::"
-msgstr "⚠️"
+msgstr "または:"
 
 #: ../../document.rst:642 4b219f15f656445a878d2e0f8345ef4c
 msgid ""
 "All names found in the catalog under keys \"/Dests\" and \"/Names/Dests\""
 " are included."
-msgstr "⚠️"
+msgstr "キー \"/Dests\" および \"/Names/Dests\" の下でカタログ内に見つかるすべての名前が含まれます。"
 
 #: ../../document.rst:645 8bf57ba3b0c4441bafd9527eae099841
 msgid "New in v1.23.6"
@@ -3575,7 +3575,7 @@ msgid ""
 "are now transformed with `page.cropbox` and `page.rotation_matrix`). So "
 "for example `set_toc(get_toc())` now gives unchanged destination 'to' "
 "coordinates."
-msgstr "⚠️"
+msgstr "1.23.8 で変更されました: デスティネーションの 'to' 座標は、現在 `get_toc()` で返される座標系と同じ座標系であるべきです (内部的には `page.cropbox` と `page.rotation_matrix` で変換されます)。したがって、例えば `set_toc(get_toc())` は、変更されていない 'to' 座標を与えます。"
 
 #: ../../document.rst:1089 d68ec85a216f4c8a98ca0856100e3558
 msgid ""
@@ -3714,20 +3714,20 @@ msgid ""
 "PDF only: Convert annotations and / or widgets to become permanent parts "
 "of the pages. The PDF **will be changed** by this method. If `widgets` is"
 " `True`, the document will also no longer be a \"Form PDF\"."
-msgstr "⚠️"
+msgstr "PDF のみ: 注釈やウィジェットをページの永続的な部分に変換します。このメソッドによって PDF **は変更されます**。 `widgets` が `True` の場合、ドキュメントは「フォーム PDF」ではなくなります。"
 
 #: ../../document.rst:1151 cf99257989124baea424c848483e8a34
 msgid ""
 "All pages will look the same, but will no longer have annotations, "
 "respectively fields. The visible parts will be converted to standard "
 "text, vector graphics or images as required."
-msgstr "⚠️"
+msgstr "すべてのページが同じように見えますが、注釈またはフィールドがなくなります。必要に応じて、表示される部分は標準のテキスト、ベクトルグラフィックス、または画像に変換されます。"
 
 #: ../../document.rst:1153 2161bfd28cf1427b8df64a7ccead39ef
 msgid ""
 "The method may thus be a viable **alternative for PDF-to-PDF "
 "conversions** using :meth:`Document.convert_to_pdf`."
-msgstr "⚠️"
+msgstr "このメソッドは、:meth:`Document.convert_to_pdf` を使用して PDF を PDF に変換する際の代替手段として有効な選択肢です。"
 
 #: ../../document.rst:1155 362d8ae27cc44a679d1bdc1cd45ba80d
 msgid ""
@@ -3737,7 +3737,7 @@ msgid ""
 "widgets with this method, all this underlying information (attached "
 "files, comments, associated PopUp annotations, etc.) will be lost and be "
 "removed on next garbage collection."
-msgstr "⚠️"
+msgstr "注釈は複雑なオブジェクトであり、視覚的な外観の下にさらに多くのデータが存在する場合があります。例としては、"Text" や "FileAttachment" の注釈が挙げられます。このメソッドで注釈やウィジェットを組み込む際には、この下部情報（添付ファイル、コメント、関連するポップアップ注釈など）がすべて失われ、次のガベージコレクション時に削除されます。"
 
 #: ../../document.rst:1157 00f2bafe760944b58f702b40b33e54b7
 msgid ""
@@ -3745,17 +3745,17 @@ msgid ""
 "(which supports no copying of widgets) or :meth:`Page.show_pdf_page` "
 "(which supports neither annotations nor widgets) when the source pages "
 "should look exactly the same in the target."
-msgstr "⚠️"
+msgstr "たとえば、 :meth:`Document.insert_pdf` （ウィジェットのコピーをサポートしていない）や :meth:`Page.show_pdf_page` （注釈やウィジェットをサポートしていない）などのメソッドで、ソースページがターゲットで完全に同じように見えるようにする場合にこの機能を使用します。"
 
 #: ../../document.rst:1160 9c492c0950254c308633f48834528c19
 msgid "convert annotations."
-msgstr "⚠️"
+msgstr "注釈を変換するかどうか。"
 
 #: ../../document.rst:1161 62fe03408be143f78eb6bbeb824e5b13
 msgid ""
 "convert fields / widgets. After execution, the document will no longer be"
 " a \"Form PDF\"."
-msgstr "⚠️"
+msgstr "フィールド / ウィジェットを変換します。実行後、ドキュメントはもはや「フォーム PDF」ではありません。"
 
 #: ../../document.rst:1166 7585ffac58384db5867bed3e40eef97e
 msgid "New in v1.16.0"
@@ -4035,7 +4035,7 @@ msgid ""
 ":data:`stream` data. Depending on the `deflate` parameter value, the "
 "converted object definitions will be compressed -- which can lead to very"
 " significant file size reductions."
-msgstr "⚠️"
+msgstr "*（v1.24.0で新機能）* 可変化PDFオブジェクト定義を他のオブジェクトの :data:`stream`  データに格納される情報に変換する圧縮オプションです。`deflate` パラメータの値に応じて、変換されたオブジェクト定義が圧縮されます。これにより、ファイルサイズが非常に大幅に削減される可能性があります。"
 
 #: ../../document.rst:1242 975dbfe06c634674ad2d43fce59396f9
 msgid ""
@@ -4046,7 +4046,7 @@ msgstr "このメソッドは、その名前のファイルがすでに存在す
 
 #: ../../document.rst:1246 ebed406a89c84884b0246a4816155c1b
 msgid "**File size reduction**"
-msgstr "⚠️"
+msgstr "**ファイルサイズの削減**"
 
 #: ../../document.rst:1248 3f63c1be05ac4013a43d9dadc21e2532
 msgid ""
@@ -4055,7 +4055,9 @@ msgid ""
 "clean=False|0, incremental=False|0`. This is a \"lossless\" file size "
 "reduction. There is a convenience version of this method with these "
 "values set by default, :meth:`Document.ez_save` -- please see below."
-msgstr "⚠️"
+msgstr "オプションとして、`garbage=3|4, deflate=True, "
+"use_objstms=True|1`. デフォルト値に触れないでください。 `expand=False|0, "
+"clean=False|0, incremental=False|0` は変更しないでください。これは「非破壊的」なファイルサイズの削減です。これらの値がデフォルトで設定されたメソッドの簡易版もあります。 :meth:`Document.ez_save()` をご覧ください。"
 
 #: ../../document.rst:1251 ef32e8e16a68431683443e032ea01c76
 msgid ""
@@ -4064,7 +4066,8 @@ msgid ""
 " grayscale versions (c) reduce image resolutions. Find examples in the "
 "`PyMuPDF Utilities \"replace-image\" folder <https://github.com/pymupdf"
 "/PyMuPDF-Utilities/tree/master/examples/replace-image>`_."
-msgstr "⚠️"
+msgstr "本質的に「損失のある」ファイルサイズの削減は、画像に関して何かを犠牲にする必要があります。例えば、(a) すべての画像を削除する、(b) 画像をグレースケールに置換する、(c) 画像の解像度を低下させるなどの方法があります。`PyMuPDF Utilities \"replace-image\" folder <https://github.com/pymupdf"
+"/PyMuPDF-Utilities/tree/master/examples/replace-image>`_ に例があります。"
 
 #: ../../document.rst:1255 6257507958724be99828890bfe7207bd
 msgid "New in v1.18.11"
@@ -4220,15 +4223,14 @@ msgid ""
 "be copied** -- although they seem to appear on pages only. Look at "
 ":meth:`Document.bake` for converting a source document if you need to "
 "retain at least widget **appearances.**"
-msgstr "⚠️"
+msgstr "これはページベースのメソッドです。そのため、ソース文書のドキュメントレベルの情報は無視されます。例には、オプショナルコンテンツ、埋め込みファイル、 `StructureElem` 、 `AcroForm` 、目次、ページラベル、メタデータ、名前付き目的地（および他の名前付きエントリ）などがあります。その結果、具体的にはフォームフィールド（ウィジェット）はコピーできません。 - たとえそれらがページ上に表示されているように見える場合でも。ウィジェットの **外観** を少なくとも保持する必要がある場合は、:meth:`Document.bake` をご覧ください。"
 
 #: ../../document.rst:1323 ff446a9617ae40b2bb5da3f79a3d1caf
 msgid ""
 "If `from_page > to_page`, pages will be **copied in reverse order**. If "
 "`0 <= from_page == to_page`, then one page will be copied."
 msgstr ""
-"*from_page > to_page* の場合、ページは **逆の順序でコピーされます** 。*0 <= from_page == "
-"to_page* の場合、1ページがコピーされます。"
+"`from_page > to_page` の場合、ページは **逆の順序でコピーされます** 。`0 <= from_page == to_page`  の場合、1ページがコピーされます。"
 
 #: ../../document.rst:1325 641efc27f17b44c98fbbf6366c1c594f
 msgid ""
@@ -5409,7 +5411,7 @@ msgstr "このメソッドは、ドキュメントを保存する直前に使用
 msgid ""
 "write various progress information to sysout. This currently only has an "
 "effect if `fallback` is `True`."
-msgstr "⚠️"
+msgstr "さまざまな進行状況情報を sysout に書き込みます。現在、これは `fallback` が `True` の場合にのみ効果があります。"
 
 #: ../../document.rst:1823 0452ca8daa494334bf98787f5ca889ac
 msgid ""
@@ -5418,7 +5420,7 @@ msgid ""
 "installed). If using the recommended value `False` (default), MuPDF's "
 "native function is used -- which is **very much faster** and can subset a"
 " broader range of font types. Package fontTools is not required then."
-msgstr "⚠️"
+msgstr "`True` の場合、非推奨のアルゴリズムを使用して、パッケージ `fontTools <https://pypi.org/project/fonttools/>`_  を使用します（従って、fontTools がインストールされている必要があります）。推奨される値 `False` （デフォルト）を使用すると、MuPDF のネイティブ関数が使用されます。これは非常に高速で、より広範なフォントタイプをサブセット化できます。この場合、パッケージ fontTools は必要ありません。"
 
 #: ../../document.rst:1825 52ff234b74074b1db1cddd89f142b6b9
 msgid ""
@@ -5426,7 +5428,7 @@ msgid ""
 "fonts like is typical for Asian scripts. When using the :ref:`Story` "
 "class or method :meth:`Page.insert_htmlbox`, multiple fonts may "
 "automatically be included -- without the programmer becoming aware of it."
-msgstr "⚠️"
+msgstr "最大の利点は、アジアのスクリプトに典型的な大きなフォントを使用して新しい PDF を作成する場合に得られます。 :ref:`Story`  クラスまたはメソッド  :meth:`Page.insert_htmlbox`  を使用する場合、複数のフォントが自動的に含まれる場合がありますが、プログラマーが気付かない場合もあります。"
 
 #: ../../document.rst:1827 0e40451dd90e402c8530e96f339ef2d4
 msgid ""
@@ -5435,7 +5437,7 @@ msgid ""
 " this method can easily reduce the embedded font binaries by two orders "
 "of magnitude -- from several megabytes down to a low two-digit kilobyte "
 "amount."
-msgstr "⚠️"
+msgstr "これらのすべての場合、実際に使用される Unicode のセットは、使用されるフォントの使用可能なグリフの数に比べて非常に小さいことがほとんどです。このメソッドを使用すると、埋め込まれたフォントのバイナリを容易に2桁のキロバイト量にまで減らすことができます。"
 
 #: ../../document.rst:1829 ff6016ddee9c400999e7f94d087be100
 msgid ""
@@ -5443,7 +5445,7 @@ msgid ""
 "PDF objects (\"ghosts\"). Therefore, make sure to compress and garbage-"
 "collect when saving the file. We recommend to use "
 ":meth:`Document.ez_save`."
-msgstr "⚠️"
+msgstr "フォントのサブセットを作成すると、多数の大きな、今は使用されていない PDF オブジェクト（「ゴースト」）が残ります。そのため、ファイルを保存する際に圧縮およびガベージコレクトを行ってください。:meth:`Document.ez_save` の使用をお勧めします。"
 
 #: ../../document.rst:1831 b2bba7363f714ee697783d9721761433
 msgid "|history_begin|"
@@ -5455,7 +5457,7 @@ msgstr "v1.18.9で変更"
 
 #: ../../document.rst:1835 e85e2d9222e74a9db3a403dc6f18a7f8
 msgid "Changed in v1.24.2 use native function of MuPDF."
-msgstr "⚠️"
+msgstr "v1.24.2 で変更され、MuPDF のネイティブ機能を使用するようになりました。"
 
 #: ../../document.rst:1837 9946a8c84a944420ba31948a880779db
 msgid "|history_end|"

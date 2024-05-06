@@ -60,8 +60,8 @@ msgid ""
 ":meth:`Shape.commit` method is invoked. If many draw and text operations "
 "are executed for a page, you should always consider using a Shape object."
 msgstr ""
-"実際には、各 :ref:`Page` クラスの描画メソッドは、（1）シェイプの描画メソッド、（2）:meth:`Shape.finish` "
-"メソッド、（3）:meth:`Shape.commit` "
+"実際には、各 :ref:`Page` クラスの描画メソッドは、（1）シェイプの描画メソッド、（2） :meth:`Shape.finish`  "
+"メソッド、（3） :meth:`Shape.commit`  "
 "メソッドの3つの要素の便利なラッパーです。ページテキストの挿入に関しては、:meth:`Shape.commit` "
 "メソッドのみが呼び出されます。ページで多くの描画およびテキスト操作を実行する場合、常にShapeオブジェクトの使用を検討することをお勧めします。"
 
@@ -81,8 +81,7 @@ msgid ""
 "logging the area they are covering in a rectangle (:attr:`Shape.rect`). "
 "This property can for instance be used to set "
 ":attr:`Page.cropbox_position`."
-msgstr ""
-"このクラスの **描画** メソッド（および:meth:`Shape.insert_textbox`）は、カバーしている領域を矩形 "
+msgstr "このクラスの **描画** メソッド（および :meth:`Shape.insert_textbox` ）は、カバーしている領域を矩形 "
 "(:attr:`Shape.rect`)で記録します。このプロパティは、:attr:`Page.cropbox_position` "
 "を設定するために使用できます。"
 
@@ -517,7 +516,7 @@ msgid ""
 "scripts in the PyMuPDF-Utilities repository."
 msgstr ""
 "`rect.bl -> rect.tl` 、または `quad.ll -> quad.ul` の線の中間点。いくつかの例はこちら"
-"、またはPyMuPDF-Utilitiesリポジトリの *quad-show?.py* スクリプトをご覧ください。"
+"、またはPyMuPDF-Utilitiesリポジトリの  *quad-show?.py*  スクリプトをご覧ください。"
 
 #: ../../shape.rst:165 f4bfe464b8b44931a709252c77e78121
 msgid ""
@@ -691,7 +690,7 @@ msgstr "次の *draw*()* メソッドの一連の描画を、:ref:`CommonParms` 
 msgid ""
 "It has **no effect on** :meth:`Shape.insert_text` and "
 ":meth:`Shape.insert_textbox`."
-msgstr ":meth:`Shape.insert_text` および:meth:`Shape.insert_textbox` には **影響を与えません**。"
+msgstr ":meth:`Shape.insert_text` および :meth:`Shape.insert_textbox` には **影響を与えません**。"
 
 #: ../../shape.rst:257 ea77304b9f574db38ddf2e9b1e6f897e
 msgid ""
@@ -1412,21 +1411,21 @@ msgid ""
 "The stroke (\"border\") width of the elements in a shape (if applicable)."
 " The default value is 1. The values width, color and fill have the "
 "following relationship / dependency:"
-msgstr "⚠️"
+msgstr "図形内の要素のストローク（\"枠線\"）の幅（適用可能な場合）。デフォルト値は1です。幅、色、塗りつぶしの値は、以下の関係/依存関係を持ちます："
 
 #: ../../shape.rst:585 7254c9a8a9ca4a08b673c5030f0c2eea
 msgid ""
 "If `fill=None` shape elements will always be drawn with a border - even "
 "if `color=None` (in which case black is taken) or `width=0` (in which "
 "case 1 is taken)."
-msgstr "⚠️"
+msgstr "`fill=None` の場合、shape要素は常に枠線で描画されます -  `color=None` の場合（その場合、黒が使用されます）、または `width=0` の場合（その場合、1が使用されます）でもです。"
 
 #: ../../shape.rst:586 e5e06a2a4f4e46f99b4ff35935d0b5ef
 msgid ""
 "Shapes without border can only be achieved if a fill color is specified "
 "(which may be white of course). To achieve this, specify `width=0`. In "
 "this case, the `color` parameter is ignored."
-msgstr "⚠️"
+msgstr "枠線のない図形は、塗りつぶしの色が指定されている場合のみ実現できます（もちろん白色であっても構いません）。これを実現するには、 `width=0` を指定します。この場合、 `color` パラメータは無視されます。"
 
 #: ../../shape.rst:590 a09f147da27e45b7b9357f93a0e630d7
 msgid "**stroke_opacity / fill_opacity** (*floats*)"

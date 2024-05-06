@@ -27,21 +27,21 @@ msgstr ""
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF は、PDF（およびその他の）ドキュメントのデータ抽出、解析、変換、および操作のための高性能な Python ライブラリです。"
 
 #: ../../header.rst:-1 7f7462091fb44f4fb68f82d55a974669
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF テキスト抽出、PDF 画像抽出、PDF 変換、PDF テーブル、PDF 分割、PDF 作成、Pyodide、PyScript"
 
 #: ../../packaging.rst:5 884c72c6c016487f9bcb726fb65a0140
 msgid "Packaging for Linux distributions"
-msgstr ""
+msgstr "Linux ディストリビューション向けのパッケージング"
 
 #: ../../packaging.rst:9 209a91638caf435bb31fe7949f3d1fa9
 msgid "Requirements"
-msgstr ""
+msgstr "要件"
 
 #: ../../packaging.rst:11 4d6a2e2f989648efbbc438e187a81ba5
 msgid "Python"
@@ -49,55 +49,55 @@ msgstr ""
 
 #: ../../packaging.rst:12 568713fbe13048fcbc9f250c7eb9387a
 msgid "MuPDF checkout (including submodules)."
-msgstr ""
+msgstr "MuPDF チェックアウト（サブモジュールを含む）。"
 
 #: ../../packaging.rst:13 f8978433f21c4ae891b32dd3425253ce
 msgid "PyMuPDF checkout."
-msgstr ""
+msgstr "PyMuPDF チェックアウト。"
 
 #: ../../packaging.rst:14 327fc84ec1ff4dd495ae20fb73f775bb
 msgid "System packages listed in `scripts/sysinstall.py:g_sys_packages`."
-msgstr ""
+msgstr "`scripts/sysinstall.py:g_sys_packages` にリストされたシステムパッケージ。"
 
 #: ../../packaging.rst:15 76c4f01c12df4a408b5644110a75ceba
 msgid "Python packages listed in `pyproject.toml`."
-msgstr ""
+msgstr "`pyproject.toml` にリストされた Python パッケージ。"
 
 #: ../../packaging.rst:17 d3df6822f1e04ed8909afe912a05147c
 msgid "Extra requirements for running tests:"
-msgstr ""
+msgstr "テストの実行に必要な追加要件："
 
 #: ../../packaging.rst:19 62ce99e2943f4d17ba47c0007cf42967
 msgid "Python packages listed in `scripts/gh_release.py:test_packages`."
-msgstr ""
+msgstr "`scripts/gh_release.py:test_packages` にリストされた Python パッケージ。"
 
 #: ../../packaging.rst:23 ac34e83cedf84d1da9270684ce13d74a
 msgid "General steps"
-msgstr ""
+msgstr "一般的な手順"
 
 #: ../../packaging.rst:25 f399ac7003634e5a9cd1f95ee0ffd337
 msgid "Build and install MuPDF:"
-msgstr ""
+msgstr "MuPDF をビルドしてインストールする："
 
 #: ../../packaging.rst:27 59580e5058df487894cfaf0881bebc40
 msgid "Install required system packages."
-msgstr ""
+msgstr "必要なシステムパッケージをインストールします。"
 
 #: ../../packaging.rst:28 dafd008c7c1240a9964cdf88029710f1
 msgid ""
 "Run `make install-shared-python` on MuPDF's `Makefile` with at least "
 "these make variables:"
-msgstr ""
+msgstr "MuPDF の `Makefile` で `make install-shared-python` を実行し、少なくともこれらの make 変数を設定します："
 
 #: ../../packaging.rst:31 52cefb437e334060bbf38c8210ea92d8
 msgid "`DESTDIR` set to the install directory, e.g. `/`."
-msgstr ""
+msgstr "`DESTDIR` をインストールディレクトリに設定します。例: `/`。"
 
 #: ../../packaging.rst:33 8e8a980f7bef4eae9721ad26c29a18f3
 msgid ""
 "`prefix` set to location relative to DESTDIR, such as `/usr/local` or "
 "`/usr`. Must start with `/`."
-msgstr ""
+msgstr "`prefix` を DESTDIR に相対的な場所に設定します。たとえば `/usr/local` または /usr など、必ず / で始める必要があります。"
 
 #: ../../packaging.rst:35 331df3d074e04268a5faf10083e1218c
 msgid "`USE_SYSTEM_LIBS=yes`."
@@ -113,99 +113,99 @@ msgstr ""
 
 #: ../../packaging.rst:39 b10ef14fee844e508806082fefc897f8
 msgid "Build and install PyMuPDF:"
-msgstr ""
+msgstr "`pip install ./PyMuPDF`"
 
 #: ../../packaging.rst:42 58c138e3de1f4109ab6ada549b656723
 msgid ""
 "Run `pip install ./PyMuPDF` or `pip wheel ./PyMuPDF` with at least these "
 "environment variables:"
-msgstr ""
+msgstr "`pip install ./PyMuPDF` または `pip wheel ./PyMuPDF` を実行します。少なくとも以下の環境変数を設定してください："
 
 #: ../../packaging.rst:46 3cb50340fdcb49b8929b93049a40b470
 msgid ""
 "`PYMUPDF_SETUP_MUPDF_BUILD=` (empty string) to prevent download and build"
 " of hard-coded MuPDF release."
-msgstr ""
+msgstr "`PYMUPDF_SETUP_MUPDF_BUILD=` （空の文字列）：ハードコードされた MuPDF リリースのダウンロードとビルドを防ぐために設定します。"
 
 #: ../../packaging.rst:49 a43ecc66400140f4b90ed30ded22663c
 msgid ""
 "`CFLAGS`, `CXXFLAGS` and `LDFLAGS` set to allow visibility of the "
 "installed MuPDF headers and shared libraries."
-msgstr ""
+msgstr "`CFLAGS`、`CXXFLAGS`、および `LDFLAGS` を設定して、インストールされた MuPDF のヘッダーと共有ライブラリが見えるようにします。"
 
 #: ../../packaging.rst:52 cf4cb16844584bdaa97cc98d4f0d59fb
 msgid ""
 "[As of 2024-04-15, tere is no need to set "
 "`PYMUPDF_SETUP_IMPLEMENTATIONS=b` to build only the rebased "
 "implementation, as this is now the default.]"
-msgstr ""
+msgstr "[2024年4月15日現在、`PYMUPDF_SETUP_IMPLEMENTATIONS=b` を設定して、リベースされた実装のみをビルドする必要はありません。これはデフォルトの動作です。]"
 
 #: ../../packaging.rst:56 3f4370d95f9c4c3db0914ecb048029da
 msgid "Run PyMuPDF tests:"
-msgstr ""
+msgstr "PyMuPDF テストを実行する："
 
 #: ../../packaging.rst:58 bddf072ecea24e88aacab76c4c119fc1
 msgid "Ensure required Python packages are available."
-msgstr ""
+msgstr "必要な Python パッケージが利用可能であることを確認します"
 
 #: ../../packaging.rst:60 aa3b323a668f4b73a92bcc7f7b48856a
 msgid "Run `pytest -k \"not test_color_count and not test_3050\" PyMuPDF`"
-msgstr ""
+msgstr "`pytest -k \"not test_color_count and not test_3050\" PyMuPDF` を実行します。"
 
 #: ../../packaging.rst:62 87422178d37c4e67b51376ffb5ba74e4
 msgid ""
 "Test `test_color_count` is known fail if MuPDF is not built with "
 "PyMuPDF's custom config.h."
-msgstr ""
+msgstr "`test_color_count` テストは、MuPDF が PyMuPDF のカスタム config.h でビルドされていない場合に失敗することが既知です。"
 
 #: ../../packaging.rst:63 30e7134d24794b0f9d2cc8cefe295ed7
 msgid ""
 "Test `test_3050` is known to fail if MuPDF is built without its own "
 "third-party libraries."
-msgstr ""
+msgstr "`test_3050` テストは、MuPDF が独自のサードパーティライブラリを使用せずにビルドされている場合に失敗することが既知です。"
 
 #: ../../packaging.rst:67 973fa68618c04701bceb8bbceb4dd506
 msgid "Use of scripts/sysinstall.py"
-msgstr ""
+msgstr "scripts/sysinstall.py の使用"
 
 #: ../../packaging.rst:69 d03df40d9c4b47da94120b3c5bc4499f
 msgid ""
 "`scripts/sysinstall.py` provides a useful example of build, install and "
 "test commands that are known to to work, because it is run regularly by "
 "Github action `.github/workflows/test_sysinstall.yml`."
-msgstr ""
+msgstr "`scripts/sysinstall.py` は、定期的に GitHub アクション `.github/workflows/test_sysinstall.yml` で実行されるため、動作が確認されているビルド、インストール、およびテストコマンドの便利な例を提供しています。"
 
 #: ../../packaging.rst:73 876fa33ceffd43cc954690444ea33f6f
 msgid "Run with `-h` or look at the doc-string to see detailed usage information."
-msgstr ""
+msgstr "詳細な使用方法については、`-h` を付けて実行するか、ドキュメント文字列を参照してください。"
 
 #: ../../packaging.rst:74 5e2042956b1f44d58eecff8623c66bae
 msgid "It uses Debian-style `apt` commands to install system packages."
-msgstr ""
+msgstr "システムパッケージのインストールには、Debian スタイルの `apt` コマンドが使用されます。"
 
 #: ../../packaging.rst:75 4235acdd5a5147d281e0e60a14df8b38
 msgid "By default it assumes local git checkouts `mupdf/` and `PyMuPDF/`."
-msgstr ""
+msgstr "デフォルトでは、ローカルの git チェックアウトである `mupdf/` と `PyMuPDF/` を想定しています。"
 
 #: ../../packaging.rst:77 f7833fbda4c1413c8f70f7a9e954f4f3
 msgid ""
 "To run a full build, install and test for both a local fake root and the "
 "system root:"
-msgstr ""
+msgstr "ローカルのフェイクルートとシステムルートの両方で、フルビルド、インストール、およびテストを実行するには、"
 
 #: ../../packaging.rst:85 93d3371811b549f3b2a587f16566b0d5
 msgid "To see what commands would be run without actually running them:"
-msgstr ""
+msgstr "実際に実行せずに実行されるコマンドを確認するには:"
 
 #: ../../packaging.rst:93 698e06867e11413ab0a78a1a2a7decb1
 msgid "See also"
-msgstr ""
+msgstr "参考にしてください"
 
 #: ../../packaging.rst:96 25d30a337d42412ea569400f721bbf53
 msgid ""
 "`setup.py`'s initial doc-comment has detailed information about the "
 "environment variables used when building PyMuPDF."
-msgstr ""
+msgstr "参考にしてください `setup.py` の最初のドキュメントコメントには、PyMuPDF をビルドする際に使用される環境変数に関する詳細な情報が含まれています。"
 
 #~ msgid ""
 #~ "`PYMUPDF_SETUP_IMPLEMENTATIONS=b` to build only "
