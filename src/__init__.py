@@ -21465,7 +21465,6 @@ class TOOLS:
     @staticmethod
     def set_small_glyph_heights(on=None):
         """Set / unset small glyph heights."""
-        log(f'set_small_glyph_heights(): {_globals.small_glyph_heights=} {on=}')
         if on is not None:
             _globals.small_glyph_heights = bool(on)
             if g_use_extra:
