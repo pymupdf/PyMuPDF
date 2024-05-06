@@ -78,6 +78,7 @@ class Package:
         ...                         ('cli.py', 'foo/__main__.py'),
         ...                         (f'build/{so_leaf}', f'foo/'),
         ...                         ('README', '$dist-info/'),
+        ...                         (b'Hello world', 'foo/hw.txt'),
         ...                         ]
         ...
         ...             def sdist():
@@ -88,6 +89,7 @@ class Package:
         ...                         'pipcl.py',
         ...                         'wdev.py',
         ...                         'README',
+        ...                         (b'Hello word2', 'hw2.txt'),
         ...                         ]
         ...
         ...             p = pipcl.Package(
@@ -394,16 +396,18 @@ class Package:
                 A function taking no args, or a single `config_settings` dict
                 arg (as described in PEP-517), that builds the package.
 
-                Should return a list of items; each item should be a tuple of
-                two strings `(from_, to_)`, or a single string `path` which is
-                treated as the tuple `(path, path)`.
+                Should return a list of items; each item should be a tuple
+                `(from_, to_)`, or a single string `path` which is treated as
+                the tuple `(path, path)`.
 
-                `from_` should be the path to a file; if a relative path it is
-                assumed to be relative to `root`.
+                `from_` can be a string or a `bytes`. If a string it should
+                be the path to a file; a relative path is treated as relative
+                to `root`. If a `bytes` it is the contents of the file to be
+                added.
 
                 `to_` identifies what the file should be called within a wheel
                 or when installing. If `to_` ends with `/`, the leaf of `from_`
-                is appended to it.
+                is appended to it (and `from_` must not be a `bytes`).
 
                 Initial `$dist-info/` in `_to` is replaced by
                 `{name}-{version}.dist-info/`; this is useful for license files
@@ -437,13 +441,9 @@ class Package:
 
             fn_sdist:
                 A function taking no args, or a single `config_settings` dict
-                arg (as described in PEP517), that returns a list of paths for
-                files that should be copied into the sdist. Each item in the
-                list can also be a tuple `(from_, to_)`, where `from_` is the
-                path of a file and `to_` is its name within the sdist.
-
-                Relative paths are interpreted as relative to `root`. It is an
-                error if a path does not exist or is not a file.
+                arg (as described in PEP517), that returns a list of items to
+                be copied into the sdist. The list should be in the same format
+                as returned by `fn_build`.
 
                 It can be convenient to use `pipcl.git_items()`.
 
@@ -646,21 +646,26 @@ class Package:
         record = _Record()
         with zipfile.ZipFile(path, 'w', self.wheel_compression, self.wheel_compresslevel) as z:
 
-            def add_file(from_, to_):
-                z.write(from_, to_)
-                record.add_file(from_, to_)
+            def add(from_, to_):
+                if isinstance(from_, str):
+                    z.write(from_, to_)
+                    record.add_file(from_, to_)
+                elif isinstance(from_, bytes):
+                    z.writestr(to_, from_)
+                    record.add_content(from_, to_)
+                else:
+                    assert 0
 
             def add_str(content, to_):
-                z.writestr(to_, content)
-                record.add_content(content, to_)
+                add(content.encode('utf8'), to_)
 
             dist_info_dir = self._dist_info_dir()
 
             # Add the files returned by fn_build().
             #
             for item in items:
-                (from_abs, from_rel), (to_abs, to_rel) = self._fromto(item)
-                add_file(from_abs, to_rel)
+                from_, (to_abs, to_rel) = self._fromto(item)
+                add(from_, to_rel)
 
             # Add <name>-<version>.dist-info/WHEEL.
             #
@@ -726,60 +731,63 @@ class Package:
             else:
                 items = self.fn_sdist()
 
-        manifest = []
-        names_in_tar = []
-        def check_name(name):
-            if name in names_in_tar:
-                raise Exception(f'Name specified twice: {name}')
-            names_in_tar.append(name)
-
         prefix = f'{self.name}-{self.version}'
-        def add_content(tar, name, contents):
-            '''
-            Adds item called `name` to `tarfile.TarInfo` `tar`, containing
-            `contents`. If contents is a string, it is encoded using utf8.
-            '''
-            log2( f'Adding: {name}')
-            if isinstance(contents, str):
-                contents = contents.encode('utf8')
-            check_name(name)
-            ti = tarfile.TarInfo(f'{prefix}/{name}')
-            ti.size = len(contents)
-            ti.mtime = time.time()
-            tar.addfile(ti, io.BytesIO(contents))
-
-        def add_file(tar, path_abs, name):
-            log2( f'Adding file: {os.path.relpath(path_abs)} => {name}')
-            check_name(name)
-            tar.add( path_abs, f'{prefix}/{name}', recursive=False)
-
         os.makedirs(sdist_directory, exist_ok=True)
         tarpath = f'{sdist_directory}/{prefix}.tar.gz'
         log2(f'Creating sdist: {tarpath}')
+        
         with tarfile.open(tarpath, 'w:gz') as tar:
+            
+            names_in_tar = list()
+            def check_name(name):
+                if name in names_in_tar:
+                    raise Exception(f'Name specified twice: {name}')
+                names_in_tar.append(name)
+            
+            def add(from_, name):
+                check_name(name)
+                if isinstance(from_, str):
+                    log2( f'Adding file: {os.path.relpath(from_)} => {name}')
+                    tar.add( from_, f'{prefix}/{name}', recursive=False)
+                elif isinstance(from_, bytes):
+                    log2( f'Adding: {name}')
+                    ti = tarfile.TarInfo(f'{prefix}/{name}')
+                    ti.size = len(from_)
+                    ti.mtime = time.time()
+                    tar.addfile(ti, io.BytesIO(from_))
+                else:
+                    assert 0
+        
+            def add_string(text, name):
+                textb = text.encode('utf8')
+                return add(textb, name)
+
             found_pyproject_toml = False
             for item in items:
-                (from_abs, from_rel), (to_abs, to_rel) = self._fromto(item)
-                if from_abs.startswith(f'{os.path.abspath(sdist_directory)}/'):
-                    # Source files should not be inside <sdist_directory>.
-                    assert 0, f'Path is inside sdist_directory={sdist_directory}: {from_abs!r}'
-                assert os.path.exists(from_abs), f'Path does not exist: {from_abs!r}'
-                assert os.path.isfile(from_abs), f'Path is not a file: {from_abs!r}'
-                if to_rel == 'pyproject.toml':
-                    found_pyproject_toml = True
-                add_file( tar, from_abs, to_rel)
-                manifest.append(to_rel)
+                from_, (to_abs, to_rel) = self._fromto(item)
+                if isinstance(from_, bytes):
+                    add(from_, to_rel)
+                else:
+                    if from_.startswith(f'{os.path.abspath(sdist_directory)}/'):
+                        # Source files should not be inside <sdist_directory>.
+                        assert 0, f'Path is inside sdist_directory={sdist_directory}: {from_!r}'
+                    assert os.path.exists(from_), f'Path does not exist: {from_!r}'
+                    assert os.path.isfile(from_), f'Path is not a file: {from_!r}'
+                    if to_rel == 'pyproject.toml':
+                        found_pyproject_toml = True
+                    add(from_, to_rel)
+            
             if not found_pyproject_toml:
                 log0(f'Warning: no pyproject.toml specified.')
 
             # Always add a PKG-INFO file.
-            add_content(tar, f'PKG-INFO', self._metainfo())
+            add_string(self._metainfo(), 'PKG-INFO')
 
             if self.license:
                 if 'COPYING' in names_in_tar:
                     log2(f'Not writing .license because file already in sdist: COPYING')
                 else:
-                    add_content(tar, f'COPYING', self.license)
+                    add_string(self.license, 'COPYING')
 
         log1( f'Have created sdist: {tarpath}')
         return os.path.basename(tarpath)
@@ -849,11 +857,18 @@ class Package:
             record_path = f'{root2}/{dist_info_dir}/RECORD'
         record = _Record()
 
-        def add_file(from_abs, from_rel, to_abs, to_rel):
-            log2(f'Copying from {from_rel} to {to_abs}')
+        def add_file(from_, to_abs, to_rel):
             os.makedirs( os.path.dirname( to_abs), exist_ok=True)
-            shutil.copy2( from_abs, to_abs)
-            record.add_file(from_rel, to_rel)
+            if isinstance(from_, bytes):
+                log2(f'Copying content into {to_abs}.')
+                with open(to_abs, 'wb') as f:
+                    f.write(from_)
+                record.add_content(from_, to_rel)
+            else:
+                log0(f'{from_=}')
+                log2(f'Copying from {os.path.relpath(from_, self.root)} to {to_abs}')
+                shutil.copy2( from_, to_abs)
+                record.add_file(from_, to_rel)
 
         def add_str(content, to_abs, to_rel):
             log2( f'Writing to: {to_abs}')
@@ -863,9 +878,10 @@ class Package:
             record.add_content(content, to_rel)
 
         for item in items:
-            (from_abs, from_rel), (to_abs, to_rel) = self._fromto(item)
+            from_, (to_abs, to_rel) = self._fromto(item)
+            log0(f'{from_=} {to_abs=} {to_rel=}')
             to_abs2 = f'{root2}/{to_rel}'
-            add_file( from_abs, from_rel, to_abs2, to_rel)
+            add_file( from_, to_abs2, to_rel)
 
         add_str( self._metainfo(), f'{root2}/{dist_info_dir}/METADATA', f'{dist_info_dir}/METADATA')
         
@@ -1245,12 +1261,14 @@ class Package:
 
     def _fromto(self, p):
         '''
-        Returns `((from_abs, from_rel), (to_abs, to_rel))`.
+        Returns `(from_, (to_abs, to_rel))`.
 
-        If `p` is a string we convert to `(p, p)`. Otherwise we assert
-        that `p` is a tuple of two string, `(from_, to_)`. Non-absolute
-        paths are assumed to be relative to `self.root`. If `to_` is
-        empty or ends with `/`, we append the leaf of `from_`.
+        If `p` is a string we convert to `(p, p)`. Otherwise we assert that
+        `p` is a tuple `(from_, to_)` where `from_` is str/bytes and `to_` is
+        str. If `from_` is a bytes it is contents of file to add, otherwise the
+        path of an existing file; non-absolute paths are assumed to be relative
+        to `self.root`. If `to_` is empty or ends with `/`, we append the leaf
+        of `from_` (which must be a str).
 
         If `to_` starts with `$dist-info/`, we replace this with
         `self._dist_info_dir()`.
@@ -1258,21 +1276,18 @@ class Package:
         If `to_` starts with `$data/`, we replace this with
         `{self.name}-{self.version}.data/`.
 
-        `from_abs` and `to_abs` are absolute paths. We assert that `to_abs` is
-        `within self.root`.
+        We assert that `to_abs` is `within self.root`.
 
-        `from_rel` and `to_rel` are derived from the `_abs` paths and are
-        `relative to self.root`.
+        `to_rel` is derived from the `to_abs` and is relative to self.root`.
         '''
         ret = None
         if isinstance(p, str):
-            ret = p, p
-        elif isinstance(p, tuple) and len(p) == 2:
-            from_, to_ = p
-            if isinstance(from_, str) and isinstance(to_, str):
-                ret = from_, to_
-        assert ret, 'p should be str or (str, str), but is: {p}'
-        from_, to_ = ret
+            p = p, p
+        assert isinstance(p, tuple) and len(p) == 2
+        
+        from_, to_ = p
+        assert isinstance(from_, (str, bytes))
+        assert isinstance(to_, str)
         if to_.endswith('/') or to_=='':
             to_ += os.path.basename(from_)
         prefix = '$dist-info/'
@@ -1281,8 +1296,11 @@ class Package:
         prefix = '$data/'
         if to_.startswith( prefix):
             to_ = f'{self.name}-{self.version}.data/{to_[ len(prefix):]}'
-        from_ = self._path_relative_to_root( from_, assert_within_root=False)
+        if isinstance(from_, str):
+            from_, _ = self._path_relative_to_root( from_, assert_within_root=False)
         to_ = self._path_relative_to_root(to_)
+        assert isinstance(from_, (str, bytes))
+        log2(f'returning {from_=} {to_=}')
         return from_, to_
 
 
@@ -2212,7 +2230,7 @@ def _fs_mtime( filename, default=0):
     except OSError:
         return default
 
-g_verbose = int(os.environ.get('PIPCL_VERBOSE', '2'))
+g_verbose = int(os.environ.get('PIPCL_VERBOSE', '1'))
 
 def verbose(level=None):
     '''
