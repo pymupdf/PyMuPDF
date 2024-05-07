@@ -57,12 +57,15 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-      #with:
-      #  fetch-depth: 0  # Optional, use if you use setuptools_scm
-      #  submodules: true  # Optional, use if you have submodules
 
     - name: Build sdist
-      run: pipx run build --sdist
+      env:
+            inputs_wheels_default: 0
+            inputs_sdist: 1
+            inputs_flavours: ${{inputs.flavours}}
+            inputs_PYMUPDF_SETUP_MUPDF_BUILD: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD}}
+      run:
+        python scripts/gh_release.py
 
     - uses: actions/upload-artifact@v2
       with:
