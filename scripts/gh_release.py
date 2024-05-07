@@ -200,160 +200,184 @@ def build( platform_=None, valgrind=False):
     if platform.system() == 'Linux' and inputs_wheels_linux_pyodide:
         build_pyodide_wheel(inputs_wheels_implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD)
     
-    # Build 
+    # Build sdist(s).
     #
-    env_extra = dict()
+    if inputs_sdist:
+        if pymupdf_dir != os.path.abspath( os.getcwd()):
+            log( f'Changing dir to {pymupdf_dir=}')
+            os.chdir( pymupdf_dir)
+        # Create PyMuPDF sdist.
+        run(f'{sys.executable} setup.py sdist')
+        assert glob.glob('dist/PyMuPDF-*.tar.gz')
+        if inputs_flavours:
+            # Create PyMuPDFb sdist.
+            run(
+                    f'{sys.executable} setup.py sdist',
+                    env_extra=dict(PYMUPDF_SETUP_FLAVOUR='b'),
+                    )
+            assert glob.glob('dist/PyMuPDFb-*.tar.gz')
     
-    def set_if_unset(name, value):
-        v = os.environ.get(name)
-        if v is None:
-            log( f'Setting environment {name=} to {value=}')
-            env_extra[ name] = value
-        else:
-            log( f'Not changing {name}={v!r} to {value!r}')
-    set_if_unset( 'CIBW_BUILD_VERBOSITY', '3')
-    set_if_unset( 'CIBW_SKIP', '"pp* *i686 *-musllinux_* cp36* cp37*"')
+    # Build wheels.
+    #
+    if (0
+            or inputs_wheels_linux_aarch64
+            or inputs_wheels_linux_auto
+            or inputs_wheels_macos_arm64
+            or inputs_wheels_macos_auto
+            or inputs_wheels_windows_auto
+            ):
+        env_extra = dict()
     
-    def make_string(*items):
-        ret = list()
-        for item in items:
-            if item:
-                ret.append(item)
-        return ' '.join(ret)
+        def set_if_unset(name, value):
+            v = os.environ.get(name)
+            if v is None:
+                log( f'Setting environment {name=} to {value=}')
+                env_extra[ name] = value
+            else:
+                log( f'Not changing {name}={v!r} to {value!r}')
+        set_if_unset( 'CIBW_BUILD_VERBOSITY', '3')
+        set_if_unset( 'CIBW_SKIP', '"pp* *i686 *-musllinux_* cp36* cp37*"')
     
-    cps = inputs_wheels_cps if inputs_wheels_cps else 'cp38* cp39* cp310* cp311* cp312*'
-    set_if_unset( 'CIBW_BUILD', cps)
+        def make_string(*items):
+            ret = list()
+            for item in items:
+                if item:
+                    ret.append(item)
+            return ' '.join(ret)
     
-    if platform.system() == 'Linux':
-        set_if_unset(
-                'CIBW_ARCHS_LINUX',
-                make_string(
-                    'auto64' * inputs_wheels_linux_auto,
-                    'aarch64' * inputs_wheels_linux_aarch64,
-                    ),
-                )
-        if env_extra.get('CIBW_ARCHS_LINUX') == '':
-            log(f'Not running cibuildwheel because CIBW_ARCHS_LINUX is empty string.')
-            return
+        cps = inputs_wheels_cps if inputs_wheels_cps else 'cp38* cp39* cp310* cp311* cp312*'
+        set_if_unset( 'CIBW_BUILD', cps)
     
-    if platform.system() == 'Windows':
-        set_if_unset(
-                'CIBW_ARCHS_WINDOWS',
-                make_string(
-                    'auto' * inputs_wheels_windows_auto,
-                    ),
-                )
-        if env_extra.get('CIBW_ARCHS_WINDOWS') == '':
-            log(f'Not running cibuildwheel because CIBW_ARCHS_WINDOWS is empty string.')
-            return
-    
-    if platform.system() == 'Darwin':
-        set_if_unset(
-                'CIBW_ARCHS_MACOS',
-                make_string(
-                    'auto' * inputs_wheels_macos_auto,
-                    'arm64' * inputs_wheels_macos_arm64,
-                    ),
-                )
-        if env_extra.get('CIBW_ARCHS_MACOS') == '':
-            log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
-            return
-    
-    def env_pass(name):
-        '''
-        Adds `name` to CIBW_ENVIRONMENT_PASS_LINUX if required to be available
-        when building wheel with cibuildwheel.
-        '''
         if platform.system() == 'Linux':
-            v = env_extra.get('CIBW_ENVIRONMENT_PASS_LINUX', '')
-            if v:
-                v += ' '
-            v += name
-            env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = v
+            set_if_unset(
+                    'CIBW_ARCHS_LINUX',
+                    make_string(
+                        'auto64' * inputs_wheels_linux_auto,
+                        'aarch64' * inputs_wheels_linux_aarch64,
+                        ),
+                    )
+            if env_extra.get('CIBW_ARCHS_LINUX') == '':
+                log(f'Not running cibuildwheel because CIBW_ARCHS_LINUX is empty string.')
+                return
     
-    def env_set(name, value, pass_=False):
-        assert isinstance( value, str)
-        if not name.startswith('CIBW'):
-            assert pass_, f'{name=} {value=}'
-        env_extra[ name] = value
-        if pass_:
-            env_pass(name)
+        if platform.system() == 'Windows':
+            set_if_unset(
+                    'CIBW_ARCHS_WINDOWS',
+                    make_string(
+                        'auto' * inputs_wheels_windows_auto,
+                        ),
+                    )
+            if env_extra.get('CIBW_ARCHS_WINDOWS') == '':
+                log(f'Not running cibuildwheel because CIBW_ARCHS_WINDOWS is empty string.')
+                return
+    
+        if platform.system() == 'Darwin':
+            set_if_unset(
+                    'CIBW_ARCHS_MACOS',
+                    make_string(
+                        'auto' * inputs_wheels_macos_auto,
+                        'arm64' * inputs_wheels_macos_arm64,
+                        ),
+                    )
+            if env_extra.get('CIBW_ARCHS_MACOS') == '':
+                log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
+                return
+    
+        def env_pass(name):
+            '''
+            Adds `name` to CIBW_ENVIRONMENT_PASS_LINUX if required to be available
+            when building wheel with cibuildwheel.
+            '''
+            if platform.system() == 'Linux':
+                v = env_extra.get('CIBW_ENVIRONMENT_PASS_LINUX', '')
+                if v:
+                    v += ' '
+                v += name
+                env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = v
+    
+        def env_set(name, value, pass_=False):
+            assert isinstance( value, str)
+            if not name.startswith('CIBW'):
+                assert pass_, f'{name=} {value=}'
+            env_extra[ name] = value
+            if pass_:
+                env_pass(name)
 
-    if os.environ.get('PYMUPDF_SETUP_LIBCLANG'):
-        env_pass('PYMUPDF_SETUP_LIBCLANG')
+        if os.environ.get('PYMUPDF_SETUP_LIBCLANG'):
+            env_pass('PYMUPDF_SETUP_LIBCLANG')
     
-    env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', inputs_wheels_implementations, pass_=1)
-    if inputs_skeleton:
-        env_set('PYMUPDF_SETUP_SKELETON', inputs_skeleton, pass_=1)
+        env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', inputs_wheels_implementations, pass_=1)
+        if inputs_skeleton:
+            env_set('PYMUPDF_SETUP_SKELETON', inputs_skeleton, pass_=1)
     
-    if inputs_PYMUPDF_SETUP_MUPDF_BUILD not in ('-', None):
-        log(f'Setting PYMUPDF_SETUP_MUPDF_BUILD to {inputs_PYMUPDF_SETUP_MUPDF_BUILD!r}.')
-        env_set('PYMUPDF_SETUP_MUPDF_BUILD', inputs_PYMUPDF_SETUP_MUPDF_BUILD, pass_=True)
-        env_set('PYMUPDF_SETUP_MUPDF_TGZ', '', pass_=True)   # Don't put mupdf in sdist.
+        if inputs_PYMUPDF_SETUP_MUPDF_BUILD not in ('-', None):
+            log(f'Setting PYMUPDF_SETUP_MUPDF_BUILD to {inputs_PYMUPDF_SETUP_MUPDF_BUILD!r}.')
+            env_set('PYMUPDF_SETUP_MUPDF_BUILD', inputs_PYMUPDF_SETUP_MUPDF_BUILD, pass_=True)
+            env_set('PYMUPDF_SETUP_MUPDF_TGZ', '', pass_=True)   # Don't put mupdf in sdist.
     
-    def set_cibuild_test():
-        log( f'set_cibuild_test(): {inputs_skeleton=}')
-        valgrind_text = ''
-        if valgrind:
-            valgrind_text = ' --valgrind 1'
-        env_set('CIBW_TEST_COMMAND', f'python {{project}}/scripts/gh_release.py{valgrind_text} test {{project}} {{package}}')
+        def set_cibuild_test():
+            log( f'set_cibuild_test(): {inputs_skeleton=}')
+            valgrind_text = ''
+            if valgrind:
+                valgrind_text = ' --valgrind 1'
+            env_set('CIBW_TEST_COMMAND', f'python {{project}}/scripts/gh_release.py{valgrind_text} test {{project}} {{package}}')
     
-    if pymupdf_dir != os.path.abspath( os.getcwd()):
-        log( f'Changing dir to {pymupdf_dir=}')
-        os.chdir( pymupdf_dir)
+        if pymupdf_dir != os.path.abspath( os.getcwd()):
+            log( f'Changing dir to {pymupdf_dir=}')
+            os.chdir( pymupdf_dir)
     
-    run('pip install cibuildwheel')
+        run('pip install cibuildwheel')
     
-    if inputs_flavours:
-        # Build and test PyMuPDF and PyMuPDFb wheels.
-        #
+        if inputs_flavours:
+            # Build and test PyMuPDF and PyMuPDFb wheels.
+            #
         
-        # First build PyMuPDFb wheel. cibuildwheel will build a single wheel
-        # here, which will work with any python version on current OS.
-        #
-        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'b', pass_=1)
-        run( f'cibuildwheel{platform_arg}', env_extra)
-        run( 'echo after flavour=b')
-        run( 'ls -l wheelhouse')
+            # First build PyMuPDFb wheel. cibuildwheel will build a single wheel
+            # here, which will work with any python version on current OS.
+            #
+            env_set( 'PYMUPDF_SETUP_FLAVOUR', 'b', pass_=1)
+            run( f'cibuildwheel{platform_arg}', env_extra)
+            run( 'echo after flavour=b')
+            run( 'ls -l wheelhouse')
 
-        # Now set environment to build PyMuPDF wheels. cibuildwheel will build
-        # one for each Python version.
-        #
+            # Now set environment to build PyMuPDF wheels. cibuildwheel will build
+            # one for each Python version.
+            #
         
-        # Tell cibuildwheel not to use `auditwheel`, because it cannot cope
-        # with us deliberately putting required libraries into a different
-        # wheel.
-        #
-        # Also, `auditwheel addtag` says `No tags to be added` and terminates
-        # with non-zero. See: https://github.com/pypa/auditwheel/issues/439.
-        #
-        env_set('CIBW_REPAIR_WHEEL_COMMAND_LINUX', '')
-        env_set('CIBW_REPAIR_WHEEL_COMMAND_MACOS', '')
+            # Tell cibuildwheel not to use `auditwheel`, because it cannot cope
+            # with us deliberately putting required libraries into a different
+            # wheel.
+            #
+            # Also, `auditwheel addtag` says `No tags to be added` and terminates
+            # with non-zero. See: https://github.com/pypa/auditwheel/issues/439.
+            #
+            env_set('CIBW_REPAIR_WHEEL_COMMAND_LINUX', '')
+            env_set('CIBW_REPAIR_WHEEL_COMMAND_MACOS', '')
         
-        # We tell cibuildwheel to test these wheels, but also set
-        # CIBW_BEFORE_TEST to make it first run ourselves with the
-        # `pip_install` arg to install the PyMuPDFb wheel. Otherwise
-        # installation of PyMuPDF would fail because it lists the
-        # PyMuPDFb wheel as a prerequisite. We need to use `pip_install`
-        # because wildcards do not work on Windows, and we want to be
-        # careful to avoid incompatible wheels, e.g. 32 vs 64-bit wheels
-        # coexist during Windows builds.
-        #
-        env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py pip_install wheelhouse/PyMuPDFb')
+            # We tell cibuildwheel to test these wheels, but also set
+            # CIBW_BEFORE_TEST to make it first run ourselves with the
+            # `pip_install` arg to install the PyMuPDFb wheel. Otherwise
+            # installation of PyMuPDF would fail because it lists the
+            # PyMuPDFb wheel as a prerequisite. We need to use `pip_install`
+            # because wildcards do not work on Windows, and we want to be
+            # careful to avoid incompatible wheels, e.g. 32 vs 64-bit wheels
+            # coexist during Windows builds.
+            #
+            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py pip_install wheelhouse/PyMuPDFb')
         
-        set_cibuild_test()
+            set_cibuild_test()
         
-        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'p', pass_=1)
+            env_set( 'PYMUPDF_SETUP_FLAVOUR', 'p', pass_=1)
         
-    else:
-        # Build and test wheels which contain everything.
-        #
-        set_cibuild_test()
-        env_set( 'PYMUPDF_SETUP_FLAVOUR', 'pb', pass_=1)
+        else:
+            # Build and test wheels which contain everything.
+            #
+            set_cibuild_test()
+            env_set( 'PYMUPDF_SETUP_FLAVOUR', 'pb', pass_=1)
     
-    run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
+        run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
     
-    run( 'ls -lt wheelhouse')
+        run( 'ls -lt wheelhouse')
 
 
 def build_pyodide_wheel( implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD):
