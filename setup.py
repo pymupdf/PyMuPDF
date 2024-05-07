@@ -11,10 +11,12 @@ Overview:
     Default behaviour:
 
         Building an sdist:
-            We download the MuPDF .tar.gz file and embed within the sdist.
+            As of 1.23.26 we no longer download the MuPDF .tar.gz file and
+            embed it within the sdist. Instead it will be downloaded at build
+            time.
 
         Building PyMuPDF:
-            If we are not in an sdist we first download the mupdf .tar.gz file.
+            We first download the hard-coded mupdf .tar.gz file.
 
             Then we extract and build MuPDF locally, before building PyMuPDF
             itself. So PyMuPDF will always be built with the exact MuPDF
@@ -39,7 +41,7 @@ Environmental variables:
     
     PYMUPDF_SETUP_IMPLEMENTATIONS
         Must be one of 'a', 'b', 'ab'. If unset we use 'b'.
-        If contains 'a' we build original implementation.
+        If contains 'a' we build obsolete classic implementation.
         If contains 'b' we build rebased implementation.
     
     PYMUPDF_SETUP_DEVENV
@@ -204,6 +206,9 @@ assert g_flavour in ('p', 'b', 'pb'), \
         f'Unrecognised {g_flavour=} should be one of: "p", "b", "pb"'
 
 g_root = os.path.abspath( f'{__file__}/..')
+
+# Name of file that identifies that we are in a PyMuPDF sdist.
+g_pymupdfb_sdist_marker = 'pymupdfb_sdist'
 
 def _fs_remove(path):
     '''
@@ -1055,6 +1060,24 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
 
 def sdist():
     ret = list()
+    
+    if g_flavour == 'b':
+        # Create a minimal sdist that will build/install a dummy PyMuPDFb.
+        for p in (
+                'setup.py',
+                'pipcl.py',
+                'wdev.py',
+                'pyproject.toml',
+                ):
+            ret.append(p)
+        ret.append(
+                (
+                    b'This file indicates that we are a PyMuPDFb sdist and should build/install a dummy PyMuPDFb package.\n',
+                    g_pymupdfb_sdist_marker,
+                    )
+                )
+        return ret
+        
     for p in pipcl.git_items( g_root):
         if p.startswith(
                 (
@@ -1091,104 +1114,130 @@ classifier = [
         'Topic :: Software Development :: Libraries',
         ]
 
-with open( f'{g_root}/README.md', encoding='utf-8') as f:
-    readme_ = f.read()
-
-with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
-    readme_rb = f.read()
-
 # We generate different wheels depending on g_flavour.
 #
 
 version = '1.24.2'
 version_b = '1.24.1'
 
-tag_python = None
-requires_dist = None,
+if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
+    
+    # We are in a PyMuPDFb sdist. We specify a dummy package so that pip builds
+    # from sdists work - pip's build using PyMuPDF's sdist will already create
+    # the required binaries, but pip will still see `requires_dist` set to
+    # 'PyMuPDFb', so will also download and build PyMuPDFb's sdist.
+    #
+    log(f'Specifying dummy PyMuPDFb wheel.')
+    
+    def get_requires_for_build_wheel(config_settings=None):
+        return ['setuptools']
+    
+    p = pipcl.Package(
+            'PyMuPDFb',
+            version_b,
+            summary = 'Dummy PyMuPDFb wheel',
+            description = '',
+            author = 'Artifex',
+            author_email = 'support@artifex.com',
+            license = 'GNU AFFERO GPL 3.0',
+            tag_python = 'py3',
+            )
 
-summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.'
-
-if g_flavour == 'pb':
-    name = 'PyMuPDF'
-    readme = readme_
-elif g_flavour == 'p':
-    name = 'PyMuPDF'
-    readme = readme_
-    requires_dist = f'PyMuPDFb =={version_b}'
-elif g_flavour == 'b':
-    name = 'PyMuPDFb'
-    summary = 'MuPDF shared libraries for PyMuPDF.'
-    readme = readme_rb
-    tag_python = 'py3'  # Works with any Python version.
-    version = version_b
 else:
-    assert 0, f'Unrecognised flavour: {g_flavour}'
+    # A normal PyMuPDF package.
+    
+    with open( f'{g_root}/README.md', encoding='utf-8') as f:
+        readme_ = f.read()
 
-p = pipcl.Package(
-        name,
-        version,
-        summary = summary,
-        description = readme,
-        description_content_type = 'text/markdown',
-        classifier = classifier,
-        author = 'Artifex',
-        author_email = 'support@artifex.com',
-        requires_dist = requires_dist,
-        requires_python = '>=3.8',
-        license = 'GNU AFFERO GPL 3.0',
-        project_url = [
-            ('Documentation, https://pymupdf.readthedocs.io/'),
-            ('Source, https://github.com/pymupdf/pymupdf'),
-            ('Tracker, https://github.com/pymupdf/PyMuPDF/issues'),
-            ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
-            ],
-        
-        # Create a `pymupdf` command.
-        entry_points = textwrap.dedent('''
-                [console_scripts]
-                pymupdf = pymupdf.__main__:main
-                '''),
-        
-        fn_build=build,
-        fn_sdist=sdist,
-        
-        tag_python=tag_python,
+    with open( f'{g_root}/READMErb.md', encoding='utf-8') as f:
+        readme_rb = f.read()
 
-        # 30MB: 9 ZIP_DEFLATED
-        # 28MB: 9 ZIP_BZIP2
-        # 23MB: 9 ZIP_LZMA
-        #wheel_compression = zipfile.ZIP_DEFLATED if (darwin or pyodide) else zipfile.ZIP_LZMA,
-        wheel_compresslevel = 9,
-        )
+    tag_python = None
+    requires_dist = None,
+
+    summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.'
+
+    if g_flavour == 'pb':
+        name = 'PyMuPDF'
+        readme = readme_
+    elif g_flavour == 'p':
+        name = 'PyMuPDF'
+        readme = readme_
+        requires_dist = f'PyMuPDFb =={version_b}'
+    elif g_flavour == 'b':
+        name = 'PyMuPDFb'
+        summary = 'MuPDF shared libraries for PyMuPDF.'
+        readme = readme_rb
+        tag_python = 'py3'  # Works with any Python version.
+        version = version_b
+    else:
+        assert 0, f'Unrecognised flavour: {g_flavour}'
+
+    p = pipcl.Package(
+            name,
+            version,
+            summary = summary,
+            description = readme,
+            description_content_type = 'text/markdown',
+            classifier = classifier,
+            author = 'Artifex',
+            author_email = 'support@artifex.com',
+            requires_dist = requires_dist,
+            requires_python = '>=3.8',
+            license = 'GNU AFFERO GPL 3.0',
+            project_url = [
+                ('Documentation, https://pymupdf.readthedocs.io/'),
+                ('Source, https://github.com/pymupdf/pymupdf'),
+                ('Tracker, https://github.com/pymupdf/PyMuPDF/issues'),
+                ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
+                ],
+        
+            # Create a `pymupdf` command.
+            entry_points = textwrap.dedent('''
+                    [console_scripts]
+                    pymupdf = pymupdf.__main__:main
+                    '''),
+        
+            fn_build=build,
+            fn_sdist=sdist,
+        
+            tag_python=tag_python,
+
+            # 30MB: 9 ZIP_DEFLATED
+            # 28MB: 9 ZIP_BZIP2
+            # 23MB: 9 ZIP_LZMA
+            #wheel_compression = zipfile.ZIP_DEFLATED if (darwin or pyodide) else zipfile.ZIP_LZMA,
+            wheel_compresslevel = 9,
+            )
+
+    def get_requires_for_build_wheel(config_settings=None):
+        '''
+        Adds to pyproject.toml:[build-system]:requires, allowing programmatic
+        control over what packages we require.
+        '''
+        ret = list()
+        ret.append('setuptools')
+        libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
+        if libclang:
+            print(f'Overriding to use {libclang=}.')
+            ret.append(libclang)
+        elif openbsd:
+            print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
+        elif darwin and platform.machine() == 'arm64':
+            print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
+            ret.append('libclang==16.0.6')
+        else:
+            ret.append('libclang')
+        if msys2:
+            print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
+        elif openbsd:
+            print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
+        else:
+            ret.append( 'swig')
+        return ret
 
 build_wheel = p.build_wheel
 build_sdist = p.build_sdist
-
-def get_requires_for_build_wheel(config_settings=None):
-    '''
-    Adds to pyproject.toml:[build-system]:requires, allowing programmatic
-    control over what packages we require.
-    '''
-    ret = list()
-    ret.append('setuptools')
-    libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
-    if libclang:
-        print(f'Overriding to use {libclang=}.')
-        ret.append(libclang)
-    elif openbsd:
-        print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
-    elif darwin and platform.machine() == 'arm64':
-        print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
-        ret.append('libclang==16.0.6')
-    else:
-        ret.append('libclang')
-    if msys2:
-        print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
-    elif openbsd:
-        print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
-    else:
-        ret.append( 'swig')
-    return ret
 
 
 if __name__ == '__main__':
