@@ -239,8 +239,13 @@ def test_1645():
     # Check type of page.derotation_matrix - this is #2911.
     assert isinstance(page.derotation_matrix, pymupdf.Matrix), \
             f'Bad type for page.derotation_matrix: {type(page.derotation_matrix)=} {page.derotation_matrix=}.'
-    page.add_freetext_annot(annot_loc * page.derotation_matrix, "TEST", fontsize=18,
-    fill_color=pymupdf.utils.getColor("FIREBRICK1"), rotate=page.rotation)
+    page.add_freetext_annot(
+            annot_loc * page.derotation_matrix,
+            "TEST",
+            fontsize=18,
+            fill_color=pymupdf.utils.getColor("FIREBRICK1"),
+            rotate=page.rotation,
+            )
     doc.save(path_out, garbage=1, deflate=True, no_new_id=True)
     print(f'Have created {path_out}. comparing with {path_expected}.')
     with open( path_out, 'rb') as f:
