@@ -2393,10 +2393,10 @@ msgstr "ページのリンクをイテレーターとして返します。結果
 #: ../../page.rst:625 5923c907c724435fa51bfd17ab4b2615
 msgid ""
 "a sequence of integers to down-select to one or more link kinds. Default "
-"is all links. Example: *kinds=(fitz.LINK_GOTO,)* will only return "
+"is all links. Example: *kinds=(pymupdf.LINK_GOTO,)* will only return "
 "internal links."
 msgstr ""
-"1つ以上のリンク種別をダウン選択するための整数のシーケンス。デフォルトはすべてのリンクです。例：*kinds=(fitz.LINK_GOTO,)*"
+"1つ以上のリンク種別をダウン選択するための整数のシーケンス。デフォルトはすべてのリンクです。例：*kinds=(pymupdf.LINK_GOTO,)*"
 " は内部リンクのみを返します。"
 
 #: ../../page.rst:628 c3cfae7df69e4f49b416e51481d8bce6
@@ -2416,11 +2416,11 @@ msgstr "ページの注釈をイテレーターとして返します。"
 #: ../../page.rst:640 4b8a1735caa34db0ab07cd03967f715e
 msgid ""
 "a sequence of integers to down-select to one or more annotation types. "
-"Default is all annotations. Example: `types=(fitz.PDF_ANNOT_FREETEXT, "
-"fitz.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations."
+"Default is all annotations. Example: `types=(pymupdf.PDF_ANNOT_FREETEXT, "
+"pymupdf.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations."
 msgstr ""
-"1つ以上の注釈タイプをダウン選択するための整数のシーケンス。デフォルトはすべての注釈です。例：`types=(fitz.PDF_ANNOT_FREETEXT,"
-" fitz.PDF_ANNOT_TEXT)` は「FreeText」および「Text」注釈のみを返します。"
+"1つ以上の注釈タイプをダウン選択するための整数のシーケンス。デフォルトはすべての注釈です。例：`types=(pymupdf.PDF_ANNOT_FREETEXT,"
+" pymupdf.PDF_ANNOT_TEXT)` は「FreeText」および「Text」注釈のみを返します。"
 
 #: ../../page.rst:643 66d4e220df0447baa27d79539b186d21
 msgid ""
@@ -2456,11 +2456,11 @@ msgstr "フォームフィールドのジェネレーターを返します。"
 #: ../../page.rst:665 62d27f49c6c4445291e41068ed5766cc
 msgid ""
 "a sequence of integers to down-select to one or more widget types. "
-"Default is all form fields. Example: `types=(fitz.PDF_WIDGET_TYPE_TEXT,)`"
+"Default is all form fields. Example: `types=(pymupdf.PDF_WIDGET_TYPE_TEXT,)`"
 " will only return 'Text' fields."
 msgstr ""
 "1つ以上のウィジェットタイプに選択を絞り込むための整数のシーケンス。デフォルトではすべてのフォームフィールドが対象です。例: "
-"`types=(fitz.PDF_WIDGET_TYPE_TEXT,)` を指定すると 'Text' フィールドのみが返されます。"
+"`types=(pymupdf.PDF_WIDGET_TYPE_TEXT,)` を指定すると 'Text' フィールドのみが返されます。"
 
 #: ../../page.rst:668 15137c56f00d4c7db1015286b40c122a
 msgid "a :ref:`Widget` for each iteration."
@@ -4673,10 +4673,10 @@ msgstr ""
 #: ../../page.rst:1743 a42f30f58ff8469ab43e33047da91c4b
 msgid ""
 "The image's \"transformation matrix\" is defined as the matrix, for which"
-" the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, "
+" the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, "
 "lookup details here: :ref:`ImageTransformation`."
 msgstr ""
-"イメージの「変換行列」は、`bbox / transform == fitz.Rect(0, 0, 1, 1)` "
+"イメージの「変換行列」は、`bbox / transform == pymupdf.Rect(0, 0, 1, 1)` "
 "という式が真であるための行列であり、詳細はこちらを参照してください：:ref:`ImageTransformation`。"
 
 #: ../../page.rst:1747 7ab9e36c429040a3940f114dfb433fc0
@@ -5525,13 +5525,13 @@ msgstr "page：宛先ページを示す0ベースの整数。*LINK_GOTO*およ�
 
 #: ../../page.rst:2230 4c5f2d0986414b7b8310f213b914c9d3
 msgid ""
-"*to*:   either a *fitz.Point*, specifying the destination location on the"
-" provided page, default is *fitz.Point(0, 0)*, or a symbolic (indirect) "
+"*to*:   either a *pymupdf.Point*, specifying the destination location on the"
+" provided page, default is *pymupdf.Point(0, 0)*, or a symbolic (indirect) "
 "name. If an indirect name is specified, *page = -1* is required and the "
 "name must be defined in the PDF in order for this to work. Required for "
 "*LINK_GOTO* and *LINK_GOTOR*, else ignored."
 msgstr ""
-"*to*：宛先ページ上の宛先場所を指定する *fitz.Point*、デフォルトは *fitz.Point(0, "
+"*to*：宛先ページ上の宛先場所を指定する *pymupdf.Point*、デフォルトは *pymupdf.Point(0, "
 "0)*、またはシンボリック（間接）名です。間接名が指定された場合、*page = -1* "
 "が必要で、名前はPDFで定義されている必要があります。*LINK_GOTO* および *LINK_GOTOR* "
 "の場合に必要ですが、それ以外の場合は無視されます。"
@@ -5668,10 +5668,10 @@ msgstr "ターゲットページ番号（0から始まる）と、リンクを�
 
 #: ../../page.rst:2268 f25e433cd316414d959b5eace159d6e0
 msgid ""
-"Create a dictionary `d = {\"kind\": fitz.LINK_GOTO, \"page\": pno, "
+"Create a dictionary `d = {\"kind\": pymupdf.LINK_GOTO, \"page\": pno, "
 "\"from\": bbox, \"to\": point}`."
 msgstr ""
-"辞書 `d = {\"kind\": fitz.LINK_GOTO, \"page\": pno, \"from\": bbox, \"to\": "
+"辞書 `d = {\"kind\": pymupdf.LINK_GOTO, \"page\": pno, \"from\": bbox, \"to\": "
 "point}` を作成します。"
 
 #: ../../page.rst:2270 7fd89e0724354bf6af85457e8f69b7d4

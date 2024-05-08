@@ -65,9 +65,9 @@ msgstr ""
 
 #: ../../colorspace.rst:24 0efd4e21a8454614bc95d7d0a6b56de9
 msgid ""
-"The name identifying the colorspace. Example: *fitz.csCMYK.name = "
+"The name identifying the colorspace. Example: *pymupdf.csCMYK.name = "
 "'DeviceCMYK'*."
-msgstr "カラースペースを識別する名前です。例:  *fitz.csCMYK.name = 'DeviceCMYK'* 。"
+msgstr "カラースペースを識別する名前です。例:  *pymupdf.csCMYK.name = 'DeviceCMYK'* 。"
 
 #: ../../colorspace.rst 0a6b8f0cac194572ac4d4ab6386a4e59
 #: 810a7ea03fc64c1cb9b3ba9e95f4dc18
@@ -81,8 +81,8 @@ msgstr ""
 #: ../../colorspace.rst:30 cb63570c110a492b878525c422a40f25
 msgid ""
 "The number of bytes required to define the color of one pixel. Example: "
-"*fitz.csCMYK.n == 4*."
-msgstr "1ピクセルの色を定義するのに必要なバイト数です。例: *fitz.csCMYK.n == 4* 。"
+"*pymupdf.csCMYK.n == 4*."
+msgstr "1ピクセルの色を定義するのに必要なバイト数です。例: *pymupdf.csCMYK.n == 4* 。"
 
 #: ../../colorspace.rst:32 8ca7bac3bbad4687b2f22e2fe7a41b4e
 msgid "int"
@@ -99,15 +99,15 @@ msgid ""
 msgstr "入力を簡略化するために、三つの利用可能なケースのための事前定義されたカラースペースオブジェクトが存在します。"
 
 #: ../../colorspace.rst:39 85849d931ad640c3a3ba1148485edcc6
-msgid ":data:`csRGB`  = *fitz.Colorspace(fitz.CS_RGB)*"
+msgid ":data:`csRGB`  = *pymupdf.Colorspace(pymupdf.CS_RGB)*"
 msgstr ""
 
 #: ../../colorspace.rst:40 690779c80da24f15aaac19325a782c63
-msgid ":data:`csGRAY` = *fitz.Colorspace(fitz.CS_GRAY)*"
+msgid ":data:`csGRAY` = *pymupdf.Colorspace(pymupdf.CS_GRAY)*"
 msgstr ""
 
 #: ../../colorspace.rst:41 3c0dd4d40df84d6591e785a9a4bc0cdc
-msgid ":data:`csCMYK` = *fitz.Colorspace(fitz.CS_CMYK)*"
+msgid ":data:`csCMYK` = *pymupdf.Colorspace(pymupdf.CS_CMYK)*"
 msgstr ""
 
 #: ../../footer.rst:71 9adc881254754272972b355fca42fd63

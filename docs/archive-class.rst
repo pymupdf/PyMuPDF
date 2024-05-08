@@ -85,12 +85,12 @@ In PyMuPDF, archives are currently only used by :ref:`Story` objects to specify 
       **Example:**
 
       >>> from pprint import pprint
-      >>> import fitz
+      >>> import pymupdf
       >>> dir1 = "fitz-32"  # a folder name
       >>> dir2 = "fitz-64"  # a folder name
       >>> img = ("nur-ruhig.jpg", "img")  # an image file
       >>> members = (dir1, img, dir2)  # we want to append these in one go
-      >>> arch = fitz.Archive()
+      >>> arch = pymupdf.Archive()
       >>> arch.add(members, path="mypath")
       >>> pprint(arch.entry_list)
       [{'entries': ['310', '37', '38', '39'], 'fmt': 'dir', 'path': 'mypath'},

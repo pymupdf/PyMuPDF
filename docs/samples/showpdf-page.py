@@ -2,14 +2,14 @@
 Demo of Story class in PyMuPDF
 -------------------------------
 
-This script demonstrates how to the results of a fitz.Story output can be
+This script demonstrates how to the results of a pymupdf.Story output can be
 placed in a rectangle of an existing (!) PDF page.
 
 """
 import io
 import os
 
-import fitz
+import pymupdf
 
 
 def make_pdf(fileptr, text, rect, font="sans-serif", archive=None):
@@ -20,7 +20,7 @@ def make_pdf(fileptr, text, rect, font="sans-serif", archive=None):
         text: the text to output (HTML format)
         rect: the target rectangle. Will use its width / height as mediabox
         font: (str) font family name, default sans-serif
-        archive: fitz.Archive parameter. To be used if e.g. images or special
+        archive: pymupdf.Archive parameter. To be used if e.g. images or special
                 fonts should be used.
     Returns:
         The matrix to convert page rectangles of the created PDF back
@@ -31,14 +31,14 @@ def make_pdf(fileptr, text, rect, font="sans-serif", archive=None):
         changed parameters.
     """
     # use input rectangle as the page dimension
-    mediabox = fitz.Rect(0, 0, rect.width, rect.height)
+    mediabox = pymupdf.Rect(0, 0, rect.width, rect.height)
     # this matrix converts mediabox back to input rect
     matrix = mediabox.torect(rect)
 
-    story = fitz.Story(text, archive=archive)
+    story = pymupdf.Story(text, archive=archive)
     body = story.body
     body.set_properties(font=font)
-    writer = fitz.DocumentWriter(fileptr)
+    writer = pymupdf.DocumentWriter(fileptr)
     while True:
         device = writer.begin_page(mediabox)
         more, _ = story.place(mediabox)
@@ -61,10 +61,10 @@ HTML = """
 
 # Make a PDF page for demo purposes
 root = os.path.abspath( f"{__file__}/..")
-doc = fitz.open(f"{root}/mupdf-title.pdf")
+doc = pymupdf.open(f"{root}/mupdf-title.pdf")
 page = doc[0]
 
-WHERE = fitz.Rect(50, 100, 250, 500)  # target rectangle on existing page
+WHERE = pymupdf.Rect(50, 100, 250, 500)  # target rectangle on existing page
 
 fileptr = io.BytesIO()  # let DocumentWriter use this as its file
 
@@ -72,7 +72,7 @@ fileptr = io.BytesIO()  # let DocumentWriter use this as its file
 # call DocumentWriter and Story to fill our rectangle
 matrix = make_pdf(fileptr, HTML, WHERE)
 # -------------------------------------------------------------------
-src = fitz.open("pdf", fileptr)  # open DocumentWriter output PDF
+src = pymupdf.open("pdf", fileptr)  # open DocumentWriter output PDF
 if src.page_count > 1:  # target rect was too small
     raise ValueError("target WHERE too small")
 

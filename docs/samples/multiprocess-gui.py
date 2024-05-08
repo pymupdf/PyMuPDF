@@ -16,7 +16,7 @@ import sys
 import time
 import multiprocessing as mp
 import queue
-import fitz
+import pymupdf
 
 ''' PyQt and PySide namespace unifier shim
     https://www.pythonguis.com/faq/pyqt6-vs-pyside6/
@@ -168,7 +168,7 @@ class DocForm(QtWidgets.QWidget):
 
 def openDocInProcess(path, queNum, quePageInfo):
     start = my_timer()
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     end = my_timer()
     quePageInfo.put(doc.page_count)
     while True:

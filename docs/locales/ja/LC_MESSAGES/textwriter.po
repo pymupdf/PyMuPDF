@@ -319,8 +319,8 @@ msgstr "任意の長さの文字列。位置「pos」から書き始められま
 
 #: ../../textwriter.rst:75 ../../textwriter.rst:106
 #: 2f9322133af545c08469215aa0617d73 37787bf15b5745f0be2ba635f5471f21
-msgid "a :ref:`Font`. If omitted, `fitz.Font(\"helv\")` will be used."
-msgstr ":ref:`Font`。省略された場合、`fitz.Font(\"helv\")` が使用されます。"
+msgid "a :ref:`Font`. If omitted, `pymupdf.Font(\"helv\")` will be used."
+msgstr ":ref:`Font`。省略された場合、`pymupdf.Font(\"helv\")` が使用されます。"
 
 #: ../../textwriter.rst:76 71da7ae11cb847a59466140c67f67ea3
 msgid "the :data:`fontsize`, a positive number, default 11."
@@ -358,9 +358,9 @@ msgid ""
 " font. If present, take that value instead. Otherwise the original "
 "character (this font or the fallback font) will be taken. The fallback "
 "font will never return small caps. For example, this snippet::  >>> doc ="
-" fitz.open() >>> page = doc.new_page() >>> text = \"PyMuPDF: the Python "
-"bindings for MuPDF\" >>> font = fitz.Font(\"figo\")  # choose a font with"
-" small caps >>> tw = fitz.TextWriter(page.rect) >>> tw.append((50,100), "
+" pymupdf.open() >>> page = doc.new_page() >>> text = \"PyMuPDF: the Python "
+"bindings for MuPDF\" >>> font = pymupdf.Font(\"figo\")  # choose a font with"
+" small caps >>> tw = pymupdf.TextWriter(page.rect) >>> tw.append((50,100), "
 "text, font=font, small_caps=True) >>> tw.write_text(page) >>> "
 "doc.ez_save(\"x.pdf\")  will produce this PDF text:  .. image:: images"
 "/img-smallcaps.*"
@@ -454,8 +454,8 @@ msgid ""
 msgstr "*（v1.17.3で新規）* このポイントから記憶を開始します。デフォルトは矩形の左上近くのポイントです。"
 
 #: ../../textwriter.rst:124 96e2ec8874184cf5b16661e66d7015df
-msgid "the :ref:`Font`, default `fitz.Font(\"helv\")`."
-msgstr ":ref:`Font`、デフォルトは `fitz.Font(\"helv\")`。"
+msgid "the :ref:`Font`, default `pymupdf.Font(\"helv\")`."
+msgstr ":ref:`Font`、デフォルトは `pymupdf.Font(\"helv\")`。"
 
 #: ../../textwriter.rst:125 09703ab564f0466994b341f187d31853
 msgid "the :data:`fontsize`."

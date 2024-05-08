@@ -37,7 +37,7 @@ How to Use FreeText
 This script shows a couple of ways to deal with 'FreeText' annotations::
 
     # -*- coding: utf-8 -*-
-    import fitz
+    import pymupdf
 
     # some colors
     blue  = (0,0,1)
@@ -46,11 +46,11 @@ This script shows a couple of ways to deal with 'FreeText' annotations::
     gold  = (1,1,0)
 
     # a new PDF with 1 page
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     # 3 rectangles, same size, above each other
-    r1 = fitz.Rect(100,100,200,150)
+    r1 = pymupdf.Rect(100,100,200,150)
     r2 = r1 + (0,75,0,75)
     r3 = r2 + (0,75,0,75)
 
@@ -98,14 +98,14 @@ Ink annotations are used to contain freehand scribbling. A typical example may b
 The following script creates an ink annotation with two mathematical curves (sine and cosine function graphs) as line segments::
 
     import math
-    import fitz
+    import pymupdf
 
     #------------------------------------------------------------------------------
     # preliminary stuff: create function value lists for sine and cosine
     #------------------------------------------------------------------------------
     w360 = math.pi * 2  # go through full circle
     deg = w360 / 360  # 1 degree as radians
-    rect = fitz.Rect(100,200, 300, 300)  # use this rectangle
+    rect = pymupdf.Rect(100,200, 300, 300)  # use this rectangle
     first_x = rect.x0  # x starts from left
     first_y = rect.y0 + rect.height / 2.  # rect middle means y = 0
     x_step = rect.width / 360  # rect width means 360 degrees
@@ -124,7 +124,7 @@ The following script creates an ink annotation with two mathematical curves (sin
     #------------------------------------------------------------------------------
     # create the document with one page
     #------------------------------------------------------------------------------
-    doc = fitz.open()  # make new PDF
+    doc = pymupdf.open()  # make new PDF
     page = doc.new_page()  # give it a page
 
     #------------------------------------------------------------------------------

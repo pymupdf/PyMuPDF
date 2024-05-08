@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 import json
 
 my_json =  """
@@ -164,11 +164,11 @@ my_json =  """
 # the result is a Python dictionary:
 my_dict = json.loads(my_json)
 
-MEDIABOX = fitz.paper_rect("letter")  # output page format: Letter
+MEDIABOX = pymupdf.paper_rect("letter")  # output page format: Letter
 WHERE = MEDIABOX + (36, 36, -36, -36)
-writer = fitz.DocumentWriter("json-example.pdf")  # create the writer
+writer = pymupdf.DocumentWriter("json-example.pdf")  # create the writer
 
-story = fitz.Story()
+story = pymupdf.Story()
 body = story.body
 
 for i, entry in enumerate(my_dict):

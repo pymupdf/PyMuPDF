@@ -17,9 +17,9 @@ To open a file, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("a.pdf") # open a document
+    doc = pymupdf.open("a.pdf") # open a document
 
 
 .. note::
@@ -41,9 +41,9 @@ To extract all the text from a |PDF| file, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("a.pdf") # open a document
+    doc = pymupdf.open("a.pdf") # open a document
     out = open("output.txt", "wb") # create a text output
     for page in doc: # iterate the document pages
         text = page.get_text().encode("utf8") # get plain text (is in UTF-8)
@@ -88,9 +88,9 @@ To extract all the images from a |PDF| file, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open a document
+    doc = pymupdf.open("test.pdf") # open a document
 
     for page_index in range(len(doc)): # iterate over pdf pages
         page = doc[page_index] # get the page
@@ -104,10 +104,10 @@ To extract all the images from a |PDF| file, do the following:
 
         for image_index, img in enumerate(image_list, start=1): # enumerate the image list
             xref = img[0] # get the XREF of the image
-            pix = fitz.Pixmap(doc, xref) # create a Pixmap
+            pix = pymupdf.Pixmap(doc, xref) # create a Pixmap
 
             if pix.n - pix.alpha > 3: # CMYK: convert to RGB first
-                pix = fitz.Pixmap(fitz.csRGB, pix)
+                pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
 
             pix.save("page_%s-image_%s.png" % (page_index, image_index)) # save the image as png
             pix = None
@@ -137,7 +137,7 @@ To extract all the vector graphics from a document page, do the following:
 
 .. code-block:: python
 
-    doc = fitz.open("some.file")
+    doc = pymupdf.open("some.file")
     page = doc[0]
     paths = page.get_drawings()
 
@@ -169,10 +169,10 @@ To merge |PDF| files, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc_a = fitz.open("a.pdf") # open the 1st document
-    doc_b = fitz.open("b.pdf") # open the 2nd document
+    doc_a = pymupdf.open("a.pdf") # open the 1st document
+    doc_b = pymupdf.open("b.pdf") # open the 2nd document
 
     doc_a.insert_pdf(doc_b) # merge the docs
     doc_a.save("a+b.pdf") # save the merged document with a new filename
@@ -185,10 +185,10 @@ With :meth:`Document.insert_file` you can invoke the method to merge :ref:`suppo
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc_a = fitz.open("a.pdf") # open the 1st document
-    doc_b = fitz.open("b.svg") # open the 2nd document
+    doc_a = pymupdf.open("a.pdf") # open the 1st document
+    doc_b = pymupdf.open("b.svg") # open the 2nd document
 
     doc_a.insert_file(doc_b) # merge the docs
     doc_a.save("a+b.pdf") # save the merged document with a new filename
@@ -232,9 +232,9 @@ To add a watermark to a |PDF| file, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("document.pdf") # open a document
+    doc = pymupdf.open("document.pdf") # open a document
 
     for page_index in range(len(doc)): # iterate over pdf pages
         page = doc[page_index] # get the page
@@ -270,15 +270,15 @@ To add an image to a |PDF| file, for example a logo, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("document.pdf") # open a document
+    doc = pymupdf.open("document.pdf") # open a document
 
     for page_index in range(len(doc)): # iterate over pdf pages
         page = doc[page_index] # get the page
 
         # insert an image logo from a file name at the top left of the document
-        page.insert_image(fitz.Rect(0,0,50,50),filename="my-logo.png")
+        page.insert_image(pymupdf.Rect(0,0,50,50),filename="my-logo.png")
 
     doc.save("logo-document.pdf") # save the document with a new filename
 
@@ -306,9 +306,9 @@ To add a rotation to a page, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open document
+    doc = pymupdf.open("test.pdf") # open document
     page = doc[0] # get the 1st page of the document
     page.set_rotation(90) # rotate the page
     doc.save("rotated-page-1.pdf")
@@ -331,11 +331,11 @@ To crop a page to a defined :ref:`Rect<Rect>`, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open document
+    doc = pymupdf.open("test.pdf") # open document
     page = doc[0] # get the 1st page of the document
-    page.set_cropbox(fitz.Rect(100, 100, 400, 400)) # set a cropbox for the page
+    page.set_cropbox(pymupdf.Rect(100, 100, 400, 400)) # set a cropbox for the page
     doc.save("cropped-page-1.pdf")
 
 .. note::
@@ -357,13 +357,13 @@ To attach another file to a page, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open main document
-    attachment = fitz.open("my-attachment.pdf") # open document you want to attach
+    doc = pymupdf.open("test.pdf") # open main document
+    attachment = pymupdf.open("my-attachment.pdf") # open document you want to attach
 
     page = doc[0] # get the 1st page of the document
-    point = fitz.Point(100, 100) # create the point where you want to add the attachment
+    point = pymupdf.Point(100, 100) # create the point where you want to add the attachment
     attachment_data = attachment.tobytes() # get the document byte data as a buffer
 
     # add the file annotation with the point, data and the file name
@@ -399,10 +399,10 @@ To embed a file to a document, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open main document
-    embedded_doc = fitz.open("my-embed.pdf") # open document you want to embed
+    doc = pymupdf.open("test.pdf") # open main document
+    embedded_doc = pymupdf.open("my-embed.pdf") # open document you want to embed
 
     embedded_data = embedded_doc.tobytes() # get the document byte data as a buffer
 
@@ -436,9 +436,9 @@ To delete a page from a document, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open a document
+    doc = pymupdf.open("test.pdf") # open a document
     doc.delete_page(0) # delete the 1st page of the document
     doc.save("test-deleted-page-one.pdf") # save the document
 
@@ -448,9 +448,9 @@ To delete a multiple pages from a document, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open a document
+    doc = pymupdf.open("test.pdf") # open a document
     doc.delete_pages(from_page=9, to_page=14) # delete a page range from the document
     doc.save("test-deleted-pages.pdf") # save the document
 
@@ -488,9 +488,9 @@ To change the sequence of pages, i.e. re-arrange pages, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open a document
+    doc = pymupdf.open("test.pdf") # open a document
     doc.move_page(1,0) # move the 2nd page of the document to the start of the document
     doc.save("test-page-moved.pdf") # save the document
 
@@ -516,9 +516,9 @@ To copy pages, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open a document
+    doc = pymupdf.open("test.pdf") # open a document
     doc.copy_page(0) # copy the 1st page and puts it at the end of the document
     doc.save("test-page-copied.pdf") # save the document
 
@@ -541,9 +541,9 @@ To select pages, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open("test.pdf") # open a document
+    doc = pymupdf.open("test.pdf") # open a document
     doc.select([0, 1]) # select the 1st & 2nd page of the document
     doc.save("just-page-one-and-two.pdf") # save the document
 
@@ -577,7 +577,7 @@ To select pages, do the following:
         doc.select(p_even) # only the even pages left over
         doc.save("even.pdf") # save the "even" PDF
         doc.close() # recycle the file
-        doc = fitz.open(doc.name) # re-open
+        doc = pymupdf.open(doc.name) # re-open
         doc.select(p_odd) # and do the same with the odd pages
         doc.save("odd.pdf")
 
@@ -624,9 +624,9 @@ To add a blank page, do the following:
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open(...) # some new or existing PDF document
+    doc = pymupdf.open(...) # some new or existing PDF document
     page = doc.new_page(-1, # insertion point: end of document
                         width = 595, # page dimension: A4 portrait
                         height = 842)
@@ -641,7 +641,7 @@ To add a blank page, do the following:
 
     .. code-block:: python
 
-        w, h = fitz.paper_size("letter-l")  # 'Letter' landscape
+        w, h = pymupdf.paper_size("letter-l")  # 'Letter' landscape
         page = doc.new_page(width = w, height = h)
 
 
@@ -651,7 +651,7 @@ To add a blank page, do the following:
 
     .. code-block:: python
 
-        doc = fitz.open()
+        doc = pymupdf.open()
         doc.new_page()
         doc.save("A4.pdf")
 
@@ -674,9 +674,9 @@ Using the :meth:`Document.insert_page` method also inserts a new page and accept
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open(...)  # some new or existing PDF document
+    doc = pymupdf.open(...)  # some new or existing PDF document
     n = doc.insert_page(-1, # default insertion point
                         text = "The quick brown fox jumped over the lazy dog",
                         fontsize = 11,
@@ -716,14 +716,14 @@ This deals with splitting up pages of a |PDF| in arbitrary pieces. For example, 
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    src = fitz.open("test.pdf")
-    doc = fitz.open()  # empty output PDF
+    src = pymupdf.open("test.pdf")
+    doc = pymupdf.open()  # empty output PDF
 
     for spage in src:  # for each page in input
         r = spage.rect  # input page rectangle
-        d = fitz.Rect(spage.cropbox_position,  # CropBox displacement if not
+        d = pymupdf.Rect(spage.cropbox_position,  # CropBox displacement if not
                       spage.cropbox_position)  # starting at (0, 0)
         #--------------------------------------------------------------------------
         # example: cut input page into 2 x 2 parts
@@ -731,7 +731,7 @@ This deals with splitting up pages of a |PDF| in arbitrary pieces. For example, 
         r1 = r / 2  # top left rect
         r2 = r1 + (r1.width, 0, r1.width, 0)  # top right rect
         r3 = r1 + (0, r1.height, 0, r1.height)  # bottom left rect
-        r4 = fitz.Rect(r1.br, r.br)  # bottom right rect
+        r4 = pymupdf.Rect(r1.br, r.br)  # bottom right rect
         rect_list = [r1, r2, r3, r4]  # put them in a list
 
         for rx in rect_list:  # run thru rect list
@@ -779,19 +779,19 @@ This deals with joining |PDF| pages to form a new |PDF| with pages each combinin
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
-    src = fitz.open("test.pdf")
-    doc = fitz.open()  # empty output PDF
+    src = pymupdf.open("test.pdf")
+    doc = pymupdf.open()  # empty output PDF
 
-    width, height = fitz.paper_size("a4")  # A4 portrait output page format
-    r = fitz.Rect(0, 0, width, height)
+    width, height = pymupdf.paper_size("a4")  # A4 portrait output page format
+    r = pymupdf.Rect(0, 0, width, height)
 
     # define the 4 rectangles per page
     r1 = r / 2  # top left rect
     r2 = r1 + (r1.width, 0, r1.width, 0)  # top right
     r3 = r1 + (0, r1.height, 0, r1.height)  # bottom left
-    r4 = fitz.Rect(r1.br, r.br)  # bottom right
+    r4 = pymupdf.Rect(r1.br, r.br)  # bottom right
 
     # put them in a list
     r_tab = [r1, r2, r3, r4]
@@ -856,19 +856,19 @@ The following snippet creates a new |PDF| and encrypts it with separate user and
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
     text = "some secret information" # keep this data secret
     perm = int(
-        fitz.PDF_PERM_ACCESSIBILITY # always use this
-        | fitz.PDF_PERM_PRINT # permit printing
-        | fitz.PDF_PERM_COPY # permit copying
-        | fitz.PDF_PERM_ANNOTATE # permit annotations
+        pymupdf.PDF_PERM_ACCESSIBILITY # always use this
+        | pymupdf.PDF_PERM_PRINT # permit printing
+        | pymupdf.PDF_PERM_COPY # permit copying
+        | pymupdf.PDF_PERM_ANNOTATE # permit annotations
     )
     owner_pass = "owner" # owner password
     user_pass = "user" # user password
-    encrypt_meth = fitz.PDF_ENCRYPT_AES_256 # strongest algorithm
-    doc = fitz.open() # empty pdf
+    encrypt_meth = pymupdf.PDF_ENCRYPT_AES_256 # strongest algorithm
+    doc = pymupdf.open() # empty pdf
     page = doc.new_page() # empty page
     page.insert_text((50, 72), text) # insert the data
     doc.save(
@@ -891,7 +891,7 @@ The following snippet creates a new |PDF| and encrypts it with separate user and
 
     **Decrypting** will automatically happen on save as before when no encryption parameters are provided.
 
-    To **keep the encryption method** of a PDF save it using `encryption=fitz.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() == True`, an incremental save is also possible.
+    To **keep the encryption method** of a PDF save it using `encryption=pymupdf.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() == True`, an incremental save is also possible.
 
     To **change the encryption method** specify the full range of options above (`encryption`, `owner_pw`, `user_pw`, `permissions`). An incremental save is **not possible** in this case.
 
@@ -912,10 +912,10 @@ Tables can be found and extracted from any document :ref:`Page`.
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
     from pprint import pprint
 
-    doc = fitz.open("test.pdf") # open document
+    doc = pymupdf.open("test.pdf") # open document
     page = doc[0] # get the 1st page of the document
     tabs = page.find_tables() # locate and extract any tables on page
     print(f"{len(tabs.tables)} found on {page}") # display number of found tables
@@ -948,7 +948,7 @@ Links can be extracted from a :ref:`Page` to return :ref:`Link` objects.
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
     for page in doc: # iterate the document pages
         link = page.first_link  # a `Link` object or `None`
@@ -978,7 +978,7 @@ Annotations (:ref:`Annot`) on pages can be retrieved with the `page.annots()` me
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
     for page in doc:
         for annot in page.annots():
@@ -1007,10 +1007,10 @@ For example if we wanted to redact all instances of the name "Jane Doe" from a d
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
     # Open the PDF document
-    doc = fitz.open('test.pdf')
+    doc = pymupdf.open('test.pdf')
 
     # Iterate over each page of the document
     for page in doc:
@@ -1036,10 +1036,10 @@ Another example could be redacting an area of a page, but not to redact any line
 
 .. code-block:: python
 
-    import fitz
+    import pymupdf
 
     # Open the PDF document
-    doc = fitz.open('test.pdf')
+    doc = pymupdf.open('test.pdf')
 
     # Get the first page
     page = doc[0]

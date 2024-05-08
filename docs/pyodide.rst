@@ -69,7 +69,7 @@ Using a Pyodide wheel
 
       import pyodide_js
       await pyodide_js.loadPackage(url)
-      import fitz
+      import pymupdf
 
   *
     Note that `micropip.install()` does not work, because of PyMuPDF's use of
@@ -89,7 +89,7 @@ Loading a PDF document from a URL into PyMuPDF
       import pyodide.http
       r = await pyodide.http.pyfetch('https://...')
       data = await r.bytes()
-      doc = fitz.Document(stream=data)
+      doc = pymupdf.Document(stream=data)
 
 * It looks like this only works with `https://`, not `http://`.
 

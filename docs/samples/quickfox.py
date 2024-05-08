@@ -18,17 +18,17 @@ https://en.wikipedia.org/wiki/The_quick_brown_fox_jumps_over_the_lazy_dog.
 import io
 import os
 import zipfile
-import fitz
+import pymupdf
 
 
 thisdir = os.path.dirname(os.path.abspath(__file__))
 myzip = zipfile.ZipFile(os.path.join(thisdir, "quickfox.zip"))
-arch = fitz.Archive(myzip)
+arch = pymupdf.Archive(myzip)
 
-if fitz.fitz_fontdescriptors:
+if pymupdf.fitz_fontdescriptors:
     # we want to use the Ubuntu fonts for sans-serif and for monospace
-    CSS = fitz.css_for_pymupdf_font("ubuntu", archive=arch, name="sans-serif")
-    CSS = fitz.css_for_pymupdf_font("ubuntm", CSS=CSS, archive=arch, name="monospace")
+    CSS = pymupdf.css_for_pymupdf_font("ubuntu", archive=arch, name="sans-serif")
+    CSS = pymupdf.css_for_pymupdf_font("ubuntm", CSS=CSS, archive=arch, name="monospace")
 else:
     # No pymupdf-fonts available.
     CSS=""
@@ -38,7 +38,7 @@ docname = __file__.replace(".py", ".pdf")  # output PDF file name
 HTML = myzip.read("quickfox.html").decode()
 
 # make the Story object
-story = fitz.Story(HTML, user_css=CSS, archive=arch)
+story = pymupdf.Story(HTML, user_css=CSS, archive=arch)
 
 # --------------------------------------------------------------
 # modify the DOM somewhat
@@ -56,7 +56,7 @@ while para != None:
     para = para.find_next("p", None, None)
 
 # choose PDF page size
-MEDIABOX = fitz.paper_rect("letter")
+MEDIABOX = pymupdf.paper_rect("letter")
 # text appears only within this subrectangle
 WHERE = MEDIABOX + (36, 36, -36, -36)
 
@@ -65,12 +65,12 @@ WHERE = MEDIABOX + (36, 36, -36, -36)
 # --------------------------------------------------------------
 COLS = 2  # layout: 2 cols 1 row
 ROWS = 1
-TABLE = fitz.make_table(WHERE, cols=COLS, rows=ROWS)
+TABLE = pymupdf.make_table(WHERE, cols=COLS, rows=ROWS)
 # fill the cells of each page in this sequence:
 CELLS = [TABLE[i][j] for i in range(ROWS) for j in range(COLS)]
 
 fileobject = io.BytesIO()  # let DocumentWriter write to memory
-writer = fitz.DocumentWriter(fileobject)  # define the writer
+writer = pymupdf.DocumentWriter(fileobject)  # define the writer
 
 more = 1
 while more:  # loop until all input text has been written out
@@ -85,5 +85,5 @@ while more:  # loop until all input text has been written out
 writer.close()  # close DocumentWriter output
 
 # for housekeeping work re-open from memory
-doc = fitz.open("pdf", fileobject)
+doc = pymupdf.open("pdf", fileobject)
 doc.ez_save(docname)

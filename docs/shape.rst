@@ -52,7 +52,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: __init__(self, page)
 
-      Create a new drawing. During importing PyMuPDF, the *fitz.Page* object is being given the convenience method *new_shape()* to construct a *Shape* object. During instantiation, a check will be made whether we do have a PDF page. An exception is otherwise raised.
+      Create a new drawing. During importing PyMuPDF, the *pymupdf.Page* object is being given the convenience method *new_shape()* to construct a *Shape* object. During instantiation, a check will be made whether we do have a PDF page. An exception is otherwise raised.
 
       :arg page: an existing page of a PDF document.
       :type page: :ref:`Page`
@@ -88,10 +88,10 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Here is an example of three connected lines, forming a closed, filled triangle. Little arrows indicate the stroking direction.
 
-         >>> import fitz
-         >>> doc=fitz.open()
+         >>> import pymupdf
+         >>> doc=pymupdf.open()
          >>> page=doc.new_page()
-         >>> r = fitz.Rect(100, 100, 300, 200)
+         >>> r = pymupdf.Rect(100, 100, 300, 200)
          >>> shape=page.new_shape()
          >>> shape.draw_squiggle(r.tl, r.tr)
          >>> shape.draw_squiggle(r.tr, r.br)
@@ -429,7 +429,7 @@ Several draw methods can be executed in a row and each one of them will contribu
          >>> # assuming ...
          >>> morph = (point, matrix)
          >>> # ... recalculate the shape rectangle like so:
-         >>> shape.rect = (shape.rect - fitz.Rect(point, point)) * ~matrix + fitz.Rect(point, point)
+         >>> shape.rect = (shape.rect - pymupdf.Rect(point, point)) * ~matrix + pymupdf.Rect(point, point)
 
       :type: :ref:`Rect`
 
@@ -484,8 +484,8 @@ Examples
       cols = (...)  # a sequence of RGB color triples
       pieces = len(cols)  # number of pieces to draw
       beta = 360. / pieces  # angle of each piece of pie
-      center = fitz.Point(...)  # center of the pie
-      p0 = fitz.Point(...)  # starting point
+      center = pymupdf.Point(...)  # center of the pie
+      p0 = pymupdf.Point(...)  # starting point
       for i in range(pieces):
           p0 = shape.draw_sector(center, p0, beta,
                                 fullSector=True) # draw piece
@@ -501,8 +501,8 @@ Here is an example for 5 colors:
 
       shape = page.new_shape() # start a new shape
       beta = -360.0 / n  # our angle, drawn clockwise
-      center = fitz.Point(...)  # center of circle
-      p0 = fitz.Point(...)  # start here (1st edge)
+      center = pymupdf.Point(...)  # center of circle
+      p0 = pymupdf.Point(...)  # start here (1st edge)
       points = [p0]  # store polygon edges
       for i in range(n):  # calculate the edges
           p0 = shape.draw_sector(center, p0, beta)
@@ -570,7 +570,7 @@ Common Parameters
 
   Stroke and fill colors can be specified as tuples or list of of floats from 0 to 1. These sequences must have a length of 1 (GRAY), 3 (RGB) or 4 (CMYK). For GRAY colorspace, a single float instead of the unwieldy *(float,)* or *[float]* is also accepted. Accept (default) or use `None` to not use the parameter.
 
-  To simplify color specification, method *getColor()* in *fitz.utils* may be used to get predefined RGB color triples by name. It accepts a string as the name of the color and returns the corresponding triple. The method knows over 540 color names -- see section :ref:`ColorDatabase`.
+  To simplify color specification, method *getColor()* in *pymupdf.utils* may be used to get predefined RGB color triples by name. It accepts a string as the name of the color and returns the corresponding triple. The method knows over 540 color names -- see section :ref:`ColorDatabase`.
 
   Please note that the term *color* usually means "stroke" color when used in conjunction with fill color.
 

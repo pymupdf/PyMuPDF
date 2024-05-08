@@ -3,7 +3,7 @@
 ===============================
 Constants and Enumerations
 ===============================
-Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|. Each of the following variables is accessible as *fitz.variable*.
+Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|. Each of the following variables is accessible as *pymupdf.variable*.
 
 
 Constants
@@ -17,19 +17,19 @@ Constants
 
 .. py:data:: csRGB
 
-    Predefined RGB colorspace *fitz.Colorspace(fitz.CS_RGB)*.
+    Predefined RGB colorspace *pymupdf.Colorspace(pymupdf.CS_RGB)*.
 
     :rtype: :ref:`Colorspace`
 
 .. py:data:: csGRAY
 
-    Predefined GRAY colorspace *fitz.Colorspace(fitz.CS_GRAY)*.
+    Predefined GRAY colorspace *pymupdf.Colorspace(pymupdf.CS_GRAY)*.
 
     :rtype: :ref:`Colorspace`
 
 .. py:data:: csCMYK
 
-    Predefined CMYK colorspace *fitz.Colorspace(fitz.CS_CMYK)*.
+    Predefined CMYK colorspace *pymupdf.Colorspace(pymupdf.CS_CMYK)*.
 
     :rtype: :ref:`Colorspace`
 

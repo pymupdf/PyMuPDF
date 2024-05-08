@@ -235,7 +235,7 @@ msgid ""
 "when using **PyMuPDF** -  **\"coordinates\"**. Please have a quick look "
 "at the :ref:`Coordinates` section to understand the coordinate system to "
 "help you with positioning objects and understand your document space."
-msgstr "**PyMuPDF** を使用する際に快適に感じるべき*数学用語*が1つあります - **「座標」** です。オブジェクトの配置や文書空間の理解に役立つ座標系を理解するために、:ref:`Coordinates` セクションを簡単にご覧ください。"
+msgstr "**PyMuPDF** を使用する際に快適に感じるべき *数学用語* が1つあります - **「座標」** です。オブジェクトの配置や文書空間の理解に役立つ座標系を理解するために、:ref:`Coordinates` セクションを簡単にご覧ください。"
 
 #: ../../the-basics.rst:229 37c12dbb65434e5a9347b2abd7748822
 msgid "Adding a watermark to a |PDF|"
@@ -613,7 +613,7 @@ msgstr ""
 #: ../../the-basics.rst:756 ../../the-basics.rst:814
 #: a8cd38ef0f66434ab5050f2099416572 def03ce2bb9440f59171e1240fc47608
 msgid "Example:"
-msgstr ""
+msgstr "例:"
 
 #: ../../the-basics.rst:764 ../../the-basics.rst:823
 #: 678d37b782ac4c9d8b6cae3946f8027e cb5c39dc162a45fe86d250969d58a25f
@@ -730,10 +730,10 @@ msgstr "暗号化パラメータが提供されていない場合、保存時に
 #: ../../the-basics.rst:894 5a9a64aed4644280a150eee7af2395d8
 msgid ""
 "To **keep the encryption method** of a PDF save it using "
-"`encryption=fitz.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() == "
+"`encryption=pymupdf.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() == "
 "True`, an incremental save is also possible."
 msgstr ""
-"PDFの暗号化方法を保持するには、`encryption=fitz.PDF_ENCRYPT_KEEP` を使用して保存します。また、 "
+"PDFの暗号化方法を保持するには、`encryption=pymupdf.PDF_ENCRYPT_KEEP` を使用して保存します。また、 "
 "`doc.can_save_incrementally() == True` であれば、増分保存も可能です"
 
 #: ../../the-basics.rst:896 3793cdda03214ff6ae766f29b910a2ca
@@ -917,11 +917,11 @@ msgstr ""
 #~ "|PDF|. So in these cases there is"
 #~ " no need for additional precautions. "
 #~ "Similarly, for memory documents, you can"
-#~ " just specify `doc=fitz.open(stream=mem_area)` to"
+#~ " just specify `doc=pymupdf.open(stream=mem_area)` to"
 #~ " open it as a |PDF| document."
 #~ msgstr ""
 #~ "|PyMuPDF| "
-#~ "が不明な/欠落している拡張子のファイルに遭遇した場合、それをPDFとして開こうと試みます。したがって、これらの場合は追加の注意が必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=fitz.open(stream=mem_area)`"
+#~ "が不明な/欠落している拡張子のファイルに遭遇した場合、それをPDFとして開こうと試みます。したがって、これらの場合は追加の注意が必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=pymupdf.open(stream=mem_area)`"
 #~ " と指定するだけでPDFドキュメントとして開くことができます"
 
 #~ msgid ""

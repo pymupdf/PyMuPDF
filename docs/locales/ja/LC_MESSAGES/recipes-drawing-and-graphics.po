@@ -43,18 +43,18 @@ msgstr "描画とグラフィックス"
 msgid ""
 "When the terms \"Drawings\" or \"Graphics\" are mentioned here we are "
 "referring to \"Vector Graphics\" or \"Line Art\"."
-msgstr "⚠️"
+msgstr "ここで「Drawings」や「Graphics」という用語が言及されている場合、それは「ベクトルグラフィックス」や「線画」を指しています。"
 
 #: ../../recipes-drawing-and-graphics.rst:13 4f851f467f2d4b9a9fc7139ab87ea710
 msgid "Therefore please consider these terms as being synonymous!"
-msgstr "⚠️"
+msgstr "したがって、これらの用語を同義語として考えてください。"
 
 #: ../../recipes-drawing-and-graphics.rst:16 d6999484bd4d4b79ac0422c98d0eecf0
 msgid ""
 "PDF files support elementary drawing operations as part of their syntax. "
 "These are **vector graphics** and include basic geometrical objects like "
 "lines, curves, circles, rectangles including specifying colors."
-msgstr "⚠️"
+msgstr "PDFファイルは、その構文の一部として基本的な描画操作をサポートしています。これらは**ベクトルグラフィックス**であり、線、曲線、円、長方形などの基本的な幾何学的オブジェクトを含み、色の指定も可能です。"
 
 #: ../../recipes-drawing-and-graphics.rst:18 6c00375b63f842218c599b6b49ddbaee
 msgid ""
@@ -81,11 +81,11 @@ msgid ""
 "instruction like `shape = page.new_shape()`. The class defines numerous "
 "methods that perform drawing operations on the page's area. For example, "
 "`last_point = shape.draw_rect(rect)` draws a rectangle along the borders "
-"of a suitably defined `rect = fitz.Rect(...)`."
+"of a suitably defined `rect = pymupdf.Rect(...)`."
 msgstr ""
 "シェイプは常にページの子として作成され、通常は `shape = page.new_shape()` "
 "のような命令で行います。このクラスは、ページの領域に描画操作を実行するための多数のメソッドを定義しています。たとえば、 `last_point ="
-" shape.draw_rect(rect)` は、適切に定義された `rect = fitz.Rect(…)` "
+" shape.draw_rect(rect)` は、適切に定義された `rect = pymupdf.Rect(…)` "
 "の境界に沿って四角形を描画します。"
 
 #: ../../recipes-drawing-and-graphics.rst:24 48d720a104d04d9c9b7cdf9467eefe0f
@@ -219,50 +219,52 @@ msgid ""
 msgstr "パスのリストを使用して、ページ上のすべての線またはすべての四角形などのリストを作成し、色やページ上の位置などの基準でサブセレクトすることができます。"
 
 #: ../../recipes-drawing-and-graphics.rst:210 3a9d4909dbae4d3e8b32ccedb7d287b1
-#, fuzzy
 msgid "How to Delete Drawings"
-msgstr "⚠️"
+msgstr "描画の削除方法"
 
 #: ../../recipes-drawing-and-graphics.rst:212 90002c6b09dc4a57a7059843116ba374
 msgid ""
 "To delete drawings/vector graphics we must use a :ref:`Redaction "
 "Annotation <The_Basics_Redacting>` with the bounding box of the drawing "
 "and then **add and apply** a redaction to it to delete it."
-msgstr "⚠️"
+msgstr "描画やベクトルグラフィックスを削除するには、その描画の境界ボックスを持つ :ref:`赤字アノテーション<The_Basics_Redacting>` を使用し、それに赤字を **追加して適用する** 必要があります。"
+
 
 #: ../../recipes-drawing-and-graphics.rst:215 52251d6b4da34f95a776f5c28b5b5d29
 msgid ""
 "The following code shows an example of deleting the first drawing found "
 "on the page::"
-msgstr "⚠️"
+msgstr "以下のコードは、ページ上で最初に見つかった描画を削除する例を示しています："
 
 #: ../../recipes-drawing-and-graphics.rst:225 b39a815341b6455f93ff6b156013613f
 msgid ""
 "See :meth:`Page.apply_redactions` for the parameter options which can be "
 "sent - you are able to apply deletion options to image, drawing and text "
 "objects which are bound by the annotation area."
-msgstr "⚠️"
+msgstr ":meth:`Page.apply_redactions` には送信できるパラメータオプションがあります。アノテーション領域によって境界付けられたイメージ、描画、テキストオブジェクトに削除オプションを適用できます。"
+
 
 #: ../../recipes-drawing-and-graphics.rst:229 2900fd9fe1ff4f40bd472abac92ad86e
 msgid "How to Draw Graphics"
-msgstr "⚠️"
+msgstr "グラフィックスを描画する方法"
 
 #: ../../recipes-drawing-and-graphics.rst:231 91d3c9688fad42c4a11e68c9983519e3
 msgid ""
 "Drawing graphics is as simple as calling the type of :meth:`Drawing "
 "Method <Page.draw_line>` you may want. You can draw graphics directly on "
 "pages or within shape objects."
-msgstr "⚠️"
+msgstr "グラフィックスを描画することは、必要な :meth:`描画方法 <Page.draw_line>` の種類を呼び出すだけです。グラフィックスは、ページ上または形状オブジェクト内に直接描画できます。"
 
 #: ../../recipes-drawing-and-graphics.rst:234 8f34536c9ce24ffdbb717576a4b63b36
 msgid "For example, to draw a circle::"
-msgstr "⚠️"
+msgstr "例えば、円を描画するには："
 
 #: ../../recipes-drawing-and-graphics.rst:245 541e33c7470748588b394739019e6c65
 msgid ""
 "The :ref:`Shape` object can be used to combine multiple drawings that "
 "should receive common properties as specified by :meth:`Shape.finish`."
-msgstr "⚠️"
+msgstr ":ref:`Shape` オブジェクトは、:meth:`Shape.finish` で指定された共通のプロパティを受け取る必要がある複数の描画を組み合わせるために使用できます。"
+
 
 #: ../../footer.rst:60 6948efd7c60041dc97a51b07dbeb7351
 msgid "This documentation covers all versions up to |version|."

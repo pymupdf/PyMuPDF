@@ -42,8 +42,8 @@ msgstr "定数と列挙型"
 #: ../../vars.rst:6 95c32cdcb39a44a88b2e65ecdeb8e412
 msgid ""
 "Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|."
-" Each of the following variables is accessible as *fitz.variable*."
-msgstr "PyMuPDFによって実装されたMuPDFの定数と列挙型。以下の各変数は、 *fitz.variable* としてアクセスできます。"
+" Each of the following variables is accessible as *pymupdf.variable*."
+msgstr "PyMuPDFによって実装されたMuPDFの定数と列挙型。以下の各変数は、 *pymupdf.variable* としてアクセスできます。"
 
 #: ../../vars.rst:10 10b3cf4bd1d2403dad1627ee3b60c371
 msgid "Constants"
@@ -70,8 +70,8 @@ msgid "Return type"
 msgstr "戻り値の型"
 
 #: ../../vars.rst:20 164aad7f558e48ae9dd9b8947df1fa13
-msgid "Predefined RGB colorspace *fitz.Colorspace(fitz.CS_RGB)*."
-msgstr "事前定義されたRGBカラースペース *fitz.Colorspace(fitz.CS_RGB)*。"
+msgid "Predefined RGB colorspace *pymupdf.Colorspace(pymupdf.CS_RGB)*."
+msgstr "事前定義されたRGBカラースペース *pymupdf.Colorspace(pymupdf.CS_RGB)*。"
 
 #: ../../vars.rst:22 ../../vars.rst:28 ../../vars.rst:34
 #: 63825de6ade048b2a9cdd6ddd67a6587 cc1546ed9f9942309e9d2349cb79edcb
@@ -80,12 +80,12 @@ msgid ":ref:`Colorspace`"
 msgstr ":ref:`Colorspace`"
 
 #: ../../vars.rst:26 11fbd608aa854fbbaec617fc1834fdc8
-msgid "Predefined GRAY colorspace *fitz.Colorspace(fitz.CS_GRAY)*."
-msgstr "事前定義されたGRAYカラースペース *fitz.Colorspace(fitz.CS_GRAY)*。"
+msgid "Predefined GRAY colorspace *pymupdf.Colorspace(pymupdf.CS_GRAY)*."
+msgstr "事前定義されたGRAYカラースペース *pymupdf.Colorspace(pymupdf.CS_GRAY)*。"
 
 #: ../../vars.rst:32 4df0813b718e43968458e2b2a540a6cd
-msgid "Predefined CMYK colorspace *fitz.Colorspace(fitz.CS_CMYK)*."
-msgstr "事前定義されたCMYKカラースペース *fitz.Colorspace(fitz.CS_CMYK)*。"
+msgid "Predefined CMYK colorspace *pymupdf.Colorspace(pymupdf.CS_CMYK)*."
+msgstr "事前定義されたCMYKカラースペース *pymupdf.Colorspace(pymupdf.CS_CMYK)*。"
 
 #: ../../vars.rst:38 4f14feac11aa445ba1d6b390c9797c8d
 msgid "1 -- Type of :ref:`Colorspace` is RGBA"
@@ -114,11 +114,11 @@ msgstr "これらのバインディングがビルドされたISOタイムスタ
 #: ../../vars.rst:72 454f9fbfed864f088e7fd21ec101d315
 msgid ""
 "The docstring of *fitz* contains information of the above which can be "
-"retrieved like so: *print(fitz.__doc__)*, and should look like: *PyMuPDF "
+"retrieved like so: *print(pymupdf.__doc__)*, and should look like: *PyMuPDF "
 "1.10.0: Python bindings for the MuPDF 1.10 library, built on 2016-11-30 "
 "13:09:13*."
 msgstr ""
-"fitzのドキュストリングには、上記の情報が含まれており、次のようにして取得できます：print(fitz.doc)。以下のように表示されるべきです：PyMuPDF"
+"fitzのドキュストリングには、上記の情報が含まれており、次のようにして取得できます：print(pymupdf.doc)。以下のように表示されるべきです：PyMuPDF"
 " 1.10.0：MuPDF 1.10ライブラリ用のPythonバインディング、ビルド日時2016-11-30 13:09:13。"
 
 #: ../../vars.rst:76 70840a4eb13247c18b2bbec3bb6edb41

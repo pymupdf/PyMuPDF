@@ -1,6 +1,6 @@
 import sys
 
-import fitz
+import pymupdf
 
 
 def flags_decomposer(flags):
@@ -23,7 +23,7 @@ def flags_decomposer(flags):
     return ", ".join(l)
 
 
-doc = fitz.open(sys.argv[1])
+doc = pymupdf.open(sys.argv[1])
 page = doc[0]
 
 # read page text as a dictionary, suppressing extra spaces in CJK fonts

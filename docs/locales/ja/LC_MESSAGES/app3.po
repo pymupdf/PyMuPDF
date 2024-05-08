@@ -78,20 +78,20 @@ msgid "Using the original image's width and height,"
 msgstr "元の画像の幅と高さを使用して、"
 
 #: ../../app3.rst:23 2254528a02204db29976656cce479394
-msgid "define the image rectangle `imgrect = fitz.Rect(0, 0, width, height)`"
-msgstr "画像の矩形を `imgrect = fitz.Rect(0, 0, width, height)` と定義します。"
+msgid "define the image rectangle `imgrect = pymupdf.Rect(0, 0, width, height)`"
+msgstr "画像の矩形を `imgrect = pymupdf.Rect(0, 0, width, height)` と定義します。"
 
 #: ../../app3.rst:24 0889a555e2c64ba39bf996f84dfbe69d
 msgid ""
-"define the \"shrink matrix\" `shrink = fitz.Matrix(1/width, 0, 0, "
+"define the \"shrink matrix\" `shrink = pymupdf.Matrix(1/width, 0, 0, "
 "1/height, 0, 0)`."
-msgstr "「縮小行列」を `shrink = fitz.Matrix(1/width, 0, 0,1/height, 0, 0)` と定義します。"
+msgstr "「縮小行列」を `shrink = pymupdf.Matrix(1/width, 0, 0,1/height, 0, 0)` と定義します。"
 
 #: ../../app3.rst:26 863b902429b74a0ea4d682d95d708b85
 msgid ""
 "Transforming the image rectangle with its shrink matrix, will result in "
-"the unit rectangle: `imgrect * shrink = fitz.Rect(0, 0, 1, 1)`."
-msgstr "画像矩形を縮小行列で変換すると、単位矩形が得られます： `imgrect * shrink = fitz.Rect(0, 0, 1, 1)` 。"
+"the unit rectangle: `imgrect * shrink = pymupdf.Rect(0, 0, 1, 1)`."
+msgstr "画像矩形を縮小行列で変換すると、単位矩形が得られます： `imgrect * shrink = pymupdf.Rect(0, 0, 1, 1)` 。"
 
 #: ../../app3.rst:28 98e630c525654f03a1c95410d9f89381
 msgid ""
@@ -223,11 +223,11 @@ msgid "will make it usable in the following example expressions:"
 msgstr "これによって、以下の例の式で使用可能になります："
 
 #: ../../app3.rst:140 432743f5750a4c5c908b41631cf9fb0a
-msgid "`fitz.Point(s)`"
+msgid "`pymupdf.Point(s)`"
 msgstr ""
 
 #: ../../app3.rst:141 d4509f3c403a493696b92e8e4b693bf1
-msgid "`fitz.Point(x, y) + s`"
+msgid "`pymupdf.Point(x, y) + s`"
 msgstr ""
 
 #: ../../app3.rst:142 08ea77d7eeb34f6daafbd3344c96f595
@@ -279,19 +279,19 @@ msgstr "PyMuPDFは、CライブラリMuPDFのPythonバインディングです�
 msgid ""
 "Python on the other hand implements the OO-model in a very clean way. The"
 " interface code between PyMuPDF and MuPDF consists of two basic files: "
-"*fitz.py* and *fitz_wrap.c*. They are created by the excellent SWIG tool "
+"*pymupdf.py* and *fitz_wrap.c*. They are created by the excellent SWIG tool "
 "for each new version."
 msgstr ""
 "一方で、Pythonは非常にクリーンな方法でOOモデルを実装しています。PyMuPDFとMuPDFの間のインターフェースコードは、基本的に2つのファイルから構成されています："
-" *fitz.py* と *fitz_wrap.c* 。これらは、新バージョンごとに優れたSWIGツールによって作成されます。"
+" *pymupdf.py* と *fitz_wrap.c* 。これらは、新バージョンごとに優れたSWIGツールによって作成されます。"
 
 #: ../../app3.rst:175 6d7bd080bff74db6882f2cd8657ea611
 msgid ""
 "When you use one of PyMuPDF's objects or methods, this will result in "
-"execution of some code in *fitz.py*, which in turn will call some C code "
+"execution of some code in *pymupdf.py*, which in turn will call some C code "
 "compiled with *fitz_wrap.c*."
 msgstr ""
-"PyMuPDFのオブジェクトやメソッドのいずれかを使用すると、これにより *fitz.py* でいくつかのコードが実行され、それがさらに "
+"PyMuPDFのオブジェクトやメソッドのいずれかを使用すると、これにより *pymupdf.py* でいくつかのコードが実行され、それがさらに "
 "*fitz_wrap.c* でコンパイルされたCコードを呼び出します。"
 
 #: ../../app3.rst:177 cca361ee883c4605a003cb058f92a6ac
@@ -637,11 +637,11 @@ msgstr "MuPDFバージョン1.16以降、エラーと警告メッセージは公
 msgid ""
 "PyMuPDF will put error messages to `sys.stderr` prefixed with the string "
 "\"mupdf:\". Warnings are internally stored and can be accessed via "
-"*fitz.TOOLS.mupdf_warnings()*. There also is a function to empty this "
+"*pymupdf.TOOLS.mupdf_warnings()*. There also is a function to empty this "
 "store."
 msgstr ""
 "PyMuPDFはエラーメッセージを、先頭に文字列「mupdf:」を付けて `sys.stderr` "
-"に表示します。警告は内部で保存され、*fitz.TOOLS.mupdf_warnings()* "
+"に表示します。警告は内部で保存され、*pymupdf.TOOLS.mupdf_warnings()* "
 "を通じてアクセスできます。また、この保存領域を空にするための関数も存在します。"
 
 #: ../../app3.rst:308 32225e3faefa444b8273d0478a9d4b06

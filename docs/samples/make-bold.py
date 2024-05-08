@@ -33,7 +33,7 @@ When using other PDF viewers, the reaction is unforeseeable.
 """
 import sys
 
-import fitz
+import pymupdf
 
 # this JavaScript will execute when the button is clicked:
 jscript = """
@@ -51,20 +51,20 @@ app.alert('Done');
 """
 i_fn = sys.argv[1]  # input file name
 o_fn = "bold-" + i_fn  # output filename
-doc = fitz.open(i_fn)  # open input
+doc = pymupdf.open(i_fn)  # open input
 page = doc[0]  # get desired page
 
 # ------------------------------------------------
 # make a push button for invoking the JavaScript
 # ------------------------------------------------
 
-widget = fitz.Widget()  # create widget
+widget = pymupdf.Widget()  # create widget
 
 # make it a 'PushButton'
-widget.field_type = fitz.PDF_WIDGET_TYPE_BUTTON
-widget.field_flags = fitz.PDF_BTN_FIELD_IS_PUSHBUTTON
+widget.field_type = pymupdf.PDF_WIDGET_TYPE_BUTTON
+widget.field_flags = pymupdf.PDF_BTN_FIELD_IS_PUSHBUTTON
 
-widget.rect = fitz.Rect(5, 5, 20, 20)  # button position
+widget.rect = pymupdf.Rect(5, 5, 20, 20)  # button position
 
 widget.script = jscript  # fill in JavaScript source text
 widget.field_name = "Make bold"  # arbitrary name

@@ -343,8 +343,8 @@ msgid ""
 "output.  .. note:: Instead of an actual archive, valid arguments for "
 "**creating** an :ref:`Archive` can also be provided -- in which case an "
 "archive will temporarily be constructed. So, instead of `story = "
-"fitz.Story(archive=fitz.Archive(\"myfolder\"))`, one can also shorter "
-"write `story = fitz.Story(archive=\"myfolder\")`."
+"pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))`, one can also shorter "
+"write `story = pymupdf.Story(archive=\"myfolder\")`."
 msgstr ""
 
 #: ../../story-class.rst:110 6cd51bea678e402bbb503dbe0f6ccf07
@@ -362,12 +362,12 @@ msgid ""
 "Instead of an actual archive, valid arguments for **creating** an "
 ":ref:`Archive` can also be provided -- in which case an archive will "
 "temporarily be constructed. So, instead of `story = "
-"fitz.Story(archive=fitz.Archive(\"myfolder\"))`, one can also shorter "
-"write `story = fitz.Story(archive=\"myfolder\")`."
+"pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))`, one can also shorter "
+"write `story = pymupdf.Story(archive=\"myfolder\")`."
 msgstr ""
 "アーカイブの代わりに、:ref:`Archive` を一時的に **構築する** ための有効な引数も提供できます。したがって、`story = "
-"fitz.Story(archive=fitz.Archive(\"myfolder\"))` の代わりに、`story = "
-"fitz.Story(archive=\"myfolder\")` と短縮して記述することもできます。 "
+"pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))` の代わりに、`story = "
+"pymupdf.Story(archive=\"myfolder\")` と短縮して記述することもできます。 "
 
 #: ../../story-class.rst:116 e4efde983eac454cb029e6a332f8c944
 msgid ""
@@ -735,7 +735,7 @@ msgstr ""
 #: ../../story-class.rst:259 63aa857801ef4edca7d89591b7714f43
 msgid ""
 "A callable taking a floating point `parameter` and returning a "
-"`fitz.Rect()`. If the rect is empty, we assume the story will not fit and"
+"`pymupdf.Rect()`. If the rect is empty, we assume the story will not fit and"
 " do not call `self.place()`.  Must guarantee that `self.place()` behaves "
 "monotonically when given rect `fn(parameter`) as `parameter` increases. "
 "This usually means that both width and height increase or stay unchanged "
@@ -745,7 +745,7 @@ msgstr ""
 #: ../../story-class.rst:260 6ac30a70c5914d768f23cdb859888f93
 msgid ""
 "A callable taking a floating point `parameter` and returning a "
-"`fitz.Rect()`. If the rect is empty, we assume the story will not fit and"
+"`pymupdf.Rect()`. If the rect is empty, we assume the story will not fit and"
 " do not call `self.place()`."
 msgstr ""
 
@@ -926,8 +926,8 @@ msgstr "`elpos.rect_num` （int）– これまでにストーリーで埋めら
 #: ../../story-class.rst:400 4d623cd7efcd42d09f5d8f7c59edae0a
 msgid ""
 "`elpos.page_num` (int) -- page number; only present when using "
-"`fitz.Story.write*()` functions."
-msgstr "`elpos.page_num` （int）– ページ番号。`fitz.Story.write*()` 関数を使用する場合にのみ存在します。"
+"`pymupdf.Story.write*()` functions."
+msgstr "`elpos.page_num` （int）– ページ番号。`pymupdf.Story.write*()` 関数を使用する場合にのみ存在します。"
 
 #: ../../footer.rst:71 cf6b29a38132416c91ce0ab7a2a2b769
 msgid "This documentation covers all versions up to |version|."

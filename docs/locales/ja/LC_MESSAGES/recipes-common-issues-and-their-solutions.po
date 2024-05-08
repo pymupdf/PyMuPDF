@@ -132,10 +132,10 @@ msgstr "さらに、これらのメッセージはMuPDFの警告とともに内�
 msgid ""
 "We always prefix these messages with an identifying string *\"mupdf:\"*. "
 "If you prefer to not see recoverable MuPDF errors at all, issue the "
-"command `fitz.TOOLS.mupdf_display_errors(False)`."
+"command `pymupdf.TOOLS.mupdf_display_errors(False)`."
 msgstr ""
 "これらのメッセージは常に識別用の文字列 `\"mupdf:\"` で始まります。復旧可能なMuPDFエラーを全く表示したくない場合は、コマンド  "
-"`fitz.TOOLS.mupdf_display_errors(False)` を発行してください。"
+"`pymupdf.TOOLS.mupdf_display_errors(False)` を発行してください。"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:140
 #: a5012ed81a07428ea3ef464155aad1a2
@@ -159,11 +159,11 @@ msgid ""
 " but MuPDF is able to repair it and gives us a little information on what"
 " happened. Then we illustrate how to find out whether the document can "
 "later be saved incrementally. Checking the :attr:`Document.is_dirty` "
-"attribute at this point also indicates that during `fitz.open` the "
+"attribute at this point also indicates that during `pymupdf.open` the "
 "document had to be repaired:"
 msgstr ""
 "回復可能なエラーの例出力です。損傷したPDFを開いていますが、MuPDFはそれを修復し、何が起こったかに関する少しの情報を提供しています。その後、ドキュメントが後で増分保存できるかどうかを調べる方法も示しています。この時点で"
-" :attr:`Document.is_dirty` 属性をチェックすることも、 `fitz.open` "
+" :attr:`Document.is_dirty` 属性をチェックすることも、 `pymupdf.open` "
 "の際にドキュメントを修復する必要があったことを示しています::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:165

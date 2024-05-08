@@ -622,7 +622,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's links. The results equal the entries of :meth:`Page.get_links`.
 
-      :arg sequence kinds: a sequence of integers to down-select to one or more link kinds. Default is all links. Example: *kinds=(fitz.LINK_GOTO,)* will only return internal links.
+      :arg sequence kinds: a sequence of integers to down-select to one or more link kinds. Default is all links. Example: *kinds=(pymupdf.LINK_GOTO,)* will only return internal links.
 
       :rtype: generator
       :returns: an entry of :meth:`Page.get_links()` for each iteration.
@@ -637,7 +637,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's annotations.
 
-      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: `types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations.
+      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: `types=(pymupdf.PDF_ANNOT_FREETEXT, pymupdf.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations.
 
       :rtype: generator
       :returns: an :ref:`Annot` for each iteration.
@@ -662,7 +662,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's form fields.
 
-      :arg sequence types: a sequence of integers to down-select to one or more widget types. Default is all form fields. Example: `types=(fitz.PDF_WIDGET_TYPE_TEXT,)` will only return 'Text' fields.
+      :arg sequence types: a sequence of integers to down-select to one or more widget types. Default is all form fields. Example: `types=(pymupdf.PDF_WIDGET_TYPE_TEXT,)` will only return 'Text' fields.
 
       :rtype: generator
       :returns: a :ref:`Widget` for each iteration.
@@ -1217,8 +1217,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       This example puts the same image on every page of a document::
 
-         >>> doc = fitz.open(...)
-         >>> rect = fitz.Rect(0, 0, 50, 50)       # put thumbnail in upper left corner
+         >>> doc = pymupdf.open(...)
+         >>> rect = pymupdf.Rect(0, 0, 50, 50)       # put thumbnail in upper left corner
          >>> img = open("some.jpg", "rb").read()  # an image file
          >>> img_xref = 0                         # first execution embeds the image
          >>> for page in doc:
@@ -1740,7 +1740,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
 
          1. Be aware that :meth:`Page.get_images` may contain "dead" entries i.e. images, which the page **does not display**. This is no error, but intended by the PDF creator. No exception will be raised in this case, but an infinite rectangle is returned. You can avoid this from happening by executing :meth:`Page.clean_contents` before this method.
-         2. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
+         2. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
 
       |history_begin|
 
@@ -1751,7 +1751,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. index::
       pair: matrix; get_svg_image
 
-   .. method:: get_svg_image(matrix=fitz.Identity, text_as_path=True)
+   .. method:: get_svg_image(matrix=pymupdf.Identity, text_as_path=True)
 
      Create an SVG image from the page. Only full page images are currently supported.
 
@@ -1770,7 +1770,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: matrix; get_pixmap
       pair: dpi; get_pixmap
 
-   .. method:: get_pixmap(*, matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
+   .. method:: get_pixmap(*, matrix=pymupdf.Identity, dpi=None, colorspace=pymupdf.csRGB, clip=None, alpha=False, annots=True)
 
      Create a pixmap from the page. This is probably the most often used method to create a :ref:`Pixmap`.
 
@@ -1810,8 +1810,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * The method will respect any page rotation and will not exceed the intersection of `clip` and :attr:`Page.cropbox`. If you need the page's mediabox (and if this is a different rectangle), you can use a snippet like the following to achieve this::
 
-            In [1]: import fitz
-            In [2]: doc=fitz.open("demo1.pdf")
+            In [1]: import pymupdf
+            In [2]: doc=pymupdf.open("demo1.pdf")
             In [3]: page=doc[0]
             In [4]: rotation = page.rotation
             In [5]: cropbox = page.cropbox
@@ -1950,16 +1950,16 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Example: Show the same source page, rotated by 90 and by -90 degrees:
 
-      >>> doc = fitz.open()  # new empty PDF
+      >>> doc = pymupdf.open()  # new empty PDF
       >>> page=doc.new_page()  # new page in A4 format
       >>>
       >>> # upper half page
-      >>> r1 = fitz.Rect(0, 0, page.rect.width, page.rect.height/2)
+      >>> r1 = pymupdf.Rect(0, 0, page.rect.width, page.rect.height/2)
       >>>
       >>> # lower half page
       >>> r2 = r1 + (0, page.rect.height/2, 0, page.rect.height/2)
       >>>
-      >>> src = fitz.open("PyMuPDF.pdf")  # show page 0 of this
+      >>> src = pymupdf.open("PyMuPDF.pdf")  # show page 0 of this
       >>>
       >>> page.show_pdf_page(r1, src, 0, rotate=90)
       >>> page.show_pdf_page(r2, src, 0, rotate=-90)
@@ -2065,20 +2065,20 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       >>> page = doc.new_page()
       >>> page.rect
-      fitz.Rect(0.0, 0.0, 595.0, 842.0)
+      pymupdf.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
       >>> page.cropbox  # cropbox and mediabox still equal
-      fitz.Rect(0.0, 0.0, 595.0, 842.0)
+      pymupdf.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
       >>> # now set cropbox to a part of the page
-      >>> page.set_cropbox(fitz.Rect(100, 100, 400, 400))
+      >>> page.set_cropbox(pymupdf.Rect(100, 100, 400, 400))
       >>> # this will also change the "rect" property:
       >>> page.rect
-      fitz.Rect(0.0, 0.0, 300.0, 300.0)
+      pymupdf.Rect(0.0, 0.0, 300.0, 300.0)
       >>>
       >>> # but mediabox remains unaffected
       >>> page.mediabox
-      fitz.Rect(0.0, 0.0, 595.0, 842.0)
+      pymupdf.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
       >>> # revert CropBox change
       >>> # either set it to MediaBox
@@ -2163,7 +2163,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          >>> page.set_rotation(90)  # rotate an ISO A4 page
          >>> page.rect
          Rect(0.0, 0.0, 842.0, 595.0)
-         >>> p = fitz.Point(0, 0)  # where did top-left point land?
+         >>> p = pymupdf.Point(0, 0)  # where did top-left point land?
          >>> p * page.rotation_matrix
          Point(842.0, 0.0)
          >>>
@@ -2227,7 +2227,7 @@ Each entry of the :meth:`Page.get_links` list is a dictionary with the following
 
 * *page*:  a 0-based integer indicating the destination page. Required for *LINK_GOTO* and *LINK_GOTOR*, else ignored.
 
-* *to*:   either a *fitz.Point*, specifying the destination location on the provided page, default is *fitz.Point(0, 0)*, or a symbolic (indirect) name. If an indirect name is specified, *page = -1* is required and the name must be defined in the PDF in order for this to work. Required for *LINK_GOTO* and *LINK_GOTOR*, else ignored.
+* *to*:   either a *pymupdf.Point*, specifying the destination location on the provided page, default is *pymupdf.Point(0, 0)*, or a symbolic (indirect) name. If an indirect name is specified, *page = -1* is required and the name must be defined in the PDF in order for this to work. Required for *LINK_GOTO* and *LINK_GOTOR*, else ignored.
 
 * *file*: a string specifying the destination file. Required for *LINK_GOTOR* and *LINK_LAUNCH*, else ignored.
 
@@ -2265,7 +2265,7 @@ Indirect *LINK_GOTOR* destinations can in general of course not be checked for v
 
 2. Determine the target page number ("pno", 0-based) and a :ref:`Point` on it, where the link should be directed to.
 
-3. Create a dictionary `d = {"kind": fitz.LINK_GOTO, "page": pno, "from": bbox, "to": point}`.
+3. Create a dictionary `d = {"kind": pymupdf.LINK_GOTO, "page": pno, "from": bbox, "to": point}`.
 
 4. Execute `page.insert_link(d)`.
 
