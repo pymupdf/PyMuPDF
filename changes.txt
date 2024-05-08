@@ -2,18 +2,23 @@ Change Log
 ==========
 
 
-**Changes in version 1.24.3 ()**
+**Changes in version 1.24.3 (2024-05-08)**
 
 *
   The Python module is now called `pymupdf`. `fitz` is still supported for
   backwards compatibility.
 
+* Use MuPDF-1.24.2.
+
 * Fixed issues:
 
-  * **Fixed** `3402 <https://github.com/pymupdf/PyMuPDF/issues/3402>`_: Cannot add Widgets containing inter-field-calculation JavaScript
+  * **Fixed** `3357 <https://github.com/pymupdf/PyMuPDF/issues/3357>`_: PyMuPDF==1.24.0 will hanging when using page.get_text("text")
+  * **Fixed** `3376 <https://github.com/pymupdf/PyMuPDF/issues/3376>`_: Redacting results are not as expected in 1.24.x.
   * **Fixed** `3379 <https://github.com/pymupdf/PyMuPDF/issues/3379>`_: Documentation mismatch for get_text_blocks return value order.
-  * **Fixed** `3414 <https://github.com/pymupdf/PyMuPDF/issues/3414>`_: missing attribute set_dpi()
   * **Fixed** `3381 <https://github.com/pymupdf/PyMuPDF/issues/3381>`_: Contents stream contains floats in scientific notation
+  * **Fixed** `3402 <https://github.com/pymupdf/PyMuPDF/issues/3402>`_: Cannot add Widgets containing inter-field-calculation JavaScript
+  * **Fixed** `3414 <https://github.com/pymupdf/PyMuPDF/issues/3414>`_: missing attribute set_dpi()
+  * **Fixed** `3430 <https://github.com/pymupdf/PyMuPDF/issues/3430>`_: page.get_text() cause process freeze with certain pdf on v1.24.2
 
 * Other:
 
@@ -22,6 +27,9 @@ Change Log
     * `Page.remove_rotation()`: new, set page rotation to zero while keeping appearance.
 
   * Fixed some problems when checking for PDF properties.
+  * Fixed pip builds from sdist
+    (see discussion `3360 <https://github.com/pymupdf/PyMuPDF/discussions/3360>`_:
+    Alpine linux docker build failing "No matching distribution found for pymupdfb==1.24.1").
 
 
 **Changes in version 1.24.2 (2024-04-17)**
