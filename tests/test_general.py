@@ -1222,6 +1222,9 @@ def test_3354():
     assert document.metadata == v
 
 def test_scientific_numbers():
+    '''
+    This is #3381.
+    '''
     doc = pymupdf.open()
     page = doc.new_page(width=595, height=842)
     point = pymupdf.Point(1e-11, -1e-10)

@@ -11,7 +11,7 @@ Overview:
     Default behaviour:
 
         Building an sdist:
-            As of 1.23.26 we no longer download the MuPDF .tar.gz file and
+            As of 2024-002-28 we no longer download the MuPDF .tar.gz file and
             embed it within the sdist. Instead it will be downloaded at build
             time.
 
@@ -386,7 +386,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.1-source.tar.gz'
+        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.2-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -1117,8 +1117,8 @@ classifier = [
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.24.2'
-version_b = '1.24.1'
+version = '1.24.3'
+version_b = '1.24.3'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     
