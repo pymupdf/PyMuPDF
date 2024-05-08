@@ -13460,7 +13460,7 @@ csCMYK = Colorspace(CS_CMYK)
 # internally.
 #
 dictkey_align = "align"
-dictkey_align = "ascender"
+dictkey_asc = "ascender"
 dictkey_bbox = "bbox"
 dictkey_blocks = "blocks"
 dictkey_bpc = "bpc"
